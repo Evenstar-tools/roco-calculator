@@ -1,0 +1,62 @@
+name: Bug 报告
+description: 报告计算、数据或界面问题
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: 请提供可复现信息；计算问题尽量填写完整攻防配置。
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      placeholder: v1.2.3 / main
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: 问题类型
+      options:
+        - 伤害计算
+        - 技能或特性规则
+        - 数据或素材
+        - 配置记忆
+        - 界面与适配
+        - 安装与启动
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 复现步骤
+      description: 请写明精灵、性格、个体、技能、触发条件和操作顺序。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 证据或截图
+      description: 规则问题请附可核查的游戏描述或来源。
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已搜索现有 Issue，没有找到相同问题。
+          required: true
+        - label: 我没有提交账号、令牌或私人信息。
+          required: true

@@ -1,0 +1,29 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  build: {
+    outDir: "dist/client",
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom/client"],
+  },
+  server: {
+    host: "0.0.0.0",
+    allowedHosts: ["terminal.local"],
+    warmup: {
+      clientFiles: ["./src/main.jsx"],
+    },
+  },
+  test: {
+    environment: "jsdom",
+    setupFiles: "./vitest.setup.js",
+    css: true,
+    exclude: [
+      "e2e/**",
+      "node_modules/**",
+      "dist/**",
+    ],
+  },
+  plugins: [react()],
+});

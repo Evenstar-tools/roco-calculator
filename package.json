@@ -1,0 +1,90 @@
+{
+  "name": "rock-calculator",
+  "version": "1.2.3",
+  "description": "内置完整赛季数据、可断网使用的洛克王国 PVP 伤害计算器。",
+  "author": "洛克计算器",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhangzeyu99-web/rock-calculator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhangzeyu99-web/rock-calculator/issues"
+  },
+  "homepage": "https://github.com/zhangzeyu99-web/rock-calculator#readme",
+  "private": true,
+  "type": "module",
+  "main": "desktop/main.mjs",
+  "scripts": {
+    "dev": "npm run data:runtime && vite",
+    "build": "npm run data:runtime && vite build",
+    "desktop": "npm run build && electron .",
+    "desktop:pack": "npm run build && node scripts/build-desktop.mjs",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "data:build": "node scripts/bwiki/build-snapshot.mjs",
+    "data:runtime": "node scripts/runtime-snapshot.mjs public/data/current.json public/data/runtime.json",
+    "data:validate": "node scripts/bwiki/validate.mjs public/data/current.json"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "2.1.10",
+    "@vitejs/plugin-react": "5.0.4",
+    "cheerio": "1.1.2",
+    "pinyin-pro": "3.27.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "vite": "6.4.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.54.1",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.3.0",
+    "@testing-library/user-event": "14.6.1",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
+    "jsdom": "26.1.0",
+    "vitest": "3.2.4"
+  },
+  "build": {
+    "appId": "cn.rock.calculator",
+    "productName": "洛克计算器",
+    "artifactName": "洛克计算器.${ext}",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "desktop/**/*",
+      "package.json",
+      "!node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "dist/client",
+        "to": "client"
+      }
+    ],
+    "win": {
+      "icon": "desktop/icon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "guid": "5ca658da-1ce6-5199-babe-3d59475e8d1a",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "洛克计算器",
+      "uninstallDisplayName": "洛克计算器"
+    }
+  }
+}

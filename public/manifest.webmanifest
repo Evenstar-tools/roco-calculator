@@ -1,0 +1,39 @@
+{
+  "id": "/",
+  "name": "洛克计算器",
+  "short_name": "洛克计算器",
+  "description": "洛克王国：世界 PVP 即时伤害计算器，支持离线使用。",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait-primary",
+  "background_color": "#f4f6fb",
+  "theme_color": "#5946e8",
+  "categories": ["games", "utilities"],
+  "icons": [
+    {
+      "src": "/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "快速计算",
+      "short_name": "计算",
+      "description": "打开精简双选界面",
+      "url": "/?mode=compact&source=shortcut",
+      "icons": [{ "src": "/app-icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

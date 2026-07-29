@@ -1,0 +1,67 @@
+{
+  "sourcePage": "https://wiki.biligame.com/rocom/精灵图鉴",
+  "retrievedAt": "2026-07-24",
+  "license": "CC BY-NC-SA 4.0",
+  "assets": [
+    {
+      "stat": "hp",
+      "label": "生命",
+      "localFile": "/assets/stats/hp.png",
+      "sourceFile": "图标 图鉴 生命.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/b/b1/760bkicnlbhdbx6vxck97q6t1pxkroz.png",
+      "sha1": "3d5ace5618026f41f1c95de3dcac0efa6b40de33",
+      "width": 53,
+      "height": 48
+    },
+    {
+      "stat": "physicalAttack",
+      "label": "物攻",
+      "localFile": "/assets/stats/physical-attack.png",
+      "sourceFile": "图标 图鉴 物攻.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/4/47/omsg42h1fu1dgkzfyoji4ei8wwx79ej.png",
+      "sha1": "d2e11da1ed0a4db19ea0351180af75bdd7c56c5b",
+      "width": 53,
+      "height": 48
+    },
+    {
+      "stat": "physicalDefense",
+      "label": "物防",
+      "localFile": "/assets/stats/physical-defense.png",
+      "sourceFile": "图标 图鉴 物防.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/3/3e/620b3gkse3oax64468fu43a91wjrct8.png",
+      "sha1": "33d7b44c7c59db17e7a0397c0d3c815db3943c9c",
+      "width": 53,
+      "height": 48
+    },
+    {
+      "stat": "magicalAttack",
+      "label": "魔攻",
+      "localFile": "/assets/stats/magical-attack.png",
+      "sourceFile": "图标 图鉴 魔攻.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/16/pz6f82c7i0h465mm2cd7tz1u4niaz1s.png",
+      "sha1": "de62d7fedfebfd1ecbd5913d16ad4226e47e9df0",
+      "width": 53,
+      "height": 48
+    },
+    {
+      "stat": "magicalDefense",
+      "label": "魔防",
+      "localFile": "/assets/stats/magical-defense.png",
+      "sourceFile": "图标 图鉴 魔防.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/63/5w9grx15sih3lvm3957dyw4e4g1pkn0.png",
+      "sha1": "3279edab5a6dbbb316415a8977f83a9342ddd5bc",
+      "width": 53,
+      "height": 48
+    },
+    {
+      "stat": "speed",
+      "label": "速度",
+      "localFile": "/assets/stats/speed.png",
+      "sourceFile": "图标 图鉴 速度.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/4/4c/hex81g18kvj6c23nrw362xqidq2aoos.png",
+      "sha1": "95152cd812d8145c4e1ff2e765cd9a185121d57c",
+      "width": 53,
+      "height": 48
+    }
+  ]
+}

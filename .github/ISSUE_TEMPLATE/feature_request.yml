@@ -1,0 +1,26 @@
+name: 功能建议
+description: 提议可验证的功能或交互改进
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 当前问题
+      description: 请描述真实 PVP 决策中遇到的阻力。
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收方式
+      description: 什么结果可以证明该建议有效？
+    validations:
+      required: true

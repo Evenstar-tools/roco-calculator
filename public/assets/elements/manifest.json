@@ -1,0 +1,186 @@
+{
+  "generatedAt": "2026-07-23T13:15:22.934Z",
+  "sourceSnapshot": "s3-2026-07-15",
+  "assets": [
+    {
+      "id": "普通",
+      "name": "普通",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/69/nc77midbqeafn7i2snh5a5h16ctdi0o.png",
+      "localFile": "/assets/elements/normal.png",
+      "sha256": "6ed289379a48e408c844b39df2eb97510dbf2e9cf0c42717b3d937cda71e0a6a",
+      "bytes": 7821,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "草",
+      "name": "草",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/12/b8bsilucec9a98rsmqkmxt06c4mnnix.png",
+      "localFile": "/assets/elements/grass.png",
+      "sha256": "a94038f17fa7f9444907eb521b14dc4154c5f088ec4b2806542a6d92c8e515ce",
+      "bytes": 8622,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "火",
+      "name": "火",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/a/ab/8wvxz3p479e2b702afdqyzhx9340qgx.png",
+      "localFile": "/assets/elements/fire.png",
+      "sha256": "9b621e97ee333206ac34f216e3d2d7ff9d74786c1a7d539eecebc7ee6dfbbb54",
+      "bytes": 8705,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "水",
+      "name": "水",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/d/d1/csqsyhq1k488329455xdlzdcybv6zjh.png",
+      "localFile": "/assets/elements/water.png",
+      "sha256": "4ae59b6aac9e34b11f775eab07853c23839d87040e826a2269d3f3b60a247001",
+      "bytes": 7848,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "光",
+      "name": "光",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/d/de/pxfi7cg0j94c45uxf4itigu90wis7jr.png",
+      "localFile": "/assets/elements/light.png",
+      "sha256": "8b7752e695c4634d9748ef97a5bc43a61accfd9ac523596dce239abc7871ed4c",
+      "bytes": 8369,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "地",
+      "name": "地",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/3/32/0w5pybmkd8qm306doqx8kh5onl1o8cq.png",
+      "localFile": "/assets/elements/earth.png",
+      "sha256": "c77dd3a2122a1e0ab440fc86b5392130d803215dbd4410aaaa5acb1661363129",
+      "bytes": 8277,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "冰",
+      "name": "冰",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9b/oxnxxud1xhopw87c7mnawxijz8r1hns.png",
+      "localFile": "/assets/elements/ice.png",
+      "sha256": "fe80f4c236d13536ce020dbfffb9c411ff340cc72349cd54e394771eb387791f",
+      "bytes": 8049,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "龙",
+      "name": "龙",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/65/kgcg0hvl19o7up0ug8f42bbvhi71dke.png",
+      "localFile": "/assets/elements/dragon.png",
+      "sha256": "fbe829e6e188353e252941d179888f214e08439455c41f65ad2495ed2de54140",
+      "bytes": 5610,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "电",
+      "name": "电",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/02/iqzkamzcra945jsw5z6o8h9p30fv7db.png",
+      "localFile": "/assets/elements/electric.png",
+      "sha256": "e6c12394056d23b7492fae9f77db1589453d253942521834ac7ec9ccb2632c61",
+      "bytes": 7866,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "毒",
+      "name": "毒",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/5/53/jnd3vijasgthdz2ukggyfpisd464r2v.png",
+      "localFile": "/assets/elements/poison.png",
+      "sha256": "a862febfd25129eeb9a4f1a66e4138b1a3bd65ea22b4382fb3601c55729a68b7",
+      "bytes": 7839,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "虫",
+      "name": "虫",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/c/cb/q3mlwj270f67spwr934hpqx7hj62bm3.png",
+      "localFile": "/assets/elements/bug.png",
+      "sha256": "deac33585093acc691c2309ee2ac0d98472c5c8f57bd8b6ebfc70b0848691fee",
+      "bytes": 8982,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "武",
+      "name": "武",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/5/52/q9hbq9nrnhjt7t86hy7sftv3e2e5fvx.png",
+      "localFile": "/assets/elements/martial.png",
+      "sha256": "d42984eb2af5e42f3f360b01495801d376621f22f3d9eaad6dc3d7b218deaa6d",
+      "bytes": 8016,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "翼",
+      "name": "翼",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/2/2b/p7wdw88ziupp84s1mr8t9t602psswzz.png",
+      "localFile": "/assets/elements/wing.png",
+      "sha256": "6bf8788723f3ded77a25623edc4380ac20fb3348e2e5a9ad6d0a4d57e5122542",
+      "bytes": 8343,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "萌",
+      "name": "萌",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/5/5f/80jhk99eosjv1ld26wp7ljtmif27lfv.png",
+      "localFile": "/assets/elements/cute.png",
+      "sha256": "0404cdb448024eb15008737e168092c29059a52d05c5b67235c3e1c465511408",
+      "bytes": 8205,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "幽",
+      "name": "幽",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/e/e7/ttqdi3zlz72g5dgmc8qg9ko4aorwllw.png",
+      "localFile": "/assets/elements/ghost.png",
+      "sha256": "1b06b4e25cf508ce1666a21bb665ad4866653cbd8744e2b90d158ab355057e18",
+      "bytes": 7689,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "恶",
+      "name": "恶",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/3/3b/hrdmz7n0qt3bnmir9fdn7977fvleec0.png",
+      "localFile": "/assets/elements/dark.png",
+      "sha256": "f95cfc7ec71ab19ada1d33b312b376ccd35cb5086d9e93697a61b44de563f77e",
+      "bytes": 7988,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "机械",
+      "name": "机械",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/a/ad/fw81a2pvdickbcnq5rt17m6066cchcf.png",
+      "localFile": "/assets/elements/machine.png",
+      "sha256": "cea844046cbc5a571eb50bf189e0b76bbb72fa0e01af8d9460767a8dd665b215",
+      "bytes": 8561,
+      "width": 198,
+      "height": 198
+    },
+    {
+      "id": "幻",
+      "name": "幻",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/64/89miqle961qdw2tt56hb78bps6f34ci.png",
+      "localFile": "/assets/elements/illusion.png",
+      "sha256": "a0c1728c4869a98c083a98ca4e6bf68ddf765e1173af68070f7d718d3669822d",
+      "bytes": 9573,
+      "width": 198,
+      "height": 198
+    }
+  ]
+}
