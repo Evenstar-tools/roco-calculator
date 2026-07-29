@@ -1249,9 +1249,10 @@ select:focus-visible {
 }
 
 .four-skill-side {
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--border);
   border-radius: 7px;
+  background: var(--surface);
 }
 
 .four-skill-side > header {
@@ -1263,6 +1264,8 @@ select:focus-visible {
   border-bottom: 1px solid var(--border);
   background: var(--surface-soft);
   font-size: 11px;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
 }
 
 .four-skill-side--attacker > header span {
@@ -1317,6 +1320,11 @@ select:focus-visible {
 
 .skill-slot .skill-picker__options {
   min-width: 210px;
+}
+
+.skill-slot-group:nth-last-child(-n + 2) .skill-picker__options {
+  top: auto;
+  bottom: calc(100% + 4px);
 }
 
 .four-skill-side--defender .skill-picker__options {
@@ -3036,6 +3044,11 @@ html[data-theme="dark"] .formula-group {
 .compact-skill__row .skill-picker__options {
   right: auto;
   width: max(100%, min(340px, calc(100vw - 36px)));
+}
+
+.compact-skill__row:nth-last-child(-n + 2) .skill-picker__options {
+  top: auto;
+  bottom: calc(100% + 4px);
 }
 
 .compact-skill-side--defender .compact-skill__row .skill-picker__options {

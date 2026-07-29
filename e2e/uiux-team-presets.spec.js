@@ -27,6 +27,64 @@ async function openDetailedMode(page) {
   await page.getByRole("tab", { name: "单技能" }).click();
 }
 
+async function inspectDetailedSkillMenu(page, side, slot) {
+  const picker = page.getByRole("combobox", {
+    name: `${side}技能${slot}`,
+  });
+  await picker.scrollIntoViewIfNeeded();
+  await picker.click();
+  const options = picker.locator("xpath=..").locator(".skill-picker__options");
+  await expect(options).toBeVisible();
+
+  const layout = await options.evaluate((node) => {
+    const menu = node.getBoundingClientRect();
+    const picker = node.parentElement.getBoundingClientRect();
+    const clippingAncestors = [];
+    let ancestor = node.parentElement;
+    while (ancestor && ancestor !== document.documentElement) {
+      const style = getComputedStyle(ancestor);
+      const clipsX = ["auto", "clip", "hidden", "scroll"].includes(
+        style.overflowX,
+      );
+      const clipsY = ["auto", "clip", "hidden", "scroll"].includes(
+        style.overflowY,
+      );
+      if (clipsX || clipsY) {
+        const box = ancestor.getBoundingClientRect();
+        if (
+          (clipsX && (menu.left < box.left - 1 || menu.right > box.right + 1)) ||
+          (clipsY && (menu.top < box.top - 1 || menu.bottom > box.bottom + 1))
+        ) {
+          clippingAncestors.push(ancestor.className || ancestor.tagName);
+        }
+      }
+      ancestor = ancestor.parentElement;
+    }
+
+    const name = node.querySelector(".skill-picker__option-name strong");
+    const text = name?.textContent?.slice(0, 4) ?? "";
+    const style = name ? getComputedStyle(name) : null;
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    if (style) {
+      context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    }
+
+    return {
+      clippingAncestors,
+      menuBottom: menu.bottom,
+      menuTop: menu.top,
+      nameWidth: name?.getBoundingClientRect().width ?? 0,
+      pickerBottom: picker.bottom,
+      pickerTop: picker.top,
+      requiredNameWidth: context.measureText(text).width,
+    };
+  });
+
+  await page.keyboard.press("Escape");
+  return layout;
+}
+
 test("keeps the compact workflow usable at 390px", async ({ page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
   await page.goto("/");
@@ -242,6 +300,50 @@ test("keeps the result rail and three steps readable at 1280px", async ({
         .every((slot) => slot.scrollWidth <= slot.clientWidth),
     ),
   ).toBe(true);
+});
+
+test("keeps compact bottom skill menus above their rows on both sides", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 945, width: 1536 });
+  await page.goto("/");
+  await selectDefaultSpirits(page);
+
+  for (const side of ["攻击方", "防御方"]) {
+    for (const slot of [3, 4]) {
+      const layout = await inspectDetailedSkillMenu(page, side, slot);
+      expect(layout.clippingAncestors).toEqual([]);
+      expect(layout.nameWidth).toBeGreaterThanOrEqual(
+        layout.requiredNameWidth,
+      );
+      expect(layout.menuBottom).toBeLessThanOrEqual(layout.pickerTop + 1);
+    }
+  }
+});
+
+test("keeps detailed four-skill menus readable outside every attack and defense row", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 945, width: 1536 });
+  await page.goto("/");
+  await selectDefaultSpirits(page);
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  for (const side of ["攻击方", "防御方"]) {
+    for (const slot of [1, 2, 3, 4]) {
+      const layout = await inspectDetailedSkillMenu(page, side, slot);
+      expect(layout.clippingAncestors).toEqual([]);
+      expect(layout.nameWidth).toBeGreaterThanOrEqual(
+        layout.requiredNameWidth,
+      );
+      if (slot >= 3) {
+        expect(layout.menuBottom).toBeLessThanOrEqual(layout.pickerTop + 1);
+      } else {
+        expect(layout.menuTop).toBeGreaterThanOrEqual(layout.pickerBottom - 1);
+      }
+    }
+  }
 });
 
 test("collapses cleanly in a 930px half-screen window and steps IV by six", async ({
