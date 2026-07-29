@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/zhangzeyu99-web/rock-calculator/raw/refs/heads/main/docs/images/project-cover.png" alt="洛克计算器项目封面" width="100%">
+  <img src="https://github.com/user-attachments/assets/2385a040-cf86-40c4-a2bd-f14b80ebf92f" alt="洛克计算器项目封面" width="100%">
 </p>
 
 # 洛克计算器
@@ -11,7 +11,7 @@
 
 面向《洛克王国：世界》PVP 的确定性伤害计算器。目标是在一回合有限的决策时间内，用最少操作完成双方精灵、性格、个体和技能对比。
 
-![洛克计算器精简版界面](https://github.com/zhangzeyu99-web/rock-calculator/raw/refs/heads/main/docs/images/app-overview.png)
+![洛克计算器精简版界面](https://github.com/user-attachments/assets/fa1ab460-f8ce-4428-b14c-e098fbc35b3f)
 
 ## 主要能力
 
