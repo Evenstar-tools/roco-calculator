@@ -26,7 +26,7 @@
 
 ### Windows
 
-前往 [Releases](https://github.com/zhangzeyu99-web/rock-calculator/releases/latest) 下载最新版 `洛克计算器-v*.exe`，直接安装或覆盖旧版本。
+前往 [Releases](https://github.com/zhangzeyu99-web/rock-calculator/releases/latest) 下载最新版 `Rock-Calculator-v*.exe`，直接安装或覆盖旧版本。应用安装后仍显示为“洛克计算器”。
 
 ### 本地网页
 
