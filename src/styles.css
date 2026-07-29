@@ -4335,12 +4335,12 @@ html[data-theme="dark"] .mobile-result-bar {
 
   .icon-action,
   .team-action {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 38px;
+    min-height: 38px;
   }
 
   .team-action {
-    width: 44px;
+    width: 38px;
     padding: 0;
   }
 

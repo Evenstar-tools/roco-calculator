@@ -351,6 +351,36 @@ test("collapses cleanly in a 930px half-screen window and steps IV by six", asyn
 }) => {
   await page.setViewportSize({ height: 900, width: 930 });
   await page.goto("/");
+
+  const headerMode = await page
+    .getByRole("group", { name: "界面模式" })
+    .boundingBox();
+  const headerTeam = await page
+    .getByRole("button", { name: "打开队伍" })
+    .boundingBox();
+  const headerTheme = await page
+    .getByRole("button", { name: "切换主题" })
+    .boundingBox();
+  const headerMenu = await page
+    .getByRole("button", { name: "打开菜单" })
+    .boundingBox();
+  for (const action of [headerTeam, headerTheme, headerMenu]) {
+    expect(action.height).toBe(headerMode.height);
+    expect(action.y).toBe(headerMode.y);
+  }
+  expect(headerTeam.width).toBe(headerMode.height);
+
+  await page.getByRole("button", { name: "具体版" }).click();
+  const detailedMode = await page
+    .getByRole("group", { name: "界面模式" })
+    .boundingBox();
+  for (const name of ["打开队伍", "切换主题", "打开菜单"]) {
+    const action = await page.getByRole("button", { name }).boundingBox();
+    expect(action.height).toBe(detailedMode.height);
+    expect(action.y).toBe(detailedMode.y);
+  }
+  await page.getByRole("button", { name: "精简版" }).click();
+
   await selectDefaultSpirits(page);
 
   const compactSkill = page.getByRole("combobox", {
