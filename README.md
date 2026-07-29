@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/project-cover.png" alt="洛克计算器项目封面" width="100%">
+</p>
+
 # 洛克计算器
 
 [![CI](https://github.com/zhangzeyu99-web/rock-calculator/actions/workflows/ci.yml/badge.svg)](https://github.com/zhangzeyu99-web/rock-calculator/actions/workflows/ci.yml)
