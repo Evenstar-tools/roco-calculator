@@ -26,6 +26,16 @@ function shareFixture() {
   return {
     ...state,
     mode: "four",
+    marks: {
+      attacker: {
+        negative: { id: "slow", stacks: 2 },
+        positive: { id: "tailwind", stacks: 3 },
+      },
+      defender: {
+        negative: { id: "starfall", stacks: 5 },
+        positive: { id: "charge", stacks: 1 },
+      },
+    },
     sides: {
       attacker: {
         ...state.sides.attacker,
@@ -180,6 +190,41 @@ describe("versioned share state", () => {
     expect(decoded.sides.attacker.skills.four[1]).not.toHaveProperty(
       "totalDamage",
     );
+  });
+
+  test("migrates legacy starfallStacks into the matching side's negative mark", async () => {
+    const state = shareFixture();
+    delete state.marks;
+    state.directions.forward.starfallStacks = 4;
+    state.directions.reverse.starfallStacks = 2;
+
+    const payload = JSON.stringify(state);
+    const bytes = new TextEncoder().encode(payload);
+    let binary = "";
+    for (const byte of bytes) binary += String.fromCharCode(byte);
+    const body = btoa(binary)
+      .replaceAll("+", "-")
+      .replaceAll("/", "_")
+      .replace(/=+$/u, "");
+    const digest = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(payload),
+    );
+    const checksum = [...new Uint8Array(digest)]
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("")
+      .slice(0, 12);
+
+    const decoded = await decodeShareState(`#v1.${body}.${checksum}`);
+
+    expect(decoded.marks.defender.negative).toEqual({
+      id: "starfall",
+      stacks: 4,
+    });
+    expect(decoded.marks.attacker.negative).toEqual({
+      id: "starfall",
+      stacks: 2,
+    });
   });
 
   test("normalizes legacy nature labels when decoding old links", async () => {

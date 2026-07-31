@@ -1,5 +1,9 @@
 import { STATE_SCHEMA_VERSION } from "./defaults.js";
 import { normalizeNatureId } from "../domain/natures.js";
+import {
+  MARK_DEFINITIONS,
+  normalizeMarksState,
+} from "../domain/marks.js";
 
 const SHARE_FORMAT_VERSION = "v1";
 const SHARE_PATTERN = /^#v1\.([A-Za-z0-9_-]+)\.([a-f0-9]{12})$/;
@@ -15,9 +19,11 @@ const TOP_LEVEL_KEYS = [
   "schemaVersion",
   "versions",
   "mode",
+  "marks",
   "sides",
   "directions",
 ];
+const LEGACY_TOP_LEVEL_KEYS = TOP_LEVEL_KEYS.filter((key) => key !== "marks");
 const SIDE_KEYS = ["spiritId", "nature", "displayIvs", "skills"];
 const DIRECTION_KEYS = [
   "selectedSkillIndex",
@@ -29,6 +35,7 @@ const DIRECTION_KEYS = [
   "context",
   "overrides",
 ];
+const MARK_SLOT_KEYS = ["id", "stacks"];
 const SKILL_INPUT_KEYS = [
   "skillId",
   "hitCount",
@@ -197,6 +204,37 @@ function assertSide(side, path) {
   });
 }
 
+function assertMarks(marks) {
+  if (!hasExactKeys(marks, ["attacker", "defender"])) {
+    throw new TypeError("分享配置印记结构无效");
+  }
+  for (const side of ["attacker", "defender"]) {
+    if (!hasExactKeys(marks[side], ["positive", "negative"])) {
+      throw new TypeError(`marks.${side} 结构无效`);
+    }
+    for (const polarity of ["positive", "negative"]) {
+      const slot = marks[side][polarity];
+      if (!hasExactKeys(slot, MARK_SLOT_KEYS)) {
+        throw new TypeError(`marks.${side}.${polarity} 结构无效`);
+      }
+      const allowed = new Set(
+        MARK_DEFINITIONS[polarity].map((mark) => mark.id),
+      );
+      if (slot.id !== null && !allowed.has(slot.id)) {
+        throw new TypeError(`marks.${side}.${polarity}.id 无效`);
+      }
+      if (
+        !Number.isInteger(slot.stacks) ||
+        slot.stacks < 0 ||
+        slot.stacks > 99 ||
+        (slot.id === null && slot.stacks !== 0)
+      ) {
+        throw new TypeError(`marks.${side}.${polarity}.stacks 无效`);
+      }
+    }
+  }
+}
+
 function assertDirection(direction, path) {
   if (!hasExactKeys(direction, DIRECTION_KEYS)) {
     throw new TypeError(`${path} 结构无效`);
@@ -258,6 +296,7 @@ function assertShareState(state) {
   if (state.mode !== "single" && state.mode !== "four") {
     throw new TypeError("分享配置技能模式无效");
   }
+  assertMarks(state.marks);
   if (!hasExactKeys(state.sides, ["attacker", "defender"])) {
     throw new TypeError("分享配置双方结构无效");
   }
@@ -321,6 +360,7 @@ export function selectShareableInputs(state) {
       rules: state.versions?.rules,
     },
     mode: state.mode,
+    marks: normalizeMarksState(state.marks, state.directions),
     sides: {
       attacker: selectSide(state.sides?.attacker ?? {}),
       defender: selectSide(state.sides?.defender ?? {}),
@@ -460,11 +500,21 @@ export async function decodeShareState(hash, expectedVersions) {
     throw new TypeError("分享配置 JSON 无效");
   }
 
-  assertShareState(state);
-  const normalizedState = {
+  if (
+    !hasExactKeys(state, TOP_LEVEL_KEYS) &&
+    !hasExactKeys(state, LEGACY_TOP_LEVEL_KEYS)
+  ) {
+    throw new TypeError("分享配置结构无效");
+  }
+  const migratedState = {
     ...state,
+    marks: normalizeMarksState(state.marks, state.directions),
+  };
+  assertShareState(migratedState);
+  const normalizedState = {
+    ...migratedState,
     sides: Object.fromEntries(
-      Object.entries(state.sides).map(([side, value]) => [
+      Object.entries(migratedState.sides).map(([side, value]) => [
         side,
         {
           ...value,

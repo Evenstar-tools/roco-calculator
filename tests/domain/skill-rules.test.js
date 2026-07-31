@@ -131,25 +131,38 @@ describe("resolveSkillPower", () => {
     },
   );
 
-  test("asks for energy when Mana Burst lacks context", () => {
+  test("defaults Mana Burst to zero energy instead of blocking damage", () => {
     expect(
       resolveSkillPower(
         skill({ name: "魔能爆", ruleId: "mana_burst" }),
         {},
       ),
     ).toMatchObject({
-      status: "needs_input",
-      inputs: [{ key: "energy" }],
+      status: "exact",
+      value: 45,
+      steps: [{ input: 0, after: 45 }],
     });
   });
 
-  test("resolves Mana Burst when energy is supplied", () => {
+  test.each([
+    [0, 45],
+    [1, 70],
+    [2, 90],
+    [3, 110],
+    [4, 135],
+    [5, 155],
+    [6, 165],
+    [7, 180],
+    [8, 190],
+    [9, 200],
+    [10, 210],
+  ])("resolves Mana Burst at %i energy to %i power", (energy, power) => {
     expect(
       resolveSkillPower(
         skill({ name: "魔能爆", ruleId: "mana_burst" }),
-        { energy: 4 },
+        { energy },
       ),
-    ).toMatchObject({ status: "exact", value: 135 });
+    ).toMatchObject({ status: "exact", value: power });
   });
 
   test("resolves Ice Sweep from the defender's four carried skill costs", () => {
@@ -482,6 +495,12 @@ describe("resolveSkillPower", () => {
       65,
       { enemyEnergy: 2 },
       { status: "exact", value: 325 },
+    ],
+    [
+      "甜蜜陷阱",
+      50,
+      { energy: 11 },
+      { status: "exact", value: 160 },
     ],
     [
       "血契",

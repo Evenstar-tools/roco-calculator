@@ -2,6 +2,8 @@ import { Lightning, Shield, Sword } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
 import { getSkillEffectInputs } from "../domain/skill-effects.js";
+import { getSkillStatusEffectInputs } from "../domain/skill-status-effects.js";
+import { HealthInput } from "./HealthInput.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
 
 const CATEGORY_LABELS = {
@@ -17,8 +19,18 @@ function toNumber(value, fallback = 0) {
   return Number.isFinite(number) ? number : fallback;
 }
 
-export function dynamicInputsForSkill(skill) {
-  return getSkillEffectInputs(skill);
+export function dynamicInputsForSkill(
+  skill,
+  { includeStatusEffects = false } = {},
+) {
+  const inputs = [
+    ...getSkillEffectInputs(skill),
+    ...(includeStatusEffects ? getSkillStatusEffectInputs(skill) : []),
+  ];
+  return inputs.filter(
+    (input, index) =>
+      inputs.findIndex((candidate) => candidate.key === input.key) === index,
+  );
 }
 
 export function clampDynamicInput(input, value) {
@@ -37,9 +49,11 @@ export function DraftNumberInput({
   ariaLabel,
   className,
   disabled = false,
+  inputMode,
   max,
   min = 0,
   onCommit,
+  step,
   value,
 }) {
   const [draft, setDraft] = useState(String(value ?? ""));
@@ -53,6 +67,7 @@ export function DraftNumberInput({
       aria-label={ariaLabel}
       className={className}
       disabled={disabled}
+      inputMode={inputMode}
       max={max}
       min={min}
       onBlur={() => {
@@ -68,6 +83,18 @@ export function DraftNumberInput({
           onCommit?.(normalized);
         }
       }}
+      onKeyDown={(event) => {
+        if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+        event.preventDefault();
+        const current = toNumber(draft, toNumber(value));
+        const normalized = Math.min(
+          max ?? Number.POSITIVE_INFINITY,
+          Math.max(min, current + (event.key === "ArrowUp" ? 1 : -1)),
+        );
+        setDraft(String(normalized));
+        onCommit?.(normalized);
+      }}
+      step={step}
       type="number"
       value={draft}
     />
@@ -97,9 +124,11 @@ export function TraitInputs({
           <span>{input.label}</span>
           <DraftNumberInput
             ariaLabel={input.label}
+            inputMode="numeric"
             max={input.max}
             min={input.min}
             onCommit={(value) => onChange?.(input.key, value)}
+            step={input.step ?? 1}
             value={dynamicInputValue(input, context)}
           />
           {input.suffix ? <small>{input.suffix}</small> : null}
@@ -150,6 +179,9 @@ export function describeResolution(result) {
     const metric = String(step.label).startsWith("物防") ? "物防" : "速度";
     return `${metric} ${Number(step.input.attacker)} − ${Number(step.input.defender)} = ${before} → 威力 ${after}`;
   }
+  if (source.includes("mana-burst")) {
+    return `${Number(step.input)} 能量 → 威力 ${after}`;
+  }
   if (source.includes("hit-count")) {
     return `${before} 连击 → ${after} 连击`;
   }
@@ -165,11 +197,17 @@ export function describeResolution(result) {
 }
 
 export function SingleSkillEditor({
+  attackerHealth,
   attackerTrait,
+  defenderHealth,
   defenderTrait,
   hitCount,
   manualPower,
   onHitCountChange,
+  onAttackerHealthChange,
+  onAttackerHealthPercentChange,
+  onDefenderHealthChange,
+  onDefenderHealthPercentChange,
   onManualPowerChange,
   onPowerModeChange,
   onSkillSelect,
@@ -183,6 +221,12 @@ export function SingleSkillEditor({
   const [powerDraft, setPowerDraft] = useState(String(manualPower));
   const [hitDraft, setHitDraft] = useState(String(hitCount));
   const dynamicInputs = dynamicInputsForSkill(selectedSkill);
+  const hasAttackerHpRule = dynamicInputs.some(
+    (input) => input.key === "attackerHpPercent",
+  );
+  const hasDefenderHpRule = dynamicInputs.some(
+    (input) => input.key === "defenderHpPercent",
+  );
   const resolutionSummary = describeResolution(result);
 
   useEffect(() => {
@@ -230,7 +274,34 @@ export function SingleSkillEditor({
         </div>
         {powerMode !== "displayed" && dynamicInputs.length > 0 ? (
           <div aria-label="动态技能条件" className="skill-effect-card__conditions">
+            {hasAttackerHpRule && attackerHealth ? (
+              <HealthInput
+                currentHp={attackerHealth.currentHp}
+                defaultMode="percent"
+                label="攻击方"
+                maxHp={attackerHealth.maxHp}
+                onCurrentHpChange={onAttackerHealthChange}
+                onPercentChange={onAttackerHealthPercentChange}
+                percentValue={attackerHealth.percent}
+              />
+            ) : null}
+            {hasDefenderHpRule && defenderHealth ? (
+              <HealthInput
+                currentHp={defenderHealth.currentHp}
+                defaultMode="percent"
+                label="防御方"
+                maxHp={defenderHealth.maxHp}
+                onCurrentHpChange={onDefenderHealthChange}
+                onPercentChange={onDefenderHealthPercentChange}
+                percentValue={defenderHealth.percent}
+              />
+            ) : null}
             {dynamicInputs
+              .filter(
+                (input) =>
+                  (input.key !== "attackerHpPercent" || !attackerHealth) &&
+                  (input.key !== "defenderHpPercent" || !defenderHealth),
+              )
               .filter((input) =>
                 isDynamicInputVisible(input, traitContext),
               )

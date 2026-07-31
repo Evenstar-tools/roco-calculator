@@ -9,6 +9,7 @@ import {
 import { SkillPicker } from "./SkillPicker.jsx";
 import { useEffect, useState } from "react";
 import { damageTone } from "./damageTone.js";
+import { HealthInput } from "./HealthInput.jsx";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -33,6 +34,15 @@ function useMediaQuery(query) {
   }, [query]);
 
   return matches;
+}
+
+function isInteractiveSkillTarget(target) {
+  return target instanceof Element &&
+    Boolean(
+      target.closest(
+        "button, input, label, select, textarea, [role='combobox'], [role='option']",
+      ),
+    );
 }
 
 function SkillDamagePreview({
@@ -77,15 +87,24 @@ function SkillDamagePreview({
 }
 
 function SkillSide({
+  active,
+  activeSkillIndex,
   hitCount,
+  health,
   label,
   name,
+  opponentHealth,
+  opponentLabel,
   opponentName,
+  opponentSide,
+  onSkillActivate,
   onSkillContextChange,
   onSkillFocus,
   onSkillHitCountChange,
   onSkillPowerChange,
   onSkillSelect,
+  onHealthChange,
+  onHealthPercentChange,
   onTraitContextChange,
   results,
   selectedSkills,
@@ -95,6 +114,16 @@ function SkillSide({
   defenseTrait,
   traitContext,
 }) {
+  const hasSelfHpRule = selectedSkills.some((skill) =>
+    dynamicInputsForSkill(skill, { includeStatusEffects: true }).some(
+      (input) => input.key === "attackerHpPercent",
+    ),
+  );
+  const hasTargetHpRule = selectedSkills.some((skill) =>
+    dynamicInputsForSkill(skill, { includeStatusEffects: true }).some(
+      (input) => input.key === "defenderHpPercent",
+    ),
+  );
   const offensiveTraitInputs =
     trait?.inputs?.filter((input) => input.scope !== "skill") ?? [];
   const defensiveTraitInputs =
@@ -129,6 +158,40 @@ function SkillSide({
           />
         </div>
       ) : null}
+      {hasSelfHpRule && health ? (
+        <div className="four-skill-health">
+          <span>自身生命</span>
+          <HealthInput
+            currentHp={health.currentHp}
+            defaultMode="percent"
+            label={label}
+            maxHp={health.maxHp}
+            onCurrentHpChange={(value) => onHealthChange?.(side, value)}
+            onPercentChange={(value) =>
+              onHealthPercentChange?.(side, value)
+            }
+            percentValue={health.percent}
+          />
+        </div>
+      ) : null}
+      {hasTargetHpRule && opponentHealth ? (
+        <div className="four-skill-health">
+          <span>对方生命</span>
+          <HealthInput
+            currentHp={opponentHealth.currentHp}
+            defaultMode="percent"
+            label={opponentLabel}
+            maxHp={opponentHealth.maxHp}
+            onCurrentHpChange={(value) =>
+              onHealthChange?.(opponentSide, value)
+            }
+            onPercentChange={(value) =>
+              onHealthPercentChange?.(opponentSide, value)
+            }
+            percentValue={opponentHealth.percent}
+          />
+        </div>
+      ) : null}
       <div className="skill-slot-list">
         <div aria-hidden="true" className="skill-slot skill-slot--head">
           <span />
@@ -142,7 +205,10 @@ function SkillSide({
         {Array.from({ length: 4 }, (_, index) => {
           const selected = selectedSkills[index];
           const result = results?.[index];
-          const skillInputs = selected ? dynamicInputsForSkill(selected) : [];
+          const isSelected = active && index === activeSkillIndex;
+          const skillInputs = selected
+            ? dynamicInputsForSkill(selected, { includeStatusEffects: true })
+            : [];
           const traitInputs =
             selected
               ? [
@@ -171,7 +237,28 @@ function SkillSide({
             ),
           ];
           return (
-            <div className="skill-slot-group" key={`${side}-${index}`}>
+            <div
+              aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
+              className={`skill-slot-group${isSelected ? " is-selected" : ""}`}
+              key={`${side}-${index}`}
+              onClick={(event) => {
+                onSkillFocus?.(side, index);
+                if (selected && !isInteractiveSkillTarget(event.target)) {
+                  onSkillActivate?.(side, index);
+                }
+              }}
+              onKeyDown={(event) => {
+                if (
+                  event.target === event.currentTarget &&
+                  (event.key === "Enter" || event.key === " ")
+                ) {
+                  event.preventDefault();
+                  onSkillFocus?.(side, index);
+                }
+              }}
+              role="group"
+              tabIndex="0"
+            >
               <div className="skill-slot">
                 <span className="skill-slot__number">{index + 1}</span>
                 <SkillPicker
@@ -246,6 +333,11 @@ function SkillSide({
                     <p title={selected.description}>{selected.description}</p>
                   ) : null}
                   {dynamicInputs
+                    .filter(
+                      (input) =>
+                        (input.key !== "attackerHpPercent" || !health) &&
+                        (input.key !== "defenderHpPercent" || !opponentHealth),
+                    )
                     .filter((input) =>
                       isDynamicInputVisible(
                         input,
@@ -340,6 +432,9 @@ function SkillSide({
 }
 
 export function FourSkillEditor({
+  activeSide = "attacker",
+  activeSkillIndex = 0,
+  attackerHealth,
   attackerHitCount = 1,
   attackerName,
   attackerResults = [],
@@ -356,6 +451,10 @@ export function FourSkillEditor({
   defenderTrait,
   defenderTraitContext = {},
   defenderDefenseTrait,
+  defenderHealth,
+  onHealthChange,
+  onHealthPercentChange,
+  onSkillActivate,
   onSkillContextChange,
   onSkillFocus,
   onSkillHitCountChange,
@@ -369,9 +468,13 @@ export function FourSkillEditor({
   const sideProps = {
     attacker: {
       hitCount: attackerHitCount,
+      health: attackerHealth,
       label: "攻击方",
       name: attackerName,
+      opponentHealth: defenderHealth,
+      opponentLabel: "防御方",
       opponentName: defenderName,
+      opponentSide: "defender",
       results: attackerResults,
       selectedSkills: attackerSkills,
       side: "attacker",
@@ -382,9 +485,13 @@ export function FourSkillEditor({
     },
     defender: {
       hitCount: defenderHitCount,
+      health: defenderHealth,
       label: "防御方",
       name: defenderName,
+      opponentHealth: attackerHealth,
+      opponentLabel: "攻击方",
       opponentName: attackerName,
+      opponentSide: "attacker",
       results: defenderResults,
       selectedSkills: defenderSkills,
       side: "defender",
@@ -399,8 +506,13 @@ export function FourSkillEditor({
     return (
       <SkillSide
         {...sideProps[side]}
+        active={activeSide === side}
+        activeSkillIndex={activeSkillIndex}
         key={side}
+        onSkillActivate={onSkillActivate}
         onSkillContextChange={onSkillContextChange}
+        onHealthChange={onHealthChange}
+        onHealthPercentChange={onHealthPercentChange}
         onSkillFocus={onSkillFocus}
         onSkillHitCountChange={onSkillHitCountChange}
         onSkillPowerChange={onSkillPowerChange}

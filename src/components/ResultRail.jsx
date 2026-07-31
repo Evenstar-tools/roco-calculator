@@ -1,5 +1,6 @@
 import { ArrowsLeftRight } from "@phosphor-icons/react";
 import { damageTone } from "./damageTone.js";
+import { HealthInput } from "./HealthInput.jsx";
 
 function clampPercent(value) {
   return Math.min(100, Math.max(0, Number(value) || 0));
@@ -7,6 +8,7 @@ function clampPercent(value) {
 
 export function ResultRail({
   onCurrentHpChange,
+  onCurrentHpPercentChange,
   onDirectionToggle,
   result,
 }) {
@@ -55,7 +57,7 @@ export function ResultRail({
       </div>
 
       <div
-        aria-label={isExact ? `伤害占当前生命 ${primary.hpPercent.toFixed(1)}%` : "伤害待计算"}
+        aria-label={isExact ? `伤害占最大生命 ${primary.hpPercent.toFixed(1)}%` : "伤害待计算"}
         className="damage-bar"
         role="img"
       >
@@ -69,27 +71,34 @@ export function ResultRail({
         <p className="result-rail__warning">{primary.warnings.join("；")}</p>
       ) : null}
 
+      {primary.markSettlements?.length > 0 ? (
+        <section aria-label="印记结算" className="result-rail__marks">
+          {primary.markSettlements.map((settlement, index) => (
+            <div
+              data-side={settlement.side}
+              data-status={settlement.status}
+              key={`${settlement.side}-${settlement.markId}-${index}`}
+            >
+              <b>
+                {settlement.side === "attacker" ? "进攻方" : "防御方"}
+              </b>
+              <span>{settlement.text}</span>
+            </div>
+          ))}
+        </section>
+      ) : null}
+
       {onCurrentHpChange ? (
         <div className="result-rail__hp-control">
           <span>目标 HP</span>
-          <label>
-            <input
-              aria-label="防御方当前生命"
-              max={result.defenderMaxHp}
-              min="0"
-              onChange={(event) =>
-                onCurrentHpChange(
-                  Math.min(
-                    result.defenderMaxHp,
-                    Math.max(0, Number(event.target.value) || 0),
-                  ),
-                )
-              }
-              type="number"
-              value={result.defenderHp}
-            />
-            <span>/ {result.defenderMaxHp}</span>
-          </label>
+          <HealthInput
+            currentHp={result.defenderHp}
+            label="防御方"
+            maxHp={result.defenderMaxHp}
+            onCurrentHpChange={onCurrentHpChange}
+            onPercentChange={onCurrentHpPercentChange}
+            percentValue={result.defenderHpPercent}
+          />
           <button
             aria-label="恢复满血"
             onClick={() => onCurrentHpChange(result.defenderMaxHp)}

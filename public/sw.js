@@ -1,11 +1,10 @@
-const CACHE_NAME = "rock-calculator-webapp-v1.2.0";
+const CACHE_NAME = "rock-calculator-webapp-v1.3.0";
 const APP_SHELL = [
   "/",
   "/manifest.webmanifest",
   "/app-icon-192.png",
   "/app-icon-512.png",
   "/data/runtime.json",
-  "/assets/spirits/manifest.json",
   "/assets/elements/manifest.json",
 ];
 const BUILD_ASSET_RE = /(?:src|href)="([^"]*\/assets\/[^"]+\.(?:js|css))"/g;

@@ -4,8 +4,8 @@
 
 # 洛克计算器
 
-[![Checks](https://img.shields.io/badge/checks-315%20passed-2da44e.svg)](#开发与验证)
-[![Release](https://img.shields.io/badge/release-v1.2.4-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.2.4)
+[![Checks](https://img.shields.io/badge/checks-420%20passed-2da44e.svg)](#开发与验证)
+[![Release](https://img.shields.io/badge/release-v1.3.0-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.3.0)
 [![License](https://img.shields.io/badge/code-MIT-4c55d9.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Windows-2563eb.svg)](#使用方式)
 
@@ -20,6 +20,7 @@
 - **双向对比**：攻击方与防御方技能均可快捷查看对方伤害。
 - **完整配置**：提供精简版与具体版，支持性格、六维个体、威力、连击和触发条件。
 - **技能规则**：覆盖动态威力、条件触发、层数特性和手动覆盖。
+- **公式核对**：高级选项用四行中文算式展示技能威力、显示威力、单段取整与总伤害。
 - **配置记忆**：精灵配置自动保存在本机，切换后按精灵恢复。
 - **队伍预设**：支持多支六人队伍、四技能配置及攻防方快捷载入。
 - **离线可用**：内置当前赛季快照和本地素材，可作为网页、PWA 或 Windows 桌面应用运行。
@@ -30,7 +31,7 @@
 
 ### Windows
 
-前往 [Releases](https://github.com/zhangzeyu99-web/rock-calculator/releases/latest) 下载最新版 `Rock-Calculator-v*.exe`，直接安装或覆盖旧版本。应用安装后仍显示为“洛克计算器”。
+前往 [Releases](https://github.com/zhangzeyu99-web/rock-calculator/releases/latest) 下载最新版“洛克计算器”安装包，直接安装或覆盖旧版本。
 
 ### 本地网页
 
@@ -89,10 +90,24 @@ npm run desktop:pack
 
 ## 数据与规则
 
-- 主要数据与素材参考 BWIKI 的公开页面及本地核验快照。
+- 精灵、技能与美术素材主要参考[洛克王国：世界 BWIKI](https://wiki.biligame.com/rocom/)，并保留本地核验快照与修订号。
 - 特殊技能和特性规则在 `src/domain/` 中显式登记并配套测试。
 - 赛季更新流程参见 [docs/season-update-runbook.md](docs/season-update-runbook.md)。
 - 为兼容旧版本，本地存储中仍可能保留历史键名；这不代表项目与同名网站存在隶属关系。
+
+## 鸣谢与参考
+
+- 感谢 [lovepvp.top](https://lovepvp.top/) 原站作者对洛克王国 PVP 伤害计算流程、技能规则整理与交互方式的长期积累。
+- 感谢 [Roco Showdown 战斗模拟计算原理](https://rocopvp.tzrain.wiki/battle-use-guide) 作者与维护者提供可核对的公式分区、取整顺序和规则说明。
+- 感谢[洛克王国：世界 BWIKI](https://wiki.biligame.com/rocom/) 创建者 MonicaSarina 及全体编辑者整理精灵、技能、属性与美术资料。
+
+以上页面用于规则查证、交互研究和资料核验；本仓库未将参考站点代码作为运行时依赖。具体权利与授权边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
+## 版本管理
+
+- 使用语义化版本号 `主版本.次版本.修订号`。
+- 每个正式版本均对应 Git 标签、GitHub Release、Windows 安装包和 SHA256 文件。
+- 详细历史见 [CHANGELOG.md](CHANGELOG.md)；开源前的本地版本以里程碑方式记录，不补造不存在的历史标签。
 
 ## 贡献
 

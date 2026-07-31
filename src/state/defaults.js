@@ -1,3 +1,5 @@
+import { createMarksState } from "../domain/marks.js";
+
 export const STATE_SCHEMA_VERSION = 1;
 
 const STAT_KEYS = [
@@ -62,6 +64,7 @@ export function createInitialState(snapshot) {
       rules: meta.rulesVersion ?? meta.ruleVersion ?? null,
     },
     mode: "single",
+    marks: createMarksState(),
     sides: {
       attacker: createSide(spirits[0]?.id, defaultSkillIds),
       defender: createSide(spirits[1]?.id ?? spirits[0]?.id, defaultSkillIds),

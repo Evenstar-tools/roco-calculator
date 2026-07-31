@@ -1,4 +1,5 @@
 import { normalizeNatureId } from "../domain/natures.js";
+import { normalizeMarkSlot } from "../domain/marks.js";
 import { reconcileSkillLoadout } from "../domain/skill-loadout.js";
 
 const DIRECTIONS = new Set(["forward", "reverse"]);
@@ -69,6 +70,35 @@ export function calculatorReducer(state, action) {
         ...state,
         mode: action.value,
       };
+    case "mark/update": {
+      const side = requireSide(action);
+      if (action.polarity !== "positive" && action.polarity !== "negative") {
+        throw new TypeError("印记类型必须是 positive 或 negative");
+      }
+      const slot = normalizeMarkSlot(action.value, action.polarity);
+      const legacyDirection = side === "defender" ? "forward" : "reverse";
+      return {
+        ...state,
+        marks: {
+          ...state.marks,
+          [side]: {
+            ...state.marks[side],
+            [action.polarity]: slot,
+          },
+        },
+        directions:
+          action.polarity === "negative"
+            ? {
+                ...state.directions,
+                [legacyDirection]: {
+                  ...state.directions[legacyDirection],
+                  starfallStacks:
+                    slot.id === "starfall" ? slot.stacks : 0,
+                },
+              }
+            : state.directions,
+      };
+    }
     case "side/set-spirit":
       return updateSide(state, action, (side) => ({
         ...side,
@@ -234,6 +264,12 @@ export function calculatorReducer(state, action) {
     case "sides/swap":
       return {
         ...state,
+        marks: state.marks
+          ? {
+              attacker: state.marks.defender,
+              defender: state.marks.attacker,
+            }
+          : state.marks,
         sides: {
           attacker: state.sides.defender,
           defender: state.sides.attacker,

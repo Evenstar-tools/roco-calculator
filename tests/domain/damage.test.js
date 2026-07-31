@@ -19,7 +19,7 @@ describe("calculateDamage", () => {
     expect(calculateDamage(goldenInput()).total).toBe(332);
   });
 
-  test("keeps the core arithmetic unrounded until the final floor", () => {
+  test("rounds the damage numerator before dividing by defense", () => {
     expect(
       calculateDamage({
         attackerStat: 1,
@@ -30,10 +30,10 @@ describe("calculateDamage", () => {
         finalDamageMultiplier: 1,
         level: 60,
       }).total,
-    ).toBe(1);
+    ).toBe(2);
   });
 
-  test("applies hit count before the final floor", () => {
+  test("floors one hit before multiplying by the hit count", () => {
     const result = calculateDamage({
       attackerStat: 1,
       displayedPower: 1,
@@ -45,16 +45,28 @@ describe("calculateDamage", () => {
     });
 
     expect(result.oneHit).toBe(0);
-    expect(result.total).toBe(1);
+    expect(result.multiHit).toBe(0);
+    expect(result.total).toBe(0);
   });
 
-  test("floors the final multiplier after multiplying hit count", () => {
+  test("floors one-hit damage after the final multiplier before multiplying hit count", () => {
     const result = calculateDamage(
-      goldenInput({ hitCount: 3, finalDamageMultiplier: 1.1 }),
+      goldenInput({ hitCount: 3, finalDamageMultiplier: 1.05 }),
     );
 
-    expect(result.multiHit).toBeCloseTo(997.92, 2);
-    expect(result.total).toBe(1097);
+    expect(result.oneHit).toBe(332);
+    expect(result.multiHit).toBe(996);
+    expect(result.total).toBe(1044);
+    expect(result.total % 3).toBe(0);
+  });
+
+  test("makes an unmodified multi-hit total divisible by its hit count", () => {
+    const result = calculateDamage(goldenInput({ hitCount: 5 }));
+
+    expect(result.oneHit).toBe(332);
+    expect(result.multiHit).toBe(1660);
+    expect(result.total).toBe(1660);
+    expect(result.total % 5).toBe(0);
   });
 
   test("treats null optional multipliers as absent defaults", () => {

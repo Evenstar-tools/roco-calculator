@@ -12,7 +12,7 @@ function SideStats({
   side,
 }) {
   const level = side.level ?? {
-    label: label === "攻击方" ? "攻击威力等级" : "防御威力等级",
+    label: label === "攻击方" ? "攻击能力等级" : "防御能力等级",
     multiplier: 1,
     stage: 0,
   };
@@ -46,7 +46,7 @@ function SideStats({
         <div>
           <button
             aria-label={`${label}等级减一`}
-            disabled={level.stage <= -9}
+            disabled={level.stage <= -50}
             onClick={() => onLevelChange(level.stage - 1)}
             type="button"
           >
@@ -58,7 +58,7 @@ function SideStats({
           </output>
           <button
             aria-label={`${label}等级加一`}
-            disabled={level.stage >= 10}
+            disabled={level.stage >= 50}
             onClick={() => onLevelChange(level.stage + 1)}
             type="button"
           >

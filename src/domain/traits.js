@@ -47,8 +47,12 @@ function exactContribution(overrides = {}, step = undefined) {
   return {
     status: "exact",
     attackLevelBonus: 0,
+    attackerDefenseLevelBonus: 0,
     attackMultiplier: 1,
+    defenseLevelBonus: 0,
+    defenderDefenseLevelBonus: 0,
     fixedPowerAdd: 0,
+    powerPercentAdd: 0,
     powerMultiplier: 1,
     damageReductionMultiplier: 1,
     finalDamageMultiplier: 1,
@@ -93,7 +97,7 @@ function resolvePowerIfFaster(trait, input) {
       ? numberOrUndefined(trait.multiplier ?? trait.ruleParams?.multiplier) ?? 1.5
       : 1;
   return exactContribution(
-    { powerMultiplier: multiplier },
+    { powerMultiplier: multiplier, powerPercentAdd: multiplier - 1 },
     {
       label: trait.name ?? trait.id,
       input: { attackerSpeed, defenderSpeed },
@@ -111,7 +115,7 @@ function resolvePowerIfActedBeforeEnemy(trait, input) {
     ? numberOrUndefined(trait.multiplier ?? trait.ruleParams?.multiplier) ?? 1.75
     : 1;
   return exactContribution(
-    { powerMultiplier: multiplier },
+    { powerMultiplier: multiplier, powerPercentAdd: multiplier - 1 },
     {
       label: trait.name ?? trait.id,
       input: triggered,
@@ -141,7 +145,7 @@ function resolvePhysicalFirstTurn(trait, input) {
     ? numberOrUndefined(trait.multiplier ?? trait.ruleParams?.multiplier) ?? 2
     : 1;
   return exactContribution(
-    { powerMultiplier: multiplier },
+    { powerMultiplier: multiplier, powerPercentAdd: multiplier - 1 },
     {
       label: trait.name ?? trait.id,
       input: input.context[key],
@@ -250,7 +254,7 @@ function resolveStackPower(trait, input) {
   const perStack = numberOrUndefined(trait.ruleParams?.perStack) ?? 0.15;
   const multiplier = 1 + Math.max(0, Math.floor(stacks)) * perStack;
   return exactContribution(
-    { powerMultiplier: multiplier },
+    { powerMultiplier: multiplier, powerPercentAdd: multiplier - 1 },
     {
       label: trait.name ?? trait.id,
       input: stacks,
@@ -280,7 +284,7 @@ function resolveEnemyTotalCostPower(trait, input) {
   const perCost = numberOrUndefined(trait.ruleParams?.perCost) ?? 0.1;
   const multiplier = 1 + Math.max(0, totalCost) * perCost;
   return exactContribution(
-    { powerMultiplier: multiplier },
+    { powerMultiplier: multiplier, powerPercentAdd: multiplier - 1 },
     {
       label: trait.name ?? trait.id,
       input: totalCost,
@@ -303,11 +307,17 @@ function resolveOneTrait(traitValue, role, input) {
     return exactContribution(
       {
         attackLevelBonus: interactiveRule.attackLevelBonus,
+        attackerDefenseLevelBonus:
+          interactiveRule.attackerDefenseLevelBonus,
         attackMultiplier: interactiveRule.attackMultiplier,
+        defenseLevelBonus: interactiveRule.defenseLevelBonus,
+        defenderDefenseLevelBonus:
+          interactiveRule.defenderDefenseLevelBonus,
         damageReductionMultiplier:
           interactiveRule.damageReductionMultiplier,
         finalDamageMultiplier: interactiveRule.finalDamageMultiplier,
         fixedPowerAdd: interactiveRule.fixedPowerAdd,
+        powerPercentAdd: interactiveRule.powerPercentAdd,
         powerMultiplier: interactiveRule.powerMultiplier,
       },
       interactiveRule.step,
@@ -351,7 +361,11 @@ function resolveOneTrait(traitValue, role, input) {
     return resolveOffTypeReduction(trait, input);
   }
   if (ruleId === "power_multiplier" && role === "attacker") {
-    return resolveStaticMultiplier(trait, "powerMultiplier");
+    const resolution = resolveStaticMultiplier(trait, "powerMultiplier");
+    return {
+      ...resolution,
+      powerPercentAdd: resolution.powerMultiplier - 1,
+    };
   }
   if (ruleId === "damage_reduction_multiplier" && role === "defender") {
     return resolveStaticMultiplier(trait, "damageReductionMultiplier");
@@ -414,10 +428,20 @@ export function resolveTraitMultipliers({
       ...combined,
       attackLevelBonus:
         combined.attackLevelBonus + resolution.attackLevelBonus,
+      attackerDefenseLevelBonus:
+        combined.attackerDefenseLevelBonus +
+        resolution.attackerDefenseLevelBonus,
       attackMultiplier:
         combined.attackMultiplier * resolution.attackMultiplier,
+      defenseLevelBonus:
+        combined.defenseLevelBonus + resolution.defenseLevelBonus,
+      defenderDefenseLevelBonus:
+        combined.defenderDefenseLevelBonus +
+        resolution.defenderDefenseLevelBonus,
       fixedPowerAdd:
         combined.fixedPowerAdd + resolution.fixedPowerAdd,
+      powerPercentAdd:
+        combined.powerPercentAdd + resolution.powerPercentAdd,
       powerMultiplier:
         combined.powerMultiplier * resolution.powerMultiplier,
       damageReductionMultiplier:

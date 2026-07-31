@@ -55,4 +55,34 @@ describe("natures", () => {
     expect(getQuickNatureId("hp")).toBe("grounded");
     expect(getQuickNatureId(null)).toBe("neutral");
   });
+
+  test("uses single-attack natures for compact attacker physical and magical boosts", () => {
+    expect(getQuickNatureId("physicalAttack", "attacker")).toBe("adamant");
+    expect(getQuickNatureId("magicalAttack", "attacker")).toBe("smart");
+  });
+
+  test("keeps non-attack quick attacker natures from lowering attacks and defender natures from lowering defenses", () => {
+    const attackStats = ["physicalAttack", "magicalAttack"];
+    const defenseStats = ["physicalDefense", "magicalDefense"];
+
+    for (const stat of [
+      "hp",
+      "physicalAttack",
+      "magicalAttack",
+      "speed",
+      "physicalDefense",
+      "magicalDefense",
+    ]) {
+      if (!attackStats.includes(stat)) {
+        expect(
+          attackStats,
+          `攻击方${stat}增益不应降低攻击属性`,
+        ).not.toContain(getNature(getQuickNatureId(stat, "attacker")).downStat);
+      }
+      expect(
+        defenseStats,
+        `防御方${stat}增益不应降低防御属性`,
+      ).not.toContain(getNature(getQuickNatureId(stat, "defender")).downStat);
+    }
+  });
 });

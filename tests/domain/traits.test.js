@@ -140,6 +140,127 @@ describe("resolveTraitMultipliers", () => {
     });
   });
 
+  test("applies Prophet's fifty-percent attack bonus for every trigger stack", () => {
+    const attackerTraits = [{ id: "prophet", name: "先知" }];
+
+    expect(
+      resolveTraitMultipliers(input({ attackerTraits })),
+    ).toMatchObject({
+      status: "exact",
+      attackMultiplier: 1,
+    });
+    expect(
+      resolveTraitMultipliers(
+        input({
+          attackerTraits,
+          context: { attackerTraitStacks: 2 },
+        }),
+      ),
+    ).toMatchObject({
+      status: "exact",
+      attackMultiplier: 2,
+    });
+  });
+
+  test.each(["最好的伙伴", "裁决", "滋养", "点燃", "净化"])(
+    "applies %s's twenty-percent attack bonus for every trigger stack",
+    (name) => {
+      expect(
+        resolveTraitMultipliers(
+          input({
+            attackerTraits: [{ id: `dimo-${name}`, name }],
+            context: { attackerTraitStacks: 2 },
+          }),
+        ),
+      ).toMatchObject({
+        status: "exact",
+        attackLevelBonus: 4,
+        attackMultiplier: 1.4,
+      });
+    },
+  );
+
+  test.each([
+    ["助燃", 1.4],
+    ["爆燃", 1.6],
+    ["鼓气", 1.4],
+  ])(
+    "applies %s once for every accumulated trigger",
+    (name, attackMultiplier) => {
+      expect(
+        resolveTraitMultipliers(
+          input({
+            attackerTraits: [{ id: `stacked-${name}`, name }],
+            context: { attackerTraitStacks: 2 },
+          }),
+        ),
+      ).toMatchObject({
+        status: "exact",
+        attackMultiplier,
+      });
+    },
+  );
+
+  test("applies penetration stacks to both offense and physical defense", () => {
+    expect(
+      resolveTraitMultipliers(
+        input({
+          attackerTraits: [{ id: "penetration", name: "渗透" }],
+          context: { attackerTraitStacks: 4 },
+        }),
+      ),
+    ).toMatchObject({
+      status: "exact",
+      attackLevelBonus: 2,
+      attackerDefenseLevelBonus: 2,
+      attackMultiplier: 1.2,
+    });
+
+    expect(
+      resolveTraitMultipliers(
+        input({
+          defenderTraits: [{ id: "penetration", name: "渗透" }],
+          context: { defenderTraitStacks: 4 },
+        }),
+      ),
+    ).toMatchObject({
+      status: "exact",
+      defenseLevelBonus: 2,
+      defenderDefenseLevelBonus: 2,
+    });
+  });
+
+  test.each([
+    "最好的伙伴",
+    "裁决",
+    "滋养",
+    "点燃",
+    "净化",
+    "虫群鼓舞",
+    "虫群突袭",
+    "鼓气",
+    "三鼓作气",
+    "淬炼火",
+  ])("applies %s stacks on both attack and defense", (name) => {
+    const attacker = resolveTraitMultipliers(
+      input({
+        attackerTraits: [{ id: `attack-defense-${name}`, name }],
+        context: { attackerTraitStacks: 2 },
+      }),
+    );
+    const defender = resolveTraitMultipliers(
+      input({
+        defenderTraits: [{ id: `attack-defense-${name}`, name }],
+        context: { defenderTraitStacks: 2 },
+      }),
+    );
+
+    expect(attacker.attackerDefenseLevelBonus).toBeGreaterThan(0);
+    expect(attacker.attackMultiplier).toBeGreaterThan(1);
+    expect(defender.defenderDefenseLevelBonus).toBeGreaterThan(0);
+    expect(defender.defenseLevelBonus).toBeGreaterThan(0);
+  });
+
   test("applies Centripetal Force only to the first two skill slots", () => {
     const attackerTraits = [{ id: "centripetal", name: "向心力" }];
 

@@ -20,11 +20,15 @@ import {
   getDefaultHitCount,
   getSkillEffectInputs,
 } from "./domain/skill-effects.js";
+import { resolveSkillStatusActivation } from "./domain/skill-status-effects.js";
 import {
   getNatureMultipliers,
   normalizeNatureId,
 } from "./domain/natures.js";
-import { getTraitEffectInputs } from "./domain/trait-effects.js";
+import {
+  getInheritedDamageTraits,
+  getTraitEffectInputs,
+} from "./domain/trait-effects.js";
 import {
   chooseDefaultSkillIds,
   getSkillChoices,
@@ -63,11 +67,27 @@ const REMEMBERED_SIDE_ACTIONS = new Set([
 ]);
 
 function clampStage(value) {
-  return Math.min(10, Math.max(-9, Math.floor(Number(value) || 0)));
+  return Math.min(50, Math.max(-50, Math.floor(Number(value) || 0)));
 }
 
 function stageMultiplier(stage) {
-  return 1 + clampStage(stage) * 0.1;
+  const normalizedStage = clampStage(stage);
+  return normalizedStage >= 0
+    ? 1 + normalizedStage * 0.1
+    : 1 / (1 + Math.abs(normalizedStage) * 0.1);
+}
+
+function abilityLevelMultiplier(attackStage, defenseStage) {
+  const attackPercent = clampStage(attackStage) * 10;
+  const defensePercent = clampStage(defenseStage) * 10;
+  return (
+    (1 +
+      Math.max(attackPercent, 0) / 100 +
+      Math.max(-defensePercent, 0) / 100) /
+    (1 +
+      Math.max(-attackPercent, 0) / 100 +
+      Math.max(defensePercent, 0) / 100)
+  );
 }
 
 function sameVersions(left, right) {
@@ -261,39 +281,57 @@ function getSpirit(snapshot, side) {
   return snapshot.spirits.find((spirit) => spirit.id === side.spiritId);
 }
 
-function getPanelView(spirit, side) {
+function getPanelView(spirit, side, stages = {}) {
   const panel = calculateAllPanelStats({
     raceStats: spirit.raceStats,
     displayIvs: side.displayIvs,
     natureMultipliers: getNatureMultipliers(side.nature),
   });
-  return STAT_VIEW.map(({ key, label }) => ({
-    displayIv: side.displayIvs[key],
-    key,
-    label,
-    panel: panel[key],
-    race: spirit.raceStats[key],
-  }));
+  const attackMultiplier = stageMultiplier(stages.attack ?? 0);
+  const defenseMultiplier = stageMultiplier(stages.defense ?? 0);
+  return STAT_VIEW.map(({ key, label }) => {
+    const multiplier =
+      key === "physicalAttack" || key === "magicalAttack"
+        ? attackMultiplier
+        : key === "physicalDefense" || key === "magicalDefense"
+          ? defenseMultiplier
+          : 1;
+    return {
+      displayIv: side.displayIvs[key],
+      key,
+      label,
+      panel: Math.round(panel[key] * multiplier),
+      race: spirit.raceStats[key],
+    };
+  });
 }
 
 function getTraitView(snapshot, spirit, role = "attacker") {
-  const trait =
+  const primaryTrait =
     snapshot.traits?.find((candidate) => spirit.traitIds?.includes(candidate.id)) ??
     null;
-  const name = trait?.name ?? spirit.traitName;
-  if (!name) return null;
-  const traitEntity = trait ?? {
+  const fallbackTrait = primaryTrait ?? {
     description: spirit.traitDescription,
-    name,
+    name: spirit.traitName,
   };
+  const candidates = [
+    fallbackTrait,
+    ...getInheritedDamageTraits(spirit),
+  ].filter((candidate) => candidate?.name);
+  const traitEntity =
+    candidates.find(
+      (candidate) => getTraitEffectInputs(candidate, role).length > 0,
+    ) ?? candidates[0];
+  if (!traitEntity) return null;
   const inputs = getTraitEffectInputs(traitEntity, role);
   const condition = inputs.find((input) => input.type === "boolean");
   return {
     conditionKey: condition?.key ?? null,
     conditionLabel: condition?.label ?? null,
-    description: trait?.description ?? "按当前战斗条件自动判定。",
+    description:
+      traitEntity.description ?? "按当前战斗条件自动判定。",
     inputs,
-    name,
+    name: traitEntity.displayName ?? traitEntity.name,
   };
 }
 
@@ -315,14 +353,22 @@ function asResultRailModel({
     displayIvs: defenseSide.displayIvs,
     natureMultipliers: getNatureMultipliers(defenseSide.nature),
   });
-  const defenderHp =
-    state.directions[direction].currentHp ?? defenderPanels.hp;
+  const defenderHp = Math.min(
+    defenderPanels.hp,
+    Math.max(
+      0,
+      state.directions[direction].currentHp ?? defenderPanels.hp,
+    ),
+  );
   const rows = [...directionResult.results];
   while (rows.length < 4) rows.push(null);
 
   return {
     attackerName: attacker.fullName,
     defenderHp,
+    defenderHpPercent:
+      state.directions[direction].context?.currentHpPercent ??
+      Number(((defenderHp / defenderPanels.hp) * 100).toFixed(1)),
     defenderMaxHp: defenderPanels.hp,
     defenderName: defender.fullName,
     mode: state.mode,
@@ -668,6 +714,54 @@ function CalculatorWorkspace({ snapshot }) {
     (spirit) => spirit.id === state.sides.defender.spiritId,
   );
   const configurationReady = Boolean(attacker && defender);
+  const attackerPanelStats = configurationReady
+    ? calculateAllPanelStats({
+        raceStats: attacker.raceStats,
+        displayIvs: state.sides.attacker.displayIvs,
+        natureMultipliers: getNatureMultipliers(state.sides.attacker.nature),
+      })
+    : null;
+  const defenderPanelStats = configurationReady
+    ? calculateAllPanelStats({
+        raceStats: defender.raceStats,
+        displayIvs: state.sides.defender.displayIvs,
+        natureMultipliers: getNatureMultipliers(state.sides.defender.nature),
+      })
+    : null;
+  const attackerHealth = configurationReady
+    ? {
+        currentHp:
+          state.directions.reverse.currentHp ?? attackerPanelStats.hp,
+        maxHp: attackerPanelStats.hp,
+        percent:
+          state.directions.reverse.context?.currentHpPercent ??
+          Number(
+            (
+              ((state.directions.reverse.currentHp ??
+                attackerPanelStats.hp) /
+                attackerPanelStats.hp) *
+              100
+            ).toFixed(1),
+          ),
+      }
+    : null;
+  const defenderHealth = configurationReady
+    ? {
+        currentHp:
+          state.directions.forward.currentHp ?? defenderPanelStats.hp,
+        maxHp: defenderPanelStats.hp,
+        percent:
+          state.directions.forward.context?.currentHpPercent ??
+          Number(
+            (
+              ((state.directions.forward.currentHp ??
+                defenderPanelStats.hp) /
+                defenderPanelStats.hp) *
+              100
+            ).toFixed(1),
+          ),
+      }
+    : null;
   const activeAttackSideKey =
     activeDirection === "forward" ? "attacker" : "defender";
   const activeDefenseSideKey =
@@ -677,18 +771,24 @@ function CalculatorWorkspace({ snapshot }) {
     activeAttackSideKey === "attacker" ? attacker : defender;
   const activeDefenseSpirit =
     activeDefenseSideKey === "defender" ? defender : attacker;
-  const activeAttackSkills = useMemo(
-    () => getSkillChoices(snapshot, activeAttackSide.spiritId),
-    [activeAttackSide.spiritId, snapshot],
-  );
   const attackerSkillChoices = useMemo(
-    () => getSkillChoices(snapshot, state.sides.attacker.spiritId),
+    () =>
+      state.sides.attacker.spiritId
+        ? getSkillChoices(snapshot, state.sides.attacker.spiritId)
+        : [],
     [snapshot, state.sides.attacker.spiritId],
   );
   const defenderSkillChoices = useMemo(
-    () => getSkillChoices(snapshot, state.sides.defender.spiritId),
+    () =>
+      state.sides.defender.spiritId
+        ? getSkillChoices(snapshot, state.sides.defender.spiritId)
+        : [],
     [snapshot, state.sides.defender.spiritId],
   );
+  const activeAttackSkills =
+    activeAttackSideKey === "attacker"
+      ? attackerSkillChoices
+      : defenderSkillChoices;
   const selectedSingleSkill =
     getSkill(snapshot, activeAttackSide.skills.single) ??
     activeAttackSkills[0] ??
@@ -712,6 +812,19 @@ function CalculatorWorkspace({ snapshot }) {
       })
     : null;
   const currentDirection = state.directions[activeDirection];
+  const weatherRainTurns = Math.min(
+    8,
+    Math.max(
+      0,
+      Math.floor(
+        Number(
+          state.directions.forward.context?.weatherRainTurns ??
+            state.directions.reverse.context?.weatherRainTurns ??
+            0,
+        ) || 0,
+      ),
+    ),
+  );
   const attackLevelStage =
     currentDirection.overrides.attackLevelStage ?? 0;
   const defenseLevelStage =
@@ -761,10 +874,60 @@ function CalculatorWorkspace({ snapshot }) {
     updateDirection({
       overrides: {
         attackDefenseLevelMultiplier:
-          stageMultiplier(nextAttackStage) /
-          stageMultiplier(nextDefenseStage),
+          abilityLevelMultiplier(nextAttackStage, nextDefenseStage),
         [`${role}LevelStage`]: stage,
       },
+    });
+  }
+
+  function updateWeatherRainTurns(value) {
+    const weatherRainTurns = Math.min(
+      8,
+      Math.max(0, Math.floor(Number(value) || 0)),
+    );
+    for (const direction of ["forward", "reverse"]) {
+      dispatch({
+        direction,
+        type: "direction/update",
+        value: { context: { weatherRainTurns } },
+      });
+    }
+  }
+
+  function updateTraitContext(direction, key, value) {
+    dispatch({
+      direction,
+      type: "direction/update",
+      value: { context: { [key]: value } },
+    });
+
+    const mirroredKey = key.startsWith("attackerTrait")
+      ? key.replace("attackerTrait", "defenderTrait")
+      : key.startsWith("defenderTrait")
+        ? key.replace("defenderTrait", "attackerTrait")
+        : null;
+    if (!mirroredKey) return;
+
+    dispatch({
+      direction: direction === "forward" ? "reverse" : "forward",
+      type: "direction/update",
+      value: { context: { [mirroredKey]: value } },
+    });
+  }
+
+  function updateSideHealth(side, currentHp) {
+    dispatch({
+      direction: side === "attacker" ? "reverse" : "forward",
+      type: "direction/update",
+      value: { currentHp },
+    });
+  }
+
+  function updateSideHealthPercent(side, currentHpPercent) {
+    dispatch({
+      direction: side === "attacker" ? "reverse" : "forward",
+      type: "direction/update",
+      value: { context: { currentHpPercent } },
     });
   }
 
@@ -853,7 +1016,7 @@ function CalculatorWorkspace({ snapshot }) {
   }
 
   function updateFourSkillEntry(side, index, patch) {
-    const current = state.sides[side].skills.four[index];
+    const current = stateRef.current.sides[side].skills.four[index];
     const skillId =
       typeof current === "string" ? current : current?.skillId ?? current?.id;
     const details =
@@ -907,6 +1070,73 @@ function CalculatorWorkspace({ snapshot }) {
     });
   }
 
+  function activateFourSkill(side, index) {
+    const latest = stateRef.current;
+    const entry = latest.sides[side].skills.four[index];
+    const skill = getSkill(snapshot, entry);
+    const context =
+      entry && typeof entry === "object" ? entry.context ?? {} : {};
+    const resolution = resolveSkillStatusActivation(skill, context);
+    if (!resolution) return;
+    if (!resolution.applied) {
+      setToast(resolution.reason);
+      return;
+    }
+
+    const selfDirection = side === "attacker" ? "forward" : "reverse";
+    const oppositeDirection =
+      selfDirection === "forward" ? "reverse" : "forward";
+    const selfOverrides =
+      latest.directions[selfDirection].overrides ?? {};
+    const oppositeOverrides =
+      latest.directions[oppositeDirection].overrides ?? {};
+    const { deltas } = resolution;
+
+    if (deltas.ownAttack !== 0 || deltas.targetDefense !== 0) {
+      dispatch({
+        direction: selfDirection,
+        type: "direction/update",
+        value: {
+          overrides: {
+            attackLevelStage: clampStage(
+              (selfOverrides.attackLevelStage ?? 0) + deltas.ownAttack,
+            ),
+            defenseLevelStage: clampStage(
+              (selfOverrides.defenseLevelStage ?? 0) + deltas.targetDefense,
+            ),
+          },
+        },
+      });
+    }
+    if (deltas.targetAttack !== 0 || deltas.ownDefense !== 0) {
+      dispatch({
+        direction: oppositeDirection,
+        type: "direction/update",
+        value: {
+          overrides: {
+            attackLevelStage: clampStage(
+              (oppositeOverrides.attackLevelStage ?? 0) + deltas.targetAttack,
+            ),
+            defenseLevelStage: clampStage(
+              (oppositeOverrides.defenseLevelStage ?? 0) + deltas.ownDefense,
+            ),
+          },
+        },
+      });
+    }
+
+    updateFourSkillEntry(side, index, {
+      context: {
+        skillUseCount: Math.max(
+          0,
+          Math.floor(Number(context.skillUseCount) || 0),
+        ) + 1,
+      },
+    });
+    setActiveDirection(selfDirection);
+    setToast(`${skill.name}的能力等级已应用`);
+  }
+
   function updateRememberedSingleDirection(value) {
     updateDirection(value);
     rememberSingleSkill();
@@ -935,7 +1165,13 @@ function CalculatorWorkspace({ snapshot }) {
 
   const singleEditor = configurationReady ? (
     <SingleSkillEditor
+      attackerHealth={
+        activeDirection === "forward" ? attackerHealth : defenderHealth
+      }
       attackerTrait={getTraitView(snapshot, activeAttackSpirit, "attacker")}
+      defenderHealth={
+        activeDirection === "forward" ? defenderHealth : attackerHealth
+      }
       defenderTrait={getTraitView(snapshot, activeDefenseSpirit, "defender")}
       hitCount={currentDirection.hitCount}
       manualPower={
@@ -950,6 +1186,30 @@ function CalculatorWorkspace({ snapshot }) {
       onHitCountChange={(hitCount) =>
         updateRememberedSingleDirection({ hitCount })
       }
+      onAttackerHealthChange={(currentHp) =>
+        updateSideHealth(
+          activeDirection === "forward" ? "attacker" : "defender",
+          currentHp,
+        )
+      }
+      onAttackerHealthPercentChange={(currentHpPercent) =>
+        updateSideHealthPercent(
+          activeDirection === "forward" ? "attacker" : "defender",
+          currentHpPercent,
+        )
+      }
+      onDefenderHealthChange={(currentHp) =>
+        updateSideHealth(
+          activeDirection === "forward" ? "defender" : "attacker",
+          currentHp,
+        )
+      }
+      onDefenderHealthPercentChange={(currentHpPercent) =>
+        updateSideHealthPercent(
+          activeDirection === "forward" ? "defender" : "attacker",
+          currentHpPercent,
+        )
+      }
       onManualPowerChange={(power) =>
         updateRememberedSingleDirection({
           overrides:
@@ -962,9 +1222,10 @@ function CalculatorWorkspace({ snapshot }) {
         updateRememberedSingleDirection({ overrides: { powerMode } })
       }
       onSkillSelect={selectSingleSkill}
-      onTraitContextChange={(key, value) =>
-        updateRememberedSingleDirection({ context: { [key]: value } })
-      }
+      onTraitContextChange={(key, value) => {
+        updateTraitContext(activeDirection, key, value);
+        rememberSingleSkill();
+      }}
       result={resultModel.selectedResult}
       selectedSkill={selectedSingleSkill}
       skills={activeAttackSkills}
@@ -975,6 +1236,9 @@ function CalculatorWorkspace({ snapshot }) {
 
   const fourEditor = configurationReady ? (
     <FourSkillEditor
+      activeSide={activeAttackSideKey}
+      activeSkillIndex={currentDirection.selectedSkillIndex}
+      attackerHealth={attackerHealth}
       attackerHitCount={state.directions.forward.hitCount}
       attackerName={attacker.fullName}
       attackerResults={calculation.forward.results}
@@ -986,6 +1250,7 @@ function CalculatorWorkspace({ snapshot }) {
       attackerTraitContext={state.directions.forward.context}
       attackerDefenseTrait={getTraitView(snapshot, defender, "defender")}
       defenderHitCount={state.directions.reverse.hitCount}
+      defenderHealth={defenderHealth}
       defenderName={defender.fullName}
       defenderResults={calculation.reverse.results}
       defenderSkillChoices={defenderSkillChoices}
@@ -995,19 +1260,18 @@ function CalculatorWorkspace({ snapshot }) {
       defenderTrait={getTraitView(snapshot, defender, "attacker")}
       defenderTraitContext={state.directions.reverse.context}
       defenderDefenseTrait={getTraitView(snapshot, attacker, "defender")}
+      onHealthChange={updateSideHealth}
+      onHealthPercentChange={updateSideHealthPercent}
       onTraitContextChange={(side, key, value) => {
         const direction = side === "attacker" ? "forward" : "reverse";
-        dispatch({
-          direction,
-          type: "direction/update",
-          value: { context: { [key]: value } },
-        });
+        updateTraitContext(direction, key, value);
       }}
       onSkillContextChange={(side, index, key, value) =>
         updateFourSkillEntry(side, index, {
           context: { [key]: value },
         })
       }
+      onSkillActivate={activateFourSkill}
       onSkillFocus={(side, index) => {
         const direction = side === "attacker" ? "forward" : "reverse";
         setActiveDirection(direction);
@@ -1052,6 +1316,8 @@ function CalculatorWorkspace({ snapshot }) {
 
   const compactFourEditor = configurationReady ? (
     <CompactFourSkillEditor
+      activeSide={activeAttackSideKey}
+      activeSkillIndex={currentDirection.selectedSkillIndex}
       attackerName={attacker.fullName}
       attackerResults={calculation.forward.results}
       attackerSkillChoices={attackerSkillChoices}
@@ -1256,37 +1522,47 @@ function CalculatorWorkspace({ snapshot }) {
               level:
                 activeDirection === "forward"
                   ? {
-                      label: "攻击威力等级",
+                      label: "攻击能力等级",
                       multiplier: stageMultiplier(attackLevelStage),
                       role: "attack",
                       stage: attackLevelStage,
                     }
                   : {
-                      label: "防御威力等级",
+                      label: "防御能力等级",
                       multiplier: stageMultiplier(defenseLevelStage),
                       role: "defense",
                       stage: defenseLevelStage,
                     },
               nature: state.sides.attacker.nature,
-              stats: getPanelView(attacker, state.sides.attacker),
+              stats: getPanelView(attacker, state.sides.attacker, {
+                attack:
+                  state.directions.forward.overrides.attackLevelStage ?? 0,
+                defense:
+                  state.directions.reverse.overrides.defenseLevelStage ?? 0,
+              }),
             }}
             defender={{
               level:
                 activeDirection === "forward"
                   ? {
-                      label: "防御威力等级",
+                      label: "防御能力等级",
                       multiplier: stageMultiplier(defenseLevelStage),
                       role: "defense",
                       stage: defenseLevelStage,
                     }
                   : {
-                      label: "攻击威力等级",
+                      label: "攻击能力等级",
                       multiplier: stageMultiplier(attackLevelStage),
                       role: "attack",
                       stage: attackLevelStage,
                     },
               nature: state.sides.defender.nature,
-              stats: getPanelView(defender, state.sides.defender),
+              stats: getPanelView(defender, state.sides.defender, {
+                attack:
+                  state.directions.reverse.overrides.attackLevelStage ?? 0,
+                defense:
+                  state.directions.forward.overrides.defenseLevelStage ?? 0,
+              }),
             }}
             onAttackerIvChange={(stat, value) =>
               dispatch({
@@ -1331,9 +1607,19 @@ function CalculatorWorkspace({ snapshot }) {
               />
               <AdvancedOptions
                 finalMultiplier={currentDirection.finalDamageMultiplier}
+                marks={state.marks}
                 onFinalMultiplierChange={(finalDamageMultiplier) =>
                   updateDirection({ finalDamageMultiplier })
                 }
+                onMarkChange={(side, polarity, value) =>
+                  dispatch({
+                    polarity,
+                    side,
+                    type: "mark/update",
+                    value,
+                  })
+                }
+                onRainTurnsChange={updateWeatherRainTurns}
                 onReductionChange={(percent) =>
                   dispatch({
                     direction: activeDirection,
@@ -1341,13 +1627,11 @@ function CalculatorWorkspace({ snapshot }) {
                     value: Math.max(0, 1 - percent / 100),
                   })
                 }
-                onStarfallStacksChange={(starfallStacks) =>
-                  updateDirection({ starfallStacks })
-                }
+                rainTurns={weatherRainTurns}
                 reductionPercent={Math.round(
                   (1 - currentDirection.reduction) * 100,
                 )}
-                starfallStacks={currentDirection.starfallStacks}
+                result={resultModel.selectedResult}
               />
             </>
           ) : null}
@@ -1357,6 +1641,9 @@ function CalculatorWorkspace({ snapshot }) {
           <div className="result-column">
             <ResultRail
               onCurrentHpChange={(currentHp) => updateDirection({ currentHp })}
+              onCurrentHpPercentChange={(currentHpPercent) =>
+                updateDirection({ context: { currentHpPercent } })
+              }
               onDirectionToggle={() =>
                 setActiveDirection((direction) =>
                   direction === "forward" ? "reverse" : "forward",
@@ -1415,6 +1702,9 @@ function CalculatorWorkspace({ snapshot }) {
           </button>
           <ResultRail
             onCurrentHpChange={(currentHp) => updateDirection({ currentHp })}
+            onCurrentHpPercentChange={(currentHpPercent) =>
+              updateDirection({ context: { currentHpPercent } })
+            }
             onDirectionToggle={() =>
               setActiveDirection((direction) =>
                 direction === "forward" ? "reverse" : "forward",
@@ -1667,15 +1957,6 @@ export function App({ initialAssetManifest = null, initialSnapshot = null }) {
     if (initialSnapshot) return undefined;
     const controller = new AbortController();
     let active = true;
-    let loadedManifest = initialAssetManifest;
-    const manifestRequest = fetch("/assets/spirits/manifest.json", {
-      signal: controller.signal,
-    })
-      .then((response) => (response.ok ? response.json() : null))
-      .catch((manifestError) => {
-        if (manifestError.name === "AbortError") return null;
-        return null;
-      });
 
     fetch("/data/runtime.json", { signal: controller.signal })
       .then(async (snapshotResponse) => {
@@ -1683,7 +1964,7 @@ export function App({ initialAssetManifest = null, initialSnapshot = null }) {
           throw new Error(`数据加载失败：${snapshotResponse.status}`);
         }
         const loadedSnapshot = await snapshotResponse.json();
-        return attachLocalAssets(loadedSnapshot, loadedManifest);
+        return attachLocalAssets(loadedSnapshot, initialAssetManifest);
       })
       .then((loadedSnapshot) => {
         if (active) setSnapshot(loadedSnapshot);
@@ -1693,14 +1974,6 @@ export function App({ initialAssetManifest = null, initialSnapshot = null }) {
           setError(loadError.message);
         }
       });
-
-    manifestRequest.then((manifest) => {
-      if (!active || !manifest) return;
-      loadedManifest = manifest;
-      setSnapshot((current) =>
-        current ? attachLocalAssets(current, manifest) : current,
-      );
-    });
 
     return () => {
       active = false;

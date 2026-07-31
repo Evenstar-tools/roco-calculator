@@ -26,16 +26,17 @@ export function calculateDamage(input) {
   const coefficient = (level * 45 / 100 + 10) / 41;
   const unroundedNumerator =
     attackerStat * displayedPower * reduction * coefficient;
-  const numerator = unroundedNumerator;
+  const numerator = Math.round(unroundedNumerator);
   const unroundedOneHit = numerator / defenderDefense;
   const oneHit = Math.floor(unroundedOneHit);
-  const multiHit = unroundedOneHit * hitCount;
-  const total = Math.floor(multiHit * finalMultiplier);
+  const multiHit = oneHit * hitCount;
+  const total = Math.floor(oneHit * finalMultiplier) * hitCount;
 
   return {
     coefficient,
     unroundedNumerator,
     numerator,
+    unroundedOneHit,
     oneHit,
     multiHit,
     total,

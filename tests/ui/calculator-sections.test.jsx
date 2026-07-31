@@ -162,12 +162,12 @@ test("nature step keeps final panel, race, individual values, and level controls
   render(
     <NatureStatsStep
       attacker={{
-        level: { label: "攻击威力等级", multiplier: 1, stage: 0 },
+        level: { label: "攻击能力等级", multiplier: 1, stage: 0 },
         nature: "固执（+物攻，-魔攻）",
         stats,
       }}
       defender={{
-        level: { label: "防御威力等级", multiplier: 1, stage: 0 },
+        level: { label: "防御能力等级", multiplier: 1, stage: 0 },
         nature: "普通（无修正）",
         stats,
       }}

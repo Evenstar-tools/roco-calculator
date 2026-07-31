@@ -23,14 +23,11 @@ test("loads the compact runtime snapshot instead of the audit snapshot", () => {
     "/data/runtime.json",
     expect.objectContaining({ signal: expect.any(AbortSignal) }),
   );
+  expect(fetchMock).toHaveBeenCalledTimes(1);
   vi.unstubAllGlobals();
 });
 
-test("shows the calculator as soon as runtime data is ready without waiting for the avatar manifest", async () => {
-  let resolveManifest;
-  const manifestPending = new Promise((resolve) => {
-    resolveManifest = resolve;
-  });
+test("uses avatar data embedded in the runtime snapshot without a second request", async () => {
   const runtime = {
     learnsets: [],
     meta: {
@@ -39,62 +36,9 @@ test("shows the calculator as soon as runtime data is ready without waiting for 
       rulesVersion: "1.0.0",
     },
     skills: [],
-    spirits: [],
-    traits: [],
-    typeChart: {},
-  };
-  const fetchMock = vi.fn((url) => {
-    if (url === "/data/runtime.json") {
-      return Promise.resolve({
-        json: () => Promise.resolve(runtime),
-        ok: true,
-      });
-    }
-    if (url === "/assets/spirits/manifest.json") {
-      return manifestPending;
-    }
-    throw new Error(`unexpected request ${url}`);
-  });
-  vi.stubGlobal("fetch", fetchMock);
-
-  render(<App />);
-
-  expect(
-    await screen.findByRole("combobox", { name: "攻击方精灵" }),
-  ).toBeVisible();
-  resolveManifest({
-    json: () => Promise.resolve({ assets: [] }),
-    ok: true,
-  });
-  vi.unstubAllGlobals();
-});
-
-test("keeps avatar data when the manifest loads before the runtime snapshot", async () => {
-  let resolveRuntime;
-  const runtimePending = new Promise((resolve) => {
-    resolveRuntime = resolve;
-  });
-  const manifestJson = vi.fn(() =>
-    Promise.resolve({
-      assets: [
-        {
-          id: "sonic-dog",
-          localFile: "/assets/spirits/sonic-dog.png",
-        },
-      ],
-    }),
-  );
-  const runtime = {
-    learnsets: [],
-    meta: {
-      bwikiRevision: 41360,
-      id: "s3-avatar-race",
-      rulesVersion: "1.0.0",
-    },
-    skills: [],
     spirits: [
       {
-        asset: null,
+        asset: { localUrl: "/assets/spirits/sonic-dog.png" },
         dexNo: "128",
         fullName: "音速犬",
         id: "sonic-dog",
@@ -116,24 +60,17 @@ test("keeps avatar data when the manifest loads before the runtime snapshot", as
     typeChart: {},
   };
   const fetchMock = vi.fn((url) => {
-    if (url === "/assets/spirits/manifest.json") {
+    if (url === "/data/runtime.json") {
       return Promise.resolve({
-        json: manifestJson,
+        json: () => Promise.resolve(runtime),
         ok: true,
       });
     }
-    if (url === "/data/runtime.json") return runtimePending;
     throw new Error(`unexpected request ${url}`);
   });
   vi.stubGlobal("fetch", fetchMock);
 
   render(<App />);
-  await vi.waitFor(() => expect(manifestJson).toHaveBeenCalledTimes(1));
-  await Promise.resolve();
-  resolveRuntime({
-    json: () => Promise.resolve(runtime),
-    ok: true,
-  });
 
   const user = userEvent.setup();
   const picker = await screen.findByRole("combobox", { name: "攻击方精灵" });
@@ -144,5 +81,6 @@ test("keeps avatar data when the manifest loads before the runtime snapshot", as
     "src",
     "/assets/spirits/sonic-dog.png",
   );
+  expect(fetchMock).toHaveBeenCalledTimes(1);
   vi.unstubAllGlobals();
 });

@@ -302,6 +302,43 @@ test("keeps the result rail and three steps readable at 1280px", async ({
   ).toBe(true);
 });
 
+test("derives Comet power from one shared, editable current-HP value", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 945, width: 1536 });
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "黑猫密探");
+  await selectSpirit(page, "防御方", "圣光迪莫");
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  const skill = page.getByRole("combobox", { name: "攻击方技能1" });
+  await skill.fill("彗星");
+  await page
+    .getByRole("option")
+    .filter({ hasText: "彗星" })
+    .first()
+    .click();
+
+  const percent = page.getByRole("spinbutton", {
+    name: "攻击方生命百分比",
+  });
+  await expect(percent).toHaveValue("100");
+  await percent.fill("50");
+  await expect(
+    page.getByRole("spinbutton", { name: "攻击方技能1威力" }),
+  ).toHaveValue("140");
+
+  await page.getByRole("button", { name: "按当前值输入" }).click();
+  const currentHp = page.getByRole("spinbutton", {
+    name: "攻击方当前生命",
+  });
+  await expect(currentHp).toHaveValue("212");
+  await expect(
+    page.locator('output[aria-label^="攻击方彗星攻击圣光迪莫"]'),
+  ).toHaveAttribute("data-status", "ready");
+});
+
 test("keeps compact bottom skill menus above their rows on both sides", async ({
   page,
 }) => {

@@ -126,14 +126,13 @@ function resolveEnemyTotalSkillCostPower(skill, context) {
 }
 
 function resolveManaBurst(_skill, context) {
-  if (!isFiniteNumber(context.energy)) {
-    return needsInput(
-      [numberInput("energy", "当前能量")],
-      "魔能爆需要当前能量",
-    );
-  }
-
-  const energy = Math.min(10, Math.max(0, Math.floor(Number(context.energy))));
+  const energy = Math.min(
+    10,
+    Math.max(
+      0,
+      Math.floor(isFiniteNumber(context.energy) ? Number(context.energy) : 0),
+    ),
+  );
   return exact(MANA_BURST_POWER[energy], [
     {
       label: "能量威力",

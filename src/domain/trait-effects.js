@@ -3,6 +3,24 @@ const ATTACK_STACK_KEY = "attackerTraitStacks";
 const DEFENSE_EFFECT_KEY = "defenderTraitEffect";
 const DEFENSE_STACK_KEY = "defenderTraitStacks";
 
+const PENETRATION_INHERITANCE = Object.freeze({
+  description:
+    "继承棋绮后的渗透层数，每层双攻双防+5%。",
+  displayName: "渗透（进化继承）",
+  id: "inherited_trait_penetration",
+  inheritedFrom: "棋绮后",
+  name: "渗透",
+});
+
+export function getInheritedDamageTraits(spirit) {
+  const isChessQueenBranch =
+    spirit?.baseName === "棋契陛下" &&
+    String(spirit?.variantName ?? spirit?.fullName ?? "").includes(
+      "棋绮后分支",
+    );
+  return isChessQueenBranch ? [{ ...PENETRATION_INHERITANCE }] : [];
+}
+
 const trigger = (
   kind,
   effect,
@@ -51,29 +69,33 @@ const automatic = (kind, effect, effectLabel, extra = {}) => ({
 });
 
 const RULES = Object.freeze({
-  裁决: trigger(
-    "attack_percent",
+  裁决: stack(
+    "attack_defense_percent",
     20,
-    "已造成克制伤害",
-    "双攻加成",
+    "触发层数",
+    "每层攻防",
+    { roles: ["attacker", "defender"] },
   ),
-  滋养: trigger(
-    "attack_percent",
+  滋养: stack(
+    "attack_defense_percent",
     20,
-    "已造成克制伤害",
-    "双攻加成",
+    "触发层数",
+    "每层攻防",
+    { roles: ["attacker", "defender"] },
   ),
-  点燃: trigger(
-    "attack_percent",
+  点燃: stack(
+    "attack_defense_percent",
     20,
-    "已造成克制伤害",
-    "双攻加成",
+    "触发层数",
+    "每层攻防",
+    { roles: ["attacker", "defender"] },
   ),
-  净化: trigger(
-    "attack_percent",
+  净化: stack(
+    "attack_defense_percent",
     20,
-    "已造成克制伤害",
-    "双攻加成",
+    "触发层数",
+    "每层攻防",
+    { roles: ["attacker", "defender"] },
   ),
   挺起胸脯: automatic("power_percent", 50, "威力加成", {
     applies: ({ skill }) => Number(skill.cost) === 1,
@@ -134,17 +156,17 @@ const RULES = Object.freeze({
       max: 5,
     },
   ),
-  助燃: trigger(
+  助燃: stack(
     "attack_percent",
     20,
-    "已使用火系技能",
-    "双攻加成",
+    "火系技能使用次数",
+    "每层双攻",
   ),
-  爆燃: trigger(
+  爆燃: stack(
     "attack_percent",
     30,
-    "已使用火系技能",
-    "双攻加成",
+    "火系技能使用次数",
+    "每层双攻",
   ),
   观星: stack(
     "power_percent",
@@ -229,18 +251,18 @@ const RULES = Object.freeze({
     "双攻加成",
   ),
   虫群鼓舞: stack(
-    "attack_percent",
+    "attack_defense_percent",
     10,
     "其他虫系精灵数",
     "每层攻防速",
-    { max: 5 },
+    { max: 5, roles: ["attacker", "defender"] },
   ),
   虫群突袭: stack(
-    "attack_percent",
+    "attack_defense_percent",
     15,
     "其他虫系精灵数",
     "每层攻防速",
-    { max: 5 },
+    { max: 5, roles: ["attacker", "defender"] },
   ),
   得寸进尺: trigger(
     "attack_percent",
@@ -248,11 +270,12 @@ const RULES = Object.freeze({
     "雨天或水系环境",
     "双攻加成",
   ),
-  最好的伙伴: trigger(
-    "attack_percent",
+  最好的伙伴: stack(
+    "attack_defense_percent",
     20,
-    "已造成克制伤害",
-    "攻防速加成",
+    "触发层数",
+    "每层攻防",
+    { roles: ["attacker", "defender"] },
   ),
   指挥家: stack(
     "attack_percent",
@@ -275,35 +298,32 @@ const RULES = Object.freeze({
     "每层双攻",
     { max: 5 },
   ),
-  鼓气: trigger(
-    "attack_percent",
+  鼓气: stack(
+    "attack_defense_percent",
     20,
-    "本次使用能耗3技能",
-    "攻防加成",
-    {
-      applies: ({ skill }) => Number(skill.cost) === 3,
-      conditionScope: "skill",
-    },
+    "能耗3技能使用次数",
+    "每层攻防",
+    { roles: ["attacker", "defender"] },
   ),
   三鼓作气: stack(
-    "attack_percent",
+    "attack_defense_percent",
     20,
     "累计触发次数",
     "每层攻防",
-    { max: 10 },
+    { max: 10, roles: ["attacker", "defender"] },
   ),
-  先知: trigger(
+  先知: stack(
     "attack_percent",
     50,
-    "敌方技能足够击败自己",
-    "双攻加成",
+    "触发层数",
+    "每层双攻",
   ),
   渗透: stack(
-    "attack_percent",
+    "attack_defense_percent",
     5,
     "已使用武/地技能次数",
-    "每层双攻",
-    { max: 20 },
+    "每层双攻双防",
+    { max: 20, roles: ["attacker", "defender"] },
   ),
   草木苏醒时: stack(
     "attack_percent",
@@ -424,11 +444,11 @@ const RULES = Object.freeze({
     { max: 100, types: ["冰"] },
   ),
   淬炼火: stack(
-    "attack_percent",
+    "attack_defense_percent",
     10,
     "己方火系技能次数",
     "每层攻防",
-    { max: 10 },
+    { max: 10, roles: ["attacker", "defender"] },
   ),
   猫精灵的礼物: stack(
     "attack_percent",
@@ -596,13 +616,33 @@ function inferredRule(trait, role) {
 
 export function getTraitEffectRule(trait, role = "attacker") {
   const named = RULES[trait?.name] ?? LEGACY_EDITABLE_RULES[trait?.name];
-  if (named && (named.role ?? "attacker") === role) return named;
+  if (
+    named &&
+    ((named.roles ?? [named.role ?? "attacker"]).includes(role))
+  ) {
+    if (role === "defender" && named.stack) {
+      return {
+        ...named,
+        stack: {
+          ...named.stack,
+          key:
+            named.stack.key === ATTACK_STACK_KEY
+              ? DEFENSE_STACK_KEY
+              : named.stack.key,
+        },
+      };
+    }
+    return named;
+  }
   return inferredRule(trait, role);
 }
 
 export function hasNamedTraitEffectRule(trait, role = "attacker") {
   const named = RULES[trait?.name];
-  return Boolean(named && (named.role ?? "attacker") === role);
+  return Boolean(
+    named &&
+      (named.roles ?? [named.role ?? "attacker"]).includes(role),
+  );
 }
 
 function effectKey(role) {
@@ -660,10 +700,14 @@ export function resolveTraitEffectRule(trait, role, input) {
   if (!categoryMatches(rule, input.skill) || !typeMatches(rule, input.skill)) {
     return {
       attackLevelBonus: 0,
+      attackerDefenseLevelBonus: 0,
       attackMultiplier: 1,
+      defenseLevelBonus: 0,
+      defenderDefenseLevelBonus: 0,
       damageReductionMultiplier: 1,
       finalDamageMultiplier: 1,
       fixedPowerAdd: 0,
+      powerPercentAdd: 0,
       powerMultiplier: 1,
       step: null,
     };
@@ -671,10 +715,14 @@ export function resolveTraitEffectRule(trait, role, input) {
   if (rule.applies && !rule.applies(input)) {
     return {
       attackLevelBonus: 0,
+      attackerDefenseLevelBonus: 0,
       attackMultiplier: 1,
+      defenseLevelBonus: 0,
+      defenderDefenseLevelBonus: 0,
       damageReductionMultiplier: 1,
       finalDamageMultiplier: 1,
       fixedPowerAdd: 0,
+      powerPercentAdd: 0,
       powerMultiplier: 1,
       step: null,
     };
@@ -700,17 +748,31 @@ export function resolveTraitEffectRule(trait, role, input) {
     : 0;
   const result = {
     attackLevelBonus: 0,
+    attackerDefenseLevelBonus: 0,
     attackMultiplier: 1,
+    defenseLevelBonus: 0,
+    defenderDefenseLevelBonus: 0,
     damageReductionMultiplier: 1,
     finalDamageMultiplier: 1,
     fixedPowerAdd: 0,
+    powerPercentAdd: 0,
     powerMultiplier: 1,
   };
 
   if (rule.kind === "attack_percent" || rule.kind === "decay_attack_percent") {
     result.attackLevelBonus = amount / 10;
     result.attackMultiplier = 1 + amount / 100;
+  } else if (rule.kind === "attack_defense_percent") {
+    if (role === "attacker") {
+      result.attackLevelBonus = amount / 10;
+      result.attackerDefenseLevelBonus = amount / 10;
+      result.attackMultiplier = 1 + amount / 100;
+    } else {
+      result.defenseLevelBonus = amount / 10;
+      result.defenderDefenseLevelBonus = amount / 10;
+    }
   } else if (rule.kind === "power_percent") {
+    result.powerPercentAdd = amount / 100;
     result.powerMultiplier = 1 + amount / 100;
   } else if (rule.kind === "fixed_power") {
     result.fixedPowerAdd = amount;
@@ -728,8 +790,12 @@ export function resolveTraitEffectRule(trait, role, input) {
             rule.kind === "fixed_power"
               ? result.fixedPowerAdd
               : rule.kind === "attack_percent" ||
-                  rule.kind === "decay_attack_percent"
-                ? result.attackMultiplier
+                  rule.kind === "decay_attack_percent" ||
+                  rule.kind === "attack_defense_percent"
+                ? rule.kind === "attack_defense_percent" &&
+                  role === "defender"
+                  ? 1 + amount / 100
+                  : result.attackMultiplier
                 : rule.kind === "power_percent"
                   ? result.powerMultiplier
                   : rule.kind === "damage_reduction_percent"

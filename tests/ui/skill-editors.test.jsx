@@ -7,6 +7,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { AdvancedOptions } from "../../src/components/AdvancedOptions.jsx";
+import { CompactFourSkillEditor } from "../../src/components/CompactSkillEditor.jsx";
 import { FourSkillEditor } from "../../src/components/FourSkillEditor.jsx";
 import { SkillPicker } from "../../src/components/SkillPicker.jsx";
 import {
@@ -573,6 +574,135 @@ test("four-skill choice controls stay compact and update their own slot context"
   );
 });
 
+test("four-skill rows expose one visible selection and select from the whole row", async () => {
+  const user = userEvent.setup();
+  const onSkillActivate = vi.fn();
+  const onSkillFocus = vi.fn();
+
+  render(
+    <FourSkillEditor
+      activeSide="attacker"
+      activeSkillIndex={1}
+      attackerName="音速犬"
+      attackerSkills={[skills[0], skills[1], null, null]}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillActivate={onSkillActivate}
+      onSkillFocus={onSkillFocus}
+      onSkillSelect={vi.fn()}
+      skills={skills}
+    />,
+  );
+
+  const selectedRow = screen.getByRole("group", {
+    name: "攻击方技能2，当前选中",
+  });
+  expect(selectedRow).toHaveClass("is-selected");
+  expect(
+    screen.getByRole("group", { name: "防御方技能1" }),
+  ).not.toHaveClass("is-selected");
+
+  await user.click(selectedRow);
+  expect(onSkillFocus).toHaveBeenLastCalledWith("attacker", 1);
+  expect(onSkillActivate).toHaveBeenLastCalledWith("attacker", 1);
+
+  await user.click(
+    screen.getByRole("combobox", { name: "攻击方技能2" }),
+  );
+  expect(onSkillActivate).toHaveBeenCalledTimes(1);
+
+  await user.click(screen.getByRole("group", { name: "防御方技能1" }));
+  expect(onSkillFocus).toHaveBeenLastCalledWith("defender", 0);
+  expect(onSkillActivate).toHaveBeenLastCalledWith("defender", 0);
+});
+
+test("compact four-skill rows use the same mutually exclusive selection state", async () => {
+  const user = userEvent.setup();
+  const onSkillFocus = vi.fn();
+
+  render(
+    <CompactFourSkillEditor
+      activeSide="defender"
+      activeSkillIndex={0}
+      attackerName="音速犬"
+      attackerResults={[]}
+      attackerSkillChoices={skills}
+      attackerSkills={[skills[0], null, null, null]}
+      defenderName="水灵"
+      defenderResults={[]}
+      defenderSkillChoices={skills}
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillFocus={onSkillFocus}
+      onSkillSelect={vi.fn()}
+    />,
+  );
+
+  expect(
+    screen.getByRole("group", { name: "防御方技能1，当前选中" }),
+  ).toHaveClass("is-selected");
+  expect(
+    screen.getByRole("group", { name: "攻击方技能1" }),
+  ).not.toHaveClass("is-selected");
+
+  await user.click(screen.getByRole("group", { name: "攻击方技能1" }));
+  expect(onSkillFocus).toHaveBeenLastCalledWith("attacker", 0);
+});
+
+test("four-skill HP rules use a draft-safe percent or current-HP control", async () => {
+  const user = userEvent.setup();
+  const onHealthChange = vi.fn();
+  const comet = {
+    ...skills[1],
+    basePower: 240,
+    cost: 0,
+    description:
+      "造成魔伤，每失去5%生命，本次技能威力-10，使用后消耗全部生命。",
+    id: "comet",
+    name: "彗星",
+    slotContext: { attackerHpPercent: 0 },
+    type: "普通",
+  };
+
+  render(
+    <FourSkillEditor
+      attackerHealth={{ currentHp: 315, maxHp: 315 }}
+      attackerName="黑猫密探"
+      attackerSkills={[comet, null, null, null]}
+      defenderHealth={{ currentHp: 428, maxHp: 428 }}
+      defenderName="圣光迪莫"
+      defenderSkills={[skills[1], null, null, null]}
+      onHealthChange={onHealthChange}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, comet]}
+    />,
+  );
+
+  expect(
+    screen.queryByRole("spinbutton", {
+      name: "攻击方技能1自身生命百分比",
+    }),
+  ).not.toBeInTheDocument();
+
+  const percent = screen.getByRole("spinbutton", {
+    name: "攻击方生命百分比",
+  });
+  expect(percent).toHaveValue(100);
+  await user.clear(percent);
+  expect(onHealthChange).not.toHaveBeenCalled();
+  await user.type(percent, "50");
+  expect(onHealthChange).toHaveBeenLastCalledWith("attacker", 158);
+
+  await user.click(screen.getByRole("button", { name: "按当前值输入" }));
+  const currentHp = screen.getByRole("spinbutton", {
+    name: "攻击方当前生命",
+  });
+  expect(currentHp).toHaveValue(315);
+  expect(screen.getByText("/ 315")).toBeVisible();
+  await user.clear(currentHp);
+  await user.type(currentHp, "200");
+  expect(onHealthChange).toHaveBeenLastCalledWith("attacker", 200);
+});
+
 test("four-skill slots expose an attacker trait condition without blocking damage", async () => {
   const user = userEvent.setup();
   const onSkillContextChange = vi.fn();
@@ -909,6 +1039,9 @@ test("four-skill slots expose their own dynamic rule context", async () => {
     />,
   );
 
+  expect(
+    screen.getByRole("spinbutton", { name: "攻击方技能1当前能量" }),
+  ).toHaveValue(0);
   await user.type(
     screen.getByRole("spinbutton", { name: "攻击方技能1当前能量" }),
     "5",
@@ -928,6 +1061,53 @@ test("four-skill slots expose their own dynamic rule context", async () => {
     0,
     "energy",
     10,
+  );
+});
+
+test("Sweet Trap accepts current energy above ten and caps it at ninety-nine", () => {
+  const onSkillContextChange = vi.fn();
+  const sweetTrap = {
+    basePower: 50,
+    category: "magical",
+    cost: 4,
+    description: "造成魔伤，自己每有1能量，本次技能威力+10。",
+    id: "sweet-trap",
+    name: "甜蜜陷阱",
+    slotContext: { energy: 10 },
+    type: "草",
+  };
+
+  render(
+    <FourSkillEditor
+      attackerName="音速犬"
+      attackerSkills={[sweetTrap, null, null, null]}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillContextChange={onSkillContextChange}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, sweetTrap]}
+    />,
+  );
+
+  const energy = screen.getByRole("spinbutton", {
+    name: "攻击方技能1当前能量",
+  });
+  expect(energy).toHaveAttribute("max", "99");
+
+  fireEvent.change(energy, { target: { value: "11" } });
+  expect(onSkillContextChange).toHaveBeenLastCalledWith(
+    "attacker",
+    0,
+    "energy",
+    11,
+  );
+
+  fireEvent.change(energy, { target: { value: "100" } });
+  expect(onSkillContextChange).toHaveBeenLastCalledWith(
+    "attacker",
+    0,
+    "energy",
+    99,
   );
 });
 
@@ -1001,16 +1181,87 @@ test("four-skill sides use their own learnability labels", async () => {
 
 test("advanced settings stay collapsed until requested", async () => {
   const user = userEvent.setup();
-  const onStarfallStacksChange = vi.fn();
+  const onMarkChange = vi.fn();
+  const onRainTurnsChange = vi.fn();
 
   render(
     <AdvancedOptions
       finalMultiplier={1}
       onFinalMultiplierChange={vi.fn()}
+      onRainTurnsChange={onRainTurnsChange}
       onReductionChange={vi.fn()}
-      onStarfallStacksChange={onStarfallStacksChange}
+      onMarkChange={onMarkChange}
+      rainTurns={0}
       reductionPercent={0}
-      starfallStacks={0}
+      result={{
+        additionalDamage: 0,
+        effectivePower: 38,
+        formulaSteps: [
+          {
+            after: 37.5,
+            before: 30,
+            input: 1.25,
+            label: "本系",
+          },
+          {
+            after: 65.625,
+            before: 37.5,
+            input: {
+              multiplier: 1.75,
+              remainingTurns: 8,
+              weather: "雨天",
+            },
+            label: "天气",
+          },
+          {
+            after: 38,
+            before: 37.5,
+            input: { method: "round" },
+            label: "显示威力",
+          },
+          {
+            after: 47,
+            before: 8264.63,
+            input: {
+              attackerStat: 246,
+              calculationPower: 37.5,
+              coefficient: 37 / 41,
+              defenderDefense: 175,
+              displayedPower: 38,
+              roundedNumerator: 8265,
+              unroundedNumerator: 8264.63,
+              unroundedOneHit: 47.228,
+            },
+            label: "等级系数与攻防比",
+          },
+          {
+            after: 141,
+            before: 47,
+            input: {
+              damageReductionMultiplier: 1,
+              finalDamageMultiplier: 1,
+              hitCount: 3,
+              oneHitAfterFinal: 47,
+            },
+            label: "减伤、连击与最终倍率",
+          },
+        ],
+        hitCount: 3,
+        mainDamage: 141,
+        skillName: "光之矛",
+        status: "exact",
+        totalDamage: 141,
+      }}
+      marks={{
+        attacker: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: "tailwind", stacks: 2 },
+        },
+        defender: {
+          negative: { id: "starfall", stacks: 3 },
+          positive: { id: null, stacks: 0 },
+        },
+      }}
     />,
   );
 
@@ -1022,8 +1273,47 @@ test("advanced settings stay collapsed until requested", async () => {
     screen.queryByRole("spinbutton", { name: "防御方当前生命" }),
   ).not.toBeInTheDocument();
   expect(screen.getByRole("spinbutton", { name: "最终伤害倍率" })).toHaveValue(1);
-  const starfall = screen.getByRole("spinbutton", { name: "星陨层数" });
-  await user.clear(starfall);
-  await user.type(starfall, "4");
-  expect(onStarfallStacksChange).toHaveBeenLastCalledWith(4);
+  expect(screen.getByText("伤害计算过程")).toBeVisible();
+  expect(screen.getByText("技能威力")).toBeVisible();
+  expect(screen.getByText("显示威力")).toBeVisible();
+  expect(screen.getByText("每段伤害")).toBeVisible();
+  expect(screen.getByText("总伤害")).toBeVisible();
+  expect(screen.getAllByText("四舍五入")).toHaveLength(2);
+  expect(screen.getByText("向下取整")).toBeVisible();
+  expect(screen.getByText("8265")).toBeVisible();
+  expect(screen.getAllByText("47")).toHaveLength(2);
+  expect(screen.getByText("141")).toBeVisible();
+  expect(screen.queryByText(/先算技能威力/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/读取攻击数值/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/round\(/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/floor\(/i)).not.toBeInTheDocument();
+  expect(screen.queryByText("×1")).not.toBeInTheDocument();
+  expect(document.querySelectorAll(".formula-audit__row")).toHaveLength(4);
+  const rain = screen.getByRole("checkbox", {
+    name: "雨天",
+  });
+  expect(rain).not.toBeChecked();
+  expect(
+    screen.queryByRole("spinbutton", { name: "雨天剩余回合" }),
+  ).not.toBeInTheDocument();
+  expect(screen.queryByText(/雨天剩余.*回合/)).not.toBeInTheDocument();
+  await user.click(rain);
+  expect(onRainTurnsChange).toHaveBeenLastCalledWith(8);
+  const attackerMarks = screen.getByRole("group", { name: "进攻方印记" });
+  const defenderMarks = screen.getByRole("group", { name: "防御方印记" });
+  expect(
+    within(attackerMarks).getByRole("combobox", { name: "进攻方正面印记" }),
+  ).toHaveValue("tailwind");
+  expect(
+    within(defenderMarks).getByRole("combobox", { name: "防御方负面印记" }),
+  ).toHaveValue("starfall");
+  const starfall = within(defenderMarks).getByRole("spinbutton", {
+    name: "防御方星陨层数",
+  });
+  fireEvent.change(starfall, { target: { value: "4" } });
+  expect(onMarkChange).toHaveBeenLastCalledWith(
+    "defender",
+    "negative",
+    { id: "starfall", stacks: 4 },
+  );
 });

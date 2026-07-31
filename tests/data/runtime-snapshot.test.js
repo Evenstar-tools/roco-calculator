@@ -8,6 +8,7 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
   const directory = mkdtempSync(path.join(tmpdir(), "lovepvp-runtime-"));
   const sourcePath = path.join(directory, "source.json");
   const targetPath = path.join(directory, "runtime.json");
+  const manifestPath = path.join(directory, "manifest.json");
   const source = {
     meta: {
       id: "s3-fixture",
@@ -73,10 +74,22 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
     },
   };
   writeFileSync(sourcePath, JSON.stringify(source), "utf8");
+  writeFileSync(
+    manifestPath,
+    JSON.stringify({
+      assets: [
+        {
+          id: "spirit-sonic",
+          localFile: "/assets/spirits/spirit-sonic.png",
+        },
+      ],
+    }),
+    "utf8",
+  );
 
   const run = spawnSync(
     process.execPath,
-    ["scripts/runtime-snapshot.mjs", sourcePath, targetPath],
+    ["scripts/runtime-snapshot.mjs", sourcePath, targetPath, manifestPath],
     {
       cwd: process.cwd(),
       encoding: "utf8",
@@ -86,6 +99,9 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
   expect(run.status, run.stderr).toBe(0);
   const runtime = JSON.parse(readFileSync(targetPath, "utf8"));
   expect(runtime.spirits[0]).toMatchObject({
+    asset: {
+      localUrl: "/assets/spirits/spirit-sonic.png",
+    },
     evolutionChainIds: ["spirit-guard", "spirit-sonic"],
     fullName: "音速犬",
     initials: "ysq",
@@ -99,7 +115,7 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
     spiritId: "spirit-sonic",
   });
   expect(runtime.meta.sources).toBeUndefined();
-  expect(runtime.spirits[0].asset).toBeUndefined();
+  expect(runtime.spirits[0].asset.sourceUrl).toBeUndefined();
   expect(runtime.spirits[0].provenance).toBeUndefined();
   expect(runtime.skills[0].provenance).toBeUndefined();
   expect(runtime.traits[0].provenance).toBeUndefined();

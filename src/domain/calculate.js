@@ -3,6 +3,12 @@ import { calculateDamage } from "./damage.js";
 import { getDefaultHitCount } from "./skill-effects.js";
 import { resolveSkillPower } from "./skill-rules.js";
 import { calculateAllPanelStats } from "./stat.js";
+import { getInheritedDamageTraits } from "./trait-effects.js";
+import {
+  normalizeMarkSlot,
+  resolveSourceMarkEffects,
+  targetNegativeMarkSettlement,
+} from "./marks.js";
 import { resolveTraitMultipliers } from "./traits.js";
 import { getTypeMultiplier } from "./type-chart.js";
 
@@ -30,6 +36,27 @@ function product(values) {
 function asMultiplierList(value) {
   if (Array.isArray(value)) return value;
   return value === undefined ? [] : [value];
+}
+
+function abilityLevelMultiplier(attackStage, defenseStage) {
+  const attackPercent = Number(attackStage) * 10;
+  const defensePercent = Number(defenseStage) * 10;
+  const numerator =
+    1 +
+    Math.max(attackPercent, 0) / 100 +
+    Math.max(-defensePercent, 0) / 100;
+  const denominator =
+    1 +
+    Math.max(-attackPercent, 0) / 100 +
+    Math.max(defensePercent, 0) / 100;
+  return numerator / denominator;
+}
+
+function abilityAdjustedStat(value, stage) {
+  const percent = Number(stage) * 10;
+  const numerator = 1 + Math.max(percent, 0) / 100;
+  const denominator = 1 + Math.max(-percent, 0) / 100;
+  return Number(value) * numerator / denominator;
 }
 
 function resolveNatureMultipliers(side, snapshot) {
@@ -108,6 +135,7 @@ function resolveCombatant(
     ...traitIds
       .map((traitId) => indexes.traits[traitId])
       .filter(Boolean),
+    ...getInheritedDamageTraits(spirit),
   ];
   const carriedSkills = collectCarriedSkills(side, mode, indexes.skills);
 
@@ -233,9 +261,17 @@ function calculateSkillResult({
   entry,
   direction,
   attacker,
+  attackerCurrentHp,
+  attackerHpPercent,
   defender,
+  defenderCurrentHp,
+  defenderHpPercent,
   level,
   skillPosition,
+  sourceMarks,
+  sourceSide,
+  targetMarks,
+  targetSide,
 }) {
   if (!skill) return emptySlotResult();
 
@@ -244,8 +280,17 @@ function calculateSkillResult({
   const slotOverrides = details.overrides ?? {};
   const usesDisplayedPower =
     mode === "single" && directionOverrides.powerMode === "displayed";
+  const sourceNegativeMark = normalizeMarkSlot(
+    sourceMarks?.negative,
+    "negative",
+  );
+  const markedAttackerSpeed =
+    Number(attacker.panelStats.speed) -
+    (sourceNegativeMark.id === "slow"
+      ? sourceNegativeMark.stacks * 10
+      : 0);
   const context = {
-    attackerSpeed: attacker.panelStats.speed,
+    attackerSpeed: markedAttackerSpeed,
     defenderSpeed: defender.panelStats.speed,
     attackerPhysicalDefense: attacker.panelStats.physicalDefense,
     defenderPhysicalDefense: defender.panelStats.physicalDefense,
@@ -255,7 +300,45 @@ function calculateSkillResult({
     ...details.context,
     ...directionOverrides.context,
     ...slotOverrides.context,
+    attackerHpPercent:
+      finiteNumber(attackerHpPercent) ??
+      (Math.min(
+          attacker.panelStats.hp,
+          Math.max(
+            0,
+            finiteNumber(
+              attackerCurrentHp,
+              attacker.currentHp,
+              attacker.panelStats.hp,
+            ) ?? 0,
+          ),
+        ) /
+          Math.max(1, attacker.panelStats.hp)) *
+        100,
+    defenderHpPercent:
+      finiteNumber(defenderHpPercent) ??
+      (Math.min(
+          defender.panelStats.hp,
+          Math.max(
+            0,
+            finiteNumber(
+              defenderCurrentHp,
+              defender.currentHp,
+              defender.panelStats.hp,
+            ) ?? 0,
+          ),
+        ) /
+          Math.max(1, defender.panelStats.hp)) *
+        100,
   };
+  const sourceMarkEffects = resolveSourceMarkEffects({
+    actedBeforeEnemy: context.actedBeforeEnemy,
+    attackerSpeed: attacker.panelStats.speed,
+    defenderSpeed: defender.panelStats.speed,
+    marks: sourceMarks,
+    side: sourceSide,
+    skill,
+  });
   const basePowerOverride = finiteNumber(
     slotOverrides.basePower,
     slotOverrides.basePowerOverride,
@@ -266,6 +349,31 @@ function calculateSkillResult({
   if (basePowerOverride !== undefined) {
     context.basePowerOverride = basePowerOverride;
   }
+
+  const traitResolution = resolveTraitMultipliers({
+    attackerTraits: usesDisplayedPower ? [] : attacker.traits,
+    defenderTraits: defender.traits,
+    skill,
+    attacker,
+    defender,
+    context,
+  });
+  if (traitResolution.status !== "exact") {
+    return unresolvedResult(skill, traitResolution);
+  }
+
+  context.attackerPhysicalDefense = Math.round(
+    abilityAdjustedStat(
+      attacker.panelStats.physicalDefense,
+      traitResolution.attackerDefenseLevelBonus,
+    ),
+  );
+  context.defenderPhysicalDefense = Math.round(
+    abilityAdjustedStat(
+      defender.panelStats.physicalDefense,
+      traitResolution.defenderDefenseLevelBonus,
+    ),
+  );
 
   const powerResolution = usesDisplayedPower
     ? {
@@ -287,6 +395,9 @@ function calculateSkillResult({
         directionOverrides.fixedPowerAdd,
         direction.fixedPowerAdd,
       ) ?? 0;
+  const markFixedPowerAdd = usesDisplayedPower
+    ? 0
+    : sourceMarkEffects.fixedPowerAdd;
   const percentageAdds = usesDisplayedPower
     ? []
     : [
@@ -294,26 +405,21 @@ function calculateSkillResult({
         ...asMultiplierList(directionOverrides.skillPowerPercentAdds),
         ...asMultiplierList(details.skillPowerPercentAdds),
         ...asMultiplierList(slotOverrides.skillPowerPercentAdds),
+        ...(traitResolution.powerPercentAdd === 0
+          ? []
+          : [traitResolution.powerPercentAdd]),
+        ...(sourceMarkEffects.powerPercentAdd === 0
+          ? []
+          : [sourceMarkEffects.powerPercentAdd]),
       ];
+  const powerAfterFixed = powerResolution.value + fixedPowerAdd;
+  const powerAfterMarkFixed = powerAfterFixed + markFixedPowerAdd;
+  const powerAfterTraitFixed =
+    powerAfterMarkFixed + traitResolution.fixedPowerAdd;
   const effectivePower =
-    (powerResolution.value + fixedPowerAdd) *
+    powerAfterTraitFixed *
     (1 + percentageAdds.reduce((sum, value) => sum + (Number(value) || 0), 0));
-
-  const traitResolution = resolveTraitMultipliers({
-    attackerTraits: usesDisplayedPower ? [] : attacker.traits,
-    defenderTraits: defender.traits,
-    skill,
-    attacker,
-    defender,
-    context,
-  });
-  if (traitResolution.status !== "exact") {
-    return unresolvedResult(skill, traitResolution, {
-      skillPower: Math.round(effectivePower),
-    });
-  }
-  const traitAdjustedPower =
-    effectivePower + traitResolution.fixedPowerAdd;
+  const traitAdjustedPower = effectivePower;
 
   const statKeys = statKeysForCategory(skill.category, attacker.panelStats);
   if (!statKeys) {
@@ -329,8 +435,7 @@ function calculateSkillResult({
     directionOverrides.attackerStat,
     attacker.panelStats[statKeys.attack],
   );
-  const attackerStat =
-    baseAttackerStat * traitResolution.attackMultiplier;
+  const attackerStat = baseAttackerStat;
   const defenderDefense = finiteNumber(
     slotOverrides.defenderDefense,
     directionOverrides.defenderDefense,
@@ -361,29 +466,56 @@ function calculateSkillResult({
     powerResolution.ignoreResistance && resolvedTypeMultiplier < 1
       ? 1
       : resolvedTypeMultiplier;
-  const attackDefenseLevelMultiplier =
-    finiteNumber(
-      slotOverrides.attackDefenseLevelMultiplier,
-      directionOverrides.attackDefenseLevelMultiplier,
-      direction.attackDefenseLevelMultiplier,
-    ) ??
-    product([
-      finiteNumber(direction.attackLevelMultiplier) ?? 1,
-      finiteNumber(direction.defenseLevelMultiplier) ?? 1,
-    ]);
+  const attackLevelStage = finiteNumber(
+    slotOverrides.attackLevelStage,
+    directionOverrides.attackLevelStage,
+    direction.attackLevelStage,
+  );
+  const defenseLevelStage = finiteNumber(
+    slotOverrides.defenseLevelStage,
+    directionOverrides.defenseLevelStage,
+    direction.defenseLevelStage,
+  );
+  const hasStageInput =
+    attackLevelStage !== undefined ||
+    defenseLevelStage !== undefined ||
+    traitResolution.attackLevelBonus !== 0 ||
+    traitResolution.defenseLevelBonus !== 0;
+  const attackDefenseLevelMultiplier = hasStageInput
+    ? abilityLevelMultiplier(
+        (attackLevelStage ?? 0) + traitResolution.attackLevelBonus,
+        (defenseLevelStage ?? 0) + traitResolution.defenseLevelBonus,
+      )
+    : finiteNumber(
+        slotOverrides.attackDefenseLevelMultiplier,
+        directionOverrides.attackDefenseLevelMultiplier,
+        direction.attackDefenseLevelMultiplier,
+      ) ??
+      product([
+        finiteNumber(direction.attackLevelMultiplier) ?? 1,
+        finiteNumber(direction.defenseLevelMultiplier) ?? 1,
+      ]);
   const otherPowerMultiplier =
-    traitResolution.powerMultiplier *
     product([
       ...asMultiplierList(direction.otherPowerMultipliers),
       ...asMultiplierList(directionOverrides.otherPowerMultipliers),
       ...asMultiplierList(details.otherPowerMultipliers),
       ...asMultiplierList(slotOverrides.otherPowerMultipliers),
     ]);
+  const weatherRainTurns = Math.min(
+    8,
+    Math.max(0, Math.floor(finiteNumber(context.weatherRainTurns) ?? 0)),
+  );
+  const weatherMultiplier =
+    !usesDisplayedPower && weatherRainTurns > 0 && skill.type === "水"
+      ? 1.75
+      : 1;
   const powerAfterStab = traitAdjustedPower * stabMultiplier;
   const powerAfterType =
     powerAfterStab * (usesDisplayedPower ? 1 : typeMultiplier);
+  const powerAfterWeather = powerAfterType * weatherMultiplier;
   const powerAfterLevels =
-    powerAfterType *
+    powerAfterWeather *
     (usesDisplayedPower ? 1 : attackDefenseLevelMultiplier);
   const powerAfterOther =
     powerAfterLevels * (usesDisplayedPower ? 1 : otherPowerMultiplier);
@@ -429,8 +561,20 @@ function calculateSkillResult({
     finalDamageMultiplier,
     level,
   });
+  const targetNegativeMark = normalizeMarkSlot(
+    targetMarks?.negative,
+    "negative",
+  );
+  const legacyStarfallStacks =
+    !targetNegativeMark.id && !targetMarks
+      ? Math.max(0, Math.floor(Number(direction.starfallStacks) || 0))
+      : 0;
+  const starfallStacks =
+    targetNegativeMark.id === "starfall"
+      ? targetNegativeMark.stacks
+      : legacyStarfallStacks;
   const additionalDamage = starfallDamage({
-    stacks: direction.starfallStacks,
+    stacks: starfallStacks,
     skill,
     attackerStat,
     defenderDefense,
@@ -442,13 +586,35 @@ function calculateSkillResult({
     attackDefenseLevelMultiplier,
     otherPowerMultiplier,
   });
+  const targetMarkSettlement = targetNegativeMarkSettlement({
+    additionalDamage: additionalDamage.total,
+    markSlot:
+      targetNegativeMark.id === "starfall" || targetNegativeMark.id
+        ? targetNegativeMark
+        : legacyStarfallStacks > 0
+          ? { id: "starfall", stacks: legacyStarfallStacks }
+          : null,
+    side: targetSide,
+    skill,
+  });
+  const markSettlements = [
+    ...sourceMarkEffects.settlements,
+    ...(targetMarkSettlement ? [targetMarkSettlement] : []),
+  ];
   const totalDamage = mainDamage.total + additionalDamage.total;
-  const currentHp = Math.max(
-    0,
-    finiteNumber(direction.currentHp, defender.currentHp, defender.panelStats.hp) ??
+  const currentHp = Math.min(
+    defender.panelStats.hp,
+    Math.max(
       0,
+      finiteNumber(
+        direction.currentHp,
+        defender.currentHp,
+        defender.panelStats.hp,
+      ) ?? 0,
+    ),
   );
-  const hpPercent = currentHp > 0 ? totalDamage / currentHp * 100 : 0;
+  const maximumHp = Math.max(0, Number(defender.panelStats.hp) || 0);
+  const hpPercent = maximumHp > 0 ? totalDamage / maximumHp * 100 : 0;
   const powerFormulaSteps = usesDisplayedPower
     ? [
         formulaStep(
@@ -479,24 +645,31 @@ function calculateSkillResult({
           "固定威力增加",
           fixedPowerAdd,
           powerResolution.value,
-          powerResolution.value + fixedPowerAdd,
+          powerAfterFixed,
           fixedPowerAdd === 0 ? "default" : "battle-input",
         ),
         formulaStep(
-          "技能威力百分比",
-          percentageAdds,
-          powerResolution.value + fixedPowerAdd,
-          effectivePower,
-          percentageAdds.length === 0 ? "default" : "battle-input",
+          "印记固定威力",
+          markFixedPowerAdd,
+          powerAfterFixed,
+          powerAfterMarkFixed,
+          markFixedPowerAdd === 0 ? "default" : "reviewed-mark-system-v1",
         ),
         formulaStep(
           "特性固定威力",
           traitResolution.fixedPowerAdd,
-          effectivePower,
-          traitAdjustedPower,
+          powerAfterMarkFixed,
+          powerAfterTraitFixed,
           traitResolution.fixedPowerAdd === 0
             ? "default"
             : "reviewed-trait:interactive-effect-v1",
+        ),
+        formulaStep(
+          "技能威力百分比",
+          percentageAdds,
+          powerAfterTraitFixed,
+          effectivePower,
+          percentageAdds.length === 0 ? "default" : "battle-input",
         ),
         formulaStep(
           "本系",
@@ -513,9 +686,22 @@ function calculateSkillResult({
           snapshot.typeChart?.source ?? "builtin-type-chart-v1",
         ),
         formulaStep(
+          "天气",
+          {
+            multiplier: weatherMultiplier,
+            remainingTurns: weatherRainTurns,
+            weather: weatherRainTurns > 0 ? "雨天" : "无天气",
+          },
+          powerAfterType,
+          powerAfterWeather,
+          weatherRainTurns > 0
+            ? "battle-weather:rain-v1"
+            : "default",
+        ),
+        formulaStep(
           "攻防等级",
           attackDefenseLevelMultiplier,
-          powerAfterType,
+          powerAfterWeather,
           powerAfterLevels,
           "direction-state",
         ),
@@ -524,8 +710,15 @@ function calculateSkillResult({
           "其他威力乘区",
           otherPowerMultiplier,
           powerAfterLevels,
-          displayedPower,
+          powerAfterOther,
           "direction-state",
+        ),
+        formulaStep(
+          "显示威力",
+          { method: "round" },
+          powerAfterOther,
+          displayedPower,
+          "damage-formula-v1",
         ),
       ];
   const formulaSteps = [
@@ -534,9 +727,7 @@ function calculateSkillResult({
       statKeys.attack,
       attacker.panelStats[statKeys.attack],
       attackerStat,
-      traitResolution.attackMultiplier === 1
-        ? "panel-stat"
-        : "reviewed-trait:interactive-effect-v1",
+      "panel-stat",
     ),
     ...powerFormulaSteps,
     ...(usesDisplayedPower ? traitResolution.steps : []),
@@ -546,7 +737,13 @@ function calculateSkillResult({
         level,
         coefficient: mainDamage.coefficient,
         attackerStat,
+        calculationPower: powerAfterOther,
+        damageReductionMultiplier,
         defenderDefense,
+        displayedPower,
+        roundedNumerator: mainDamage.numerator,
+        unroundedNumerator: mainDamage.unroundedNumerator,
+        unroundedOneHit: mainDamage.unroundedOneHit,
       },
       mainDamage.unroundedNumerator,
       mainDamage.oneHit,
@@ -558,6 +755,9 @@ function calculateSkillResult({
         damageReductionMultiplier,
         hitCount: Math.max(1, Math.floor(Number(hitCount) || 1)),
         finalDamageMultiplier,
+        oneHitAfterFinal: Math.floor(
+          mainDamage.oneHit * finalDamageMultiplier,
+        ),
       },
       mainDamage.oneHit,
       mainDamage.total,
@@ -566,7 +766,7 @@ function calculateSkillResult({
     formulaStep(
       "星陨追加伤害",
       {
-        stacks: Math.max(0, Math.floor(Number(direction.starfallStacks) || 0)),
+        stacks: starfallStacks,
         power: additionalDamage.power,
         typeMultiplier: additionalDamage.typeMultiplier,
       },
@@ -590,6 +790,7 @@ function calculateSkillResult({
     totalDamage,
     mainDamage: mainDamage.total,
     additionalDamage: additionalDamage.total,
+    markSettlements,
     hpPercent,
     lethal: currentHp <= totalDamage,
     status: "exact",
@@ -605,9 +806,17 @@ function calculateDirection({
   direction,
   attackerSide,
   attacker,
+  attackerCurrentHp,
+  attackerHpPercent,
   defender,
+  defenderCurrentHp,
+  defenderHpPercent,
   skillsById,
   level,
+  sourceMarks,
+  sourceSide,
+  targetMarks,
+  targetSide,
 }) {
   const entries = skillEntriesForMode(attackerSide, mode);
   const results = entries.map((entry, index) =>
@@ -618,9 +827,17 @@ function calculateDirection({
       entry,
       direction,
       attacker,
+      attackerCurrentHp,
+      attackerHpPercent,
       defender,
+      defenderCurrentHp,
+      defenderHpPercent,
       level,
       skillPosition: mode === "four" ? index + 1 : undefined,
+      sourceMarks,
+      sourceSide,
+      targetMarks,
+      targetSide,
     }),
   );
   const selectedIndex =
@@ -665,15 +882,24 @@ export function calculateMatchup(snapshot, battleInput) {
     indexes,
   );
   const level = finiteNumber(battleInput.level) ?? 60;
+  const marks = battleInput.marks ?? null;
   const forward = calculateDirection({
     snapshot,
     mode,
     direction: directions.forward ?? {},
     attackerSide: sides.attacker,
     attacker,
+    attackerCurrentHp: directions.reverse?.currentHp,
+    attackerHpPercent: directions.reverse?.context?.currentHpPercent,
     defender,
+    defenderCurrentHp: directions.forward?.currentHp,
+    defenderHpPercent: directions.forward?.context?.currentHpPercent,
     skillsById: indexes.skills,
     level,
+    sourceMarks: marks?.attacker,
+    sourceSide: "attacker",
+    targetMarks: marks?.defender,
+    targetSide: "defender",
   });
   const reverse = calculateDirection({
     snapshot,
@@ -681,9 +907,17 @@ export function calculateMatchup(snapshot, battleInput) {
     direction: directions.reverse ?? {},
     attackerSide: sides.defender,
     attacker: defender,
+    attackerCurrentHp: directions.forward?.currentHp,
+    attackerHpPercent: directions.forward?.context?.currentHpPercent,
     defender: attacker,
+    defenderCurrentHp: directions.reverse?.currentHp,
+    defenderHpPercent: directions.reverse?.context?.currentHpPercent,
     skillsById: indexes.skills,
     level,
+    sourceMarks: marks?.defender,
+    sourceSide: "defender",
+    targetMarks: marks?.attacker,
+    targetSide: "attacker",
   });
 
   return {

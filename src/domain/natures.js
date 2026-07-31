@@ -99,6 +99,25 @@ const QUICK_NATURE_IDS = Object.freeze({
   speed: "timid",
 });
 
+const QUICK_NATURE_IDS_BY_SIDE = Object.freeze({
+  attacker: Object.freeze({
+    hp: "melancholy",
+    magicalAttack: "smart",
+    magicalDefense: "gentle",
+    physicalAttack: "adamant",
+    physicalDefense: "lazy",
+    speed: "hasty",
+  }),
+  defender: Object.freeze({
+    hp: "silent",
+    magicalAttack: "smart",
+    magicalDefense: "vigilant",
+    physicalAttack: "adamant",
+    physicalDefense: "steady",
+    speed: "timid",
+  }),
+});
+
 export function normalizeNatureId(value) {
   if (NATURE_BY_ID.has(value)) return value;
   if (NATURE_BY_NAME.has(value)) return NATURE_BY_NAME.get(value);
@@ -113,6 +132,9 @@ export function getNatureMultipliers(value) {
   return getNature(value).multipliers;
 }
 
-export function getQuickNatureId(upStat) {
+export function getQuickNatureId(upStat, side) {
+  if (QUICK_NATURE_IDS_BY_SIDE[side]) {
+    return QUICK_NATURE_IDS_BY_SIDE[side][upStat] ?? "neutral";
+  }
   return QUICK_NATURE_IDS[upStat] ?? "neutral";
 }

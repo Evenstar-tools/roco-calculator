@@ -49,7 +49,7 @@ describe("calculatePanelStat", () => {
     ).toBe(434);
   });
 
-  test("matches the original-site Water Spirit speed at zero individual", () => {
+  test("matches the reference zero-IV half tie for Water Spirit speed", () => {
     expect(
       calculatePanelStat({
         kind: "speed",
@@ -57,18 +57,22 @@ describe("calculatePanelStat", () => {
         displayIv: 0,
         natureMultiplier: 1,
       }),
-    ).toBe(154);
+    ).toBe(153);
   });
 
-  test("matches the original-site floor exception for race 105 at zero individual", () => {
+  test.each([
+    ["non-HP race 105", "magicalDefense", 105, 175],
+    ["non-HP race 125", "physicalDefense", 125, 197],
+    ["HP race 95", "hp", 95, 331],
+  ])("matches the original-site zero-IV half tie for %s", (_label, kind, race, expected) => {
     expect(
       calculatePanelStat({
-        kind: "magicalDefense",
-        race: 105,
+        kind,
+        race,
         displayIv: 0,
         natureMultiplier: 1,
       }),
-    ).toBe(175);
+    ).toBe(expected);
   });
 });
 

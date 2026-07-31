@@ -95,6 +95,23 @@ const snapshot = {
       ruleId: null,
       provenance: { basePower: { source: "fixture" } },
     },
+    {
+      id: "skill_comet",
+      name: "彗星",
+      type: "普通",
+      category: "magical",
+      cost: 0,
+      basePower: 240,
+      ruleId: "hp_scaled",
+      ruleParams: {
+        changePerInterval: 10,
+        contextKey: "attackerHpPercent",
+        direction: "decrease",
+        interval: 5,
+        label: "自身生命百分比",
+      },
+      provenance: { basePower: { source: "fixture" } },
+    },
   ],
   traits: [],
   typeChart: null,
@@ -118,6 +135,16 @@ function battleInput(overrides = {}) {
     schemaVersion: 1,
     versions: { data: "s3-fixture", rules: "1.0.0" },
     mode: "single",
+    marks: {
+      attacker: {
+        negative: { id: null, stacks: 0 },
+        positive: { id: null, stacks: 0 },
+      },
+      defender: {
+        negative: { id: null, stacks: 0 },
+        positive: { id: null, stacks: 0 },
+      },
+    },
     level: 60,
     sides: {
       attacker: side("spirit_sonic_dog", "skill_wind", [
@@ -174,7 +201,134 @@ function battleInput(overrides = {}) {
   };
 }
 
+function legacyBattleInput(overrides = {}) {
+  const input = battleInput(overrides);
+  delete input.marks;
+  return input;
+}
+
 describe("calculateMatchup", () => {
+  test("applies the active side's positive mark by stack and reports the settlement", () => {
+    const before = calculateMatchup(snapshot, battleInput()).forward.selectedResult;
+    const after = calculateMatchup(
+      snapshot,
+      battleInput({
+        marks: {
+          attacker: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "tailwind", stacks: 2 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: null, stacks: 0 },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(after.effectivePower).toBe(Math.round(before.effectivePower * 1.4));
+    expect(after.markSettlements).toContainEqual(
+      expect.objectContaining({
+        markId: "tailwind",
+        side: "attacker",
+        stacks: 2,
+        status: "applied",
+        text: "风起 ×2 技能威力 +40%",
+      }),
+    );
+  });
+
+  test("uses the target side's starfall mark and does not trigger it for phantom skills", () => {
+    const marked = battleInput({
+      marks: {
+        attacker: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: null, stacks: 0 },
+        },
+        defender: {
+          negative: { id: "starfall", stacks: 3 },
+          positive: { id: null, stacks: 0 },
+        },
+      },
+    });
+    const nonPhantom = calculateMatchup(snapshot, marked).forward.selectedResult;
+    const phantom = calculateMatchup(snapshot, {
+      ...marked,
+      sides: {
+        ...marked.sides,
+        attacker: {
+          ...marked.sides.attacker,
+          skills: {
+            single: "skill_mana",
+            four: ["skill_mana", null, null, null],
+          },
+        },
+      },
+      directions: {
+        ...marked.directions,
+        forward: {
+          ...marked.directions.forward,
+          context: { energy: 3 },
+        },
+      },
+    }).forward.selectedResult;
+
+    expect(nonPhantom.additionalDamage).toBeGreaterThan(0);
+    expect(nonPhantom.markSettlements).toContainEqual(
+      expect.objectContaining({
+        markId: "starfall",
+        side: "defender",
+        stacks: 3,
+        status: "applied",
+      }),
+    );
+    expect(phantom.additionalDamage).toBe(0);
+    expect(phantom.markSettlements).toContainEqual(
+      expect.objectContaining({
+        markId: "starfall",
+        side: "defender",
+        stacks: 3,
+        status: "inactive",
+        text: "星陨 ×3 幻系不触发",
+      }),
+    );
+  });
+
+  test("keeps attack and defense marks independent when calculating the reverse direction", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        marks: {
+          attacker: {
+            negative: { id: "starfall", stacks: 2 },
+            positive: { id: null, stacks: 0 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "attack", stacks: 3 },
+          },
+        },
+      }),
+    ).reverse.selectedResult;
+
+    expect(result.markSettlements).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          markId: "attack",
+          side: "defender",
+          stacks: 3,
+          status: "applied",
+        }),
+        expect.objectContaining({
+          markId: "starfall",
+          side: "attacker",
+          stacks: 2,
+          status: "applied",
+        }),
+      ]),
+    );
+  });
+
   test("uses the original-site 1.25 same-type bonus by default", () => {
     const result = calculateMatchup(snapshot, battleInput()).reverse.selectedResult;
     const stab = result.formulaSteps.find((step) => step.label === "本系");
@@ -198,6 +352,42 @@ describe("calculateMatchup", () => {
     );
     expect(four.reverse.selectedResult.totalDamage).toBe(
       single.reverse.selectedResult.totalDamage,
+    );
+  });
+
+  test("derives Comet power from the attacker's current and maximum HP", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: side("spirit_sonic_dog", "skill_comet", [
+            {
+              context: { attackerHpPercent: 0 },
+              skillId: "skill_comet",
+            },
+            null,
+            null,
+            null,
+          ]),
+        },
+        directions: {
+          reverse: {
+            currentHp: 204,
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.skillPower).toBe(140);
+    expect(result.formulaSteps).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          input: 50,
+          label: "生命比例威力",
+          after: 140,
+        }),
+      ]),
     );
   });
 
@@ -528,7 +718,7 @@ describe("calculateMatchup", () => {
     expect(labels).not.toContain("其他威力乘区");
   });
 
-  test("keeps fractional effective power until the final damage floor", () => {
+  test("keeps fractional effective power until the damage numerator is rounded", () => {
     const result = calculateMatchup(
       snapshot,
       battleInput({
@@ -542,6 +732,299 @@ describe("calculateMatchup", () => {
 
     expect(result.effectivePower).toBe(81);
     expect(result.totalDamage).toBe(98);
+  });
+
+  test("keeps fractional same-type power until the damage numerator is rounded", () => {
+    const lightSpear = {
+      basePower: 30,
+      category: "physical",
+      cost: 3,
+      description: "造成物伤，3连击。",
+      id: "skill_light_spear",
+      name: "光之矛",
+      provenance: { basePower: { source: "fixture" } },
+      ruleId: null,
+      type: "光",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, lightSpear],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: {
+            ...side("spirit_sonic_dog", lightSpear.id, [
+              {
+                hitCount: 3,
+                skillId: lightSpear.id,
+              },
+              null,
+              null,
+              null,
+            ]),
+            panelStats: {
+              hp: 359,
+              magicalAttack: 206,
+              magicalDefense: 195,
+              physicalAttack: 246,
+              physicalDefense: 179,
+              speed: 209,
+            },
+            types: ["火", "光"],
+          },
+          defender: {
+            ...side("spirit_water", "skill_water", ["skill_water"]),
+            panelStats: {
+              hp: 393,
+              magicalAttack: 215,
+              magicalDefense: 203,
+              physicalAttack: 101,
+              physicalDefense: 175,
+              speed: 254,
+            },
+            types: ["地", "光"],
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      effectivePower: 38,
+      hitCount: 3,
+      mainDamage: 141,
+      totalDamage: 141,
+    });
+  });
+
+  test("applies rainy weather as an independent 1.75 multiplier to water skills", () => {
+    const dry = calculateMatchup(snapshot, battleInput()).reverse.selectedResult;
+    const rainy = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          reverse: {
+            context: { weatherRainTurns: 8 },
+          },
+        },
+      }),
+    ).reverse.selectedResult;
+    const weather = rainy.formulaSteps.find((step) => step.label === "天气");
+
+    expect(weather).toMatchObject({
+      input: {
+        multiplier: 1.75,
+        remainingTurns: 8,
+        weather: "雨天",
+      },
+    });
+    expect(weather.after).toBeCloseTo(weather.before * 1.75, 8);
+    expect(rainy.totalDamage).toBeGreaterThan(dry.totalDamage);
+  });
+
+  test("records formula power and every damage rounding boundary", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            context: { weatherRainTurns: 8 },
+            skillPowerPercentAdds: [0.017],
+          },
+        },
+      }),
+    ).forward.selectedResult;
+    const steps = Object.fromEntries(
+      result.formulaSteps.map((step) => [step.label, step]),
+    );
+
+    expect(steps["显示威力"]).toMatchObject({
+      before: expect.any(Number),
+      after: result.effectivePower,
+    });
+    expect(steps["等级系数与攻防比"].input).toMatchObject({
+      calculationPower: expect.any(Number),
+      displayedPower: result.effectivePower,
+      roundedNumerator: expect.any(Number),
+      unroundedNumerator: expect.any(Number),
+      unroundedOneHit: expect.any(Number),
+    });
+    expect(steps["减伤、连击与最终倍率"].input).toMatchObject({
+      oneHitAfterFinal: expect.any(Number),
+    });
+  });
+
+  test("adds fixed power before combining all current-skill percentage bonuses", () => {
+    const fixedTraitSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: ["trait_fixed"] }
+          : spirit,
+      ),
+      traits: [
+        {
+          id: "trait_fixed",
+          name: "蒸汽膨胀",
+          description:
+            "己方精灵每使用1次火系技能，自己入场时获得全技能威力+10。",
+        },
+      ],
+    };
+    const percentTraitSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: ["trait_percent"] }
+          : spirit,
+      ),
+      traits: [
+        {
+          id: "trait_percent",
+          name: "破空",
+          description: "若先于敌方攻击，本次技能威力+75%。",
+        },
+      ],
+    };
+    const fixed = calculateMatchup(
+      fixedTraitSnapshot,
+      battleInput({
+        directions: {
+          forward: {
+            context: {
+              attackerTraitEffect: 10,
+              attackerTraitStacks: 3,
+            },
+            skillPowerPercentAdds: [0.5],
+          },
+        },
+      }),
+    ).forward.selectedResult;
+    const percent = calculateMatchup(
+      percentTraitSnapshot,
+      battleInput({
+        directions: {
+          forward: {
+            context: { actedBeforeEnemy: true },
+            skillPowerPercentAdds: [0.25],
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(fixed.skillPower).toBe(165);
+    expect(percent.skillPower).toBe(160);
+  });
+
+  test("combines attack increases and defense decreases additively in the ability layer", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            overrides: {
+              attackLevelStage: 10,
+              defenseLevelStage: -4,
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.effectivePower).toBe(192);
+    expect(
+      result.formulaSteps.find((step) => step.label === "攻防等级"),
+    ).toMatchObject({ input: 2.4 });
+  });
+
+  test("uses explicit ability stages once and ignores the legacy combined multiplier", () => {
+    const stageOnly = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            overrides: {
+              attackLevelStage: 7,
+              defenseLevelStage: 0,
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+    const withLegacyMultiplier = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            overrides: {
+              attackDefenseLevelMultiplier: 9,
+              attackLevelStage: 7,
+              defenseLevelStage: 0,
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(withLegacyMultiplier.damage).toBe(stageOnly.damage);
+    expect(withLegacyMultiplier.effectivePower).toBe(stageOnly.effectivePower);
+    expect(
+      withLegacyMultiplier.formulaSteps.find(
+        (step) => step.label === "攻防等级",
+      ),
+    ).toMatchObject({ input: 1.7 });
+  });
+
+  test("applies attack-percent traits in the ability layer instead of the panel stat", () => {
+    const traitSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: ["trait_focus"] }
+          : spirit,
+      ),
+      traits: [
+        {
+          affectsDamage: true,
+          description: "入场首回合，获得物攻+100%。",
+          id: "trait_focus",
+          name: "专注力",
+        },
+      ],
+    };
+    const result = calculateMatchup(
+      traitSnapshot,
+      battleInput({
+        directions: {
+          forward: { context: { traitActivated: true } },
+        },
+      }),
+    ).forward.selectedResult;
+    const panelStep = result.formulaSteps.find(
+      (step) => step.label === "攻击面板",
+    );
+
+    expect(panelStep.after).toBe(panelStep.before);
+    expect(result.effectivePower).toBe(160);
+  });
+
+  test("reports damage percentage against maximum HP while lethal uses current HP", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: { currentHp: 50 },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.hpPercent).toBeCloseTo(
+      result.totalDamage / 434 * 100,
+      10,
+    );
+    expect(result.lethal).toBe(true);
   });
 
   test("changing forward reduction does not change reverse results", () => {
@@ -561,7 +1044,7 @@ describe("calculateMatchup", () => {
     const before = calculateMatchup(snapshot, battleInput());
     const after = calculateMatchup(
       snapshot,
-      battleInput({
+      legacyBattleInput({
         directions: { forward: { starfallStacks: 2 } },
       }),
     );
@@ -572,23 +1055,78 @@ describe("calculateMatchup", () => {
     expect(after.reverse.results).toEqual(before.reverse.results);
   });
 
+  test("keeps fractional starfall power until its damage numerator is rounded", () => {
+    const result = calculateMatchup(
+      snapshot,
+      legacyBattleInput({
+        sides: {
+          attacker: {
+            ...side("spirit_sonic_dog", "skill_wind", ["skill_wind"]),
+            panelStats: {
+              hp: 100,
+              magicalAttack: 100,
+              magicalDefense: 100,
+              physicalAttack: 100,
+              physicalDefense: 100,
+              speed: 100,
+            },
+            types: [],
+          },
+          defender: {
+            ...side("spirit_water", "skill_water", ["skill_water"]),
+            panelStats: {
+              hp: 100,
+              magicalAttack: 100,
+              magicalDefense: 100,
+              physicalAttack: 100,
+              physicalDefense: 2,
+              speed: 100,
+            },
+            types: ["光"],
+          },
+        },
+        directions: {
+          forward: { starfallStacks: 1 },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.additionalDamage).toBe(22);
+  });
+
   test("propagates needs-input rule status instead of inventing damage", () => {
+    const unresolvedSkill = {
+      id: "skill_enemy_power",
+      name: "怨力打击",
+      type: "恶",
+      category: "physical",
+      basePower: 1,
+      ruleId: "enemy_skill_power_multiplier",
+      ruleParams: {
+        contextKey: "enemySkillPower",
+        multiplier: 3,
+      },
+      provenance: { ruleId: { source: "fixture" } },
+    };
     const input = battleInput({
       sides: {
-        attacker: side("spirit_sonic_dog", "skill_mana", [
-          "skill_mana",
+        attacker: side("spirit_sonic_dog", unresolvedSkill.id, [
+          unresolvedSkill.id,
           null,
           null,
           null,
         ]),
       },
     });
-    const result = calculateMatchup(snapshot, input).forward.selectedResult;
+    const result = calculateMatchup(
+      { ...snapshot, skills: [...snapshot.skills, unresolvedSkill] },
+      input,
+    ).forward.selectedResult;
 
     expect(result).toMatchObject({
       status: "needs_input",
       totalDamage: null,
-      inputs: [{ key: "energy" }],
+      inputs: [{ key: "enemySkillPower" }],
     });
   });
 
@@ -639,7 +1177,11 @@ describe("calculateMatchup", () => {
     expect(steps["本系"]).toMatchObject({ before: 80, after: 120 });
     expect(steps["属性克制"]).toMatchObject({ before: 120, after: 240 });
     expect(steps["攻防等级"]).toMatchObject({ before: 240, after: 288 });
-    expect(steps["其他威力乘区"]).toMatchObject({ before: 288, after: 317 });
+    expect(steps["其他威力乘区"]).toMatchObject({
+      before: 288,
+      after: 316.8,
+    });
+    expect(steps["显示威力"]).toMatchObject({ before: 316.8, after: 317 });
   });
 
   test("accepts the state-layer stab and type-effectiveness override names", () => {
@@ -1101,5 +1643,168 @@ describe("calculateMatchup", () => {
       }),
     );
     expect(serialized).not.toMatch(/"random"|"seed"|"minimum"|"maximum"/);
+  });
+});
+
+describe("inherited penetration stacks", () => {
+  const chessSnapshot = {
+    meta: {
+      id: "chess-fixture",
+      rulesVersion: "2026-07-31",
+    },
+    spirits: [
+      {
+        id: "spirit_king",
+        baseName: "棋契陛下",
+        fullName: "棋契陛下（白棋棋绮后分支）",
+        variantName: "白棋棋绮后分支",
+        types: ["武", "地"],
+        raceStats: {
+          hp: 100,
+          speed: 100,
+          physicalAttack: 100,
+          magicalAttack: 100,
+          physicalDefense: 100,
+          magicalDefense: 100,
+        },
+        traitIds: ["trait_royal"],
+      },
+      {
+        id: "spirit_target",
+        fullName: "测试目标",
+        types: ["普通"],
+        raceStats: {
+          hp: 1000,
+          speed: 100,
+          physicalAttack: 100,
+          magicalAttack: 100,
+          physicalDefense: 100,
+          magicalDefense: 100,
+        },
+        traitIds: [],
+      },
+    ],
+    skills: [
+      {
+        id: "skill_sand_trap",
+        name: "鸣沙陷阱",
+        type: "地",
+        category: "physical",
+        basePower: 60,
+        ruleId: "physical_defense_difference",
+      },
+      {
+        id: "skill_plain",
+        name: "测试攻击",
+        type: "普通",
+        category: "physical",
+        basePower: 100,
+      },
+    ],
+    traits: [
+      {
+        id: "trait_royal",
+        name: "御驾亲征",
+        description: "棋契陛下大幅提升种族资质。",
+      },
+    ],
+    typeChart: null,
+  };
+
+  function chessSide(spiritId, skillId) {
+    return {
+      spiritId,
+      panelStats: {
+        hp: spiritId === "spirit_target" ? 1000 : 100,
+        speed: 100,
+        physicalAttack: 100,
+        magicalAttack: 100,
+        physicalDefense: 100,
+        magicalDefense: 100,
+      },
+      skills: {
+        single: skillId,
+        four: [skillId, null, null, null],
+      },
+    };
+  }
+
+  function chessBattle({
+    attackerId = "spirit_king",
+    attackerSkill = "skill_sand_trap",
+    defenderId = "spirit_target",
+    forwardContext = {},
+  } = {}) {
+    return {
+      mode: "single",
+      level: 60,
+      sides: {
+        attacker: chessSide(attackerId, attackerSkill),
+        defender: chessSide(defenderId, "skill_plain"),
+      },
+      directions: {
+        forward: {
+          context: forwardContext,
+          currentHp: defenderId === "spirit_target" ? 1000 : 100,
+          finalDamageMultiplier: 1,
+          hitCount: 1,
+          overrides: {},
+          reduction: 1,
+          selectedSkillIndex: 0,
+          starfallStacks: 0,
+        },
+        reverse: {
+          context: {},
+          currentHp: attackerId === "spirit_target" ? 1000 : 100,
+          finalDamageMultiplier: 1,
+          hitCount: 1,
+          overrides: {},
+          reduction: 1,
+          selectedSkillIndex: 0,
+          starfallStacks: 0,
+        },
+      },
+    };
+  }
+
+  test("uses inherited physical defense when resolving Sand Trap power", () => {
+    const result = calculateMatchup(
+      chessSnapshot,
+      chessBattle({
+        forwardContext: { attackerTraitStacks: 4 },
+      }),
+    ).forward.selectedResult;
+    const step = result.formulaSteps.find(
+      (candidate) => candidate.label === "物防差威力",
+    );
+
+    expect(step).toMatchObject({
+      after: 130,
+      before: 20,
+      input: { attacker: 120, defender: 100 },
+    });
+    expect(result.skillPower).toBe(130);
+  });
+
+  test("uses the same inherited stacks to reduce incoming damage", () => {
+    const withoutStacks = calculateMatchup(
+      chessSnapshot,
+      chessBattle({
+        attackerId: "spirit_target",
+        attackerSkill: "skill_plain",
+        defenderId: "spirit_king",
+      }),
+    ).forward.selectedResult;
+    const withStacks = calculateMatchup(
+      chessSnapshot,
+      chessBattle({
+        attackerId: "spirit_target",
+        attackerSkill: "skill_plain",
+        defenderId: "spirit_king",
+        forwardContext: { defenderTraitStacks: 4 },
+      }),
+    ).forward.selectedResult;
+
+    expect(withStacks.totalDamage).toBeLessThan(withoutStacks.totalDamage);
   });
 });

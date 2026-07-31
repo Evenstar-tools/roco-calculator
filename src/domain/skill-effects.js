@@ -182,7 +182,7 @@ const REVIEWED_EFFECTS = Object.freeze({
     },
   },
   魔能爆: {
-    inputs: [numberInput("energy", "当前能量", 0, 10)],
+    inputs: [numberInput("energy", "当前能量", 0, 10, 0)],
     ruleId: "mana_burst",
   },
 
@@ -387,7 +387,7 @@ const REVIEWED_EFFECTS = Object.freeze({
     "其他草系技能使用次数",
     60,
   ),
-  甜蜜陷阱: stackAdd("energy", "当前能量", 10, 10),
+  甜蜜陷阱: stackAdd("energy", "当前能量", 10, 99),
   吹火: stackAdd("skillUseCount", "此前使用次数", 20),
   流星火雨: stackAdd("defeatedEnemyCount", "此前击败次数", 75, 6),
   山火: exponentialGrowth(
@@ -684,7 +684,7 @@ const REVIEWED_EFFECTS = Object.freeze({
 function inputsForExplicitRule(ruleId, params = {}) {
   switch (ruleId) {
     case "mana_burst":
-      return [numberInput("energy", "当前能量", 0, 10)];
+      return [numberInput("energy", "当前能量", 0, 10, 0)];
     case "counter_multiplier":
       return [
         booleanInput(

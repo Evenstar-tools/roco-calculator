@@ -16,6 +16,28 @@ const initialState = {
 };
 
 describe("calculatorReducer", () => {
+  test("updates one side and one polarity of marks without touching the other slots", () => {
+    const state = createInitialState({
+      meta: { id: "s3", rulesVersion: "rules-v1" },
+      spirits: [{ id: "attacker" }, { id: "defender" }],
+      skills: [{ id: "skill_a" }],
+    });
+
+    const next = calculatorReducer(state, {
+      type: "mark/update",
+      side: "defender",
+      polarity: "negative",
+      value: { id: "starfall", stacks: 4 },
+    });
+
+    expect(next.marks.defender.negative).toEqual({
+      id: "starfall",
+      stacks: 4,
+    });
+    expect(next.marks.defender.positive).toBe(state.marks.defender.positive);
+    expect(next.marks.attacker).toBe(state.marks.attacker);
+  });
+
   test("updates only the selected direction", () => {
     const next = calculatorReducer(initialState, {
       type: "direction/set-reduction",

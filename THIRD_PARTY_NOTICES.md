@@ -8,7 +8,16 @@
 
 ## 数据来源
 
-部分公开数据和素材索引参考 BWIKI 洛克王国相关页面。仓库保留必要的来源信息与修订号，以便核查数据。
+精灵、技能、属性和美术素材主要参考[洛克王国：世界 BWIKI](https://wiki.biligame.com/rocom/) 的公开页面。感谢创建者 MonicaSarina 与全体编辑者持续整理资料。BWIKI 页面标注采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans)；来自 BWIKI 的内容继续受其原授权与署名要求约束，不并入本仓库的 MIT 代码许可证。
+
+仓库在快照中保留来源地址、修订号和本地素材索引，以便核查与更新。
+
+## 规则与交互参考
+
+- [lovepvp.top](https://lovepvp.top/)：感谢原站作者积累的伤害计算流程、技能规则整理和交互设计经验。
+- [Roco Showdown：战斗模拟计算原理](https://rocopvp.tzrain.wiki/battle-use-guide)：感谢作者与维护者提供公式分区、取整顺序和规则证据说明。
+
+上述页面用于研究、交叉核对和鸣谢，不是本项目的运行时依赖；除非另有明确许可，本项目不主张获得其原创代码、页面设计或自建数据的权利。
 
 ## 非官方声明
 

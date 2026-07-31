@@ -24,6 +24,10 @@ const snapshot = {
         "mana-burst",
         "head-on-blow",
         "multi-hit",
+        "magic-boost",
+        "prepared-stance",
+        "bubble-shield",
+        "pain-lover",
       ],
     },
     {
@@ -94,6 +98,48 @@ const snapshot = {
       provenance: { basePower: "test" },
       ruleId: null,
       type: "普通",
+    },
+    {
+      basePower: 0,
+      category: "status",
+      cost: 0,
+      description: "自己获得魔攻+70%。",
+      id: "magic-boost",
+      name: "魔法增效",
+      ruleId: null,
+      type: "普通",
+    },
+    {
+      basePower: 0,
+      category: "status",
+      cost: 2,
+      description:
+        "自身物攻+80%；应对防御：对方物防-80%。",
+      id: "prepared-stance",
+      name: "预备势",
+      ruleId: null,
+      type: "武",
+    },
+    {
+      basePower: 0,
+      category: "defense",
+      cost: 2,
+      description: "减伤80%，应对攻击：自己获得魔攻+70%。",
+      id: "bubble-shield",
+      name: "水泡盾",
+      ruleId: null,
+      type: "水",
+    },
+    {
+      basePower: 0,
+      category: "defense",
+      cost: 2,
+      description:
+        "减伤80%，应对攻击：期间自己每受到1次攻击伤害，获得双攻+40%。",
+      id: "pain-lover",
+      name: "嗜痛",
+      ruleId: null,
+      type: "恶",
     },
   ],
   spirits: [
@@ -278,6 +324,31 @@ test("compact mode defaults to four skills and preserves state when opening deta
   ).toHaveAttribute("aria-pressed", "true");
 });
 
+test("compact nature choices use single-attack attacker natures and safe defender natures", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+
+  await user.click(screen.getByRole("button", { name: "攻击方物攻增益" }));
+  await user.click(screen.getByRole("button", { name: "防御方物防增益" }));
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  expect(
+    screen.getByRole("combobox", { name: "攻击方性格" }),
+  ).toHaveValue("adamant");
+  expect(
+    screen.getByRole("combobox", { name: "防御方性格" }),
+  ).toHaveValue("steady");
+
+  await user.click(screen.getByRole("button", { name: "精简版" }));
+  await user.click(screen.getByRole("button", { name: "攻击方魔攻增益" }));
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  expect(
+    screen.getByRole("combobox", { name: "攻击方性格" }),
+  ).toHaveValue("smart");
+});
+
 test("compact individual checkboxes write sixty or zero without leaving quick mode", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
@@ -396,6 +467,35 @@ test("connects the real three-step flow to one deterministic result", async () =
   expect(screen.getByTestId("primary-damage").textContent).toMatch(/^\d+$/);
 });
 
+test("rainy weather boosts water damage and stays global across directions", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+
+  await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+  const dryDamage = Number(screen.getByTestId("primary-damage").textContent);
+
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const rain = screen.getByRole("checkbox", {
+    name: "雨天",
+  });
+  expect(rain).not.toBeChecked();
+  await user.click(rain);
+
+  expect(Number(screen.getByTestId("primary-damage").textContent)).toBeGreaterThan(
+    dryDamage,
+  );
+  const formulaAudit = document.querySelector(".formula-audit");
+  expect(within(formulaAudit).getByText("雨天")).toBeVisible();
+  expect(within(formulaAudit).getByText("1.75")).toBeVisible();
+
+  await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+  expect(
+    screen.getByRole("checkbox", { name: "雨天" }),
+  ).toBeChecked();
+});
+
 test("shows a base result for Skybreaker and recalculates when it acts first", async () => {
   const user = userEvent.setup();
   const skybreakerSnapshot = {
@@ -481,6 +581,114 @@ test("recalculates stacked trait effects and editable four-skill power", async (
   ).toBeVisible();
 });
 
+test("Black Cat Detective adjusts Prophet stacks with the number-input arrows", async () => {
+  const user = userEvent.setup();
+  const prophetSnapshot = {
+    ...snapshot,
+    spirits: snapshot.spirits.map((spirit) =>
+      spirit.id === "sonic-dog"
+        ? {
+            ...spirit,
+            traitIds: ["prophet"],
+            traitName: "先知",
+          }
+        : spirit,
+    ),
+    traits: [
+      {
+        description:
+          "若敌方技能足够击败自己，回合开始时自己获得速度+50，双攻+50%。",
+        id: "prophet",
+        name: "先知",
+      },
+    ],
+  };
+
+  render(<App initialSnapshot={prophetSnapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+
+  const damage = screen.getByTestId("primary-damage");
+  const baseDamage = Number(damage.textContent);
+  const stacks = screen.getByRole("spinbutton", { name: "触发层数" });
+
+  expect(stacks).toHaveAttribute("step", "1");
+  expect(stacks).toHaveAttribute("inputmode", "numeric");
+  await user.click(stacks);
+  await user.keyboard("{ArrowUp}");
+  const oneStackDamage = Number(damage.textContent);
+  expect(stacks).toHaveValue(1);
+  expect(oneStackDamage).toBeGreaterThan(baseDamage);
+
+  await user.keyboard("{ArrowUp}");
+  expect(stacks).toHaveValue(2);
+  expect(Number(damage.textContent)).toBeGreaterThan(oneStackDamage);
+
+  await user.keyboard("{ArrowDown}");
+  expect(stacks).toHaveValue(1);
+});
+
+test("shares and remembers inherited penetration stacks across both directions", async () => {
+  const user = userEvent.setup();
+  const chessSnapshot = {
+    ...snapshot,
+    learnsets: [
+      ...snapshot.learnsets,
+      { spiritId: "chess-king", skillIds: ["fire-strike"] },
+    ],
+    spirits: [
+      ...snapshot.spirits,
+      {
+        asset: null,
+        baseName: "棋契陛下",
+        dexNo: "190",
+        fullName: "棋契陛下（白棋棋绮后分支）",
+        id: "chess-king",
+        raceStats: {
+          hp: 100,
+          magicalAttack: 143,
+          magicalDefense: 123,
+          physicalAttack: 143,
+          physicalDefense: 133,
+          speed: 100,
+        },
+        stage: "首领",
+        traitIds: [],
+        traitName: "御驾亲征",
+        types: ["武", "地"],
+        variantName: "白棋棋绮后分支",
+      },
+    ],
+  };
+
+  const firstRender = render(<App initialSnapshot={chessSnapshot} />);
+  await selectSpirit(user, "攻击方", "棋契陛下");
+  await selectSpirit(user, "防御方", "水灵");
+  await openDetailedMode(user);
+
+  const stacks = screen.getByRole("spinbutton", {
+    name: "已使用武/地技能次数",
+  });
+  await user.clear(stacks);
+  await user.type(stacks, "4");
+  expect(stacks).toHaveValue(4);
+
+  await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+  expect(
+    screen.getByRole("spinbutton", { name: "已使用武/地技能次数" }),
+  ).toHaveValue(4);
+
+  firstRender.unmount();
+  render(<App initialSnapshot={chessSnapshot} />);
+  await selectSpirit(user, "攻击方", "棋契陛下");
+  await selectSpirit(user, "防御方", "水灵");
+  await openDetailedMode(user);
+
+  expect(
+    screen.getByRole("spinbutton", { name: "已使用武/地技能次数" }),
+  ).toHaveValue(4);
+});
+
 test("defaults the defender to neutral nature with only HP individual-value points", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
@@ -488,6 +696,8 @@ test("defaults the defender to neutral nature with only HP individual-value poin
   await openDetailedMode(user);
 
   const natureStep = screen.getByRole("region", { name: "性格配置" });
+  expect(within(natureStep).getByText("攻击能力等级")).toBeVisible();
+  expect(within(natureStep).getByText("防御能力等级")).toBeVisible();
   const attackSide = within(natureStep).getByRole("group", { name: "攻击方能力" });
   const defenseSide = within(natureStep).getByRole("group", { name: "防御方能力" });
 
@@ -501,7 +711,7 @@ test("defaults the defender to neutral nature with only HP individual-value poin
   expect(within(defenseSide).getByRole("spinbutton", { name: "魔防个体" })).toHaveValue(0);
 });
 
-test("applies the original site's linear ten-percent power levels beyond six", async () => {
+test("caps positive power levels at 50 with ten percent per level", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -516,11 +726,33 @@ test("applies the original site's linear ten-percent power levels beyond six", a
   await user.click(addLevel);
   expect(within(attackSide).getByText("1层 · +10%")).toBeVisible();
 
-  for (let level = 1; level < 10; level += 1) {
-    await user.click(addLevel);
+  for (let level = 1; level < 50; level += 1) {
+    fireEvent.click(addLevel);
   }
-  expect(within(attackSide).getByText("10层 · +100%")).toBeVisible();
+  expect(within(attackSide).getByText("50层 · +500%")).toBeVisible();
   expect(addLevel).toBeDisabled();
+});
+
+test("uses the original site's reciprocal multiplier down to level -50", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+
+  const natureStep = screen.getByRole("region", { name: "性格配置" });
+  const attackSide = within(natureStep).getByRole("group", { name: "攻击方能力" });
+  const subtractLevel = within(attackSide).getByRole("button", {
+    name: "攻击方等级减一",
+  });
+
+  await user.click(subtractLevel);
+  expect(within(attackSide).getByText("-1层 · -9%")).toBeVisible();
+
+  for (let level = -1; level > -50; level -= 1) {
+    fireEvent.click(subtractLevel);
+  }
+  expect(within(attackSide).getByText("-50层 · -83%")).toBeVisible();
+  expect(subtractLevel).toBeDisabled();
 });
 
 test("shows defense power levels as the original positive multiplier", async () => {
@@ -540,6 +772,177 @@ test("shows defense power levels as the original positive multiplier", async () 
   expect(Number(screen.getByTestId("primary-damage").textContent)).toBeLessThan(
     damageBefore,
   );
+});
+
+test("uses a selected status skill only after its non-input row is clicked", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const attackSide = within(
+    screen.getByRole("region", { name: "性格配置" }),
+  ).getByRole("group", { name: "攻击方能力" });
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "魔法增效");
+  await user.click(screen.getByRole("option", { name: /魔法增效/ }));
+
+  expect(within(attackSide).getByText("0层 · 0%")).toBeVisible();
+  await user.click(screen.getByText("自己获得魔攻+70%。"));
+  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+});
+
+test("shows applied attack levels in both attack panel values", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const attackSide = within(
+    screen.getByRole("region", { name: "性格配置" }),
+  ).getByRole("group", { name: "攻击方能力" });
+  const physicalAttackTile = within(attackSide)
+    .getByTitle("物攻")
+    .closest(".stat-tile");
+  const magicalAttackTile = within(attackSide)
+    .getByTitle("魔攻")
+    .closest(".stat-tile");
+  const physicalBefore = Number(
+    physicalAttackTile.querySelector(".stat-tile__panel").textContent,
+  );
+  const magicalBefore = Number(
+    magicalAttackTile.querySelector(".stat-tile__panel").textContent,
+  );
+
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "魔法增效");
+  await user.click(screen.getByRole("option", { name: /魔法增效/ }));
+  await user.click(screen.getByText("自己获得魔攻+70%。"));
+
+  expect(
+    Number(physicalAttackTile.querySelector(".stat-tile__panel").textContent),
+  ).toBe(Math.round(physicalBefore * 1.7));
+  expect(
+    Number(magicalAttackTile.querySelector(".stat-tile__panel").textContent),
+  ).toBe(Math.round(magicalBefore * 1.7));
+});
+
+test("applies Prepared Stance attack gain and only applies its counter debuff when checked", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const natureStep = screen.getByRole("region", { name: "性格配置" });
+  const attackSide = within(natureStep).getByRole("group", {
+    name: "攻击方能力",
+  });
+  const defenseSide = within(natureStep).getByRole("group", {
+    name: "防御方能力",
+  });
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "预备势");
+  await user.click(screen.getByRole("option", { name: /预备势/ }));
+
+  await user.click(screen.getByText("自身物攻+80%；应对防御：对方物防-80%。"));
+  expect(within(attackSide).getByText("8层 · +80%")).toBeVisible();
+  expect(within(defenseSide).getByText("0层 · 0%")).toBeVisible();
+
+  await user.click(
+    screen.getByRole("checkbox", {
+      name: "攻击方技能1应对防御成功",
+    }),
+  );
+  await user.click(screen.getByText("自身物攻+80%；应对防御：对方物防-80%。"));
+  expect(within(attackSide).getByText("16层 · +160%")).toBeVisible();
+  expect(within(defenseSide).getByText("-8层 · -44%")).toBeVisible();
+});
+
+test("requires a successful defense response before applying Water Bubble Shield", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const attackSide = within(
+    screen.getByRole("region", { name: "性格配置" }),
+  ).getByRole("group", { name: "攻击方能力" });
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "水泡盾");
+  await user.click(screen.getByRole("option", { name: /水泡盾/ }));
+
+  await user.click(
+    screen.getByText("减伤80%，应对攻击：自己获得魔攻+70%。"),
+  );
+  expect(within(attackSide).getByText("0层 · 0%")).toBeVisible();
+
+  await user.click(
+    screen.getByRole("checkbox", {
+      name: "攻击方技能1防御应对成功",
+    }),
+  );
+  await user.click(
+    screen.getByText("减伤80%，应对攻击：自己获得魔攻+70%。"),
+  );
+  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+});
+
+test("applies Pain Lover attack levels once per recorded incoming hit", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const attackSide = within(
+    screen.getByRole("region", { name: "性格配置" }),
+  ).getByRole("group", { name: "攻击方能力" });
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "嗜痛");
+  await user.click(screen.getByRole("option", { name: /嗜痛/ }));
+  await user.click(
+    screen.getByRole("checkbox", {
+      name: "攻击方技能1防御应对成功",
+    }),
+  );
+  const hits = screen.getByRole("spinbutton", {
+    name: "攻击方技能1本次承受攻击次数",
+  });
+  await user.clear(hits);
+  await user.type(hits, "3");
+  await user.click(
+    screen.getByText(
+      "减伤80%，应对攻击：期间自己每受到1次攻击伤害，获得双攻+40%。",
+    ),
+  );
+
+  expect(within(attackSide).getByText("12层 · +120%")).toBeVisible();
+});
+
+test("applies the same status-skill interaction to the defense-side loadout", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const defenseSide = within(
+    screen.getByRole("region", { name: "性格配置" }),
+  ).getByRole("group", { name: "防御方能力" });
+  const picker = screen.getByRole("combobox", { name: "防御方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "魔法增效");
+  await user.click(screen.getByRole("option", { name: /魔法增效/ }));
+
+  const selectedRow = screen.getByRole("group", {
+    name: "防御方技能1，当前选中",
+  });
+  await user.click(within(selectedRow).getByText("自己获得魔攻+70%。"));
+
+  expect(within(defenseSide).getByText("7层 · +70%")).toBeVisible();
 });
 
 test("keeps the exact result available without scrolling to the bottom", async () => {
@@ -583,7 +986,7 @@ test("reverse direction edits the current attacking side", async () => {
   expect(screen.getByRole("combobox", { name: "选择技能" })).toHaveValue("水之波纹");
 });
 
-test("selecting a dynamic skill clears a previous manual power override", async () => {
+test("selecting Mana Burst clears manual power and resolves zero energy immediately", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -597,7 +1000,8 @@ test("selecting a dynamic skill clears a previous manual power override", async 
   await user.type(skillPicker, "魔能");
   await user.click(screen.getByRole("option", { name: /魔能爆/ }));
 
-  expect(screen.getByText("魔能爆需要当前能量")).toBeVisible();
+  expect(screen.queryByText("魔能爆需要当前能量")).not.toBeInTheDocument();
+  expect(screen.getByText("0 能量 → 威力 45")).toBeVisible();
 });
 
 test("keeps single-skill manual power across a four-skill round trip", async () => {

@@ -13,6 +13,17 @@ export function statRound(value) {
   return Math.round(value);
 }
 
+function roundScaledStat(value, normalizedIv) {
+  const floor = Math.floor(value);
+  const isZeroIvHalfTie =
+    normalizedIv === 0 &&
+    Math.abs(value - floor - 0.5) <
+      Number.EPSILON * Math.max(100, Math.abs(value));
+
+  if (!isZeroIvHalfTie) return statRound(value);
+  return floor % 2 === 0 ? floor + 1 : floor;
+}
+
 export function calculatePanelStat({
   kind,
   race,
@@ -24,15 +35,8 @@ export function calculatePanelStat({
   const coefficient = isHp ? 1.7 : 1.1;
   const raceValue = Number(race);
   const natureValue = Number(natureMultiplier);
-  const useOriginalFloorException =
-    !isHp &&
-    raceValue === 105 &&
-    normalizedIv === 0 &&
-    natureValue === 1;
   const scaledValue = coefficient * (raceValue + 3 * normalizedIv);
-  const scaled = useOriginalFloorException
-    ? Math.floor(scaledValue)
-    : statRound(scaledValue);
+  const scaled = roundScaledStat(scaledValue, normalizedIv);
   const base = scaled + (isHp ? 70 : 10);
 
   return Math.round(base * natureValue) + (isHp ? 100 : 50);

@@ -64,7 +64,7 @@ function stripAuditFields(value) {
   );
 }
 
-function prepareSpirit(spirit, resolveSpiritId) {
+function prepareSpirit(spirit, resolveSpiritId, localAssetById) {
   const nameParts = pinyinParts(
     [spirit.fullName, spirit.variantName].filter(Boolean).join(" "),
   );
@@ -85,6 +85,9 @@ function prepareSpirit(spirit, resolveSpiritId) {
   }
   return {
     ...runtimeSpirit,
+    ...(localAssetById.get(spirit.id)
+      ? { asset: { localUrl: localAssetById.get(spirit.id) } }
+      : {}),
     ...(evolutionChainIds.length > 1 ? { evolutionChainIds } : {}),
     initials: nameParts.map((part) => part[0]).join(""),
     pinyin: nameParts.join(""),
@@ -108,12 +111,17 @@ function prepareSkill(skill) {
   };
 }
 
-export function buildRuntimeSnapshot(snapshot) {
+export function buildRuntimeSnapshot(snapshot, assetManifest = null) {
   const resolveSpiritId = createSpiritNameResolver(snapshot.spirits ?? []);
+  const localAssetById = new Map(
+    (assetManifest?.assets ?? [])
+      .filter((asset) => asset?.id && asset?.localFile)
+      .map((asset) => [asset.id, asset.localFile]),
+  );
   return {
     meta: stripAuditFields(snapshot.meta ?? {}),
     spirits: (snapshot.spirits ?? []).map((spirit) =>
-      prepareSpirit(spirit, resolveSpiritId),
+      prepareSpirit(spirit, resolveSpiritId, localAssetById),
     ),
     skills: (snapshot.skills ?? []).map(prepareSkill),
     learnsets: (snapshot.learnsets ?? []).map(({ spiritId, skillIds }) => ({
@@ -125,22 +133,25 @@ export function buildRuntimeSnapshot(snapshot) {
   };
 }
 
-export function writeRuntimeSnapshot(sourcePath, targetPath) {
+export function writeRuntimeSnapshot(sourcePath, targetPath, manifestPath = null) {
   const snapshot = JSON.parse(readFileSync(sourcePath, "utf8"));
-  const runtime = buildRuntimeSnapshot(snapshot);
+  const assetManifest = manifestPath
+    ? JSON.parse(readFileSync(manifestPath, "utf8"))
+    : null;
+  const runtime = buildRuntimeSnapshot(snapshot, assetManifest);
   mkdirSync(path.dirname(targetPath), { recursive: true });
   writeFileSync(targetPath, JSON.stringify(runtime), "utf8");
   return runtime;
 }
 
-const [sourcePath, targetPath] = process.argv.slice(2);
+const [sourcePath, targetPath, manifestPath] = process.argv.slice(2);
 if (!sourcePath || !targetPath) {
   throw new TypeError(
     "Usage: node scripts/runtime-snapshot.mjs <source.json> <target.json>",
   );
 }
 
-const runtime = writeRuntimeSnapshot(sourcePath, targetPath);
+const runtime = writeRuntimeSnapshot(sourcePath, targetPath, manifestPath);
 console.log(
   `runtime spirits=${runtime.spirits.length} skills=${runtime.skills.length}`,
 );

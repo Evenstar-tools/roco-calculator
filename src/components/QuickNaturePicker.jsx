@@ -48,7 +48,7 @@ export function QuickNaturePicker({
           aria-pressed={selectedStat === stat}
           className="quick-nature__option"
           key={stat}
-          onClick={() => onChange(getQuickNatureId(stat))}
+          onClick={() => onChange(getQuickNatureId(stat, side))}
           title={`${STAT_LABELS[stat]} +20%`}
           type="button"
         >

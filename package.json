@@ -1,6 +1,6 @@
 {
   "name": "rock-calculator",
-  "version": "1.2.4",
+  "version": "1.3.0",
   "description": "内置完整赛季数据、可断网使用的洛克王国 PVP 伤害计算器。",
   "author": "洛克计算器",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "data:build": "node scripts/bwiki/build-snapshot.mjs",
-    "data:runtime": "node scripts/runtime-snapshot.mjs public/data/current.json public/data/runtime.json",
+    "data:runtime": "node scripts/runtime-snapshot.mjs public/data/current.json public/data/runtime.json public/assets/spirits/manifest.json",
     "data:validate": "node scripts/bwiki/validate.mjs public/data/current.json"
   },
   "dependencies": {

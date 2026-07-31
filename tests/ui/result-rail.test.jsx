@@ -38,6 +38,42 @@ test("keeps the exact damage and percent prominent", () => {
   expect(screen.queryByText(/随机|范围|置信/)).not.toBeInTheDocument();
 });
 
+test("shows attacker and defender mark settlements separately", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        selectedResult: {
+          ...result.selectedResult,
+          markSettlements: [
+            {
+              markId: "tailwind",
+              side: "attacker",
+              stacks: 2,
+              status: "applied",
+              text: "风起 ×2 技能威力 +40%",
+            },
+            {
+              damage: 35,
+              markId: "starfall",
+              side: "defender",
+              stacks: 3,
+              status: "applied",
+              text: "星陨 ×3 +35 伤害",
+            },
+          ],
+        },
+      }}
+    />,
+  );
+
+  const marks = screen.getByRole("region", { name: "印记结算" });
+  expect(within(marks).getByText("进攻方")).toBeVisible();
+  expect(within(marks).getByText("风起 ×2 技能威力 +40%")).toBeVisible();
+  expect(within(marks).getByText("防御方")).toBeVisible();
+  expect(within(marks).getByText("星陨 ×3 +35 伤害")).toBeVisible();
+});
+
 test("keeps the result visible while naming an unapplied trait", () => {
   render(
     <ResultRail
@@ -134,6 +170,28 @@ test("edits the defender current HP without leaving the result rail", async () =
 
   await user.click(screen.getByRole("button", { name: "恢复满血" }));
   expect(onCurrentHpChange).toHaveBeenLastCalledWith(434);
+});
+
+test("switches target HP to percentage input without committing an empty draft", async () => {
+  const user = userEvent.setup();
+  const onCurrentHpChange = vi.fn();
+  render(
+    <ResultRail
+      onCurrentHpChange={onCurrentHpChange}
+      result={result}
+    />,
+  );
+
+  await user.click(screen.getByRole("button", { name: "按百分比输入" }));
+  const percent = screen.getByRole("spinbutton", {
+    name: "防御方生命百分比",
+  });
+  expect(percent).toHaveValue(100);
+
+  await user.clear(percent);
+  expect(onCurrentHpChange).not.toHaveBeenCalled();
+  await user.type(percent, "50");
+  expect(onCurrentHpChange).toHaveBeenLastCalledWith(217);
 });
 
 test("does not invent a number when a dynamic rule still needs input", () => {

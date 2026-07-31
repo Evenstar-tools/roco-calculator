@@ -57,6 +57,8 @@ function CompactDamage({
 }
 
 function CompactSkillSide({
+  active,
+  activeSkillIndex,
   label,
   name,
   onSkillFocus,
@@ -78,8 +80,25 @@ function CompactSkillSide({
       <div className="compact-skill__list">
         {Array.from({ length: 4 }, (_, index) => {
           const selected = selectedSkills[index];
+          const isSelected = active && index === activeSkillIndex;
           return (
-            <div className="compact-skill__row" key={`${side}-${index}`}>
+            <div
+              aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
+              className={`compact-skill__row${isSelected ? " is-selected" : ""}`}
+              key={`${side}-${index}`}
+              onClick={() => onSkillFocus?.(side, index)}
+              onKeyDown={(event) => {
+                if (
+                  event.target === event.currentTarget &&
+                  (event.key === "Enter" || event.key === " ")
+                ) {
+                  event.preventDefault();
+                  onSkillFocus?.(side, index);
+                }
+              }}
+              role="group"
+              tabIndex="0"
+            >
               <span className="compact-skill__number">{index + 1}</span>
               <SkillPicker
                 ariaLabel={`${label}技能${index + 1}`}
@@ -120,6 +139,8 @@ function CompactSkillSide({
 }
 
 export function CompactFourSkillEditor({
+  activeSide = "attacker",
+  activeSkillIndex = 0,
   attackerName,
   attackerResults,
   attackerSkillChoices,
@@ -134,6 +155,8 @@ export function CompactFourSkillEditor({
   return (
     <div className="compact-four-skill">
       <CompactSkillSide
+        active={activeSide === "attacker"}
+        activeSkillIndex={activeSkillIndex}
         label="攻击方"
         name={attackerName}
         onSkillFocus={onSkillFocus}
@@ -145,6 +168,8 @@ export function CompactFourSkillEditor({
         skills={attackerSkillChoices}
       />
       <CompactSkillSide
+        active={activeSide === "defender"}
+        activeSkillIndex={activeSkillIndex}
         label="防御方"
         name={defenderName}
         onSkillFocus={onSkillFocus}
