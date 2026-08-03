@@ -12,6 +12,7 @@ import {
   patchFourSkill,
   rememberSingleSkill,
   replaceConfiguration,
+  selectSpirit,
   selectFourSkill,
   selectSingleSkill,
   shareHashFromInput,
@@ -94,6 +95,97 @@ const fixtureEnergyId = getSkillEffectInputs(snapshot.skills[0]).find(
 ).id;
 
 describe("calculator session", () => {
+  test("auto-enables moon judgment against a leader and clears the default for a non-leader", () => {
+    const moonSpirit = runtimeSnapshot.spirits.find(
+      (spirit) => spirit.traitName === "月光审判",
+    );
+    const leader = runtimeSnapshot.spirits.find(
+      (spirit) => spirit.stage === "首领",
+    );
+    const nonLeader = runtimeSnapshot.spirits.find(
+      (spirit) => spirit.stage !== "首领" && spirit.id !== moonSpirit.id,
+    );
+    const trait = runtimeSnapshot.traits.find(
+      (candidate) => candidate.name === "月光审判",
+    );
+    const activation = getTraitEffectInputs(trait, "attacker").find(
+      (control) => control.contextKey === "traitActivated",
+    );
+    const initialState = createProductInitialState(runtimeSnapshot);
+
+    const attackerSelected = selectSpirit(initialState, {
+      initialState,
+      personalConfiguration: null,
+      side: "attacker",
+      snapshot: runtimeSnapshot,
+      spiritId: moonSpirit.id,
+    });
+    const leaderSelected = selectSpirit(attackerSelected.state, {
+      initialState,
+      personalConfiguration: null,
+      side: "defender",
+      snapshot: runtimeSnapshot,
+      spiritId: leader.id,
+    });
+
+    expect(leaderSelected.state.directions.forward.context[activation.id]).toBe(
+      true,
+    );
+
+    const nonLeaderSelected = selectSpirit(leaderSelected.state, {
+      initialState,
+      personalConfiguration: null,
+      side: "defender",
+      snapshot: runtimeSnapshot,
+      spiritId: nonLeader.id,
+    });
+    expect(
+      nonLeaderSelected.state.directions.forward.context[activation.id],
+    ).toBe(false);
+  });
+
+  test("auto-enables moon judgment for every family member in its attack direction", () => {
+    const family = runtimeSnapshot.spirits.filter(
+      (spirit) => spirit.traitName === "月光审判",
+    );
+    const leader = runtimeSnapshot.spirits.find(
+      (spirit) => spirit.stage === "首领",
+    );
+    const trait = runtimeSnapshot.traits.find(
+      (candidate) => candidate.name === "月光审判",
+    );
+    const activation = getTraitEffectInputs(trait, "attacker").find(
+      (control) => control.contextKey === "traitActivated",
+    );
+
+    expect(family.map((spirit) => spirit.fullName)).toEqual([
+      "犀角鸟",
+      "光纤兽",
+      "疾光千兽",
+    ]);
+    for (const spirit of family) {
+      const initialState = createProductInitialState(runtimeSnapshot);
+      const defenderSelected = selectSpirit(initialState, {
+        initialState,
+        personalConfiguration: null,
+        side: "defender",
+        snapshot: runtimeSnapshot,
+        spiritId: spirit.id,
+      });
+      const leaderSelected = selectSpirit(defenderSelected.state, {
+        initialState,
+        personalConfiguration: null,
+        side: "attacker",
+        snapshot: runtimeSnapshot,
+        spiritId: leader.id,
+      });
+
+      expect(
+        leaderSelected.state.directions.reverse.context[activation.id],
+      ).toBe(true);
+    }
+  });
+
   test.each([
     ["personal", true, "attacker"],
     ["team", true, "attacker"],
@@ -191,6 +283,64 @@ describe("calculator session", () => {
     });
     expect(result.state.sides.defender).toBe(applied.sides.defender);
     expect(result.persistence.rememberSide).toBe("attacker");
+  });
+
+  test("keeps the gale turbine companion slot in a sanitized four-skill entry", () => {
+    const initialState = createProductInitialState(runtimeSnapshot);
+    const turbine = runtimeSkill("疾风涡轮");
+    const learnerId = runtimeSnapshot.learnsets.find((learnset) =>
+      learnset.skillIds.includes(turbine.id),
+    ).spiritId;
+    const state = {
+      ...initialState,
+      sides: {
+        ...initialState.sides,
+        attacker: {
+          ...initialState.sides.attacker,
+          skills: {
+            ...initialState.sides.attacker.skills,
+            four: [
+              {
+                context: {},
+                hitCount: 1,
+                overrides: {},
+                skillId: turbine.id,
+              },
+              null,
+              null,
+              null,
+            ],
+          },
+        },
+      },
+    };
+
+    const result = patchFourSkill(state, {
+      index: 0,
+      patch: { context: { galeTurbineCompanionSlot: "2" } },
+      side: "attacker",
+      snapshot: runtimeSnapshot,
+    });
+
+    expect(
+      result.state.sides.attacker.skills.four[0].context,
+    ).toEqual({ galeTurbineCompanionSlot: "2" });
+    expect(result.persistence.rememberSide).toBe("attacker");
+
+    const restored = applyConfiguration(initialState, {
+      ...initialState.sides.attacker,
+      skills: result.state.sides.attacker.skills,
+      spiritId: learnerId,
+    }, {
+      initialState,
+      remember: false,
+      side: "attacker",
+      snapshot: runtimeSnapshot,
+      source: "personal",
+    });
+    expect(
+      restored.state.sides.attacker.skills.four[0].context,
+    ).toEqual({ galeTurbineCompanionSlot: "2" });
   });
 
   test("clears the displayed fallback skill context when single memory is null", () => {
@@ -546,6 +696,24 @@ describe("calculator session", () => {
 
     expect(result.state.directions.forward.context[attackerControl.id]).toBe("illusion");
     expect(result.state.directions.reverse.context[defenderControl.id]).toBe("illusion");
+  });
+
+  test("无差别过滤勾选同步到同一精灵的反向角色控件", () => {
+    const trait = runtimeSnapshot.traits.find(
+      ({ name }) => name === "无差别过滤",
+    );
+    const attackerControl = getTraitEffectInputs(trait, "attacker")[0];
+    const defenderControl = getTraitEffectInputs(trait, "defender")[0];
+    const state = createProductInitialState(runtimeSnapshot);
+
+    const result = updateMirroredTraitContext(state, {
+      direction: "forward",
+      key: attackerControl.id,
+      value: true,
+    });
+
+    expect(result.state.directions.forward.context[attackerControl.id]).toBe(true);
+    expect(result.state.directions.reverse.context[defenderControl.id]).toBe(true);
   });
 
   test("restores role-neutral personal trait values on both battle directions", () => {

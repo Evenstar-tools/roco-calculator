@@ -138,4 +138,55 @@ describe("trait value persistence", () => {
     );
     expect(restored[attackerControl.id]).toBe(true);
   });
+
+  test("round-trips 契约的形状 choices across attack and defense roles", () => {
+    const spirit = runtimeSnapshot.spirits.find(
+      (candidate) => candidate.fullName === "陨星虫",
+    );
+    const attackerControls = getTraitView(
+      runtimeSnapshot,
+      spirit,
+      "attacker",
+    ).inputs;
+    const defenderControls = getTraitView(
+      runtimeSnapshot,
+      spirit,
+      "defender",
+    ).inputs;
+    const attackerBall = attackerControls.find(
+      (control) => control.contextKey === "contractBallType",
+    );
+    const attackerPrism = attackerControls.find(
+      (control) => control.contextKey === "contractPrismEffect",
+    );
+    const defenderBall = defenderControls.find(
+      (control) => control.contextKey === "contractBallType",
+    );
+    const defenderPrism = defenderControls.find(
+      (control) => control.contextKey === "contractPrismEffect",
+    );
+    const values = extractTraitValues({
+      spiritId: spirit.id,
+      traitValues: {
+        [canonicalTraitControlKey(attackerBall)]: "prism",
+        [canonicalTraitControlKey(attackerPrism)]: "darkstar",
+      },
+    }, runtimeSnapshot);
+
+    expect(canonicalTraitControlKey(attackerBall)).toBe(
+      canonicalTraitControlKey(defenderBall),
+    );
+    expect(canonicalTraitControlKey(attackerPrism)).toBe(
+      canonicalTraitControlKey(defenderPrism),
+    );
+    expect(materializeTraitContext(
+      values,
+      runtimeSnapshot,
+      spirit.id,
+      "defender",
+    )).toMatchObject({
+      [defenderBall.id]: "prism",
+      [defenderPrism.id]: "darkstar",
+    });
+  });
 });

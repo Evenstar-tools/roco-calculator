@@ -5,6 +5,7 @@ import { calculateAllPanelStats } from "./stat.js";
 import { getSnapshotIndexes } from "./snapshot-indexes.js";
 import {
   getInheritedDamageTraits,
+  getTraitAutomaticStack,
   getTraitEffectInputs,
 } from "./trait-effects.js";
 
@@ -124,6 +125,7 @@ export function getTraitView(snapshot, spirit, role = "attacker") {
   const inputs = getTraitEffectInputs(traitEntity, role);
   const condition = inputs.find((input) => input.type === "boolean");
   return {
+    automaticStack: getTraitAutomaticStack(traitEntity, role),
     conditionKey: condition?.id ?? null,
     conditionLabel: condition?.label ?? null,
     description: traitEntity.description ?? "按当前战斗条件自动判定。",

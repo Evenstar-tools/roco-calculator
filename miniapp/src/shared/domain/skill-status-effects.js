@@ -1,3 +1,10 @@
+import { resolveRefractionEffects } from "./refraction.js";
+import {
+  normalizeTriggerControls,
+  projectTriggerContext,
+} from "./trigger-controls.js";
+import { resolveSkillMarkApplications } from "./marks.js";
+
 const booleanInput = (key, label) => ({
   defaultValue: false,
   key,
@@ -57,7 +64,7 @@ const STATUS_EFFECTS = Object.freeze({
   缓一缓: { ownAttack: 1, ownDefense: 1 },
   氧输送: { ownAttack: 7 },
   丰饶: { ownAttack: 14 },
-  花炮: { ownAttack: 12 },
+  花炮: { defaultHitCount: 2, ownAttackPerHit: 6 },
   纤维化: {
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     ownDefense: 7,
@@ -68,6 +75,20 @@ const STATUS_EFFECTS = Object.freeze({
   水泡盾: {
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     ownAttack: 7,
+    requiresCounter: true,
+  },
+  淬火: {
+    inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
+    operations(context) {
+      return {
+        powerPercentForAllAttacks:
+          context.defenseCounterSucceeded === true ? 1 : 0,
+      };
+    },
+  },
+  暖气: {
+    inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
+    ownFixedPower: 50,
     requiresCounter: true,
   },
   流沙: {
@@ -334,14 +355,25 @@ function normalizeDeltas(deltas = {}) {
     targetAttack: number(deltas.targetAttack),
     targetDefense: number(deltas.targetDefense),
     targetFixedPower: number(deltas.targetFixedPower),
+    targetHitCountAdd: number(deltas.targetHitCountAdd),
+    targetSpeedFlat: number(deltas.targetSpeedFlat),
   };
 }
 
 function stageDeltas(effect, multiplier, context) {
   const conditional = effect.conditional;
+  const effectiveHitCount = Math.max(
+    1,
+    Math.floor(
+      Number(context.effectiveHitCount) ||
+        Number(effect.defaultHitCount) ||
+        1,
+    ),
+  );
   return {
     ownAttack:
       Number(effect.ownAttack ?? 0) +
+      Number(effect.ownAttackPerHit ?? 0) * effectiveHitCount +
       Number(effect.ownAttackPerStack ?? 0) * multiplier +
       (conditional && context[conditional.key] === true
         ? Number(conditional.ownAttack ?? 0)
@@ -405,16 +437,39 @@ export function getDefenseSkillReductionPercent(skill) {
 }
 
 export function resolveSkillStatusActivation(skill, context = {}) {
+  const refraction = resolveRefractionEffects({
+    carriedSkills: context.carriedSkills,
+    selectedSkill: skill,
+  });
+  if (refraction) {
+    return {
+      applied: refraction.types.length > 0,
+      deltas: normalizeDeltas(refraction.deltas),
+      operations: refraction.operations,
+      reason: refraction.types.length > 0
+        ? null
+        : "请再携带至少一个其他系别技能",
+    };
+  }
   const effect = getSkillStatusEffect(skill);
   const defenseReductionPercent = getDefenseSkillReductionPercent(skill);
-  if (!effect && defenseReductionPercent === null) return null;
+  const markApplications = resolveSkillMarkApplications(skill);
+  if (
+    !effect &&
+    defenseReductionPercent === null &&
+    markApplications.length === 0
+  ) return null;
   if (!effect) {
+    const applied = defenseReductionPercent > 0 || markApplications.length > 0;
     return {
-      applied: defenseReductionPercent > 0,
+      applied,
       deltas: normalizeDeltas({}),
-      operations: { defenseReductionPercent },
+      operations: {
+        ...(defenseReductionPercent === null ? {} : { defenseReductionPercent }),
+        ...(markApplications.length > 0 ? { markApplications } : {}),
+      },
       reason:
-        defenseReductionPercent > 0
+        applied
           ? null
           : "该防御技能没有可应用的减伤数值",
     };
@@ -464,8 +519,12 @@ export function resolveSkillStatusActivation(skill, context = {}) {
   if (defenseReductionPercent !== null) {
     operations.defenseReductionPercent = defenseReductionPercent;
   }
+  if (markApplications.length > 0) {
+    operations.markApplications = markApplications;
+  }
   const applied =
     Object.values(deltas).some((value) => value !== 0) ||
+    markApplications.length > 0 ||
     Object.values(operations).some(
       (value) => value === true || (Number.isFinite(Number(value)) && Number(value) !== 0),
     );
@@ -481,7 +540,3 @@ export function resolveSkillStatusActivation(skill, context = {}) {
           : "该技能当前没有可应用的能力或威力变化",
   };
 }
-import {
-  normalizeTriggerControls,
-  projectTriggerContext,
-} from "./trigger-controls.js";

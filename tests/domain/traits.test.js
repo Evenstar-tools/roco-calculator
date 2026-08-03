@@ -18,6 +18,77 @@ function input(overrides = {}) {
 }
 
 describe("resolveTraitMultipliers", () => {
+  test("守护之心每种不同增益只提高持有者20%物防", () => {
+    const trait = [{ id: "guardian-heart", name: "守护之心" }];
+    const physicalDefense = resolveTraitMultipliers(
+      input({
+        defenderTraits: trait,
+        context: { defenderTraitStacks: 2 },
+        skill: { type: "武", category: "physical", cost: 2 },
+      }),
+    );
+    const magicalDefense = resolveTraitMultipliers(
+      input({
+        defenderTraits: trait,
+        context: { defenderTraitStacks: 2 },
+        skill: { type: "魔", category: "magical", cost: 2 },
+      }),
+    );
+    const ownerDefense = resolveTraitMultipliers(
+      input({
+        attackerTraits: trait,
+        context: { attackerTraitStacks: 2 },
+      }),
+    );
+
+    expect(physicalDefense).toMatchObject({
+      defenseLevelBonus: 4,
+      defenderDefenseLevelBonus: 4,
+    });
+    expect(magicalDefense).toMatchObject({
+      defenseLevelBonus: 0,
+      defenderDefenseLevelBonus: 4,
+    });
+    expect(ownerDefense).toMatchObject({
+      attackMultiplier: 1,
+      attackerDefenseLevelBonus: 4,
+    });
+  });
+
+  test("derives Tundra stacks from carried ice skills for ground attacks", () => {
+    expect(
+      resolveTraitMultipliers(
+        input({
+          attackerTraits: [{ id: "tundra", name: "冻土" }],
+          attacker: {
+            panelStats: { speed: 180 },
+            skillTypes: ["冰", "地", "冰", "普通"],
+            types: ["地"],
+          },
+          context: { attackerTraitEffect: 10, attackerTraitStacks: 4 },
+          skill: { category: "physical", cost: 3, type: "地" },
+        }),
+      ),
+    ).toMatchObject({ status: "exact", powerMultiplier: 1.2 });
+  });
+
+  test("applies the fixed Saint Fire Knight doubling only when checked", () => {
+    const attackerTraits = [{ id: "holy-fire-knight", name: "圣火骑士" }];
+
+    expect(resolveTraitMultipliers(input({ attackerTraits }))).toMatchObject({
+      status: "exact",
+      powerMultiplier: 1,
+    });
+    expect(
+      resolveTraitMultipliers(
+        input({
+          attackerTraits,
+          context: { "attackerTrait.counterTriggered": true },
+        }),
+      ),
+    ).toMatchObject({ status: "exact", powerMultiplier: 2 });
+  });
+
   test("uses neutral exact multipliers when neither side has a trait", () => {
     expect(resolveTraitMultipliers(input())).toMatchObject({
       status: "exact",
@@ -269,6 +340,57 @@ describe("resolveTraitMultipliers", () => {
     });
   });
 
+  test("张弛有度周末加双攻，平日加双防", () => {
+    const trait = { id: "flexible-tempo", name: "张弛有度" };
+
+    expect(
+      resolveTraitMultipliers(
+        input({ attackerTraits: [trait], context: { traitActivated: true } }),
+      ),
+    ).toMatchObject({
+      attackLevelBonus: 4,
+      attackMultiplier: 1.4,
+      attackerDefenseLevelBonus: 0,
+      steps: [
+        expect.objectContaining({
+          after: 1.4,
+          label: "张弛有度 · 周末双攻",
+        }),
+      ],
+    });
+    expect(
+      resolveTraitMultipliers(
+        input({ attackerTraits: [trait], context: { traitActivated: false } }),
+      ),
+    ).toMatchObject({
+      attackLevelBonus: 0,
+      attackMultiplier: 1,
+      attackerDefenseLevelBonus: 4,
+    });
+    expect(
+      resolveTraitMultipliers(
+        input({ defenderTraits: [trait], context: { traitActivated: false } }),
+      ),
+    ).toMatchObject({
+      defenseLevelBonus: 4,
+      defenderDefenseLevelBonus: 4,
+      steps: [
+        expect.objectContaining({
+          after: 1.4,
+          label: "张弛有度 · 平日双防",
+        }),
+      ],
+    });
+    expect(
+      resolveTraitMultipliers(
+        input({ defenderTraits: [trait], context: { traitActivated: true } }),
+      ),
+    ).toMatchObject({
+      defenseLevelBonus: 0,
+      defenderDefenseLevelBonus: 0,
+    });
+  });
+
   test.each([
     "最好的伙伴",
     "裁决",
@@ -382,6 +504,27 @@ describe("resolveTraitMultipliers", () => {
     ).toMatchObject({
       status: "exact",
       attackMultiplier: 2,
+    });
+  });
+
+  test("月光审判勾选后只应用一次技能威力加成", () => {
+    const attackerTraits = [{ id: "moon-judgment", name: "月光审判" }];
+
+    expect(resolveTraitMultipliers(input({ attackerTraits }))).toMatchObject({
+      powerMultiplier: 1,
+    });
+    expect(
+      resolveTraitMultipliers(
+        input({
+          attackerTraits,
+          context: {
+            attackerTraitEffect: 100,
+            traitActivated: true,
+          },
+        }),
+      ),
+    ).toMatchObject({
+      powerMultiplier: 2,
     });
   });
 

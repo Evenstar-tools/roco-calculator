@@ -59,22 +59,61 @@ function withoutResponse(skill, context) {
   return next;
 }
 
+function persistentControl(skill, contextKey) {
+  return getSkillEffectInputs(skill).find(
+    (input) => (input.contextKey ?? input.key) === contextKey,
+  );
+}
+
+function persistentValue(skill, context, contextKey) {
+  const control = persistentControl(skill, contextKey);
+  if (control && Object.hasOwn(context, control.id)) {
+    return { key: control.id, value: context[control.id] };
+  }
+  return { key: contextKey, value: context[contextKey] };
+}
+
 function advancePersistentContext(skill, context) {
   if (
     skill?.name === "友谊满溢" &&
     context.friendshipMode === "growth"
   ) {
+    const stored = persistentValue(skill, context, "skillUseCount");
     return {
       ...context,
-      skillUseCount:
-        Math.max(0, Math.floor(Number(context.skillUseCount) || 0)) + 1,
+      [stored.key]:
+        Math.max(0, Math.floor(Number(stored.value) || 0)) + 1,
+    };
+  }
+  if (skill?.name === "撒娇") {
+    const stored = persistentValue(skill, context, "moeGainCount");
+    return {
+      ...context,
+      [stored.key]:
+        Math.max(0, Math.floor(Number(stored.value) || 0)) + 1,
     };
   }
   return { ...context };
 }
 
+function persistentContextPatch(skill, context) {
+  if (skill?.name === "友谊满溢") {
+    const stored = persistentValue(skill, context, "skillUseCount");
+    return { [stored.key]: stored.value };
+  }
+  if (skill?.name === "撒娇") {
+    const stored = persistentValue(skill, context, "moeGainCount");
+    return { [stored.key]: stored.value };
+  }
+  return {};
+}
+
 export function isChoiceSkill(skill) {
   return String(skill?.description ?? "").includes("选择：");
+}
+
+export function hasPersistentSkillProgression(skill) {
+  return skill?.name === "友谊满溢" || skill?.name === "撒娇";
 }
 
 export function supportsChoiceTrait(traitName) {
@@ -116,9 +155,7 @@ export function buildChoiceSkillSequence({ skill, traitName, context = {} }) {
       ],
       nextContext: {
         ...context,
-        ...(skill?.name === "友谊满溢"
-          ? { skillUseCount: afterFirst.skillUseCount }
-          : {}),
+        ...persistentContextPatch(skill, afterFirst),
       },
       traitName: null,
     };
@@ -150,9 +187,7 @@ export function buildChoiceSkillSequence({ skill, traitName, context = {} }) {
     ],
     nextContext: {
       ...context,
-      ...(skill?.name === "友谊满溢"
-        ? { skillUseCount: afterSecond.skillUseCount }
-        : {}),
+      ...persistentContextPatch(skill, afterSecond),
     },
     traitName,
   };

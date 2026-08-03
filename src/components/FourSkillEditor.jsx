@@ -4,6 +4,7 @@ import {
   dynamicInputValue,
   dynamicInputsForSkill,
   isDynamicInputVisible,
+  TraitAutomaticStack,
   TraitInputs,
 } from "./SingleSkillEditor.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
@@ -15,6 +16,8 @@ import {
   getChoiceTraitInput,
   supportsChoiceTrait,
 } from "../domain/choice-skill-sequence.js";
+import { buildRefractionHint } from "../domain/refraction.js";
+import { getGaleTurbineCompanionInput } from "../domain/wing-extension.js";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -123,18 +126,26 @@ function SkillSide({
   traitContext,
   traitDamage,
 }) {
-  const hasSelfHpRule = selectedSkills.some((skill) =>
-    dynamicInputsForSkill(skill, { includeStatusEffects: true }).some(
+  const hasSelfHpRule =
+    selectedSkills.some((skill) =>
+      dynamicInputsForSkill(skill, { includeStatusEffects: true }).some(
+        (input) => (input.contextKey ?? input.key) === "attackerHpPercent",
+      ),
+    ) ||
+    trait?.inputs?.some(
       (input) => (input.contextKey ?? input.key) === "attackerHpPercent",
-    ),
-  );
+    );
   const hasTargetHpRule = selectedSkills.some((skill) =>
     dynamicInputsForSkill(skill, { includeStatusEffects: true }).some(
       (input) => (input.contextKey ?? input.key) === "defenderHpPercent",
     ),
   );
   const offensiveTraitInputs =
-    trait?.inputs?.filter((input) => input.scope !== "slot") ?? [];
+    trait?.inputs?.filter(
+      (input) =>
+        input.scope !== "slot" &&
+        ((input.contextKey ?? input.key) !== "attackerHpPercent" || !health),
+    ) ?? [];
   const defensiveTraitInputs =
     defenseTrait?.inputs?.filter((input) => input.scope !== "slot") ?? [];
   return (
@@ -146,6 +157,10 @@ function SkillSide({
       {offensiveTraitInputs.length > 0 ? (
         <div className="four-skill-trait-controls">
           <TraitHint description={trait.description} name={trait.name} />
+          <TraitAutomaticStack
+            automaticStack={trait.automaticStack}
+            skills={selectedSkills}
+          />
           <TraitInputs
             context={traitContext}
             inputs={offensiveTraitInputs}
@@ -265,7 +280,7 @@ function SkillSide({
             </div>
           </div>
         ) : null}
-        {Array.from({ length: 4 }, (_, index) => {
+        {Array.from({ length: Math.max(4, selectedSkills.length) }, (_, index) => {
           const selected = selectedSkills[index];
           const result = results?.[index];
           const isSelected =
@@ -274,12 +289,18 @@ function SkillSide({
             selected && supportsChoiceTrait(trait?.name)
               ? getChoiceTraitInput(selected)
               : null;
+          const galeTurbineInput = getGaleTurbineCompanionInput({
+            currentIndex: index,
+            selectedSkills,
+            traitName: trait?.name,
+          });
           const skillInputs = selected
             ? [
                 ...dynamicInputsForSkill(selected, {
                   includeStatusEffects: true,
                 }),
                 ...(choiceTraitInput ? [choiceTraitInput] : []),
+                ...(galeTurbineInput ? [galeTurbineInput] : []),
               ]
             : [];
           const traitInputs =
@@ -310,6 +331,15 @@ function SkillSide({
                 !skillInputs.some((input) => input.id === traitInput.id),
             ),
           ];
+          const refractionHint = buildRefractionHint({
+            carriedSkills: selectedSkills,
+            selectedSkill: selected,
+          });
+          const counterReflectionHint =
+            result?.reflectedSourceSkillName &&
+            Number.isFinite(result?.reflectedPower)
+              ? `反弹「${result.reflectedSourceSkillName}」· 威力 ${result.reflectedPower}`
+              : null;
           return (
             <div
               aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
@@ -348,7 +378,7 @@ function SkillSide({
                 />
                 <span className="skill-slot__kind">
                   {selected
-                    ? `${selected.type}·${CATEGORY_LABELS[selected.category]?.slice(0, 1) ?? "—"}`
+                    ? `${result?.typeLabel ?? selected.type}·${CATEGORY_LABELS[selected.category]?.slice(0, 1) ?? "—"}`
                     : "—"}
                 </span>
                 <span className="skill-slot__cost">{selected?.cost ?? "—"}</span>
@@ -374,14 +404,14 @@ function SkillSide({
                   <input
                     aria-label={`${label}技能${index + 1}连击次数`}
                     disabled={!selected}
-                    max="20"
+                    max="99"
                     min="1"
                     onChange={(event) =>
                       onSkillHitCountChange?.(
                         side,
                         index,
                         Math.min(
-                          20,
+                          99,
                           Math.max(1, Number(event.target.value) || 1),
                         ),
                       )
@@ -401,7 +431,10 @@ function SkillSide({
                   selected={selected}
                 />
               </div>
-              {selected?.description || dynamicInputs.length > 0 ? (
+              {selected?.description ||
+              refractionHint ||
+              counterReflectionHint ||
+              dynamicInputs.length > 0 ? (
                 <div className="skill-slot__context">
                   {selected?.description ? (
                     <p
@@ -409,6 +442,19 @@ function SkillSide({
                       title={selected.description}
                     >
                       {selected.description}
+                    </p>
+                  ) : null}
+                  {refractionHint ? (
+                    <p className="skill-slot__effect-hint" title={refractionHint}>
+                      {refractionHint}
+                    </p>
+                  ) : null}
+                  {counterReflectionHint ? (
+                    <p
+                      className="skill-slot__effect-hint"
+                      title={counterReflectionHint}
+                    >
+                      {counterReflectionHint}
                     </p>
                   ) : null}
                   <div className="skill-slot__controls">

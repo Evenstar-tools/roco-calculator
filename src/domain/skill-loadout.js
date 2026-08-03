@@ -1,4 +1,8 @@
 import { getSnapshotIndexes } from "./snapshot-indexes.js";
+import {
+  getSpiritSkillSlotCapacity,
+  normalizeSkillSlots,
+} from "./skill-slot-capacity.js";
 
 const choiceCache = new WeakMap();
 
@@ -38,6 +42,7 @@ export function getSkillChoices(snapshot, spiritId) {
 }
 
 export function chooseDefaultSkillIds(snapshot, spiritId) {
+  const capacity = getSpiritSkillSlotCapacity(snapshot, spiritId);
   const legalIds = getLegalSkillIds(snapshot, spiritId);
   const byId = getSnapshotIndexes(snapshot).skills;
   const legal = legalIds.map((id) => byId[id]).filter(Boolean);
@@ -55,20 +60,16 @@ export function chooseDefaultSkillIds(snapshot, spiritId) {
   const chosen = [
     ...new Map(ordered.map((skill) => [skill.id, skill])).values(),
   ]
-    .slice(0, 4)
+    .slice(0, capacity)
     .map((skill) => skill.id);
-  while (chosen.length < 4) chosen.push(null);
-  return chosen;
+  return normalizeSkillSlots(chosen, capacity);
 }
 
-export function reconcileSkillLoadout(currentSkills, legalSkillIds) {
+export function reconcileSkillLoadout(currentSkills, legalSkillIds, capacity = 4) {
   const legal = [...new Set(legalSkillIds.filter(Boolean))];
   const legalSet = new Set(legal);
   const used = new Set();
-  const currentFour = Array.from(
-    { length: 4 },
-    (_, index) => currentSkills?.four?.[index] ?? null,
-  );
+  const currentFour = normalizeSkillSlots(currentSkills?.four, capacity);
 
   for (const entry of currentFour) {
     const id = entryId(entry);

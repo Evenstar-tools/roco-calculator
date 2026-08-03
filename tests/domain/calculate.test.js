@@ -113,6 +113,29 @@ const snapshot = {
       },
       provenance: { basePower: { source: "fixture" } },
     },
+    {
+      id: "skill_listen_bridge",
+      name: "听桥",
+      type: "武",
+      category: "defense",
+      cost: 4,
+      basePower: 0,
+      description:
+        "减伤60%，应对攻击：对敌方造成武系物理伤害，威力与被应对技能相等。",
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    },
+    {
+      id: "skill_hard_gate",
+      name: "硬门",
+      type: "武",
+      category: "defense",
+      cost: 2,
+      basePower: 0,
+      description: "应对攻击：打断被应对技能，并造成90威力物伤。",
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    },
   ],
   traits: [],
   typeChart: null,
@@ -238,7 +261,131 @@ function bloodlineContext(role, bloodlineType) {
   ]));
 }
 
+const contractShapeTrait = {
+  id: "trait_contract_shape",
+  name: "契约的形状",
+  description: "根据捕捉所用的咕噜球，入场时获得不同效果。",
+};
+
+function contractShapeSnapshot({ combo = false, skill = null } = {}) {
+  return {
+    ...snapshot,
+    spirits: snapshot.spirits.map((spirit) => ({
+      ...spirit,
+      traitIds: [contractShapeTrait.id],
+    })),
+    skills: snapshot.skills.map((entry) => {
+      if (skill && entry.id === "skill_wind") return skill;
+      return combo && entry.id === "skill_wind"
+        ? { ...entry, description: "造成物理伤害，3连击。" }
+        : entry;
+    }),
+    traits: [contractShapeTrait],
+  };
+}
+
+function contractContext(role, ballType, prismEffect = "") {
+  const controls = getTraitEffectInputs(contractShapeTrait, role);
+  return Object.fromEntries(controls.map((control) => [
+    control.id,
+    control.contextKey === "contractBallType" ? ballType : prismEffect,
+  ]));
+}
+
 describe("calculateMatchup", () => {
+  test("硬门按固定90威力结算武系物理伤害", () => {
+    const input = battleInput({
+      mode: "four",
+      sides: {
+        attacker: side("spirit_sonic_dog", "skill_wind", [
+          "skill_hard_gate",
+          null,
+          null,
+          null,
+        ]),
+        defender: side("spirit_water", "skill_water", [
+          "skill_water",
+          null,
+          null,
+          null,
+        ]),
+      },
+      directions: {
+        forward: {
+          selectedSkillIndex: 0,
+          overrides: {
+            attackerStat: 100,
+            defenderDefense: 100,
+            stabMultiplier: 1,
+            typeMultiplier: 1,
+          },
+        },
+      },
+    });
+
+    expect(calculateMatchup(snapshot, input).forward.results[0]).toMatchObject({
+      hitCount: 1,
+      skillName: "硬门",
+      skillPower: 90,
+      status: "exact",
+      totalDamage: 81,
+      typeLabel: "武",
+    });
+  });
+
+  test("听桥继承对方增益后的技能面板威力并按单段武系物理伤害反弹", () => {
+    const input = battleInput({
+      mode: "four",
+      sides: {
+        attacker: side("spirit_sonic_dog", "skill_wind", [
+          {
+            skillId: "skill_wind",
+            hitCount: 5,
+          },
+          null,
+          null,
+          null,
+        ]),
+        defender: side("spirit_water", "skill_water", [
+          "skill_listen_bridge",
+          null,
+          null,
+          null,
+        ]),
+      },
+      directions: {
+        forward: {
+          selectedSkillIndex: 0,
+          overrides: {
+            fixedPowerAdd: 20,
+            skillPowerPercentAdds: [0.5],
+          },
+        },
+        reverse: {
+          selectedSkillIndex: 0,
+          overrides: {
+            attackerStat: 100,
+            defenderDefense: 100,
+            stabMultiplier: 1,
+            typeMultiplier: 1,
+          },
+        },
+      },
+    });
+
+    const result = calculateMatchup(snapshot, input).reverse.results[0];
+
+    expect(result).toMatchObject({
+      hitCount: 1,
+      reflectedPower: 150,
+      reflectedSourceSkillName: "风力冲击",
+      skillName: "听桥",
+      skillPower: 150,
+      status: "exact",
+      totalDamage: 135,
+    });
+  });
+
   test("稀兽花宝普通血脉只增加一次固定威力", () => {
     const input = battleInput({
       directions: {
@@ -375,6 +522,109 @@ describe("calculateMatchup", () => {
       expect.objectContaining({ status: "not-triggered", text: expect.stringContaining("幻系技能不触发") }),
     ]));
   });
+
+  test("契约的形状美妙球增加固定威力且不进入百分比乘区两次", () => {
+    const fixture = contractShapeSnapshot();
+    const base = calculateMatchup(fixture, battleInput()).forward.selectedResult;
+    const result = calculateMatchup(fixture, battleInput({
+      directions: {
+        forward: { context: contractContext("attacker", "beautiful") },
+      },
+    })).forward.selectedResult;
+
+    expect(result.skillPower).toBe(100);
+    expect(result.totalDamage).toBeGreaterThan(base.totalDamage);
+    expect(result.traitSettlements).toEqual(expect.arrayContaining([
+      expect.objectContaining({ ballType: "beautiful", side: "attacker" }),
+    ]));
+    expect(result.formulaSteps).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: "美妙球", input: "+20 固定威力" }),
+    ]));
+  });
+
+  test("契约的形状按双方角色应用攻防等级", () => {
+    const fixture = contractShapeSnapshot();
+    const base = calculateMatchup(fixture, battleInput()).forward.selectedResult;
+    const attackerKing = calculateMatchup(fixture, battleInput({
+      directions: { forward: { context: contractContext("attacker", "king") } },
+    })).forward.selectedResult;
+    const defenderKing = calculateMatchup(fixture, battleInput({
+      directions: { forward: { context: contractContext("defender", "king") } },
+    })).forward.selectedResult;
+
+    expect(attackerKing.totalDamage).toBeGreaterThan(base.totalDamage);
+    expect(defenderKing.totalDamage).toBeLessThan(base.totalDamage);
+  });
+
+  test("契约的形状光合与绝缘只修正声明连击的技能", () => {
+    const fixture = contractShapeSnapshot({ combo: true });
+    const photosynthesis = calculateMatchup(fixture, battleInput({
+      directions: {
+        forward: {
+          context: contractContext("attacker", "photosynthesis"),
+          hitCount: 3,
+        },
+      },
+    })).forward.selectedResult;
+    const insulation = calculateMatchup(fixture, battleInput({
+      directions: {
+        forward: {
+          context: contractContext("defender", "insulation"),
+          hitCount: 3,
+        },
+      },
+    })).forward.selectedResult;
+
+    expect(photosynthesis.hitCount).toBe(4);
+    expect(insulation.hitCount).toBe(1);
+  });
+
+  test("契约的形状速度效果先进入动态威力，淘沙球增加星陨", () => {
+    const speedSkill = {
+      ...snapshot.skills[0],
+      id: "skill_wind",
+      name: "闪击",
+      ruleId: "speed_difference",
+      provenance: { ruleId: { source: "fixture" } },
+    };
+    const fixture = contractShapeSnapshot({ skill: speedSkill });
+    const base = calculateMatchup(fixture, battleInput()).forward.selectedResult;
+    const net = calculateMatchup(fixture, battleInput({
+      directions: { forward: { context: contractContext("attacker", "net") } },
+    })).forward.selectedResult;
+    const marked = calculateMatchup(fixture, battleInput({
+      marks: {
+        attacker: { negative: { id: null, stacks: 0 }, positive: { id: null, stacks: 0 } },
+        defender: { negative: { id: "starfall", stacks: 2 }, positive: { id: null, stacks: 0 } },
+      },
+      directions: { forward: { context: contractContext("attacker", "sand") } },
+    })).forward.selectedResult;
+
+    expect(net.effectivePower).toBeGreaterThan(base.effectivePower);
+    expect(marked.formulaSteps).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: "星陨追加伤害", input: expect.objectContaining({ stacks: 3 }) }),
+    ]));
+  });
+
+  test("契约的形状棱镜按指定效果半值接入伤害", () => {
+    const fixture = contractShapeSnapshot();
+    const base = calculateMatchup(fixture, battleInput()).forward.selectedResult;
+    const prism = calculateMatchup(fixture, battleInput({
+      directions: {
+        forward: { context: contractContext("attacker", "prism", "beautiful") },
+      },
+    })).forward.selectedResult;
+
+    expect(prism.skillPower).toBe(90);
+    expect(prism.totalDamage).toBeGreaterThan(base.totalDamage);
+    expect(prism.traitSettlements).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        ballType: "prism",
+        effectiveBallType: "beautiful",
+        text: expect.stringContaining("半值"),
+      }),
+    ]));
+  });
   test("persistent hit-count bonuses only affect skills with a declared combo", () => {
     const comboSnapshot = {
       ...snapshot,
@@ -405,6 +655,230 @@ describe("calculateMatchup", () => {
     expect(buffed.totalDamage).toBe(base.totalDamage * 4);
     expect(noCombo.hitCount).toBe(1);
     expect(noCombo.totalDamage).toBe(base.totalDamage);
+  });
+
+  test("allows persistent hit-count reductions but never drops below one hit", () => {
+    const comboSnapshot = {
+      ...snapshot,
+      skills: snapshot.skills.map((skill) =>
+        skill.id === "skill_wind"
+          ? { ...skill, description: "造成物伤，5连击。" }
+          : skill,
+      ),
+    };
+    const reduced = calculateMatchup(
+      comboSnapshot,
+      battleInput({
+        directions: {
+          forward: { hitCount: 5, overrides: { hitCountAdd: -2 } },
+        },
+      }),
+    ).forward.selectedResult;
+    const minimum = calculateMatchup(
+      comboSnapshot,
+      battleInput({
+        directions: {
+          forward: { hitCount: 5, overrides: { hitCountAdd: -99 } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(reduced.hitCount).toBe(3);
+    expect(minimum.hitCount).toBe(1);
+  });
+
+  test("侵蚀把中毒层数加到攻击与状态技能的明确连击数", () => {
+    const erosionTrait = {
+      description: "敌方每有1层中毒效果，自己获得连击数+1。",
+      id: "trait_erosion",
+      name: "侵蚀",
+    };
+    const comboAttack = {
+      ...snapshot.skills[0],
+      description: "造成物伤，3连击。",
+      id: "skill_combo_attack",
+      name: "撕咬",
+    };
+    const comboStatus = {
+      basePower: 0,
+      category: "status",
+      cost: 1,
+      description: "自己获得物攻+30%，3连击。",
+      id: "skill_combo_status",
+      name: "三连破",
+      type: "普通",
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit, index) =>
+        index === 0 ? { ...spirit, traitIds: [erosionTrait.id] } : spirit,
+      ),
+      skills: [...snapshot.skills, comboAttack, comboStatus],
+      traits: [erosionTrait],
+    };
+    const controls = getTraitEffectInputs(erosionTrait, "attacker");
+    const context = Object.fromEntries(
+      controls.map((control) => [
+        control.id,
+        control.contextKey === "enemyPoisonStacks" ? 2 : true,
+      ]),
+    );
+    const attackerWith = (skill) =>
+      side("spirit_sonic_dog", skill.id, [skill.id, null, null, null]);
+    const base = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: { attacker: attackerWith(comboAttack) },
+      }),
+    ).forward.selectedResult;
+    const attack = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: { attacker: attackerWith(comboAttack) },
+        directions: { forward: { context } },
+      }),
+    ).forward.selectedResult;
+    const status = calculateMatchup(
+      fixture,
+      battleInput({
+        mode: "four",
+        sides: { attacker: attackerWith(comboStatus) },
+        directions: { forward: { context } },
+      }),
+    ).forward.selectedResult;
+
+    expect(base.hitCount).toBe(3);
+    expect(attack.hitCount).toBe(5);
+    expect(attack.automaticHitCountAdd).toBe(2);
+    expect(attack.totalDamage).toBe((base.totalDamage / 3) * 5);
+    expect(attack.formulaSteps).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: "侵蚀连击", after: 2 }),
+    ]));
+    expect(status).toMatchObject({
+      automaticHitCountAdd: 2,
+      hitCount: 5,
+      status: "unsupported",
+      totalDamage: null,
+    });
+  });
+
+  test("嫁祸读取攻击方实时生命百分比并增加明确连击", () => {
+    const blameShift = {
+      description: "自己每失去25%生命，连击数+2。",
+      id: "trait_blame_shift",
+      name: "嫁祸",
+    };
+    const comboAttack = {
+      ...snapshot.skills[0],
+      description: "造成物伤，3连击。",
+      id: "skill_blame_combo",
+      name: "撕咬",
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit, index) =>
+        index === 0 ? { ...spirit, traitIds: [blameShift.id] } : spirit,
+      ),
+      skills: [...snapshot.skills, comboAttack],
+      traits: [blameShift],
+    };
+    const trigger = getTraitEffectInputs(blameShift, "attacker").find(
+      (control) => control.contextKey === "traitHitCountActivated",
+    );
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", comboAttack.id, [
+            comboAttack.id,
+            null,
+            null,
+            null,
+          ]),
+        },
+        directions: {
+          forward: { context: { [trigger.id]: true } },
+          reverse: { context: { currentHpPercent: 50 } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      automaticHitCountAdd: 4,
+      hitCount: 7,
+      status: "exact",
+    });
+    expect(result.formulaSteps).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        label: "嫁祸连击",
+        after: 4,
+        input: { currentHpPercent: 50 },
+      }),
+    ]));
+  });
+
+  test("无差别过滤勾选后将攻防双方最终连击固定为2，取消后恢复原值", () => {
+    const filterTrait = {
+      description: "在场时，所有精灵连击数固定为2。",
+      id: "trait_indiscriminate_filter",
+      name: "无差别过滤",
+    };
+    const comboAttack = {
+      ...snapshot.skills[0],
+      description: "造成物伤，5连击。",
+      id: "skill_filter_combo",
+      name: "五连击",
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit, index) =>
+        index === 0 ? { ...spirit, traitIds: [filterTrait.id] } : spirit,
+      ),
+      skills: [...snapshot.skills, comboAttack],
+      traits: [filterTrait],
+    };
+    const attackerControl = getTraitEffectInputs(filterTrait, "attacker")[0];
+    const defenderControl = getTraitEffectInputs(filterTrait, "defender")[0];
+    const configuredSides = {
+      attacker: side("spirit_sonic_dog", comboAttack.id, [
+        comboAttack.id,
+        null,
+        null,
+        null,
+      ]),
+      defender: side("spirit_water", comboAttack.id, [
+        comboAttack.id,
+        null,
+        null,
+        null,
+      ]),
+    };
+    const baseline = calculateMatchup(
+      fixture,
+      battleInput({ mode: "four", sides: configuredSides }),
+    );
+    const filtered = calculateMatchup(
+      fixture,
+      battleInput({
+        mode: "four",
+        sides: configuredSides,
+        directions: {
+          forward: { context: { [attackerControl.id]: true } },
+          reverse: { context: { [defenderControl.id]: true } },
+        },
+      }),
+    );
+
+    expect(baseline.forward.selectedResult.hitCount).toBe(5);
+    expect(baseline.reverse.selectedResult.hitCount).toBe(5);
+    expect(filtered.forward.selectedResult.hitCount).toBe(2);
+    expect(filtered.reverse.selectedResult.hitCount).toBe(2);
+    expect(filtered.forward.selectedResult.totalDamage).toBe(
+      (baseline.forward.selectedResult.totalDamage / 5) * 2,
+    );
+    expect(filtered.reverse.selectedResult.totalDamage).toBe(
+      (baseline.reverse.selectedResult.totalDamage / 5) * 2,
+    );
   });
 
   test("calculates Skin Spikes as neutral fixed-power trait damage and rounds each hit first", () => {
@@ -720,6 +1194,20 @@ describe("calculateMatchup", () => {
     expect(four.reverse.selectedResult.totalDamage).toBe(
       single.reverse.selectedResult.totalDamage,
     );
+  });
+
+  test("calculates every configured slot when a spirit carries seven skills", () => {
+    const input = battleInput({
+      mode: "four",
+      sides: {
+        attacker: side("spirit_sonic_dog", "skill_wind", Array(7).fill("skill_wind")),
+        defender: side("spirit_water", "skill_water", [
+          "skill_water", null, null, null,
+        ]),
+      },
+    });
+
+    expect(calculateMatchup(snapshot, input).forward.results).toHaveLength(7);
   });
 
   test("derives Comet power from the attacker's current and maximum HP", () => {
@@ -1515,6 +2003,56 @@ describe("calculateMatchup", () => {
 
     expect(physicalBuffed).toBeLessThan(physicalBase);
     expect(magicalBuffed).toBeLessThan(magicalBase);
+  });
+
+  test("张弛有度按周末勾选在双攻和双防之间切换", () => {
+    const trait = {
+      affectsDamage: true,
+      description: "周末时自己获得双攻+40%，其他时间获得双防+40%。",
+      id: "trait_flexible_tempo",
+      name: "张弛有度",
+    };
+    const attackerSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      traits: [trait],
+    };
+    const defenderSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_water"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      traits: [trait],
+    };
+    const weekend = {
+      directions: { forward: { context: { traitActivated: true } } },
+    };
+
+    const weekdayAttack = calculateMatchup(
+      attackerSnapshot,
+      battleInput(),
+    ).forward.selectedResult.totalDamage;
+    const weekendAttack = calculateMatchup(
+      attackerSnapshot,
+      battleInput(weekend),
+    ).forward.selectedResult.totalDamage;
+    const weekdayDefense = calculateMatchup(
+      defenderSnapshot,
+      battleInput(),
+    ).forward.selectedResult.totalDamage;
+    const weekendDefense = calculateMatchup(
+      defenderSnapshot,
+      battleInput(weekend),
+    ).forward.selectedResult.totalDamage;
+
+    expect(weekendAttack).toBeGreaterThan(weekdayAttack);
+    expect(weekdayDefense).toBeLessThan(weekendDefense);
   });
 
   test("reports damage percentage against maximum HP while lethal uses current HP", () => {
@@ -2313,5 +2851,193 @@ describe("inherited penetration stacks", () => {
     ).forward.selectedResult;
 
     expect(withStacks.totalDamage).toBeLessThan(withoutStacks.totalDamage);
+  });
+
+  test("展翅只把持有者自己的普通技能按翼系结算", () => {
+    const traitId = "trait-wing-extension";
+    const normalSkill = {
+      id: "skill-normal-strike",
+      name: "先发制人",
+      type: "普通",
+      category: "physical",
+      cost: 2,
+      basePower: 55,
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const wingSnapshot = {
+      ...snapshot,
+      spirits: [
+        {
+          ...snapshot.spirits[0],
+          fullName: "凡鹰",
+          types: ["翼"],
+          traitIds: [traitId],
+        },
+        { ...snapshot.spirits[1], types: ["草"] },
+      ],
+      skills: [...snapshot.skills, normalSkill],
+      traits: [{ id: traitId, name: "展翅", description: "普通转翼。" }],
+    };
+    const result = calculateMatchup(
+      wingSnapshot,
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: side("spirit_sonic_dog", "skill-normal-strike", [
+            "skill-normal-strike",
+            null,
+            null,
+            null,
+          ]),
+          defender: side("spirit_water", "skill-normal-strike", [
+            "skill-normal-strike",
+            null,
+            null,
+            null,
+          ]),
+        },
+      }),
+    );
+
+    expect(result.forward.selectedResult).toMatchObject({
+      skillName: "先发制人",
+      typeLabel: "翼",
+      typeMultiplier: 2,
+    });
+    expect(result.reverse.selectedResult).toMatchObject({
+      skillName: "先发制人",
+      typeLabel: "普通",
+      typeMultiplier: 1,
+    });
+    expect(normalSkill.type).toBe("普通");
+  });
+
+  test("展翅防御开关只在勾选时增加25%最终承伤", () => {
+    const traitId = "trait-wing-extension";
+    const wingSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_water"
+          ? { ...spirit, traitIds: [traitId] }
+          : spirit,
+      ),
+      traits: [{ id: traitId, name: "展翅", description: "后手承伤+25%。" }],
+    };
+    const calculate = (triggered) =>
+      calculateMatchup(
+        wingSnapshot,
+        battleInput({
+          mode: "four",
+          sides: {
+            attacker: side("spirit_sonic_dog", "skill_wind", [
+              {
+                context: { actedAfterEnemy: triggered },
+                skillId: "skill_wind",
+              },
+              null,
+              null,
+              null,
+            ]),
+          },
+        }),
+      ).forward.selectedResult;
+
+    const inactive = calculate(false);
+    const active = calculate(true);
+    expect(active.totalDamage).toBe(Math.floor(inactive.totalDamage * 1.25));
+  });
+
+  test("疾风涡轮把前置翼系攻击与自身伤害分别取整后相加", () => {
+    const traitId = "trait-wing-extension";
+    const normalAttack = {
+      id: "skill-normal-strike",
+      name: "先发制人",
+      type: "普通",
+      category: "physical",
+      cost: 2,
+      basePower: 55,
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const wingStatus = {
+      id: "skill-wing-status",
+      name: "羽化加速",
+      type: "翼",
+      category: "status",
+      cost: 2,
+      basePower: 0,
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const turbine = {
+      id: "skill-gale-turbine",
+      name: "疾风涡轮",
+      type: "翼",
+      category: "physical",
+      cost: 0,
+      basePower: 100,
+      description:
+        "造成物伤，无法主动使用，在使用3次翼系技能后会自动使用此技能。",
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const wingSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? {
+              ...spirit,
+              fullName: "凡鹰",
+              types: ["翼"],
+              traitIds: [traitId],
+            }
+          : spirit,
+      ),
+      skills: [...snapshot.skills, normalAttack, wingStatus, turbine],
+      traits: [{ id: traitId, name: "展翅", description: "普通转翼。" }],
+    };
+    const calculate = (companionSlot) =>
+      calculateMatchup(
+        wingSnapshot,
+        battleInput({
+          mode: "four",
+          directions: { forward: { selectedSkillIndex: 2 } },
+          sides: {
+            attacker: side("spirit_sonic_dog", "skill-gale-turbine", [
+              "skill-normal-strike",
+              "skill-wing-status",
+              {
+                context: companionSlot
+                  ? { galeTurbineCompanionSlot: companionSlot }
+                  : {},
+                skillId: "skill-gale-turbine",
+              },
+              null,
+            ]),
+          },
+        }),
+      ).forward.selectedResult;
+
+    const turbineOnly = calculate(null);
+    const withAttack = calculate(1);
+    const withStatus = calculate(2);
+
+    expect(turbineOnly.skillName).toBe("疾风涡轮");
+    expect(turbineOnly.choiceTraitSequence).toBeUndefined();
+    expect(withAttack.choiceTraitSequence.executions).toMatchObject([
+      { skillName: "先发制人" },
+      { skillName: "疾风涡轮" },
+    ]);
+    expect(withAttack.totalDamage).toBe(
+      withAttack.choiceTraitSequence.executions.reduce(
+        (sum, execution) => sum + execution.damage,
+        0,
+      ),
+    );
+    expect(withAttack.choiceTraitSequence.text).toContain("先发制人");
+    expect(withAttack.choiceTraitSequence.text).toContain("疾风涡轮");
+    expect(withStatus.totalDamage).toBe(turbineOnly.totalDamage);
+    expect(withStatus.choiceTraitSequence).toBeUndefined();
   });
 });

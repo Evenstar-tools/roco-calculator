@@ -119,6 +119,7 @@ export function TraitInputs({
 }) {
   return inputs
     .filter((input) => !scope || input.scope === scope)
+    .filter((input) => isDynamicInputVisible(input, context))
     .map((input) =>
       input.type === "choice" ? (
         <label className="trait-choice" key={dynamicInputId(input)}>
@@ -164,6 +165,18 @@ export function TraitInputs({
         </label>
       ),
     );
+}
+
+export function TraitAutomaticStack({ automaticStack, skills = [] }) {
+  if (!automaticStack) return null;
+  const matchingTypes = new Set(automaticStack.skillTypes ?? []);
+  const value = skills.filter((skill) => matchingTypes.has(skill?.type)).length;
+  return (
+    <span className="trait-number trait-number--automatic">
+      <span>{automaticStack.label}</span>
+      <output aria-label={`${automaticStack.label}（自动读取）`}>{value}</output>
+    </span>
+  );
 }
 
 export function isDynamicInputVisible(input, context = {}) {
@@ -230,6 +243,7 @@ export function describeResolution(result) {
 export function SingleSkillEditor({
   attackerHealth,
   attackerTrait,
+  carriedSkills = [],
   defenderHealth,
   defenderTrait,
   hitCount,
@@ -252,13 +266,40 @@ export function SingleSkillEditor({
   const [powerDraft, setPowerDraft] = useState(String(manualPower));
   const [hitDraft, setHitDraft] = useState(String(hitCount));
   const dynamicInputs = dynamicInputsForSkill(selectedSkill);
-  const hasAttackerHpRule = dynamicInputs.some(
-    (input) => dynamicInputContextKey(input) === "attackerHpPercent",
-  );
-  const hasDefenderHpRule = dynamicInputs.some(
-    (input) => dynamicInputContextKey(input) === "defenderHpPercent",
-  );
+  const attackerTraitInputs = attackerTrait?.inputs ??
+    (attackerTrait?.conditionKey
+      ? [{
+          defaultValue: false,
+          key: attackerTrait.conditionKey,
+          label: attackerTrait.conditionLabel,
+          type: "boolean",
+        }]
+      : []);
+  const defenderTraitInputs = defenderTrait?.inputs ??
+    (defenderTrait?.conditionKey
+      ? [{
+          defaultValue: false,
+          key: defenderTrait.conditionKey,
+          label: defenderTrait.conditionLabel,
+          type: "boolean",
+        }]
+      : []);
+  const hasAttackerHpRule =
+    dynamicInputs.some(
+      (input) => dynamicInputContextKey(input) === "attackerHpPercent",
+    ) ||
+    attackerTraitInputs.some(
+      (input) => dynamicInputContextKey(input) === "attackerHpPercent",
+    );
+  const hasDefenderHpRule =
+    dynamicInputs.some(
+      (input) => dynamicInputContextKey(input) === "defenderHpPercent",
+    ) ||
+    defenderTraitInputs.some(
+      (input) => dynamicInputContextKey(input) === "defenderHpPercent",
+    );
   const resolutionSummary = describeResolution(result);
+  const effectiveType = result?.typeLabel ?? selectedSkill.type;
 
   useEffect(() => {
     setPowerDraft(String(manualPower));
@@ -286,10 +327,10 @@ export function SingleSkillEditor({
             {CATEGORY_LABELS[selectedSkill.category] ?? selectedSkill.category}
           </span>
           <span
-            className={`type-chip type-chip--${selectedSkill.type}`}
-            style={getElementToneStyle(selectedSkill.type)}
+            className={`type-chip type-chip--${effectiveType}`}
+            style={getElementToneStyle(effectiveType)}
           >
-            {selectedSkill.type}
+            {effectiveType}
           </span>
           <span className="skill-fact">
             <Lightning aria-hidden="true" size={17} weight="fill" />
@@ -303,7 +344,8 @@ export function SingleSkillEditor({
           <Lightning aria-hidden="true" size={16} weight="fill" />
           <p>{selectedSkill.description || "无额外效果。"}</p>
         </div>
-        {powerMode !== "displayed" && dynamicInputs.length > 0 ? (
+        {powerMode !== "displayed" &&
+        (dynamicInputs.length > 0 || hasAttackerHpRule || hasDefenderHpRule) ? (
           <div aria-label="动态技能条件" className="skill-effect-card__conditions">
             {hasAttackerHpRule && attackerHealth ? (
               <HealthInput
@@ -480,14 +522,14 @@ export function SingleSkillEditor({
             <span>连击次数</span>
             <input
               aria-label="连击次数"
-              max="20"
+              max="99"
               min="1"
               onChange={(event) => {
                 setHitDraft(event.target.value);
                 if (event.target.value !== "") {
                   onHitCountChange(
                     Math.min(
-                      20,
+                      99,
                       Math.max(1, Math.floor(toNumber(event.target.value, 1))),
                     ),
                   );
@@ -495,7 +537,7 @@ export function SingleSkillEditor({
               }}
               onBlur={() => {
                 const normalized = Math.min(
-                  20,
+                  99,
                   Math.max(1, Math.floor(toNumber(hitDraft, hitCount))),
                 );
                 setHitDraft(String(normalized));
@@ -519,19 +561,17 @@ export function SingleSkillEditor({
               <strong>{attackerTrait.name}</strong>
               <p>{attackerTrait.description}</p>
               <div className="trait-inputs">
+                <TraitAutomaticStack
+                  automaticStack={attackerTrait.automaticStack}
+                  skills={carriedSkills}
+                />
                 <TraitInputs
                   context={traitContext}
-                  inputs={
-                    attackerTrait.inputs ??
-                    (attackerTrait.conditionKey
-                      ? [{
-                          defaultValue: false,
-                          key: attackerTrait.conditionKey,
-                          label: attackerTrait.conditionLabel,
-                          type: "boolean",
-                        }]
-                      : [])
-                  }
+                  inputs={attackerTraitInputs.filter(
+                    (input) =>
+                      dynamicInputContextKey(input) !== "attackerHpPercent" ||
+                      !attackerHealth,
+                  )}
                   onChange={onTraitContextChange}
                 />
               </div>
@@ -548,17 +588,11 @@ export function SingleSkillEditor({
               <div className="trait-inputs">
                 <TraitInputs
                   context={traitContext}
-                  inputs={
-                    defenderTrait.inputs ??
-                    (defenderTrait.conditionKey
-                      ? [{
-                          defaultValue: false,
-                          key: defenderTrait.conditionKey,
-                          label: defenderTrait.conditionLabel,
-                          type: "boolean",
-                        }]
-                      : [])
-                  }
+                  inputs={defenderTraitInputs.filter(
+                    (input) =>
+                      dynamicInputContextKey(input) !== "defenderHpPercent" ||
+                      !defenderHealth,
+                  )}
                   onChange={onTraitContextChange}
                 />
               </div>

@@ -80,6 +80,7 @@ function validateStoredState(value) {
 
 function sanitizeMember(member) {
   if (!member) return null;
+  const capacity = member.skills?.four?.length === 7 ? 7 : 4;
   return {
     displayIvs: Object.fromEntries(
       STAT_KEYS.map((stat) => [stat, Number(member.displayIvs?.[stat]) || 0]),
@@ -87,7 +88,7 @@ function sanitizeMember(member) {
     natureId: normalizeNatureId(member.natureId),
     skills: {
       four: Array.from(
-        { length: 4 },
+        { length: capacity },
         (_, index) => cloneJson(member.skills?.four?.[index] ?? null),
       ),
       single: cloneJson(member.skills?.single ?? null),

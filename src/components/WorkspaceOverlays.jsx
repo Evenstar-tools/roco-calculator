@@ -24,6 +24,7 @@ function trapFocus(event, container) {
 
 export function WorkspaceOverlays({
   children,
+  cleanupConfigs = {},
   configLibrary,
   menu,
   mobileResult,
@@ -148,12 +149,21 @@ export function WorkspaceOverlays({
           </button>
           <button
             onClick={() => {
-              menuActions.onReset?.();
+              menuActions.onClearCurrent?.();
               menuActions.onClose?.();
             }}
             type="button"
           >
-            重置全部配置
+            清除当前页配置
+          </button>
+          <button
+            onClick={() => {
+              menuActions.onCleanupConfigs?.();
+              menuActions.onClose?.();
+            }}
+            type="button"
+          >
+            清理未完成配置
           </button>
           <button
             onClick={() => {
@@ -226,6 +236,43 @@ export function WorkspaceOverlays({
       ) : null}
 
       <ConfigLibraryDialog {...configLibrary} />
+
+      {cleanupConfigs.open ? (
+        <div
+          className="dialog-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              cleanupConfigs.onCancel?.();
+            }
+          }}
+        >
+          <section
+            aria-label="清理未完成配置"
+            aria-modal="true"
+            className="share-dialog"
+            role="dialog"
+          >
+            <h2>清理未完成配置</h2>
+            <p>仅清理未完成的精灵配置，收藏、完整配置和队伍不会删除。</p>
+            <div className="dialog-actions">
+              <button
+                className="secondary-action"
+                onClick={cleanupConfigs.onConfirm}
+                type="button"
+              >
+                确认清理
+              </button>
+              <button
+                className="secondary-action"
+                onClick={cleanupConfigs.onCancel}
+                type="button"
+              >
+                取消
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
 
       {share.open ? (
         <div

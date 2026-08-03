@@ -7,6 +7,70 @@ import {
 const skill = (name, extra = {}) => ({ name, ...extra });
 
 describe("skill status effects", () => {
+  test.each([
+    [
+      skill("蓄势待发", {
+        category: "status",
+        description: "自己获得1层蓄势印记。",
+      }),
+      { id: "momentum", polarity: "positive", stacks: 1, target: "self" },
+    ],
+    [
+      skill("空间压迫", {
+        category: "physical",
+        description: "造成物伤，敌方获得1层星陨印记。",
+      }),
+      { id: "starfall", polarity: "negative", stacks: 1, target: "opponent" },
+    ],
+    [
+      skill("加油", {
+        category: "status",
+        description: "自己获得1层萌芽印记。",
+      }),
+      { id: "sprout", polarity: "positive", stacks: 1, target: "self" },
+    ],
+    [
+      skill("纺纱", {
+        category: "status",
+        description: "敌方获得1层暗涌印记。",
+      }),
+      { id: "undertow", polarity: "negative", stacks: 1, target: "opponent" },
+    ],
+  ])("点击 %s 应用描述中的确定印记", (selectedSkill, mark) => {
+    expect(resolveSkillStatusActivation(selectedSkill)).toMatchObject({
+      applied: true,
+      operations: { markApplications: [mark] },
+    });
+  });
+
+  test("不把应对、随机或动态印记条件当成普通点击效果", () => {
+    expect(
+      resolveSkillStatusActivation(skill("冥想", {
+        category: "defense",
+        description: "减伤80%，应对攻击：敌方获得2层星陨印记。",
+      })),
+    ).not.toMatchObject({ operations: { markApplications: expect.anything() } });
+    expect(
+      resolveSkillStatusActivation(skill("薄纱环", {
+        category: "status",
+        description: "选择：对手随机获得1种负面印记或自己随机获得1种正面印记。",
+      })),
+    ).toBeNull();
+  });
+
+  test("折射把携带技能的唯一系别效果交给统一状态入口", () => {
+    expect(resolveSkillStatusActivation(skill("折射", { type: "光" }), {
+      carriedSkills: [
+        skill("折射", { type: "光" }),
+        skill("追打", { type: "普通" }),
+        skill("回旋风暴", { type: "翼" }),
+      ],
+    })).toMatchObject({
+      applied: true,
+      deltas: { ownFixedPower: 10, ownHitCountAdd: 1 },
+      operations: { refractionTypes: ["普通", "翼"] },
+    });
+  });
   test("防御技能点击后应用描述中的基础减伤", () => {
     expect(
       resolveSkillStatusActivation(
@@ -33,6 +97,64 @@ describe("skill status effects", () => {
       applied: true,
       deltas: { ownAttack: 0 },
       operations: { defenseReductionPercent: 80 },
+    });
+  });
+
+  test("淬火在防御应对成功后让下次攻击技能威力翻倍", () => {
+    const quench = skill("淬火", {
+      category: "defense",
+      description: "减伤80%，应对攻击：下次攻击技能威力翻倍。",
+    });
+    expect(getSkillStatusEffectInputs(quench)).toEqual([
+      expect.objectContaining({
+        key: "defenseCounterSucceeded",
+        label: "防御应对成功",
+        type: "boolean",
+      }),
+    ]);
+    expect(resolveSkillStatusActivation(quench, {})).toMatchObject({
+      applied: true,
+      operations: { defenseReductionPercent: 80 },
+    });
+    expect(
+      resolveSkillStatusActivation(quench, {
+        defenseCounterSucceeded: true,
+      }),
+    ).toMatchObject({
+      applied: true,
+      operations: {
+        defenseReductionPercent: 80,
+        powerPercentForAllAttacks: 1,
+      },
+    });
+  });
+
+  test("暖气只在应对成功后给下一次攻击增加50固定威力", () => {
+    const warmAir = skill("暖气", {
+      category: "defense",
+      description: "减伤70%，应对攻击：下一次攻击时，技能威力+50。",
+    });
+
+    expect(getSkillStatusEffectInputs(warmAir)).toEqual([
+      expect.objectContaining({
+        key: "defenseCounterSucceeded",
+        label: "防御应对成功",
+        type: "boolean",
+      }),
+    ]);
+    expect(resolveSkillStatusActivation(warmAir, {})).toMatchObject({
+      applied: true,
+      deltas: { ownFixedPower: 0 },
+      operations: { defenseReductionPercent: 70 },
+    });
+    expect(
+      resolveSkillStatusActivation(warmAir, {
+        defenseCounterSucceeded: true,
+      }),
+    ).toMatchObject({
+      applied: true,
+      deltas: { ownFixedPower: 50 },
+      operations: { defenseReductionPercent: 70 },
     });
   });
 
@@ -104,6 +226,19 @@ describe("skill status effects", () => {
     expect(resolveSkillStatusActivation(skill(name))).toMatchObject({
       applied: true,
       deltas: expected,
+    });
+  });
+
+  test("花炮按本次实际连击次数结算逐击增益", () => {
+    expect(
+      resolveSkillStatusActivation(skill("花炮"), { effectiveHitCount: 5 }),
+    ).toMatchObject({
+      applied: true,
+      deltas: { ownAttack: 30 },
+    });
+    expect(resolveSkillStatusActivation(skill("花炮"))).toMatchObject({
+      applied: true,
+      deltas: { ownAttack: 12 },
     });
   });
 

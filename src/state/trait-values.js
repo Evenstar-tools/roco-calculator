@@ -46,7 +46,13 @@ function explicitControlValue(context, control) {
 }
 
 function sanitizeOne(control, value) {
-  return sanitizeTriggerValues({ [control.id]: value }, [control])[control.id];
+  const standaloneControl = control.visibleWhen
+    ? { ...control, visibleWhen: undefined }
+    : control;
+  return sanitizeTriggerValues(
+    { [standaloneControl.id]: value },
+    [standaloneControl],
+  )[standaloneControl.id];
 }
 
 export function extractTraitValues(config, snapshot) {

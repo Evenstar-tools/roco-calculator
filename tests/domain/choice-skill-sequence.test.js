@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import {
   buildChoiceSkillSequence,
   getChoiceTraitInput,
+  hasPersistentSkillProgression,
   isChoiceSkill,
   supportsChoiceTrait,
 } from "../../src/domain/choice-skill-sequence.js";
@@ -120,6 +121,25 @@ describe("选择技能特性执行计划", () => {
 
     expect(sequence.executions).toHaveLength(1);
     expect(sequence.nextContext.skillUseCount).toBe(3);
+  });
+
+  test("click activation advances 撒娇萌化次数 exactly once", () => {
+    const skill = {
+      basePower: 30,
+      category: "magical",
+      description: "造成魔伤，3连击。自己获得萌化，威力永久+20。",
+      name: "撒娇",
+    };
+
+    expect(hasPersistentSkillProgression(skill)).toBe(true);
+    const sequence = buildChoiceSkillSequence({
+      context: { moeGainCount: 2 },
+      skill,
+      traitName: null,
+    });
+
+    expect(sequence.executions).toHaveLength(1);
+    expect(sequence.nextContext.moeGainCount).toBe(3);
   });
 
   test("exposes one stable trigger control only for supported choice traits", () => {

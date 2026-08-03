@@ -136,19 +136,22 @@ export function TeamMemberEditor({
           </div>
 
           <div className="team-member-editor__skills">
-            {Array.from({ length: 4 }, (_, skillIndex) => (
-              <label key={skillIndex}>
-                <span>{skillIndex + 1}</span>
-                <SkillPicker
-                  ariaLabel={`成员技能${skillIndex + 1}`}
-                  onSelect={(skillId) => updateSkill(skillIndex, skillId)}
-                  selected={skillById.get(
-                    entryId(member.skills.four[skillIndex]),
-                  )}
-                  skills={legalSkills}
-                />
-              </label>
-            ))}
+            {Array.from(
+              { length: Math.max(4, member.skills.four.length) },
+              (_, skillIndex) => (
+                <label key={skillIndex}>
+                  <span>{skillIndex + 1}</span>
+                  <SkillPicker
+                    ariaLabel={`成员技能${skillIndex + 1}`}
+                    onSelect={(skillId) => updateSkill(skillIndex, skillId)}
+                    selected={skillById.get(
+                      entryId(member.skills.four[skillIndex]),
+                    )}
+                    skills={legalSkills}
+                  />
+                </label>
+              ),
+            )}
           </div>
         </>
       ) : (

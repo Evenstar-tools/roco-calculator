@@ -125,4 +125,30 @@ describe("skill loadouts", () => {
     ]);
     expect(getSkillChoices(snapshot, "spirit-a")).toBe(first);
   });
+
+  test("fills seven default slots for a spirit with the dazzling trait", () => {
+    const snapshot = {
+      learnsets: [{
+        skillIds: ["a", "b", "c", "d", "e", "f", "g"],
+        spiritId: "rainbow-unicorn",
+      }],
+      skills: Array.from({ length: 7 }, (_, index) => ({
+        basePower: 50 + index,
+        category: "magical",
+        id: String.fromCharCode(97 + index),
+        name: `技能${index + 1}`,
+      })),
+      spirits: [{ id: "rainbow-unicorn", traitIds: ["dazzling"] }],
+      traits: [{ id: "dazzling", name: "夺目" }],
+    };
+
+    expect(chooseDefaultSkillIds(snapshot, "rainbow-unicorn")).toEqual([
+      "a", "b", "c", "d", "e", "f", "g",
+    ]);
+    expect(reconcileSkillLoadout(
+      { four: ["a", null, null, null], single: "a" },
+      ["a", "b", "c", "d", "e", "f", "g"],
+      7,
+    ).four).toEqual(["a", "b", "c", "d", "e", "f", "g"]);
+  });
 });

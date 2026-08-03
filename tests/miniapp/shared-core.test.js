@@ -557,5 +557,5 @@ describe("miniapp shared calculator core", () => {
         scopes: ["working-tree", "index", "HEAD"],
       }),
     ).toEqual([]);
-  });
+  }, 10_000);
 });

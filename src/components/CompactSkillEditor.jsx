@@ -8,6 +8,7 @@ import {
 import { damageTone } from "./damageTone.js";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
+import { buildRefractionHint } from "../domain/refraction.js";
 
 function CompactDamage({
   label,
@@ -62,6 +63,7 @@ function CompactSkillSide({
   activeSkillIndex,
   label,
   name,
+  onSkillActivate,
   onSkillFocus,
   onSkillSelect,
   onTraitDamageFocus,
@@ -131,16 +133,31 @@ function CompactSkillSide({
             />
           </div>
         ) : null}
-        {Array.from({ length: 4 }, (_, index) => {
+        {Array.from({ length: Math.max(4, selectedSkills.length) }, (_, index) => {
           const selected = selectedSkills[index];
+          const result = results?.[index];
+          const effectiveType = result?.typeLabel ?? selected?.type;
           const isSelected =
             active && activeDamageSource !== "trait" && index === activeSkillIndex;
+          const refractionHint = buildRefractionHint({
+            carriedSkills: selectedSkills,
+            selectedSkill: selected,
+          });
           return (
             <div
               aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
               className={`compact-skill__row${isSelected ? " is-selected" : ""}`}
               key={`${side}-${index}`}
-              onClick={() => onSkillFocus?.(side, index)}
+              onClick={(event) => {
+                onSkillFocus?.(side, index);
+                if (
+                  selected &&
+                  event.target instanceof Element &&
+                  !event.target.closest("button, input, [role='combobox'], [role='option']")
+                ) {
+                  onSkillActivate?.(side, index);
+                }
+              }}
               onKeyDown={(event) => {
                 if (
                   event.target === event.currentTarget &&
@@ -167,9 +184,9 @@ function CompactSkillSide({
               />
               <span
                 className="compact-skill__element"
-                title={selected?.type ?? "未选择属性"}
+                title={effectiveType ?? "未选择属性"}
               >
-                <ElementIcon size={19} type={selected?.type} />
+                <ElementIcon size={19} type={effectiveType} />
               </span>
               <span
                 className="compact-skill__cost"
@@ -181,9 +198,17 @@ function CompactSkillSide({
               <CompactDamage
                 label={label}
                 opponentName={opponentName}
-                result={results?.[index]}
+                result={result}
                 selected={selected}
               />
+              {refractionHint ? (
+                <small
+                  className="compact-skill__effect-hint"
+                  title={refractionHint}
+                >
+                  {refractionHint}
+                </small>
+              ) : null}
             </div>
           );
         })}
@@ -207,6 +232,7 @@ export function CompactFourSkillEditor({
   defenderSkills,
   defenderTraitDamage,
   onSkillFocus,
+  onSkillActivate,
   onSkillSelect,
   onTraitDamageFocus,
   onTraitDamageHitCountChange,
@@ -220,6 +246,7 @@ export function CompactFourSkillEditor({
         label="攻击方"
         name={attackerName}
         onSkillFocus={onSkillFocus}
+        onSkillActivate={onSkillActivate}
         onSkillSelect={onSkillSelect}
         onTraitDamageFocus={onTraitDamageFocus}
         onTraitDamageHitCountChange={onTraitDamageHitCountChange}
@@ -237,6 +264,7 @@ export function CompactFourSkillEditor({
         label="防御方"
         name={defenderName}
         onSkillFocus={onSkillFocus}
+        onSkillActivate={onSkillActivate}
         onSkillSelect={onSkillSelect}
         onTraitDamageFocus={onTraitDamageFocus}
         onTraitDamageHitCountChange={onTraitDamageHitCountChange}
@@ -259,6 +287,7 @@ export function CompactSingleSkillEditor({
   selectedSkill,
   skills,
 }) {
+  const effectiveType = result?.typeLabel ?? selectedSkill?.type;
   return (
     <div className="compact-single-skill">
       <SkillPicker
@@ -268,8 +297,8 @@ export function CompactSingleSkillEditor({
         skills={skills}
       />
       <div className="compact-single-skill__meta">
-        <span title={selectedSkill?.type ?? "未选择属性"}>
-          <ElementIcon size={20} type={selectedSkill?.type} />
+        <span title={effectiveType ?? "未选择属性"}>
+          <ElementIcon size={20} type={effectiveType} />
         </span>
         <span title={selectedSkill?.category ?? "技能类型"}>
           {selectedSkill?.category === "magical" ? (

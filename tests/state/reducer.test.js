@@ -202,6 +202,32 @@ describe("calculatorReducer", () => {
     expect(next.sides.defender).toBe(state.sides.defender);
   });
 
+  test("reconciles a seven-slot spirit without truncating its extra slots", () => {
+    const state = createInitialState({
+      meta: { id: "s3", rulesVersion: "rules-v1" },
+      skills: [{ id: "old-skill" }],
+      spirits: [{ id: "attacker" }, { id: "defender" }],
+    });
+
+    const next = calculatorReducer(state, {
+      capacity: 7,
+      legalSkillIds: Array.from({ length: 7 }, (_, index) => `skill-${index + 1}`),
+      side: "attacker",
+      type: "side/set-spirit",
+      value: "rainbow-unicorn",
+    });
+
+    expect(next.sides.attacker.skills.four).toEqual([
+      "skill-1",
+      "skill-2",
+      "skill-3",
+      "skill-4",
+      "skill-5",
+      "skill-6",
+      "skill-7",
+    ]);
+  });
+
   test("atomically applies a complete team member to one side", () => {
     const state = createInitialState({
       meta: { id: "s3", rulesVersion: "rules-v1" },
@@ -306,7 +332,7 @@ describe("calculatorReducer", () => {
           spiritId: "attacker",
         },
       }),
-    ).toThrow("队伍成员必须配置四个技能位");
+    ).toThrow("队伍成员技能槽数量无效");
   });
 
   test("updates a complete direction environment without cross-direction fallback", () => {

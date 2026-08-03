@@ -302,6 +302,49 @@ test("nature step keeps final panel, race, individual values, and level controls
   expect(onAttackerLevelChange).toHaveBeenCalledWith(1);
 });
 
+test("nature step can reveal both attack and defense levels for each side", async () => {
+  const user = userEvent.setup();
+  const onAttackerLevelChange = vi.fn();
+  const onDefenderLevelChange = vi.fn();
+  render(
+    <NatureStatsStep
+      attacker={{
+        levels: [
+          { label: "攻击能力等级", multiplier: 1.2, role: "attack", stage: 2 },
+          { label: "防御能力等级", multiplier: 1.1, role: "defense", stage: 1 },
+        ],
+        nature: "neutral",
+        stats,
+      }}
+      defender={{
+        levels: [
+          { label: "攻击能力等级", multiplier: 1.3, role: "attack", stage: 3 },
+          { label: "防御能力等级", multiplier: 1.4, role: "defense", stage: 4 },
+        ],
+        nature: "neutral",
+        stats,
+      }}
+      onAttackerIvChange={vi.fn()}
+      onAttackerLevelChange={onAttackerLevelChange}
+      onAttackerNatureChange={vi.fn()}
+      onDefenderIvChange={vi.fn()}
+      onDefenderLevelChange={onDefenderLevelChange}
+      onDefenderNatureChange={vi.fn()}
+    />,
+  );
+
+  expect(screen.getAllByText("攻击能力等级")).toHaveLength(2);
+  expect(screen.getAllByText("防御能力等级")).toHaveLength(2);
+  await user.click(screen.getByRole("button", {
+    name: "攻击方防御能力等级加一",
+  }));
+  expect(onAttackerLevelChange).toHaveBeenCalledWith("defense", 2);
+  await user.click(screen.getByRole("button", {
+    name: "防御方攻击能力等级加一",
+  }));
+  expect(onDefenderLevelChange).toHaveBeenCalledWith("attack", 4);
+});
+
 test("holding a level button repeats changes and stops on release", () => {
   vi.useFakeTimers();
   try {

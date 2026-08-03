@@ -4,6 +4,10 @@ import {
   legacyStorageKey,
 } from "./storage-namespace.js";
 import { extractTraitValues } from "./trait-values.js";
+import {
+  getSpiritSkillSlotCapacity,
+  normalizeSkillSlots,
+} from "../domain/skill-slot-capacity.js";
 
 const SPIRIT_CONFIG_STORAGE_SUFFIX = "spirit-configs.v2";
 const SPIRIT_CONFIG_V1_STORAGE_SUFFIX = "spirit-configs.v1";
@@ -50,16 +54,16 @@ function sanitizeConfig(
   if (!config?.spiritId) {
     throw new TypeError("精灵配置必须包含 spiritId");
   }
+  const capacity = snapshot
+    ? getSpiritSkillSlotCapacity(snapshot, config.spiritId)
+    : config.skills?.four?.length === 7 ? 7 : 4;
   return {
     displayIvs: Object.fromEntries(
       STAT_KEYS.map((stat) => [stat, Number(config.displayIvs?.[stat]) || 0]),
     ),
     natureId: normalizeNatureId(config.natureId ?? config.nature),
     skills: {
-      four: Array.from(
-        { length: 4 },
-        (_, index) => cloneJson(config.skills?.four?.[index] ?? null),
-      ),
+      four: normalizeSkillSlots(config.skills?.four, capacity).map(cloneJson),
       single: cloneJson(config.skills?.single ?? null),
     },
     spiritId: config.spiritId,
@@ -159,6 +163,16 @@ export function spiritConfigsRepository({
       storage.removeItem(legacyStorageKey(SPIRIT_CONFIG_STORAGE_SUFFIX));
       storage.removeItem(legacyStorageKey(SPIRIT_CONFIG_V1_STORAGE_SUFFIX));
       return emptyState();
+    },
+    clearIncomplete(state, snapshot = null) {
+      return write({
+        configs: Object.fromEntries(
+          Object.entries(state?.configs ?? {}).filter(([, config]) =>
+            isCompleteSpiritConfig(config),
+          ),
+        ),
+        schemaVersion: SPIRIT_CONFIG_SCHEMA_VERSION,
+      }, snapshot);
     },
     load(snapshot) {
       const candidates = [

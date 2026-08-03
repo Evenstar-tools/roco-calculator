@@ -26,11 +26,16 @@ import {
 } from "./domain/calculator-view-model.js";
 import {
   buildChoiceSkillSequence,
+  hasPersistentSkillProgression,
   isChoiceSkill,
   supportsChoiceTrait,
 } from "./domain/choice-skill-sequence.js";
 import { resolveSkillStatusActivation } from "./domain/skill-status-effects.js";
 import { hasDeclaredHitCount } from "./domain/skill-effects.js";
+import {
+  copyPositiveAbilityStages,
+  hasFairPigeonBalance,
+} from "./domain/fair-pigeon.js";
 import { getNatureMultipliers } from "./domain/natures.js";
 import { calculateAllPanelStats } from "./domain/stat.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
@@ -91,6 +96,7 @@ function CalculatorWorkspace({ snapshot }) {
   const [configLibraryMode, setConfigLibraryMode] = useState(null);
   const [configLibraryParsed, setConfigLibraryParsed] = useState(null);
   const [configLibrarySummary, setConfigLibrarySummary] = useState(null);
+  const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
   const [importDraft, setImportDraft] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileResultOpen, setMobileResultOpen] = useState(false);
@@ -262,6 +268,8 @@ function CalculatorWorkspace({ snapshot }) {
   const { attacker: attackerView, defender: defenderView } = viewModel.sides;
   const attacker = attackerView.spirit;
   const defender = defenderView.spirit;
+  const fairPigeonPresent =
+    hasFairPigeonBalance(attacker) || hasFairPigeonBalance(defender);
   const attackerHealth = attackerView.health;
   const defenderHealth = defenderView.health;
   const activeAttackSideKey = viewModel.active.attackSideKey;
@@ -362,11 +370,64 @@ function CalculatorWorkspace({ snapshot }) {
     });
   }
 
+  function abilityStagesForSide(currentState, side) {
+    return side === "attacker"
+      ? {
+          attack:
+            currentState.directions.forward.overrides.attackLevelStage ?? 0,
+          defense:
+            currentState.directions.reverse.overrides.defenseLevelStage ?? 0,
+        }
+      : {
+          attack:
+            currentState.directions.reverse.overrides.attackLevelStage ?? 0,
+          defense:
+            currentState.directions.forward.overrides.defenseLevelStage ?? 0,
+        };
+  }
+
+  function updateSideAbilityLevel(side, role, nextStage) {
+    const direction = role === "attack"
+      ? side === "attacker" ? "forward" : "reverse"
+      : side === "attacker" ? "reverse" : "forward";
+    dispatch({
+      direction,
+      type: "direction/update",
+      value: {
+        overrides: { [`${role}LevelStage`]: clampStage(nextStage) },
+      },
+    });
+  }
+
+  function copyAbilityStages(sourceSide, targetSide, sourceStages = null) {
+    const latest = stateRef.current;
+    const source = sourceStages ?? abilityStagesForSide(latest, sourceSide);
+    const target = abilityStagesForSide(latest, targetSide);
+    const copied = copyPositiveAbilityStages(source, target);
+    updateSideAbilityLevel(targetSide, "attack", copied.attack);
+    updateSideAbilityLevel(targetSide, "defense", copied.defense);
+  }
+
+  function balanceTriggerId(side) {
+    const spirit = side === "attacker" ? attacker : defender;
+    return getTraitView(snapshot, spirit, "attacker")?.inputs?.find(
+      (input) => input.contextKey === "balanceTriggered",
+    )?.id;
+  }
+
+  function balanceIsTriggered(currentState, side) {
+    const inputId = balanceTriggerId(side);
+    if (!inputId) return false;
+    const direction = side === "attacker" ? "forward" : "reverse";
+    return currentState.directions[direction].context?.[inputId] === true;
+  }
+
   function updateWeatherRainTurns(value) {
     commitSession(updateGlobalRain(stateRef.current, value));
   }
 
   function updateTraitContext(direction, key, value) {
+    const previousValue = stateRef.current.directions[direction].context?.[key];
     commitSession(
       updateMirroredTraitContext(stateRef.current, { direction, key, value }),
     );
@@ -382,6 +443,18 @@ function CalculatorWorkspace({ snapshot }) {
         snapshot,
       }),
     );
+    if (
+      value === true &&
+      previousValue !== true &&
+      key.includes(".balanceTriggered.") &&
+      hasFairPigeonBalance(ownerSide === "attacker" ? attacker : defender)
+    ) {
+      copyAbilityStages(
+        ownerSide === "attacker" ? "defender" : "attacker",
+        ownerSide,
+      );
+      setToast("衡量已触发：已复制对方当前正面攻防等级");
+    }
   }
 
   function updateSideHealth(side, currentHp) {
@@ -469,6 +542,23 @@ function CalculatorWorkspace({ snapshot }) {
     return next;
   }
 
+  function addPowerPercentToAllAttacks(side, amount, current = {}) {
+    const next = { ...current };
+    for (const [index, entry] of stateRef.current.sides[side].skills.four.entries()) {
+      const carriedSkill = getSkill(snapshot, entry);
+      if (
+        !carriedSkill ||
+        carriedSkill.category === "status" ||
+        carriedSkill.category === "defense"
+      ) {
+        continue;
+      }
+      const slot = String(index + 1);
+      next[slot] = Number(next[slot] ?? 0) + amount;
+    }
+    return next;
+  }
+
   function setSkillMode(value) {
     dispatch({ type: "mode/set", value });
   }
@@ -520,10 +610,15 @@ function CalculatorWorkspace({ snapshot }) {
     const resolution = resolveSkillStatusActivation(skill, {
       ...context,
       attackerHpPercent,
+      carriedSkills: latest.sides[side].skills.four
+        .map((carriedEntry) => getSkill(snapshot, carriedEntry))
+        .filter(Boolean),
       choiceTrait,
+      effectiveHitCount:
+        calculation?.[selfDirection]?.results?.[index]?.hitCount,
     });
     if (!resolution) {
-      if (!isChoiceSkill(skill)) return;
+      if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) return;
       const sequence = buildChoiceSkillSequence({
         context,
         skill,
@@ -572,23 +667,39 @@ function CalculatorWorkspace({ snapshot }) {
           selfOverrides.fixedPowerAddsBySlot,
         )
       : selfOverrides.fixedPowerAddsBySlot;
-    const ownSkillPowerPercentAddsBySlot = operations.powerPercentForType
-      ? addPowerPercentToAttacksOfType(
-          side,
-          operations.powerPercentType,
-          Number(operations.powerPercentForType),
-          selfOverrides.skillPowerPercentAddsBySlot,
-        )
-      : selfOverrides.skillPowerPercentAddsBySlot;
+    let ownSkillPowerPercentAddsBySlot = selfOverrides.skillPowerPercentAddsBySlot;
+    if (operations.powerPercentForAllAttacks) {
+      ownSkillPowerPercentAddsBySlot = addPowerPercentToAllAttacks(
+        side,
+        Number(operations.powerPercentForAllAttacks),
+        ownSkillPowerPercentAddsBySlot,
+      );
+    }
+    if (operations.powerPercentForType) {
+      ownSkillPowerPercentAddsBySlot = addPowerPercentToAttacksOfType(
+        side,
+        operations.powerPercentType,
+        Number(operations.powerPercentForType),
+        ownSkillPowerPercentAddsBySlot,
+      );
+    }
     const ownSpeedFlat = doublePositive(
       Number(selfOverrides.attackerSpeedFlat ?? 0) + deltas.ownSpeedFlat,
     );
-    const ownHitCountAdd = Math.max(
-      0,
-      Math.floor(
-        Number(selfOverrides.hitCountAdd ?? 0) + deltas.ownHitCountAdd,
-      ),
+    const ownHitCountAdd = Math.floor(
+      Number(selfOverrides.hitCountAdd ?? 0) + deltas.ownHitCountAdd,
     );
+    const targetHitCountAdd = Math.floor(
+      Number(oppositeOverrides.hitCountAdd ?? 0) +
+      Number(deltas.targetHitCountAdd ?? 0),
+    );
+    const targetSpeedFlat =
+      Number(oppositeOverrides.attackerSpeedFlat ?? 0) +
+      Number(deltas.targetSpeedFlat ?? 0);
+    const refractionStatuses = [
+      ...(selfOverrides.refractionStatuses ?? []),
+      ...(operations.refractionStatuses ?? []),
+    ];
 
     dispatch({
       direction: selfDirection,
@@ -597,6 +708,9 @@ function CalculatorWorkspace({ snapshot }) {
         overrides: {
           attackLevelStage: ownAttackStage,
           attackerSpeedFlat: ownSpeedFlat,
+          defenderSpeedFlat:
+            Number(selfOverrides.defenderSpeedFlat ?? 0) +
+            Number(deltas.targetSpeedFlat ?? 0),
           defenseLevelStage: clampStage(
             Number(selfOverrides.defenseLevelStage ?? 0) + deltas.targetDefense,
           ),
@@ -604,6 +718,7 @@ function CalculatorWorkspace({ snapshot }) {
           fixedPowerAddsBySlot: ownFixedPowerAddsBySlot,
           skillPowerPercentAddsBySlot: ownSkillPowerPercentAddsBySlot,
           hitCountAdd: ownHitCountAdd,
+          refractionStatuses,
         },
       },
     });
@@ -615,14 +730,94 @@ function CalculatorWorkspace({ snapshot }) {
           attackLevelStage: clampStage(
             Number(oppositeOverrides.attackLevelStage ?? 0) + deltas.targetAttack,
           ),
+          attackerSpeedFlat: targetSpeedFlat,
           defenderSpeedFlat: ownSpeedFlat,
           defenseLevelStage: ownDefenseStage,
           fixedPowerAdd:
             Number(oppositeOverrides.fixedPowerAdd ?? 0) +
             deltas.targetFixedPower,
+          hitCountAdd: targetHitCountAdd,
         },
       },
     });
+    const oppositeSide = side === "attacker" ? "defender" : "attacker";
+    if (
+      hasFairPigeonBalance(oppositeSide === "attacker" ? attacker : defender) &&
+      balanceIsTriggered(stateRef.current, oppositeSide)
+    ) {
+      const gainedAttack = Math.max(
+        0,
+        ownAttackStage - Number(selfOverrides.attackLevelStage ?? 0),
+      );
+      const gainedDefense = Math.max(
+        0,
+        ownDefenseStage - Number(oppositeOverrides.defenseLevelStage ?? 0),
+      );
+      if (gainedAttack > 0 || gainedDefense > 0) {
+        copyAbilityStages(side, oppositeSide, {
+          attack: gainedAttack,
+          defense: gainedDefense,
+        });
+      }
+    }
+    const healPercent = Number(operations.healPercent ?? 0);
+    if (healPercent > 0) {
+      const currentHp = Math.min(
+        panelStats.hp,
+        Math.max(
+          0,
+          Math.round(
+            Number(healthDirection.currentHp ?? panelStats.hp) +
+            panelStats.hp * healPercent / 100,
+          ),
+        ),
+      );
+      dispatch({
+        direction: side === "attacker" ? "reverse" : "forward",
+        type: "direction/update",
+        value: {
+          currentHp,
+          context: { currentHpPercent: currentHp / panelStats.hp * 100 },
+        },
+      });
+    }
+    const targetStarfallStacks = Number(operations.targetStarfallStacks ?? 0);
+    if (targetStarfallStacks > 0) {
+      const targetSide = side === "attacker" ? "defender" : "attacker";
+      const currentMark = latest.marks?.[targetSide]?.negative;
+      dispatch({
+        polarity: "negative",
+        side: targetSide,
+        type: "mark/update",
+        value: {
+          id: "starfall",
+          stacks: Math.min(
+            99,
+            (currentMark?.id === "starfall" ? currentMark.stacks : 0) +
+              targetStarfallStacks,
+          ),
+        },
+      });
+    }
+    for (const markApplication of operations.markApplications ?? []) {
+      const markSide = markApplication.target === "self"
+        ? side
+        : side === "attacker" ? "defender" : "attacker";
+      const currentMark = stateRef.current.marks?.[markSide]?.[markApplication.polarity];
+      dispatch({
+        polarity: markApplication.polarity,
+        side: markSide,
+        type: "mark/update",
+        value: {
+          id: markApplication.id,
+          stacks: Math.min(
+            99,
+            (currentMark?.id === markApplication.id ? currentMark.stacks : 0) +
+              markApplication.stacks,
+          ),
+        },
+      });
+    }
     const defenseReductionPercent = Number(
       operations.defenseReductionPercent,
     );
@@ -660,10 +855,17 @@ function CalculatorWorkspace({ snapshot }) {
     );
   }
 
-  function storedHitCount(skill, direction, effectiveHitCount) {
-    const bonus = hasDeclaredHitCount(skill)
-      ? Math.max(0, Math.floor(Number(direction.overrides?.hitCountAdd) || 0))
-      : 0;
+  function storedHitCount(
+    skill,
+    direction,
+    effectiveHitCount,
+    automaticHitCountAdd,
+  ) {
+    const bonus = Number.isFinite(Number(automaticHitCountAdd))
+      ? Math.floor(Number(automaticHitCountAdd))
+      : hasDeclaredHitCount(skill)
+        ? Math.floor(Number(direction.overrides?.hitCountAdd) || 0)
+        : 0;
     return Math.max(1, Math.floor(Number(effectiveHitCount) || 1) - bonus);
   }
 
@@ -673,6 +875,9 @@ function CalculatorWorkspace({ snapshot }) {
         activeDirection === "forward" ? attackerHealth : defenderHealth
       }
       attackerTrait={getTraitView(snapshot, activeAttackSpirit, "attacker")}
+      carriedSkills={state.sides[activeAttackSideKey].skills.four
+        .map((entry) => getSkill(snapshot, entry))
+        .filter(Boolean)}
       defenderHealth={
         activeDirection === "forward" ? defenderHealth : attackerHealth
       }
@@ -689,7 +894,12 @@ function CalculatorWorkspace({ snapshot }) {
       }
       onHitCountChange={(hitCount) =>
         updateRememberedSingleDirection({
-          hitCount: storedHitCount(selectedSingleSkill, currentDirection, hitCount),
+          hitCount: storedHitCount(
+            selectedSingleSkill,
+            currentDirection,
+            hitCount,
+            resultModel.selectedResult?.automaticHitCountAdd,
+          ),
         })
       }
       onAttackerHealthChange={(currentHp) =>
@@ -779,7 +989,11 @@ function CalculatorWorkspace({ snapshot }) {
       attackerTrait={getTraitView(snapshot, attacker, "attacker")}
       attackerTraitContext={state.directions.forward.context}
       attackerTraitDamage={attackerTraitDamage}
-      attackerDefenseTrait={getTraitView(snapshot, defender, "defender")}
+      attackerDefenseTrait={
+        hasFairPigeonBalance(defender)
+          ? null
+          : getTraitView(snapshot, defender, "defender")
+      }
       defenderHitCount={state.directions.reverse.hitCount}
       defenderHealth={defenderHealth}
       defenderName={defender.fullName}
@@ -791,7 +1005,11 @@ function CalculatorWorkspace({ snapshot }) {
       defenderTrait={getTraitView(snapshot, defender, "attacker")}
       defenderTraitContext={state.directions.reverse.context}
       defenderTraitDamage={defenderTraitDamage}
-      defenderDefenseTrait={getTraitView(snapshot, attacker, "defender")}
+      defenderDefenseTrait={
+        hasFairPigeonBalance(attacker)
+          ? null
+          : getTraitView(snapshot, attacker, "defender")
+      }
       onHealthChange={updateSideHealth}
       onHealthPercentChange={updateSideHealthPercent}
       onTraitContextChange={(side, key, value) => {
@@ -844,8 +1062,15 @@ function CalculatorWorkspace({ snapshot }) {
         const directionKey = side === "attacker" ? "forward" : "reverse";
         const direction = stateRef.current.directions[directionKey];
         const entry = stateRef.current.sides[side].skills.four[index];
+        const automaticHitCountAdd =
+          calculation?.[directionKey]?.results?.[index]?.automaticHitCountAdd;
         updateFourSkillEntry(side, index, {
-          hitCount: storedHitCount(getSkill(snapshot, entry), direction, hitCount),
+          hitCount: storedHitCount(
+            getSkill(snapshot, entry),
+            direction,
+            hitCount,
+            automaticHitCountAdd,
+          ),
         });
       }}
       onSkillPowerChange={(side, index, power) =>
@@ -895,6 +1120,7 @@ function CalculatorWorkspace({ snapshot }) {
           value: { selectedDamageSource: "skill", selectedSkillIndex: index },
         });
       }}
+      onSkillActivate={activateFourSkill}
       onTraitDamageFocus={(side) => {
         const direction = side === "attacker" ? "forward" : "reverse";
         setActiveDirection(direction);
@@ -931,15 +1157,26 @@ function CalculatorWorkspace({ snapshot }) {
         onClose: () => setMenuOpen(false),
         onConfigLibraryExport: openConfigLibraryExport,
         onConfigLibraryImport: openConfigLibraryImport,
-        onReset: () => {
-          storedData.clearSpiritConfigs();
+        onClearCurrent: () => {
           dispatch({ type: "state/replace", value: initialState });
         },
+        onCleanupConfigs: () => setCleanupConfigsOpen(true),
         onShare: openShareConfiguration,
       },
       buttonRef: menuButtonRef,
       open: menuOpen,
       ref: menuRef,
+    },
+    cleanupConfigs: {
+      onCancel: () => setCleanupConfigsOpen(false),
+      onConfirm: () => {
+        const next = storedData.clearIncompleteSpiritConfigs();
+        setCleanupConfigsOpen(false);
+        setToast(
+          `已清理未完成配置，保留 ${Object.keys(next.configs).length} 只完整配置`,
+        );
+      },
+      open: cleanupConfigsOpen,
     },
     configLibrary: {
       error: configLibraryError,
@@ -1178,6 +1415,28 @@ function CalculatorWorkspace({ snapshot }) {
             <>
               <NatureStatsStep
             attacker={{
+              levels: fairPigeonPresent
+                ? [
+                    {
+                      label: "攻击能力等级",
+                      multiplier: stageMultiplier(
+                        state.directions.forward.overrides.attackLevelStage ?? 0,
+                      ),
+                      role: "attack",
+                      stage:
+                        state.directions.forward.overrides.attackLevelStage ?? 0,
+                    },
+                    {
+                      label: "防御能力等级",
+                      multiplier: stageMultiplier(
+                        state.directions.reverse.overrides.defenseLevelStage ?? 0,
+                      ),
+                      role: "defense",
+                      stage:
+                        state.directions.reverse.overrides.defenseLevelStage ?? 0,
+                    },
+                  ]
+                : undefined,
               level:
                 activeDirection === "forward"
                   ? {
@@ -1203,6 +1462,28 @@ function CalculatorWorkspace({ snapshot }) {
               }),
             }}
             defender={{
+              levels: fairPigeonPresent
+                ? [
+                    {
+                      label: "攻击能力等级",
+                      multiplier: stageMultiplier(
+                        state.directions.reverse.overrides.attackLevelStage ?? 0,
+                      ),
+                      role: "attack",
+                      stage:
+                        state.directions.reverse.overrides.attackLevelStage ?? 0,
+                    },
+                    {
+                      label: "防御能力等级",
+                      multiplier: stageMultiplier(
+                        state.directions.forward.overrides.defenseLevelStage ?? 0,
+                      ),
+                      role: "defense",
+                      stage:
+                        state.directions.forward.overrides.defenseLevelStage ?? 0,
+                    },
+                  ]
+                : undefined,
               level:
                 activeDirection === "forward"
                   ? {
@@ -1238,12 +1519,14 @@ function CalculatorWorkspace({ snapshot }) {
             onAttackerNatureChange={(value) =>
               dispatch({ side: "attacker", type: "side/set-nature", value })
             }
-            onAttackerLevelChange={(stage) =>
-              updatePowerLevel(
-                activeDirection === "forward" ? "attack" : "defense",
-                stage,
-              )
-            }
+            onAttackerLevelChange={fairPigeonPresent
+              ? (role, stage) =>
+                  updateSideAbilityLevel("attacker", role, stage)
+              : (stage) =>
+                  updatePowerLevel(
+                    activeDirection === "forward" ? "attack" : "defense",
+                    stage,
+                  )}
             onDefenderIvChange={(stat, value) =>
               dispatch({
                 side: "defender",
@@ -1255,12 +1538,14 @@ function CalculatorWorkspace({ snapshot }) {
             onDefenderNatureChange={(value) =>
               dispatch({ side: "defender", type: "side/set-nature", value })
             }
-            onDefenderLevelChange={(stage) =>
-              updatePowerLevel(
-                activeDirection === "forward" ? "defense" : "attack",
-                stage,
-              )
-            }
+            onDefenderLevelChange={fairPigeonPresent
+              ? (role, stage) =>
+                  updateSideAbilityLevel("defender", role, stage)
+              : (stage) =>
+                  updatePowerLevel(
+                    activeDirection === "forward" ? "defense" : "attack",
+                    stage,
+                  )}
               />
               <SkillStep
                 activeMode={state.mode}

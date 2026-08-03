@@ -23,6 +23,7 @@ import {
   transitionTriggerContext,
 } from "./trigger-context.js";
 import { getChoiceTraitInput } from "../domain/choice-skill-sequence.js";
+import { getGaleTurbineCompanionControl } from "../domain/wing-extension.js";
 
 const CONFIGURATION_SOURCES = new Set(["personal", "team", "share"]);
 const REMEMBERED_SIDE_ACTIONS = new Set([
@@ -242,10 +243,12 @@ function entrySkillId(entry) {
 
 function skillTriggerControls(skill) {
   const choiceTraitInput = getChoiceTraitInput(skill);
+  const galeTurbineInput = getGaleTurbineCompanionControl(skill);
   return normalizeTriggerControls([
     ...getSkillEffectInputs(skill),
     ...getSkillStatusEffectInputs(skill),
     ...(choiceTraitInput ? [choiceTraitInput] : []),
+    ...(galeTurbineInput ? [galeTurbineInput] : []),
   ], { source: "skill" }).filter((control) => control.scope !== "battle");
 }
 
@@ -372,6 +375,40 @@ function directionTraitControls(snapshot, sides, direction) {
   ];
 }
 
+function applyMatchupTraitDefaults(state, snapshot) {
+  let nextState = state;
+  for (const direction of ["forward", "reverse"]) {
+    const attackerSide =
+      direction === "forward"
+        ? nextState.sides.attacker
+        : nextState.sides.defender;
+    const defenderSide =
+      direction === "forward"
+        ? nextState.sides.defender
+        : nextState.sides.attacker;
+    const attacker = getSpirit(snapshot, attackerSide);
+    const defender = getSpirit(snapshot, defenderSide);
+    const trait = attacker
+      ? getTraitView(snapshot, attacker, "attacker")
+      : null;
+    if (trait?.name !== "月光审判") continue;
+    const activation = trait.inputs.find(
+      (control) => control.contextKey === "traitActivated",
+    );
+    if (!activation) continue;
+    nextState = calculatorReducer(nextState, {
+      direction,
+      type: "direction/update",
+      value: {
+        context: {
+          [activation.id]: defender?.stage === "首领",
+        },
+      },
+    });
+  }
+  return nextState;
+}
+
 function migrateSkillContext(context, skill) {
   const controls = skillTriggerControls(skill);
   return replaceSlotControls(
@@ -466,6 +503,9 @@ export function applyConfiguration(
         value: { context: traitContext },
       });
     }
+  }
+  if (snapshot) {
+    nextState = applyMatchupTraitDefaults(nextState, snapshot);
   }
 
   return {

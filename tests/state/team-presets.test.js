@@ -98,6 +98,22 @@ describe("teamPresetsRepository", () => {
     expect(JSON.parse(storage.getItem(TEAM_STORAGE_KEY))).toEqual(next);
   });
 
+  test("preserves a seven-slot dazzling member", () => {
+    const side = {
+      displayIvs: {},
+      nature: "neutral",
+      skills: {
+        four: ["a", "b", "c", "d", "e", "f", "g"],
+        single: "a",
+      },
+      spiritId: "rainbow-unicorn",
+    };
+
+    expect(createTeamMemberFromSide(side).skills.four).toEqual(
+      side.skills.four,
+    );
+  });
+
   test("renames duplicates and deletes without sharing member references", () => {
     const store = repository();
     let state = store.create(store.load(snapshot()), "主队");

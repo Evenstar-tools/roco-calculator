@@ -69,6 +69,13 @@ const automatic = (kind, effect, effectLabel, extra = {}) => ({
 });
 
 const RULES = Object.freeze({
+  守护之心: stack(
+    "physical_defense_percent",
+    20,
+    "不同增益种类",
+    "每种物防",
+    { max: 50, roles: ["attacker", "defender"] },
+  ),
   保守派: trigger(
     "defense_percent",
     80,
@@ -379,10 +386,11 @@ const RULES = Object.freeze({
       Number(context.skillPosition) === 2,
   }),
   张弛有度: trigger(
-    "attack_percent",
+    "weekend_attack_weekday_defense_percent",
     40,
-    "当前为周末",
-    "双攻加成",
+    "周末",
+    "攻防加成",
+    { editableEffect: false, roles: ["attacker", "defender"] },
   ),
   水翼飞升: automatic("power_percent", 30, "威力加成", {
     applies: ({ skill }) => Number(skill.cost) === 0,
@@ -392,7 +400,14 @@ const RULES = Object.freeze({
     10,
     "携带冰系技能数",
     "每层威力",
-    { max: 4, types: ["地"] },
+    {
+      automaticStack: {
+        label: "携带冰系技能数",
+        skillTypes: ["冰"],
+      },
+      max: 4,
+      types: ["地"],
+    },
   ),
   拨浪鼓: stack(
     "fixed_power",
@@ -492,6 +507,7 @@ const RULES = Object.freeze({
     {
       conditionKey: "counterTriggered",
       conditionScope: "skill",
+      editableEffect: false,
     },
   ),
   电流刺激: trigger(
@@ -507,11 +523,12 @@ const RULES = Object.freeze({
   展翅: trigger(
     "final_damage_percent",
     25,
-    "后于敌方行动",
+    "后于对手行动",
     "承伤增加",
     {
       conditionKey: "actedAfterEnemy",
       conditionScope: "skill",
+      editableEffect: false,
       role: "defender",
     },
   ),
@@ -644,6 +661,17 @@ export function getTraitEffectRule(trait, role = "attacker") {
   return inferredRule(trait, role);
 }
 
+export function getTraitAutomaticStack(trait, role = "attacker", skills = []) {
+  const automaticStack = getTraitEffectRule(trait, role)?.automaticStack;
+  if (!automaticStack) return null;
+  const matchingTypes = new Set(automaticStack.skillTypes ?? []);
+  return {
+    label: automaticStack.label,
+    skillTypes: [...matchingTypes],
+    value: skills.filter((skill) => matchingTypes.has(skill?.type)).length,
+  };
+}
+
 export function hasNamedTraitEffectRule(trait, role = "attacker") {
   const named = RULES[trait?.name];
   return Boolean(
@@ -657,6 +685,21 @@ function effectKey(role) {
 }
 
 export function getTraitEffectInputs(trait, role = "attacker") {
+  const hitCountInputs = getTraitHitCountInputs(trait, role);
+  if (hitCountInputs.length > 0) return hitCountInputs;
+  if (trait?.name === "衡量") {
+    return normalizeTriggerControls([
+      {
+        contextKey: "balanceTriggered",
+        defaultValue: false,
+        label: "触发衡量",
+        scope: "battle",
+        type: "boolean",
+      },
+    ], {
+      source: role === "defender" ? "defenderTrait" : "attackerTrait",
+    });
+  }
   if (trait?.name === BEAST_FLOWER_TRAIT_NAME) {
     return normalizeTriggerControls([
       {
@@ -684,6 +727,46 @@ export function getTraitEffectInputs(trait, role = "attacker") {
       source: role === "defender" ? "defenderTrait" : "attackerTrait",
     });
   }
+  if (trait?.name === CONTRACT_SHAPE_TRAIT_NAME) {
+    return normalizeTriggerControls([
+      {
+        contextKey: "contractBallType",
+        defaultValue: "",
+        label: "咕噜球",
+        options: [
+          { value: "", label: "选择咕噜球" },
+          ...CONTRACT_BALLS.map(({ value, label, summary }) => ({
+            value,
+            label: `${label}｜${summary}`,
+          })),
+        ],
+        scope: "direction",
+        type: "choice",
+      },
+      {
+        contextKey: "contractPrismEffect",
+        defaultValue: "",
+        label: "棱镜效果",
+        options: [
+          { value: "", label: "选择随机到的球" },
+          ...CONTRACT_BALLS
+            .filter(({ value }) => value !== "prism")
+            .map(({ value, label, summary }) => ({
+              value,
+              label: `${label}｜${summary}`,
+            })),
+        ],
+        scope: "direction",
+        type: "choice",
+        visibleWhen: {
+          contextKey: "contractBallType",
+          equals: "prism",
+        },
+      },
+    ], {
+      source: role === "defender" ? "defenderTrait" : "attackerTrait",
+    });
+  }
   const rule = getTraitEffectRule(trait, role);
   if (!rule) return [];
   const inputs = [];
@@ -693,7 +776,7 @@ export function getTraitEffectInputs(trait, role = "attacker") {
       type: "boolean",
     });
   }
-  if (rule.stack) {
+  if (rule.stack && !rule.automaticStack) {
     inputs.push({
       ...rule.stack,
       type: "number",
@@ -738,6 +821,28 @@ export function resolveBeastFlowerBloodlineTrait({
   };
 }
 
+export function resolveContractShapeTrait({
+  traits = [],
+  role = "attacker",
+  context = {},
+  skill = null,
+} = {}) {
+  const trait = traits.find(({ name }) => name === CONTRACT_SHAPE_TRAIT_NAME);
+  if (!trait) return resolveContractShape({ skill });
+
+  const controls = getTraitEffectInputs(trait, role);
+  const projected = projectTriggerContext(context, controls);
+  return {
+    ...resolveContractShape({
+      ballType: projected.contractBallType,
+      prismEffect: projected.contractPrismEffect,
+      ownerRole: role,
+      skill,
+    }),
+    traitId: trait.id,
+  };
+}
+
 function finiteNumber(value, fallback) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : fallback;
@@ -755,7 +860,10 @@ function typeMatches(rule, skill) {
 }
 
 export function resolveTraitEffectRule(trait, role, input) {
-  if (trait?.name === BEAST_FLOWER_TRAIT_NAME) {
+  if (
+    trait?.name === BEAST_FLOWER_TRAIT_NAME ||
+    trait?.name === CONTRACT_SHAPE_TRAIT_NAME
+  ) {
     return {
       attackLevelBonus: 0,
       attackerDefenseLevelBonus: 0,
@@ -814,11 +922,19 @@ export function resolveTraitEffectRule(trait, role, input) {
     ? input.context[rule.condition.key] === true
     : true;
   const rawStacks = rule.stack
-    ? input.context[rule.stack.key] ??
-      (rule.useDefenderTotalCost ? input.defender.totalSkillCost : 0)
+    ? rule.automaticStack
+      ? (input.attacker.skillTypes ?? []).filter((type) =>
+          rule.automaticStack.skillTypes.includes(type),
+        ).length
+      : input.context[rule.stack.key] ??
+        (rule.useDefenderTotalCost ? input.defender.totalSkillCost : 0)
     : 1;
   const stacks = Math.max(0, Math.floor(finiteNumber(rawStacks, 0)));
-  const active = triggered && (!rule.stack || stacks > 0);
+  const isWeekendAttackWeekdayDefense =
+    rule.kind === "weekend_attack_weekday_defense_percent";
+  const active =
+    (isWeekendAttackWeekdayDefense || triggered) &&
+    (!rule.stack || stacks > 0);
   const effect = Math.max(
     0,
     finiteNumber(input.context[effectKey(role)], rule.effect),
@@ -844,6 +960,16 @@ export function resolveTraitEffectRule(trait, role, input) {
   if (rule.kind === "attack_percent" || rule.kind === "decay_attack_percent") {
     result.attackLevelBonus = amount / 10;
     result.attackMultiplier = 1 + amount / 100;
+  } else if (rule.kind === "weekend_attack_weekday_defense_percent") {
+    if (triggered && role === "attacker") {
+      result.attackLevelBonus = amount / 10;
+      result.attackMultiplier = 1 + amount / 100;
+    } else if (!triggered && role === "attacker") {
+      result.attackerDefenseLevelBonus = amount / 10;
+    } else if (!triggered) {
+      result.defenseLevelBonus = amount / 10;
+      result.defenderDefenseLevelBonus = amount / 10;
+    }
   } else if (rule.kind === "attack_defense_percent") {
     if (role === "attacker") {
       result.attackLevelBonus = amount / 10;
@@ -859,6 +985,15 @@ export function resolveTraitEffectRule(trait, role, input) {
     } else {
       result.defenseLevelBonus = amount / 10;
       result.defenderDefenseLevelBonus = amount / 10;
+    }
+  } else if (rule.kind === "physical_defense_percent") {
+    if (role === "attacker") {
+      result.attackerDefenseLevelBonus = amount / 10;
+    } else {
+      result.defenderDefenseLevelBonus = amount / 10;
+      if (input.skill?.category === "physical") {
+        result.defenseLevelBonus = amount / 10;
+      }
     }
   } else if (rule.kind === "power_percent") {
     result.powerPercentAdd = amount / 100;
@@ -881,12 +1016,17 @@ export function resolveTraitEffectRule(trait, role, input) {
               : rule.kind === "attack_percent" ||
                   rule.kind === "decay_attack_percent" ||
                   rule.kind === "attack_defense_percent" ||
-                  rule.kind === "defense_percent"
+                  rule.kind === "defense_percent" ||
+                  rule.kind === "physical_defense_percent" ||
+                  rule.kind === "weekend_attack_weekday_defense_percent"
                 ? rule.kind === "attack_defense_percent" &&
                   role === "defender"
                   ? 1 + amount / 100
-                  : rule.kind === "defense_percent"
+                  : rule.kind === "defense_percent" ||
+                      rule.kind === "physical_defense_percent"
                     ? 1 + amount / 100
+                    : rule.kind === "weekend_attack_weekday_defense_percent"
+                      ? 1 + amount / 100
                     : result.attackMultiplier
                 : rule.kind === "power_percent"
                   ? result.powerMultiplier
@@ -895,7 +1035,9 @@ export function resolveTraitEffectRule(trait, role, input) {
                     : result.finalDamageMultiplier,
           before: rule.kind === "fixed_power" ? 0 : 1,
           input: rule.stack ? { effect, stacks } : { effect, triggered },
-          label: trait.name ?? trait.id,
+          label: isWeekendAttackWeekdayDefense
+            ? `${trait.name ?? trait.id} · ${triggered ? "周末双攻" : "平日双防"}`
+            : trait.name ?? trait.id,
           source: "reviewed-trait:interactive-effect-v1",
         }
       : null,
@@ -909,6 +1051,12 @@ import {
   resolveBeastFlowerBloodline,
 } from "./beast-flower-bloodline.js";
 import {
+  CONTRACT_BALLS,
+  CONTRACT_SHAPE_TRAIT_NAME,
+  resolveContractShape,
+} from "./contract-shape.js";
+import {
   normalizeTriggerControls,
   projectTriggerContext,
 } from "./trigger-controls.js";
+import { getTraitHitCountInputs } from "./trait-hit-count.js";

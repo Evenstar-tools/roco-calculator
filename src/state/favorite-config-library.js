@@ -1,6 +1,10 @@
 import { NATURES } from "../domain/natures.js";
 import { isCompleteSpiritConfig } from "./spirit-configs.js";
 import { extractTraitValues } from "./trait-values.js";
+import {
+  getSpiritSkillSlotCapacity,
+  normalizeSkillSlots,
+} from "../domain/skill-slot-capacity.js";
 
 export const FAVORITE_CONFIG_LIBRARY_FORMAT =
   "rock-calculator.favorite-config-library";
@@ -36,16 +40,15 @@ function favoriteSpiritIds(favorites) {
 }
 
 function exportEntry(config, snapshot) {
+  const capacity = getSpiritSkillSlotCapacity(snapshot, config.spiritId);
   return {
     spiritId: config.spiritId,
     natureId: config.natureId ?? config.nature,
     displayIvs: Object.fromEntries(
       STAT_KEYS.map((stat) => [stat, Number(config.displayIvs?.[stat])]),
     ),
-    skills: Array.from(
-      { length: 4 },
-      (_, index) => skillId(config.skills?.four?.[index]) || null,
-    ),
+    skills: normalizeSkillSlots(config.skills?.four, capacity)
+      .map((entry) => skillId(entry) || null),
     traitValues: extractTraitValues(config, snapshot),
   };
 }
@@ -131,20 +134,23 @@ function isValidIvs(displayIvs) {
   });
 }
 
-function isValidSkills(skills) {
-  return Array.isArray(skills) && skills.length === 4 && skills.every(
+function isValidSkills(skills, capacity) {
+  return Array.isArray(skills) && skills.length === capacity && skills.every(
     (value) => value === null || typeof value === "string",
   );
 }
 
 function validateAndRepairEntry(raw, snapshot) {
+  const capacity = typeof raw?.spiritId === "string"
+    ? getSpiritSkillSlotCapacity(snapshot, raw.spiritId)
+    : 4;
   if (
     !raw ||
     typeof raw !== "object" ||
     typeof raw.spiritId !== "string" ||
     !NATURE_IDS.has(raw.natureId) ||
     !isValidIvs(raw.displayIvs) ||
-    !isValidSkills(raw.skills) ||
+    !isValidSkills(raw.skills, capacity) ||
     !raw.traitValues ||
     typeof raw.traitValues !== "object" ||
     Array.isArray(raw.traitValues)

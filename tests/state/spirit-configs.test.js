@@ -129,7 +129,57 @@ describe("isCompleteSpiritConfig", () => {
   });
 });
 
+test("persists all seven slots for a dazzling spirit configuration", () => {
+  const data = snapshot();
+  data.skills.push(
+    { id: "skill-d", name: "技能 D" },
+    { id: "skill-e", name: "技能 E" },
+    { id: "skill-f", name: "技能 F" },
+    { id: "skill-g", name: "技能 G" },
+  );
+  data.traits.push({ id: "trait-dazzling", name: "夺目" });
+  data.spirits.push({
+    fullName: "彩虹独角兽",
+    id: "rainbow-unicorn",
+    traitIds: ["trait-dazzling"],
+  });
+  const storage = memoryStorage();
+  const repository = spiritConfigsRepository({ storage });
+  const side = {
+    ...configuredSide(),
+    spiritId: "rainbow-unicorn",
+    skills: {
+      four: ["skill-a", "skill-b", "skill-c", "skill-d", "skill-e", "skill-f", "skill-g"],
+      single: "skill-a",
+    },
+  };
+
+  repository.save(repository.load(data), side, data);
+
+  expect(repository.load(data).configs["rainbow-unicorn"].skills.four)
+    .toEqual(side.skills.four);
+});
+
 describe("spiritConfigsRepository", () => {
+  test("clears only incomplete memories and preserves exportable configurations", () => {
+    const data = snapshot();
+    const storage = memoryStorage();
+    const repository = spiritConfigsRepository({ storage });
+    const complete = configuredSide();
+    const incomplete = {
+      ...configuredSide(),
+      nature: "neutral",
+      spiritId: "spirit-b",
+    };
+    let current = repository.save(repository.load(data), complete, data);
+    current = repository.save(current, incomplete, data);
+
+    const next = repository.clearIncomplete(current, data);
+
+    expect(Object.keys(next.configs)).toEqual(["spirit-a"]);
+    expect(repository.load(data)).toEqual(next);
+  });
+
   test("稀兽花宝只持久化血脉类型，不持久化本回合触发", () => {
     const data = snapshot();
     data.spirits[0].traitIds = ["trait-beast-flower"];

@@ -198,6 +198,50 @@ async function inspectDetailedSkillMenu(page, side, slot) {
   return layout;
 }
 
+test("keeps Dazzling's seven slots readable and exposes Refraction effects", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 945, width: 1536 });
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "彩虹独角兽");
+  await selectSpirit(page, "防御方", "水灵");
+
+  const compactSeventh = page.getByRole("combobox", { name: "攻击方技能7" });
+  await expect(compactSeventh).toBeVisible();
+  expect(
+    await page.locator(".compact-skill-side--attacker .compact-skill__row")
+      .evaluateAll((rows) => rows.every((row) => row.scrollWidth <= row.clientWidth)),
+  ).toBe(true);
+
+  await expect(page.locator(".compact-skill__effect-hint")).toContainText(
+    "普·威力+10",
+  );
+
+  await page.getByRole("button", { name: "具体版" }).click();
+  await expect(page.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
+  const hint = page.locator(".skill-slot__effect-hint");
+  await expect(hint).toContainText("普·威力+10");
+  expect(await hint.evaluate((node) => getComputedStyle(node).webkitLineClamp))
+    .toBe("2");
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBe(true);
+
+  await page.setViewportSize({ height: 844, width: 390 });
+  const mobileSeventh = page.getByRole("combobox", { name: "攻击方技能7" });
+  await mobileSeventh.scrollIntoViewIfNeeded();
+  await expect(mobileSeventh).toBeVisible();
+  expect(
+    await page.locator(".four-skill-side--attacker .skill-slot-group")
+      .evaluateAll((rows) => rows.every((row) => row.scrollWidth <= row.clientWidth)),
+  ).toBe(true);
+  const lastSlotBox = await mobileSeventh.boundingBox();
+  const resultBarBox = await page.getByRole("button", {
+    name: "展开伤害结果",
+  }).boundingBox();
+  expect(lastSlotBox.y + lastSlotBox.height).toBeLessThanOrEqual(resultBarBox.y);
+});
+
 test("applies and explains Beast Flower bloodlines without retaining the battle trigger", async ({
   page,
 }) => {
@@ -222,6 +266,36 @@ test("applies and explains Beast Flower bloodlines without retaining the battle 
   await selectSpirit(page, "攻击方", "兽花蕾");
   await expect(page.getByRole("combobox", { name: "血脉" })).toHaveValue("normal");
   await expect(page.getByRole("checkbox", { name: "入场已触发" })).not.toBeChecked();
+});
+
+test("applies and remembers Meteor Bug contract ball effects", async ({ page }) => {
+  await page.setViewportSize({ height: 945, width: 1536 });
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "陨星虫");
+  await selectSpirit(page, "防御方", "水灵");
+  await openDetailedMode(page);
+
+  const skillPicker = page.getByRole("combobox", { name: "选择技能" });
+  await skillPicker.fill("啃咬");
+  await page.getByRole("option", { name: /啃咬/ }).click();
+  const ball = page.getByRole("combobox", { name: "咕噜球" });
+  await ball.selectOption("beautiful");
+  await expect(page.getByRole("region", { name: "特性结算" })).toContainText(
+    "美妙球｜对方双攻 -30% · 威力 +20",
+  );
+
+  await ball.selectOption("prism");
+  const prism = page.getByRole("combobox", { name: "棱镜效果" });
+  await expect(prism).toBeVisible();
+  await prism.selectOption("darkstar");
+  await expect(page.getByRole("region", { name: "特性结算" })).toContainText(
+    "棱镜球（暗星球半值）",
+  );
+
+  await selectSpirit(page, "攻击方", "音速犬");
+  await selectSpirit(page, "攻击方", "陨星虫");
+  await expect(page.getByRole("combobox", { name: "咕噜球" })).toHaveValue("prism");
+  await expect(page.getByRole("combobox", { name: "棱镜效果" })).toHaveValue("darkstar");
 });
 
 test("keeps the compact workflow usable at 390px", async ({ page }) => {
@@ -509,6 +583,42 @@ test("keeps Gal choice controls inside two-line four-skill rows at desktop width
   expect(layout.descriptionHeight).toBeLessThanOrEqual(layout.lineHeight * 2 + 2);
 
   await expect(page.getByLabel("选择特性结算")).toContainText("仅第一段触发应对");
+});
+
+test("applies Wing Extension and combines Gale Turbine with one carried wing skill", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 945, width: 1536 });
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "凡鹰");
+  await selectSpirit(page, "防御方", "水灵");
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  const first = page.getByRole("combobox", { name: "攻击方技能1" });
+  await first.fill("先发制人");
+  await page.getByRole("option").filter({ hasText: "先发制人" }).first().click();
+  const turbine = page.getByRole("combobox", { name: "攻击方技能4" });
+  await turbine.fill("疾风涡轮");
+  await page.getByRole("option").filter({ hasText: "疾风涡轮" }).first().click();
+
+  const firstRow = page.getByRole("group", { name: "攻击方技能1" });
+  await expect(firstRow).toContainText("翼·物");
+  const companion = page.getByRole("combobox", {
+    name: "攻击方技能4前置翼技",
+  });
+  await companion.selectOption("1");
+  await expect(page.getByLabel("选择特性结算")).toContainText("先发制人");
+  await expect(page.getByLabel("选择特性结算")).toContainText("疾风涡轮");
+
+  const turbineRow = page.getByRole("group", {
+    name: "攻击方技能4，当前选中",
+  });
+  const layout = await turbineRow.evaluate((row) => ({
+    pageFits: document.documentElement.scrollWidth <= window.innerWidth,
+    rowFits: row.scrollWidth <= row.clientWidth,
+  }));
+  expect(layout).toEqual({ pageFits: true, rowFits: true });
 });
 
 test("calculates Stone Lizard family's Skin Spikes as a selectable trait source", async ({

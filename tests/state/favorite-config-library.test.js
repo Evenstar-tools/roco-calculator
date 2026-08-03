@@ -116,6 +116,41 @@ describe("buildFavoriteConfigLibrary", () => {
     expect(result.manualConfiguredCount).toBe(0);
     expect(result.library.entries[0].spiritId).toBe("spirit-a");
   });
+
+  test("exports and parses all seven slots for a dazzling spirit", () => {
+    const data = snapshot();
+    data.skills.push(...["c", "d", "e", "f", "g"].map((suffix) => ({
+      id: `skill-${suffix}`,
+      name: `技能 ${suffix.toUpperCase()}`,
+    })));
+    data.traits.push({ id: "trait-dazzling", name: "夺目" });
+    data.spirits.push({
+      id: "rainbow-unicorn",
+      fullName: "彩虹独角兽",
+      traitIds: ["trait-dazzling"],
+    });
+    const sevenSkills = ["skill-a", "skill-b", "skill-c", "skill-d", "skill-e", "skill-f", "skill-g"];
+    const result = buildFavoriteConfigLibrary({
+      appVersion: "1.3.6",
+      favorites: [{ kind: "spirit", spiritId: "rainbow-unicorn" }],
+      snapshot: data,
+      spiritConfigs: {
+        configs: {
+          "rainbow-unicorn": {
+            ...config("rainbow-unicorn"),
+            skills: { four: sevenSkills, single: "skill-a" },
+          },
+        },
+      },
+      versions: {},
+    });
+
+    expect(result.library.entries[0].skills).toEqual(sevenSkills);
+    const parsed = parseFavoriteConfigLibrary(JSON.stringify(result.library), {
+      snapshot: data,
+    });
+    expect(parsed.entries[0].skills).toEqual(sevenSkills);
+  });
 });
 
 describe("parseFavoriteConfigLibrary", () => {

@@ -34,6 +34,11 @@ const POSITIVE_MARKS = [
     name: "攻击",
     summary: "每层技能威力 +10%",
   },
+  {
+    id: "sprout",
+    name: "萌芽",
+    summary: "当前伤害不变",
+  },
 ];
 
 const NEGATIVE_MARKS = [
@@ -62,6 +67,11 @@ const NEGATIVE_MARKS = [
     name: "棘刺",
     summary: "入场时结算；本次技能不追加伤害",
   },
+  {
+    id: "undertow",
+    name: "暗涌",
+    summary: "当前伤害不变",
+  },
 ];
 
 export const MARK_DEFINITIONS = Object.freeze({
@@ -72,6 +82,37 @@ export const MARK_DEFINITIONS = Object.freeze({
 const MARKS_BY_ID = new Map(
   [...POSITIVE_MARKS, ...NEGATIVE_MARKS].map((mark) => [mark.id, mark]),
 );
+const MARKS_BY_NAME = new Map(
+  Object.entries(MARK_DEFINITIONS).flatMap(([polarity, marks]) =>
+    marks.map((mark) => [mark.name, { ...mark, polarity }]),
+  ),
+);
+
+export function resolveSkillMarkApplications(skill) {
+  const description = String(skill?.description ?? "").replace(/\s+/g, "");
+  if (!description) return [];
+  const applications = [];
+  const pattern = /(自己|敌方|对方)获得(\d+)层([^，。；：]+?)印记/g;
+  for (const match of description.matchAll(pattern)) {
+    const clauseStart = Math.max(
+      description.lastIndexOf("。", match.index - 1),
+      description.lastIndexOf("；", match.index - 1),
+    ) + 1;
+    const clausePrefix = description.slice(clauseStart, match.index);
+    if (/(选择|随机|应对|若|每次|每使用|等于|偷取|驱散)/.test(clausePrefix)) {
+      continue;
+    }
+    const mark = MARKS_BY_NAME.get(match[3]);
+    if (!mark) continue;
+    applications.push({
+      id: mark.id,
+      polarity: mark.polarity,
+      stacks: Math.min(99, Math.max(1, Math.floor(Number(match[2]) || 1))),
+      target: match[1] === "自己" ? "self" : "opponent",
+    });
+  }
+  return applications;
+}
 
 export function createEmptyMarkSlot() {
   return { id: null, stacks: 0 };

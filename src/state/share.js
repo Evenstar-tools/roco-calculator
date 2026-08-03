@@ -230,7 +230,7 @@ function assertSide(side, path) {
   assertSkillInput(side.skills.single, `${path}.skills.single`);
   if (
     !Array.isArray(side.skills.four) ||
-    side.skills.four.length !== 4
+    (side.skills.four.length !== 4 && side.skills.four.length !== 7)
   ) {
     throw new TypeError(`${path}.skills.four 无效`);
   }

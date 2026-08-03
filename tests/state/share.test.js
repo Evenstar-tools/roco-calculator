@@ -96,6 +96,19 @@ describe("versioned share state", () => {
     );
   });
 
+  test("round trips a seven-slot carried skill loadout", async () => {
+    const state = shareFixture();
+    state.sides.attacker.skills.four = [
+      "skill_a", "skill_b", "skill_c", "skill_d", "skill_a", "skill_b", "skill_c",
+    ];
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.sides.attacker.skills.four).toEqual(
+      state.sides.attacker.skills.four,
+    );
+  });
+
   test("round trips every raw input with data and rule versions", async () => {
     const state = shareFixture();
 

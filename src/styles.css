@@ -2257,6 +2257,20 @@ select:focus-visible {
   -webkit-line-clamp: 2;
 }
 
+.skill-slot__effect-hint {
+  display: -webkit-box;
+  min-width: 0;
+  flex: 1 1 100%;
+  margin: -2px 0 0;
+  overflow: hidden;
+  color: var(--primary);
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .skill-slot__controls {
   display: flex;
   min-width: 0;
@@ -3635,6 +3649,21 @@ html[data-theme="dark"] .formula-group {
 
 .compact-skill__cost svg {
   color: var(--accent);
+}
+
+.compact-skill__effect-hint {
+  display: -webkit-box;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--accent-strong);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.35;
+  grid-column: 2 / -1;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .compact-skill__result {
@@ -5186,6 +5215,19 @@ html[data-theme="dark"] .power-mode-switch button[aria-pressed="true"] {
   background: var(--surface);
   color: var(--text);
   font-weight: 700;
+  text-align: center;
+}
+
+.trait-number--automatic output {
+  min-width: 30px;
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
   text-align: center;
 }
 

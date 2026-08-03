@@ -7,13 +7,20 @@ import {
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { AdvancedOptions } from "../../src/components/AdvancedOptions.jsx";
-import { CompactFourSkillEditor } from "../../src/components/CompactSkillEditor.jsx";
+import {
+  CompactFourSkillEditor,
+  CompactSingleSkillEditor,
+} from "../../src/components/CompactSkillEditor.jsx";
 import { FourSkillEditor } from "../../src/components/FourSkillEditor.jsx";
 import { SkillPicker } from "../../src/components/SkillPicker.jsx";
-import { getTraitEffectInputs } from "../../src/domain/trait-effects.js";
+import {
+  getTraitAutomaticStack,
+  getTraitEffectInputs,
+} from "../../src/domain/trait-effects.js";
 import {
   describeResolution,
   SingleSkillEditor,
+  TraitInputs,
 } from "../../src/components/SingleSkillEditor.jsx";
 
 const skills = [
@@ -35,6 +42,35 @@ const skills = [
     type: "水",
   },
 ];
+
+test("特性选择只在满足条件时显示依赖字段", () => {
+  const inputs = [
+    {
+      contextKey: "contractBallType",
+      id: "trait.ball",
+      label: "咕噜球",
+      options: [{ value: "normal", label: "普通球" }, { value: "prism", label: "棱镜球" }],
+      scope: "direction",
+      type: "choice",
+    },
+    {
+      contextKey: "contractPrismEffect",
+      id: "trait.prism",
+      label: "棱镜效果",
+      options: [{ value: "normal", label: "普通球" }],
+      scope: "direction",
+      type: "choice",
+      visibleWhen: { equals: "prism", id: "trait.ball" },
+    },
+  ];
+  const { rerender } = render(
+    <TraitInputs context={{ "trait.ball": "normal" }} inputs={inputs} />,
+  );
+  expect(screen.queryByRole("combobox", { name: "棱镜效果" })).not.toBeInTheDocument();
+
+  rerender(<TraitInputs context={{ "trait.ball": "prism" }} inputs={inputs} />);
+  expect(screen.getByRole("combobox", { name: "棱镜效果" })).toBeVisible();
+});
 
 test("explains automatic difference-based power with both panel values", () => {
   expect(
@@ -94,6 +130,32 @@ test("single-skill editor keeps actual power directly editable", async () => {
   await user.clear(manualPower);
   await user.type(manualPower, "92");
   expect(onManualPowerChange).toHaveBeenLastCalledWith(92);
+});
+
+test("single-skill editor displays the effective type returned by calculation", () => {
+  const normalSkill = {
+    ...skills[0],
+    id: "normal-strike",
+    name: "先发制人",
+    type: "普通",
+  };
+
+  render(
+    <SingleSkillEditor
+      hitCount={1}
+      manualPower={55}
+      onHitCountChange={vi.fn()}
+      onManualPowerChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      result={{ typeLabel: "翼" }}
+      selectedSkill={normalSkill}
+      skills={[...skills, normalSkill]}
+    />,
+  );
+
+  const facts = screen.getByLabelText("技能属性");
+  expect(within(facts).getByText("翼")).toBeVisible();
+  expect(within(facts).queryByText("普通")).not.toBeInTheDocument();
 });
 
 test("single-skill editor switches to compact game-displayed power input", async () => {
@@ -709,6 +771,111 @@ test("four-skill choice controls stay compact and update their own slot context"
   );
 });
 
+test("展翅显示实际翼属性并让疾风涡轮选择同队前置翼技", async () => {
+  const user = userEvent.setup();
+  const onSkillContextChange = vi.fn();
+  const normalAttack = {
+    basePower: 55,
+    category: "physical",
+    cost: 2,
+    id: "normal-strike",
+    name: "先发制人",
+    type: "普通",
+  };
+  const wingStatus = {
+    basePower: 0,
+    category: "status",
+    cost: 2,
+    id: "wing-status",
+    name: "羽化加速",
+    type: "翼",
+  };
+  const turbine = {
+    basePower: 100,
+    category: "physical",
+    cost: 0,
+    id: "gale-turbine",
+    name: "疾风涡轮",
+    slotContext: { galeTurbineCompanionSlot: "1" },
+    type: "翼",
+  };
+
+  render(
+    <FourSkillEditor
+      attackerName="凡鹰"
+      attackerResults={[
+        { hpPercent: 10, totalDamage: 40, typeLabel: "翼" },
+        { hpPercent: 10, totalDamage: 40, typeLabel: "水" },
+        { reason: "非伤害技能不计算伤害", typeLabel: "翼" },
+        { hpPercent: 30, totalDamage: 120, typeLabel: "翼" },
+      ]}
+      attackerSkills={[normalAttack, skills[1], wingStatus, turbine]}
+      attackerTrait={{ description: "普通转翼。", inputs: [], name: "展翅" }}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillContextChange={onSkillContextChange}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, normalAttack, wingStatus, turbine]}
+    />,
+  );
+
+  expect(
+    within(
+      screen.getByRole("group", { name: "攻击方技能1，当前选中" }),
+    ).getByText("翼·物"),
+  ).toBeVisible();
+  const companion = screen.getByRole("combobox", {
+    name: "攻击方技能4前置翼技",
+  });
+  expect(within(companion).getByRole("option", { name: "1 · 先发制人" })).toBeVisible();
+  expect(within(companion).getByRole("option", { name: "3 · 羽化加速" })).toBeVisible();
+  expect(within(companion).queryByRole("option", { name: /水之波纹/ })).not.toBeInTheDocument();
+
+  await user.selectOptions(companion, "3");
+  expect(onSkillContextChange).toHaveBeenCalledWith(
+    "attacker",
+    3,
+    "galeTurbineCompanionSlot",
+    "3",
+  );
+});
+
+test("Tundra displays an automatic carried-ice count instead of an editable stack", () => {
+  const tundra = {
+    description: "每携带1个冰系技能进入战斗，地系技能威力+10%。",
+    name: "冻土",
+  };
+  const iceSkill = {
+    ...skills[0],
+    id: "ice-skill",
+    name: "冰冻打击",
+    type: "冰",
+  };
+
+  render(
+    <FourSkillEditor
+      attackerName="獾牙猪"
+      attackerSkills={[iceSkill, skills[1], iceSkill, null]}
+      attackerTrait={{
+        automaticStack: getTraitAutomaticStack(tundra, "attacker"),
+        description: tundra.description,
+        inputs: getTraitEffectInputs(tundra, "attacker"),
+        name: tundra.name,
+      }}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, iceSkill]}
+    />,
+  );
+
+  expect(screen.getByLabelText("携带冰系技能数（自动读取）")).toHaveTextContent("2");
+  expect(
+    screen.queryByRole("spinbutton", { name: "携带冰系技能数" }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("spinbutton", { name: "每层威力" })).toBeVisible();
+});
+
 test("supported Jal-family traits expose an explicit trigger only on choice skills", async () => {
   const user = userEvent.setup();
   const onSkillContextChange = vi.fn();
@@ -826,6 +993,67 @@ test("compact four-skill rows use the same mutually exclusive selection state", 
 
   await user.click(screen.getByRole("group", { name: "攻击方技能1" }));
   expect(onSkillFocus).toHaveBeenLastCalledWith("attacker", 0);
+});
+
+test("compact four-skill editor displays the effective type returned by calculation", () => {
+  const normalSkill = {
+    ...skills[0],
+    id: "normal-skill",
+    name: "先发制人",
+    type: "普通",
+  };
+
+  render(
+    <CompactFourSkillEditor
+      attackerName="凡鹰"
+      attackerResults={[{
+        hpPercent: 20,
+        status: "exact",
+        totalDamage: 80,
+        typeLabel: "翼",
+      }]}
+      attackerSkillChoices={[normalSkill]}
+      attackerSkills={[normalSkill, null, null, null]}
+      defenderName="水灵"
+      defenderResults={[]}
+      defenderSkillChoices={skills}
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillFocus={vi.fn()}
+      onSkillSelect={vi.fn()}
+    />,
+  );
+
+  const row = screen.getByRole("group", { name: "攻击方技能1，当前选中" });
+  expect(within(row).getByTitle("翼")).toBeVisible();
+  expect(within(row).queryByTitle("普通")).not.toBeInTheDocument();
+});
+
+test("compact single-skill editor displays the effective type returned by calculation", () => {
+  const normalSkill = {
+    ...skills[0],
+    id: "normal-skill",
+    name: "先发制人",
+    type: "普通",
+  };
+
+  render(
+    <CompactSingleSkillEditor
+      attackName="凡鹰"
+      defenseName="水灵"
+      onSkillSelect={vi.fn()}
+      result={{
+        hpPercent: 20,
+        status: "exact",
+        totalDamage: 80,
+        typeLabel: "翼",
+      }}
+      selectedSkill={normalSkill}
+      skills={[normalSkill]}
+    />,
+  );
+
+  expect(screen.getByTitle("翼")).toBeVisible();
+  expect(screen.queryByTitle("普通")).not.toBeInTheDocument();
 });
 
 test("four-skill editor shows selectable direct trait damage above skill one", async () => {
@@ -960,6 +1188,56 @@ test("four-skill HP rules use a draft-safe percent or current-HP control", async
   await user.clear(currentHp);
   await user.type(currentHp, "200");
   expect(onHealthChange).toHaveBeenLastCalledWith("attacker", 200);
+});
+
+test("four-skill editor exposes erosion stacks and trigger above the slots", () => {
+  const trait = {
+    description: "敌方每有1层中毒效果，自己获得连击数+1。",
+    name: "侵蚀",
+  };
+  render(
+    <FourSkillEditor
+      attackerName="厉毒修萝"
+      attackerSkills={[{ ...skills[0], description: "造成物伤，3连击。" }, null, null, null]}
+      attackerTrait={{
+        ...trait,
+        inputs: getTraitEffectInputs(trait, "attacker"),
+      }}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillSelect={vi.fn()}
+      skills={skills}
+    />,
+  );
+
+  expect(screen.getByRole("spinbutton", { name: "敌方中毒层数" })).toBeVisible();
+  expect(screen.getByRole("checkbox", { name: "触发侵蚀" })).toBeVisible();
+});
+
+test("four-skill editor reuses the HP switch for blame shift", () => {
+  const trait = {
+    description: "自己每失去25%生命，连击数+2。",
+    name: "嫁祸",
+  };
+  render(
+    <FourSkillEditor
+      attackerHealth={{ currentHp: 300, maxHp: 400, percent: 75 }}
+      attackerName="朔夜伊芙"
+      attackerSkills={[{ ...skills[0], description: "造成物伤，3连击。" }, null, null, null]}
+      attackerTrait={{
+        ...trait,
+        inputs: getTraitEffectInputs(trait, "attacker"),
+      }}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillSelect={vi.fn()}
+      skills={skills}
+    />,
+  );
+
+  expect(screen.getByRole("spinbutton", { name: "攻击方生命百分比" })).toHaveValue(75);
+  expect(screen.getByRole("checkbox", { name: "触发嫁祸" })).toBeVisible();
+  expect(screen.queryByRole("spinbutton", { name: "自身生命百分比" })).not.toBeInTheDocument();
 });
 
 test("four-skill slots expose an attacker trait condition without blocking damage", async () => {
@@ -1134,6 +1412,47 @@ test("four-skill rows keep each skill power directly editable", async () => {
   );
 });
 
+test("听桥技能行标明反弹来源技能和继承的面板威力", () => {
+  const listenBridge = {
+    basePower: 0,
+    category: "defense",
+    cost: 4,
+    description:
+      "减伤60%，应对攻击：对敌方造成武系物理伤害，威力与被应对技能相等。",
+    id: "listen-bridge",
+    name: "听桥",
+    type: "武",
+  };
+
+  render(
+    <FourSkillEditor
+      attackerName="音速犬"
+      attackerResults={[]}
+      attackerSkills={[skills[0], null, null, null]}
+      defenderName="水灵"
+      defenderResults={[
+        {
+          hitCount: 1,
+          hpPercent: 25,
+          reflectedPower: 150,
+          reflectedSourceSkillName: "风力冲击",
+          skillPower: 150,
+          status: "exact",
+          totalDamage: 100,
+        },
+      ]}
+      defenderSkills={[listenBridge, null, null, null]}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, listenBridge]}
+    />,
+  );
+
+  expect(screen.getByText("反弹「风力冲击」· 威力 150")).toBeVisible();
+  expect(
+    screen.getByRole("spinbutton", { name: "防御方技能1威力" }),
+  ).toHaveValue(150);
+});
+
 test("four-skill editor exposes four independent slots on both sides", async () => {
   const user = userEvent.setup();
   const onSkillFocus = vi.fn();
@@ -1272,6 +1591,69 @@ test("mobile four-skill editor switches between four attack and defense slots", 
   expect(onSkillFocus).toHaveBeenCalledWith("defender", 0);
 
   vi.unstubAllGlobals();
+});
+
+test("dazzling loadouts render seven slots and a two-line Refraction preview", () => {
+  const refraction = {
+    basePower: 50,
+    category: "magical",
+    cost: 4,
+    description: "造成魔伤，携带其他系别技能会给本技能带来不同效果。",
+    id: "refraction",
+    name: "折射",
+    type: "光",
+  };
+  const normal = { ...skills[0], id: "normal", name: "追打", type: "普通" };
+  const wing = { ...skills[0], id: "wing", name: "回旋风暴", type: "翼" };
+  const seven = [refraction, normal, wing, null, null, null, null];
+
+  render(
+    <FourSkillEditor
+      attackerName="彩虹独角兽"
+      attackerSkills={seven}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, refraction, normal, wing]}
+    />,
+  );
+
+  expect(screen.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
+  expect(screen.getByTitle(/^本次可得：/))
+    .toHaveTextContent("普·威力+10 翼·连击+1");
+});
+
+test("compact dazzling loadouts keep seven rows and the Refraction preview", () => {
+  const refraction = {
+    basePower: 50,
+    category: "magical",
+    cost: 4,
+    description: "造成魔伤，携带其他系别技能会给本技能带来不同效果。",
+    id: "refraction",
+    name: "折射",
+    type: "光",
+  };
+  const normal = { ...skills[0], id: "normal", name: "追打", type: "普通" };
+  const seven = [refraction, normal, null, null, null, null, null];
+
+  render(
+    <CompactFourSkillEditor
+      attackerName="彩虹独角兽"
+      attackerResults={[]}
+      attackerSkillChoices={[...skills, refraction, normal]}
+      attackerSkills={seven}
+      defenderName="水灵"
+      defenderResults={[]}
+      defenderSkillChoices={skills}
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillFocus={vi.fn()}
+      onSkillSelect={vi.fn()}
+    />,
+  );
+
+  expect(screen.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
+  expect(screen.getByTitle("本次可得：普·威力+10"))
+    .toHaveClass("compact-skill__effect-hint");
 });
 
 test("four-skill slots expose their own dynamic rule context", async () => {

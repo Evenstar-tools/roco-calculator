@@ -127,6 +127,21 @@ export function useStoredCalculatorData(
     return nextConfigs;
   }
 
+  function clearIncompleteSpiritConfigs() {
+    let nextConfigs = spiritConfigsRef.current;
+    try {
+      nextConfigs = stores.spiritConfigs?.clearIncomplete?.(
+        spiritConfigsRef.current,
+        snapshot,
+      ) ?? spiritConfigsRef.current;
+    } catch {
+      onToast("配置保存失败");
+    }
+    spiritConfigsRef.current = nextConfigs;
+    setSpiritConfigsState(nextConfigs);
+    return nextConfigs;
+  }
+
   function toggleSpiritFavorite(spirit) {
     if (!stores.favorites) {
       onToast("当前环境无法保存收藏");
@@ -266,6 +281,7 @@ export function useStoredCalculatorData(
 
   return {
     buildFavoriteConfigLibrary,
+    clearIncompleteSpiritConfigs,
     clearSpiritConfigs,
     completeSpiritIds,
     favoriteSpiritIds,

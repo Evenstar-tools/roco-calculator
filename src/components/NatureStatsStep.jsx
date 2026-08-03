@@ -88,12 +88,13 @@ function SideStats({
   onNatureChange,
   side,
 }) {
-  const level = side.level ?? {
+  const fallbackLevel = side.level ?? {
     label: label === "攻击方" ? "攻击能力等级" : "防御能力等级",
     multiplier: 1,
     stage: 0,
   };
-  const levelPercent = Math.round((level.multiplier - 1) * 100);
+  const levels = side.levels?.length > 0 ? side.levels : [fallbackLevel];
+  const multipleLevels = levels.length > 1;
   return (
     <div aria-label={`${label}能力`} className="nature-side" role="group">
       <NatureSelect
@@ -118,33 +119,45 @@ function SideStats({
         ))}
       </div>
 
-      <div className="level-control">
-        <span>{level.label}</span>
-        <div>
-          <RepeatLevelButton
-            ariaLabel={`${label}等级减一`}
-            delta={-1}
-            disabled={level.stage <= -50}
-            onChange={onLevelChange}
-            value={level.stage}
-          >
-            <Minus aria-hidden="true" size={14} />
-          </RepeatLevelButton>
-          <output>
-            {level.stage}层 · {levelPercent > 0 ? "+" : ""}
-            {levelPercent}%
-          </output>
-          <RepeatLevelButton
-            ariaLabel={`${label}等级加一`}
-            delta={1}
-            disabled={level.stage >= 50}
-            onChange={onLevelChange}
-            value={level.stage}
-          >
-            <Plus aria-hidden="true" size={14} />
-          </RepeatLevelButton>
-        </div>
-      </div>
+      {levels.map((level) => {
+        const levelPercent = Math.round((level.multiplier - 1) * 100);
+        const changeLevel = (nextStage) =>
+          multipleLevels
+            ? onLevelChange(level.role, nextStage)
+            : onLevelChange(nextStage);
+        const controlLabel = multipleLevels
+          ? `${label}${level.label}`
+          : `${label}等级`;
+        return (
+          <div className="level-control" key={level.role ?? level.label}>
+            <span>{level.label}</span>
+            <div>
+              <RepeatLevelButton
+                ariaLabel={`${controlLabel}减一`}
+                delta={-1}
+                disabled={level.stage <= -50}
+                onChange={changeLevel}
+                value={level.stage}
+              >
+                <Minus aria-hidden="true" size={14} />
+              </RepeatLevelButton>
+              <output>
+                {level.stage}层 · {levelPercent > 0 ? "+" : ""}
+                {levelPercent}%
+              </output>
+              <RepeatLevelButton
+                ariaLabel={`${controlLabel}加一`}
+                delta={1}
+                disabled={level.stage >= 50}
+                onChange={changeLevel}
+                value={level.stage}
+              >
+                <Plus aria-hidden="true" size={14} />
+              </RepeatLevelButton>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -104,7 +104,11 @@ export function calculatorReducer(state, action) {
       return updateSide(state, action, (side) => ({
         ...side,
         skills: Array.isArray(action.legalSkillIds)
-          ? reconcileSkillLoadout(side.skills, action.legalSkillIds)
+          ? reconcileSkillLoadout(
+              side.skills,
+              action.legalSkillIds,
+              action.capacity,
+            )
           : side.skills,
         spiritId: action.value,
       }));
@@ -124,9 +128,9 @@ export function calculatorReducer(state, action) {
       }
       if (
         !Array.isArray(member.skills.four) ||
-        member.skills.four.length !== 4
+        (member.skills.four.length !== 4 && member.skills.four.length !== 7)
       ) {
-        throw new TypeError("队伍成员必须配置四个技能位");
+        throw new TypeError("队伍成员技能槽数量无效");
       }
       const four = member.skills.four.map(cloneSkillEntry);
       const single = cloneSkillEntry(
@@ -173,7 +177,7 @@ export function calculatorReducer(state, action) {
           action.index < 0 ||
           action.index >= side.skills.four.length
         ) {
-          throw new RangeError("四技能槽位必须是 0 到 3 的整数");
+          throw new RangeError("技能槽位索引无效");
         }
 
         const four = [...side.skills.four];
