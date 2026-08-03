@@ -1,0 +1,371 @@
+export const CACHE_KEY = "rock-calculator.miniapp.snapshot.v1";
+
+const CACHE_VERSION = 1;
+const SHA256_PATTERN = /^[a-f0-9]{64}$/i;
+const SHA256_INITIAL = [
+  0x6a09e667,
+  0xbb67ae85,
+  0x3c6ef372,
+  0xa54ff53a,
+  0x510e527f,
+  0x9b05688c,
+  0x1f83d9ab,
+  0x5be0cd19,
+];
+const SHA256_CONSTANTS = [
+  0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b,
+  0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01,
+  0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7,
+  0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
+  0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152,
+  0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147,
+  0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc,
+  0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+  0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819,
+  0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08,
+  0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f,
+  0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+  0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+];
+
+function rotateRight(value, amount) {
+  return (value >>> amount) | (value << (32 - amount));
+}
+
+function toUtf8Bytes(text) {
+  const bytes = [];
+
+  for (const character of text) {
+    const characterCodePoint = character.codePointAt(0);
+    const codePoint =
+      characterCodePoint >= 0xd800 && characterCodePoint <= 0xdfff
+        ? 0xfffd
+        : characterCodePoint;
+    if (codePoint <= 0x7f) {
+      bytes.push(codePoint);
+    } else if (codePoint <= 0x7ff) {
+      bytes.push(
+        0xc0 | (codePoint >>> 6),
+        0x80 | (codePoint & 0x3f),
+      );
+    } else if (codePoint <= 0xffff) {
+      bytes.push(
+        0xe0 | (codePoint >>> 12),
+        0x80 | ((codePoint >>> 6) & 0x3f),
+        0x80 | (codePoint & 0x3f),
+      );
+    } else {
+      bytes.push(
+        0xf0 | (codePoint >>> 18),
+        0x80 | ((codePoint >>> 12) & 0x3f),
+        0x80 | ((codePoint >>> 6) & 0x3f),
+        0x80 | (codePoint & 0x3f),
+      );
+    }
+  }
+
+  return bytes;
+}
+
+export function sha256Hex(text) {
+  if (typeof text !== "string") {
+    throw new TypeError("SHA-256 输入必须是字符串");
+  }
+
+  const bytes = toUtf8Bytes(text);
+  const bitLength = bytes.length * 8;
+  bytes.push(0x80);
+  while (bytes.length % 64 !== 56) {
+    bytes.push(0);
+  }
+
+  const highBits = Math.floor(bitLength / 0x100000000);
+  const lowBits = bitLength >>> 0;
+  for (let shift = 24; shift >= 0; shift -= 8) {
+    bytes.push((highBits >>> shift) & 0xff);
+  }
+  for (let shift = 24; shift >= 0; shift -= 8) {
+    bytes.push((lowBits >>> shift) & 0xff);
+  }
+
+  const hash = SHA256_INITIAL.slice();
+  const words = new Array(64);
+
+  for (let offset = 0; offset < bytes.length; offset += 64) {
+    for (let index = 0; index < 16; index += 1) {
+      const byteOffset = offset + index * 4;
+      words[index] =
+        (bytes[byteOffset] << 24) |
+        (bytes[byteOffset + 1] << 16) |
+        (bytes[byteOffset + 2] << 8) |
+        bytes[byteOffset + 3];
+    }
+
+    for (let index = 16; index < 64; index += 1) {
+      const word15 = words[index - 15];
+      const word2 = words[index - 2];
+      const sigma0 =
+        rotateRight(word15, 7) ^
+        rotateRight(word15, 18) ^
+        (word15 >>> 3);
+      const sigma1 =
+        rotateRight(word2, 17) ^
+        rotateRight(word2, 19) ^
+        (word2 >>> 10);
+      words[index] =
+        (words[index - 16] + sigma0 + words[index - 7] + sigma1) | 0;
+    }
+
+    let [a, b, c, d, e, f, g, h] = hash;
+
+    for (let index = 0; index < 64; index += 1) {
+      const sum1 =
+        rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25);
+      const choice = (e & f) ^ (~e & g);
+      const temporary1 =
+        (h + sum1 + choice + SHA256_CONSTANTS[index] + words[index]) | 0;
+      const sum0 =
+        rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22);
+      const majority = (a & b) ^ (a & c) ^ (b & c);
+      const temporary2 = (sum0 + majority) | 0;
+
+      h = g;
+      g = f;
+      f = e;
+      e = (d + temporary1) | 0;
+      d = c;
+      c = b;
+      b = a;
+      a = (temporary1 + temporary2) | 0;
+    }
+
+    hash[0] = (hash[0] + a) | 0;
+    hash[1] = (hash[1] + b) | 0;
+    hash[2] = (hash[2] + c) | 0;
+    hash[3] = (hash[3] + d) | 0;
+    hash[4] = (hash[4] + e) | 0;
+    hash[5] = (hash[5] + f) | 0;
+    hash[6] = (hash[6] + g) | 0;
+    hash[7] = (hash[7] + h) | 0;
+  }
+
+  return hash
+    .map((value) => (value >>> 0).toString(16).padStart(8, "0"))
+    .join("");
+}
+
+export class IntegrityError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "IntegrityError";
+  }
+}
+
+export class DataUnavailableError extends Error {
+  constructor(message, cause) {
+    super(message);
+    this.name = "DataUnavailableError";
+    this.cause = cause;
+  }
+}
+
+function assertManifest(manifest, trustedRuntimeSha256) {
+  if (!manifest || typeof manifest !== "object") {
+    throw new IntegrityError("数据清单格式无效");
+  }
+  if (
+    typeof manifest.runtimeFileId !== "string" ||
+    manifest.runtimeFileId !== manifest.runtimeFileId.trim() ||
+    !/^cloud:\/\/[^\s/]+\/\S+$/.test(manifest.runtimeFileId)
+  ) {
+    throw new IntegrityError("数据清单缺少有效的 runtimeFileId");
+  }
+  if (
+    typeof manifest.runtimeSha256 !== "string" ||
+    !SHA256_PATTERN.test(manifest.runtimeSha256)
+  ) {
+    throw new IntegrityError("数据清单缺少有效的 runtimeSha256");
+  }
+  if (manifest.runtimeSha256.toLowerCase() !== trustedRuntimeSha256) {
+    throw new IntegrityError("数据清单与构建期可信 SHA-256 不一致");
+  }
+
+  if (manifest.petImages != null) {
+    if (
+      typeof manifest.petImages !== "object" ||
+      Array.isArray(manifest.petImages)
+    ) {
+      throw new IntegrityError("数据清单的宠物图片映射无效");
+    }
+    for (const fileId of Object.values(manifest.petImages)) {
+      if (
+        typeof fileId !== "string" ||
+        fileId !== fileId.trim() ||
+        !/^cloud:\/\/[^\s/]+\/\S+$/.test(fileId)
+      ) {
+        throw new IntegrityError("宠物图片必须使用精确的微信云文件 ID");
+      }
+    }
+  }
+}
+
+function assertRuntimeHash(runtimeText, expectedSha256) {
+  const actualSha256 = sha256Hex(runtimeText);
+  if (actualSha256 !== expectedSha256.toLowerCase()) {
+    throw new IntegrityError("计算数据 SHA-256 校验失败");
+  }
+}
+
+function readPetImages(manifest) {
+  return { ...(manifest.petImages ?? {}) };
+}
+
+function parseSnapshot(runtimeText) {
+  let snapshot;
+
+  try {
+    snapshot = JSON.parse(runtimeText);
+  } catch (error) {
+    throw new IntegrityError(`计算数据不是有效 JSON：${error.message}`);
+  }
+
+  if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) {
+    throw new IntegrityError("计算数据根节点必须是对象");
+  }
+  return snapshot;
+}
+
+function readValidCache(cachedValue, trustedRuntimeSha256) {
+  let cached = cachedValue;
+
+  if (typeof cachedValue === "string") {
+    try {
+      cached = JSON.parse(cachedValue);
+    } catch {
+      return null;
+    }
+  }
+
+  try {
+    if (
+      !cached ||
+      cached.version !== CACHE_VERSION ||
+      typeof cached.runtimeText !== "string"
+    ) {
+      return null;
+    }
+    assertManifest(cached.manifest, trustedRuntimeSha256);
+    assertRuntimeHash(cached.runtimeText, trustedRuntimeSha256);
+    const snapshot = parseSnapshot(cached.runtimeText);
+    if (
+      cached.snapshot != null &&
+      JSON.stringify(cached.snapshot) !== JSON.stringify(snapshot)
+    ) {
+      return null;
+    }
+    return {
+      petImages: readPetImages(cached.manifest),
+      snapshot,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function createDataService({
+  cloud,
+  storage,
+  previewPetImages = {},
+  previewSnapshot,
+  config,
+}) {
+  if (!storage) {
+    throw new TypeError("storage 不能为空");
+  }
+
+  return {
+    async load() {
+      if (config?.preview) {
+        return {
+          petImages: { ...previewPetImages },
+          snapshot: previewSnapshot,
+          source: "preview",
+          stale: false,
+        };
+      }
+
+      let trustedRuntimeSha256 = "";
+      let cloudError;
+
+      try {
+        if (
+          typeof config?.trustedRuntimeSha256 !== "string" ||
+          !SHA256_PATTERN.test(config.trustedRuntimeSha256)
+        ) {
+          throw new IntegrityError("缺少构建期可信 SHA-256");
+        }
+        trustedRuntimeSha256 =
+          config.trustedRuntimeSha256.toLowerCase();
+        const manifest = await cloud.downloadManifest();
+        assertManifest(manifest, trustedRuntimeSha256);
+        const runtimeText = await cloud.downloadRuntime(
+          manifest.runtimeFileId,
+        );
+        assertRuntimeHash(runtimeText, trustedRuntimeSha256);
+        const snapshot = parseSnapshot(runtimeText);
+        try {
+          storage.set(CACHE_KEY, {
+            version: CACHE_VERSION,
+            manifest,
+            runtimeText,
+            snapshot,
+          });
+        } catch {
+          // 缓存是可选加速层，写入失败不否定已校验的云数据。
+        }
+        return {
+          petImages: readPetImages(manifest),
+          snapshot,
+          source: "cloud",
+          stale: false,
+        };
+      } catch (error) {
+        cloudError = error;
+      }
+
+      let cachedValue;
+      let cacheCause;
+      try {
+        cachedValue = storage.get(CACHE_KEY);
+      } catch (error) {
+        cacheCause = error;
+      }
+
+      if (!cacheCause) {
+        const cachedData = readValidCache(
+          cachedValue,
+          trustedRuntimeSha256,
+        );
+        if (cachedData) {
+          return {
+            ...cachedData,
+            source: "cache",
+            stale: true,
+          };
+        }
+      }
+
+      const unavailableError = new DataUnavailableError(
+        "计算数据加载失败，请检查网络后重试",
+        cloudError,
+      );
+      if (cacheCause) {
+        unavailableError.cacheCause = cacheCause;
+      }
+      throw unavailableError;
+    },
+    clearCache() {
+      storage.remove(CACHE_KEY);
+    },
+  };
+}

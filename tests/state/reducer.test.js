@@ -221,8 +221,15 @@ describe("calculatorReducer", () => {
       skills: {
         four: [
           {
-            context: { energy: 3 },
+            context: { energy: 3, nested: { stacks: 2 } },
             hitCount: 2,
+            memoryBySkill: {
+              "skill-a": {
+                context: { energy: 4, nested: { stacks: 3 } },
+                hitCount: 3,
+                overrides: { basePower: 90 },
+              },
+            },
             skillId: "skill-a",
           },
           null,
@@ -254,6 +261,22 @@ describe("calculatorReducer", () => {
     expect(next.sides.attacker.skills.four[0]).not.toBe(
       member.skills.four[0],
     );
+    expect(next.sides.attacker.skills.four[0].memoryBySkill).not.toBe(
+      member.skills.four[0].memoryBySkill,
+    );
+    expect(
+      next.sides.attacker.skills.four[0].memoryBySkill["skill-a"].context,
+    ).not.toBe(
+      member.skills.four[0].memoryBySkill["skill-a"].context,
+    );
+    next.sides.attacker.skills.four[0].context.nested.stacks = 8;
+    next.sides.attacker.skills.four[0].memoryBySkill[
+      "skill-a"
+    ].context.nested.stacks = 9;
+    expect(member.skills.four[0].context.nested.stacks).toBe(2);
+    expect(
+      member.skills.four[0].memoryBySkill["skill-a"].context.nested.stacks,
+    ).toBe(3);
     expect(next.sides.defender).toBe(state.sides.defender);
     expect(next.directions).toBe(state.directions);
   });

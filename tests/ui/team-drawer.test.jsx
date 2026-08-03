@@ -109,7 +109,11 @@ function memoryStorage() {
   };
 }
 
-function DrawerHarness({ onApply = vi.fn(), onCaptureSide = vi.fn() }) {
+function DrawerHarness({
+  getSpiritConfiguration = () => null,
+  onApply = vi.fn(),
+  onCaptureSide = vi.fn(),
+}) {
   const triggerRef = useRef(null);
   const storeRef = useRef(null);
   if (!storeRef.current) {
@@ -130,6 +134,7 @@ function DrawerHarness({ onApply = vi.fn(), onCaptureSide = vi.fn() }) {
         打开队伍
       </button>
       <TeamDrawer
+        getSpiritConfiguration={getSpiritConfiguration}
         onActiveTeamChange={(id) =>
           setTeamsState((state) => store.setActive(state, id))
         }
@@ -203,6 +208,72 @@ test("creates and edits one of six team members", async () => {
   expect(screen.getAllByRole("combobox", { name: /成员技能/ })).toHaveLength(
     4,
   );
+});
+
+test("copies a personal configuration when selecting a member and never inherits the previous spirit", async () => {
+  const personalConfig = {
+    displayIvs: {
+      hp: 1,
+      speed: 2,
+      physicalAttack: 60,
+      magicalAttack: 3,
+      physicalDefense: 4,
+      magicalDefense: 5,
+    },
+    natureId: "adamant",
+    skills: {
+      four: ["fire-a", "fire-b", null, null],
+      single: "fire-a",
+    },
+    spiritId: "sonic-dog",
+  };
+  const user = userEvent.setup();
+  render(
+    <DrawerHarness
+      getSpiritConfiguration={(spiritId) =>
+        spiritId === "sonic-dog" ? personalConfig : null
+      }
+    />,
+  );
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  await user.click(screen.getByRole("button", { name: "编辑空位 1" }));
+  const editor = screen.getByRole("region", { name: "成员 1 配置" });
+  const picker = within(editor).getByRole("combobox", { name: "成员精灵" });
+  await user.type(picker, "音速犬");
+  await act(async () => {
+    await user.click(within(editor).getByRole("option", { name: /音速犬/ }));
+  });
+
+  expect(within(editor).getByRole("combobox", { name: "成员性格" })).toHaveValue(
+    "adamant",
+  );
+  expect(within(editor).getByRole("spinbutton", { name: "物攻个体" })).toHaveValue(
+    60,
+  );
+  expect(within(editor).getByRole("combobox", { name: "成员技能1" })).toHaveValue(
+    "风力冲击",
+  );
+
+  await user.clear(picker);
+  await user.type(picker, "水灵");
+  await act(async () => {
+    await user.click(within(editor).getByRole("option", { name: /水灵/ }));
+  });
+
+  expect(within(editor).getByRole("combobox", { name: "成员性格" })).toHaveValue(
+    "neutral",
+  );
+  expect(within(editor).getByRole("spinbutton", { name: "物攻个体" })).toHaveValue(
+    0,
+  );
+  expect(within(editor).getByRole("combobox", { name: "成员技能1" })).toHaveValue(
+    "水之波纹",
+  );
+  expect(personalConfig).toMatchObject({
+    natureId: "adamant",
+    skills: { four: ["fire-a", "fire-b", null, null] },
+  });
 });
 
 test("applies a member as attack or defense and confirms deletion inline", async () => {

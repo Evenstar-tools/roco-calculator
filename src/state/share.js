@@ -27,14 +27,19 @@ const LEGACY_TOP_LEVEL_KEYS = TOP_LEVEL_KEYS.filter((key) => key !== "marks");
 const SIDE_KEYS = ["spiritId", "nature", "displayIvs", "skills"];
 const DIRECTION_KEYS = [
   "selectedSkillIndex",
+  "selectedDamageSource",
   "reduction",
   "hitCount",
+  "traitDamageHitCount",
   "starfallStacks",
   "finalDamageMultiplier",
   "currentHp",
   "context",
   "overrides",
 ];
+const LEGACY_DIRECTION_KEYS = DIRECTION_KEYS.filter(
+  (key) => key !== "selectedDamageSource" && key !== "traitDamageHitCount",
+);
 const MARK_SLOT_KEYS = ["id", "stacks"];
 const SKILL_INPUT_KEYS = [
   "skillId",
@@ -45,7 +50,9 @@ const SKILL_INPUT_KEYS = [
   "fixedPowerAdd",
   "skillPowerPercentAdds",
   "otherPowerMultipliers",
+  "memoryBySkill",
 ];
+const SKILL_MEMORY_KEYS = ["context", "hitCount", "overrides"];
 
 function isPlainObject(value) {
   if (value === null || typeof value !== "object") {
@@ -168,6 +175,34 @@ function assertSkillInput(skill, path) {
       assertJsonValue(skill[key], `${path}.${key}`);
     }
   }
+  if (Object.hasOwn(skill, "memoryBySkill")) {
+    if (!isPlainObject(skill.memoryBySkill)) {
+      throw new TypeError(`${path}.memoryBySkill 无效`);
+    }
+    for (const [skillId, memory] of Object.entries(skill.memoryBySkill)) {
+      if (
+        !isNonEmptyString(skillId) ||
+        !isPlainObject(memory) ||
+        !Object.keys(memory).every((key) => SKILL_MEMORY_KEYS.includes(key))
+      ) {
+        throw new TypeError(`${path}.memoryBySkill.${skillId} 结构无效`);
+      }
+      if (
+        Object.hasOwn(memory, "hitCount") &&
+        (!Number.isInteger(memory.hitCount) || memory.hitCount < 1)
+      ) {
+        throw new TypeError(`${path}.memoryBySkill.${skillId}.hitCount 无效`);
+      }
+      for (const key of ["context", "overrides"]) {
+        if (Object.hasOwn(memory, key)) {
+          if (!isPlainObject(memory[key])) {
+            throw new TypeError(`${path}.memoryBySkill.${skillId}.${key} 无效`);
+          }
+          assertJsonValue(memory[key], `${path}.memoryBySkill.${skillId}.${key}`);
+        }
+      }
+    }
+  }
 }
 
 function assertSide(side, path) {
@@ -236,7 +271,10 @@ function assertMarks(marks) {
 }
 
 function assertDirection(direction, path) {
-  if (!hasExactKeys(direction, DIRECTION_KEYS)) {
+  if (
+    !LEGACY_DIRECTION_KEYS.every((key) => Object.hasOwn(direction, key)) ||
+    !Object.keys(direction).every((key) => DIRECTION_KEYS.includes(key))
+  ) {
     throw new TypeError(`${path} 结构无效`);
   }
   if (
@@ -246,11 +284,26 @@ function assertDirection(direction, path) {
   ) {
     throw new TypeError(`${path}.selectedSkillIndex 无效`);
   }
+  if (
+    Object.hasOwn(direction, "selectedDamageSource") &&
+    direction.selectedDamageSource !== "skill" &&
+    direction.selectedDamageSource !== "trait"
+  ) {
+    throw new TypeError(`${path}.selectedDamageSource 无效`);
+  }
   if (!isFiniteNonNegative(direction.reduction)) {
     throw new TypeError(`${path}.reduction 无效`);
   }
   if (!Number.isInteger(direction.hitCount) || direction.hitCount < 1) {
     throw new TypeError(`${path}.hitCount 无效`);
+  }
+  if (
+    Object.hasOwn(direction, "traitDamageHitCount") &&
+    (!Number.isInteger(direction.traitDamageHitCount) ||
+      direction.traitDamageHitCount < 1 ||
+      direction.traitDamageHitCount > 99)
+  ) {
+    throw new TypeError(`${path}.traitDamageHitCount 无效`);
   }
   if (
     !Number.isInteger(direction.starfallStacks) ||
@@ -319,7 +372,18 @@ function selectSkillInput(skill) {
   };
   for (const key of SKILL_INPUT_KEYS.slice(1)) {
     if (Object.hasOwn(skill, key)) {
-      selected[key] = skill[key];
+      selected[key] = key === "memoryBySkill"
+        ? Object.fromEntries(
+            Object.entries(skill[key]).map(([skillId, memory]) => [
+              skillId,
+              Object.fromEntries(
+                SKILL_MEMORY_KEYS.filter((memoryKey) =>
+                  Object.hasOwn(memory, memoryKey),
+                ).map((memoryKey) => [memoryKey, memory[memoryKey]]),
+              ),
+            ]),
+          )
+        : skill[key];
     }
   }
   return selected;
@@ -340,7 +404,7 @@ function selectSide(side) {
 }
 
 function selectDirection(direction) {
-  return {
+  const selected = {
     selectedSkillIndex: direction.selectedSkillIndex,
     reduction: direction.reduction,
     hitCount: direction.hitCount,
@@ -350,6 +414,19 @@ function selectDirection(direction) {
     context: direction.context,
     overrides: direction.overrides,
   };
+  if (
+    Object.hasOwn(direction, "selectedDamageSource") &&
+    direction.selectedDamageSource !== "skill"
+  ) {
+    selected.selectedDamageSource = direction.selectedDamageSource;
+  }
+  if (
+    Object.hasOwn(direction, "traitDamageHitCount") &&
+    direction.traitDamageHitCount !== 1
+  ) {
+    selected.traitDamageHitCount = direction.traitDamageHitCount;
+  }
+  return selected;
 }
 
 export function selectShareableInputs(state) {
@@ -513,6 +590,16 @@ export async function decodeShareState(hash, expectedVersions) {
   assertShareState(migratedState);
   const normalizedState = {
     ...migratedState,
+    directions: Object.fromEntries(
+      Object.entries(migratedState.directions).map(([direction, value]) => [
+        direction,
+        {
+          ...value,
+          selectedDamageSource: value.selectedDamageSource ?? "skill",
+          traitDamageHitCount: value.traitDamageHitCount ?? 1,
+        },
+      ]),
+    ),
     sides: Object.fromEntries(
       Object.entries(migratedState.sides).map(([side, value]) => [
         side,

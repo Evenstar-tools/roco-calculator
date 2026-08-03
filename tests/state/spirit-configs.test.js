@@ -1,9 +1,17 @@
 import { describe, expect, test } from "vitest";
 import {
   SPIRIT_CONFIG_STORAGE_KEY,
+  SPIRIT_CONFIG_V1_STORAGE_KEY,
+  SPIRIT_CONFIG_SCHEMA_VERSION,
   isCompleteSpiritConfig,
   spiritConfigsRepository,
 } from "../../src/state/spirit-configs.js";
+import {
+  canonicalTraitControlKey,
+  extractTraitValues,
+  materializeTraitContext,
+} from "../../src/state/trait-values.js";
+import { getTraitView } from "../../src/domain/calculator-view-model.js";
 
 function memoryStorage(seed = {}) {
   const values = new Map(Object.entries(seed));
@@ -28,8 +36,19 @@ function snapshot() {
       { id: "skill-c", name: "火焰切割" },
     ],
     spirits: [
-      { fullName: "绒光优优", id: "spirit-a" },
+      {
+        fullName: "绒光优优",
+        id: "spirit-a",
+        traitIds: ["trait-ignite"],
+      },
       { fullName: "恶魔狼王", id: "spirit-b" },
+    ],
+    traits: [
+      {
+        description: "每层增加双攻双防。",
+        id: "trait-ignite",
+        name: "点燃",
+      },
     ],
   };
 }
@@ -111,6 +130,84 @@ describe("isCompleteSpiritConfig", () => {
 });
 
 describe("spiritConfigsRepository", () => {
+  test("稀兽花宝只持久化血脉类型，不持久化本回合触发", () => {
+    const data = snapshot();
+    data.spirits[0].traitIds = ["trait-beast-flower"];
+    data.traits = [{
+      id: "trait-beast-flower",
+      name: "稀兽花宝",
+      description: "根据自己的血脉，入场时获得不同效果。",
+    }];
+    const controls = getTraitView(data, data.spirits[0], "attacker").inputs;
+    const bloodline = controls.find(({ contextKey }) => contextKey === "bloodlineType");
+    const activated = controls.find(({ contextKey }) => contextKey === "bloodlineActivated");
+    const config = configuredSide();
+    config.spiritId = "spirit-a";
+    config.skills.single.context = {
+      [bloodline.id]: "illusion",
+      [activated.id]: true,
+    };
+
+    const traitValues = extractTraitValues(config, data);
+    expect(traitValues).toEqual({
+      [canonicalTraitControlKey(bloodline)]: "illusion",
+    });
+    expect(materializeTraitContext(
+      traitValues,
+      data,
+      "spirit-a",
+      "attacker",
+    )).toEqual({ [bloodline.id]: "illusion" });
+  });
+  test("migrates current v1 memory to v2 and extracts role-neutral trait values", () => {
+    const data = snapshot();
+    const attackerControls = getTraitView(
+      data,
+      data.spirits[0],
+      "attacker",
+    ).inputs;
+    const stack = attackerControls.find(
+      (control) => control.contextKey === "attackerTraitStacks",
+    );
+    const effect = attackerControls.find(
+      (control) => control.contextKey === "attackerTraitEffect",
+    );
+    const side = configuredSide();
+    side.skills.single.context = {
+      [effect.id]: 20,
+      [stack.id]: 4,
+      weatherRainTurns: 8,
+    };
+    const legacyState = {
+      configs: {
+        "spirit-a": {
+          ...side,
+          natureId: "adamant",
+          updatedAt: "2026-07-29T12:00:00.000Z",
+        },
+      },
+      schemaVersion: 1,
+    };
+    const storage = memoryStorage({
+      [SPIRIT_CONFIG_V1_STORAGE_KEY]: JSON.stringify(legacyState),
+    });
+
+    const restored = spiritConfigsRepository({ storage }).load(data);
+
+    expect(SPIRIT_CONFIG_SCHEMA_VERSION).toBe(2);
+    expect(restored.schemaVersion).toBe(2);
+    expect(restored.configs["spirit-a"].traitValues).toEqual({
+      [canonicalTraitControlKey(effect)]: 20,
+      [canonicalTraitControlKey(stack)]: 4,
+    });
+    expect(JSON.parse(storage.getItem(SPIRIT_CONFIG_STORAGE_KEY))).toEqual(
+      restored,
+    );
+    expect(storage.getItem(SPIRIT_CONFIG_V1_STORAGE_KEY)).toBe(
+      JSON.stringify(legacyState),
+    );
+  });
+
   test("migrates the previous app namespace without losing spirit memory", () => {
     const legacyKey = "lovepvp.spirit-configs.v1";
     const stored = {
@@ -121,13 +218,12 @@ describe("spiritConfigsRepository", () => {
       [legacyKey]: JSON.stringify(stored),
     });
 
-    expect(spiritConfigsRepository({ storage }).load(snapshot())).toEqual(
-      stored,
-    );
+    const restored = spiritConfigsRepository({ storage }).load(snapshot());
+    expect(restored).toEqual({ configs: {}, schemaVersion: 2 });
     expect(JSON.parse(storage.getItem(SPIRIT_CONFIG_STORAGE_KEY))).toEqual(
-      stored,
+      restored,
     );
-    expect(storage.getItem(legacyKey)).toBeNull();
+    expect(storage.getItem(legacyKey)).toBe(JSON.stringify(stored));
   });
 
   test("persists the complete nested skill configuration without shared references", () => {
@@ -145,6 +241,7 @@ describe("spiritConfigsRepository", () => {
       natureId: "adamant",
       skills: side.skills,
       spiritId: "spirit-a",
+      traitValues: {},
       updatedAt: "2026-07-29T12:00:00.000Z",
     });
     expect(saved.configs["spirit-a"].skills).not.toBe(side.skills);
@@ -221,15 +318,42 @@ describe("spiritConfigsRepository", () => {
 
     expect(repository.load(snapshot())).toEqual({
       configs: {},
-      schemaVersion: 1,
+      schemaVersion: 2,
     });
     repository.save(repository.load(snapshot()), configuredSide());
     expect(storage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).not.toBeNull();
 
     expect(repository.clear()).toEqual({
       configs: {},
-      schemaVersion: 1,
+      schemaVersion: 2,
     });
     expect(storage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).toBeNull();
+  });
+
+  test("backs up a corrupt v2 value and still recovers the intact v1 memory", () => {
+    const legacyState = {
+      configs: {
+        "spirit-a": {
+          ...configuredSide(),
+          natureId: "adamant",
+          updatedAt: "2026-07-29T12:00:00.000Z",
+        },
+      },
+      schemaVersion: 1,
+    };
+    const storage = memoryStorage({
+      [SPIRIT_CONFIG_STORAGE_KEY]: "{broken",
+      [SPIRIT_CONFIG_V1_STORAGE_KEY]: JSON.stringify(legacyState),
+    });
+
+    const restored = spiritConfigsRepository({
+      now: () => "2026-08-03T00:00:00.000Z",
+      storage,
+    }).load(snapshot());
+
+    expect(restored.configs["spirit-a"].natureId).toBe("adamant");
+    expect(
+      storage.getItem(`${SPIRIT_CONFIG_STORAGE_KEY}.corrupt.2026-08-03T00:00:00.000Z`),
+    ).toBe("{broken");
   });
 });

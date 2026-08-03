@@ -10,6 +10,11 @@ import { SkillPicker } from "./SkillPicker.jsx";
 import { useEffect, useState } from "react";
 import { damageTone } from "./damageTone.js";
 import { HealthInput } from "./HealthInput.jsx";
+import { TraitHint } from "./TraitHint.jsx";
+import {
+  getChoiceTraitInput,
+  supportsChoiceTrait,
+} from "../domain/choice-skill-sequence.js";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -88,6 +93,7 @@ function SkillDamagePreview({
 
 function SkillSide({
   active,
+  activeDamageSource,
   activeSkillIndex,
   hitCount,
   health,
@@ -106,6 +112,8 @@ function SkillSide({
   onHealthChange,
   onHealthPercentChange,
   onTraitContextChange,
+  onTraitDamageFocus,
+  onTraitDamageHitCountChange,
   results,
   selectedSkills,
   side,
@@ -113,21 +121,22 @@ function SkillSide({
   trait,
   defenseTrait,
   traitContext,
+  traitDamage,
 }) {
   const hasSelfHpRule = selectedSkills.some((skill) =>
     dynamicInputsForSkill(skill, { includeStatusEffects: true }).some(
-      (input) => input.key === "attackerHpPercent",
+      (input) => (input.contextKey ?? input.key) === "attackerHpPercent",
     ),
   );
   const hasTargetHpRule = selectedSkills.some((skill) =>
     dynamicInputsForSkill(skill, { includeStatusEffects: true }).some(
-      (input) => input.key === "defenderHpPercent",
+      (input) => (input.contextKey ?? input.key) === "defenderHpPercent",
     ),
   );
   const offensiveTraitInputs =
-    trait?.inputs?.filter((input) => input.scope !== "skill") ?? [];
+    trait?.inputs?.filter((input) => input.scope !== "slot") ?? [];
   const defensiveTraitInputs =
-    defenseTrait?.inputs?.filter((input) => input.scope !== "skill") ?? [];
+    defenseTrait?.inputs?.filter((input) => input.scope !== "slot") ?? [];
   return (
     <section className={`four-skill-side four-skill-side--${side}`}>
       <header>
@@ -136,7 +145,7 @@ function SkillSide({
       </header>
       {offensiveTraitInputs.length > 0 ? (
         <div className="four-skill-trait-controls">
-          <span>{trait.name}</span>
+          <TraitHint description={trait.description} name={trait.name} />
           <TraitInputs
             context={traitContext}
             inputs={offensiveTraitInputs}
@@ -148,7 +157,10 @@ function SkillSide({
       ) : null}
       {defensiveTraitInputs.length > 0 ? (
         <div className="four-skill-trait-controls four-skill-trait-controls--defense">
-          <span>{defenseTrait.name}</span>
+          <TraitHint
+            description={defenseTrait.description}
+            name={`${opponentName} · ${defenseTrait.name}`}
+          />
           <TraitInputs
             context={traitContext}
             inputs={defensiveTraitInputs}
@@ -202,30 +214,92 @@ function SkillSide({
           <span className="skill-slot__head-hits">连击</span>
           <span className="skill-slot__head-result">伤害占比</span>
         </div>
+        {traitDamage ? (
+          <div
+            aria-label={`${label}特性伤害${traitDamage.name}${
+              active && activeDamageSource === "trait" ? "，当前选中" : ""
+            }`}
+            className={`skill-slot-group skill-slot-group--trait${
+              active && activeDamageSource === "trait" ? " is-selected" : ""
+            }`}
+            onClick={() => onTraitDamageFocus?.(side)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onTraitDamageFocus?.(side);
+              }
+            }}
+            role="group"
+            tabIndex="0"
+          >
+            <div className="skill-slot skill-slot--trait">
+              <span className="skill-slot__number">特</span>
+              <strong className="skill-slot__trait-name">{traitDamage.name}</strong>
+              <span className="skill-slot__kind">{traitDamage.typeLabel}</span>
+              <span>—</span>
+              <strong>{traitDamage.basePower}</strong>
+              <label className="skill-slot__hits">
+                <span className="sr-only">{label}{traitDamage.name}连击次数</span>
+                <input
+                  aria-label={`${label}${traitDamage.name}连击次数`}
+                  max="99"
+                  min="1"
+                  onChange={(event) =>
+                    onTraitDamageHitCountChange?.(
+                      side,
+                      Math.min(99, Math.max(1, Number(event.target.value) || 1)),
+                    )
+                  }
+                  onFocus={() => onTraitDamageFocus?.(side)}
+                  type="number"
+                  value={traitDamage.hitCount}
+                />
+              </label>
+              <SkillDamagePreview
+                index={-1}
+                label={label}
+                opponentName={opponentName}
+                result={traitDamage.result}
+                selected={{ name: traitDamage.name }}
+              />
+            </div>
+          </div>
+        ) : null}
         {Array.from({ length: 4 }, (_, index) => {
           const selected = selectedSkills[index];
           const result = results?.[index];
-          const isSelected = active && index === activeSkillIndex;
+          const isSelected =
+            active && activeDamageSource !== "trait" && index === activeSkillIndex;
+          const choiceTraitInput =
+            selected && supportsChoiceTrait(trait?.name)
+              ? getChoiceTraitInput(selected)
+              : null;
           const skillInputs = selected
-            ? dynamicInputsForSkill(selected, { includeStatusEffects: true })
+            ? [
+                ...dynamicInputsForSkill(selected, {
+                  includeStatusEffects: true,
+                }),
+                ...(choiceTraitInput ? [choiceTraitInput] : []),
+              ]
             : [];
           const traitInputs =
             selected
               ? [
                   ...(trait?.inputs?.filter(
-                    (input) => input.scope === "skill",
+                    (input) => input.scope === "slot",
                   ) ??
                     (trait?.conditionKey
                       ? [{
                           defaultValue: false,
                           key: trait.conditionKey,
                           label: trait.conditionLabel,
-                          scope: "skill",
+                          id: trait.conditionKey,
+                          scope: "slot",
                           type: "boolean",
                         }]
                       : [])),
                   ...(defenseTrait?.inputs?.filter(
-                    (input) => input.scope === "skill",
+                    (input) => input.scope === "slot",
                   ) ?? []),
                 ]
               : [];
@@ -233,7 +307,7 @@ function SkillSide({
             ...skillInputs,
             ...traitInputs.filter(
               (traitInput) =>
-                !skillInputs.some((input) => input.key === traitInput.key),
+                !skillInputs.some((input) => input.id === traitInput.id),
             ),
           ];
           return (
@@ -330,13 +404,19 @@ function SkillSide({
               {selected?.description || dynamicInputs.length > 0 ? (
                 <div className="skill-slot__context">
                   {selected?.description ? (
-                    <p title={selected.description}>{selected.description}</p>
+                    <p
+                      className="skill-slot__description"
+                      title={selected.description}
+                    >
+                      {selected.description}
+                    </p>
                   ) : null}
-                  {dynamicInputs
+                  <div className="skill-slot__controls">
+                    {dynamicInputs
                     .filter(
                       (input) =>
-                        (input.key !== "attackerHpPercent" || !health) &&
-                        (input.key !== "defenderHpPercent" || !opponentHealth),
+                        ((input.contextKey ?? input.key) !== "attackerHpPercent" || !health) &&
+                        ((input.contextKey ?? input.key) !== "defenderHpPercent" || !opponentHealth),
                     )
                     .filter((input) =>
                       isDynamicInputVisible(
@@ -346,7 +426,7 @@ function SkillSide({
                     )
                     .map((input) =>
                     input.type === "choice" ? (
-                      <label key={input.key}>
+                      <label key={input.id ?? input.key}>
                         <span className="sr-only">{input.label}</span>
                         <select
                           aria-label={`${label}技能${index + 1}${input.label}`}
@@ -354,7 +434,7 @@ function SkillSide({
                             onSkillContextChange?.(
                               side,
                               index,
-                              input.key,
+                              input.id ?? input.key,
                               event.target.value,
                             )
                           }
@@ -372,7 +452,7 @@ function SkillSide({
                         </select>
                       </label>
                     ) : input.type === "boolean" ? (
-                      <label key={input.key}>
+                      <label key={input.id ?? input.key}>
                         <input
                           aria-label={`${label}技能${index + 1}${input.label}`}
                           checked={Boolean(
@@ -385,7 +465,7 @@ function SkillSide({
                             onSkillContextChange?.(
                               side,
                               index,
-                              input.key,
+                              input.id ?? input.key,
                               event.target.checked,
                             )
                           }
@@ -395,7 +475,7 @@ function SkillSide({
                         {input.label}
                       </label>
                     ) : (
-                      <label key={input.key}>
+                      <label key={input.id ?? input.key}>
                         <span>{input.label}</span>
                         <input
                           aria-label={`${label}技能${index + 1}${input.label}`}
@@ -405,7 +485,7 @@ function SkillSide({
                             onSkillContextChange?.(
                               side,
                               index,
-                              input.key,
+                              input.id ?? input.key,
                               clampDynamicInput(input, event.target.value),
                             )
                           }
@@ -421,6 +501,7 @@ function SkillSide({
                       </label>
                     ),
                   )}
+                  </div>
                 </div>
               ) : null}
             </div>
@@ -432,6 +513,7 @@ function SkillSide({
 }
 
 export function FourSkillEditor({
+  activeDamageSource = "skill",
   activeSide = "attacker",
   activeSkillIndex = 0,
   attackerHealth,
@@ -442,6 +524,7 @@ export function FourSkillEditor({
   attackerSkills,
   attackerTrait,
   attackerTraitContext = {},
+  attackerTraitDamage,
   attackerDefenseTrait,
   defenderHitCount = 1,
   defenderName,
@@ -450,6 +533,7 @@ export function FourSkillEditor({
   defenderSkills,
   defenderTrait,
   defenderTraitContext = {},
+  defenderTraitDamage,
   defenderDefenseTrait,
   defenderHealth,
   onHealthChange,
@@ -461,6 +545,8 @@ export function FourSkillEditor({
   onSkillPowerChange,
   onSkillSelect,
   onTraitContextChange,
+  onTraitDamageFocus,
+  onTraitDamageHitCountChange,
   skills,
 }) {
   const isMobile = useMediaQuery("(max-width: 620px)");
@@ -482,6 +568,7 @@ export function FourSkillEditor({
       trait: attackerTrait,
       defenseTrait: attackerDefenseTrait,
       traitContext: attackerTraitContext,
+      traitDamage: attackerTraitDamage,
     },
     defender: {
       hitCount: defenderHitCount,
@@ -499,6 +586,7 @@ export function FourSkillEditor({
       trait: defenderTrait,
       defenseTrait: defenderDefenseTrait,
       traitContext: defenderTraitContext,
+      traitDamage: defenderTraitDamage,
     },
   };
 
@@ -507,6 +595,7 @@ export function FourSkillEditor({
       <SkillSide
         {...sideProps[side]}
         active={activeSide === side}
+        activeDamageSource={activeDamageSource}
         activeSkillIndex={activeSkillIndex}
         key={side}
         onSkillActivate={onSkillActivate}
@@ -518,6 +607,8 @@ export function FourSkillEditor({
         onSkillPowerChange={onSkillPowerChange}
         onSkillSelect={onSkillSelect}
         onTraitContextChange={onTraitContextChange}
+        onTraitDamageFocus={onTraitDamageFocus}
+        onTraitDamageHitCountChange={onTraitDamageHitCountChange}
       />
     );
   }

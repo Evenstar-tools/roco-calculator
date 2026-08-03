@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { AppHeader } from "../../src/components/AppHeader.jsx";
@@ -12,6 +12,7 @@ const attacker = {
   fullName: "音速犬",
   id: "sonic-dog",
   stage: "物攻型",
+  traitDescription: "入场首回合，获得物攻+100%。",
   traitName: "专注力",
   types: ["火"],
 };
@@ -21,6 +22,7 @@ const defender = {
   fullName: "水灵",
   id: "water-spirit",
   stage: "物攻型",
+  traitDescription: "使用水系技能后，全部技能能耗-1。",
   traitName: "湿润",
   types: ["水"],
 };
@@ -82,6 +84,36 @@ test("spirit step preserves the mirrored original-site structure and swaps compl
 
   await user.click(within(section).getByRole("button", { name: "交换双方完整配置" }));
   expect(onSwap).toHaveBeenCalledOnce();
+});
+
+test("shows the full trait description on pointer hover and keyboard focus", async () => {
+  const user = userEvent.setup();
+  render(
+    <SpiritStep
+      attacker={attacker}
+      defender={defender}
+      onAttackerSelect={vi.fn()}
+      onDefenderSelect={vi.fn()}
+      onSwap={vi.fn()}
+      spirits={[attacker, defender]}
+    />,
+  );
+
+  const attackerTrait = screen.getByText("专注力");
+  expect(
+    screen.queryByRole("tooltip", { name: "入场首回合，获得物攻+100%。" }),
+  ).not.toBeInTheDocument();
+
+  await user.hover(attackerTrait);
+  expect(
+    screen.getByRole("tooltip", { name: "入场首回合，获得物攻+100%。" }),
+  ).toBeVisible();
+
+  await user.unhover(attackerTrait);
+  fireEvent.focus(attackerTrait);
+  expect(
+    screen.getByRole("tooltip", { name: "入场首回合，获得物攻+100%。" }),
+  ).toBeVisible();
 });
 
 test("spirit search restores the selected name when Escape cancels the query", async () => {
@@ -156,6 +188,58 @@ test("spirit search keeps all marked configurations ahead of ordinary spirits", 
   ).toEqual(["完整配置", "手动收藏", "普通精灵"]);
 });
 
+test("spirit preview loads twenty more favorites per scroll until all are visible", async () => {
+  const user = userEvent.setup();
+  const favorites = Array.from({ length: 45 }, (_, index) => ({
+    evolutionChainIds: [`favorite-${index + 1}`],
+    favoriteState: index % 2 === 0 ? "manual" : "complete",
+    fullName: `收藏精灵${String(index + 1).padStart(2, "0")}`,
+    id: `favorite-${index + 1}`,
+  }));
+  render(
+    <SpiritPicker
+      favoriteState={null}
+      label="攻击方"
+      onFavoriteToggle={vi.fn()}
+      onSelect={vi.fn()}
+      selected={null}
+      side="attack"
+      spirits={[
+        ...favorites,
+        {
+          evolutionChainIds: ["ordinary"],
+          favoriteState: null,
+          fullName: "普通精灵",
+          id: "ordinary",
+        },
+      ]}
+    />,
+  );
+
+  await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  const listbox = screen.getByRole("listbox");
+  expect(screen.getAllByRole("option")).toHaveLength(12);
+  expect(screen.queryByText("已预览所有已收藏精灵")).not.toBeInTheDocument();
+
+  Object.defineProperties(listbox, {
+    clientHeight: { configurable: true, value: 100 },
+    scrollHeight: { configurable: true, value: 300 },
+    scrollTop: { configurable: true, value: 200, writable: true },
+  });
+  fireEvent.scroll(listbox);
+  expect(screen.getAllByRole("option")).toHaveLength(32);
+  expect(screen.queryByText("已预览所有已收藏精灵")).not.toBeInTheDocument();
+
+  Object.defineProperties(listbox, {
+    scrollHeight: { configurable: true, value: 500 },
+    scrollTop: { configurable: true, value: 400, writable: true },
+  });
+  fireEvent.scroll(listbox);
+  expect(screen.getAllByRole("option")).toHaveLength(45);
+  expect(screen.getByText("已预览所有已收藏精灵")).toBeVisible();
+  expect(screen.queryByRole("option", { name: /普通精灵/ })).not.toBeInTheDocument();
+});
+
 test("nature step keeps final panel, race, individual values, and level controls visible", async () => {
   const user = userEvent.setup();
   const onAttackerLevelChange = vi.fn();
@@ -216,6 +300,48 @@ test("nature step keeps final panel, race, individual values, and level controls
 
   await user.click(screen.getByRole("button", { name: "攻击方等级加一" }));
   expect(onAttackerLevelChange).toHaveBeenCalledWith(1);
+});
+
+test("holding a level button repeats changes and stops on release", () => {
+  vi.useFakeTimers();
+  try {
+    const onAttackerLevelChange = vi.fn();
+    render(
+      <NatureStatsStep
+        attacker={{
+          level: { label: "攻击能力等级", multiplier: 1, stage: 0 },
+          nature: "neutral",
+          stats,
+        }}
+        defender={{
+          level: { label: "防御能力等级", multiplier: 1, stage: 0 },
+          nature: "neutral",
+          stats,
+        }}
+        onAttackerIvChange={vi.fn()}
+        onAttackerLevelChange={onAttackerLevelChange}
+        onAttackerNatureChange={vi.fn()}
+        onDefenderIvChange={vi.fn()}
+        onDefenderLevelChange={vi.fn()}
+        onDefenderNatureChange={vi.fn()}
+      />,
+    );
+
+    const increase = screen.getByRole("button", { name: "攻击方等级加一" });
+    fireEvent.pointerDown(increase, { pointerId: 1 });
+    act(() => vi.advanceTimersByTime(650));
+    fireEvent.pointerUp(increase, { pointerId: 1 });
+
+    expect(onAttackerLevelChange.mock.calls.length).toBeGreaterThan(2);
+    expect(onAttackerLevelChange.mock.lastCall[0]).toBeGreaterThan(2);
+    const callCount = onAttackerLevelChange.mock.calls.length;
+    fireEvent.click(increase);
+    expect(onAttackerLevelChange).toHaveBeenCalledTimes(callCount);
+    act(() => vi.advanceTimersByTime(300));
+    expect(onAttackerLevelChange).toHaveBeenCalledTimes(callCount);
+  } finally {
+    vi.useRealTimers();
+  }
 });
 
 test("skill step has only single and four-skill top modes and keeps both editors mounted", async () => {

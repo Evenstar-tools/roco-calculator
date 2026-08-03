@@ -6,13 +6,14 @@ import {
 } from "@phosphor-icons/react";
 import {
   getNature,
-  getQuickNatureId,
   QUICK_STATS,
+  resolveCompactNaturePreset,
   STAT_LABELS,
 } from "../domain/natures.js";
 import { StatIcon } from "./StatIcon.jsx";
 
 export function QuickNaturePicker({
+  displayIvs,
   label,
   onChange,
   side,
@@ -48,7 +49,7 @@ export function QuickNaturePicker({
           aria-pressed={selectedStat === stat}
           className="quick-nature__option"
           key={stat}
-          onClick={() => onChange(getQuickNatureId(stat, side))}
+          onClick={() => onChange(resolveCompactNaturePreset(stat, displayIvs))}
           title={`${STAT_LABELS[stat]} +20%`}
           type="button"
         >

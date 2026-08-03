@@ -88,6 +88,21 @@ export function ResultRail({
         </section>
       ) : null}
 
+      {primary.traitSettlements?.length > 0 ? (
+        <section aria-label="特性结算" className="result-rail__traits">
+          {primary.traitSettlements.map((settlement, index) => (
+            <div
+              data-side={settlement.side}
+              data-status={settlement.status}
+              key={`${settlement.traitId}-${settlement.bloodlineType}-${index}`}
+            >
+              <b>{settlement.side === "attacker" ? "进攻方" : "防御方"}</b>
+              <span>{settlement.text}</span>
+            </div>
+          ))}
+        </section>
+      ) : null}
+
       {onCurrentHpChange ? (
         <div className="result-rail__hp-control">
           <span>目标 HP</span>
@@ -113,6 +128,32 @@ export function ResultRail({
       {result.mode === "four" ? (
         <section aria-label="技能结果" className="skill-result-list">
           <h2>技能结果</h2>
+          {result.traitResult ? (
+            <div
+              className={`skill-result-row skill-result-row--trait${
+                result.traitResult.selected ? " is-selected" : ""
+              }`}
+              data-tone={damageTone(result.traitResult.hpPercent)}
+            >
+              <span className="skill-result-row__index">特</span>
+              <span className="skill-result-row__name">
+                <small>特性造成伤害</small>
+                {result.traitResult.name}
+              </span>
+              <span className="skill-result-row__bar" aria-hidden="true">
+                <span
+                  style={{
+                    width: `${clampPercent(result.traitResult.hpPercent)}%`,
+                  }}
+                />
+              </span>
+              <strong>
+                {Number.isFinite(result.traitResult.hpPercent)
+                  ? `${result.traitResult.hpPercent.toFixed(1)}%`
+                  : "—"}
+              </strong>
+            </div>
+          ) : null}
           {result.skillResults.map((skill, index) => (
             <div
               className={`skill-result-row${skill.selected ? " is-selected" : ""}`}
@@ -132,6 +173,16 @@ export function ResultRail({
             </div>
           ))}
         </section>
+      ) : null}
+
+      {primary.choiceTraitSequence?.text ? (
+        <p
+          aria-label="选择特性结算"
+          className="result-rail__choice-sequence"
+          role="status"
+        >
+          {primary.choiceTraitSequence.text}
+        </p>
       ) : null}
 
     </aside>

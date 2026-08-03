@@ -117,8 +117,12 @@ describe("skill loadouts", () => {
       ],
     };
 
-    expect(
-      getSkillChoices(snapshot, "spirit-a").map((skill) => skill.id),
-    ).toEqual(["skill-a", "skill-b", "skill-c"]);
+    const first = getSkillChoices(snapshot, "spirit-a");
+    expect(first.map((skill) => skill.id)).toEqual([
+      "skill-a",
+      "skill-b",
+      "skill-c",
+    ]);
+    expect(getSkillChoices(snapshot, "spirit-a")).toBe(first);
   });
 });

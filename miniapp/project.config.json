@@ -1,0 +1,11 @@
+{
+  "appid": "touristappid",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "projectname": "rock-calculator-miniapp",
+  "setting": {
+    "es6": true,
+    "minified": true,
+    "postcss": true
+  }
+}

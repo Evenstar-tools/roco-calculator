@@ -180,6 +180,13 @@ export function createTeamMember(snapshot, spiritId) {
   };
 }
 
+export function createTeamMemberFromSpiritConfig(config) {
+  if (!config?.spiritId) {
+    throw new TypeError("个人精灵配置必须包含 spiritId");
+  }
+  return sanitizeMember(config);
+}
+
 export function createTeamMemberFromSide(side) {
   if (!side?.spiritId) {
     throw new TypeError("当前计算方没有可保存的精灵");

@@ -143,6 +143,9 @@ export function favoritesRepository(storage = globalThis.localStorage) {
 
       return writeFavorites(storage, favorites);
     },
+    replace(favorites) {
+      return writeFavorites(storage, favorites);
+    },
     clear() {
       storage.removeItem(FAVORITES_STORAGE_KEY);
       storage.removeItem(legacyStorageKey(FAVORITES_STORAGE_SUFFIX));

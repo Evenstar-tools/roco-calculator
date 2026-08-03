@@ -5,6 +5,8 @@ import {
   getInheritedDamageTraits,
   getTraitEffectRule,
   getTraitEffectInputs,
+  resolveBeastFlowerBloodlineTrait,
+  resolveTraitEffectRule,
   TRAIT_EFFECT_RULE_NAMES,
 } from "../../src/domain/trait-effects.js";
 
@@ -12,6 +14,67 @@ const snapshotPath = join(process.cwd(), "public", "data", "current.json");
 const snapshot = JSON.parse(readFileSync(snapshotPath, "utf8"));
 
 describe("trait effect coverage", () => {
+  test("稀兽花宝为攻防双方提供互斥血脉与临时触发控件", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "稀兽花宝");
+
+    for (const role of ["attacker", "defender"]) {
+      const inputs = getTraitEffectInputs(trait, role);
+      expect(inputs).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          contextKey: "bloodlineType",
+          options: expect.arrayContaining([
+            expect.objectContaining({ value: "normal", label: "普通｜技能威力 +40" }),
+            expect.objectContaining({ value: "illusion", label: "幻｜对方星陨 ×2" }),
+          ]),
+          scope: "direction",
+          type: "choice",
+        }),
+        expect.objectContaining({
+          contextKey: "bloodlineActivated",
+          scope: "battle",
+          type: "boolean",
+        }),
+      ]));
+      expect(inputs[0].options.filter(({ value }) => value !== "")).toHaveLength(18);
+    }
+  });
+
+  test("稀兽花宝不进入既有特性倍率计算", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "稀兽花宝");
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      attacker: {},
+      context: {},
+      defender: {},
+      skill: { category: "physical", type: "普通" },
+    })).toMatchObject({
+      attackLevelBonus: 0,
+      attackMultiplier: 1,
+      fixedPowerAdd: 0,
+      powerMultiplier: 1,
+    });
+  });
+
+  test("按角色语义键解析稀兽花宝血脉", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "稀兽花宝");
+    const inputs = getTraitEffectInputs(trait, "defender");
+    const bloodlineType = inputs.find((input) => input.contextKey === "bloodlineType");
+    const activated = inputs.find((input) => input.contextKey === "bloodlineActivated");
+
+    expect(resolveBeastFlowerBloodlineTrait({
+      traits: [trait],
+      role: "defender",
+      context: {
+        [bloodlineType.id]: "machine",
+        [activated.id]: true,
+      },
+      skill: { category: "physical", type: "普通" },
+    })).toMatchObject({
+      active: true,
+      bloodlineType: "machine",
+      defenseLevelBonusByCategory: { physical: 6, magical: 6 },
+    });
+  });
+
   test("keeps a maintained catalog for reviewed recurring trait shapes", () => {
     expect(TRAIT_EFFECT_RULE_NAMES.length).toBeGreaterThanOrEqual(40);
   });
@@ -112,6 +175,48 @@ describe("trait effect coverage", () => {
     ]);
   });
 
+  test("namespaces attacker and defender controls while preserving their legacy context keys", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "渗透");
+
+    const attackerInputs = getTraitEffectInputs(trait, "attacker");
+    const defenderInputs = getTraitEffectInputs(trait, "defender");
+    expect(attackerInputs).toMatchObject([
+      {
+        contextKey: "attackerTraitStacks",
+        id: expect.stringMatching(
+          /^attackerTrait\.attackerTraitStacks\.[a-f0-9]{8}$/,
+        ),
+        scope: "direction",
+        source: "attackerTrait",
+      },
+      {
+        contextKey: "attackerTraitEffect",
+        id: expect.stringMatching(
+          /^attackerTrait\.attackerTraitEffect\.[a-f0-9]{8}$/,
+        ),
+      },
+    ]);
+    expect(defenderInputs).toMatchObject([
+      {
+        contextKey: "defenderTraitStacks",
+        id: expect.stringMatching(
+          /^defenderTrait\.defenderTraitStacks\.[a-f0-9]{8}$/,
+        ),
+        scope: "direction",
+        source: "defenderTrait",
+      },
+      {
+        contextKey: "defenderTraitEffect",
+        id: expect.stringMatching(
+          /^defenderTrait\.defenderTraitEffect\.[a-f0-9]{8}$/,
+        ),
+      },
+    ]);
+    expect(attackerInputs[0].id.split(".").at(-1)).toBe(
+      defenderInputs[0].id.split(".").at(-1),
+    );
+  });
+
   test.each(["最好的伙伴", "裁决", "滋养", "点燃", "净化"])(
     "%s exposes Dimo-family trigger stacks instead of a trigger toggle",
     (name) => {
@@ -160,6 +265,22 @@ describe("trait effect coverage", () => {
         label: "每层双攻双防",
       },
     ]);
+  });
+
+  test("保守派只显示固定双防加成的触发勾选", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "保守派");
+
+    for (const role of ["attacker", "defender"]) {
+      expect(getTraitEffectInputs(trait, role)).toMatchObject([
+        {
+          defaultValue: false,
+          key: "traitActivated",
+          label: "总技能能耗小于4",
+          type: "boolean",
+        },
+      ]);
+      expect(getTraitEffectInputs(trait, role)).toHaveLength(1);
+    }
   });
 
   test.each([

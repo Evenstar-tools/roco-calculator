@@ -38,6 +38,33 @@ test("keeps the exact damage and percent prominent", () => {
   expect(screen.queryByText(/随机|范围|置信/)).not.toBeInTheDocument();
 });
 
+test("explains a repeated choice skill as two independently calculated passes", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        mode: "four",
+        selectedResult: {
+          ...result.selectedResult,
+          choiceTraitSequence: {
+            executions: [
+              { damage: 140, label: "第一段", power: 140 },
+              { damage: 70, label: "第二段", power: 70 },
+            ],
+            text: "有求必应：第一段 140 + 第二段 70 = 210",
+            traitName: "有求必应",
+          },
+          totalDamage: 210,
+        },
+      }}
+    />,
+  );
+
+  expect(
+    screen.getByRole("status", { name: "选择特性结算" }),
+  ).toHaveTextContent("有求必应：第一段 140 + 第二段 70 = 210");
+});
+
 test("shows attacker and defender mark settlements separately", () => {
   render(
     <ResultRail
@@ -72,6 +99,40 @@ test("shows attacker and defender mark settlements separately", () => {
   expect(within(marks).getByText("风起 ×2 技能威力 +40%")).toBeVisible();
   expect(within(marks).getByText("防御方")).toBeVisible();
   expect(within(marks).getByText("星陨 ×3 +35 伤害")).toBeVisible();
+});
+
+test("shows Beast Flower bloodline settlements without pretending they are marks", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        selectedResult: {
+          ...result.selectedResult,
+          traitSettlements: [
+            {
+              traitId: "trait_beast_flower",
+              bloodlineType: "normal",
+              side: "attacker",
+              status: "applied",
+              text: "普通血脉｜技能威力 +40",
+            },
+            {
+              traitId: "trait_beast_flower",
+              bloodlineType: "fire",
+              side: "defender",
+              status: "recorded",
+              text: "火系血脉｜灼烧 ×6 · 本次伤害不追加",
+            },
+          ],
+        },
+      }}
+    />,
+  );
+
+  const settlements = screen.getByRole("region", { name: "特性结算" });
+  expect(within(settlements).getByText("普通血脉｜技能威力 +40")).toBeVisible();
+  expect(within(settlements).getByText("火系血脉｜灼烧 ×6 · 本次伤害不追加")).toBeVisible();
+  expect(screen.queryByRole("region", { name: "印记结算" })).not.toBeInTheDocument();
 });
 
 test("keeps the result visible while naming an unapplied trait", () => {
@@ -118,6 +179,36 @@ test("keeps the four-skill comparison visible in four-skill mode", () => {
   expect(within(skillResults).getByText("125.6%").closest(".skill-result-row"))
     .toHaveAttribute("data-tone", "danger");
   expect(within(skillResults).queryByText("545")).not.toBeInTheDocument();
+});
+
+test("shows direct trait damage as a separate selected result above skills", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        mode: "four",
+        selectedSkillName: "刺肤",
+        selectedResult: {
+          hpPercent: 12.5,
+          lethal: false,
+          status: "exact",
+          totalDamage: 54,
+        },
+        traitResult: {
+          damage: 54,
+          hpPercent: 12.5,
+          name: "刺肤",
+          selected: true,
+        },
+      }}
+    />,
+  );
+
+  const list = screen.getByRole("region", { name: "技能结果" });
+  const trait = within(list).getByText("特性造成伤害").closest(".skill-result-row");
+  expect(trait).toHaveClass("is-selected");
+  expect(within(trait).getByText("12.5%")).toBeVisible();
+  expect(within(trait).getByText("刺肤")).toBeVisible();
 });
 
 test("does not expose formula, share, or developer provenance in the result rail", () => {

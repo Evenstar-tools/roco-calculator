@@ -58,16 +58,20 @@ function CompactDamage({
 
 function CompactSkillSide({
   active,
+  activeDamageSource,
   activeSkillIndex,
   label,
   name,
   onSkillFocus,
   onSkillSelect,
+  onTraitDamageFocus,
+  onTraitDamageHitCountChange,
   opponentName,
   results,
   selectedSkills,
   side,
   skills,
+  traitDamage,
 }) {
   const SideIcon = side === "attacker" ? Sword : Shield;
 
@@ -78,9 +82,59 @@ function CompactSkillSide({
         <strong>{name}</strong>
       </header>
       <div className="compact-skill__list">
+        {traitDamage ? (
+          <div
+            aria-label={`${label}特性伤害${traitDamage.name}${
+              active && activeDamageSource === "trait" ? "，当前选中" : ""
+            }`}
+            className={`compact-skill__row compact-skill__row--trait${
+              active && activeDamageSource === "trait" ? " is-selected" : ""
+            }`}
+            onClick={() => onTraitDamageFocus?.(side)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onTraitDamageFocus?.(side);
+              }
+            }}
+            role="group"
+            tabIndex="0"
+          >
+            <span className="compact-skill__number">特</span>
+            <span className="compact-skill__trait-name">
+              <strong>{traitDamage.name}</strong>
+              <small>{traitDamage.typeLabel} · 威 {traitDamage.basePower}</small>
+            </span>
+            <span className="compact-skill__element">无</span>
+            <label className="compact-skill__trait-hits">
+              <span className="sr-only">{label}{traitDamage.name}连击次数</span>
+              <input
+                aria-label={`${label}${traitDamage.name}连击次数`}
+                max="99"
+                min="1"
+                onChange={(event) =>
+                  onTraitDamageHitCountChange?.(
+                    side,
+                    Math.min(99, Math.max(1, Number(event.target.value) || 1)),
+                  )
+                }
+                onFocus={() => onTraitDamageFocus?.(side)}
+                type="number"
+                value={traitDamage.hitCount}
+              />
+            </label>
+            <CompactDamage
+              label={label}
+              opponentName={opponentName}
+              result={traitDamage.result}
+              selected={{ name: traitDamage.name }}
+            />
+          </div>
+        ) : null}
         {Array.from({ length: 4 }, (_, index) => {
           const selected = selectedSkills[index];
-          const isSelected = active && index === activeSkillIndex;
+          const isSelected =
+            active && activeDamageSource !== "trait" && index === activeSkillIndex;
           return (
             <div
               aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
@@ -139,46 +193,59 @@ function CompactSkillSide({
 }
 
 export function CompactFourSkillEditor({
+  activeDamageSource = "skill",
   activeSide = "attacker",
   activeSkillIndex = 0,
   attackerName,
   attackerResults,
   attackerSkillChoices,
   attackerSkills,
+  attackerTraitDamage,
   defenderName,
   defenderResults,
   defenderSkillChoices,
   defenderSkills,
+  defenderTraitDamage,
   onSkillFocus,
   onSkillSelect,
+  onTraitDamageFocus,
+  onTraitDamageHitCountChange,
 }) {
   return (
     <div className="compact-four-skill">
       <CompactSkillSide
         active={activeSide === "attacker"}
+        activeDamageSource={activeDamageSource}
         activeSkillIndex={activeSkillIndex}
         label="攻击方"
         name={attackerName}
         onSkillFocus={onSkillFocus}
         onSkillSelect={onSkillSelect}
+        onTraitDamageFocus={onTraitDamageFocus}
+        onTraitDamageHitCountChange={onTraitDamageHitCountChange}
         opponentName={defenderName}
         results={attackerResults}
         selectedSkills={attackerSkills}
         side="attacker"
         skills={attackerSkillChoices}
+        traitDamage={attackerTraitDamage}
       />
       <CompactSkillSide
         active={activeSide === "defender"}
+        activeDamageSource={activeDamageSource}
         activeSkillIndex={activeSkillIndex}
         label="防御方"
         name={defenderName}
         onSkillFocus={onSkillFocus}
         onSkillSelect={onSkillSelect}
+        onTraitDamageFocus={onTraitDamageFocus}
+        onTraitDamageHitCountChange={onTraitDamageHitCountChange}
         opponentName={attackerName}
         results={defenderResults}
         selectedSkills={defenderSkills}
         side="defender"
         skills={defenderSkillChoices}
+        traitDamage={defenderTraitDamage}
       />
     </div>
   );

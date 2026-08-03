@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { calculateMatchup } from "../../src/domain/calculate.js";
+import { getTraitEffectInputs } from "../../src/domain/trait-effects.js";
 
 const allFullIvs = {
   physicalAttack: 60,
@@ -207,7 +208,373 @@ function legacyBattleInput(overrides = {}) {
   return input;
 }
 
+const beastFlowerTrait = {
+  id: "trait_beast_flower",
+  name: "稀兽花宝",
+  description: "根据自己的血脉，入场时获得不同效果。",
+};
+
+function beastFlowerSnapshot({ combo = false } = {}) {
+  return {
+    ...snapshot,
+    spirits: snapshot.spirits.map((spirit) => ({
+      ...spirit,
+      traitIds: [beastFlowerTrait.id],
+    })),
+    skills: snapshot.skills.map((skill) =>
+      combo && skill.id === "skill_wind"
+        ? { ...skill, description: "造成物理伤害，3连击。" }
+        : skill,
+    ),
+    traits: [beastFlowerTrait],
+  };
+}
+
+function bloodlineContext(role, bloodlineType) {
+  const controls = getTraitEffectInputs(beastFlowerTrait, role);
+  return Object.fromEntries(controls.map((control) => [
+    control.id,
+    control.contextKey === "bloodlineType" ? bloodlineType : true,
+  ]));
+}
+
 describe("calculateMatchup", () => {
+  test("稀兽花宝普通血脉只增加一次固定威力", () => {
+    const input = battleInput({
+      directions: {
+        forward: { context: bloodlineContext("attacker", "normal") },
+      },
+    });
+    const result = calculateMatchup(beastFlowerSnapshot(), input).forward.selectedResult;
+
+    expect(result.skillPower).toBe(120);
+    expect(result.traitSettlements).toEqual(expect.arrayContaining([
+      expect.objectContaining({ bloodlineType: "normal", side: "attacker" }),
+    ]));
+    expect(result.formulaSteps).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: "普通血脉", input: "+40 固定威力" }),
+    ]));
+  });
+
+  test("稀兽花宝按当前技能类别应用攻防能力等级", () => {
+    const martial = calculateMatchup(beastFlowerSnapshot(), battleInput({
+      directions: {
+        forward: { context: bloodlineContext("attacker", "martial") },
+      },
+    })).forward.selectedResult;
+    const light = calculateMatchup(beastFlowerSnapshot(), battleInput({
+      directions: {
+        forward: { context: bloodlineContext("attacker", "light") },
+      },
+    })).forward.selectedResult;
+    const machine = calculateMatchup(beastFlowerSnapshot(), battleInput({
+      directions: {
+        forward: { context: bloodlineContext("defender", "machine") },
+      },
+    })).forward.selectedResult;
+    const base = calculateMatchup(beastFlowerSnapshot(), battleInput()).forward.selectedResult;
+
+    expect(martial.totalDamage).toBeGreaterThan(base.totalDamage);
+    expect(light.totalDamage).toBe(base.totalDamage);
+    expect(machine.totalDamage).toBeLessThan(base.totalDamage);
+  });
+
+  test("稀兽花宝翼与地血脉只修正明确声明的连击", () => {
+    const wing = calculateMatchup(beastFlowerSnapshot({ combo: true }), battleInput({
+      directions: {
+        forward: { context: bloodlineContext("attacker", "wing"), hitCount: 3 },
+      },
+    })).forward.selectedResult;
+    const earth = calculateMatchup(beastFlowerSnapshot({ combo: true }), battleInput({
+      directions: {
+        forward: { context: bloodlineContext("defender", "earth"), hitCount: 3 },
+      },
+    })).forward.selectedResult;
+    const singleWing = calculateMatchup(beastFlowerSnapshot(), battleInput({
+      directions: {
+        forward: { context: bloodlineContext("attacker", "wing") },
+      },
+    })).forward.selectedResult;
+
+    expect(wing.hitCount).toBe(6);
+    expect(earth.hitCount).toBe(1);
+    expect(singleWing.hitCount).toBe(1);
+  });
+
+  test("稀兽花宝电与地血脉先修正速度再计算动态威力", () => {
+    const speedSkill = {
+      id: "skill_beast_speed",
+      name: "闪击",
+      type: "翼",
+      category: "physical",
+      basePower: 60,
+      ruleId: "speed_difference",
+      provenance: { ruleId: { source: "fixture" } },
+    };
+    const fixture = {
+      ...beastFlowerSnapshot(),
+      skills: [...snapshot.skills, speedSkill],
+    };
+    const attackerSide = side("spirit_sonic_dog", speedSkill.id, [
+      speedSkill.id,
+      null,
+      null,
+      null,
+    ]);
+    const baseInput = battleInput({ sides: { attacker: attackerSide } });
+    const base = calculateMatchup(fixture, baseInput).forward.selectedResult;
+    const electric = calculateMatchup(fixture, battleInput({
+      sides: { attacker: attackerSide },
+      directions: {
+        forward: { context: bloodlineContext("attacker", "electric") },
+      },
+    })).forward.selectedResult;
+    const earth = calculateMatchup(fixture, battleInput({
+      sides: { attacker: attackerSide },
+      directions: {
+        forward: { context: bloodlineContext("defender", "earth") },
+      },
+    })).forward.selectedResult;
+
+    expect(electric.effectivePower).toBeGreaterThan(base.effectivePower);
+    expect(earth.effectivePower).toBeLessThan(base.effectivePower);
+  });
+
+  test("稀兽花宝幻血脉把两层星陨加到当前目标且幻系技能不触发", () => {
+    const marked = battleInput({
+      marks: {
+        attacker: { negative: { id: null, stacks: 0 }, positive: { id: null, stacks: 0 } },
+        defender: { negative: { id: "starfall", stacks: 3 }, positive: { id: null, stacks: 0 } },
+      },
+      directions: {
+        forward: { context: bloodlineContext("attacker", "illusion") },
+      },
+    });
+    const nonIllusion = calculateMatchup(beastFlowerSnapshot(), marked).forward.selectedResult;
+    const illusionInput = battleInput({
+      ...marked,
+      sides: {
+        ...marked.sides,
+        attacker: side("spirit_sonic_dog", "skill_mana", ["skill_mana", null, null, null]),
+      },
+    });
+    const illusion = calculateMatchup(beastFlowerSnapshot(), illusionInput).forward.selectedResult;
+
+    expect(nonIllusion.additionalDamage).toBeGreaterThan(0);
+    expect(nonIllusion.formulaSteps).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: "星陨追加伤害", input: expect.objectContaining({ stacks: 5 }) }),
+    ]));
+    expect(nonIllusion.traitSettlements).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        bloodlineType: "illusion",
+        text: `幻系血脉｜星陨 ×2 · 追加 ${nonIllusion.additionalDamage} 伤害`,
+      }),
+    ]));
+    expect(illusion.additionalDamage).toBe(0);
+    expect(illusion.traitSettlements).toEqual(expect.arrayContaining([
+      expect.objectContaining({ status: "not-triggered", text: expect.stringContaining("幻系技能不触发") }),
+    ]));
+  });
+  test("persistent hit-count bonuses only affect skills with a declared combo", () => {
+    const comboSnapshot = {
+      ...snapshot,
+      skills: snapshot.skills.map((skill) =>
+        skill.id === "skill_wind"
+          ? { ...skill, description: "造成物伤，1连击。" }
+          : skill,
+      ),
+    };
+    const base = calculateMatchup(
+      comboSnapshot,
+      battleInput(),
+    ).forward.selectedResult;
+    const buffed = calculateMatchup(
+      comboSnapshot,
+      battleInput({
+        directions: { forward: { overrides: { hitCountAdd: 3 } } },
+      }),
+    ).forward.selectedResult;
+    const noCombo = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: { forward: { overrides: { hitCountAdd: 3 } } },
+      }),
+    ).forward.selectedResult;
+
+    expect(buffed.hitCount).toBe(4);
+    expect(buffed.totalDamage).toBe(base.totalDamage * 4);
+    expect(noCombo.hitCount).toBe(1);
+    expect(noCombo.totalDamage).toBe(base.totalDamage);
+  });
+
+  test("calculates Skin Spikes as neutral fixed-power trait damage and rounds each hit first", () => {
+    const traitSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit, index) =>
+        index === 0 ? { ...spirit, traitIds: ["trait_skin_spikes"] } : spirit,
+      ),
+      traits: [
+        {
+          description: "每受到1次攻击伤害，对攻击自己的精灵造成50威力物理伤害。",
+          id: "trait_skin_spikes",
+          name: "刺肤",
+        },
+      ],
+    };
+    const oneHit = calculateMatchup(
+      traitSnapshot,
+      battleInput({
+        mode: "four",
+        directions: {
+          forward: {
+            selectedDamageSource: "trait",
+            traitDamageHitCount: 1,
+            context: { weatherRainTurns: 8 },
+          },
+        },
+      }),
+    ).forward;
+    const threeHits = calculateMatchup(
+      traitSnapshot,
+      battleInput({
+        mode: "four",
+        directions: {
+          forward: {
+            selectedDamageSource: "trait",
+            traitDamageHitCount: 3,
+            context: { weatherRainTurns: 8 },
+          },
+        },
+      }),
+    ).forward;
+
+    expect(oneHit.selectedResult).toBe(oneHit.traitResult);
+    expect(oneHit.traitResult).toMatchObject({
+      category: "physical",
+      effectivePower: 50,
+      hitCount: 1,
+      skillName: "刺肤",
+      sourceKind: "trait",
+      typeLabel: "无·特性",
+      typeMultiplier: 1,
+      weatherMultiplier: 1,
+    });
+    expect(threeHits.traitResult.totalDamage).toBe(
+      oneHit.traitResult.totalDamage * 3,
+    );
+  });
+
+  test("calculates direct trait damage in both battle directions", () => {
+    const traitSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) => ({
+        ...spirit,
+        traitIds: ["trait_skin_spikes"],
+      })),
+      traits: [
+        {
+          description: "每受到1次攻击伤害，对攻击自己的精灵造成50威力物理伤害。",
+          id: "trait_skin_spikes",
+          name: "刺肤",
+        },
+      ],
+    };
+    const matchup = calculateMatchup(
+      traitSnapshot,
+      battleInput({ mode: "four" }),
+    );
+
+    expect(matchup.forward.traitResult?.skillName).toBe("刺肤");
+    expect(matchup.reverse.traitResult?.skillName).toBe("刺肤");
+  });
+
+  test("uses status-applied flat speed when resolving speed-difference power", () => {
+    const speedSkill = {
+      id: "skill_speed_difference",
+      name: "闪击",
+      type: "翼",
+      category: "physical",
+      basePower: 60,
+      ruleId: "speed_difference",
+      provenance: { ruleId: { source: "fixture" } },
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, speedSkill],
+    };
+    const input = battleInput({
+      mode: "four",
+      sides: {
+        attacker: side("spirit_sonic_dog", speedSkill.id, [
+          speedSkill.id,
+          null,
+          null,
+          null,
+        ]),
+      },
+    });
+    const before = calculateMatchup(fixture, input).forward.selectedResult;
+    const after = calculateMatchup(
+      fixture,
+      {
+        ...input,
+        directions: {
+          ...input.directions,
+          forward: {
+            ...input.directions.forward,
+            overrides: { attackerSpeedFlat: 60 },
+          },
+        },
+      },
+    ).forward.selectedResult;
+
+    expect(after.effectivePower).toBeGreaterThan(before.effectivePower);
+    const beforeStep = before.formulaSteps.find(
+      (step) => step.label === "速度差威力",
+    );
+    const afterStep = after.formulaSteps.find(
+      (step) => step.label === "速度差威力",
+    );
+    expect(afterStep).toMatchObject({
+      input: {
+        attacker: expect.any(Number),
+        defender: expect.any(Number),
+      },
+    });
+    expect(afterStep.input.attacker - beforeStep.input.attacker).toBe(60);
+  });
+
+  test("applies a direction fixed-power status bonus to every selected skill", () => {
+    const input = battleInput({
+      mode: "four",
+      sides: {
+        attacker: side("spirit_sonic_dog", "skill_wind", [
+          "skill_wind",
+          "skill_color_dispersion",
+          null,
+          null,
+        ]),
+      },
+    });
+    const before = calculateMatchup(snapshot, input).forward.results;
+    const after = calculateMatchup(
+      snapshot,
+      {
+        ...input,
+        directions: {
+          ...input.directions,
+          forward: {
+            ...input.directions.forward,
+            overrides: { fixedPowerAdd: 20 },
+          },
+        },
+      },
+    ).forward.results;
+
+    expect(after[0].effectivePower - before[0].effectivePower).toBe(20);
+    expect(after[1].effectivePower - before[1].effectivePower).toBe(20);
+  });
+
   test("applies the active side's positive mark by stack and reports the settlement", () => {
     const before = calculateMatchup(snapshot, battleInput()).forward.selectedResult;
     const after = calculateMatchup(
@@ -479,6 +846,92 @@ describe("calculateMatchup", () => {
       totalDamage: 158,
     });
   });
+
+  test.each([
+    {
+      expectedPowers: [70, 90],
+      mode: "growth",
+      response: false,
+      traitName: "有求必应",
+    },
+    {
+      expectedPowers: [140, 70],
+      mode: "counter",
+      response: true,
+      traitName: "有求必应",
+    },
+    {
+      expectedPowers: [70, 90],
+      mode: "growth",
+      response: false,
+      traitName: "一意孤行",
+    },
+    {
+      expectedPowers: [140, 70],
+      mode: "counter",
+      response: true,
+      traitName: "一意孤行",
+    },
+  ])(
+    "calculates choice trait damage as two rounded passes: $traitName $mode",
+    ({ expectedPowers, mode, response, traitName }) => {
+      const traitId = `trait-${traitName}`;
+      const choiceSnapshot = {
+        ...snapshot,
+        spirits: snapshot.spirits.map((spirit) =>
+          spirit.id === "spirit_sonic_dog"
+            ? { ...spirit, traitIds: [traitId] }
+            : spirit,
+        ),
+        traits: [
+          {
+            description: "选择技能额外执行一次。",
+            id: traitId,
+            name: traitName,
+          },
+        ],
+      };
+      const entry = {
+        context: {
+          choiceTraitTriggered: true,
+          counterTriggered: response,
+          friendshipMode: mode,
+          skillUseCount: 0,
+        },
+        overrides: { basePower: 70 },
+        skillId: "skill_friendship_overflow",
+      };
+      const result = calculateMatchup(
+        choiceSnapshot,
+        battleInput({
+          mode: "four",
+          sides: {
+            attacker: side("spirit_sonic_dog", "skill_friendship_overflow", [
+              entry,
+              null,
+              null,
+              null,
+            ]),
+          },
+        }),
+      ).forward.selectedResult;
+
+      expect(result.choiceTraitSequence.executions.map((pass) => pass.power)).toEqual(
+        expectedPowers,
+      );
+      expect(result.totalDamage).toBe(
+        result.choiceTraitSequence.executions.reduce(
+          (total, pass) => total + pass.damage,
+          0,
+        ),
+      );
+      expect(result.choiceTraitSequence.text).toContain("第一段");
+      expect(result.choiceTraitSequence.text).toContain("第二段");
+      if (response) {
+        expect(result.choiceTraitSequence.text).toContain("仅第一段触发应对");
+      }
+    },
+  );
 
   test("returns damage first for Skybreaker and applies its condition per skill", () => {
     const skybreakerSnapshot = {
@@ -1008,6 +1461,60 @@ describe("calculateMatchup", () => {
 
     expect(panelStep.after).toBe(panelStep.before);
     expect(result.effectivePower).toBe(160);
+  });
+
+  test("保守派触发后同时降低受到的物理和魔法伤害", () => {
+    const traitSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_water"
+          ? { ...spirit, traitIds: ["trait_conservative"] }
+          : spirit,
+      ),
+      traits: [
+        {
+          affectsDamage: true,
+          description: "总技能能耗小于4时，自己获得双防+80%。",
+          id: "trait_conservative",
+          name: "保守派",
+        },
+      ],
+    };
+    const activated = {
+      directions: {
+        forward: { context: { traitActivated: true } },
+      },
+    };
+
+    const physicalBase = calculateMatchup(
+      traitSnapshot,
+      battleInput(),
+    ).forward.selectedResult.totalDamage;
+    const physicalBuffed = calculateMatchup(
+      traitSnapshot,
+      battleInput(activated),
+    ).forward.selectedResult.totalDamage;
+    const magicalInput = {
+      sides: {
+        attacker: side("spirit_sonic_dog", "skill_water", [
+          "skill_water",
+          null,
+          null,
+          null,
+        ]),
+      },
+    };
+    const magicalBase = calculateMatchup(
+      traitSnapshot,
+      battleInput(magicalInput),
+    ).forward.selectedResult.totalDamage;
+    const magicalBuffed = calculateMatchup(
+      traitSnapshot,
+      battleInput({ ...magicalInput, ...activated }),
+    ).forward.selectedResult.totalDamage;
+
+    expect(physicalBuffed).toBeLessThan(physicalBase);
+    expect(magicalBuffed).toBeLessThan(magicalBase);
   });
 
   test("reports damage percentage against maximum HP while lethal uses current HP", () => {

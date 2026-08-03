@@ -1,11 +1,12 @@
 import { calculateAllPanelStats } from "../domain/stat.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import {
-  getLegalSkillIds,
   getSkillChoices,
-  reconcileSkillLoadout,
 } from "../domain/skill-loadout.js";
-import { createTeamMember } from "../state/team-presets.js";
+import {
+  createTeamMember,
+  createTeamMemberFromSpiritConfig,
+} from "../state/team-presets.js";
 import { NatureEffect } from "./NatureEffect.jsx";
 import { NatureSelect } from "./NatureSelect.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
@@ -43,7 +44,13 @@ function spiritView(spirit) {
   };
 }
 
-export function TeamMemberEditor({ index, member, onChange, snapshot }) {
+export function TeamMemberEditor({
+  getSpiritConfiguration = () => null,
+  index,
+  member,
+  onChange,
+  snapshot,
+}) {
   const spirit = (snapshot.spirits ?? []).find(
     (candidate) => candidate.id === member?.spiritId,
   );
@@ -65,20 +72,12 @@ export function TeamMemberEditor({ index, member, onChange, snapshot }) {
     : null;
 
   function selectSpirit(spiritId) {
-    const defaults = createTeamMember(snapshot, spiritId);
-    if (!member) {
-      onChange(defaults);
-      return;
-    }
-    onChange({
-      ...defaults,
-      displayIvs: { ...member.displayIvs },
-      natureId: member.natureId,
-      skills: reconcileSkillLoadout(
-        member.skills,
-        getLegalSkillIds(snapshot, spiritId),
-      ),
-    });
+    const personalConfiguration = getSpiritConfiguration(spiritId);
+    onChange(
+      personalConfiguration
+        ? createTeamMemberFromSpiritConfig(personalConfiguration)
+        : createTeamMember(snapshot, spiritId),
+    );
   }
 
   function updateSkill(skillIndex, skillId) {

@@ -28,6 +28,16 @@ const snapshot = {
         "prepared-stance",
         "bubble-shield",
         "pain-lover",
+        "steam-march",
+        "mud-armor",
+        "feather-acceleration",
+        "horse-stance",
+        "warm-up",
+        "diffuse-reflection",
+        "fire-strike-2",
+        "water-strike",
+        "sunny",
+        "light-strike",
       ],
     },
     {
@@ -48,11 +58,32 @@ const snapshot = {
   },
   skills: [
     {
+      basePower: 0,
+      category: "status",
+      cost: 2,
+      description: "自己获得连击数+3。",
+      id: "warm-up",
+      name: "热身运动",
+      ruleId: null,
+      type: "普通",
+    },
+    {
       basePower: 80,
       category: "physical",
       cost: 1,
       id: "fire-strike",
       name: "风力冲击",
+      provenance: { basePower: "test" },
+      ruleId: null,
+      type: "火",
+    },
+    {
+      basePower: 60,
+      category: "physical",
+      cost: 2,
+      description: "对敌方精灵造成物理伤害。",
+      id: "fire-strike-2",
+      name: "火焰冲击",
       provenance: { basePower: "test" },
       ruleId: null,
       type: "火",
@@ -66,6 +97,17 @@ const snapshot = {
       provenance: { basePower: "test" },
       ruleId: null,
       type: "水",
+    },
+    {
+      basePower: 100,
+      category: "magical",
+      cost: 2,
+      description: "对敌方精灵造成魔法伤害。",
+      id: "light-strike",
+      name: "光能冲击",
+      provenance: { basePower: "test" },
+      ruleId: null,
+      type: "光",
     },
     {
       basePower: null,
@@ -140,6 +182,66 @@ const snapshot = {
       name: "嗜痛",
       ruleId: null,
       type: "恶",
+    },
+    {
+      basePower: 0,
+      category: "status",
+      cost: 2,
+      description: "选择：自己获得速度+60或物攻+90%。",
+      id: "steam-march",
+      name: "蒸汽进行曲",
+      ruleId: null,
+      type: "水",
+    },
+    {
+      basePower: 0,
+      category: "defense",
+      cost: 2,
+      description: "自己获得物攻、物防+60%；防御应对成功时增益翻倍。",
+      id: "mud-armor",
+      name: "泥浆铠甲",
+      ruleId: null,
+      type: "地",
+    },
+    {
+      basePower: 0,
+      category: "status",
+      cost: 2,
+      description: "自己全部技能威力+20。",
+      id: "feather-acceleration",
+      name: "羽化加速",
+      ruleId: null,
+      type: "翼",
+    },
+    {
+      basePower: 0,
+      category: "status",
+      cost: 1,
+      description: "每种系别中的至多1个技能，威力+35。",
+      id: "diffuse-reflection",
+      name: "漫反射",
+      ruleId: null,
+      type: "光",
+    },
+    {
+      basePower: 0,
+      category: "status",
+      cost: 2,
+      description: "光系技能威力永久+50%，应对防御：改为永久+100%。",
+      id: "sunny",
+      name: "放晴",
+      ruleId: null,
+      type: "光",
+    },
+    {
+      basePower: 0,
+      category: "status",
+      cost: 2,
+      description: "生命高于80%时，选择：自己获得物攻+150%。",
+      id: "horse-stance",
+      name: "马步",
+      ruleId: null,
+      type: "武",
     },
   ],
   spirits: [
@@ -316,7 +418,7 @@ test("compact mode defaults to four skills and preserves state when opening deta
   expect(screen.getByRole("region", { name: "性格配置" })).toBeVisible();
   expect(
     screen.getByRole("combobox", { name: "攻击方性格" }),
-  ).toHaveValue("adamant");
+  ).toHaveValue("brave");
 
   await user.click(screen.getByRole("button", { name: "精简版" }));
   expect(
@@ -324,7 +426,7 @@ test("compact mode defaults to four skills and preserves state when opening deta
   ).toHaveAttribute("aria-pressed", "true");
 });
 
-test("compact nature choices use single-attack attacker natures and safe defender natures", async () => {
+test("compact nature presets use each side's current attack IV selection", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -335,18 +437,38 @@ test("compact nature choices use single-attack attacker natures and safe defende
 
   expect(
     screen.getByRole("combobox", { name: "攻击方性格" }),
-  ).toHaveValue("adamant");
+  ).toHaveValue("brave");
   expect(
     screen.getByRole("combobox", { name: "防御方性格" }),
-  ).toHaveValue("steady");
+  ).toHaveValue("relaxed");
 
   await user.click(screen.getByRole("button", { name: "精简版" }));
-  await user.click(screen.getByRole("button", { name: "攻击方魔攻增益" }));
+  await user.click(
+    screen.getByRole("checkbox", { name: "攻击方魔攻个体加点" }),
+  );
+  await user.click(
+    screen.getByRole("checkbox", { name: "防御方魔攻个体加点" }),
+  );
+
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  expect(
+    screen.getByRole("combobox", { name: "攻击方性格" }),
+  ).toHaveValue("brave");
+  expect(
+    screen.getByRole("combobox", { name: "防御方性格" }),
+  ).toHaveValue("relaxed");
+
+  await user.click(screen.getByRole("button", { name: "精简版" }));
+  await user.click(screen.getByRole("button", { name: "攻击方物攻增益" }));
+  await user.click(screen.getByRole("button", { name: "防御方生命增益" }));
   await user.click(screen.getByRole("button", { name: "具体版" }));
 
   expect(
     screen.getByRole("combobox", { name: "攻击方性格" }),
-  ).toHaveValue("smart");
+  ).toHaveValue("adamant");
+  expect(
+    screen.getByRole("combobox", { name: "防御方性格" }),
+  ).toHaveValue("silent");
 });
 
 test("compact individual checkboxes write sixty or zero without leaving quick mode", async () => {
@@ -581,6 +703,62 @@ test("recalculates stacked trait effects and editable four-skill power", async (
   ).toBeVisible();
 });
 
+test("keeps Dimo-family attack and defense trait stacks synchronized", async () => {
+  const user = userEvent.setup();
+  const dimoSnapshot = {
+    ...snapshot,
+    spirits: snapshot.spirits.map((spirit) =>
+      spirit.id === "water-spirit"
+        ? {
+            ...spirit,
+            traitIds: ["judgment"],
+            traitName: "裁决",
+          }
+        : spirit,
+    ),
+    traits: [
+      {
+        description:
+          "造成克制伤害后，获得攻防速+20%，回复2能量。",
+        id: "judgment",
+        name: "裁决",
+      },
+    ],
+  };
+
+  const firstRender = render(<App initialSnapshot={dimoSnapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+  await user.click(screen.getByRole("tab", { name: "四技能" }));
+
+  const stackInputs = screen.getAllByRole("spinbutton", {
+    name: "触发层数",
+  });
+  expect(stackInputs).toHaveLength(2);
+  expect(screen.getByText("水灵 · 裁决", { exact: true })).toBeVisible();
+  await user.clear(stackInputs[0]);
+  await user.type(stackInputs[0], "3");
+  expect(stackInputs[0]).toHaveValue(3);
+  expect(stackInputs[1]).toHaveValue(3);
+
+  firstRender.unmount();
+  render(<App initialSnapshot={dimoSnapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+  await user.click(screen.getByRole("tab", { name: "四技能" }));
+
+  const restoredInputs = screen.getAllByRole("spinbutton", {
+    name: "触发层数",
+  });
+  expect(restoredInputs[0]).toHaveValue(3);
+  expect(restoredInputs[1]).toHaveValue(3);
+
+  await user.clear(restoredInputs[1]);
+  await user.type(restoredInputs[1], "2");
+  expect(restoredInputs[0]).toHaveValue(2);
+  expect(restoredInputs[1]).toHaveValue(2);
+});
+
 test("Black Cat Detective adjusts Prophet stacks with the number-input arrows", async () => {
   const user = userEvent.setup();
   const prophetSnapshot = {
@@ -793,6 +971,34 @@ test("uses a selected status skill only after its non-input row is clicked", asy
   expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
 });
 
+test("Warm-up adds three hits to declared combo skills without double-counting manual edits", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const first = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(first);
+  await user.type(first, "乱打");
+  await user.click(screen.getByRole("option", { name: /乱打/ }));
+  const comboHits = screen.getByRole("spinbutton", {
+    name: "攻击方技能1连击次数",
+  });
+  expect(comboHits).toHaveValue(5);
+
+  const second = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(second);
+  await user.type(second, "热身运动");
+  await user.click(screen.getByRole("option", { name: /热身运动/ }));
+  expect(comboHits).toHaveValue(5);
+
+  await user.click(screen.getByText("自己获得连击数+3。"));
+  expect(comboHits).toHaveValue(8);
+
+  fireEvent.change(comboHits, { target: { value: "9" } });
+  expect(comboHits).toHaveValue(9);
+});
+
 test("shows applied attack levels in both attack panel values", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
@@ -891,6 +1097,39 @@ test("requires a successful defense response before applying Water Bubble Shield
   expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
 });
 
+test("applies a clicked defense skill reduction and clears it after another skill is used", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const first = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(first);
+  await user.type(first, "水泡盾");
+  await user.click(screen.getByRole("option", { name: /水泡盾/ }));
+  await user.click(
+    screen.getByText("减伤80%，应对攻击：自己获得魔攻+70%。"),
+  );
+
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  expect(screen.getByRole("spinbutton", { name: "防御技能减伤" })).toHaveValue(80);
+
+  const second = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(second);
+  await user.type(second, "火焰冲击");
+  await user.click(screen.getByRole("option", { name: /火焰冲击/ }));
+  await user.click(
+    within(
+      screen.getByRole("group", {
+        name: "攻击方技能2，当前选中",
+      }),
+    ).getByText("对敌方精灵造成物理伤害。"),
+  );
+
+  await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+  expect(screen.getByRole("spinbutton", { name: "防御技能减伤" })).toHaveValue(0);
+});
+
 test("applies Pain Lover attack levels once per recorded incoming hit", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
@@ -943,6 +1182,222 @@ test("applies the same status-skill interaction to the defense-side loadout", as
   await user.click(within(selectedRow).getByText("自己获得魔攻+70%。"));
 
   expect(within(defenseSide).getByText("7层 · +70%")).toBeVisible();
+});
+
+test("applies both Steam March branches to attack level and the displayed speed panel", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const attackSide = within(
+    screen.getByRole("region", { name: "性格配置" }),
+  ).getByRole("group", { name: "攻击方能力" });
+  const speedTile = within(attackSide).getByTitle("速度").closest(".stat-tile");
+  const speedBefore = Number(
+    speedTile.querySelector(".stat-tile__panel").textContent,
+  );
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "蒸汽进行曲");
+  await user.click(screen.getByRole("option", { name: /蒸汽进行曲/ }));
+  await user.click(
+    screen.getByRole("checkbox", { name: "攻击方技能1速度+60" }),
+  );
+  await user.click(
+    screen.getByRole("checkbox", { name: "攻击方技能1物攻+90%" }),
+  );
+  await user.click(screen.getByText("选择：自己获得速度+60或物攻+90%。"));
+
+  expect(within(attackSide).getByText("9层 · +90%")).toBeVisible();
+  expect(
+    Number(speedTile.querySelector(".stat-tile__panel").textContent),
+  ).toBe(speedBefore + 60);
+});
+
+test("doubles all existing positive own levels after Mud Armor counters", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const natureStep = screen.getByRole("region", { name: "性格配置" });
+  const attackSide = within(natureStep).getByRole("group", {
+    name: "攻击方能力",
+  });
+  const defenseSide = within(natureStep).getByRole("group", {
+    name: "防御方能力",
+  });
+  const ownPhysicalDefense = within(attackSide)
+    .getByTitle("物防")
+    .closest(".stat-tile");
+  const physicalDefenseBefore = Number(
+    ownPhysicalDefense.querySelector(".stat-tile__panel").textContent,
+  );
+  const first = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(first);
+  await user.type(first, "魔法增效");
+  await user.click(screen.getByRole("option", { name: /魔法增效/ }));
+  await user.click(screen.getByText("自己获得魔攻+70%。"));
+
+  const second = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(second);
+  await user.type(second, "泥浆铠甲");
+  await user.click(screen.getByRole("option", { name: /泥浆铠甲/ }));
+  await user.click(
+    screen.getByRole("checkbox", { name: "攻击方技能2防御应对成功" }),
+  );
+  await user.click(
+    screen.getByText("自己获得物攻、物防+60%；防御应对成功时增益翻倍。"),
+  );
+
+  expect(within(attackSide).getByText("26层 · +260%")).toBeVisible();
+  expect(
+    Number(ownPhysicalDefense.querySelector(".stat-tile__panel").textContent),
+  ).toBe(Math.round(physicalDefenseBefore * 2.2));
+  expect(within(defenseSide).getByText("0层 · 0%")).toBeVisible();
+});
+
+test("keeps Feather Acceleration as a persistent bonus for the other carried skills", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const first = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(first);
+  await user.type(first, "羽化加速");
+  await user.click(screen.getByRole("option", { name: /羽化加速/ }));
+  const second = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(second);
+  await user.type(second, "风力冲击");
+  await user.click(screen.getByRole("option", { name: /风力冲击/ }));
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(80);
+
+  await user.click(screen.getByText("自己全部技能威力+20。"));
+
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(100);
+});
+
+test("Diffuse Reflection buffs only the first attacking skill of each type", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const selections = [
+    ["攻击方技能1", "漫反射"],
+    ["攻击方技能2", "风力冲击"],
+    ["攻击方技能3", "火焰冲击"],
+    ["攻击方技能4", "水之波纹"],
+  ];
+  for (const [label, name] of selections) {
+    const picker = screen.getByRole("combobox", { name: label });
+    await user.clear(picker);
+    await user.type(picker, name);
+    await user.click(screen.getByRole("option", { name: new RegExp(name) }));
+  }
+
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(80);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能3威力" })).toHaveValue(60);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能4威力" })).toHaveValue(60);
+
+  await user.click(screen.getByText("每种系别中的至多1个技能，威力+35。"));
+
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(115);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能3威力" })).toHaveValue(60);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能4威力" })).toHaveValue(95);
+});
+
+test("Sunny buffs light attacking skills without changing other types", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const selections = [
+    ["攻击方技能1", "放晴"],
+    ["攻击方技能2", "光能冲击"],
+    ["攻击方技能3", "风力冲击"],
+  ];
+  for (const [label, name] of selections) {
+    const picker = screen.getByRole("combobox", { name: label });
+    await user.clear(picker);
+    await user.type(picker, name);
+    await user.click(screen.getByRole("option", { name: new RegExp(name) }));
+  }
+
+  await user.click(screen.getByText("光系技能威力永久+50%，应对防御：改为永久+100%。"));
+
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(150);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能3威力" })).toHaveValue(80);
+});
+
+test("uses the live attacker health percentage when activating Horse Stance", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const attackSide = within(
+    screen.getByRole("region", { name: "性格配置" }),
+  ).getByRole("group", { name: "攻击方能力" });
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "马步");
+  await user.click(screen.getByRole("option", { name: /马步/ }));
+  await user.click(
+    screen.getByRole("checkbox", { name: "攻击方技能1选择物攻+150%" }),
+  );
+  const health = screen.getByRole("spinbutton", { name: "攻击方生命百分比" });
+  await user.clear(health);
+  await user.type(health, "80");
+  await user.click(screen.getByText("生命高于80%时，选择：自己获得物攻+150%。"));
+  expect(within(attackSide).getByText("0层 · 0%")).toBeVisible();
+
+  await user.clear(health);
+  await user.type(health, "81");
+  await user.click(screen.getByText("生命高于80%时，选择：自己获得物攻+150%。"));
+  expect(within(attackSide).getByText("15层 · +150%")).toBeVisible();
+});
+
+test("passes Gal's choice trait into Steam March activation", async () => {
+  const user = userEvent.setup();
+  const galSnapshot = {
+    ...snapshot,
+    spirits: snapshot.spirits.map((spirit) =>
+      spirit.id === "sonic-dog"
+        ? { ...spirit, traitName: "有求必应" }
+        : spirit,
+    ),
+  };
+  render(<App initialSnapshot={galSnapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const attackSide = within(
+    screen.getByRole("region", { name: "性格配置" }),
+  ).getByRole("group", { name: "攻击方能力" });
+  const speedTile = within(attackSide).getByTitle("速度").closest(".stat-tile");
+  const speedBefore = Number(
+    speedTile.querySelector(".stat-tile__panel").textContent,
+  );
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "蒸汽进行曲");
+  await user.click(screen.getByRole("option", { name: /蒸汽进行曲/ }));
+  await user.click(
+    screen.getByRole("checkbox", { name: "攻击方技能1物攻+90%" }),
+  );
+  await user.click(
+    screen.getByRole("checkbox", { name: "攻击方技能1触发特性" }),
+  );
+  await user.click(screen.getByText("选择：自己获得速度+60或物攻+90%。"));
+
+  expect(within(attackSide).getByText("9层 · +90%")).toBeVisible();
+  expect(
+    Number(speedTile.querySelector(".stat-tile__panel").textContent),
+  ).toBe(speedBefore + 60);
 });
 
 test("keeps the exact result available without scrolling to the bottom", async () => {
@@ -1123,6 +1578,9 @@ test("restores one global spirit configuration with nested four-skill state", as
     screen.getByRole("region", { name: "性格配置" }),
   ).getByRole("group", { name: "攻击方能力" });
   expect(
+    screen.getByRole("combobox", { name: "攻击方性格" }),
+  ).toHaveValue("adamant");
+  expect(
     within(attackStats).getByRole("spinbutton", { name: "HP个体" }),
   ).toHaveValue(17);
   expect(
@@ -1254,7 +1712,7 @@ test("automatically saves the last edited side and reset clears spirit memory", 
       JSON.parse(localStorage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).configs[
         "sonic-dog"
       ].natureId,
-    ).toBe("adamant"),
+    ).toBe("brave"),
   );
   expect(
     screen.getAllByRole("button", { name: "手动收藏音速犬" }),
@@ -1266,7 +1724,7 @@ test("automatically saves the last edited side and reset clears spirit memory", 
       JSON.parse(localStorage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).configs[
         "sonic-dog"
       ].natureId,
-    ).toBe("smart"),
+    ).toBe("calm"),
   );
   expect(screen.getAllByRole("button", { name: "收藏音速犬" })).toHaveLength(
     2,
@@ -1370,9 +1828,9 @@ test("applies selected skill effects and declared hit counts without manual powe
   await user.click(screen.getByRole("option", { name: /当头棒喝/ }));
   expect(
     screen.getByRole("checkbox", { name: "敌方本回合换精灵" }),
-  ).not.toBeChecked();
+  ).toBeChecked();
   expect(
-    within(screen.getByLabelText("技能威力")).getByText("80"),
+    within(screen.getByLabelText("技能威力")).getByText("180"),
   ).toBeVisible();
 });
 
@@ -1407,6 +1865,11 @@ test("loads one team member into the attack side without linking later edits", a
   });
   fireEvent.change(memberAttackIv, { target: { value: "42" } });
 
+  const personalStorageBefore = localStorage.getItem(
+    SPIRIT_CONFIG_STORAGE_KEY,
+  );
+  const teamStorageBeforeLoad = localStorage.getItem(TEAM_STORAGE_KEY);
+
   await user.click(
     screen.getByRole("button", { name: "水灵设为攻击方" }),
   );
@@ -1433,16 +1896,10 @@ test("loads one team member into the attack side without linking later edits", a
     "水之波纹",
   );
   expect(screen.getByText("已载入攻击方 水灵")).toBeVisible();
-  await waitFor(() =>
-    expect(
-      JSON.parse(localStorage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).configs[
-        "water-spirit"
-      ],
-    ).toMatchObject({
-      displayIvs: expect.objectContaining({ physicalAttack: 42 }),
-      natureId: "adamant",
-    }),
+  expect(localStorage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).toBe(
+    personalStorageBefore,
   );
+  expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamStorageBeforeLoad);
 
   const storedBefore = localStorage.getItem(TEAM_STORAGE_KEY);
   await user.clear(mainAttackIv);
@@ -1534,22 +1991,50 @@ test("offers current-version recalculation for an older valid share", async () =
   window.history.replaceState(null, "", window.location.pathname);
 });
 
-test("opens a pasteable share-link importer from the menu", async () => {
+test("opens one clear dialog for copying or loading a shared configuration", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
 
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "导入分享链接" }));
+  await user.click(screen.getByRole("button", { name: "分享当前配置" }));
 
+  const dialog = screen.getByRole("dialog", { name: "分享当前配置" });
+  expect(dialog).toBeVisible();
+  expect(within(dialog).getByText(/不会包含配置库和队伍/)).toBeVisible();
   expect(
-    screen.getByRole("dialog", { name: "导入分享链接" }),
-  ).toBeVisible();
-  expect(screen.getByRole("textbox", { name: "分享链接" })).toHaveFocus();
+    within(dialog).getByRole("button", { name: "复制当前配置链接" }),
+  ).toBeDisabled();
+  expect(within(dialog).getByRole("textbox", { name: "粘贴分享链接" })).toHaveFocus();
   await user.keyboard("{Escape}");
   expect(
-    screen.queryByRole("dialog", { name: "导入分享链接" }),
+    screen.queryByRole("dialog", { name: "分享当前配置" }),
   ).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "打开菜单" })).toHaveFocus();
+});
+
+test("loads a pasted share from the unified share dialog", async () => {
+  const user = userEvent.setup();
+  const hash = await encodeShareState(createInitialState(snapshot));
+  render(<App initialSnapshot={snapshot} />);
+
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "分享当前配置" }));
+  const dialog = screen.getByRole("dialog", { name: "分享当前配置" });
+  fireEvent.change(
+    within(dialog).getByRole("textbox", { name: "粘贴分享链接" }),
+    { target: { value: hash } },
+  );
+  await user.click(
+    within(dialog).getByRole("button", { name: "载入分享配置" }),
+  );
+
+  expect(
+    await screen.findByText("分享配置已载入"),
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("dialog", { name: "分享当前配置" }),
+  ).not.toBeInTheDocument();
+  window.history.replaceState(null, "", window.location.pathname);
 });
 
 test("menu reports its state and closes with Escape or an outside click", async () => {
@@ -1578,25 +2063,113 @@ test("menu reports its state and closes with Escape or an outside click", async 
   ).not.toBeInTheDocument();
 });
 
-test("menu actions expose share, data, and season feedback", async () => {
+test("menu keeps only useful actions and explains current-configuration sharing", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
 
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "复制分享链接" }));
+  expect(screen.getByRole("button", { name: "分享当前配置" })).toBeVisible();
+  expect(screen.queryByRole("button", { name: "复制分享链接" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "导入分享链接" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "安装 WebApp" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "数据来源" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "赛季记录" })).not.toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "分享当前配置" }));
+  const dialog = screen.getByRole("dialog", { name: "分享当前配置" });
+  await waitFor(() => {
+    expect(
+      within(dialog).getByRole("textbox", { name: "当前配置链接" }).value,
+    ).toMatch(/#v1\./);
+  });
   expect(window.location.hash).toMatch(/^#v1\./);
+  await user.click(
+    within(dialog).getByRole("button", { name: "复制当前配置链接" }),
+  );
   expect(screen.getByText("分享链接已复制")).toBeVisible();
 
-  await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "数据来源" }));
-  expect(screen.getByText("BWIKI 修订 41360")).toBeVisible();
-
-  await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "赛季记录" }));
-  expect(screen.getByText("当前赛季 s3")).toBeVisible();
-
   window.history.replaceState(null, "", window.location.pathname);
+});
+
+test("opens configuration library export from the system menu with live counts", async () => {
+  localStorage.clear();
+  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([{
+    id: "spirit:sonic-dog",
+    kind: "spirit",
+    spiritId: "sonic-dog",
+  }]));
+  localStorage.setItem(SPIRIT_CONFIG_STORAGE_KEY, JSON.stringify({
+    schemaVersion: 2,
+    configs: {
+      "sonic-dog": {
+        spiritId: "sonic-dog",
+        natureId: "adamant",
+        displayIvs: {
+          hp: 0,
+          speed: 60,
+          physicalAttack: 60,
+          magicalAttack: 60,
+          physicalDefense: 0,
+          magicalDefense: 0,
+        },
+        skills: {
+          four: ["fire-strike", "mana-burst", null, null],
+          single: null,
+        },
+        traitValues: {},
+        updatedAt: "2026-08-03T00:00:00.000Z",
+      },
+    },
+  }));
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "配置库导出" }));
+
+  const dialog = screen.getByRole("dialog", { name: "配置库导出" });
+  expect(within(dialog).getByText("可导出 1 只精灵")).toBeVisible();
+  expect(
+    within(dialog).getByText("跳过").nextElementSibling,
+  ).toHaveTextContent("0");
+});
+
+test("configuration library export recognizes complete legacy memories without manual favorites", async () => {
+  localStorage.clear();
+  localStorage.setItem("rock-calculator.spirit-configs.v1", JSON.stringify({
+    schemaVersion: 1,
+    configs: {
+      "sonic-dog": {
+        spiritId: "sonic-dog",
+        natureId: "adamant",
+        displayIvs: {
+          hp: 0,
+          speed: 60,
+          physicalAttack: 60,
+          magicalAttack: 60,
+          physicalDefense: 0,
+          magicalDefense: 0,
+        },
+        skills: {
+          four: ["fire-strike", "mana-burst", null, null],
+          single: null,
+        },
+        updatedAt: "2026-08-03T00:00:00.000Z",
+      },
+    },
+  }));
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "配置库导出" }));
+
+  const dialog = screen.getByRole("dialog", { name: "配置库导出" });
+  expect(within(dialog).getByText("可导出 1 只精灵")).toBeVisible();
+  const autoMetric = within(dialog).getByText("自动识别").parentElement;
+  expect(within(autoMetric).getByText("1")).toBeVisible();
+  expect(within(dialog).getByRole("button", { name: "导出" })).toBeEnabled();
 });
 
 test("share falls back to a copyable link when clipboard access fails", async () => {
@@ -1608,18 +2181,23 @@ test("share falls back to a copyable link when clipboard access fails", async ()
   await selectDefaultSpirits(user);
 
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "复制分享链接" }));
+  await user.click(screen.getByRole("button", { name: "分享当前配置" }));
 
-  const dialog = screen.getByRole("dialog", { name: "复制分享链接" });
+  const dialog = screen.getByRole("dialog", { name: "分享当前配置" });
   expect(dialog).toBeVisible();
-  expect(
-    within(dialog).getByRole("textbox", { name: "生成的分享链接" }).value,
-  ).toMatch(/#v1\./);
-  expect(screen.getByText("复制受限，请手动复制")).toBeVisible();
+  await waitFor(() => {
+    expect(
+      within(dialog).getByRole("textbox", { name: "当前配置链接" }).value,
+    ).toMatch(/#v1\./);
+  });
+  await user.click(
+    within(dialog).getByRole("button", { name: "复制当前配置链接" }),
+  );
+  expect(screen.getByText("复制受限，请手动复制上方链接")).toBeVisible();
 
   await user.keyboard("{Escape}");
   expect(
-    screen.queryByRole("dialog", { name: "复制分享链接" }),
+    screen.queryByRole("dialog", { name: "分享当前配置" }),
   ).not.toBeInTheDocument();
   window.history.replaceState(null, "", window.location.pathname);
 });

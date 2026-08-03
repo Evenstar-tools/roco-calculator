@@ -1,7 +1,84 @@
 import { Minus, Plus } from "@phosphor-icons/react";
+import { useEffect, useRef } from "react";
 import { NatureEffect } from "./NatureEffect.jsx";
 import { NatureSelect } from "./NatureSelect.jsx";
 import { StatTile } from "./StatTile.jsx";
+
+const HOLD_DELAY_MS = 350;
+const HOLD_INTERVAL_MS = 80;
+
+function RepeatLevelButton({
+  ariaLabel,
+  children,
+  delta,
+  disabled,
+  onChange,
+  value,
+}) {
+  const timeoutRef = useRef(null);
+  const intervalRef = useRef(null);
+  const valueRef = useRef(value);
+  const repeatedRef = useRef(false);
+
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
+  function stopRepeat() {
+    globalThis.clearTimeout(timeoutRef.current);
+    globalThis.clearInterval(intervalRef.current);
+    timeoutRef.current = null;
+    intervalRef.current = null;
+  }
+
+  useEffect(() => stopRepeat, []);
+
+  function step() {
+    const next = Math.max(-50, Math.min(50, valueRef.current + delta));
+    if (next === valueRef.current) {
+      stopRepeat();
+      return;
+    }
+    valueRef.current = next;
+    onChange(next);
+  }
+
+  function handlePointerDown(event) {
+    if (disabled || (event.button !== undefined && event.button !== 0)) return;
+    stopRepeat();
+    repeatedRef.current = false;
+    timeoutRef.current = globalThis.setTimeout(() => {
+      repeatedRef.current = true;
+      step();
+      intervalRef.current = globalThis.setInterval(step, HOLD_INTERVAL_MS);
+    }, HOLD_DELAY_MS);
+  }
+
+  function handleClick(event) {
+    if (repeatedRef.current) {
+      event.preventDefault();
+      repeatedRef.current = false;
+      return;
+    }
+    step();
+  }
+
+  return (
+    <button
+      aria-label={ariaLabel}
+      disabled={disabled}
+      onBlur={stopRepeat}
+      onClick={handleClick}
+      onPointerCancel={stopRepeat}
+      onPointerDown={handlePointerDown}
+      onPointerLeave={stopRepeat}
+      onPointerUp={stopRepeat}
+      type="button"
+    >
+      {children}
+    </button>
+  );
+}
 
 function SideStats({
   accent,
@@ -44,26 +121,28 @@ function SideStats({
       <div className="level-control">
         <span>{level.label}</span>
         <div>
-          <button
-            aria-label={`${label}等级减一`}
+          <RepeatLevelButton
+            ariaLabel={`${label}等级减一`}
+            delta={-1}
             disabled={level.stage <= -50}
-            onClick={() => onLevelChange(level.stage - 1)}
-            type="button"
+            onChange={onLevelChange}
+            value={level.stage}
           >
             <Minus aria-hidden="true" size={14} />
-          </button>
+          </RepeatLevelButton>
           <output>
             {level.stage}层 · {levelPercent > 0 ? "+" : ""}
             {levelPercent}%
           </output>
-          <button
-            aria-label={`${label}等级加一`}
+          <RepeatLevelButton
+            ariaLabel={`${label}等级加一`}
+            delta={1}
             disabled={level.stage >= 50}
-            onClick={() => onLevelChange(level.stage + 1)}
-            type="button"
+            onChange={onLevelChange}
+            value={level.stage}
           >
             <Plus aria-hidden="true" size={14} />
-          </button>
+          </RepeatLevelButton>
         </div>
       </div>
     </div>

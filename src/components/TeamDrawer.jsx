@@ -30,6 +30,7 @@ function trapFocus(event, container) {
 }
 
 export function TeamDrawer({
+  getSpiritConfiguration,
   onActiveTeamChange,
   onApply,
   onCaptureSide,
@@ -231,6 +232,7 @@ export function TeamDrawer({
                 </button>
               </div>
               <TeamMemberEditor
+                getSpiritConfiguration={getSpiritConfiguration}
                 index={selectedIndex}
                 member={activeTeam.members[selectedIndex]}
                 onChange={(member) =>

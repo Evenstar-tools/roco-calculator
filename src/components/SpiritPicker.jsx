@@ -1,10 +1,14 @@
 import { CaretDown, MagnifyingGlass, Star } from "@phosphor-icons/react";
 import { useId, useMemo, useRef, useState } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
+import { TraitHint } from "./TraitHint.jsx";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
 }
+
+const INITIAL_PREVIEW_COUNT = 12;
+const PREVIEW_PAGE_SIZE = 20;
 
 export function SpiritPicker({
   favorite = false,
@@ -23,10 +27,11 @@ export function SpiritPicker({
   const selectedName = selected?.fullName ?? "";
   const [query, setQuery] = useState(selectedName);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [previewLimit, setPreviewLimit] = useState(INITIAL_PREVIEW_COUNT);
   const resolvedFavoriteState =
     favoriteState ?? (favorite ? "manual" : null);
 
-  const matches = useMemo(() => {
+  const preview = useMemo(() => {
     const needle = normalizeSearch(query);
     const direct = needle
       ? spirits.filter((spirit) =>
@@ -46,10 +51,29 @@ export function SpiritPicker({
           Number(Boolean(left.favoriteState)),
       );
     if (!needle) {
-      return markedFirst(direct).slice(0, 12).map((spirit) => ({
-        related: false,
-        spirit,
-      }));
+      const sorted = markedFirst(direct);
+      const favoriteCount = sorted.filter((spirit) =>
+        Boolean(spirit.favoriteState),
+      ).length;
+      const visibleCount = favoriteCount
+        ? Math.min(
+            sorted.length,
+            Math.max(
+              INITIAL_PREVIEW_COUNT,
+              Math.min(previewLimit, favoriteCount),
+            ),
+          )
+        : Math.min(sorted.length, INITIAL_PREVIEW_COUNT);
+      return {
+        allFavoritesVisible:
+          favoriteCount > 0 && visibleCount >= favoriteCount,
+        favoriteCount,
+        isUnfiltered: true,
+        items: sorted.slice(0, visibleCount).map((spirit) => ({
+          related: false,
+          spirit,
+        })),
+      };
     }
 
     const byId = new Map(spirits.map((spirit) => [spirit.id, spirit]));
@@ -71,13 +95,19 @@ export function SpiritPicker({
         expanded.push({ related: false, spirit: match });
       }
     }
-    return markedFirst(expanded.map(({ spirit }) => spirit))
-      .slice(0, 20)
-      .map((spirit) => ({
-        related: !directIds.has(spirit.id),
-        spirit,
-      }));
-  }, [query, spirits]);
+    return {
+      allFavoritesVisible: false,
+      favoriteCount: 0,
+      isUnfiltered: false,
+      items: markedFirst(expanded.map(({ spirit }) => spirit))
+        .slice(0, 20)
+        .map((spirit) => ({
+          related: !directIds.has(spirit.id),
+          spirit,
+        })),
+    };
+  }, [previewLimit, query, spirits]);
+  const matches = preview.items;
 
   function commit(spirit) {
     setQuery(spirit.fullName);
@@ -100,6 +130,17 @@ export function SpiritPicker({
       setQuery(selectedName);
       setOpen(false);
     }
+  }
+
+  function handleOptionsScroll(event) {
+    if (!preview.isUnfiltered || preview.allFavoritesVisible) return;
+    const options = event.currentTarget;
+    const isNearBottom =
+      options.scrollTop + options.clientHeight >= options.scrollHeight - 12;
+    if (!isNearBottom) return;
+    setPreviewLimit((current) =>
+      Math.min(preview.favoriteCount, current + PREVIEW_PAGE_SIZE),
+    );
   }
 
   return (
@@ -129,10 +170,14 @@ export function SpiritPicker({
           onChange={(event) => {
             setQuery(event.target.value);
             setActiveIndex(0);
+            setPreviewLimit(INITIAL_PREVIEW_COUNT);
             setOpen(true);
           }}
           onFocus={() => {
-            if (!open) setQuery(selectedName);
+            if (!open) {
+              setQuery(selectedName);
+              setPreviewLimit(INITIAL_PREVIEW_COUNT);
+            }
             setOpen(true);
           }}
           onKeyDown={handleKeyDown}
@@ -154,7 +199,12 @@ export function SpiritPicker({
           <CaretDown aria-hidden="true" size={14} weight="bold" />
         </button>
         {open ? (
-          <ul className="spirit-picker__options" id={listboxId} role="listbox">
+          <ul
+            className="spirit-picker__options"
+            id={listboxId}
+            onScroll={handleOptionsScroll}
+            role="listbox"
+          >
             {matches.length ? (
               matches.map(({ related, spirit }, index) => (
                 <li
@@ -182,6 +232,14 @@ export function SpiritPicker({
             ) : (
               <li className="spirit-picker__empty">没有匹配精灵</li>
             )}
+            {preview.isUnfiltered && preview.allFavoritesVisible ? (
+              <li
+                className="spirit-picker__preview-complete"
+                role="presentation"
+              >
+                已预览所有已收藏精灵
+              </li>
+            ) : null}
           </ul>
         ) : null}
       </div>
@@ -212,7 +270,11 @@ export function SpiritPicker({
               <span>{selected.stage}</span>
             </div>
             <p>
-              特性：<strong>{selected.traitName}</strong>
+              特性：
+              <TraitHint
+                description={selected.traitDescription}
+                name={selected.traitName}
+              />
             </p>
           </div>
           {showFavorite ? (

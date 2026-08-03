@@ -63,6 +63,18 @@ describe("resolveTraitMultipliers", () => {
       status: "exact",
       powerMultiplier: 1.9,
     });
+
+    expect(
+      resolveTraitMultipliers(
+        input({
+          attackerTraits,
+          context: {
+            "attackerTrait.actedBeforeEnemy": true,
+            "attackerTrait.attackerTraitEffect": 90,
+          },
+        }),
+      ),
+    ).toMatchObject({ status: "exact", powerMultiplier: 1.9 });
   });
 
   test("turns Prowling Claw gift stacks into editable physical attack levels", () => {
@@ -227,6 +239,33 @@ describe("resolveTraitMultipliers", () => {
       status: "exact",
       defenseLevelBonus: 2,
       defenderDefenseLevelBonus: 2,
+    });
+  });
+
+  test("保守派勾选后只增加自身双防80%", () => {
+    const attackerTraits = [{ id: "conservative", name: "保守派" }];
+    const defenderTraits = [{ id: "conservative", name: "保守派" }];
+
+    expect(resolveTraitMultipliers(input({ attackerTraits }))).toMatchObject({
+      attackMultiplier: 1,
+      attackerDefenseLevelBonus: 0,
+    });
+    expect(
+      resolveTraitMultipliers(
+        input({ attackerTraits, context: { traitActivated: true } }),
+      ),
+    ).toMatchObject({
+      attackMultiplier: 1,
+      attackLevelBonus: 0,
+      attackerDefenseLevelBonus: 8,
+    });
+    expect(
+      resolveTraitMultipliers(
+        input({ defenderTraits, context: { traitActivated: true } }),
+      ),
+    ).toMatchObject({
+      defenseLevelBonus: 8,
+      defenderDefenseLevelBonus: 8,
     });
   });
 

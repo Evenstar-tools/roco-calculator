@@ -90,6 +90,12 @@ function shareFixture() {
 }
 
 describe("versioned share state", () => {
+  test("keeps the complete v1 share bytes stable", async () => {
+    await expect(encodeShareState(shareFixture())).resolves.toBe(
+      "#v1.eyJkaXJlY3Rpb25zIjp7ImZvcndhcmQiOnsiY29udGV4dCI6eyJhYm5vcm1hbFN0YWNrcyI6MiwiZW5lcmd5Ijo0fSwiY3VycmVudEhwIjoyODAsImZpbmFsRGFtYWdlTXVsdGlwbGllciI6MSwiaGl0Q291bnQiOjMsIm92ZXJyaWRlcyI6eyJiYXNlUG93ZXIiOjEyMCwiZGlzcGxheWVkUG93ZXIiOjI0MCwicG93ZXJNb2RlIjoiZGlzcGxheWVkIn0sInJlZHVjdGlvbiI6MSwic2VsZWN0ZWRTa2lsbEluZGV4IjowLCJzdGFyZmFsbFN0YWNrcyI6MH0sInJldmVyc2UiOnsiY29udGV4dCI6eyJza2lsbFBvc2l0aW9uIjozfSwiY3VycmVudEhwIjozMTAsImZpbmFsRGFtYWdlTXVsdGlwbGllciI6MS4yLCJoaXRDb3VudCI6MSwib3ZlcnJpZGVzIjp7InR5cGVFZmZlY3RpdmVuZXNzIjoxLjV9LCJyZWR1Y3Rpb24iOjAuNzUsInNlbGVjdGVkU2tpbGxJbmRleCI6Miwic3RhcmZhbGxTdGFja3MiOjV9fSwibWFya3MiOnsiYXR0YWNrZXIiOnsibmVnYXRpdmUiOnsiaWQiOiJzbG93Iiwic3RhY2tzIjoyfSwicG9zaXRpdmUiOnsiaWQiOiJ0YWlsd2luZCIsInN0YWNrcyI6M319LCJkZWZlbmRlciI6eyJuZWdhdGl2ZSI6eyJpZCI6InN0YXJmYWxsIiwic3RhY2tzIjo1fSwicG9zaXRpdmUiOnsiaWQiOiJjaGFyZ2UiLCJzdGFja3MiOjF9fX0sIm1vZGUiOiJmb3VyIiwic2NoZW1hVmVyc2lvbiI6MSwic2lkZXMiOnsiYXR0YWNrZXIiOnsiZGlzcGxheUl2cyI6eyJocCI6NjAsIm1hZ2ljYWxBdHRhY2siOjYwLCJtYWdpY2FsRGVmZW5zZSI6NjAsInBoeXNpY2FsQXR0YWNrIjoxMDAsInBoeXNpY2FsRGVmZW5zZSI6NjAsInNwZWVkIjo2MH0sIm5hdHVyZSI6ImJyYXZlIiwic2tpbGxzIjp7ImZvdXIiOlsic2tpbGxfYSIsInNraWxsX2IiLCJza2lsbF9jIiwic2tpbGxfZCJdLCJzaW5nbGUiOiJza2lsbF9jIn0sInNwaXJpdElkIjoic3Bpcml0X2F0dGFja2VyIn0sImRlZmVuZGVyIjp7ImRpc3BsYXlJdnMiOnsiaHAiOjQ4LCJtYWdpY2FsQXR0YWNrIjo2MCwibWFnaWNhbERlZmVuc2UiOjQyLCJwaHlzaWNhbEF0dGFjayI6NjAsInBoeXNpY2FsRGVmZW5zZSI6NjAsInNwZWVkIjo2MH0sIm5hdHVyZSI6ImNhbG0iLCJza2lsbHMiOnsiZm91ciI6WyJza2lsbF9kIiwic2tpbGxfYyIsInNraWxsX2IiLCJza2lsbF9hIl0sInNpbmdsZSI6InNraWxsX2IifSwic3Bpcml0SWQiOiJzcGlyaXRfZGVmZW5kZXIifX0sInZlcnNpb25zIjp7ImRhdGEiOiJzMy0yMDI2LTA3LTE1IiwicnVsZXMiOiJydWxlcy0yMDI2LjA3In19.af04de399744",
+    );
+  });
+
   test("round trips every raw input with data and rule versions", async () => {
     const state = shareFixture();
 
@@ -97,6 +103,34 @@ describe("versioned share state", () => {
 
     expect(hash).toMatch(/^#v1\.[A-Za-z0-9_-]+\.[a-f0-9]{12}$/);
     await expect(decodeShareState(hash)).resolves.toEqual(state);
+  });
+
+  test("分享状态同时保留血脉选择和本回合触发", async () => {
+    const state = shareFixture();
+    state.directions.forward.context = {
+      ...state.directions.forward.context,
+      "attackerTrait.bloodlineType.12345678": "illusion",
+      "attackerTrait.bloodlineActivated.87654321": true,
+    };
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+    expect(decoded.directions.forward.context).toMatchObject({
+      "attackerTrait.bloodlineType.12345678": "illusion",
+      "attackerTrait.bloodlineActivated.87654321": true,
+    });
+  });
+
+  test("round trips a selected direct trait damage source and its hit count", async () => {
+    const state = shareFixture();
+    state.directions.forward.selectedDamageSource = "trait";
+    state.directions.forward.traitDamageHitCount = 7;
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.directions.forward).toMatchObject({
+      selectedDamageSource: "trait",
+      traitDamageHitCount: 7,
+    });
   });
 
   test("rejects a modified checksum", async () => {
@@ -189,6 +223,35 @@ describe("versioned share state", () => {
     });
     expect(decoded.sides.attacker.skills.four[1]).not.toHaveProperty(
       "totalDamage",
+    );
+  });
+
+  test("round trips optional per-skill single memories without changing the v1 schema", async () => {
+    const state = shareFixture();
+    state.sides.attacker.skills.single = {
+      context: { "skill.energy": 5 },
+      hitCount: 2,
+      memoryBySkill: {
+        skill_a: {
+          context: { "skill.energy": 5 },
+          hitCount: 2,
+          overrides: { basePower: 120, powerMode: "base" },
+        },
+        skill_b: {
+          context: { "skill.stackCount": 3 },
+          hitCount: 4,
+          overrides: { displayedPower: 180, powerMode: "displayed" },
+        },
+      },
+      overrides: { basePower: 120, powerMode: "base" },
+      skillId: "skill_a",
+    };
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.schemaVersion).toBe(1);
+    expect(decoded.sides.attacker.skills.single.memoryBySkill).toEqual(
+      state.sides.attacker.skills.single.memoryBySkill,
     );
   });
 

@@ -10,6 +10,7 @@ import { AdvancedOptions } from "../../src/components/AdvancedOptions.jsx";
 import { CompactFourSkillEditor } from "../../src/components/CompactSkillEditor.jsx";
 import { FourSkillEditor } from "../../src/components/FourSkillEditor.jsx";
 import { SkillPicker } from "../../src/components/SkillPicker.jsx";
+import { getTraitEffectInputs } from "../../src/domain/trait-effects.js";
 import {
   describeResolution,
   SingleSkillEditor,
@@ -170,7 +171,7 @@ test("single-skill picker filters by typed pinyin and commits the matching skill
   expect(onSkillSelect).toHaveBeenCalledWith("water-bomb");
 });
 
-test("skill picker keeps the complete skill library reachable", async () => {
+test("skill picker virtualizes the complete library without truncating search", async () => {
   const user = userEvent.setup();
   const completeLibrary = Array.from({ length: 553 }, (_, index) => ({
     basePower: 40 + index,
@@ -192,8 +193,93 @@ test("skill picker keeps the complete skill library reachable", async () => {
 
   await user.click(screen.getByRole("combobox", { name: "选择技能" }));
 
-  expect(screen.getAllByRole("option")).toHaveLength(completeLibrary.length);
+  expect(screen.getAllByRole("option").length).toBeLessThanOrEqual(24);
+  expect(screen.queryByRole("option", { name: /技能553/ })).not.toBeInTheDocument();
+
+  await user.clear(screen.getByRole("combobox", { name: "选择技能" }));
+  await user.type(
+    screen.getByRole("combobox", { name: "选择技能" }),
+    "技能553",
+  );
   expect(screen.getByRole("option", { name: /技能553/ })).toBeVisible();
+});
+
+test("skill picker keeps keyboard navigation synchronized with its virtual window", async () => {
+  const user = userEvent.setup();
+  const onSelect = vi.fn();
+  const completeLibrary = Array.from({ length: 553 }, (_, index) => ({
+    basePower: 40,
+    category: "physical",
+    cost: 1,
+    id: `skill-${index + 1}`,
+    name: `技能${index + 1}`,
+    type: "普通",
+  }));
+
+  render(
+    <SkillPicker
+      ariaLabel="选择技能"
+      onSelect={onSelect}
+      selected={completeLibrary[0]}
+      skills={completeLibrary}
+    />,
+  );
+
+  const picker = screen.getByRole("combobox", { name: "选择技能" });
+  await user.click(picker);
+  for (let index = 0; index < 30; index += 1) {
+    await user.keyboard("{ArrowDown}");
+  }
+  expect(screen.getAllByRole("option").length).toBeLessThanOrEqual(24);
+  await user.keyboard("{Enter}");
+  expect(onSelect).toHaveBeenCalledWith("skill-31");
+});
+
+test("skill picker keeps its active descendant mounted after manual scrolling", async () => {
+  const user = userEvent.setup();
+  const onSelect = vi.fn();
+  const completeLibrary = Array.from({ length: 553 }, (_, index) => ({
+    basePower: 40,
+    category: "physical",
+    cost: 1,
+    id: `skill-${index + 1}`,
+    name: `技能${index + 1}`,
+    type: "普通",
+  }));
+
+  render(
+    <SkillPicker
+      ariaLabel="选择技能"
+      onSelect={onSelect}
+      selected={completeLibrary[0]}
+      skills={completeLibrary}
+    />,
+  );
+
+  const picker = screen.getByRole("combobox", { name: "选择技能" });
+  await user.click(picker);
+  const listbox = screen.getByRole("listbox");
+  Object.defineProperty(listbox, "scrollTop", {
+    configurable: true,
+    value: 100,
+    writable: true,
+  });
+  fireEvent.scroll(listbox);
+  expect(listbox.scrollTop).toBe(100);
+
+  Object.defineProperty(listbox, "scrollTop", {
+    configurable: true,
+    value: 553 * 42 - 360,
+    writable: true,
+  });
+  fireEvent.scroll(listbox);
+
+  const activeId = picker.getAttribute("aria-activedescendant");
+  expect(activeId).toBeTruthy();
+  expect(document.getElementById(activeId)).toBeInTheDocument();
+
+  await user.keyboard("{ArrowDown}{Enter}");
+  expect(onSelect).toHaveBeenCalledWith("skill-547");
 });
 
 test("skill picker prioritizes learnable skills without hiding the rest", async () => {
@@ -279,6 +365,51 @@ test("shows required trait conditions as explicit inputs", async () => {
   expect(onTraitContextChange).toHaveBeenCalledWith("traitActivated", false);
 });
 
+test("Beast Flower trait renders all bloodlines and a separate entry trigger", async () => {
+  const user = userEvent.setup();
+  const onTraitContextChange = vi.fn();
+  const trait = {
+    description: "根据自己的血脉，入场时获得不同效果。",
+    name: "稀兽花宝",
+  };
+  const inputs = getTraitEffectInputs(trait, "attacker");
+
+  render(
+    <SingleSkillEditor
+      attackerTrait={{ ...trait, inputs }}
+      hitCount={1}
+      manualPower={80}
+      onHitCountChange={vi.fn()}
+      onManualPowerChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      onTraitContextChange={onTraitContextChange}
+      selectedSkill={skills[0]}
+      skills={skills}
+      traitContext={{}}
+    />,
+  );
+
+  const bloodline = screen.getByRole("combobox", { name: "血脉" });
+  expect(within(bloodline).getAllByRole("option")).toHaveLength(19);
+  expect(within(bloodline).getByRole("option", {
+    name: "普通｜技能威力 +40",
+  })).toBeVisible();
+  expect(within(bloodline).getByRole("option", {
+    name: "幻｜对方星陨 ×2",
+  })).toBeVisible();
+
+  await user.selectOptions(bloodline, "illusion");
+  expect(onTraitContextChange).toHaveBeenCalledWith(
+    expect.stringMatching(/^attackerTrait\.bloodlineType\.[a-f0-9]{8}$/),
+    "illusion",
+  );
+  await user.click(screen.getByRole("checkbox", { name: "入场已触发" }));
+  expect(onTraitContextChange).toHaveBeenCalledWith(
+    expect.stringMatching(/^attackerTrait\.bloodlineActivated\.[a-f0-9]{8}$/),
+    true,
+  );
+});
+
 test("shows reviewed dynamic skill conditions as editable inputs", async () => {
   const user = userEvent.setup();
   const onTraitContextChange = vi.fn();
@@ -301,11 +432,17 @@ test("shows reviewed dynamic skill conditions as editable inputs", async () => {
   );
 
   await user.type(screen.getByRole("spinbutton", { name: "当前能量" }), "4");
-  expect(onTraitContextChange).toHaveBeenLastCalledWith("energy", 4);
+  expect(onTraitContextChange).toHaveBeenLastCalledWith(
+    expect.stringMatching(/^skill\.energy\.[a-f0-9]{8}$/),
+    4,
+  );
   fireEvent.change(screen.getByRole("spinbutton", { name: "当前能量" }), {
     target: { value: "99" },
   });
-  expect(onTraitContextChange).toHaveBeenLastCalledWith("energy", 10);
+  expect(onTraitContextChange).toHaveBeenLastCalledWith(
+    expect.stringMatching(/^skill\.energy\.[a-f0-9]{8}$/),
+    10,
+  );
 });
 
 test("shows the Wish Power target-status condition", async () => {
@@ -339,7 +476,7 @@ test("shows the Wish Power target-status condition", async () => {
     screen.getByRole("checkbox", { name: "目标本回合使用状态技能" }),
   );
   expect(onTraitContextChange).toHaveBeenCalledWith(
-    "enemyUsedStatusSkill",
+    expect.stringMatching(/^skill\.enemyUsedStatusSkill\.[a-f0-9]{8}$/),
     true,
   );
 });
@@ -399,7 +536,7 @@ test("shows every skill effect and calculates Head-on Blow from its condition", 
   expect(condition).toBeChecked();
   await user.click(condition);
   expect(onTraitContextChange).toHaveBeenCalledWith(
-    "enemySwitchedThisTurn",
+    expect.stringMatching(/^skill\.enemySwitchedThisTurn\.[a-f0-9]{8}$/),
     false,
   );
 });
@@ -466,7 +603,7 @@ test("choice skills use a compact branch control and reveal only relevant condit
 
   await user.click(screen.getByRole("button", { name: "应对翻倍" }));
   expect(onTraitContextChange).toHaveBeenCalledWith(
-    "friendshipMode",
+    expect.stringMatching(/^skill\.friendshipMode\.[a-f0-9]{8}$/),
     "counter",
   );
 
@@ -485,9 +622,7 @@ test("choice skills use a compact branch control and reveal only relevant condit
   );
 
   expect(screen.getByRole("checkbox", { name: "触发应对" })).toBeVisible();
-  expect(
-    screen.queryByRole("spinbutton", { name: "此前使用次数" }),
-  ).not.toBeInTheDocument();
+  expect(screen.getByRole("spinbutton", { name: "此前使用次数" })).toBeVisible();
 });
 
 test("explains a selected non-damage branch instead of calling it untriggered", () => {
@@ -569,8 +704,53 @@ test("four-skill choice controls stay compact and update their own slot context"
   expect(onSkillContextChange).toHaveBeenCalledWith(
     "attacker",
     0,
-    "flightMode",
+    expect.stringMatching(/^skill\.flightMode\.[a-f0-9]{8}$/),
     "hits",
+  );
+});
+
+test("supported Jal-family traits expose an explicit trigger only on choice skills", async () => {
+  const user = userEvent.setup();
+  const onSkillContextChange = vi.fn();
+  const friendship = {
+    basePower: 70,
+    category: "magical",
+    cost: 2,
+    description:
+      "造成魔伤，选择：每次使用后威力永久+20或应对状态时本次技能威力+100%。",
+    id: "friendship-overflow",
+    name: "友谊满溢",
+    slotContext: { choiceTraitTriggered: false },
+    type: "普通",
+  };
+
+  render(
+    <FourSkillEditor
+      attackerName="加益"
+      attackerSkills={[friendship, skills[0], null, null]}
+      attackerTrait={{ description: "额外执行另一选择。", name: "有求必应" }}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillContextChange={onSkillContextChange}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, friendship]}
+    />,
+  );
+
+  const trigger = screen.getByRole("checkbox", {
+    name: "攻击方技能1触发特性",
+  });
+  expect(trigger).toBeVisible();
+  expect(
+    screen.queryByRole("checkbox", { name: "攻击方技能2触发特性" }),
+  ).not.toBeInTheDocument();
+
+  await user.click(trigger);
+  expect(onSkillContextChange).toHaveBeenCalledWith(
+    "attacker",
+    0,
+    "choiceTraitTriggered",
+    true,
   );
 });
 
@@ -646,6 +826,85 @@ test("compact four-skill rows use the same mutually exclusive selection state", 
 
   await user.click(screen.getByRole("group", { name: "攻击方技能1" }));
   expect(onSkillFocus).toHaveBeenLastCalledWith("attacker", 0);
+});
+
+test("four-skill editor shows selectable direct trait damage above skill one", async () => {
+  const user = userEvent.setup();
+  const onTraitDamageFocus = vi.fn();
+  const onTraitDamageHitCountChange = vi.fn();
+
+  render(
+    <FourSkillEditor
+      activeDamageSource="trait"
+      activeSide="attacker"
+      attackerName="石冠王蜥"
+      attackerSkillChoices={skills}
+      attackerSkills={[skills[0], null, null, null]}
+      attackerTraitDamage={{
+        basePower: 50,
+        hitCount: 1,
+        name: "刺肤",
+        result: { hpPercent: 12.5, status: "exact", totalDamage: 60 },
+        typeLabel: "无·特性",
+      }}
+      defenderName="水灵"
+      defenderSkillChoices={skills}
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillSelect={vi.fn()}
+      onTraitDamageFocus={onTraitDamageFocus}
+      onTraitDamageHitCountChange={onTraitDamageHitCountChange}
+    />,
+  );
+
+  const traitRow = screen.getByRole("group", {
+    name: "攻击方特性伤害刺肤，当前选中",
+  });
+  expect(traitRow).toHaveClass("is-selected");
+  expect(within(traitRow).getByText("无·特性")).toBeVisible();
+  expect(within(traitRow).getByText("50")).toBeVisible();
+  expect(
+    screen.getByRole("group", { name: "攻击方技能1" }),
+  ).not.toHaveClass("is-selected");
+
+  await user.click(traitRow);
+  expect(onTraitDamageFocus).toHaveBeenCalledWith("attacker");
+  fireEvent.change(
+    within(traitRow).getByRole("spinbutton", { name: "攻击方刺肤连击次数" }),
+    { target: { value: "3" } },
+  );
+  expect(onTraitDamageHitCountChange).toHaveBeenCalledWith("attacker", 3);
+});
+
+test("compact editor shows direct trait damage on either side without adding a skill slot", () => {
+  render(
+    <CompactFourSkillEditor
+      activeDamageSource="trait"
+      activeSide="defender"
+      attackerName="音速犬"
+      attackerResults={[]}
+      attackerSkillChoices={skills}
+      attackerSkills={[skills[0], null, null, null]}
+      defenderName="石刺蜥"
+      defenderResults={[]}
+      defenderSkillChoices={skills}
+      defenderSkills={[skills[1], null, null, null]}
+      defenderTraitDamage={{
+        basePower: 50,
+        hitCount: 2,
+        name: "刺肤",
+        result: { hpPercent: 20, status: "exact", totalDamage: 90 },
+        typeLabel: "无·特性",
+      }}
+      onSkillFocus={vi.fn()}
+      onSkillSelect={vi.fn()}
+      onTraitDamageFocus={vi.fn()}
+    />,
+  );
+
+  expect(
+    screen.getByRole("group", { name: "防御方特性伤害刺肤，当前选中" }),
+  ).toBeVisible();
+  expect(screen.getAllByRole("combobox")).toHaveLength(8);
 });
 
 test("four-skill HP rules use a draft-safe percent or current-HP control", async () => {
@@ -770,7 +1029,7 @@ test("four-skill Color Dispersion exposes the mixed-blood target switch", async 
   expect(onSkillContextChange).toHaveBeenCalledWith(
     "attacker",
     0,
-    "enemyIsMixedBloodline",
+    expect.stringMatching(/^skill\.enemyIsMixedBloodline\.[a-f0-9]{8}$/),
     true,
   );
 });
@@ -1049,7 +1308,7 @@ test("four-skill slots expose their own dynamic rule context", async () => {
   expect(onSkillContextChange).toHaveBeenLastCalledWith(
     "attacker",
     0,
-    "energy",
+    expect.stringMatching(/^skill\.energy\.[a-f0-9]{8}$/),
     5,
   );
   fireEvent.change(
@@ -1059,7 +1318,7 @@ test("four-skill slots expose their own dynamic rule context", async () => {
   expect(onSkillContextChange).toHaveBeenLastCalledWith(
     "attacker",
     0,
-    "energy",
+    expect.stringMatching(/^skill\.energy\.[a-f0-9]{8}$/),
     10,
   );
 });
@@ -1098,7 +1357,7 @@ test("Sweet Trap accepts current energy above ten and caps it at ninety-nine", (
   expect(onSkillContextChange).toHaveBeenLastCalledWith(
     "attacker",
     0,
-    "energy",
+    expect.stringMatching(/^skill\.energy\.[a-f0-9]{8}$/),
     11,
   );
 
@@ -1106,7 +1365,7 @@ test("Sweet Trap accepts current energy above ten and caps it at ninety-nine", (
   expect(onSkillContextChange).toHaveBeenLastCalledWith(
     "attacker",
     0,
-    "energy",
+    expect.stringMatching(/^skill\.energy\.[a-f0-9]{8}$/),
     99,
   );
 });

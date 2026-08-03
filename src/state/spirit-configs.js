@@ -1,15 +1,17 @@
 import { normalizeNatureId } from "../domain/natures.js";
 import {
   STORAGE_NAMESPACE,
-  finishStorageMigration,
   legacyStorageKey,
-  readStorageWithLegacy,
 } from "./storage-namespace.js";
+import { extractTraitValues } from "./trait-values.js";
 
-const SPIRIT_CONFIG_STORAGE_SUFFIX = "spirit-configs.v1";
+const SPIRIT_CONFIG_STORAGE_SUFFIX = "spirit-configs.v2";
+const SPIRIT_CONFIG_V1_STORAGE_SUFFIX = "spirit-configs.v1";
 export const SPIRIT_CONFIG_STORAGE_KEY =
   `${STORAGE_NAMESPACE}.${SPIRIT_CONFIG_STORAGE_SUFFIX}`;
-export const SPIRIT_CONFIG_SCHEMA_VERSION = 1;
+export const SPIRIT_CONFIG_V1_STORAGE_KEY =
+  `${STORAGE_NAMESPACE}.${SPIRIT_CONFIG_V1_STORAGE_SUFFIX}`;
+export const SPIRIT_CONFIG_SCHEMA_VERSION = 2;
 
 const STAT_KEYS = [
   "hp",
@@ -40,7 +42,11 @@ function skillId(entry) {
   return entry?.skillId ?? entry?.id ?? null;
 }
 
-function sanitizeConfig(config, updatedAt = config?.updatedAt) {
+function sanitizeConfig(
+  config,
+  updatedAt = config?.updatedAt,
+  snapshot = null,
+) {
   if (!config?.spiritId) {
     throw new TypeError("精灵配置必须包含 spiritId");
   }
@@ -57,6 +63,9 @@ function sanitizeConfig(config, updatedAt = config?.updatedAt) {
       single: cloneJson(config.skills?.single ?? null),
     },
     spiritId: config.spiritId,
+    traitValues: snapshot
+      ? extractTraitValues(config, snapshot)
+      : cloneJson(config.traitValues ?? {}),
     updatedAt,
   };
 }
@@ -92,6 +101,21 @@ function validateState(value) {
   return value;
 }
 
+function validateV1State(value) {
+  if (
+    !value ||
+    typeof value !== "object" ||
+    Array.isArray(value) ||
+    value.schemaVersion !== 1 ||
+    !value.configs ||
+    typeof value.configs !== "object" ||
+    Array.isArray(value.configs)
+  ) {
+    throw new TypeError("旧精灵配置数据结构无效");
+  }
+  return value;
+}
+
 export function isCompleteSpiritConfig(config) {
   if (!config) return false;
   const natureId = normalizeNatureId(config.natureId ?? config.nature);
@@ -113,12 +137,12 @@ export function spiritConfigsRepository({
     throw new TypeError("当前环境无法保存精灵配置");
   }
 
-  function write(state) {
+  function write(state, snapshot = null) {
     const stored = {
       configs: Object.fromEntries(
         Object.entries(state.configs ?? {}).map(([spiritId, config]) => [
           spiritId,
-          sanitizeConfig(config),
+          sanitizeConfig(config, config?.updatedAt, snapshot),
         ]),
       ),
       schemaVersion: SPIRIT_CONFIG_SCHEMA_VERSION,
@@ -131,58 +155,77 @@ export function spiritConfigsRepository({
   return {
     clear() {
       storage.removeItem(SPIRIT_CONFIG_STORAGE_KEY);
+      storage.removeItem(SPIRIT_CONFIG_V1_STORAGE_KEY);
       storage.removeItem(legacyStorageKey(SPIRIT_CONFIG_STORAGE_SUFFIX));
+      storage.removeItem(legacyStorageKey(SPIRIT_CONFIG_V1_STORAGE_SUFFIX));
       return emptyState();
     },
     load(snapshot) {
-      const { key, raw } = readStorageWithLegacy(
-        storage,
-        SPIRIT_CONFIG_STORAGE_KEY,
-        SPIRIT_CONFIG_STORAGE_SUFFIX,
-      );
-      if (!raw) return emptyState();
-      try {
-        const parsed = validateState(JSON.parse(raw));
-        finishStorageMigration(
-          storage,
-          SPIRIT_CONFIG_STORAGE_KEY,
-          key,
-          raw,
-        );
-        const spiritIds = snapshot
-          ? new Set((snapshot.spirits ?? []).map((spirit) => spirit.id))
-          : null;
-        const skillIds = snapshot
-          ? new Set((snapshot.skills ?? []).map((skill) => skill.id))
-          : null;
-        const configs = {};
-        for (const [spiritId, storedConfig] of Object.entries(parsed.configs)) {
-          if (spiritIds && !spiritIds.has(spiritId)) continue;
-          const config = sanitizeConfig({
-            ...storedConfig,
-            spiritId,
-          });
-          configs[spiritId] = skillIds
-            ? repairConfig(config, skillIds)
-            : config;
-        }
-        return {
-          configs,
+      const candidates = [
+        {
+          key: SPIRIT_CONFIG_STORAGE_KEY,
           schemaVersion: SPIRIT_CONFIG_SCHEMA_VERSION,
-        };
-      } catch {
-        return emptyState();
+        },
+        { key: SPIRIT_CONFIG_V1_STORAGE_KEY, schemaVersion: 1 },
+        {
+          key: legacyStorageKey(SPIRIT_CONFIG_V1_STORAGE_SUFFIX),
+          schemaVersion: 1,
+        },
+      ];
+      for (const source of candidates) {
+        const raw = storage.getItem(source.key);
+        if (!raw) continue;
+        try {
+          const decoded = JSON.parse(raw);
+          const parsed = decoded?.schemaVersion === SPIRIT_CONFIG_SCHEMA_VERSION
+            ? validateState(decoded)
+            : validateV1State(decoded);
+          const spiritIds = snapshot
+            ? new Set((snapshot.spirits ?? []).map((spirit) => spirit.id))
+            : null;
+          const skillIds = snapshot
+            ? new Set((snapshot.skills ?? []).map((skill) => skill.id))
+            : null;
+          const configs = {};
+          for (const [spiritId, storedConfig] of Object.entries(parsed.configs)) {
+            if (spiritIds && !spiritIds.has(spiritId)) continue;
+            const config = sanitizeConfig({
+              ...storedConfig,
+              spiritId,
+            }, storedConfig?.updatedAt, snapshot);
+            configs[spiritId] = skillIds
+              ? repairConfig(config, skillIds)
+              : config;
+          }
+          const restored = {
+            configs,
+            schemaVersion: SPIRIT_CONFIG_SCHEMA_VERSION,
+          };
+          if (parsed.schemaVersion !== SPIRIT_CONFIG_SCHEMA_VERSION) {
+            storage.setItem(
+              SPIRIT_CONFIG_STORAGE_KEY,
+              JSON.stringify(restored),
+            );
+          }
+          return restored;
+        } catch {
+          storage.setItem(`${source.key}.corrupt.${now()}`, raw);
+        }
       }
+      return emptyState();
     },
-    save(state, side) {
-      const config = sanitizeConfig(side, now());
+    replace(state, snapshot = null) {
+      return write(state, snapshot);
+    },
+    save(state, side, snapshot = null) {
+      const config = sanitizeConfig(side, now(), snapshot);
       return write({
         configs: {
           ...(state?.configs ?? {}),
           [config.spiritId]: config,
         },
         schemaVersion: SPIRIT_CONFIG_SCHEMA_VERSION,
-      });
+      }, snapshot);
     },
   };
 }

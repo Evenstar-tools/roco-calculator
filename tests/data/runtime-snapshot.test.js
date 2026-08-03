@@ -1,4 +1,9 @@
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -116,8 +121,46 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
   });
   expect(runtime.meta.sources).toBeUndefined();
   expect(runtime.spirits[0].asset.sourceUrl).toBeUndefined();
+  expect(runtime.spirits[1].asset).toBeUndefined();
   expect(runtime.spirits[0].provenance).toBeUndefined();
   expect(runtime.skills[0].provenance).toBeUndefined();
   expect(runtime.traits[0].provenance).toBeUndefined();
   expect(runtime.typeChart.source).toBeUndefined();
+});
+
+test("keeps the complete production roster, skill library, and local avatar set", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "rock-runtime-production-"));
+  const targetPath = path.join(directory, "runtime.json");
+  const run = spawnSync(
+    process.execPath,
+    [
+      "scripts/runtime-snapshot.mjs",
+      "public/data/current.json",
+      targetPath,
+      "public/assets/spirits/manifest.json",
+    ],
+    {
+      cwd: process.cwd(),
+      encoding: "utf8",
+    },
+  );
+
+  expect(run.status, run.stderr).toBe(0);
+  const runtime = JSON.parse(readFileSync(targetPath, "utf8"));
+  const localAssets = runtime.spirits.filter(
+    (spirit) => spirit.asset?.localUrl,
+  );
+  const localAssetPaths = localAssets.map((spirit) =>
+    path.resolve("public", spirit.asset.localUrl.replace(/^\/+/, "")),
+  );
+  const missingAssets = localAssetPaths.filter(
+    (assetPath) => !existsSync(assetPath),
+  );
+
+  expect(runtime.spirits).toHaveLength(592);
+  expect(runtime.skills).toHaveLength(553);
+  expect(runtime.learnsets).toHaveLength(592);
+  expect(localAssets).toHaveLength(592);
+  expect(new Set(localAssetPaths)).toHaveLength(592);
+  expect(missingAssets).toEqual([]);
 });

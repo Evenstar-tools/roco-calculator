@@ -4,9 +4,122 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     if (sessionStorage.getItem("e2e-storage-initialized")) return;
     localStorage.removeItem("rock-calculator.spirit-configs.v1");
+    localStorage.removeItem("rock-calculator.spirit-configs.v2");
+    localStorage.removeItem("rock-calculator.favorites.v1");
     localStorage.removeItem("rock-calculator.teams.v1");
     sessionStorage.setItem("e2e-storage-initialized", "1");
   });
+});
+
+test("exports and imports the favorite configuration library without touching teams", async ({ page }) => {
+  await page.goto("/");
+  const runtime = await page.evaluate(() =>
+    fetch("/data/runtime.json").then((response) => response.json()),
+  );
+  const spirit = runtime.spirits[0];
+  const skills = runtime.learnsets.find(
+    (entry) => entry.spiritId === spirit.id,
+  ).skillIds.slice(0, 2);
+  const entry = {
+    spiritId: spirit.id,
+    natureId: "adamant",
+    displayIvs: {
+      hp: 0,
+      speed: 60,
+      physicalAttack: 60,
+      magicalAttack: 60,
+      physicalDefense: 0,
+      magicalDefense: 0,
+    },
+    skills: [skills[0], skills[1], null, null],
+    traitValues: {},
+  };
+  await page.evaluate(({ entry }) => {
+    localStorage.setItem("rock-calculator.favorites.v1", JSON.stringify([{
+      id: `spirit:${entry.spiritId}`,
+      kind: "spirit",
+      spiritId: entry.spiritId,
+    }]));
+    localStorage.setItem("rock-calculator.spirit-configs.v2", JSON.stringify({
+      configs: {
+        [entry.spiritId]: {
+          ...entry,
+          skills: { four: entry.skills, single: null },
+          updatedAt: "2026-08-03T00:00:00.000Z",
+        },
+      },
+      schemaVersion: 2,
+    }));
+    localStorage.setItem("rock-calculator.teams.v1", "team-sentinel");
+  }, { entry });
+  await page.reload();
+
+  await page.getByRole("button", { name: "打开菜单" }).click();
+  await page.getByRole("button", { name: "配置库导出" }).click();
+  await expect(page.getByText("可导出 1 只精灵")).toBeVisible();
+  await page.getByRole("button", { name: "查看精灵和技能" }).click();
+  await expect(page.getByText(spirit.fullName, { exact: true })).toBeVisible();
+  await expect(page.getByText(runtime.skills.find(
+    (skill) => skill.id === skills[0],
+  ).name, { exact: true })).toBeVisible();
+  const exportListLayout = await page.locator(".config-library-entry-list").evaluate(
+    (element) => ({
+      overflowY: getComputedStyle(element).overflowY,
+      width: element.getBoundingClientRect().width,
+      parentWidth: element.parentElement.getBoundingClientRect().width,
+    }),
+  );
+  expect(exportListLayout.overflowY).toBe("auto");
+  expect(exportListLayout.width).toBeLessThanOrEqual(exportListLayout.parentWidth);
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "导出", exact: true }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(
+    /^洛克计算器-收藏配置-\d{8}-\d{4}\.json$/,
+  );
+
+  const library = {
+    format: "rock-calculator.favorite-config-library",
+    schemaVersion: 1,
+    appVersion: "1.3.1",
+    versions: {
+      data: runtime.meta.id,
+      rules: runtime.meta.rulesVersion,
+    },
+    exportedAt: "2026-08-03T00:00:00.000Z",
+    entryCount: 1,
+    entries: [entry],
+  };
+  await page.evaluate(() => {
+    localStorage.removeItem("rock-calculator.favorites.v1");
+    localStorage.removeItem("rock-calculator.spirit-configs.v2");
+  });
+  await page.reload();
+  await page.getByRole("button", { name: "打开菜单" }).click();
+  await page.getByRole("button", { name: "配置库导入" }).click();
+  await page.getByLabel("选择配置库文件").setInputFiles({
+    buffer: Buffer.from(JSON.stringify(library), "utf8"),
+    mimeType: "application/json",
+    name: "配置库.json",
+  });
+  await expect(page.getByText("新增配置").locator("..").getByText("1")).toBeVisible();
+  await expect(page.getByText("检查通过，未发现兼容问题")).toBeVisible();
+  await expect(page.getByText("失效技能槽")).toHaveCount(0);
+  await page.getByRole("button", { name: "确认导入" }).click();
+
+  const stored = await page.evaluate((spiritId) => ({
+    configs: JSON.parse(
+      localStorage.getItem("rock-calculator.spirit-configs.v2"),
+    ),
+    favorites: JSON.parse(
+      localStorage.getItem("rock-calculator.favorites.v1"),
+    ),
+    teams: localStorage.getItem("rock-calculator.teams.v1"),
+    spiritId,
+  }), spirit.id);
+  expect(stored.configs.configs[stored.spiritId].natureId).toBe("adamant");
+  expect(stored.favorites[0].spiritId).toBe(stored.spiritId);
+  expect(stored.teams).toBe("team-sentinel");
 });
 
 async function selectSpirit(page, side, name) {
@@ -84,6 +197,32 @@ async function inspectDetailedSkillMenu(page, side, slot) {
   await page.keyboard.press("Escape");
   return layout;
 }
+
+test("applies and explains Beast Flower bloodlines without retaining the battle trigger", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 945, width: 1536 });
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "兽花蕾");
+  await selectSpirit(page, "防御方", "水灵");
+  await openDetailedMode(page);
+
+  const skillPicker = page.getByRole("combobox", { name: "选择技能" });
+  await skillPicker.fill("透射");
+  await page.getByRole("option", { name: /透射/ }).click();
+  const bloodline = page.getByRole("combobox", { name: "血脉" });
+  await bloodline.selectOption("normal");
+  await page.getByRole("checkbox", { name: "入场已触发" }).check();
+
+  await expect(page.getByRole("region", { name: "特性结算" })).toContainText(
+    "普通血脉｜技能威力 +40",
+  );
+
+  await selectSpirit(page, "攻击方", "音速犬");
+  await selectSpirit(page, "攻击方", "兽花蕾");
+  await expect(page.getByRole("combobox", { name: "血脉" })).toHaveValue("normal");
+  await expect(page.getByRole("checkbox", { name: "入场已触发" })).not.toBeChecked();
+});
 
 test("keeps the compact workflow usable at 390px", async ({ page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
@@ -237,6 +376,22 @@ test("keeps the compact workflow usable at 390px", async ({ page }) => {
   );
 });
 
+test("shows the team label on desktop and keeps the mobile header compact", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 900, width: 1424 });
+  await page.goto("/");
+
+  const teamAction = page.locator(".team-action");
+  const teamLabel = teamAction.locator("span");
+  await expect(teamLabel).toBeVisible();
+  expect((await teamAction.boundingBox()).width).toBeGreaterThan(38);
+
+  await page.setViewportSize({ height: 844, width: 390 });
+  await expect(teamLabel).toBeHidden();
+  expect((await teamAction.boundingBox()).width).toBe(38);
+});
+
 test("keeps the result rail and three steps readable at 1280px", async ({
   page,
 }) => {
@@ -277,13 +432,21 @@ test("keeps the result rail and three steps readable at 1280px", async ({
   const skillPicker = page.getByRole("combobox", { name: "选择技能" });
   await skillPicker.scrollIntoViewIfNeeded();
   await skillPicker.click();
-  await expect(
-    page.locator('.skill-picker__options [role="option"]'),
-  ).toHaveCount(571);
+  const skillOptions = skillPicker
+    .locator("xpath=..")
+    .locator('.skill-picker__options [role="option"]');
+  await expect(skillOptions).toHaveCount(19);
+  await expect(skillOptions.first()).toHaveAttribute("aria-setsize", "571");
+  const skillList = skillPicker
+    .locator("xpath=..")
+    .locator(".skill-picker__options");
+  await skillList.evaluate((node) => {
+    node.scrollTop = node.scrollHeight;
+    node.dispatchEvent(new Event("scroll", { bubbles: true }));
+  });
+  await expect(skillOptions.last()).toHaveAttribute("aria-posinset", "571");
   await skillPicker.fill("愿力冲击");
-  await expect(
-    page.locator('.skill-picker__options [role="option"]'),
-  ).toHaveCount(18);
+  await expect(skillOptions).toHaveCount(18);
 
   expect(
     await page.evaluate(
@@ -300,6 +463,113 @@ test("keeps the result rail and three steps readable at 1280px", async ({
         .every((slot) => slot.scrollWidth <= slot.clientWidth),
     ),
   ).toBe(true);
+});
+
+test("keeps Gal choice controls inside two-line four-skill rows at desktop width", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 861, width: 1424 });
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "加尔");
+  await selectSpirit(page, "防御方", "水灵");
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  const picker = page.getByRole("combobox", { name: "攻击方技能1" });
+  await picker.fill("友谊满溢");
+  await page
+    .getByRole("option")
+    .filter({ hasText: "友谊满溢" })
+    .first()
+    .click();
+  await page
+    .getByRole("combobox", { name: "攻击方技能1选择效果" })
+    .selectOption("counter");
+  await page.getByRole("checkbox", { name: "攻击方技能1触发应对" }).check();
+  await page.getByRole("checkbox", { name: "攻击方技能1触发特性" }).check();
+
+  const firstRow = page
+    .locator(".four-skill-side")
+    .first()
+    .locator(".skill-slot-group")
+    .first();
+  const layout = await firstRow.evaluate((row) => {
+    const context = row.querySelector(".skill-slot__context");
+    const description = row.querySelector(".skill-slot__description");
+    const styles = getComputedStyle(description);
+    return {
+      contextFits: context.scrollWidth <= context.clientWidth,
+      descriptionHeight: description.getBoundingClientRect().height,
+      lineHeight: Number.parseFloat(styles.lineHeight),
+      pageFits: document.documentElement.scrollWidth <= window.innerWidth,
+    };
+  });
+  expect(layout.contextFits).toBe(true);
+  expect(layout.pageFits).toBe(true);
+  expect(layout.descriptionHeight).toBeLessThanOrEqual(layout.lineHeight * 2 + 2);
+
+  await expect(page.getByLabel("选择特性结算")).toContainText("仅第一段触发应对");
+});
+
+test("calculates Stone Lizard family's Skin Spikes as a selectable trait source", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 945, width: 1536 });
+  await page.goto("/");
+  const attackerPicker = page.getByRole("combobox", { name: "攻击方精灵" });
+  await attackerPicker.fill("石冠王蜥");
+  await page.getByRole("option", { name: /^石冠王蜥\s/ }).click();
+  await selectSpirit(page, "防御方", "水灵");
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  const traitSource = page.getByRole("group", {
+    name: "攻击方特性伤害刺肤",
+  });
+  await expect(traitSource).toBeVisible();
+  await expect(traitSource).toContainText("无·特性");
+  await expect(traitSource).toContainText("50");
+  await traitSource.click();
+  await expect(
+    page.getByRole("group", {
+      name: "攻击方特性伤害刺肤，当前选中",
+    }),
+  ).toBeVisible();
+
+  const hitCount = page.getByRole("spinbutton", {
+    name: "攻击方刺肤连击次数",
+  });
+  await hitCount.fill("3");
+  await expect(hitCount).toHaveValue("3");
+  await expect(page.getByText("特性造成伤害", { exact: true })).toBeVisible();
+  await expect(page.getByText("刺肤", { exact: true }).last()).toBeVisible();
+});
+
+test("keeps Dimo-family trait stacks synchronized in both damage directions", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 945, width: 1536 });
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "幻影荆棘");
+  await selectSpirit(page, "防御方", "圣光迪莫");
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  const stackInputs = page.getByRole("spinbutton", { name: "触发层数" });
+  await expect(stackInputs).toHaveCount(2);
+  await expect(page.getByText("圣光迪莫 · 裁决", { exact: true })).toBeVisible();
+  await stackInputs.first().fill("4");
+  await expect(stackInputs.first()).toHaveValue("4");
+  await expect(stackInputs.last()).toHaveValue("4");
+
+  await page.reload();
+  await selectSpirit(page, "攻击方", "幻影荆棘");
+  await selectSpirit(page, "防御方", "圣光迪莫");
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+  const restoredInputs = page.getByRole("spinbutton", { name: "触发层数" });
+  await expect(restoredInputs.first()).toHaveValue("4");
+  await expect(restoredInputs.last()).toHaveValue("4");
 });
 
 test("derives Comet power from one shared, editable current-HP value", async ({

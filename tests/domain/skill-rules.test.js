@@ -78,6 +78,32 @@ describe("resolveSkillPower", () => {
     });
   });
 
+  test("exposes stable slot control ids and accepts the stable value in calculations", () => {
+    const colorDispersion = skill({
+      category: "magical",
+      description: "造成魔伤，对混血精灵造成伤害+50%。",
+      name: "色散",
+      type: "光",
+    });
+
+    const [control] = getSkillEffectInputs(colorDispersion);
+    expect([control]).toMatchObject([
+      {
+        contextKey: "enemyIsMixedBloodline",
+        id: expect.stringMatching(
+          /^skill\.enemyIsMixedBloodline\.[a-f0-9]{8}$/,
+        ),
+        scope: "slot",
+        source: "skill",
+      },
+    ]);
+    expect(
+      resolveSkillPower(colorDispersion, {
+        [control.id]: true,
+      }),
+    ).toMatchObject({ finalDamageMultiplier: 1.5, status: "exact" });
+  });
+
   test("resolves Flash Strike from the speed difference table", () => {
     expect(
       resolveSkillPower(

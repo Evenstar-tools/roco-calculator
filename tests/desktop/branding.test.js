@@ -11,10 +11,11 @@ describe("desktop package branding", () => {
     expect(packageJson).toMatchObject({
       author: "洛克计算器",
       name: "rock-calculator",
-      version: "1.3.0",
+      version: "1.3.6",
     });
     expect(packageJson.build).toMatchObject({
       appId: "cn.rock.calculator",
+      artifactName: "洛克计算器-${version}.${ext}",
       nsis: {
         guid: "5ca658da-1ce6-5199-babe-3d59475e8d1a",
       },

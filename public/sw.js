@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v1.3.0";
+const CACHE_NAME = "rock-calculator-webapp-v1.3.6";
 const APP_SHELL = [
   "/",
   "/manifest.webmanifest",
@@ -50,26 +50,27 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-async function networkFirst(request) {
-  const cache = await caches.open(CACHE_NAME);
+async function refreshCache(cache, request) {
   try {
     const response = await fetch(request);
     if (response.ok) await cache.put(request, response.clone());
     return response;
   } catch {
-    return caches.match(request);
+    return null;
   }
 }
 
-async function cacheFirst(request) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
-  const response = await fetch(request);
-  if (response.ok) {
-    const cache = await caches.open(CACHE_NAME);
-    await cache.put(request, response.clone());
+async function staleWhileRevalidate(event, request, fallbackRequest = request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached =
+    (await cache.match(fallbackRequest)) ??
+    (await caches.match(fallbackRequest));
+  const refresh = refreshCache(cache, request);
+  if (cached) {
+    event.waitUntil(refresh);
+    return cached;
   }
-  return response;
+  return (await refresh) ?? caches.match(fallbackRequest);
 }
 
 self.addEventListener("fetch", (event) => {
@@ -79,23 +80,17 @@ self.addEventListener("fetch", (event) => {
 
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request)
-        .then(async (response) => {
-          if (response.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            await cache.put("/", response.clone());
-          }
-          return response;
-        })
-        .catch(() => caches.match("/") || caches.match("/index.html")),
+      staleWhileRevalidate(event, event.request, "/").then(
+        (response) => response ?? caches.match("/index.html"),
+      ),
     );
     return;
   }
 
   if (url.pathname === "/data/runtime.json") {
-    event.respondWith(networkFirst(event.request));
+    event.respondWith(staleWhileRevalidate(event, event.request));
     return;
   }
 
-  event.respondWith(cacheFirst(event.request));
+  event.respondWith(staleWhileRevalidate(event, event.request));
 });

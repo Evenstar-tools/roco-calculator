@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   TEAM_STORAGE_KEY,
   createTeamMember,
+  createTeamMemberFromSpiritConfig,
   createTeamMemberFromSide,
   teamPresetsRepository,
 } from "../../src/state/team-presets.js";
@@ -31,6 +32,10 @@ function snapshot() {
         skillIds: ["skill-a", "skill-b", "skill-c", "skill-d"],
         spiritId: "spirit-a",
       },
+      {
+        skillIds: ["skill-e"],
+        spiritId: "spirit-b",
+      },
     ],
     skills: [
       {
@@ -42,8 +47,12 @@ function snapshot() {
       { basePower: 60, category: "magical", id: "skill-b", name: "水波" },
       { basePower: null, category: "status", id: "skill-c", name: "状态" },
       { basePower: null, category: "defense", id: "skill-d", name: "防御" },
+      { basePower: 70, category: "physical", id: "skill-e", name: "新技能" },
     ],
-    spirits: [{ fullName: "音速犬", id: "spirit-a" }],
+    spirits: [
+      { fullName: "音速犬", id: "spirit-a" },
+      { fullName: "水灵", id: "spirit-b" },
+    ],
   };
 }
 
@@ -177,6 +186,179 @@ describe("teamPresetsRepository", () => {
     expect(member.skills).not.toBe(side.skills);
     side.skills.four[0].context.energy = 1;
     expect(member.skills.four[0].context.energy).toBe(3);
+  });
+
+  test("creates a team member from a personal configuration as an independent deep copy", () => {
+    const config = {
+      displayIvs: {
+        hp: 11,
+        speed: 22,
+        physicalAttack: 33,
+        magicalAttack: 44,
+        physicalDefense: 55,
+        magicalDefense: 60,
+      },
+      natureId: "adamant",
+      skills: {
+        four: [
+          {
+            context: { nested: { stacks: 3 } },
+            hitCount: 2,
+            memoryBySkill: {
+              "skill-b": {
+                context: { energy: 4 },
+                hitCount: 3,
+                overrides: { basePower: 120 },
+              },
+            },
+            overrides: { basePower: 100 },
+            skillId: "skill-a",
+          },
+          "skill-b",
+          null,
+          null,
+        ],
+        single: {
+          context: { currentHpPercent: 75 },
+          hitCount: 2,
+          memoryBySkill: {
+            "skill-b": {
+              context: { energy: 2 },
+              overrides: { basePower: 90 },
+            },
+          },
+          overrides: { basePower: 110 },
+          skillId: "skill-a",
+        },
+      },
+      spiritId: "spirit-a",
+      updatedAt: "2026-07-29T12:00:00.000Z",
+    };
+
+    const member = createTeamMemberFromSpiritConfig(config);
+
+    expect(member).toEqual({
+      displayIvs: config.displayIvs,
+      natureId: "adamant",
+      skills: config.skills,
+      spiritId: "spirit-a",
+    });
+    expect(member.skills).not.toBe(config.skills);
+    member.skills.four[0].context.nested.stacks = 9;
+    member.skills.four[0].memoryBySkill["skill-b"].overrides.basePower = 1;
+    member.skills.single.memoryBySkill["skill-b"].context.energy = 8;
+    expect(config.skills.four[0].context.nested.stacks).toBe(3);
+    expect(
+      config.skills.four[0].memoryBySkill["skill-b"].overrides.basePower,
+    ).toBe(120);
+    expect(
+      config.skills.single.memoryBySkill["skill-b"].context.energy,
+    ).toBe(2);
+  });
+
+  test("keeps context overrides and remembered skills isolated across save reload and duplicate", () => {
+    const storage = memoryStorage();
+    const store = repository(storage);
+    let state = store.create(store.load(snapshot()), "主队");
+    const source = createTeamMemberFromSpiritConfig({
+      displayIvs: { physicalAttack: 60 },
+      natureId: "adamant",
+      skills: {
+        four: [
+          {
+            context: { nested: { stacks: 2 } },
+            memoryBySkill: {
+              "skill-b": {
+                context: { energy: 3 },
+                overrides: { basePower: 120 },
+              },
+            },
+            overrides: { basePower: 100 },
+            skillId: "skill-a",
+          },
+        ],
+        single: null,
+      },
+      spiritId: "spirit-a",
+    });
+    state = store.updateMember(state, state.activeTeamId, 0, source);
+    const sourceTeamId = state.activeTeamId;
+    state = store.duplicate(state, sourceTeamId);
+    const reloaded = repository(storage).load(snapshot());
+    const original = reloaded.teams[0].members[0];
+    const copy = reloaded.teams[1].members[0];
+
+    copy.skills.four[0].context.nested.stacks = 8;
+    copy.skills.four[0].overrides.basePower = 1;
+    copy.skills.four[0].memoryBySkill["skill-b"].context.energy = 9;
+
+    expect(original.skills.four[0].context.nested.stacks).toBe(2);
+    expect(original.skills.four[0].overrides.basePower).toBe(100);
+    expect(
+      original.skills.four[0].memoryBySkill["skill-b"].context.energy,
+    ).toBe(3);
+    expect(source.skills.four[0].context.nested.stacks).toBe(2);
+  });
+
+  test("uses a clean spirit default after replacing a configured member with an unremembered spirit", () => {
+    const configuredA = createTeamMemberFromSpiritConfig({
+      displayIvs: {
+        hp: 12,
+        speed: 60,
+        physicalAttack: 60,
+        magicalAttack: 48,
+        physicalDefense: 36,
+        magicalDefense: 24,
+      },
+      natureId: "adamant",
+      skills: {
+        four: [
+          {
+            context: { energy: 3 },
+            hitCount: 4,
+            overrides: { basePower: 140 },
+            skillId: "skill-a",
+          },
+          null,
+          null,
+          null,
+        ],
+        single: {
+          context: { targetSwitched: true },
+          hitCount: 2,
+          overrides: { basePower: 180 },
+          skillId: "skill-a",
+        },
+      },
+      spiritId: "spirit-a",
+    });
+
+    const cleanB = createTeamMember(snapshot(), "spirit-b");
+
+    expect(configuredA.skills.four[0]).toMatchObject({
+      context: { energy: 3 },
+      hitCount: 4,
+      overrides: { basePower: 140 },
+    });
+    expect(cleanB).toEqual({
+      displayIvs: {
+        hp: 0,
+        speed: 0,
+        physicalAttack: 0,
+        magicalAttack: 0,
+        physicalDefense: 0,
+        magicalDefense: 0,
+      },
+      natureId: "neutral",
+      skills: {
+        four: ["skill-e", null, null, null],
+        single: "skill-e",
+      },
+      spiritId: "spirit-b",
+    });
+    expect(JSON.stringify(cleanB)).not.toMatch(
+      /context|hitCount|overrides|skill-a|adamant/,
+    );
   });
 
   test("backs up corrupt JSON and returns an empty warning state", () => {

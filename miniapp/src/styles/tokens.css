@@ -1,0 +1,24 @@
+.page {
+  --surface-page: #f3f4f8;
+  --surface-card: #ffffff;
+  --surface-muted: #f7f8fb;
+  --surface-pressed: #eef0f5;
+  --text-primary: #191c25;
+  --text-secondary: #626878;
+  --text-muted: #8990a0;
+  --border-neutral: #dfe2e9;
+  --border-strong: #c9ced9;
+  --attacker: #d93c43;
+  --attacker-soft: #fff1f2;
+  --defender: #247eb8;
+  --defender-soft: #eef8ff;
+  --result: #7457d7;
+  --result-soft: #f4f0ff;
+  --success: #188b55;
+  --success-soft: #ebf8f1;
+  --danger: #c9353d;
+  --shadow-card: 0 5px 18px rgba(30, 37, 55, 0.07);
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --touch-target: 44PX;
+}

@@ -29,8 +29,16 @@ export function dynamicInputsForSkill(
   ];
   return inputs.filter(
     (input, index) =>
-      inputs.findIndex((candidate) => candidate.key === input.key) === index,
+      inputs.findIndex((candidate) => candidate.id === input.id) === index,
   );
+}
+
+function dynamicInputId(input) {
+  return input.id ?? input.key;
+}
+
+function dynamicInputContextKey(input) {
+  return input.contextKey ?? input.key;
 }
 
 export function clampDynamicInput(input, value) {
@@ -42,7 +50,9 @@ export function clampDynamicInput(input, value) {
 }
 
 export function dynamicInputValue(input, context = {}) {
-  return context[input.key] ?? input.defaultValue;
+  return context[dynamicInputId(input)] ??
+    context[dynamicInputContextKey(input)] ??
+    input.defaultValue;
 }
 
 export function DraftNumberInput({
@@ -110,24 +120,43 @@ export function TraitInputs({
   return inputs
     .filter((input) => !scope || input.scope === scope)
     .map((input) =>
-      input.type === "boolean" ? (
-        <label className="trait-condition" key={input.key}>
+      input.type === "choice" ? (
+        <label className="trait-choice" key={dynamicInputId(input)}>
+          <span>{input.label}</span>
+          <select
+            aria-label={input.label}
+            onChange={(event) =>
+              onChange?.(dynamicInputId(input), event.target.value)
+            }
+            value={dynamicInputValue(input, context) ?? ""}
+          >
+            {input.options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : input.type === "boolean" ? (
+        <label className="trait-condition" key={dynamicInputId(input)}>
           <input
             checked={Boolean(dynamicInputValue(input, context))}
-            onChange={(event) => onChange?.(input.key, event.target.checked)}
+            onChange={(event) =>
+              onChange?.(dynamicInputId(input), event.target.checked)
+            }
             type="checkbox"
           />
           <span>{input.label}</span>
         </label>
       ) : (
-        <label className="trait-number" key={input.key}>
+        <label className="trait-number" key={dynamicInputId(input)}>
           <span>{input.label}</span>
           <DraftNumberInput
             ariaLabel={input.label}
             inputMode="numeric"
             max={input.max}
             min={input.min}
-            onCommit={(value) => onChange?.(input.key, value)}
+            onCommit={(value) => onChange?.(dynamicInputId(input), value)}
             step={input.step ?? 1}
             value={dynamicInputValue(input, context)}
           />
@@ -138,11 +167,13 @@ export function TraitInputs({
 }
 
 export function isDynamicInputVisible(input, context = {}) {
-  if (!input.when) return true;
+  const condition = input.visibleWhen ?? input.when;
+  if (!condition) return true;
   const controllingValue =
-    context[input.when.key] ??
-    input.when.defaultValue;
-  return controllingValue === input.when.equals;
+    context[condition.id ?? condition.key] ??
+    context[condition.contextKey ?? condition.key] ??
+    condition.defaultValue;
+  return controllingValue === condition.equals;
 }
 
 export function describeResolution(result) {
@@ -222,10 +253,10 @@ export function SingleSkillEditor({
   const [hitDraft, setHitDraft] = useState(String(hitCount));
   const dynamicInputs = dynamicInputsForSkill(selectedSkill);
   const hasAttackerHpRule = dynamicInputs.some(
-    (input) => input.key === "attackerHpPercent",
+    (input) => dynamicInputContextKey(input) === "attackerHpPercent",
   );
   const hasDefenderHpRule = dynamicInputs.some(
-    (input) => input.key === "defenderHpPercent",
+    (input) => dynamicInputContextKey(input) === "defenderHpPercent",
   );
   const resolutionSummary = describeResolution(result);
 
@@ -299,8 +330,8 @@ export function SingleSkillEditor({
             {dynamicInputs
               .filter(
                 (input) =>
-                  (input.key !== "attackerHpPercent" || !attackerHealth) &&
-                  (input.key !== "defenderHpPercent" || !defenderHealth),
+                  (dynamicInputContextKey(input) !== "attackerHpPercent" || !attackerHealth) &&
+                  (dynamicInputContextKey(input) !== "defenderHpPercent" || !defenderHealth),
               )
               .filter((input) =>
                 isDynamicInputVisible(input, traitContext),
@@ -310,7 +341,7 @@ export function SingleSkillEditor({
                 <div
                   aria-label={input.label}
                   className="skill-condition-choice"
-                  key={input.key}
+                  key={dynamicInputId(input)}
                   role="group"
                 >
                   {input.options.map((option) => (
@@ -321,7 +352,7 @@ export function SingleSkillEditor({
                       }
                       key={option.value}
                       onClick={() =>
-                        onTraitContextChange?.(input.key, option.value)
+                        onTraitContextChange?.(dynamicInputId(input), option.value)
                       }
                       type="button"
                     >
@@ -330,20 +361,20 @@ export function SingleSkillEditor({
                   ))}
                 </div>
               ) : input.type === "boolean" ? (
-                <label className="skill-condition-toggle" key={input.key}>
+                <label className="skill-condition-toggle" key={dynamicInputId(input)}>
                   <input
                     checked={Boolean(
                       dynamicInputValue(input, traitContext),
                     )}
                     onChange={(event) =>
-                      onTraitContextChange?.(input.key, event.target.checked)
+                      onTraitContextChange?.(dynamicInputId(input), event.target.checked)
                     }
                     type="checkbox"
                   />
                   <span>{input.label}</span>
                 </label>
               ) : (
-                <label className="skill-condition-number" key={input.key}>
+                <label className="skill-condition-number" key={dynamicInputId(input)}>
                   <span>{input.label}</span>
                   <input
                     aria-label={input.label}
@@ -352,7 +383,7 @@ export function SingleSkillEditor({
                     onChange={(event) => {
                       if (event.target.value !== "") {
                         onTraitContextChange?.(
-                          input.key,
+                          dynamicInputId(input),
                           clampDynamicInput(input, event.target.value),
                         );
                       }

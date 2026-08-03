@@ -20,8 +20,10 @@ export default defineConfig({
     setupFiles: "./vitest.setup.js",
     css: true,
     exclude: [
+      "**/node_modules/**",
+      ".tmp/**",
       "e2e/**",
-      "node_modules/**",
+      "miniapp/tests/**",
       "dist/**",
     ],
   },
