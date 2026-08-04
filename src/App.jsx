@@ -607,6 +607,10 @@ function CalculatorWorkspace({ snapshot }) {
       ? storedHpPercent
       : ((healthDirection.currentHp ?? panelStats.hp) / Math.max(1, panelStats.hp)) *
         100;
+    const positiveMark = latest.marks?.[side]?.positive;
+    const sproutStacks = positiveMark?.id === "sprout"
+      ? Math.min(99, Math.max(0, Math.floor(Number(positiveMark.stacks) || 0)))
+      : 0;
     const resolution = resolveSkillStatusActivation(skill, {
       ...context,
       attackerHpPercent,
@@ -616,12 +620,14 @@ function CalculatorWorkspace({ snapshot }) {
       choiceTrait,
       effectiveHitCount:
         calculation?.[selfDirection]?.results?.[index]?.hitCount,
+      sproutStacks,
     });
     if (!resolution) {
       if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) return;
       const sequence = buildChoiceSkillSequence({
         context,
         skill,
+        sproutStacks,
         traitName: detectedChoiceTrait,
       });
       updateFourSkillEntry(side, index, { context: sequence.nextContext });
@@ -689,6 +695,9 @@ function CalculatorWorkspace({ snapshot }) {
     const ownHitCountAdd = Math.floor(
       Number(selfOverrides.hitCountAdd ?? 0) + deltas.ownHitCountAdd,
     );
+    const ownHitCountPercentAdd =
+      Number(selfOverrides.hitCountPercentAdd ?? 0) +
+      Number(operations.hitCountPercentForAllAttacks ?? 0);
     const targetHitCountAdd = Math.floor(
       Number(oppositeOverrides.hitCountAdd ?? 0) +
       Number(deltas.targetHitCountAdd ?? 0),
@@ -718,6 +727,7 @@ function CalculatorWorkspace({ snapshot }) {
           fixedPowerAddsBySlot: ownFixedPowerAddsBySlot,
           skillPowerPercentAddsBySlot: ownSkillPowerPercentAddsBySlot,
           hitCountAdd: ownHitCountAdd,
+          hitCountPercentAdd: ownHitCountPercentAdd,
           refractionStatuses,
         },
       },
@@ -832,6 +842,7 @@ function CalculatorWorkspace({ snapshot }) {
     const sequence = buildChoiceSkillSequence({
       context,
       skill,
+      sproutStacks,
       traitName: detectedChoiceTrait,
     });
     updateFourSkillEntry(side, index, { context: sequence.nextContext });
@@ -986,6 +997,11 @@ function CalculatorWorkspace({ snapshot }) {
       attackerSkills={state.sides.attacker.skills.four.map((entry) =>
         getSkillSlotView(snapshot, entry),
       )}
+      attackerSproutStacks={
+        state.marks?.attacker?.positive?.id === "sprout"
+          ? state.marks.attacker.positive.stacks
+          : 0
+      }
       attackerTrait={getTraitView(snapshot, attacker, "attacker")}
       attackerTraitContext={state.directions.forward.context}
       attackerTraitDamage={attackerTraitDamage}
@@ -1002,6 +1018,11 @@ function CalculatorWorkspace({ snapshot }) {
       defenderSkills={state.sides.defender.skills.four.map((entry) =>
         getSkillSlotView(snapshot, entry),
       )}
+      defenderSproutStacks={
+        state.marks?.defender?.positive?.id === "sprout"
+          ? state.marks.defender.positive.stacks
+          : 0
+      }
       defenderTrait={getTraitView(snapshot, defender, "attacker")}
       defenderTraitContext={state.directions.reverse.context}
       defenderTraitDamage={defenderTraitDamage}
@@ -1103,6 +1124,11 @@ function CalculatorWorkspace({ snapshot }) {
       attackerSkills={state.sides.attacker.skills.four.map((entry) =>
         getSkillSlotView(snapshot, entry),
       )}
+      attackerSproutStacks={
+        state.marks?.attacker?.positive?.id === "sprout"
+          ? state.marks.attacker.positive.stacks
+          : 0
+      }
       attackerTraitDamage={attackerTraitDamage}
       defenderName={defender.fullName}
       defenderResults={calculation.reverse.results}
@@ -1110,6 +1136,11 @@ function CalculatorWorkspace({ snapshot }) {
       defenderSkills={state.sides.defender.skills.four.map((entry) =>
         getSkillSlotView(snapshot, entry),
       )}
+      defenderSproutStacks={
+        state.marks?.defender?.positive?.id === "sprout"
+          ? state.marks.defender.positive.stacks
+          : 0
+      }
       defenderTraitDamage={defenderTraitDamage}
       onSkillFocus={(side, index) => {
         const direction = side === "attacker" ? "forward" : "reverse";

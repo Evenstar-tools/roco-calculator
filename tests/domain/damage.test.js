@@ -19,7 +19,7 @@ describe("calculateDamage", () => {
     expect(calculateDamage(goldenInput()).total).toBe(332);
   });
 
-  test("rounds the damage numerator before dividing by defense", () => {
+  test("rounds the damage numerator before dividing by defense and applying reduction", () => {
     expect(
       calculateDamage({
         attackerStat: 1,
@@ -30,7 +30,22 @@ describe("calculateDamage", () => {
         finalDamageMultiplier: 1,
         level: 60,
       }).total,
-    ).toBe(2);
+    ).toBe(1);
+  });
+
+  test("applies defense-skill reduction after dividing the rounded numerator by defense", () => {
+    const result = calculateDamage({
+      attackerStat: 80,
+      displayedPower: 110,
+      defenderDefense: 209,
+      damageReductionMultiplier: 0.5,
+      hitCount: 1,
+      finalDamageMultiplier: 1,
+      level: 60,
+    });
+
+    expect(result.numerator).toBe(7941);
+    expect(result.total).toBe(18);
   });
 
   test("floors one hit before multiplying by the hit count", () => {

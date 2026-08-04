@@ -20,6 +20,14 @@ const STAT_KEYS = [
   "physicalDefense",
   "magicalDefense",
 ];
+const STAT_LABELS = {
+  hp: "生命",
+  speed: "速度",
+  physicalAttack: "物攻",
+  magicalAttack: "魔攻",
+  physicalDefense: "物防",
+  magicalDefense: "魔防",
+};
 const NATURE_IDS = new Set(NATURES.map((nature) => nature.id));
 
 function cloneJson(value) {
@@ -127,41 +135,61 @@ function parseJson(json) {
   }
 }
 
-function isValidIvs(displayIvs) {
-  return displayIvs && STAT_KEYS.every((stat) => {
-    const value = displayIvs[stat];
-    return Number.isInteger(value) && value >= 0 && value <= 60;
-  });
-}
-
-function isValidSkills(skills, capacity) {
-  return Array.isArray(skills) && skills.length === capacity && skills.every(
-    (value) => value === null || typeof value === "string",
-  );
+function invalidEntryReasons(raw, capacity) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return ["配置内容不是有效对象"];
+  }
+  const reasons = [];
+  if (typeof raw.spiritId !== "string") reasons.push("缺少有效的精灵 ID");
+  if (!NATURE_IDS.has(raw.natureId)) reasons.push(`无法识别性格 ${raw.natureId ?? "空"}`);
+  if (!raw.displayIvs || typeof raw.displayIvs !== "object") {
+    reasons.push("缺少六项个体配置");
+  } else {
+    for (const stat of STAT_KEYS) {
+      const value = raw.displayIvs[stat];
+      if (!Number.isInteger(value) || value < 0 || value > 60) {
+        reasons.push(`${STAT_LABELS[stat]}个体 ${value ?? "空"} 不在 0～60`);
+      }
+    }
+  }
+  if (!Array.isArray(raw.skills)) {
+    reasons.push("技能槽不是数组");
+  } else {
+    const supportsLegacyFourSlots = capacity > 4 && raw.skills.length === 4;
+    if (raw.skills.length !== capacity && !supportsLegacyFourSlots) {
+      reasons.push(`技能槽有 ${raw.skills.length} 个，当前形态需要 ${capacity} 个`);
+    }
+    if (raw.skills.some((value) => value !== null && typeof value !== "string")) {
+      reasons.push("技能槽中存在无法识别的内容");
+    }
+  }
+  if (
+    !raw.traitValues ||
+    typeof raw.traitValues !== "object" ||
+    Array.isArray(raw.traitValues)
+  ) {
+    reasons.push("特性配置格式无效");
+  }
+  return reasons;
 }
 
 function validateAndRepairEntry(raw, snapshot) {
   const capacity = typeof raw?.spiritId === "string"
     ? getSpiritSkillSlotCapacity(snapshot, raw.spiritId)
     : 4;
-  if (
-    !raw ||
-    typeof raw !== "object" ||
-    typeof raw.spiritId !== "string" ||
-    !NATURE_IDS.has(raw.natureId) ||
-    !isValidIvs(raw.displayIvs) ||
-    !isValidSkills(raw.skills, capacity) ||
-    !raw.traitValues ||
-    typeof raw.traitValues !== "object" ||
-    Array.isArray(raw.traitValues)
-  ) {
-    return { invalid: true };
+  const invalidReasons = invalidEntryReasons(raw, capacity);
+  if (invalidReasons.length > 0) return { invalid: true, invalidReasons };
+  const repairs = [];
+  if (capacity > 4 && raw.skills.length === 4) {
+    repairs.push(`已保留原四技能，并补齐 ${capacity - 4} 个空技能槽`);
   }
   const skillIds = new Set((snapshot?.skills ?? []).map((skill) => skill.id));
   let missingSkills = 0;
-  const skills = raw.skills.map((id) => {
+  const missingSkillSlots = [];
+  const skills = normalizeSkillSlots(raw.skills, capacity).map((id, index) => {
     if (id && !skillIds.has(id)) {
       missingSkills += 1;
+      missingSkillSlots.push({ id, index: index + 1 });
       return null;
     }
     return id;
@@ -172,10 +200,12 @@ function validateAndRepairEntry(raw, snapshot) {
     skills: { four: [], single: null },
   }, snapshot);
   let unknownTraitFields = 0;
+  const unknownTraitKeys = [];
   for (const [key, rawValue] of Object.entries(raw.traitValues)) {
     if (!Object.hasOwn(traitValues, key) || !Object.is(traitValues[key], rawValue)) {
       delete traitValues[key];
       unknownTraitFields += 1;
+      unknownTraitKeys.push(key);
     }
   }
   return {
@@ -187,7 +217,10 @@ function validateAndRepairEntry(raw, snapshot) {
       traitValues,
     },
     missingSkills,
+    missingSkillSlots,
+    repairs,
     unknownTraitFields,
+    unknownTraitKeys,
   };
 }
 
@@ -259,31 +292,121 @@ export function parseFavoriteConfigLibrary(json, {
     unknownTraitFields: 0,
     invalidEntries: 0,
     duplicateEntries: 0,
+    repairedEntries: 0,
   };
-  const rawBySpirit = new Map();
-  for (const raw of decoded.entries) {
-    if (typeof raw?.spiritId === "string" && rawBySpirit.has(raw.spiritId)) {
-      preview.duplicateEntries += 1;
-    }
-    if (typeof raw?.spiritId === "string") rawBySpirit.set(raw.spiritId, raw);
-    else preview.invalidEntries += 1;
-  }
+  const issueDetails = [];
+  const spiritById = new Map(
+    (snapshot?.spirits ?? []).map((spirit) => [spirit.id, spirit]),
+  );
+  const addIssueDetail = ({
+    action,
+    entryIndex,
+    raw,
+    reason,
+    type,
+  }) => {
+    const spiritId = typeof raw?.spiritId === "string" ? raw.spiritId : null;
+    issueDetails.push({
+      action,
+      entryIndex,
+      reason,
+      spiritId,
+      spiritName: spiritById.get(spiritId)?.fullName ?? spiritId ?? "无法识别的配置",
+      type,
+    });
+  };
   const knownSpiritIds = new Set(
     (snapshot?.spirits ?? []).map((spirit) => spirit.id),
   );
-  const entries = [];
-  for (const [spiritId, raw] of rawBySpirit) {
+  const seenSpiritIds = new Set();
+  const validBySpirit = new Map();
+  for (const [index, raw] of decoded.entries.entries()) {
+    const entryIndex = index + 1;
+    const spiritId = typeof raw?.spiritId === "string" ? raw.spiritId : null;
+    if (spiritId && seenSpiritIds.has(spiritId)) {
+      preview.duplicateEntries += 1;
+      addIssueDetail({
+        action: "导入时采用文件中最后一条有效配置",
+        entryIndex,
+        raw,
+        reason: "同一精灵在文件中出现多次",
+        type: "duplicateEntries",
+      });
+    }
+    if (spiritId) seenSpiritIds.add(spiritId);
+    if (!spiritId) {
+      preview.invalidEntries += 1;
+      addIssueDetail({
+        action: "已跳过，不会写入",
+        entryIndex,
+        raw,
+        reason: "缺少有效的精灵 ID",
+        type: "invalidEntries",
+      });
+      continue;
+    }
     if (!knownSpiritIds.has(spiritId)) {
       preview.missingSpirits += 1;
+      addIssueDetail({
+        action: "已跳过，不会写入",
+        entryIndex,
+        raw,
+        reason: "当前数据中找不到这个精灵形态",
+        type: "missingSpirits",
+      });
       continue;
     }
     const validated = validateAndRepairEntry(raw, snapshot);
     if (validated.invalid) {
       preview.invalidEntries += 1;
+      addIssueDetail({
+        action: validBySpirit.has(spiritId)
+          ? "已跳过，继续使用文件中上一条有效配置"
+          : "已跳过，不会写入",
+        entryIndex,
+        raw,
+        reason: validated.invalidReasons.join("；"),
+        type: "invalidEntries",
+      });
       continue;
     }
+    validBySpirit.set(spiritId, { entryIndex, raw, validated });
+  }
+  const entries = [];
+  for (const [spiritId, candidate] of validBySpirit) {
+    const { entryIndex, raw, validated } = candidate;
     preview.missingSkills += validated.missingSkills;
     preview.unknownTraitFields += validated.unknownTraitFields;
+    if (validated.missingSkillSlots.length > 0) {
+      addIssueDetail({
+        action: "只清空对应技能槽，其他配置正常导入",
+        entryIndex,
+        raw,
+        reason: validated.missingSkillSlots
+          .map(({ id, index }) => `第 ${index} 槽技能 ${id} 已失效`)
+          .join("；"),
+        type: "missingSkills",
+      });
+    }
+    if (validated.unknownTraitKeys.length > 0) {
+      addIssueDetail({
+        action: "只忽略无法识别的特性字段",
+        entryIndex,
+        raw,
+        reason: `无法识别特性字段：${validated.unknownTraitKeys.join("、")}`,
+        type: "unknownTraitFields",
+      });
+    }
+    if (validated.repairs.length > 0) {
+      preview.repairedEntries += 1;
+      addIssueDetail({
+        action: validated.repairs.join("；"),
+        entryIndex,
+        raw,
+        reason: "旧版技能槽结构已兼容当前形态",
+        type: "repairedEntries",
+      });
+    }
     if (existingSpiritConfigs?.configs?.[spiritId]) preview.overwritten += 1;
     else preview.added += 1;
     entries.push(validated.entry);
@@ -312,6 +435,7 @@ export function parseFavoriteConfigLibrary(json, {
     entries,
     favoriteSpiritIds: requestedFavorites,
     format: decoded.format,
+    issueDetails,
     preview,
     warnings,
   };

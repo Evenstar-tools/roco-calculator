@@ -12,7 +12,11 @@ const EFFECTS = Object.freeze({
   虫: { deltas: { targetDefense: -4 }, label: "虫·敌双防-4层" },
   龙: { deltas: { targetDefense: -4 }, label: "龙·敌双防-4层" },
   翼: { deltas: { ownHitCountAdd: 1 }, label: "翼·连击+1" },
-  水: { label: "水·能耗-1", status: "全技能能耗-1" },
+  水: {
+    label: "水·能耗-1",
+    operations: { refractionEnergyCostReduction: 1 },
+    status: "全技能能耗-1",
+  },
   武: { deltas: { ownAttack: 3 }, label: "武·双攻+3层" },
   光: { deltas: { ownAttack: 3 }, label: "光·双攻+3层" },
   幻: { label: "幻·敌星陨+1", operations: { targetStarfallStacks: 1 } },
@@ -39,8 +43,47 @@ function emptyDeltas() {
   return Object.fromEntries(DELTA_KEYS.map((key) => [key, 0]));
 }
 
-export function resolveRefractionEffects({ selectedSkill, carriedSkills = [] }) {
+const SPROUT_DELTA_STEPS = Object.freeze({
+  ownAttack: 1,
+  ownDefense: 1,
+  ownFixedPower: 10,
+  ownHitCountAdd: 1,
+  ownSpeedFlat: 10,
+});
+
+function normalizedSproutStacks(value) {
+  return Math.min(99, Math.max(0, Math.floor(Number(value) || 0)));
+}
+
+function effectDeltasWithSprout(deltas = {}, sproutStacks = 0) {
+  return Object.fromEntries(
+    Object.entries(deltas).map(([key, value]) => [
+      key,
+      Number(value) > 0 && SPROUT_DELTA_STEPS[key]
+        ? Number(value) + SPROUT_DELTA_STEPS[key] * sproutStacks
+        : Number(value) || 0,
+    ]),
+  );
+}
+
+function effectLabel(type, effect, deltas, operations) {
+  if (type === "普通") return `普·威力+${deltas.ownFixedPower}`;
+  if (type === "机械") return `机·双防+${deltas.ownDefense}层`;
+  if (type === "翼") return `翼·连击+${deltas.ownHitCountAdd}`;
+  if (type === "水") return `水·能耗-${operations.refractionEnergyCostReduction}`;
+  if (type === "武") return `武·双攻+${deltas.ownAttack}层`;
+  if (type === "光") return `光·双攻+${deltas.ownAttack}层`;
+  if (type === "电") return `电·速度+${deltas.ownSpeedFlat}`;
+  return effect.label;
+}
+
+export function resolveRefractionEffects({
+  selectedSkill,
+  carriedSkills = [],
+  sproutStacks = 0,
+}) {
   if (selectedSkill?.name !== "折射") return null;
+  const normalizedStacks = normalizedSproutStacks(sproutStacks);
   const types = [];
   const seen = new Set();
   for (const skill of carriedSkills) {
@@ -56,14 +99,29 @@ export function resolveRefractionEffects({ selectedSkill, carriedSkills = [] }) 
   const labels = [];
   for (const type of types) {
     const effect = EFFECTS[type];
-    labels.push(effect.label);
-    for (const [key, value] of Object.entries(effect.deltas ?? {})) {
+    const scaledDeltas = effectDeltasWithSprout(
+      effect.deltas,
+      normalizedStacks,
+    );
+    const scaledOperations = { ...(effect.operations ?? {}) };
+    if (Number(scaledOperations.refractionEnergyCostReduction) > 0) {
+      scaledOperations.refractionEnergyCostReduction += normalizedStacks;
+    }
+    labels.push(effectLabel(type, effect, scaledDeltas, scaledOperations));
+    for (const [key, value] of Object.entries(scaledDeltas)) {
       deltas[key] += Number(value) || 0;
     }
-    for (const [key, value] of Object.entries(effect.operations ?? {})) {
+    for (const [key, value] of Object.entries(scaledOperations)) {
       operations[key] = Number(operations[key] ?? 0) + Number(value ?? 0);
     }
-    if (effect.status) statuses.push({ label: effect.status, type });
+    if (effect.status) {
+      statuses.push({
+        label: type === "水"
+          ? `全技能能耗-${scaledOperations.refractionEnergyCostReduction}`
+          : effect.status,
+        type,
+      });
+    }
   }
   if (statuses.length > 0) operations.refractionStatuses = statuses;
   return {
@@ -75,8 +133,16 @@ export function resolveRefractionEffects({ selectedSkill, carriedSkills = [] }) 
   };
 }
 
-export function buildRefractionHint({ selectedSkill, carriedSkills = [] }) {
-  const result = resolveRefractionEffects({ selectedSkill, carriedSkills });
+export function buildRefractionHint({
+  selectedSkill,
+  carriedSkills = [],
+  sproutStacks = 0,
+}) {
+  const result = resolveRefractionEffects({
+    selectedSkill,
+    carriedSkills,
+    sproutStacks,
+  });
   if (!result) return null;
   return result.summary
     ? `本次可得：${result.summary}`

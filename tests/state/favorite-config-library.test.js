@@ -195,6 +195,32 @@ describe("parseFavoriteConfigLibrary", () => {
     expect(parsed.warnings).toHaveLength(2);
   });
 
+  test("keeps the last valid duplicate when a later duplicate is invalid", () => {
+    const valid = {
+      spiritId: "spirit-a",
+      natureId: "adamant",
+      displayIvs: IVS,
+      skills: ["skill-a", null, null, null],
+      traitValues: {},
+    };
+    const parsed = parseFavoriteConfigLibrary(JSON.stringify(library([
+      valid,
+      { ...valid, natureId: "not-a-nature" },
+    ])), { snapshot: snapshot(), currentVersions: {} });
+
+    expect(parsed.entries).toEqual([valid]);
+    expect(parsed.preview.duplicateEntries).toBe(1);
+    expect(parsed.preview.invalidEntries).toBe(1);
+    expect(parsed.issueDetails).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        action: "已跳过，继续使用文件中上一条有效配置",
+        entryIndex: 2,
+        spiritId: "spirit-a",
+        type: "invalidEntries",
+      }),
+    ]));
+  });
+
   test("rejects invalid entries instead of silently fixing nature or IVs", () => {
     const parsed = parseFavoriteConfigLibrary(JSON.stringify(library([
       {
@@ -208,6 +234,53 @@ describe("parseFavoriteConfigLibrary", () => {
 
     expect(parsed.entries).toEqual([]);
     expect(parsed.preview.invalidEntries).toBe(1);
+    expect(parsed.issueDetails).toEqual([
+      expect.objectContaining({
+        entryIndex: 1,
+        reason: expect.stringContaining("性格"),
+        spiritId: "spirit-a",
+        spiritName: "形态 A",
+        type: "invalidEntries",
+      }),
+    ]);
+  });
+
+  test("pads legacy four-skill entries when the current spirit has seven slots", () => {
+    const data = snapshot();
+    data.traits.push({ id: "trait-dazzling", name: "夺目" });
+    data.spirits.push({
+      id: "rainbow-unicorn",
+      fullName: "彩虹独角兽",
+      traitIds: ["trait-dazzling"],
+    });
+    const parsed = parseFavoriteConfigLibrary(JSON.stringify(library([{
+      spiritId: "rainbow-unicorn",
+      natureId: "timid",
+      displayIvs: IVS,
+      skills: ["skill-a", "skill-b", null, null],
+      traitValues: {},
+    }])), { snapshot: data, currentVersions: {} });
+
+    expect(parsed.entries[0].skills).toEqual([
+      "skill-a",
+      "skill-b",
+      null,
+      null,
+      null,
+      null,
+      null,
+    ]);
+    expect(parsed.preview.invalidEntries).toBe(0);
+    expect(parsed.preview.repairedEntries).toBe(1);
+    expect(parsed.issueDetails).toEqual([
+      expect.objectContaining({
+        action: "已保留原四技能，并补齐 3 个空技能槽",
+        entryIndex: 1,
+        spiritId: "rainbow-unicorn",
+        spiritName: "彩虹独角兽",
+        type: "repairedEntries",
+      }),
+    ]);
   });
 
   test("keeps valid trait values but ignores values outside current bounds", () => {

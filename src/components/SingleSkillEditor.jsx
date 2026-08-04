@@ -2,6 +2,7 @@ import { Lightning, Shield, Sword } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
 import { getSkillEffectInputs } from "../domain/skill-effects.js";
+import { usesAbsolutePowerRule } from "../domain/skill-rules.js";
 import { getSkillStatusEffectInputs } from "../domain/skill-status-effects.js";
 import { HealthInput } from "./HealthInput.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
@@ -13,6 +14,16 @@ const CATEGORY_LABELS = {
   physical: "物理",
   status: "变化",
 };
+
+export function displayedSkillPower(skill, result) {
+  if (
+    usesAbsolutePowerRule(skill) &&
+    Number.isFinite(Number(result?.resolvedPower))
+  ) {
+    return Number(result.resolvedPower);
+  }
+  return result?.skillPower ?? result?.effectivePower;
+}
 
 function toNumber(value, fallback = 0) {
   const number = Number(value);
@@ -456,7 +467,7 @@ export function SingleSkillEditor({
           </label>
           <strong>
             <small>实际</small>
-            {result?.skillPower ?? result?.effectivePower ?? "待输入"}
+            {displayedSkillPower(selectedSkill, result) ?? "待输入"}
           </strong>
           {resolutionSummary ? (
             <span className="skill-effect-card__formula">

@@ -88,7 +88,6 @@ export function buildFormulaAudit(result) {
     numerator: {
       attack: damageInput.attackerStat,
       power: damageInput.calculationPower ?? displayPower?.before,
-      reduction: damageInput.damageReductionMultiplier ?? 1,
       coefficient: damageInput.coefficient,
       beforeRound: damageInput.unroundedNumerator ?? damage?.before,
       afterRound: damageInput.roundedNumerator,
@@ -96,6 +95,7 @@ export function buildFormulaAudit(result) {
     oneHit: {
       numerator: damageInput.roundedNumerator,
       defense: damageInput.defenderDefense,
+      reduction: damageInput.damageReductionMultiplier ?? 1,
       beforeFloor: damageInput.unroundedOneHit,
       afterFloor: damage?.after,
     },
@@ -235,12 +235,6 @@ export function FormulaAudit({ result }) {
         <AuditChip label={audit.attackLabel} tone="one-hit" value={displayNumber(numerator.attack)} />
         <Operator>×</Operator>
         <AuditChip label="威力" tone="one-hit" value={displayNumber(numerator.power)} />
-        {Number(numerator.reduction) !== 1 ? (
-          <>
-            <Operator>×</Operator>
-            <AuditChip label="伤害保留" tone="one-hit" value={displayNumber(numerator.reduction)} />
-          </>
-        ) : null}
         <Operator>×</Operator>
         <AuditChip label="等级系数" tone="one-hit" value={displayNumber(numerator.coefficient, 6)} />
         <Operator>→</Operator>
@@ -248,6 +242,12 @@ export function FormulaAudit({ result }) {
         <AuditChip label="伤害分子" tone="one-hit" value={displayNumber(numerator.afterRound)} />
         <Operator>÷</Operator>
         <AuditChip label={audit.defenseLabel} tone="one-hit" value={displayNumber(oneHit.defense)} />
+        {Number(oneHit.reduction) !== 1 ? (
+          <>
+            <Operator>×</Operator>
+            <AuditChip label="伤害保留" tone="one-hit" value={displayNumber(oneHit.reduction)} />
+          </>
+        ) : null}
         <Operator>→</Operator>
         <span className="formula-audit__rounding">向下取整</span>
         <AuditChip label="结果" tone="result" value={displayNumber(oneHit.afterFloor)} />

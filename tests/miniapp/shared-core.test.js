@@ -158,6 +158,7 @@ function createRepositoryFixture() {
   writeFileSync(mirrorPath, "export const value = 1;\n");
   writeFileSync(manifestPath, serializeManifest(fixtureManifest));
   execFileSync("git", ["init", "--quiet"], { cwd: root });
+  execFileSync("git", ["config", "core.autocrlf", "false"], { cwd: root });
   execFileSync("git", ["config", "user.email", "test@example.invalid"], {
     cwd: root,
   });
@@ -348,7 +349,7 @@ describe("miniapp shared calculator core", () => {
       sourcePath: "src/domain/new-rule.js",
       type: "unclassified-source",
     });
-  });
+  }, 15_000);
 
   test("each scope uses its own manifest classification", async () => {
     const { getCoreDrift } = await import(

@@ -142,6 +142,55 @@ describe("选择技能特性执行计划", () => {
     expect(sequence.nextContext.moeGainCount).toBe(3);
   });
 
+  test("passes the current sprout stacks into one-shot attack resolution without persisting it", () => {
+    const sequence = buildChoiceSkillSequence({
+      context: { attackerMoeActive: true },
+      skill: {
+        basePower: 60,
+        category: "physical",
+        description: "造成物伤，自己获得萌化：本次技能威力+60。",
+        name: "超级糖果",
+      },
+      sproutStacks: 2,
+      traitName: null,
+    });
+
+    expect(sequence.executions[0].context.sproutStacks).toBe(2);
+    expect(sequence.nextContext).not.toHaveProperty("sproutStacks");
+  });
+
+  test("友谊满溢不获得萌芽加成，撒娇仍按萌芽追加固定威力", () => {
+    const friendshipSequence = buildChoiceSkillSequence({
+      context: {
+        choiceTraitTriggered: true,
+        friendshipMode: "growth",
+        skillUseCount: 3,
+      },
+      skill: friendship,
+      sproutStacks: 1,
+      traitName: "一意孤行",
+    });
+
+    expect(friendshipSequence.executions[0].context.skillUseCount).toBe(3);
+    expect(friendshipSequence.executions[1].context.skillUseCount).toBe(4);
+    expect(friendshipSequence.executions[1].context.sproutFixedPowerBonus).toBeUndefined();
+    expect(friendshipSequence.nextContext.skillUseCount).toBe(5);
+    expect(friendshipSequence.nextContext.sproutFixedPowerBonus).toBeUndefined();
+
+    const moeSequence = buildChoiceSkillSequence({
+      context: { moeGainCount: 2 },
+      skill: {
+        category: "magical",
+        description: "造成魔伤，3连击。自己获得萌化，威力永久+20。",
+        name: "撒娇",
+      },
+      sproutStacks: 2,
+      traitName: null,
+    });
+    expect(moeSequence.nextContext.moeGainCount).toBe(3);
+    expect(moeSequence.nextContext.sproutFixedPowerBonus).toBe(20);
+  });
+
   test("exposes one stable trigger control only for supported choice traits", () => {
     expect(supportsChoiceTrait("有求必应")).toBe(true);
     expect(supportsChoiceTrait("一意孤行")).toBe(true);

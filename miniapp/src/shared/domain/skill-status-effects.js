@@ -34,6 +34,14 @@ const STATUS_EFFECTS = Object.freeze({
   },
   力量增效: { ownAttack: 10 },
   魔法增效: { ownAttack: 7 },
+  快速移动: {
+    inputs: [booleanInput("counterDefenseSucceeded", "应对防御成功")],
+    resolve(context) {
+      return {
+        ownSpeedFlat: context.counterDefenseSucceeded === true ? 160 : 80,
+      };
+    },
+  },
   咆哮: { targetAttack: -6 },
   锐利眼神: { targetDefense: -12 },
   预备势: {
@@ -51,7 +59,7 @@ const STATUS_EFFECTS = Object.freeze({
   },
   加固: { ownDefense: 14 },
   鼓劲: { ownDefense: 17 },
-  三连破: { ownAttack: 3 },
+  三连破: { defaultHitCount: 3, ownAttackPerHit: 3 },
   嗜痛: {
     inputs: [
       booleanInput("defenseCounterSucceeded", "防御应对成功"),
@@ -77,6 +85,7 @@ const STATUS_EFFECTS = Object.freeze({
     ownAttack: 7,
     requiresCounter: true,
   },
+  伺机而动: { ownFixedPower: 70 },
   淬火: {
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     operations(context) {
@@ -103,7 +112,7 @@ const STATUS_EFFECTS = Object.freeze({
     requiresCounter: true,
     targetAttack: -7,
   },
-  钧势: { ownDefense: 14 },
+  钧势: { ownDefense: 14, ownSpeedFlat: -30 },
   不动如山: {
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     ownAttack: 5,
@@ -111,11 +120,14 @@ const STATUS_EFFECTS = Object.freeze({
   },
   沙石阵: {
     resolve(context) {
-      return { ownDefense: context.choiceTrait ? 18 : 9 };
+      return {
+        ownDefense: context.choiceTrait ? 18 : 9,
+        ownSpeedFlat: -20,
+      };
     },
   },
   霜冻: { targetDefense: -10 },
-  龙吟: { ownAttack: 15 },
+  龙吟: { ownAttack: 15, ownSpeedFlat: 80 },
   麻痹: {
     conditional: {
       key: "counterDefenseSucceeded",
@@ -135,7 +147,15 @@ const STATUS_EFFECTS = Object.freeze({
   破防: { targetDefense: -7 },
   气沉丹田: { ownAttack: 13 },
   耍赖: { ownAttack: 1 },
-  嘲弄: { ownAttack: 9 },
+  嘲弄: {
+    inputs: [booleanInput("enemySwitchedThisTurn", "敌方本回合更换精灵")],
+    resolve(context) {
+      return {
+        ownAttack: 9,
+        ownSpeedFlat: context.enemySwitchedThisTurn === true ? 70 : 0,
+      };
+    },
+  },
   虚化: {
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     ownDefense: 7,
@@ -191,6 +211,13 @@ const STATUS_EFFECTS = Object.freeze({
     resolve(context) {
       const stacks = integerInput(context.dispelledMarkStacks, 0, 99);
       return { ownAttack: stacks * 5 };
+    },
+  },
+  焚毁: {
+    inputs: [numberInput("dispelledMarkStacks", "驱散印记层数", 0, 99, 0)],
+    resolve(context) {
+      const stacks = integerInput(context.dispelledMarkStacks, 0, 99);
+      return { ownAttack: stacks * 2 };
     },
   },
   啮合传递: {
@@ -296,19 +323,32 @@ const STATUS_EFFECTS = Object.freeze({
   放晴: {
     inputs: [booleanInput("counterDefenseSucceeded", "应对防御成功")],
     operations(context) {
+      const sproutBonus = integerInput(context.sproutStacks, 0, 99, 0) * 0.1;
       return {
         powerPercentForType:
-          context.counterDefenseSucceeded === true ? 1 : 0.5,
+          (context.counterDefenseSucceeded === true ? 1 : 0.5) + sproutBonus,
         powerPercentType: "光",
       };
     },
   },
   点亮: {
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
-    operations() {
-      return { powerPercentForType: 0.5, powerPercentType: "光" };
+    operations(context) {
+      return {
+        powerPercentForType:
+          0.5 + integerInput(context.sproutStacks, 0, 99, 0) * 0.1,
+        powerPercentType: "光",
+      };
     },
     requiresCounter: true,
+  },
+  暴风眼: {
+    operations(context) {
+      return {
+        hitCountPercentForAllAttacks:
+          1 + integerInput(context.sproutStacks, 0, 99, 0),
+      };
+    },
   },
   化劲: { ownFixedPower: 40 },
   提气: {
@@ -331,6 +371,41 @@ const STATUS_EFFECTS = Object.freeze({
       return {
         ownFixedPower: first + (context.choiceTrait ? 30 : 0),
       };
+    },
+  },
+  乘风: { ownSpeedFlat: 120 },
+  示弱: { ownSpeedFlat: 150 },
+  地陷: {
+    inputs: [booleanInput("counterTriggered", "触发应对状态")],
+    resolve(context) {
+      return { ownDefense: context.counterTriggered === true ? 14 : 7 };
+    },
+  },
+  砂石冲撞: {
+    inputs: [booleanInput("enemySwitchedThisTurn", "敌方本回合更换精灵")],
+    resolve(context) {
+      return {
+        ownDefense: context.enemySwitchedThisTurn === true ? 10 : 0,
+      };
+    },
+  },
+  崩拳: {
+    inputs: [booleanInput("counterTriggered", "触发应对状态")],
+    resolve(context) {
+      return { ownAttack: context.counterTriggered === true ? 10 : 0 };
+    },
+  },
+  超导加速: { ownSpeedFlat: 30 },
+  坍缩: {
+    inputs: [booleanInput("defeatedEnemy", "本次击败敌方")],
+    resolve(context) {
+      return { ownAttack: context.defeatedEnemy === true ? 7 : 0 };
+    },
+  },
+  跌落: {
+    inputs: [booleanInput("counterTriggered", "触发应对状态")],
+    resolve(context) {
+      return { ownAttack: context.counterTriggered === true ? 5 : -5 };
     },
   },
 });
@@ -358,6 +433,27 @@ function normalizeDeltas(deltas = {}) {
     targetHitCountAdd: number(deltas.targetHitCountAdd),
     targetSpeedFlat: number(deltas.targetSpeedFlat),
   };
+}
+
+const SPROUT_POSITIVE_STEPS = Object.freeze({
+  ownAttack: 1,
+  ownDefense: 1,
+  ownFixedPower: 10,
+  ownHitCountAdd: 1,
+  ownSpeedFlat: 10,
+});
+
+function applySproutToPositiveDeltas(deltas, sproutStacks) {
+  const stacks = integerInput(sproutStacks, 0, 99, 0);
+  if (stacks === 0) return deltas;
+  return Object.fromEntries(
+    Object.entries(deltas).map(([key, value]) => [
+      key,
+      value > 0 && SPROUT_POSITIVE_STEPS[key]
+        ? value + SPROUT_POSITIVE_STEPS[key] * stacks
+        : value,
+    ]),
+  );
 }
 
 function stageDeltas(effect, multiplier, context) {
@@ -440,6 +536,7 @@ export function resolveSkillStatusActivation(skill, context = {}) {
   const refraction = resolveRefractionEffects({
     carriedSkills: context.carriedSkills,
     selectedSkill: skill,
+    sproutStacks: context.sproutStacks,
   });
   if (refraction) {
     return {
@@ -507,15 +604,16 @@ export function resolveSkillStatusActivation(skill, context = {}) {
     };
   }
 
-  const deltas = normalizeDeltas(
-    typeof effect.resolve === "function"
-      ? effect.resolve(context)
-      : stageDeltas(effect, multiplier, context),
+  const deltas = applySproutToPositiveDeltas(
+    normalizeDeltas(
+      typeof effect.resolve === "function"
+        ? effect.resolve(context)
+        : stageDeltas(effect, multiplier, context),
+    ),
+    context.sproutStacks,
   );
   const operations =
-    typeof effect.operations === "function"
-      ? effect.operations(context)
-      : {};
+    typeof effect.operations === "function" ? effect.operations(context) : {};
   if (defenseReductionPercent !== null) {
     operations.defenseReductionPercent = defenseReductionPercent;
   }

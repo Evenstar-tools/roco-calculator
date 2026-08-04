@@ -122,6 +122,60 @@ test("exports and imports the favorite configuration library without touching te
   expect(stored.teams).toBe("team-sentinel");
 });
 
+test("imports a legacy four-skill dazzling config and explains the compatibility repair", async ({ page }) => {
+  await page.goto("/");
+  const runtime = await page.evaluate(() =>
+    fetch("/data/runtime.json").then((response) => response.json()),
+  );
+  const spirit = runtime.spirits.find((entry) => entry.fullName === "彩虹独角兽");
+  const skills = runtime.learnsets.find(
+    (entry) => entry.spiritId === spirit.id,
+  ).skillIds.slice(0, 4);
+  const library = {
+    format: "rock-calculator.favorite-config-library",
+    schemaVersion: 1,
+    appVersion: "1.3.6",
+    versions: {},
+    exportedAt: "2026-08-03T06:30:00.000Z",
+    entryCount: 1,
+    entries: [{
+      spiritId: spirit.id,
+      natureId: "timid",
+      displayIvs: {
+        hp: 60,
+        speed: 60,
+        physicalAttack: 0,
+        magicalAttack: 60,
+        physicalDefense: 0,
+        magicalDefense: 0,
+      },
+      skills,
+      traitValues: {},
+    }],
+  };
+
+  await page.getByRole("button", { name: "打开菜单" }).click();
+  await page.getByRole("button", { name: "配置库导入" }).click();
+  await page.getByLabel("选择配置库文件").setInputFiles({
+    buffer: Buffer.from(JSON.stringify(library), "utf8"),
+    mimeType: "application/json",
+    name: "旧版配置库.json",
+  });
+
+  await expect(page.getByText("无效配置")).toHaveCount(0);
+  await page.getByRole("button", { name: /检查详情/ }).click();
+  await expect(page.getByText("兼容修复", { exact: true })).toBeVisible();
+  await expect(page.getByText("彩虹独角兽", { exact: true })).toBeVisible();
+  await expect(page.getByText("旧版技能槽结构已兼容当前形态")).toBeVisible();
+  await expect(page.getByText("已保留原四技能，并补齐 3 个空技能槽")).toBeVisible();
+  await page.getByRole("button", { name: "确认导入" }).click();
+
+  const storedSkills = await page.evaluate((spiritId) => JSON.parse(
+    localStorage.getItem("rock-calculator.spirit-configs.v2"),
+  ).configs[spiritId].skills.four, spirit.id);
+  expect(storedSkills).toEqual([...skills, null, null, null]);
+});
+
 async function selectSpirit(page, side, name) {
   const picker = page.getByRole("combobox", { name: `${side}精灵` });
   await picker.fill(name);
@@ -500,7 +554,9 @@ test("keeps the result rail and three steps readable at 1280px", async ({
   await page
     .getByRole("checkbox", { name: "敌方本回合换精灵" })
     .check();
-  await expect(page.getByText("80 + 100 = 180")).toBeVisible();
+  await expect(
+    page.locator("#single-skill-panel").getByText("80 + 100 = 180"),
+  ).toBeVisible();
   await expect(powerSummary.locator("strong")).toContainText("180");
 
   const skillPicker = page.getByRole("combobox", { name: "选择技能" });

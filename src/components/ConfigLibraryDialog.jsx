@@ -8,12 +8,14 @@ const PRIMARY_PREVIEW_ROWS = [
 ];
 
 const ISSUE_PREVIEW_ROWS = [
+  ["repairedEntries", "兼容修复"],
   ["missingSpirits", "缺失精灵"],
   ["missingSkills", "失效技能槽"],
   ["unknownTraitFields", "未知特性字段"],
   ["invalidEntries", "无效配置"],
   ["duplicateEntries", "文件内重复"],
 ];
+const ISSUE_LABELS = Object.fromEntries(ISSUE_PREVIEW_ROWS);
 
 export function ConfigLibraryDialog({
   error,
@@ -69,6 +71,7 @@ export function ConfigLibraryDialog({
     (total, [key]) => total + Number(parsed.preview[key]),
     0,
   );
+  const importIssueDetails = parsed?.issueDetails ?? [];
   return (
     <div
       className="dialog-backdrop"
@@ -201,6 +204,22 @@ export function ConfigLibraryDialog({
                             </div>
                           ))}
                         </dl>
+                        {importIssueDetails.length > 0 ? (
+                          <ul className="config-library-issue-details">
+                            {importIssueDetails.map((detail, index) => (
+                              <li key={`${detail.type}:${detail.entryIndex}:${detail.spiritId ?? index}`}>
+                                <div className="config-library-issue-heading">
+                                  <strong>{detail.spiritName}</strong>
+                                  <span>
+                                    文件第 {detail.entryIndex} 条 · {ISSUE_LABELS[detail.type] ?? "检查项"}
+                                  </span>
+                                </div>
+                                <p>{detail.reason}</p>
+                                <small>{detail.action}</small>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
                         {parsed.preview.duplicateEntries > 0 ? (
                           <p className="config-library-note">
                             同一精灵在文件内出现多次，采用最后一条有效配置。

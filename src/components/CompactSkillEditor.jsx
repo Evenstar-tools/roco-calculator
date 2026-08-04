@@ -8,6 +8,7 @@ import {
 import { damageTone } from "./damageTone.js";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
+import { describeResolution } from "./SingleSkillEditor.jsx";
 import { buildRefractionHint } from "../domain/refraction.js";
 
 function CompactDamage({
@@ -73,6 +74,7 @@ function CompactSkillSide({
   selectedSkills,
   side,
   skills,
+  sproutStacks,
   traitDamage,
 }) {
   const SideIcon = side === "attacker" ? Sword : Shield;
@@ -142,7 +144,11 @@ function CompactSkillSide({
           const refractionHint = buildRefractionHint({
             carriedSkills: selectedSkills,
             selectedSkill: selected,
+            sproutStacks,
           });
+          const powerResolutionHint = selected
+            ? describeResolution(result)
+            : null;
           return (
             <div
               aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
@@ -209,6 +215,14 @@ function CompactSkillSide({
                   {refractionHint}
                 </small>
               ) : null}
+              {powerResolutionHint ? (
+                <small
+                  className="compact-skill__power-note"
+                  title={powerResolutionHint}
+                >
+                  {powerResolutionHint}
+                </small>
+              ) : null}
             </div>
           );
         })}
@@ -225,11 +239,13 @@ export function CompactFourSkillEditor({
   attackerResults,
   attackerSkillChoices,
   attackerSkills,
+  attackerSproutStacks = 0,
   attackerTraitDamage,
   defenderName,
   defenderResults,
   defenderSkillChoices,
   defenderSkills,
+  defenderSproutStacks = 0,
   defenderTraitDamage,
   onSkillFocus,
   onSkillActivate,
@@ -255,6 +271,7 @@ export function CompactFourSkillEditor({
         selectedSkills={attackerSkills}
         side="attacker"
         skills={attackerSkillChoices}
+        sproutStacks={attackerSproutStacks}
         traitDamage={attackerTraitDamage}
       />
       <CompactSkillSide
@@ -273,6 +290,7 @@ export function CompactFourSkillEditor({
         selectedSkills={defenderSkills}
         side="defender"
         skills={defenderSkillChoices}
+        sproutStacks={defenderSproutStacks}
         traitDamage={defenderTraitDamage}
       />
     </div>
@@ -288,6 +306,9 @@ export function CompactSingleSkillEditor({
   skills,
 }) {
   const effectiveType = result?.typeLabel ?? selectedSkill?.type;
+  const powerResolutionHint = selectedSkill
+    ? describeResolution(result)
+    : null;
   return (
     <div className="compact-single-skill">
       <SkillPicker
@@ -322,6 +343,14 @@ export function CompactSingleSkillEditor({
         <p className="compact-single-skill__effect">
           {selectedSkill.description}
         </p>
+      ) : null}
+      {powerResolutionHint ? (
+        <small
+          className="compact-single-skill__power-note"
+          title={powerResolutionHint}
+        >
+          {powerResolutionHint}
+        </small>
       ) : null}
     </div>
   );

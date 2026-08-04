@@ -71,6 +71,164 @@ describe("skill status effects", () => {
       operations: { refractionTypes: ["普通", "翼"] },
     });
   });
+
+  test("萌芽只为技能的自身正面增益追加固定单位", () => {
+    expect(
+      resolveSkillStatusActivation(skill("魔法增效"), { sproutStacks: 2 }),
+    ).toMatchObject({
+      deltas: { ownAttack: 9 },
+    });
+    expect(
+      resolveSkillStatusActivation(skill("怒火"), { sproutStacks: 2 }),
+    ).toMatchObject({
+      deltas: { ownAttack: 14, ownDefense: -4 },
+    });
+    expect(
+      resolveSkillStatusActivation(skill("羽化加速"), { sproutStacks: 1 }),
+    ).toMatchObject({
+      deltas: { ownFixedPower: 30 },
+    });
+    expect(
+      resolveSkillStatusActivation(skill("热身运动"), { sproutStacks: 1 }),
+    ).toMatchObject({
+      deltas: { ownHitCountAdd: 4 },
+    });
+    expect(
+      resolveSkillStatusActivation(skill("蒸汽进行曲"), {
+        applyAttackBoost: true,
+        applySpeedBoost: true,
+        sproutStacks: 1,
+      }),
+    ).toMatchObject({
+      deltas: { ownAttack: 10, ownSpeedFlat: 70 },
+    });
+  });
+
+  test.each([
+    ["快速移动", { counterDefenseSucceeded: false }, { ownSpeedFlat: 90 }],
+    ["快速移动", { counterDefenseSucceeded: true }, { ownSpeedFlat: 170 }],
+    ["伺机而动", {}, { ownFixedPower: 80 }],
+    ["乘风", {}, { ownSpeedFlat: 130 }],
+    ["示弱", {}, { ownSpeedFlat: 160 }],
+    ["龙吟", {}, { ownAttack: 16, ownSpeedFlat: 90 }],
+    ["嘲弄", { enemySwitchedThisTurn: true }, { ownAttack: 10, ownSpeedFlat: 80 }],
+    ["钧势", {}, { ownDefense: 15, ownSpeedFlat: -30 }],
+    ["沙石阵", {}, { ownDefense: 10, ownSpeedFlat: -20 }],
+  ])("萌芽补齐状态技能 %s 的固定正面增益", (name, context, deltas) => {
+    expect(
+      resolveSkillStatusActivation(skill(name), {
+        ...context,
+        sproutStacks: 1,
+      }),
+    ).toMatchObject({ applied: true, deltas });
+  });
+
+  test.each([
+    ["地陷", {}, { ownDefense: 8 }],
+    ["地陷", { counterTriggered: true }, { ownDefense: 15 }],
+    ["砂石冲撞", { enemySwitchedThisTurn: true }, { ownDefense: 11 }],
+    ["崩拳", { counterTriggered: true }, { ownAttack: 11 }],
+    ["超导加速", {}, { ownSpeedFlat: 40 }],
+    ["坍缩", { defeatedEnemy: true }, { ownAttack: 8 }],
+    ["跌落", {}, { ownAttack: -5 }],
+    ["跌落", { counterTriggered: true }, { ownAttack: 6 }],
+    ["焚毁", { dispelledMarkStacks: 3 }, { ownAttack: 7 }],
+  ])("萌芽补齐攻击技能 %s 使用后的固定正面增益", (name, context, deltas) => {
+    expect(
+      resolveSkillStatusActivation(skill(name), {
+        ...context,
+        sproutStacks: 1,
+      }),
+    ).toMatchObject({ applied: true, deltas });
+  });
+
+  test("萌芽不放大对敌减益、减伤和印记应用", () => {
+    expect(
+      resolveSkillStatusActivation(skill("锐利眼神"), { sproutStacks: 5 }),
+    ).toMatchObject({
+      deltas: { targetDefense: -12 },
+    });
+    expect(
+      resolveSkillStatusActivation(
+        skill("有效预防", {
+          category: "defense",
+          description: "减伤50%，应对攻击：下一次行动获得先手+1。",
+        }),
+        { sproutStacks: 5 },
+      ),
+    ).toMatchObject({
+      operations: { defenseReductionPercent: 50 },
+    });
+    expect(
+      resolveSkillStatusActivation(
+        skill("萌芽技能", { description: "自己获得1层萌芽印记。" }),
+        { sproutStacks: 5 },
+      ),
+    ).toMatchObject({
+      operations: {
+        markApplications: [
+          { id: "sprout", polarity: "positive", stacks: 1, target: "self" },
+        ],
+      },
+    });
+  });
+
+  test("放晴和点亮每层萌芽增加十个百分点光系威力", () => {
+    expect(
+      resolveSkillStatusActivation(skill("放晴"), { sproutStacks: 1 }),
+    ).toMatchObject({
+      operations: { powerPercentForType: 0.6, powerPercentType: "光" },
+    });
+    expect(
+      resolveSkillStatusActivation(skill("放晴"), {
+        counterDefenseSucceeded: true,
+        sproutStacks: 1,
+      }),
+    ).toMatchObject({
+      operations: { powerPercentForType: 1.1, powerPercentType: "光" },
+    });
+    expect(
+      resolveSkillStatusActivation(
+        skill("点亮", {
+          category: "defense",
+          description: "减伤90%，应对攻击：自己获得光系技能威力永久+50%。",
+        }),
+        { defenseCounterSucceeded: true, sproutStacks: 1 },
+      ),
+    ).toMatchObject({
+      operations: { powerPercentForType: 0.6, powerPercentType: "光" },
+    });
+  });
+
+  test("暴风眼每层萌芽再增加百分之百连击", () => {
+    expect(
+      resolveSkillStatusActivation(skill("暴风眼"), { sproutStacks: 1 }),
+    ).toMatchObject({
+      operations: { hitCountPercentForAllAttacks: 2 },
+    });
+  });
+
+  test("其他百分比威力不受萌芽影响", () => {
+    const resolution = resolveSkillStatusActivation(
+      skill("淬火", {
+        category: "defense",
+        description: "减伤80%，应对攻击：下次攻击技能威力翻倍。",
+      }),
+      { defenseCounterSucceeded: true, sproutStacks: 2 },
+    );
+    expect(resolution).toMatchObject({
+      operations: { powerPercentForAllAttacks: 1 },
+    });
+    expect(resolution.operations).not.toHaveProperty("fixedPowerOncePerType");
+  });
+
+  test("漫反射不读取萌芽加成", () => {
+    expect(
+      resolveSkillStatusActivation(skill("漫反射"), { sproutStacks: 3 }),
+    ).toMatchObject({
+      operations: { fixedPowerOncePerType: 35 },
+    });
+  });
   test("防御技能点击后应用描述中的基础减伤", () => {
     expect(
       resolveSkillStatusActivation(
@@ -205,7 +363,7 @@ describe("skill status effects", () => {
     ["锐利眼神", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: -12 }],
     ["加固", { ownAttack: 0, ownDefense: 14, targetAttack: 0, targetDefense: 0 }],
     ["鼓劲", { ownAttack: 0, ownDefense: 17, targetAttack: 0, targetDefense: 0 }],
-    ["三连破", { ownAttack: 3, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
+    ["三连破", { ownAttack: 9, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
     ["缓一缓", { ownAttack: 1, ownDefense: 1, targetAttack: 0, targetDefense: 0 }],
     ["氧输送", { ownAttack: 7, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
     ["丰饶", { ownAttack: 14, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
@@ -239,6 +397,19 @@ describe("skill status effects", () => {
     expect(resolveSkillStatusActivation(skill("花炮"))).toMatchObject({
       applied: true,
       deltas: { ownAttack: 12 },
+    });
+  });
+
+  test("三连破每次连击增加三层攻击且默认三连击", () => {
+    expect(resolveSkillStatusActivation(skill("三连破"))).toMatchObject({
+      applied: true,
+      deltas: { ownAttack: 9 },
+    });
+    expect(
+      resolveSkillStatusActivation(skill("三连破"), { effectiveHitCount: 5 }),
+    ).toMatchObject({
+      applied: true,
+      deltas: { ownAttack: 15 },
     });
   });
 

@@ -92,4 +92,58 @@ describe("refraction", () => {
     expect(buildRefractionHint({ selectedSkill, carriedSkills }))
       .toContain("本次可得：");
   });
+
+  test("each sprout stack adds one effect unit instead of multiplying the base effect", () => {
+    const selectedSkill = skill("折射", "光");
+    const carriedSkills = [
+      selectedSkill,
+      skill("普通技能", "普通"),
+      skill("翼技能", "翼"),
+      skill("电技能", "电"),
+      skill("光技能", "光"),
+      skill("水技能", "水"),
+      skill("萌技能", "萌"),
+    ];
+
+    expect(resolveRefractionEffects({
+      carriedSkills,
+      selectedSkill,
+      sproutStacks: 1,
+    })).toMatchObject({
+      deltas: {
+        ownAttack: 4,
+        ownFixedPower: 20,
+        ownHitCountAdd: 2,
+        ownSpeedFlat: 30,
+        targetAttack: -3,
+      },
+      operations: {
+        refractionEnergyCostReduction: 2,
+      },
+    });
+    expect(buildRefractionHint({
+      carriedSkills,
+      selectedSkill,
+      sproutStacks: 1,
+    })).toContain(
+      "普·威力+20　翼·连击+2　电·速度+30　光·双攻+4层　水·能耗-2",
+    );
+
+    expect(resolveRefractionEffects({
+      carriedSkills,
+      selectedSkill,
+      sproutStacks: 2,
+    })).toMatchObject({
+      deltas: {
+        ownAttack: 5,
+        ownFixedPower: 30,
+        ownHitCountAdd: 3,
+        ownSpeedFlat: 40,
+        targetAttack: -3,
+      },
+      operations: {
+        refractionEnergyCostReduction: 3,
+      },
+    });
+  });
 });

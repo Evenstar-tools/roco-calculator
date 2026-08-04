@@ -440,6 +440,41 @@ describe("resolveSkillPower", () => {
     ).toMatchObject({ status: "exact", value: 200 });
   });
 
+  test("友谊满溢不读取萌芽固定威力，撒娇仍保留追加", () => {
+    expect(
+      resolveSkillPower(skill({ basePower: 70, name: "友谊满溢" }), {
+        friendshipMode: "growth",
+        skillUseCount: 3,
+        sproutFixedPowerBonus: 10,
+      }),
+    ).toMatchObject({ status: "exact", value: 130 });
+
+    expect(
+      resolveSkillPower(skill({ basePower: 30, name: "撒娇" }), {
+        moeGainCount: 3,
+        sproutFixedPowerBonus: 20,
+      }),
+    ).toMatchObject({ status: "exact", value: 110 });
+  });
+
+  test("超级糖果不读取萌芽加成", () => {
+    expect(
+      resolveSkillPower(skill({ basePower: 40, name: "超级糖果" }), {
+        attackerMoeActive: true,
+        sproutStacks: 2,
+      }),
+    ).toMatchObject({ status: "exact", value: 100 });
+  });
+
+  test("幼态延续保留现有萌芽兼容规则", () => {
+    expect(
+      resolveSkillPower(skill({ basePower: 40, name: "幼态延续" }), {
+        attackerMoeActive: true,
+        sproutStacks: 2,
+      }),
+    ).toMatchObject({ status: "exact", value: 120 });
+  });
+
   test("only resolves Calamity against the enemy after its counter condition", () => {
     const calamity = skill({ basePower: 60, name: "灾厄" });
 

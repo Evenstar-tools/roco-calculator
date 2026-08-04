@@ -33,6 +33,7 @@ const snapshot = {
         "feather-acceleration",
         "horse-stance",
         "warm-up",
+        "storm-eye",
         "diffuse-reflection",
         "fire-strike-2",
         "water-strike",
@@ -93,6 +94,16 @@ const snapshot = {
       name: "热身运动",
       ruleId: null,
       type: "普通",
+    },
+    {
+      basePower: 0,
+      category: "status",
+      cost: 3,
+      description: "自己获得连击数+100%。",
+      id: "storm-eye",
+      name: "暴风眼",
+      ruleId: null,
+      type: "翼",
     },
     {
       basePower: 80,
@@ -1069,11 +1080,21 @@ test("shows defense power levels as the original positive multiplier", async () 
   );
 });
 
-test("uses a selected status skill only after its non-input row is clicked", async () => {
+test("uses a selected status skill with the current sprout bonus only after its row is clicked", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
   await user.click(screen.getByRole("button", { name: "具体版" }));
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const marks = screen.getByRole("group", { name: "进攻方印记" });
+  await user.selectOptions(
+    within(marks).getByRole("combobox", { name: "进攻方正面印记" }),
+    "sprout",
+  );
+  fireEvent.change(
+    within(marks).getByRole("spinbutton", { name: "进攻方萌芽层数" }),
+    { target: { value: "1" } },
+  );
 
   const attackSide = within(
     screen.getByRole("region", { name: "性格配置" }),
@@ -1085,7 +1106,7 @@ test("uses a selected status skill only after its non-input row is clicked", asy
 
   expect(within(attackSide).getByText("0层 · 0%")).toBeVisible();
   await user.click(screen.getByText("自己获得魔攻+70%。"));
-  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+  expect(within(attackSide).getByText("8层 · +80%")).toBeVisible();
 });
 
 test("Dazzling shows seven slots and Refraction applies unique carried types per click", async () => {
@@ -1165,25 +1186,36 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
     await user.click(screen.getByRole("option", { name: new RegExp(name) }));
   }
 
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const attackerMarks = screen.getByRole("group", { name: "进攻方印记" });
+  await user.selectOptions(
+    within(attackerMarks).getByRole("combobox", { name: "进攻方正面印记" }),
+    "sprout",
+  );
+  fireEvent.change(
+    within(attackerMarks).getByRole("spinbutton", { name: "进攻方萌芽层数" }),
+    { target: { value: "1" } },
+  );
+
   const attackSide = within(
     screen.getByRole("region", { name: "性格配置" }),
   ).getByRole("group", { name: "攻击方能力" });
   expect(within(attackSide).getByText("0层 · 0%")).toBeVisible();
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(100);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(1);
-  expect(screen.getByText(/本次可得：.*普·威力\+10.*翼·连击\+1.*光·双攻\+3层/))
+  expect(screen.getByText(/本次可得：.*普·威力\+20.*翼·连击\+2.*光·双攻\+4层/))
     .toBeVisible();
 
   const refractionRow = screen.getByRole("group", { name: "攻击方技能1" });
   await user.click(within(refractionRow).getByText(refraction.description));
-  expect(within(attackSide).getByText("3层 · +30%")) .toBeVisible();
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(113);
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(2);
-
-  await user.click(within(refractionRow).getByText(refraction.description));
-  expect(within(attackSide).getByText("6层 · +60%")) .toBeVisible();
+  expect(within(attackSide).getByText("4层 · +40%")) .toBeVisible();
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(125);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(3);
+
+  await user.click(within(refractionRow).getByText(refraction.description));
+  expect(within(attackSide).getByText("8层 · +80%")) .toBeVisible();
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(150);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(5);
 });
 
 test("Warm-up adds three hits to declared combo skills without double-counting manual edits", async () => {
@@ -1212,6 +1244,41 @@ test("Warm-up adds three hits to declared combo skills without double-counting m
 
   fireEvent.change(comboHits, { target: { value: "9" } });
   expect(comboHits).toHaveValue(9);
+});
+
+test("Storm Eye applies its sprout-amplified hit percentage through the status click", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const comboPicker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(comboPicker);
+  await user.type(comboPicker, "乱打");
+  await user.click(screen.getByRole("option", { name: /乱打/ }));
+  const comboHits = screen.getByRole("spinbutton", {
+    name: "攻击方技能1连击次数",
+  });
+  expect(comboHits).toHaveValue(5);
+
+  const stormPicker = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(stormPicker);
+  await user.type(stormPicker, "暴风眼");
+  await user.click(screen.getByRole("option", { name: /暴风眼/ }));
+
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const marks = screen.getByRole("group", { name: "进攻方印记" });
+  await user.selectOptions(
+    within(marks).getByRole("combobox", { name: "进攻方正面印记" }),
+    "sprout",
+  );
+  fireEvent.change(
+    within(marks).getByRole("spinbutton", { name: "进攻方萌芽层数" }),
+    { target: { value: "1" } },
+  );
+
+  await user.click(screen.getByText("自己获得连击数+100%。"));
+  expect(comboHits).toHaveValue(15);
 });
 
 test("clicking 撒娇 advances its permanent power once without input side effects", async () => {
@@ -1820,7 +1887,10 @@ test("selecting Mana Burst clears manual power and resolves zero energy immediat
   await user.click(screen.getByRole("option", { name: /魔能爆/ }));
 
   expect(screen.queryByText("魔能爆需要当前能量")).not.toBeInTheDocument();
-  expect(screen.getByText("0 能量 → 威力 45")).toBeVisible();
+  const singleSkillPanel = screen.getByRole("tabpanel", { name: "单技能" });
+  expect(
+    within(singleSkillPanel).getByText("0 能量 → 威力 45"),
+  ).toBeVisible();
 });
 
 test("keeps single-skill manual power across a four-skill round trip", async () => {

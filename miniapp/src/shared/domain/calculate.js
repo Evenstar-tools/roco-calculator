@@ -533,6 +533,9 @@ function calculateSkillResult({
   const persistentHitCountAdd = declaredHitCount
     ? finiteNumber(directionOverrides.hitCountAdd) ?? 0
     : 0;
+  const persistentHitCountPercentAdd = declaredHitCount
+    ? Math.max(0, finiteNumber(directionOverrides.hitCountPercentAdd) ?? 0)
+    : 0;
   const bloodlineHitCountAdd = declaredHitCount
     ? attackerBloodline.hitCountAdd + defenderBloodline.targetHitCountAdd
     : 0;
@@ -546,6 +549,17 @@ function calculateSkillResult({
       traitHitCount.hitCountAdd,
   );
   const automaticHitCountAdd = fixedHitCount ? 0 : rawAutomaticHitCountAdd;
+  const resolveHitCount = (baseHitCount, automaticAdd) =>
+    Math.min(
+      99,
+      Math.max(
+        1,
+        Math.floor(
+          (baseHitCount + automaticAdd) *
+            (1 + persistentHitCountPercentAdd),
+        ),
+      ),
+    );
   if (skill.category === "status" || skill.category === "defense") {
     const baseHitCount =
       finiteNumber(
@@ -565,10 +579,7 @@ function calculateSkillResult({
           ...(fixedHitCount
             ? [{
                 after: fixedHitCount.hitCount,
-                before: Math.min(
-                  99,
-                  Math.max(1, Math.floor(baseHitCount + rawAutomaticHitCountAdd)),
-                ),
+                before: resolveHitCount(baseHitCount, rawAutomaticHitCountAdd),
                 input: { fixedHitCount: fixedHitCount.hitCount },
                 label: fixedHitCount.traitName,
                 source: fixedHitCount.sources[0],
@@ -580,10 +591,7 @@ function calculateSkillResult({
         automaticHitCountAdd,
         hitCount:
           fixedHitCount?.hitCount ??
-          Math.min(
-            99,
-            Math.max(1, Math.floor(baseHitCount + automaticHitCountAdd)),
-          ),
+          resolveHitCount(baseHitCount, automaticHitCountAdd),
         sources: [
           ...traitHitCount.sources,
           ...(fixedHitCount?.sources ?? []),
@@ -855,21 +863,12 @@ function calculateSkillResult({
     ) ?? 1;
   const hitCount =
     fixedHitCount?.hitCount ??
-    Math.max(
-      1,
-      Math.min(99, Math.floor(baseHitCount + automaticHitCountAdd)),
-    );
+    resolveHitCount(baseHitCount, automaticHitCountAdd);
   const fixedHitCountSteps = fixedHitCount
     ? [
         {
           after: fixedHitCount.hitCount,
-          before: Math.max(
-            1,
-            Math.min(
-              99,
-              Math.floor(baseHitCount + rawAutomaticHitCountAdd),
-            ),
-          ),
+          before: resolveHitCount(baseHitCount, rawAutomaticHitCountAdd),
           input: { fixedHitCount: fixedHitCount.hitCount },
           label: fixedHitCount.traitName,
           source: fixedHitCount.sources[0],
@@ -1182,6 +1181,7 @@ function calculateSkillResult({
   return {
     skillId: skill.id,
     skillName: skill.name,
+    resolvedPower: powerResolution.value,
     skillPower: Math.round(traitAdjustedPower),
     effectivePower: displayedPower,
     automaticHitCountAdd,
@@ -1390,6 +1390,10 @@ function calculateDirection({
     const sequence = buildChoiceSkillSequence({
       context: details.context,
       skill,
+      sproutStacks:
+        sourceMarks?.positive?.id === "sprout"
+          ? sourceMarks.positive.stacks
+          : 0,
       traitName,
     });
     const executions =

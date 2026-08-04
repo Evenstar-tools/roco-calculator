@@ -95,7 +95,16 @@ test("shows import preview and only confirms after a valid entry is ready", () =
           unknownTraitFields: 1,
           invalidEntries: 1,
           duplicateEntries: 1,
+          repairedEntries: 0,
         },
+        issueDetails: [{
+          action: "已跳过，不会写入",
+          entryIndex: 75,
+          reason: "技能槽数量不符合当前版本",
+          spiritId: "spirit-unicorn",
+          spiritName: "彩虹独角兽",
+          type: "invalidEntries",
+        }],
         warnings: ["数据版本不同，已按当前版本校验"],
       }}
     />,
@@ -110,6 +119,10 @@ test("shows import preview and only confirms after a valid entry is ready", () =
 
   expect(screen.getByText("失效技能槽").nextElementSibling).toHaveTextContent("3");
   expect(screen.getByText("文件内重复").nextElementSibling).toHaveTextContent("1");
+  expect(screen.getByText("彩虹独角兽")).toBeVisible();
+  expect(screen.getByText(/文件第 75 条/)).toBeVisible();
+  expect(screen.getByText("技能槽数量不符合当前版本")).toBeVisible();
+  expect(screen.getByText("已跳过，不会写入")).toBeVisible();
   expect(screen.getByText(/采用最后一条有效配置/)).toBeVisible();
   expect(screen.getByText(/确认后将覆盖 1 只精灵/)).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "确认导入" }));

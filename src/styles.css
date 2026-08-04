@@ -2271,6 +2271,18 @@ select:focus-visible {
   -webkit-line-clamp: 2;
 }
 
+.skill-slot__power-note {
+  min-width: 0;
+  flex: 1 1 100%;
+  margin: -2px 0 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .skill-slot__controls {
   display: flex;
   min-width: 0;
@@ -2724,6 +2736,64 @@ select:focus-visible {
   margin-top: 8px;
 }
 
+.config-library-issue-details {
+  display: grid;
+  max-height: min(34vh, 280px);
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0 4px 0 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.config-library-issue-details > li {
+  display: grid;
+  gap: 3px;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-soft);
+}
+
+.config-library-issue-heading {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.config-library-issue-heading strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.config-library-issue-heading span,
+.config-library-issue-details small {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.config-library-issue-heading span {
+  flex: none;
+}
+
+.config-library-issue-details p {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.config-library-issue-details small {
+  color: var(--accent-strong);
+  overflow-wrap: anywhere;
+}
+
 .share-dialog .config-library-check-ok,
 .share-dialog .config-library-note {
   margin: 10px 0 0;
@@ -2784,6 +2854,12 @@ select:focus-visible {
   }
 
   .config-library-entry-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .config-library-issue-heading {
     align-items: flex-start;
     flex-direction: column;
     gap: 1px;
@@ -3666,6 +3742,18 @@ html[data-theme="dark"] .formula-group {
   -webkit-line-clamp: 2;
 }
 
+.compact-skill__power-note {
+  min-width: 0;
+  overflow: hidden;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.35;
+  grid-column: 2 / -1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .compact-skill__result {
   display: grid;
   min-width: 0;
@@ -3755,6 +3843,15 @@ html[data-theme="dark"] .formula-group {
   margin: 0;
   color: var(--text-muted);
   font-size: 12px;
+  grid-column: 1 / -1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compact-single-skill__power-note {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 11px;
   grid-column: 1 / -1;
   text-overflow: ellipsis;
   white-space: nowrap;

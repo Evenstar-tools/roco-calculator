@@ -102,6 +102,68 @@ test("explains automatic difference-based power with both panel values", () => {
   ).toBe("物防 183 − 146 = 37 → 威力 140");
 });
 
+test("single-skill difference rules keep table power separate from trait power", () => {
+  const flashStrike = {
+    ...skills[0],
+    basePower: 60,
+    id: "flash-strike-single",
+    name: "闪击",
+    ruleId: "speed_difference",
+  };
+
+  render(
+    <SingleSkillEditor
+      hitCount={1}
+      manualPower={60}
+      onHitCountChange={vi.fn()}
+      onManualPowerChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      result={{
+        resolvedPower: 190,
+        skillPower: 285,
+        status: "exact",
+      }}
+      selectedSkill={flashStrike}
+      skills={[flashStrike]}
+    />,
+  );
+
+  const powerSummary = screen.getByLabelText("技能威力");
+  expect(within(powerSummary).getByText("190")).toBeVisible();
+  expect(within(powerSummary).queryByText("285")).not.toBeInTheDocument();
+});
+
+test("other absolute dynamic rules also show their resolved power before traits", () => {
+  const manaBurst = {
+    ...skills[1],
+    basePower: 45,
+    id: "mana-burst-display",
+    name: "魔能爆",
+    ruleId: "mana_burst",
+  };
+
+  render(
+    <SingleSkillEditor
+      hitCount={1}
+      manualPower={45}
+      onHitCountChange={vi.fn()}
+      onManualPowerChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      result={{
+        resolvedPower: 135,
+        skillPower: 203,
+        status: "exact",
+      }}
+      selectedSkill={manaBurst}
+      skills={[manaBurst]}
+    />,
+  );
+
+  const powerSummary = screen.getByLabelText("技能威力");
+  expect(within(powerSummary).getByText("135")).toBeVisible();
+  expect(within(powerSummary).queryByText("203")).not.toBeInTheDocument();
+});
+
 test("single-skill editor keeps actual power directly editable", async () => {
   const user = userEvent.setup();
   const onManualPowerChange = vi.fn();
@@ -1056,6 +1118,59 @@ test("compact single-skill editor displays the effective type returned by calcul
   expect(screen.queryByTitle("普通")).not.toBeInTheDocument();
 });
 
+test("compact editors show the same dynamic power note", () => {
+  const flashStrike = {
+    ...skills[0],
+    id: "compact-flash-strike",
+    name: "闪击",
+    ruleId: "speed_difference",
+  };
+  const result = {
+    formulaSteps: [
+      {
+        after: 190,
+        before: 111,
+        input: { attacker: 254, defender: 143 },
+        label: "速度差威力",
+        source: "reviewed-rule:speed-defense-difference-v1",
+      },
+    ],
+    hpPercent: 20,
+    resolvedPower: 190,
+    status: "exact",
+    totalDamage: 80,
+  };
+
+  render(
+    <>
+      <CompactFourSkillEditor
+        attackerName="岚鸟"
+        attackerResults={[result]}
+        attackerSkillChoices={[flashStrike]}
+        attackerSkills={[flashStrike, null, null, null]}
+        defenderName="炮米花"
+        defenderResults={[]}
+        defenderSkillChoices={skills}
+        defenderSkills={[skills[1], null, null, null]}
+        onSkillFocus={vi.fn()}
+        onSkillSelect={vi.fn()}
+      />
+      <CompactSingleSkillEditor
+        attackName="岚鸟"
+        defenseName="炮米花"
+        onSkillSelect={vi.fn()}
+        result={result}
+        selectedSkill={flashStrike}
+        skills={[flashStrike]}
+      />
+    </>,
+  );
+
+  expect(
+    screen.getAllByText("速度 254 − 143 = 111 → 威力 190"),
+  ).toHaveLength(2);
+});
+
 test("four-skill editor shows selectable direct trait damage above skill one", async () => {
   const user = userEvent.setup();
   const onTraitDamageFocus = vi.fn();
@@ -1410,6 +1525,52 @@ test("four-skill rows keep each skill power directly editable", async () => {
     0,
     123,
   );
+});
+
+test("difference-table skills show the resolved table power before trait multipliers", () => {
+  const flashStrike = {
+    ...skills[0],
+    basePower: 60,
+    id: "flash-strike",
+    name: "闪击",
+    ruleId: "speed_difference",
+  };
+
+  render(
+    <FourSkillEditor
+      attackerName="岚鸟"
+      attackerResults={[
+        {
+          formulaSteps: [
+            {
+              after: 190,
+              before: 111,
+              input: { attacker: 254, defender: 143 },
+              label: "速度差威力",
+              source: "reviewed-rule:speed-defense-difference-v1",
+            },
+          ],
+          hitCount: 1,
+          resolvedPower: 190,
+          skillPower: 285,
+          status: "exact",
+          totalDamage: 722,
+        },
+      ]}
+      attackerSkills={[flashStrike, null, null, null]}
+      defenderName="炮米花"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, flashStrike]}
+    />,
+  );
+
+  expect(
+    screen.getByRole("spinbutton", { name: "攻击方技能1威力" }),
+  ).toHaveValue(190);
+  expect(
+    screen.getByText("速度 254 − 143 = 111 → 威力 190"),
+  ).toBeVisible();
 });
 
 test("听桥技能行标明反弹来源技能和继承的面板威力", () => {
@@ -1956,5 +2117,66 @@ test("advanced settings stay collapsed until requested", async () => {
     "defender",
     "negative",
     { id: "starfall", stacks: 4 },
+  );
+});
+
+test("formula audit places defense-skill reduction after defense division", async () => {
+  const user = userEvent.setup();
+
+  render(
+    <AdvancedOptions
+      finalMultiplier={1}
+      onFinalMultiplierChange={vi.fn()}
+      onMarkChange={vi.fn()}
+      onRainTurnsChange={vi.fn()}
+      onReductionChange={vi.fn()}
+      rainTurns={0}
+      reductionPercent={50}
+      result={{
+        additionalDamage: 0,
+        effectivePower: 110,
+        formulaSteps: [
+          {
+            after: 18,
+            before: 7941.463414634146,
+            input: {
+              attackerStat: 80,
+              calculationPower: 110,
+              coefficient: 37 / 41,
+              damageReductionMultiplier: 0.5,
+              defenderDefense: 209,
+              displayedPower: 110,
+              roundedNumerator: 7941,
+              unroundedNumerator: 7941.463414634146,
+              unroundedOneHit: 18.997607655502392,
+            },
+            label: "等级系数与攻防比",
+          },
+          {
+            after: 18,
+            before: 18,
+            input: {
+              damageReductionMultiplier: 0.5,
+              finalDamageMultiplier: 1,
+              hitCount: 1,
+              oneHitAfterFinal: 18,
+            },
+            label: "减伤、连击与最终倍率",
+          },
+        ],
+        hitCount: 1,
+        mainDamage: 18,
+        skillName: "测试技能",
+        status: "exact",
+        totalDamage: 18,
+      }}
+    />,
+  );
+
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const row = screen.getByText("每段伤害").closest(".formula-audit__row");
+
+  expect(row.textContent).toMatch(
+    /伤害分子7941÷物防209×伤害保留0\.5→向下取整/,
   );
 });

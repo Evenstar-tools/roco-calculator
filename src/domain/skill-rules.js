@@ -236,9 +236,17 @@ function resolveBooleanPowerAdd(skill, context) {
   const params = skill.ruleParams ?? {};
   const contextKey = params.contextKey ?? "conditionTriggered";
   const triggered = context[contextKey] === true;
+  const sproutFixedPower =
+    triggered && params.sproutFixedUnit === true
+      ? Math.min(99, Math.max(0, Math.floor(Number(context.sproutStacks) || 0))) * 10
+      : 0;
   const value = Math.max(
     0,
-    Math.round(Number(skill.basePower) + (triggered ? Number(params.add) : 0)),
+    Math.round(
+      Number(skill.basePower) +
+        (triggered ? Number(params.add) : 0) +
+        sproutFixedPower,
+    ),
   );
   return exact(value, [
     {
@@ -480,9 +488,13 @@ function resolveStackScaled(skill, context) {
 
   const stackCount = Math.max(0, Math.floor(Number(rawStackCount)));
   const perStack = Number(skill.ruleParams?.perStack ?? 0);
+  const flatBonusKey = skill.ruleParams?.flatBonusContextKey;
+  const flatBonus = flatBonusKey
+    ? Math.max(0, Number(context[flatBonusKey]) || 0)
+    : 0;
   const value = Math.max(
     0,
-    Math.round(Number(skill.basePower) + stackCount * perStack),
+    Math.round(Number(skill.basePower) + stackCount * perStack + flatBonus),
   );
   return exact(value, [
     {
@@ -876,6 +888,11 @@ const ABSOLUTE_POWER_RULES = new Set([
   "mana_burst",
   "enemy_skill_power_multiplier",
 ]);
+
+export function usesAbsolutePowerRule(skill) {
+  const effectRule = getSkillEffectRule(skill);
+  return ABSOLUTE_POWER_RULES.has(effectRule?.ruleId);
+}
 
 export function resolveSkillPower(skill, context = {}) {
   context = projectTriggerContext(context, getSkillEffectInputs(skill));

@@ -1,6 +1,6 @@
 {
   "name": "rock-calculator",
-  "version": "1.4.1",
+  "version": "1.4.3",
   "description": "内置完整赛季数据、可断网使用的洛克王国 PVP 伤害计算器。",
   "author": "洛克计算器",
   "license": "MIT",
@@ -39,19 +39,19 @@
     "@vitejs/plugin-react": "5.0.4",
     "cheerio": "1.1.2",
     "pinyin-pro": "3.27.0",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "vite": "6.4.2"
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "vite": "6.4.3"
   },
   "devDependencies": {
-    "@playwright/test": "1.54.1",
+    "@playwright/test": "1.55.1",
     "@testing-library/jest-dom": "6.6.3",
-    "@testing-library/react": "16.3.0",
+    "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.1",
     "electron": "^43.2.0",
     "electron-builder": "^26.15.3",
     "jsdom": "26.1.0",
-    "vitest": "3.2.4"
+    "vitest": "3.2.7"
   },
   "build": {
     "appId": "cn.rock.calculator",

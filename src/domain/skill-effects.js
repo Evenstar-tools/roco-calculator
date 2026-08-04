@@ -278,7 +278,9 @@ const REVIEWED_EFFECTS = Object.freeze({
   ),
 
   超级糖果: booleanAdd("attackerMoeActive", "自身获得萌化", 60),
-  幼态延续: booleanAdd("attackerMoeActive", "自身拥有萌化", 60),
+  幼态延续: booleanAdd("attackerMoeActive", "自身拥有萌化", 60, {
+    sproutFixedUnit: true,
+  }),
   破罐破摔: booleanAdd("attackerDebuffed", "自身有减益", 60),
 
   逆袭: {
@@ -489,7 +491,16 @@ const REVIEWED_EFFECTS = Object.freeze({
     { triggeredHitCount: 3 },
   ),
   远行: stackAdd("actedFirstCount", "此前先手次数", 25),
-  撒娇: stackAdd("moeGainCount", "获得萌化次数", 20),
+  撒娇: (() => {
+    const effect = stackAdd("moeGainCount", "获得萌化次数", 20);
+    return {
+      ...effect,
+      ruleParams: {
+        ...effect.ruleParams,
+        flatBonusContextKey: "sproutFixedPowerBonus",
+      },
+    };
+  })(),
   拆礼物: booleanAdd("enemyMoeActive", "敌方有萌化", 100),
   背袭: thresholdMultiplier(
     "enemyEnergy",

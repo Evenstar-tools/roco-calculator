@@ -1,8 +1,10 @@
 import {
   clampDynamicInput,
   DraftNumberInput,
+  describeResolution,
   dynamicInputValue,
   dynamicInputsForSkill,
+  displayedSkillPower,
   isDynamicInputVisible,
   TraitAutomaticStack,
   TraitInputs,
@@ -121,6 +123,7 @@ function SkillSide({
   selectedSkills,
   side,
   skills,
+  sproutStacks,
   trait,
   defenseTrait,
   traitContext,
@@ -334,12 +337,16 @@ function SkillSide({
           const refractionHint = buildRefractionHint({
             carriedSkills: selectedSkills,
             selectedSkill: selected,
+            sproutStacks,
           });
           const counterReflectionHint =
             result?.reflectedSourceSkillName &&
             Number.isFinite(result?.reflectedPower)
               ? `反弹「${result.reflectedSourceSkillName}」· 威力 ${result.reflectedPower}`
               : null;
+          const powerResolutionHint = selected
+            ? describeResolution(result)
+            : null;
           return (
             <div
               aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
@@ -392,7 +399,7 @@ function SkillSide({
                   }
                   value={
                     selected?.slotPowerOverride ??
-                    result?.skillPower ??
+                    displayedSkillPower(selected, result) ??
                     selected?.basePower ??
                     ""
                   }
@@ -434,6 +441,7 @@ function SkillSide({
               {selected?.description ||
               refractionHint ||
               counterReflectionHint ||
+              powerResolutionHint ||
               dynamicInputs.length > 0 ? (
                 <div className="skill-slot__context">
                   {selected?.description ? (
@@ -442,6 +450,14 @@ function SkillSide({
                       title={selected.description}
                     >
                       {selected.description}
+                    </p>
+                  ) : null}
+                  {powerResolutionHint ? (
+                    <p
+                      className="skill-slot__power-note"
+                      title={powerResolutionHint}
+                    >
+                      {powerResolutionHint}
                     </p>
                   ) : null}
                   {refractionHint ? (
@@ -568,6 +584,7 @@ export function FourSkillEditor({
   attackerResults = [],
   attackerSkillChoices,
   attackerSkills,
+  attackerSproutStacks = 0,
   attackerTrait,
   attackerTraitContext = {},
   attackerTraitDamage,
@@ -577,6 +594,7 @@ export function FourSkillEditor({
   defenderResults = [],
   defenderSkillChoices,
   defenderSkills,
+  defenderSproutStacks = 0,
   defenderTrait,
   defenderTraitContext = {},
   defenderTraitDamage,
@@ -611,6 +629,7 @@ export function FourSkillEditor({
       selectedSkills: attackerSkills,
       side: "attacker",
       skills: attackerSkillChoices ?? skills,
+      sproutStacks: attackerSproutStacks,
       trait: attackerTrait,
       defenseTrait: attackerDefenseTrait,
       traitContext: attackerTraitContext,
@@ -629,6 +648,7 @@ export function FourSkillEditor({
       selectedSkills: defenderSkills,
       side: "defender",
       skills: defenderSkillChoices ?? skills,
+      sproutStacks: defenderSproutStacks,
       trait: defenderTrait,
       defenseTrait: defenderDefenseTrait,
       traitContext: defenderTraitContext,

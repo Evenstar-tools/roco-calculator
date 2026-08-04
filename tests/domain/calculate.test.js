@@ -657,6 +657,30 @@ describe("calculateMatchup", () => {
     expect(noCombo.totalDamage).toBe(base.totalDamage);
   });
 
+  test("暴风眼的连击百分比在固定连击加成后统一结算", () => {
+    const comboSnapshot = {
+      ...snapshot,
+      skills: snapshot.skills.map((skill) =>
+        skill.id === "skill_wind"
+          ? { ...skill, description: "造成物伤，5连击。" }
+          : skill,
+      ),
+    };
+    const result = calculateMatchup(
+      comboSnapshot,
+      battleInput({
+        directions: {
+          forward: {
+            hitCount: 5,
+            overrides: { hitCountAdd: 1, hitCountPercentAdd: 2 },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.hitCount).toBe(18);
+  });
+
   test("allows persistent hit-count reductions but never drops below one hit", () => {
     const comboSnapshot = {
       ...snapshot,
@@ -1016,6 +1040,55 @@ describe("calculateMatchup", () => {
       },
     });
     expect(afterStep.input.attacker - beforeStep.input.attacker).toBe(60);
+  });
+
+  test("keeps difference-table power separate from Tailwind's damage multiplier", () => {
+    const speedSkill = {
+      id: "skill_speed_difference_tailwind",
+      name: "闪击",
+      type: "翼",
+      category: "physical",
+      basePower: 60,
+      ruleId: "speed_difference",
+      provenance: { ruleId: { source: "fixture" } },
+    };
+    const tailwind = {
+      id: "trait_tailwind",
+      name: "顺风",
+      description: "若先于敌方攻击，本次技能威力+50%。",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, speedSkill],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [tailwind.id] }
+          : spirit,
+      ),
+      traits: [tailwind],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: side("spirit_sonic_dog", speedSkill.id, [
+            speedSkill.id,
+            null,
+            null,
+            null,
+          ]),
+        },
+        directions: {
+          forward: { context: { attackerSpeed: 254, defenderSpeed: 143 } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      resolvedPower: 190,
+      skillPower: 285,
+    });
   });
 
   test("applies a direction fixed-power status bonus to every selected skill", () => {

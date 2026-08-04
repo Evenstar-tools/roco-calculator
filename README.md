@@ -4,8 +4,8 @@
 
 # 洛克计算器
 
-[![Checks](https://img.shields.io/badge/checks-420%20passed-2da44e.svg)](#开发与验证)
-[![Release](https://img.shields.io/badge/release-v1.3.1-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.3.1)
+[![Checks](https://img.shields.io/badge/checks-1002%20passed-2da44e.svg)](#开发与验证)
+[![Release](https://img.shields.io/badge/release-v1.4.3-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.4.3)
 [![License](https://img.shields.io/badge/code-MIT-4c55d9.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Windows-2563eb.svg)](#使用方式)
 
@@ -66,6 +66,8 @@ npm run build
 ```bash
 npm run data:validate
 npm test
+npm run miniapp:test
+npm run miniapp:build
 npm run e2e
 npm run build
 ```
@@ -84,6 +86,8 @@ npm run desktop:pack
 | `npm run data:runtime` | 从完整快照生成紧凑运行数据 |
 | `npm run data:validate` | 校验精灵、技能和引用关系 |
 | `npm test` | 运行单元与集成测试 |
+| `npm run miniapp:test` | 运行微信小程序共享核心与界面测试 |
+| `npm run miniapp:build` | 同步共享核心并构建微信小程序 |
 | `npm run e2e` | 运行 Chromium 端到端测试 |
 | `npm run build` | 生成静态站点 |
 | `npm run desktop:pack` | 生成 Windows x64 安装包 |
