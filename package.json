@@ -36,22 +36,26 @@
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",
-    "@vitejs/plugin-react": "5.0.4",
-    "cheerio": "1.1.2",
-    "pinyin-pro": "3.27.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "vite": "6.4.3"
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@playwright/test": "1.55.1",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.2",
-    "@testing-library/user-event": "14.6.1",
-    "electron": "^43.2.0",
+    "@testing-library/user-event": "14.6.3",
+    "@vitejs/plugin-react": "5.0.4",
+    "cheerio": "1.2.0",
+    "electron": "43.3.0",
     "electron-builder": "^26.15.3",
     "jsdom": "26.1.0",
+    "pinyin-pro": "3.28.2",
+    "vite": "6.4.3",
     "vitest": "3.2.7"
+  },
+  "overrides": {
+    "fast-uri": "3.1.5",
+    "undici": "7.29.0"
   },
   "build": {
     "appId": "cn.rock.calculator",
