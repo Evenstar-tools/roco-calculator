@@ -1,17 +1,17 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/2385a040-cf86-40c4-a2bd-f14b80ebf92f" alt="洛克计算器项目封面" width="100%">
+  <img src="docs/images/project-cover.png" alt="洛克计算器项目封面" width="100%">
 </p>
 
 # 洛克计算器
 
-[![Checks](https://img.shields.io/badge/checks-1008%20passed-2da44e.svg)](#开发与验证)
-[![Release](https://img.shields.io/badge/release-v1.4.4-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.4.4)
+[![Checks](https://img.shields.io/badge/checks-1009%20passed-2da44e.svg)](#开发与验证)
+[![Release](https://img.shields.io/badge/release-v1.4.5-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.4.5)
 [![License](https://img.shields.io/badge/code-MIT-4c55d9.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Windows-2563eb.svg)](#使用方式)
 
 面向《洛克王国：世界》PVP 的确定性伤害计算器。目标是在一回合有限的决策时间内，用最少操作完成双方精灵、性格、个体和技能对比。
 
-![洛克计算器精简版界面](https://github.com/user-attachments/assets/fa1ab460-f8ce-4428-b14c-e098fbc35b3f)
+![洛克计算器精简版界面](docs/images/app-overview.png)
 
 ## 主要能力
 
@@ -26,6 +26,13 @@
 - **离线可用**：内置当前赛季快照和本地素材，可作为网页、PWA 或 Windows 桌面应用运行。
 
 当前数据快照包含 **592 个精灵形态**与 **553 个技能**。
+
+## 快速入口
+
+- [下载最新 Windows 安装包](https://github.com/zhangzeyu99-web/rock-calculator/releases/latest)
+- [查看完整更新记录](CHANGELOG.md)
+- [反馈计算错误或功能问题](https://github.com/zhangzeyu99-web/rock-calculator/issues/new/choose)
+- [核对伤害计算过程](docs/damage-calculation-human-readable.md)
 
 ## 使用方式
 

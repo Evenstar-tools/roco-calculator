@@ -438,6 +438,34 @@ describe("trait effect coverage", () => {
     }
   });
 
+  test("构装契约者为攻防双方显示敌方魔力为1的固定双防触发勾选", () => {
+    const trait = snapshot.traits.find(
+      (candidate) => candidate.name === "构装契约者",
+    );
+
+    for (const role of ["attacker", "defender"]) {
+      expect(getTraitEffectInputs(trait, role)).toMatchObject([
+        {
+          defaultValue: false,
+          key: "traitActivated",
+          label: "敌方魔力为1",
+          type: "boolean",
+        },
+      ]);
+      expect(getTraitEffectInputs(trait, role)).toHaveLength(1);
+    }
+
+    expect(resolveTraitEffectRule(trait, "defender", {
+      attacker: {},
+      context: { traitActivated: true },
+      defender: {},
+      skill: { category: "physical", type: "普通" },
+    })).toMatchObject({
+      defenseLevelBonus: 10,
+      defenderDefenseLevelBonus: 10,
+    });
+  });
+
   test("张弛有度只显示周末勾选并同时支持攻防双方", () => {
     const trait = snapshot.traits.find((candidate) => candidate.name === "张弛有度");
 

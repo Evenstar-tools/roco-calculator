@@ -83,6 +83,13 @@ const RULES = Object.freeze({
     "双防加成",
     { editableEffect: false, roles: ["attacker", "defender"] },
   ),
+  构装契约者: trigger(
+    "defense_percent",
+    100,
+    "敌方魔力为1",
+    "双防加成",
+    { editableEffect: false, roles: ["attacker", "defender"] },
+  ),
   裁决: stack(
     "attack_defense_percent",
     20,
