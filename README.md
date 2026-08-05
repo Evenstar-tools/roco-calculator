@@ -4,8 +4,8 @@
 
 # 洛克计算器
 
-[![Checks](https://img.shields.io/badge/checks-1002%20passed-2da44e.svg)](#开发与验证)
-[![Release](https://img.shields.io/badge/release-v1.4.3-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.4.3)
+[![Checks](https://img.shields.io/badge/checks-1008%20passed-2da44e.svg)](#开发与验证)
+[![Release](https://img.shields.io/badge/release-v1.4.4-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.4.4)
 [![License](https://img.shields.io/badge/code-MIT-4c55d9.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Windows-2563eb.svg)](#使用方式)
 
@@ -70,6 +70,7 @@ npm run miniapp:test
 npm run miniapp:build
 npm run e2e
 npm run build
+npm audit --omit=dev
 ```
 
 Windows 安装包：
@@ -89,7 +90,8 @@ npm run desktop:pack
 | `npm run miniapp:test` | 运行微信小程序共享核心与界面测试 |
 | `npm run miniapp:build` | 同步共享核心并构建微信小程序 |
 | `npm run e2e` | 运行 Chromium 端到端测试 |
-| `npm run build` | 生成静态站点 |
+| `npm run build` | 生成静态站点并校验产物体积预算 |
+| `npm run performance:verify` | 单独校验当前静态产物体积预算 |
 | `npm run desktop:pack` | 生成 Windows x64 安装包 |
 
 ## 数据与规则
@@ -110,8 +112,9 @@ npm run desktop:pack
 ## 版本管理
 
 - 使用语义化版本号 `主版本.次版本.修订号`。
-- 每个正式版本均对应 Git 标签、GitHub Release、Windows 安装包和 SHA256 文件。
-- 详细历史见 [CHANGELOG.md](CHANGELOG.md)；开源前的本地版本以里程碑方式记录，不补造不存在的历史标签。
+- [CHANGELOG.md](CHANGELOG.md) 记录所有实际交付过的本地修订，不补造不存在的历史标签。
+- GitHub Releases 保留完成全量验收的稳定里程碑，不要求每个历史修订都补发；最新版 Release 是公开安装包的唯一入口。
+- 每个已发布的 GitHub Release 均对应 Git 标签、Windows 安装包和 SHA256 文件。
 
 ## 贡献
 
