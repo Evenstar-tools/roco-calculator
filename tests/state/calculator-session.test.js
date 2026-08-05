@@ -244,6 +244,68 @@ describe("calculator session", () => {
     ).toThrow("source");
   });
 
+  test("switching spirits restores only the saved loadout and clears battle state", () => {
+    const initialState = createProductInitialState(snapshot);
+    const dirtyState = {
+      ...initialState,
+      sides: {
+        ...initialState.sides,
+        attacker: {
+          ...initialState.sides.attacker,
+          spiritId: "alpha",
+        },
+      },
+      directions: {
+        forward: {
+          ...initialState.directions.forward,
+          context: { statusApplied: true, weatherRainTurns: 8 },
+          currentHp: 1,
+          hitCount: 9,
+          overrides: { basePower: 999 },
+        },
+        reverse: {
+          ...initialState.directions.reverse,
+          context: { statusApplied: true },
+          currentHp: 2,
+        },
+      },
+    };
+    const personalConfiguration = {
+      displayIvs: configuration().displayIvs,
+      natureId: "timid",
+      skills: {
+        four: [{ context: {}, skillId: "skill-b" }, null, null, null],
+        single: { context: {}, skillId: "skill-b" },
+      },
+      spiritId: "beta",
+    };
+
+    const result = selectSpirit(dirtyState, {
+      initialState,
+      personalConfiguration,
+      side: "attacker",
+      snapshot,
+      spiritId: "beta",
+    });
+
+    expect(result.state.sides.attacker).toMatchObject({
+      nature: "timid",
+      spiritId: "beta",
+    });
+    expect(result.state.sides.attacker.skills.single).toMatchObject({
+      context: {},
+      skillId: "skill-b",
+    });
+    expect(result.state.directions.forward).toMatchObject({
+      context: {},
+      currentHp: null,
+      hitCount: 1,
+      overrides: {},
+    });
+    expect(result.state.directions.reverse.context).toEqual({});
+    expect(result.state.directions.reverse.currentHp).toBeNull();
+  });
+
   test("replaces share configuration without a persistence intent", () => {
     const initialState = createProductInitialState(snapshot);
     const sharedState = { ...initialState, mode: "single" };
