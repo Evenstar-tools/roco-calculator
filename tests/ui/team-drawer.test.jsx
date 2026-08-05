@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRef, useState } from "react";
 import { expect, test, vi } from "vitest";
@@ -179,8 +179,7 @@ test("creates and edits one of six team members", async () => {
   );
 
   const spiritPicker = screen.getByRole("combobox", { name: "成员精灵" });
-  await user.clear(spiritPicker);
-  await user.type(spiritPicker, "音速犬");
+  fireEvent.change(spiritPicker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
 
   await waitFor(() =>
@@ -238,7 +237,7 @@ test("copies a personal configuration when selecting a member and never inherits
   await user.click(screen.getByRole("button", { name: "编辑空位 1" }));
   const editor = screen.getByRole("region", { name: "成员 1 配置" });
   const picker = within(editor).getByRole("combobox", { name: "成员精灵" });
-  await user.type(picker, "音速犬");
+  fireEvent.change(picker, { target: { value: "音速犬" } });
   await user.click(within(editor).getByRole("option", { name: /音速犬/ }));
 
   expect(within(editor).getByRole("combobox", { name: "成员性格" })).toHaveValue(
@@ -251,8 +250,7 @@ test("copies a personal configuration when selecting a member and never inherits
     "风力冲击",
   );
 
-  await user.clear(picker);
-  await user.type(picker, "水灵");
+  fireEvent.change(picker, { target: { value: "水灵" } });
   await user.click(within(editor).getByRole("option", { name: /水灵/ }));
 
   expect(within(editor).getByRole("combobox", { name: "成员性格" })).toHaveValue(
@@ -278,8 +276,7 @@ test("applies a member as attack or defense and confirms deletion inline", async
   await user.click(screen.getByRole("button", { name: "新建队伍" }));
   await user.click(screen.getByRole("button", { name: "编辑空位 1" }));
   const spiritPicker = screen.getByRole("combobox", { name: "成员精灵" });
-  await user.clear(spiritPicker);
-  await user.type(spiritPicker, "音速犬");
+  fireEvent.change(spiritPicker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
 
   const applyAttack = screen.getByRole("button", {
