@@ -9,9 +9,9 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "npm run dev -- --host 127.0.0.1 --port 4174 --strictPort",
+    command: "npm run build && npm run preview:test",
     url: "http://127.0.0.1:4174",
-    reuseExistingServer: true,
+    reuseExistingServer: false,
   },
   projects: [
     {
