@@ -528,6 +528,7 @@ function calculateSkillResult({
     attackerTraits: attacker.traits,
     defenderTraits: defender.traits,
     context,
+    skill,
   });
   const declaredHitCount = hasDeclaredHitCount(skill);
   const persistentHitCountAdd = declaredHitCount

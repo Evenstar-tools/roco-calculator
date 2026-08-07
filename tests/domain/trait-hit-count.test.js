@@ -41,6 +41,11 @@ const comboAttack = {
   description: "造成物伤，3连击。",
   name: "撕咬",
 };
+const singleAttack = {
+  category: "physical",
+  description: "造成物理伤害。",
+  name: "单段攻击",
+};
 const comboStatus = {
   category: "status",
   description: "自己获得物攻+30%，3连击。",
@@ -87,6 +92,7 @@ describe("resolveTraitHitCountBonus", () => {
         attackerTraits: [indiscriminateFilter],
         context: { [attackerControl.id]: true },
         defenderTraits: [],
+        skill: comboAttack,
       }),
     ).toMatchObject({ hitCount: 2, traitName: "无差别过滤" });
     expect(
@@ -94,6 +100,7 @@ describe("resolveTraitHitCountBonus", () => {
         attackerTraits: [],
         context: { [defenderControl.id]: true },
         defenderTraits: [indiscriminateFilter],
+        skill: comboAttack,
       }),
     ).toMatchObject({ hitCount: 2, traitName: "无差别过滤" });
     expect(
@@ -101,8 +108,33 @@ describe("resolveTraitHitCountBonus", () => {
         attackerTraits: [indiscriminateFilter],
         context: { [attackerControl.id]: false },
         defenderTraits: [],
+        skill: comboAttack,
       }),
     ).toBeNull();
+  });
+
+  test("无差别过滤不作用于未声明连击的技能", () => {
+    const attackerControl = getTraitEffectInputs(
+      indiscriminateFilter,
+      "attacker",
+    )[0];
+
+    expect(
+      resolveGlobalFixedHitCount({
+        attackerTraits: [indiscriminateFilter],
+        context: { [attackerControl.id]: true },
+        defenderTraits: [],
+        skill: singleAttack,
+      }),
+    ).toBeNull();
+    expect(
+      resolveGlobalFixedHitCount({
+        attackerTraits: [indiscriminateFilter],
+        context: { [attackerControl.id]: true },
+        defenderTraits: [],
+        skill: comboAttack,
+      }),
+    ).toMatchObject({ hitCount: 2, traitName: "无差别过滤" });
   });
 
   test("侵蚀需要勾选后才按敌方中毒层数增加连击", () => {

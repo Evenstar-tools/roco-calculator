@@ -853,12 +853,18 @@ describe("calculateMatchup", () => {
       id: "skill_filter_combo",
       name: "五连击",
     };
+    const singleAttack = {
+      ...snapshot.skills[0],
+      description: "造成物理伤害。",
+      id: "skill_filter_single",
+      name: "单段攻击",
+    };
     const fixture = {
       ...snapshot,
       spirits: snapshot.spirits.map((spirit, index) =>
         index === 0 ? { ...spirit, traitIds: [filterTrait.id] } : spirit,
       ),
-      skills: [...snapshot.skills, comboAttack],
+      skills: [...snapshot.skills, comboAttack, singleAttack],
       traits: [filterTrait],
     };
     const attackerControl = getTraitEffectInputs(filterTrait, "attacker")[0];
@@ -870,8 +876,8 @@ describe("calculateMatchup", () => {
         null,
         null,
       ]),
-      defender: side("spirit_water", comboAttack.id, [
-        comboAttack.id,
+      defender: side("spirit_water", singleAttack.id, [
+        singleAttack.id,
         null,
         null,
         null,
@@ -894,14 +900,14 @@ describe("calculateMatchup", () => {
     );
 
     expect(baseline.forward.selectedResult.hitCount).toBe(5);
-    expect(baseline.reverse.selectedResult.hitCount).toBe(5);
+    expect(baseline.reverse.selectedResult.hitCount).toBe(1);
     expect(filtered.forward.selectedResult.hitCount).toBe(2);
-    expect(filtered.reverse.selectedResult.hitCount).toBe(2);
+    expect(filtered.reverse.selectedResult.hitCount).toBe(1);
     expect(filtered.forward.selectedResult.totalDamage).toBe(
       (baseline.forward.selectedResult.totalDamage / 5) * 2,
     );
     expect(filtered.reverse.selectedResult.totalDamage).toBe(
-      (baseline.reverse.selectedResult.totalDamage / 5) * 2,
+      baseline.reverse.selectedResult.totalDamage,
     );
   });
 

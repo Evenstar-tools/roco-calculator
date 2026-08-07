@@ -157,7 +157,9 @@ export function resolveGlobalFixedHitCount({
   attackerTraits = [],
   defenderTraits = [],
   context = {},
+  skill = null,
 } = {}) {
+  if (!hasDeclaredHitCount(skill)) return null;
   for (const [traits, role] of [
     [attackerTraits, "attacker"],
     [defenderTraits, "defender"],
