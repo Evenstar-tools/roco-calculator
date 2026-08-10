@@ -1,17 +1,17 @@
 <p align="center">
-  <img src="https://github.com/zhangzeyu99-web/rock-calculator/releases/download/v1.4.5/project-cover.png" alt="洛克计算器项目封面" width="100%">
+  <img src="https://github.com/zhangzeyu99-web/rock-calculator/releases/download/v1.4.6/project-cover.png" alt="洛克计算器项目封面" width="100%">
 </p>
 
 # 洛克计算器
 
-[![Checks](https://img.shields.io/badge/checks-1009%20passed-2da44e.svg)](#开发与验证)
-[![Release](https://img.shields.io/badge/release-v1.4.5-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.4.5)
+[![Checks](https://img.shields.io/badge/checks-1014%20passed-2da44e.svg)](#开发与验证)
+[![Release](https://img.shields.io/badge/release-v1.4.6-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.4.6)
 [![License](https://img.shields.io/badge/code-MIT-4c55d9.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Windows-2563eb.svg)](#使用方式)
 
 面向《洛克王国：世界》PVP 的确定性伤害计算器。目标是在一回合有限的决策时间内，用最少操作完成双方精灵、性格、个体和技能对比。
 
-![洛克计算器精简版界面](https://github.com/zhangzeyu99-web/rock-calculator/releases/download/v1.4.5/app-overview.png)
+![洛克计算器精简版界面](https://github.com/zhangzeyu99-web/rock-calculator/releases/download/v1.4.6/app-overview.png)
 
 ## 主要能力
 

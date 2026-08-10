@@ -293,6 +293,148 @@ function contractContext(role, ballType, prismEffect = "") {
 }
 
 describe("calculateMatchup", () => {
+  test("换碟为午夜噪音的每一段先增加5点固定基础威力，再结算5连击", () => {
+    const trait = {
+      id: "trait-disc-swap",
+      name: "换碟",
+      description: "指定音波技能增加固定基础威力。",
+    };
+    const midnightNoise = {
+      id: "skill-midnight-noise",
+      name: "午夜噪音",
+      type: "幽",
+      category: "magical",
+      cost: 4,
+      basePower: 20,
+      description: "造成魔法伤害，5连击。",
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const discSwapSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      skills: [...snapshot.skills, midnightNoise],
+      traits: [trait],
+    };
+
+    const result = calculateMatchup(
+      discSwapSnapshot,
+      battleInput({
+        directions: { forward: { hitCount: 5 } },
+        sides: {
+          attacker: side("spirit_sonic_dog", midnightNoise.id, [
+            midnightNoise.id,
+            null,
+            null,
+            null,
+          ]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.skillPower).toBe(25);
+    expect(result.totalDamage % 5).toBe(0);
+    expect(result.formulaSteps).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          after: 5,
+          label: expect.stringContaining("换碟"),
+        }),
+      ]),
+    );
+  });
+
+  test("勾选固定速度特性后向面板暴露最终速度", () => {
+    const warningTrait = {
+      description: "敌方技能足以击败自己时，速度+50。",
+      id: "trait_warning",
+      name: "预警",
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [warningTrait.id] }
+          : spirit,
+      ),
+      traits: [warningTrait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: {
+          forward: {
+            context: {
+              "attackerTrait.attackerTraitEffect.fff35f45": 50,
+              "attackerTrait.traitActivated.8c9e2197": true,
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.combatPanel).toMatchObject({
+      attacker: { speed: 271 },
+    });
+  });
+
+  test("选择状态技能时仍向面板暴露已触发的速度特性", () => {
+    const warningTrait = {
+      description: "敌方技能足以击败自己时，速度+50。",
+      id: "trait_warning_status",
+      name: "预警",
+    };
+    const statusSkill = {
+      basePower: 0,
+      category: "status",
+      id: "skill_status_only",
+      name: "状态测试",
+      provenance: { basePower: { source: "fixture" } },
+      ruleId: null,
+      type: "普通",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, statusSkill],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [warningTrait.id] }
+          : spirit,
+      ),
+      traits: [warningTrait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", statusSkill.id, [
+            statusSkill.id,
+            null,
+            null,
+            null,
+          ]),
+        },
+        directions: {
+          forward: {
+            context: {
+              "attackerTrait.attackerTraitEffect.fff35f45": 50,
+              "attackerTrait.traitActivated.8c9e2197": true,
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      combatPanel: { attacker: { speed: 271 } },
+      status: "unsupported",
+    });
+  });
+
   test("硬门按固定90威力结算武系物理伤害", () => {
     const input = battleInput({
       mode: "four",
@@ -1086,7 +1228,13 @@ describe("calculateMatchup", () => {
           ]),
         },
         directions: {
-          forward: { context: { attackerSpeed: 254, defenderSpeed: 143 } },
+          forward: {
+            context: {
+              actedBeforeEnemy: true,
+              attackerSpeed: 254,
+              defenderSpeed: 143,
+            },
+          },
         },
       }),
     ).forward.selectedResult;
@@ -1606,6 +1754,58 @@ describe("calculateMatchup", () => {
       status: "exact",
     });
     expect(stacked.totalDamage).toBeGreaterThan(base.totalDamage);
+  });
+
+  test("uses trait speed bonuses before resolving speed-difference skill power", () => {
+    const speedSkill = {
+      id: "skill_trait_speed_difference",
+      name: "闪击",
+      type: "翼",
+      category: "physical",
+      basePower: 60,
+      ruleId: "speed_difference",
+      provenance: { ruleId: { source: "fixture" } },
+    };
+    const trait = {
+      id: "trait_dimo_speed",
+      name: "裁决",
+      description: "造成克制伤害后，获得攻防速+20%。",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, speedSkill],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      traits: [trait],
+    };
+    const baseInput = battleInput({
+      mode: "four",
+      sides: {
+        attacker: side("spirit_sonic_dog", speedSkill.id, [
+          speedSkill.id,
+          null,
+          null,
+          null,
+        ]),
+      },
+    });
+    const withoutStacks = calculateMatchup(fixture, baseInput).forward
+      .selectedResult;
+    const withStacks = calculateMatchup(fixture, {
+      ...baseInput,
+      directions: {
+        ...baseInput.directions,
+        forward: {
+          ...baseInput.directions.forward,
+          context: { attackerTraitStacks: 1 },
+        },
+      },
+    }).forward.selectedResult;
+
+    expect(withStacks.resolvedPower).toBeGreaterThan(withoutStacks.resolvedPower);
   });
 
   test("uses editable per-slot power in bilateral four-skill results", () => {

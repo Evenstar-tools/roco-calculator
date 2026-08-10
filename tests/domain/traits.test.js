@@ -100,10 +100,21 @@ describe("resolveTraitMultipliers", () => {
     });
   });
 
-  test("resolves Tailwind from the supplied panel speeds", () => {
+  test("resolves Tailwind only after the acted-first condition is confirmed", () => {
     expect(
       resolveTraitMultipliers(
         input({ attackerTraits: [{ id: "tailwind", name: "顺风" }] }),
+      ),
+    ).toMatchObject({
+      status: "exact",
+      powerMultiplier: 1,
+    });
+    expect(
+      resolveTraitMultipliers(
+        input({
+          attackerTraits: [{ id: "tailwind", name: "顺风" }],
+          context: { actedBeforeEnemy: true },
+        }),
       ),
     ).toMatchObject({
       status: "exact",

@@ -2,6 +2,32 @@ const ATTACK_EFFECT_KEY = "attackerTraitEffect";
 const ATTACK_STACK_KEY = "attackerTraitStacks";
 const DEFENSE_EFFECT_KEY = "defenderTraitEffect";
 const DEFENSE_STACK_KEY = "defenderTraitStacks";
+const ATTACK_SECONDARY_EFFECT_KEY = "attackerTraitSecondaryEffect";
+const DEFENSE_SECONDARY_EFFECT_KEY = "defenderTraitSecondaryEffect";
+const ATTACK_SPEED_EFFECT_KEY = "attackerTraitSpeedEffect";
+const DEFENSE_SPEED_EFFECT_KEY = "defenderTraitSpeedEffect";
+
+export const DISC_SWAP_SKILL_POWER_BONUSES = Object.freeze([
+  Object.freeze({ fixedPowerAdd: 15, skillName: "音波弹" }),
+  Object.freeze({ fixedPowerAdd: 20, skillName: "音爆" }),
+  Object.freeze({ fixedPowerAdd: 20, skillName: "金属噪音" }),
+  Object.freeze({ fixedPowerAdd: 5, perHit: true, skillName: "午夜噪音" }),
+]);
+
+const DISC_SWAP_POWER_BY_SKILL = Object.freeze(
+  Object.fromEntries(
+    DISC_SWAP_SKILL_POWER_BONUSES.map(({ fixedPowerAdd, skillName }) => [
+      skillName,
+      fixedPowerAdd,
+    ]),
+  ),
+);
+
+export function getTraitSkillPowerBonuses(trait) {
+  return trait?.name === "换碟"
+    ? DISC_SWAP_SKILL_POWER_BONUSES.map((bonus) => ({ ...bonus }))
+    : [];
+}
 
 const PENETRATION_INHERITANCE = Object.freeze({
   description:
@@ -68,7 +94,30 @@ const automatic = (kind, effect, effectLabel, extra = {}) => ({
   ...extra,
 });
 
+const triggeredStack = (
+  kind,
+  effect,
+  conditionLabel,
+  stackLabel,
+  effectLabel,
+  extra = {},
+) => ({
+  ...stack(kind, effect, stackLabel, effectLabel, extra),
+  condition: {
+    defaultValue: false,
+    key: extra.conditionKey ?? "traitActivated",
+    label: conditionLabel,
+    scope: extra.conditionScope ?? "direction",
+  },
+});
+
 const RULES = Object.freeze({
+  换碟: automatic("fixed_power", 15, "固定基础威力", {
+    applies: ({ skill }) =>
+      Object.hasOwn(DISC_SWAP_POWER_BY_SKILL, skill?.name),
+    editableEffect: false,
+    fixedPowerBySkillName: DISC_SWAP_POWER_BY_SKILL,
+  }),
   守护之心: stack(
     "physical_defense_percent",
     20,
@@ -83,6 +132,37 @@ const RULES = Object.freeze({
     "双防加成",
     { editableEffect: false, roles: ["attacker", "defender"] },
   ),
+  囤积: stack(
+    "defense_percent",
+    10,
+    "当前能量",
+    "每点双防",
+    { max: 99, roles: ["attacker", "defender"] },
+  ),
+  游弋: trigger(
+    "defense_percent",
+    100,
+    "正在蓄力",
+    "双防加成",
+    { editableEffect: false, roles: ["attacker", "defender"] },
+  ),
+  惊吓: trigger(
+    "damage_reduction_percent",
+    100,
+    "攻击方能量为0",
+    "免疫伤害",
+    {
+      conditionKey: "attackerEnergyZero",
+      conditionScope: "skill",
+      editableEffect: false,
+      role: "defender",
+    },
+  ),
+  逐魂鸟: automatic("damage_reduction_percent", 100, "免疫伤害", {
+    applies: ({ skill }) => Number(skill.cost) <= 1,
+    editableEffect: false,
+    role: "defender",
+  }),
   构装契约者: trigger(
     "defense_percent",
     100,
@@ -95,28 +175,48 @@ const RULES = Object.freeze({
     20,
     "触发层数",
     "每层攻防",
-    { roles: ["attacker", "defender"] },
+    {
+      roles: ["attacker", "defender"],
+      speedEffect: 20,
+      speedEffectLabel: "每层速度",
+      speedMode: "percent",
+    },
   ),
   滋养: stack(
     "attack_defense_percent",
     20,
     "触发层数",
     "每层攻防",
-    { roles: ["attacker", "defender"] },
+    {
+      roles: ["attacker", "defender"],
+      speedEffect: 20,
+      speedEffectLabel: "每层速度",
+      speedMode: "percent",
+    },
   ),
   点燃: stack(
     "attack_defense_percent",
     20,
     "触发层数",
     "每层攻防",
-    { roles: ["attacker", "defender"] },
+    {
+      roles: ["attacker", "defender"],
+      speedEffect: 20,
+      speedEffectLabel: "每层速度",
+      speedMode: "percent",
+    },
   ),
   净化: stack(
     "attack_defense_percent",
     20,
     "触发层数",
     "每层攻防",
-    { roles: ["attacker", "defender"] },
+    {
+      roles: ["attacker", "defender"],
+      speedEffect: 20,
+      speedEffectLabel: "每层速度",
+      speedMode: "percent",
+    },
   ),
   挺起胸脯: automatic("power_percent", 50, "威力加成", {
     applies: ({ skill }) => Number(skill.cost) === 1,
@@ -127,11 +227,16 @@ const RULES = Object.freeze({
   勇敢: automatic("power_percent", 40, "威力加成", {
     applies: ({ skill }) => Number(skill.cost) > 3,
   }),
-  顺风: automatic("power_percent", 50, "威力加成", {
-    applies: ({ attacker, defender }) =>
-      Number(attacker.panelStats?.speed) >
-      Number(defender.panelStats?.speed),
-  }),
+  顺风: trigger(
+    "power_percent",
+    50,
+    "先于敌方攻击",
+    "触发加成",
+    {
+      conditionKey: "actedBeforeEnemy",
+      conditionScope: "skill",
+    },
+  ),
   破空: trigger(
     "power_percent",
     75,
@@ -249,7 +354,12 @@ const RULES = Object.freeze({
     10,
     "敌方增益层数",
     "每层威力",
-    { stackKey: "enemyBuffStacks" },
+    {
+      speedEffect: 5,
+      speedEffectLabel: "每层速度",
+      speedMode: "flat",
+      stackKey: "enemyBuffStacks",
+    },
   ),
   悲悯: stack(
     "attack_percent",
@@ -276,14 +386,26 @@ const RULES = Object.freeze({
     10,
     "其他虫系精灵数",
     "每层攻防速",
-    { max: 5, roles: ["attacker", "defender"] },
+    {
+      max: 5,
+      roles: ["attacker", "defender"],
+      speedEffect: 10,
+      speedEffectLabel: "每层速度",
+      speedMode: "percent",
+    },
   ),
   虫群突袭: stack(
     "attack_defense_percent",
     15,
     "其他虫系精灵数",
     "每层攻防速",
-    { max: 5, roles: ["attacker", "defender"] },
+    {
+      max: 5,
+      roles: ["attacker", "defender"],
+      speedEffect: 15,
+      speedEffectLabel: "每层速度",
+      speedMode: "percent",
+    },
   ),
   得寸进尺: trigger(
     "attack_percent",
@@ -296,7 +418,12 @@ const RULES = Object.freeze({
     20,
     "触发层数",
     "每层攻防",
-    { roles: ["attacker", "defender"] },
+    {
+      roles: ["attacker", "defender"],
+      speedEffect: 20,
+      speedEffectLabel: "每层速度",
+      speedMode: "percent",
+    },
   ),
   指挥家: stack(
     "attack_percent",
@@ -338,6 +465,38 @@ const RULES = Object.freeze({
     50,
     "触发层数",
     "每层双攻",
+    {
+      speedEffect: 50,
+      speedEffectLabel: "每层速度",
+      speedMode: "flat",
+    },
+  ),
+  预警: trigger(
+    "speed_flat",
+    50,
+    "敌方技能足以击败自己",
+    "速度加成",
+    {
+      roles: ["attacker", "defender"],
+    },
+  ),
+  哨兵: trigger(
+    "speed_flat",
+    50,
+    "敌方技能足以击败自己",
+    "速度加成",
+    {
+      roles: ["attacker", "defender"],
+    },
+  ),
+  流沙统治者: trigger(
+    "speed_flat",
+    50,
+    "沙暴天气",
+    "速度加成",
+    {
+      roles: ["attacker", "defender"],
+    },
   ),
   渗透: stack(
     "attack_defense_percent",
@@ -354,11 +513,15 @@ const RULES = Object.freeze({
     { max: 5 },
   ),
   合拍: stack(
-    "attack_percent",
+    "attack_defense_percent",
     10,
     "累计相同项数",
-    "每项物攻",
-    { categories: ["physical"], max: 30 },
+    "每项物攻物防",
+    {
+      categories: ["physical"],
+      max: 30,
+      roles: ["attacker", "defender"],
+    },
   ),
   和弦共振: stack(
     "attack_percent",
@@ -459,25 +622,42 @@ const RULES = Object.freeze({
     { categories: ["magical"], max: 20 },
   ),
   扫荡: stack(
-    "attack_percent",
+    "split_attack_defense_percent",
     20,
     "敌方聚能或换宠次数",
     "每层魔攻",
-    { categories: ["magical"], max: 20 },
+    {
+      categories: ["magical"],
+      defenseEffect: 10,
+      defenseEffectLabel: "每层魔防",
+      max: 20,
+      roles: ["attacker", "defender"],
+    },
   ),
-  冰雪魂魄: stack(
+  冰雪魂魄: triggeredStack(
     "power_percent",
     10,
+    "暴风雪天气",
     "敌方冻结总层数",
     "每层威力",
-    { max: 100, types: ["冰"] },
+    {
+      conditionKey: "blizzardWeather",
+      max: 100,
+      types: ["冰"],
+    },
   ),
   淬炼火: stack(
     "attack_defense_percent",
     10,
     "己方火系技能次数",
     "每层攻防",
-    { max: 10, roles: ["attacker", "defender"] },
+    {
+      max: 10,
+      roles: ["attacker", "defender"],
+      speedEffect: 10,
+      speedEffectLabel: "每层速度",
+      speedMode: "flat",
+    },
   ),
   猫精灵的礼物: stack(
     "attack_percent",
@@ -691,6 +871,18 @@ function effectKey(role) {
   return role === "defender" ? DEFENSE_EFFECT_KEY : ATTACK_EFFECT_KEY;
 }
 
+function secondaryEffectKey(role) {
+  return role === "defender"
+    ? DEFENSE_SECONDARY_EFFECT_KEY
+    : ATTACK_SECONDARY_EFFECT_KEY;
+}
+
+function speedEffectKey(role) {
+  return role === "defender"
+    ? DEFENSE_SPEED_EFFECT_KEY
+    : ATTACK_SPEED_EFFECT_KEY;
+}
+
 export function getTraitEffectInputs(trait, role = "attacker") {
   const hitCountInputs = getTraitHitCountInputs(trait, role);
   if (hitCountInputs.length > 0) return hitCountInputs;
@@ -801,6 +993,30 @@ export function getTraitEffectInputs(trait, role = "attacker") {
       type: "number",
     });
   }
+  if (rule.defenseEffect !== undefined) {
+    inputs.push({
+      defaultValue: rule.defenseEffect,
+      key: secondaryEffectKey(role),
+      label: rule.defenseEffectLabel,
+      max: 500,
+      min: 0,
+      scope: "direction",
+      suffix: "%",
+      type: "number",
+    });
+  }
+  if (rule.speedEffect !== undefined) {
+    inputs.push({
+      defaultValue: rule.speedEffect,
+      key: speedEffectKey(role),
+      label: rule.speedEffectLabel,
+      max: 500,
+      min: 0,
+      scope: "direction",
+      suffix: rule.speedMode === "percent" ? "%" : "",
+      type: "number",
+    });
+  }
   return normalizeTriggerControls(inputs, {
     source: role === "defender" ? "defenderTrait" : "attackerTrait",
   });
@@ -873,10 +1089,14 @@ export function resolveTraitEffectRule(trait, role, input) {
   ) {
     return {
       attackLevelBonus: 0,
+      attackerSpeedFlatBonus: 0,
+      attackerSpeedLevelBonus: 0,
       attackerDefenseLevelBonus: 0,
       attackMultiplier: 1,
       defenseLevelBonus: 0,
       defenderDefenseLevelBonus: 0,
+      defenderSpeedFlatBonus: 0,
+      defenderSpeedLevelBonus: 0,
       damageReductionMultiplier: 1,
       finalDamageMultiplier: 1,
       fixedPowerAdd: 0,
@@ -897,10 +1117,14 @@ export function resolveTraitEffectRule(trait, role, input) {
   if (!categoryMatches(rule, input.skill) || !typeMatches(rule, input.skill)) {
     return {
       attackLevelBonus: 0,
+      attackerSpeedFlatBonus: 0,
+      attackerSpeedLevelBonus: 0,
       attackerDefenseLevelBonus: 0,
       attackMultiplier: 1,
       defenseLevelBonus: 0,
       defenderDefenseLevelBonus: 0,
+      defenderSpeedFlatBonus: 0,
+      defenderSpeedLevelBonus: 0,
       damageReductionMultiplier: 1,
       finalDamageMultiplier: 1,
       fixedPowerAdd: 0,
@@ -912,10 +1136,14 @@ export function resolveTraitEffectRule(trait, role, input) {
   if (rule.applies && !rule.applies(input)) {
     return {
       attackLevelBonus: 0,
+      attackerSpeedFlatBonus: 0,
+      attackerSpeedLevelBonus: 0,
       attackerDefenseLevelBonus: 0,
       attackMultiplier: 1,
       defenseLevelBonus: 0,
       defenderDefenseLevelBonus: 0,
+      defenderSpeedFlatBonus: 0,
+      defenderSpeedLevelBonus: 0,
       damageReductionMultiplier: 1,
       finalDamageMultiplier: 1,
       fixedPowerAdd: 0,
@@ -942,21 +1170,42 @@ export function resolveTraitEffectRule(trait, role, input) {
   const active =
     (isWeekendAttackWeekdayDefense || triggered) &&
     (!rule.stack || stacks > 0);
+  const skillSpecificEffect = rule.fixedPowerBySkillName?.[input.skill?.name];
   const effect = Math.max(
     0,
-    finiteNumber(input.context[effectKey(role)], rule.effect),
+    finiteNumber(
+      skillSpecificEffect,
+      finiteNumber(input.context[effectKey(role)], rule.effect),
+    ),
   );
   const amount = active
     ? rule.kind === "decay_attack_percent"
       ? Math.max(0, finiteNumber(rule.baseEffect, 100) - stacks * effect)
       : effect * stacks
     : 0;
+  const defenseEffect = Math.max(
+    0,
+    finiteNumber(
+      input.context[secondaryEffectKey(role)],
+      rule.defenseEffect ?? rule.effect,
+    ),
+  );
+  const defenseAmount = active ? defenseEffect * stacks : 0;
+  const speedEffect = Math.max(
+    0,
+    finiteNumber(input.context[speedEffectKey(role)], rule.speedEffect ?? 0),
+  );
+  const speedAmount = active ? speedEffect * stacks : 0;
   const result = {
     attackLevelBonus: 0,
+    attackerSpeedFlatBonus: 0,
+    attackerSpeedLevelBonus: 0,
     attackerDefenseLevelBonus: 0,
     attackMultiplier: 1,
     defenseLevelBonus: 0,
     defenderDefenseLevelBonus: 0,
+    defenderSpeedFlatBonus: 0,
+    defenderSpeedLevelBonus: 0,
     damageReductionMultiplier: 1,
     finalDamageMultiplier: 1,
     fixedPowerAdd: 0,
@@ -986,6 +1235,15 @@ export function resolveTraitEffectRule(trait, role, input) {
       result.defenseLevelBonus = amount / 10;
       result.defenderDefenseLevelBonus = amount / 10;
     }
+  } else if (rule.kind === "split_attack_defense_percent") {
+    if (role === "attacker") {
+      result.attackLevelBonus = amount / 10;
+      result.attackerDefenseLevelBonus = defenseAmount / 10;
+      result.attackMultiplier = 1 + amount / 100;
+    } else {
+      result.defenseLevelBonus = defenseAmount / 10;
+      result.defenderDefenseLevelBonus = defenseAmount / 10;
+    }
   } else if (rule.kind === "defense_percent") {
     if (role === "attacker") {
       result.attackerDefenseLevelBonus = amount / 10;
@@ -1011,6 +1269,17 @@ export function resolveTraitEffectRule(trait, role, input) {
     result.damageReductionMultiplier = Math.max(0, 1 - amount / 100);
   } else if (rule.kind === "final_damage_percent") {
     result.finalDamageMultiplier = 1 + amount / 100;
+  } else if (rule.kind === "speed_flat") {
+    if (role === "attacker") result.attackerSpeedFlatBonus = amount;
+    else result.defenderSpeedFlatBonus = amount;
+  }
+
+  if (rule.speedMode === "percent") {
+    if (role === "attacker") result.attackerSpeedLevelBonus = speedAmount / 10;
+    else result.defenderSpeedLevelBonus = speedAmount / 10;
+  } else if (rule.speedMode === "flat") {
+    if (role === "attacker") result.attackerSpeedFlatBonus = speedAmount;
+    else result.defenderSpeedFlatBonus = speedAmount;
   }
 
   return {
@@ -1020,15 +1289,23 @@ export function resolveTraitEffectRule(trait, role, input) {
           after:
             rule.kind === "fixed_power"
               ? result.fixedPowerAdd
+              : rule.kind === "speed_flat"
+                ? amount
               : rule.kind === "attack_percent" ||
                   rule.kind === "decay_attack_percent" ||
                   rule.kind === "attack_defense_percent" ||
+                  rule.kind === "split_attack_defense_percent" ||
                   rule.kind === "defense_percent" ||
                   rule.kind === "physical_defense_percent" ||
                   rule.kind === "weekend_attack_weekday_defense_percent"
-                ? rule.kind === "attack_defense_percent" &&
+                ? (rule.kind === "attack_defense_percent" ||
+                    rule.kind === "split_attack_defense_percent") &&
                   role === "defender"
-                  ? 1 + amount / 100
+                  ? 1 +
+                    (rule.kind === "split_attack_defense_percent"
+                      ? defenseAmount
+                      : amount) /
+                      100
                   : rule.kind === "defense_percent" ||
                       rule.kind === "physical_defense_percent"
                     ? 1 + amount / 100
@@ -1040,10 +1317,20 @@ export function resolveTraitEffectRule(trait, role, input) {
                   : rule.kind === "damage_reduction_percent"
                     ? result.damageReductionMultiplier
                     : result.finalDamageMultiplier,
-          before: rule.kind === "fixed_power" ? 0 : 1,
-          input: rule.stack ? { effect, stacks } : { effect, triggered },
+          before:
+            rule.kind === "fixed_power" || rule.kind === "speed_flat" ? 0 : 1,
+          input: rule.stack
+            ? {
+                ...(rule.defenseEffect === undefined ? {} : { defenseEffect }),
+                effect,
+                ...(rule.speedEffect === undefined ? {} : { speedEffect }),
+                stacks,
+              }
+            : { effect, triggered },
           label: isWeekendAttackWeekdayDefense
             ? `${trait.name ?? trait.id} · ${triggered ? "周末双攻" : "平日双防"}`
+            : rule.fixedPowerBySkillName
+              ? `${trait.name ?? trait.id} · ${input.skill.name} +${effect}`
             : trait.name ?? trait.id,
           source: "reviewed-trait:interactive-effect-v1",
         }

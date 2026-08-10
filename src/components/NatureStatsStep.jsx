@@ -1,5 +1,5 @@
 import { Minus, Plus } from "@phosphor-icons/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NatureEffect } from "./NatureEffect.jsx";
 import { NatureSelect } from "./NatureSelect.jsx";
 import { StatTile } from "./StatTile.jsx";
@@ -88,6 +88,13 @@ function SideStats({
   onNatureChange,
   side,
 }) {
+  const [panelView, setPanelView] = useState({
+    showFinalPanel: true,
+    spiritId: side.id,
+  });
+  const showFinalPanel =
+    panelView.spiritId === side.id ? panelView.showFinalPanel : true;
+
   const fallbackLevel = side.level ?? {
     label: label === "攻击方" ? "攻击能力等级" : "防御能力等级",
     multiplier: 1,
@@ -108,12 +115,22 @@ function SideStats({
         {side.stats.map((stat) => (
           <StatTile
             accent={accent}
+            basePanel={stat.basePanel}
+            change={stat.change}
+            delta={stat.delta}
             displayIv={stat.displayIv}
             key={stat.key}
             label={stat.label}
             onIvChange={(value) => onIvChange(stat.key, value)}
+            onPanelToggle={() =>
+              setPanelView({
+                showFinalPanel: !showFinalPanel,
+                spiritId: side.id,
+              })
+            }
             panel={stat.panel}
             race={stat.race}
+            showFinalPanel={showFinalPanel}
             stat={stat.key}
           />
         ))}

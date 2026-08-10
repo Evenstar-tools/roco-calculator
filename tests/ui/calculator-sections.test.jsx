@@ -302,6 +302,141 @@ test("nature step keeps final panel, race, individual values, and level controls
   expect(onAttackerLevelChange).toHaveBeenCalledWith(1);
 });
 
+test("clicking a modified stat toggles the whole side between final and base panels", async () => {
+  const user = userEvent.setup();
+  const onAttackerIvChange = vi.fn();
+  const onAttackerNatureChange = vi.fn();
+  const onDefenderIvChange = vi.fn();
+  const onDefenderNatureChange = vi.fn();
+  const attackerStats = stats.map((stat) => {
+    if (stat.key === "attack") {
+      return {
+        ...stat,
+        basePanel: 240,
+        change: "increase",
+        delta: 24,
+        panel: 264,
+      };
+    }
+    if (stat.key === "magicAttack") {
+      return {
+        ...stat,
+        basePanel: 180,
+        change: "increase",
+        delta: 18,
+        panel: 198,
+      };
+    }
+    return { ...stat, basePanel: stat.panel, change: null, delta: 0 };
+  });
+  const defenderStats = stats.map((stat) =>
+    stat.key === "defense"
+      ? {
+          ...stat,
+          basePanel: 190,
+          change: "decrease",
+          delta: -17,
+          panel: 173,
+        }
+      : { ...stat, basePanel: stat.panel, change: null, delta: 0 },
+  );
+
+  render(
+    <NatureStatsStep
+      attacker={{ id: "attacker", nature: "neutral", stats: attackerStats }}
+      defender={{ id: "defender", nature: "neutral", stats: defenderStats }}
+      onAttackerIvChange={onAttackerIvChange}
+      onAttackerNatureChange={onAttackerNatureChange}
+      onDefenderIvChange={onDefenderIvChange}
+      onDefenderNatureChange={onDefenderNatureChange}
+    />,
+  );
+
+  const attackerSide = screen.getByRole("group", { name: "攻击方能力" });
+  const defenderSide = screen.getByRole("group", { name: "防御方能力" });
+  await user.click(
+    within(attackerSide).getByRole("button", {
+      name: "物攻最终值264，基础值240，增加24，点击查看修改前的六维",
+    }),
+  );
+
+  expect(within(attackerSide).getByText("240")).toBeVisible();
+  expect(within(attackerSide).getByText("180")).toBeVisible();
+  expect(within(attackerSide).getAllByText("原值")).toHaveLength(2);
+  expect(within(defenderSide).getByText("173")).toBeVisible();
+
+  await user.click(
+    within(attackerSide).getByRole("button", {
+      name: "物攻当前显示基础值240，最终值264，点击恢复最终六维",
+    }),
+  );
+
+  expect(within(attackerSide).getByText("264")).toBeVisible();
+  expect(within(attackerSide).getByText("198")).toBeVisible();
+  expect(within(attackerSide).queryByText("原值")).not.toBeInTheDocument();
+  expect(within(defenderSide).getByText("173")).toBeVisible();
+
+  await user.click(
+    within(defenderSide).getByRole("button", {
+      name: "物防最终值173，基础值190，降低17，点击查看修改前的六维",
+    }),
+  );
+  expect(within(defenderSide).getByText("190")).toBeVisible();
+  expect(within(defenderSide).getByText("原值")).toBeVisible();
+  expect(within(attackerSide).getByText("264")).toBeVisible();
+
+  expect(onAttackerIvChange).not.toHaveBeenCalled();
+  expect(onAttackerNatureChange).not.toHaveBeenCalled();
+  expect(onDefenderIvChange).not.toHaveBeenCalled();
+  expect(onDefenderNatureChange).not.toHaveBeenCalled();
+});
+
+test("base panel preview resets when that side switches spirit", async () => {
+  const user = userEvent.setup();
+  const modifiedStats = stats.map((stat) =>
+    stat.key === "speed"
+      ? {
+          ...stat,
+          basePanel: 220,
+          change: "increase",
+          delta: 30,
+          panel: 250,
+        }
+      : { ...stat, basePanel: stat.panel, change: null, delta: 0 },
+  );
+  const props = {
+    defender: { id: "defender", nature: "neutral", stats },
+    onAttackerIvChange: vi.fn(),
+    onAttackerNatureChange: vi.fn(),
+    onDefenderIvChange: vi.fn(),
+    onDefenderNatureChange: vi.fn(),
+  };
+  const { rerender } = render(
+    <NatureStatsStep
+      {...props}
+      attacker={{ id: "attacker-a", nature: "neutral", stats: modifiedStats }}
+    />,
+  );
+
+  const attackerSide = screen.getByRole("group", { name: "攻击方能力" });
+  await user.click(
+    within(attackerSide).getByRole("button", {
+      name: "速度最终值250，基础值220，增加30，点击查看修改前的六维",
+    }),
+  );
+  expect(within(attackerSide).getByText("220")).toBeVisible();
+
+  rerender(
+    <NatureStatsStep
+      {...props}
+      attacker={{ id: "attacker-b", nature: "neutral", stats: modifiedStats }}
+    />,
+  );
+
+  expect(within(attackerSide).getByText("250")).toBeVisible();
+  expect(within(attackerSide).queryByText("原值")).not.toBeInTheDocument();
+});
+
 test("nature step can reveal both attack and defense levels for each side", async () => {
   const user = userEvent.setup();
   const onAttackerLevelChange = vi.fn();

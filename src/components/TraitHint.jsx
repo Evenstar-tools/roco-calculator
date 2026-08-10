@@ -25,3 +25,20 @@ export function TraitHint({ description, name }) {
     </span>
   );
 }
+
+export function TraitSkillPowerBonuses({ ariaLabel, bonuses = [] }) {
+  if (bonuses.length === 0) return null;
+  return (
+    <div
+      aria-label={ariaLabel}
+      className="trait-skill-power-bonuses"
+      role="note"
+    >
+      {bonuses.map(({ fixedPowerAdd, perHit, skillName }) => (
+        <span key={skillName}>
+          {skillName} {perHit ? "每段" : ""}+{fixedPowerAdd}
+        </span>
+      ))}
+    </div>
+  );
+}

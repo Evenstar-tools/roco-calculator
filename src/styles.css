@@ -656,6 +656,76 @@ select:focus-visible {
   min-width: 0;
 }
 
+.stat-tile__value-group--toggle {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.stat-tile__value-group--toggle:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.stat-tile__panel-row {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.stat-tile__delta {
+  padding: 1px 4px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.stat-tile--increase {
+  border-color: #9fd9b7;
+  box-shadow: inset 3px 0 #22a65b;
+}
+
+.stat-tile--decrease {
+  border-color: #f1aaa4;
+  box-shadow: inset 3px 0 #dc4338;
+}
+
+.stat-tile--increase .stat-tile__panel,
+.stat-tile--increase .stat-tile__delta {
+  color: #137a43;
+}
+
+.stat-tile--increase .stat-tile__delta {
+  background: #e8f7ee;
+}
+
+.stat-tile--decrease .stat-tile__panel,
+.stat-tile--decrease .stat-tile__delta {
+  color: #c43129;
+}
+
+.stat-tile--decrease .stat-tile__delta {
+  background: #fff0ee;
+}
+
+.stat-tile--base-preview {
+  border-color: #b9abff;
+  box-shadow: inset 3px 0 #6654e8;
+}
+
+.stat-tile--base-preview .stat-tile__delta {
+  background: #efedff;
+  color: #5140c7;
+}
+
 .stat-tile__label,
 .stat-tile__panel,
 .stat-tile__race {
@@ -5359,6 +5429,25 @@ html[data-theme="dark"] .power-mode-switch button[aria-pressed="true"] {
   font-weight: 700;
 }
 
+.trait-skill-power-bonuses {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.trait-skill-power-bonuses > span {
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
 .skill-slot__power-input {
   color: var(--primary);
   font-weight: 800;
@@ -5378,6 +5467,44 @@ html[data-theme="dark"] .stat-tile,
 html[data-theme="dark"] .nature-effect,
 html[data-theme="dark"] .level-control {
   border-color: var(--border);
+}
+
+html[data-theme="dark"] .stat-tile--increase {
+  border-color: #367f59;
+  box-shadow: inset 3px 0 #45bf78;
+}
+
+html[data-theme="dark"] .stat-tile--decrease {
+  border-color: #934b47;
+  box-shadow: inset 3px 0 #ef6a61;
+}
+
+html[data-theme="dark"] .stat-tile--increase .stat-tile__panel,
+html[data-theme="dark"] .stat-tile--increase .stat-tile__delta {
+  color: #71d99b;
+}
+
+html[data-theme="dark"] .stat-tile--increase .stat-tile__delta {
+  background: #173b29;
+}
+
+html[data-theme="dark"] .stat-tile--decrease .stat-tile__panel,
+html[data-theme="dark"] .stat-tile--decrease .stat-tile__delta {
+  color: #ff8b82;
+}
+
+html[data-theme="dark"] .stat-tile--decrease .stat-tile__delta {
+  background: #46211f;
+}
+
+html[data-theme="dark"] .stat-tile--base-preview {
+  border-color: #7468bd;
+  box-shadow: inset 3px 0 #9387f2;
+}
+
+html[data-theme="dark"] .stat-tile--base-preview .stat-tile__delta {
+  background: #302b58;
+  color: #c6bfff;
 }
 
 html[data-theme="dark"] .skill-effect-card {

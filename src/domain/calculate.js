@@ -569,6 +569,95 @@ function calculateSkillResult({
         mode === "single" ? direction.hitCount : undefined,
         getDefaultHitCount(skill),
       ) ?? 1;
+    const panelTraitResolution = resolveTraitMultipliers({
+      attackerTraits: usesDisplayedPower ? [] : attacker.traits,
+      defenderTraits: defender.traits,
+      skill: { ...skill, category: "physical" },
+      attacker,
+      defender,
+      context,
+    });
+    const panelTrait =
+      panelTraitResolution.status === "exact"
+        ? panelTraitResolution
+        : {
+            attackLevelBonus: 0,
+            attackerSpeedFlatBonus: 0,
+            attackerSpeedLevelBonus: 0,
+            defenseLevelBonus: 0,
+            defenderSpeedFlatBonus: 0,
+            defenderSpeedLevelBonus: 0,
+          };
+    const attackLevelStage =
+      finiteNumber(
+        slotOverrides.attackLevelStage,
+        directionOverrides.attackLevelStage,
+        direction.attackLevelStage,
+      ) ?? 0;
+    const defenseLevelStage =
+      finiteNumber(
+        slotOverrides.defenseLevelStage,
+        directionOverrides.defenseLevelStage,
+        direction.defenseLevelStage,
+      ) ?? 0;
+    const statusAttackStageFor = (category) =>
+      attackLevelStage +
+      panelTrait.attackLevelBonus +
+      attackerBloodline.attackLevelBonusByCategory[category] +
+      defenderBloodline.targetAttackLevelBonusByCategory[category] +
+      attackerContract.attackLevelBonusByCategory[category] +
+      defenderContract.targetAttackLevelBonusByCategory[category];
+    const statusDefenseStageFor = (category) =>
+      defenseLevelStage +
+      panelTrait.defenseLevelBonus +
+      defenderBloodline.defenseLevelBonusByCategory[category] +
+      attackerBloodline.targetDefenseLevelBonusByCategory[category] +
+      defenderContract.defenseLevelBonusByCategory[category] +
+      attackerContract.targetDefenseLevelBonusByCategory[category];
+    const combatPanel = {
+      attacker: {
+        magicalAttack: Math.round(
+          abilityAdjustedStat(
+            attacker.panelStats.magicalAttack,
+            statusAttackStageFor("magical"),
+          ),
+        ),
+        physicalAttack: Math.round(
+          abilityAdjustedStat(
+            attacker.panelStats.physicalAttack,
+            statusAttackStageFor("physical"),
+          ),
+        ),
+        speed:
+          Math.round(
+            abilityAdjustedStat(
+              context.attackerSpeed,
+              panelTrait.attackerSpeedLevelBonus,
+            ),
+          ) + panelTrait.attackerSpeedFlatBonus,
+      },
+      defender: {
+        magicalDefense: Math.round(
+          abilityAdjustedStat(
+            defender.panelStats.magicalDefense,
+            statusDefenseStageFor("magical"),
+          ),
+        ),
+        physicalDefense: Math.round(
+          abilityAdjustedStat(
+            defender.panelStats.physicalDefense,
+            statusDefenseStageFor("physical"),
+          ),
+        ),
+        speed:
+          Math.round(
+            abilityAdjustedStat(
+              context.defenderSpeed,
+              panelTrait.defenderSpeedLevelBonus,
+            ),
+          ) + panelTrait.defenderSpeedFlatBonus,
+      },
+    };
     return unresolvedResult(
       skill,
       {
@@ -590,6 +679,7 @@ function calculateSkillResult({
       },
       {
         automaticHitCountAdd,
+        combatPanel,
         hitCount:
           fixedHitCount?.hitCount ??
           resolveHitCount(baseHitCount, automaticHitCountAdd),
@@ -630,6 +720,21 @@ function calculateSkillResult({
   if (traitResolution.status !== "exact") {
     return unresolvedResult(skill, traitResolution);
   }
+
+  context.attackerSpeed =
+    Math.round(
+      abilityAdjustedStat(
+        context.attackerSpeed,
+        traitResolution.attackerSpeedLevelBonus,
+      ),
+    ) + traitResolution.attackerSpeedFlatBonus;
+  context.defenderSpeed =
+    Math.round(
+      abilityAdjustedStat(
+        context.defenderSpeed,
+        traitResolution.defenderSpeedLevelBonus,
+      ),
+    ) + traitResolution.defenderSpeedFlatBonus;
 
   context.attackerPhysicalDefense = Math.round(
     abilityAdjustedStat(
@@ -721,13 +826,56 @@ function calculateSkillResult({
     (1 + percentageAdds.reduce((sum, value) => sum + (Number(value) || 0), 0));
   const traitAdjustedPower = effectivePower;
 
+  const attackLevelStage = finiteNumber(
+    slotOverrides.attackLevelStage,
+    directionOverrides.attackLevelStage,
+    direction.attackLevelStage,
+  );
+  const defenseLevelStage = finiteNumber(
+    slotOverrides.defenseLevelStage,
+    directionOverrides.defenseLevelStage,
+    direction.defenseLevelStage,
+  );
+  const baseCombatPanel = {
+    attacker: {
+      magicalAttack: Math.round(
+        abilityAdjustedStat(
+          attacker.panelStats.magicalAttack,
+          (attackLevelStage ?? 0) + traitResolution.attackLevelBonus,
+        ),
+      ),
+      physicalAttack: Math.round(
+        abilityAdjustedStat(
+          attacker.panelStats.physicalAttack,
+          (attackLevelStage ?? 0) + traitResolution.attackLevelBonus,
+        ),
+      ),
+      speed: context.attackerSpeed,
+    },
+    defender: {
+      magicalDefense: Math.round(
+        abilityAdjustedStat(
+          defender.panelStats.magicalDefense,
+          (defenseLevelStage ?? 0) + traitResolution.defenseLevelBonus,
+        ),
+      ),
+      physicalDefense: Math.round(
+        abilityAdjustedStat(
+          defender.panelStats.physicalDefense,
+          (defenseLevelStage ?? 0) + traitResolution.defenseLevelBonus,
+        ),
+      ),
+      speed: context.defenderSpeed,
+    },
+  };
+
   const statKeys = statKeysForCategory(skill.category, attacker.panelStats);
   if (!statKeys) {
     return unresolvedResult(skill, {
       status: "unsupported",
       reason: `技能分类 ${skill.category} 的攻防取值规则尚未验证`,
       source: skill.provenance,
-    });
+    }, { combatPanel: baseCombatPanel });
   }
 
   const baseAttackerStat = finiteNumber(
@@ -766,16 +914,6 @@ function calculateSkillResult({
     powerResolution.ignoreResistance && resolvedTypeMultiplier < 1
       ? 1
       : resolvedTypeMultiplier;
-  const attackLevelStage = finiteNumber(
-    slotOverrides.attackLevelStage,
-    directionOverrides.attackLevelStage,
-    direction.attackLevelStage,
-  );
-  const defenseLevelStage = finiteNumber(
-    slotOverrides.defenseLevelStage,
-    directionOverrides.defenseLevelStage,
-    direction.defenseLevelStage,
-  );
   const categoryKey =
     statKeys.attack === "magicalAttack" ? "magical" : "physical";
   const bloodlineAttackLevelBonus =
@@ -1179,6 +1317,55 @@ function calculateSkillResult({
       : []),
   ].filter(Boolean);
 
+  const attackStageFor = (category) =>
+    (attackLevelStage ?? 0) +
+    traitResolution.attackLevelBonus +
+    attackerBloodline.attackLevelBonusByCategory[category] +
+    defenderBloodline.targetAttackLevelBonusByCategory[category] +
+    attackerContract.attackLevelBonusByCategory[category] +
+    defenderContract.targetAttackLevelBonusByCategory[category];
+  const defenseStageFor = (category) =>
+    (defenseLevelStage ?? 0) +
+    traitResolution.defenseLevelBonus +
+    defenderBloodline.defenseLevelBonusByCategory[category] +
+    attackerBloodline.targetDefenseLevelBonusByCategory[category] +
+    defenderContract.defenseLevelBonusByCategory[category] +
+    attackerContract.targetDefenseLevelBonusByCategory[category];
+  const combatPanel = {
+    attacker: {
+      ...baseCombatPanel.attacker,
+      magicalAttack: Math.round(
+        abilityAdjustedStat(
+          attacker.panelStats.magicalAttack,
+          attackStageFor("magical"),
+        ),
+      ),
+      physicalAttack: Math.round(
+        abilityAdjustedStat(
+          attacker.panelStats.physicalAttack,
+          attackStageFor("physical"),
+        ),
+      ),
+      speed: context.attackerSpeed,
+    },
+    defender: {
+      ...baseCombatPanel.defender,
+      magicalDefense: Math.round(
+        abilityAdjustedStat(
+          defender.panelStats.magicalDefense,
+          defenseStageFor("magical"),
+        ),
+      ),
+      physicalDefense: Math.round(
+        abilityAdjustedStat(
+          defender.panelStats.physicalDefense,
+          defenseStageFor("physical"),
+        ),
+      ),
+      speed: context.defenderSpeed,
+    },
+  };
+
   return {
     skillId: skill.id,
     skillName: skill.name,
@@ -1190,6 +1377,7 @@ function calculateSkillResult({
     totalDamage,
     mainDamage: mainDamage.total,
     additionalDamage: additionalDamage.total,
+    combatPanel,
     markSettlements,
     traitSettlements,
     hpPercent,

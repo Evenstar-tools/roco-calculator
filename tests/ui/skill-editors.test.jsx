@@ -1329,6 +1329,36 @@ test("four-skill editor exposes erosion stacks and trigger above the slots", () 
   expect(screen.getByRole("checkbox", { name: "触发侵蚀" })).toBeVisible();
 });
 
+test("four-skill editor labels every fixed-power bonus inside the disc-swap trait", () => {
+  render(
+    <FourSkillEditor
+      attackerName="音碟吼"
+      attackerSkills={[skills[0], null, null, null]}
+      attackerTrait={{
+        description: "指定音波技能增加固定基础威力。",
+        inputs: [],
+        name: "换碟",
+        skillPowerBonuses: [
+          { fixedPowerAdd: 15, skillName: "音波弹" },
+          { fixedPowerAdd: 20, skillName: "音爆" },
+          { fixedPowerAdd: 20, skillName: "金属噪音" },
+          { fixedPowerAdd: 5, perHit: true, skillName: "午夜噪音" },
+        ],
+      }}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillSelect={vi.fn()}
+      skills={skills}
+    />,
+  );
+
+  const trait = screen.getByLabelText("换碟技能加成");
+  expect(within(trait).getByText("音波弹 +15")).toBeVisible();
+  expect(within(trait).getByText("音爆 +20")).toBeVisible();
+  expect(within(trait).getByText("金属噪音 +20")).toBeVisible();
+  expect(within(trait).getByText("午夜噪音 每段+5")).toBeVisible();
+});
+
 test("four-skill editor reuses the HP switch for blame shift", () => {
   const trait = {
     description: "自己每失去25%生命，连击数+2。",

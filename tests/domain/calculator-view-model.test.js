@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
+import {
+  buildCalculatorViewModel,
+  getPanelView,
+  getTraitView,
+} from "../../src/domain/calculator-view-model.js";
 
 const ivs = {
   hp: 60,
@@ -180,6 +184,93 @@ describe("buildCalculatorViewModel", () => {
     expect(model.calculation.forward.selectedResult).toMatchObject({
       reason: "请选择双方精灵",
       status: "unsupported",
+    });
+  });
+
+  test("projects a triggered fixed-speed trait into the owning side panel", () => {
+    const warningTrait = {
+      description: "敌方技能足以击败自己时，速度+50。",
+      id: "warning",
+      name: "预警",
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "fire"
+          ? { ...spirit, traitIds: [warningTrait.id] }
+          : spirit,
+      ),
+      traits: [warningTrait],
+    };
+    const input = state();
+    input.directions.forward.context = {
+      "attackerTrait.attackerTraitEffect.fff35f45": 50,
+      "attackerTrait.traitActivated.8c9e2197": true,
+    };
+
+    const model = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot: fixture,
+      state: input,
+    });
+
+    expect(model.sides.attacker.finalPanelStats).toMatchObject({ speed: 271 });
+  });
+});
+
+describe("getTraitView", () => {
+  test("换碟列出四个技能的固定威力加成", () => {
+    const trait = {
+      description: "自己携带的指定音波技能威力提升。",
+      id: "disc-swap",
+      name: "换碟",
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: [
+        {
+          ...snapshot.spirits[0],
+          traitIds: [trait.id],
+        },
+      ],
+      traits: [trait],
+    };
+
+    expect(getTraitView(fixture, fixture.spirits[0], "attacker")).toMatchObject({
+      description: expect.stringContaining("音波弹 +15"),
+      skillPowerBonuses: [
+        { fixedPowerAdd: 15, skillName: "音波弹" },
+        { fixedPowerAdd: 20, skillName: "音爆" },
+        { fixedPowerAdd: 20, skillName: "金属噪音" },
+        { fixedPowerAdd: 5, perHit: true, skillName: "午夜噪音" },
+      ],
+    });
+  });
+});
+
+describe("getPanelView", () => {
+  test("uses calculated final stats and reports the visible delta", () => {
+    const spirit = snapshot.spirits[0];
+    const side = state().sides.attacker;
+    const stats = getPanelView(spirit, side, {
+      finalStats: {
+        magicalAttack: 240,
+        physicalAttack: 360,
+        speed: 261,
+      },
+    });
+
+    expect(stats.find(({ key }) => key === "speed")).toMatchObject({
+      basePanel: 221,
+      change: "increase",
+      delta: 40,
+      panel: 261,
+    });
+    expect(stats.find(({ key }) => key === "hp")).toMatchObject({
+      basePanel: 408,
+      change: null,
+      delta: 0,
+      panel: 408,
     });
   });
 });

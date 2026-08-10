@@ -16,6 +16,15 @@ const snapshotPath = join(process.cwd(), "public", "data", "current.json");
 const snapshot = JSON.parse(readFileSync(snapshotPath, "utf8"));
 
 describe("trait effect coverage", () => {
+  function contextFor(trait, role, values) {
+    return Object.fromEntries(
+      getTraitEffectInputs(trait, role).map((control) => [
+        control.id,
+        values[control.contextKey] ?? control.defaultValue,
+      ]),
+    );
+  }
+
   test("守护之心按双方场上不同增益种类输入物防加成", () => {
     const trait = snapshot.traits.find(
       (candidate) => candidate.name === "守护之心",
@@ -280,14 +289,37 @@ describe("trait effect coverage", () => {
     expect(getTraitEffectInputs(trait, "defender")).toEqual([]);
   });
 
+  test("换碟按技能名称增加固定基础威力，不影响其他技能", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "换碟");
+    const cases = [
+      ["音波弹", 15],
+      ["音爆", 20],
+      ["金属噪音", 20],
+      ["午夜噪音", 5],
+      ["闪光", 0],
+    ];
+
+    for (const [name, expected] of cases) {
+      expect(
+        resolveTraitEffectRule(trait, "attacker", {
+          attacker: {},
+          context: {},
+          defender: {},
+          skill: { category: "magical", name, type: "普通" },
+        })?.fixedPowerAdd,
+      ).toBe(expected);
+    }
+  });
+
   test.each([
     ["猫精灵的礼物", "完整选择次数", "每层物攻"],
     ["蒸汽膨胀", "己方火系技能次数", "每层威力"],
     ["图书守卫者", "入场时魔力为1", "双攻加成"],
+    ["顺风", "先于敌方攻击", "触发加成"],
     ["破空", "先于敌方攻击", "触发加成"],
     ["贪得无厌", "每5%过量回复", "每层物攻"],
     ["草木苏醒时", "本次攻击前回复能量", "每点双攻"],
-    ["合拍", "累计相同项数", "每项物攻"],
+    ["合拍", "累计相同项数", "每项物攻物防"],
     ["和弦共振", "场上印记种类", "每种魔攻"],
   ])("%s exposes its condition and editable effect", (name, condition, effect) => {
     const trait = snapshot.traits.find((candidate) => candidate.name === name);
@@ -325,6 +357,12 @@ describe("trait effect coverage", () => {
         defaultValue: 50,
         key: "attackerTraitEffect",
         label: "每层双攻",
+        type: "number",
+      },
+      {
+        defaultValue: 50,
+        key: "attackerTraitSpeedEffect",
+        label: "每层速度",
         type: "number",
       },
     ]);
@@ -389,6 +427,12 @@ describe("trait effect coverage", () => {
           defaultValue: 20,
           key: "attackerTraitEffect",
           label: "每层攻防",
+          type: "number",
+        },
+        {
+          defaultValue: 20,
+          key: "attackerTraitSpeedEffect",
+          label: "每层速度",
           type: "number",
         },
       ]);
@@ -464,6 +508,258 @@ describe("trait effect coverage", () => {
       defenseLevelBonus: 10,
       defenderDefenseLevelBonus: 10,
     });
+  });
+
+  test("囤积按当前能量为攻防双方增加双防", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "囤积");
+    for (const role of ["attacker", "defender"]) {
+      const context = contextFor(trait, role, {
+        [`${role}TraitStacks`]: 3,
+      });
+      expect(getTraitEffectInputs(trait, role).map(({ label }) => label)).toEqual([
+        "当前能量",
+        "每点双防",
+      ]);
+      expect(resolveTraitEffectRule(trait, role, {
+        attacker: {},
+        context,
+        defender: {},
+        skill: { category: "physical", type: "普通" },
+      })).toMatchObject(
+        role === "attacker"
+          ? { attackerDefenseLevelBonus: 3 }
+          : { defenseLevelBonus: 3, defenderDefenseLevelBonus: 3 },
+      );
+    }
+  });
+
+  test("游弋仅在勾选蓄力状态后为攻防双方增加100%双防", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "游弋");
+    for (const role of ["attacker", "defender"]) {
+      const controls = getTraitEffectInputs(trait, role);
+      expect(controls).toMatchObject([
+        { label: "正在蓄力", type: "boolean" },
+      ]);
+      expect(controls).toHaveLength(1);
+      const context = contextFor(trait, role, { traitActivated: true });
+      expect(resolveTraitEffectRule(trait, role, {
+        attacker: {},
+        context,
+        defender: {},
+        skill: { category: "magical", type: "水" },
+      })).toMatchObject(
+        role === "attacker"
+          ? { attackerDefenseLevelBonus: 10 }
+          : { defenseLevelBonus: 10, defenderDefenseLevelBonus: 10 },
+      );
+    }
+  });
+
+  test("合拍同时结算物攻和物防，且不误加到魔法伤害", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "合拍");
+    const context = contextFor(trait, "attacker", { attackerTraitStacks: 2 });
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      attacker: {},
+      context,
+      defender: {},
+      skill: { category: "physical", type: "普通" },
+    })).toMatchObject({ attackLevelBonus: 2, attackerDefenseLevelBonus: 2 });
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      attacker: {},
+      context,
+      defender: {},
+      skill: { category: "magical", type: "普通" },
+    })).toMatchObject({ attackLevelBonus: 0, attackerDefenseLevelBonus: 0 });
+    const defenderContext = contextFor(trait, "defender", {
+      defenderTraitStacks: 2,
+    });
+    expect(resolveTraitEffectRule(trait, "defender", {
+      attacker: {},
+      context: defenderContext,
+      defender: {},
+      skill: { category: "physical", type: "普通" },
+    })).toMatchObject({ defenseLevelBonus: 2, defenderDefenseLevelBonus: 2 });
+  });
+
+  test("扫荡同时结算魔攻和魔防，且不误加到物理伤害", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "扫荡");
+    const context = contextFor(trait, "attacker", { attackerTraitStacks: 2 });
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      attacker: {},
+      context,
+      defender: {},
+      skill: { category: "magical", type: "普通" },
+    })).toMatchObject({ attackLevelBonus: 4, attackerDefenseLevelBonus: 2 });
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      attacker: {},
+      context,
+      defender: {},
+      skill: { category: "physical", type: "普通" },
+    })).toMatchObject({ attackLevelBonus: 0, attackerDefenseLevelBonus: 0 });
+    const defenderContext = contextFor(trait, "defender", {
+      defenderTraitStacks: 2,
+    });
+    expect(resolveTraitEffectRule(trait, "defender", {
+      attacker: {},
+      context: defenderContext,
+      defender: {},
+      skill: { category: "magical", type: "普通" },
+    })).toMatchObject({ defenseLevelBonus: 2, defenderDefenseLevelBonus: 2 });
+  });
+
+  test("冰雪魂魄必须勾选暴风雪天气才按冻结层数增加冰系威力", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "冰雪魂魄");
+    expect(getTraitEffectInputs(trait, "attacker").map(({ label }) => label)).toEqual([
+      "暴风雪天气",
+      "敌方冻结总层数",
+      "每层威力",
+    ]);
+    const inactive = contextFor(trait, "attacker", {
+      blizzardWeather: false,
+      attackerTraitStacks: 3,
+    });
+    const active = contextFor(trait, "attacker", {
+      blizzardWeather: true,
+      attackerTraitStacks: 3,
+    });
+    const input = {
+      attacker: {},
+      defender: {},
+      skill: { category: "magical", type: "冰" },
+    };
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      ...input,
+      context: inactive,
+    })).toMatchObject({ powerPercentAdd: 0 });
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      ...input,
+      context: active,
+    })).toMatchObject({ powerPercentAdd: 0.3 });
+  });
+
+  test("攻防速类特性把速度加成带入双方的即时计算", () => {
+    for (const name of [
+      "最好的伙伴",
+      "裁决",
+      "滋养",
+      "点燃",
+      "净化",
+      "虫群鼓舞",
+      "虫群突袭",
+    ]) {
+      const trait = snapshot.traits.find((candidate) => candidate.name === name);
+      const attackerContext = contextFor(trait, "attacker", {
+        attackerTraitStacks: 2,
+      });
+      const attackerResult = resolveTraitEffectRule(trait, "attacker", {
+        attacker: {},
+        context: attackerContext,
+        defender: {},
+        skill: { category: "physical", type: "普通" },
+      });
+      expect(attackerResult.attackerSpeedLevelBonus).toBeGreaterThan(0);
+
+      const defenderContext = contextFor(trait, "defender", {
+        defenderTraitStacks: 2,
+      });
+      const defenderResult = resolveTraitEffectRule(trait, "defender", {
+        attacker: {},
+        context: defenderContext,
+        defender: {},
+        skill: { category: "physical", type: "普通" },
+      });
+      expect(defenderResult.defenderSpeedLevelBonus).toBeGreaterThan(0);
+    }
+  });
+
+  test("先知、变形活画和淬炼火按层数提供描述中的固定速度", () => {
+    for (const [name, expectedSpeed] of [
+      ["先知", 100],
+      ["变形活画", 10],
+      ["淬炼火", 20],
+    ]) {
+      const trait = snapshot.traits.find((candidate) => candidate.name === name);
+      const context = contextFor(trait, "attacker", {
+        attackerTraitStacks: 2,
+        enemyBuffStacks: 2,
+      });
+      expect(resolveTraitEffectRule(trait, "attacker", {
+        attacker: {},
+        context,
+        defender: {},
+        skill: { category: "physical", type: "普通" },
+      })).toMatchObject({ attackerSpeedFlatBonus: expectedSpeed });
+    }
+  });
+
+  test("惊吓仅在确认攻击方零能量时免疫本次伤害", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "惊吓");
+    expect(getTraitEffectInputs(trait, "attacker")).toEqual([]);
+    expect(getTraitEffectInputs(trait, "defender").map(({ label }) => label)).toEqual([
+      "攻击方能量为0",
+    ]);
+    const baseInput = {
+      attacker: {},
+      defender: {},
+      skill: { category: "physical", cost: 3, type: "普通" },
+    };
+    expect(resolveTraitEffectRule(trait, "defender", {
+      ...baseInput,
+      context: contextFor(trait, "defender", { attackerEnergyZero: false }),
+    })).toMatchObject({ damageReductionMultiplier: 1 });
+    expect(resolveTraitEffectRule(trait, "defender", {
+      ...baseInput,
+      context: contextFor(trait, "defender", { attackerEnergyZero: true }),
+    })).toMatchObject({ damageReductionMultiplier: 0 });
+  });
+
+  test("逐魂鸟自动免疫能耗不高于1的攻击技能", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "逐魂鸟");
+    expect(getTraitEffectInputs(trait, "attacker")).toEqual([]);
+    expect(getTraitEffectInputs(trait, "defender")).toEqual([]);
+    const resolve = (cost) => resolveTraitEffectRule(trait, "defender", {
+      attacker: {},
+      context: contextFor(trait, "defender"),
+      defender: {},
+      skill: { category: "physical", cost, type: "普通" },
+    });
+    expect(resolve(1)).toMatchObject({ damageReductionMultiplier: 0 });
+    expect(resolve(2)).toMatchObject({ damageReductionMultiplier: 1 });
+  });
+
+  test.each([
+    ["预警", "敌方技能足以击败自己"],
+    ["哨兵", "敌方技能足以击败自己"],
+    ["流沙统治者", "沙暴天气"],
+  ])("%s在条件确认后为特性持有方增加50速度", (name, conditionLabel) => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === name);
+    for (const role of ["attacker", "defender"]) {
+      expect(getTraitEffectInputs(trait, role).map(({ label }) => label)).toEqual([
+        conditionLabel,
+        "速度加成",
+      ]);
+      const inactive = resolveTraitEffectRule(trait, role, {
+        attacker: {},
+        context: contextFor(trait, role, { traitActivated: false }),
+        defender: {},
+        skill: { category: "physical", cost: 2, type: "普通" },
+      });
+      const active = resolveTraitEffectRule(trait, role, {
+        attacker: {},
+        context: contextFor(trait, role, { traitActivated: true }),
+        defender: {},
+        skill: { category: "physical", cost: 2, type: "普通" },
+      });
+      expect(inactive).toMatchObject({
+        attackerSpeedFlatBonus: 0,
+        defenderSpeedFlatBonus: 0,
+      });
+      expect(active).toMatchObject(
+        role === "attacker"
+          ? { attackerSpeedFlatBonus: 50 }
+          : { defenderSpeedFlatBonus: 50 },
+      );
+    }
   });
 
   test("张弛有度只显示周末勾选并同时支持攻防双方", () => {

@@ -49,10 +49,14 @@ function exactContribution(overrides = {}, step = undefined) {
   return {
     status: "exact",
     attackLevelBonus: 0,
+    attackerSpeedFlatBonus: 0,
+    attackerSpeedLevelBonus: 0,
     attackerDefenseLevelBonus: 0,
     attackMultiplier: 1,
     defenseLevelBonus: 0,
     defenderDefenseLevelBonus: 0,
+    defenderSpeedFlatBonus: 0,
+    defenderSpeedLevelBonus: 0,
     fixedPowerAdd: 0,
     powerPercentAdd: 0,
     powerMultiplier: 1,
@@ -316,12 +320,16 @@ function resolveOneTrait(traitValue, role, input) {
     return exactContribution(
       {
         attackLevelBonus: interactiveRule.attackLevelBonus,
+        attackerSpeedFlatBonus: interactiveRule.attackerSpeedFlatBonus,
+        attackerSpeedLevelBonus: interactiveRule.attackerSpeedLevelBonus,
         attackerDefenseLevelBonus:
           interactiveRule.attackerDefenseLevelBonus,
         attackMultiplier: interactiveRule.attackMultiplier,
         defenseLevelBonus: interactiveRule.defenseLevelBonus,
         defenderDefenseLevelBonus:
           interactiveRule.defenderDefenseLevelBonus,
+        defenderSpeedFlatBonus: interactiveRule.defenderSpeedFlatBonus,
+        defenderSpeedLevelBonus: interactiveRule.defenderSpeedLevelBonus,
         damageReductionMultiplier:
           interactiveRule.damageReductionMultiplier,
         finalDamageMultiplier: interactiveRule.finalDamageMultiplier,
@@ -437,6 +445,10 @@ export function resolveTraitMultipliers({
       ...combined,
       attackLevelBonus:
         combined.attackLevelBonus + resolution.attackLevelBonus,
+      attackerSpeedFlatBonus:
+        combined.attackerSpeedFlatBonus + resolution.attackerSpeedFlatBonus,
+      attackerSpeedLevelBonus:
+        combined.attackerSpeedLevelBonus + resolution.attackerSpeedLevelBonus,
       attackerDefenseLevelBonus:
         combined.attackerDefenseLevelBonus +
         resolution.attackerDefenseLevelBonus,
@@ -447,6 +459,10 @@ export function resolveTraitMultipliers({
       defenderDefenseLevelBonus:
         combined.defenderDefenseLevelBonus +
         resolution.defenderDefenseLevelBonus,
+      defenderSpeedFlatBonus:
+        combined.defenderSpeedFlatBonus + resolution.defenderSpeedFlatBonus,
+      defenderSpeedLevelBonus:
+        combined.defenderSpeedLevelBonus + resolution.defenderSpeedLevelBonus,
       fixedPowerAdd:
         combined.fixedPowerAdd + resolution.fixedPowerAdd,
       powerPercentAdd:

@@ -13,7 +13,10 @@ import { SkillPicker } from "./SkillPicker.jsx";
 import { useEffect, useState } from "react";
 import { damageTone } from "./damageTone.js";
 import { HealthInput } from "./HealthInput.jsx";
-import { TraitHint } from "./TraitHint.jsx";
+import {
+  TraitHint,
+  TraitSkillPowerBonuses,
+} from "./TraitHint.jsx";
 import {
   getChoiceTraitInput,
   supportsChoiceTrait,
@@ -157,9 +160,14 @@ function SkillSide({
         <span>{label}</span>
         <strong>{name}</strong>
       </header>
-      {offensiveTraitInputs.length > 0 ? (
+      {offensiveTraitInputs.length > 0 ||
+      trait?.skillPowerBonuses?.length > 0 ? (
         <div className="four-skill-trait-controls">
           <TraitHint description={trait.description} name={trait.name} />
+          <TraitSkillPowerBonuses
+            ariaLabel={`${trait.name}技能加成`}
+            bonuses={trait.skillPowerBonuses}
+          />
           <TraitAutomaticStack
             automaticStack={trait.automaticStack}
             skills={selectedSkills}

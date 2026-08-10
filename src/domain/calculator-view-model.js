@@ -7,6 +7,7 @@ import {
   getInheritedDamageTraits,
   getTraitAutomaticStack,
   getTraitEffectInputs,
+  getTraitSkillPowerBonuses,
 } from "./trait-effects.js";
 
 const STAT_VIEW = [
@@ -70,12 +71,27 @@ function getSpiritCardView(snapshot, spirit) {
   const traitsById = getSnapshotIndexes(snapshot).traits;
   const primaryTrait =
     spirit.traitIds?.map((traitId) => traitsById[traitId]).find(Boolean) ?? null;
+  const skillPowerBonuses = getTraitSkillPowerBonuses(primaryTrait);
+  const traitDescription = describeTraitWithSkillPowerBonuses(
+    primaryTrait?.description ?? spirit.traitDescription,
+    skillPowerBonuses,
+  );
   return {
     ...spirit,
-    traitDescription: primaryTrait?.description ?? spirit.traitDescription,
+    traitDescription,
     traitName:
       primaryTrait?.displayName ?? primaryTrait?.name ?? spirit.traitName,
   };
+}
+
+function describeTraitWithSkillPowerBonuses(description, bonuses) {
+  if (bonuses.length === 0) return description;
+  const details = bonuses
+    .map(({ fixedPowerAdd, perHit, skillName }) =>
+      `${skillName} ${perHit ? "每段" : ""}+${fixedPowerAdd}`,
+    )
+    .join("；");
+  return `${description ?? ""} 固定基础威力：${details}。`.trim();
 }
 
 export function getPanelView(spirit, side, stages = {}) {
@@ -93,17 +109,44 @@ export function getPanelView(spirit, side, stages = {}) {
         : key === "physicalDefense" || key === "magicalDefense"
           ? defenseMultiplier
           : 1;
+    const basePanel = panel[key];
+    const fallbackPanel = Math.round(
+      (basePanel + (key === "speed" ? Number(stages.speedFlat ?? 0) : 0)) *
+        multiplier,
+    );
+    const projectedPanel = Number(stages.finalStats?.[key]);
+    const finalPanel = Number.isFinite(projectedPanel)
+      ? Math.round(projectedPanel)
+      : fallbackPanel;
+    const delta = finalPanel - basePanel;
     return {
+      basePanel,
+      change: delta > 0 ? "increase" : delta < 0 ? "decrease" : null,
+      delta,
       displayIv: side.displayIvs[key],
       key,
       label,
-      panel: Math.round(
-        (panel[key] + (key === "speed" ? Number(stages.speedFlat ?? 0) : 0)) *
-          multiplier,
-      ),
+      panel: finalPanel,
       race: spirit.raceStats[key],
     };
   });
+}
+
+function finalPanelStatsForSide(calculation, sideKey) {
+  const attackDirection = sideKey === "attacker" ? "forward" : "reverse";
+  const defenseDirection = sideKey === "attacker" ? "reverse" : "forward";
+  const attackProjection =
+    calculation[attackDirection]?.selectedResult?.combatPanel?.attacker;
+  const defenseProjection =
+    calculation[defenseDirection]?.selectedResult?.combatPanel?.defender;
+  if (!attackProjection && !defenseProjection) return null;
+  return {
+    ...(defenseProjection ?? {}),
+    ...(attackProjection ?? {}),
+    speed:
+      attackProjection?.speed ??
+      defenseProjection?.speed,
+  };
 }
 
 export function getTraitView(snapshot, spirit, role = "attacker") {
@@ -123,14 +166,19 @@ export function getTraitView(snapshot, spirit, role = "attacker") {
     ) ?? candidates[0];
   if (!traitEntity) return null;
   const inputs = getTraitEffectInputs(traitEntity, role);
+  const skillPowerBonuses = getTraitSkillPowerBonuses(traitEntity);
   const condition = inputs.find((input) => input.type === "boolean");
   return {
     automaticStack: getTraitAutomaticStack(traitEntity, role),
     conditionKey: condition?.id ?? null,
     conditionLabel: condition?.label ?? null,
-    description: traitEntity.description ?? "按当前战斗条件自动判定。",
+    description: describeTraitWithSkillPowerBonuses(
+      traitEntity.description ?? "按当前战斗条件自动判定。",
+      skillPowerBonuses,
+    ),
     inputs,
     name: traitEntity.displayName ?? traitEntity.name,
+    skillPowerBonuses,
   };
 }
 
@@ -293,6 +341,12 @@ export function buildCalculatorViewModel({
   const result = configurationReady
     ? asResultRailModel({ calculation, direction: activeDirection, snapshot, state })
     : null;
+  const attackerFinalPanelStats = configurationReady
+    ? finalPanelStatsForSide(calculation, "attacker")
+    : null;
+  const defenderFinalPanelStats = configurationReady
+    ? finalPanelStatsForSide(calculation, "defender")
+    : null;
   const currentDirection = state.directions[activeDirection];
   const weatherRainTurns = Math.min(
     8,
@@ -329,11 +383,13 @@ export function buildCalculatorViewModel({
     selectableSpirits,
     sides: {
       attacker: {
+        finalPanelStats: attackerFinalPanelStats,
         health: attackerHealth,
         panelStats: attackerPanelStats,
         spirit: attacker,
       },
       defender: {
+        finalPanelStats: defenderFinalPanelStats,
         health: defenderHealth,
         panelStats: defenderPanelStats,
         spirit: defender,

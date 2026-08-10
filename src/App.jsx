@@ -1446,6 +1446,7 @@ function CalculatorWorkspace({ snapshot }) {
             <>
               <NatureStatsStep
             attacker={{
+              id: attacker.id,
               levels: fairPigeonPresent
                 ? [
                     {
@@ -1490,9 +1491,11 @@ function CalculatorWorkspace({ snapshot }) {
                   state.directions.reverse.overrides.defenseLevelStage ?? 0,
                 speedFlat:
                   state.directions.forward.overrides.attackerSpeedFlat ?? 0,
+                finalStats: viewModel.sides.attacker.finalPanelStats,
               }),
             }}
             defender={{
+              id: defender.id,
               levels: fairPigeonPresent
                 ? [
                     {
@@ -1537,6 +1540,7 @@ function CalculatorWorkspace({ snapshot }) {
                   state.directions.forward.overrides.defenseLevelStage ?? 0,
                 speedFlat:
                   state.directions.reverse.overrides.attackerSpeedFlat ?? 0,
+                finalStats: viewModel.sides.defender.finalPanelStats,
               }),
             }}
             onAttackerIvChange={(stat, value) =>

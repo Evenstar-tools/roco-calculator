@@ -134,6 +134,16 @@ const GLOBAL_FIXED_RULES = Object.freeze({
       type: "boolean",
     },
   },
+  强制过滤: {
+    hitCount: 1,
+    input: {
+      contextKey: "forcedFilterActivated",
+      defaultValue: false,
+      label: "触发强制过滤",
+      scope: "battle",
+      type: "boolean",
+    },
+  },
 });
 
 function sourceFor(trait) {

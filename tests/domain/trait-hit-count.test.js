@@ -35,6 +35,11 @@ const indiscriminateFilter = {
   name: "无差别过滤",
   description: "在场时，所有精灵连击数固定为2。",
 };
+const forcedFilter = {
+  id: "trait_forced_filter",
+  name: "强制过滤",
+  description: "在场时，所有精灵连击数固定为1。",
+};
 
 const comboAttack = {
   category: "physical",
@@ -135,6 +140,36 @@ describe("resolveTraitHitCountBonus", () => {
         skill: comboAttack,
       }),
     ).toMatchObject({ hitCount: 2, traitName: "无差别过滤" });
+  });
+
+  test("强制过滤提供攻防共用的勾选项，且只把已声明连击的技能固定为1", () => {
+    for (const [role, attackerTraits, defenderTraits] of [
+      ["attacker", [forcedFilter], []],
+      ["defender", [], [forcedFilter]],
+    ]) {
+      const control = getTraitEffectInputs(forcedFilter, role)[0];
+      expect(control).toMatchObject({
+        contextKey: "forcedFilterActivated",
+        label: "触发强制过滤",
+        type: "boolean",
+      });
+      expect(
+        resolveGlobalFixedHitCount({
+          attackerTraits,
+          context: { [control.id]: true },
+          defenderTraits,
+          skill: comboAttack,
+        }),
+      ).toMatchObject({ hitCount: 1, traitName: "强制过滤" });
+      expect(
+        resolveGlobalFixedHitCount({
+          attackerTraits,
+          context: { [control.id]: true },
+          defenderTraits,
+          skill: singleAttack,
+        }),
+      ).toBeNull();
+    }
   });
 
   test("侵蚀需要勾选后才按敌方中毒层数增加连击", () => {

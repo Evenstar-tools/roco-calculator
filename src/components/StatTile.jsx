@@ -9,11 +9,16 @@ function clampIv(value) {
 
 export function StatTile({
   accent = "neutral",
+  basePanel,
+  change = null,
+  delta = 0,
   displayIv,
   label,
   onIvChange,
+  onPanelToggle,
   panel,
   race,
+  showFinalPanel = true,
   stat,
 }) {
   const inputId = useId();
@@ -35,16 +40,56 @@ export function StatTile({
     onIvChange(clamped);
   }
 
-  return (
-    <div className={`stat-tile stat-tile--${accent}`}>
-      <div className="stat-tile__value-group">
-        <span className="stat-tile__label" title={label}>
-          <StatIcon stat={stat} />
-          <span className="stat-tile__label-text">{label}</span>
-        </span>
-        <output className="stat-tile__panel">{panel}</output>
-        <span className="stat-tile__race">种:{race}</span>
+  const numericDelta = Number(delta) || 0;
+  const changeText = numericDelta > 0 ? "增加" : "降低";
+  const isModified = Boolean(change);
+  const showingBase = isModified && !showFinalPanel;
+  const displayedPanel = showingBase ? basePanel : panel;
+  const panelActionLabel = showingBase
+    ? `${label}当前显示基础值${basePanel}，最终值${panel}，点击恢复最终六维`
+    : `${label}最终值${panel}，基础值${basePanel}，${changeText}${Math.abs(numericDelta)}，点击查看修改前的六维`;
+  const valueContent = (
+    <>
+      <span className="stat-tile__label" title={label}>
+        <StatIcon stat={stat} />
+        <span className="stat-tile__label-text">{label}</span>
+      </span>
+      <div className="stat-tile__panel-row">
+        <output className="stat-tile__panel">{displayedPanel}</output>
+        {isModified ? (
+          <span className="stat-tile__delta">
+            {showingBase ? (
+              "原值"
+            ) : (
+              <>
+                {numericDelta > 0 ? "+" : ""}
+                {numericDelta}
+              </>
+            )}
+          </span>
+        ) : null}
       </div>
+      <span className="stat-tile__race">种:{race}</span>
+    </>
+  );
+
+  return (
+    <div
+      className={`stat-tile stat-tile--${accent}${showFinalPanel && change ? ` stat-tile--${change}` : ""}${showingBase ? " stat-tile--base-preview" : ""}`}
+    >
+      {isModified ? (
+        <button
+          aria-label={panelActionLabel}
+          className="stat-tile__value-group stat-tile__value-group--toggle"
+          onClick={onPanelToggle}
+          title={showingBase ? "显示最终六维" : "显示修改前六维"}
+          type="button"
+        >
+          {valueContent}
+        </button>
+      ) : (
+        <div className="stat-tile__value-group">{valueContent}</div>
+      )}
 
       <div className="stat-tile__iv-group">
         <label className="stat-tile__iv-label" htmlFor={inputId}>

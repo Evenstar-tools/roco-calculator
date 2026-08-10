@@ -39,11 +39,17 @@ describe("trait value persistence", () => {
     const attackerEffect = attackerControls.find(
       (control) => control.contextKey === "attackerTraitEffect",
     );
+    const attackerSpeedEffect = attackerControls.find(
+      (control) => control.contextKey === "attackerTraitSpeedEffect",
+    );
     const defenderStack = defenderControls.find(
       (control) => control.contextKey === "defenderTraitStacks",
     );
     const defenderEffect = defenderControls.find(
       (control) => control.contextKey === "defenderTraitEffect",
+    );
+    const defenderSpeedEffect = defenderControls.find(
+      (control) => control.contextKey === "defenderTraitSpeedEffect",
     );
 
     const values = extractTraitValues(
@@ -75,9 +81,13 @@ describe("trait value persistence", () => {
     expect(canonicalTraitControlKey(attackerStack)).toBe(
       canonicalTraitControlKey(defenderStack),
     );
+    expect(canonicalTraitControlKey(attackerSpeedEffect)).toBe(
+      canonicalTraitControlKey(defenderSpeedEffect),
+    );
     expect(materializeTraitContext(values, data, spirit.id, "defender")).toEqual(
       {
         [defenderEffect.id]: 20,
+        [defenderSpeedEffect.id]: 20,
         [defenderStack.id]: 3,
       },
     );
@@ -93,6 +103,9 @@ describe("trait value persistence", () => {
     const attackerEffect = attackerControls.find(
       (control) => control.contextKey === "attackerTraitEffect",
     );
+    const attackerSpeedEffect = attackerControls.find(
+      (control) => control.contextKey === "attackerTraitSpeedEffect",
+    );
 
     expect(
       materializeTraitContext(
@@ -107,6 +120,7 @@ describe("trait value persistence", () => {
       ),
     ).toEqual({
       [attackerEffect.id]: 500,
+      [attackerSpeedEffect.id]: 20,
       [attackerStack.id]: 20,
     });
   });

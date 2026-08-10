@@ -53,3 +53,28 @@ test("clamps individual values to the current sixty-point cap", async () => {
   expect(input).toHaveValue(60);
   expect(onIvChange).toHaveBeenLastCalledWith(60);
 });
+
+test("marks a final panel value with a readable positive delta", () => {
+  render(
+    <StatTile
+      accent="attack"
+      basePanel={221}
+      change="increase"
+      delta={50}
+      displayIv={60}
+      label="速度"
+      onIvChange={() => {}}
+      panel={271}
+      race={116}
+      stat="speed"
+    />,
+  );
+
+  expect(screen.getByText("271")).toBeVisible();
+  expect(screen.getByText("+50")).toBeVisible();
+  expect(
+    screen.getByRole("button", {
+      name: "速度最终值271，基础值221，增加50，点击查看修改前的六维",
+    }),
+  ).toBeVisible();
+});
