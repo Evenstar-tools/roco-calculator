@@ -634,15 +634,14 @@ const RULES = Object.freeze({
       roles: ["attacker", "defender"],
     },
   ),
-  冰雪魂魄: triggeredStack(
+  冰雪魂魄: trigger(
     "power_percent",
-    10,
+    100,
     "暴风雪天气",
-    "敌方冻结总层数",
-    "每层威力",
+    "冰系威力",
     {
       conditionKey: "blizzardWeather",
-      max: 100,
+      editableEffect: false,
       types: ["冰"],
     },
   ),
@@ -675,7 +674,7 @@ const RULES = Object.freeze({
   ),
   光度换算: stack(
     "fixed_power",
-    20,
+    30,
     "已使用火系技能次数",
     "每层威力",
     { max: 20, types: ["光"] },

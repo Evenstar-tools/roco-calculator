@@ -157,10 +157,10 @@ test("keeps the complete production roster, skill library, and local avatar set"
     (assetPath) => !existsSync(assetPath),
   );
 
-  expect(runtime.spirits).toHaveLength(592);
+  expect(runtime.spirits).toHaveLength(594);
   expect(runtime.skills).toHaveLength(553);
-  expect(runtime.learnsets).toHaveLength(592);
-  expect(localAssets).toHaveLength(592);
-  expect(new Set(localAssetPaths)).toHaveLength(592);
+  expect(runtime.learnsets).toHaveLength(594);
+  expect(localAssets).toHaveLength(594);
+  expect(new Set(localAssetPaths)).toHaveLength(594);
   expect(missingAssets).toEqual([]);
 });

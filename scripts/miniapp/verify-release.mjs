@@ -11,7 +11,7 @@ const { loadReleaseConfig, preflightErrors, verifyPreflight } = releaseConfig;
 const traverse = traverseModule.default ?? traverseModule;
 
 const EXPECTED_MINIAPP_VERSION = "0.1.2";
-const EXPECTED_ROOT_VERSION = "1.5.0";
+const EXPECTED_ROOT_VERSION = "1.5.2";
 const MAX_MAIN_PACKAGE_BYTES = 2 * 1024 * 1024;
 const REQUIRED_DIST_FILES = [
   "app.json",

@@ -1295,10 +1295,10 @@ test("clicking 撒娇 advances its permanent power once without input side effec
   expect(power).toHaveValue(30);
 
   await user.click(screen.getByText(/自己获得萌化/));
-  await waitFor(() => expect(power).toHaveValue(50));
+  await waitFor(() => expect(power).toHaveValue(40));
 
   await user.click(power);
-  expect(power).toHaveValue(50);
+  expect(power).toHaveValue(40);
 });
 
 test("clicking a mark skill adds its mark to the described side", async () => {

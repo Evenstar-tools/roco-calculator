@@ -500,7 +500,7 @@ const REVIEWED_EFFECTS = Object.freeze({
   ),
   远行: stackAdd("actedFirstCount", "此前先手次数", 25),
   撒娇: (() => {
-    const effect = stackAdd("moeGainCount", "获得萌化次数", 20);
+    const effect = stackAdd("moeGainCount", "获得萌化次数", 10);
     return {
       ...effect,
       ruleParams: {

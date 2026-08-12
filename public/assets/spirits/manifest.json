@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-23T13:15:22.934Z",
-  "sourceSnapshot": "s3-2026-07-15",
+  "generatedAt": "2026-08-12T16:34:46.426Z",
+  "sourceSnapshot": "s3-2026-08-13-midseason",
   "assets": [
     {
       "id": "spirit_db5a2cb398dc0385",
@@ -5919,6 +5919,26 @@
       "localFile": "/assets/spirits/spirit_b7e38cd586b1d05c.png",
       "sha256": "fce99cd3e7258ce36176389d35fca653dfe08c248f4d1c9bfc61725a8209f956",
       "bytes": 17808,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "spirit_5f3eaa6f91c32c93",
+      "name": "宝藏小狐",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/7/7c/690n5t1mnsocezt2vzhf6hdzby9824p.png",
+      "localFile": "/assets/spirits/spirit_5f3eaa6f91c32c93.png",
+      "sha256": "0f3786519a723a24dccabb9f7f4595542fda63c24323a238b6896d9b2cef4f42",
+      "bytes": 12402,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "spirit_ad25e8d39ea8f904",
+      "name": "宝藏沙狐",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/ff/esjftr9ldicwjdkbmbtbxh9cmw4fykw.png",
+      "localFile": "/assets/spirits/spirit_ad25e8d39ea8f904.png",
+      "sha256": "63c61cdeeb6a2ef98ab137c9bb17dd607024710edb26fd928bc4944bc6f5403c",
+      "bytes": 15009,
       "width": 128,
       "height": 128
     }

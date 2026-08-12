@@ -7,6 +7,13 @@ import {
 const skill = (name, extra = {}) => ({ name, ...extra });
 
 describe("skill status effects", () => {
+  test("S3季中示弱应用速度永久+130", () => {
+    expect(resolveSkillStatusActivation(skill("示弱"))).toMatchObject({
+      applied: true,
+      deltas: { ownSpeedFlat: 130 },
+    });
+  });
+
   test.each([
     [
       skill("蓄势待发", {
@@ -109,7 +116,7 @@ describe("skill status effects", () => {
     ["快速移动", { counterDefenseSucceeded: true }, { ownSpeedFlat: 170 }],
     ["伺机而动", {}, { ownFixedPower: 80 }],
     ["乘风", {}, { ownSpeedFlat: 130 }],
-    ["示弱", {}, { ownSpeedFlat: 160 }],
+    ["示弱", {}, { ownSpeedFlat: 140 }],
     ["龙吟", {}, { ownAttack: 16, ownSpeedFlat: 90 }],
     ["嘲弄", { enemySwitchedThisTurn: true }, { ownAttack: 10, ownSpeedFlat: 80 }],
     ["钧势", {}, { ownDefense: 15, ownSpeedFlat: -30 }],

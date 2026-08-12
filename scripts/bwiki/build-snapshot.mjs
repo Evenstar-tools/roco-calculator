@@ -470,7 +470,7 @@ export async function buildSnapshot(options = {}) {
   };
   snapshot.meta.contentSha256 = sha256Hex(JSON.stringify(snapshot));
   const validation = validateSnapshot(snapshot, {
-    expectedSpiritCount: 592,
+    expectedSpiritCount: 594,
     expectedSkillCount: 553,
   });
   if (!validation.ok) {

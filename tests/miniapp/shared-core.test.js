@@ -207,7 +207,7 @@ afterEach(() => {
 
 describe("miniapp shared calculator core", () => {
   test("pins the miniapp release to the current web core version", () => {
-    expect(rootPackage.version).toBe("1.5.0");
+    expect(rootPackage.version).toBe("1.5.2");
     expect(miniappPackage.version).toBe("0.1.2");
     expect(miniappLockfile.packages[""].version).toBe("0.1.2");
   });

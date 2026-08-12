@@ -1,6 +1,6 @@
 {
   "name": "rock-calculator",
-  "version": "1.5.0",
+  "version": "1.5.2",
   "description": "内置完整赛季数据、可断网使用的洛克王国 PVP 伤害计算器。",
   "author": "洛克计算器",
   "license": "MIT",

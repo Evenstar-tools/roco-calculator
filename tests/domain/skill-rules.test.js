@@ -463,7 +463,15 @@ describe("resolveSkillPower", () => {
         moeGainCount: 3,
         sproutFixedPowerBonus: 20,
       }),
-    ).toMatchObject({ status: "exact", value: 110 });
+    ).toMatchObject({ status: "exact", value: 80 });
+  });
+
+  test("S3季中撒娇每次萌化只增加10威力", () => {
+    expect(
+      resolveSkillPower(skill({ basePower: 30, name: "撒娇" }), {
+        moeGainCount: 3,
+      }),
+    ).toMatchObject({ status: "exact", value: 60 });
   });
 
   test("超级糖果不读取萌芽加成", () => {

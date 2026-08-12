@@ -256,7 +256,7 @@ async function main() {
   if (!file) throw new Error("用法：node scripts/bwiki/validate.mjs <snapshot.json>");
   const snapshot = JSON.parse(await readFile(file, "utf8"));
   const result = validateSnapshot(snapshot, {
-    expectedSpiritCount: 592,
+    expectedSpiritCount: 594,
     expectedSkillCount: 553,
   });
   const duplicateSpiritForms = result.errors.filter(
