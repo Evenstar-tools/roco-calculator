@@ -11,6 +11,7 @@ test("renders the calculator title", () => {
       name: "洛克计算器",
     }),
   ).toBeVisible();
+  expect(screen.getByText("正在加载 S3季中数据…")).toBeVisible();
 });
 
 test("loads the compact runtime snapshot instead of the audit snapshot", () => {

@@ -23,8 +23,10 @@ import { createRuntimeConfig } from "../src/config/runtime.js";
 function createSnapshot() {
   return {
     meta: {
+      bwikiRevision: 41360,
       id: "data-v1",
       rulesVersion: "rules-v1",
+      seasonId: "S3季中",
     },
     spirits: [
       {
@@ -122,6 +124,20 @@ describe("IndexPage", () => {
     __setRouterParams();
     vi.useRealTimers();
     vi.restoreAllMocks();
+  });
+
+  test("labels the bundled dataset with its S3 midseason name", async () => {
+    const snapshot = createSnapshot();
+
+    render(
+      <IndexPage
+        services={createServices(async () => ({ snapshot }))}
+      />,
+    );
+
+    expect(
+      await screen.findByText("数据 S3季中 · 41360"),
+    ).toBeInTheDocument();
   });
 
   test("registers a safe share message and restores shared calculator inputs", async () => {
@@ -374,7 +390,7 @@ describe("IndexPage", () => {
       "音速犬",
     );
     expect(screen.getByLabelText("防守方配置")).toHaveTextContent("水灵");
-    expect(screen.getByText("数据 data-v1")).toBeInTheDocument();
+    expect(screen.getByText("数据 S3季中 · 41360")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     expect(
       screen.getByRole("button", { name: "重置本页" }).tagName,

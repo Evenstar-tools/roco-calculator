@@ -1091,7 +1091,7 @@ function CalculatorWorkspace({ snapshot }) {
   return (
     <>
       <AppHeader
-        dataVersion={`S3 · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`}
+        dataVersion={`${snapshot.meta.seasonId ?? "S3季中"} · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`}
         menuButtonRef={menuButtonRef}
         menuOpen={menuOpen}
         onMenuOpen={() => setMenuOpen((open) => !open)}
@@ -1420,7 +1420,7 @@ export function App({ initialSnapshot = null }) {
       <div className="app">
         <AppHeader dataVersion="加载中" />
         <main className="loading-state">
-          <p>{error || "正在加载 S3 数据…"}</p>
+          <p>{error || "正在加载 S3季中数据…"}</p>
         </main>
       </div>
     );

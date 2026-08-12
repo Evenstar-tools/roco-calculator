@@ -320,7 +320,11 @@ export default function IndexPage({ services }) {
     <View className="page">
       <AppHeader
         commonConfigCount={pageState.configLibrary.entries.length}
-        dataVersion={pageState.snapshot.meta?.id}
+        dataVersion={[
+          pageState.snapshot.meta?.seasonId,
+          pageState.snapshot.meta?.bwikiRevision
+            ?? pageState.snapshot.meta?.snapshotVersion,
+        ].filter(Boolean).join(" · ") || pageState.snapshot.meta?.id}
         memoryEnabled={pageState.memoryEnabled}
         onImportCommonConfig={importCommonConfigLibrary}
         onMemoryChange={changeMemoryEnabled}
