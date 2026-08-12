@@ -12,11 +12,15 @@ import { getSpiritSkillSlotCapacity } from "../shared/domain/skill-slot-capacity
 import {
   applyBattleActivation,
   applyBalanceTraitTrigger,
-  canApplyBattleActivation,
 } from "../shared/state/battle-activation.js";
+import {
+  createResultActionRecord,
+  restoreResultAction,
+} from "../state/result-action-history.js";
 import { createCalculationView } from "../view-models/calculation.js";
 import { createConditionSummary } from "../view-models/condition-summary.js";
 import { createDirectionTraitViews } from "../view-models/traits.js";
+import { createResultActions } from "../view-models/result-actions.js";
 import { getSkill, getSkillChoices } from "../view-models/skills.js";
 import CombatantCard from "./CombatantCard.jsx";
 import BattleConditionStrip from "./BattleConditionStrip.jsx";
@@ -74,8 +78,9 @@ export default function BattleWorkspace({
   store,
 }) {
   const [activeLayer, setActiveLayer] = useState(null);
-  const [activationMessage, setActivationMessage] = useState("");
+  const [actionFeedback, setActionFeedback] = useState(null);
   const [direction, setDirection] = useState("forward");
+  const resultActionHistoryRef = useRef(new Map());
   const resultTriggerRef = useRef(null);
   const state = useSyncExternalStore(
     store.subscribe,
@@ -116,6 +121,12 @@ export default function BattleWorkspace({
     state,
     direction,
   );
+  const resultActions = createResultActions({
+    direction,
+    snapshot,
+    state,
+    traitViews,
+  });
   const conditionSummary = createConditionSummary({
     direction,
     skill: selectedSkill,
@@ -268,26 +279,116 @@ export default function BattleWorkspace({
     updateDirection(direction, value);
   }
 
-  function applySelectedSkill() {
-    if (state.mode !== "four") return;
-    const skillIndex = activeDirectionState.selectedSkillIndex;
+  function updateResultActionControl(action, input, value) {
+    const key = input.contextKey ?? input.key ?? input.id;
+    if (action.kind === "trait") {
+      const currentValue = action.values?.[input.canonicalKey] ?? action.value;
+      const nextValue = input.type === "choice" && currentValue === value
+        ? input.defaultValue
+        : value;
+      setTraitValue(action.side, input.canonicalKey, nextValue, input);
+      return;
+    }
+    if (action.mode === "single") {
+      updateDirection(direction, {
+        context: {
+          ...(state.directions[direction].context ?? {}),
+          [key]: value,
+        },
+      });
+      return;
+    }
+    const current = state.sides[action.side].skills.four[action.slotIndex];
+    const entry = current && typeof current === "object"
+      ? current
+      : { skillId: current };
+    setFourSkill(action.side, action.slotIndex, {
+      ...entry,
+      context: { ...(entry.context ?? {}), [key]: value },
+    });
+  }
+
+  function applyResultAction(action) {
+    const history = resultActionHistoryRef.current;
+    const previousRecord = history.get(action.key);
+    if (previousRecord) {
+      const restored = restoreResultAction(store.getState(), previousRecord);
+      if (restored.restored) {
+        store.dispatch({ type: "state/replace", value: restored.state });
+        history.delete(action.key);
+        setActionFeedback({
+          actionKey: action.key,
+          message: `${action.name}触发已取消`,
+        });
+      } else {
+        setActionFeedback({
+          actionKey: action.key,
+          message: restored.reason,
+        });
+      }
+      return;
+    }
+
+    const beforeState = store.getState();
+    if (action.kind === "trait") {
+      const control = action.control;
+      if (control.type === "boolean" && action.value === true) {
+        setTraitValue(
+          action.side,
+          control.canonicalKey,
+          control.defaultValue,
+          control,
+        );
+        setActionFeedback({
+          actionKey: action.key,
+          message: `${action.name}触发已取消`,
+        });
+        return;
+      }
+      const value = control.type === "boolean"
+        ? action.value !== true
+        : control.defaultValue;
+      setTraitValue(action.side, control.canonicalKey, value, control);
+      const afterState = store.getState();
+      history.set(
+        action.key,
+        createResultActionRecord(action.key, beforeState, afterState),
+      );
+      setActionFeedback({
+        actionKey: action.key,
+        message: `${action.name}已触发`,
+      });
+      return;
+    }
+
     const result = applyBattleActivation({
       calculation: {
         [direction]: { results: calculations[direction].rows },
       },
-      side: activeSide,
-      skillIndex,
+      side: action.side,
+      skillIndex: action.slotIndex,
+      skillMode: action.mode,
       snapshot,
-      state: store.getState(),
+      state: beforeState,
     });
     if (result.applied) {
       store.dispatch({ type: "state/replace", value: result.state });
-      setActivationMessage(`${selectedSkill?.name ?? "技能"}状态已应用`);
+      history.set(
+        action.key,
+        createResultActionRecord(action.key, beforeState, result.state),
+      );
+      setActionFeedback({
+        actionKey: action.key,
+        message: `${action.name}状态已应用`,
+      });
     } else {
       if (result.stateChanged) {
         store.dispatch({ type: "state/replace", value: result.state });
       }
-      setActivationMessage(result.reason ?? "当前没有可应用的状态");
+      setActionFeedback({
+        actionKey: action.key,
+        message: result.reason ?? "当前没有可应用的状态",
+      });
     }
   }
 
@@ -519,13 +620,6 @@ export default function BattleWorkspace({
               <SkillConditionEditor
                 context={conditionContext}
                 direction={conditionDirection}
-                feedback={activationMessage}
-                onApply={
-                  state.mode === "four" &&
-                  canApplyBattleActivation(selectedSkill, conditionContext)
-                    ? applySelectedSkill
-                    : undefined
-                }
                 onContextChange={updateSkillContext}
                 onDirectionChange={updateSkillDirection}
                 skill={selectedSkill}
@@ -634,6 +728,11 @@ export default function BattleWorkspace({
       ) : null}
 
       <ResultSheet
+        actions={resultActions}
+        activeActionKeys={[...resultActionHistoryRef.current.keys()]}
+        actionFeedback={actionFeedback}
+        onActionControlChange={updateResultActionControl}
+        onApplyAction={applyResultAction}
         onClose={closeResults}
         onSelectSkill={(selectedSkillIndex) => updateDirection(direction, {
           selectedDamageSource: "skill",

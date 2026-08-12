@@ -27,6 +27,7 @@ const appHeaderSource = readSource("src/components/AppHeader.jsx");
 const battleWorkspaceSource = readSource("src/components/BattleWorkspace.jsx");
 const directionSwitchSource = readSource("src/components/DirectionSwitch.jsx");
 const quickControlsSource = readSource("src/components/QuickCombatantControls.jsx");
+const resultSheetSource = readSource("src/components/ResultSheet.jsx");
 
 describe("reference-first responsive CSS", () => {
   test("loads shared tokens before the six ordered style modules", () => {
@@ -194,6 +195,18 @@ describe("reference-first responsive CSS", () => {
     expect(overlays).toMatch(
       /\.result-sheet__scroll\s*\{[\s\S]*width:\s*100%[\s\S]*box-sizing:\s*border-box/u,
     );
+    expect(overlays).toMatch(
+      /\.result-sheet\s*\{[\s\S]*height:\s*min\(92vh,\s*820px\)/u,
+    );
+    expect(overlays).toMatch(
+      /\.result-sheet__scroll\s*\{[\s\S]*height:\s*0[\s\S]*flex:\s*1\s+1\s+auto/u,
+    );
+    expect(overlays).toMatch(
+      /\.settings-sheet__row,[\s\S]*\.settings-sheet__action-row,[\s\S]*\.settings-sheet__reset\s*\{[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto/u,
+    );
+    expect(resultSheetSource).not.toMatch(
+      /catchMove[\s\S]{0,80}result-sheet__overlay/u,
+    );
   });
 
   test("prevents 320px horizontal overflow and vertical text fallbacks", () => {
@@ -282,6 +295,26 @@ describe("reference-first responsive CSS", () => {
     );
     expect(overlays).toMatch(
       /\.skill-picker__clear\s*\{[\s\S]*min-height:\s*44px/u,
+    );
+  });
+
+  test("keeps result trigger categories equal and every action touchable", () => {
+    const overlays = styles["overlays.css"];
+
+    expect(overlays).toMatch(
+      /\.result-actions__categories\s*\{[\s\S]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/u,
+    );
+    expect(overlays).toMatch(
+      /\.result-actions__category\s*\{[\s\S]*min-height:\s*44px/u,
+    );
+    expect(overlays).toMatch(
+      /\.result-actions__item\s*\{[\s\S]*min-width:\s*0[\s\S]*overflow:\s*hidden/u,
+    );
+    expect(overlays).toMatch(
+      /\.result-actions__apply\s*\{[\s\S]*min-height:\s*44px/u,
+    );
+    expect(overlays).toMatch(
+      /\.result-actions__category--active\s*\{[\s\S]*background:\s*var\(--result\)[\s\S]*color:\s*#fff/u,
     );
   });
 

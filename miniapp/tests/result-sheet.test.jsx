@@ -593,7 +593,7 @@ describe("result bar and sheet", () => {
 
     const dialog = screen.getByRole("dialog", { name: "伤害结果" });
     expect(dialog).toBeInTheDocument();
-    expect(dialog.parentElement).toHaveAttribute(
+    expect(dialog.parentElement).not.toHaveAttribute(
       "data-catch-move",
       "true",
     );

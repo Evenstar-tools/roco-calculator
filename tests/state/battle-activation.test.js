@@ -196,6 +196,37 @@ describe("shared battle activation", () => {
     });
   });
 
+  test("applies and persists a status skill from single-skill mode", () => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.skills.single = "steam-march";
+    state.directions.forward.context = {
+      applyAttackBoost: true,
+      applySpeedBoost: true,
+    };
+
+    const result = applyBattleActivation({
+      calculation: { forward: { results: [{ hitCount: 1 }] } },
+      side: "attacker",
+      skillIndex: 0,
+      skillMode: "single",
+      snapshot,
+      state,
+    });
+
+    expect(result).toMatchObject({ applied: true, reason: null });
+    expect(result.state.directions.forward.overrides).toMatchObject({
+      attackLevelStage: 9,
+      attackerSpeedFlat: 60,
+    });
+    expect(result.state.directions.forward.context).toMatchObject({
+      applyAttackBoost: true,
+      applySpeedBoost: true,
+    });
+  });
+
   test("clears the previous defense reduction when another skill is used", () => {
     const snapshot = createSnapshot();
     const state = createInitialState(snapshot);

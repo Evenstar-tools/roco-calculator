@@ -102,7 +102,7 @@ describe("mini-program desktop feature parity", () => {
     ).toBeInTheDocument();
   });
 
-  test("applies a status skill from the four-skill workflow", () => {
+  test("applies and safely undoes a status skill from the result sheet", () => {
     const snapshot = snapshotFixture();
     const store = createCalculatorStore(snapshot);
     store.dispatch({ type: "mode/set", value: "four" });
@@ -117,8 +117,12 @@ describe("mini-program desktop feature parity", () => {
     });
 
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    expect(screen.getByRole("dialog", { name: "伤害结果" }))
+      .toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "增减" }));
     fireEvent.click(
-      screen.getByRole("button", { name: "应用当前技能状态" }),
+      screen.getByRole("button", { name: "触发蒸汽进行曲" }),
     );
 
     expect(store.getState().directions.forward.overrides).toMatchObject({
@@ -126,6 +130,15 @@ describe("mini-program desktop feature parity", () => {
       attackerSpeedFlat: 60,
     });
     expect(screen.getByText("蒸汽进行曲状态已应用")).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "伤害结果" }))
+      .toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "撤销蒸汽进行曲" }),
+    );
+    expect(store.getState().directions.forward.overrides).toEqual({});
+    expect(screen.getByRole("dialog", { name: "伤害结果" }))
+      .toBeInTheDocument();
   });
 
   test("edits both sides ability stages from the battle-state sheet", () => {

@@ -450,6 +450,33 @@ try {
       ".settings-sheet",
       `${viewport.name} settings`,
     );
+    const settingsGeometry = await page.locator(".settings-sheet")
+      .evaluate((sheet) => {
+        const sheetRect = sheet.getBoundingClientRect();
+        const rows = Array.from(sheet.querySelectorAll(
+          ".settings-sheet__row, .settings-sheet__action-row, .settings-sheet__reset",
+        ));
+        const controls = Array.from(sheet.querySelectorAll(
+          ".settings-sheet__switch, .settings-sheet__action-text, .settings-sheet__chevron",
+        ));
+        return {
+          controlsFit: controls.every((control) => {
+            const rect = control.getBoundingClientRect();
+            return rect.left >= sheetRect.left - 0.5 &&
+              rect.right <= sheetRect.right + 0.5;
+          }),
+          rowsFit: rows.every((row) => {
+            const rect = row.getBoundingClientRect();
+            return rect.left >= sheetRect.left - 0.5 &&
+              rect.right <= sheetRect.right + 0.5 &&
+              row.scrollWidth <= row.clientWidth + 0.5;
+          }),
+          sheetFits: sheet.scrollWidth <= sheet.clientWidth + 0.5,
+        };
+      });
+    assert.equal(settingsGeometry.sheetFits, true, `${viewport.name}: settings sheet scrolls horizontally`);
+    assert.equal(settingsGeometry.rowsFit, true, `${viewport.name}: a settings row overflows`);
+    assert.equal(settingsGeometry.controlsFit, true, `${viewport.name}: a settings action crosses the right edge`);
     await assertTouchTargets(
       page,
       ".settings-sheet__close, .settings-sheet__switch, .settings-sheet__reset",

@@ -10,6 +10,7 @@ import {
   resultTone,
 } from "../view-models/result-presentation.js";
 import ResultFormulaAudit from "./ResultFormulaAudit.jsx";
+import ResultActionPanel from "./ResultActionPanel.jsx";
 import SkillResultRows from "./SkillResultRows.jsx";
 
 function settlementText(entry) {
@@ -34,8 +35,61 @@ function DetailSection({ items, title, formatter = (value) => String(value) }) {
   );
 }
 
+function ResultSummary({
+  damagePercent,
+  damagePercentText,
+  damageProgress,
+  damageTone,
+  remainingHp,
+  result,
+}) {
+  return (
+    <View aria-label="伤害摘要" className="result-sheet__summary">
+      <Text className="result-sheet__skill-name">{result.skillName}</Text>
+      {result.powerSummary ? (
+        <Text className="result-sheet__power-summary">
+          {result.powerSummary}
+        </Text>
+      ) : null}
+      <View className="result-sheet__primary">
+        <Text className="result-sheet__damage">{result.totalDamage}</Text>
+        <Text
+          className={`result-sheet__damage-percent result-sheet__damage-percent--${damageTone}`}
+        >
+          {damagePercentText}
+        </Text>
+        <Text className="result-sheet__remaining">剩余 {remainingHp} HP</Text>
+      </View>
+      <View
+        aria-label={Number.isFinite(damagePercent)
+          ? `伤害占目标生命 ${damagePercent.toFixed(1)}%`
+          : "伤害占目标生命待计算"}
+        className="result-sheet__health"
+        role="img"
+      >
+        <View className="result-sheet__health-track">
+          <View
+            className={`result-sheet__health-fill result-sheet__health-fill--${damageTone}`}
+            style={{ width: damageProgress }}
+          />
+        </View>
+        <Text className="result-sheet__health-value">
+          {Number.isFinite(damagePercent)
+            ? `${damagePercent.toFixed(1)}%`
+            : "--"}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
 export default function ResultSheet({
+  actions,
+  activeActionKeys,
+  actionFeedback,
   onClose,
+  onApplyAction,
+  onActionControlChange,
   onSelectSkill,
   onSelectTrait,
   onTraitHitCountChange,
@@ -62,11 +116,7 @@ export default function ResultSheet({
     ? result.remainingHp
     : "--";
   return (
-    <View
-      catchMove
-      className="result-sheet__overlay"
-      onClick={onClose}
-    >
+    <View className="result-sheet__overlay" onClick={onClose}>
       <View
         aria-label="伤害结果"
         aria-modal="true"
@@ -103,49 +153,24 @@ export default function ResultSheet({
           showScrollbar
         >
           {exact ? (
+            <ResultSummary
+              damagePercent={damagePercent}
+              damagePercentText={damagePercentText}
+              damageProgress={damageProgress}
+              damageTone={damageTone}
+              remainingHp={remainingHp}
+              result={result}
+            />
+          ) : null}
+          <ResultActionPanel
+            actions={actions}
+            activeActionKeys={activeActionKeys}
+            feedback={actionFeedback}
+            onApplyAction={onApplyAction}
+            onControlChange={onActionControlChange}
+          />
+          {exact ? (
             <>
-              <View aria-label="伤害摘要" className="result-sheet__summary">
-                <Text className="result-sheet__skill-name">
-                  {result.skillName}
-                </Text>
-                {result.powerSummary ? (
-                  <Text className="result-sheet__power-summary">
-                    {result.powerSummary}
-                  </Text>
-                ) : null}
-                <View className="result-sheet__primary">
-                  <Text className="result-sheet__damage">
-                    {result.totalDamage}
-                  </Text>
-                  <Text
-                    className={`result-sheet__damage-percent result-sheet__damage-percent--${damageTone}`}
-                  >
-                    {damagePercentText}
-                  </Text>
-                  <Text className="result-sheet__remaining">
-                    剩余 {remainingHp} HP
-                  </Text>
-                </View>
-                <View
-                  aria-label={Number.isFinite(damagePercent)
-                    ? `伤害占目标生命 ${damagePercent.toFixed(1)}%`
-                    : "伤害占目标生命待计算"}
-                  className="result-sheet__health"
-                  role="img"
-                >
-                  <View className="result-sheet__health-track">
-                    <View
-                      className={`result-sheet__health-fill result-sheet__health-fill--${damageTone}`}
-                      style={{ width: damageProgress }}
-                    />
-                  </View>
-                  <Text className="result-sheet__health-value">
-                    {Number.isFinite(damagePercent)
-                      ? `${damagePercent.toFixed(1)}%`
-                      : "--"}
-                  </Text>
-                </View>
-              </View>
               {view?.rows?.length > 1 ? (
                 <View className="result-sheet__comparison">
                   <Text className="result-sheet__section-title">

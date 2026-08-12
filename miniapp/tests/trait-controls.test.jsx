@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
 import TraitConditionEditor from "../src/components/TraitConditionEditor.jsx";
@@ -149,7 +149,7 @@ describe("TraitConditionEditor", () => {
     ).toEqual([3]);
   });
 
-  test("writes a battle-scoped trait trigger to direction context instead of cosmetic side memory", () => {
+  test("triggers and cancels a battle-scoped trait from the result sheet", () => {
     const stats = {
       hp: 120,
       magicalAttack: 100,
@@ -201,7 +201,8 @@ describe("TraitConditionEditor", () => {
     const store = createCalculatorStore(snapshot);
 
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
-    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    fireEvent.click(screen.getByRole("button", { name: "增减" }));
     fireEvent.click(screen.getByRole("button", { name: "触发无差别过滤" }));
 
     expect(store.getState().sides.attacker.traitValues).toEqual({});
@@ -215,6 +216,32 @@ describe("TraitConditionEditor", () => {
     ).toEqual(expect.arrayContaining([
       [expect.stringMatching(/^defenderTrait\.indiscriminateFilterActivated\./u), true],
     ]));
+    expect(screen.getByRole("dialog", { name: "伤害结果" }))
+      .toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "撤销无差别过滤" }));
+    expect(store.getState().directions.forward.context).toEqual({});
+    expect(store.getState().directions.reverse.context).toEqual({});
+    expect(screen.getByRole("dialog", { name: "伤害结果" }))
+      .toBeInTheDocument();
+
+    const control = createDirectionTraitViews(
+      snapshot,
+      store.getState(),
+      "forward",
+    ).attacker.controls[0];
+    act(() => {
+      store.dispatch({
+        direction: "forward",
+        key: control.id,
+        type: "battle/set-trait-control",
+        value: true,
+      });
+    });
+    fireEvent.click(screen.getByRole("button", { name: "撤销无差别过滤" }));
+    expect(store.getState().directions.forward.context[control.id]).toBe(false);
+    expect(screen.getByRole("button", { name: "触发无差别过滤" }))
+      .toBeInTheDocument();
   });
 });
 

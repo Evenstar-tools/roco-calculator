@@ -61,12 +61,23 @@ function updateDirection(state, direction, value) {
   };
 }
 
-function updateSkillContext(state, side, index, context) {
-  const current = state.sides[side].skills.four[index];
-  state.sides[side].skills.four[index] = {
+function skillEntryForMode(state, side, skillMode, index) {
+  return skillMode === "single"
+    ? state.sides[side].skills.single
+    : state.sides[side].skills.four[index];
+}
+
+function updateSkillContext(state, side, index, context, skillMode) {
+  if (skillMode === "single") {
+    updateDirection(state, sideDirection(side), { context });
+    return;
+  }
+  const current = skillEntryForMode(state, side, skillMode, index);
+  const next = {
     ...(current && typeof current === "object" ? current : { skillId: current }),
     context,
   };
+  state.sides[side].skills.four[index] = next;
 }
 
 function addBySlot(state, snapshot, side, current, predicate, amount) {
@@ -190,6 +201,7 @@ export function applyBattleActivation({
   calculation,
   side,
   skillIndex,
+  skillMode = "four",
   snapshot,
   state,
 }) {
@@ -197,7 +209,7 @@ export function applyBattleActivation({
   const selfDirection = sideDirection(side);
   const targetDirection = oppositeDirection(selfDirection);
   const targetSide = oppositeSide(side);
-  const entry = next.sides[side].skills.four[skillIndex];
+  const entry = skillEntryForMode(next, side, skillMode, skillIndex);
   const skill = getSkill(snapshot, entry);
   if (!skill) {
     return { applied: false, reason: "请先选择技能", state };
@@ -208,7 +220,9 @@ export function applyBattleActivation({
   const stateChanged = previousReduction !== 1;
   updateDirection(next, targetDirection, { reduction: 1 });
 
-  const context = skillContext(entry);
+  const context = skillMode === "single"
+    ? next.directions[selfDirection].context ?? {}
+    : skillContext(entry);
   const spirit = getSpirit(snapshot, next.sides[side]);
   const traitName = getTraitView(snapshot, spirit, "attacker")?.name;
   const choiceTrait = context.choiceTraitTriggered === true &&
@@ -249,7 +263,13 @@ export function applyBattleActivation({
         stateChanged,
       };
     }
-    updateSkillContext(next, side, skillIndex, sequence.nextContext);
+    updateSkillContext(
+      next,
+      side,
+      skillIndex,
+      sequence.nextContext,
+      skillMode,
+    );
     return { applied: true, reason: null, state: next };
   }
   if (!resolution.applied) {
@@ -419,6 +439,12 @@ export function applyBattleActivation({
     );
   }
 
-  updateSkillContext(next, side, skillIndex, sequence.nextContext);
+  updateSkillContext(
+    next,
+    side,
+    skillIndex,
+    sequence.nextContext,
+    skillMode,
+  );
   return { applied: true, reason: null, state: next, stateChanged: true };
 }

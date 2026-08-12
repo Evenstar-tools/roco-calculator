@@ -61,6 +61,7 @@ try {
           );
         }),
         scrollHorizontalOverflow: scroll.scrollWidth - scroll.clientWidth,
+        scrollable: scroll.scrollHeight > scroll.clientHeight + 1,
         shareVisible:
           shareRect.top >= sheetRect.top - 0.5 &&
           shareRect.bottom <= sheetRect.bottom + 0.5,
@@ -84,6 +85,11 @@ try {
     assert.ok(
       geometry.scrollHorizontalOverflow <= 0.5,
       `${viewport.name}: result content overflows horizontally`,
+    );
+    assert.equal(
+      geometry.scrollable,
+      true,
+      `${viewport.name}: result content has no usable vertical scroll range`,
     );
     assert.equal(geometry.summaryFits, true, `${viewport.name}: summary clips`);
     assert.ok(geometry.rowCount >= 2, `${viewport.name}: skill rows missing`);
@@ -127,6 +133,24 @@ try {
       scroll.scrollTop = scroll.scrollHeight;
     });
     await page.waitForTimeout(80);
+    const bottomGeometry = await page.locator(".result-sheet__scroll")
+      .evaluate((scroll) => {
+        const last = scroll.lastElementChild?.getBoundingClientRect();
+        const rect = scroll.getBoundingClientRect();
+        return {
+          lastVisible: Boolean(last) && last.bottom <= rect.bottom + 1,
+          scrollTop: scroll.scrollTop,
+        };
+      });
+    assert.ok(
+      bottomGeometry.scrollTop > 0,
+      `${viewport.name}: native result scroll position did not change`,
+    );
+    assert.equal(
+      bottomGeometry.lastVisible,
+      true,
+      `${viewport.name}: last result section cannot scroll above the footer`,
+    );
     await page.screenshot({
       fullPage: false,
       path: resolve(artifactDir, `${viewport.name}-bottom.png`),
