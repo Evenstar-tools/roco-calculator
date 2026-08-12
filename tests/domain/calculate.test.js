@@ -1240,8 +1240,8 @@ describe("calculateMatchup", () => {
     ).forward.selectedResult;
 
     expect(result).toMatchObject({
-      resolvedPower: 190,
-      skillPower: 285,
+      resolvedPower: 140,
+      skillPower: 210,
     });
   });
 
@@ -3103,11 +3103,11 @@ describe("inherited penetration stacks", () => {
     );
 
     expect(step).toMatchObject({
-      after: 130,
+      after: 80,
       before: 20,
       input: { attacker: 120, defender: 100 },
     });
-    expect(result.skillPower).toBe(130);
+    expect(result.skillPower).toBe(80);
   });
 
   test("uses the same inherited stacks to reduce incoming damage", () => {

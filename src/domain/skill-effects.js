@@ -13,6 +13,9 @@ const numberInput = (key, label, min = 0, max, defaultValue) => ({
   ...(defaultValue === undefined ? {} : { defaultValue }),
   type: "number",
 });
+
+export const SWEET_TRAP_ENERGY_RANGE = Object.freeze([0, 99]);
+
 const choiceInput = (key, label, options, defaultValue) => ({
   defaultValue,
   key,
@@ -253,8 +256,8 @@ const REVIEWED_EFFECTS = Object.freeze({
     ruleId: "stack_plus_counter_add",
     ruleParams: {
       contextKey: "enemyPoisonStacks",
-      counterAdd: 40,
       counterKey: "counterTriggered",
+      counterPerStack: 40,
       label: "敌方中毒层数",
       perStack: 10,
     },
@@ -389,7 +392,12 @@ const REVIEWED_EFFECTS = Object.freeze({
     "其他草系技能使用次数",
     60,
   ),
-  甜蜜陷阱: stackAdd("energy", "当前能量", 10, 99),
+  甜蜜陷阱: stackAdd(
+    "energy",
+    "当前能量",
+    10,
+    SWEET_TRAP_ENERGY_RANGE[1],
+  ),
   吹火: stackAdd("skillUseCount", "此前使用次数", 20),
   流星火雨: stackAdd("defeatedEnemyCount", "此前击败次数", 75, 6),
   山火: exponentialGrowth(

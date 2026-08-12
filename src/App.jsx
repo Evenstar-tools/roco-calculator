@@ -24,20 +24,11 @@ import {
   getTraitView,
   stageMultiplier,
 } from "./domain/calculator-view-model.js";
-import {
-  buildChoiceSkillSequence,
-  hasPersistentSkillProgression,
-  isChoiceSkill,
-  supportsChoiceTrait,
-} from "./domain/choice-skill-sequence.js";
-import { resolveSkillStatusActivation } from "./domain/skill-status-effects.js";
 import { hasDeclaredHitCount } from "./domain/skill-effects.js";
 import {
   copyPositiveAbilityStages,
   hasFairPigeonBalance,
 } from "./domain/fair-pigeon.js";
-import { getNatureMultipliers } from "./domain/natures.js";
-import { calculateAllPanelStats } from "./domain/stat.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
 import { withCalculatorExtras } from "./data/snapshot-extras.js";
 import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
@@ -61,6 +52,7 @@ import {
   updateMirroredTraitContext,
 } from "./state/calculator-session.js";
 import { decodeShareState, encodeShareState } from "./state/share.js";
+import { applyBattleActivation } from "./state/battle-activation.js";
 import packageInfo from "../package.json";
 
 function configLibraryFileName(date = new Date()) {
@@ -575,279 +567,27 @@ function CalculatorWorkspace({ snapshot }) {
   }
 
   function activateFourSkill(side, index) {
-    const latest = stateRef.current;
-    const entry = latest.sides[side].skills.four[index];
-    const skill = getSkill(snapshot, entry);
-    const selfDirection = side === "attacker" ? "forward" : "reverse";
-    const oppositeDirection =
-      selfDirection === "forward" ? "reverse" : "forward";
-    dispatch({
-      direction: oppositeDirection,
-      type: "direction/set-reduction",
-      value: 1,
+    const activation = applyBattleActivation({
+      calculation,
+      side,
+      skillIndex: index,
+      snapshot,
+      state: stateRef.current,
     });
-    const context =
-      entry && typeof entry === "object" ? entry.context ?? {} : {};
-    const spirit = getSpirit(snapshot, latest.sides[side]);
-    const detectedChoiceTrait = getTraitView(snapshot, spirit, "attacker").name;
-    const choiceTrait =
-      context.choiceTraitTriggered === true &&
-      supportsChoiceTrait(detectedChoiceTrait)
-        ? detectedChoiceTrait
-        : null;
-    const healthDirection =
-      side === "attacker" ? latest.directions.reverse : latest.directions.forward;
-    const panelStats = calculateAllPanelStats({
-      raceStats: spirit.raceStats,
-      displayIvs: latest.sides[side].displayIvs,
-      natureMultipliers: getNatureMultipliers(latest.sides[side].nature),
-    });
-    const storedHpPercent = Number(healthDirection.context?.currentHpPercent);
-    const attackerHpPercent = Number.isFinite(storedHpPercent)
-      ? storedHpPercent
-      : ((healthDirection.currentHp ?? panelStats.hp) / Math.max(1, panelStats.hp)) *
-        100;
-    const positiveMark = latest.marks?.[side]?.positive;
-    const sproutStacks = positiveMark?.id === "sprout"
-      ? Math.min(99, Math.max(0, Math.floor(Number(positiveMark.stacks) || 0)))
-      : 0;
-    const resolution = resolveSkillStatusActivation(skill, {
-      ...context,
-      attackerHpPercent,
-      carriedSkills: latest.sides[side].skills.four
-        .map((carriedEntry) => getSkill(snapshot, carriedEntry))
-        .filter(Boolean),
-      choiceTrait,
-      effectiveHitCount:
-        calculation?.[selfDirection]?.results?.[index]?.hitCount,
-      sproutStacks,
-    });
-    if (!resolution) {
-      if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) return;
-      const sequence = buildChoiceSkillSequence({
-        context,
-        skill,
-        sproutStacks,
-        traitName: detectedChoiceTrait,
-      });
-      updateFourSkillEntry(side, index, { context: sequence.nextContext });
-      setActiveDirection(
-        side === "attacker" ? "forward" : "reverse",
-      );
-      setToast(
-        sequence.executions.length > 1
-          ? `${detectedChoiceTrait}已应用：本次按两段结算`
-          : `${skill.name}已记为使用1次`,
-      );
-      return;
-    }
-    if (!resolution.applied) {
-      setToast(resolution.reason);
-      return;
-    }
-
-    const selfOverrides =
-      latest.directions[selfDirection].overrides ?? {};
-    const oppositeOverrides =
-      latest.directions[oppositeDirection].overrides ?? {};
-    const { deltas, operations = {} } = resolution;
-    const doublePositive = (value) =>
-      operations.doublePositiveOwnBuffs && value > 0 ? value * 2 : value;
-    const ownAttackStage = clampStage(
-      doublePositive(
-        Number(selfOverrides.attackLevelStage ?? 0) + deltas.ownAttack,
-      ),
-    );
-    const ownDefenseStage = clampStage(
-      doublePositive(
-        Number(oppositeOverrides.defenseLevelStage ?? 0) + deltas.ownDefense,
-      ),
-    );
-    const ownFixedPower = doublePositive(
-      Number(selfOverrides.fixedPowerAdd ?? 0) + deltas.ownFixedPower,
-    );
-    const ownFixedPowerAddsBySlot = operations.fixedPowerOncePerType
-      ? addFixedPowerToFirstAttackOfEachType(
-          side,
-          Number(operations.fixedPowerOncePerType),
-          selfOverrides.fixedPowerAddsBySlot,
-        )
-      : selfOverrides.fixedPowerAddsBySlot;
-    let ownSkillPowerPercentAddsBySlot = selfOverrides.skillPowerPercentAddsBySlot;
-    if (operations.powerPercentForAllAttacks) {
-      ownSkillPowerPercentAddsBySlot = addPowerPercentToAllAttacks(
-        side,
-        Number(operations.powerPercentForAllAttacks),
-        ownSkillPowerPercentAddsBySlot,
-      );
-    }
-    if (operations.powerPercentForType) {
-      ownSkillPowerPercentAddsBySlot = addPowerPercentToAttacksOfType(
-        side,
-        operations.powerPercentType,
-        Number(operations.powerPercentForType),
-        ownSkillPowerPercentAddsBySlot,
-      );
-    }
-    const ownSpeedFlat = doublePositive(
-      Number(selfOverrides.attackerSpeedFlat ?? 0) + deltas.ownSpeedFlat,
-    );
-    const ownHitCountAdd = Math.floor(
-      Number(selfOverrides.hitCountAdd ?? 0) + deltas.ownHitCountAdd,
-    );
-    const ownHitCountPercentAdd =
-      Number(selfOverrides.hitCountPercentAdd ?? 0) +
-      Number(operations.hitCountPercentForAllAttacks ?? 0);
-    const targetHitCountAdd = Math.floor(
-      Number(oppositeOverrides.hitCountAdd ?? 0) +
-      Number(deltas.targetHitCountAdd ?? 0),
-    );
-    const targetSpeedFlat =
-      Number(oppositeOverrides.attackerSpeedFlat ?? 0) +
-      Number(deltas.targetSpeedFlat ?? 0);
-    const refractionStatuses = [
-      ...(selfOverrides.refractionStatuses ?? []),
-      ...(operations.refractionStatuses ?? []),
-    ];
-
-    dispatch({
-      direction: selfDirection,
-      type: "direction/update",
-      value: {
-        overrides: {
-          attackLevelStage: ownAttackStage,
-          attackerSpeedFlat: ownSpeedFlat,
-          defenderSpeedFlat:
-            Number(selfOverrides.defenderSpeedFlat ?? 0) +
-            Number(deltas.targetSpeedFlat ?? 0),
-          defenseLevelStage: clampStage(
-            Number(selfOverrides.defenseLevelStage ?? 0) + deltas.targetDefense,
-          ),
-          fixedPowerAdd: ownFixedPower,
-          fixedPowerAddsBySlot: ownFixedPowerAddsBySlot,
-          skillPowerPercentAddsBySlot: ownSkillPowerPercentAddsBySlot,
-          hitCountAdd: ownHitCountAdd,
-          hitCountPercentAdd: ownHitCountPercentAdd,
-          refractionStatuses,
-        },
-      },
-    });
-    dispatch({
-      direction: oppositeDirection,
-      type: "direction/update",
-      value: {
-        overrides: {
-          attackLevelStage: clampStage(
-            Number(oppositeOverrides.attackLevelStage ?? 0) + deltas.targetAttack,
-          ),
-          attackerSpeedFlat: targetSpeedFlat,
-          defenderSpeedFlat: ownSpeedFlat,
-          defenseLevelStage: ownDefenseStage,
-          fixedPowerAdd:
-            Number(oppositeOverrides.fixedPowerAdd ?? 0) +
-            deltas.targetFixedPower,
-          hitCountAdd: targetHitCountAdd,
-        },
-      },
-    });
-    const oppositeSide = side === "attacker" ? "defender" : "attacker";
-    if (
-      hasFairPigeonBalance(oppositeSide === "attacker" ? attacker : defender) &&
-      balanceIsTriggered(stateRef.current, oppositeSide)
-    ) {
-      const gainedAttack = Math.max(
-        0,
-        ownAttackStage - Number(selfOverrides.attackLevelStage ?? 0),
-      );
-      const gainedDefense = Math.max(
-        0,
-        ownDefenseStage - Number(oppositeOverrides.defenseLevelStage ?? 0),
-      );
-      if (gainedAttack > 0 || gainedDefense > 0) {
-        copyAbilityStages(side, oppositeSide, {
-          attack: gainedAttack,
-          defense: gainedDefense,
-        });
+    if (!activation.applied) {
+      if (activation.stateChanged) {
+        commitState(activation.state, side);
       }
+      if (activation.reason) setToast(activation.reason);
+      return;
     }
-    const healPercent = Number(operations.healPercent ?? 0);
-    if (healPercent > 0) {
-      const currentHp = Math.min(
-        panelStats.hp,
-        Math.max(
-          0,
-          Math.round(
-            Number(healthDirection.currentHp ?? panelStats.hp) +
-            panelStats.hp * healPercent / 100,
-          ),
-        ),
-      );
-      dispatch({
-        direction: side === "attacker" ? "reverse" : "forward",
-        type: "direction/update",
-        value: {
-          currentHp,
-          context: { currentHpPercent: currentHp / panelStats.hp * 100 },
-        },
-      });
-    }
-    const targetStarfallStacks = Number(operations.targetStarfallStacks ?? 0);
-    if (targetStarfallStacks > 0) {
-      const targetSide = side === "attacker" ? "defender" : "attacker";
-      const currentMark = latest.marks?.[targetSide]?.negative;
-      dispatch({
-        polarity: "negative",
-        side: targetSide,
-        type: "mark/update",
-        value: {
-          id: "starfall",
-          stacks: Math.min(
-            99,
-            (currentMark?.id === "starfall" ? currentMark.stacks : 0) +
-              targetStarfallStacks,
-          ),
-        },
-      });
-    }
-    for (const markApplication of operations.markApplications ?? []) {
-      const markSide = markApplication.target === "self"
-        ? side
-        : side === "attacker" ? "defender" : "attacker";
-      const currentMark = stateRef.current.marks?.[markSide]?.[markApplication.polarity];
-      dispatch({
-        polarity: markApplication.polarity,
-        side: markSide,
-        type: "mark/update",
-        value: {
-          id: markApplication.id,
-          stacks: Math.min(
-            99,
-            (currentMark?.id === markApplication.id ? currentMark.stacks : 0) +
-              markApplication.stacks,
-          ),
-        },
-      });
-    }
-    const defenseReductionPercent = Number(
-      operations.defenseReductionPercent,
+    commitState(activation.state, side);
+    setActiveDirection(side === "attacker" ? "forward" : "reverse");
+    const activatedSkill = getSkill(
+      snapshot,
+      activation.state.sides[side].skills.four[index],
     );
-    if (Number.isFinite(defenseReductionPercent)) {
-      dispatch({
-        direction: oppositeDirection,
-        type: "direction/set-reduction",
-        value: Math.max(0, 1 - defenseReductionPercent / 100),
-      });
-    }
-
-    const sequence = buildChoiceSkillSequence({
-      context,
-      skill,
-      sproutStacks,
-      traitName: detectedChoiceTrait,
-    });
-    updateFourSkillEntry(side, index, { context: sequence.nextContext });
-    setActiveDirection(selfDirection);
-    setToast(`${skill.name}的状态已应用`);
+    setToast(`${activatedSkill?.name ?? "技能"}的状态已应用`);
   }
 
   function updateRememberedSingleDirection(value) {

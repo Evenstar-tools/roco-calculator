@@ -5,6 +5,13 @@ import { createCombatantView } from "./combatant.js";
 const UNRESOLVED_MESSAGE = "当前规则暂未收录";
 const RECOVERABLE_CONFIGURATION_MESSAGE =
   "当前配置无法完成计算，请重新选择宠物和技能";
+const POWER_RESOLUTION_SOURCES = new Set([
+  "reviewed-rule:speed-defense-difference-v1",
+  "reviewed-rule:speed-defense-difference-v2",
+  "reviewed-rule:mana-burst-v1",
+  "reviewed-rule:enemy-total-skill-cost-power-v1",
+  "reviewed-rule:enemy-skill-power-multiplier-v1",
+]);
 
 function getSpiritName(snapshot, spiritId) {
   return (
@@ -14,7 +21,7 @@ function getSpiritName(snapshot, spiritId) {
   );
 }
 
-function getDefenderHp(snapshot, side) {
+function getDefenderMaxHp(snapshot, side) {
   return (
     createCombatantView(snapshot, side).stats.find(
       (stat) => stat.key === "hp",
@@ -30,6 +37,62 @@ function unresolvedMessage(result) {
   return UNRESOLVED_MESSAGE;
 }
 
+function formatResolutionStep(step) {
+  const before = Number(step.before);
+  const after = Number(step.after);
+  const source = String(step.source);
+  if (
+    source.startsWith("reviewed-rule:speed-defense-difference-v") &&
+    Number.isFinite(Number(step.input?.attacker)) &&
+    Number.isFinite(Number(step.input?.defender))
+  ) {
+    const metric = String(step.label).includes("物防")
+      ? "物防"
+      : "速度";
+    return `${metric} ${Number(step.input.attacker)} − ${Number(step.input.defender)} = ${before} → 威力 ${after}`;
+  }
+  if (source === "reviewed-rule:mana-burst-v1") {
+    return `${Number(step.input)} 能量 → 威力 ${after}`;
+  }
+  if (source === "reviewed-rule:enemy-skill-power-multiplier-v1") {
+    const input = Number(step.input);
+    if (Number.isFinite(input) && input !== 0) {
+      const multiplier = after / input;
+      return `${input} × ${Number(multiplier.toFixed(2))} = ${after}`;
+    }
+    return `敌方技能威力 ${input} → 威力 ${after}`;
+  }
+  const difference = after - before;
+  return `${before} ${difference >= 0 ? "+" : "−"} ${Math.abs(difference)} = ${after}`;
+}
+
+export function describePowerResolution(result) {
+  const steps = result?.formulaSteps ?? [];
+  const baseIndex = steps.findIndex(({ label }) =>
+    String(label).trim().endsWith("基础威力")
+  );
+  const candidates = baseIndex >= 0 ? steps.slice(0, baseIndex) : steps;
+  const changed = candidates.find(({ before, after, source }) =>
+    POWER_RESOLUTION_SOURCES.has(String(source)) &&
+    Number.isFinite(Number(before)) &&
+    Number.isFinite(Number(after)) &&
+    Number(before) !== Number(after)
+  );
+  return changed ? formatResolutionStep(changed) : null;
+}
+
+export function decoratePowerResult(result) {
+  return {
+    ...result,
+    displayedPower:
+      result?.resolvedPower ??
+      result?.skillPower ??
+      result?.effectivePower ??
+      null,
+    powerSummary: describePowerResolution(result),
+  };
+}
+
 function isRecoverableConfigurationError(error) {
   return (
     error instanceof Error &&
@@ -37,7 +100,7 @@ function isRecoverableConfigurationError(error) {
   );
 }
 
-function toResultRow(result, defenderHp) {
+function toResultRow(result, defenderHp, defenderMaxHp) {
   if (result?.status !== "exact") {
     return {
       ...result,
@@ -53,15 +116,29 @@ function toResultRow(result, defenderHp) {
       ? Math.max(0, defenderHp - result.totalDamage)
       : null;
   const remainingHpPercent =
-    Number.isFinite(defenderHp) && defenderHp > 0
-      ? remainingHp / defenderHp * 100
+    Number.isFinite(defenderMaxHp) && defenderMaxHp > 0
+      ? remainingHp / defenderMaxHp * 100
       : null;
 
   return {
-    ...result,
+    ...decoratePowerResult(result),
     remainingHp,
     remainingHpPercent,
   };
+}
+
+export function selectDamageResult({
+  rows,
+  selectedDamageSource,
+  selectedIndex,
+  traitResult,
+}) {
+  return selectedDamageSource === "trait" && traitResult
+    ? { selectedDamageSource: "trait", selectedResult: traitResult }
+    : {
+        selectedDamageSource: "skill",
+        selectedResult: rows[selectedIndex] ?? null,
+      };
 }
 
 export function createCalculationView(snapshot, state, direction) {
@@ -83,17 +160,33 @@ export function createCalculationView(snapshot, state, direction) {
     snapshot,
     defenderSide.spiritId,
   );
-  const defenderHp = getDefenderHp(snapshot, defenderSide);
+  const defenderMaxHp = getDefenderMaxHp(snapshot, defenderSide);
+  const rawConfiguredHp =
+    state.directions[normalizedDirection]?.currentHp;
+  const configuredHp =
+    rawConfiguredHp === null || rawConfiguredHp === undefined
+      ? Number.NaN
+      : Number(rawConfiguredHp);
+  const defenderHp = Number.isFinite(configuredHp)
+    ? Math.min(defenderMaxHp, Math.max(0, configuredHp))
+    : defenderMaxHp;
+  const defenderHpPercent =
+    Number.isFinite(defenderMaxHp) && defenderMaxHp > 0
+      ? defenderHp / defenderMaxHp * 100
+      : null;
 
   try {
     const calculation = calculateMatchup(
       snapshot,
-      buildCombatState(state),
+      buildCombatState(state, snapshot),
     );
     const directionResult = calculation[normalizedDirection];
     const rows = directionResult.results.map((result) =>
-      toResultRow(result, defenderHp),
+      toResultRow(result, defenderHp, defenderMaxHp),
     );
+    const traitResult = directionResult.traitResult
+      ? toResultRow(directionResult.traitResult, defenderHp, defenderMaxHp)
+      : null;
     const selectedIndex =
       state.mode === "four"
         ? Math.min(
@@ -109,27 +202,44 @@ export function createCalculationView(snapshot, state, direction) {
             ),
           )
         : 0;
-    const selectedRow = rows[selectedIndex] ?? null;
+    const {
+      selectedDamageSource,
+      selectedResult: selectedRow,
+    } = selectDamageResult({
+      rows,
+      selectedDamageSource:
+        state.directions[normalizedDirection]?.selectedDamageSource,
+      selectedIndex,
+      traitResult,
+    });
 
     if (selectedRow?.status !== "exact") {
       return {
         attackerName,
         defenderHp,
+        defenderHpPercent,
+        defenderMaxHp,
         defenderName,
         message: selectedRow?.message ?? UNRESOLVED_MESSAGE,
         rows,
         selectedResult: null,
+        selectedDamageSource,
         status: "unresolved",
+        traitResult,
       };
     }
 
     return {
       attackerName,
       defenderHp,
+      defenderHpPercent,
+      defenderMaxHp,
       defenderName,
       rows,
       selectedResult: selectedRow,
+      selectedDamageSource,
       status: "exact",
+      traitResult,
     };
   } catch (error) {
     if (!isRecoverableConfigurationError(error)) {
@@ -138,11 +248,14 @@ export function createCalculationView(snapshot, state, direction) {
     return {
       attackerName,
       defenderHp,
+      defenderHpPercent,
+      defenderMaxHp,
       defenderName,
       message: RECOVERABLE_CONFIGURATION_MESSAGE,
       rows: [],
       selectedResult: null,
       status: "unresolved",
+      traitResult: null,
     };
   }
 }

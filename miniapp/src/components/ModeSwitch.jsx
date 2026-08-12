@@ -1,4 +1,4 @@
-import { Button, View } from "@tarojs/components";
+import { Button, Text, View } from "@tarojs/components";
 
 export default function ModeSwitch({ onChange, value }) {
   return (
@@ -11,9 +11,11 @@ export default function ModeSwitch({ onChange, value }) {
             ? "mode-switch__button mode-switch__button--active"
             : "mode-switch__button"
         }
+        hoverClass="mode-switch__button--pressed"
         onClick={() => onChange("single")}
       >
-        单技能
+        <Text className="mode-switch__short-label">单</Text>
+        <Text className="mode-switch__long-label">单技能</Text>
       </Button>
       <Button
         aria-label="四技能模式"
@@ -23,9 +25,11 @@ export default function ModeSwitch({ onChange, value }) {
             ? "mode-switch__button mode-switch__button--active"
             : "mode-switch__button"
         }
+        hoverClass="mode-switch__button--pressed"
         onClick={() => onChange("four")}
       >
-        四技能
+        <Text className="mode-switch__short-label">四</Text>
+        <Text className="mode-switch__long-label">四技能</Text>
       </Button>
     </View>
   );

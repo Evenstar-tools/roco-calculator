@@ -16,6 +16,26 @@ const initialState = {
 };
 
 describe("calculatorReducer", () => {
+  test("stores canonical trait values on the owning side", () => {
+    const snapshot = {
+      meta: { id: "data-v1", rulesVersion: "rules-v1" },
+      skills: [{ id: "skill-a" }],
+      spirits: [{ id: "spirit-a" }, { id: "spirit-b" }],
+    };
+    const state = createInitialState(snapshot);
+    const next = calculatorReducer(state, {
+      type: "side/set-trait-value",
+      side: "attacker",
+      key: "trait.traitActivated.activation",
+      value: true,
+    });
+
+    expect(next.sides.attacker.traitValues).toEqual({
+      "trait.traitActivated.activation": true,
+    });
+    expect(next.sides.defender.traitValues).toEqual({});
+  });
+
   test("updates one side and one polarity of marks without touching the other slots", () => {
     const state = createInitialState({
       meta: { id: "s3", rulesVersion: "rules-v1" },
@@ -182,6 +202,9 @@ describe("calculatorReducer", () => {
       four: ["fire-a", "fire-b", null, null],
       single: "fire-a",
     };
+    state.sides.attacker.traitValues = {
+      "trait.traitActivated.activation": true,
+    };
 
     const next = calculatorReducer(state, {
       legalSkillIds: ["water-a", "water-b"],
@@ -198,6 +221,7 @@ describe("calculatorReducer", () => {
         single: "water-a",
       },
       spiritId: "water-spirit",
+      traitValues: {},
     });
     expect(next.sides.defender).toBe(state.sides.defender);
   });
@@ -265,6 +289,9 @@ describe("calculatorReducer", () => {
         single: null,
       },
       spiritId: "team-spirit",
+      traitValues: {
+        "trait.attackerTraitStacks.stack": 3,
+      },
     };
 
     const next = calculatorReducer(state, {
@@ -281,6 +308,7 @@ describe("calculatorReducer", () => {
         single: member.skills.four[0],
       },
       spiritId: "team-spirit",
+      traitValues: member.traitValues,
     });
     expect(next.sides.attacker.displayIvs).not.toBe(member.displayIvs);
     expect(next.sides.attacker.skills.four).not.toBe(member.skills.four);
@@ -290,6 +318,7 @@ describe("calculatorReducer", () => {
     expect(next.sides.attacker.skills.four[0].memoryBySkill).not.toBe(
       member.skills.four[0].memoryBySkill,
     );
+    expect(next.sides.attacker.traitValues).not.toBe(member.traitValues);
     expect(
       next.sides.attacker.skills.four[0].memoryBySkill["skill-a"].context,
     ).not.toBe(
@@ -445,9 +474,11 @@ describe("createInitialState", () => {
             single: "skill_a",
             four: ["skill_a", "skill_b", "skill_c", null],
           },
+          traitValues: {},
         },
         defender: {
           spiritId: "spirit_defender",
+          traitValues: {},
         },
       },
       directions: {

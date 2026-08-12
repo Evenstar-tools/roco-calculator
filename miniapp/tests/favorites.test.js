@@ -91,6 +91,25 @@ describe("createFavoritesRepository", () => {
       [],
     );
   });
+
+  test("lists and atomically replaces unique known ids", () => {
+    const storage = createMemoryStorage();
+    const repository = createFavoritesRepository({ storage });
+    repository.load(snapshot);
+
+    expect(repository.replace([
+      "spirit-b",
+      "unknown-spirit",
+      "spirit-a",
+      "spirit-b",
+    ])).toEqual(["spirit-b", "spirit-a"]);
+    expect(repository.list()).toEqual(["spirit-b", "spirit-a"]);
+    expect(storage.set).toHaveBeenCalledTimes(1);
+    expect(storage.set).toHaveBeenLastCalledWith(
+      MINIAPP_FAVORITES_KEY,
+      ["spirit-b", "spirit-a"],
+    );
+  });
 });
 
 describe("favorite controls", () => {

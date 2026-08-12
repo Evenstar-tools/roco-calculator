@@ -1,4 +1,5 @@
-import { Button, Text, View } from "@tarojs/components";
+import { Button, Image, Text, View } from "@tarojs/components";
+import arrowsLeftRightIcon from "../assets/icons/arrows-left-right.png";
 
 export default function DirectionSwitch({ onSwap }) {
   return (
@@ -10,9 +11,16 @@ export default function DirectionSwitch({ onSwap }) {
       <Button
         aria-label="切换攻守配置"
         className="direction-switch__button"
+        hoverClass="button-hover"
         onClick={onSwap}
       >
-        切换攻守
+        <Image
+          alt="交换攻守"
+          aria-label="交换攻守"
+          className="direction-switch__icon"
+          mode="aspectFit"
+          src={arrowsLeftRightIcon}
+        />
       </Button>
     </View>
   );

@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { createHash } from "node:crypto";
 import { afterEach, describe, expect, test, vi } from "vitest";
@@ -74,11 +75,17 @@ function createUserSettingServices({
   load = async () => ({ snapshot: createSnapshot() }),
   persistedState,
   favoriteIds = [],
+  memoryEnabled = true,
 } = {}) {
   const persistence = {
     clear: vi.fn(),
+    getMemoryEnabled: vi.fn(() => memoryEnabled),
     load: vi.fn(() => persistedState),
     save: vi.fn(),
+    setMemoryEnabled: vi.fn((value) => {
+      memoryEnabled = value;
+      return value;
+    }),
   };
   const favoritesRepository = {
     clear: vi.fn(() => []),
@@ -186,6 +193,31 @@ describe("IndexPage", () => {
     });
   });
 
+  test("default WeApp services load bundled data without cloud configuration", async () => {
+    const snapshot = createSnapshot();
+    snapshot.spirits[0].imageUrl =
+      "https://images.example/spirit-a.png";
+    const taro = createStorageTaro({
+      cloud: {
+        init: vi.fn(),
+      },
+    });
+    const services = createDefaultServices({
+      bundledData: snapshot,
+      taro,
+    });
+
+    await expect(services.dataService.load()).resolves.toEqual({
+      petImages: {
+        "spirit-a": "https://images.example/spirit-a.png",
+      },
+      snapshot,
+      source: "bundled",
+      stale: false,
+    });
+    expect(taro.cloud.init).not.toHaveBeenCalled();
+  });
+
   test("default WeApp services reach valid cloud data loading", async () => {
     const snapshot = createSnapshot();
     const runtimeText = JSON.stringify(snapshot);
@@ -287,7 +319,9 @@ describe("IndexPage", () => {
       await screen.findByRole("img", { name: "音速犬头像" }),
     ).toHaveAttribute("src", attackerImage);
     expect(
-      screen.getByLabelText("防守方配置").querySelector("img"),
+      screen
+        .getByLabelText("防守方配置")
+        .querySelector(".combatant-card__image"),
     ).toBeNull();
   });
 
@@ -299,7 +333,8 @@ describe("IndexPage", () => {
     );
 
     expect(screen.getByText("正在加载计算数据…")).toBeInTheDocument();
-    expect(document.querySelector("progress")).toBeInTheDocument();
+    expect(document.querySelector(".state-card__progress-fill"))
+      .toBeInTheDocument();
     expect(screen.queryByLabelText("攻击方配置")).not.toBeInTheDocument();
   });
 
@@ -340,10 +375,14 @@ describe("IndexPage", () => {
     );
     expect(screen.getByLabelText("防守方配置")).toHaveTextContent("水灵");
     expect(screen.getByText("数据 data-v1")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     expect(
-      screen.getByRole("button", { name: "重置配置" }).tagName,
+      screen.getByRole("button", { name: "重置本页" }).tagName,
     ).toBe("BUTTON");
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.getByText("常用精灵配置")).toBeInTheDocument();
+    expect(screen.queryByText(/配置库 JSON/u)).not.toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /头像/u }))
+      .not.toBeInTheDocument();
   });
 
   test("restores settings and saves the latest store state once after 250ms", async () => {
@@ -379,28 +418,124 @@ describe("IndexPage", () => {
     expect(services.persistence.save.mock.calls[0][0].mode).toBe("four");
   });
 
-  test("cancels pending saves when the store is rebuilt or the page unmounts", async () => {
+  test("skips restore and autosave while configuration memory is disabled", async () => {
+    vi.useFakeTimers();
+    const snapshot = createSnapshot();
+    const persistedState = createInitialState(snapshot);
+    persistedState.mode = "four";
+    const services = createUserSettingServices({
+      memoryEnabled: false,
+      persistedState,
+    });
+
+    render(<IndexPage services={services} />);
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(services.persistence.load).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "单技能模式" }))
+      .toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+    act(() => {
+      vi.advanceTimersByTime(250);
+    });
+    expect(services.persistence.save).not.toHaveBeenCalled();
+  });
+
+  test("turns configuration memory off and back on with immediate current-page persistence", async () => {
+    const services = createUserSettingServices();
+    render(<IndexPage services={services} />);
+    expect(await screen.findByLabelText("攻击方配置")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    const memorySwitch = screen.getByRole("switch", { name: "配置记忆" });
+    expect(memorySwitch).toHaveAttribute("aria-checked", "true");
+
+    fireEvent.click(memorySwitch);
+    expect(services.persistence.setMemoryEnabled).toHaveBeenCalledWith(false);
+    expect(memorySwitch).toHaveAttribute("aria-checked", "false");
+    expect(services.persistence.save).not.toHaveBeenCalled();
+
+    fireEvent.click(memorySwitch);
+    expect(services.persistence.setMemoryEnabled).toHaveBeenCalledWith(true);
+    expect(memorySwitch).toHaveAttribute("aria-checked", "true");
+    expect(services.persistence.save).toHaveBeenCalledTimes(1);
+    expect(services.persistence.save.mock.calls[0][0].mode).toBe("four");
+  });
+
+  test("imports bundled PVP presets only after tapping and applies one on selection", async () => {
+    const entry = {
+      displayIvs: {
+        hp: 60,
+        magicalAttack: 60,
+        magicalDefense: 60,
+        physicalAttack: 0,
+        physicalDefense: 60,
+        speed: 60,
+      },
+      natureId: "timid",
+      skills: ["skill-b", null, null, null],
+      spiritId: "spirit-b",
+      traitValues: {},
+    };
+    const services = createUserSettingServices();
+    services.configLibraryRepository = {
+      commit: vi.fn(() => ({
+        entries: [entry],
+        favorites: ["spirit-b"],
+        preview: { added: 1, overwritten: 0 },
+        schemaVersion: 1,
+      })),
+      load: vi.fn(() => ({ entries: [], schemaVersion: 1 })),
+      preview: vi.fn(() => ({
+        entries: [entry],
+        favoriteSpiritIds: ["spirit-b"],
+        preview: { added: 1, overwritten: 0 },
+      })),
+    };
+    vi.spyOn(Taro, "showToast").mockResolvedValue();
+
+    render(<IndexPage services={services} />);
+    expect(await screen.findByLabelText("攻击方配置")).toBeInTheDocument();
+    expect(services.configLibraryRepository.commit).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    fireEvent.click(screen.getByRole("button", {
+      name: "导入PVP热门配置",
+    }));
+
+    await waitFor(() => {
+      expect(services.configLibraryRepository.commit).toHaveBeenCalledTimes(1);
+    });
+    expect(screen.getByText(/已导入 1 只/u)).toBeInTheDocument();
+    expect(Taro.showToast).toHaveBeenCalledWith(expect.objectContaining({
+      title: "已导入 1 只精灵",
+    }));
+
+    fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
+    const attacker = screen.getByLabelText("攻击方配置");
+    fireEvent.click(within(attacker).getByLabelText("攻击方宠物摘要"));
+    fireEvent.input(within(attacker).getByLabelText("搜索攻击方宠物"), {
+      target: { value: "水灵" },
+    });
+    fireEvent.click(within(attacker).getByRole("button", {
+      name: "选择水灵",
+    }));
+
+    expect(screen.getByLabelText("攻击方配置")).toHaveTextContent("水灵");
+    expect(screen.getByLabelText("攻击方快速属性配置"))
+      .toHaveTextContent("胆小");
+  });
+
+  test("cancels pending saves when the page unmounts", async () => {
     vi.useFakeTimers();
     const services = createUserSettingServices();
     const { unmount } = render(<IndexPage services={services} />);
     await act(async () => {
       await Promise.resolve();
     });
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "四技能模式" }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: "更多" }));
-    fireEvent.click(
-      screen.getByRole("button", { name: "重试数据加载" }),
-    );
-    await act(async () => {
-      await Promise.resolve();
-    });
-    act(() => {
-      vi.advanceTimersByTime(250);
-    });
-    expect(services.persistence.save).not.toHaveBeenCalled();
 
     fireEvent.click(
       screen.getByRole("button", { name: "四技能模式" }),
@@ -412,7 +547,7 @@ describe("IndexPage", () => {
     expect(services.persistence.save).not.toHaveBeenCalled();
   });
 
-  test("leaves local data untouched when clear confirmation is cancelled", async () => {
+  test("does not reset the page when reset confirmation is cancelled", async () => {
     const services = createUserSettingServices({
       favoriteIds: ["spirit-a"],
     });
@@ -425,9 +560,10 @@ describe("IndexPage", () => {
     expect(
       await screen.findByLabelText("攻击方配置"),
     ).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "更多" }));
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     fireEvent.click(
-      screen.getByRole("button", { name: "清除本机数据" }),
+      screen.getByRole("button", { name: "重置本页" }),
     );
     await act(async () => {
       await Promise.resolve();
@@ -435,16 +571,18 @@ describe("IndexPage", () => {
 
     expect(Taro.showModal).toHaveBeenCalledWith(
       expect.objectContaining({
-        content: expect.stringMatching(/收藏|配置|缓存/u),
-        title: "清除本机数据",
+        content: expect.stringMatching(/收藏/u),
+        title: "重置本页",
       }),
     );
     expect(services.persistence.clear).not.toHaveBeenCalled();
     expect(services.favoritesRepository.clear).not.toHaveBeenCalled();
     expect(services.dataService.clearCache).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "四技能模式" }))
+      .toHaveAttribute("aria-pressed", "true");
   });
 
-  test("clears settings, favorites and cache after confirmation and restores defaults", async () => {
+  test("resets only the current page after confirmation and preserves favorites", async () => {
     vi.useFakeTimers();
     const snapshot = createSnapshot();
     const persistedState = createInitialState(snapshot);
@@ -466,10 +604,9 @@ describe("IndexPage", () => {
       screen.getByRole("button", { name: "四技能模式" }),
     ).toHaveAttribute("aria-pressed", "true");
 
-    fireEvent.click(screen.getByRole("button", { name: "更多" }));
-    expect(screen.queryByText(/删除账号/u)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     fireEvent.click(
-      screen.getByRole("button", { name: "清除本机数据" }),
+      screen.getByRole("button", { name: "重置本页" }),
     );
     await act(async () => {
       await Promise.resolve();
@@ -478,102 +615,11 @@ describe("IndexPage", () => {
       vi.advanceTimersByTime(250);
     });
 
-    expect(services.persistence.clear).toHaveBeenCalledTimes(1);
-    expect(services.favoritesRepository.clear).toHaveBeenCalledTimes(1);
-    expect(services.dataService.clearCache).toHaveBeenCalledTimes(1);
-    expect(services.persistence.save).not.toHaveBeenCalled();
+    expect(services.favoritesRepository.clear).not.toHaveBeenCalled();
+    expect(services.dataService.clearCache).not.toHaveBeenCalled();
+    expect(services.persistence.save).toHaveBeenCalledTimes(1);
     expect(
       screen.getByRole("button", { name: "单技能模式" }),
     ).toHaveAttribute("aria-pressed", "true");
-  });
-
-  test.each([
-    ["state", "persistence"],
-    ["favorites", "favoritesRepository"],
-  ])(
-    "continues every clear step and resets the UI when %s clearing throws",
-    async (_label, failingService) => {
-      vi.useFakeTimers();
-      const snapshot = createSnapshot();
-      const persistedState = createInitialState(snapshot);
-      persistedState.mode = "four";
-      const services = createUserSettingServices({
-        favoriteIds: ["spirit-a"],
-        persistedState,
-      });
-      const privateError = new Error(
-        "storage key and internal adapter details",
-      );
-      if (failingService === "persistence") {
-        services.persistence.clear.mockImplementation(() => {
-          throw privateError;
-        });
-      } else {
-        services.favoritesRepository.clear.mockImplementation(() => {
-          throw privateError;
-        });
-      }
-      vi.spyOn(Taro, "showModal").mockResolvedValue({
-        cancel: false,
-        confirm: true,
-      });
-      vi.spyOn(Taro, "showToast").mockResolvedValue();
-
-      render(<IndexPage services={services} />);
-      await act(async () => {
-        await Promise.resolve();
-      });
-      fireEvent.click(
-        screen.getByRole("button", { name: "四技能模式" }),
-      );
-      fireEvent.click(screen.getByRole("button", { name: "更多" }));
-      fireEvent.click(
-        screen.getByRole("button", { name: "清除本机数据" }),
-      );
-      await act(async () => {
-        await Promise.resolve();
-      });
-      act(() => {
-        vi.advanceTimersByTime(250);
-      });
-
-      expect(services.persistence.clear).toHaveBeenCalledTimes(1);
-      expect(
-        services.favoritesRepository.clear,
-      ).toHaveBeenCalledTimes(1);
-      expect(services.dataService.clearCache).toHaveBeenCalledTimes(1);
-      expect(services.persistence.save).not.toHaveBeenCalled();
-      expect(
-        screen.getByRole("button", { name: "单技能模式" }),
-      ).toHaveAttribute("aria-pressed", "true");
-      expect(Taro.showToast).toHaveBeenCalledWith({
-        duration: 3200,
-        icon: "none",
-        title: "部分本机数据未能清除，请重试",
-      });
-      expect(JSON.stringify(Taro.showToast.mock.calls)).not.toContain(
-        privateError.message,
-      );
-    },
-  );
-
-  test("shows the BWIKI source and unofficial notice from the more menu", async () => {
-    render(
-      <IndexPage
-        services={createUserSettingServices()}
-      />,
-    );
-    expect(
-      await screen.findByLabelText("攻击方配置"),
-    ).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "更多" }));
-    fireEvent.click(
-      screen.getByRole("button", { name: "关于与数据来源" }),
-    );
-
-    expect(screen.getByText(/BWIKI/u)).toBeInTheDocument();
-    expect(screen.getByText(/非官方/u)).toBeInTheDocument();
-    expect(screen.queryByText(/删除账号/u)).not.toBeInTheDocument();
   });
 });

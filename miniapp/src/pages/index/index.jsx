@@ -8,7 +8,7 @@ import AppHeader from "../../components/AppHeader.jsx";
 import BattleWorkspace from "../../components/BattleWorkspace.jsx";
 import ErrorState from "../../components/ErrorState.jsx";
 import LoadingState from "../../components/LoadingState.jsx";
-import { readRuntimeConfig } from "../../config/runtime.js";
+import commonSpiritConfig from "../../data/common-spirit-config.json";
 import previewSnapshot from "../../data/preview-runtime.json";
 import { PREVIEW_PET_IMAGES } from "../../data/preview-pet-images.js";
 import { createCloudAdapter } from "../../services/cloud-adapter.js";
@@ -20,9 +20,30 @@ import {
 } from "../../share/payload.js";
 import { createCalculatorStore } from "../../state/calculator-store.js";
 import { createAutosaveController } from "../../state/autosave.js";
+import {
+  configPresetsBySpirit,
+  createConfigLibraryRepository,
+  expandBundledConfigLibrary,
+} from "../../state/config-library.js";
 import { createFavoritesRepository } from "../../state/favorites.js";
 import { createPersistence } from "../../state/persistence.js";
+import bundledRuntime from "../../data/bundled-runtime.json";
 import "./index.css";
+
+const COMMON_SPIRIT_CONFIG_JSON = JSON.stringify(
+  expandBundledConfigLibrary(commonSpiritConfig),
+);
+
+function bundledPetImagesFor(snapshot) {
+  return Object.fromEntries(
+    (snapshot?.spirits ?? []).flatMap((spirit) => {
+      const imageUrl = PREVIEW_PET_IMAGES[spirit.id] ?? spirit.imageUrl;
+      return typeof imageUrl === "string" && imageUrl.trim()
+        ? [[spirit.id, imageUrl]]
+        : [];
+    }),
+  );
+}
 
 function createRuntimeTaro() {
   return {
@@ -43,28 +64,36 @@ function createRuntimeTaro() {
 }
 
 export function createDefaultServices({
+  bundledData = bundledRuntime,
   taro,
-  config = readRuntimeConfig(),
+  config,
   previewData = previewSnapshot,
 } = {}) {
   const platform = taro ?? createRuntimeTaro();
   const storage = createStorageAdapter(platform);
-  const cloud = config.preview
+  const cloud = !config || config.preview
     ? null
     : createCloudAdapter(platform, {
         cloudEnv: config.cloudEnv,
         manifestFileId: config.manifestFileId,
       });
+  const favoritesRepository = createFavoritesRepository({ storage });
 
   return {
+    configLibraryRepository: createConfigLibraryRepository({
+      favoritesRepository,
+      storage,
+    }),
     dataService: createDataService({
+      bundledPetImages: bundledPetImagesFor(bundledData),
+      bundledSnapshot: config ? null : bundledData,
       cloud,
       storage,
       previewPetImages: PREVIEW_PET_IMAGES,
       previewSnapshot: previewData,
       config,
     }),
-    favoritesRepository: createFavoritesRepository({ storage }),
+    favoritesRepository,
     persistence: createPersistence({ storage }),
   };
 }
@@ -85,6 +114,8 @@ export default function IndexPage({ services }) {
     snapshot: null,
     store: null,
     favoriteIds: [],
+    configLibrary: { entries: [], schemaVersion: 1 },
+    memoryEnabled: true,
     services: null,
   });
 
@@ -100,6 +131,8 @@ export default function IndexPage({ services }) {
       snapshot: null,
       store: null,
       favoriteIds: [],
+      configLibrary: { entries: [], schemaVersion: 1 },
+      memoryEnabled: true,
       services: null,
     });
 
@@ -115,17 +148,26 @@ export default function IndexPage({ services }) {
       const sharedState = sharePayload
         ? decodeSharePayload(sharePayload, snapshot)
         : null;
+      const memoryEnabled =
+        pageServices.persistence?.getMemoryEnabled?.() ?? true;
       const persistedState = sharedState?.sides
         ? sharedState
-        : pageServices.persistence?.load(snapshot);
+        : memoryEnabled
+          ? pageServices.persistence?.load(snapshot)
+          : null;
       const favoriteIds =
         pageServices.favoritesRepository?.load(snapshot) ?? [];
+      const configLibrary =
+        pageServices.configLibraryRepository?.load(snapshot) ??
+        { entries: [], schemaVersion: 1 };
       setPageState({
         status: "ready",
         error: null,
         petImages,
         snapshot,
         favoriteIds,
+        configLibrary,
+        memoryEnabled,
         services: pageServices,
         store: createCalculatorStore(
           snapshot,
@@ -143,6 +185,8 @@ export default function IndexPage({ services }) {
         snapshot: null,
         store: null,
         favoriteIds: [],
+        configLibrary: { entries: [], schemaVersion: 1 },
+        memoryEnabled: true,
         services: null,
       });
     }
@@ -162,7 +206,11 @@ export default function IndexPage({ services }) {
   useEffect(() => {
     autosave.current?.dispose();
     autosave.current = null;
-    if (pageState.store && pageState.services?.persistence) {
+    if (
+      pageState.memoryEnabled &&
+      pageState.store &&
+      pageState.services?.persistence
+    ) {
       autosave.current = createAutosaveController({
         persistence: pageState.services.persistence,
         store: pageState.store,
@@ -172,7 +220,7 @@ export default function IndexPage({ services }) {
       autosave.current?.dispose();
       autosave.current = null;
     };
-  }, [pageState.services, pageState.store]);
+  }, [pageState.memoryEnabled, pageState.services, pageState.store]);
 
   const toggleFavorite = useCallback((spiritId) => {
     setPageState((current) => {
@@ -183,52 +231,82 @@ export default function IndexPage({ services }) {
     });
   }, []);
 
-  const clearLocalData = useCallback(async () => {
+  const changeMemoryEnabled = useCallback((enabled) => {
+    try {
+      autosave.current?.cancel();
+      pageState.services?.persistence?.setMemoryEnabled?.(enabled);
+      if (enabled && pageState.store) {
+        pageState.services?.persistence?.save(pageState.store.getState());
+      }
+      setPageState((current) => current.store === pageState.store
+        ? { ...current, memoryEnabled: enabled }
+        : current);
+      return true;
+    } catch {
+      Promise.resolve(Taro.showToast({
+        duration: 2400,
+        icon: "none",
+        title: "配置记忆设置失败，请重试",
+      })).catch(() => {});
+      return false;
+    }
+  }, [pageState]);
+
+  const importCommonConfigLibrary = useCallback(() => {
+    try {
+      const repository = pageState.services?.configLibraryRepository;
+      if (!repository) {
+        throw new TypeError("常用精灵配置仓库尚未就绪");
+      }
+      const parsed = repository.preview(
+        COMMON_SPIRIT_CONFIG_JSON,
+        pageState.snapshot,
+      );
+      const imported = repository.commit(parsed, pageState.snapshot);
+      setPageState((current) => current.store === pageState.store
+        ? {
+            ...current,
+            configLibrary: {
+              entries: imported.entries,
+              schemaVersion: imported.schemaVersion,
+            },
+            favoriteIds: imported.favorites,
+          }
+        : current);
+      Promise.resolve(Taro.showToast({
+        duration: 2400,
+        icon: "success",
+        title: `已导入 ${imported.entries.length} 只精灵`,
+      })).catch(() => {});
+      return imported;
+    } catch {
+      Promise.resolve(Taro.showToast({
+        duration: 2800,
+        icon: "none",
+        title: "常用精灵配置导入失败，请重试",
+      })).catch(() => {});
+      return null;
+    }
+  }, [pageState]);
+
+  const resetCurrentPage = useCallback(async () => {
     const confirmation = await Taro.showModal({
-      title: "清除本机数据",
-      content:
-        "将清除本机保存的最近配置、宠物收藏和计算数据缓存，且无法撤销。",
-      confirmText: "确认清除",
+      title: "重置本页",
+      content: "将恢复当前页面的默认计算参数，收藏不会删除。",
+      confirmText: "确认重置",
       cancelText: "取消",
     });
     if (!confirmation?.confirm) {
-      return;
+      return false;
     }
 
-    const current = pageState;
     autosave.current?.cancel();
-    let clearFailed = false;
-    const clearActions = [
-      () => current.services?.persistence?.clear(),
-      () => current.services?.favoritesRepository?.clear(),
-      () => current.services?.dataService?.clearCache?.(),
-    ];
-    for (const clear of clearActions) {
-      try {
-        clear();
-      } catch {
-        clearFailed = true;
-      }
-    }
-
-    current.store?.reset();
+    pageState.store?.reset();
     autosave.current?.cancel();
-    setPageState((latest) =>
-      latest.store === current.store
-        ? { ...latest, favoriteIds: [] }
-        : latest
-    );
-    if (clearFailed) {
-      try {
-        await Taro.showToast({
-          duration: 3200,
-          icon: "none",
-          title: "部分本机数据未能清除，请重试",
-        });
-      } catch {
-        // 清理已进入稳定完成态，提示失败不应再次破坏页面。
-      }
+    if (pageState.memoryEnabled && pageState.store) {
+      pageState.services?.persistence?.save(pageState.store.getState());
     }
+    return true;
   }, [pageState]);
 
   if (pageState.status === "loading") {
@@ -241,12 +319,17 @@ export default function IndexPage({ services }) {
   return (
     <View className="page">
       <AppHeader
+        commonConfigCount={pageState.configLibrary.entries.length}
         dataVersion={pageState.snapshot.meta?.id}
-        onClearLocalData={clearLocalData}
-        onReset={pageState.store.reset}
-        onRetry={load}
+        memoryEnabled={pageState.memoryEnabled}
+        onImportCommonConfig={importCommonConfigLibrary}
+        onMemoryChange={changeMemoryEnabled}
+        onReset={resetCurrentPage}
       />
       <BattleWorkspace
+        configPresetsBySpirit={configPresetsBySpirit(
+          pageState.configLibrary.entries,
+        )}
         favoriteIds={pageState.favoriteIds}
         onFavoriteToggle={toggleFavorite}
         onShareChange={updateShareMessage}

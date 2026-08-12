@@ -12,6 +12,15 @@ describe("mini program skill choices", () => {
       { id: "skill-c", name: "技能 C" },
       { id: "skill-d", name: "技能 D" },
       { id: "skill-illegal", name: "不可学习" },
+      {
+        id: "calculator_wish_power_light",
+        name: "愿力冲击",
+        pickerVisibility: "search-only",
+        provenance: {
+          ruleId: "rock-calculator:reviewed-special-skill-2026-07-24",
+        },
+        type: "光",
+      },
     ],
     learnsets: [
       {
@@ -31,7 +40,13 @@ describe("mini program skill choices", () => {
   test("returns only existing skills in the spirit learnset", () => {
     expect(
       getSkillChoices(snapshot, "spirit-a").map((skill) => skill.id),
-    ).toEqual(["skill-a", "skill-b", "skill-c", "skill-d"]);
+    ).toEqual([
+      "skill-a",
+      "skill-b",
+      "skill-c",
+      "skill-d",
+      "calculator_wish_power_light",
+    ]);
   });
 
   test("returns no global fallback skills when the spirit has no learnset", () => {
@@ -40,6 +55,21 @@ describe("mini program skill choices", () => {
 });
 
 describe("dynamic skill inputs", () => {
+  test.each([
+    ["放晴", "counterDefenseSucceeded"],
+    ["点亮", "defenseCounterSucceeded"],
+    ["暖气", "defenseCounterSucceeded"],
+    ["嗜痛", "incomingHitCount"],
+  ])("exposes %s status input %s", (name, contextKey) => {
+    const inputs = getVisibleSkillInputs({ name }, {});
+
+    expect(
+      inputs.some(
+        (input) => (input.contextKey ?? input.key) === contextKey,
+      ),
+    ).toBe(true);
+  });
+
   const skill = {
     inputs: [
       {

@@ -1,19 +1,31 @@
 import { getSkillEffectInputs } from "../shared/domain/skill-effects.js";
+import { getSkillStatusEffectInputs } from "../shared/domain/skill-status-effects.js";
 
 function unique(values) {
   return [...new Set(values)];
 }
 
+function isGlobalCalculatorSkill(skill) {
+  return skill?.pickerVisibility === "search-only" &&
+    skill?.provenance?.ruleId ===
+      "rock-calculator:reviewed-special-skill-2026-07-24";
+}
+
 export function getSkillChoices(snapshot, spiritId) {
-  const skillIds =
-    (snapshot?.learnsets ?? []).find(
-      (learnset) => learnset.spiritId === spiritId,
-    )?.skillIds ?? [];
+  const learnset = (snapshot?.learnsets ?? []).find(
+    (entry) => entry.spiritId === spiritId,
+  );
+  if (!learnset) return [];
+
+  const skillIds = learnset.skillIds ?? [];
   const skillsById = new Map(
     (snapshot?.skills ?? []).map((skill) => [skill.id, skill]),
   );
+  const specialSkillIds = (snapshot?.skills ?? [])
+    .filter(isGlobalCalculatorSkill)
+    .map((skill) => skill.id);
 
-  return unique(skillIds)
+  return unique([...skillIds, ...specialSkillIds])
     .map((skillId) => skillsById.get(skillId))
     .filter(Boolean);
 }
@@ -28,13 +40,25 @@ export function getSkill(snapshot, entry) {
   ) ?? null;
 }
 
-export function getVisibleSkillInputs(skill, context = {}) {
-  const inputs = skill?.inputs ?? getSkillEffectInputs(skill);
-
+export function getSkillInputs(skill) {
+  const inputs = [
+    ...(skill?.inputs ?? getSkillEffectInputs(skill)),
+    ...getSkillStatusEffectInputs(skill),
+  ];
+  const seen = new Set();
   return inputs.filter((input) => {
-    if (!input.when) return true;
-    const controllingValue =
-      context[input.when.key] ?? input.when.defaultValue;
-    return controllingValue === input.when.equals;
+    const id = input.id ?? input.contextKey ?? input.key;
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+}
+
+export function getVisibleSkillInputs(skill, context = {}) {
+  return getSkillInputs(skill).filter((input) => {
+    const condition = input.visibleWhen ?? input.when;
+    if (!condition) return true;
+    const key = condition.id ?? condition.contextKey ?? condition.key;
+    return (context[key] ?? condition.defaultValue) === condition.equals;
   });
 }

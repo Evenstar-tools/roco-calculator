@@ -1,0 +1,574 @@
+/*postcss-pxtransform disable*/
+
+@media (max-width: 767px) {
+  .page {
+    --result-bar-height: 154px;
+
+    padding-right: 8px;
+    padding-bottom: calc(var(--result-bar-height) + 2px + var(--safe-area-bottom));
+    padding-left: 8px;
+  }
+
+  .app-header-shell {
+    margin-bottom: 8px;
+  }
+
+  .app-header {
+    min-height: 48px;
+  }
+
+  .app-header__title {
+    font-size: 19px;
+  }
+
+  .app-header__version {
+    display: none;
+  }
+
+  .app-header__action {
+    min-width: 44px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .workspace-layout,
+  .workspace-layout__main {
+    gap: 8px;
+  }
+
+  .battle-workspace__duel {
+    grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .combatant-card__summary {
+    min-height: 84px;
+    padding: 8px;
+    gap: 7px;
+  }
+
+  .combatant-card__image {
+    width: 54px;
+    height: 54px;
+    flex-basis: 54px;
+  }
+
+  .combatant-card__label {
+    font-size: 10px;
+  }
+
+  .combatant-card__name {
+    font-size: 15px;
+  }
+
+  .combatant-card__types {
+    font-size: 10px;
+  }
+
+  .combatant-card__types .element-icon {
+    width: 14px;
+    height: 14px;
+    flex-basis: 14px;
+  }
+
+  .configuration-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .side-configuration:not(.side-configuration--active) {
+    display: none;
+  }
+
+  .side-configuration {
+    padding: 9px;
+  }
+
+  .side-configuration__heading {
+    min-height: var(--touch-target);
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .stat-grid__item {
+    padding: 5px 6px;
+  }
+
+  .stat-grid__item .stat-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .stat-grid__label {
+    font-size: 10px;
+  }
+
+  .stat-grid__value {
+    font-size: 14px;
+  }
+
+  .workspace-section--skills {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .mode-switch {
+    width: 132px;
+  }
+
+  .mode-switch__short-label {
+    display: block;
+  }
+
+  .mode-switch__long-label {
+    display: none;
+  }
+
+  .skills-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skill-panel:not(.skill-panel--active) {
+    display: none;
+  }
+
+  .skill-panel {
+    padding: 0;
+    border: 0;
+    border-left: 3px solid var(--side-color);
+    border-radius: 9px;
+  }
+
+  .skill-panel__title {
+    padding: 7px 9px 0;
+  }
+
+  .skill-result-row {
+    grid-template-columns: minmax(0, 1fr) 78px;
+  }
+
+  .skill-result-row__damage {
+    font-size: 20px;
+  }
+
+  .active-skill-conditions {
+    padding: 8px;
+  }
+
+  .conditions-ribbon {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 7px 9px;
+  }
+
+  .conditions-ribbon__health-label {
+    display: none;
+  }
+
+  .conditions-ribbon__health {
+    grid-template-columns: 60px auto;
+  }
+
+  .conditions-ribbon__health-input {
+    width: 60px;
+  }
+
+  .result-bar {
+    position: fixed;
+    z-index: 30;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    min-height: calc(var(--result-bar-height) + var(--safe-area-bottom));
+    grid-template-columns: minmax(0, 1fr) 44px;
+    grid-template-areas:
+      "matchup action"
+      "metrics metrics"
+      "health health";
+    align-content: center;
+    align-items: center;
+    gap: 6px 12px;
+    padding: 11px 16px calc(10px + var(--safe-area-bottom));
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-top-width: 1px;
+    border-radius: 0;
+    box-shadow: 0 -4px 18px rgba(30, 37, 55, 0.1);
+  }
+
+  .result-bar__matchup {
+    grid-area: matchup;
+    overflow: hidden;
+  }
+
+  .result-bar__names {
+    overflow: hidden;
+    gap: 7px;
+    font-size: 18px;
+    font-weight: 760;
+    line-height: 24px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .result-bar__attacker-name,
+  .result-bar__defender-name {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .result-bar__skill-row {
+    margin-top: 1px;
+    gap: 10px;
+  }
+
+  .result-bar__skill {
+    display: block;
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: 650;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .result-bar__skill-position {
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .result-bar__metrics {
+    display: flex;
+    grid-area: metrics;
+    align-items: baseline;
+    gap: 18px;
+  }
+
+  .result-bar__primary-value {
+    align-items: baseline;
+    gap: 18px;
+  }
+
+  .result-bar__damage {
+    font-size: 48px;
+    font-weight: 820;
+  }
+
+  .result-bar__metric-copy {
+    padding-bottom: 0;
+  }
+
+  .result-bar__metric-label,
+  .result-bar__rows,
+  .result-bar__target-hp {
+    display: none;
+  }
+
+  .result-bar__percent {
+    font-size: 20px;
+    font-weight: 760;
+    white-space: nowrap;
+  }
+
+  .result-bar__remaining {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .result-bar__health {
+    grid-area: health;
+  }
+
+  .result-bar__track {
+    gap: 10px;
+    margin: 0;
+  }
+
+  .result-bar__track-line {
+    height: 7px;
+  }
+
+  .result-bar__action {
+    display: flex;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    grid-area: action;
+    align-self: start;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--border-strong);
+    border-radius: 9px;
+    background: var(--surface-card);
+    color: var(--text-primary);
+    transition: background-color 120ms ease, transform 120ms ease;
+  }
+
+  .result-bar__action:active {
+    background: var(--surface-muted);
+    transform: scale(0.96);
+  }
+
+  .result-bar__action-icon {
+    display: block;
+  }
+
+  .parameter-sheet,
+  .conditions-sheet,
+  .result-sheet,
+  .skill-picker__sheet,
+  .settings-sheet {
+    max-height: 92vh;
+  }
+
+  .skill-picker__sheet {
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0px) + 12vh);
+    right: 0;
+    bottom: var(--skill-picker-keyboard-height, 0px);
+    left: 0;
+    height: auto;
+    max-height: none;
+    margin-bottom: 0;
+  }
+
+  .quick-controls__row {
+    grid-template-columns: 42px repeat(6, minmax(0, 1fr));
+    gap: 2px;
+  }
+
+  .quick-controls__option {
+    min-height: 52px;
+    padding: 2px 0;
+  }
+
+  .quick-controls__icon-stage,
+  .quick-controls__icon-stage .stat-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .quick-controls__stat-label {
+    font-size: 10px;
+    line-height: 13px;
+  }
+
+  .quick-controls__status-badge {
+    width: 13px;
+    height: 13px;
+  }
+
+  .quick-controls__summary {
+    margin-right: -9px;
+    margin-bottom: -9px;
+    margin-left: -9px;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .iv-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 359px) {
+  .page {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+
+  .combatant-card__summary {
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .combatant-card__image {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  .combatant-card__name {
+    font-size: 14px;
+  }
+
+  .stat-grid__item {
+    gap: 3px;
+    padding: 4px;
+  }
+
+  .stat-grid__item .stat-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .quick-controls__summary-separator,
+  .quick-controls__summary-slash {
+    margin-right: 3px;
+    margin-left: 3px;
+  }
+
+  .conditions-ribbon__summary,
+  .conditions-ribbon__health-max {
+    display: none;
+  }
+
+  .conditions-ribbon__health {
+    grid-template-columns: 58px;
+  }
+
+  .conditions-ribbon__health-input {
+    width: 58px;
+  }
+
+  .result-bar {
+    gap: 4px 8px;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .result-bar__metrics,
+  .result-bar__primary-value {
+    gap: 10px;
+  }
+
+  .result-row {
+    grid-template-columns: 16px minmax(68px, 1fr) minmax(52px, 0.85fr) 46px;
+    gap: 6px;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .result-formula__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .result-formula__row-title {
+    padding-top: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .settings-sheet__overlay {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .settings-sheet {
+    max-width: 480px;
+    margin: 0;
+    border-bottom: 1px solid var(--border-neutral);
+    border-radius: 18px;
+  }
+
+  .settings-sheet {
+    margin-bottom: 0;
+  }
+
+  .page {
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 18px calc(24px + var(--safe-area-bottom));
+  }
+
+  .workspace-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+
+  .battle-workspace__duel {
+    grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr);
+  }
+
+  .configuration-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-controls__row {
+    grid-template-columns: 42px repeat(6, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .skills-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trait-editor__controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .result-bar {
+    position: sticky;
+    top: 16px;
+  }
+
+  .parameter-sheet,
+  .conditions-sheet,
+  .result-sheet,
+  .skill-picker__sheet,
+  .settings-sheet {
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border-neutral);
+    border-radius: 18px;
+  }
+
+  .result-sheet__scroll {
+    padding: 18px;
+  }
+
+  .result-formula__row {
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 12px;
+    padding: 11px 14px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 899px) and (orientation: portrait) {
+  .workspace-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .result-bar {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .workspace-layout {
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 16px;
+  }
+
+  .workspace-layout__main {
+    gap: 14px;
+  }
+
+  .combatant-card__image {
+    width: 82px;
+    height: 82px;
+    flex-basis: 82px;
+  }
+
+  .skill-result-row {
+    grid-template-columns: minmax(0, 1fr) 92px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .workspace-layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}

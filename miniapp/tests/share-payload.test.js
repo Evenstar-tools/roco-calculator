@@ -13,8 +13,16 @@ function createSnapshot() {
   return {
     meta: { id: "data-v2", rulesVersion: "rules-v3" },
     spirits: [
-      { id: "spirit-a", fullName: "烈焰兽" },
-      { id: "spirit-b", fullName: "潮汐兽" },
+      {
+        id: "spirit-a",
+        fullName: "烈焰兽",
+        traitIds: ["trait-ignite"],
+      },
+      {
+        id: "spirit-b",
+        fullName: "潮汐兽",
+        traitIds: ["trait-ignite"],
+      },
     ],
     skills: [
       { id: "skill-a", name: "烈焰冲击" },
@@ -30,6 +38,13 @@ function createSnapshot() {
       {
         spiritId: "spirit-b",
         skillIds: ["skill-c", "skill-d"],
+      },
+    ],
+    traits: [
+      {
+        description: "每层增加双攻双防。",
+        id: "trait-ignite",
+        name: "点燃",
       },
     ],
   };
@@ -70,11 +85,26 @@ function createState(snapshot) {
         null,
       ],
     },
+    traitValues: {
+      "trait.traitStacks.53103d7d": 3,
+      "trait.unknown.deadbeef": true,
+      openid: "secret-openid",
+      password: "hunter2",
+    },
   };
-  state.sides.defender.skills = {
-    single: "skill-c",
-    four: ["skill-c", "skill-d", null, null],
+  state.sides.attacker.password = "hunter2";
+  state.sides.defender = {
+    ...state.sides.defender,
+    openid: "secret-openid",
+    skills: {
+      single: "skill-c",
+      four: ["skill-c", "skill-d", null, null],
+    },
+    traitValues: {
+      "trait.traitEffect.ddee82fa": 120,
+    },
   };
+  state.marks.attacker.positive = { id: "sprout", stacks: 3 };
   state.directions.forward = {
     ...state.directions.forward,
     context: {
@@ -112,8 +142,16 @@ describe("mini program share payload", () => {
     expect(encoded).toMatch(/^[A-Za-z0-9_-]+$/u);
     expect(encoded).not.toContain("=");
     expect(encoded.length).toBeLessThan(900);
+    expect(
+      JSON.parse(Buffer.from(encoded, "base64url").toString("utf8")).v,
+    ).toBe(2);
     expect(decoded).toMatchObject({
       mode: "four",
+      marks: {
+        attacker: {
+          positive: { id: "sprout", stacks: 3 },
+        },
+      },
       sides: {
         attacker: {
           displayIvs: {
@@ -140,8 +178,16 @@ describe("mini program share payload", () => {
             ],
             single: "skill-a",
           },
+          traitValues: {
+            "trait.traitStacks.53103d7d": 3,
+          },
         },
-        defender: { spiritId: "spirit-b" },
+        defender: {
+          spiritId: "spirit-b",
+          traitValues: {
+            "trait.traitEffect.ddee82fa": 120,
+          },
+        },
       },
       directions: {
         forward: {
@@ -156,6 +202,11 @@ describe("mini program share payload", () => {
     });
     expect(decoded).not.toHaveProperty("identity");
     expect(decoded).not.toHaveProperty("result");
+    expect(decoded.sides.attacker).not.toHaveProperty("password");
+    expect(decoded.sides.defender).not.toHaveProperty("openid");
+    expect(decoded.sides.attacker.traitValues).not.toHaveProperty(
+      "trait.unknown.deadbeef",
+    );
     expect(decoded.directions.forward.context).not.toHaveProperty(
       "password",
     );
@@ -177,6 +228,26 @@ describe("mini program share payload", () => {
         createSnapshot(),
       ),
     ).toEqual({});
+  });
+
+  test("migrates version 1 payloads with default marks and traits", () => {
+    const snapshot = createSnapshot();
+    const decoded = decodeSharePayload(
+      encodeFixture({
+        a: {
+          s: "spirit-a",
+          t: { "traitStacks.53103d7d": 3 },
+        },
+        d: { s: "spirit-b" },
+        m: "single",
+        v: 1,
+      }),
+      snapshot,
+    );
+
+    expect(decoded.marks).toEqual(createInitialState(snapshot).marks);
+    expect(decoded.sides.attacker.traitValues).toEqual({});
+    expect(decoded.sides.defender.traitValues).toEqual({});
   });
 
   test("repairs invalid IDs and numeric boundaries while preserving valid fields", () => {

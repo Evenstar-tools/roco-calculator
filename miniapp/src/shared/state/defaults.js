@@ -1,4 +1,5 @@
 import { createMarksState } from "../domain/marks.js";
+import { getSpiritSkillSlotCapacity } from "../domain/skill-slot-capacity.js";
 
 export const STATE_SCHEMA_VERSION = 1;
 
@@ -27,14 +28,18 @@ function getDefaultSkillIds(snapshot) {
   return skillIds;
 }
 
-function createSide(spiritId, defaultSkillIds) {
+function createSide(spiritId, defaultSkillIds, capacity = 4) {
   return {
     spiritId: spiritId ?? null,
     nature: "neutral",
     displayIvs: createDisplayIvs(),
+    traitValues: {},
     skills: {
       single: defaultSkillIds[0],
-      four: [...defaultSkillIds],
+      four: Array.from(
+        { length: capacity },
+        (_, index) => defaultSkillIds[index] ?? null,
+      ),
     },
   };
 }
@@ -68,8 +73,19 @@ export function createInitialState(snapshot) {
     mode: "single",
     marks: createMarksState(),
     sides: {
-      attacker: createSide(spirits[0]?.id, defaultSkillIds),
-      defender: createSide(spirits[1]?.id ?? spirits[0]?.id, defaultSkillIds),
+      attacker: createSide(
+        spirits[0]?.id,
+        defaultSkillIds,
+        getSpiritSkillSlotCapacity(snapshot, spirits[0]?.id),
+      ),
+      defender: createSide(
+        spirits[1]?.id ?? spirits[0]?.id,
+        defaultSkillIds,
+        getSpiritSkillSlotCapacity(
+          snapshot,
+          spirits[1]?.id ?? spirits[0]?.id,
+        ),
+      ),
     },
     directions: {
       forward: createDirection(),

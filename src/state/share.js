@@ -25,6 +25,9 @@ const TOP_LEVEL_KEYS = [
 ];
 const LEGACY_TOP_LEVEL_KEYS = TOP_LEVEL_KEYS.filter((key) => key !== "marks");
 const SIDE_KEYS = ["spiritId", "nature", "displayIvs", "skills"];
+const SIDE_KEYS_WITH_TRAITS = [...SIDE_KEYS, "traitValues"];
+const TRAIT_VALUE_KEY_PATTERN =
+  /^trait\.[A-Za-z][A-Za-z0-9]*\.[a-f0-9]{8}$/u;
 const DIRECTION_KEYS = [
   "selectedSkillIndex",
   "selectedDamageSource",
@@ -78,6 +81,24 @@ function hasExactKeys(value, expectedKeys) {
 
 function isNonEmptyString(value) {
   return typeof value === "string" && value.length > 0;
+}
+
+function isTraitValue(value) {
+  return (
+    typeof value === "boolean" ||
+    typeof value === "string" ||
+    (typeof value === "number" && Number.isFinite(value))
+  );
+}
+
+function sanitizeTraitValues(value) {
+  if (!isPlainObject(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value).filter(
+      ([key, candidate]) =>
+        TRAIT_VALUE_KEY_PATTERN.test(key) && isTraitValue(candidate),
+    ),
+  );
 }
 
 function isNullableId(value) {
@@ -206,7 +227,10 @@ function assertSkillInput(skill, path) {
 }
 
 function assertSide(side, path) {
-  if (!hasExactKeys(side, SIDE_KEYS)) {
+  if (
+    !hasExactKeys(side, SIDE_KEYS) &&
+    !hasExactKeys(side, SIDE_KEYS_WITH_TRAITS)
+  ) {
     throw new TypeError(`${path} 结构无效`);
   }
   if (!isNullableId(side.spiritId)) {
@@ -237,6 +261,16 @@ function assertSide(side, path) {
   side.skills.four.forEach((skill, index) => {
     assertSkillInput(skill, `${path}.skills.four[${index}]`);
   });
+  if (Object.hasOwn(side, "traitValues")) {
+    if (!isPlainObject(side.traitValues)) {
+      throw new TypeError(`${path}.traitValues 无效`);
+    }
+    for (const [key, value] of Object.entries(side.traitValues)) {
+      if (!TRAIT_VALUE_KEY_PATTERN.test(key) || !isTraitValue(value)) {
+        throw new TypeError(`${path}.traitValues.${key} 无效`);
+      }
+    }
+  }
 }
 
 function assertMarks(marks) {
@@ -390,7 +424,7 @@ function selectSkillInput(skill) {
 }
 
 function selectSide(side) {
-  return {
+  const selected = {
     spiritId: side.spiritId,
     nature: side.nature,
     displayIvs: Object.fromEntries(
@@ -401,6 +435,26 @@ function selectSide(side) {
       four: side.skills.four.map(selectSkillInput),
     },
   };
+  const traitValues = sanitizeTraitValues(side.traitValues);
+  if (Object.keys(traitValues).length > 0) {
+    selected.traitValues = traitValues;
+  }
+  return selected;
+}
+
+function migrateSides(sides) {
+  if (!isPlainObject(sides)) return sides;
+  return Object.fromEntries(
+    Object.entries(sides).map(([side, value]) => [
+      side,
+      isPlainObject(value)
+        ? {
+            ...value,
+            traitValues: sanitizeTraitValues(value.traitValues),
+          }
+        : value,
+    ]),
+  );
 }
 
 function selectDirection(direction) {
@@ -586,6 +640,7 @@ export async function decodeShareState(hash, expectedVersions) {
   const migratedState = {
     ...state,
     marks: normalizeMarksState(state.marks, state.directions),
+    sides: migrateSides(state.sides),
   };
   assertShareState(migratedState);
   const normalizedState = {

@@ -1,4 +1,5 @@
 import { Button, Input, Text, View } from "@tarojs/components";
+import { ConditionField } from "./ConditionField.jsx";
 import { getVisibleSkillInputs } from "../view-models/skills.js";
 
 function eventValue(event) {
@@ -14,72 +15,11 @@ function numericValue(event, minimum = 0, maximum) {
   );
 }
 
-function ConditionField({ input, onChange, value }) {
-  if (input.type === "boolean") {
-    return (
-      <Button
-        aria-label={input.label}
-        aria-pressed={value === true}
-        className={
-          value === true
-            ? "condition-editor__toggle condition-editor__toggle--active"
-            : "condition-editor__toggle"
-        }
-        onClick={() => onChange(value !== true)}
-      >
-        <Text>{input.label}</Text>
-        <Text>{value === true ? "已开启" : "未开启"}</Text>
-      </Button>
-    );
-  }
-
-  if (input.type === "choice") {
-    return (
-      <View className="condition-editor__field">
-        <Text className="condition-editor__label">{input.label}</Text>
-        <View className="condition-editor__choices">
-          {(input.options ?? []).map((option) => (
-            <Button
-              aria-label={option.label}
-              aria-pressed={value === option.value}
-              className={
-                value === option.value
-                  ? "condition-editor__choice condition-editor__choice--active"
-                  : "condition-editor__choice"
-              }
-              key={option.value}
-              onClick={() => onChange(option.value)}
-            >
-              {option.label}
-            </Button>
-          ))}
-        </View>
-      </View>
-    );
-  }
-
-  return (
-    <View className="condition-editor__field condition-editor__field--number">
-      <Text className="condition-editor__label">{input.label}</Text>
-      <Input
-        aria-label={input.label}
-        className="condition-editor__input"
-        inputMode="numeric"
-        max={input.max}
-        min={input.min ?? 0}
-        onInput={(event) =>
-          onChange(numericValue(event, input.min ?? 0, input.max))
-        }
-        type="number"
-        value={value ?? input.defaultValue ?? ""}
-      />
-    </View>
-  );
-}
-
 export default function SkillConditionEditor({
   context,
   direction,
+  feedback,
+  onApply,
   onContextChange,
   onDirectionChange,
   skill,
@@ -91,11 +31,17 @@ export default function SkillConditionEditor({
       {inputs.map((input) => (
         <ConditionField
           input={input}
-          key={input.key}
+          key={input.id ?? input.contextKey ?? input.key}
           onChange={(value) =>
-            onContextChange({ ...context, [input.key]: value })
+            onContextChange({
+              ...context,
+              [input.contextKey ?? input.key ?? input.id]: value,
+            })
           }
-          value={context[input.key] ?? input.defaultValue}
+          value={
+            context[input.contextKey ?? input.key ?? input.id] ??
+            input.defaultValue
+          }
         />
       ))}
       <View className="condition-editor__manual">
@@ -140,6 +86,23 @@ export default function SkillConditionEditor({
           />
         </View>
       </View>
+      {onApply ? (
+        <View className="condition-editor__activation">
+          <Button
+            aria-label="应用当前技能状态"
+            className="condition-editor__apply"
+            hoverClass="button-hover"
+            onClick={onApply}
+          >
+            应用技能
+          </Button>
+          {feedback ? (
+            <Text aria-live="polite" className="condition-editor__feedback">
+              {feedback}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
     </View>
   );
 }

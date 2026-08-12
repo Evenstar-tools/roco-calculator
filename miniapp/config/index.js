@@ -1,27 +1,18 @@
-const fs = require("node:fs");
 const path = require("node:path");
 const { defineConfig } = require("@tarojs/cli");
-
-function readLocalConfig() {
-  const filePath = path.resolve(__dirname, "..", "local.config.json");
-
-  if (!fs.existsSync(filePath)) {
-    return {};
-  }
-
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
-}
+const {
+  applyTaroAppId,
+  loadReleaseConfig,
+  verifyPreflight,
+} = require("../../scripts/miniapp/release-config.cjs");
 
 module.exports = defineConfig(async (merge, { mode }) => {
-  const localConfig = readLocalConfig();
-  const cloudEnv =
-    process.env.TARO_APP_CLOUD_ENV ?? localConfig.cloudEnv ?? "";
-  const manifestFileId =
-    process.env.TARO_APP_MANIFEST_FILE_ID ?? localConfig.manifestFileId ?? "";
-  const runtimeSha256 =
-    process.env.TARO_APP_RUNTIME_SHA256 ??
-    localConfig.runtimeSha256 ??
-    "";
+  const releaseConfig = loadReleaseConfig({
+    environment: process.env,
+    miniappRoot: path.resolve(__dirname, ".."),
+  });
+  const { cloudEnv, manifestFileId, runtimeSha256 } = releaseConfig;
+  applyTaroAppId(releaseConfig, process.env);
   const target = process.env.TARO_ENV ?? "";
   const previewRequested =
     process.env.TARO_APP_PREVIEW_FIXTURE === "1" ||
@@ -29,20 +20,7 @@ module.exports = defineConfig(async (merge, { mode }) => {
   const previewFixture = previewRequested && target === "h5";
 
   if (mode === "production" && !previewFixture) {
-    if (!cloudEnv) {
-      throw new Error("生产构建缺少 TARO_APP_CLOUD_ENV");
-    }
-    if (!manifestFileId) {
-      throw new Error("生产构建缺少 TARO_APP_MANIFEST_FILE_ID");
-    }
-    if (!/^[a-f0-9]{64}$/i.test(runtimeSha256)) {
-      throw new Error("生产构建缺少有效的 TARO_APP_RUNTIME_SHA256");
-    }
-    if (!/^cloud:\/\/[^\s/]+\/\S+$/.test(manifestFileId)) {
-      throw new Error(
-        "TARO_APP_MANIFEST_FILE_ID 必须是精确的微信云文件 ID"
-      );
-    }
+    verifyPreflight(releaseConfig);
   }
 
   const baseConfig = {

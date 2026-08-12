@@ -3,17 +3,17 @@ import { getSkillEffectInputs } from "./skill-effects.js";
 import { projectTriggerContext } from "./trigger-controls.js";
 
 const DIFFERENCE_POWER_TABLE = Object.freeze([
-  { minimum: Number.NEGATIVE_INFINITY, maximum: -1, power: 60 },
-  { minimum: 0, maximum: 14, power: 100 },
-  { minimum: 15, maximum: 29, power: 130 },
-  { minimum: 30, maximum: 44, power: 140 },
-  { minimum: 45, maximum: 59, power: 150 },
-  { minimum: 60, maximum: 74, power: 160 },
-  { minimum: 75, maximum: 89, power: 170 },
-  { minimum: 90, maximum: 104, power: 180 },
-  { minimum: 105, maximum: 119, power: 190 },
-  { minimum: 120, maximum: 134, power: 194 },
-  { minimum: 135, maximum: Number.POSITIVE_INFINITY, power: 200 },
+  { minimum: Number.NEGATIVE_INFINITY, maximum: 0, power: 60 },
+  { minimum: 1, maximum: 30, power: 80 },
+  { minimum: 31, maximum: 60, power: 100 },
+  { minimum: 61, maximum: 90, power: 120 },
+  { minimum: 91, maximum: 120, power: 140 },
+  { minimum: 121, maximum: 150, power: 150 },
+  { minimum: 151, maximum: 180, power: 160 },
+  { minimum: 181, maximum: 210, power: 170 },
+  { minimum: 211, maximum: 240, power: 180 },
+  { minimum: 241, maximum: 270, power: 190 },
+  { minimum: 271, maximum: Number.POSITIVE_INFINITY, power: 200 },
 ]);
 
 const MANA_BURST_POWER = Object.freeze([
@@ -73,7 +73,7 @@ function resolveDifference(context, attackerKey, defenderKey, labels) {
       input: { attacker: attackerValue, defender: defenderValue },
       before: difference,
       after: row.power,
-      source: "reviewed-rule:speed-defense-difference-v1",
+      source: "reviewed-rule:speed-defense-difference-v2",
     },
   ]);
 }
@@ -362,13 +362,13 @@ function resolveStackPlusCounterAdd(skill, context) {
   }
   const stackCount = Math.max(0, Math.floor(Number(context[contextKey])));
   const counterTriggered = context[params.counterKey ?? "counterTriggered"] === true;
+  const perStack = Number(
+    counterTriggered ? params.counterPerStack : params.perStack,
+  );
   const value = Math.max(
     0,
     Math.round(
-      Number(skill.basePower) +
-        (counterTriggered
-          ? Number(params.counterAdd ?? 0)
-          : stackCount * Number(params.perStack ?? 0)),
+      Number(skill.basePower) + stackCount * perStack,
     ),
   );
   return exact(value, [

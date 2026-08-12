@@ -18,6 +18,16 @@ const repositoryRoot = path.resolve(
   "../..",
 );
 
+const rootPackage = JSON.parse(
+  readFileSync(path.join(repositoryRoot, "package.json"), "utf8"),
+);
+const miniappPackage = JSON.parse(
+  readFileSync(path.join(repositoryRoot, "miniapp/package.json"), "utf8"),
+);
+const miniappLockfile = JSON.parse(
+  readFileSync(path.join(repositoryRoot, "miniapp/package-lock.json"), "utf8"),
+);
+
 const fixtureManifest = {
   shared: ["src/domain/calculate.js"],
   webOnly: [],
@@ -196,6 +206,12 @@ afterEach(() => {
 });
 
 describe("miniapp shared calculator core", () => {
+  test("pins the miniapp release to the current web core version", () => {
+    expect(rootPackage.version).toBe("1.5.0");
+    expect(miniappPackage.version).toBe("0.1.2");
+    expect(miniappLockfile.packages[""].version).toBe("0.1.2");
+  });
+
   test("manifest classifies every Web domain module exactly once", async () => {
     const { getManifestCoverage } = await import(
       "../../scripts/miniapp/shared-source-manifest.mjs"

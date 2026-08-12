@@ -393,4 +393,64 @@ describe("applyFavoriteConfigLibraryImport", () => {
     expect(configs.configs.local.spiritId).toBe("local");
     expect(configs.configs["spirit-a"]).toBeUndefined();
   });
+
+  test("attempts every rollback and reports rollback failures after a partial favorite write", () => {
+    const beforeFavorites = [
+      { id: "spirit:local", kind: "spirit", spiritId: "local" },
+    ];
+    let favorites = structuredClone(beforeFavorites);
+    let configs = { configs: { local: config("local") }, schemaVersion: 2 };
+    const mainError = new Error("favorite write failed after mutation");
+    const configRollbackError = new Error("config rollback failed");
+    const favoritesRepository = {
+      list: () => structuredClone(favorites),
+      replace: vi.fn((next) => {
+        favorites = structuredClone(next);
+        if (favoritesRepository.replace.mock.calls.length === 1) {
+          throw mainError;
+        }
+        return structuredClone(favorites);
+      }),
+    };
+    const spiritConfigsRepository = {
+      load: () => structuredClone(configs),
+      replace: vi.fn((next) => {
+        if (spiritConfigsRepository.replace.mock.calls.length === 2) {
+          throw configRollbackError;
+        }
+        configs = structuredClone(next);
+        return structuredClone(configs);
+      }),
+    };
+    const parsed = parseFavoriteConfigLibrary(JSON.stringify(library([
+      {
+        spiritId: "spirit-a",
+        natureId: "adamant",
+        displayIvs: IVS,
+        skills: ["skill-a", null, null, null],
+        traitValues: {},
+      },
+    ])), { snapshot: snapshot(), currentVersions: {} });
+
+    let thrown;
+    try {
+      applyFavoriteConfigLibraryImport({
+        favoritesRepository,
+        parsed,
+        snapshot: snapshot(),
+        spiritConfigsRepository,
+      });
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(favoritesRepository.replace).toHaveBeenCalledTimes(2);
+    expect(favorites).toEqual(beforeFavorites);
+    expect(thrown).toBeInstanceOf(AggregateError);
+    expect(thrown.cause).toBe(mainError);
+    expect(thrown.errors[0]).toBe(mainError);
+    expect(thrown.errors[1]).toMatchObject({ cause: configRollbackError });
+    expect(thrown.errors[1].message).toMatch(/精灵配置回滚失败/u);
+    expect(thrown.message).toMatch(/导入失败.*回滚失败/u);
+  });
 });
