@@ -105,6 +105,17 @@ function createConfiguredState(snapshot = createSnapshot()) {
 }
 
 describe("createPersistence", () => {
+  test("stores the type analysis display setting independently", () => {
+    const storage = createMemoryStorage();
+    const persistence = createPersistence({ storage });
+
+    expect(persistence.getTypeAnalysisEnabled()).toBe(false);
+    expect(persistence.setTypeAnalysisEnabled(true)).toBe(true);
+    expect(persistence.getTypeAnalysisEnabled()).toBe(true);
+    expect(persistence.setTypeAnalysisEnabled(false)).toBe(false);
+    expect(persistence.getTypeAnalysisEnabled()).toBe(false);
+  });
+
   test("publishes persistence schema 2", () => {
     expect(MINIAPP_PERSISTENCE_SCHEMA_VERSION).toBe(2);
   });

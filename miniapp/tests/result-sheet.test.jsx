@@ -112,6 +112,41 @@ function renderWorkspace() {
 }
 
 describe("result bar and sheet", () => {
+  test("shows defensive matchups and four-skill coverage when enabled", () => {
+    render(
+      <ResultSheet
+        onClose={vi.fn()}
+        open
+        showTypeAnalysis
+        view={{
+          attackerName: "烈焰兽",
+          defenderName: "潮汐兽",
+          message: "请选择技能",
+          rows: [],
+          selectedResult: null,
+          status: "unresolved",
+          typeAnalysis: {
+            subjectName: "烈焰兽",
+            defense: {
+              weaknesses: [{ type: "水", multiplier: 2 }],
+              resistances: [{ type: "火", multiplier: 0.5 }],
+            },
+            offense: {
+              coverage: [{ type: "草", multiplier: 2 }],
+              blindSpots: [{ type: "水", multiplier: 0.5 }],
+            },
+          },
+        }}
+      />,
+    );
+
+    const analysis = screen.getByLabelText("属性分析");
+    expect(analysis).toHaveTextContent("烈焰兽 · 自身防御面");
+    expect(analysis).toHaveTextContent("四技能进攻面");
+    expect(analysis).toHaveTextContent("水");
+    expect(analysis).toHaveTextContent("草");
+  });
+
   test("keeps target HP beside the compact battle condition summary", () => {
     const onCurrentHpChange = vi.fn();
     render(

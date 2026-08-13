@@ -102,6 +102,35 @@ test("shows data sources and exposes the feedback contact", () => {
   expect(dialog).toBeVisible();
 });
 
+test("opens the complete release notes in a second-level dialog", () => {
+  renderOverlays({
+    dataSource: {
+      onClose: vi.fn(),
+      onCopyFeedback: vi.fn(),
+      open: true,
+    },
+    menu: { actions: {}, open: false },
+  });
+
+  expect(screen.getByText("版本记录")).toBeVisible();
+  expect(screen.getByText("完整版本记录")).toBeVisible();
+  expect(screen.getByText("v1.5.5")).toBeVisible();
+  expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole("button", { name: "查看完整版本记录" }));
+  expect(screen.getByRole("dialog", { name: "完整版本记录" })).toBeVisible();
+  expect(screen.getByText("v1.5.4")).toBeVisible();
+  expect(screen.getByText("v1.0.0")).toBeVisible();
+  expect(
+    screen.getByText("新增精灵防御端分析，分别显示自身弱点与抗性。"),
+  ).toBeVisible();
+
+  fireEvent.click(screen.getByRole("button", { name: "返回数据来源" }));
+  expect(screen.getByRole("dialog", { name: "数据来源" })).toBeVisible();
+  expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "查看完整版本记录" })).toBeVisible();
+});
+
 test("opens display settings from the menu and exposes the type analysis switch", () => {
   const onShowDisplaySettings = vi.fn();
   const onTypeCoverageChange = vi.fn();

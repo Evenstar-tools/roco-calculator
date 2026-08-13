@@ -27,11 +27,8 @@ import {
 } from "../../state/config-library.js";
 import { createFavoritesRepository } from "../../state/favorites.js";
 import { createPersistence } from "../../state/persistence.js";
-import bundledRuntimePayload from "../../data/bundled-runtime.json";
-import { expandBundledRuntime } from "../../data/expand-bundled-runtime.js";
+import bundledRuntime from "../../data/bundled-runtime.js";
 import "./index.css";
-
-const bundledRuntime = expandBundledRuntime(bundledRuntimePayload);
 
 const COMMON_SPIRIT_CONFIG_JSON = JSON.stringify(
   expandBundledConfigLibrary(commonSpiritConfig),
@@ -107,7 +104,7 @@ export default function IndexPage({ services }) {
   const router = useRouter();
   const sharePayload = router?.params?.share;
   const shareMessage = useRef({
-    title: "洛克对战计算器",
+    title: "洛克计算器 · S3季中",
     path: "/pages/index/index",
   });
   const [pageState, setPageState] = useState({
@@ -119,6 +116,7 @@ export default function IndexPage({ services }) {
     favoriteIds: [],
     configLibrary: { entries: [], schemaVersion: 1 },
     memoryEnabled: true,
+    typeAnalysisEnabled: false,
     services: null,
   });
 
@@ -136,6 +134,7 @@ export default function IndexPage({ services }) {
       favoriteIds: [],
       configLibrary: { entries: [], schemaVersion: 1 },
       memoryEnabled: true,
+      typeAnalysisEnabled: false,
       services: null,
     });
 
@@ -153,6 +152,8 @@ export default function IndexPage({ services }) {
         : null;
       const memoryEnabled =
         pageServices.persistence?.getMemoryEnabled?.() ?? true;
+      const typeAnalysisEnabled =
+        pageServices.persistence?.getTypeAnalysisEnabled?.() ?? false;
       const persistedState = sharedState?.sides
         ? sharedState
         : memoryEnabled
@@ -171,6 +172,7 @@ export default function IndexPage({ services }) {
         favoriteIds,
         configLibrary,
         memoryEnabled,
+        typeAnalysisEnabled,
         services: pageServices,
         store: createCalculatorStore(
           snapshot,
@@ -190,6 +192,7 @@ export default function IndexPage({ services }) {
         favoriteIds: [],
         configLibrary: { entries: [], schemaVersion: 1 },
         memoryEnabled: true,
+        typeAnalysisEnabled: false,
         services: null,
       });
     }
@@ -292,6 +295,23 @@ export default function IndexPage({ services }) {
     }
   }, [pageState]);
 
+  const changeTypeAnalysisEnabled = useCallback((enabled) => {
+    try {
+      pageState.services?.persistence?.setTypeAnalysisEnabled?.(enabled);
+      setPageState((current) => current.store === pageState.store
+        ? { ...current, typeAnalysisEnabled: enabled }
+        : current);
+      return true;
+    } catch {
+      Promise.resolve(Taro.showToast({
+        duration: 2400,
+        icon: "none",
+        title: "属性分析设置失败，请重试",
+      })).catch(() => {});
+      return false;
+    }
+  }, [pageState]);
+
   const resetCurrentPage = useCallback(async () => {
     const confirmation = await Taro.showModal({
       title: "重置本页",
@@ -332,6 +352,8 @@ export default function IndexPage({ services }) {
         onImportCommonConfig={importCommonConfigLibrary}
         onMemoryChange={changeMemoryEnabled}
         onReset={resetCurrentPage}
+        onTypeAnalysisChange={changeTypeAnalysisEnabled}
+        typeAnalysisEnabled={pageState.typeAnalysisEnabled}
       />
       <BattleWorkspace
         configPresetsBySpirit={configPresetsBySpirit(
@@ -341,6 +363,7 @@ export default function IndexPage({ services }) {
         onFavoriteToggle={toggleFavorite}
         onShareChange={updateShareMessage}
         petImages={pageState.petImages}
+        showTypeAnalysis={pageState.typeAnalysisEnabled}
         snapshot={pageState.snapshot}
         store={pageState.store}
       />

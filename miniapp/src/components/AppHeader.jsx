@@ -9,6 +9,8 @@ export default function AppHeader({
   onImportCommonConfig,
   onMemoryChange,
   onReset,
+  onTypeAnalysisChange,
+  typeAnalysisEnabled = false,
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -26,7 +28,7 @@ export default function AppHeader({
     >
       <View className="app-header">
         <View className="app-header__identity">
-          <Text className="app-header__title">洛克对战计算器</Text>
+          <Text className="app-header__title">洛克计算器 · S3季中</Text>
           <Text className="app-header__version">
             数据 {dataVersion || "待确认"}
           </Text>
@@ -90,6 +92,29 @@ export default function AppHeader({
                     : "settings-sheet__switch"}
                   hoverClass="settings-sheet__switch--pressed"
                   onClick={() => onMemoryChange?.(!memoryEnabled)}
+                  role="switch"
+                >
+                  <View className="settings-sheet__switch-thumb" />
+                </Button>
+              </View>
+              <View className="settings-sheet__divider" />
+              <View className="settings-sheet__row">
+                <View className="settings-sheet__copy">
+                  <Text className="settings-sheet__label">
+                    属性克制与打击面
+                  </Text>
+                  <Text className="settings-sheet__description">
+                    在结果中显示自身弱点、抗性和四技能覆盖
+                  </Text>
+                </View>
+                <Button
+                  aria-checked={typeAnalysisEnabled}
+                  aria-label="属性克制与打击面"
+                  className={typeAnalysisEnabled
+                    ? "settings-sheet__switch settings-sheet__switch--on"
+                    : "settings-sheet__switch"}
+                  hoverClass="settings-sheet__switch--pressed"
+                  onClick={() => onTypeAnalysisChange?.(!typeAnalysisEnabled)}
                   role="switch"
                 >
                   <View className="settings-sheet__switch-thumb" />

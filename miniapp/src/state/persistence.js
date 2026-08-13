@@ -6,6 +6,8 @@ import { sanitizePublicContext } from "../share/context-schema.js";
 export const MINIAPP_STATE_KEY = "rock-calculator.miniapp.state.v1";
 export const MINIAPP_MEMORY_ENABLED_KEY =
   "rock-calculator.miniapp.memory-enabled.v1";
+export const MINIAPP_TYPE_ANALYSIS_ENABLED_KEY =
+  "rock-calculator.miniapp.type-analysis-enabled.v1";
 export const MINIAPP_PERSISTENCE_SCHEMA_VERSION = 2;
 
 const SKILL_NUMBER_KEYS = ["basePowerOverride", "fixedPowerAdd"];
@@ -449,6 +451,14 @@ export function createPersistence({ storage }) {
     }
   }
 
+  function getTypeAnalysisEnabled() {
+    try {
+      return storage.get(MINIAPP_TYPE_ANALYSIS_ENABLED_KEY) === true;
+    } catch {
+      return false;
+    }
+  }
+
   return {
     clear() {
       storage.remove(MINIAPP_STATE_KEY);
@@ -505,6 +515,8 @@ export function createPersistence({ storage }) {
 
     getMemoryEnabled,
 
+    getTypeAnalysisEnabled,
+
     setMemoryEnabled(enabled) {
       if (typeof enabled !== "boolean") {
         throw new TypeError("配置记忆开关必须是布尔值");
@@ -513,6 +525,14 @@ export function createPersistence({ storage }) {
       if (!enabled) {
         storage.remove(MINIAPP_STATE_KEY);
       }
+      return enabled;
+    },
+
+    setTypeAnalysisEnabled(enabled) {
+      if (typeof enabled !== "boolean") {
+        throw new TypeError("属性分析开关必须是布尔值");
+      }
+      storage.set(MINIAPP_TYPE_ANALYSIS_ENABLED_KEY, enabled);
       return enabled;
     },
   };

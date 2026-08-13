@@ -12,6 +12,7 @@ import {
 import ResultFormulaAudit from "./ResultFormulaAudit.jsx";
 import ResultActionPanel from "./ResultActionPanel.jsx";
 import SkillResultRows from "./SkillResultRows.jsx";
+import TypeAnalysisPanel from "./TypeAnalysisPanel.jsx";
 
 function settlementText(entry) {
   return [entry?.name ?? entry?.label, entry?.text ?? entry?.summary]
@@ -95,6 +96,7 @@ export default function ResultSheet({
   onTraitHitCountChange,
   open,
   selectedIndex,
+  showTypeAnalysis = false,
   traitDamageHitCount = 1,
   view,
 }) {
@@ -262,6 +264,9 @@ export default function ResultSheet({
               </Text>
             </View>
           )}
+          {showTypeAnalysis ? (
+            <TypeAnalysisPanel analysis={view?.typeAnalysis} />
+          ) : null}
         </ScrollView>
         <Button
           aria-label="分享当前计算"

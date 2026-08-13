@@ -75,6 +75,7 @@ export default function BattleWorkspace({
   onFavoriteToggle,
   onShareChange,
   petImages,
+  showTypeAnalysis = false,
   snapshot,
   store,
 }) {
@@ -765,6 +766,7 @@ export default function BattleWorkspace({
         }
         open={resultOpen}
         selectedIndex={activeDirectionState.selectedSkillIndex}
+        showTypeAnalysis={showTypeAnalysis}
         traitDamageHitCount={activeDirectionState.traitDamageHitCount}
         view={calculation}
       />
