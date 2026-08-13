@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("rock-calculator.first-run-guide.v1", "1");
+  });
+});
+
 async function selectSpirit(page, side, name) {
   const picker = page.getByRole("combobox", { name: `${side}精灵` });
   await picker.fill(name);
@@ -27,7 +33,7 @@ test("works offline after the service worker caches the production app", async (
   await context.setOffline(true);
   try {
     await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.getByText("洛克计算器", { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "洛克计算器 · S3季中" })).toBeVisible();
     const cachedRuntime = await page.evaluate(async () => {
       const response = await fetch("/data/runtime.json");
       const runtime = await response.json();
@@ -48,7 +54,7 @@ test("works offline after the service worker caches the production app", async (
 test("stays within cold warm and skill search budgets", async ({ page }) => {
   const coldStartedAt = Date.now();
   await page.goto("/");
-  await expect(page.getByText("洛克计算器", { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "洛克计算器 · S3季中" })).toBeVisible();
   expect(Date.now() - coldStartedAt).toBeLessThan(10_000);
 
   const warmStartedAt = Date.now();

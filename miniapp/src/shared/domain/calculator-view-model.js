@@ -4,6 +4,11 @@ import { getSkillChoices } from "./skill-loadout.js";
 import { calculateAllPanelStats } from "./stat.js";
 import { getSnapshotIndexes } from "./snapshot-indexes.js";
 import {
+  analyzeDefensiveTypes,
+  analyzeSkillTypeCoverage,
+} from "./type-chart.js";
+import { resolveWingExtensionSkill } from "./wing-extension.js";
+import {
   getInheritedDamageTraits,
   getTraitAutomaticStack,
   getTraitEffectInputs,
@@ -201,6 +206,15 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
   );
   const rows = [...directionResult.results];
   while (rows.length < 4) rows.push(null);
+  const skillEntries = attackSide.skills.four;
+  const traitsById = getSnapshotIndexes(snapshot).traits;
+  const traits = (attacker.traitIds ?? [])
+    .map((traitId) => traitsById[traitId])
+    .filter(Boolean);
+  const effectiveSkills = skillEntries
+    .map((entry) => getSkill(snapshot, entry))
+    .filter(Boolean)
+    .map((skill) => resolveWingExtensionSkill({ skill, traits }));
 
   return {
     attackerName: attacker.fullName,
@@ -223,6 +237,11 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
             state.directions[direction].selectedDamageSource === "trait",
         }
       : null,
+    typeAnalysis: {
+      subjectName: attacker.fullName,
+      defense: analyzeDefensiveTypes(attacker.types, snapshot.typeChart),
+      offense: analyzeSkillTypeCoverage(effectiveSkills, snapshot.typeChart),
+    },
     skillResults: rows.map((result, index) => ({
       damage: result?.totalDamage ?? null,
       hpPercent: result?.hpPercent ?? null,

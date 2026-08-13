@@ -11,6 +11,10 @@ function entryId(entry) {
   return entry?.skillId ?? entry?.id ?? null;
 }
 
+function isWishPowerExtra(skill) {
+  return skill?.id?.startsWith("calculator_wish_power_") ?? false;
+}
+
 export function getLegalSkillIds(snapshot, spiritId) {
   return [...new Set([
     ...(getSnapshotIndexes(snapshot).learnsets[spiritId]?.skillIds ?? []),
@@ -46,7 +50,8 @@ export function chooseDefaultSkillIds(snapshot, spiritId) {
   const legalIds = getLegalSkillIds(snapshot, spiritId);
   const byId = getSnapshotIndexes(snapshot).skills;
   const legal = legalIds.map((id) => byId[id]).filter(Boolean);
-  const damaging = legal.filter(
+  const defaultCandidates = legal.filter((skill) => !isWishPowerExtra(skill));
+  const damaging = defaultCandidates.filter(
     (skill) =>
       Number.isFinite(skill.basePower) &&
       skill.basePower > 0 &&
@@ -56,7 +61,7 @@ export function chooseDefaultSkillIds(snapshot, spiritId) {
   const preferred = preferredNames
     .map((name) => damaging.find((skill) => skill.name === name))
     .find(Boolean);
-  const ordered = [preferred, ...damaging, ...legal].filter(Boolean);
+  const ordered = [preferred, ...damaging, ...defaultCandidates].filter(Boolean);
   const chosen = [
     ...new Map(ordered.map((skill) => [skill.id, skill])).values(),
   ]

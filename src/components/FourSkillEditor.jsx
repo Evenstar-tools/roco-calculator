@@ -4,6 +4,7 @@ import {
   describeResolution,
   dynamicInputValue,
   dynamicInputsForSkill,
+  mergeDynamicInputs,
   displayedSkillPower,
   isDynamicInputVisible,
   TraitAutomaticStack,
@@ -335,13 +336,11 @@ function SkillSide({
                   ) ?? []),
                 ]
               : [];
-          const dynamicInputs = [
-            ...skillInputs,
-            ...traitInputs.filter(
-              (traitInput) =>
-                !skillInputs.some((input) => input.id === traitInput.id),
-            ),
-          ];
+          const dynamicInputs = mergeDynamicInputs(
+            skillInputs,
+            traitInputs,
+            result?.inputs ?? [],
+          );
           const refractionHint = buildRefractionHint({
             carriedSkills: selectedSkills,
             selectedSkill: selected,
@@ -406,8 +405,8 @@ function SkillSide({
                     onSkillPowerChange?.(side, index, power)
                   }
                   value={
-                    selected?.slotPowerOverride ??
                     displayedSkillPower(selected, result) ??
+                    selected?.slotPowerOverride ??
                     selected?.basePower ??
                     ""
                   }

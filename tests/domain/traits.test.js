@@ -518,6 +518,52 @@ describe("resolveTraitMultipliers", () => {
     });
   });
 
+  test("doubles Wish Power when its dual category selects physical attack", () => {
+    expect(
+      resolveTraitMultipliers(
+        input({
+          attackerTraits: [{ id: "focus", name: "专注力" }],
+          attacker: {
+            types: ["火"],
+            panelStats: {
+              physicalAttack: 271,
+              magicalAttack: 105,
+              speed: 225,
+            },
+          },
+          skill: { type: "草", category: "dual", cost: 2 },
+          context: { traitActivated: true },
+        }),
+      ),
+    ).toMatchObject({
+      status: "exact",
+      attackMultiplier: 2,
+    });
+  });
+
+  test("does not apply physical-only Focus when Wish Power selects magical attack", () => {
+    expect(
+      resolveTraitMultipliers(
+        input({
+          attackerTraits: [{ id: "focus", name: "专注力" }],
+          attacker: {
+            types: ["火"],
+            panelStats: {
+              physicalAttack: 105,
+              magicalAttack: 271,
+              speed: 225,
+            },
+          },
+          skill: { type: "草", category: "dual", cost: 2 },
+          context: { traitActivated: true },
+        }),
+      ),
+    ).toMatchObject({
+      status: "exact",
+      attackMultiplier: 1,
+    });
+  });
+
   test("月光审判勾选后只应用一次技能威力加成", () => {
     const attackerTraits = [{ id: "moon-judgment", name: "月光审判" }];
 

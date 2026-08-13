@@ -18,6 +18,7 @@ export function SpiritStep({
       <div className="versus-grid">
         <SpiritPicker
           favoriteState={attackerFavoriteState}
+          guideTarget="attacker"
           label="攻击方"
           onFavoriteToggle={onAttackerFavoriteToggle}
           onSelect={onAttackerSelect}
@@ -36,6 +37,7 @@ export function SpiritStep({
         </button>
         <SpiritPicker
           favoriteState={defenderFavoriteState}
+          guideTarget="defender"
           label="防御方"
           onFavoriteToggle={onDefenderFavoriteToggle}
           onSelect={onDefenderSelect}

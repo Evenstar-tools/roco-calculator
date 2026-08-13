@@ -607,20 +607,16 @@ describe("trait effect coverage", () => {
     })).toMatchObject({ defenseLevelBonus: 2, defenderDefenseLevelBonus: 2 });
   });
 
-  test("冰雪魂魄必须勾选暴风雪天气才按冻结层数增加冰系威力", () => {
+  test("S3季中冰雪魂魄只需勾选暴风雪天气即增加100%冰系威力", () => {
     const trait = snapshot.traits.find((candidate) => candidate.name === "冰雪魂魄");
     expect(getTraitEffectInputs(trait, "attacker").map(({ label }) => label)).toEqual([
       "暴风雪天气",
-      "敌方冻结总层数",
-      "每层威力",
     ]);
     const inactive = contextFor(trait, "attacker", {
       blizzardWeather: false,
-      attackerTraitStacks: 3,
     });
     const active = contextFor(trait, "attacker", {
       blizzardWeather: true,
-      attackerTraitStacks: 3,
     });
     const input = {
       attacker: {},
@@ -634,7 +630,18 @@ describe("trait effect coverage", () => {
     expect(resolveTraitEffectRule(trait, "attacker", {
       ...input,
       context: active,
-    })).toMatchObject({ powerPercentAdd: 0.3 });
+    })).toMatchObject({ powerPercentAdd: 1 });
+  });
+
+  test("S3季中光度换算每次触发使光系技能威力永久增加30", () => {
+    const trait = snapshot.traits.find((candidate) => candidate.name === "光度换算");
+    const context = contextFor(trait, "attacker", { attackerTraitStacks: 2 });
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      attacker: {},
+      context,
+      defender: {},
+      skill: { category: "magical", type: "光" },
+    })).toMatchObject({ fixedPowerAdd: 60 });
   });
 
   test("攻防速类特性把速度加成带入双方的即时计算", () => {

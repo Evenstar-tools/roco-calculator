@@ -91,15 +91,15 @@ test("explains automatic difference-based power with both panel values", () => {
     describeResolution({
       formulaSteps: [
         {
-          after: 140,
-          before: 37,
-          input: { attacker: 183, defender: 146 },
+          after: 100,
+          before: 33,
+          input: { attacker: 283, defender: 250 },
           label: "物防差威力",
           source: "reviewed-rule:speed-defense-difference-v1",
         },
       ],
     }),
-  ).toBe("物防 183 − 146 = 37 → 威力 140");
+  ).toBe("物防 283 − 250 = 33 → 威力 100");
 });
 
 test("single-skill difference rules keep table power separate from trait power", () => {
@@ -1169,6 +1169,99 @@ test("compact editors show the same dynamic power note", () => {
   expect(
     screen.getAllByText("速度 254 − 143 = 111 → 威力 190"),
   ).toHaveLength(2);
+});
+
+test("four-skill editor explains adjacent displayed power for transmission skills", () => {
+  const sixDegrees = {
+    basePower: 30,
+    category: "magical",
+    cost: 4,
+    id: "six-degrees-note",
+    name: "六自由度",
+    type: "机械",
+  };
+  const result = {
+    formulaSteps: [
+      {
+        after: 80,
+        before: 200,
+        input: {
+          left: { name: "传动状态", power: 0 },
+          right: { name: "面板二百", power: 200 },
+        },
+        label: "相邻技能显示威力",
+        source: "reviewed-rule:adjacent-displayed-power-v1",
+      },
+    ],
+    hpPercent: 20,
+    resolvedPower: 80,
+    status: "exact",
+    totalDamage: 80,
+  };
+
+  render(
+    <FourSkillEditor
+      attackerName="离心舞者"
+      attackerResults={[result]}
+      attackerSkillChoices={[sixDegrees]}
+      attackerSkills={[sixDegrees, null, null, null]}
+      defenderName="测试靶"
+      defenderResults={[]}
+      defenderSkillChoices={skills}
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillFocus={vi.fn()}
+      onSkillSelect={vi.fn()}
+    />,
+  );
+
+  expect(
+    screen.getByText("左 传动状态 0｜右 面板二百 200 → 威力 80"),
+  ).toBeVisible();
+});
+
+test("four-skill editor allows missing adjacent displayed power to be entered manually", () => {
+  const onSkillContextChange = vi.fn();
+  const sixDegrees = {
+    basePower: 30,
+    category: "magical",
+    cost: 4,
+    id: "six-degrees-manual",
+    name: "六自由度",
+    type: "机械",
+  };
+
+  render(
+    <FourSkillEditor
+      attackerName="离心舞者"
+      attackerResults={[{
+        inputs: [
+          { key: "adjacentLeftDisplayedPowerOverride", label: "左侧游戏内威力", min: 0, type: "number" },
+        ],
+        reason: "需要两侧相邻技能的当前游戏内显示威力",
+        status: "needs_input",
+      }]}
+      attackerSkillChoices={[sixDegrees]}
+      attackerSkills={[sixDegrees, null, null, null]}
+      defenderName="测试靶"
+      defenderResults={[]}
+      defenderSkillChoices={skills}
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillContextChange={onSkillContextChange}
+      onSkillFocus={vi.fn()}
+      onSkillSelect={vi.fn()}
+    />,
+  );
+
+  fireEvent.change(
+    screen.getByRole("spinbutton", { name: "攻击方技能1左侧游戏内威力" }),
+    { target: { value: "120" } },
+  );
+  expect(onSkillContextChange).toHaveBeenCalledWith(
+    "attacker",
+    0,
+    "adjacentLeftDisplayedPowerOverride",
+    120,
+  );
 });
 
 test("four-skill editor shows selectable direct trait damage above skill one", async () => {

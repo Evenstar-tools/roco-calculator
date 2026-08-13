@@ -1,18 +1,17 @@
 import { readFile, stat, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 import {
   app,
   BrowserWindow,
   Menu,
   protocol,
-  session,
 } from "electron";
 import { resolveOfflineAssetPath } from "./offline-paths.mjs";
 
 const APP_SCHEME = "app";
 const APP_ORIGIN = "app://calculator/";
-const APP_TITLE = "洛克计算器";
+const APP_NAME = "洛克计算器";
+const APP_TITLE = "洛克计算器 · S3季中";
 const APP_USER_MODEL_ID = "cn.rock.calculator";
 
 protocol.registerSchemesAsPrivileged([
@@ -23,7 +22,6 @@ protocol.registerSchemesAsPrivileged([
       secure: true,
       supportFetchAPI: true,
       corsEnabled: true,
-      stream: true,
     },
   },
 ]);
@@ -42,16 +40,16 @@ function getMimeType(filePath) {
   const extension = path.extname(filePath).toLowerCase();
   return (
     {
-      ".css": "text/css; charset=utf-8",
-      ".html": "text/html; charset=utf-8",
+      ".css": "text/css",
+      ".html": "text/html",
       ".ico": "image/x-icon",
       ".jpeg": "image/jpeg",
       ".jpg": "image/jpeg",
-      ".js": "text/javascript; charset=utf-8",
-      ".json": "application/json; charset=utf-8",
+      ".js": "text/javascript",
+      ".json": "application/json",
       ".png": "image/png",
       ".svg": "image/svg+xml",
-      ".webmanifest": "application/manifest+json; charset=utf-8",
+      ".webmanifest": "application/manifest+json",
       ".webp": "image/webp",
       ".woff": "font/woff",
       ".woff2": "font/woff2",
@@ -63,7 +61,11 @@ async function readBundledAsset(requestUrl) {
   const clientRoot = getClientRoot();
   let assetPath = resolveOfflineAssetPath(requestUrl, clientRoot);
   if (!assetPath) {
-    return new Response("Not found", { status: 404 });
+    return {
+      data: Buffer.from("Not found"),
+      mimeType: "text/plain",
+      statusCode: 404,
+    };
   }
 
   try {
@@ -72,24 +74,28 @@ async function readBundledAsset(requestUrl) {
       assetPath = path.join(assetPath, "index.html");
     }
     const body = await readFile(assetPath);
-    return new Response(body, {
-      headers: {
-        "cache-control": "no-store",
-        "content-type": getMimeType(assetPath),
-      },
-    });
+    return {
+      data: body,
+      headers: { "cache-control": "no-store" },
+      mimeType: getMimeType(assetPath),
+      statusCode: 200,
+    };
   } catch {
     try {
       const fallbackPath = path.join(clientRoot, "index.html");
       const body = await readFile(fallbackPath);
-      return new Response(body, {
-        headers: {
-          "cache-control": "no-store",
-          "content-type": getMimeType(fallbackPath),
-        },
-      });
+      return {
+        data: body,
+        headers: { "cache-control": "no-store" },
+        mimeType: getMimeType(fallbackPath),
+        statusCode: 200,
+      };
     } catch {
-      return new Response("Offline app files are unavailable.", { status: 500 });
+      return {
+        data: Buffer.from("Offline app files are unavailable."),
+        mimeType: "text/plain",
+        statusCode: 500,
+      };
     }
   }
 }
@@ -100,7 +106,7 @@ function createMainWindow({ visible = true } = {}) {
     height: 900,
     minWidth: 900,
     minHeight: 640,
-    show: visible,
+    show: false,
     title: APP_TITLE,
     icon: getAppIconPath(),
     backgroundColor: "#f4f6fb",
@@ -117,6 +123,11 @@ function createMainWindow({ visible = true } = {}) {
     window.setTitle(APP_TITLE);
   });
   window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  if (visible) {
+    window.once("ready-to-show", () => {
+      window.show();
+    });
+  }
   window.loadURL(APP_ORIGIN);
   return window;
 }
@@ -133,7 +144,10 @@ async function collectOfflineSmokeResult(window) {
   while (Date.now() < deadline) {
     shell = await window.webContents.executeJavaScript(`
       (() => ({
-        heading: document.querySelector("h1")?.textContent ?? "",
+        heading:
+          document.querySelector("h1")?.getAttribute("aria-label") ??
+          document.querySelector("h1")?.textContent ??
+          "",
         attackerPicker: Boolean(
           document.querySelector('[aria-label="攻击方精灵"]')
         ),
@@ -178,20 +192,23 @@ async function collectOfflineSmokeResult(window) {
   };
 }
 
-app.setName(APP_TITLE);
+app.setName(APP_NAME);
 app.setAppUserModelId(APP_USER_MODEL_ID);
+app.commandLine.appendSwitch("disable-direct-composition");
 
 app.whenReady().then(async () => {
   Menu.setApplicationMenu(null);
-  await protocol.handle(APP_SCHEME, (request) =>
-    readBundledAsset(request.url),
-  );
+  protocol.registerBufferProtocol(APP_SCHEME, (request, callback) => {
+    readBundledAsset(request.url).then(callback).catch(() =>
+      callback({
+        data: Buffer.from("Offline app files are unavailable."),
+        mimeType: "text/plain",
+        statusCode: 500,
+      }),
+    );
+  });
 
   const smokeReportPath = getSmokeReportPath();
-  if (smokeReportPath) {
-    session.defaultSession.enableNetworkEmulation({ offline: true });
-  }
-
   const window = createMainWindow({ visible: !smokeReportPath });
   if (!smokeReportPath) return;
 

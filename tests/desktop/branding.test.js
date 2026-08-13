@@ -11,7 +11,7 @@ describe("desktop package branding", () => {
     expect(packageJson).toMatchObject({
       author: "洛克计算器",
       name: "rock-calculator",
-      version: "1.4.6",
+      version: "1.5.4",
     });
     expect(packageJson.build).toMatchObject({
       appId: "cn.rock.calculator",
@@ -32,6 +32,13 @@ describe("desktop package branding", () => {
     expect(desktopMain).toContain(
       'const APP_USER_MODEL_ID = "cn.rock.calculator";',
     );
+    expect(desktopMain).toContain('const APP_NAME = "洛克计算器";');
+    expect(desktopMain).toContain("app.setName(APP_NAME)");
+    expect(desktopMain).toContain(
+      'app.commandLine.appendSwitch("disable-direct-composition")',
+    );
+    expect(desktopMain).toContain('window.once("ready-to-show"');
+    expect(desktopMain).toContain('const APP_TITLE = "洛克计算器 · S3季中";');
     expect(desktopMain).toContain("icon: getAppIconPath()");
     expect(desktopMain).not.toMatch(/lovepvp/i);
   });

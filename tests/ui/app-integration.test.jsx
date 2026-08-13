@@ -11,9 +11,11 @@ import { beforeEach, expect, test, vi } from "vitest";
 import { App } from "../../src/App.jsx";
 import { createInitialState } from "../../src/state/defaults.js";
 import { FAVORITES_STORAGE_KEY } from "../../src/state/favorites.js";
+import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js";
 import { encodeShareState } from "../../src/state/share.js";
 import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
 import { TEAM_STORAGE_KEY } from "../../src/state/team-presets.js";
+import { TYPE_COVERAGE_STORAGE_KEY } from "../../src/state/display-settings.js";
 
 const snapshot = {
   learnsets: [
@@ -42,6 +44,7 @@ const snapshot = {
         "quench",
         "gather-momentum",
         "moe-strike",
+        "wish-power-fire",
       ],
     },
     {
@@ -74,6 +77,18 @@ const snapshot = {
       name: "撒娇",
       ruleId: null,
       type: "萌",
+    },
+    {
+      basePower: 80,
+      category: "dual",
+      cost: 2,
+      description:
+        "取物攻与魔攻中较高的一项；目标本回合使用状态技能时，威力×2.5且必定先手。",
+      id: "wish-power-fire",
+      name: "愿力冲击",
+      provenance: { basePower: "test" },
+      ruleId: null,
+      type: "火",
     },
     {
       basePower: 0,
@@ -389,6 +404,11 @@ const snapshot = {
   ],
   traits: [
     {
+      description: "入场首回合，获得物攻+100%。",
+      id: "focus-trait",
+      name: "专注力",
+    },
+    {
       description: "入场时，复制敌方的增益。在场时，若敌方获得增益自己也会获得。",
       id: "balance-trait",
       name: "衡量",
@@ -398,6 +418,8 @@ const snapshot = {
 
 beforeEach(() => {
   localStorage.removeItem(SPIRIT_CONFIG_STORAGE_KEY);
+  localStorage.removeItem(TYPE_COVERAGE_STORAGE_KEY);
+  localStorage.setItem(FIRST_RUN_GUIDE_STORAGE_KEY, "1");
 });
 
 async function selectSpirit(user, side, name) {
@@ -447,6 +469,100 @@ test("starts with both spirit selectors empty and hides incomplete configuration
   expect(
     screen.queryByRole("button", { name: "展开伤害结果" }),
   ).not.toBeInTheDocument();
+});
+
+test("shows the first-run guide once, persists skip, and allows menu replay", async () => {
+  localStorage.removeItem(FIRST_RUN_GUIDE_STORAGE_KEY);
+  const user = userEvent.setup();
+  const first = render(<App initialSnapshot={snapshot} />);
+
+  expect(await screen.findByRole("dialog", { name: "新手引导 1/6" }))
+    .toHaveTextContent("先选攻击方");
+  expect(document.querySelector('[data-guide-target="attacker"]'))
+    .toBeInTheDocument();
+  expect(document.querySelector('[data-guide-target="defender"]'))
+    .toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "跳过引导" }));
+  expect(localStorage.getItem(FIRST_RUN_GUIDE_STORAGE_KEY)).toBe("1");
+  expect(screen.queryByRole("dialog", { name: /新手引导/ }))
+    .not.toBeInTheDocument();
+
+  first.unmount();
+  render(<App initialSnapshot={snapshot} />);
+  expect(screen.queryByRole("dialog", { name: /新手引导/ }))
+    .not.toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "新手引导" }));
+  expect(screen.getByRole("dialog", { name: "新手引导 1/6" }))
+    .toBeInTheDocument();
+});
+
+test("walks through compact mode, opens detailed mode, and imports the library from step six", async () => {
+  localStorage.clear();
+  const teamBytes = JSON.stringify({
+    activeTeamId: null,
+    schemaVersion: 1,
+    teams: [],
+  });
+  localStorage.setItem(TEAM_STORAGE_KEY, teamBytes);
+  const library = {
+    appVersion: "1.5.1",
+    entries: [{
+      displayIvs: {
+        hp: 0,
+        magicalAttack: 60,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      },
+      natureId: "adamant",
+      skills: ["fire-strike", "mana-burst", null, null],
+      spiritId: "sonic-dog",
+      traitValues: {},
+    }],
+    entryCount: 1,
+    exportedAt: "2026-08-12T10:16:00.000Z",
+    format: "rock-calculator.favorite-config-library",
+    schemaVersion: 1,
+    versions: { data: "s3-test", rules: "1.0.0" },
+  };
+  const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    ok: true,
+    text: async () => JSON.stringify(library),
+  });
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+
+  await screen.findByRole("dialog", { name: "新手引导 1/6" });
+  await selectSpirit(user, "攻击方", "音速犬");
+  await user.click(screen.getByRole("button", { name: "下一步" }));
+  await selectSpirit(user, "防御方", "水灵");
+  await user.click(screen.getByRole("button", { name: "下一步" }));
+  await user.click(screen.getByRole("button", { name: "下一步" }));
+  await user.click(screen.getByRole("button", { name: "下一步" }));
+  await user.click(screen.getByRole("button", { name: "前往具体版" }));
+  expect(screen.getByRole("button", { name: "具体版" }))
+    .toHaveAttribute("aria-pressed", "true");
+  const finalStep = screen.getByRole("dialog", { name: "新手引导 6/6" });
+  expect(finalStep).toHaveTextContent("以后修改性格、个体和技能，都会继续记住");
+
+  await user.click(within(finalStep).getByRole("button", { name: "导入并完成" }));
+  await waitFor(() => {
+    expect(screen.queryByRole("dialog", { name: /新手引导/ }))
+      .not.toBeInTheDocument();
+  });
+  expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json");
+  expect(localStorage.getItem(FIRST_RUN_GUIDE_STORAGE_KEY)).toBe("1");
+  expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);
+  expect(screen.getByRole("combobox", { name: "攻击方精灵" })).toHaveValue("音速犬");
+  expect(screen.getByRole("combobox", { name: "防御方精灵" })).toHaveValue("水灵");
+  expect(JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY))).toEqual(
+    expect.arrayContaining([expect.objectContaining({ spiritId: "sonic-dog" })]),
+  );
+  fetchMock.mockRestore();
 });
 
 test("compact mode defaults to four skills and preserves state when opening detailed mode", async () => {
@@ -540,7 +656,7 @@ test("compact nature presets use each side's current attack IV selection", async
   ).toHaveValue("adamant");
   expect(
     screen.getByRole("combobox", { name: "防御方性格" }),
-  ).toHaveValue("silent");
+  ).toHaveValue("peaceful");
 });
 
 test("compact individual checkboxes write sixty or zero without leaving quick mode", async () => {
@@ -562,12 +678,12 @@ test("compact individual checkboxes write sixty or zero without leaving quick mo
   });
 
   expect(attackPower).toBeChecked();
-  expect(attackHp).not.toBeChecked();
+  expect(attackHp).toBeChecked();
   expect(defenseHp).toBeChecked();
-  expect(defenseMagicDefense).not.toBeChecked();
+  expect(defenseMagicDefense).toBeChecked();
 
   await user.click(attackHp);
-  expect(attackHp).toBeChecked();
+  expect(attackHp).not.toBeChecked();
 
   await user.click(screen.getByRole("button", { name: "具体版" }));
   const natureStep = screen.getByRole("region", { name: "性格配置" });
@@ -576,7 +692,7 @@ test("compact individual checkboxes write sixty or zero without leaving quick mo
   });
   expect(
     within(attackSide).getByRole("spinbutton", { name: "HP个体" }),
-  ).toHaveValue(60);
+  ).toHaveValue(0);
 
   await user.click(screen.getByRole("button", { name: "精简版" }));
   await user.click(
@@ -587,7 +703,7 @@ test("compact individual checkboxes write sixty or zero without leaving quick mo
     within(
       screen.getByRole("region", { name: "性格配置" }),
     ).getAllByRole("spinbutton", { name: "HP个体" })[0],
-  ).toHaveValue(0);
+  ).toHaveValue(60);
 });
 
 test("clear current page returns to the cold-start interface", async () => {
@@ -645,7 +761,7 @@ test("connects the real three-step flow to one deterministic result", async () =
   expect(within(natureStep).getAllByText("种:128")).toHaveLength(1);
   expect(
     within(natureStep).getAllByRole("spinbutton", { name: "HP个体" })[0],
-  ).toHaveValue(0);
+  ).toHaveValue(60);
   expect(
     screen.getByRole("combobox", { name: "选择技能" }),
   ).toHaveValue("风力冲击");
@@ -939,7 +1055,7 @@ test("shares and remembers inherited penetration stacks across both directions",
   ).toHaveValue(4);
 });
 
-test("defaults the defender to neutral nature with only HP individual-value points", async () => {
+test("defaults both sides to neutral nature with all individual-value points", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -956,9 +1072,9 @@ test("defaults the defender to neutral nature with only HP individual-value poin
   expect(within(attackSide).getByRole("spinbutton", { name: "魔攻个体" })).toHaveValue(60);
   expect(within(attackSide).getByRole("spinbutton", { name: "速度个体" })).toHaveValue(60);
   expect(within(defenseSide).getByRole("spinbutton", { name: "HP个体" })).toHaveValue(60);
-  expect(within(defenseSide).getByRole("spinbutton", { name: "物攻个体" })).toHaveValue(0);
-  expect(within(defenseSide).getByRole("spinbutton", { name: "物防个体" })).toHaveValue(0);
-  expect(within(defenseSide).getByRole("spinbutton", { name: "魔防个体" })).toHaveValue(0);
+  expect(within(defenseSide).getByRole("spinbutton", { name: "物攻个体" })).toHaveValue(60);
+  expect(within(defenseSide).getByRole("spinbutton", { name: "物防个体" })).toHaveValue(60);
+  expect(within(defenseSide).getByRole("spinbutton", { name: "魔防个体" })).toHaveValue(60);
 });
 
 test("shows both hidden ability levels and copies current buffs when Fair Pigeon triggers", async () => {
@@ -1295,10 +1411,10 @@ test("clicking 撒娇 advances its permanent power once without input side effec
   expect(power).toHaveValue(30);
 
   await user.click(screen.getByText(/自己获得萌化/));
-  await waitFor(() => expect(power).toHaveValue(50));
+  await waitFor(() => expect(power).toHaveValue(40));
 
   await user.click(power);
-  expect(power).toHaveValue(50);
+  expect(power).toHaveValue(40);
 });
 
 test("clicking a mark skill adds its mark to the described side", async () => {
@@ -1519,6 +1635,16 @@ test("applies a clicked defense skill reduction and clears it after another skil
   await user.click(screen.getByRole("button", { name: "高级选项" }));
   expect(screen.getByRole("spinbutton", { name: "防御技能减伤" })).toHaveValue(80);
 
+  await user.click(
+    screen.getByText("减伤80%，应对攻击：自己获得魔攻+70%。"),
+  );
+  expect(screen.getByRole("spinbutton", { name: "防御技能减伤" })).toHaveValue(0);
+
+  await user.click(
+    screen.getByText("减伤80%，应对攻击：自己获得魔攻+70%。"),
+  );
+  expect(screen.getByRole("spinbutton", { name: "防御技能减伤" })).toHaveValue(80);
+
   const second = screen.getByRole("combobox", { name: "攻击方技能2" });
   await user.clear(second);
   await user.type(second, "火焰冲击");
@@ -1684,7 +1810,39 @@ test("keeps Feather Acceleration as a persistent bonus for the other carried ski
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(100);
 });
 
-test("applies Quench's checked response as a persistent doubling for attack skills", async () => {
+test("keeps persistent power bonuses visible after manually overriding base power", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const first = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(first);
+  await user.type(first, "羽化加速");
+  await user.click(screen.getByRole("option", { name: /羽化加速/ }));
+  const second = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(second);
+  await user.type(second, "风力冲击");
+  await user.click(screen.getByRole("option", { name: /风力冲击/ }));
+
+  const power = screen.getByRole("spinbutton", { name: "攻击方技能2威力" });
+  await user.clear(power);
+  await user.type(power, "55");
+  expect(power).toHaveValue(55);
+
+  await user.click(screen.getByText("自己全部技能威力+20。"));
+
+  expect(power).toHaveValue(75);
+
+  await user.clear(power);
+  await user.type(power, "45");
+  expect(power).toHaveValue(45);
+  await user.tab();
+
+  expect(power).toHaveValue(65);
+});
+
+test("toggles Quench's checked response without stacking its doubling", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -1708,6 +1866,44 @@ test("applies Quench's checked response as a persistent doubling for attack skil
   );
 
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(160);
+
+  await user.click(
+    screen.getByText("减伤80%，应对攻击：下次攻击技能威力翻倍。"),
+  );
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(80);
+
+  await user.click(
+    screen.getByText("减伤80%，应对攻击：下次攻击技能威力翻倍。"),
+  );
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(160);
+});
+
+test("reapplies a defense response gain only after its transient state was turned off", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const attackSide = within(
+    screen.getByRole("region", { name: "性格配置" }),
+  ).getByRole("group", { name: "攻击方能力" });
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "水泡盾");
+  await user.click(screen.getByRole("option", { name: /水泡盾/ }));
+  await user.click(
+    screen.getByRole("checkbox", { name: "攻击方技能1防御应对成功" }),
+  );
+
+  const description = "减伤80%，应对攻击：自己获得魔攻+70%。";
+  await user.click(screen.getByText(description));
+  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+
+  await user.click(screen.getByText(description));
+  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+
+  await user.click(screen.getByText(description));
+  expect(within(attackSide).getByText("14层 · +140%")).toBeVisible();
 });
 
 test("Diffuse Reflection buffs only the first attacking skill of each type", async () => {
@@ -1872,6 +2068,25 @@ test("reverse direction edits the current attacking side", async () => {
   expect(screen.getByRole("combobox", { name: "选择技能" })).toHaveValue("水之波纹");
 });
 
+test("swapping spirits returns the detailed controls to left attack and right defense", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+
+  await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+  const natureStep = screen.getByRole("region", { name: "性格配置" });
+  const leftSide = within(natureStep).getByRole("group", { name: "攻击方能力" });
+  const rightSide = within(natureStep).getByRole("group", { name: "防御方能力" });
+  expect(within(leftSide).getByText("防御能力等级")).toBeVisible();
+  expect(within(rightSide).getByText("攻击能力等级")).toBeVisible();
+
+  await user.click(screen.getByRole("button", { name: "交换双方完整配置" }));
+
+  expect(within(leftSide).getByText("攻击能力等级")).toBeVisible();
+  expect(within(rightSide).getByText("防御能力等级")).toBeVisible();
+});
+
 test("selecting Mana Burst clears manual power and resolves zero energy immediately", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
@@ -1891,6 +2106,40 @@ test("selecting Mana Burst clears manual power and resolves zero energy immediat
   expect(
     within(singleSkillPanel).getByText("0 能量 → 威力 45"),
   ).toBeVisible();
+});
+
+test("Wish Power reacts to its target-status condition and Focus in the real editor", async () => {
+  const user = userEvent.setup();
+  const wishSnapshot = {
+    ...snapshot,
+    spirits: snapshot.spirits.map((spirit) =>
+      spirit.id === "sonic-dog"
+        ? { ...spirit, traitIds: ["focus-trait"] }
+        : spirit,
+    ),
+  };
+  render(<App initialSnapshot={wishSnapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+
+  const skillPicker = screen.getByRole("combobox", { name: "选择技能" });
+  await user.clear(skillPicker);
+  await user.type(skillPicker, "愿力");
+  await user.click(screen.getAllByRole("option", { name: /愿力冲击/ })[0]);
+
+  const baseDamage = Number(screen.getByTestId("primary-damage").textContent);
+  await user.click(
+    screen.getByRole("checkbox", { name: "目标本回合使用状态技能" }),
+  );
+  const counterDamage = Number(
+    screen.getByTestId("primary-damage").textContent,
+  );
+  expect(counterDamage).toBeGreaterThan(baseDamage);
+
+  await user.click(screen.getByRole("checkbox", { name: "入场首回合" }));
+  expect(Number(screen.getByTestId("primary-damage").textContent)).toBeGreaterThan(
+    counterDamage,
+  );
 });
 
 test("keeps single-skill manual power across a four-skill round trip", async () => {
@@ -2024,7 +2273,7 @@ test("restores one global spirit configuration with nested four-skill state", as
   ).toBeChecked();
   expect(
     screen.getByRole("spinbutton", { name: "攻击方技能3威力" }),
-  ).toHaveValue(180);
+  ).toHaveValue(280);
 
   await selectSpirit(user, "攻击方", "风暴战犬");
   await selectSpirit(user, "攻击方", "音速犬");
@@ -2130,7 +2379,7 @@ test("restores defender single and four-skill edits after remounting", async () 
   ).toBeChecked();
   expect(
     screen.getByRole("spinbutton", { name: "防御方技能1威力" }),
-  ).toHaveValue(166);
+  ).toHaveValue(266);
 });
 
 test("clear current page preserves saved spirit memory", async () => {
@@ -2160,7 +2409,7 @@ test("clear current page preserves saved spirit memory", async () => {
       ].natureId,
     ).toBe("calm"),
   );
-  expect(screen.getAllByRole("button", { name: "收藏音速犬" })).toHaveLength(
+  expect(screen.getAllByRole("button", { name: "手动收藏音速犬" })).toHaveLength(
     2,
   );
 
@@ -2569,7 +2818,8 @@ test("menu keeps only useful actions and explains current-configuration sharing"
   expect(screen.queryByRole("button", { name: "复制分享链接" })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "导入分享链接" })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "安装 WebApp" })).not.toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: "数据来源" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "常用精灵配置" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "数据来源" })).toBeVisible();
   expect(screen.queryByRole("button", { name: "赛季记录" })).not.toBeInTheDocument();
 
   await user.click(screen.getByRole("button", { name: "分享当前配置" }));
@@ -2586,6 +2836,80 @@ test("menu keeps only useful actions and explains current-configuration sharing"
   expect(screen.getByText("分享链接已复制")).toBeVisible();
 
   window.history.replaceState(null, "", window.location.pathname);
+});
+
+test("enables type analysis from display settings and remembers the switch", async () => {
+  const user = userEvent.setup();
+  const first = render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+
+  expect(screen.queryByRole("region", { name: "属性分析" })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "显示设置" }));
+  await user.click(screen.getByRole("checkbox", { name: "属性克制与打击面" }));
+  await user.click(screen.getByRole("button", { name: "完成" }));
+
+  expect(screen.getByRole("region", { name: "属性分析" })).toBeVisible();
+  expect(localStorage.getItem(TYPE_COVERAGE_STORAGE_KEY)).toBe("1");
+
+  first.unmount();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  expect(screen.getByRole("region", { name: "属性分析" })).toBeVisible();
+});
+
+test("loads the built-in popular library only on demand and imports through the existing flow", async () => {
+  localStorage.clear();
+  const teamBytes = JSON.stringify({
+    activeTeamId: null,
+    schemaVersion: 1,
+    teams: [],
+  });
+  localStorage.setItem(TEAM_STORAGE_KEY, teamBytes);
+  const library = {
+    appVersion: "1.5.0",
+    entries: [{
+      displayIvs: {
+        hp: 0,
+        magicalAttack: 60,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      },
+      natureId: "adamant",
+      skills: ["fire-strike", "mana-burst", null, null],
+      spiritId: "sonic-dog",
+      traitValues: {},
+    }],
+    entryCount: 1,
+    exportedAt: "2026-08-12T10:16:00.000Z",
+    format: "rock-calculator.favorite-config-library",
+    schemaVersion: 1,
+    versions: { data: "s3-test", rules: "1.0.0" },
+  };
+  const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    ok: true,
+    text: async () => JSON.stringify(library),
+  });
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+
+  expect(fetchMock).not.toHaveBeenCalled();
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "常用精灵配置" }));
+
+  const dialog = await screen.findByRole("dialog", { name: "常用精灵配置" });
+  expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json");
+  expect(within(dialog).getByText("新增配置").nextElementSibling).toHaveTextContent("1");
+  await user.click(within(dialog).getByRole("button", { name: "导入常用配置" }));
+
+  expect(screen.getByText(/已导入 1 只配置/)).toBeVisible();
+  expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);
+  expect(JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY))).toEqual(
+    expect.arrayContaining([expect.objectContaining({ spiritId: "sonic-dog" })]),
+  );
+  fetchMock.mockRestore();
 });
 
 test("opens configuration library export from the system menu with live counts", async () => {

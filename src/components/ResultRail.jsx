@@ -1,6 +1,7 @@
 import { ArrowsLeftRight } from "@phosphor-icons/react";
 import { damageTone } from "./damageTone.js";
 import { HealthInput } from "./HealthInput.jsx";
+import { TypeCoveragePanel } from "./TypeCoveragePanel.jsx";
 
 function clampPercent(value) {
   return Math.min(100, Math.max(0, Number(value) || 0));
@@ -11,6 +12,7 @@ export function ResultRail({
   onCurrentHpPercentChange,
   onDirectionToggle,
   result,
+  showTypeCoverage = false,
 }) {
   const primary = result.selectedResult;
   const isExact =
@@ -173,6 +175,10 @@ export function ResultRail({
             </div>
           ))}
         </section>
+      ) : null}
+
+      {showTypeCoverage ? (
+        <TypeCoveragePanel analysis={result.typeAnalysis} />
       ) : null}
 
       {primary.choiceTraitSequence?.text ? (

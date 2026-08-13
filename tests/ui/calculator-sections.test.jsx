@@ -36,11 +36,11 @@ const stats = [
   { key: "magicDefense", label: "魔防", panel: 150, race: 82, displayIv: 60 },
 ];
 
-test("header stays compact and exposes teams, version, theme, and menu controls", () => {
+test("header uses the S3 midseason title and exposes compact controls", () => {
   render(<AppHeader dataVersion="S3 · 41360" onTeamsOpen={vi.fn()} />);
 
   expect(
-    screen.getByRole("heading", { name: "洛克计算器" }),
+    screen.getByRole("heading", { name: "洛克计算器 · S3季中" }),
   ).toBeVisible();
   expect(screen.getByText("S3 · 41360")).toBeVisible();
   expect(screen.getByRole("button", { name: "打开队伍" })).toHaveAttribute(

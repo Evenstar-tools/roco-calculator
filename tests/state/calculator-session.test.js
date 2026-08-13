@@ -95,6 +95,21 @@ const fixtureEnergyId = getSkillEffectInputs(snapshot.skills[0]).find(
 ).id;
 
 describe("calculator session", () => {
+  test("starts both compact sides with all six individual values at 60", () => {
+    const state = createProductInitialState(runtimeSnapshot);
+
+    for (const side of ["attacker", "defender"]) {
+      expect(Object.values(state.sides[side].displayIvs)).toEqual([
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+      ]);
+    }
+  });
+
   test("auto-enables moon judgment against a leader and clears the default for a non-leader", () => {
     const moonSpirit = runtimeSnapshot.spirits.find(
       (spirit) => spirit.traitName === "月光审判",

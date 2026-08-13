@@ -160,6 +160,12 @@ const thresholdHitCount = (
 });
 
 const REVIEWED_EFFECTS = Object.freeze({
+  六自由度: {
+    ruleId: "adjacent_power_difference",
+  },
+  钢钻: {
+    ruleId: "adjacent_power_average",
+  },
   闪击: { ruleId: "speed_difference" },
   鸣沙陷阱: { ruleId: "physical_defense_difference" },
   冰锋横扫: {
@@ -253,8 +259,8 @@ const REVIEWED_EFFECTS = Object.freeze({
     ruleId: "stack_plus_counter_add",
     ruleParams: {
       contextKey: "enemyPoisonStacks",
-      counterAdd: 40,
       counterKey: "counterTriggered",
+      counterPerStack: 40,
       label: "敌方中毒层数",
       perStack: 10,
     },
@@ -492,7 +498,7 @@ const REVIEWED_EFFECTS = Object.freeze({
   ),
   远行: stackAdd("actedFirstCount", "此前先手次数", 25),
   撒娇: (() => {
-    const effect = stackAdd("moeGainCount", "获得萌化次数", 20);
+    const effect = stackAdd("moeGainCount", "获得萌化次数", 10);
     return {
       ...effect,
       ruleParams: {

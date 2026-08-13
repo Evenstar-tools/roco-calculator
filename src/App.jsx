@@ -14,6 +14,15 @@ import { SingleSkillEditor } from "./components/SingleSkillEditor.jsx";
 import { SkillStep } from "./components/SkillStep.jsx";
 import { SpiritStep } from "./components/SpiritStep.jsx";
 import { WorkspaceOverlays } from "./components/WorkspaceOverlays.jsx";
+import { FEEDBACK_QQ } from "./components/DataSourceDialog.jsx";
+import {
+  completeFirstRunGuide,
+  isFirstRunGuideCompleted,
+} from "./state/first-run-guide.js";
+import {
+  readTypeCoverageSetting,
+  writeTypeCoverageSetting,
+} from "./state/display-settings.js";
 import {
   buildCalculatorViewModel,
   clampStage,
@@ -63,6 +72,8 @@ import {
 import { decodeShareState, encodeShareState } from "./state/share.js";
 import packageInfo from "../package.json";
 
+const POPULAR_CONFIG_COUNT = 193;
+
 function configLibraryFileName(date = new Date()) {
   const pad = (value) => String(value).padStart(2, "0");
   return `洛克计算器-收藏配置-${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}.json`;
@@ -97,7 +108,18 @@ function CalculatorWorkspace({ snapshot }) {
   const [configLibraryParsed, setConfigLibraryParsed] = useState(null);
   const [configLibrarySummary, setConfigLibrarySummary] = useState(null);
   const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
+  const [dataSourceOpen, setDataSourceOpen] = useState(false);
+  const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
+  const [typeCoverageEnabled, setTypeCoverageEnabled] = useState(() =>
+    readTypeCoverageSetting(),
+  );
   const [importDraft, setImportDraft] = useState("");
+  const [firstRunGuideError, setFirstRunGuideError] = useState("");
+  const [firstRunGuideImporting, setFirstRunGuideImporting] = useState(false);
+  const [firstRunGuideOpen, setFirstRunGuideOpen] = useState(
+    () => !isFirstRunGuideCompleted(),
+  );
+  const [firstRunGuideStep, setFirstRunGuideStep] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileResultOpen, setMobileResultOpen] = useState(false);
   const [pendingSharedState, setPendingSharedState] = useState(null);
@@ -167,6 +189,57 @@ function CalculatorWorkspace({ snapshot }) {
     setConfigLibraryParsed(null);
     setConfigLibrarySummary(null);
     setConfigLibraryMode("import");
+  }
+
+  async function loadPopularConfigLibrary() {
+    const response = await fetch("/data/presets/pvp-popular-configs.json");
+    if (!response.ok) {
+      throw new Error(`内置配置读取失败：${response.status}`);
+    }
+    return storedData.previewFavoriteConfigLibrary(
+      await response.text(),
+      initialState.versions,
+    );
+  }
+
+  async function openPopularConfigLibrary() {
+    setConfigLibraryError("");
+    setConfigLibraryParsed(null);
+    setConfigLibrarySummary(null);
+    setConfigLibraryMode("popular");
+    try {
+      setConfigLibraryParsed(await loadPopularConfigLibrary());
+    } catch (error) {
+      setConfigLibraryError(
+        error instanceof Error ? error.message : "内置配置无法读取",
+      );
+    }
+  }
+
+  function finishFirstRunGuide() {
+    completeFirstRunGuide();
+    setFirstRunGuideError("");
+    setFirstRunGuideOpen(false);
+    setFirstRunGuideStep(0);
+  }
+
+  async function importPopularConfigFromGuide() {
+    setFirstRunGuideError("");
+    setFirstRunGuideImporting(true);
+    try {
+      const parsed = await loadPopularConfigLibrary();
+      const result = storedData.importFavoriteConfigLibrary(parsed);
+      finishFirstRunGuide();
+      setToast(
+        `已导入 ${result.preview.added + result.preview.overwritten} 只常用配置，后续修改仍会记忆`,
+      );
+    } catch (error) {
+      setFirstRunGuideError(
+        error instanceof Error ? error.message : "常用配置导入失败",
+      );
+    } finally {
+      setFirstRunGuideImporting(false);
+    }
   }
 
   async function previewConfigLibraryFile(file) {
@@ -559,6 +632,24 @@ function CalculatorWorkspace({ snapshot }) {
     return next;
   }
 
+  function mergePowerPercentAdds(current = {}, additions = {}) {
+    const next = { ...current };
+    for (const [slot, amount] of Object.entries(additions)) {
+      next[slot] = Number(next[slot] ?? 0) + Number(amount ?? 0);
+    }
+    return next;
+  }
+
+  function removePowerPercentAdds(current = {}, additions = {}) {
+    const next = { ...current };
+    for (const [slot, amount] of Object.entries(additions)) {
+      const value = Number(next[slot] ?? 0) - Number(amount ?? 0);
+      if (Math.abs(value) < 1e-9) delete next[slot];
+      else next[slot] = value;
+    }
+    return next;
+  }
+
   function setSkillMode(value) {
     dispatch({ type: "mode/set", value });
   }
@@ -575,19 +666,49 @@ function CalculatorWorkspace({ snapshot }) {
   }
 
   function activateFourSkill(side, index) {
-    const latest = stateRef.current;
+    let latest = stateRef.current;
     const entry = latest.sides[side].skills.four[index];
     const skill = getSkill(snapshot, entry);
+    const context =
+      entry && typeof entry === "object" ? entry.context ?? {} : {};
+    const activationContextSignature = JSON.stringify(context);
     const selfDirection = side === "attacker" ? "forward" : "reverse";
     const oppositeDirection =
       selfDirection === "forward" ? "reverse" : "forward";
-    dispatch({
-      direction: oppositeDirection,
-      type: "direction/set-reduction",
-      value: 1,
-    });
-    const context =
-      entry && typeof entry === "object" ? entry.context ?? {} : {};
+    const activeDefenseStatus =
+      latest.directions[selfDirection].overrides?.activeDefenseStatus;
+    const isSameActiveStatus =
+      activeDefenseStatus?.skillId === skill?.id &&
+      activeDefenseStatus?.slotIndex === index &&
+      activeDefenseStatus?.contextSignature === activationContextSignature;
+    if (activeDefenseStatus) {
+      const currentOverrides =
+        latest.directions[selfDirection].overrides ?? {};
+      dispatch({
+        direction: selfDirection,
+        type: "direction/update",
+        value: {
+          overrides: {
+            activeDefenseStatus: null,
+            skillPowerPercentAddsBySlot: removePowerPercentAdds(
+              currentOverrides.skillPowerPercentAddsBySlot,
+              activeDefenseStatus.powerPercentAddsBySlot,
+            ),
+          },
+        },
+      });
+      dispatch({
+        direction: oppositeDirection,
+        type: "direction/set-reduction",
+        value: 1,
+      });
+      latest = stateRef.current;
+      if (isSameActiveStatus) {
+        setActiveDirection(selfDirection);
+        setToast(`${skill.name}的状态已解除`);
+        return;
+      }
+    }
     const spirit = getSpirit(snapshot, latest.sides[side]);
     const detectedChoiceTrait = getTraitView(snapshot, spirit, "attacker").name;
     const choiceTrait =
@@ -681,6 +802,21 @@ function CalculatorWorkspace({ snapshot }) {
         ownSkillPowerPercentAddsBySlot,
       );
     }
+    const transientPowerPercent = Number(
+      operations.transientPowerPercentForAllAttacks,
+    );
+    const transientPowerPercentAddsBySlot =
+      Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0
+        ? addPowerPercentToAllAttacks(
+            side,
+            transientPowerPercent,
+            {},
+          )
+        : {};
+    ownSkillPowerPercentAddsBySlot = mergePowerPercentAdds(
+      ownSkillPowerPercentAddsBySlot,
+      transientPowerPercentAddsBySlot,
+    );
     if (operations.powerPercentForType) {
       ownSkillPowerPercentAddsBySlot = addPowerPercentToAttacksOfType(
         side,
@@ -709,6 +845,12 @@ function CalculatorWorkspace({ snapshot }) {
       ...(selfOverrides.refractionStatuses ?? []),
       ...(operations.refractionStatuses ?? []),
     ];
+    const defenseReductionPercent = Number(
+      operations.defenseReductionPercent,
+    );
+    const hasTransientDefenseStatus =
+      Number.isFinite(defenseReductionPercent) ||
+      Object.keys(transientPowerPercentAddsBySlot).length > 0;
 
     dispatch({
       direction: selfDirection,
@@ -729,6 +871,16 @@ function CalculatorWorkspace({ snapshot }) {
           hitCountAdd: ownHitCountAdd,
           hitCountPercentAdd: ownHitCountPercentAdd,
           refractionStatuses,
+          ...(hasTransientDefenseStatus
+            ? {
+                activeDefenseStatus: {
+                  contextSignature: activationContextSignature,
+                  powerPercentAddsBySlot: transientPowerPercentAddsBySlot,
+                  skillId: skill.id,
+                  slotIndex: index,
+                },
+              }
+            : {}),
         },
       },
     });
@@ -828,9 +980,6 @@ function CalculatorWorkspace({ snapshot }) {
         },
       });
     }
-    const defenseReductionPercent = Number(
-      operations.defenseReductionPercent,
-    );
     if (Number.isFinite(defenseReductionPercent)) {
       dispatch({
         direction: oppositeDirection,
@@ -1188,11 +1337,20 @@ function CalculatorWorkspace({ snapshot }) {
         onClose: () => setMenuOpen(false),
         onConfigLibraryExport: openConfigLibraryExport,
         onConfigLibraryImport: openConfigLibraryImport,
+        onPopularConfigLibrary: openPopularConfigLibrary,
+        onFirstRunGuide: () => {
+          setFirstRunGuideError("");
+          setFirstRunGuideStep(0);
+          setFirstRunGuideOpen(true);
+          setViewMode("compact");
+        },
         onClearCurrent: () => {
           dispatch({ type: "state/replace", value: initialState });
         },
         onCleanupConfigs: () => setCleanupConfigsOpen(true),
         onShare: openShareConfiguration,
+        onShowDisplaySettings: () => setDisplaySettingsOpen(true),
+        onShowDataSource: () => setDataSourceOpen(true),
       },
       buttonRef: menuButtonRef,
       open: menuOpen,
@@ -1208,6 +1366,27 @@ function CalculatorWorkspace({ snapshot }) {
         );
       },
       open: cleanupConfigsOpen,
+    },
+    firstRunGuide: {
+      error: firstRunGuideError,
+      importCount: POPULAR_CONFIG_COUNT,
+      importing: firstRunGuideImporting,
+      layoutKey: `${configurationReady}:${viewMode}:${state.mode}`,
+      onBack: () => setFirstRunGuideStep((current) => Math.max(0, current - 1)),
+      onImport: importPopularConfigFromGuide,
+      onNext: () => setFirstRunGuideStep((current) => Math.min(5, current + 1)),
+      onOpenDetailed: () => setViewMode("detailed"),
+      onSkip: finishFirstRunGuide,
+      open: firstRunGuideOpen,
+      ready: [
+        Boolean(attacker),
+        Boolean(defender),
+        configurationReady,
+        configurationReady,
+        true,
+        true,
+      ][firstRunGuideStep],
+      step: firstRunGuideStep,
     },
     configLibrary: {
       error: configLibraryError,
@@ -1243,6 +1422,30 @@ function CalculatorWorkspace({ snapshot }) {
       parsed: configLibraryParsed,
       snapshot,
     },
+    dataSource: {
+      onClose: () => setDataSourceOpen(false),
+      onCopyFeedback: async () => {
+        if (!globalThis.navigator?.clipboard?.writeText) {
+          setToast(`反馈 QQ：${FEEDBACK_QQ}`);
+          return;
+        }
+        try {
+          await globalThis.navigator.clipboard.writeText(FEEDBACK_QQ);
+          setToast("反馈 QQ 已复制");
+        } catch {
+          setToast(`反馈 QQ：${FEEDBACK_QQ}`);
+        }
+      },
+      open: dataSourceOpen,
+    },
+    displaySettings: {
+      onClose: () => setDisplaySettingsOpen(false),
+      onTypeCoverageChange: (enabled) => {
+        setTypeCoverageEnabled(writeTypeCoverageSetting(undefined, enabled));
+      },
+      open: displaySettingsOpen,
+      typeCoverageEnabled,
+    },
     mobileResult: {
       actions: {
         onClose: () => setMobileResultOpen(false),
@@ -1260,6 +1463,7 @@ function CalculatorWorkspace({ snapshot }) {
         trigger: mobileResultTriggerRef,
       },
       result: resultModel,
+      showTypeCoverage: typeCoverageEnabled,
       viewMode,
     },
     share: {
@@ -1390,7 +1594,10 @@ function CalculatorWorkspace({ snapshot }) {
             onAttackerSelect={(value) => changeSpirit("attacker", value)}
             onDefenderFavoriteToggle={() => toggleSpiritFavorite(defender)}
             onDefenderSelect={(value) => changeSpirit("defender", value)}
-            onSwap={() => dispatch({ type: "sides/swap" })}
+            onSwap={() => {
+              dispatch({ type: "sides/swap" });
+              setActiveDirection("forward");
+            }}
             spirits={selectableSpirits}
           />
           {configurationReady && viewMode === "compact" ? (
@@ -1398,7 +1605,10 @@ function CalculatorWorkspace({ snapshot }) {
               aria-label="即时配置"
               className="compact-workspace calculator-step"
             >
-              <div className="compact-adjustment-grid">
+              <div
+                className="compact-adjustment-grid"
+                data-guide-target="quick-settings"
+              >
                 {["attacker", "defender"].map((side) => {
                   const label = side === "attacker" ? "攻击方" : "防御方";
                   return (
@@ -1631,6 +1841,7 @@ function CalculatorWorkspace({ snapshot }) {
                 setActiveDirection(toggleDirection)
               }
               result={resultModel}
+              showTypeCoverage={typeCoverageEnabled}
             />
           </div>
         ) : null}

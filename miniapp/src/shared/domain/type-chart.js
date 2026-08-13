@@ -123,3 +123,54 @@ export function getTypeMultiplier(
   if (rawMultiplier <= 0.25) return 0.25;
   return rawMultiplier;
 }
+
+const ATTACKING_SKILL_CATEGORIES = new Set(["physical", "magical", "dual"]);
+
+export function analyzeDefensiveTypes(defenderTypes, chart = undefined) {
+  const matchups = ELEMENT_TYPES.map((type) => ({
+    type,
+    multiplier: getTypeMultiplier(type, defenderTypes, chart),
+  }));
+  return {
+    weaknesses: matchups.filter(({ multiplier }) => multiplier > 1),
+    resistances: matchups.filter(({ multiplier }) => multiplier < 1),
+  };
+}
+
+export function analyzeSkillTypeCoverage(skills, chart = undefined) {
+  const attackingTypes = [
+    ...new Set(
+      (Array.isArray(skills) ? skills : [])
+        .filter(
+          (skill) =>
+            skill?.type && ATTACKING_SKILL_CATEGORIES.has(skill.category),
+        )
+        .map((skill) => skill.type),
+    ),
+  ];
+  if (attackingTypes.length === 0) {
+    return { attackingTypes, blindSpots: [], coverage: [] };
+  }
+
+  const matchups = ELEMENT_TYPES.map((type) => {
+    const multipliers = attackingTypes.map((attackType) =>
+      getTypeMultiplier(attackType, [type], chart),
+    );
+    const hasCoverage = multipliers.some((multiplier) => multiplier > 1);
+    const isBlindSpot = multipliers.every((multiplier) => multiplier < 1);
+    return {
+      type,
+      coverageMultiplier: hasCoverage ? 2 : 1,
+      blindSpotMultiplier: isBlindSpot ? 0.5 : 1,
+    };
+  });
+  return {
+    attackingTypes,
+    blindSpots: matchups
+      .filter(({ blindSpotMultiplier }) => blindSpotMultiplier < 1)
+      .map(({ type, blindSpotMultiplier: multiplier }) => ({ type, multiplier })),
+    coverage: matchups
+      .filter(({ coverageMultiplier }) => coverageMultiplier > 1)
+      .map(({ type, coverageMultiplier: multiplier }) => ({ type, multiplier })),
+  };
+}

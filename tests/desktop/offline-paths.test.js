@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
 import { resolveOfflineAssetPath } from "../../desktop/offline-paths.mjs";
@@ -27,5 +28,21 @@ describe("offline desktop asset routing", () => {
         clientRoot,
       ),
     ).toBeNull();
+  });
+
+  test("offline smoke keeps the bundled app protocol available", () => {
+    const desktopMain = readFileSync("desktop/main.mjs", "utf8");
+    expect(desktopMain).not.toContain("enableNetworkEmulation({ offline: true })");
+    expect(desktopMain).toContain("protocol.registerBufferProtocol");
+    expect(desktopMain).toContain('getAttribute("aria-label")');
+    expect(desktopMain).not.toContain('"text/javascript; charset=utf-8"');
+  });
+
+  test("desktop runtime does not register a service worker on the app protocol", () => {
+    const mainSource = readFileSync("src/main.jsx", "utf8");
+    expect(mainSource).toContain(
+      'const isDesktopApp = window.location.protocol === "app:";',
+    );
+    expect(mainSource).toContain("!isDesktopApp");
   });
 });

@@ -292,7 +292,249 @@ function contractContext(role, ballType, prismEffect = "") {
   ]));
 }
 
+function transmissionSnapshot() {
+  const dancer = {
+    id: "spirit-centrifugal-dancer",
+    fullName: "离心舞者",
+    types: ["幻", "机械"],
+    raceStats: {
+      physicalAttack: 50,
+      magicalAttack: 110,
+      speed: 125,
+      hp: 114,
+      physicalDefense: 77,
+      magicalDefense: 120,
+    },
+    traitIds: [],
+  };
+  const target = {
+    id: "spirit-transmission-target",
+    fullName: "传动测试靶",
+    types: ["普通"],
+    raceStats: {
+      physicalAttack: 100,
+      magicalAttack: 100,
+      speed: 100,
+      hp: 150,
+      physicalDefense: 100,
+      magicalDefense: 100,
+    },
+    traitIds: [],
+  };
+  return {
+    ...snapshot,
+    spirits: [...snapshot.spirits, dancer, target],
+    skills: [
+      ...snapshot.skills,
+      {
+        id: "skill-transmission-status",
+        name: "传动状态",
+        type: "机械",
+        category: "status",
+        cost: 1,
+        basePower: 0,
+      },
+      {
+        id: "skill-transmission-200",
+        name: "面板二百",
+        type: "普通",
+        category: "magical",
+        cost: 1,
+        basePower: 200,
+      },
+      {
+        id: "skill-transmission-90",
+        name: "面板九十",
+        type: "普通",
+        category: "physical",
+        cost: 1,
+        basePower: 90,
+      },
+      {
+        id: "skill-transmission-150",
+        name: "面板一百五",
+        type: "普通",
+        category: "physical",
+        cost: 1,
+        basePower: 150,
+      },
+      {
+        id: "skill-six-degrees",
+        name: "六自由度",
+        type: "机械",
+        category: "magical",
+        cost: 4,
+        basePower: 30,
+        description: "造成魔伤，威力额外增加两侧技能威力差的四分之一，传动1。",
+      },
+      {
+        id: "skill-steel-drill",
+        name: "钢钻",
+        type: "机械",
+        category: "physical",
+        cost: 4,
+        basePower: 1,
+        description: "造成物伤，技能威力为两侧技能威力和的三分之一，传动1。",
+      },
+    ],
+  };
+}
+
+function transmissionSide(skillIds) {
+  return {
+    spiritId: "spirit-centrifugal-dancer",
+    displayIvs: { ...allFullIvs },
+    skills: { single: skillIds[0], four: skillIds },
+  };
+}
+
 describe("calculateMatchup", () => {
+  test("六自由度读取相邻最终显示威力，变化技能按 0，并在离心舞者本系后结算", () => {
+    const result = calculateMatchup(
+      transmissionSnapshot(),
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: transmissionSide([
+            "skill-transmission-status",
+            "skill-six-degrees",
+            "skill-transmission-200",
+            null,
+          ]),
+          defender: {
+            ...transmissionSide([null, null, null, null]),
+            spiritId: "spirit-transmission-target",
+          },
+        },
+      }),
+    ).forward.results[1];
+
+    expect(result.status).toBe("exact");
+    expect(result.resolvedPower).toBe(80);
+    expect(result.effectivePower).toBe(100);
+    expect(result.formulaSteps).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: "相邻技能显示威力",
+          input: {
+            left: { name: "传动状态", power: 0 },
+            right: { name: "面板二百", power: 200 },
+          },
+          after: 80,
+        }),
+      ]),
+    );
+  });
+
+  test("钢钻使用两侧最终显示威力之和的三分之一，不叠加占位基础威力", () => {
+    const result = calculateMatchup(
+      transmissionSnapshot(),
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: transmissionSide([
+            "skill-transmission-90",
+            "skill-steel-drill",
+            "skill-transmission-150",
+            null,
+          ]),
+          defender: {
+            ...transmissionSide([null, null, null, null]),
+            spiritId: "spirit-transmission-target",
+          },
+        },
+      }),
+    ).forward.results[1];
+
+    expect(result.status).toBe("exact");
+    expect(result.resolvedPower).toBe(80);
+    expect(result.effectivePower).toBe(100);
+  });
+
+  test("六自由度读取的是相邻技能包含克制与能力等级后的界面威力", () => {
+    const result = calculateMatchup(
+      transmissionSnapshot(),
+      battleInput({
+        mode: "four",
+        directions: {
+          forward: {
+            attackLevelStage: 5,
+            overrides: { typeEffectiveness: 2 },
+          },
+        },
+        sides: {
+          attacker: transmissionSide([
+            "skill-transmission-status",
+            "skill-six-degrees",
+            "skill-transmission-200",
+            null,
+          ]),
+          defender: {
+            ...transmissionSide([null, null, null, null]),
+            spiritId: "spirit-transmission-target",
+          },
+        },
+      }),
+    ).forward.results[1];
+
+    expect(result.formulaSteps).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: "相邻技能显示威力",
+          input: {
+            left: { name: "传动状态", power: 0 },
+            right: { name: "面板二百", power: 600 },
+          },
+          after: 180,
+        }),
+      ]),
+    );
+  });
+
+  test("传动技能位于边界或相邻动态技能互相依赖时不静默按零计算", () => {
+    const edge = calculateMatchup(
+      transmissionSnapshot(),
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: transmissionSide([
+            "skill-six-degrees",
+            "skill-transmission-200",
+            null,
+            null,
+          ]),
+          defender: {
+            ...transmissionSide([null, null, null, null]),
+            spiritId: "spirit-transmission-target",
+          },
+        },
+      }),
+    ).forward.results[0];
+    const cycle = calculateMatchup(
+      transmissionSnapshot(),
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: transmissionSide([
+            "skill-transmission-90",
+            "skill-six-degrees",
+            "skill-steel-drill",
+            "skill-transmission-150",
+          ]),
+          defender: {
+            ...transmissionSide([null, null, null, null]),
+            spiritId: "spirit-transmission-target",
+          },
+        },
+      }),
+    ).forward.results;
+
+    expect(edge.status).toBe("needs_input");
+    expect(edge.reason).toContain("相邻技能");
+    expect(cycle[1].status).toBe("needs_input");
+    expect(cycle[2].status).toBe("needs_input");
+  });
+
   test("换碟为午夜噪音的每一段先增加5点固定基础威力，再结算5连击", () => {
     const trait = {
       id: "trait-disc-swap",
@@ -1240,8 +1482,8 @@ describe("calculateMatchup", () => {
     ).forward.selectedResult;
 
     expect(result).toMatchObject({
-      resolvedPower: 190,
-      skillPower: 285,
+      resolvedPower: 140,
+      skillPower: 210,
     });
   });
 
@@ -2699,6 +2941,186 @@ describe("calculateMatchup", () => {
     expect(dual.totalDamage).toBe(physical.totalDamage);
   });
 
+  test("applies Focus to Wish Power when physical attack is the selected stat", () => {
+    const wishPower = {
+      basePower: 80,
+      category: "dual",
+      cost: 2,
+      id: "skill_wish_power_focus",
+      name: "愿力冲击",
+      provenance: { basePower: { source: "fixture" } },
+      ruleId: null,
+      type: "草",
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: ["trait_focus"] }
+          : spirit,
+      ),
+      skills: [...snapshot.skills, wishPower],
+      traits: [
+        {
+          affectsDamage: true,
+          description: "入场首回合，获得物攻+100%。",
+          id: "trait_focus",
+          name: "专注力",
+        },
+      ],
+    };
+    const attacker = side("spirit_sonic_dog", wishPower.id, [
+      wishPower.id,
+      null,
+      null,
+      null,
+    ]);
+    const base = calculateMatchup(
+      fixture,
+      battleInput({ sides: { attacker } }),
+    ).forward.selectedResult;
+    const activated = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: { attacker },
+        directions: {
+          forward: { context: { traitActivated: true } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(activated.effectivePower).toBe(base.effectivePower * 2);
+    expect(activated.totalDamage).toBeGreaterThan(base.totalDamage);
+  });
+
+  test("applies Focus only to physical attack in the projected panel", () => {
+    const wishPower = {
+      basePower: 80,
+      category: "dual",
+      cost: 2,
+      id: "skill_wish_power_focus_panel",
+      name: "愿力冲击",
+      provenance: { basePower: { source: "fixture" } },
+      ruleId: null,
+      type: "草",
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: ["trait_focus"] }
+          : spirit,
+      ),
+      skills: [...snapshot.skills, wishPower],
+      traits: [
+        {
+          affectsDamage: true,
+          description: "入场首回合，获得物攻+100%。",
+          id: "trait_focus",
+          name: "专注力",
+        },
+      ],
+    };
+    const attacker = side("spirit_sonic_dog", wishPower.id, [
+      wishPower.id,
+      null,
+      null,
+      null,
+    ]);
+    const base = calculateMatchup(
+      fixture,
+      battleInput({ sides: { attacker } }),
+    ).forward.selectedResult;
+    const activated = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: { attacker },
+        directions: {
+          forward: { context: { traitActivated: true } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(activated.combatPanel.attacker.physicalAttack).toBe(
+      base.combatPanel.attacker.physicalAttack * 2,
+    );
+    expect(activated.combatPanel.attacker.magicalAttack).toBe(
+      base.combatPanel.attacker.magicalAttack,
+    );
+  });
+
+  test("chooses Wish Power attack channel after category-specific trait bonuses", () => {
+    const wishPower = {
+      basePower: 80,
+      category: "dual",
+      cost: 2,
+      id: "skill_wish_power_focus_crossover",
+      name: "愿力冲击",
+      provenance: { basePower: { source: "fixture" } },
+      ruleId: null,
+      type: "草",
+    };
+    const crossoverSpirit = {
+      id: "spirit_wish_crossover",
+      fullName: "愿力测试精灵",
+      types: ["火"],
+      raceStats: {
+        physicalAttack: 80,
+        magicalAttack: 110,
+        speed: 100,
+        hp: 100,
+        physicalDefense: 100,
+        magicalDefense: 100,
+      },
+      traitIds: ["trait_focus"],
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: [...snapshot.spirits, crossoverSpirit],
+      skills: [...snapshot.skills, wishPower],
+      traits: [
+        {
+          affectsDamage: true,
+          description: "入场首回合，获得物攻+100%。",
+          id: "trait_focus",
+          name: "专注力",
+        },
+      ],
+    };
+    const attacker = {
+      ...side(crossoverSpirit.id, wishPower.id, [
+        wishPower.id,
+        null,
+        null,
+        null,
+      ]),
+      natureMultipliers: {},
+    };
+    const base = calculateMatchup(
+      fixture,
+      battleInput({ sides: { attacker } }),
+    ).forward.selectedResult;
+    const activated = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: { attacker },
+        directions: {
+          forward: { context: { traitActivated: true } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(
+      base.formulaSteps.find(({ label }) => label === "攻击面板")?.input,
+    ).toBe("magicalAttack");
+    expect(
+      activated.formulaSteps.find(({ label }) => label === "攻击面板")?.input,
+    ).toBe("physicalAttack");
+    expect(activated.combatPanel.attacker.physicalAttack).toBeGreaterThan(
+      activated.combatPanel.attacker.magicalAttack,
+    );
+  });
+
   test("uses the four-skill slot position for reviewed position bonuses", () => {
     const steelTorrent = {
       basePower: 70,
@@ -3103,11 +3525,11 @@ describe("inherited penetration stacks", () => {
     );
 
     expect(step).toMatchObject({
-      after: 130,
+      after: 80,
       before: 20,
       input: { attacker: 120, defender: 100 },
     });
-    expect(result.skillPower).toBe(130);
+    expect(result.skillPower).toBe(80);
   });
 
   test("uses the same inherited stacks to reduce incoming damage", () => {

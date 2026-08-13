@@ -161,3 +161,54 @@ test("allows importing legacy favorites even when they contain no configuration"
   fireEvent.click(confirm);
   expect(onConfirmImport).toHaveBeenCalledTimes(1);
 });
+
+test("shows the built-in popular configuration preview without a file picker", () => {
+  const onConfirmImport = vi.fn();
+  render(
+    <ConfigLibraryDialog
+      mode="popular"
+      onClose={vi.fn()}
+      onConfirmImport={onConfirmImport}
+      parsed={{
+        entries: [{
+          natureId: "adamant",
+          skills: ["skill-fire", null, null, null],
+          spiritId: "spirit-dog",
+        }],
+        favoriteSpiritIds: ["spirit-dog"],
+        preview: {
+          added: 188,
+          overwritten: 5,
+          favoritesAdded: 180,
+          missingSpirits: 0,
+          missingSkills: 0,
+          unknownTraitFields: 0,
+          invalidEntries: 0,
+          duplicateEntries: 0,
+          repairedEntries: 0,
+        },
+        issueDetails: [],
+        warnings: [],
+      }}
+      snapshot={{
+        skills: [{ id: "skill-fire", name: "烈焰冲锋" }],
+        spirits: [{ fullName: "音速犬", id: "spirit-dog" }],
+      }}
+    />,
+  );
+
+  expect(screen.getByRole("dialog", { name: "常用精灵配置" })).toBeVisible();
+  expect(screen.getByText("PVP 热门配置 · 193 只")).toBeVisible();
+  expect(screen.getByText("安装后可离线导入")).toBeVisible();
+  expect(screen.queryByLabelText("选择配置库文件")).not.toBeInTheDocument();
+  expect(screen.getByText("新增配置").nextElementSibling).toHaveTextContent("188");
+  expect(screen.getByText("覆盖本机配置").nextElementSibling).toHaveTextContent("5");
+  expect(screen.getByText(/队伍与当前页面不会改变/)).toBeVisible();
+
+  fireEvent.click(screen.getByRole("button", { name: "查看精灵和技能" }));
+  expect(screen.getByText("音速犬")).toBeVisible();
+  expect(screen.getByText("烈焰冲锋")).toBeVisible();
+
+  fireEvent.click(screen.getByRole("button", { name: "导入常用配置" }));
+  expect(onConfirmImport).toHaveBeenCalledTimes(1);
+});

@@ -8,7 +8,7 @@ test("renders the calculator title", () => {
 
   expect(
     screen.getByRole("heading", {
-      name: "洛克计算器",
+      name: "洛克计算器 · S3季中",
     }),
   ).toBeVisible();
 });

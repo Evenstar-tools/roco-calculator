@@ -30,12 +30,12 @@ export function AppHeader({
   return (
     <header className={`app-header app-header--${viewMode}`}>
       <div className="app-header__brand">
-        <h1 aria-label="洛克计算器">
+        <h1 aria-label="洛克计算器 · S3季中">
           <span aria-hidden="true" className="app-header__title-long">
-            洛克计算器
+            洛克计算器 · S3季中
           </span>
           <span aria-hidden="true" className="app-header__title-short">
-            洛克计算器
+            S3季中
           </span>
         </h1>
         <span className="app-header__version">{dataVersion}</span>
@@ -56,6 +56,7 @@ export function AppHeader({
           <button
             aria-label="具体版"
             aria-pressed={viewMode === "detailed"}
+            data-guide-target="detailed-mode"
             onClick={() => onViewModeChange?.("detailed")}
             title="具体版"
             type="button"

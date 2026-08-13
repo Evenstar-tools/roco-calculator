@@ -20,8 +20,16 @@ export function SkillStep({
   }
 
   return (
-    <section aria-label="技能配置" className="calculator-step calculator-step--skills">
-      <div aria-label="技能模式" className="mode-tabs" role="tablist">
+    <section
+      aria-label="技能配置"
+      className="calculator-step calculator-step--skills"
+    >
+      <div
+        aria-label="技能模式"
+        className="mode-tabs"
+        data-guide-target="skills"
+        role="tablist"
+      >
         <button
           aria-label="单技能"
           aria-controls="single-skill-panel"

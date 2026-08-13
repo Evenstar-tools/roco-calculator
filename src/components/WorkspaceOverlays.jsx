@@ -3,6 +3,9 @@ import { useEffect } from "react";
 import { ResultRail } from "./ResultRail.jsx";
 import { TeamDrawer } from "./TeamDrawer.jsx";
 import { ConfigLibraryDialog } from "./ConfigLibraryDialog.jsx";
+import { DataSourceDialog } from "./DataSourceDialog.jsx";
+import { FirstRunGuide } from "./FirstRunGuide.jsx";
+import { DisplaySettingsDialog } from "./DisplaySettingsDialog.jsx";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -26,6 +29,9 @@ export function WorkspaceOverlays({
   children,
   cleanupConfigs = {},
   configLibrary,
+  dataSource = {},
+  displaySettings = {},
+  firstRunGuide = {},
   menu,
   mobileResult,
   share,
@@ -148,6 +154,18 @@ export function WorkspaceOverlays({
             配置库导入
           </button>
           <button
+            aria-label="常用精灵配置"
+            className="app-menu__primary"
+            onClick={() => {
+              menuActions.onPopularConfigLibrary?.();
+              menuActions.onClose?.();
+            }}
+            type="button"
+          >
+            <span>常用精灵配置</span>
+            <span className="app-menu__badge">193</span>
+          </button>
+          <button
             onClick={() => {
               menuActions.onClearCurrent?.();
               menuActions.onClose?.();
@@ -174,10 +192,40 @@ export function WorkspaceOverlays({
           >
             分享当前配置
           </button>
+          <div aria-hidden="true" className="app-menu__separator" />
+          <button
+            onClick={() => {
+              menuActions.onFirstRunGuide?.();
+              menuActions.onClose?.();
+            }}
+            type="button"
+          >
+            新手引导
+          </button>
+          <button
+            onClick={() => {
+              menuActions.onShowDisplaySettings?.();
+              menuActions.onClose?.();
+            }}
+            type="button"
+          >
+            显示设置
+          </button>
+          <button
+            onClick={() => {
+              menuActions.onShowDataSource?.();
+              menuActions.onClose?.();
+            }}
+            type="button"
+          >
+            数据来源
+          </button>
         </nav>
       ) : null}
 
       {children}
+
+      <FirstRunGuide {...firstRunGuide} />
 
       {mobileResult.configurationReady ? (
         <button
@@ -227,6 +275,7 @@ export function WorkspaceOverlays({
             onCurrentHpPercentChange={mobileActions.onCurrentHpPercentChange}
             onDirectionToggle={mobileActions.onDirectionToggle}
             result={mobileResult.result}
+            showTypeCoverage={mobileResult.showTypeCoverage}
           />
         </div>
       ) : null}
@@ -236,6 +285,10 @@ export function WorkspaceOverlays({
       ) : null}
 
       <ConfigLibraryDialog {...configLibrary} />
+
+      <DataSourceDialog {...dataSource} />
+
+      <DisplaySettingsDialog {...displaySettings} />
 
       {cleanupConfigs.open ? (
         <div

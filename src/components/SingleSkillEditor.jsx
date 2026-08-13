@@ -44,6 +44,17 @@ export function dynamicInputsForSkill(
   );
 }
 
+export function mergeDynamicInputs(...inputGroups) {
+  const inputs = inputGroups.flat().filter(Boolean);
+  return inputs.filter(
+    (input, index) =>
+      inputs.findIndex(
+        (candidate) =>
+          (candidate.id ?? candidate.key) === (input.id ?? input.key),
+      ) === index,
+  );
+}
+
 function dynamicInputId(input) {
   return input.id ?? input.key;
 }
@@ -78,10 +89,11 @@ export function DraftNumberInput({
   value,
 }) {
   const [draft, setDraft] = useState(String(value ?? ""));
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    setDraft(String(value ?? ""));
-  }, [value]);
+    if (!isEditing) setDraft(String(value ?? ""));
+  }, [isEditing, value]);
 
   return (
     <input
@@ -92,6 +104,7 @@ export function DraftNumberInput({
       max={max}
       min={min}
       onBlur={() => {
+        setIsEditing(false);
         if (draft === "") setDraft(String(value ?? ""));
       }}
       onChange={(event) => {
@@ -115,6 +128,7 @@ export function DraftNumberInput({
         setDraft(String(normalized));
         onCommit?.(normalized);
       }}
+      onFocus={() => setIsEditing(true)}
       step={step}
       type="number"
       value={draft}
@@ -234,6 +248,13 @@ export function describeResolution(result) {
     const metric = String(step.label).startsWith("物防") ? "物防" : "速度";
     return `${metric} ${Number(step.input.attacker)} − ${Number(step.input.defender)} = ${before} → 威力 ${after}`;
   }
+  if (
+    source.includes("adjacent-displayed-power") &&
+    step.input?.left &&
+    step.input?.right
+  ) {
+    return `左 ${step.input.left.name} ${Number(step.input.left.power)}｜右 ${step.input.right.name} ${Number(step.input.right.power)} → 威力 ${after}`;
+  }
   if (source.includes("mana-burst")) {
     return `${Number(step.input)} 能量 → 威力 ${after}`;
   }
@@ -276,7 +297,10 @@ export function SingleSkillEditor({
 }) {
   const [powerDraft, setPowerDraft] = useState(String(manualPower));
   const [hitDraft, setHitDraft] = useState(String(hitCount));
-  const dynamicInputs = dynamicInputsForSkill(selectedSkill);
+  const dynamicInputs = mergeDynamicInputs(
+    dynamicInputsForSkill(selectedSkill),
+    result?.inputs ?? [],
+  );
   const attackerTraitInputs = attackerTrait?.inputs ??
     (attackerTrait?.conditionKey
       ? [{

@@ -23,7 +23,7 @@ const WISH_POWER_SKILLS = Object.freeze(
   WISH_POWER_TYPES.map(([suffix, type]) => ({
     basePower: 80,
     category: "dual",
-    cost: 3,
+    cost: 2,
     description:
       "取物攻与魔攻中较高的一项；目标本回合使用状态技能时，威力×2.5且必定先手。",
     id: `calculator_wish_power_${suffix}`,
@@ -37,15 +37,58 @@ const WISH_POWER_SKILLS = Object.freeze(
   })),
 );
 
+const WISH_POWER_ID_BY_TYPE = new Map(
+  WISH_POWER_SKILLS.map((skill) => [skill.type, skill.id]),
+);
+
+function bossWishPowerIds(spirit, traitsById) {
+  const descriptions = (spirit.traitIds ?? [])
+    .map((traitId) => traitsById.get(traitId)?.description ?? "")
+    .join("\n");
+  const type = descriptions.match(/替换为([^，。；\s]+)系愿力冲击/)?.[1];
+  const skillId = WISH_POWER_ID_BY_TYPE.get(type);
+  return skillId ? [skillId] : [];
+}
+
 export function withCalculatorExtras(snapshot) {
   const skills = snapshot?.skills ?? [];
   const existingIds = new Set(skills.map((skill) => skill.id));
   const missing = WISH_POWER_SKILLS.filter(
     (skill) => !existingIds.has(skill.id),
   );
-  if (missing.length === 0) return snapshot;
+  const wishPowerIds = WISH_POWER_SKILLS.map((skill) => skill.id);
+  const spiritsById = new Map(
+    (snapshot?.spirits ?? []).map((spirit) => [spirit.id, spirit]),
+  );
+  const traitsById = new Map(
+    (snapshot?.traits ?? []).map((trait) => [trait.id, trait]),
+  );
+  let learnsetsChanged = false;
+  const learnsets = (snapshot?.learnsets ?? []).map((learnset) => {
+    const spirit = spiritsById.get(learnset.spiritId);
+    if (!spirit) return learnset;
+
+    const currentSkillIds = learnset.skillIds ?? [];
+    const currentSet = new Set(currentSkillIds);
+    const learnableWishPowerIds = spirit.stage === "首领"
+      ? bossWishPowerIds(spirit, traitsById)
+      : wishPowerIds;
+    const missingWishPowerIds = learnableWishPowerIds.filter(
+      (skillId) => !currentSet.has(skillId),
+    );
+    if (missingWishPowerIds.length === 0) return learnset;
+
+    learnsetsChanged = true;
+    return {
+      ...learnset,
+      skillIds: [...currentSkillIds, ...missingWishPowerIds],
+    };
+  });
+
+  if (missing.length === 0 && !learnsetsChanged) return snapshot;
   return {
     ...snapshot,
     skills: [...skills, ...missing],
+    learnsets,
   };
 }

@@ -101,6 +101,44 @@ describe("skill loadouts", () => {
     ]);
   });
 
+  test("keeps Wish Power learnable without auto-filling an empty default slot", () => {
+    const snapshot = {
+      learnsets: [
+        {
+          skillIds: ["regular", "calculator_wish_power_fire"],
+          spiritId: "spirit-a",
+        },
+      ],
+      skills: [
+        {
+          basePower: 60,
+          category: "physical",
+          id: "regular",
+          name: "常规技能",
+        },
+        {
+          basePower: 80,
+          category: "dual",
+          cost: 2,
+          id: "calculator_wish_power_fire",
+          name: "愿力冲击",
+        },
+      ],
+    };
+
+    expect(
+      getSkillChoices(snapshot, "spirit-a").find(
+        ({ id }) => id === "calculator_wish_power_fire",
+      ),
+    ).toMatchObject({ learnable: true, cost: 2 });
+    expect(chooseDefaultSkillIds(snapshot, "spirit-a")).toEqual([
+      "regular",
+      null,
+      null,
+      null,
+    ]);
+  });
+
   test("deduplicates repeated learnset entries before rendering skill choices", () => {
     const snapshot = {
       learnsets: [

@@ -110,30 +110,32 @@ describe("resolveSkillPower", () => {
         skill({ name: "闪击", ruleId: "speed_difference" }),
         { attackerSpeed: 260, defenderSpeed: 180 },
       ),
-    ).toMatchObject({ status: "exact", value: 170 });
+    ).toMatchObject({ status: "exact", value: 120 });
   });
 
   test.each([
     [-1, 60],
-    [0, 100],
-    [14, 100],
-    [15, 130],
-    [29, 130],
-    [30, 140],
-    [44, 140],
-    [45, 150],
-    [59, 150],
-    [60, 160],
-    [74, 160],
-    [75, 170],
-    [89, 170],
-    [90, 180],
-    [104, 180],
-    [105, 190],
-    [119, 190],
-    [120, 194],
-    [134, 194],
-    [135, 200],
+    [0, 60],
+    [1, 80],
+    [30, 80],
+    [31, 100],
+    [33, 100],
+    [60, 100],
+    [61, 120],
+    [90, 120],
+    [91, 140],
+    [120, 140],
+    [121, 150],
+    [150, 150],
+    [151, 160],
+    [180, 160],
+    [181, 170],
+    [210, 170],
+    [211, 180],
+    [240, 180],
+    [241, 190],
+    [270, 190],
+    [271, 200],
   ])(
     "uses the reviewed difference table at %i for power %i",
     (difference, power) => {
@@ -215,6 +217,23 @@ describe("resolveSkillPower", () => {
     });
   });
 
+  test("composes Wish Power target-status multiplier with manual base power", () => {
+    const wishPower = skill({ basePower: 80, name: "愿力冲击" });
+
+    expect(
+      resolveSkillPower(wishPower, {
+        basePowerOverride: 100,
+        enemyUsedStatusSkill: false,
+      }),
+    ).toMatchObject({ status: "exact", value: 100 });
+    expect(
+      resolveSkillPower(wishPower, {
+        basePowerOverride: 100,
+        enemyUsedStatusSkill: true,
+      }),
+    ).toMatchObject({ status: "exact", value: 250 });
+  });
+
   test("resolves Head-on Blow from the reviewed skill effect without a snapshot rule id", () => {
     const headOnBlow = skill({
       name: "当头棒喝",
@@ -248,19 +267,26 @@ describe("resolveSkillPower", () => {
     });
   });
 
-  test("uses the current BWIKI flat counter bonus for Poison instead of stacking both bonuses", () => {
-    const poison = skill({ basePower: 75, name: "鸩毒" });
+  test.each([
+    [0, false, 75],
+    [1, false, 85],
+    [3, false, 105],
+    [0, true, 75],
+    [1, true, 115],
+    [3, true, 195],
+  ])(
+    "adds Poison power per poison stack (stacks=%i, counter=%s)",
+    (enemyPoisonStacks, counterTriggered, expectedPower) => {
+      const poison = skill({ basePower: 75, name: "鸩毒" });
 
-    expect(
-      resolveSkillPower(poison, { enemyPoisonStacks: 2 }),
-    ).toMatchObject({ status: "exact", value: 95 });
-    expect(
-      resolveSkillPower(poison, {
-        counterTriggered: true,
-        enemyPoisonStacks: 2,
-      }),
-    ).toMatchObject({ status: "exact", value: 115 });
-  });
+      expect(
+        resolveSkillPower(poison, {
+          counterTriggered,
+          enemyPoisonStacks,
+        }),
+      ).toMatchObject({ status: "exact", value: expectedPower });
+    },
+  );
 
   test.each([
     [
@@ -454,7 +480,15 @@ describe("resolveSkillPower", () => {
         moeGainCount: 3,
         sproutFixedPowerBonus: 20,
       }),
-    ).toMatchObject({ status: "exact", value: 110 });
+    ).toMatchObject({ status: "exact", value: 80 });
+  });
+
+  test("S3季中撒娇每次萌化只增加10威力", () => {
+    expect(
+      resolveSkillPower(skill({ basePower: 30, name: "撒娇" }), {
+        moeGainCount: 3,
+      }),
+    ).toMatchObject({ status: "exact", value: 60 });
   });
 
   test("超级糖果不读取萌芽加成", () => {
@@ -491,10 +525,10 @@ describe("resolveSkillPower", () => {
     });
   });
 
-  test("registers all 97 reviewed dynamic skills in the current snapshot", () => {
+  test("registers all 99 reviewed dynamic skills in the current snapshot", () => {
     expect(
       snapshot.skills.filter((entry) => getSkillEffectRule(entry)).length,
-    ).toBe(97);
+    ).toBe(99);
   });
 
   test("keeps every reviewed rule default-safe and every choice default valid", () => {

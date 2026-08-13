@@ -121,6 +121,10 @@ function resolveEmbeddedDamageSkill(skill) {
   };
 }
 
+function isAdjacentPowerSkill(skill) {
+  return skill?.name === "六自由度" || skill?.name === "钢钻";
+}
+
 function entryDetails(entry) {
   return entry && typeof entry === "object" ? entry : {};
 }
@@ -709,14 +713,58 @@ function calculateSkillResult({
     context.basePowerOverride = basePowerOverride;
   }
 
-  const traitResolution = resolveTraitMultipliers({
-    attackerTraits: usesDisplayedPower ? [] : attacker.traits,
-    defenderTraits: defender.traits,
-    skill,
-    attacker,
-    defender,
-    context,
-  });
+  const attackLevelStage = finiteNumber(
+    slotOverrides.attackLevelStage,
+    directionOverrides.attackLevelStage,
+    direction.attackLevelStage,
+  );
+  const defenseLevelStage = finiteNumber(
+    slotOverrides.defenseLevelStage,
+    directionOverrides.defenseLevelStage,
+    direction.defenseLevelStage,
+  );
+  const traitResolutionForCategory = (category) =>
+    resolveTraitMultipliers({
+      attackerTraits: usesDisplayedPower ? [] : attacker.traits,
+      defenderTraits: defender.traits,
+      skill: { ...skill, category },
+      attacker,
+      defender,
+      context,
+    });
+  const categoryTraitResolutions = {
+    magical: traitResolutionForCategory("magical"),
+    physical: traitResolutionForCategory("physical"),
+  };
+  const attackStageForCategory = (category) => {
+    const categoryResolution = categoryTraitResolutions[category];
+    return (
+      (attackLevelStage ?? 0) +
+      (categoryResolution?.status === "exact"
+        ? categoryResolution.attackLevelBonus
+        : 0) +
+      attackerBloodline.attackLevelBonusByCategory[category] +
+      defenderBloodline.targetAttackLevelBonusByCategory[category] +
+      attackerContract.attackLevelBonusByCategory[category] +
+      defenderContract.targetAttackLevelBonusByCategory[category]
+    );
+  };
+  const resolvedSkillCategory =
+    skill.category === "dual"
+      ? abilityAdjustedStat(
+          attacker.panelStats.physicalAttack,
+          attackStageForCategory("physical"),
+        ) >=
+        abilityAdjustedStat(
+          attacker.panelStats.magicalAttack,
+          attackStageForCategory("magical"),
+        )
+        ? "physical"
+        : "magical"
+      : skill.category;
+  const traitResolution =
+    categoryTraitResolutions[resolvedSkillCategory] ??
+    traitResolutionForCategory(resolvedSkillCategory);
   if (traitResolution.status !== "exact") {
     return unresolvedResult(skill, traitResolution);
   }
@@ -826,28 +874,18 @@ function calculateSkillResult({
     (1 + percentageAdds.reduce((sum, value) => sum + (Number(value) || 0), 0));
   const traitAdjustedPower = effectivePower;
 
-  const attackLevelStage = finiteNumber(
-    slotOverrides.attackLevelStage,
-    directionOverrides.attackLevelStage,
-    direction.attackLevelStage,
-  );
-  const defenseLevelStage = finiteNumber(
-    slotOverrides.defenseLevelStage,
-    directionOverrides.defenseLevelStage,
-    direction.defenseLevelStage,
-  );
   const baseCombatPanel = {
     attacker: {
       magicalAttack: Math.round(
         abilityAdjustedStat(
           attacker.panelStats.magicalAttack,
-          (attackLevelStage ?? 0) + traitResolution.attackLevelBonus,
+          attackStageForCategory("magical"),
         ),
       ),
       physicalAttack: Math.round(
         abilityAdjustedStat(
           attacker.panelStats.physicalAttack,
-          (attackLevelStage ?? 0) + traitResolution.attackLevelBonus,
+          attackStageForCategory("physical"),
         ),
       ),
       speed: context.attackerSpeed,
@@ -869,7 +907,10 @@ function calculateSkillResult({
     },
   };
 
-  const statKeys = statKeysForCategory(skill.category, attacker.panelStats);
+  const statKeys = statKeysForCategory(
+    resolvedSkillCategory,
+    attacker.panelStats,
+  );
   if (!statKeys) {
     return unresolvedResult(skill, {
       status: "unsupported",
@@ -1317,16 +1358,12 @@ function calculateSkillResult({
       : []),
   ].filter(Boolean);
 
-  const attackStageFor = (category) =>
-    (attackLevelStage ?? 0) +
-    traitResolution.attackLevelBonus +
-    attackerBloodline.attackLevelBonusByCategory[category] +
-    defenderBloodline.targetAttackLevelBonusByCategory[category] +
-    attackerContract.attackLevelBonusByCategory[category] +
-    defenderContract.targetAttackLevelBonusByCategory[category];
+  const attackStageFor = (category) => attackStageForCategory(category);
   const defenseStageFor = (category) =>
     (defenseLevelStage ?? 0) +
-    traitResolution.defenseLevelBonus +
+    (categoryTraitResolutions[category]?.status === "exact"
+      ? categoryTraitResolutions[category].defenseLevelBonus
+      : 0) +
     defenderBloodline.defenseLevelBonusByCategory[category] +
     attackerBloodline.targetDefenseLevelBonusByCategory[category] +
     defenderContract.defenseLevelBonusByCategory[category] +
@@ -1568,7 +1605,7 @@ function calculateDirection({
       ) ?? 0,
     ),
   );
-  const results = entries.map((entry, index) => {
+  const preliminaryResults = entries.map((entry, index) => {
     const skill = resolveEmbeddedDamageSkill(
       resolveWingExtensionSkill({
         skill: resolveSkillEntity(entry, skillsById),
@@ -1665,6 +1702,78 @@ function calculateDirection({
           executions,
         )
       : passResults[0];
+  });
+  const results = preliminaryResults.map((result, index) => {
+    const entry = entries[index];
+    const skill = resolveEmbeddedDamageSkill(
+      resolveWingExtensionSkill({
+        skill: resolveSkillEntity(entry, skillsById),
+        traits: attacker.traits,
+      }),
+    );
+    if (mode !== "four" || !isAdjacentPowerSkill(skill)) return result;
+
+    const adjacent = (adjacentIndex) => {
+      if (adjacentIndex < 0 || adjacentIndex >= entries.length) return null;
+      const adjacentEntry = entries[adjacentIndex];
+      const adjacentSkill = resolveEmbeddedDamageSkill(
+        resolveWingExtensionSkill({
+          skill: resolveSkillEntity(adjacentEntry, skillsById),
+          traits: attacker.traits,
+        }),
+      );
+      if (!adjacentSkill) return { name: "空技能槽", power: 0 };
+      if (adjacentSkill.category === "status" || adjacentSkill.category === "defense") {
+        return { name: adjacentSkill.name, power: 0 };
+      }
+      if (isAdjacentPowerSkill(adjacentSkill)) return null;
+      const adjacentResult = preliminaryResults[adjacentIndex];
+      if (
+        adjacentResult?.status !== "exact" ||
+        !Number.isFinite(Number(adjacentResult.effectivePower))
+      ) return null;
+      return {
+        name: adjacentSkill.name,
+        power: Number(adjacentResult.effectivePower),
+      };
+    };
+
+    const left = adjacent(index - 1);
+    const right = adjacent(index + 1);
+    const details = entryDetails(entry);
+    return calculateSkillResult({
+      snapshot,
+      mode,
+      skill,
+      entry: entryWithContext(entry, {
+        ...details.context,
+        ...(left
+          ? {
+              adjacentLeftDisplayedPower: left.power,
+              adjacentLeftSkillName: left.name,
+            }
+          : {}),
+        ...(right
+          ? {
+              adjacentRightDisplayedPower: right.power,
+              adjacentRightSkillName: right.name,
+            }
+          : {}),
+      }),
+      direction,
+      attacker,
+      attackerCurrentHp,
+      attackerHpPercent,
+      defender,
+      defenderCurrentHp,
+      defenderHpPercent,
+      level,
+      skillPosition: index + 1,
+      sourceMarks,
+      sourceSide,
+      targetMarks,
+      targetSide,
+    });
   });
   const selectedIndex =
     mode === "four"

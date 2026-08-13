@@ -152,6 +152,20 @@ describe("buildCalculatorViewModel", () => {
     expect(reverse.result.attackerName).toBe("水灵");
     expect(forward.result.skillResults).toHaveLength(4);
     expect(forward.result.selectedResult.totalDamage).toBeGreaterThan(0);
+    expect(forward.result.typeAnalysis.subjectName).toBe("火灵");
+    expect(forward.result.typeAnalysis.defense.weaknesses).toContainEqual({
+      type: "水",
+      multiplier: 2,
+    });
+    expect(forward.result.typeAnalysis.offense.coverage).toContainEqual({
+      type: "草",
+      multiplier: 2,
+    });
+    expect(reverse.result.typeAnalysis.subjectName).toBe("水灵");
+    expect(reverse.result.typeAnalysis.defense.weaknesses).toContainEqual({
+      type: "草",
+      multiplier: 2,
+    });
     expect(forward.selectableSpirits.map((spirit) => spirit.favoriteState)).toEqual([
       "manual",
       "complete",
@@ -165,6 +179,23 @@ describe("buildCalculatorViewModel", () => {
       traitName: "专注力",
     });
     expect(input).toEqual(state());
+  });
+
+  test("analyzes the carried four skills even while the single-skill editor is active", () => {
+    const input = state();
+    input.sides.attacker.skills.single = null;
+    input.sides.attacker.skills.four = ["fire-hit", null, null, null];
+
+    const view = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot,
+      state: input,
+    });
+
+    expect(view.result.typeAnalysis.offense.coverage).toContainEqual({
+      type: "草",
+      multiplier: 2,
+    });
   });
 
   test("returns an unresolved model when both spirits are not selected", () => {

@@ -90,7 +90,7 @@ const STATUS_EFFECTS = Object.freeze({
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     operations(context) {
       return {
-        powerPercentForAllAttacks:
+        transientPowerPercentForAllAttacks:
           context.defenseCounterSucceeded === true ? 1 : 0,
       };
     },
@@ -374,7 +374,7 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   乘风: { ownSpeedFlat: 120 },
-  示弱: { ownSpeedFlat: 150 },
+  示弱: { ownSpeedFlat: 130 },
   地陷: {
     inputs: [booleanInput("counterTriggered", "触发应对状态")],
     resolve(context) {

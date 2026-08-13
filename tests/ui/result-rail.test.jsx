@@ -307,3 +307,31 @@ test("does not invent a number when a dynamic rule still needs input", () => {
   expect(screen.getByText("需要输入当前能量")).toBeVisible();
   expect(screen.queryByText(/NaN|0.0% HP/)).not.toBeInTheDocument();
 });
+
+test("renders icon-based type analysis only when the display setting is enabled", () => {
+  const typeAnalysis = {
+    subjectName: "测试精灵",
+    defense: {
+      weaknesses: [{ type: "草", multiplier: 2 }],
+      resistances: [{ type: "火", multiplier: 0.5 }],
+    },
+    offense: {
+      coverage: [{ type: "水", multiplier: 2 }],
+      blindSpots: [{ type: "龙", multiplier: 0.5 }],
+    },
+  };
+  const { rerender } = render(
+    <ResultRail result={{ ...result, typeAnalysis }} showTypeCoverage={false} />,
+  );
+  expect(screen.queryByRole("region", { name: "属性分析" })).not.toBeInTheDocument();
+
+  rerender(
+    <ResultRail result={{ ...result, typeAnalysis }} showTypeCoverage />,
+  );
+  const panel = screen.getByRole("region", { name: "属性分析" });
+  expect(within(panel).getByText("测试精灵 · 自身防御面")).toBeVisible();
+  expect(within(panel).getByText("四技能进攻面")).toBeVisible();
+  expect(within(panel).getByRole("img", { name: "草" })).toBeVisible();
+  expect(within(panel).getByLabelText("草 2倍")).toBeVisible();
+  expect(within(panel).getByText("盲点")).toBeVisible();
+});

@@ -13,6 +13,7 @@ const PREVIEW_PAGE_SIZE = 20;
 export function SpiritPicker({
   favorite = false,
   favoriteState,
+  guideTarget,
   label,
   onFavoriteToggle,
   onSelect,
@@ -146,6 +147,7 @@ export function SpiritPicker({
   return (
     <article
       className={`spirit-picker spirit-picker--${side}`}
+      data-guide-root={guideTarget}
       onBlur={(event) => {
         if (
           !event.currentTarget.contains(event.relatedTarget) &&
@@ -160,7 +162,7 @@ export function SpiritPicker({
         <span>{label}</span>
       </div>
 
-      <div className="spirit-picker__search">
+      <div className="spirit-picker__search" data-guide-target={guideTarget}>
         <MagnifyingGlass aria-hidden="true" size={18} />
         <input
           aria-autocomplete="list"
@@ -201,6 +203,7 @@ export function SpiritPicker({
         {open ? (
           <ul
             className="spirit-picker__options"
+            data-guide-part="options"
             id={listboxId}
             onScroll={handleOptionsScroll}
             role="listbox"
@@ -245,7 +248,7 @@ export function SpiritPicker({
       </div>
 
       {selected?.id ? (
-        <div className="spirit-card">
+        <div className="spirit-card" data-guide-part="selection">
           {selected.assetUrl ? (
             <img
               alt={selected.fullName}
