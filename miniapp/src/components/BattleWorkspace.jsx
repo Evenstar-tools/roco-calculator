@@ -7,12 +7,12 @@ import {
 import Taro from "@tarojs/taro";
 import { Button, Text, View } from "@tarojs/components";
 import { restoreResultContext } from "../platform/result-interaction.js";
-import { getLegalSkillIds } from "../shared/domain/skill-loadout.js";
-import { getSpiritSkillSlotCapacity } from "../shared/domain/skill-slot-capacity.js";
 import {
   applyBattleActivation,
   applyBalanceTraitTrigger,
 } from "../shared/state/battle-activation.js";
+import { createInitialState } from "../shared/state/defaults.js";
+import { selectSpirit } from "../shared/state/calculator-session.js";
 import {
   createResultActionRecord,
   restoreResultAction,
@@ -26,6 +26,7 @@ import CombatantCard from "./CombatantCard.jsx";
 import BattleConditionStrip from "./BattleConditionStrip.jsx";
 import BattleEnvironmentEditor from "./BattleEnvironmentEditor.jsx";
 import AbilityStageEditor from "./AbilityStageEditor.jsx";
+import ActiveAbilityStageBar from "./ActiveAbilityStageBar.jsx";
 import CombatantParameterSheet from "./CombatantParameterSheet.jsx";
 import DirectionSwitch from "./DirectionSwitch.jsx";
 import MarkEditor from "./MarkEditor.jsx";
@@ -162,20 +163,33 @@ export default function BattleWorkspace({
 
   function setSpirit(side, value) {
     const preset = configPresetsBySpirit[value];
-    if (preset) {
-      store.dispatch({
-        side,
-        type: "side/apply-preset",
-        value: preset,
-      });
-      return;
-    }
-    store.dispatch({
-      type: "side/set-spirit",
+    const result = selectSpirit(store.getState(), {
+      initialState: createInitialState(snapshot),
+      personalConfiguration: preset ?? null,
       side,
-      value,
-      capacity: getSpiritSkillSlotCapacity(snapshot, value),
-      legalSkillIds: getLegalSkillIds(snapshot, value),
+      snapshot,
+      spiritId: value,
+    });
+    store.dispatch({
+      type: "state/replace",
+      value: result.state,
+    });
+  }
+
+  function resetBattleState(nextState = store.getState()) {
+    const initialState = createInitialState(snapshot);
+    return {
+      ...nextState,
+      directions: initialState.directions,
+      marks: initialState.marks,
+    };
+  }
+
+  function swapSides() {
+    store.dispatch({ type: "sides/swap" });
+    store.dispatch({
+      type: "state/replace",
+      value: resetBattleState(),
     });
   }
 
@@ -447,9 +461,7 @@ export default function BattleWorkspace({
               spirit={attacker}
               spirits={snapshot.spirits ?? []}
             />
-            <DirectionSwitch
-              onSwap={() => store.dispatch({ type: "sides/swap" })}
-            />
+            <DirectionSwitch onSwap={swapSides} />
             <CombatantCard
               active={direction === "reverse"}
               favorite={favoriteIds.includes(defender?.id)}
@@ -523,6 +535,13 @@ export default function BattleWorkspace({
           </View>
 
           <View className="workspace-section workspace-section--skills">
+            <ActiveAbilityStageBar
+              direction={direction}
+              onChange={(role, value) => updateDirection(direction, {
+                overrides: { [`${role}LevelStage`]: value },
+              })}
+              state={activeDirectionState}
+            />
             <ModeSwitch
               onChange={(value) => store.dispatch({ type: "mode/set", value })}
               value={state.mode}

@@ -263,6 +263,16 @@ describe("calculator session", () => {
     const initialState = createProductInitialState(snapshot);
     const dirtyState = {
       ...initialState,
+      marks: {
+        attacker: {
+          negative: { id: "starfall", stacks: 7 },
+          positive: { id: "defense", stacks: 2 },
+        },
+        defender: {
+          negative: { id: "starfall", stacks: 3 },
+          positive: null,
+        },
+      },
       sides: {
         ...initialState.sides,
         attacker: {
@@ -319,6 +329,7 @@ describe("calculator session", () => {
     });
     expect(result.state.directions.reverse.context).toEqual({});
     expect(result.state.directions.reverse.currentHp).toBeNull();
+    expect(result.state.marks).toEqual(initialState.marks);
   });
 
   test("replaces share configuration without a persistence intent", () => {

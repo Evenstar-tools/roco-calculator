@@ -36,9 +36,11 @@ const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
     "src/domain/wing-extension.js",
     "src/state/defaults.js",
     "src/state/battle-activation.js",
+    "src/state/calculator-session.js",
     "src/state/reducer.js",
     "src/state/spirit-configs.js",
     "src/state/storage-namespace.js",
+    "src/state/trigger-context.js",
     "src/state/trait-values.js"
   ],
   "webOnly": [

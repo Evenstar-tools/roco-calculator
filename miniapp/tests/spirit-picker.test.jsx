@@ -299,7 +299,6 @@ describe("BattleWorkspace combatants", () => {
       ],
     };
     const store = createCalculatorStore(snapshot);
-    const dispatch = vi.spyOn(store, "dispatch");
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
     const attacker = screen.getByLabelText("攻击方配置");
@@ -310,13 +309,6 @@ describe("BattleWorkspace combatants", () => {
       within(attacker).getByRole("button", { name: "选择水灵" }),
     );
 
-    expect(dispatch).toHaveBeenCalledWith({
-      capacity: 4,
-      type: "side/set-spirit",
-      side: "attacker",
-      value: "spirit-water",
-      legalSkillIds: ["skill-water"],
-    });
     expect(store.getState().sides.attacker).toMatchObject({
       spiritId: "spirit-water",
       skills: {
@@ -326,6 +318,67 @@ describe("BattleWorkspace combatants", () => {
     expect(
       store.getState().sides.attacker.skills.four.filter(Boolean),
     ).toEqual(["skill-water"]);
+  });
+
+  test("switching spirits clears transient calculation state", () => {
+    const snapshot = {
+      meta: { id: "data-v1", rulesVersion: "rules-v1" },
+      spirits,
+      skills: [
+        { id: "skill-wind" },
+        { id: "skill-water" },
+      ],
+      learnsets: [
+        { spiritId: "spirit-sonic-dog", skillIds: ["skill-wind"] },
+        { spiritId: "spirit-water", skillIds: ["skill-water"] },
+      ],
+    };
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({
+      direction: "forward",
+      type: "direction/update",
+      value: {
+        context: { balanceTriggered: true },
+        currentHp: 1,
+        hitCount: 9,
+        overrides: {
+          attackLevelStage: 8,
+          basePower: 999,
+          defenseLevelStage: -6,
+        },
+      },
+    });
+    store.dispatch({
+      direction: "reverse",
+      type: "direction/update",
+      value: {
+        context: { rainTurns: 8 },
+        currentHp: 2,
+        overrides: { attackLevelStage: 5 },
+      },
+    });
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    const attacker = screen.getByLabelText("攻击方配置");
+    fireEvent.input(within(attacker).getByLabelText("搜索攻击方宠物"), {
+      target: { value: "水灵" },
+    });
+    fireEvent.click(
+      within(attacker).getByRole("button", { name: "选择水灵" }),
+    );
+
+    expect(store.getState().directions.forward).toMatchObject({
+      context: {},
+      currentHp: null,
+      hitCount: 1,
+      overrides: {},
+    });
+    expect(store.getState().directions.reverse).toMatchObject({
+      context: {},
+      currentHp: null,
+      hitCount: 1,
+      overrides: {},
+    });
   });
 
   test("applies an imported common preset when its spirit is selected", () => {
@@ -339,7 +392,6 @@ describe("BattleWorkspace combatants", () => {
       learnsets: [],
     };
     const store = createCalculatorStore(snapshot);
-    const dispatch = vi.spyOn(store, "dispatch");
     render(
       <BattleWorkspace
         configPresetsBySpirit={{
@@ -374,11 +426,6 @@ describe("BattleWorkspace combatants", () => {
       within(attacker).getByRole("button", { name: "选择水灵" }),
     );
 
-    expect(dispatch).toHaveBeenCalledWith({
-      side: "attacker",
-      type: "side/apply-preset",
-      value: expect.objectContaining({ spiritId: "spirit-water" }),
-    });
     expect(store.getState().sides.attacker).toMatchObject({
       displayIvs: { physicalAttack: 0, speed: 60 },
       nature: "timid",
@@ -394,6 +441,15 @@ describe("BattleWorkspace combatants", () => {
       learnsets: [],
     };
     const store = createCalculatorStore(snapshot);
+    store.dispatch({
+      direction: "forward",
+      type: "direction/update",
+      value: {
+        currentHp: 1,
+        hitCount: 9,
+        overrides: { attackLevelStage: 8, basePower: 999 },
+      },
+    });
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
     fireEvent.click(screen.getByRole("button", { name: "切换攻守配置" }));
@@ -404,5 +460,10 @@ describe("BattleWorkspace combatants", () => {
     expect(attacker).toHaveTextContent("水灵");
     expect(defender).toHaveClass("combatant-card--defender");
     expect(defender).toHaveTextContent("音速犬");
+    expect(store.getState().directions.forward).toMatchObject({
+      currentHp: null,
+      hitCount: 1,
+      overrides: {},
+    });
   });
 });

@@ -381,6 +381,10 @@
 }
 
 @media (max-width: 359px) {
+  .active-ability-stage__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .page {
     padding-right: 5px;
     padding-left: 5px;

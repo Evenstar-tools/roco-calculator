@@ -273,6 +273,102 @@
   gap: 10px;
 }
 
+.active-ability-stage {
+  display: grid;
+  min-width: 0;
+  padding-bottom: 8px;
+  gap: 7px;
+  border-bottom: 1px solid var(--border-neutral);
+}
+
+.active-ability-stage__heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.active-ability-stage__title {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.active-ability-stage__direction {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.active-ability-stage__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+  gap: 7px;
+}
+
+.active-ability-stage__control {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.active-ability-stage__label {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.active-ability-stage__stepper {
+  display: grid;
+  grid-template-columns: var(--touch-target) minmax(48px, 1fr) var(--touch-target);
+  min-width: 0;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border-neutral);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.active-ability-stage__button {
+  min-width: 0;
+  min-height: var(--touch-target);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--surface-card);
+  color: var(--text-primary) !important;
+  font-size: 16px;
+  font-weight: 760;
+  line-height: var(--touch-target);
+}
+
+.active-ability-stage__button[disabled] {
+  color: var(--text-muted) !important;
+  opacity: 0.45;
+}
+
+.active-ability-stage__button--pressed {
+  background: var(--surface-pressed);
+  transform: scale(0.94);
+}
+
+.active-ability-stage__value {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--result);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 720;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .ability-stage__heading,
 .ability-stage__side-title {
   display: flex;

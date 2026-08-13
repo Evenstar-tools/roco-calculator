@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
 import SkillSlots from "../src/components/SkillSlots.jsx";
@@ -149,6 +149,25 @@ describe("mini-program desktop feature parity", () => {
     fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     fireEvent.click(screen.getByRole("button", { name: "攻击方攻击提高一级" }));
     fireEvent.click(screen.getByRole("button", { name: "防守方防御降低一级" }));
+
+    expect(store.getState().directions.forward.overrides).toMatchObject({
+      attackLevelStage: 1,
+      defenseLevelStage: -1,
+    });
+  });
+
+  test("edits the active calculation ability stages from the main workspace", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    const editor = screen.getByLabelText("当前计算能力等级");
+    fireEvent.click(within(editor).getByRole("button", {
+      name: "当前攻击等级提高一级",
+    }));
+    fireEvent.click(within(editor).getByRole("button", {
+      name: "当前防御等级降低一级",
+    }));
 
     expect(store.getState().directions.forward.overrides).toMatchObject({
       attackLevelStage: 1,
