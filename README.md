@@ -1,5 +1,7 @@
 # 洛克计算器
 
+![洛克计算器项目封面](https://opengraph.githubassets.com/rock-calculator/zhangzeyu99-web/rock-calculator)
+
 [![Checks](https://img.shields.io/badge/checks-1049%20passed-2da44e.svg)](#开发与验证)
 [![Release](https://img.shields.io/badge/release-v1.5.5-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.5.5)
 [![License](https://img.shields.io/badge/code-MIT-4c55d9.svg)](LICENSE)
