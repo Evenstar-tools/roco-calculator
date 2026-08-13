@@ -75,4 +75,17 @@ describe("miniapp production configuration preflight", () => {
     const { root } = createMiniappRoot();
     expect(runReleasePreflight(root)).toBe(true);
   });
+
+  test("uploads only the compiled mini-program instead of development sources", () => {
+    const projectConfig = JSON.parse(fs.readFileSync(
+      path.resolve("miniapp/project.config.json"),
+      "utf8",
+    ));
+
+    expect(projectConfig.miniprogramRoot).toBe("dist/");
+    expect(projectConfig.packOptions.ignore).toContainEqual({
+      type: "folder",
+      value: "src",
+    });
+  });
 });

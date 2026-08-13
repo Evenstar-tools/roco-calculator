@@ -29,7 +29,12 @@
   },
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "src"
+      }
+    ],
     "include": []
   },
   "editorSetting": {}
