@@ -68,8 +68,29 @@ const skills = runtime.skills.map((skill) => ({
     .join("|"),
 }));
 
+const skillIndexById = new Map(
+  skills.map((skill, index) => [skill.id, index]),
+);
+const learnsetBySpiritId = new Map(
+  runtime.learnsets.map((learnset) => [learnset.spiritId, learnset]),
+);
+const learnsetSkillIndexes = spirits.map((spirit) => {
+  const learnset = learnsetBySpiritId.get(spirit.id);
+  if (!learnset) throw new Error(`精灵 ${spirit.id} 缺少技能表`);
+  return learnset.skillIds.map((skillId) => {
+    const skillIndex = skillIndexById.get(skillId);
+    if (skillIndex == null) {
+      throw new Error(`技能表引用不存在的技能 ${skillId}`);
+    }
+    return skillIndex;
+  });
+});
+
+const { learnsets: _learnsets, ...runtimeWithoutLearnsets } = runtime;
+
 const bundledRuntime = {
-  ...runtime,
+  ...runtimeWithoutLearnsets,
+  learnsetSkillIndexes,
   skills,
   spirits,
 };

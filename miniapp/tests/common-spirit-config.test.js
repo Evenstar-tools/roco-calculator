@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import bundledRuntime from "../src/data/bundled-runtime.json";
+import bundledRuntimePayload from "../src/data/bundled-runtime.json";
+import { expandBundledRuntime } from "../src/data/expand-bundled-runtime.js";
 import commonSpiritConfig from "../src/data/common-spirit-config.json";
 import {
   expandBundledConfigLibrary,
@@ -9,6 +10,7 @@ import {
 } from "../src/state/config-library.js";
 
 const CONFIG_FILE = resolve(process.cwd(), "src/data/common-spirit-config.json");
+const bundledRuntime = expandBundledRuntime(bundledRuntimePayload);
 
 describe("bundled common spirit configuration", () => {
   test("contains the supplied 193-entry PVP library without sensitive fields", () => {

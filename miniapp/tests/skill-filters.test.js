@@ -6,6 +6,7 @@ import {
   filterSkillChoices,
   normalizeSkillQuery,
 } from "../src/view-models/skill-filters.js";
+import { expandBundledRuntime } from "../src/data/expand-bundled-runtime.js";
 
 const choices = [
   {
@@ -106,10 +107,10 @@ describe("skill category filters", () => {
   });
 
   test("classifies the bundled 53-skill Dimo learnset by the real project data", () => {
-    const runtime = JSON.parse(readFileSync(resolve(
+    const runtime = expandBundledRuntime(JSON.parse(readFileSync(resolve(
       process.cwd(),
       "src/data/bundled-runtime.json",
-    ), "utf8"));
+    ), "utf8")));
     const dimo = runtime.spirits.find((spirit) => spirit.fullName === "迪莫");
     const learnset = runtime.learnsets.find((entry) =>
       entry.spiritId === dimo.id

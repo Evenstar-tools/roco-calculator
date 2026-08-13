@@ -27,8 +27,11 @@ import {
 } from "../../state/config-library.js";
 import { createFavoritesRepository } from "../../state/favorites.js";
 import { createPersistence } from "../../state/persistence.js";
-import bundledRuntime from "../../data/bundled-runtime.json";
+import bundledRuntimePayload from "../../data/bundled-runtime.json";
+import { expandBundledRuntime } from "../../data/expand-bundled-runtime.js";
 import "./index.css";
+
+const bundledRuntime = expandBundledRuntime(bundledRuntimePayload);
 
 const COMMON_SPIRIT_CONFIG_JSON = JSON.stringify(
   expandBundledConfigLibrary(commonSpiritConfig),
