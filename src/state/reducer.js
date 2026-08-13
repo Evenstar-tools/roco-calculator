@@ -54,6 +54,71 @@ function cloneSkillEntry(entry) {
 
 export function calculatorReducer(state, action) {
   switch (action.type) {
+    case "battle/set-rain": {
+      const weatherRainTurns = Math.min(
+        8,
+        Math.max(0, Math.floor(Number(action.value) || 0)),
+      );
+      return {
+        ...state,
+        directions: Object.fromEntries(
+          Object.entries(state.directions).map(([direction, value]) => [
+            direction,
+            {
+              ...value,
+              context: {
+                ...(value.context ?? {}),
+                weatherRainTurns,
+              },
+            },
+          ]),
+        ),
+      };
+    }
+    case "battle/set-trait-control": {
+      const direction = requireDirection(action);
+      if (typeof action.key !== "string" || action.key.length === 0) {
+        throw new TypeError("特性控件缺少稳定标识");
+      }
+      const source = action.key.startsWith("attackerTrait.")
+        ? "attackerTrait"
+        : action.key.startsWith("defenderTrait.")
+          ? "defenderTrait"
+          : null;
+      const target = source === "attackerTrait"
+        ? "defenderTrait"
+        : source === "defenderTrait"
+          ? "attackerTrait"
+          : null;
+      const mirroredKey = target
+        ? `${target}.${action.key.slice(source.length + 1)}`
+        : null;
+      const otherDirection = direction === "forward" ? "reverse" : "forward";
+      return {
+        ...state,
+        directions: {
+          ...state.directions,
+          [direction]: {
+            ...state.directions[direction],
+            context: {
+              ...(state.directions[direction].context ?? {}),
+              [action.key]: action.value,
+            },
+          },
+          ...(mirroredKey
+            ? {
+                [otherDirection]: {
+                  ...state.directions[otherDirection],
+                  context: {
+                    ...(state.directions[otherDirection].context ?? {}),
+                    [mirroredKey]: action.value,
+                  },
+                },
+              }
+            : {}),
+        },
+      };
+    }
     case "state/replace":
       if (
         action.value === null ||
@@ -111,6 +176,7 @@ export function calculatorReducer(state, action) {
             )
           : side.skills,
         spiritId: action.value,
+        traitValues: {},
       }));
     case "side/apply-preset": {
       const member = action.value;
@@ -141,8 +207,17 @@ export function calculatorReducer(state, action) {
         nature: normalizeNatureId(member.natureId),
         skills: { four, single },
         spiritId: member.spiritId,
+        traitValues: { ...(member.traitValues ?? {}) },
       }));
     }
+    case "side/set-trait-value":
+      return updateSide(state, action, (side) => ({
+        ...side,
+        traitValues: {
+          ...(side.traitValues ?? {}),
+          [action.key]: action.value,
+        },
+      }));
     case "side/set-nature":
       return updateSide(state, action, (side) => ({
         ...side,

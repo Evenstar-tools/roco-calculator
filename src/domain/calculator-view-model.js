@@ -154,7 +154,7 @@ function finalPanelStatsForSide(calculation, sideKey) {
   };
 }
 
-export function getTraitView(snapshot, spirit, role = "attacker") {
+export function getTraitView(snapshot, spirit, role = "attacker", skills = []) {
   const traitsById = getSnapshotIndexes(snapshot).traits;
   const primaryTrait =
     spirit.traitIds?.map((traitId) => traitsById[traitId]).find(Boolean) ?? null;
@@ -174,7 +174,7 @@ export function getTraitView(snapshot, spirit, role = "attacker") {
   const skillPowerBonuses = getTraitSkillPowerBonuses(traitEntity);
   const condition = inputs.find((input) => input.type === "boolean");
   return {
-    automaticStack: getTraitAutomaticStack(traitEntity, role),
+    automaticStack: getTraitAutomaticStack(traitEntity, role, skills),
     conditionKey: condition?.id ?? null,
     conditionLabel: condition?.label ?? null,
     description: describeTraitWithSkillPowerBonuses(

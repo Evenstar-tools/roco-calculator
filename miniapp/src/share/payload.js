@@ -1,8 +1,11 @@
 import { normalizeNatureId } from "../shared/domain/natures.js";
+import { normalizeMarksState } from "../shared/domain/marks.js";
+import { getSpiritSkillSlotCapacity } from "../shared/domain/skill-slot-capacity.js";
 import { createInitialState } from "../shared/state/defaults.js";
+import { extractTraitValues } from "../shared/state/trait-values.js";
 import { sanitizePublicContext } from "./context-schema.js";
 
-const SHARE_VERSION = 1;
+const SHARE_VERSION = 2;
 const MAX_ENCODED_LENGTH = 899;
 const BASE64_ALPHABET =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -20,6 +23,14 @@ function safeIdentifier(value) {
     /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/u.test(value)
     ? value
     : null;
+}
+
+function isCompactTraitValue(value) {
+  return (
+    typeof value === "boolean" ||
+    typeof value === "number" && Number.isFinite(value) ||
+    typeof value === "string" && safeIdentifier(value) !== null
+  );
 }
 
 function finiteInRange(value, minimum, maximum, fallback) {
@@ -90,19 +101,54 @@ function compactSkill(entry) {
   return Object.keys(compact).length === 1 ? skillId : compact;
 }
 
+function compactTraitValues(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+  const compact = {};
+  for (const [key, candidate] of Object.entries(value)) {
+    if (
+      !/^trait\.[A-Za-z0-9_.:-]{1,63}$/u.test(key) ||
+      !isCompactTraitValue(candidate)
+    ) {
+      continue;
+    }
+    compact[key.slice("trait.".length)] = candidate;
+    if (Object.keys(compact).length === 16) break;
+  }
+  return Object.keys(compact).length ? compact : undefined;
+}
+
 function compactSide(side) {
   const ivs = STAT_KEYS.map((key) =>
     integerInRange(side?.displayIvs?.[key], 0, 60, 60),
   );
-  return {
+  const capacity = Math.min(
+    7,
+    Math.max(4, Number(side?.skills?.four?.length) || 4),
+  );
+  const compact = {
     s: safeIdentifier(side?.spiritId),
     n: safeIdentifier(side?.nature) ?? "neutral",
     i: ivs,
     u: compactSkill(side?.skills?.single),
-    k: Array.from({ length: 4 }, (_, index) =>
+    k: Array.from({ length: capacity }, (_, index) =>
       compactSkill(side?.skills?.four?.[index]),
     ),
   };
+  const traitValues = compactTraitValues(side?.traitValues);
+  if (traitValues) compact.t = traitValues;
+  return compact;
+}
+
+function compactMarks(value, legacyDirections) {
+  const marks = normalizeMarksState(value, legacyDirections);
+  return ["attacker", "defender"].map((side) => [
+    marks[side].positive.id,
+    marks[side].positive.stacks,
+    marks[side].negative.id,
+    marks[side].negative.stacks,
+  ]);
 }
 
 function compactDirection(direction) {
@@ -110,7 +156,7 @@ function compactDirection(direction) {
   const selectedSkillIndex = integerInRange(
     direction?.selectedSkillIndex,
     0,
-    3,
+    6,
     0,
   );
   const reduction = finiteInRange(direction?.reduction, 0, 1, 1);
@@ -254,12 +300,32 @@ function fitPayload(payload) {
     }
   }
 
+  for (const side of [payload.a, payload.d]) {
+    for (const key of Object.keys(side.t ?? {}).reverse()) {
+      delete side.t[key];
+      if (Object.keys(side.t).length === 0) delete side.t;
+      encoded = toBase64Url(JSON.stringify(payload));
+      if (encoded.length <= MAX_ENCODED_LENGTH) return encoded;
+    }
+  }
+
   return toBase64Url(
     JSON.stringify({
       v: SHARE_VERSION,
       m: payload.m,
-      a: { s: payload.a.s, n: payload.a.n, i: payload.a.i },
-      d: { s: payload.d.s, n: payload.d.n, i: payload.d.i },
+      a: {
+        s: payload.a.s,
+        n: payload.a.n,
+        i: payload.a.i,
+        ...(payload.a.t ? { t: payload.a.t } : {}),
+      },
+      d: {
+        s: payload.d.s,
+        n: payload.d.n,
+        i: payload.d.i,
+        ...(payload.d.t ? { t: payload.d.t } : {}),
+      },
+      z: payload.z,
     }),
   );
 }
@@ -272,6 +338,7 @@ export function encodeSharePayload(state) {
     d: compactSide(state?.sides?.defender),
     f: compactDirection(state?.directions?.forward),
     r: compactDirection(state?.directions?.reverse),
+    z: compactMarks(state?.marks, state?.directions),
   };
   return fitPayload(payload);
 }
@@ -320,7 +387,29 @@ function expandSkill(entry, allowedSkillIds) {
   return Object.keys(result).length === 1 ? skillId : result;
 }
 
-function expandSide(raw, fallback, snapshot, spiritIds, skillIds) {
+function expandTraitValues(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(
+        ([key, candidate]) =>
+          /^[A-Za-z0-9_.:-]{1,63}$/u.test(key) &&
+          isCompactTraitValue(candidate),
+      )
+      .map(([key, candidate]) => [`trait.${key}`, candidate]),
+  );
+}
+
+function expandSide(
+  raw,
+  fallback,
+  snapshot,
+  spiritIds,
+  skillIds,
+  includeTraitValues,
+) {
   const requestedSpiritId = safeIdentifier(raw?.s);
   const spiritId =
     requestedSpiritId && spiritIds.has(requestedSpiritId)
@@ -331,9 +420,10 @@ function expandSide(raw, fallback, snapshot, spiritIds, skillIds) {
     spiritId,
     skillIds,
   );
+  const capacity = getSpiritSkillSlotCapacity(snapshot, spiritId);
   const ivs = Array.isArray(raw?.i) ? raw.i : [];
   const four = Array.isArray(raw?.k)
-    ? Array.from({ length: 4 }, (_, index) =>
+    ? Array.from({ length: capacity }, (_, index) =>
         expandSkill(raw.k[index], allowedSkillIds),
       )
     : [...fallback.skills.four];
@@ -341,7 +431,7 @@ function expandSide(raw, fallback, snapshot, spiritIds, skillIds) {
     ? expandSkill(raw.u, allowedSkillIds)
     : fallback.skills.single;
 
-  return {
+  const expanded = {
     ...fallback,
     displayIvs: Object.fromEntries(
       STAT_KEYS.map((key, index) => [
@@ -358,6 +448,18 @@ function expandSide(raw, fallback, snapshot, spiritIds, skillIds) {
     skills: { four, single },
     spiritId,
   };
+  return {
+    ...expanded,
+    traitValues: extractTraitValues(
+      {
+        ...expanded,
+        traitValues: expandTraitValues(
+          includeTraitValues ? raw?.t : undefined,
+        ),
+      },
+      snapshot,
+    ),
+  };
 }
 
 function expandDirection(raw, fallback) {
@@ -367,7 +469,7 @@ function expandDirection(raw, fallback) {
       : finiteInRange(raw.p, 0, 99999, null);
   return {
     ...fallback,
-    selectedSkillIndex: integerInRange(raw?.x, 0, 3, 0),
+    selectedSkillIndex: integerInRange(raw?.x, 0, 6, 0),
     reduction: finiteInRange(raw?.q, 0, 1, 1),
     hitCount: integerInRange(raw?.h, 1, 100, 1),
     starfallStacks: integerInRange(raw?.s, 0, 100, 0),
@@ -376,6 +478,25 @@ function expandDirection(raw, fallback) {
     context: sanitizePublicContext(raw?.c) ?? {},
     overrides: expandOverrides(raw?.o) ?? {},
   };
+}
+
+function expandMarks(raw, legacyDirections) {
+  if (!Array.isArray(raw)) {
+    return normalizeMarksState(undefined, legacyDirections);
+  }
+  const value = Object.fromEntries(
+    ["attacker", "defender"].map((side, index) => {
+      const compact = Array.isArray(raw[index]) ? raw[index] : [];
+      return [
+        side,
+        {
+          positive: { id: compact[0], stacks: compact[1] },
+          negative: { id: compact[2], stacks: compact[3] },
+        },
+      ];
+    }),
+  );
+  return normalizeMarksState(value, legacyDirections);
 }
 
 export function decodeSharePayload(encoded, snapshot) {
@@ -387,7 +508,7 @@ export function decodeSharePayload(encoded, snapshot) {
       !payload ||
       typeof payload !== "object" ||
       Array.isArray(payload) ||
-      payload.v !== SHARE_VERSION
+      (payload.v !== 1 && payload.v !== SHARE_VERSION)
     ) {
       return {};
     }
@@ -395,9 +516,20 @@ export function decodeSharePayload(encoded, snapshot) {
     const fallback = createInitialState(snapshot ?? {});
     const spiritIds = validIds(snapshot, "spirits");
     const skillIds = validIds(snapshot, "skills");
+    const directions = {
+      forward: expandDirection(
+        payload.f,
+        fallback.directions.forward,
+      ),
+      reverse: expandDirection(
+        payload.r,
+        fallback.directions.reverse,
+      ),
+    };
     return {
       ...fallback,
       mode: payload.m === "four" ? "four" : "single",
+      marks: expandMarks(payload.v === 2 ? payload.z : undefined, directions),
       sides: {
         attacker: expandSide(
           payload.a,
@@ -405,6 +537,7 @@ export function decodeSharePayload(encoded, snapshot) {
           snapshot,
           spiritIds,
           skillIds,
+          payload.v === SHARE_VERSION,
         ),
         defender: expandSide(
           payload.d,
@@ -412,18 +545,10 @@ export function decodeSharePayload(encoded, snapshot) {
           snapshot,
           spiritIds,
           skillIds,
+          payload.v === SHARE_VERSION,
         ),
       },
-      directions: {
-        forward: expandDirection(
-          payload.f,
-          fallback.directions.forward,
-        ),
-        reverse: expandDirection(
-          payload.r,
-          fallback.directions.reverse,
-        ),
-      },
+      directions,
     };
   } catch {
     return {};

@@ -60,6 +60,23 @@ npm run build
 
 将 `dist/client/` 作为静态站点目录部署到任意服务器即可。运行时不依赖 ChatGPT 登录或外部计算服务。
 
+### 微信小程序生产构建
+
+完整计算数据随小程序本地打包，不需要购买或开通微信云开发。微信开发者
+工具导入项目后，生产构建会优先读取 `miniapp/project.config.json` 中的真实
+AppID；也可以复制 `miniapp/local.config.example.json` 为被 Git 忽略的
+`miniapp/local.config.json` 并填写 AppID。不要填写 AppSecret，也不要把本地
+配置加入版本控制。
+
+```bash
+npm run miniapp:build:prod
+```
+
+微信开发者工具导入目录为仓库内的 `miniapp/`；`project.config.json` 已将
+`miniprogramRoot` 固定为 `dist/`。生产门禁完成本地构建、安全扫描、2 MiB
+包体和版本校验，并把 AppID 注入 `dist/project.config.json` 后核对一致性。
+该命令不会预览、上传、送审或发布小程序。
+
 ## 操作流程
 
 1. 选择攻击方和防御方精灵。
@@ -96,6 +113,7 @@ npm run desktop:pack
 | `npm test` | 运行单元与集成测试 |
 | `npm run miniapp:test` | 运行微信小程序共享核心与界面测试 |
 | `npm run miniapp:build` | 同步共享核心并构建微信小程序 |
+| `npm run miniapp:build:prod` | 使用本地私有配置构建并校验微信小程序生产产物 |
 | `npm run e2e` | 运行 Chromium 端到端测试 |
 | `npm run build` | 生成静态站点并校验产物体积预算 |
 | `npm run performance:verify` | 单独校验当前静态产物体积预算 |

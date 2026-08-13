@@ -28,6 +28,7 @@ const WISH_POWER_SKILLS = Object.freeze(
       "取物攻与魔攻中较高的一项；目标本回合使用状态技能时，威力×2.5且必定先手。",
     id: `calculator_wish_power_${suffix}`,
     name: "愿力冲击",
+    pickerVisibility: "search-only",
     searchText: "愿力冲击|yuanlichongji|ylcj",
     provenance: {
       ruleId: "rock-calculator:reviewed-special-skill-2026-07-24",

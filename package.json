@@ -31,6 +31,8 @@
     "test:core-drift": "node scripts/miniapp/check-core-drift.mjs",
     "miniapp:test": "npm run test:core-drift && npm --prefix miniapp test -- --run",
     "miniapp:build": "npm run miniapp:sync-core && npm run test:core-drift && npm --prefix miniapp run build:weapp -- --mode development",
+    "miniapp:build:prod": "node scripts/miniapp/verify-release.mjs --preflight && npm run miniapp:sync-core && npm run test:core-drift && npm --prefix miniapp run build:weapp -- --mode production && node scripts/miniapp/verify-release.mjs",
+    "miniapp:portrait-probe": "node scripts/miniapp/verify-portrait-layout.mjs",
     "e2e": "playwright test",
     "data:build": "node scripts/bwiki/build-snapshot.mjs",
     "data:runtime": "node scripts/runtime-snapshot.mjs public/data/current.json public/data/runtime.json public/assets/spirits/manifest.json",
@@ -42,6 +44,8 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@babel/parser": "7.29.7",
+    "@babel/traverse": "7.29.7",
     "@playwright/test": "1.55.1",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.2",
@@ -51,6 +55,7 @@
     "electron": "43.3.0",
     "electron-builder": "^26.15.3",
     "jsdom": "26.1.0",
+    "miniprogram-automator": "0.12.1",
     "pinyin-pro": "3.28.2",
     "vite": "6.4.3",
     "vitest": "3.2.7"

@@ -1,6 +1,9 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
+import SkillConditionEditor from "../src/components/SkillConditionEditor.jsx";
+import SkillPicker from "../src/components/SkillPicker.jsx";
+import SkillSlots from "../src/components/SkillSlots.jsx";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
 
 function createSnapshot() {
@@ -93,6 +96,322 @@ function createSnapshot() {
 }
 
 describe("mini program skill workflow", () => {
+  test("filters the skill sheet by category and search with reversible state", () => {
+    const onChange = vi.fn();
+    const choices = [
+      {
+        basePower: 60,
+        category: "magical",
+        cost: 1,
+        id: "flash",
+        name: "闪光",
+        searchText: "闪光|光|shanguang|sg",
+        type: "光",
+      },
+      {
+        basePower: 65,
+        category: "physical",
+        cost: 1,
+        id: "slam",
+        name: "猛烈撞击",
+        type: "普通",
+      },
+      {
+        basePower: 80,
+        category: "physical",
+        cost: 2,
+        id: "fire-arrow",
+        name: "火焰箭",
+        type: "火",
+      },
+      {
+        basePower: 0,
+        category: "status",
+        cost: 0,
+        id: "boost",
+        name: "魔法增效",
+        type: "普通",
+      },
+      {
+        basePower: 0,
+        category: "defense",
+        cost: 1,
+        id: "guard",
+        name: "防御",
+        type: "普通",
+      },
+    ];
+
+    const { rerender } = render(
+      <SkillPicker
+        choices={choices}
+        label="攻击方技能 1"
+        onChange={onChange}
+        value="flash"
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "选择攻击方技能 1" }));
+    let dialog = screen.getByRole("dialog", { name: "攻击方技能 1选项" });
+    const search = within(dialog).getByLabelText("搜索攻击方技能 1");
+    expect(search).not.toHaveAttribute("autofocus");
+    expect(search).toHaveAttribute("data-adjust-position", "false");
+    expect(search).toHaveAttribute("data-keyboard-height-handler", "true");
+    expect(within(dialog).getByAltText("搜索")).toHaveAttribute(
+      "src",
+      expect.stringContaining("search.png"),
+    );
+    expect(within(dialog).getByRole("button", {
+      name: "筛选全部技能，共 5 项",
+    })).toHaveAttribute("aria-pressed", "true");
+    expect(within(dialog).getByRole("button", {
+      name: "筛选物理技能，共 2 项",
+    })).toHaveAttribute("aria-pressed", "false");
+    expect(within(dialog).getByAltText("当前已选技能")).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole("button", {
+      name: "筛选物理技能，共 2 项",
+    }));
+    expect(within(dialog).getByText("物理 2 项")).toBeInTheDocument();
+    expect(within(dialog).getByRole("button", { name: /猛烈撞击/u })).toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: /闪光/u })).not.toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole("button", {
+      name: "筛选物理技能，共 2 项",
+    }));
+    expect(within(dialog).getByText("共 5 项")).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole("button", {
+      name: "筛选魔法技能，共 1 项",
+    }));
+    fireEvent.input(search, { target: { value: "sg" } });
+    expect(within(dialog).getByText("魔法 1 项")).toBeInTheDocument();
+    expect(within(dialog).getByRole("button", { name: /闪光/u })).toBeInTheDocument();
+
+    fireEvent.input(search, { target: { value: "不存在" } });
+    expect(within(dialog).getByText("当前筛选无结果")).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole("button", { name: "清除筛选" }));
+    expect(search).toHaveValue("");
+    expect(within(dialog).getByText("共 5 项")).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole("button", { name: /猛烈撞击/u }));
+    expect(onChange).toHaveBeenCalledWith("slam");
+    expect(screen.queryByRole("dialog", { name: "攻击方技能 1选项" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "选择攻击方技能 1" }));
+    dialog = screen.getByRole("dialog", { name: "攻击方技能 1选项" });
+    expect(within(dialog).getByText("共 5 项")).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole("button", {
+      name: "筛选物理技能，共 2 项",
+    }));
+
+    rerender(
+      <SkillPicker
+        choices={choices.filter((skill) => skill.category !== "physical")}
+        label="攻击方技能 1"
+        onChange={onChange}
+        value="flash"
+      />,
+    );
+    dialog = screen.getByRole("dialog", { name: "攻击方技能 1选项" });
+    expect(within(dialog).queryByRole("button", {
+      name: /筛选物理技能/u,
+    })).not.toBeInTheDocument();
+    expect(within(dialog).getByRole("button", {
+      name: "筛选全部技能，共 3 项",
+    })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("filters skills in a searchable dialog and makes the selected choice explicit", () => {
+    const onChange = vi.fn();
+    const choices = [
+      {
+        basePower: 80,
+        category: "physical",
+        id: "skill-a",
+        name: "烈焰冲击",
+        type: "火",
+      },
+      {
+        basePower: 70,
+        category: "magical",
+        id: "skill-b",
+        name: "潮汐冲击",
+        type: "水",
+      },
+    ];
+
+    render(
+      <SkillPicker
+        choices={choices}
+        label="攻击方技能 1"
+        onChange={onChange}
+        value="skill-a"
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "选择攻击方技能 1" }),
+    );
+    const dialog = screen.getByRole("dialog", {
+      name: "攻击方技能 1选项",
+    });
+    expect(screen.getByLabelText("搜索攻击方技能 1")).toBeInTheDocument();
+    const selectedOption = within(dialog).getByRole("button", {
+      name: /烈焰冲击/,
+    });
+    expect(selectedOption).toHaveAttribute("aria-pressed", "true");
+    expect(selectedOption).not.toHaveTextContent(/选择|已选/u);
+
+    fireEvent.input(screen.getByLabelText("搜索攻击方技能 1"), {
+      target: { value: "魔法" },
+    });
+
+    expect(
+      within(dialog).queryByRole("button", { name: /烈焰冲击/ }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: /潮汐冲击/ }),
+    );
+
+    expect(onChange).toHaveBeenCalledWith("skill-b");
+    expect(
+      screen.queryByRole("dialog", { name: "攻击方技能 1选项" }),
+    ).not.toBeInTheDocument();
+  });
+
+  test("does not count search-only calculator skills until the user searches", () => {
+    const choices = [
+      {
+        category: "physical",
+        id: "skill-a",
+        name: "抓挠",
+        type: "普通",
+      },
+      {
+        category: "dual",
+        id: "calculator_wish_power_light",
+        name: "愿力冲击",
+        pickerVisibility: "search-only",
+        searchText: "愿力冲击|yuanlichongji|ylcj",
+        type: "光",
+      },
+    ];
+
+    render(
+      <SkillPicker
+        choices={choices}
+        label="攻击方技能 1"
+        onChange={() => {}}
+        value="skill-a"
+      />,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "选择攻击方技能 1" }),
+    );
+    expect(screen.getByText("共 1 项", { exact: true })).toBeInTheDocument();
+    expect(screen.queryByText("愿力冲击")).not.toBeInTheDocument();
+
+    fireEvent.input(screen.getByLabelText("搜索攻击方技能 1"), {
+      target: { value: "愿力冲击" },
+    });
+    expect(screen.getByText("1 项匹配", { exact: true })).toBeInTheDocument();
+    expect(screen.getByText("愿力冲击", { exact: true })).toBeInTheDocument();
+  });
+
+  test("lets an empty skill prompt use the full trigger width", () => {
+    render(
+      <SkillPicker
+        choices={[]}
+        label="攻击方单技能"
+        onChange={() => {}}
+        value={null}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "选择攻击方单技能" }),
+    ).toHaveClass("skill-picker__trigger--empty");
+  });
+
+  test("shows the calculated skill when it is absent from the learnset choices", () => {
+    const snapshot = createSnapshot();
+    const initialState = createCalculatorStore(snapshot).getState();
+    snapshot.learnsets = snapshot.learnsets.map((entry) =>
+      entry.spiritId === "spirit-a"
+        ? { ...entry, skillIds: [] }
+        : entry
+    );
+    const store = createCalculatorStore(snapshot, initialState);
+
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    const trigger = screen.getByRole("button", {
+      name: "选择攻击方单技能",
+    });
+    expect(trigger).toHaveTextContent("烈焰冲击");
+    expect(trigger).toHaveTextContent("物理");
+    expect(trigger).toHaveTextContent("威力 80");
+    expect(within(trigger).getByAltText("火系图标")).toBeInTheDocument();
+    expect(screen.queryByText("请选择技能")).not.toBeInTheDocument();
+  });
+
+  test("keeps calculated skill names visible when a bundled choice is unavailable", () => {
+    render(
+      <SkillSlots
+        choices={[]}
+        fallbackSkills={[
+          {
+            basePower: 35,
+            category: "physical",
+            cost: 0,
+            name: "抓挠",
+            type: "火",
+          },
+        ]}
+        label="攻击方"
+        onChange={() => {}}
+        onSelect={() => {}}
+        rows={[
+          {
+            hpPercent: 6.3,
+            skillName: "抓挠",
+            status: "exact",
+            totalDamage: 27,
+          },
+        ]}
+        selectedIndex={0}
+        values={["skill-grab"]}
+      />,
+    );
+
+    expect(screen.getByText("抓挠")).toBeInTheDocument();
+    expect(screen.getByText("物理")).toBeInTheDocument();
+    expect(screen.getByText("威力 35")).toBeInTheDocument();
+    expect(screen.getByText("能量 0")).toBeInTheDocument();
+    expect(screen.getByAltText("火系图标")).toBeInTheDocument();
+  });
+
+  test("writes a status skill input to the context", () => {
+    const onContextChange = vi.fn();
+
+    render(
+      <SkillConditionEditor
+        context={{}}
+        direction={{ hitCount: 1, overrides: {} }}
+        onContextChange={onContextChange}
+        onDirectionChange={() => {}}
+        skill={{ name: "放晴" }}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "应对防御成功" }));
+
+    expect(onContextChange).toHaveBeenCalledWith({
+      counterDefenseSucceeded: true,
+    });
+  });
+
   test("switches to four-skill mode and dispatches legal slot changes", () => {
     const snapshot = createSnapshot();
     const store = createCalculatorStore(snapshot);
@@ -108,10 +427,21 @@ describe("mini program skill workflow", () => {
       screen.getByRole("button", { name: "四技能模式" }),
     );
     expect(store.getState().mode).toBe("four");
+    const attackerSkills = screen.getByLabelText("攻击方技能面板");
+    expect(
+      within(attackerSkills).getByRole("button", {
+        name: /查看烈焰冲击伤害 96 20\.2% HP/u,
+      }),
+    ).toHaveClass("skill-result-row__result--selected");
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "选择攻击方技能 2" }),
+    const secondSkillTrigger = screen.getByRole("button", {
+      name: "选择攻击方技能 2",
+    });
+    expect(secondSkillTrigger).not.toHaveClass(
+      "skill-picker__trigger--expanded",
     );
+    fireEvent.click(secondSkillTrigger);
+    expect(secondSkillTrigger).toHaveClass("skill-picker__trigger--expanded");
     const picker = screen.getByLabelText("攻击方技能 2选项");
     expect(
       within(picker).queryByRole("button", { name: /不可学习/ }),
@@ -120,6 +450,7 @@ describe("mini program skill workflow", () => {
       within(picker).getByRole("button", { name: /闪燃/ }),
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     fireEvent.click(screen.getByRole("button", { name: "触发应对" }));
     fireEvent.input(screen.getByLabelText("手动威力"), {
       target: { value: "95" },
@@ -150,6 +481,7 @@ describe("mini program skill workflow", () => {
     });
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     fireEvent.click(screen.getByRole("button", { name: "连击成长" }));
     expect(
       store.getState().directions.forward.context.flightMode,

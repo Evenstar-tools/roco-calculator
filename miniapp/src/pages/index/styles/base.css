@@ -1,0 +1,256 @@
+/*postcss-pxtransform disable*/
+
+page,
+body,
+#app {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  background: #f4f2ed;
+  color: #1d252d;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea {
+  box-sizing: border-box;
+  color: inherit;
+  font: inherit;
+}
+
+button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: inherit;
+}
+
+button::after {
+  border: 0;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #287db6;
+  outline-offset: 2px;
+}
+
+.button-hover {
+  opacity: 0.82;
+  transform: scale(0.98);
+}
+
+.page {
+  min-width: 320px;
+  min-height: 100vh;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 12px calc(20px + var(--safe-area-bottom));
+  overflow-x: hidden;
+  background: var(--surface-page);
+}
+
+.app-header-shell {
+  position: relative;
+  z-index: 20;
+  max-width: 1240px;
+  margin: 0 auto 12px;
+}
+
+.app-header-shell--settings-open {
+  z-index: 110;
+}
+
+.app-header {
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.app-header__identity {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.app-header__title {
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 21px;
+  font-weight: 720;
+  letter-spacing: -0.35px;
+  white-space: nowrap;
+}
+
+.app-header__version {
+  color: var(--text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.app-header__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.app-header__action,
+.state-card__action {
+  display: flex;
+  min-height: var(--touch-target);
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-control);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.app-header__action--expanded {
+  border-color: var(--result);
+  background: var(--result);
+  color: #fff;
+}
+
+.battle-workspace,
+.workspace-layout,
+.workspace-layout__main,
+.configuration-grid,
+.skills-grid {
+  min-width: 0;
+}
+
+.battle-workspace {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.workspace-layout {
+  display: grid;
+  gap: 12px;
+}
+
+.workspace-layout__main {
+  display: grid;
+  gap: 12px;
+}
+
+.workspace-section {
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.calculation-direction--a11y {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.state-card {
+  display: grid;
+  max-width: 560px;
+  margin: 80px auto;
+  padding: 28px;
+  gap: 10px;
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.state-card__eyebrow {
+  color: var(--defender);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.state-card__title {
+  font-size: 22px;
+  font-weight: 750;
+}
+
+.state-card__message {
+  color: var(--text-secondary);
+}
+
+.state-card__progress {
+  height: 4px;
+  overflow: hidden;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--result-soft);
+}
+
+.state-card__progress-fill {
+  width: 30%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--success);
+}
+
+.state-card--error {
+  border-top: 3px solid var(--danger);
+}
+
+.state-card__action {
+  justify-self: start;
+  margin-top: 8px;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.element-icon,
+.stat-icon,
+.combatant-card__image,
+.spirit-picker__result-image,
+.direction-switch__icon {
+  display: block;
+  object-fit: contain;
+}
+
+.element-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+}
+
+.stat-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.stat-icon > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  object-fit: contain;
+  transform: none;
+}

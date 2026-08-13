@@ -16,3 +16,5 @@ data/sources/
 .env
 .env.*
 !.env.example
+miniapp/local.config.json
+miniapp/project.private.config.json

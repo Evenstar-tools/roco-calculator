@@ -17,6 +17,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    include: ["tests/**/*.{test,spec}.{js,jsx,ts,tsx}"],
     setupFiles: [
       fileURLToPath(new URL("./vitest.setup.js", import.meta.url))
     ]

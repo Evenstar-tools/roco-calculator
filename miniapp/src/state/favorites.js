@@ -47,6 +47,10 @@ export function createFavoritesRepository({ storage }) {
   }
 
   return {
+    list() {
+      return [...favoriteIds];
+    },
+
     load(snapshot) {
       validIds = new Set(
         (snapshot?.spirits ?? []).map((spirit) => spirit.id),
@@ -83,6 +87,16 @@ export function createFavoritesRepository({ storage }) {
         ? favoriteIds.filter((id) => id !== spiritId)
         : [...favoriteIds, spiritId];
       return persist();
+    },
+
+    replace(ids) {
+      const nextIds = uniqueKnownIds(
+        Array.isArray(ids) ? ids : [],
+        validIds,
+      );
+      storage.set(MINIAPP_FAVORITES_KEY, nextIds);
+      favoriteIds = nextIds;
+      return [...favoriteIds];
     },
 
     clear() {

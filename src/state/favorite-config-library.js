@@ -481,11 +481,29 @@ export function applyFavoriteConfigLibraryImport({
     const favorites = favoritesRepository.replace(nextFavorites);
     return { configs, favorites, preview: parsed.preview };
   } catch (error) {
+    const rollbackErrors = [];
     try {
       spiritConfigsRepository.replace(beforeConfigs, snapshot);
+    } catch (rollbackError) {
+      rollbackErrors.push(new Error(
+        `精灵配置回滚失败：${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}`,
+        { cause: rollbackError },
+      ));
+    }
+    try {
       favoritesRepository.replace(beforeFavorites);
-    } catch {
-      // 保留原始写入错误，调用方会提示用户并保留备份。
+    } catch (rollbackError) {
+      rollbackErrors.push(new Error(
+        `收藏回滚失败：${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}`,
+        { cause: rollbackError },
+      ));
+    }
+    if (rollbackErrors.length > 0) {
+      throw new AggregateError(
+        [error, ...rollbackErrors],
+        `配置库导入失败：${error instanceof Error ? error.message : String(error)}；${rollbackErrors.map((failure) => failure.message).join("；")}`,
+        { cause: error },
+      );
     }
     throw error;
   }

@@ -1,0 +1,243 @@
+/*postcss-pxtransform disable*/
+
+.battle-workspace__duel {
+  display: grid;
+  align-items: stretch;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.combatant-card {
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--border-neutral);
+  border-radius: 12px;
+  background: var(--surface-muted);
+  overflow: visible;
+}
+
+.combatant-card--attacker {
+  --side-color: var(--attacker);
+  --side-soft: var(--attacker-soft);
+}
+
+.combatant-card--defender {
+  --side-color: var(--defender);
+  --side-soft: var(--defender-soft);
+}
+
+.combatant-card--active {
+  border-color: var(--side-color);
+  background: var(--side-soft);
+  box-shadow: inset 0 -3px 0 var(--side-color);
+}
+
+.combatant-card__summary {
+  display: flex;
+  min-width: 0;
+  min-height: 92px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 11px;
+  cursor: pointer;
+}
+
+.combatant-card__image {
+  width: 68px;
+  height: 68px;
+  flex: 0 0 68px;
+}
+
+.combatant-card__identity {
+  display: grid;
+  min-width: 0;
+  align-content: center;
+  gap: 2px;
+}
+
+.combatant-card__label {
+  color: var(--side-color);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.combatant-card__name {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 760;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.combatant-card__types {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.combatant-card__types .element-icon {
+  width: 16px;
+  height: 16px;
+  flex-basis: 16px;
+}
+
+.favorite-button {
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  padding: 0 10px;
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-control);
+  background: var(--surface-card);
+  color: var(--text-secondary);
+}
+
+.favorite-button--active {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.direction-switch {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+}
+
+.direction-switch__copy {
+  display: none;
+}
+
+.direction-switch__button {
+  display: flex;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-neutral);
+  border-radius: 50%;
+  background: var(--surface-muted);
+}
+
+.direction-switch__icon {
+  width: 22px;
+  height: 22px;
+}
+
+.direction-switch__icon > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: none;
+}
+
+.configuration-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.side-configuration {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border-neutral);
+  border-top: 3px solid transparent;
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.side-configuration--attacker {
+  --side-color: var(--attacker);
+  --side-soft: var(--attacker-soft);
+}
+
+.side-configuration--defender {
+  --side-color: var(--defender);
+  --side-soft: var(--defender-soft);
+}
+
+.side-configuration--active {
+  border-top-color: var(--side-color);
+}
+
+.side-configuration__heading {
+  display: flex;
+  width: 100%;
+  min-height: var(--touch-target);
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--side-color);
+  font-weight: 720;
+  text-align: left;
+}
+
+.stat-grid {
+  display: grid;
+  gap: 6px;
+}
+
+.stat-grid__item {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: var(--touch-target);
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-neutral);
+  border-radius: 9px;
+  background: var(--surface-muted);
+  text-align: left;
+}
+
+.stat-grid__item--raised {
+  border-color: #70b892;
+  background: var(--success-soft);
+}
+
+.stat-grid__item--lowered {
+  border-color: #dda09b;
+  background: var(--attacker-soft);
+}
+
+.stat-grid__copy {
+  display: grid;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.stat-grid__label {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.stat-grid__value {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 760;
+}
+
+.stat-grid__nature {
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  color: var(--side-color);
+  font-size: 11px;
+  font-weight: 800;
+}

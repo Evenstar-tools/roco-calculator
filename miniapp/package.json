@@ -1,14 +1,15 @@
 {
   "name": "rock-calculator-miniapp",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "scripts": {
     "build:h5": "node --no-deprecation ./scripts/run-taro.cjs build --type h5",
     "build:weapp": "node --no-deprecation ./scripts/run-taro.cjs build --type weapp",
     "dev:h5": "node --no-deprecation ./scripts/run-taro.cjs build --type h5 --watch",
-    "prebuild:h5": "node ../scripts/miniapp/sync-core.mjs",
-    "prebuild:weapp": "node ../scripts/miniapp/sync-core.mjs",
-    "predev:h5": "node ../scripts/miniapp/sync-core.mjs",
+    "prebuild:h5": "node ../scripts/miniapp/build-bundled-runtime.mjs && node ../scripts/miniapp/sync-core.mjs",
+    "prebuild:weapp": "node ../scripts/miniapp/build-bundled-runtime.mjs && node ../scripts/miniapp/sync-core.mjs",
+    "postbuild:weapp": "node ../scripts/miniapp/minify-weapp-assets.mjs",
+    "predev:h5": "node ../scripts/miniapp/build-bundled-runtime.mjs && node ../scripts/miniapp/sync-core.mjs",
     "sync:core": "node ../scripts/miniapp/sync-core.mjs",
     "test": "vitest"
   },

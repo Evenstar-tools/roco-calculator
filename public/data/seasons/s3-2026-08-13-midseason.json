@@ -10,15 +10,8 @@
       "skillFilter": 40653
     },
     "fetchedAt": "2026-07-23T13:54:31.332Z",
-    "contentSha256": "3a2e6b8c64a1d7ad147daa4cf8aed3a3cddf3f50501263cf6a76baf982a69c03",
+    "contentSha256": "a2df0b97c809ba10962be5eb8d68aaf9c2ecf1076195ee168e3295682b75ec63",
     "sources": [
-      {
-        "title": "精灵筛选",
-        "url": "https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E7%AD%9B%E9%80%89",
-        "revision": 41360,
-        "fetchedAt": "2026-07-23T13:54:31.648Z",
-        "sha256": "e1dc235b3d2a7f24f7e4e06f21b7ce6186f5c8265eb82b761124ce862ab1e8f8"
-      },
       {
         "title": "技能筛选",
         "url": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E7%AD%9B%E9%80%89",
@@ -38,10 +31,24 @@
         "url": "https://wiki.biligame.com/rocom/精灵图鉴",
         "revision": null,
         "fetchedAt": "2026-07-23T13:54:31.332Z",
-        "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d",
-        "pages": 592,
+        "sha256": "67880af4ac67ee68a7b8bc8e6a3aa21bf4c833b343c6d875a4e17af3875c2f9d",
+        "pages": 594,
         "refreshedPages": 0,
-        "revisionDigest": "7b2f3e186e92876b55e1ec27558cd49c8e8df6dd39f5663adebea7e51a51f5f7"
+        "revisionDigest": "3cec58a5111e098009b1337aa000f8a006603a7ac482554d992960c81626c05d"
+      },
+      {
+        "title": "S3 季中新增精灵目录",
+        "url": "urn:rock-calculator:catalog-additions:s3-2026-08-13",
+        "revision": "42863/42865",
+        "fetchedAt": "2026-08-12T16:34:40.674Z",
+        "sha256": "d939d82b538f0a6eb29ac96ead750d1acb2f5b2c72ea800b9dcf5f538f60a54a"
+      },
+      {
+        "title": "精灵筛选",
+        "url": "https://wiki.biligame.com/rocom/精灵筛选",
+        "revision": 41360,
+        "fetchedAt": "2026-08-12T16:34:40.262Z",
+        "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
       },
       {
         "fetchedAt": "2026-08-13T04:00:00.000+08:00",
@@ -52,16 +59,16 @@
       }
     ],
     "counts": {
-      "spirits": 592,
+      "spirits": 594,
       "skills": 553,
-      "learnsets": 592,
-      "traits": 227,
+      "learnsets": 594,
+      "traits": 228,
       "typeChart": 18,
       "overrides": 5
     },
     "diff": {
-      "previousSnapshot": null,
-      "spiritsAdded": 0,
+      "previousSnapshot": "s3-2026-07-15",
+      "spiritsAdded": 2,
       "spiritsRemoved": 0,
       "skillsAdded": 0,
       "skillsRemoved": 0
@@ -56044,6 +56051,178 @@
       },
       "evolutionChainNames": [
         "睡铃雪影娃娃"
+      ]
+    },
+    {
+      "id": "spirit_5f3eaa6f91c32c93",
+      "dexNo": "441",
+      "baseName": "宝藏小狐",
+      "variantName": null,
+      "fullName": "宝藏小狐",
+      "stage": "一阶",
+      "sourceCategory": "原始形态",
+      "types": [
+        "普通"
+      ],
+      "raceStats": {
+        "hp": 77,
+        "speed": 80,
+        "physicalAttack": 81,
+        "magicalAttack": 33,
+        "physicalDefense": 99,
+        "magicalDefense": 73,
+        "total": 443
+      },
+      "traitIds": [
+        "trait_ba4ac1cdf7e7fb85"
+      ],
+      "traitName": "博物",
+      "detailUrl": "https://wiki.biligame.com/rocom/%E5%AE%9D%E8%97%8F%E5%B0%8F%E7%8B%90",
+      "asset": {
+        "sourceUrl": "https://patchwiki.biligame.com/images/rocom/7/7c/690n5t1mnsocezt2vzhf6hdzby9824p.png",
+        "width": 128,
+        "height": 128
+      },
+      "source": {
+        "title": "精灵筛选",
+        "url": "https://wiki.biligame.com/rocom/精灵筛选",
+        "revision": 41360,
+        "fetchedAt": "2026-08-12T16:34:40.262Z",
+        "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+      },
+      "provenance": {
+        "identity": {
+          "title": "精灵筛选",
+          "url": "https://wiki.biligame.com/rocom/精灵筛选",
+          "revision": 41360,
+          "fetchedAt": "2026-08-12T16:34:40.262Z",
+          "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+        },
+        "types": {
+          "title": "精灵筛选",
+          "url": "https://wiki.biligame.com/rocom/精灵筛选",
+          "revision": 41360,
+          "fetchedAt": "2026-08-12T16:34:40.262Z",
+          "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+        },
+        "raceStats": {
+          "title": "精灵筛选",
+          "url": "https://wiki.biligame.com/rocom/精灵筛选",
+          "revision": 41360,
+          "fetchedAt": "2026-08-12T16:34:40.262Z",
+          "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+        },
+        "traitIds": {
+          "title": "精灵筛选",
+          "url": "https://wiki.biligame.com/rocom/精灵筛选",
+          "revision": 41360,
+          "fetchedAt": "2026-08-12T16:34:40.262Z",
+          "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+        },
+        "asset": {
+          "title": "精灵筛选",
+          "url": "https://wiki.biligame.com/rocom/精灵筛选",
+          "revision": 41360,
+          "fetchedAt": "2026-08-12T16:34:40.262Z",
+          "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+        },
+        "evolutionChainNames": {
+          "title": "宝藏小狐",
+          "url": "https://wiki.biligame.com/rocom/%E5%AE%9D%E8%97%8F%E5%B0%8F%E7%8B%90",
+          "revision": 42863,
+          "fetchedAt": "2026-08-12T16:34:40.567Z",
+          "sha256": "1e2f7ffc0c71676a40758a909e345ae48f8be801567838a89bad8d1a0639b4a5"
+        }
+      },
+      "evolutionChainNames": [
+        "宝藏小狐",
+        "宝藏沙狐"
+      ]
+    },
+    {
+      "id": "spirit_ad25e8d39ea8f904",
+      "dexNo": "442",
+      "baseName": "宝藏沙狐",
+      "variantName": null,
+      "fullName": "宝藏沙狐",
+      "stage": "二阶",
+      "sourceCategory": "原始形态",
+      "types": [
+        "普通"
+      ],
+      "raceStats": {
+        "hp": 96,
+        "speed": 100,
+        "physicalAttack": 101,
+        "magicalAttack": 41,
+        "physicalDefense": 124,
+        "magicalDefense": 91,
+        "total": 553
+      },
+      "traitIds": [
+        "trait_ba4ac1cdf7e7fb85"
+      ],
+      "traitName": "博物",
+      "detailUrl": "https://wiki.biligame.com/rocom/%E5%AE%9D%E8%97%8F%E6%B2%99%E7%8B%90",
+      "asset": {
+        "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/ff/esjftr9ldicwjdkbmbtbxh9cmw4fykw.png",
+        "width": 128,
+        "height": 128
+      },
+      "source": {
+        "title": "精灵筛选",
+        "url": "https://wiki.biligame.com/rocom/精灵筛选",
+        "revision": 41360,
+        "fetchedAt": "2026-08-12T16:34:40.262Z",
+        "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+      },
+      "provenance": {
+        "identity": {
+          "title": "精灵筛选",
+          "url": "https://wiki.biligame.com/rocom/精灵筛选",
+          "revision": 41360,
+          "fetchedAt": "2026-08-12T16:34:40.262Z",
+          "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+        },
+        "types": {
+          "title": "精灵筛选",
+          "url": "https://wiki.biligame.com/rocom/精灵筛选",
+          "revision": 41360,
+          "fetchedAt": "2026-08-12T16:34:40.262Z",
+          "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+        },
+        "raceStats": {
+          "title": "精灵筛选",
+          "url": "https://wiki.biligame.com/rocom/精灵筛选",
+          "revision": 41360,
+          "fetchedAt": "2026-08-12T16:34:40.262Z",
+          "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+        },
+        "traitIds": {
+          "title": "精灵筛选",
+          "url": "https://wiki.biligame.com/rocom/精灵筛选",
+          "revision": 41360,
+          "fetchedAt": "2026-08-12T16:34:40.262Z",
+          "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+        },
+        "asset": {
+          "title": "精灵筛选",
+          "url": "https://wiki.biligame.com/rocom/精灵筛选",
+          "revision": 41360,
+          "fetchedAt": "2026-08-12T16:34:40.262Z",
+          "sha256": "4d21154103208dd744d5fd5e8950c4407942e1eed7404a328595f8dd2ae71602"
+        },
+        "evolutionChainNames": {
+          "title": "宝藏沙狐",
+          "url": "https://wiki.biligame.com/rocom/%E5%AE%9D%E8%97%8F%E6%B2%99%E7%8B%90",
+          "revision": 42865,
+          "fetchedAt": "2026-08-12T16:34:40.674Z",
+          "sha256": "b32ae2e025c5bcaa3ec35ec1b66984adea0922834307cb6cebd62c3cfee3fa98"
+        }
+      },
+      "evolutionChainNames": [
+        "宝藏小狐",
+        "宝藏沙狐"
       ]
     }
   ],
@@ -227535,6 +227714,408 @@
           "sha256": "942f36d17c231b9b2ea4d13623220c19945ae6e3212103f6f67c701c09230a9c"
         }
       }
+    },
+    {
+      "spiritId": "spirit_5f3eaa6f91c32c93",
+      "skillIds": [
+        "skill_eecbee3c980e6cf8",
+        "skill_ecf734d95fe4d91f",
+        "skill_cf48b22bdb5249e2",
+        "skill_9403fd3a6850b653",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_4375736cdfafd6a1",
+        "skill_7bc7893e8f60631e",
+        "skill_db13fac307bec662",
+        "skill_4b96abe6649fb598",
+        "skill_15580f0fc4ab4918",
+        "skill_39c0fb554f575c6f",
+        "skill_e44e19ea6a979598",
+        "skill_a9a1858dfc2af2dc",
+        "skill_c5aa5d8e7a7b1d05",
+        "skill_a8775d4fa534f139",
+        "skill_e62203589974729b",
+        "skill_e0a643d803158d08",
+        "skill_32bb236ac6c2a963",
+        "skill_be2ecc615bf1b487",
+        "skill_b67ed3c744455dd1",
+        "skill_5359801a9ff210ec",
+        "skill_6839492d3ccfba38",
+        "skill_e8ae25185fcd9973",
+        "skill_0a381682aee6ac13",
+        "skill_355dbb9f12ce5907",
+        "skill_1d9ad604e5ce65c8",
+        "skill_774cf40886b35f94",
+        "skill_7f07532c0b252f52",
+        "skill_83f039bd249fdc0d",
+        "skill_eebef36388bb0777",
+        "skill_46f5f9f26fe99d5c",
+        "skill_d0f5b82ecca23745",
+        "skill_3d69dc97bb34a4d3",
+        "skill_95e55ed4adffda90",
+        "skill_ef22bd690a632eed",
+        "skill_c796ce77cdbb8b37",
+        "skill_14a0d67f9225c4a5",
+        "skill_9a1fcd3fea626421",
+        "skill_97ca23a514bcc348",
+        "skill_9c542e8f33ddac60",
+        "skill_58d84e9ffcc63857",
+        "skill_58fc0a8993745ce6",
+        "skill_c47886a9901ec0d6",
+        "skill_b67699fa9b91b710"
+      ],
+      "acquisitions": {
+        "skill_eecbee3c980e6cf8": [
+          "解锁：Lv.1"
+        ],
+        "skill_ecf734d95fe4d91f": [
+          "解锁：Lv.1"
+        ],
+        "skill_cf48b22bdb5249e2": [
+          "解锁：Lv.6"
+        ],
+        "skill_9403fd3a6850b653": [
+          "解锁：Lv.12"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "解锁：Lv.16"
+        ],
+        "skill_4375736cdfafd6a1": [
+          "解锁：Lv.26"
+        ],
+        "skill_7bc7893e8f60631e": [
+          "解锁：Lv.27"
+        ],
+        "skill_db13fac307bec662": [
+          "解锁：Lv.28"
+        ],
+        "skill_4b96abe6649fb598": [
+          "解锁：Lv.33"
+        ],
+        "skill_15580f0fc4ab4918": [
+          "解锁：Lv.35"
+        ],
+        "skill_39c0fb554f575c6f": [
+          "解锁：Lv.37"
+        ],
+        "skill_e44e19ea6a979598": [
+          "解锁：Lv.42"
+        ],
+        "skill_a9a1858dfc2af2dc": [
+          "解锁：Lv.46"
+        ],
+        "skill_c5aa5d8e7a7b1d05": [
+          "解锁：普通系血脉"
+        ],
+        "skill_a8775d4fa534f139": [
+          "解锁：草系血脉"
+        ],
+        "skill_e62203589974729b": [
+          "解锁：火系血脉"
+        ],
+        "skill_e0a643d803158d08": [
+          "解锁：水系血脉"
+        ],
+        "skill_32bb236ac6c2a963": [
+          "解锁：光系血脉"
+        ],
+        "skill_be2ecc615bf1b487": [
+          "解锁：地系血脉"
+        ],
+        "skill_b67ed3c744455dd1": [
+          "解锁：冰系血脉"
+        ],
+        "skill_5359801a9ff210ec": [
+          "解锁：龙系血脉"
+        ],
+        "skill_6839492d3ccfba38": [
+          "解锁：电系血脉"
+        ],
+        "skill_e8ae25185fcd9973": [
+          "解锁：毒系血脉"
+        ],
+        "skill_0a381682aee6ac13": [
+          "解锁：虫系血脉"
+        ],
+        "skill_355dbb9f12ce5907": [
+          "解锁：武系血脉"
+        ],
+        "skill_1d9ad604e5ce65c8": [
+          "解锁：翼系血脉"
+        ],
+        "skill_774cf40886b35f94": [
+          "解锁：萌系血脉"
+        ],
+        "skill_7f07532c0b252f52": [
+          "解锁：幽系血脉"
+        ],
+        "skill_83f039bd249fdc0d": [
+          "解锁：恶系血脉"
+        ],
+        "skill_eebef36388bb0777": [
+          "解锁：机械系血脉"
+        ],
+        "skill_46f5f9f26fe99d5c": [
+          "解锁：幻系血脉"
+        ],
+        "skill_d0f5b82ecca23745": [
+          "解锁：[技能石]取念"
+        ],
+        "skill_3d69dc97bb34a4d3": [
+          "解锁：[技能石]预备势"
+        ],
+        "skill_95e55ed4adffda90": [
+          "解锁：[技能石]寸拳"
+        ],
+        "skill_ef22bd690a632eed": [
+          "解锁：[技能石]缠丝劲"
+        ],
+        "skill_c796ce77cdbb8b37": [
+          "解锁：[技能石]蛰针"
+        ],
+        "skill_14a0d67f9225c4a5": [
+          "解锁：[技能石]飞断"
+        ],
+        "skill_9a1fcd3fea626421": [
+          "解锁：[技能石]尾后针"
+        ],
+        "skill_97ca23a514bcc348": [
+          "解锁：[技能石]虫群智慧"
+        ],
+        "skill_9c542e8f33ddac60": [
+          "解锁：[技能石]吓退"
+        ],
+        "skill_58d84e9ffcc63857": [
+          "解锁：[技能石]有效预防"
+        ],
+        "skill_58fc0a8993745ce6": [
+          "解锁：[技能石]摇篮曲"
+        ],
+        "skill_c47886a9901ec0d6": [
+          "解锁：[技能石]退化"
+        ],
+        "skill_b67699fa9b91b710": [
+          "解锁：[技能石]晒太阳"
+        ]
+      },
+      "sources": [
+        {
+          "title": "宝藏小狐",
+          "url": "https://wiki.biligame.com/rocom/%E5%AE%9D%E8%97%8F%E5%B0%8F%E7%8B%90",
+          "revision": 42863,
+          "fetchedAt": "2026-08-12T16:34:40.567Z",
+          "sha256": "1e2f7ffc0c71676a40758a909e345ae48f8be801567838a89bad8d1a0639b4a5"
+        }
+      ],
+      "provenance": {
+        "skillIds": {
+          "title": "宝藏小狐",
+          "url": "https://wiki.biligame.com/rocom/%E5%AE%9D%E8%97%8F%E5%B0%8F%E7%8B%90",
+          "revision": 42863,
+          "fetchedAt": "2026-08-12T16:34:40.567Z",
+          "sha256": "1e2f7ffc0c71676a40758a909e345ae48f8be801567838a89bad8d1a0639b4a5"
+        }
+      }
+    },
+    {
+      "spiritId": "spirit_ad25e8d39ea8f904",
+      "skillIds": [
+        "skill_eecbee3c980e6cf8",
+        "skill_ecf734d95fe4d91f",
+        "skill_cf48b22bdb5249e2",
+        "skill_9403fd3a6850b653",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_4375736cdfafd6a1",
+        "skill_7bc7893e8f60631e",
+        "skill_db13fac307bec662",
+        "skill_4b96abe6649fb598",
+        "skill_15580f0fc4ab4918",
+        "skill_39c0fb554f575c6f",
+        "skill_e44e19ea6a979598",
+        "skill_a9a1858dfc2af2dc",
+        "skill_c5aa5d8e7a7b1d05",
+        "skill_a8775d4fa534f139",
+        "skill_e62203589974729b",
+        "skill_e0a643d803158d08",
+        "skill_32bb236ac6c2a963",
+        "skill_be2ecc615bf1b487",
+        "skill_b67ed3c744455dd1",
+        "skill_5359801a9ff210ec",
+        "skill_6839492d3ccfba38",
+        "skill_e8ae25185fcd9973",
+        "skill_0a381682aee6ac13",
+        "skill_355dbb9f12ce5907",
+        "skill_1d9ad604e5ce65c8",
+        "skill_774cf40886b35f94",
+        "skill_7f07532c0b252f52",
+        "skill_83f039bd249fdc0d",
+        "skill_eebef36388bb0777",
+        "skill_46f5f9f26fe99d5c",
+        "skill_d0f5b82ecca23745",
+        "skill_3d69dc97bb34a4d3",
+        "skill_95e55ed4adffda90",
+        "skill_ef22bd690a632eed",
+        "skill_c796ce77cdbb8b37",
+        "skill_14a0d67f9225c4a5",
+        "skill_9a1fcd3fea626421",
+        "skill_97ca23a514bcc348",
+        "skill_9c542e8f33ddac60",
+        "skill_58d84e9ffcc63857",
+        "skill_58fc0a8993745ce6",
+        "skill_c47886a9901ec0d6",
+        "skill_b67699fa9b91b710"
+      ],
+      "acquisitions": {
+        "skill_eecbee3c980e6cf8": [
+          "解锁：Lv.1"
+        ],
+        "skill_ecf734d95fe4d91f": [
+          "解锁：Lv.1"
+        ],
+        "skill_cf48b22bdb5249e2": [
+          "解锁：Lv.6"
+        ],
+        "skill_9403fd3a6850b653": [
+          "解锁：Lv.12"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "解锁：Lv.16"
+        ],
+        "skill_4375736cdfafd6a1": [
+          "解锁：Lv.26"
+        ],
+        "skill_7bc7893e8f60631e": [
+          "解锁：Lv.27"
+        ],
+        "skill_db13fac307bec662": [
+          "解锁：Lv.28"
+        ],
+        "skill_4b96abe6649fb598": [
+          "解锁：Lv.33"
+        ],
+        "skill_15580f0fc4ab4918": [
+          "解锁：Lv.35"
+        ],
+        "skill_39c0fb554f575c6f": [
+          "解锁：Lv.37"
+        ],
+        "skill_e44e19ea6a979598": [
+          "解锁：Lv.42"
+        ],
+        "skill_a9a1858dfc2af2dc": [
+          "解锁：Lv.46"
+        ],
+        "skill_c5aa5d8e7a7b1d05": [
+          "解锁：普通系血脉"
+        ],
+        "skill_a8775d4fa534f139": [
+          "解锁：草系血脉"
+        ],
+        "skill_e62203589974729b": [
+          "解锁：火系血脉"
+        ],
+        "skill_e0a643d803158d08": [
+          "解锁：水系血脉"
+        ],
+        "skill_32bb236ac6c2a963": [
+          "解锁：光系血脉"
+        ],
+        "skill_be2ecc615bf1b487": [
+          "解锁：地系血脉"
+        ],
+        "skill_b67ed3c744455dd1": [
+          "解锁：冰系血脉"
+        ],
+        "skill_5359801a9ff210ec": [
+          "解锁：龙系血脉"
+        ],
+        "skill_6839492d3ccfba38": [
+          "解锁：电系血脉"
+        ],
+        "skill_e8ae25185fcd9973": [
+          "解锁：毒系血脉"
+        ],
+        "skill_0a381682aee6ac13": [
+          "解锁：虫系血脉"
+        ],
+        "skill_355dbb9f12ce5907": [
+          "解锁：武系血脉"
+        ],
+        "skill_1d9ad604e5ce65c8": [
+          "解锁：翼系血脉"
+        ],
+        "skill_774cf40886b35f94": [
+          "解锁：萌系血脉"
+        ],
+        "skill_7f07532c0b252f52": [
+          "解锁：幽系血脉"
+        ],
+        "skill_83f039bd249fdc0d": [
+          "解锁：恶系血脉"
+        ],
+        "skill_eebef36388bb0777": [
+          "解锁：机械系血脉"
+        ],
+        "skill_46f5f9f26fe99d5c": [
+          "解锁：幻系血脉"
+        ],
+        "skill_d0f5b82ecca23745": [
+          "解锁：[技能石]取念"
+        ],
+        "skill_3d69dc97bb34a4d3": [
+          "解锁：[技能石]预备势"
+        ],
+        "skill_95e55ed4adffda90": [
+          "解锁：[技能石]寸拳"
+        ],
+        "skill_ef22bd690a632eed": [
+          "解锁：[技能石]缠丝劲"
+        ],
+        "skill_c796ce77cdbb8b37": [
+          "解锁：[技能石]蛰针"
+        ],
+        "skill_14a0d67f9225c4a5": [
+          "解锁：[技能石]飞断"
+        ],
+        "skill_9a1fcd3fea626421": [
+          "解锁：[技能石]尾后针"
+        ],
+        "skill_97ca23a514bcc348": [
+          "解锁：[技能石]虫群智慧"
+        ],
+        "skill_9c542e8f33ddac60": [
+          "解锁：[技能石]吓退"
+        ],
+        "skill_58d84e9ffcc63857": [
+          "解锁：[技能石]有效预防"
+        ],
+        "skill_58fc0a8993745ce6": [
+          "解锁：[技能石]摇篮曲"
+        ],
+        "skill_c47886a9901ec0d6": [
+          "解锁：[技能石]退化"
+        ],
+        "skill_b67699fa9b91b710": [
+          "解锁：[技能石]晒太阳"
+        ]
+      },
+      "sources": [
+        {
+          "title": "宝藏沙狐",
+          "url": "https://wiki.biligame.com/rocom/%E5%AE%9D%E8%97%8F%E6%B2%99%E7%8B%90",
+          "revision": 42865,
+          "fetchedAt": "2026-08-12T16:34:40.674Z",
+          "sha256": "b32ae2e025c5bcaa3ec35ec1b66984adea0922834307cb6cebd62c3cfee3fa98"
+        }
+      ],
+      "provenance": {
+        "skillIds": {
+          "title": "宝藏沙狐",
+          "url": "https://wiki.biligame.com/rocom/%E5%AE%9D%E8%97%8F%E6%B2%99%E7%8B%90",
+          "revision": 42865,
+          "fetchedAt": "2026-08-12T16:34:40.674Z",
+          "sha256": "b32ae2e025c5bcaa3ec35ec1b66984adea0922834307cb6cebd62c3cfee3fa98"
+        }
+      }
     }
   ],
   "traits": [
@@ -232366,6 +232947,27 @@
           "revision": 41360,
           "fetchedAt": "2026-07-16T00:00:00.000+08:00",
           "sha256": "af1674e688b54113b3d15b8d4376186adcdeef72fa03928486828611bcbe88de"
+        }
+      }
+    },
+    {
+      "id": "trait_ba4ac1cdf7e7fb85",
+      "name": "博物",
+      "description": "在场时，识破精灵的变化效果，解除其伪装。",
+      "provenance": {
+        "identity": {
+          "title": "宝藏沙狐",
+          "url": "https://wiki.biligame.com/rocom/%E5%AE%9D%E8%97%8F%E6%B2%99%E7%8B%90",
+          "revision": 42865,
+          "fetchedAt": "2026-08-12T16:34:40.674Z",
+          "sha256": "b32ae2e025c5bcaa3ec35ec1b66984adea0922834307cb6cebd62c3cfee3fa98"
+        },
+        "description": {
+          "title": "宝藏沙狐",
+          "url": "https://wiki.biligame.com/rocom/%E5%AE%9D%E8%97%8F%E6%B2%99%E7%8B%90",
+          "revision": 42865,
+          "fetchedAt": "2026-08-12T16:34:40.674Z",
+          "sha256": "b32ae2e025c5bcaa3ec35ec1b66984adea0922834307cb6cebd62c3cfee3fa98"
         }
       }
     }

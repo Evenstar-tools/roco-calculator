@@ -65,7 +65,7 @@ const snapshot = {
     bwikiRevision: 41360,
     id: "s3-test",
     rulesVersion: "1.0.0",
-    seasonId: "s3",
+    seasonId: "S3季中",
   },
   skills: [
     {
@@ -438,6 +438,12 @@ async function openDetailedMode(user) {
   await user.click(screen.getByRole("button", { name: "具体版" }));
   await user.click(screen.getByRole("tab", { name: "单技能" }));
 }
+
+test("labels the current dataset with its S3 midseason name", () => {
+  render(<App initialSnapshot={snapshot} />);
+
+  expect(screen.getByText("S3季中 · 41360")).toBeVisible();
+});
 
 test("starts with both spirit selectors empty and hides incomplete configuration", () => {
   render(<App initialSnapshot={snapshot} />);

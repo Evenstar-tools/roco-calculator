@@ -1,0 +1,40 @@
+{
+  "version": "0.1.2",
+  "webVersion": "1.5.0",
+  "date": "2026-08-12",
+  "branch": "codex/miniapp-v0.1.1",
+  "baselineCommit": "0d03af5",
+  "status": "accepted",
+  "tests": {
+    "desktop": 971,
+    "miniapp": 256,
+    "total": 1227,
+    "failed": 0
+  },
+  "deviceMatrix": {
+    "viewports": 17,
+    "horizontalOverflow": 0,
+    "phoneInteraction": "passed",
+    "ipadInteraction": "passed"
+  },
+  "wechatRuntime": {
+    "devtoolsVersion": "2.01.2510290",
+    "sdkVersion": "3.17.1",
+    "phone": "390x844",
+    "ipad": "768x1024",
+    "runtimeErrors": 0,
+    "elementProtocolNote": "DevTools Page.getElement timed out for the Taro root component in both development and production builds; native launch, device metadata and screenshots completed."
+  },
+  "release": {
+    "mainPackageBytes": 2088708,
+    "artifactManifestSha256": "82e86b2b4717cfe9b9ab0b78d7608d0df72b71f7652547e60b1154ece45dbf7f",
+    "deliveryZipBytes": 394849,
+    "deliveryZipSha256": "831493dec8a9eb17d68ee3174fcfa4ec63e6f5e5aba52e081859156129a0df64",
+    "commonSpiritConfigurations": 193
+  },
+  "externalActions": {
+    "uploaded": false,
+    "submittedForReview": false,
+    "published": false
+  }
+}

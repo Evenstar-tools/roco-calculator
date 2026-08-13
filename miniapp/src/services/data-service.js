@@ -273,6 +273,8 @@ function readValidCache(cachedValue, trustedRuntimeSha256) {
 }
 
 export function createDataService({
+  bundledPetImages = {},
+  bundledSnapshot,
   cloud,
   storage,
   previewPetImages = {},
@@ -285,6 +287,15 @@ export function createDataService({
 
   return {
     async load() {
+      if (bundledSnapshot) {
+        return {
+          petImages: { ...bundledPetImages },
+          snapshot: bundledSnapshot,
+          source: "bundled",
+          stale: false,
+        };
+      }
+
       if (config?.preview) {
         return {
           petImages: { ...previewPetImages },

@@ -5,6 +5,26 @@ import {
   encodeShareState,
 } from "../../src/state/share.js";
 
+async function encodeRawPayload(value) {
+  const payload = JSON.stringify(value);
+  const bytes = new TextEncoder().encode(payload);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  const body = btoa(binary)
+    .replaceAll("+", "-")
+    .replaceAll("/", "_")
+    .replace(/=+$/u, "");
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(payload),
+  );
+  const checksum = [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 12);
+  return `#v1.${body}.${checksum}`;
+}
+
 function shareFixture() {
   const state = createInitialState({
     meta: {
@@ -116,6 +136,43 @@ describe("versioned share state", () => {
 
     expect(hash).toMatch(/^#v1\.[A-Za-z0-9_-]+\.[a-f0-9]{12}$/);
     await expect(decodeShareState(hash)).resolves.toEqual(state);
+  });
+
+  test("round trips non-empty canonical trait values", async () => {
+    const state = shareFixture();
+    state.sides.attacker.traitValues = {
+      "trait.traitActivated.12345678": true,
+      "trait.traitStacks.deadbeef": 3,
+    };
+    state.sides.defender.traitValues = {
+      "trait.contractBallType.cafebabe": "prism",
+    };
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.sides.attacker.traitValues).toEqual(
+      state.sides.attacker.traitValues,
+    );
+    expect(decoded.sides.defender.traitValues).toEqual(
+      state.sides.defender.traitValues,
+    );
+  });
+
+  test("repairs unknown, malicious, and non-object trait values", async () => {
+    const state = shareFixture();
+    state.sides.attacker.traitValues = {
+      "trait.traitActivated.12345678": true,
+      "trait.traitStacks.deadbeef": { nested: true },
+      openid: "user-secret",
+    };
+    state.sides.defender.traitValues = "not-an-object";
+
+    const decoded = await decodeShareState(await encodeRawPayload(state));
+
+    expect(decoded.sides.attacker.traitValues).toEqual({
+      "trait.traitActivated.12345678": true,
+    });
+    expect(decoded.sides.defender.traitValues).toEqual({});
   });
 
   test("分享状态同时保留血脉选择和本回合触发", async () => {
@@ -271,27 +328,12 @@ describe("versioned share state", () => {
   test("migrates legacy starfallStacks into the matching side's negative mark", async () => {
     const state = shareFixture();
     delete state.marks;
+    delete state.sides.attacker.traitValues;
+    delete state.sides.defender.traitValues;
     state.directions.forward.starfallStacks = 4;
     state.directions.reverse.starfallStacks = 2;
 
-    const payload = JSON.stringify(state);
-    const bytes = new TextEncoder().encode(payload);
-    let binary = "";
-    for (const byte of bytes) binary += String.fromCharCode(byte);
-    const body = btoa(binary)
-      .replaceAll("+", "-")
-      .replaceAll("/", "_")
-      .replace(/=+$/u, "");
-    const digest = await crypto.subtle.digest(
-      "SHA-256",
-      new TextEncoder().encode(payload),
-    );
-    const checksum = [...new Uint8Array(digest)]
-      .map((byte) => byte.toString(16).padStart(2, "0"))
-      .join("")
-      .slice(0, 12);
-
-    const decoded = await decodeShareState(`#v1.${body}.${checksum}`);
+    const decoded = await decodeShareState(await encodeRawPayload(state));
 
     expect(decoded.marks.defender.negative).toEqual({
       id: "starfall",
@@ -301,6 +343,8 @@ describe("versioned share state", () => {
       id: "starfall",
       stacks: 2,
     });
+    expect(decoded.sides.attacker.traitValues).toEqual({});
+    expect(decoded.sides.defender.traitValues).toEqual({});
   });
 
   test("normalizes legacy nature labels when decoding old links", async () => {

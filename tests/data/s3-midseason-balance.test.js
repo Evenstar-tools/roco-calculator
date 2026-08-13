@@ -1,9 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-const snapshot = JSON.parse(
-  readFileSync("public/data/current.json", "utf8"),
-);
+const snapshot = JSON.parse(readFileSync("public/data/current.json", "utf8"));
 
 function spirit(name) {
   return snapshot.spirits.find((candidate) => candidate.fullName === name);
@@ -18,6 +16,71 @@ function trait(name) {
 }
 
 describe("S3 季中 8 月 13 日平衡补丁", () => {
+  test("发布 594 精灵的季中离线快照", () => {
+    expect(snapshot.meta).toMatchObject({
+      id: "s3-2026-08-13-midseason",
+      rulesVersion: "2026-08-13",
+      seasonId: "S3季中",
+      snapshotVersion: 2,
+    });
+    expect(snapshot.spirits).toHaveLength(594);
+    expect(snapshot.learnsets).toHaveLength(594);
+  });
+
+  test.each([
+    [
+      "宝藏小狐",
+      "spirit_5f3eaa6f91c32c93",
+      {
+        hp: 77,
+        speed: 80,
+        physicalAttack: 81,
+        magicalAttack: 33,
+        physicalDefense: 99,
+        magicalDefense: 73,
+        total: 443,
+      },
+    ],
+    [
+      "宝藏沙狐",
+      "spirit_ad25e8d39ea8f904",
+      {
+        hp: 96,
+        speed: 100,
+        physicalAttack: 101,
+        magicalAttack: 41,
+        physicalDefense: 124,
+        magicalDefense: 91,
+        total: 553,
+      },
+    ],
+  ])("补齐 %s 的种族值、图片和学习集", (name, id, raceStats) => {
+    const entry = spirit(name);
+    expect(entry).toMatchObject({
+      id,
+      fullName: name,
+      types: ["普通"],
+      raceStats,
+      traitIds: ["trait_ba4ac1cdf7e7fb85"],
+    });
+    expect(entry.asset.sourceUrl).toMatch(/^https:\/\//u);
+
+    const learnset = snapshot.learnsets.find(
+      (candidate) => candidate.spiritId === id,
+    );
+    expect(learnset.skillIds.length).toBeGreaterThan(10);
+    expect(learnset.skillIds.every((skillId) =>
+      snapshot.skills.some((candidate) => candidate.id === skillId)
+    )).toBe(true);
+  });
+
+  test("补齐博物特性并记录可核验来源", () => {
+    expect(trait("博物")).toMatchObject({
+      id: "trait_ba4ac1cdf7e7fb85",
+      description: "在场时，识破精灵的变化效果，解除其伪装。",
+    });
+  });
+
   test.each([
     ["炮米花", { hp: 115, magicalAttack: 100, magicalDefense: 110, physicalAttack: 99, physicalDefense: 110, total: 609 }],
     ["障眼魔", { hp: 134, magicalDefense: 110, physicalDefense: 96, total: 616 }],
