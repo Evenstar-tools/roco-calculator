@@ -743,7 +743,33 @@ function CalculatorWorkspace({ snapshot }) {
         calculation?.[selfDirection]?.results?.[index]?.hitCount,
       sproutStacks,
     });
+    const postAttackStageAdd = Math.max(
+      0,
+      Math.floor(Number(
+        calculation?.[selfDirection]?.results?.[index]
+          ?.postAttackEffects?.attackLevelStageAdd,
+      ) || 0),
+    );
     if (!resolution) {
+      if (postAttackStageAdd > 0) {
+        const currentOverrides =
+          latest.directions[selfDirection].overrides ?? {};
+        dispatch({
+          direction: selfDirection,
+          type: "direction/update",
+          value: {
+            overrides: {
+              attackLevelStage: clampStage(
+                Number(currentOverrides.attackLevelStage ?? 0) +
+                  postAttackStageAdd,
+              ),
+            },
+          },
+        });
+        setActiveDirection(selfDirection);
+        setToast(`贪得无厌：后续物攻 +${postAttackStageAdd * 10}%`);
+        return;
+      }
       if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) return;
       const sequence = buildChoiceSkillSequence({
         context,
@@ -776,7 +802,9 @@ function CalculatorWorkspace({ snapshot }) {
       operations.doublePositiveOwnBuffs && value > 0 ? value * 2 : value;
     const ownAttackStage = clampStage(
       doublePositive(
-        Number(selfOverrides.attackLevelStage ?? 0) + deltas.ownAttack,
+        Number(selfOverrides.attackLevelStage ?? 0) +
+          deltas.ownAttack +
+          postAttackStageAdd,
       ),
     );
     const ownDefenseStage = clampStage(
@@ -870,6 +898,9 @@ function CalculatorWorkspace({ snapshot }) {
           skillPowerPercentAddsBySlot: ownSkillPowerPercentAddsBySlot,
           hitCountAdd: ownHitCountAdd,
           hitCountPercentAdd: ownHitCountPercentAdd,
+          lifestealPercent:
+            Number(selfOverrides.lifestealPercent ?? 0) +
+            Number(operations.lifestealPercent ?? 0),
           refractionStatuses,
           ...(hasTransientDefenseStatus
             ? {
@@ -1034,6 +1065,9 @@ function CalculatorWorkspace({ snapshot }) {
       attackerHealth={
         activeDirection === "forward" ? attackerHealth : defenderHealth
       }
+      attackerLifestealPercent={
+        currentDirection.overrides?.lifestealPercent ?? 0
+      }
       attackerTrait={getTraitView(snapshot, activeAttackSpirit, "attacker")}
       carriedSkills={state.sides[activeAttackSideKey].skills.four
         .map((entry) => getSkill(snapshot, entry))
@@ -1140,6 +1174,9 @@ function CalculatorWorkspace({ snapshot }) {
       activeSkillIndex={currentDirection.selectedSkillIndex}
       attackerHealth={attackerHealth}
       attackerHitCount={state.directions.forward.hitCount}
+      attackerLifestealPercent={
+        state.directions.forward.overrides?.lifestealPercent ?? 0
+      }
       attackerName={attacker.fullName}
       attackerResults={calculation.forward.results}
       attackerSkillChoices={attackerSkillChoices}
@@ -1160,6 +1197,9 @@ function CalculatorWorkspace({ snapshot }) {
           : getTraitView(snapshot, defender, "defender")
       }
       defenderHitCount={state.directions.reverse.hitCount}
+      defenderLifestealPercent={
+        state.directions.reverse.overrides?.lifestealPercent ?? 0
+      }
       defenderHealth={defenderHealth}
       defenderName={defender.fullName}
       defenderResults={calculation.reverse.results}

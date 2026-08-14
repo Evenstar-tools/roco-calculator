@@ -90,6 +90,15 @@ describe("TraitConditionEditor", () => {
     );
   });
 
+  test("shows the permanent lifesteal ability level in the trait section", () => {
+    const fixture = fixtureFor("贪得无厌");
+    fixture.views.attacker.lifesteal = { levels: 16, percent: 160 };
+
+    render(<TraitConditionEditor {...fixture} />);
+
+    expect(screen.getByText("吸血 16层 · 160%")).toBeInTheDocument();
+  });
+
   test("dispatches a workspace edit to the side that owns the trait", () => {
     const stats = {
       hp: 120,

@@ -1,13 +1,25 @@
 import { getTraitView } from "../shared/domain/calculator-view-model.js";
 import { canonicalTraitControlKey } from "../shared/state/trait-values.js";
 import { getSkill } from "./skills.js";
+import { resolveLifestealCapability } from "../shared/domain/baron-greed.js";
 
-export function createTraitView(snapshot, side, role, ownerSide, skills = []) {
+export function createTraitView(
+  snapshot,
+  side,
+  role,
+  ownerSide,
+  skills = [],
+  persistentLifestealPercent = 0,
+) {
   const spirit = (snapshot?.spirits ?? []).find(
     (entry) => entry.id === side?.spiritId,
   );
   const trait = spirit ? getTraitView(snapshot, spirit, role, skills) : null;
   if (!trait) return null;
+  const lifesteal = resolveLifestealCapability({
+    persistentLifestealPercent,
+    traits: role === "attacker" ? [trait] : [],
+  });
   return {
     ...trait,
     controls: trait.inputs.map((input) => ({
@@ -15,6 +27,7 @@ export function createTraitView(snapshot, side, role, ownerSide, skills = []) {
       canonicalKey: canonicalTraitControlKey(input),
     })),
     ownerSide,
+    lifesteal,
   };
 }
 
@@ -36,6 +49,7 @@ export function createDirectionTraitViews(snapshot, state, direction) {
       "attacker",
       attackerSide,
       carriedSkills(attackerSide),
+      state.directions?.[direction]?.overrides?.lifestealPercent ?? 0,
     ),
     defender: createTraitView(
       snapshot,

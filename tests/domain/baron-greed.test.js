@@ -1,0 +1,64 @@
+import { describe, expect, test } from "vitest";
+import {
+  resolveBaronGreed,
+  resolveLifestealCapability,
+} from "../../src/domain/baron-greed.js";
+
+const baronTrait = { name: "贪得无厌" };
+
+describe("恶魔男爵贪得无厌", () => {
+  test("常驻50%吸血计为5层，并与后续吸血能力相加", () => {
+    expect(resolveLifestealCapability({
+      persistentLifestealPercent: 110,
+      traits: [baronTrait],
+    })).toEqual({
+      basePercent: 50,
+      levels: 16,
+      percent: 160,
+    });
+  });
+
+  test("只把超过缺失生命的回复换算为后续物攻等级", () => {
+    expect(resolveBaronGreed({
+      attackerCurrentHp: 450,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      mainDamage: 200,
+      skill: { description: "造成物伤。" },
+    })).toMatchObject({
+      active: true,
+      attackLevelStageAdd: 2,
+      effectiveLifestealPercent: 50,
+      lifestealLevels: 5,
+      missingHp: 50,
+      overflowHealing: 50,
+      requestedHealing: 100,
+    });
+  });
+
+  test("不足完整5%最大生命的溢出回复不增加物攻等级", () => {
+    expect(resolveBaronGreed({
+      attackerCurrentHp: 500,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      mainDamage: 49,
+      skill: { description: "造成物伤。" },
+    }).attackLevelStageAdd).toBe(0);
+  });
+
+  test("技能自带吸血和已获得的吸血能力参与同一次回复，但不重复加入基础50%", () => {
+    expect(resolveBaronGreed({
+      attackerCurrentHp: 500,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      mainDamage: 100,
+      persistentLifestealPercent: 100,
+      skill: { description: "造成物伤，并吸血100%。" },
+    })).toMatchObject({
+      attackLevelStageAdd: 10,
+      effectiveLifestealPercent: 250,
+      lifestealLevels: 15,
+      overflowHealing: 250,
+    });
+  });
+});

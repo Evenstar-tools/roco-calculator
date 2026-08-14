@@ -1,9 +1,18 @@
 import { describe, expect, test } from "vitest";
 import {
   buildCalculatorViewModel,
+  clampStage,
   getPanelView,
   getTraitView,
+  stageMultiplier,
 } from "../../src/domain/calculator-view-model.js";
+
+test("面板能力等级按正负九十九层封顶", () => {
+  expect(clampStage(100)).toBe(99);
+  expect(clampStage(-100)).toBe(-99);
+  expect(stageMultiplier(99)).toBeCloseTo(10.9);
+  expect(stageMultiplier(-99)).toBeCloseTo(1 / 10.9);
+});
 
 const ivs = {
   hp: 60,

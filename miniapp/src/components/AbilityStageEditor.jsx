@@ -1,7 +1,7 @@
 import { Button, Text, View } from "@tarojs/components";
 
 function clamp(value) {
-  return Math.min(50, Math.max(-50, Math.floor(Number(value) || 0)));
+  return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
 }
 
 function StageControl({ label, onChange, value }) {
@@ -12,7 +12,7 @@ function StageControl({ label, onChange, value }) {
         <Button
           aria-label={`${label}降低一级`}
           className="ability-stage__button"
-          disabled={value <= -50}
+          disabled={value <= -99}
           hoverClass="ability-stage__button--pressed"
           onClick={() => onChange(clamp(value - 1))}
         >
@@ -22,7 +22,7 @@ function StageControl({ label, onChange, value }) {
         <Button
           aria-label={`${label}提高一级`}
           className="ability-stage__button"
-          disabled={value >= 50}
+          disabled={value >= 99}
           hoverClass="ability-stage__button--pressed"
           onClick={() => onChange(clamp(value + 1))}
         >

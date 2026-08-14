@@ -20,6 +20,18 @@ export function displayFormulaNumber(value, digits = 4) {
   return Number(numeric.toFixed(digits)).toString();
 }
 
+export function displayDamageCoefficient(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return "—";
+  const numerator = numeric * 41;
+  const roundedNumerator = Math.round(numerator);
+  const displayedNumerator =
+    Math.abs(numerator - roundedNumerator) < 0.00001
+      ? roundedNumerator
+      : displayFormulaNumber(numerator, 6);
+  return `${displayedNumerator}/41`;
+}
+
 export function buildResultFormulaAudit(result) {
   if (!result?.formulaSteps?.length) return null;
 

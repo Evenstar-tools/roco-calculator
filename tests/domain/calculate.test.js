@@ -2401,6 +2401,29 @@ describe("calculateMatchup", () => {
     ).toMatchObject({ input: 2.4 });
   });
 
+  test("caps calculated attack and defense ability stages at positive and negative 99", () => {
+    const calculateAtStages = (attackLevelStage, defenseLevelStage) =>
+      calculateMatchup(
+        snapshot,
+        battleInput({
+          directions: {
+            forward: {
+              overrides: { attackLevelStage, defenseLevelStage },
+            },
+          },
+        }),
+      ).forward.selectedResult;
+
+    const capped = calculateAtStages(99, -99);
+    const overflow = calculateAtStages(100, -100);
+
+    expect(overflow.damage).toBe(capped.damage);
+    expect(overflow.effectivePower).toBe(capped.effectivePower);
+    expect(
+      overflow.formulaSteps.find((step) => step.label === "攻防等级"),
+    ).toMatchObject({ input: 20.8 });
+  });
+
   test("uses explicit ability stages once and ignores the legacy combined multiplier", () => {
     const stageOnly = calculateMatchup(
       snapshot,
@@ -3740,5 +3763,174 @@ describe("inherited penetration stacks", () => {
     expect(withAttack.choiceTraitSequence.text).toContain("疾风涡轮");
     expect(withStatus.totalDamage).toBe(turbineOnly.totalDamage);
     expect(withStatus.choiceTraitSequence).toBeUndefined();
+  });
+
+  test("戏耍把蝙蝠实际吸血量作为特性真伤加入总伤害", () => {
+    const trait = { id: "trait-clown", name: "戏耍" };
+    const bat = {
+      id: "skill-bat",
+      name: "蝙蝠",
+      type: "恶",
+      category: "physical",
+      basePower: 65,
+      description: "造成物伤，并吸血100%。",
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      skills: [...snapshot.skills, bat],
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { reverse: { currentHp: 358 } },
+        sides: {
+          attacker: side("spirit_sonic_dog", bat.id, [bat.id, null, null, null]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.status).toBe("exact");
+    expect(result.traitDamage).toBe(50);
+    expect(result.totalDamage).toBe(result.mainDamage + 50);
+    expect(result.traitSettlements[0].text).toContain("实际回复 50");
+  });
+
+  test("戏耍让休息回复按缺失生命直接显示特性真伤", () => {
+    const trait = { id: "trait-clown", name: "戏耍" };
+    const rest = {
+      id: "skill-rest-heal",
+      name: "休息回复",
+      type: "普通",
+      category: "status",
+      basePower: 0,
+      description: "自己回复30%生命。",
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      skills: [...snapshot.skills, rest],
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { reverse: { currentHp: 300 } },
+        sides: {
+          attacker: side("spirit_sonic_dog", rest.id, [rest.id, null, null, null]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      mainDamage: 0,
+      status: "exact",
+      totalDamage: 108,
+      traitDamage: 108,
+    });
+
+    const fullHpResult = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { reverse: { currentHp: 408 } },
+        sides: {
+          attacker: side("spirit_sonic_dog", rest.id, [rest.id, null, null, null]),
+        },
+      }),
+    ).forward.selectedResult;
+    expect(fullHpResult).toMatchObject({
+      status: "exact",
+      totalDamage: 0,
+      traitDamage: 0,
+    });
+    expect(fullHpResult.traitSettlements[0].text).toContain("溢出治疗不计伤害");
+  });
+
+  test("贪得无厌根据当前生命和本次吸血计算后续物攻等级", () => {
+    const trait = { id: "trait-baron", name: "贪得无厌" };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { reverse: { currentHp: 400 } },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.postAttackEffects).toMatchObject({
+      attackLevelStageAdd: expect.any(Number),
+      source: "贪得无厌",
+    });
+    expect(result.traitSettlements).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        text: expect.stringContaining("后续物攻"),
+      }),
+    ]));
+  });
+
+  test("贪得无厌把直接回复的溢出生命换算为后续物攻等级", () => {
+    const trait = { id: "trait-baron", name: "贪得无厌" };
+    const rest = {
+      id: "skill-baron-rest",
+      name: "休息回复",
+      type: "普通",
+      category: "status",
+      basePower: 0,
+      description: "自己回复30%生命。",
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      skills: [...snapshot.skills, rest],
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { reverse: { currentHp: 408 } },
+        sides: {
+          attacker: side(
+            "spirit_sonic_dog",
+            rest.id,
+            [rest.id, null, null, null],
+          ),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      mainDamage: 0,
+      status: "exact",
+      totalDamage: 0,
+      postAttackEffects: {
+        attackLevelStageAdd: 5,
+        source: "贪得无厌",
+      },
+    });
+    expect(result.traitSettlements[0].text).toContain("溢出回复 122");
+    expect(result.traitSettlements[0].text).toContain("后续物攻 +50%");
   });
 });

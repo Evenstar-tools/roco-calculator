@@ -21,10 +21,10 @@ describe("公平鸽衡量", () => {
     })).toEqual({ attack: 9, defense: -4 });
   });
 
-  test("复制结果仍限制在正负五十层", () => {
+  test("复制结果仍限制在正负九十九层", () => {
     expect(copyPositiveAbilityStages({ attack: 8, defense: 12 }, {
-      attack: 47,
-      defense: 45,
-    })).toEqual({ attack: 50, defense: 50 });
+      attack: 97,
+      defense: 95,
+    })).toEqual({ attack: 99, defense: 99 });
   });
 });

@@ -137,10 +137,13 @@ export function ResultRail({
               }`}
               data-tone={damageTone(result.traitResult.hpPercent)}
             >
-              <span className="skill-result-row__index">特</span>
-              <span className="skill-result-row__name">
-                <small>特性造成伤害</small>
-                {result.traitResult.name}
+              <span className="skill-result-row__index skill-result-row__index--trait">
+                特
+              </span>
+              <span className="skill-result-row__name skill-result-row__name--trait">
+                <span>{result.traitResult.name}</span>
+                <small aria-hidden="true">特性</small>
+                <span className="sr-only">特性造成伤害</span>
               </span>
               <span className="skill-result-row__bar" aria-hidden="true">
                 <span

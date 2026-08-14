@@ -2,7 +2,7 @@ const FAIR_PIGEON_NAME = "公平鸽";
 const BALANCE_TRAIT_NAME = "衡量";
 
 function clampStage(value) {
-  return Math.min(50, Math.max(-50, Math.floor(Number(value) || 0)));
+  return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
 }
 
 export function hasFairPigeonBalance(spirit) {

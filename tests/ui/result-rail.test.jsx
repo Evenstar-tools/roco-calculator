@@ -209,6 +209,7 @@ test("shows direct trait damage as a separate selected result above skills", () 
   expect(trait).toHaveClass("is-selected");
   expect(within(trait).getByText("12.5%")).toBeVisible();
   expect(within(trait).getByText("刺肤")).toBeVisible();
+  expect(within(trait).getByText("特性")).toBeVisible();
 });
 
 test("does not expose formula, share, or developer provenance in the result rail", () => {

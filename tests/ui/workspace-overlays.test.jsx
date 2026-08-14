@@ -113,8 +113,8 @@ test("opens the complete release notes in a second-level dialog", () => {
   });
 
   expect(screen.getByText("版本记录")).toBeVisible();
-  expect(screen.getByText("完整版本记录")).toBeVisible();
-  expect(screen.getByText("v1.5.5")).toBeVisible();
+  expect(screen.getByText("吸血与溢出回复")).toBeVisible();
+  expect(screen.getByText("v1.5.6")).toBeVisible();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
 
   fireEvent.click(screen.getByRole("button", { name: "查看完整版本记录" }));

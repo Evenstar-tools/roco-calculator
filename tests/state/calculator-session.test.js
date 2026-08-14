@@ -5,6 +5,7 @@ import { getSkillStatusEffectInputs } from "../../src/domain/skill-status-effect
 import { getTraitEffectInputs } from "../../src/domain/trait-effects.js";
 import { canonicalTraitControlKey } from "../../src/state/trait-values.js";
 import {
+  abilityLevelMultiplier,
   applyConfiguration,
   assertSnapshotReferences,
   createProductInitialState,
@@ -18,6 +19,13 @@ import {
   shareHashFromInput,
   updateMirroredTraitContext,
 } from "../../src/state/calculator-session.js";
+
+test("能力等级按正负九十九层封顶", () => {
+  expect(abilityLevelMultiplier(99, 0)).toBeCloseTo(10.9);
+  expect(abilityLevelMultiplier(100, 0)).toBeCloseTo(10.9);
+  expect(abilityLevelMultiplier(-99, 0)).toBeCloseTo(1 / 10.9);
+  expect(abilityLevelMultiplier(-100, 0)).toBeCloseTo(1 / 10.9);
+});
 
 const snapshot = {
   meta: { id: "s3-session", rulesVersion: "rules-v1" },

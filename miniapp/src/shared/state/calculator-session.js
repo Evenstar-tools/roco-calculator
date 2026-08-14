@@ -35,7 +35,7 @@ const REMEMBERED_SIDE_ACTIONS = new Set([
 ]);
 
 function clampStage(value) {
-  return Math.min(50, Math.max(-50, Math.floor(Number(value) || 0)));
+  return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
 }
 
 export function abilityLevelMultiplier(attackStage, defenseStage) {

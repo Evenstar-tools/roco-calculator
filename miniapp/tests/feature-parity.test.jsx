@@ -174,4 +174,29 @@ describe("mini-program desktop feature parity", () => {
       defenseLevelStage: -1,
     });
   });
+
+  test("caps the active calculation ability stages at positive and negative 99", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    const editor = screen.getByLabelText("当前计算能力等级");
+    const increase = within(editor).getByRole("button", {
+      name: "当前攻击等级提高一级",
+    });
+    const decrease = within(editor).getByRole("button", {
+      name: "当前防御等级降低一级",
+    });
+    for (let index = 0; index < 100; index += 1) {
+      fireEvent.click(increase);
+      fireEvent.click(decrease);
+    }
+
+    expect(store.getState().directions.forward.overrides).toMatchObject({
+      attackLevelStage: 99,
+      defenseLevelStage: -99,
+    });
+    expect(increase).toBeDisabled();
+    expect(decrease).toBeDisabled();
+  });
 });

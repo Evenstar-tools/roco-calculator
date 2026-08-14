@@ -49,7 +49,9 @@ describe("bundled miniapp runtime", () => {
   });
 
   test("decodes the compressed runtime without losing records", () => {
-    const bundled = JSON.parse(readFileSync(bundledRuntimePath, "utf8"));
+    const bundled = expandBundledRuntime(
+      JSON.parse(readFileSync(bundledRuntimePath, "utf8")),
+    );
 
     expect(decodedBundledRuntime.meta.id).toBe(bundled.meta.id);
     expect(decodedBundledRuntime.spirits).toHaveLength(bundled.spirits.length);

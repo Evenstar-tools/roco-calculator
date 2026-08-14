@@ -1477,17 +1477,40 @@ select:focus-visible {
 }
 
 .skill-slot-group--trait {
-  margin-bottom: 2px;
-  background: color-mix(in srgb, var(--surface-muted) 74%, transparent);
+  margin-bottom: 3px;
+  border: 1px solid color-mix(in srgb, var(--attack) 35%, var(--border));
+  background: color-mix(in srgb, var(--attack-soft) 70%, var(--surface));
 }
 
-.skill-slot__trait-name {
+.skill-slot-group--trait + .skill-slot-group {
+  border-top: 0;
+}
+
+.skill-slot__number--trait {
+  color: var(--attack);
+}
+
+.skill-slot__trait-skill {
+  display: flex;
+  min-width: 0;
+  height: 27px;
+  align-items: center;
+  padding: 0 7px;
   overflow: hidden;
-  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--attack) 32%, var(--border));
+  border-radius: 5px;
+  color: var(--attack);
+  background: var(--surface);
   font-size: 10px;
+  font-weight: 800;
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.skill-slot__trait-power {
+  color: var(--attack) !important;
+  font-variant-numeric: tabular-nums;
 }
 
 .skill-slot {
@@ -1887,16 +1910,44 @@ select:focus-visible {
 
 .skill-result-row--trait {
   border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--attack-soft) 52%, var(--surface));
 }
 
-.skill-result-row--trait .skill-result-row__name {
-  display: grid;
-  line-height: 1.2;
+.skill-result-row__index--trait {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  color: var(--attack);
+  background: color-mix(in srgb, var(--attack) 12%, var(--surface));
+  font-size: 9px;
+  font-weight: 800;
 }
 
-.skill-result-row--trait .skill-result-row__name small {
-  color: var(--text-faint);
+.skill-result-row__name--trait {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+  color: var(--attack);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.skill-result-row__name--trait > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.skill-result-row__name--trait small {
+  padding: 1px 4px;
+  border-radius: 999px;
+  color: var(--attack);
+  background: color-mix(in srgb, var(--attack) 10%, transparent);
   font-size: 8px;
+  font-weight: 700;
 }
 
 .skill-result-row__bar {
@@ -4159,29 +4210,53 @@ html[data-theme="dark"] .formula-group {
 }
 
 .compact-skill__row--trait {
-  background: color-mix(in srgb, var(--surface-muted) 74%, transparent);
+  border: 1px solid color-mix(in srgb, var(--attack) 35%, var(--border));
+  background: color-mix(in srgb, var(--attack-soft) 70%, var(--surface));
 }
 
-.compact-skill__trait-name {
-  display: grid;
+.compact-skill__number--trait {
+  color: var(--attack);
+  font-weight: 800;
+}
+
+.compact-skill__trait-skill {
+  display: flex;
   min-width: 0;
+  height: 36px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 0 9px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--attack) 32%, var(--border));
+  border-radius: 6px;
+  background: var(--surface);
 }
 
-.compact-skill__trait-name strong,
-.compact-skill__trait-name small {
+.compact-skill__trait-skill strong,
+.compact-skill__trait-skill small {
   overflow: hidden;
+  color: var(--attack);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.compact-skill__trait-name strong {
-  color: var(--text);
+.compact-skill__trait-skill strong {
   font-size: 12px;
+  font-weight: 800;
 }
 
-.compact-skill__trait-name small {
-  color: var(--text-muted);
+.compact-skill__trait-skill small {
+  flex: 0 0 auto;
   font-size: 9px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.compact-skill__element--trait {
+  color: var(--attack);
+  font-size: 10px;
+  font-weight: 800;
 }
 
 .compact-skill__trait-hits input {
@@ -6021,6 +6096,13 @@ html[data-theme="dark"] .type-analysis-chip[data-tone] {
   color: var(--text);
   font-size: 11px;
   font-weight: 700;
+}
+
+.trait-capability-note {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .trait-skill-power-bonuses {

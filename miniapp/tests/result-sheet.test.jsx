@@ -386,6 +386,7 @@ describe("result bar and sheet", () => {
     expect(within(process).getByText("显示威力")).toBeInTheDocument();
     expect(within(process).getByText("每段伤害")).toBeInTheDocument();
     expect(within(process).getByText("总伤害")).toBeInTheDocument();
+    expect(within(process).getByText("37/41")).toBeInTheDocument();
     expect(within(process).getByText("伤害分子")).toBeInTheDocument();
     expect(within(process).getByText("段数")).toBeInTheDocument();
   });

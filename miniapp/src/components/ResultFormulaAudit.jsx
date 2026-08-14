@@ -1,6 +1,7 @@
 import { Text, View } from "@tarojs/components";
 import {
   buildResultFormulaAudit,
+  displayDamageCoefficient,
   displayFormulaNumber,
 } from "../view-models/formula-audit.js";
 
@@ -148,7 +149,7 @@ export default function ResultFormulaAudit({ result }) {
         <FormulaChip
           label="等级系数"
           tone="one-hit"
-          value={displayFormulaNumber(numerator.coefficient, 6)}
+          value={displayDamageCoefficient(numerator.coefficient)}
         />
         <FormulaOperator>→</FormulaOperator>
         <FormulaRounding>四舍五入</FormulaRounding>

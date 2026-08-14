@@ -24,6 +24,7 @@ import {
 } from "../domain/choice-skill-sequence.js";
 import { buildRefractionHint } from "../domain/refraction.js";
 import { getGaleTurbineCompanionInput } from "../domain/wing-extension.js";
+import { resolveLifestealCapability } from "../domain/baron-greed.js";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -106,6 +107,7 @@ function SkillSide({
   activeSkillIndex,
   hitCount,
   health,
+  lifestealPercent,
   label,
   name,
   opponentHealth,
@@ -155,6 +157,12 @@ function SkillSide({
     ) ?? [];
   const defensiveTraitInputs =
     defenseTrait?.inputs?.filter((input) => input.scope !== "slot") ?? [];
+  const lifesteal = resolveLifestealCapability({
+    persistentLifestealPercent: lifestealPercent,
+    traits: trait ? [trait] : [],
+  });
+  const showsLifestealCapability =
+    lifesteal.percent > 0 || ["戏耍", "贪得无厌"].includes(trait?.name);
   return (
     <section className={`four-skill-side four-skill-side--${side}`}>
       <header>
@@ -162,7 +170,8 @@ function SkillSide({
         <strong>{name}</strong>
       </header>
       {offensiveTraitInputs.length > 0 ||
-      trait?.skillPowerBonuses?.length > 0 ? (
+      trait?.skillPowerBonuses?.length > 0 ||
+      showsLifestealCapability ? (
         <div className="four-skill-trait-controls">
           <TraitHint description={trait.description} name={trait.name} />
           <TraitSkillPowerBonuses
@@ -173,6 +182,11 @@ function SkillSide({
             automaticStack={trait.automaticStack}
             skills={selectedSkills}
           />
+          {showsLifestealCapability ? (
+            <small className="trait-capability-note">
+              吸血 {lifesteal.levels}层 · {lifesteal.percent}%
+            </small>
+          ) : null}
           <TraitInputs
             context={traitContext}
             inputs={offensiveTraitInputs}
@@ -260,11 +274,15 @@ function SkillSide({
             tabIndex="0"
           >
             <div className="skill-slot skill-slot--trait">
-              <span className="skill-slot__number">特</span>
-              <strong className="skill-slot__trait-name">{traitDamage.name}</strong>
+              <span className="skill-slot__number skill-slot__number--trait">特</span>
+              <span className="skill-slot__trait-skill" title="固定特性伤害">
+                {traitDamage.name}
+              </span>
               <span className="skill-slot__kind">{traitDamage.typeLabel}</span>
               <span>—</span>
-              <strong>{traitDamage.basePower}</strong>
+              <strong className="skill-slot__trait-power">
+                {traitDamage.basePower}
+              </strong>
               <label className="skill-slot__hits">
                 <span className="sr-only">{label}{traitDamage.name}连击次数</span>
                 <input
@@ -586,6 +604,7 @@ export function FourSkillEditor({
   activeSide = "attacker",
   activeSkillIndex = 0,
   attackerHealth,
+  attackerLifestealPercent = 0,
   attackerHitCount = 1,
   attackerName,
   attackerResults = [],
@@ -607,6 +626,7 @@ export function FourSkillEditor({
   defenderTraitDamage,
   defenderDefenseTrait,
   defenderHealth,
+  defenderLifestealPercent = 0,
   onHealthChange,
   onHealthPercentChange,
   onSkillActivate,
@@ -626,6 +646,7 @@ export function FourSkillEditor({
     attacker: {
       hitCount: attackerHitCount,
       health: attackerHealth,
+      lifestealPercent: attackerLifestealPercent,
       label: "攻击方",
       name: attackerName,
       opponentHealth: defenderHealth,
@@ -645,6 +666,7 @@ export function FourSkillEditor({
     defender: {
       hitCount: defenderHitCount,
       health: defenderHealth,
+      lifestealPercent: defenderLifestealPercent,
       label: "防御方",
       name: defenderName,
       opponentHealth: attackerHealth,

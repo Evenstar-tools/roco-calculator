@@ -4,6 +4,7 @@ import { getElementToneStyle } from "../domain/element-colors.js";
 import { getSkillEffectInputs } from "../domain/skill-effects.js";
 import { usesAbsolutePowerRule } from "../domain/skill-rules.js";
 import { getSkillStatusEffectInputs } from "../domain/skill-status-effects.js";
+import { resolveLifestealCapability } from "../domain/baron-greed.js";
 import { HealthInput } from "./HealthInput.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
 
@@ -274,6 +275,7 @@ export function describeResolution(result) {
 
 export function SingleSkillEditor({
   attackerHealth,
+  attackerLifestealPercent = 0,
   attackerTrait,
   carriedSkills = [],
   defenderHealth,
@@ -334,6 +336,13 @@ export function SingleSkillEditor({
       (input) => dynamicInputContextKey(input) === "defenderHpPercent",
     );
   const resolutionSummary = describeResolution(result);
+  const lifesteal = resolveLifestealCapability({
+    persistentLifestealPercent: attackerLifestealPercent,
+    traits: attackerTrait ? [attackerTrait] : [],
+  });
+  const showsLifestealCapability =
+    lifesteal.percent > 0 ||
+    ["戏耍", "贪得无厌"].includes(attackerTrait?.name);
   const effectiveType = result?.typeLabel ?? selectedSkill.type;
 
   useEffect(() => {
@@ -596,6 +605,11 @@ export function SingleSkillEditor({
               <strong>{attackerTrait.name}</strong>
               <p>{attackerTrait.description}</p>
               <div className="trait-inputs">
+                {showsLifestealCapability ? (
+                  <small className="trait-capability-note">
+                    吸血 {lifesteal.levels}层 · {lifesteal.percent}%
+                  </small>
+                ) : null}
                 <TraitAutomaticStack
                   automaticStack={attackerTrait.automaticStack}
                   skills={carriedSkills}

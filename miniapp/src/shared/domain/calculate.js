@@ -34,6 +34,8 @@ import {
   isGaleTurbine,
   resolveWingExtensionSkill,
 } from "./wing-extension.js";
+import { resolveClownTrickDamage } from "./clown-trick.js";
+import { resolveBaronGreed } from "./baron-greed.js";
 
 function finiteNumber(...values) {
   for (const value of values) {
@@ -56,9 +58,13 @@ function asMultiplierList(value) {
   return value === undefined ? [] : [value];
 }
 
+function clampAbilityStage(value) {
+  return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
+}
+
 function abilityLevelMultiplier(attackStage, defenseStage) {
-  const attackPercent = Number(attackStage) * 10;
-  const defensePercent = Number(defenseStage) * 10;
+  const attackPercent = clampAbilityStage(attackStage) * 10;
+  const defensePercent = clampAbilityStage(defenseStage) * 10;
   const numerator =
     1 +
     Math.max(attackPercent, 0) / 100 +
@@ -71,7 +77,7 @@ function abilityLevelMultiplier(attackStage, defenseStage) {
 }
 
 function abilityAdjustedStat(value, stage) {
-  const percent = Number(stage) * 10;
+  const percent = clampAbilityStage(stage) * 10;
   const numerator = 1 + Math.max(percent, 0) / 100;
   const denominator = 1 + Math.max(-percent, 0) / 100;
   return Number(value) * numerator / denominator;
@@ -281,6 +287,10 @@ function mergeChoiceTraitResults(
       (total, result) => total + result.additionalDamage,
       0,
     ),
+    traitDamage: results.reduce(
+      (total, result) => total + (Number(result.traitDamage) || 0),
+      0,
+    ),
     choiceTraitSequence: {
       executions: resultExecutions,
       text: `${traitName}：第一段 ${first.totalDamage} + 第二段 ${second.totalDamage} = ${totalDamage}${firstUsesResponse ? "（仅第一段触发应对）" : ""}`,
@@ -300,6 +310,9 @@ function mergeChoiceTraitResults(
     ),
     markSettlements: results.flatMap(
       (result) => result.markSettlements ?? [],
+    ),
+    traitSettlements: results.flatMap(
+      (result) => result.traitSettlements ?? [],
     ),
     totalDamage,
     warnings: [...new Set(results.flatMap((result) => result.warnings ?? []))],
@@ -329,6 +342,9 @@ function mergeGaleTurbineResults({
     ...turbineResult,
     additionalDamage:
       companionResult.additionalDamage + turbineResult.additionalDamage,
+    traitDamage:
+      (Number(companionResult.traitDamage) || 0) +
+      (Number(turbineResult.traitDamage) || 0),
     choiceTraitSequence: {
       executions,
       text: `${companionResult.skillName} ${companionResult.totalDamage} + 疾风涡轮 ${turbineResult.totalDamage} = ${totalDamage}`,
@@ -343,6 +359,10 @@ function mergeGaleTurbineResults({
     hpPercent: (totalDamage / Math.max(1, defender.panelStats.hp)) * 100,
     lethal: currentHp <= totalDamage,
     mainDamage: companionResult.mainDamage + turbineResult.mainDamage,
+    traitSettlements: [
+      ...(companionResult.traitSettlements ?? []),
+      ...(turbineResult.traitSettlements ?? []),
+    ],
     sources: [...new Set([
       ...(companionResult.sources ?? []),
       ...(turbineResult.sources ?? []),
@@ -523,6 +543,36 @@ function calculateSkillResult({
           Math.max(1, defender.panelStats.hp)) *
         100,
   };
+  const attackerMaximumHp = Math.max(0, Number(attacker.panelStats.hp) || 0);
+  const normalizedAttackerCurrentHp = Math.min(
+    attackerMaximumHp,
+    Math.max(
+      0,
+      finiteNumber(
+        attackerCurrentHp,
+        attacker.currentHp,
+        attackerMaximumHp,
+      ) ?? 0,
+    ),
+  );
+  const clownTrickFor = (mainDamage) => resolveClownTrickDamage({
+    attackerTraits: attacker.traits,
+    attackerCurrentHp: normalizedAttackerCurrentHp,
+    attackerMaximumHp,
+    context,
+    mainDamage,
+    persistentLifestealPercent: directionOverrides.lifestealPercent,
+    skill,
+  });
+  const baronGreedFor = (mainDamage) => resolveBaronGreed({
+    attackerTraits: attacker.traits,
+    attackerCurrentHp: normalizedAttackerCurrentHp,
+    attackerMaximumHp,
+    context,
+    mainDamage,
+    persistentLifestealPercent: directionOverrides.lifestealPercent,
+    skill,
+  });
   const traitHitCount = resolveTraitHitCountBonus({
     traits: attacker.traits,
     context,
@@ -662,6 +712,103 @@ function calculateSkillResult({
           ) + panelTrait.defenderSpeedFlatBonus,
       },
     };
+    const clownTrick = clownTrickFor(0);
+    if (clownTrick.active) {
+      const maximumHp = Math.max(0, Number(defender.panelStats.hp) || 0);
+      const currentHp = Math.min(
+        maximumHp,
+        Math.max(
+          0,
+          finiteNumber(
+            defenderCurrentHp,
+            defender.currentHp,
+            maximumHp,
+          ) ?? 0,
+        ),
+      );
+      const hitCount =
+        fixedHitCount?.hitCount ??
+        resolveHitCount(baseHitCount, automaticHitCountAdd);
+      return {
+        additionalDamage: 0,
+        automaticHitCountAdd,
+        combatPanel,
+        effectivePower: 0,
+        formulaSteps: [
+          formulaStep(
+            "戏耍特性伤害",
+            {
+              actualHealing: clownTrick.actualHealing,
+              missingHp: clownTrick.missingHp,
+              requestedHealing: clownTrick.requestedHealing,
+            },
+            0,
+            clownTrick.damage,
+            "reviewed-trait:clown-trick-v1",
+          ),
+        ],
+        hitCount,
+        hpPercent: maximumHp > 0 ? clownTrick.damage / maximumHp * 100 : 0,
+        lethal: currentHp <= clownTrick.damage,
+        mainDamage: 0,
+        markSettlements: [],
+        skillId: skill.id,
+        skillName: skill.name,
+        skillPower: 0,
+        sources: ["reviewed-trait:clown-trick-v1"],
+        status: "exact",
+        totalDamage: clownTrick.damage,
+        traitDamage: clownTrick.damage,
+        traitSettlements: [clownTrick.settlement].filter(Boolean),
+        typeLabel: "无·特性",
+        typeMultiplier: 1,
+        warnings: [],
+      };
+    }
+    const baronGreed = baronGreedFor(0);
+    if (baronGreed.active) {
+      const hitCount =
+        fixedHitCount?.hitCount ??
+        resolveHitCount(baseHitCount, automaticHitCountAdd);
+      return {
+        additionalDamage: 0,
+        automaticHitCountAdd,
+        combatPanel,
+        effectivePower: 0,
+        formulaSteps: [
+          formulaStep(
+            "贪得无厌溢出回复",
+            {
+              missingHp: baronGreed.missingHp,
+              requestedHealing: baronGreed.requestedHealing,
+            },
+            0,
+            baronGreed.attackLevelStageAdd,
+            "reviewed-trait:baron-greed-v1",
+          ),
+        ],
+        hitCount,
+        hpPercent: 0,
+        lethal: false,
+        mainDamage: 0,
+        markSettlements: [],
+        postAttackEffects: {
+          attackLevelStageAdd: baronGreed.attackLevelStageAdd,
+          source: "贪得无厌",
+        },
+        skillId: skill.id,
+        skillName: skill.name,
+        skillPower: 0,
+        sources: ["reviewed-trait:baron-greed-v1"],
+        status: "exact",
+        totalDamage: 0,
+        traitDamage: 0,
+        traitSettlements: [baronGreed.settlement].filter(Boolean),
+        typeLabel: skill.type,
+        typeMultiplier: 1,
+        warnings: [],
+      };
+    }
     return unresolvedResult(
       skill,
       {
@@ -1112,6 +1259,8 @@ function calculateSkillResult({
     attackDefenseLevelMultiplier,
     otherPowerMultiplier,
   });
+  const clownTrick = clownTrickFor(mainDamage.total);
+  const baronGreed = baronGreedFor(mainDamage.total);
   const targetMarkSettlement = targetNegativeMarkSettlement({
     additionalDamage: additionalDamage.total,
     markSlot:
@@ -1146,7 +1295,14 @@ function calculateSkillResult({
             ? `${settlement.text} · 追加 ${additionalDamage.total} 伤害`
           : settlement.text,
     }));
-  const totalDamage = mainDamage.total + additionalDamage.total;
+  if (clownTrick.settlement) {
+    traitSettlements.push(clownTrick.settlement);
+  }
+  if (baronGreed.settlement) {
+    traitSettlements.push(baronGreed.settlement);
+  }
+  const totalDamage =
+    mainDamage.total + additionalDamage.total + clownTrick.damage;
   const currentHp = Math.min(
     defender.panelStats.hp,
     Math.max(
@@ -1343,6 +1499,38 @@ function calculateSkillResult({
       additionalDamage.total,
       "reviewed-rule:starfall-v1",
     ),
+    ...(clownTrick.active
+      ? [
+          formulaStep(
+            "戏耍特性伤害",
+            {
+              actualHealing: clownTrick.actualHealing,
+              lifestealPercent: clownTrick.lifestealPercent,
+              missingHp: clownTrick.missingHp,
+              requestedHealing: clownTrick.requestedHealing,
+            },
+            mainDamage.total + additionalDamage.total,
+            clownTrick.damage,
+            "reviewed-trait:clown-trick-v1",
+          ),
+        ]
+      : []),
+    ...(baronGreed.active
+      ? [
+          formulaStep(
+            "贪得无厌溢出回复",
+            {
+              lifestealPercent: baronGreed.effectiveLifestealPercent,
+              missingHp: baronGreed.missingHp,
+              overflowHealing: baronGreed.overflowHealing,
+              requestedHealing: baronGreed.requestedHealing,
+            },
+            mainDamage.total,
+            baronGreed.attackLevelStageAdd,
+            "reviewed-trait:baron-greed-v1",
+          ),
+        ]
+      : []),
   ];
   const sources = [
     skill.provenance,
@@ -1356,6 +1544,8 @@ function calculateSkillResult({
     ...(attackerContract.active || defenderContract.active
       ? ["reviewed-trait:contract-shape-v1"]
       : []),
+    ...(clownTrick.active ? ["reviewed-trait:clown-trick-v1"] : []),
+    ...(baronGreed.active ? ["reviewed-trait:baron-greed-v1"] : []),
   ].filter(Boolean);
 
   const attackStageFor = (category) => attackStageForCategory(category);
@@ -1414,9 +1604,16 @@ function calculateSkillResult({
     totalDamage,
     mainDamage: mainDamage.total,
     additionalDamage: additionalDamage.total,
+    traitDamage: clownTrick.damage,
     combatPanel,
     markSettlements,
     traitSettlements,
+    postAttackEffects: baronGreed.active
+      ? {
+          attackLevelStageAdd: baronGreed.attackLevelStageAdd,
+          source: "贪得无厌",
+        }
+      : undefined,
     hpPercent,
     lethal: currentHp <= totalDamage,
     status: "exact",
@@ -1567,6 +1764,7 @@ function calculateDirectTraitDamageResult({
     sources: [rule.id, ...traitResolution.sources],
     status: "exact",
     totalDamage: damage.total,
+    traitDamage: 0,
     typeLabel: rule.typeLabel,
     typeMultiplier: 1,
     warnings: traitResolution.warnings,

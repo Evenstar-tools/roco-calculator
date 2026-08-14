@@ -917,6 +917,9 @@ test("calculates Stone Lizard family's Skin Spikes as a selectable trait source"
   await expect(traitSource).toBeVisible();
   await expect(traitSource).toContainText("无·特性");
   await expect(traitSource).toContainText("50");
+  await expect(traitSource.getByTitle("固定特性伤害")).toContainText("刺肤");
+  expect(await traitSource.evaluate((row) => row.scrollWidth <= row.clientWidth))
+    .toBe(true);
   await traitSource.click();
   await expect(
     page.getByRole("group", {
@@ -929,8 +932,17 @@ test("calculates Stone Lizard family's Skin Spikes as a selectable trait source"
   });
   await hitCount.fill("3");
   await expect(hitCount).toHaveValue("3");
-  await expect(page.getByText("特性造成伤害", { exact: true })).toBeVisible();
+  await expect(page.getByText("特性", { exact: true })).toBeVisible();
   await expect(page.getByText("刺肤", { exact: true }).last()).toBeVisible();
+
+  await page.getByRole("button", { name: "精简版" }).click();
+  const compactTraitSource = page.getByRole("group", {
+    name: "攻击方特性伤害刺肤，当前选中",
+  });
+  await expect(compactTraitSource.getByTitle("固定特性伤害"))
+    .toContainText("威力 50");
+  expect(await compactTraitSource.evaluate((row) => row.scrollWidth <= row.clientWidth))
+    .toBe(true);
 });
 
 test("keeps Dimo-family trait stacks synchronized in both damage directions", async ({

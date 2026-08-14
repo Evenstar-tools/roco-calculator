@@ -16,6 +16,18 @@ function displayNumber(value, digits = 4) {
   return Number(numeric.toFixed(digits)).toString();
 }
 
+function displayDamageCoefficient(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return "—";
+  const numerator = numeric * 41;
+  const roundedNumerator = Math.round(numerator);
+  const displayedNumerator =
+    Math.abs(numerator - roundedNumerator) < 0.00001
+      ? roundedNumerator
+      : displayNumber(numerator, 6);
+  return `${displayedNumerator}/41`;
+}
+
 function stepByLabel(result, label) {
   return result?.formulaSteps?.find((step) => step.label === label);
 }
@@ -65,6 +77,7 @@ export function buildFormulaAudit(result) {
     Math.floor(Number(settlementInput.hitCount ?? result.hitCount) || 1),
   );
   const additionalDamage = Number(result.additionalDamage) || 0;
+  const traitDamage = Number(result.traitDamage) || 0;
 
   return {
     skillName: result.skillName,
@@ -106,6 +119,7 @@ export function buildFormulaAudit(result) {
         settlementInput.oneHitAfterFinal ?? settlement?.before,
       hitCount,
       additionalDamage,
+      traitDamage,
       value: result.totalDamage,
     },
     weather:
@@ -236,7 +250,7 @@ export function FormulaAudit({ result }) {
         <Operator>×</Operator>
         <AuditChip label="威力" tone="one-hit" value={displayNumber(numerator.power)} />
         <Operator>×</Operator>
-        <AuditChip label="等级系数" tone="one-hit" value={displayNumber(numerator.coefficient, 6)} />
+        <AuditChip label="等级系数" tone="one-hit" value={displayDamageCoefficient(numerator.coefficient)} />
         <Operator>→</Operator>
         <span className="formula-audit__rounding">四舍五入</span>
         <AuditChip label="伤害分子" tone="one-hit" value={displayNumber(numerator.afterRound)} />
@@ -274,6 +288,16 @@ export function FormulaAudit({ result }) {
           <>
             <Operator>+</Operator>
             <AuditChip label="星陨追加" tone="total" value={displayNumber(total.additionalDamage)} />
+          </>
+        ) : null}
+        {total.traitDamage > 0 ? (
+          <>
+            <Operator>+</Operator>
+            <AuditChip
+              label="戏耍真伤"
+              tone="total"
+              value={displayNumber(total.traitDamage)}
+            />
           </>
         ) : null}
         <Operator>=</Operator>

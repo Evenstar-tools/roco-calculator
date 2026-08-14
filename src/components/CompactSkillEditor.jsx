@@ -104,12 +104,14 @@ function CompactSkillSide({
             role="group"
             tabIndex="0"
           >
-            <span className="compact-skill__number">特</span>
-            <span className="compact-skill__trait-name">
+            <span className="compact-skill__number compact-skill__number--trait">特</span>
+            <span className="compact-skill__trait-skill" title="固定特性伤害">
               <strong>{traitDamage.name}</strong>
-              <small>{traitDamage.typeLabel} · 威 {traitDamage.basePower}</small>
+              <small>威力 {traitDamage.basePower}</small>
             </span>
-            <span className="compact-skill__element">无</span>
+            <span className="compact-skill__element compact-skill__element--trait">
+              无
+            </span>
             <label className="compact-skill__trait-hits">
               <span className="sr-only">{label}{traitDamage.name}连击次数</span>
               <input

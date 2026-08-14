@@ -1298,6 +1298,7 @@ test("four-skill editor shows selectable direct trait damage above skill one", a
   expect(traitRow).toHaveClass("is-selected");
   expect(within(traitRow).getByText("无·特性")).toBeVisible();
   expect(within(traitRow).getByText("50")).toBeVisible();
+  expect(within(traitRow).getByTitle("固定特性伤害")).toHaveTextContent("刺肤");
   expect(
     screen.getByRole("group", { name: "攻击方技能1" }),
   ).not.toHaveClass("is-selected");
@@ -1340,6 +1341,7 @@ test("compact editor shows direct trait damage on either side without adding a s
   expect(
     screen.getByRole("group", { name: "防御方特性伤害刺肤，当前选中" }),
   ).toBeVisible();
+  expect(screen.getByTitle("固定特性伤害")).toHaveTextContent("刺肤威力 50");
   expect(screen.getAllByRole("combobox")).toHaveLength(8);
 });
 
@@ -1420,6 +1422,53 @@ test("four-skill editor exposes erosion stacks and trigger above the slots", () 
 
   expect(screen.getByRole("spinbutton", { name: "敌方中毒层数" })).toBeVisible();
   expect(screen.getByRole("checkbox", { name: "触发侵蚀" })).toBeVisible();
+});
+
+test("特性栏常驻显示吸血能力等级，恶魔男爵包含基础5层", () => {
+  render(
+    <FourSkillEditor
+      attackerHealth={{ currentHp: 400, maxHp: 500, percent: 80 }}
+      attackerLifestealPercent={110}
+      attackerName="恶魔男爵"
+      attackerSkills={[skills[0], null, null, null]}
+      attackerTrait={{
+        description: "入场时获得50%吸血，每过量回复5%生命转化为10%物攻。",
+        inputs: [{
+          contextKey: "attackerHpPercent",
+          defaultValue: 100,
+          label: "自身生命百分比",
+          max: 100,
+          min: 0,
+          scope: "battle",
+          type: "number",
+        }],
+        name: "贪得无厌",
+      }}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillSelect={vi.fn()}
+      skills={skills}
+    />,
+  );
+
+  expect(screen.getByText("吸血 16层 · 160%" )).toBeVisible();
+  expect(screen.getByRole("spinbutton", { name: "攻击方生命百分比" })).toBeVisible();
+});
+
+test("戏耍特性未获得吸血时也常驻显示0层", () => {
+  render(
+    <FourSkillEditor
+      attackerName="小丑"
+      attackerSkills={[skills[0], null, null, null]}
+      attackerTrait={{ description: "实际回复转为真伤。", inputs: [], name: "戏耍" }}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillSelect={vi.fn()}
+      skills={skills}
+    />,
+  );
+
+  expect(screen.getByText("吸血 0层 · 0%")).toBeVisible();
 });
 
 test("four-skill editor labels every fixed-power bonus inside the disc-swap trait", () => {
@@ -2203,6 +2252,7 @@ test("advanced settings stay collapsed until requested", async () => {
   expect(screen.getByText("显示威力")).toBeVisible();
   expect(screen.getByText("每段伤害")).toBeVisible();
   expect(screen.getByText("总伤害")).toBeVisible();
+  expect(screen.getByText("37/41")).toBeVisible();
   expect(screen.getAllByText("四舍五入")).toHaveLength(2);
   expect(screen.getByText("向下取整")).toBeVisible();
   expect(screen.getByText("8265")).toBeVisible();

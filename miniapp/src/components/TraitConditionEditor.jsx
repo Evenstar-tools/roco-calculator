@@ -70,6 +70,14 @@ export default function TraitConditionEditor({
                 {view.automaticStack.label}：{view.automaticStack.value}
               </Text>
             ) : null}
+            {view.lifesteal && (
+              view.lifesteal.percent > 0 ||
+              ["戏耍", "贪得无厌"].includes(view.name)
+            ) ? (
+              <Text className="trait-editor__automatic">
+                吸血 {view.lifesteal.levels}层 · {view.lifesteal.percent}%
+              </Text>
+            ) : null}
             <View className="trait-editor__controls">
               {visibleControls(view, values, battleContext).map((control) => (
                 <ConditionField

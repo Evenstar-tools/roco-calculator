@@ -317,7 +317,6 @@ describe("trait effect coverage", () => {
     ["图书守卫者", "入场时魔力为1", "双攻加成"],
     ["顺风", "先于敌方攻击", "触发加成"],
     ["破空", "先于敌方攻击", "触发加成"],
-    ["贪得无厌", "每5%过量回复", "每层物攻"],
     ["草木苏醒时", "本次攻击前回复能量", "每点双攻"],
     ["合拍", "累计相同项数", "每项物攻物防"],
     ["和弦共振", "场上印记种类", "每种魔攻"],
@@ -329,6 +328,23 @@ describe("trait effect coverage", () => {
 
     expect(labels).toContain(condition);
     expect(labels).toContain(effect);
+  });
+
+  test("贪得无厌改为填写自身生命，不再手填过量回复层数", () => {
+    const trait = snapshot.traits.find(
+      (candidate) => candidate.name === "贪得无厌",
+    );
+
+    expect(getTraitEffectInputs(trait, "attacker")).toMatchObject([
+      {
+        contextKey: "attackerHpPercent",
+        label: "自身生命百分比",
+        max: 100,
+        min: 0,
+        scope: "battle",
+        type: "number",
+      },
+    ]);
   });
 
   test.each([

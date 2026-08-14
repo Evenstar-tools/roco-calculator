@@ -1139,7 +1139,7 @@ test("mirrors later positive ability gains to a triggered Fair Pigeon once", asy
   expect(within(defenseSide).getByText("7层 · +70%")).toBeVisible();
 });
 
-test("caps positive power levels at 50 with ten percent per level", async () => {
+test("caps positive power levels at 99 with ten percent per level", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -1154,14 +1154,14 @@ test("caps positive power levels at 50 with ten percent per level", async () => 
   await user.click(addLevel);
   expect(within(attackSide).getByText("1层 · +10%")).toBeVisible();
 
-  for (let level = 1; level < 50; level += 1) {
+  for (let level = 1; level < 99; level += 1) {
     fireEvent.click(addLevel);
   }
-  expect(within(attackSide).getByText("50层 · +500%")).toBeVisible();
+  expect(within(attackSide).getByText("99层 · +990%")).toBeVisible();
   expect(addLevel).toBeDisabled();
 });
 
-test("uses the original site's reciprocal multiplier down to level -50", async () => {
+test("uses the original site's reciprocal multiplier down to level -99", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -1176,10 +1176,10 @@ test("uses the original site's reciprocal multiplier down to level -50", async (
   await user.click(subtractLevel);
   expect(within(attackSide).getByText("-1层 · -9%")).toBeVisible();
 
-  for (let level = -1; level > -50; level -= 1) {
+  for (let level = -1; level > -99; level -= 1) {
     fireEvent.click(subtractLevel);
   }
-  expect(within(attackSide).getByText("-50层 · -83%")).toBeVisible();
+  expect(within(attackSide).getByText("-99层 · -91%")).toBeVisible();
   expect(subtractLevel).toBeDisabled();
 });
 
