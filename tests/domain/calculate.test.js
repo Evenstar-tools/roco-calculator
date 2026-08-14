@@ -3857,6 +3857,50 @@ describe("inherited penetration stacks", () => {
     expect(fullHpResult.traitSettlements[0].text).toContain("溢出治疗不计伤害");
   });
 
+  test("戏耍把光合治愈拆成独立真伤，并与当前技能伤害合并", () => {
+    const trait = { id: "trait-clown", name: "戏耍" };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      traits: [trait],
+    };
+    const input = battleInput({
+      mode: "four",
+      directions: {
+        forward: {
+          context: {
+            bloodlineMagicId: "photosynthetic-healing",
+            bloodlineMagicTriggered: true,
+          },
+        },
+        reverse: { currentHp: 300 },
+      },
+    });
+    const result = calculateMatchup(fixture, input).forward;
+
+    expect(result.bloodlineResult).toMatchObject({
+      skillName: "戏耍·光合治愈",
+      sourceKind: "bloodline",
+      status: "exact",
+      totalDamage: 108,
+      traitDamage: 108,
+    });
+    expect(result.results[0].totalDamage).toBe(
+      result.results[0].mainDamage + 108,
+    );
+    expect(result.results[0].traitSettlements.at(-1).text).toContain(
+      "光合治愈 204",
+    );
+
+    input.directions.forward.selectedDamageSource = "bloodline";
+    const selected = calculateMatchup(fixture, input).forward;
+    expect(selected.selectedResult).toBe(selected.bloodlineResult);
+  });
+
   test("贪得无厌根据当前生命和本次吸血计算后续物攻等级", () => {
     const trait = { id: "trait-baron", name: "贪得无厌" };
     const fixture = {

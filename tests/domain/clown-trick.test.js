@@ -100,4 +100,24 @@ describe("clown trick trait", () => {
       context: { counterTriggered: true },
     }).damage).toBe(100);
   });
+
+  test("光合治愈与吸血合并后只按缺失生命截断一次", () => {
+    const result = resolveClownTrickDamage({
+      attackerTraits: clownTrait,
+      attackerCurrentHp: 300,
+      attackerMaximumHp: 400,
+      externalHealingSources: [{ amount: 200, label: "光合治愈" }],
+      mainDamage: 80,
+      persistentLifestealPercent: 100,
+      skill: { name: "普通攻击", description: "造成物伤。" },
+    });
+
+    expect(result).toMatchObject({
+      actualHealing: 100,
+      damage: 100,
+      missingHp: 100,
+      requestedHealing: 280,
+    });
+    expect(result.settlement.text).toContain("吸血 80 + 光合治愈 200");
+  });
 });

@@ -1165,7 +1165,10 @@ function CalculatorWorkspace({ snapshot }) {
     currentDirection.selectedDamageSource === "trait" &&
     calculation[activeDirection].traitResult
       ? "trait"
-      : "skill";
+      : currentDirection.selectedDamageSource === "bloodline" &&
+          calculation[activeDirection].bloodlineResult
+        ? "bloodline"
+        : "skill";
 
   const fourEditor = configurationReady ? (
     <FourSkillEditor
@@ -1839,8 +1842,26 @@ function CalculatorWorkspace({ snapshot }) {
                 singleSkillContent={singleEditor}
               />
               <AdvancedOptions
+                bloodlineMagicId={
+                  currentDirection.context?.bloodlineMagicId ?? "none"
+                }
+                bloodlineMagicTriggered={
+                  currentDirection.context?.bloodlineMagicTriggered === true
+                }
                 finalMultiplier={currentDirection.finalDamageMultiplier}
                 marks={state.marks}
+                onBloodlineMagicChange={(bloodlineMagicId, triggered) =>
+                  updateDirection({
+                    ...(!triggered &&
+                    currentDirection.selectedDamageSource === "bloodline"
+                      ? { selectedDamageSource: "skill" }
+                      : {}),
+                    context: {
+                      bloodlineMagicId,
+                      bloodlineMagicTriggered: triggered,
+                    },
+                  })
+                }
                 onFinalMultiplierChange={(finalDamageMultiplier) =>
                   updateDirection({ finalDamageMultiplier })
                 }
@@ -1873,6 +1894,9 @@ function CalculatorWorkspace({ snapshot }) {
         {configurationReady ? (
           <div className="result-column">
             <ResultRail
+              onBloodlineResultFocus={() =>
+                updateDirection({ selectedDamageSource: "bloodline" })
+              }
               onCurrentHpChange={(currentHp) => updateDirection({ currentHp })}
               onCurrentHpPercentChange={(currentHpPercent) =>
                 updateDirection({ context: { currentHpPercent } })

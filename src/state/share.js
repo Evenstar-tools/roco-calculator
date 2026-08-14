@@ -321,7 +321,8 @@ function assertDirection(direction, path) {
   if (
     Object.hasOwn(direction, "selectedDamageSource") &&
     direction.selectedDamageSource !== "skill" &&
-    direction.selectedDamageSource !== "trait"
+    direction.selectedDamageSource !== "trait" &&
+    direction.selectedDamageSource !== "bloodline"
   ) {
     throw new TypeError(`${path}.selectedDamageSource 无效`);
   }

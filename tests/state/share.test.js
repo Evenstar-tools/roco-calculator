@@ -203,6 +203,26 @@ describe("versioned share state", () => {
     });
   });
 
+  test("round trips bloodline magic selection and its standalone damage source", async () => {
+    const state = shareFixture();
+    state.directions.forward.selectedDamageSource = "bloodline";
+    state.directions.forward.context = {
+      ...state.directions.forward.context,
+      bloodlineMagicId: "photosynthetic-healing",
+      bloodlineMagicTriggered: true,
+    };
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.directions.forward).toMatchObject({
+      selectedDamageSource: "bloodline",
+      context: {
+        bloodlineMagicId: "photosynthetic-healing",
+        bloodlineMagicTriggered: true,
+      },
+    });
+  });
+
   test("rejects a modified checksum", async () => {
     const hash = await encodeShareState(shareFixture());
     const replacement = hash.endsWith("a") ? "b" : "a";

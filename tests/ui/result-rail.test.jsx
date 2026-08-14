@@ -212,6 +212,33 @@ test("shows direct trait damage as a separate selected result above skills", () 
   expect(within(trait).getByText("特性")).toBeVisible();
 });
 
+test("shows bloodline true damage separately and lets the user select it", async () => {
+  const user = userEvent.setup();
+  const onBloodlineResultFocus = vi.fn();
+  render(
+    <ResultRail
+      onBloodlineResultFocus={onBloodlineResultFocus}
+      result={{
+        ...result,
+        bloodlineResult: {
+          damage: 108,
+          hpPercent: 24.9,
+          name: "戏耍·光合治愈",
+          selected: false,
+        },
+        mode: "four",
+      }}
+    />,
+  );
+
+  const row = screen.getByRole("button", {
+    name: "查看戏耍·光合治愈伤害",
+  });
+  expect(within(row).getByText("24.9%")).toBeVisible();
+  await user.click(row);
+  expect(onBloodlineResultFocus).toHaveBeenCalledTimes(1);
+});
+
 test("does not expose formula, share, or developer provenance in the result rail", () => {
   render(<ResultRail onShare={vi.fn()} result={result} />);
 

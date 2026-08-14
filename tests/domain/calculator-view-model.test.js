@@ -190,6 +190,42 @@ describe("buildCalculatorViewModel", () => {
     expect(input).toEqual(state());
   });
 
+  test("maps standalone bloodline damage without leaving a skill row selected", () => {
+    const input = state();
+    input.mode = "four";
+    input.directions.forward.selectedDamageSource = "bloodline";
+    input.directions.forward.context = {
+      bloodlineMagicId: "photosynthetic-healing",
+      bloodlineMagicTriggered: true,
+    };
+    input.directions.reverse.currentHp = 300;
+    const clownSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "fire"
+          ? { ...spirit, traitIds: ["clown-trick"] }
+          : spirit,
+      ),
+      traits: [
+        ...snapshot.traits,
+        { id: "clown-trick", name: "戏耍", description: "实际回复转为真伤。" },
+      ],
+    };
+
+    const view = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot: clownSnapshot,
+      state: input,
+    });
+
+    expect(view.result.bloodlineResult).toMatchObject({
+      name: "戏耍·光合治愈",
+      selected: true,
+    });
+    expect(view.result.selectedSkillName).toBe("戏耍·光合治愈");
+    expect(view.result.skillResults.every((entry) => !entry.selected)).toBe(true);
+  });
+
   test("analyzes the carried four skills even while the single-skill editor is active", () => {
     const input = state();
     input.sides.attacker.skills.single = null;

@@ -2293,6 +2293,79 @@ test("advanced settings stay collapsed until requested", async () => {
   );
 });
 
+test("advanced settings configure bloodline magic without applying placeholders", async () => {
+  const user = userEvent.setup();
+  const onBloodlineMagicChange = vi.fn();
+
+  render(
+    <AdvancedOptions
+      bloodlineMagicId="photosynthetic-healing"
+      bloodlineMagicTriggered={false}
+      finalMultiplier={1}
+      onBloodlineMagicChange={onBloodlineMagicChange}
+      onFinalMultiplierChange={vi.fn()}
+      onMarkChange={vi.fn()}
+      onRainTurnsChange={vi.fn()}
+      onReductionChange={vi.fn()}
+      rainTurns={0}
+      reductionPercent={0}
+      result={null}
+    />,
+  );
+
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  expect(screen.getByRole("combobox", { name: "血脉魔法" })).toHaveValue(
+    "photosynthetic-healing",
+  );
+  expect(screen.getByText(/回复最大生命的50%/)).toBeVisible();
+
+  await user.click(screen.getByRole("checkbox", { name: "使用光合治愈" }));
+  expect(onBloodlineMagicChange).toHaveBeenCalledWith(
+    "photosynthetic-healing",
+    true,
+  );
+
+  await user.selectOptions(
+    screen.getByRole("combobox", { name: "血脉魔法" }),
+    "throttling",
+  );
+  expect(onBloodlineMagicChange).toHaveBeenLastCalledWith("throttling", false);
+});
+
+test("formula audit explains standalone photosynthetic healing damage", async () => {
+  const user = userEvent.setup();
+
+  render(
+    <AdvancedOptions
+      finalMultiplier={1}
+      onFinalMultiplierChange={vi.fn()}
+      onMarkChange={vi.fn()}
+      onRainTurnsChange={vi.fn()}
+      onReductionChange={vi.fn()}
+      rainTurns={0}
+      reductionPercent={0}
+      result={{
+        formulaSteps: [
+          { label: "血脉魔法回复", output: 250 },
+          {
+            input: { actualHealing: 108, requestedHealing: 250 },
+            label: "戏耍特性伤害",
+          },
+        ],
+        skillName: "戏耍·光合治愈",
+        sourceKind: "bloodline",
+        totalDamage: 108,
+      }}
+    />,
+  );
+
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  expect(screen.getByText("戏耍·光合治愈")).toBeVisible();
+  expect(screen.getAllByText("光合治愈")).toHaveLength(2);
+  expect(screen.getByText("戏耍真伤")).toBeVisible();
+  expect(screen.getByText("最大生命 × 50%")).toBeVisible();
+});
+
 test("formula audit places defense-skill reduction after defense division", async () => {
   const user = userEvent.setup();
 

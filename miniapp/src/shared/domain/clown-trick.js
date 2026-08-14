@@ -66,6 +66,7 @@ export function resolveSkillHealing({
   attackerMaximumHp,
   baseLifestealPercent = 0,
   context = {},
+  externalHealingSources = [],
   mainDamage = 0,
   persistentLifestealPercent = 0,
   skill,
@@ -87,15 +88,36 @@ export function resolveSkillHealing({
     Math.max(0, Number(mainDamage) || 0) * lifestealPercent / 100,
   );
   const directHealing = Math.round(maximumHp * healPercent / 100);
+  const normalizedExternalSources = externalHealingSources
+    .map((source) => ({
+      amount: Math.max(0, Math.round(Number(source?.amount) || 0)),
+      label: String(source?.label ?? "").trim(),
+    }))
+    .filter((source) => source.amount > 0 && source.label.length > 0);
+  const externalHealing = normalizedExternalSources.reduce(
+    (sum, source) => sum + source.amount,
+    0,
+  );
+  const healingSources = [
+    lifestealHealing > 0
+      ? { amount: lifestealHealing, label: "吸血" }
+      : null,
+    directHealing > 0
+      ? { amount: directHealing, label: "回复" }
+      : null,
+    ...normalizedExternalSources,
+  ].filter(Boolean);
   return {
     currentHp,
     directHealing,
+    externalHealing,
     healPercent,
+    healingSources,
     lifestealHealing,
     lifestealPercent,
     maximumHp,
     missingHp,
-    requestedHealing: lifestealHealing + directHealing,
+    requestedHealing: lifestealHealing + directHealing + externalHealing,
   };
 }
 
@@ -104,6 +126,7 @@ export function resolveClownTrickDamage({
   attackerCurrentHp,
   attackerMaximumHp,
   context = {},
+  externalHealingSources = [],
   mainDamage = 0,
   persistentLifestealPercent = 0,
   skill,
@@ -125,23 +148,22 @@ export function resolveClownTrickDamage({
     attackerCurrentHp,
     attackerMaximumHp,
     context,
+    externalHealingSources,
     mainDamage,
     persistentLifestealPercent,
     skill,
   });
   const {
-    directHealing,
     healPercent,
-    lifestealHealing,
+    healingSources,
     lifestealPercent,
     missingHp,
     requestedHealing,
   } = healing;
   const actualHealing = Math.min(missingHp, requestedHealing);
-  const sourceLabels = [
-    lifestealHealing > 0 ? `吸血 ${lifestealHealing}` : null,
-    directHealing > 0 ? `回复 ${directHealing}` : null,
-  ].filter(Boolean);
+  const sourceLabels = healingSources.map(
+    (source) => `${source.label} ${source.amount}`,
+  );
   const text = requestedHealing > 0
     ? actualHealing > 0
       ? `戏耍｜${sourceLabels.join(" + ")}，实际回复 ${actualHealing} → 追加 ${actualHealing} 真实伤害`

@@ -1908,6 +1908,14 @@ select:focus-visible {
   background: #f5f3ff;
 }
 
+.skill-result-row--action {
+  width: 100%;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
 .skill-result-row--trait {
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--attack-soft) 52%, var(--surface));
@@ -5162,6 +5170,51 @@ body {
   gap: 10px;
   grid-column: 1 / -1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bloodline-magic-field {
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 0;
+  background: var(--surface);
+}
+
+.bloodline-magic-field legend {
+  padding: 0 4px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.bloodline-magic-field legend small,
+.bloodline-magic-field > small {
+  color: var(--text-faint);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.bloodline-magic-field__controls {
+  display: grid;
+  align-items: center;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.bloodline-magic-field__trigger {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bloodline-magic-field > small {
+  display: block;
+  margin-top: 5px;
 }
 
 .mark-side {

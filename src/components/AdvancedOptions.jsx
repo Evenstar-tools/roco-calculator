@@ -4,6 +4,10 @@ import {
   MARK_DEFINITIONS,
   markDefinition,
 } from "../domain/marks.js";
+import {
+  BLOODLINE_MAGIC_OPTIONS,
+  getBloodlineMagicOption,
+} from "../domain/bloodline-magic.js";
 
 function numericValue(value, fallback = 0) {
   const next = Number(value);
@@ -161,6 +165,44 @@ function Operator({ children }) {
 }
 
 export function FormulaAudit({ result }) {
+  if (result?.sourceKind === "bloodline") {
+    const healingStep = result.formulaSteps?.find(
+      (step) => step.label === "血脉魔法回复",
+    );
+    const traitStep = result.formulaSteps?.find(
+      (step) => step.label === "戏耍特性伤害",
+    );
+    const actualHealing = Number(traitStep?.input?.actualHealing) || 0;
+    const requestedHealing = Number(traitStep?.input?.requestedHealing) || 0;
+
+    return (
+      <section className="formula-audit">
+        <header>
+          <strong>伤害计算过程</strong>
+          <span>{result.skillName}</span>
+        </header>
+        <FormulaRow title="光合治愈" tone="power">
+          <AuditChip
+            label="最大生命 × 50%"
+            tone="power"
+            value={displayNumber(healingStep?.output ?? requestedHealing)}
+          />
+          <Operator>→</Operator>
+          <AuditChip
+            label="实际回复"
+            tone="result"
+            value={displayNumber(actualHealing)}
+          />
+        </FormulaRow>
+        <FormulaRow title="戏耍真伤" tone="total">
+          <AuditChip label="实际回复" tone="total" value={displayNumber(actualHealing)} />
+          <Operator>=</Operator>
+          <AuditChip label="结果" tone="result" value={displayNumber(result.totalDamage)} />
+        </FormulaRow>
+      </section>
+    );
+  }
+
   const audit = buildFormulaAudit(result);
   if (!audit) {
     return (
@@ -395,8 +437,11 @@ function SideMarks({ label, marks, onChange, side, tone }) {
 }
 
 export function AdvancedOptions({
+  bloodlineMagicId = "none",
+  bloodlineMagicTriggered = false,
   finalMultiplier,
   marks,
+  onBloodlineMagicChange = () => {},
   onFinalMultiplierChange,
   onMarkChange,
   onRainTurnsChange,
@@ -406,6 +451,7 @@ export function AdvancedOptions({
   result,
 }) {
   const [open, setOpen] = useState(false);
+  const bloodlineMagic = getBloodlineMagicOption(bloodlineMagicId);
 
   return (
     <section className={`advanced-options${open ? " is-open" : ""}`}>
@@ -438,6 +484,48 @@ export function AdvancedOptions({
               <span>%</span>
             </span>
           </label>
+          <fieldset className="bloodline-magic-field">
+            <legend>
+              血脉魔法 <small>给进攻方使用</small>
+            </legend>
+            <div className="bloodline-magic-field__controls">
+              <select
+                aria-label="血脉魔法"
+                onChange={(event) =>
+                  onBloodlineMagicChange(event.target.value, false)
+                }
+                value={bloodlineMagic.id}
+              >
+                {BLOODLINE_MAGIC_OPTIONS.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+              <label className="bloodline-magic-field__trigger">
+                <input
+                  aria-label={`使用${bloodlineMagic.name}`}
+                  checked={bloodlineMagicTriggered && bloodlineMagic.id !== "none"}
+                  disabled={bloodlineMagic.id === "none"}
+                  onChange={(event) =>
+                    onBloodlineMagicChange(
+                      bloodlineMagic.id,
+                      event.target.checked,
+                    )
+                  }
+                  type="checkbox"
+                />
+                使用
+              </label>
+            </div>
+            <small>
+              {bloodlineMagic.implemented
+                ? bloodlineMagic.note
+                : bloodlineMagic.id === "none"
+                  ? "未使用血脉魔法"
+                  : "暂不参与伤害计算"}
+            </small>
+          </fieldset>
           <div className="mark-config">
             <SideMarks
               label="进攻方"
