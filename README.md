@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/project-cover.png" alt="洛克计算器项目封面" width="100%">
+</p>
+
 # 洛克计算器
 
 [![Checks](https://img.shields.io/badge/checks-1049%20passed-2da44e.svg)](#开发与验证)
@@ -6,6 +10,8 @@
 [![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Windows-2563eb.svg)](#使用方式)
 
 面向《洛克王国：世界》PVP 的确定性伤害计算器。目标是在一回合有限的决策时间内，用最少操作完成双方精灵、性格、个体和技能对比。
+
+![洛克计算器精简版界面](docs/images/app-overview.png)
 
 ## 主要能力
 
