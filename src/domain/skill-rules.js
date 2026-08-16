@@ -341,6 +341,27 @@ function resolveBooleanPowerMultiplier(skill, context) {
   ]);
 }
 
+function resolveBooleanPowerPercentAdd(skill, context) {
+  const params = skill.ruleParams ?? {};
+  const contextKey = params.contextKey ?? "conditionTriggered";
+  const triggered = context[contextKey] === true;
+  const add = triggered ? Math.max(0, Number(params.add) || 0) : 0;
+  const basePower = Number(skill.basePower);
+  return exact(
+    basePower,
+    [
+      {
+        label: params.label ?? "条件威力加成",
+        input: triggered,
+        before: basePower,
+        after: basePower * (1 + add),
+        source: "reviewed-rule:boolean-power-percent-add-v1",
+      },
+    ],
+    { powerPercentAdds: add === 0 ? [] : [add] },
+  );
+}
+
 function resolveBooleanDamageMultiplier(skill, context) {
   const params = skill.ruleParams ?? {};
   const contextKey = params.contextKey ?? "conditionTriggered";
@@ -924,6 +945,7 @@ const RULES = new Map([
   ["position_power_add", resolvePositionPowerAdd],
   ["boolean_power_add", resolveBooleanPowerAdd],
   ["boolean_power_multiplier", resolveBooleanPowerMultiplier],
+  ["boolean_power_percent_add", resolveBooleanPowerPercentAdd],
   ["boolean_damage_multiplier", resolveBooleanDamageMultiplier],
   ["enemy_skill_power_multiplier", resolveEnemySkillPowerMultiplier],
   ["energy_percentage_decrease", resolveEnergyPercentageDecrease],

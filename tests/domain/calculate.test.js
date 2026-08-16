@@ -1487,6 +1487,115 @@ describe("calculateMatchup", () => {
     });
   });
 
+  test("adds Fan, Tailwind and Wind mark bonuses in one power zone", () => {
+    const fan = {
+      id: "skill_fan_additive",
+      name: "扇风",
+      type: "翼",
+      category: "physical",
+      basePower: 75,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const tailwind = {
+      id: "trait_tailwind_additive",
+      name: "顺风",
+      description: "若先于敌方攻击，本次技能威力+50%。",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, fan],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [tailwind.id] }
+          : spirit,
+      ),
+      traits: [tailwind],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", fan.id, [fan.id, null, null, null]),
+        },
+        marks: {
+          attacker: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "tailwind", stacks: 1 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: null, stacks: 0 },
+          },
+        },
+        directions: {
+          forward: { context: { actedBeforeEnemy: true } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.skillPower).toBe(165);
+    expect(
+      result.formulaSteps.find((step) => step.label === "技能威力百分比")?.input,
+    ).toEqual(expect.arrayContaining([0.5, 0.5, 0.2]));
+  });
+
+  test("adds Snowfield Hunt, Ice Soul and Momentum bonuses in one power zone", () => {
+    const snowfieldHunt = {
+      id: "skill_snowfield_hunt_additive",
+      name: "雪原狩猎",
+      type: "冰",
+      category: "physical",
+      basePower: 80,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const iceSoul = {
+      id: "trait_ice_soul_additive",
+      name: "冰雪魂魄",
+      description: "天气为暴风雪时，冰系技能威力+100%。",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, snowfieldHunt],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [iceSoul.id] }
+          : spirit,
+      ),
+      traits: [iceSoul],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", snowfieldHunt.id, [
+            snowfieldHunt.id,
+            null,
+            null,
+            null,
+          ]),
+        },
+        marks: {
+          attacker: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "momentum", stacks: 1 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: null, stacks: 0 },
+          },
+        },
+        directions: {
+          forward: { context: { blizzardWeather: true } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.skillPower).toBe(224);
+    expect(
+      result.formulaSteps.find((step) => step.label === "技能威力百分比")?.input,
+    ).toEqual(expect.arrayContaining([0.5, 1, 0.3]));
+  });
+
   test("applies a direction fixed-power status bonus to every selected skill", () => {
     const input = battleInput({
       mode: "four",

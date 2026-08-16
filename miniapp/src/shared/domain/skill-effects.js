@@ -334,12 +334,11 @@ const REVIEWED_EFFECTS = Object.freeze({
   天旋地转: booleanAdd("burstTriggered", "触发迸发", 30),
   扇风: {
     inputs: [booleanInput("actedBeforeEnemy", "先于敌方攻击")],
-    ruleId: "boolean_power_multiplier",
+    ruleId: "boolean_power_percent_add",
     ruleParams: {
+      add: 0.5,
       contextKey: "actedBeforeEnemy",
       label: "先于敌方攻击",
-      multiplier: 1.5,
-      rounding: "floor",
     },
   },
   色散: {
@@ -443,11 +442,11 @@ const REVIEWED_EFFECTS = Object.freeze({
   滚雪球: counterMultiplier(2),
   雪原狩猎: {
     inputs: [booleanInput("blizzardWeather", "当前为暴风雪天气")],
-    ruleId: "boolean_power_multiplier",
+    ruleId: "boolean_power_percent_add",
     ruleParams: {
+      add: 0.5,
       contextKey: "blizzardWeather",
       label: "暴风雪天气",
-      multiplier: 1.5,
     },
   },
   吹炎: counterMultiplier(2),

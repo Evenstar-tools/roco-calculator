@@ -20,7 +20,9 @@ import {
   isFirstRunGuideCompleted,
 } from "./state/first-run-guide.js";
 import {
+  readPowerDisplayMode,
   readTypeCoverageSetting,
+  writePowerDisplayMode,
   writeTypeCoverageSetting,
 } from "./state/display-settings.js";
 import {
@@ -110,6 +112,9 @@ function CalculatorWorkspace({ snapshot }) {
   const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
   const [dataSourceOpen, setDataSourceOpen] = useState(false);
   const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
+  const [powerDisplayMode, setPowerDisplayMode] = useState(() =>
+    readPowerDisplayMode(),
+  );
   const [typeCoverageEnabled, setTypeCoverageEnabled] = useState(() =>
     readTypeCoverageSetting(),
   );
@@ -1138,6 +1143,7 @@ function CalculatorWorkspace({ snapshot }) {
       result={resultModel.selectedResult}
       selectedSkill={selectedSingleSkill}
       skills={activeAttackSkills}
+      powerDisplayMode={powerDisplayMode}
       powerMode={currentDirection.overrides.powerMode ?? "base"}
       traitContext={currentDirection.context}
     />
@@ -1291,6 +1297,7 @@ function CalculatorWorkspace({ snapshot }) {
           overrides: { basePower: power },
         })
       }
+      powerDisplayMode={powerDisplayMode}
     />
   ) : null;
 
@@ -1483,10 +1490,14 @@ function CalculatorWorkspace({ snapshot }) {
     },
     displaySettings: {
       onClose: () => setDisplaySettingsOpen(false),
+      onPowerDisplayModeChange: (mode) => {
+        setPowerDisplayMode(writePowerDisplayMode(undefined, mode));
+      },
       onTypeCoverageChange: (enabled) => {
         setTypeCoverageEnabled(writeTypeCoverageSetting(undefined, enabled));
       },
       open: displaySettingsOpen,
+      powerDisplayMode,
       typeCoverageEnabled,
     },
     mobileResult: {

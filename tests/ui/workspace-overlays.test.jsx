@@ -133,6 +133,7 @@ test("opens the complete release notes in a second-level dialog", () => {
 
 test("opens display settings from the menu and exposes the type analysis switch", () => {
   const onShowDisplaySettings = vi.fn();
+  const onPowerDisplayModeChange = vi.fn();
   const onTypeCoverageChange = vi.fn();
   const { rerender } = renderOverlays({
     menu: {
@@ -150,8 +151,10 @@ test("opens display settings from the menu and exposes the type analysis switch"
     <WorkspaceOverlays
       displaySettings={{
         onClose: vi.fn(),
+        onPowerDisplayModeChange,
         onTypeCoverageChange,
         open: true,
+        powerDisplayMode: "skill",
         typeCoverageEnabled: false,
       }}
       menu={{ actions: {}, open: false }}
@@ -170,4 +173,11 @@ test("opens display settings from the menu and exposes the type analysis switch"
   expect(switchControl).not.toBeChecked();
   fireEvent.click(switchControl);
   expect(onTypeCoverageChange).toHaveBeenCalledWith(true);
+
+  expect(screen.getByRole("button", { name: "技能威力" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "面板威力" }));
+  expect(onPowerDisplayModeChange).toHaveBeenCalledWith("panel");
 });

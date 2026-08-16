@@ -5885,6 +5885,48 @@ body {
   accent-color: var(--accent);
 }
 
+.display-settings-option--power {
+  align-items: stretch;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.display-settings-segment {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  grid-template-columns: 1fr 1fr;
+}
+
+.display-settings-segment button {
+  min-height: 34px;
+  border: 0;
+  color: var(--text-muted);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.display-settings-segment button[aria-pressed="true"] {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.skill-slot__power-output {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-strong);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
 .formula-breakdown dd span {
   font-size: 11px;
 }

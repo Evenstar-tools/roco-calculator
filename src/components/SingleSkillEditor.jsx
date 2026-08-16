@@ -294,6 +294,7 @@ export function SingleSkillEditor({
   result,
   selectedSkill,
   skills,
+  powerDisplayMode = "skill",
   powerMode = "base",
   traitContext = {},
 }) {
@@ -498,9 +499,13 @@ export function SingleSkillEditor({
               value={manualPower}
             />
           </label>
-          <strong>
-            <small>实际</small>
-            {displayedSkillPower(selectedSkill, result) ?? "待输入"}
+          <strong
+            aria-label={powerDisplayMode === "panel" ? "面板威力" : undefined}
+          >
+            <small>{powerDisplayMode === "panel" ? "面板" : "实际"}</small>
+            {powerDisplayMode === "panel"
+              ? result?.displayedPower ?? "待输入"
+              : displayedSkillPower(selectedSkill, result) ?? "待输入"}
           </strong>
           {resolutionSummary ? (
             <span className="skill-effect-card__formula">

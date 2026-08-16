@@ -114,6 +114,7 @@ function SkillSide({
   opponentLabel,
   opponentName,
   opponentSide,
+  powerDisplayMode,
   onSkillActivate,
   onSkillContextChange,
   onSkillFocus,
@@ -251,7 +252,9 @@ function SkillSide({
           <span className="skill-slot__head-skill">技能</span>
           <span className="skill-slot__head-kind">属性</span>
           <span className="skill-slot__head-cost">耗</span>
-          <span className="skill-slot__head-power">威力</span>
+          <span className="skill-slot__head-power">
+            {powerDisplayMode === "panel" ? "面板" : "威力"}
+          </span>
           <span className="skill-slot__head-hits">连击</span>
           <span className="skill-slot__head-result">伤害占比</span>
         </div>
@@ -414,21 +417,31 @@ function SkillSide({
                     : "—"}
                 </span>
                 <span className="skill-slot__cost">{selected?.cost ?? "—"}</span>
-                <DraftNumberInput
-                  ariaLabel={`${label}技能${index + 1}威力`}
-                  className="skill-slot__power-input"
-                  disabled={!selected}
-                  min={0}
-                  onCommit={(power) =>
-                    onSkillPowerChange?.(side, index, power)
-                  }
-                  value={
-                    displayedSkillPower(selected, result) ??
-                    selected?.slotPowerOverride ??
-                    selected?.basePower ??
-                    ""
-                  }
-                />
+                {powerDisplayMode === "panel" ? (
+                  <output
+                    aria-label={`${label}技能${index + 1}面板威力`}
+                    className="skill-slot__power-output"
+                    title="已包含本系、克制、天气和能力等级"
+                  >
+                    {selected ? result?.displayedPower ?? "—" : "—"}
+                  </output>
+                ) : (
+                  <DraftNumberInput
+                    ariaLabel={`${label}技能${index + 1}威力`}
+                    className="skill-slot__power-input"
+                    disabled={!selected}
+                    min={0}
+                    onCommit={(power) =>
+                      onSkillPowerChange?.(side, index, power)
+                    }
+                    value={
+                      displayedSkillPower(selected, result) ??
+                      selected?.slotPowerOverride ??
+                      selected?.basePower ??
+                      ""
+                    }
+                  />
+                )}
                 <label className="skill-slot__hits">
                   <span className="sr-only">
                     {label}技能{index + 1}连击次数
@@ -638,6 +651,7 @@ export function FourSkillEditor({
   onTraitContextChange,
   onTraitDamageFocus,
   onTraitDamageHitCountChange,
+  powerDisplayMode = "skill",
   skills,
 }) {
   const isMobile = useMediaQuery("(max-width: 620px)");
@@ -701,6 +715,7 @@ export function FourSkillEditor({
         onSkillHitCountChange={onSkillHitCountChange}
         onSkillPowerChange={onSkillPowerChange}
         onSkillSelect={onSkillSelect}
+        powerDisplayMode={powerDisplayMode}
         onTraitContextChange={onTraitContextChange}
         onTraitDamageFocus={onTraitDamageFocus}
         onTraitDamageHitCountChange={onTraitDamageHitCountChange}

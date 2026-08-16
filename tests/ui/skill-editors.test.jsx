@@ -1699,6 +1699,60 @@ test("four-skill rows keep each skill power directly editable", async () => {
   );
 });
 
+test("single-skill panel mode shows game panel power without changing manual power", () => {
+  render(
+    <SingleSkillEditor
+      hitCount={1}
+      manualPower={80}
+      onHitCountChange={vi.fn()}
+      onManualPowerChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      powerDisplayMode="panel"
+      result={{
+        displayedPower: 240,
+        effectivePower: 120,
+        skillPower: 80,
+        status: "exact",
+      }}
+      selectedSkill={skills[0]}
+      skills={skills}
+    />,
+  );
+
+  expect(screen.getByLabelText("面板威力")).toHaveTextContent("240");
+  expect(screen.getByRole("spinbutton", { name: "基础技能威力" })).toHaveValue(80);
+});
+
+test("four-skill panel mode is read-only and keeps skill power editing unavailable", () => {
+  render(
+    <FourSkillEditor
+      attackerName="音速犬"
+      attackerResults={[
+        {
+          displayedPower: 240,
+          effectivePower: 120,
+          hitCount: 1,
+          skillPower: 80,
+          status: "exact",
+          totalDamage: 100,
+        },
+      ]}
+      attackerSkills={[skills[0], null, null, null]}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillPowerChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      powerDisplayMode="panel"
+      skills={skills}
+    />,
+  );
+
+  expect(screen.getByLabelText("攻击方技能1面板威力")).toHaveTextContent("240");
+  expect(
+    screen.queryByRole("spinbutton", { name: "攻击方技能1威力" }),
+  ).not.toBeInTheDocument();
+});
+
 test("difference-table skills show the resolved table power before trait multipliers", () => {
   const flashStrike = {
     ...skills[0],

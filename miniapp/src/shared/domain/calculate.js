@@ -1000,6 +1000,7 @@ function calculateSkillResult({
   const percentageAdds = usesDisplayedPower || usesLockedPower
     ? []
     : [
+        ...asMultiplierList(powerResolution.powerPercentAdds),
         ...asMultiplierList(direction.skillPowerPercentAdds),
         ...asMultiplierList(directionOverrides.skillPowerPercentAdds),
         ...asMultiplierList(details.skillPowerPercentAdds),

@@ -15,7 +15,10 @@ import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js"
 import { encodeShareState } from "../../src/state/share.js";
 import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
 import { TEAM_STORAGE_KEY } from "../../src/state/team-presets.js";
-import { TYPE_COVERAGE_STORAGE_KEY } from "../../src/state/display-settings.js";
+import {
+  POWER_DISPLAY_STORAGE_KEY,
+  TYPE_COVERAGE_STORAGE_KEY,
+} from "../../src/state/display-settings.js";
 
 const snapshot = {
   learnsets: [
@@ -2862,6 +2865,33 @@ test("enables type analysis from display settings and remembers the switch", asy
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
   expect(screen.getByRole("region", { name: "属性分析" })).toBeVisible();
+});
+
+test("switches detailed four-skill rows to the read-only game panel power and remembers it", async () => {
+  const user = userEvent.setup();
+  const first = render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  expect(
+    screen.getByRole("spinbutton", { name: "攻击方技能1威力" }),
+  ).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "显示设置" }));
+  await user.click(screen.getByRole("button", { name: "面板威力" }));
+  await user.click(screen.getByRole("button", { name: "完成" }));
+
+  expect(screen.getByLabelText("攻击方技能1面板威力")).toBeVisible();
+  expect(
+    screen.queryByRole("spinbutton", { name: "攻击方技能1威力" }),
+  ).not.toBeInTheDocument();
+  expect(localStorage.getItem(POWER_DISPLAY_STORAGE_KEY)).toBe("panel");
+
+  first.unmount();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  expect(screen.getByLabelText("攻击方技能1面板威力")).toBeVisible();
 });
 
 test("loads the built-in popular library only on demand and imports through the existing flow", async () => {
