@@ -504,7 +504,7 @@ export function SingleSkillEditor({
           >
             <small>{powerDisplayMode === "panel" ? "面板" : "实际"}</small>
             {powerDisplayMode === "panel"
-              ? result?.displayedPower ?? "待输入"
+              ? result?.effectivePower ?? "待输入"
               : displayedSkillPower(selectedSkill, result) ?? "待输入"}
           </strong>
           {resolutionSummary ? (

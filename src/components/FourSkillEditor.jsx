@@ -423,7 +423,7 @@ function SkillSide({
                     className="skill-slot__power-output"
                     title="已包含本系、克制、天气和能力等级"
                   >
-                    {selected ? result?.displayedPower ?? "—" : "—"}
+                    {selected ? result?.effectivePower ?? "—" : "—"}
                   </output>
                 ) : (
                   <DraftNumberInput

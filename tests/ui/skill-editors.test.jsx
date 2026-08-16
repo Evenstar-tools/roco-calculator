@@ -1709,8 +1709,7 @@ test("single-skill panel mode shows game panel power without changing manual pow
       onSkillSelect={vi.fn()}
       powerDisplayMode="panel"
       result={{
-        displayedPower: 240,
-        effectivePower: 120,
+        effectivePower: 240,
         skillPower: 80,
         status: "exact",
       }}
@@ -1729,8 +1728,7 @@ test("four-skill panel mode is read-only and keeps skill power editing unavailab
       attackerName="音速犬"
       attackerResults={[
         {
-          displayedPower: 240,
-          effectivePower: 120,
+          effectivePower: 240,
           hitCount: 1,
           skillPower: 80,
           status: "exact",

@@ -1532,8 +1532,33 @@ describe("calculateMatchup", () => {
         },
       }),
     ).forward.selectedResult;
+    const manualResult = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", fan.id, [fan.id, null, null, null]),
+        },
+        marks: {
+          attacker: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "tailwind", stacks: 1 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: null, stacks: 0 },
+          },
+        },
+        directions: {
+          forward: {
+            context: { actedBeforeEnemy: true },
+            overrides: { basePower: 100 },
+          },
+        },
+      }),
+    ).forward.selectedResult;
 
     expect(result.skillPower).toBe(165);
+    expect(manualResult.skillPower).toBe(220);
     expect(
       result.formulaSteps.find((step) => step.label === "技能威力百分比")?.input,
     ).toEqual(expect.arrayContaining([0.5, 0.5, 0.2]));

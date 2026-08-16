@@ -2882,6 +2882,7 @@ test("switches detailed four-skill rows to the read-only game panel power and re
   await user.click(screen.getByRole("button", { name: "完成" }));
 
   expect(screen.getByLabelText("攻击方技能1面板威力")).toBeVisible();
+  expect(screen.getByLabelText("攻击方技能1面板威力")).not.toHaveTextContent("—");
   expect(
     screen.queryByRole("spinbutton", { name: "攻击方技能1威力" }),
   ).not.toBeInTheDocument();
@@ -2892,6 +2893,7 @@ test("switches detailed four-skill rows to the read-only game panel power and re
   await selectDefaultSpirits(user);
   await user.click(screen.getByRole("button", { name: "具体版" }));
   expect(screen.getByLabelText("攻击方技能1面板威力")).toBeVisible();
+  expect(screen.getByLabelText("攻击方技能1面板威力")).not.toHaveTextContent("—");
 });
 
 test("loads the built-in popular library only on demand and imports through the existing flow", async () => {
