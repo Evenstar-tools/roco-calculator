@@ -40,6 +40,7 @@ import {
 } from "./clown-trick.js";
 import { resolveBaronGreed } from "./baron-greed.js";
 import { resolveBloodlineMagicHealing } from "./bloodline-magic.js";
+import { resolvePowerOverride } from "./power-override.js";
 
 function finiteNumber(...values) {
   for (const value of values) {
@@ -55,6 +56,10 @@ function product(values) {
     const numeric = Number(value);
     return Number.isFinite(numeric) ? result * numeric : result;
   }, 1);
+}
+
+function normalizedPower(value) {
+  return Number(Number(value).toFixed(12));
 }
 
 function asMultiplierList(value) {
@@ -452,8 +457,6 @@ function calculateSkillResult({
   const details = entryDetails(entry);
   const directionOverrides = direction.overrides ?? {};
   const slotOverrides = details.overrides ?? {};
-  const usesDisplayedPower =
-    mode === "single" && directionOverrides.powerMode === "displayed";
   const usesLockedPower = finiteNumber(lockedPower) !== undefined;
   const sourceNegativeMark = normalizeMarkSlot(
     sourceMarks?.negative,
@@ -641,7 +644,7 @@ function calculateSkillResult({
         getDefaultHitCount(skill),
       ) ?? 1;
     const panelTraitResolution = resolveTraitMultipliers({
-      attackerTraits: usesDisplayedPower ? [] : attacker.traits,
+      attackerTraits: attacker.traits,
       defenderTraits: defender.traits,
       skill: { ...skill, category: "physical" },
       attacker,
@@ -866,15 +869,31 @@ function calculateSkillResult({
     side: sourceSide,
     skill,
   });
-  const basePowerOverride = finiteNumber(
+  const legacyBasePower = finiteNumber(
     slotOverrides.basePower,
     slotOverrides.basePowerOverride,
     details.basePowerOverride,
     mode === "single" ? directionOverrides.basePower : undefined,
     mode === "single" ? directionOverrides.basePowerOverride : undefined,
   );
-  if (basePowerOverride !== undefined) {
-    context.basePowerOverride = basePowerOverride;
+  const powerOverride = resolvePowerOverride({
+    current:
+      slotOverrides.powerOverride ??
+      details.powerOverride ??
+      (mode === "single" ? directionOverrides.powerOverride : undefined),
+    legacyBasePower,
+    legacyDisplayedPower: finiteNumber(
+      slotOverrides.displayedPower,
+      details.displayedPower,
+      mode === "single" ? directionOverrides.displayedPower : undefined,
+    ),
+    legacyPowerMode:
+      slotOverrides.powerMode ??
+      details.powerMode ??
+      (mode === "single" ? directionOverrides.powerMode : undefined),
+  });
+  if (powerOverride.mode === "legacy-base") {
+    context.basePowerOverride = powerOverride.value;
   }
 
   const attackLevelStage = finiteNumber(
@@ -889,7 +908,7 @@ function calculateSkillResult({
   );
   const traitResolutionForCategory = (category) =>
     resolveTraitMultipliers({
-      attackerTraits: usesDisplayedPower ? [] : attacker.traits,
+      attackerTraits: attacker.traits,
       defenderTraits: defender.traits,
       skill: { ...skill, category },
       attacker,
@@ -967,19 +986,12 @@ function calculateSkillResult({
         steps: [],
         value: finiteNumber(lockedPower) ?? 0,
       }
-    : usesDisplayedPower
-    ? {
-        status: "exact",
-        steps: [],
-        value:
-          finiteNumber(directionOverrides.displayedPower, skill.basePower) ?? 0,
-      }
     : resolveSkillPower(skill, context);
   if (powerResolution.status !== "exact") {
     return unresolvedResult(skill, powerResolution);
   }
 
-  const baseFixedPowerAdd = usesDisplayedPower || usesLockedPower
+  const baseFixedPowerAdd = usesLockedPower
     ? 0
     : finiteNumber(
         slotOverrides.fixedPowerAdd,
@@ -987,17 +999,17 @@ function calculateSkillResult({
         directionOverrides.fixedPowerAdd,
         direction.fixedPowerAdd,
       ) ?? 0;
-  const scopedFixedPowerAdd = usesDisplayedPower || usesLockedPower
+  const scopedFixedPowerAdd = usesLockedPower
     ? 0
     : finiteNumber(
         directionOverrides.fixedPowerAddsBySlot?.[skillPosition],
         0,
       ) ?? 0;
   const fixedPowerAdd = baseFixedPowerAdd + scopedFixedPowerAdd;
-  const markFixedPowerAdd = usesDisplayedPower || usesLockedPower
+  const markFixedPowerAdd = usesLockedPower
     ? 0
     : sourceMarkEffects.fixedPowerAdd;
-  const percentageAdds = usesDisplayedPower || usesLockedPower
+  const nonMarkPercentageAdds = usesLockedPower
     ? []
     : [
         ...asMultiplierList(powerResolution.powerPercentAdds),
@@ -1011,10 +1023,23 @@ function calculateSkillResult({
         ...(traitResolution.powerPercentAdd === 0
           ? []
           : [traitResolution.powerPercentAdd]),
-        ...(sourceMarkEffects.powerPercentAdd === 0
-          ? []
-          : [sourceMarkEffects.powerPercentAdd]),
       ];
+  const hiddenPanelPowerPercentAdd = usesLockedPower
+    ? 0
+    : sourceMarkEffects.hiddenPanelPowerPercentAdd ?? 0;
+  const visibleMarkPowerPercentAdd = usesLockedPower
+    ? 0
+    : sourceMarkEffects.powerPercentAdd - hiddenPanelPowerPercentAdd;
+  const visiblePercentageAdds = [
+    ...nonMarkPercentageAdds,
+    ...(visibleMarkPowerPercentAdd === 0 ? [] : [visibleMarkPowerPercentAdd]),
+  ];
+  const percentageAdds = [
+    ...visiblePercentageAdds,
+    ...(hiddenPanelPowerPercentAdd === 0
+      ? []
+      : [hiddenPanelPowerPercentAdd]),
+  ];
   const powerAfterFixed = powerResolution.value + fixedPowerAdd;
   const powerAfterMarkFixed = powerAfterFixed + markFixedPowerAdd;
   const traitFixedPowerAdd = usesLockedPower
@@ -1022,22 +1047,34 @@ function calculateSkillResult({
     : traitResolution.fixedPowerAdd;
   const powerAfterTraitFixed =
     powerAfterMarkFixed + traitFixedPowerAdd;
-  const bloodlineFixedPowerAdd =
-    usesDisplayedPower || usesLockedPower
-      ? 0
-      : attackerBloodline.fixedPowerAdd;
+  const bloodlineFixedPowerAdd = usesLockedPower
+    ? 0
+    : attackerBloodline.fixedPowerAdd;
   const powerAfterBloodlineFixed =
     powerAfterTraitFixed + bloodlineFixedPowerAdd;
-  const contractFixedPowerAdd =
-    usesDisplayedPower || usesLockedPower
-      ? 0
-      : attackerContract.fixedPowerAdd;
+  const contractFixedPowerAdd = usesLockedPower
+    ? 0
+    : attackerContract.fixedPowerAdd;
   const powerAfterContractFixed =
     powerAfterBloodlineFixed + contractFixedPowerAdd;
-  const effectivePower =
+  const automaticVisibleActualPower =
+    powerAfterContractFixed *
+    (1 + visiblePercentageAdds.reduce(
+      (sum, value) => sum + (Number(value) || 0),
+      0,
+    ));
+  const automaticActualPower =
     powerAfterContractFixed *
     (1 + percentageAdds.reduce((sum, value) => sum + (Number(value) || 0), 0));
-  const traitAdjustedPower = effectivePower;
+  const actualPower = normalizedPower(
+    powerOverride.mode === "actual"
+      ? powerOverride.value
+      : automaticActualPower,
+  );
+  const traitAdjustedPower = actualPower;
+  const visibleActualPower = powerOverride.mode === "actual"
+    ? actualPower
+    : automaticVisibleActualPower;
 
   const baseCombatPanel = {
     attacker: {
@@ -1175,19 +1212,20 @@ function calculateSkillResult({
     Math.max(0, Math.floor(finiteNumber(context.weatherRainTurns) ?? 0)),
   );
   const weatherMultiplier =
-    !usesDisplayedPower && weatherRainTurns > 0 && skill.type === "水"
-      ? 1.75
-      : 1;
-  const powerAfterStab = traitAdjustedPower * stabMultiplier;
-  const powerAfterType =
-    powerAfterStab * (usesDisplayedPower ? 1 : typeMultiplier);
+    weatherRainTurns > 0 && skill.type === "水" ? 1.75 : 1;
+  const powerAfterStab = visibleActualPower * stabMultiplier;
+  const powerAfterType = powerAfterStab * typeMultiplier;
   const powerAfterWeather = powerAfterType * weatherMultiplier;
-  const powerAfterLevels =
-    powerAfterWeather *
-    (usesDisplayedPower ? 1 : attackDefenseLevelMultiplier);
-  const powerAfterOther =
-    powerAfterLevels * (usesDisplayedPower ? 1 : otherPowerMultiplier);
-  const displayedPower = Math.round(powerAfterOther);
+  const powerAfterLevels = powerAfterWeather * attackDefenseLevelMultiplier;
+  const automaticPanelPower = powerAfterLevels * otherPowerMultiplier;
+  const calculationPower = powerOverride.mode === "panel"
+    ? powerOverride.value
+    : traitAdjustedPower * stabMultiplier * typeMultiplier * weatherMultiplier *
+      attackDefenseLevelMultiplier * otherPowerMultiplier;
+  const panelPower = powerOverride.mode === "panel"
+    ? powerOverride.value
+    : Math.round(automaticPanelPower);
+  const displayedPower = panelPower;
   const damageReductionMultiplier =
     Math.max(0, finiteNumber(direction.reduction) ?? 1) *
     traitResolution.damageReductionMultiplier *
@@ -1236,7 +1274,7 @@ function calculateSkillResult({
     );
   const mainDamage = calculateDamage({
     attackerStat,
-    displayedPower: powerAfterOther,
+    displayedPower: calculationPower,
     defenderDefense,
     damageReductionMultiplier,
     hitCount,
@@ -1334,21 +1372,72 @@ function calculateSkillResult({
   );
   const maximumHp = Math.max(0, Number(defender.panelStats.hp) || 0);
   const hpPercent = maximumHp > 0 ? totalDamage / maximumHp * 100 : 0;
-  const powerFormulaSteps = usesDisplayedPower
+  const panelPowerOverride = powerOverride.mode === "panel";
+  const actualPowerOverride = powerOverride.mode === "actual";
+  const powerFormulaSteps = panelPowerOverride
     ? [
         formulaStep(
-          "游戏内显示威力",
-          powerResolution.value,
-          powerResolution.value,
-          powerResolution.value,
+          "手动面板威力",
+          powerOverride.value,
+          powerOverride.value,
+          panelPower,
+          "battle-input",
+        ),
+      ]
+    : actualPowerOverride
+    ? [
+        formulaStep(
+          "手动实际威力",
+          powerOverride.value,
+          powerOverride.value,
+          actualPower,
           "battle-input",
         ),
         formulaStep(
           "本系",
           stabMultiplier,
-          powerResolution.value,
+          actualPower,
           powerAfterStab,
           "automatic",
+        ),
+        formulaStep(
+          "属性克制",
+          defender.types,
+          powerAfterStab,
+          powerAfterType,
+          snapshot.typeChart?.source ?? "builtin-type-chart-v1",
+        ),
+        formulaStep(
+          "天气",
+          {
+            multiplier: weatherMultiplier,
+            remainingTurns: weatherRainTurns,
+            weather: weatherRainTurns > 0 ? "雨天" : "无天气",
+          },
+          powerAfterType,
+          powerAfterWeather,
+          weatherRainTurns > 0 ? "battle-weather:rain-v1" : "default",
+        ),
+        formulaStep(
+          "攻防等级",
+          attackDefenseLevelMultiplier,
+          powerAfterWeather,
+          powerAfterLevels,
+          "direction-state",
+        ),
+        formulaStep(
+          "其他威力乘区",
+          otherPowerMultiplier,
+          powerAfterLevels,
+          automaticPanelPower,
+          "direction-state",
+        ),
+        formulaStep(
+          "面板威力",
+          { method: "round" },
+          calculationPower,
+          panelPower,
+          "damage-formula-v1",
         ),
       ]
     : [
@@ -1409,7 +1498,7 @@ function calculateSkillResult({
           "技能威力百分比",
           percentageAdds,
           powerAfterContractFixed,
-          effectivePower,
+          automaticActualPower,
           percentageAdds.length === 0 ? "default" : "battle-input",
         ),
         formulaStep(
@@ -1451,13 +1540,13 @@ function calculateSkillResult({
           "其他威力乘区",
           otherPowerMultiplier,
           powerAfterLevels,
-          powerAfterOther,
+          automaticPanelPower,
           "direction-state",
         ),
         formulaStep(
-          "显示威力",
+          "面板威力",
           { method: "round" },
-          powerAfterOther,
+          calculationPower,
           displayedPower,
           "damage-formula-v1",
         ),
@@ -1471,7 +1560,6 @@ function calculateSkillResult({
       "panel-stat",
     ),
     ...powerFormulaSteps,
-    ...(usesDisplayedPower ? traitResolution.steps : []),
     ...traitHitCount.steps,
     ...fixedHitCountSteps,
     formulaStep(
@@ -1480,7 +1568,7 @@ function calculateSkillResult({
         level,
         coefficient: mainDamage.coefficient,
         attackerStat,
-        calculationPower: powerAfterOther,
+        calculationPower,
         damageReductionMultiplier,
         defenderDefense,
         displayedPower,
@@ -1615,8 +1703,11 @@ function calculateSkillResult({
     skillId: skill.id,
     skillName: skill.name,
     resolvedPower: powerResolution.value,
-    skillPower: Math.round(traitAdjustedPower),
-    effectivePower: displayedPower,
+    actualPower,
+    panelPower,
+    powerSource: powerOverride.source,
+    skillPower: actualPower,
+    effectivePower: panelPower,
     automaticHitCountAdd,
     hitCount: Math.max(1, Math.floor(Number(hitCount) || 1)),
     totalDamage,

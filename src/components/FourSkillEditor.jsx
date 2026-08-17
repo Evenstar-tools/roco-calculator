@@ -1,6 +1,5 @@
 import {
   clampDynamicInput,
-  DraftNumberInput,
   describeResolution,
   dynamicInputValue,
   dynamicInputsForSkill,
@@ -14,6 +13,7 @@ import { SkillPicker } from "./SkillPicker.jsx";
 import { useEffect, useState } from "react";
 import { damageTone } from "./damageTone.js";
 import { HealthInput } from "./HealthInput.jsx";
+import { PowerDraftInput } from "./PowerDraftInput.jsx";
 import {
   TraitHint,
   TraitSkillPowerBonuses,
@@ -119,6 +119,7 @@ function SkillSide({
   onSkillContextChange,
   onSkillFocus,
   onSkillHitCountChange,
+  onSkillPowerClear,
   onSkillPowerChange,
   onSkillSelect,
   onHealthChange,
@@ -253,7 +254,7 @@ function SkillSide({
           <span className="skill-slot__head-kind">属性</span>
           <span className="skill-slot__head-cost">耗</span>
           <span className="skill-slot__head-power">
-            {powerDisplayMode === "panel" ? "面板" : "威力"}
+            {powerDisplayMode === "panel" ? "面板威力" : "实际威力"}
           </span>
           <span className="skill-slot__head-hits">连击</span>
           <span className="skill-slot__head-result">伤害占比</span>
@@ -375,6 +376,14 @@ function SkillSide({
           const powerResolutionHint = selected
             ? describeResolution(result)
             : null;
+          const powerSourceHint =
+            result?.powerSource === "manual-actual"
+              ? "手动实际"
+              : result?.powerSource === "manual-panel"
+                ? "手动面板"
+                : selected
+                  ? "自动"
+                  : null;
           return (
             <div
               aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
@@ -417,31 +426,29 @@ function SkillSide({
                     : "—"}
                 </span>
                 <span className="skill-slot__cost">{selected?.cost ?? "—"}</span>
-                {powerDisplayMode === "panel" ? (
-                  <output
-                    aria-label={`${label}技能${index + 1}面板威力`}
-                    className="skill-slot__power-output"
-                    title="已包含本系、克制、天气和能力等级"
-                  >
-                    {selected ? result?.effectivePower ?? "—" : "—"}
-                  </output>
-                ) : (
-                  <DraftNumberInput
-                    ariaLabel={`${label}技能${index + 1}威力`}
-                    className="skill-slot__power-input"
-                    disabled={!selected}
-                    min={0}
-                    onCommit={(power) =>
-                      onSkillPowerChange?.(side, index, power)
-                    }
-                    value={
-                      displayedSkillPower(selected, result) ??
-                      selected?.slotPowerOverride ??
-                      selected?.basePower ??
-                      ""
-                    }
-                  />
-                )}
+                <PowerDraftInput
+                  ariaLabel={`${label}技能${index + 1}${
+                    powerDisplayMode === "panel" ? "面板威力" : "实际威力"
+                  }`}
+                  className="skill-slot__power-input"
+                  disabled={!selected}
+                  isManual={Boolean(selected?.slotPowerOverride)}
+                  mode={powerDisplayMode === "panel" ? "panel" : "actual"}
+                  onClear={() => onSkillPowerClear?.(side, index)}
+                  onCommit={(value) =>
+                    onSkillPowerChange?.(side, index, {
+                      mode: powerDisplayMode === "panel" ? "panel" : "actual",
+                      value,
+                    })
+                  }
+                  value={
+                    selected
+                      ? powerDisplayMode === "panel"
+                        ? result?.panelPower ?? result?.effectivePower ?? selected.basePower
+                        : result?.actualPower ?? displayedSkillPower(selected, result) ?? selected.basePower
+                      : ""
+                  }
+                />
                 <label className="skill-slot__hits">
                   <span className="sr-only">
                     {label}技能{index + 1}连击次数
@@ -480,6 +487,7 @@ function SkillSide({
               refractionHint ||
               counterReflectionHint ||
               powerResolutionHint ||
+              powerSourceHint ||
               dynamicInputs.length > 0 ? (
                 <div className="skill-slot__context">
                   {selected?.description ? (
@@ -497,6 +505,11 @@ function SkillSide({
                     >
                       {powerResolutionHint}
                     </p>
+                  ) : null}
+                  {powerSourceHint ? (
+                    <small className="skill-slot__power-source">
+                      {powerSourceHint}
+                    </small>
                   ) : null}
                   {refractionHint ? (
                     <p className="skill-slot__effect-hint" title={refractionHint}>
@@ -646,12 +659,13 @@ export function FourSkillEditor({
   onSkillContextChange,
   onSkillFocus,
   onSkillHitCountChange,
+  onSkillPowerClear,
   onSkillPowerChange,
   onSkillSelect,
   onTraitContextChange,
   onTraitDamageFocus,
   onTraitDamageHitCountChange,
-  powerDisplayMode = "skill",
+  powerDisplayMode = "actual",
   skills,
 }) {
   const isMobile = useMediaQuery("(max-width: 620px)");
@@ -713,6 +727,7 @@ export function FourSkillEditor({
         onHealthPercentChange={onHealthPercentChange}
         onSkillFocus={onSkillFocus}
         onSkillHitCountChange={onSkillHitCountChange}
+        onSkillPowerClear={onSkillPowerClear}
         onSkillPowerChange={onSkillPowerChange}
         onSkillSelect={onSkillSelect}
         powerDisplayMode={powerDisplayMode}

@@ -4,14 +4,14 @@ export const POWER_DISPLAY_STORAGE_KEY =
   "rock-calculator.settings.power-display.v1";
 
 function normalizePowerDisplayMode(value) {
-  return value === "panel" ? "panel" : "skill";
+  return value === "panel" ? "panel" : "actual";
 }
 
 export function readPowerDisplayMode(storage = globalThis.localStorage) {
   try {
     return normalizePowerDisplayMode(storage?.getItem(POWER_DISPLAY_STORAGE_KEY));
   } catch {
-    return "skill";
+    return "actual";
   }
 }
 

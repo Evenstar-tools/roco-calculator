@@ -113,7 +113,7 @@ test("opens the complete release notes in a second-level dialog", () => {
   });
 
   expect(screen.getByText("版本记录")).toBeVisible();
-  expect(screen.getByText("威力显示与乘区校正")).toBeVisible();
+  expect(screen.getByText("威力输入与乘区校正")).toBeVisible();
   expect(screen.getByText("v1.5.7")).toBeVisible();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
 
@@ -154,7 +154,7 @@ test("opens display settings from the menu and exposes the type analysis switch"
         onPowerDisplayModeChange,
         onTypeCoverageChange,
         open: true,
-        powerDisplayMode: "skill",
+        powerDisplayMode: "actual",
         typeCoverageEnabled: false,
       }}
       menu={{ actions: {}, open: false }}
@@ -174,7 +174,7 @@ test("opens display settings from the menu and exposes the type analysis switch"
   fireEvent.click(switchControl);
   expect(onTypeCoverageChange).toHaveBeenCalledWith(true);
 
-  expect(screen.getByRole("button", { name: "技能威力" })).toHaveAttribute(
+  expect(screen.getByRole("button", { name: "实际威力" })).toHaveAttribute(
     "aria-pressed",
     "true",
   );

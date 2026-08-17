@@ -6,6 +6,7 @@ import { usesAbsolutePowerRule } from "../domain/skill-rules.js";
 import { getSkillStatusEffectInputs } from "../domain/skill-status-effects.js";
 import { resolveLifestealCapability } from "../domain/baron-greed.js";
 import { HealthInput } from "./HealthInput.jsx";
+import { PowerDraftInput } from "./PowerDraftInput.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
 
 const CATEGORY_LABELS = {
@@ -17,6 +18,9 @@ const CATEGORY_LABELS = {
 };
 
 export function displayedSkillPower(skill, result) {
+  if (Number.isFinite(Number(result?.actualPower))) {
+    return Number(result.actualPower);
+  }
   if (
     usesAbsolutePowerRule(skill) &&
     Number.isFinite(Number(result?.resolvedPower))
@@ -241,6 +245,9 @@ export function describeResolution(result) {
   const before = Number(step.before);
   const after = Number(step.after);
   const source = String(step.source);
+  if (source.includes("blazing-wave")) {
+    return String(step.label);
+  }
   if (
     source.includes("speed-defense-difference") &&
     Number.isFinite(Number(step.input?.attacker)) &&
@@ -288,18 +295,24 @@ export function SingleSkillEditor({
   onDefenderHealthChange,
   onDefenderHealthPercentChange,
   onManualPowerChange,
-  onPowerModeChange,
+  onPowerOverrideChange,
   onSkillSelect,
   onTraitContextChange,
   result,
   selectedSkill,
   skills,
-  powerDisplayMode = "skill",
+  powerDisplayMode = "actual",
+  powerOverride,
   powerMode = "base",
   traitContext = {},
 }) {
-  const [powerDraft, setPowerDraft] = useState(String(manualPower));
   const [hitDraft, setHitDraft] = useState(String(hitCount));
+  const normalizedPowerDisplayMode =
+    powerDisplayMode === "panel" ? "panel" : "actual";
+  const hasUnifiedPowerOverride = powerOverride !== undefined;
+  const activePowerOverride = hasUnifiedPowerOverride
+    ? powerOverride
+    : null;
   const dynamicInputs = mergeDynamicInputs(
     dynamicInputsForSkill(selectedSkill),
     result?.inputs ?? [],
@@ -347,10 +360,6 @@ export function SingleSkillEditor({
   const effectiveType = result?.typeLabel ?? selectedSkill.type;
 
   useEffect(() => {
-    setPowerDraft(String(manualPower));
-  }, [manualPower]);
-
-  useEffect(() => {
     setHitDraft(String(hitCount));
   }, [hitCount]);
 
@@ -389,8 +398,7 @@ export function SingleSkillEditor({
           <Lightning aria-hidden="true" size={16} weight="fill" />
           <p>{selectedSkill.description || "无额外效果。"}</p>
         </div>
-        {powerMode !== "displayed" &&
-        (dynamicInputs.length > 0 || hasAttackerHpRule || hasDefenderHpRule) ? (
+        {dynamicInputs.length > 0 || hasAttackerHpRule || hasDefenderHpRule ? (
           <div aria-label="动态技能条件" className="skill-effect-card__conditions">
             {hasAttackerHpRule && attackerHealth ? (
               <HealthInput
@@ -486,27 +494,34 @@ export function SingleSkillEditor({
           </div>
         ) : null}
         <div className="skill-effect-card__power" aria-label="技能威力">
-          <label className="skill-effect-card__base">
-            <small>基础</small>
-            <DraftNumberInput
+          <label className="skill-effect-card__power-input">
+            <small>
+              {normalizedPowerDisplayMode === "panel" ? "面板威力" : "实际威力"}
+            </small>
+            <PowerDraftInput
               ariaLabel={
-                powerMode === "displayed"
-                  ? "游戏内显示威力"
-                  : "基础技能威力"
+                normalizedPowerDisplayMode === "panel" ? "面板威力" : "实际威力"
               }
-              min={0}
-              onCommit={onManualPowerChange}
-              value={manualPower}
+              isManual={Boolean(activePowerOverride)}
+              mode={normalizedPowerDisplayMode}
+              onClear={() => onPowerOverrideChange?.(null)}
+              onCommit={(value) => {
+                if (hasUnifiedPowerOverride) {
+                  onPowerOverrideChange?.({
+                    mode: normalizedPowerDisplayMode,
+                    value,
+                  });
+                } else {
+                  onManualPowerChange?.(value);
+                }
+              }}
+              value={
+                normalizedPowerDisplayMode === "panel"
+                  ? result?.panelPower ?? result?.effectivePower ?? manualPower ?? selectedSkill?.basePower
+                  : result?.actualPower ?? displayedSkillPower(selectedSkill, result) ?? manualPower ?? selectedSkill?.basePower
+              }
             />
           </label>
-          <strong
-            aria-label={powerDisplayMode === "panel" ? "面板威力" : undefined}
-          >
-            <small>{powerDisplayMode === "panel" ? "面板" : "实际"}</small>
-            {powerDisplayMode === "panel"
-              ? result?.effectivePower ?? "待输入"
-              : displayedSkillPower(selectedSkill, result) ?? "待输入"}
-          </strong>
           {resolutionSummary ? (
             <span className="skill-effect-card__formula">
               {resolutionSummary}
@@ -516,57 +531,15 @@ export function SingleSkillEditor({
               当前条件未触发加成
             </span>
           ) : null}
+          {activePowerOverride?.mode === "actual" ? (
+            <span className="skill-effect-card__formula">威力已手动覆盖</span>
+          ) : null}
         </div>
       </div>
 
       <details className="manual-skill-settings">
         <summary>手动调整</summary>
         <div className="manual-parameter-grid">
-          <div
-            aria-label="威力口径"
-            className="power-mode-switch"
-            role="group"
-          >
-            <button
-              aria-pressed={powerMode === "base"}
-              onClick={() => onPowerModeChange?.("base")}
-              type="button"
-            >
-              基础威力
-            </button>
-            <button
-              aria-pressed={powerMode === "displayed"}
-              onClick={() => onPowerModeChange?.("displayed")}
-              type="button"
-            >
-              游戏内威力
-            </button>
-          </div>
-          <label className="field-group">
-            <span>{powerMode === "displayed" ? "游戏内威力" : "手动威力"}</span>
-            <input
-              aria-label={
-                "手动威力"
-              }
-              min="0"
-              onChange={(event) => {
-                setPowerDraft(event.target.value);
-                if (event.target.value !== "") {
-                  onManualPowerChange(
-                    Math.max(0, toNumber(event.target.value)),
-                  );
-                }
-              }}
-              onBlur={() => {
-                if (powerDraft === "") setPowerDraft(String(manualPower));
-              }}
-              type="number"
-              value={powerDraft}
-            />
-            {powerMode === "displayed" ? (
-              <small>已含特性/克制/等级</small>
-            ) : null}
-          </label>
           <label className="field-group">
             <span>连击次数</span>
             <input
@@ -599,7 +572,7 @@ export function SingleSkillEditor({
         </div>
       </details>
 
-      {powerMode !== "displayed" && (attackerTrait || defenderTrait) ? (
+      {attackerTrait || defenderTrait ? (
         <div className="trait-grid">
           {attackerTrait ? (
             <article className="trait-card trait-card--attack">

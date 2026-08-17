@@ -55,7 +55,7 @@ export function buildFormulaAudit(result) {
   const weather = stepByLabel(result, "天气");
   const levels = stepByLabel(result, "攻防等级");
   const other = stepByLabel(result, "其他威力乘区");
-  const displayPower = stepByLabel(result, "显示威力");
+  const displayPower = stepByLabel(result, "面板威力");
   const damage = stepByLabel(result, "等级系数与攻防比");
   const settlement = stepByLabel(result, "减伤、连击与最终倍率");
   const additional = stepByLabel(result, "星陨追加伤害");
@@ -227,7 +227,7 @@ export function FormulaAudit({ result }) {
         <span>{audit.skillName}</span>
       </header>
 
-      <FormulaRow title="技能威力" tone="power">
+      <FormulaRow title="实际威力" tone="power">
         {Number.isFinite(Number(power.base)) ? (
           <AuditChip label="基础" tone="power" value={displayNumber(power.base)} />
         ) : (
@@ -266,8 +266,8 @@ export function FormulaAudit({ result }) {
         <AuditChip label="结果" tone="result" value={displayNumber(power.effective)} />
       </FormulaRow>
 
-      <FormulaRow title="显示威力" tone="display">
-        <AuditChip label="技能" tone="display" value={displayNumber(power.effective)} />
+      <FormulaRow title="面板威力" tone="display">
+        <AuditChip label="实际威力" tone="display" value={displayNumber(power.effective)} />
         {audit.formulaPower.factors
           .filter((factor) => Math.abs(Number(factor.value) - 1) > 1e-10)
           .map((factor) => (
@@ -284,7 +284,7 @@ export function FormulaAudit({ result }) {
         <AuditChip label="公式值" tone="display" value={displayNumber(audit.formulaPower.internal)} />
         <Operator>→</Operator>
         <span className="formula-audit__rounding">四舍五入</span>
-        <AuditChip label="界面值" tone="result" value={displayNumber(audit.formulaPower.displayed)} />
+        <AuditChip label="面板威力" tone="result" value={displayNumber(audit.formulaPower.displayed)} />
       </FormulaRow>
 
       <FormulaRow title="每段伤害" tone="one-hit">

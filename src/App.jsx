@@ -1082,15 +1082,6 @@ function CalculatorWorkspace({ snapshot }) {
       }
       defenderTrait={getTraitView(snapshot, activeDefenseSpirit, "defender")}
       hitCount={resultModel.selectedResult?.hitCount ?? currentDirection.hitCount}
-      manualPower={
-        currentDirection.overrides.powerMode === "displayed"
-          ? currentDirection.overrides.displayedPower ??
-            selectedSingleSkill?.basePower ??
-            0
-          : currentDirection.overrides.basePower ??
-            selectedSingleSkill?.basePower ??
-            0
-      }
       onHitCountChange={(hitCount) =>
         updateRememberedSingleDirection({
           hitCount: storedHitCount(
@@ -1125,16 +1116,10 @@ function CalculatorWorkspace({ snapshot }) {
           currentHpPercent,
         )
       }
-      onManualPowerChange={(power) =>
+      onPowerOverrideChange={(powerOverride) =>
         updateRememberedSingleDirection({
-          overrides:
-            currentDirection.overrides.powerMode === "displayed"
-              ? { displayedPower: power }
-              : { basePower: power },
+          overrides: { powerOverride },
         })
-      }
-      onPowerModeChange={(powerMode) =>
-        updateRememberedSingleDirection({ overrides: { powerMode } })
       }
       onSkillSelect={selectSingleSkill}
       onTraitContextChange={(key, value) => {
@@ -1144,7 +1129,7 @@ function CalculatorWorkspace({ snapshot }) {
       selectedSkill={selectedSingleSkill}
       skills={activeAttackSkills}
       powerDisplayMode={powerDisplayMode}
-      powerMode={currentDirection.overrides.powerMode ?? "base"}
+      powerOverride={currentDirection.overrides.powerOverride ?? null}
       traitContext={currentDirection.context}
     />
   ) : null;
@@ -1292,9 +1277,14 @@ function CalculatorWorkspace({ snapshot }) {
           ),
         });
       }}
-      onSkillPowerChange={(side, index, power) =>
+      onSkillPowerChange={(side, index, powerOverride) =>
         updateFourSkillEntry(side, index, {
-          overrides: { basePower: power },
+          overrides: { powerOverride },
+        })
+      }
+      onSkillPowerClear={(side, index) =>
+        updateFourSkillEntry(side, index, {
+          overrides: { powerOverride: null },
         })
       }
       powerDisplayMode={powerDisplayMode}

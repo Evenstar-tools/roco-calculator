@@ -190,6 +190,15 @@ const REVIEWED_EFFECTS = Object.freeze({
       multiplier: 2.5,
     },
   },
+  炙热波动: {
+    inputs: [booleanInput("counterTriggered", "触发应对")],
+    ruleId: "counter_power_and_burn",
+    ruleParams: {
+      baseBurnStacks: 4,
+      contextKey: "counterTriggered",
+      multiplier: 2,
+    },
+  },
   魔能爆: {
     inputs: [numberInput("energy", "当前能量", 0, 10, 0)],
     ruleId: "mana_burst",

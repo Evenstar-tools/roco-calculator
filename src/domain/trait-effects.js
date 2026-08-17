@@ -562,9 +562,18 @@ const RULES = Object.freeze({
     "攻防加成",
     { editableEffect: false, roles: ["attacker", "defender"] },
   ),
-  水翼飞升: automatic("power_percent", 30, "威力加成", {
-    applies: ({ skill }) => Number(skill.cost) === 0,
-  }),
+  水翼飞升: trigger(
+    "power_percent",
+    30,
+    "触发加成",
+    "威力加成",
+    {
+      conditionKey: "waterWingAscentTriggered",
+      conditionScope: "skill",
+      editableEffect: false,
+      roles: ["attacker", "defender"],
+    },
+  ),
   冻土: stack(
     "power_percent",
     10,

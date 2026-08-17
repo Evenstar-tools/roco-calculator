@@ -121,15 +121,15 @@ function resolveAdjacentDisplayedPower(skill, context, operation) {
   const right = adjacentDisplayedPower(context, "Right");
   const missing = [];
   if (left === null) {
-    missing.push(numberInput("adjacentLeftDisplayedPowerOverride", "左侧游戏内威力"));
+    missing.push(numberInput("adjacentLeftDisplayedPowerOverride", "左侧面板威力"));
   }
   if (right === null) {
-    missing.push(numberInput("adjacentRightDisplayedPowerOverride", "右侧游戏内威力"));
+    missing.push(numberInput("adjacentRightDisplayedPowerOverride", "右侧面板威力"));
   }
   if (missing.length > 0) {
     return needsInput(
       missing,
-      "需要两侧相邻技能的当前游戏内显示威力",
+      "需要两侧相邻技能的当前面板威力",
     );
   }
 
@@ -138,7 +138,7 @@ function resolveAdjacentDisplayedPower(skill, context, operation) {
     : (left + right) / 3;
   return exact(value, [
     {
-      label: "相邻技能显示威力",
+      label: "相邻技能面板威力",
       input: {
         left: {
           name: context.adjacentLeftSkillName ?? "左侧技能",
@@ -226,6 +226,31 @@ function resolveCounterMultiplier(skill, context) {
   ], {
     ignoreResistance:
       triggered && params.ignoreResistanceWhenTriggered === true,
+  });
+}
+
+function resolveCounterPowerAndBurn(skill, context) {
+  const params = skill.ruleParams ?? {};
+  const contextKey = params.contextKey ?? "counterTriggered";
+  const triggered = context[contextKey] === true;
+  const basePower = Number(skill.basePower);
+  const baseBurnStacks = Number(params.baseBurnStacks ?? 0);
+  const multiplier = triggered ? Number(params.multiplier ?? 1) : 1;
+  const value = Math.round(basePower * multiplier);
+  const appliedBurnStacks = Math.round(baseBurnStacks * multiplier);
+
+  return exact(value, [
+    {
+      label: triggered
+        ? `应对：威力 ×${multiplier}，灼烧 ${baseBurnStacks}→${appliedBurnStacks}层`
+        : `未触发应对：灼烧 ${baseBurnStacks}层`,
+      input: triggered,
+      before: basePower,
+      after: value,
+      source: "reviewed-rule:blazing-wave-v1",
+    },
+  ], {
+    appliedBurnStacks,
   });
 }
 
@@ -939,6 +964,7 @@ const RULES = new Map([
   ["enemy_total_skill_cost_power", resolveEnemyTotalSkillCostPower],
   ["mana_burst", resolveManaBurst],
   ["counter_multiplier", resolveCounterMultiplier],
+  ["counter_power_and_burn", resolveCounterPowerAndBurn],
   ["hp_scaled", resolveHpScaled],
   ["energy_scaled", resolveEnergyScaled],
   ["stack_scaled", resolveStackScaled],
@@ -1017,7 +1043,7 @@ export function resolveSkillPower(skill, context = {}) {
   if (!effectRule) {
     if (!isFiniteNumber(skill.basePower)) {
       return needsInput(
-        [numberInput("basePowerOverride", "手动威力")],
+        [numberInput("basePowerOverride", "实际威力")],
         "技能缺少已验证的基础威力",
       );
     }

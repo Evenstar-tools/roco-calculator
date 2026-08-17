@@ -209,6 +209,7 @@ export function resolveSourceMarkEffects({
   const negative = normalizeMarkSlot(marks?.negative, "negative");
   const effects = {
     fixedPowerAdd: 0,
+    hiddenPanelPowerPercentAdd: 0,
     powerPercentAdd: 0,
     speedPenalty: negative.id === "slow" ? negative.stacks * 10 : 0,
     settlements: [],
@@ -223,7 +224,9 @@ export function resolveSourceMarkEffects({
           ? actedBeforeEnemy
           : Number(attackerSpeed) - effects.speedPenalty > Number(defenderSpeed);
       if (first && attacking) {
-        effects.powerPercentAdd += positive.stacks * 0.2;
+        const powerPercentAdd = positive.stacks * 0.2;
+        effects.powerPercentAdd += powerPercentAdd;
+        effects.hiddenPanelPowerPercentAdd += powerPercentAdd;
         effects.settlements.push(
           settlement({
             mark,

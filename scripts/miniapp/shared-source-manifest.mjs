@@ -22,6 +22,7 @@ const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
     "src/domain/fair-pigeon.js",
     "src/domain/marks.js",
     "src/domain/natures.js",
+    "src/domain/power-override.js",
     "src/domain/refraction.js",
     "src/domain/skill-effects.js",
     "src/domain/skill-loadout.js",
