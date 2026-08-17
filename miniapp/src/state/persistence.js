@@ -110,6 +110,23 @@ function sanitizeSlotValues(value, allowLists) {
   return Object.keys(sanitized).length ? sanitized : undefined;
 }
 
+function sanitizePowerOverride(value) {
+  if (!isRecord(value)) return undefined;
+  const mode = value.mode === "static" || value.mode === "panel"
+    ? value.mode
+    : undefined;
+  const power = finiteNumber(value.value);
+  if (
+    !mode ||
+    !Number.isInteger(power) ||
+    power < 0 ||
+    power > 9999
+  ) {
+    return undefined;
+  }
+  return { mode, value: power };
+}
+
 function sanitizeOverrides(value) {
   if (!isRecord(value)) return {};
   const sanitized = {};
@@ -138,6 +155,8 @@ function sanitizeOverrides(value) {
   if (value.powerMode === "base" || value.powerMode === "displayed") {
     sanitized.powerMode = value.powerMode;
   }
+  const powerOverride = sanitizePowerOverride(value.powerOverride);
+  if (powerOverride) sanitized.powerOverride = powerOverride;
   if (isRecord(value.context)) {
     const context = sanitizeContext(value.context);
     if (Object.keys(context).length) sanitized.context = context;

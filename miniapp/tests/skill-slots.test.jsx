@@ -95,6 +95,50 @@ function createSnapshot() {
   };
 }
 
+test("switches between static and panel power overrides and restores automatic calculation", () => {
+  const onDirectionChange = vi.fn();
+  const { rerender } = render(
+    <SkillConditionEditor
+      context={{}}
+      direction={{ overrides: {} }}
+      onContextChange={vi.fn()}
+      onDirectionChange={onDirectionChange}
+      result={{ panelPower: 150, staticPower: 80 }}
+      skill={{ basePower: 80, id: "skill-a", name: "烈焰冲击" }}
+    />,
+  );
+
+  expect(screen.getByRole("button", { name: "静态威力" }))
+    .toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByLabelText("静态威力")).toHaveValue(80);
+
+  fireEvent.click(screen.getByRole("button", { name: "面板威力" }));
+  expect(screen.getByLabelText("面板威力")).toHaveValue(150);
+  fireEvent.input(screen.getByLabelText("面板威力"), {
+    target: { value: "175" },
+  });
+  expect(onDirectionChange).toHaveBeenLastCalledWith({
+    overrides: { powerOverride: { mode: "panel", value: 175 } },
+  });
+
+  rerender(
+    <SkillConditionEditor
+      context={{}}
+      direction={{
+        overrides: { powerOverride: { mode: "panel", value: 175 } },
+      }}
+      onContextChange={vi.fn()}
+      onDirectionChange={onDirectionChange}
+      result={{ panelPower: 175, staticPower: 80 }}
+      skill={{ basePower: 80, id: "skill-a", name: "烈焰冲击" }}
+    />,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "恢复自动威力" }));
+  expect(onDirectionChange).toHaveBeenLastCalledWith({
+    overrides: { basePower: undefined, powerOverride: null },
+  });
+});
+
 describe("mini program skill workflow", () => {
   test("filters the skill sheet by category and search with reversible state", () => {
     const onChange = vi.fn();
@@ -452,7 +496,7 @@ describe("mini program skill workflow", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     fireEvent.click(screen.getByRole("button", { name: "触发应对" }));
-    fireEvent.input(screen.getByLabelText("手动威力"), {
+    fireEvent.input(screen.getByLabelText("静态威力"), {
       target: { value: "95" },
     });
     fireEvent.input(screen.getByLabelText("连击数"), {
@@ -462,7 +506,10 @@ describe("mini program skill workflow", () => {
     expect(store.getState().sides.attacker.skills.four[1]).toEqual({
       context: { counterTriggered: true },
       hitCount: 3,
-      overrides: { basePower: 95 },
+      overrides: {
+        basePower: undefined,
+        powerOverride: { mode: "static", value: 95 },
+      },
       skillId: "skill-b",
     });
     expect(
@@ -507,7 +554,7 @@ describe("mini program skill workflow", () => {
       store.getState().directions.forward.context.counterTriggered,
     ).toBe(true);
 
-    fireEvent.input(screen.getByLabelText("手动威力"), {
+    fireEvent.input(screen.getByLabelText("静态威力"), {
       target: { value: "95" },
     });
     fireEvent.input(screen.getByLabelText("连击数"), {
@@ -515,7 +562,10 @@ describe("mini program skill workflow", () => {
     });
     expect(store.getState().directions.forward).toMatchObject({
       hitCount: 3,
-      overrides: { basePower: 95 },
+      overrides: {
+        basePower: undefined,
+        powerOverride: { mode: "static", value: 95 },
+      },
     });
   });
 

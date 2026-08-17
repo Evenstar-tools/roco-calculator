@@ -78,7 +78,10 @@ function createState(snapshot) {
             secret: "shh",
           },
           hitCount: 3,
-          overrides: { basePower: 95 },
+          overrides: {
+            basePower: 95,
+            powerOverride: { mode: "panel", value: 175 },
+          },
           skillId: "skill-b",
         },
         null,
@@ -116,7 +119,10 @@ function createState(snapshot) {
     },
     currentHp: 110,
     hitCount: 2,
-    overrides: { basePower: 90 },
+    overrides: {
+      basePower: 90,
+      powerOverride: { mode: "static", value: 110 },
+    },
     reduction: 0.75,
     selectedSkillIndex: 1,
   };
@@ -170,7 +176,10 @@ describe("mini program share payload", () => {
               {
                 context: { counterTriggered: true },
                 hitCount: 3,
-                overrides: { basePower: 95 },
+                overrides: {
+                  basePower: 95,
+                  powerOverride: { mode: "panel", value: 175 },
+                },
                 skillId: "skill-b",
               },
               null,
@@ -194,7 +203,10 @@ describe("mini program share payload", () => {
           context: { currentHpPercent: 80 },
           currentHp: 110,
           hitCount: 2,
-          overrides: { basePower: 90 },
+          overrides: {
+            basePower: 90,
+            powerOverride: { mode: "static", value: 110 },
+          },
           reduction: 0.75,
           selectedSkillIndex: 1,
         },

@@ -642,6 +642,9 @@ export default function BattleWorkspace({
                 direction={conditionDirection}
                 onContextChange={updateSkillContext}
                 onDirectionChange={updateSkillDirection}
+                result={state.mode === "four"
+                  ? calculation.rows[activeDirectionState.selectedSkillIndex]
+                  : calculation.rows[0]}
                 skill={selectedSkill}
               />
             </View>

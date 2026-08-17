@@ -68,13 +68,27 @@ function integerInRange(value, minimum, maximum, fallback) {
 }
 
 function compactOverrides(value) {
+  const compact = {};
   const basePower = finiteInRange(
     value?.basePower,
     0,
     5000,
     undefined,
   );
-  return basePower === undefined ? undefined : { p: basePower };
+  if (basePower !== undefined) compact.p = basePower;
+
+  const mode = value?.powerOverride?.mode;
+  const power = integerInRange(
+    value?.powerOverride?.value,
+    0,
+    9999,
+    undefined,
+  );
+  if ((mode === "static" || mode === "panel") && power !== undefined) {
+    compact.m = mode === "panel" ? "p" : "s";
+    compact.v = power;
+  }
+  return Object.keys(compact).length ? compact : undefined;
 }
 
 function compactSkill(entry) {
@@ -365,8 +379,20 @@ function legalSkillIds(snapshot, spiritId, allSkillIds) {
 }
 
 function expandOverrides(value) {
+  const expanded = {};
   const basePower = finiteInRange(value?.p, 0, 5000, undefined);
-  return basePower === undefined ? undefined : { basePower };
+  if (basePower !== undefined) expanded.basePower = basePower;
+
+  const mode = value?.m === "p"
+    ? "panel"
+    : value?.m === "s"
+      ? "static"
+      : undefined;
+  const power = integerInRange(value?.v, 0, 9999, undefined);
+  if (mode && power !== undefined) {
+    expanded.powerOverride = { mode, value: power };
+  }
+  return Object.keys(expanded).length ? expanded : undefined;
 }
 
 function expandSkill(entry, allowedSkillIds) {

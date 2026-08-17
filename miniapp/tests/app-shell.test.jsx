@@ -20,11 +20,11 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
   });
 
-  test("publishes miniapp 0.2.0 against web core 1.5.7", () => {
-    expect(MINIAPP_VERSION).toBe("0.2.0");
+  test("publishes miniapp 0.2.3 against web core 1.5.7", () => {
+    expect(MINIAPP_VERSION).toBe("0.2.3");
     expect(WEB_CORE_VERSION).toBe("1.5.7");
     expect(MINIAPP_RELEASE_LABEL).toBe(
-      "小程序 v0.2.0 · 网页核心 v1.5.7",
+      "小程序 v0.2.3 · 网页核心 v1.5.7",
     );
     render(<AppHeader dataVersion="data-v1" />);
     expect(screen.getByText(MINIAPP_RELEASE_LABEL)).toBeInTheDocument();
