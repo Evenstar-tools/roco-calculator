@@ -316,6 +316,39 @@ describe("versioned share state", () => {
     );
   });
 
+  test("round trips actual and panel power overrides", async () => {
+    const state = shareFixture();
+    state.directions.forward.overrides = {
+      powerOverride: { mode: "actual", value: 87.5 },
+    };
+    state.sides.attacker.skills.four[0] = {
+      skillId: "skill_a",
+      overrides: { powerOverride: { mode: "panel", value: 281 } },
+    };
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.directions.forward.overrides.powerOverride).toEqual({
+      mode: "actual",
+      value: 87.5,
+    });
+    expect(decoded.sides.attacker.skills.four[0].overrides.powerOverride).toEqual({
+      mode: "panel",
+      value: 281,
+    });
+  });
+
+  test.each([
+    [{ mode: "panel", value: 87.5 }, "面板威力必须为整数"],
+    [{ mode: "actual", value: 10000 }, "威力必须在 0–9999"],
+    [{ mode: "base", value: 80 }, "威力口径无效"],
+  ])("rejects invalid power overrides", async (powerOverride, message) => {
+    const state = shareFixture();
+    state.directions.forward.overrides = { powerOverride };
+
+    await expect(encodeShareState(state)).rejects.toThrow(message);
+  });
+
   test("round trips optional per-skill single memories without changing the v1 schema", async () => {
     const state = shareFixture();
     state.sides.attacker.skills.single = {

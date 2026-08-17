@@ -113,8 +113,8 @@ test("opens the complete release notes in a second-level dialog", () => {
   });
 
   expect(screen.getByText("版本记录")).toBeVisible();
-  expect(screen.getByText("吸血与溢出回复")).toBeVisible();
-  expect(screen.getByText("v1.5.6")).toBeVisible();
+  expect(screen.getByText("威力输入与乘区校正")).toBeVisible();
+  expect(screen.getByText("v1.5.7")).toBeVisible();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
 
   fireEvent.click(screen.getByRole("button", { name: "查看完整版本记录" }));
@@ -133,6 +133,7 @@ test("opens the complete release notes in a second-level dialog", () => {
 
 test("opens display settings from the menu and exposes the type analysis switch", () => {
   const onShowDisplaySettings = vi.fn();
+  const onPowerDisplayModeChange = vi.fn();
   const onTypeCoverageChange = vi.fn();
   const { rerender } = renderOverlays({
     menu: {
@@ -150,8 +151,10 @@ test("opens display settings from the menu and exposes the type analysis switch"
     <WorkspaceOverlays
       displaySettings={{
         onClose: vi.fn(),
+        onPowerDisplayModeChange,
         onTypeCoverageChange,
         open: true,
+        powerDisplayMode: "actual",
         typeCoverageEnabled: false,
       }}
       menu={{ actions: {}, open: false }}
@@ -170,4 +173,11 @@ test("opens display settings from the menu and exposes the type analysis switch"
   expect(switchControl).not.toBeChecked();
   fireEvent.click(switchControl);
   expect(onTypeCoverageChange).toHaveBeenCalledWith(true);
+
+  expect(screen.getByRole("button", { name: "实际威力" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "面板威力" }));
+  expect(onPowerDisplayModeChange).toHaveBeenCalledWith("panel");
 });

@@ -535,6 +535,46 @@ describe("calculator session", () => {
     });
   });
 
+  test("clears a temporary power override when selecting another single skill", () => {
+    const initialState = createProductInitialState(snapshot);
+    const state = {
+      ...initialState,
+      directions: {
+        ...initialState.directions,
+        forward: {
+          ...initialState.directions.forward,
+          overrides: {
+            ...initialState.directions.forward.overrides,
+            powerOverride: { mode: "actual", value: 222 },
+          },
+        },
+      },
+      sides: {
+        ...initialState.sides,
+        attacker: {
+          ...initialState.sides.attacker,
+          skills: {
+            ...initialState.sides.attacker.skills,
+            single: { skillId: "skill-a" },
+          },
+          spiritId: "alpha",
+        },
+      },
+    };
+
+    const result = selectSingleSkill(state, {
+      direction: "forward",
+      side: "attacker",
+      skillId: "skill-b",
+      snapshot,
+    });
+
+    expect(result.state.directions.forward.overrides.powerOverride).toBeNull();
+    expect(
+      result.state.sides.attacker.skills.single.overrides.powerOverride,
+    ).toBeUndefined();
+  });
+
   test.each([
     ["魔能爆", "甜蜜陷阱", "energy", 7, 42],
     ["逆袭", "叠浪", "actualSkillCost", 12, 2],

@@ -2630,6 +2630,13 @@ select:focus-visible {
   white-space: nowrap;
 }
 
+.skill-slot__power-source {
+  flex: 0 0 auto;
+  color: var(--text-faint);
+  font-size: 10px;
+  font-weight: 700;
+}
+
 .skill-slot__controls {
   display: flex;
   min-width: 0;
@@ -5885,6 +5892,103 @@ body {
   accent-color: var(--accent);
 }
 
+.display-settings-option--power {
+  align-items: stretch;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.display-settings-segment {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  grid-template-columns: 1fr 1fr;
+}
+
+.display-settings-segment button {
+  min-height: 34px;
+  border: 0;
+  color: var(--text-muted);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.display-settings-segment button[aria-pressed="true"] {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.display-settings-power-help {
+  display: grid;
+  gap: 5px;
+}
+
+.display-settings-power-help small {
+  line-height: 1.45;
+}
+
+.display-settings-power-help strong {
+  font-size: inherit;
+}
+
+.skill-slot__power-output {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-strong);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.power-draft {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.power-draft__control {
+  display: flex;
+  min-width: 0;
+  align-items: stretch;
+}
+
+.power-draft__control input {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.power-draft__reset {
+  flex: 0 0 auto;
+  min-width: 30px;
+  padding: 0 4px;
+  border: 1px solid var(--border-strong);
+  border-left: 0;
+  border-radius: 0 5px 5px 0;
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.power-draft__control:has(.power-draft__reset) input {
+  border-radius: 5px 0 0 5px;
+}
+
+.power-draft__error {
+  color: var(--attack);
+  font-size: 9px;
+  line-height: 1.3;
+  white-space: normal;
+}
+
 .formula-breakdown dd span {
   font-size: 11px;
 }
@@ -6062,14 +6166,24 @@ html[data-theme="dark"] .type-analysis-chip[data-tone] {
   background: var(--surface);
 }
 
-.skill-effect-card__base {
+.skill-effect-card__power-input {
   display: grid;
   justify-items: end;
   gap: 2px;
 }
 
-.skill-effect-card__base input {
-  width: 70px;
+.skill-effect-card__power-input > small {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.skill-effect-card__power-input .power-draft {
+  width: 112px;
+}
+
+.skill-effect-card__power-input input {
+  width: 100%;
   height: 30px;
   border: 1px solid var(--border);
   border-radius: 5px;
@@ -6182,7 +6296,13 @@ html[data-theme="dark"] .type-analysis-chip[data-tone] {
   font-weight: 800;
 }
 
-html[data-theme="dark"] .skill-effect-card__base input,
+.skill-slot__power-input .power-draft__reset {
+  min-width: 25px;
+  padding: 0 2px;
+  font-size: 8px;
+}
+
+html[data-theme="dark"] .skill-effect-card__power-input input,
 html[data-theme="dark"] .trait-number input {
   background: var(--surface);
   color: var(--text);

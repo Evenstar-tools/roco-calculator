@@ -102,6 +102,22 @@ test("explains automatic difference-based power with both panel values", () => {
   ).toBe("物防 283 − 250 = 33 → 威力 100");
 });
 
+test("explains 炙热波动 counter power and burn-stack doubling together", () => {
+  expect(
+    describeResolution({
+      formulaSteps: [
+        {
+          after: 110,
+          before: 55,
+          input: true,
+          label: "应对：威力 ×2，灼烧 4→8层",
+          source: "reviewed-rule:blazing-wave-v1",
+        },
+      ],
+    }),
+  ).toBe("应对：威力 ×2，灼烧 4→8层");
+});
+
 test("single-skill difference rules keep table power separate from trait power", () => {
   const flashStrike = {
     ...skills[0],
@@ -128,9 +144,8 @@ test("single-skill difference rules keep table power separate from trait power",
     />,
   );
 
-  const powerSummary = screen.getByLabelText("技能威力");
-  expect(within(powerSummary).getByText("190")).toBeVisible();
-  expect(within(powerSummary).queryByText("285")).not.toBeInTheDocument();
+  expect(screen.getByRole("spinbutton", { name: "实际威力" })).toHaveValue(190);
+  expect(screen.queryByDisplayValue("285")).not.toBeInTheDocument();
 });
 
 test("other absolute dynamic rules also show their resolved power before traits", () => {
@@ -159,21 +174,22 @@ test("other absolute dynamic rules also show their resolved power before traits"
     />,
   );
 
-  const powerSummary = screen.getByLabelText("技能威力");
-  expect(within(powerSummary).getByText("135")).toBeVisible();
-  expect(within(powerSummary).queryByText("203")).not.toBeInTheDocument();
+  expect(screen.getByRole("spinbutton", { name: "实际威力" })).toHaveValue(135);
+  expect(screen.queryByDisplayValue("203")).not.toBeInTheDocument();
 });
 
 test("single-skill editor keeps actual power directly editable", async () => {
   const user = userEvent.setup();
-  const onManualPowerChange = vi.fn();
+  const onPowerOverrideChange = vi.fn();
 
   render(
     <SingleSkillEditor
       hitCount={1}
       manualPower={80}
       onHitCountChange={vi.fn()}
-      onManualPowerChange={onManualPowerChange}
+      onManualPowerChange={vi.fn()}
+      onPowerOverrideChange={onPowerOverrideChange}
+      powerOverride={null}
       onSkillSelect={vi.fn()}
       selectedSkill={skills[0]}
       skills={skills}
@@ -186,12 +202,16 @@ test("single-skill editor keeps actual power directly editable", async () => {
   expect(screen.getByText("翼")).toBeVisible();
   expect(screen.queryByRole("tab", { name: /手动威力/ })).not.toBeInTheDocument();
   const manualPower = screen.getByRole("spinbutton", {
-    name: "基础技能威力",
+    name: "实际威力",
   });
   expect(manualPower).toBeVisible();
   await user.clear(manualPower);
   await user.type(manualPower, "92");
-  expect(onManualPowerChange).toHaveBeenLastCalledWith(92);
+  await user.keyboard("{Enter}");
+  expect(onPowerOverrideChange).toHaveBeenLastCalledWith({
+    mode: "actual",
+    value: 92,
+  });
 });
 
 test("single-skill editor displays the effective type returned by calculation", () => {
@@ -220,33 +240,11 @@ test("single-skill editor displays the effective type returned by calculation", 
   expect(within(facts).queryByText("普通")).not.toBeInTheDocument();
 });
 
-test("single-skill editor switches to compact game-displayed power input", async () => {
+test("single-skill editor uses the selected display mode as the next input semantic", async () => {
   const user = userEvent.setup();
-  const onPowerModeChange = vi.fn();
+  const onPowerOverrideChange = vi.fn();
 
-  const { rerender } = render(
-    <SingleSkillEditor
-      attackerTrait={{
-        description: "入场首回合物攻提高。",
-        name: "专注力",
-      }}
-      hitCount={1}
-      manualPower={80}
-      onHitCountChange={vi.fn()}
-      onManualPowerChange={vi.fn()}
-      onPowerModeChange={onPowerModeChange}
-      onSkillSelect={vi.fn()}
-      powerMode="base"
-      selectedSkill={skills[0]}
-      skills={skills}
-    />,
-  );
-
-  await user.click(screen.getByText("手动调整"));
-  await user.click(screen.getByRole("button", { name: "游戏内威力" }));
-  expect(onPowerModeChange).toHaveBeenCalledWith("displayed");
-
-  rerender(
+  render(
     <SingleSkillEditor
       attackerTrait={{
         description: "入场首回合物攻提高。",
@@ -256,19 +254,25 @@ test("single-skill editor switches to compact game-displayed power input", async
       manualPower={160}
       onHitCountChange={vi.fn()}
       onManualPowerChange={vi.fn()}
-      onPowerModeChange={onPowerModeChange}
+      onPowerOverrideChange={onPowerOverrideChange}
       onSkillSelect={vi.fn()}
-      powerMode="displayed"
+      powerDisplayMode="panel"
+      powerOverride={null}
+      result={{ actualPower: 80, panelPower: 160, status: "exact" }}
       selectedSkill={skills[0]}
       skills={skills}
     />,
   );
 
-  expect(
-    screen.getByRole("spinbutton", { name: "游戏内显示威力" }),
-  ).toHaveValue(160);
-  expect(screen.getByText("已含特性/克制/等级")).toBeVisible();
-  expect(screen.queryByText("攻击特性")).not.toBeInTheDocument();
+  const input = screen.getByRole("spinbutton", { name: "面板威力" });
+  expect(input).toHaveValue(160);
+  await user.clear(input);
+  await user.type(input, "180{Enter}");
+  expect(onPowerOverrideChange).toHaveBeenLastCalledWith({
+    mode: "panel",
+    value: 180,
+  });
+  expect(screen.getByText("攻击特性")).toBeVisible();
 });
 
 test("single-skill picker filters by typed pinyin and commits the matching skill", async () => {
@@ -648,11 +652,9 @@ test("shows every skill effect and calculates Head-on Blow from its condition", 
 
   expect(screen.getByText(headOnBlow.description)).toBeVisible();
   expect(
-    screen.getByRole("spinbutton", { name: "基础技能威力" }),
-  ).toHaveValue(80);
-  const powerSummary = screen.getByLabelText("技能威力");
-  expect(within(powerSummary).getByText("实际")).toBeVisible();
-  expect(within(powerSummary).getByText("180")).toBeVisible();
+    screen.getByRole("spinbutton", { name: "实际威力" }),
+  ).toHaveValue(180);
+  expect(within(screen.getByLabelText("技能威力")).getByText("实际威力")).toBeVisible();
   expect(screen.getByText("80 + 100 = 180")).toBeVisible();
   const condition = screen.getByRole("checkbox", {
     name: "敌方本回合换精灵",
@@ -683,9 +685,8 @@ test("shows known skill power even when final damage still needs support", () =>
     />,
   );
 
-  const powerSummary = screen.getByLabelText("技能威力");
-  expect(within(powerSummary).getByText("80")).toBeVisible();
-  expect(within(powerSummary).queryByText("待输入")).not.toBeInTheDocument();
+  expect(screen.getByRole("spinbutton", { name: "实际威力" })).toHaveValue(80);
+  expect(screen.queryByText("待输入")).not.toBeInTheDocument();
 });
 
 test("choice skills use a compact branch control and reveal only relevant conditions", async () => {
@@ -1189,7 +1190,7 @@ test("four-skill editor explains adjacent displayed power for transmission skill
           left: { name: "传动状态", power: 0 },
           right: { name: "面板二百", power: 200 },
         },
-        label: "相邻技能显示威力",
+        label: "相邻技能面板威力",
         source: "reviewed-rule:adjacent-displayed-power-v1",
       },
     ],
@@ -1237,7 +1238,7 @@ test("four-skill editor allows missing adjacent displayed power to be entered ma
         inputs: [
           { key: "adjacentLeftDisplayedPowerOverride", label: "左侧游戏内威力", min: 0, type: "number" },
         ],
-        reason: "需要两侧相邻技能的当前游戏内显示威力",
+        reason: "需要两侧相邻技能的当前面板威力",
         status: "needs_input",
       }]}
       attackerSkillChoices={[sixDegrees]}
@@ -1688,14 +1689,76 @@ test("four-skill rows keep each skill power directly editable", async () => {
   );
 
   const power = screen.getByRole("spinbutton", {
-    name: "攻击方技能1威力",
+    name: "攻击方技能1实际威力",
   });
   await user.clear(power);
-  await user.type(power, "123");
+  await user.type(power, "123{Enter}");
   expect(onSkillPowerChange).toHaveBeenLastCalledWith(
     "attacker",
     0,
-    123,
+    { mode: "actual", value: 123 },
+  );
+});
+
+test("single-skill panel mode exposes one editable panel-power field", () => {
+  render(
+    <SingleSkillEditor
+      hitCount={1}
+      manualPower={80}
+      onHitCountChange={vi.fn()}
+      onManualPowerChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      powerDisplayMode="panel"
+      result={{
+        actualPower: 80,
+        panelPower: 240,
+        status: "exact",
+      }}
+      selectedSkill={skills[0]}
+      skills={skills}
+    />,
+  );
+
+  expect(screen.getByRole("spinbutton", { name: "面板威力" })).toHaveValue(240);
+  expect(screen.queryByRole("spinbutton", { name: "实际威力" })).not.toBeInTheDocument();
+});
+
+test("four-skill panel mode is editable and saves a panel override", async () => {
+  const user = userEvent.setup();
+  const onSkillPowerChange = vi.fn();
+  render(
+    <FourSkillEditor
+      attackerName="音速犬"
+      attackerResults={[
+        {
+          panelPower: 240,
+          actualPower: 80,
+          hitCount: 1,
+          skillPower: 80,
+          status: "exact",
+          totalDamage: 100,
+        },
+      ]}
+      attackerSkills={[skills[0], null, null, null]}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillPowerChange={onSkillPowerChange}
+      onSkillSelect={vi.fn()}
+      powerDisplayMode="panel"
+      skills={skills}
+    />,
+  );
+
+  const input = screen.getByRole("spinbutton", {
+    name: "攻击方技能1面板威力",
+  });
+  expect(input).toHaveValue(240);
+  await user.clear(input);
+  await user.type(input, "281{Enter}");
+  expect(onSkillPowerChange).toHaveBeenLastCalledWith(
+    "attacker",
+    0,
+    { mode: "panel", value: 281 },
   );
 });
 
@@ -1738,7 +1801,7 @@ test("difference-table skills show the resolved table power before trait multipl
   );
 
   expect(
-    screen.getByRole("spinbutton", { name: "攻击方技能1威力" }),
+    screen.getByRole("spinbutton", { name: "攻击方技能1实际威力" }),
   ).toHaveValue(190);
   expect(
     screen.getByText("速度 254 − 143 = 111 → 威力 190"),
@@ -1782,7 +1845,7 @@ test("听桥技能行标明反弹来源技能和继承的面板威力", () => {
 
   expect(screen.getByText("反弹「风力冲击」· 威力 150")).toBeVisible();
   expect(
-    screen.getByRole("spinbutton", { name: "防御方技能1威力" }),
+    screen.getByRole("spinbutton", { name: "防御方技能1实际威力" }),
   ).toHaveValue(150);
 });
 
@@ -2191,7 +2254,7 @@ test("advanced settings stay collapsed until requested", async () => {
             after: 38,
             before: 37.5,
             input: { method: "round" },
-            label: "显示威力",
+            label: "面板威力",
           },
           {
             after: 47,
@@ -2248,8 +2311,8 @@ test("advanced settings stay collapsed until requested", async () => {
   ).not.toBeInTheDocument();
   expect(screen.getByRole("spinbutton", { name: "最终伤害倍率" })).toHaveValue(1);
   expect(screen.getByText("伤害计算过程")).toBeVisible();
-  expect(screen.getByText("技能威力")).toBeVisible();
-  expect(screen.getByText("显示威力")).toBeVisible();
+  expect(screen.getAllByText("实际威力").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("面板威力").length).toBeGreaterThan(0);
   expect(screen.getByText("每段伤害")).toBeVisible();
   expect(screen.getByText("总伤害")).toBeVisible();
   expect(screen.getByText("37/41")).toBeVisible();

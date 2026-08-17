@@ -48,7 +48,8 @@ export function getSkillSlotView(snapshot, entry) {
     ...skill,
     slotContext: entry.context ?? {},
     slotHitCount: entry.hitCount,
-    slotPowerOverride:
+    slotPowerOverride: entry.overrides?.powerOverride ?? null,
+    slotLegacyBasePowerOverride:
       entry.overrides?.basePower ?? entry.basePowerOverride,
   };
 }

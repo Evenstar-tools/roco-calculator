@@ -20,7 +20,9 @@ import {
   isFirstRunGuideCompleted,
 } from "./state/first-run-guide.js";
 import {
+  readPowerDisplayMode,
   readTypeCoverageSetting,
+  writePowerDisplayMode,
   writeTypeCoverageSetting,
 } from "./state/display-settings.js";
 import {
@@ -110,6 +112,9 @@ function CalculatorWorkspace({ snapshot }) {
   const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
   const [dataSourceOpen, setDataSourceOpen] = useState(false);
   const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
+  const [powerDisplayMode, setPowerDisplayMode] = useState(() =>
+    readPowerDisplayMode(),
+  );
   const [typeCoverageEnabled, setTypeCoverageEnabled] = useState(() =>
     readTypeCoverageSetting(),
   );
@@ -1077,15 +1082,6 @@ function CalculatorWorkspace({ snapshot }) {
       }
       defenderTrait={getTraitView(snapshot, activeDefenseSpirit, "defender")}
       hitCount={resultModel.selectedResult?.hitCount ?? currentDirection.hitCount}
-      manualPower={
-        currentDirection.overrides.powerMode === "displayed"
-          ? currentDirection.overrides.displayedPower ??
-            selectedSingleSkill?.basePower ??
-            0
-          : currentDirection.overrides.basePower ??
-            selectedSingleSkill?.basePower ??
-            0
-      }
       onHitCountChange={(hitCount) =>
         updateRememberedSingleDirection({
           hitCount: storedHitCount(
@@ -1120,16 +1116,10 @@ function CalculatorWorkspace({ snapshot }) {
           currentHpPercent,
         )
       }
-      onManualPowerChange={(power) =>
+      onPowerOverrideChange={(powerOverride) =>
         updateRememberedSingleDirection({
-          overrides:
-            currentDirection.overrides.powerMode === "displayed"
-              ? { displayedPower: power }
-              : { basePower: power },
+          overrides: { powerOverride },
         })
-      }
-      onPowerModeChange={(powerMode) =>
-        updateRememberedSingleDirection({ overrides: { powerMode } })
       }
       onSkillSelect={selectSingleSkill}
       onTraitContextChange={(key, value) => {
@@ -1138,7 +1128,8 @@ function CalculatorWorkspace({ snapshot }) {
       result={resultModel.selectedResult}
       selectedSkill={selectedSingleSkill}
       skills={activeAttackSkills}
-      powerMode={currentDirection.overrides.powerMode ?? "base"}
+      powerDisplayMode={powerDisplayMode}
+      powerOverride={currentDirection.overrides.powerOverride ?? null}
       traitContext={currentDirection.context}
     />
   ) : null;
@@ -1286,11 +1277,17 @@ function CalculatorWorkspace({ snapshot }) {
           ),
         });
       }}
-      onSkillPowerChange={(side, index, power) =>
+      onSkillPowerChange={(side, index, powerOverride) =>
         updateFourSkillEntry(side, index, {
-          overrides: { basePower: power },
+          overrides: { powerOverride },
         })
       }
+      onSkillPowerClear={(side, index) =>
+        updateFourSkillEntry(side, index, {
+          overrides: { powerOverride: null },
+        })
+      }
+      powerDisplayMode={powerDisplayMode}
     />
   ) : null;
 
@@ -1483,10 +1480,14 @@ function CalculatorWorkspace({ snapshot }) {
     },
     displaySettings: {
       onClose: () => setDisplaySettingsOpen(false),
+      onPowerDisplayModeChange: (mode) => {
+        setPowerDisplayMode(writePowerDisplayMode(undefined, mode));
+      },
       onTypeCoverageChange: (enabled) => {
         setTypeCoverageEnabled(writeTypeCoverageSetting(undefined, enabled));
       },
       open: displaySettingsOpen,
+      powerDisplayMode,
       typeCoverageEnabled,
     },
     mobileResult: {
