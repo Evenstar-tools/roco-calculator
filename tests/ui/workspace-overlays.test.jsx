@@ -154,7 +154,7 @@ test("opens display settings from the menu and exposes the type analysis switch"
         onPowerDisplayModeChange,
         onTypeCoverageChange,
         open: true,
-        powerDisplayMode: "actual",
+        powerDisplayMode: "static",
         typeCoverageEnabled: false,
       }}
       menu={{ actions: {}, open: false }}
@@ -174,7 +174,7 @@ test("opens display settings from the menu and exposes the type analysis switch"
   fireEvent.click(switchControl);
   expect(onTypeCoverageChange).toHaveBeenCalledWith(true);
 
-  expect(screen.getByRole("button", { name: "实际威力" })).toHaveAttribute(
+  expect(screen.getByRole("button", { name: "静态威力" })).toHaveAttribute(
     "aria-pressed",
     "true",
   );

@@ -154,7 +154,9 @@ function assertPowerOverride(overrides, path) {
   if (powerOverride === null) return;
   if (
     !hasExactKeys(powerOverride, ["mode", "value"]) ||
-    (powerOverride.mode !== "actual" && powerOverride.mode !== "panel")
+    (powerOverride.mode !== "static" &&
+      powerOverride.mode !== "actual" &&
+      powerOverride.mode !== "panel")
   ) {
     throw new TypeError(`${path}.powerOverride 威力口径无效`);
   }
@@ -171,13 +173,15 @@ function assertPowerOverride(overrides, path) {
     Math.round(powerOverride.value * 1_000_000) / 1_000_000 !==
       powerOverride.value
   ) {
-    throw new TypeError(`${path}.powerOverride 实际威力最多 6 位小数`);
+    throw new TypeError(`${path}.powerOverride 旧版威力覆盖值最多 6 位小数`);
   }
   if (
-    powerOverride.mode === "panel" &&
+    (powerOverride.mode === "static" || powerOverride.mode === "panel") &&
     !Number.isInteger(powerOverride.value)
   ) {
-    throw new TypeError(`${path}.powerOverride 面板威力必须为整数`);
+    throw new TypeError(
+      `${path}.powerOverride ${powerOverride.mode === "panel" ? "面板" : "静态"}威力必须为整数`,
+    );
   }
 }
 

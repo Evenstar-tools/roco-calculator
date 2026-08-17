@@ -18,6 +18,9 @@ const CATEGORY_LABELS = {
 };
 
 export function displayedSkillPower(skill, result) {
+  if (Number.isFinite(Number(result?.staticPower))) {
+    return Number(result.staticPower);
+  }
   if (Number.isFinite(Number(result?.actualPower))) {
     return Number(result.actualPower);
   }
@@ -301,14 +304,14 @@ export function SingleSkillEditor({
   result,
   selectedSkill,
   skills,
-  powerDisplayMode = "actual",
+  powerDisplayMode = "static",
   powerOverride,
   powerMode = "base",
   traitContext = {},
 }) {
   const [hitDraft, setHitDraft] = useState(String(hitCount));
   const normalizedPowerDisplayMode =
-    powerDisplayMode === "panel" ? "panel" : "actual";
+    powerDisplayMode === "panel" ? "panel" : "static";
   const hasUnifiedPowerOverride = powerOverride !== undefined;
   const activePowerOverride = hasUnifiedPowerOverride
     ? powerOverride
@@ -496,11 +499,11 @@ export function SingleSkillEditor({
         <div className="skill-effect-card__power" aria-label="技能威力">
           <label className="skill-effect-card__power-input">
             <small>
-              {normalizedPowerDisplayMode === "panel" ? "面板威力" : "实际威力"}
+              {normalizedPowerDisplayMode === "panel" ? "面板威力" : "静态威力"}
             </small>
             <PowerDraftInput
               ariaLabel={
-                normalizedPowerDisplayMode === "panel" ? "面板威力" : "实际威力"
+                normalizedPowerDisplayMode === "panel" ? "面板威力" : "静态威力"
               }
               isManual={Boolean(activePowerOverride)}
               mode={normalizedPowerDisplayMode}
@@ -518,7 +521,7 @@ export function SingleSkillEditor({
               value={
                 normalizedPowerDisplayMode === "panel"
                   ? result?.panelPower ?? result?.effectivePower ?? manualPower ?? selectedSkill?.basePower
-                  : result?.actualPower ?? displayedSkillPower(selectedSkill, result) ?? manualPower ?? selectedSkill?.basePower
+                  : result?.staticPower ?? displayedSkillPower(selectedSkill, result) ?? manualPower ?? selectedSkill?.basePower
               }
             />
           </label>
@@ -531,8 +534,9 @@ export function SingleSkillEditor({
               当前条件未触发加成
             </span>
           ) : null}
-          {activePowerOverride?.mode === "actual" ? (
-            <span className="skill-effect-card__formula">威力已手动覆盖</span>
+          {activePowerOverride?.mode === "static" ||
+          activePowerOverride?.mode === "actual" ? (
+            <span className="skill-effect-card__formula">静态威力已手动填写</span>
           ) : null}
         </div>
       </div>

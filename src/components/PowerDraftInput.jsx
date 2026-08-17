@@ -4,17 +4,10 @@ function validationMessage(mode, draft) {
   if (draft === "") return "";
   const value = Number(draft);
   if (!Number.isFinite(value) || value < 0 || value > 9999) {
-    return `请输入 0–9999 的${mode === "panel" ? "面板" : "实际"}威力`;
+    return `请输入 0–9999 的${mode === "panel" ? "面板" : "静态"}威力`;
   }
-  if (mode === "panel" && !Number.isInteger(value)) {
-    return "面板威力只能填整数";
-  }
-  if (
-    mode === "actual" &&
-    draft.includes(".") &&
-    draft.split(".")[1].length > 6
-  ) {
-    return "实际威力最多保留 6 位小数";
+  if (!Number.isInteger(value)) {
+    return `${mode === "panel" ? "面板" : "静态"}威力只能填整数`;
   }
   return "";
 }
@@ -24,7 +17,7 @@ export function PowerDraftInput({
   className = "",
   disabled = false,
   isManual = false,
-  mode = "actual",
+  mode = "static",
   onClear,
   onCommit,
   value,
@@ -58,7 +51,7 @@ export function PowerDraftInput({
   function step(direction) {
     const current = Number(draft === "" ? value : draft);
     const next = Math.min(9999, Math.max(0, (Number.isFinite(current) ? current : 0) + direction));
-    const normalized = mode === "panel" ? Math.round(next) : next;
+    const normalized = Math.round(next);
     setDraft(String(normalized));
     setError("");
     onCommit?.(normalized);
@@ -97,7 +90,7 @@ export function PowerDraftInput({
               step(event.key === "ArrowUp" ? 1 : -1);
             }
           }}
-          step={mode === "panel" ? "1" : "any"}
+          step="1"
           type="number"
           value={draft}
         />
@@ -114,7 +107,7 @@ export function PowerDraftInput({
             title="恢复自动威力"
             type="button"
           >
-            自动
+            ↺
           </button>
         ) : null}
       </span>

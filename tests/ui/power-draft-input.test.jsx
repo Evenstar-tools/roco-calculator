@@ -4,18 +4,18 @@ import { describe, expect, test, vi } from "vitest";
 import { PowerDraftInput } from "../../src/components/PowerDraftInput.jsx";
 
 describe("PowerDraftInput", () => {
-  test("commits a multi-digit actual power only on Enter", async () => {
+  test("commits a multi-digit static power only on Enter", async () => {
     const user = userEvent.setup();
     const onCommit = vi.fn();
     render(
       <PowerDraftInput
-        ariaLabel="实际威力"
-        mode="actual"
+        ariaLabel="静态威力"
+        mode="static"
         onCommit={onCommit}
         value={80}
       />,
     );
-    const input = screen.getByRole("spinbutton", { name: "实际威力" });
+    const input = screen.getByRole("spinbutton", { name: "静态威力" });
 
     await user.clear(input);
     await user.type(input, "180");
@@ -30,14 +30,14 @@ describe("PowerDraftInput", () => {
     const onClear = vi.fn();
     render(
       <PowerDraftInput
-        ariaLabel="实际威力"
+        ariaLabel="静态威力"
         isManual
-        mode="actual"
+        mode="static"
         onClear={onClear}
         value={180}
       />,
     );
-    const input = screen.getByRole("spinbutton", { name: "实际威力" });
+    const input = screen.getByRole("spinbutton", { name: "静态威力" });
     await user.clear(input);
     await user.tab();
     expect(onClear).toHaveBeenCalledTimes(1);
@@ -63,19 +63,39 @@ describe("PowerDraftInput", () => {
     expect(screen.getByText("面板威力只能填整数")).toBeVisible();
   });
 
+  test("rejects fractional static power without changing calculation", async () => {
+    const user = userEvent.setup();
+    const onCommit = vi.fn();
+    render(
+      <PowerDraftInput
+        ariaLabel="静态威力"
+        mode="static"
+        onCommit={onCommit}
+        value={80}
+      />,
+    );
+    const input = screen.getByRole("spinbutton", { name: "静态威力" });
+    await user.clear(input);
+    await user.type(input, "87.5");
+    await user.keyboard("{Enter}");
+
+    expect(onCommit).not.toHaveBeenCalled();
+    expect(screen.getByText("静态威力只能填整数")).toBeVisible();
+  });
+
   test("Escape abandons a draft and the recovery button clears a manual value", async () => {
     const user = userEvent.setup();
     const onClear = vi.fn();
     render(
       <PowerDraftInput
-        ariaLabel="实际威力"
+        ariaLabel="静态威力"
         isManual
-        mode="actual"
+        mode="static"
         onClear={onClear}
         value={90}
       />,
     );
-    const input = screen.getByRole("spinbutton", { name: "实际威力" });
+    const input = screen.getByRole("spinbutton", { name: "静态威力" });
     await user.clear(input);
     await user.type(input, "123");
     await user.keyboard("{Escape}");
@@ -83,5 +103,6 @@ describe("PowerDraftInput", () => {
 
     await user.click(screen.getByRole("button", { name: "恢复自动威力" }));
     expect(onClear).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText("自动")).not.toBeInTheDocument();
   });
 });

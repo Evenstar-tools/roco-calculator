@@ -3,7 +3,7 @@ export function DisplaySettingsDialog({
   onPowerDisplayModeChange,
   onTypeCoverageChange,
   open = false,
-  powerDisplayMode = "actual",
+  powerDisplayMode = "static",
   typeCoverageEnabled = false,
 }) {
   if (!open) return null;
@@ -32,11 +32,11 @@ export function DisplaySettingsDialog({
             role="group"
           >
             <button
-              aria-pressed={powerDisplayMode === "actual"}
-              onClick={() => onPowerDisplayModeChange?.("actual")}
+              aria-pressed={powerDisplayMode !== "panel"}
+              onClick={() => onPowerDisplayModeChange?.("static")}
               type="button"
             >
-              实际威力
+              静态威力
             </button>
             <button
               aria-pressed={powerDisplayMode === "panel"}
@@ -48,10 +48,10 @@ export function DisplaySettingsDialog({
           </div>
           <div className="display-settings-power-help">
             <small>
-              <strong>实际威力：</strong>已结算技能、特性与威力加成；还会继续计算本系、克制、天气和能力等级。
+              <strong>静态威力：</strong>技能自身规则与固定威力调整后的结果；不含特性、印记、本系和克制。
             </small>
             <small>
-              <strong>面板威力：</strong>游戏最终显示值；已包含本系、克制、天气和能力等级。
+              <strong>面板威力：</strong>完整结算后的最终威力；手动填写后直接用于伤害计算。
             </small>
           </div>
         </div>

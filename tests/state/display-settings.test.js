@@ -32,8 +32,8 @@ describe("type coverage display setting", () => {
 });
 
 describe("power display setting", () => {
-  test("defaults to actual power", () => {
-    expect(readPowerDisplayMode(createStorage())).toBe("actual");
+  test("defaults to static power", () => {
+    expect(readPowerDisplayMode(createStorage())).toBe("static");
   });
 
   test("persists panel power", () => {
@@ -48,20 +48,20 @@ describe("power display setting", () => {
     expect(readPowerDisplayMode(storage)).toBe("panel");
   });
 
-  test("maps the old skill value to actual power", () => {
+  test.each(["skill", "actual"])("maps the old %s value to static power", (value) => {
     const storage = {
-      getItem: (key) => key === POWER_DISPLAY_STORAGE_KEY ? "skill" : null,
+      getItem: (key) => key === POWER_DISPLAY_STORAGE_KEY ? value : null,
       setItem: () => {},
     };
-    expect(readPowerDisplayMode(storage)).toBe("actual");
+    expect(readPowerDisplayMode(storage)).toBe("static");
   });
 
-  test("falls back to actual power for an unsupported value", () => {
+  test("falls back to static power for an unsupported value", () => {
     const storage = {
       getItem: (key) => key === POWER_DISPLAY_STORAGE_KEY ? "broken" : null,
       setItem: () => {},
     };
-    expect(readPowerDisplayMode(storage)).toBe("actual");
-    expect(writePowerDisplayMode(storage, "broken")).toBe("actual");
+    expect(readPowerDisplayMode(storage)).toBe("static");
+    expect(writePowerDisplayMode(storage, "broken")).toBe("static");
   });
 });

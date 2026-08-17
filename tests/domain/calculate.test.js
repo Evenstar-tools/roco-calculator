@@ -2365,7 +2365,7 @@ describe("calculateMatchup", () => {
     expect(labels).not.toContain("其他威力乘区");
   });
 
-  test("keeps automatic actual and panel power aliases explicit", () => {
+  test("keeps automatic static, actual, and panel power aliases explicit", () => {
     const result = calculateMatchup(snapshot, battleInput()).forward.selectedResult;
 
     expect(result).toMatchObject({
@@ -2373,11 +2373,12 @@ describe("calculateMatchup", () => {
       effectivePower: 80,
       panelPower: 80,
       powerSource: "automatic",
+      staticPower: 80,
       skillPower: 80,
     });
   });
 
-  test("manual actual power replaces all earlier power additions but keeps panel multipliers", () => {
+  test("manual static power includes status adjustments already and keeps panel multipliers", () => {
     const result = calculateMatchup(
       snapshot,
       battleInput({
@@ -2388,7 +2389,7 @@ describe("calculateMatchup", () => {
               attackDefenseLevelMultiplier: 1.1,
               fixedPowerAdd: 20,
               otherPowerMultipliers: [1.5],
-              powerOverride: { mode: "actual", value: 87.5 },
+              powerOverride: { mode: "static", value: 100 },
               stabMultiplier: 1.25,
               typeMultiplier: 2,
             },
@@ -2398,15 +2399,60 @@ describe("calculateMatchup", () => {
     ).forward.selectedResult;
 
     expect(result).toMatchObject({
-      actualPower: 87.5,
-      panelPower: 361,
-      powerSource: "manual-actual",
-      skillPower: 87.5,
-      effectivePower: 361,
+      actualPower: 100,
+      panelPower: 413,
+      powerSource: "manual-static",
+      staticPower: 100,
+      skillPower: 100,
+      effectivePower: 413,
     });
     expect(result.formulaSteps.map((step) => step.label)).toContain(
-      "手动实际威力",
+      "手动静态威力",
     );
+  });
+
+  test("automatic static power follows fixed adjustments after a manual override is cleared", () => {
+    const automatic = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: { overrides: { fixedPowerAdd: 20 } },
+        },
+      }),
+    ).forward.selectedResult;
+    const manual = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            overrides: {
+              fixedPowerAdd: 20,
+              powerOverride: { mode: "static", value: 55 },
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(automatic.staticPower).toBe(100);
+    expect(manual.staticPower).toBe(55);
+    expect(manual.actualPower).toBe(55);
+  });
+
+  test("automatic static power follows status percentage bonuses", () => {
+    const base = calculateMatchup(snapshot, battleInput()).forward.selectedResult;
+    const boosted = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: { skillPowerPercentAdds: [0.5] },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(boosted.staticPower).toBe(120);
+    expect(boosted.actualPower).toBe(120);
+    expect(boosted.panelPower).toBeGreaterThan(base.panelPower);
   });
 
   test("manual panel power enters damage without reapplying any panel multiplier", () => {
@@ -2442,42 +2488,59 @@ describe("calculateMatchup", () => {
     expect(labels).not.toContain("其他威力乘区");
   });
 
-  test.each([
-    ["actual", 87.5],
-    ["panel", 281],
-  ])(
-    "manual %s power is not multiplied by a hidden mark bonus",
-    (mode, value) => {
-      const baseInput = battleInput({
-        directions: {
-          forward: {
-            overrides: { powerOverride: { mode, value } },
-          },
+  test("manual static power still accepts later mark bonuses", () => {
+    const mode = "static";
+    const value = 88;
+    const baseInput = battleInput({
+      directions: {
+        forward: {
+          overrides: { powerOverride: { mode, value } },
         },
-      });
-      const markedInput = battleInput({
-        directions: baseInput.directions,
-        marks: {
-          attacker: {
-            negative: { id: null, stacks: 0 },
-            positive: { id: "tailwind", stacks: 2 },
-          },
-          defender: {
-            negative: { id: null, stacks: 0 },
-            positive: { id: null, stacks: 0 },
-          },
+      },
+    });
+    const markedInput = battleInput({
+      directions: baseInput.directions,
+      marks: {
+        attacker: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: "tailwind", stacks: 2 },
         },
-      });
-      const base = calculateMatchup(snapshot, baseInput).forward.selectedResult;
-      const marked = calculateMatchup(snapshot, markedInput).forward.selectedResult;
+        defender: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: null, stacks: 0 },
+        },
+      },
+    });
+    const base = calculateMatchup(snapshot, baseInput).forward.selectedResult;
+    const marked = calculateMatchup(snapshot, markedInput).forward.selectedResult;
 
-      if (mode === "actual") {
-        expect(marked.actualPower).toBe(base.actualPower);
-      }
-      expect(marked.effectivePower).toBe(base.effectivePower);
-      expect(marked.totalDamage).toBe(base.totalDamage);
-    },
-  );
+    expect(marked.staticPower).toBe(base.staticPower);
+    expect(marked.actualPower).toBeGreaterThan(base.actualPower);
+    expect(marked.totalDamage).toBeGreaterThan(base.totalDamage);
+  });
+
+  test("manual panel power is not multiplied by a hidden mark bonus", () => {
+    const overrides = { powerOverride: { mode: "panel", value: 281 } };
+    const baseInput = battleInput({ directions: { forward: { overrides } } });
+    const markedInput = battleInput({
+      directions: baseInput.directions,
+      marks: {
+        attacker: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: "tailwind", stacks: 2 },
+        },
+        defender: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: null, stacks: 0 },
+        },
+      },
+    });
+    const base = calculateMatchup(snapshot, baseInput).forward.selectedResult;
+    const marked = calculateMatchup(snapshot, markedInput).forward.selectedResult;
+
+    expect(marked.effectivePower).toBe(base.effectivePower);
+    expect(marked.totalDamage).toBe(base.totalDamage);
+  });
 
   test("new power override wins over every legacy manual power field", () => {
     const result = calculateMatchup(
@@ -2490,7 +2553,7 @@ describe("calculateMatchup", () => {
               basePowerOverride: 124,
               displayedPower: 300,
               powerMode: "displayed",
-              powerOverride: { mode: "actual", value: 90 },
+              powerOverride: { mode: "static", value: 90 },
             },
           },
         },
@@ -2499,7 +2562,7 @@ describe("calculateMatchup", () => {
 
     expect(result).toMatchObject({
       actualPower: 90,
-      powerSource: "manual-actual",
+      powerSource: "manual-static",
       skillPower: 90,
     });
   });
@@ -2520,7 +2583,7 @@ describe("calculateMatchup", () => {
           attacker: side("spirit_sonic_dog", comboSkill.id, [
             {
               hitCount: 3,
-              overrides: { powerOverride: { mode: "actual", value: 90 } },
+              overrides: { powerOverride: { mode: "static", value: 90 } },
               skillId: comboSkill.id,
             },
             null,
@@ -2534,7 +2597,7 @@ describe("calculateMatchup", () => {
     expect(result).toMatchObject({
       actualPower: 90,
       hitCount: 3,
-      powerSource: "manual-actual",
+      powerSource: "manual-static",
     });
   });
 

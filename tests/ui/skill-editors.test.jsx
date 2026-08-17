@@ -144,7 +144,7 @@ test("single-skill difference rules keep table power separate from trait power",
     />,
   );
 
-  expect(screen.getByRole("spinbutton", { name: "实际威力" })).toHaveValue(190);
+  expect(screen.getByRole("spinbutton", { name: "静态威力" })).toHaveValue(190);
   expect(screen.queryByDisplayValue("285")).not.toBeInTheDocument();
 });
 
@@ -174,7 +174,7 @@ test("other absolute dynamic rules also show their resolved power before traits"
     />,
   );
 
-  expect(screen.getByRole("spinbutton", { name: "实际威力" })).toHaveValue(135);
+  expect(screen.getByRole("spinbutton", { name: "静态威力" })).toHaveValue(135);
   expect(screen.queryByDisplayValue("203")).not.toBeInTheDocument();
 });
 
@@ -202,14 +202,14 @@ test("single-skill editor keeps actual power directly editable", async () => {
   expect(screen.getByText("翼")).toBeVisible();
   expect(screen.queryByRole("tab", { name: /手动威力/ })).not.toBeInTheDocument();
   const manualPower = screen.getByRole("spinbutton", {
-    name: "实际威力",
+    name: "静态威力",
   });
   expect(manualPower).toBeVisible();
   await user.clear(manualPower);
   await user.type(manualPower, "92");
   await user.keyboard("{Enter}");
   expect(onPowerOverrideChange).toHaveBeenLastCalledWith({
-    mode: "actual",
+    mode: "static",
     value: 92,
   });
 });
@@ -652,9 +652,9 @@ test("shows every skill effect and calculates Head-on Blow from its condition", 
 
   expect(screen.getByText(headOnBlow.description)).toBeVisible();
   expect(
-    screen.getByRole("spinbutton", { name: "实际威力" }),
+    screen.getByRole("spinbutton", { name: "静态威力" }),
   ).toHaveValue(180);
-  expect(within(screen.getByLabelText("技能威力")).getByText("实际威力")).toBeVisible();
+  expect(within(screen.getByLabelText("技能威力")).getByText("静态威力")).toBeVisible();
   expect(screen.getByText("80 + 100 = 180")).toBeVisible();
   const condition = screen.getByRole("checkbox", {
     name: "敌方本回合换精灵",
@@ -685,7 +685,7 @@ test("shows known skill power even when final damage still needs support", () =>
     />,
   );
 
-  expect(screen.getByRole("spinbutton", { name: "实际威力" })).toHaveValue(80);
+  expect(screen.getByRole("spinbutton", { name: "静态威力" })).toHaveValue(80);
   expect(screen.queryByText("待输入")).not.toBeInTheDocument();
 });
 
@@ -1689,14 +1689,14 @@ test("four-skill rows keep each skill power directly editable", async () => {
   );
 
   const power = screen.getByRole("spinbutton", {
-    name: "攻击方技能1实际威力",
+    name: "攻击方技能1静态威力",
   });
   await user.clear(power);
   await user.type(power, "123{Enter}");
   expect(onSkillPowerChange).toHaveBeenLastCalledWith(
     "attacker",
     0,
-    { mode: "actual", value: 123 },
+    { mode: "static", value: 123 },
   );
 });
 
@@ -1720,7 +1720,7 @@ test("single-skill panel mode exposes one editable panel-power field", () => {
   );
 
   expect(screen.getByRole("spinbutton", { name: "面板威力" })).toHaveValue(240);
-  expect(screen.queryByRole("spinbutton", { name: "实际威力" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("spinbutton", { name: "静态威力" })).not.toBeInTheDocument();
 });
 
 test("four-skill panel mode is editable and saves a panel override", async () => {
@@ -1801,7 +1801,7 @@ test("difference-table skills show the resolved table power before trait multipl
   );
 
   expect(
-    screen.getByRole("spinbutton", { name: "攻击方技能1实际威力" }),
+    screen.getByRole("spinbutton", { name: "攻击方技能1静态威力" }),
   ).toHaveValue(190);
   expect(
     screen.getByText("速度 254 − 143 = 111 → 威力 190"),
@@ -1845,7 +1845,7 @@ test("听桥技能行标明反弹来源技能和继承的面板威力", () => {
 
   expect(screen.getByText("反弹「风力冲击」· 威力 150")).toBeVisible();
   expect(
-    screen.getByRole("spinbutton", { name: "防御方技能1实际威力" }),
+    screen.getByRole("spinbutton", { name: "防御方技能1静态威力" }),
   ).toHaveValue(150);
 });
 
@@ -2311,7 +2311,7 @@ test("advanced settings stay collapsed until requested", async () => {
   ).not.toBeInTheDocument();
   expect(screen.getByRole("spinbutton", { name: "最终伤害倍率" })).toHaveValue(1);
   expect(screen.getByText("伤害计算过程")).toBeVisible();
-  expect(screen.getAllByText("实际威力").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("静态威力").length).toBeGreaterThan(0);
   expect(screen.getAllByText("面板威力").length).toBeGreaterThan(0);
   expect(screen.getByText("每段伤害")).toBeVisible();
   expect(screen.getByText("总伤害")).toBeVisible();

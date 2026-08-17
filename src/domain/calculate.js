@@ -1009,10 +1009,12 @@ function calculateSkillResult({
   const markFixedPowerAdd = usesLockedPower
     ? 0
     : sourceMarkEffects.fixedPowerAdd;
-  const nonMarkPercentageAdds = usesLockedPower
+  const skillPercentageAdds = usesLockedPower
+    ? []
+    : asMultiplierList(powerResolution.powerPercentAdds);
+  const statusPercentageAdds = usesLockedPower
     ? []
     : [
-        ...asMultiplierList(powerResolution.powerPercentAdds),
         ...asMultiplierList(direction.skillPowerPercentAdds),
         ...asMultiplierList(directionOverrides.skillPowerPercentAdds),
         ...asMultiplierList(details.skillPowerPercentAdds),
@@ -1020,10 +1022,16 @@ function calculateSkillResult({
         ...asMultiplierList(
           directionOverrides.skillPowerPercentAddsBySlot?.[skillPosition],
         ),
-        ...(traitResolution.powerPercentAdd === 0
-          ? []
-          : [traitResolution.powerPercentAdd]),
       ];
+  const traitPercentageAdds =
+    usesLockedPower || traitResolution.powerPercentAdd === 0
+      ? []
+      : [traitResolution.powerPercentAdd];
+  const nonMarkPercentageAdds = [
+    ...skillPercentageAdds,
+    ...statusPercentageAdds,
+    ...traitPercentageAdds,
+  ];
   const hiddenPanelPowerPercentAdd = usesLockedPower
     ? 0
     : sourceMarkEffects.hiddenPanelPowerPercentAdd ?? 0;
@@ -1066,14 +1074,53 @@ function calculateSkillResult({
   const automaticActualPower =
     powerAfterContractFixed *
     (1 + percentageAdds.reduce((sum, value) => sum + (Number(value) || 0), 0));
-  const actualPower = normalizedPower(
-    powerOverride.mode === "actual"
+  const automaticStaticPower =
+    powerAfterFixed *
+    (1 + [...skillPercentageAdds, ...statusPercentageAdds].reduce(
+      (sum, value) => sum + (Number(value) || 0),
+      0,
+    ));
+  const staticPowerOverride = powerOverride.mode === "static";
+  const staticPower = normalizedPower(
+    staticPowerOverride
       ? powerOverride.value
-      : automaticActualPower,
+      : Math.round(automaticStaticPower),
+  );
+  const manualPowerAfterMarkFixed = staticPower + markFixedPowerAdd;
+  const manualPowerAfterTraitFixed =
+    manualPowerAfterMarkFixed + traitFixedPowerAdd;
+  const manualPowerAfterBloodlineFixed =
+    manualPowerAfterTraitFixed + bloodlineFixedPowerAdd;
+  const manualPowerAfterContractFixed =
+    manualPowerAfterBloodlineFixed + contractFixedPowerAdd;
+  const manualVisiblePercentageAdds = [
+    ...traitPercentageAdds,
+    ...(visibleMarkPowerPercentAdd === 0 ? [] : [visibleMarkPowerPercentAdd]),
+  ];
+  const manualPercentageAdds = [
+    ...manualVisiblePercentageAdds,
+    ...(hiddenPanelPowerPercentAdd === 0
+      ? []
+      : [hiddenPanelPowerPercentAdd]),
+  ];
+  const manualVisibleActualPower =
+    manualPowerAfterContractFixed *
+    (1 + manualVisiblePercentageAdds.reduce(
+      (sum, value) => sum + (Number(value) || 0),
+      0,
+    ));
+  const manualActualPower =
+    manualPowerAfterContractFixed *
+    (1 + manualPercentageAdds.reduce(
+      (sum, value) => sum + (Number(value) || 0),
+      0,
+    ));
+  const actualPower = normalizedPower(
+    staticPowerOverride ? manualActualPower : automaticActualPower,
   );
   const traitAdjustedPower = actualPower;
-  const visibleActualPower = powerOverride.mode === "actual"
-    ? actualPower
+  const visibleActualPower = staticPowerOverride
+    ? manualVisibleActualPower
     : automaticVisibleActualPower;
 
   const baseCombatPanel = {
@@ -1373,7 +1420,6 @@ function calculateSkillResult({
   const maximumHp = Math.max(0, Number(defender.panelStats.hp) || 0);
   const hpPercent = maximumHp > 0 ? totalDamage / maximumHp * 100 : 0;
   const panelPowerOverride = powerOverride.mode === "panel";
-  const actualPowerOverride = powerOverride.mode === "actual";
   const powerFormulaSteps = panelPowerOverride
     ? [
         formulaStep(
@@ -1384,19 +1430,38 @@ function calculateSkillResult({
           "battle-input",
         ),
       ]
-    : actualPowerOverride
+    : staticPowerOverride
     ? [
         formulaStep(
-          "手动实际威力",
+          "手动静态威力",
           powerOverride.value,
           powerOverride.value,
-          actualPower,
+          staticPower,
           "battle-input",
+        ),
+        formulaStep(
+          "外部固定威力",
+          {
+            bloodline: bloodlineFixedPowerAdd,
+            contract: contractFixedPowerAdd,
+            mark: markFixedPowerAdd,
+            trait: traitFixedPowerAdd,
+          },
+          staticPower,
+          manualPowerAfterContractFixed,
+          "automatic",
+        ),
+        formulaStep(
+          "外部威力加成",
+          manualPercentageAdds,
+          manualPowerAfterContractFixed,
+          actualPower,
+          manualPercentageAdds.length === 0 ? "default" : "battle-input",
         ),
         formulaStep(
           "本系",
           stabMultiplier,
-          actualPower,
+          visibleActualPower,
           powerAfterStab,
           "automatic",
         ),
@@ -1703,6 +1768,10 @@ function calculateSkillResult({
     skillId: skill.id,
     skillName: skill.name,
     resolvedPower: powerResolution.value,
+    staticPower,
+    staticPowerPercentAdds: staticPowerOverride
+      ? []
+      : [...skillPercentageAdds, ...statusPercentageAdds],
     actualPower,
     panelPower,
     powerSource: powerOverride.source,

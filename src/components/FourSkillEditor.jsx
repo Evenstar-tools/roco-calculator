@@ -254,7 +254,7 @@ function SkillSide({
           <span className="skill-slot__head-kind">属性</span>
           <span className="skill-slot__head-cost">耗</span>
           <span className="skill-slot__head-power">
-            {powerDisplayMode === "panel" ? "面板威力" : "实际威力"}
+            {powerDisplayMode === "panel" ? "面板威力" : "静态威力"}
           </span>
           <span className="skill-slot__head-hits">连击</span>
           <span className="skill-slot__head-result">伤害占比</span>
@@ -376,14 +376,7 @@ function SkillSide({
           const powerResolutionHint = selected
             ? describeResolution(result)
             : null;
-          const powerSourceHint =
-            result?.powerSource === "manual-actual"
-              ? "手动实际"
-              : result?.powerSource === "manual-panel"
-                ? "手动面板"
-                : selected
-                  ? "自动"
-                  : null;
+          const powerSourceHint = null;
           return (
             <div
               aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
@@ -428,16 +421,16 @@ function SkillSide({
                 <span className="skill-slot__cost">{selected?.cost ?? "—"}</span>
                 <PowerDraftInput
                   ariaLabel={`${label}技能${index + 1}${
-                    powerDisplayMode === "panel" ? "面板威力" : "实际威力"
+                    powerDisplayMode === "panel" ? "面板威力" : "静态威力"
                   }`}
                   className="skill-slot__power-input"
                   disabled={!selected}
                   isManual={Boolean(selected?.slotPowerOverride)}
-                  mode={powerDisplayMode === "panel" ? "panel" : "actual"}
+                  mode={powerDisplayMode === "panel" ? "panel" : "static"}
                   onClear={() => onSkillPowerClear?.(side, index)}
                   onCommit={(value) =>
                     onSkillPowerChange?.(side, index, {
-                      mode: powerDisplayMode === "panel" ? "panel" : "actual",
+                      mode: powerDisplayMode === "panel" ? "panel" : "static",
                       value,
                     })
                   }
@@ -445,7 +438,7 @@ function SkillSide({
                     selected
                       ? powerDisplayMode === "panel"
                         ? result?.panelPower ?? result?.effectivePower ?? selected.basePower
-                        : result?.actualPower ?? displayedSkillPower(selected, result) ?? selected.basePower
+                        : result?.staticPower ?? displayedSkillPower(selected, result) ?? selected.basePower
                       : ""
                   }
                 />
@@ -665,7 +658,7 @@ export function FourSkillEditor({
   onTraitContextChange,
   onTraitDamageFocus,
   onTraitDamageHitCountChange,
-  powerDisplayMode = "actual",
+  powerDisplayMode = "static",
   skills,
 }) {
   const isMobile = useMediaQuery("(max-width: 620px)");

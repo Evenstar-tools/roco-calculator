@@ -545,7 +545,7 @@ describe("calculator session", () => {
           ...initialState.directions.forward,
           overrides: {
             ...initialState.directions.forward.overrides,
-            powerOverride: { mode: "actual", value: 222 },
+            powerOverride: { mode: "static", value: 222 },
           },
         },
       },

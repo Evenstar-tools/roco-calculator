@@ -1043,7 +1043,7 @@ export function resolveSkillPower(skill, context = {}) {
   if (!effectRule) {
     if (!isFiniteNumber(skill.basePower)) {
       return needsInput(
-        [numberInput("basePowerOverride", "实际威力")],
+        [numberInput("basePowerOverride", "静态威力")],
         "技能缺少已验证的基础威力",
       );
     }

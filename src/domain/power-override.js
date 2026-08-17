@@ -16,10 +16,15 @@ function validCurrentOverride(current) {
       ? { mode: "panel", source: "manual-panel", value }
       : null;
   }
+  if (current.mode === "static") {
+    return Number.isInteger(value)
+      ? { mode: "static", source: "manual-static", value }
+      : null;
+  }
   if (current.mode === "actual") {
     const precision = Math.round(value * 1_000_000) / 1_000_000;
     return precision === value
-      ? { mode: "actual", source: "manual-actual", value }
+      ? { mode: "static", source: "legacy-actual", value: Math.round(value) }
       : null;
   }
   return null;

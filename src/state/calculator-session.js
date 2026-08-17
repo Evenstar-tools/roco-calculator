@@ -356,7 +356,8 @@ function singlePowerOverrides(overrides = {}, { includeTemporary = true } = {}) 
   if (
     includeTemporary &&
     overrides.powerOverride &&
-    (overrides.powerOverride.mode === "actual" ||
+    (overrides.powerOverride.mode === "static" ||
+      overrides.powerOverride.mode === "actual" ||
       overrides.powerOverride.mode === "panel") &&
     Number.isFinite(Number(overrides.powerOverride.value))
   ) {

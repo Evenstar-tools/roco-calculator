@@ -49,7 +49,6 @@ export function buildFormulaAudit(result) {
   const fixedPower = stepByLabel(result, "固定威力增加");
   const markFixedPower = stepByLabel(result, "印记固定威力");
   const traitFixedPower = stepByLabel(result, "特性固定威力");
-  const percentPower = stepByLabel(result, "技能威力百分比");
   const sameType = stepByLabel(result, "本系");
   const type = stepByLabel(result, "属性克制");
   const weather = stepByLabel(result, "天气");
@@ -73,8 +72,11 @@ export function buildFormulaAudit(result) {
     { label: "其他", value: other?.input },
   ].filter((item) => Number.isFinite(Number(item.value)));
 
-  const percentAdds = Array.isArray(percentPower?.input)
-    ? percentPower.input.reduce((sum, value) => sum + (Number(value) || 0), 0)
+  const percentAdds = Array.isArray(result.staticPowerPercentAdds)
+    ? result.staticPowerPercentAdds.reduce(
+        (sum, value) => sum + (Number(value) || 0),
+        0,
+      )
     : 0;
   const hitCount = Math.max(
     1,
@@ -95,6 +97,7 @@ export function buildFormulaAudit(result) {
       markFixed: Number(markFixedPower?.input) || 0,
       traitFixed: Number(traitFixedPower?.input) || 0,
       percentAdds,
+      static: result.staticPower ?? sameType?.before ?? displayPower?.before,
       effective: sameType?.before ?? displayPower?.before,
     },
     formulaPower: {
@@ -227,11 +230,11 @@ export function FormulaAudit({ result }) {
         <span>{audit.skillName}</span>
       </header>
 
-      <FormulaRow title="实际威力" tone="power">
+      <FormulaRow title="静态威力" tone="power">
         {Number.isFinite(Number(power.base)) ? (
           <AuditChip label="基础" tone="power" value={displayNumber(power.base)} />
         ) : (
-          <AuditChip label="规则值" tone="power" value={displayNumber(power.effective)} />
+          <AuditChip label="规则值" tone="power" value={displayNumber(power.static)} />
         )}
         {Number.isFinite(Number(power.conditional)) &&
         Number(power.conditional) !== Number(power.base) ? (
@@ -242,8 +245,6 @@ export function FormulaAudit({ result }) {
         ) : null}
         {[
           ["技能固定", power.fixed],
-          ["印记固定", power.markFixed],
-          ["特性固定", power.traitFixed],
         ].map(([label, value]) =>
           Number(value) !== 0 ? (
             <span className="formula-audit__term" key={label}>
@@ -263,11 +264,11 @@ export function FormulaAudit({ result }) {
           </>
         ) : null}
         <Operator>=</Operator>
-        <AuditChip label="结果" tone="result" value={displayNumber(power.effective)} />
+        <AuditChip label="结果" tone="result" value={displayNumber(power.static)} />
       </FormulaRow>
 
       <FormulaRow title="面板威力" tone="display">
-        <AuditChip label="实际威力" tone="display" value={displayNumber(power.effective)} />
+        <AuditChip label="结算前威力" tone="display" value={displayNumber(power.effective)} />
         {audit.formulaPower.factors
           .filter((factor) => Math.abs(Number(factor.value) - 1) > 1e-10)
           .map((factor) => (

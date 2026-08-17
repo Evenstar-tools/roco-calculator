@@ -590,7 +590,7 @@ describe("resolveSkillPower", () => {
       if (resolution.status === "exact") {
         expect(
           Number.isFinite(Number(resolution.value)),
-          `${reviewedSkill.name} 的实际威力`,
+          `${reviewedSkill.name} 的静态威力`,
         ).toBe(true);
         if (resolution.hitCount !== undefined) {
           expect(
