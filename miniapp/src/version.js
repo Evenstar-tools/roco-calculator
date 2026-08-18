@@ -1,4 +1,4 @@
-export const MINIAPP_VERSION = "0.2.4";
+export const MINIAPP_VERSION = "1.0.0";
 export const MINIAPP_UPDATE_DATE = "2026-08-18";
 export const WEB_CORE_VERSION = "1.5.7";
 export const MINIAPP_RELEASE_LABEL =
