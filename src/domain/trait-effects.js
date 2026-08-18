@@ -55,7 +55,7 @@ const trigger = (
   extra = {},
 ) => ({
   condition: {
-    defaultValue: false,
+    defaultValue: extra.conditionDefaultValue ?? false,
     key: extra.conditionKey ?? "traitActivated",
     label: conditionLabel,
     scope: extra.conditionScope ?? "direction",
@@ -712,6 +712,7 @@ const RULES = Object.freeze({
     "触发威力",
     {
       conditionKey: "burstTriggered",
+      conditionDefaultValue: true,
       conditionScope: "skill",
     },
   ),

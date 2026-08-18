@@ -21,6 +21,57 @@ function skill(overrides = {}) {
 }
 
 describe("resolveSkillPower", () => {
+  test.each([
+    ["天旋地转", 90, 60],
+    ["电弧", 120, 80],
+    ["引雷", 55, 35],
+  ])("%s 的迸发默认开启并可手动关闭", (name, enabledPower, disabledPower) => {
+    const burstSkill = snapshot.skills.find((candidate) => candidate.name === name);
+    const burstControl = getSkillEffectInputs(burstSkill).find(
+      (input) => input.contextKey === "burstTriggered",
+    );
+
+    expect(burstControl).toMatchObject({
+      defaultValue: true,
+      label: "触发迸发",
+      type: "boolean",
+    });
+    expect(resolveSkillPower(burstSkill, {})).toMatchObject({ value: enabledPower });
+    expect(resolveSkillPower(burstSkill, { burstTriggered: false })).toMatchObject({
+      value: disabledPower,
+    });
+  });
+
+  test("雷暴默认启用迸发，但只累计用户填写的既有迸发种类", () => {
+    const thunderstorm = snapshot.skills.find(
+      (candidate) => candidate.name === "雷暴",
+    );
+
+    expect(getSkillEffectInputs(thunderstorm)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contextKey: "burstTriggered",
+          defaultValue: true,
+          label: "触发迸发",
+        }),
+        expect.objectContaining({
+          contextKey: "activeBurstKinds",
+          defaultValue: 0,
+          label: "已生效迸发种类",
+        }),
+      ]),
+    );
+    expect(resolveSkillPower(thunderstorm, { activeBurstKinds: 3 })).toMatchObject({
+      value: 85,
+    });
+    expect(
+      resolveSkillPower(thunderstorm, {
+        activeBurstKinds: 3,
+        burstTriggered: false,
+      }),
+    ).toMatchObject({ value: 55 });
+  });
+
   test("reads the declared default hit count from every skill description", () => {
     expect(
       getDefaultHitCount(

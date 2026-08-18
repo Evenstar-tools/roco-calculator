@@ -114,6 +114,7 @@ test("switches between static and panel power overrides and restores automatic c
 
   fireEvent.click(screen.getByRole("button", { name: "面板威力" }));
   expect(screen.getByLabelText("面板威力")).toHaveValue(150);
+  expect(onDirectionChange).not.toHaveBeenCalled();
   fireEvent.input(screen.getByLabelText("面板威力"), {
     target: { value: "175" },
   });
@@ -137,6 +138,73 @@ test("switches between static and panel power overrides and restores automatic c
   expect(onDirectionChange).toHaveBeenLastCalledWith({
     overrides: { basePower: undefined, powerOverride: null },
   });
+});
+
+test("shows burst skills enabled by default and lets the user turn them off", () => {
+  const onContextChange = vi.fn();
+  const { rerender } = render(
+    <SkillConditionEditor
+      context={{}}
+      direction={{ overrides: {} }}
+      onContextChange={onContextChange}
+      onDirectionChange={vi.fn()}
+      result={{ panelPower: 90, staticPower: 90 }}
+      skill={{
+        basePower: 60,
+        category: "physical",
+        id: "burst-skill",
+        name: "天旋地转",
+        type: "翼",
+      }}
+    />,
+  );
+
+  const burstToggle = screen.getByRole("button", { name: "触发迸发" });
+  expect(burstToggle).toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(burstToggle);
+  expect(onContextChange).toHaveBeenLastCalledWith({ burstTriggered: false });
+
+  rerender(
+    <SkillConditionEditor
+      context={{ burstTriggered: false }}
+      direction={{ overrides: {} }}
+      onContextChange={onContextChange}
+      onDirectionChange={vi.fn()}
+      result={{ panelPower: 60, staticPower: 60 }}
+      skill={{
+        basePower: 60,
+        category: "physical",
+        id: "burst-skill",
+        name: "天旋地转",
+        type: "翼",
+      }}
+    />,
+  );
+  expect(screen.getByRole("button", { name: "触发迸发" }))
+    .toHaveAttribute("aria-pressed", "false");
+});
+
+test("shows the thunderstorm burst switch and kind counter together", () => {
+  render(
+    <SkillConditionEditor
+      context={{}}
+      direction={{ overrides: {} }}
+      onContextChange={vi.fn()}
+      onDirectionChange={vi.fn()}
+      result={{ panelPower: 55, staticPower: 55 }}
+      skill={{
+        basePower: 55,
+        category: "magical",
+        id: "thunderstorm",
+        name: "雷暴",
+        type: "电",
+      }}
+    />,
+  );
+
+  expect(screen.getByRole("button", { name: "触发迸发" }))
+    .toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByLabelText("已生效迸发种类")).toHaveValue(0);
 });
 
 describe("mini program skill workflow", () => {

@@ -29,7 +29,11 @@ const when = (input, key, equals, defaultValue) => ({
 });
 
 const booleanAdd = (contextKey, label, add, extra = {}) => ({
-  inputs: [booleanInput(contextKey, label)],
+  inputs: [
+    booleanInput(contextKey, label, {
+      defaultValue: extra.defaultValue ?? false,
+    }),
+  ],
   ruleId: "boolean_power_add",
   ruleParams: { add, contextKey, label, ...extra },
 });
@@ -340,7 +344,9 @@ const REVIEWED_EFFECTS = Object.freeze({
     50,
     { ignoreResistanceWhenTriggered: true },
   ),
-  天旋地转: booleanAdd("burstTriggered", "触发迸发", 30),
+  天旋地转: booleanAdd("burstTriggered", "触发迸发", 30, {
+    defaultValue: true,
+  }),
   扇风: {
     inputs: [booleanInput("actedBeforeEnemy", "先于敌方攻击")],
     ruleId: "boolean_power_percent_add",
@@ -361,15 +367,32 @@ const REVIEWED_EFFECTS = Object.freeze({
       multiplier: 1.5,
     },
   },
-  电弧: booleanAdd("burstTriggered", "触发迸发", 40),
+  电弧: booleanAdd("burstTriggered", "触发迸发", 40, {
+    defaultValue: true,
+  }),
   引雷: (() => {
-    const effect = booleanAdd("burstTriggered", "触发迸发", 20);
+    const effect = booleanAdd("burstTriggered", "触发迸发", 20, {
+      defaultValue: true,
+    });
     return {
       ...effect,
       ruleParams: { ...effect.ruleParams, hitCount: 2 },
     };
   })(),
-  雷暴: stackAdd("activeBurstKinds", "已生效迸发种类", 10, 20),
+  雷暴: {
+    inputs: [
+      booleanInput("burstTriggered", "触发迸发", { defaultValue: true }),
+      numberInput("activeBurstKinds", "已生效迸发种类", 0, 20, 0),
+    ],
+    ruleId: "stack_scaled",
+    ruleParams: {
+      conditionKey: "burstTriggered",
+      contextKey: "activeBurstKinds",
+      defaultValue: 0,
+      label: "已生效迸发种类",
+      perStack: 10,
+    },
+  },
 
   乘胜追击: hitCountGrowth("skillUseCount", "此前使用次数", 1, 1),
   趁火打劫: hitCountGrowth("defeatedEnemyCount", "此前击败次数", 2, 2, 6),

@@ -25,6 +25,31 @@ describe("trait effect coverage", () => {
     );
   }
 
+  test("电流刺激的迸发默认开启并可手动关闭", () => {
+    const trait = snapshot.traits.find(
+      (candidate) => candidate.name === "电流刺激",
+    );
+    const skill = { category: "physical", cost: 3, name: "测试技能", type: "电" };
+
+    expect(getTraitEffectInputs(trait, "attacker")).toEqual(
+      expect.arrayContaining([expect.objectContaining({
+        contextKey: "burstTriggered",
+        defaultValue: true,
+        label: "触发迸发",
+        type: "boolean",
+      })]),
+    );
+    expect(resolveTraitEffectRule(trait, "attacker", { skill })).toMatchObject({
+      fixedPowerAdd: 40,
+    });
+    expect(
+      resolveTraitEffectRule(trait, "attacker", {
+        context: { burstTriggered: false },
+        skill,
+      }),
+    ).toMatchObject({ fixedPowerAdd: 0 });
+  });
+
   test("守护之心按双方场上不同增益种类输入物防加成", () => {
     const trait = snapshot.traits.find(
       (candidate) => candidate.name === "守护之心",

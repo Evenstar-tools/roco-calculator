@@ -581,6 +581,8 @@ function resolveEnergyScaled(skill, context) {
 }
 
 function resolveStackScaled(skill, context) {
+  const conditionKey = skill.ruleParams?.conditionKey;
+  const triggered = conditionKey ? context[conditionKey] === true : true;
   const key = skill.ruleParams?.contextKey ?? "stackCount";
   const rawStackCount = isFiniteNumber(context[key])
     ? context[key]
@@ -592,7 +594,9 @@ function resolveStackScaled(skill, context) {
     );
   }
 
-  const stackCount = Math.max(0, Math.floor(Number(rawStackCount)));
+  const stackCount = triggered
+    ? Math.max(0, Math.floor(Number(rawStackCount)))
+    : 0;
   const perStack = Number(skill.ruleParams?.perStack ?? 0);
   const flatBonusKey = skill.ruleParams?.flatBonusContextKey;
   const flatBonus = flatBonusKey
@@ -604,8 +608,8 @@ function resolveStackScaled(skill, context) {
   );
   return exact(value, [
     {
-      label: "层数缩放威力",
-      input: stackCount,
+      label: conditionKey ? "迸发种类威力加成" : "层数缩放威力",
+      input: conditionKey ? { stackCount, triggered } : stackCount,
       before: skill.basePower,
       after: value,
       source: "reviewed-rule:stack-scaled-v1",

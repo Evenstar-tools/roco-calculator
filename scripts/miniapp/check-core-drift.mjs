@@ -33,9 +33,17 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     mirrorHash: "61baf83aa3f8acafd8218de495c6cee2ae8e46695c1e113700d1a55f2c01810a",
     reason: "保留 v1.5.7 后已验收的威力覆盖语义",
   }),
+  "src/domain/skill-effects.js": Object.freeze({
+    mirrorHash: "31e7ca26894c9c34241e59b9c09f7b9ab35e0475cf9b0900eb70a99472f0f0cc",
+    reason: "保留迸发默认开启与雷暴迸发种类联动的已验收语义",
+  }),
   "src/domain/skill-rules.js": Object.freeze({
-    mirrorHash: "7f5c2385ee37c89c98408316e8b3156d36c9d0ee375accce4186b9c341bd6cd4",
-    reason: "保留相邻技能面板威力与静态威力覆盖的已验收语义",
+    mirrorHash: "a28b753d23953c37a448f4167b4b80bdf28351bf69411811ba41ae3f1632bdc1",
+    reason: "保留静态面板威力覆盖与雷暴迸发条件联动的已验收语义",
+  }),
+  "src/domain/trait-effects.js": Object.freeze({
+    mirrorHash: "f18b15e86578cb196a9920f5f5b845c7d6dc44fb9ce346f265a2c92ee0c8dafb",
+    reason: "保留电流刺激迸发默认开启的已验收语义",
   }),
   "src/state/calculator-session.js": Object.freeze({
     mirrorHash: "b297cccc2e1761d43ec6bf0d0f77873d4b44c389ec010ebe1dfb93fc4766e696",

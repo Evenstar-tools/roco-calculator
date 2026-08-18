@@ -294,7 +294,10 @@ describe("calculator session", () => {
           context: { statusApplied: true, weatherRainTurns: 8 },
           currentHp: 1,
           hitCount: 9,
-          overrides: { basePower: 999 },
+          overrides: {
+            basePower: 999,
+            powerOverride: { mode: "panel", value: 321 },
+          },
         },
         reverse: {
           ...initialState.directions.reverse,
