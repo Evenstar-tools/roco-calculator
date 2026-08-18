@@ -38,6 +38,16 @@ describe("offline desktop asset routing", () => {
     expect(desktopMain).not.toContain('"text/javascript; charset=utf-8"');
   });
 
+  test("offline smoke expects the current production spirit count", () => {
+    const desktopMain = readFileSync("desktop/main.mjs", "utf8");
+    const snapshot = JSON.parse(
+      readFileSync("public/data/current.json", "utf8"),
+    );
+    const expectedCount = desktopMain.match(/data\.spirits === (\d+)/)?.[1];
+
+    expect(Number(expectedCount)).toBe(snapshot.spirits.length);
+  });
+
   test("desktop runtime does not register a service worker on the app protocol", () => {
     const mainSource = readFileSync("src/main.jsx", "utf8");
     expect(mainSource).toContain(
