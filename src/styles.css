@@ -1477,17 +1477,40 @@ select:focus-visible {
 }
 
 .skill-slot-group--trait {
-  margin-bottom: 2px;
-  background: color-mix(in srgb, var(--surface-muted) 74%, transparent);
+  margin-bottom: 3px;
+  border: 1px solid color-mix(in srgb, var(--attack) 35%, var(--border));
+  background: color-mix(in srgb, var(--attack-soft) 70%, var(--surface));
 }
 
-.skill-slot__trait-name {
+.skill-slot-group--trait + .skill-slot-group {
+  border-top: 0;
+}
+
+.skill-slot__number--trait {
+  color: var(--attack);
+}
+
+.skill-slot__trait-skill {
+  display: flex;
+  min-width: 0;
+  height: 27px;
+  align-items: center;
+  padding: 0 7px;
   overflow: hidden;
-  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--attack) 32%, var(--border));
+  border-radius: 5px;
+  color: var(--attack);
+  background: var(--surface);
   font-size: 10px;
+  font-weight: 800;
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.skill-slot__trait-power {
+  color: var(--attack) !important;
+  font-variant-numeric: tabular-nums;
 }
 
 .skill-slot {
@@ -1885,18 +1908,54 @@ select:focus-visible {
   background: #f5f3ff;
 }
 
+.skill-result-row--action {
+  width: 100%;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
 .skill-result-row--trait {
   border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--attack-soft) 52%, var(--surface));
 }
 
-.skill-result-row--trait .skill-result-row__name {
-  display: grid;
-  line-height: 1.2;
+.skill-result-row__index--trait {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  color: var(--attack);
+  background: color-mix(in srgb, var(--attack) 12%, var(--surface));
+  font-size: 9px;
+  font-weight: 800;
 }
 
-.skill-result-row--trait .skill-result-row__name small {
-  color: var(--text-faint);
+.skill-result-row__name--trait {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+  color: var(--attack);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.skill-result-row__name--trait > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.skill-result-row__name--trait small {
+  padding: 1px 4px;
+  border-radius: 999px;
+  color: var(--attack);
+  background: color-mix(in srgb, var(--attack) 10%, transparent);
   font-size: 8px;
+  font-weight: 700;
 }
 
 .skill-result-row__bar {
@@ -2571,6 +2630,13 @@ select:focus-visible {
   white-space: nowrap;
 }
 
+.skill-slot__power-source {
+  flex: 0 0 auto;
+  color: var(--text-faint);
+  font-size: 10px;
+  font-weight: 700;
+}
+
 .skill-slot__controls {
   display: flex;
   min-width: 0;
@@ -2873,7 +2939,9 @@ select:focus-visible {
 }
 
 .data-source-dialog {
-  width: min(420px, 100%);
+  width: min(500px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
 }
 
 .data-source-dialog > a,
@@ -2916,6 +2984,154 @@ select:focus-visible {
 
 .data-source-dialog__feedback .secondary-action {
   min-width: 64px;
+}
+
+.data-source-history {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.data-source-history__header,
+.data-source-release__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.data-source-history__header > div,
+.data-source-release__heading > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.data-source-history__toggle {
+  min-height: 30px;
+  flex: none;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--accent);
+  background: transparent;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.data-source-history__toggle:hover {
+  background: var(--accent-soft);
+}
+
+.data-source-release {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.data-source-release--current {
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-radius: 7px;
+  background: var(--surface);
+}
+
+.data-source-release__heading strong {
+  font-size: 13px;
+}
+
+.data-source-release__heading span {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.data-source-release__heading b {
+  flex: none;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.data-source-release ul {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding-left: 16px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.release-notes-dialog {
+  display: grid;
+  width: min(720px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.release-notes-dialog__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.release-notes-dialog__header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.release-notes-dialog__header h2 {
+  margin: 0;
+}
+
+.release-notes-dialog__header span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.release-notes-dialog__back {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--accent);
+  background: var(--surface-soft);
+  font-size: 18px;
+}
+
+.release-notes-dialog__back:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.release-notes-dialog__list {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  margin-top: 12px;
+  padding-right: 4px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.release-notes-dialog__list .data-source-release {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.release-notes-dialog__list .data-source-release--current {
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
+  background: var(--accent-soft);
 }
 
 .config-library-summary strong {
@@ -4009,29 +4225,53 @@ html[data-theme="dark"] .formula-group {
 }
 
 .compact-skill__row--trait {
-  background: color-mix(in srgb, var(--surface-muted) 74%, transparent);
+  border: 1px solid color-mix(in srgb, var(--attack) 35%, var(--border));
+  background: color-mix(in srgb, var(--attack-soft) 70%, var(--surface));
 }
 
-.compact-skill__trait-name {
-  display: grid;
+.compact-skill__number--trait {
+  color: var(--attack);
+  font-weight: 800;
+}
+
+.compact-skill__trait-skill {
+  display: flex;
   min-width: 0;
+  height: 36px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 0 9px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--attack) 32%, var(--border));
+  border-radius: 6px;
+  background: var(--surface);
 }
 
-.compact-skill__trait-name strong,
-.compact-skill__trait-name small {
+.compact-skill__trait-skill strong,
+.compact-skill__trait-skill small {
   overflow: hidden;
+  color: var(--attack);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.compact-skill__trait-name strong {
-  color: var(--text);
+.compact-skill__trait-skill strong {
   font-size: 12px;
+  font-weight: 800;
 }
 
-.compact-skill__trait-name small {
-  color: var(--text-muted);
+.compact-skill__trait-skill small {
+  flex: 0 0 auto;
   font-size: 9px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.compact-skill__element--trait {
+  color: var(--attack);
+  font-size: 10px;
+  font-weight: 800;
 }
 
 .compact-skill__trait-hits input {
@@ -4939,6 +5179,51 @@ body {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.bloodline-magic-field {
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 0;
+  background: var(--surface);
+}
+
+.bloodline-magic-field legend {
+  padding: 0 4px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.bloodline-magic-field legend small,
+.bloodline-magic-field > small {
+  color: var(--text-faint);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.bloodline-magic-field__controls {
+  display: grid;
+  align-items: center;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.bloodline-magic-field__trigger {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bloodline-magic-field > small {
+  display: block;
+  margin-top: 5px;
+}
+
 .mark-side {
   min-width: 0;
   padding: 10px;
@@ -5607,6 +5892,103 @@ body {
   accent-color: var(--accent);
 }
 
+.display-settings-option--power {
+  align-items: stretch;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.display-settings-segment {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  grid-template-columns: 1fr 1fr;
+}
+
+.display-settings-segment button {
+  min-height: 34px;
+  border: 0;
+  color: var(--text-muted);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.display-settings-segment button[aria-pressed="true"] {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.display-settings-power-help {
+  display: grid;
+  gap: 5px;
+}
+
+.display-settings-power-help small {
+  line-height: 1.45;
+}
+
+.display-settings-power-help strong {
+  font-size: inherit;
+}
+
+.skill-slot__power-output {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-strong);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.power-draft {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.power-draft__control {
+  display: flex;
+  min-width: 0;
+  align-items: stretch;
+}
+
+.power-draft__control input {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.power-draft__reset {
+  flex: 0 0 auto;
+  min-width: 30px;
+  padding: 0 4px;
+  border: 1px solid var(--border-strong);
+  border-left: 0;
+  border-radius: 0 5px 5px 0;
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.power-draft__control:has(.power-draft__reset) input {
+  border-radius: 5px 0 0 5px;
+}
+
+.power-draft__error {
+  color: var(--attack);
+  font-size: 9px;
+  line-height: 1.3;
+  white-space: normal;
+}
+
 .formula-breakdown dd span {
   font-size: 11px;
 }
@@ -5784,14 +6166,24 @@ html[data-theme="dark"] .type-analysis-chip[data-tone] {
   background: var(--surface);
 }
 
-.skill-effect-card__base {
+.skill-effect-card__power-input {
   display: grid;
   justify-items: end;
   gap: 2px;
 }
 
-.skill-effect-card__base input {
-  width: 70px;
+.skill-effect-card__power-input > small {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.skill-effect-card__power-input .power-draft {
+  width: 112px;
+}
+
+.skill-effect-card__power-input input {
+  width: 100%;
   height: 30px;
   border: 1px solid var(--border);
   border-radius: 5px;
@@ -5873,6 +6265,13 @@ html[data-theme="dark"] .type-analysis-chip[data-tone] {
   font-weight: 700;
 }
 
+.trait-capability-note {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .trait-skill-power-bonuses {
   display: flex;
   flex: 1 1 100%;
@@ -5897,7 +6296,13 @@ html[data-theme="dark"] .type-analysis-chip[data-tone] {
   font-weight: 800;
 }
 
-html[data-theme="dark"] .skill-effect-card__base input,
+.skill-slot__power-input .power-draft__reset {
+  min-width: 25px;
+  padding: 0 2px;
+  font-size: 8px;
+}
+
+html[data-theme="dark"] .skill-effect-card__power-input input,
 html[data-theme="dark"] .trait-number input {
   background: var(--surface);
   color: var(--text);

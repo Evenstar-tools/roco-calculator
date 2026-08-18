@@ -15,7 +15,10 @@ import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js"
 import { encodeShareState } from "../../src/state/share.js";
 import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
 import { TEAM_STORAGE_KEY } from "../../src/state/team-presets.js";
-import { TYPE_COVERAGE_STORAGE_KEY } from "../../src/state/display-settings.js";
+import {
+  POWER_DISPLAY_STORAGE_KEY,
+  TYPE_COVERAGE_STORAGE_KEY,
+} from "../../src/state/display-settings.js";
 
 const snapshot = {
   learnsets: [
@@ -885,10 +888,10 @@ test("recalculates stacked trait effects and editable four-skill power", async (
 
   await user.click(screen.getByRole("tab", { name: "四技能" }));
   const firstPower = screen.getByRole("spinbutton", {
-    name: "攻击方技能1威力",
+    name: "攻击方技能1静态威力",
   });
   await user.clear(firstPower);
-  await user.type(firstPower, "123");
+  await user.type(firstPower, "123{Enter}");
   expect(firstPower).toHaveValue(123);
   expect(
     screen.getByRole("status", {
@@ -1139,7 +1142,7 @@ test("mirrors later positive ability gains to a triggered Fair Pigeon once", asy
   expect(within(defenseSide).getByText("7层 · +70%")).toBeVisible();
 });
 
-test("caps positive power levels at 50 with ten percent per level", async () => {
+test("caps positive power levels at 99 with ten percent per level", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -1154,14 +1157,14 @@ test("caps positive power levels at 50 with ten percent per level", async () => 
   await user.click(addLevel);
   expect(within(attackSide).getByText("1层 · +10%")).toBeVisible();
 
-  for (let level = 1; level < 50; level += 1) {
+  for (let level = 1; level < 99; level += 1) {
     fireEvent.click(addLevel);
   }
-  expect(within(attackSide).getByText("50层 · +500%")).toBeVisible();
+  expect(within(attackSide).getByText("99层 · +990%")).toBeVisible();
   expect(addLevel).toBeDisabled();
 });
 
-test("uses the original site's reciprocal multiplier down to level -50", async () => {
+test("uses the original site's reciprocal multiplier down to level -99", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -1176,10 +1179,10 @@ test("uses the original site's reciprocal multiplier down to level -50", async (
   await user.click(subtractLevel);
   expect(within(attackSide).getByText("-1层 · -9%")).toBeVisible();
 
-  for (let level = -1; level > -50; level -= 1) {
+  for (let level = -1; level > -99; level -= 1) {
     fireEvent.click(subtractLevel);
   }
-  expect(within(attackSide).getByText("-50层 · -83%")).toBeVisible();
+  expect(within(attackSide).getByText("-99层 · -91%")).toBeVisible();
   expect(subtractLevel).toBeDisabled();
 });
 
@@ -1323,7 +1326,7 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
     screen.getByRole("region", { name: "性格配置" }),
   ).getByRole("group", { name: "攻击方能力" });
   expect(within(attackSide).getByText("0层 · 0%")).toBeVisible();
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(100);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(80);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(1);
   expect(screen.getByText(/本次可得：.*普·威力\+20.*翼·连击\+2.*光·双攻\+4层/))
     .toBeVisible();
@@ -1331,12 +1334,12 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   const refractionRow = screen.getByRole("group", { name: "攻击方技能1" });
   await user.click(within(refractionRow).getByText(refraction.description));
   expect(within(attackSide).getByText("4层 · +40%")) .toBeVisible();
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(125);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(100);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(3);
 
   await user.click(within(refractionRow).getByText(refraction.description));
   expect(within(attackSide).getByText("8层 · +80%")) .toBeVisible();
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(150);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(120);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(5);
 });
 
@@ -1413,7 +1416,7 @@ test("clicking 撒娇 advances its permanent power once without input side effec
   await user.clear(picker);
   await user.type(picker, "撒娇");
   await user.click(screen.getByRole("option", { name: /撒娇/ }));
-  const power = screen.getByRole("spinbutton", { name: "攻击方技能1威力" });
+  const power = screen.getByRole("spinbutton", { name: "攻击方技能1静态威力" });
   expect(power).toHaveValue(30);
 
   await user.click(screen.getByText(/自己获得萌化/));
@@ -1809,14 +1812,14 @@ test("keeps Feather Acceleration as a persistent bonus for the other carried ski
   await user.clear(second);
   await user.type(second, "风力冲击");
   await user.click(screen.getByRole("option", { name: /风力冲击/ }));
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(80);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(80);
 
   await user.click(screen.getByText("自己全部技能威力+20。"));
 
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(100);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(100);
 });
 
-test("keeps persistent power bonuses visible after manually overriding base power", async () => {
+test("manual static power ignores later fixed bonuses until restored", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -1831,21 +1834,25 @@ test("keeps persistent power bonuses visible after manually overriding base powe
   await user.type(second, "风力冲击");
   await user.click(screen.getByRole("option", { name: /风力冲击/ }));
 
-  const power = screen.getByRole("spinbutton", { name: "攻击方技能2威力" });
+  const power = screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" });
   await user.clear(power);
-  await user.type(power, "55");
+  await user.type(power, "55{Enter}");
   expect(power).toHaveValue(55);
 
   await user.click(screen.getByText("自己全部技能威力+20。"));
 
-  expect(power).toHaveValue(75);
+  expect(power).toHaveValue(55);
 
   await user.clear(power);
-  await user.type(power, "45");
+  await user.type(power, "45{Enter}");
   expect(power).toHaveValue(45);
   await user.tab();
 
-  expect(power).toHaveValue(65);
+  expect(power).toHaveValue(45);
+
+  await user.click(screen.getByRole("button", { name: "恢复自动威力" }));
+
+  expect(power).toHaveValue(100);
 });
 
 test("toggles Quench's checked response without stacking its doubling", async () => {
@@ -1862,7 +1869,7 @@ test("toggles Quench's checked response without stacking its doubling", async ()
   await user.clear(second);
   await user.type(second, "风力冲击");
   await user.click(screen.getByRole("option", { name: /风力冲击/ }));
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(80);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(80);
 
   await user.click(
     screen.getByRole("checkbox", { name: "攻击方技能1防御应对成功" }),
@@ -1871,17 +1878,17 @@ test("toggles Quench's checked response without stacking its doubling", async ()
     screen.getByText("减伤80%，应对攻击：下次攻击技能威力翻倍。"),
   );
 
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(160);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(160);
 
   await user.click(
     screen.getByText("减伤80%，应对攻击：下次攻击技能威力翻倍。"),
   );
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(80);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(80);
 
   await user.click(
     screen.getByText("减伤80%，应对攻击：下次攻击技能威力翻倍。"),
   );
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(160);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(160);
 });
 
 test("reapplies a defense response gain only after its transient state was turned off", async () => {
@@ -1931,15 +1938,15 @@ test("Diffuse Reflection buffs only the first attacking skill of each type", asy
     await user.click(screen.getByRole("option", { name: new RegExp(name) }));
   }
 
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(80);
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能3威力" })).toHaveValue(60);
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能4威力" })).toHaveValue(60);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(80);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能3静态威力" })).toHaveValue(60);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能4静态威力" })).toHaveValue(60);
 
   await user.click(screen.getByText("每种系别中的至多1个技能，威力+35。"));
 
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(115);
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能3威力" })).toHaveValue(60);
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能4威力" })).toHaveValue(95);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(115);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能3静态威力" })).toHaveValue(60);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能4静态威力" })).toHaveValue(95);
 });
 
 test("Sunny buffs light attacking skills without changing other types", async () => {
@@ -1962,8 +1969,8 @@ test("Sunny buffs light attacking skills without changing other types", async ()
 
   await user.click(screen.getByText("光系技能威力永久+50%，应对防御：改为永久+100%。"));
 
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2威力" })).toHaveValue(150);
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能3威力" })).toHaveValue(80);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(150);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能3静态威力" })).toHaveValue(80);
 });
 
 test("uses the live attacker health percentage when activating Horse Stance", async () => {
@@ -2099,7 +2106,7 @@ test("selecting Mana Burst clears manual power and resolves zero energy immediat
   await selectDefaultSpirits(user);
   await openDetailedMode(user);
 
-  const manualPower = screen.getByRole("spinbutton", { name: "手动威力" });
+  const manualPower = screen.getByRole("spinbutton", { name: "静态威力" });
   await user.clear(manualPower);
   await user.type(manualPower, "222");
   const skillPicker = screen.getByRole("combobox", { name: "选择技能" });
@@ -2154,13 +2161,13 @@ test("keeps single-skill manual power across a four-skill round trip", async () 
   await selectDefaultSpirits(user);
   await openDetailedMode(user);
 
-  const manualPower = screen.getByRole("spinbutton", { name: "手动威力" });
+  const manualPower = screen.getByRole("spinbutton", { name: "静态威力" });
   await user.clear(manualPower);
-  await user.type(manualPower, "92");
+  await user.type(manualPower, "92{Enter}");
   await user.click(screen.getByRole("tab", { name: "四技能" }));
   await user.click(screen.getByRole("tab", { name: "单技能" }));
 
-  expect(screen.getByRole("spinbutton", { name: "手动威力" })).toHaveValue(
+  expect(screen.getByRole("spinbutton", { name: "静态威力" })).toHaveValue(
     92,
   );
 });
@@ -2278,7 +2285,7 @@ test("restores one global spirit configuration with nested four-skill state", as
     }),
   ).toBeChecked();
   expect(
-    screen.getByRole("spinbutton", { name: "攻击方技能3威力" }),
+    screen.getByRole("spinbutton", { name: "攻击方技能3静态威力" }),
   ).toHaveValue(280);
 
   await selectSpirit(user, "攻击方", "风暴战犬");
@@ -2304,9 +2311,9 @@ test("restores single-skill conditions and manual inputs after an immediate remo
   await user.click(
     screen.getByRole("checkbox", { name: "敌方本回合换精灵" }),
   );
-  const manualPower = screen.getByRole("spinbutton", { name: "手动威力" });
+  const manualPower = screen.getByRole("spinbutton", { name: "静态威力" });
   await user.clear(manualPower);
-  await user.type(manualPower, "137");
+  await user.type(manualPower, "137{Enter}");
   firstRender.unmount();
 
   render(<App initialSnapshot={snapshot} />);
@@ -2319,7 +2326,7 @@ test("restores single-skill conditions and manual inputs after an immediate remo
   expect(
     screen.getByRole("checkbox", { name: "敌方本回合换精灵" }),
   ).toBeChecked();
-  expect(screen.getByRole("spinbutton", { name: "手动威力" })).toHaveValue(
+  expect(screen.getByRole("spinbutton", { name: "静态威力" })).toHaveValue(
     137,
   );
 });
@@ -2339,9 +2346,9 @@ test("restores defender single and four-skill edits after remounting", async () 
   await user.click(
     screen.getByRole("checkbox", { name: "敌方本回合换精灵" }),
   );
-  const singlePower = screen.getByRole("spinbutton", { name: "手动威力" });
+  const singlePower = screen.getByRole("spinbutton", { name: "静态威力" });
   await user.clear(singlePower);
-  await user.type(singlePower, "137");
+  await user.type(singlePower, "137{Enter}");
 
   await user.click(screen.getByRole("tab", { name: "四技能" }));
   const fourPicker = screen.getByRole("combobox", { name: "防御方技能1" });
@@ -2354,10 +2361,10 @@ test("restores defender single and four-skill edits after remounting", async () 
     }),
   );
   const fourPower = screen.getByRole("spinbutton", {
-    name: "防御方技能1威力",
+    name: "防御方技能1静态威力",
   });
   await user.clear(fourPower);
-  await user.type(fourPower, "166");
+  await user.type(fourPower, "166{Enter}");
   firstRender.unmount();
 
   render(<App initialSnapshot={snapshot} />);
@@ -2370,7 +2377,7 @@ test("restores defender single and four-skill edits after remounting", async () 
   expect(
     screen.getByRole("checkbox", { name: "敌方本回合换精灵" }),
   ).toBeChecked();
-  expect(screen.getByRole("spinbutton", { name: "手动威力" })).toHaveValue(
+  expect(screen.getByRole("spinbutton", { name: "静态威力" })).toHaveValue(
     137,
   );
 
@@ -2384,8 +2391,8 @@ test("restores defender single and four-skill edits after remounting", async () 
     }),
   ).toBeChecked();
   expect(
-    screen.getByRole("spinbutton", { name: "防御方技能1威力" }),
-  ).toHaveValue(266);
+    screen.getByRole("spinbutton", { name: "防御方技能1静态威力" }),
+  ).toHaveValue(166);
 });
 
 test("clear current page preserves saved spirit memory", async () => {
@@ -2514,7 +2521,7 @@ test("changing to an unremembered attacker restores role defaults instead of inh
   await user.clear(skillPicker);
   await user.type(skillPicker, "魔能爆");
   await user.click(screen.getByRole("option", { name: /魔能爆/ }));
-  const manualPower = screen.getByRole("spinbutton", { name: "手动威力" });
+  const manualPower = screen.getByRole("spinbutton", { name: "静态威力" });
   await user.clear(manualPower);
   await user.type(manualPower, "143");
   await selectSpirit(user, "攻击方", "水灵");
@@ -2522,7 +2529,7 @@ test("changing to an unremembered attacker restores role defaults instead of inh
   expect(screen.getByRole("combobox", { name: "选择技能" })).toHaveValue(
     "水之波纹",
   );
-  expect(screen.getByRole("spinbutton", { name: "手动威力" })).toHaveValue(
+  expect(screen.getByRole("spinbutton", { name: "静态威力" })).toHaveValue(
     60,
   );
   await user.click(screen.getByRole("button", { name: "精简版" }));
@@ -2558,16 +2565,16 @@ test("applies selected skill effects and declared hit counts without manual powe
   await user.click(screen.getByRole("option", { name: /当头棒喝/ }));
 
   expect(
-    within(screen.getByLabelText("技能威力")).getByText("80"),
-  ).toBeVisible();
+    screen.getByRole("spinbutton", { name: "静态威力" }),
+  ).toHaveValue(80);
   const switched = screen.getByRole("checkbox", {
     name: "敌方本回合换精灵",
   });
   expect(switched).not.toBeChecked();
   await user.click(switched);
   expect(
-    within(screen.getByLabelText("技能威力")).getByText("180"),
-  ).toBeVisible();
+    screen.getByRole("spinbutton", { name: "静态威力" }),
+  ).toHaveValue(180);
 
   await user.clear(picker);
   await user.type(picker, "乱打");
@@ -2581,8 +2588,8 @@ test("applies selected skill effects and declared hit counts without manual powe
     screen.getByRole("checkbox", { name: "敌方本回合换精灵" }),
   ).toBeChecked();
   expect(
-    within(screen.getByLabelText("技能威力")).getByText("180"),
-  ).toBeVisible();
+    screen.getByRole("spinbutton", { name: "静态威力" }),
+  ).toHaveValue(180);
 });
 
 test("loads one team member into the attack side without linking later edits", async () => {
@@ -2862,6 +2869,33 @@ test("enables type analysis from display settings and remembers the switch", asy
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
   expect(screen.getByRole("region", { name: "属性分析" })).toBeVisible();
+});
+
+test("switches detailed four-skill rows to editable panel power and remembers it", async () => {
+  const user = userEvent.setup();
+  const first = render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  expect(
+    screen.getByRole("spinbutton", { name: "攻击方技能1静态威力" }),
+  ).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "显示设置" }));
+  await user.click(screen.getByRole("button", { name: "面板威力" }));
+  await user.click(screen.getByRole("button", { name: "完成" }));
+
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能1面板威力" })).toBeVisible();
+  expect(
+    screen.queryByRole("spinbutton", { name: "攻击方技能1静态威力" }),
+  ).not.toBeInTheDocument();
+  expect(localStorage.getItem(POWER_DISPLAY_STORAGE_KEY)).toBe("panel");
+
+  first.unmount();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能1面板威力" })).toBeVisible();
 });
 
 test("loads the built-in popular library only on demand and imports through the existing flow", async () => {

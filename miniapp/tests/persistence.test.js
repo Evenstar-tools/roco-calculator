@@ -105,6 +105,17 @@ function createConfiguredState(snapshot = createSnapshot()) {
 }
 
 describe("createPersistence", () => {
+  test("stores the type analysis display setting independently", () => {
+    const storage = createMemoryStorage();
+    const persistence = createPersistence({ storage });
+
+    expect(persistence.getTypeAnalysisEnabled()).toBe(false);
+    expect(persistence.setTypeAnalysisEnabled(true)).toBe(true);
+    expect(persistence.getTypeAnalysisEnabled()).toBe(true);
+    expect(persistence.setTypeAnalysisEnabled(false)).toBe(false);
+    expect(persistence.getTypeAnalysisEnabled()).toBe(false);
+  });
+
   test("publishes persistence schema 2", () => {
     expect(MINIAPP_PERSISTENCE_SCHEMA_VERSION).toBe(2);
   });
@@ -243,6 +254,7 @@ describe("createPersistence", () => {
         fixedPowerAddsBySlot: [0, 10, 20],
         identity: { openid: "secret-openid" },
         privateMultiplier: 9,
+        powerOverride: { mode: "panel", value: 175 },
         result: { totalDamage: 999 },
       },
       result: { totalDamage: 999 },
@@ -266,6 +278,7 @@ describe("createPersistence", () => {
       },
       identity: { openid: "secret-openid" },
       privateMultiplier: 9,
+      powerOverride: { mode: "static", value: 110 },
       result: { totalDamage: 999 },
     };
 
@@ -299,6 +312,7 @@ describe("createPersistence", () => {
         basePower: 95,
         context: { counterTriggered: true },
         fixedPowerAddsBySlot: [0, 10, 20],
+        powerOverride: { mode: "panel", value: 175 },
       },
       skillId: "skill-b",
       skillPowerPercentAdds: [0.2],
@@ -314,6 +328,7 @@ describe("createPersistence", () => {
       attackLevelStage: 2,
       basePower: 90,
       context: { enemyEnergy: 5 },
+      powerOverride: { mode: "static", value: 110 },
     });
 
     const restored = persistence.load(snapshot);
@@ -327,6 +342,7 @@ describe("createPersistence", () => {
       attackLevelStage: 2,
       basePower: 90,
       context: { enemyEnergy: 5 },
+      powerOverride: { mode: "static", value: 110 },
     });
   });
 

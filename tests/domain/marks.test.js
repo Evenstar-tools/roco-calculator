@@ -41,10 +41,14 @@ describe("mark rules", () => {
   );
 
   test("only applies tailwind when the attacker acts first", () => {
-    expect(effects("tailwind", 2).powerPercentAdd).toBe(0.4);
+    expect(effects("tailwind", 2)).toMatchObject({
+      hiddenPanelPowerPercentAdd: 0.4,
+      powerPercentAdd: 0.4,
+    });
     expect(
       effects("tailwind", 2, { actedBeforeEnemy: false }).powerPercentAdd,
     ).toBe(0);
+    expect(effects("momentum", 1).hiddenPanelPowerPercentAdd).toBe(0);
   });
 
   test("applies slow per stack and records non-damage marks without inventing damage", () => {

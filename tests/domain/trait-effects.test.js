@@ -685,6 +685,42 @@ describe("trait effect coverage", () => {
     })).toMatchObject({ powerPercentAdd: 1 });
   });
 
+  test("水翼飞升只在当前技能勾选触发后增加30%威力", () => {
+    const trait = snapshot.traits.find(
+      (candidate) => candidate.name === "水翼飞升",
+    );
+
+    for (const role of ["attacker", "defender"]) {
+      expect(getTraitEffectInputs(trait, role)).toMatchObject([
+        {
+          contextKey: "waterWingAscentTriggered",
+          label: "触发加成",
+          scope: "slot",
+          type: "boolean",
+        },
+      ]);
+      expect(getTraitEffectInputs(trait, role)).toHaveLength(1);
+
+      const input = {
+        attacker: {},
+        defender: {},
+        skill: { category: "physical", cost: 0, type: "普通" },
+      };
+      expect(resolveTraitEffectRule(trait, role, {
+        ...input,
+        context: contextFor(trait, role, {
+          waterWingAscentTriggered: false,
+        }),
+      })).toMatchObject({ powerPercentAdd: 0, powerMultiplier: 1 });
+      expect(resolveTraitEffectRule(trait, role, {
+        ...input,
+        context: contextFor(trait, role, {
+          waterWingAscentTriggered: true,
+        }),
+      })).toMatchObject({ powerPercentAdd: 0.3, powerMultiplier: 1.3 });
+    }
+  });
+
   test("S3季中光度换算每次触发使光系技能威力永久增加30", () => {
     const trait = snapshot.traits.find((candidate) => candidate.name === "光度换算");
     const context = contextFor(trait, "attacker", { attackerTraitStacks: 2 });

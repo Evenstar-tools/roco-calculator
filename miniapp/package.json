@@ -1,7 +1,7 @@
 {
   "name": "rock-calculator-miniapp",
   "private": true,
-  "version": "0.2.3",
+  "version": "0.2.4",
   "scripts": {
     "build:h5": "node --no-deprecation ./scripts/run-taro.cjs build --type h5",
     "build:weapp": "node --no-deprecation ./scripts/run-taro.cjs build --type weapp",
@@ -23,6 +23,7 @@
     "@tarojs/runtime": "4.2.1",
     "@tarojs/shared": "4.2.1",
     "@tarojs/taro": "4.2.1",
+    "lz-string": "^1.5.0",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

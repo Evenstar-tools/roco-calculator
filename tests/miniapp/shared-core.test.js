@@ -208,8 +208,8 @@ afterEach(() => {
 describe("miniapp shared calculator core", () => {
   test("pins the miniapp release to the current web core version", () => {
     expect(rootPackage.version).toBe("1.5.7");
-    expect(miniappPackage.version).toBe("0.2.3");
-    expect(miniappLockfile.packages[""].version).toBe("0.2.3");
+    expect(miniappPackage.version).toBe("0.2.4");
+    expect(miniappLockfile.packages[""].version).toBe("0.2.4");
   });
 
   test("manifest classifies every Web domain module exactly once", async () => {

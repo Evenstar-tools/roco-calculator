@@ -513,6 +513,69 @@
   gap: 10px;
 }
 
+.condition-editor__manual {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(104px, 0.6fr);
+  gap: 8px;
+}
+
+.condition-editor__power {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.condition-editor__power-modes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.condition-editor__power-mode,
+.condition-editor__power-reset {
+  min-height: 32px;
+  margin: 0;
+  padding: 0 8px;
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-control);
+  background: var(--surface-card);
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 30px;
+}
+
+.condition-editor__power-mode::after,
+.condition-editor__power-reset::after {
+  border: 0;
+}
+
+.condition-editor__power-mode--active {
+  border-color: var(--defender);
+  background: var(--defender-soft);
+  color: var(--defender);
+  font-weight: 700;
+}
+
+.condition-editor__power-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.condition-editor__power-reset {
+  min-height: 28px;
+  border: 0;
+  color: var(--defender);
+  line-height: 28px;
+}
+
+.condition-editor__power-status {
+  color: var(--text-tertiary);
+  font-size: 11px;
+}
+
 .battle-environment {
   padding: 2px 0 14px;
 }

@@ -1,10 +1,15 @@
 import { readFileSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const projectRoot = path.resolve(path.dirname(scriptPath), "../..");
+const requireFromMiniapp = createRequire(
+  path.join(projectRoot, "miniapp/package.json"),
+);
+const { compressToBase64 } = requireFromMiniapp("lz-string");
 const runtimePath = path.join(projectRoot, "public/data/runtime.json");
 const manifestPath = path.join(
   projectRoot,
@@ -13,6 +18,10 @@ const manifestPath = path.join(
 const outputPath = path.join(
   projectRoot,
   "miniapp/src/data/bundled-runtime.json",
+);
+const compressedOutputPath = path.join(
+  projectRoot,
+  "miniapp/src/data/bundled-runtime.payload.js",
 );
 
 const runtime = withCalculatorExtras(
@@ -96,6 +105,10 @@ const bundledRuntime = {
 };
 const output = `${JSON.stringify(bundledRuntime)}\n`;
 writeFileSync(outputPath, output, "utf8");
+const compressedOutput = `export default ${JSON.stringify(
+  compressToBase64(output.trim()),
+)};\n`;
+writeFileSync(compressedOutputPath, compressedOutput, "utf8");
 process.stdout.write(
-  `Built bundled miniapp runtime with ${spirits.length} portraits (${Buffer.byteLength(output)} bytes).\n`,
+  `Built bundled miniapp runtime with ${spirits.length} portraits (${Buffer.byteLength(output)} raw bytes, ${Buffer.byteLength(compressedOutput)} compressed bytes).\n`,
 );

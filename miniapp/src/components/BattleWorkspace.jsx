@@ -111,6 +111,7 @@ export default function BattleWorkspace({
   onFavoriteToggle,
   onShareChange,
   petImages,
+  showTypeAnalysis = false,
   snapshot,
   store,
 }) {
@@ -693,6 +694,7 @@ export default function BattleWorkspace({
                   onContextChange={updateSkillContext}
                   onDirectionChange={updateSkillDirection}
                   presentation={activePresentation}
+                  result={calculation.rows[0]}
                   skill={selectedSkill}
                 />
               </View>
@@ -813,6 +815,7 @@ export default function BattleWorkspace({
         selectedIndex={activeDirectionState.selectedSkillIndex}
         shareCompleteness={shareCompleteness}
         showSkillConditions={state.mode === "four"}
+        showTypeAnalysis={showTypeAnalysis}
         skillConditionContext={conditionContext}
         skillConditionDirection={conditionDirection}
         skillConditionPresentation={activePresentation}

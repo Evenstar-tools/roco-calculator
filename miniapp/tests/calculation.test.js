@@ -393,6 +393,24 @@ test.each([
 );
 
 describe("createCalculationView", () => {
+  test("returns the acting spirit defensive matchups and four-skill coverage", () => {
+    const snapshot = createSnapshot();
+    snapshot.typeChart = undefined;
+    const state = createState(snapshot);
+
+    const view = createCalculationView(snapshot, state, "forward");
+
+    expect(view.typeAnalysis.subjectName).toBe("烈焰兽");
+    expect(view.typeAnalysis.defense.weaknesses).toContainEqual({
+      type: "水",
+      multiplier: 2,
+    });
+    expect(view.typeAnalysis.offense.coverage).toContainEqual({
+      type: "草",
+      multiplier: 2,
+    });
+  });
+
   test("defaults an unset target HP to the defender maximum", () => {
     const snapshot = createSnapshot();
     const state = createState(snapshot);

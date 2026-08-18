@@ -112,6 +112,42 @@ function renderWorkspace() {
 }
 
 describe("result bar and sheet", () => {
+  test("shows defensive matchups and four-skill coverage when enabled", () => {
+    render(
+      <ResultSheet
+        onClose={vi.fn()}
+        open
+        showTypeAnalysis
+        view={{
+          attackerName: "烈焰兽",
+          defenderName: "潮汐兽",
+          message: "请选择技能",
+          rows: [],
+          selectedResult: null,
+          status: "unresolved",
+          typeAnalysis: {
+            subjectName: "烈焰兽",
+            defense: {
+              weaknesses: [{ type: "水", multiplier: 2 }],
+              resistances: [{ type: "火", multiplier: 0.5 }],
+            },
+            offense: {
+              coverage: [{ type: "草", multiplier: 2 }],
+              blindSpots: [{ type: "水", multiplier: 0.5 }],
+            },
+          },
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "展开属性分析" }));
+    const analysis = screen.getByLabelText("属性分析");
+    expect(analysis).toHaveTextContent("烈焰兽 · 自身防御面");
+    expect(analysis).toHaveTextContent("四技能进攻面");
+    expect(analysis).toHaveTextContent("水");
+    expect(analysis).toHaveTextContent("草");
+  });
+
   test("keeps target HP beside the compact battle condition summary", () => {
     const onCurrentHpChange = vi.fn();
     render(
@@ -175,6 +211,7 @@ describe("result bar and sheet", () => {
         onSelectSkill={() => {}}
         open
         selectedIndex={0}
+        showTypeAnalysis
         view={{
           attackerName: "烈焰兽",
           defenderName: "潮汐兽",
@@ -257,6 +294,7 @@ describe("result bar and sheet", () => {
         onSelectSkill={() => {}}
         open
         selectedIndex={0}
+        showTypeAnalysis
         view={{
           attackerName: "迪莫",
           defenderName: "圣光迪莫",
@@ -425,6 +463,7 @@ describe("result bar and sheet", () => {
     expect(within(process).getByText("显示威力")).toBeInTheDocument();
     expect(within(process).getByText("每段伤害")).toBeInTheDocument();
     expect(within(process).getByText("总伤害")).toBeInTheDocument();
+    expect(within(process).getByText("37/41")).toBeInTheDocument();
     expect(within(process).getByText("伤害分子")).toBeInTheDocument();
     expect(within(process).getByText("37/41")).toBeInTheDocument();
     expect(within(process).queryByText("0.902439")).not.toBeInTheDocument();

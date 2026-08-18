@@ -177,7 +177,7 @@ async function collectOfflineSmokeResult(window) {
     shell?.attackerPicker === true &&
     shell?.defenderPicker === true &&
     shell?.loading === false &&
-    data.spirits === 592 &&
+    data.spirits === 594 &&
     data.skills === 553;
 
   return {

@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
 import { expandBundledRuntime } from "../src/data/expand-bundled-runtime.js";
+import decodedBundledRuntime from "../src/data/bundled-runtime.js";
 
 const miniappRoot = process.cwd();
 const bundledRuntimePath = path.join(
@@ -45,6 +46,18 @@ describe("bundled miniapp runtime", () => {
     ).toBe(
       "https://patchwiki.biligame.com/images/rocom/d/de/n2a74bd4dvdud8b4t4819y9md4t811z.png",
     );
+  });
+
+  test("decodes the compressed runtime without losing records", () => {
+    const bundled = expandBundledRuntime(
+      JSON.parse(readFileSync(bundledRuntimePath, "utf8")),
+    );
+
+    expect(decodedBundledRuntime.meta.id).toBe(bundled.meta.id);
+    expect(decodedBundledRuntime.spirits).toHaveLength(bundled.spirits.length);
+    expect(decodedBundledRuntime.skills).toHaveLength(bundled.skills.length);
+    expect(decodedBundledRuntime.traits).toHaveLength(bundled.traits.length);
+    expect(decodedBundledRuntime.learnsets).toHaveLength(bundled.learnsets.length);
   });
 
   test("bundles all searchable Wish Power variants used by the calculator", () => {

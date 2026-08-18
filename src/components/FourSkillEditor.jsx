@@ -1,6 +1,5 @@
 import {
   clampDynamicInput,
-  DraftNumberInput,
   describeResolution,
   dynamicInputValue,
   dynamicInputsForSkill,
@@ -14,6 +13,7 @@ import { SkillPicker } from "./SkillPicker.jsx";
 import { useEffect, useState } from "react";
 import { damageTone } from "./damageTone.js";
 import { HealthInput } from "./HealthInput.jsx";
+import { PowerDraftInput } from "./PowerDraftInput.jsx";
 import {
   TraitHint,
   TraitSkillPowerBonuses,
@@ -24,6 +24,7 @@ import {
 } from "../domain/choice-skill-sequence.js";
 import { buildRefractionHint } from "../domain/refraction.js";
 import { getGaleTurbineCompanionInput } from "../domain/wing-extension.js";
+import { resolveLifestealCapability } from "../domain/baron-greed.js";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -106,16 +107,19 @@ function SkillSide({
   activeSkillIndex,
   hitCount,
   health,
+  lifestealPercent,
   label,
   name,
   opponentHealth,
   opponentLabel,
   opponentName,
   opponentSide,
+  powerDisplayMode,
   onSkillActivate,
   onSkillContextChange,
   onSkillFocus,
   onSkillHitCountChange,
+  onSkillPowerClear,
   onSkillPowerChange,
   onSkillSelect,
   onHealthChange,
@@ -155,6 +159,12 @@ function SkillSide({
     ) ?? [];
   const defensiveTraitInputs =
     defenseTrait?.inputs?.filter((input) => input.scope !== "slot") ?? [];
+  const lifesteal = resolveLifestealCapability({
+    persistentLifestealPercent: lifestealPercent,
+    traits: trait ? [trait] : [],
+  });
+  const showsLifestealCapability =
+    lifesteal.percent > 0 || ["戏耍", "贪得无厌"].includes(trait?.name);
   return (
     <section className={`four-skill-side four-skill-side--${side}`}>
       <header>
@@ -162,7 +172,8 @@ function SkillSide({
         <strong>{name}</strong>
       </header>
       {offensiveTraitInputs.length > 0 ||
-      trait?.skillPowerBonuses?.length > 0 ? (
+      trait?.skillPowerBonuses?.length > 0 ||
+      showsLifestealCapability ? (
         <div className="four-skill-trait-controls">
           <TraitHint description={trait.description} name={trait.name} />
           <TraitSkillPowerBonuses
@@ -173,6 +184,11 @@ function SkillSide({
             automaticStack={trait.automaticStack}
             skills={selectedSkills}
           />
+          {showsLifestealCapability ? (
+            <small className="trait-capability-note">
+              吸血 {lifesteal.levels}层 · {lifesteal.percent}%
+            </small>
+          ) : null}
           <TraitInputs
             context={traitContext}
             inputs={offensiveTraitInputs}
@@ -237,7 +253,9 @@ function SkillSide({
           <span className="skill-slot__head-skill">技能</span>
           <span className="skill-slot__head-kind">属性</span>
           <span className="skill-slot__head-cost">耗</span>
-          <span className="skill-slot__head-power">威力</span>
+          <span className="skill-slot__head-power">
+            {powerDisplayMode === "panel" ? "面板威力" : "静态威力"}
+          </span>
           <span className="skill-slot__head-hits">连击</span>
           <span className="skill-slot__head-result">伤害占比</span>
         </div>
@@ -260,11 +278,15 @@ function SkillSide({
             tabIndex="0"
           >
             <div className="skill-slot skill-slot--trait">
-              <span className="skill-slot__number">特</span>
-              <strong className="skill-slot__trait-name">{traitDamage.name}</strong>
+              <span className="skill-slot__number skill-slot__number--trait">特</span>
+              <span className="skill-slot__trait-skill" title="固定特性伤害">
+                {traitDamage.name}
+              </span>
               <span className="skill-slot__kind">{traitDamage.typeLabel}</span>
               <span>—</span>
-              <strong>{traitDamage.basePower}</strong>
+              <strong className="skill-slot__trait-power">
+                {traitDamage.basePower}
+              </strong>
               <label className="skill-slot__hits">
                 <span className="sr-only">{label}{traitDamage.name}连击次数</span>
                 <input
@@ -354,6 +376,7 @@ function SkillSide({
           const powerResolutionHint = selected
             ? describeResolution(result)
             : null;
+          const powerSourceHint = null;
           return (
             <div
               aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
@@ -396,19 +419,27 @@ function SkillSide({
                     : "—"}
                 </span>
                 <span className="skill-slot__cost">{selected?.cost ?? "—"}</span>
-                <DraftNumberInput
-                  ariaLabel={`${label}技能${index + 1}威力`}
+                <PowerDraftInput
+                  ariaLabel={`${label}技能${index + 1}${
+                    powerDisplayMode === "panel" ? "面板威力" : "静态威力"
+                  }`}
                   className="skill-slot__power-input"
                   disabled={!selected}
-                  min={0}
-                  onCommit={(power) =>
-                    onSkillPowerChange?.(side, index, power)
+                  isManual={Boolean(selected?.slotPowerOverride)}
+                  mode={powerDisplayMode === "panel" ? "panel" : "static"}
+                  onClear={() => onSkillPowerClear?.(side, index)}
+                  onCommit={(value) =>
+                    onSkillPowerChange?.(side, index, {
+                      mode: powerDisplayMode === "panel" ? "panel" : "static",
+                      value,
+                    })
                   }
                   value={
-                    displayedSkillPower(selected, result) ??
-                    selected?.slotPowerOverride ??
-                    selected?.basePower ??
-                    ""
+                    selected
+                      ? powerDisplayMode === "panel"
+                        ? result?.panelPower ?? result?.effectivePower ?? selected.basePower
+                        : result?.staticPower ?? displayedSkillPower(selected, result) ?? selected.basePower
+                      : ""
                   }
                 />
                 <label className="skill-slot__hits">
@@ -449,6 +480,7 @@ function SkillSide({
               refractionHint ||
               counterReflectionHint ||
               powerResolutionHint ||
+              powerSourceHint ||
               dynamicInputs.length > 0 ? (
                 <div className="skill-slot__context">
                   {selected?.description ? (
@@ -466,6 +498,11 @@ function SkillSide({
                     >
                       {powerResolutionHint}
                     </p>
+                  ) : null}
+                  {powerSourceHint ? (
+                    <small className="skill-slot__power-source">
+                      {powerSourceHint}
+                    </small>
                   ) : null}
                   {refractionHint ? (
                     <p className="skill-slot__effect-hint" title={refractionHint}>
@@ -586,6 +623,7 @@ export function FourSkillEditor({
   activeSide = "attacker",
   activeSkillIndex = 0,
   attackerHealth,
+  attackerLifestealPercent = 0,
   attackerHitCount = 1,
   attackerName,
   attackerResults = [],
@@ -607,17 +645,20 @@ export function FourSkillEditor({
   defenderTraitDamage,
   defenderDefenseTrait,
   defenderHealth,
+  defenderLifestealPercent = 0,
   onHealthChange,
   onHealthPercentChange,
   onSkillActivate,
   onSkillContextChange,
   onSkillFocus,
   onSkillHitCountChange,
+  onSkillPowerClear,
   onSkillPowerChange,
   onSkillSelect,
   onTraitContextChange,
   onTraitDamageFocus,
   onTraitDamageHitCountChange,
+  powerDisplayMode = "static",
   skills,
 }) {
   const isMobile = useMediaQuery("(max-width: 620px)");
@@ -626,6 +667,7 @@ export function FourSkillEditor({
     attacker: {
       hitCount: attackerHitCount,
       health: attackerHealth,
+      lifestealPercent: attackerLifestealPercent,
       label: "攻击方",
       name: attackerName,
       opponentHealth: defenderHealth,
@@ -645,6 +687,7 @@ export function FourSkillEditor({
     defender: {
       hitCount: defenderHitCount,
       health: defenderHealth,
+      lifestealPercent: defenderLifestealPercent,
       label: "防御方",
       name: defenderName,
       opponentHealth: attackerHealth,
@@ -677,8 +720,10 @@ export function FourSkillEditor({
         onHealthPercentChange={onHealthPercentChange}
         onSkillFocus={onSkillFocus}
         onSkillHitCountChange={onSkillHitCountChange}
+        onSkillPowerClear={onSkillPowerClear}
         onSkillPowerChange={onSkillPowerChange}
         onSkillSelect={onSkillSelect}
+        powerDisplayMode={powerDisplayMode}
         onTraitContextChange={onTraitContextChange}
         onTraitDamageFocus={onTraitDamageFocus}
         onTraitDamageHitCountChange={onTraitDamageHitCountChange}

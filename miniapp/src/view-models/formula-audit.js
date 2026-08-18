@@ -47,12 +47,27 @@ export function displayLevelCoefficient(coefficient, level = 60) {
   return `${numerator / divisor}/${denominator / divisor}`;
 }
 
+export function displayDamageCoefficient(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return "—";
+  const numerator = numeric * 41;
+  const roundedNumerator = Math.round(numerator);
+  const displayedNumerator =
+    Math.abs(numerator - roundedNumerator) < 0.00001
+      ? roundedNumerator
+      : displayFormulaNumber(numerator, 6);
+  return `${displayedNumerator}/41`;
+}
+
 export function buildResultFormulaAudit(result) {
   if (!result?.formulaSteps?.length) return null;
 
   const attackPanel = stepByLabel(result, "攻击面板");
   const basePower = stepByLabel(result, "基础威力");
-  const displayedBasePower = stepByLabel(result, "游戏内显示威力");
+  const displayedBasePower =
+    stepByLabel(result, "手动面板威力") ??
+    stepByLabel(result, "面板威力") ??
+    stepByLabel(result, "游戏内显示威力");
   const fixedPower = stepByLabel(result, "固定威力增加");
   const markFixedPower = stepByLabel(result, "印记固定威力");
   const traitFixedPower = stepByLabel(result, "特性固定威力");

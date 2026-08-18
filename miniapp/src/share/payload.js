@@ -68,6 +68,7 @@ function integerInRange(value, minimum, maximum, fallback) {
 }
 
 function compactOverrides(value) {
+  const compact = {};
   const basePower = finiteInRange(
     value?.basePower,
     0,
@@ -86,13 +87,23 @@ function compactOverrides(value) {
     6,
     undefined,
   );
-  const compact = {};
   if (basePower !== undefined) compact.p = basePower;
   if (attackLevelStage !== undefined && attackLevelStage !== 0) {
     compact.a = attackLevelStage;
   }
   if (defenseLevelStage !== undefined && defenseLevelStage !== 0) {
     compact.d = defenseLevelStage;
+  }
+  const mode = value?.powerOverride?.mode;
+  const power = integerInRange(
+    value?.powerOverride?.value,
+    0,
+    9999,
+    undefined,
+  );
+  if ((mode === "static" || mode === "panel") && power !== undefined) {
+    compact.m = mode === "panel" ? "p" : "s";
+    compact.v = power;
   }
   return Object.keys(compact).length ? compact : undefined;
 }
@@ -406,18 +417,27 @@ function legalSkillIds(snapshot, spiritId, allSkillIds) {
 }
 
 function expandOverrides(value) {
+  const expanded = {};
   const basePower = finiteInRange(value?.p, 0, 5000, undefined);
   const attackLevelStage = integerInRange(value?.a, -6, 6, undefined);
   const defenseLevelStage = integerInRange(value?.d, -6, 6, undefined);
-  const result = {};
-  if (basePower !== undefined) result.basePower = basePower;
+  if (basePower !== undefined) expanded.basePower = basePower;
   if (attackLevelStage !== undefined && attackLevelStage !== 0) {
-    result.attackLevelStage = attackLevelStage;
+    expanded.attackLevelStage = attackLevelStage;
   }
   if (defenseLevelStage !== undefined && defenseLevelStage !== 0) {
-    result.defenseLevelStage = defenseLevelStage;
+    expanded.defenseLevelStage = defenseLevelStage;
   }
-  return Object.keys(result).length ? result : undefined;
+  const mode = value?.m === "p"
+    ? "panel"
+    : value?.m === "s"
+      ? "static"
+      : undefined;
+  const power = integerInRange(value?.v, 0, 9999, undefined);
+  if (mode && power !== undefined) {
+    expanded.powerOverride = { mode, value: power };
+  }
+  return Object.keys(expanded).length ? expanded : undefined;
 }
 
 function expandSkill(entry, allowedSkillIds) {

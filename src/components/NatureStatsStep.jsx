@@ -34,7 +34,7 @@ function RepeatLevelButton({
   useEffect(() => stopRepeat, []);
 
   function step() {
-    const next = Math.max(-50, Math.min(50, valueRef.current + delta));
+    const next = Math.max(-99, Math.min(99, valueRef.current + delta));
     if (next === valueRef.current) {
       stopRepeat();
       return;
@@ -152,7 +152,7 @@ function SideStats({
               <RepeatLevelButton
                 ariaLabel={`${controlLabel}减一`}
                 delta={-1}
-                disabled={level.stage <= -50}
+                disabled={level.stage <= -99}
                 onChange={changeLevel}
                 value={level.stage}
               >
@@ -165,7 +165,7 @@ function SideStats({
               <RepeatLevelButton
                 ariaLabel={`${controlLabel}加一`}
                 delta={1}
-                disabled={level.stage >= 50}
+                disabled={level.stage >= 99}
                 onChange={changeLevel}
                 value={level.stage}
               >

@@ -8,6 +8,7 @@ function clampPercent(value) {
 }
 
 export function ResultRail({
+  onBloodlineResultFocus,
   onCurrentHpChange,
   onCurrentHpPercentChange,
   onDirectionToggle,
@@ -130,6 +131,37 @@ export function ResultRail({
       {result.mode === "four" ? (
         <section aria-label="技能结果" className="skill-result-list">
           <h2>技能结果</h2>
+          {result.bloodlineResult ? (
+            <button
+              aria-label={`查看${result.bloodlineResult.name}伤害`}
+              className={`skill-result-row skill-result-row--trait skill-result-row--action${
+                result.bloodlineResult.selected ? " is-selected" : ""
+              }`}
+              data-tone={damageTone(result.bloodlineResult.hpPercent)}
+              onClick={onBloodlineResultFocus}
+              type="button"
+            >
+              <span className="skill-result-row__index skill-result-row__index--trait">
+                血
+              </span>
+              <span className="skill-result-row__name skill-result-row__name--trait">
+                <span>{result.bloodlineResult.name}</span>
+                <small>血脉</small>
+              </span>
+              <span className="skill-result-row__bar" aria-hidden="true">
+                <span
+                  style={{
+                    width: `${clampPercent(result.bloodlineResult.hpPercent)}%`,
+                  }}
+                />
+              </span>
+              <strong>
+                {Number.isFinite(result.bloodlineResult.hpPercent)
+                  ? `${result.bloodlineResult.hpPercent.toFixed(1)}%`
+                  : "—"}
+              </strong>
+            </button>
+          ) : null}
           {result.traitResult ? (
             <div
               className={`skill-result-row skill-result-row--trait${
@@ -137,10 +169,13 @@ export function ResultRail({
               }`}
               data-tone={damageTone(result.traitResult.hpPercent)}
             >
-              <span className="skill-result-row__index">特</span>
-              <span className="skill-result-row__name">
-                <small>特性造成伤害</small>
-                {result.traitResult.name}
+              <span className="skill-result-row__index skill-result-row__index--trait">
+                特
+              </span>
+              <span className="skill-result-row__name skill-result-row__name--trait">
+                <span>{result.traitResult.name}</span>
+                <small aria-hidden="true">特性</small>
+                <span className="sr-only">特性造成伤害</span>
               </span>
               <span className="skill-result-row__bar" aria-hidden="true">
                 <span

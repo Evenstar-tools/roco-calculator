@@ -21,12 +21,12 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
   });
 
-  test("publishes miniapp 0.2.3 against web core 1.5.7", () => {
-    expect(MINIAPP_VERSION).toBe("0.2.3");
-    expect(MINIAPP_UPDATE_DATE).toBe("2026-08-17");
+  test("publishes miniapp 0.2.4 against web core 1.5.7", () => {
+    expect(MINIAPP_VERSION).toBe("0.2.4");
+    expect(MINIAPP_UPDATE_DATE).toBe("2026-08-18");
     expect(WEB_CORE_VERSION).toBe("1.5.7");
     expect(MINIAPP_RELEASE_LABEL).toBe(
-      "小程序 v0.2.3 · 网页核心 v1.5.7",
+      "小程序 v0.2.4 · 网页核心 v1.5.7",
     );
     render(<AppHeader dataVersion="data-v1" />);
     expect(screen.getByText(MINIAPP_RELEASE_LABEL)).toBeInTheDocument();
@@ -34,12 +34,13 @@ describe("miniapp shell", () => {
 
   test("renders the calculator title without requesting identity", () => {
     render(<IndexPage />);
-    expect(screen.getByText("洛克对战计算器")).toBeInTheDocument();
+    expect(screen.getByText("洛克计算器 · S3季中")).toBeInTheDocument();
     expect(screen.queryByText("微信登录")).not.toBeInTheDocument();
   });
 
   test("exposes compact settings actions, common configs and data attribution", () => {
     const onImportCommonConfig = vi.fn();
+    const onTypeAnalysisChange = vi.fn();
     render(
       <AppHeader
         commonConfigCount={0}
@@ -48,6 +49,8 @@ describe("miniapp shell", () => {
         onImportCommonConfig={onImportCommonConfig}
         onMemoryChange={vi.fn()}
         onReset={vi.fn()}
+        onTypeAnalysisChange={onTypeAnalysisChange}
+        typeAnalysisEnabled
       />,
     );
 
@@ -61,6 +64,12 @@ describe("miniapp shell", () => {
       .toHaveAttribute("data-scroll-y", "true");
     expect(screen.getByRole("switch", { name: "配置记忆" }))
       .toHaveAttribute("aria-checked", "true");
+    const typeAnalysisSwitch = screen.getByRole("switch", {
+      name: "属性克制与打击面",
+    });
+    expect(typeAnalysisSwitch).toHaveAttribute("aria-checked", "true");
+    fireEvent.click(typeAnalysisSwitch);
+    expect(onTypeAnalysisChange).toHaveBeenCalledWith(false);
     expect(screen.getByText("常用精灵配置")).toBeInTheDocument();
     const importButton = screen.getByRole("button", {
       name: "导入PVP热门配置",
@@ -75,7 +84,7 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
     expect(screen.getByText(/1215583051/u)).toBeInTheDocument();
     expect(screen.getByText("当前版本")).toBeInTheDocument();
-    expect(screen.getByText("v0.2.3 · 更新于 2026-08-17"))
+    expect(screen.getByText("v0.2.4 · 更新于 2026-08-18"))
       .toBeInTheDocument();
   });
 

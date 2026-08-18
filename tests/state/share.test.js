@@ -203,6 +203,26 @@ describe("versioned share state", () => {
     });
   });
 
+  test("round trips bloodline magic selection and its standalone damage source", async () => {
+    const state = shareFixture();
+    state.directions.forward.selectedDamageSource = "bloodline";
+    state.directions.forward.context = {
+      ...state.directions.forward.context,
+      bloodlineMagicId: "photosynthetic-healing",
+      bloodlineMagicTriggered: true,
+    };
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.directions.forward).toMatchObject({
+      selectedDamageSource: "bloodline",
+      context: {
+        bloodlineMagicId: "photosynthetic-healing",
+        bloodlineMagicTriggered: true,
+      },
+    });
+  });
+
   test("rejects a modified checksum", async () => {
     const hash = await encodeShareState(shareFixture());
     const replacement = hash.endsWith("a") ? "b" : "a";
@@ -294,6 +314,54 @@ describe("versioned share state", () => {
     expect(decoded.sides.attacker.skills.four[1]).not.toHaveProperty(
       "totalDamage",
     );
+  });
+
+  test("round trips static and panel power overrides", async () => {
+    const state = shareFixture();
+    state.directions.forward.overrides = {
+      powerOverride: { mode: "static", value: 88 },
+    };
+    state.sides.attacker.skills.four[0] = {
+      skillId: "skill_a",
+      overrides: { powerOverride: { mode: "panel", value: 281 } },
+    };
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.directions.forward.overrides.powerOverride).toEqual({
+      mode: "static",
+      value: 88,
+    });
+    expect(decoded.sides.attacker.skills.four[0].overrides.powerOverride).toEqual({
+      mode: "panel",
+      value: 281,
+    });
+  });
+
+  test.each([
+    [{ mode: "panel", value: 87.5 }, "面板威力必须为整数"],
+    [{ mode: "static", value: 87.5 }, "静态威力必须为整数"],
+    [{ mode: "static", value: 10000 }, "威力必须在 0–9999"],
+    [{ mode: "base", value: 80 }, "威力口径无效"],
+  ])("rejects invalid power overrides", async (powerOverride, message) => {
+    const state = shareFixture();
+    state.directions.forward.overrides = { powerOverride };
+
+    await expect(encodeShareState(state)).rejects.toThrow(message);
+  });
+
+  test("keeps legacy actual overrides readable", async () => {
+    const state = shareFixture();
+    state.directions.forward.overrides = {
+      powerOverride: { mode: "actual", value: 87.5 },
+    };
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.directions.forward.overrides.powerOverride).toEqual({
+      mode: "actual",
+      value: 87.5,
+    });
   });
 
   test("round trips optional per-skill single memories without changing the v1 schema", async () => {

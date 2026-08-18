@@ -415,7 +415,7 @@ describe("calculateMatchup", () => {
     expect(result.formulaSteps).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          label: "相邻技能显示威力",
+          label: "相邻技能面板威力",
           input: {
             left: { name: "传动状态", power: 0 },
             right: { name: "面板二百", power: 200 },
@@ -480,7 +480,7 @@ describe("calculateMatchup", () => {
     expect(result.formulaSteps).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          label: "相邻技能显示威力",
+          label: "相邻技能面板威力",
           input: {
             left: { name: "传动状态", power: 0 },
             right: { name: "面板二百", power: 600 },
@@ -1487,6 +1487,141 @@ describe("calculateMatchup", () => {
     });
   });
 
+  test("adds Fan, Tailwind and Wind mark bonuses in one power zone", () => {
+    const fan = {
+      id: "skill_fan_additive",
+      name: "扇风",
+      type: "翼",
+      category: "physical",
+      basePower: 75,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const tailwind = {
+      id: "trait_tailwind_additive",
+      name: "顺风",
+      description: "若先于敌方攻击，本次技能威力+50%。",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, fan],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [tailwind.id] }
+          : spirit,
+      ),
+      traits: [tailwind],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", fan.id, [fan.id, null, null, null]),
+        },
+        marks: {
+          attacker: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "tailwind", stacks: 1 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: null, stacks: 0 },
+          },
+        },
+        directions: {
+          forward: { context: { actedBeforeEnemy: true } },
+        },
+      }),
+    ).forward.selectedResult;
+    const manualResult = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", fan.id, [fan.id, null, null, null]),
+        },
+        marks: {
+          attacker: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "tailwind", stacks: 1 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: null, stacks: 0 },
+          },
+        },
+        directions: {
+          forward: {
+            context: { actedBeforeEnemy: true },
+            overrides: { basePower: 100 },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.skillPower).toBe(165);
+    expect(manualResult.skillPower).toBe(220);
+    expect(
+      result.formulaSteps.find((step) => step.label === "技能威力百分比")?.input,
+    ).toEqual(expect.arrayContaining([0.5, 0.5, 0.2]));
+  });
+
+  test("adds Snowfield Hunt, Ice Soul and Momentum bonuses in one power zone", () => {
+    const snowfieldHunt = {
+      id: "skill_snowfield_hunt_additive",
+      name: "雪原狩猎",
+      type: "冰",
+      category: "physical",
+      basePower: 80,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const iceSoul = {
+      id: "trait_ice_soul_additive",
+      name: "冰雪魂魄",
+      description: "天气为暴风雪时，冰系技能威力+100%。",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, snowfieldHunt],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [iceSoul.id] }
+          : spirit,
+      ),
+      traits: [iceSoul],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", snowfieldHunt.id, [
+            snowfieldHunt.id,
+            null,
+            null,
+            null,
+          ]),
+        },
+        marks: {
+          attacker: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "momentum", stacks: 1 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: null, stacks: 0 },
+          },
+        },
+        directions: {
+          forward: { context: { blizzardWeather: true } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.skillPower).toBe(224);
+    expect(result.panelPower).toBe(224);
+    expect(
+      result.formulaSteps.find((step) => step.label === "技能威力百分比")?.input,
+    ).toEqual(expect.arrayContaining([0.5, 1, 0.3]));
+  });
+
   test("applies a direction fixed-power status bonus to every selected skill", () => {
     const input = battleInput({
       mode: "four",
@@ -1518,6 +1653,54 @@ describe("calculateMatchup", () => {
     expect(after[1].effectivePower - before[1].effectivePower).toBe(20);
   });
 
+  test("adds fixed power after a counter replacement and before percentage bonuses", () => {
+    const flashBurn = {
+      id: "skill_flash_burn_power_order",
+      name: "闪燃",
+      type: "火",
+      category: "physical",
+      basePower: 40,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, flashBurn],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", flashBurn.id, [
+            flashBurn.id,
+            null,
+            null,
+            null,
+          ]),
+        },
+        directions: {
+          forward: {
+            context: { counterTriggered: true },
+            overrides: {
+              fixedPowerAdd: 20,
+              skillPowerPercentAdds: [0.5],
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.skillPower).toBe(270);
+    expect(
+      result.formulaSteps.find((step) => step.label === "应对倍率")?.after,
+    ).toBe(160);
+    expect(
+      result.formulaSteps.find((step) => step.label === "固定威力增加")?.after,
+    ).toBe(180);
+    expect(
+      result.formulaSteps.find((step) => step.label === "技能威力百分比")?.after,
+    ).toBe(270);
+  });
+
   test("applies the active side's positive mark by stack and reports the settlement", () => {
     const before = calculateMatchup(snapshot, battleInput()).forward.selectedResult;
     const after = calculateMatchup(
@@ -1536,7 +1719,9 @@ describe("calculateMatchup", () => {
       }),
     ).forward.selectedResult;
 
-    expect(after.effectivePower).toBe(Math.round(before.effectivePower * 1.4));
+    expect(after.actualPower).toBe(Math.round(before.actualPower * 1.4));
+    expect(after.panelPower).toBe(before.panelPower);
+    expect(after.totalDamage).toBeGreaterThan(before.totalDamage);
     expect(after.markSettlements).toContainEqual(
       expect.objectContaining({
         markId: "tailwind",
@@ -2173,11 +2358,247 @@ describe("calculateMatchup", () => {
     const result = calculateMatchup(snapshot, input).forward.selectedResult;
     const labels = result.formulaSteps.map((step) => step.label);
 
-    expect(result.effectivePower).toBe(250);
-    expect(labels).toContain("游戏内显示威力");
+    expect(result.effectivePower).toBe(200);
+    expect(labels).toContain("手动面板威力");
     expect(labels).not.toContain("属性克制");
     expect(labels).not.toContain("攻防等级");
     expect(labels).not.toContain("其他威力乘区");
+  });
+
+  test("keeps automatic static, actual, and panel power aliases explicit", () => {
+    const result = calculateMatchup(snapshot, battleInput()).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      actualPower: 80,
+      effectivePower: 80,
+      panelPower: 80,
+      powerSource: "automatic",
+      staticPower: 80,
+      skillPower: 80,
+    });
+  });
+
+  test("manual static power includes status adjustments already and keeps panel multipliers", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            skillPowerPercentAdds: [0.5],
+            overrides: {
+              attackDefenseLevelMultiplier: 1.1,
+              fixedPowerAdd: 20,
+              otherPowerMultipliers: [1.5],
+              powerOverride: { mode: "static", value: 100 },
+              stabMultiplier: 1.25,
+              typeMultiplier: 2,
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      actualPower: 100,
+      panelPower: 413,
+      powerSource: "manual-static",
+      staticPower: 100,
+      skillPower: 100,
+      effectivePower: 413,
+    });
+    expect(result.formulaSteps.map((step) => step.label)).toContain(
+      "手动静态威力",
+    );
+  });
+
+  test("automatic static power follows fixed adjustments after a manual override is cleared", () => {
+    const automatic = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: { overrides: { fixedPowerAdd: 20 } },
+        },
+      }),
+    ).forward.selectedResult;
+    const manual = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            overrides: {
+              fixedPowerAdd: 20,
+              powerOverride: { mode: "static", value: 55 },
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(automatic.staticPower).toBe(100);
+    expect(manual.staticPower).toBe(55);
+    expect(manual.actualPower).toBe(55);
+  });
+
+  test("automatic static power follows status percentage bonuses", () => {
+    const base = calculateMatchup(snapshot, battleInput()).forward.selectedResult;
+    const boosted = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: { skillPowerPercentAdds: [0.5] },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(boosted.staticPower).toBe(120);
+    expect(boosted.actualPower).toBe(120);
+    expect(boosted.panelPower).toBeGreaterThan(base.panelPower);
+  });
+
+  test("manual panel power enters damage without reapplying any panel multiplier", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            skillPowerPercentAdds: [0.5],
+            overrides: {
+              attackDefenseLevelMultiplier: 1.8,
+              fixedPowerAdd: 20,
+              otherPowerMultipliers: [2],
+              powerOverride: { mode: "panel", value: 281 },
+              stabMultiplier: 1.25,
+              typeMultiplier: 2,
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      effectivePower: 281,
+      panelPower: 281,
+      powerSource: "manual-panel",
+    });
+    const labels = result.formulaSteps.map((step) => step.label);
+    expect(labels).toContain("手动面板威力");
+    expect(labels).not.toContain("本系");
+    expect(labels).not.toContain("属性克制");
+    expect(labels).not.toContain("攻防等级");
+    expect(labels).not.toContain("其他威力乘区");
+  });
+
+  test("manual static power still accepts later mark bonuses", () => {
+    const mode = "static";
+    const value = 88;
+    const baseInput = battleInput({
+      directions: {
+        forward: {
+          overrides: { powerOverride: { mode, value } },
+        },
+      },
+    });
+    const markedInput = battleInput({
+      directions: baseInput.directions,
+      marks: {
+        attacker: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: "tailwind", stacks: 2 },
+        },
+        defender: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: null, stacks: 0 },
+        },
+      },
+    });
+    const base = calculateMatchup(snapshot, baseInput).forward.selectedResult;
+    const marked = calculateMatchup(snapshot, markedInput).forward.selectedResult;
+
+    expect(marked.staticPower).toBe(base.staticPower);
+    expect(marked.actualPower).toBeGreaterThan(base.actualPower);
+    expect(marked.totalDamage).toBeGreaterThan(base.totalDamage);
+  });
+
+  test("manual panel power is not multiplied by a hidden mark bonus", () => {
+    const overrides = { powerOverride: { mode: "panel", value: 281 } };
+    const baseInput = battleInput({ directions: { forward: { overrides } } });
+    const markedInput = battleInput({
+      directions: baseInput.directions,
+      marks: {
+        attacker: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: "tailwind", stacks: 2 },
+        },
+        defender: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: null, stacks: 0 },
+        },
+      },
+    });
+    const base = calculateMatchup(snapshot, baseInput).forward.selectedResult;
+    const marked = calculateMatchup(snapshot, markedInput).forward.selectedResult;
+
+    expect(marked.effectivePower).toBe(base.effectivePower);
+    expect(marked.totalDamage).toBe(base.totalDamage);
+  });
+
+  test("new power override wins over every legacy manual power field", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            overrides: {
+              basePower: 123,
+              basePowerOverride: 124,
+              displayedPower: 300,
+              powerMode: "displayed",
+              powerOverride: { mode: "static", value: 90 },
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      actualPower: 90,
+      powerSource: "manual-static",
+      skillPower: 90,
+    });
+  });
+
+  test("power override keeps declared hit count and other non-power effects", () => {
+    const comboSkill = {
+      ...snapshot.skills[0],
+      description: "造成物理伤害，3连击。",
+      id: "skill_combo_override",
+      name: "覆盖连击",
+    };
+    const fixture = { ...snapshot, skills: [...snapshot.skills, comboSkill] };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: side("spirit_sonic_dog", comboSkill.id, [
+            {
+              hitCount: 3,
+              overrides: { powerOverride: { mode: "static", value: 90 } },
+              skillId: comboSkill.id,
+            },
+            null,
+            null,
+            null,
+          ]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      actualPower: 90,
+      hitCount: 3,
+      powerSource: "manual-static",
+    });
   });
 
   test("keeps fractional effective power until the damage numerator is rounded", () => {
@@ -2302,7 +2723,7 @@ describe("calculateMatchup", () => {
       result.formulaSteps.map((step) => [step.label, step]),
     );
 
-    expect(steps["显示威力"]).toMatchObject({
+    expect(steps["面板威力"]).toMatchObject({
       before: expect.any(Number),
       after: result.effectivePower,
     });
@@ -2399,6 +2820,29 @@ describe("calculateMatchup", () => {
     expect(
       result.formulaSteps.find((step) => step.label === "攻防等级"),
     ).toMatchObject({ input: 2.4 });
+  });
+
+  test("caps calculated attack and defense ability stages at positive and negative 99", () => {
+    const calculateAtStages = (attackLevelStage, defenseLevelStage) =>
+      calculateMatchup(
+        snapshot,
+        battleInput({
+          directions: {
+            forward: {
+              overrides: { attackLevelStage, defenseLevelStage },
+            },
+          },
+        }),
+      ).forward.selectedResult;
+
+    const capped = calculateAtStages(99, -99);
+    const overflow = calculateAtStages(100, -100);
+
+    expect(overflow.damage).toBe(capped.damage);
+    expect(overflow.effectivePower).toBe(capped.effectivePower);
+    expect(
+      overflow.formulaSteps.find((step) => step.label === "攻防等级"),
+    ).toMatchObject({ input: 20.8 });
   });
 
   test("uses explicit ability stages once and ignores the legacy combined multiplier", () => {
@@ -2747,7 +3191,7 @@ describe("calculateMatchup", () => {
       before: 288,
       after: 316.8,
     });
-    expect(steps["显示威力"]).toMatchObject({ before: 316.8, after: 317 });
+    expect(steps["面板威力"]).toMatchObject({ before: 316.8, after: 317 });
   });
 
   test("accepts the state-layer stab and type-effectiveness override names", () => {
@@ -3742,7 +4186,7 @@ describe("inherited penetration stacks", () => {
     expect(withStatus.choiceTraitSequence).toBeUndefined();
   });
 
-  test("戏耍把实际吸血量作为特性真伤加入总伤害", () => {
+  test("戏耍把蝙蝠实际吸血量作为特性真伤加入总伤害", () => {
     const trait = { id: "trait-clown", name: "戏耍" };
     const bat = {
       id: "skill-bat",
@@ -3913,6 +4357,61 @@ describe("inherited penetration stacks", () => {
     ).toEqual(expect.arrayContaining([0.5, 1, 0.3]));
   });
 
+  test("戏耍让休息回复按缺失生命直接显示特性真伤", () => {
+    const trait = { id: "trait-clown", name: "戏耍" };
+    const rest = {
+      id: "skill-rest-heal",
+      name: "休息回复",
+      type: "普通",
+      category: "status",
+      basePower: 0,
+      description: "自己回复30%生命。",
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      skills: [...snapshot.skills, rest],
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { reverse: { currentHp: 300 } },
+        sides: {
+          attacker: side("spirit_sonic_dog", rest.id, [rest.id, null, null, null]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      mainDamage: 0,
+      status: "exact",
+      totalDamage: 108,
+      traitDamage: 108,
+    });
+
+    const fullHpResult = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { reverse: { currentHp: 408 } },
+        sides: {
+          attacker: side("spirit_sonic_dog", rest.id, [rest.id, null, null, null]),
+        },
+      }),
+    ).forward.selectedResult;
+    expect(fullHpResult).toMatchObject({
+      status: "exact",
+      totalDamage: 0,
+      traitDamage: 0,
+    });
+    expect(fullHpResult.traitSettlements[0].text).toContain("溢出治疗不计伤害");
+  });
+
   test("戏耍把光合治愈拆成独立真伤，并与当前技能伤害合并", () => {
     const trait = { id: "trait-clown", name: "戏耍" };
     const fixture = {
@@ -3955,5 +4454,82 @@ describe("inherited penetration stacks", () => {
     input.directions.forward.selectedDamageSource = "bloodline";
     const selected = calculateMatchup(fixture, input).forward;
     expect(selected.selectedResult).toBe(selected.bloodlineResult);
+  });
+
+  test("贪得无厌根据当前生命和本次吸血计算后续物攻等级", () => {
+    const trait = { id: "trait-baron", name: "贪得无厌" };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { reverse: { currentHp: 400 } },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.postAttackEffects).toMatchObject({
+      attackLevelStageAdd: expect.any(Number),
+      source: "贪得无厌",
+    });
+    expect(result.traitSettlements).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        text: expect.stringContaining("后续物攻"),
+      }),
+    ]));
+  });
+
+  test("贪得无厌把直接回复的溢出生命换算为后续物攻等级", () => {
+    const trait = { id: "trait-baron", name: "贪得无厌" };
+    const rest = {
+      id: "skill-baron-rest",
+      name: "休息回复",
+      type: "普通",
+      category: "status",
+      basePower: 0,
+      description: "自己回复30%生命。",
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      skills: [...snapshot.skills, rest],
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { reverse: { currentHp: 408 } },
+        sides: {
+          attacker: side(
+            "spirit_sonic_dog",
+            rest.id,
+            [rest.id, null, null, null],
+          ),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      mainDamage: 0,
+      status: "exact",
+      totalDamage: 0,
+      postAttackEffects: {
+        attackLevelStageAdd: 5,
+        source: "贪得无厌",
+      },
+    });
+    expect(result.traitSettlements[0].text).toContain("溢出回复 122");
+    expect(result.traitSettlements[0].text).toContain("后续物攻 +5级（+50%）");
   });
 });

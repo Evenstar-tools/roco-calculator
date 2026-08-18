@@ -16,9 +16,7 @@ function createTypeAnalysis(snapshot, side, subjectName) {
     .map((traitId) => indexes.traits[traitId])
     .filter(Boolean);
   const skills = (side.skills?.four ?? [])
-    .map((entry) => typeof entry === "string"
-      ? entry
-      : entry?.skillId ?? entry?.id)
+    .map((entry) => typeof entry === "string" ? entry : entry?.skillId ?? entry?.id)
     .map((skillId) => indexes.skills[skillId])
     .filter(Boolean)
     .map((skill) => resolveWingExtensionSkill({ skill, traits }));

@@ -48,4 +48,20 @@ describe("恶魔男爵贪得无厌", () => {
       skill: { description: "造成物伤。" },
     }).attackLevelStageAdd).toBe(0);
   });
+
+  test("技能自带吸血和已获得的吸血能力参与同一次回复，但不重复加入基础50%", () => {
+    expect(resolveBaronGreed({
+      attackerCurrentHp: 500,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      mainDamage: 100,
+      persistentLifestealPercent: 100,
+      skill: { description: "造成物伤，并吸血100%。" },
+    })).toMatchObject({
+      attackLevelStageAdd: 10,
+      effectiveLifestealPercent: 250,
+      lifestealLevels: 15,
+      overflowHealing: 250,
+    });
+  });
 });

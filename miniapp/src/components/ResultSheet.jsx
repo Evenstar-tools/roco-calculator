@@ -105,6 +105,7 @@ export default function ResultSheet({
   selectedIndex,
   shareCompleteness = "full",
   showSkillConditions = false,
+  showTypeAnalysis = false,
   skillConditionContext,
   skillConditionDirection,
   skillConditionPresentation,
@@ -198,6 +199,7 @@ export default function ResultSheet({
                 onContextChange={onSkillConditionContextChange}
                 onDirectionChange={onSkillConditionDirectionChange}
                 presentation={skillConditionPresentation}
+                result={result}
                 skill={skillConditionSkill}
               />
             </ConditionSection>
@@ -301,15 +303,6 @@ export default function ResultSheet({
               {result.formulaSteps?.length ? (
                 <ResultFormulaAudit result={result} />
               ) : null}
-              {view?.typeAnalysis ? (
-                <ConditionSection
-                  className="condition-section--type-analysis"
-                  summary={view.typeAnalysis.subjectName}
-                  title="属性分析"
-                >
-                  <TypeAnalysisPanel analysis={view.typeAnalysis} />
-                </ConditionSection>
-              ) : null}
             </>
           ) : (
             <View
@@ -324,6 +317,15 @@ export default function ResultSheet({
               </Text>
             </View>
           )}
+          {showTypeAnalysis && view?.typeAnalysis ? (
+            <ConditionSection
+              className="condition-section--type-analysis"
+              summary={view.typeAnalysis.subjectName}
+              title="属性分析"
+            >
+              <TypeAnalysisPanel analysis={view.typeAnalysis} />
+            </ConditionSection>
+          ) : null}
           </View>
         </ScrollView>
         <Button

@@ -771,15 +771,15 @@ test("keeps the result rail and three steps readable at 1280px", async ({
   await expect(page.locator(".step-heading")).toHaveCount(0);
   await expect(page.locator(".stat-tile__label-text")).toHaveCount(12);
   await expect(page.locator(".stat-tile__label-text").first()).toBeVisible();
-  const powerSummary = page.locator(".skill-effect-card__power");
-  await expect(powerSummary.locator("strong")).toContainText("80");
+  const staticPower = page.getByRole("spinbutton", { name: "静态威力" });
+  await expect(staticPower).toHaveValue("80");
   await page
     .getByRole("checkbox", { name: "敌方本回合换精灵" })
     .check();
   await expect(
     page.locator("#single-skill-panel").getByText("80 + 100 = 180"),
   ).toBeVisible();
-  await expect(powerSummary.locator("strong")).toContainText("180");
+  await expect(staticPower).toHaveValue("180");
 
   const skillPicker = page.getByRole("combobox", { name: "选择技能" });
   await skillPicker.scrollIntoViewIfNeeded();
@@ -917,6 +917,9 @@ test("calculates Stone Lizard family's Skin Spikes as a selectable trait source"
   await expect(traitSource).toBeVisible();
   await expect(traitSource).toContainText("无·特性");
   await expect(traitSource).toContainText("50");
+  await expect(traitSource.getByTitle("固定特性伤害")).toContainText("刺肤");
+  expect(await traitSource.evaluate((row) => row.scrollWidth <= row.clientWidth))
+    .toBe(true);
   await traitSource.click();
   await expect(
     page.getByRole("group", {
@@ -929,8 +932,17 @@ test("calculates Stone Lizard family's Skin Spikes as a selectable trait source"
   });
   await hitCount.fill("3");
   await expect(hitCount).toHaveValue("3");
-  await expect(page.getByText("特性造成伤害", { exact: true })).toBeVisible();
+  await expect(page.getByText("特性", { exact: true })).toBeVisible();
   await expect(page.getByText("刺肤", { exact: true }).last()).toBeVisible();
+
+  await page.getByRole("button", { name: "精简版" }).click();
+  const compactTraitSource = page.getByRole("group", {
+    name: "攻击方特性伤害刺肤，当前选中",
+  });
+  await expect(compactTraitSource.getByTitle("固定特性伤害"))
+    .toContainText("威力 50");
+  expect(await compactTraitSource.evaluate((row) => row.scrollWidth <= row.clientWidth))
+    .toBe(true);
 });
 
 test("keeps Dimo-family trait stacks synchronized in both damage directions", async ({
@@ -984,7 +996,7 @@ test("derives Comet power from one shared, editable current-HP value", async ({
   await expect(percent).toHaveValue("100");
   await percent.fill("50");
   await expect(
-    page.getByRole("spinbutton", { name: "攻击方技能1威力" }),
+    page.getByRole("spinbutton", { name: "攻击方技能1静态威力" }),
   ).toHaveValue("140");
 
   await page.getByRole("button", { name: "按当前值输入" }).click();
@@ -1196,18 +1208,22 @@ test("recalculates current stacked and triggered traits without blocking results
   await page.getByRole("spinbutton", { name: "每层物攻" }).fill("50");
 
   await selectSpirit(page, "攻击方", "烈火守护");
-  const actualPower = page.locator(".skill-effect-card__power strong");
+  const staticPower = page.getByRole("spinbutton", { name: "静态威力" });
   const guardianBasePower = Number(
-    (await actualPower.textContent()).replace(/\D/g, ""),
+    await staticPower.inputValue(),
   );
+  const guardianBaseDamage = Number(await damage.textContent());
   await page
     .getByRole("spinbutton", { name: "己方火系技能次数" })
     .fill("3");
   await expect
     .poll(async () =>
-      Number((await actualPower.textContent()).replace(/\D/g, "")),
+      Number(await staticPower.inputValue()),
     )
-    .toBe(guardianBasePower + 30);
+    .toBe(guardianBasePower);
+  await expect
+    .poll(async () => Number(await damage.textContent()))
+    .toBeGreaterThan(guardianBaseDamage);
 
   await selectSpirit(page, "攻击方", "古卷执政官");
   const governorTrigger = page.getByRole("checkbox", {
@@ -1270,8 +1286,9 @@ test("persists single-skill state across reloads and isolates spirit switches", 
     .getByRole("checkbox", { name: "敌方本回合换精灵" })
     .check();
   await page
-    .getByRole("spinbutton", { name: "基础技能威力" })
+    .getByRole("spinbutton", { name: "静态威力" })
     .fill("137");
+  await page.getByRole("spinbutton", { name: "静态威力" }).press("Enter");
 
   await page.reload();
   await selectDefaultSpirits(page);
@@ -1283,7 +1300,7 @@ test("persists single-skill state across reloads and isolates spirit switches", 
     page.getByRole("checkbox", { name: "敌方本回合换精灵" }),
   ).toBeChecked();
   await expect(
-    page.getByRole("spinbutton", { name: "基础技能威力" }),
+    page.getByRole("spinbutton", { name: "静态威力" }),
   ).toHaveValue("137");
 
   await selectSpirit(page, "攻击方", "水灵");
@@ -1294,7 +1311,7 @@ test("persists single-skill state across reloads and isolates spirit switches", 
     page.getByRole("checkbox", { name: "敌方本回合换精灵" }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("spinbutton", { name: "基础技能威力" }),
+    page.getByRole("spinbutton", { name: "静态威力" }),
   ).not.toHaveValue("137");
 
   await selectSpirit(page, "攻击方", "音速犬");
@@ -1305,6 +1322,6 @@ test("persists single-skill state across reloads and isolates spirit switches", 
     page.getByRole("checkbox", { name: "敌方本回合换精灵" }),
   ).toBeChecked();
   await expect(
-    page.getByRole("spinbutton", { name: "基础技能威力" }),
+    page.getByRole("spinbutton", { name: "静态威力" }),
   ).toHaveValue("137");
 });

@@ -5,6 +5,7 @@ import { getSkillStatusEffectInputs } from "../../src/domain/skill-status-effect
 import { getTraitEffectInputs } from "../../src/domain/trait-effects.js";
 import { canonicalTraitControlKey } from "../../src/state/trait-values.js";
 import {
+  abilityLevelMultiplier,
   applyConfiguration,
   assertSnapshotReferences,
   createProductInitialState,
@@ -18,6 +19,13 @@ import {
   shareHashFromInput,
   updateMirroredTraitContext,
 } from "../../src/state/calculator-session.js";
+
+test("能力等级按正负九十九层封顶", () => {
+  expect(abilityLevelMultiplier(99, 0)).toBeCloseTo(10.9);
+  expect(abilityLevelMultiplier(100, 0)).toBeCloseTo(10.9);
+  expect(abilityLevelMultiplier(-99, 0)).toBeCloseTo(1 / 10.9);
+  expect(abilityLevelMultiplier(-100, 0)).toBeCloseTo(1 / 10.9);
+});
 
 const snapshot = {
   meta: { id: "s3-session", rulesVersion: "rules-v1" },
@@ -525,6 +533,46 @@ describe("calculator session", () => {
       hitCount: 2,
       overrides: { basePower: 123, powerMode: "base" },
     });
+  });
+
+  test("clears a temporary power override when selecting another single skill", () => {
+    const initialState = createProductInitialState(snapshot);
+    const state = {
+      ...initialState,
+      directions: {
+        ...initialState.directions,
+        forward: {
+          ...initialState.directions.forward,
+          overrides: {
+            ...initialState.directions.forward.overrides,
+            powerOverride: { mode: "static", value: 222 },
+          },
+        },
+      },
+      sides: {
+        ...initialState.sides,
+        attacker: {
+          ...initialState.sides.attacker,
+          skills: {
+            ...initialState.sides.attacker.skills,
+            single: { skillId: "skill-a" },
+          },
+          spiritId: "alpha",
+        },
+      },
+    };
+
+    const result = selectSingleSkill(state, {
+      direction: "forward",
+      side: "attacker",
+      skillId: "skill-b",
+      snapshot,
+    });
+
+    expect(result.state.directions.forward.overrides.powerOverride).toBeNull();
+    expect(
+      result.state.sides.attacker.skills.single.overrides.powerOverride,
+    ).toBeUndefined();
   });
 
   test.each([

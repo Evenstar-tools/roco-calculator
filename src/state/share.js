@@ -148,6 +148,43 @@ function assertJsonValue(value, path, ancestors = new Set()) {
   ancestors.delete(value);
 }
 
+function assertPowerOverride(overrides, path) {
+  if (!Object.hasOwn(overrides, "powerOverride")) return;
+  const powerOverride = overrides.powerOverride;
+  if (powerOverride === null) return;
+  if (
+    !hasExactKeys(powerOverride, ["mode", "value"]) ||
+    (powerOverride.mode !== "static" &&
+      powerOverride.mode !== "actual" &&
+      powerOverride.mode !== "panel")
+  ) {
+    throw new TypeError(`${path}.powerOverride 威力口径无效`);
+  }
+  if (
+    typeof powerOverride.value !== "number" ||
+    !Number.isFinite(powerOverride.value) ||
+    powerOverride.value < 0 ||
+    powerOverride.value > 9999
+  ) {
+    throw new TypeError(`${path}.powerOverride 威力必须在 0–9999`);
+  }
+  if (
+    powerOverride.mode === "actual" &&
+    Math.round(powerOverride.value * 1_000_000) / 1_000_000 !==
+      powerOverride.value
+  ) {
+    throw new TypeError(`${path}.powerOverride 旧版威力覆盖值最多 6 位小数`);
+  }
+  if (
+    (powerOverride.mode === "static" || powerOverride.mode === "panel") &&
+    !Number.isInteger(powerOverride.value)
+  ) {
+    throw new TypeError(
+      `${path}.powerOverride ${powerOverride.mode === "panel" ? "面板" : "静态"}威力必须为整数`,
+    );
+  }
+}
+
 function isFiniteNumberOrArray(value) {
   if (typeof value === "number") {
     return Number.isFinite(value);
@@ -194,6 +231,9 @@ function assertSkillInput(skill, path) {
         throw new TypeError(`${path}.${key} 无效`);
       }
       assertJsonValue(skill[key], `${path}.${key}`);
+      if (key === "overrides") {
+        assertPowerOverride(skill[key], `${path}.${key}`);
+      }
     }
   }
   if (Object.hasOwn(skill, "memoryBySkill")) {
@@ -220,6 +260,12 @@ function assertSkillInput(skill, path) {
             throw new TypeError(`${path}.memoryBySkill.${skillId}.${key} 无效`);
           }
           assertJsonValue(memory[key], `${path}.memoryBySkill.${skillId}.${key}`);
+          if (key === "overrides") {
+            assertPowerOverride(
+              memory[key],
+              `${path}.memoryBySkill.${skillId}.${key}`,
+            );
+          }
         }
       }
     }
@@ -321,7 +367,8 @@ function assertDirection(direction, path) {
   if (
     Object.hasOwn(direction, "selectedDamageSource") &&
     direction.selectedDamageSource !== "skill" &&
-    direction.selectedDamageSource !== "trait"
+    direction.selectedDamageSource !== "trait" &&
+    direction.selectedDamageSource !== "bloodline"
   ) {
     throw new TypeError(`${path}.selectedDamageSource 无效`);
   }
@@ -362,6 +409,7 @@ function assertDirection(direction, path) {
   }
   assertJsonValue(direction.context, `${path}.context`);
   assertJsonValue(direction.overrides, `${path}.overrides`);
+  assertPowerOverride(direction.overrides, `${path}.overrides`);
 }
 
 function assertShareState(state) {

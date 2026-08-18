@@ -1,6 +1,7 @@
 import { Text, View } from "@tarojs/components";
 import {
   buildResultFormulaAudit,
+  displayDamageCoefficient,
   displayFormulaNumber,
   displayLevelCoefficient,
 } from "../view-models/formula-audit.js";

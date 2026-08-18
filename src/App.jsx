@@ -20,7 +20,9 @@ import {
   isFirstRunGuideCompleted,
 } from "./state/first-run-guide.js";
 import {
+  readPowerDisplayMode,
   readTypeCoverageSetting,
+  writePowerDisplayMode,
   writeTypeCoverageSetting,
 } from "./state/display-settings.js";
 import {
@@ -110,6 +112,9 @@ function CalculatorWorkspace({ snapshot }) {
   const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
   const [dataSourceOpen, setDataSourceOpen] = useState(false);
   const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
+  const [powerDisplayMode, setPowerDisplayMode] = useState(() =>
+    readPowerDisplayMode(),
+  );
   const [typeCoverageEnabled, setTypeCoverageEnabled] = useState(() =>
     readTypeCoverageSetting(),
   );
@@ -743,7 +748,33 @@ function CalculatorWorkspace({ snapshot }) {
         calculation?.[selfDirection]?.results?.[index]?.hitCount,
       sproutStacks,
     });
+    const postAttackStageAdd = Math.max(
+      0,
+      Math.floor(Number(
+        calculation?.[selfDirection]?.results?.[index]
+          ?.postAttackEffects?.attackLevelStageAdd,
+      ) || 0),
+    );
     if (!resolution) {
+      if (postAttackStageAdd > 0) {
+        const currentOverrides =
+          latest.directions[selfDirection].overrides ?? {};
+        dispatch({
+          direction: selfDirection,
+          type: "direction/update",
+          value: {
+            overrides: {
+              attackLevelStage: clampStage(
+                Number(currentOverrides.attackLevelStage ?? 0) +
+                  postAttackStageAdd,
+              ),
+            },
+          },
+        });
+        setActiveDirection(selfDirection);
+        setToast(`贪得无厌：后续物攻 +${postAttackStageAdd * 10}%`);
+        return;
+      }
       if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) return;
       const sequence = buildChoiceSkillSequence({
         context,
@@ -776,7 +807,9 @@ function CalculatorWorkspace({ snapshot }) {
       operations.doublePositiveOwnBuffs && value > 0 ? value * 2 : value;
     const ownAttackStage = clampStage(
       doublePositive(
-        Number(selfOverrides.attackLevelStage ?? 0) + deltas.ownAttack,
+        Number(selfOverrides.attackLevelStage ?? 0) +
+          deltas.ownAttack +
+          postAttackStageAdd,
       ),
     );
     const ownDefenseStage = clampStage(
@@ -870,6 +903,9 @@ function CalculatorWorkspace({ snapshot }) {
           skillPowerPercentAddsBySlot: ownSkillPowerPercentAddsBySlot,
           hitCountAdd: ownHitCountAdd,
           hitCountPercentAdd: ownHitCountPercentAdd,
+          lifestealPercent:
+            Number(selfOverrides.lifestealPercent ?? 0) +
+            Number(operations.lifestealPercent ?? 0),
           refractionStatuses,
           ...(hasTransientDefenseStatus
             ? {
@@ -1034,6 +1070,9 @@ function CalculatorWorkspace({ snapshot }) {
       attackerHealth={
         activeDirection === "forward" ? attackerHealth : defenderHealth
       }
+      attackerLifestealPercent={
+        currentDirection.overrides?.lifestealPercent ?? 0
+      }
       attackerTrait={getTraitView(snapshot, activeAttackSpirit, "attacker")}
       carriedSkills={state.sides[activeAttackSideKey].skills.four
         .map((entry) => getSkill(snapshot, entry))
@@ -1043,15 +1082,6 @@ function CalculatorWorkspace({ snapshot }) {
       }
       defenderTrait={getTraitView(snapshot, activeDefenseSpirit, "defender")}
       hitCount={resultModel.selectedResult?.hitCount ?? currentDirection.hitCount}
-      manualPower={
-        currentDirection.overrides.powerMode === "displayed"
-          ? currentDirection.overrides.displayedPower ??
-            selectedSingleSkill?.basePower ??
-            0
-          : currentDirection.overrides.basePower ??
-            selectedSingleSkill?.basePower ??
-            0
-      }
       onHitCountChange={(hitCount) =>
         updateRememberedSingleDirection({
           hitCount: storedHitCount(
@@ -1086,16 +1116,10 @@ function CalculatorWorkspace({ snapshot }) {
           currentHpPercent,
         )
       }
-      onManualPowerChange={(power) =>
+      onPowerOverrideChange={(powerOverride) =>
         updateRememberedSingleDirection({
-          overrides:
-            currentDirection.overrides.powerMode === "displayed"
-              ? { displayedPower: power }
-              : { basePower: power },
+          overrides: { powerOverride },
         })
-      }
-      onPowerModeChange={(powerMode) =>
-        updateRememberedSingleDirection({ overrides: { powerMode } })
       }
       onSkillSelect={selectSingleSkill}
       onTraitContextChange={(key, value) => {
@@ -1104,7 +1128,8 @@ function CalculatorWorkspace({ snapshot }) {
       result={resultModel.selectedResult}
       selectedSkill={selectedSingleSkill}
       skills={activeAttackSkills}
-      powerMode={currentDirection.overrides.powerMode ?? "base"}
+      powerDisplayMode={powerDisplayMode}
+      powerOverride={currentDirection.overrides.powerOverride ?? null}
       traitContext={currentDirection.context}
     />
   ) : null;
@@ -1131,7 +1156,10 @@ function CalculatorWorkspace({ snapshot }) {
     currentDirection.selectedDamageSource === "trait" &&
     calculation[activeDirection].traitResult
       ? "trait"
-      : "skill";
+      : currentDirection.selectedDamageSource === "bloodline" &&
+          calculation[activeDirection].bloodlineResult
+        ? "bloodline"
+        : "skill";
 
   const fourEditor = configurationReady ? (
     <FourSkillEditor
@@ -1140,6 +1168,9 @@ function CalculatorWorkspace({ snapshot }) {
       activeSkillIndex={currentDirection.selectedSkillIndex}
       attackerHealth={attackerHealth}
       attackerHitCount={state.directions.forward.hitCount}
+      attackerLifestealPercent={
+        state.directions.forward.overrides?.lifestealPercent ?? 0
+      }
       attackerName={attacker.fullName}
       attackerResults={calculation.forward.results}
       attackerSkillChoices={attackerSkillChoices}
@@ -1160,6 +1191,9 @@ function CalculatorWorkspace({ snapshot }) {
           : getTraitView(snapshot, defender, "defender")
       }
       defenderHitCount={state.directions.reverse.hitCount}
+      defenderLifestealPercent={
+        state.directions.reverse.overrides?.lifestealPercent ?? 0
+      }
       defenderHealth={defenderHealth}
       defenderName={defender.fullName}
       defenderResults={calculation.reverse.results}
@@ -1243,11 +1277,17 @@ function CalculatorWorkspace({ snapshot }) {
           ),
         });
       }}
-      onSkillPowerChange={(side, index, power) =>
+      onSkillPowerChange={(side, index, powerOverride) =>
         updateFourSkillEntry(side, index, {
-          overrides: { basePower: power },
+          overrides: { powerOverride },
         })
       }
+      onSkillPowerClear={(side, index) =>
+        updateFourSkillEntry(side, index, {
+          overrides: { powerOverride: null },
+        })
+      }
+      powerDisplayMode={powerDisplayMode}
     />
   ) : null;
 
@@ -1440,10 +1480,14 @@ function CalculatorWorkspace({ snapshot }) {
     },
     displaySettings: {
       onClose: () => setDisplaySettingsOpen(false),
+      onPowerDisplayModeChange: (mode) => {
+        setPowerDisplayMode(writePowerDisplayMode(undefined, mode));
+      },
       onTypeCoverageChange: (enabled) => {
         setTypeCoverageEnabled(writeTypeCoverageSetting(undefined, enabled));
       },
       open: displaySettingsOpen,
+      powerDisplayMode,
       typeCoverageEnabled,
     },
     mobileResult: {
@@ -1799,8 +1843,26 @@ function CalculatorWorkspace({ snapshot }) {
                 singleSkillContent={singleEditor}
               />
               <AdvancedOptions
+                bloodlineMagicId={
+                  currentDirection.context?.bloodlineMagicId ?? "none"
+                }
+                bloodlineMagicTriggered={
+                  currentDirection.context?.bloodlineMagicTriggered === true
+                }
                 finalMultiplier={currentDirection.finalDamageMultiplier}
                 marks={state.marks}
+                onBloodlineMagicChange={(bloodlineMagicId, triggered) =>
+                  updateDirection({
+                    ...(!triggered &&
+                    currentDirection.selectedDamageSource === "bloodline"
+                      ? { selectedDamageSource: "skill" }
+                      : {}),
+                    context: {
+                      bloodlineMagicId,
+                      bloodlineMagicTriggered: triggered,
+                    },
+                  })
+                }
                 onFinalMultiplierChange={(finalDamageMultiplier) =>
                   updateDirection({ finalDamageMultiplier })
                 }
@@ -1833,6 +1895,9 @@ function CalculatorWorkspace({ snapshot }) {
         {configurationReady ? (
           <div className="result-column">
             <ResultRail
+              onBloodlineResultFocus={() =>
+                updateDirection({ selectedDamageSource: "bloodline" })
+              }
               onCurrentHpChange={(currentHp) => updateDirection({ currentHp })}
               onCurrentHpPercentChange={(currentHpPercent) =>
                 updateDirection({ context: { currentHpPercent } })

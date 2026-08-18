@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button, Input, Text, View } from "@tarojs/components";
 import { ConditionField } from "./ConditionField.jsx";
 import { getVisibleSkillInputs } from "../view-models/skills.js";
@@ -23,9 +24,28 @@ export default function SkillConditionEditor({
   onContextChange,
   onDirectionChange,
   presentation,
+  result,
   skill,
 }) {
   const inputs = presentation?.inputs ?? getVisibleSkillInputs(skill, context);
+  const savedMode = direction.overrides?.powerOverride?.mode;
+  const [powerMode, setPowerMode] = useState(
+    savedMode === "panel" ? "panel" : "static",
+  );
+
+  useEffect(() => {
+    setPowerMode(savedMode === "panel" ? "panel" : "static");
+  }, [savedMode, skill?.id]);
+
+  const powerOverride = direction.overrides?.powerOverride;
+  const manualPower = powerOverride?.mode === powerMode
+    ? powerOverride.value
+    : null;
+  const automaticPower = powerMode === "panel"
+    ? result?.panelPower ?? result?.effectivePower
+    : result?.staticPower ?? result?.skillPower ?? skill?.basePower;
+  const powerValue = manualPower ?? automaticPower ?? "";
+  const powerLabel = powerMode === "panel" ? "面板威力" : "静态威力";
 
   return (
     <View aria-label="技能条件" className="condition-editor">
@@ -60,26 +80,68 @@ export default function SkillConditionEditor({
         />
       ))}
       <View className="condition-editor__manual">
-        <View className="condition-editor__field condition-editor__field--number">
-          <Text className="condition-editor__label">手动威力</Text>
-          <Input
-            aria-label="手动威力"
-            className="condition-editor__input"
-            inputMode="numeric"
-            min="0"
-            onInput={(event) => {
-              const raw = eventValue(event);
-              onDirectionChange({
-                overrides: {
-                  basePower:
-                    raw === "" ? undefined : numericValue(event, 0),
-                },
-              });
-            }}
-            placeholder="自动"
-            type="number"
-            value={direction.overrides?.basePower ?? ""}
-          />
+        <View className="condition-editor__power">
+          <View aria-label="威力口径" className="condition-editor__power-modes">
+            {[
+              ["static", "静态威力"],
+              ["panel", "面板威力"],
+            ].map(([mode, label]) => (
+              <Button
+                aria-pressed={powerMode === mode}
+                className={powerMode === mode
+                  ? "condition-editor__power-mode condition-editor__power-mode--active"
+                  : "condition-editor__power-mode"}
+                key={mode}
+                onClick={() => setPowerMode(mode)}
+              >
+                {label}
+              </Button>
+            ))}
+          </View>
+          <View className="condition-editor__field condition-editor__field--number">
+            <View className="condition-editor__power-heading">
+              <Text className="condition-editor__label">{powerLabel}</Text>
+              {powerOverride ? (
+                <Button
+                  aria-label="恢复自动威力"
+                  className="condition-editor__power-reset"
+                  onClick={() => onDirectionChange({
+                    overrides: {
+                      basePower: undefined,
+                      powerOverride: null,
+                    },
+                  })}
+                >
+                  恢复自动
+                </Button>
+              ) : (
+                <Text className="condition-editor__power-status">自动</Text>
+              )}
+            </View>
+            <Input
+              aria-label={powerLabel}
+              className="condition-editor__input"
+              inputMode="numeric"
+              min="0"
+              max="9999"
+              onInput={(event) => {
+                const raw = eventValue(event);
+                onDirectionChange({
+                  overrides: {
+                    basePower: undefined,
+                    powerOverride: raw === ""
+                      ? null
+                      : {
+                          mode: powerMode,
+                          value: Math.round(numericValue(event, 0, 9999)),
+                        },
+                  },
+                });
+              }}
+              type="number"
+              value={powerValue}
+            />
+          </View>
         </View>
         <View className="condition-editor__field condition-editor__field--number">
           <Text className="condition-editor__label">连击数</Text>

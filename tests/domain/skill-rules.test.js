@@ -559,7 +559,7 @@ describe("resolveSkillPower", () => {
     });
   });
 
-  test("registers all 99 reviewed dynamic skills in the current snapshot", () => {
+  test("registers all 100 reviewed dynamic skills in the current snapshot", () => {
     expect(
       snapshot.skills.filter((entry) => getSkillEffectRule(entry)).length,
     ).toBe(100);
@@ -593,7 +593,7 @@ describe("resolveSkillPower", () => {
       if (resolution.status === "exact") {
         expect(
           Number.isFinite(Number(resolution.value)),
-          `${reviewedSkill.name} 的实际威力`,
+          `${reviewedSkill.name} 的静态威力`,
         ).toBe(true);
         if (resolution.hitCount !== undefined) {
           expect(

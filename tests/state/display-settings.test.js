@@ -1,6 +1,9 @@
 import { describe, expect, test } from "vitest";
 import {
+  POWER_DISPLAY_STORAGE_KEY,
+  readPowerDisplayMode,
   readTypeCoverageSetting,
+  writePowerDisplayMode,
   writeTypeCoverageSetting,
 } from "../../src/state/display-settings.js";
 
@@ -25,5 +28,40 @@ describe("type coverage display setting", () => {
 
   test("treats unexpected stored values as off", () => {
     expect(readTypeCoverageSetting(createStorage("broken"))).toBe(false);
+  });
+});
+
+describe("power display setting", () => {
+  test("defaults to static power", () => {
+    expect(readPowerDisplayMode(createStorage())).toBe("static");
+  });
+
+  test("persists panel power", () => {
+    const values = new Map();
+    const storage = {
+      getItem: (key) => values.get(key) ?? null,
+      setItem: (key, value) => values.set(key, value),
+    };
+
+    expect(writePowerDisplayMode(storage, "panel")).toBe("panel");
+    expect(values.get(POWER_DISPLAY_STORAGE_KEY)).toBe("panel");
+    expect(readPowerDisplayMode(storage)).toBe("panel");
+  });
+
+  test.each(["skill", "actual"])("maps the old %s value to static power", (value) => {
+    const storage = {
+      getItem: (key) => key === POWER_DISPLAY_STORAGE_KEY ? value : null,
+      setItem: () => {},
+    };
+    expect(readPowerDisplayMode(storage)).toBe("static");
+  });
+
+  test("falls back to static power for an unsupported value", () => {
+    const storage = {
+      getItem: (key) => key === POWER_DISPLAY_STORAGE_KEY ? "broken" : null,
+      setItem: () => {},
+    };
+    expect(readPowerDisplayMode(storage)).toBe("static");
+    expect(writePowerDisplayMode(storage, "broken")).toBe("static");
   });
 });

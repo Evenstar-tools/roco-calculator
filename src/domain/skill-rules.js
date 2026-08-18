@@ -121,15 +121,15 @@ function resolveAdjacentDisplayedPower(skill, context, operation) {
   const right = adjacentDisplayedPower(context, "Right");
   const missing = [];
   if (left === null) {
-    missing.push(numberInput("adjacentLeftDisplayedPowerOverride", "左侧游戏内威力"));
+    missing.push(numberInput("adjacentLeftDisplayedPowerOverride", "左侧面板威力"));
   }
   if (right === null) {
-    missing.push(numberInput("adjacentRightDisplayedPowerOverride", "右侧游戏内威力"));
+    missing.push(numberInput("adjacentRightDisplayedPowerOverride", "右侧面板威力"));
   }
   if (missing.length > 0) {
     return needsInput(
       missing,
-      "需要两侧相邻技能的当前游戏内显示威力",
+      "需要两侧相邻技能的当前面板威力",
     );
   }
 
@@ -138,7 +138,7 @@ function resolveAdjacentDisplayedPower(skill, context, operation) {
     : (left + right) / 3;
   return exact(value, [
     {
-      label: "相邻技能显示威力",
+      label: "相邻技能面板威力",
       input: {
         left: {
           name: context.adjacentLeftSkillName ?? "左侧技能",

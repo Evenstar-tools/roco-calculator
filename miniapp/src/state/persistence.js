@@ -6,6 +6,8 @@ import { sanitizePublicContext } from "../share/context-schema.js";
 export const MINIAPP_STATE_KEY = "rock-calculator.miniapp.state.v1";
 export const MINIAPP_MEMORY_ENABLED_KEY =
   "rock-calculator.miniapp.memory-enabled.v1";
+export const MINIAPP_TYPE_ANALYSIS_ENABLED_KEY =
+  "rock-calculator.miniapp.type-analysis-enabled.v1";
 export const MINIAPP_PERSISTENCE_SCHEMA_VERSION = 2;
 
 const SKILL_NUMBER_KEYS = ["basePowerOverride", "fixedPowerAdd"];
@@ -108,6 +110,23 @@ function sanitizeSlotValues(value, allowLists) {
   return Object.keys(sanitized).length ? sanitized : undefined;
 }
 
+function sanitizePowerOverride(value) {
+  if (!isRecord(value)) return undefined;
+  const mode = value.mode === "static" || value.mode === "panel"
+    ? value.mode
+    : undefined;
+  const power = finiteNumber(value.value);
+  if (
+    !mode ||
+    !Number.isInteger(power) ||
+    power < 0 ||
+    power > 9999
+  ) {
+    return undefined;
+  }
+  return { mode, value: power };
+}
+
 function sanitizeOverrides(value) {
   if (!isRecord(value)) return {};
   const sanitized = {};
@@ -136,6 +155,8 @@ function sanitizeOverrides(value) {
   if (value.powerMode === "base" || value.powerMode === "displayed") {
     sanitized.powerMode = value.powerMode;
   }
+  const powerOverride = sanitizePowerOverride(value.powerOverride);
+  if (powerOverride) sanitized.powerOverride = powerOverride;
   if (isRecord(value.context)) {
     const context = sanitizeContext(value.context);
     if (Object.keys(context).length) sanitized.context = context;
@@ -449,6 +470,14 @@ export function createPersistence({ storage }) {
     }
   }
 
+  function getTypeAnalysisEnabled() {
+    try {
+      return storage.get(MINIAPP_TYPE_ANALYSIS_ENABLED_KEY) === true;
+    } catch {
+      return false;
+    }
+  }
+
   return {
     clear() {
       storage.remove(MINIAPP_STATE_KEY);
@@ -505,6 +534,8 @@ export function createPersistence({ storage }) {
 
     getMemoryEnabled,
 
+    getTypeAnalysisEnabled,
+
     setMemoryEnabled(enabled) {
       if (typeof enabled !== "boolean") {
         throw new TypeError("配置记忆开关必须是布尔值");
@@ -513,6 +544,14 @@ export function createPersistence({ storage }) {
       if (!enabled) {
         storage.remove(MINIAPP_STATE_KEY);
       }
+      return enabled;
+    },
+
+    setTypeAnalysisEnabled(enabled) {
+      if (typeof enabled !== "boolean") {
+        throw new TypeError("属性分析开关必须是布尔值");
+      }
+      storage.set(MINIAPP_TYPE_ANALYSIS_ENABLED_KEY, enabled);
       return enabled;
     },
   };

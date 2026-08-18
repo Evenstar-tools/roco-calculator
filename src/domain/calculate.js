@@ -1266,11 +1266,11 @@ function calculateSkillResult({
   const powerAfterLevels = powerAfterWeather * attackDefenseLevelMultiplier;
   const automaticPanelPower = powerAfterLevels * otherPowerMultiplier;
   const calculationPower = powerOverride.mode === "panel"
-    ? powerOverride.value * stabMultiplier
+    ? powerOverride.value
     : traitAdjustedPower * stabMultiplier * typeMultiplier * weatherMultiplier *
       attackDefenseLevelMultiplier * otherPowerMultiplier;
   const panelPower = powerOverride.mode === "panel"
-    ? Math.round(calculationPower)
+    ? powerOverride.value
     : Math.round(automaticPanelPower);
   const displayedPower = panelPower;
   const damageReductionMultiplier =
@@ -1423,7 +1423,7 @@ function calculateSkillResult({
   const powerFormulaSteps = panelPowerOverride
     ? [
         formulaStep(
-          "游戏内显示威力",
+          "手动面板威力",
           powerOverride.value,
           powerOverride.value,
           panelPower,
@@ -1498,7 +1498,7 @@ function calculateSkillResult({
           "direction-state",
         ),
         formulaStep(
-          "显示威力",
+          "面板威力",
           { method: "round" },
           calculationPower,
           panelPower,
@@ -1609,7 +1609,7 @@ function calculateSkillResult({
           "direction-state",
         ),
         formulaStep(
-          "显示威力",
+          "面板威力",
           { method: "round" },
           calculationPower,
           displayedPower,

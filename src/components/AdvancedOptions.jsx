@@ -4,6 +4,10 @@ import {
   MARK_DEFINITIONS,
   markDefinition,
 } from "../domain/marks.js";
+import {
+  BLOODLINE_MAGIC_OPTIONS,
+  getBloodlineMagicOption,
+} from "../domain/bloodline-magic.js";
 
 function numericValue(value, fallback = 0) {
   const next = Number(value);
@@ -43,6 +47,18 @@ function displayLevelCoefficient(coefficient, level = 60) {
   return `${numerator / divisor}/${denominator / divisor}`;
 }
 
+function displayDamageCoefficient(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return "—";
+  const numerator = numeric * 41;
+  const roundedNumerator = Math.round(numerator);
+  const displayedNumerator =
+    Math.abs(numerator - roundedNumerator) < 0.00001
+      ? roundedNumerator
+      : displayNumber(numerator, 6);
+  return `${displayedNumerator}/41`;
+}
+
 function stepByLabel(result, label) {
   return result?.formulaSteps?.find((step) => step.label === label);
 }
@@ -60,13 +76,12 @@ export function buildFormulaAudit(result) {
   const fixedPower = stepByLabel(result, "固定威力增加");
   const markFixedPower = stepByLabel(result, "印记固定威力");
   const traitFixedPower = stepByLabel(result, "特性固定威力");
-  const percentPower = stepByLabel(result, "技能威力百分比");
   const sameType = stepByLabel(result, "本系");
   const type = stepByLabel(result, "属性克制");
   const weather = stepByLabel(result, "天气");
   const levels = stepByLabel(result, "攻防等级");
   const other = stepByLabel(result, "其他威力乘区");
-  const displayPower = stepByLabel(result, "显示威力");
+  const displayPower = stepByLabel(result, "面板威力");
   const damage = stepByLabel(result, "等级系数与攻防比");
   const settlement = stepByLabel(result, "减伤、连击与最终倍率");
   const additional = stepByLabel(result, "星陨追加伤害");
@@ -84,14 +99,18 @@ export function buildFormulaAudit(result) {
     { label: "其他", value: other?.input },
   ].filter((item) => Number.isFinite(Number(item.value)));
 
-  const percentAdds = Array.isArray(percentPower?.input)
-    ? percentPower.input.reduce((sum, value) => sum + (Number(value) || 0), 0)
+  const percentAdds = Array.isArray(result.staticPowerPercentAdds)
+    ? result.staticPowerPercentAdds.reduce(
+        (sum, value) => sum + (Number(value) || 0),
+        0,
+      )
     : 0;
   const hitCount = Math.max(
     1,
     Math.floor(Number(settlementInput.hitCount ?? result.hitCount) || 1),
   );
   const additionalDamage = Number(result.additionalDamage) || 0;
+  const traitDamage = Number(result.traitDamage) || 0;
 
   return {
     skillName: result.skillName,
@@ -105,6 +124,7 @@ export function buildFormulaAudit(result) {
       markFixed: Number(markFixedPower?.input) || 0,
       traitFixed: Number(traitFixedPower?.input) || 0,
       percentAdds,
+      static: result.staticPower ?? sameType?.before ?? displayPower?.before,
       effective: sameType?.before ?? displayPower?.before,
     },
     formulaPower: {
@@ -134,6 +154,7 @@ export function buildFormulaAudit(result) {
         settlementInput.oneHitAfterFinal ?? settlement?.before,
       hitCount,
       additionalDamage,
+      traitDamage,
       value: result.totalDamage,
     },
     weather:
@@ -175,6 +196,44 @@ function Operator({ children }) {
 }
 
 export function FormulaAudit({ result }) {
+  if (result?.sourceKind === "bloodline") {
+    const healingStep = result.formulaSteps?.find(
+      (step) => step.label === "血脉魔法回复",
+    );
+    const traitStep = result.formulaSteps?.find(
+      (step) => step.label === "戏耍特性伤害",
+    );
+    const actualHealing = Number(traitStep?.input?.actualHealing) || 0;
+    const requestedHealing = Number(traitStep?.input?.requestedHealing) || 0;
+
+    return (
+      <section className="formula-audit">
+        <header>
+          <strong>伤害计算过程</strong>
+          <span>{result.skillName}</span>
+        </header>
+        <FormulaRow title="光合治愈" tone="power">
+          <AuditChip
+            label="最大生命 × 50%"
+            tone="power"
+            value={displayNumber(healingStep?.output ?? requestedHealing)}
+          />
+          <Operator>→</Operator>
+          <AuditChip
+            label="实际回复"
+            tone="result"
+            value={displayNumber(actualHealing)}
+          />
+        </FormulaRow>
+        <FormulaRow title="戏耍真伤" tone="total">
+          <AuditChip label="实际回复" tone="total" value={displayNumber(actualHealing)} />
+          <Operator>=</Operator>
+          <AuditChip label="结果" tone="result" value={displayNumber(result.totalDamage)} />
+        </FormulaRow>
+      </section>
+    );
+  }
+
   const audit = buildFormulaAudit(result);
   if (!audit) {
     return (
@@ -199,11 +258,11 @@ export function FormulaAudit({ result }) {
         <span>{audit.skillName}</span>
       </header>
 
-      <FormulaRow title="技能威力" tone="power">
+      <FormulaRow title="静态威力" tone="power">
         {Number.isFinite(Number(power.base)) ? (
           <AuditChip label="基础" tone="power" value={displayNumber(power.base)} />
         ) : (
-          <AuditChip label="规则值" tone="power" value={displayNumber(power.effective)} />
+          <AuditChip label="规则值" tone="power" value={displayNumber(power.static)} />
         )}
         {Number.isFinite(Number(power.conditional)) &&
         Number(power.conditional) !== Number(power.base) ? (
@@ -214,8 +273,6 @@ export function FormulaAudit({ result }) {
         ) : null}
         {[
           ["技能固定", power.fixed],
-          ["印记固定", power.markFixed],
-          ["特性固定", power.traitFixed],
         ].map(([label, value]) =>
           Number(value) !== 0 ? (
             <span className="formula-audit__term" key={label}>
@@ -235,11 +292,11 @@ export function FormulaAudit({ result }) {
           </>
         ) : null}
         <Operator>=</Operator>
-        <AuditChip label="结果" tone="result" value={displayNumber(power.effective)} />
+        <AuditChip label="结果" tone="result" value={displayNumber(power.static)} />
       </FormulaRow>
 
-      <FormulaRow title="显示威力" tone="display">
-        <AuditChip label="技能" tone="display" value={displayNumber(power.effective)} />
+      <FormulaRow title="面板威力" tone="display">
+        <AuditChip label="结算前威力" tone="display" value={displayNumber(power.effective)} />
         {audit.formulaPower.factors
           .filter((factor) => Math.abs(Number(factor.value) - 1) > 1e-10)
           .map((factor) => (
@@ -256,7 +313,7 @@ export function FormulaAudit({ result }) {
         <AuditChip label="公式值" tone="display" value={displayNumber(audit.formulaPower.internal)} />
         <Operator>→</Operator>
         <span className="formula-audit__rounding">四舍五入</span>
-        <AuditChip label="界面值" tone="result" value={displayNumber(audit.formulaPower.displayed)} />
+        <AuditChip label="面板威力" tone="result" value={displayNumber(audit.formulaPower.displayed)} />
       </FormulaRow>
 
       <FormulaRow title="每段伤害" tone="one-hit">
@@ -306,6 +363,16 @@ export function FormulaAudit({ result }) {
           <>
             <Operator>+</Operator>
             <AuditChip label="星陨追加" tone="total" value={displayNumber(total.additionalDamage)} />
+          </>
+        ) : null}
+        {total.traitDamage > 0 ? (
+          <>
+            <Operator>+</Operator>
+            <AuditChip
+              label="戏耍真伤"
+              tone="total"
+              value={displayNumber(total.traitDamage)}
+            />
           </>
         ) : null}
         <Operator>=</Operator>
@@ -403,8 +470,11 @@ function SideMarks({ label, marks, onChange, side, tone }) {
 }
 
 export function AdvancedOptions({
+  bloodlineMagicId = "none",
+  bloodlineMagicTriggered = false,
   finalMultiplier,
   marks,
+  onBloodlineMagicChange = () => {},
   onFinalMultiplierChange,
   onMarkChange,
   onRainTurnsChange,
@@ -414,6 +484,7 @@ export function AdvancedOptions({
   result,
 }) {
   const [open, setOpen] = useState(false);
+  const bloodlineMagic = getBloodlineMagicOption(bloodlineMagicId);
 
   return (
     <section className={`advanced-options${open ? " is-open" : ""}`}>
@@ -446,6 +517,48 @@ export function AdvancedOptions({
               <span>%</span>
             </span>
           </label>
+          <fieldset className="bloodline-magic-field">
+            <legend>
+              血脉魔法 <small>给进攻方使用</small>
+            </legend>
+            <div className="bloodline-magic-field__controls">
+              <select
+                aria-label="血脉魔法"
+                onChange={(event) =>
+                  onBloodlineMagicChange(event.target.value, false)
+                }
+                value={bloodlineMagic.id}
+              >
+                {BLOODLINE_MAGIC_OPTIONS.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+              <label className="bloodline-magic-field__trigger">
+                <input
+                  aria-label={`使用${bloodlineMagic.name}`}
+                  checked={bloodlineMagicTriggered && bloodlineMagic.id !== "none"}
+                  disabled={bloodlineMagic.id === "none"}
+                  onChange={(event) =>
+                    onBloodlineMagicChange(
+                      bloodlineMagic.id,
+                      event.target.checked,
+                    )
+                  }
+                  type="checkbox"
+                />
+                使用
+              </label>
+            </div>
+            <small>
+              {bloodlineMagic.implemented
+                ? bloodlineMagic.note
+                : bloodlineMagic.id === "none"
+                  ? "未使用血脉魔法"
+                  : "暂不参与伤害计算"}
+            </small>
+          </fieldset>
           <div className="mark-config">
             <SideMarks
               label="进攻方"

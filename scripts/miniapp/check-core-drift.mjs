@@ -22,8 +22,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留贪得无厌结算中的物攻等级说明",
   }),
   "src/domain/calculate.js": Object.freeze({
-    mirrorHash: "f9e8aa41c0abf003159a1eac0a16d1fdbac218318084729bee1c1f838a4249bc",
-    reason: "保留 v1.5.7 后已验收的显示威力结算补丁",
+    mirrorHash: "e2cabef1f8580879f913839807abf1dcbe879416d64b8ade24a43e5a96e653a3",
+    reason: "保留 v1.5.7 后已验收的静态威力与面板威力结算补丁",
   }),
   "src/domain/marks.js": Object.freeze({
     mirrorHash: "7ae356e5f9623674c6834494843e36781c932145b1ddddf24dd4146347545e99",
@@ -34,8 +34,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留 v1.5.7 后已验收的威力覆盖语义",
   }),
   "src/domain/skill-rules.js": Object.freeze({
-    mirrorHash: "c3c0b96d10ab39facbc351fea290c69d239ecc97db8dff204822b835d9b19952",
-    reason: "保留相邻技能显示威力的已验收文案与语义",
+    mirrorHash: "7f5c2385ee37c89c98408316e8b3156d36c9d0ee375accce4186b9c341bd6cd4",
+    reason: "保留相邻技能面板威力与静态威力覆盖的已验收语义",
   }),
   "src/state/calculator-session.js": Object.freeze({
     mirrorHash: "b297cccc2e1761d43ec6bf0d0f77873d4b44c389ec010ebe1dfb93fc4766e696",
