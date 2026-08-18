@@ -7,9 +7,13 @@ function eventValue(event) {
 function numericValue(event, minimum = 0, maximum) {
   const numeric = Number(eventValue(event));
   const safe = Number.isFinite(numeric) ? numeric : minimum;
+  return clampNumeric(safe, minimum, maximum);
+}
+
+function clampNumeric(value, minimum = 0, maximum) {
   return Math.min(
     maximum ?? Number.POSITIVE_INFINITY,
-    Math.max(minimum, safe),
+    Math.max(minimum, value),
   );
 }
 
@@ -31,8 +35,10 @@ export function ConditionField({ className, input, onChange, value }) {
         )}
         onClick={() => onChange(value !== true)}
       >
-        <Text>{input.label}</Text>
-        <Text>{value === true ? "已开启" : "未开启"}</Text>
+        <Text className="condition-editor__toggle-label">{input.label}</Text>
+        <Text className="condition-editor__toggle-state">
+          {value === true ? "已开启" : "未开启"}
+        </Text>
       </Button>
     );
   }
@@ -63,21 +69,60 @@ export function ConditionField({ className, input, onChange, value }) {
     );
   }
 
+  const minimum = input.min ?? 0;
+  const maximum = input.max;
+  const step = Number(input.step) > 0 ? Number(input.step) : 1;
+  const numericCurrent = Number(value ?? input.defaultValue ?? minimum);
+  const current = clampNumeric(
+    Number.isFinite(numericCurrent) ? numericCurrent : minimum,
+    minimum,
+    maximum,
+  );
+  const decreaseDisabled = current <= minimum;
+  const increaseDisabled = maximum !== undefined && current >= maximum;
+
   return (
     <View className="condition-editor__field condition-editor__field--number">
       <Text className="condition-editor__label">{input.label}</Text>
-      <Input
-        aria-label={input.label}
-        className={classes("condition-editor__input", className)}
-        inputMode="numeric"
-        max={input.max}
-        min={input.min ?? 0}
-        onInput={(event) =>
-          onChange(numericValue(event, input.min ?? 0, input.max))
-        }
-        type="number"
-        value={value ?? input.defaultValue ?? ""}
-      />
+      <View className="condition-editor__number-stepper">
+        <Button
+          aria-label={`${input.label}减少`}
+          className={classes(
+            "condition-editor__step-button",
+            decreaseDisabled && "condition-editor__step-button--disabled",
+          )}
+          disabled={decreaseDisabled}
+          hoverClass="condition-editor__step-button--pressed"
+          onClick={() => onChange(clampNumeric(current - step, minimum, maximum))}
+        >
+          −
+        </Button>
+        <Input
+          aria-label={input.label}
+          className={classes("condition-editor__input", className)}
+          inputMode="numeric"
+          max={maximum}
+          min={minimum}
+          onInput={(event) =>
+            onChange(numericValue(event, minimum, maximum))
+          }
+          step={step}
+          type="number"
+          value={value ?? input.defaultValue ?? ""}
+        />
+        <Button
+          aria-label={`${input.label}增加`}
+          className={classes(
+            "condition-editor__step-button",
+            increaseDisabled && "condition-editor__step-button--disabled",
+          )}
+          disabled={increaseDisabled}
+          hoverClass="condition-editor__step-button--pressed"
+          onClick={() => onChange(clampNumeric(current + step, minimum, maximum))}
+        >
+          ＋
+        </Button>
+      </View>
     </View>
   );
 }

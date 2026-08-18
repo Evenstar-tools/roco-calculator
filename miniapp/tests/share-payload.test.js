@@ -4,7 +4,9 @@ import { createInitialState } from "../src/shared/state/defaults.js";
 import {
   createShareMessage,
   decodeSharePayload,
+  decodeSharePayloadResult,
   encodeSharePayload,
+  encodeSharePayloadWithMeta,
 } from "../src/share/payload.js";
 
 const statValues = [60, 59, 58, 57, 56, 55];
@@ -116,7 +118,11 @@ function createState(snapshot) {
     },
     currentHp: 110,
     hitCount: 2,
-    overrides: { basePower: 90 },
+    overrides: {
+      attackLevelStage: 2,
+      basePower: 90,
+      defenseLevelStage: -1,
+    },
     reduction: 0.75,
     selectedSkillIndex: 1,
   };
@@ -194,7 +200,11 @@ describe("mini program share payload", () => {
           context: { currentHpPercent: 80 },
           currentHp: 110,
           hitCount: 2,
-          overrides: { basePower: 90 },
+          overrides: {
+            attackLevelStage: 2,
+            basePower: 90,
+            defenseLevelStage: -1,
+          },
           reduction: 0.75,
           selectedSkillIndex: 1,
         },
@@ -387,6 +397,71 @@ describe("mini program share payload", () => {
     expect(encodeSharePayload(state).length).toBeLessThan(900);
   });
 
+  test("reports full and reduced share completeness", () => {
+    const snapshot = createSnapshot();
+    const full = encodeSharePayloadWithMeta(createState(snapshot));
+
+    expect(full.encoded).toBe(encodeSharePayload(createState(snapshot)));
+    expect(full.completeness).toBe("full");
+
+    const oversized = createState(snapshot);
+    oversized.sides.attacker.skills.four = Array.from(
+      { length: 7 },
+      (_, index) => ({
+        context: {
+          attackerHpPercent: 10 + index,
+          counterTriggered: true,
+          enemyEnergy: 20 + index,
+          flightMode: "hits",
+          skillUseCount: 10 + index,
+        },
+        hitCount: 90 + index,
+        overrides: { basePower: 4000 + index },
+        skillId: index % 2 ? "skill-b" : "skill-a",
+      }),
+    );
+    const reduced = encodeSharePayloadWithMeta(oversized);
+
+    expect(reduced.encoded.length).toBeLessThan(900);
+    expect(["reduced", "minimal"]).toContain(reduced.completeness);
+    expect(
+      decodeSharePayloadResult(reduced.encoded, snapshot).completeness,
+    ).toBe(reduced.completeness);
+  });
+
+  test("returns structured valid, repaired, and invalid decode results", () => {
+    const snapshot = createSnapshot();
+    const valid = decodeSharePayloadResult(
+      encodeSharePayload(createState(snapshot)),
+      snapshot,
+    );
+    const repaired = decodeSharePayloadResult(
+      encodeFixture({
+        a: { s: "spirit-a" },
+        d: { s: "spirit-b" },
+        m: "single",
+        v: 1,
+      }),
+      snapshot,
+    );
+    const invalid = decodeSharePayloadResult("not_valid!", snapshot);
+
+    expect(valid).toMatchObject({
+      completeness: "full",
+      status: "valid",
+    });
+    expect(valid.state.sides.attacker.spiritId).toBe("spirit-a");
+    expect(repaired).toMatchObject({
+      completeness: "full",
+      status: "repaired",
+    });
+    expect(invalid).toEqual({
+      completeness: "minimal",
+      state: null,
+      status: "invalid",
+    });
+  });
+
   test("creates a safe bounded page route and public result title", () => {
     const snapshot = createSnapshot();
     const state = createState(snapshot);
@@ -395,6 +470,7 @@ describe("mini program share payload", () => {
         attackerName: "烈焰兽",
         defenderName: "潮汐兽",
         selectedResult: {
+          hpPercent: 44.7,
           skillName: "连环火花",
           totalDamage: 188,
         },
@@ -403,7 +479,9 @@ describe("mini program share payload", () => {
       state,
     );
 
-    expect(message.title).toBe("烈焰兽 → 潮汐兽｜连环火花 188 伤害");
+    expect(message.title).toBe(
+      "烈焰兽 → 潮汐兽｜连环火花 188伤害（44.7% HP）",
+    );
     expect(message.path).toMatch(
       /^\/pages\/index\/index\?share=[A-Za-z0-9_-]+$/u,
     );
@@ -415,5 +493,29 @@ describe("mini program share payload", () => {
         snapshot,
       ),
     ).toMatchObject({ mode: "four" });
+  });
+
+  test("keeps the actively shared calculation direction", () => {
+    const snapshot = createSnapshot();
+    const message = createShareMessage(
+      {
+        attackerName: "潮汐兽",
+        defenderName: "烈焰兽",
+        selectedResult: {
+          hpPercent: 20,
+          skillName: "潮汐冲击",
+          totalDamage: 80,
+        },
+        status: "exact",
+      },
+      createState(snapshot),
+      "reverse",
+    );
+    const decoded = decodeSharePayloadResult(
+      message.path.split("?share=")[1],
+      snapshot,
+    );
+
+    expect(decoded.direction).toBe("reverse");
   });
 });

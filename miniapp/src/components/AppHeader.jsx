@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Button, ScrollView, Text, View } from "@tarojs/components";
-import { MINIAPP_RELEASE_LABEL } from "../version.js";
+import {
+  MINIAPP_RELEASE_LABEL,
+  MINIAPP_UPDATE_DATE,
+  MINIAPP_VERSION,
+} from "../version.js";
 
 export default function AppHeader({
   commonConfigCount = 0,
@@ -75,6 +79,7 @@ export default function AppHeader({
               </Button>
             </View>
             <ScrollView className="settings-sheet__body" scrollY>
+              <View className="settings-sheet__body-content">
               <View className="settings-sheet__row">
                 <View className="settings-sheet__copy">
                   <Text className="settings-sheet__label">配置记忆</Text>
@@ -140,6 +145,14 @@ export default function AppHeader({
                 <Text className="settings-sheet__description">
                   使用体验、功能优化或 Bug 反馈：QQ 1215583051
                 </Text>
+              </View>
+              <View className="settings-sheet__divider" />
+              <View className="settings-sheet__source">
+                <Text className="settings-sheet__label">当前版本</Text>
+                <Text className="settings-sheet__description">
+                  v{MINIAPP_VERSION} · 更新于 {MINIAPP_UPDATE_DATE}
+                </Text>
+              </View>
               </View>
             </ScrollView>
           </View>

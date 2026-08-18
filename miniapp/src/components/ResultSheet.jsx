@@ -5,13 +5,18 @@ import {
   Text,
   View,
 } from "@tarojs/components";
+import { useState } from "react";
 import {
   clampResultPercent,
   resultTone,
 } from "../view-models/result-presentation.js";
 import ResultFormulaAudit from "./ResultFormulaAudit.jsx";
 import ResultActionPanel from "./ResultActionPanel.jsx";
+import ConditionSection from "./ConditionSection.jsx";
+import SkillConditionEditor from "./SkillConditionEditor.jsx";
 import SkillResultRows from "./SkillResultRows.jsx";
+import SharePreviewSheet from "./SharePreviewSheet.jsx";
+import TypeAnalysisPanel from "./TypeAnalysisPanel.jsx";
 
 function settlementText(entry) {
   return [entry?.name ?? entry?.label, entry?.text ?? entry?.summary]
@@ -90,14 +95,25 @@ export default function ResultSheet({
   onClose,
   onApplyAction,
   onActionControlChange,
+  onSkillConditionContextChange,
+  onSkillConditionDirectionChange,
+  onSelectBloodline,
   onSelectSkill,
   onSelectTrait,
   onTraitHitCountChange,
   open,
   selectedIndex,
+  shareCompleteness = "full",
+  showSkillConditions = false,
+  skillConditionContext,
+  skillConditionDirection,
+  skillConditionPresentation,
+  skillConditionSkill,
   traitDamageHitCount = 1,
   view,
 }) {
+  const [sharePreviewOpen, setSharePreviewOpen] = useState(false);
+
   if (!open) return null;
 
   const exact = view?.status === "exact";
@@ -152,6 +168,7 @@ export default function ResultSheet({
           scrollY
           showScrollbar
         >
+          <View className="result-sheet__scroll-content">
           {exact ? (
             <ResultSummary
               damagePercent={damagePercent}
@@ -169,6 +186,22 @@ export default function ResultSheet({
             onApplyAction={onApplyAction}
             onControlChange={onActionControlChange}
           />
+          {showSkillConditions ? (
+            <ConditionSection
+              className="condition-section--skill-parameters"
+              summary={skillConditionSkill?.name ?? "未选择技能"}
+              title="技能参数"
+            >
+              <SkillConditionEditor
+                context={skillConditionContext}
+                direction={skillConditionDirection}
+                onContextChange={onSkillConditionContextChange}
+                onDirectionChange={onSkillConditionDirectionChange}
+                presentation={skillConditionPresentation}
+                skill={skillConditionSkill}
+              />
+            </ConditionSection>
+          ) : null}
           {exact ? (
             <>
               {view?.rows?.length > 1 ? (
@@ -224,6 +257,26 @@ export default function ResultSheet({
                   </View>
                 </View>
               ) : null}
+              {view?.bloodlineResult ? (
+                <View className="result-sheet__trait-result">
+                  <Button
+                    aria-label="选择血脉魔法伤害结果"
+                    aria-pressed={view.selectedDamageSource === "bloodline"}
+                    className={[
+                      "result-sheet__trait-select",
+                      view.selectedDamageSource === "bloodline"
+                        ? "result-sheet__trait-select--selected"
+                        : "",
+                    ].filter(Boolean).join(" ")}
+                    onClick={onSelectBloodline}
+                  >
+                    <Text>血脉魔法</Text>
+                    <Text>
+                      {view.bloodlineResult.skillName} · {view.bloodlineResult.totalDamage}
+                    </Text>
+                  </Button>
+                </View>
+              ) : null}
               {(result.markSettlements?.length || result.traitSettlements?.length) ? (
                 <View className="result-sheet__audit-group">
                   <Text className="result-sheet__audit-title">结算明细</Text>
@@ -248,6 +301,15 @@ export default function ResultSheet({
               {result.formulaSteps?.length ? (
                 <ResultFormulaAudit result={result} />
               ) : null}
+              {view?.typeAnalysis ? (
+                <ConditionSection
+                  className="condition-section--type-analysis"
+                  summary={view.typeAnalysis.subjectName}
+                  title="属性分析"
+                >
+                  <TypeAnalysisPanel analysis={view.typeAnalysis} />
+                </ConditionSection>
+              ) : null}
             </>
           ) : (
             <View
@@ -262,14 +324,22 @@ export default function ResultSheet({
               </Text>
             </View>
           )}
+          </View>
         </ScrollView>
         <Button
-          aria-label="分享当前计算"
+          aria-label="预览并分享"
           className="result-sheet__share"
-          openType="share"
+          hoverClass="button-hover"
+          onClick={() => setSharePreviewOpen(true)}
         >
-          分享当前计算
+          预览并分享
         </Button>
+        <SharePreviewSheet
+          completeness={shareCompleteness}
+          onClose={() => setSharePreviewOpen(false)}
+          open={sharePreviewOpen}
+          view={view}
+        />
       </View>
     </View>
   );

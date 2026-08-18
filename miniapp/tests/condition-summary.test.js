@@ -2,12 +2,13 @@ import { describe, expect, test } from "vitest";
 import { createConditionSummary } from "../src/view-models/condition-summary.js";
 
 describe("createConditionSummary", () => {
-  test("counts only active skill, trait, mark and battle values", () => {
+  test("counts battle-wide values without mixing in current skill parameters", () => {
     const state = {
       directions: {
         forward: {
           context: {
             counterTriggered: true,
+            "trait.a.battle": true,
             weatherRainTurns: 2,
           },
           currentHp: 300,
@@ -51,6 +52,12 @@ describe("createConditionSummary", () => {
               canonicalKey: "trait.a.activation",
               defaultValue: false,
             },
+            {
+              canonicalKey: "trait.a.battle",
+              defaultValue: false,
+              id: "trait.a.battle",
+              scope: "battle",
+            },
           ],
           ownerSide: "attacker",
         },
@@ -58,16 +65,16 @@ describe("createConditionSummary", () => {
       },
     });
 
-    expect(summary.count).toBe(7);
+    expect(summary.count).toBe(6);
     expect(summary.labels).toEqual(expect.arrayContaining([
-      "触发应对",
       "雨天 2 回合",
       "目标 HP 300",
       "减伤 20%",
       "终伤 ×1.2",
-      "特性 1",
+      "特性 2",
       "印记 1",
     ]));
+    expect(summary.labels).not.toContain("触发应对");
   });
 
   test("reports the empty default state without a fake three-item count", () => {

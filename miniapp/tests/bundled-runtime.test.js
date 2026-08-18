@@ -43,7 +43,7 @@ describe("bundled miniapp runtime", () => {
         (spirit) => spirit.id === "spirit_db5a2cb398dc0385",
       )?.imageUrl,
     ).toBe(
-      "https://patchwiki.biligame.com/images/rocom/3/3c/jksy80nru0voaobly2uguh0rtydx2wa.png",
+      "https://patchwiki.biligame.com/images/rocom/d/de/n2a74bd4dvdud8b4t4819y9md4t811z.png",
     );
   });
 

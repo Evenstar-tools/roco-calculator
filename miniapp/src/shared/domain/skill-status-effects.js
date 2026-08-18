@@ -22,6 +22,22 @@ const numberInput = (key, label, min, max, defaultValue) => ({
 });
 
 const STATUS_EFFECTS = Object.freeze({
+  贪婪: {
+    operations(context) {
+      return { lifestealPercent: stackedLifestealPercent(10, context) };
+    },
+  },
+  等价交换: {
+    inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
+    operations(context) {
+      return {
+        lifestealPercent: context.defenseCounterSucceeded === true
+          ? stackedLifestealPercent(5, context)
+          : 0,
+      };
+    },
+    requiresCounter: true,
+  },
   热身运动: { ownHitCountAdd: 3 },
   芳香诱引: { ownHitCountAdd: 2 },
   羽翼庇护: {
@@ -414,6 +430,11 @@ function integerInput(value, min, max, fallback = 0) {
   const numeric = Number(value);
   const normalized = Number.isFinite(numeric) ? Math.floor(numeric) : fallback;
   return Math.min(max, Math.max(min, normalized));
+}
+
+function stackedLifestealPercent(baseLayers, context) {
+  const sproutStacks = integerInput(context?.sproutStacks, 0, 99, 0);
+  return (baseLayers + sproutStacks) * 10;
 }
 
 function normalizeDeltas(deltas = {}) {

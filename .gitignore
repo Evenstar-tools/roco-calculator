@@ -9,6 +9,7 @@ public/data/runtime.json
 coverage/
 playwright-report/
 test-results/
+artifacts/
 .vite/
 tmp/
 .worktrees/

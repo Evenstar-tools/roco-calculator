@@ -112,6 +112,21 @@ function createSnapshot() {
         name: "友谊满溢",
         type: "普通",
       },
+      {
+        basePower: 0,
+        category: "status",
+        id: "greed",
+        name: "贪婪",
+        type: "恶",
+      },
+      {
+        basePower: 0,
+        category: "defense",
+        description: "减伤90%，应对攻击：自己获得50%吸血。",
+        id: "equivalent-exchange",
+        name: "等价交换",
+        type: "恶",
+      },
     ],
     traits: [],
     typeChart: { matrix: [[1]], types: ["普通"] },
@@ -119,6 +134,44 @@ function createSnapshot() {
 }
 
 describe("shared battle activation", () => {
+  test("stacks lifesteal from Greed and applies Baron post-attack stages", () => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.skills.four = ["greed", null, null, null];
+    state.marks.attacker.positive = { id: "sprout", stacks: 1 };
+
+    const greed = applyBattleActivation({
+      calculation: { forward: { results: [] } },
+      side: "attacker",
+      skillIndex: 0,
+      snapshot,
+      state,
+    });
+    expect(greed.state.directions.forward.overrides.lifestealPercent).toBe(110);
+
+    greed.state.sides.attacker.skills.four = ["scratch", null, null, null];
+    const baron = applyBattleActivation({
+      calculation: {
+        forward: {
+          results: [{
+            postAttackEffects: {
+              attackLevelStageAdd: 2,
+              source: "贪得无厌",
+            },
+          }],
+        },
+      },
+      side: "attacker",
+      skillIndex: 0,
+      snapshot,
+      state: greed.state,
+    });
+    expect(baron.applied).toBe(true);
+    expect(baron.state.directions.forward.overrides.attackLevelStage).toBe(2);
+  });
+
   test("copies the opponent positive ability stages when Balance triggers", () => {
     const state = createInitialState(createSnapshot());
     state.directions.forward.overrides = {

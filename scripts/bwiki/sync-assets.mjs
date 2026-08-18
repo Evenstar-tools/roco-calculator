@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import Jimp from "jimp";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname, "../..");
 const ELEMENT_SLUGS = {
@@ -36,6 +37,8 @@ export function collectAssetPlan(snapshot) {
     id: spirit.id,
     name: spirit.fullName,
     sourceUrl: spirit.asset?.sourceUrl,
+    sourceTitle: spirit.asset?.sourceTitle,
+    sourceSha1: spirit.asset?.sourceSha1,
     localFile: `/assets/spirits/${spirit.id}${extensionFromUrl(spirit.asset?.sourceUrl)}`,
   }));
   const elements = Object.entries(snapshot.meta?.assetSources?.elements ?? {}).map(
@@ -89,6 +92,22 @@ export function readImageDimensions(buffer) {
   throw new Error("无法识别素材尺寸");
 }
 
+export async function optimizeSpiritImage(buffer, maxDimension = 128) {
+  const { width, height } = readImageDimensions(buffer);
+  if (Math.max(width, height) <= maxDimension) return buffer;
+  const scale = maxDimension / Math.max(width, height);
+  const targetWidth = Math.max(1, Math.round(width * scale));
+  const targetHeight = Math.max(1, Math.round(height * scale));
+  const image = await Jimp.read(buffer);
+  image.resize(targetWidth, targetHeight, Jimp.RESIZE_BICUBIC);
+  return new Promise((resolve, reject) => {
+    image.getBuffer(Jimp.MIME_PNG, (error, output) => {
+      if (error) reject(error);
+      else resolve(output);
+    });
+  });
+}
+
 export function resolvePublicAssetPath(localFile) {
   const publicRoot = path.resolve(PROJECT_ROOT, "public");
   const target = path.resolve(publicRoot, String(localFile).replace(/^[/\\]+/u, ""));
@@ -98,7 +117,7 @@ export function resolvePublicAssetPath(localFile) {
   return target;
 }
 
-async function download(item) {
+async function download(item, transform) {
   if (!item.sourceUrl) throw new Error(`素材缺少 BWIKI URL：${item.id}`);
   const response = await fetch(item.sourceUrl, {
     headers: {
@@ -107,7 +126,8 @@ async function download(item) {
     },
   });
   if (!response.ok) throw new Error(`素材下载失败：HTTP ${response.status} ${item.sourceUrl}`);
-  const buffer = Buffer.from(await response.arrayBuffer());
+  const sourceBuffer = Buffer.from(await response.arrayBuffer());
+  const buffer = transform ? await transform(sourceBuffer) : sourceBuffer;
   const dimensions = readImageDimensions(buffer);
   return {
     ...item,
@@ -132,10 +152,10 @@ async function runPool(items, worker, concurrency = 12) {
   return results;
 }
 
-async function syncGroup(items, directory) {
+async function syncGroup(items, directory, transform) {
   await mkdir(directory, { recursive: true });
   return runPool(items, async (item) => {
-    const downloaded = await download(item);
+    const downloaded = await download(item, transform);
     const target = resolvePublicAssetPath(item.localFile);
     await writeFile(target, downloaded.buffer);
     const { buffer, ...manifestEntry } = downloaded;
@@ -147,7 +167,11 @@ export async function syncAssets(snapshotPath = path.join(PROJECT_ROOT, "public/
   const snapshot = JSON.parse(await readFile(snapshotPath, "utf8"));
   const plan = collectAssetPlan(snapshot);
   const [spirits, elements] = await Promise.all([
-    syncGroup(plan.spirits, path.join(PROJECT_ROOT, "public/assets/spirits")),
+    syncGroup(
+      plan.spirits,
+      path.join(PROJECT_ROOT, "public/assets/spirits"),
+      optimizeSpiritImage,
+    ),
     syncGroup(plan.elements, path.join(PROJECT_ROOT, "public/assets/elements")),
   ]);
   const missing = [

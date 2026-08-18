@@ -1,9 +1,13 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
+import BattleAdvancedEditor from "../src/components/BattleAdvancedEditor.jsx";
 import SkillSlots from "../src/components/SkillSlots.jsx";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
-import { selectDamageResult } from "../src/view-models/calculation.js";
+import {
+  createCalculationView,
+  selectDamageResult,
+} from "../src/view-models/calculation.js";
 
 function snapshotFixture() {
   const raceStats = {
@@ -70,6 +74,55 @@ describe("mini-program desktop feature parity", () => {
     })).toEqual({
       selectedDamageSource: "trait",
       selectedResult: trait,
+    });
+  });
+
+  test("selects bloodline damage as the active result source", () => {
+    const skill = { skillName: "抓挠", totalDamage: 30 };
+    const bloodline = { skillName: "戏耍·光合治愈", totalDamage: 50 };
+
+    expect(selectDamageResult({
+      bloodlineResult: bloodline,
+      rows: [skill],
+      selectedDamageSource: "bloodline",
+      selectedIndex: 0,
+      traitResult: null,
+    })).toEqual({
+      selectedDamageSource: "bloodline",
+      selectedResult: bloodline,
+    });
+  });
+
+  test("exposes desktop bloodline magic choices in advanced conditions", () => {
+    const onChange = vi.fn();
+    render(
+      <BattleAdvancedEditor
+        direction={{ context: {}, finalDamageMultiplier: 1, reduction: 1 }}
+        onChange={onChange}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "展开高级参数" }));
+    fireEvent.click(screen.getByRole("button", { name: "选择光合治愈" }));
+    expect(onChange).toHaveBeenCalledWith({
+      context: {
+        bloodlineMagicId: "photosynthetic-healing",
+        bloodlineMagicTriggered: false,
+      },
+    });
+    expect(screen.getByText("当前仅光合治愈参与伤害结算"))
+      .toBeInTheDocument();
+  });
+
+  test("keeps desktop type analysis data in the mini-program result view", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    const view = createCalculationView(snapshot, store.getState(), "forward");
+
+    expect(view.typeAnalysis).toMatchObject({
+      subjectName: "测试攻方",
+      defense: expect.any(Object),
+      offense: expect.any(Object),
     });
   });
 
@@ -141,19 +194,14 @@ describe("mini-program desktop feature parity", () => {
       .toBeInTheDocument();
   });
 
-  test("edits both sides ability stages from the battle-state sheet", () => {
+  test("keeps ability stages on the main workspace instead of duplicating them in the battle sheet", () => {
     const snapshot = snapshotFixture();
     const store = createCalculatorStore(snapshot);
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
     fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
-    fireEvent.click(screen.getByRole("button", { name: "攻击方攻击提高一级" }));
-    fireEvent.click(screen.getByRole("button", { name: "防守方防御降低一级" }));
-
-    expect(store.getState().directions.forward.overrides).toMatchObject({
-      attackLevelStage: 1,
-      defenseLevelStage: -1,
-    });
+    expect(screen.queryByLabelText("能力等级")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("当前计算能力等级")).toBeInTheDocument();
   });
 
   test("edits the active calculation ability stages from the main workspace", () => {
@@ -173,5 +221,30 @@ describe("mini-program desktop feature parity", () => {
       attackLevelStage: 1,
       defenseLevelStage: -1,
     });
+  });
+
+  test("caps active calculation ability stages at positive and negative 99", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    const editor = screen.getByLabelText("当前计算能力等级");
+    const increase = within(editor).getByRole("button", {
+      name: "当前攻击等级提高一级",
+    });
+    const decrease = within(editor).getByRole("button", {
+      name: "当前防御等级降低一级",
+    });
+    for (let index = 0; index < 100; index += 1) {
+      fireEvent.click(increase);
+      fireEvent.click(decrease);
+    }
+
+    expect(store.getState().directions.forward.overrides).toMatchObject({
+      attackLevelStage: 99,
+      defenseLevelStage: -99,
+    });
+    expect(increase).toBeDisabled();
+    expect(decrease).toBeDisabled();
   });
 });

@@ -40,10 +40,12 @@ export function getSkill(snapshot, entry) {
   ) ?? null;
 }
 
-export function getSkillInputs(skill) {
+export function getSkillInputs(skill, extraInputs = []) {
   const inputs = [
-    ...(skill?.inputs ?? getSkillEffectInputs(skill)),
+    ...(skill?.inputs ?? []),
+    ...getSkillEffectInputs(skill),
     ...getSkillStatusEffectInputs(skill),
+    ...extraInputs,
   ];
   const seen = new Set();
   return inputs.filter((input) => {
@@ -54,8 +56,8 @@ export function getSkillInputs(skill) {
   });
 }
 
-export function getVisibleSkillInputs(skill, context = {}) {
-  return getSkillInputs(skill).filter((input) => {
+export function getVisibleSkillInputs(skill, context = {}, extraInputs = []) {
+  return getSkillInputs(skill, extraInputs).filter((input) => {
     const condition = input.visibleWhen ?? input.when;
     if (!condition) return true;
     const key = condition.id ?? condition.contextKey ?? condition.key;

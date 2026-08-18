@@ -16,6 +16,33 @@ function displayNumber(value, digits = 4) {
   return Number(numeric.toFixed(digits)).toString();
 }
 
+function greatestCommonDivisor(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+  return a || 1;
+}
+
+function displayLevelCoefficient(coefficient, level = 60) {
+  const numericCoefficient = Number(coefficient);
+  const numericLevel = Number(level);
+  if (!Number.isFinite(numericCoefficient)) return "—";
+  if (!Number.isInteger(numericLevel)) {
+    return displayNumber(numericCoefficient, 6);
+  }
+
+  const numerator = numericLevel * 9 + 200;
+  const denominator = 820;
+  if (Math.abs(numericCoefficient - numerator / denominator) > 0.0000005) {
+    return displayNumber(numericCoefficient, 6);
+  }
+
+  const divisor = greatestCommonDivisor(numerator, denominator);
+  return `${numerator / divisor}/${denominator / divisor}`;
+}
+
 function stepByLabel(result, label) {
   return result?.formulaSteps?.find((step) => step.label === label);
 }
@@ -89,6 +116,7 @@ export function buildFormulaAudit(result) {
       attack: damageInput.attackerStat,
       power: damageInput.calculationPower ?? displayPower?.before,
       coefficient: damageInput.coefficient,
+      level: damageInput.level,
       beforeRound: damageInput.unroundedNumerator ?? damage?.before,
       afterRound: damageInput.roundedNumerator,
     },
@@ -236,7 +264,11 @@ export function FormulaAudit({ result }) {
         <Operator>×</Operator>
         <AuditChip label="威力" tone="one-hit" value={displayNumber(numerator.power)} />
         <Operator>×</Operator>
-        <AuditChip label="等级系数" tone="one-hit" value={displayNumber(numerator.coefficient, 6)} />
+        <AuditChip
+          label="等级系数"
+          tone="one-hit"
+          value={displayLevelCoefficient(numerator.coefficient, numerator.level)}
+        />
         <Operator>→</Operator>
         <span className="formula-audit__rounding">四舍五入</span>
         <AuditChip label="伤害分子" tone="one-hit" value={displayNumber(numerator.afterRound)} />

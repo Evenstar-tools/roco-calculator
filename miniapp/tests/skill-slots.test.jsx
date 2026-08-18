@@ -450,7 +450,12 @@ describe("mini program skill workflow", () => {
       within(picker).getByRole("button", { name: /闪燃/ }),
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    fireEvent.click(
+      within(attackerSkills).getByRole("button", {
+        name: /查看闪燃伤害/u,
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "展开技能参数" }));
     fireEvent.click(screen.getByRole("button", { name: "触发应对" }));
     fireEvent.input(screen.getByLabelText("手动威力"), {
       target: { value: "95" },
@@ -471,6 +476,30 @@ describe("mini program skill workflow", () => {
     expect(store.getState().directions.forward.context).toEqual({});
   });
 
+  test("edits the selected four-skill slot from an on-demand result parameter section", () => {
+    const snapshot = createSnapshot();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+    fireEvent.click(screen.getAllByRole("button", {
+      name: /查看烈焰冲击伤害/u,
+    })[0]);
+
+    expect(screen.queryByLabelText("手动威力")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "展开技能参数" }));
+    fireEvent.input(screen.getByLabelText("手动威力"), {
+      target: { value: "92" },
+    });
+
+    expect(store.getState().sides.attacker.skills.four[0]).toMatchObject({
+      overrides: { basePower: 92 },
+      skillId: "skill-a",
+    });
+    expect(screen.getByRole("dialog", { name: "伤害结果" }))
+      .toBeInTheDocument();
+  });
+
   test("edits boolean, number, enum, manual power, and hit count inputs", () => {
     const snapshot = createSnapshot();
     const store = createCalculatorStore(snapshot);
@@ -481,7 +510,6 @@ describe("mini program skill workflow", () => {
     });
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     fireEvent.click(screen.getByRole("button", { name: "连击成长" }));
     expect(
       store.getState().directions.forward.context.flightMode,

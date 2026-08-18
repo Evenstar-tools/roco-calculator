@@ -15,7 +15,7 @@
   position: relative;
   min-width: 0;
   border: 1px solid var(--border-neutral);
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--surface-muted);
   overflow: visible;
 }
@@ -43,7 +43,7 @@
   align-items: center;
   gap: 10px;
   padding: 12px;
-  border-radius: 11px;
+  border-radius: 9px;
   cursor: pointer;
 }
 
@@ -62,16 +62,16 @@
 
 .combatant-card__label {
   color: var(--side-color);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--font-caption);
+  font-weight: var(--weight-emphasis);
 }
 
 .combatant-card__name {
   display: -webkit-box;
   overflow: hidden;
   color: var(--text-primary);
-  font-size: 18px;
-  font-weight: 760;
+  font-size: 17px;
+  font-weight: var(--weight-title);
   line-height: 1.25;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -155,7 +155,7 @@
   border-top: 3px solid transparent;
   border-radius: var(--radius-card);
   background: var(--surface-card);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
 }
 
 .side-configuration--attacker {
@@ -182,7 +182,8 @@
   border: 0;
   background: transparent;
   color: var(--side-color);
-  font-weight: 720;
+  font-size: var(--font-section);
+  font-weight: var(--weight-section);
   text-align: left;
 }
 
@@ -230,7 +231,7 @@
   color: var(--text-primary);
   font-size: 15px;
   font-variant-numeric: tabular-nums;
-  font-weight: 760;
+  font-weight: var(--weight-title);
 }
 
 .stat-grid__nature {
@@ -239,5 +240,5 @@
   right: 5px;
   color: var(--side-color);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: var(--weight-title);
 }

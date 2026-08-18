@@ -3741,4 +3741,219 @@ describe("inherited penetration stacks", () => {
     expect(withStatus.totalDamage).toBe(turbineOnly.totalDamage);
     expect(withStatus.choiceTraitSequence).toBeUndefined();
   });
+
+  test("戏耍把实际吸血量作为特性真伤加入总伤害", () => {
+    const trait = { id: "trait-clown", name: "戏耍" };
+    const bat = {
+      id: "skill-bat",
+      name: "蝙蝠",
+      type: "恶",
+      category: "physical",
+      basePower: 65,
+      description: "造成物伤，并吸血100%。",
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      skills: [...snapshot.skills, bat],
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { reverse: { currentHp: 358 } },
+        sides: {
+          attacker: side("spirit_sonic_dog", bat.id, [bat.id, null, null, null]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.status).toBe("exact");
+    expect(result.traitDamage).toBe(50);
+    expect(result.totalDamage).toBe(result.mainDamage + 50);
+    expect(result.traitSettlements[0].text).toContain("实际回复 50");
+  });
+
+  test("贪得无厌把溢出回复转换为后续物攻等级", () => {
+    const trait = { id: "trait-baron", name: "贪得无厌" };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({ directions: { reverse: { currentHp: 400 } } }),
+    ).forward.selectedResult;
+
+    expect(result.postAttackEffects).toMatchObject({
+      attackLevelStageAdd: expect.any(Number),
+      source: "贪得无厌",
+    });
+    expect(result.traitSettlements).toEqual(expect.arrayContaining([
+      expect.objectContaining({ text: expect.stringContaining("后续物攻") }),
+    ]));
+  });
+
+  test("扇风、顺风与风起在同一威力百分比乘区相加", () => {
+    const fan = {
+      id: "skill_fan_additive",
+      name: "扇风",
+      type: "翼",
+      category: "physical",
+      basePower: 75,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const tailwind = {
+      id: "trait_tailwind_additive",
+      name: "顺风",
+      description: "若先于敌方攻击，本次技能威力+50%。",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, fan],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [tailwind.id] }
+          : spirit,
+      ),
+      traits: [tailwind],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", fan.id, [fan.id, null, null, null]),
+        },
+        marks: {
+          attacker: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "tailwind", stacks: 1 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: null, stacks: 0 },
+          },
+        },
+        directions: {
+          forward: { context: { actedBeforeEnemy: true } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.skillPower).toBe(165);
+    expect(
+      result.formulaSteps.find((step) => step.label === "技能威力百分比")?.input,
+    ).toEqual(expect.arrayContaining([0.5, 0.5, 0.2]));
+  });
+
+  test("雪原狩猎、冰雪魂魄与蓄势在同一威力百分比乘区相加", () => {
+    const snowfieldHunt = {
+      id: "skill_snowfield_hunt_additive",
+      name: "雪原狩猎",
+      type: "冰",
+      category: "physical",
+      basePower: 80,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const iceSoul = {
+      id: "trait_ice_soul_additive",
+      name: "冰雪魂魄",
+      description: "天气为暴风雪时，冰系技能威力+100%。",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, snowfieldHunt],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [iceSoul.id] }
+          : spirit,
+      ),
+      traits: [iceSoul],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", snowfieldHunt.id, [
+            snowfieldHunt.id,
+            null,
+            null,
+            null,
+          ]),
+        },
+        marks: {
+          attacker: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "momentum", stacks: 1 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: null, stacks: 0 },
+          },
+        },
+        directions: {
+          forward: { context: { blizzardWeather: true } },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.skillPower).toBe(224);
+    expect(
+      result.formulaSteps.find((step) => step.label === "技能威力百分比")?.input,
+    ).toEqual(expect.arrayContaining([0.5, 1, 0.3]));
+  });
+
+  test("戏耍把光合治愈拆成独立真伤，并与当前技能伤害合并", () => {
+    const trait = { id: "trait-clown", name: "戏耍" };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      traits: [trait],
+    };
+    const input = battleInput({
+      mode: "four",
+      directions: {
+        forward: {
+          context: {
+            bloodlineMagicId: "photosynthetic-healing",
+            bloodlineMagicTriggered: true,
+          },
+        },
+        reverse: { currentHp: 300 },
+      },
+    });
+    const result = calculateMatchup(fixture, input).forward;
+
+    expect(result.bloodlineResult).toMatchObject({
+      skillName: "戏耍·光合治愈",
+      sourceKind: "bloodline",
+      status: "exact",
+      totalDamage: 108,
+      traitDamage: 108,
+    });
+    expect(result.results[0].totalDamage).toBe(
+      result.results[0].mainDamage + 108,
+    );
+    expect(result.results[0].traitSettlements.at(-1).text).toContain(
+      "光合治愈 204",
+    );
+
+    input.directions.forward.selectedDamageSource = "bloodline";
+    const selected = calculateMatchup(fixture, input).forward;
+    expect(selected.selectedResult).toBe(selected.bloodlineResult);
+  });
 });

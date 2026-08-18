@@ -1,6 +1,7 @@
 import { canApplyBattleActivation } from "../shared/state/battle-activation.js";
 import { resolveSkillStatusActivation } from "../shared/domain/skill-status-effects.js";
 import { getSkill, getVisibleSkillInputs } from "./skills.js";
+import { createSkillPresentation } from "./skill-presentation.js";
 
 const EMPTY_ACTIONS = Object.freeze({
   defense: [],
@@ -39,7 +40,7 @@ function skillEntries(state, side) {
   }));
 }
 
-function skillAction(snapshot, state, side, candidate) {
+function skillAction(snapshot, state, side, candidate, calculation, traitViews) {
   const skill = getSkill(snapshot, candidate.entry);
   if (!skill) return null;
   const direction = side === "attacker" ? "forward" : "reverse";
@@ -49,11 +50,29 @@ function skillAction(snapshot, state, side, candidate) {
       ? candidate.entry.context ?? {}
       : {};
   if (!canApplyBattleActivation(skill, context)) return null;
+  const configuredSkills = (state.sides[side]?.skills?.four ?? [])
+    .map((entry) => getSkill(snapshot, entry));
+  const carriedSkills = candidate.mode === "single"
+    ? [skill, ...configuredSkills]
+    : configuredSkills;
+  const result = calculation?.rows?.[candidate.slotIndex];
+  const positiveMark = state.marks?.[side]?.positive;
+  const presentation = createSkillPresentation({
+    carriedSkills,
+    context,
+    currentIndex: candidate.slotIndex,
+    includeGaleTurbineCompanion: candidate.mode === "four",
+    result,
+    skill,
+    sproutStacks: positiveMark?.id === "sprout" ? positiveMark.stacks : 0,
+    traitName: traitViews?.attacker?.name,
+  });
   return {
     category: skillCategory(skill, context),
     context,
-    controls: getVisibleSkillInputs(skill, context),
+    controls: presentation.inputs ?? getVisibleSkillInputs(skill, context),
     description: skill.description ?? "应用该技能产生的战斗状态",
+    effectHint: presentation.effectHint,
     key: `skill:${side}:${candidate.mode}:${candidate.slotIndex}`,
     kind: "skill",
     mode: candidate.mode,
@@ -107,6 +126,7 @@ function traitActions(state, direction, traitViews) {
 }
 
 export function createResultActions({
+  calculation,
   direction,
   snapshot,
   state,
@@ -116,7 +136,14 @@ export function createResultActions({
   const side = activeSideForDirection(direction);
   const actions = [
     ...skillEntries(state, side)
-      .map((candidate) => skillAction(snapshot, state, side, candidate))
+      .map((candidate) => skillAction(
+        snapshot,
+        state,
+        side,
+        candidate,
+        calculation,
+        traitViews,
+      ))
       .filter(Boolean),
     ...traitActions(state, direction, traitViews),
   ];

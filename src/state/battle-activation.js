@@ -253,8 +253,26 @@ export function applyBattleActivation({
     sproutStacks,
     traitName,
   });
+  const postAttackStageAdd = Math.max(
+    0,
+    Math.floor(Number(
+      calculation?.[selfDirection]?.results?.[skillIndex]
+        ?.postAttackEffects?.attackLevelStageAdd,
+    ) || 0),
+  );
 
   if (!resolution) {
+    if (postAttackStageAdd > 0) {
+      const selfOverrides = next.directions[selfDirection].overrides ?? {};
+      updateDirection(next, selfDirection, {
+        overrides: {
+          attackLevelStage: clampStage(
+            Number(selfOverrides.attackLevelStage ?? 0) + postAttackStageAdd,
+          ),
+        },
+      });
+      return { applied: true, reason: null, state: next };
+    }
     if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
       return {
         applied: false,
@@ -287,7 +305,9 @@ export function applyBattleActivation({
   const doublePositive = (value) =>
     operations.doublePositiveOwnBuffs && value > 0 ? value * 2 : value;
   const ownAttackStage = clampStage(doublePositive(
-    Number(selfOverrides.attackLevelStage ?? 0) + deltas.ownAttack,
+    Number(selfOverrides.attackLevelStage ?? 0) +
+      deltas.ownAttack +
+      postAttackStageAdd,
   ));
   const ownDefenseStage = clampStage(doublePositive(
     Number(targetOverrides.defenseLevelStage ?? 0) + deltas.ownDefense,
@@ -348,6 +368,9 @@ export function applyBattleActivation({
       hitCountPercentAdd:
         Number(selfOverrides.hitCountPercentAdd ?? 0) +
         Number(operations.hitCountPercentForAllAttacks ?? 0),
+      lifestealPercent:
+        Number(selfOverrides.lifestealPercent ?? 0) +
+        Number(operations.lifestealPercent ?? 0),
       refractionStatuses: [
         ...(selfOverrides.refractionStatuses ?? []),
         ...(operations.refractionStatuses ?? []),

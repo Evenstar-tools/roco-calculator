@@ -8,7 +8,10 @@ import AppHeader from "../../components/AppHeader.jsx";
 import BattleWorkspace from "../../components/BattleWorkspace.jsx";
 import ErrorState from "../../components/ErrorState.jsx";
 import LoadingState from "../../components/LoadingState.jsx";
+import SharedResultPage from "../../components/SharedResultPage.jsx";
+import SharedSessionStrip from "../../components/SharedSessionStrip.jsx";
 import commonSpiritConfig from "../../data/common-spirit-config.json";
+import { BUNDLED_PET_IMAGE_OVERRIDES } from "../../data/bundled-pet-image-overrides.js";
 import previewSnapshot from "../../data/preview-runtime.json";
 import { PREVIEW_PET_IMAGES } from "../../data/preview-pet-images.js";
 import { createCloudAdapter } from "../../services/cloud-adapter.js";
@@ -16,10 +19,11 @@ import { createDataService } from "../../services/data-service.js";
 import { createStorageAdapter } from "../../services/storage-adapter.js";
 import {
   createShareMessage,
-  decodeSharePayload,
+  decodeSharePayloadResult,
 } from "../../share/payload.js";
 import { createCalculatorStore } from "../../state/calculator-store.js";
 import { createAutosaveController } from "../../state/autosave.js";
+import { createCalculationView } from "../../view-models/calculation.js";
 import {
   configPresetsBySpirit,
   createConfigLibraryRepository,
@@ -40,7 +44,9 @@ const COMMON_SPIRIT_CONFIG_JSON = JSON.stringify(
 function bundledPetImagesFor(snapshot) {
   return Object.fromEntries(
     (snapshot?.spirits ?? []).flatMap((spirit) => {
-      const imageUrl = PREVIEW_PET_IMAGES[spirit.id] ?? spirit.imageUrl;
+      const imageUrl = BUNDLED_PET_IMAGE_OVERRIDES[spirit.id]
+        ?? PREVIEW_PET_IMAGES[spirit.id]
+        ?? spirit.imageUrl;
       return typeof imageUrl === "string" && imageUrl.trim()
         ? [[spirit.id, imageUrl]]
         : [];
@@ -120,6 +126,7 @@ export default function IndexPage({ services }) {
     configLibrary: { entries: [], schemaVersion: 1 },
     memoryEnabled: true,
     services: null,
+    shareSession: null,
   });
 
   useShareAppMessage(() => shareMessage.current);
@@ -137,6 +144,7 @@ export default function IndexPage({ services }) {
       configLibrary: { entries: [], schemaVersion: 1 },
       memoryEnabled: true,
       services: null,
+      shareSession: null,
     });
 
     try {
@@ -148,16 +156,33 @@ export default function IndexPage({ services }) {
       if (loadId.current !== currentLoadId) {
         return;
       }
-      const sharedState = sharePayload
-        ? decodeSharePayload(sharePayload, snapshot)
-        : null;
       const memoryEnabled =
         pageServices.persistence?.getMemoryEnabled?.() ?? true;
-      const persistedState = sharedState?.sides
-        ? sharedState
-        : memoryEnabled
-          ? pageServices.persistence?.load(snapshot)
-          : null;
+      const localState = memoryEnabled
+        ? pageServices.persistence?.load(snapshot)
+        : null;
+      const shareResult = sharePayload
+        ? decodeSharePayloadResult(sharePayload, snapshot)
+        : null;
+      const hasSharedState = Boolean(shareResult?.state?.sides);
+      const shareSession = sharePayload
+        ? hasSharedState
+          ? {
+              completeness: shareResult.completeness,
+              decodeStatus: shareResult.status,
+              direction: shareResult.direction,
+              localState,
+              sharedState: shareResult.state,
+              status: "preview",
+            }
+          : {
+              completeness: "minimal",
+              decodeStatus: "invalid",
+              localState,
+              sharedState: null,
+              status: "invalid",
+            }
+        : null;
       const favoriteIds =
         pageServices.favoritesRepository?.load(snapshot) ?? [];
       const configLibrary =
@@ -174,8 +199,9 @@ export default function IndexPage({ services }) {
         services: pageServices,
         store: createCalculatorStore(
           snapshot,
-          persistedState,
+          hasSharedState ? shareResult.state : localState,
         ),
+        shareSession,
       });
     } catch (error) {
       if (loadId.current !== currentLoadId) {
@@ -191,12 +217,13 @@ export default function IndexPage({ services }) {
         configLibrary: { entries: [], schemaVersion: 1 },
         memoryEnabled: true,
         services: null,
+        shareSession: null,
       });
     }
   }, [services, sharePayload]);
 
-  const updateShareMessage = useCallback((view, state) => {
-    shareMessage.current = createShareMessage(view, state);
+  const updateShareMessage = useCallback((view, state, direction) => {
+    shareMessage.current = createShareMessage(view, state, direction);
   }, []);
 
   useEffect(() => {
@@ -212,7 +239,8 @@ export default function IndexPage({ services }) {
     if (
       pageState.memoryEnabled &&
       pageState.store &&
-      pageState.services?.persistence
+      pageState.services?.persistence &&
+      !["preview", "invalid"].includes(pageState.shareSession?.status)
     ) {
       autosave.current = createAutosaveController({
         persistence: pageState.services.persistence,
@@ -223,7 +251,74 @@ export default function IndexPage({ services }) {
       autosave.current?.dispose();
       autosave.current = null;
     };
-  }, [pageState.memoryEnabled, pageState.services, pageState.store]);
+  }, [
+    pageState.memoryEnabled,
+    pageState.services,
+    pageState.shareSession?.status,
+    pageState.store,
+  ]);
+
+  useEffect(() => {
+    if (
+      pageState.status !== "ready" ||
+      pageState.shareSession?.status !== "preview" ||
+      !pageState.snapshot ||
+      !pageState.store
+    ) {
+      return;
+    }
+    const state = pageState.store.getState();
+    updateShareMessage(
+      createCalculationView(
+        pageState.snapshot,
+        state,
+        pageState.shareSession.direction,
+      ),
+      state,
+      pageState.shareSession.direction,
+    );
+  }, [pageState, updateShareMessage]);
+
+  const returnToLocalCalculation = useCallback(() => {
+    autosave.current?.cancel();
+    setPageState((current) => {
+      if (!current.snapshot || !current.shareSession) return current;
+      return {
+        ...current,
+        shareSession: null,
+        store: createCalculatorStore(
+          current.snapshot,
+          current.shareSession.localState,
+        ),
+      };
+    });
+  }, []);
+
+  const continueSharedCalculation = useCallback(() => {
+    setPageState((current) => current.shareSession?.status === "preview"
+      ? {
+          ...current,
+          shareSession: { ...current.shareSession, status: "active" },
+        }
+      : current);
+  }, []);
+
+  const restoreSharedSnapshot = useCallback(() => {
+    setPageState((current) => {
+      if (
+        current.shareSession?.status !== "active" ||
+        !current.store ||
+        !current.shareSession.sharedState
+      ) {
+        return current;
+      }
+      current.store.dispatch({
+        type: "state/replace",
+        value: current.shareSession.sharedState,
+      });
+      return current;
+    });
+  }, []);
 
   const toggleFavorite = useCallback((spiritId) => {
     setPageState((current) => {
@@ -319,6 +414,40 @@ export default function IndexPage({ services }) {
     return <ErrorState message={pageState.error?.message} onRetry={load} />;
   }
 
+  if (pageState.shareSession?.status === "invalid") {
+    return (
+      <View className="page">
+        <SharedResultPage
+          onOpenLocal={returnToLocalCalculation}
+          status="invalid"
+        />
+      </View>
+    );
+  }
+
+  if (pageState.shareSession?.status === "preview") {
+    const sharedState = pageState.store.getState();
+    return (
+      <View className="page">
+        <SharedResultPage
+          completeness={pageState.shareSession.completeness}
+          onContinue={continueSharedCalculation}
+          onReturnLocal={returnToLocalCalculation}
+          petImages={pageState.petImages}
+          snapshot={pageState.snapshot}
+          state={sharedState}
+          status="preview"
+          direction={pageState.shareSession.direction}
+          view={createCalculationView(
+            pageState.snapshot,
+            sharedState,
+            pageState.shareSession.direction,
+          )}
+        />
+      </View>
+    );
+  }
+
   return (
     <View className="page">
       <AppHeader
@@ -333,6 +462,12 @@ export default function IndexPage({ services }) {
         onMemoryChange={changeMemoryEnabled}
         onReset={resetCurrentPage}
       />
+      {pageState.shareSession?.status === "active" ? (
+        <SharedSessionStrip
+          onRestore={restoreSharedSnapshot}
+          onReturnLocal={returnToLocalCalculation}
+        />
+      ) : null}
       <BattleWorkspace
         configPresetsBySpirit={configPresetsBySpirit(
           pageState.configLibrary.entries,

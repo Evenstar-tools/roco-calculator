@@ -7,6 +7,7 @@ import IndexPage from "../src/pages/index/index.jsx";
 import LoadingState from "../src/components/LoadingState.jsx";
 import {
   MINIAPP_RELEASE_LABEL,
+  MINIAPP_UPDATE_DATE,
   MINIAPP_VERSION,
   WEB_CORE_VERSION,
 } from "../src/version.js";
@@ -20,11 +21,12 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
   });
 
-  test("publishes miniapp 0.2.0 against web core 1.5.4", () => {
-    expect(MINIAPP_VERSION).toBe("0.2.0");
-    expect(WEB_CORE_VERSION).toBe("1.5.4");
+  test("publishes miniapp 0.2.3 against web core 1.5.7", () => {
+    expect(MINIAPP_VERSION).toBe("0.2.3");
+    expect(MINIAPP_UPDATE_DATE).toBe("2026-08-17");
+    expect(WEB_CORE_VERSION).toBe("1.5.7");
     expect(MINIAPP_RELEASE_LABEL).toBe(
-      "小程序 v0.2.0 · 网页核心 v1.5.4",
+      "小程序 v0.2.3 · 网页核心 v1.5.7",
     );
     render(<AppHeader dataVersion="data-v1" />);
     expect(screen.getByText(MINIAPP_RELEASE_LABEL)).toBeInTheDocument();
@@ -72,6 +74,9 @@ describe("miniapp shell", () => {
     expect(screen.getByText(/BWIKI 洛克王国公开资料/u))
       .toBeInTheDocument();
     expect(screen.getByText(/1215583051/u)).toBeInTheDocument();
+    expect(screen.getByText("当前版本")).toBeInTheDocument();
+    expect(screen.getByText("v0.2.3 · 更新于 2026-08-17"))
+      .toBeInTheDocument();
   });
 
   test("mounts portrait touch-target classes on real controls", () => {
@@ -95,6 +100,9 @@ describe("miniapp shell", () => {
           },
         }}
       />,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "展开特性与状态" }),
     );
     expect(
       screen.getByRole("button", { name: "满足触发条件" }),

@@ -7,6 +7,30 @@ import {
 const skill = (name, extra = {}) => ({ name, ...extra });
 
 describe("skill status effects", () => {
+  test("贪婪与等价交换按萌芽层数累计吸血", () => {
+    expect(
+      resolveSkillStatusActivation(skill("贪婪"), { sproutStacks: 1 }),
+    ).toMatchObject({
+      applied: true,
+      operations: { lifestealPercent: 110 },
+    });
+
+    const equivalentExchange = skill("等价交换", {
+      category: "defense",
+      description: "减伤90%，应对攻击：自己获得50%吸血。",
+    });
+    expect(resolveSkillStatusActivation(equivalentExchange, {
+      defenseCounterSucceeded: true,
+      sproutStacks: 1,
+    })).toMatchObject({
+      applied: true,
+      operations: {
+        defenseReductionPercent: 90,
+        lifestealPercent: 60,
+      },
+    });
+  });
+
   test("S3季中示弱应用速度永久+130", () => {
     expect(resolveSkillStatusActivation(skill("示弱"))).toMatchObject({
       applied: true,

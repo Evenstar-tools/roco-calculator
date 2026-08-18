@@ -214,6 +214,80 @@ describe("result bar and sheet", () => {
     expect(screen.getByText("总伤害")).toBeInTheDocument();
   });
 
+  test("selects the bloodline magic result without closing details", () => {
+    const onSelectBloodline = vi.fn();
+    render(
+      <ResultSheet
+        onClose={() => {}}
+        onSelectBloodline={onSelectBloodline}
+        onSelectSkill={() => {}}
+        open
+        selectedIndex={0}
+        view={{
+          attackerName: "迪莫",
+          bloodlineResult: {
+            skillName: "戏耍·光合治愈",
+            status: "exact",
+            totalDamage: 108,
+          },
+          defenderName: "圣光迪莫",
+          rows: [{ skillName: "抓挠", status: "exact", totalDamage: 27 }],
+          selectedDamageSource: "skill",
+          selectedResult: {
+            remainingHp: 401,
+            remainingHpPercent: 93.7,
+            skillName: "抓挠",
+            totalDamage: 27,
+          },
+          status: "exact",
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "选择血脉魔法伤害结果" }));
+    expect(onSelectBloodline).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("dialog", { name: "伤害结果" }))
+      .toBeInTheDocument();
+  });
+
+  test("keeps type analysis compact and expandable in result details", () => {
+    render(
+      <ResultSheet
+        onClose={() => {}}
+        onSelectSkill={() => {}}
+        open
+        selectedIndex={0}
+        view={{
+          attackerName: "迪莫",
+          defenderName: "圣光迪莫",
+          rows: [],
+          selectedResult: {
+            remainingHp: 401,
+            skillName: "抓挠",
+            totalDamage: 27,
+          },
+          status: "exact",
+          typeAnalysis: {
+            subjectName: "迪莫",
+            defense: {
+              resistances: [{ multiplier: 0.5, type: "龙" }],
+              weaknesses: [{ multiplier: 2, type: "武" }],
+            },
+            offense: {
+              blindSpots: [{ multiplier: 0.5, type: "机械" }],
+              coverage: [{ multiplier: 2, type: "普通" }],
+            },
+          },
+        }}
+      />,
+    );
+
+    const toggle = screen.getByRole("button", { name: "展开属性分析" });
+    fireEvent.click(toggle);
+    expect(screen.getByLabelText("属性分析")).toBeInTheDocument();
+    expect(screen.getByText("迪莫 · 自身防御面")).toBeInTheDocument();
+  });
+
   test("presents the selected damage, four-skill comparison and formula process in the desktop result hierarchy", () => {
     render(
       <ResultSheet
@@ -352,6 +426,8 @@ describe("result bar and sheet", () => {
     expect(within(process).getByText("每段伤害")).toBeInTheDocument();
     expect(within(process).getByText("总伤害")).toBeInTheDocument();
     expect(within(process).getByText("伤害分子")).toBeInTheDocument();
+    expect(within(process).getByText("37/41")).toBeInTheDocument();
+    expect(within(process).queryByText("0.902439")).not.toBeInTheDocument();
     expect(within(process).getByText("段数")).toBeInTheDocument();
   });
 
@@ -384,6 +460,42 @@ describe("result bar and sheet", () => {
     const comparison = screen.getByText("技能结果");
     expect(
       current.compareDocumentPosition(comparison) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  test("keeps trigger adjustments before optional skill parameters", () => {
+    render(
+      <ResultSheet
+        actions={{ defense: [], modifiers: [], status: [] }}
+        onClose={() => {}}
+        onSelectSkill={() => {}}
+        open
+        selectedIndex={0}
+        showSkillConditions
+        skillConditionContext={{}}
+        skillConditionDirection="attacker"
+        skillConditionPresentation={{ inputs: [] }}
+        skillConditionSkill={{ id: "skill-a", name: "烈焰冲击" }}
+        view={{
+          attackerName: "烈焰兽",
+          defenderName: "潮汐兽",
+          rows: [],
+          selectedResult: {
+            hpPercent: 21.7,
+            remainingHp: 335,
+            skillName: "烈焰冲击",
+            totalDamage: 93,
+          },
+          status: "exact",
+        }}
+      />,
+    );
+
+    const triggerWorkbench = screen.getByLabelText("触发工作台");
+    const skillParameters = screen.getByText("技能参数");
+    expect(
+      triggerWorkbench.compareDocumentPosition(skillParameters) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
@@ -599,13 +711,27 @@ describe("result bar and sheet", () => {
     );
     expect(dialog.querySelector("[data-scroll-y='true']")).not.toBeNull();
     expect(within(dialog).getByText(/剩余 \d+ HP/u)).toBeInTheDocument();
-    const shareButtons = screen.getAllByRole("button", {
-      name: "分享当前计算",
+    const previewButton = screen.getByRole("button", {
+      name: "预览并分享",
     });
-    expect(shareButtons).toHaveLength(1);
-    for (const button of shareButtons) {
-      expect(button).toHaveAttribute("data-open-type", "share");
-    }
+    expect(previewButton).not.toHaveAttribute("data-open-type", "share");
+    fireEvent.click(previewButton);
+
+    const sharePreview = screen.getByRole("dialog", { name: "分享预览" });
+    expect(within(sharePreview).getByText("分享给好友前确认"))
+      .toBeInTheDocument();
+    expect(within(sharePreview).getByText(/烈焰兽 → 潮汐兽/u))
+      .toBeInTheDocument();
+    const shareButton = within(sharePreview).getByRole("button", {
+      name: "确认分享",
+    });
+    expect(shareButton).toHaveAttribute("data-open-type", "share");
+
+    fireEvent.click(within(sharePreview).getByRole("button", {
+      name: "返回修改",
+    }));
+    expect(screen.queryByRole("dialog", { name: "分享预览" }))
+      .not.toBeInTheDocument();
   });
 
   test("selects a skill row and closes back to the result trigger", () => {

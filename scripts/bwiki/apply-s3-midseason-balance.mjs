@@ -6,6 +6,23 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const EFFECTIVE_DATE = "2026-08-13";
+const BWIKI_FILTER_SOURCE = Object.freeze({
+  fetchedAt: "2026-08-17T01:31:17.162Z",
+  revision: 41360,
+  sha256: "1e3d31c2448bb81efc15e93e4d38d1e2b691d653d16e8f355cba1087fddcdd0c",
+  title: "精灵筛选",
+  url: "https://wiki.biligame.com/rocom/精灵筛选",
+});
+
+const BWIKI_RACE_STAT_PATCHES = Object.freeze({
+  雪灵兽: Object.freeze({ hp: 62, speed: 75, physicalAttack: 51, magicalAttack: 14, physicalDefense: 67, magicalDefense: 62, total: 331 }),
+  幻雪兽: Object.freeze({ hp: 83, speed: 100, physicalAttack: 68, magicalAttack: 19, physicalDefense: 89, magicalDefense: 82, total: 441 }),
+  友爱天天: Object.freeze({ hp: 97, speed: 76, physicalAttack: 30, magicalAttack: 93, physicalDefense: 70, magicalDefense: 80, total: 446 }),
+  芽眼魔: Object.freeze({ hp: 80, speed: 45, physicalAttack: 62, magicalAttack: 59, physicalDefense: 58, magicalDefense: 66, total: 370 }),
+  叶眼魔: Object.freeze({ hp: 107, speed: 60, physicalAttack: 82, magicalAttack: 78, physicalDefense: 77, magicalDefense: 88, total: 492 }),
+  苞米仔: Object.freeze({ hp: 92, speed: 60, physicalAttack: 79, magicalAttack: 80, physicalDefense: 88, magicalDefense: 88, total: 487 }),
+  守夜烛: Object.freeze({ hp: 97, speed: 84, physicalAttack: 76, magicalAttack: 83, physicalDefense: 86, magicalDefense: 98, total: 524 }),
+});
 
 const RACE_STAT_PATCHES = Object.freeze({
   炮米花: Object.freeze({
@@ -94,6 +111,14 @@ export function applyS3MidseasonBalance(snapshot) {
     spirit.raceStats.total = recalculateRaceTotal(spirit.raceStats);
     spirit.provenance = { ...spirit.provenance, raceStats: source };
   }
+  for (const [name, raceStats] of Object.entries(BWIKI_RACE_STAT_PATCHES)) {
+    const spirit = requireNamed(next.spirits, name, "精灵");
+    spirit.raceStats = { ...raceStats };
+    spirit.provenance = {
+      ...spirit.provenance,
+      raceStats: BWIKI_FILTER_SOURCE,
+    };
+  }
   for (const [name, patch] of Object.entries(SKILL_PATCHES)) {
     const skill = requireNamed(next.skills, name, "技能");
     Object.assign(skill, patch);
@@ -112,6 +137,11 @@ export function applyS3MidseasonBalance(snapshot) {
   next.meta = {
     ...next.meta,
     balancePatch: { ...SOURCE_PAYLOAD },
+    raceStatsSync: {
+      count: Object.keys(BWIKI_RACE_STAT_PATCHES).length,
+      names: Object.keys(BWIKI_RACE_STAT_PATCHES),
+      revision: BWIKI_FILTER_SOURCE.revision,
+    },
     contentSha256: null,
     id: "s3-2026-08-13-midseason",
     rulesVersion: EFFECTIVE_DATE,
@@ -119,8 +149,11 @@ export function applyS3MidseasonBalance(snapshot) {
     snapshotVersion: 2,
     sources: [
       ...(next.meta?.sources ?? []).filter(
-        (candidate) => candidate.url !== source.url,
+        (candidate) =>
+          candidate.url !== source.url &&
+          candidate.url !== BWIKI_FILTER_SOURCE.url,
       ),
+      BWIKI_FILTER_SOURCE,
       source,
     ],
   };

@@ -14,8 +14,8 @@
 
 .quick-controls__row-label {
   color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 720;
+  font-size: var(--font-body);
+  font-weight: var(--weight-section);
 }
 
 .quick-controls__option {
@@ -48,7 +48,7 @@
 .quick-controls__option--selected {
   background: var(--success-soft);
   color: var(--success);
-  box-shadow: inset 0 0 0 1px #6fba92;
+  box-shadow: inset 0 0 0 1px #82bea0;
 }
 
 .quick-controls__option--pressed {
@@ -74,7 +74,7 @@
   max-width: 100%;
   overflow: hidden;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 620;
   line-height: 13px;
   text-align: center;
@@ -115,7 +115,7 @@
   background: var(--surface-muted);
   color: var(--text-secondary);
   font-size: 13px;
-  font-weight: 620;
+  font-weight: 500;
   line-height: 18px;
   overflow: hidden;
   white-space: nowrap;
@@ -137,7 +137,7 @@
 
 .quick-controls__summary-nature {
   color: var(--text-primary);
-  font-weight: 680;
+  font-weight: var(--weight-emphasis);
 }
 
 .quick-controls__summary-separator {
@@ -221,6 +221,13 @@
   font-size: 12px;
 }
 
+.nature-picker__neutral {
+  flex: 0 0 auto;
+  color: var(--text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 .nature-picker__effect-up {
   color: var(--success);
 }
@@ -263,8 +270,7 @@
   font-weight: 650;
 }
 
-.nature-picker__option,
-.nature-picker__neutral {
+.nature-picker__option {
   display: flex;
   width: 100%;
   min-height: var(--touch-target);

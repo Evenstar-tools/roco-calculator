@@ -2206,6 +2206,8 @@ test("advanced settings stay collapsed until requested", async () => {
   expect(screen.getAllByText("四舍五入")).toHaveLength(2);
   expect(screen.getByText("向下取整")).toBeVisible();
   expect(screen.getByText("8265")).toBeVisible();
+  expect(screen.getByText("37/41")).toBeVisible();
+  expect(screen.queryByText("0.902439")).not.toBeInTheDocument();
   expect(screen.getAllByText("47")).toHaveLength(2);
   expect(screen.getByText("141")).toBeVisible();
   expect(screen.queryByText(/先算技能威力/)).not.toBeInTheDocument();

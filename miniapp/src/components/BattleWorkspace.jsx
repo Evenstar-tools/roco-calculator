@@ -7,6 +7,7 @@ import {
 import Taro from "@tarojs/taro";
 import { Button, Text, View } from "@tarojs/components";
 import { restoreResultContext } from "../platform/result-interaction.js";
+import { encodeSharePayloadWithMeta } from "../share/payload.js";
 import {
   applyBattleActivation,
   applyBalanceTraitTrigger,
@@ -21,15 +22,16 @@ import { createCalculationView } from "../view-models/calculation.js";
 import { createConditionSummary } from "../view-models/condition-summary.js";
 import { createDirectionTraitViews } from "../view-models/traits.js";
 import { createResultActions } from "../view-models/result-actions.js";
+import { createSkillPresentation } from "../view-models/skill-presentation.js";
 import { getSkill, getSkillChoices } from "../view-models/skills.js";
 import CombatantCard from "./CombatantCard.jsx";
+import BattleAdvancedEditor from "./BattleAdvancedEditor.jsx";
 import BattleConditionStrip from "./BattleConditionStrip.jsx";
 import BattleEnvironmentEditor from "./BattleEnvironmentEditor.jsx";
-import AbilityStageEditor from "./AbilityStageEditor.jsx";
+import BattleMarksEditor from "./BattleMarksEditor.jsx";
 import ActiveAbilityStageBar from "./ActiveAbilityStageBar.jsx";
 import CombatantParameterSheet from "./CombatantParameterSheet.jsx";
 import DirectionSwitch from "./DirectionSwitch.jsx";
-import MarkEditor from "./MarkEditor.jsx";
 import ModeSwitch from "./ModeSwitch.jsx";
 import QuickCombatantControls from "./QuickCombatantControls.jsx";
 import ResultBar from "./ResultBar.jsx";
@@ -69,6 +71,40 @@ function selectedSlot(configuration, directionState, mode) {
     : configuration.skills.single;
 }
 
+function presentationForSide({
+  calculation,
+  configuration,
+  directionState,
+  mode,
+  side,
+  snapshot,
+  state,
+  traitViews,
+}) {
+  const currentIndex = mode === "four"
+    ? directionState.selectedSkillIndex
+    : 0;
+  const entry = selectedSlot(configuration, directionState, mode);
+  const details = entry && typeof entry === "object" ? entry : {};
+  const selectedSkill = getSkill(snapshot, entry);
+  const configuredSkills = (configuration.skills.four ?? [])
+    .map((candidate) => getSkill(snapshot, candidate));
+  const carriedSkills = mode === "single"
+    ? [selectedSkill, ...configuredSkills]
+    : configuredSkills;
+  const positiveMark = state.marks?.[side]?.positive;
+  return createSkillPresentation({
+    carriedSkills,
+    context: mode === "four" ? details.context ?? {} : directionState.context,
+    currentIndex,
+    includeGaleTurbineCompanion: mode === "four",
+    result: calculation?.rows?.[currentIndex],
+    skill: selectedSkill,
+    sproutStacks: positiveMark?.id === "sprout" ? positiveMark.stacks : 0,
+    traitName: traitViews?.attacker?.name,
+  });
+}
+
 export default function BattleWorkspace({
   configPresetsBySpirit = {},
   favoriteIds = [],
@@ -95,6 +131,9 @@ export default function BattleWorkspace({
     reverse: createCalculationView(snapshot, state, "reverse"),
   };
   const calculation = calculations[direction];
+  const shareCompleteness = encodeSharePayloadWithMeta(state, {
+    direction,
+  }).completeness;
   const activeSide = direction === "forward" ? "attacker" : "defender";
   const activeConfiguration = state.sides[activeSide];
   const activeDirectionState = state.directions[direction];
@@ -123,6 +162,7 @@ export default function BattleWorkspace({
     direction,
   );
   const resultActions = createResultActions({
+    calculation,
     direction,
     snapshot,
     state,
@@ -146,6 +186,11 @@ export default function BattleWorkspace({
   const panels = ["attacker", "defender"].map((side) => {
     const panelDirection = SIDE_DIRECTIONS[side];
     const configuration = state.sides[side];
+    const panelTraitViews = createDirectionTraitViews(
+      snapshot,
+      state,
+      panelDirection,
+    );
     return {
       calculation: calculations[panelDirection],
       choices: getSkillChoices(snapshot, configuration.spiritId),
@@ -153,13 +198,26 @@ export default function BattleWorkspace({
       direction: panelDirection,
       directionState: state.directions[panelDirection],
       label: SIDE_LABELS[side],
+      presentation: presentationForSide({
+        calculation: calculations[panelDirection],
+        configuration,
+        directionState: state.directions[panelDirection],
+        mode: state.mode,
+        side,
+        snapshot,
+        state,
+        traitViews: panelTraitViews,
+      }),
       side,
     };
   });
+  const activePresentation = panels.find(
+    (panel) => panel.direction === direction,
+  )?.presentation;
 
   useEffect(() => {
-    onShareChange?.(calculation, state);
-  }, [calculation, onShareChange, state]);
+    onShareChange?.(calculation, state, direction);
+  }, [calculation, direction, onShareChange, state]);
 
   function setSpirit(side, value) {
     const preset = configPresetsBySpirit[value];
@@ -230,15 +288,6 @@ export default function BattleWorkspace({
 
   function setGlobalRain(value) {
     store.dispatch({ type: "battle/set-rain", value });
-  }
-
-  function setAbilityStage(side, role, value) {
-    const targetDirection = role === "attack"
-      ? SIDE_DIRECTIONS[side]
-      : SIDE_DIRECTIONS[side] === "forward" ? "reverse" : "forward";
-    updateDirection(targetDirection, {
-      overrides: { [`${role}LevelStage`]: value },
-    });
   }
 
   function setMark(side, polarity, value) {
@@ -586,6 +635,7 @@ export default function BattleWorkspace({
                         });
                         setActiveLayer("result");
                       }}
+                      presentation={panel.presentation}
                       resultsHidden={resultOpen}
                       rows={panel.calculation.rows}
                       selectedIndex={panel.directionState.selectedSkillIndex}
@@ -627,23 +677,26 @@ export default function BattleWorkspace({
                 </View>
               ))}
             </View>
-            <View className="active-skill-conditions">
-              <View className="active-skill-conditions__heading">
-                <Text className="active-skill-conditions__title">
-                  当前技能参数
-                </Text>
-                <Text className="active-skill-conditions__context">
-                  {SIDE_LABELS[activeSide]} · {selectedSkill?.name ?? "未选择技能"}
-                </Text>
+            {state.mode === "single" ? (
+              <View className="active-skill-conditions">
+                <View className="active-skill-conditions__heading">
+                  <Text className="active-skill-conditions__title">
+                    当前技能参数
+                  </Text>
+                  <Text className="active-skill-conditions__context">
+                    {SIDE_LABELS[activeSide]} · {selectedSkill?.name ?? "未选择技能"}
+                  </Text>
+                </View>
+                <SkillConditionEditor
+                  context={conditionContext}
+                  direction={conditionDirection}
+                  onContextChange={updateSkillContext}
+                  onDirectionChange={updateSkillDirection}
+                  presentation={activePresentation}
+                  skill={selectedSkill}
+                />
               </View>
-              <SkillConditionEditor
-                context={conditionContext}
-                direction={conditionDirection}
-                onContextChange={updateSkillContext}
-                onDirectionChange={updateSkillDirection}
-                skill={selectedSkill}
-              />
-            </View>
+            ) : null}
           </View>
 
           <BattleConditionStrip
@@ -697,12 +750,8 @@ export default function BattleWorkspace({
               <BattleEnvironmentEditor
                 defenderMaxHp={calculation.defenderMaxHp}
                 direction={activeDirectionState}
-                onChange={(value) => updateDirection(direction, value)}
+                onCurrentHpChange={setTargetHp}
                 onRainChange={setGlobalRain}
-              />
-              <AbilityStageEditor
-                onChange={setAbilityStage}
-                state={state}
               />
               <TraitConditionEditor
                 battleContext={activeDirectionState.context}
@@ -713,22 +762,14 @@ export default function BattleWorkspace({
                 }}
                 views={traitViews}
               />
-              <View className="conditions-sheet__marks">
-                <MarkEditor
-                  marks={state.marks.attacker}
-                  onChange={(polarity, value) =>
-                    setMark("attacker", polarity, value)
-                  }
-                  side="attacker"
-                />
-                <MarkEditor
-                  marks={state.marks.defender}
-                  onChange={(polarity, value) =>
-                    setMark("defender", polarity, value)
-                  }
-                  side="defender"
-                />
-              </View>
+              <BattleMarksEditor
+                marks={state.marks}
+                onChange={setMark}
+              />
+              <BattleAdvancedEditor
+                direction={activeDirectionState}
+                onChange={(value) => updateDirection(direction, value)}
+              />
             </View>
           </View>
         </View>
@@ -753,9 +794,14 @@ export default function BattleWorkspace({
         onActionControlChange={updateResultActionControl}
         onApplyAction={applyResultAction}
         onClose={closeResults}
+        onSkillConditionContextChange={updateSkillContext}
+        onSkillConditionDirectionChange={updateSkillDirection}
         onSelectSkill={(selectedSkillIndex) => updateDirection(direction, {
           selectedDamageSource: "skill",
           selectedSkillIndex,
+        })}
+        onSelectBloodline={() => updateDirection(direction, {
+          selectedDamageSource: "bloodline",
         })}
         onSelectTrait={() => updateDirection(direction, {
           selectedDamageSource: "trait",
@@ -765,6 +811,12 @@ export default function BattleWorkspace({
         }
         open={resultOpen}
         selectedIndex={activeDirectionState.selectedSkillIndex}
+        shareCompleteness={shareCompleteness}
+        showSkillConditions={state.mode === "four"}
+        skillConditionContext={conditionContext}
+        skillConditionDirection={conditionDirection}
+        skillConditionPresentation={activePresentation}
+        skillConditionSkill={selectedSkill}
         traitDamageHitCount={activeDirectionState.traitDamageHitCount}
         view={calculation}
       />

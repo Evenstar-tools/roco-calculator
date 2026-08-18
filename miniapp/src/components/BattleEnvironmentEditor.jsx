@@ -1,4 +1,4 @@
-import { Input, Text, View } from "@tarojs/components";
+import { Button, Input, Text, View } from "@tarojs/components";
 
 function readNumber(event, fallback = 0) {
   const raw = event?.detail?.value ?? event?.target?.value ?? "";
@@ -34,7 +34,7 @@ function NumericField({ label, max, min = 0, onChange, suffix, value }) {
 export default function BattleEnvironmentEditor({
   defenderMaxHp,
   direction,
-  onChange,
+  onCurrentHpChange,
   onRainChange,
 }) {
   const rainTurns = Math.max(
@@ -43,52 +43,61 @@ export default function BattleEnvironmentEditor({
   );
 
   return (
-    <View aria-label="环境与生命" className="battle-environment">
+    <View aria-label="常用条件" className="battle-environment">
       <View className="battle-environment__heading">
-        <Text className="battle-environment__title">环境与生命</Text>
+        <Text className="battle-environment__title">常用条件</Text>
         <Text className="battle-environment__hint">影响当前计算</Text>
       </View>
       <View className="battle-environment__grid">
         <NumericField
           label="目标当前生命"
           max={defenderMaxHp}
-          onChange={(currentHp) => onChange({
-            currentHp: Math.min(defenderMaxHp ?? currentHp, Math.max(0, Math.floor(currentHp))),
-          })}
+          onChange={(currentHp) => onCurrentHpChange(
+            Math.min(
+              defenderMaxHp ?? currentHp,
+              Math.max(0, Math.floor(currentHp)),
+            ),
+          )}
           suffix={defenderMaxHp ? `/ ${defenderMaxHp}` : "HP"}
           value={direction.currentHp ?? defenderMaxHp ?? ""}
         />
-        <NumericField
-          label="雨天回合"
-          max={8}
-          onChange={(value) => {
-            const weatherRainTurns = Math.min(
+        <View className="battle-environment__weather">
+          <Text className="battle-environment__label">天气</Text>
+          <View className="battle-environment__weather-choices">
+            <Button
+              aria-label="无天气"
+              aria-pressed={rainTurns === 0}
+              className={rainTurns === 0
+                ? "battle-environment__weather-button battle-environment__weather-button--active"
+                : "battle-environment__weather-button"}
+              onClick={() => onRainChange(0)}
+            >
+              无
+            </Button>
+            <Button
+              aria-label="雨天"
+              aria-pressed={rainTurns > 0}
+              className={rainTurns > 0
+                ? "battle-environment__weather-button battle-environment__weather-button--active"
+                : "battle-environment__weather-button"}
+              onClick={() => onRainChange(rainTurns > 0 ? rainTurns : 8)}
+            >
+              雨天
+            </Button>
+          </View>
+        </View>
+        {rainTurns > 0 ? (
+          <NumericField
+            label="雨天回合"
+            max={8}
+            onChange={(value) => onRainChange(Math.min(
               8,
               Math.max(0, Math.floor(value)),
-            );
-            if (onRainChange) onRainChange(weatherRainTurns);
-            else onChange({ context: { weatherRainTurns } });
-          }}
-          suffix="回合"
-          value={rainTurns}
-        />
-        <NumericField
-          label="减伤比例"
-          max={100}
-          onChange={(value) => onChange({
-            reduction: 1 - Math.min(100, Math.max(0, value)) / 100,
-          })}
-          suffix="%"
-          value={Math.round((1 - Number(direction.reduction ?? 1)) * 100)}
-        />
-        <NumericField
-          label="最终伤害倍率"
-          max={100}
-          min={0}
-          onChange={(finalDamageMultiplier) => onChange({ finalDamageMultiplier })}
-          suffix="×"
-          value={Number(direction.finalDamageMultiplier ?? 1)}
-        />
+            ))}
+            suffix="回合"
+            value={rainTurns}
+          />
+        ) : null}
       </View>
     </View>
   );

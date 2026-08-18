@@ -63,6 +63,58 @@ function createSnapshot() {
 }
 
 describe("responsive battle workspace", () => {
+  test("keeps the inline current-skill parameters exclusive to single mode", () => {
+    const snapshot = createSnapshot();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    expect(screen.getByText("当前技能参数")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+
+    expect(screen.queryByText("当前技能参数")).not.toBeInTheDocument();
+  });
+
+  test("groups battle conditions and hides duplicate or advanced controls by default", () => {
+    const snapshot = createSnapshot();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+
+    expect(screen.getByText("常用条件")).toBeInTheDocument();
+    expect(screen.queryByLabelText("能力等级")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "展开印记" }))
+      .toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: "展开高级参数" }))
+      .toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByLabelText("减伤比例")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "攻击方正面印记萌芽" }))
+      .not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "展开高级参数" }));
+    expect(screen.getByLabelText("减伤比例")).toBeInTheDocument();
+    expect(screen.getByLabelText("最终伤害倍率")).toBeInTheDocument();
+  });
+
+  test("shows rain turns only while rainy weather is selected", () => {
+    const snapshot = createSnapshot();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+
+    expect(screen.getByRole("button", { name: "无天气" }))
+      .toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByLabelText("雨天回合")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "雨天" }));
+    expect(screen.getByLabelText("雨天回合")).toHaveValue(8);
+
+    fireEvent.click(screen.getByRole("button", { name: "无天气" }));
+    expect(screen.queryByLabelText("雨天回合")).not.toBeInTheDocument();
+  });
+
   test("keeps both combatants visible while exposing phone and iPad work surfaces", () => {
     const snapshot = createSnapshot();
     const store = createCalculatorStore(snapshot);

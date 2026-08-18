@@ -20,6 +20,33 @@ export function displayFormulaNumber(value, digits = 4) {
   return Number(numeric.toFixed(digits)).toString();
 }
 
+function greatestCommonDivisor(left, right) {
+  let a = Math.abs(left);
+  let b = Math.abs(right);
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+  return a || 1;
+}
+
+export function displayLevelCoefficient(coefficient, level = 60) {
+  const numericCoefficient = Number(coefficient);
+  const numericLevel = Number(level);
+  if (!Number.isFinite(numericCoefficient)) return "—";
+  if (!Number.isInteger(numericLevel)) {
+    return displayFormulaNumber(numericCoefficient, 6);
+  }
+
+  const numerator = numericLevel * 9 + 200;
+  const denominator = 820;
+  if (Math.abs(numericCoefficient - numerator / denominator) > 0.0000005) {
+    return displayFormulaNumber(numericCoefficient, 6);
+  }
+
+  const divisor = greatestCommonDivisor(numerator, denominator);
+  return `${numerator / divisor}/${denominator / divisor}`;
+}
+
 export function buildResultFormulaAudit(result) {
   if (!result?.formulaSteps?.length) return null;
 
@@ -94,6 +121,7 @@ export function buildResultFormulaAudit(result) {
       attack: damageInput.attackerStat ?? attackPanel?.after,
       afterRound: damageInput.roundedNumerator,
       coefficient: damageInput.coefficient,
+      level: damageInput.level,
       power:
         damageInput.calculationPower ??
         displayPower?.before ??

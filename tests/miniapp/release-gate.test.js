@@ -25,8 +25,8 @@ const validRelease = {
   ],
   mainPackageBytes: 1024,
   manifestFileId: "cloud://cloud-prod-1a2b/data/manifest.json",
-  miniappVersion: "0.2.0",
-  rootVersion: "1.5.4",
+  miniappVersion: "0.2.3",
+  rootVersion: "1.5.7",
   runtimeSha256: "a".repeat(64),
   sourceText: "Taro.cloud.downloadFile({ fileID: manifestFileId })",
 };
@@ -48,11 +48,11 @@ function createReleaseFixture(localConfig) {
   fs.mkdirSync(path.join(root, "miniapp", "src"), { recursive: true });
   fs.writeFileSync(
     path.join(root, "package.json"),
-    JSON.stringify({ version: "1.5.4" }),
+    JSON.stringify({ version: "1.5.7" }),
   );
   fs.writeFileSync(
     path.join(root, "miniapp", "package.json"),
-    JSON.stringify({ version: "0.2.0" }),
+    JSON.stringify({ version: "0.2.3" }),
   );
   fs.writeFileSync(
     path.join(root, "miniapp", "local.config.json"),
@@ -115,8 +115,8 @@ describe("miniapp production release gate", () => {
   });
 
   test.each([
-    ["miniappVersion", "0.1.0", /0\.2\.0/u],
-    ["rootVersion", "1.4.6", /1\.5\.4/u],
+    ["miniappVersion", "0.1.0", /0\.2\.3/u],
+    ["rootVersion", "1.4.6", /1\.5\.7/u],
   ])("rejects an unexpected %s", (key, value, message) => {
     expect(() => verifyRelease({ ...validRelease, [key]: value }))
       .toThrow(message);
@@ -363,7 +363,7 @@ describe("miniapp production release gate", () => {
     expect(() => runReleaseCli(root)).toThrow(/上传|发布/u);
   });
 
-  test("accepts a complete v0.2.0 production artifact contract", () => {
+  test("accepts a complete v0.2.3 production artifact contract", () => {
     expect(verifyRelease(validRelease)).toBe(true);
   });
 });

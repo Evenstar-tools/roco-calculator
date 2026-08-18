@@ -91,6 +91,18 @@ describe("S3 季中 8 月 13 日平衡补丁", () => {
     expect(spirit(name)?.raceStats).toMatchObject(expected);
   });
 
+  test.each([
+    ["雪灵兽", { hp: 62, speed: 75, physicalAttack: 51, magicalAttack: 14, physicalDefense: 67, magicalDefense: 62, total: 331 }],
+    ["幻雪兽", { hp: 83, speed: 100, physicalAttack: 68, magicalAttack: 19, physicalDefense: 89, magicalDefense: 82, total: 441 }],
+    ["友爱天天", { hp: 97, speed: 76, physicalAttack: 30, magicalAttack: 93, physicalDefense: 70, magicalDefense: 80, total: 446 }],
+    ["芽眼魔", { hp: 80, speed: 45, physicalAttack: 62, magicalAttack: 59, physicalDefense: 58, magicalDefense: 66, total: 370 }],
+    ["叶眼魔", { hp: 107, speed: 60, physicalAttack: 82, magicalAttack: 78, physicalDefense: 77, magicalDefense: 88, total: 492 }],
+    ["苞米仔", { hp: 92, speed: 60, physicalAttack: 79, magicalAttack: 80, physicalDefense: 88, magicalDefense: 88, total: 487 }],
+    ["守夜烛", { hp: 97, speed: 84, physicalAttack: 76, magicalAttack: 83, physicalDefense: 86, magicalDefense: 98, total: 524 }],
+  ])("同步 BWIKI 当前筛选页的 %s 种族值", (name, expected) => {
+    expect(spirit(name)?.raceStats).toEqual(expected);
+  });
+
   test("更新孢子、撒娇和示弱", () => {
     expect(skill("孢子")).toMatchObject({
       cost: 3,

@@ -34,6 +34,13 @@ import {
   isGaleTurbine,
   resolveWingExtensionSkill,
 } from "./wing-extension.js";
+import {
+  hasClownTrickTrait,
+  resolveClownTrickDamage,
+} from "./clown-trick.js";
+import { resolveBaronGreed } from "./baron-greed.js";
+import { resolveBloodlineMagicHealing } from "./bloodline-magic.js";
+import { resolvePowerOverride } from "./power-override.js";
 
 function finiteNumber(...values) {
   for (const value of values) {
@@ -51,14 +58,22 @@ function product(values) {
   }, 1);
 }
 
+function normalizedPower(value) {
+  return Number(Number(value).toFixed(12));
+}
+
 function asMultiplierList(value) {
   if (Array.isArray(value)) return value;
   return value === undefined ? [] : [value];
 }
 
+function clampAbilityStage(value) {
+  return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
+}
+
 function abilityLevelMultiplier(attackStage, defenseStage) {
-  const attackPercent = Number(attackStage) * 10;
-  const defensePercent = Number(defenseStage) * 10;
+  const attackPercent = clampAbilityStage(attackStage) * 10;
+  const defensePercent = clampAbilityStage(defenseStage) * 10;
   const numerator =
     1 +
     Math.max(attackPercent, 0) / 100 +
@@ -71,7 +86,7 @@ function abilityLevelMultiplier(attackStage, defenseStage) {
 }
 
 function abilityAdjustedStat(value, stage) {
-  const percent = Number(stage) * 10;
+  const percent = clampAbilityStage(stage) * 10;
   const numerator = 1 + Math.max(percent, 0) / 100;
   const denominator = 1 + Math.max(-percent, 0) / 100;
   return Number(value) * numerator / denominator;
@@ -281,6 +296,10 @@ function mergeChoiceTraitResults(
       (total, result) => total + result.additionalDamage,
       0,
     ),
+    traitDamage: results.reduce(
+      (total, result) => total + (Number(result.traitDamage) || 0),
+      0,
+    ),
     choiceTraitSequence: {
       executions: resultExecutions,
       text: `${traitName}：第一段 ${first.totalDamage} + 第二段 ${second.totalDamage} = ${totalDamage}${firstUsesResponse ? "（仅第一段触发应对）" : ""}`,
@@ -300,6 +319,9 @@ function mergeChoiceTraitResults(
     ),
     markSettlements: results.flatMap(
       (result) => result.markSettlements ?? [],
+    ),
+    traitSettlements: results.flatMap(
+      (result) => result.traitSettlements ?? [],
     ),
     totalDamage,
     warnings: [...new Set(results.flatMap((result) => result.warnings ?? []))],
@@ -329,6 +351,9 @@ function mergeGaleTurbineResults({
     ...turbineResult,
     additionalDamage:
       companionResult.additionalDamage + turbineResult.additionalDamage,
+    traitDamage:
+      (Number(companionResult.traitDamage) || 0) +
+      (Number(turbineResult.traitDamage) || 0),
     choiceTraitSequence: {
       executions,
       text: `${companionResult.skillName} ${companionResult.totalDamage} + 疾风涡轮 ${turbineResult.totalDamage} = ${totalDamage}`,
@@ -343,6 +368,10 @@ function mergeGaleTurbineResults({
     hpPercent: (totalDamage / Math.max(1, defender.panelStats.hp)) * 100,
     lethal: currentHp <= totalDamage,
     mainDamage: companionResult.mainDamage + turbineResult.mainDamage,
+    traitSettlements: [
+      ...(companionResult.traitSettlements ?? []),
+      ...(turbineResult.traitSettlements ?? []),
+    ],
     sources: [...new Set([
       ...(companionResult.sources ?? []),
       ...(turbineResult.sources ?? []),
@@ -428,8 +457,6 @@ function calculateSkillResult({
   const details = entryDetails(entry);
   const directionOverrides = direction.overrides ?? {};
   const slotOverrides = details.overrides ?? {};
-  const usesDisplayedPower =
-    mode === "single" && directionOverrides.powerMode === "displayed";
   const usesLockedPower = finiteNumber(lockedPower) !== undefined;
   const sourceNegativeMark = normalizeMarkSlot(
     sourceMarks?.negative,
@@ -523,6 +550,49 @@ function calculateSkillResult({
           Math.max(1, defender.panelStats.hp)) *
         100,
   };
+  const attackerMaximumHp = Math.max(0, Number(attacker.panelStats.hp) || 0);
+  const normalizedAttackerCurrentHp = Math.min(
+    attackerMaximumHp,
+    Math.max(
+      0,
+      finiteNumber(
+        attackerCurrentHp,
+        attacker.currentHp,
+        attackerMaximumHp,
+      ) ?? 0,
+    ),
+  );
+  const bloodlineMagicHealing = resolveBloodlineMagicHealing({
+    context,
+    maximumHp: attackerMaximumHp,
+  });
+  const bloodlineHealingSources = bloodlineMagicHealing.active
+    ? [
+        {
+          amount: bloodlineMagicHealing.healing,
+          label: bloodlineMagicHealing.sourceLabel,
+        },
+      ]
+    : [];
+  const clownTrickFor = (mainDamage) => resolveClownTrickDamage({
+    attackerTraits: attacker.traits,
+    attackerCurrentHp: normalizedAttackerCurrentHp,
+    attackerMaximumHp,
+    context,
+    mainDamage,
+    externalHealingSources: bloodlineHealingSources,
+    persistentLifestealPercent: directionOverrides.lifestealPercent,
+    skill,
+  });
+  const baronGreedFor = (mainDamage) => resolveBaronGreed({
+    attackerTraits: attacker.traits,
+    attackerCurrentHp: normalizedAttackerCurrentHp,
+    attackerMaximumHp,
+    context,
+    mainDamage,
+    persistentLifestealPercent: directionOverrides.lifestealPercent,
+    skill,
+  });
   const traitHitCount = resolveTraitHitCountBonus({
     traits: attacker.traits,
     context,
@@ -574,7 +644,7 @@ function calculateSkillResult({
         getDefaultHitCount(skill),
       ) ?? 1;
     const panelTraitResolution = resolveTraitMultipliers({
-      attackerTraits: usesDisplayedPower ? [] : attacker.traits,
+      attackerTraits: attacker.traits,
       defenderTraits: defender.traits,
       skill: { ...skill, category: "physical" },
       attacker,
@@ -662,6 +732,103 @@ function calculateSkillResult({
           ) + panelTrait.defenderSpeedFlatBonus,
       },
     };
+    const clownTrick = clownTrickFor(0);
+    if (clownTrick.active) {
+      const maximumHp = Math.max(0, Number(defender.panelStats.hp) || 0);
+      const currentHp = Math.min(
+        maximumHp,
+        Math.max(
+          0,
+          finiteNumber(
+            defenderCurrentHp,
+            defender.currentHp,
+            maximumHp,
+          ) ?? 0,
+        ),
+      );
+      const hitCount =
+        fixedHitCount?.hitCount ??
+        resolveHitCount(baseHitCount, automaticHitCountAdd);
+      return {
+        additionalDamage: 0,
+        automaticHitCountAdd,
+        combatPanel,
+        effectivePower: 0,
+        formulaSteps: [
+          formulaStep(
+            "戏耍特性伤害",
+            {
+              actualHealing: clownTrick.actualHealing,
+              missingHp: clownTrick.missingHp,
+              requestedHealing: clownTrick.requestedHealing,
+            },
+            0,
+            clownTrick.damage,
+            "reviewed-trait:clown-trick-v1",
+          ),
+        ],
+        hitCount,
+        hpPercent: maximumHp > 0 ? clownTrick.damage / maximumHp * 100 : 0,
+        lethal: currentHp <= clownTrick.damage,
+        mainDamage: 0,
+        markSettlements: [],
+        skillId: skill.id,
+        skillName: skill.name,
+        skillPower: 0,
+        sources: ["reviewed-trait:clown-trick-v1"],
+        status: "exact",
+        totalDamage: clownTrick.damage,
+        traitDamage: clownTrick.damage,
+        traitSettlements: [clownTrick.settlement].filter(Boolean),
+        typeLabel: "无·特性",
+        typeMultiplier: 1,
+        warnings: [],
+      };
+    }
+    const baronGreed = baronGreedFor(0);
+    if (baronGreed.active) {
+      const hitCount =
+        fixedHitCount?.hitCount ??
+        resolveHitCount(baseHitCount, automaticHitCountAdd);
+      return {
+        additionalDamage: 0,
+        automaticHitCountAdd,
+        combatPanel,
+        effectivePower: 0,
+        formulaSteps: [
+          formulaStep(
+            "贪得无厌溢出回复",
+            {
+              missingHp: baronGreed.missingHp,
+              requestedHealing: baronGreed.requestedHealing,
+            },
+            0,
+            baronGreed.attackLevelStageAdd,
+            "reviewed-trait:baron-greed-v1",
+          ),
+        ],
+        hitCount,
+        hpPercent: 0,
+        lethal: false,
+        mainDamage: 0,
+        markSettlements: [],
+        postAttackEffects: {
+          attackLevelStageAdd: baronGreed.attackLevelStageAdd,
+          source: "贪得无厌",
+        },
+        skillId: skill.id,
+        skillName: skill.name,
+        skillPower: 0,
+        sources: ["reviewed-trait:baron-greed-v1"],
+        status: "exact",
+        totalDamage: 0,
+        traitDamage: 0,
+        traitSettlements: [baronGreed.settlement].filter(Boolean),
+        typeLabel: skill.type,
+        typeMultiplier: 1,
+        warnings: [],
+      };
+    }
     return unresolvedResult(
       skill,
       {
@@ -702,15 +869,31 @@ function calculateSkillResult({
     side: sourceSide,
     skill,
   });
-  const basePowerOverride = finiteNumber(
+  const legacyBasePower = finiteNumber(
     slotOverrides.basePower,
     slotOverrides.basePowerOverride,
     details.basePowerOverride,
     mode === "single" ? directionOverrides.basePower : undefined,
     mode === "single" ? directionOverrides.basePowerOverride : undefined,
   );
-  if (basePowerOverride !== undefined) {
-    context.basePowerOverride = basePowerOverride;
+  const powerOverride = resolvePowerOverride({
+    current:
+      slotOverrides.powerOverride ??
+      details.powerOverride ??
+      (mode === "single" ? directionOverrides.powerOverride : undefined),
+    legacyBasePower,
+    legacyDisplayedPower: finiteNumber(
+      slotOverrides.displayedPower,
+      details.displayedPower,
+      mode === "single" ? directionOverrides.displayedPower : undefined,
+    ),
+    legacyPowerMode:
+      slotOverrides.powerMode ??
+      details.powerMode ??
+      (mode === "single" ? directionOverrides.powerMode : undefined),
+  });
+  if (powerOverride.mode === "legacy-base") {
+    context.basePowerOverride = powerOverride.value;
   }
 
   const attackLevelStage = finiteNumber(
@@ -725,7 +908,7 @@ function calculateSkillResult({
   );
   const traitResolutionForCategory = (category) =>
     resolveTraitMultipliers({
-      attackerTraits: usesDisplayedPower ? [] : attacker.traits,
+      attackerTraits: attacker.traits,
       defenderTraits: defender.traits,
       skill: { ...skill, category },
       attacker,
@@ -803,19 +986,12 @@ function calculateSkillResult({
         steps: [],
         value: finiteNumber(lockedPower) ?? 0,
       }
-    : usesDisplayedPower
-    ? {
-        status: "exact",
-        steps: [],
-        value:
-          finiteNumber(directionOverrides.displayedPower, skill.basePower) ?? 0,
-      }
     : resolveSkillPower(skill, context);
   if (powerResolution.status !== "exact") {
     return unresolvedResult(skill, powerResolution);
   }
 
-  const baseFixedPowerAdd = usesDisplayedPower || usesLockedPower
+  const baseFixedPowerAdd = usesLockedPower
     ? 0
     : finiteNumber(
         slotOverrides.fixedPowerAdd,
@@ -823,17 +999,20 @@ function calculateSkillResult({
         directionOverrides.fixedPowerAdd,
         direction.fixedPowerAdd,
       ) ?? 0;
-  const scopedFixedPowerAdd = usesDisplayedPower || usesLockedPower
+  const scopedFixedPowerAdd = usesLockedPower
     ? 0
     : finiteNumber(
         directionOverrides.fixedPowerAddsBySlot?.[skillPosition],
         0,
       ) ?? 0;
   const fixedPowerAdd = baseFixedPowerAdd + scopedFixedPowerAdd;
-  const markFixedPowerAdd = usesDisplayedPower || usesLockedPower
+  const markFixedPowerAdd = usesLockedPower
     ? 0
     : sourceMarkEffects.fixedPowerAdd;
-  const percentageAdds = usesDisplayedPower || usesLockedPower
+  const skillPercentageAdds = usesLockedPower
+    ? []
+    : asMultiplierList(powerResolution.powerPercentAdds);
+  const statusPercentageAdds = usesLockedPower
     ? []
     : [
         ...asMultiplierList(direction.skillPowerPercentAdds),
@@ -843,13 +1022,32 @@ function calculateSkillResult({
         ...asMultiplierList(
           directionOverrides.skillPowerPercentAddsBySlot?.[skillPosition],
         ),
-        ...(traitResolution.powerPercentAdd === 0
-          ? []
-          : [traitResolution.powerPercentAdd]),
-        ...(sourceMarkEffects.powerPercentAdd === 0
-          ? []
-          : [sourceMarkEffects.powerPercentAdd]),
       ];
+  const traitPercentageAdds =
+    usesLockedPower || traitResolution.powerPercentAdd === 0
+      ? []
+      : [traitResolution.powerPercentAdd];
+  const nonMarkPercentageAdds = [
+    ...skillPercentageAdds,
+    ...statusPercentageAdds,
+    ...traitPercentageAdds,
+  ];
+  const hiddenPanelPowerPercentAdd = usesLockedPower
+    ? 0
+    : sourceMarkEffects.hiddenPanelPowerPercentAdd ?? 0;
+  const visibleMarkPowerPercentAdd = usesLockedPower
+    ? 0
+    : sourceMarkEffects.powerPercentAdd - hiddenPanelPowerPercentAdd;
+  const visiblePercentageAdds = [
+    ...nonMarkPercentageAdds,
+    ...(visibleMarkPowerPercentAdd === 0 ? [] : [visibleMarkPowerPercentAdd]),
+  ];
+  const percentageAdds = [
+    ...visiblePercentageAdds,
+    ...(hiddenPanelPowerPercentAdd === 0
+      ? []
+      : [hiddenPanelPowerPercentAdd]),
+  ];
   const powerAfterFixed = powerResolution.value + fixedPowerAdd;
   const powerAfterMarkFixed = powerAfterFixed + markFixedPowerAdd;
   const traitFixedPowerAdd = usesLockedPower
@@ -857,22 +1055,73 @@ function calculateSkillResult({
     : traitResolution.fixedPowerAdd;
   const powerAfterTraitFixed =
     powerAfterMarkFixed + traitFixedPowerAdd;
-  const bloodlineFixedPowerAdd =
-    usesDisplayedPower || usesLockedPower
-      ? 0
-      : attackerBloodline.fixedPowerAdd;
+  const bloodlineFixedPowerAdd = usesLockedPower
+    ? 0
+    : attackerBloodline.fixedPowerAdd;
   const powerAfterBloodlineFixed =
     powerAfterTraitFixed + bloodlineFixedPowerAdd;
-  const contractFixedPowerAdd =
-    usesDisplayedPower || usesLockedPower
-      ? 0
-      : attackerContract.fixedPowerAdd;
+  const contractFixedPowerAdd = usesLockedPower
+    ? 0
+    : attackerContract.fixedPowerAdd;
   const powerAfterContractFixed =
     powerAfterBloodlineFixed + contractFixedPowerAdd;
-  const effectivePower =
+  const automaticVisibleActualPower =
+    powerAfterContractFixed *
+    (1 + visiblePercentageAdds.reduce(
+      (sum, value) => sum + (Number(value) || 0),
+      0,
+    ));
+  const automaticActualPower =
     powerAfterContractFixed *
     (1 + percentageAdds.reduce((sum, value) => sum + (Number(value) || 0), 0));
-  const traitAdjustedPower = effectivePower;
+  const automaticStaticPower =
+    powerAfterFixed *
+    (1 + [...skillPercentageAdds, ...statusPercentageAdds].reduce(
+      (sum, value) => sum + (Number(value) || 0),
+      0,
+    ));
+  const staticPowerOverride = powerOverride.mode === "static";
+  const staticPower = normalizedPower(
+    staticPowerOverride
+      ? powerOverride.value
+      : Math.round(automaticStaticPower),
+  );
+  const manualPowerAfterMarkFixed = staticPower + markFixedPowerAdd;
+  const manualPowerAfterTraitFixed =
+    manualPowerAfterMarkFixed + traitFixedPowerAdd;
+  const manualPowerAfterBloodlineFixed =
+    manualPowerAfterTraitFixed + bloodlineFixedPowerAdd;
+  const manualPowerAfterContractFixed =
+    manualPowerAfterBloodlineFixed + contractFixedPowerAdd;
+  const manualVisiblePercentageAdds = [
+    ...traitPercentageAdds,
+    ...(visibleMarkPowerPercentAdd === 0 ? [] : [visibleMarkPowerPercentAdd]),
+  ];
+  const manualPercentageAdds = [
+    ...manualVisiblePercentageAdds,
+    ...(hiddenPanelPowerPercentAdd === 0
+      ? []
+      : [hiddenPanelPowerPercentAdd]),
+  ];
+  const manualVisibleActualPower =
+    manualPowerAfterContractFixed *
+    (1 + manualVisiblePercentageAdds.reduce(
+      (sum, value) => sum + (Number(value) || 0),
+      0,
+    ));
+  const manualActualPower =
+    manualPowerAfterContractFixed *
+    (1 + manualPercentageAdds.reduce(
+      (sum, value) => sum + (Number(value) || 0),
+      0,
+    ));
+  const actualPower = normalizedPower(
+    staticPowerOverride ? manualActualPower : automaticActualPower,
+  );
+  const traitAdjustedPower = actualPower;
+  const visibleActualPower = staticPowerOverride
+    ? manualVisibleActualPower
+    : automaticVisibleActualPower;
 
   const baseCombatPanel = {
     attacker: {
@@ -1010,19 +1259,20 @@ function calculateSkillResult({
     Math.max(0, Math.floor(finiteNumber(context.weatherRainTurns) ?? 0)),
   );
   const weatherMultiplier =
-    !usesDisplayedPower && weatherRainTurns > 0 && skill.type === "水"
-      ? 1.75
-      : 1;
-  const powerAfterStab = traitAdjustedPower * stabMultiplier;
-  const powerAfterType =
-    powerAfterStab * (usesDisplayedPower ? 1 : typeMultiplier);
+    weatherRainTurns > 0 && skill.type === "水" ? 1.75 : 1;
+  const powerAfterStab = visibleActualPower * stabMultiplier;
+  const powerAfterType = powerAfterStab * typeMultiplier;
   const powerAfterWeather = powerAfterType * weatherMultiplier;
-  const powerAfterLevels =
-    powerAfterWeather *
-    (usesDisplayedPower ? 1 : attackDefenseLevelMultiplier);
-  const powerAfterOther =
-    powerAfterLevels * (usesDisplayedPower ? 1 : otherPowerMultiplier);
-  const displayedPower = Math.round(powerAfterOther);
+  const powerAfterLevels = powerAfterWeather * attackDefenseLevelMultiplier;
+  const automaticPanelPower = powerAfterLevels * otherPowerMultiplier;
+  const calculationPower = powerOverride.mode === "panel"
+    ? powerOverride.value * stabMultiplier
+    : traitAdjustedPower * stabMultiplier * typeMultiplier * weatherMultiplier *
+      attackDefenseLevelMultiplier * otherPowerMultiplier;
+  const panelPower = powerOverride.mode === "panel"
+    ? Math.round(calculationPower)
+    : Math.round(automaticPanelPower);
+  const displayedPower = panelPower;
   const damageReductionMultiplier =
     Math.max(0, finiteNumber(direction.reduction) ?? 1) *
     traitResolution.damageReductionMultiplier *
@@ -1071,7 +1321,7 @@ function calculateSkillResult({
     );
   const mainDamage = calculateDamage({
     attackerStat,
-    displayedPower: powerAfterOther,
+    displayedPower: calculationPower,
     defenderDefense,
     damageReductionMultiplier,
     hitCount,
@@ -1112,6 +1362,8 @@ function calculateSkillResult({
     attackDefenseLevelMultiplier,
     otherPowerMultiplier,
   });
+  const clownTrick = clownTrickFor(mainDamage.total);
+  const baronGreed = baronGreedFor(mainDamage.total);
   const targetMarkSettlement = targetNegativeMarkSettlement({
     additionalDamage: additionalDamage.total,
     markSlot:
@@ -1146,7 +1398,14 @@ function calculateSkillResult({
             ? `${settlement.text} · 追加 ${additionalDamage.total} 伤害`
           : settlement.text,
     }));
-  const totalDamage = mainDamage.total + additionalDamage.total;
+  if (clownTrick.settlement) {
+    traitSettlements.push(clownTrick.settlement);
+  }
+  if (baronGreed.settlement) {
+    traitSettlements.push(baronGreed.settlement);
+  }
+  const totalDamage =
+    mainDamage.total + additionalDamage.total + clownTrick.damage;
   const currentHp = Math.min(
     defender.panelStats.hp,
     Math.max(
@@ -1160,21 +1419,90 @@ function calculateSkillResult({
   );
   const maximumHp = Math.max(0, Number(defender.panelStats.hp) || 0);
   const hpPercent = maximumHp > 0 ? totalDamage / maximumHp * 100 : 0;
-  const powerFormulaSteps = usesDisplayedPower
+  const panelPowerOverride = powerOverride.mode === "panel";
+  const powerFormulaSteps = panelPowerOverride
     ? [
         formulaStep(
           "游戏内显示威力",
-          powerResolution.value,
-          powerResolution.value,
-          powerResolution.value,
+          powerOverride.value,
+          powerOverride.value,
+          panelPower,
           "battle-input",
+        ),
+      ]
+    : staticPowerOverride
+    ? [
+        formulaStep(
+          "手动静态威力",
+          powerOverride.value,
+          powerOverride.value,
+          staticPower,
+          "battle-input",
+        ),
+        formulaStep(
+          "外部固定威力",
+          {
+            bloodline: bloodlineFixedPowerAdd,
+            contract: contractFixedPowerAdd,
+            mark: markFixedPowerAdd,
+            trait: traitFixedPowerAdd,
+          },
+          staticPower,
+          manualPowerAfterContractFixed,
+          "automatic",
+        ),
+        formulaStep(
+          "外部威力加成",
+          manualPercentageAdds,
+          manualPowerAfterContractFixed,
+          actualPower,
+          manualPercentageAdds.length === 0 ? "default" : "battle-input",
         ),
         formulaStep(
           "本系",
           stabMultiplier,
-          powerResolution.value,
+          visibleActualPower,
           powerAfterStab,
           "automatic",
+        ),
+        formulaStep(
+          "属性克制",
+          defender.types,
+          powerAfterStab,
+          powerAfterType,
+          snapshot.typeChart?.source ?? "builtin-type-chart-v1",
+        ),
+        formulaStep(
+          "天气",
+          {
+            multiplier: weatherMultiplier,
+            remainingTurns: weatherRainTurns,
+            weather: weatherRainTurns > 0 ? "雨天" : "无天气",
+          },
+          powerAfterType,
+          powerAfterWeather,
+          weatherRainTurns > 0 ? "battle-weather:rain-v1" : "default",
+        ),
+        formulaStep(
+          "攻防等级",
+          attackDefenseLevelMultiplier,
+          powerAfterWeather,
+          powerAfterLevels,
+          "direction-state",
+        ),
+        formulaStep(
+          "其他威力乘区",
+          otherPowerMultiplier,
+          powerAfterLevels,
+          automaticPanelPower,
+          "direction-state",
+        ),
+        formulaStep(
+          "显示威力",
+          { method: "round" },
+          calculationPower,
+          panelPower,
+          "damage-formula-v1",
         ),
       ]
     : [
@@ -1235,7 +1563,7 @@ function calculateSkillResult({
           "技能威力百分比",
           percentageAdds,
           powerAfterContractFixed,
-          effectivePower,
+          automaticActualPower,
           percentageAdds.length === 0 ? "default" : "battle-input",
         ),
         formulaStep(
@@ -1277,13 +1605,13 @@ function calculateSkillResult({
           "其他威力乘区",
           otherPowerMultiplier,
           powerAfterLevels,
-          powerAfterOther,
+          automaticPanelPower,
           "direction-state",
         ),
         formulaStep(
           "显示威力",
           { method: "round" },
-          powerAfterOther,
+          calculationPower,
           displayedPower,
           "damage-formula-v1",
         ),
@@ -1297,7 +1625,6 @@ function calculateSkillResult({
       "panel-stat",
     ),
     ...powerFormulaSteps,
-    ...(usesDisplayedPower ? traitResolution.steps : []),
     ...traitHitCount.steps,
     ...fixedHitCountSteps,
     formulaStep(
@@ -1306,7 +1633,7 @@ function calculateSkillResult({
         level,
         coefficient: mainDamage.coefficient,
         attackerStat,
-        calculationPower: powerAfterOther,
+        calculationPower,
         damageReductionMultiplier,
         defenderDefense,
         displayedPower,
@@ -1343,6 +1670,38 @@ function calculateSkillResult({
       additionalDamage.total,
       "reviewed-rule:starfall-v1",
     ),
+    ...(clownTrick.active
+      ? [
+          formulaStep(
+            "戏耍特性伤害",
+            {
+              actualHealing: clownTrick.actualHealing,
+              lifestealPercent: clownTrick.lifestealPercent,
+              missingHp: clownTrick.missingHp,
+              requestedHealing: clownTrick.requestedHealing,
+            },
+            mainDamage.total + additionalDamage.total,
+            clownTrick.damage,
+            "reviewed-trait:clown-trick-v1",
+          ),
+        ]
+      : []),
+    ...(baronGreed.active
+      ? [
+          formulaStep(
+            "贪得无厌溢出回复",
+            {
+              lifestealPercent: baronGreed.effectiveLifestealPercent,
+              missingHp: baronGreed.missingHp,
+              overflowHealing: baronGreed.overflowHealing,
+              requestedHealing: baronGreed.requestedHealing,
+            },
+            mainDamage.total,
+            baronGreed.attackLevelStageAdd,
+            "reviewed-trait:baron-greed-v1",
+          ),
+        ]
+      : []),
   ];
   const sources = [
     skill.provenance,
@@ -1356,6 +1715,8 @@ function calculateSkillResult({
     ...(attackerContract.active || defenderContract.active
       ? ["reviewed-trait:contract-shape-v1"]
       : []),
+    ...(clownTrick.active ? ["reviewed-trait:clown-trick-v1"] : []),
+    ...(baronGreed.active ? ["reviewed-trait:baron-greed-v1"] : []),
   ].filter(Boolean);
 
   const attackStageFor = (category) => attackStageForCategory(category);
@@ -1407,16 +1768,30 @@ function calculateSkillResult({
     skillId: skill.id,
     skillName: skill.name,
     resolvedPower: powerResolution.value,
-    skillPower: Math.round(traitAdjustedPower),
-    effectivePower: displayedPower,
+    staticPower,
+    staticPowerPercentAdds: staticPowerOverride
+      ? []
+      : [...skillPercentageAdds, ...statusPercentageAdds],
+    actualPower,
+    panelPower,
+    powerSource: powerOverride.source,
+    skillPower: actualPower,
+    effectivePower: panelPower,
     automaticHitCountAdd,
     hitCount: Math.max(1, Math.floor(Number(hitCount) || 1)),
     totalDamage,
     mainDamage: mainDamage.total,
     additionalDamage: additionalDamage.total,
+    traitDamage: clownTrick.damage,
     combatPanel,
     markSettlements,
     traitSettlements,
+    postAttackEffects: baronGreed.active
+      ? {
+          attackLevelStageAdd: baronGreed.attackLevelStageAdd,
+          source: "贪得无厌",
+        }
+      : undefined,
     hpPercent,
     lethal: currentHp <= totalDamage,
     status: "exact",
@@ -1567,6 +1942,7 @@ function calculateDirectTraitDamageResult({
     sources: [rule.id, ...traitResolution.sources],
     status: "exact",
     totalDamage: damage.total,
+    traitDamage: 0,
     typeLabel: rule.typeLabel,
     typeMultiplier: 1,
     warnings: traitResolution.warnings,
@@ -1792,12 +2168,88 @@ function calculateDirection({
           rule: findDirectTraitDamageRule(attacker.traits),
         })
       : null;
+  const bloodlineMagicHealing = resolveBloodlineMagicHealing({
+    context: direction.context,
+    maximumHp: attacker.panelStats.hp,
+  });
+  const bloodlineSettlement =
+    bloodlineMagicHealing.active && hasClownTrickTrait(attacker.traits)
+      ? resolveClownTrickDamage({
+          attackerTraits: attacker.traits,
+          attackerCurrentHp,
+          attackerMaximumHp: attacker.panelStats.hp,
+          context: direction.context,
+          externalHealingSources: [
+            {
+              amount: bloodlineMagicHealing.healing,
+              label: bloodlineMagicHealing.sourceLabel,
+            },
+          ],
+          mainDamage: 0,
+          persistentLifestealPercent: 0,
+          skill: null,
+        })
+      : null;
+  const bloodlineResult = bloodlineSettlement?.active
+    ? {
+        additionalDamage: 0,
+        combatPanel: results.find((result) => result?.combatPanel)?.combatPanel,
+        effectivePower: 0,
+        formulaSteps: [
+          formulaStep(
+            "血脉魔法回复",
+            `${attacker.panelStats.hp} × 50%`,
+            bloodlineMagicHealing.healing,
+            bloodlineMagicHealing.healing,
+            "bloodline-magic:photosynthetic-healing-v1",
+          ),
+          formulaStep(
+            "戏耍特性伤害",
+            {
+              actualHealing: bloodlineSettlement.actualHealing,
+              missingHp: bloodlineSettlement.missingHp,
+              requestedHealing: bloodlineSettlement.requestedHealing,
+            },
+            bloodlineSettlement.requestedHealing,
+            bloodlineSettlement.damage,
+            "reviewed-trait:clown-trick-v1",
+          ),
+        ],
+        hitCount: 1,
+        hpPercent:
+          defender.panelStats.hp > 0
+            ? (bloodlineSettlement.damage / defender.panelStats.hp) * 100
+            : 0,
+        lethal: currentHp <= bloodlineSettlement.damage,
+        mainDamage: 0,
+        skillId: "bloodline:photosynthetic-healing",
+        skillName: "戏耍·光合治愈",
+        skillPower: 0,
+        sourceKind: "bloodline",
+        sources: [
+          "bloodline-magic:photosynthetic-healing-v1",
+          "reviewed-trait:clown-trick-v1",
+        ],
+        status: "exact",
+        totalDamage: bloodlineSettlement.damage,
+        traitDamage: bloodlineSettlement.damage,
+        traitSettlements: bloodlineSettlement.settlement
+          ? [bloodlineSettlement.settlement]
+          : [],
+        typeLabel: "无·血脉",
+        typeMultiplier: 1,
+        warnings: [],
+      }
+    : null;
   const selectedResult =
     direction.selectedDamageSource === "trait" && traitResult
       ? traitResult
-      : results[selectedIndex] ?? emptySlotResult();
+      : direction.selectedDamageSource === "bloodline" && bloodlineResult
+        ? bloodlineResult
+        : results[selectedIndex] ?? emptySlotResult();
 
   return {
+    bloodlineResult,
     results,
     selectedResult,
     traitResult,
@@ -1894,7 +2346,10 @@ function withListenBridgeCounters({
     selectedResult:
       direction.selectedDamageSource === "trait" && directionResult.traitResult
         ? directionResult.traitResult
-        : results[selectedIndex] ?? emptySlotResult(),
+        : direction.selectedDamageSource === "bloodline" &&
+            directionResult.bloodlineResult
+          ? directionResult.bloodlineResult
+          : results[selectedIndex] ?? emptySlotResult(),
   };
 }
 

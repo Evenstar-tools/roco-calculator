@@ -1,6 +1,33 @@
 import { buildCombatState } from "../shared/build-combat-state.js";
 import { calculateMatchup } from "../shared/domain/calculate.js";
+import {
+  analyzeDefensiveTypes,
+  analyzeSkillTypeCoverage,
+} from "../shared/domain/type-chart.js";
+import { getSnapshotIndexes } from "../shared/domain/snapshot-indexes.js";
+import { resolveWingExtensionSkill } from "../shared/domain/wing-extension.js";
 import { createCombatantView } from "./combatant.js";
+
+function createTypeAnalysis(snapshot, side, subjectName) {
+  const indexes = getSnapshotIndexes(snapshot);
+  const spirit = indexes.spirits[side.spiritId];
+  if (!spirit) return null;
+  const traits = (spirit.traitIds ?? [])
+    .map((traitId) => indexes.traits[traitId])
+    .filter(Boolean);
+  const skills = (side.skills?.four ?? [])
+    .map((entry) => typeof entry === "string"
+      ? entry
+      : entry?.skillId ?? entry?.id)
+    .map((skillId) => indexes.skills[skillId])
+    .filter(Boolean)
+    .map((skill) => resolveWingExtensionSkill({ skill, traits }));
+  return {
+    subjectName,
+    defense: analyzeDefensiveTypes(spirit.types, snapshot.typeChart),
+    offense: analyzeSkillTypeCoverage(skills, snapshot.typeChart),
+  };
+}
 
 const UNRESOLVED_MESSAGE = "当前规则暂未收录";
 const RECOVERABLE_CONFIGURATION_MESSAGE =
@@ -128,12 +155,15 @@ function toResultRow(result, defenderHp, defenderMaxHp) {
 }
 
 export function selectDamageResult({
+  bloodlineResult,
   rows,
   selectedDamageSource,
   selectedIndex,
   traitResult,
 }) {
-  return selectedDamageSource === "trait" && traitResult
+  return selectedDamageSource === "bloodline" && bloodlineResult
+    ? { selectedDamageSource: "bloodline", selectedResult: bloodlineResult }
+    : selectedDamageSource === "trait" && traitResult
     ? { selectedDamageSource: "trait", selectedResult: traitResult }
     : {
         selectedDamageSource: "skill",
@@ -174,6 +204,7 @@ export function createCalculationView(snapshot, state, direction) {
     Number.isFinite(defenderMaxHp) && defenderMaxHp > 0
       ? defenderHp / defenderMaxHp * 100
       : null;
+  const typeAnalysis = createTypeAnalysis(snapshot, attackerSide, attackerName);
 
   try {
     const calculation = calculateMatchup(
@@ -186,6 +217,9 @@ export function createCalculationView(snapshot, state, direction) {
     );
     const traitResult = directionResult.traitResult
       ? toResultRow(directionResult.traitResult, defenderHp, defenderMaxHp)
+      : null;
+    const bloodlineResult = directionResult.bloodlineResult
+      ? toResultRow(directionResult.bloodlineResult, defenderHp, defenderMaxHp)
       : null;
     const selectedIndex =
       state.mode === "four"
@@ -206,6 +240,7 @@ export function createCalculationView(snapshot, state, direction) {
       selectedDamageSource,
       selectedResult: selectedRow,
     } = selectDamageResult({
+      bloodlineResult,
       rows,
       selectedDamageSource:
         state.directions[normalizedDirection]?.selectedDamageSource,
@@ -216,6 +251,7 @@ export function createCalculationView(snapshot, state, direction) {
     if (selectedRow?.status !== "exact") {
       return {
         attackerName,
+        bloodlineResult,
         defenderHp,
         defenderHpPercent,
         defenderMaxHp,
@@ -226,11 +262,13 @@ export function createCalculationView(snapshot, state, direction) {
         selectedDamageSource,
         status: "unresolved",
         traitResult,
+        typeAnalysis,
       };
     }
 
     return {
       attackerName,
+      bloodlineResult,
       defenderHp,
       defenderHpPercent,
       defenderMaxHp,
@@ -240,6 +278,7 @@ export function createCalculationView(snapshot, state, direction) {
       selectedDamageSource,
       status: "exact",
       traitResult,
+      typeAnalysis,
     };
   } catch (error) {
     if (!isRecoverableConfigurationError(error)) {
@@ -247,6 +286,7 @@ export function createCalculationView(snapshot, state, direction) {
     }
     return {
       attackerName,
+      bloodlineResult: null,
       defenderHp,
       defenderHpPercent,
       defenderMaxHp,
@@ -256,6 +296,7 @@ export function createCalculationView(snapshot, state, direction) {
       selectedResult: null,
       status: "unresolved",
       traitResult: null,
+      typeAnalysis,
     };
   }
 }

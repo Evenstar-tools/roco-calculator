@@ -25,7 +25,7 @@ const STAT_VIEW = [
 ];
 
 export function clampStage(value) {
-  return Math.min(50, Math.max(-50, Math.floor(Number(value) || 0)));
+  return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
 }
 
 export function stageMultiplier(stage) {
@@ -48,7 +48,8 @@ export function getSkillSlotView(snapshot, entry) {
     ...skill,
     slotContext: entry.context ?? {},
     slotHitCount: entry.hitCount,
-    slotPowerOverride:
+    slotPowerOverride: entry.overrides?.powerOverride ?? null,
+    slotLegacyBasePowerOverride:
       entry.overrides?.basePower ?? entry.basePowerOverride,
   };
 }
@@ -227,6 +228,16 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
     mode: state.mode,
     selectedResult: selected,
     selectedSkillName: selected.skillName ?? "未选择技能",
+    bloodlineResult: directionResult.bloodlineResult
+      ? {
+          damage: directionResult.bloodlineResult.totalDamage,
+          hpPercent: directionResult.bloodlineResult.hpPercent,
+          id: directionResult.bloodlineResult.skillId,
+          name: directionResult.bloodlineResult.skillName,
+          selected:
+            state.directions[direction].selectedDamageSource === "bloodline",
+        }
+      : null,
     traitResult: directionResult.traitResult
       ? {
           damage: directionResult.traitResult.totalDamage,
@@ -248,7 +259,7 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
       id: result?.skillId ?? `empty-${index}`,
       name: result?.skillName ?? `技能${index + 1}`,
       selected:
-        state.directions[direction].selectedDamageSource !== "trait" &&
+        state.directions[direction].selectedDamageSource === "skill" &&
         index ===
         (state.mode === "four"
           ? state.directions[direction].selectedSkillIndex

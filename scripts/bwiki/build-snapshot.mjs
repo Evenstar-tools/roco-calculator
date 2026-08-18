@@ -18,6 +18,10 @@ import {
 } from "./normalize.mjs";
 import { parseSpiritRows } from "./parse-spirits.mjs";
 import { parseSkillRows } from "./parse-skills.mjs";
+import {
+  applyNamedPortraitAssets,
+  fetchNamedPortraitAssets,
+} from "./portrait-bindings.mjs";
 import { applyReviewedOverrides } from "./reviewed-overrides.mjs";
 import { validateSnapshot } from "./validate.mjs";
 
@@ -297,7 +301,13 @@ export async function buildSnapshot(options = {}) {
 
   const liveSpirits = parseSpiritRows(spiritPage.html, spiritSource);
   const csvSpirits = parseSpiritCsv(csvText, csvSource);
-  const spirits = mergeVerifiedSpirits(liveSpirits, csvSpirits);
+  const verifiedSpirits = mergeVerifiedSpirits(liveSpirits, csvSpirits);
+  const namedPortraitAssets = await fetchNamedPortraitAssets(verifiedSpirits);
+  const portraitBindings = applyNamedPortraitAssets(
+    verifiedSpirits,
+    namedPortraitAssets,
+  );
+  const spirits = portraitBindings.spirits;
   const detailRevisionMap = await fetchRevisionsBatched(
     spirits.map((spirit) => spirit.fullName),
   );
@@ -449,6 +459,11 @@ export async function buildSnapshot(options = {}) {
         traits: traits.length,
         typeChart: 18,
         overrides: reviewed.applied.length,
+      },
+      portraitBindings: {
+        strategy: "exact-full-name-file-then-filter-row",
+        resolved: portraitBindings.resolved,
+        fallback: portraitBindings.fallback,
       },
       diff: {
         previousSnapshot: null,

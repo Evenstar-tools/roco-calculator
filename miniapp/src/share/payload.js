@@ -74,7 +74,27 @@ function compactOverrides(value) {
     5000,
     undefined,
   );
-  return basePower === undefined ? undefined : { p: basePower };
+  const attackLevelStage = integerInRange(
+    value?.attackLevelStage,
+    -6,
+    6,
+    undefined,
+  );
+  const defenseLevelStage = integerInRange(
+    value?.defenseLevelStage,
+    -6,
+    6,
+    undefined,
+  );
+  const compact = {};
+  if (basePower !== undefined) compact.p = basePower;
+  if (attackLevelStage !== undefined && attackLevelStage !== 0) {
+    compact.a = attackLevelStage;
+  }
+  if (defenseLevelStage !== undefined && defenseLevelStage !== 0) {
+    compact.d = defenseLevelStage;
+  }
+  return Object.keys(compact).length ? compact : undefined;
 }
 
 function compactSkill(entry) {
@@ -273,13 +293,18 @@ function stripOptionalInputs(payload) {
   }
 }
 
-function fitPayload(payload) {
+function fitPayloadWithMeta(payload) {
   let encoded = toBase64Url(JSON.stringify(payload));
-  if (encoded.length <= MAX_ENCODED_LENGTH) return encoded;
+  if (encoded.length <= MAX_ENCODED_LENGTH) {
+    return { completeness: "full", encoded };
+  }
 
+  payload.g = 1;
   stripOptionalInputs(payload);
   encoded = toBase64Url(JSON.stringify(payload));
-  if (encoded.length <= MAX_ENCODED_LENGTH) return encoded;
+  if (encoded.length <= MAX_ENCODED_LENGTH) {
+    return { completeness: "reduced", encoded };
+  }
 
   if (payload.m === "four") {
     delete payload.a.u;
@@ -289,14 +314,18 @@ function fitPayload(payload) {
     delete payload.d.k;
   }
   encoded = toBase64Url(JSON.stringify(payload));
-  if (encoded.length <= MAX_ENCODED_LENGTH) return encoded;
+  if (encoded.length <= MAX_ENCODED_LENGTH) {
+    return { completeness: "reduced", encoded };
+  }
 
   for (const side of [payload.a, payload.d]) {
     if (!Array.isArray(side.k)) continue;
     for (let index = side.k.length - 1; index >= 0; index -= 1) {
       side.k[index] = null;
       encoded = toBase64Url(JSON.stringify(payload));
-      if (encoded.length <= MAX_ENCODED_LENGTH) return encoded;
+      if (encoded.length <= MAX_ENCODED_LENGTH) {
+        return { completeness: "reduced", encoded };
+      }
     }
   }
 
@@ -305,14 +334,20 @@ function fitPayload(payload) {
       delete side.t[key];
       if (Object.keys(side.t).length === 0) delete side.t;
       encoded = toBase64Url(JSON.stringify(payload));
-      if (encoded.length <= MAX_ENCODED_LENGTH) return encoded;
+      if (encoded.length <= MAX_ENCODED_LENGTH) {
+        return { completeness: "reduced", encoded };
+      }
     }
   }
 
-  return toBase64Url(
-    JSON.stringify({
+  return {
+    completeness: "minimal",
+    encoded: toBase64Url(
+      JSON.stringify({
       v: SHARE_VERSION,
+      g: 2,
       m: payload.m,
+      ...(payload.y ? { y: payload.y } : {}),
       a: {
         s: payload.a.s,
         n: payload.a.n,
@@ -326,21 +361,27 @@ function fitPayload(payload) {
         ...(payload.d.t ? { t: payload.d.t } : {}),
       },
       z: payload.z,
-    }),
-  );
+      }),
+    ),
+  };
 }
 
-export function encodeSharePayload(state) {
+export function encodeSharePayloadWithMeta(state, { direction } = {}) {
   const payload = {
     v: SHARE_VERSION,
     m: state?.mode === "four" ? "four" : "single",
+    ...(direction === "reverse" ? { y: "r" } : {}),
     a: compactSide(state?.sides?.attacker),
     d: compactSide(state?.sides?.defender),
     f: compactDirection(state?.directions?.forward),
     r: compactDirection(state?.directions?.reverse),
     z: compactMarks(state?.marks, state?.directions),
   };
-  return fitPayload(payload);
+  return fitPayloadWithMeta(payload);
+}
+
+export function encodeSharePayload(state, options) {
+  return encodeSharePayloadWithMeta(state, options).encoded;
 }
 
 function validIds(snapshot, collection) {
@@ -366,7 +407,17 @@ function legalSkillIds(snapshot, spiritId, allSkillIds) {
 
 function expandOverrides(value) {
   const basePower = finiteInRange(value?.p, 0, 5000, undefined);
-  return basePower === undefined ? undefined : { basePower };
+  const attackLevelStage = integerInRange(value?.a, -6, 6, undefined);
+  const defenseLevelStage = integerInRange(value?.d, -6, 6, undefined);
+  const result = {};
+  if (basePower !== undefined) result.basePower = basePower;
+  if (attackLevelStage !== undefined && attackLevelStage !== 0) {
+    result.attackLevelStage = attackLevelStage;
+  }
+  if (defenseLevelStage !== undefined && defenseLevelStage !== 0) {
+    result.defenseLevelStage = defenseLevelStage;
+  }
+  return Object.keys(result).length ? result : undefined;
 }
 
 function expandSkill(entry, allowedSkillIds) {
@@ -499,10 +550,20 @@ function expandMarks(raw, legacyDirections) {
   return normalizeMarksState(value, legacyDirections);
 }
 
-export function decodeSharePayload(encoded, snapshot) {
+function invalidDecodeResult() {
+  return {
+    completeness: "minimal",
+    state: null,
+    status: "invalid",
+  };
+}
+
+export function decodeSharePayloadResult(encoded, snapshot) {
   try {
     const json = fromBase64Url(encoded);
-    if (!json || /[^\u0000-\u007f]/u.test(json)) return {};
+    if (!json || /[^\u0000-\u007f]/u.test(json)) {
+      return invalidDecodeResult();
+    }
     const payload = JSON.parse(json);
     if (
       !payload ||
@@ -510,7 +571,7 @@ export function decodeSharePayload(encoded, snapshot) {
       Array.isArray(payload) ||
       (payload.v !== 1 && payload.v !== SHARE_VERSION)
     ) {
-      return {};
+      return invalidDecodeResult();
     }
 
     const fallback = createInitialState(snapshot ?? {});
@@ -526,7 +587,7 @@ export function decodeSharePayload(encoded, snapshot) {
         fallback.directions.reverse,
       ),
     };
-    return {
+    const state = {
       ...fallback,
       mode: payload.m === "four" ? "four" : "single",
       marks: expandMarks(payload.v === 2 ? payload.z : undefined, directions),
@@ -550,9 +611,23 @@ export function decodeSharePayload(encoded, snapshot) {
       },
       directions,
     };
+    return {
+      completeness: payload.g === 2
+        ? "minimal"
+        : payload.g === 1
+          ? "reduced"
+          : "full",
+      direction: payload.y === "r" ? "reverse" : "forward",
+      state,
+      status: payload.v === SHARE_VERSION ? "valid" : "repaired",
+    };
   } catch {
-    return {};
+    return invalidDecodeResult();
   }
+}
+
+export function decodeSharePayload(encoded, snapshot) {
+  return decodeSharePayloadResult(encoded, snapshot).state ?? {};
 }
 
 function titleText(value, fallback) {
@@ -563,15 +638,19 @@ function titleText(value, fallback) {
   return normalized ? normalized.slice(0, 24) : fallback;
 }
 
-export function createShareMessage(view, state) {
-  const encoded = encodeSharePayload(state);
+export function createShareMessage(view, state, direction = "forward") {
+  const encoded = encodeSharePayload(state, { direction });
   const attacker = titleText(view?.attackerName, "攻击方");
   const defender = titleText(view?.defenderName, "防守方");
   const result = view?.selectedResult;
   const detail =
     view?.status === "exact" &&
     Number.isFinite(result?.totalDamage)
-      ? `${titleText(result.skillName, "当前技能")} ${result.totalDamage} 伤害`
+      ? `${titleText(result.skillName, "当前技能")} ${result.totalDamage}伤害${
+          Number.isFinite(result?.hpPercent)
+            ? `（${Number(result.hpPercent).toFixed(1)}% HP）`
+            : ""
+        }`
       : "计算配置";
 
   return {

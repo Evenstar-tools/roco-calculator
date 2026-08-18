@@ -94,6 +94,11 @@ export default function ResultActionPanel({
                   <Text className="result-actions__description">
                     {action.description}
                   </Text>
+                  {action.effectHint ? (
+                    <Text className="result-actions__effect">
+                      {action.effectHint}
+                    </Text>
+                  ) : null}
                 </View>
                 {showsActionButton ? (
                   <Button
@@ -113,15 +118,24 @@ export default function ResultActionPanel({
               {editableControls.length ? (
                 <View className="result-actions__controls">
                   {editableControls.map((input) => (
-                    <ConditionField
-                      className="result-actions__control"
-                      input={input}
+                    <View
+                      className={[
+                        "result-actions__control-slot",
+                        input.type === "boolean"
+                          ? "result-actions__control-slot--boolean"
+                          : "",
+                      ].filter(Boolean).join(" ")}
                       key={inputKey(input)}
-                      onChange={(value) =>
-                        onControlChange(action, input, value)
-                      }
-                      value={inputValue(action, input)}
-                    />
+                    >
+                      <ConditionField
+                        className="result-actions__control"
+                        input={input}
+                        onChange={(value) =>
+                          onControlChange(action, input, value)
+                        }
+                        value={inputValue(action, input)}
+                      />
+                    </View>
                   ))}
                 </View>
               ) : null}

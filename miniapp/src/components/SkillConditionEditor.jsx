@@ -22,12 +22,27 @@ export default function SkillConditionEditor({
   onApply,
   onContextChange,
   onDirectionChange,
+  presentation,
   skill,
 }) {
-  const inputs = getVisibleSkillInputs(skill, context);
+  const inputs = presentation?.inputs ?? getVisibleSkillInputs(skill, context);
 
   return (
     <View aria-label="技能条件" className="condition-editor">
+      {presentation?.description || presentation?.effectHint ? (
+        <View className="condition-editor__skill-note">
+          {presentation.description ? (
+            <Text className="condition-editor__skill-description">
+              {presentation.description}
+            </Text>
+          ) : null}
+          {presentation.effectHint ? (
+            <Text className="condition-editor__skill-effect">
+              {presentation.effectHint}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
       {inputs.map((input) => (
         <ConditionField
           input={input}

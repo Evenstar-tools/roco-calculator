@@ -207,9 +207,9 @@ afterEach(() => {
 
 describe("miniapp shared calculator core", () => {
   test("pins the miniapp release to the current web core version", () => {
-    expect(rootPackage.version).toBe("1.5.4");
-    expect(miniappPackage.version).toBe("0.2.0");
-    expect(miniappLockfile.packages[""].version).toBe("0.2.0");
+    expect(rootPackage.version).toBe("1.5.7");
+    expect(miniappPackage.version).toBe("0.2.3");
+    expect(miniappLockfile.packages[""].version).toBe("0.2.3");
   });
 
   test("manifest classifies every Web domain module exactly once", async () => {
@@ -312,6 +312,44 @@ describe("miniapp shared calculator core", () => {
       }),
     ).toEqual([
       expect.objectContaining({ scope: "HEAD", type: "content-mismatch" }),
+    ]);
+  });
+
+  test("declared desktop release drift is detected even when current Web and miniapp mirrors agree", async () => {
+    const coreDriftModule = await import(
+      "../../scripts/miniapp/check-core-drift.mjs"
+    );
+    expect(coreDriftModule.getReleaseCoreDrift).toBeTypeOf("function");
+
+    const fixture = createRepositoryFixture();
+    execFileSync("git", ["tag", "v1.0.0"], { cwd: fixture.root });
+    writeFileSync(fixture.sourcePath, "export const value = 2;\n");
+    writeFileSync(fixture.mirrorPath, "export const value = 2;\n");
+    execFileSync("git", ["add", "."], { cwd: fixture.root });
+    execFileSync("git", ["commit", "--quiet", "-m", "newer current core"], {
+      cwd: fixture.root,
+    });
+
+    expect(
+      coreDriftModule.getCoreDrift({
+        manifest: fixtureManifest,
+        repositoryRoot: fixture.root,
+        scopes: ["working-tree"],
+      }),
+    ).toEqual([]);
+    expect(
+      coreDriftModule.getReleaseCoreDrift({
+        manifest: fixtureManifest,
+        releaseRef: "v1.0.0",
+        repositoryRoot: fixture.root,
+      }),
+    ).toEqual([
+      expect.objectContaining({
+        mirrorPath: "miniapp/src/shared/domain/calculate.js",
+        releaseRef: "v1.0.0",
+        sourcePath: "src/domain/calculate.js",
+        type: "release-content-mismatch",
+      }),
     ]);
   });
 

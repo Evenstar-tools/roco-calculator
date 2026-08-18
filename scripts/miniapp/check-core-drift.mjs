@@ -16,6 +16,32 @@ import {
 } from "./shared-source-manifest.mjs";
 
 const VALID_SCOPES = new Set(["working-tree", "index", "HEAD"]);
+const DECLARED_RELEASE_PATCHES = Object.freeze({
+  "src/domain/baron-greed.js": Object.freeze({
+    mirrorHash: "25ac295a5825153c1ee718ab2ac233f722ca792307ec8b6f950c876e963c2c14",
+    reason: "保留贪得无厌结算中的物攻等级说明",
+  }),
+  "src/domain/calculate.js": Object.freeze({
+    mirrorHash: "f9e8aa41c0abf003159a1eac0a16d1fdbac218318084729bee1c1f838a4249bc",
+    reason: "保留 v1.5.7 后已验收的显示威力结算补丁",
+  }),
+  "src/domain/marks.js": Object.freeze({
+    mirrorHash: "7ae356e5f9623674c6834494843e36781c932145b1ddddf24dd4146347545e99",
+    reason: "保留风起印记的已验收威力结算补丁",
+  }),
+  "src/domain/power-override.js": Object.freeze({
+    mirrorHash: "61baf83aa3f8acafd8218de495c6cee2ae8e46695c1e113700d1a55f2c01810a",
+    reason: "保留 v1.5.7 后已验收的威力覆盖语义",
+  }),
+  "src/domain/skill-rules.js": Object.freeze({
+    mirrorHash: "c3c0b96d10ab39facbc351fea290c69d239ecc97db8dff204822b835d9b19952",
+    reason: "保留相邻技能显示威力的已验收文案与语义",
+  }),
+  "src/state/calculator-session.js": Object.freeze({
+    mirrorHash: "b297cccc2e1761d43ec6bf0d0f77873d4b44c389ec010ebe1dfb93fc4766e696",
+    reason: "保留 v1.5.7 后已验收的威力输入状态管理",
+  }),
+});
 
 function hash(content) {
   return createHash("sha256").update(content).digest("hex");
@@ -38,6 +64,14 @@ function readAtScope(repositoryRoot, scope, relativePath) {
       "show",
       scope === "index" ? `:${relativePath}` : `HEAD:${relativePath}`,
     ]);
+  } catch {
+    return null;
+  }
+}
+
+function readAtRef(repositoryRoot, reference, relativePath) {
+  try {
+    return git(repositoryRoot, ["show", `${reference}:${relativePath}`]);
   } catch {
     return null;
   }
@@ -145,6 +179,43 @@ function manifestAtScope(repositoryRoot, scope, manifestOverride) {
   }
 }
 
+function manifestAtRef(repositoryRoot, releaseRef, manifestOverride) {
+  if (manifestOverride) {
+    return { drift: [], manifest: normalizeManifest(manifestOverride) };
+  }
+  const source = readAtRef(
+    repositoryRoot,
+    releaseRef,
+    SHARED_SOURCE_MANIFEST_PATH,
+  );
+  if (source === null) {
+    return {
+      drift: [{
+        releaseRef,
+        sourcePath: SHARED_SOURCE_MANIFEST_PATH,
+        type: "missing-release-manifest",
+      }],
+      manifest: null,
+    };
+  }
+  try {
+    return {
+      drift: [],
+      manifest: parseManifestSource(source.toString("utf8")),
+    };
+  } catch (error) {
+    return {
+      drift: [{
+        message: error.message,
+        releaseRef,
+        sourcePath: SHARED_SOURCE_MANIFEST_PATH,
+        type: "invalid-release-manifest",
+      }],
+      manifest: null,
+    };
+  }
+}
+
 function coverageDrift(repositoryRoot, scope, manifest) {
   const coverage = getManifestCoverage({
     actualDomain: listDomainSources(repositoryRoot, scope),
@@ -224,6 +295,63 @@ export function getCoreDrift({
   return drift;
 }
 
+export function getReleaseCoreDrift({
+  allowedReleasePatches = {},
+  manifest,
+  mirrorScope = "working-tree",
+  releaseRef,
+  repositoryRoot = process.cwd(),
+} = {}) {
+  if (!releaseRef) {
+    throw new Error("releaseRef is required");
+  }
+  if (!VALID_SCOPES.has(mirrorScope)) {
+    throw new Error(`Unknown mirror scope: ${mirrorScope}`);
+  }
+  const scoped = manifestAtRef(repositoryRoot, releaseRef, manifest);
+  const drift = [...scoped.drift];
+  if (!scoped.manifest) return drift;
+
+  for (const sourcePath of scoped.manifest.shared) {
+    const mirrorPath = mirrorPathFor(sourcePath);
+    const releaseSource = readAtRef(repositoryRoot, releaseRef, sourcePath);
+    const mirror = readAtScope(repositoryRoot, mirrorScope, mirrorPath);
+    if (releaseSource === null) {
+      drift.push({
+        mirrorPath,
+        releaseRef,
+        sourcePath,
+        type: "missing-release-source",
+      });
+      continue;
+    }
+    if (mirror === null) {
+      drift.push({
+        mirrorPath,
+        releaseRef,
+        sourcePath,
+        type: "missing-mirror",
+      });
+      continue;
+    }
+    if (!releaseSource.equals(mirror)) {
+      const mirrorHash = hash(mirror);
+      const allowedPatch = allowedReleasePatches[sourcePath];
+      if (allowedPatch?.mirrorHash === mirrorHash) continue;
+      drift.push({
+        mirrorHash,
+        mirrorPath,
+        releaseRef,
+        sourceHash: hash(releaseSource),
+        sourcePath,
+        type: "release-content-mismatch",
+      });
+    }
+  }
+
+  return drift;
+}
+
 export function assertCoreMatches(options) {
   const drift = getCoreDrift(options);
   if (drift.length > 0) {
@@ -240,12 +368,51 @@ export function assertCoreMatches(options) {
   }
 }
 
+export function assertReleaseCoreMatches(options) {
+  const drift = getReleaseCoreDrift(options);
+  if (drift.length > 0) {
+    const details = drift.map((entry) => {
+      const paths = [entry.sourcePath, entry.mirrorPath]
+        .filter(Boolean)
+        .join(" -> ");
+      const hashes = entry.sourceHash
+        ? ` (${entry.sourceHash} != ${entry.mirrorHash})`
+        : "";
+      return `[${entry.releaseRef}] ${entry.type}: ${paths}${hashes}`;
+    });
+    throw new Error(`Declared release core drift detected:\n${details.join("\n")}`);
+  }
+}
+
+function declaredReleaseRef(repositoryRoot) {
+  const versionSource = readFileSync(
+    path.join(repositoryRoot, "miniapp/src/version.js"),
+    "utf8",
+  );
+  const match = versionSource.match(
+    /export const WEB_CORE_VERSION = ["']([^"']+)["'];/u,
+  );
+  if (!match) {
+    throw new Error("WEB_CORE_VERSION is missing from miniapp/src/version.js");
+  }
+  return `v${match[1]}`;
+}
+
 const scriptPath = fileURLToPath(import.meta.url);
 
 if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
   try {
-    assertCoreMatches({ repositoryRoot: path.resolve(path.dirname(scriptPath), "../..") });
-    process.stdout.write("Shared core matches in working tree, index, and HEAD.\n");
+    const repositoryRoot = path.resolve(path.dirname(scriptPath), "../..");
+    const releaseRef = declaredReleaseRef(repositoryRoot);
+    assertCoreMatches({ repositoryRoot });
+    assertReleaseCoreMatches({
+      allowedReleasePatches: DECLARED_RELEASE_PATCHES,
+      releaseRef,
+      repositoryRoot,
+    });
+    process.stdout.write(
+      `Shared core matches working tree, index, HEAD, and ${releaseRef}.\n`,
+    );
   } catch (error) {
     process.stderr.write(`${error.message}\n`);
     process.exitCode = 1;

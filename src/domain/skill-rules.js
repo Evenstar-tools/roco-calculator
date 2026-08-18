@@ -229,6 +229,31 @@ function resolveCounterMultiplier(skill, context) {
   });
 }
 
+function resolveCounterPowerAndBurn(skill, context) {
+  const params = skill.ruleParams ?? {};
+  const contextKey = params.contextKey ?? "counterTriggered";
+  const triggered = context[contextKey] === true;
+  const basePower = Number(skill.basePower);
+  const baseBurnStacks = Number(params.baseBurnStacks ?? 0);
+  const multiplier = triggered ? Number(params.multiplier ?? 1) : 1;
+  const value = Math.round(basePower * multiplier);
+  const appliedBurnStacks = Math.round(baseBurnStacks * multiplier);
+
+  return exact(value, [
+    {
+      label: triggered
+        ? `应对：威力 ×${multiplier}，灼烧 ${baseBurnStacks}→${appliedBurnStacks}层`
+        : `未触发应对：灼烧 ${baseBurnStacks}层`,
+      input: triggered,
+      before: basePower,
+      after: value,
+      source: "reviewed-rule:blazing-wave-v1",
+    },
+  ], {
+    appliedBurnStacks,
+  });
+}
+
 function resolveHpScaled(skill, context) {
   const params = skill.ruleParams ?? {};
   const contextKey = params.contextKey ?? "currentHpPercent";
@@ -339,6 +364,27 @@ function resolveBooleanPowerMultiplier(skill, context) {
       source: "reviewed-rule:boolean-power-multiplier-v1",
     },
   ]);
+}
+
+function resolveBooleanPowerPercentAdd(skill, context) {
+  const params = skill.ruleParams ?? {};
+  const contextKey = params.contextKey ?? "conditionTriggered";
+  const triggered = context[contextKey] === true;
+  const add = triggered ? Math.max(0, Number(params.add) || 0) : 0;
+  const basePower = Number(skill.basePower);
+  return exact(
+    basePower,
+    [
+      {
+        label: params.label ?? "条件威力加成",
+        input: triggered,
+        before: basePower,
+        after: basePower * (1 + add),
+        source: "reviewed-rule:boolean-power-percent-add-v1",
+      },
+    ],
+    { powerPercentAdds: add === 0 ? [] : [add] },
+  );
 }
 
 function resolveBooleanDamageMultiplier(skill, context) {
@@ -918,12 +964,14 @@ const RULES = new Map([
   ["enemy_total_skill_cost_power", resolveEnemyTotalSkillCostPower],
   ["mana_burst", resolveManaBurst],
   ["counter_multiplier", resolveCounterMultiplier],
+  ["counter_power_and_burn", resolveCounterPowerAndBurn],
   ["hp_scaled", resolveHpScaled],
   ["energy_scaled", resolveEnergyScaled],
   ["stack_scaled", resolveStackScaled],
   ["position_power_add", resolvePositionPowerAdd],
   ["boolean_power_add", resolveBooleanPowerAdd],
   ["boolean_power_multiplier", resolveBooleanPowerMultiplier],
+  ["boolean_power_percent_add", resolveBooleanPowerPercentAdd],
   ["boolean_damage_multiplier", resolveBooleanDamageMultiplier],
   ["enemy_skill_power_multiplier", resolveEnemySkillPowerMultiplier],
   ["energy_percentage_decrease", resolveEnergyPercentageDecrease],
@@ -995,7 +1043,7 @@ export function resolveSkillPower(skill, context = {}) {
   if (!effectRule) {
     if (!isFiniteNumber(skill.basePower)) {
       return needsInput(
-        [numberInput("basePowerOverride", "手动威力")],
+        [numberInput("basePowerOverride", "静态威力")],
         "技能缺少已验证的基础威力",
       );
     }

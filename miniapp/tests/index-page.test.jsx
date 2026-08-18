@@ -154,9 +154,15 @@ describe("IndexPage", () => {
       />,
     );
 
-    expect(
-      await screen.findByRole("button", { name: "四技能模式" }),
-    ).toHaveAttribute("aria-pressed", "true");
+    expect(await screen.findByText("好友分享快照 · 已载入"))
+      .toBeInTheDocument();
+    expect(screen.getByText("本次预览不会覆盖你的本机配置"))
+      .toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", {
+      name: "用此配置继续计算",
+    }));
+    expect(screen.getByRole("button", { name: "四技能模式" }))
+      .toHaveAttribute("aria-pressed", "true");
     await waitFor(() => {
       expect(__getShareMessage().title).toMatch(/^音速犬 → 水灵｜/u);
     });
@@ -165,6 +171,80 @@ describe("IndexPage", () => {
       /^\/pages\/index\/index\?share=[A-Za-z0-9_-]+$/u,
     );
     expect(message.path.length).toBeLessThan(940);
+  });
+
+  test("keeps a shared snapshot isolated until the receiver continues", async () => {
+    vi.useFakeTimers();
+    const snapshot = createSnapshot();
+    const localState = createInitialState(snapshot);
+    localState.mode = "single";
+    const sharedState = createInitialState(snapshot);
+    sharedState.mode = "four";
+    __setRouterParams({ share: encodeSharePayload(sharedState) });
+    const services = createUserSettingServices({ persistedState: localState });
+
+    render(<IndexPage services={services} />);
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(screen.getByText("好友分享快照 · 已载入"))
+      .toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "四技能模式" }))
+      .not.toBeInTheDocument();
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+    expect(services.persistence.save).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", {
+      name: "返回我的配置",
+    }));
+    expect(screen.getByRole("button", { name: "单技能模式" }))
+      .toHaveAttribute("aria-pressed", "true");
+    expect(services.persistence.save).not.toHaveBeenCalled();
+  });
+
+  test("enables normal configuration memory after accepting a shared snapshot", async () => {
+    vi.useFakeTimers();
+    const snapshot = createSnapshot();
+    const sharedState = createInitialState(snapshot);
+    sharedState.mode = "four";
+    __setRouterParams({ share: encodeSharePayload(sharedState) });
+    const services = createUserSettingServices({
+      persistedState: createInitialState(snapshot),
+    });
+
+    render(<IndexPage services={services} />);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    fireEvent.click(screen.getByRole("button", {
+      name: "用此配置继续计算",
+    }));
+    expect(screen.getByText("正在基于好友分享调整"))
+      .toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "单技能模式" }));
+    act(() => {
+      vi.advanceTimersByTime(250);
+    });
+    expect(services.persistence.save).toHaveBeenCalledTimes(1);
+    expect(services.persistence.save.mock.calls[0][0].mode).toBe("single");
+  });
+
+  test("shows an explicit invalid-share state without replacing local memory", async () => {
+    __setRouterParams({ share: "not_valid!" });
+    const services = createUserSettingServices({
+      persistedState: createInitialState(createSnapshot()),
+    });
+
+    render(<IndexPage services={services} />);
+
+    expect(await screen.findByText("分享内容无法读取"))
+      .toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "打开我的计算器" }))
+      .toBeInTheDocument();
+    expect(services.persistence.save).not.toHaveBeenCalled();
   });
 
   test("default H5 preview services reach fixture data loading", async () => {
@@ -232,6 +312,41 @@ describe("IndexPage", () => {
       stale: false,
     });
     expect(taro.cloud.init).not.toHaveBeenCalled();
+  });
+
+  test("海枝枝四种配色使用按精灵 ID 固定的本地头像", async () => {
+    const snapshot = createSnapshot();
+    snapshot.spirits = [
+      ["spirit_9d8badfc01f62f16", "海枝枝（碧蓝珊瑚）"],
+      ["spirit_e6f44a2b7c94c74f", "海枝枝（翠绿纶布）"],
+      ["spirit_1ae8bf8691ced64f", "海枝枝（杏黄百合）"],
+      ["spirit_dcad4af678b05dcc", "海枝枝（洋红沙丁）"],
+    ].map(([id, fullName]) => ({
+      fullName,
+      id,
+      imageUrl: "https://images.example/filter-row.png",
+    }));
+    const services = createDefaultServices({
+      bundledData: snapshot,
+      taro: createStorageTaro(),
+    });
+
+    await expect(services.dataService.load()).resolves.toMatchObject({
+      petImages: {
+        spirit_9d8badfc01f62f16: expect.stringMatching(
+          /spirit_9d8badfc01f62f16\.png$/u,
+        ),
+        spirit_e6f44a2b7c94c74f: expect.stringMatching(
+          /spirit_e6f44a2b7c94c74f\.png$/u,
+        ),
+        spirit_1ae8bf8691ced64f: expect.stringMatching(
+          /spirit_1ae8bf8691ced64f\.png$/u,
+        ),
+        spirit_dcad4af678b05dcc: expect.stringMatching(
+          /spirit_dcad4af678b05dcc\.png$/u,
+        ),
+      },
+    });
   });
 
   test("default WeApp services reach valid cloud data loading", async () => {

@@ -1,4 +1,4 @@
-import { View } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import SingleSkillResultRow from "./SingleSkillResultRow.jsx";
 
 export default function SkillSlots({
@@ -8,6 +8,7 @@ export default function SkillSlots({
   onChange,
   onOpenResult,
   onSelect,
+  presentation,
   resultsHidden = false,
   rows = [],
   selectedIndex,
@@ -41,6 +42,23 @@ export default function SkillSlots({
           />
         );
       })}
+      {presentation?.description || presentation?.effectHint ? (
+        <View
+          aria-label={`${label}\u5f53\u524d\u6280\u80fd\u8bf4\u660e`}
+          className="skill-context-note"
+        >
+          {presentation.description ? (
+            <Text className="skill-context-note__description">
+              {presentation.description}
+            </Text>
+          ) : null}
+          {presentation.effectHint ? (
+            <Text className="skill-context-note__effect">
+              {presentation.effectHint}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
     </View>
   );
 }

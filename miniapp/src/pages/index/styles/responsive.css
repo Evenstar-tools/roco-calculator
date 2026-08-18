@@ -209,7 +209,7 @@
     overflow: hidden;
     gap: 7px;
     font-size: 18px;
-    font-weight: 760;
+    font-weight: var(--weight-title);
     line-height: 24px;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -232,7 +232,7 @@
     display: block;
     overflow: hidden;
     font-size: 15px;
-    font-weight: 650;
+    font-weight: var(--weight-emphasis);
     line-height: 20px;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -257,7 +257,7 @@
 
   .result-bar__damage {
     font-size: 48px;
-    font-weight: 820;
+    font-weight: var(--weight-result);
   }
 
   .result-bar__metric-copy {
@@ -272,7 +272,7 @@
 
   .result-bar__percent {
     font-size: 20px;
-    font-weight: 760;
+    font-weight: var(--weight-result);
     white-space: nowrap;
   }
 
@@ -358,8 +358,8 @@
   }
 
   .quick-controls__stat-label {
-    font-size: 10px;
-    line-height: 13px;
+    font-size: 11px;
+    line-height: 14px;
   }
 
   .quick-controls__status-badge {
@@ -380,9 +380,15 @@
   }
 }
 
-@media (max-width: 359px) {
+@media (max-width: 479px) {
   .active-ability-stage__grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 359px) {
+  .result-actions__control-slot--boolean {
+    grid-column: 1 / -1;
   }
 
   .page {
@@ -480,12 +486,13 @@
   }
 
   .page {
-    padding: calc(16px + env(safe-area-inset-top, 0px)) 18px calc(24px + var(--safe-area-bottom));
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px calc(20px + var(--safe-area-bottom));
   }
 
   .workspace-layout {
     grid-template-columns: minmax(0, 1fr) 300px;
     align-items: start;
+    gap: 10px;
   }
 
   .battle-workspace__duel {
@@ -513,6 +520,40 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .conditions-sheet__content {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    column-gap: 18px;
+  }
+
+  .conditions-sheet__content > .battle-environment,
+  .condition-section--advanced {
+    grid-column: 1 / -1;
+  }
+
+  .condition-section--traits {
+    grid-column: 1;
+    padding-right: 18px;
+    border-right: 1px solid var(--border-neutral);
+  }
+
+  .condition-section--marks {
+    grid-column: 2;
+  }
+
+  .battle-marks__tabs {
+    display: none;
+  }
+
+  .battle-marks__editors {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 12px;
+  }
+
+  .battle-marks__editor {
+    display: grid;
+  }
+
   .result-bar {
     position: sticky;
     top: 16px;
@@ -528,8 +569,8 @@
     border-radius: 18px;
   }
 
-  .result-sheet__scroll {
-    padding: 18px;
+  .result-sheet__scroll-content {
+    padding: 16px;
   }
 
   .result-formula__row {

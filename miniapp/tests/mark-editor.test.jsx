@@ -51,6 +51,7 @@ describe("MarkEditor", () => {
       <BattleWorkspace snapshot={snapshot} store={store} />,
     );
     fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    fireEvent.click(screen.getByRole("button", { name: "展开印记" }));
 
     const hiddenField = container.querySelector(
       ".mark-editor__stacks--hidden",
@@ -75,6 +76,7 @@ describe("MarkEditor", () => {
     const store = createCalculatorStore(snapshot);
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
     fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    fireEvent.click(screen.getByRole("button", { name: "展开印记" }));
 
     fireEvent.click(
       screen.getByRole("button", { name: "攻击方正面印记萌芽" }),

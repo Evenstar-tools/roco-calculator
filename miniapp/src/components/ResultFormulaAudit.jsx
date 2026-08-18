@@ -2,6 +2,7 @@ import { Text, View } from "@tarojs/components";
 import {
   buildResultFormulaAudit,
   displayFormulaNumber,
+  displayLevelCoefficient,
 } from "../view-models/formula-audit.js";
 
 function FormulaChip({ label, tone = "neutral", value }) {
@@ -148,7 +149,7 @@ export default function ResultFormulaAudit({ result }) {
         <FormulaChip
           label="等级系数"
           tone="one-hit"
-          value={displayFormulaNumber(numerator.coefficient, 6)}
+          value={displayLevelCoefficient(numerator.coefficient, numerator.level)}
         />
         <FormulaOperator>→</FormulaOperator>
         <FormulaRounding>四舍五入</FormulaRounding>

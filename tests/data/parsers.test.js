@@ -13,6 +13,7 @@ import {
 } from "../../scripts/bwiki/reviewed-overrides.mjs";
 import {
   collectAssetPlan,
+  optimizeSpiritImage,
   readImageDimensions,
   resolvePublicAssetPath,
 } from "../../scripts/bwiki/sync-assets.mjs";
@@ -177,6 +178,22 @@ describe("BWIKI row parsers", () => {
     expect(resolvePublicAssetPath("/assets/elements/fire.png")).toMatch(
       /public[\\/]assets[\\/]elements[\\/]fire\.png$/u,
     );
+  });
+
+  test("downscales local portrait files without changing their identity source", async () => {
+    const { default: Jimp } = await import("jimp");
+    const image = await new Jimp(256, 192, 0xff3366ff);
+    const source = await new Promise((resolve, reject) => {
+      image.getBuffer(Jimp.MIME_PNG, (error, buffer) => {
+        if (error) reject(error);
+        else resolve(buffer);
+      });
+    });
+
+    const optimized = await optimizeSpiritImage(source);
+
+    expect(readImageDimensions(optimized)).toEqual({ width: 128, height: 96 });
+    expect(optimized.length).toBeLessThan(source.length);
   });
 
   test("applies reviewed rule IDs only when the upstream fingerprint matches", () => {

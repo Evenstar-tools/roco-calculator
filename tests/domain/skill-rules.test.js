@@ -42,6 +42,40 @@ describe("resolveSkillPower", () => {
     });
   });
 
+  test("炙热波动勾选应对后威力和灼烧层数同时翻倍", () => {
+    const blazingWave = skill({
+      basePower: 55,
+      category: "magical",
+      name: "炙热波动",
+      type: "火",
+    });
+
+    expect(getSkillEffectInputs(blazingWave)).toMatchObject([
+      {
+        contextKey: "counterTriggered",
+        label: "触发应对",
+        type: "boolean",
+      },
+    ]);
+    expect(resolveSkillPower(blazingWave, {})).toMatchObject({
+      appliedBurnStacks: 4,
+      status: "exact",
+      value: 55,
+    });
+    expect(
+      resolveSkillPower(blazingWave, { counterTriggered: true }),
+    ).toMatchObject({
+      appliedBurnStacks: 8,
+      status: "exact",
+      value: 110,
+      steps: [
+        expect.objectContaining({
+          label: "应对：威力 ×2，灼烧 4→8层",
+        }),
+      ],
+    });
+  });
+
   test("keeps Color Dispersion at 80 power and exposes its mixed-blood damage bonus", () => {
     const colorDispersion = skill({
       category: "magical",
@@ -528,7 +562,7 @@ describe("resolveSkillPower", () => {
   test("registers all 99 reviewed dynamic skills in the current snapshot", () => {
     expect(
       snapshot.skills.filter((entry) => getSkillEffectRule(entry)).length,
-    ).toBe(99);
+    ).toBe(100);
   });
 
   test("keeps every reviewed rule default-safe and every choice default valid", () => {

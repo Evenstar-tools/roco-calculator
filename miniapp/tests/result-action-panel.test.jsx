@@ -71,6 +71,8 @@ describe("result action panel", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "增减" }));
     const action = screen.getByLabelText("蒸汽进行曲触发项");
+    expect(within(action).getByText("未开启"))
+      .toHaveClass("condition-editor__toggle-state");
     fireEvent.click(within(action).getByRole("button", { name: "物攻提高" }));
     expect(onControlChange).toHaveBeenCalledWith(
       expect.objectContaining({ name: "蒸汽进行曲" }),
@@ -102,6 +104,42 @@ describe("result action panel", () => {
     expect(onApplyAction).toHaveBeenCalledWith(
       expect.objectContaining({ kind: "trait", value: false }),
     );
+  });
+
+  test("keeps long skill and trait toggles in compact aligned control slots", () => {
+    const longToggle = {
+      defaultValue: false,
+      id: "counterTriggered",
+      key: "counterTriggered",
+      label: "触发应对状态",
+      type: "boolean",
+    };
+    const action = {
+      category: "modifiers",
+      context: { counterTriggered: false },
+      controls: [longToggle],
+      description: "切换后更新技能结算。",
+      key: "skill:attacker:four:0",
+      kind: "skill",
+      name: "跌落",
+      source: "技能",
+    };
+
+    render(
+      <ResultActionPanel
+        actions={{ defense: [], modifiers: [action], status: [] }}
+        onApplyAction={() => {}}
+        onControlChange={() => {}}
+      />,
+    );
+
+    const toggle = screen.getByRole("button", { name: "触发应对状态" });
+    expect(toggle.parentElement)
+      .toHaveClass("result-actions__control-slot--boolean");
+    expect(within(toggle).getByText("触发应对状态"))
+      .toHaveClass("condition-editor__toggle-label");
+    expect(within(toggle).getByText("未开启"))
+      .toHaveClass("condition-editor__toggle-state");
   });
 
   test("keeps the selected category when actions refresh", () => {
@@ -192,5 +230,83 @@ describe("result action panel", () => {
       target: { value: "2" },
     });
     expect(onControlChange).toHaveBeenCalledWith(action, controls[0], 2);
+  });
+
+  test("adjusts trait numeric controls with explicit touch steppers", () => {
+    const onControlChange = vi.fn();
+    const control = {
+      canonicalKey: "trait.judgment.stacks",
+      defaultValue: 0,
+      id: "judgmentStacks",
+      label: "触发层数",
+      max: 3,
+      min: 0,
+      step: 1,
+      type: "number",
+    };
+    const action = {
+      category: "modifiers",
+      controls: [control],
+      description: "造成克制伤害后获得增益。",
+      key: "trait:attacker:裁决",
+      kind: "trait",
+      name: "裁决",
+      side: "attacker",
+      source: "特性",
+      values: {
+        "trait.judgment.stacks": 2,
+      },
+    };
+    render(
+      <ResultActionPanel
+        actions={{ defense: [], modifiers: [action], status: [] }}
+        onApplyAction={() => {}}
+        onControlChange={onControlChange}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "触发层数减少" }));
+    expect(onControlChange).toHaveBeenLastCalledWith(action, control, 1);
+
+    fireEvent.click(screen.getByRole("button", { name: "触发层数增加" }));
+    expect(onControlChange).toHaveBeenLastCalledWith(action, control, 3);
+    expect(screen.getByRole("button", { name: "触发层数减少" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "触发层数增加" })).toBeEnabled();
+  });
+
+  test("disables a trait stepper only at its actual boundary", () => {
+    const control = {
+      canonicalKey: "trait.judgment.stacks",
+      defaultValue: 0,
+      id: "judgmentStacks",
+      label: "触发层数",
+      max: 3,
+      min: 0,
+      step: 1,
+      type: "number",
+    };
+    render(
+      <ResultActionPanel
+        actions={{
+          defense: [],
+          modifiers: [{
+            category: "modifiers",
+            controls: [control],
+            key: "trait:attacker:裁决",
+            kind: "trait",
+            name: "裁决",
+            side: "attacker",
+            source: "特性",
+            values: { "trait.judgment.stacks": 0 },
+          }],
+          status: [],
+        }}
+        onApplyAction={() => {}}
+        onControlChange={() => {}}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "触发层数减少" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "触发层数增加" })).toBeEnabled();
   });
 });

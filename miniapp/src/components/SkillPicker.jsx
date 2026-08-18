@@ -260,8 +260,9 @@ export default function SkillPicker({
               className="skill-picker__options"
               scrollIntoView={scrollTarget}
               scrollY
-              showScrollbar
+              showScrollbar={false}
             >
+              <View className="skill-picker__options-content">
               {filteredChoices.length ? (
                 filteredChoices.map((skill) => {
                   const isSelected = skill.id === selectedId;
@@ -315,6 +316,7 @@ export default function SkillPicker({
                   ) : null}
                 </View>
               )}
+              </View>
             </ScrollView>
           </View>
         </View>

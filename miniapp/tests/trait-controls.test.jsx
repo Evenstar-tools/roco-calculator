@@ -31,6 +31,18 @@ function fixtureFor(traitName) {
 }
 
 describe("TraitConditionEditor", () => {
+  test("shows the permanent lifesteal ability level in the trait section", () => {
+    const fixture = fixtureFor("贪得无厌");
+    fixture.views.attacker.lifesteal = { levels: 16, percent: 160 };
+
+    render(<TraitConditionEditor {...fixture} />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "展开特性与状态" }),
+    );
+
+    expect(screen.getByText("吸血 16层 · 160%")).toBeInTheDocument();
+  });
+
   test.each([
     "极光千兽",
     "陨星虫",
@@ -78,6 +90,9 @@ describe("TraitConditionEditor", () => {
       />,
     );
 
+    fireEvent.click(
+      screen.getByRole("button", { name: "展开特性与状态" }),
+    );
     expect(screen.getByText("防御特性")).toBeInTheDocument();
     expect(screen.getByText("自动增益层数：2")).toBeInTheDocument();
     fireEvent.input(screen.getByLabelText("不同增益种类"), {
@@ -140,6 +155,9 @@ describe("TraitConditionEditor", () => {
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
     fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "展开特性与状态" }),
+    );
     fireEvent.input(screen.getByLabelText("不同增益种类"), {
       target: { value: "3" },
     });

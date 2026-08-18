@@ -1,7 +1,7 @@
 import { Button, Text, View } from "@tarojs/components";
 
 function clamp(value) {
-  return Math.min(50, Math.max(-50, Math.floor(Number(value) || 0)));
+  return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
 }
 
 function formatStage(value) {
@@ -19,7 +19,7 @@ function CompactStageControl({ ariaLabel, label, onChange, value }) {
         <Button
           aria-label={`${ariaLabel}降低一级`}
           className="active-ability-stage__button"
-          disabled={value <= -50}
+          disabled={value <= -99}
           hoverClass="active-ability-stage__button--pressed"
           onClick={() => onChange(clamp(value - 1))}
         >
@@ -31,7 +31,7 @@ function CompactStageControl({ ariaLabel, label, onChange, value }) {
         <Button
           aria-label={`${ariaLabel}提高一级`}
           className="active-ability-stage__button"
-          disabled={value >= 50}
+          disabled={value >= 99}
           hoverClass="active-ability-stage__button--pressed"
           onClick={() => onChange(clamp(value + 1))}
         >

@@ -14,6 +14,7 @@ const styleFiles = [
   "parameters.css",
   "skills.css",
   "overlays.css",
+  "share.css",
   "responsive.css",
 ];
 const styles = Object.fromEntries(
@@ -26,11 +27,12 @@ const allCss = [pageCss, tokensCss, ...Object.values(styles)].join("\n");
 const appHeaderSource = readSource("src/components/AppHeader.jsx");
 const battleWorkspaceSource = readSource("src/components/BattleWorkspace.jsx");
 const directionSwitchSource = readSource("src/components/DirectionSwitch.jsx");
+const conditionFieldSource = readSource("src/components/ConditionField.jsx");
 const quickControlsSource = readSource("src/components/QuickCombatantControls.jsx");
 const resultSheetSource = readSource("src/components/ResultSheet.jsx");
 
 describe("reference-first responsive CSS", () => {
-  test("loads shared tokens before the six ordered style modules", () => {
+  test("loads shared tokens before the ordered style modules", () => {
     expect(pageCss.trim()).toBe(
       [
         '@import "../../styles/tokens.css";',
@@ -135,6 +137,16 @@ describe("reference-first responsive CSS", () => {
     expect(styles["skills.css"]).toMatch(/\.skill-result-row__result[\s\S]*min-height:\s*var\(--touch-target\)/u);
   });
 
+  test("keeps shared typography and radius tokens out of Taro pixel scaling", () => {
+    expect(tokensCss).toMatch(/--font-title:\s*21PX/u);
+    expect(tokensCss).toMatch(/--font-section:\s*15PX/u);
+    expect(tokensCss).toMatch(/--font-body:\s*14PX/u);
+    expect(tokensCss).toMatch(/--font-caption:\s*12PX/u);
+    expect(tokensCss).toMatch(/--font-result:\s*54PX/u);
+    expect(tokensCss).toMatch(/--radius-card:\s*12PX/u);
+    expect(tokensCss).toMatch(/--radius-control:\s*9PX/u);
+  });
+
   test("normalizes the native mode switch into two equal selected-state cells", () => {
     const skills = styles["skills.css"];
     const buttonRule = skills.match(
@@ -163,6 +175,13 @@ describe("reference-first responsive CSS", () => {
     expect(responsive).toMatch(/\.result-bar[\s\S]*display:\s*none/u);
     expect(responsive).toMatch(
       /\.result-bar\s*\{[\s\S]*min-height:\s*calc\(var\(--result-bar-height\)\s*\+\s*var\(--safe-area-bottom\)\)/u,
+    );
+  });
+
+  test("stacks phone ability steppers before their values can truncate", () => {
+    const responsive = styles["responsive.css"];
+    expect(responsive).toMatch(
+      /@media\s*\(max-width:\s*479px\)[\s\S]*\.active-ability-stage__grid\s*\{[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)/u,
     );
   });
 
@@ -206,6 +225,15 @@ describe("reference-first responsive CSS", () => {
     );
     expect(resultSheetSource).not.toMatch(
       /catchMove[\s\S]{0,80}result-sheet__overlay/u,
+    );
+  });
+
+  test("keeps the share preview trigger above the result scroll surface", () => {
+    expect(styles["overlays.css"]).toMatch(
+      /\.result-sheet__share\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*3;[^}]*flex:\s*0 0 auto;/su,
+    );
+    expect(styles["overlays.css"]).toMatch(
+      /\.result-sheet__share::after\s*\{[^}]*pointer-events:\s*none;/su,
     );
   });
 
@@ -318,6 +346,48 @@ describe("reference-first responsive CSS", () => {
     );
   });
 
+  test("keeps long boolean trigger labels on one readable row", () => {
+    const skills = styles["skills.css"];
+    const overlays = styles["overlays.css"];
+    const responsive = styles["responsive.css"];
+
+    expect(conditionFieldSource).toContain(
+      'className="condition-editor__toggle-label"',
+    );
+    expect(conditionFieldSource).toContain(
+      'className="condition-editor__toggle-state"',
+    );
+    expect(skills).toMatch(
+      /\.condition-editor__toggle\s*\{[\s\S]*display:\s*flex[\s\S]*justify-content:\s*space-between[\s\S]*font-size:\s*13px/u,
+    );
+    expect(skills).toMatch(
+      /\.condition-editor__toggle-label\s*\{[\s\S]*white-space:\s*nowrap/u,
+    );
+    expect(overlays).toMatch(
+      /\.result-actions__control-slot--boolean \.condition-editor__toggle\s*\{[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto[\s\S]*height:\s*44px[\s\S]*font-size:\s*12px[\s\S]*line-height:\s*17px/u,
+    );
+    expect(overlays).toMatch(
+      /\.result-actions__control-slot--boolean \.condition-editor__toggle-label\s*\{[\s\S]*white-space:\s*nowrap/u,
+    );
+    expect(overlays).toMatch(
+      /\.result-actions__control-slot--boolean \.condition-editor__toggle-state\s*\{[\s\S]*font-size:\s*11px[\s\S]*white-space:\s*nowrap/u,
+    );
+    expect(responsive).toMatch(
+      /@media\s*\(max-width:\s*359px\)[\s\S]*\.result-actions__control-slot--boolean\s*\{[\s\S]*grid-column:\s*1\s*\/\s*-1/u,
+    );
+  });
+
+  test("keeps neutral nature summary inline instead of styling it as an option row", () => {
+    const parameters = styles["parameters.css"];
+
+    expect(parameters).toMatch(
+      /\.nature-picker__neutral\s*\{[\s\S]*flex:\s*0\s+0\s+auto[\s\S]*white-space:\s*nowrap/u,
+    );
+    expect(parameters).not.toMatch(
+      /\.nature-picker__option,\s*\n\.nature-picker__neutral/u,
+    );
+  });
+
   test("constrains the fixed spirit search and results to equal safe margins", () => {
     const overlays = styles["overlays.css"];
     const fixedInput = overlays.match(
@@ -335,5 +405,16 @@ describe("reference-first responsive CSS", () => {
     expect(overlays).toMatch(
       /\.spirit-picker__result\s*\{[\s\S]*width:\s*100%[\s\S]*margin:\s*0/u,
     );
+  });
+
+  test("uses native-safe font-weight tokens for WXSS compilation", () => {
+    expect(tokensCss).toMatch(/--weight-title:\s*700;/u);
+    expect(tokensCss).toMatch(/--weight-section:\s*600;/u);
+    expect(tokensCss).toMatch(/--weight-emphasis:\s*600;/u);
+    expect(tokensCss).toMatch(/--weight-result:\s*800;/u);
+  });
+
+  test("avoids unsupported compound pseudo selectors in native WXSS", () => {
+    expect(allCss).not.toContain(":last-child:nth-child(odd)");
   });
 });

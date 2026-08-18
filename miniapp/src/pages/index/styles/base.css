@@ -9,7 +9,7 @@ body,
   background: #f4f2ed;
   color: #1d252d;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-size: 14px;
+  font-size: var(--font-body, 14px);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
@@ -90,15 +90,15 @@ textarea:focus-visible,
 .app-header__title {
   min-width: 0;
   color: var(--text-primary);
-  font-size: 21px;
-  font-weight: 720;
+  font-size: var(--font-title);
+  font-weight: var(--weight-title);
   letter-spacing: -0.35px;
   white-space: nowrap;
 }
 
 .app-header__version {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--font-caption);
   white-space: nowrap;
 }
 
@@ -119,8 +119,8 @@ textarea:focus-visible,
   border-radius: var(--radius-control);
   background: var(--surface-card);
   color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 650;
+  font-size: var(--font-body);
+  font-weight: var(--weight-emphasis);
   line-height: 1;
   white-space: nowrap;
 }
@@ -186,13 +186,13 @@ textarea:focus-visible,
 
 .state-card__eyebrow {
   color: var(--defender);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--font-caption);
+  font-weight: var(--weight-emphasis);
 }
 
 .state-card__title {
-  font-size: 22px;
-  font-weight: 750;
+  font-size: var(--font-title);
+  font-weight: var(--weight-title);
 }
 
 .state-card__message {

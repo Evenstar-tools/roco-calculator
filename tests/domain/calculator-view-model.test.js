@@ -1,9 +1,15 @@
 import { describe, expect, test } from "vitest";
 import {
   buildCalculatorViewModel,
+  clampStage,
   getPanelView,
   getTraitView,
 } from "../../src/domain/calculator-view-model.js";
+
+test("能力等级按正负九十九层封顶", () => {
+  expect(clampStage(100)).toBe(99);
+  expect(clampStage(-100)).toBe(-99);
+});
 
 const ivs = {
   hp: 60,

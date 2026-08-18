@@ -35,7 +35,7 @@ const REMEMBERED_SIDE_ACTIONS = new Set([
 ]);
 
 function clampStage(value) {
-  return Math.min(50, Math.max(-50, Math.floor(Number(value) || 0)));
+  return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
 }
 
 export function abilityLevelMultiplier(attackStage, defenseStage) {
@@ -347,12 +347,26 @@ function sanitizePresetSkills(state, snapshot) {
   return nextState;
 }
 
-function singlePowerOverrides(overrides = {}) {
-  return {
+function singlePowerOverrides(overrides = {}, { includeTemporary = true } = {}) {
+  const selected = {
     basePower: overrides.basePower ?? null,
     displayedPower: overrides.displayedPower ?? null,
     powerMode: overrides.powerMode ?? "base",
   };
+  if (
+    includeTemporary &&
+    overrides.powerOverride &&
+    (overrides.powerOverride.mode === "static" ||
+      overrides.powerOverride.mode === "actual" ||
+      overrides.powerOverride.mode === "panel") &&
+    Number.isFinite(Number(overrides.powerOverride.value))
+  ) {
+    selected.powerOverride = {
+      mode: overrides.powerOverride.mode,
+      value: Number(overrides.powerOverride.value),
+    };
+  }
+  return selected;
 }
 
 function replaceSlotControls(context, previousControls, nextValues) {
@@ -715,7 +729,9 @@ export function rememberSingleSkill(
     memoryBySkill[resolvedSkillId] = {
       context: skillContext,
       hitCount: latestDirection.hitCount,
-      overrides,
+      overrides: singlePowerOverrides(latestDirection.overrides, {
+        includeTemporary: false,
+      }),
     };
   }
   return reduceSessionAction(state, {
@@ -752,7 +768,9 @@ export function selectSingleSkill(
     currentMemories[currentSkillId] = {
       context: sanitizeTriggerContext(currentDirection.context, currentControls),
       hitCount: currentDirection.hitCount,
-      overrides: singlePowerOverrides(currentDirection.overrides),
+      overrides: singlePowerOverrides(currentDirection.overrides, {
+        includeTemporary: false,
+      }),
     };
   }
   const remembered = currentMemories[skillId];
@@ -769,8 +787,18 @@ export function selectSingleSkill(
     nextSlotContext,
   );
   const nextOverrides = remembered
-    ? singlePowerOverrides(remembered.overrides)
-    : { basePower: null, displayedPower: null, powerMode: "base" };
+    ? {
+        ...singlePowerOverrides(remembered.overrides, {
+          includeTemporary: false,
+        }),
+        powerOverride: null,
+      }
+    : {
+        basePower: null,
+        displayedPower: null,
+        powerMode: "base",
+        powerOverride: null,
+      };
   let nextState = calculatorReducer(state, {
     direction,
     type: "direction/set-context",
