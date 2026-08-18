@@ -585,13 +585,6 @@ export default function BattleWorkspace({
           </View>
 
           <View className="workspace-section workspace-section--skills">
-            <ActiveAbilityStageBar
-              direction={direction}
-              onChange={(role, value) => updateDirection(direction, {
-                overrides: { [`${role}LevelStage`]: value },
-              })}
-              state={activeDirectionState}
-            />
             <ModeSwitch
               onChange={(value) => store.dispatch({ type: "mode/set", value })}
               value={state.mode}
@@ -754,6 +747,13 @@ export default function BattleWorkspace({
                 direction={activeDirectionState}
                 onCurrentHpChange={setTargetHp}
                 onRainChange={setGlobalRain}
+              />
+              <ActiveAbilityStageBar
+                direction={direction}
+                onChange={(role, value) => updateDirection(direction, {
+                  overrides: { [`${role}LevelStage`]: value },
+                })}
+                state={activeDirectionState}
               />
               <TraitConditionEditor
                 battleContext={activeDirectionState.context}

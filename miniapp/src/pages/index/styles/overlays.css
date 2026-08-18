@@ -674,6 +674,10 @@
   padding-top: 14px;
 }
 
+.conditions-sheet__content > .active-ability-stage {
+  padding: 14px 0;
+}
+
 .result-sheet__summary + .condition-section--skill-parameters,
 .condition-section--skill-parameters + .result-actions {
   margin-top: 14px;

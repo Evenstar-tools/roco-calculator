@@ -194,21 +194,24 @@ describe("mini-program desktop feature parity", () => {
       .toBeInTheDocument();
   });
 
-  test("keeps ability stages on the main workspace instead of duplicating them in the battle sheet", () => {
+  test("keeps ability stages inside the battle condition sheet", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    expect(screen.queryByLabelText("当前计算能力等级")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    expect(screen.queryByLabelText("能力等级")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("dialog", { name: "战斗条件" }))
+      .getByLabelText("当前计算能力等级")).toBeInTheDocument();
+  });
+
+  test("edits the active calculation ability stages from the battle condition sheet", () => {
     const snapshot = snapshotFixture();
     const store = createCalculatorStore(snapshot);
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
     fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
-    expect(screen.queryByLabelText("能力等级")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("当前计算能力等级")).toBeInTheDocument();
-  });
-
-  test("edits the active calculation ability stages from the main workspace", () => {
-    const snapshot = snapshotFixture();
-    const store = createCalculatorStore(snapshot);
-    render(<BattleWorkspace snapshot={snapshot} store={store} />);
-
     const editor = screen.getByLabelText("当前计算能力等级");
     fireEvent.click(within(editor).getByRole("button", {
       name: "当前攻击等级提高一级",
@@ -228,6 +231,7 @@ describe("mini-program desktop feature parity", () => {
     const store = createCalculatorStore(snapshot);
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     const editor = screen.getByLabelText("当前计算能力等级");
     const increase = within(editor).getByRole("button", {
       name: "当前攻击等级提高一级",

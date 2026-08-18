@@ -526,6 +526,7 @@
   }
 
   .conditions-sheet__content > .battle-environment,
+  .conditions-sheet__content > .active-ability-stage,
   .condition-section--advanced {
     grid-column: 1 / -1;
   }
