@@ -5,7 +5,7 @@
 # 洛克计算器
 
 [![Checks](https://img.shields.io/badge/checks-1049%20passed-2da44e.svg)](#开发与验证)
-[![Release](https://img.shields.io/badge/release-v1.6.0-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.6.0)
+[![Release](https://img.shields.io/badge/release-v1.6.1-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.6.1)
 [![License](https://img.shields.io/badge/code-MIT-4c55d9.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Windows-2563eb.svg)](#使用方式)
 
@@ -25,7 +25,7 @@
 - **队伍预设**：支持多支六人队伍、四技能配置及攻防方快捷载入。
 - **离线可用**：内置当前赛季快照和本地素材，可作为网页、PWA 或 Windows 桌面应用运行。
 
-当前数据快照包含 **592 个精灵形态**与 **553 个技能**。
+当前数据快照包含 **594 个精灵形态**与 **553 个技能**。
 
 ## 快速入口
 

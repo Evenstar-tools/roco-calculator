@@ -1,5 +1,13 @@
 export const USER_RELEASE_NOTES = Object.freeze([
   {
+    version: "v1.6.1",
+    date: "2026.08.21",
+    title: "桌面主线与实战回归",
+    highlights: [
+      "桌面1.6.x主线统一；男爵回归与海枝枝资源修正。",
+    ],
+  },
+  {
     version: "v1.6.0",
     date: "2026.08.21",
     title: "负面状态结算",
