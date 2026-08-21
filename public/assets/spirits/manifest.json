@@ -3455,30 +3455,30 @@
     {
       "id": "spirit_1ae8bf8691ced64f",
       "name": "海枝枝（杏黄百合）",
-      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/c/ce/gu6jzlvxig77gm42gayvu4sk9u6ieec.png",
-      "localFile": "/assets/spirits/spirit_1ae8bf8691ced64f.png",
-      "sha256": "e3c65ce31e410a75c24dd6264f0786ca6a0071ca6c7b8a27e76d1e53a8740031",
-      "bytes": 22299,
-      "width": 128,
-      "height": 128
-    },
-    {
-      "id": "spirit_dcad4af678b05dcc",
-      "name": "海枝枝（洋红沙丁）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/4/4a/mgmynoz7yceewyozls8lpo95sgc9dvj.png",
-      "localFile": "/assets/spirits/spirit_dcad4af678b05dcc.png",
+      "localFile": "/assets/spirits/spirit_1ae8bf8691ced64f.png",
       "sha256": "fffad343ca6842f656eb141fed623de059b96197845711379710f4717e93f99d",
       "bytes": 23085,
       "width": 128,
       "height": 128
     },
     {
-      "id": "spirit_e6f44a2b7c94c74f",
-      "name": "海枝枝（翠绿纶布）",
+      "id": "spirit_dcad4af678b05dcc",
+      "name": "海枝枝（洋红沙丁）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/a/ae/hl04yjyfbnis2rflogd0z88vlvvoxg8.png",
-      "localFile": "/assets/spirits/spirit_e6f44a2b7c94c74f.png",
+      "localFile": "/assets/spirits/spirit_dcad4af678b05dcc.png",
       "sha256": "910e3f94c8e799c42a1f8d35550e2a04746dc0fa6c3486cea7085bc5c73e0fbb",
       "bytes": 22205,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "spirit_e6f44a2b7c94c74f",
+      "name": "海枝枝（翠绿纶布）",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/c/ce/gu6jzlvxig77gm42gayvu4sk9u6ieec.png",
+      "localFile": "/assets/spirits/spirit_e6f44a2b7c94c74f.png",
+      "sha256": "e3c65ce31e410a75c24dd6264f0786ca6a0071ca6c7b8a27e76d1e53a8740031",
+      "bytes": 22299,
       "width": 128,
       "height": 128
     },
