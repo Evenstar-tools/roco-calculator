@@ -338,6 +338,27 @@ test("captures the current attack or defense configuration into the selected slo
   );
 });
 
+test("switches the right pane between member editing and team defense analysis", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  await user.click(screen.getByRole("button", { name: "编辑空位 1" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+
+  expect(screen.getByRole("region", { name: "成员 1 配置" })).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "分析" }));
+
+  expect(screen.getByRole("region", { name: "队伍防守面" })).toBeVisible();
+  expect(screen.getByText("1/6")).toBeVisible();
+  expect(screen.queryByRole("region", { name: "成员 1 配置" })).not.toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "成员" }));
+  expect(screen.getByRole("region", { name: "成员 1 配置" })).toBeVisible();
+});
+
 test("closes with Escape and restores focus to the trigger", async () => {
   const user = userEvent.setup();
   render(<DrawerHarness />);

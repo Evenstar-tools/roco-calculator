@@ -414,6 +414,45 @@ test("shows Beast Flower bloodline settlements without pretending they are marks
   expect(screen.queryByRole("region", { name: "印记结算" })).not.toBeInTheDocument();
 });
 
+test("shows Baron Greed ten-hit details without truncating the whole-skill gain", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        selectedResult: {
+          ...result.selectedResult,
+          traitSettlements: [
+            {
+              attackPercentAdd: 80,
+              hitDamages: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109],
+              kind: "baron-greed",
+              lifestealPercent: 50,
+              lines: [
+                "逐击 100/101/102/103/104/105/106/107/108/109",
+                "吸血50% · 溢出200 · 本次加攻+80%",
+              ],
+              overflowHealing: 200,
+              side: "attacker",
+              status: "applied",
+              text: "legacy fallback",
+              traitId: "reviewed-trait:baron-greed-v2",
+            },
+          ],
+        },
+      }}
+    />,
+  );
+
+  const settlements = screen.getByRole("region", { name: "特性结算" });
+  expect(within(settlements).getByText("贪得无厌")).toBeVisible();
+  expect(within(settlements).getByText(
+    "逐击 100/101/102/103/104/105/106/107/108/109",
+  )).toBeVisible();
+  expect(within(settlements).getByText("吸血50% · 溢出200 · 本次加攻+80%"))
+    .toBeVisible();
+  expect(within(settlements).queryByText("legacy fallback")).not.toBeInTheDocument();
+});
+
 test("keeps the result visible while naming an unapplied trait", () => {
   render(
     <ResultRail

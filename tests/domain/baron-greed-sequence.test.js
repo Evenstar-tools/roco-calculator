@@ -106,7 +106,7 @@ describe("恶魔男爵逐击吸血实战回归", () => {
       totalDamage: 648,
     });
     expect(bite.traitSettlements.at(-1).text).toContain(
-      "逐击 127 / 127 / 127 / 127 / 140",
+      "逐击 127/127/127/127/140",
     );
   });
 

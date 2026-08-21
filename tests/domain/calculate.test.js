@@ -4565,7 +4565,7 @@ describe("inherited penetration stacks", () => {
     });
     expect(result.traitSettlements).toEqual(expect.arrayContaining([
       expect.objectContaining({
-        text: expect.stringContaining("后续物攻"),
+        text: expect.stringContaining("本次加攻"),
       }),
     ]));
   });
@@ -4645,7 +4645,7 @@ describe("inherited penetration stacks", () => {
         source: "贪得无厌",
       },
     });
-    expect(result.traitSettlements[0].text).toContain("溢出回复 122");
-    expect(result.traitSettlements[0].text).toContain("后续物攻 +50%");
+    expect(result.traitSettlements[0].text).toContain("溢出122");
+    expect(result.traitSettlements[0].text).toContain("本次加攻+50%");
   });
 });

@@ -6,6 +6,7 @@ import {
   CompactSingleSkillEditor,
 } from "./components/CompactSkillEditor.jsx";
 import { FourSkillEditor } from "./components/FourSkillEditor.jsx";
+import { FloatingUndoButton } from "./components/FloatingUndoButton.jsx";
 import { NatureStatsStep } from "./components/NatureStatsStep.jsx";
 import { QuickNaturePicker } from "./components/QuickNaturePicker.jsx";
 import { QuickIvPicker } from "./components/QuickIvPicker.jsx";
@@ -79,6 +80,7 @@ import {
   updateMirroredTraitContext,
 } from "./state/calculator-session.js";
 import { decodeShareState, encodeShareState } from "./state/share.js";
+import { createUndoHistory } from "./state/undo-history.js";
 import packageInfo from "../package.json";
 
 const POPULAR_CONFIG_COUNT = 193;
@@ -121,6 +123,10 @@ function CalculatorWorkspace({ snapshot }) {
   }, [snapshot]);
   const [state, setState] = useState(initialState);
   const stateRef = useRef(initialState);
+  const undoHistoryRef = useRef(createUndoHistory({ limit: 50 }));
+  const undoBatchRef = useRef(null);
+  const undoBatchSequenceRef = useRef(0);
+  const [undoCount, setUndoCount] = useState(0);
   const [activeDirection, setActiveDirection] = useState("forward");
   const [configLibraryError, setConfigLibraryError] = useState("");
   const [configLibraryMode, setConfigLibraryMode] = useState(null);
@@ -171,22 +177,71 @@ function CalculatorWorkspace({ snapshot }) {
     if (teamsState.warning) setToast(teamsState.warning);
   }, [teamsState.warning]);
 
-  function commitState(nextState, rememberSide = null) {
+  function startUndoBatch() {
+    if (undoBatchRef.current !== null) return undoBatchRef.current;
+    undoBatchSequenceRef.current += 1;
+    undoBatchRef.current = undoBatchSequenceRef.current;
+    queueMicrotask(() => {
+      undoBatchRef.current = null;
+    });
+    return undoBatchRef.current;
+  }
+
+  function commitState(nextState, rememberSide = null, {
+    groupKey = null,
+    recordHistory = true,
+  } = {}) {
+    if (nextState === stateRef.current) return nextState;
+    if (recordHistory) {
+      undoHistoryRef.current.record(stateRef.current, {
+        batchToken: startUndoBatch(),
+        groupKey,
+        rememberSide,
+      });
+      setUndoCount(undoHistoryRef.current.size());
+    }
     stateRef.current = nextState;
     setState(nextState);
     const configuredSide = rememberSide
       ? nextState.sides[rememberSide]
       : null;
     if (configuredSide?.spiritId) storedData.rememberSide(configuredSide);
+    return nextState;
   }
 
-  function commitSession(result) {
-    commitState(result.state, result.persistence.rememberSide);
+  function commitSession(result, options) {
+    commitState(result.state, result.persistence.rememberSide, options);
     return result.state;
   }
 
   function dispatch(action) {
-    return commitSession(reduceSessionAction(stateRef.current, action));
+    const valueKeys = action?.value && typeof action.value === "object"
+      ? Object.keys(action.value).sort().join(",")
+      : "";
+    const groupKey = [
+      action?.type,
+      action?.side,
+      action?.direction,
+      action?.index,
+      action?.stat,
+      action?.key,
+      valueKeys,
+    ].filter((value) => value !== undefined && value !== "").join(":");
+    return commitSession(reduceSessionAction(stateRef.current, action), { groupKey });
+  }
+
+  function undoLastChange() {
+    const previous = undoHistoryRef.current.undo();
+    if (!previous) return;
+    undoBatchRef.current = null;
+    stateRef.current = previous.state;
+    setState(previous.state);
+    for (const side of previous.rememberSides) {
+      const configuredSide = previous.state.sides?.[side];
+      if (configuredSide?.spiritId) storedData.rememberSide(configuredSide);
+    }
+    setUndoCount(undoHistoryRef.current.size());
+    setToast("已撤回上一步");
   }
 
   function closeConfigLibrary() {
@@ -284,12 +339,13 @@ function CalculatorWorkspace({ snapshot }) {
     }
   }
 
-  function applySharedConfiguration(configuration) {
+  function applySharedConfiguration(configuration, options) {
     commitSession(
       replaceConfiguration(stateRef.current, configuration, {
         remember: false,
         source: "share",
       }),
+      options,
     );
   }
 
@@ -325,7 +381,7 @@ function CalculatorWorkspace({ snapshot }) {
         if (!sameConfigurationVersions(sharedState.versions, initialState.versions)) {
           setPendingSharedState(sharedState);
         } else {
-          applySharedConfiguration(sharedState);
+          applySharedConfiguration(sharedState, { recordHistory: false });
         }
       })
       .catch((error) => {
@@ -600,6 +656,7 @@ function CalculatorWorkspace({ snapshot }) {
   function updateFourSkillEntry(side, index, patch) {
     commitSession(
       patchFourSkill(stateRef.current, { index, patch, side, snapshot }),
+      { groupKey: `four:${side}:${index}:${Object.keys(patch).sort().join(",")}` },
     );
   }
 
@@ -825,7 +882,7 @@ function CalculatorWorkspace({ snapshot }) {
           },
         });
         setActiveDirection(selfDirection);
-        setToast(`贪得无厌：后续物攻 +${postAttackStageAdd * 10}%`);
+        setToast(`贪得无厌：本次共加攻 +${postAttackStageAdd * 10}%`);
         return;
       }
       if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
@@ -2023,6 +2080,7 @@ function CalculatorWorkspace({ snapshot }) {
       </div>
 
       </WorkspaceOverlays>
+      <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>
   );
 }

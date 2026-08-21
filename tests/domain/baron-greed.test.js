@@ -102,8 +102,8 @@ describe("恶魔男爵贪得无厌", () => {
       requestedHealing: 100,
       selfDamageBeforeHealing: 50,
     });
-    expect(result.settlement.text).toContain("下注先扣 50 生命");
-    expect(result.settlement.text).toContain("实际回复 50");
+    expect(result.settlement.text).toContain("自损50");
+    expect(result.settlement.text).toContain("回复50");
   });
 
   test("下注暗分支不扣血，不改变吸血与溢出回复", () => {
@@ -146,6 +146,33 @@ describe("恶魔男爵贪得无厌", () => {
       overflowHealing: 110,
       requestedHealing: 160,
       totalDamage: 320,
+    });
+    expect(result.settlement).toMatchObject({
+      kind: "baron-greed",
+      lines: [
+        "逐击 100/100/120",
+        "吸血50% · 溢出110 · 本次加攻+40%",
+      ],
+    });
+  });
+
+  test("十连击结算保留完整逐击明细和整次技能加攻总和", () => {
+    const result = resolveBaronGreedHitSequence({
+      attackerCurrentHp: 500,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      calculateHit: ({ hitIndex }) => 100 + hitIndex,
+      hitCount: 10,
+      skill: { description: "造成物伤，10连击。" },
+      targetCurrentHp: 5000,
+    });
+
+    expect(result.settlement).toMatchObject({
+      kind: "baron-greed",
+      lines: [
+        "逐击 100/101/102/103/104/105/106/107/108/109",
+        `吸血50% · 溢出520 · 本次加攻+${result.attackLevelStageAdd * 10}%`,
+      ],
     });
   });
 

@@ -50,7 +50,8 @@ const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
     "src/state/trait-values.js"
   ],
   "webOnly": [
-    "src/domain/element-colors.js"
+    "src/domain/element-colors.js",
+    "src/domain/team-type-analysis.js"
   ]
 }
 SHARED_SOURCE_MANIFEST_END */`;

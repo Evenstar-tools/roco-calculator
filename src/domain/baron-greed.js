@@ -88,17 +88,15 @@ export function resolveBaronGreed({
     ? Math.floor(overflowHealing * 20 / healing.maximumHp)
     : 0;
   const attackPercentAdd = attackLevelStageAdd * 10;
-  const selfDamageText = healing.selfDamageBeforeHealing > 0
-    ? `｜下注先扣 ${healing.selfDamageBeforeHealing} 生命`
-    : "";
-  const actualHealingText = healing.selfDamageBeforeHealing > 0
-    ? `｜实际回复 ${actualHealing}`
-    : "";
-  const text = healing.requestedHealing > 0
-    ? overflowHealing > 0
-      ? `贪得无厌${selfDamageText}｜吸血 ${capability.levels}层 · ${capability.percent}%${actualHealingText}｜溢出回复 ${overflowHealing} → 后续物攻 +${attackPercentAdd}%`
-      : `贪得无厌${selfDamageText}｜吸血 ${capability.levels}层 · ${capability.percent}%${actualHealingText}｜回复未溢出，物攻不增加`
-    : `贪得无厌${selfDamageText}｜吸血 ${capability.levels}层 · ${capability.percent}%`;
+  const lines = [
+    `吸血${capability.percent}%`,
+    healing.selfDamageBeforeHealing > 0
+      ? `自损${healing.selfDamageBeforeHealing}`
+      : null,
+    actualHealing > 0 ? `回复${actualHealing}` : null,
+    `溢出${overflowHealing}`,
+    `本次加攻+${attackPercentAdd}%`,
+  ].filter(Boolean);
 
   return {
     active: healing.requestedHealing > 0,
@@ -112,9 +110,11 @@ export function resolveBaronGreed({
     requestedHealing: healing.requestedHealing,
     selfDamageBeforeHealing: healing.selfDamageBeforeHealing,
     settlement: {
+      kind: "baron-greed",
+      lines: [lines.join(" · ")],
       side: "attacker",
       status: attackLevelStageAdd > 0 ? "applied" : "inactive",
-      text,
+      text: lines.join("｜"),
       traitId: "reviewed-trait:baron-greed-v2",
     },
   };
@@ -200,10 +200,10 @@ export function resolveBaronGreedHitSequence({
   }
 
   const attackPercentAdd = attackLevelStageAdd * 10;
-  const hitText = hitDamages.join(" / ");
-  const text =
-    `贪得无厌｜逐击 ${hitText}｜吸血 ${capability.levels}层 · ` +
-    `${capability.percent}%｜溢出回复 ${overflowHealing} → 物攻 +${attackPercentAdd}%`;
+  const lines = [
+    `逐击 ${hitDamages.join("/")}`,
+    `吸血${capability.percent}% · 溢出${overflowHealing} · 本次加攻+${attackPercentAdd}%`,
+  ];
 
   return {
     active: requestedHealing > 0,
@@ -214,9 +214,11 @@ export function resolveBaronGreedHitSequence({
     overflowHealing,
     requestedHealing,
     settlement: {
+      kind: "baron-greed",
+      lines,
       side: "attacker",
       status: attackLevelStageAdd > 0 ? "applied" : "inactive",
-      text,
+      text: lines.join("｜"),
       traitId: "reviewed-trait:baron-greed-v2",
     },
     totalDamage: hitDamages.reduce((sum, damage) => sum + damage, 0),

@@ -26,7 +26,7 @@ const validRelease = {
   mainPackageBytes: 1024,
   manifestFileId: "cloud://cloud-prod-1a2b/data/manifest.json",
   miniappVersion: "0.2.3",
-  rootVersion: "1.6.1",
+  rootVersion: "1.6.2",
   runtimeSha256: "a".repeat(64),
   sourceText: "Taro.cloud.downloadFile({ fileID: manifestFileId })",
 };
@@ -48,7 +48,7 @@ function createReleaseFixture(localConfig) {
   fs.mkdirSync(path.join(root, "miniapp", "src"), { recursive: true });
   fs.writeFileSync(
     path.join(root, "package.json"),
-    JSON.stringify({ version: "1.6.1" }),
+    JSON.stringify({ version: "1.6.2" }),
   );
   fs.writeFileSync(
     path.join(root, "miniapp", "package.json"),
@@ -116,7 +116,7 @@ describe("miniapp production release gate", () => {
 
   test.each([
     ["miniappVersion", "0.1.0", /0\.2\.3/u],
-    ["rootVersion", "1.4.6", /1\.6\.1/u],
+    ["rootVersion", "1.4.6", /1\.6\.2/u],
   ])("rejects an unexpected %s", (key, value, message) => {
     expect(() => verifyRelease({ ...validRelease, [key]: value }))
       .toThrow(message);

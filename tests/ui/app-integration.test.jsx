@@ -481,6 +481,21 @@ test("starts with both spirit selectors empty and hides incomplete configuration
   ).not.toBeInTheDocument();
 });
 
+test("undoes the latest calculator change without treating interface mode as history", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+
+  expect(screen.getByRole("button", { name: "暂无可撤回操作" }))
+    .toHaveAttribute("aria-disabled", "true");
+  await selectSpirit(user, "攻击方", "音速犬");
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  await user.click(screen.getByRole("button", { name: "撤回上一步（1）" }));
+  expect(screen.getByRole("combobox", { name: "攻击方精灵" })).toHaveValue("");
+  expect(screen.getByRole("button", { name: "具体版" }))
+    .toHaveAttribute("aria-pressed", "true");
+});
+
 test("shows the first-run guide once, persists skip, and allows menu replay", async () => {
   localStorage.removeItem(FIRST_RUN_GUIDE_STORAGE_KEY);
   const user = userEvent.setup();

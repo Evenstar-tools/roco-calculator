@@ -394,12 +394,23 @@ export function ResultRail({
         <section aria-label="特性结算" className="result-rail__traits">
           {primary.traitSettlements.map((settlement, index) => (
             <div
+              data-kind={settlement.kind}
               data-side={settlement.side}
               data-status={settlement.status}
               key={`${settlement.traitId}-${settlement.bloodlineType}-${index}`}
             >
-              <b>{settlement.side === "attacker" ? "进攻方" : "防御方"}</b>
-              <span>{settlement.text}</span>
+              <b>
+                {settlement.kind === "baron-greed"
+                  ? "贪得无厌"
+                  : settlement.side === "attacker" ? "进攻方" : "防御方"}
+              </b>
+              {settlement.lines?.length ? (
+                <div className="result-rail__trait-lines">
+                  {settlement.lines.map((line) => <span key={line}>{line}</span>)}
+                </div>
+              ) : (
+                <span>{settlement.text}</span>
+              )}
             </div>
           ))}
         </section>

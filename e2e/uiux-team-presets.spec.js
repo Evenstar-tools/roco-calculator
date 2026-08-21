@@ -13,6 +13,66 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test("analyzes a six-member team's defensive matchups inside the drawer", async ({ page }) => {
+  await page.addInitScript(() => {
+    const spiritIds = [
+      "spirit_b2f1251352d5f670",
+      "spirit_b9382967288bd429",
+      "spirit_30c62645090ee8af",
+      "spirit_563a4e078a1d8cba",
+      "spirit_07cdb4d4a94ac1bd",
+      "spirit_f7e8528a743eaaf0",
+    ];
+    const members = spiritIds.map((spiritId) => ({
+      displayIvs: {
+        hp: 0,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 0,
+        physicalDefense: 0,
+        speed: 0,
+      },
+      natureId: "neutral",
+      skills: { four: [null, null, null, null], single: null },
+      spiritId,
+    }));
+    localStorage.setItem(
+      "rock-calculator.teams.v1",
+      JSON.stringify({
+        activeTeamId: "team-analysis-e2e",
+        schemaVersion: 1,
+        teams: [{
+          createdAt: "2026-08-22T00:00:00.000Z",
+          id: "team-analysis-e2e",
+          members,
+          name: "防守面测试队",
+          updatedAt: "2026-08-22T00:00:00.000Z",
+        }],
+      }),
+    );
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "打开队伍" }).click();
+  await page.getByRole("button", { name: "分析" }).click();
+
+  const analysis = page.getByRole("region", { name: "队伍防守面" });
+  await expect(analysis).toBeVisible();
+  await expect(analysis.getByText("6/6")).toBeVisible();
+
+  const firstRisk = analysis.locator(".team-type-analysis__row-button").first();
+  await firstRisk.click();
+  await expect(firstRisk).toHaveAttribute("aria-expanded", "true");
+  await expect(analysis.locator(".team-type-analysis__member img").first()).toBeVisible();
+
+  await analysis.getByRole("button", { name: "全部" }).click();
+  await expect(analysis.locator(".team-type-analysis__row")).toHaveCount(18);
+  await analysis.getByRole("button", { name: "重点" }).click();
+
+  const drawer = page.getByRole("dialog", { name: "队伍" });
+  expect(await drawer.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+});
+
 test("first-run guide appears once, can be replayed, and imports popular configs", async ({ page }) => {
   await page.addInitScript(() => {
     if (sessionStorage.getItem("first-run-guide-e2e")) return;
@@ -1093,6 +1153,34 @@ test("keeps detailed four-skill menus readable outside every attack and defense 
       }
     }
   }
+});
+
+test("keeps a manual four-skill power value readable beside its restore control", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 900, width: 1424 });
+  await page.goto("/");
+  await selectDefaultSpirits(page);
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  const power = page.getByRole("spinbutton", {
+    name: "攻击方技能1静态威力",
+  });
+  await power.fill("123");
+  await power.press("Enter");
+
+  await expect(power).toHaveValue("123");
+  const restore = page.getByRole("button", { name: "恢复自动威力" }).first();
+  await expect(restore).toBeVisible();
+  const [powerBox, restoreBox] = await Promise.all([
+    power.boundingBox(),
+    restore.boundingBox(),
+  ]);
+  expect(powerBox).not.toBeNull();
+  expect(restoreBox).not.toBeNull();
+  expect(powerBox.width).toBeGreaterThanOrEqual(32);
+  expect(powerBox.x + powerBox.width).toBeLessThanOrEqual(restoreBox.x + 1);
 });
 
 test("collapses cleanly in a 930px half-screen window and steps IV by six", async ({
