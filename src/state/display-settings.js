@@ -2,6 +2,8 @@ export const TYPE_COVERAGE_STORAGE_KEY =
   "rock-calculator.settings.type-coverage.v1";
 export const POWER_DISPLAY_STORAGE_KEY =
   "rock-calculator.settings.power-display.v1";
+export const NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY =
+  "rock-calculator.settings.negative-status-settlement.v1";
 
 function normalizePowerDisplayMode(value) {
   return value === "panel" ? "panel" : "static";
@@ -43,6 +45,32 @@ export function writeTypeCoverageSetting(
   const normalized = Boolean(enabled);
   try {
     storage?.setItem(TYPE_COVERAGE_STORAGE_KEY, normalized ? "1" : "0");
+  } catch {
+    return normalized;
+  }
+  return normalized;
+}
+
+export function readNegativeStatusSettlementSetting(
+  storage = globalThis.localStorage,
+) {
+  try {
+    return storage?.getItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function writeNegativeStatusSettlementSetting(
+  storage = globalThis.localStorage,
+  enabled,
+) {
+  const normalized = Boolean(enabled);
+  try {
+    storage?.setItem(
+      NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY,
+      normalized ? "1" : "0",
+    );
   } catch {
     return normalized;
   }

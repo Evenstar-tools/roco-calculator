@@ -110,6 +110,26 @@ function shareFixture() {
 }
 
 describe("versioned share state", () => {
+  test("round trips negative status inputs and the opt-in settlement switch", async () => {
+    const state = shareFixture();
+    state.calculationOptions.includeNegativeStatusSettlement = true;
+    state.negativeStatuses.attacker.freeze = 2;
+    state.negativeStatuses.defender.poison = 6;
+    state.negativeStatuses.defender.electrified = 1;
+    state.directions.forward.context.weatherThunder = true;
+    state.directions.reverse.context.weatherThunder = true;
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.calculationOptions).toEqual({
+      includeNegativeStatusSettlement: true,
+    });
+    expect(decoded.negativeStatuses.attacker.freeze).toBe(2);
+    expect(decoded.negativeStatuses.defender.poison).toBe(6);
+    expect(decoded.negativeStatuses.defender.electrified).toBe(1);
+    expect(decoded.directions.forward.context.weatherThunder).toBe(true);
+  });
+
   test("keeps the complete v1 share bytes stable", async () => {
     await expect(encodeShareState(shareFixture())).resolves.toBe(
       "#v1.eyJkaXJlY3Rpb25zIjp7ImZvcndhcmQiOnsiY29udGV4dCI6eyJhYm5vcm1hbFN0YWNrcyI6MiwiZW5lcmd5Ijo0fSwiY3VycmVudEhwIjoyODAsImZpbmFsRGFtYWdlTXVsdGlwbGllciI6MSwiaGl0Q291bnQiOjMsIm92ZXJyaWRlcyI6eyJiYXNlUG93ZXIiOjEyMCwiZGlzcGxheWVkUG93ZXIiOjI0MCwicG93ZXJNb2RlIjoiZGlzcGxheWVkIn0sInJlZHVjdGlvbiI6MSwic2VsZWN0ZWRTa2lsbEluZGV4IjowLCJzdGFyZmFsbFN0YWNrcyI6MH0sInJldmVyc2UiOnsiY29udGV4dCI6eyJza2lsbFBvc2l0aW9uIjozfSwiY3VycmVudEhwIjozMTAsImZpbmFsRGFtYWdlTXVsdGlwbGllciI6MS4yLCJoaXRDb3VudCI6MSwib3ZlcnJpZGVzIjp7InR5cGVFZmZlY3RpdmVuZXNzIjoxLjV9LCJyZWR1Y3Rpb24iOjAuNzUsInNlbGVjdGVkU2tpbGxJbmRleCI6Miwic3RhcmZhbGxTdGFja3MiOjV9fSwibWFya3MiOnsiYXR0YWNrZXIiOnsibmVnYXRpdmUiOnsiaWQiOiJzbG93Iiwic3RhY2tzIjoyfSwicG9zaXRpdmUiOnsiaWQiOiJ0YWlsd2luZCIsInN0YWNrcyI6M319LCJkZWZlbmRlciI6eyJuZWdhdGl2ZSI6eyJpZCI6InN0YXJmYWxsIiwic3RhY2tzIjo1fSwicG9zaXRpdmUiOnsiaWQiOiJjaGFyZ2UiLCJzdGFja3MiOjF9fX0sIm1vZGUiOiJmb3VyIiwic2NoZW1hVmVyc2lvbiI6MSwic2lkZXMiOnsiYXR0YWNrZXIiOnsiZGlzcGxheUl2cyI6eyJocCI6NjAsIm1hZ2ljYWxBdHRhY2siOjYwLCJtYWdpY2FsRGVmZW5zZSI6NjAsInBoeXNpY2FsQXR0YWNrIjoxMDAsInBoeXNpY2FsRGVmZW5zZSI6NjAsInNwZWVkIjo2MH0sIm5hdHVyZSI6ImJyYXZlIiwic2tpbGxzIjp7ImZvdXIiOlsic2tpbGxfYSIsInNraWxsX2IiLCJza2lsbF9jIiwic2tpbGxfZCJdLCJzaW5nbGUiOiJza2lsbF9jIn0sInNwaXJpdElkIjoic3Bpcml0X2F0dGFja2VyIn0sImRlZmVuZGVyIjp7ImRpc3BsYXlJdnMiOnsiaHAiOjQ4LCJtYWdpY2FsQXR0YWNrIjo2MCwibWFnaWNhbERlZmVuc2UiOjQyLCJwaHlzaWNhbEF0dGFjayI6NjAsInBoeXNpY2FsRGVmZW5zZSI6NjAsInNwZWVkIjo2MH0sIm5hdHVyZSI6ImNhbG0iLCJza2lsbHMiOnsiZm91ciI6WyJza2lsbF9kIiwic2tpbGxfYyIsInNraWxsX2IiLCJza2lsbF9hIl0sInNpbmdsZSI6InNraWxsX2IifSwic3Bpcml0SWQiOiJzcGlyaXRfZGVmZW5kZXIifX0sInZlcnNpb25zIjp7ImRhdGEiOiJzMy0yMDI2LTA3LTE1IiwicnVsZXMiOiJydWxlcy0yMDI2LjA3In19.af04de399744",

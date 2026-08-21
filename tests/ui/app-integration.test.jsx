@@ -16,6 +16,7 @@ import { encodeShareState } from "../../src/state/share.js";
 import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
 import { TEAM_STORAGE_KEY } from "../../src/state/team-presets.js";
 import {
+  NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY,
   POWER_DISPLAY_STORAGE_KEY,
   TYPE_COVERAGE_STORAGE_KEY,
 } from "../../src/state/display-settings.js";
@@ -796,11 +797,9 @@ test("rainy weather boosts water damage and stays global across directions", asy
   const dryDamage = Number(screen.getByTestId("primary-damage").textContent);
 
   await user.click(screen.getByRole("button", { name: "高级选项" }));
-  const rain = screen.getByRole("checkbox", {
-    name: "雨天",
-  });
-  expect(rain).not.toBeChecked();
-  await user.click(rain);
+  const weather = screen.getByRole("combobox", { name: "天气" });
+  expect(weather).toHaveValue("none");
+  await user.selectOptions(weather, "rain");
 
   expect(Number(screen.getByTestId("primary-damage").textContent)).toBeGreaterThan(
     dryDamage,
@@ -810,9 +809,7 @@ test("rainy weather boosts water damage and stays global across directions", asy
   expect(within(formulaAudit).getByText("1.75")).toBeVisible();
 
   await user.click(screen.getByRole("button", { name: "切换计算方向" }));
-  expect(
-    screen.getByRole("checkbox", { name: "雨天" }),
-  ).toBeChecked();
+  expect(screen.getByRole("combobox", { name: "天气" })).toHaveValue("rain");
 });
 
 test("shows a base result for Skybreaker and recalculates when it acts first", async () => {
@@ -2869,6 +2866,36 @@ test("enables type analysis from display settings and remembers the switch", asy
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
   expect(screen.getByRole("region", { name: "属性分析" })).toBeVisible();
+});
+
+test("enables negative-status settlement, edits stacks, and remembers the switch", async () => {
+  const user = userEvent.setup();
+  const first = render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+
+  expect(screen.queryByRole("region", { name: "负面状态结算" }))
+    .not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "显示设置" }));
+  await user.click(screen.getByRole("checkbox", { name: "负面状态结算" }));
+  await user.click(screen.getByRole("button", { name: "完成" }));
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  await user.click(screen.getByRole("button", { name: "防御方灼烧加一层" }));
+
+  const settlement = screen.getByRole("region", { name: "负面状态结算" });
+  expect(settlement).toBeVisible();
+  expect(settlement).toHaveTextContent("灼烧");
+  expect(settlement).toHaveTextContent("灼烧 ×1");
+  expect(settlement).toHaveTextContent("1.8% · 8 HP");
+  expect(localStorage.getItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY)).toBe("1");
+
+  first.unmount();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  expect(screen.getByRole("region", { name: "负面状态层数" })).toBeVisible();
 });
 
 test("switches detailed four-skill rows to editable panel power and remembers it", async () => {

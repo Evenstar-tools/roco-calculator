@@ -32,10 +32,289 @@ const result = {
 test("keeps the exact damage and percent prominent", () => {
   render(<ResultRail onShare={vi.fn()} result={result} />);
 
+  expect(screen.queryByText("技能直接伤害")).not.toBeInTheDocument();
   expect(screen.getByTestId("primary-damage")).toHaveTextContent("399");
   expect(screen.getByText("91.9% HP")).toBeVisible();
   expect(screen.queryByText("技能2")).not.toBeInTheDocument();
   expect(screen.queryByText(/随机|范围|置信/)).not.toBeInTheDocument();
+});
+
+test("separates actual status damage from freeze threshold without ambiguous loss copy", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        selectedResult: {
+          ...result.selectedResult,
+          negativeStatusSettlement: {
+            added: { burn: 2, freeze: 1, parasitism: 0, poison: 0 },
+            breakdown: [
+              {
+                damage: 40,
+                healing: 0,
+                id: "burn",
+                immune: false,
+                label: "灼烧",
+                stacks: 2,
+              },
+            ],
+            combinedHpLoss: 434,
+            directDamage: 399,
+            freeze: {
+              immune: false,
+              label: "冻结",
+              stacks: 1,
+              thresholdPercent: 5,
+            },
+            lethal: true,
+            maxHp: 434,
+            outcome: "负面状态击倒",
+            remainingHp: 0,
+            skipped: null,
+            stacks: { burn: 2, freeze: 1, parasitism: 0, poison: 0 },
+            statusDamage: 40,
+            actualStatusDamage: 35,
+          },
+        },
+      }}
+    />,
+  );
+
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent("399");
+  const settlement = screen.getByRole("region", { name: "负面状态结算" });
+  expect(within(settlement).getByText("状态结算")).toBeVisible();
+  expect(within(settlement).queryByText("实际追加 35 HP")).not.toBeInTheDocument();
+  expect(within(settlement).getByText("灼烧 ×2")).toBeVisible();
+  expect(within(settlement).getByText("9.2% · 40 HP")).toBeVisible();
+  expect(within(settlement).getByText("冻结 ×1")).toBeVisible();
+  expect(within(settlement).getByText("5% 斩杀线")).toBeVisible();
+  expect(within(settlement).getByText("≤21 HP · 不额外扣血")).toBeVisible();
+  expect(within(settlement).getByText("合计 434 HP")).toBeVisible();
+  expect(within(settlement).getByText("负面状态击倒")).toBeVisible();
+  expect(within(settlement).queryByText("回合结束")).not.toBeInTheDocument();
+});
+
+test("explains freeze-only settlement as a threshold instead of extra damage", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        defenderHp: 372,
+        defenderMaxHp: 372,
+        selectedResult: {
+          ...result.selectedResult,
+          hpPercent: 50.8,
+          totalDamage: 189,
+          negativeStatusSettlement: {
+            actualStatusDamage: 0,
+            added: { burn: 0, freeze: 1, parasitism: 0, poison: 0 },
+            breakdown: [],
+            combinedHpLoss: 189,
+            directDamage: 189,
+            freeze: {
+              immune: false,
+              lethal: false,
+              stacks: 1,
+              thresholdHp: 18,
+              thresholdPercent: 5,
+            },
+            lethal: false,
+            outcome: "剩余 183 HP",
+            remainingHp: 183,
+            skipped: null,
+            stacks: { burn: 0, freeze: 1, parasitism: 0, poison: 0 },
+            statusDamage: 0,
+          },
+        },
+      }}
+    />,
+  );
+
+  const settlement = screen.getByRole("region", { name: "负面状态结算" });
+  expect(within(settlement).getByText("冻结 ×1")).toBeVisible();
+  expect(within(settlement).getByText("5% 斩杀线")).toBeVisible();
+  expect(within(settlement).getByText("≤18 HP · 不额外扣血")).toBeVisible();
+  expect(within(settlement).queryByText(/追加|总伤害|合计损失|合计/)).not.toBeInTheDocument();
+  expect(within(settlement).getByRole("img", { name: "冻结斩杀阈值 5%，等效不高于 18 HP，不额外扣血" })).toBeVisible();
+});
+
+test("shows a compact current and next-turn preview for layered statuses", () => {
+  const phase = ({ added, damage, next, remaining, stacks }) => ({
+    actualStatusDamage: damage,
+    added: { burn: added, electrified: 0, freeze: 0, parasitism: 0, poison: 0 },
+    breakdown: [{ damage, id: "burn", stacks: stacks.burn }],
+    combinedHpLoss: damage,
+    directDamage: 0,
+    freeze: { stacks: 0, thresholdPercent: 0 },
+    maxHp: 1000,
+    nextStacks: { burn: next, electrified: 0, freeze: 0, parasitism: 0, poison: 0 },
+    remainingHp: remaining,
+    stacks: { ...stacks, electrified: 0, freeze: 0, parasitism: 0, poison: 0 },
+    statusDamage: damage,
+  });
+  const current = phase({ added: 10, damage: 200, next: 5, remaining: 800, stacks: { burn: 10 } });
+  current.turnPreview = {
+    focusStatusIds: ["burn"],
+    next: phase({ added: 10, damage: 300, next: 7, remaining: 500, stacks: { burn: 15 } }),
+    repeated: true,
+  };
+
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        selectedSkillName: "引燃",
+        selectedResult: {
+          ...result.selectedResult,
+          hpPercent: 0,
+          statusOnly: true,
+          totalDamage: 0,
+          negativeStatusSettlement: current,
+        },
+      }}
+    />,
+  );
+
+  const preview = screen.getByRole("region", { name: "回合状态预估" });
+  expect(within(preview).getByText("本回合")).toBeVisible();
+  expect(within(preview).getByText("灼烧 ×10")).toBeVisible();
+  expect(within(preview).getByText("20.0% · 200 HP")).toBeVisible();
+  expect(within(preview).getByText("下回合")).toBeVisible();
+  expect(within(preview).getByText("续用")).toBeVisible();
+  expect(within(preview).getByText("灼烧 ×15")).toBeVisible();
+  expect(within(preview).getByText("30.0% · 300 HP")).toBeVisible();
+  expect(within(preview).queryByText(/不续|再用引燃/)).not.toBeInTheDocument();
+});
+
+test("keeps a status-only result readable when negative settlement is enabled", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        mode: "four",
+        selectedSkillName: "打喷嚏",
+        skillResults: [
+          {
+            id: "sneeze",
+            name: "打喷嚏",
+            damage: 0,
+            hpPercent: 0,
+            selected: true,
+            statusOnly: true,
+            negativeStatusSettlement: {
+              added: { freeze: 3 },
+              freeze: { stacks: 3, thresholdPercent: 15 },
+            },
+          },
+        ],
+        selectedResult: {
+          hpPercent: 0,
+          lethal: false,
+          status: "exact",
+          statusOnly: true,
+          totalDamage: 0,
+          negativeStatusSettlement: {
+            actualStatusDamage: 0,
+            added: { burn: 0, freeze: 3, parasitism: 0, poison: 0 },
+            breakdown: [],
+            combinedHpLoss: 0,
+            directDamage: 0,
+            freeze: {
+              immune: false,
+              stacks: 3,
+              thresholdPercent: 15,
+            },
+            lethal: false,
+            maxHp: 434,
+            outcome: "剩余 434 HP",
+            remainingHp: 434,
+            skipped: null,
+            stacks: { burn: 0, freeze: 3, parasitism: 0, poison: 0 },
+            statusDamage: 0,
+          },
+        },
+      }}
+    />,
+  );
+
+  expect(screen.queryByTestId("primary-damage")).not.toBeInTheDocument();
+  expect(screen.queryByText("0.0% HP")).not.toBeInTheDocument();
+  expect(screen.queryByRole("img", { name: "伤害占最大生命 0.0%" })).not.toBeInTheDocument();
+  expect(screen.queryByText("无直接伤害")).not.toBeInTheDocument();
+  const settlement = screen.getByRole("region", { name: "负面状态结算" });
+  expect(within(settlement).getByText("冻结 ×3")).toBeVisible();
+  expect(within(settlement).getByText("15% 斩杀线")).toBeVisible();
+  expect(within(settlement).getByText("≤65 HP · 不额外扣血")).toBeVisible();
+  expect(within(settlement).queryByText(/合计/)).not.toBeInTheDocument();
+  const results = screen.getByRole("region", { name: "技能结果" });
+  const row = within(results).getByText("打喷嚏").closest(".skill-result-row");
+  expect(within(row).getByText("—")).toBeVisible();
+  expect(within(row).queryByText("0.0%")).not.toBeInTheDocument();
+});
+
+test("shows a compact status summary for each four-skill row", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        mode: "four",
+        skillResults: [
+          {
+            id: "burn",
+            name: "易燃物质",
+            damage: 50,
+            hpPercent: 11.5,
+            negativeStatusSettlement: {
+              added: { burn: 4, freeze: 0, parasitism: 0, poison: 0 },
+              actualStatusDamage: 80,
+              breakdown: [{ damage: 80, id: "burn", stacks: 4 }],
+              maxHp: 434,
+              statusDamage: 80,
+              freeze: { stacks: 0, thresholdPercent: 0 },
+              outcome: "剩余 304 HP",
+            },
+          },
+        ],
+      }}
+    />,
+  );
+
+  const row = screen.getByText("易燃物质").closest(".skill-result-row");
+  expect(within(row).getByText("灼烧×4")).toBeVisible();
+});
+
+test("uses distinct visual identities for all five negative states", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        selectedResult: {
+          ...result.selectedResult,
+          negativeStatusSettlement: {
+            added: { burn: 1, electrified: 1, freeze: 1, parasitism: 1, poison: 1 },
+            breakdown: [
+              { damage: 8, id: "burn", label: "灼烧", stacks: 1 },
+              { damage: 12, id: "poison", label: "中毒", stacks: 1 },
+              { damage: 6, healing: 6, id: "parasitism", label: "寄生", stacks: 1 },
+              { damage: 108, id: "electrified", label: "引电", stacks: 2, triggered: true },
+            ],
+            combinedHpLoss: 434,
+            directDamage: 399,
+            freeze: { immune: false, stacks: 1, thresholdPercent: 5 },
+            outcome: "负面状态击倒",
+            statusDamage: 134,
+          },
+        },
+      }}
+    />,
+  );
+
+  const settlement = screen.getByRole("region", { name: "负面状态结算" });
+  for (const id of ["burn", "poison", "parasitism", "freeze", "electrified"]) {
+    expect(settlement.querySelector(`[data-status="${id}"]`)).toBeTruthy();
+  }
+  expect(within(settlement).getByText("回复 +6")).toBeVisible();
+  expect(within(settlement).getByText("引电 ×2 · 已触发")).toBeVisible();
 });
 
 test("explains a repeated choice skill as two independently calculated passes", () => {

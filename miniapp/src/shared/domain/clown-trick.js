@@ -55,6 +55,22 @@ export function directHealingPercent(skill, context) {
   return healing;
 }
 
+function selfDamageBeforeHealing(skill, context, maximumHp, currentHp) {
+  if (
+    String(skill?.name ?? "").trim() !== "下注" ||
+    String(context?.betMode ?? "fixed") !== "fixed"
+  ) return 0;
+
+  const selfDamagePercent = parsePercent(
+    skill?.description,
+    /自己生命-(\d+(?:\.\d+)?)\s*[%％]/,
+  );
+  return Math.min(
+    currentHp,
+    Math.round(maximumHp * selfDamagePercent / 100),
+  );
+}
+
 export function hasClownTrickTrait(traits = []) {
   return CLOWN_TRICK_ENABLED && traits.some(
     (trait) => traitName(trait) === CLOWN_TRICK_TRAIT_NAME,
@@ -62,30 +78,54 @@ export function hasClownTrickTrait(traits = []) {
 }
 
 export function resolveSkillHealing({
+  applySelfDamage = true,
   attackerCurrentHp,
   attackerMaximumHp,
   baseLifestealPercent = 0,
   context = {},
   externalHealingSources = [],
+  includeDirectHealing = true,
   mainDamage = 0,
   persistentLifestealPercent = 0,
   skill,
+  targetCurrentHp,
 } = {}) {
   const maximumHp = Math.max(0, Math.round(Number(attackerMaximumHp) || 0));
-  const currentHp = clamp(
+  const currentHpBeforeSelfDamage = clamp(
     Math.round(Number(attackerCurrentHp) || 0),
     0,
     maximumHp,
   );
+  const preHealingSelfDamage = applySelfDamage
+    ? selfDamageBeforeHealing(
+        skill,
+        context,
+        maximumHp,
+        currentHpBeforeSelfDamage,
+      )
+    : 0;
+  const currentHp = currentHpBeforeSelfDamage - preHealingSelfDamage;
   const missingHp = maximumHp - currentHp;
-  const currentHpPercent = maximumHp > 0 ? currentHp / maximumHp * 100 : 0;
+  const currentHpPercent = maximumHp > 0
+    ? currentHpBeforeSelfDamage / maximumHp * 100
+    : 0;
   const lifestealPercent =
     Math.max(0, Number(baseLifestealPercent) || 0) +
     Math.max(0, Number(persistentLifestealPercent) || 0) +
     inherentLifestealPercent(skill, context, currentHpPercent);
-  const healPercent = directHealingPercent(skill, context);
+  const healPercent = includeDirectHealing
+    ? directHealingPercent(skill, context)
+    : 0;
+  const normalizedMainDamage = Math.max(0, Number(mainDamage) || 0);
+  const parsedTargetCurrentHp = Number(targetCurrentHp);
+  const lifestealBaseDamage = Number.isFinite(parsedTargetCurrentHp)
+    ? Math.min(
+        normalizedMainDamage,
+        Math.max(0, Math.round(parsedTargetCurrentHp)),
+      )
+    : normalizedMainDamage;
   const lifestealHealing = Math.floor(
-    Math.max(0, Number(mainDamage) || 0) * lifestealPercent / 100,
+    lifestealBaseDamage * lifestealPercent / 100,
   );
   const directHealing = Math.round(maximumHp * healPercent / 100);
   const normalizedExternalSources = externalHealingSources
@@ -109,6 +149,7 @@ export function resolveSkillHealing({
   ].filter(Boolean);
   return {
     currentHp,
+    currentHpBeforeSelfDamage,
     directHealing,
     externalHealing,
     healPercent,
@@ -118,6 +159,7 @@ export function resolveSkillHealing({
     maximumHp,
     missingHp,
     requestedHealing: lifestealHealing + directHealing + externalHealing,
+    selfDamageBeforeHealing: preHealingSelfDamage,
   };
 }
 
@@ -130,6 +172,7 @@ export function resolveClownTrickDamage({
   mainDamage = 0,
   persistentLifestealPercent = 0,
   skill,
+  targetCurrentHp,
 } = {}) {
   if (!hasClownTrickTrait(attackerTraits)) {
     return {
@@ -140,6 +183,7 @@ export function resolveClownTrickDamage({
       lifestealPercent: 0,
       missingHp: 0,
       requestedHealing: 0,
+      selfDamageBeforeHealing: 0,
       settlement: null,
     };
   }
@@ -152,6 +196,7 @@ export function resolveClownTrickDamage({
     mainDamage,
     persistentLifestealPercent,
     skill,
+    targetCurrentHp,
   });
   const {
     healPercent,
@@ -159,6 +204,7 @@ export function resolveClownTrickDamage({
     lifestealPercent,
     missingHp,
     requestedHealing,
+    selfDamageBeforeHealing,
   } = healing;
   const actualHealing = Math.min(missingHp, requestedHealing);
   const sourceLabels = healingSources.map(
@@ -178,6 +224,7 @@ export function resolveClownTrickDamage({
     lifestealPercent,
     missingHp,
     requestedHealing,
+    selfDamageBeforeHealing,
     settlement: text
       ? {
           side: "attacker",

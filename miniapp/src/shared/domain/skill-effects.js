@@ -28,8 +28,82 @@ const when = (input, key, equals, defaultValue) => ({
   when: { defaultValue, equals, key },
 });
 
+export const THUNDERSTORM_BURST_SOURCES = Object.freeze([
+  {
+    contextKey: "burstSourceBioelectric",
+    description: "携带的电系技能获得迸发：能耗 -2。",
+    group: "特性",
+    label: "生物电",
+  },
+  {
+    contextKey: "burstSourceCurrentStimulus",
+    description: "携带的攻击技能获得迸发：威力 +40。",
+    group: "特性",
+    label: "电流刺激",
+  },
+  {
+    contextKey: "burstSourceOverload",
+    description: "攻击技能获得迸发：敌方全技能能耗 +1。",
+    group: "特性",
+    label: "超负荷",
+  },
+  {
+    contextKey: "burstSourceContinuousLoad",
+    description: "自身技能的迸发效果延长 1 回合。",
+    group: "特性",
+    label: "连续负荷",
+  },
+  {
+    contextKey: "burstSourceHeavenSpin",
+    description: "本次技能威力 +30。",
+    group: "技能",
+    label: "天旋地转",
+  },
+  {
+    contextKey: "burstSourceArc",
+    description: "本次技能威力 +40。",
+    group: "技能",
+    label: "电弧",
+  },
+  {
+    contextKey: "burstSourceSuperconduct",
+    description: "本技能能耗 -1。",
+    group: "技能",
+    label: "超导",
+  },
+  {
+    contextKey: "burstSourceLightningGuide",
+    description: "本次技能威力 +20。",
+    group: "技能",
+    label: "引雷",
+  },
+  {
+    contextKey: "burstSourceDoublePulse",
+    description: "本技能使用次数 +1。",
+    group: "技能",
+    label: "双联脉冲",
+  },
+  {
+    contextKey: "burstSourceChargeMark",
+    description: "每层蓄电印记使本次技能威力 +10。",
+    group: "印记",
+    label: "蓄电",
+  },
+]);
+
+const burstSourceInput = ({ contextKey, description, group, label }) =>
+  booleanInput(contextKey, label, {
+    burstDescription: description,
+    burstGroup: group,
+    burstSource: true,
+  });
+
 const booleanAdd = (contextKey, label, add, extra = {}) => ({
-  inputs: [booleanInput(contextKey, label)],
+  inputs: [
+    booleanInput(contextKey, label, {
+      defaultValue: extra.defaultValue ?? false,
+    }),
+  ],
   ruleId: "boolean_power_add",
   ruleParams: { add, contextKey, label, ...extra },
 });
@@ -340,7 +414,9 @@ const REVIEWED_EFFECTS = Object.freeze({
     50,
     { ignoreResistanceWhenTriggered: true },
   ),
-  天旋地转: booleanAdd("burstTriggered", "触发迸发", 30),
+  天旋地转: booleanAdd("burstTriggered", "触发迸发", 30, {
+    defaultValue: true,
+  }),
   扇风: {
     inputs: [booleanInput("actedBeforeEnemy", "先于敌方攻击")],
     ruleId: "boolean_power_percent_add",
@@ -361,15 +437,41 @@ const REVIEWED_EFFECTS = Object.freeze({
       multiplier: 1.5,
     },
   },
-  电弧: booleanAdd("burstTriggered", "触发迸发", 40),
+  电弧: booleanAdd("burstTriggered", "触发迸发", 40, {
+    defaultValue: true,
+  }),
   引雷: (() => {
-    const effect = booleanAdd("burstTriggered", "触发迸发", 20);
+    const effect = booleanAdd("burstTriggered", "触发迸发", 20, {
+      defaultValue: true,
+    });
     return {
       ...effect,
       ruleParams: { ...effect.ruleParams, hitCount: 2 },
     };
   })(),
-  雷暴: stackAdd("activeBurstKinds", "已生效迸发种类", 10, 20),
+  雷暴: {
+    inputs: [
+      booleanInput("burstTriggered", "触发迸发", { defaultValue: true }),
+      ...THUNDERSTORM_BURST_SOURCES.map(burstSourceInput),
+      {
+        ...numberInput("activeBurstKinds", "迸发种类数", 0, 20, 0),
+        derivedTrueContextKeys: THUNDERSTORM_BURST_SOURCES.map(
+          (source) => source.contextKey,
+        ),
+      },
+    ],
+    ruleId: "thunderstorm_burst",
+    ruleParams: {
+      conditionKey: "burstTriggered",
+      contextKey: "activeBurstKinds",
+      defaultValue: 0,
+      label: "迸发种类数",
+      perStack: 10,
+      sourceContextKeys: THUNDERSTORM_BURST_SOURCES.map(
+        (source) => source.contextKey,
+      ),
+    },
+  },
 
   乘胜追击: hitCountGrowth("skillUseCount", "此前使用次数", 1, 1),
   趁火打劫: hitCountGrowth("defeatedEnemyCount", "此前击败次数", 2, 2, 6),
@@ -776,9 +878,22 @@ export function getSkillEffectRule(skill) {
 }
 
 export function getSkillEffectInputs(skill) {
-  return normalizeTriggerControls(getSkillEffectRule(skill)?.inputs ?? [], {
+  const controls = normalizeTriggerControls(getSkillEffectRule(skill)?.inputs ?? [], {
     source: "skill",
   });
+  const controlsByContextKey = new Map(
+    controls.map((control) => [control.contextKey, control]),
+  );
+  return controls.map((control) =>
+    Array.isArray(control.derivedTrueContextKeys)
+      ? {
+          ...control,
+          derivedTrueIds: control.derivedTrueContextKeys
+            .map((contextKey) => controlsByContextKey.get(contextKey)?.id)
+            .filter(Boolean),
+        }
+      : control,
+  );
 }
 
 export function getDefaultHitCount(skill) {

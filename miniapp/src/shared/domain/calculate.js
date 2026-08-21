@@ -6,11 +6,13 @@ import {
 } from "./choice-skill-sequence.js";
 import {
   getDefaultHitCount,
+  getSkillEffectInputs,
   hasDeclaredHitCount,
 } from "./skill-effects.js";
 import { resolveSkillPower } from "./skill-rules.js";
 import { calculateAllPanelStats } from "./stat.js";
 import {
+  getTraitEffectInputs,
   getInheritedDamageTraits,
   resolveBeastFlowerBloodlineTrait,
   resolveContractShapeTrait,
@@ -38,9 +40,13 @@ import {
   hasClownTrickTrait,
   resolveClownTrickDamage,
 } from "./clown-trick.js";
-import { resolveBaronGreed } from "./baron-greed.js";
+import {
+  resolveBaronGreed,
+  resolveBaronGreedHitSequence,
+} from "./baron-greed.js";
 import { resolveBloodlineMagicHealing } from "./bloodline-magic.js";
 import { resolvePowerOverride } from "./power-override.js";
+import { projectTriggerContext } from "./trigger-controls.js";
 
 function finiteNumber(...values) {
   for (const value of values) {
@@ -56,6 +62,19 @@ function product(values) {
     const numeric = Number(value);
     return Number.isFinite(numeric) ? result * numeric : result;
   }, 1);
+}
+
+function resolvesBurstTrigger({ context, skill, traits }) {
+  const controls = [
+    ...getSkillEffectInputs(skill),
+    ...(traits ?? []).flatMap((trait) =>
+      getTraitEffectInputs(trait, "attacker"),
+    ),
+  ].filter((control) => control.contextKey === "burstTriggered");
+  return controls.some(
+    (control) =>
+      projectTriggerContext(context, [control]).burstTriggered === true,
+  );
 }
 
 function normalizedPower(value) {
@@ -562,6 +581,18 @@ function calculateSkillResult({
       ) ?? 0,
     ),
   );
+  const defenderMaximumHp = Math.max(0, Number(defender.panelStats.hp) || 0);
+  const normalizedDefenderCurrentHp = Math.min(
+    defenderMaximumHp,
+    Math.max(
+      0,
+      finiteNumber(
+        defenderCurrentHp,
+        defender.currentHp,
+        defenderMaximumHp,
+      ) ?? 0,
+    ),
+  );
   const bloodlineMagicHealing = resolveBloodlineMagicHealing({
     context,
     maximumHp: attackerMaximumHp,
@@ -583,6 +614,7 @@ function calculateSkillResult({
     externalHealingSources: bloodlineHealingSources,
     persistentLifestealPercent: directionOverrides.lifestealPercent,
     skill,
+    targetCurrentHp: normalizedDefenderCurrentHp,
   });
   const baronGreedFor = (mainDamage) => resolveBaronGreed({
     attackerTraits: attacker.traits,
@@ -592,6 +624,7 @@ function calculateSkillResult({
     mainDamage,
     persistentLifestealPercent: directionOverrides.lifestealPercent,
     skill,
+    targetCurrentHp: normalizedDefenderCurrentHp,
   });
   const traitHitCount = resolveTraitHitCountBonus({
     traits: attacker.traits,
@@ -804,7 +837,7 @@ function calculateSkillResult({
             },
             0,
             baronGreed.attackLevelStageAdd,
-            "reviewed-trait:baron-greed-v1",
+            "reviewed-trait:baron-greed-v2",
           ),
         ],
         hitCount,
@@ -819,7 +852,7 @@ function calculateSkillResult({
         skillId: skill.id,
         skillName: skill.name,
         skillPower: 0,
-        sources: ["reviewed-trait:baron-greed-v1"],
+        sources: ["reviewed-trait:baron-greed-v2"],
         status: "exact",
         totalDamage: 0,
         traitDamage: 0,
@@ -864,6 +897,11 @@ function calculateSkillResult({
   const sourceMarkEffects = resolveSourceMarkEffects({
     actedBeforeEnemy: context.actedBeforeEnemy,
     attackerSpeed,
+    burstTriggered: resolvesBurstTrigger({
+      context: rawContext,
+      skill,
+      traits: attacker.traits,
+    }),
     defenderSpeed,
     marks: sourceMarks,
     side: sourceSide,
@@ -1227,16 +1265,20 @@ function calculateSkillResult({
     bloodlineDefenseLevelBonus !== 0 ||
     contractAttackLevelBonus !== 0 ||
     contractDefenseLevelBonus !== 0;
+  const totalAttackLevelStage =
+    (attackLevelStage ?? 0) +
+    traitResolution.attackLevelBonus +
+    bloodlineAttackLevelBonus +
+    contractAttackLevelBonus;
+  const totalDefenseLevelStage =
+    (defenseLevelStage ?? 0) +
+    traitResolution.defenseLevelBonus +
+    bloodlineDefenseLevelBonus +
+    contractDefenseLevelBonus;
   const attackDefenseLevelMultiplier = hasStageInput
     ? abilityLevelMultiplier(
-        (attackLevelStage ?? 0) +
-          traitResolution.attackLevelBonus +
-          bloodlineAttackLevelBonus +
-          contractAttackLevelBonus,
-        (defenseLevelStage ?? 0) +
-          traitResolution.defenseLevelBonus +
-          bloodlineDefenseLevelBonus +
-          contractDefenseLevelBonus,
+        totalAttackLevelStage,
+        totalDefenseLevelStage,
       )
     : finiteNumber(
         slotOverrides.attackDefenseLevelMultiplier,
@@ -1319,7 +1361,7 @@ function calculateSkillResult({
       0,
       finiteNumber(powerResolution.finalDamageMultiplier) ?? 1,
     );
-  const mainDamage = calculateDamage({
+  const baseMainDamage = calculateDamage({
     attackerStat,
     displayedPower: calculationPower,
     defenderDefense,
@@ -1328,6 +1370,53 @@ function calculateSkillResult({
     finalDamageMultiplier,
     level,
   });
+  const hitArithmetic = [];
+  const baronGreedSequence = hitCount > 1
+    ? resolveBaronGreedHitSequence({
+        attackerCurrentHp: normalizedAttackerCurrentHp,
+        attackerMaximumHp,
+        attackerTraits: attacker.traits,
+        calculateHit: ({ attackLevelStageAdd }) => {
+          const sequentialLevelMultiplier = resolvedSkillCategory === "physical"
+            ? hasStageInput
+              ? abilityLevelMultiplier(
+                  totalAttackLevelStage + attackLevelStageAdd,
+                  totalDefenseLevelStage,
+                )
+              : attackDefenseLevelMultiplier *
+                abilityLevelMultiplier(attackLevelStageAdd, 0)
+            : attackDefenseLevelMultiplier;
+          const sequentialPower = calculationPower *
+            sequentialLevelMultiplier /
+            Math.max(Number.EPSILON, attackDefenseLevelMultiplier);
+          const arithmetic = calculateDamage({
+            attackerStat,
+            displayedPower: sequentialPower,
+            defenderDefense,
+            damageReductionMultiplier,
+            hitCount: 1,
+            finalDamageMultiplier,
+            level,
+          });
+          hitArithmetic.push(arithmetic);
+          return arithmetic;
+        },
+        context,
+        hitCount,
+        persistentLifestealPercent: directionOverrides.lifestealPercent,
+        skill,
+        targetCurrentHp: normalizedDefenderCurrentHp,
+      })
+    : null;
+  const hasSequentialBaronSettlement =
+    baronGreedSequence?.hitDamages?.length === hitCount;
+  const mainDamage = hasSequentialBaronSettlement
+    ? {
+        ...hitArithmetic[0],
+        multiHit: baronGreedSequence.totalDamage,
+        total: baronGreedSequence.totalDamage,
+      }
+    : baseMainDamage;
   const targetNegativeMark = normalizeMarkSlot(
     targetMarks?.negative,
     "negative",
@@ -1363,7 +1452,9 @@ function calculateSkillResult({
     otherPowerMultiplier,
   });
   const clownTrick = clownTrickFor(mainDamage.total);
-  const baronGreed = baronGreedFor(mainDamage.total);
+  const baronGreed = hasSequentialBaronSettlement
+    ? baronGreedSequence
+    : baronGreedFor(mainDamage.total);
   const targetMarkSettlement = targetNegativeMarkSettlement({
     additionalDamage: additionalDamage.total,
     markSlot:
@@ -1691,6 +1782,7 @@ function calculateSkillResult({
           formulaStep(
             "贪得无厌溢出回复",
             {
+              hitDamages: baronGreed.hitDamages,
               lifestealPercent: baronGreed.effectiveLifestealPercent,
               missingHp: baronGreed.missingHp,
               overflowHealing: baronGreed.overflowHealing,
@@ -1698,7 +1790,7 @@ function calculateSkillResult({
             },
             mainDamage.total,
             baronGreed.attackLevelStageAdd,
-            "reviewed-trait:baron-greed-v1",
+            "reviewed-trait:baron-greed-v2",
           ),
         ]
       : []),
@@ -1716,7 +1808,7 @@ function calculateSkillResult({
       ? ["reviewed-trait:contract-shape-v1"]
       : []),
     ...(clownTrick.active ? ["reviewed-trait:clown-trick-v1"] : []),
-    ...(baronGreed.active ? ["reviewed-trait:baron-greed-v1"] : []),
+    ...(baronGreed.active ? ["reviewed-trait:baron-greed-v2"] : []),
   ].filter(Boolean);
 
   const attackStageFor = (category) => attackStageForCategory(category);
@@ -1775,10 +1867,17 @@ function calculateSkillResult({
     actualPower,
     panelPower,
     powerSource: powerOverride.source,
+    skillCost: finiteNumber(powerResolution.resolvedCost) ?? skill.cost,
     skillPower: actualPower,
     effectivePower: panelPower,
     automaticHitCountAdd,
     hitCount: Math.max(1, Math.floor(Number(hitCount) || 1)),
+    hitDamages: hasSequentialBaronSettlement
+      ? baronGreed.hitDamages
+      : Array.from(
+          { length: Math.max(1, Math.floor(Number(hitCount) || 1)) },
+          () => Math.floor(mainDamage.oneHit * finalDamageMultiplier),
+        ),
     totalDamage,
     mainDamage: mainDamage.total,
     additionalDamage: additionalDamage.total,
@@ -2114,8 +2213,12 @@ function calculateDirection({
       };
     };
 
-    const left = adjacent(index - 1);
-    const right = adjacent(index + 1);
+    const fourSlotIndex = (offset) =>
+      index < 4 && entries.length >= 4
+        ? (index + offset + 4) % 4
+        : index + offset;
+    const left = adjacent(fourSlotIndex(-1));
+    const right = adjacent(fourSlotIndex(1));
     const details = entryDetails(entry);
     return calculateSkillResult({
       snapshot,

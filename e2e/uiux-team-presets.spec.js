@@ -374,6 +374,48 @@ async function selectSpirit(page, side, name) {
     .click();
 }
 
+test("keeps Hai Zhizhi portraits centered in fixed avatar boxes", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 900, height: 720 });
+  await page.goto("/");
+
+  const picker = page.getByRole("combobox", { name: "攻击方精灵" });
+  await picker.fill("海枝枝");
+  const option = page.getByRole("option", {
+    name: /^海枝枝（碧蓝珊瑚）/,
+  });
+  await expect(option).toBeVisible();
+
+  const optionPortrait = option.locator("img");
+  const optionLayout = await optionPortrait.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return {
+      display: style.display,
+      flexBasis: style.flexBasis,
+      flexShrink: style.flexShrink,
+      height: node.getBoundingClientRect().height,
+      objectPosition: style.objectPosition,
+      width: node.getBoundingClientRect().width,
+    };
+  });
+  expect(optionLayout).toEqual({
+    display: "block",
+    flexBasis: "36px",
+    flexShrink: "0",
+    height: 36,
+    objectPosition: "50% 50%",
+    width: 36,
+  });
+
+  await option.click();
+  const cardPortrait = page.locator(".spirit-picker--attack .spirit-card__image");
+  await expect(cardPortrait).toBeVisible();
+  await expect(cardPortrait).toHaveCSS("display", "block");
+  await expect(cardPortrait).toHaveCSS("object-position", "50% 50%");
+  await expect(cardPortrait).toHaveCSS("justify-self", "center");
+});
+
 async function selectDefaultSpirits(page) {
   await selectSpirit(page, "攻击方", "音速犬");
   await selectSpirit(page, "防御方", "水灵");
@@ -1324,4 +1366,51 @@ test("persists single-skill state across reloads and isolates spirit switches", 
   await expect(
     page.getByRole("spinbutton", { name: "静态威力" }),
   ).toHaveValue("137");
+});
+
+test("uses negative-status skills once this turn, twice through next turn, and cancels on the third click", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "rock-calculator.settings.negative-status-settlement.v1",
+      "1",
+    );
+  });
+  await page.setViewportSize({ height: 900, width: 1424 });
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "燃薪虫");
+  await selectSpirit(page, "防御方", "叶冕魔力猫");
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  const picker = page.getByRole("combobox", { name: "攻击方技能2" });
+  if ((await picker.inputValue()) !== "引燃") {
+    await picker.fill("引燃");
+    await page.getByRole("option", { name: /引燃/ }).click();
+  }
+  const row = picker.locator("xpath=ancestor::*[contains(@class,'skill-slot-group')]");
+  const description = row.locator(".skill-slot__description");
+
+  await description.click();
+  let preview = page.getByRole("region", { name: "回合状态预估" });
+  await expect(preview).toContainText("本回合");
+  await expect(preview).toContainText("下回合");
+  await expect(preview).toContainText("灼烧 ×10");
+  await expect(preview.getByText("续用")).toHaveCount(0);
+
+  await description.click();
+  preview = page.getByRole("region", { name: "回合状态预估" });
+  await expect(preview.getByText("续用")).toBeVisible();
+  await expect(preview.locator(".result-rail__turn-row")).toHaveCount(2);
+  await expect(page.getByRole("region", { name: "负面状态结算" }))
+    .not.toContainText("实际追加");
+  await page.screenshot({
+    fullPage: true,
+    path: "artifacts/audit/negative-status-two-turn-1424.png",
+  });
+
+  await description.click();
+  await expect(page.getByRole("region", { name: "回合状态预估" }))
+    .toHaveCount(0);
 });

@@ -5,7 +5,7 @@
 # 洛克计算器
 
 [![Checks](https://img.shields.io/badge/checks-1049%20passed-2da44e.svg)](#开发与验证)
-[![Release](https://img.shields.io/badge/release-v1.5.7-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.5.7)
+[![Release](https://img.shields.io/badge/release-v1.6.0-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.6.0)
 [![License](https://img.shields.io/badge/code-MIT-4c55d9.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Windows-2563eb.svg)](#使用方式)
 

@@ -21,6 +21,93 @@ function skill(overrides = {}) {
 }
 
 describe("resolveSkillPower", () => {
+  test.each([
+    ["天旋地转", 90, 60],
+    ["电弧", 120, 80],
+    ["引雷", 55, 35],
+  ])("%s 的迸发默认开启并可手动关闭", (name, enabledPower, disabledPower) => {
+    const burstSkill = snapshot.skills.find((candidate) => candidate.name === name);
+    const burstControl = getSkillEffectInputs(burstSkill).find(
+      (input) => input.contextKey === "burstTriggered",
+    );
+
+    expect(burstControl).toMatchObject({
+      defaultValue: true,
+      label: "触发迸发",
+      type: "boolean",
+    });
+    expect(resolveSkillPower(burstSkill, {})).toMatchObject({ value: enabledPower });
+    expect(resolveSkillPower(burstSkill, { burstTriggered: false })).toMatchObject({
+      value: disabledPower,
+    });
+  });
+
+  test("雷暴按已选迸发来源自动计数，并保留手动种类数", () => {
+    const thunderstorm = snapshot.skills.find(
+      (candidate) => candidate.name === "雷暴",
+    );
+    const inputs = getSkillEffectInputs(thunderstorm);
+
+    expect(inputs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contextKey: "burstTriggered",
+          defaultValue: true,
+          label: "触发迸发",
+        }),
+        expect.objectContaining({
+          contextKey: "activeBurstKinds",
+          defaultValue: 0,
+          label: "迸发种类数",
+        }),
+      ]),
+    );
+    expect(
+      inputs
+        .filter((input) => input.burstSource)
+        .map(({ burstGroup, contextKey, label }) => ({
+          burstGroup,
+          contextKey,
+          label,
+        })),
+    ).toEqual([
+      { burstGroup: "特性", contextKey: "burstSourceBioelectric", label: "生物电" },
+      { burstGroup: "特性", contextKey: "burstSourceCurrentStimulus", label: "电流刺激" },
+      { burstGroup: "特性", contextKey: "burstSourceOverload", label: "超负荷" },
+      { burstGroup: "特性", contextKey: "burstSourceContinuousLoad", label: "连续负荷" },
+      { burstGroup: "技能", contextKey: "burstSourceHeavenSpin", label: "天旋地转" },
+      { burstGroup: "技能", contextKey: "burstSourceArc", label: "电弧" },
+      { burstGroup: "技能", contextKey: "burstSourceSuperconduct", label: "超导" },
+      { burstGroup: "技能", contextKey: "burstSourceLightningGuide", label: "引雷" },
+      { burstGroup: "技能", contextKey: "burstSourceDoublePulse", label: "双联脉冲" },
+      { burstGroup: "印记", contextKey: "burstSourceChargeMark", label: "蓄电" },
+    ]);
+
+    expect(
+      resolveSkillPower(thunderstorm, {
+        activeBurstKinds: 0,
+        burstSourceBioelectric: true,
+        burstSourceDoublePulse: true,
+      }),
+    ).toMatchObject({ resolvedCost: 3, value: 75 });
+    expect(resolveSkillPower(thunderstorm, { activeBurstKinds: 3 })).toMatchObject({
+      value: 85,
+    });
+    expect(
+      resolveSkillPower(thunderstorm, {
+        activeBurstKinds: 1,
+        burstSourceBioelectric: true,
+        burstSourceDoublePulse: true,
+      }),
+    ).toMatchObject({ value: 75 });
+    expect(
+      resolveSkillPower(thunderstorm, {
+        activeBurstKinds: 3,
+        burstTriggered: false,
+      }),
+    ).toMatchObject({ resolvedCost: 1, value: 55 });
+  });
+
   test("reads the declared default hit count from every skill description", () => {
     expect(
       getDefaultHitCount(

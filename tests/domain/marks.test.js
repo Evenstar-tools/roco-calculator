@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   createMarksState,
   normalizeMarksState,
+  resolveSkillMarkApplications,
   resolveSourceMarkEffects,
 } from "../../src/domain/marks.js";
 
@@ -30,7 +31,6 @@ describe("mark rules", () => {
   test.each([
     ["momentum", 2, 0.6, 0],
     ["attack", 3, 0.3, 0],
-    ["charge", 4, 0, 40],
   ])(
     "applies %s once per stack",
     (id, stacks, powerPercentAdd, fixedPowerAdd) => {
@@ -39,6 +39,31 @@ describe("mark rules", () => {
       expect(result.powerPercentAdd).toBeCloseTo(powerPercentAdd);
     },
   );
+
+  test("only applies charge stacks when burst is triggered", () => {
+    expect(effects("charge", 4, { burstTriggered: false })).toMatchObject({
+      fixedPowerAdd: 0,
+    });
+    expect(effects("charge", 4, { burstTriggered: true })).toMatchObject({
+      fixedPowerAdd: 40,
+    });
+  });
+
+  test("reads the charge mark granted by 增程电池", () => {
+    expect(
+      resolveSkillMarkApplications({
+        name: "增程电池",
+        description: "自己获得1层蓄电印记。",
+      }),
+    ).toEqual([
+      {
+        id: "charge",
+        polarity: "positive",
+        stacks: 1,
+        target: "self",
+      },
+    ]);
+  });
 
   test("only applies tailwind when the attacker acts first", () => {
     expect(effects("tailwind", 2)).toMatchObject({

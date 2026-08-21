@@ -22,7 +22,7 @@ const POSITIVE_MARKS = [
   {
     id: "charge",
     name: "蓄电",
-    summary: "每层攻击技能威力 +10",
+    summary: "迸发时每层技能威力 +10",
   },
   {
     id: "photosynthesis",
@@ -204,6 +204,7 @@ export function resolveSourceMarkEffects({
   attackerSpeed,
   defenderSpeed,
   actedBeforeEnemy,
+  burstTriggered,
 }) {
   const positive = normalizeMarkSlot(marks?.positive, "positive");
   const negative = normalizeMarkSlot(marks?.negative, "negative");
@@ -269,7 +270,7 @@ export function resolveSourceMarkEffects({
           text: `攻击 ×${positive.stacks} 技能威力 +${positive.stacks * 10}%`,
         }),
       );
-    } else if (positive.id === "charge" && attacking) {
+    } else if (positive.id === "charge" && attacking && burstTriggered) {
       effects.fixedPowerAdd += positive.stacks * 10;
       effects.settlements.push(
         settlement({
@@ -277,7 +278,17 @@ export function resolveSourceMarkEffects({
           side,
           stacks: positive.stacks,
           status: "applied",
-          text: `蓄电 ×${positive.stacks} 技能威力 +${positive.stacks * 10}`,
+          text: `蓄电 ×${positive.stacks} 迸发威力 +${positive.stacks * 10}`,
+        }),
+      );
+    } else if (positive.id === "charge") {
+      effects.settlements.push(
+        settlement({
+          mark,
+          side,
+          stacks: positive.stacks,
+          status: "inactive",
+          text: `蓄电 ×${positive.stacks} 未触发迸发`,
         }),
       );
     } else {

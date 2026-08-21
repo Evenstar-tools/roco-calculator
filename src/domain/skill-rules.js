@@ -581,6 +581,8 @@ function resolveEnergyScaled(skill, context) {
 }
 
 function resolveStackScaled(skill, context) {
+  const conditionKey = skill.ruleParams?.conditionKey;
+  const triggered = conditionKey ? context[conditionKey] === true : true;
   const key = skill.ruleParams?.contextKey ?? "stackCount";
   const rawStackCount = isFiniteNumber(context[key])
     ? context[key]
@@ -592,7 +594,9 @@ function resolveStackScaled(skill, context) {
     );
   }
 
-  const stackCount = Math.max(0, Math.floor(Number(rawStackCount)));
+  const stackCount = triggered
+    ? Math.max(0, Math.floor(Number(rawStackCount)))
+    : 0;
   const perStack = Number(skill.ruleParams?.perStack ?? 0);
   const flatBonusKey = skill.ruleParams?.flatBonusContextKey;
   const flatBonus = flatBonusKey
@@ -604,13 +608,54 @@ function resolveStackScaled(skill, context) {
   );
   return exact(value, [
     {
-      label: "层数缩放威力",
-      input: stackCount,
+      label: conditionKey ? "迸发种类威力加成" : "层数缩放威力",
+      input: conditionKey ? { stackCount, triggered } : stackCount,
       before: skill.basePower,
       after: value,
       source: "reviewed-rule:stack-scaled-v1",
     },
   ]);
+}
+
+function resolveThunderstormBurst(skill, context) {
+  const params = skill.ruleParams ?? {};
+  const triggered = context[params.conditionKey ?? "burstTriggered"] === true;
+  const selectedSources = (params.sourceContextKeys ?? []).filter(
+    (contextKey) => context[contextKey] === true,
+  );
+  const manualKinds = isFiniteNumber(context[params.contextKey ?? "activeBurstKinds"])
+    ? Math.max(0, Math.floor(Number(context[params.contextKey ?? "activeBurstKinds"])))
+    : Number(params.defaultValue ?? 0);
+  const burstKinds = triggered
+    ? Math.max(manualKinds, selectedSources.length)
+    : 0;
+  const value = Math.max(
+    0,
+    Math.round(
+      Number(skill.basePower) + burstKinds * Number(params.perStack ?? 10),
+    ),
+  );
+  const resolvedCost = Math.max(
+    0,
+    Number(skill.cost ?? 0) + burstKinds,
+  );
+  return exact(value, [
+    {
+      label: "迸发种类威力加成",
+      input: {
+        burstKinds,
+        selectedSources,
+        triggered,
+      },
+      before: skill.basePower,
+      after: value,
+      source: "reviewed-rule:thunderstorm-burst-v2",
+    },
+  ], {
+    activeBurstKinds: burstKinds,
+    resolvedCost,
+    selectedBurstSources: selectedSources,
+  });
 }
 
 function compareThreshold(value, threshold, operator) {
@@ -968,6 +1013,7 @@ const RULES = new Map([
   ["hp_scaled", resolveHpScaled],
   ["energy_scaled", resolveEnergyScaled],
   ["stack_scaled", resolveStackScaled],
+  ["thunderstorm_burst", resolveThunderstormBurst],
   ["position_power_add", resolvePositionPowerAdd],
   ["boolean_power_add", resolveBooleanPowerAdd],
   ["boolean_power_multiplier", resolveBooleanPowerMultiplier],

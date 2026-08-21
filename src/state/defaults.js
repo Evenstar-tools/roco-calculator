@@ -1,4 +1,5 @@
 import { createMarksState } from "../domain/marks.js";
+import { createNegativeStatusState } from "../domain/negative-status.js";
 import { getSpiritSkillSlotCapacity } from "../domain/skill-slot-capacity.js";
 
 export const STATE_SCHEMA_VERSION = 1;
@@ -71,7 +72,11 @@ export function createInitialState(snapshot) {
       rules: meta.rulesVersion ?? meta.ruleVersion ?? null,
     },
     mode: "single",
+    calculationOptions: {
+      includeNegativeStatusSettlement: false,
+    },
     marks: createMarksState(),
+    negativeStatuses: createNegativeStatusState(),
     sides: {
       attacker: createSide(
         spirits[0]?.id,

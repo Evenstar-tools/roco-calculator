@@ -1,10 +1,37 @@
 import { describe, expect, test } from "vitest";
-import { resolveClownTrickDamage } from "../../src/domain/clown-trick.js";
+import {
+  resolveClownTrickDamage,
+  resolveSkillHealing,
+} from "../../src/domain/clown-trick.js";
 import { getTraitEffectInputs } from "../../src/domain/trait-effects.js";
 
 const clownTrait = [{ id: "trait-clown", name: "戏耍" }];
 
 describe("clown trick trait", () => {
+  test("吸血只按目标实际损失的生命计算", () => {
+    expect(resolveSkillHealing({
+      attackerCurrentHp: 0,
+      attackerMaximumHp: 500,
+      baseLifestealPercent: 100,
+      mainDamage: 500,
+      targetCurrentHp: 10,
+    })).toMatchObject({
+      lifestealHealing: 10,
+      requestedHealing: 10,
+    });
+
+    expect(resolveSkillHealing({
+      attackerCurrentHp: 0,
+      attackerMaximumHp: 1000,
+      baseLifestealPercent: 150,
+      mainDamage: 500,
+      targetCurrentHp: 490,
+    })).toMatchObject({
+      lifestealHealing: 735,
+      requestedHealing: 735,
+    });
+  });
+
   test("特性为攻防两侧提供同一套自身生命输入", () => {
     for (const role of ["attacker", "defender"]) {
       expect(getTraitEffectInputs(clownTrait[0], role)).toEqual([

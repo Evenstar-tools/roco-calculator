@@ -4,6 +4,10 @@ import {
   MARK_DEFINITIONS,
   normalizeMarksState,
 } from "../domain/marks.js";
+import {
+  createNegativeStatusState,
+  normalizeNegativeStatusState,
+} from "../domain/negative-status.js";
 
 const SHARE_FORMAT_VERSION = "v1";
 const SHARE_PATTERN = /^#v1\.([A-Za-z0-9_-]+)\.([a-f0-9]{12})$/;
@@ -24,6 +28,14 @@ const TOP_LEVEL_KEYS = [
   "directions",
 ];
 const LEGACY_TOP_LEVEL_KEYS = TOP_LEVEL_KEYS.filter((key) => key !== "marks");
+const EXTENDED_TOP_LEVEL_KEYS = [
+  ...TOP_LEVEL_KEYS,
+  "calculationOptions",
+  "negativeStatuses",
+];
+const EXTENDED_LEGACY_TOP_LEVEL_KEYS = EXTENDED_TOP_LEVEL_KEYS.filter(
+  (key) => key !== "marks",
+);
 const SIDE_KEYS = ["spiritId", "nature", "displayIvs", "skills"];
 const SIDE_KEYS_WITH_TRAITS = [...SIDE_KEYS, "traitValues"];
 const TRAIT_VALUE_KEY_PATTERN =
@@ -413,7 +425,10 @@ function assertDirection(direction, path) {
 }
 
 function assertShareState(state) {
-  if (!hasExactKeys(state, TOP_LEVEL_KEYS)) {
+  if (
+    !hasExactKeys(state, TOP_LEVEL_KEYS) &&
+    !hasExactKeys(state, EXTENDED_TOP_LEVEL_KEYS)
+  ) {
     throw new TypeError("分享配置结构无效");
   }
   if (state.schemaVersion !== STATE_SCHEMA_VERSION) {
@@ -432,6 +447,33 @@ function assertShareState(state) {
     throw new TypeError("分享配置技能模式无效");
   }
   assertMarks(state.marks);
+  if (Object.hasOwn(state, "calculationOptions")) {
+    if (
+      !hasExactKeys(state.calculationOptions, [
+        "includeNegativeStatusSettlement",
+      ]) ||
+      typeof state.calculationOptions.includeNegativeStatusSettlement !== "boolean"
+    ) {
+      throw new TypeError("分享配置负面状态开关无效");
+    }
+  }
+  if (Object.hasOwn(state, "negativeStatuses")) {
+    if (!hasExactKeys(state.negativeStatuses, ["attacker", "defender"])) {
+      throw new TypeError("分享配置负面状态结构无效");
+    }
+    const normalized = normalizeNegativeStatusState(state.negativeStatuses);
+    for (const side of ["attacker", "defender"]) {
+      const input = state.negativeStatuses[side];
+      if (!input || typeof input !== "object" || Array.isArray(input)) {
+        throw new TypeError("分享配置负面状态层数无效");
+      }
+      for (const [key, value] of Object.entries(input)) {
+        if (!Object.hasOwn(normalized[side], key) || normalized[side][key] !== value) {
+          throw new TypeError("分享配置负面状态层数无效");
+        }
+      }
+    }
+  }
   if (!hasExactKeys(state.sides, ["attacker", "defender"])) {
     throw new TypeError("分享配置双方结构无效");
   }
@@ -532,7 +574,7 @@ function selectDirection(direction) {
 }
 
 export function selectShareableInputs(state) {
-  return {
+  const selected = {
     schemaVersion: state.schemaVersion,
     versions: {
       data: state.versions?.data,
@@ -549,6 +591,17 @@ export function selectShareableInputs(state) {
       reverse: selectDirection(state.directions?.reverse ?? {}),
     },
   };
+  const negativeStatuses = normalizeNegativeStatusState(state.negativeStatuses);
+  const hasNegativeStatuses = Object.values(negativeStatuses).some((side) =>
+    Object.values(side).some((value) => value > 0),
+  );
+  const includeNegativeStatusSettlement =
+    state.calculationOptions?.includeNegativeStatusSettlement === true;
+  if (hasNegativeStatuses || includeNegativeStatusSettlement) {
+    selected.calculationOptions = { includeNegativeStatusSettlement };
+    selected.negativeStatuses = negativeStatuses;
+  }
+  return selected;
 }
 
 export function stableStringify(value, ancestors = new Set()) {
@@ -681,7 +734,9 @@ export async function decodeShareState(hash, expectedVersions) {
 
   if (
     !hasExactKeys(state, TOP_LEVEL_KEYS) &&
-    !hasExactKeys(state, LEGACY_TOP_LEVEL_KEYS)
+    !hasExactKeys(state, LEGACY_TOP_LEVEL_KEYS) &&
+    !hasExactKeys(state, EXTENDED_TOP_LEVEL_KEYS) &&
+    !hasExactKeys(state, EXTENDED_LEGACY_TOP_LEVEL_KEYS)
   ) {
     throw new TypeError("分享配置结构无效");
   }
@@ -693,6 +748,13 @@ export async function decodeShareState(hash, expectedVersions) {
   assertShareState(migratedState);
   const normalizedState = {
     ...migratedState,
+    calculationOptions: {
+      includeNegativeStatusSettlement:
+        migratedState.calculationOptions?.includeNegativeStatusSettlement === true,
+    },
+    negativeStatuses: Object.hasOwn(migratedState, "negativeStatuses")
+      ? normalizeNegativeStatusState(migratedState.negativeStatuses)
+      : createNegativeStatusState(),
     directions: Object.fromEntries(
       Object.entries(migratedState.directions).map(([direction, value]) => [
         direction,
