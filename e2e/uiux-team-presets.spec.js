@@ -13,6 +13,66 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test("analyzes a six-member team's defensive matchups inside the drawer", async ({ page }) => {
+  await page.addInitScript(() => {
+    const spiritIds = [
+      "spirit_b2f1251352d5f670",
+      "spirit_b9382967288bd429",
+      "spirit_30c62645090ee8af",
+      "spirit_563a4e078a1d8cba",
+      "spirit_07cdb4d4a94ac1bd",
+      "spirit_f7e8528a743eaaf0",
+    ];
+    const members = spiritIds.map((spiritId) => ({
+      displayIvs: {
+        hp: 0,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 0,
+        physicalDefense: 0,
+        speed: 0,
+      },
+      natureId: "neutral",
+      skills: { four: [null, null, null, null], single: null },
+      spiritId,
+    }));
+    localStorage.setItem(
+      "rock-calculator.teams.v1",
+      JSON.stringify({
+        activeTeamId: "team-analysis-e2e",
+        schemaVersion: 1,
+        teams: [{
+          createdAt: "2026-08-22T00:00:00.000Z",
+          id: "team-analysis-e2e",
+          members,
+          name: "防守面测试队",
+          updatedAt: "2026-08-22T00:00:00.000Z",
+        }],
+      }),
+    );
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "打开队伍" }).click();
+  await page.getByRole("button", { name: "分析" }).click();
+
+  const analysis = page.getByRole("region", { name: "队伍防守面" });
+  await expect(analysis).toBeVisible();
+  await expect(analysis.getByText("6/6")).toBeVisible();
+
+  const firstRisk = analysis.locator(".team-type-analysis__row-button").first();
+  await firstRisk.click();
+  await expect(firstRisk).toHaveAttribute("aria-expanded", "true");
+  await expect(analysis.locator(".team-type-analysis__member img").first()).toBeVisible();
+
+  await analysis.getByRole("button", { name: "全部" }).click();
+  await expect(analysis.locator(".team-type-analysis__row")).toHaveCount(18);
+  await analysis.getByRole("button", { name: "重点" }).click();
+
+  const drawer = page.getByRole("dialog", { name: "队伍" });
+  expect(await drawer.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+});
+
 test("first-run guide appears once, can be replayed, and imports popular configs", async ({ page }) => {
   await page.addInitScript(() => {
     if (sessionStorage.getItem("first-run-guide-e2e")) return;
@@ -373,6 +433,48 @@ async function selectSpirit(page, side, name) {
     .getByRole("option", { name: new RegExp(`^${name}`) })
     .click();
 }
+
+test("keeps Hai Zhizhi portraits centered in fixed avatar boxes", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 900, height: 720 });
+  await page.goto("/");
+
+  const picker = page.getByRole("combobox", { name: "攻击方精灵" });
+  await picker.fill("海枝枝");
+  const option = page.getByRole("option", {
+    name: /^海枝枝（碧蓝珊瑚）/,
+  });
+  await expect(option).toBeVisible();
+
+  const optionPortrait = option.locator("img");
+  const optionLayout = await optionPortrait.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return {
+      display: style.display,
+      flexBasis: style.flexBasis,
+      flexShrink: style.flexShrink,
+      height: node.getBoundingClientRect().height,
+      objectPosition: style.objectPosition,
+      width: node.getBoundingClientRect().width,
+    };
+  });
+  expect(optionLayout).toEqual({
+    display: "block",
+    flexBasis: "36px",
+    flexShrink: "0",
+    height: 36,
+    objectPosition: "50% 50%",
+    width: 36,
+  });
+
+  await option.click();
+  const cardPortrait = page.locator(".spirit-picker--attack .spirit-card__image");
+  await expect(cardPortrait).toBeVisible();
+  await expect(cardPortrait).toHaveCSS("display", "block");
+  await expect(cardPortrait).toHaveCSS("object-position", "50% 50%");
+  await expect(cardPortrait).toHaveCSS("justify-self", "center");
+});
 
 async function selectDefaultSpirits(page) {
   await selectSpirit(page, "攻击方", "音速犬");
@@ -1053,6 +1155,34 @@ test("keeps detailed four-skill menus readable outside every attack and defense 
   }
 });
 
+test("keeps a manual four-skill power value readable beside its restore control", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 900, width: 1424 });
+  await page.goto("/");
+  await selectDefaultSpirits(page);
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  const power = page.getByRole("spinbutton", {
+    name: "攻击方技能1静态威力",
+  });
+  await power.fill("123");
+  await power.press("Enter");
+
+  await expect(power).toHaveValue("123");
+  const restore = page.getByRole("button", { name: "恢复自动威力" }).first();
+  await expect(restore).toBeVisible();
+  const [powerBox, restoreBox] = await Promise.all([
+    power.boundingBox(),
+    restore.boundingBox(),
+  ]);
+  expect(powerBox).not.toBeNull();
+  expect(restoreBox).not.toBeNull();
+  expect(powerBox.width).toBeGreaterThanOrEqual(32);
+  expect(powerBox.x + powerBox.width).toBeLessThanOrEqual(restoreBox.x + 1);
+});
+
 test("collapses cleanly in a 930px half-screen window and steps IV by six", async ({
   page,
 }) => {
@@ -1324,4 +1454,51 @@ test("persists single-skill state across reloads and isolates spirit switches", 
   await expect(
     page.getByRole("spinbutton", { name: "静态威力" }),
   ).toHaveValue("137");
+});
+
+test("uses negative-status skills once this turn, twice through next turn, and cancels on the third click", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "rock-calculator.settings.negative-status-settlement.v1",
+      "1",
+    );
+  });
+  await page.setViewportSize({ height: 900, width: 1424 });
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "燃薪虫");
+  await selectSpirit(page, "防御方", "叶冕魔力猫");
+  await openDetailedMode(page);
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  const picker = page.getByRole("combobox", { name: "攻击方技能2" });
+  if ((await picker.inputValue()) !== "引燃") {
+    await picker.fill("引燃");
+    await page.getByRole("option", { name: /引燃/ }).click();
+  }
+  const row = picker.locator("xpath=ancestor::*[contains(@class,'skill-slot-group')]");
+  const description = row.locator(".skill-slot__description");
+
+  await description.click();
+  let preview = page.getByRole("region", { name: "回合状态预估" });
+  await expect(preview).toContainText("本回合");
+  await expect(preview).toContainText("下回合");
+  await expect(preview).toContainText("灼烧 ×10");
+  await expect(preview.getByText("续用")).toHaveCount(0);
+
+  await description.click();
+  preview = page.getByRole("region", { name: "回合状态预估" });
+  await expect(preview.getByText("续用")).toBeVisible();
+  await expect(preview.locator(".result-rail__turn-row")).toHaveCount(2);
+  await expect(page.getByRole("region", { name: "负面状态结算" }))
+    .not.toContainText("实际追加");
+  await page.screenshot({
+    fullPage: true,
+    path: "artifacts/audit/negative-status-two-turn-1424.png",
+  });
+
+  await description.click();
+  await expect(page.getByRole("region", { name: "回合状态预估" }))
+    .toHaveCount(0);
 });

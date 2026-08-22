@@ -1,5 +1,7 @@
 export function DisplaySettingsDialog({
+  negativeStatusSettlementEnabled = false,
   onClose,
+  onNegativeStatusSettlementChange,
   onPowerDisplayModeChange,
   onTypeCoverageChange,
   open = false,
@@ -64,6 +66,20 @@ export function DisplaySettingsDialog({
             aria-label="属性克制与打击面"
             checked={typeCoverageEnabled}
             onChange={(event) => onTypeCoverageChange?.(event.target.checked)}
+            type="checkbox"
+          />
+        </label>
+        <label className="display-settings-option">
+          <span>
+            <strong>负面状态结算</strong>
+            <small>显示本回合新增状态与追加伤害</small>
+          </span>
+          <input
+            aria-label="负面状态结算"
+            checked={negativeStatusSettlementEnabled}
+            onChange={(event) =>
+              onNegativeStatusSettlementChange?.(event.target.checked)
+            }
             type="checkbox"
           />
         </label>

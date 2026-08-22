@@ -442,6 +442,51 @@ describe("calculator session", () => {
     ).toEqual({ galeTurbineCompanionSlot: "2" });
   });
 
+  test("keeps manual adjacent power inputs for 六自由度 and 钢钻", () => {
+    const initialState = createProductInitialState(runtimeSnapshot);
+    const sixDegrees = runtimeSkill("六自由度");
+    const state = {
+      ...initialState,
+      sides: {
+        ...initialState.sides,
+        attacker: {
+          ...initialState.sides.attacker,
+          skills: {
+            ...initialState.sides.attacker.skills,
+            four: [
+              {
+                context: {},
+                hitCount: 1,
+                overrides: {},
+                skillId: sixDegrees.id,
+              },
+              null,
+              null,
+              null,
+            ],
+          },
+        },
+      },
+    };
+
+    const result = patchFourSkill(state, {
+      index: 0,
+      patch: {
+        context: {
+          adjacentLeftDisplayedPowerOverride: 120,
+          adjacentRightDisplayedPowerOverride: 80,
+        },
+      },
+      side: "attacker",
+      snapshot: runtimeSnapshot,
+    });
+
+    expect(result.state.sides.attacker.skills.four[0].context).toMatchObject({
+      adjacentLeftDisplayedPowerOverride: 120,
+      adjacentRightDisplayedPowerOverride: 80,
+    });
+  });
+
   test("clears the displayed fallback skill context when single memory is null", () => {
     const initialState = createProductInitialState(snapshot);
     const state = {
@@ -716,6 +761,10 @@ describe("calculator session", () => {
     const sweetTrap = runtimeSkill("甜蜜陷阱");
     const manaEnergy = runtimeControl("魔能爆", "energy");
     const state = createProductInitialState(runtimeSnapshot);
+    state.directions.forward.context.negativeStatusUseCountsBySlot = {
+      1: 2,
+      2: 1,
+    };
     const untouched = { skillId: runtimeSkill("突袭").id };
     state.sides.attacker.skills.four = [
       {
@@ -742,6 +791,9 @@ describe("calculator session", () => {
     });
     expect(result.state.sides.attacker.skills.four[1]).toBe(untouched);
     expect(result.state.sides.defender).toBe(state.sides.defender);
+    expect(
+      result.state.directions.forward.context.negativeStatusUseCountsBySlot,
+    ).toEqual({ 2: 1 });
   });
 
   test("stores direction traits with the selected single skill but excludes battle context from per-skill memory", () => {

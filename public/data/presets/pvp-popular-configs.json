@@ -233,7 +233,7 @@
       ],
       "traitValues": {
         "trait.traitStacks.53103d7d": 0,
-        "trait.traitEffect.ddee82fa": 20
+        "trait.traitEffect.d50295e3": 30
       }
     },
     {
@@ -676,9 +676,7 @@
         "skill_a10916aca82eef6a",
         "skill_1c52276f3f3d4b3e"
       ],
-      "traitValues": {
-        "trait.traitStacks.53103d7d": 0
-      }
+      "traitValues": {}
     },
     {
       "spiritId": "spirit_9dd866cafbbf24f3",

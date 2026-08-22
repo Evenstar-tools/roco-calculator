@@ -243,6 +243,237 @@ describe("buildCalculatorViewModel", () => {
     });
   });
 
+  test("attaches optional negative-status settlement without changing direct damage", () => {
+    const input = state();
+    input.calculationOptions = { includeNegativeStatusSettlement: true };
+    input.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 2 };
+    input.negativeStatuses = {
+      attacker: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
+      defender: { burn: 1, freeze: 0, parasitism: 0, poison: 0 },
+    };
+    const fixture = {
+      ...snapshot,
+      skills: snapshot.skills.map((entry) =>
+        entry.id === "fire-hit" ? { ...entry, name: "易燃物质" } : entry,
+      ),
+    };
+
+    const view = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot: fixture,
+      state: input,
+    });
+
+    const directDamage = view.calculation.forward.selectedResult.totalDamage;
+    expect(view.result.selectedResult.totalDamage).toBe(directDamage);
+    expect(view.result.selectedResult.negativeStatusApplications.stacks)
+      .toMatchObject({ burn: 4 });
+    expect(view.result.selectedResult.negativeStatusSettlement).toMatchObject({
+      added: { burn: 4 },
+      directDamage,
+      stacks: { burn: 5 },
+      turnPreview: {
+        next: {
+          added: { burn: 4 },
+          stacks: { burn: 6 },
+        },
+        repeated: true,
+      },
+    });
+  });
+
+  test("applies a negative-status source only after use and repeats it next turn after a second use", () => {
+    const fixture = {
+      ...snapshot,
+      skills: snapshot.skills.map((entry) =>
+        entry.id === "fire-hit" ? { ...entry, name: "引燃" } : entry,
+      ),
+    };
+    const input = state();
+    input.calculationOptions = { includeNegativeStatusSettlement: true };
+    input.negativeStatuses = {
+      attacker: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
+      defender: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
+    };
+
+    const unused = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input });
+    expect(unused.result.selectedResult.negativeStatusSettlement.added.burn).toBe(0);
+
+    input.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+    const once = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input });
+    expect(once.result.selectedResult.negativeStatusSettlement).toMatchObject({
+      added: { burn: 10 },
+      turnPreview: { repeated: false, next: { added: { burn: 0 } } },
+    });
+
+    input.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 2 };
+    const twice = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input });
+    expect(twice.result.selectedResult.negativeStatusSettlement).toMatchObject({
+      added: { burn: 10 },
+      turnPreview: { repeated: true, next: { added: { burn: 10 } } },
+    });
+  });
+
+  test("does not attach status settlement while the display setting is off", () => {
+    const view = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot,
+      state: state(),
+    });
+    expect(view.result.selectedResult.negativeStatusSettlement).toBeNull();
+  });
+
+  test("settles 打喷嚏 only when negative-status settlement is enabled", () => {
+    const fixture = {
+      ...snapshot,
+      learnsets: snapshot.learnsets.map((entry) =>
+        entry.spiritId === "fire"
+          ? { ...entry, skillIds: [...entry.skillIds, "sneeze"] }
+          : entry,
+      ),
+      skills: [
+        ...snapshot.skills,
+        {
+          basePower: 0,
+          category: "status",
+          id: "sneeze",
+          name: "打喷嚏",
+          provenance: { basePower: { source: "fixture" } },
+          ruleId: null,
+          type: "冰",
+        },
+      ],
+    };
+    const disabled = state();
+    disabled.sides.attacker.skills.single = "sneeze";
+    disabled.sides.attacker.skills.four = ["sneeze", null, null, null];
+    const disabledView = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot: fixture,
+      state: disabled,
+    });
+
+    expect(disabledView.result.selectedResult).toMatchObject({
+      status: "unsupported",
+      negativeStatusSettlement: null,
+    });
+
+    const enabled = structuredClone(disabled);
+    enabled.calculationOptions = { includeNegativeStatusSettlement: true };
+    enabled.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+    const enabledView = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot: fixture,
+      state: enabled,
+    });
+    expect(enabledView.result.selectedResult).toMatchObject({
+      hpPercent: 0,
+      status: "exact",
+      statusOnly: true,
+      totalDamage: 0,
+      negativeStatusSettlement: {
+        added: { freeze: 3 },
+        freeze: { stacks: 3, thresholdPercent: 15 },
+      },
+    });
+    expect(enabledView.result.skillResults[0]).toMatchObject({
+      hpPercent: 0,
+      statusOnly: true,
+    });
+  });
+
+  test("passes the target poison mark into diffusion erosion settlement", () => {
+    const input = state();
+    input.calculationOptions = { includeNegativeStatusSettlement: true };
+    input.marks.defender.negative = { id: "poison", stacks: 3 };
+    input.sides.attacker.skills.single = "water-hit";
+    input.sides.attacker.skills.four = ["water-hit", null, null, null];
+    input.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+    const fixture = {
+      ...snapshot,
+      learnsets: snapshot.learnsets.map((entry) =>
+        entry.spiritId === "fire"
+          ? { ...entry, skillIds: ["water-hit"] }
+          : entry,
+      ),
+      spirits: snapshot.spirits.map((entry) =>
+        entry.id === "fire"
+          ? { ...entry, traitIds: ["diffusion-erosion"] }
+          : entry,
+      ),
+      traits: [
+        ...snapshot.traits,
+        {
+          description: "使用水系技能后，敌方获得中毒，层数等于中毒印记的2倍。",
+          id: "diffusion-erosion",
+          name: "扩散侵蚀",
+        },
+      ],
+    };
+
+    const view = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot: fixture,
+      state: input,
+    });
+
+    expect(view.result.selectedResult.negativeStatusSettlement.added)
+      .toMatchObject({ poison: 6 });
+  });
+
+  test("uses target negative-status layers for dependent skill power only while enabled", () => {
+    const fixture = {
+      ...snapshot,
+      learnsets: snapshot.learnsets.map((entry) =>
+        entry.spiritId === "fire"
+          ? { ...entry, skillIds: ["ice-break"] }
+          : entry,
+      ),
+      skills: [
+        ...snapshot.skills,
+        {
+          basePower: 60,
+          category: "physical",
+          id: "ice-break",
+          name: "碎冰冰",
+          provenance: { basePower: { source: "fixture" } },
+          ruleId: null,
+          type: "冰",
+        },
+      ],
+    };
+    const enabled = state();
+    enabled.calculationOptions = { includeNegativeStatusSettlement: true };
+    enabled.negativeStatuses = {
+      attacker: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
+      defender: { burn: 0, freeze: 2, parasitism: 0, poison: 0 },
+    };
+    enabled.sides.attacker.skills.single = {
+      context: { enemyFreezeStacks: 9 },
+      skillId: "ice-break",
+    };
+    enabled.sides.attacker.skills.four = [{
+      context: { enemyFreezeStacks: 9 },
+      skillId: "ice-break",
+    }, null, null, null];
+
+    const enabledView = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot: fixture,
+      state: enabled,
+    });
+    expect(enabledView.result.selectedResult.effectivePower).toBe(100);
+
+    const disabled = structuredClone(enabled);
+    disabled.calculationOptions.includeNegativeStatusSettlement = false;
+    const disabledView = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot: fixture,
+      state: disabled,
+    });
+    expect(disabledView.result.selectedResult.effectivePower).toBe(60);
+  });
+
   test("returns an unresolved model when both spirits are not selected", () => {
     const input = state();
     input.sides.attacker.spiritId = null;

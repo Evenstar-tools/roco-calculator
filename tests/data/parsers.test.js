@@ -1,7 +1,10 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, test } from "vitest";
 import { parseDetailPage } from "../../scripts/bwiki/parse-detail.mjs";
-import { parseSpiritRows } from "../../scripts/bwiki/parse-spirits.mjs";
+import {
+  parseSpiritRows,
+  resolveSpiritAssetSource,
+} from "../../scripts/bwiki/parse-spirits.mjs";
 import { parseSkillRows } from "../../scripts/bwiki/parse-skills.mjs";
 import {
   findDetailRevisionDrift,
@@ -35,6 +38,37 @@ const skillSource = {
 };
 
 describe("BWIKI row parsers", () => {
+  test("corrects the reviewed Haizhizhi form portraits without affecting other spirits", () => {
+    const corrections = [
+      [
+        "海枝枝（杏黄百合）",
+        "https://patchwiki.biligame.com/images/rocom/c/ce/gu6jzlvxig77gm42gayvu4sk9u6ieec.png",
+        "https://patchwiki.biligame.com/images/rocom/4/4a/mgmynoz7yceewyozls8lpo95sgc9dvj.png",
+      ],
+      [
+        "海枝枝（洋红沙丁）",
+        "https://patchwiki.biligame.com/images/rocom/4/4a/mgmynoz7yceewyozls8lpo95sgc9dvj.png",
+        "https://patchwiki.biligame.com/images/rocom/a/ae/hl04yjyfbnis2rflogd0z88vlvvoxg8.png",
+      ],
+      [
+        "海枝枝（翠绿纶布）",
+        "https://patchwiki.biligame.com/images/rocom/a/ae/hl04yjyfbnis2rflogd0z88vlvvoxg8.png",
+        "https://patchwiki.biligame.com/images/rocom/c/ce/gu6jzlvxig77gm42gayvu4sk9u6ieec.png",
+      ],
+    ];
+    for (const [name, upstreamUrl, correctedUrl] of corrections) {
+      expect(resolveSpiritAssetSource(name, upstreamUrl)).toBe(correctedUrl);
+    }
+    expect(
+      resolveSpiritAssetSource(
+        "迪莫",
+        "https://patchwiki.biligame.com/images/rocom/3/3c/jksy80nru0voaobly2uguh0rtydx2wa.png",
+      ),
+    ).toBe(
+      "https://patchwiki.biligame.com/images/rocom/3/3c/jksy80nru0voaobly2uguh0rtydx2wa.png",
+    );
+  });
+
   test("keeps a branch form as an independent spirit with provenance", async () => {
     const html = await readFile("scripts/fixtures/spirit-row.html", "utf8");
     const [spirit] = parseSpiritRows(html, spiritSource);

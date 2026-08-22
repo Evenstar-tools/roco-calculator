@@ -6,6 +6,7 @@ import {
   CompactSingleSkillEditor,
 } from "./components/CompactSkillEditor.jsx";
 import { FourSkillEditor } from "./components/FourSkillEditor.jsx";
+import { FloatingUndoButton } from "./components/FloatingUndoButton.jsx";
 import { NatureStatsStep } from "./components/NatureStatsStep.jsx";
 import { QuickNaturePicker } from "./components/QuickNaturePicker.jsx";
 import { QuickIvPicker } from "./components/QuickIvPicker.jsx";
@@ -20,8 +21,10 @@ import {
   isFirstRunGuideCompleted,
 } from "./state/first-run-guide.js";
 import {
+  readNegativeStatusSettlementSetting,
   readPowerDisplayMode,
   readTypeCoverageSetting,
+  writeNegativeStatusSettlementSetting,
   writePowerDisplayMode,
   writeTypeCoverageSetting,
 } from "./state/display-settings.js";
@@ -42,6 +45,10 @@ import {
   supportsChoiceTrait,
 } from "./domain/choice-skill-sequence.js";
 import { resolveSkillStatusActivation } from "./domain/skill-status-effects.js";
+import {
+  hasNegativeStatusSkillApplication,
+  hasNegativeStatusTraitApplication,
+} from "./domain/negative-status-rules.js";
 import { hasDeclaredHitCount } from "./domain/skill-effects.js";
 import {
   copyPositiveAbilityStages,
@@ -69,9 +76,11 @@ import {
   sameConfigurationVersions,
   toggleDirection,
   updateGlobalRain,
+  updateGlobalWeather,
   updateMirroredTraitContext,
 } from "./state/calculator-session.js";
 import { decodeShareState, encodeShareState } from "./state/share.js";
+import { createUndoHistory } from "./state/undo-history.js";
 import packageInfo from "../package.json";
 
 const POPULAR_CONFIG_COUNT = 193;
@@ -101,9 +110,23 @@ async function saveConfigLibraryFile(library) {
 }
 
 function CalculatorWorkspace({ snapshot }) {
-  const initialState = useMemo(() => createProductInitialState(snapshot), [snapshot]);
+  const initialState = useMemo(() => {
+    const next = createProductInitialState(snapshot);
+    return {
+      ...next,
+      calculationOptions: {
+        ...next.calculationOptions,
+        includeNegativeStatusSettlement:
+          readNegativeStatusSettlementSetting(),
+      },
+    };
+  }, [snapshot]);
   const [state, setState] = useState(initialState);
   const stateRef = useRef(initialState);
+  const undoHistoryRef = useRef(createUndoHistory({ limit: 50 }));
+  const undoBatchRef = useRef(null);
+  const undoBatchSequenceRef = useRef(0);
+  const [undoCount, setUndoCount] = useState(0);
   const [activeDirection, setActiveDirection] = useState("forward");
   const [configLibraryError, setConfigLibraryError] = useState("");
   const [configLibraryMode, setConfigLibraryMode] = useState(null);
@@ -154,22 +177,71 @@ function CalculatorWorkspace({ snapshot }) {
     if (teamsState.warning) setToast(teamsState.warning);
   }, [teamsState.warning]);
 
-  function commitState(nextState, rememberSide = null) {
+  function startUndoBatch() {
+    if (undoBatchRef.current !== null) return undoBatchRef.current;
+    undoBatchSequenceRef.current += 1;
+    undoBatchRef.current = undoBatchSequenceRef.current;
+    queueMicrotask(() => {
+      undoBatchRef.current = null;
+    });
+    return undoBatchRef.current;
+  }
+
+  function commitState(nextState, rememberSide = null, {
+    groupKey = null,
+    recordHistory = true,
+  } = {}) {
+    if (nextState === stateRef.current) return nextState;
+    if (recordHistory) {
+      undoHistoryRef.current.record(stateRef.current, {
+        batchToken: startUndoBatch(),
+        groupKey,
+        rememberSide,
+      });
+      setUndoCount(undoHistoryRef.current.size());
+    }
     stateRef.current = nextState;
     setState(nextState);
     const configuredSide = rememberSide
       ? nextState.sides[rememberSide]
       : null;
     if (configuredSide?.spiritId) storedData.rememberSide(configuredSide);
+    return nextState;
   }
 
-  function commitSession(result) {
-    commitState(result.state, result.persistence.rememberSide);
+  function commitSession(result, options) {
+    commitState(result.state, result.persistence.rememberSide, options);
     return result.state;
   }
 
   function dispatch(action) {
-    return commitSession(reduceSessionAction(stateRef.current, action));
+    const valueKeys = action?.value && typeof action.value === "object"
+      ? Object.keys(action.value).sort().join(",")
+      : "";
+    const groupKey = [
+      action?.type,
+      action?.side,
+      action?.direction,
+      action?.index,
+      action?.stat,
+      action?.key,
+      valueKeys,
+    ].filter((value) => value !== undefined && value !== "").join(":");
+    return commitSession(reduceSessionAction(stateRef.current, action), { groupKey });
+  }
+
+  function undoLastChange() {
+    const previous = undoHistoryRef.current.undo();
+    if (!previous) return;
+    undoBatchRef.current = null;
+    stateRef.current = previous.state;
+    setState(previous.state);
+    for (const side of previous.rememberSides) {
+      const configuredSide = previous.state.sides?.[side];
+      if (configuredSide?.spiritId) storedData.rememberSide(configuredSide);
+    }
+    setUndoCount(undoHistoryRef.current.size());
+    setToast("已撤回上一步");
   }
 
   function closeConfigLibrary() {
@@ -267,12 +339,13 @@ function CalculatorWorkspace({ snapshot }) {
     }
   }
 
-  function applySharedConfiguration(configuration) {
+  function applySharedConfiguration(configuration, options) {
     commitSession(
       replaceConfiguration(stateRef.current, configuration, {
         remember: false,
         source: "share",
       }),
+      options,
     );
   }
 
@@ -308,7 +381,7 @@ function CalculatorWorkspace({ snapshot }) {
         if (!sameConfigurationVersions(sharedState.versions, initialState.versions)) {
           setPendingSharedState(sharedState);
         } else {
-          applySharedConfiguration(sharedState);
+          applySharedConfiguration(sharedState, { recordHistory: false });
         }
       })
       .catch((error) => {
@@ -504,6 +577,10 @@ function CalculatorWorkspace({ snapshot }) {
     commitSession(updateGlobalRain(stateRef.current, value));
   }
 
+  function updateWeather(weather) {
+    commitSession(updateGlobalWeather(stateRef.current, weather));
+  }
+
   function updateTraitContext(direction, key, value) {
     const previousValue = stateRef.current.directions[direction].context?.[key];
     commitSession(
@@ -579,6 +656,7 @@ function CalculatorWorkspace({ snapshot }) {
   function updateFourSkillEntry(side, index, patch) {
     commitSession(
       patchFourSkill(stateRef.current, { index, patch, side, snapshot }),
+      { groupKey: `four:${side}:${index}:${Object.keys(patch).sort().join(",")}` },
     );
   }
 
@@ -716,6 +794,38 @@ function CalculatorWorkspace({ snapshot }) {
     }
     const spirit = getSpirit(snapshot, latest.sides[side]);
     const detectedChoiceTrait = getTraitView(snapshot, spirit, "attacker").name;
+    let negativeStatusUseCount = null;
+    const canApplyNegativeStatus =
+      latest.calculationOptions?.includeNegativeStatusSettlement === true &&
+      (hasNegativeStatusSkillApplication(skill) ||
+        hasNegativeStatusTraitApplication(detectedChoiceTrait));
+    if (canApplyNegativeStatus) {
+      const currentCounts =
+        latest.directions[selfDirection].context
+          ?.negativeStatusUseCountsBySlot ?? {};
+      const currentCount = Math.min(
+        2,
+        Math.max(0, Math.floor(Number(currentCounts[index + 1]) || 0)),
+      );
+      negativeStatusUseCount = currentCount >= 2 ? 0 : currentCount + 1;
+      dispatch({
+        direction: selfDirection,
+        type: "direction/update",
+        value: {
+          context: {
+            negativeStatusUseCountsBySlot: {
+              ...currentCounts,
+              [index + 1]: negativeStatusUseCount,
+            },
+          },
+        },
+      });
+      if (negativeStatusUseCount === 0) {
+        setActiveDirection(selfDirection);
+        setToast(`${skill.name}的负面状态已取消`);
+        return;
+      }
+    }
     const choiceTrait =
       context.choiceTraitTriggered === true &&
       supportsChoiceTrait(detectedChoiceTrait)
@@ -772,10 +882,20 @@ function CalculatorWorkspace({ snapshot }) {
           },
         });
         setActiveDirection(selfDirection);
-        setToast(`贪得无厌：后续物攻 +${postAttackStageAdd * 10}%`);
+        setToast(`贪得无厌：本次共加攻 +${postAttackStageAdd * 10}%`);
         return;
       }
-      if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) return;
+      if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
+        if (negativeStatusUseCount !== null) {
+          setActiveDirection(selfDirection);
+          setToast(
+            negativeStatusUseCount === 1
+              ? `${skill.name}：本回合`
+              : `${skill.name}：本回合 + 下回合`,
+          );
+        }
+        return;
+      }
       const sequence = buildChoiceSkillSequence({
         context,
         skill,
@@ -1032,7 +1152,11 @@ function CalculatorWorkspace({ snapshot }) {
     });
     updateFourSkillEntry(side, index, { context: sequence.nextContext });
     setActiveDirection(selfDirection);
-    setToast(`${skill.name}的状态已应用`);
+    setToast(
+      negativeStatusUseCount === 2
+        ? `${skill.name}：本回合 + 下回合`
+        : `${skill.name}的状态已应用`,
+    );
   }
 
   function updateRememberedSingleDirection(value) {
@@ -1128,6 +1252,9 @@ function CalculatorWorkspace({ snapshot }) {
       result={resultModel.selectedResult}
       selectedSkill={selectedSingleSkill}
       skills={activeAttackSkills}
+      negativeStatusEnabled={
+        state.calculationOptions?.includeNegativeStatusSettlement === true
+      }
       powerDisplayMode={powerDisplayMode}
       powerOverride={currentDirection.overrides.powerOverride ?? null}
       traitContext={currentDirection.context}
@@ -1287,6 +1414,9 @@ function CalculatorWorkspace({ snapshot }) {
           overrides: { powerOverride: null },
         })
       }
+      negativeStatusEnabled={
+        state.calculationOptions?.includeNegativeStatusSettlement === true
+      }
       powerDisplayMode={powerDisplayMode}
     />
   ) : null;
@@ -1385,7 +1515,15 @@ function CalculatorWorkspace({ snapshot }) {
           setViewMode("compact");
         },
         onClearCurrent: () => {
-          dispatch({ type: "state/replace", value: initialState });
+          dispatch({
+            type: "state/replace",
+            value: {
+              ...initialState,
+              calculationOptions: {
+                ...stateRef.current.calculationOptions,
+              },
+            },
+          });
         },
         onCleanupConfigs: () => setCleanupConfigsOpen(true),
         onShare: openShareConfiguration,
@@ -1479,7 +1617,16 @@ function CalculatorWorkspace({ snapshot }) {
       open: dataSourceOpen,
     },
     displaySettings: {
+      negativeStatusSettlementEnabled:
+        state.calculationOptions?.includeNegativeStatusSettlement === true,
       onClose: () => setDisplaySettingsOpen(false),
+      onNegativeStatusSettlementChange: (enabled) => {
+        const value = writeNegativeStatusSettlementSetting(undefined, enabled);
+        dispatch({
+          type: "calculation-option/set-negative-status",
+          value,
+        });
+      },
       onPowerDisplayModeChange: (mode) => {
         setPowerDisplayMode(writePowerDisplayMode(undefined, mode));
       },
@@ -1851,6 +1998,10 @@ function CalculatorWorkspace({ snapshot }) {
                 }
                 finalMultiplier={currentDirection.finalDamageMultiplier}
                 marks={state.marks}
+                negativeStatusEnabled={
+                  state.calculationOptions?.includeNegativeStatusSettlement === true
+                }
+                negativeStatuses={state.negativeStatuses}
                 onBloodlineMagicChange={(bloodlineMagicId, triggered) =>
                   updateDirection({
                     ...(!triggered &&
@@ -1874,7 +2025,16 @@ function CalculatorWorkspace({ snapshot }) {
                     value,
                   })
                 }
+                onNegativeStatusChange={(side, key, value) =>
+                  dispatch({
+                    key,
+                    side,
+                    type: "negative-status/update",
+                    value,
+                  })
+                }
                 onRainTurnsChange={updateWeatherRainTurns}
+                onWeatherChange={updateWeather}
                 onReductionChange={(percent) =>
                   dispatch({
                     direction: reductionDirectionKey,
@@ -1883,6 +2043,13 @@ function CalculatorWorkspace({ snapshot }) {
                   })
                 }
                 rainTurns={weatherRainTurns}
+                weather={
+                  currentDirection.context?.weatherThunder === true
+                    ? "thunder"
+                    : weatherRainTurns > 0
+                      ? "rain"
+                      : "none"
+                }
                 reductionPercent={Math.round(
                   (1 - reductionDirection.reduction) * 100,
                 )}
@@ -1913,6 +2080,7 @@ function CalculatorWorkspace({ snapshot }) {
       </div>
 
       </WorkspaceOverlays>
+      <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>
   );
 }

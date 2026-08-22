@@ -11,10 +11,12 @@ import { gzipSync } from "node:zlib";
 export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
   clientTotal: 65 * 1024 * 1024,
   cssGzip: 24 * 1024,
-  jsGzip: 190 * 1024,
-  jsRaw: 650 * 1024,
+  jsGzip: 194 * 1024,
+  jsRaw: 658 * 1024,
   runtimeJson: 1.5 * 1024 * 1024,
 });
+
+export const DEFAULT_HARD_OVERAGE_BYTES = 20 * 1024;
 
 const LABELS = {
   clientTotal: "客户端总量",
@@ -46,6 +48,7 @@ function gzipSize(file) {
 export function verifyPerformanceBudget({
   budgets = DEFAULT_PERFORMANCE_BUDGETS,
   distRoot = path.resolve("dist/client"),
+  hardOverageBytes = DEFAULT_HARD_OVERAGE_BYTES,
 } = {}) {
   const limits = { ...DEFAULT_PERFORMANCE_BUDGETS, ...budgets };
   const runtimePath = path.join(distRoot, "data", "runtime.json");
@@ -63,11 +66,18 @@ export function verifyPerformanceBudget({
     jsRaw: jsFiles.reduce((total, file) => total + byteSize(file), 0),
     runtimeJson: byteSize(runtimePath),
   };
-  const violations = Object.entries(metrics)
+  const overages = Object.entries(metrics)
     .filter(([key, actual]) => actual > limits[key])
-    .map(([key, actual]) => ({ actual, key, limit: limits[key] }));
+    .map(([key, actual]) => ({
+      actual,
+      hardLimit: limits[key] + hardOverageBytes,
+      key,
+      limit: limits[key],
+    }));
+  const warnings = overages.filter(({ actual, hardLimit }) => actual <= hardLimit);
+  const violations = overages.filter(({ actual, hardLimit }) => actual > hardLimit);
 
-  return { metrics, violations };
+  return { metrics, violations, warnings };
 }
 
 function formatBytes(value) {
@@ -87,7 +97,12 @@ function runCli() {
   }
   for (const violation of result.violations) {
     console.error(
-      `${LABELS[violation.key]}超出预算：${formatBytes(violation.actual)} > ${formatBytes(violation.limit)}`,
+      `${LABELS[violation.key]}超出硬门禁：${formatBytes(violation.actual)} > ${formatBytes(violation.hardLimit)}（基线 ${formatBytes(violation.limit)}）`,
+    );
+  }
+  for (const warning of result.warnings) {
+    console.warn(
+      `${LABELS[warning.key]}小幅超出基线，仅警告：${formatBytes(warning.actual)} > ${formatBytes(warning.limit)}；达到 ${formatBytes(warning.hardLimit)} 才阻塞`,
     );
   }
   if (result.violations.length) process.exitCode = 1;

@@ -1,4 +1,5 @@
 import {
+  BurstSourceControls,
   clampDynamicInput,
   describeResolution,
   dynamicInputValue,
@@ -115,6 +116,7 @@ function SkillSide({
   opponentName,
   opponentSide,
   powerDisplayMode,
+  negativeStatusEnabled,
   onSkillActivate,
   onSkillContextChange,
   onSkillFocus,
@@ -139,7 +141,10 @@ function SkillSide({
 }) {
   const hasSelfHpRule =
     selectedSkills.some((skill) =>
-      dynamicInputsForSkill(skill, { includeStatusEffects: true }).some(
+      dynamicInputsForSkill(skill, {
+        includeNegativeStatusEffects: negativeStatusEnabled,
+        includeStatusEffects: true,
+      }).some(
         (input) => (input.contextKey ?? input.key) === "attackerHpPercent",
       ),
     ) ||
@@ -147,7 +152,10 @@ function SkillSide({
       (input) => (input.contextKey ?? input.key) === "attackerHpPercent",
     );
   const hasTargetHpRule = selectedSkills.some((skill) =>
-    dynamicInputsForSkill(skill, { includeStatusEffects: true }).some(
+    dynamicInputsForSkill(skill, {
+      includeNegativeStatusEffects: negativeStatusEnabled,
+      includeStatusEffects: true,
+    }).some(
       (input) => (input.contextKey ?? input.key) === "defenderHpPercent",
     ),
   );
@@ -331,6 +339,7 @@ function SkillSide({
           const skillInputs = selected
             ? [
                 ...dynamicInputsForSkill(selected, {
+                  includeNegativeStatusEffects: negativeStatusEnabled,
                   includeStatusEffects: true,
                 }),
                 ...(choiceTraitInput ? [choiceTraitInput] : []),
@@ -358,10 +367,52 @@ function SkillSide({
                   ) ?? []),
                 ]
               : [];
-          const dynamicInputs = mergeDynamicInputs(
+          const skillDynamicInputs = mergeDynamicInputs(
             skillInputs,
-            traitInputs,
             result?.inputs ?? [],
+          ).map((input) =>
+            selected?.name === "雷暴" &&
+            (input.contextKey ?? input.key) === "burstTriggered"
+              ? { ...input, label: "雷暴迸发" }
+              : input,
+          );
+          const traitDynamicInputs = mergeDynamicInputs(traitInputs).map(
+            (input) =>
+              (input.contextKey ?? input.key) === "burstTriggered"
+                ? {
+                    ...input,
+                    controlGroup: "trait",
+                    label: trait?.name
+                      ? `触发${trait.name}`
+                      : "触发特性迸发",
+                  }
+                : { ...input, controlGroup: "trait" },
+          );
+          const dynamicInputs = [
+            ...skillDynamicInputs,
+            ...traitDynamicInputs,
+          ];
+          const visibleInputs = (inputs) =>
+            inputs
+              .filter(
+                (input) =>
+                  ((input.contextKey ?? input.key) !== "attackerHpPercent" ||
+                    !health) &&
+                  ((input.contextKey ?? input.key) !== "defenderHpPercent" ||
+                    !opponentHealth),
+              )
+              .filter((input) =>
+                isDynamicInputVisible(input, selected?.slotContext),
+              )
+              .filter((input) => !input.burstSource);
+          const visibleSkillInputs = visibleInputs(skillDynamicInputs);
+          const visibleTraitInputs = visibleInputs(traitDynamicInputs);
+          const visibleDynamicInputs = [
+            ...visibleSkillInputs,
+            ...visibleTraitInputs,
+          ];
+          const hasBurstSources = skillDynamicInputs.some(
+            (input) => input.burstSource,
           );
           const refractionHint = buildRefractionHint({
             carriedSkills: selectedSkills,
@@ -418,7 +469,9 @@ function SkillSide({
                     ? `${result?.typeLabel ?? selected.type}·${CATEGORY_LABELS[selected.category]?.slice(0, 1) ?? "—"}`
                     : "—"}
                 </span>
-                <span className="skill-slot__cost">{selected?.cost ?? "—"}</span>
+                <span className="skill-slot__cost">
+                  {result?.skillCost ?? selected?.cost ?? "—"}
+                </span>
                 <PowerDraftInput
                   ariaLabel={`${label}技能${index + 1}${
                     powerDisplayMode === "panel" ? "面板威力" : "静态威力"
@@ -517,96 +570,120 @@ function SkillSide({
                       {counterReflectionHint}
                     </p>
                   ) : null}
-                  <div className="skill-slot__controls">
-                    {dynamicInputs
-                    .filter(
-                      (input) =>
-                        ((input.contextKey ?? input.key) !== "attackerHpPercent" || !health) &&
-                        ((input.contextKey ?? input.key) !== "defenderHpPercent" || !opponentHealth),
-                    )
-                    .filter((input) =>
-                      isDynamicInputVisible(
-                        input,
-                        selected?.slotContext,
-                      ),
-                    )
-                    .map((input) =>
-                    input.type === "choice" ? (
-                      <label key={input.id ?? input.key}>
-                        <span className="sr-only">{input.label}</span>
-                        <select
-                          aria-label={`${label}技能${index + 1}${input.label}`}
-                          onChange={(event) =>
-                            onSkillContextChange?.(
-                              side,
-                              index,
-                              input.id ?? input.key,
-                              event.target.value,
-                            )
-                          }
-                          onFocus={() => onSkillFocus?.(side, index)}
-                          value={dynamicInputValue(
-                            input,
-                            selected?.slotContext,
-                          )}
-                        >
-                          {input.options.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                    ) : input.type === "boolean" ? (
-                      <label key={input.id ?? input.key}>
-                        <input
-                          aria-label={`${label}技能${index + 1}${input.label}`}
-                          checked={Boolean(
-                            dynamicInputValue(
-                              input,
-                              selected?.slotContext,
-                            ),
-                          )}
-                          onChange={(event) =>
-                            onSkillContextChange?.(
-                              side,
-                              index,
-                              input.id ?? input.key,
-                              event.target.checked,
-                            )
-                          }
-                          onFocus={() => onSkillFocus?.(side, index)}
-                          type="checkbox"
-                        />
-                        {input.label}
-                      </label>
-                    ) : (
-                      <label key={input.id ?? input.key}>
-                        <span>{input.label}</span>
-                        <input
-                          aria-label={`${label}技能${index + 1}${input.label}`}
-                          max={input.max}
-                          min={input.min}
-                          onChange={(event) =>
-                            onSkillContextChange?.(
-                              side,
-                              index,
-                              input.id ?? input.key,
-                              clampDynamicInput(input, event.target.value),
-                            )
-                          }
-                          onFocus={() => onSkillFocus?.(side, index)}
-                          type="number"
-                          value={
-                            dynamicInputValue(
-                              input,
-                              selected?.slotContext,
-                            ) ?? ""
-                          }
-                        />
-                      </label>
-                    ),
-                  )}
+                  <div
+                    className={`skill-slot__control-row${
+                      hasBurstSources ? " has-burst-sources" : ""
+                    }`}
+                  >
+                    <BurstSourceControls
+                      ariaPrefix={`${label}技能${index + 1}`}
+                      context={selected?.slotContext}
+                      inputs={skillDynamicInputs}
+                      onChange={(key, value) =>
+                        onSkillContextChange?.(side, index, key, value)
+                      }
+                      onFocus={() => onSkillFocus?.(side, index)}
+                    />
+                    <div className="skill-slot__controls">
+                      {visibleDynamicInputs.map((input) =>
+                        input.type === "choice" ? (
+                          <label
+                            className={
+                              input.controlGroup === "trait"
+                                ? "skill-slot__control--trait"
+                                : undefined
+                            }
+                            key={input.id ?? input.key}
+                          >
+                            <span className="sr-only">{input.label}</span>
+                            <select
+                              aria-label={`${label}技能${index + 1}${input.label}`}
+                              onChange={(event) =>
+                                onSkillContextChange?.(
+                                  side,
+                                  index,
+                                  input.id ?? input.key,
+                                  event.target.value,
+                                )
+                              }
+                              onFocus={() => onSkillFocus?.(side, index)}
+                              value={dynamicInputValue(
+                                input,
+                                selected?.slotContext,
+                              )}
+                            >
+                              {input.options.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                        ) : input.type === "boolean" ? (
+                          <label
+                            className={
+                              input.controlGroup === "trait"
+                                ? "skill-slot__control--trait"
+                                : undefined
+                            }
+                            key={input.id ?? input.key}
+                          >
+                            <input
+                              aria-label={`${label}技能${index + 1}${input.label}`}
+                              checked={Boolean(
+                                dynamicInputValue(
+                                  input,
+                                  selected?.slotContext,
+                                ),
+                              )}
+                              onChange={(event) =>
+                                onSkillContextChange?.(
+                                  side,
+                                  index,
+                                  input.id ?? input.key,
+                                  event.target.checked,
+                                )
+                              }
+                              onFocus={() => onSkillFocus?.(side, index)}
+                              type="checkbox"
+                            />
+                            {input.label}
+                          </label>
+                        ) : (
+                          <label
+                            className={
+                              input.controlGroup === "trait"
+                                ? "skill-slot__control--trait"
+                                : undefined
+                            }
+                            key={input.id ?? input.key}
+                          >
+                            <span>{input.label}</span>
+                            <input
+                              aria-label={`${label}技能${index + 1}${input.label}`}
+                              max={input.max}
+                              min={input.min}
+                              onChange={(event) =>
+                                onSkillContextChange?.(
+                                  side,
+                                  index,
+                                  input.id ?? input.key,
+                                  clampDynamicInput(input, event.target.value),
+                                )
+                              }
+                              onFocus={() => onSkillFocus?.(side, index)}
+                              type="number"
+                              value={
+                                dynamicInputValue(
+                                  input,
+                                  selected?.slotContext,
+                                ) ?? ""
+                              }
+                            />
+                          </label>
+                        ),
+                      )}
+                    </div>
                   </div>
                 </div>
               ) : null}
@@ -658,6 +735,7 @@ export function FourSkillEditor({
   onTraitContextChange,
   onTraitDamageFocus,
   onTraitDamageHitCountChange,
+  negativeStatusEnabled = false,
   powerDisplayMode = "static",
   skills,
 }) {
@@ -723,6 +801,7 @@ export function FourSkillEditor({
         onSkillPowerClear={onSkillPowerClear}
         onSkillPowerChange={onSkillPowerChange}
         onSkillSelect={onSkillSelect}
+        negativeStatusEnabled={negativeStatusEnabled}
         powerDisplayMode={powerDisplayMode}
         onTraitContextChange={onTraitContextChange}
         onTraitDamageFocus={onTraitDamageFocus}

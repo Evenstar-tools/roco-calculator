@@ -33,6 +33,11 @@ const REMEMBERED_SIDE_ACTIONS = new Set([
   "side/set-nature",
   "side/set-single-skill",
 ]);
+const ADJACENT_POWER_SKILLS = new Set(["六自由度", "钢钻"]);
+const ADJACENT_POWER_CONTEXT_KEYS = [
+  "adjacentLeftDisplayedPowerOverride",
+  "adjacentRightDisplayedPowerOverride",
+];
 
 function clampStage(value) {
   return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
@@ -287,8 +292,9 @@ function sanitizeStoredSkillEntry(
 ) {
   if (!entry || typeof entry === "string") return entry;
   const skillId = entrySkillId(entry);
+  const skill = getSkill(snapshot, skillId);
   const controls = [
-    ...skillTriggerControls(getSkill(snapshot, skillId)),
+    ...skillTriggerControls(skill),
     ...additionalControls,
   ].filter((control) => control.scope !== "battle");
   const memoryBySkill = Object.fromEntries(
@@ -306,7 +312,10 @@ function sanitizeStoredSkillEntry(
   );
   return {
     ...entry,
-    context: sanitizeTriggerContext(entry.context ?? {}, controls),
+    context: {
+      ...sanitizeTriggerContext(entry.context ?? {}, controls),
+      ...preserveSkillRuleContext(entry.context, skill),
+    },
     ...(Object.keys(memoryBySkill).length > 0 ? { memoryBySkill } : {}),
     overrides: { ...(entry.overrides ?? {}) },
   };
@@ -381,6 +390,18 @@ function preserveTraitSlotContext(context = {}) {
     Object.entries(context).filter(([key]) =>
       key.startsWith("attackerTrait.") || key.startsWith("defenderTrait."),
     ),
+  );
+}
+
+function preserveSkillRuleContext(context = {}, skill) {
+  if (!ADJACENT_POWER_SKILLS.has(skill?.name)) return {};
+  return Object.fromEntries(
+    ADJACENT_POWER_CONTEXT_KEYS.flatMap((key) => {
+      const value = Number(context[key]);
+      return Number.isFinite(value) && value >= 0 && value <= 9999
+        ? [[key, value]]
+        : [];
+    }),
   );
 }
 
@@ -593,14 +614,14 @@ export function patchFourSkill(state, { index, patch, side, snapshot }) {
     overrides: { ...(details.overrides ?? {}), ...(patch.overrides ?? {}) },
   };
   if (snapshot && patch.context) {
-    const controls = skillTriggerControls(
-      getSkill(snapshot, entrySkillId(value)),
-    );
+    const skill = getSkill(snapshot, entrySkillId(value));
+    const controls = skillTriggerControls(skill);
     value = {
       ...value,
       context: {
         ...preserveTraitSlotContext(value.context),
         ...sanitizeTriggerContext(value.context, controls),
+        ...preserveSkillRuleContext(value.context, skill),
       },
     };
   }
@@ -635,7 +656,7 @@ export function selectFourSkill(
       nextControls,
     ),
   };
-  return reduceSessionAction(state, {
+  const selected = reduceSessionAction(state, {
     index,
     side,
     type: "side/set-four-skill",
@@ -646,6 +667,22 @@ export function selectFourSkill(
       skillId,
     },
   });
+  const direction = side === "attacker" ? "forward" : "reverse";
+  const counts = {
+    ...(selected.state.directions[direction].context
+      ?.negativeStatusUseCountsBySlot ?? {}),
+  };
+  delete counts[index + 1];
+  return {
+    ...selected,
+    state: calculatorReducer(selected.state, {
+      direction,
+      type: "direction/update",
+      value: {
+        context: { negativeStatusUseCountsBySlot: counts },
+      },
+    }),
+  };
 }
 
 export function updateGlobalRain(state, value) {
@@ -659,6 +696,24 @@ export function updateGlobalRain(state, value) {
       direction,
       type: "direction/update",
       value: { context: { weatherRainTurns } },
+    });
+  }
+  return { persistence: persistence(), state: nextState };
+}
+
+export function updateGlobalWeather(state, weather) {
+  const nextWeather = ["rain", "thunder"].includes(weather) ? weather : "none";
+  let nextState = state;
+  for (const direction of ["forward", "reverse"]) {
+    nextState = calculatorReducer(nextState, {
+      direction,
+      type: "direction/update",
+      value: {
+        context: {
+          weatherRainTurns: nextWeather === "rain" ? 8 : 0,
+          weatherThunder: nextWeather === "thunder",
+        },
+      },
     });
   }
   return { persistence: persistence(), state: nextState };

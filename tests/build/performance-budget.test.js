@@ -42,11 +42,12 @@ describe("release performance budget", () => {
     });
 
     expect(result.violations).toEqual([]);
+    expect(result.warnings).toEqual([]);
     expect(result.metrics.jsRaw).toBeGreaterThan(0);
     expect(result.metrics.runtimeJson).toBe(2);
   });
 
-  test("reports the exact artifact that exceeds its threshold", () => {
+  test("warns instead of blocking when an artifact only slightly exceeds its threshold", () => {
     const result = verifyPerformanceBudget({
       budgets: {
         clientTotal: 1_000,
@@ -55,11 +56,32 @@ describe("release performance budget", () => {
         jsRaw: 8,
         runtimeJson: 1_000,
       },
-      distRoot: fixture({ js: "export default 123456789" }),
+      distRoot: fixture({ js: "1234567890" }),
+      hardOverageBytes: 20,
     });
 
+    expect(result.warnings).toEqual([
+      expect.objectContaining({ actual: 10, key: "jsRaw", limit: 8 }),
+    ]);
+    expect(result.violations).toEqual([]);
+  });
+
+  test("blocks when an artifact exceeds its threshold by more than the hard allowance", () => {
+    const result = verifyPerformanceBudget({
+      budgets: {
+        clientTotal: 1_000,
+        cssGzip: 1_000,
+        jsGzip: 1_000,
+        jsRaw: 8,
+        runtimeJson: 1_000,
+      },
+      distRoot: fixture({ js: "12345678901234567890123456789" }),
+      hardOverageBytes: 20,
+    });
+
+    expect(result.warnings).toEqual([]);
     expect(result.violations).toEqual([
-      expect.objectContaining({ key: "jsRaw", limit: 8 }),
+      expect.objectContaining({ actual: 29, key: "jsRaw", limit: 8 }),
     ]);
   });
 

@@ -9,6 +9,41 @@ import {
   toInteger,
 } from "./normalize.mjs";
 
+const REVIEWED_SPIRIT_ASSET_OVERRIDES = new Map([
+  [
+    "海枝枝（杏黄百合）",
+    {
+      upstreamUrl:
+        "https://patchwiki.biligame.com/images/rocom/c/ce/gu6jzlvxig77gm42gayvu4sk9u6ieec.png",
+      correctedUrl:
+        "https://patchwiki.biligame.com/images/rocom/4/4a/mgmynoz7yceewyozls8lpo95sgc9dvj.png",
+    },
+  ],
+  [
+    "海枝枝（洋红沙丁）",
+    {
+      upstreamUrl:
+        "https://patchwiki.biligame.com/images/rocom/4/4a/mgmynoz7yceewyozls8lpo95sgc9dvj.png",
+      correctedUrl:
+        "https://patchwiki.biligame.com/images/rocom/a/ae/hl04yjyfbnis2rflogd0z88vlvvoxg8.png",
+    },
+  ],
+  [
+    "海枝枝（翠绿纶布）",
+    {
+      upstreamUrl:
+        "https://patchwiki.biligame.com/images/rocom/a/ae/hl04yjyfbnis2rflogd0z88vlvvoxg8.png",
+      correctedUrl:
+        "https://patchwiki.biligame.com/images/rocom/c/ce/gu6jzlvxig77gm42gayvu4sk9u6ieec.png",
+    },
+  ],
+]);
+
+export function resolveSpiritAssetSource(fullName, sourceUrl) {
+  const override = REVIEWED_SPIRIT_ASSET_OVERRIDES.get(fullName);
+  return override?.upstreamUrl === sourceUrl ? override.correctedUrl : sourceUrl;
+}
+
 function textFromCell($, cell) {
   return cleanText($(cell).attr("data-sort-value") ?? $(cell).text());
 }
@@ -62,7 +97,10 @@ function parseSpiritRow($, row, source) {
     traitName,
     detailUrl,
     asset: {
-      sourceUrl: originalPatchwikiUrl(portrait.attr("src")),
+      sourceUrl: resolveSpiritAssetSource(
+        fullName,
+        originalPatchwikiUrl(portrait.attr("src")),
+      ),
       width: toInteger(portrait.attr("data-file-width") ?? portrait.attr("width")),
       height: toInteger(portrait.attr("data-file-height") ?? portrait.attr("height")),
     },

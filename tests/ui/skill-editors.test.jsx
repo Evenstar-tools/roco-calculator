@@ -19,9 +19,12 @@ import {
 } from "../../src/domain/trait-effects.js";
 import {
   describeResolution,
+  dynamicInputValue,
   SingleSkillEditor,
   TraitInputs,
 } from "../../src/components/SingleSkillEditor.jsx";
+import snapshot from "../../public/data/current.json";
+import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 
 const skills = [
   {
@@ -42,6 +45,94 @@ const skills = [
     type: "水",
   },
 ];
+
+test("雷暴来源显示悬停效果，并与星光狮特性迸发保持独立", async () => {
+  const user = userEvent.setup();
+  const onSkillContextChange = vi.fn();
+  const thunderstorm = snapshot.skills.find((skill) => skill.name === "雷暴");
+  const inputs = getSkillEffectInputs(thunderstorm);
+  const bioelectric = inputs.find(
+    (input) => input.contextKey === "burstSourceBioelectric",
+  );
+  const doublePulse = inputs.find(
+    (input) => input.contextKey === "burstSourceDoublePulse",
+  );
+  const kindCount = inputs.find(
+    (input) => input.contextKey === "activeBurstKinds",
+  );
+  const slotContext = {
+    [bioelectric.id]: true,
+    [doublePulse.id]: true,
+    [kindCount.id]: 0,
+  };
+
+  expect(dynamicInputValue(kindCount, slotContext)).toBe(2);
+
+  render(
+    <FourSkillEditor
+      attackerName="星光狮"
+      attackerResults={[{ skillCost: 3 }]}
+      attackerSkills={[{ ...thunderstorm, slotContext }, null, null, null]}
+      attackerTrait={{
+        inputs: [{
+          contextKey: "burstTriggered",
+          defaultValue: true,
+          id: "trait.current-stimulus.burst-triggered",
+          label: "触发迸发",
+          scope: "slot",
+          type: "boolean",
+        }],
+        name: "电流刺激",
+      }}
+      defenderName="木桩"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillContextChange={onSkillContextChange}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, thunderstorm]}
+    />,
+  );
+
+  expect(screen.getByText("已选 2")).toBeVisible();
+  expect(screen.getByRole("group", { name: "攻击方技能1迸发来源" })).not.toBeVisible();
+  await user.click(screen.getByText("迸发来源", { selector: "summary span" }));
+  expect(screen.getByRole("group", { name: "攻击方技能1迸发来源" })).toBeVisible();
+  expect(within(screen.getByRole("group", { name: "攻击方技能1迸发来源" })).getByText("特性")).toBeVisible();
+  expect(within(screen.getByRole("group", { name: "攻击方技能1迸发来源" })).getByText("技能")).toBeVisible();
+  expect(within(screen.getByRole("group", { name: "攻击方技能1迸发来源" })).getByText("印记")).toBeVisible();
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能1迸发种类数" })).toHaveValue(2);
+  expect(screen.getByText("3", { selector: ".skill-slot__cost" })).toBeVisible();
+  expect(screen.getByRole("checkbox", { name: "攻击方技能1雷暴迸发" })).toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "攻击方技能1触发电流刺激" })).toBeChecked();
+
+  const currentStimulusSource = screen.getByRole("checkbox", {
+    name: "攻击方技能1电流刺激（迸发来源）",
+  });
+  await user.hover(currentStimulusSource.closest("label"));
+  expect(currentStimulusSource.closest("label")).toHaveAttribute(
+    "title",
+    "携带的攻击技能获得迸发：威力 +40。",
+  );
+
+  await user.click(screen.getByRole("checkbox", {
+    name: "攻击方技能1生物电（迸发来源）",
+  }));
+  expect(onSkillContextChange).toHaveBeenCalledWith(
+    "attacker",
+    0,
+    bioelectric.id,
+    false,
+  );
+
+  await user.click(screen.getByRole("checkbox", {
+    name: "攻击方技能1触发电流刺激",
+  }));
+  expect(onSkillContextChange).toHaveBeenCalledWith(
+    "attacker",
+    0,
+    "trait.current-stimulus.burst-triggered",
+    false,
+  );
+});
 
 test("特性选择只在满足条件时显示依赖字段", () => {
   const inputs = [
@@ -2170,6 +2261,39 @@ test("four-skill slots keep each selected skill effect visible", () => {
   expect(screen.getByText(headOnBlow.description)).toBeVisible();
 });
 
+test("negative-status branch controls only appear while settlement is enabled", () => {
+  const heavenFire = snapshot.skills.find((skill) => skill.name === "天火");
+  const { rerender } = render(
+    <SingleSkillEditor
+      hitCount={1}
+      onHitCountChange={vi.fn()}
+      onPowerOverrideChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      result={{ status: "exact" }}
+      selectedSkill={heavenFire}
+      skills={[heavenFire]}
+    />,
+  );
+
+  expect(screen.queryByRole("checkbox", { name: "应对防御" }))
+    .not.toBeInTheDocument();
+
+  rerender(
+    <SingleSkillEditor
+      hitCount={1}
+      negativeStatusEnabled
+      onHitCountChange={vi.fn()}
+      onPowerOverrideChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      result={{ status: "exact" }}
+      selectedSkill={heavenFire}
+      skills={[heavenFire]}
+    />,
+  );
+
+  expect(screen.getByRole("checkbox", { name: "应对防御" })).toBeVisible();
+});
+
 test("four-skill sides use their own learnability labels", async () => {
   const user = userEvent.setup();
 
@@ -2219,16 +2343,17 @@ test("four-skill sides use their own learnability labels", async () => {
 test("advanced settings stay collapsed until requested", async () => {
   const user = userEvent.setup();
   const onMarkChange = vi.fn();
-  const onRainTurnsChange = vi.fn();
+  const onWeatherChange = vi.fn();
 
   render(
     <AdvancedOptions
       finalMultiplier={1}
       onFinalMultiplierChange={vi.fn()}
-      onRainTurnsChange={onRainTurnsChange}
+      onWeatherChange={onWeatherChange}
       onReductionChange={vi.fn()}
       onMarkChange={onMarkChange}
       rainTurns={0}
+      weather="none"
       reductionPercent={0}
       result={{
         additionalDamage: 0,
@@ -2329,16 +2454,14 @@ test("advanced settings stay collapsed until requested", async () => {
   expect(screen.queryByText(/floor\(/i)).not.toBeInTheDocument();
   expect(screen.queryByText("×1")).not.toBeInTheDocument();
   expect(document.querySelectorAll(".formula-audit__row")).toHaveLength(4);
-  const rain = screen.getByRole("checkbox", {
-    name: "雨天",
-  });
-  expect(rain).not.toBeChecked();
+  const weather = screen.getByRole("combobox", { name: "天气" });
+  expect(weather).toHaveValue("none");
   expect(
     screen.queryByRole("spinbutton", { name: "雨天剩余回合" }),
   ).not.toBeInTheDocument();
   expect(screen.queryByText(/雨天剩余.*回合/)).not.toBeInTheDocument();
-  await user.click(rain);
-  expect(onRainTurnsChange).toHaveBeenLastCalledWith(8);
+  await user.selectOptions(weather, "rain");
+  expect(onWeatherChange).toHaveBeenLastCalledWith("rain");
   const attackerMarks = screen.getByRole("group", { name: "进攻方印记" });
   const defenderMarks = screen.getByRole("group", { name: "防御方印记" });
   expect(
@@ -2395,6 +2518,51 @@ test("advanced settings configure bloodline magic without applying placeholders"
     "throttling",
   );
   expect(onBloodlineMagicChange).toHaveBeenLastCalledWith("throttling", false);
+});
+
+test("advanced settings edit both sides' negative-status stacks only when enabled", async () => {
+  const user = userEvent.setup();
+  const onNegativeStatusChange = vi.fn();
+  const onWeatherChange = vi.fn();
+
+  render(
+    <AdvancedOptions
+      finalMultiplier={1}
+      negativeStatusEnabled
+      negativeStatuses={{
+        attacker: { burn: 0, electrified: 0, freeze: 0, parasitism: 0, poison: 0 },
+        defender: { burn: 2, electrified: 1, freeze: 1, parasitism: 0, poison: 3 },
+      }}
+      onFinalMultiplierChange={vi.fn()}
+      onMarkChange={vi.fn()}
+      onNegativeStatusChange={onNegativeStatusChange}
+      onRainTurnsChange={vi.fn()}
+      onWeatherChange={onWeatherChange}
+      onReductionChange={vi.fn()}
+      rainTurns={0}
+      weather="none"
+      reductionPercent={0}
+      result={null}
+    />,
+  );
+
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const region = screen.getByRole("region", { name: "负面状态层数" });
+  expect(within(region).getByText("这里填行动前已有层数；点异常技能 1 次算本回合，2 次续到下回合"))
+    .toBeVisible();
+  expect(within(region).getByRole("spinbutton", { name: "防御方中毒层数" }))
+    .toHaveValue(3);
+  expect(within(region).getByRole("spinbutton", { name: "防御方引电层数" }))
+    .toHaveValue(1);
+  await user.selectOptions(screen.getByRole("combobox", { name: "天气" }), "thunder");
+  expect(onWeatherChange).toHaveBeenCalledWith("thunder");
+  await user.click(within(region).getByRole("button", { name: "防御方中毒加一层" }));
+  expect(onNegativeStatusChange).toHaveBeenLastCalledWith("defender", "poison", 4);
+  fireEvent.change(
+    within(region).getByRole("spinbutton", { name: "进攻方冻结层数" }),
+    { target: { value: "8" } },
+  );
+  expect(onNegativeStatusChange).toHaveBeenLastCalledWith("attacker", "freeze", "8");
 });
 
 test("formula audit explains standalone photosynthetic healing damage", async () => {

@@ -113,8 +113,8 @@ test("opens the complete release notes in a second-level dialog", () => {
   });
 
   expect(screen.getByText("版本记录")).toBeVisible();
-  expect(screen.getByText("威力输入与乘区校正")).toBeVisible();
-  expect(screen.getByText("v1.5.7")).toBeVisible();
+  expect(screen.getByText("队伍分析与快捷撤回")).toBeVisible();
+  expect(screen.getByText("v1.6.2")).toBeVisible();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
 
   fireEvent.click(screen.getByRole("button", { name: "查看完整版本记录" }));
@@ -134,6 +134,7 @@ test("opens the complete release notes in a second-level dialog", () => {
 test("opens display settings from the menu and exposes the type analysis switch", () => {
   const onShowDisplaySettings = vi.fn();
   const onPowerDisplayModeChange = vi.fn();
+  const onNegativeStatusSettlementChange = vi.fn();
   const onTypeCoverageChange = vi.fn();
   const { rerender } = renderOverlays({
     menu: {
@@ -151,6 +152,8 @@ test("opens display settings from the menu and exposes the type analysis switch"
     <WorkspaceOverlays
       displaySettings={{
         onClose: vi.fn(),
+        negativeStatusSettlementEnabled: false,
+        onNegativeStatusSettlementChange,
         onPowerDisplayModeChange,
         onTypeCoverageChange,
         open: true,
@@ -173,6 +176,13 @@ test("opens display settings from the menu and exposes the type analysis switch"
   expect(switchControl).not.toBeChecked();
   fireEvent.click(switchControl);
   expect(onTypeCoverageChange).toHaveBeenCalledWith(true);
+
+  const statusSwitch = screen.getByRole("checkbox", {
+    name: "负面状态结算",
+  });
+  expect(statusSwitch).not.toBeChecked();
+  fireEvent.click(statusSwitch);
+  expect(onNegativeStatusSettlementChange).toHaveBeenCalledWith(true);
 
   expect(screen.getByRole("button", { name: "静态威力" })).toHaveAttribute(
     "aria-pressed",

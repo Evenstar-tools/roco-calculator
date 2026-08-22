@@ -8,6 +8,11 @@ import {
   BLOODLINE_MAGIC_OPTIONS,
   getBloodlineMagicOption,
 } from "../domain/bloodline-magic.js";
+import {
+  NEGATIVE_STATUS_DEFINITIONS,
+  NEGATIVE_STATUS_KEYS,
+  normalizeNegativeStatusSide,
+} from "../domain/negative-status.js";
 
 function numericValue(value, fallback = 0) {
   const next = Number(value);
@@ -469,19 +474,65 @@ function SideMarks({ label, marks, onChange, side, tone }) {
   );
 }
 
+function NegativeStatusSide({ label, onChange, side, value }) {
+  const normalized = normalizeNegativeStatusSide(value);
+  return (
+    <fieldset className="negative-status-side">
+      <legend>{label}</legend>
+      <div className="negative-status-side__grid">
+        {NEGATIVE_STATUS_KEYS.map((key) => (
+          <label key={key}>
+            <span>{NEGATIVE_STATUS_DEFINITIONS[key].label}</span>
+            <span className="negative-status-stepper">
+              <button
+                aria-label={`${label}${NEGATIVE_STATUS_DEFINITIONS[key].label}减一层`}
+                disabled={normalized[key] <= 0}
+                onClick={() => onChange(side, key, normalized[key] - 1)}
+                type="button"
+              >
+                −
+              </button>
+              <input
+                aria-label={`${label}${NEGATIVE_STATUS_DEFINITIONS[key].label}层数`}
+                max={key === "electrified" ? "2" : "99"}
+                min="0"
+                onChange={(event) => onChange(side, key, event.target.value)}
+                type="number"
+                value={normalized[key]}
+              />
+              <button
+                aria-label={`${label}${NEGATIVE_STATUS_DEFINITIONS[key].label}加一层`}
+                disabled={normalized[key] >= (key === "electrified" ? 2 : 99)}
+                onClick={() => onChange(side, key, normalized[key] + 1)}
+                type="button"
+              >
+                +
+              </button>
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
 export function AdvancedOptions({
   bloodlineMagicId = "none",
   bloodlineMagicTriggered = false,
   finalMultiplier,
   marks,
+  negativeStatusEnabled = false,
+  negativeStatuses,
   onBloodlineMagicChange = () => {},
   onFinalMultiplierChange,
   onMarkChange,
-  onRainTurnsChange,
+  onNegativeStatusChange = () => {},
+  onWeatherChange = () => {},
   onReductionChange,
   rainTurns,
   reductionPercent,
   result,
+  weather = rainTurns > 0 ? "rain" : "none",
 }) {
   const [open, setOpen] = useState(false);
   const bloodlineMagic = getBloodlineMagicOption(bloodlineMagicId);
@@ -575,20 +626,39 @@ export function AdvancedOptions({
               tone="defense"
             />
           </div>
+          {negativeStatusEnabled ? (
+            <section aria-label="负面状态层数" className="negative-status-config">
+              <header>
+                <strong>负面状态</strong>
+                <small>这里填行动前已有层数；点异常技能 1 次算本回合，2 次续到下回合</small>
+              </header>
+              <div>
+                <NegativeStatusSide
+                  label="进攻方"
+                  onChange={onNegativeStatusChange}
+                  side="attacker"
+                  value={negativeStatuses?.attacker}
+                />
+                <NegativeStatusSide
+                  label="防御方"
+                  onChange={onNegativeStatusChange}
+                  side="defender"
+                  value={negativeStatuses?.defender}
+                />
+              </div>
+            </section>
+          ) : null}
           <label className="field-group">
             <span>天气</span>
-            <span className="weather-toggle">
-              <input
-                aria-label="雨天"
-                checked={rainTurns > 0}
-                onChange={(event) =>
-                  onRainTurnsChange(event.target.checked ? 8 : 0)
-                }
-                type="checkbox"
-              />
-              <span>雨天</span>
-              <small>水系 ×1.75</small>
-            </span>
+            <select
+              aria-label="天气"
+              onChange={(event) => onWeatherChange(event.target.value)}
+              value={weather}
+            >
+              <option value="none">无天气</option>
+              <option value="rain">雨天 · 水系 ×1.75</option>
+              <option value="thunder">雷鸣 · 回合末引电 +1</option>
+            </select>
           </label>
           <label className="field-group">
             <span>最终伤害倍率</span>

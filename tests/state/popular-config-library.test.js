@@ -30,5 +30,6 @@ test("内置常用精灵配置包含并可校验 193 只精灵", () => {
   expect(library.entries).toHaveLength(193);
   expect(parsed.entries).toHaveLength(193);
   expect(parsed.preview.missingSpirits).toBe(0);
+  expect(parsed.preview.unknownTraitFields).toBe(0);
   expect(parsed.preview.invalidEntries).toBe(0);
 });

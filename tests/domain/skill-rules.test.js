@@ -42,12 +42,13 @@ describe("resolveSkillPower", () => {
     });
   });
 
-  test("雷暴默认启用迸发，但只累计用户填写的既有迸发种类", () => {
+  test("雷暴按已选迸发来源自动计数，并保留手动种类数", () => {
     const thunderstorm = snapshot.skills.find(
       (candidate) => candidate.name === "雷暴",
     );
+    const inputs = getSkillEffectInputs(thunderstorm);
 
-    expect(getSkillEffectInputs(thunderstorm)).toEqual(
+    expect(inputs).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           contextKey: "burstTriggered",
@@ -57,19 +58,54 @@ describe("resolveSkillPower", () => {
         expect.objectContaining({
           contextKey: "activeBurstKinds",
           defaultValue: 0,
-          label: "已生效迸发种类",
+          label: "迸发种类数",
         }),
       ]),
     );
+    expect(
+      inputs
+        .filter((input) => input.burstSource)
+        .map(({ burstGroup, contextKey, label }) => ({
+          burstGroup,
+          contextKey,
+          label,
+        })),
+    ).toEqual([
+      { burstGroup: "特性", contextKey: "burstSourceBioelectric", label: "生物电" },
+      { burstGroup: "特性", contextKey: "burstSourceCurrentStimulus", label: "电流刺激" },
+      { burstGroup: "特性", contextKey: "burstSourceOverload", label: "超负荷" },
+      { burstGroup: "特性", contextKey: "burstSourceContinuousLoad", label: "连续负荷" },
+      { burstGroup: "技能", contextKey: "burstSourceHeavenSpin", label: "天旋地转" },
+      { burstGroup: "技能", contextKey: "burstSourceArc", label: "电弧" },
+      { burstGroup: "技能", contextKey: "burstSourceSuperconduct", label: "超导" },
+      { burstGroup: "技能", contextKey: "burstSourceLightningGuide", label: "引雷" },
+      { burstGroup: "技能", contextKey: "burstSourceDoublePulse", label: "双联脉冲" },
+      { burstGroup: "印记", contextKey: "burstSourceChargeMark", label: "蓄电" },
+    ]);
+
+    expect(
+      resolveSkillPower(thunderstorm, {
+        activeBurstKinds: 0,
+        burstSourceBioelectric: true,
+        burstSourceDoublePulse: true,
+      }),
+    ).toMatchObject({ resolvedCost: 3, value: 75 });
     expect(resolveSkillPower(thunderstorm, { activeBurstKinds: 3 })).toMatchObject({
       value: 85,
     });
     expect(
       resolveSkillPower(thunderstorm, {
+        activeBurstKinds: 1,
+        burstSourceBioelectric: true,
+        burstSourceDoublePulse: true,
+      }),
+    ).toMatchObject({ value: 75 });
+    expect(
+      resolveSkillPower(thunderstorm, {
         activeBurstKinds: 3,
         burstTriggered: false,
       }),
-    ).toMatchObject({ value: 55 });
+    ).toMatchObject({ resolvedCost: 1, value: 55 });
   });
 
   test("reads the declared default hit count from every skill description", () => {
@@ -94,12 +130,9 @@ describe("resolveSkillPower", () => {
   });
 
   test("炙热波动勾选应对后威力和灼烧层数同时翻倍", () => {
-    const blazingWave = skill({
-      basePower: 55,
-      category: "magical",
-      name: "炙热波动",
-      type: "火",
-    });
+    const blazingWave = snapshot.skills.find(
+      (candidate) => candidate.name === "炙热波动",
+    );
 
     expect(getSkillEffectInputs(blazingWave)).toMatchObject([
       {

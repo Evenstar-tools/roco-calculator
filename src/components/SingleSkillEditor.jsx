@@ -4,6 +4,7 @@ import { getElementToneStyle } from "../domain/element-colors.js";
 import { getSkillEffectInputs } from "../domain/skill-effects.js";
 import { usesAbsolutePowerRule } from "../domain/skill-rules.js";
 import { getSkillStatusEffectInputs } from "../domain/skill-status-effects.js";
+import { getNegativeStatusInputs } from "../domain/negative-status-rules.js";
 import { resolveLifestealCapability } from "../domain/baron-greed.js";
 import { HealthInput } from "./HealthInput.jsx";
 import { PowerDraftInput } from "./PowerDraftInput.jsx";
@@ -16,6 +17,12 @@ const CATEGORY_LABELS = {
   physical: "物理",
   status: "变化",
 };
+
+const MANAGED_NEGATIVE_STATUS_INPUTS = new Set([
+  "enemyFreezeStacks",
+  "enemyPoisonStacks",
+  "poisonStacks",
+]);
 
 export function displayedSkillPower(skill, result) {
   if (Number.isFinite(Number(result?.staticPower))) {
@@ -40,14 +47,21 @@ function toNumber(value, fallback = 0) {
 
 export function dynamicInputsForSkill(
   skill,
-  { includeStatusEffects = false } = {},
+  {
+    includeNegativeStatusEffects = false,
+    includeStatusEffects = false,
+  } = {},
 ) {
   const inputs = [
     ...getSkillEffectInputs(skill),
     ...(includeStatusEffects ? getSkillStatusEffectInputs(skill) : []),
+    ...(includeNegativeStatusEffects ? getNegativeStatusInputs(skill) : []),
   ];
   return inputs.filter(
     (input, index) =>
+      !MANAGED_NEGATIVE_STATUS_INPUTS.has(
+        input.contextKey ?? input.id ?? input.key,
+      ) &&
       inputs.findIndex((candidate) => candidate.id === input.id) === index,
   );
 }
@@ -58,7 +72,8 @@ export function mergeDynamicInputs(...inputGroups) {
     (input, index) =>
       inputs.findIndex(
         (candidate) =>
-          (candidate.id ?? candidate.key) === (input.id ?? input.key),
+          (candidate.contextKey ?? candidate.id ?? candidate.key) ===
+          (input.contextKey ?? input.id ?? input.key),
       ) === index,
   );
 }
@@ -80,9 +95,80 @@ export function clampDynamicInput(input, value) {
 }
 
 export function dynamicInputValue(input, context = {}) {
-  return context[dynamicInputId(input)] ??
+  const storedValue = context[dynamicInputId(input)] ??
     context[dynamicInputContextKey(input)] ??
     input.defaultValue;
+  if (!Array.isArray(input.derivedTrueIds)) return storedValue;
+  const selectedCount = input.derivedTrueIds.filter(
+    (id) => context[id] === true,
+  ).length;
+  const numericStored = Number(storedValue);
+  return Math.max(
+    Number.isFinite(numericStored) ? numericStored : 0,
+    selectedCount,
+  );
+}
+
+export function BurstSourceControls({
+  ariaPrefix = "",
+  context = {},
+  inputs = [],
+  onChange,
+  onFocus,
+}) {
+  const sources = inputs.filter((input) => input.burstSource);
+  if (sources.length === 0) return null;
+  const groups = ["特性", "技能", "印记"];
+  const selectedCount = sources.filter((input) =>
+    Boolean(dynamicInputValue(input, context)),
+  ).length;
+  return (
+    <details
+      className="burst-source-controls"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <summary aria-label={`${ariaPrefix}选择迸发来源`}>
+        <span>迸发来源</span>
+        <strong>{selectedCount > 0 ? `已选 ${selectedCount}` : "未选"}</strong>
+      </summary>
+      <div
+        aria-label={`${ariaPrefix}迸发来源`}
+        className="burst-source-controls__menu"
+        role="group"
+      >
+        {groups.map((group) => {
+          const groupSources = sources.filter(
+            (input) => input.burstGroup === group,
+          );
+          if (groupSources.length === 0) return null;
+          return (
+            <fieldset key={group}>
+              <legend>{group}</legend>
+              {groupSources.map((input) => (
+                <label
+                  data-description={input.burstDescription}
+                  key={dynamicInputId(input)}
+                  title={input.burstDescription}
+                >
+                  <input
+                    aria-label={`${ariaPrefix}${input.label}（迸发来源）`}
+                    checked={Boolean(dynamicInputValue(input, context))}
+                    onChange={(event) =>
+                      onChange?.(dynamicInputId(input), event.target.checked)
+                    }
+                    onFocus={onFocus}
+                    type="checkbox"
+                  />
+                  <span>{input.label}</span>
+                </label>
+              ))}
+            </fieldset>
+          );
+        })}
+        <small>勾选此前已生效的迸发；种类数取已选项与手动值中的较大值。</small>
+      </div>
+    </details>
+  );
 }
 
 export function DraftNumberInput({
@@ -305,6 +391,7 @@ export function SingleSkillEditor({
   selectedSkill,
   skills,
   powerDisplayMode = "static",
+  negativeStatusEnabled = false,
   powerOverride,
   powerMode = "base",
   traitContext = {},
@@ -317,7 +404,9 @@ export function SingleSkillEditor({
     ? powerOverride
     : null;
   const dynamicInputs = mergeDynamicInputs(
-    dynamicInputsForSkill(selectedSkill),
+    dynamicInputsForSkill(selectedSkill, {
+      includeNegativeStatusEffects: negativeStatusEnabled,
+    }),
     result?.inputs ?? [],
   );
   const attackerTraitInputs = attackerTrait?.inputs ??
@@ -391,7 +480,7 @@ export function SingleSkillEditor({
           </span>
           <span className="skill-fact">
             <Lightning aria-hidden="true" size={17} weight="fill" />
-            能耗 {selectedSkill.cost}
+            能耗 {result?.skillCost ?? selectedSkill.cost}
           </span>
         </div>
       </div>
@@ -425,6 +514,11 @@ export function SingleSkillEditor({
                 percentValue={defenderHealth.percent}
               />
             ) : null}
+            <BurstSourceControls
+              context={traitContext}
+              inputs={dynamicInputs}
+              onChange={onTraitContextChange}
+            />
             {dynamicInputs
               .filter(
                 (input) =>
@@ -434,6 +528,7 @@ export function SingleSkillEditor({
               .filter((input) =>
                 isDynamicInputVisible(input, traitContext),
               )
+              .filter((input) => !input.burstSource)
               .map((input) =>
               input.type === "choice" ? (
                 <div

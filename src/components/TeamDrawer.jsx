@@ -7,9 +7,11 @@ import {
   UsersThree,
   X,
 } from "@phosphor-icons/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { analyzeTeamDefensiveTypes } from "../domain/team-type-analysis.js";
 import { TeamMemberEditor } from "./TeamMemberEditor.jsx";
 import { TeamRoster } from "./TeamRoster.jsx";
+import { TeamTypeAnalysisPanel } from "./TeamTypeAnalysisPanel.jsx";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -49,10 +51,20 @@ export function TeamDrawer({
   const drawerRef = useRef(null);
   const [deletePending, setDeletePending] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
+  const [paneMode, setPaneMode] = useState("member");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const activeTeam =
     teamsState.teams.find((team) => team.id === teamsState.activeTeamId) ??
     null;
+  const teamTypeAnalysis = useMemo(
+    () =>
+      analyzeTeamDefensiveTypes({
+        members: activeTeam?.members ?? [],
+        spirits: snapshot.spirits,
+        typeChart: snapshot.typeChart,
+      }),
+    [activeTeam?.members, snapshot.spirits, snapshot.typeChart],
+  );
 
   const close = useCallback(() => {
     onClose();
@@ -206,40 +218,64 @@ export function TeamDrawer({
               />
             </div>
             <div className="team-drawer__editor-pane">
-              <div className="team-drawer__capture-actions">
-                <span>{selectedIndex + 1}号位</span>
+              <div aria-label="队伍面板" className="team-drawer__pane-tabs">
                 <button
-                  aria-label={`用当前攻击方填入${selectedIndex + 1}号位`}
-                  onClick={() =>
-                    onCaptureSide("attacker", activeTeam.id, selectedIndex)
-                  }
-                  title="存入当前攻击方"
+                  aria-pressed={paneMode === "member"}
+                  onClick={() => setPaneMode("member")}
                   type="button"
                 >
-                  <Sword aria-hidden="true" size={16} weight="bold" />
-                  存攻方
+                  <UsersThree aria-hidden="true" size={17} weight="fill" />
+                  成员
                 </button>
                 <button
-                  aria-label={`用当前防御方填入${selectedIndex + 1}号位`}
-                  onClick={() =>
-                    onCaptureSide("defender", activeTeam.id, selectedIndex)
-                  }
-                  title="存入当前防御方"
+                  aria-pressed={paneMode === "analysis"}
+                  onClick={() => setPaneMode("analysis")}
                   type="button"
                 >
-                  <Shield aria-hidden="true" size={16} weight="bold" />
-                  存防方
+                  <Shield aria-hidden="true" size={17} weight="fill" />
+                  分析
                 </button>
               </div>
-              <TeamMemberEditor
-                getSpiritConfiguration={getSpiritConfiguration}
-                index={selectedIndex}
-                member={activeTeam.members[selectedIndex]}
-                onChange={(member) =>
-                  onMemberChange(activeTeam.id, selectedIndex, member)
-                }
-                snapshot={snapshot}
-              />
+              {paneMode === "member" ? (
+                <>
+                  <div className="team-drawer__capture-actions">
+                    <span>{selectedIndex + 1}号位</span>
+                    <button
+                      aria-label={`用当前攻击方填入${selectedIndex + 1}号位`}
+                      onClick={() =>
+                        onCaptureSide("attacker", activeTeam.id, selectedIndex)
+                      }
+                      title="存入当前攻击方"
+                      type="button"
+                    >
+                      <Sword aria-hidden="true" size={16} weight="bold" />
+                      存攻方
+                    </button>
+                    <button
+                      aria-label={`用当前防御方填入${selectedIndex + 1}号位`}
+                      onClick={() =>
+                        onCaptureSide("defender", activeTeam.id, selectedIndex)
+                      }
+                      title="存入当前防御方"
+                      type="button"
+                    >
+                      <Shield aria-hidden="true" size={16} weight="bold" />
+                      存防方
+                    </button>
+                  </div>
+                  <TeamMemberEditor
+                    getSpiritConfiguration={getSpiritConfiguration}
+                    index={selectedIndex}
+                    member={activeTeam.members[selectedIndex]}
+                    onChange={(member) =>
+                      onMemberChange(activeTeam.id, selectedIndex, member)
+                    }
+                    snapshot={snapshot}
+                  />
+                </>
+              ) : (
+                <TeamTypeAnalysisPanel analysis={teamTypeAnalysis} />
+              )}
             </div>
           </div>
         ) : (

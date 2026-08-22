@@ -9,6 +9,15 @@ import {
 } from "./type-chart.js";
 import { resolveWingExtensionSkill } from "./wing-extension.js";
 import {
+  calculateNegativeStatusSettlement,
+  normalizeNegativeStatusSide,
+  projectNegativeStatusTurns,
+} from "./negative-status.js";
+import {
+  resolveNegativeStatusApplications,
+  resolveNegativeStatusModifiers,
+} from "./negative-status-rules.js";
+import {
   getInheritedDamageTraits,
   getTraitAutomaticStack,
   getTraitEffectInputs,
@@ -54,15 +63,90 @@ export function getSkillSlotView(snapshot, entry) {
   };
 }
 
+const MANAGED_NEGATIVE_STATUS_CONTEXT_KEYS = [
+  "enemyFreezeStacks",
+  "enemyPoisonStacks",
+  "poisonStacks",
+  "targetPoisonMarkStacks",
+];
+
+function negativeStatusContext(state, targetSideKey, enabled) {
+  const statuses = enabled
+    ? normalizeNegativeStatusSide(state.negativeStatuses?.[targetSideKey])
+    : normalizeNegativeStatusSide();
+  const targetNegativeMark = state.marks?.[targetSideKey]?.negative;
+  return {
+    enemyFreezeStacks: statuses.freeze,
+    enemyPoisonStacks: statuses.poison,
+    poisonStacks: statuses.poison,
+    targetPoisonMarkStacks:
+      enabled && targetNegativeMark?.id === "poison"
+        ? Math.max(0, Math.floor(Number(targetNegativeMark.stacks) || 0))
+        : 0,
+  };
+}
+
+function withManagedStatusContext(entry, context) {
+  if (!entry) return entry;
+  if (typeof entry === "string") return { context: { ...context }, skillId: entry };
+  return {
+    ...entry,
+    context: { ...(entry.context ?? {}), ...context },
+    ...(entry.overrides
+      ? {
+          overrides: {
+            ...entry.overrides,
+            context: { ...(entry.overrides.context ?? {}), ...context },
+          },
+        }
+      : {}),
+  };
+}
+
 function buildCombatState(state) {
+  const enabled = state.calculationOptions?.includeNegativeStatusSettlement === true;
+  const contexts = {
+    forward: negativeStatusContext(state, "defender", enabled),
+    reverse: negativeStatusContext(state, "attacker", enabled),
+  };
+  const sideContexts = {
+    attacker: contexts.forward,
+    defender: contexts.reverse,
+  };
   return {
     ...state,
+    directions: Object.fromEntries(
+      Object.entries(state.directions).map(([direction, value]) => [
+        direction,
+        {
+          ...value,
+          context: { ...(value.context ?? {}), ...contexts[direction] },
+          overrides: {
+            ...(value.overrides ?? {}),
+            context: {
+              ...(value.overrides?.context ?? {}),
+              ...contexts[direction],
+            },
+          },
+        },
+      ]),
+    ),
     sides: Object.fromEntries(
       Object.entries(state.sides).map(([side, value]) => [
         side,
         {
           ...value,
           natureMultipliers: getNatureMultipliers(value.nature),
+          skills: {
+            ...value.skills,
+            four: (value.skills?.four ?? []).map((entry) =>
+              withManagedStatusContext(entry, sideContexts[side]),
+            ),
+            single: withManagedStatusContext(
+              value.skills?.single,
+              sideContexts[side],
+            ),
+          },
         },
       ]),
     ),
@@ -201,17 +285,230 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
     displayIvs: defenseSide.displayIvs,
     natureMultipliers: getNatureMultipliers(defenseSide.nature),
   });
+  const attackerPanels = calculateAllPanelStats({
+    raceStats: attacker.raceStats,
+    displayIvs: attackSide.displayIvs,
+    natureMultipliers: getNatureMultipliers(attackSide.nature),
+  });
   const defenderHp = Math.min(
     defenderPanels.hp,
     Math.max(0, state.directions[direction].currentHp ?? defenderPanels.hp),
   );
-  const rows = [...directionResult.results];
-  while (rows.length < 4) rows.push(null);
   const skillEntries = attackSide.skills.four;
   const traitsById = getSnapshotIndexes(snapshot).traits;
   const traits = (attacker.traitIds ?? [])
     .map((traitId) => traitsById[traitId])
     .filter(Boolean);
+  const defenderTraits = (defender.traitIds ?? [])
+    .map((traitId) => traitsById[traitId])
+    .filter(Boolean);
+  const statusEnabled =
+    state.calculationOptions?.includeNegativeStatusSettlement === true;
+  const statusSideKey = isForward ? "defender" : "attacker";
+  const baselineStatuses = state.negativeStatuses?.[statusSideKey];
+  const targetNegativeMark = state.marks?.[statusSideKey]?.negative;
+  const targetPoisonMarkStacks =
+    targetNegativeMark?.id === "poison"
+      ? Math.max(0, Math.floor(Number(targetNegativeMark.stacks) || 0))
+      : 0;
+  const directionState = state.directions[direction];
+  const attackerCurrentHp = Math.min(
+    attackerPanels.hp,
+    Math.max(
+      0,
+      state.directions[isForward ? "reverse" : "forward"].currentHp ??
+        attackerPanels.hp,
+    ),
+  );
+  const globalStatusModifiers = resolveNegativeStatusModifiers([
+    ...traits,
+    ...defenderTraits,
+  ]);
+  const attackerStatusModifiers = resolveNegativeStatusModifiers(traits);
+  const statusModifiers = {
+    ...globalStatusModifiers,
+    healFromBurn: attackerStatusModifiers.healFromBurn,
+    healFromPoison: attackerStatusModifiers.healFromPoison,
+  };
+  const selectedStatusSkills = skillEntries
+    .map((entry) => getSkill(snapshot, entry))
+    .filter(Boolean);
+  const settleResult = (
+    rawResult,
+    index,
+    entry,
+    allowApplications = true,
+    includeTurnPreview = false,
+  ) => {
+    if (!rawResult) return rawResult;
+    const selectedSkill = getSkill(snapshot, entry);
+    const context = {
+      targetPoisonMarkStacks,
+      ...(directionState.context ?? {}),
+      ...(entry && typeof entry === "object" ? entry.context ?? {} : {}),
+    };
+    const potentialApplication = allowApplications
+      ? resolveNegativeStatusApplications({
+          baselineStatuses,
+          context,
+          selectedSkills: selectedStatusSkills,
+          skill: selectedSkill,
+          skillIndex: index,
+          traits,
+        })
+      : { sources: [], special: null, stacks: {} };
+    const statusUseCount = Math.min(
+      2,
+      Math.max(
+        0,
+        Math.floor(
+          Number(
+            directionState.context?.negativeStatusUseCountsBySlot?.[index + 1],
+          ) || 0,
+        ),
+      ),
+    );
+    const application = statusUseCount > 0
+      ? potentialApplication
+      : { sources: [], special: null, stacks: {} };
+    const hasStatusApplication =
+      Object.values(application.stacks ?? {}).some(
+        (stacks) => Number(stacks) > 0,
+      ) || Boolean(application.special);
+    const statusOnly =
+      statusEnabled &&
+      rawResult.status !== "exact" &&
+      ["defense", "status"].includes(selectedSkill?.category) &&
+      hasStatusApplication;
+    const resultForSettlement = statusOnly
+      ? {
+          ...rawResult,
+          hpPercent: 0,
+          lethal: false,
+          reason: null,
+          status: "exact",
+          statusOnly: true,
+          totalDamage: 0,
+        }
+      : rawResult;
+    const settlementInput = {
+      applications: application.stacks,
+      attacker: {
+        currentHp: attackerCurrentHp,
+        maxHp: attackerPanels.hp,
+        types: attacker.types,
+      },
+      defender: {
+        currentHp: defenderHp,
+        maxHp: defenderPanels.hp,
+        types: defender.types,
+      },
+      directDamage: resultForSettlement.totalDamage,
+      enabled: statusEnabled && resultForSettlement.status === "exact",
+      modifiers: {
+        ...statusModifiers,
+        burnImmediateTriggers:
+          application.special === "double-burn-and-trigger" ? 1 : 0,
+      },
+      statuses: baselineStatuses,
+      thunderWeather: context.weatherThunder === true,
+      typeChart: snapshot.typeChart,
+    };
+    const negativeStatusSettlement = calculateNegativeStatusSettlement(
+      settlementInput,
+    );
+    let turnProjection = null;
+    if (
+      includeTurnPreview &&
+      negativeStatusSettlement &&
+      negativeStatusSettlement.skipped !== "direct-ko"
+    ) {
+      let repeatDirectDamage = resultForSettlement.totalDamage;
+      try {
+        const projectedState = structuredClone(state);
+        projectedState.negativeStatuses = {
+          ...(projectedState.negativeStatuses ?? {}),
+          [statusSideKey]: negativeStatusSettlement.nextStacks,
+        };
+        projectedState.directions = {
+          ...projectedState.directions,
+          [direction]: {
+            ...projectedState.directions[direction],
+            currentHp: negativeStatusSettlement.remainingHp,
+          },
+        };
+        const projectedDirection = calculateMatchup(
+          snapshot,
+          buildCombatState(projectedState),
+        )[direction];
+        const projectedResult = directionState.selectedDamageSource === "bloodline"
+          ? projectedDirection.bloodlineResult
+          : directionState.selectedDamageSource === "trait"
+            ? projectedDirection.traitResult
+            : projectedDirection.selectedResult;
+        if (Number.isFinite(Number(projectedResult?.totalDamage))) {
+          repeatDirectDamage = Number(projectedResult.totalDamage);
+        }
+      } catch {
+        repeatDirectDamage = resultForSettlement.totalDamage;
+      }
+      const repeatApplication = allowApplications && statusUseCount > 1
+        ? resolveNegativeStatusApplications({
+            baselineStatuses: negativeStatusSettlement.nextStacks,
+            context,
+            selectedSkills: selectedStatusSkills,
+            skill: selectedSkill,
+            skillIndex: index,
+            traits,
+          })
+        : { stacks: {} };
+      turnProjection = projectNegativeStatusTurns({
+        ...settlementInput,
+        repeatApplications: repeatApplication.stacks,
+        repeatDirectDamage,
+      });
+    }
+    if (negativeStatusSettlement && turnProjection) {
+      negativeStatusSettlement.turnPreview = {
+        focusStatusIds: Object.keys(negativeStatusSettlement.stacks ?? {}).filter(
+          (id) =>
+            Number(negativeStatusSettlement.stacks?.[id]) > 0 ||
+            Number(negativeStatusSettlement.added?.[id]) > 0,
+        ),
+        next: statusUseCount > 1
+          ? turnProjection.nextWithRepeat
+          : turnProjection.nextWithoutRepeat,
+        repeated: statusUseCount > 1,
+      };
+    }
+    return {
+      ...resultForSettlement,
+      negativeStatusApplications: application,
+      negativeStatusCanApply:
+        potentialApplication.sources.length > 0 ||
+        Boolean(potentialApplication.special),
+      negativeStatusSettlement,
+      negativeStatusUseCount: statusUseCount,
+    };
+  };
+  const rawRows = [...directionResult.results];
+  const enrichedRows = rawRows.map((row, index) =>
+    settleResult(row, index, skillEntries[index]),
+  );
+  while (enrichedRows.length < 4) enrichedRows.push(null);
+  const selectedSkillIndex = state.mode === "four"
+    ? directionState.selectedSkillIndex
+    : 0;
+  const selectedEntry = state.mode === "four"
+    ? skillEntries[selectedSkillIndex]
+    : attackSide.skills.single;
+  const enrichedSelected = settleResult(
+    selected,
+    selectedSkillIndex,
+    selectedEntry,
+    !["bloodline", "trait"].includes(directionState.selectedDamageSource),
+    true,
+  );
   const effectiveSkills = skillEntries
     .map((entry) => getSkill(snapshot, entry))
     .filter(Boolean)
@@ -226,7 +523,7 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
     defenderMaxHp: defenderPanels.hp,
     defenderName: defender.fullName,
     mode: state.mode,
-    selectedResult: selected,
+    selectedResult: enrichedSelected,
     selectedSkillName: selected.skillName ?? "未选择技能",
     bloodlineResult: directionResult.bloodlineResult
       ? {
@@ -253,11 +550,13 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
       defense: analyzeDefensiveTypes(attacker.types, snapshot.typeChart),
       offense: analyzeSkillTypeCoverage(effectiveSkills, snapshot.typeChart),
     },
-    skillResults: rows.map((result, index) => ({
+    skillResults: enrichedRows.map((result, index) => ({
       damage: result?.totalDamage ?? null,
       hpPercent: result?.hpPercent ?? null,
       id: result?.skillId ?? `empty-${index}`,
       name: result?.skillName ?? `技能${index + 1}`,
+      negativeStatusSettlement: result?.negativeStatusSettlement ?? null,
+      statusOnly: result?.statusOnly === true,
       selected:
         state.directions[direction].selectedDamageSource === "skill" &&
         index ===

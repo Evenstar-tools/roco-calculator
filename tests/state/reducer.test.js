@@ -16,6 +16,37 @@ const initialState = {
 };
 
 describe("calculatorReducer", () => {
+  test("updates one side negative status and swaps it with the spirits", () => {
+    const state = createInitialState({
+      meta: { id: "s3", rulesVersion: "rules-v1" },
+      spirits: [{ id: "attacker" }, { id: "defender" }],
+      skills: [{ id: "skill_a" }],
+    });
+    const updated = calculatorReducer(state, {
+      key: "poison",
+      side: "defender",
+      type: "negative-status/update",
+      value: 120,
+    });
+    expect(updated.negativeStatuses.defender.poison).toBe(99);
+    const swapped = calculatorReducer(updated, { type: "sides/swap" });
+    expect(swapped.negativeStatuses.attacker.poison).toBe(99);
+    expect(swapped.negativeStatuses.defender.poison).toBe(0);
+  });
+
+  test("stores the optional settlement switch independently from display-only state", () => {
+    const state = createInitialState({
+      meta: { id: "s3", rulesVersion: "rules-v1" },
+      spirits: [{ id: "attacker" }, { id: "defender" }],
+      skills: [{ id: "skill_a" }],
+    });
+    const next = calculatorReducer(state, {
+      type: "calculation-option/set-negative-status",
+      value: true,
+    });
+    expect(next.calculationOptions.includeNegativeStatusSettlement).toBe(true);
+  });
+
   test("stores canonical trait values on the owning side", () => {
     const snapshot = {
       meta: { id: "data-v1", rulesVersion: "rules-v1" },

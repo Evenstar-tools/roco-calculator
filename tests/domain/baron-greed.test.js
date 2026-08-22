@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   resolveBaronGreed,
+  resolveBaronGreedHitSequence,
   resolveLifestealCapability,
 } from "../../src/domain/baron-greed.js";
 
@@ -39,6 +40,23 @@ describe("恶魔男爵贪得无厌", () => {
     expect(result.settlement.text).toContain("后续物攻 +2级（+20%）");
   });
 
+  test("目标剩余生命限制吸血与溢出回复", () => {
+    expect(resolveBaronGreed({
+      attackerCurrentHp: 500,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      mainDamage: 500,
+      persistentLifestealPercent: 50,
+      skill: { description: "造成物伤。" },
+      targetCurrentHp: 10,
+    })).toMatchObject({
+      attackLevelStageAdd: 0,
+      effectiveLifestealPercent: 100,
+      overflowHealing: 10,
+      requestedHealing: 10,
+    });
+  });
+
   test("不足完整5%最大生命的溢出回复不增加物攻等级", () => {
     expect(resolveBaronGreed({
       attackerCurrentHp: 500,
@@ -62,6 +80,122 @@ describe("恶魔男爵贪得无厌", () => {
       effectiveLifestealPercent: 250,
       lifestealLevels: 15,
       overflowHealing: 250,
+    });
+  });
+
+  test("下注明分支先扣除10%生命，再结算吸血与溢出回复", () => {
+    const result = resolveBaronGreed({
+      attackerCurrentHp: 500,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      context: { betMode: "fixed" },
+      mainDamage: 200,
+      skill: {
+        name: "下注",
+        description:
+          "造成物伤，选择：本次技能威力+40，使用后自己生命-10%或自己生命低于50%时本次技能威力+100。",
+      },
+    });
+    expect(result).toMatchObject({
+      actualHealing: 50,
+      attackLevelStageAdd: 2,
+      currentHpAfterHealing: 500,
+      missingHp: 50,
+      overflowHealing: 50,
+      requestedHealing: 100,
+      selfDamageBeforeHealing: 50,
+    });
+    expect(result.settlement.text).toContain("自损50");
+    expect(result.settlement.text).toContain("回复50");
+  });
+
+  test("下注暗分支不扣血，不改变吸血与溢出回复", () => {
+    expect(resolveBaronGreed({
+      attackerCurrentHp: 500,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      context: { attackerHpPercent: 49, betMode: "lowHp" },
+      mainDamage: 200,
+      skill: {
+        name: "下注",
+        description:
+          "造成物伤，选择：本次技能威力+40，使用后自己生命-10%或自己生命低于50%时本次技能威力+100。",
+      },
+    })).toMatchObject({
+      attackLevelStageAdd: 4,
+      missingHp: 0,
+      overflowHealing: 100,
+      requestedHealing: 100,
+      selfDamageBeforeHealing: 0,
+    });
+  });
+
+  test("多段技能逐段吸血，溢出治疗增加的物攻从下一段开始生效", () => {
+    const result = resolveBaronGreedHitSequence({
+      attackerCurrentHp: 450,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      calculateHit: ({ attackLevelStageAdd }) =>
+        100 + attackLevelStageAdd * 10,
+      hitCount: 3,
+      skill: { description: "造成物伤，3连击。" },
+      targetCurrentHp: 1000,
+    });
+
+    expect(result).toMatchObject({
+      active: true,
+      attackLevelStageAdd: 4,
+      hitDamages: [100, 100, 120],
+      overflowHealing: 110,
+      requestedHealing: 160,
+      totalDamage: 320,
+    });
+    expect(result.settlement).toMatchObject({
+      kind: "baron-greed",
+      lines: [
+        "逐击 100/100/120",
+        "吸血50% · 溢出110 · 本次加攻+40%",
+      ],
+    });
+  });
+
+  test("十连击结算保留完整逐击明细和整次技能加攻总和", () => {
+    const result = resolveBaronGreedHitSequence({
+      attackerCurrentHp: 500,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      calculateHit: ({ hitIndex }) => 100 + hitIndex,
+      hitCount: 10,
+      skill: { description: "造成物伤，10连击。" },
+      targetCurrentHp: 5000,
+    });
+
+    expect(result.settlement).toMatchObject({
+      kind: "baron-greed",
+      lines: [
+        "逐击 100/101/102/103/104/105/106/107/108/109",
+        `吸血50% · 溢出520 · 本次加攻+${result.attackLevelStageAdd * 10}%`,
+      ],
+    });
+  });
+
+  test("逐段吸血只按目标每段实际损失生命结算", () => {
+    const result = resolveBaronGreedHitSequence({
+      attackerCurrentHp: 500,
+      attackerMaximumHp: 500,
+      attackerTraits: [baronTrait],
+      calculateHit: ({ attackLevelStageAdd }) =>
+        100 + attackLevelStageAdd * 10,
+      hitCount: 3,
+      skill: { description: "造成物伤，3连击。" },
+      targetCurrentHp: 150,
+    });
+
+    expect(result).toMatchObject({
+      attackLevelStageAdd: 3,
+      hitDamages: [100, 120, 130],
+      overflowHealing: 75,
+      requestedHealing: 75,
     });
   });
 });

@@ -1,6 +1,10 @@
 import { normalizeNatureId } from "../domain/natures.js";
 import { normalizeMarkSlot } from "../domain/marks.js";
 import { reconcileSkillLoadout } from "../domain/skill-loadout.js";
+import {
+  NEGATIVE_STATUS_KEYS,
+  normalizeNegativeStatusSide,
+} from "../domain/negative-status.js";
 
 const DIRECTIONS = new Set(["forward", "reverse"]);
 const SIDES = new Set(["attacker", "defender"]);
@@ -54,6 +58,31 @@ function cloneSkillEntry(entry) {
 
 export function calculatorReducer(state, action) {
   switch (action.type) {
+    case "calculation-option/set-negative-status":
+      return {
+        ...state,
+        calculationOptions: {
+          ...(state.calculationOptions ?? {}),
+          includeNegativeStatusSettlement: Boolean(action.value),
+        },
+      };
+    case "negative-status/update": {
+      const side = requireSide(action);
+      if (!NEGATIVE_STATUS_KEYS.includes(action.key)) {
+        throw new TypeError(`未知负面状态 ${action.key}`);
+      }
+      const current = normalizeNegativeStatusSide(state.negativeStatuses?.[side]);
+      return {
+        ...state,
+        negativeStatuses: {
+          ...state.negativeStatuses,
+          [side]: normalizeNegativeStatusSide({
+            ...current,
+            [action.key]: action.value,
+          }),
+        },
+      };
+    }
     case "battle/set-rain": {
       const weatherRainTurns = Math.min(
         8,
@@ -344,6 +373,12 @@ export function calculatorReducer(state, action) {
     case "sides/swap":
       return {
         ...state,
+        negativeStatuses: state.negativeStatuses
+          ? {
+              attacker: state.negativeStatuses.defender,
+              defender: state.negativeStatuses.attacker,
+            }
+          : state.negativeStatuses,
         marks: state.marks
           ? {
               attacker: state.marks.defender,

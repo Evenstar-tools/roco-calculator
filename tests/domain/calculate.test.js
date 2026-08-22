@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { calculateMatchup } from "../../src/domain/calculate.js";
+import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 import { getTraitEffectInputs } from "../../src/domain/trait-effects.js";
 
 const allFullIvs = {
@@ -491,17 +492,17 @@ describe("calculateMatchup", () => {
     );
   });
 
-  test("传动技能位于边界或相邻动态技能互相依赖时不静默按零计算", () => {
-    const edge = calculateMatchup(
+  test("传动技能在1号位读取4和2，在4号位读取3和1", () => {
+    const firstSlot = calculateMatchup(
       transmissionSnapshot(),
       battleInput({
         mode: "four",
         sides: {
           attacker: transmissionSide([
             "skill-six-degrees",
-            "skill-transmission-200",
+            "skill-transmission-150",
             null,
-            null,
+            "skill-transmission-90",
           ]),
           defender: {
             ...transmissionSide([null, null, null, null]),
@@ -510,6 +511,54 @@ describe("calculateMatchup", () => {
         },
       }),
     ).forward.results[0];
+    const fourthSlot = calculateMatchup(
+      transmissionSnapshot(),
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: transmissionSide([
+            "skill-transmission-150",
+            null,
+            "skill-transmission-90",
+            "skill-steel-drill",
+          ]),
+          defender: {
+            ...transmissionSide([null, null, null, null]),
+            spiritId: "spirit-transmission-target",
+          },
+        },
+      }),
+    ).forward.results[3];
+
+    expect(firstSlot.status).toBe("exact");
+    expect(firstSlot.formulaSteps).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: "相邻技能面板威力",
+          input: {
+            left: { name: "面板九十", power: 90 },
+            right: { name: "面板一百五", power: 150 },
+          },
+          after: 45,
+        }),
+      ]),
+    );
+    expect(fourthSlot.status).toBe("exact");
+    expect(fourthSlot.formulaSteps).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: "相邻技能面板威力",
+          input: {
+            left: { name: "面板九十", power: 90 },
+            right: { name: "面板一百五", power: 150 },
+          },
+          after: 80,
+        }),
+      ]),
+    );
+  });
+
+  test("相邻传动技能互相依赖时不静默按零计算", () => {
     const cycle = calculateMatchup(
       transmissionSnapshot(),
       battleInput({
@@ -529,8 +578,6 @@ describe("calculateMatchup", () => {
       }),
     ).forward.results;
 
-    expect(edge.status).toBe("needs_input");
-    expect(edge.reason).toContain("相邻技能");
     expect(cycle[1].status).toBe("needs_input");
     expect(cycle[2].status).toBe("needs_input");
   });
@@ -1731,6 +1778,178 @@ describe("calculateMatchup", () => {
         text: "风起 ×2 技能威力 +40%",
       }),
     );
+  });
+
+  test("applies charge fixed power only when the current skill triggers burst", () => {
+    const electricArc = {
+      id: "skill_electric_arc_charge_mark",
+      name: "电弧",
+      type: "电",
+      category: "magical",
+      basePower: 80,
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, electricArc],
+    };
+    const burstControl = getSkillEffectInputs(electricArc).find(
+      (input) => input.contextKey === "burstTriggered",
+    );
+    const result = (marked, burstTriggered) =>
+      calculateMatchup(
+        fixture,
+        battleInput({
+          sides: {
+            attacker: side("spirit_sonic_dog", electricArc.id, [
+              electricArc.id,
+              null,
+              null,
+              null,
+            ]),
+          },
+          marks: {
+            attacker: {
+              negative: { id: null, stacks: 0 },
+              positive: marked
+                ? { id: "charge", stacks: 2 }
+                : { id: null, stacks: 0 },
+            },
+            defender: {
+              negative: { id: null, stacks: 0 },
+              positive: { id: null, stacks: 0 },
+            },
+          },
+          directions: {
+            forward: {
+              context: { [burstControl.id]: burstTriggered },
+            },
+          },
+        }),
+      ).forward.selectedResult;
+
+    const unmarkedInactive = result(false, false);
+    const markedInactive = result(true, false);
+    const unmarkedActive = result(false, true);
+    const markedActive = result(true, true);
+
+    expect(markedInactive.skillPower).toBe(unmarkedInactive.skillPower);
+    expect(markedActive.skillPower - unmarkedActive.skillPower).toBe(20);
+    expect(markedActive.markSettlements).toContainEqual(
+      expect.objectContaining({
+        markId: "charge",
+        status: "applied",
+        text: "蓄电 ×2 迸发威力 +20",
+      }),
+    );
+  });
+
+  test("lets an attacker trait burst trigger consume charge stacks", () => {
+    const currentStimulus = {
+      id: "trait_current_stimulus_charge_mark",
+      name: "电流刺激",
+      description: "触发迸发时，本次技能威力+40。",
+    };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [currentStimulus.id] }
+          : spirit,
+      ),
+      traits: [currentStimulus],
+    };
+    const burstControl = getTraitEffectInputs(
+      currentStimulus,
+      "attacker",
+    ).find((input) => input.contextKey === "burstTriggered");
+    const result = (burstTriggered) =>
+      calculateMatchup(
+        fixture,
+        battleInput({
+          marks: {
+            attacker: {
+              negative: { id: null, stacks: 0 },
+              positive: { id: "charge", stacks: 3 },
+            },
+            defender: {
+              negative: { id: null, stacks: 0 },
+              positive: { id: null, stacks: 0 },
+            },
+          },
+          directions: {
+            forward: {
+              context: { [burstControl.id]: burstTriggered },
+            },
+          },
+        }),
+      ).forward.selectedResult;
+
+    expect(result(true).skillPower - result(false).skillPower).toBe(70);
+    expect(result(true).markSettlements).toContainEqual(
+      expect.objectContaining({
+        markId: "charge",
+        status: "applied",
+      }),
+    );
+  });
+
+  test("雷暴区分本次电流刺激与此前已生效的迸发种类", () => {
+    const thunderstorm = {
+      id: "skill_thunderstorm_fixture",
+      name: "雷暴",
+      type: "电",
+      category: "magical",
+      cost: 1,
+      basePower: 55,
+      description: "获得所有已生效迸发，每种使本技能能耗+1、威力+10。",
+      provenance: { basePower: { source: "fixture" } },
+    };
+    const currentStimulus = {
+      id: "trait_current_stimulus_thunderstorm",
+      name: "电流刺激",
+      description: "攻击时获得迸发：本次技能威力+40。",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, thunderstorm],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [currentStimulus.id] }
+          : spirit,
+      ),
+      traits: [currentStimulus],
+    };
+    const skillInputs = getSkillEffectInputs(thunderstorm);
+    const traitInput = getTraitEffectInputs(
+      currentStimulus,
+      "attacker",
+    ).find((input) => input.contextKey === "burstTriggered");
+    const sourceInput = (contextKey) =>
+      skillInputs.find((input) => input.contextKey === contextKey);
+    const context = {
+      [traitInput.id]: true,
+      [sourceInput("burstSourceBioelectric").id]: true,
+      [sourceInput("burstSourceDoublePulse").id]: true,
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", thunderstorm.id, [
+            { context, skillId: thunderstorm.id },
+            null,
+            null,
+            null,
+          ]),
+        },
+        directions: {
+          forward: { context },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({ skillCost: 3, skillPower: 115 });
   });
 
   test("uses the target side's starfall mark and does not trigger it for phantom skills", () => {
@@ -4223,140 +4442,6 @@ describe("inherited penetration stacks", () => {
     expect(result.traitSettlements[0].text).toContain("实际回复 50");
   });
 
-  test("贪得无厌把溢出回复转换为后续物攻等级", () => {
-    const trait = { id: "trait-baron", name: "贪得无厌" };
-    const fixture = {
-      ...snapshot,
-      spirits: snapshot.spirits.map((spirit) =>
-        spirit.id === "spirit_sonic_dog"
-          ? { ...spirit, traitIds: [trait.id] }
-          : spirit,
-      ),
-      traits: [trait],
-    };
-    const result = calculateMatchup(
-      fixture,
-      battleInput({ directions: { reverse: { currentHp: 400 } } }),
-    ).forward.selectedResult;
-
-    expect(result.postAttackEffects).toMatchObject({
-      attackLevelStageAdd: expect.any(Number),
-      source: "贪得无厌",
-    });
-    expect(result.traitSettlements).toEqual(expect.arrayContaining([
-      expect.objectContaining({ text: expect.stringContaining("后续物攻") }),
-    ]));
-  });
-
-  test("扇风、顺风与风起在同一威力百分比乘区相加", () => {
-    const fan = {
-      id: "skill_fan_additive",
-      name: "扇风",
-      type: "翼",
-      category: "physical",
-      basePower: 75,
-      provenance: { basePower: { source: "fixture" } },
-    };
-    const tailwind = {
-      id: "trait_tailwind_additive",
-      name: "顺风",
-      description: "若先于敌方攻击，本次技能威力+50%。",
-    };
-    const fixture = {
-      ...snapshot,
-      skills: [...snapshot.skills, fan],
-      spirits: snapshot.spirits.map((spirit) =>
-        spirit.id === "spirit_sonic_dog"
-          ? { ...spirit, traitIds: [tailwind.id] }
-          : spirit,
-      ),
-      traits: [tailwind],
-    };
-    const result = calculateMatchup(
-      fixture,
-      battleInput({
-        sides: {
-          attacker: side("spirit_sonic_dog", fan.id, [fan.id, null, null, null]),
-        },
-        marks: {
-          attacker: {
-            negative: { id: null, stacks: 0 },
-            positive: { id: "tailwind", stacks: 1 },
-          },
-          defender: {
-            negative: { id: null, stacks: 0 },
-            positive: { id: null, stacks: 0 },
-          },
-        },
-        directions: {
-          forward: { context: { actedBeforeEnemy: true } },
-        },
-      }),
-    ).forward.selectedResult;
-
-    expect(result.skillPower).toBe(165);
-    expect(
-      result.formulaSteps.find((step) => step.label === "技能威力百分比")?.input,
-    ).toEqual(expect.arrayContaining([0.5, 0.5, 0.2]));
-  });
-
-  test("雪原狩猎、冰雪魂魄与蓄势在同一威力百分比乘区相加", () => {
-    const snowfieldHunt = {
-      id: "skill_snowfield_hunt_additive",
-      name: "雪原狩猎",
-      type: "冰",
-      category: "physical",
-      basePower: 80,
-      provenance: { basePower: { source: "fixture" } },
-    };
-    const iceSoul = {
-      id: "trait_ice_soul_additive",
-      name: "冰雪魂魄",
-      description: "天气为暴风雪时，冰系技能威力+100%。",
-    };
-    const fixture = {
-      ...snapshot,
-      skills: [...snapshot.skills, snowfieldHunt],
-      spirits: snapshot.spirits.map((spirit) =>
-        spirit.id === "spirit_sonic_dog"
-          ? { ...spirit, traitIds: [iceSoul.id] }
-          : spirit,
-      ),
-      traits: [iceSoul],
-    };
-    const result = calculateMatchup(
-      fixture,
-      battleInput({
-        sides: {
-          attacker: side("spirit_sonic_dog", snowfieldHunt.id, [
-            snowfieldHunt.id,
-            null,
-            null,
-            null,
-          ]),
-        },
-        marks: {
-          attacker: {
-            negative: { id: null, stacks: 0 },
-            positive: { id: "momentum", stacks: 1 },
-          },
-          defender: {
-            negative: { id: null, stacks: 0 },
-            positive: { id: null, stacks: 0 },
-          },
-        },
-        directions: {
-          forward: { context: { blizzardWeather: true } },
-        },
-      }),
-    ).forward.selectedResult;
-
-    expect(result.skillPower).toBe(224);
-    expect(
-      result.formulaSteps.find((step) => step.label === "技能威力百分比")?.input,
-    ).toEqual(expect.arrayContaining([0.5, 1, 0.3]));
-  });
-
   test("戏耍让休息回复按缺失生命直接显示特性真伤", () => {
     const trait = { id: "trait-clown", name: "戏耍" };
     const rest = {
@@ -4480,9 +4565,40 @@ describe("inherited penetration stacks", () => {
     });
     expect(result.traitSettlements).toEqual(expect.arrayContaining([
       expect.objectContaining({
-        text: expect.stringContaining("后续物攻"),
+        text: expect.stringContaining("本次加攻"),
       }),
     ]));
+  });
+
+  test("贪得无厌在整套计算中只吸取目标实际损失的生命", () => {
+    const trait = { id: "trait-baron", name: "贪得无厌" };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: {
+          forward: { currentHp: 10 },
+          reverse: { currentHp: 408 },
+        },
+      }),
+    ).forward.selectedResult;
+    const settlement = result.formulaSteps.find(
+      (step) => step.label === "贪得无厌溢出回复",
+    );
+
+    expect(result.mainDamage).toBeGreaterThan(10);
+    expect(settlement.input).toMatchObject({
+      lifestealPercent: 50,
+      requestedHealing: 5,
+    });
   });
 
   test("贪得无厌把直接回复的溢出生命换算为后续物攻等级", () => {
@@ -4529,7 +4645,7 @@ describe("inherited penetration stacks", () => {
         source: "贪得无厌",
       },
     });
-    expect(result.traitSettlements[0].text).toContain("溢出回复 122");
-    expect(result.traitSettlements[0].text).toContain("后续物攻 +5级（+50%）");
+    expect(result.traitSettlements[0].text).toContain("溢出122");
+    expect(result.traitSettlements[0].text).toContain("本次加攻+50%");
   });
 });
