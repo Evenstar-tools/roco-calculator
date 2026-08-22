@@ -10,6 +10,10 @@ import {
 } from "../src/state/config-library.js";
 
 const CONFIG_FILE = resolve(process.cwd(), "src/data/common-spirit-config.json");
+const DESKTOP_CONFIG_FILE = resolve(
+  process.cwd(),
+  "../public/data/presets/pvp-popular-configs.json",
+);
 const bundledRuntime = expandBundledRuntime(bundledRuntimePayload);
 
 describe("bundled common spirit configuration", () => {
@@ -45,5 +49,22 @@ describe("bundled common spirit configuration", () => {
       missingSpirits: 0,
       missingSkills: 0,
     });
+  });
+
+  test("matches the current desktop popular configuration library", () => {
+    const desktopLibrary = JSON.parse(
+      readFileSync(DESKTOP_CONFIG_FILE, "utf8"),
+    );
+    const bundledEntries = expandBundledConfigLibrary(commonSpiritConfig)
+      .entries;
+    const comparableDesktopEntries = desktopLibrary.entries.map((entry) => ({
+      displayIvs: entry.displayIvs,
+      natureId: entry.natureId,
+      skills: entry.skills,
+      spiritId: entry.spiritId,
+      traitValues: entry.traitValues ?? {},
+    }));
+
+    expect(bundledEntries).toEqual(comparableDesktopEntries);
   });
 });

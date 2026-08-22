@@ -207,6 +207,49 @@ test("shows the thunderstorm burst switch and kind counter together", () => {
   expect(screen.getByLabelText("迸发种类数")).toHaveValue(0);
 });
 
+test("groups thunderstorm burst sources behind a stable summary", () => {
+  const onContextChange = vi.fn();
+  render(
+    <SkillConditionEditor
+      context={{
+        burstSourceChargeMark: true,
+        burstSourceCurrentStimulus: true,
+      }}
+      direction={{ overrides: {} }}
+      onContextChange={onContextChange}
+      onDirectionChange={vi.fn()}
+      result={{ panelPower: 55, staticPower: 55 }}
+      skill={{
+        basePower: 55,
+        category: "magical",
+        id: "thunderstorm",
+        name: "雷暴",
+        type: "电",
+      }}
+    />,
+  );
+
+  const summary = screen.getByRole("button", { name: "选择迸发来源" });
+  expect(summary).toHaveTextContent("已选 2/10");
+  expect(screen.queryByLabelText("迸发来源")).not.toBeInTheDocument();
+
+  fireEvent.click(summary);
+  const selector = screen.getByLabelText("迸发来源");
+  expect(within(selector).getByText("特性")).toBeInTheDocument();
+  expect(within(selector).getByText("技能")).toBeInTheDocument();
+  expect(within(selector).getByText("印记")).toBeInTheDocument();
+  expect(within(selector).getByText("本次技能威力 +40。")).toBeInTheDocument();
+  expect(within(selector).getByRole("button", { name: "电流刺激" }))
+    .toHaveAttribute("aria-pressed", "true");
+
+  fireEvent.click(within(selector).getByRole("button", { name: "电弧" }));
+  expect(onContextChange).toHaveBeenLastCalledWith({
+    burstSourceArc: true,
+    burstSourceChargeMark: true,
+    burstSourceCurrentStimulus: true,
+  });
+});
+
 describe("mini program skill workflow", () => {
   test("filters the skill sheet by category and search with reversible state", () => {
     const onChange = vi.fn();

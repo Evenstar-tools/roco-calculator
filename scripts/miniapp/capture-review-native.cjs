@@ -5,7 +5,7 @@ const Connection = require("miniprogram-automator/out/Connection").default;
 const MiniProgram = require("miniprogram-automator/out/MiniProgram").default;
 
 const outputDir = path.resolve(
-  process.argv[2] ?? "artifacts/wechat-review-package-v0.1.2",
+  process.argv[2] ?? "artifacts/wechat-review-package-v1.1.2",
 );
 const wsEndpoint = process.argv[3]
   ?? process.env.WECHAT_DEVTOOLS_WS_ENDPOINT
@@ -127,75 +127,191 @@ async function connectNative(wsEndpoint) {
       `select all ${selector}`,
       30000,
     );
+    const findByText = async (selector, text, exact = false) => {
+      const elements = await selectMany(selector);
+      for (const element of elements) {
+        const content = String(await element.text()).trim();
+        if (exact ? content === text : content.includes(text)) return element;
+      }
+      return null;
+    };
+    const selectAttackerSpirit = async (name) => {
+      const card = await selectOne(
+        ".combatant-card--attacker .combatant-card__summary",
+      );
+      assert.ok(card, "attacker card is missing");
+      await card.tap();
+      await wait(180);
+      const input = await selectOne(
+        ".combatant-card--attacker .spirit-picker__input",
+      );
+      assert.ok(input, "spirit search is missing");
+      await input.input(name);
+      await wait(450);
+      const row = await findByText(
+        ".combatant-card--attacker .spirit-picker__result",
+        name,
+      );
+      assert.ok(row, `spirit ${name} is missing`);
+      await row.tap();
+      await wait(350);
+    };
+    const selectSkill = async (name) => {
+      const trigger = await selectOne(".skill-picker__trigger");
+      assert.ok(trigger, "skill trigger is missing");
+      await trigger.tap();
+      await wait(220);
+      const input = await selectOne(".skill-picker__search");
+      assert.ok(input, "skill search is missing");
+      await input.input(name);
+      await wait(450);
+      const row = await findByText(".skill-picker__option", name);
+      assert.ok(row, `skill ${name} is missing`);
+      await row.tap();
+      await wait(450);
+    };
+    const openResult = async () => {
+      const action = await selectOne(".result-bar__action");
+      assert.ok(action, "result action is missing");
+      await action.tap();
+      await wait(600);
+      assert.ok(await selectOne(".result-sheet"), "result sheet did not open");
+    };
+    const closeResult = async () => {
+      const close = await selectOne(".result-sheet__close");
+      assert.ok(close, "result close action is missing");
+      await close.tap();
+      await wait(260);
+    };
     assert.ok(await selectOne(".battle-workspace"), "workspace did not load");
     process.stdout.write("native: workspace ready\n");
     await screenshot(miniProgram, "01-home-calculator.png");
 
-    const attackerCard = await selectOne(
-      ".combatant-card--attacker .combatant-card__summary",
-    );
-    assert.ok(attackerCard, "attacker card is missing");
-    await attackerCard.tap();
-    await wait(180);
-    const spiritInput = await selectOne(
-      ".combatant-card--attacker .spirit-picker__input",
-    );
-    assert.ok(spiritInput, "spirit search is missing");
-    await spiritInput.input("迪莫");
-    await wait(450);
-    const spiritRows = await selectMany(
-      ".combatant-card--attacker .spirit-picker__result",
-    );
-    assert.ok(spiritRows.length >= 5, "spirit results are incomplete");
-    await screenshot(miniProgram, "02-spirit-search.png");
-    await spiritRows[0].tap();
-    await wait(300);
-
-    const modeButtons = await selectMany(".mode-switch__button");
-    assert.equal(modeButtons.length, 2, "mode switch is incomplete");
-    await modeButtons[1].tap();
-    await wait(300);
-    const skillTrigger = await selectOne(".skill-picker__trigger");
-    assert.ok(skillTrigger, "skill trigger is missing");
-    await skillTrigger.tap();
-    await wait(250);
-    const skillSearch = await selectOne(".skill-picker__search");
-    assert.ok(skillSearch, "skill search is missing");
-    await skillSearch.input("愿力冲击");
-    await wait(500);
-    const skillRows = await selectMany(".skill-picker__option");
-    assert.equal(skillRows.length, 18, "Wish Power should expose 18 types");
-    await screenshot(miniProgram, "03-skill-selection.png");
-    await skillRows[0].tap();
-    await wait(500);
-
-    const resultAction = await selectOne(".result-bar__action");
-    assert.ok(resultAction, "result action is missing");
-    await resultAction.tap();
-    await wait(700);
-    assert.ok(await selectOne(".result-sheet"), "result sheet did not open");
-    await screenshot(miniProgram, "04-damage-results.png");
-
-    const resultClose = await selectOne(".result-sheet__close");
-    assert.ok(resultClose, "result close action is missing");
-    await resultClose.tap();
-    await wait(250);
-
+    process.stdout.write("native: popular config and opt-in settings\n");
     const settingsAction = await selectOne(".app-header__action");
     assert.ok(settingsAction, "settings action is missing");
     await settingsAction.tap();
     await wait(250);
     const settingsSwitches = await selectMany(".settings-sheet__switch");
-    assert.ok(settingsSwitches.length >= 3, "team analysis setting is missing");
-    const teamSwitchClass = await settingsSwitches[1].attribute("class");
-    if (!String(teamSwitchClass).includes("settings-sheet__switch--on")) {
-      await settingsSwitches[1].tap();
-      await wait(180);
+    assert.ok(settingsSwitches.length >= 5, "release settings are incomplete");
+    for (const index of [1, 3, 4]) {
+      const switchClass = await settingsSwitches[index].attribute("class");
+      if (!String(switchClass).includes("settings-sheet__switch--on")) {
+        await settingsSwitches[index].tap();
+        await wait(180);
+      }
     }
+    const importAction = await selectOne(".settings-sheet__action-row");
+    assert.ok(importAction, "popular config import is missing");
+    await importAction.tap();
+    await wait(350);
+    assert.match(await importAction.text(), /已导入\s*193\s*只/u);
+    await screenshot(miniProgram, "02-popular-config-settings.png");
     const settingsClose = await selectOne(".settings-sheet__close");
     assert.ok(settingsClose, "settings close action is missing");
     await settingsClose.tap();
     await wait(250);
+    const modeButtons = await selectMany(".mode-switch__button");
+    assert.equal(modeButtons.length, 2, "mode switch is incomplete");
+    await modeButtons[0].tap();
+    await wait(220);
+
+    process.stdout.write("native: negative status settlement\n");
+    await selectAttackerSpirit("迪莫");
+    await selectSkill("猛烈撞击");
+    const conditionsAction = await selectOne(".conditions-ribbon__main");
+    assert.ok(conditionsAction, "battle conditions entry is missing");
+    await conditionsAction.tap();
+    await wait(300);
+    let statusSteps = await selectMany(".negative-status-editor__step");
+    assert.equal(statusSteps.length, 20, "negative status steppers are incomplete");
+    for (const index of [11, 13, 15, 17, 19, 19]) {
+      statusSteps = await selectMany(".negative-status-editor__step");
+      await statusSteps[index].tap();
+      await wait(100);
+    }
+    await screenshot(miniProgram, "03-negative-status-conditions.png");
+    const conditionsClose = await selectOne(".conditions-sheet__close");
+    assert.ok(conditionsClose, "battle conditions close action is missing");
+    await conditionsClose.tap();
+    await wait(250);
+    await openResult();
+    assert.ok(await selectOne(".result-sheet__status-settlement"), "negative status settlement is missing");
+    assert.ok(await selectOne(".result-sheet__turn-preview"), "negative status turn preview is missing");
+    const statusRows = await selectMany(".result-sheet__status-row");
+    assert.ok(statusRows.length >= 5, "negative status rows are incomplete");
+    await screenshot(miniProgram, "04-negative-status-result.png");
+    await closeResult();
+
+    process.stdout.write("native: baron settlement\n");
+    await selectAttackerSpirit("恶魔男爵");
+    await selectSkill("撕咬");
+    await openResult();
+    assert.ok(await selectOne(".result-sheet__baron-settlement"), "Baron settlement is missing");
+    const baronLines = await selectMany(".result-sheet__baron-line");
+    assert.ok(baronLines.length >= 2, "Baron settlement should contain two lines");
+    await screenshot(miniProgram, "05-baron-settlement.png");
+    await closeResult();
+
+    process.stdout.write("native: quick undo\n");
+    await page.scrollTop(0);
+    await wait(250);
+    let natureOptions = await selectMany(
+      ".side-configuration--attacker .quick-controls__row--nature .quick-controls__option",
+    );
+    assert.equal(natureOptions.length, 6, "nature quick controls are incomplete");
+    const natureClassesBefore = await Promise.all(
+      natureOptions.map((option) => option.attribute("class")),
+    );
+    const natureSummaryBefore = await (
+      await selectOne(".side-configuration--attacker .quick-controls__summary")
+    ).text();
+    const natureTargetIndex = natureClassesBefore.findIndex(
+      (value) => !String(value).includes("quick-controls__option--selected"),
+    );
+    assert.ok(natureTargetIndex >= 0, "no unselected nature target is available");
+    await natureOptions[natureTargetIndex].tap();
+    await wait(180);
+    natureOptions = await selectMany(
+      ".side-configuration--attacker .quick-controls__row--nature .quick-controls__option",
+    );
+    const natureSummaryChanged = await (
+      await selectOne(".side-configuration--attacker .quick-controls__summary")
+    ).text();
+    assert.notEqual(natureSummaryChanged, natureSummaryBefore, "nature selection did not change");
+    const quickUndo = await selectOne(".quick-undo");
+    assert.ok(quickUndo, "quick undo is missing");
+    await quickUndo.tap();
+    await wait(220);
+    natureOptions = await selectMany(
+      ".side-configuration--attacker .quick-controls__row--nature .quick-controls__option",
+    );
+    const natureSummaryRestored = await (
+      await selectOne(".side-configuration--attacker .quick-controls__summary")
+    ).text();
+    assert.equal(natureSummaryRestored, natureSummaryBefore, "quick undo did not restore the nature selection");
+    await screenshot(miniProgram, "06-quick-undo.png");
+
+    process.stdout.write("native: thunderstorm burst groups\n");
+    await selectAttackerSpirit("酷拉");
+    await selectSkill("雷暴");
+    const burstSummary = await selectOne(".condition-editor__burst-summary");
+    assert.ok(burstSummary, "thunderstorm burst summary is missing");
+    await burstSummary.tap();
+    await wait(250);
+    assert.equal((await selectMany(".condition-editor__burst-group-title")).length, 3, "burst groups are incomplete");
+    assert.equal((await selectMany(".condition-editor__burst-source")).length, 10, "burst sources are incomplete");
+    const currentSource = await findByText(".condition-editor__burst-source", "电流刺激");
+    assert.ok(currentSource, "burst source 电流刺激 is missing");
+    await currentSource.tap();
+    await wait(150);
+    const arcSource = await findByText(".condition-editor__burst-source", "电弧");
+    assert.ok(arcSource, "burst source 电弧 is missing");
+    await arcSource.tap();
+    await wait(180);
+    assert.equal((await selectMany(".condition-editor__burst-source--active")).length, 2, "burst source selection did not persist");
+    await screenshot(miniProgram, "07-thunderstorm-burst-groups.png");
+    await (await selectOne(".condition-editor__burst-summary")).tap();
 
     await page.scrollTop(10000);
     await wait(300);
@@ -206,7 +322,7 @@ async function connectNative(wsEndpoint) {
     assert.ok(await selectOne(".team-analysis"), "team analysis sheet did not open");
     const teamSlots = await selectMany(".team-analysis__slot");
     assert.equal(teamSlots.length, 6, "team analysis should expose six slots");
-    await screenshot(miniProgram, "05-team-analysis-empty.png");
+    await screenshot(miniProgram, "08-team-analysis-empty.png");
 
     await teamSlots[0].tap();
     await wait(180);
@@ -218,17 +334,19 @@ async function connectNative(wsEndpoint) {
     assert.ok(teamSearchRows.length >= 5, "team member search results are incomplete");
     await teamSearchRows[0].tap();
     await wait(300);
-    await screenshot(miniProgram, "06-team-analysis-configured.png");
+    await screenshot(miniProgram, "09-team-analysis-configured.png");
 
     const evidence = {
+      baronSettlementLineCount: baronLines.length,
+      burstGroupCount: 3,
+      burstSourceCount: 10,
+      negativeStatusRowCount: statusRows.length,
       passed: runtimeErrors.length === 0,
       runtimeErrors,
-      spiritResultCount: spiritRows.length,
       systemInfo: await miniProgram.systemInfo(),
       toolInfo,
       teamAnalysisSlotCount: teamSlots.length,
       teamSearchResultCount: teamSearchRows.length,
-      wishPowerResultCount: skillRows.length,
     };
     await writeFile(
       path.join(outputDir, "native-capture-report.json"),

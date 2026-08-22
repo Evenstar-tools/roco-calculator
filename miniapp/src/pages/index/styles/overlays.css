@@ -1576,6 +1576,80 @@
   font-size: 13px;
 }
 
+.result-sheet__status-row[data-status="burn"] {
+  color: #dc3c32;
+}
+
+.result-sheet__status-row[data-status="parasitism"] {
+  color: #168a61;
+}
+
+.result-sheet__status-row[data-status="poison"] {
+  color: #8157b0;
+}
+
+.result-sheet__status-row[data-status="electrified"] {
+  color: #b77900;
+}
+
+.result-sheet__status-row[data-status="freeze"] {
+  color: #278cbf;
+}
+
+.result-sheet__turn-preview {
+  display: grid;
+  overflow: hidden;
+  margin-top: 2px;
+  border: 1px solid #dde3e7;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.result-sheet__turn-row {
+  display: grid;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 10px;
+  align-items: center;
+  grid-template-columns: 68px minmax(0, 1fr) auto;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.result-sheet__turn-row + .result-sheet__turn-row {
+  border-top: 1px solid #e7ebee;
+}
+
+.result-sheet__turn-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.result-sheet__turn-label text + text {
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #168a61;
+  background: #e8f6f0;
+  font-size: 10px;
+}
+
+.result-sheet__turn-status {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-sheet__turn-loss {
+  color: var(--text-primary);
+  font-weight: 750;
+  white-space: nowrap;
+}
+
 .result-sheet__skill-name {
   min-width: 0;
   overflow: hidden;
@@ -2036,6 +2110,27 @@
   color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.6;
+}
+
+.result-sheet__baron-settlement {
+  display: grid;
+  padding: 9px 10px;
+  border: 1px solid #e1e5e8;
+  border-radius: 9px;
+  background: #f8faf9;
+  gap: 3px;
+}
+
+.result-sheet__baron-title {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 760;
+}
+
+.result-sheet__baron-line {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .result-sheet__audit-group--warning {

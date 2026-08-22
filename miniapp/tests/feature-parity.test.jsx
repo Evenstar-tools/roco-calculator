@@ -90,7 +90,7 @@ describe("mini-program desktop feature parity", () => {
     expect(store.getState().directions.reverse.context.weatherThunder).toBe(true);
   });
 
-  test("offers optional one-step undo without changing the default UI", () => {
+  test("keeps mode changes out of undo and coalesces rapid control changes", () => {
     const snapshot = snapshotFixture();
     const store = createCalculatorStore(snapshot);
     const { rerender } = render(
@@ -104,8 +104,46 @@ describe("mini-program desktop feature parity", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
     expect(store.getState().mode).toBe("four");
+    expect(screen.getByRole("button", { name: "撤回上一步" })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    const increase = screen.getByRole("button", { name: "当前攻击等级提高一级" });
+    fireEvent.click(increase);
+    fireEvent.click(increase);
+    expect(store.getState().directions.forward.overrides.attackLevelStage).toBe(2);
     fireEvent.click(screen.getByRole("button", { name: "撤回上一步" }));
-    expect(store.getState().mode).toBe("single");
+    expect(store.getState().directions.forward.overrides.attackLevelStage ?? 0).toBe(0);
+    expect(store.getState().mode).toBe("four");
+  });
+
+  test("restores and persists the draggable undo position", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    const onQuickUndoPositionChange = vi.fn();
+    render(
+      <BattleWorkspace
+        onQuickUndoPositionChange={onQuickUndoPositionChange}
+        quickUndoEnabled
+        quickUndoPosition={{ bottom: 140, right: 24 }}
+        snapshot={snapshot}
+        store={store}
+      />,
+    );
+
+    const undoHandle = screen.getByLabelText("移动撤回按钮");
+    expect(undoHandle).toHaveStyle({ bottom: "140px", right: "24px" });
+    fireEvent.touchStart(undoHandle, {
+      touches: [{ clientX: 320, clientY: 500 }],
+    });
+    fireEvent.touchMove(undoHandle, {
+      touches: [{ clientX: 280, clientY: 460 }],
+    });
+    fireEvent.touchEnd(undoHandle);
+
+    expect(onQuickUndoPositionChange).toHaveBeenLastCalledWith({
+      bottom: 180,
+      right: 64,
+    });
   });
 
   test("selects direct trait damage as the active result source", () => {

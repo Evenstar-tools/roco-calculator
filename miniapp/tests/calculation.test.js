@@ -457,6 +457,41 @@ describe("createCalculationView", () => {
     expect(view.selectedResult.warnings).toEqual(expect.any(Array));
   });
 
+  test("enriches the real selected result with negative-status settlement and turn preview", () => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.calculationOptions.includeNegativeStatusSettlement = true;
+    state.negativeStatuses.defender = {
+      burn: 1,
+      electrified: 2,
+      freeze: 1,
+      parasitism: 1,
+      poison: 1,
+    };
+
+    const view = createCalculationView(snapshot, state, "forward");
+
+    expect(view.selectedResult.negativeStatusSettlement).toMatchObject({
+      breakdown: expect.arrayContaining([
+        expect.objectContaining({ id: "burn", stacks: 1 }),
+        expect.objectContaining({ id: "electrified", stacks: 2 }),
+        expect.objectContaining({ id: "parasitism", stacks: 1 }),
+        expect.objectContaining({ id: "poison", stacks: 1 }),
+      ]),
+      freeze: expect.objectContaining({ stacks: 1, thresholdPercent: 5 }),
+      turnPreview: expect.objectContaining({
+        focusStatusIds: expect.arrayContaining([
+          "burn",
+          "electrified",
+          "freeze",
+          "parasitism",
+          "poison",
+        ]),
+        next: expect.any(Object),
+      }),
+    });
+  });
+
   test("formats the real enemy-skill-power multiplier step", () => {
     const snapshot = createSnapshot();
     const state = createState(snapshot);
@@ -543,6 +578,9 @@ describe("createCalculationView", () => {
       [reverseDefenderControl.id]: false,
       reverseSkillOnly: 4,
     };
+    state.calculationOptions.includeNegativeStatusSettlement = true;
+    state.negativeStatuses.attacker.burn = 1;
+    state.negativeStatuses.defender.burn = 1;
 
     const combatState = buildCombatState(state, snapshot);
 
@@ -562,6 +600,9 @@ describe("createCalculationView", () => {
       const view = createCalculationView(snapshot, state, direction);
       expect(view.selectedResult.totalDamage).toBe(
         direct[direction].selectedResult.totalDamage,
+      );
+      expect(view.selectedResult.negativeStatusSettlement.directDamage).toBe(
+        view.selectedResult.totalDamage,
       );
     }
   });

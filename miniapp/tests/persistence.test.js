@@ -4,6 +4,7 @@ import {
   MINIAPP_NEGATIVE_STATUS_ENABLED_KEY,
   MINIAPP_PERSISTENCE_SCHEMA_VERSION,
   MINIAPP_QUICK_UNDO_ENABLED_KEY,
+  MINIAPP_QUICK_UNDO_POSITION_KEY,
   MINIAPP_STATE_KEY,
   MINIAPP_TEAM_ANALYSIS_ENABLED_KEY,
   MINIAPP_TEAM_ANALYSIS_MEMBERS_KEY,
@@ -133,9 +134,11 @@ describe("createPersistence", () => {
 
     expect(persistence.getNegativeStatusEnabled()).toBe(false);
     expect(persistence.getQuickUndoEnabled()).toBe(false);
+    expect(persistence.getQuickUndoPosition()).toBeNull();
     expect(persistence.getTeamAnalysisEnabled()).toBe(false);
     persistence.setNegativeStatusEnabled(true);
     persistence.setQuickUndoEnabled(true);
+    persistence.setQuickUndoPosition({ bottom: 128, right: 18 });
     persistence.setTeamAnalysisEnabled(true);
     expect(storage.set).toHaveBeenCalledWith(
       MINIAPP_NEGATIVE_STATUS_ENABLED_KEY,
@@ -144,6 +147,10 @@ describe("createPersistence", () => {
     expect(storage.set).toHaveBeenCalledWith(
       MINIAPP_QUICK_UNDO_ENABLED_KEY,
       true,
+    );
+    expect(storage.set).toHaveBeenCalledWith(
+      MINIAPP_QUICK_UNDO_POSITION_KEY,
+      { bottom: 128, right: 18 },
     );
     expect(storage.set).toHaveBeenCalledWith(
       MINIAPP_TEAM_ANALYSIS_ENABLED_KEY,

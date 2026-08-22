@@ -124,6 +124,7 @@ export default function IndexPage({ services }) {
     memoryEnabled: true,
     negativeStatusEnabled: false,
     quickUndoEnabled: false,
+    quickUndoPosition: null,
     teamAnalysisEnabled: false,
     teamAnalysisMembers: [null, null, null, null, null, null],
     typeAnalysisEnabled: false,
@@ -147,6 +148,7 @@ export default function IndexPage({ services }) {
       memoryEnabled: true,
       negativeStatusEnabled: false,
       quickUndoEnabled: false,
+      quickUndoPosition: null,
       teamAnalysisEnabled: false,
       teamAnalysisMembers: [null, null, null, null, null, null],
       typeAnalysisEnabled: false,
@@ -171,6 +173,8 @@ export default function IndexPage({ services }) {
         pageServices.persistence?.getNegativeStatusEnabled?.() ?? false;
       const quickUndoEnabled =
         pageServices.persistence?.getQuickUndoEnabled?.() ?? false;
+      const quickUndoPosition =
+        pageServices.persistence?.getQuickUndoPosition?.() ?? null;
       const teamAnalysisEnabled =
         pageServices.persistence?.getTeamAnalysisEnabled?.() ?? false;
       const teamAnalysisMembers =
@@ -224,6 +228,7 @@ export default function IndexPage({ services }) {
         memoryEnabled,
         negativeStatusEnabled,
         quickUndoEnabled,
+        quickUndoPosition,
         teamAnalysisEnabled,
         teamAnalysisMembers,
         typeAnalysisEnabled,
@@ -246,6 +251,7 @@ export default function IndexPage({ services }) {
         memoryEnabled: true,
         negativeStatusEnabled: false,
         quickUndoEnabled: false,
+        quickUndoPosition: null,
         teamAnalysisEnabled: false,
         teamAnalysisMembers: [null, null, null, null, null, null],
         typeAnalysisEnabled: false,
@@ -475,6 +481,19 @@ export default function IndexPage({ services }) {
     }
   }, [pageState]);
 
+  const changeQuickUndoPosition = useCallback((position) => {
+    try {
+      const saved = pageState.services?.persistence
+        ?.setQuickUndoPosition?.(position) ?? position;
+      setPageState((current) => current.store === pageState.store
+        ? { ...current, quickUndoPosition: saved }
+        : current);
+      return saved;
+    } catch {
+      return null;
+    }
+  }, [pageState]);
+
   const changeTeamAnalysisEnabled = useCallback((enabled) => {
     try {
       pageState.services?.persistence?.setTeamAnalysisEnabled?.(enabled);
@@ -606,10 +625,12 @@ export default function IndexPage({ services }) {
         )}
         favoriteIds={pageState.favoriteIds}
         onFavoriteToggle={toggleFavorite}
+        onQuickUndoPositionChange={changeQuickUndoPosition}
         onShareChange={updateShareMessage}
         negativeStatusEnabled={pageState.negativeStatusEnabled}
         petImages={pageState.petImages}
         quickUndoEnabled={pageState.quickUndoEnabled}
+        quickUndoPosition={pageState.quickUndoPosition}
         showTypeAnalysis={pageState.typeAnalysisEnabled}
         snapshot={pageState.snapshot}
         store={pageState.store}

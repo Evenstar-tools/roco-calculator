@@ -18,6 +18,59 @@ import SkillResultRows from "./SkillResultRows.jsx";
 import SharePreviewSheet from "./SharePreviewSheet.jsx";
 import TypeAnalysisPanel from "./TypeAnalysisPanel.jsx";
 
+const STATUS_LABELS = Object.freeze({
+  burn: "灼烧",
+  electrified: "引电",
+  freeze: "冻结",
+  parasitism: "寄生",
+  poison: "中毒",
+});
+
+function turnStatusText(phase, statusIds) {
+  return statusIds
+    .map((id) => {
+      const stacks = Math.max(0, Number(phase?.stacks?.[id]) || 0);
+      return stacks > 0 ? `${STATUS_LABELS[id]} ×${stacks}` : null;
+    })
+    .filter(Boolean)
+    .join(" · ");
+}
+
+function turnLossText(phase) {
+  const damage = Math.max(0, Number(phase?.actualStatusDamage) || 0);
+  const maxHp = Math.max(1, Number(phase?.maxHp) || 1);
+  if (damage > 0) return `${(damage / maxHp * 100).toFixed(1)}% · ${damage} HP`;
+  const threshold = Math.max(0, Number(phase?.freeze?.thresholdPercent) || 0);
+  return threshold > 0 ? `冻结线 ${threshold}%` : "不扣血";
+}
+
+function TurnStatusPreview({ current, preview }) {
+  if (!preview?.next) return null;
+  const statusIds = (preview.focusStatusIds ?? []).filter(
+    (id) => STATUS_LABELS[id],
+  );
+  if (statusIds.length === 0) return null;
+  return (
+    <View aria-label="回合状态预估" className="result-sheet__turn-preview">
+      {[
+        ["本回合", current],
+        ["下回合", preview.next],
+      ].map(([label, phase]) => (
+        <View className="result-sheet__turn-row" key={label}>
+          <View className="result-sheet__turn-label">
+            <Text>{label}</Text>
+            {label === "下回合" && preview.repeated ? <Text>续用</Text> : null}
+          </View>
+          <Text className="result-sheet__turn-status">
+            {turnStatusText(phase, statusIds)}
+          </Text>
+          <Text className="result-sheet__turn-loss">{turnLossText(phase)}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 function settlementText(entry) {
   return [
     entry?.kind === "baron-greed" ? "贪得无厌" : entry?.name ?? entry?.label,
@@ -27,16 +80,39 @@ function settlementText(entry) {
     .join(" · ");
 }
 
-function DetailSection({ items, title, formatter = (value) => String(value) }) {
+function SettlementDetail({ entry }) {
+  if (entry?.kind === "baron-greed" && entry?.lines?.length) {
+    return (
+      <View aria-label="贪得无厌结算" className="result-sheet__baron-settlement">
+        <Text className="result-sheet__baron-title">贪得无厌</Text>
+        {entry.lines.map((line, index) => (
+          <Text className="result-sheet__baron-line" key={`baron-${index}`}>
+            {line}
+          </Text>
+        ))}
+      </View>
+    );
+  }
+  return <Text className="result-sheet__detail-row">{settlementText(entry)}</Text>;
+}
+
+function DetailSection({
+  items,
+  title,
+  formatter = (value) => String(value),
+  renderItem,
+}) {
   if (!items?.length) return null;
   return (
     <View className="result-sheet__detail-section">
       <Text className="result-sheet__detail-title">{title}</Text>
       <View className="result-sheet__detail-list">
         {items.map((item, index) => (
-          <Text className="result-sheet__detail-row" key={`${title}-${index}`}>
-            {formatter(item)}
-          </Text>
+          <View key={`${title}-${index}`}>
+            {renderItem ? renderItem(item) : (
+              <Text className="result-sheet__detail-row">{formatter(item)}</Text>
+            )}
+          </View>
         ))}
       </View>
     </View>
@@ -58,17 +134,22 @@ function NegativeStatusSettlement({ settlement }) {
         </Text>
       </View>
       {entries.map((entry) => (
-        <View className="result-sheet__status-row" key={entry.id}>
+        <View
+          className="result-sheet__status-row"
+          data-status={entry.id}
+          key={entry.id}
+        >
           <Text>{entry.label} ×{entry.stacks}</Text>
           <Text>{entry.immune ? "免疫" : `${Math.max(0, Number(entry.damage) || 0)} HP`}</Text>
         </View>
       ))}
       {Number(freeze?.stacks) > 0 ? (
-        <View className="result-sheet__status-row">
+        <View className="result-sheet__status-row" data-status="freeze">
           <Text>冻结 ×{freeze.stacks}</Text>
           <Text>斩杀线 {Math.max(0, Number(freeze.thresholdPercent) || 0)}%</Text>
         </View>
       ) : null}
+      <TurnStatusPreview current={settlement} preview={settlement.turnPreview} />
     </View>
   );
 }
@@ -323,11 +404,13 @@ export default function ResultSheet({
                   <DetailSection
                     formatter={settlementText}
                     items={result.markSettlements}
+                    renderItem={(entry) => <SettlementDetail entry={entry} />}
                     title="印记"
                   />
                   <DetailSection
                     formatter={settlementText}
                     items={result.traitSettlements}
+                    renderItem={(entry) => <SettlementDetail entry={entry} />}
                     title="特性"
                   />
                 </View>

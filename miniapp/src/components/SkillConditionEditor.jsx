@@ -16,6 +16,76 @@ function numericValue(event, minimum = 0, maximum) {
   );
 }
 
+const BURST_GROUPS = ["特性", "技能", "印记"];
+
+function BurstSourceSelector({ context, inputs, onChange }) {
+  const [open, setOpen] = useState(false);
+  const selectedCount = inputs.filter((input) =>
+    (context[input.contextKey ?? input.key] ?? input.defaultValue) === true
+  ).length;
+  return (
+    <View className="condition-editor__burst-sources">
+      <Button
+        aria-expanded={open}
+        aria-label="选择迸发来源"
+        className="condition-editor__burst-summary"
+        hoverClass="condition-editor__burst-summary--pressed"
+        onClick={() => setOpen((value) => !value)}
+      >
+        <View className="condition-editor__burst-summary-copy">
+          <Text className="condition-editor__burst-title">迸发来源</Text>
+          <Text className="condition-editor__burst-count">
+            已选 {selectedCount}/{inputs.length}
+          </Text>
+        </View>
+        <Text className="condition-editor__burst-chevron">{open ? "⌃" : "⌄"}</Text>
+      </Button>
+      {open ? (
+        <View aria-label="迸发来源" className="condition-editor__burst-panel">
+          {BURST_GROUPS.map((group) => {
+            const groupInputs = inputs.filter((input) => input.burstGroup === group);
+            if (groupInputs.length === 0) return null;
+            return (
+              <View className="condition-editor__burst-group" key={group}>
+                <Text className="condition-editor__burst-group-title">{group}</Text>
+                <View className="condition-editor__burst-list">
+                  {groupInputs.map((input) => {
+                    const key = input.contextKey ?? input.key;
+                    const active = (context[key] ?? input.defaultValue) === true;
+                    return (
+                      <Button
+                        aria-label={input.label}
+                        aria-pressed={active}
+                        className={active
+                          ? "condition-editor__burst-source condition-editor__burst-source--active"
+                          : "condition-editor__burst-source"}
+                        key={key}
+                        onClick={() => onChange({ ...context, [key]: !active })}
+                      >
+                        <View className="condition-editor__burst-source-copy">
+                          <Text className="condition-editor__burst-source-name">
+                            {input.label}
+                          </Text>
+                          <Text className="condition-editor__burst-source-description">
+                            {input.burstDescription}
+                          </Text>
+                        </View>
+                        <Text className="condition-editor__burst-source-state">
+                          {active ? "✓" : ""}
+                        </Text>
+                      </Button>
+                    );
+                  })}
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 export default function SkillConditionEditor({
   context,
   direction,
@@ -28,6 +98,8 @@ export default function SkillConditionEditor({
   skill,
 }) {
   const inputs = presentation?.inputs ?? getVisibleSkillInputs(skill, context);
+  const burstInputs = inputs.filter((input) => input.burstSource === true);
+  const regularInputs = inputs.filter((input) => input.burstSource !== true);
   const savedMode = direction.overrides?.powerOverride?.mode;
   const [powerMode, setPowerMode] = useState(
     savedMode === "panel" ? "panel" : "static",
@@ -63,10 +135,10 @@ export default function SkillConditionEditor({
           ) : null}
         </View>
       ) : null}
-      {inputs.map((input) => (
+      {regularInputs.map((input, index) => (
+        <View key={input.id ?? input.contextKey ?? input.key}>
         <ConditionField
           input={input}
-          key={input.id ?? input.contextKey ?? input.key}
           onChange={(value) =>
             onContextChange({
               ...context,
@@ -78,6 +150,14 @@ export default function SkillConditionEditor({
             input.defaultValue
           }
         />
+          {burstInputs.length > 0 && index === 0 ? (
+            <BurstSourceSelector
+              context={context}
+              inputs={burstInputs}
+              onChange={onContextChange}
+            />
+          ) : null}
+        </View>
       ))}
       <View className="condition-editor__manual">
         <View className="condition-editor__power">

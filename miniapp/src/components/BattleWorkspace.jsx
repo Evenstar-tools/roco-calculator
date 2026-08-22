@@ -21,6 +21,7 @@ import {
   createResultActionRecord,
   restoreResultAction,
 } from "../state/result-action-history.js";
+import { createUndoHistory } from "../state/undo-history.js";
 import { createCalculationView } from "../view-models/calculation.js";
 import { createConditionSummary } from "../view-models/condition-summary.js";
 import { createDirectionTraitViews } from "../view-models/traits.js";
@@ -55,6 +56,61 @@ const SIDE_DIRECTIONS = Object.freeze({
   attacker: "forward",
   defender: "reverse",
 });
+
+const DEFAULT_QUICK_UNDO_POSITION = Object.freeze({
+  bottom: 176,
+  right: 16,
+});
+
+function nestedKeys(value, prefix = "") {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return prefix ? [prefix] : [];
+  }
+  return Object.keys(value).sort().flatMap((key) => {
+    const path = prefix ? `${prefix}.${key}` : key;
+    const nested = nestedKeys(value[key], path);
+    return nested.length ? nested : [path];
+  });
+}
+
+function actionUndoGroup(action) {
+  if (!action || action.type === "mode/set" || action.type === "state/replace") {
+    return null;
+  }
+  const scope = [
+    action.type,
+    action.side,
+    action.direction,
+    action.index,
+    action.key,
+    action.polarity,
+    ...nestedKeys(action.value),
+  ].filter((value) => value !== undefined && value !== null && value !== "");
+  return scope.join(":");
+}
+
+function touchPoint(event) {
+  return event?.touches?.[0]
+    ?? event?.nativeEvent?.touches?.[0]
+    ?? event?.detail?.touches?.[0]
+    ?? null;
+}
+
+function viewportSize() {
+  try {
+    const info = Taro.getWindowInfo?.() ?? Taro.getSystemInfoSync?.();
+    return {
+      height: Number(info?.windowHeight) || 667,
+      width: Number(info?.windowWidth) || 375,
+    };
+  } catch {
+    return { height: 667, width: 375 };
+  }
+}
+
+function clamp(value, minimum, maximum) {
+  return Math.min(Math.max(value, minimum), Math.max(minimum, maximum));
+}
 
 function getSpirit(snapshot, spiritId) {
   return (snapshot.spirits ?? []).find(
@@ -115,9 +171,11 @@ export default function BattleWorkspace({
   favoriteIds = [],
   onFavoriteToggle,
   onShareChange,
+  onQuickUndoPositionChange,
   negativeStatusEnabled = false,
   petImages,
   quickUndoEnabled = false,
+  quickUndoPosition = null,
   showTypeAnalysis = false,
   snapshot,
   store,
@@ -129,7 +187,14 @@ export default function BattleWorkspace({
   const [actionFeedback, setActionFeedback] = useState(null);
   const [direction, setDirection] = useState("forward");
   const [quickUndoDepth, setQuickUndoDepth] = useState(0);
-  const quickUndoHistoryRef = useRef([]);
+  const [undoPosition, setUndoPosition] = useState(
+    quickUndoPosition ?? DEFAULT_QUICK_UNDO_POSITION,
+  );
+  const quickUndoHistoryRef = useRef(createUndoHistory({
+    coalesceMs: 400,
+    limit: 50,
+  }));
+  const quickUndoDragRef = useRef(null);
   const resultActionHistoryRef = useRef(new Map());
   const resultTriggerRef = useRef(null);
   const state = useSyncExternalStore(
@@ -234,31 +299,88 @@ export default function BattleWorkspace({
 
   useEffect(() => {
     if (!quickUndoEnabled) {
-      quickUndoHistoryRef.current = [];
+      quickUndoHistoryRef.current.clear();
       setQuickUndoDepth(0);
     }
   }, [quickUndoEnabled, store]);
 
-  function recordQuickUndo() {
+  useEffect(() => {
+    setUndoPosition(quickUndoPosition ?? DEFAULT_QUICK_UNDO_POSITION);
+  }, [quickUndoPosition]);
+
+  function recordQuickUndo(options = {}) {
     if (quickUndoEnabled) {
-      quickUndoHistoryRef.current = [
-        ...quickUndoHistoryRef.current.slice(-49),
-        store.getState(),
-      ];
-      setQuickUndoDepth(quickUndoHistoryRef.current.length);
+      quickUndoHistoryRef.current.record(store.getState(), options);
+      setQuickUndoDepth(quickUndoHistoryRef.current.size());
     }
   }
 
-  function dispatchWithUndo(action) {
-    recordQuickUndo();
+  function dispatchWithUndo(action, options = {}) {
+    if (action.type !== "mode/set") {
+      recordQuickUndo({
+        groupKey: actionUndoGroup(action),
+        ...options,
+      });
+    }
     store.dispatch(action);
   }
 
   function undoLastChange() {
-    const previous = quickUndoHistoryRef.current.pop();
+    if (quickUndoDragRef.current?.suppressClick) return;
+    const previous = quickUndoHistoryRef.current.undo();
     if (!previous) return;
-    store.dispatch({ type: "state/replace", value: previous });
-    setQuickUndoDepth(quickUndoHistoryRef.current.length);
+    store.dispatch({ type: "state/replace", value: previous.state });
+    setQuickUndoDepth(quickUndoHistoryRef.current.size());
+  }
+
+  function startQuickUndoDrag(event) {
+    const point = touchPoint(event);
+    if (!point) return;
+    quickUndoDragRef.current = {
+      moved: false,
+      startBottom: undoPosition.bottom,
+      startRight: undoPosition.right,
+      startX: point.clientX,
+      startY: point.clientY,
+      position: undoPosition,
+      suppressClick: false,
+    };
+  }
+
+  function moveQuickUndo(event) {
+    const drag = quickUndoDragRef.current;
+    const point = touchPoint(event);
+    if (!drag || !point) return;
+    const viewport = viewportSize();
+    const next = {
+      bottom: Math.round(clamp(
+        drag.startBottom - (point.clientY - drag.startY),
+        76,
+        viewport.height - 56,
+      )),
+      right: Math.round(clamp(
+        drag.startRight - (point.clientX - drag.startX),
+        8,
+        viewport.width - 56,
+      )),
+    };
+    drag.moved = drag.moved ||
+      Math.abs(point.clientX - drag.startX) > 4 ||
+      Math.abs(point.clientY - drag.startY) > 4;
+    drag.position = next;
+    setUndoPosition(next);
+  }
+
+  function finishQuickUndoDrag() {
+    const drag = quickUndoDragRef.current;
+    if (!drag) return;
+    drag.suppressClick = drag.moved;
+    if (drag.moved) {
+      onQuickUndoPositionChange?.(drag.position);
+      setTimeout(() => {
+        if (quickUndoDragRef.current === drag) drag.suppressClick = false;
+      }, 0);
+    }
   }
 
   function setSpirit(side, value) {
@@ -660,19 +782,31 @@ export default function BattleWorkspace({
 
           <View className="workspace-section workspace-section--skills">
             <ModeSwitch
-              onChange={(value) => dispatchWithUndo({ type: "mode/set", value })}
+              onChange={(value) => store.dispatch({ type: "mode/set", value })}
               value={state.mode}
             />
             {quickUndoEnabled ? (
-              <Button
-                aria-label="撤回上一步"
-                className="quick-undo"
-                disabled={quickUndoDepth === 0}
-                hoverClass="quick-undo--pressed"
-                onClick={undoLastChange}
+              <View
+                aria-label="移动撤回按钮"
+                className="quick-undo-positioner"
+                onTouchEnd={finishQuickUndoDrag}
+                onTouchMove={moveQuickUndo}
+                onTouchStart={startQuickUndoDrag}
+                style={{
+                  bottom: `${undoPosition.bottom}px`,
+                  right: `${undoPosition.right}px`,
+                }}
               >
-                ↶ 撤回
-              </Button>
+                <Button
+                  aria-label="撤回上一步"
+                  className="quick-undo"
+                  disabled={quickUndoDepth === 0}
+                  hoverClass="quick-undo--pressed"
+                  onClick={undoLastChange}
+                >
+                  ↶
+                </Button>
+              </View>
             ) : null}
             <View className="skills-grid">
               {panels.map((panel) => (

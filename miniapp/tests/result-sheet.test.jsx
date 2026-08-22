@@ -145,6 +145,68 @@ describe("result bar and sheet", () => {
     expect(settlement).toHaveTextContent("灼烧 ×3");
   });
 
+  test("distinguishes all five statuses and shows the next-turn preview", () => {
+    render(
+      <ResultSheet
+        onClose={vi.fn()}
+        open
+        view={{
+          attackerName: "烈焰兽",
+          defenderName: "潮汐兽",
+          rows: [],
+          selectedResult: {
+            hpPercent: 20,
+            negativeStatusSettlement: {
+              actualStatusDamage: 46,
+              breakdown: [
+                { damage: 8, id: "burn", label: "灼烧", stacks: 1 },
+                { damage: 6, id: "parasitism", label: "寄生", stacks: 1 },
+                { damage: 12, id: "poison", label: "中毒", stacks: 1 },
+                { damage: 20, id: "electrified", label: "引电", stacks: 2 },
+              ],
+              freeze: { stacks: 1, thresholdPercent: 5 },
+              maxHp: 400,
+              remainingHp: 274,
+              stacks: {
+                burn: 1,
+                electrified: 2,
+                freeze: 1,
+                parasitism: 1,
+                poison: 1,
+              },
+              turnPreview: {
+                focusStatusIds: ["burn", "freeze"],
+                next: {
+                  actualStatusDamage: 24,
+                  freeze: { stacks: 2, thresholdPercent: 10 },
+                  maxHp: 400,
+                  stacks: { burn: 2, freeze: 2 },
+                },
+                repeated: true,
+              },
+            },
+            remainingHp: 320,
+            skillName: "烈焰冲击",
+            totalDamage: 80,
+          },
+          status: "exact",
+        }}
+      />,
+    );
+
+    const settlement = screen.getByLabelText("负面状态结算");
+    for (const id of ["burn", "parasitism", "poison", "electrified", "freeze"]) {
+      expect(settlement.querySelector(`[data-status="${id}"]`)).not.toBeNull();
+    }
+    const preview = screen.getByLabelText("回合状态预估");
+    expect(preview).toHaveTextContent("本回合");
+    expect(preview).toHaveTextContent("下回合");
+    expect(preview).toHaveTextContent("续用");
+    expect(preview).toHaveTextContent("灼烧 ×2");
+    expect(preview).toHaveTextContent("冻结 ×2");
+    expect(preview).toHaveTextContent("6.0% · 24 HP");
+  });
+
   test("shows defensive matchups and four-skill coverage when enabled", () => {
     render(
       <ResultSheet
@@ -282,6 +344,42 @@ describe("result bar and sheet", () => {
     expect(screen.getByText("伤害计算过程")).toBeInTheDocument();
     expect(screen.getByText("每段伤害")).toBeInTheDocument();
     expect(screen.getByText("总伤害")).toBeInTheDocument();
+  });
+
+  test("keeps the Baron Greed settlement in two readable lines", () => {
+    render(
+      <ResultSheet
+        onClose={() => {}}
+        open
+        view={{
+          attackerName: "恶魔男爵",
+          defenderName: "骨龙",
+          rows: [],
+          selectedResult: {
+            remainingHp: 0,
+            skillName: "撕咬",
+            totalDamage: 648,
+            traitSettlements: [{
+              kind: "baron-greed",
+              lines: [
+                "逐击 127 / 127 / 127 / 127 / 140 · 吸血 198",
+                "溢出回复 24 · 本次总加攻 +10%",
+              ],
+            }],
+          },
+          status: "exact",
+        }}
+      />,
+    );
+
+    const settlement = screen.getByLabelText("贪得无厌结算");
+    expect(within(settlement).getByText("贪得无厌")).toBeInTheDocument();
+    expect(within(settlement).getByText(
+      "逐击 127 / 127 / 127 / 127 / 140 · 吸血 198",
+    )).toBeInTheDocument();
+    expect(within(settlement).getByText(
+      "溢出回复 24 · 本次总加攻 +10%",
+    )).toBeInTheDocument();
   });
 
   test("selects the bloodline magic result without closing details", () => {

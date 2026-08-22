@@ -13,6 +13,8 @@ export const MINIAPP_NEGATIVE_STATUS_ENABLED_KEY =
   "rock-calculator.miniapp.negative-status-enabled.v1";
 export const MINIAPP_QUICK_UNDO_ENABLED_KEY =
   "rock-calculator.miniapp.quick-undo-enabled.v1";
+export const MINIAPP_QUICK_UNDO_POSITION_KEY =
+  "rock-calculator.miniapp.quick-undo-position.v1";
 export const MINIAPP_TEAM_ANALYSIS_ENABLED_KEY =
   "rock-calculator.miniapp.team-analysis-enabled.v1";
 export const MINIAPP_TEAM_ANALYSIS_MEMBERS_KEY =
@@ -522,6 +524,27 @@ export function createPersistence({ storage }) {
     }
   }
 
+  function getQuickUndoPosition() {
+    try {
+      const value = parseStoredValue(
+        storage.get(MINIAPP_QUICK_UNDO_POSITION_KEY),
+      );
+      if (
+        !isRecord(value) ||
+        !Number.isFinite(value.bottom) ||
+        !Number.isFinite(value.right)
+      ) {
+        return null;
+      }
+      return {
+        bottom: Math.max(0, Math.round(value.bottom)),
+        right: Math.max(0, Math.round(value.right)),
+      };
+    } catch {
+      return null;
+    }
+  }
+
   function getTeamAnalysisEnabled() {
     try {
       return storage.get(MINIAPP_TEAM_ANALYSIS_ENABLED_KEY) === true;
@@ -608,6 +631,8 @@ export function createPersistence({ storage }) {
 
     getQuickUndoEnabled,
 
+    getQuickUndoPosition,
+
     getTeamAnalysisEnabled,
 
     getTeamAnalysisMembers,
@@ -647,6 +672,22 @@ export function createPersistence({ storage }) {
       }
       storage.set(MINIAPP_QUICK_UNDO_ENABLED_KEY, enabled);
       return enabled;
+    },
+
+    setQuickUndoPosition(position) {
+      if (
+        !isRecord(position) ||
+        !Number.isFinite(position.bottom) ||
+        !Number.isFinite(position.right)
+      ) {
+        throw new TypeError("快捷撤回位置必须包含有效坐标");
+      }
+      const normalized = {
+        bottom: Math.max(0, Math.round(position.bottom)),
+        right: Math.max(0, Math.round(position.right)),
+      };
+      storage.set(MINIAPP_QUICK_UNDO_POSITION_KEY, normalized);
+      return normalized;
     },
 
     setTeamAnalysisEnabled(enabled) {

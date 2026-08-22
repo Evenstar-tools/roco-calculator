@@ -341,6 +341,9 @@ async function verifyPhone() {
     /配置\s*\d+|配置库|JSON/u,
   );
   await page.getByLabel("导入PVP热门配置").waitFor({ state: "visible" });
+  await page.getByLabel("导入PVP热门配置").click();
+  await page.getByText("已导入 193 只，选择时自动应用", { exact: true })
+    .waitFor({ state: "visible" });
   const memorySwitch = page.getByRole("switch", { name: "配置记忆" });
   assert.equal(await memorySwitch.getAttribute("aria-checked"), "true");
   await memorySwitch.click();
@@ -353,6 +356,16 @@ async function verifyPhone() {
   assert.equal(await teamAnalysisSwitch.getAttribute("aria-checked"), "false");
   await teamAnalysisSwitch.click();
   assert.equal(await teamAnalysisSwitch.getAttribute("aria-checked"), "true");
+  const negativeStatusSwitch = page.getByRole("switch", {
+    name: "负面状态结算",
+  });
+  assert.equal(await negativeStatusSwitch.getAttribute("aria-checked"), "false");
+  await negativeStatusSwitch.click();
+  assert.equal(await negativeStatusSwitch.getAttribute("aria-checked"), "true");
+  const quickUndoSwitch = page.getByRole("switch", { name: "快捷撤回" });
+  assert.equal(await quickUndoSwitch.getAttribute("aria-checked"), "false");
+  await quickUndoSwitch.click();
+  assert.equal(await quickUndoSwitch.getAttribute("aria-checked"), "true");
   await page.getByLabel("重置本页").click();
   await page.getByText("确认重置", { exact: true }).waitFor();
   await page.getByText("取消", { exact: true }).click();
@@ -473,6 +486,13 @@ async function verifyPhone() {
   await page.locator(".skill-picker__close").click();
   await page.locator(".skill-picker__sheet").waitFor({ state: "hidden" });
 
+  await page.locator(".skill-picker__trigger").first().click();
+  await page.locator(".skill-picker__sheet").waitFor({ state: "visible" });
+  await page.getByLabel(/筛选全部技能，共 \d+ 项/u).click();
+  await fillTaroInput(page.locator(".skill-picker__search"), "猛烈撞击");
+  await page.locator(".skill-picker__option").first().click();
+  await page.locator(".skill-picker__sheet").waitFor({ state: "hidden" });
+
   setStep("phone battle conditions");
   await page.locator(".conditions-ribbon__main").click();
   await page.locator(".conditions-sheet").waitFor({ state: "visible" });
@@ -490,6 +510,11 @@ async function verifyPhone() {
   setStep("phone battle conditions weather");
   await page.getByLabel("雨天", { exact: true }).click();
   await fillTaroInput(page.getByLabel("雨天回合"), "2");
+  for (const label of ["灼烧", "冻结", "寄生", "中毒"]) {
+    await page.getByLabel(`防守方${label}层数增加`).click();
+  }
+  await page.getByLabel("防守方引电层数增加").click();
+  await page.getByLabel("防守方引电层数增加").click();
   await screenshot(page, "phone-conditions-sheet");
   await page.getByLabel("关闭战斗条件").click();
   await page.locator(".conditions-sheet").waitFor({ state: "hidden" });
@@ -510,12 +535,97 @@ async function verifyPhone() {
     await row.click();
     assert.equal(await row.getAttribute("aria-pressed"), "true");
   }
-  await screenshot(page, "phone-result-sheet");
+  const statusSettlement = page.getByLabel("负面状态结算");
+  await screenshot(page, "phone-negative-status-result");
+  await statusSettlement.waitFor({ state: "visible" });
+  await page.getByLabel("回合状态预估").waitFor({ state: "visible" });
+  const statusColors = await statusSettlement
+    .locator(".result-sheet__status-row[data-status]")
+    .evaluateAll((rows) => rows.map((row) => getComputedStyle(row).color));
+  assert.equal(statusColors.length, 5, "phone negative status rows are incomplete");
+  assert.equal(
+    new Set(statusColors).size,
+    5,
+    "phone negative statuses lost their distinct colors",
+  );
   await page.getByLabel("关闭伤害结果").click();
   await page.locator(".result-sheet").waitFor({ state: "hidden" });
 
-  setStep("phone return to single mode");
+  setStep("phone baron settlement");
   await page.getByLabel("单技能模式").click();
+  await page.getByLabel("攻击方宠物摘要").click();
+  await fillTaroInput(page.getByLabel("搜索攻击方宠物"), "恶魔男爵");
+  await page.locator(".spirit-picker__results").waitFor({ state: "visible" });
+  await page.getByLabel("选择恶魔男爵", { exact: true }).click();
+  await page.locator(".skill-picker__trigger").first().click();
+  await page.locator(".skill-picker__sheet").waitFor({ state: "visible" });
+  await fillTaroInput(page.locator(".skill-picker__search"), "撕咬");
+  await page.locator(".skill-picker__option").first().click();
+  await page.locator(".result-bar__action").click();
+  await page.locator(".result-sheet").waitFor({ state: "visible" });
+  const baronSettlement = page.getByLabel("贪得无厌结算");
+  await baronSettlement.waitFor({ state: "visible" });
+  assert.ok(
+    await baronSettlement.locator(".result-sheet__baron-line").count() >= 2,
+    "phone Baron settlement did not render as separate lines",
+  );
+  await assertSurfaceInsideViewport(page, ".result-sheet", "phone Baron result");
+  await screenshot(page, "phone-baron-settlement");
+  await page.getByLabel("关闭伤害结果").click();
+
+  setStep("phone quick undo");
+  const hpNatureBeforeUndo = await page.getByLabel("攻击方生命正面性格")
+    .getAttribute("aria-pressed");
+  await page.getByLabel("攻击方生命正面性格").click();
+  assert.notEqual(
+    await page.getByLabel("攻击方生命正面性格").getAttribute("aria-pressed"),
+    hpNatureBeforeUndo,
+    "phone undo setup did not change the selected nature",
+  );
+  await page.getByLabel("撤回上一步").click();
+  assert.equal(
+    await page.getByLabel("攻击方生命正面性格").getAttribute("aria-pressed"),
+    hpNatureBeforeUndo,
+    "phone quick undo did not restore the previous nature",
+  );
+  await screenshot(page, "phone-quick-undo");
+
+  setStep("phone thunderstorm burst sources");
+  await page.getByLabel("攻击方宠物摘要").click();
+  await fillTaroInput(page.getByLabel("搜索攻击方宠物"), "酷拉");
+  await page.locator(".spirit-picker__results").waitFor({ state: "visible" });
+  await page.getByLabel("选择酷拉", { exact: true }).click();
+  await page.locator(".skill-picker__trigger").first().click();
+  await page.locator(".skill-picker__sheet").waitFor({ state: "visible" });
+  await fillTaroInput(page.locator(".skill-picker__search"), "雷暴");
+  await page.locator(".skill-picker__option").first().click();
+  const burstSummary = page.getByLabel("选择迸发来源");
+  await burstSummary.click();
+  const burstPanel = page.getByLabel("迸发来源", { exact: true });
+  await burstPanel.waitFor({ state: "visible" });
+  for (const group of ["特性", "技能", "印记"]) {
+    await burstPanel.getByText(group, { exact: true }).waitFor({ state: "visible" });
+  }
+  assert.equal(
+    await burstPanel.locator(".condition-editor__burst-source").count(),
+    10,
+    "phone thunderstorm burst source count is incorrect",
+  );
+  await burstPanel.getByLabel("电流刺激").click();
+  await burstPanel.getByLabel("电弧").click();
+  assert.equal(
+    await burstPanel.getByLabel("电流刺激").getAttribute("aria-pressed"),
+    "true",
+  );
+  assert.equal(
+    await burstPanel.getByLabel("电弧").getAttribute("aria-pressed"),
+    "true",
+  );
+  await screenshot(page, "phone-thunderstorm-burst-sources");
+  await burstSummary.click();
+  assert.match(await burstSummary.innerText(), /已选\s*2\/10/u);
+
+  setStep("phone return to single mode");
   assert.equal(await page.getByLabel("单技能模式").getAttribute("aria-pressed"), "true");
   setStep("phone reset current page");
   await page.getByLabel("四技能模式").click();
@@ -593,11 +703,47 @@ async function verifyIpad() {
   await page.close();
 }
 
+async function verifyResponsiveSmoke() {
+  const viewports = [
+    { height: 700, label: "phone-320", width: 320 },
+    { height: 812, label: "phone-375", width: 375 },
+    { height: 932, label: "phone-430", width: 430 },
+    { height: 1024, label: "ipad-768", width: 768 },
+    { height: 1194, label: "ipad-834", width: 834 },
+    { height: 1366, label: "ipad-1024", width: 1024 },
+  ];
+  for (const viewport of viewports) {
+    const { errors, page, setStep } = await openPage(viewport);
+    setStep(`${viewport.label} main`);
+    await assertViewportSafe(page, `${viewport.label} main`);
+    await page.getByLabel("打开设置").click();
+    await page.locator(".settings-sheet").waitFor({ state: "visible" });
+    await assertSurfaceInsideViewport(
+      page,
+      ".settings-sheet",
+      `${viewport.label} settings`,
+    );
+    await page.getByLabel("关闭设置", { exact: true }).click();
+    await page.locator(".result-bar__action").click();
+    await page.locator(".result-sheet").waitFor({ state: "visible" });
+    await assertSurfaceInsideViewport(
+      page,
+      ".result-sheet",
+      `${viewport.label} result`,
+    );
+    await screenshot(page, `${viewport.label}-result`);
+    assert.deepEqual(errors, [], `${viewport.label} browser console errors`);
+    await page.close();
+  }
+}
+
 try {
   await verifyPhone();
   console.log("PASS phone interaction matrix");
   await verifyIpad();
   console.log("PASS iPad interaction matrix");
+  await verifyResponsiveSmoke();
+  console.log("PASS responsive interaction smoke");
 } finally {
   await browser.close();
 }

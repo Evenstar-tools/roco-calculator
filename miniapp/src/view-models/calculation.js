@@ -6,6 +6,7 @@ import {
 } from "../shared/domain/type-chart.js";
 import { getSnapshotIndexes } from "../shared/domain/snapshot-indexes.js";
 import { resolveWingExtensionSkill } from "../shared/domain/wing-extension.js";
+import { buildCalculatorViewModel } from "../shared/domain/calculator-view-model.js";
 import { createCombatantView } from "./combatant.js";
 
 function createTypeAnalysis(snapshot, side, subjectName) {
@@ -152,6 +153,18 @@ function toResultRow(result, defenderHp, defenderMaxHp) {
   };
 }
 
+function withNegativeStatusResult(result, sharedResult) {
+  if (!result || !sharedResult) return result;
+  return {
+    ...result,
+    negativeStatusApplications: sharedResult.negativeStatusApplications,
+    negativeStatusCanApply: sharedResult.negativeStatusCanApply,
+    negativeStatusSettlement: sharedResult.negativeStatusSettlement,
+    negativeStatusUseCount: sharedResult.negativeStatusUseCount,
+    statusOnly: sharedResult.statusOnly === true,
+  };
+}
+
 export function selectDamageResult({
   bloodlineResult,
   rows,
@@ -205,13 +218,23 @@ export function createCalculationView(snapshot, state, direction) {
   const typeAnalysis = createTypeAnalysis(snapshot, attackerSide, attackerName);
 
   try {
-    const calculation = calculateMatchup(
+    const combatState = buildCombatState(state, snapshot);
+    const sharedResult = buildCalculatorViewModel({
+      activeDirection: normalizedDirection,
       snapshot,
-      buildCombatState(state, snapshot),
-    );
+      state: combatState,
+    }).result;
+    const calculation = calculateMatchup(snapshot, combatState);
     const directionResult = calculation[normalizedDirection];
-    const rows = directionResult.results.map((result) =>
-      toResultRow(result, defenderHp, defenderMaxHp),
+    const rows = directionResult.results.map((result, index) =>
+      toResultRow(
+        withNegativeStatusResult(
+          result,
+          sharedResult?.skillResults?.[index],
+        ),
+        defenderHp,
+        defenderMaxHp,
+      ),
     );
     const traitResult = directionResult.traitResult
       ? toResultRow(directionResult.traitResult, defenderHp, defenderMaxHp)
@@ -236,7 +259,7 @@ export function createCalculationView(snapshot, state, direction) {
         : 0;
     const {
       selectedDamageSource,
-      selectedResult: selectedRow,
+      selectedResult,
     } = selectDamageResult({
       bloodlineResult,
       rows,
@@ -245,6 +268,10 @@ export function createCalculationView(snapshot, state, direction) {
       selectedIndex,
       traitResult,
     });
+    const selectedRow = withNegativeStatusResult(
+      selectedResult,
+      sharedResult?.selectedResult,
+    );
 
     if (selectedRow?.status !== "exact") {
       return {
