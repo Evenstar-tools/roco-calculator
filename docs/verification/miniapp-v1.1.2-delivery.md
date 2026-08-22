@@ -8,6 +8,8 @@
 - 微信开发版本：已上传，包体 `1387373` 字节
 - 交付 ZIP：`1756125` 字节
 - ZIP SHA256：`9AA0D9DF2B57C7AAE08415099F2433E3FAB9C5511B5C0C8383E7539EA50E7DD3`
+- 飞书链接：`https://my.feishu.cn/file/DYTjbgyYeo2qvXx8tZRcw6KZnqd`
+- 飞书消息：`om_x100b67a025fbd0a0b03ff5dee9c49f1`，已回读核验
 
 ## 主要改动
 
