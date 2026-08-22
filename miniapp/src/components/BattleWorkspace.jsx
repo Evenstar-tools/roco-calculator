@@ -44,6 +44,7 @@ import SingleSkillResultRow from "./SingleSkillResultRow.jsx";
 import SkillConditionEditor from "./SkillConditionEditor.jsx";
 import SkillSlots from "./SkillSlots.jsx";
 import TraitConditionEditor from "./TraitConditionEditor.jsx";
+import TeamTypeAnalysisSheet from "./TeamTypeAnalysisSheet.jsx";
 
 const SIDE_LABELS = Object.freeze({
   attacker: "攻击方",
@@ -120,6 +121,9 @@ export default function BattleWorkspace({
   showTypeAnalysis = false,
   snapshot,
   store,
+  teamAnalysisEnabled = false,
+  teamAnalysisMembers = [],
+  onTeamAnalysisMembersChange,
 }) {
   const [activeLayer, setActiveLayer] = useState(null);
   const [actionFeedback, setActionFeedback] = useState(null);
@@ -635,6 +639,25 @@ export default function BattleWorkspace({
             ))}
           </View>
 
+          {teamAnalysisEnabled ? (
+            <Button
+              aria-label="打开队伍防守面分析"
+              className="team-analysis-entry"
+              hoverClass="team-analysis-entry--pressed"
+              onClick={() => setActiveLayer("team-analysis")}
+            >
+              <View className="team-analysis-entry__copy">
+                <Text className="team-analysis-entry__title">队伍防守面</Text>
+                <Text className="team-analysis-entry__summary">
+                  已配置 {teamAnalysisMembers.filter(Boolean).length}/6
+                </Text>
+              </View>
+              <Text aria-hidden="true" className="team-analysis-entry__chevron">
+                ›
+              </Text>
+            </Button>
+          ) : null}
+
           <View className="workspace-section workspace-section--skills">
             <ModeSwitch
               onChange={(value) => dispatchWithUndo({ type: "mode/set", value })}
@@ -863,6 +886,15 @@ export default function BattleWorkspace({
           snapshot={snapshot}
         />
       ) : null}
+
+      <TeamTypeAnalysisSheet
+        members={teamAnalysisMembers}
+        onClose={() => setActiveLayer(null)}
+        onMembersChange={onTeamAnalysisMembersChange}
+        open={activeLayer === "team-analysis"}
+        petImages={petImages}
+        snapshot={snapshot}
+      />
 
       <ResultSheet
         actions={resultActions}

@@ -17,7 +17,7 @@ function readJson(relativePath) {
 describe("desktop v1.6.2 miniapp parity", () => {
   test("pins the miniapp to web core 1.6.2", () => {
     expect(readJson("package.json").version).toBe("1.6.2");
-    expect(readJson("miniapp/package.json").version).toBe("1.1.0");
+    expect(readJson("miniapp/package.json").version).toBe("1.1.1");
   });
 
   test.each([
@@ -34,5 +34,19 @@ describe("desktop v1.6.2 miniapp parity", () => {
     const state = createInitialState({ meta: {}, skills: [], spirits: [] });
 
     expect(state.calculationOptions.includeNegativeStatusSettlement).toBe(false);
+  });
+
+  test("shares the desktop team defensive analysis domain with miniapp", async () => {
+    const desktop = await import("../../src/domain/team-type-analysis.js");
+    const miniapp = await import(
+      "../../miniapp/src/shared/domain/team-type-analysis.js"
+    );
+    const input = {
+      members: [{ spiritId: "grass" }],
+      spirits: [{ id: "grass", name: "草系成员", types: ["草"] }],
+    };
+
+    expect(miniapp.analyzeTeamDefensiveTypes(input))
+      .toEqual(desktop.analyzeTeamDefensiveTypes(input));
   });
 });

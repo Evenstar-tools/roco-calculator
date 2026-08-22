@@ -38,6 +38,7 @@ const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
     "src/domain/trait-hit-count.js",
     "src/domain/trait-damage.js",
     "src/domain/traits.js",
+    "src/domain/team-type-analysis.js",
     "src/domain/trigger-controls.js",
     "src/domain/type-chart.js",
     "src/domain/wing-extension.js",
@@ -51,8 +52,7 @@ const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
     "src/state/trait-values.js"
   ],
   "webOnly": [
-    "src/domain/element-colors.js",
-    "src/domain/team-type-analysis.js"
+    "src/domain/element-colors.js"
   ]
 }
 SHARED_SOURCE_MANIFEST_END */`;

@@ -21,12 +21,12 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
   });
 
-  test("publishes miniapp 1.1.0 against web core 1.6.2", () => {
-    expect(MINIAPP_VERSION).toBe("1.1.0");
+  test("publishes miniapp 1.1.1 against web core 1.6.2", () => {
+    expect(MINIAPP_VERSION).toBe("1.1.1");
     expect(MINIAPP_UPDATE_DATE).toBe("2026-08-22");
     expect(WEB_CORE_VERSION).toBe("1.6.2");
     expect(MINIAPP_RELEASE_LABEL).toBe(
-      "小程序 v1.1.0 · 网页核心 v1.6.2",
+      "小程序 v1.1.1 · 网页核心 v1.6.2",
     );
     render(<AppHeader dataVersion="data-v1" />);
     expect(screen.getByText(MINIAPP_RELEASE_LABEL)).toBeInTheDocument();
@@ -43,6 +43,7 @@ describe("miniapp shell", () => {
     const onNegativeStatusChange = vi.fn();
     const onQuickUndoChange = vi.fn();
     const onTypeAnalysisChange = vi.fn();
+    const onTeamAnalysisChange = vi.fn();
     render(
       <AppHeader
         commonConfigCount={0}
@@ -54,6 +55,8 @@ describe("miniapp shell", () => {
         onQuickUndoChange={onQuickUndoChange}
         onReset={vi.fn()}
         onTypeAnalysisChange={onTypeAnalysisChange}
+        onTeamAnalysisChange={onTeamAnalysisChange}
+        teamAnalysisEnabled={false}
         typeAnalysisEnabled
       />,
     );
@@ -74,6 +77,12 @@ describe("miniapp shell", () => {
     expect(typeAnalysisSwitch).toHaveAttribute("aria-checked", "true");
     fireEvent.click(typeAnalysisSwitch);
     expect(onTypeAnalysisChange).toHaveBeenCalledWith(false);
+    const teamAnalysisSwitch = screen.getByRole("switch", {
+      name: "队伍防守面分析",
+    });
+    expect(teamAnalysisSwitch).toHaveAttribute("aria-checked", "false");
+    fireEvent.click(teamAnalysisSwitch);
+    expect(onTeamAnalysisChange).toHaveBeenCalledWith(true);
     const negativeStatusSwitch = screen.getByRole("switch", {
       name: "负面状态结算",
     });
@@ -98,7 +107,7 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
     expect(screen.getByText(/1215583051/u)).toBeInTheDocument();
     expect(screen.getByText("当前版本")).toBeInTheDocument();
-    expect(screen.getByText("v1.1.0 · 更新于 2026-08-22"))
+    expect(screen.getByText("v1.1.1 · 更新于 2026-08-22"))
       .toBeInTheDocument();
   });
 

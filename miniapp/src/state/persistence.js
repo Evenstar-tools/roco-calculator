@@ -13,6 +13,10 @@ export const MINIAPP_NEGATIVE_STATUS_ENABLED_KEY =
   "rock-calculator.miniapp.negative-status-enabled.v1";
 export const MINIAPP_QUICK_UNDO_ENABLED_KEY =
   "rock-calculator.miniapp.quick-undo-enabled.v1";
+export const MINIAPP_TEAM_ANALYSIS_ENABLED_KEY =
+  "rock-calculator.miniapp.team-analysis-enabled.v1";
+export const MINIAPP_TEAM_ANALYSIS_MEMBERS_KEY =
+  "rock-calculator.miniapp.team-analysis-members.v1";
 export const MINIAPP_PERSISTENCE_SCHEMA_VERSION = 2;
 
 const SKILL_NUMBER_KEYS = ["basePowerOverride", "fixedPowerAdd"];
@@ -57,6 +61,18 @@ function parseStoredValue(value) {
     return JSON.parse(value);
   }
   return value;
+}
+
+function sanitizeTeamAnalysisMembers(value, snapshot) {
+  const spiritIds = new Set(
+    (snapshot?.spirits ?? []).map((spirit) => spirit.id),
+  );
+  return Array.from({ length: 6 }, (_, index) => {
+    const spiritId = Array.isArray(value) ? value[index] : null;
+    return typeof spiritId === "string" && spiritIds.has(spiritId)
+      ? spiritId
+      : null;
+  });
 }
 
 function getSkillId(entry) {
@@ -506,6 +522,25 @@ export function createPersistence({ storage }) {
     }
   }
 
+  function getTeamAnalysisEnabled() {
+    try {
+      return storage.get(MINIAPP_TEAM_ANALYSIS_ENABLED_KEY) === true;
+    } catch {
+      return false;
+    }
+  }
+
+  function getTeamAnalysisMembers(snapshot) {
+    try {
+      return sanitizeTeamAnalysisMembers(
+        parseStoredValue(storage.get(MINIAPP_TEAM_ANALYSIS_MEMBERS_KEY)),
+        snapshot,
+      );
+    } catch {
+      return sanitizeTeamAnalysisMembers([], snapshot);
+    }
+  }
+
   return {
     clear() {
       storage.remove(MINIAPP_STATE_KEY);
@@ -573,6 +608,10 @@ export function createPersistence({ storage }) {
 
     getQuickUndoEnabled,
 
+    getTeamAnalysisEnabled,
+
+    getTeamAnalysisMembers,
+
     getTypeAnalysisEnabled,
 
     setMemoryEnabled(enabled) {
@@ -608,6 +647,20 @@ export function createPersistence({ storage }) {
       }
       storage.set(MINIAPP_QUICK_UNDO_ENABLED_KEY, enabled);
       return enabled;
+    },
+
+    setTeamAnalysisEnabled(enabled) {
+      if (typeof enabled !== "boolean") {
+        throw new TypeError("队伍防守面分析开关必须是布尔值");
+      }
+      storage.set(MINIAPP_TEAM_ANALYSIS_ENABLED_KEY, enabled);
+      return enabled;
+    },
+
+    setTeamAnalysisMembers(members, snapshot) {
+      const sanitized = sanitizeTeamAnalysisMembers(members, snapshot);
+      storage.set(MINIAPP_TEAM_ANALYSIS_MEMBERS_KEY, sanitized);
+      return sanitized;
     },
   };
 }

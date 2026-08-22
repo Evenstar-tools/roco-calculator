@@ -326,7 +326,8 @@
   .conditions-sheet,
   .result-sheet,
   .skill-picker__sheet,
-  .settings-sheet {
+  .settings-sheet,
+  .team-analysis {
     max-height: 92vh;
   }
 
@@ -387,6 +388,14 @@
 }
 
 @media (max-width: 359px) {
+  .team-analysis__slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .team-analysis__counts {
+    gap: 5px;
+  }
+
   .result-actions__control-slot--boolean {
     grid-column: 1 / -1;
   }
@@ -469,7 +478,8 @@
 }
 
 @media (min-width: 768px) {
-  .settings-sheet__overlay {
+  .settings-sheet__overlay,
+  .team-analysis__overlay {
     align-items: center;
     padding: 24px;
   }
@@ -477,6 +487,12 @@
   .settings-sheet {
     max-width: 480px;
     margin: 0;
+    border-bottom: 1px solid var(--border-neutral);
+    border-radius: 18px;
+  }
+
+  .team-analysis {
+    margin-bottom: 0;
     border-bottom: 1px solid var(--border-neutral);
     border-radius: 18px;
   }

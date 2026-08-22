@@ -5,6 +5,8 @@ import {
   MINIAPP_PERSISTENCE_SCHEMA_VERSION,
   MINIAPP_QUICK_UNDO_ENABLED_KEY,
   MINIAPP_STATE_KEY,
+  MINIAPP_TEAM_ANALYSIS_ENABLED_KEY,
+  MINIAPP_TEAM_ANALYSIS_MEMBERS_KEY,
   createPersistence,
 } from "../src/state/persistence.js";
 import { getSkillEffectInputs } from "../src/shared/domain/skill-effects.js";
@@ -131,8 +133,10 @@ describe("createPersistence", () => {
 
     expect(persistence.getNegativeStatusEnabled()).toBe(false);
     expect(persistence.getQuickUndoEnabled()).toBe(false);
+    expect(persistence.getTeamAnalysisEnabled()).toBe(false);
     persistence.setNegativeStatusEnabled(true);
     persistence.setQuickUndoEnabled(true);
+    persistence.setTeamAnalysisEnabled(true);
     expect(storage.set).toHaveBeenCalledWith(
       MINIAPP_NEGATIVE_STATUS_ENABLED_KEY,
       true,
@@ -141,6 +145,37 @@ describe("createPersistence", () => {
       MINIAPP_QUICK_UNDO_ENABLED_KEY,
       true,
     );
+    expect(storage.set).toHaveBeenCalledWith(
+      MINIAPP_TEAM_ANALYSIS_ENABLED_KEY,
+      true,
+    );
+  });
+
+  test("stores at most six valid team analysis members", () => {
+    const snapshot = createSnapshot();
+    const storage = createMemoryStorage();
+    const persistence = createPersistence({ storage });
+
+    expect(persistence.getTeamAnalysisMembers(snapshot)).toEqual([
+      null, null, null, null, null, null,
+    ]);
+    persistence.setTeamAnalysisMembers([
+      "spirit-a",
+      "removed-spirit",
+      "spirit-b",
+      "spirit-a",
+      "spirit-b",
+      "spirit-a",
+      "spirit-b",
+    ], snapshot);
+
+    expect(storage.set).toHaveBeenCalledWith(
+      MINIAPP_TEAM_ANALYSIS_MEMBERS_KEY,
+      ["spirit-a", null, "spirit-b", "spirit-a", "spirit-b", "spirit-a"],
+    );
+    expect(persistence.getTeamAnalysisMembers(snapshot)).toEqual([
+      "spirit-a", null, "spirit-b", "spirit-a", "spirit-b", "spirit-a",
+    ]);
   });
 
   test("stores the type analysis display setting independently", () => {

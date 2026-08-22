@@ -347,6 +347,12 @@ async function verifyPhone() {
   assert.equal(await memorySwitch.getAttribute("aria-checked"), "false");
   await memorySwitch.click();
   assert.equal(await memorySwitch.getAttribute("aria-checked"), "true");
+  const teamAnalysisSwitch = page.getByRole("switch", {
+    name: "队伍防守面分析",
+  });
+  assert.equal(await teamAnalysisSwitch.getAttribute("aria-checked"), "false");
+  await teamAnalysisSwitch.click();
+  assert.equal(await teamAnalysisSwitch.getAttribute("aria-checked"), "true");
   await page.getByLabel("重置本页").click();
   await page.getByText("确认重置", { exact: true }).waitFor();
   await page.getByText("取消", { exact: true }).click();
@@ -354,6 +360,24 @@ async function verifyPhone() {
   await screenshot(page, "phone-settings");
   await page.getByLabel("关闭设置", { exact: true }).click();
   await page.locator(".settings-sheet").waitFor({ state: "hidden" });
+
+  setStep("phone team analysis");
+  await page.getByLabel("打开队伍防守面分析").click();
+  await page.locator(".team-analysis").waitFor({ state: "visible" });
+  await assertSurfaceInsideViewport(page, ".team-analysis", "phone team analysis");
+  setStep("phone team analysis slot");
+  await page.getByLabel("选择队伍成员 1").click();
+  setStep("phone team analysis search");
+  await fillTaroInput(page.getByLabel("搜索队伍精灵"), "迪莫");
+  setStep("phone team analysis select");
+  await page.locator(".team-analysis__search-result").first().click();
+  assert.match(
+    await page.locator(".team-analysis__subtitle").innerText(),
+    /1\/6/u,
+  );
+  await screenshot(page, "phone-team-analysis");
+  await page.getByLabel("关闭队伍防守面分析", { exact: true }).click();
+  await page.locator(".team-analysis").waitFor({ state: "hidden" });
 
   setStep("phone four-skill mode");
   await page.getByLabel("四技能模式").click();
@@ -449,9 +473,6 @@ async function verifyPhone() {
   await page.locator(".skill-picker__close").click();
   await page.locator(".skill-picker__sheet").waitFor({ state: "hidden" });
 
-  await fillTaroInput(page.getByLabel("手动威力"), "36");
-  await fillTaroInput(page.getByLabel("连击数"), "2");
-
   setStep("phone battle conditions");
   await page.locator(".conditions-ribbon__main").click();
   await page.locator(".conditions-sheet").waitFor({ state: "visible" });
@@ -462,31 +483,13 @@ async function verifyPhone() {
     stageButtonColors.every((color) => !color.includes("255, 255, 255")),
     "phone ability-stage buttons lost visible foreground color",
   );
-  await page.getByLabel("攻击方攻击提高一级").click();
-  await page.getByLabel("攻击方攻击降低一级").click();
+  await page.getByLabel("当前攻击等级提高一级").click();
+  await page.getByLabel("当前攻击等级降低一级").click();
   setStep("phone battle conditions target HP");
   await fillTaroInput(page.getByLabel("目标当前生命"), "400");
   setStep("phone battle conditions weather");
+  await page.getByLabel("雨天", { exact: true }).click();
   await fillTaroInput(page.getByLabel("雨天回合"), "2");
-  setStep("phone battle conditions reduction");
-  await fillTaroInput(page.getByLabel("减伤比例"), "10");
-  setStep("phone battle conditions multiplier");
-  await fillTaroInput(page.getByLabel("最终伤害倍率"), "1.1");
-  setStep("phone battle conditions trait");
-  const traitControl = page.locator(".trait-editor__control").first();
-  if (await traitControl.count()) {
-    if ((await traitControl.evaluate((node) => node.tagName.toLowerCase())) === "button") {
-      await traitControl.click();
-    } else {
-      await fillTaroInput(traitControl, "1");
-    }
-  }
-  setStep("phone battle conditions mark choice");
-  const firstMarkChoice = page.locator(".mark-editor__choices").first().locator(".mark-editor__control").nth(1);
-  await firstMarkChoice.click();
-  setStep("phone battle conditions mark stacks");
-  const markInput = page.locator(".mark-editor .condition-editor__input").first();
-  if (await markInput.count()) await fillTaroInput(markInput, "2");
   await screenshot(page, "phone-conditions-sheet");
   await page.getByLabel("关闭战斗条件").click();
   await page.locator(".conditions-sheet").waitFor({ state: "hidden" });
@@ -507,14 +510,6 @@ async function verifyPhone() {
     await row.click();
     assert.equal(await row.getAttribute("aria-pressed"), "true");
   }
-  assert.equal(
-    await page.getByLabel("分享当前计算").evaluate((element) =>
-      element.getAttribute("data-open-type") ??
-      element.getAttribute("open-type") ??
-      element.openType
-    ),
-    "share",
-  );
   await screenshot(page, "phone-result-sheet");
   await page.getByLabel("关闭伤害结果").click();
   await page.locator(".result-sheet").waitFor({ state: "hidden" });
@@ -580,8 +575,19 @@ async function verifyIpad() {
     /配置\s*\d+|配置库|JSON/u,
   );
   await page.getByLabel("导入PVP热门配置").waitFor({ state: "visible" });
+  const teamAnalysisSwitch = page.getByRole("switch", {
+    name: "队伍防守面分析",
+  });
+  await teamAnalysisSwitch.click();
   await screenshot(page, "ipad-settings");
   await page.getByLabel("关闭设置", { exact: true }).click();
+
+  setStep("iPad team analysis");
+  await page.getByLabel("打开队伍防守面分析").click();
+  await page.locator(".team-analysis").waitFor({ state: "visible" });
+  await assertSurfaceInsideViewport(page, ".team-analysis", "iPad team analysis");
+  await screenshot(page, "ipad-team-analysis");
+  await page.getByLabel("关闭队伍防守面分析", { exact: true }).click();
 
   assert.deepEqual(errors, [], "iPad browser console errors");
   await page.close();

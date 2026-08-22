@@ -16,8 +16,10 @@ export default function AppHeader({
   onNegativeStatusChange,
   onQuickUndoChange,
   onReset,
+  onTeamAnalysisChange,
   onTypeAnalysisChange,
   quickUndoEnabled = false,
+  teamAnalysisEnabled = false,
   typeAnalysisEnabled = false,
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -101,6 +103,29 @@ export default function AppHeader({
                     : "settings-sheet__switch"}
                   hoverClass="settings-sheet__switch--pressed"
                   onClick={() => onMemoryChange?.(!memoryEnabled)}
+                  role="switch"
+                >
+                  <View className="settings-sheet__switch-thumb" />
+                </Button>
+              </View>
+              <View className="settings-sheet__divider" />
+              <View className="settings-sheet__row">
+                <View className="settings-sheet__copy">
+                  <Text className="settings-sheet__label">
+                    队伍防守面分析
+                  </Text>
+                  <Text className="settings-sheet__description">
+                    分析六人队伍的属性弱点、抗性与免疫
+                  </Text>
+                </View>
+                <Button
+                  aria-checked={teamAnalysisEnabled}
+                  aria-label="队伍防守面分析"
+                  className={teamAnalysisEnabled
+                    ? "settings-sheet__switch settings-sheet__switch--on"
+                    : "settings-sheet__switch"}
+                  hoverClass="settings-sheet__switch--pressed"
+                  onClick={() => onTeamAnalysisChange?.(!teamAnalysisEnabled)}
                   role="switch"
                 >
                   <View className="settings-sheet__switch-thumb" />

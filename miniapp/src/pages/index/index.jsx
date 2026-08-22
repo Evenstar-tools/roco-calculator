@@ -124,6 +124,8 @@ export default function IndexPage({ services }) {
     memoryEnabled: true,
     negativeStatusEnabled: false,
     quickUndoEnabled: false,
+    teamAnalysisEnabled: false,
+    teamAnalysisMembers: [null, null, null, null, null, null],
     typeAnalysisEnabled: false,
     services: null,
     shareSession: null,
@@ -145,6 +147,8 @@ export default function IndexPage({ services }) {
       memoryEnabled: true,
       negativeStatusEnabled: false,
       quickUndoEnabled: false,
+      teamAnalysisEnabled: false,
+      teamAnalysisMembers: [null, null, null, null, null, null],
       typeAnalysisEnabled: false,
       services: null,
       shareSession: null,
@@ -167,6 +171,11 @@ export default function IndexPage({ services }) {
         pageServices.persistence?.getNegativeStatusEnabled?.() ?? false;
       const quickUndoEnabled =
         pageServices.persistence?.getQuickUndoEnabled?.() ?? false;
+      const teamAnalysisEnabled =
+        pageServices.persistence?.getTeamAnalysisEnabled?.() ?? false;
+      const teamAnalysisMembers =
+        pageServices.persistence?.getTeamAnalysisMembers?.(snapshot)
+        ?? [null, null, null, null, null, null];
       const localState = memoryEnabled
         ? pageServices.persistence?.load(snapshot)
         : null;
@@ -215,6 +224,8 @@ export default function IndexPage({ services }) {
         memoryEnabled,
         negativeStatusEnabled,
         quickUndoEnabled,
+        teamAnalysisEnabled,
+        teamAnalysisMembers,
         typeAnalysisEnabled,
         services: pageServices,
         store: calculatorStore,
@@ -235,6 +246,8 @@ export default function IndexPage({ services }) {
         memoryEnabled: true,
         negativeStatusEnabled: false,
         quickUndoEnabled: false,
+        teamAnalysisEnabled: false,
+        teamAnalysisMembers: [null, null, null, null, null, null],
         typeAnalysisEnabled: false,
         services: null,
         shareSession: null,
@@ -462,6 +475,42 @@ export default function IndexPage({ services }) {
     }
   }, [pageState]);
 
+  const changeTeamAnalysisEnabled = useCallback((enabled) => {
+    try {
+      pageState.services?.persistence?.setTeamAnalysisEnabled?.(enabled);
+      setPageState((current) => current.store === pageState.store
+        ? { ...current, teamAnalysisEnabled: enabled }
+        : current);
+      return true;
+    } catch {
+      Promise.resolve(Taro.showToast({
+        duration: 2400,
+        icon: "none",
+        title: "队伍分析设置失败，请重试",
+      })).catch(() => {});
+      return false;
+    }
+  }, [pageState]);
+
+  const changeTeamAnalysisMembers = useCallback((members) => {
+    try {
+      const saved = pageState.services?.persistence
+        ?.setTeamAnalysisMembers?.(members, pageState.snapshot)
+        ?? members;
+      setPageState((current) => current.store === pageState.store
+        ? { ...current, teamAnalysisMembers: saved }
+        : current);
+      return saved;
+    } catch {
+      Promise.resolve(Taro.showToast({
+        duration: 2400,
+        icon: "none",
+        title: "队伍成员保存失败，请重试",
+      })).catch(() => {});
+      return null;
+    }
+  }, [pageState]);
+
   const resetCurrentPage = useCallback(async () => {
     const confirmation = await Taro.showModal({
       title: "重置本页",
@@ -539,8 +588,10 @@ export default function IndexPage({ services }) {
         onNegativeStatusChange={changeNegativeStatusEnabled}
         onQuickUndoChange={changeQuickUndoEnabled}
         onReset={resetCurrentPage}
+        onTeamAnalysisChange={changeTeamAnalysisEnabled}
         onTypeAnalysisChange={changeTypeAnalysisEnabled}
         quickUndoEnabled={pageState.quickUndoEnabled}
+        teamAnalysisEnabled={pageState.teamAnalysisEnabled}
         typeAnalysisEnabled={pageState.typeAnalysisEnabled}
       />
       {pageState.shareSession?.status === "active" ? (
@@ -562,6 +613,9 @@ export default function IndexPage({ services }) {
         showTypeAnalysis={pageState.typeAnalysisEnabled}
         snapshot={pageState.snapshot}
         store={pageState.store}
+        teamAnalysisEnabled={pageState.teamAnalysisEnabled}
+        teamAnalysisMembers={pageState.teamAnalysisMembers}
+        onTeamAnalysisMembersChange={changeTeamAnalysisMembers}
       />
     </View>
   );
