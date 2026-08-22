@@ -144,6 +144,21 @@ function encodeFixture(value) {
 }
 
 describe("mini program share payload", () => {
+  test("round-trips optional negative status settlement inputs", () => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.calculationOptions = { includeNegativeStatusSettlement: true };
+    state.negativeStatuses = {
+      attacker: { burn: 3, electrified: 2, freeze: 1, parasitism: 0, poison: 4 },
+      defender: { burn: 2, electrified: 0, freeze: 0, parasitism: 3, poison: 1 },
+    };
+
+    expect(decodeSharePayload(encodeSharePayload(state), snapshot)).toMatchObject({
+      calculationOptions: { includeNegativeStatusSettlement: true },
+      negativeStatuses: state.negativeStatuses,
+    });
+  });
+
   test("round-trips public calculator inputs in bounded Base64URL form", () => {
     const snapshot = createSnapshot();
     const encoded = encodeSharePayload(createState(snapshot));

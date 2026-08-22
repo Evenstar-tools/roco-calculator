@@ -23,7 +23,7 @@ describe("miniapp shell", () => {
 
   test("publishes miniapp 1.1.0 against web core 1.6.2", () => {
     expect(MINIAPP_VERSION).toBe("1.1.0");
-    expect(MINIAPP_UPDATE_DATE).toBe("2026-08-19");
+    expect(MINIAPP_UPDATE_DATE).toBe("2026-08-22");
     expect(WEB_CORE_VERSION).toBe("1.6.2");
     expect(MINIAPP_RELEASE_LABEL).toBe(
       "小程序 v1.1.0 · 网页核心 v1.6.2",
@@ -40,6 +40,8 @@ describe("miniapp shell", () => {
 
   test("exposes compact settings actions, common configs and data attribution", () => {
     const onImportCommonConfig = vi.fn();
+    const onNegativeStatusChange = vi.fn();
+    const onQuickUndoChange = vi.fn();
     const onTypeAnalysisChange = vi.fn();
     render(
       <AppHeader
@@ -48,6 +50,8 @@ describe("miniapp shell", () => {
         memoryEnabled
         onImportCommonConfig={onImportCommonConfig}
         onMemoryChange={vi.fn()}
+        onNegativeStatusChange={onNegativeStatusChange}
+        onQuickUndoChange={onQuickUndoChange}
         onReset={vi.fn()}
         onTypeAnalysisChange={onTypeAnalysisChange}
         typeAnalysisEnabled
@@ -70,6 +74,16 @@ describe("miniapp shell", () => {
     expect(typeAnalysisSwitch).toHaveAttribute("aria-checked", "true");
     fireEvent.click(typeAnalysisSwitch);
     expect(onTypeAnalysisChange).toHaveBeenCalledWith(false);
+    const negativeStatusSwitch = screen.getByRole("switch", {
+      name: "负面状态结算",
+    });
+    expect(negativeStatusSwitch).toHaveAttribute("aria-checked", "false");
+    fireEvent.click(negativeStatusSwitch);
+    expect(onNegativeStatusChange).toHaveBeenCalledWith(true);
+    const quickUndoSwitch = screen.getByRole("switch", { name: "快捷撤回" });
+    expect(quickUndoSwitch).toHaveAttribute("aria-checked", "false");
+    fireEvent.click(quickUndoSwitch);
+    expect(onQuickUndoChange).toHaveBeenCalledWith(true);
     expect(screen.getByText("常用精灵配置")).toBeInTheDocument();
     const importButton = screen.getByRole("button", {
       name: "导入PVP热门配置",

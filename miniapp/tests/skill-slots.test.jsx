@@ -204,7 +204,7 @@ test("shows the thunderstorm burst switch and kind counter together", () => {
 
   expect(screen.getByRole("button", { name: "触发迸发" }))
     .toHaveAttribute("aria-pressed", "true");
-  expect(screen.getByLabelText("已生效迸发种类")).toHaveValue(0);
+  expect(screen.getByLabelText("迸发种类数")).toHaveValue(0);
 });
 
 describe("mini program skill workflow", () => {

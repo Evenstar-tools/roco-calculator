@@ -13,7 +13,10 @@ import {
   applyBalanceTraitTrigger,
 } from "../shared/state/battle-activation.js";
 import { createInitialState } from "../shared/state/defaults.js";
-import { selectSpirit } from "../shared/state/calculator-session.js";
+import {
+  selectSpirit,
+  updateGlobalWeather,
+} from "../shared/state/calculator-session.js";
 import {
   createResultActionRecord,
   restoreResultAction,
@@ -33,6 +36,7 @@ import ActiveAbilityStageBar from "./ActiveAbilityStageBar.jsx";
 import CombatantParameterSheet from "./CombatantParameterSheet.jsx";
 import DirectionSwitch from "./DirectionSwitch.jsx";
 import ModeSwitch from "./ModeSwitch.jsx";
+import NegativeStatusEditor from "./NegativeStatusEditor.jsx";
 import QuickCombatantControls from "./QuickCombatantControls.jsx";
 import ResultBar from "./ResultBar.jsx";
 import ResultSheet from "./ResultSheet.jsx";
@@ -110,7 +114,9 @@ export default function BattleWorkspace({
   favoriteIds = [],
   onFavoriteToggle,
   onShareChange,
+  negativeStatusEnabled = false,
   petImages,
+  quickUndoEnabled = false,
   showTypeAnalysis = false,
   snapshot,
   store,
@@ -118,6 +124,8 @@ export default function BattleWorkspace({
   const [activeLayer, setActiveLayer] = useState(null);
   const [actionFeedback, setActionFeedback] = useState(null);
   const [direction, setDirection] = useState("forward");
+  const [quickUndoDepth, setQuickUndoDepth] = useState(0);
+  const quickUndoHistoryRef = useRef([]);
   const resultActionHistoryRef = useRef(new Map());
   const resultTriggerRef = useRef(null);
   const state = useSyncExternalStore(
@@ -220,18 +228,51 @@ export default function BattleWorkspace({
     onShareChange?.(calculation, state, direction);
   }, [calculation, direction, onShareChange, state]);
 
+  useEffect(() => {
+    if (!quickUndoEnabled) {
+      quickUndoHistoryRef.current = [];
+      setQuickUndoDepth(0);
+    }
+  }, [quickUndoEnabled, store]);
+
+  function recordQuickUndo() {
+    if (quickUndoEnabled) {
+      quickUndoHistoryRef.current = [
+        ...quickUndoHistoryRef.current.slice(-49),
+        store.getState(),
+      ];
+      setQuickUndoDepth(quickUndoHistoryRef.current.length);
+    }
+  }
+
+  function dispatchWithUndo(action) {
+    recordQuickUndo();
+    store.dispatch(action);
+  }
+
+  function undoLastChange() {
+    const previous = quickUndoHistoryRef.current.pop();
+    if (!previous) return;
+    store.dispatch({ type: "state/replace", value: previous });
+    setQuickUndoDepth(quickUndoHistoryRef.current.length);
+  }
+
   function setSpirit(side, value) {
+    const initialState = createInitialState(snapshot);
     const preset = configPresetsBySpirit[value];
     const result = selectSpirit(store.getState(), {
-      initialState: createInitialState(snapshot),
+      initialState,
       personalConfiguration: preset ?? null,
       side,
       snapshot,
       spiritId: value,
     });
-    store.dispatch({
+    dispatchWithUndo({
       type: "state/replace",
-      value: result.state,
+      value: {
+        ...result.state,
+        negativeStatuses: initialState.negativeStatuses,
+      },
     });
   }
 
@@ -241,10 +282,12 @@ export default function BattleWorkspace({
       ...nextState,
       directions: initialState.directions,
       marks: initialState.marks,
+      negativeStatuses: initialState.negativeStatuses,
     };
   }
 
   function swapSides() {
+    recordQuickUndo();
     store.dispatch({ type: "sides/swap" });
     store.dispatch({
       type: "state/replace",
@@ -253,16 +296,17 @@ export default function BattleWorkspace({
   }
 
   function setNature(side, value) {
-    store.dispatch({ type: "side/set-nature", side, value });
+    dispatchWithUndo({ type: "side/set-nature", side, value });
   }
 
   function setIv(side, stat, value) {
-    store.dispatch({ type: "side/set-iv", side, stat, value });
+    dispatchWithUndo({ type: "side/set-iv", side, stat, value });
   }
 
   function setTraitValue(side, key, value, control) {
     if (control?.scope === "battle") {
       const previousValue = state.directions[direction].context?.[control.id];
+      recordQuickUndo();
       store.dispatch({
         direction,
         key: control.id,
@@ -284,19 +328,26 @@ export default function BattleWorkspace({
       }
       return;
     }
-    store.dispatch({ key, side, type: "side/set-trait-value", value });
+    dispatchWithUndo({ key, side, type: "side/set-trait-value", value });
   }
 
   function setGlobalRain(value) {
-    store.dispatch({ type: "battle/set-rain", value });
+    dispatchWithUndo({ type: "battle/set-rain", value });
+  }
+
+  function setGlobalWeather(value) {
+    dispatchWithUndo({
+      type: "state/replace",
+      value: updateGlobalWeather(store.getState(), value).state,
+    });
   }
 
   function setMark(side, polarity, value) {
-    store.dispatch({ polarity, side, type: "mark/update", value });
+    dispatchWithUndo({ polarity, side, type: "mark/update", value });
   }
 
   function updateDirection(targetDirection, value) {
-    store.dispatch({
+    dispatchWithUndo({
       direction: targetDirection,
       type: "direction/update",
       value,
@@ -304,11 +355,11 @@ export default function BattleWorkspace({
   }
 
   function setSingleSkill(side, value) {
-    store.dispatch({ side, type: "side/set-single-skill", value });
+    dispatchWithUndo({ side, type: "side/set-single-skill", value });
   }
 
   function setFourSkill(side, index, value) {
-    store.dispatch({ index, side, type: "side/set-four-skill", value });
+    dispatchWithUndo({ index, side, type: "side/set-four-skill", value });
   }
 
   function updateSelectedSlot(targetDirection, side, value) {
@@ -378,7 +429,7 @@ export default function BattleWorkspace({
     if (previousRecord) {
       const restored = restoreResultAction(store.getState(), previousRecord);
       if (restored.restored) {
-        store.dispatch({ type: "state/replace", value: restored.state });
+        dispatchWithUndo({ type: "state/replace", value: restored.state });
         history.delete(action.key);
         setActionFeedback({
           actionKey: action.key,
@@ -436,7 +487,7 @@ export default function BattleWorkspace({
       state: beforeState,
     });
     if (result.applied) {
-      store.dispatch({ type: "state/replace", value: result.state });
+      dispatchWithUndo({ type: "state/replace", value: result.state });
       history.set(
         action.key,
         createResultActionRecord(action.key, beforeState, result.state),
@@ -447,7 +498,7 @@ export default function BattleWorkspace({
       });
     } else {
       if (result.stateChanged) {
-        store.dispatch({ type: "state/replace", value: result.state });
+        dispatchWithUndo({ type: "state/replace", value: result.state });
       }
       setActionFeedback({
         actionKey: action.key,
@@ -586,9 +637,20 @@ export default function BattleWorkspace({
 
           <View className="workspace-section workspace-section--skills">
             <ModeSwitch
-              onChange={(value) => store.dispatch({ type: "mode/set", value })}
+              onChange={(value) => dispatchWithUndo({ type: "mode/set", value })}
               value={state.mode}
             />
+            {quickUndoEnabled ? (
+              <Button
+                aria-label="撤回上一步"
+                className="quick-undo"
+                disabled={quickUndoDepth === 0}
+                hoverClass="quick-undo--pressed"
+                onClick={undoLastChange}
+              >
+                ↶ 撤回
+              </Button>
+            ) : null}
             <View className="skills-grid">
               {panels.map((panel) => (
                 <View
@@ -747,6 +809,8 @@ export default function BattleWorkspace({
                 direction={activeDirectionState}
                 onCurrentHpChange={setTargetHp}
                 onRainChange={setGlobalRain}
+                onWeatherChange={setGlobalWeather}
+                showThunder={negativeStatusEnabled}
               />
               <ActiveAbilityStageBar
                 direction={direction}
@@ -755,6 +819,17 @@ export default function BattleWorkspace({
                 })}
                 state={activeDirectionState}
               />
+              {negativeStatusEnabled ? (
+                <NegativeStatusEditor
+                  onChange={(side, key, value) => dispatchWithUndo({
+                    key,
+                    side,
+                    type: "negative-status/update",
+                    value,
+                  })}
+                  statuses={state.negativeStatuses}
+                />
+              ) : null}
               <TraitConditionEditor
                 battleContext={activeDirectionState.context}
                 onChange={setTraitValue}

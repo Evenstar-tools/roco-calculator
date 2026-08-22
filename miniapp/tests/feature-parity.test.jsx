@@ -62,6 +62,52 @@ function snapshotFixture() {
 }
 
 describe("mini-program desktop feature parity", () => {
+  test("shows optional negative status controls only when enabled", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    const { rerender } = render(
+      <BattleWorkspace
+        negativeStatusEnabled={false}
+        snapshot={snapshot}
+        store={store}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    expect(screen.queryByLabelText("负面状态层数")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "关闭战斗条件" }));
+    rerender(
+      <BattleWorkspace
+        negativeStatusEnabled
+        snapshot={snapshot}
+        store={store}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    expect(screen.getByLabelText("负面状态层数")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "雷暴" }));
+    expect(store.getState().directions.forward.context.weatherThunder).toBe(true);
+    expect(store.getState().directions.reverse.context.weatherThunder).toBe(true);
+  });
+
+  test("offers optional one-step undo without changing the default UI", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    const { rerender } = render(
+      <BattleWorkspace quickUndoEnabled={false} snapshot={snapshot} store={store} />,
+    );
+    expect(screen.queryByRole("button", { name: "撤回上一步" }))
+      .not.toBeInTheDocument();
+
+    rerender(
+      <BattleWorkspace quickUndoEnabled snapshot={snapshot} store={store} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+    expect(store.getState().mode).toBe("four");
+    fireEvent.click(screen.getByRole("button", { name: "撤回上一步" }));
+    expect(store.getState().mode).toBe("single");
+  });
+
   test("selects direct trait damage as the active result source", () => {
     const skill = { skillName: "抓挠", totalDamage: 30 };
     const trait = { skillName: "刺肤", totalDamage: 50 };

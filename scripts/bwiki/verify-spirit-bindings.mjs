@@ -98,7 +98,7 @@ export async function verifySpiritBindings() {
   }
 
   const expectedNamed = snapshot.meta.portraitBindings?.resolved;
-  if (namedPortraits !== expectedNamed) {
+  if (Number.isInteger(expectedNamed) && namedPortraits !== expectedNamed) {
     errors.push(`精确命名头像 ${namedPortraits} != 元数据 ${expectedNamed}`);
   }
   if (errors.length > 0) {

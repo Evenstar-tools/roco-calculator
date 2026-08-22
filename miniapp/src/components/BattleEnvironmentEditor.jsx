@@ -36,11 +36,15 @@ export default function BattleEnvironmentEditor({
   direction,
   onCurrentHpChange,
   onRainChange,
+  onWeatherChange,
+  showThunder = false,
 }) {
   const rainTurns = Math.max(
     0,
     Math.floor(Number(direction.context?.weatherRainTurns) || 0),
   );
+  const thunder = direction.context?.weatherThunder === true;
+  const weather = thunder ? "thunder" : rainTurns > 0 ? "rain" : "none";
 
   return (
     <View aria-label="常用条件" className="battle-environment">
@@ -66,27 +70,43 @@ export default function BattleEnvironmentEditor({
           <View className="battle-environment__weather-choices">
             <Button
               aria-label="无天气"
-              aria-pressed={rainTurns === 0}
-              className={rainTurns === 0
+              aria-pressed={weather === "none"}
+              className={weather === "none"
                 ? "battle-environment__weather-button battle-environment__weather-button--active"
                 : "battle-environment__weather-button"}
-              onClick={() => onRainChange(0)}
+              onClick={() => onWeatherChange
+                ? onWeatherChange("none")
+                : onRainChange(0)}
             >
               无
             </Button>
             <Button
               aria-label="雨天"
-              aria-pressed={rainTurns > 0}
-              className={rainTurns > 0
+              aria-pressed={weather === "rain"}
+              className={weather === "rain"
                 ? "battle-environment__weather-button battle-environment__weather-button--active"
                 : "battle-environment__weather-button"}
-              onClick={() => onRainChange(rainTurns > 0 ? rainTurns : 8)}
+              onClick={() => onWeatherChange
+                ? onWeatherChange("rain")
+                : onRainChange(rainTurns > 0 ? rainTurns : 8)}
             >
               雨天
             </Button>
+            {showThunder ? (
+              <Button
+                aria-label="雷暴"
+                aria-pressed={weather === "thunder"}
+                className={weather === "thunder"
+                  ? "battle-environment__weather-button battle-environment__weather-button--active"
+                  : "battle-environment__weather-button"}
+                onClick={() => onWeatherChange?.("thunder")}
+              >
+                雷暴
+              </Button>
+            ) : null}
           </View>
         </View>
-        {rainTurns > 0 ? (
+        {weather === "rain" ? (
           <NumericField
             label="雨天回合"
             max={8}

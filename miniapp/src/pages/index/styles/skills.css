@@ -17,6 +17,28 @@
   background: var(--surface-muted);
 }
 
+.quick-undo {
+  min-width: 128rpx;
+  min-height: 72rpx;
+  margin: 0 0 20rpx 16rpx;
+  padding: 0 24rpx;
+  border: 1rpx solid #d7dce3;
+  border-radius: 16rpx;
+  background: #fff;
+  color: #27313d;
+  font-size: 26rpx;
+  line-height: 72rpx;
+}
+
+.quick-undo[disabled] {
+  color: #a3abb5;
+  background: #f5f6f7;
+}
+
+.quick-undo--pressed {
+  background: #eef2f5;
+}
+
 .mode-switch__button {
   display: flex;
   width: 100%;

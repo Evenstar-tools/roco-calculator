@@ -670,6 +670,97 @@
   gap: 0;
 }
 
+.negative-status-editor {
+  padding: 24rpx;
+  border: 1rpx solid #e1e4e8;
+  border-radius: 20rpx;
+  background: #fff;
+}
+
+.negative-status-editor__heading,
+.negative-status-editor__side-label,
+.negative-status-editor__stepper {
+  display: flex;
+  align-items: center;
+}
+
+.negative-status-editor__heading {
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.negative-status-editor__title {
+  color: #202936;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.negative-status-editor__hint {
+  color: #7c8794;
+  font-size: 22rpx;
+}
+
+.negative-status-editor__side + .negative-status-editor__side {
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #eceef1;
+}
+
+.negative-status-editor__side-label {
+  margin-bottom: 12rpx;
+  color: #45515f;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.negative-status-editor__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12rpx;
+}
+
+.negative-status-editor__item {
+  min-width: 0;
+  padding: 12rpx;
+  border: 1rpx solid #e5e7eb;
+  border-radius: 14rpx;
+  background: #fafafa;
+}
+
+.negative-status-editor__label {
+  display: block;
+  margin-bottom: 8rpx;
+  color: #4b5563;
+  font-size: 22rpx;
+}
+
+.negative-status-editor__stepper {
+  justify-content: space-between;
+}
+
+.negative-status-editor__step {
+  width: 56rpx;
+  min-width: 56rpx;
+  height: 56rpx;
+  min-height: 56rpx;
+  padding: 0;
+  border: 1rpx solid #d8dde3;
+  border-radius: 12rpx;
+  background: #fff;
+  color: #24313d;
+  font-size: 30rpx;
+  line-height: 54rpx;
+}
+
+.negative-status-editor__value {
+  min-width: 44rpx;
+  text-align: center;
+  color: #202936;
+  font-size: 26rpx;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
 .conditions-sheet__content > .battle-environment {
   padding-top: 14px;
 }
@@ -988,6 +1079,43 @@
   padding: 2px 2px 14px;
   gap: 4px;
   border-bottom: 1px solid var(--border-neutral);
+}
+
+.result-sheet__status-settlement {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #dfe4e8;
+  border-radius: 12px;
+  background: #f8faf9;
+}
+
+.result-sheet__status-heading,
+.result-sheet__status-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.result-sheet__status-heading .result-sheet__section-title {
+  margin-bottom: 0;
+}
+
+.result-sheet__status-total {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 680;
+}
+
+.result-sheet__status-row {
+  min-height: 32px;
+  padding-top: 8px;
+  border-top: 1px solid #e7ebee;
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 .result-sheet__skill-name {

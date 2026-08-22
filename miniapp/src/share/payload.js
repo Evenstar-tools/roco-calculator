@@ -1,5 +1,6 @@
 import { normalizeNatureId } from "../shared/domain/natures.js";
 import { normalizeMarksState } from "../shared/domain/marks.js";
+import { normalizeNegativeStatusState } from "../shared/domain/negative-status.js";
 import { getSpiritSkillSlotCapacity } from "../shared/domain/skill-slot-capacity.js";
 import { createInitialState } from "../shared/state/defaults.js";
 import { extractTraitValues } from "../shared/state/trait-values.js";
@@ -179,6 +180,17 @@ function compactMarks(value, legacyDirections) {
     marks[side].positive.stacks,
     marks[side].negative.id,
     marks[side].negative.stacks,
+  ]);
+}
+
+function compactNegativeStatuses(value) {
+  const statuses = normalizeNegativeStatusState(value);
+  return ["attacker", "defender"].map((side) => [
+    statuses[side].burn,
+    statuses[side].freeze,
+    statuses[side].parasitism,
+    statuses[side].poison,
+    statuses[side].electrified,
   ]);
 }
 
@@ -372,6 +384,7 @@ function fitPayloadWithMeta(payload) {
         ...(payload.d.t ? { t: payload.d.t } : {}),
       },
       z: payload.z,
+      ...(payload.e ? { e: 1, w: payload.w } : {}),
       }),
     ),
   };
@@ -387,6 +400,12 @@ export function encodeSharePayloadWithMeta(state, { direction } = {}) {
     f: compactDirection(state?.directions?.forward),
     r: compactDirection(state?.directions?.reverse),
     z: compactMarks(state?.marks, state?.directions),
+    ...(state?.calculationOptions?.includeNegativeStatusSettlement === true
+      ? {
+          e: 1,
+          w: compactNegativeStatuses(state?.negativeStatuses),
+        }
+      : {}),
   };
   return fitPayloadWithMeta(payload);
 }
@@ -570,6 +589,23 @@ function expandMarks(raw, legacyDirections) {
   return normalizeMarksState(value, legacyDirections);
 }
 
+function expandNegativeStatuses(raw) {
+  if (!Array.isArray(raw)) return normalizeNegativeStatusState(undefined);
+  const expanded = Object.fromEntries(
+    ["attacker", "defender"].map((side, index) => {
+      const values = Array.isArray(raw[index]) ? raw[index] : [];
+      return [side, {
+        burn: values[0],
+        freeze: values[1],
+        parasitism: values[2],
+        poison: values[3],
+        electrified: values[4],
+      }];
+    }),
+  );
+  return normalizeNegativeStatusState(expanded);
+}
+
 function invalidDecodeResult() {
   return {
     completeness: "minimal",
@@ -611,6 +647,10 @@ export function decodeSharePayloadResult(encoded, snapshot) {
       ...fallback,
       mode: payload.m === "four" ? "four" : "single",
       marks: expandMarks(payload.v === 2 ? payload.z : undefined, directions),
+      calculationOptions: {
+        includeNegativeStatusSettlement: payload.e === 1,
+      },
+      negativeStatuses: expandNegativeStatuses(payload.e === 1 ? payload.w : undefined),
       sides: {
         attacker: expandSide(
           payload.a,

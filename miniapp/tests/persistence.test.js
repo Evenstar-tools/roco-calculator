@@ -1,7 +1,9 @@
 import { describe, expect, test, vi } from "vitest";
 import {
   MINIAPP_MEMORY_ENABLED_KEY,
+  MINIAPP_NEGATIVE_STATUS_ENABLED_KEY,
   MINIAPP_PERSISTENCE_SCHEMA_VERSION,
+  MINIAPP_QUICK_UNDO_ENABLED_KEY,
   MINIAPP_STATE_KEY,
   createPersistence,
 } from "../src/state/persistence.js";
@@ -91,6 +93,11 @@ function createConfiguredState(snapshot = createSnapshot()) {
         positive: { id: "sprout", stacks: 3 },
       },
     },
+    calculationOptions: { includeNegativeStatusSettlement: true },
+    negativeStatuses: {
+      attacker: { burn: 3, electrified: 2, freeze: 1, parasitism: 0, poison: 4 },
+      defender: { burn: 2, electrified: 0, freeze: 0, parasitism: 3, poison: 1 },
+    },
     directions: {
       ...state.directions,
       forward: {
@@ -105,6 +112,37 @@ function createConfiguredState(snapshot = createSnapshot()) {
 }
 
 describe("createPersistence", () => {
+  test("preserves negative status calculation inputs in configuration memory", () => {
+    const snapshot = createSnapshot();
+    const storage = createMemoryStorage();
+    const persistence = createPersistence({ storage });
+    const state = createConfiguredState(snapshot);
+
+    persistence.save(state);
+    expect(persistence.load(snapshot)).toMatchObject({
+      calculationOptions: { includeNegativeStatusSettlement: true },
+      negativeStatuses: state.negativeStatuses,
+    });
+  });
+
+  test("defaults important feature settings to off and stores them independently", () => {
+    const storage = createMemoryStorage();
+    const persistence = createPersistence({ storage });
+
+    expect(persistence.getNegativeStatusEnabled()).toBe(false);
+    expect(persistence.getQuickUndoEnabled()).toBe(false);
+    persistence.setNegativeStatusEnabled(true);
+    persistence.setQuickUndoEnabled(true);
+    expect(storage.set).toHaveBeenCalledWith(
+      MINIAPP_NEGATIVE_STATUS_ENABLED_KEY,
+      true,
+    );
+    expect(storage.set).toHaveBeenCalledWith(
+      MINIAPP_QUICK_UNDO_ENABLED_KEY,
+      true,
+    );
+  });
+
   test("stores the type analysis display setting independently", () => {
     const storage = createMemoryStorage();
     const persistence = createPersistence({ storage });
@@ -149,6 +187,10 @@ describe("createPersistence", () => {
       state: {
         mode: "four",
         marks: expect.any(Object),
+        calculationOptions: {
+          includeNegativeStatusSettlement: true,
+        },
+        negativeStatuses: createConfiguredState(snapshot).negativeStatuses,
         sides: expect.any(Object),
         directions: expect.any(Object),
       },

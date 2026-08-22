@@ -10,10 +10,14 @@ export default function AppHeader({
   commonConfigCount = 0,
   dataVersion,
   memoryEnabled = true,
+  negativeStatusEnabled = false,
   onImportCommonConfig,
   onMemoryChange,
+  onNegativeStatusChange,
+  onQuickUndoChange,
   onReset,
   onTypeAnalysisChange,
+  quickUndoEnabled = false,
   typeAnalysisEnabled = false,
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -120,6 +124,48 @@ export default function AppHeader({
                     : "settings-sheet__switch"}
                   hoverClass="settings-sheet__switch--pressed"
                   onClick={() => onTypeAnalysisChange?.(!typeAnalysisEnabled)}
+                  role="switch"
+                >
+                  <View className="settings-sheet__switch-thumb" />
+                </Button>
+              </View>
+              <View className="settings-sheet__divider" />
+              <View className="settings-sheet__row">
+                <View className="settings-sheet__copy">
+                  <Text className="settings-sheet__label">负面状态结算</Text>
+                  <Text className="settings-sheet__description">
+                    计算灼烧、冻结、寄生、中毒与引电结算
+                  </Text>
+                </View>
+                <Button
+                  aria-checked={negativeStatusEnabled}
+                  aria-label="负面状态结算"
+                  className={negativeStatusEnabled
+                    ? "settings-sheet__switch settings-sheet__switch--on"
+                    : "settings-sheet__switch"}
+                  hoverClass="settings-sheet__switch--pressed"
+                  onClick={() => onNegativeStatusChange?.(!negativeStatusEnabled)}
+                  role="switch"
+                >
+                  <View className="settings-sheet__switch-thumb" />
+                </Button>
+              </View>
+              <View className="settings-sheet__divider" />
+              <View className="settings-sheet__row">
+                <View className="settings-sheet__copy">
+                  <Text className="settings-sheet__label">快捷撤回</Text>
+                  <Text className="settings-sheet__description">
+                    显示一步撤回按钮，避免误触后重复录入
+                  </Text>
+                </View>
+                <Button
+                  aria-checked={quickUndoEnabled}
+                  aria-label="快捷撤回"
+                  className={quickUndoEnabled
+                    ? "settings-sheet__switch settings-sheet__switch--on"
+                    : "settings-sheet__switch"}
+                  hoverClass="settings-sheet__switch--pressed"
+                  onClick={() => onQuickUndoChange?.(!quickUndoEnabled)}
                   role="switch"
                 >
                   <View className="settings-sheet__switch-thumb" />

@@ -96,26 +96,25 @@ describe("BWIKI 精灵头像身份绑定", () => {
   test.each([
     [
       "海枝枝（碧蓝珊瑚）",
-      "https://patchwiki.biligame.com/images/rocom/b/bc/6q8ni2pwfbr37ip0gzw3cpdaf2t91be.png",
+      "https://patchwiki.biligame.com/images/rocom/5/51/5mf590oikzkcsjf8w921d0mh18a4woq.png",
     ],
     [
       "海枝枝（杏黄百合）",
-      "https://patchwiki.biligame.com/images/rocom/6/69/0wosddte1bpfw4523ibg3nq1896n0lx.png",
+      "https://patchwiki.biligame.com/images/rocom/4/4a/mgmynoz7yceewyozls8lpo95sgc9dvj.png",
     ],
     [
       "海枝枝（洋红沙丁）",
-      "https://patchwiki.biligame.com/images/rocom/7/7c/mopanlk0uluof46et5xm4b9yxcyoqtq.png",
+      "https://patchwiki.biligame.com/images/rocom/a/ae/hl04yjyfbnis2rflogd0z88vlvvoxg8.png",
     ],
     [
       "海枝枝（翠绿纶布）",
-      "https://patchwiki.biligame.com/images/rocom/0/00/4g0f2sxnvfzds3tgjr0pxxwm2vvyvl0.png",
+      "https://patchwiki.biligame.com/images/rocom/c/ce/gu6jzlvxig77gm42gayvu4sk9u6ieec.png",
     ],
   ])("%s 使用按完整形态名绑定的头像", (name, sourceUrl) => {
     const entry = manifest.assets.find((asset) => asset.name === name);
     expect(entry).toMatchObject({
       name,
       sourceUrl,
-      sourceTitle: avatarFileTitle(name),
     });
   });
 

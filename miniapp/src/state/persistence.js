@@ -1,4 +1,5 @@
 import { normalizeMarksState } from "../shared/domain/marks.js";
+import { normalizeNegativeStatusState } from "../shared/domain/negative-status.js";
 import { createInitialState } from "../shared/state/defaults.js";
 import { extractTraitValues } from "../shared/state/trait-values.js";
 import { sanitizePublicContext } from "../share/context-schema.js";
@@ -8,6 +9,10 @@ export const MINIAPP_MEMORY_ENABLED_KEY =
   "rock-calculator.miniapp.memory-enabled.v1";
 export const MINIAPP_TYPE_ANALYSIS_ENABLED_KEY =
   "rock-calculator.miniapp.type-analysis-enabled.v1";
+export const MINIAPP_NEGATIVE_STATUS_ENABLED_KEY =
+  "rock-calculator.miniapp.negative-status-enabled.v1";
+export const MINIAPP_QUICK_UNDO_ENABLED_KEY =
+  "rock-calculator.miniapp.quick-undo-enabled.v1";
 export const MINIAPP_PERSISTENCE_SCHEMA_VERSION = 2;
 
 const SKILL_NUMBER_KEYS = ["basePowerOverride", "fixedPowerAdd"];
@@ -377,6 +382,13 @@ function repairPersistedState(snapshot, persistedState) {
       persistedState.marks,
       persistedState.directions,
     ),
+    calculationOptions: {
+      includeNegativeStatusSettlement:
+        persistedState.calculationOptions?.includeNegativeStatusSettlement === true,
+    },
+    negativeStatuses: normalizeNegativeStatusState(
+      persistedState.negativeStatuses,
+    ),
     sides: {
       attacker,
       defender,
@@ -478,6 +490,22 @@ export function createPersistence({ storage }) {
     }
   }
 
+  function getNegativeStatusEnabled() {
+    try {
+      return storage.get(MINIAPP_NEGATIVE_STATUS_ENABLED_KEY) === true;
+    } catch {
+      return false;
+    }
+  }
+
+  function getQuickUndoEnabled() {
+    try {
+      return storage.get(MINIAPP_QUICK_UNDO_ENABLED_KEY) === true;
+    } catch {
+      return false;
+    }
+  }
+
   return {
     clear() {
       storage.remove(MINIAPP_STATE_KEY);
@@ -514,6 +542,13 @@ export function createPersistence({ storage }) {
         state: {
           mode: state?.mode,
           marks: normalizeMarksState(state?.marks, state?.directions),
+          calculationOptions: {
+            includeNegativeStatusSettlement:
+              state?.calculationOptions?.includeNegativeStatusSettlement === true,
+          },
+          negativeStatuses: normalizeNegativeStatusState(
+            state?.negativeStatuses,
+          ),
           sides: {
             attacker: selectSideInputs(state?.sides?.attacker),
             defender: selectSideInputs(state?.sides?.defender),
@@ -534,6 +569,10 @@ export function createPersistence({ storage }) {
 
     getMemoryEnabled,
 
+    getNegativeStatusEnabled,
+
+    getQuickUndoEnabled,
+
     getTypeAnalysisEnabled,
 
     setMemoryEnabled(enabled) {
@@ -552,6 +591,22 @@ export function createPersistence({ storage }) {
         throw new TypeError("属性分析开关必须是布尔值");
       }
       storage.set(MINIAPP_TYPE_ANALYSIS_ENABLED_KEY, enabled);
+      return enabled;
+    },
+
+    setNegativeStatusEnabled(enabled) {
+      if (typeof enabled !== "boolean") {
+        throw new TypeError("负面状态结算开关必须是布尔值");
+      }
+      storage.set(MINIAPP_NEGATIVE_STATUS_ENABLED_KEY, enabled);
+      return enabled;
+    },
+
+    setQuickUndoEnabled(enabled) {
+      if (typeof enabled !== "boolean") {
+        throw new TypeError("快捷撤回开关必须是布尔值");
+      }
+      storage.set(MINIAPP_QUICK_UNDO_ENABLED_KEY, enabled);
       return enabled;
     },
   };

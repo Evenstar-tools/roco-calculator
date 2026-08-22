@@ -122,6 +122,8 @@ export default function IndexPage({ services }) {
     favoriteIds: [],
     configLibrary: { entries: [], schemaVersion: 1 },
     memoryEnabled: true,
+    negativeStatusEnabled: false,
+    quickUndoEnabled: false,
     typeAnalysisEnabled: false,
     services: null,
     shareSession: null,
@@ -141,6 +143,8 @@ export default function IndexPage({ services }) {
       favoriteIds: [],
       configLibrary: { entries: [], schemaVersion: 1 },
       memoryEnabled: true,
+      negativeStatusEnabled: false,
+      quickUndoEnabled: false,
       typeAnalysisEnabled: false,
       services: null,
       shareSession: null,
@@ -159,6 +163,10 @@ export default function IndexPage({ services }) {
         pageServices.persistence?.getMemoryEnabled?.() ?? true;
       const typeAnalysisEnabled =
         pageServices.persistence?.getTypeAnalysisEnabled?.() ?? false;
+      const negativeStatusEnabled =
+        pageServices.persistence?.getNegativeStatusEnabled?.() ?? false;
+      const quickUndoEnabled =
+        pageServices.persistence?.getQuickUndoEnabled?.() ?? false;
       const localState = memoryEnabled
         ? pageServices.persistence?.load(snapshot)
         : null;
@@ -189,6 +197,14 @@ export default function IndexPage({ services }) {
       const configLibrary =
         pageServices.configLibraryRepository?.load(snapshot) ??
         { entries: [], schemaVersion: 1 };
+      const calculatorStore = createCalculatorStore(
+        snapshot,
+        hasSharedState ? shareResult.state : localState,
+      );
+      calculatorStore.dispatch({
+        type: "calculation-option/set-negative-status",
+        value: negativeStatusEnabled,
+      });
       setPageState({
         status: "ready",
         error: null,
@@ -197,12 +213,11 @@ export default function IndexPage({ services }) {
         favoriteIds,
         configLibrary,
         memoryEnabled,
+        negativeStatusEnabled,
+        quickUndoEnabled,
         typeAnalysisEnabled,
         services: pageServices,
-        store: createCalculatorStore(
-          snapshot,
-          hasSharedState ? shareResult.state : localState,
-        ),
+        store: calculatorStore,
         shareSession,
       });
     } catch (error) {
@@ -218,6 +233,8 @@ export default function IndexPage({ services }) {
         favoriteIds: [],
         configLibrary: { entries: [], schemaVersion: 1 },
         memoryEnabled: true,
+        negativeStatusEnabled: false,
+        quickUndoEnabled: false,
         typeAnalysisEnabled: false,
         services: null,
         shareSession: null,
@@ -407,6 +424,44 @@ export default function IndexPage({ services }) {
     }
   }, [pageState]);
 
+  const changeNegativeStatusEnabled = useCallback((enabled) => {
+    try {
+      pageState.services?.persistence?.setNegativeStatusEnabled?.(enabled);
+      pageState.store?.dispatch({
+        type: "calculation-option/set-negative-status",
+        value: enabled,
+      });
+      setPageState((current) => current.store === pageState.store
+        ? { ...current, negativeStatusEnabled: enabled }
+        : current);
+      return true;
+    } catch {
+      Promise.resolve(Taro.showToast({
+        duration: 2400,
+        icon: "none",
+        title: "负面状态结算设置失败，请重试",
+      })).catch(() => {});
+      return false;
+    }
+  }, [pageState]);
+
+  const changeQuickUndoEnabled = useCallback((enabled) => {
+    try {
+      pageState.services?.persistence?.setQuickUndoEnabled?.(enabled);
+      setPageState((current) => current.store === pageState.store
+        ? { ...current, quickUndoEnabled: enabled }
+        : current);
+      return true;
+    } catch {
+      Promise.resolve(Taro.showToast({
+        duration: 2400,
+        icon: "none",
+        title: "快捷撤回设置失败，请重试",
+      })).catch(() => {});
+      return false;
+    }
+  }, [pageState]);
+
   const resetCurrentPage = useCallback(async () => {
     const confirmation = await Taro.showModal({
       title: "重置本页",
@@ -478,10 +533,14 @@ export default function IndexPage({ services }) {
             ?? pageState.snapshot.meta?.snapshotVersion,
         ].filter(Boolean).join(" · ") || pageState.snapshot.meta?.id}
         memoryEnabled={pageState.memoryEnabled}
+        negativeStatusEnabled={pageState.negativeStatusEnabled}
         onImportCommonConfig={importCommonConfigLibrary}
         onMemoryChange={changeMemoryEnabled}
+        onNegativeStatusChange={changeNegativeStatusEnabled}
+        onQuickUndoChange={changeQuickUndoEnabled}
         onReset={resetCurrentPage}
         onTypeAnalysisChange={changeTypeAnalysisEnabled}
+        quickUndoEnabled={pageState.quickUndoEnabled}
         typeAnalysisEnabled={pageState.typeAnalysisEnabled}
       />
       {pageState.shareSession?.status === "active" ? (
@@ -497,7 +556,9 @@ export default function IndexPage({ services }) {
         favoriteIds={pageState.favoriteIds}
         onFavoriteToggle={toggleFavorite}
         onShareChange={updateShareMessage}
+        negativeStatusEnabled={pageState.negativeStatusEnabled}
         petImages={pageState.petImages}
+        quickUndoEnabled={pageState.quickUndoEnabled}
         showTypeAnalysis={pageState.typeAnalysisEnabled}
         snapshot={pageState.snapshot}
         store={pageState.store}

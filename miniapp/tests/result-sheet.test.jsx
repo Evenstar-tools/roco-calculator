@@ -112,6 +112,39 @@ function renderWorkspace() {
 }
 
 describe("result bar and sheet", () => {
+  test("shows negative status settlement when the calculation returns it", () => {
+    render(
+      <ResultSheet
+        onClose={vi.fn()}
+        open
+        view={{
+          attackerName: "烈焰兽",
+          defenderName: "潮汐兽",
+          rows: [],
+          selectedResult: {
+            hpPercent: 20,
+            negativeStatusSettlement: {
+              actualStatusDamage: 42,
+              breakdown: [
+                { damage: 42, id: "burn", label: "灼烧", stacks: 3 },
+              ],
+              freeze: { stacks: 0, thresholdPercent: 0 },
+              remainingHp: 300,
+            },
+            remainingHp: 342,
+            skillName: "烈焰冲击",
+            totalDamage: 86,
+          },
+          status: "exact",
+        }}
+      />,
+    );
+
+    const settlement = screen.getByLabelText("负面状态结算");
+    expect(settlement).toHaveTextContent("状态追加 42 HP");
+    expect(settlement).toHaveTextContent("灼烧 ×3");
+  });
+
   test("shows defensive matchups and four-skill coverage when enabled", () => {
     render(
       <ResultSheet

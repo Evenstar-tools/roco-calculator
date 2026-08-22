@@ -19,7 +19,10 @@ import SharePreviewSheet from "./SharePreviewSheet.jsx";
 import TypeAnalysisPanel from "./TypeAnalysisPanel.jsx";
 
 function settlementText(entry) {
-  return [entry?.name ?? entry?.label, entry?.text ?? entry?.summary]
+  return [
+    entry?.kind === "baron-greed" ? "贪得无厌" : entry?.name ?? entry?.label,
+    entry?.lines?.length ? entry.lines.join("；") : entry?.text ?? entry?.summary,
+  ]
     .filter(Boolean)
     .join(" · ");
 }
@@ -36,6 +39,36 @@ function DetailSection({ items, title, formatter = (value) => String(value) }) {
           </Text>
         ))}
       </View>
+    </View>
+  );
+}
+
+function NegativeStatusSettlement({ settlement }) {
+  if (!settlement) return null;
+  const entries = (settlement.breakdown ?? []).filter(
+    (entry) => Number(entry?.stacks) > 0,
+  );
+  const freeze = settlement.freeze;
+  return (
+    <View aria-label="负面状态结算" className="result-sheet__status-settlement">
+      <View className="result-sheet__status-heading">
+        <Text className="result-sheet__section-title">状态结算</Text>
+        <Text className="result-sheet__status-total">
+          状态追加 {Math.max(0, Number(settlement.actualStatusDamage) || 0)} HP
+        </Text>
+      </View>
+      {entries.map((entry) => (
+        <View className="result-sheet__status-row" key={entry.id}>
+          <Text>{entry.label} ×{entry.stacks}</Text>
+          <Text>{entry.immune ? "免疫" : `${Math.max(0, Number(entry.damage) || 0)} HP`}</Text>
+        </View>
+      ))}
+      {Number(freeze?.stacks) > 0 ? (
+        <View className="result-sheet__status-row">
+          <Text>冻结 ×{freeze.stacks}</Text>
+          <Text>斩杀线 {Math.max(0, Number(freeze.thresholdPercent) || 0)}%</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -178,6 +211,11 @@ export default function ResultSheet({
               damageTone={damageTone}
               remainingHp={remainingHp}
               result={result}
+            />
+          ) : null}
+          {exact ? (
+            <NegativeStatusSettlement
+              settlement={result?.negativeStatusSettlement}
             />
           ) : null}
           <ResultActionPanel
