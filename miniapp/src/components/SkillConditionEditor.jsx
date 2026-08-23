@@ -184,24 +184,24 @@ export default function SkillConditionEditor({
         </View>
       ))}
       <View className="condition-editor__manual">
-        <View className="condition-editor__power">
-          <View aria-label="威力口径" className="condition-editor__power-modes">
-            {[
-              ["static", "静态威力"],
-              ["panel", "面板威力"],
-            ].map(([mode, label]) => (
-              <Button
-                aria-pressed={powerMode === mode}
-                className={powerMode === mode
-                  ? "condition-editor__power-mode condition-editor__power-mode--active"
-                  : "condition-editor__power-mode"}
-                key={mode}
-                onClick={() => setPowerMode(mode)}
-              >
-                {label}
-              </Button>
-            ))}
-          </View>
+        <View aria-label="威力口径" className="condition-editor__power-modes">
+          {[
+            ["static", "静态威力"],
+            ["panel", "面板威力"],
+          ].map(([mode, label]) => (
+            <Button
+              aria-pressed={powerMode === mode}
+              className={powerMode === mode
+                ? "condition-editor__power-mode condition-editor__power-mode--active"
+                : "condition-editor__power-mode"}
+              key={mode}
+              onClick={() => setPowerMode(mode)}
+            >
+              {label}
+            </Button>
+          ))}
+        </View>
+        <View aria-label="威力与连击参数" className="condition-editor__manual-fields">
           <View className="condition-editor__field condition-editor__field--number">
             <View className="condition-editor__power-heading">
               <Text className="condition-editor__label">{powerLabel}</Text>
@@ -246,25 +246,25 @@ export default function SkillConditionEditor({
               value={powerValue}
             />
           </View>
-        </View>
-        <View className="condition-editor__field condition-editor__field--number">
-          <Text className="condition-editor__label">连击数</Text>
-          <Input
-            aria-label="连击数"
-            className="condition-editor__input"
-            inputMode="numeric"
-            min="1"
-            onInput={(event) =>
-              onDirectionChange({
-                hitCount: Math.max(
-                  1,
-                  Math.floor(numericValue(event, 1)),
-                ),
-              })
-            }
-            type="number"
-            value={direction.hitCount ?? 1}
-          />
+          <View className="condition-editor__field condition-editor__field--number">
+            <Text className="condition-editor__label">连击数</Text>
+            <Input
+              aria-label="连击数"
+              className="condition-editor__input"
+              inputMode="numeric"
+              min="1"
+              onInput={(event) =>
+                onDirectionChange({
+                  hitCount: Math.max(
+                    1,
+                    Math.floor(numericValue(event, 1)),
+                  ),
+                })
+              }
+              type="number"
+              value={direction.hitCount ?? 1}
+            />
+          </View>
         </View>
       </View>
       {onApply ? (

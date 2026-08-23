@@ -709,6 +709,11 @@ describe("mini program skill workflow", () => {
         powerOverride: { mode: "static", value: 95 },
       },
     });
+    const manualFields = screen.getByLabelText("威力与连击参数");
+    expect(within(manualFields).getByLabelText("静态威力"))
+      .toBeInTheDocument();
+    expect(within(manualFields).getByLabelText("连击数"))
+      .toBeInTheDocument();
   });
 
   test("calculates reverse direction from the defender skill without swapping configurations", () => {

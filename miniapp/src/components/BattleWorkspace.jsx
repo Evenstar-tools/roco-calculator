@@ -697,30 +697,34 @@ export default function BattleWorkspace({
                 onChange={(value) => store.dispatch({ type: "mode/set", value })}
                 value={state.mode}
               />
-              {teamAnalysisEnabled ? (
-                <Button
-                  aria-label="手机打开队伍防守面分析"
-                  className="team-analysis-quick"
-                  hoverClass="team-analysis-entry--pressed"
-                  onClick={() => setActiveLayer("team-analysis")}
-                >
-                  <Text>队伍</Text>
-                  <Text className="team-analysis-quick__count">
-                    {teamAnalysisMembers.filter(Boolean).length}/6
-                  </Text>
-                </Button>
-              ) : null}
-              {quickUndoEnabled ? (
-                <Button
-                  aria-label="撤回上一步"
-                  className="quick-undo"
-                  disabled={quickUndoDepth === 0}
-                  hoverClass="quick-undo--pressed"
-                  onClick={undoLastChange}
-                >
-                  <Text aria-hidden="true" className="quick-undo__icon">↶</Text>
-                  <Text className="quick-undo__label">撤回</Text>
-                </Button>
+              {teamAnalysisEnabled || quickUndoEnabled ? (
+                <View aria-label="技能辅助操作" className="skills-toolbar__actions">
+                  {teamAnalysisEnabled ? (
+                    <Button
+                      aria-label="手机打开队伍防守面分析"
+                      className="team-analysis-quick"
+                      hoverClass="team-analysis-entry--pressed"
+                      onClick={() => setActiveLayer("team-analysis")}
+                    >
+                      <Text>队伍</Text>
+                      <Text className="team-analysis-quick__count">
+                        {teamAnalysisMembers.filter(Boolean).length}/6
+                      </Text>
+                    </Button>
+                  ) : null}
+                  {quickUndoEnabled ? (
+                    <Button
+                      aria-label="撤回上一步"
+                      className="quick-undo"
+                      disabled={quickUndoDepth === 0}
+                      hoverClass="quick-undo--pressed"
+                      onClick={undoLastChange}
+                    >
+                      <Text aria-hidden="true" className="quick-undo__icon">↶</Text>
+                      <Text className="quick-undo__label">撤回</Text>
+                    </Button>
+                  ) : null}
+                </View>
               ) : null}
             </View>
             <View className="skills-grid">

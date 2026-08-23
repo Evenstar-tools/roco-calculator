@@ -158,7 +158,7 @@
   }
 
   .mode-switch__button {
-    min-height: 40px;
+    min-height: 44px;
   }
 
   .mode-switch__short-label {
@@ -327,9 +327,9 @@
   .result-bar__names {
     overflow: hidden;
     gap: 7px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: var(--weight-title);
-    line-height: 21px;
+    line-height: 23px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -350,9 +350,9 @@
   .result-bar__skill {
     display: block;
     overflow: hidden;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: var(--weight-emphasis);
-    line-height: 18px;
+    line-height: 20px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -375,7 +375,7 @@
   }
 
   .result-bar__damage {
-    font-size: 44px;
+    font-size: 48px;
     font-weight: var(--weight-result);
   }
 
@@ -557,10 +557,6 @@
 
   .combatant-card__name {
     font-size: 14px;
-  }
-
-  .side-configuration__heading {
-    min-height: 40px;
   }
 
   .skill-slots--matrix .skill-result-row,

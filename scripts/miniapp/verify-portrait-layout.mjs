@@ -150,6 +150,43 @@ async function assertSkillPickerGeometry(page, label) {
   assert.equal(geometry.rowHasInternalOverflow, false, `${label}: a row clips its content`);
 }
 
+async function assertFourSkillCardDividers(page, label) {
+  const cards = await page.locator(".skill-slots--matrix .skill-result-row").evaluateAll(
+    (rows) => rows.filter((row) => {
+      const rect = row.getBoundingClientRect();
+      const style = getComputedStyle(row);
+      return rect.width > 0 && rect.height > 0 && style.display !== "none";
+    }).map((row) => {
+      const picker = row.querySelector(".skill-picker");
+      const result = row.querySelector(".skill-result-row__result");
+      const pickerRect = picker?.getBoundingClientRect();
+      const resultRect = result?.getBoundingClientRect();
+      const resultStyle = result ? getComputedStyle(result) : null;
+      return {
+        dividerWidth: Number.parseFloat(resultStyle?.borderLeftWidth ?? "0"),
+        gap: pickerRect && resultRect ? resultRect.left - pickerRect.right : Number.NaN,
+        radius: Number.parseFloat(resultStyle?.borderTopLeftRadius ?? "0"),
+        topBorder: Number.parseFloat(resultStyle?.borderTopWidth ?? "0"),
+        rightBorder: Number.parseFloat(resultStyle?.borderRightWidth ?? "0"),
+        bottomBorder: Number.parseFloat(resultStyle?.borderBottomWidth ?? "0"),
+      };
+    }),
+  );
+  assert.equal(cards.length, 4, `${label}: four-skill card count is incorrect`);
+  assert.deepEqual(
+    cards.filter((card) =>
+      card.dividerWidth < 1 ||
+      Math.abs(card.gap) > 0.5 ||
+      card.radius > 0 ||
+      card.topBorder > 0 ||
+      card.rightBorder > 0 ||
+      card.bottomBorder > 0
+    ),
+    [],
+    `${label}: result cells must use only one flush vertical divider`,
+  );
+}
+
 async function assertModeSwitchState(page, label) {
   const readState = () => page.locator(".mode-switch").evaluate((switcher) => {
     const buttons = Array.from(switcher.querySelectorAll(".mode-switch__button"));
@@ -296,7 +333,10 @@ try {
     });
     assert.equal(summaryGeometry.fitsWidth, true, `${viewport.name}: summary overflows`);
     assert.equal(summaryGeometry.whiteSpace, "nowrap", `${viewport.name}: summary wraps`);
-    assert.ok(summaryGeometry.height >= 33 && summaryGeometry.height <= 36, `${viewport.name}: summary height drifted`);
+    const expectedSummaryHeight = viewport.width < 768
+      ? summaryGeometry.height >= 28 && summaryGeometry.height <= 30
+      : summaryGeometry.height >= 33 && summaryGeometry.height <= 36;
+    assert.ok(expectedSummaryHeight, `${viewport.name}: summary height drifted`);
     assert.notEqual(summaryGeometry.upColor, summaryGeometry.downColor, `${viewport.name}: summary arrows lost their colors`);
     await assertTouchTargets(
       page,
@@ -333,7 +373,7 @@ try {
       assert.ok(Math.abs(phoneDock.bottomGap) <= 0.5, `${viewport.name}: result dock is not flush to viewport bottom`);
       const contentHeight = phoneDock.height - (viewport.safeBottom ?? 0);
       assert.ok(
-        contentHeight >= 148 && contentHeight <= 174,
+        contentHeight >= 132 && contentHeight <= 140,
         `${viewport.name}: result dock content height ${contentHeight}px does not match the selected compact layout`,
       );
       assert.ok(phoneDock.pagePaddingBottom >= phoneDock.height, `${viewport.name}: result dock obscures page content`);
@@ -600,6 +640,11 @@ try {
         4,
         "iphone-14: four-skill mode must show four editable rows",
       );
+      await assertFourSkillCardDividers(page, "iphone-14 four-skill cards");
+      await page.screenshot({
+        path: resolve(artifactDir, "iphone-14-four-skill-main.png"),
+        fullPage: false,
+      });
       await page.locator(".skill-picker__trigger").first().click();
       await page.locator(".skill-picker__sheet").waitFor({ state: "visible" });
       await assertSkillPickerGeometry(page, "iphone-14 skill picker");

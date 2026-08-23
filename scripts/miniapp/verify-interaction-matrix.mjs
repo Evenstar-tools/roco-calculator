@@ -139,7 +139,7 @@ async function assertQuickSummary(page, label) {
   });
   assert.equal(geometry.fitsWidth, true, `${label}: summary overflows its card`);
   assert.equal(geometry.whiteSpace, "nowrap", `${label}: summary wrapped`);
-  assert.ok(geometry.height >= 33 && geometry.height <= 36, `${label}: summary footer height drifted`);
+  assert.ok(geometry.height >= 28 && geometry.height <= 30, `${label}: compact summary footer height drifted`);
   assert.ok(geometry.upFontSize >= 14.5 && geometry.downFontSize >= 14.5, `${label}: arrows are undersized`);
   assert.notEqual(geometry.upColor, geometry.downColor, `${label}: arrows lost their state colors`);
   assert.ok(geometry.statArrowCenterDelta <= 2, `${label}: arrows are not aligned to the text baseline`);
@@ -375,7 +375,7 @@ async function verifyPhone() {
   await page.locator(".settings-sheet").waitFor({ state: "hidden" });
 
   setStep("phone team analysis");
-  await page.getByLabel("打开队伍防守面分析").click();
+  await page.getByLabel("手机打开队伍防守面分析", { exact: true }).click();
   await page.locator(".team-analysis").waitFor({ state: "visible" });
   await assertSurfaceInsideViewport(page, ".team-analysis", "phone team analysis");
   setStep("phone team analysis slot");
@@ -608,17 +608,24 @@ async function verifyPhone() {
   }
   assert.equal(
     await burstPanel.locator(".condition-editor__burst-source").count(),
-    10,
-    "phone thunderstorm burst source count is incorrect",
+    4,
+    "phone thunderstorm trait source count is incorrect",
   );
   await burstPanel.getByLabel("电流刺激").click();
+  await burstPanel.getByLabel("查看技能迸发来源", { exact: true }).click();
+  assert.equal(
+    await burstPanel.locator(".condition-editor__burst-source").count(),
+    5,
+    "phone thunderstorm skill source count is incorrect",
+  );
   await burstPanel.getByLabel("电弧").click();
   assert.equal(
-    await burstPanel.getByLabel("电流刺激").getAttribute("aria-pressed"),
+    await burstPanel.getByLabel("电弧").getAttribute("aria-pressed"),
     "true",
   );
+  await burstPanel.getByLabel("查看特性迸发来源", { exact: true }).click();
   assert.equal(
-    await burstPanel.getByLabel("电弧").getAttribute("aria-pressed"),
+    await burstPanel.getByLabel("电流刺激").getAttribute("aria-pressed"),
     "true",
   );
   await screenshot(page, "phone-thunderstorm-burst-sources");
@@ -693,7 +700,7 @@ async function verifyIpad() {
   await page.getByLabel("关闭设置", { exact: true }).click();
 
   setStep("iPad team analysis");
-  await page.getByLabel("打开队伍防守面分析").click();
+  await page.getByLabel("打开队伍防守面分析", { exact: true }).click();
   await page.locator(".team-analysis").waitFor({ state: "visible" });
   await assertSurfaceInsideViewport(page, ".team-analysis", "iPad team analysis");
   await screenshot(page, "ipad-team-analysis");
