@@ -80,7 +80,7 @@ describe("恶魔男爵贪得无厌", () => {
     });
   });
 
-  test("下注明分支先扣除10%生命，再结算吸血与溢出回复", () => {
+  test("下注明分支先结算吸血与溢出回复，再扣除10%生命", () => {
     const result = resolveBaronGreed({
       attackerCurrentHp: 500,
       attackerMaximumHp: 500,
@@ -94,16 +94,17 @@ describe("恶魔男爵贪得无厌", () => {
       },
     });
     expect(result).toMatchObject({
-      actualHealing: 50,
-      attackLevelStageAdd: 2,
+      actualHealing: 0,
+      attackLevelStageAdd: 4,
       currentHpAfterHealing: 500,
-      missingHp: 50,
-      overflowHealing: 50,
+      currentHpAfterSettlement: 450,
+      missingHp: 0,
+      overflowHealing: 100,
       requestedHealing: 100,
-      selfDamageBeforeHealing: 50,
+      selfDamageAfterHealing: 50,
     });
-    expect(result.settlement.text).toContain("自损50");
-    expect(result.settlement.text).toContain("回复50");
+    expect(result.settlement.text).toContain("吸血后自损50");
+    expect(result.settlement.text).not.toContain("回复50");
   });
 
   test("下注暗分支不扣血，不改变吸血与溢出回复", () => {
@@ -120,10 +121,11 @@ describe("恶魔男爵贪得无厌", () => {
       },
     })).toMatchObject({
       attackLevelStageAdd: 4,
+      currentHpAfterSettlement: 500,
       missingHp: 0,
       overflowHealing: 100,
       requestedHealing: 100,
-      selfDamageBeforeHealing: 0,
+      selfDamageAfterHealing: 0,
     });
   });
 

@@ -20,9 +20,16 @@ const BURST_GROUPS = ["特性", "技能", "印记"];
 
 function BurstSourceSelector({ context, inputs, onChange }) {
   const [open, setOpen] = useState(false);
+  const [activeGroup, setActiveGroup] = useState(BURST_GROUPS[0]);
   const selectedCount = inputs.filter((input) =>
     (context[input.contextKey ?? input.key] ?? input.defaultValue) === true
   ).length;
+  const groups = BURST_GROUPS.map((group) => ({
+    inputs: inputs.filter((input) => input.burstGroup === group),
+    label: group,
+  })).filter((group) => group.inputs.length > 0);
+  const visibleGroup = groups.find((group) => group.label === activeGroup)
+    ?? groups[0];
   return (
     <View className="condition-editor__burst-sources">
       <Button
@@ -42,14 +49,32 @@ function BurstSourceSelector({ context, inputs, onChange }) {
       </Button>
       {open ? (
         <View aria-label="迸发来源" className="condition-editor__burst-panel">
-          {BURST_GROUPS.map((group) => {
-            const groupInputs = inputs.filter((input) => input.burstGroup === group);
-            if (groupInputs.length === 0) return null;
-            return (
-              <View className="condition-editor__burst-group" key={group}>
-                <Text className="condition-editor__burst-group-title">{group}</Text>
-                <View className="condition-editor__burst-list">
-                  {groupInputs.map((input) => {
+          <View aria-label="迸发来源分类" className="condition-editor__burst-tabs">
+            {groups.map((group) => {
+              const groupSelectedCount = group.inputs.filter((input) =>
+                (context[input.contextKey ?? input.key] ?? input.defaultValue) === true
+              ).length;
+              const active = visibleGroup?.label === group.label;
+              return (
+                <Button
+                  aria-label={`查看${group.label}迸发来源`}
+                  aria-pressed={active}
+                  className={active
+                    ? "condition-editor__burst-tab condition-editor__burst-tab--active"
+                    : "condition-editor__burst-tab"}
+                  key={group.label}
+                  onClick={() => setActiveGroup(group.label)}
+                >
+                  <Text>{group.label}</Text>
+                  {groupSelectedCount > 0 ? <Text>{groupSelectedCount}</Text> : null}
+                </Button>
+              );
+            })}
+          </View>
+          {visibleGroup ? (
+            <View className="condition-editor__burst-group" key={visibleGroup.label}>
+              <View className="condition-editor__burst-list">
+                  {visibleGroup.inputs.map((input) => {
                     const key = input.contextKey ?? input.key;
                     const active = (context[key] ?? input.defaultValue) === true;
                     return (
@@ -76,10 +101,9 @@ function BurstSourceSelector({ context, inputs, onChange }) {
                       </Button>
                     );
                   })}
-                </View>
               </View>
-            );
-          })}
+            </View>
+          ) : null}
         </View>
       ) : null}
     </View>

@@ -2,7 +2,7 @@
 
 @media (max-width: 767px) {
   .page {
-    --result-bar-height: 154px;
+    --result-bar-height: 136px;
 
     padding-right: 8px;
     padding-bottom: calc(var(--result-bar-height) + 2px + var(--safe-area-bottom));
@@ -10,15 +10,15 @@
   }
 
   .app-header-shell {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .app-header {
-    min-height: 48px;
+    min-height: 44px;
   }
 
   .app-header__title {
-    font-size: 19px;
+    font-size: 18px;
   }
 
   .app-header__version {
@@ -33,25 +33,25 @@
 
   .workspace-layout,
   .workspace-layout__main {
-    gap: 8px;
+    gap: 6px;
   }
 
   .battle-workspace__duel {
     grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
-    padding: 6px;
-    gap: 4px;
+    padding: 5px;
+    gap: 3px;
   }
 
   .combatant-card__summary {
-    min-height: 84px;
-    padding: 8px;
-    gap: 7px;
+    min-height: 76px;
+    padding: 6px;
+    gap: 6px;
   }
 
   .combatant-card__image {
-    width: 54px;
-    height: 54px;
-    flex-basis: 54px;
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
   }
 
   .combatant-card__label {
@@ -74,6 +74,7 @@
 
   .configuration-grid {
     grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
   }
 
   .side-configuration:not(.side-configuration--active) {
@@ -81,7 +82,7 @@
   }
 
   .side-configuration {
-    padding: 9px;
+    padding: 7px;
   }
 
   .side-configuration__heading {
@@ -111,12 +112,53 @@
   }
 
   .workspace-section--skills {
-    padding: 8px;
-    gap: 8px;
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .skills-toolbar {
+    gap: 6px;
+  }
+
+  .team-analysis-entry {
+    display: none;
+  }
+
+  .team-analysis-quick {
+    display: flex;
+    width: 64px;
+    min-width: 64px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 0 7px;
+    border: 1px solid var(--border-neutral);
+    border-radius: 9px;
+    background: var(--surface-card);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: var(--weight-emphasis);
+  }
+
+  .team-analysis-quick::after {
+    border: 0;
+  }
+
+  .team-analysis-quick__count {
+    color: var(--text-muted);
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
   }
 
   .mode-switch {
-    width: 132px;
+    width: 120px;
+    min-height: 44px;
+    padding: 2px;
+  }
+
+  .mode-switch__button {
+    min-height: 40px;
   }
 
   .mode-switch__short-label {
@@ -138,12 +180,89 @@
   .skill-panel {
     padding: 0;
     border: 0;
-    border-left: 3px solid var(--side-color);
     border-radius: 9px;
   }
 
   .skill-panel__title {
-    padding: 7px 9px 0;
+    display: none;
+  }
+
+  .skill-slots--matrix {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    padding: 0 6px 6px;
+  }
+
+  .skill-slots--matrix .skill-result-row {
+    min-height: 60px;
+    grid-template-columns: minmax(0, 1fr) 68px;
+    gap: 0;
+    border-radius: 9px;
+  }
+
+  .skill-slots--matrix .skill-picker__trigger {
+    min-height: 60px;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 4px;
+    padding: 5px 4px 5px 6px;
+  }
+
+  .skill-slots--matrix .skill-picker__trigger > .element-icon {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+  }
+
+  .skill-slots--matrix .skill-picker__name {
+    font-size: 13px;
+    line-height: 17px;
+    -webkit-line-clamp: 1;
+  }
+
+  .skill-slots--matrix .skill-picker__meta {
+    gap: 2px;
+    font-size: 9px;
+    line-height: 13px;
+  }
+
+  .skill-slots--matrix .skill-picker__meta-item +
+  .skill-picker__meta-item::before {
+    margin-right: 2px;
+  }
+
+  .skill-slots--matrix .skill-picker__meta-item:nth-child(3) {
+    display: none;
+  }
+
+  .skill-slots--matrix .skill-result-row__result {
+    min-height: 60px;
+    min-width: 0;
+    padding: 4px 3px;
+  }
+
+  .skill-slots--matrix .skill-result-row__damage {
+    font-size: 18px;
+  }
+
+  .skill-slots--matrix .skill-result-row__percent {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .skill-slots--matrix .skill-context-note {
+    grid-column: 1 / -1;
+    padding: 5px 7px;
+  }
+
+  .skill-slots--matrix .skill-context-note__description {
+    font-size: 10px;
+    line-height: 14px;
+    -webkit-line-clamp: 1;
+  }
+
+  .skill-slots--matrix .skill-context-note__effect {
+    font-size: 10px;
+    line-height: 14px;
   }
 
   .skill-result-row {
@@ -190,8 +309,8 @@
       "health health";
     align-content: center;
     align-items: center;
-    gap: 6px 12px;
-    padding: 11px 16px calc(10px + var(--safe-area-bottom));
+    gap: 4px 10px;
+    padding: 8px 14px calc(7px + var(--safe-area-bottom));
     border-right: 0;
     border-bottom: 0;
     border-left: 0;
@@ -208,9 +327,9 @@
   .result-bar__names {
     overflow: hidden;
     gap: 7px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: var(--weight-title);
-    line-height: 24px;
+    line-height: 21px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -231,16 +350,16 @@
   .result-bar__skill {
     display: block;
     overflow: hidden;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: var(--weight-emphasis);
-    line-height: 20px;
+    line-height: 18px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   .result-bar__skill-position {
-    font-size: 13px;
-    line-height: 20px;
+    font-size: 12px;
+    line-height: 18px;
   }
 
   .result-bar__metrics {
@@ -256,7 +375,7 @@
   }
 
   .result-bar__damage {
-    font-size: 48px;
+    font-size: 44px;
     font-weight: var(--weight-result);
   }
 
@@ -271,13 +390,13 @@
   }
 
   .result-bar__percent {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: var(--weight-result);
     white-space: nowrap;
   }
 
   .result-bar__remaining {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     white-space: nowrap;
   }
@@ -343,24 +462,24 @@
   }
 
   .quick-controls__row {
-    grid-template-columns: 42px repeat(6, minmax(0, 1fr));
+    grid-template-columns: 38px repeat(6, minmax(0, 1fr));
     gap: 2px;
   }
 
   .quick-controls__option {
-    min-height: 52px;
+    min-height: 44px;
     padding: 2px 0;
   }
 
   .quick-controls__icon-stage,
   .quick-controls__icon-stage .stat-icon {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
   }
 
   .quick-controls__stat-label {
-    font-size: 11px;
-    line-height: 14px;
+    font-size: 10px;
+    line-height: 12px;
   }
 
   .quick-controls__status-badge {
@@ -369,11 +488,13 @@
   }
 
   .quick-controls__summary {
-    margin-right: -9px;
-    margin-bottom: -9px;
-    margin-left: -9px;
-    padding-right: 8px;
-    padding-left: 8px;
+    min-height: 28px;
+    margin-right: -7px;
+    margin-bottom: -7px;
+    margin-left: -7px;
+    padding: 5px 7px;
+    font-size: 11px;
+    line-height: 16px;
   }
 
   .iv-editor {
@@ -405,7 +526,25 @@
     padding-left: 5px;
   }
 
+  .app-header-shell {
+    margin-bottom: 4px;
+  }
+
+  .app-header {
+    min-height: 40px;
+  }
+
+  .workspace-layout,
+  .workspace-layout__main {
+    gap: 4px;
+  }
+
+  .battle-workspace__duel {
+    padding: 4px;
+  }
+
   .combatant-card__summary {
+    min-height: 68px;
     padding: 6px;
     gap: 4px;
   }
@@ -418,6 +557,20 @@
 
   .combatant-card__name {
     font-size: 14px;
+  }
+
+  .side-configuration__heading {
+    min-height: 40px;
+  }
+
+  .skill-slots--matrix .skill-result-row,
+  .skill-slots--matrix .skill-picker__trigger,
+  .skill-slots--matrix .skill-result-row__result {
+    min-height: 58px;
+  }
+
+  .skill-slots--matrix .skill-context-note {
+    display: none;
   }
 
   .stat-grid__item {

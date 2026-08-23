@@ -235,13 +235,16 @@ test("groups thunderstorm burst sources behind a stable summary", () => {
 
   fireEvent.click(summary);
   const selector = screen.getByLabelText("迸发来源");
-  expect(within(selector).getByText("特性")).toBeInTheDocument();
-  expect(within(selector).getByText("技能")).toBeInTheDocument();
-  expect(within(selector).getByText("印记")).toBeInTheDocument();
-  expect(within(selector).getByText("本次技能威力 +40。")).toBeInTheDocument();
+  expect(within(selector).getByRole("button", { name: "查看特性迸发来源" }))
+    .toHaveAttribute("aria-pressed", "true");
   expect(within(selector).getByRole("button", { name: "电流刺激" }))
     .toHaveAttribute("aria-pressed", "true");
+  expect(within(selector).queryByRole("button", { name: "电弧" }))
+    .not.toBeInTheDocument();
 
+  fireEvent.click(within(selector).getByRole("button", {
+    name: "查看技能迸发来源",
+  }));
   fireEvent.click(within(selector).getByRole("button", { name: "电弧" }));
   expect(onContextChange).toHaveBeenLastCalledWith({
     burstSourceArc: true,

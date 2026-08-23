@@ -253,24 +253,41 @@ export function applyBattleActivation({
     sproutStacks,
     traitName,
   });
+  const postAttackEffects =
+    calculation?.[selfDirection]?.results?.[skillIndex]?.postAttackEffects;
   const postAttackStageAdd = Math.max(
     0,
-    Math.floor(Number(
-      calculation?.[selfDirection]?.results?.[skillIndex]
-        ?.postAttackEffects?.attackLevelStageAdd,
-    ) || 0),
+    Math.floor(Number(postAttackEffects?.attackLevelStageAdd) || 0),
   );
+  const rawPostAttackCurrentHp =
+    postAttackEffects?.selfCurrentHpAfterSettlement;
+  const postAttackCurrentHp = Number(rawPostAttackCurrentHp);
+  const hasPostAttackCurrentHp =
+    rawPostAttackCurrentHp !== undefined &&
+    rawPostAttackCurrentHp !== null &&
+    Number.isFinite(postAttackCurrentHp);
 
   if (!resolution) {
-    if (postAttackStageAdd > 0) {
+    if (postAttackStageAdd > 0 || hasPostAttackCurrentHp) {
       const selfOverrides = next.directions[selfDirection].overrides ?? {};
-      updateDirection(next, selfDirection, {
-        overrides: {
-          attackLevelStage: clampStage(
-            Number(selfOverrides.attackLevelStage ?? 0) + postAttackStageAdd,
-          ),
-        },
-      });
+      if (postAttackStageAdd > 0) {
+        updateDirection(next, selfDirection, {
+          overrides: {
+            attackLevelStage: clampStage(
+              Number(selfOverrides.attackLevelStage ?? 0) + postAttackStageAdd,
+            ),
+          },
+        });
+      }
+      if (hasPostAttackCurrentHp) {
+        updateDirection(next, targetDirection, {
+          currentHp: postAttackCurrentHp,
+          context: {
+            currentHpPercent:
+              postAttackCurrentHp / Math.max(1, panelStats.hp) * 100,
+          },
+        });
+      }
       return { applied: true, reason: null, state: next };
     }
     if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
@@ -436,6 +453,15 @@ export function applyBattleActivation({
     updateDirection(next, targetDirection, {
       currentHp,
       context: { currentHpPercent: currentHp / panelStats.hp * 100 },
+    });
+  }
+  if (hasPostAttackCurrentHp) {
+    updateDirection(next, targetDirection, {
+      currentHp: postAttackCurrentHp,
+      context: {
+        currentHpPercent:
+          postAttackCurrentHp / Math.max(1, panelStats.hp) * 100,
+      },
     });
   }
 

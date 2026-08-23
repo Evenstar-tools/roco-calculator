@@ -204,6 +204,7 @@ describe("shared battle activation", () => {
           results: [{
             postAttackEffects: {
               attackLevelStageAdd: 2,
+              selfCurrentHpAfterSettlement: 450,
               source: "贪得无厌",
             },
           }],
@@ -217,6 +218,7 @@ describe("shared battle activation", () => {
 
     expect(result.applied).toBe(true);
     expect(result.state.directions.forward.overrides.attackLevelStage).toBe(2);
+    expect(result.state.directions.reverse.currentHp).toBe(450);
   });
 
   test("copies the opponent positive ability stages when Balance triggers", () => {

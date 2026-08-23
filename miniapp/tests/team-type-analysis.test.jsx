@@ -57,6 +57,8 @@ describe("mini-program team defensive analysis", () => {
     );
     expect(screen.getByRole("button", { name: "打开队伍防守面分析" }))
       .toHaveTextContent("已配置 2/6");
+    expect(screen.getByRole("button", { name: "手机打开队伍防守面分析" }))
+      .toHaveTextContent("队伍2/6");
   });
 
   test("edits six slots and expands risk details without leaving the sheet", () => {

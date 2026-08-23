@@ -1129,14 +1129,13 @@
 }
 
 .negative-status-editor {
-  padding: 24rpx;
-  border: 1rpx solid #e1e4e8;
-  border-radius: 20rpx;
+  padding: 12px;
+  border: 1px solid #e1e4e8;
+  border-radius: 10px;
   background: #fff;
 }
 
 .negative-status-editor__heading,
-.negative-status-editor__side-label,
 .negative-status-editor__stepper {
   display: flex;
   align-items: center;
@@ -1144,52 +1143,78 @@
 
 .negative-status-editor__heading {
   justify-content: space-between;
-  margin-bottom: 20rpx;
+  margin-bottom: 10px;
 }
 
 .negative-status-editor__title {
   color: #202936;
-  font-size: 30rpx;
+  font-size: 15px;
   font-weight: 700;
 }
 
 .negative-status-editor__hint {
   color: #7c8794;
-  font-size: 22rpx;
+  font-size: 11px;
 }
 
-.negative-status-editor__side + .negative-status-editor__side {
-  margin-top: 24rpx;
-  padding-top: 24rpx;
-  border-top: 1rpx solid #eceef1;
+.negative-status-editor__tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 10px;
+  padding: 3px;
+  gap: 3px;
+  border: 1px solid #dfe3e7;
+  border-radius: 8px;
+  background: #f5f6f7;
 }
 
-.negative-status-editor__side-label {
-  margin-bottom: 12rpx;
-  color: #45515f;
-  font-size: 24rpx;
-  font-weight: 600;
+.negative-status-editor__tab {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  margin: 0;
+  padding: 0 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #596574;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.negative-status-editor__tab::after {
+  border: 0;
+}
+
+.negative-status-editor__tab--active {
+  background: #24313d;
+  color: #fff;
 }
 
 .negative-status-editor__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12rpx;
+  gap: 7px;
 }
 
 .negative-status-editor__item {
   min-width: 0;
-  padding: 12rpx;
-  border: 1rpx solid #e5e7eb;
-  border-radius: 14rpx;
-  background: #fafafa;
+  padding: 7px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f8faf9;
 }
 
 .negative-status-editor__label {
   display: block;
-  margin-bottom: 8rpx;
+  margin-bottom: 5px;
   color: #4b5563;
-  font-size: 22rpx;
+  font-size: 12px;
 }
 
 .negative-status-editor__stepper {
@@ -1197,24 +1222,31 @@
 }
 
 .negative-status-editor__step {
-  width: 56rpx;
-  min-width: 56rpx;
-  height: 56rpx;
-  min-height: 56rpx;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
   padding: 0;
-  border: 1rpx solid #d8dde3;
-  border-radius: 12rpx;
+  border: 1px solid #d8dde3;
+  border-radius: 7px;
   background: #fff;
-  color: #24313d;
-  font-size: 30rpx;
-  line-height: 54rpx;
+  color: #24313d !important;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 34px;
+}
+
+.negative-status-editor__step:disabled {
+  border-color: #e7eaed;
+  background: #f2f4f5;
+  color: #b3bac2 !important;
 }
 
 .negative-status-editor__value {
-  min-width: 44rpx;
+  min-width: 24px;
   text-align: center;
   color: #202936;
-  font-size: 26rpx;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
 }

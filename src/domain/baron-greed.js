@@ -46,11 +46,13 @@ export function resolveBaronGreed({
       actualHealing: 0,
       attackLevelStageAdd: 0,
       currentHpAfterHealing: 0,
+      currentHpAfterSettlement: 0,
       effectiveLifestealPercent: 0,
       lifestealLevels: 0,
       missingHp: 0,
       overflowHealing: 0,
       requestedHealing: 0,
+      selfDamageAfterHealing: 0,
       selfDamageBeforeHealing: 0,
       settlement: null,
     };
@@ -76,39 +78,37 @@ export function resolveBaronGreed({
     0,
     healing.requestedHealing - healing.missingHp,
   );
-  const actualHealing = Math.min(
-    healing.missingHp,
-    healing.requestedHealing,
-  );
-  const currentHpAfterHealing = Math.min(
-    healing.maximumHp,
-    healing.currentHp + actualHealing,
-  );
+  const actualHealing = healing.actualHealing;
+  const currentHpAfterHealing = healing.currentHpAfterHealing;
+  const currentHpAfterSettlement = healing.currentHpAfterSettlement;
   const attackLevelStageAdd = healing.maximumHp > 0
     ? Math.floor(overflowHealing * 20 / healing.maximumHp)
     : 0;
   const attackPercentAdd = attackLevelStageAdd * 10;
   const lines = [
     `吸血${capability.percent}%`,
-    healing.selfDamageBeforeHealing > 0
-      ? `自损${healing.selfDamageBeforeHealing}`
-      : null,
     actualHealing > 0 ? `回复${actualHealing}` : null,
     `溢出${overflowHealing}`,
     `本次加攻+${attackPercentAdd}%`,
+    healing.selfDamageAfterHealing > 0
+      ? `吸血后自损${healing.selfDamageAfterHealing}`
+      : null,
   ].filter(Boolean);
 
   return {
-    active: healing.requestedHealing > 0,
+    active:
+      healing.requestedHealing > 0 || healing.selfDamageAfterHealing > 0,
     actualHealing,
     attackLevelStageAdd,
     currentHpAfterHealing,
+    currentHpAfterSettlement,
     effectiveLifestealPercent: healing.lifestealPercent,
     lifestealLevels: capability.levels,
     missingHp: healing.missingHp,
     overflowHealing,
     requestedHealing: healing.requestedHealing,
-    selfDamageBeforeHealing: healing.selfDamageBeforeHealing,
+    selfDamageAfterHealing: healing.selfDamageAfterHealing,
+    selfDamageBeforeHealing: 0,
     settlement: {
       kind: "baron-greed",
       lines: [lines.join(" · ")],
@@ -152,8 +152,10 @@ export function resolveBaronGreedHitSequence({
     ? Math.max(0, Math.round(parsedTargetHp))
     : undefined;
   let attackLevelStageAdd = 0;
+  let currentHpAfterHealing = currentHp;
   let overflowHealing = 0;
   let requestedHealing = 0;
+  let selfDamageAfterHealing = 0;
   const hitDamages = [];
   const capability = resolveLifestealCapability({
     persistentLifestealPercent,
@@ -170,7 +172,7 @@ export function resolveBaronGreedHitSequence({
       Math.floor(Number(calculated?.total ?? calculated) || 0),
     );
     const hitHealing = resolveSkillHealing({
-      applySelfDamage: index === 0,
+      applySelfDamage: index === normalizedHitCount - 1,
       attackerCurrentHp: currentHp,
       attackerMaximumHp: maximumHp,
       baseLifestealPercent: capability.basePercent,
@@ -182,10 +184,7 @@ export function resolveBaronGreedHitSequence({
       targetCurrentHp: targetHp,
     });
 
-    const actualHealing = Math.min(
-      hitHealing.missingHp,
-      hitHealing.requestedHealing,
-    );
+    const actualHealing = hitHealing.actualHealing;
     requestedHealing += hitHealing.requestedHealing;
     overflowHealing += Math.max(
       0,
@@ -194,7 +193,9 @@ export function resolveBaronGreedHitSequence({
     attackLevelStageAdd = maximumHp > 0
       ? Math.floor(overflowHealing * 20 / maximumHp)
       : 0;
-    currentHp = Math.min(maximumHp, hitHealing.currentHp + actualHealing);
+    currentHpAfterHealing = hitHealing.currentHpAfterHealing;
+    selfDamageAfterHealing += hitHealing.selfDamageAfterHealing;
+    currentHp = hitHealing.currentHpAfterSettlement;
     if (targetHp !== undefined) targetHp = Math.max(0, targetHp - damage);
     hitDamages.push(damage);
   }
@@ -202,17 +203,27 @@ export function resolveBaronGreedHitSequence({
   const attackPercentAdd = attackLevelStageAdd * 10;
   const lines = [
     `逐击 ${hitDamages.join("/")}`,
-    `吸血${capability.percent}% · 溢出${overflowHealing} · 本次加攻+${attackPercentAdd}%`,
+    [
+      `吸血${capability.percent}%`,
+      `溢出${overflowHealing}`,
+      `本次加攻+${attackPercentAdd}%`,
+      selfDamageAfterHealing > 0
+        ? `吸血后自损${selfDamageAfterHealing}`
+        : null,
+    ].filter(Boolean).join(" · "),
   ];
 
   return {
-    active: requestedHealing > 0,
+    active: requestedHealing > 0 || selfDamageAfterHealing > 0,
     attackLevelStageAdd,
+    currentHpAfterHealing,
+    currentHpAfterSettlement: currentHp,
     effectiveLifestealPercent: capability.percent,
     hitDamages,
     missingHp: Math.max(0, maximumHp - currentHp),
     overflowHealing,
     requestedHealing,
+    selfDamageAfterHealing,
     settlement: {
       kind: "baron-greed",
       lines,

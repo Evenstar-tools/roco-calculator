@@ -858,31 +858,56 @@ function CalculatorWorkspace({ snapshot }) {
         calculation?.[selfDirection]?.results?.[index]?.hitCount,
       sproutStacks,
     });
+    const postAttackEffects =
+      calculation?.[selfDirection]?.results?.[index]?.postAttackEffects;
     const postAttackStageAdd = Math.max(
       0,
-      Math.floor(Number(
-        calculation?.[selfDirection]?.results?.[index]
-          ?.postAttackEffects?.attackLevelStageAdd,
-      ) || 0),
+      Math.floor(Number(postAttackEffects?.attackLevelStageAdd) || 0),
     );
+    const rawPostAttackCurrentHp =
+      postAttackEffects?.selfCurrentHpAfterSettlement;
+    const postAttackCurrentHp = Number(rawPostAttackCurrentHp);
+    const hasPostAttackCurrentHp =
+      rawPostAttackCurrentHp !== undefined &&
+      rawPostAttackCurrentHp !== null &&
+      Number.isFinite(postAttackCurrentHp);
     if (!resolution) {
-      if (postAttackStageAdd > 0) {
+      if (postAttackStageAdd > 0 || hasPostAttackCurrentHp) {
         const currentOverrides =
           latest.directions[selfDirection].overrides ?? {};
-        dispatch({
-          direction: selfDirection,
-          type: "direction/update",
-          value: {
-            overrides: {
-              attackLevelStage: clampStage(
-                Number(currentOverrides.attackLevelStage ?? 0) +
-                  postAttackStageAdd,
-              ),
+        if (postAttackStageAdd > 0) {
+          dispatch({
+            direction: selfDirection,
+            type: "direction/update",
+            value: {
+              overrides: {
+                attackLevelStage: clampStage(
+                  Number(currentOverrides.attackLevelStage ?? 0) +
+                    postAttackStageAdd,
+                ),
+              },
             },
-          },
-        });
+          });
+        }
+        if (hasPostAttackCurrentHp) {
+          dispatch({
+            direction: oppositeDirection,
+            type: "direction/update",
+            value: {
+              currentHp: postAttackCurrentHp,
+              context: {
+                currentHpPercent:
+                  postAttackCurrentHp / Math.max(1, panelStats.hp) * 100,
+              },
+            },
+          });
+        }
         setActiveDirection(selfDirection);
-        setToast(`贪得无厌：本次共加攻 +${postAttackStageAdd * 10}%`);
+        setToast(
+          postAttackStageAdd > 0
+            ? `贪得无厌：本次共加攻 +${postAttackStageAdd * 10}%`
+            : `${skill.name}：吸血后结算自身掉血`,
+        );
         return;
       }
       if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
@@ -1096,6 +1121,19 @@ function CalculatorWorkspace({ snapshot }) {
         value: {
           currentHp,
           context: { currentHpPercent: currentHp / panelStats.hp * 100 },
+        },
+      });
+    }
+    if (hasPostAttackCurrentHp) {
+      dispatch({
+        direction: oppositeDirection,
+        type: "direction/update",
+        value: {
+          currentHp: postAttackCurrentHp,
+          context: {
+            currentHpPercent:
+              postAttackCurrentHp / Math.max(1, panelStats.hp) * 100,
+          },
         },
       });
     }

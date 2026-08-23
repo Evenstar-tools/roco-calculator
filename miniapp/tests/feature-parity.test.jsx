@@ -85,6 +85,15 @@ describe("mini-program desktop feature parity", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     expect(screen.getByLabelText("负面状态层数")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "查看防守方负面状态" }))
+      .toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByRole("button", { name: "攻击方灼烧层数增加" }))
+      .not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "查看攻击方负面状态" }));
+    expect(screen.getByRole("button", { name: "攻击方灼烧层数增加" }))
+      .toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "防守方灼烧层数增加" }))
+      .not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "雷暴" }));
     expect(store.getState().directions.forward.context.weatherThunder).toBe(true);
     expect(store.getState().directions.reverse.context.weatherThunder).toBe(true);
@@ -116,34 +125,21 @@ describe("mini-program desktop feature parity", () => {
     expect(store.getState().mode).toBe("four");
   });
 
-  test("restores and persists the draggable undo position", () => {
+  test("docks quick undo beside the mode switch without covering content", () => {
     const snapshot = snapshotFixture();
     const store = createCalculatorStore(snapshot);
-    const onQuickUndoPositionChange = vi.fn();
     render(
       <BattleWorkspace
-        onQuickUndoPositionChange={onQuickUndoPositionChange}
         quickUndoEnabled
-        quickUndoPosition={{ bottom: 140, right: 24 }}
         snapshot={snapshot}
         store={store}
       />,
     );
 
-    const undoHandle = screen.getByLabelText("移动撤回按钮");
-    expect(undoHandle).toHaveStyle({ bottom: "140px", right: "24px" });
-    fireEvent.touchStart(undoHandle, {
-      touches: [{ clientX: 320, clientY: 500 }],
-    });
-    fireEvent.touchMove(undoHandle, {
-      touches: [{ clientX: 280, clientY: 460 }],
-    });
-    fireEvent.touchEnd(undoHandle);
-
-    expect(onQuickUndoPositionChange).toHaveBeenLastCalledWith({
-      bottom: 180,
-      right: 64,
-    });
+    const toolbar = screen.getByLabelText("技能操作");
+    expect(within(toolbar).getByRole("button", { name: "撤回上一步" }))
+      .toBeInTheDocument();
+    expect(screen.queryByLabelText("移动撤回按钮")).not.toBeInTheDocument();
   });
 
   test("selects direct trait damage as the active result source", () => {

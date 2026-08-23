@@ -211,8 +211,61 @@ async function connectNative(wsEndpoint) {
     assert.ok(settingsClose, "settings close action is missing");
     await settingsClose.tap();
     await wait(250);
+    await selectAttackerSpirit("古卷执政官");
     const modeButtons = await selectMany(".mode-switch__button");
     assert.equal(modeButtons.length, 2, "mode switch is incomplete");
+    await modeButtons[1].tap();
+    await wait(1600);
+    const fourSkillRows = await selectMany(
+      ".skill-panel--active .skill-slots--matrix .skill-result-row",
+    );
+    assert.equal(
+      fourSkillRows.length,
+      4,
+      "phone four-skill matrix should expose four result cards",
+    );
+    const fourSkillResults = await selectMany(
+      ".skill-panel--active .skill-slots--matrix .skill-result-row__result",
+    );
+    const fourSkillDamages = await selectMany(
+      ".skill-panel--active .skill-slots--matrix .skill-result-row__damage",
+    );
+    const fourSkillPercents = await selectMany(
+      ".skill-panel--active .skill-slots--matrix .skill-result-row__percent",
+    );
+    assert.equal(fourSkillResults.length, 4, "four-skill result columns are incomplete");
+    assert.equal(fourSkillDamages.length, 4, "four-skill damage labels are incomplete");
+    assert.equal(fourSkillPercents.length, 4, "four-skill percent labels are incomplete");
+    for (let index = 0; index < fourSkillResults.length; index += 1) {
+      const [
+        resultOffset,
+        resultSize,
+        damageOffset,
+        damageSize,
+        percentOffset,
+        percentSize,
+      ] = await Promise.all([
+        fourSkillResults[index].offset(),
+        fourSkillResults[index].size(),
+        fourSkillDamages[index].offset(),
+        fourSkillDamages[index].size(),
+        fourSkillPercents[index].offset(),
+        fourSkillPercents[index].size(),
+      ]);
+      const resultRight = Number(resultOffset.left) + Number(resultSize.width);
+      for (const [label, offset, size] of [
+        ["damage", damageOffset, damageSize],
+        ["percent", percentOffset, percentSize],
+      ]) {
+        assert.ok(
+          Number(offset.left) >= Number(resultOffset.left) - 0.5 &&
+            Number(offset.left) + Number(size.width) <= resultRight + 0.5,
+          `four-skill ${label} label ${index + 1} overflows its result column: ` +
+            `${JSON.stringify({ offset, resultOffset, resultSize, size })}`,
+        );
+      }
+    }
+    await screenshot(miniProgram, "02a-four-skill-matrix.png");
     await modeButtons[0].tap();
     await wait(220);
 
@@ -223,9 +276,13 @@ async function connectNative(wsEndpoint) {
     assert.ok(conditionsAction, "battle conditions entry is missing");
     await conditionsAction.tap();
     await wait(300);
+    const statusTabs = await selectMany(".negative-status-editor__tab");
+    assert.equal(statusTabs.length, 2, "negative status side tabs are incomplete");
+    const activeStatusTab = await selectOne(".negative-status-editor__tab--active");
+    assert.match(await activeStatusTab.text(), /防守方/u, "defender status tab should open first");
     let statusSteps = await selectMany(".negative-status-editor__step");
-    assert.equal(statusSteps.length, 20, "negative status steppers are incomplete");
-    for (const index of [11, 13, 15, 17, 19, 19]) {
+    assert.equal(statusSteps.length, 10, "active negative status steppers are incomplete");
+    for (const index of [1, 3, 5, 7, 9, 9]) {
       statusSteps = await selectMany(".negative-status-editor__step");
       await statusSteps[index].tap();
       await wait(100);
@@ -250,7 +307,24 @@ async function connectNative(wsEndpoint) {
     assert.ok(await selectOne(".result-sheet__baron-settlement"), "Baron settlement is missing");
     const baronLines = await selectMany(".result-sheet__baron-line");
     assert.ok(baronLines.length >= 2, "Baron settlement should contain two lines");
+    const baronResultScroll = await selectOne(".result-sheet__scroll");
+    assert.ok(baronResultScroll, "result scroll view is missing");
+    await baronResultScroll.scrollTo(0, 620);
+    await wait(220);
     await screenshot(miniProgram, "05-baron-settlement.png");
+    await closeResult();
+
+    process.stdout.write("native: bet settles after lifesteal\n");
+    await selectSkill("下注");
+    await openResult();
+    const betSettlement = await selectOne(".result-sheet__baron-settlement");
+    assert.ok(betSettlement, "Baron bet settlement is missing");
+    assert.match(
+      await betSettlement.text(),
+      /吸血后自损/u,
+      "bet should settle self damage after lifesteal",
+    );
+    await screenshot(miniProgram, "05b-baron-bet-settlement.png");
     await closeResult();
 
     process.stdout.write("native: quick undo\n");
@@ -299,17 +373,25 @@ async function connectNative(wsEndpoint) {
     assert.ok(burstSummary, "thunderstorm burst summary is missing");
     await burstSummary.tap();
     await wait(250);
-    assert.equal((await selectMany(".condition-editor__burst-group-title")).length, 3, "burst groups are incomplete");
-    assert.equal((await selectMany(".condition-editor__burst-source")).length, 10, "burst sources are incomplete");
+    const burstTabs = await selectMany(".condition-editor__burst-tab");
+    assert.equal(burstTabs.length, 3, "burst category tabs are incomplete");
+    assert.equal((await selectMany(".condition-editor__burst-source")).length, 4, "trait burst sources are incomplete");
     const currentSource = await findByText(".condition-editor__burst-source", "电流刺激");
     assert.ok(currentSource, "burst source 电流刺激 is missing");
     await currentSource.tap();
     await wait(150);
+    await burstTabs[1].tap();
+    await wait(150);
+    assert.equal((await selectMany(".condition-editor__burst-source")).length, 5, "skill burst sources are incomplete");
     const arcSource = await findByText(".condition-editor__burst-source", "电弧");
     assert.ok(arcSource, "burst source 电弧 is missing");
     await arcSource.tap();
     await wait(180);
-    assert.equal((await selectMany(".condition-editor__burst-source--active")).length, 2, "burst source selection did not persist");
+    assert.equal((await selectMany(".condition-editor__burst-source--active")).length, 1, "active burst source is missing from the current category");
+    assert.match(await burstSummary.text(), /2\/10/u, "burst source selections did not persist across categories");
+    const burstOffset = await burstSummary.offset();
+    await miniProgram.pageScrollTo(Math.max(0, Number(burstOffset?.top) - 210));
+    await wait(220);
     await screenshot(miniProgram, "07-thunderstorm-burst-groups.png");
     await (await selectOne(".condition-editor__burst-summary")).tap();
 
@@ -340,6 +422,8 @@ async function connectNative(wsEndpoint) {
       baronSettlementLineCount: baronLines.length,
       burstGroupCount: 3,
       burstSourceCount: 10,
+      mobileFourSkillOverflowCount: 0,
+      mobileFourSkillRowCount: fourSkillRows.length,
       negativeStatusRowCount: statusRows.length,
       passed: runtimeErrors.length === 0,
       runtimeErrors,

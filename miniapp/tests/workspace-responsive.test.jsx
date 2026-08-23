@@ -155,6 +155,18 @@ describe("responsive battle workspace", () => {
     );
   });
 
+  test("exposes four-skill groups as a compact two-by-two phone matrix", () => {
+    const snapshot = createSnapshot();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+
+    const attackerSkills = screen.getByLabelText("攻击方四技能");
+    expect(attackerSkills).toHaveClass("skill-slots--matrix");
+    expect(attackerSkills.querySelectorAll(".skill-result-row")).toHaveLength(4);
+  });
+
   test("keeps nature and 60-point shortcuts directly on the main surface", () => {
     const snapshot = createSnapshot();
     const store = createCalculatorStore(snapshot);

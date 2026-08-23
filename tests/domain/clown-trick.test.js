@@ -32,6 +32,28 @@ describe("clown trick trait", () => {
     });
   });
 
+  test("下注固定分支在吸血结算完成后再扣除自身10%生命", () => {
+    expect(resolveSkillHealing({
+      attackerCurrentHp: 500,
+      attackerMaximumHp: 500,
+      baseLifestealPercent: 50,
+      context: { betMode: "fixed" },
+      mainDamage: 200,
+      skill: {
+        name: "下注",
+        description:
+          "造成物伤，选择：本次技能威力+40，使用后自己生命-10%或自己生命低于50%时本次技能威力+100。",
+      },
+    })).toMatchObject({
+      actualHealing: 0,
+      currentHpAfterHealing: 500,
+      currentHpAfterSettlement: 450,
+      missingHp: 0,
+      requestedHealing: 100,
+      selfDamageAfterHealing: 50,
+    });
+  });
+
   test("特性为攻防两侧提供同一套自身生命输入", () => {
     for (const role of ["attacker", "defender"]) {
       expect(getTraitEffectInputs(clownTrait[0], role)).toEqual([

@@ -18,12 +18,16 @@ import {
 const VALID_SCOPES = new Set(["working-tree", "index", "HEAD"]);
 const DECLARED_RELEASE_PATCHES = Object.freeze({
   "src/domain/baron-greed.js": Object.freeze({
-    mirrorHash: "25ac295a5825153c1ee718ab2ac233f722ca792307ec8b6f950c876e963c2c14",
-    reason: "保留贪得无厌结算中的物攻等级说明",
+    mirrorHash: "27db5f973104a9e7e3423b5d925d30d9d3ce4f2adb2e8daf59091fdbf60e2452",
+    reason: "保留贪得无厌结算、吸血后自损顺序与物攻等级说明",
   }),
   "src/domain/calculate.js": Object.freeze({
-    mirrorHash: "e2cabef1f8580879f913839807abf1dcbe879416d64b8ade24a43e5a96e653a3",
-    reason: "保留 v1.5.7 后已验收的静态威力与面板威力结算补丁",
+    mirrorHash: "55f99fc1d279ac656e39c1024a0196c86c352f3b588fc14ee5994fd5350f4f96",
+    reason: "保留静态威力、面板威力与贪得无厌结算状态写回补丁",
+  }),
+  "src/domain/clown-trick.js": Object.freeze({
+    mirrorHash: "3f2bc2be7147963bd68a506481040c052cd83804b34a421b33e0c02294f878ec",
+    reason: "保留下注先吸血后扣除自身生命的已验收结算顺序",
   }),
   "src/domain/marks.js": Object.freeze({
     mirrorHash: "7ae356e5f9623674c6834494843e36781c932145b1ddddf24dd4146347545e99",
@@ -48,6 +52,10 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
   "src/state/calculator-session.js": Object.freeze({
     mirrorHash: "b297cccc2e1761d43ec6bf0d0f77873d4b44c389ec010ebe1dfb93fc4766e696",
     reason: "保留 v1.5.7 后已验收的威力输入状态管理",
+  }),
+  "src/state/battle-activation.js": Object.freeze({
+    mirrorHash: "99bd26b9e5437fddca002b50a2bc354db0fb41d4c6c9bc5f8e8d35b6df9e0ef2",
+    reason: "保留贪得无厌加攻与自身最终生命同步写回",
   }),
 });
 

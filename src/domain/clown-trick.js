@@ -55,7 +55,7 @@ export function directHealingPercent(skill, context) {
   return healing;
 }
 
-function selfDamageBeforeHealing(skill, context, maximumHp, currentHp) {
+function selfDamageAfterHealing(skill, context, maximumHp, currentHp) {
   if (
     String(skill?.name ?? "").trim() !== "下注" ||
     String(context?.betMode ?? "fixed") !== "fixed"
@@ -96,15 +96,7 @@ export function resolveSkillHealing({
     0,
     maximumHp,
   );
-  const preHealingSelfDamage = applySelfDamage
-    ? selfDamageBeforeHealing(
-        skill,
-        context,
-        maximumHp,
-        currentHpBeforeSelfDamage,
-      )
-    : 0;
-  const currentHp = currentHpBeforeSelfDamage - preHealingSelfDamage;
+  const currentHp = currentHpBeforeSelfDamage;
   const missingHp = maximumHp - currentHp;
   const currentHpPercent = maximumHp > 0
     ? currentHpBeforeSelfDamage / maximumHp * 100
@@ -147,8 +139,29 @@ export function resolveSkillHealing({
       : null,
     ...normalizedExternalSources,
   ].filter(Boolean);
+  const requestedHealing = lifestealHealing + directHealing + externalHealing;
+  const actualHealing = Math.min(missingHp, requestedHealing);
+  const currentHpAfterHealing = Math.min(
+    maximumHp,
+    currentHp + actualHealing,
+  );
+  const postHealingSelfDamage = applySelfDamage
+    ? selfDamageAfterHealing(
+        skill,
+        context,
+        maximumHp,
+        currentHpAfterHealing,
+      )
+    : 0;
+  const currentHpAfterSettlement = Math.max(
+    0,
+    currentHpAfterHealing - postHealingSelfDamage,
+  );
   return {
+    actualHealing,
     currentHp,
+    currentHpAfterHealing,
+    currentHpAfterSettlement,
     currentHpBeforeSelfDamage,
     directHealing,
     externalHealing,
@@ -158,8 +171,9 @@ export function resolveSkillHealing({
     lifestealPercent,
     maximumHp,
     missingHp,
-    requestedHealing: lifestealHealing + directHealing + externalHealing,
-    selfDamageBeforeHealing: preHealingSelfDamage,
+    requestedHealing,
+    selfDamageAfterHealing: postHealingSelfDamage,
+    selfDamageBeforeHealing: 0,
   };
 }
 
@@ -183,6 +197,7 @@ export function resolveClownTrickDamage({
       lifestealPercent: 0,
       missingHp: 0,
       requestedHealing: 0,
+      selfDamageAfterHealing: 0,
       selfDamageBeforeHealing: 0,
       settlement: null,
     };
@@ -199,14 +214,14 @@ export function resolveClownTrickDamage({
     targetCurrentHp,
   });
   const {
+    actualHealing,
     healPercent,
     healingSources,
     lifestealPercent,
     missingHp,
     requestedHealing,
-    selfDamageBeforeHealing,
+    selfDamageAfterHealing,
   } = healing;
-  const actualHealing = Math.min(missingHp, requestedHealing);
   const sourceLabels = healingSources.map(
     (source) => `${source.label} ${source.amount}`,
   );
@@ -224,7 +239,8 @@ export function resolveClownTrickDamage({
     lifestealPercent,
     missingHp,
     requestedHealing,
-    selfDamageBeforeHealing,
+    selfDamageAfterHealing,
+    selfDamageBeforeHealing: 0,
     settlement: text
       ? {
           side: "attacker",

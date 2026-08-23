@@ -16,7 +16,10 @@ export default function SkillSlots({
 }) {
   const slotCount = Math.max(4, values?.length ?? 0, rows?.length ?? 0);
   return (
-    <View aria-label={`${label}四技能`} className="skill-slots">
+    <View
+      aria-label={`${label}四技能`}
+      className="skill-slots skill-slots--matrix"
+    >
       {Array.from({ length: slotCount }, (_, index) => {
         const row = rows[index];
 

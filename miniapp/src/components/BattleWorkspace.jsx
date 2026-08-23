@@ -57,11 +57,6 @@ const SIDE_DIRECTIONS = Object.freeze({
   defender: "reverse",
 });
 
-const DEFAULT_QUICK_UNDO_POSITION = Object.freeze({
-  bottom: 176,
-  right: 16,
-});
-
 function nestedKeys(value, prefix = "") {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return prefix ? [prefix] : [];
@@ -87,29 +82,6 @@ function actionUndoGroup(action) {
     ...nestedKeys(action.value),
   ].filter((value) => value !== undefined && value !== null && value !== "");
   return scope.join(":");
-}
-
-function touchPoint(event) {
-  return event?.touches?.[0]
-    ?? event?.nativeEvent?.touches?.[0]
-    ?? event?.detail?.touches?.[0]
-    ?? null;
-}
-
-function viewportSize() {
-  try {
-    const info = Taro.getWindowInfo?.() ?? Taro.getSystemInfoSync?.();
-    return {
-      height: Number(info?.windowHeight) || 667,
-      width: Number(info?.windowWidth) || 375,
-    };
-  } catch {
-    return { height: 667, width: 375 };
-  }
-}
-
-function clamp(value, minimum, maximum) {
-  return Math.min(Math.max(value, minimum), Math.max(minimum, maximum));
 }
 
 function getSpirit(snapshot, spiritId) {
@@ -171,11 +143,9 @@ export default function BattleWorkspace({
   favoriteIds = [],
   onFavoriteToggle,
   onShareChange,
-  onQuickUndoPositionChange,
   negativeStatusEnabled = false,
   petImages,
   quickUndoEnabled = false,
-  quickUndoPosition = null,
   showTypeAnalysis = false,
   snapshot,
   store,
@@ -187,14 +157,10 @@ export default function BattleWorkspace({
   const [actionFeedback, setActionFeedback] = useState(null);
   const [direction, setDirection] = useState("forward");
   const [quickUndoDepth, setQuickUndoDepth] = useState(0);
-  const [undoPosition, setUndoPosition] = useState(
-    quickUndoPosition ?? DEFAULT_QUICK_UNDO_POSITION,
-  );
   const quickUndoHistoryRef = useRef(createUndoHistory({
     coalesceMs: 400,
     limit: 50,
   }));
-  const quickUndoDragRef = useRef(null);
   const resultActionHistoryRef = useRef(new Map());
   const resultTriggerRef = useRef(null);
   const state = useSyncExternalStore(
@@ -304,10 +270,6 @@ export default function BattleWorkspace({
     }
   }, [quickUndoEnabled, store]);
 
-  useEffect(() => {
-    setUndoPosition(quickUndoPosition ?? DEFAULT_QUICK_UNDO_POSITION);
-  }, [quickUndoPosition]);
-
   function recordQuickUndo(options = {}) {
     if (quickUndoEnabled) {
       quickUndoHistoryRef.current.record(store.getState(), options);
@@ -326,61 +288,10 @@ export default function BattleWorkspace({
   }
 
   function undoLastChange() {
-    if (quickUndoDragRef.current?.suppressClick) return;
     const previous = quickUndoHistoryRef.current.undo();
     if (!previous) return;
     store.dispatch({ type: "state/replace", value: previous.state });
     setQuickUndoDepth(quickUndoHistoryRef.current.size());
-  }
-
-  function startQuickUndoDrag(event) {
-    const point = touchPoint(event);
-    if (!point) return;
-    quickUndoDragRef.current = {
-      moved: false,
-      startBottom: undoPosition.bottom,
-      startRight: undoPosition.right,
-      startX: point.clientX,
-      startY: point.clientY,
-      position: undoPosition,
-      suppressClick: false,
-    };
-  }
-
-  function moveQuickUndo(event) {
-    const drag = quickUndoDragRef.current;
-    const point = touchPoint(event);
-    if (!drag || !point) return;
-    const viewport = viewportSize();
-    const next = {
-      bottom: Math.round(clamp(
-        drag.startBottom - (point.clientY - drag.startY),
-        76,
-        viewport.height - 56,
-      )),
-      right: Math.round(clamp(
-        drag.startRight - (point.clientX - drag.startX),
-        8,
-        viewport.width - 56,
-      )),
-    };
-    drag.moved = drag.moved ||
-      Math.abs(point.clientX - drag.startX) > 4 ||
-      Math.abs(point.clientY - drag.startY) > 4;
-    drag.position = next;
-    setUndoPosition(next);
-  }
-
-  function finishQuickUndoDrag() {
-    const drag = quickUndoDragRef.current;
-    if (!drag) return;
-    drag.suppressClick = drag.moved;
-    if (drag.moved) {
-      onQuickUndoPositionChange?.(drag.position);
-      setTimeout(() => {
-        if (quickUndoDragRef.current === drag) drag.suppressClick = false;
-      }, 0);
-    }
   }
 
   function setSpirit(side, value) {
@@ -781,22 +692,25 @@ export default function BattleWorkspace({
           ) : null}
 
           <View className="workspace-section workspace-section--skills">
-            <ModeSwitch
-              onChange={(value) => store.dispatch({ type: "mode/set", value })}
-              value={state.mode}
-            />
-            {quickUndoEnabled ? (
-              <View
-                aria-label="移动撤回按钮"
-                className="quick-undo-positioner"
-                onTouchEnd={finishQuickUndoDrag}
-                onTouchMove={moveQuickUndo}
-                onTouchStart={startQuickUndoDrag}
-                style={{
-                  bottom: `${undoPosition.bottom}px`,
-                  right: `${undoPosition.right}px`,
-                }}
-              >
+            <View aria-label="技能操作" className="skills-toolbar">
+              <ModeSwitch
+                onChange={(value) => store.dispatch({ type: "mode/set", value })}
+                value={state.mode}
+              />
+              {teamAnalysisEnabled ? (
+                <Button
+                  aria-label="手机打开队伍防守面分析"
+                  className="team-analysis-quick"
+                  hoverClass="team-analysis-entry--pressed"
+                  onClick={() => setActiveLayer("team-analysis")}
+                >
+                  <Text>队伍</Text>
+                  <Text className="team-analysis-quick__count">
+                    {teamAnalysisMembers.filter(Boolean).length}/6
+                  </Text>
+                </Button>
+              ) : null}
+              {quickUndoEnabled ? (
                 <Button
                   aria-label="撤回上一步"
                   className="quick-undo"
@@ -804,10 +718,11 @@ export default function BattleWorkspace({
                   hoverClass="quick-undo--pressed"
                   onClick={undoLastChange}
                 >
-                  ↶
+                  <Text aria-hidden="true" className="quick-undo__icon">↶</Text>
+                  <Text className="quick-undo__label">撤回</Text>
                 </Button>
-              </View>
-            ) : null}
+              ) : null}
+            </View>
             <View className="skills-grid">
               {panels.map((panel) => (
                 <View

@@ -178,6 +178,37 @@ describe("reference-first responsive CSS", () => {
     );
   });
 
+  test("reserves enough result width for three-digit damage and HP percentages", () => {
+    const responsive = styles["responsive.css"];
+    expect(responsive).toMatch(
+      /\.skill-slots--matrix\s+\.skill-result-row\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)\s*68px/u,
+    );
+    expect(responsive).toMatch(
+      /\.skill-slots--matrix\s+\.skill-result-row__result\s*\{[\s\S]*?min-width:\s*0/u,
+    );
+    expect(responsive).toMatch(
+      /\.skill-slots--matrix\s+\.skill-result-row__percent\s*\{[\s\S]*?white-space:\s*nowrap/u,
+    );
+  });
+
+  test("keeps skill groups free of a redundant outer direction rail", () => {
+    const skills = styles["skills.css"];
+    const responsive = styles["responsive.css"];
+    const desktopPanelRule = skills.match(
+      /\.skill-panel\s*\{([\s\S]*?)\}/u,
+    )?.[1] ?? "";
+    const activePanelRule = skills.match(
+      /\.skill-panel--active\s*\{([\s\S]*?)\}/u,
+    )?.[1] ?? "";
+    const phonePanelRule = responsive.match(
+      /\.skill-panel\s*\{([\s\S]*?)\}/u,
+    )?.[1] ?? "";
+
+    expect(desktopPanelRule).not.toMatch(/border-left/u);
+    expect(activePanelRule).not.toMatch(/border-left/u);
+    expect(phonePanelRule).not.toMatch(/border-left/u);
+  });
+
   test("stacks phone ability steppers before their values can truncate", () => {
     const responsive = styles["responsive.css"];
     expect(responsive).toMatch(

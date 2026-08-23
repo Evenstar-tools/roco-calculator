@@ -1888,6 +1888,9 @@ function calculateSkillResult({
     postAttackEffects: baronGreed.active
       ? {
           attackLevelStageAdd: baronGreed.attackLevelStageAdd,
+          selfCurrentHpAfterSettlement:
+            baronGreed.currentHpAfterSettlement,
+          selfDamageAfterHealing: baronGreed.selfDamageAfterHealing,
           source: "贪得无厌",
         }
       : undefined,
