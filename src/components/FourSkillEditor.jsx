@@ -262,7 +262,7 @@ function SkillSide({
           <span className="skill-slot__head-kind">属性</span>
           <span className="skill-slot__head-cost">耗</span>
           <span className="skill-slot__head-power">
-            {powerDisplayMode === "panel" ? "面板威力" : "静态威力"}
+            {powerDisplayMode === "panel" ? "显示威力" : "静态威力"}
           </span>
           <span className="skill-slot__head-hits">连击</span>
           <span className="skill-slot__head-result">伤害占比</span>
@@ -422,7 +422,7 @@ function SkillSide({
           const counterReflectionHint =
             result?.reflectedSourceSkillName &&
             Number.isFinite(result?.reflectedPower)
-              ? `反弹「${result.reflectedSourceSkillName}」· 威力 ${result.reflectedPower}`
+              ? `反弹「${result.reflectedSourceSkillName}」· 继承显示威力 ${result.reflectedPower}`
               : null;
           const powerResolutionHint = selected
             ? describeResolution(result)
@@ -474,7 +474,7 @@ function SkillSide({
                 </span>
                 <PowerDraftInput
                   ariaLabel={`${label}技能${index + 1}${
-                    powerDisplayMode === "panel" ? "面板威力" : "静态威力"
+                    powerDisplayMode === "panel" ? "显示威力" : "静态威力"
                   }`}
                   className="skill-slot__power-input"
                   disabled={!selected}

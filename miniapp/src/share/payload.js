@@ -18,12 +18,47 @@ const STAT_KEYS = [
   "physicalDefense",
   "magicalDefense",
 ];
+const CONTEXT_KEY_ALIASES = Object.freeze({
+  donationHitBonus: "wh",
+  donationPoisonCount: "wz",
+  donationPowerCount: "wp",
+});
+const CONTEXT_KEY_NAMES = Object.freeze(
+  Object.fromEntries(
+    Object.entries(CONTEXT_KEY_ALIASES).map(([name, alias]) => [alias, name]),
+  ),
+);
 
 function safeIdentifier(value) {
   return typeof value === "string" &&
     /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/u.test(value)
     ? value
     : null;
+}
+
+function compactPublicContext(value) {
+  const sanitized = sanitizePublicContext(value);
+  if (!sanitized) return undefined;
+  return Object.fromEntries(
+    Object.entries(sanitized).map(([key, candidate]) => [
+      CONTEXT_KEY_ALIASES[key] ?? key,
+      candidate,
+    ]),
+  );
+}
+
+function expandPublicContext(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+  return sanitizePublicContext(
+    Object.fromEntries(
+      Object.entries(value).map(([key, candidate]) => [
+        CONTEXT_KEY_NAMES[key] ?? key,
+        candidate,
+      ]),
+    ),
+  );
 }
 
 function isCompactTraitValue(value) {
@@ -125,7 +160,7 @@ function compactSkill(entry) {
     100,
     undefined,
   );
-  const context = sanitizePublicContext(entry.context);
+  const context = compactPublicContext(entry.context);
   const overrides = compactOverrides(entry.overrides);
   if (hitCount !== undefined && hitCount !== 1) compact.h = hitCount;
   if (context) compact.c = context;
@@ -226,7 +261,7 @@ function compactDirection(direction) {
     direction?.currentHp === undefined
       ? null
       : finiteInRange(direction.currentHp, 0, 99999, null);
-  const context = sanitizePublicContext(direction?.context);
+  const context = compactPublicContext(direction?.context);
   const overrides = compactOverrides(direction?.overrides);
 
   if (selectedSkillIndex !== 0) compact.x = selectedSkillIndex;
@@ -470,7 +505,7 @@ function expandSkill(entry, allowedSkillIds) {
   if (Object.hasOwn(entry ?? {}, "h")) {
     result.hitCount = integerInRange(entry.h, 1, 100, 1);
   }
-  const context = sanitizePublicContext(entry?.c);
+  const context = expandPublicContext(entry?.c);
   const overrides = expandOverrides(entry?.o);
   if (context) result.context = context;
   if (overrides) result.overrides = overrides;
@@ -565,7 +600,7 @@ function expandDirection(raw, fallback) {
     starfallStacks: integerInRange(raw?.s, 0, 100, 0),
     finalDamageMultiplier: finiteInRange(raw?.m, 0, 100, 1),
     currentHp,
-    context: sanitizePublicContext(raw?.c) ?? {},
+    context: expandPublicContext(raw?.c) ?? {},
     overrides: expandOverrides(raw?.o) ?? {},
   };
 }

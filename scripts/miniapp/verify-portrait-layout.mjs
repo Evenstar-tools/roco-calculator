@@ -187,6 +187,79 @@ async function assertFourSkillCardDividers(page, label) {
   );
 }
 
+async function assertFourSkillMetricFit(page, label) {
+  const metrics = await page.locator(
+    ".skill-slots--matrix .skill-result-row",
+  ).evaluateAll((rows) => rows.filter((row) => {
+    const rect = row.getBoundingClientRect();
+    const style = getComputedStyle(row);
+    return rect.width > 0 && rect.height > 0 && style.display !== "none";
+  }).map((row) => {
+    const result = row.querySelector(".skill-result-row__result");
+    const damage = row.querySelector(".skill-result-row__damage");
+    const percent = row.querySelector(".skill-result-row__percent");
+    if (!result || !damage || !percent) return null;
+
+    const previous = {
+      damageClass: damage.className,
+      damageText: damage.textContent,
+      percentClass: percent.className,
+      percentText: percent.textContent,
+      resultClass: result.className,
+    };
+    result.classList.add("skill-result-row__result--long");
+    damage.classList.add(
+      "skill-result-row__damage--compact",
+      "skill-result-row__damage--tight",
+    );
+    percent.classList.add("skill-result-row__percent--compact");
+    damage.textContent = "1234567";
+    percent.textContent = "999.9% HP";
+
+    const resultRect = result.getBoundingClientRect();
+    const damageRect = damage.getBoundingClientRect();
+    const percentRect = percent.getBoundingClientRect();
+    const measurement = {
+      damageCenterDelta: Math.abs(
+        damageRect.left + damageRect.width / 2 -
+          (resultRect.left + resultRect.width / 2),
+      ),
+      damageFits:
+        damage.scrollWidth <= damage.clientWidth + 0.5 &&
+        damageRect.left >= resultRect.left - 0.5 &&
+        damageRect.right <= resultRect.right + 0.5,
+      percentCenterDelta: Math.abs(
+        percentRect.left + percentRect.width / 2 -
+          (resultRect.left + resultRect.width / 2),
+      ),
+      percentFits:
+        percent.scrollWidth <= percent.clientWidth + 0.5 &&
+        percentRect.left >= resultRect.left - 0.5 &&
+        percentRect.right <= resultRect.right + 0.5,
+    };
+
+    result.className = previous.resultClass;
+    damage.className = previous.damageClass;
+    damage.textContent = previous.damageText;
+    percent.className = previous.percentClass;
+    percent.textContent = previous.percentText;
+    return measurement;
+  }));
+
+  assert.equal(metrics.length, 4, `${label}: four metric cells are missing`);
+  assert.deepEqual(
+    metrics.filter((metric) =>
+      !metric ||
+      !metric.damageFits ||
+      !metric.percentFits ||
+      metric.damageCenterDelta > 1 ||
+      metric.percentCenterDelta > 1
+    ),
+    [],
+    `${label}: a long damage metric is off-center or overflows`,
+  );
+}
+
 async function assertModeSwitchState(page, label) {
   const readState = () => page.locator(".mode-switch").evaluate((switcher) => {
     const buttons = Array.from(switcher.querySelectorAll(".mode-switch__button"));
@@ -641,6 +714,7 @@ try {
         "iphone-14: four-skill mode must show four editable rows",
       );
       await assertFourSkillCardDividers(page, "iphone-14 four-skill cards");
+      await assertFourSkillMetricFit(page, "iphone-14 four-skill metrics");
       await page.screenshot({
         path: resolve(artifactDir, "iphone-14-four-skill-main.png"),
         fullPage: false,

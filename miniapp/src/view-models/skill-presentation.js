@@ -12,7 +12,7 @@ function counterReflectionHint(result) {
     !result?.reflectedSourceSkillName ||
     !Number.isFinite(Number(result?.reflectedPower))
   ) return null;
-  return `\u53cd\u5f39\u300c${result.reflectedSourceSkillName}\u300d\u00b7\u5a01\u529b ${Number(result.reflectedPower)}`;
+  return `\u53cd\u5f39\u300c${result.reflectedSourceSkillName}\u300d\u00b7\u663e\u793a\u5a01\u529b ${Number(result.reflectedPower)}`;
 }
 
 export function createSkillPresentation({

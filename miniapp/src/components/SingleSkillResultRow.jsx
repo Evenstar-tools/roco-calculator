@@ -17,6 +17,9 @@ export default function SingleSkillResultRow({
   const damageLabel = exact ? row.totalDamage : "--";
   const percentLabel = exact ? `${row.hpPercent.toFixed(1)}% HP` : "--% HP";
   const skillName = row?.skillName ?? fallbackSkill?.name ?? "当前技能";
+  const damageLength = String(damageLabel).length;
+  const percentLength = percentLabel.length;
+  const longMetrics = damageLength >= 5 || percentLength >= 9;
 
   return (
     <View
@@ -36,9 +39,11 @@ export default function SingleSkillResultRow({
         aria-hidden={resultsHidden}
         aria-label={`查看${skillName}伤害 ${damageLabel} ${percentLabel}`}
         aria-pressed={selected}
-        className={selected
-          ? "skill-result-row__result skill-result-row__result--selected"
-          : "skill-result-row__result"}
+        className={[
+          "skill-result-row__result",
+          selected ? "skill-result-row__result--selected" : "",
+          longMetrics ? "skill-result-row__result--long" : "",
+        ].filter(Boolean).join(" ")}
         hoverClass="button-hover"
         onClick={(event) => {
           event.stopPropagation();
@@ -46,8 +51,15 @@ export default function SingleSkillResultRow({
         }}
         tabIndex={resultsHidden ? -1 : 0}
       >
-        <Text className="skill-result-row__damage">{damageLabel}</Text>
-        <Text className="skill-result-row__percent">{percentLabel}</Text>
+        <Text className={[
+          "skill-result-row__damage",
+          damageLength >= 5 ? "skill-result-row__damage--compact" : "",
+          damageLength >= 7 ? "skill-result-row__damage--tight" : "",
+        ].filter(Boolean).join(" ")}>{damageLabel}</Text>
+        <Text className={[
+          "skill-result-row__percent",
+          percentLength >= 9 ? "skill-result-row__percent--compact" : "",
+        ].filter(Boolean).join(" ")}>{percentLabel}</Text>
       </Button>
     </View>
   );

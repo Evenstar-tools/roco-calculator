@@ -594,11 +594,11 @@ export function SingleSkillEditor({
         <div className="skill-effect-card__power" aria-label="技能威力">
           <label className="skill-effect-card__power-input">
             <small>
-              {normalizedPowerDisplayMode === "panel" ? "面板威力" : "静态威力"}
+              {normalizedPowerDisplayMode === "panel" ? "显示威力" : "静态威力"}
             </small>
             <PowerDraftInput
               ariaLabel={
-                normalizedPowerDisplayMode === "panel" ? "面板威力" : "静态威力"
+                normalizedPowerDisplayMode === "panel" ? "显示威力" : "静态威力"
               }
               isManual={Boolean(activePowerOverride)}
               mode={normalizedPowerDisplayMode}

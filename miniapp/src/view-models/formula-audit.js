@@ -65,6 +65,7 @@ export function buildResultFormulaAudit(result) {
   const attackPanel = stepByLabel(result, "攻击面板");
   const basePower = stepByLabel(result, "基础威力");
   const displayedBasePower =
+    stepByLabel(result, "手动显示威力") ??
     stepByLabel(result, "手动面板威力") ??
     stepByLabel(result, "面板威力") ??
     stepByLabel(result, "游戏内显示威力");

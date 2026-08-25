@@ -87,6 +87,14 @@ function createSnapshot() {
         name: "闪燃",
         type: "火",
       },
+      {
+        basePower: 20,
+        category: "physical",
+        cost: 7,
+        id: "skill-swarm",
+        name: "虫群",
+        type: "火",
+      },
     ],
     traits: [
       {
@@ -533,6 +541,51 @@ describe("createCalculationView", () => {
 
     expect(view.selectedResult.displayedPower).toBe(90);
     expect(view.selectedResult.powerSummary).toBeNull();
+  });
+
+  test("同步虫群三类奉献到小程序完整计算", () => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.mode = "four";
+    state.sides.attacker.skills.four[0] = {
+      context: {
+        donationHitBonus: 2,
+        donationPoisonCount: 2,
+        donationPowerCount: 1,
+      },
+      skillId: "skill-swarm",
+    };
+    state.directions.forward.selectedSkillIndex = 0;
+
+    const view = createCalculationView(snapshot, state, "forward");
+
+    expect(view.selectedResult).toMatchObject({
+      donationPoisonStacks: 2,
+      hitCount: 3,
+      skillCost: 7,
+      staticPower: 40,
+    });
+  });
+
+  test("同步悼亡特性层数上限和稳定控件标识", () => {
+    const snapshot = createSnapshot();
+    snapshot.traits.push({
+      description: "按双方力竭数提高双攻。",
+      id: "trait-mourning",
+      name: "悼亡",
+    });
+    snapshot.spirits[0].traitIds = ["trait-mourning"];
+
+    const control = getTraitView(
+      snapshot,
+      snapshot.spirits[0],
+      "attacker",
+    ).inputs.find((input) => input.contextKey === "attackerTraitStacks");
+
+    expect(control).toMatchObject({
+      id: "attackerTrait.attackerTraitStacks.b0f10b7e",
+      max: 99,
+    });
   });
 
   test("materializes owning-side traits for both combat directions", () => {

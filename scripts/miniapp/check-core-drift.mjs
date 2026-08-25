@@ -22,8 +22,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留贪得无厌结算、吸血后自损顺序与物攻等级说明",
   }),
   "src/domain/calculate.js": Object.freeze({
-    mirrorHash: "55f99fc1d279ac656e39c1024a0196c86c352f3b588fc14ee5994fd5350f4f96",
-    reason: "保留静态威力、面板威力与贪得无厌结算状态写回补丁",
+    mirrorHash: "0509ef555c3bcafddbd71b4b32420c1334c212f65ebd05d3c43ec1ac8bd90ba7",
+    reason: "保留显示威力、实际攻防面板、听桥继承与虫群奉献结算补丁",
   }),
   "src/domain/clown-trick.js": Object.freeze({
     mirrorHash: "3f2bc2be7147963bd68a506481040c052cd83804b34a421b33e0c02294f878ec",
@@ -33,21 +33,25 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     mirrorHash: "7ae356e5f9623674c6834494843e36781c932145b1ddddf24dd4146347545e99",
     reason: "保留风起印记的已验收威力结算补丁",
   }),
+  "src/domain/negative-status-rules.js": Object.freeze({
+    mirrorHash: "ac5f192d99c5c7ab5a79844c250081beac67900924522365b942474d09678660",
+    reason: "保留虫群中毒奉献结算补丁",
+  }),
   "src/domain/power-override.js": Object.freeze({
     mirrorHash: "61baf83aa3f8acafd8218de495c6cee2ae8e46695c1e113700d1a55f2c01810a",
     reason: "保留 v1.5.7 后已验收的威力覆盖语义",
   }),
   "src/domain/skill-effects.js": Object.freeze({
-    mirrorHash: "31e7ca26894c9c34241e59b9c09f7b9ab35e0475cf9b0900eb70a99472f0f0cc",
-    reason: "保留迸发默认开启与雷暴迸发种类联动的已验收语义",
+    mirrorHash: "e7e89444a3d777b683a1b7827ed7e6c2f7e52e4c30fe9006fb54fe003fbad0ba",
+    reason: "保留迸发联动、虫群三类奉献与桌面最新技能输入语义",
   }),
   "src/domain/skill-rules.js": Object.freeze({
-    mirrorHash: "a28b753d23953c37a448f4167b4b80bdf28351bf69411811ba41ae3f1632bdc1",
-    reason: "保留静态面板威力覆盖与雷暴迸发条件联动的已验收语义",
+    mirrorHash: "a3702fd44a3e4d594b04b3ab4e0d95e3f4fd7bd581bae50606b8d9b3c7da2133",
+    reason: "保留显示威力覆盖、虫群奉献与最新技能规则语义",
   }),
   "src/domain/trait-effects.js": Object.freeze({
-    mirrorHash: "f18b15e86578cb196a9920f5f5b845c7d6dc44fb9ce346f265a2c92ee0c8dafb",
-    reason: "保留电流刺激迸发默认开启的已验收语义",
+    mirrorHash: "e1ef3d9481dd183d7c2b1b24d85444636cba5eda1da99697306f340cebee7211",
+    reason: "保留迸发默认开启、特性层数上限与最新特性输入语义",
   }),
   "src/state/calculator-session.js": Object.freeze({
     mirrorHash: "b297cccc2e1761d43ec6bf0d0f77873d4b44c389ec010ebe1dfb93fc4766e696",

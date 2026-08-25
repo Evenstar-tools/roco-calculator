@@ -112,10 +112,10 @@ test("switches between static and panel power overrides and restores automatic c
     .toHaveAttribute("aria-pressed", "true");
   expect(screen.getByLabelText("静态威力")).toHaveValue(80);
 
-  fireEvent.click(screen.getByRole("button", { name: "面板威力" }));
-  expect(screen.getByLabelText("面板威力")).toHaveValue(150);
+  fireEvent.click(screen.getByRole("button", { name: "显示威力" }));
+  expect(screen.getByLabelText("显示威力")).toHaveValue(150);
   expect(onDirectionChange).not.toHaveBeenCalled();
-  fireEvent.input(screen.getByLabelText("面板威力"), {
+  fireEvent.input(screen.getByLabelText("显示威力"), {
     target: { value: "175" },
   });
   expect(onDirectionChange).toHaveBeenLastCalledWith({

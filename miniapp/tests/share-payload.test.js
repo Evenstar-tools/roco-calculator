@@ -375,6 +375,8 @@ describe("mini program share payload", () => {
     state.sides.attacker.skills.four[1].context = {
       authCode: "abc123",
       counterTriggered: true,
+      donationPoisonCount: 3,
+      donationPowerCount: 2,
       flightMode: "hits",
       secret: "shh",
       skillUseCount: 4,
@@ -395,6 +397,8 @@ describe("mini program share payload", () => {
       decoded.sides.attacker.skills.four[1].context,
     ).toEqual({
       counterTriggered: true,
+      donationPoisonCount: 3,
+      donationPowerCount: 2,
       flightMode: "hits",
       skillUseCount: 4,
     });

@@ -244,9 +244,21 @@
     font-size: 18px;
   }
 
+  .skill-slots--matrix .skill-result-row__damage--compact {
+    font-size: 15px;
+  }
+
+  .skill-slots--matrix .skill-result-row__damage--tight {
+    font-size: 11px;
+  }
+
   .skill-slots--matrix .skill-result-row__percent {
     font-size: 10px;
     white-space: nowrap;
+  }
+
+  .skill-slots--matrix .skill-result-row__percent--compact {
+    font-size: 9px;
   }
 
   .skill-slots--matrix .skill-context-note {

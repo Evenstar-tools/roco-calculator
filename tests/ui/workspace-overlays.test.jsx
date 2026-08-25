@@ -113,7 +113,7 @@ test("opens the complete release notes in a second-level dialog", () => {
   });
 
   expect(screen.getByText("版本记录")).toBeVisible();
-  expect(screen.getByText("队伍分析与快捷撤回")).toBeVisible();
+  expect(screen.getByText("计算核心与桌面体验收口")).toBeVisible();
   expect(screen.getByText("v1.6.2")).toBeVisible();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
 
@@ -188,6 +188,6 @@ test("opens display settings from the menu and exposes the type analysis switch"
     "aria-pressed",
     "true",
   );
-  fireEvent.click(screen.getByRole("button", { name: "面板威力" }));
+  fireEvent.click(screen.getByRole("button", { name: "显示威力" }));
   expect(onPowerDisplayModeChange).toHaveBeenCalledWith("panel");
 });

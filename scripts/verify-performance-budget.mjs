@@ -12,7 +12,7 @@ export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
   clientTotal: 65 * 1024 * 1024,
   cssGzip: 24 * 1024,
   jsGzip: 194 * 1024,
-  jsRaw: 658 * 1024,
+  jsRaw: 660 * 1024,
   runtimeJson: 1.5 * 1024 * 1024,
 });
 

@@ -4,10 +4,10 @@ function validationMessage(mode, draft) {
   if (draft === "") return "";
   const value = Number(draft);
   if (!Number.isFinite(value) || value < 0 || value > 9999) {
-    return `请输入 0–9999 的${mode === "panel" ? "面板" : "静态"}威力`;
+    return `请输入 0–9999 的${mode === "panel" ? "显示" : "静态"}威力`;
   }
   if (!Number.isInteger(value)) {
-    return `${mode === "panel" ? "面板" : "静态"}威力只能填整数`;
+    return `${mode === "panel" ? "显示" : "静态"}威力只能填整数`;
   }
   return "";
 }

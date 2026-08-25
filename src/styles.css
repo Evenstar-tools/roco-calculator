@@ -4460,19 +4460,20 @@ html[data-theme="dark"] .formula-group {
 
 .floating-undo > span {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 18px;
-  text-align: center;
-  background: var(--accent, #5945e6);
-  border: 2px solid var(--surface, #fff);
-  border-radius: 9px;
+  top: 4px;
+  right: 5px;
+  min-width: 12px;
+  height: auto;
+  padding: 0;
+  color: var(--accent, #5945e6);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: right;
+  pointer-events: none;
+  background: transparent;
+  border: 0;
 }
 
 [data-theme="dark"] .floating-undo {
@@ -4488,7 +4489,7 @@ html[data-theme="dark"] .formula-group {
 }
 
 [data-theme="dark"] .floating-undo > span {
-  border-color: #252a3d;
+  color: #a99cff;
 }
 
 @media (prefers-reduced-motion: reduce) {

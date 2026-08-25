@@ -87,6 +87,14 @@ const SKILL_RULES = {
     inputs: [numberInput("convertedBuffStacks", "转化增益层数")],
     resolve: (context) => ({ poison: Number(context.convertedBuffStacks) || 0 }),
   },
+  虫群: {
+    resolve: (context) => ({
+      poison: Math.max(
+        0,
+        Math.floor(Number(context.donationPoisonCount) || 0),
+      ),
+    }),
+  },
   剧毒: {
     inputs: [booleanInput("negativeStatusCounterDefense", "应对防御")],
     resolve: (context) => ({ poison: context.negativeStatusCounterDefense ? 8 : 3 }),

@@ -2913,7 +2913,7 @@ test("enables negative-status settlement, edits stacks, and remembers the switch
   expect(screen.getByRole("region", { name: "负面状态层数" })).toBeVisible();
 });
 
-test("switches detailed four-skill rows to editable panel power and remembers it", async () => {
+test("切换四技能行到可编辑的显示威力并记住设置", async () => {
   const user = userEvent.setup();
   const first = render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -2924,10 +2924,11 @@ test("switches detailed four-skill rows to editable panel power and remembers it
   ).toBeVisible();
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "显示设置" }));
-  await user.click(screen.getByRole("button", { name: "面板威力" }));
+  expect(screen.getByText("显示威力：")).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "显示威力" }));
   await user.click(screen.getByRole("button", { name: "完成" }));
 
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能1面板威力" })).toBeVisible();
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能1显示威力" })).toBeVisible();
   expect(
     screen.queryByRole("spinbutton", { name: "攻击方技能1静态威力" }),
   ).not.toBeInTheDocument();
@@ -2937,7 +2938,7 @@ test("switches detailed four-skill rows to editable panel power and remembers it
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
   await user.click(screen.getByRole("button", { name: "具体版" }));
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能1面板威力" })).toBeVisible();
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能1显示威力" })).toBeVisible();
 });
 
 test("loads the built-in popular library only on demand and imports through the existing flow", async () => {

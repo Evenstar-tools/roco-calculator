@@ -51,6 +51,18 @@ npm ci
 npm run dev
 ```
 
+### AI 计算 CLI
+
+项目内置纯 JSON CLI，供 AI 直接计算、复算和展开公式，无需读取计算源码或启动界面：
+
+```bash
+npm run -s cli -- meta
+npm run -s cli -- schema
+npm run -s cli -- calculate --input tmp/rock-cli-input.json
+```
+
+自动调用规则和交接方式见 [AI CLI 交接文档](docs/maintenance/ai-cli-handoff.md)。
+
 ### 静态部署
 
 ```bash
@@ -107,6 +119,8 @@ npm run desktop:pack
 
 | 命令 | 用途 |
 | --- | --- |
+| `npm run -s cli -- <命令>` | 供 AI 检索、计算、复算和展开公式 |
+| `npm run cli:test` | 验证 CLI 机器协议与真实核心集成 |
 | `npm run dev` | 启动本地开发环境 |
 | `npm run data:runtime` | 从完整快照生成紧凑运行数据 |
 | `npm run data:validate` | 校验精灵、技能和引用关系 |

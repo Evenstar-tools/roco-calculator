@@ -81,6 +81,34 @@ describe("trait effect coverage", () => {
     ]);
   });
 
+  test("悼亡按双方6只力竭精灵结算为物攻能力等级18", () => {
+    const mourning = snapshot.traits.find(
+      (candidate) => candidate.name === "悼亡",
+    );
+    const context = contextFor(mourning, "attacker", {
+      attackerTraitEffect: 30,
+      attackerTraitStacks: 6,
+    });
+
+    expect(getTraitEffectInputs(mourning, "attacker")).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contextKey: "attackerTraitStacks",
+          id: "attackerTrait.attackerTraitStacks.b0f10b7e",
+          max: 99,
+        }),
+      ]),
+    );
+    expect(
+      resolveTraitEffectRule(mourning, "attacker", {
+        attacker: {},
+        context,
+        defender: {},
+        skill: { category: "physical", cost: 7, type: "虫" },
+      }),
+    ).toMatchObject({ attackLevelBonus: 18, attackMultiplier: 2.8 });
+  });
+
   test("冻土自动读取携带的冰系技能，不再要求手填层数", () => {
     const trait = snapshot.traits.find((candidate) => candidate.name === "冻土");
 

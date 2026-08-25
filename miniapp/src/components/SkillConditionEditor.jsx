@@ -141,7 +141,7 @@ export default function SkillConditionEditor({
     ? result?.panelPower ?? result?.effectivePower
     : result?.staticPower ?? result?.skillPower ?? skill?.basePower;
   const powerValue = manualPower ?? automaticPower ?? "";
-  const powerLabel = powerMode === "panel" ? "面板威力" : "静态威力";
+  const powerLabel = powerMode === "panel" ? "显示威力" : "静态威力";
 
   return (
     <View aria-label="技能条件" className="condition-editor">
@@ -187,7 +187,7 @@ export default function SkillConditionEditor({
         <View aria-label="威力口径" className="condition-editor__power-modes">
           {[
             ["static", "静态威力"],
-            ["panel", "面板威力"],
+            ["panel", "显示威力"],
           ].map(([mode, label]) => (
             <Button
               aria-pressed={powerMode === mode}

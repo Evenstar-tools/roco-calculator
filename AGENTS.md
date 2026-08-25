@@ -1,5 +1,11 @@
 # 洛克计算器项目协作规则
 
+## AI 计算与验算
+
+- 当用户要求计算、复算、验算、解释或比较《洛克王国：世界》PVP 伤害时，必须先读取并使用项目 Skill：`.agents/skills/rock-calculator-cli/SKILL.md`。
+- 普通计算只调用 `npm run -s cli -- ...`；不要把 `src/domain/` 计算源码或 `public/data/current.json` 加载进模型上下文。
+- CLI 结果中的数据版本、规则版本和 `inputDigest` 是本次计算的交接与复现凭据。
+
 ## 飞书安装包交付
 
 以下规则在用户提出“发我飞书”“发送最新版安装包”“把桌面包发给我”等请求时强制执行。

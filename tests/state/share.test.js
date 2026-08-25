@@ -359,7 +359,7 @@ describe("versioned share state", () => {
   });
 
   test.each([
-    [{ mode: "panel", value: 87.5 }, "面板威力必须为整数"],
+    [{ mode: "panel", value: 87.5 }, "显示威力必须为整数"],
     [{ mode: "static", value: 87.5 }, "静态威力必须为整数"],
     [{ mode: "static", value: 10000 }, "威力必须在 0–9999"],
     [{ mode: "base", value: 80 }, "威力口径无效"],

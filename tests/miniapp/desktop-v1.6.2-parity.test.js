@@ -17,7 +17,7 @@ function readJson(relativePath) {
 describe("desktop v1.6.2 miniapp parity", () => {
   test("pins the miniapp to web core 1.6.2", () => {
     expect(readJson("package.json").version).toBe("1.6.2");
-    expect(readJson("miniapp/package.json").version).toBe("1.1.2");
+    expect(readJson("miniapp/package.json").version).toBe("1.1.3");
   });
 
   test.each([

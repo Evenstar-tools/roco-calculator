@@ -192,7 +192,7 @@ function assertPowerOverride(overrides, path) {
     !Number.isInteger(powerOverride.value)
   ) {
     throw new TypeError(
-      `${path}.powerOverride ${powerOverride.mode === "panel" ? "面板" : "静态"}威力必须为整数`,
+      `${path}.powerOverride ${powerOverride.mode === "panel" ? "显示" : "静态"}威力必须为整数`,
     );
   }
 }

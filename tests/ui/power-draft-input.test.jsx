@@ -48,19 +48,39 @@ describe("PowerDraftInput", () => {
     const onCommit = vi.fn();
     render(
       <PowerDraftInput
-        ariaLabel="面板威力"
+        ariaLabel="显示威力"
         mode="panel"
         onCommit={onCommit}
         value={281}
       />,
     );
-    const input = screen.getByRole("spinbutton", { name: "面板威力" });
+    const input = screen.getByRole("spinbutton", { name: "显示威力" });
     await user.clear(input);
     await user.type(input, "87.5");
     await user.keyboard("{Enter}");
 
     expect(onCommit).not.toHaveBeenCalled();
-    expect(screen.getByText("面板威力只能填整数")).toBeVisible();
+    expect(screen.getByText("显示威力只能填整数")).toBeVisible();
+  });
+
+  test("显示威力超出范围时使用统一名称提示", async () => {
+    const user = userEvent.setup();
+    const onCommit = vi.fn();
+    render(
+      <PowerDraftInput
+        ariaLabel="显示威力"
+        mode="panel"
+        onCommit={onCommit}
+        value={281}
+      />,
+    );
+    const input = screen.getByRole("spinbutton", { name: "显示威力" });
+    await user.clear(input);
+    await user.type(input, "10000");
+    await user.keyboard("{Enter}");
+
+    expect(onCommit).not.toHaveBeenCalled();
+    expect(screen.getByText("请输入 0–9999 的显示威力")).toBeVisible();
   });
 
   test("rejects fractional static power without changing calculation", async () => {

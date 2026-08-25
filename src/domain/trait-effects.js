@@ -83,6 +83,7 @@ const stack = (
     max: extra.max ?? 20,
     min: 0,
     scope: "direction",
+    ...(extra.stackId ? { id: extra.stackId } : {}),
   },
   ...extra,
 });
@@ -373,7 +374,10 @@ const RULES = Object.freeze({
     30,
     "双方力竭数",
     "每层双攻",
-    { max: 10 },
+    {
+      max: 99,
+      stackId: "attackerTrait.attackerTraitStacks.b0f10b7e",
+    },
   ),
   壮胆: trigger(
     "attack_percent",

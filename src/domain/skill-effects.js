@@ -479,7 +479,14 @@ const REVIEWED_EFFECTS = Object.freeze({
   叠势: hitCountGrowth("counterSuccessCount", "成功应对次数", 2, 2),
   月光合奏: hitCountGrowth("totalMoeStacks", "双方萌化总层数", 1, 1),
   飞断: booleanAdd("teamDonationActive", "己方队伍获得奉献", 20),
-  虫群: hitCountGrowth("donationHitBonus", "奉献增加连击", 1, 1),
+  虫群: {
+    inputs: [
+      numberInput("donationPowerCount", "威力奉献层数", 0, 20, 0),
+      numberInput("donationHitBonus", "连击奉献层数", 0, 20, 0),
+      numberInput("donationPoisonCount", "中毒奉献层数", 0, 20, 0),
+    ],
+    ruleId: "swarm_donations",
+  },
 
   迫近攻击: stackAdd("skillUseCount", "此前使用次数", 45),
   连续爪击: booleanHitCount(

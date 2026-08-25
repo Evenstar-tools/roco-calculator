@@ -55,6 +55,8 @@ const NUMBER_FIELDS = {
   defenderTraitEffect: [0, 500],
   defenderTraitStacks: [0, 100],
   donationHitBonus: [0, 20],
+  donationPoisonCount: [0, 20],
+  donationPowerCount: [0, 20],
   dispelledMarkStacks: [0, 99],
   enemyBuffStacks: [0, 20],
   enemyEnergy: [0, 10],

@@ -48,4 +48,29 @@ describe("single skill result row", () => {
     );
     expect(onOpenResult).toHaveBeenCalledTimes(1);
   });
+
+  test("uses compact centered metric styles for long damage results", () => {
+    const { container } = render(
+      <SingleSkillResultRow
+        choices={[skill]}
+        fallbackSkill={skill}
+        label="攻击方单技能"
+        onChange={vi.fn()}
+        row={{
+          hpPercent: 999.9,
+          skillName: "光球",
+          status: "exact",
+          totalDamage: 1234567,
+        }}
+        value="skill-light"
+      />,
+    );
+
+    expect(container.querySelector(".skill-result-row__result"))
+      .toHaveClass("skill-result-row__result--long");
+    expect(container.querySelector(".skill-result-row__damage"))
+      .toHaveClass("skill-result-row__damage--tight");
+    expect(container.querySelector(".skill-result-row__percent"))
+      .toHaveClass("skill-result-row__percent--compact");
+  });
 });

@@ -764,6 +764,76 @@ describe("resolveSkillPower", () => {
     ).toMatchObject({ status: "exact", value: 90 });
   });
 
+  test("虫群的累计威力奉献每层增加20威力", () => {
+    const swarm = snapshot.skills.find((candidate) => candidate.name === "虫群");
+
+    expect(getSkillEffectInputs(swarm)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contextKey: "donationPowerCount",
+          label: "威力奉献层数",
+          type: "number",
+        }),
+      ]),
+    );
+    expect(
+      resolveSkillPower(swarm, { donationPowerCount: 2 }),
+    ).toMatchObject({ status: "exact", value: 60 });
+  });
+
+  test("虫群的累计连击奉献沿用旧donationHitBonus并每层增加1连击", () => {
+    const swarm = snapshot.skills.find((candidate) => candidate.name === "虫群");
+
+    expect(getSkillEffectInputs(swarm)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contextKey: "donationHitBonus",
+          label: "连击奉献层数",
+          type: "number",
+        }),
+      ]),
+    );
+    expect(
+      resolveSkillPower(swarm, { donationHitBonus: 2 }),
+    ).toMatchObject({ hitCount: 3, status: "exact", value: 20 });
+  });
+
+  test("虫群的累计中毒奉献每层记录1层中毒", () => {
+    const swarm = snapshot.skills.find((candidate) => candidate.name === "虫群");
+
+    expect(getSkillEffectInputs(swarm)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contextKey: "donationPoisonCount",
+          label: "中毒奉献层数",
+          type: "number",
+        }),
+      ]),
+    );
+    expect(
+      resolveSkillPower(swarm, { donationPoisonCount: 3 }),
+    ).toMatchObject({ donationPoisonStacks: 3, status: "exact", value: 20 });
+  });
+
+  test("虫群暂时只计算威力、连击和中毒三类奉献", () => {
+    const swarm = snapshot.skills.find((candidate) => candidate.name === "虫群");
+
+    expect(
+      getSkillEffectInputs(swarm).map((input) => input.contextKey),
+    ).toEqual([
+      "donationPowerCount",
+      "donationHitBonus",
+      "donationPoisonCount",
+    ]);
+    const result = resolveSkillPower(swarm, {
+      donationCostReductionCount: 2,
+      donationLifestealCount: 3,
+    });
+    expect(result).toMatchObject({ status: "exact", value: 20 });
+    expect(result).not.toHaveProperty("donationLifestealPercent");
+    expect(result).not.toHaveProperty("resolvedCost");
+  });
+
   test("does not guess unknown enemy energy for threshold skills", () => {
     expect(
       resolveSkillPower(skill({ name: "穿膛", basePower: 65 }), {}),

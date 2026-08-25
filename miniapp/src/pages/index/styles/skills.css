@@ -273,16 +273,23 @@
 
 .skill-result-row__result {
   display: grid;
+  width: 100%;
   min-width: 0;
   min-height: var(--touch-target);
   align-content: center;
-  justify-items: end;
+  justify-items: center;
   padding: 6px 10px;
   border: 0;
   border-left: 1px solid var(--border-neutral);
   border-radius: 0;
   background: var(--surface-muted);
   box-shadow: none;
+  text-align: center;
+}
+
+.skill-result-row__result--long {
+  padding-right: 4px;
+  padding-left: 4px;
 }
 
 .skill-result-row__result::after {
@@ -295,19 +302,42 @@
 }
 
 .skill-result-row__damage {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   color: var(--text-primary);
   font-size: 22px;
   font-variant-numeric: tabular-nums;
   font-weight: var(--weight-result);
   line-height: 1.05;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.skill-result-row__damage--compact {
+  font-size: 18px;
+}
+
+.skill-result-row__damage--tight {
+  font-size: 14px;
 }
 
 .skill-result-row__percent {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   color: var(--success);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
+  text-align: center;
   white-space: nowrap;
+}
+
+.skill-result-row__percent--compact {
+  font-size: 10px;
 }
 
 .active-skill-conditions {

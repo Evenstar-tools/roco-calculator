@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { createSkillPresentation } from "../src/view-models/skill-presentation.js";
+import { buildResultFormulaAudit } from "../src/view-models/formula-audit.js";
 
 const refraction = {
   basePower: 50,
@@ -57,5 +58,34 @@ describe("miniapp skill presentation", () => {
         "galeTurbineCompanionSlot",
       ]),
     );
+  });
+
+  test("uses the synchronized display-power term for reflected skills", () => {
+    const presentation = createSkillPresentation({
+      result: {
+        reflectedPower: 245,
+        reflectedSourceSkillName: "虫群",
+      },
+      skill: { ...refraction, name: "听桥" },
+    });
+
+    expect(presentation.effectHint).toContain("反弹「虫群」·显示威力 245");
+  });
+
+  test("accepts the latest manual display-power formula step", () => {
+    const audit = buildResultFormulaAudit({
+      formulaSteps: [
+        {
+          after: 80,
+          before: 20,
+          input: 80,
+          label: "手动显示威力",
+          source: "manual",
+        },
+      ],
+      skillName: "测试技能",
+    });
+
+    expect(audit.power).toMatchObject({ base: 20, conditional: 80 });
   });
 });

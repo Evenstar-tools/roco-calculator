@@ -30,6 +30,24 @@ describe("negative status source rules", () => {
     }
   });
 
+  test("虫群只按捆缚奉献次数追加每次1层中毒", () => {
+    expect(
+      resolveNegativeStatusApplications({
+        context: { donationPoisonCount: 2 },
+        skill: skill("虫群"),
+      }),
+    ).toMatchObject({
+      sources: [
+        {
+          kind: "skill",
+          name: "虫群",
+          stacks: { poison: 2 },
+        },
+      ],
+      stacks: { poison: 2 },
+    });
+  });
+
   test("电子音乐只在雷鸣天气使用电系技能时增加引电", () => {
     expect(resolveNegativeStatusApplications({
       context: { weatherThunder: true },

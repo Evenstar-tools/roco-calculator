@@ -1,0 +1,7 @@
+interface:
+  display_name: "洛克计算器 CLI"
+  short_description: "用项目内确定性核心计算和验算洛克王国 PVP 伤害"
+  default_prompt: "使用 $rock-calculator-cli 计算或验算这个洛克王国 PVP 对局。"
+
+policy:
+  allow_implicit_invocation: true

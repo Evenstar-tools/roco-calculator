@@ -127,6 +127,17 @@ const snapshot = {
       provenance: { basePower: { source: "fixture" } },
     },
     {
+      id: "skill_swarm",
+      name: "虫群",
+      type: "虫",
+      category: "physical",
+      cost: 7,
+      basePower: 20,
+      description: "造成物伤，1连击，本技能会受奉献影响。",
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    },
+    {
       id: "skill_hard_gate",
       name: "硬门",
       type: "武",
@@ -416,7 +427,7 @@ describe("calculateMatchup", () => {
     expect(result.formulaSteps).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          label: "相邻技能面板威力",
+          label: "相邻技能显示威力",
           input: {
             left: { name: "传动状态", power: 0 },
             right: { name: "面板二百", power: 200 },
@@ -481,7 +492,7 @@ describe("calculateMatchup", () => {
     expect(result.formulaSteps).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          label: "相邻技能面板威力",
+          label: "相邻技能显示威力",
           input: {
             left: { name: "传动状态", power: 0 },
             right: { name: "面板二百", power: 600 },
@@ -534,7 +545,7 @@ describe("calculateMatchup", () => {
     expect(firstSlot.formulaSteps).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          label: "相邻技能面板威力",
+          label: "相邻技能显示威力",
           input: {
             left: { name: "面板九十", power: 90 },
             right: { name: "面板一百五", power: 150 },
@@ -547,7 +558,7 @@ describe("calculateMatchup", () => {
     expect(fourthSlot.formulaSteps).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          label: "相邻技能面板威力",
+          label: "相邻技能显示威力",
           input: {
             left: { name: "面板九十", power: 90 },
             right: { name: "面板一百五", power: 150 },
@@ -764,7 +775,7 @@ describe("calculateMatchup", () => {
     });
   });
 
-  test("听桥继承对方增益后的技能面板威力并按单段武系物理伤害反弹", () => {
+  test("听桥继承对方增益后的技能显示威力并按单段武系物理伤害反弹", () => {
     const input = battleInput({
       mode: "four",
       sides: {
@@ -814,6 +825,168 @@ describe("calculateMatchup", () => {
       skillPower: 150,
       status: "exact",
       totalDamage: 135,
+    });
+  });
+
+  test("虫群三类奉献结果进入完整伤害计算", () => {
+    const input = battleInput({
+      mode: "four",
+      sides: {
+        attacker: side("spirit_sonic_dog", "skill_swarm", [
+          {
+            skillId: "skill_swarm",
+            context: {
+              donationHitBonus: 2,
+              donationPoisonCount: 2,
+              donationPowerCount: 1,
+            },
+          },
+          null,
+          null,
+          null,
+        ]),
+      },
+      directions: {
+        forward: {
+          selectedSkillIndex: 0,
+          overrides: {
+            attackerStat: 100,
+            defenderDefense: 100,
+            stabMultiplier: 1,
+            typeMultiplier: 1,
+          },
+        },
+      },
+    });
+
+    const result = calculateMatchup(snapshot, input).forward.results[0];
+
+    expect(result).toMatchObject({
+      donationPoisonStacks: 2,
+      hitCount: 3,
+      skillCost: 7,
+      staticPower: 40,
+      totalDamage: 108,
+    });
+    expect(result).not.toHaveProperty("donationLifestealPercent");
+  });
+
+  test("参考站实战口径下虫群显示威力613并由听桥重算为245和544伤害", () => {
+    const input = battleInput({
+      mode: "four",
+      sides: {
+        attacker: side("spirit_sonic_dog", "skill_swarm", [
+          {
+            skillId: "skill_swarm",
+            context: { donationPowerCount: 6 },
+          },
+          null,
+          null,
+          null,
+        ]),
+        defender: side("spirit_water", "skill_water", [
+          "skill_listen_bridge",
+          null,
+          null,
+          null,
+        ]),
+      },
+      directions: {
+        forward: {
+          selectedSkillIndex: 0,
+          overrides: {
+            attackerStat: 148,
+            attackDefenseLevelMultiplier: 1.75,
+            defenderDefense: 160,
+            stabMultiplier: 1.25,
+            typeMultiplier: 2,
+          },
+        },
+        reverse: {
+          selectedSkillIndex: 0,
+          overrides: {
+            attackerStat: 261,
+            attackDefenseLevelMultiplier: 1.6,
+            defenderDefense: 106,
+            stabMultiplier: 1,
+            typeMultiplier: 0.25,
+          },
+        },
+      },
+    });
+
+    const result = calculateMatchup(snapshot, input);
+
+    expect(result.forward.results[0]).toMatchObject({
+      displayPower: 613,
+      panelPower: 613,
+      staticPower: 140,
+      totalDamage: 511,
+    });
+    expect(result.reverse.results[0]).toMatchObject({
+      displayPower: 245,
+      hitCount: 1,
+      panelPower: 245,
+      reflectedPower: 613,
+      skillPower: 613,
+      totalDamage: 544,
+    });
+    expect(result.reverse.results[0].formulaSteps).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          after: 613,
+          label: "继承显示威力",
+        }),
+      ]),
+    );
+  });
+
+  test("听桥继承来源显示威力后继续结算自身固定与百分比威力乘区", () => {
+    const input = battleInput({
+      mode: "four",
+      sides: {
+        attacker: side("spirit_sonic_dog", "skill_wind", [
+          {
+            skillId: "skill_wind",
+            overrides: { powerOverride: { mode: "panel", value: 85 } },
+          },
+          null,
+          null,
+          null,
+        ]),
+        defender: side("spirit_water", "skill_water", [
+          "skill_listen_bridge",
+          null,
+          null,
+          null,
+        ]),
+      },
+      directions: {
+        forward: { selectedSkillIndex: 0 },
+        reverse: {
+          selectedSkillIndex: 0,
+          overrides: {
+            attackerStat: 100,
+            attackDefenseLevelMultiplier: 1.8,
+            defenderDefense: 100,
+            fixedPowerAdd: 20,
+            otherPowerMultipliers: [2],
+            skillPowerPercentAdds: [0.5],
+            stabMultiplier: 1.25,
+            typeMultiplier: 0.25,
+          },
+        },
+      },
+    });
+
+    const result = calculateMatchup(snapshot, input).reverse.results[0];
+
+    expect(result).toMatchObject({
+      displayPower: 177,
+      panelPower: 177,
+      reflectedPower: 85,
+      skillPower: 157.5,
+      totalDamage: 159,
     });
   });
 
@@ -1382,6 +1555,24 @@ describe("calculateMatchup", () => {
         },
       }),
     ).forward;
+    const staged = calculateMatchup(
+      traitSnapshot,
+      battleInput({
+        mode: "four",
+        directions: {
+          forward: {
+            selectedDamageSource: "trait",
+            traitDamageHitCount: 1,
+            overrides: {
+              attackerStat: 30,
+              attackLevelStage: 18,
+              defenderDefense: 31,
+              defenseLevelStage: 5,
+            },
+          },
+        },
+      }),
+    ).forward;
 
     expect(oneHit.selectedResult).toBe(oneHit.traitResult);
     expect(oneHit.traitResult).toMatchObject({
@@ -1397,6 +1588,12 @@ describe("calculateMatchup", () => {
     expect(threeHits.traitResult.totalDamage).toBe(
       oneHit.traitResult.totalDamage * 3,
     );
+    expect(staged.traitResult.totalDamage).toBe(80);
+    expect(
+      staged.traitResult.formulaSteps.find(
+        (step) => step.label === "每段伤害",
+      ),
+    ).toMatchObject({ input: { attackerStat: 84, defenderDefense: 47 } });
   });
 
   test("calculates direct trait damage in both battle directions", () => {
@@ -1748,7 +1945,7 @@ describe("calculateMatchup", () => {
     ).toBe(270);
   });
 
-  test("applies the active side's positive mark by stack and reports the settlement", () => {
+  test("正面印记按层数进入显示威力并报告结算", () => {
     const before = calculateMatchup(snapshot, battleInput()).forward.selectedResult;
     const after = calculateMatchup(
       snapshot,
@@ -1767,7 +1964,7 @@ describe("calculateMatchup", () => {
     ).forward.selectedResult;
 
     expect(after.actualPower).toBe(Math.round(before.actualPower * 1.4));
-    expect(after.panelPower).toBe(before.panelPower);
+    expect(after.panelPower).toBe(Math.round(before.panelPower * 1.4));
     expect(after.totalDamage).toBeGreaterThan(before.totalDamage);
     expect(after.markSettlements).toContainEqual(
       expect.objectContaining({
@@ -2578,7 +2775,7 @@ describe("calculateMatchup", () => {
     const labels = result.formulaSteps.map((step) => step.label);
 
     expect(result.effectivePower).toBe(200);
-    expect(labels).toContain("手动面板威力");
+    expect(labels).toContain("手动显示威力");
     expect(labels).not.toContain("属性克制");
     expect(labels).not.toContain("攻防等级");
     expect(labels).not.toContain("其他威力乘区");
@@ -2700,7 +2897,7 @@ describe("calculateMatchup", () => {
       powerSource: "manual-panel",
     });
     const labels = result.formulaSteps.map((step) => step.label);
-    expect(labels).toContain("手动面板威力");
+    expect(labels).toContain("手动显示威力");
     expect(labels).not.toContain("本系");
     expect(labels).not.toContain("属性克制");
     expect(labels).not.toContain("攻防等级");
@@ -2820,7 +3017,7 @@ describe("calculateMatchup", () => {
     });
   });
 
-  test("keeps fractional effective power until the damage numerator is rounded", () => {
+  test("显示威力四舍五入后才进入伤害公式", () => {
     const result = calculateMatchup(
       snapshot,
       battleInput({
@@ -2833,10 +3030,10 @@ describe("calculateMatchup", () => {
     ).forward.selectedResult;
 
     expect(result.effectivePower).toBe(81);
-    expect(result.totalDamage).toBe(98);
+    expect(result.totalDamage).toBe(97);
   });
 
-  test("keeps fractional same-type power until the damage numerator is rounded", () => {
+  test("本系结算后的显示威力先四舍五入再进入多段伤害", () => {
     const lightSpear = {
       basePower: 30,
       category: "physical",
@@ -2896,8 +3093,8 @@ describe("calculateMatchup", () => {
     expect(result).toMatchObject({
       effectivePower: 38,
       hitCount: 3,
-      mainDamage: 141,
-      totalDamage: 141,
+      mainDamage: 144,
+      totalDamage: 144,
     });
   });
 
@@ -2942,7 +3139,7 @@ describe("calculateMatchup", () => {
       result.formulaSteps.map((step) => [step.label, step]),
     );
 
-    expect(steps["面板威力"]).toMatchObject({
+    expect(steps["显示威力"]).toMatchObject({
       before: expect.any(Number),
       after: result.effectivePower,
     });
@@ -3041,6 +3238,41 @@ describe("calculateMatchup", () => {
     ).toMatchObject({ input: 2.4 });
   });
 
+  test("普通伤害统一使用取整后的实际攻防面板并保留内部威力小数", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            overrides: {
+              attackerStat: 50,
+              attackLevelStage: 18,
+              defenderDefense: 55,
+              defenseLevelStage: 5,
+              stabMultiplier: 1,
+              typeMultiplier: 1,
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      displayPower: 149,
+      totalDamage: 121,
+    });
+    expect(
+      result.formulaSteps.find((step) => step.label === "等级系数与攻防比"),
+    ).toMatchObject({
+      input: {
+        attackerStat: 140,
+        calculationPower: 80,
+        defenderDefense: 83,
+        roundedNumerator: 10107,
+      },
+    });
+  });
+
   test("caps calculated attack and defense ability stages at positive and negative 99", () => {
     const calculateAtStages = (attackLevelStage, defenseLevelStage) =>
       calculateMatchup(
@@ -3102,7 +3334,28 @@ describe("calculateMatchup", () => {
     ).toMatchObject({ input: 1.7 });
   });
 
-  test("applies attack-percent traits in the ability layer instead of the panel stat", () => {
+  test("特性提供的半层能力等级按实际百分比结算而不向下截断", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            overrides: {
+              attackLevelStage: 7.5,
+              defenseLevelStage: 0,
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.effectivePower).toBe(140);
+    expect(
+      result.formulaSteps.find((step) => step.label === "攻防等级"),
+    ).toMatchObject({ input: 1.75 });
+  });
+
+  test("攻击百分比特性进入实际面板，显示威力仍保留能力等级结果", () => {
     const traitSnapshot = {
       ...snapshot,
       spirits: snapshot.spirits.map((spirit) =>
@@ -3131,8 +3384,11 @@ describe("calculateMatchup", () => {
       (step) => step.label === "攻击面板",
     );
 
-    expect(panelStep.after).toBe(panelStep.before);
+    expect(panelStep).toMatchObject({ before: 271, after: 542 });
     expect(result.effectivePower).toBe(160);
+    expect(
+      result.formulaSteps.find((step) => step.label === "等级系数与攻防比"),
+    ).toMatchObject({ input: { attackerStat: 542, calculationPower: 80 } });
   });
 
   test("保守派触发后同时降低受到的物理和魔法伤害", () => {
@@ -3410,7 +3666,7 @@ describe("calculateMatchup", () => {
       before: 288,
       after: 316.8,
     });
-    expect(steps["面板威力"]).toMatchObject({ before: 316.8, after: 317 });
+    expect(steps["显示威力"]).toMatchObject({ before: 316.8, after: 317 });
   });
 
   test("accepts the state-layer stab and type-effectiveness override names", () => {

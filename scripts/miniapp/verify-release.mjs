@@ -10,7 +10,7 @@ import releaseConfig from "./release-config.cjs";
 const { loadReleaseConfig, preflightErrors, verifyPreflight } = releaseConfig;
 const traverse = traverseModule.default ?? traverseModule;
 
-const EXPECTED_MINIAPP_VERSION = "1.1.2";
+const EXPECTED_MINIAPP_VERSION = "1.1.3";
 const EXPECTED_ROOT_VERSION = "1.6.2";
 const MAX_MAIN_PACKAGE_BYTES = 2 * 1024 * 1024;
 const REQUIRED_DIST_FILES = [

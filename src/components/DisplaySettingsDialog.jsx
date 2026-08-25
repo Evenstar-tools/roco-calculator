@@ -45,7 +45,7 @@ export function DisplaySettingsDialog({
               onClick={() => onPowerDisplayModeChange?.("panel")}
               type="button"
             >
-              面板威力
+              显示威力
             </button>
           </div>
           <div className="display-settings-power-help">
@@ -53,7 +53,7 @@ export function DisplaySettingsDialog({
               <strong>静态威力：</strong>技能自身规则与固定威力调整后的结果；不含特性、印记、本系和克制。
             </small>
             <small>
-              <strong>面板威力：</strong>完整结算后的最终威力；手动填写后直接用于伤害计算。
+              <strong>显示威力：</strong>有效威力结算本系、克制、天气、能力等级与其他威力乘区后四舍五入；手动填写后直接用于伤害计算。
             </small>
           </div>
         </div>
