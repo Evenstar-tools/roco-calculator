@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { WorkspaceOverlays } from "../../src/components/WorkspaceOverlays.jsx";
 
@@ -27,6 +27,7 @@ function renderOverlays(overrides = {}) {
         onCopyFeedback: vi.fn(),
         open: false,
       }}
+      productAccess={{ onClose: vi.fn(), open: false }}
       mobileResult={{ open: false }}
       share={{ importOpen: false, pendingState: null, shareLink: "" }}
       team={{ open: false }}
@@ -69,21 +70,77 @@ test("exposes a replayable first-run guide from the app menu", () => {
   expect(onFirstRunGuide).toHaveBeenCalledOnce();
 });
 
-test("keeps the first-run guide with the lower utility actions", () => {
+test("puts clear first and hides cleanup and sharing from the web menu", () => {
   renderOverlays();
-  const buttons = screen
+  const menu = screen.getByRole("navigation", { name: "应用菜单" });
+  const buttons = within(menu)
     .getAllByRole("button")
     .map((button) => button.textContent.trim());
 
-  expect(buttons.indexOf("新手引导")).toBeGreaterThan(
-    buttons.indexOf("分享当前配置"),
-  );
-  expect(buttons.indexOf("新手引导")).toBeLessThan(
-    buttons.indexOf("显示设置"),
-  );
+  expect(buttons[0]).toBe("清除当前页配置");
+  expect(buttons).not.toContain("清理未完成配置");
+  expect(buttons).not.toContain("分享当前配置");
+  expect(buttons.indexOf("新手引导")).toBeLessThan(buttons.indexOf("显示设置"));
 });
 
-test("shows data sources and exposes the feedback contact", () => {
+test("opens application access and about from the lower utility menu", () => {
+  const onShowProductAccess = vi.fn();
+  const onShowDataSource = vi.fn();
+  renderOverlays({
+    menu: {
+      actions: { onShowDataSource, onShowProductAccess },
+      buttonRef: { current: document.createElement("button") },
+      open: true,
+      ref: { current: null },
+    },
+  });
+
+  fireEvent.click(screen.getByRole("button", { name: "获取应用" }));
+  expect(onShowProductAccess).toHaveBeenCalledOnce();
+
+  fireEvent.click(screen.getByRole("button", { name: "关于与来源" }));
+  expect(onShowDataSource).toHaveBeenCalledOnce();
+});
+
+test("shows desktop downloads and the mini program code", () => {
+  renderOverlays({
+    menu: { actions: {}, open: false },
+    productAccess: { onClose: vi.fn(), open: true },
+  });
+
+  expect(screen.getByRole("dialog", { name: "获取应用" })).toBeVisible();
+  expect(screen.getByRole("link", { name: "打开 Windows 下载页" }))
+    .toHaveAttribute(
+      "href",
+      "https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.6.3",
+    );
+  expect(screen.getByRole("img", { name: "洛克计算器微信小程序码" }))
+    .toHaveAttribute("src", "/assets/downloads/wechat-miniapp-code.jpg");
+  expect(screen.queryByText(/安装包.*未签名/)).not.toBeInTheDocument();
+});
+
+test("hides permission errors from the configuration export dialog", () => {
+  renderOverlays({
+    configLibrary: {
+      error: "Permission denied",
+      exportSummary: { exportedCount: 213, library: { entries: [] } },
+      mode: "export",
+      onClose: vi.fn(),
+      snapshot: { skills: [], spirits: [] },
+    },
+  });
+
+  expect(screen.getByRole("dialog", { name: "配置库导出" })).toBeVisible();
+  expect(screen.queryByText(/permission denied/i)).not.toBeInTheDocument();
+});
+
+test("hides permission errors from global web notices", () => {
+  renderOverlays({ toast: { message: "Permission denied" } });
+
+  expect(screen.queryByText(/permission denied/i)).not.toBeInTheDocument();
+});
+
+test("keeps QQ on the first level and moves other feedback contacts deeper", () => {
   const onClose = vi.fn();
   const onCopyFeedback = vi.fn();
   renderOverlays({
@@ -91,17 +148,46 @@ test("shows data sources and exposes the feedback contact", () => {
     menu: { actions: {}, open: false },
   });
 
-  const dialog = screen.getByRole("dialog", { name: "数据来源" });
+  expect(screen.getByRole("dialog", { name: "关于与来源" })).toBeVisible();
   expect(screen.getByRole("link", { name: /洛克王国：世界 BWIKI/ })).toHaveAttribute(
     "href",
     "https://wiki.biligame.com/rocom/",
   );
-  expect(screen.getByText(/1215583051/)).toBeVisible();
+  expect(screen.getByText("QQ 1215583051")).toBeVisible();
+  expect(screen.queryByRole("link", { name: "诛仙剑下伤心花" }))
+    .not.toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: "1215583051@qq.com" }))
+    .not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "复制反馈 QQ" }));
-  expect(onCopyFeedback).toHaveBeenCalledTimes(1);
-  fireEvent.click(screen.getByRole("button", { name: "关闭数据来源" }));
+  expect(onCopyFeedback).toHaveBeenCalledOnce();
+  fireEvent.click(screen.getByRole("button", { name: "查看问题反馈" }));
+  expect(screen.getByRole("dialog", { name: "问题反馈" })).toBeVisible();
+  expect(screen.getByRole("link", { name: "诛仙剑下伤心花" })).toHaveAttribute(
+    "href",
+    "https://space.bilibili.com/9281359?spm_id_from=333.1007.0.0",
+  );
+  expect(screen.getByRole("link", { name: "1215583051@qq.com" }))
+    .toHaveAttribute("href", "mailto:1215583051@qq.com");
+  fireEvent.click(screen.getByRole("button", { name: "返回关于与来源" }));
+  fireEvent.click(screen.getByRole("button", { name: "查看免责声明" }));
+  expect(screen.getByRole("dialog", { name: "免责声明" })).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "返回关于与来源" }));
+  fireEvent.click(screen.getByRole("button", { name: "关闭关于与来源" }));
   expect(onClose).toHaveBeenCalledTimes(1);
-  expect(dialog).toBeVisible();
+});
+
+test("puts the current release first and removes the rule validation card", () => {
+  renderOverlays({
+    dataSource: { onClose: vi.fn(), onCopyFeedback: vi.fn(), open: true },
+    menu: { actions: {}, open: false },
+  });
+
+  const history = screen.getByRole("region", { name: "版本记录" });
+  const source = screen.getByRole("link", { name: /洛克王国：世界 BWIKI/ });
+  expect(
+    history.compareDocumentPosition(source) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  expect(screen.queryByText("规则校验")).not.toBeInTheDocument();
 });
 
 test("opens the complete release notes in a second-level dialog", () => {
@@ -120,6 +206,9 @@ test("opens the complete release notes in a second-level dialog", () => {
   expect(
     screen.getByText("队伍升级为成员、分析、对位三页，六人矩阵首屏完整展示。"),
   ).toBeVisible();
+  expect(
+    screen.getByText("内置213只PVP配置与14种咕噜球，新增获取应用及二级说明。"),
+  ).toBeVisible();
   expect(screen.queryByText(/陨星虫配置中已失效/)).not.toBeInTheDocument();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
 
@@ -133,8 +222,8 @@ test("opens the complete release notes in a second-level dialog", () => {
     screen.getByText("新增精灵防御端分析，分别显示自身弱点与抗性。"),
   ).toBeVisible();
 
-  fireEvent.click(screen.getByRole("button", { name: "返回数据来源" }));
-  expect(screen.getByRole("dialog", { name: "数据来源" })).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "返回关于与来源" }));
+  expect(screen.getByRole("dialog", { name: "关于与来源" })).toBeVisible();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "查看完整版本记录" })).toBeVisible();
 });

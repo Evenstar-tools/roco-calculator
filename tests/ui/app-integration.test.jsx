@@ -524,6 +524,34 @@ test("shows the first-run guide once, persists skip, and allows menu replay", as
     .toBeInTheDocument();
 });
 
+test("keeps first-run guidance opt-in on mobile while preserving menu replay", async () => {
+  const originalWidth = window.innerWidth;
+  Object.defineProperty(window, "innerWidth", {
+    configurable: true,
+    value: 390,
+  });
+  localStorage.removeItem(FIRST_RUN_GUIDE_STORAGE_KEY);
+  const user = userEvent.setup();
+
+  try {
+    render(<App initialSnapshot={snapshot} />);
+
+    expect(screen.queryByRole("dialog", { name: /新手引导/ }))
+      .not.toBeInTheDocument();
+    expect(localStorage.getItem(FIRST_RUN_GUIDE_STORAGE_KEY)).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "打开菜单" }));
+    await user.click(screen.getByRole("button", { name: "新手引导" }));
+    expect(screen.getByRole("dialog", { name: "新手引导 1/6" }))
+      .toBeInTheDocument();
+  } finally {
+    Object.defineProperty(window, "innerWidth", {
+      configurable: true,
+      value: originalWidth,
+    });
+  }
+});
+
 test("walks through compact mode, opens detailed mode, and imports the library from step six", async () => {
   localStorage.clear();
   const teamBytes = JSON.stringify({
@@ -2447,64 +2475,6 @@ test("clear current page preserves saved spirit memory", async () => {
   ).toBe("calm");
 });
 
-test("cleanup removes only incomplete memories after confirmation", async () => {
-  localStorage.clear();
-  const complete = {
-    displayIvs: {
-      hp: 0,
-      speed: 60,
-      physicalAttack: 60,
-      magicalAttack: 60,
-      physicalDefense: 0,
-      magicalDefense: 0,
-    },
-    natureId: "adamant",
-    skills: {
-      four: ["fire-strike", "mana-burst", null, null],
-      single: null,
-    },
-    spiritId: "sonic-dog",
-    traitValues: {},
-  };
-  const incomplete = {
-    ...complete,
-    natureId: "neutral",
-    spiritId: "storm-dog",
-  };
-  localStorage.setItem(SPIRIT_CONFIG_STORAGE_KEY, JSON.stringify({
-    configs: { "sonic-dog": complete, "storm-dog": incomplete },
-    schemaVersion: 2,
-  }));
-  const favorites = JSON.stringify([{
-    id: "spirit:sonic-dog",
-    kind: "spirit",
-    spiritId: "sonic-dog",
-  }]);
-  localStorage.setItem(FAVORITES_STORAGE_KEY, favorites);
-  const teams = JSON.stringify({
-    activeTeamId: null,
-    schemaVersion: 1,
-    teams: [],
-  });
-  localStorage.setItem(TEAM_STORAGE_KEY, teams);
-
-  const user = userEvent.setup();
-  render(<App initialSnapshot={snapshot} />);
-  await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "清理未完成配置" }));
-  const dialog = screen.getByRole("dialog", { name: "清理未完成配置" });
-  expect(within(dialog).getByText(
-    "仅清理未完成的精灵配置，收藏、完整配置和队伍不会删除。",
-  )).toBeVisible();
-  await user.click(within(dialog).getByRole("button", { name: "确认清理" }));
-
-  expect(
-    Object.keys(JSON.parse(localStorage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).configs),
-  ).toEqual(["sonic-dog"]);
-  expect(localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe(favorites);
-  expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teams);
-});
-
 test("individual spirit changes return damage results to the attack side", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
@@ -2761,52 +2731,6 @@ test("offers current-version recalculation for an older valid share", async () =
   window.history.replaceState(null, "", window.location.pathname);
 });
 
-test("opens one clear dialog for copying or loading a shared configuration", async () => {
-  const user = userEvent.setup();
-  render(<App initialSnapshot={snapshot} />);
-
-  await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "分享当前配置" }));
-
-  const dialog = screen.getByRole("dialog", { name: "分享当前配置" });
-  expect(dialog).toBeVisible();
-  expect(within(dialog).getByText(/不会包含配置库和队伍/)).toBeVisible();
-  expect(
-    within(dialog).getByRole("button", { name: "复制当前配置链接" }),
-  ).toBeDisabled();
-  expect(within(dialog).getByRole("textbox", { name: "粘贴分享链接" })).toHaveFocus();
-  await user.keyboard("{Escape}");
-  expect(
-    screen.queryByRole("dialog", { name: "分享当前配置" }),
-  ).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "打开菜单" })).toHaveFocus();
-});
-
-test("loads a pasted share from the unified share dialog", async () => {
-  const user = userEvent.setup();
-  const hash = await encodeShareState(createInitialState(snapshot));
-  render(<App initialSnapshot={snapshot} />);
-
-  await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "分享当前配置" }));
-  const dialog = screen.getByRole("dialog", { name: "分享当前配置" });
-  fireEvent.change(
-    within(dialog).getByRole("textbox", { name: "粘贴分享链接" }),
-    { target: { value: hash } },
-  );
-  await user.click(
-    within(dialog).getByRole("button", { name: "载入分享配置" }),
-  );
-
-  expect(
-    await screen.findByText("分享配置已载入"),
-  ).toBeVisible();
-  expect(
-    screen.queryByRole("dialog", { name: "分享当前配置" }),
-  ).not.toBeInTheDocument();
-  window.history.replaceState(null, "", window.location.pathname);
-});
-
 test("menu reports its state and closes with Escape or an outside click", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
@@ -2833,34 +2757,22 @@ test("menu reports its state and closes with Escape or an outside click", async 
   ).not.toBeInTheDocument();
 });
 
-test("menu keeps only useful actions and explains current-configuration sharing", async () => {
+test("menu keeps clear first and hides cleanup and sharing", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
-  await selectDefaultSpirits(user);
 
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  expect(screen.getByRole("button", { name: "分享当前配置" })).toBeVisible();
-  expect(screen.queryByRole("button", { name: "复制分享链接" })).not.toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: "导入分享链接" })).not.toBeInTheDocument();
+  const menu = screen.getByRole("navigation", { name: "应用菜单" });
+  expect(within(menu).getAllByRole("button")[0]).toHaveTextContent("清除当前页配置");
+  expect(within(menu).queryByRole("button", { name: "清理未完成配置" }))
+    .not.toBeInTheDocument();
+  expect(within(menu).queryByRole("button", { name: "分享当前配置" }))
+    .not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "安装 WebApp" })).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "常用精灵配置" })).toBeVisible();
-  expect(screen.getByRole("button", { name: "数据来源" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "获取应用" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "关于与来源" })).toBeVisible();
   expect(screen.queryByRole("button", { name: "赛季记录" })).not.toBeInTheDocument();
-
-  await user.click(screen.getByRole("button", { name: "分享当前配置" }));
-  const dialog = screen.getByRole("dialog", { name: "分享当前配置" });
-  await waitFor(() => {
-    expect(
-      within(dialog).getByRole("textbox", { name: "当前配置链接" }).value,
-    ).toMatch(/#v1\./);
-  });
-  expect(window.location.hash).toMatch(/^#v1\./);
-  await user.click(
-    within(dialog).getByRole("button", { name: "复制当前配置链接" }),
-  );
-  expect(screen.getByText("分享链接已复制")).toBeVisible();
-
-  window.history.replaceState(null, "", window.location.pathname);
 });
 
 test("enables type analysis from display settings and remembers the switch", async () => {
@@ -3073,36 +2985,6 @@ test("configuration library export recognizes complete legacy memories without m
   const autoMetric = within(dialog).getByText("自动识别").parentElement;
   expect(within(autoMetric).getByText("1")).toBeVisible();
   expect(within(dialog).getByRole("button", { name: "导出" })).toBeEnabled();
-});
-
-test("share falls back to a copyable link when clipboard access fails", async () => {
-  const user = userEvent.setup();
-  vi.spyOn(navigator.clipboard, "writeText").mockRejectedValueOnce(
-    new DOMException("Document is not focused", "NotAllowedError"),
-  );
-  render(<App initialSnapshot={snapshot} />);
-  await selectDefaultSpirits(user);
-
-  await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "分享当前配置" }));
-
-  const dialog = screen.getByRole("dialog", { name: "分享当前配置" });
-  expect(dialog).toBeVisible();
-  await waitFor(() => {
-    expect(
-      within(dialog).getByRole("textbox", { name: "当前配置链接" }).value,
-    ).toMatch(/#v1\./);
-  });
-  await user.click(
-    within(dialog).getByRole("button", { name: "复制当前配置链接" }),
-  );
-  expect(screen.getByText("复制受限，请手动复制上方链接")).toBeVisible();
-
-  await user.keyboard("{Escape}");
-  expect(
-    screen.queryByRole("dialog", { name: "分享当前配置" }),
-  ).not.toBeInTheDocument();
-  window.history.replaceState(null, "", window.location.pathname);
 });
 
 test("moves focus into the mobile result dialog and closes it with Escape", async () => {

@@ -4,6 +4,7 @@ import { ResultRail } from "./ResultRail.jsx";
 import { TeamDrawer } from "./TeamDrawer.jsx";
 import { ConfigLibraryDialog } from "./ConfigLibraryDialog.jsx";
 import { DataSourceDialog } from "./DataSourceDialog.jsx";
+import { ProductAccessDialog } from "./ProductAccessDialog.jsx";
 import { FirstRunGuide } from "./FirstRunGuide.jsx";
 import { DisplaySettingsDialog } from "./DisplaySettingsDialog.jsx";
 
@@ -34,6 +35,7 @@ export function WorkspaceOverlays({
   firstRunGuide = {},
   menu,
   mobileResult,
+  productAccess = {},
   share,
   team,
   toast,
@@ -137,6 +139,15 @@ export function WorkspaceOverlays({
         >
           <button
             onClick={() => {
+              menuActions.onClearCurrent?.();
+              menuActions.onClose?.();
+            }}
+            type="button"
+          >
+            清除当前页配置
+          </button>
+          <button
+            onClick={() => {
               menuActions.onConfigLibraryExport?.();
               menuActions.onClose?.();
             }}
@@ -165,33 +176,6 @@ export function WorkspaceOverlays({
             <span>常用精灵配置</span>
             <span className="app-menu__badge">213</span>
           </button>
-          <button
-            onClick={() => {
-              menuActions.onClearCurrent?.();
-              menuActions.onClose?.();
-            }}
-            type="button"
-          >
-            清除当前页配置
-          </button>
-          <button
-            onClick={() => {
-              menuActions.onCleanupConfigs?.();
-              menuActions.onClose?.();
-            }}
-            type="button"
-          >
-            清理未完成配置
-          </button>
-          <button
-            onClick={() => {
-              menuActions.onShare?.();
-              menuActions.onClose?.();
-            }}
-            type="button"
-          >
-            分享当前配置
-          </button>
           <div aria-hidden="true" className="app-menu__separator" />
           <button
             onClick={() => {
@@ -213,12 +197,21 @@ export function WorkspaceOverlays({
           </button>
           <button
             onClick={() => {
+              menuActions.onShowProductAccess?.();
+              menuActions.onClose?.();
+            }}
+            type="button"
+          >
+            获取应用
+          </button>
+          <button
+            onClick={() => {
               menuActions.onShowDataSource?.();
               menuActions.onClose?.();
             }}
             type="button"
           >
-            数据来源
+            关于与来源
           </button>
         </nav>
       ) : null}
@@ -287,6 +280,8 @@ export function WorkspaceOverlays({
       <ConfigLibraryDialog {...configLibrary} />
 
       <DataSourceDialog {...dataSource} />
+
+      <ProductAccessDialog {...productAccess} />
 
       <DisplaySettingsDialog {...displaySettings} />
 
@@ -450,7 +445,9 @@ export function WorkspaceOverlays({
         </div>
       ) : null}
 
-      {toast.message ? <div className="toast">{toast.message}</div> : null}
+      {toast.message && !/permission denied/i.test(toast.message) ? (
+        <div className="toast">{toast.message}</div>
+      ) : null}
     </>
   );
 }

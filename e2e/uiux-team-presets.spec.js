@@ -205,6 +205,13 @@ test("keeps the six-step guide aligned in a narrow viewport", async ({ page }) =
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
+  await expect(page.getByRole("dialog", { name: /新手引导/ })).toHaveCount(0);
+  expect(await page.evaluate(() =>
+    localStorage.getItem("rock-calculator.first-run-guide.v1"),
+  )).toBeNull();
+  await page.getByRole("button", { name: "打开菜单" }).click();
+  await page.getByRole("button", { name: "新手引导" }).click();
+
   const card = page.locator(".first-run-guide__card");
   const spotlight = page.locator(".first-run-guide__spotlight");
   const expectInsideViewport = async (locator) => {

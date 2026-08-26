@@ -4,8 +4,17 @@ import {
   USER_RELEASE_NOTES,
 } from "../data/user-release-notes.js";
 
+const BWIKI_URL = "https://wiki.biligame.com/rocom/";
 export const FEEDBACK_QQ = "1215583051";
-export const BWIKI_URL = "https://wiki.biligame.com/rocom/";
+const FEEDBACK_EMAIL = "1215583051@qq.com";
+const FEEDBACK_BILIBILI_URL =
+  "https://space.bilibili.com/9281359?spm_id_from=333.1007.0.0";
+const CURRENT_RELEASE_SUMMARY = {
+  ...CURRENT_USER_RELEASE,
+  highlights:
+    CURRENT_USER_RELEASE.summaryHighlights ??
+    CURRENT_USER_RELEASE.highlights.slice(0, 3),
+};
 
 function ReleaseItem({ release, current = false }) {
   return (
@@ -40,7 +49,7 @@ function ReleaseNotesView({ onBack, onClose }) {
     >
       <header className="release-notes-dialog__header">
         <button
-          aria-label="返回数据来源"
+          aria-label="返回关于与来源"
           className="release-notes-dialog__back"
           onClick={onBack}
           type="button"
@@ -75,15 +84,63 @@ function ReleaseNotesView({ onBack, onClose }) {
   );
 }
 
+function DetailView({ feedback, onBack, onClose }) {
+  const title = feedback ? "问题反馈" : "免责声明";
+  return (
+    <section
+      aria-label={title}
+      aria-modal="true"
+      className="share-dialog release-notes-dialog legal-notice-dialog"
+      role="dialog"
+    >
+      <header className="release-notes-dialog__header">
+        <button
+          aria-label="返回关于与来源"
+          className="release-notes-dialog__back"
+          onClick={onBack}
+          type="button"
+        >
+          ←
+        </button>
+        <h2>{title}</h2>
+      </header>
+      {feedback ? (
+        <div className="feedback-detail-list">
+          <div>
+            <strong>B站私信</strong>
+            <a href={FEEDBACK_BILIBILI_URL} rel="noreferrer" target="_blank">
+              诛仙剑下伤心花
+            </a>
+          </div>
+          <div>
+            <strong>邮箱</strong>
+            <a href={`mailto:${FEEDBACK_EMAIL}`}>{FEEDBACK_EMAIL}</a>
+          </div>
+        </div>
+      ) : (
+        <div className="legal-notice-dialog__content">
+          <p>本项目是玩家自建工具，非官方产品。</p>
+          <p>数据和计算仅供参考，请以游戏内结果为准。</p>
+          <p>游戏名称、角色与素材权利归原权利人所有。</p>
+        </div>
+      )}
+      <div className="dialog-actions">
+        <button
+          aria-label={`关闭${title}`}
+          className="secondary-action"
+          onClick={onClose}
+          type="button"
+        >
+          关闭
+        </button>
+      </div>
+    </section>
+  );
+}
+
 export function DataSourceDialog({ onClose, onCopyFeedback, open }) {
   const dialogRef = useRef(null);
-  const [releaseNotesOpen, setReleaseNotesOpen] = useState(false);
-  const currentReleaseSummary = {
-    ...CURRENT_USER_RELEASE,
-    highlights:
-      CURRENT_USER_RELEASE.summaryHighlights ??
-      CURRENT_USER_RELEASE.highlights.slice(0, 3),
-  };
+  const [view, setView] = useState("");
 
   useEffect(() => {
     if (!open) return undefined;
@@ -91,7 +148,7 @@ export function DataSourceDialog({ onClose, onCopyFeedback, open }) {
     dialogRef.current?.querySelector("a, button")?.focus();
     const onKeyDown = (event) => {
       if (event.key !== "Escape") return;
-      if (releaseNotesOpen) setReleaseNotesOpen(false);
+      if (view) setView("");
       else onClose?.();
     };
     document.addEventListener("keydown", onKeyDown);
@@ -99,10 +156,12 @@ export function DataSourceDialog({ onClose, onCopyFeedback, open }) {
       document.removeEventListener("keydown", onKeyDown);
       if (trigger instanceof HTMLElement && trigger.isConnected) trigger.focus();
     };
-  }, [onClose, open, releaseNotesOpen]);
+  }, [onClose, open, view]);
 
   useEffect(() => {
-    if (!open) setReleaseNotesOpen(false);
+    if (!open) {
+      setView("");
+    }
   }, [open]);
 
   if (!open) return null;
@@ -114,46 +173,56 @@ export function DataSourceDialog({ onClose, onCopyFeedback, open }) {
       }}
       ref={dialogRef}
     >
-      {releaseNotesOpen ? (
+      {view === "release" ? (
         <ReleaseNotesView
-          onBack={() => setReleaseNotesOpen(false)}
+          onBack={() => setView("")}
+          onClose={onClose}
+        />
+      ) : view ? (
+        <DetailView
+          feedback={view === "feedback"}
+          onBack={() => setView("")}
           onClose={onClose}
         />
       ) : (
         <section
-          aria-label="数据来源"
+          aria-label="关于与来源"
           aria-modal="true"
           className="share-dialog data-source-dialog"
           role="dialog"
         >
-          <h2>数据来源</h2>
-          <a href={BWIKI_URL} rel="noreferrer" target="_blank">
-            <strong>洛克王国：世界 BWIKI</strong>
-            <span>精灵、技能、属性与美术资料</span>
-          </a>
-          <div className="data-source-dialog__row">
-            <strong>规则校验</strong>
-            <span>公开资料与实机结果</span>
-          </div>
+          <h2>关于与来源</h2>
+          <p className="data-source-dialog__summary">
+            非官方工具。资料来自公开页面和实机校验。
+          </p>
           <section aria-label="版本记录" className="data-source-history">
             <div className="data-source-history__header">
               <strong>版本记录</strong>
               <button
                 aria-label="查看完整版本记录"
                 className="data-source-history__toggle"
-                onClick={() => setReleaseNotesOpen(true)}
+                onClick={() => setView("release")}
                 type="button"
               >
                 完整记录
               </button>
             </div>
-            <ReleaseItem current release={currentReleaseSummary} />
+            <ReleaseItem current release={CURRENT_RELEASE_SUMMARY} />
           </section>
+          <a href={BWIKI_URL} rel="noreferrer" target="_blank">
+            <strong>洛克王国：世界 BWIKI</strong>
+            <span>精灵、技能、属性与美术资料</span>
+          </a>
           <div className="data-source-dialog__feedback">
-            <div>
+            <button
+              aria-label="查看问题反馈"
+              className="data-source-dialog__feedback-open"
+              onClick={() => setView("feedback")}
+              type="button"
+            >
               <strong>问题反馈</strong>
               <span>QQ {FEEDBACK_QQ}</span>
-            </div>
+            </button>
             <button
               aria-label="复制反馈 QQ"
               className="secondary-action"
@@ -165,7 +234,15 @@ export function DataSourceDialog({ onClose, onCopyFeedback, open }) {
           </div>
           <div className="dialog-actions">
             <button
-              aria-label="关闭数据来源"
+              aria-label="查看免责声明"
+              className="secondary-action"
+              onClick={() => setView("disclaimer")}
+              type="button"
+            >
+              免责声明
+            </button>
+            <button
+              aria-label="关闭关于与来源"
               className="secondary-action"
               onClick={onClose}
               type="button"

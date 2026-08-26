@@ -34,6 +34,12 @@ function guideRect({ bottom, height, left, right, top, width }) {
 }
 
 describe("FirstRunGuide", () => {
+  test("hides permission errors from the web runtime", () => {
+    renderGuide({ error: "Permission denied", step: 5 });
+
+    expect(screen.queryByText(/permission denied/i)).not.toBeInTheDocument();
+  });
+
   test("walks through the real calculator tasks with usable actions", () => {
     const actions = renderGuide();
 

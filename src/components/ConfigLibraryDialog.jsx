@@ -295,7 +295,9 @@ export function ConfigLibraryDialog({
             )}
           </>
         )}
-        {error ? <p className="config-library-error" role="alert">{error}</p> : null}
+        {error && !/permission denied/i.test(error) ? (
+          <p className="config-library-error" role="alert">{error}</p>
+        ) : null}
         <div className="dialog-actions">
           <button
             className="secondary-action"

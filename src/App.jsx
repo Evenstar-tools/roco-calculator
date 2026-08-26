@@ -145,12 +145,13 @@ function CalculatorWorkspace({ snapshot }) {
   const [firstRunGuideError, setFirstRunGuideError] = useState("");
   const [firstRunGuideImporting, setFirstRunGuideImporting] = useState(false);
   const [firstRunGuideOpen, setFirstRunGuideOpen] = useState(
-    () => !isFirstRunGuideCompleted(),
+    () => !isFirstRunGuideCompleted() && globalThis.innerWidth > 640,
   );
   const [firstRunGuideStep, setFirstRunGuideStep] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileResultOpen, setMobileResultOpen] = useState(false);
   const [pendingSharedState, setPendingSharedState] = useState(null);
+  const [productAccessOpen, setProductAccessOpen] = useState(false);
   const [shareLink, setShareLink] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
   const [teamOpen, setTeamOpen] = useState(false);
@@ -1566,6 +1567,7 @@ function CalculatorWorkspace({ snapshot }) {
         onCleanupConfigs: () => setCleanupConfigsOpen(true),
         onShare: openShareConfiguration,
         onShowDisplaySettings: () => setDisplaySettingsOpen(true),
+        onShowProductAccess: () => setProductAccessOpen(true),
         onShowDataSource: () => setDataSourceOpen(true),
       },
       buttonRef: menuButtonRef,
@@ -1653,6 +1655,10 @@ function CalculatorWorkspace({ snapshot }) {
         }
       },
       open: dataSourceOpen,
+    },
+    productAccess: {
+      onClose: () => setProductAccessOpen(false),
+      open: productAccessOpen,
     },
     displaySettings: {
       negativeStatusSettlementEnabled:

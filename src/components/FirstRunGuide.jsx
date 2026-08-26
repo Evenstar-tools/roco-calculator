@@ -303,7 +303,9 @@ export function FirstRunGuide({
           </div>
         ) : null}
         <p>{body}</p>
-        {error ? <p className="first-run-guide__error" role="alert">{error}</p> : null}
+        {error && !/permission denied/i.test(error) ? (
+          <p className="first-run-guide__error" role="alert">{error}</p>
+        ) : null}
         <footer className="first-run-guide__actions">
           <button className="first-run-guide__skip" onClick={onSkip} type="button">
             跳过引导

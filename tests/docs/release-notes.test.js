@@ -28,7 +28,7 @@ describe("版本记录", () => {
     expect(currentRelease.summaryHighlights.every((item) => item.length <= 58)).toBe(true);
     expect(visibleSummary).toMatch(/队伍.*分析.*对位.*六人矩阵/);
     expect(visibleSummary).toMatch(/体重挡位.*奉献.*相邻技能威力/);
-    expect(visibleSummary).toMatch(/213.*PVP.*14种咕噜球.*暗色/);
+    expect(visibleSummary).toMatch(/213.*PVP.*14种咕噜球.*获取应用.*二级说明/);
     expect(completeNotes).toMatch(/陨星虫.*旧空字段/);
     expect(completeNotes).toMatch(/吨位压制.*飞断/);
   });
