@@ -8,6 +8,7 @@ import {
 
 export default function AppHeader({
   commonConfigCount = 0,
+  commonConfigStatus,
   dataVersion,
   memoryEnabled = true,
   negativeStatusEnabled = false,
@@ -23,6 +24,9 @@ export default function AppHeader({
   typeAnalysisEnabled = false,
 }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const resolvedCommonConfigStatus = commonConfigStatus
+    ?? (commonConfigCount > 0 ? "update" : "available");
+  const commonConfigCurrent = resolvedCommonConfigStatus === "current";
 
   async function resetCurrentPage() {
     const completed = await onReset?.();
@@ -198,21 +202,34 @@ export default function AppHeader({
               </View>
               <View className="settings-sheet__divider" />
               <Button
-                aria-label="导入PVP热门配置"
-                className="settings-sheet__action-row"
-                hoverClass="settings-sheet__action-row--pressed"
+                aria-label={commonConfigCurrent
+                  ? "PVP热门配置已更新"
+                  : "导入PVP热门配置"}
+                className={commonConfigCurrent
+                  ? "settings-sheet__action-row settings-sheet__action-row--current"
+                  : "settings-sheet__action-row"}
+                disabled={commonConfigCurrent}
+                hoverClass={commonConfigCurrent
+                  ? "none"
+                  : "settings-sheet__action-row--pressed"}
                 onClick={() => onImportCommonConfig?.()}
               >
                 <View className="settings-sheet__copy">
                   <Text className="settings-sheet__label">常用精灵配置</Text>
                   <Text className="settings-sheet__description">
-                    {commonConfigCount > 0
-                      ? `已导入 ${commonConfigCount} 只，选择时自动应用`
-                      : "一键导入 PVP 热门配置"}
+                    {commonConfigCurrent
+                      ? `当前 ${commonConfigCount} 只，已是最新`
+                      : commonConfigCount > 0
+                        ? `已有 ${commonConfigCount} 只，更新时保留个人修改`
+                        : "一键导入 PVP 热门配置"}
                   </Text>
                 </View>
                 <Text className="settings-sheet__action-text">
-                  {commonConfigCount > 0 ? "更新" : "一键导入"}
+                  {commonConfigCurrent
+                    ? "已更新"
+                    : commonConfigCount > 0
+                      ? "更新"
+                      : "一键导入"}
                 </Text>
               </Button>
               <View className="settings-sheet__divider" />

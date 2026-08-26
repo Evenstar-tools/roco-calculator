@@ -163,7 +163,7 @@ export function WorkspaceOverlays({
             type="button"
           >
             <span>常用精灵配置</span>
-            <span className="app-menu__badge">193</span>
+            <span className="app-menu__badge">213</span>
           </button>
           <button
             onClick={() => {

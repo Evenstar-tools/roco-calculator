@@ -4,6 +4,7 @@ import {
   getSkillChoices,
 } from "../domain/skill-loadout.js";
 import {
+  TEAM_BLOODLINE_OPTIONS,
   createTeamMember,
   createTeamMemberFromSpiritConfig,
 } from "../state/team-presets.js";
@@ -50,11 +51,16 @@ export function TeamMemberEditor({
   member,
   onChange,
   snapshot,
+  spiritChoices,
 }) {
   const spirit = (snapshot.spirits ?? []).find(
     (candidate) => candidate.id === member?.spiritId,
   );
-  const spirits = (snapshot.spirits ?? []).map(spiritView);
+  const pickerSpirits =
+    spiritChoices ?? (snapshot.spirits ?? []).map(spiritView);
+  const selectedSpirit = pickerSpirits.find(
+    (candidate) => candidate.id === member?.spiritId,
+  );
   const legalSkills = member
     ? getSkillChoices(snapshot, member.spiritId).filter(
         (skill) => skill.learnable,
@@ -99,10 +105,10 @@ export function TeamMemberEditor({
         label="成员"
         onFavoriteToggle={() => {}}
         onSelect={selectSpirit}
-        selected={spiritView(spirit)}
+        selected={selectedSpirit ?? spiritView(spirit)}
         showFavorite={false}
         side="team"
-        spirits={spirits}
+        spirits={pickerSpirits}
       />
 
       {member && spirit ? (
@@ -114,6 +120,25 @@ export function TeamMemberEditor({
               value={member.natureId}
             />
             <NatureEffect natureId={member.natureId} />
+            <label className="team-member-editor__bloodline">
+              <span>血脉</span>
+              <select
+                aria-label="血脉"
+                onChange={(event) =>
+                  onChange({ ...member, bloodlineType: event.target.value })
+                }
+                value={
+                  member.bloodlineType ??
+                  (spirit.stage === "首领" ? "boss" : "normal")
+                }
+              >
+                {TEAM_BLOODLINE_OPTIONS.map(({ label, value }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
           <div className="stat-grid team-member-editor__stats">

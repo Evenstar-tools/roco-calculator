@@ -86,6 +86,40 @@ const snapshot = {
       provenance: { basePower: { source: "fixture" } },
     },
     {
+      id: "skill_pressure_valve",
+      name: "减压阀",
+      type: "机械",
+      category: "status",
+      cost: 1,
+      basePower: 0,
+      description:
+        "主动：本技能被动永久额外+20威力，被动：两侧技能威力+10，传动1。",
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    },
+    {
+      id: "skill_caltrop",
+      name: "铁蒺藜",
+      type: "机械",
+      category: "magical",
+      cost: 3,
+      basePower: 85,
+      description: "造成魔伤，应对状态：本次伤害翻倍。",
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    },
+    {
+      id: "skill_weight_pressure",
+      name: "吨位压制",
+      type: "普通",
+      category: "physical",
+      cost: 3,
+      basePower: 100,
+      description: "造成物伤，敌方体重越低，威力越高。",
+      ruleId: null,
+      provenance: { basePower: { source: "fixture" } },
+    },
+    {
       id: "skill_friendship_overflow",
       name: "友谊满溢",
       type: "普通",
@@ -1160,30 +1194,30 @@ describe("calculateMatchup", () => {
     expect(defenderKing.totalDamage).toBeLessThan(base.totalDamage);
   });
 
-  test("契约的形状光合与绝缘只修正声明连击的技能", () => {
+  test("契约的形状网兜与淘沙只修正声明连击的技能", () => {
     const fixture = contractShapeSnapshot({ combo: true });
-    const photosynthesis = calculateMatchup(fixture, battleInput({
+    const net = calculateMatchup(fixture, battleInput({
       directions: {
         forward: {
-          context: contractContext("attacker", "photosynthesis"),
+          context: contractContext("attacker", "net"),
           hitCount: 3,
         },
       },
     })).forward.selectedResult;
-    const insulation = calculateMatchup(fixture, battleInput({
+    const sand = calculateMatchup(fixture, battleInput({
       directions: {
         forward: {
-          context: contractContext("defender", "insulation"),
+          context: contractContext("attacker", "sand"),
           hitCount: 3,
         },
       },
     })).forward.selectedResult;
 
-    expect(photosynthesis.hitCount).toBe(4);
-    expect(insulation.hitCount).toBe(1);
+    expect(net.hitCount).toBe(4);
+    expect(sand.hitCount).toBe(5);
   });
 
-  test("契约的形状速度效果先进入动态威力，淘沙球增加星陨", () => {
+  test("契约的形状绝缘球速度先进入动态威力，变幻球增加星陨", () => {
     const speedSkill = {
       ...snapshot.skills[0],
       id: "skill_wind",
@@ -1193,18 +1227,18 @@ describe("calculateMatchup", () => {
     };
     const fixture = contractShapeSnapshot({ skill: speedSkill });
     const base = calculateMatchup(fixture, battleInput()).forward.selectedResult;
-    const net = calculateMatchup(fixture, battleInput({
-      directions: { forward: { context: contractContext("attacker", "net") } },
+    const insulation = calculateMatchup(fixture, battleInput({
+      directions: { forward: { context: contractContext("attacker", "insulation") } },
     })).forward.selectedResult;
     const marked = calculateMatchup(fixture, battleInput({
       marks: {
         attacker: { negative: { id: null, stacks: 0 }, positive: { id: null, stacks: 0 } },
         defender: { negative: { id: "starfall", stacks: 2 }, positive: { id: null, stacks: 0 } },
       },
-      directions: { forward: { context: contractContext("attacker", "sand") } },
+      directions: { forward: { context: contractContext("attacker", "transform") } },
     })).forward.selectedResult;
 
-    expect(net.effectivePower).toBeGreaterThan(base.effectivePower);
+    expect(insulation.effectivePower).toBeGreaterThan(base.effectivePower);
     expect(marked.formulaSteps).toEqual(expect.arrayContaining([
       expect.objectContaining({ label: "星陨追加伤害", input: expect.objectContaining({ stacks: 3 }) }),
     ]));
@@ -2361,6 +2395,165 @@ describe("calculateMatchup", () => {
       totalDamage: 94,
     });
     expect(finalStep.input.finalDamageMultiplier).toBe(1.5);
+  });
+
+  test("减压阀按使用次数增加相邻技能的固定威力", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: side("spirit_sonic_dog", "skill_wind", [
+            "skill_wind",
+            {
+              context: { pressureValveUseCount: 2 },
+              skillId: "skill_pressure_valve",
+            },
+            null,
+            null,
+          ]),
+        },
+      }),
+    ).forward.results[0];
+
+    expect(result).toMatchObject({ resolvedPower: 80, staticPower: 130 });
+  });
+
+  test("减压阀按四技能首尾相邻并累计多个相邻来源", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: side("spirit_sonic_dog", "skill_wind", [
+            "skill_wind",
+            { skillId: "skill_pressure_valve" },
+            null,
+            { skillId: "skill_pressure_valve" },
+          ]),
+        },
+      }),
+    ).forward.results[0];
+
+    expect(result).toMatchObject({ resolvedPower: 80, staticPower: 100 });
+  });
+
+  test("减压阀不影响非相邻槽位且不覆盖既有分槽固定威力", () => {
+    const nonAdjacent = calculateMatchup(
+      snapshot,
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: side("spirit_sonic_dog", "skill_wind", [
+            "skill_wind",
+            null,
+            { skillId: "skill_pressure_valve" },
+            null,
+          ]),
+        },
+      }),
+    ).forward.results[0];
+    const additive = calculateMatchup(
+      snapshot,
+      battleInput({
+        mode: "four",
+        directions: {
+          forward: { overrides: { fixedPowerAddsBySlot: { 1: 5 } } },
+        },
+        sides: {
+          attacker: side("spirit_sonic_dog", "skill_wind", [
+            "skill_wind",
+            { skillId: "skill_pressure_valve" },
+            null,
+            null,
+          ]),
+        },
+      }),
+    ).forward.results[0];
+
+    expect(nonAdjacent).toMatchObject({ resolvedPower: 80, staticPower: 80 });
+    expect(additive).toMatchObject({ resolvedPower: 80, staticPower: 95 });
+  });
+
+  test("铁蒺藜应对成功翻倍最终伤害但保持显示威力", () => {
+    const input = (counterTriggered) => battleInput({
+      directions: { forward: { context: { counterTriggered } } },
+      sides: {
+        attacker: side("spirit_sonic_dog", "skill_caltrop", [
+          "skill_caltrop",
+          null,
+          null,
+          null,
+        ]),
+      },
+    });
+    const normal = calculateMatchup(snapshot, input(false)).forward.selectedResult;
+    const countered = calculateMatchup(snapshot, input(true)).forward.selectedResult;
+
+    expect(countered).toMatchObject({
+      displayPower: normal.displayPower,
+      skillPower: normal.skillPower,
+      totalDamage: normal.totalDamage * 2,
+    });
+  });
+
+  test("铁蒺藜多段时逐段应用最终伤害翻倍和向下取整", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        directions: {
+          forward: {
+            context: { counterTriggered: true },
+            hitCount: 3,
+          },
+        },
+        sides: {
+          attacker: side("spirit_sonic_dog", "skill_caltrop", [
+            "skill_caltrop",
+            null,
+            null,
+            null,
+          ]),
+        },
+      }),
+    ).forward.selectedResult;
+    const finalStep = result.formulaSteps.find(
+      ({ label }) => label === "减伤、连击与最终倍率",
+    );
+
+    expect(result.hitCount).toBe(3);
+    expect(result.totalDamage).toBe(finalStep.input.oneHitAfterFinal * 3);
+    expect(finalStep.input.finalDamageMultiplier).toBe(2);
+    expect(finalStep.input.oneHitAfterFinal).toBe(
+      Math.floor(finalStep.before * 2),
+    );
+  });
+
+  test("体重挡位技能允许手动显示威力直接覆盖完整面板结算", () => {
+    const result = calculateMatchup(
+      snapshot,
+      battleInput({
+        mode: "four",
+        sides: {
+          attacker: side("spirit_sonic_dog", "skill_weight_pressure", [
+            {
+              context: { targetWeightTier: "4~13" },
+              overrides: { powerOverride: { mode: "panel", value: 281 } },
+              skillId: "skill_weight_pressure",
+            },
+            null,
+            null,
+            null,
+          ]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      panelPower: 281,
+      powerSource: "manual-panel",
+      resolvedPower: 140,
+    });
   });
 
   test("applies Friendship Overflow counter doubling after editable four-skill power", () => {

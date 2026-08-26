@@ -43,6 +43,8 @@ test("keeps menu before workspace and closes it with Escape", () => {
   const { menuButtonRef, onMenuClose } = renderOverlays();
 
   expect(screen.getByRole("navigation", { name: "应用菜单" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "常用精灵配置" }))
+    .toHaveTextContent("213");
   expect(screen.getByText("工作区").previousElementSibling).toHaveAttribute(
     "aria-label",
     "应用菜单",
@@ -113,12 +115,18 @@ test("opens the complete release notes in a second-level dialog", () => {
   });
 
   expect(screen.getByText("版本记录")).toBeVisible();
-  expect(screen.getByText("计算核心与桌面体验收口")).toBeVisible();
-  expect(screen.getByText("v1.6.2")).toBeVisible();
+  expect(screen.getByText("队伍分析与技能适配")).toBeVisible();
+  expect(screen.getByText("v1.6.3")).toBeVisible();
+  expect(
+    screen.getByText("队伍升级为成员、分析、对位三页，六人矩阵首屏完整展示。"),
+  ).toBeVisible();
+  expect(screen.queryByText(/陨星虫配置中已失效/)).not.toBeInTheDocument();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
 
   fireEvent.click(screen.getByRole("button", { name: "查看完整版本记录" }));
   expect(screen.getByRole("dialog", { name: "完整版本记录" })).toBeVisible();
+  expect(screen.getByText(/陨星虫配置中已失效/)).toBeVisible();
+  expect(screen.getByText("v1.6.2")).toBeVisible();
   expect(screen.getByText("v1.5.4")).toBeVisible();
   expect(screen.getByText("v1.0.0")).toBeVisible();
   expect(

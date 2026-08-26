@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "capturedAt": "2026-08-26",
+    "damageRuleCount": 90,
+    "hitCountRuleCount": 52,
+    "priorAuditDamageRuleCount": 91,
+    "source": "https://rocopvp.tzrain.wiki/battle",
+    "sourceBundle": "https://rocopvp.tzrain.wiki/_next/static/chunks/461-69dc8760a4425a98.js",
+    "sourceGuide": "https://rocopvp.tzrain.wiki/battle-use-guide",
+    "note": "当前线上包为90项伤害适配；此前审计记录为91项，本快照以抓取到的线上规则签名为准。"
+  },
+  "damageSignatures": {
+    "switch": [
+      "暗突袭", "爆冲", "背袭", "磁暴", "草虫冲击", "超级糖果", "虫击", "触底强击",
+      "穿膛", "吹炎", "拆礼物", "当头棒喝", "地陷", "电弧", "钢铁洪流", "滚雪球",
+      "回旋踢", "极寒领域", "急中生智", "技巧打击", "见招拆招", "离子震荡", "龙卷风",
+      "轮班", "破罐破摔", "气势一击", "筛管奔流", "撒花", "闪燃", "星痕", "扇风",
+      "色散", "铁蒺藜", "透镜实验", "天旋地转", "偷袭", "突袭", "无影脚", "雪原狩猎",
+      "械斗", "引雷", "硬门", "炙热波动"
+    ],
+    "layer": [
+      "齿轮扭矩", "吹火", "垂死反击", "飞断", "坟场搏击", "光能聚集", "过曝", "彗星",
+      "减压阀", "流星火雨", "落雷", "能量刃", "逆袭", "迫近攻击", "牵连", "燃尽",
+      "撒娇", "山火", "水波术", "碎冰冰", "天体吸积", "微型斥候", "啃咬", "阳火增辉",
+      "远行", "涌泉", "叠浪", "甜蜜陷阱", "试飞", "血契", "虫群", "雷暴", "绵里藏针"
+    ],
+    "tier": [
+      "吨位压制", "鸣沙陷阱", "魔能爆", "砂糖弹球", "闪击", "以重制重", "下注", "驱赶"
+    ],
+    "power": ["冰锋横扫", "钢钻", "怨力打击", "听桥"],
+    "layer+switch": ["鸩毒", "友谊满溢"]
+  },
+  "hitCountSignatures": [
+    { "name": "孢子爆散", "defaultHitCount": 1, "mode": "total", "baseHitCount": 0 },
+    { "name": "冰捆缚", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "缠丝劲", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "趁火打劫", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "乘胜追击", "defaultHitCount": 1, "mode": "total", "baseHitCount": 0 },
+    { "name": "虫刺", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "虫群", "defaultHitCount": 1, "mode": "total", "baseHitCount": 0 },
+    { "name": "虫群过境", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "虫鸣", "defaultHitCount": 1, "mode": "total", "baseHitCount": 0 },
+    { "name": "传感器", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "刺藤", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "打雪仗", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "叠浪", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "电离爆破", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "叠势", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "多维击打", "defaultHitCount": 0, "mode": "bonus-layer", "baseHitCount": 1 },
+    { "name": "反击拳", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "飞箭", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "光之矛", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "黑手", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "花炮", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "疾风刺", "defaultHitCount": 1, "mode": "total", "baseHitCount": 0 },
+    { "name": "聚盐", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "啃咬", "defaultHitCount": 1, "mode": "total", "baseHitCount": 0 },
+    { "name": "连续毒针", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "连续爪击", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "灵光", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "流火", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "乱打", "defaultHitCount": 5, "mode": "total", "baseHitCount": 0 },
+    { "name": "落石", "defaultHitCount": 1, "mode": "total", "baseHitCount": 0 },
+    { "name": "埋伏", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "能量炮", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "撒娇", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "三连破", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "散手", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "闪击折返", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "双响炮", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "水花四溅", "defaultHitCount": 4, "mode": "total", "baseHitCount": 0 },
+    { "name": "撕咬", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "午夜噪音", "defaultHitCount": 5, "mode": "total", "baseHitCount": 0 },
+    { "name": "星链", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "旋转突击", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "易燃物质", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "音波弹", "defaultHitCount": 1, "mode": "total", "baseHitCount": 0 },
+    { "name": "引雷", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "月光合奏", "defaultHitCount": 0, "mode": "bonus-layer", "baseHitCount": 1 },
+    { "name": "试飞", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "过敏原", "defaultHitCount": 1, "mode": "total", "baseHitCount": 0 },
+    { "name": "针状物", "defaultHitCount": 3, "mode": "total", "baseHitCount": 0 },
+    { "name": "种皮爆裂", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 },
+    { "name": "追打", "defaultHitCount": 1, "mode": "total", "baseHitCount": 0 },
+    { "name": "啄击", "defaultHitCount": 2, "mode": "total", "baseHitCount": 0 }
+  ],
+  "coverage": {
+    "defaultClassification": "shared-rule",
+    "specialCore": ["听桥", "硬门", "减压阀"],
+    "unsupported": []
+  },
+  "officialOverrides": {
+    "孢子": { "pvpParasitismStacks": 3 },
+    "撒娇": { "powerPerUse": 10, "referencePowerPerUse": 20 },
+    "示弱": { "cost": 2, "speedFlat": 130 },
+    "触底强击": { "powerAdd": 120, "referencePowerAdd": 110 }
+  }
+}

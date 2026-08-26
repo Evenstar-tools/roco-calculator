@@ -22,12 +22,16 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留贪得无厌结算、吸血后自损顺序与物攻等级说明",
   }),
   "src/domain/calculate.js": Object.freeze({
-    mirrorHash: "0509ef555c3bcafddbd71b4b32420c1334c212f65ebd05d3c43ec1ac8bd90ba7",
-    reason: "保留显示威力、实际攻防面板、听桥继承与虫群奉献结算补丁",
+    mirrorHash: "17679b3424fd698093dcb7cb409f3f477f3db4a121176dc9212af6004156b079",
+    reason: "保留显示威力、实际攻防面板、听桥继承、虫群奉献与减压阀相邻结算补丁",
   }),
   "src/domain/clown-trick.js": Object.freeze({
     mirrorHash: "3f2bc2be7147963bd68a506481040c052cd83804b34a421b33e0c02294f878ec",
     reason: "保留下注先吸血后扣除自身生命的已验收结算顺序",
+  }),
+  "src/domain/contract-shape.js": Object.freeze({
+    mirrorHash: "04682363912d83aeb97c301c92e5db4d5128ff2104ad1a82ea89dbbd37fdff3a",
+    reason: "保留契约的形状14种咕噜球效果对应关系与结算语义",
   }),
   "src/domain/marks.js": Object.freeze({
     mirrorHash: "7ae356e5f9623674c6834494843e36781c932145b1ddddf24dd4146347545e99",
@@ -42,12 +46,16 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留 v1.5.7 后已验收的威力覆盖语义",
   }),
   "src/domain/skill-effects.js": Object.freeze({
-    mirrorHash: "e7e89444a3d777b683a1b7827ed7e6c2f7e52e4c30fe9006fb54fe003fbad0ba",
-    reason: "保留迸发联动、虫群三类奉献与桌面最新技能输入语义",
+    mirrorHash: "705b42e8dc2e7f9a8d079915ace11daa1f37139eb139bbad868a00a334c10f70",
+    reason: "保留迸发联动、虫群奉献、体重挡位、啃咬与飞断最新技能输入语义",
   }),
   "src/domain/skill-rules.js": Object.freeze({
-    mirrorHash: "a3702fd44a3e4d594b04b3ab4e0d95e3f4fd7bd581bae50606b8d9b3c7da2133",
-    reason: "保留显示威力覆盖、虫群奉献与最新技能规则语义",
+    mirrorHash: "36a2a2e92b41fbbf44343f9939c1aa362f00b1fc5809f622cc89dc2dcef0b4b8",
+    reason: "保留显示威力覆盖、虫群奉献、体重挡位与最终伤害倍率规则语义",
+  }),
+  "src/domain/skill-status-effects.js": Object.freeze({
+    mirrorHash: "692be3b976e05cf4fd544bb74b5956770d75ea98e130b77199678aec442d889d",
+    reason: "保留减压阀已使用次数输入与状态技能适配语义",
   }),
   "src/domain/trait-effects.js": Object.freeze({
     mirrorHash: "e1ef3d9481dd183d7c2b1b24d85444636cba5eda1da99697306f340cebee7211",

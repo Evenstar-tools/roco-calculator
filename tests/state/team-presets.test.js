@@ -159,6 +159,23 @@ describe("teamPresetsRepository", () => {
     expect(restored.teams[0].members[0].skills.four).toHaveLength(4);
   });
 
+  test("persists the selected team bloodline after refresh", () => {
+    const storage = memoryStorage();
+    const store = repository(storage);
+    let state = store.create(store.load(snapshot()), "主队");
+    const member = {
+      ...createTeamMember(snapshot(), "spirit-a"),
+      bloodlineType: "fire",
+    };
+
+    state = store.updateMember(state, state.activeTeamId, 0, member);
+
+    expect(repository(storage).load(snapshot()).teams[0].members[0]).toMatchObject({
+      bloodlineType: "fire",
+      spiritId: "spirit-a",
+    });
+  });
+
   test("captures a calculator side without sharing nested references", () => {
     const side = {
       displayIvs: {

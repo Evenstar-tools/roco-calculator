@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { analyzeTeamDefensiveTypes } from "../../src/domain/team-type-analysis.js";
+import {
+  analyzeTeamDefensiveTypes,
+  analyzeTeamMatchups,
+  analyzeTeamTypes,
+} from "../../src/domain/team-type-analysis.js";
 
 const spirits = [
   {
@@ -10,6 +14,7 @@ const spirits = [
   },
   { fullName: "水地灵", id: "water-ground", types: ["水", "地"] },
   { fullName: "龙灵", id: "dragon", types: ["龙"] },
+  { fullName: "首领灵", id: "boss", stage: "首领", types: ["光"] },
 ];
 
 function row(result, type) {
@@ -96,5 +101,205 @@ describe("analyzeTeamDefensiveTypes", () => {
 
     expect(result.riskRows[0].type).toBe("草");
     expect(result.riskRows.every((item) => item.weakCount > 0)).toBe(true);
+  });
+});
+
+describe("analyzeTeamTypes", () => {
+  test("returns defense cells and the best carried attack for every type", () => {
+    const result = analyzeTeamTypes({
+      members: [
+        {
+          skills: {
+            four: ["fire-hit", "water-hit", "grass-status", null],
+          },
+          spiritId: "water",
+        },
+      ],
+      skills: [
+        {
+          category: "physical",
+          id: "fire-hit",
+          name: "火焰冲击",
+          type: "火",
+        },
+        {
+          category: "magical",
+          id: "water-hit",
+          name: "水之波纹",
+          type: "水",
+        },
+        {
+          category: "status",
+          id: "grass-status",
+          name: "催眠粉",
+          type: "草",
+        },
+      ],
+      spirits,
+    });
+
+    const member = result.members[0];
+    expect(member.defense.find(({ type }) => type === "草")).toMatchObject({
+      multiplier: 2,
+      type: "草",
+    });
+    expect(member.offense.find(({ type }) => type === "草")).toMatchObject({
+      multiplier: 2,
+      skillId: "fire-hit",
+      skillName: "火焰冲击",
+      skillType: "火",
+      type: "草",
+    });
+  });
+
+  test("adds Wish Power from the configured elemental bloodline only when enabled", () => {
+    const input = {
+      members: [
+        {
+          bloodlineType: "fire",
+          skills: { four: ["water-hit", null, null, null] },
+          spiritId: "water",
+        },
+      ],
+      skills: [
+        {
+          category: "magical",
+          id: "water-hit",
+          name: "水之波纹",
+          type: "水",
+        },
+      ],
+      spirits,
+    };
+
+    const withoutWish = analyzeTeamTypes(input);
+    const withWish = analyzeTeamTypes({ ...input, includeWishPower: true });
+
+    expect(
+      withoutWish.members[0].offense.find(({ type }) => type === "草"),
+    ).toMatchObject({ multiplier: 0.5, skillName: "水之波纹" });
+    expect(
+      withWish.members[0].offense.find(({ type }) => type === "草"),
+    ).toMatchObject({
+      multiplier: 2,
+      skillName: "愿力冲击",
+      skillType: "火",
+      sourceKind: "wish-power",
+    });
+  });
+
+  test("resolves a boss bloodline from its legal Wish Power replacement", () => {
+    const result = analyzeTeamTypes({
+      includeWishPower: true,
+      learnsets: [
+        {
+          skillIds: ["calculator_wish_power_bug"],
+          spiritId: "boss",
+        },
+      ],
+      members: [
+        {
+          bloodlineType: "boss",
+          skills: { four: [null, null, null, null] },
+          spiritId: "boss",
+        },
+      ],
+      skills: [
+        {
+          category: "dual",
+          id: "calculator_wish_power_bug",
+          name: "愿力冲击",
+          type: "虫",
+        },
+      ],
+      spirits,
+    });
+
+    expect(
+      result.members[0].offense.find(({ type }) => type === "恶"),
+    ).toMatchObject({
+      multiplier: 2,
+      skillId: "calculator_wish_power_bug",
+      skillName: "愿力冲击",
+      skillType: "虫",
+      sourceKind: "wish-power",
+    });
+  });
+
+  test("uses the boss bloodline default for a legacy boss member", () => {
+    const result = analyzeTeamTypes({
+      includeWishPower: true,
+      learnsets: [
+        {
+          skillIds: ["calculator_wish_power_bug"],
+          spiritId: "boss",
+        },
+      ],
+      members: [
+        {
+          skills: { four: [null, null, null, null] },
+          spiritId: "boss",
+        },
+      ],
+      skills: [
+        {
+          category: "dual",
+          id: "calculator_wish_power_bug",
+          name: "愿力冲击",
+          type: "虫",
+        },
+      ],
+      spirits,
+    });
+
+    expect(
+      result.members[0].offense.find(({ type }) => type === "恶"),
+    ).toMatchObject({
+      multiplier: 2,
+      skillId: "calculator_wish_power_bug",
+      sourceKind: "wish-power",
+    });
+  });
+});
+
+describe("analyzeTeamMatchups", () => {
+  test("traces each 6x6 cell to the best carried skill", () => {
+    const result = analyzeTeamMatchups({
+      attackers: [
+        {
+          skills: { four: ["fire-hit", "water-hit", null, null] },
+          spiritId: "water",
+        },
+      ],
+      defenders: [
+        {
+          skills: { four: [] },
+          spiritId: "dragon",
+        },
+      ],
+      skills: [
+        {
+          category: "physical",
+          id: "fire-hit",
+          name: "火焰冲击",
+          type: "火",
+        },
+        {
+          category: "magical",
+          id: "water-hit",
+          name: "水之波纹",
+          type: "水",
+        },
+      ],
+      spirits,
+    });
+
+    expect(result.cells[0][0]).toMatchObject({
+      attackerSlotIndex: 0,
+      defenderSlotIndex: 0,
+      multiplier: 0.5,
+      skillId: "fire-hit",
+      skillName: "火焰冲击",
+    });
   });
 });

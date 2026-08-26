@@ -11,6 +11,9 @@ import LoadingState from "../../components/LoadingState.jsx";
 import SharedResultPage from "../../components/SharedResultPage.jsx";
 import SharedSessionStrip from "../../components/SharedSessionStrip.jsx";
 import commonSpiritConfig from "../../data/common-spirit-config.json";
+import {
+  LEGACY_COMMON_CONFIG_ENTRY_SIGNATURES,
+} from "../../data/legacy-common-config-signatures.js";
 import { BUNDLED_PET_IMAGE_OVERRIDES } from "../../data/bundled-pet-image-overrides.js";
 import previewSnapshot from "../../data/preview-runtime.json";
 import { PREVIEW_PET_IMAGES } from "../../data/preview-pet-images.js";
@@ -26,6 +29,7 @@ import { createAutosaveController } from "../../state/autosave.js";
 import { createCalculationView } from "../../view-models/calculation.js";
 import {
   configPresetsBySpirit,
+  configLibraryBundleId,
   createConfigLibraryRepository,
   expandBundledConfigLibrary,
 } from "../../state/config-library.js";
@@ -34,9 +38,18 @@ import { createPersistence } from "../../state/persistence.js";
 import bundledRuntime from "../../data/bundled-runtime.js";
 import "./index.css";
 
-const COMMON_SPIRIT_CONFIG_JSON = JSON.stringify(
-  expandBundledConfigLibrary(commonSpiritConfig),
+const EXPANDED_COMMON_SPIRIT_CONFIG = expandBundledConfigLibrary(
+  commonSpiritConfig,
 );
+const COMMON_SPIRIT_CONFIG_JSON = JSON.stringify(EXPANDED_COMMON_SPIRIT_CONFIG);
+export const COMMON_SPIRIT_CONFIG_BUNDLE_ID = configLibraryBundleId(
+  EXPANDED_COMMON_SPIRIT_CONFIG,
+);
+const EMPTY_CONFIG_LIBRARY = {
+  commonConfig: { bundleId: null, entrySignatures: {} },
+  entries: [],
+  schemaVersion: 1,
+};
 
 function bundledPetImagesFor(snapshot) {
   return Object.fromEntries(
@@ -120,7 +133,7 @@ export default function IndexPage({ services }) {
     snapshot: null,
     store: null,
     favoriteIds: [],
-    configLibrary: { entries: [], schemaVersion: 1 },
+    configLibrary: EMPTY_CONFIG_LIBRARY,
     memoryEnabled: true,
     negativeStatusEnabled: false,
     quickUndoEnabled: false,
@@ -144,7 +157,7 @@ export default function IndexPage({ services }) {
       snapshot: null,
       store: null,
       favoriteIds: [],
-      configLibrary: { entries: [], schemaVersion: 1 },
+      configLibrary: EMPTY_CONFIG_LIBRARY,
       memoryEnabled: true,
       negativeStatusEnabled: false,
       quickUndoEnabled: false,
@@ -209,7 +222,7 @@ export default function IndexPage({ services }) {
         pageServices.favoritesRepository?.load(snapshot) ?? [];
       const configLibrary =
         pageServices.configLibraryRepository?.load(snapshot) ??
-        { entries: [], schemaVersion: 1 };
+        EMPTY_CONFIG_LIBRARY;
       const calculatorStore = createCalculatorStore(
         snapshot,
         hasSharedState ? shareResult.state : localState,
@@ -247,7 +260,7 @@ export default function IndexPage({ services }) {
         snapshot: null,
         store: null,
         favoriteIds: [],
-        configLibrary: { entries: [], schemaVersion: 1 },
+        configLibrary: EMPTY_CONFIG_LIBRARY,
         memoryEnabled: true,
         negativeStatusEnabled: false,
         quickUndoEnabled: false,
@@ -391,6 +404,12 @@ export default function IndexPage({ services }) {
 
   const importCommonConfigLibrary = useCallback(() => {
     try {
+      if (
+        pageState.configLibrary.commonConfig?.bundleId
+        === COMMON_SPIRIT_CONFIG_BUNDLE_ID
+      ) {
+        return null;
+      }
       const repository = pageState.services?.configLibraryRepository;
       if (!repository) {
         throw new TypeError("常用精灵配置仓库尚未就绪");
@@ -399,11 +418,14 @@ export default function IndexPage({ services }) {
         COMMON_SPIRIT_CONFIG_JSON,
         pageState.snapshot,
       );
-      const imported = repository.commit(parsed, pageState.snapshot);
+      const imported = repository.commit(parsed, pageState.snapshot, {
+        legacyEntrySignatures: LEGACY_COMMON_CONFIG_ENTRY_SIGNATURES,
+      });
       setPageState((current) => current.store === pageState.store
         ? {
             ...current,
             configLibrary: {
+              commonConfig: imported.commonConfig,
               entries: imported.entries,
               schemaVersion: imported.schemaVersion,
             },
@@ -413,7 +435,9 @@ export default function IndexPage({ services }) {
       Promise.resolve(Taro.showToast({
         duration: 2400,
         icon: "success",
-        title: `已导入 ${imported.entries.length} 只精灵`,
+        title: pageState.configLibrary.entries.length > 0
+          ? `已更新 ${imported.entries.length} 只，保留 ${imported.preview.preserved} 项`
+          : `已导入 ${imported.entries.length} 只精灵`,
       })).catch(() => {});
       return imported;
     } catch {
@@ -595,6 +619,14 @@ export default function IndexPage({ services }) {
     <View className="page">
       <AppHeader
         commonConfigCount={pageState.configLibrary.entries.length}
+        commonConfigStatus={
+          pageState.configLibrary.commonConfig?.bundleId
+            === COMMON_SPIRIT_CONFIG_BUNDLE_ID
+            ? "current"
+            : pageState.configLibrary.entries.length > 0
+              ? "update"
+              : "available"
+        }
         dataVersion={[
           pageState.snapshot.meta?.seasonId,
           pageState.snapshot.meta?.bwikiRevision

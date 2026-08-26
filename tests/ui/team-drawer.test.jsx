@@ -107,6 +107,8 @@ function DrawerHarness({
   getSpiritConfiguration = () => null,
   onApply = vi.fn(),
   onCaptureSide = vi.fn(),
+  spiritChoices,
+  snapshotOverride = snapshot,
 }) {
   const triggerRef = useRef(null);
   const storeRef = useRef(null);
@@ -120,7 +122,7 @@ function DrawerHarness({
   }
   const store = storeRef.current;
   const [open, setOpen] = useState(true);
-  const [teamsState, setTeamsState] = useState(() => store.load(snapshot));
+  const [teamsState, setTeamsState] = useState(() => store.load(snapshotOverride));
 
   return (
     <>
@@ -154,12 +156,34 @@ function DrawerHarness({
         }
         open={open}
         returnFocusRef={triggerRef}
-        snapshot={snapshot}
+        snapshot={snapshotOverride}
+        spiritChoices={spiritChoices}
         teamsState={teamsState}
       />
     </>
   );
 }
+
+test("uses the calculator spirit choices in the team member picker", async () => {
+  const user = userEvent.setup();
+  const spiritChoices = snapshot.spirits.map((spirit) => ({
+    ...spirit,
+    assetUrl: spirit.asset?.localUrl ?? null,
+    favoriteState: spirit.id === "water-spirit" ? "manual" : null,
+  }));
+  render(<DrawerHarness spiritChoices={spiritChoices} />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  await user.click(screen.getByRole("combobox", { name: "成员精灵" }));
+
+  const options = within(screen.getByRole("listbox")).getAllByRole("option");
+  expect(options[0]).toHaveTextContent("水灵");
+  expect(
+    within(screen.getByRole("listbox")).queryByRole("option", {
+      name: /音速犬/,
+    }),
+  ).not.toBeInTheDocument();
+});
 
 test("creates and edits one of six team members", async () => {
   const user = userEvent.setup();
@@ -205,6 +229,25 @@ test("creates and edits one of six team members", async () => {
       4,
     );
   });
+});
+
+test("configures one of 18 elemental bloodlines or the boss bloodline", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const spiritPicker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(spiritPicker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+
+  const bloodline = screen.getByRole("combobox", { name: "血脉" });
+  expect(within(bloodline).getAllByRole("option")).toHaveLength(19);
+  await user.selectOptions(bloodline, "fire");
+  expect(bloodline).toHaveValue("fire");
+
+  await user.click(screen.getByRole("button", { name: "编辑空位 2" }));
+  await user.click(screen.getByRole("button", { name: "编辑音速犬" }));
+  expect(screen.getByRole("combobox", { name: "血脉" })).toHaveValue("fire");
 });
 
 test("copies a personal configuration when selecting a member and never inherits the previous spirit", async () => {
@@ -351,12 +394,306 @@ test("switches the right pane between member editing and team defense analysis",
   expect(screen.getByRole("region", { name: "成员 1 配置" })).toBeVisible();
   await user.click(screen.getByRole("button", { name: "分析" }));
 
-  expect(screen.getByRole("region", { name: "队伍防守面" })).toBeVisible();
-  expect(screen.getByText("1/6")).toBeVisible();
+  expect(screen.getByRole("region", { name: "队伍分析" })).toBeVisible();
+  expect(screen.getByRole("list", { name: "队伍成员" })).toBeVisible();
+  expect(screen.getByRole("table", { name: "队伍防守与打击面矩阵" })).toBeVisible();
   expect(screen.queryByRole("region", { name: "成员 1 配置" })).not.toBeInTheDocument();
 
   await user.click(screen.getByRole("button", { name: "成员" }));
   expect(screen.getByRole("region", { name: "成员 1 配置" })).toBeVisible();
+});
+
+test("keeps the vertical roster beside three top-level member analysis and matchup panes", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "复制队伍" }));
+
+  const paneTabs = screen.getByLabelText("队伍面板");
+  expect(within(paneTabs).getByRole("button", { name: "成员" })).toBeVisible();
+  expect(within(paneTabs).getByRole("button", { name: "分析" })).toBeVisible();
+  expect(within(paneTabs).getByRole("button", { name: "对位" })).toBeVisible();
+
+  await user.click(within(paneTabs).getByRole("button", { name: "分析" }));
+  expect(screen.getByRole("list", { name: "队伍成员" })).toBeVisible();
+  expect(screen.queryByRole("list", { name: "分析队伍成员" })).not.toBeInTheDocument();
+  expect(screen.getByRole("table", { name: "队伍防守与打击面矩阵" })).toBeVisible();
+
+  await user.click(within(paneTabs).getByRole("button", { name: "对位" }));
+  expect(screen.getByRole("list", { name: "队伍成员" })).toBeVisible();
+  expect(screen.queryByRole("list", { name: "分析队伍成员" })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "导入队伍" }));
+  expect(screen.getByRole("table", { name: "队伍六乘六对位" })).toBeVisible();
+});
+
+test("opens the icon-led analysis matrix without changing the member editor layout", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "分析" }));
+
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+  expect(
+    within(panel).getByRole("table", { name: "队伍防守与打击面矩阵" }),
+  ).toBeVisible();
+  expect(within(panel).getByRole("complementary", { name: "防守概览" })).toBeVisible();
+  expect(within(panel).getByRole("complementary", { name: "打击概览" })).toBeVisible();
+  expect(within(panel).getByRole("checkbox", { name: "计入愿力冲击" })).toBeVisible();
+});
+
+test("does not count immune defense cells as resistances", async () => {
+  const user = userEvent.setup();
+  render(
+    <DrawerHarness
+      snapshotOverride={{
+        ...snapshot,
+        typeChart: {
+          matrix: [
+            [1, 0],
+            [1, 1],
+          ],
+          types: ["草", "火"],
+        },
+      }}
+    />,
+  );
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "分析" }));
+
+  const summary = screen.getByRole("complementary", { name: "防守概览" });
+  expect(within(within(summary).getByText("抗性").closest("span")).getByText("0"))
+    .toBeVisible();
+  expect(within(within(summary).getByText("免疫").closest("span")).getByText("1"))
+    .toBeVisible();
+});
+
+test("switches to skill coverage and traces a matrix cell to its source skill", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "分析" }));
+
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+  await user.click(within(panel).getByRole("button", { name: "技能打击面" }));
+  await user.click(
+    within(panel).getByRole("button", { name: "音速犬 对草打击×2" }),
+  );
+
+  const detail = within(panel).getByLabelText("单元格详情");
+  expect(within(detail).getByText("音速犬")).toBeVisible();
+  expect(within(detail).getByText("风力冲击")).toBeVisible();
+  expect(within(detail).getByText("×2")).toBeVisible();
+});
+
+test("clears a selected matrix cell when switching matrix modes", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "分析" }));
+
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+  await user.click(
+    within(panel).getByRole("button", { name: "音速犬 对草承伤×0.5" }),
+  );
+  expect(within(panel).getByLabelText("单元格详情")).toBeVisible();
+
+  await user.click(within(panel).getByRole("button", { name: "技能打击面" }));
+  expect(within(panel).queryByLabelText("单元格详情")).not.toBeInTheDocument();
+});
+
+test("does not restore a stale cell detail after changing analysis views", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "分析" }));
+
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+  await user.click(
+    within(panel).getByRole("button", { name: "音速犬 对草承伤×0.5" }),
+  );
+  const paneTabs = screen.getByLabelText("队伍面板");
+  await user.click(within(paneTabs).getByRole("button", { name: "对位" }));
+  await user.click(within(paneTabs).getByRole("button", { name: "分析" }));
+
+  expect(within(panel).queryByLabelText("单元格详情")).not.toBeInTheDocument();
+});
+
+test("opens matchup as one import-and-edit workflow without redundant source tabs", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "复制队伍" }));
+  await user.click(screen.getByRole("button", { name: "对位" }));
+
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+
+  expect(within(panel).queryByRole("button", { name: "已保存队伍" })).not.toBeInTheDocument();
+  expect(within(panel).queryByRole("button", { name: "现场编辑" })).not.toBeInTheDocument();
+  expect(within(panel).getByRole("region", { name: "现场队伍编辑" })).toBeVisible();
+  expect(within(panel).getByRole("combobox", { name: "导入现有队伍" })).toBeVisible();
+  expect(within(panel).getByText("添加现场对手后查看对位")).toBeVisible();
+});
+
+test("opens an isolated现场 opponent editor directly from the matchup page", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  await user.click(screen.getByRole("button", { name: "复制队伍" }));
+  await user.click(screen.getByRole("button", { name: "对位" }));
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+
+  expect(within(panel).getByRole("region", { name: "现场队伍编辑" })).toBeVisible();
+  expect(within(panel).getByRole("list", { name: "现场队伍成员" })).toBeVisible();
+  expect(within(panel).getByRole("combobox", { name: "导入现有队伍" })).toBeVisible();
+  expect(within(panel).getByRole("button", { name: "导入队伍" })).toBeVisible();
+  expect(
+    within(panel).queryByRole("region", { name: "成员 1 配置" }),
+  ).not.toBeInTheDocument();
+});
+
+test("imports a saved opponent into an editable现场 copy without changing the saved team", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const mainPicker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(mainPicker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "复制队伍" }));
+  await user.click(screen.getByRole("button", { name: "对位" }));
+
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+  await user.click(within(panel).getByRole("button", { name: "导入队伍" }));
+  expect(within(panel).getByRole("button", { name: "编辑现场音速犬 1" })).toBeVisible();
+  await user.click(within(panel).getByRole("button", { name: "编辑现场音速犬 1" }));
+
+  const editor = within(panel).getByRole("region", { name: "成员 1 配置" });
+  const draftPicker = within(editor).getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(draftPicker, { target: { value: "水灵" } });
+  await user.click(within(editor).getByRole("option", { name: /水灵/ }));
+  await waitFor(() =>
+    expect(
+      within(panel).getByRole("table", { name: "队伍六乘六对位" }),
+    ).toHaveTextContent("水灵"),
+  );
+
+  await user.click(within(panel).getByRole("button", { name: "导入队伍" }));
+  expect(
+    within(panel).getByRole("table", { name: "队伍六乘六对位" }),
+  ).toHaveTextContent("音速犬");
+  expect(
+    within(panel).getByRole("table", { name: "队伍六乘六对位" }),
+  ).not.toHaveTextContent("水灵");
+});
+
+test("allows现场 editing when there is no other saved team", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  await user.click(screen.getByRole("button", { name: "对位" }));
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+
+  expect(within(panel).getByRole("region", { name: "现场队伍编辑" })).toBeVisible();
+  expect(within(panel).getByText("添加现场对手后查看对位")).toBeVisible();
+
+  await user.click(within(panel).getByRole("button", { name: "编辑现场空位 1" }));
+  const editor = within(panel).getByRole("region", { name: "成员 1 配置" });
+  const picker = within(editor).getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "水灵" } });
+  await user.click(within(editor).getByRole("option", { name: /水灵/ }));
+  expect(
+    within(panel).getByRole("table", { name: "队伍六乘六对位" }),
+  ).toHaveTextContent("水灵");
+});
+
+test("clears matchup detail when the attack direction changes", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "复制队伍" }));
+  await user.click(screen.getByRole("button", { name: "对位" }));
+
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+  await user.click(within(panel).getByRole("button", { name: "导入队伍" }));
+  const table = within(panel).getByRole("table", { name: "队伍六乘六对位" });
+  await user.click(within(table).getAllByRole("button")[0]);
+  expect(within(panel).getByLabelText("单元格详情")).toBeVisible();
+
+  await user.click(within(panel).getByRole("button", { name: "切换攻击方向" }));
+  expect(within(panel).queryByLabelText("单元格详情")).not.toBeInTheDocument();
+});
+
+test("clears matchup detail when another saved team is imported", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "复制队伍" }));
+  await user.click(screen.getByRole("button", { name: "复制队伍" }));
+  await user.click(screen.getByRole("button", { name: "对位" }));
+
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+  await user.click(within(panel).getByRole("button", { name: "导入队伍" }));
+  const table = within(panel).getByRole("table", { name: "队伍六乘六对位" });
+  await user.click(within(table).getAllByRole("button")[0]);
+  expect(within(panel).getByLabelText("单元格详情")).toBeVisible();
+
+  const opponentPicker = within(panel).getByRole("combobox", { name: "导入现有队伍" });
+  await user.selectOptions(opponentPicker, within(opponentPicker).getAllByRole("option")[1]);
+  await user.click(within(panel).getByRole("button", { name: "导入队伍" }));
+  expect(within(panel).queryByLabelText("单元格详情")).not.toBeInTheDocument();
+});
+
+test("opens the matrix directly without a separate overview home", async () => {
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "分析" }));
+
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+  expect(within(panel).getByRole("table", { name: "队伍防守与打击面矩阵" })).toBeVisible();
+  expect(within(panel).queryByRole("button", { name: "概览视图" })).not.toBeInTheDocument();
 });
 
 test("closes with Escape and restores focus to the trigger", async () => {

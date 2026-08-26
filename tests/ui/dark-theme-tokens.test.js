@@ -48,4 +48,27 @@ describe("深色主题变量", () => {
       'html[data-theme="dark"] .data-source-release__heading b',
     );
   });
+
+  it("精灵与技能下拉浮层和队伍确认按钮使用深色交互面", () => {
+    const darkSurfaceGroupStart = css.indexOf(
+      'html[data-theme="dark"] .app-header,',
+    );
+    const darkSurfaceGroupEnd = css.indexOf("}", darkSurfaceGroupStart);
+    const darkSurfaceGroup = css.slice(
+      darkSurfaceGroupStart,
+      darkSurfaceGroupEnd + 1,
+    );
+
+    expect(darkSurfaceGroup).toContain(
+      'html[data-theme="dark"] .spirit-picker__options',
+    );
+    expect(darkSurfaceGroup).toContain(
+      'html[data-theme="dark"] .skill-picker__options',
+    );
+    expect(darkSurfaceGroup).toContain(
+      'html[data-theme="dark"] .team-drawer__confirm button',
+    );
+    expect(darkSurfaceGroup).toContain("color: var(--text);");
+    expect(darkSurfaceGroup).toContain("background: var(--surface);");
+  });
 });

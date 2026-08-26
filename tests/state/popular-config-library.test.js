@@ -8,7 +8,7 @@ import {
 
 const presetPath = "public/data/presets/pvp-popular-configs.json";
 
-test("内置常用精灵配置包含并可校验 193 只精灵", () => {
+test("内置常用精灵配置包含并可校验 213 只精灵", () => {
   expect(existsSync(presetPath)).toBe(true);
   if (!existsSync(presetPath)) return;
 
@@ -26,9 +26,9 @@ test("内置常用精灵配置包含并可校验 193 只精灵", () => {
   });
 
   expect(library.format).toBe(FAVORITE_CONFIG_LIBRARY_FORMAT);
-  expect(library.entryCount).toBe(193);
-  expect(library.entries).toHaveLength(193);
-  expect(parsed.entries).toHaveLength(193);
+  expect(library.entryCount).toBe(213);
+  expect(library.entries).toHaveLength(213);
+  expect(parsed.entries).toHaveLength(213);
   expect(parsed.preview.missingSpirits).toBe(0);
   expect(parsed.preview.unknownTraitFields).toBe(0);
   expect(parsed.preview.invalidEntries).toBe(0);

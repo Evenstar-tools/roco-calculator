@@ -207,6 +207,59 @@ test("shows the thunderstorm burst switch and kind counter together", () => {
   expect(screen.getByLabelText("迸发种类数")).toHaveValue(0);
 });
 
+test("edits weight tiers and pressure valve uses with shared-core controls", () => {
+  const onWeightChange = vi.fn();
+  const onPressureChange = vi.fn();
+  render(
+    <>
+      <SkillConditionEditor
+        context={{}}
+        direction={{ overrides: {} }}
+        onContextChange={onWeightChange}
+        onDirectionChange={vi.fn()}
+        result={{ panelPower: 100, staticPower: 100 }}
+        skill={{
+          basePower: 100,
+          category: "physical",
+          id: "weight-pressure",
+          name: "吨位压制",
+          type: "普通",
+        }}
+      />
+      <SkillConditionEditor
+        context={{}}
+        direction={{ overrides: {} }}
+        onContextChange={onPressureChange}
+        onDirectionChange={vi.fn()}
+        result={{ panelPower: 0, staticPower: 0 }}
+        skill={{
+          basePower: 0,
+          category: "status",
+          id: "pressure-valve",
+          name: "减压阀",
+          type: "机械",
+        }}
+      />
+    </>,
+  );
+
+  expect(screen.getByText("敌方体重挡位")).toBeVisible();
+  expect(screen.getByRole("button", { name: "30~59" }))
+    .toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(screen.getByRole("button", { name: "120+" }));
+  expect(onWeightChange).toHaveBeenLastCalledWith({
+    targetWeightTier: "120+",
+  });
+
+  expect(screen.getByLabelText("已使用次数")).toHaveValue(0);
+  fireEvent.input(screen.getByLabelText("已使用次数"), {
+    target: { value: "3" },
+  });
+  expect(onPressureChange).toHaveBeenLastCalledWith({
+    pressureValveUseCount: 3,
+  });
+});
+
 test("groups thunderstorm burst sources behind a stable summary", () => {
   const onContextChange = vi.fn();
   render(

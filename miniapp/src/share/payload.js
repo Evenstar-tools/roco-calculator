@@ -22,6 +22,10 @@ const CONTEXT_KEY_ALIASES = Object.freeze({
   donationHitBonus: "wh",
   donationPoisonCount: "wz",
   donationPowerCount: "wp",
+  pressureValveUseCount: "pv",
+  targetWeightTier: "wt",
+  teamDonationCount: "wd",
+  weightDifferenceTier: "ww",
 });
 const CONTEXT_KEY_NAMES = Object.freeze(
   Object.fromEntries(

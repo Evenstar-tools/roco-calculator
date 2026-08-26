@@ -10,6 +10,32 @@ const TEAM_STORAGE_SUFFIX = "teams.v1";
 export const TEAM_STORAGE_KEY = `${STORAGE_NAMESPACE}.${TEAM_STORAGE_SUFFIX}`;
 export const TEAM_SCHEMA_VERSION = 1;
 
+export const TEAM_BLOODLINE_OPTIONS = Object.freeze([
+  { label: "普通", value: "normal" },
+  { label: "草", value: "grass" },
+  { label: "火", value: "fire" },
+  { label: "水", value: "water" },
+  { label: "光", value: "light" },
+  { label: "地", value: "ground" },
+  { label: "冰", value: "ice" },
+  { label: "龙", value: "dragon" },
+  { label: "电", value: "electric" },
+  { label: "毒", value: "poison" },
+  { label: "虫", value: "bug" },
+  { label: "武", value: "martial" },
+  { label: "翼", value: "wing" },
+  { label: "萌", value: "moe" },
+  { label: "幽", value: "ghost" },
+  { label: "恶", value: "evil" },
+  { label: "机械", value: "machine" },
+  { label: "幻", value: "phantom" },
+  { label: "首领", value: "boss" },
+]);
+
+const TEAM_BLOODLINE_VALUES = new Set(
+  TEAM_BLOODLINE_OPTIONS.map(({ value }) => value),
+);
+
 const STAT_KEYS = [
   "hp",
   "speed",
@@ -82,6 +108,9 @@ function sanitizeMember(member) {
   if (!member) return null;
   const capacity = member.skills?.four?.length === 7 ? 7 : 4;
   return {
+    ...(TEAM_BLOODLINE_VALUES.has(member.bloodlineType)
+      ? { bloodlineType: member.bloodlineType }
+      : {}),
     displayIvs: Object.fromEntries(
       STAT_KEYS.map((stat) => [stat, Number(member.displayIvs?.[stat]) || 0]),
     ),

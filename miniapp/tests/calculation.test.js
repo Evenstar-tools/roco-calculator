@@ -747,6 +747,72 @@ describe("createCalculationView", () => {
     });
   });
 
+  test("keeps new shared skill contexts through the mini-program calculation view", () => {
+    const snapshot = createSnapshot();
+    snapshot.skills.push(
+      {
+        basePower: 100,
+        category: "physical",
+        id: "skill-weight-pressure",
+        name: "吨位压制",
+        type: "火",
+      },
+      {
+        basePower: 0,
+        category: "status",
+        id: "skill-pressure-valve",
+        name: "减压阀",
+        type: "火",
+      },
+      {
+        basePower: 40,
+        category: "physical",
+        id: "skill-bite",
+        name: "啃咬",
+        type: "火",
+      },
+      {
+        basePower: 20,
+        category: "physical",
+        id: "skill-sever",
+        name: "飞断",
+        type: "火",
+      },
+    );
+    const state = createState(snapshot);
+    state.mode = "four";
+    state.sides.attacker.skills.four = [
+      {
+        context: { targetWeightTier: "120+" },
+        skillId: "skill-weight-pressure",
+      },
+      {
+        context: { pressureValveUseCount: 0 },
+        skillId: "skill-pressure-valve",
+      },
+      {
+        context: { donationPowerCount: 3 },
+        skillId: "skill-bite",
+      },
+      {
+        context: { teamDonationCount: 3 },
+        skillId: "skill-sever",
+      },
+    ];
+
+    state.directions.forward.selectedSkillIndex = 0;
+    expect(createCalculationView(snapshot, state, "forward").selectedResult)
+      .toMatchObject({ resolvedPower: 80, staticPower: 90 });
+
+    state.directions.forward.selectedSkillIndex = 2;
+    expect(createCalculationView(snapshot, state, "forward").selectedResult)
+      .toMatchObject({ hitCount: 1, resolvedPower: 100, staticPower: 110 });
+
+    state.directions.forward.selectedSkillIndex = 3;
+    expect(createCalculationView(snapshot, state, "forward").selectedResult)
+      .toMatchObject({ resolvedPower: 80, staticPower: 80 });
+  });
+
   test("keeps an unmet boolean condition deterministic", () => {
     const snapshot = createSnapshot();
     const state = createState(snapshot);

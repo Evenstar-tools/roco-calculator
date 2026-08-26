@@ -14,20 +14,22 @@ describe("版本记录", () => {
     expect(changelogVersions).toEqual(applicationVersions);
   });
 
-  test("v1.6.2 首屏优先展示后续重打包的累计更新", () => {
+  test("v1.6.3 首屏展示队伍分析、技能适配和配置库更新", () => {
     const currentRelease = USER_RELEASE_NOTES[0];
-    const visibleSummary = currentRelease.highlights.slice(0, 3).join("\n");
+    const visibleSummary = currentRelease.summaryHighlights.join("\n");
     const completeNotes = currentRelease.highlights.join("\n");
 
     expect(currentRelease).toMatchObject({
-      date: "2026.08.25",
-      title: "计算核心与桌面体验收口",
-      version: "v1.6.2",
+      date: "2026.08.26",
+      title: "队伍分析与技能适配",
+      version: "v1.6.3",
     });
-    expect(visibleSummary).toMatch(/实际攻防面板.*听桥.*543/);
-    expect(visibleSummary).toMatch(/虫群.*悼亡.*\+115/);
-    expect(visibleSummary).toMatch(/纯 JSON CLI/);
-    expect(completeNotes).toMatch(/队伍.*防守面分析/);
-    expect(completeNotes).toMatch(/全局撤回/);
+    expect(currentRelease.summaryHighlights).toHaveLength(3);
+    expect(currentRelease.summaryHighlights.every((item) => item.length <= 58)).toBe(true);
+    expect(visibleSummary).toMatch(/队伍.*分析.*对位.*六人矩阵/);
+    expect(visibleSummary).toMatch(/体重挡位.*奉献.*相邻技能威力/);
+    expect(visibleSummary).toMatch(/213.*PVP.*14种咕噜球.*暗色/);
+    expect(completeNotes).toMatch(/陨星虫.*旧空字段/);
+    expect(completeNotes).toMatch(/吨位压制.*飞断/);
   });
 });

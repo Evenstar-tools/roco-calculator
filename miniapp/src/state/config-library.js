@@ -21,7 +21,55 @@ function cloneJson(value) {
 }
 
 function emptyLibrary() {
-  return { entries: [], schemaVersion: SCHEMA_VERSION };
+  return {
+    commonConfig: { bundleId: null, entrySignatures: {} },
+    entries: [],
+    schemaVersion: SCHEMA_VERSION,
+  };
+}
+
+function normalizedEntry(entry) {
+  return {
+    displayIvs: Object.fromEntries(STAT_KEYS.map((stat) => [
+      stat,
+      entry?.displayIvs?.[stat],
+    ])),
+    natureId: entry?.natureId,
+    skills: Array.isArray(entry?.skills) ? entry.skills : [],
+    spiritId: entry?.spiritId,
+    traitValues: Object.fromEntries(
+      Object.entries(entry?.traitValues ?? {}).sort(([left], [right]) => (
+        left.localeCompare(right)
+      )),
+    ),
+  };
+}
+
+export function configEntrySignature(entry) {
+  const text = JSON.stringify(normalizedEntry(entry));
+  let fnv = 2166136261;
+  let djb = 5381;
+  for (let index = 0; index < text.length; index += 1) {
+    const code = text.charCodeAt(index);
+    fnv = Math.imul(fnv ^ code, 16777619) >>> 0;
+    djb = (Math.imul(djb, 33) ^ code) >>> 0;
+  }
+  return `${fnv.toString(16).padStart(8, "0")}${djb
+    .toString(16)
+    .padStart(8, "0")}`;
+}
+
+export function configLibraryBundleId(library) {
+  const versions = library?.versions ?? {};
+  return [
+    library?.exportedAt ?? "unknown-export",
+    library?.appVersion ?? "unknown-app",
+    versions.data ?? "unknown-data",
+    versions.rules ?? "unknown-rules",
+    Array.isArray(library?.entries)
+      ? library.entries.length
+      : library?.entryCount ?? 0,
+  ].join("|");
 }
 
 function decodeLibrary(json) {
@@ -145,6 +193,7 @@ export function parseBundledConfigLibrary(json, {
   }
 
   return {
+    bundleId: configLibraryBundleId(decoded),
     entries,
     favoriteSpiritIds: entries.map((entry) => entry.spiritId),
     preview,
@@ -228,7 +277,25 @@ export function createConfigLibraryRepository({
         format: FORMAT,
         schemaVersion: SCHEMA_VERSION,
       }, { snapshot });
-      return { entries: parsed.entries, schemaVersion: SCHEMA_VERSION };
+      const validSpiritIds = new Set(parsed.entries.map((entry) => entry.spiritId));
+      const storedSignatures = decoded.commonConfig?.entrySignatures;
+      const entrySignatures = Object.fromEntries(Object.entries(
+        storedSignatures && typeof storedSignatures === "object"
+          ? storedSignatures
+          : {},
+      ).filter(([spiritId, signature]) => (
+        validSpiritIds.has(spiritId) && typeof signature === "string"
+      )));
+      return {
+        commonConfig: {
+          bundleId: typeof decoded.commonConfig?.bundleId === "string"
+            ? decoded.commonConfig.bundleId
+            : null,
+          entrySignatures,
+        },
+        entries: parsed.entries,
+        schemaVersion: SCHEMA_VERSION,
+      };
     } catch {
       if (repair) storage.remove(MINIAPP_CONFIG_LIBRARY_KEY);
       return emptyLibrary();
@@ -236,27 +303,67 @@ export function createConfigLibraryRepository({
   }
 
   return {
-    commit(parsed, snapshot) {
+    commit(parsed, snapshot, { legacyEntrySignatures = {} } = {}) {
       if (!favoritesRepository) {
         throw new TypeError("配置库导入仓库尚未就绪");
       }
       const beforeLibrary = storage.get(MINIAPP_CONFIG_LIBRARY_KEY);
       const beforeFavorites = favoritesRepository.list();
+      const currentLibrary = load(snapshot, { repair: false });
+      const currentBySpirit = new Map(
+        currentLibrary.entries.map((entry) => [entry.spiritId, entry]),
+      );
+      const nextEntries = [];
+      const nextEntrySignatures = {};
+      let added = 0;
+      let overwritten = 0;
+      let preserved = 0;
+      for (const bundledEntry of parsed.entries) {
+        const spiritId = bundledEntry.spiritId;
+        const existingEntry = currentBySpirit.get(spiritId);
+        const previousSignature =
+          currentLibrary.commonConfig.entrySignatures[spiritId]
+          ?? legacyEntrySignatures[spiritId];
+        const canReplace = !existingEntry || (
+          previousSignature
+          && configEntrySignature(existingEntry) === previousSignature
+        );
+        if (!existingEntry) added += 1;
+        else if (canReplace) overwritten += 1;
+        else preserved += 1;
+        nextEntries.push(cloneJson(canReplace ? bundledEntry : existingEntry));
+        nextEntrySignatures[spiritId] = configEntrySignature(bundledEntry);
+        currentBySpirit.delete(spiritId);
+      }
+      for (const existingEntry of currentBySpirit.values()) {
+        nextEntries.push(cloneJson(existingEntry));
+      }
       const favoriteIds = [...new Set([
         ...beforeFavorites,
         ...parsed.favoriteSpiritIds,
       ])];
       const envelope = {
-        entries: cloneJson(parsed.entries),
+        commonConfig: {
+          bundleId: parsed.bundleId,
+          entrySignatures: nextEntrySignatures,
+        },
+        entries: nextEntries,
         schemaVersion: SCHEMA_VERSION,
       };
       try {
         storage.set(MINIAPP_CONFIG_LIBRARY_KEY, envelope);
         const favorites = favoritesRepository.replace(favoriteIds);
+        const library = load(snapshot);
         return {
-          entries: load(snapshot).entries,
+          commonConfig: library.commonConfig,
+          entries: library.entries,
           favorites,
-          preview: parsed.preview,
+          preview: {
+            ...parsed.preview,
+            added,
+            overwritten,
+            preserved,
+          },
           schemaVersion: SCHEMA_VERSION,
         };
       } catch (error) {

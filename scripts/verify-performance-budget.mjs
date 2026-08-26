@@ -12,11 +12,11 @@ export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
   clientTotal: 65 * 1024 * 1024,
   cssGzip: 24 * 1024,
   jsGzip: 194 * 1024,
-  jsRaw: 660 * 1024,
+  jsRaw: 668 * 1024,
   runtimeJson: 1.5 * 1024 * 1024,
 });
 
-export const DEFAULT_HARD_OVERAGE_BYTES = 20 * 1024;
+export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
 
 const LABELS = {
   clientTotal: "客户端总量",

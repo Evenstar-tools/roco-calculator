@@ -303,6 +303,16 @@
   padding: 12px 2px;
 }
 
+.settings-sheet__action-row--current {
+  opacity: 1;
+}
+
+.settings-sheet__action-row--current .settings-sheet__action-text {
+  border-color: var(--border-neutral);
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+}
+
 .settings-sheet__copy {
   display: grid;
   min-width: 0;

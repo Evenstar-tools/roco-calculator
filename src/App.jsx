@@ -83,7 +83,7 @@ import { decodeShareState, encodeShareState } from "./state/share.js";
 import { createUndoHistory } from "./state/undo-history.js";
 import packageInfo from "../package.json";
 
-const POPULAR_CONFIG_COUNT = 193;
+const POPULAR_CONFIG_COUNT = 213;
 
 function configLibraryFileName(date = new Date()) {
   const pad = (value) => String(value).padStart(2, "0");
@@ -1774,6 +1774,7 @@ function CalculatorWorkspace({ snapshot }) {
         onRenameTeam: teamActions.rename,
         returnFocusRef: teamsButtonRef,
         snapshot,
+        spiritChoices: selectableSpirits,
         teamsState,
       },
       open: teamOpen,

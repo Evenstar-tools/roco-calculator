@@ -1,4 +1,5 @@
 import {
+  ArrowsLeftRight,
   Copy,
   Plus,
   Shield,
@@ -7,11 +8,10 @@ import {
   UsersThree,
   X,
 } from "@phosphor-icons/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { analyzeTeamDefensiveTypes } from "../domain/team-type-analysis.js";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { TeamAnalysisPanel } from "./TeamAnalysisPanel.jsx";
 import { TeamMemberEditor } from "./TeamMemberEditor.jsx";
 import { TeamRoster } from "./TeamRoster.jsx";
-import { TeamTypeAnalysisPanel } from "./TeamTypeAnalysisPanel.jsx";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -45,6 +45,7 @@ export function TeamDrawer({
   open,
   returnFocusRef,
   snapshot,
+  spiritChoices,
   teamsState,
 }) {
   const closeRef = useRef(null);
@@ -56,15 +57,6 @@ export function TeamDrawer({
   const activeTeam =
     teamsState.teams.find((team) => team.id === teamsState.activeTeamId) ??
     null;
-  const teamTypeAnalysis = useMemo(
-    () =>
-      analyzeTeamDefensiveTypes({
-        members: activeTeam?.members ?? [],
-        spirits: snapshot.spirits,
-        typeChart: snapshot.typeChart,
-      }),
-    [activeTeam?.members, snapshot.spirits, snapshot.typeChart],
-  );
 
   const close = useCallback(() => {
     onClose();
@@ -109,7 +101,7 @@ export function TeamDrawer({
       <aside
         aria-label="队伍"
         aria-modal="true"
-        className="team-drawer"
+        className={`team-drawer${paneMode !== "member" ? " is-analysis" : ""}`}
         ref={drawerRef}
         role="dialog"
       >
@@ -235,6 +227,14 @@ export function TeamDrawer({
                   <Shield aria-hidden="true" size={17} weight="fill" />
                   分析
                 </button>
+                <button
+                  aria-pressed={paneMode === "matchup"}
+                  onClick={() => setPaneMode("matchup")}
+                  type="button"
+                >
+                  <ArrowsLeftRight aria-hidden="true" size={17} />
+                  对位
+                </button>
               </div>
               {paneMode === "member" ? (
                 <>
@@ -271,10 +271,18 @@ export function TeamDrawer({
                       onMemberChange(activeTeam.id, selectedIndex, member)
                     }
                     snapshot={snapshot}
+                    spiritChoices={spiritChoices}
                   />
                 </>
               ) : (
-                <TeamTypeAnalysisPanel analysis={teamTypeAnalysis} />
+                <TeamAnalysisPanel
+                  getSpiritConfiguration={getSpiritConfiguration}
+                  mode={paneMode}
+                  snapshot={snapshot}
+                  spiritChoices={spiritChoices}
+                  team={activeTeam}
+                  teams={teamsState.teams}
+                />
               )}
             </div>
           </div>

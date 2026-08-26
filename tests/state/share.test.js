@@ -316,7 +316,13 @@ describe("versioned share state", () => {
     state.sides.attacker.skills.four[1] = {
       skillId: "skill_b",
       hitCount: 2,
-      context: { energy: 5 },
+      context: {
+        energy: 5,
+        pressureValveUseCount: 2,
+        targetWeightTier: "120+",
+        teamDonationCount: 3,
+        weightDifferenceTier: "61~100",
+      },
       overrides: { basePower: 145, finalDamageMultiplier: 1.1 },
       skillPowerPercentAdds: [0.2],
       totalDamage: 999_999,
@@ -327,7 +333,13 @@ describe("versioned share state", () => {
     expect(decoded.sides.attacker.skills.four[1]).toEqual({
       skillId: "skill_b",
       hitCount: 2,
-      context: { energy: 5 },
+      context: {
+        energy: 5,
+        pressureValveUseCount: 2,
+        targetWeightTier: "120+",
+        teamDonationCount: 3,
+        weightDifferenceTier: "61~100",
+      },
       overrides: { basePower: 145, finalDamageMultiplier: 1.1 },
       skillPowerPercentAdds: [0.2],
     });

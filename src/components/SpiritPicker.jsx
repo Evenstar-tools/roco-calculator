@@ -47,33 +47,44 @@ export function SpiritPicker({
       : spirits;
     const markedFirst = (items) =>
       [...items].sort(
-        (left, right) =>
-          Number(Boolean(right.favoriteState)) -
-          Number(Boolean(left.favoriteState)),
+        (left, right) => {
+          const markedOrder =
+            Number(Boolean(right.favoriteState)) -
+            Number(Boolean(left.favoriteState));
+          if (markedOrder !== 0) return markedOrder;
+          if (!left.favoriteState || !right.favoriteState) return 0;
+          return String(left.dexNo ?? "").localeCompare(
+            String(right.dexNo ?? ""),
+            "zh-CN",
+            { numeric: true },
+          );
+        },
       );
     if (!needle) {
-      const sorted = markedFirst(direct);
-      const favoriteCount = sorted.filter((spirit) =>
-        Boolean(spirit.favoriteState),
-      ).length;
-      const visibleCount = favoriteCount
-        ? Math.min(
-            sorted.length,
-            Math.max(
-              INITIAL_PREVIEW_COUNT,
-              Math.min(previewLimit, favoriteCount),
-            ),
-          )
-        : Math.min(sorted.length, INITIAL_PREVIEW_COUNT);
+      const favorites = markedFirst(
+        direct.filter((spirit) => Boolean(spirit.favoriteState)),
+      );
+      const favoriteCount = favorites.length;
+      const orderedRoster = [...direct].sort((left, right) =>
+        String(left.dexNo ?? "").localeCompare(
+          String(right.dexNo ?? ""),
+          "zh-CN",
+          { numeric: true },
+        ),
+      );
+      const previewItems = favoriteCount ? favorites : orderedRoster;
+      const visibleCount = Math.min(previewItems.length, previewLimit);
       return {
         allFavoritesVisible:
           favoriteCount > 0 && visibleCount >= favoriteCount,
+        allPreviewItemsVisible: visibleCount >= previewItems.length,
         favoriteCount,
         isUnfiltered: true,
-        items: sorted.slice(0, visibleCount).map((spirit) => ({
+        items: previewItems.slice(0, visibleCount).map((spirit) => ({
           related: false,
           spirit,
         })),
+        totalCount: previewItems.length,
       };
     }
 
@@ -98,6 +109,7 @@ export function SpiritPicker({
     }
     return {
       allFavoritesVisible: false,
+      allPreviewItemsVisible: true,
       favoriteCount: 0,
       isUnfiltered: false,
       items: markedFirst(expanded.map(({ spirit }) => spirit))
@@ -134,13 +146,13 @@ export function SpiritPicker({
   }
 
   function handleOptionsScroll(event) {
-    if (!preview.isUnfiltered || preview.allFavoritesVisible) return;
+    if (!preview.isUnfiltered || preview.allPreviewItemsVisible) return;
     const options = event.currentTarget;
     const isNearBottom =
       options.scrollTop + options.clientHeight >= options.scrollHeight - 12;
     if (!isNearBottom) return;
     setPreviewLimit((current) =>
-      Math.min(preview.favoriteCount, current + PREVIEW_PAGE_SIZE),
+      Math.min(preview.totalCount, current + PREVIEW_PAGE_SIZE),
     );
   }
 
@@ -233,7 +245,11 @@ export function SpiritPicker({
                 </li>
               ))
             ) : (
-              <li className="spirit-picker__empty">没有匹配精灵</li>
+              <li className="spirit-picker__empty">
+                {preview.isUnfiltered
+                  ? "暂无收藏精灵，请输入搜索"
+                  : "没有匹配精灵"}
+              </li>
             )}
             {preview.isUnfiltered && preview.allFavoritesVisible ? (
               <li

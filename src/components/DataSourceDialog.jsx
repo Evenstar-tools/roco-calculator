@@ -80,7 +80,9 @@ export function DataSourceDialog({ onClose, onCopyFeedback, open }) {
   const [releaseNotesOpen, setReleaseNotesOpen] = useState(false);
   const currentReleaseSummary = {
     ...CURRENT_USER_RELEASE,
-    highlights: CURRENT_USER_RELEASE.highlights.slice(0, 3),
+    highlights:
+      CURRENT_USER_RELEASE.summaryHighlights ??
+      CURRENT_USER_RELEASE.highlights.slice(0, 3),
   };
 
   useEffect(() => {
@@ -110,70 +112,69 @@ export function DataSourceDialog({ onClose, onCopyFeedback, open }) {
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose?.();
       }}
+      ref={dialogRef}
     >
-      <div ref={dialogRef}>
-        {releaseNotesOpen ? (
-          <ReleaseNotesView
-            onBack={() => setReleaseNotesOpen(false)}
-            onClose={onClose}
-          />
-        ) : (
-          <section
-            aria-label="数据来源"
-            aria-modal="true"
-            className="share-dialog data-source-dialog"
-            role="dialog"
-          >
-            <h2>数据来源</h2>
-            <a href={BWIKI_URL} rel="noreferrer" target="_blank">
-              <strong>洛克王国：世界 BWIKI</strong>
-              <span>精灵、技能、属性与美术资料</span>
-            </a>
-            <div className="data-source-dialog__row">
-              <strong>规则校验</strong>
-              <span>公开资料与实机结果</span>
-            </div>
-            <section aria-label="版本记录" className="data-source-history">
-              <div className="data-source-history__header">
-                <strong>版本记录</strong>
-                <button
-                  aria-label="查看完整版本记录"
-                  className="data-source-history__toggle"
-                  onClick={() => setReleaseNotesOpen(true)}
-                  type="button"
-                >
-                  完整记录
-                </button>
-              </div>
-              <ReleaseItem current release={currentReleaseSummary} />
-            </section>
-            <div className="data-source-dialog__feedback">
-              <div>
-                <strong>问题反馈</strong>
-                <span>QQ {FEEDBACK_QQ}</span>
-              </div>
+      {releaseNotesOpen ? (
+        <ReleaseNotesView
+          onBack={() => setReleaseNotesOpen(false)}
+          onClose={onClose}
+        />
+      ) : (
+        <section
+          aria-label="数据来源"
+          aria-modal="true"
+          className="share-dialog data-source-dialog"
+          role="dialog"
+        >
+          <h2>数据来源</h2>
+          <a href={BWIKI_URL} rel="noreferrer" target="_blank">
+            <strong>洛克王国：世界 BWIKI</strong>
+            <span>精灵、技能、属性与美术资料</span>
+          </a>
+          <div className="data-source-dialog__row">
+            <strong>规则校验</strong>
+            <span>公开资料与实机结果</span>
+          </div>
+          <section aria-label="版本记录" className="data-source-history">
+            <div className="data-source-history__header">
+              <strong>版本记录</strong>
               <button
-                aria-label="复制反馈 QQ"
-                className="secondary-action"
-                onClick={onCopyFeedback}
+                aria-label="查看完整版本记录"
+                className="data-source-history__toggle"
+                onClick={() => setReleaseNotesOpen(true)}
                 type="button"
               >
-                复制
+                完整记录
               </button>
             </div>
-            <div className="dialog-actions">
-              <button
-                aria-label="关闭数据来源"
-                className="secondary-action"
-                onClick={onClose}
-                type="button"
-              >
-                关闭
-              </button>
-            </div>
+            <ReleaseItem current release={currentReleaseSummary} />
           </section>
-        )}
-      </div>
+          <div className="data-source-dialog__feedback">
+            <div>
+              <strong>问题反馈</strong>
+              <span>QQ {FEEDBACK_QQ}</span>
+            </div>
+            <button
+              aria-label="复制反馈 QQ"
+              className="secondary-action"
+              onClick={onCopyFeedback}
+              type="button"
+            >
+              复制
+            </button>
+          </div>
+          <div className="dialog-actions">
+            <button
+              aria-label="关闭数据来源"
+              className="secondary-action"
+              onClick={onClose}
+              type="button"
+            >
+              关闭
+            </button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -206,6 +206,38 @@ function resolveManaBurst(_skill, context) {
   ]);
 }
 
+function resolveTierPower(skill, context) {
+  const params = skill.ruleParams ?? {};
+  const contextKey = params.contextKey ?? "powerTier";
+  const selectedTier = context[contextKey] ?? params.defaultValue;
+  const tier = (params.tiers ?? []).find(
+    (candidate) => candidate.label === selectedTier,
+  );
+  if (!tier) {
+    return needsInput(
+      [{
+        key: contextKey,
+        label: params.label ?? "威力挡位",
+        options: (params.tiers ?? []).map(({ label }) => ({
+          label,
+          value: label,
+        })),
+        type: "choice",
+      }],
+      "需要选择威力挡位",
+    );
+  }
+  return exact(Number(tier.power), [
+    {
+      after: Number(tier.power),
+      before: skill.basePower,
+      input: selectedTier,
+      label: params.label ?? "威力挡位",
+      source: "reviewed-rule:tier-power-v1",
+    },
+  ]);
+}
+
 function resolveCounterMultiplier(skill, context) {
   const params = skill.ruleParams ?? {};
   const contextKey = params.contextKey ?? "counterTriggered";
@@ -612,9 +644,13 @@ function resolveStackScaled(skill, context) {
   const conditionKey = skill.ruleParams?.conditionKey;
   const triggered = conditionKey ? context[conditionKey] === true : true;
   const key = skill.ruleParams?.contextKey ?? "stackCount";
-  const rawStackCount = isFiniteNumber(context[key])
-    ? context[key]
+  const legacyBooleanKey = skill.ruleParams?.legacyBooleanContextKey;
+  const currentStackCount = isFiniteNumber(context[key])
+    ? Number(context[key])
     : skill.ruleParams?.defaultValue;
+  const rawStackCount = legacyBooleanKey && context[legacyBooleanKey] === true
+    ? Math.max(1, Number(currentStackCount) || 0)
+    : currentStackCount;
   if (!isFiniteNumber(rawStackCount)) {
     return needsInput(
       [numberInput(key, skill.ruleParams?.label ?? "层数")],
@@ -1036,6 +1072,7 @@ const RULES = new Map([
   ["physical_defense_difference", resolvePhysicalDefenseDifference],
   ["enemy_total_skill_cost_power", resolveEnemyTotalSkillCostPower],
   ["mana_burst", resolveManaBurst],
+  ["tier_power", resolveTierPower],
   ["counter_multiplier", resolveCounterMultiplier],
   ["counter_power_and_burn", resolveCounterPowerAndBurn],
   ["hp_scaled", resolveHpScaled],
@@ -1073,6 +1110,7 @@ const ABSOLUTE_POWER_RULES = new Set([
   "physical_defense_difference",
   "enemy_total_skill_cost_power",
   "mana_burst",
+  "tier_power",
   "enemy_skill_power_multiplier",
 ]);
 

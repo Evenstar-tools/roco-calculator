@@ -148,7 +148,7 @@ test("spirit search restores the selected name when Escape cancels the query", a
   expect(input).toHaveValue("音速犬");
 });
 
-test("spirit search keeps all marked configurations ahead of ordinary spirits", async () => {
+test("spirit picker previews only favorites and searches the full roster", async () => {
   const user = userEvent.setup();
   render(
     <SpiritPicker
@@ -166,12 +166,14 @@ test("spirit search keeps all marked configurations ahead of ordinary spirits", 
           id: "ordinary",
         },
         {
+          dexNo: "200",
           evolutionChainIds: ["complete"],
           favoriteState: "complete",
           fullName: "完整配置",
           id: "complete",
         },
         {
+          dexNo: "100",
           evolutionChainIds: ["manual"],
           favoriteState: "manual",
           fullName: "手动收藏",
@@ -185,7 +187,46 @@ test("spirit search keeps all marked configurations ahead of ordinary spirits", 
 
   expect(
     screen.getAllByRole("option").map((option) => option.textContent),
-  ).toEqual(["完整配置", "手动收藏", "普通精灵"]);
+  ).toEqual(["手动收藏100", "完整配置200"]);
+
+  const input = screen.getByRole("combobox", { name: "攻击方精灵" });
+  await user.type(input, "普通");
+  expect(screen.getByRole("option", { name: /普通精灵/ })).toBeVisible();
+});
+
+test("spirit picker falls back to dex order when there are no favorites", async () => {
+  const user = userEvent.setup();
+  render(
+    <SpiritPicker
+      favoriteState={null}
+      label="攻击方"
+      onFavoriteToggle={vi.fn()}
+      onSelect={vi.fn()}
+      selected={null}
+      side="attack"
+      spirits={[
+        {
+          dexNo: "200",
+          evolutionChainIds: ["later"],
+          favoriteState: null,
+          fullName: "后位精灵",
+          id: "later",
+        },
+        {
+          dexNo: "100",
+          evolutionChainIds: ["earlier"],
+          favoriteState: null,
+          fullName: "前位精灵",
+          id: "earlier",
+        },
+      ]}
+    />,
+  );
+
+  await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  expect(
+    screen.getAllByRole("option").map((option) => option.textContent),
+  ).toEqual(["前位精灵100", "后位精灵200"]);
 });
 
 test("spirit preview loads twenty more favorites per scroll until all are visible", async () => {

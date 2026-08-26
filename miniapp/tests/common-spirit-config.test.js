@@ -5,6 +5,9 @@ import bundledRuntimePayload from "../src/data/bundled-runtime.json";
 import { expandBundledRuntime } from "../src/data/expand-bundled-runtime.js";
 import commonSpiritConfig from "../src/data/common-spirit-config.json";
 import {
+  LEGACY_COMMON_CONFIG_ENTRY_SIGNATURES,
+} from "../src/data/legacy-common-config-signatures.js";
+import {
   expandBundledConfigLibrary,
   parseBundledConfigLibrary,
 } from "../src/state/config-library.js";
@@ -17,19 +20,19 @@ const DESKTOP_CONFIG_FILE = resolve(
 const bundledRuntime = expandBundledRuntime(bundledRuntimePayload);
 
 describe("bundled common spirit configuration", () => {
-  test("contains the supplied 193-entry PVP library without sensitive fields", () => {
+  test("contains the supplied 213-entry PVP library without sensitive fields", () => {
     expect(existsSync(CONFIG_FILE)).toBe(true);
     const text = readFileSync(CONFIG_FILE, "utf8");
     const library = JSON.parse(text);
 
     expect(library).toMatchObject({
-      appVersion: "1.4.6",
-      entryCount: 193,
+      appVersion: "1.6.2",
+      entryCount: 213,
       entryEncoding: "tuple-v1",
       format: "rock-calculator.favorite-config-library",
       schemaVersion: 1,
     });
-    expect(library.entries).toHaveLength(193);
+    expect(library.entries).toHaveLength(213);
     expect(library.entries.every((entry) => Array.isArray(entry)))
       .toBe(true);
     expect(text).not.toMatch(
@@ -43,7 +46,7 @@ describe("bundled common spirit configuration", () => {
       { snapshot: bundledRuntime },
     );
 
-    expect(parsed.entries).toHaveLength(193);
+    expect(parsed.entries).toHaveLength(213);
     expect(parsed.preview).toMatchObject({
       invalidEntries: 0,
       missingSpirits: 0,
@@ -66,5 +69,19 @@ describe("bundled common spirit configuration", () => {
     }));
 
     expect(bundledEntries).toEqual(comparableDesktopEntries);
+  });
+
+  test("keeps migration signatures for every entry in the previous 193-entry bundle", () => {
+    const currentSpiritIds = new Set(
+      expandBundledConfigLibrary(commonSpiritConfig).entries
+        .map((entry) => entry.spiritId),
+    );
+    const legacySpiritIds = Object.keys(
+      LEGACY_COMMON_CONFIG_ENTRY_SIGNATURES,
+    );
+
+    expect(legacySpiritIds).toHaveLength(193);
+    expect(legacySpiritIds.every((spiritId) => currentSpiritIds.has(spiritId)))
+      .toBe(true);
   });
 });

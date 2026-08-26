@@ -7,6 +7,19 @@ import {
 const skill = (name, extra = {}) => ({ name, ...extra });
 
 describe("skill status effects", () => {
+  test("减压阀暴露已使用次数供相邻技能结算", () => {
+    expect(getSkillStatusEffectInputs(skill("减压阀"))).toEqual([
+      expect.objectContaining({
+        contextKey: "pressureValveUseCount",
+        defaultValue: 0,
+        label: "已使用次数",
+        max: 20,
+        min: 0,
+        type: "number",
+      }),
+    ]);
+  });
+
   test("贪婪每次增加10层吸血并读取萌芽层数", () => {
     expect(resolveSkillStatusActivation(skill("贪婪"))).toMatchObject({
       applied: true,

@@ -259,7 +259,8 @@ describe("trait effect coverage", () => {
         expect.objectContaining({
           contextKey: "contractBallType",
           options: expect.arrayContaining([
-            expect.objectContaining({ value: "normal", label: "普通球｜攻防速 +10%" }),
+            expect.objectContaining({ value: "normal", label: "普通球｜攻防速 +5%" }),
+            expect.objectContaining({ value: "combat", label: "好战球｜物攻 +40% · 对方魔防 -40%" }),
             expect.objectContaining({ value: "prism", label: "棱镜球｜指定随机球效果 · 数值减半" }),
           ]),
           scope: "direction",
@@ -275,7 +276,7 @@ describe("trait effect coverage", () => {
           }),
         }),
       ]));
-      expect(inputs[0].options.filter(({ value }) => value !== "")).toHaveLength(13);
+      expect(inputs[0].options.filter(({ value }) => value !== "")).toHaveLength(14);
     }
   });
 
@@ -301,13 +302,13 @@ describe("trait effect coverage", () => {
       role: "defender",
       context: {
         [ball.id]: "prism",
-        [prism.id]: "darkstar",
+        [prism.id]: "combat",
       },
       skill: { category: "magical", type: "普通" },
     })).toMatchObject({
       active: true,
       ballType: "prism",
-      effectiveBallType: "darkstar",
+      effectiveBallType: "combat",
       attackLevelBonusByCategory: { physical: 2, magical: 0 },
       targetDefenseLevelBonusByCategory: { physical: 0, magical: -2 },
     });

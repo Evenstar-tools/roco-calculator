@@ -196,6 +196,18 @@ describe("resolveSkillPower", () => {
     });
   });
 
+  test("铁蒺藜应对成功只翻倍最终伤害，不改技能威力", () => {
+    const caltrop = snapshot.skills.find(
+      (candidate) => candidate.name === "铁蒺藜",
+    );
+
+    expect(resolveSkillPower(caltrop, { counterTriggered: true })).toMatchObject({
+      finalDamageMultiplier: 2,
+      status: "exact",
+      value: 85,
+    });
+  });
+
   test("exposes stable slot control ids and accepts the stable value in calculations", () => {
     const colorDispersion = skill({
       category: "magical",
@@ -287,6 +299,78 @@ describe("resolveSkillPower", () => {
       status: "exact",
       value: 45,
       steps: [{ input: 0, after: 45 }],
+    });
+  });
+
+  test.each([
+    ["<4", 160],
+    ["4~13", 140],
+    ["14~29", 120],
+    ["30~59", 100],
+    ["60~119", 90],
+    ["120+", 80],
+  ])("吨位压制在%s挡位为%i威力", (tier, power) => {
+    const weightPressure = snapshot.skills.find(
+      (candidate) => candidate.name === "吨位压制",
+    );
+
+    expect(getSkillEffectInputs(weightPressure)).toEqual([
+      expect.objectContaining({
+        contextKey: "targetWeightTier",
+        defaultValue: "30~59",
+        label: "敌方体重挡位",
+        type: "choice",
+      }),
+    ]);
+    expect(
+      resolveSkillPower(weightPressure, { targetWeightTier: tier }),
+    ).toMatchObject({ status: "exact", value: power });
+  });
+
+  test.each([
+    ["<4", 80],
+    ["4~13", 90],
+    ["14~29", 100],
+    ["30~59", 120],
+    ["60~119", 140],
+    ["120+", 160],
+  ])("以重制重在%s挡位为%i威力", (tier, power) => {
+    const weightReversal = snapshot.skills.find(
+      (candidate) => candidate.name === "以重制重",
+    );
+
+    expect(
+      resolveSkillPower(weightReversal, { targetWeightTier: tier }),
+    ).toMatchObject({ status: "exact", value: power });
+  });
+
+  test.each([
+    ["0~10", 20],
+    ["11~20", 40],
+    ["21~30", 60],
+    ["31~60", 80],
+    ["61~100", 100],
+    ["101+", 120],
+  ])("砂糖弹球在%s挡位为%i威力", (tier, power) => {
+    const sugarPinball = snapshot.skills.find(
+      (candidate) => candidate.name === "砂糖弹球",
+    );
+
+    expect(
+      resolveSkillPower(sugarPinball, { weightDifferenceTier: tier }),
+    ).toMatchObject({ status: "exact", value: power });
+  });
+
+  test.each([
+    ["吨位压制", 100],
+    ["以重制重", 120],
+    ["砂糖弹球", 80],
+  ])("%s默认使用官方名义威力%i", (name, power) => {
+    const reviewedSkill = snapshot.skills.find((candidate) => candidate.name === name);
+
+    expect(resolveSkillPower(reviewedSkill, {})).toMatchObject({
+      status: "exact",
+      value: power,
     });
   });
 
@@ -643,10 +727,10 @@ describe("resolveSkillPower", () => {
     });
   });
 
-  test("registers all 100 reviewed dynamic skills in the current snapshot", () => {
+  test("registers all 105 reviewed dynamic skills in the current snapshot", () => {
     expect(
       snapshot.skills.filter((entry) => getSkillEffectRule(entry)).length,
-    ).toBe(100);
+    ).toBe(105);
   });
 
   test("keeps every reviewed rule default-safe and every choice default valid", () => {
@@ -779,6 +863,28 @@ describe("resolveSkillPower", () => {
     expect(
       resolveSkillPower(swarm, { donationPowerCount: 2 }),
     ).toMatchObject({ status: "exact", value: 60 });
+  });
+
+  test("啃咬的威力奉献每层增加20威力且不改连击", () => {
+    const bite = snapshot.skills.find((candidate) => candidate.name === "啃咬");
+    const resolution = resolveSkillPower(bite, { donationPowerCount: 3 });
+
+    expect(resolution).toMatchObject({ status: "exact", value: 100 });
+    expect(resolution).not.toHaveProperty("hitCount");
+    expect(getDefaultHitCount(bite)).toBe(1);
+  });
+
+  test("飞断按奉献次数增加威力并兼容旧布尔字段", () => {
+    const sever = snapshot.skills.find((candidate) => candidate.name === "飞断");
+
+    expect(resolveSkillPower(sever, { teamDonationCount: 3 })).toMatchObject({
+      status: "exact",
+      value: 80,
+    });
+    expect(resolveSkillPower(sever, { teamDonationActive: true })).toMatchObject({
+      status: "exact",
+      value: 40,
+    });
   });
 
   test("虫群的累计连击奉献沿用旧donationHitBonus并每层增加1连击", () => {

@@ -169,6 +169,24 @@ function entryDetails(entry) {
   return entry && typeof entry === "object" ? entry : {};
 }
 
+function pressureValveFixedPowerAdds(entries, skillsById) {
+  if (entries.length < 4) return {};
+  const additions = {};
+  entries.slice(0, 4).forEach((entry, index) => {
+    if (resolveSkillEntity(entry, skillsById)?.name !== "减压阀") return;
+    const useCount = Math.max(
+      0,
+      Math.floor(Number(entryDetails(entry).context?.pressureValveUseCount) || 0),
+    );
+    const bonus = 10 + useCount * 20;
+    for (const adjacentIndex of [(index + 3) % 4, (index + 1) % 4]) {
+      const skillPosition = adjacentIndex + 1;
+      additions[skillPosition] = (additions[skillPosition] ?? 0) + bonus;
+    }
+  });
+  return additions;
+}
+
 function carriedSkillEntries(side, mode) {
   const four = side.skills?.four ?? side.fourSkills;
   if (Array.isArray(four) && four.some(Boolean)) {
@@ -2088,6 +2106,28 @@ function calculateDirection({
   targetSide,
 }) {
   const entries = skillEntriesForMode(attackerSide, mode);
+  const pressureValveAdds = mode === "four"
+    ? pressureValveFixedPowerAdds(entries, skillsById)
+    : {};
+  const existingFixedPowerAdds = direction.overrides?.fixedPowerAddsBySlot ?? {};
+  const directionWithPressureValve = Object.keys(pressureValveAdds).length > 0
+    ? {
+        ...direction,
+        overrides: {
+          ...direction.overrides,
+          fixedPowerAddsBySlot: Object.fromEntries(
+            [...new Set([
+              ...Object.keys(existingFixedPowerAdds),
+              ...Object.keys(pressureValveAdds),
+            ])].map((skillPosition) => [
+              skillPosition,
+              (Number(existingFixedPowerAdds[skillPosition]) || 0) +
+                (Number(pressureValveAdds[skillPosition]) || 0),
+            ]),
+          ),
+        },
+      }
+    : direction;
   const traitName = choiceTraitName(attacker);
   const currentHp = Math.min(
     defender.panelStats.hp,
@@ -2130,7 +2170,7 @@ function calculateDirection({
         mode,
         skill,
         entry: entryWithContext(entry, execution.context),
-        direction,
+        direction: directionWithPressureValve,
         attacker,
         attackerCurrentHp,
         attackerHpPercent,
@@ -2167,7 +2207,7 @@ function calculateDirection({
         mode,
         skill: companionSkill,
         entry: companionEntry,
-        direction,
+        direction: directionWithPressureValve,
         attacker,
         attackerCurrentHp,
         attackerHpPercent,
@@ -2259,7 +2299,7 @@ function calculateDirection({
             }
           : {}),
       }),
-      direction,
+      direction: directionWithPressureValve,
       attacker,
       attackerCurrentHp,
       attackerHpPercent,

@@ -404,6 +404,41 @@ describe("mini program share payload", () => {
     });
   });
 
+  test("round-trips weight tiers, pressure valve uses, and donation counts", () => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.directions.forward.context = {
+      pressureValveUseCount: 3,
+      targetWeightTier: "120+",
+      teamDonationCount: 4,
+      weightDifferenceTier: "61~100",
+    };
+    state.sides.attacker.skills.four[1].context = {
+      pressureValveUseCount: 2,
+      targetWeightTier: "4~13",
+      teamDonationCount: 5,
+      weightDifferenceTier: "101+",
+    };
+
+    const decoded = decodeSharePayload(
+      encodeSharePayload(state),
+      snapshot,
+    );
+
+    expect(decoded.directions.forward.context).toEqual({
+      pressureValveUseCount: 3,
+      targetWeightTier: "120+",
+      teamDonationCount: 4,
+      weightDifferenceTier: "61~100",
+    });
+    expect(decoded.sides.attacker.skills.four[1].context).toEqual({
+      pressureValveUseCount: 2,
+      targetWeightTier: "4~13",
+      teamDonationCount: 5,
+      weightDifferenceTier: "101+",
+    });
+  });
+
   test("keeps an oversized untrusted state below the route budget", () => {
     const snapshot = createSnapshot();
     const state = createState(snapshot);

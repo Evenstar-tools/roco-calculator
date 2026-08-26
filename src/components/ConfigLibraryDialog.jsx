@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getNature } from "../domain/natures.js";
 
-const POPULAR_CONFIG_COUNT = 193;
+const POPULAR_CONFIG_COUNT = 213;
 const PRIMARY_PREVIEW_ROWS = [
   ["added", "新增配置"],
   ["overwritten", "覆盖本机配置"],

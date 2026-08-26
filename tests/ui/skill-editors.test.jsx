@@ -2194,6 +2194,53 @@ test("four-skill slots expose their own dynamic rule context", async () => {
   );
 });
 
+test("four-skill slots expose weight tiers and pressure valve use count", async () => {
+  const user = userEvent.setup();
+  const onSkillContextChange = vi.fn();
+  const weightPressure = snapshot.skills.find(
+    (skill) => skill.name === "吨位压制",
+  );
+  const pressureValve = snapshot.skills.find(
+    (skill) => skill.name === "减压阀",
+  );
+
+  render(
+    <FourSkillEditor
+      attackerName="测试精灵"
+      attackerSkills={[weightPressure, pressureValve, null, null]}
+      defenderName="木桩"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillContextChange={onSkillContextChange}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, weightPressure, pressureValve]}
+    />,
+  );
+
+  const tier = screen.getByRole("combobox", {
+    name: "攻击方技能1敌方体重挡位",
+  });
+  expect(tier).toHaveValue("30~59");
+  await user.selectOptions(tier, "120+");
+  expect(onSkillContextChange).toHaveBeenCalledWith(
+    "attacker",
+    0,
+    expect.stringMatching(/^skill\.targetWeightTier\.[a-f0-9]{8}$/),
+    "120+",
+  );
+
+  const uses = screen.getByRole("spinbutton", {
+    name: "攻击方技能2已使用次数",
+  });
+  expect(uses).toHaveValue(0);
+  await user.type(uses, "3");
+  expect(onSkillContextChange).toHaveBeenLastCalledWith(
+    "attacker",
+    1,
+    expect.stringMatching(/^skill\.pressureValveUseCount\.[a-f0-9]{8}$/),
+    3,
+  );
+});
+
 test("Sweet Trap accepts current energy above ten and caps it at ninety-nine", () => {
   const onSkillContextChange = vi.fn();
   const sweetTrap = {

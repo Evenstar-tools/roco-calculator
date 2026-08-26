@@ -23,6 +23,22 @@ const choiceInput = (key, label, options, defaultValue) => ({
   options,
   type: "choice",
 });
+
+const tierPower = (contextKey, label, tiers, defaultValue) => ({
+  inputs: [
+    choiceInput(
+      contextKey,
+      label,
+      tiers.map(({ label: optionLabel }) => ({
+        label: optionLabel,
+        value: optionLabel,
+      })),
+      defaultValue,
+    ),
+  ],
+  ruleId: "tier_power",
+  ruleParams: { contextKey, defaultValue, label, tiers },
+});
 const when = (input, key, equals, defaultValue) => ({
   ...input,
   when: { defaultValue, equals, key },
@@ -277,6 +293,45 @@ const REVIEWED_EFFECTS = Object.freeze({
     inputs: [numberInput("energy", "当前能量", 0, 10, 0)],
     ruleId: "mana_burst",
   },
+  吨位压制: tierPower(
+    "targetWeightTier",
+    "敌方体重挡位",
+    [
+      { label: "<4", power: 160 },
+      { label: "4~13", power: 140 },
+      { label: "14~29", power: 120 },
+      { label: "30~59", power: 100 },
+      { label: "60~119", power: 90 },
+      { label: "120+", power: 80 },
+    ],
+    "30~59",
+  ),
+  以重制重: tierPower(
+    "targetWeightTier",
+    "敌方体重挡位",
+    [
+      { label: "<4", power: 80 },
+      { label: "4~13", power: 90 },
+      { label: "14~29", power: 100 },
+      { label: "30~59", power: 120 },
+      { label: "60~119", power: 140 },
+      { label: "120+", power: 160 },
+    ],
+    "30~59",
+  ),
+  砂糖弹球: tierPower(
+    "weightDifferenceTier",
+    "双方体重差挡位",
+    [
+      { label: "0~10", power: 20 },
+      { label: "11~20", power: 40 },
+      { label: "21~30", power: 60 },
+      { label: "31~60", power: 80 },
+      { label: "61~100", power: 100 },
+      { label: "101+", power: 120 },
+    ],
+    "31~60",
+  ),
 
   钢铁洪流: positionAdd([1], 90),
   械斗: positionAdd([1], 60),
@@ -437,6 +492,15 @@ const REVIEWED_EFFECTS = Object.freeze({
       multiplier: 1.5,
     },
   },
+  铁蒺藜: {
+    inputs: [booleanInput("counterTriggered", "触发应对")],
+    ruleId: "boolean_damage_multiplier",
+    ruleParams: {
+      contextKey: "counterTriggered",
+      label: "应对伤害翻倍",
+      multiplier: 2,
+    },
+  },
   电弧: booleanAdd("burstTriggered", "触发迸发", 40, {
     defaultValue: true,
   }),
@@ -478,7 +542,18 @@ const REVIEWED_EFFECTS = Object.freeze({
   孢子爆散: hitCountGrowth("skillUseCount", "此前使用次数", 1, 2),
   叠势: hitCountGrowth("counterSuccessCount", "成功应对次数", 2, 2),
   月光合奏: hitCountGrowth("totalMoeStacks", "双方萌化总层数", 1, 1),
-  飞断: booleanAdd("teamDonationActive", "己方队伍获得奉献", 20),
+  飞断: {
+    inputs: [numberInput("teamDonationCount", "己方队伍奉献次数", 0, 20, 0)],
+    ruleId: "stack_scaled",
+    ruleParams: {
+      contextKey: "teamDonationCount",
+      defaultValue: 0,
+      label: "己方队伍奉献次数",
+      legacyBooleanContextKey: "teamDonationActive",
+      perStack: 20,
+    },
+  },
+  啃咬: stackAdd("donationPowerCount", "威力奉献层数", 20),
   虫群: {
     inputs: [
       numberInput("donationPowerCount", "威力奉献层数", 0, 20, 0),

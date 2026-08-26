@@ -18,7 +18,7 @@ function renderGuide(props = {}) {
       <div data-guide-target="skills">技能目标</div>
       <div data-guide-target="detailed-mode">具体版目标</div>
       <FirstRunGuide
-        importCount={193}
+        importCount={213}
         open
         step={0}
         {...actions}
@@ -85,7 +85,7 @@ describe("FirstRunGuide", () => {
 
     expect(screen.getByRole("dialog", { name: "新手引导 6/6" }))
       .toHaveTextContent("导入热门配置");
-    expect(screen.getByText("193 只 PVP 精灵配置，安装后离线可用"))
+    expect(screen.getByText("213 只 PVP 精灵配置，安装后离线可用"))
       .toBeInTheDocument();
     expect(screen.getByText("以后修改性格、个体和技能，都会继续记住"))
       .toBeInTheDocument();
@@ -106,7 +106,7 @@ describe("FirstRunGuide", () => {
   test("renders safely when the highlighted target is not available", () => {
     render(
       <FirstRunGuide
-        importCount={193}
+        importCount={213}
         onBack={() => {}}
         onImport={() => {}}
         onNext={() => {}}
@@ -199,7 +199,7 @@ describe("FirstRunGuide", () => {
     try {
       render(
         <FirstRunGuide
-          importCount={193}
+          importCount={213}
           onBack={() => {}}
           onImport={() => {}}
           onNext={() => {}}
@@ -239,7 +239,7 @@ describe("FirstRunGuide", () => {
     try {
       const { rerender } = render(
         <FirstRunGuide
-          importCount={193}
+          importCount={213}
           layoutKey="before"
           onBack={() => {}}
           onImport={() => {}}
@@ -251,7 +251,7 @@ describe("FirstRunGuide", () => {
       );
       rerender(
         <FirstRunGuide
-          importCount={193}
+          importCount={213}
           layoutKey="after"
           onBack={() => {}}
           onImport={() => {}}
@@ -349,7 +349,7 @@ describe("FirstRunGuide", () => {
       options.dataset.guidePart = "options";
       target.append(options);
       const guideProps = {
-        importCount: 193,
+        importCount: 213,
         onBack: () => {},
         onImport: () => {},
         onNext: () => {},

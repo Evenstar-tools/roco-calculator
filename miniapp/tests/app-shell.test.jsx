@@ -21,12 +21,12 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
   });
 
-  test("publishes miniapp 1.1.3 against web core 1.6.2", () => {
-    expect(MINIAPP_VERSION).toBe("1.1.3");
+  test("publishes miniapp 1.1.4 against web core 1.6.2", () => {
+    expect(MINIAPP_VERSION).toBe("1.1.4");
     expect(MINIAPP_UPDATE_DATE).toBe("2026-08-25");
     expect(WEB_CORE_VERSION).toBe("1.6.2");
     expect(MINIAPP_RELEASE_LABEL).toBe(
-      "小程序 v1.1.3 · 网页核心 v1.6.2",
+      "小程序 v1.1.4 · 网页核心 v1.6.2",
     );
     render(<AppHeader dataVersion="data-v1" />);
     expect(screen.getByText(MINIAPP_RELEASE_LABEL)).toBeInTheDocument();
@@ -47,6 +47,7 @@ describe("miniapp shell", () => {
     render(
       <AppHeader
         commonConfigCount={0}
+        commonConfigStatus="available"
         dataVersion="data-v1"
         memoryEnabled
         onImportCommonConfig={onImportCommonConfig}
@@ -107,8 +108,30 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
     expect(screen.getByText(/1215583051/u)).toBeInTheDocument();
     expect(screen.getByText("当前版本")).toBeInTheDocument();
-    expect(screen.getByText("v1.1.3 · 更新于 2026-08-25"))
+    expect(screen.getByText("v1.1.4 · 更新于 2026-08-25"))
       .toBeInTheDocument();
+  });
+
+  test("disables the common configuration action after the bundled version is installed", () => {
+    const onImportCommonConfig = vi.fn();
+    render(
+      <AppHeader
+        commonConfigCount={213}
+        commonConfigStatus="current"
+        dataVersion="data-v1"
+        onImportCommonConfig={onImportCommonConfig}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    const updatedButton = screen.getByRole("button", {
+      name: "PVP热门配置已更新",
+    });
+    expect(updatedButton).toBeDisabled();
+    expect(updatedButton).toHaveTextContent("已更新");
+    expect(updatedButton).toHaveTextContent("当前 213 只");
+    fireEvent.click(updatedButton);
+    expect(onImportCommonConfig).not.toHaveBeenCalled();
   });
 
   test("mounts portrait touch-target classes on real controls", () => {

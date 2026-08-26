@@ -14,10 +14,10 @@ function readJson(relativePath) {
   );
 }
 
-describe("desktop v1.6.2 miniapp parity", () => {
-  test("pins the miniapp to web core 1.6.2", () => {
-    expect(readJson("package.json").version).toBe("1.6.2");
-    expect(readJson("miniapp/package.json").version).toBe("1.1.3");
+describe("desktop v1.6.3 miniapp parity", () => {
+  test("keeps the desktop and miniapp release versions explicit", () => {
+    expect(readJson("package.json").version).toBe("1.6.3");
+    expect(readJson("miniapp/package.json").version).toBe("1.1.4");
   });
 
   test.each([

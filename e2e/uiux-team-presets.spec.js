@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("analyzes a six-member team's defensive matchups inside the drawer", async ({ page }) => {
+test("shows all six members in the compact team analysis matrix", async ({ page }) => {
   await page.addInitScript(() => {
     const spiritIds = [
       "spirit_b2f1251352d5f670",
@@ -56,18 +56,17 @@ test("analyzes a six-member team's defensive matchups inside the drawer", async 
   await page.getByRole("button", { name: "打开队伍" }).click();
   await page.getByRole("button", { name: "分析" }).click();
 
-  const analysis = page.getByRole("region", { name: "队伍防守面" });
+  const analysis = page.getByRole("region", { name: "队伍分析" });
   await expect(analysis).toBeVisible();
-  await expect(analysis.getByText("6/6")).toBeVisible();
+  const matrix = analysis.getByRole("table", { name: "队伍防守与打击面矩阵" });
+  await expect(matrix.locator("tbody tr")).toHaveCount(6);
 
-  const firstRisk = analysis.locator(".team-type-analysis__row-button").first();
-  await firstRisk.click();
-  await expect(firstRisk).toHaveAttribute("aria-expanded", "true");
-  await expect(analysis.locator(".team-type-analysis__member img").first()).toBeVisible();
+  const firstCell = matrix.locator("tbody button").first();
+  await firstCell.click();
+  await expect(analysis.getByLabel("单元格详情")).toBeVisible();
 
-  await analysis.getByRole("button", { name: "全部" }).click();
-  await expect(analysis.locator(".team-type-analysis__row")).toHaveCount(18);
-  await analysis.getByRole("button", { name: "重点" }).click();
+  await analysis.getByRole("button", { name: "技能打击面" }).click();
+  await expect(matrix.locator("tbody tr")).toHaveCount(6);
 
   const drawer = page.getByRole("dialog", { name: "队伍" });
   expect(await drawer.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);

@@ -22,6 +22,9 @@ const numberInput = (key, label, min, max, defaultValue) => ({
 });
 
 const STATUS_EFFECTS = Object.freeze({
+  减压阀: {
+    inputs: [numberInput("pressureValveUseCount", "已使用次数", 0, 20, 0)],
+  },
   贪婪: {
     operations(context) {
       return { lifestealPercent: stackedLifestealPercent(10, context) };

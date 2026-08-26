@@ -14,6 +14,7 @@ import {
 } from "@tarojs/taro";
 import Taro from "@tarojs/taro";
 import IndexPage, {
+  COMMON_SPIRIT_CONFIG_BUNDLE_ID,
   createDefaultServices,
 } from "../src/pages/index/index.jsx";
 import { encodeSharePayload } from "../src/share/payload.js";
@@ -614,13 +615,22 @@ describe("IndexPage", () => {
     const services = createUserSettingServices();
     services.configLibraryRepository = {
       commit: vi.fn(() => ({
+        commonConfig: {
+          bundleId: COMMON_SPIRIT_CONFIG_BUNDLE_ID,
+          entrySignatures: {},
+        },
         entries: [entry],
         favorites: ["spirit-b"],
         preview: { added: 1, overwritten: 0 },
         schemaVersion: 1,
       })),
-      load: vi.fn(() => ({ entries: [], schemaVersion: 1 })),
+      load: vi.fn(() => ({
+        commonConfig: { bundleId: null, entrySignatures: {} },
+        entries: [],
+        schemaVersion: 1,
+      })),
       preview: vi.fn(() => ({
+        bundleId: COMMON_SPIRIT_CONFIG_BUNDLE_ID,
         entries: [entry],
         favoriteSpiritIds: ["spirit-b"],
         preview: { added: 1, overwritten: 0 },
@@ -640,7 +650,9 @@ describe("IndexPage", () => {
     await waitFor(() => {
       expect(services.configLibraryRepository.commit).toHaveBeenCalledTimes(1);
     });
-    expect(screen.getByText(/已导入 1 只/u)).toBeInTheDocument();
+    expect(screen.getByText(/当前 1 只，已是最新/u)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "PVP热门配置已更新" }))
+      .toBeDisabled();
     expect(Taro.showToast).toHaveBeenCalledWith(expect.objectContaining({
       title: "已导入 1 只精灵",
     }));

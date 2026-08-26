@@ -133,3 +133,165 @@
 - 构建：生产构建通过；无阻塞型性能预算超限，只有既有 JS 体积基线警告。
 
 final result: passed
+
+---
+
+# 队伍分析视觉验收
+
+## 证据
+
+- 设计源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-fe3691b5-d53c-4cd7-98db-db527ef598e7.png`
+- 设计源像素：1536 × 1024；为匹配实现视口，取顶部 1536 × 864 后按 1× 密度归一化为 1280 × 720。
+- 最终实现：`D:\codex\rock-calculator-public\artifacts\design-qa\team-analysis-final-1280.png`
+- 最终实现像素 / CSS 视口 / 密度：1280 × 720 / 1280 × 720 / devicePixelRatio 1。
+- 同屏对照：`D:\codex\rock-calculator-public\artifacts\design-qa\comparison-final.png`（左侧设计，右侧实现）。
+- 补充状态：`team-member-1280.png`、`team-analysis-1024.png`、`team-analysis-390.png`、`team-analysis-dark-1024.png`、`team-matchup-dark-1024.png`。
+- 验收状态：亮色分析页，3/6 成员，防守矩阵；另检查暗色矩阵、对位、来源详情和成员配置。
+
+## 全景与重点区域对照
+
+- 全景：导航、顶部成员条、双模式工具栏、18 属性矩阵、右侧双汇总的层级和顺序与设计一致。
+- 重点区域：逐项放大检查属性图标、精灵头像、倍率色块、愿力开关、矩阵行头和汇总区；均使用项目真实图片资源与 Phosphor 图标。
+- 成员配置：保留原双栏编辑结构，仅在性格行加入血脉选择，没有扩大或重排成员页主体。
+- 响应式：1024px 下汇总移至矩阵底部；390px 下队伍条和矩阵在各自容器内滚动，页面本身没有横向溢出。
+
+## 必查表面
+
+- 字体：沿用项目现有字体栈、字号和字重；表头及倍率在缩放后仍可辨识，无异常换行。
+- 间距：主要卡片、标签、矩阵和汇总保持紧凑节奏；窄屏触控按钮不小于 44px。
+- 色彩：沿用现有主题变量；红色表示危险/受阻，绿色表示抗性/克制，并始终保留倍率文字。
+- 图片：精灵头像和属性图标均来自项目素材，无占位位图、CSS 绘图或自制 SVG。
+- 文案：按用户要求将“矩阵”改为“分析”；“防守承伤、技能打击面、愿力冲击、对位”语义明确。
+- 交互：三视图、矩阵模式、愿力开关、单元格详情、对手选择、攻击方向切换均已实际操作；浏览器控制台无 error/warning。
+
+## 对照迭代记录
+
+### Pass 1
+
+- [P2] 矩阵行头同时显示头像和截断名称，扫描噪声高；改为头像主导，名称保留在可访问文本和提示中。
+- [P2] 右侧只显示当前模式汇总，与设计稿同时展示防守/打击概览不一致；改为双汇总常驻。
+
+### Pass 2
+
+- [P2] 双汇总首次实现后在 720px 高度被裁切；压缩汇总行距、字号和内边距，1024px 断点改为底部横排。
+
+### Pass 3
+
+- 复验 1280 × 720、1024 × 768、390 × 844 和暗色主题；此前 P2 均已关闭。
+- 设计中的 12 个展示槽位未照搬：项目真实队伍模型固定为 6 位，保留 6 位是产品约束。
+- 设计中的“矩阵”标题按用户明确指示改为“分析”；成员/分析一级切换和队伍管理栏按“成员配置界面不要大改”保留。
+
+### Pass 4
+
+- 复验旧队伍未显式保存血脉时的愿力分析：普通精灵按普通血脉、首领精灵按首领血脉推导，显示值与计算值一致。
+- 实际点击矩阵单元格后切换防守/打击模式，来源详情立即清空；概览/分析/对位、攻击方向和对手队伍切换同样不会残留旧来源。
+- 防守汇总把 `×0` 只计入免疫，不再同时计入抗性；浏览器实测交互通过，布局与 Pass 3 无视觉变化。
+
+### Pass 5
+
+- 对照源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-3a30f91a-9349-4363-b248-46e65865d8a3.png`。
+- 最终实现：`D:\codex\rock-calculator-public\artifacts\design-qa\team-matchup-manual-final.jpg`（1280 × 720）。
+- 同屏对照：`D:\codex\rock-calculator-public\artifacts\design-qa\team-matchup-manual-comparison.jpg`（设计源裁切缩放至 1280 × 720，左侧设计、右侧实现，合成图 2560 × 720）。
+- 验收状态：对位页切换“现场编辑”，导入三名成员的既存队伍副本，成员详细配置收起，6×6 对位表保持首屏可见。
+- [P2] 初版默认展开完整成员编辑器，导致对位表跌出首屏；改为六槽位头像条默认收起，点击槽位后再展开，并提供“收起现场配置”。
+- 导入后的修改仅作用于现场副本；切回“已保存队伍”后仍读取原队伍，未出现反向写入。
+- 最终复验未发现 P0、P1 或 P2 视觉差异。
+
+## 后续精修（P3）
+
+- 有完整 6 人队伍时可再细调顶部头像条密度，但不影响当前功能或可读性。
+
+### Pass 6：竖排成员与三栏分析结构
+
+- 设计源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-21eb5229-9cfd-42d3-8db6-bb39eb05e763.png`、`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-699f0039-b6bf-4e49-9e28-b3e0596cd46e.png`、`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-06eb699d-42ca-4d65-9eb3-05c38fe6dbdb.png`、`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-a2b8eb42-7dba-430b-bd8e-88a1442aeab0.png`、`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-5b5af6c1-2374-4834-a2ff-6f7c42800756.png`。
+- 最终实现：`artifacts/design-qa/team-member-three-tabs-final.png`、`artifacts/design-qa/team-analysis-vertical-six-final.png`、`artifacts/design-qa/team-matchup-vertical-six-final.png`。
+- 同屏对照：`artifacts/design-qa/team-analysis-vertical-comparison.jpg`、`artifacts/design-qa/team-matchup-vertical-comparison.jpg`。
+- 像素 / CSS 视口 / 密度：最终实现均为 1280 × 720 / 1280 × 720 / devicePixelRatio 1；设计源按同高裁切并等比缩放到对照面板，避免把原始截图尺寸差异误判为布局差异。
+- 状态：完整六人队伍；分别打开成员、分析和对位三个一级页签。分析页为防守承伤矩阵，对位页为已保存队伍模式。
+- 首轮发现的 [P1]：分析区重复横排成员条，破坏左侧竖排配置工作流；分析矩阵首屏只能看见 3/6 成员；对位第六行跌出首屏；倍率文字在紧凑单元格中存在越界风险。
+- 修复：一级页签固定为“成员 / 分析 / 对位”；成员竖排始终保留，删除分析和对位中的重复横排成员条及嵌套导航；矩阵行高、首列、倍率单元格、对位行高和底部汇总统一收紧，并补齐省略与不换行规则。
+- 复验：成员页保持原竖排配置结构；分析矩阵 6 行最末行底部为 533px，左侧第六槽底部为 647px；对位表 6 行最末行底部为 676px；三页浏览器溢出扫描均为空数组，未发现文字超框。
+- 字体与文案：沿用现有字体栈和设计令牌；三栏标题完整显示，倍率使用等宽数字且不换行，长队伍名和技能名按容器截断。
+- 布局与间距：97vw 扩展抽屉保留 300px 竖排成员列，右侧只承载当前分析任务；矩阵汇总改为底部紧凑条，不再占用矩阵横向空间。
+- 色彩与图片：继续使用现有红、绿语义色、官方精灵头像和属性图标，没有新增占位图、CSS 图形或自制 SVG。
+- 交互：实际切换三个一级页签、矩阵模式和对位来源；选中单元格后切换一级页签会清空旧详情，未发现控制台错误。
+- 最终复验无遗留 P0、P1、P2；聚焦区域已由两张同屏对照覆盖矩阵密度、六行可见性、头像清晰度和文字边界，无需追加单独裁切图。
+
+### Pass 7：参考站紧凑色块与实心倍率字
+
+- 设计源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-439be0e5-2a8e-413f-8bef-6a27bfd582fb.png`（1100 × 121px）；该图只作为格子密度、色块和倍率文字风格依据，不作为整页布局目标。
+- 修改前证据：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-dc2ac610-71ae-4dd2-97a0-8c17754a80c7.png`、`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-48249064-214a-4c38-9b46-dad16428a5d9.png`。
+- 最终实现：`artifacts/design-qa/team-analysis-compact-solid-final.jpg`、`artifacts/design-qa/team-matchup-compact-solid-final.jpg`；像素 / CSS 视口 / 密度均为 1280 × 720 / 1280 × 720 / devicePixelRatio 1。
+- 同屏对照：`artifacts/design-qa/team-analysis-compact-solid-comparison.jpg`。参考图等比放大到 1280px 宽后与完整实现上下排列，保留原始纵横比；重点比较属性表头、连续色块、倍率字重和色块间距。
+- 状态：完整六人队伍；分析页为防守承伤，对位页为已保存队伍。实际切换“技能打击面”验证同一色块规则继续生效。
+- 初轮 [P1]：分析格实际为约 45 × 42px，内部按钮 40 × 32px；高圆角、显式描边和浏览器计算出的 400 字重使矩阵呈现为分散按钮，明显弱于参考站的连续色块观感。
+- 修复：分析矩阵固定到最大 640px，单元格约 32 × 30px，内部色块约 29 × 24px；圆角收为 4px、常态描边透明，安全/危险背景提高到 22%/18% 混色；倍率使用 9px、800 字重。
+- 对位同步：表格最大 640px，行高 40px，倍率色块高 24px；首列保留 108px，并强制“攻击方 \\ 防守方”单行，避免紧凑化造成标题折行。
+- 浏览器几何复验：分析与对位滚动容器 `scrollWidth - clientWidth = 0`，页面水平溢出为 0；分析最长 `×0.25` 文案 `scrollWidth - clientWidth = 0`；对位六行末行底部位于 604px，首屏完整。
+- 字体、颜色、图片和文案：倍率字由继承的 14px/400 收敛为 9px/800，增强小尺寸实心感；继续使用项目属性图标和精灵头像，未新增图片替代、CSS 图形或自制 SVG；倍率和名称语义未改变。
+- 最终同屏复验未发现遗留 P0、P1、P2。与参考站的差异仅剩产品结构：参考图把防守与打击同时并排，本项目仍由现有双模式切换，属于既定交互约束，不在本轮改动范围。
+
+### Pass 8：整页流式适配与移除横向拖拽条
+
+- 设计问题源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-8130fd89-bd34-4ed0-bc8b-722c011ee933.png`（664 × 30px），明确显示矩阵底部横向拖拽条。
+- 最终实现：`artifacts/design-qa/team-analysis-fluid-no-scroll-final.jpg`、`artifacts/design-qa/team-matchup-fluid-no-scroll-final.jpg`；像素 / CSS 视口 / 密度均为 1280 × 720 / 1280 × 720 / devicePixelRatio 1。
+- 同屏对照：`artifacts/design-qa/team-analysis-fluid-no-scroll-comparison.jpg`。顶部保留问题截图原始纵横比并等比放大，底部为完整分析页，直接检查拖拽条、整页占比和文字边界。
+- 初轮 [P1]：矩阵与对位表使用 636px 固定最小宽度，右侧工作区低于该值时必然产生横向滚动；摘要在窄断点仍使用固定 74px 列宽，也会把文字和汇总推到容器外。
+- 修复：分析与对位表取消固定最小宽度，矩阵布局改为 100% 占用右侧工作区；滚动容器固定 `overflow-x: hidden`，表格列由 `table-layout: fixed` 随工作区等比缩放，倍率色块最大宽度保持 32px 并居中，不因页面变宽而失去紧凑感。
+- 窄工作区策略：使用容器查询而非只看浏览器宽度；工作区低于 560px 时隐藏可省略的倍率“×”前缀、字号降到 8px、成员行头和头像同步收窄、双汇总改为上下排列并隐藏重复小标签。
+- 对位适配：首列改为 `clamp(80px, 15%, 108px)`，成员名继续省略显示；每个对位按钮新增完整 `aria-label`，视觉截断不损失可访问语义。
+- 浏览器复验：分析矩阵 `clientWidth = scrollWidth = 878px`、横向差值 0、滚动条高度 0；对位表横向差值 0；全页 `scrollWidth - clientWidth = 0`；可见叶子文本超框扫描为空，最长倍率文案也无裁切。
+- 字体、间距、颜色和图片：继续沿用 Pass 7 的 9px/800 倍率字、24px 色块高和实心红绿状态；表格随整页变宽，但色块保持紧凑；精灵头像与属性图标继续使用项目真实资源。
+- 最终同屏复验未发现遗留 P0、P1、P2；横向拖拽条已完全移除，分析和对位页均完整利用右侧区域。
+
+### Pass 9：消除分析页剩余空栏并让详情区收口
+
+- 问题源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-2049be91-4e8b-4adb-9740-e38a10cf11ec.png`（1107 × 693px），红框标出矩阵右侧旧固定宽度空栏及单元格详情下方空区。
+- 最终实现：`artifacts/design-qa/team-analysis-fill-unused-space-final.png`；像素 / CSS 视口 / 密度为 1107 × 693 / 1107 × 693 / devicePixelRatio 1。
+- 同屏对照：`artifacts/design-qa/team-analysis-unused-space-comparison.png`（左侧问题源，右侧最终实现；两侧均为同尺寸、同亮色主题、六人队伍、技能打击面并选中单元格）。
+- 初轮 [P2]：旧截图仍显示 Pass 7 的 640px 固定矩阵，右侧留下约 100px 空栏；当前流式矩阵复测为 `clientWidth = scrollWidth = 710px`，已完整铺到工作区右边界。
+- 初轮 [P2]：右侧编辑列与六人竖排列表等高，但详情条仅 70px，高度结束后留下约 114px 无效空区。修复为右侧编辑列纵向弹性布局，分析页占用页签之后的剩余高度；选中详情区使用剩余轨道，底边与编辑列同为 677px，且未越过抽屉边界。
+- 字体与文案：完整可见文本溢出扫描为空；仅命中本来就以 1px 隐藏的 `sr-only` 精灵名称，属于可访问文本，不是视觉超框。
+- 间距与布局：矩阵仍保持 30px 行高、24px 色块和 9px/800 倍率字；没有恢复横向拖拽条，也没有改变左侧六人竖排配置结构。
+- 色彩、图片和图标：沿用现有主题令牌、官方精灵头像、属性图标和 Phosphor 图标，没有新增近似绘图或占位资源。
+- 交互与运行态：实际切换到“分析 → 技能打击面”并点击单元格；矩阵横向差值 0、全页横向差值 0，浏览器控制台无 error/warning。
+- 最终同屏复验未发现遗留 P0、P1、P2。
+
+### Pass 10：单元格详情恢复紧凑高度
+
+- 问题源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-d5d09b96-881a-4ace-b7c9-1e8f24194c8e.png`（1103 × 837px），用户明确标注 Pass 9 的拉伸详情卡过大。
+- 最终实现：`artifacts/design-qa/team-analysis-compact-detail-final.png`（1103 × 834px）；CSS 视口为 1103 × 837，浏览器截图比视口少 3px，比较时只裁去问题源底部 3px，不做缩放。
+- 同屏对照：`artifacts/design-qa/team-analysis-compact-detail-comparison.png`（左侧问题源裁切，右侧最终实现）。
+- [P1] Pass 9 把详情条填满了右侧剩余高度，在 837px 高窗口中膨胀到约 400px，来源链路只占中间一行，形成新的巨大空卡。修复为固定 70px 上限、三行自动网格轨道并靠上排列；详情卡实测高度 70px。
+- 矩阵继续完整铺满横向工作区，六行、18 属性、双汇总均在首屏可见；左侧六人竖排未调整，页面横向溢出为 0。
+- 字体、倍率色块、图标、颜色和文案均未改变；本轮只收紧详情区高度，没有恢复拖拽条或旧固定矩阵宽度。
+- 最终同屏复验未发现遗留 P0、P1、P2。
+
+### Pass 11：队伍成员选择栏与默认计算器统一
+
+- 设计源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-94d25306-e7e6-4a78-9cf0-f383852c03d2.png`（队伍成员现状）与 `C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-702091ac-b24d-4637-893f-73a7681b0e0e.png`（默认计算器目标）。
+- 浏览器全景证据：`artifacts/design-qa/team-picker-empty.jpg`（734 × 918，亮色主题，对位现场编辑空成员并展开选择栏）；聚焦同屏对照：`artifacts/design-qa/team-picker-comparison.png`（现状、目标、修复后三栏并列）。本轮目标仅为选择栏组件一致性，聚焦图已可清楚检查标题、搜索框、选项行、头像、图鉴号、阶段、选中态和滚动容器，无需再增加整页缩放对照。
+- [P1] 队伍页原先虽然渲染同一个 `SpiritPicker`，但传入原始图鉴；默认计算器传入带收藏/完整配置优先级、进化链和标准素材字段的 `selectableSpirits`，因此两处列表顺序与搜索展开结果可能分叉。修复为从计算器视图模型将同一份选择数据贯穿到队伍成员页及“对位 → 现场编辑”。
+- [P2] 队伍变体的“成员”标题缺少默认选择栏已有的胶囊底色。补为现有强调色胶囊，保留队伍语义，不冒充攻击方或防御方。
+- 交互复验：空成员展开后显示同一套图鉴顺序与 12 项初始预览；搜索、键盘可访问角色、选项头像及两行文本结构均由同一组件提供。浏览器控制台 error/warning 为 0。
+- 最终同屏复验未发现遗留 P0、P1、P2；容器宽度随队伍侧栏响应式收缩，组件层级、间距和交互与默认计算器一致。
+
+### Pass 12：窄屏顶部队伍按钮切换为纯图标
+
+- 问题源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-016d8748-164f-410f-bd1c-ce5cf90dda31.png`（745 × 969，浏览器内容宽度约 745px，红框标出顶部队伍按钮）。
+- 最终实现：`artifacts/design-qa/header-icon-only-745.jpg`（745 × 896，CSS 视口 745 × 896，亮色精简版）；同屏重点对照：`artifacts/design-qa/header-icon-only-comparison.png`。对照裁掉问题图的浏览器外壳，只比较同为 745px 宽的应用标题栏。
+- [P1] `621–760px` 断点只隐藏“精简版 / 具体版”文字，队伍按钮仍参与文字布局；空间不足时文字被裁切而非真正退出布局。修复为在同一 `max-width: 760px` 规则中隐藏 `.team-action span`，并把按钮收为 38 × 38px、清除横向内边距、图标居中。
+- 触控边界：详细版在 620px 以下继续保留 44px 队伍按钮；精简版沿用同组 38px 紧凑图标按钮，不改变主题和菜单按钮。
+- 视觉复验：745px 下精简版、具体版、队伍均只显示真实 Phosphor 图标；三个按钮无文字残留、裁切或异常空白，品牌标题保持完整。浏览器控制台 error/warning 为 0。
+- 最终同屏复验未发现遗留 P0、P1、P2。
+
+### Pass 13：对位来源收敛与暗色浮层修复
+
+- 问题源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-5c5c2350-9977-47c2-a6c7-a6408964241f.png`（1920 × 1035，右侧浏览器区域标出“已保存队伍 / 现场编辑”冗余来源按钮与暗色精灵下拉白底）。
+- 最终实现：`artifacts/design-qa/team-matchup-dark-picker-fixed.png`（1200 × 900，暗色主题、对位页、现场 1 号位精灵列表展开）；同屏对照：`artifacts/design-qa/team-matchup-dark-picker-comparison.png`。
+- [P1] 对位页原有两套来源模式，把“选保存队伍”和“导入后编辑”拆成两层选择。修复为进入对位即显示一个现场副本：可从现有队伍导入、继续现场调整、直接查看对位；删除两个来源按钮及保存队伍直连分支，导入仍使用深拷贝，不修改保存队伍。
+- [P1] `.spirit-picker__options` 亮色白底未加入暗色交互面分组，导致暗色主题下文字对比失效。修复后实测背景 `rgb(36, 39, 54)`、文字 `rgb(241, 243, 251)`、边框 `rgb(75, 82, 108)`；同类审计补齐队伍删除确认按钮，技能下拉原本已正确使用暗色令牌。
+- 视觉与交互复验：暗色对位页中仅保留“成员 / 分析 / 对位”一级栏；导入、六个现场槽位和展开后的精灵列表均位于同一任务流；未出现硬编码白底、低对比文字或新增横向滚动。浏览器控制台 error/warning 为 0。
+- 最终同屏复验未发现遗留 P0、P1、P2。
+
+final result: passed

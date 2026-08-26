@@ -80,6 +80,7 @@ const NUMBER_FIELDS = {
   otherTypeCount: [0, 17],
   positionChangeCount: [0, 20],
   poisonStacks: [0, 99],
+  pressureValveUseCount: [0, 20],
   resistedAttackCount: [0, 20],
   skillPosition: [1, 4],
   skillSlot: [1, 4],
@@ -98,6 +99,8 @@ const CHOICE_FIELDS = {
   flowerMode: ["power", "heal"],
   friendshipMode: ["growth", "counter"],
   shiftMode: ["power", "drive"],
+  targetWeightTier: ["<4", "4~13", "14~29", "30~59", "60~119", "120+"],
+  weightDifferenceTier: ["0~10", "11~20", "21~30", "31~60", "61~100", "101+"],
 };
 
 export const PUBLIC_CONTEXT_SCHEMA = Object.freeze({
