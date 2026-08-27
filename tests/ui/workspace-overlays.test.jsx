@@ -112,7 +112,7 @@ test("shows desktop downloads and the mini program code", () => {
   expect(screen.getByRole("link", { name: "打开 Windows 下载页" }))
     .toHaveAttribute(
       "href",
-      "https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.6.3",
+      "https://github.com/zhangzeyu99-web/rock-calculator/releases/latest",
     );
   expect(screen.getByRole("img", { name: "洛克计算器微信小程序码" }))
     .toHaveAttribute("src", "/assets/downloads/wechat-miniapp-code.jpg");
@@ -201,13 +201,13 @@ test("opens the complete release notes in a second-level dialog", () => {
   });
 
   expect(screen.getByText("版本记录")).toBeVisible();
-  expect(screen.getByText("队伍分析与技能适配")).toBeVisible();
-  expect(screen.getByText("v1.6.3")).toBeVisible();
+  expect(screen.getByText("外链修复")).toBeVisible();
+  expect(screen.getByText("v1.6.4")).toBeVisible();
   expect(
-    screen.getByText("队伍升级为成员、分析、对位三页，六人矩阵首屏完整展示。"),
+    screen.getByText("修复Windows桌面版外链无响应。"),
   ).toBeVisible();
   expect(
-    screen.getByText("内置213只PVP配置与14种咕噜球，新增获取应用及二级说明。"),
+    screen.getByText("GitHub、BWIKI、B站跳转正常。"),
   ).toBeVisible();
   expect(screen.queryByText(/陨星虫配置中已失效/)).not.toBeInTheDocument();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();

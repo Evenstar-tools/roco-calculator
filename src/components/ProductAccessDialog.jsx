@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 const DESKTOP_RELEASES_URL =
-  "https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.6.3";
+  "https://github.com/zhangzeyu99-web/rock-calculator/releases/latest";
 const MINIAPP_CODE_URL = "/assets/downloads/wechat-miniapp-code.jpg";
 
 export function ProductAccessDialog({ onClose, open }) {

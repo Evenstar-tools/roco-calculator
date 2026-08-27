@@ -3,9 +3,16 @@ import path from "node:path";
 import {
   app,
   BrowserWindow,
+  ipcMain,
   Menu,
   protocol,
+  shell,
 } from "electron";
+import {
+  createWindowOpenHandler,
+  handleWillNavigate,
+  isSupportedExternalUrl,
+} from "./external-navigation.mjs";
 import { resolveOfflineAssetPath } from "./offline-paths.mjs";
 
 const APP_SCHEME = "app";
@@ -113,6 +120,7 @@ function createMainWindow({ visible = true } = {}) {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
+      preload: path.join(app.getAppPath(), "desktop", "preload.cjs"),
       sandbox: true,
     },
   });
@@ -122,7 +130,13 @@ function createMainWindow({ visible = true } = {}) {
     event.preventDefault();
     window.setTitle(APP_TITLE);
   });
-  window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  const openExternal = (url) => shell.openExternal(url);
+  window.webContents.setWindowOpenHandler(
+    createWindowOpenHandler(openExternal),
+  );
+  window.webContents.on("will-navigate", (event, url) => {
+    handleWillNavigate(event, url, openExternal);
+  });
   if (visible) {
     window.once("ready-to-show", () => {
       window.show();
@@ -198,6 +212,16 @@ app.commandLine.appendSwitch("disable-direct-composition");
 
 app.whenReady().then(async () => {
   Menu.setApplicationMenu(null);
+  ipcMain.handle("desktop:open-external", async (event, url) => {
+    if (
+      !event.senderFrame.url.startsWith(APP_ORIGIN) ||
+      !isSupportedExternalUrl(url)
+    ) {
+      return false;
+    }
+    await shell.openExternal(url);
+    return true;
+  });
   protocol.registerBufferProtocol(APP_SCHEME, (request, callback) => {
     readBundledAsset(request.url).then(callback).catch(() =>
       callback({

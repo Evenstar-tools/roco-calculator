@@ -19,7 +19,7 @@ test("keeps the concise about summary centered in a wide viewport", async ({ pag
   expect(Math.abs(box.x + box.width / 2 - 1424 / 2)).toBeLessThanOrEqual(1);
 
   await expect(
-    dialog.getByText("队伍升级为成员、分析、对位三页，六人矩阵首屏完整展示。"),
+    dialog.getByText("修复Windows桌面版外链无响应。"),
   ).toBeVisible();
   await expect(dialog.getByText("QQ 1215583051")).toBeVisible();
   await expect(dialog.getByText("规则校验")).toHaveCount(0);
@@ -48,7 +48,7 @@ test("keeps application access and about dialogs inside a mobile viewport", asyn
   await expect(accessDialog.getByRole("link", { name: "打开 Windows 下载页" }))
     .toHaveAttribute(
       "href",
-      "https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.6.3",
+      "https://github.com/zhangzeyu99-web/rock-calculator/releases/latest",
     );
   expect(await accessDialog.evaluate((node) => node.scrollWidth <= node.clientWidth))
     .toBe(true);
