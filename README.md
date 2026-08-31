@@ -21,6 +21,10 @@
   · <a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest"><strong>下载最新 Windows 版</strong></a>
 </p>
 
+<p align="center">
+  <sub>最新发布：<a href="https://github.com/Evenstar-tools/roco-calculator/releases/tag/v1.6.3">v1.6.3</a> · 更新于 2026-08-31　｜　数据支持：S3-季中</sub>
+</p>
+
 ![洛克计算器界面](docs/images/app-overview.png)
 
 ## 微信小程序
@@ -65,7 +69,8 @@
 
 ## 规则说明
 
-- [计算规则说明](docs/damage-calculation-human-readable.md) 供需要核对结果的玩家查阅。
+伤害结果会按双方精灵、技能、性格、个体、威力和战斗条件逐项计算；相同配置会得到相同结果。
+需要核对公式、取整和特殊条件时，可查看 [计算规则说明](docs/damage-calculation-human-readable.md)。
 
 ## 鸣谢与参考
 
