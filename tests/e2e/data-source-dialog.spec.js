@@ -19,7 +19,7 @@ test("keeps the concise about summary centered in a wide viewport", async ({ pag
   expect(Math.abs(box.x + box.width / 2 - 1424 / 2)).toBeLessThanOrEqual(1);
 
   await expect(
-    dialog.getByText("修复Windows桌面版外链无响应。"),
+    dialog.getByText("小程序技能栏和选择器加入技能图标，窄屏仍保持紧凑可读。"),
   ).toBeVisible();
   await expect(dialog.getByText("QQ 1215583051")).toBeVisible();
   await expect(dialog.getByText("规则校验")).toHaveCount(0);
