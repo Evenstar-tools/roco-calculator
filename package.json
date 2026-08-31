@@ -59,7 +59,7 @@
     "@testing-library/user-event": "14.6.3",
     "@vitejs/plugin-react": "5.0.4",
     "cheerio": "1.2.0",
-    "electron": "43.3.0",
+    "electron": "44.0.0",
     "electron-builder": "^26.15.3",
     "jimp": "^0.6.8",
     "jsdom": "26.1.0",
