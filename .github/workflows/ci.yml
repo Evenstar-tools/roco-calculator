@@ -34,6 +34,8 @@ jobs:
         run: npm run acceptance:verify
       - name: Validate data
         run: npm run data:validate
+      - name: Generate runtime data
+        run: npm run data:runtime
       - name: Run unit and integration tests
         run: npm test
       - name: Build static site
