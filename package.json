@@ -61,7 +61,7 @@
     "cheerio": "1.2.0",
     "electron": "43.3.0",
     "electron-builder": "^26.15.3",
-    "jimp": "^0.6.8",
+    "jimp": "^1.6.1",
     "jsdom": "26.1.0",
     "miniprogram-automator": "0.12.1",
     "pinyin-pro": "3.28.2",
