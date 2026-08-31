@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { fileURLToPath } from "node:url";
 
 export default defineConfig({
   build: {
@@ -28,7 +29,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    setupFiles: "./vitest.setup.js",
+    setupFiles: fileURLToPath(new URL("./vitest.setup.js", import.meta.url)),
     css: true,
     testTimeout: 15_000,
     exclude: [
