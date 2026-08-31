@@ -11,4 +11,5 @@ updates:
       vite-toolchain:
         patterns:
           - vite
+          - vitest
           - "@vitejs/plugin-react"
