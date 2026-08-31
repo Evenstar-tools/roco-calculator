@@ -7,3 +7,8 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    groups:
+      vite-toolchain:
+        patterns:
+          - vite
+          - "@vitejs/plugin-react"
