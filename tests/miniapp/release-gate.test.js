@@ -115,8 +115,8 @@ describe("miniapp production release gate", () => {
   });
 
   test.each([
-    ["miniappVersion", "0.1.0", /1\.1\.5/u],
-    ["rootVersion", "1.4.6", /1\.6\.4/u],
+    ["miniappVersion", "0.1.0", /1\.1\.6/u],
+    ["rootVersion", "1.4.6", /1\.6\.5/u],
   ])("rejects an unexpected %s", (key, value, message) => {
     expect(() => verifyRelease({ ...validRelease, [key]: value }))
       .toThrow(message);
