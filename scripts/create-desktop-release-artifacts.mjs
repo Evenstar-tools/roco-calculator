@@ -13,5 +13,4 @@ const result = await createDesktopReleaseAssets({
 });
 
 console.log(result.versionedPath);
-console.log(result.stablePath);
 console.log(result.checksumPath);

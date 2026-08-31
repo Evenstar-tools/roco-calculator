@@ -53,17 +53,16 @@ npm run desktop:release-assets
 - [ ] 全新目录安装、离线启动、卸载和重装通过。
 - [ ] 头像、运行数据、配置库导入导出和本地记忆可用。
 - [ ] 安装包产品名、图标、快捷方式、版本号和签名正确。
-- [ ] 同时生成版本号安装包和 `rock-calculator-latest.exe` 固定别名。
-- [ ] `SHA256SUMS.txt` 同时记录两个文件，且两者 SHA256 一致。
+- [ ] 仅生成一个带版本号的安装包。
+- [ ] `SHA256SUMS.txt` 记录该安装包的 SHA256，仅随本地发布归档保留。
 - [ ] 从安装包解包后验证运行资源。
 
 ## 发布
 
 - [ ] 更新 `package.json`、小程序版本和完整 `CHANGELOG.md`。
 - [ ] 更新应用内用户版更新记录，只写用户可理解的变化。
-- [ ] 创建 Git 标签与 GitHub Release，同时上传版本号安装包和 `rock-calculator-latest.exe`。
-- [ ] `SHA256SUMS.txt` 仅随本地发布归档保留，不作为公开 Release 资产展示。
-- [ ] `https://github.com/Evenstar-tools/roco-calculator/releases/latest/download/rock-calculator-latest.exe` 能跳转到本次稳定版安装包。
+- [ ] 创建 Git 标签与 GitHub Release，仅上传带版本号的安装包。
+- [ ] 不再提供固定文件名的直链；应用内和网页入口统一打开当前 Release 页面。
 - [ ] 发布后下载回读，核对文件大小和 SHA256。
 - [ ] 线上站点验证真实版本，不以本地构建成功代替线上发布。
 - [ ] 本机安装包只保留当前稳定版和上一稳定版；旧版由 Release 保存。

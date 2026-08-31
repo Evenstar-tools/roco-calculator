@@ -8,7 +8,7 @@ import { createDesktopReleaseAssets } from
   "../../scripts/desktop-release-assets.mjs";
 
 describe("desktop release assets", () => {
-  test("creates a fixed latest installer alias beside the versioned package", async () => {
+  test("creates only the versioned installer package", async () => {
     const root = await mkdtemp(path.join(tmpdir(), "rock-release-assets-"));
     const sourcePath = path.join(root, "source.exe");
     const outputDirectory = path.join(root, "output");
@@ -22,14 +22,12 @@ describe("desktop release assets", () => {
     });
 
     expect(path.basename(result.versionedPath)).toBe("洛克计算器-9.9.9.exe");
-    expect(path.basename(result.stablePath)).toBe("rock-calculator-latest.exe");
     expect(await readFile(result.versionedPath)).toEqual(source);
-    expect(await readFile(result.stablePath)).toEqual(source);
+    expect(result).not.toHaveProperty("stablePath");
 
     const checksum = createHash("sha256").update(source).digest("hex");
     expect(await readFile(result.checksumPath, "utf8")).toBe(
-      `${checksum}  洛克计算器-9.9.9.exe\n` +
-      `${checksum}  rock-calculator-latest.exe\n`,
+      `${checksum}  洛克计算器-9.9.9.exe\n`,
     );
   });
 });

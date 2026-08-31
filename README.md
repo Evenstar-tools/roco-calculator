@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest/download/rock-calculator-latest.exe"><strong>下载 Windows 版</strong></a>
+  <a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest"><strong>下载 Windows 版</strong></a>
   · <a href="docs/releases/README.md">版本记录</a>
   · <a href="docs/damage-calculation-human-readable.md">计算说明</a>
   · <a href="https://github.com/Evenstar-tools/roco-calculator/issues/new/choose">反馈问题</a>
@@ -41,7 +41,7 @@
 
 ## 快速入口
 
-- [下载最新 Windows 安装包](https://github.com/Evenstar-tools/roco-calculator/releases/latest/download/rock-calculator-latest.exe)
+- [查看最新 Windows 版本与安装包](https://github.com/Evenstar-tools/roco-calculator/releases/latest)
 - [查看版本与发布索引](docs/releases/README.md)
 - [阅读完整更新记录](CHANGELOG.md)
 - [反馈计算错误或功能问题](https://github.com/Evenstar-tools/roco-calculator/issues/new/choose)
