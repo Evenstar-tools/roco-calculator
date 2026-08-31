@@ -5,7 +5,7 @@ import path from "node:path";
 import { describe, expect, test } from "vitest";
 
 const projectRoot = process.cwd();
-const cliPath = path.join(projectRoot, "cli", "rock-calculator.mjs");
+const cliPath = path.join(projectRoot, "scripts", "cli", "rock-calculator.mjs");
 const packageJson = JSON.parse(
   readFileSync(path.join(projectRoot, "package.json"), "utf8"),
 );

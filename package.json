@@ -16,21 +16,21 @@
   "type": "module",
   "main": "desktop/main.mjs",
   "bin": {
-    "rock-calculator": "./cli/rock-calculator.mjs"
+    "rock-calculator": "./scripts/cli/rock-calculator.mjs"
   },
   "scripts": {
-    "cli": "node cli/rock-calculator.mjs",
+    "cli": "node scripts/cli/rock-calculator.mjs",
     "cli:test": "vitest run tests/cli/rock-calculator-cli.test.js",
-    "dev": "npm run data:runtime && vite",
-    "build": "npm run acceptance:verify && npm run test:core-drift && npm run data:runtime && npm run data:verify-bindings && vite build && npm run performance:verify",
+    "dev": "npm run data:runtime && vite --config config/vite.config.mjs",
+    "build": "npm run acceptance:verify && npm run test:core-drift && npm run data:runtime && npm run data:verify-bindings && vite build --config config/vite.config.mjs && npm run performance:verify",
     "desktop": "npm run build && electron .",
     "desktop:pack": "npm run build && node scripts/build-desktop.mjs",
     "desktop:release-assets": "node scripts/create-desktop-release-artifacts.mjs",
-    "preview": "vite preview",
-    "preview:test": "vite preview --host 127.0.0.1 --port 4174 --strictPort",
+    "preview": "vite preview --config config/vite.config.mjs",
+    "preview:test": "vite preview --config config/vite.config.mjs --host 127.0.0.1 --port 4174 --strictPort",
     "pretest": "npm run test:core-drift",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run --config config/vite.config.mjs",
+    "test:watch": "vitest --config config/vite.config.mjs",
     "acceptance:verify": "node scripts/verify-acceptance.mjs",
     "performance:verify": "node scripts/verify-performance-budget.mjs",
     "miniapp:sync-core": "node scripts/miniapp/sync-core.mjs",
@@ -39,7 +39,7 @@
     "miniapp:build": "npm run miniapp:sync-core && npm run test:core-drift && npm --prefix miniapp run build:weapp -- --mode development",
     "miniapp:build:prod": "node scripts/miniapp/verify-release.mjs --preflight && npm run data:verify-bindings && npm run miniapp:sync-core && npm run test:core-drift && npm --prefix miniapp run build:weapp -- --mode production && node scripts/miniapp/verify-release.mjs",
     "miniapp:portrait-probe": "node scripts/miniapp/verify-portrait-layout.mjs",
-    "e2e": "playwright test",
+    "e2e": "playwright test --config config/playwright.config.js",
     "data:build": "node scripts/bwiki/build-snapshot.mjs",
     "data:check-updates": "node scripts/bwiki/check-source-updates.mjs",
     "data:runtime": "node scripts/runtime-snapshot.mjs public/data/current.json public/data/runtime.json public/assets/spirits/manifest.json",
@@ -58,7 +58,7 @@
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.6",
-    "@vitejs/plugin-react": "5.0.4",
+    "@vitejs/plugin-react": "6.1.1",
     "cheerio": "1.2.0",
     "electron": "44.0.0",
     "electron-builder": "^26.15.3",
@@ -66,8 +66,8 @@
     "jsdom": "26.1.0",
     "miniprogram-automator": "0.12.1",
     "pinyin-pro": "3.28.2",
-    "vite": "6.4.3",
-    "vitest": "3.2.7"
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
   },
   "overrides": {
     "fast-uri": "3.1.5",
