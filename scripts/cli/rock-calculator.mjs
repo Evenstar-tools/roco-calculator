@@ -4,9 +4,12 @@ import { fileURLToPath } from "node:url";
 import {
   executeCli,
   serializeCliError,
-} from "../src/cli/rock-calculator-cli.js";
+} from "../../src/cli/rock-calculator-cli.js";
 
-const projectRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const projectRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../..",
+);
 
 try {
   const result = executeCli(process.argv.slice(2), {

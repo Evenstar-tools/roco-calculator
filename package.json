@@ -16,10 +16,10 @@
   "type": "module",
   "main": "desktop/main.mjs",
   "bin": {
-    "rock-calculator": "./cli/rock-calculator.mjs"
+    "rock-calculator": "./scripts/cli/rock-calculator.mjs"
   },
   "scripts": {
-    "cli": "node cli/rock-calculator.mjs",
+    "cli": "node scripts/cli/rock-calculator.mjs",
     "cli:test": "vitest run tests/cli/rock-calculator-cli.test.js",
     "dev": "npm run data:runtime && vite",
     "build": "npm run acceptance:verify && npm run test:core-drift && npm run data:runtime && npm run data:verify-bindings && vite build && npm run performance:verify",

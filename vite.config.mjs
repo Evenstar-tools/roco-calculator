@@ -34,7 +34,7 @@ export default defineConfig({
     exclude: [
       "**/node_modules/**",
       ".tmp/**",
-      "e2e/**",
+      "tests/e2e/**",
       "miniapp/tests/**",
       "dist/**",
     ],
