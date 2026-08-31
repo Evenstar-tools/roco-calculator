@@ -1,5 +1,13 @@
 # 洛克计算器项目协作规则
 
+## GitHub 仓库与发布目标
+
+- 项目唯一的公开维护仓库是 `https://github.com/Evenstar-tools/roco-calculator`。
+- 本地 `origin` 必须指向上述仓库，`main` 必须跟踪 `origin/main`；日常 `fetch`、`pull`、`push`、Issue、Release 和 Actions 管理均以此为默认目标。
+- `legacy-origin` 仅用于读取旧仓库历史和紧急核对，不得向其推送提交、标签或 Release。
+- 执行 GitHub 写操作前先核对 `git remote -v`、当前分支和上游；发现目标不是 `Evenstar-tools/roco-calculator` 时，先停止发布并修正目标。
+- 推送或发布完成后必须回读新仓库的远端引用及公开页面；本地命令成功不等于公开发布成功。
+
 ## AI 计算与验算
 
 - 当用户要求计算、复算、验算、解释或比较《洛克王国：世界》PVP 伤害时，必须先读取并使用项目 Skill：`.agents/skills/rock-calculator-cli/SKILL.md`。
