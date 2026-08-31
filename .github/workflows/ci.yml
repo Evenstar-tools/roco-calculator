@@ -61,6 +61,8 @@ jobs:
         run: npm ci --prefix miniapp
       - name: Verify shared calculator core
         run: npm run test:core-drift
+      - name: Generate runtime data
+        run: npm run data:runtime
       - name: Run miniapp tests
         run: npm run miniapp:test
       - name: Build miniapp
