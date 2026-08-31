@@ -63,7 +63,7 @@
     "electron": "44.0.0",
     "electron-builder": "^26.15.3",
     "jimp": "^1.6.1",
-    "jsdom": "26.1.0",
+    "jsdom": "30.0.1",
     "miniprogram-automator": "0.12.1",
     "pinyin-pro": "3.28.2",
     "vite": "8.2.2",
