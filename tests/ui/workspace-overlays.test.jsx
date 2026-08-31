@@ -109,7 +109,12 @@ test("shows desktop downloads and the mini program code", () => {
   });
 
   expect(screen.getByRole("dialog", { name: "获取应用" })).toBeVisible();
-  expect(screen.getByRole("link", { name: "查看当前 Windows Release" }))
+  expect(screen.getByRole("link", { name: "GitHub 发布页" }))
+    .toHaveAttribute(
+      "href",
+      "https://github.com/Evenstar-tools/roco-calculator",
+    );
+  expect(screen.getByRole("link", { name: "获取 Windows 电脑版" }))
     .toHaveAttribute(
       "href",
       "https://github.com/Evenstar-tools/roco-calculator/releases/latest",

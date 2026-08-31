@@ -3592,7 +3592,8 @@ select:focus-visible {
 }
 
 .product-access-card--desktop {
-  align-items: center;
+  gap: 0;
+  padding: 0;
 }
 
 .product-access-card--desktop > div,
@@ -3612,15 +3613,28 @@ select:focus-visible {
   line-height: 1.45;
 }
 
-.product-access-card--desktop .secondary-action {
-  display: inline-flex;
-  width: max-content;
-  grid-column: 1 / -1;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  color: var(--accent);
+.product-access-desktop-link {
+  display: grid;
+  min-height: 88px;
+  align-content: center;
+  gap: 3px;
+  padding: 16px;
+  color: var(--text);
   text-decoration: none;
+}
+
+.product-access-desktop-link + .product-access-desktop-link {
+  border-top: 1px solid var(--border);
+}
+
+.product-access-desktop-link:hover,
+.product-access-desktop-link:focus-visible {
+  background: var(--selection-hover);
+  outline: none;
+}
+
+.product-access-desktop-link:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--accent);
 }
 
 .product-access-card__title {

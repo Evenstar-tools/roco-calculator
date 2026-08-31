@@ -45,7 +45,12 @@ test("keeps application access and about dialogs inside a mobile viewport", asyn
   await page.getByRole("button", { name: "获取应用" }).click();
   const accessDialog = page.getByRole("dialog", { name: "获取应用" });
   await expect(accessDialog).toBeVisible();
-  await expect(accessDialog.getByRole("link", { name: "查看当前 Windows Release" }))
+  await expect(accessDialog.getByRole("link", { name: "GitHub 发布页" }))
+    .toHaveAttribute(
+      "href",
+      "https://github.com/Evenstar-tools/roco-calculator",
+    );
+  await expect(accessDialog.getByRole("link", { name: "获取 Windows 电脑版" }))
     .toHaveAttribute(
       "href",
       "https://github.com/Evenstar-tools/roco-calculator/releases/latest",

@@ -10,6 +10,7 @@ const { installExternalLinkInterceptor } = preloadNavigation;
 
 describe("desktop external navigation", () => {
   test.each([
+    "https://github.com/Evenstar-tools/roco-calculator",
     "https://github.com/Evenstar-tools/roco-calculator/releases/latest",
     "http://example.com/help",
     "mailto:1215583051@qq.com",
