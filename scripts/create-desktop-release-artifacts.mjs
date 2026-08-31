@@ -1,21 +1,17 @@
-import { createHash } from "node:crypto";
-import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import packageJson from "../package.json" with { type: "json" };
+import { createDesktopReleaseAssets } from "./desktop-release-assets.mjs";
 
 const projectRoot = process.cwd();
 const version = packageJson.version;
-const fileName = `洛克计算器-${version}.exe`;
-const sourcePath = path.join(projectRoot, "release", fileName);
+const sourcePath = path.join(projectRoot, "release", `洛克计算器-${version}.exe`);
 const outputDirectory = path.join(projectRoot, "installers", `v${version}`);
-const outputPath = path.join(outputDirectory, fileName);
-const checksumPath = path.join(outputDirectory, "SHA256SUMS.txt");
+const result = await createDesktopReleaseAssets({
+  outputDirectory,
+  sourcePath,
+  version,
+});
 
-await mkdir(outputDirectory, { recursive: true });
-await copyFile(sourcePath, outputPath);
-const checksum = createHash("sha256")
-  .update(await readFile(outputPath))
-  .digest("hex");
-await writeFile(checksumPath, `${checksum}  ${fileName}\n`, "utf8");
-console.log(outputPath);
-console.log(checksumPath);
+console.log(result.versionedPath);
+console.log(result.stablePath);
+console.log(result.checksumPath);

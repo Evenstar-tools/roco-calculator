@@ -25,6 +25,7 @@
     "build": "npm run acceptance:verify && npm run test:core-drift && npm run data:runtime && npm run data:verify-bindings && vite build && npm run performance:verify",
     "desktop": "npm run build && electron .",
     "desktop:pack": "npm run build && node scripts/build-desktop.mjs",
+    "desktop:release-assets": "node scripts/create-desktop-release-artifacts.mjs",
     "preview": "vite preview",
     "preview:test": "vite preview --host 127.0.0.1 --port 4174 --strictPort",
     "pretest": "npm run test:core-drift",

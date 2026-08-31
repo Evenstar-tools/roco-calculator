@@ -109,10 +109,10 @@ test("shows desktop downloads and the mini program code", () => {
   });
 
   expect(screen.getByRole("dialog", { name: "获取应用" })).toBeVisible();
-  expect(screen.getByRole("link", { name: "打开 Windows 下载页" }))
+  expect(screen.getByRole("link", { name: "下载 Windows 安装包" }))
     .toHaveAttribute(
       "href",
-      "https://github.com/Evenstar-tools/roco-calculator/releases/latest",
+      "https://github.com/Evenstar-tools/roco-calculator/releases/latest/download/rock-calculator-latest.exe",
     );
   expect(screen.getByRole("img", { name: "洛克计算器微信小程序码" }))
     .toHaveAttribute("src", "/assets/downloads/wechat-miniapp-code.jpg");

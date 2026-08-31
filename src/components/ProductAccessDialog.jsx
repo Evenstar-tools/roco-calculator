@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
-const DESKTOP_RELEASES_URL =
-  "https://github.com/Evenstar-tools/roco-calculator/releases/latest";
+const DESKTOP_INSTALLER_URL =
+  "https://github.com/Evenstar-tools/roco-calculator/releases/latest/download/rock-calculator-latest.exe";
 const MINIAPP_CODE_URL = "/assets/downloads/wechat-miniapp-code.jpg";
 
 export function ProductAccessDialog({ onClose, open }) {
@@ -43,16 +43,16 @@ export function ProductAccessDialog({ onClose, open }) {
           <article className="product-access-card product-access-card--desktop">
             <div>
               <strong>Windows 桌面版</strong>
-              <span>在 GitHub Releases 下载</span>
+              <span>直接下载最新稳定版</span>
             </div>
             <a
-              aria-label="打开 Windows 下载页"
+              aria-label="下载 Windows 安装包"
               className="secondary-action"
-              href={DESKTOP_RELEASES_URL}
+              href={DESKTOP_INSTALLER_URL}
               rel="noreferrer"
               target="_blank"
             >
-              打开下载页
+              下载安装包
             </a>
           </article>
           <article className="product-access-card product-access-card--miniapp">
