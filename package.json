@@ -57,7 +57,7 @@
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.6",
-    "@vitejs/plugin-react": "5.0.4",
+    "@vitejs/plugin-react": "6.1.1",
     "cheerio": "1.2.0",
     "electron": "44.0.0",
     "electron-builder": "^26.15.3",
@@ -65,7 +65,7 @@
     "jsdom": "26.1.0",
     "miniprogram-automator": "0.12.1",
     "pinyin-pro": "3.28.2",
-    "vite": "6.4.3",
+    "vite": "8.2.2",
     "vitest": "3.2.7"
   },
   "overrides": {
