@@ -1,5 +1,13 @@
 import { describe, expect, test } from "vitest";
-import { calculateDamage } from "../../src/domain/damage.js";
+import {
+  calculateDamage,
+  DAMAGE_ROUNDING_POLICY,
+  floorEffectiveSkillPower,
+  floorOneHitDamage,
+  normalizeDamageHitCount,
+  roundDamageNumerator,
+  roundDisplayedPower,
+} from "../../src/domain/damage.js";
 
 function goldenInput(overrides = {}) {
   return {
@@ -15,6 +23,23 @@ function goldenInput(overrides = {}) {
 }
 
 describe("calculateDamage", () => {
+  test("exposes one shared rounding policy for every damage boundary", () => {
+    expect(DAMAGE_ROUNDING_POLICY).toEqual({
+      damageNumerator: "round-half-up",
+      displayedPower: "round-half-up",
+      effectiveSkillPower: "floor",
+      finalOneHitDamage: "floor",
+      hitCount: "floor-then-multiply",
+      oneHitDamage: "floor",
+    });
+    expect(floorEffectiveSkillPower(82.5)).toBe(82);
+    expect(roundDisplayedPower(356.25)).toBe(356);
+    expect(roundDisplayedPower(356.5)).toBe(357);
+    expect(roundDamageNumerator(20053.5)).toBe(20054);
+    expect(floorOneHitDamage(117.99)).toBe(117);
+    expect(normalizeDamageHitCount(3.99)).toBe(3);
+  });
+
   test("reproduces the 332 golden damage", () => {
     expect(calculateDamage(goldenInput()).total).toBe(332);
   });
@@ -70,6 +95,7 @@ describe("calculateDamage", () => {
     );
 
     expect(result.oneHit).toBe(332);
+    expect(result.finalOneHit).toBe(348);
     expect(result.multiHit).toBe(996);
     expect(result.total).toBe(1044);
     expect(result.total % 3).toBe(0);

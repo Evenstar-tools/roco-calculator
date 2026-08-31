@@ -4,6 +4,35 @@ function finiteNumber(value, fallback) {
   return Number.isFinite(numeric) ? numeric : fallback;
 }
 
+export const DAMAGE_ROUNDING_POLICY = Object.freeze({
+  damageNumerator: "round-half-up",
+  displayedPower: "round-half-up",
+  effectiveSkillPower: "floor",
+  finalOneHitDamage: "floor",
+  hitCount: "floor-then-multiply",
+  oneHitDamage: "floor",
+});
+
+export function floorEffectiveSkillPower(value) {
+  return Math.floor(finiteNumber(value, 0));
+}
+
+export function roundDisplayedPower(value) {
+  return Math.round(finiteNumber(value, 0));
+}
+
+export function roundDamageNumerator(value) {
+  return Math.round(finiteNumber(value, 0));
+}
+
+export function floorOneHitDamage(value) {
+  return Math.floor(finiteNumber(value, 0));
+}
+
+export function normalizeDamageHitCount(value) {
+  return Math.max(1, Math.floor(finiteNumber(value, 1)));
+}
+
 export function calculateDamage(input) {
   const attackerStat = finiteNumber(input.attackerStat, 0);
   const displayedPower = finiteNumber(input.displayedPower, 0);
@@ -12,7 +41,7 @@ export function calculateDamage(input) {
     0,
     finiteNumber(input.damageReductionMultiplier, 1),
   );
-  const hitCount = Math.max(1, Math.floor(finiteNumber(input.hitCount, 1)));
+  const hitCount = normalizeDamageHitCount(input.hitCount);
   const finalMultiplier = Math.max(
     0,
     finiteNumber(input.finalDamageMultiplier, 1),
@@ -25,11 +54,12 @@ export function calculateDamage(input) {
 
   const coefficient = (level * 45 / 100 + 10) / 41;
   const unroundedNumerator = attackerStat * displayedPower * coefficient;
-  const numerator = Math.round(unroundedNumerator);
+  const numerator = roundDamageNumerator(unroundedNumerator);
   const unroundedOneHit = numerator / defenderDefense * reduction;
-  const oneHit = Math.floor(unroundedOneHit);
+  const oneHit = floorOneHitDamage(unroundedOneHit);
   const multiHit = oneHit * hitCount;
-  const total = Math.floor(oneHit * finalMultiplier) * hitCount;
+  const finalOneHit = floorOneHitDamage(oneHit * finalMultiplier);
+  const total = finalOneHit * hitCount;
 
   return {
     coefficient,
@@ -37,6 +67,7 @@ export function calculateDamage(input) {
     numerator,
     unroundedOneHit,
     oneHit,
+    finalOneHit,
     multiHit,
     total,
   };

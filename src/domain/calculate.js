@@ -1,5 +1,10 @@
 import { RULES_VERSION } from "./constants.js";
-import { calculateDamage } from "./damage.js";
+import {
+  calculateDamage,
+  floorEffectiveSkillPower,
+  normalizeDamageHitCount,
+  roundDisplayedPower,
+} from "./damage.js";
 import {
   buildChoiceSkillSequence,
   supportsChoiceTrait,
@@ -455,7 +460,7 @@ function starfallDamage({
     typeMultiplier *
     attackDefenseLevelMultiplier *
     otherPowerMultiplier;
-  const displayedPower = Math.round(calculationPower);
+  const displayedPower = roundDisplayedPower(calculationPower);
   const arithmetic = calculateDamage({
     attackerStat,
     displayedPower: calculationPower,
@@ -1141,7 +1146,7 @@ function calculateSkillResult({
       (sum, value) => sum + (Number(value) || 0),
       0,
     ));
-  const actualPower = Math.floor(
+  const actualPower = floorEffectiveSkillPower(
     staticPowerOverride ? manualActualPower : automaticActualPower,
   );
   const traitAdjustedPower = actualPower;
@@ -1302,7 +1307,7 @@ function calculateSkillResult({
   const automaticPanelPower = powerAfterLevels * otherPowerMultiplier;
   const panelPower = powerOverride.mode === "panel"
     ? powerOverride.value
-    : Math.round(automaticPanelPower);
+    : roundDisplayedPower(automaticPanelPower);
   const calculationPower = usesActualCombatPanelForDamage
     ? powerOverride.mode === "panel"
       ? panelPower / attackDefenseLevelMultiplier
@@ -1762,11 +1767,9 @@ function calculateSkillResult({
       "减伤、连击与最终倍率",
       {
         damageReductionMultiplier,
-        hitCount: Math.max(1, Math.floor(Number(hitCount) || 1)),
+        hitCount: normalizeDamageHitCount(hitCount),
         finalDamageMultiplier,
-        oneHitAfterFinal: Math.floor(
-          mainDamage.oneHit * finalDamageMultiplier,
-        ),
+        oneHitAfterFinal: mainDamage.finalOneHit,
       },
       mainDamage.oneHit,
       mainDamage.total,
@@ -1895,12 +1898,12 @@ function calculateSkillResult({
     skillPower: actualPower,
     effectivePower: panelPower,
     automaticHitCountAdd,
-    hitCount: Math.max(1, Math.floor(Number(hitCount) || 1)),
+    hitCount: normalizeDamageHitCount(hitCount),
     hitDamages: hasSequentialBaronSettlement
       ? baronGreed.hitDamages
       : Array.from(
-          { length: Math.max(1, Math.floor(Number(hitCount) || 1)) },
-          () => Math.floor(mainDamage.oneHit * finalDamageMultiplier),
+          { length: normalizeDamageHitCount(hitCount) },
+          () => mainDamage.finalOneHit,
         ),
     totalDamage,
     mainDamage: mainDamage.total,

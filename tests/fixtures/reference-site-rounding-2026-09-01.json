@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "capturedAt": "2026-09-01",
+    "source": "https://rocopvp.tzrain.wiki/battle",
+    "sourceBundle": "https://rocopvp.tzrain.wiki/_next/static/chunks/461-69dc8760a4425a98.js",
+    "sourceGuide": "https://rocopvp.tzrain.wiki/battle-use-guide"
+  },
+  "publishedExample": {
+    "rawEffectivePower": 142.5,
+    "displayPowerExpression": {
+      "stabMultiplier": 1.25,
+      "typeMultiplier": 2
+    },
+    "expectedDisplayedPower": 356,
+    "damageInput": {
+      "attackerStat": 234,
+      "defenderDefense": 226,
+      "level": 60
+    },
+    "expectedDamage": 332
+  },
+  "verifiedGameBoundary": {
+    "skill": "先发制人",
+    "basePower": 55,
+    "percentageBonus": 0.5,
+    "rawEffectivePower": 82.5,
+    "expectedEffectivePower": 82,
+    "attackerStat": 271,
+    "defenderDefense": 170,
+    "expectedDamageNumerator": 20054,
+    "expectedDamage": 117,
+    "evidence": "龙鱼攻击固执·岚鸟（春天的样子）的游戏内实战结果"
+  },
+  "comparison": {
+    "agreesOn": [
+      "displayedPower:round-half-up",
+      "damageNumerator:round-half-up",
+      "oneHitDamage:floor",
+      "hitCount:floor-then-multiply"
+    ],
+    "localOverride": "参考站保留半点有效威力；本项目按游戏内实战证据在有效技能威力阶段向下取整。"
+  }
+}
