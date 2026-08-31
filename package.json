@@ -40,6 +40,7 @@
     "miniapp:portrait-probe": "node scripts/miniapp/verify-portrait-layout.mjs",
     "e2e": "playwright test",
     "data:build": "node scripts/bwiki/build-snapshot.mjs",
+    "data:check-updates": "node scripts/bwiki/check-source-updates.mjs",
     "data:runtime": "node scripts/runtime-snapshot.mjs public/data/current.json public/data/runtime.json public/assets/spirits/manifest.json",
     "data:verify-bindings": "node scripts/bwiki/verify-spirit-bindings.mjs",
     "data:validate": "node scripts/bwiki/validate.mjs public/data/current.json"

@@ -7,6 +7,16 @@ $env:ROCOM_S3_CSV='.\data\sources\rocom_world_s3_spirits.csv'
 $env:ROCOM_BWIKI_CACHE='.\data\sources\bwiki_cache'
 ```
 
+`ROCOM_S3_CSV` 是历史遗留变量名，新赛季仍可复用；赛季身份以候选快照的 `meta` 为准。`data/sources/` 不入库，缺少 CSV 或详情缓存时不得运行候选构建。
+
+只读检查 BWIKI 筛选页是否产生新修订：
+
+```powershell
+npm run -s data:check-updates
+```
+
+`status=changed` 只表示需要开始差异核验，不表示页面中的每项数值都可直接采用。2026 年 9 月 10 日更新使用[专用执行单](maintenance/season-update-2026-09-10.md)。
+
 ## 更新前登记
 
 每次赛季或平衡性更新先建立独立分支，并记录：
@@ -32,8 +42,11 @@ $env:ROCOM_BWIKI_CACHE='.\data\sources\bwiki_cache'
 2. 构建候选快照：
 
    ```bash
+   npm run data:check-updates
    npm run data:build
    ```
+
+   运行前必须确认检查结果为 `buildReady=true`，并更新构建器内的赛季 ID、名称、规则日期和预期数量；不得让旧 S3 常量进入新赛季快照。
 
 3. 同步素材：
 
