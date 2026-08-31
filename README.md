@@ -47,6 +47,7 @@
 ## 更新与说明
 
 - [最新 Release](https://github.com/Evenstar-tools/roco-calculator/releases/latest) 是 Windows 安装包的下载入口。
+- [版本记录与下载](docs/releases/README.md) 说明当前可下载版本、源码版本与历史入口。
 - [更新记录](CHANGELOG.md) 说明每个版本带来的变化。
 - [计算规则说明](docs/damage-calculation-human-readable.md) 供需要核对结果的玩家查阅。
 

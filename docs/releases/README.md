@@ -1,41 +1,30 @@
-# 版本与发布
+# 版本记录与下载
 
-本页区分源码修订、Git 标签和可下载安装包，避免把本地完成或已有标签误写成公开发布成功。
+这里用于确认“现在能下载哪个版本”，不把本地代码、Git 标签和公开安装包混为一谈。
+
+> [下载最新 Windows 版](https://github.com/Evenstar-tools/roco-calculator/releases/latest) · [查看全部 Release](https://github.com/Evenstar-tools/roco-calculator/releases) · [打开在线版](https://rococalc.top/)
 
 ## 当前状态
 
-| 项目 | 版本 | 状态 | 入口 |
-| --- | --- | --- | --- |
-| 当前源码 | `v1.6.4` | 已进入 `main`，尚未发布对应安装包 | [更新内容](../../CHANGELOG.md#v164) |
-| 最新稳定版 | `v1.6.3` | GitHub Release，提供 Windows 安装包与 SHA-256 | [下载与说明](https://github.com/Evenstar-tools/roco-calculator/releases/tag/v1.6.3) |
+| 项目 | 版本 | 你可以做什么 |
+| --- | --- | --- |
+| 最新可下载版本 | [`v1.6.3`](https://github.com/Evenstar-tools/roco-calculator/releases/tag/v1.6.3) | 下载 Windows 安装包 `rock-calculator-1.6.3.exe`。 |
+| 当前源码版本 | `v1.6.4` | 已在 `main`，但尚未发布对应安装包；可先查看 [v1.6.4 更新内容](../../CHANGELOG.md#v164)。 |
 
-## 记录口径
+## 这三类记录分别代表什么
 
-- [CHANGELOG.md](../../CHANGELOG.md) 记录所有实际完成的版本修订，包括未单独创建 Git 标签或 Release 的版本。
+- [更新日志](../../CHANGELOG.md) 记录每次功能和修复的变化。
 - [Git 标签](https://github.com/Evenstar-tools/roco-calculator/tags) 固定已标记的源码里程碑。
-- [GitHub Releases](https://github.com/Evenstar-tools/roco-calculator/releases) 只保存完成发布验收、可公开下载的稳定版本。
-- Windows 安装包以 Release 资产为准；提交、构建成功和 Git 标签本身都不等于公开安装包已发布。
+- [GitHub Releases](https://github.com/Evenstar-tools/roco-calculator/releases) 只放完成发布验收、可供用户下载的稳定版本。
 
-## 已保留的源码里程碑
+因此，提交已合入或已有 Git 标签，并不代表已经提供了新的安装包；下载时以 GitHub Release 页面为准。
 
-新仓库保留以下 16 个正式版本标签：
+## 现有下载资产
 
-`v1.6.3`、`v1.6.2`、`v1.6.1`、`v1.5.7`、`v1.5.6`、`v1.5.5`、`v1.5.4`、`v1.4.6`、`v1.4.5`、`v1.4.4`、`v1.4.3`、`v1.4.1`、`v1.3.6`、`v1.3.0`、`v1.2.4`、`v1.2.3`。
+截至本页更新，`v1.6.3` Release 已公开提供 Windows 安装包 `rock-calculator-1.6.3.exe`。该 Release 当前没有单独的 SHA-256 文件；请只从上方的 GitHub Release 页面下载安装包。
 
-完整功能变化见 [CHANGELOG.md](../../CHANGELOG.md)。历史标签只证明对应源码已标记；没有 Release 资产的标签不提供安装包下载承诺。
+## 历史版本
 
-## 下载校验
-
-下载 Windows 安装包后，在 PowerShell 中执行：
-
-```powershell
-Get-FileHash -Algorithm SHA256 .\rock-calculator-1.6.3.exe
-```
-
-`v1.6.3` 安装包的 SHA-256 应为：
-
-```text
-FA966731C8F0E0EE3383835A1C156311C675BE92344FBFA9D97AE33A1754D7A4
-```
-
-同时可下载 Release 中的 `SHA256SUMS.txt` 交叉核对。若哈希不一致，请勿运行文件，并通过 [安全漏洞私密报告](https://github.com/Evenstar-tools/roco-calculator/security/advisories/new) 联系维护者。
+- [全部发布版本与下载](https://github.com/Evenstar-tools/roco-calculator/releases)
+- [全部源码标签](https://github.com/Evenstar-tools/roco-calculator/tags)
+- [完整更新日志](../../CHANGELOG.md)
