@@ -215,14 +215,13 @@ describe("BWIKI row parsers", () => {
   });
 
   test("downscales local portrait files without changing their identity source", async () => {
-    const { default: Jimp } = await import("jimp");
-    const image = await new Jimp(256, 192, 0xff3366ff);
-    const source = await new Promise((resolve, reject) => {
-      image.getBuffer(Jimp.MIME_PNG, (error, buffer) => {
-        if (error) reject(error);
-        else resolve(buffer);
-      });
+    const { Jimp, JimpMime } = await import("jimp");
+    const image = new Jimp({
+      width: 256,
+      height: 192,
+      color: 0xff3366ff,
     });
+    const source = await image.getBuffer(JimpMime.png);
 
     const optimized = await optimizeSpiritImage(source);
 

@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import Jimp from "jimp";
+import { Jimp, JimpMime, ResizeStrategy } from "jimp";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname, "../..");
 const ELEMENT_SLUGS = {
@@ -99,13 +99,12 @@ export async function optimizeSpiritImage(buffer, maxDimension = 128) {
   const targetWidth = Math.max(1, Math.round(width * scale));
   const targetHeight = Math.max(1, Math.round(height * scale));
   const image = await Jimp.read(buffer);
-  image.resize(targetWidth, targetHeight, Jimp.RESIZE_BICUBIC);
-  return new Promise((resolve, reject) => {
-    image.getBuffer(Jimp.MIME_PNG, (error, output) => {
-      if (error) reject(error);
-      else resolve(output);
-    });
+  image.resize({
+    w: targetWidth,
+    h: targetHeight,
+    mode: ResizeStrategy.BICUBIC,
   });
+  return image.getBuffer(JimpMime.png);
 }
 
 export function resolvePublicAssetPath(localFile) {
