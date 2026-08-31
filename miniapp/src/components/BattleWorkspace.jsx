@@ -12,6 +12,7 @@ import {
   applyBattleActivation,
   applyBalanceTraitTrigger,
 } from "../shared/state/battle-activation.js";
+import { isPureStatusSkill } from "../shared/domain/skill-status-effects.js";
 import { createInitialState } from "../shared/state/defaults.js";
 import {
   selectSpirit,
@@ -19,6 +20,9 @@ import {
 } from "../shared/state/calculator-session.js";
 import {
   createResultActionRecord,
+  hasPersistedStatusAction,
+  persistStatusAction,
+  restorePersistedStatusAction,
   restoreResultAction,
 } from "../state/result-action-history.js";
 import { createUndoHistory } from "../state/undo-history.js";
@@ -26,6 +30,7 @@ import { createCalculationView } from "../view-models/calculation.js";
 import { createConditionSummary } from "../view-models/condition-summary.js";
 import { createDirectionTraitViews } from "../view-models/traits.js";
 import { createResultActions } from "../view-models/result-actions.js";
+import { createShareSummary } from "../view-models/share-summary.js";
 import { createSkillPresentation } from "../view-models/skill-presentation.js";
 import { getSkill, getSkillChoices } from "../view-models/skills.js";
 import CombatantCard from "./CombatantCard.jsx";
@@ -104,6 +109,15 @@ function selectedSlot(configuration, directionState, mode) {
     : configuration.skills.single;
 }
 
+function skillForResultAction(snapshot, state, action) {
+  if (action?.kind !== "skill") return null;
+  const skills = state?.sides?.[action.side]?.skills;
+  const entry = action.mode === "single"
+    ? skills?.single
+    : skills?.four?.[action.slotIndex];
+  return getSkill(snapshot, entry);
+}
+
 function presentationForSide({
   calculation,
   configuration,
@@ -139,6 +153,7 @@ function presentationForSide({
 }
 
 export default function BattleWorkspace({
+  compactDemo = true,
   configPresetsBySpirit = {},
   favoriteIds = [],
   onFavoriteToggle,
@@ -162,6 +177,7 @@ export default function BattleWorkspace({
     limit: 50,
   }));
   const resultActionHistoryRef = useRef(new Map());
+  const statusAutoTriggerOptOutRef = useRef(new Set());
   const resultTriggerRef = useRef(null);
   const state = useSyncExternalStore(
     store.subscribe,
@@ -196,7 +212,8 @@ export default function BattleWorkspace({
     : activeDirectionState.context;
   const conditionDirection = state.mode === "four"
     ? {
-        hitCount: selectedSlotDetails.hitCount ?? 1,
+        hitCount: selectedSlotDetails.hitCount,
+        statusTriggerCount: selectedSlotDetails.statusTriggerCount,
         overrides: selectedSlotDetails.overrides ?? {},
       }
     : activeDirectionState;
@@ -211,6 +228,44 @@ export default function BattleWorkspace({
     snapshot,
     state,
     traitViews,
+  });
+  const selectedStatusAction = isPureStatusSkill(selectedSkill)
+    ? [
+        ...(resultActions.defense ?? []),
+        ...(resultActions.modifiers ?? []),
+      ].find((action) =>
+        action.kind === "skill" &&
+        action.mode === state.mode &&
+        action.side === activeSide &&
+        action.slotIndex === (state.mode === "four"
+          ? activeDirectionState.selectedSkillIndex
+          : 0)
+      ) ?? null
+    : null;
+  const restoredStatusAction = selectedStatusAction
+    ? restorePersistedStatusAction(state, selectedStatusAction)
+    : null;
+  const persistedStatusAction = selectedStatusAction
+    ? hasPersistedStatusAction(state, selectedStatusAction)
+    : false;
+  const activeActionKeys = [...resultActionHistoryRef.current.keys()];
+  if (
+    selectedStatusAction &&
+    (restoredStatusAction || persistedStatusAction) &&
+    !activeActionKeys.includes(selectedStatusAction.key)
+  ) {
+    activeActionKeys.push(selectedStatusAction.key);
+  }
+  const selectedStatusActionActive = selectedStatusAction
+    ? activeActionKeys.includes(selectedStatusAction.key)
+    : false;
+  const selectedStatusActionKey = selectedStatusAction?.key ?? null;
+  const shareSummary = createShareSummary({
+    actions: resultActions,
+    activeActionKeys,
+    direction,
+    snapshot,
+    state,
   });
   const conditionSummary = createConditionSummary({
     direction,
@@ -321,15 +376,6 @@ export default function BattleWorkspace({
       marks: initialState.marks,
       negativeStatuses: initialState.negativeStatuses,
     };
-  }
-
-  function swapSides() {
-    recordQuickUndo();
-    store.dispatch({ type: "sides/swap" });
-    store.dispatch({
-      type: "state/replace",
-      value: resetBattleState(),
-    });
   }
 
   function setNature(side, value) {
@@ -460,14 +506,29 @@ export default function BattleWorkspace({
     });
   }
 
-  function applyResultAction(action) {
+  function applyResultAction(action, { automatic = false } = {}) {
     const history = resultActionHistoryRef.current;
-    const previousRecord = history.get(action.key);
+    let previousRecord = history.get(action.key);
+    if (!previousRecord && action.kind === "skill") {
+      previousRecord = restorePersistedStatusAction(store.getState(), action);
+      if (previousRecord) {
+        history.set(action.key, previousRecord);
+      } else if (hasPersistedStatusAction(store.getState(), action)) {
+        setActionFeedback({
+          actionKey: action.key,
+          message: "状态已被其他条件修改，请在战斗条件中调整后再触发",
+        });
+        return;
+      }
+    }
     if (previousRecord) {
       const restored = restoreResultAction(store.getState(), previousRecord);
       if (restored.restored) {
         dispatchWithUndo({ type: "state/replace", value: restored.state });
         history.delete(action.key);
+        if (!automatic && action.kind === "skill") {
+          statusAutoTriggerOptOutRef.current.add(action.key);
+        }
         setActionFeedback({
           actionKey: action.key,
           message: `${action.name}触发已取消`,
@@ -479,6 +540,10 @@ export default function BattleWorkspace({
         });
       }
       return;
+    }
+
+    if (!automatic && action.kind === "skill") {
+      statusAutoTriggerOptOutRef.current.delete(action.key);
     }
 
     const beforeState = store.getState();
@@ -524,10 +589,19 @@ export default function BattleWorkspace({
       state: beforeState,
     });
     if (result.applied) {
-      dispatchWithUndo({ type: "state/replace", value: result.state });
+      const activatedState = isPureStatusSkill(
+        skillForResultAction(snapshot, beforeState, action),
+      )
+        ? persistStatusAction({
+            action,
+            afterState: result.state,
+            beforeState,
+          })
+        : result.state;
+      dispatchWithUndo({ type: "state/replace", value: activatedState });
       history.set(
         action.key,
-        createResultActionRecord(action.key, beforeState, result.state),
+        createResultActionRecord(action.key, beforeState, activatedState),
       );
       setActionFeedback({
         actionKey: action.key,
@@ -543,6 +617,111 @@ export default function BattleWorkspace({
       });
     }
   }
+
+  function updateStatusParameter(action, parameter, value, label) {
+    const count = Math.min(99, Math.max(1, Math.floor(Number(value) || 1)));
+    const history = resultActionHistoryRef.current;
+    let previousRecord = history.get(action?.key);
+    if (!previousRecord && action) {
+      previousRecord = restorePersistedStatusAction(store.getState(), action);
+      if (previousRecord) history.set(action.key, previousRecord);
+    }
+    if (!action || !previousRecord) {
+      if (action && hasPersistedStatusAction(store.getState(), action)) {
+        setActionFeedback({
+          actionKey: action.key,
+          message: "状态已被其他条件修改，请在战斗条件中调整后再触发",
+        });
+        return;
+      }
+      updateSkillDirection({ [parameter]: count });
+      return;
+    }
+
+    const restored = restoreResultAction(store.getState(), previousRecord);
+    if (!restored.restored) {
+      updateSkillDirection({ [parameter]: count });
+      setActionFeedback({
+        actionKey: action.key,
+        message: `状态已变化，${label}已更新；请重新触发后查看累计效果`,
+      });
+      return;
+    }
+
+    const baseState = restored.state;
+    if (action.mode === "single") {
+      const actionDirection = action.side === "attacker" ? "forward" : "reverse";
+      baseState.directions[actionDirection] = {
+        ...baseState.directions[actionDirection],
+        [parameter]: count,
+      };
+    } else {
+      const entry = baseState.sides[action.side].skills.four[action.slotIndex];
+      baseState.sides[action.side].skills.four[action.slotIndex] = {
+        ...(entry && typeof entry === "object" ? entry : { skillId: entry }),
+        [parameter]: count,
+      };
+    }
+
+    const updatedCalculation = createCalculationView(snapshot, baseState, direction);
+    const reapplied = applyBattleActivation({
+      calculation: {
+        [direction]: { results: updatedCalculation.rows },
+      },
+      side: action.side,
+      skillIndex: action.slotIndex,
+      skillMode: action.mode,
+      snapshot,
+      state: baseState,
+    });
+    if (!reapplied.applied) {
+      dispatchWithUndo({ type: "state/replace", value: baseState });
+      history.delete(action.key);
+      setActionFeedback({
+        actionKey: action.key,
+        message: reapplied.reason ?? "当前状态无法重新触发",
+      });
+      return;
+    }
+    const activatedState = persistStatusAction({
+      action,
+      afterState: reapplied.state,
+      beforeState: baseState,
+    });
+    dispatchWithUndo({ type: "state/replace", value: activatedState });
+    history.set(
+      action.key,
+      createResultActionRecord(action.key, baseState, activatedState),
+    );
+    setActionFeedback({
+      actionKey: action.key,
+      message: parameter === "statusTriggerCount"
+        ? `${action.name}已按 ${count} 次触发更新`
+        : `${action.name}已按每次 ${count} 连击更新`,
+    });
+  }
+
+  function updateStatusTriggerCount(action, value) {
+    updateStatusParameter(action, "statusTriggerCount", value, "触发次数");
+  }
+
+  function updateStatusHitCount(action, value) {
+    updateStatusParameter(action, "hitCount", value, "每次连击数");
+  }
+
+  useEffect(() => {
+    if (
+      activeLayer !== "result" ||
+      !selectedStatusAction ||
+      selectedStatusActionActive ||
+      statusAutoTriggerOptOutRef.current.has(selectedStatusAction.key)
+    ) return;
+    applyResultAction(selectedStatusAction, { automatic: true });
+  }, [
+    activeLayer,
+    selectedStatusActionKey,
+    selectedStatusActionActive,
+  ]);
 
   function closeResults() {
     setActiveLayer(null);
@@ -577,7 +756,11 @@ export default function BattleWorkspace({
   }
 
   return (
-    <View className="battle-workspace">
+    <View
+      className={compactDemo
+        ? "battle-workspace battle-workspace--compact-demo"
+        : "battle-workspace"}
+    >
       <View className="workspace-layout">
         <View className="workspace-layout__main">
           <View aria-label="对战对象" className="battle-workspace__duel">
@@ -599,7 +782,11 @@ export default function BattleWorkspace({
               spirit={attacker}
               spirits={snapshot.spirits ?? []}
             />
-            <DirectionSwitch onSwap={swapSides} />
+            <DirectionSwitch
+              onSwap={() => setDirection(
+                direction === "forward" ? "reverse" : "forward",
+              )}
+            />
             <CombatantCard
               active={direction === "reverse"}
               favorite={favoriteIds.includes(defender?.id)}
@@ -618,23 +805,6 @@ export default function BattleWorkspace({
               spirit={defender}
               spirits={snapshot.spirits ?? []}
             />
-          </View>
-
-          <View className="calculation-direction calculation-direction--a11y">
-            <Button
-              aria-label="查看攻击方攻击结果"
-              aria-pressed={direction === "forward"}
-              onClick={() => setDirection("forward")}
-            >
-              攻击方 → 防守方
-            </Button>
-            <Button
-              aria-label="查看防守方攻击结果"
-              aria-pressed={direction === "reverse"}
-              onClick={() => setDirection("reverse")}
-            >
-              防守方 → 攻击方
-            </Button>
           </View>
 
           <View aria-label="双方快速配置" className="configuration-grid">
@@ -671,6 +841,16 @@ export default function BattleWorkspace({
               </View>
             ))}
           </View>
+
+          {compactDemo ? (
+            <ActiveAbilityStageBar
+              direction={direction}
+              onChange={(role, value) => updateDirection(direction, {
+                overrides: { [`${role}LevelStage`]: value },
+              })}
+              state={activeDirectionState}
+            />
+          ) : null}
 
           {teamAnalysisEnabled ? (
             <Button
@@ -888,13 +1068,15 @@ export default function BattleWorkspace({
                 onWeatherChange={setGlobalWeather}
                 showThunder={negativeStatusEnabled}
               />
-              <ActiveAbilityStageBar
-                direction={direction}
-                onChange={(role, value) => updateDirection(direction, {
-                  overrides: { [`${role}LevelStage`]: value },
-                })}
-                state={activeDirectionState}
-              />
+              {!compactDemo ? (
+                <ActiveAbilityStageBar
+                  direction={direction}
+                  onChange={(role, value) => updateDirection(direction, {
+                    overrides: { [`${role}LevelStage`]: value },
+                  })}
+                  state={activeDirectionState}
+                />
+              ) : null}
               {negativeStatusEnabled ? (
                 <NegativeStatusEditor
                   onChange={(side, key, value) => dispatchWithUndo({
@@ -951,8 +1133,9 @@ export default function BattleWorkspace({
 
       <ResultSheet
         actions={resultActions}
-        activeActionKeys={[...resultActionHistoryRef.current.keys()]}
+        activeActionKeys={activeActionKeys}
         actionFeedback={actionFeedback}
+        hiddenActionKeys={selectedStatusAction ? [selectedStatusAction.key] : []}
         onActionControlChange={updateResultActionControl}
         onApplyAction={applyResultAction}
         onClose={closeResults}
@@ -974,12 +1157,26 @@ export default function BattleWorkspace({
         open={resultOpen}
         selectedIndex={activeDirectionState.selectedSkillIndex}
         shareCompleteness={shareCompleteness}
-        showSkillConditions={state.mode === "four"}
+        shareSummary={shareSummary}
+        showSkillConditions={Boolean(selectedSkill)}
         showTypeAnalysis={showTypeAnalysis}
         skillConditionContext={conditionContext}
         skillConditionDirection={conditionDirection}
         skillConditionPresentation={activePresentation}
         skillConditionSkill={selectedSkill}
+        skillConditionStatusActivation={selectedStatusAction ? {
+          active: selectedStatusActionActive,
+          available: true,
+          onToggle: () => applyResultAction(selectedStatusAction),
+          onTriggerCountChange: (count) => updateStatusTriggerCount(
+            selectedStatusAction,
+            count,
+          ),
+          onHitCountChange: (count) => updateStatusHitCount(
+            selectedStatusAction,
+            count,
+          ),
+        } : null}
         traitDamageHitCount={activeDirectionState.traitDamageHitCount}
         view={calculation}
       />

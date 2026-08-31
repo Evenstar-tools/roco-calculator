@@ -114,12 +114,15 @@ describe("result action view model", () => {
     expect(actions.defense.map((item) => item.name)).toEqual(
       expect.arrayContaining(["羽翼庇护", "坚守"]),
     );
+    expect(actions.defense.find((item) => item.name === "羽翼庇护"))
+      .toMatchObject({ triggerHint: "防御技能触发后按本次应对结算" });
     expect(actions.modifiers).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           kind: "trait",
           name: "勇猛",
           source: "特性",
+          triggerHint: "开启“主动触发”后按当前参数结算",
         }),
       ]),
     );
@@ -143,10 +146,29 @@ describe("result action view model", () => {
       expect.objectContaining({ mode: "single", name: "羽翼庇护" }),
     ]);
     expect([
-      ...actions.status,
       ...actions.defense,
       ...actions.modifiers,
     ].filter((item) => item.kind === "skill")).toHaveLength(1);
+  });
+
+  test("merges former status actions into modifiers", () => {
+    const snapshot = snapshotFixture();
+    const state = createInitialState(snapshot);
+    state.mode = "four";
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.attacker.skills.four = ["steam", null, null, null];
+
+    const actions = createResultActions({
+      direction: "forward",
+      snapshot,
+      state,
+      traitViews: {},
+    });
+
+    expect(actions).not.toHaveProperty("status");
+    expect(actions.modifiers).toEqual([
+      expect.objectContaining({ name: "蒸汽进行曲" }),
+    ]);
   });
 
   test("groups all controls from one trait into a single action card", () => {

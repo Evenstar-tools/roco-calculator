@@ -121,6 +121,7 @@ export default function IndexPage({ services }) {
   const autosave = useRef(null);
   const loadId = useRef(0);
   const router = useRouter();
+  const compactDemo = router?.params?.legacyLayout !== "1";
   const sharePayload = router?.params?.share;
   const shareMessage = useRef({
     title: "洛克计算器 · S3季中",
@@ -185,7 +186,7 @@ export default function IndexPage({ services }) {
       const negativeStatusEnabled =
         pageServices.persistence?.getNegativeStatusEnabled?.() ?? false;
       const quickUndoEnabled =
-        pageServices.persistence?.getQuickUndoEnabled?.() ?? false;
+        pageServices.persistence?.getQuickUndoEnabled?.() ?? true;
       const quickUndoPosition =
         pageServices.persistence?.getQuickUndoPosition?.() ?? null;
       const teamAnalysisEnabled =
@@ -616,7 +617,7 @@ export default function IndexPage({ services }) {
   }
 
   return (
-    <View className="page">
+    <View className={compactDemo ? "page page--compact-demo" : "page"}>
       <AppHeader
         commonConfigCount={pageState.configLibrary.entries.length}
         commonConfigStatus={
@@ -652,6 +653,7 @@ export default function IndexPage({ services }) {
         />
       ) : null}
       <BattleWorkspace
+        compactDemo={compactDemo}
         configPresetsBySpirit={configPresetsBySpirit(
           pageState.configLibrary.entries,
         )}

@@ -17,7 +17,7 @@ function readJson(relativePath) {
 describe("desktop v1.6.3 core and v1.6.4 release miniapp parity", () => {
   test("keeps the desktop and miniapp release versions explicit", () => {
     expect(readJson("package.json").version).toBe("1.6.4");
-    expect(readJson("miniapp/package.json").version).toBe("1.1.4");
+    expect(readJson("miniapp/package.json").version).toBe("1.1.5");
   });
 
   test.each([

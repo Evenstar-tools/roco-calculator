@@ -666,7 +666,8 @@ describe("mini program skill workflow", () => {
         name: /查看闪燃伤害/u,
       }),
     );
-    fireEvent.click(screen.getByRole("button", { name: "展开技能参数" }));
+    expect(screen.getByRole("button", { name: "技能参数" }))
+      .toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: "触发应对" }));
     fireEvent.input(screen.getByLabelText("静态威力"), {
       target: { value: "95" },
@@ -690,7 +691,7 @@ describe("mini program skill workflow", () => {
     expect(store.getState().directions.forward.context).toEqual({});
   });
 
-  test("edits the selected four-skill slot from an on-demand result parameter section", () => {
+  test("edits the selected four-skill slot from the always-visible result parameter tab", () => {
     const snapshot = createSnapshot();
     const store = createCalculatorStore(snapshot);
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
@@ -700,8 +701,8 @@ describe("mini program skill workflow", () => {
       name: /查看烈焰冲击伤害/u,
     })[0]);
 
-    expect(screen.queryByLabelText("静态威力")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "展开技能参数" }));
+    expect(screen.getByRole("button", { name: "技能参数" }))
+      .toHaveAttribute("aria-pressed", "true");
     fireEvent.input(screen.getByLabelText("静态威力"), {
       target: { value: "92" },
     });
@@ -782,13 +783,12 @@ describe("mini program skill workflow", () => {
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
     fireEvent.click(
-      screen.getByRole("button", { name: "查看防守方攻击结果" }),
+      screen.getByRole("button", { name: "切换计算方向" }),
     );
 
     expect(store.getState().sides).toBe(before);
-    expect(
-      screen.getAllByText("防守方 → 攻击方"),
-    ).not.toHaveLength(0);
+    expect(screen.getByLabelText("防守方宠物摘要"))
+      .toHaveAttribute("aria-pressed", "true");
     expect(screen.getAllByText("潮汐冲击")).not.toHaveLength(0);
     expect(screen.getByLabelText("确定性伤害")).not.toBeEmptyDOMElement();
   });

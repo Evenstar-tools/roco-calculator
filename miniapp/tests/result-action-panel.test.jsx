@@ -34,10 +34,8 @@ function actionsFixture() {
         name: "蒸汽进行曲",
         source: "技能",
       },
-    ],
-    status: [
       {
-        category: "status",
+        category: "modifiers",
         control: {
           canonicalKey: "activated",
           defaultValue: false,
@@ -98,6 +96,7 @@ describe("result action panel", () => {
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "增减" }));
     fireEvent.click(
       screen.getByRole("button", { name: "触发勇猛" }),
     );
@@ -127,12 +126,13 @@ describe("result action panel", () => {
 
     render(
       <ResultActionPanel
-        actions={{ defense: [], modifiers: [action], status: [] }}
+        actions={{ defense: [], modifiers: [action] }}
         onApplyAction={() => {}}
         onControlChange={() => {}}
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "增减" }));
     const toggle = screen.getByRole("button", { name: "触发应对状态" });
     expect(toggle.parentElement)
       .toHaveClass("result-actions__control-slot--boolean");
@@ -164,20 +164,42 @@ describe("result action panel", () => {
       .toHaveAttribute("aria-pressed", "true");
   });
 
-  test("opens the first non-empty category instead of an empty status tab", () => {
-    const actions = actionsFixture();
-    actions.status = [];
+  test("opens skill parameters first and removes the duplicate status category", () => {
     render(
       <ResultActionPanel
-        actions={actions}
+        actions={actionsFixture()}
+        onApplyAction={() => {}}
+        onControlChange={() => {}}
+        parameterContent={<span>应对攻击已开启</span>}
+        parameterSummary="烈焰冲击"
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "技能参数" }))
+      .toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("应对攻击已开启")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "状态" }))
+      .not.toBeInTheDocument();
+  });
+
+  test("explains an empty defense or modifier category by its future trigger types", () => {
+    render(
+      <ResultActionPanel
+        actions={{ defense: [], modifiers: [] }}
         onApplyAction={() => {}}
         onControlChange={() => {}}
       />,
     );
 
-    expect(screen.getByRole("button", { name: "防御" }))
-      .toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByLabelText("羽翼庇护触发项")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "防御" }));
+    expect(screen.getByText(
+      "暂无防御类效果。可触发：防御技能、防守特性、应对成功后的附加增益。",
+    )).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "增减" }));
+    expect(screen.getByText(
+      "暂无增减类效果。可触发：状态技能、攻击特性，以及能力或威力变化效果。",
+    )).toBeInTheDocument();
   });
 
   test("renders one trait card with all of its parameter controls", () => {
@@ -217,12 +239,13 @@ describe("result action panel", () => {
     };
     render(
       <ResultActionPanel
-        actions={{ defense: [], modifiers: [action], status: [] }}
+        actions={{ defense: [], modifiers: [action] }}
         onApplyAction={() => {}}
         onControlChange={onControlChange}
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "增减" }));
     expect(screen.getAllByLabelText("裁决触发项")).toHaveLength(1);
     expect(screen.getByLabelText("触发层数")).toHaveValue(3);
     expect(screen.getByLabelText("每层攻防")).toHaveValue(20);
@@ -259,12 +282,13 @@ describe("result action panel", () => {
     };
     render(
       <ResultActionPanel
-        actions={{ defense: [], modifiers: [action], status: [] }}
+        actions={{ defense: [], modifiers: [action] }}
         onApplyAction={() => {}}
         onControlChange={onControlChange}
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "增减" }));
     fireEvent.click(screen.getByRole("button", { name: "触发层数减少" }));
     expect(onControlChange).toHaveBeenLastCalledWith(action, control, 1);
 
@@ -287,8 +311,8 @@ describe("result action panel", () => {
     };
     render(
       <ResultActionPanel
-        actions={{
-          defense: [],
+          actions={{
+            defense: [],
           modifiers: [{
             category: "modifiers",
             controls: [control],
@@ -299,13 +323,13 @@ describe("result action panel", () => {
             source: "特性",
             values: { "trait.judgment.stacks": 0 },
           }],
-          status: [],
-        }}
+          }}
         onApplyAction={() => {}}
         onControlChange={() => {}}
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "增减" }));
     expect(screen.getByRole("button", { name: "触发层数减少" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "触发层数增加" })).toBeEnabled();
   });

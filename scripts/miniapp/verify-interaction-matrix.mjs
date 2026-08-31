@@ -342,8 +342,14 @@ async function verifyPhone() {
   );
   await page.getByLabel("导入PVP热门配置").waitFor({ state: "visible" });
   await page.getByLabel("导入PVP热门配置").click();
-  await page.getByText("已导入 193 只，选择时自动应用", { exact: true })
-    .waitFor({ state: "visible" });
+  const currentConfigAction = page.getByLabel("PVP热门配置已更新");
+  await currentConfigAction.waitFor({ state: "visible" });
+  assert.equal(await currentConfigAction.getAttribute("disabled"), "");
+  assert.match(
+    await currentConfigAction.innerText(),
+    /当前\s*\d+\s*只，已是最新/u,
+    "phone settings: imported config count or current state is missing",
+  );
   const memorySwitch = page.getByRole("switch", { name: "配置记忆" });
   assert.equal(await memorySwitch.getAttribute("aria-checked"), "true");
   await memorySwitch.click();
@@ -363,6 +369,8 @@ async function verifyPhone() {
   await negativeStatusSwitch.click();
   assert.equal(await negativeStatusSwitch.getAttribute("aria-checked"), "true");
   const quickUndoSwitch = page.getByRole("switch", { name: "快捷撤回" });
+  assert.equal(await quickUndoSwitch.getAttribute("aria-checked"), "true");
+  await quickUndoSwitch.click();
   assert.equal(await quickUndoSwitch.getAttribute("aria-checked"), "false");
   await quickUndoSwitch.click();
   assert.equal(await quickUndoSwitch.getAttribute("aria-checked"), "true");
@@ -493,11 +501,8 @@ async function verifyPhone() {
   await page.locator(".skill-picker__option").first().click();
   await page.locator(".skill-picker__sheet").waitFor({ state: "hidden" });
 
-  setStep("phone battle conditions");
-  await page.locator(".conditions-ribbon__main").click();
-  await page.locator(".conditions-sheet").waitFor({ state: "visible" });
-  await assertSurfaceInsideViewport(page, ".conditions-sheet", "phone conditions sheet");
-  const stageButtonColors = await page.locator(".ability-stage__button")
+  setStep("phone active ability stages");
+  const stageButtonColors = await page.locator(".active-ability-stage__button")
     .evaluateAll((buttons) => buttons.map((button) => getComputedStyle(button).color));
   assert.ok(
     stageButtonColors.every((color) => !color.includes("255, 255, 255")),
@@ -505,6 +510,10 @@ async function verifyPhone() {
   );
   await page.getByLabel("当前攻击等级提高一级").click();
   await page.getByLabel("当前攻击等级降低一级").click();
+  setStep("phone battle conditions");
+  await page.locator(".conditions-ribbon__main").click();
+  await page.locator(".conditions-sheet").waitFor({ state: "visible" });
+  await assertSurfaceInsideViewport(page, ".conditions-sheet", "phone conditions sheet");
   setStep("phone battle conditions target HP");
   await fillTaroInput(page.getByLabel("目标当前生命"), "400");
   setStep("phone battle conditions weather");

@@ -149,7 +149,7 @@ describe("DirectionSwitch", () => {
   test("uses a real exchange icon instead of wrapping text", () => {
     render(<DirectionSwitch onSwap={() => {}} />);
 
-    const button = screen.getByRole("button", { name: "切换攻守配置" });
+    const button = screen.getByRole("button", { name: "切换计算方向" });
     expect(within(button).getByRole("img", { name: "交换攻守" }))
       .toBeInTheDocument();
     expect(button).not.toHaveTextContent("切换攻守");
@@ -433,7 +433,7 @@ describe("BattleWorkspace combatants", () => {
     });
   });
 
-  test("swaps configurations while attack remains red and defense remains blue", () => {
+  test("switches calculation direction without swapping configurations", () => {
     const snapshot = {
       meta: { id: "data-v1", rulesVersion: "rules-v1" },
       spirits,
@@ -452,18 +452,20 @@ describe("BattleWorkspace combatants", () => {
     });
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "切换攻守配置" }));
+    fireEvent.click(screen.getByRole("button", { name: "切换计算方向" }));
 
     const attacker = screen.getByLabelText("攻击方配置");
     const defender = screen.getByLabelText("防守方配置");
     expect(attacker).toHaveClass("combatant-card--attacker");
-    expect(attacker).toHaveTextContent("水灵");
+    expect(attacker).toHaveTextContent("音速犬");
     expect(defender).toHaveClass("combatant-card--defender");
-    expect(defender).toHaveTextContent("音速犬");
+    expect(defender).toHaveTextContent("水灵");
     expect(store.getState().directions.forward).toMatchObject({
-      currentHp: null,
-      hitCount: 1,
-      overrides: {},
+      currentHp: 1,
+      hitCount: 9,
+      overrides: { attackLevelStage: 8, basePower: 999 },
     });
+    expect(screen.getByLabelText("防守方宠物摘要"))
+      .toHaveAttribute("aria-pressed", "true");
   });
 });

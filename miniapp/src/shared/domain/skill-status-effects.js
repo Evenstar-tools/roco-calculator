@@ -4,6 +4,7 @@ import {
   projectTriggerContext,
 } from "./trigger-controls.js";
 import { resolveSkillMarkApplications } from "./marks.js";
+import { getDefaultHitCount } from "./skill-effects.js";
 
 const booleanInput = (key, label) => ({
   defaultValue: false,
@@ -459,6 +460,116 @@ function normalizeDeltas(deltas = {}) {
   };
 }
 
+export function isPureStatusSkill(skill) {
+  return skill?.category === "status" &&
+    Math.max(0, Number(skill?.basePower) || 0) === 0;
+}
+
+function repeatableStatusEffect(effect) {
+  if (!effect) return false;
+  return ![
+    "conditional",
+    "inputs",
+    "operations",
+    "ownAttackPerStack",
+    "ownDefensePerStack",
+    "requiresCounter",
+    "resolve",
+    "stackKey",
+  ].some((key) => Boolean(effect[key]));
+}
+
+export function supportsRepeatedStatusTrigger(skill) {
+  return isPureStatusSkill(skill) &&
+    repeatableStatusEffect(getSkillStatusEffect(skill));
+}
+
+export function hasStatusHitCountCoefficient(skill) {
+  if (!isPureStatusSkill(skill)) return false;
+  const effect = getSkillStatusEffect(skill);
+  return Boolean(
+    effect && (
+      Number(effect.defaultHitCount ?? 0) > 0 ||
+      Number(effect.ownAttackPerHit ?? 0) !== 0
+    ),
+  );
+}
+
+function triggerCount(value) {
+  return Math.min(99, Math.max(1, Math.floor(Number(value) || 1)));
+}
+
+function multiplyDeltas(deltas, count) {
+  if (count === 1) return deltas;
+  return Object.fromEntries(
+    Object.entries(deltas).map(([key, value]) => [key, value * count]),
+  );
+}
+
+const STATUS_DELTA_LABELS = Object.freeze([
+  ["ownAttack", "己方双攻", "层"],
+  ["ownDefense", "己方双防", "层"],
+  ["ownFixedPower", "全技能威力", ""],
+  ["ownHitCountAdd", "己方连击", ""],
+  ["ownSpeedFlat", "己方速度", ""],
+  ["targetAttack", "敌方双攻", "层"],
+  ["targetDefense", "敌方双防", "层"],
+  ["targetFixedPower", "敌方技能威力", ""],
+  ["targetHitCountAdd", "敌方连击", ""],
+  ["targetSpeedFlat", "敌方速度", ""],
+]);
+
+function describeDeltas(deltas = {}) {
+  const labels = STATUS_DELTA_LABELS.flatMap(([key, label, unit]) => {
+    const value = Number(deltas[key] ?? 0);
+    if (!Number.isFinite(value) || value === 0) return [];
+    return [`${label} ${value > 0 ? "+" : ""}${value}${unit}`];
+  });
+  return labels.join(" · ");
+}
+
+export function getStatusSkillTriggerPreview(skill, {
+  context = {},
+  hitCount: requestedHitCount,
+  triggerCount: requestedTriggerCount = 1,
+} = {}) {
+  if (!isPureStatusSkill(skill)) return null;
+  const repeatable = supportsRepeatedStatusTrigger(skill);
+  const count = repeatable ? triggerCount(requestedTriggerCount) : 1;
+  const hitCountConfigurable = hasStatusHitCountCoefficient(skill);
+  const effect = getSkillStatusEffect(skill);
+  const defaultHitCount = Math.max(
+    1,
+    Number(effect?.defaultHitCount) || getDefaultHitCount(skill),
+  );
+  const hitCount = hitCountConfigurable
+    ? triggerCount(requestedHitCount ?? defaultHitCount)
+    : 1;
+  const unitResolution = resolveSkillStatusActivation(skill, {
+    ...context,
+    effectiveHitCount: hitCount,
+    statusTriggerCount: 1,
+  });
+  const totalResolution = repeatable
+    ? resolveSkillStatusActivation(skill, {
+        ...context,
+        effectiveHitCount: hitCount,
+        statusTriggerCount: count,
+      })
+    : unitResolution;
+  const unitEffect = describeDeltas(unitResolution?.deltas);
+  const cumulativeEffect = describeDeltas(totalResolution?.deltas);
+  return {
+    count,
+    cumulativeEffect: cumulativeEffect || "待满足触发条件",
+    defaultHitCount,
+    hitCount,
+    hitCountConfigurable,
+    repeatable,
+    unitEffect: unitEffect || "待满足触发条件",
+  };
+}
+
 const SPROUT_POSITIVE_STEPS = Object.freeze({
   ownAttack: 1,
   ownDefense: 1,
@@ -628,7 +739,7 @@ export function resolveSkillStatusActivation(skill, context = {}) {
     };
   }
 
-  const deltas = applySproutToPositiveDeltas(
+  const resolvedDeltas = applySproutToPositiveDeltas(
     normalizeDeltas(
       typeof effect.resolve === "function"
         ? effect.resolve(context)
@@ -636,6 +747,21 @@ export function resolveSkillStatusActivation(skill, context = {}) {
     ),
     context.sproutStacks,
   );
+  const useLegacyHitCountAsTrigger =
+    context.statusTriggerCount === undefined &&
+    !hasStatusHitCountCoefficient(skill);
+  const repeatedTriggerCount = supportsRepeatedStatusTrigger(skill)
+    ? triggerCount(
+      context.statusTriggerCount ??
+      (useLegacyHitCountAsTrigger ? context.effectiveHitCount : 1),
+    )
+    : 1;
+  const deltas = repeatedTriggerCount > 1
+    ? multiplyDeltas(
+        resolvedDeltas,
+        repeatedTriggerCount,
+      )
+    : resolvedDeltas;
   const operations =
     typeof effect.operations === "function" ? effect.operations(context) : {};
   if (defenseReductionPercent !== null) {

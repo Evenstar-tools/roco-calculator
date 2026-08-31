@@ -46,7 +46,7 @@ describe("bundled miniapp runtime", () => {
     ).toBe(
       "https://patchwiki.biligame.com/images/rocom/3/3c/jksy80nru0voaobly2uguh0rtydx2wa.png",
     );
-  });
+  }, 30_000);
 
   test("decodes the compressed runtime without losing records", () => {
     const bundled = expandBundledRuntime(

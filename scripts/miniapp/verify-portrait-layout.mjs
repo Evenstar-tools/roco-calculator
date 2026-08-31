@@ -578,6 +578,7 @@ try {
             return rect.left >= sheetRect.left - 0.5 &&
               rect.right <= sheetRect.right + 0.5;
           }),
+          height: sheetRect.height,
           rowsFit: rows.every((row) => {
             const rect = row.getBoundingClientRect();
             return rect.left >= sheetRect.left - 0.5 &&
@@ -590,6 +591,12 @@ try {
     assert.equal(settingsGeometry.sheetFits, true, `${viewport.name}: settings sheet scrolls horizontally`);
     assert.equal(settingsGeometry.rowsFit, true, `${viewport.name}: a settings row overflows`);
     assert.equal(settingsGeometry.controlsFit, true, `${viewport.name}: a settings action crosses the right edge`);
+    if (viewport.width < 768) {
+      assert.ok(
+        settingsGeometry.height >= viewport.height * 0.77,
+        `${viewport.name}: settings sheet is not tall enough for the primary actions`,
+      );
+    }
     await assertTouchTargets(
       page,
       ".settings-sheet__close, .settings-sheet__switch, .settings-sheet__reset",
@@ -602,6 +609,24 @@ try {
       /配置库|JSON|导入常用|配置\s*\d+/,
       `${viewport.name}: removed configuration import copy is visible`,
     );
+    assert.match(
+      settingsText ?? "",
+      /常用精灵配置[\s\S]*重置本页[\s\S]*配置记忆/u,
+      `${viewport.name}: settings primary action order is incorrect`,
+    );
+    for (const [name, expected] of [
+      ["配置记忆", "true"],
+      ["快捷撤回", "true"],
+      ["队伍防守面分析", "false"],
+      ["属性克制与打击面", "false"],
+      ["负面状态结算", "false"],
+    ]) {
+      assert.equal(
+        await page.getByRole("switch", { name }).getAttribute("aria-checked"),
+        expected,
+        `${viewport.name}: ${name} default is incorrect`,
+      );
+    }
     if (["iphone-se-1", "iphone-14", "ipad-air-portrait"].includes(viewport.name)) {
       await page.screenshot({
         path: resolve(artifactDir, `${viewport.name}-settings.png`),

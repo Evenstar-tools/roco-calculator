@@ -128,7 +128,10 @@ const ResultBar = forwardRef(function ResultBar(
               Number.isFinite(row?.hpPercent);
             const rowTone = resultTone(rowExact ? row.hpPercent : null);
             return (
-              <View className="result-bar__row" key={row?.skillId ?? index}>
+              <View
+                className="result-bar__row"
+                key={`${row?.skillId ?? "slot"}-${index}`}
+              >
                 <Text className="result-bar__row-index">{index + 1}</Text>
                 <Text className="result-bar__row-name">
                   {row?.skillName ?? `技能 ${index + 1}`}

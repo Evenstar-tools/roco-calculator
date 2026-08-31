@@ -634,10 +634,10 @@ describe("result bar and sheet", () => {
     ).toBeTruthy();
   });
 
-  test("keeps trigger adjustments before optional skill parameters", () => {
+  test("shows skill parameters as the default inline result adjustment tab", () => {
     render(
       <ResultSheet
-        actions={{ defense: [], modifiers: [], status: [] }}
+        actions={{ defense: [], modifiers: [] }}
         onClose={() => {}}
         onSelectSkill={() => {}}
         open
@@ -662,12 +662,12 @@ describe("result bar and sheet", () => {
       />,
     );
 
-    const triggerWorkbench = screen.getByLabelText("触发工作台");
-    const skillParameters = screen.getByText("技能参数");
-    expect(
-      triggerWorkbench.compareDocumentPosition(skillParameters) &
-        Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
+    const workbench = screen.getByLabelText("结果调整工作台");
+    expect(within(workbench).getByRole("button", { name: "技能参数" }))
+      .toHaveAttribute("aria-pressed", "true");
+    expect(within(workbench).getByLabelText("技能条件")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "展开技能参数" }))
+      .not.toBeInTheDocument();
   });
 
   test("keeps the compact bar focused on damage percent and moves sharing into details", () => {
@@ -817,6 +817,48 @@ describe("result bar and sheet", () => {
     expect(within(overview).getByText("70")).toBeInTheDocument();
   });
 
+  test("keeps repeated skill slots as distinct result rows", () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    render(
+      <ResultBar
+        onOpen={() => {}}
+        open={false}
+        view={{
+          attackerName: "烈焰兽",
+          defenderName: "潮汐兽",
+          rows: [
+            {
+              hpPercent: 21.7,
+              skillId: "skill-repeat",
+              skillName: "连续冲击",
+              status: "exact",
+              totalDamage: 93,
+            },
+            {
+              hpPercent: 21.7,
+              skillId: "skill-repeat",
+              skillName: "连续冲击",
+              status: "exact",
+              totalDamage: 93,
+            },
+          ],
+          selectedResult: {
+            hpPercent: 21.7,
+            skillName: "连续冲击",
+            totalDamage: 93,
+          },
+          status: "exact",
+        }}
+      />,
+    );
+
+    expect(consoleError.mock.calls.some((call) =>
+      call.some((value) => String(value).includes("same key"))
+    )).toBe(false);
+    consoleError.mockRestore();
+  });
+
   test("shows dynamic power in the skill row and selected-result detail", () => {
     const summary = "速度 500 − 430 = 70 → 威力 160";
     render(
@@ -892,6 +934,12 @@ describe("result bar and sheet", () => {
       .toBeInTheDocument();
     expect(within(sharePreview).getByText(/烈焰兽 → 潮汐兽/u))
       .toBeInTheDocument();
+    const configuration = within(sharePreview).getByLabelText("分享配置摘要");
+    expect(configuration).toHaveTextContent("攻击方配置");
+    expect(configuration).toHaveTextContent("防守方配置");
+    expect(configuration).toHaveTextContent("能力等级");
+    expect(configuration).toHaveTextContent("技能参数");
+    expect(configuration).toHaveTextContent("战斗条件");
     const shareButton = within(sharePreview).getByRole("button", {
       name: "确认分享",
     });
@@ -901,6 +949,53 @@ describe("result bar and sheet", () => {
       name: "返回修改",
     }));
     expect(screen.queryByRole("dialog", { name: "分享预览" }))
+      .not.toBeInTheDocument();
+  });
+
+  test("confirms applied skill effects and detailed trait conditions before sharing", () => {
+    render(
+      <ResultSheet
+        actions={{ defense: [], modifiers: [] }}
+        onClose={() => {}}
+        onSelectSkill={() => {}}
+        open
+        selectedIndex={0}
+        shareSummary={{
+          appliedSkillEffects: ["羽化加速已应用（全技能威力 +20）"],
+          attackStageLabel: "0",
+          attackerIvs: "个体全60",
+          attackerNature: "平衡",
+          conditions: ["先知：触发层数 1；每层双攻 50；每层速度 50"],
+          defenseStageLabel: "0",
+          defenderIvs: "个体全60",
+          defenderNature: "平衡",
+        }}
+        showSkillConditions
+        skillConditionContext={{}}
+        skillConditionDirection={{ hitCount: 1, overrides: {} }}
+        skillConditionPresentation={{ inputs: [] }}
+        skillConditionSkill={{ id: "skill-a", name: "午夜噪音" }}
+        view={{
+          attackerName: "黑猫密探",
+          defenderName: "梦想三三",
+          rows: [],
+          selectedResult: {
+            hpPercent: 49.9,
+            remainingHp: 206,
+            skillName: "午夜噪音",
+            totalDamage: 205,
+          },
+          status: "exact",
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "预览并分享" }));
+    const preview = screen.getByRole("dialog", { name: "分享预览" });
+    expect(within(preview).getByText(/羽化加速已应用/u)).toBeInTheDocument();
+    expect(within(preview).getByText(/先知：触发层数 1/u)).toBeInTheDocument();
+    expect(within(preview).queryByText("默认参数")).not.toBeInTheDocument();
+    expect(within(preview).queryByText("无额外战斗条件"))
       .not.toBeInTheDocument();
   });
 

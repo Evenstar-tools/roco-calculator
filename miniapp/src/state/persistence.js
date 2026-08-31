@@ -187,6 +187,60 @@ function sanitizeOverrides(value) {
   return sanitized;
 }
 
+function sanitizeStatusActionDirection(value) {
+  if (!isRecord(value)) return null;
+  const currentHp = finiteNumber(value.currentHp);
+  const finalDamageMultiplier = finiteNumber(value.finalDamageMultiplier);
+  const hitCount = Number.isInteger(value.hitCount) &&
+    value.hitCount >= 1 && value.hitCount <= 100
+    ? value.hitCount
+    : 1;
+  const reduction = finiteNumber(value.reduction);
+  const starfallStacks = Number.isInteger(value.starfallStacks) &&
+    value.starfallStacks >= 0 && value.starfallStacks <= 100
+    ? value.starfallStacks
+    : 0;
+  const direction = {
+    context: sanitizeContext(value.context),
+    currentHp: currentHp ?? null,
+    finalDamageMultiplier: finalDamageMultiplier ?? 1,
+    hitCount,
+    overrides: sanitizeOverrides(value.overrides),
+    reduction: reduction ?? 1,
+    starfallStacks,
+  };
+  if (
+    Number.isInteger(value.statusTriggerCount) &&
+    value.statusTriggerCount >= 1 &&
+    value.statusTriggerCount <= 99
+  ) {
+    direction.statusTriggerCount = value.statusTriggerCount;
+  }
+  return direction;
+}
+
+function sanitizeStatusActionSnapshot(value) {
+  if (!isRecord(value)) return undefined;
+  const forward = sanitizeStatusActionDirection(value.directions?.forward);
+  const reverse = sanitizeStatusActionDirection(value.directions?.reverse);
+  if (!forward || !reverse) return undefined;
+  return {
+    directions: { forward, reverse },
+    marks: normalizeMarksState(value.marks, value.directions),
+  };
+}
+
+function sanitizeStatusAction(value) {
+  if (!isRecord(value)) return undefined;
+  const actionKey = typeof value.actionKey === "string" &&
+    /^skill:(attacker|defender):(single|four):[0-6]$/u.test(value.actionKey)
+    ? value.actionKey
+    : null;
+  const before = sanitizeStatusActionSnapshot(value.before);
+  const after = sanitizeStatusActionSnapshot(value.after);
+  return actionKey && before && after ? { actionKey, after, before } : undefined;
+}
+
 function sanitizeSkillMemory(value, skillIds) {
   if (!isRecord(value)) return undefined;
   const sanitized = {};
@@ -205,6 +259,13 @@ function sanitizeSkillMemory(value, skillIds) {
       memory.hitCount <= 100
     ) {
       selected.hitCount = memory.hitCount;
+    }
+    if (
+      Number.isInteger(memory.statusTriggerCount) &&
+      memory.statusTriggerCount >= 1 &&
+      memory.statusTriggerCount <= 99
+    ) {
+      selected.statusTriggerCount = memory.statusTriggerCount;
     }
     if (isRecord(memory.context)) {
       const context = sanitizeContext(memory.context);
@@ -236,6 +297,13 @@ function sanitizeSkillEntry(entry, skillIds) {
   ) {
     selected.hitCount = entry.hitCount;
   }
+  if (
+    Number.isInteger(entry.statusTriggerCount) &&
+    entry.statusTriggerCount >= 1 &&
+    entry.statusTriggerCount <= 99
+  ) {
+    selected.statusTriggerCount = entry.statusTriggerCount;
+  }
   if (isRecord(entry.context)) {
     const context = sanitizeContext(entry.context);
     if (Object.keys(context).length) selected.context = context;
@@ -254,6 +322,8 @@ function sanitizeSkillEntry(entry, skillIds) {
   }
   const memoryBySkill = sanitizeSkillMemory(entry.memoryBySkill, skillIds);
   if (memoryBySkill) selected.memoryBySkill = memoryBySkill;
+  const statusAction = sanitizeStatusAction(entry.statusAction);
+  if (statusAction) selected.statusAction = statusAction;
   return selected;
 }
 
@@ -351,6 +421,13 @@ function repairDirection(direction, defaults) {
     } else {
       repaired[key] = direction[key] ?? fallback;
     }
+  }
+  if (
+    Number.isInteger(direction.statusTriggerCount) &&
+    direction.statusTriggerCount >= 1 &&
+    direction.statusTriggerCount <= 99
+  ) {
+    repaired.statusTriggerCount = direction.statusTriggerCount;
   }
   return repaired;
 }
@@ -464,7 +541,7 @@ function selectSideInputs(side) {
 }
 
 function selectDirectionInputs(direction) {
-  return {
+  const selected = {
     selectedSkillIndex: direction?.selectedSkillIndex,
     selectedDamageSource: direction?.selectedDamageSource,
     reduction: direction?.reduction,
@@ -480,6 +557,14 @@ function selectDirectionInputs(direction) {
       ? sanitizeOverrides(direction.overrides)
       : {},
   };
+  if (
+    Number.isInteger(direction?.statusTriggerCount) &&
+    direction.statusTriggerCount >= 1 &&
+    direction.statusTriggerCount <= 99
+  ) {
+    selected.statusTriggerCount = direction.statusTriggerCount;
+  }
+  return selected;
 }
 
 export function createPersistence({ storage }) {
@@ -518,9 +603,9 @@ export function createPersistence({ storage }) {
 
   function getQuickUndoEnabled() {
     try {
-      return storage.get(MINIAPP_QUICK_UNDO_ENABLED_KEY) === true;
+      return storage.get(MINIAPP_QUICK_UNDO_ENABLED_KEY) !== false;
     } catch {
-      return false;
+      return true;
     }
   }
 

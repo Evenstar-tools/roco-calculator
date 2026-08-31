@@ -54,20 +54,24 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留显示威力覆盖、虫群奉献、体重挡位与最终伤害倍率规则语义",
   }),
   "src/domain/skill-status-effects.js": Object.freeze({
-    mirrorHash: "692be3b976e05cf4fd544bb74b5956770d75ea98e130b77199678aec442d889d",
-    reason: "保留减压阀已使用次数输入与状态技能适配语义",
+    mirrorHash: "938bb7340974552fe079c68aa0790777e324e15b6a17074eae8f52d511343ed1",
+    reason: "保留状态技能重复触发，并区分触发次数与每次连击系数的结算和预览",
   }),
   "src/domain/trait-effects.js": Object.freeze({
     mirrorHash: "e1ef3d9481dd183d7c2b1b24d85444636cba5eda1da99697306f340cebee7211",
     reason: "保留迸发默认开启、特性层数上限与最新特性输入语义",
   }),
   "src/state/calculator-session.js": Object.freeze({
-    mirrorHash: "b297cccc2e1761d43ec6bf0d0f77873d4b44c389ec010ebe1dfb93fc4766e696",
-    reason: "保留 v1.5.7 后已验收的威力输入状态管理",
+    mirrorHash: "f1256bb7b7f2caddda017961a371d3430e6188f3d583fcdfe4bfda0322c319d9",
+    reason: "保留威力输入状态管理，并按技能记忆状态触发次数",
   }),
   "src/state/battle-activation.js": Object.freeze({
-    mirrorHash: "99bd26b9e5437fddca002b50a2bc354db0fb41d4c6c9bc5f8e8d35b6df9e0ef2",
-    reason: "保留贪得无厌加攻与自身最终生命同步写回",
+    mirrorHash: "af3de0aaf19a8a2621abe18aefccde6739db9fbe3a46517da90c865d93facd07",
+    reason: "保留既有战斗结算，并将状态触发次数传入状态效果核心",
+  }),
+  "src/state/reducer.js": Object.freeze({
+    mirrorHash: "134b98a11bfe71961af92aa4919017e3105f1bd14dd25ce56698a937d19796c1",
+    reason: "允许按技能保存和清除可选的状态触发次数",
   }),
 });
 

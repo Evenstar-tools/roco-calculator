@@ -141,6 +141,41 @@ describe("IndexPage", () => {
     ).toBeInTheDocument();
   });
 
+  test("uses the compact workspace by default and keeps a legacy rollback route", async () => {
+    const snapshot = createSnapshot();
+
+    const { container } = render(
+      <IndexPage
+        services={createServices(async () => ({ snapshot }))}
+      />,
+    );
+
+    await screen.findByText("数据 S3季中 · 41360");
+    expect(container.querySelector(".page--compact-demo")).not.toBeNull();
+    expect(container.querySelector(".battle-workspace--compact-demo"))
+      .not.toBeNull();
+    expect(screen.getByLabelText("当前计算能力等级"))
+      .toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "查看攻击方攻击结果" }))
+      .not.toBeInTheDocument();
+  });
+
+  test("keeps the former layout available as an immediate rollback", async () => {
+    const snapshot = createSnapshot();
+    __setRouterParams({ legacyLayout: "1" });
+
+    const { container } = render(
+      <IndexPage
+        services={createServices(async () => ({ snapshot }))}
+      />,
+    );
+
+    await screen.findByText("数据 S3季中 · 41360");
+    expect(container.querySelector(".page--compact-demo")).toBeNull();
+    expect(screen.queryByLabelText("当前计算能力等级"))
+      .not.toBeInTheDocument();
+  });
+
   test("registers a safe share message and restores shared calculator inputs", async () => {
     const snapshot = createSnapshot();
     const state = createInitialState(snapshot);

@@ -223,6 +223,11 @@ export function applyBattleActivation({
   const context = skillMode === "single"
     ? next.directions[selfDirection].context ?? {}
     : skillContext(entry);
+  const statusTriggerCount = skillMode === "single"
+    ? next.directions[selfDirection].statusTriggerCount
+    : entry && typeof entry === "object"
+      ? entry.statusTriggerCount
+      : undefined;
   const spirit = getSpirit(snapshot, next.sides[side]);
   const traitName = getTraitView(snapshot, spirit, "attacker")?.name;
   const choiceTrait = context.choiceTraitTriggered === true &&
@@ -245,6 +250,7 @@ export function applyBattleActivation({
     effectiveHitCount:
       calculation?.[selfDirection]?.results?.[skillIndex]?.hitCount,
     sproutStacks,
+    statusTriggerCount,
   });
 
   const sequence = buildChoiceSkillSequence({

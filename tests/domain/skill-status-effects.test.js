@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  getStatusSkillTriggerPreview,
   getSkillStatusEffectInputs,
   resolveSkillStatusActivation,
 } from "../../src/domain/skill-status-effects.js";
@@ -455,6 +456,33 @@ describe("skill status effects", () => {
     expect(resolveSkillStatusActivation(skill("花炮"))).toMatchObject({
       applied: true,
       deltas: { ownAttack: 12 },
+    });
+  });
+
+  test("花炮将触发次数与每次连击数分开结算和预览", () => {
+    expect(getStatusSkillTriggerPreview(skill("花炮", {
+      basePower: 0,
+      category: "status",
+    }), {
+      hitCount: 3,
+      triggerCount: 2,
+    })).toMatchObject({
+      count: 2,
+      cumulativeEffect: "己方双攻 +36层",
+      defaultHitCount: 2,
+      hitCount: 3,
+      hitCountConfigurable: true,
+      repeatable: true,
+      unitEffect: "己方双攻 +18层",
+    });
+    expect(resolveSkillStatusActivation(skill("花炮", {
+      basePower: 0,
+      category: "status",
+    }), {
+      effectiveHitCount: 3,
+      statusTriggerCount: 2,
+    })).toMatchObject({
+      deltas: { ownAttack: 36 },
     });
   });
 

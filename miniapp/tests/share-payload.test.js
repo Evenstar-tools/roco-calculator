@@ -144,6 +144,25 @@ function encodeFixture(value) {
 }
 
 describe("mini program share payload", () => {
+  test("round-trips status trigger count separately from skill hit count", () => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.sides.attacker.skills.four[1] = {
+      hitCount: 3,
+      skillId: "skill-b",
+      statusTriggerCount: 2,
+    };
+    state.directions.forward.statusTriggerCount = 4;
+
+    const decoded = decodeSharePayload(encodeSharePayload(state), snapshot);
+    expect(decoded.directions.forward.statusTriggerCount).toBe(4);
+    expect(decoded.sides.attacker.skills.four[1]).toEqual({
+      hitCount: 3,
+      skillId: "skill-b",
+      statusTriggerCount: 2,
+    });
+  });
+
   test("round-trips optional negative status settlement inputs", () => {
     const snapshot = createSnapshot();
     const state = createState(snapshot);

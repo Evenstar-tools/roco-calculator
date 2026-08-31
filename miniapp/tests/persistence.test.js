@@ -128,12 +128,61 @@ describe("createPersistence", () => {
     });
   });
 
-  test("defaults important feature settings to off and stores them independently", () => {
+  test("persists the minimum snapshot needed to avoid replaying a status action", () => {
+    const snapshot = createSnapshot();
+    const storage = createMemoryStorage();
+    const persistence = createPersistence({ storage });
+    const state = createConfiguredState(snapshot);
+    const actionSnapshot = {
+      directions: {
+        forward: {
+          context: {},
+          currentHp: null,
+          finalDamageMultiplier: 1,
+          hitCount: 1,
+          overrides: {},
+          reduction: 1,
+          starfallStacks: 0,
+        },
+        reverse: {
+          context: {},
+          currentHp: null,
+          finalDamageMultiplier: 1,
+          hitCount: 1,
+          overrides: {},
+          reduction: 1,
+          starfallStacks: 0,
+        },
+      },
+      marks: state.marks,
+    };
+    state.sides.attacker.skills.four[0] = {
+      skillId: "skill-a",
+      statusAction: {
+        actionKey: "skill:attacker:four:0",
+        after: actionSnapshot,
+        before: actionSnapshot,
+      },
+    };
+
+    persistence.save(state);
+
+    expect(persistence.load(snapshot).sides.attacker.skills.four[0])
+      .toMatchObject({
+        skillId: "skill-a",
+        statusAction: {
+          actionKey: "skill:attacker:four:0",
+          before: { directions: { forward: { hitCount: 1 } } },
+        },
+      });
+  });
+
+  test("defaults only configuration memory and quick undo to on", () => {
     const storage = createMemoryStorage();
     const persistence = createPersistence({ storage });
 
     expect(persistence.getNegativeStatusEnabled()).toBe(false);
-    expect(persistence.getQuickUndoEnabled()).toBe(false);
+    expect(persistence.getQuickUndoEnabled()).toBe(true);
     expect(persistence.getQuickUndoPosition()).toBeNull();
     expect(persistence.getTeamAnalysisEnabled()).toBe(false);
     persistence.setNegativeStatusEnabled(true);

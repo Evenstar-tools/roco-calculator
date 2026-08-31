@@ -7,10 +7,62 @@ function completenessLabel(value) {
   return "将发送基础配置";
 }
 
+function inputKey(input) {
+  return input.contextKey ?? input.key ?? input.id;
+}
+
+function optionLabel(input, value) {
+  return input.options?.find((option) => Object.is(option.value, value))?.label
+    ?? String(value);
+}
+
+function skillParameterLabels({ context = {}, direction = {}, presentation }) {
+  const labels = (presentation?.inputs ?? []).flatMap((input) => {
+    const value = context[inputKey(input)] ?? input.defaultValue;
+    if (input.type === "boolean") {
+      if (value === true) return [input.label];
+      return input.defaultValue === true ? [`${input.label}关闭`] : [];
+    }
+    if (Object.is(value, input.defaultValue) || value === undefined || value === "") {
+      return [];
+    }
+    return [`${input.label} ${optionLabel(input, value)}`];
+  });
+  const powerOverride = direction?.overrides?.powerOverride;
+  if (powerOverride && Number.isFinite(Number(powerOverride.value))) {
+    labels.push(
+      `${powerOverride.mode === "panel" ? "显示" : "静态"}威力 ${powerOverride.value}`,
+    );
+  }
+  const hitCount = Math.max(1, Math.floor(Number(direction?.hitCount) || 1));
+  if (hitCount > 1) labels.push(`连击 ${hitCount}`);
+  return labels.slice(0, 4);
+}
+
+function ConfigurationRow({ label, primary, secondary }) {
+  return (
+    <View className="share-preview__configuration-row">
+      <Text className="share-preview__configuration-label">{label}</Text>
+      <View className="share-preview__configuration-value">
+        <Text>{primary}</Text>
+        {secondary ? (
+          <Text className="share-preview__configuration-secondary">
+            {secondary}
+          </Text>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
 export default function SharePreviewSheet({
   completeness = "full",
   onClose,
   open,
+  skillContext,
+  skillDirection,
+  skillPresentation,
+  summary,
   view,
 }) {
   if (!open) return null;
@@ -20,6 +72,17 @@ export default function SharePreviewSheet({
     ? selected.hpPercent
     : null;
   const tone = resultTone(percent);
+  const parameterLabels = [
+    ...skillParameterLabels({
+      context: skillContext,
+      direction: skillDirection,
+      presentation: skillPresentation,
+    }),
+    ...(summary?.appliedSkillEffects ?? []),
+  ];
+  const conditionLabels = summary?.conditions?.length
+    ? summary.conditions
+    : ["无额外战斗条件"];
 
   return (
     <View className="share-preview__overlay" onClick={onClose}>
@@ -34,7 +97,7 @@ export default function SharePreviewSheet({
           <View>
             <Text className="share-preview__title">分享给好友前确认</Text>
             <Text className="share-preview__subtitle">
-              好友先看到只读快照，确认后才会载入配置
+              好友打开后先看只读结果，可自行决定是否载入配置
             </Text>
           </View>
           <Button
@@ -83,16 +146,40 @@ export default function SharePreviewSheet({
           </View>
         </View>
 
-        <View className="share-preview__included">
-          <Text className="share-preview__included-title">好友会收到</Text>
-          <View className="share-preview__included-tags">
-            <Text>双方精灵</Text>
-            <Text>性格个体</Text>
-            <Text>技能结果</Text>
-            <Text>战斗条件</Text>
+        <View aria-label="分享配置摘要" className="share-preview__configuration">
+          <View className="share-preview__configuration-heading">
+            <Text className="share-preview__included-title">本次配置</Text>
+            <Text className="share-preview__completeness">
+              {completenessLabel(completeness)}
+            </Text>
           </View>
-          <Text className="share-preview__completeness">
-            {completenessLabel(completeness)}
+          <View className="share-preview__configuration-list">
+            <ConfigurationRow
+              label="攻击方配置"
+              primary={summary?.attackerNature ?? "默认性格"}
+              secondary={summary?.attackerIvs ?? "默认个体"}
+            />
+            <ConfigurationRow
+              label="防守方配置"
+              primary={summary?.defenderNature ?? "默认性格"}
+              secondary={summary?.defenderIvs ?? "默认个体"}
+            />
+            <ConfigurationRow
+              label="能力等级"
+              primary={`攻击 ${summary?.attackStageLabel ?? "0"} · 防御 ${summary?.defenseStageLabel ?? "0"}`}
+            />
+            <ConfigurationRow
+              label="技能参数"
+              primary={(parameterLabels.length ? parameterLabels : ["默认参数"])
+                .join(" · ")}
+            />
+            <ConfigurationRow
+              label="战斗条件"
+              primary={conditionLabels.join(" · ")}
+            />
+          </View>
+          <Text className="share-preview__load-note">
+            好友只会在点击“载入配置”后替换自己当前的计算。
           </Text>
         </View>
 

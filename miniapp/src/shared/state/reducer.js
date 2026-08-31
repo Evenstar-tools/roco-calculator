@@ -13,6 +13,7 @@ const DIRECTION_INPUTS = new Set([
   "selectedDamageSource",
   "reduction",
   "hitCount",
+  "statusTriggerCount",
   "traitDamageHitCount",
   "starfallStacks",
   "finalDamageMultiplier",
@@ -349,6 +350,12 @@ export function calculatorReducer(state, action) {
         ...current,
         ...action.value,
       };
+      if (
+        Object.hasOwn(action.value, "statusTriggerCount") &&
+        action.value.statusTriggerCount === undefined
+      ) {
+        delete next.statusTriggerCount;
+      }
       if (action.value.context) {
         next.context = {
           ...current.context,

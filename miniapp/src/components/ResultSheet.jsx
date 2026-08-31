@@ -206,6 +206,7 @@ export default function ResultSheet({
   actions,
   activeActionKeys,
   actionFeedback,
+  hiddenActionKeys,
   onClose,
   onApplyAction,
   onActionControlChange,
@@ -218,12 +219,14 @@ export default function ResultSheet({
   open,
   selectedIndex,
   shareCompleteness = "full",
+  shareSummary,
   showSkillConditions = false,
   showTypeAnalysis = false,
   skillConditionContext,
   skillConditionDirection,
   skillConditionPresentation,
   skillConditionSkill,
+  skillConditionStatusActivation,
   traitDamageHitCount = 1,
   view,
 }) {
@@ -303,15 +306,10 @@ export default function ResultSheet({
             actions={actions}
             activeActionKeys={activeActionKeys}
             feedback={actionFeedback}
+            hiddenActionKeys={hiddenActionKeys}
             onApplyAction={onApplyAction}
             onControlChange={onActionControlChange}
-          />
-          {showSkillConditions ? (
-            <ConditionSection
-              className="condition-section--skill-parameters"
-              summary={skillConditionSkill?.name ?? "未选择技能"}
-              title="技能参数"
-            >
+            parameterContent={showSkillConditions ? (
               <SkillConditionEditor
                 context={skillConditionContext}
                 direction={skillConditionDirection}
@@ -320,9 +318,11 @@ export default function ResultSheet({
                 presentation={skillConditionPresentation}
                 result={result}
                 skill={skillConditionSkill}
+                statusActivation={skillConditionStatusActivation}
               />
-            </ConditionSection>
-          ) : null}
+            ) : null}
+            parameterSummary={skillConditionSkill?.name}
+          />
           {exact ? (
             <>
               {view?.rows?.length > 1 ? (
@@ -461,6 +461,10 @@ export default function ResultSheet({
           completeness={shareCompleteness}
           onClose={() => setSharePreviewOpen(false)}
           open={sharePreviewOpen}
+          skillContext={skillConditionContext}
+          skillDirection={skillConditionDirection}
+          skillPresentation={skillConditionPresentation}
+          summary={shareSummary}
           view={view}
         />
       </View>

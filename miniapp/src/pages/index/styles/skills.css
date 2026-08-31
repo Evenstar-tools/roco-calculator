@@ -193,7 +193,7 @@
   min-width: 0;
   grid-template-columns: minmax(0, 1fr) 84px;
   align-items: stretch;
-  gap: 6px;
+  gap: 0;
   border: 1px solid var(--border-neutral);
   border-radius: 10px;
   background: var(--surface-card);
@@ -447,10 +447,33 @@
   gap: 3px;
 }
 
+.active-ability-stage__label-group {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
 .active-ability-stage__label {
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 650;
+}
+
+.active-ability-stage__side {
+  font-size: 10px;
+  font-weight: var(--weight-emphasis);
+  line-height: 12px;
+  white-space: nowrap;
+}
+
+.active-ability-stage__side--attacker {
+  color: var(--attacker);
+}
+
+.active-ability-stage__side--defender {
+  color: var(--defender);
 }
 
 .active-ability-stage__stepper {
@@ -612,6 +635,84 @@
   gap: 6px;
 }
 
+.condition-editor__status-trigger {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.condition-editor__status-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.condition-editor__status-copy {
+  display: grid;
+  flex: 1 1 0;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1px;
+}
+
+.condition-editor__status-help,
+.condition-editor__status-unit-effect {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.condition-editor__status-toggle {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 62px;
+  min-height: 30px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-control);
+  background: var(--surface-card);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.condition-editor__status-toggle::after {
+  border: 0;
+}
+
+.condition-editor__status-toggle--active {
+  border-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.condition-editor__status-preview {
+  display: flex;
+  min-width: 0;
+  min-height: var(--touch-target);
+  align-items: center;
+  padding: 0 10px;
+  border-radius: var(--radius-control);
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.condition-editor__status-preview--single {
+  display: grid;
+  gap: 2px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  font-weight: 600;
+}
+
 .condition-editor__manual-fields {
   display: grid;
   min-width: 0;
@@ -620,10 +721,31 @@
   gap: 8px;
 }
 
+.condition-editor__field--cumulative {
+  grid-column: 1 / -1;
+}
+
 .condition-editor__power-modes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
+}
+
+.condition-editor__base-reference {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 2px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.condition-editor__base-reference text:last-child {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
 }
 
 .condition-editor__power-mode,
@@ -652,8 +774,14 @@
 }
 
 .condition-editor__power-heading {
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.condition-editor__field-heading {
   display: flex;
   min-width: 0;
+  min-height: 18px;
   align-items: center;
   justify-content: space-between;
   gap: 6px;
@@ -669,6 +797,7 @@
 .condition-editor__power-status {
   color: var(--text-tertiary);
   font-size: 11px;
+  line-height: 17px;
 }
 
 .battle-environment {
@@ -704,6 +833,29 @@
   font-size: 12px;
   font-weight: 650;
   line-height: 17px;
+}
+
+.condition-editor__manual-fields .condition-editor__input {
+  display: flex;
+  height: var(--touch-target);
+  min-height: var(--touch-target);
+  align-items: center;
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 680;
+  line-height: var(--touch-target);
+  text-align: center;
+}
+
+.condition-editor__manual-fields .condition-editor__input .weui-input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  line-height: 20px;
+  text-align: center !important;
 }
 
 .condition-editor__choices,

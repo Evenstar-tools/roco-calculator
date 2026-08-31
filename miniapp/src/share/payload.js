@@ -164,9 +164,18 @@ function compactSkill(entry) {
     100,
     undefined,
   );
+  const statusTriggerCount = integerInRange(
+    entry.statusTriggerCount,
+    1,
+    99,
+    undefined,
+  );
   const context = compactPublicContext(entry.context);
   const overrides = compactOverrides(entry.overrides);
   if (hitCount !== undefined && hitCount !== 1) compact.h = hitCount;
+  if (statusTriggerCount !== undefined && statusTriggerCount !== 1) {
+    compact.t = statusTriggerCount;
+  }
   if (context) compact.c = context;
   if (overrides) compact.o = overrides;
   return Object.keys(compact).length === 1 ? skillId : compact;
@@ -248,6 +257,12 @@ function compactDirection(direction) {
     100,
     1,
   );
+  const statusTriggerCount = integerInRange(
+    direction?.statusTriggerCount,
+    1,
+    99,
+    undefined,
+  );
   const starfallStacks = integerInRange(
     direction?.starfallStacks,
     0,
@@ -271,6 +286,9 @@ function compactDirection(direction) {
   if (selectedSkillIndex !== 0) compact.x = selectedSkillIndex;
   if (reduction !== 1) compact.q = reduction;
   if (hitCount !== 1) compact.h = hitCount;
+  if (statusTriggerCount !== undefined && statusTriggerCount !== 1) {
+    compact.t = statusTriggerCount;
+  }
   if (starfallStacks !== 0) compact.s = starfallStacks;
   if (finalDamageMultiplier !== 1) compact.m = finalDamageMultiplier;
   if (currentHp !== null) compact.p = currentHp;
@@ -509,6 +527,9 @@ function expandSkill(entry, allowedSkillIds) {
   if (Object.hasOwn(entry ?? {}, "h")) {
     result.hitCount = integerInRange(entry.h, 1, 100, 1);
   }
+  if (Object.hasOwn(entry ?? {}, "t")) {
+    result.statusTriggerCount = integerInRange(entry.t, 1, 99, 1);
+  }
   const context = expandPublicContext(entry?.c);
   const overrides = expandOverrides(entry?.o);
   if (context) result.context = context;
@@ -601,6 +622,9 @@ function expandDirection(raw, fallback) {
     selectedSkillIndex: integerInRange(raw?.x, 0, 6, 0),
     reduction: finiteInRange(raw?.q, 0, 1, 1),
     hitCount: integerInRange(raw?.h, 1, 100, 1),
+    ...(Object.hasOwn(raw ?? {}, "t")
+      ? { statusTriggerCount: integerInRange(raw.t, 1, 99, 1) }
+      : {}),
     starfallStacks: integerInRange(raw?.s, 0, 100, 0),
     finalDamageMultiplier: finiteInRange(raw?.m, 0, 100, 1),
     currentHp,

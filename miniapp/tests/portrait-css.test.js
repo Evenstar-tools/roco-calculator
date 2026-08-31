@@ -16,6 +16,7 @@ const styleFiles = [
   "overlays.css",
   "share.css",
   "responsive.css",
+  "compact-demo.css",
 ];
 const styles = Object.fromEntries(
   styleFiles.map((file) => [
@@ -28,6 +29,7 @@ const appHeaderSource = readSource("src/components/AppHeader.jsx");
 const battleWorkspaceSource = readSource("src/components/BattleWorkspace.jsx");
 const directionSwitchSource = readSource("src/components/DirectionSwitch.jsx");
 const conditionFieldSource = readSource("src/components/ConditionField.jsx");
+const skillConditionEditorSource = readSource("src/components/SkillConditionEditor.jsx");
 const quickControlsSource = readSource("src/components/QuickCombatantControls.jsx");
 const resultSheetSource = readSource("src/components/ResultSheet.jsx");
 
@@ -216,6 +218,32 @@ describe("reference-first responsive CSS", () => {
     );
   });
 
+  test("keeps the formal compact ability controls in one aligned row", () => {
+    const compact = styles["compact-demo.css"];
+    expect(compact).toMatch(
+      /workspace-layout__main\s*>\s*\.active-ability-stage\s*\{[\s\S]*grid-template-columns:\s*48px\s+minmax\(0,\s*1fr\)/u,
+    );
+    expect(compact).toMatch(
+      /\.battle-workspace--compact-demo\s+\.active-ability-stage__grid\s*\{[\s\S]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/u,
+    );
+    expect(compact).toMatch(
+      /\.active-ability-stage__label-group\s*\{[\s\S]*min-height:\s*44px[\s\S]*justify-content:\s*center/u,
+    );
+    expect(compact).toMatch(
+      /\.active-ability-stage__control\s*\{[\s\S]*grid-template-columns:\s*26px\s+minmax\(0,\s*1fr\)/u,
+    );
+  });
+
+  test("keeps compact target HP values on one numeric baseline", () => {
+    const compact = styles["compact-demo.css"];
+    expect(compact).toMatch(
+      /\.conditions-ribbon__health-input\s*\{[\s\S]*height:\s*44px[\s\S]*line-height:\s*44px/u,
+    );
+    expect(compact).toMatch(
+      /\.conditions-ribbon__health-max\s*\{[\s\S]*height:\s*44px[\s\S]*line-height:\s*44px/u,
+    );
+  });
+
   test("restores the dense dual-side and result-rail layout on iPad", () => {
     const responsive = styles["responsive.css"];
     expect(responsive).toMatch(/@media\s*\(min-width:\s*768px\)/u);
@@ -265,6 +293,43 @@ describe("reference-first responsive CSS", () => {
     );
     expect(styles["overlays.css"]).toMatch(
       /\.result-sheet__share::after\s*\{[^}]*pointer-events:\s*none;/su,
+    );
+  });
+
+  test("aligns share confirmation actions as two equal centered controls", () => {
+    const share = styles["share.css"];
+
+    expect(share).toMatch(
+      /\.share-preview__actions\s*\{[\s\S]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/u,
+    );
+    const actionRule = share.match(
+      /\.share-preview__primary,[\s\S]*?\.share-preview__secondary\s*\{([\s\S]*?)\}/u,
+    )?.[1] ?? "";
+    expect(actionRule).toMatch(/display:\s*flex/u);
+    expect(actionRule).toMatch(/width:\s*100%/u);
+    expect(actionRule).toMatch(/height:\s*var\(--touch-target\)/u);
+    expect(actionRule).toMatch(/align-items:\s*center/u);
+    expect(actionRule).toMatch(/justify-content:\s*center/u);
+    expect(actionRule).toMatch(/line-height:\s*1/u);
+  });
+
+  test("uses one heading baseline and centered values for manual skill parameters", () => {
+    const skills = styles["skills.css"];
+
+    expect(skillConditionEditorSource).toContain(
+      'className="condition-editor__field-heading condition-editor__power-heading"',
+    );
+    expect(skillConditionEditorSource).toContain(
+      'className="condition-editor__field-heading"',
+    );
+    expect(skills).toMatch(
+      /\.condition-editor__field-heading\s*\{[\s\S]*min-height:\s*18px[\s\S]*align-items:\s*center/u,
+    );
+    expect(skills).toMatch(
+      /\.condition-editor__manual-fields \.condition-editor__input\s*\{[\s\S]*height:\s*var\(--touch-target\)[\s\S]*line-height:\s*var\(--touch-target\)[\s\S]*text-align:\s*center/u,
+    );
+    expect(skills).toMatch(
+      /\.condition-editor__manual-fields \.condition-editor__input\s+\.weui-input\s*\{[\s\S]*width:\s*100%[\s\S]*text-align:\s*center/u,
     );
   });
 

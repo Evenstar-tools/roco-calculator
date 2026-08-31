@@ -80,13 +80,13 @@ describe("responsive battle workspace", () => {
     const store = createCalculatorStore(snapshot);
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
-    expect(screen.queryByLabelText("当前计算能力等级")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("当前计算能力等级")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
 
     expect(screen.getByText("常用条件")).toBeInTheDocument();
     expect(screen.queryByLabelText("能力等级")).not.toBeInTheDocument();
     expect(within(screen.getByRole("dialog", { name: "战斗条件" }))
-      .getByLabelText("当前计算能力等级")).toBeInTheDocument();
+      .queryByLabelText("当前计算能力等级")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "展开印记" }))
       .toHaveAttribute("aria-expanded", "false");
     expect(screen.getByRole("button", { name: "展开高级参数" }))

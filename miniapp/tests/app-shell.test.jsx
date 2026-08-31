@@ -21,12 +21,12 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
   });
 
-  test("publishes miniapp 1.1.4 against web core 1.6.3", () => {
-    expect(MINIAPP_VERSION).toBe("1.1.4");
-    expect(MINIAPP_UPDATE_DATE).toBe("2026-08-27");
+  test("publishes miniapp 1.1.5 against web core 1.6.3", () => {
+    expect(MINIAPP_VERSION).toBe("1.1.5");
+    expect(MINIAPP_UPDATE_DATE).toBe("2026-08-31");
     expect(WEB_CORE_VERSION).toBe("1.6.3");
     expect(MINIAPP_RELEASE_LABEL).toBe(
-      "小程序 v1.1.4 · 网页核心 v1.6.3",
+      "小程序 v1.1.5 · 网页核心 v1.6.3",
     );
     render(<AppHeader dataVersion="data-v1" />);
     expect(screen.getByText(MINIAPP_RELEASE_LABEL)).toBeInTheDocument();
@@ -91,9 +91,9 @@ describe("miniapp shell", () => {
     fireEvent.click(negativeStatusSwitch);
     expect(onNegativeStatusChange).toHaveBeenCalledWith(true);
     const quickUndoSwitch = screen.getByRole("switch", { name: "快捷撤回" });
-    expect(quickUndoSwitch).toHaveAttribute("aria-checked", "false");
+    expect(quickUndoSwitch).toHaveAttribute("aria-checked", "true");
     fireEvent.click(quickUndoSwitch);
-    expect(onQuickUndoChange).toHaveBeenCalledWith(true);
+    expect(onQuickUndoChange).toHaveBeenCalledWith(false);
     expect(screen.getByText("常用精灵配置")).toBeInTheDocument();
     const importButton = screen.getByRole("button", {
       name: "导入PVP热门配置",
@@ -103,12 +103,17 @@ describe("miniapp shell", () => {
     expect(onImportCommonConfig).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("button", { name: "重置本页" }))
       .toBeInTheDocument();
+    const settingsText = dialog.textContent;
+    expect(settingsText.indexOf("常用精灵配置"))
+      .toBeLessThan(settingsText.indexOf("重置本页"));
+    expect(settingsText.indexOf("重置本页"))
+      .toBeLessThan(settingsText.indexOf("配置记忆"));
     expect(screen.getByText("数据来源")).toBeInTheDocument();
     expect(screen.getByText(/BWIKI 洛克王国公开资料/u))
       .toBeInTheDocument();
     expect(screen.getByText(/1215583051/u)).toBeInTheDocument();
     expect(screen.getByText("当前版本")).toBeInTheDocument();
-    expect(screen.getByText("v1.1.4 · 更新于 2026-08-27"))
+    expect(screen.getByText("v1.1.5 · 更新于 2026-08-31"))
       .toBeInTheDocument();
   });
 

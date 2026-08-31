@@ -35,7 +35,69 @@ function stageLabel(value) {
   return stage > 0 ? `+${stage}` : String(stage);
 }
 
-export function createShareSummary({ direction = "forward", snapshot, state }) {
+function actionList(actions) {
+  return [
+    ...(actions?.defense ?? []),
+    ...(actions?.modifiers ?? []),
+  ];
+}
+
+function controlValue(action, control) {
+  return action.values?.[control.canonicalKey] ??
+    action.values?.[control.contextKey] ??
+    action.value ??
+    control.defaultValue;
+}
+
+function controlValueLabel(control, value) {
+  if (control.type === "boolean") {
+    return value === true ? control.label : `${control.label}关闭`;
+  }
+  const option = control.options?.find((candidate) =>
+    Object.is(candidate.value, value)
+  );
+  return `${control.label} ${option?.label ?? value}`;
+}
+
+function traitConditionLabels(actions) {
+  return actionList(actions)
+    .filter((action) => action.kind === "trait")
+    .flatMap((action) => {
+      const controls = action.controls ?? (action.control ? [action.control] : []);
+      const active = controls.some((control) =>
+        !Object.is(controlValue(action, control), control.defaultValue)
+      );
+      if (!active) return [];
+      return [`${action.name}：${controls
+        .map((control) => controlValueLabel(
+          control,
+          controlValue(action, control),
+        ))
+        .join("；")}`];
+    });
+}
+
+function appliedSkillEffectLabels(actions, activeActionKeys) {
+  const activeKeys = new Set(activeActionKeys ?? []);
+  return actionList(actions)
+    .filter((action) => action.kind === "skill" && activeKeys.has(action.key))
+    .map((action) => {
+      const detail = action.effectHint?.trim();
+      return `${action.name}已应用${detail ? `（${detail}）` : ""}`;
+    });
+}
+
+function uniqueLabels(labels) {
+  return [...new Set(labels.filter(Boolean))];
+}
+
+export function createShareSummary({
+  actions,
+  activeActionKeys,
+  direction = "forward",
+  snapshot,
+  state,
+}) {
   const normalizedDirection = direction === "reverse" ? "reverse" : "forward";
   const attackerSide = normalizedDirection === "reverse"
     ? state.sides.defender
@@ -53,15 +115,22 @@ export function createShareSummary({ direction = "forward", snapshot, state }) {
       normalizedDirection,
     ),
   });
+  const traitConditions = traitConditionLabels(actions);
 
   return {
+    appliedSkillEffects: appliedSkillEffectLabels(actions, activeActionKeys),
     attackerIvs: ivLabel(attackerSide),
     attackerName: spiritName(snapshot, attackerSide.spiritId),
     attackerNature: natureLabel(attackerSide),
     attackStageLabel: stageLabel(
       directionState.overrides?.attackLevelStage,
     ),
-    conditions: conditionSummary.labels,
+    conditions: uniqueLabels([
+      ...conditionSummary.labels.filter(
+        (label) => !/^特性 \d+$/u.test(label),
+      ),
+      ...traitConditions,
+    ]),
     defenderIvs: ivLabel(defenderSide),
     defenderName: spiritName(snapshot, defenderSide.spiritId),
     defenderNature: natureLabel(defenderSide),

@@ -1,0 +1,277 @@
+/*postcss-pxtransform disable*/
+
+@media (max-width: 767px) {
+  .page--compact-demo {
+    --result-bar-height: 136px;
+
+    padding-right: 6px;
+    padding-bottom: calc(var(--result-bar-height) + 2px + var(--safe-area-bottom));
+    padding-left: 6px;
+  }
+
+  .page--compact-demo .app-header-shell {
+    margin-bottom: 4px;
+  }
+
+  .page--compact-demo .app-header {
+    min-height: 40px;
+  }
+
+  .page--compact-demo .app-header__title {
+    font-size: 16px;
+  }
+
+  .battle-workspace--compact-demo .workspace-layout,
+  .battle-workspace--compact-demo .workspace-layout__main {
+    gap: 4px;
+  }
+
+  .battle-workspace--compact-demo .battle-workspace__duel {
+    gap: 3px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .battle-workspace--compact-demo .combatant-card__summary {
+    min-height: 64px;
+    gap: 5px;
+    padding: 5px;
+  }
+
+  .battle-workspace--compact-demo .combatant-card__image {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .battle-workspace--compact-demo .combatant-card__label,
+  .battle-workspace--compact-demo .combatant-card__types {
+    font-size: 9px;
+  }
+
+  .battle-workspace--compact-demo .combatant-card__name {
+    font-size: 14px;
+    -webkit-line-clamp: 1;
+  }
+
+  .battle-workspace--compact-demo .direction-switch__button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .battle-workspace--compact-demo .side-configuration {
+    padding: 4px;
+  }
+
+  .battle-workspace--compact-demo .side-configuration__heading {
+    min-height: 44px;
+    padding: 0 2px;
+    font-size: 13px;
+  }
+
+  .battle-workspace--compact-demo .quick-controls {
+    gap: 2px;
+  }
+
+  .battle-workspace--compact-demo .quick-controls__row {
+    grid-template-columns: 30px repeat(6, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .battle-workspace--compact-demo .quick-controls__row-label {
+    font-size: 11px;
+  }
+
+  .battle-workspace--compact-demo .quick-controls__option {
+    min-height: 44px;
+  }
+
+  .battle-workspace--compact-demo .quick-controls__icon-stage,
+  .battle-workspace--compact-demo .quick-controls__icon-stage .stat-icon {
+    width: 19px;
+    height: 19px;
+  }
+
+  .battle-workspace--compact-demo .quick-controls__stat-label {
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .battle-workspace--compact-demo .quick-controls__status-badge {
+    width: 12px;
+    height: 12px;
+  }
+
+  .battle-workspace--compact-demo .quick-controls__summary {
+    min-height: 28px;
+    margin: 0 -5px -5px;
+    padding: 4px 6px;
+    border-radius: 0 0 9px 9px;
+    font-size: 10px;
+    line-height: 14px;
+  }
+
+  .battle-workspace--compact-demo .workspace-layout__main > .active-ability-stage {
+    grid-template-columns: 48px minmax(0, 1fr);
+    align-items: center;
+    gap: 5px;
+    padding: 5px 7px;
+    border: 1px solid var(--border-neutral);
+    border-radius: 10px;
+    background: var(--surface-card);
+  }
+
+  .battle-workspace--compact-demo .workspace-layout__main >
+  .active-ability-stage .active-ability-stage__heading {
+    display: block;
+    padding-bottom: 0;
+  }
+
+  .battle-workspace--compact-demo .workspace-layout__main >
+  .active-ability-stage .active-ability-stage__title {
+    font-size: 11px;
+  }
+
+  .battle-workspace--compact-demo .workspace-layout__main >
+  .active-ability-stage .active-ability-stage__direction {
+    display: none;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__control {
+    grid-template-columns: 26px minmax(0, 1fr);
+    align-items: center;
+    gap: 2px;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__label-group {
+    display: flex;
+    min-height: 44px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__label {
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__side {
+    font-size: 8px;
+    font-weight: var(--weight-emphasis);
+    line-height: 9px;
+    white-space: nowrap;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__side--attacker {
+    color: var(--attacker);
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__side--defender {
+    color: var(--defender);
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__stepper {
+    grid-template-columns: 32px minmax(42px, 1fr) 32px;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__button {
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__value {
+    display: flex;
+    min-height: 44px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__value-line {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .battle-workspace--compact-demo .workspace-section--skills {
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .battle-workspace--compact-demo .mode-switch,
+  .battle-workspace--compact-demo .mode-switch__button {
+    min-height: 44px;
+  }
+
+  .battle-workspace--compact-demo .skill-slots--matrix {
+    gap: 3px;
+    padding: 0 3px 3px;
+  }
+
+  .battle-workspace--compact-demo .skill-slots--matrix .skill-result-row,
+  .battle-workspace--compact-demo .skill-slots--matrix .skill-picker__trigger,
+  .battle-workspace--compact-demo .skill-slots--matrix .skill-result-row__result {
+    min-height: 52px;
+  }
+
+  .battle-workspace--compact-demo .skill-slots--matrix .skill-picker__trigger {
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+
+  .battle-workspace--compact-demo .skill-slots--matrix .skill-result-row__damage {
+    font-size: 17px;
+  }
+
+  .battle-workspace--compact-demo
+  .skill-slots--matrix
+  .skill-result-row__damage--compact {
+    font-size: 15px;
+  }
+
+  .battle-workspace--compact-demo
+  .skill-slots--matrix
+  .skill-result-row__damage--tight {
+    font-size: 11px;
+  }
+
+  .battle-workspace--compact-demo .skill-slots--matrix .skill-context-note {
+    padding: 3px 6px;
+  }
+
+  .battle-workspace--compact-demo .conditions-ribbon {
+    gap: 4px;
+    padding: 4px;
+    box-shadow: none;
+  }
+
+  .battle-workspace--compact-demo .conditions-ribbon__main {
+    min-height: 44px;
+    padding: 2px 5px;
+  }
+
+  .battle-workspace--compact-demo .conditions-ribbon__health-input {
+    height: 44px;
+    min-height: 44px;
+    line-height: 44px;
+  }
+
+  .battle-workspace--compact-demo .conditions-ribbon__health-max {
+    height: 44px;
+    line-height: 44px;
+  }
+
+}

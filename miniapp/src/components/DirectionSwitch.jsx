@@ -9,7 +9,7 @@ export default function DirectionSwitch({ onSwap }) {
         <Text className="direction-switch__value">攻击方对防守方</Text>
       </View>
       <Button
-        aria-label="切换攻守配置"
+        aria-label="切换计算方向"
         className="direction-switch__button"
         hoverClass="button-hover"
         onClick={onSwap}

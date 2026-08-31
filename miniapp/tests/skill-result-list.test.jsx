@@ -73,4 +73,5 @@ describe("single skill result row", () => {
     expect(container.querySelector(".skill-result-row__percent"))
       .toHaveClass("skill-result-row__percent--compact");
   });
+
 });

@@ -19,7 +19,7 @@ export default function AppHeader({
   onReset,
   onTeamAnalysisChange,
   onTypeAnalysisChange,
-  quickUndoEnabled = false,
+  quickUndoEnabled = true,
   teamAnalysisEnabled = false,
   typeAnalysisEnabled = false,
 }) {
@@ -92,6 +92,55 @@ export default function AppHeader({
             </View>
             <ScrollView className="settings-sheet__body" scrollY>
               <View className="settings-sheet__body-content">
+              <Button
+                aria-label={commonConfigCurrent
+                  ? "PVP热门配置已更新"
+                  : "导入PVP热门配置"}
+                className={commonConfigCurrent
+                  ? "settings-sheet__action-row settings-sheet__action-row--current"
+                  : "settings-sheet__action-row"}
+                disabled={commonConfigCurrent}
+                hoverClass={commonConfigCurrent
+                  ? "none"
+                  : "settings-sheet__action-row--pressed"}
+                onClick={() => onImportCommonConfig?.()}
+              >
+                <View className="settings-sheet__copy">
+                  <Text className="settings-sheet__label">常用精灵配置</Text>
+                  <Text className="settings-sheet__description">
+                    {commonConfigCurrent
+                      ? `当前 ${commonConfigCount} 只，已是最新`
+                      : commonConfigCount > 0
+                        ? `已有 ${commonConfigCount} 只，更新时保留个人修改`
+                        : "一键导入 PVP 热门配置"}
+                  </Text>
+                </View>
+                <Text className="settings-sheet__action-text">
+                  {commonConfigCurrent
+                    ? "已更新"
+                    : commonConfigCount > 0
+                      ? "更新"
+                      : "一键导入"}
+                </Text>
+              </Button>
+              <View className="settings-sheet__divider" />
+              <Button
+                aria-label="重置本页"
+                className="settings-sheet__reset"
+                hoverClass="settings-sheet__reset--pressed"
+                onClick={resetCurrentPage}
+              >
+                <View className="settings-sheet__copy">
+                  <Text className="settings-sheet__label">重置本页</Text>
+                  <Text className="settings-sheet__description">
+                    恢复计算参数，不影响收藏
+                  </Text>
+                </View>
+                <Text aria-hidden="true" className="settings-sheet__chevron">
+                  ›
+                </Text>
+              </Button>
+              <View className="settings-sheet__divider" />
               <View className="settings-sheet__row">
                 <View className="settings-sheet__copy">
                   <Text className="settings-sheet__label">配置记忆</Text>
@@ -200,55 +249,6 @@ export default function AppHeader({
                   <View className="settings-sheet__switch-thumb" />
                 </Button>
               </View>
-              <View className="settings-sheet__divider" />
-              <Button
-                aria-label={commonConfigCurrent
-                  ? "PVP热门配置已更新"
-                  : "导入PVP热门配置"}
-                className={commonConfigCurrent
-                  ? "settings-sheet__action-row settings-sheet__action-row--current"
-                  : "settings-sheet__action-row"}
-                disabled={commonConfigCurrent}
-                hoverClass={commonConfigCurrent
-                  ? "none"
-                  : "settings-sheet__action-row--pressed"}
-                onClick={() => onImportCommonConfig?.()}
-              >
-                <View className="settings-sheet__copy">
-                  <Text className="settings-sheet__label">常用精灵配置</Text>
-                  <Text className="settings-sheet__description">
-                    {commonConfigCurrent
-                      ? `当前 ${commonConfigCount} 只，已是最新`
-                      : commonConfigCount > 0
-                        ? `已有 ${commonConfigCount} 只，更新时保留个人修改`
-                        : "一键导入 PVP 热门配置"}
-                  </Text>
-                </View>
-                <Text className="settings-sheet__action-text">
-                  {commonConfigCurrent
-                    ? "已更新"
-                    : commonConfigCount > 0
-                      ? "更新"
-                      : "一键导入"}
-                </Text>
-              </Button>
-              <View className="settings-sheet__divider" />
-              <Button
-                aria-label="重置本页"
-                className="settings-sheet__reset"
-                hoverClass="settings-sheet__reset--pressed"
-                onClick={resetCurrentPage}
-              >
-                <View className="settings-sheet__copy">
-                  <Text className="settings-sheet__label">重置本页</Text>
-                  <Text className="settings-sheet__description">
-                    恢复计算参数，不影响收藏
-                  </Text>
-                </View>
-                <Text aria-hidden="true" className="settings-sheet__chevron">
-                  ›
-                </Text>
-              </Button>
               <View className="settings-sheet__divider" />
               <View className="settings-sheet__source">
                 <Text className="settings-sheet__label">数据来源</Text>

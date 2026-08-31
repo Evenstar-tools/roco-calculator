@@ -121,12 +121,19 @@
 .direction-switch__button {
   display: flex;
   width: var(--touch-target);
+  min-width: var(--touch-target);
   height: var(--touch-target);
   align-items: center;
   justify-content: center;
+  margin: 0;
+  padding: 0;
   border: 1px solid var(--border-neutral);
   border-radius: 50%;
   background: var(--surface-muted);
+}
+
+.direction-switch__button::after {
+  border: 0;
 }
 
 .direction-switch__icon {

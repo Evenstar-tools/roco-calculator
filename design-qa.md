@@ -132,6 +132,103 @@
 - 数据：594 只精灵、553 个技能校验通过；验收矩阵 16 项通过。
 - 构建：生产构建通过；无阻塞型性能预算超限，只有既有 JS 体积基线警告。
 
+### Pass 14：伤害结果归类收敛与有效分享摘要
+
+- 设计问题源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-8042143d-f83c-42a0-9775-b063b7a95c53.png`（720 × 504）、`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-62e5b3ec-95e6-4d9c-a6a7-6c0d82a54b6e.png`（476 × 586）、`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-f647dffd-854b-4de8-93e5-0dcfe5a22f72.png`（466 × 472）。这些截图是重复层级、折叠入口和信息不足的问题证据，不是要求逐像素保留的目标稿。
+- 浏览器实现：`artifacts/miniapp-result-share-2026-08-31/h5-result-390x844.png`、`artifacts/miniapp-result-share-2026-08-31/h5-share-390x844.png`，像素 / CSS 视口 / 密度均为 390 × 844 / 390 × 844 / devicePixelRatio 1；另复验 320 × 700 和 768 × 1024。
+- 微信原生实现：`artifacts/miniapp-result-share-2026-08-31/native-result.png`、`artifacts/miniapp-result-share-2026-08-31/native-share.png`（开发者工具导出 362 × 783）；原生逻辑窗口为 430 × 834、pixelRatio 3、iPhone 15 Pro Max 模拟器，开发者工具对导出图做了等比缩放，几何验收使用原生元素坐标而非截图像素猜测。
+- 同屏对照：`artifacts/miniapp-result-share-2026-08-31/comparison-result.png`、`artifacts/miniapp-result-share-2026-08-31/comparison-share.png`。结果页对照裁取双方共同的调整区；分享对照裁掉实现图的底层页面，只比较分享浮层，均保持各自纵横比、不拉伸。
+- 状态：四技能模式、已选技能、结果详情打开；默认进入技能参数，随后实际切换防御、增减再返回技能参数；分享预览打开并显示完整配置摘要。
+- 初轮 [P1]：状态和增减承担相同的伤害变化语义，技能参数又位于单独折叠区，用户需要在同一结果页反复切换分类和二级入口。修复为“技能参数 / 防御 / 增减”三个一级页内标签，状态动作并入增减；技能参数默认首开且常驻内嵌，应对、威力口径、威力值和连击数均可原位编辑。
+- 初轮 [P1]：分享确认只列“双方精灵、性格个体、技能结果、战斗条件”四个泛化标签，无法在发送前核对实际内容；窄屏也缺少明确的横向边界和内容滚动策略。修复为五行真实摘要：攻击方配置、防守方配置、能力等级、技能参数、战斗条件，并保留伤害、生命百分比与剩余 HP；明确好友先看只读结果、主动载入后才替换自己的计算。
+- 字体与文案：沿用小程序现有字体栈和字号层级；参数名、技能名、配置值均允许安全换行或截断，分享说明改为用户实际动作语义，没有继续使用空泛“会收到”标签。
+- 间距与布局：结果调整区取消独立技能参数卡的二级折叠，三个标签保持 44px 触控高度；分享浮层统一 `box-sizing`、最小宽度和纵向滚动，320px 下按钮、摘要和关闭入口均可到达。390px 实测页面 `scrollWidth = viewport = 390`，结果工作台 `scrollWidth = width = 345`，分享浮层 `scrollWidth = width = 390`；768px 下浮层居中为 540px，无横向越界。
+- 颜色、图片与图标：继续使用现有结果色、攻守语义色和项目图标，没有新增占位图、CSS 绘图、自制 SVG 或装饰性视觉。
+- 交互与运行态：浏览器实际切换三个标签后各自 `aria-pressed = true`，打开分享后仍在原结果流程；37 个测试文件、358 项测试全部通过。微信构建成功，开发者工具原生验收报告 `artifacts/miniapp-result-share-2026-08-31/native-result-share-report.json` 显示三分类为“技能参数 / 防御 / 增减”、5 行分享配置、横向边界通过、runtime errors 为 0。
+- 对照复验未发现遗留 P0、P1、P2。聚焦结果和分享两张对照已清楚覆盖分类层级、参数常驻、字体层级、摘要密度、按钮边界和窄屏换行，无需追加更小裁切。
+
+### Pass 15：分享确认补齐已应用技能与特性参数
+
+- 问题源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-7132e320-dac9-462f-9af5-6697de05f889.png`（386 × 416，羽化加速已应用）、`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-af2262ba-7005-4f3f-8fc4-189e60a4f9bf.png`（401 × 340，先知触发层数与每层数值）和 `C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-3c436292-bdfe-4226-b988-1bc53963e6ef.png`（378 × 587，分享页仍显示默认参数/无额外条件）。
+- 最终 H5 实现：`artifacts/miniapp-share-state-2026-08-31/h5-share-feather-prophet-390x844.png`；CSS 视口 / 像素 / 密度为 390 × 844 / 390 × 844 / devicePixelRatio 1。微信原生实现：`artifacts/miniapp-share-state-2026-08-31/native-share-feather-prophet.png`；逻辑窗口 430 × 834、pixelRatio 3、iPhone 15 Pro Max 模拟器。
+- 同屏对照：`artifacts/miniapp-share-state-2026-08-31/comparison-share-before-after.png`。左侧为缺失信息的问题截图，右侧为相同分享确认结构下已补齐技能应用与特性参数的最终实现；两侧保留原始纵横比，没有拉伸。
+- 首轮 [P1]：分享视图模型只读取当前选中技能的输入项；结果页触发按钮的应用记录与特性控件的实际值均未进入分享摘要，因此用户看到“默认参数 / 无额外战斗条件”。
+- 修复：分享摘要接入结果动作列表和当前已应用动作键；技能参数行显示“羽化加速已应用”，战斗条件行按特性名称展开“先知：触发层数 1；每层双攻 50；每层速度 50”。通用数值、布尔和选项控件共享同一格式化逻辑，未把特性继续压成无意义计数。
+- 交互复验：H5 和微信原生均真实选择黑猫密探、触发羽化加速、把先知触发层数从 0 调到 1，再打开分享确认。两端都命中目标文案；H5 控制台错误 0，微信原生 `runtimeErrors = []`。
+- 布局复验：390px H5 页面 `scrollWidth = innerWidth = 390`；分享层宽度 390、左右边界 0/390。微信原生分享层宽度 430、左右边界 0/430，没有横向超框；内容增加后仍完整保留返回修改和确认分享操作。
+- 字体、间距、颜色、图片和文案：继续沿用现有字体栈、语义色、圆角和真实精灵资源；新增内容只占用原有技能参数/战斗条件两行，通过自然换行承载有效信息，没有新增卡片、图标或装饰。
+- 自动验证：37 个测试文件、360 项测试通过；微信生产构建 266 模块通过；微信原生启动与针对性分享场景均通过。最终同屏与聚焦区域复验未发现遗留 P0、P1、P2。
+
+### Pass 16：分享操作与威力参数基线对齐
+
+- 问题源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-d6c969a9-20df-470a-9b12-b79ee2477a07.png`（377 × 576）中分享页的“返回修改 / 确认分享”因未占满各自网格而大小不一、文字未形成统一中心；`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-1ab6058d-99a4-4179-a578-f173b1e32699.png`（688 × 206）中静态威力与连击数的标签、数值输入缺少共同的行高和对齐锚点。
+- H5 实现：`artifacts/miniapp-alignment-2026-08-31/h5-share-actions-390x844.png`、`h5-parameters-390x844.png`（390 × 844、CSS 视口 390 × 844、devicePixelRatio 1），并复验 `h5-share-actions-768x1024.png`、`h5-parameters-768x1024.png`（768 × 1024）。390px 中分享按钮实际几何均为 172 × 44、同一顶边 782；768px 中均为 247 × 44、同一顶边 772.64。
+- 微信原生实现：`artifacts/miniapp-alignment-2026-08-31/native-share-actions.png`、`native-parameters.png`（开发者工具导出 362 × 783；逻辑窗口 430 × 834、pixelRatio 3、iPhone 15 Pro Max）。原生按钮测量为左右各 192 × 44、同一顶边 738，运行时错误为 0。
+- 同屏对照：`artifacts/miniapp-alignment-2026-08-31/comparison-share-actions.png`、`comparison-manual-parameters.png`。对照均使用用户问题截图和同一实际区域的最终原生截图，保留比例、不拉伸；参数对照额外裁取了共同的“威力口径—两项输入”区域，保证文字基线和数值位置可判读。
+- 修复：分享操作区改为两个等分网格单元，两个按钮都明确占满单元、固定 44px 高，使用 flex 水平/垂直居中，并移除 Taro 默认伪边框。技能参数的两项字段改用统一 18px 标题行，输入容器及 H5 内部 input 共用垂直中心和居中数值；原生不依赖 H5 专属类，继续使用同一容器高度。
+- 同类检查：只将这一套规则应用到“同一确认操作的并列按钮”和“同一技能内的并列数值输入”；保留结果详情、会话条等主次操作的故意不等宽，避免把主操作层级误改为平均权重。没有新增边框、卡片或装饰。
+- 验收：37 个测试文件、362 项测试通过；微信生产构建 266 模块通过；H5 在 390 / 768 宽度的分享与参数状态均无横向溢出；微信原生针对性脚本 `native-alignment-report.json` 通过，分享按钮等宽等高且 `runtimeErrors = []`。本轮字体/排版、间距布局、颜色令牌、图片资源、文案、操作状态和窄宽适配均复核，未发现遗留 P0、P1、P2。
+
+### Pass 17：纯状态技能的触发次数与累计效果
+
+- 问题源：`C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-b133230d-65ce-4d79-a8c6-3094a51daefd.png`（715 × 316）。羽化加速这类零威力状态技能沿用了“静态威力 / 显示威力 / 连击数”，既不符合技能语义，也无法说明多次触发后的真实增益。
+- 修复：只对零威力状态技能切换为“状态触发与效果预览”；结果打开时默认触发，用户可取消。对可安全累加的简单状态效果显示触发次数步进器和累计效果，次数从 1 调至 2 时，羽化加速真实重算为“全技能威力 +40”。有伤害的技能仍保持原有威力与连击参数，条件型、动态型和堆叠型状态不虚假开放倍增。
+- 窄屏实现：`artifacts/miniapp-state-skill-trigger-2026-08-31/h5-feather-status-trigger-390x844.png`（390 × 844，CSS 视口 390 × 844）。复验中“已触发”开关为内容宽度，说明区、次数步进器和累计效果均在 323px 内容宽内横向对齐；`scrollWidth = innerWidth = 390`，无横向超框。
+- 交互与结算复验：H5 实际点按“增加状态触发次数”后，输入值为 2、累计效果为“全技能威力 +40”，同时其余伤害技能重新计算；默认触发、取消、重复结算和取消重复项都由集成测试覆盖。
+- 自动验证：37 个测试文件、365 项测试通过；共享计算核心漂移检查通过；微信生产构建 266 模块通过。微信开发者工具原生运行态 `artifacts/miniapp-state-skill-trigger-2026-08-31/native-runtime/native-capture-report.json` 的 `runtimeErrors = []`，设备窗口为 430 × 834。
+
+final result: passed
+
+---
+
+# 2026-08-31 小程序紧凑工作台正式布局
+
+## 证据与边界
+
+- 参考视觉：用户提供的三张“洛克伤害计算器”截图，重点参考双侧对称操作、固定模式入口和预设摘要的信息组织，不照搬其视觉样式。
+- 修改前：`artifacts/compact-demo-audit/01-current-home-390x844.png`。
+- 最终实现：`artifacts/compact-demo-audit/14-formal-compact-layout-final-390x844.png`。
+- 微信原生：`artifacts/compact-demo-audit/native-formal-layout/native-runtime.png`，iPhone 12/13 Pro 模拟器，390 × 844，微信基础库 3.16.2。
+- 同屏对照：`artifacts/compact-demo-audit/15-direction-reference-vs-formal.png`、`artifacts/compact-demo-audit/16-ability-reference-vs-formal.png`。
+- 交互证据：`artifacts/compact-demo-audit/05-compact-demo-conditions.png`、`artifacts/compact-demo-audit/06-compact-demo-result.png`、`artifacts/compact-demo-audit/08-compact-demo-direction-toggle.png`。
+- 视口：390 × 844 CSS px，devicePixelRatio 1；页面 `scrollWidth = 390px`，无横向溢出。
+- 状态：紧凑工作台已成为默认小程序布局；`legacyLayout=1` 可立即回退到旧布局。本轮完成微信原生构建与运行验收，未上传微信后台。
+
+## 发现与修复
+
+- [P1] 上方中央箭头与下方方向分段重复。删除下方分段，仅保留中央箭头；中央箭头现在只切换计算方向，不再交换双方精灵配置或清空参数。
+- [P2] 高频能力等级藏在战斗条件二级层，调整后需要反复开关弹层。Demo 将攻防能力等级放回主工作区，并在条件弹层中隐藏重复入口。
+- [P2] 能力等级标题与步进器垂直基线不齐，且无法快速确认归属。改为两列等宽布局，主标题居中，并增加红色“攻击方”与蓝色“防守方”小字；反向计算时提示随方向交换。
+- [P2] 原生按钮默认边框挤压中央箭头图标。移除原生伪元素边框并固定 44 × 40px 触控区，实际图标保持 22 × 22px。
+- [P2] 主屏卡片、外框和留白累积，导致同屏只能看到部分技能或结果。Demo 收紧头部、对战双方、快捷配置、四技能、条件摘要和结果栏，保留既有字体、颜色和组件语义。
+- [P2] 重复技能槽位使用技能 ID 作为 React key，会产生重复 key 告警。结果栏改为“技能槽位 + 索引”唯一 key，最终控制台无 error/warning。
+- [P3] Demo 顶部“攻击方设置”仍沿用旧文案；若正式落地，可改成更明确的“当前配置”，但不影响本轮主流程。
+
+## 交互与视觉结果
+
+- 390 × 844 同屏显示：双方精灵、攻守方向、当前侧性格/个体、双方能力等级、四技能、战斗条件摘要和主伤害结果。
+- 点击中央箭头后，能力等级归属提示由“攻击方 / 防守方”切换为“防守方 / 攻击方”，双方精灵名称保持不变；再次点击可恢复。
+- 点击攻击能力 `+` 后，能力等级由 0 层变为 +1 层，伤害与剩余 HP 原位更新。
+- 战斗条件与结果详情仍使用单层弹窗；打开条件弹窗时能力等级不重复出现，打开结果详情时可继续调整触发条件和查看公式。
+- 固定结果栏实测约 107px（含边框与底部安全区），未遮挡技能、条件摘要或操作入口。
+- 真实头像、属性图标和项目现有设计令牌全部保留；未增加占位资源、手绘图标或新视觉体系。
+- H5 390 × 844 实测无横向溢出、无控制台 error/warning；微信原生运行无 exception。
+- 微信包构建通过；小程序测试 37/37 文件、357/357 用例通过。重数据绑定校验的独立时限由 5 秒调整为 30 秒，避免包体增长后产生假失败。
+
+## 能力等级与目标生命补充验收
+
+- 参考：`codex-clipboard-d9962c6a-4155-4917-8884-a59ba6e0c150.png`、`codex-clipboard-ea834287-184c-41c8-8509-35324e530664.png`。
+- 微信原生：`artifacts/compact-demo-audit/native-alignment-fix/native-plus-one.png`，能力等级为 `+1层 / +10%`。
+- 同屏对照：`artifacts/compact-demo-audit/20-ability-plus-one-reference-vs-native.png`、`artifacts/compact-demo-audit/19-hp-alignment-reference-vs-native.png`。
+- [P1] 单行能力等级在非零层数时被省略号截断；改为层数与百分比双行居中，`±99层 / ±990%` 也有独立渲染回归用例。
+- [P2] 目标当前生命与总生命视觉中心不一致；两者统一为 40px 高度和 40px 行高。H5 实测两者 `top`、`height` 相同，中心差为 0px。
+- 390px H5 实测 `scrollWidth = clientWidth = 390px`；能力值各行 `scrollWidth <= clientWidth`。微信原生运行无 exception。
+
+## 回退路径
+
+- 路由加 `legacyLayout=1` 即可恢复旧布局，不涉及数据结构、持久化或计算核心迁移。
+- 若整体撤回，只需恢复页面默认布局开关和 `BattleWorkspace` 的默认参数，业务数据与计算核心无需回滚。
+
 final result: passed
 
 ---

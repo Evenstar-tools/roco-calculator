@@ -1,12 +1,17 @@
 import { canApplyBattleActivation } from "../shared/state/battle-activation.js";
-import { resolveSkillStatusActivation } from "../shared/domain/skill-status-effects.js";
+import {
+  getStatusSkillTriggerPreview,
+  hasStatusHitCountCoefficient,
+  isPureStatusSkill,
+  resolveSkillStatusActivation,
+} from "../shared/domain/skill-status-effects.js";
+import { getDefaultHitCount } from "../shared/domain/skill-effects.js";
 import { getSkill, getVisibleSkillInputs } from "./skills.js";
 import { createSkillPresentation } from "./skill-presentation.js";
 
 const EMPTY_ACTIONS = Object.freeze({
   defense: [],
   modifiers: [],
-  status: [],
 });
 
 function activeSideForDirection(direction) {
@@ -22,10 +27,6 @@ function skillCategory(skill, context) {
     Number(deltas.ownDefense ?? 0) !== 0 ||
     Number(operations.defenseReductionPercent ?? 0) !== 0
   ) return "defense";
-  if (
-    operations.appliedNonDamageStatus === true ||
-    Number(operations.healPercent ?? 0) !== 0
-  ) return "status";
   return "modifiers";
 }
 
@@ -38,6 +39,44 @@ function skillEntries(state, side) {
     mode: "four",
     slotIndex,
   }));
+}
+
+function isDefenseCounterControl(control) {
+  const key = control?.contextKey ?? control?.key ?? control?.id;
+  return key === "defenseCounterSucceeded" ||
+    key === "counterDefenseSucceeded";
+}
+
+function skillTriggerHint(skill, controls, result, statusPreview) {
+  if (isPureStatusSkill(skill)) {
+    if (!statusPreview) return "状态触发后按当前条件结算效果";
+    if (statusPreview.repeatable) {
+      const repeatHint = `已按 ${statusPreview.count} 次触发预览`;
+      return statusPreview.hitCountConfigurable
+        ? `${repeatHint} · 每次 ${statusPreview.hitCount} 连击`
+        : repeatHint;
+    }
+    return "状态触发后按当前条件结算效果";
+  }
+  if (skill.category === "defense") {
+    return controls.some(isDefenseCounterControl)
+      ? "防御应对成功时附加增益；减伤按本次应对结算"
+      : "防御技能触发后按本次应对结算";
+  }
+  const hitCount = Math.max(
+    1,
+    Math.floor(Number(result?.hitCount ?? getDefaultHitCount(skill)) || 1),
+  );
+  return hitCount > 1 ? `伤害按 ${hitCount} 段连击分别结算` : null;
+}
+
+function traitTriggerHint(controls) {
+  const counter = controls.find(isDefenseCounterControl);
+  if (counter) return `满足“${counter.label}”后按当前参数结算`;
+  const boolean = controls.find((control) => control.type === "boolean");
+  return boolean
+    ? `开启“${boolean.label}”后按当前参数结算`
+    : "满足特性条件后按当前参数结算";
 }
 
 function skillAction(snapshot, state, side, candidate, calculation, traitViews) {
@@ -67,12 +106,27 @@ function skillAction(snapshot, state, side, candidate, calculation, traitViews) 
     sproutStacks: positiveMark?.id === "sprout" ? positiveMark.stacks : 0,
     traitName: traitViews?.attacker?.name,
   });
+  const configuredHitCount = candidate.mode === "single"
+    ? state.directions[direction]?.hitCount ?? 1
+    : candidate.entry?.hitCount ?? 1;
+  const configuredStatusTriggerCount = candidate.mode === "single"
+    ? state.directions[direction]?.statusTriggerCount
+    : candidate.entry?.statusTriggerCount;
+  const legacyStatusTriggerCount = hasStatusHitCountCoefficient(skill)
+    ? 1
+    : configuredHitCount;
+  const statusPreview = getStatusSkillTriggerPreview(skill, {
+    context,
+    hitCount: configuredHitCount,
+    triggerCount: configuredStatusTriggerCount ?? legacyStatusTriggerCount,
+  });
+  const controls = presentation.inputs ?? getVisibleSkillInputs(skill, context);
   return {
     category: skillCategory(skill, context),
     context,
-    controls: presentation.inputs ?? getVisibleSkillInputs(skill, context),
+    controls,
     description: skill.description ?? "应用该技能产生的战斗状态",
-    effectHint: presentation.effectHint,
+    effectHint: statusPreview?.cumulativeEffect || presentation.effectHint,
     key: `skill:${side}:${candidate.mode}:${candidate.slotIndex}`,
     kind: "skill",
     mode: candidate.mode,
@@ -80,6 +134,7 @@ function skillAction(snapshot, state, side, candidate, calculation, traitViews) 
     side,
     slotIndex: candidate.slotIndex,
     source: "技能",
+    triggerHint: skillTriggerHint(skill, controls, result, statusPreview),
   };
 }
 
@@ -119,6 +174,7 @@ function traitActions(state, direction, traitViews) {
       role,
       side: view.ownerSide,
       source: "特性",
+      triggerHint: traitTriggerHint(controls),
       value: control ? values[control.canonicalKey] : undefined,
       values,
     }];
@@ -152,6 +208,6 @@ export function createResultActions({
       grouped[action.category].push(action);
       return grouped;
     },
-    { defense: [], modifiers: [], status: [] },
+    { defense: [], modifiers: [] },
   );
 }

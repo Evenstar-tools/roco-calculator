@@ -45,6 +45,7 @@ const DIRECTION_KEYS = [
   "selectedDamageSource",
   "reduction",
   "hitCount",
+  "statusTriggerCount",
   "traitDamageHitCount",
   "starfallStacks",
   "finalDamageMultiplier",
@@ -53,12 +54,15 @@ const DIRECTION_KEYS = [
   "overrides",
 ];
 const LEGACY_DIRECTION_KEYS = DIRECTION_KEYS.filter(
-  (key) => key !== "selectedDamageSource" && key !== "traitDamageHitCount",
+  (key) => key !== "selectedDamageSource" &&
+    key !== "statusTriggerCount" &&
+    key !== "traitDamageHitCount",
 );
 const MARK_SLOT_KEYS = ["id", "stacks"];
 const SKILL_INPUT_KEYS = [
   "skillId",
   "hitCount",
+  "statusTriggerCount",
   "context",
   "overrides",
   "basePowerOverride",
@@ -67,7 +71,12 @@ const SKILL_INPUT_KEYS = [
   "otherPowerMultipliers",
   "memoryBySkill",
 ];
-const SKILL_MEMORY_KEYS = ["context", "hitCount", "overrides"];
+const SKILL_MEMORY_KEYS = [
+  "context",
+  "hitCount",
+  "statusTriggerCount",
+  "overrides",
+];
 
 function isPlainObject(value) {
   if (value === null || typeof value !== "object") {
@@ -224,6 +233,14 @@ function assertSkillInput(skill, path) {
   ) {
     throw new TypeError(`${path}.hitCount 无效`);
   }
+  if (
+    Object.hasOwn(skill, "statusTriggerCount") &&
+    (!Number.isInteger(skill.statusTriggerCount) ||
+      skill.statusTriggerCount < 1 ||
+      skill.statusTriggerCount > 99)
+  ) {
+    throw new TypeError(`${path}.statusTriggerCount 无效`);
+  }
   for (const key of ["basePowerOverride", "fixedPowerAdd"]) {
     if (
       Object.hasOwn(skill, key) &&
@@ -265,6 +282,16 @@ function assertSkillInput(skill, path) {
         (!Number.isInteger(memory.hitCount) || memory.hitCount < 1)
       ) {
         throw new TypeError(`${path}.memoryBySkill.${skillId}.hitCount 无效`);
+      }
+      if (
+        Object.hasOwn(memory, "statusTriggerCount") &&
+        (!Number.isInteger(memory.statusTriggerCount) ||
+          memory.statusTriggerCount < 1 ||
+          memory.statusTriggerCount > 99)
+      ) {
+        throw new TypeError(
+          `${path}.memoryBySkill.${skillId}.statusTriggerCount 无效`,
+        );
       }
       for (const key of ["context", "overrides"]) {
         if (Object.hasOwn(memory, key)) {
@@ -389,6 +416,14 @@ function assertDirection(direction, path) {
   }
   if (!Number.isInteger(direction.hitCount) || direction.hitCount < 1) {
     throw new TypeError(`${path}.hitCount 无效`);
+  }
+  if (
+    Object.hasOwn(direction, "statusTriggerCount") &&
+    (!Number.isInteger(direction.statusTriggerCount) ||
+      direction.statusTriggerCount < 1 ||
+      direction.statusTriggerCount > 99)
+  ) {
+    throw new TypeError(`${path}.statusTriggerCount 无效`);
   }
   if (
     Object.hasOwn(direction, "traitDamageHitCount") &&
@@ -569,6 +604,12 @@ function selectDirection(direction) {
     direction.traitDamageHitCount !== 1
   ) {
     selected.traitDamageHitCount = direction.traitDamageHitCount;
+  }
+  if (
+    Object.hasOwn(direction, "statusTriggerCount") &&
+    direction.statusTriggerCount !== 1
+  ) {
+    selected.statusTriggerCount = direction.statusTriggerCount;
   }
   return selected;
 }

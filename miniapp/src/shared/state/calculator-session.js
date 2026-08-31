@@ -244,7 +244,7 @@ function createDefaultSpiritSide(initialSide, snapshot, spiritId) {
 
 function singleSkillMemory(entry, controls = null) {
   if (!entry || typeof entry !== "object") return null;
-  return {
+  const memory = {
     context: controls
       ? sanitizeTriggerContext(entry.context ?? {}, controls)
       : { ...(entry.context ?? {}) },
@@ -253,6 +253,14 @@ function singleSkillMemory(entry, controls = null) {
       : 1,
     overrides: { ...(entry.overrides ?? {}) },
   };
+  if (
+    Number.isInteger(entry.statusTriggerCount) &&
+    entry.statusTriggerCount >= 1 &&
+    entry.statusTriggerCount <= 99
+  ) {
+    memory.statusTriggerCount = entry.statusTriggerCount;
+  }
+  return memory;
 }
 
 function entrySkillId(entry) {
@@ -274,14 +282,21 @@ function skillTriggerControls(skill) {
 function cloneSingleMemories(entry) {
   if (!entry || typeof entry !== "object") return {};
   return Object.fromEntries(
-    Object.entries(entry.memoryBySkill ?? {}).map(([skillId, memory]) => [
-      skillId,
-      {
+    Object.entries(entry.memoryBySkill ?? {}).map(([skillId, memory]) => {
+      const cloned = {
         context: { ...(memory?.context ?? {}) },
         hitCount: Math.max(1, Math.floor(Number(memory?.hitCount) || 1)),
         overrides: { ...(memory?.overrides ?? {}) },
-      },
-    ]),
+      };
+      if (
+        Number.isInteger(memory?.statusTriggerCount) &&
+        memory.statusTriggerCount >= 1 &&
+        memory.statusTriggerCount <= 99
+      ) {
+        cloned.statusTriggerCount = memory.statusTriggerCount;
+      }
+      return [skillId, cloned];
+    }),
   );
 }
 
@@ -787,6 +802,11 @@ export function rememberSingleSkill(
       overrides: singlePowerOverrides(latestDirection.overrides, {
         includeTemporary: false,
       }),
+      ...(Number.isInteger(latestDirection.statusTriggerCount) &&
+        latestDirection.statusTriggerCount >= 1 &&
+        latestDirection.statusTriggerCount <= 99
+        ? { statusTriggerCount: latestDirection.statusTriggerCount }
+        : {}),
     };
   }
   return reduceSessionAction(state, {
@@ -798,6 +818,11 @@ export function rememberSingleSkill(
       memoryBySkill,
       overrides,
       skillId: resolvedSkillId,
+      ...(Number.isInteger(latestDirection.statusTriggerCount) &&
+        latestDirection.statusTriggerCount >= 1 &&
+        latestDirection.statusTriggerCount <= 99
+        ? { statusTriggerCount: latestDirection.statusTriggerCount }
+        : {}),
     },
   });
 }
@@ -826,6 +851,11 @@ export function selectSingleSkill(
       overrides: singlePowerOverrides(currentDirection.overrides, {
         includeTemporary: false,
       }),
+      ...(Number.isInteger(currentDirection.statusTriggerCount) &&
+        currentDirection.statusTriggerCount >= 1 &&
+        currentDirection.statusTriggerCount <= 99
+        ? { statusTriggerCount: currentDirection.statusTriggerCount }
+        : {}),
     };
   }
   const remembered = currentMemories[skillId];
@@ -864,6 +894,7 @@ export function selectSingleSkill(
     type: "direction/update",
     value: {
       hitCount: getDefaultHitCount(nextSkill),
+      statusTriggerCount: undefined,
       overrides: nextOverrides,
     },
   });
@@ -871,7 +902,10 @@ export function selectSingleSkill(
     nextState = calculatorReducer(nextState, {
       direction,
       type: "direction/update",
-      value: { hitCount: remembered.hitCount },
+      value: {
+        hitCount: remembered.hitCount,
+        statusTriggerCount: remembered.statusTriggerCount,
+      },
     });
   }
   const result = rememberSingleSkill(nextState, {

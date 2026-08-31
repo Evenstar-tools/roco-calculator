@@ -20,7 +20,7 @@ function snapshotFixture() {
   };
   return {
     learnsets: [
-      { spiritId: "attacker", skillIds: ["steam", "scratch"] },
+      { spiritId: "attacker", skillIds: ["steam", "feather", "scratch"] },
       { spiritId: "defender", skillIds: ["scratch"] },
     ],
     meta: { id: "test-data", rulesVersion: "test-rules" },
@@ -38,6 +38,13 @@ function snapshotFixture() {
         id: "scratch",
         name: "抓挠",
         type: "普通",
+      },
+      {
+        basePower: 0,
+        category: "status",
+        id: "feather",
+        name: "羽化加速",
+        type: "翼",
       },
     ],
     spirits: [
@@ -115,7 +122,6 @@ describe("mini-program desktop feature parity", () => {
     expect(store.getState().mode).toBe("four");
     expect(screen.getByRole("button", { name: "撤回上一步" })).toBeDisabled();
 
-    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     const increase = screen.getByRole("button", { name: "当前攻击等级提高一级" });
     fireEvent.click(increase);
     fireEvent.click(increase);
@@ -235,7 +241,7 @@ describe("mini-program desktop feature parity", () => {
     ).toBeInTheDocument();
   });
 
-  test("applies and safely undoes a status skill from the result sheet", () => {
+  test("defaults a selected status skill to triggered and safely undoes it", () => {
     const snapshot = snapshotFixture();
     const store = createCalculatorStore(snapshot);
     store.dispatch({ type: "mode/set", value: "four" });
@@ -253,45 +259,100 @@ describe("mini-program desktop feature parity", () => {
     fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
     expect(screen.getByRole("dialog", { name: "伤害结果" }))
       .toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消状态触发" }))
+      .toHaveTextContent("已触发");
     fireEvent.click(screen.getByRole("button", { name: "增减" }));
-    fireEvent.click(
-      screen.getByRole("button", { name: "触发蒸汽进行曲" }),
-    );
+    expect(screen.queryByRole("button", { name: "撤销蒸汽进行曲" }))
+      .not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "技能参数" }));
 
     expect(store.getState().directions.forward.overrides).toMatchObject({
       attackLevelStage: 9,
       attackerSpeedFlat: 60,
     });
-    expect(screen.getByText("蒸汽进行曲状态已应用")).toBeInTheDocument();
     expect(screen.getByRole("dialog", { name: "伤害结果" }))
       .toBeInTheDocument();
 
     fireEvent.click(
-      screen.getByRole("button", { name: "撤销蒸汽进行曲" }),
+      screen.getByRole("button", { name: "取消状态触发" }),
     );
     expect(store.getState().directions.forward.overrides).toEqual({});
     expect(screen.getByRole("dialog", { name: "伤害结果" }))
       .toBeInTheDocument();
   });
 
-  test("keeps ability stages inside the battle condition sheet", () => {
+  test("reapplies a repeatable status skill when its trigger count changes", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({ type: "mode/set", value: "four" });
+    store.dispatch({
+      index: 0,
+      side: "attacker",
+      type: "side/set-four-skill",
+      value: { skillId: "feather" },
+    });
+
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+
+    expect(store.getState().directions.forward.overrides.fixedPowerAdd).toBe(20);
+    expect(screen.getByRole("button", { name: "取消状态触发" }))
+      .toHaveTextContent("已触发");
+    fireEvent.input(screen.getByLabelText("状态触发次数"), {
+      target: { value: "2" },
+    });
+
+    expect(store.getState().sides.attacker.skills.four[0].statusTriggerCount)
+      .toBe(2);
+    expect(store.getState().directions.forward.overrides.fixedPowerAdd).toBe(40);
+    expect(screen.getByText("全技能威力 +40")).toBeInTheDocument();
+    expect(screen.queryByLabelText("静态威力")).not.toBeInTheDocument();
+  });
+
+  test("does not stack a selected status action after the workspace remounts", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({ type: "mode/set", value: "four" });
+    store.dispatch({
+      index: 0,
+      side: "attacker",
+      type: "side/set-four-skill",
+      value: { skillId: "feather" },
+    });
+
+    const first = render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    expect(store.getState().directions.forward.overrides.fixedPowerAdd).toBe(20);
+    expect(store.getState().sides.attacker.skills.four[0].statusAction)
+      .toMatchObject({ actionKey: "skill:attacker:four:0" });
+    first.unmount();
+
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    expect(store.getState().directions.forward.overrides.fixedPowerAdd).toBe(20);
+    fireEvent.click(screen.getByRole("button", { name: "取消状态触发" }));
+    expect(store.getState().directions.forward.overrides).toEqual({});
+  });
+
+  test("keeps ability stages on the main workspace without duplicating them in conditions", () => {
     const snapshot = snapshotFixture();
     const store = createCalculatorStore(snapshot);
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
-    expect(screen.queryByLabelText("当前计算能力等级")).not.toBeInTheDocument();
+    const editor = screen.getByLabelText("当前计算能力等级");
+    expect(within(editor).getByText("攻击方")).toBeInTheDocument();
+    expect(within(editor).getByText("防守方")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     expect(screen.queryByLabelText("能力等级")).not.toBeInTheDocument();
     expect(within(screen.getByRole("dialog", { name: "战斗条件" }))
-      .getByLabelText("当前计算能力等级")).toBeInTheDocument();
+      .queryByLabelText("当前计算能力等级")).not.toBeInTheDocument();
   });
 
-  test("edits the active calculation ability stages from the battle condition sheet", () => {
+  test("edits the active calculation ability stages from the main workspace", () => {
     const snapshot = snapshotFixture();
     const store = createCalculatorStore(snapshot);
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     const editor = screen.getByLabelText("当前计算能力等级");
     fireEvent.click(within(editor).getByRole("button", {
       name: "当前攻击等级提高一级",
@@ -300,6 +361,14 @@ describe("mini-program desktop feature parity", () => {
       name: "当前防御等级降低一级",
     }));
 
+    expect(within(editor).getByText("+1层"))
+      .toBeInTheDocument();
+    expect(within(editor).getByText("+10%"))
+      .toBeInTheDocument();
+    expect(within(editor).getByText("-1层"))
+      .toBeInTheDocument();
+    expect(within(editor).getByText("-10%"))
+      .toBeInTheDocument();
     expect(store.getState().directions.forward.overrides).toMatchObject({
       attackLevelStage: 1,
       defenseLevelStage: -1,
@@ -311,7 +380,6 @@ describe("mini-program desktop feature parity", () => {
     const store = createCalculatorStore(snapshot);
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
     const editor = screen.getByLabelText("当前计算能力等级");
     const increase = within(editor).getByRole("button", {
       name: "当前攻击等级提高一级",
@@ -328,6 +396,10 @@ describe("mini-program desktop feature parity", () => {
       attackLevelStage: 99,
       defenseLevelStage: -99,
     });
+    expect(within(editor).getByText("+99层")).toBeInTheDocument();
+    expect(within(editor).getByText("+990%")).toBeInTheDocument();
+    expect(within(editor).getByText("-99层")).toBeInTheDocument();
+    expect(within(editor).getByText("-990%")).toBeInTheDocument();
     expect(increase).toBeDisabled();
     expect(decrease).toBeDisabled();
   });
