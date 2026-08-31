@@ -215,7 +215,7 @@
   display: grid;
   width: 100%;
   min-height: 58px;
-  grid-template-columns: 24px minmax(0, 1fr);
+  grid-template-columns: 28px minmax(0, 1fr);
   align-items: center;
   gap: 9px;
   padding: 7px 10px;
@@ -229,6 +229,27 @@
 
 .skill-picker__trigger--expanded {
   background: var(--result-soft);
+}
+
+.skill-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 7px;
+}
+
+.skill-icon--fallback {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+
+.skill-icon--fallback > .element-icon {
+  width: 20px;
+  height: 20px;
+  flex-basis: 20px;
 }
 
 .skill-picker__trigger-copy {

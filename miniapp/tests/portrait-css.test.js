@@ -234,6 +234,16 @@ describe("reference-first responsive CSS", () => {
     );
   });
 
+  test("contracts compact ability controls below 360px without clipping", () => {
+    const compact = styles["compact-demo.css"];
+    expect(compact).toMatch(
+      /@media\s*\(max-width:\s*359px\)[\s\S]*\.active-ability-stage__control\s*\{[\s\S]*grid-template-columns:\s*20px\s+minmax\(0,\s*1fr\)/u,
+    );
+    expect(compact).toMatch(
+      /@media\s*\(max-width:\s*359px\)[\s\S]*\.active-ability-stage__stepper\s*\{[\s\S]*grid-template-columns:\s*28px\s+minmax\(0,\s*1fr\)\s+28px/u,
+    );
+  });
+
   test("keeps compact target HP values on one numeric baseline", () => {
     const compact = styles["compact-demo.css"];
     expect(compact).toMatch(
@@ -390,11 +400,11 @@ describe("reference-first responsive CSS", () => {
     );
   });
 
-  test("keeps skill rows inside the picker without a redundant action column", () => {
+  test("keeps skill rows inside the picker with a dedicated skill-art slot", () => {
     const overlays = styles["overlays.css"];
 
     expect(overlays).toMatch(
-      /\.skill-picker__option\s*\{[\s\S]*grid-template-columns:\s*24px\s+minmax\(0,\s*1fr\)\s+24px/u,
+      /\.skill-picker__option\s*\{[\s\S]*grid-template-columns:\s*42px\s+minmax\(0,\s*1fr\)\s+24px/u,
     );
     expect(overlays).not.toContain("skill-picker__choice-state");
   });

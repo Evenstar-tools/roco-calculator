@@ -161,6 +161,7 @@ export default function BattleWorkspace({
   negativeStatusEnabled = false,
   petImages,
   quickUndoEnabled = false,
+  showSkillIcons = true,
   showTypeAnalysis = false,
   snapshot,
   store,
@@ -951,6 +952,7 @@ export default function BattleWorkspace({
                       resultsHidden={resultOpen}
                       rows={panel.calculation.rows}
                       selectedIndex={panel.directionState.selectedSkillIndex}
+                      showSkillIcons={showSkillIcons}
                       values={panel.configuration.skills.four}
                     />
                   ) : (
@@ -983,6 +985,7 @@ export default function BattleWorkspace({
                       resultsHidden={resultOpen}
                       row={panel.calculation.rows[0]}
                       selected={panel.direction === direction}
+                      showSkillIcons={showSkillIcons}
                       value={panel.configuration.skills.single}
                     />
                   )}

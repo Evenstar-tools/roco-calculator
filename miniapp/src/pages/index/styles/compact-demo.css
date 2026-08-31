@@ -275,3 +275,23 @@
   }
 
 }
+
+@media (max-width: 359px) {
+  .battle-workspace--compact-demo .workspace-layout__main > .active-ability-stage {
+    grid-template-columns: 44px minmax(0, 1fr);
+    padding-right: 6px;
+    padding-left: 6px;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__grid {
+    gap: 2px;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__control {
+    grid-template-columns: 20px minmax(0, 1fr);
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__stepper {
+    grid-template-columns: 28px minmax(0, 1fr) 28px;
+  }
+}

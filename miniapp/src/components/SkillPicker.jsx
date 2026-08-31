@@ -15,6 +15,7 @@ import {
 } from "../view-models/skill-filters.js";
 import searchIcon from "../assets/icons/search.png";
 import ElementIcon from "./ElementIcon.jsx";
+import SkillIcon from "./SkillIcon.jsx";
 
 function entryId(entry) {
   if (typeof entry === "string") return entry;
@@ -63,6 +64,7 @@ export default function SkillPicker({
   label,
   onChange,
   onOpen,
+  showSkillIcons = true,
   value,
 }) {
   const [open, setOpen] = useState(false);
@@ -149,7 +151,13 @@ export default function SkillPicker({
         hoverClass="button-hover"
         onClick={toggle}
       >
-        {displayed?.type ? <ElementIcon type={displayed.type} /> : null}
+        {displayed?.type ? (
+          showSkillIcons ? (
+            <SkillIcon className="skill-picker__trigger-icon" skill={displayed} />
+          ) : (
+            <ElementIcon type={displayed.type} />
+          )
+        ) : null}
         <View className="skill-picker__trigger-copy">
           <Text className="skill-picker__label">{label}</Text>
           <Text className="skill-picker__name">
@@ -280,7 +288,14 @@ export default function SkillPicker({
                       key={skill.id}
                       onClick={() => select(skill.id)}
                     >
-                      <ElementIcon type={skill.type} />
+                      {showSkillIcons ? (
+                        <SkillIcon
+                          className="skill-picker__option-icon"
+                          skill={skill}
+                        />
+                      ) : (
+                        <ElementIcon type={skill.type} />
+                      )}
                       <View className="skill-picker__option-copy">
                         <Text className="skill-picker__option-name">
                           {skill.name}

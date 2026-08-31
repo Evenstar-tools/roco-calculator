@@ -12,6 +12,7 @@ export default function SkillSlots({
   resultsHidden = false,
   rows = [],
   selectedIndex,
+  showSkillIcons = true,
   values,
 }) {
   const slotCount = Math.max(4, values?.length ?? 0, rows?.length ?? 0);
@@ -41,6 +42,7 @@ export default function SkillSlots({
             resultsHidden={resultsHidden}
             row={row}
             selected={selectedIndex === index}
+            showSkillIcons={showSkillIcons}
             value={values[index]}
           />
         );

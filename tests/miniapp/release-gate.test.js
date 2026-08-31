@@ -25,8 +25,8 @@ const validRelease = {
   ],
   mainPackageBytes: 1024,
   manifestFileId: "cloud://cloud-prod-1a2b/data/manifest.json",
-  miniappVersion: "1.1.5",
-  rootVersion: "1.6.4",
+  miniappVersion: "1.1.6",
+  rootVersion: "1.6.5",
   runtimeSha256: "a".repeat(64),
   sourceText: "Taro.cloud.downloadFile({ fileID: manifestFileId })",
 };
@@ -48,11 +48,11 @@ function createReleaseFixture(localConfig) {
   fs.mkdirSync(path.join(root, "miniapp", "src"), { recursive: true });
   fs.writeFileSync(
     path.join(root, "package.json"),
-    JSON.stringify({ version: "1.6.4" }),
+    JSON.stringify({ version: "1.6.5" }),
   );
   fs.writeFileSync(
     path.join(root, "miniapp", "package.json"),
-    JSON.stringify({ version: "1.1.5" }),
+    JSON.stringify({ version: "1.1.6" }),
   );
   fs.writeFileSync(
     path.join(root, "miniapp", "local.config.json"),
@@ -363,7 +363,7 @@ describe("miniapp production release gate", () => {
     expect(() => runReleaseCli(root)).toThrow(/上传|发布/u);
   });
 
-  test("accepts a complete v1.1.5 production artifact contract", () => {
+  test("accepts a complete v1.1.6 production artifact contract", () => {
     expect(verifyRelease(validRelease)).toBe(true);
   });
 });

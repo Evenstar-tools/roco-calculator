@@ -96,6 +96,10 @@ function prepareSpirit(spirit, resolveSpiritId, localAssetById) {
 
 function prepareSkill(skill) {
   const nameParts = pinyinParts(skill.name);
+  const iconUrl = typeof skill.asset?.sourceUrl === "string" &&
+    /^https:\/\//u.test(skill.asset.sourceUrl)
+    ? skill.asset.sourceUrl
+    : null;
   const searchText = [
     skill.name,
     skill.type,
@@ -107,6 +111,7 @@ function prepareSkill(skill) {
     .join("|");
   return {
     ...stripAuditFields(skill),
+    ...(iconUrl ? { iconUrl } : {}),
     searchText,
   };
 }

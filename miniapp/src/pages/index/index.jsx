@@ -122,6 +122,7 @@ export default function IndexPage({ services }) {
   const loadId = useRef(0);
   const router = useRouter();
   const compactDemo = router?.params?.legacyLayout !== "1";
+  const skillIconsEnabled = router?.params?.skillIcons !== "0";
   const sharePayload = router?.params?.share;
   const shareMessage = useRef({
     title: "洛克计算器 · S3季中",
@@ -665,6 +666,7 @@ export default function IndexPage({ services }) {
         petImages={pageState.petImages}
         quickUndoEnabled={pageState.quickUndoEnabled}
         quickUndoPosition={pageState.quickUndoPosition}
+        showSkillIcons={skillIconsEnabled}
         showTypeAnalysis={pageState.typeAnalysisEnabled}
         snapshot={pageState.snapshot}
         store={pageState.store}

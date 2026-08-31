@@ -60,6 +60,24 @@ describe("bundled miniapp runtime", () => {
     expect(decodedBundledRuntime.learnsets).toHaveLength(bundled.learnsets.length);
   });
 
+  test("keeps secure source icons for ordinary skills while calculator-only skills remain compatible", () => {
+    const bundled = expandBundledRuntime(
+      JSON.parse(readFileSync(bundledRuntimePath, "utf8")),
+    );
+    const publicRuntime = JSON.parse(readFileSync(publicRuntimePath, "utf8"));
+    const publicIconCount = publicRuntime.skills.filter(
+      (skill) => /^https:\/\//u.test(skill.iconUrl ?? ""),
+    ).length;
+    const bundledIconCount = bundled.skills.filter(
+      (skill) => /^https:\/\//u.test(skill.iconUrl ?? ""),
+    ).length;
+
+    expect(bundledIconCount).toBe(publicIconCount);
+    expect(bundled.skills.some(
+      (skill) => skill.name === "愿力冲击" && !skill.iconUrl,
+    )).toBe(true);
+  });
+
   test("bundles all searchable Wish Power variants used by the calculator", () => {
     const bundled = expandBundledRuntime(
       JSON.parse(readFileSync(bundledRuntimePath, "utf8")),

@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <sub>最新发布：<a href="https://github.com/Evenstar-tools/roco-calculator/releases/tag/v1.6.3">v1.6.3</a> · 更新于 2026-08-31　｜　数据支持：S3-季中</sub>
+  <sub>最新发布：<a href="https://github.com/Evenstar-tools/roco-calculator/releases/tag/v1.6.5">v1.6.5</a> · 更新于 2026-09-01　｜　数据支持：S3-季中</sub>
 </p>
 
 ![洛克计算器界面](docs/images/app-overview.png)

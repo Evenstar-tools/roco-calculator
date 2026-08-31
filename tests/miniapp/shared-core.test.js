@@ -207,9 +207,9 @@ afterEach(() => {
 
 describe("miniapp shared calculator core", () => {
   test("pins the miniapp release to the current web core version", () => {
-    expect(rootPackage.version).toBe("1.6.4");
-    expect(miniappPackage.version).toBe("1.1.5");
-    expect(miniappLockfile.packages[""].version).toBe("1.1.5");
+    expect(rootPackage.version).toBe("1.6.5");
+    expect(miniappPackage.version).toBe("1.1.6");
+    expect(miniappLockfile.packages[""].version).toBe("1.1.6");
   });
 
   test("manifest classifies every Web domain module exactly once", async () => {
@@ -544,6 +544,73 @@ describe("miniapp shared calculator core", () => {
       }],
     });
     expect(miniResult).toEqual(webResult);
+  });
+
+  test("Web and miniapp both floor effective skill power before damage", async () => {
+    const [
+      { calculateMatchup: webCalculate },
+      { calculateMatchup: miniCalculate },
+      { buildResultFormulaAudit },
+    ] =
+      await Promise.all([
+        import("../../src/domain/calculate.js"),
+        import("../../miniapp/src/shared/domain/calculate.js"),
+        import("../../miniapp/src/view-models/formula-audit.js"),
+      ]);
+    const roundingSnapshot = {
+      ...snapshot,
+      skills: snapshot.skills.map((skill) =>
+        skill.id === "skill_fire"
+          ? { ...skill, basePower: 55, name: "先发制人" }
+          : skill,
+      ),
+    };
+    const roundingInput = {
+      ...battleInput,
+      directions: {
+        ...battleInput.directions,
+        forward: {
+          ...battleInput.directions.forward,
+          skillPowerPercentAdds: [0.5],
+          overrides: {
+            attackerStat: 271,
+            defenderDefense: 170,
+            stabMultiplier: 1,
+            typeMultiplier: 1,
+          },
+        },
+      },
+    };
+
+    const results = [webCalculate, miniCalculate].map((calculate) =>
+      calculate(roundingSnapshot, roundingInput).forward.selectedResult,
+    );
+    for (const result of results) {
+      const damageStep = result.formulaSteps.find(
+        (step) => step.label === "等级系数与攻防比",
+      );
+
+      expect(result).toMatchObject({
+        actualPower: 82,
+        displayPower: 82,
+        effectivePower: 82,
+        totalDamage: 117,
+      });
+      expect(damageStep).toMatchObject({
+        after: 117,
+        input: {
+          calculationPower: 82,
+          displayedPower: 82,
+          roundedNumerator: 20054,
+        },
+      });
+    }
+
+    expect(buildResultFormulaAudit(results[1])).toMatchObject({
+      formulaPower: { displayed: 82, internal: 82 },
+      numerator: { afterRound: 20054, power: 82 },
+      oneHit: { afterFloor: 117 },
+    });
   });
 
   test("Web and miniapp preserve the same needs-input result", async () => {

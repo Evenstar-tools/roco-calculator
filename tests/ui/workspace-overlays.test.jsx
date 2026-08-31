@@ -206,13 +206,13 @@ test("opens the complete release notes in a second-level dialog", () => {
   });
 
   expect(screen.getByText("版本记录")).toBeVisible();
-  expect(screen.getByText("外链修复")).toBeVisible();
-  expect(screen.getByText("v1.6.4")).toBeVisible();
+  expect(screen.getByText("小程序交互与取整修复")).toBeVisible();
+  expect(screen.getByText("v1.6.5")).toBeVisible();
   expect(
-    screen.getByText("修复Windows桌面版外链无响应。"),
+    screen.getByText("小程序技能栏和选择器加入技能图标，窄屏仍保持紧凑可读。"),
   ).toBeVisible();
   expect(
-    screen.getByText("GitHub、BWIKI、B站跳转正常。"),
+    screen.getByText("技能威力百分比加成改为先向下取整，双端伤害一致。"),
   ).toBeVisible();
   expect(screen.queryByText(/陨星虫配置中已失效/)).not.toBeInTheDocument();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();

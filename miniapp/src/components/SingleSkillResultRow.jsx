@@ -11,6 +11,7 @@ export default function SingleSkillResultRow({
   resultsHidden = false,
   row,
   selected = false,
+  showSkillIcons = true,
   value,
 }) {
   const exact = row?.status === "exact" && Number.isFinite(row?.hpPercent);
@@ -33,6 +34,7 @@ export default function SingleSkillResultRow({
         label={label}
         onChange={onChange}
         onOpen={onOpen}
+        showSkillIcons={showSkillIcons}
         value={value}
       />
       <Button

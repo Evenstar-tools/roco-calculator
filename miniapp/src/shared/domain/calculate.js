@@ -1116,7 +1116,7 @@ function calculateSkillResult({
   const staticPower = normalizedPower(
     staticPowerOverride
       ? powerOverride.value
-      : Math.round(automaticStaticPower),
+      : Math.floor(automaticStaticPower),
   );
   const manualPowerAfterMarkFixed = staticPower + markFixedPowerAdd;
   const manualPowerAfterTraitFixed =
@@ -1141,7 +1141,7 @@ function calculateSkillResult({
       (sum, value) => sum + (Number(value) || 0),
       0,
     ));
-  const actualPower = normalizedPower(
+  const actualPower = Math.floor(
     staticPowerOverride ? manualActualPower : automaticActualPower,
   );
   const traitAdjustedPower = actualPower;
@@ -1676,7 +1676,7 @@ function calculateSkillResult({
           "技能威力百分比",
           percentageAdds,
           powerAfterContractFixed,
-          automaticActualPower,
+          actualPower,
           percentageAdds.length === 0 ? "default" : "battle-input",
         ),
         formulaStep(

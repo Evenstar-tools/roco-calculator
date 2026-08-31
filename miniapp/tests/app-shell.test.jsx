@@ -21,12 +21,12 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
   });
 
-  test("publishes miniapp 1.1.5 against web core 1.6.3", () => {
-    expect(MINIAPP_VERSION).toBe("1.1.5");
-    expect(MINIAPP_UPDATE_DATE).toBe("2026-08-31");
-    expect(WEB_CORE_VERSION).toBe("1.6.3");
+  test("publishes miniapp 1.1.6 against web core 1.6.5", () => {
+    expect(MINIAPP_VERSION).toBe("1.1.6");
+    expect(MINIAPP_UPDATE_DATE).toBe("2026-09-01");
+    expect(WEB_CORE_VERSION).toBe("1.6.5");
     expect(MINIAPP_RELEASE_LABEL).toBe(
-      "小程序 v1.1.5 · 网页核心 v1.6.3",
+      "小程序 v1.1.6 · 网页核心 v1.6.5",
     );
     render(<AppHeader dataVersion="data-v1" />);
     expect(screen.getByText(MINIAPP_RELEASE_LABEL)).toBeInTheDocument();
@@ -113,7 +113,7 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
     expect(screen.getByText(/1215583051/u)).toBeInTheDocument();
     expect(screen.getByText("当前版本")).toBeInTheDocument();
-    expect(screen.getByText("v1.1.5 · 更新于 2026-08-31"))
+    expect(screen.getByText("v1.1.6 · 更新于 2026-09-01"))
       .toBeInTheDocument();
   });
 

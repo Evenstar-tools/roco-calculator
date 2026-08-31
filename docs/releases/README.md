@@ -8,8 +8,8 @@
 
 | 项目 | 版本 | 你可以做什么 |
 | --- | --- | --- |
-| 最新可下载版本 | [`v1.6.3`](https://github.com/Evenstar-tools/roco-calculator/releases/tag/v1.6.3) | 下载 Windows 安装包 `rock-calculator-1.6.3.exe`。 |
-| 当前源码版本 | `v1.6.4` | 已在 `main`，但尚未发布对应安装包；可先查看 [v1.6.4 更新内容](../../CHANGELOG.md#v164)。 |
+| 最新可下载版本 | [`v1.6.5`](https://github.com/Evenstar-tools/roco-calculator/releases/tag/v1.6.5) | 下载 Windows 安装包 `洛克计算器-1.6.5.exe`。 |
+| 当前源码版本 | `v1.6.5` | 已发布为稳定安装包；可查看 [v1.6.5 更新内容](../../CHANGELOG.md#v165)。 |
 
 ## 这三类记录分别代表什么
 
@@ -21,7 +21,7 @@
 
 ## 现有下载资产
 
-截至本页更新，`v1.6.3` Release 已公开提供 Windows 安装包 `rock-calculator-1.6.3.exe`。该 Release 当前没有单独的 SHA-256 文件；请只从上方的 GitHub Release 页面下载安装包。
+截至本页更新，`v1.6.5` Release 公开提供 Windows 安装包 `洛克计算器-1.6.5.exe` 及 SHA-256 校验文件；请只从上方的 GitHub Release 页面下载安装包。
 
 ## 历史版本
 

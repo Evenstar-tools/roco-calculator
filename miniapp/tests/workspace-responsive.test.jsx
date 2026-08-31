@@ -41,6 +41,7 @@ function createSnapshot() {
         category: "physical",
         cost: 3,
         id: "skill-a",
+        iconUrl: "https://images.example.test/flash-impact.png",
         name: "闪光冲击",
         type: "光",
       },
@@ -49,6 +50,7 @@ function createSnapshot() {
         category: "magical",
         cost: 2,
         id: "skill-b",
+        iconUrl: "https://images.example.test/light-orb.png",
         name: "光球",
         type: "光",
       },
@@ -132,7 +134,7 @@ describe("responsive battle workspace", () => {
     expect(screen.getByLabelText("防守方技能面板")).toBeInTheDocument();
   });
 
-  test("renders real type icons and compact skill metadata in four-skill mode", () => {
+  test("renders skill art without expanding the compact skill metadata in four-skill mode", () => {
     const snapshot = createSnapshot();
     const store = createCalculatorStore(snapshot);
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
@@ -147,12 +149,36 @@ describe("responsive battle workspace", () => {
     const firstSkillTrigger = screen.getAllByRole("button", {
       name: /选择攻击方技能/u,
     })[0];
+    expect(firstSkillTrigger.querySelector(".skill-icon")).toHaveAttribute(
+      "src",
+      "https://images.example.test/flash-impact.png",
+    );
     const firstSkillMeta = within(firstSkillTrigger).getByText("物理")
       .parentElement;
     expect(firstSkillMeta).toHaveClass("skill-picker__meta");
     expect(firstSkillMeta.parentElement).toHaveClass(
       "skill-picker__trigger-copy",
     );
+  });
+
+  test("keeps the original element icons available through the skill-icon rollback switch", () => {
+    const snapshot = createSnapshot();
+    const store = createCalculatorStore(snapshot);
+    render(
+      <BattleWorkspace
+        showSkillIcons={false}
+        snapshot={snapshot}
+        store={store}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+
+    const firstSkillTrigger = screen.getAllByRole("button", {
+      name: /选择攻击方技能/u,
+    })[0];
+    expect(firstSkillTrigger.querySelector(".skill-icon")).toBeNull();
+    expect(firstSkillTrigger.querySelector(".element-icon")).toBeInTheDocument();
   });
 
   test("exposes four-skill groups as a compact two-by-two phone matrix", () => {

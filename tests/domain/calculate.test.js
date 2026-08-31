@@ -1019,7 +1019,7 @@ describe("calculateMatchup", () => {
       displayPower: 177,
       panelPower: 177,
       reflectedPower: 85,
-      skillPower: 157.5,
+      skillPower: 157,
       totalDamage: 159,
     });
   });
@@ -3225,6 +3225,104 @@ describe("calculateMatchup", () => {
     expect(result.effectivePower).toBe(81);
     expect(result.totalDamage).toBe(97);
   });
+
+  test("先发制人的半点威力向下取整后进入伤害公式", () => {
+    const fixture = {
+      ...snapshot,
+      skills: snapshot.skills.map((skill) =>
+        skill.id === "skill_wind"
+          ? { ...skill, basePower: 55, name: "先发制人" }
+          : skill,
+      ),
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: {
+          forward: {
+            skillPowerPercentAdds: [0.5],
+            overrides: {
+              attackerStat: 271,
+              defenderDefense: 170,
+              stabMultiplier: 1,
+              typeMultiplier: 1,
+            },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+    const steps = Object.fromEntries(
+      result.formulaSteps.map((step) => [step.label, step]),
+    );
+
+    expect(result).toMatchObject({
+      actualPower: 82,
+      displayPower: 82,
+      effectivePower: 82,
+      totalDamage: 117,
+    });
+    expect(steps["技能威力百分比"]).toMatchObject({
+      before: 55,
+      after: 82,
+      input: [0.5],
+    });
+    expect(steps["显示威力"]).toMatchObject({
+      before: 82,
+      after: 82,
+      input: { method: "round" },
+    });
+    expect(steps["等级系数与攻防比"]).toMatchObject({
+      after: 117,
+      input: {
+        attackerStat: 271,
+        calculationPower: 82,
+        displayedPower: 82,
+        defenderDefense: 170,
+        roundedNumerator: 20054,
+      },
+    });
+  });
+
+  test.each([
+    [0, 55, 79],
+    [0.2, 66, 94],
+    [0.33, 73, 105],
+    [0.499, 82, 117],
+  ])(
+    "有效威力在百分比加成 %s 后统一向下取整为 %s",
+    (powerPercentAdd, expectedPower, expectedDamage) => {
+      const fixture = {
+        ...snapshot,
+        skills: snapshot.skills.map((skill) =>
+          skill.id === "skill_wind"
+            ? { ...skill, basePower: 55, name: "取整边界技能" }
+            : skill,
+        ),
+      };
+      const result = calculateMatchup(
+        fixture,
+        battleInput({
+          directions: {
+            forward: {
+              skillPowerPercentAdds: [powerPercentAdd],
+              overrides: {
+                attackerStat: 271,
+                defenderDefense: 170,
+                stabMultiplier: 1,
+                typeMultiplier: 1,
+              },
+            },
+          },
+        }),
+      ).forward.selectedResult;
+
+      expect(result).toMatchObject({
+        displayPower: expectedPower,
+        effectivePower: expectedPower,
+        totalDamage: expectedDamage,
+      });
+    },
+  );
 
   test("本系结算后的显示威力先四舍五入再进入多段伤害", () => {
     const lightSpear = {

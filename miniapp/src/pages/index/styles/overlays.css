@@ -1069,8 +1069,8 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  min-height: 66px;
-  grid-template-columns: 24px minmax(0, 1fr) 24px;
+  min-height: 72px;
+  grid-template-columns: 42px minmax(0, 1fr) 24px;
   align-items: center;
   gap: 9px;
   padding: 8px 10px;
@@ -1079,6 +1079,18 @@
   background: var(--surface-muted);
   overflow: hidden;
   text-align: left;
+}
+
+.skill-picker__option-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+}
+
+.skill-picker__option-icon.skill-icon--fallback > .element-icon {
+  width: 24px;
+  height: 24px;
+  flex-basis: 24px;
 }
 
 .skill-picker__option--selected {

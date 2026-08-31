@@ -22,8 +22,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留贪得无厌结算、吸血后自损顺序与物攻等级说明",
   }),
   "src/domain/calculate.js": Object.freeze({
-    mirrorHash: "17679b3424fd698093dcb7cb409f3f477f3db4a121176dc9212af6004156b079",
-    reason: "保留显示威力、实际攻防面板、听桥继承、虫群奉献与减压阀相邻结算补丁",
+    mirrorHash: "c79559000cfa63383c839e8dd49f58a72811c79b30b2650f48edf8e4379385e8",
+    reason: "保留有效技能威力向下取整、显示威力、实际攻防面板、听桥继承、虫群奉献与减压阀相邻结算补丁",
   }),
   "src/domain/clown-trick.js": Object.freeze({
     mirrorHash: "3f2bc2be7147963bd68a506481040c052cd83804b34a421b33e0c02294f878ec",
