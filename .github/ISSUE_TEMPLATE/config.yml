@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: 安全漏洞
-    url: https://github.com/zhangzeyu99-web/rock-calculator/security/advisories/new
+    url: https://github.com/Evenstar-tools/roco-calculator/security/advisories/new
     about: 请私下报告安全问题，不要创建公开 Issue。

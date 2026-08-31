@@ -112,7 +112,7 @@ test("shows desktop downloads and the mini program code", () => {
   expect(screen.getByRole("link", { name: "打开 Windows 下载页" }))
     .toHaveAttribute(
       "href",
-      "https://github.com/zhangzeyu99-web/rock-calculator/releases/latest",
+      "https://github.com/Evenstar-tools/roco-calculator/releases/latest",
     );
   expect(screen.getByRole("img", { name: "洛克计算器微信小程序码" }))
     .toHaveAttribute("src", "/assets/downloads/wechat-miniapp-code.jpg");

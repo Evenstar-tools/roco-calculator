@@ -2,14 +2,26 @@
   <img src="docs/images/project-cover.png" alt="洛克计算器项目封面" width="100%">
 </p>
 
-# 洛克计算器
+<h1 align="center">洛克计算器</h1>
 
-[![Checks](https://img.shields.io/badge/checks-1049%20passed-2da44e.svg)](#开发与验证)
-[![Release](https://img.shields.io/badge/release-v1.6.2-4c55d9.svg)](https://github.com/zhangzeyu99-web/rock-calculator/releases/tag/v1.6.2)
-[![License](https://img.shields.io/badge/code-MIT-4c55d9.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Windows-2563eb.svg)](#使用方式)
+<p align="center">
+  面向《洛克王国：世界》PVP 的确定性伤害计算器<br>
+  即时双选，快速核对双方精灵、性格、个体与技能伤害。
+</p>
 
-面向《洛克王国：世界》PVP 的确定性伤害计算器。目标是在一回合有限的决策时间内，用最少操作完成双方精灵、性格、个体和技能对比。
+<p align="center">
+  <a href="https://github.com/Evenstar-tools/roco-calculator/actions/workflows/ci.yml"><img src="https://github.com/Evenstar-tools/roco-calculator/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest"><img src="https://img.shields.io/github/v/release/Evenstar-tools/roco-calculator?label=stable&color=4c55d9" alt="最新稳定版"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/code-MIT-4c55d9.svg" alt="MIT License"></a>
+  <img src="https://img.shields.io/badge/platform-Web%20%7C%20Windows%20%7C%20微信小程序-2563eb.svg" alt="Web、Windows 与微信小程序">
+</p>
+
+<p align="center">
+  <a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest"><strong>下载 Windows 版</strong></a>
+  · <a href="docs/releases/README.md">版本记录</a>
+  · <a href="docs/damage-calculation-human-readable.md">计算说明</a>
+  · <a href="https://github.com/Evenstar-tools/roco-calculator/issues/new/choose">反馈问题</a>
+</p>
 
 ![洛克计算器精简版界面](docs/images/app-overview.png)
 
@@ -29,24 +41,25 @@
 
 ## 快速入口
 
-- [下载最新 Windows 安装包](https://github.com/zhangzeyu99-web/rock-calculator/releases/latest)
-- [查看完整更新记录](CHANGELOG.md)
-- [反馈计算错误或功能问题](https://github.com/zhangzeyu99-web/rock-calculator/issues/new/choose)
+- [下载最新 Windows 安装包](https://github.com/Evenstar-tools/roco-calculator/releases/latest)
+- [查看版本与发布索引](docs/releases/README.md)
+- [阅读完整更新记录](CHANGELOG.md)
+- [反馈计算错误或功能问题](https://github.com/Evenstar-tools/roco-calculator/issues/new/choose)
 - [核对伤害计算过程](docs/damage-calculation-human-readable.md)
 
 ## 使用方式
 
 ### Windows
 
-前往 [Releases](https://github.com/zhangzeyu99-web/rock-calculator/releases/latest) 下载最新版“洛克计算器”安装包，直接安装或覆盖旧版本。
+前往 [Releases](https://github.com/Evenstar-tools/roco-calculator/releases/latest) 下载最新版“洛克计算器”安装包，直接安装或覆盖旧版本。
 
 ### 本地网页
 
 需要 Node.js 22 或更高版本：
 
 ```bash
-git clone https://github.com/zhangzeyu99-web/rock-calculator.git
-cd rock-calculator
+git clone https://github.com/Evenstar-tools/roco-calculator.git
+cd roco-calculator
 npm ci
 npm run dev
 ```
@@ -151,6 +164,8 @@ npm run desktop:pack
 ## 版本管理
 
 - 使用语义化版本号 `主版本.次版本.修订号`。
+- 当前源码版本为 `v1.6.4`；最新公开稳定安装包为 `v1.6.3`，两者状态分别记录，不把未发布源码写成公开 Release。
+- [版本与发布索引](docs/releases/README.md) 区分源码修订、Git 标签与稳定安装包。
 - [CHANGELOG.md](CHANGELOG.md) 记录所有实际交付过的本地修订，不补造不存在的历史标签。
 - GitHub Releases 保留完成全量验收的稳定里程碑，不要求每个历史修订都补发；最新版 Release 是公开安装包的唯一入口。
 - 每个已发布的 GitHub Release 均对应 Git 标签、Windows 安装包和 SHA256 文件。

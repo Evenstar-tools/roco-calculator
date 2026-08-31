@@ -6,12 +6,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zhangzeyu99-web/rock-calculator.git"
+    "url": "git+https://github.com/Evenstar-tools/roco-calculator.git"
   },
   "bugs": {
-    "url": "https://github.com/zhangzeyu99-web/rock-calculator/issues"
+    "url": "https://github.com/Evenstar-tools/roco-calculator/issues"
   },
-  "homepage": "https://github.com/zhangzeyu99-web/rock-calculator#readme",
+  "homepage": "https://github.com/Evenstar-tools/roco-calculator#readme",
   "private": true,
   "type": "module",
   "main": "desktop/main.mjs",
