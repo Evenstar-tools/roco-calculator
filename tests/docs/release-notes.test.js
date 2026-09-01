@@ -14,21 +14,22 @@ describe("版本记录", () => {
     expect(changelogVersions).toEqual(applicationVersions);
   });
 
-  test("v1.6.5 首屏展示小程序交互与取整修复", () => {
+  test("v1.6.5 首屏只展示计算取整修复", () => {
     const currentRelease = USER_RELEASE_NOTES[0];
     const visibleSummary = currentRelease.summaryHighlights.join("\n");
     const completeNotes = currentRelease.highlights.join("\n");
 
     expect(currentRelease).toMatchObject({
       date: "2026.09.01",
-      title: "小程序交互与取整修复",
+      title: "计算取整修复",
       version: "v1.6.5",
     });
     expect(currentRelease.summaryHighlights).toHaveLength(3);
     expect(currentRelease.summaryHighlights.every((item) => item.length <= 58)).toBe(true);
-    expect(visibleSummary).toMatch(/技能栏.*选择器.*技能图标/);
-    expect(visibleSummary).toMatch(/取整.*双端伤害一致/);
-    expect(visibleSummary).toMatch(/重复入口.*对齐.*溢出/);
-    expect(completeNotes).toMatch(/先向下取整.*显示威力.*四舍五入/);
+    expect(visibleSummary).toMatch(/技能威力.*先向下取整/);
+    expect(visibleSummary).toMatch(/显示威力.*伤害分子.*单段伤害/);
+    expect(visibleSummary).toMatch(/55×1\.5.*82.*117/);
+    expect(`${visibleSummary}\n${completeNotes}`).not.toMatch(/小程序|技能图标|窄屏|分享/);
+    expect(completeNotes).toMatch(/先向下取整[\s\S]*显示威力.*四舍五入/);
   });
 });

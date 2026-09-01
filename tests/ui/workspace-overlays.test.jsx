@@ -206,14 +206,15 @@ test("opens the complete release notes in a second-level dialog", () => {
   });
 
   expect(screen.getByText("版本记录")).toBeVisible();
-  expect(screen.getByText("小程序交互与取整修复")).toBeVisible();
+  expect(screen.getByText("计算取整修复")).toBeVisible();
   expect(screen.getByText("v1.6.5")).toBeVisible();
   expect(
-    screen.getByText("小程序技能栏和选择器加入技能图标，窄屏仍保持紧凑可读。"),
+    screen.getByText("有效技能威力完成百分比加成后先向下取整，再进入伤害公式。"),
   ).toBeVisible();
   expect(
-    screen.getByText("技能威力百分比加成改为先向下取整，双端伤害一致。"),
+    screen.getByText("龙鱼“先发制人”55×1.5 按 82 威力、最终伤害 117 结算。"),
   ).toBeVisible();
+  expect(screen.queryByText(/小程序技能栏|技能图标|窄屏/)).not.toBeInTheDocument();
   expect(screen.queryByText(/陨星虫配置中已失效/)).not.toBeInTheDocument();
   expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
 
