@@ -212,7 +212,9 @@ test("opens the complete release notes in a second-level dialog", () => {
     screen.getByText("有效技能威力完成百分比加成后先向下取整，再进入伤害公式。"),
   ).toBeVisible();
   expect(
-    screen.getByText("龙鱼“先发制人”55×1.5 按 82 威力、最终伤害 117 结算。"),
+    screen.getByText(
+      "岚鸟→龙鱼案例：55×1.5=82.5→向下取整82，20054÷170=117.96→向下取整117。",
+    ),
   ).toBeVisible();
   expect(screen.queryByText(/小程序技能栏|技能图标|窄屏/)).not.toBeInTheDocument();
   expect(screen.queryByText(/陨星虫配置中已失效/)).not.toBeInTheDocument();

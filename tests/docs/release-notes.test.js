@@ -28,8 +28,12 @@ describe("版本记录", () => {
     expect(currentRelease.summaryHighlights.every((item) => item.length <= 58)).toBe(true);
     expect(visibleSummary).toMatch(/技能威力.*先向下取整/);
     expect(visibleSummary).toMatch(/显示威力.*伤害分子.*单段伤害/);
-    expect(visibleSummary).toMatch(/55×1\.5.*82.*117/);
+    expect(visibleSummary).toMatch(/55×1\.5=82\.5.*向下取整82/);
+    expect(visibleSummary).toMatch(/20054÷170=117\.96.*向下取整117/);
     expect(`${visibleSummary}\n${completeNotes}`).not.toMatch(/小程序|技能图标|窄屏|分享/);
     expect(completeNotes).toMatch(/先向下取整[\s\S]*显示威力.*四舍五入/);
+    expect(completeNotes).toMatch(/固执.*岚鸟.*先发制人.*龙鱼.*271.*170.*50%/);
+    expect(completeNotes).toMatch(/271.*82.*37\/41.*20054/);
+    expect(completeNotes).toMatch(/20054.*170.*117\.96.*117/);
   });
 });
