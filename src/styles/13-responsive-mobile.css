@@ -1,0 +1,732 @@
+@media (max-width: 1340px) {
+  .four-skill-editor {
+    grid-template-columns: 1fr;
+  }
+
+  .skill-slot {
+    grid-template-columns: 20px minmax(160px, 1fr) 54px 30px 68px 46px 88px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .calculator-layout {
+    gap: 14px;
+    padding-right: 14px;
+    padding-left: 14px;
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+
+}
+
+@media (max-width: 1080px) {
+  .calculator-layout {
+    display: block;
+    width: 100%;
+    padding: 10px 10px 108px;
+  }
+
+  .calculator-main {
+    padding: 0;
+  }
+
+  .result-column {
+    display: none;
+  }
+
+  .app-header {
+    min-height: 52px;
+  }
+
+  .icon-action,
+  .team-action {
+    min-width: 38px;
+    min-height: 38px;
+  }
+
+  .team-action {
+    width: 38px;
+    padding: 0;
+  }
+
+  .team-action span {
+    display: none;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .stat-tile__label-text {
+    display: none;
+  }
+
+  .mobile-result-bar {
+    min-height: 72px;
+  }
+
+  .result-drawer .result-rail {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .nature-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .advanced-options__content {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nature-side:first-child {
+    padding-right: 0;
+    padding-bottom: 14px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nature-side:last-child {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .advanced-options__content {
+    grid-template-columns: 1fr;
+  }
+
+  .mark-config {
+    grid-template-columns: 1fr;
+  }
+
+  .negative-status-config > header {
+    align-items: start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .negative-status-config > div {
+    grid-template-columns: 1fr;
+  }
+
+  .negative-status-stepper button,
+  .negative-status-stepper input {
+    height: 40px;
+  }
+
+  .mark-slot select,
+  .mark-slot input {
+    height: 44px;
+  }
+
+  .formula-audit {
+    padding: 10px;
+  }
+
+  .formula-audit__row {
+    align-items: start;
+    gap: 5px;
+    grid-template-columns: 1fr;
+  }
+
+  .app-header {
+    min-height: 56px;
+    padding: 0 8px 0 12px;
+  }
+
+  .app-header h1 {
+    max-width: 168px;
+    font-size: 15px;
+  }
+
+  .app-header__title-long {
+    display: none;
+  }
+
+  .app-header__title-short {
+    display: inline;
+  }
+
+  .versus-grid,
+  .nature-grid,
+  .calculator-step--skills {
+    padding: 11px;
+    border-radius: 10px;
+  }
+
+  .versus-grid {
+    gap: 10px;
+    grid-template-columns: 1fr;
+  }
+
+  .spirit-picker--attack,
+  .spirit-picker--defense {
+    padding: 2px 0 0;
+  }
+
+  .spirit-picker__eyebrow {
+    min-height: 22px;
+  }
+
+  .spirit-card {
+    min-height: 76px;
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .spirit-card__image {
+    width: 64px;
+    height: 60px;
+  }
+
+  .swap-action {
+    margin: 0 auto;
+    transform: rotate(90deg);
+  }
+
+  .nature-grid {
+    gap: 14px;
+  }
+
+  .nature-side:first-child {
+    padding-bottom: 14px;
+  }
+
+  .stat-grid {
+    gap: 6px;
+  }
+
+  .stat-tile {
+    min-height: 76px;
+    gap: 4px;
+    padding: 6px 5px;
+  }
+
+  .stat-tile__label {
+    gap: 2px;
+    white-space: nowrap;
+  }
+
+  .stat-tile__panel {
+    font-size: 18px;
+  }
+
+  .stat-tile__iv-group,
+  .stat-tile__iv-input {
+    width: 40px;
+  }
+
+  .stat-tile__iv-label {
+    display: block;
+    font-size: 11px;
+  }
+
+  .level-control {
+    min-height: 52px;
+  }
+
+  .mode-tabs {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .mode-tabs button {
+    min-height: 44px;
+  }
+
+  .skill-parameter-row {
+    gap: 9px;
+    grid-template-columns: 1fr;
+  }
+
+  .skill-facts {
+    flex-wrap: wrap;
+    padding: 0 2px;
+  }
+
+  .skill-effect-card {
+    gap: 8px;
+    grid-template-areas:
+      "copy"
+      "conditions"
+      "power";
+    grid-template-columns: 1fr;
+  }
+
+  .skill-effect-card__power {
+    min-width: 0;
+    justify-items: end;
+    padding: 7px 0 0;
+    border-top: 1px solid #e3decd;
+    border-left: 0;
+  }
+
+  .skill-effect-card__conditions {
+    gap: 7px;
+  }
+
+  .skill-condition-toggle,
+  .skill-condition-number,
+  .skill-condition-choice {
+    min-height: 44px;
+  }
+
+  .skill-condition-choice button {
+    min-height: 38px;
+  }
+
+  .manual-skill-settings {
+    width: 100%;
+  }
+
+  .manual-skill-settings summary {
+    min-height: 44px;
+  }
+
+  .manual-parameter-grid {
+    width: 100%;
+  }
+
+  .four-skill-editor {
+    grid-template-columns: 1fr;
+  }
+
+  .skill-slot {
+    min-height: 50px;
+    gap: 4px;
+    grid-template-columns: 18px minmax(92px, 1fr) 70px 48px 76px;
+  }
+
+  .skill-slot > .skill-slot__kind,
+  .skill-slot--head > :nth-child(3),
+  .skill-slot > :nth-child(4) {
+    display: none;
+  }
+
+  .skill-slot .skill-picker,
+  .skill-slot input[type="number"],
+  .skill-slot__context input[type="number"],
+  .skill-slot__context select {
+    height: 44px;
+  }
+
+  .skill-slot__context {
+    padding-left: 22px;
+  }
+
+  .skill-slot__damage-values strong {
+    font-size: 12px;
+  }
+
+  .skill-slot__damage-values > span {
+    overflow: hidden;
+    max-width: 76px;
+    font-size: 9px;
+    text-overflow: ellipsis;
+  }
+
+  .team-drawer {
+    width: 100vw;
+  }
+
+  .team-drawer__content {
+    display: block;
+    padding: 12px;
+    overflow-y: auto;
+  }
+
+  .team-drawer__roster-pane,
+  .team-drawer__editor-pane {
+    overflow: visible;
+  }
+
+  .team-drawer__editor-pane {
+    padding: 14px 0 0;
+    margin-top: 14px;
+    border-top: 1px solid var(--border);
+    border-left: 0;
+  }
+
+  .team-drawer__capture-actions button {
+    min-height: 44px;
+  }
+
+  .team-roster {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mobile-result-bar__matchup {
+    font-size: 12px;
+  }
+
+  .mobile-result-bar__damage {
+    font-size: 30px;
+  }
+
+  .mobile-result-bar__percent {
+    font-size: 14px;
+  }
+
+  .result-drawer {
+    padding: 54px 10px 10px;
+  }
+
+  .result-rail__damage {
+    font-size: 44px;
+  }
+
+  .result-rail__percent {
+    font-size: 22px;
+  }
+
+  .result-rail__hp-control {
+    grid-template-columns: auto minmax(0, 1fr) 44px;
+  }
+
+  .result-rail__hp-control input,
+  .result-rail__hp-control button {
+    height: 44px;
+  }
+
+  .result-rail__hp-control button {
+    width: 44px;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-header h1 {
+    max-width: 148px;
+    font-size: 14px;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .team-roster {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile compact battle surface */
+@media (max-width: 620px) {
+  .app-header--compact {
+    min-height: 46px;
+    padding: 0 7px 0 10px;
+  }
+
+  .app-header--compact h1 {
+    max-width: 104px;
+    font-size: 14px;
+  }
+
+  .app-header--compact .app-header__actions {
+    gap: 2px;
+  }
+
+  .app-header--compact .view-mode-switch {
+    padding: 1px;
+    border-radius: 8px;
+  }
+
+  .app-header--compact .view-mode-switch button,
+  .app-header--compact .icon-action,
+  .app-header--compact .team-action {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+  }
+
+  .calculator-layout--compact {
+    padding: 8px 7px 82px;
+  }
+
+  .calculator-layout--compact .calculator-step {
+    margin-bottom: 7px;
+  }
+
+  .calculator-layout--compact .versus-grid {
+    gap: 6px;
+    padding: 8px;
+    border-radius: 10px;
+    grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr);
+  }
+
+  .calculator-layout--compact .spirit-picker--attack,
+  .calculator-layout--compact .spirit-picker--defense {
+    padding: 2px 0 0;
+  }
+
+  .calculator-layout--compact .spirit-picker__eyebrow {
+    min-height: 19px;
+    gap: 4px;
+    font-size: 10px;
+  }
+
+  .calculator-layout--compact .spirit-picker__eyebrow .side-pill + span {
+    display: none;
+  }
+
+  .calculator-layout--compact .spirit-picker__control {
+    height: 38px;
+    padding: 0 8px;
+  }
+
+  .calculator-layout--compact .spirit-picker__control svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .calculator-layout--compact .spirit-picker input {
+    font-size: 13px;
+  }
+
+  .calculator-layout--compact .spirit-card {
+    min-height: 70px;
+    gap: 7px;
+    margin-top: 6px;
+    padding: 7px 28px 7px 7px;
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .calculator-layout--compact .spirit-card__image {
+    width: 48px;
+    height: 52px;
+  }
+
+  .calculator-layout--compact .spirit-card__identity > strong {
+    font-size: 14px;
+  }
+
+  .calculator-layout--compact .spirit-card__tags {
+    gap: 4px;
+    margin-top: 3px;
+    font-size: 10px;
+  }
+
+  .calculator-layout--compact .spirit-card__identity p {
+    overflow: visible;
+    margin-top: 3px;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .calculator-layout--compact .favorite-action {
+    top: 7px;
+    right: 7px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .calculator-layout--compact .swap-action {
+    width: 34px;
+    height: 34px;
+    margin: 42px 0 0;
+    transform: none;
+  }
+
+  .calculator-layout--compact .compact-workspace {
+    padding: 8px;
+    border-radius: 10px;
+  }
+
+  .calculator-layout--compact .compact-adjustment-grid {
+    gap: 8px;
+  }
+
+  .calculator-layout--compact .compact-adjustment-side {
+    gap: 3px;
+  }
+
+  .calculator-layout--compact .quick-nature,
+  .calculator-layout--compact .quick-iv {
+    min-height: 34px;
+    gap: 3px;
+    overflow-x: auto;
+    padding: 3px 5px;
+    scrollbar-width: none;
+    grid-template-columns: 22px 44px repeat(6, 31px);
+  }
+
+  .calculator-layout--compact .quick-nature::-webkit-scrollbar,
+  .calculator-layout--compact .quick-iv::-webkit-scrollbar {
+    display: none;
+  }
+
+  .calculator-layout--compact .quick-nature__side,
+  .calculator-layout--compact .quick-iv__label {
+    width: 22px;
+    height: 28px;
+  }
+
+  .calculator-layout--compact .quick-nature__option,
+  .calculator-layout--compact .quick-iv__option {
+    width: 31px;
+    height: 30px;
+  }
+
+  .calculator-layout--compact .quick-nature__option--neutral {
+    width: 44px;
+    min-width: 44px;
+    padding: 0 4px;
+    font-size: 10px;
+  }
+
+  .calculator-layout--compact .quick-nature__up {
+    right: 2px;
+    bottom: 1px;
+    width: 8px;
+    height: 8px;
+  }
+
+  .calculator-layout--compact .quick-iv__option input {
+    right: 2px;
+    bottom: 2px;
+    width: 10px;
+    height: 10px;
+  }
+
+  .calculator-layout--compact .compact-workspace > .calculator-step--skills {
+    margin-top: 7px;
+  }
+
+  .calculator-layout--compact .mode-tabs {
+    width: 88px;
+    margin-bottom: 7px;
+  }
+
+  .calculator-layout--compact .mode-tabs button {
+    min-height: 38px;
+  }
+
+  .calculator-layout--compact .compact-four-skill {
+    gap: 8px;
+  }
+
+  .calculator-layout--compact .compact-skill-side {
+    padding: 6px;
+  }
+
+  .calculator-layout--compact .compact-skill-side > header {
+    min-height: 22px;
+    padding-bottom: 3px;
+    font-size: 11px;
+  }
+
+  .calculator-layout--compact .compact-skill__list {
+    gap: 2px;
+  }
+
+  .calculator-layout--compact .compact-skill__row {
+    min-height: 40px;
+    gap: 4px;
+    grid-template-columns: 12px minmax(116px, 1fr) 20px minmax(80px, 0.72fr);
+  }
+
+  .calculator-layout--compact .compact-skill__row .skill-picker input {
+    height: 38px;
+    font-size: 13px;
+  }
+
+  .calculator-layout--compact .compact-skill__number {
+    font-size: 9px;
+  }
+
+  .calculator-layout--compact .compact-skill__element img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .calculator-layout--compact .compact-skill__damage {
+    font-size: 10px;
+  }
+
+  .calculator-layout--compact .compact-skill__result strong {
+    font-size: 10px;
+  }
+
+  .calculator-layout--compact .compact-single-skill {
+    gap: 6px;
+  }
+
+  .calculator-layout--compact .compact-single-skill__meta {
+    min-height: 34px;
+    gap: 5px;
+    grid-template-columns: 22px 22px 34px minmax(90px, 1fr);
+  }
+
+  .calculator-layout--compact .compact-single-skill__effect {
+    font-size: 11px;
+  }
+
+  .mobile-result-bar--compact {
+    min-height: 64px;
+    max-height: 64px;
+    gap: 7px;
+    padding: 5px 10px calc(5px + env(safe-area-inset-bottom));
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .mobile-result-bar--compact .mobile-result-bar__matchup {
+    font-size: 11px;
+  }
+
+  .mobile-result-bar--compact .mobile-result-bar__damage {
+    font-size: 26px;
+  }
+
+  .mobile-result-bar--compact .mobile-result-bar__percent {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 380px) {
+  .calculator-layout--compact {
+    padding-right: 6px;
+    padding-left: 6px;
+  }
+
+  .calculator-layout--compact .versus-grid {
+    gap: 5px;
+    grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr);
+  }
+
+  .calculator-layout--compact .swap-action {
+    width: 30px;
+    height: 30px;
+  }
+
+  .calculator-layout--compact .spirit-card {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .calculator-layout--compact .spirit-card__image {
+    width: 42px;
+  }
+
+  .calculator-layout--compact .spirit-card__identity > strong {
+    font-size: 13px;
+  }
+
+  .calculator-layout--compact .quick-nature,
+  .calculator-layout--compact .quick-iv {
+    grid-template-columns: 21px 42px repeat(6, 30px);
+  }
+
+  .calculator-layout--compact .quick-nature__option,
+  .calculator-layout--compact .quick-iv__option {
+    width: 30px;
+  }
+
+  .calculator-layout--compact .quick-nature__option--neutral {
+    width: 42px;
+    min-width: 42px;
+  }
+
+  .calculator-layout--compact .compact-skill__row {
+    grid-template-columns: 11px minmax(105px, 1fr) 19px minmax(74px, 0.68fr);
+  }
+}
+

@@ -1,0 +1,148 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+  color: inherit;
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(89, 70, 232, 0.24);
+  outline-offset: 1px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.app-header {
+  position: sticky;
+  z-index: 50;
+  top: 0;
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  border-top: 4px solid var(--accent);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+}
+
+.app-header__brand,
+.app-header__actions {
+  display: flex;
+  align-items: center;
+}
+
+.app-header__brand {
+  min-width: 0;
+  gap: 10px;
+}
+
+.app-header h1 {
+  overflow: hidden;
+  margin: 0;
+  color: #20233b;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-header__version {
+  flex: 0 0 auto;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  background: #f8f9fd;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.app-header__actions {
+  gap: 7px;
+}
+
+.icon-action,
+.team-action,
+.favorite-action,
+.spirit-picker__caret {
+  display: inline-grid;
+  padding: 0;
+  border: 0;
+  place-items: center;
+  color: var(--text-muted);
+  background: transparent;
+}
+
+.icon-action {
+  width: 38px;
+  height: 38px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.icon-action:hover {
+  border-color: var(--border);
+  background: var(--surface-soft);
+}
+
+.team-action {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--accent-strong);
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.team-action:hover {
+  border-color: #aaa1f3;
+  background: var(--accent-soft);
+}
+

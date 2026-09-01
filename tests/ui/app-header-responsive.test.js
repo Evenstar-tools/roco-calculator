@@ -1,11 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
 import { expect, test } from "vitest";
+import { readWebStyles } from "./helpers/web-styles.js";
 
-const styles = fs.readFileSync(
-  path.join(process.cwd(), "src", "styles.css"),
-  "utf8",
-);
+const styles = readWebStyles();
 
 test("hides the team label with the other header labels at narrow widths", () => {
   expect(styles).toMatch(

@@ -1,0 +1,33 @@
+:root {
+  color: #171a2d;
+  background: #f4f6fb;
+  font-family:
+    "Noto Sans SC", "Microsoft YaHei", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --attack: #e2452f;
+  --attack-soft: #fff1ed;
+  --defense: #1678d2;
+  --defense-soft: #edf7ff;
+  --accent: #5946e8;
+  --accent-strong: #4631dc;
+  --accent-soft: #f2efff;
+  --selection-bg: #f5f3ff;
+  --selection-border: #6b57e8;
+  --selection-hover: #f8f7ff;
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --surface-soft: #f1f4fa;
+  --surface-muted: #e9edf6;
+  --border: #cbd2e3;
+  --border-strong: #aeb8d0;
+  --text: #171a2d;
+  --text-muted: #626a87;
+  --text-faint: #8c94ad;
+  --damage-safe: #2f9e44;
+  --damage-warning: #d97706;
+  --damage-danger: #e2452f;
+  --shadow: 0 8px 28px rgba(34, 44, 91, 0.08);
+  --radius: 9px;
+}
+

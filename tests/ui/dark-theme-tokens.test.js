@@ -1,11 +1,7 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { readWebStyles } from "./helpers/web-styles.js";
 
-const css = readFileSync(
-  path.join(process.cwd(), "src", "styles.css"),
-  "utf8",
-);
+const css = readWebStyles();
 
 describe("深色主题变量", () => {
   it("在最终浅色变量之后重新声明完整的深色语义色", () => {

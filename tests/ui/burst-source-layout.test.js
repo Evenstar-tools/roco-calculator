@@ -1,11 +1,7 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
 import { describe, expect, test } from "vitest";
+import { readWebStyles } from "./helpers/web-styles.js";
 
-const styles = readFileSync(
-  path.join(process.cwd(), "src", "styles.css"),
-  "utf8",
-);
+const styles = readWebStyles();
 
 function ruleBody(selector) {
   const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

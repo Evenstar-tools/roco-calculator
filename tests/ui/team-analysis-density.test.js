@@ -2,10 +2,9 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { expect, test } from "vitest";
 
-const css = readFileSync(
-  path.join(process.cwd(), "src", "styles.css"),
-  "utf8",
-);
+import { readWebStyles } from "./helpers/web-styles.js";
+
+const css = readWebStyles();
 const component = readFileSync(
   path.join(process.cwd(), "src", "components", "TeamAnalysisPanel.jsx"),
   "utf8",

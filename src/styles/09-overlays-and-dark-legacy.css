@@ -1,0 +1,510 @@
+.toast {
+  position: fixed;
+  z-index: 100;
+  right: 20px;
+  bottom: 20px;
+  padding: 9px 13px;
+  border-radius: 7px;
+  color: #fff;
+  background: #29244d;
+  box-shadow: var(--shadow);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.loading-state {
+  display: grid;
+  min-height: calc(100vh - 50px);
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.result-drawer {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  display: none;
+  padding: 54px 8px 8px;
+  overflow-y: auto;
+  background: rgba(29, 31, 52, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.result-drawer .result-rail {
+  position: static;
+  min-height: auto;
+}
+
+.result-drawer__close {
+  position: fixed;
+  z-index: 91;
+  top: 13px;
+  right: 14px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  place-items: center;
+  color: #fff;
+  background: rgba(24, 25, 44, 0.8);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171925;
+  --surface: #242736;
+  --surface-soft: #2b2f42;
+  --surface-muted: #363b50;
+  --border: #454b63;
+  --border-strong: #5c647f;
+  --text: #f1f3fb;
+  --text-muted: #b8bfd5;
+  --text-faint: #8e96b2;
+  --selection-bg: #302c52;
+  --selection-border: #9588ff;
+  --selection-hover: #2d3044;
+  --damage-safe: #69db7c;
+  --damage-warning: #ffd166;
+  --damage-danger: #ff7b6b;
+}
+
+html[data-theme="dark"] body {
+  background: #171925;
+}
+
+html[data-theme="dark"] .app-header,
+html[data-theme="dark"] .versus-grid,
+html[data-theme="dark"] .nature-grid,
+html[data-theme="dark"] .calculator-step--skills,
+html[data-theme="dark"] .result-rail,
+html[data-theme="dark"] .spirit-card,
+html[data-theme="dark"] .field-group input,
+html[data-theme="dark"] .field-group select,
+html[data-theme="dark"] .nature-select select,
+html[data-theme="dark"] .spirit-picker__options,
+html[data-theme="dark"] .skill-picker,
+html[data-theme="dark"] .skill-picker__options,
+html[data-theme="dark"] .team-drawer,
+html[data-theme="dark"] .team-drawer__toolbar,
+html[data-theme="dark"] .team-drawer__toolbar button,
+html[data-theme="dark"] .team-drawer__toolbar select,
+html[data-theme="dark"] .team-drawer__name input,
+html[data-theme="dark"] .team-slot,
+html[data-theme="dark"] .team-slot__actions,
+html[data-theme="dark"] .team-slot__actions button,
+html[data-theme="dark"] .team-drawer__confirm button,
+html[data-theme="dark"] .formula-group {
+  color: var(--text);
+  background: var(--surface);
+}
+
+@media (max-width: 1100px) {
+  .calculator-layout {
+    grid-template-columns: minmax(0, 1fr) 330px;
+  }
+
+  .calculator-main {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .result-rail__damage {
+    font-size: 52px;
+  }
+}
+
+@media (max-width: 1080px) {
+  html {
+    scroll-padding-bottom: 84px;
+  }
+
+  .app-header {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .app-header h1 {
+    font-size: 15px;
+  }
+
+  .app-header__version {
+    display: none;
+  }
+
+  .icon-action,
+  .team-action {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .calculator-layout {
+    display: block;
+  }
+
+  .calculator-main {
+    padding-bottom: 104px;
+    border-right: 0;
+  }
+
+  .advanced-options {
+    scroll-margin-bottom: 84px;
+  }
+
+  .result-column {
+    display: none;
+  }
+
+  .result-drawer {
+    display: block;
+  }
+
+  .versus-grid {
+    gap: 7px;
+    grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr);
+  }
+
+  .spirit-picker--attack {
+    padding-right: 5px;
+  }
+
+  .spirit-picker--defense {
+    padding-left: 5px;
+  }
+
+  .spirit-card {
+    grid-template-columns: 54px minmax(0, 1fr);
+  }
+
+  .spirit-card__image {
+    width: 54px;
+    height: 54px;
+  }
+
+  .mobile-result-bar {
+    position: fixed;
+    z-index: 60;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    min-height: 68px;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px calc(8px + env(safe-area-inset-bottom));
+    border-top: 1px solid #a89df2;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 -7px 24px rgba(34, 44, 91, 0.1);
+    backdrop-filter: blur(12px);
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .mobile-result-bar__matchup {
+    overflow: hidden;
+    font-size: 11px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-result-bar__damage {
+    font-size: 25px;
+    font-weight: 800;
+  }
+
+  .mobile-result-bar__percent {
+    color: var(--attack);
+    font-size: 13px;
+    font-weight: 800;
+  }
+}
+
+@media (max-width: 620px) {
+  .calculator-main {
+    padding: 10px 8px 104px;
+  }
+
+  .app-header {
+    min-height: 58px;
+    padding: 5px 7px;
+  }
+
+  .app-header__brand {
+    gap: 4px;
+  }
+
+  .app-header h1 {
+    max-width: min(46vw, 180px);
+    font-size: 13px;
+  }
+
+  .app-header__actions {
+    gap: 2px;
+  }
+
+  .team-action {
+    width: 44px;
+    padding: 0;
+  }
+
+  .team-action span {
+    display: none;
+  }
+
+  .versus-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .spirit-picker--attack,
+  .spirit-picker--defense {
+    padding: 0;
+  }
+
+  .swap-action {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto;
+    transform: rotate(90deg);
+  }
+
+  .nature-grid {
+    gap: 12px;
+    grid-template-columns: 1fr;
+  }
+
+  .nature-side:first-child {
+    padding-right: 0;
+    padding-bottom: 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nature-side:last-child {
+    padding-left: 0;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .spirit-picker__search,
+  .nature-select select,
+  .field-group input,
+  .field-group select,
+  .skill-picker,
+  .mode-tabs button,
+  .advanced-options__toggle,
+  .secondary-action {
+    min-height: 44px;
+  }
+
+  .nature-select > svg {
+    top: 15px;
+  }
+
+  .stat-tile {
+    min-height: 70px;
+    padding: 5px;
+  }
+
+  .stat-tile__iv-group,
+  .stat-tile__iv-input {
+    width: 44px;
+  }
+
+  .stat-tile__iv-input {
+    height: 44px;
+    font-size: 12px;
+  }
+
+  .stat-tile__iv-label {
+    display: none;
+  }
+
+  .level-control {
+    min-height: 52px;
+  }
+
+  .level-control button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .level-control output {
+    min-width: 76px;
+    font-size: 10px;
+  }
+
+  .mode-tabs {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .skill-slot {
+    min-height: 48px;
+  }
+
+  .skill-slot .skill-picker,
+  .skill-slot input[type="number"],
+  .team-member-editor__skills .skill-picker {
+    height: 44px;
+  }
+
+  .four-skill-side-switch button {
+    min-height: 44px;
+  }
+
+  .skill-parameter-row,
+  .four-skill-editor,
+  .trait-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .advanced-options__content {
+    grid-template-columns: 1fr;
+  }
+
+  .team-drawer {
+    width: 100vw;
+    height: 100dvh;
+    min-height: 100dvh;
+    border-left: 0;
+    box-shadow: none;
+  }
+
+  .team-drawer__header {
+    min-height: 58px;
+    padding-top: calc(7px + env(safe-area-inset-top));
+  }
+
+  .team-drawer__toolbar {
+    grid-template-columns: minmax(0, 1fr) 72px 44px 44px;
+  }
+
+  .team-drawer__toolbar select,
+  .team-drawer__toolbar button,
+  .team-drawer__name input {
+    height: 44px;
+  }
+
+  .team-slot__select {
+    min-height: 78px;
+  }
+
+  .team-slot__actions button {
+    min-width: 44px;
+    min-height: 32px;
+  }
+
+  .team-member-editor__nature {
+    grid-template-columns: 126px minmax(0, 1fr);
+  }
+
+  .team-member-editor__nature .nature-select select,
+  .team-member-editor__nature .nature-effect {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-header h1 {
+    max-width: 220px;
+    font-size: 13px;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .team-roster {
+    grid-template-columns: 1fr;
+  }
+
+  .spirit-card {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .spirit-card__image {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.floating-undo {
+  position: fixed;
+  z-index: 48;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  place-items: center;
+  color: var(--text-muted, #7b8499);
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line-strong, #c8d0df);
+  border-radius: 50%;
+  box-shadow: 0 7px 20px rgb(36 43 67 / 18%);
+}
+
+.floating-undo:active {
+  cursor: grabbing;
+}
+
+.floating-undo--available {
+  color: var(--accent, #5945e6);
+  border-color: color-mix(in srgb, var(--accent, #5945e6) 45%, transparent);
+}
+
+.floating-undo > span {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  min-width: 12px;
+  height: auto;
+  padding: 0;
+  color: var(--accent, #5945e6);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: right;
+  pointer-events: none;
+  background: transparent;
+  border: 0;
+}
+
+[data-theme="dark"] .floating-undo {
+  color: #8f98ad;
+  background: #252a3d;
+  border-color: #4b5570;
+  box-shadow: 0 8px 22px rgb(0 0 0 / 36%);
+}
+
+[data-theme="dark"] .floating-undo--available {
+  color: #a99cff;
+  border-color: #7969e8;
+}
+
+[data-theme="dark"] .floating-undo > span {
+  color: #a99cff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
