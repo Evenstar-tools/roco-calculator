@@ -269,9 +269,14 @@
     font-size: 9px;
   }
 
+  /* 说明文字与四技能卡之间加浅分隔线,不再贴卡片边缘。 */
   .skill-slots--matrix .skill-context-note {
     grid-column: 1 / -1;
-    padding: 5px 7px;
+    border-top: 1px solid var(--border-neutral);
+    border-radius: 0;
+    margin-top: 2px;
+    padding: 8px 7px 5px;
+    background: transparent;
   }
 
   .skill-slots--matrix .skill-context-note__description {
