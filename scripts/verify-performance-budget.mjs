@@ -11,12 +11,18 @@ import { gzipSync } from "node:zlib";
 export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
   clientTotal: 13 * 1024 * 1024,
   cssGzip: 24 * 1024,
-  jsGzip: 194 * 1024,
-  jsRaw: 669 * 1024,
+  // 2026-09-01 重校：核心拆分模块化开销 + 星陨功能（实测 JS gzip 198.53 KiB / JS 原始 683.03 KiB）
+  jsGzip: 208 * 1024,
+  jsRaw: 717 * 1024,
   runtimeJson: 1.5 * 1024 * 1024,
 });
 
 export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
+// 2026-09-01：JS gzip 阻断 228 KiB（+20）、JS 原始阻断 786 KiB（+69）；其余指标仍用上面的统一余量
+export const DEFAULT_HARD_OVERAGE_BY_KEY = Object.freeze({
+  jsGzip: 20 * 1024,
+  jsRaw: 69 * 1024,
+});
 
 const LABELS = {
   clientTotal: "客户端总量",
@@ -49,6 +55,7 @@ export function verifyPerformanceBudget({
   budgets = DEFAULT_PERFORMANCE_BUDGETS,
   distRoot = path.resolve("dist/client"),
   hardOverageBytes = DEFAULT_HARD_OVERAGE_BYTES,
+  hardOverageByKey = DEFAULT_HARD_OVERAGE_BY_KEY,
 } = {}) {
   const limits = { ...DEFAULT_PERFORMANCE_BUDGETS, ...budgets };
   const runtimePath = path.join(distRoot, "data", "runtime.json");
@@ -70,7 +77,7 @@ export function verifyPerformanceBudget({
     .filter(([key, actual]) => actual > limits[key])
     .map(([key, actual]) => ({
       actual,
-      hardLimit: limits[key] + hardOverageBytes,
+      hardLimit: limits[key] + (hardOverageByKey[key] ?? hardOverageBytes),
       key,
       limit: limits[key],
     }));

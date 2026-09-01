@@ -58,6 +58,7 @@ describe("release performance budget", () => {
       },
       distRoot: fixture({ js: "1234567890" }),
       hardOverageBytes: 20,
+      hardOverageByKey: {},
     });
 
     expect(result.warnings).toEqual([
@@ -77,6 +78,7 @@ describe("release performance budget", () => {
       },
       distRoot: fixture({ js: "12345678901234567890123456789" }),
       hardOverageBytes: 20,
+      hardOverageByKey: {},
     });
 
     expect(result.warnings).toEqual([]);

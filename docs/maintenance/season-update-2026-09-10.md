@@ -213,6 +213,15 @@ git diff --check
 
 资料处理完成后先提交可审查结果。打桌面包、上传小程序、部署 Web、创建 GitHub Release 或发送飞书，均在用户明确要求后执行。
 
+### 9. 发版后镜像与白名单收口
+
+2026-09-01 核实：`miniapp/src` 在排除 `miniapp/src/shared` 后，没有任何文件引用 `shared/state/spirit-configs.js`（仅镜像文件自身存在）。现在不能删除该镜像——发布漂移检查按 v1.6.5 tag 的共享清单逐文件比对，删镜像会触发 missing-mirror。
+
+下次打 tag 发版后：
+
+1. 再确认小程序业务代码仍未引用该文件，则从 `scripts/miniapp/shared-source-manifest.mjs` 的共享清单移除 `src/state/spirit-configs.js`，并删除 `miniapp/src/shared/state/spirit-configs.js`。
+2. 同步清空 `scripts/miniapp/check-core-drift.mjs` 的 `DECLARED_RELEASE_PATCHES` 白名单（发版后白名单应归零）。
+
 ## 完成判定
 
 - [ ] 权威来源、抓取时间、修订号和冲突裁决有记录。
