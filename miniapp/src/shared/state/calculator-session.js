@@ -24,6 +24,7 @@ import {
 } from "./trigger-context.js";
 import { getChoiceTraitInput } from "../domain/choice-skill-sequence.js";
 import { getGaleTurbineCompanionControl } from "../domain/wing-extension.js";
+import { abilityLevelMultiplier as domainAbilityLevelMultiplier } from "../domain/skill-result/numeric.js";
 
 const CONFIGURATION_SOURCES = new Set(["personal", "team", "share"]);
 const REMEMBERED_SIDE_ACTIONS = new Set([
@@ -39,20 +40,11 @@ const ADJACENT_POWER_CONTEXT_KEYS = [
   "adjacentRightDisplayedPowerOverride",
 ];
 
-function clampStage(value) {
-  return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
-}
-
 export function abilityLevelMultiplier(attackStage, defenseStage) {
-  const attackPercent = clampStage(attackStage) * 10;
-  const defensePercent = clampStage(defenseStage) * 10;
-  return (
-    (1 +
-      Math.max(attackPercent, 0) / 100 +
-      Math.max(-defensePercent, 0) / 100) /
-    (1 +
-      Math.max(-attackPercent, 0) / 100 +
-      Math.max(defensePercent, 0) / 100)
+  // 会话层输入先取整，公式本体以 domain/skill-result/numeric.js 为唯一权威。
+  return domainAbilityLevelMultiplier(
+    Math.floor(Number(attackStage) || 0),
+    Math.floor(Number(defenseStage) || 0),
   );
 }
 

@@ -29,6 +29,14 @@ const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
     "src/domain/skill-effects.js",
     "src/domain/skill-loadout.js",
     "src/domain/skill-presentation.js",
+    "src/domain/skill-result/calculate-skill-result.js",
+    "src/domain/skill-result/direct-trait-damage.js",
+    "src/domain/skill-result/direction.js",
+    "src/domain/skill-result/loadout.js",
+    "src/domain/skill-result/numeric.js",
+    "src/domain/skill-result/results.js",
+    "src/domain/skill-result/starfall.js",
+    "src/domain/skill-result/status-skill.js",
     "src/domain/skill-rules.js",
     "src/domain/skill-slot-capacity.js",
     "src/domain/snapshot-indexes.js",
@@ -112,6 +120,18 @@ export function normalizeManifest(manifest = SHARED_SOURCE_MANIFEST) {
   return { shared, webOnly };
 }
 
+function listDomainFilesRecursively(repositoryRoot, relative = "src/domain") {
+  const absolute = path.join(repositoryRoot, relative);
+  if (!existsSync(absolute)) return [];
+  return readdirSync(absolute, { withFileTypes: true }).flatMap((entry) => {
+    const child = `${relative}/${entry.name}`;
+    if (entry.isDirectory()) {
+      return listDomainFilesRecursively(repositoryRoot, child);
+    }
+    return entry.name.endsWith(".js") ? [child] : [];
+  });
+}
+
 export function getManifestCoverage({
   actualDomain,
   hasSource,
@@ -119,13 +139,8 @@ export function getManifestCoverage({
   repositoryRoot = process.cwd(),
 } = {}) {
   const { shared, webOnly } = normalizeManifest(manifest);
-  const domainFiles = actualDomain ?? readdirSync(
-    path.join(repositoryRoot, "src/domain"),
-    { withFileTypes: true },
-  )
-    .filter((entry) => entry.isFile() && entry.name.endsWith(".js"))
-    .map((entry) => `src/domain/${entry.name}`)
-    .sort();
+  const domainFiles =
+    actualDomain ?? listDomainFilesRecursively(repositoryRoot).sort();
   const sourceExists = hasSource ?? ((sourcePath) =>
     existsSync(path.join(repositoryRoot, sourcePath)));
   const allClassified = [...shared, ...webOnly];

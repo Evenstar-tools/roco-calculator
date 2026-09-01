@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AdvancedOptions } from "./components/AdvancedOptions.jsx";
 import { AppHeader } from "./components/AppHeader.jsx";
 import {
@@ -15,19 +15,7 @@ import { SingleSkillEditor } from "./components/SingleSkillEditor.jsx";
 import { SkillStep } from "./components/SkillStep.jsx";
 import { SpiritStep } from "./components/SpiritStep.jsx";
 import { WorkspaceOverlays } from "./components/WorkspaceOverlays.jsx";
-import { FEEDBACK_QQ } from "./components/DataSourceDialog.jsx";
-import {
-  completeFirstRunGuide,
-  isFirstRunGuideCompleted,
-} from "./state/first-run-guide.js";
-import {
-  readNegativeStatusSettlementSetting,
-  readPowerDisplayMode,
-  readTypeCoverageSetting,
-  writeNegativeStatusSettlementSetting,
-  writePowerDisplayMode,
-  writeTypeCoverageSetting,
-} from "./state/display-settings.js";
+import { readNegativeStatusSettlementSetting } from "./state/display-settings.js";
 import {
   buildCalculatorViewModel,
   clampStage,
@@ -63,55 +51,28 @@ import { calculateAllPanelStats } from "./domain/stat.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
 import { withCalculatorExtras } from "./data/snapshot-extras.js";
 import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
+import { useCalculatorSession } from "./hooks/useCalculatorSession.js";
+import {
+  POPULAR_CONFIG_COUNT,
+  useConfigLibraryFlow,
+} from "./hooks/useConfigLibraryFlow.js";
+import { useFirstRunGuide } from "./hooks/useFirstRunGuide.js";
+import { useShareFlow } from "./hooks/useShareFlow.js";
+import { useWorkspaceOverlays } from "./hooks/useWorkspaceOverlays.js";
 import {
   applyConfiguration as applySessionConfiguration,
   abilityLevelMultiplier,
-  assertSnapshotReferences,
   createProductInitialState,
-  migrateSharedConfiguration,
   patchFourSkill,
-  reduceSessionAction,
   rememberSingleSkill as rememberSessionSingleSkill,
-  replaceConfiguration,
   selectFourSkill as selectSessionFourSkill,
   selectSingleSkill as selectSessionSingleSkill,
   selectSpirit,
-  shareHashFromInput,
-  sameConfigurationVersions,
   toggleDirection,
   updateGlobalRain,
   updateGlobalWeather,
   updateMirroredTraitContext,
 } from "./state/calculator-session.js";
-import { decodeShareState, encodeShareState } from "./state/share.js";
-import { createUndoHistory } from "./state/undo-history.js";
-import packageInfo from "../package.json";
-
-const POPULAR_CONFIG_COUNT = 213;
-
-function configLibraryFileName(date = new Date()) {
-  const pad = (value) => String(value).padStart(2, "0");
-  return `洛克计算器-收藏配置-${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}.json`;
-}
-
-async function saveConfigLibraryFile(library) {
-  const content = `${JSON.stringify(library, null, 2)}\n`;
-  const filename = configLibraryFileName();
-  const file = new File([content], filename, { type: "application/json" });
-  if (
-    globalThis.navigator?.share &&
-    globalThis.navigator?.canShare?.({ files: [file] })
-  ) {
-    await globalThis.navigator.share({ files: [file], title: "洛克计算器配置库" });
-    return;
-  }
-  const url = URL.createObjectURL(file);
-  const anchor = document.createElement("a");
-  anchor.download = filename;
-  anchor.href = url;
-  anchor.click();
-  URL.revokeObjectURL(url);
-}
 
 function CalculatorWorkspace({ snapshot }) {
   const initialState = useMemo(() => {
@@ -125,50 +86,9 @@ function CalculatorWorkspace({ snapshot }) {
       },
     };
   }, [snapshot]);
-  const [state, setState] = useState(initialState);
-  const stateRef = useRef(initialState);
-  const undoHistoryRef = useRef(createUndoHistory({ limit: 50 }));
-  const undoBatchRef = useRef(null);
-  const undoBatchSequenceRef = useRef(0);
-  const [undoCount, setUndoCount] = useState(0);
-  const [activeDirection, setActiveDirection] = useState("forward");
-  const [configLibraryError, setConfigLibraryError] = useState("");
-  const [configLibraryMode, setConfigLibraryMode] = useState(null);
-  const [configLibraryParsed, setConfigLibraryParsed] = useState(null);
-  const [configLibrarySummary, setConfigLibrarySummary] = useState(null);
-  const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
-  const [dataSourceOpen, setDataSourceOpen] = useState(false);
-  const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
-  const [powerDisplayMode, setPowerDisplayMode] = useState(() =>
-    readPowerDisplayMode(),
-  );
-  const [typeCoverageEnabled, setTypeCoverageEnabled] = useState(() =>
-    readTypeCoverageSetting(),
-  );
-  const [importDraft, setImportDraft] = useState("");
-  const [firstRunGuideError, setFirstRunGuideError] = useState("");
-  const [firstRunGuideImporting, setFirstRunGuideImporting] = useState(false);
-  const [firstRunGuideOpen, setFirstRunGuideOpen] = useState(
-    () => !isFirstRunGuideCompleted() && globalThis.innerWidth > 640,
-  );
-  const [firstRunGuideStep, setFirstRunGuideStep] = useState(0);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [mobileResultOpen, setMobileResultOpen] = useState(false);
-  const [pendingSharedState, setPendingSharedState] = useState(null);
-  const [productAccessOpen, setProductAccessOpen] = useState(false);
-  const [shareLink, setShareLink] = useState("");
-  const [shareOpen, setShareOpen] = useState(false);
-  const [teamOpen, setTeamOpen] = useState(false);
-  const [viewMode, setViewMode] = useState("compact");
-  const drawerCloseRef = useRef(null);
-  const menuButtonRef = useRef(null);
-  const menuRef = useRef(null);
-  const mobileResultTriggerRef = useRef(null);
-  const resultDrawerRef = useRef(null);
-  const shareDialogRef = useRef(null);
-  const teamsButtonRef = useRef(null);
-  const versionDialogRef = useRef(null);
   const [toast, setToast] = useState("");
+  const [activeDirection, setActiveDirection] = useState("forward");
+  const [viewMode, setViewMode] = useState("compact");
   const storedData = useStoredCalculatorData(snapshot, { onToast: setToast });
   const {
     completeSpiritIds,
@@ -177,225 +97,22 @@ function CalculatorWorkspace({ snapshot }) {
     teamsState,
     toggleSpiritFavorite,
   } = storedData;
+  const {
+    commitSession,
+    dispatch,
+    state,
+    stateRef,
+    undoCount,
+    undoLastChange,
+  } = useCalculatorSession({
+    initialState,
+    onRememberSide: storedData.rememberSide,
+    onToast: setToast,
+  });
 
   useEffect(() => {
     if (teamsState.warning) setToast(teamsState.warning);
   }, [teamsState.warning]);
-
-  function startUndoBatch() {
-    if (undoBatchRef.current !== null) return undoBatchRef.current;
-    undoBatchSequenceRef.current += 1;
-    undoBatchRef.current = undoBatchSequenceRef.current;
-    queueMicrotask(() => {
-      undoBatchRef.current = null;
-    });
-    return undoBatchRef.current;
-  }
-
-  function commitState(nextState, rememberSide = null, {
-    groupKey = null,
-    recordHistory = true,
-  } = {}) {
-    if (nextState === stateRef.current) return nextState;
-    if (recordHistory) {
-      undoHistoryRef.current.record(stateRef.current, {
-        batchToken: startUndoBatch(),
-        groupKey,
-        rememberSide,
-      });
-      setUndoCount(undoHistoryRef.current.size());
-    }
-    stateRef.current = nextState;
-    setState(nextState);
-    const configuredSide = rememberSide
-      ? nextState.sides[rememberSide]
-      : null;
-    if (configuredSide?.spiritId) storedData.rememberSide(configuredSide);
-    return nextState;
-  }
-
-  function commitSession(result, options) {
-    commitState(result.state, result.persistence.rememberSide, options);
-    return result.state;
-  }
-
-  function dispatch(action) {
-    const valueKeys = action?.value && typeof action.value === "object"
-      ? Object.keys(action.value).sort().join(",")
-      : "";
-    const groupKey = [
-      action?.type,
-      action?.side,
-      action?.direction,
-      action?.index,
-      action?.stat,
-      action?.key,
-      valueKeys,
-    ].filter((value) => value !== undefined && value !== "").join(":");
-    return commitSession(reduceSessionAction(stateRef.current, action), { groupKey });
-  }
-
-  function undoLastChange() {
-    const previous = undoHistoryRef.current.undo();
-    if (!previous) return;
-    undoBatchRef.current = null;
-    stateRef.current = previous.state;
-    setState(previous.state);
-    for (const side of previous.rememberSides) {
-      const configuredSide = previous.state.sides?.[side];
-      if (configuredSide?.spiritId) storedData.rememberSide(configuredSide);
-    }
-    setUndoCount(undoHistoryRef.current.size());
-    setToast("已撤回上一步");
-  }
-
-  function closeConfigLibrary() {
-    setConfigLibraryError("");
-    setConfigLibraryMode(null);
-    setConfigLibraryParsed(null);
-    setConfigLibrarySummary(null);
-  }
-
-  function openConfigLibraryExport() {
-    setConfigLibraryError("");
-    setConfigLibraryParsed(null);
-    setConfigLibrarySummary(storedData.buildFavoriteConfigLibrary({
-      appVersion: packageInfo.version,
-      versions: initialState.versions,
-    }));
-    setConfigLibraryMode("export");
-  }
-
-  function openConfigLibraryImport() {
-    setConfigLibraryError("");
-    setConfigLibraryParsed(null);
-    setConfigLibrarySummary(null);
-    setConfigLibraryMode("import");
-  }
-
-  async function loadPopularConfigLibrary() {
-    const response = await fetch("/data/presets/pvp-popular-configs.json");
-    if (!response.ok) {
-      throw new Error(`内置配置读取失败：${response.status}`);
-    }
-    return storedData.previewFavoriteConfigLibrary(
-      await response.text(),
-      initialState.versions,
-    );
-  }
-
-  async function openPopularConfigLibrary() {
-    setConfigLibraryError("");
-    setConfigLibraryParsed(null);
-    setConfigLibrarySummary(null);
-    setConfigLibraryMode("popular");
-    try {
-      setConfigLibraryParsed(await loadPopularConfigLibrary());
-    } catch (error) {
-      setConfigLibraryError(
-        error instanceof Error ? error.message : "内置配置无法读取",
-      );
-    }
-  }
-
-  function finishFirstRunGuide() {
-    completeFirstRunGuide();
-    setFirstRunGuideError("");
-    setFirstRunGuideOpen(false);
-    setFirstRunGuideStep(0);
-  }
-
-  async function importPopularConfigFromGuide() {
-    setFirstRunGuideError("");
-    setFirstRunGuideImporting(true);
-    try {
-      const parsed = await loadPopularConfigLibrary();
-      const result = storedData.importFavoriteConfigLibrary(parsed);
-      finishFirstRunGuide();
-      setToast(
-        `已导入 ${result.preview.added + result.preview.overwritten} 只常用配置，后续修改仍会记忆`,
-      );
-    } catch (error) {
-      setFirstRunGuideError(
-        error instanceof Error ? error.message : "常用配置导入失败",
-      );
-    } finally {
-      setFirstRunGuideImporting(false);
-    }
-  }
-
-  async function previewConfigLibraryFile(file) {
-    setConfigLibraryError("");
-    setConfigLibraryParsed(null);
-    if (!file) return;
-    try {
-      if (file.size > 5 * 1024 * 1024) {
-        throw new TypeError("配置库文件不能超过 5 MB");
-      }
-      const parsed = storedData.previewFavoriteConfigLibrary(
-        await file.text(),
-        initialState.versions,
-      );
-      setConfigLibraryParsed(parsed);
-    } catch (error) {
-      setConfigLibraryError(
-        error instanceof Error ? error.message : "配置库文件无法读取",
-      );
-    }
-  }
-
-  function applySharedConfiguration(configuration, options) {
-    commitSession(
-      replaceConfiguration(stateRef.current, configuration, {
-        remember: false,
-        source: "share",
-      }),
-      options,
-    );
-  }
-
-  async function loadSharedState(value) {
-    const hash = shareHashFromInput(value);
-    const decodedState = await decodeShareState(hash);
-    const sharedState = migrateSharedConfiguration(
-      decodedState,
-      decodedState.versions,
-      snapshot,
-    );
-    assertSnapshotReferences(sharedState, snapshot);
-    if (!sameConfigurationVersions(sharedState.versions, initialState.versions)) {
-      setPendingSharedState(sharedState);
-      return;
-    }
-    applySharedConfiguration(sharedState);
-    setToast("分享配置已载入");
-  }
-
-  useEffect(() => {
-    if (!globalThis.location?.hash?.startsWith("#v1.")) return undefined;
-    let active = true;
-    decodeShareState(globalThis.location.hash)
-      .then((decodedState) => {
-        if (!active) return;
-        const sharedState = migrateSharedConfiguration(
-          decodedState,
-          decodedState.versions,
-          snapshot,
-        );
-        assertSnapshotReferences(sharedState, snapshot);
-        if (!sameConfigurationVersions(sharedState.versions, initialState.versions)) {
-          setPendingSharedState(sharedState);
-        } else {
-          applySharedConfiguration(sharedState, { recordHistory: false });
-        }
-      })
-      .catch((error) => {
-        if (active) setToast(error.message);
-      });
-    return () => {
-      active = false;
-    };
-  }, [initialState]);
 
   const spiritIndex = useMemo(
     () => createSpiritSearchIndex(snapshot.spirits),
@@ -511,49 +228,42 @@ function CalculatorWorkspace({ snapshot }) {
     };
   }
 
-  async function generateShareLink() {
-    if (!configurationReady) {
-      setShareLink("");
-      return "";
-    }
-    const hash = await encodeShareState(state);
-    globalThis.history?.replaceState?.(null, "", hash);
-    const nextShareLink = globalThis.location.href;
-    setShareLink(nextShareLink);
-    return nextShareLink;
-  }
-
-  async function openShareConfiguration() {
-    setImportDraft("");
-    setShareOpen(true);
-    try {
-      await generateShareLink();
-    } catch (error) {
-      setToast(error instanceof Error ? error.message : "分享失败");
-    }
-  }
-
-  async function copyShareLink() {
-    try {
-      const link = shareLink || await generateShareLink();
-      if (!link) {
-        setToast("请先选择双方精灵");
-        return;
-      }
-      if (!globalThis.navigator?.clipboard?.writeText) {
-        setToast("复制受限，请手动复制上方链接");
-        return;
-      }
-      try {
-        await globalThis.navigator.clipboard.writeText(link);
-        setToast("分享链接已复制");
-      } catch {
-        setToast("复制受限，请手动复制上方链接");
-      }
-    } catch (error) {
-      setToast(error instanceof Error ? error.message : "分享失败");
-    }
-  }
+  const configLibraryFlow = useConfigLibraryFlow({
+    initialState,
+    onToast: setToast,
+    snapshot,
+    storedData,
+  });
+  const firstRunGuide = useFirstRunGuide({
+    importFavoriteConfigLibrary: storedData.importFavoriteConfigLibrary,
+    loadPopularConfigLibrary: configLibraryFlow.loadPopularConfigLibrary,
+    onToast: setToast,
+  });
+  const shareFlow = useShareFlow({
+    commitSession,
+    configurationReady,
+    initialState,
+    onToast: setToast,
+    snapshot,
+    state,
+    stateRef,
+  });
+  const overlays = useWorkspaceOverlays({
+    configurationReady,
+    dispatch,
+    negativeStatusEnabled:
+      state.calculationOptions?.includeNegativeStatusSettlement === true,
+    onCleanupConfirm: () => {
+      const next = storedData.clearIncompleteSpiritConfigs();
+      return `已清理未完成配置，保留 ${Object.keys(next.configs).length} 只完整配置`;
+    },
+    onDirectionToggle: () => setActiveDirection(toggleDirection),
+    onToast: setToast,
+    resultModel,
+    updateDirection,
+    viewMode,
+  });
+  const { powerDisplayMode, typeCoverageEnabled } = overlays;
 
   function updateDirection(value) {
     dispatch({
@@ -1622,14 +1332,12 @@ function CalculatorWorkspace({ snapshot }) {
   const overlayProps = {
     menu: {
       actions: {
-        onClose: () => setMenuOpen(false),
-        onConfigLibraryExport: openConfigLibraryExport,
-        onConfigLibraryImport: openConfigLibraryImport,
-        onPopularConfigLibrary: openPopularConfigLibrary,
+        onClose: () => overlays.menu.setOpen(false),
+        onConfigLibraryExport: configLibraryFlow.openConfigLibraryExport,
+        onConfigLibraryImport: configLibraryFlow.openConfigLibraryImport,
+        onPopularConfigLibrary: configLibraryFlow.openPopularConfigLibrary,
         onFirstRunGuide: () => {
-          setFirstRunGuideError("");
-          setFirstRunGuideStep(0);
-          setFirstRunGuideOpen(true);
+          firstRunGuide.restart();
           setViewMode("compact");
         },
         onClearCurrent: () => {
@@ -1643,38 +1351,28 @@ function CalculatorWorkspace({ snapshot }) {
             },
           });
         },
-        onCleanupConfigs: () => setCleanupConfigsOpen(true),
-        onShare: openShareConfiguration,
-        onShowDisplaySettings: () => setDisplaySettingsOpen(true),
-        onShowProductAccess: () => setProductAccessOpen(true),
-        onShowDataSource: () => setDataSourceOpen(true),
+        onCleanupConfigs: () => overlays.setCleanupConfigsOpen(true),
+        onShare: shareFlow.openShareConfiguration,
+        onShowDisplaySettings: () => overlays.setDisplaySettingsOpen(true),
+        onShowProductAccess: () => overlays.setProductAccessOpen(true),
+        onShowDataSource: () => overlays.setDataSourceOpen(true),
       },
-      buttonRef: menuButtonRef,
-      open: menuOpen,
-      ref: menuRef,
+      buttonRef: overlays.menu.buttonRef,
+      open: overlays.menu.open,
+      ref: overlays.menu.ref,
     },
-    cleanupConfigs: {
-      onCancel: () => setCleanupConfigsOpen(false),
-      onConfirm: () => {
-        const next = storedData.clearIncompleteSpiritConfigs();
-        setCleanupConfigsOpen(false);
-        setToast(
-          `已清理未完成配置，保留 ${Object.keys(next.configs).length} 只完整配置`,
-        );
-      },
-      open: cleanupConfigsOpen,
-    },
+    cleanupConfigs: overlays.cleanupConfigsProps,
     firstRunGuide: {
-      error: firstRunGuideError,
+      error: firstRunGuide.error,
       importCount: POPULAR_CONFIG_COUNT,
-      importing: firstRunGuideImporting,
+      importing: firstRunGuide.importing,
       layoutKey: `${configurationReady}:${viewMode}:${state.mode}`,
-      onBack: () => setFirstRunGuideStep((current) => Math.max(0, current - 1)),
-      onImport: importPopularConfigFromGuide,
-      onNext: () => setFirstRunGuideStep((current) => Math.min(5, current + 1)),
+      onBack: () => firstRunGuide.setStep((current) => Math.max(0, current - 1)),
+      onImport: firstRunGuide.importPopularConfig,
+      onNext: () => firstRunGuide.setStep((current) => Math.min(5, current + 1)),
       onOpenDetailed: () => setViewMode("detailed"),
-      onSkip: finishFirstRunGuide,
-      open: firstRunGuideOpen,
+      onSkip: firstRunGuide.finish,
+      open: firstRunGuide.open,
       ready: [
         Boolean(attacker),
         Boolean(defender),
@@ -1682,154 +1380,15 @@ function CalculatorWorkspace({ snapshot }) {
         configurationReady,
         true,
         true,
-      ][firstRunGuideStep],
-      step: firstRunGuideStep,
+      ][firstRunGuide.step],
+      step: firstRunGuide.step,
     },
-    configLibrary: {
-      error: configLibraryError,
-      exportSummary: configLibrarySummary,
-      mode: configLibraryMode,
-      onClose: closeConfigLibrary,
-      onConfirmImport: () => {
-        try {
-          const result = storedData.importFavoriteConfigLibrary(
-            configLibraryParsed,
-          );
-          closeConfigLibrary();
-          setToast(
-            `已导入 ${result.preview.added + result.preview.overwritten} 只配置，新增收藏 ${result.preview.favoritesAdded} 只，覆盖 ${result.preview.overwritten} 只，跳过 ${result.preview.missingSpirits + result.preview.invalidEntries} 只。`,
-          );
-        } catch (error) {
-          setConfigLibraryError(
-            error instanceof Error ? error.message : "配置库导入失败",
-          );
-        }
-      },
-      onExport: () => {
-        saveConfigLibraryFile(configLibrarySummary.library)
-          .then(() => {
-            closeConfigLibrary();
-            setToast(`已导出 ${configLibrarySummary.exportedCount} 只精灵`);
-          })
-          .catch((error) => setConfigLibraryError(
-            error instanceof Error ? error.message : "配置库导出失败",
-          ));
-      },
-      onFile: previewConfigLibraryFile,
-      parsed: configLibraryParsed,
-      snapshot,
-    },
-    dataSource: {
-      onClose: () => setDataSourceOpen(false),
-      onCopyFeedback: async () => {
-        if (!globalThis.navigator?.clipboard?.writeText) {
-          setToast(`反馈 QQ：${FEEDBACK_QQ}`);
-          return;
-        }
-        try {
-          await globalThis.navigator.clipboard.writeText(FEEDBACK_QQ);
-          setToast("反馈 QQ 已复制");
-        } catch {
-          setToast(`反馈 QQ：${FEEDBACK_QQ}`);
-        }
-      },
-      open: dataSourceOpen,
-    },
-    productAccess: {
-      onClose: () => setProductAccessOpen(false),
-      open: productAccessOpen,
-    },
-    displaySettings: {
-      negativeStatusSettlementEnabled:
-        state.calculationOptions?.includeNegativeStatusSettlement === true,
-      onClose: () => setDisplaySettingsOpen(false),
-      onNegativeStatusSettlementChange: (enabled) => {
-        const value = writeNegativeStatusSettlementSetting(undefined, enabled);
-        dispatch({
-          type: "calculation-option/set-negative-status",
-          value,
-        });
-      },
-      onPowerDisplayModeChange: (mode) => {
-        setPowerDisplayMode(writePowerDisplayMode(undefined, mode));
-      },
-      onTypeCoverageChange: (enabled) => {
-        setTypeCoverageEnabled(writeTypeCoverageSetting(undefined, enabled));
-      },
-      open: displaySettingsOpen,
-      powerDisplayMode,
-      typeCoverageEnabled,
-    },
-    mobileResult: {
-      actions: {
-        onClose: () => setMobileResultOpen(false),
-        onCurrentHpChange: (currentHp) => updateDirection({ currentHp }),
-        onCurrentHpPercentChange: (currentHpPercent) =>
-          updateDirection({ context: { currentHpPercent } }),
-        onDirectionToggle: () => setActiveDirection(toggleDirection),
-        onOpen: () => setMobileResultOpen(true),
-      },
-      configurationReady,
-      open: mobileResultOpen,
-      refs: {
-        close: drawerCloseRef,
-        drawer: resultDrawerRef,
-        trigger: mobileResultTriggerRef,
-      },
-      result: resultModel,
-      showTypeCoverage: typeCoverageEnabled,
-      viewMode,
-    },
-    share: {
-      actions: {
-        onCloseAll: () => {
-          setPendingSharedState(null);
-          setShareOpen(false);
-        },
-        onClose: () => setShareOpen(false),
-        onCopy: copyShareLink,
-        onImportDraftChange: setImportDraft,
-        onImportSubmit: (event) => {
-          event.preventDefault();
-          const sharedValue = importDraft.trim();
-          if (!sharedValue) return;
-          loadSharedState(sharedValue)
-            .then(() => {
-              setShareOpen(false);
-              setImportDraft("");
-            })
-            .catch((error) =>
-              setToast(error instanceof Error ? error.message : "导入失败"),
-            );
-        },
-        onPendingClose: () => setPendingSharedState(null),
-        onPendingConfirm: () => {
-          applySharedConfiguration(
-            migrateSharedConfiguration(
-              pendingSharedState,
-              initialState.versions,
-              snapshot,
-            ),
-          );
-          setPendingSharedState(null);
-          globalThis.history?.replaceState?.(
-            null,
-            "",
-            `${globalThis.location.pathname}${globalThis.location.search}`,
-          );
-          setToast("已按当前版本重算，请核对右侧结果");
-        },
-      },
-      importDraft,
-      open: shareOpen,
-      pendingState: pendingSharedState,
-      refs: {
-        dialog: shareDialogRef,
-        version: versionDialogRef,
-      },
-      shareLink,
-      versions: initialState.versions,
-    },
+    configLibrary: configLibraryFlow.overlayProps,
+    dataSource: overlays.dataSourceProps,
+    productAccess: overlays.productAccessProps,
+    displaySettings: overlays.displaySettingsProps,
+    mobileResult: overlays.mobileResultProps,
+    share: shareFlow.overlayProps,
     team: {
       drawerProps: {
         getSpiritConfiguration: storedData.getSpiritConfiguration,
@@ -1839,7 +1398,7 @@ function CalculatorWorkspace({ snapshot }) {
             remember: false,
             source: "team",
           });
-          setTeamOpen(false);
+          overlays.team.setOpen(false);
           const spirit = snapshot.spirits.find(
             (candidate) => candidate.id === member.spiritId,
           );
@@ -1851,18 +1410,18 @@ function CalculatorWorkspace({ snapshot }) {
         },
         onCaptureSide: (side, teamId, index) =>
           teamActions.captureSide(side, teamId, index, state.sides[side]),
-        onClose: () => setTeamOpen(false),
+        onClose: () => overlays.team.setOpen(false),
         onCreateTeam: teamActions.create,
         onDeleteTeam: teamActions.remove,
         onDuplicateTeam: teamActions.duplicate,
         onMemberChange: teamActions.updateMember,
         onRenameTeam: teamActions.rename,
-        returnFocusRef: teamsButtonRef,
+        returnFocusRef: overlays.team.buttonRef,
         snapshot,
         spiritChoices: selectableSpirits,
         teamsState,
       },
-      open: teamOpen,
+      open: overlays.team.open,
     },
     toast: { message: toast, onExpire: () => setToast("") },
   };
@@ -1871,17 +1430,17 @@ function CalculatorWorkspace({ snapshot }) {
     <>
       <AppHeader
         dataVersion={`${snapshot.meta.seasonId ?? "S3季中"} · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`}
-        menuButtonRef={menuButtonRef}
-        menuOpen={menuOpen}
-        onMenuOpen={() => setMenuOpen((open) => !open)}
+        menuButtonRef={overlays.menu.buttonRef}
+        menuOpen={overlays.menu.open}
+        onMenuOpen={() => overlays.menu.setOpen((open) => !open)}
         onTeamsOpen={() => {
-          setMenuOpen(false);
-          setTeamOpen(true);
+          overlays.menu.setOpen(false);
+          overlays.team.setOpen(true);
         }}
         onThemeChange={(theme) => {
           document.documentElement.dataset.theme = theme;
         }}
-        teamsButtonRef={teamsButtonRef}
+        teamsButtonRef={overlays.team.buttonRef}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
       />

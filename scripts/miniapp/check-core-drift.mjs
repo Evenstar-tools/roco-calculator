@@ -26,8 +26,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "清理 lint 发现的未使用变量，结算语义不变",
   }),
   "src/domain/calculate.js": Object.freeze({
-    mirrorHash: "eab22f1e6e75f98f87dae1badd34bfb83c4be906e873f8ee295c197e2bd1d4be",
-    reason: "保留统一取整入口、有效技能威力向下取整、显示威力、实际攻防面板、听桥继承、虫群奉献、减压阀相邻结算与多维击打读取目标星陨印记补丁",
+    mirrorHash: "61eca5ae03503afade6c7cb28010a6a11d7e7e6f7875ba663f8d4f460019b957",
+    reason: "保留统一取整入口、有效技能威力向下取整、显示威力、实际攻防面板、听桥继承、虫群奉献、减压阀相邻结算与多维击打读取目标星陨印记补丁；计算核心已拆分为 skill-result 子模块，calculate.js 只保留 calculateMatchup 门面",
   }),
   "src/domain/clown-trick.js": Object.freeze({
     mirrorHash: "3f2bc2be7147963bd68a506481040c052cd83804b34a421b33e0c02294f878ec",
@@ -70,8 +70,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留迸发默认开启、特性层数上限与最新特性输入语义，并清理未使用常量",
   }),
   "src/state/calculator-session.js": Object.freeze({
-    mirrorHash: "f1256bb7b7f2caddda017961a371d3430e6188f3d583fcdfe4bfda0322c319d9",
-    reason: "保留威力输入状态管理，并按技能记忆状态触发次数",
+    mirrorHash: "8f666e87dbd657cc222805b1d3910ba3d7e9a7d1c95db51cbdf51122728b2a5e",
+    reason: "保留威力输入状态管理，并按技能记忆状态触发次数；能力等级公式改为引用 domain/skill-result/numeric.js 单一权威",
   }),
   "src/state/battle-activation.js": Object.freeze({
     mirrorHash: "af3de0aaf19a8a2621abe18aefccde6739db9fbe3a46517da90c865d93facd07",
