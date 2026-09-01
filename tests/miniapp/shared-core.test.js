@@ -218,6 +218,26 @@ afterEach(() => {
 });
 
 describe("miniapp shared calculator core", () => {
+  test("web build validates current mirrors without requiring release tags", async () => {
+    const coreDriftModule = await import(
+      "../../scripts/miniapp/check-core-drift.mjs"
+    );
+    const fixture = createRepositoryFixture();
+
+    expect(rootPackage.scripts["test:core-current"]).toBe(
+      "node scripts/miniapp/check-core-drift.mjs --current-only",
+    );
+    expect(rootPackage.scripts.build).toContain("npm run test:core-current");
+    expect(rootPackage.scripts.build).not.toContain("npm run test:core-drift");
+    expect(
+      coreDriftModule.runCoreDriftCheck({
+        currentOnly: true,
+        manifest: fixtureManifest,
+        repositoryRoot: fixture.root,
+      }),
+    ).toEqual({ releaseRef: null });
+  });
+
   test("pins the miniapp release to an already published web core version", () => {
     const semver = /^\d+\.\d+\.\d+$/u;
 

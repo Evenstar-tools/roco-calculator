@@ -446,20 +446,43 @@ function declaredReleaseRef(repositoryRoot) {
   return `v${match[1]}`;
 }
 
+export function runCoreDriftCheck({
+  allowedReleasePatches = DECLARED_RELEASE_PATCHES,
+  currentOnly = false,
+  manifest,
+  repositoryRoot = process.cwd(),
+} = {}) {
+  assertCoreMatches({ manifest, repositoryRoot });
+  if (currentOnly) return { releaseRef: null };
+
+  const releaseRef = declaredReleaseRef(repositoryRoot);
+  assertReleaseCoreMatches({
+    allowedReleasePatches,
+    manifest,
+    releaseRef,
+    repositoryRoot,
+  });
+  return { releaseRef };
+}
+
 const scriptPath = fileURLToPath(import.meta.url);
 
 if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
   try {
     const repositoryRoot = path.resolve(path.dirname(scriptPath), "../..");
-    const releaseRef = declaredReleaseRef(repositoryRoot);
-    assertCoreMatches({ repositoryRoot });
-    assertReleaseCoreMatches({
-      allowedReleasePatches: DECLARED_RELEASE_PATCHES,
-      releaseRef,
+    const args = process.argv.slice(2);
+    const unknownArgs = args.filter((argument) => argument !== "--current-only");
+    if (unknownArgs.length > 0) {
+      throw new Error(`Unknown arguments: ${unknownArgs.join(", ")}`);
+    }
+    const { releaseRef } = runCoreDriftCheck({
+      currentOnly: args.includes("--current-only"),
       repositoryRoot,
     });
     process.stdout.write(
-      `Shared core matches working tree, index, HEAD, and ${releaseRef}.\n`,
+      releaseRef
+        ? `Shared core matches working tree, index, HEAD, and ${releaseRef}.\n`
+        : "Shared core matches working tree, index, and HEAD.\n",
     );
   } catch (error) {
     process.stderr.write(`${error.message}\n`);
