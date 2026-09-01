@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AdvancedOptions } from "./components/AdvancedOptions.jsx";
 import { AppHeader } from "./components/AppHeader.jsx";
 import { EmptyStateGuide } from "./components/EmptyStateGuide.jsx";
@@ -274,6 +274,43 @@ function CalculatorWorkspace({ snapshot }) {
     viewMode,
   });
   const { powerDisplayMode, typeCoverageEnabled } = overlays;
+
+  // 任一弹层/抽屉打开时引导浮层让位,关闭后恢复。
+  const overlayCoveringGuide = Boolean(
+    overlays.menu.open ||
+      overlays.team.open ||
+      overlays.mobileResultProps.open ||
+      overlays.cleanupConfigsProps.open ||
+      overlays.dataSourceProps.open ||
+      overlays.displaySettingsProps.open ||
+      overlays.productAccessProps.open ||
+      configLibraryFlow.overlayProps.mode ||
+      shareFlow.overlayProps.open ||
+      shareFlow.overlayProps.pendingState,
+  );
+  const firstRunGuideVisible = firstRunGuide.open && !overlayCoveringGuide;
+
+  // 完成"选攻击方/选防御方"时引导自动推进;只在选择从无到有时前进,不干扰"上一步"。
+  const guideSelectionRef = useRef({
+    attacker: Boolean(attacker),
+    defender: Boolean(defender),
+  });
+  const { open: guideOpen, setStep: setGuideStep, step: guideStep } =
+    firstRunGuide;
+  useEffect(() => {
+    const previous = guideSelectionRef.current;
+    const current = {
+      attacker: Boolean(attacker),
+      defender: Boolean(defender),
+    };
+    guideSelectionRef.current = current;
+    if (!guideOpen) return;
+    if (guideStep === 0 && current.attacker && !previous.attacker) {
+      setGuideStep(1);
+    } else if (guideStep === 1 && current.defender && !previous.defender) {
+      setGuideStep(2);
+    }
+  }, [attacker, defender, guideOpen, guideStep, setGuideStep]);
 
   function updateDirection(value) {
     dispatch({
@@ -1388,7 +1425,7 @@ function CalculatorWorkspace({ snapshot }) {
       onNext: () => firstRunGuide.setStep((current) => Math.min(5, current + 1)),
       onOpenDetailed: () => setViewMode("detailed"),
       onSkip: firstRunGuide.finish,
-      open: firstRunGuide.open,
+      open: firstRunGuideVisible,
       ready: [
         Boolean(attacker),
         Boolean(defender),
@@ -1501,7 +1538,9 @@ function CalculatorWorkspace({ snapshot }) {
             }}
             spirits={selectableSpirits}
           />
-          {!configurationReady ? <EmptyStateGuide /> : null}
+          {!configurationReady && !firstRunGuideVisible
+            ? <EmptyStateGuide />
+            : null}
           {configurationReady && viewMode === "compact" ? (
             <section
               aria-label="即时配置"

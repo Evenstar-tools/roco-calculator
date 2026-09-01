@@ -607,9 +607,11 @@ test("walks through compact mode, opens detailed mode, and imports the library f
 
   await screen.findByRole("dialog", { name: "新手引导 1/6" });
   await selectSpirit(user, "攻击方", "音速犬");
-  await user.click(screen.getByRole("button", { name: "下一步" }));
+  expect(screen.getByRole("dialog", { name: "新手引导 2/6" }))
+    .toBeInTheDocument();
   await selectSpirit(user, "防御方", "水灵");
-  await user.click(screen.getByRole("button", { name: "下一步" }));
+  expect(screen.getByRole("dialog", { name: "新手引导 3/6" }))
+    .toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "下一步" }));
   await user.click(screen.getByRole("button", { name: "下一步" }));
   await user.click(screen.getByRole("button", { name: "前往具体版" }));
@@ -632,6 +634,32 @@ test("walks through compact mode, opens detailed mode, and imports the library f
     expect.arrayContaining([expect.objectContaining({ spiritId: "sonic-dog" })]),
   );
   fetchMock.mockRestore();
+});
+
+test("首次引导随选择自动推进并在弹层打开时让位", async () => {
+  localStorage.removeItem(FIRST_RUN_GUIDE_STORAGE_KEY);
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+
+  expect(await screen.findByRole("dialog", { name: "新手引导 1/6" }))
+    .toBeInTheDocument();
+  expect(screen.queryByText("三步完成一次伤害计算")).not.toBeInTheDocument();
+
+  await selectSpirit(user, "攻击方", "音速犬");
+  expect(screen.getByRole("dialog", { name: "新手引导 2/6" }))
+    .toBeInTheDocument();
+
+  await selectSpirit(user, "防御方", "水灵");
+  expect(screen.getByRole("dialog", { name: "新手引导 3/6" }))
+    .toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "打开队伍" }));
+  expect(screen.queryByRole("dialog", { name: /新手引导/ }))
+    .not.toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "关闭队伍" }));
+  expect(screen.getByRole("dialog", { name: "新手引导 3/6" }))
+    .toBeInTheDocument();
 });
 
 test("compact mode defaults to four skills and preserves state when opening detailed mode", async () => {

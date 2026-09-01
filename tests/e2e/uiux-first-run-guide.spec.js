@@ -18,10 +18,9 @@ test("first-run guide appears once, can be replayed, and imports popular configs
 
   await expect(page.getByRole("dialog", { name: "新手引导 1/6" })).toBeVisible();
   await selectSpirit(page, "攻击方", "音速犬");
-  await page.getByRole("button", { name: "下一步" }).click();
   await expect(page.getByRole("dialog", { name: "新手引导 2/6" })).toBeVisible();
   await selectSpirit(page, "防御方", "水灵");
-  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(page.getByRole("dialog", { name: "新手引导 3/6" })).toBeVisible();
   await page.getByRole("button", { name: "下一步" }).click();
   await page.getByRole("button", { name: "下一步" }).click();
   await page.getByRole("button", { name: "前往具体版" }).click();
@@ -55,9 +54,9 @@ test("captures the selected onboarding design at the desktop viewport", async ({
     path: "output/playwright/first-run-guide-step-1.png",
   });
   await selectSpirit(page, "攻击方", "音速犬");
-  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(page.getByRole("dialog", { name: "新手引导 2/6" })).toBeVisible();
   await selectSpirit(page, "防御方", "水灵");
-  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(page.getByRole("dialog", { name: "新手引导 3/6" })).toBeVisible();
   await page.getByRole("button", { name: "下一步" }).click();
   await page.getByRole("button", { name: "下一步" }).click();
   await page.getByRole("button", { name: "前往具体版" }).click();
@@ -97,14 +96,17 @@ test("resizes the picker spotlight without blocking dropdown or page wheel scrol
 
   await attackerPicker.fill("音速犬");
   await page.getByRole("option", { name: /^音速犬/ }).click();
-  const selection = attackerRoot.locator('[data-guide-part="selection"]');
-  const selectionBox = await selection.boundingBox();
+  await expect(page.getByRole("dialog", { name: "新手引导 2/6" })).toBeVisible();
+  const defenderPicker = page.getByRole("combobox", { name: "防御方精灵" });
+  const defenderRoot = page.locator('[data-guide-root="defender"]');
+  const defenderSearch = defenderRoot.locator('[data-guide-target="defender"]');
+  const defenderSearchBox = await defenderSearch.boundingBox();
   await expect.poll(async () => (await spotlight.boundingBox()).height)
-    .toBeGreaterThan(selectionBox.height);
+    .toBeLessThan(60);
   const selectedSpotlight = await spotlight.boundingBox();
-  expect(selectedSpotlight.y).toBeLessThanOrEqual(searchBox.y);
+  expect(selectedSpotlight.y).toBeLessThanOrEqual(defenderSearchBox.y);
   expect(selectedSpotlight.y + selectedSpotlight.height)
-    .toBeGreaterThanOrEqual(selectionBox.y + selectionBox.height);
+    .toBeGreaterThanOrEqual(defenderSearchBox.y + defenderSearchBox.height);
 
   await page.evaluate(() => {
     const spacer = document.createElement("div");
@@ -118,10 +120,7 @@ test("resizes the picker spotlight without blocking dropdown or page wheel scrol
   await expect.poll(async () => page.evaluate(() => window.scrollY))
     .toBeGreaterThan(beforePageScroll);
 
-  await page.getByRole("button", { name: "下一步" }).click();
-  const defenderPicker = page.getByRole("combobox", { name: "防御方精灵" });
   await defenderPicker.click();
-  const defenderRoot = page.locator('[data-guide-root="defender"]');
   await expect(defenderRoot.locator('[data-guide-part="options"]')).toBeVisible();
   await expect.poll(async () => (await spotlight.boundingBox()).height)
     .toBeGreaterThan(250);
@@ -176,10 +175,9 @@ test("keeps the six-step guide aligned in a narrow viewport", async ({ page }) =
   await expectSeparated(card, spotlight);
 
   await selectSpirit(page, "攻击方", "音速犬");
-  await page.getByRole("button", { name: "下一步" }).click();
+  await expect(page.getByRole("dialog", { name: "新手引导 2/6" })).toBeVisible();
 
   await selectSpirit(page, "防御方", "水灵");
-  await page.getByRole("button", { name: "下一步" }).click();
   await expect(page.getByRole("dialog", { name: "新手引导 3/6" })).toBeVisible();
   await expectInsideViewport(card);
   await expectInsideViewport(spotlight);
