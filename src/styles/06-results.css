@@ -72,6 +72,14 @@
   margin-top: 14px;
 }
 
+.result-rail__damage-label {
+  margin: 0 0 2px;
+  color: var(--text-faint);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
 .result-rail__damage {
   display: block;
   color: #111;
@@ -94,6 +102,18 @@
   color: var(--text-muted);
   font-size: 11px;
   font-weight: 600;
+}
+
+/* 非致死时提示还需几次同伤害可击倒。 */
+.result-rail__ko-hint {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  margin-left: 8px;
+  color: var(--text-faint);
+  background: var(--surface-soft);
+  font-weight: 700;
 }
 
 .damage-bar {
@@ -199,9 +219,14 @@
 .skill-result-row--action {
   width: 100%;
   border: 0;
+  background: transparent;
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+.skill-result-row--action:hover {
+  background: var(--accent-soft);
 }
 
 .skill-result-row--trait {

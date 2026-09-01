@@ -2897,6 +2897,25 @@ test("enables negative-status settlement, edits stacks, and remembers the switch
   expect(screen.getByRole("region", { name: "负面状态层数" })).toBeVisible();
 });
 
+test("四技能模式下点击技能结果行可切换当前技能", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const list = within(screen.getByRole("region", { name: "技能结果" }));
+  const rows = list
+    .getAllByRole("button", { name: /^查看.+伤害$/u })
+    .filter((row) => !row.className.includes("skill-result-row--trait"));
+  expect(rows.length).toBeGreaterThanOrEqual(2);
+  expect(rows[0]).toHaveClass("is-selected");
+  expect(rows[1]).not.toHaveClass("is-selected");
+
+  await user.click(rows[1]);
+  expect(rows[1]).toHaveClass("is-selected");
+  expect(rows[0]).not.toHaveClass("is-selected");
+});
+
 test("切换四技能行到可编辑的显示威力并记住设置", async () => {
   const user = userEvent.setup();
   const first = render(<App initialSnapshot={snapshot} />);

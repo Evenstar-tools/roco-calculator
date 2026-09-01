@@ -291,6 +291,7 @@ export function ResultRail({
   onCurrentHpChange,
   onCurrentHpPercentChange,
   onDirectionToggle,
+  onSkillResultSelect,
   result,
   showTypeCoverage = false,
 }) {
@@ -307,6 +308,10 @@ export function ResultRail({
       ? "可击倒"
       : `剩余 ${Math.max(0, result.defenderHp - primary.totalDamage)} HP`
     : primary.reason ?? (primary.status === "unsupported" ? "该规则暂未验证" : "需要更多输入");
+  const koHits =
+    isExact && !primary.lethal && primary.totalDamage > 0
+      ? Math.ceil(result.defenderHp / primary.totalDamage)
+      : null;
   return (
     <aside aria-label="伤害结果" className="result-rail">
       <div className="result-rail__heading">
@@ -334,11 +339,17 @@ export function ResultRail({
       {!isStatusOnly ? (
         <>
           <div className="result-rail__primary">
+            <p className="result-rail__damage-label">单次伤害</p>
             <output className="result-rail__damage" data-testid="primary-damage">
               {isExact ? primary.totalDamage : "—"}
             </output>
             <p className="result-rail__percent">{percentText}</p>
-            <p className="result-rail__lethal">{outcomeText}</p>
+            <p className="result-rail__lethal">
+              {outcomeText}
+              {koHits !== null ? (
+                <span className="result-rail__ko-hint">{koHits} 次可击倒</span>
+              ) : null}
+            </p>
           </div>
 
           <div
@@ -442,7 +453,14 @@ export function ResultRail({
             />
           ) : null}
           {result.skillResults.map((skill, index) => (
-            <SkillResultRow index={index} item={skill} key={`${skill.id}-${index}`} />
+            <SkillResultRow
+              index={index}
+              item={skill}
+              key={`${skill.id}-${index}`}
+              onClick={onSkillResultSelect
+                ? () => onSkillResultSelect(index)
+                : undefined}
+            />
           ))}
         </section>
       ) : null}

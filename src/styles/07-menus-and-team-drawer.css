@@ -250,6 +250,14 @@
   background: var(--border);
 }
 
+.app-menu__group-label {
+  padding: 5px 10px 2px;
+  color: var(--text-faint);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
 .team-drawer-backdrop {
   position: fixed;
   z-index: 110;

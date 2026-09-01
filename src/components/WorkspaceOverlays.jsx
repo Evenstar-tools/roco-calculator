@@ -142,6 +142,9 @@ export function WorkspaceOverlays({
           id="app-menu"
           ref={menu.ref}
         >
+          <div aria-hidden="true" className="app-menu__group-label">
+            配置
+          </div>
           <button
             onClick={() => {
               menuActions.onClearCurrent?.();
@@ -182,6 +185,9 @@ export function WorkspaceOverlays({
             <span className="app-menu__badge">213</span>
           </button>
           <div aria-hidden="true" className="app-menu__separator" />
+          <div aria-hidden="true" className="app-menu__group-label">
+            帮助
+          </div>
           <button
             onClick={() => {
               menuActions.onFirstRunGuide?.();
@@ -200,6 +206,10 @@ export function WorkspaceOverlays({
           >
             显示设置
           </button>
+          <div aria-hidden="true" className="app-menu__separator" />
+          <div aria-hidden="true" className="app-menu__group-label">
+            关于
+          </div>
           <button
             onClick={() => {
               menuActions.onShowProductAccess?.();
@@ -274,6 +284,7 @@ export function WorkspaceOverlays({
             onCurrentHpChange={mobileActions.onCurrentHpChange}
             onCurrentHpPercentChange={mobileActions.onCurrentHpPercentChange}
             onDirectionToggle={mobileActions.onDirectionToggle}
+            onSkillResultSelect={mobileActions.onSkillResultSelect}
             result={mobileResult.result}
             showTypeCoverage={mobileResult.showTypeCoverage}
           />

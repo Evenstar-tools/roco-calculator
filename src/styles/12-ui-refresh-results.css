@@ -862,6 +862,10 @@ html[data-theme="dark"] .skill-result-row--action {
   background: transparent;
 }
 
+html[data-theme="dark"] .skill-result-row--action:hover {
+  background: var(--surface-soft);
+}
+
 html[data-theme="dark"] .skill-result-row.is-selected {
   color: var(--text);
   background: var(--accent-soft);

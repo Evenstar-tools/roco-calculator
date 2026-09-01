@@ -283,6 +283,12 @@ function CalculatorWorkspace({ snapshot }) {
     });
   }
 
+  // 四技能模式下点结果行即可切换当前技能;单技能模式行不可点。
+  const selectSkillResult = state.mode === "four"
+    ? (index) =>
+        updateDirection({ selectedDamageSource: "skill", selectedSkillIndex: index })
+    : undefined;
+
   function updatePowerLevel(role, nextStage) {
     const stage = clampStage(nextStage);
     const nextAttackStage =
@@ -1400,7 +1406,13 @@ function CalculatorWorkspace({ snapshot }) {
     },
     productAccess: overlays.productAccessProps,
     displaySettings: overlays.displaySettingsProps,
-    mobileResult: overlays.mobileResultProps,
+    mobileResult: {
+      ...overlays.mobileResultProps,
+      actions: {
+        ...overlays.mobileResultProps.actions,
+        onSkillResultSelect: selectSkillResult,
+      },
+    },
     share: shareFlow.overlayProps,
     team: {
       drawerProps: {
@@ -1771,6 +1783,7 @@ function CalculatorWorkspace({ snapshot }) {
               onDirectionToggle={() =>
                 setActiveDirection(toggleDirection)
               }
+              onSkillResultSelect={selectSkillResult}
               result={resultModel}
               showTypeCoverage={typeCoverageEnabled}
             />
