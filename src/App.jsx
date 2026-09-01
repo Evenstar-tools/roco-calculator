@@ -49,12 +49,16 @@ import {
   hasNegativeStatusSkillApplication,
   hasNegativeStatusTraitApplication,
 } from "./domain/negative-status-rules.js";
-import { hasDeclaredHitCount } from "./domain/skill-effects.js";
+import {
+  getSkillEffectInputs,
+  hasDeclaredHitCount,
+} from "./domain/skill-effects.js";
 import {
   copyPositiveAbilityStages,
   hasFairPigeonBalance,
 } from "./domain/fair-pigeon.js";
 import { getNatureMultipliers } from "./domain/natures.js";
+import { starfallStacksFromMarkSlot } from "./domain/marks.js";
 import { calculateAllPanelStats } from "./domain/stat.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
 import { withCalculatorExtras } from "./data/snapshot-extras.js";
@@ -454,6 +458,58 @@ function CalculatorWorkspace({ snapshot }) {
     defenseLevelStage,
     weatherRainTurns,
   } = viewModel.environment;
+
+  function targetStarfallStacksForSide(side, currentState = state) {
+    const targetSide = side === "attacker" ? "defender" : "attacker";
+    return starfallStacksFromMarkSlot(
+      currentState.marks?.[targetSide]?.negative,
+    );
+  }
+
+  function updateTargetStarfallStacks(side, value) {
+    const targetSide = side === "attacker" ? "defender" : "attacker";
+    dispatch({
+      polarity: "negative",
+      side: targetSide,
+      type: "mark/update",
+      value: {
+        id: "starfall",
+        stacks: Math.min(99, Math.max(0, Math.floor(Number(value) || 0))),
+      },
+    });
+  }
+
+  function enemyStarfallInputId(skill) {
+    return getSkillEffectInputs(skill).find(
+      (input) => input.contextKey === "enemyStarfallMarks",
+    )?.id;
+  }
+
+  function isEnemyStarfallInput(skill, key) {
+    return key === "enemyStarfallMarks" || key === enemyStarfallInputId(skill);
+  }
+
+  function linkedEnemyStarfallContext(skill, context, stacks) {
+    const inputId = enemyStarfallInputId(skill);
+    return {
+      ...(context ?? {}),
+      enemyStarfallMarks: stacks,
+      ...(inputId ? { [inputId]: stacks } : {}),
+    };
+  }
+
+  function linkedSkillSlotView(side, entry) {
+    const view = getSkillSlotView(snapshot, entry);
+    if (view?.name !== "多维击打") return view;
+    return {
+      ...view,
+      slotContext: linkedEnemyStarfallContext(
+        view,
+        view.slotContext,
+        targetStarfallStacksForSide(side),
+      ),
+    };
+  }
 
   async function generateShareLink() {
     if (!configurationReady) {
@@ -1286,6 +1342,13 @@ function CalculatorWorkspace({ snapshot }) {
       }
       onSkillSelect={selectSingleSkill}
       onTraitContextChange={(key, value) => {
+        if (
+          selectedSingleSkill?.name === "多维击打" &&
+          isEnemyStarfallInput(selectedSingleSkill, key)
+        ) {
+          updateTargetStarfallStacks(activeAttackSideKey, value);
+          return;
+        }
         updateTraitContext(activeDirection, key, value);
       }}
       result={resultModel.selectedResult}
@@ -1296,7 +1359,15 @@ function CalculatorWorkspace({ snapshot }) {
       }
       powerDisplayMode={powerDisplayMode}
       powerOverride={currentDirection.overrides.powerOverride ?? null}
-      traitContext={currentDirection.context}
+      traitContext={
+        selectedSingleSkill?.name === "多维击打"
+          ? linkedEnemyStarfallContext(
+              selectedSingleSkill,
+              currentDirection.context,
+              targetStarfallStacksForSide(activeAttackSideKey),
+            )
+          : currentDirection.context
+      }
     />
   ) : null;
 
@@ -1341,7 +1412,7 @@ function CalculatorWorkspace({ snapshot }) {
       attackerResults={calculation.forward.results}
       attackerSkillChoices={attackerSkillChoices}
       attackerSkills={state.sides.attacker.skills.four.map((entry) =>
-        getSkillSlotView(snapshot, entry),
+        linkedSkillSlotView("attacker", entry),
       )}
       attackerSproutStacks={
         state.marks?.attacker?.positive?.id === "sprout"
@@ -1365,7 +1436,7 @@ function CalculatorWorkspace({ snapshot }) {
       defenderResults={calculation.reverse.results}
       defenderSkillChoices={defenderSkillChoices}
       defenderSkills={state.sides.defender.skills.four.map((entry) =>
-        getSkillSlotView(snapshot, entry),
+        linkedSkillSlotView("defender", entry),
       )}
       defenderSproutStacks={
         state.marks?.defender?.positive?.id === "sprout"
@@ -1386,11 +1457,19 @@ function CalculatorWorkspace({ snapshot }) {
         const direction = side === "attacker" ? "forward" : "reverse";
         updateTraitContext(direction, key, value);
       }}
-      onSkillContextChange={(side, index, key, value) =>
+      onSkillContextChange={(side, index, key, value) => {
+        const skill = getSkill(
+          snapshot,
+          stateRef.current.sides[side].skills.four[index],
+        );
+        if (skill?.name === "多维击打" && isEnemyStarfallInput(skill, key)) {
+          updateTargetStarfallStacks(side, value);
+          return;
+        }
         updateFourSkillEntry(side, index, {
           context: { [key]: value },
-        })
-      }
+        });
+      }}
       onSkillActivate={activateFourSkill}
       onSkillFocus={(side, index) => {
         const direction = side === "attacker" ? "forward" : "reverse";

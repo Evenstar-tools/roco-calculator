@@ -49,6 +49,7 @@ const snapshot = {
         "gather-momentum",
         "moe-strike",
         "wish-power-fire",
+        "dimensional-hit",
       ],
     },
     {
@@ -93,6 +94,17 @@ const snapshot = {
       provenance: { basePower: "test" },
       ruleId: null,
       type: "火",
+    },
+    {
+      basePower: 15,
+      category: "physical",
+      cost: 2,
+      description: "造成物伤，额外连击数等于敌方星陨印记层数。",
+      id: "dimensional-hit",
+      name: "多维击打",
+      provenance: { basePower: "test" },
+      ruleId: null,
+      type: "幻",
     },
     {
       basePower: 0,
@@ -1242,6 +1254,62 @@ test("shows defense power levels as the original positive multiplier", async () 
   expect(within(defenseSide).getByText("1层 · +10%")).toBeVisible();
   expect(Number(screen.getByTestId("primary-damage").textContent)).toBeLessThan(
     damageBefore,
+  );
+});
+
+test("links multi-dimensional strike hits with the target starfall mark", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+
+  const skillPicker = screen.getByRole("combobox", { name: "选择技能" });
+  await user.clear(skillPicker);
+  await user.type(skillPicker, "多维击打");
+  await user.click(screen.getByRole("option", { name: /多维击打/ }));
+  expect(document.querySelector(".result-rail__attacker")).toHaveTextContent("音速犬");
+
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const defenderMarks = screen.getByRole("group", { name: "防御方印记" });
+  await user.selectOptions(
+    within(defenderMarks).getByRole("combobox", { name: "防御方负面印记" }),
+    "starfall",
+  );
+  const targetStarfall = within(defenderMarks).getByRole("spinbutton", {
+    name: "防御方星陨层数",
+  });
+  await user.clear(targetStarfall);
+  await user.type(targetStarfall, "3");
+
+  await waitFor(() =>
+    expect(
+      within(screen.getByRole("group", { name: "防御方印记" })).getByRole(
+        "spinbutton",
+        { name: "防御方星陨层数" },
+      ),
+    ).toHaveValue(3),
+  );
+
+  const linkedStarfall = screen.getByRole("spinbutton", {
+    name: "敌方星陨印记",
+  });
+  await waitFor(() => expect(linkedStarfall).toHaveValue(3));
+  await waitFor(() =>
+    expect(screen.getByRole("spinbutton", { name: "连击次数" })).toHaveValue(4),
+  );
+
+  fireEvent.change(linkedStarfall, { target: { value: "5" } });
+  fireEvent.blur(linkedStarfall);
+  await waitFor(() =>
+    expect(
+      within(screen.getByRole("group", { name: "防御方印记" })).getByRole(
+        "spinbutton",
+        { name: "防御方星陨层数" },
+      ),
+    ).toHaveValue(5),
+  );
+  await waitFor(() =>
+    expect(screen.getByRole("spinbutton", { name: "连击次数" })).toHaveValue(6),
   );
 });
 

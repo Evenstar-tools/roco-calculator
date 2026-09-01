@@ -141,6 +141,11 @@ export function normalizeMarkSlot(value, polarity) {
   return { id, stacks };
 }
 
+export function starfallStacksFromMarkSlot(value) {
+  const slot = normalizeMarkSlot(value, "negative");
+  return slot.id === "starfall" ? slot.stacks : 0;
+}
+
 export function normalizeMarksState(value, legacyDirections = {}) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     const marks = createMarksState();

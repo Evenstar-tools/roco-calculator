@@ -3283,6 +3283,42 @@ describe("calculateMatchup", () => {
     });
   });
 
+  test("多维击打按目标星陨印记同步额外连击并忽略旧技能条件", () => {
+    const fixture = {
+      ...snapshot,
+      skills: snapshot.skills.map((skill) =>
+        skill.id === "skill_wind" || skill.id === "skill_water"
+          ? { ...skill, basePower: 15, name: "多维击打" }
+          : skill,
+      ),
+    };
+    const staleInputId = getSkillEffectInputs(
+      fixture.skills.find((skill) => skill.id === "skill_wind"),
+    ).find((input) => input.contextKey === "enemyStarfallMarks").id;
+    const input = battleInput({
+      directions: {
+        forward: { context: { [staleInputId]: 1, enemyStarfallMarks: 1 } },
+        reverse: { context: { [staleInputId]: 1, enemyStarfallMarks: 1 } },
+      },
+      marks: {
+        attacker: {
+          negative: { id: "starfall", stacks: 2 },
+          positive: { id: null, stacks: 0 },
+        },
+        defender: {
+          negative: { id: "starfall", stacks: 3 },
+          positive: { id: null, stacks: 0 },
+        },
+      },
+    });
+
+    expect(calculateMatchup(fixture, input).forward.selectedResult.hitCount).toBe(4);
+    expect(calculateMatchup(fixture, input).reverse.selectedResult.hitCount).toBe(3);
+
+    input.marks.defender.negative.stacks = 5;
+    expect(calculateMatchup(fixture, input).forward.selectedResult.hitCount).toBe(6);
+  });
+
   test.each([
     [0, 55, 79],
     [0.2, 66, 94],

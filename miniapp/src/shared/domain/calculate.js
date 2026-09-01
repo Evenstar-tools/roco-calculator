@@ -24,6 +24,7 @@ import {
 } from "./trait-effects.js";
 import {
   normalizeMarkSlot,
+  starfallStacksFromMarkSlot,
   resolveSourceMarkEffects,
   targetNegativeMarkSettlement,
 } from "./marks.js";
@@ -559,6 +560,10 @@ function calculateSkillResult({
     (sourceNegativeMark.id === "slow"
       ? sourceNegativeMark.stacks * 10
       : 0);
+  const enemyStarfallMarks = starfallStacksFromMarkSlot(targetMarks?.negative);
+  const enemyStarfallInputId = getSkillEffectInputs(skill).find(
+    (input) => input.contextKey === "enemyStarfallMarks",
+  )?.id;
   const context = {
     attackerSpeed: markedAttackerSpeed,
     defenderSpeed,
@@ -567,6 +572,10 @@ function calculateSkillResult({
     enemyTotalSkillCost: defender.totalSkillCost,
     skillPosition,
     ...rawContext,
+    enemyStarfallMarks,
+    ...(enemyStarfallInputId
+      ? { [enemyStarfallInputId]: enemyStarfallMarks }
+      : {}),
     attackerHpPercent:
       finiteNumber(attackerHpPercent) ??
       (Math.min(

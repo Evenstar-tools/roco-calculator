@@ -13,6 +13,7 @@ import {
   applyBalanceTraitTrigger,
 } from "../shared/state/battle-activation.js";
 import { isPureStatusSkill } from "../shared/domain/skill-status-effects.js";
+import { starfallStacksFromMarkSlot } from "../shared/domain/marks.js";
 import { createInitialState } from "../shared/state/defaults.js";
 import {
   selectSpirit,
@@ -208,9 +209,18 @@ export default function BattleWorkspace({
     activeSelectedEntry && typeof activeSelectedEntry === "object"
       ? activeSelectedEntry
       : {};
-  const conditionContext = state.mode === "four"
+  const rawConditionContext = state.mode === "four"
     ? selectedSlotDetails.context ?? {}
     : activeDirectionState.context;
+  const targetSide = activeSide === "attacker" ? "defender" : "attacker";
+  const conditionContext = selectedSkill?.name === "多维击打"
+    ? {
+        ...rawConditionContext,
+        enemyStarfallMarks: starfallStacksFromMarkSlot(
+          state.marks?.[targetSide]?.negative,
+        ),
+      }
+    : rawConditionContext;
   const conditionDirection = state.mode === "four"
     ? {
         hitCount: selectedSlotDetails.hitCount,
@@ -463,6 +473,19 @@ export default function BattleWorkspace({
   }
 
   function updateSkillContext(context) {
+    if (
+      selectedSkill?.name === "多维击打" &&
+      Object.hasOwn(context, "enemyStarfallMarks")
+    ) {
+      setMark(targetSide, "negative", {
+        id: "starfall",
+        stacks: Math.min(
+          99,
+          Math.max(0, Math.floor(Number(context.enemyStarfallMarks) || 0)),
+        ),
+      });
+      return;
+    }
     if (state.mode === "four") {
       updateSelectedSlot(direction, activeSide, { context });
       return;

@@ -26,8 +26,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "清理 lint 发现的未使用变量，结算语义不变",
   }),
   "src/domain/calculate.js": Object.freeze({
-    mirrorHash: "3d6e93c166d12442d4a5f95916a174b15af81b6235c7cda8ae6f38373d4c52b0",
-    reason: "保留统一取整入口、有效技能威力向下取整、显示威力、实际攻防面板、听桥继承、虫群奉献与减压阀相邻结算补丁",
+    mirrorHash: "eab22f1e6e75f98f87dae1badd34bfb83c4be906e873f8ee295c197e2bd1d4be",
+    reason: "保留统一取整入口、有效技能威力向下取整、显示威力、实际攻防面板、听桥继承、虫群奉献、减压阀相邻结算与多维击打读取目标星陨印记补丁",
   }),
   "src/domain/clown-trick.js": Object.freeze({
     mirrorHash: "3f2bc2be7147963bd68a506481040c052cd83804b34a421b33e0c02294f878ec",
@@ -42,8 +42,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留契约的形状14种咕噜球效果对应关系与结算语义",
   }),
   "src/domain/marks.js": Object.freeze({
-    mirrorHash: "7ae356e5f9623674c6834494843e36781c932145b1ddddf24dd4146347545e99",
-    reason: "保留风起印记的已验收威力结算补丁",
+    mirrorHash: "703bf5f1c8de01a584034d69898528c16b3ff39a980161d05b11d04fe8fa0b8d",
+    reason: "保留风起印记的已验收威力结算与星陨层数标准读取补丁",
   }),
   "src/domain/negative-status-rules.js": Object.freeze({
     mirrorHash: "ac5f192d99c5c7ab5a79844c250081beac67900924522365b942474d09678660",
