@@ -38,14 +38,26 @@ describe("offline desktop asset routing", () => {
     expect(desktopMain).not.toContain('"text/javascript; charset=utf-8"');
   });
 
-  test("offline smoke expects the current production spirit count", () => {
+  test("offline smoke derives its data expectations from the bundled snapshot", () => {
     const desktopMain = readFileSync("desktop/main.mjs", "utf8");
+
+    expect(desktopMain).not.toMatch(/data\.(?:spirits|skills|learnsets) === \d/u);
+    expect(desktopMain).toContain("data.spirits === data.declaredSpirits");
+    expect(desktopMain).toContain("data.skills === data.declaredSkills");
+    expect(desktopMain).toContain("data.learnsets === data.spirits");
+    expect(desktopMain).toContain("data.portraits === data.spirits");
+  });
+
+  test("the shipped snapshot satisfies the offline smoke invariants", () => {
     const snapshot = JSON.parse(
       readFileSync("data/snapshots/current.json", "utf8"),
     );
-    const expectedCount = desktopMain.match(/data\.spirits === (\d+)/)?.[1];
 
-    expect(Number(expectedCount)).toBe(snapshot.spirits.length);
+    expect(snapshot.spirits.length).toBeGreaterThan(0);
+    expect(snapshot.skills.length).toBeGreaterThan(0);
+    expect(snapshot.meta.counts.spirits).toBe(snapshot.spirits.length);
+    expect(snapshot.meta.counts.skills).toBe(snapshot.skills.length);
+    expect(snapshot.learnsets).toHaveLength(snapshot.spirits.length);
   });
 
   test("desktop runtime does not register a service worker on the app protocol", () => {

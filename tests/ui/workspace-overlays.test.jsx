@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { WorkspaceOverlays } from "../../src/components/WorkspaceOverlays.jsx";
+import { USER_RELEASE_NOTES } from "../../src/data/user-release-notes.js";
 
 function renderOverlays(overrides = {}) {
   const onMenuClose = vi.fn();
@@ -205,34 +206,30 @@ test("opens the complete release notes in a second-level dialog", () => {
     menu: { actions: {}, open: false },
   });
 
+  const [latestRelease, ...previousReleases] = USER_RELEASE_NOTES;
+  const oldestRelease = previousReleases.at(-1);
+
   expect(screen.getByText("版本记录")).toBeVisible();
-  expect(screen.getByText("计算取整修复")).toBeVisible();
-  expect(screen.getByText("v1.6.5")).toBeVisible();
-  expect(
-    screen.getByText("有效技能威力完成百分比加成后先向下取整，再进入伤害公式。"),
-  ).toBeVisible();
-  expect(
-    screen.getByText(
-      "岚鸟→龙鱼案例：55×1.5=82.5→向下取整82，20054÷170=117.96→向下取整117。",
-    ),
-  ).toBeVisible();
-  expect(screen.queryByText(/小程序技能栏|技能图标|窄屏/)).not.toBeInTheDocument();
-  expect(screen.queryByText(/陨星虫配置中已失效/)).not.toBeInTheDocument();
-  expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
+  expect(screen.getByText(latestRelease.title)).toBeVisible();
+  expect(screen.getByText(latestRelease.version)).toBeVisible();
+  for (const highlight of latestRelease.summaryHighlights) {
+    expect(screen.getByText(highlight)).toBeVisible();
+  }
+  for (const release of previousReleases) {
+    expect(screen.queryByText(release.version)).not.toBeInTheDocument();
+  }
+  expect(screen.queryByText(oldestRelease.highlights[0])).not.toBeInTheDocument();
 
   fireEvent.click(screen.getByRole("button", { name: "查看完整版本记录" }));
   expect(screen.getByRole("dialog", { name: "完整版本记录" })).toBeVisible();
-  expect(screen.getByText(/陨星虫配置中已失效/)).toBeVisible();
-  expect(screen.getByText("v1.6.2")).toBeVisible();
-  expect(screen.getByText("v1.5.4")).toBeVisible();
-  expect(screen.getByText("v1.0.0")).toBeVisible();
-  expect(
-    screen.getByText("新增精灵防御端分析，分别显示自身弱点与抗性。"),
-  ).toBeVisible();
+  for (const release of USER_RELEASE_NOTES) {
+    expect(screen.getByText(release.version)).toBeVisible();
+  }
+  expect(screen.getByText(oldestRelease.highlights[0])).toBeVisible();
 
   fireEvent.click(screen.getByRole("button", { name: "返回关于与来源" }));
   expect(screen.getByRole("dialog", { name: "关于与来源" })).toBeVisible();
-  expect(screen.queryByText("v1.5.3")).not.toBeInTheDocument();
+  expect(screen.queryByText(oldestRelease.version)).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "查看完整版本记录" })).toBeVisible();
 });
 

@@ -2,8 +2,9 @@
 
 ## 当前 `main` 产品基线
 
-- Web / 桌面端版本：`1.6.5`
-- 微信小程序版本：`1.1.6`，当前标记网页核心 `1.6.5`；发布前以实际工作树重新核对。
+- Web / 桌面端版本：根 `package.json` 的 `version`，这是网页与桌面版本号的唯一事实来源。
+- 微信小程序版本：`miniapp/package.json` 的 `version`；`miniapp/src/version.js` 的 `WEB_CORE_VERSION` 记录它镜像的已发布网页核心标签。
+- 门禁脚本与测试断言一律从上述两个 `package.json` 派生，不再复制版本字符串。
 - 桌面端由 Web 构建产物通过 Electron 离线封装。
 - 微信小程序复用 Web 的计算核心，但拥有独立页面、状态适配和发布流程。
 

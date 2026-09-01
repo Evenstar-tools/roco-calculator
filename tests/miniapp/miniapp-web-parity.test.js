@@ -14,12 +14,7 @@ function readJson(relativePath) {
   );
 }
 
-describe("desktop current core and v1.6.5 release miniapp parity", () => {
-  test("keeps the desktop and miniapp release versions explicit", () => {
-    expect(readJson("package.json").version).toBe("1.6.5");
-    expect(readJson("miniapp/package.json").version).toBe("1.1.6");
-  });
-
+describe("desktop core and miniapp parity", () => {
   test.each([
     "src/domain/negative-status.js",
     "src/domain/negative-status-rules.js",

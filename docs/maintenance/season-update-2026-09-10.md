@@ -7,10 +7,10 @@
 | 项目 | 基线 |
 | --- | --- |
 | Git | 制定执行单时的 `origin/main`：`f39b481b84953d1437668be4a2424556621a6a1a` |
-| Web / 桌面 | `1.6.4` |
-| 微信小程序 | `origin/main` 为 `1.1.4`，当前标记网页核心 `1.6.3`；执行前重新读取实际版本 |
-| 数据快照 | `s3-2026-08-13-midseason`，规则版本 `2026-08-13` |
-| 数据量 | 精灵 594、技能 553、学习集 594、特性 228、属性关系 18、人工覆盖 5 |
+| Web / 桌面 | 以根 `package.json` 的 `version` 为准；执行前 `node -p "require('./package.json').version"` |
+| 微信小程序 | 以 `miniapp/package.json` 的 `version` 为准；`miniapp/src/version.js` 的 `WEB_CORE_VERSION` 记录其镜像的网页核心发布标签 |
+| 数据快照 | `data/snapshots/current.json`，当前 `s3-2026-08-13-midseason`，规则版本 `2026-08-13` |
+| 数据量 | 以 `data/snapshots/current.json` 的 `meta.counts` 为准；当前精灵 594、技能 553、学习集 594、特性 228、属性关系 18、人工覆盖 5 |
 | BWIKI 基线 | 精灵筛选 `41360`、技能筛选 `40653` |
 | `current.json` | SHA256 `5D06E2CDC0DD5463DA31FAE24AFCB3E4CF7E20B49ECC72CA172D5777B09B818C` |
 | `runtime.json` | SHA256 `60154ACD9BFE9F90F39393B509263CA77A6F86C3D86CD8EC993904B93E085029` |
@@ -48,14 +48,14 @@ npm run -s data:check-updates
 | --- | --- | --- | --- |
 | 官方信息 | 赛季名称、生效时间、完整公告、平衡说明 | 本文“执行记录”与新快照 `meta.sources` | 链接、日期、摘要齐全 |
 | 精灵目录 | 图鉴号、形态、阶数、属性、种族值、特性、进化链 | 赛季 CSV、`data/snapshots/current.json` | 稳定 ID 不漂移，新增删除可解释 |
-| 技能目录 | 属性、类别、能耗、威力、描述 | BWIKI 技能筛选与当前快照 | 553 基线差异逐项归类 |
+| 技能目录 | 属性、类别、能耗、威力、描述 | BWIKI 技能筛选与当前快照 | 与旧快照 `meta.counts.skills` 的差异逐项归类 |
 | 学习集 | 每个形态的技能与获得方式 | BWIKI 详情缓存、`learnsets` | 无未知技能引用，无缺失形态 |
 | 特性与动态规则 | 层数、位置、应对、连击、生命、能量、最终伤害等条件 | `src/domain`、规则参数与测试 | 默认、触发、边界、双向均有回归 |
 | 属性关系 | 18 属性克制、抵抗、免疫 | `typeChart` | 18 项完整且矩阵测试通过 |
 | 素材 | 精灵头像、属性图标、路径、摘要、尺寸 | `public/assets` 与 manifest | 无缺图、错图、远程依赖泄漏 |
 | 常用配置 | 新增精灵默认性格、个体、四技能、特性参数 | 配置库 JSON | 只更新有证据的配置，旧用户配置可读 |
-| 版本显示 | 赛季标题、数据版本、Web、桌面、小程序版本 | Web 与小程序生产文件 | 三端显示与快照一致 |
-| 发布说明 | CHANGELOG、应用内简版记录、验证报告 | `CHANGELOG.md`、`src/data/user-release-notes.js`、`docs/verification` | 用户可读且不混入内部流水账 |
+| 版本显示 | 赛季标题、数据版本、Web、桌面、小程序版本 | 根 `package.json`、`miniapp/package.json` 与三端生产文件 | 三端显示与快照一致；门禁和测试自动从两个 `package.json` 派生 |
+| 发布说明 | CHANGELOG、应用内简版记录、验证报告 | `CHANGELOG.md`、`src/data/user-release-notes.js`、`docs/verification` | 首条记录版本等于根 `package.json` 版本，且不复述历史条目 |
 
 ## 当日执行步骤
 
@@ -115,17 +115,18 @@ npm run -s data:check-updates -- --json
 
 ### 5. 更新构建器并生成候选快照
 
-先检查 `scripts/bwiki/build-snapshot.mjs` 中的以下旧赛季常量：
+赛季 ID、赛季名称和抓取数量期望已改为命令行参数，不再是脚本常量。仍需检查 `scripts/bwiki/build-snapshot.mjs` 中的以下旧赛季内容：
 
-- `SEASON_ID`、`seasonId`、`snapshotVersion`、`rulesVersion`；
+- `snapshotVersion`、`rulesVersion`；
 - CSV 来源标题、URN、日期；
-- 预期精灵数、技能数；
 - 旧 S3 目录补丁与季中平衡补丁的适用范围。
 
 不要直接复用 `apply-s3-midseason-catalog.mjs` 或 `apply-s3-midseason-balance.mjs` 处理新赛季。新资料需要独立、可重复执行的补丁或完整快照构建步骤。
 
+抓取数量校验是防刮取回归的门禁，必须显式传入本次核对后的期望值；缺参数时脚本直接报错并打印用法。
+
 ```powershell
-npm run data:build
+npm run data:build -- --season-id '<新赛季ID>' --season-name '<新赛季名称>' --expect-spirits <核对后的精灵数> --expect-skills <核对后的技能数>
 node scripts/bwiki/sync-assets.mjs
 npm run data:runtime
 npm run data:validate
@@ -134,7 +135,11 @@ npm run -s cli -- meta
 git diff --stat -- data/snapshots public/data public/assets
 ```
 
-候选快照必须记录上一快照 ID、增删数量、来源修订、抓取时间和内容 SHA256。
+`npm run data:validate` 默认按新快照自身的 `meta.counts` 校验内部一致性；需要对照外部核对值时追加 `-- --expect-spirits <数量> --expect-skills <数量>`。
+
+`npm run data:verify-bindings` 同时执行头像绑定校验和图片体积门禁（单图边长与 ≤200 KiB）。新赛季头像必须先压到门禁内，再进入构建。
+
+上一快照会自动归档到 `data/snapshots/seasons/<旧赛季ID>.json`，新快照写入 `data/snapshots/current.json`。候选快照必须记录上一快照 ID、增删数量、来源修订、抓取时间和内容 SHA256。
 
 ### 6. 补齐规则和界面
 
@@ -153,6 +158,27 @@ npm run test:core-drift
 - `miniapp/src/pages/index/index.jsx` 与 `index.config.js`；
 - `miniapp/src/version.js`；
 - 对应 Web、小程序、桌面品牌和分享测试。
+
+### 6.5 版本号与发布说明
+
+版本号只有两个事实来源：根 `package.json`（网页 / 桌面）与 `miniapp/package.json`（小程序）。发版时只做三件事：
+
+1. 修改根 `package.json` 的 `version`；
+2. 修改 `miniapp/package.json` 的 `version`；
+3. 在 `CHANGELOG.md` 顶部和 `src/data/user-release-notes.js` 顶部各新增一条对应新版本的记录。
+
+门禁脚本、测试断言和发布说明校验都从这三处派生，不需要再逐个改测试里的版本字符串或发布文案：
+
+- `scripts/miniapp/verify-release.mjs` 的期望版本读取两个 `package.json`；
+- `tests/docs/release-notes.test.js` 校验首条记录版本等于根 `package.json` 版本、日期格式、首屏摘要精简，且不复述历史条目；
+- `tests/ui/workspace-overlays.test.jsx` 与 `tests/e2e/data-source-dialog.spec.js` 从 `src/data/user-release-notes.js` 读取首条记录的标题与摘要做断言。
+
+仍需手动同步、且已有测试兜底的展示型版本文件：
+
+- `miniapp/src/version.js`：`MINIAPP_VERSION` 与 `MINIAPP_UPDATE_DATE` 是小程序界面展示内容，`WEB_CORE_VERSION` 是共享核心漂移比对使用的已发布网页核心标签；`miniapp/tests/app-shell.test.jsx` 校验 `MINIAPP_VERSION` 等于 `miniapp/package.json` 版本，`tests/miniapp/shared-core.test.js` 校验 `WEB_CORE_VERSION` 不超前于根 `package.json` 版本。
+- `public/sw.js` 的 `CACHE_NAME`：必须随网页版本改动才能失效旧缓存；`tests/service-worker/sw-cache.test.js` 校验它等于根 `package.json` 版本。
+
+数据数量、精灵数、技能数不再写进桌面代码或测试：桌面离线冒烟从打包内 `data/runtime.json` 的 `meta.counts` 自校验，测试从 `data/snapshots/current.json` 派生。
 
 ### 7. 完整门禁
 

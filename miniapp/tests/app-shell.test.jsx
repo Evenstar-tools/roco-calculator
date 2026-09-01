@@ -11,6 +11,7 @@ import {
   MINIAPP_VERSION,
   WEB_CORE_VERSION,
 } from "../src/version.js";
+import miniappPackage from "../package.json";
 
 describe("miniapp shell", () => {
   test("uses a static startup indicator that does not block WeChat rendering", () => {
@@ -21,12 +22,12 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
   });
 
-  test("publishes miniapp 1.1.6 against web core 1.6.5", () => {
-    expect(MINIAPP_VERSION).toBe("1.1.6");
-    expect(MINIAPP_UPDATE_DATE).toBe("2026-09-01");
-    expect(WEB_CORE_VERSION).toBe("1.6.5");
+  test("publishes the declared miniapp version against its web core", () => {
+    expect(MINIAPP_VERSION).toBe(miniappPackage.version);
+    expect(MINIAPP_UPDATE_DATE).toMatch(/^\d{4}-\d{2}-\d{2}$/u);
+    expect(WEB_CORE_VERSION).toMatch(/^\d+\.\d+\.\d+$/u);
     expect(MINIAPP_RELEASE_LABEL).toBe(
-      "小程序 v1.1.6 · 网页核心 v1.6.5",
+      `小程序 v${MINIAPP_VERSION} · 网页核心 v${WEB_CORE_VERSION}`,
     );
     render(<AppHeader dataVersion="data-v1" />);
     expect(screen.getByText(MINIAPP_RELEASE_LABEL)).toBeInTheDocument();
@@ -113,8 +114,9 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
     expect(screen.getByText(/1215583051/u)).toBeInTheDocument();
     expect(screen.getByText("当前版本")).toBeInTheDocument();
-    expect(screen.getByText("v1.1.6 · 更新于 2026-09-01"))
-      .toBeInTheDocument();
+    expect(
+      screen.getByText(`v${MINIAPP_VERSION} · 更新于 ${MINIAPP_UPDATE_DATE}`),
+    ).toBeInTheDocument();
   });
 
   test("disables the common configuration action after the bundled version is installed", () => {

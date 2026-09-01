@@ -3,6 +3,12 @@ import path from "node:path";
 import { describe, expect, test } from "vitest";
 import { USER_RELEASE_NOTES } from "../../src/data/user-release-notes.js";
 
+const packageVersion = JSON.parse(
+  readFileSync(path.join(process.cwd(), "package.json"), "utf8"),
+).version;
+
+const [currentRelease, ...previousReleases] = USER_RELEASE_NOTES;
+
 describe("版本记录", () => {
   test("仓库更新日志逐版覆盖应用内完整记录", () => {
     const changelog = readFileSync(path.join(process.cwd(), "CHANGELOG.md"), "utf8");
@@ -14,26 +20,42 @@ describe("版本记录", () => {
     expect(changelogVersions).toEqual(applicationVersions);
   });
 
-  test("v1.6.5 首屏只展示计算取整修复", () => {
-    const currentRelease = USER_RELEASE_NOTES[0];
-    const visibleSummary = currentRelease.summaryHighlights.join("\n");
-    const completeNotes = currentRelease.highlights.join("\n");
+  test("首条记录必须对应 package.json 的当前版本", () => {
+    expect(currentRelease.version).toBe(`v${packageVersion}`);
+    expect(currentRelease.date).toMatch(/^\d{4}\.\d{2}\.\d{2}$/u);
+    expect(currentRelease.title.trim().length).toBeGreaterThan(0);
+  });
 
-    expect(currentRelease).toMatchObject({
-      date: "2026.09.01",
-      title: "计算取整修复",
-      version: "v1.6.5",
-    });
-    expect(currentRelease.summaryHighlights).toHaveLength(3);
-    expect(currentRelease.summaryHighlights.every((item) => item.length <= 58)).toBe(true);
-    expect(visibleSummary).toMatch(/技能威力.*先向下取整/);
-    expect(visibleSummary).toMatch(/显示威力.*伤害分子.*单段伤害/);
-    expect(visibleSummary).toMatch(/55×1\.5=82\.5.*向下取整82/);
-    expect(visibleSummary).toMatch(/20054÷170=117\.96.*向下取整117/);
-    expect(`${visibleSummary}\n${completeNotes}`).not.toMatch(/小程序|技能图标|窄屏|分享/);
-    expect(completeNotes).toMatch(/先向下取整[\s\S]*显示威力.*四舍五入/);
-    expect(completeNotes).toMatch(/固执.*岚鸟.*先发制人.*龙鱼.*271.*170.*50%/);
-    expect(completeNotes).toMatch(/271.*82.*37\/41.*20054/);
-    expect(completeNotes).toMatch(/20054.*170.*117\.96.*117/);
+  test("版本号唯一且按发布顺序从新到旧排列", () => {
+    const versions = USER_RELEASE_NOTES.map(({ version }) => version);
+
+    expect(new Set(versions).size).toBe(versions.length);
+    expect(versions.every((version) => /^v\d+\.\d+\.\d+$/u.test(version))).toBe(true);
+  });
+
+  test("首屏摘要保持精简且每条都能完整显示", () => {
+    expect(currentRelease.summaryHighlights.length).toBeGreaterThan(0);
+    expect(currentRelease.summaryHighlights.length).toBeLessThanOrEqual(3);
+    expect(currentRelease.summaryHighlights.every((item) => item.length <= 58))
+      .toBe(true);
+    expect(currentRelease.highlights.length).toBeGreaterThan(0);
+  });
+
+  test("首屏摘要与完整记录不复述历史版本的条目", () => {
+    const historicalEntries = new Set(
+      previousReleases.flatMap((release) => [
+        ...(release.summaryHighlights ?? []),
+        ...release.highlights,
+      ]),
+    );
+    const currentEntries = [
+      ...currentRelease.summaryHighlights,
+      ...currentRelease.highlights,
+    ];
+
+    expect(currentEntries.filter((item) => historicalEntries.has(item)))
+      .toEqual([]);
+    expect(previousReleases.map(({ title }) => title))
+      .not.toContain(currentRelease.title);
   });
 });

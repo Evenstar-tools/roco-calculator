@@ -10,8 +10,20 @@ import releaseConfig from "./release-config.cjs";
 const { loadReleaseConfig, preflightErrors, verifyPreflight } = releaseConfig;
 const traverse = traverseModule.default ?? traverseModule;
 
-const EXPECTED_MINIAPP_VERSION = "1.1.6";
-const EXPECTED_ROOT_VERSION = "1.6.5";
+const REPOSITORY_ROOT = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+);
+
+// 版本单一事实来源：根 package.json（网页/桌面）与 miniapp/package.json（小程序）。
+export const EXPECTED_VERSIONS = Object.freeze({
+  miniapp: readJson(
+    path.join(REPOSITORY_ROOT, "miniapp", "package.json"),
+  ).version,
+  root: readJson(path.join(REPOSITORY_ROOT, "package.json")).version,
+});
+
 const MAX_MAIN_PACKAGE_BYTES = 2 * 1024 * 1024;
 const REQUIRED_DIST_FILES = [
   "app.json",
@@ -118,11 +130,11 @@ function validateConfiguration(release, errors) {
 }
 
 function validateVersions(release, errors) {
-  if (release.miniappVersion !== EXPECTED_MINIAPP_VERSION) {
-    errors.push(`小程序版本必须为 ${EXPECTED_MINIAPP_VERSION}`);
+  if (release.miniappVersion !== EXPECTED_VERSIONS.miniapp) {
+    errors.push(`小程序版本必须为 ${EXPECTED_VERSIONS.miniapp}`);
   }
-  if (release.rootVersion !== EXPECTED_ROOT_VERSION) {
-    errors.push(`网页核心版本必须为 ${EXPECTED_ROOT_VERSION}`);
+  if (release.rootVersion !== EXPECTED_VERSIONS.root) {
+    errors.push(`网页核心版本必须为 ${EXPECTED_VERSIONS.root}`);
   }
 }
 
@@ -583,11 +595,7 @@ function loadReleaseInput(repositoryRoot) {
   };
 }
 
-export function runReleasePreflight(repositoryRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "..",
-)) {
+export function runReleasePreflight(repositoryRoot = REPOSITORY_ROOT) {
   const config = loadReleaseConfig({
     miniappRoot: path.join(repositoryRoot, "miniapp"),
   });
@@ -596,11 +604,7 @@ export function runReleasePreflight(repositoryRoot = path.resolve(
   return true;
 }
 
-export function runReleaseCli(repositoryRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "..",
-)) {
+export function runReleaseCli(repositoryRoot = REPOSITORY_ROOT) {
   const release = loadReleaseInput(repositoryRoot);
   verifyRelease(release);
   console.log(

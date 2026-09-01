@@ -16,15 +16,16 @@ function trait(name) {
 }
 
 describe("S3 季中 8 月 13 日平衡补丁", () => {
-  test("发布 594 精灵的季中离线快照", () => {
+  test("发布完整精灵与学习集的季中离线快照", () => {
     expect(snapshot.meta).toMatchObject({
       id: "s3-2026-08-13-midseason",
       rulesVersion: "2026-08-13",
       seasonId: "S3季中",
       snapshotVersion: 2,
     });
-    expect(snapshot.spirits).toHaveLength(594);
-    expect(snapshot.learnsets).toHaveLength(594);
+    expect(snapshot.spirits.length).toBeGreaterThan(0);
+    expect(snapshot.spirits).toHaveLength(snapshot.meta.counts.spirits);
+    expect(snapshot.learnsets).toHaveLength(snapshot.spirits.length);
   });
 
   test.each([

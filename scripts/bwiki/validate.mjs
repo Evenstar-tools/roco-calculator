@@ -251,13 +251,31 @@ export function validateSnapshot(snapshot, options = {}) {
   };
 }
 
+function countOption(argv, flag) {
+  const index = argv.indexOf(flag);
+  if (index < 0) return undefined;
+  const value = Number(argv[index + 1]);
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new Error(`${flag} 需要一个正整数`);
+  }
+  return value;
+}
+
 async function main() {
-  const file = process.argv[2];
-  if (!file) throw new Error("用法：node scripts/bwiki/validate.mjs <snapshot.json>");
+  const argv = process.argv.slice(2);
+  const file = argv.find((token) => !token.startsWith("--") && token.endsWith(".json"));
+  if (!file) {
+    throw new Error(
+      "用法：node scripts/bwiki/validate.mjs <snapshot.json> [--expect-spirits <数量>] [--expect-skills <数量>]",
+    );
+  }
   const snapshot = JSON.parse(await readFile(file, "utf8"));
+  // 默认期望来自快照自身声明的 meta.counts：校验数组与声明一致，赛季增删不需要改脚本。
   const result = validateSnapshot(snapshot, {
-    expectedSpiritCount: 594,
-    expectedSkillCount: 553,
+    expectedSpiritCount:
+      countOption(argv, "--expect-spirits") ?? snapshot.meta?.counts?.spirits,
+    expectedSkillCount:
+      countOption(argv, "--expect-skills") ?? snapshot.meta?.counts?.skills,
   });
   const duplicateSpiritForms = result.errors.filter(
     ({ code }) => code === "DUPLICATE_SPIRIT_FORM",

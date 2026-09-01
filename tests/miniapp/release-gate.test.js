@@ -4,10 +4,15 @@ import path from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 
 import {
+  EXPECTED_VERSIONS,
   createArtifactEvidence,
   runReleaseCli,
   verifyRelease,
 } from "../../scripts/miniapp/verify-release.mjs";
+
+function escapeForRegExp(value) {
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+}
 
 const validRelease = {
   appId: "wx1234567890abcdef",
@@ -25,8 +30,8 @@ const validRelease = {
   ],
   mainPackageBytes: 1024,
   manifestFileId: "cloud://cloud-prod-1a2b/data/manifest.json",
-  miniappVersion: "1.1.6",
-  rootVersion: "1.6.5",
+  miniappVersion: EXPECTED_VERSIONS.miniapp,
+  rootVersion: EXPECTED_VERSIONS.root,
   runtimeSha256: "a".repeat(64),
   sourceText: "Taro.cloud.downloadFile({ fileID: manifestFileId })",
 };
@@ -48,11 +53,11 @@ function createReleaseFixture(localConfig) {
   fs.mkdirSync(path.join(root, "miniapp", "src"), { recursive: true });
   fs.writeFileSync(
     path.join(root, "package.json"),
-    JSON.stringify({ version: "1.6.5" }),
+    JSON.stringify({ version: EXPECTED_VERSIONS.root }),
   );
   fs.writeFileSync(
     path.join(root, "miniapp", "package.json"),
-    JSON.stringify({ version: "1.1.6" }),
+    JSON.stringify({ version: EXPECTED_VERSIONS.miniapp }),
   );
   fs.writeFileSync(
     path.join(root, "miniapp", "local.config.json"),
@@ -115,11 +120,11 @@ describe("miniapp production release gate", () => {
   });
 
   test.each([
-    ["miniappVersion", "0.1.0", /1\.1\.6/u],
-    ["rootVersion", "1.4.6", /1\.6\.5/u],
-  ])("rejects an unexpected %s", (key, value, message) => {
-    expect(() => verifyRelease({ ...validRelease, [key]: value }))
-      .toThrow(message);
+    ["miniappVersion", EXPECTED_VERSIONS.miniapp],
+    ["rootVersion", EXPECTED_VERSIONS.root],
+  ])("rejects an unexpected %s", (key, expectedVersion) => {
+    expect(() => verifyRelease({ ...validRelease, [key]: "0.0.1-drifted" }))
+      .toThrow(new RegExp(escapeForRegExp(expectedVersion), "u"));
   });
 
   test.each(["app.json", "pages/index/index.js"])(
@@ -363,7 +368,7 @@ describe("miniapp production release gate", () => {
     expect(() => runReleaseCli(root)).toThrow(/上传|发布/u);
   });
 
-  test("accepts a complete v1.1.6 production artifact contract", () => {
+  test("accepts a complete production artifact contract for the declared versions", () => {
     expect(verifyRelease(validRelease)).toBe(true);
   });
 });

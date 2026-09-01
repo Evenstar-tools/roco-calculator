@@ -11,8 +11,8 @@ describe("desktop package branding", () => {
     expect(packageJson).toMatchObject({
       author: "洛克计算器",
       name: "rock-calculator",
-      version: "1.6.5",
     });
+    expect(packageJson.version).toMatch(/^\d+\.\d+\.\d+$/u);
     expect(packageJson.build).toMatchObject({
       appId: "cn.rock.calculator",
       artifactName: "洛克计算器-${version}.${ext}",

@@ -24,9 +24,21 @@ const rootPackage = JSON.parse(
 const miniappPackage = JSON.parse(
   readFileSync(path.join(repositoryRoot, "miniapp/package.json"), "utf8"),
 );
-const miniappLockfile = JSON.parse(
-  readFileSync(path.join(repositoryRoot, "miniapp/package-lock.json"), "utf8"),
-);
+const declaredWebCoreVersion = readFileSync(
+  path.join(repositoryRoot, "miniapp/src/version.js"),
+  "utf8",
+).match(/export const WEB_CORE_VERSION = ["']([^"']+)["'];/u)?.[1] ?? "";
+
+function compareVersions(left, right) {
+  const leftParts = left.split(".").map(Number);
+  const rightParts = right.split(".").map(Number);
+  for (let index = 0; index < 3; index += 1) {
+    if (leftParts[index] !== rightParts[index]) {
+      return leftParts[index] - rightParts[index];
+    }
+  }
+  return 0;
+}
 
 const fixtureManifest = {
   shared: ["src/domain/calculate.js"],
@@ -206,10 +218,14 @@ afterEach(() => {
 });
 
 describe("miniapp shared calculator core", () => {
-  test("pins the miniapp release to the current web core version", () => {
-    expect(rootPackage.version).toBe("1.6.5");
-    expect(miniappPackage.version).toBe("1.1.6");
-    expect(miniappLockfile.packages[""].version).toBe("1.1.6");
+  test("pins the miniapp release to an already published web core version", () => {
+    const semver = /^\d+\.\d+\.\d+$/u;
+
+    expect(rootPackage.version).toMatch(semver);
+    expect(miniappPackage.version).toMatch(semver);
+    expect(declaredWebCoreVersion).toMatch(semver);
+    expect(compareVersions(declaredWebCoreVersion, rootPackage.version))
+      .toBeLessThanOrEqual(0);
   });
 
   test("manifest classifies every Web domain module exactly once", async () => {

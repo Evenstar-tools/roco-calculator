@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { USER_RELEASE_NOTES } from "../../src/data/user-release-notes.js";
+
+const [latestRelease] = USER_RELEASE_NOTES;
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -18,9 +21,11 @@ test("keeps the concise about summary centered in a wide viewport", async ({ pag
   expect(box).not.toBeNull();
   expect(Math.abs(box.x + box.width / 2 - 1424 / 2)).toBeLessThanOrEqual(1);
 
-  await expect(
-    dialog.getByText("小程序技能栏和选择器加入技能图标，窄屏仍保持紧凑可读。"),
-  ).toBeVisible();
+  await expect(dialog.getByText(latestRelease.version)).toBeVisible();
+  await expect(dialog.getByText(latestRelease.title)).toBeVisible();
+  for (const highlight of latestRelease.summaryHighlights) {
+    await expect(dialog.getByText(highlight)).toBeVisible();
+  }
   await expect(dialog.getByText("QQ 1215583051")).toBeVisible();
   await expect(dialog.getByText("规则校验")).toHaveCount(0);
   await expect(dialog.getByRole("link", { name: "诛仙剑下伤心花" })).toHaveCount(0);

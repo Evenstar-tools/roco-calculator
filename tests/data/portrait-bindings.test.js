@@ -118,7 +118,7 @@ describe("BWIKI 精灵头像身份绑定", () => {
     });
   });
 
-  test("594 条头像、名称与种族值使用同一个精灵 ID 关联", () => {
+  test("每条头像、名称与种族值使用同一个精灵 ID 关联", () => {
     const spiritById = new Map(snapshot.spirits.map((spirit) => [spirit.id, spirit]));
     expect(manifest.assets).toHaveLength(snapshot.spirits.length);
 

@@ -4,8 +4,9 @@ const path = require("node:path");
 const Connection = require("miniprogram-automator/out/Connection").default;
 const MiniProgram = require("miniprogram-automator/out/MiniProgram").default;
 
+const miniappVersion = require("../../miniapp/package.json").version;
 const outputDir = path.resolve(
-  process.argv[2] ?? "artifacts/wechat-review-package-v1.1.6",
+  process.argv[2] ?? `artifacts/wechat-review-package-v${miniappVersion}`,
 );
 const wsEndpoint = process.argv[3]
   ?? process.env.WECHAT_DEVTOOLS_WS_ENDPOINT

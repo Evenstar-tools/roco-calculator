@@ -42,7 +42,50 @@ const SPIRIT_FILTER_URL =
   "https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E7%AD%9B%E9%80%89";
 const SKILL_FILTER_URL =
   "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E7%AD%9B%E9%80%89";
-const SEASON_ID = "s3-2026-07-15";
+const DEFAULT_SEASON_NAME = "S3·铅字幻梦";
+const USAGE = [
+  "用法：node scripts/bwiki/build-snapshot.mjs --season-id <赛季ID> --expect-spirits <数量> --expect-skills <数量> [--season-name <赛季名称>]",
+  "示例：node scripts/bwiki/build-snapshot.mjs --season-id s3-2026-07-15 --expect-spirits 594 --expect-skills 553",
+  "抓取数量校验用于防止刮取回归，必须显式传入本次赛季资料核对后的期望数量。",
+].join("\n");
+
+export function parseBuildArguments(argv) {
+  const values = new Map();
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index];
+    if (!token.startsWith("--")) continue;
+    const separator = token.indexOf("=");
+    if (separator > 0) {
+      values.set(token.slice(2, separator), token.slice(separator + 1));
+      continue;
+    }
+    const next = argv[index + 1];
+    if (next === undefined || next.startsWith("--")) {
+      values.set(token.slice(2), "");
+      continue;
+    }
+    values.set(token.slice(2), next);
+    index += 1;
+  }
+
+  const seasonId = values.get("season-id") ?? "";
+  const spirits = Number(values.get("expect-spirits"));
+  const skills = Number(values.get("expect-skills"));
+  const missing = [];
+  if (!seasonId) missing.push("--season-id");
+  if (!Number.isInteger(spirits) || spirits <= 0) missing.push("--expect-spirits");
+  if (!Number.isInteger(skills) || skills <= 0) missing.push("--expect-skills");
+  if (missing.length > 0) {
+    throw new Error(`缺少必填参数：${missing.join("、")}\n${USAGE}`);
+  }
+
+  return {
+    expectedSkillCount: skills,
+    expectedSpiritCount: spirits,
+    seasonId,
+    seasonName: values.get("season-name") || DEFAULT_SEASON_NAME,
+  };
+}
 
 export const ELEMENT_TYPES = [
   "普通",
@@ -266,6 +309,16 @@ function mergeVerifiedSpirits(liveSpirits, csvSpirits) {
 }
 
 export async function buildSnapshot(options = {}) {
+  const {
+    expectedSkillCount,
+    expectedSpiritCount,
+    seasonId,
+    seasonName = DEFAULT_SEASON_NAME,
+  } = options;
+  if (!seasonId) throw new Error(`缺少赛季 ID\n${USAGE}`);
+  if (!Number.isInteger(expectedSpiritCount) || !Number.isInteger(expectedSkillCount)) {
+    throw new Error(`缺少精灵与技能的期望数量\n${USAGE}`);
+  }
   const csvPath = options.csvPath ?? process.env.ROCOM_S3_CSV ?? DEFAULT_CSV;
   const detailCache =
     options.detailCache ?? process.env.ROCOM_BWIKI_CACHE ?? DEFAULT_DETAIL_CACHE;
@@ -440,8 +493,8 @@ export async function buildSnapshot(options = {}) {
   });
   const snapshot = {
     meta: {
-      id: SEASON_ID,
-      seasonId: "S3·铅字幻梦",
+      id: seasonId,
+      seasonId: seasonName,
       snapshotVersion: 1,
       rulesVersion: "2026-07-23",
       bwikiRevision: `${spiritSource.revision}/${skillSource.revision}`,
@@ -485,8 +538,8 @@ export async function buildSnapshot(options = {}) {
   };
   snapshot.meta.contentSha256 = sha256Hex(JSON.stringify(snapshot));
   const validation = validateSnapshot(snapshot, {
-    expectedSpiritCount: 594,
-    expectedSkillCount: 553,
+    expectedSpiritCount,
+    expectedSkillCount,
   });
   if (!validation.ok) {
     throw new Error(`快照校验失败：${JSON.stringify(validation.errors.slice(0, 20))}`);
@@ -507,7 +560,7 @@ async function archivePreviousCurrentIfNeeded(currentPath, seasonDirectory, next
 }
 
 async function main() {
-  const snapshot = await buildSnapshot();
+  const snapshot = await buildSnapshot(parseBuildArguments(process.argv.slice(2)));
   const output = `${JSON.stringify(snapshot, null, 2)}\n`;
   const snapshotsDirectory = path.join(PROJECT_ROOT, "data", "snapshots");
   const currentPath = path.join(snapshotsDirectory, "current.json");
@@ -531,5 +584,10 @@ async function main() {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  await main();
+  try {
+    await main();
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
 }

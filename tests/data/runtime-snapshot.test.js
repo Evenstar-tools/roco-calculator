@@ -161,10 +161,16 @@ test("keeps the complete production roster, skill library, and local avatar set"
     (assetPath) => !existsSync(assetPath),
   );
 
-  expect(runtime.spirits).toHaveLength(594);
-  expect(runtime.skills).toHaveLength(553);
-  expect(runtime.learnsets).toHaveLength(594);
-  expect(localAssets).toHaveLength(594);
-  expect(new Set(localAssetPaths)).toHaveLength(594);
+  const snapshot = JSON.parse(
+    readFileSync("data/snapshots/current.json", "utf8"),
+  );
+
+  expect(snapshot.spirits.length).toBeGreaterThan(0);
+  expect(snapshot.skills.length).toBeGreaterThan(0);
+  expect(runtime.spirits).toHaveLength(snapshot.spirits.length);
+  expect(runtime.skills).toHaveLength(snapshot.skills.length);
+  expect(runtime.learnsets).toHaveLength(snapshot.learnsets.length);
+  expect(localAssets).toHaveLength(snapshot.spirits.length);
+  expect(new Set(localAssetPaths)).toHaveLength(snapshot.spirits.length);
   expect(missingAssets).toEqual([]);
 });

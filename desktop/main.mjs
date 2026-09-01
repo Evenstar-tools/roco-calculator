@@ -182,17 +182,30 @@ async function collectOfflineSmokeResult(window) {
         return response.json();
       })
       .then((snapshot) => ({
-        spirits: snapshot.spirits.length,
+        dataVersion: snapshot.meta?.id ?? "",
+        declaredSkills: snapshot.meta?.counts?.skills ?? null,
+        declaredSpirits: snapshot.meta?.counts?.spirits ?? null,
+        learnsets: snapshot.learnsets.length,
+        portraits: snapshot.spirits.filter(
+          (spirit) => Boolean(spirit.asset?.localUrl)
+        ).length,
         skills: snapshot.skills.length,
+        spirits: snapshot.spirits.length,
       }))
   `);
 
+  // 数量期望来自打包内 runtime.json 自身声明的 meta.counts：
+  // 只校验内部一致性，赛季增删精灵不需要改桌面代码。
   const ok =
     shell?.attackerPicker === true &&
     shell?.defenderPicker === true &&
     shell?.loading === false &&
-    data.spirits === 594 &&
-    data.skills === 553;
+    data.spirits > 0 &&
+    data.skills > 0 &&
+    data.spirits === data.declaredSpirits &&
+    data.skills === data.declaredSkills &&
+    data.learnsets === data.spirits &&
+    data.portraits === data.spirits;
 
   return {
     ok,
@@ -201,6 +214,9 @@ async function collectOfflineSmokeResult(window) {
     heading: shell?.heading ?? "",
     attackerPicker: shell?.attackerPicker ?? false,
     defenderPicker: shell?.defenderPicker ?? false,
+    dataVersion: data.dataVersion,
+    learnsets: data.learnsets,
+    portraits: data.portraits,
     spirits: data.spirits,
     skills: data.skills,
   };
