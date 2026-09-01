@@ -138,7 +138,7 @@ function DetailView({ feedback, onBack, onClose }) {
   );
 }
 
-export function DataSourceDialog({ onClose, onCopyFeedback, open }) {
+export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open }) {
   const dialogRef = useRef(null);
   const [view, setView] = useState("");
 
@@ -196,6 +196,14 @@ export function DataSourceDialog({ onClose, onCopyFeedback, open }) {
           <p className="data-source-dialog__summary">
             非官方工具。资料来自公开页面和实机校验。
           </p>
+          {dataVersion ? (
+            <p
+              className="data-source-dialog__data-version"
+              title="数字为 BWIKI 页面修订号"
+            >
+              数据快照：{dataVersion}
+            </p>
+          ) : null}
           <section aria-label="版本记录" className="data-source-history">
             <div className="data-source-history__header">
               <strong>版本记录</strong>

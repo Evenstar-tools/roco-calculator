@@ -159,6 +159,13 @@
   line-height: 1.55;
 }
 
+/* 数据快照版本从首页头部迁到此处,普通用户不需要常驻看到修订号。 */
+.data-source-dialog__data-version {
+  margin: -6px 0 10px;
+  color: var(--text-faint);
+  font-size: 11.5px;
+}
+
 .data-source-dialog > a,
 .data-source-dialog__row,
 .data-source-dialog__feedback {

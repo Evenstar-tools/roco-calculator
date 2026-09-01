@@ -96,12 +96,6 @@ textarea:focus-visible,
   white-space: nowrap;
 }
 
-.app-header__version {
-  color: var(--text-muted);
-  font-size: var(--font-caption);
-  white-space: nowrap;
-}
-
 .app-header__actions {
   display: flex;
   flex: 0 0 auto;

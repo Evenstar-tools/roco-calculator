@@ -118,10 +118,6 @@ html[data-theme="dark"] .formula-group {
     font-size: 15px;
   }
 
-  .app-header__version {
-    display: none;
-  }
-
   .icon-action,
   .team-action {
     min-width: 44px;

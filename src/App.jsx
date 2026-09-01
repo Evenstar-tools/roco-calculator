@@ -1394,7 +1394,10 @@ function CalculatorWorkspace({ snapshot }) {
       step: firstRunGuide.step,
     },
     configLibrary: configLibraryFlow.overlayProps,
-    dataSource: overlays.dataSourceProps,
+    dataSource: {
+      ...overlays.dataSourceProps,
+      dataVersion: `${snapshot.meta.seasonId ?? "S3季中"} · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
+    },
     productAccess: overlays.productAccessProps,
     displaySettings: overlays.displaySettingsProps,
     mobileResult: overlays.mobileResultProps,
@@ -1439,7 +1442,6 @@ function CalculatorWorkspace({ snapshot }) {
   return (
     <>
       <AppHeader
-        dataVersion={`${snapshot.meta.seasonId ?? "S3季中"} · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`}
         menuButtonRef={overlays.menu.buttonRef}
         menuOpen={overlays.menu.open}
         onMenuOpen={() => overlays.menu.setOpen((open) => !open)}
@@ -1819,7 +1821,7 @@ export function App({ initialSnapshot = null }) {
   if (!snapshot) {
     return (
       <div className="app">
-        <AppHeader dataVersion="加载中" />
+        <AppHeader />
         <main className="loading-state">
           <p>{error || "正在加载 S3季中数据…"}</p>
         </main>

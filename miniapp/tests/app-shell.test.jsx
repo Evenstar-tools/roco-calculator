@@ -30,7 +30,10 @@ describe("miniapp shell", () => {
       `小程序 v${MINIAPP_VERSION} · 网页核心 v${WEB_CORE_VERSION}`,
     );
     render(<AppHeader dataVersion="data-v1" />);
+    expect(screen.queryByText(MINIAPP_RELEASE_LABEL)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     expect(screen.getByText(MINIAPP_RELEASE_LABEL)).toBeInTheDocument();
+    expect(screen.getByText("数据快照：data-v1")).toBeInTheDocument();
   });
 
   test("renders the calculator title without requesting identity", () => {
@@ -114,8 +117,9 @@ describe("miniapp shell", () => {
       .toBeInTheDocument();
     expect(screen.getByText(/1215583051/u)).toBeInTheDocument();
     expect(screen.getByText("当前版本")).toBeInTheDocument();
+    expect(screen.getByText(MINIAPP_RELEASE_LABEL)).toBeInTheDocument();
     expect(
-      screen.getByText(`v${MINIAPP_VERSION} · 更新于 ${MINIAPP_UPDATE_DATE}`),
+      screen.getByText(`更新于 ${MINIAPP_UPDATE_DATE}`),
     ).toBeInTheDocument();
   });
 

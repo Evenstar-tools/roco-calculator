@@ -60,13 +60,6 @@ body {
   display: none;
 }
 
-.app-header__version {
-  padding: 3px 8px;
-  border-radius: 5px;
-  background: var(--surface-soft);
-  font-size: 11px;
-}
-
 .icon-action,
 .team-action {
   min-height: 38px;

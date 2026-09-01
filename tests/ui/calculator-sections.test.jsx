@@ -37,12 +37,12 @@ const stats = [
 ];
 
 test("header uses the S3 midseason title and exposes compact controls", () => {
-  render(<AppHeader dataVersion="S3 · 41360" onTeamsOpen={vi.fn()} />);
+  render(<AppHeader onTeamsOpen={vi.fn()} />);
 
   expect(
     screen.getByRole("heading", { name: "洛克计算器 · S3季中" }),
   ).toBeVisible();
-  expect(screen.getByText("S3 · 41360")).toBeVisible();
+  expect(screen.queryByText(/41360/u)).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "打开队伍" })).toHaveAttribute(
     "title",
     "队伍",

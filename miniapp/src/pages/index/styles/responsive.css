@@ -21,10 +21,6 @@
     font-size: 18px;
   }
 
-  .app-header__version {
-    display: none;
-  }
-
   .app-header__action {
     min-width: 44px;
     padding: 0 10px;

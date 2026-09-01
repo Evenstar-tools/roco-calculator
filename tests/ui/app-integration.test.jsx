@@ -455,10 +455,14 @@ async function openDetailedMode(user) {
   await user.click(screen.getByRole("tab", { name: "单技能" }));
 }
 
-test("labels the current dataset with its S3 midseason name", () => {
+test("labels the current dataset with its S3 midseason name", async () => {
+  const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
 
-  expect(screen.getByText("S3季中 · 41360")).toBeVisible();
+  expect(screen.queryByText(/S3季中 · 41360/u)).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "关于与来源" }));
+  expect(screen.getByText("数据快照：S3季中 · 41360")).toBeVisible();
 });
 
 test("starts with both spirit selectors empty and hides incomplete configuration", () => {

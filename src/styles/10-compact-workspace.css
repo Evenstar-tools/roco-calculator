@@ -625,10 +625,6 @@ html[data-theme="dark"] .quick-iv__option input:checked {
 }
 
 @media (max-width: 620px) {
-  .app-header__version {
-    display: none;
-  }
-
   .app-header:not(.app-header--compact) .team-action {
     width: 44px;
     min-width: 44px;

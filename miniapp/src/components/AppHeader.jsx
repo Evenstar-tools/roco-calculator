@@ -3,7 +3,6 @@ import { Button, ScrollView, Text, View } from "@tarojs/components";
 import {
   MINIAPP_RELEASE_LABEL,
   MINIAPP_UPDATE_DATE,
-  MINIAPP_VERSION,
 } from "../version.js";
 
 export default function AppHeader({
@@ -43,12 +42,6 @@ export default function AppHeader({
       <View className="app-header">
         <View className="app-header__identity">
           <Text className="app-header__title">洛克计算器 · S3季中</Text>
-          <Text className="app-header__version">
-            数据 {dataVersion || "待确认"}
-          </Text>
-          <Text className="app-header__version">
-            {MINIAPP_RELEASE_LABEL}
-          </Text>
         </View>
         <View className="app-header__actions">
           <Button
@@ -253,6 +246,9 @@ export default function AppHeader({
               <View className="settings-sheet__source">
                 <Text className="settings-sheet__label">数据来源</Text>
                 <Text className="settings-sheet__description">
+                  数据快照：{dataVersion || "待确认"}
+                </Text>
+                <Text className="settings-sheet__description">
                   数据素材来源：BWIKI 洛克王国公开资料
                 </Text>
                 <Text className="settings-sheet__description">
@@ -263,7 +259,10 @@ export default function AppHeader({
               <View className="settings-sheet__source">
                 <Text className="settings-sheet__label">当前版本</Text>
                 <Text className="settings-sheet__description">
-                  v{MINIAPP_VERSION} · 更新于 {MINIAPP_UPDATE_DATE}
+                  {MINIAPP_RELEASE_LABEL}
+                </Text>
+                <Text className="settings-sheet__description">
+                  更新于 {MINIAPP_UPDATE_DATE}
                 </Text>
               </View>
               </View>

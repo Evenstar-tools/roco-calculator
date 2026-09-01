@@ -10,7 +10,6 @@ import { useState } from "react";
 import { readThemeSetting } from "../state/display-settings.js";
 
 export function AppHeader({
-  dataVersion,
   menuButtonRef,
   menuOpen = false,
   onMenuOpen,
@@ -39,12 +38,6 @@ export function AppHeader({
             S3季中
           </span>
         </h1>
-        <span
-          className="app-header__version"
-          title="数据快照版本 · 数字为 BWIKI 页面修订号"
-        >
-          {dataVersion}
-        </span>
       </div>
 
       <div className="app-header__actions">
