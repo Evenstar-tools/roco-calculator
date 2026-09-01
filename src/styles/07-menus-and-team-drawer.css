@@ -435,6 +435,31 @@
   font-size: 12px;
 }
 
+.team-drawer__zero-cta {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 9px;
+  margin-top: 14px;
+  color: #fff;
+  background: var(--accent);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.team-drawer__zero-cta:hover {
+  background: var(--accent-strong);
+}
+
+.team-drawer__zero .team-drawer__zero-hint {
+  color: var(--text-faint);
+  font-size: 11.5px;
+}
+
 .team-roster {
   display: grid;
   gap: 7px;
@@ -756,5 +781,60 @@
   color: var(--text-faint);
   font-size: 10px;
   text-align: center;
+}
+
+/* 打开过渡:抽屉右侧滑入、菜单淡入,与小程序端节奏一致;二者均为条件挂载,无需关闭动画。 */
+@keyframes team-drawer-scrim-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes team-drawer-slide-in {
+  from {
+    opacity: 0.4;
+    transform: translateX(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes app-menu-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.team-drawer-backdrop {
+  animation: team-drawer-scrim-fade 200ms ease-out;
+}
+
+.team-drawer {
+  animation: team-drawer-slide-in 240ms ease-out;
+}
+
+.app-menu {
+  animation: app-menu-fade 160ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-drawer-backdrop,
+  .team-drawer,
+  .app-menu {
+    animation: none;
+  }
 }
 

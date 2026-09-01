@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AdvancedOptions } from "./components/AdvancedOptions.jsx";
 import { AppHeader } from "./components/AppHeader.jsx";
+import { EmptyStateGuide } from "./components/EmptyStateGuide.jsx";
 import {
   CompactFourSkillEditor,
   CompactSingleSkillEditor,
@@ -1486,6 +1487,7 @@ function CalculatorWorkspace({ snapshot }) {
             }}
             spirits={selectableSpirits}
           />
+          {!configurationReady ? <EmptyStateGuide /> : null}
           {configurationReady && viewMode === "compact" ? (
             <section
               aria-label="即时配置"

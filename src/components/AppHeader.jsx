@@ -39,7 +39,12 @@ export function AppHeader({
             S3季中
           </span>
         </h1>
-        <span className="app-header__version">{dataVersion}</span>
+        <span
+          className="app-header__version"
+          title="数据快照版本 · 数字为 BWIKI 页面修订号"
+        >
+          {dataVersion}
+        </span>
       </div>
 
       <div className="app-header__actions">

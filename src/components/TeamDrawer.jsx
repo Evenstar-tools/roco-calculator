@@ -291,7 +291,18 @@ export function TeamDrawer({
         ) : (
           <div className="team-drawer__zero">
             <UsersThree aria-hidden="true" size={38} />
-            <p>新建一支六人队伍</p>
+            <p>还没有队伍</p>
+            <button
+              className="team-drawer__zero-cta"
+              onClick={() => onCreateTeam(`队伍 ${teamsState.teams.length + 1}`)}
+              type="button"
+            >
+              <Plus aria-hidden="true" size={16} weight="bold" />
+              新建六人队伍
+            </button>
+            <p className="team-drawer__zero-hint">
+              保存常用阵容，进行属性弱点与打击面分析
+            </p>
           </div>
         )}
       </aside>

@@ -572,6 +572,26 @@ html[data-theme="dark"] .quick-nature__option[aria-pressed="true"] {
   background: var(--surface);
 }
 
+/* 个体值勾选态原为硬编码亮色(#f1faf4/#a9d8bb/白色内圈),暗色下整排发亮,改为暗绿系。 */
+html[data-theme="dark"] .quick-iv__option:hover {
+  background: var(--surface);
+}
+
+html[data-theme="dark"] .quick-iv__option[data-checked="true"] {
+  border-color: #2e6b45;
+  background: rgba(38, 96, 62, 0.32);
+}
+
+html[data-theme="dark"] .quick-iv__option input {
+  background: var(--surface);
+}
+
+html[data-theme="dark"] .quick-iv__option input:checked {
+  border-color: #34c374;
+  background: #2aa15f;
+  box-shadow: inset 0 0 0 2px #14241b;
+}
+
 @media (max-width: 760px) {
   .view-mode-switch button {
     width: 38px;
