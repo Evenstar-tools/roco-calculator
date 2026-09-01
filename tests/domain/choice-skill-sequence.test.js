@@ -206,7 +206,7 @@ describe("选择技能特性执行计划", () => {
 
   test("covers every current Jal-family choice skill with the explicit trait trigger", () => {
     const snapshot = JSON.parse(
-      readFileSync("public/data/current.json", "utf8"),
+      readFileSync("data/snapshots/current.json", "utf8"),
     );
     const traitsById = new Map(
       snapshot.traits.map((trait) => [trait.id, trait]),

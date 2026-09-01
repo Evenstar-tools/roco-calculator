@@ -139,7 +139,7 @@ test("keeps the complete production roster, skill library, and local avatar set"
     process.execPath,
     [
       "scripts/runtime-snapshot.mjs",
-      "public/data/current.json",
+      "data/snapshots/current.json",
       targetPath,
       "public/assets/spirits/manifest.json",
     ],

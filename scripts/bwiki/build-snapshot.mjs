@@ -494,16 +494,31 @@ export async function buildSnapshot(options = {}) {
   return snapshot;
 }
 
+async function archivePreviousCurrentIfNeeded(currentPath, seasonDirectory, nextSeasonId) {
+  if (!(await exists(currentPath))) return null;
+  const previousRaw = await readFile(currentPath, "utf8");
+  const previous = JSON.parse(previousRaw);
+  const previousId = previous.meta?.id;
+  if (!previousId || previousId === nextSeasonId) return null;
+  const archivePath = path.join(seasonDirectory, `${previousId}.json`);
+  if (await exists(archivePath)) return null;
+  await writeFile(archivePath, previousRaw, "utf8");
+  return archivePath;
+}
+
 async function main() {
   const snapshot = await buildSnapshot();
   const output = `${JSON.stringify(snapshot, null, 2)}\n`;
-  const dataDirectory = path.join(PROJECT_ROOT, "public", "data");
-  const seasonDirectory = path.join(dataDirectory, "seasons");
+  const snapshotsDirectory = path.join(PROJECT_ROOT, "data", "snapshots");
+  const currentPath = path.join(snapshotsDirectory, "current.json");
+  const seasonDirectory = path.join(snapshotsDirectory, "seasons");
   await mkdir(seasonDirectory, { recursive: true });
-  await Promise.all([
-    writeFile(path.join(seasonDirectory, `${SEASON_ID}.json`), output, "utf8"),
-    writeFile(path.join(dataDirectory, "current.json"), output, "utf8"),
-  ]);
+  const archivedPath = await archivePreviousCurrentIfNeeded(
+    currentPath,
+    seasonDirectory,
+    snapshot.meta.id,
+  );
+  await writeFile(currentPath, output, "utf8");
   console.log(`spirits=${snapshot.spirits.length}`);
   console.log(`skills=${snapshot.skills.length}`);
   console.log(`learnsets=${snapshot.learnsets.length}`);
@@ -511,6 +526,7 @@ async function main() {
   console.log(`detailPagesRefreshed=${snapshot.meta.sources[3].refreshedPages}`);
   console.log(`bwikiRevision=${snapshot.meta.bwikiRevision}`);
   console.log(`contentSha256=${snapshot.meta.contentSha256}`);
+  if (archivedPath) console.log(`archivedPrevious=${archivedPath}`);
   console.log("status=valid");
 }
 

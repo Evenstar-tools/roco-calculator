@@ -34,9 +34,8 @@ function haizhizhiEntries(snapshot) {
 
 describe("海枝枝形态素材映射", () => {
   test.each([
-    "public/data/current.json",
-    "public/data/seasons/s3-2026-07-15.json",
-    "public/data/seasons/s3-2026-08-13-midseason.json",
+    "data/snapshots/current.json",
+    "data/snapshots/seasons/s3-2026-07-15.json",
   ])("%s 中的形态名称与图片一一对应", (snapshotPath) => {
     const entries = haizhizhiEntries(readJson(snapshotPath));
 

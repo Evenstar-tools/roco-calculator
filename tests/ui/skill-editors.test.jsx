@@ -23,7 +23,7 @@ import {
   SingleSkillEditor,
   TraitInputs,
 } from "../../src/components/SingleSkillEditor.jsx";
-import snapshot from "../../public/data/current.json";
+import snapshot from "../../data/snapshots/current.json";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 
 const skills = [

@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { avatarFileTitle } from "./portrait-bindings.mjs";
+import { readImageDimensions } from "./sync-assets.mjs";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname, "../..");
+const SPIRIT_IMAGE_DIR = path.join(PROJECT_ROOT, "public/assets/spirits");
+const MAX_SPIRIT_EDGE = 128;
+const MAX_SPIRIT_BYTES = 200 * 1024;
+const SPIRIT_IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp"]);
 const STAT_KEYS = [
   "hp",
   "speed",
@@ -24,7 +29,7 @@ function sha256(buffer) {
 
 export async function verifySpiritBindings() {
   const [snapshot, manifest, runtime, bundled] = await Promise.all([
-    readFile(path.join(PROJECT_ROOT, "public/data/current.json"), "utf8").then(JSON.parse),
+    readFile(path.join(PROJECT_ROOT, "data/snapshots/current.json"), "utf8").then(JSON.parse),
     readFile(
       path.join(PROJECT_ROOT, "public/assets/spirits/manifest.json"),
       "utf8",
@@ -95,6 +100,23 @@ export async function verifySpiritBindings() {
     if (sha256(buffer) !== asset.sha256) {
       errors.push(`${asset.name} 本地头像哈希与清单不一致`);
     }
+  }
+
+  const imageNames = (await readdir(SPIRIT_IMAGE_DIR)).filter((name) =>
+    SPIRIT_IMAGE_EXTENSIONS.has(path.extname(name).toLowerCase()),
+  );
+  const oversizedImages = [];
+  for (const name of imageNames) {
+    const buffer = await readFile(path.join(SPIRIT_IMAGE_DIR, name));
+    const { width, height } = readImageDimensions(buffer);
+    if (Math.max(width, height) > MAX_SPIRIT_EDGE || buffer.length > MAX_SPIRIT_BYTES) {
+      oversizedImages.push(name);
+    }
+  }
+  if (oversizedImages.length > 0) {
+    errors.push(
+      `精灵图超出体积门禁（边长≤${MAX_SPIRIT_EDGE} 且 ≤${MAX_SPIRIT_BYTES}B）：${oversizedImages.join("、")}`,
+    );
   }
 
   const expectedNamed = snapshot.meta.portraitBindings?.resolved;

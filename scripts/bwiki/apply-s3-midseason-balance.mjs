@@ -162,19 +162,11 @@ export function applyS3MidseasonBalance(snapshot) {
 }
 
 async function main() {
-  const sourcePath = path.join(PROJECT_ROOT, "public", "data", "current.json");
-  const targetPath = path.join(
-    PROJECT_ROOT,
-    "public",
-    "data",
-    "seasons",
-    "s3-2026-08-13-midseason.json",
-  );
+  const sourcePath = path.join(PROJECT_ROOT, "data", "snapshots", "current.json");
   const snapshot = JSON.parse(await readFile(sourcePath, "utf8"));
   const patched = applyS3MidseasonBalance(snapshot);
   const output = `${JSON.stringify(patched, null, 2)}\n`;
   await writeFile(sourcePath, output, "utf8");
-  await writeFile(targetPath, output, "utf8");
   console.log(
     `S3季中补丁已写入：spirits=${patched.spirits.length} skills=${patched.skills.length}`,
   );

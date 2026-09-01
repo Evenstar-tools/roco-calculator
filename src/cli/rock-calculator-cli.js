@@ -67,7 +67,7 @@ function loadJson(filePath, label) {
 }
 
 function loadContext(projectRoot) {
-  const snapshotPath = path.join(projectRoot, "public", "data", "current.json");
+  const snapshotPath = path.join(projectRoot, "data", "snapshots", "current.json");
   const packagePath = path.join(projectRoot, "package.json");
   const snapshot = withCalculatorExtras(loadJson(snapshotPath, "数据快照"));
   const packageJson = loadJson(packagePath, "package.json");

@@ -162,7 +162,7 @@ async function syncGroup(items, directory, transform) {
   });
 }
 
-export async function syncAssets(snapshotPath = path.join(PROJECT_ROOT, "public/data/current.json")) {
+export async function syncAssets(snapshotPath = path.join(PROJECT_ROOT, "data/snapshots/current.json")) {
   const snapshot = JSON.parse(await readFile(snapshotPath, "utf8"));
   const plan = collectAssetPlan(snapshot);
   const [spirits, elements] = await Promise.all([

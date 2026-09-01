@@ -11,7 +11,7 @@
 ## AI 计算与验算
 
 - 当用户要求计算、复算、验算、解释或比较《洛克王国：世界》PVP 伤害时，必须先读取并使用项目 Skill：`.agents/skills/rock-calculator-cli/SKILL.md`。
-- 普通计算只调用 `npm run -s cli -- ...`；不要把 `src/domain/` 计算源码或 `public/data/current.json` 加载进模型上下文。
+- 普通计算只调用 `npm run -s cli -- ...`；不要把 `src/domain/` 计算源码或 `data/snapshots/current.json` 加载进模型上下文。
 - CLI 结果中的数据版本、规则版本和 `inputDigest` 是本次计算的交接与复现凭据。
 
 ## 飞书安装包交付

@@ -12,7 +12,7 @@ import {
   TRAIT_EFFECT_RULE_NAMES,
 } from "../../src/domain/trait-effects.js";
 
-const snapshotPath = join(process.cwd(), "public", "data", "current.json");
+const snapshotPath = join(process.cwd(), "data", "snapshots", "current.json");
 const snapshot = JSON.parse(readFileSync(snapshotPath, "utf8"));
 
 describe("trait effect coverage", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import snapshot from "../../public/data/current.json";
+import snapshot from "../../data/snapshots/current.json";
 import referenceAdapters from "../fixtures/reference-site-skill-adapters-2026-08-26.json";
 import {
   getDefaultHitCount,

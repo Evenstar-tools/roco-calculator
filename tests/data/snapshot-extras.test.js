@@ -119,7 +119,7 @@ describe("withCalculatorExtras", () => {
 
   test("keeps the real S3 roster aligned with regular and trait-specific boss Wish Power rules", () => {
     const snapshot = JSON.parse(
-      readFileSync("public/data/current.json", "utf8"),
+      readFileSync("data/snapshots/current.json", "utf8"),
     );
     const enriched = withCalculatorExtras(snapshot);
     const wishPowerIds = enriched.skills

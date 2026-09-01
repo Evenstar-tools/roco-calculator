@@ -47,7 +47,7 @@ function applyToSnapshot(snapshot, assets, auditedAt) {
 }
 
 export async function applyPortraitBindings(
-  sourcePath = path.join(PROJECT_ROOT, "public/data/current.json"),
+  sourcePath = path.join(PROJECT_ROOT, "data/snapshots/current.json"),
 ) {
   const current = JSON.parse(await readFile(sourcePath, "utf8"));
   const assets = await fetchNamedPortraitAssets(current.spirits);
@@ -56,7 +56,7 @@ export async function applyPortraitBindings(
   const targets = [sourcePath];
   const seasonPath = path.join(
     PROJECT_ROOT,
-    "public/data/seasons",
+    "data/snapshots/seasons",
     `${current.meta.id}.json`,
   );
   if (path.resolve(seasonPath) !== path.resolve(sourcePath) && (await exists(seasonPath))) {

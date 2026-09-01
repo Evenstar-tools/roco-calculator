@@ -5,7 +5,7 @@ import { pathToFileURL } from "node:url";
 import { fetchRevisions } from "./fetch-page.mjs";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname, "../..");
-const DEFAULT_SNAPSHOT = path.join(PROJECT_ROOT, "public/data/current.json");
+const DEFAULT_SNAPSHOT = path.join(PROJECT_ROOT, "data/snapshots/current.json");
 const DEFAULT_CSV = path.join(
   PROJECT_ROOT,
   "data/sources/rocom_world_s3_spirits.csv",

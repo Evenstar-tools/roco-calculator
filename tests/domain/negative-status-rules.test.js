@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import snapshot from "../../public/data/current.json";
+import snapshot from "../../data/snapshots/current.json";
 import {
   NEGATIVE_STATUS_RULE_AUDIT,
   getNegativeStatusInputs,

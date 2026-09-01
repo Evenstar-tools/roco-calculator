@@ -10,7 +10,7 @@ const packageJson = JSON.parse(
   readFileSync(path.join(projectRoot, "package.json"), "utf8"),
 );
 const snapshot = JSON.parse(
-  readFileSync(path.join(projectRoot, "public", "data", "current.json"), "utf8"),
+  readFileSync(path.join(projectRoot, "data", "snapshots", "current.json"), "utf8"),
 );
 
 function runCli(args, input) {

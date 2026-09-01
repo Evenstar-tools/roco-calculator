@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-12T16:34:46.426Z",
+  "generatedAt": "2026-09-01T03:30:56.957Z",
   "sourceSnapshot": "s3-2026-08-13-midseason",
   "assets": [
     {
@@ -17,40 +17,40 @@
       "name": "圣光迪莫",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/2/2c/7qezwl2nb2ymfw4dos2vu163szd9p2h.png",
       "localFile": "/assets/spirits/spirit_f60e2755ae42cf41.png",
-      "sha256": "e47e260102bf5b38778e5d3fa7458980c87ebaaea1543c88f41a2f65fa62b3dc",
-      "bytes": 408374,
-      "width": 1024,
-      "height": 1024
+      "sha256": "ee1dec6283040a2e876972624dc48c16c40c6fd122960d5836d37d05ecee3b78",
+      "bytes": 16380,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_ec2230c14154bb52",
       "name": "圣草迪莫",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/11/dfjw0rmtvjca55818p4zrv3rgh53wuc.png",
       "localFile": "/assets/spirits/spirit_ec2230c14154bb52.png",
-      "sha256": "6b01922a1c97026c5b0b7c19b1e787840eb0d70a12dbba6440f580b996cae256",
-      "bytes": 480107,
-      "width": 1024,
-      "height": 1024
+      "sha256": "754efcc698bbc2edf945fd7b0b5309f663f329173383955cd5443a7625e7a504",
+      "bytes": 16273,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_dd14e867313fad1d",
       "name": "圣火迪莫",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/f0/f9i1rwu00yct36m8hwm9lra0kkjcry0.png",
       "localFile": "/assets/spirits/spirit_dd14e867313fad1d.png",
-      "sha256": "ac6746ec7c8a6da001e8cc48b37b48aaafe962ec7b23e09da728f2fc8be654d8",
-      "bytes": 909630,
-      "width": 1024,
-      "height": 1024
+      "sha256": "b872b69505c6231e18c69dd20084594c2e21f00b936ff56e28af21e0b5a6a712",
+      "bytes": 26203,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_32aed655cbbf0db6",
       "name": "圣水迪莫",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/69/h6he56fvj9hogroxuwde360noeykscr.png",
       "localFile": "/assets/spirits/spirit_32aed655cbbf0db6.png",
-      "sha256": "89b13c491329db026e08d8f59fd6be6765a191e4f2bc78c097d5976778eb469d",
-      "bytes": 630847,
-      "width": 1024,
-      "height": 1024
+      "sha256": "39af75f3e369084fed4583d7601c222644288536f069e40b48e20143a7c86280",
+      "bytes": 19071,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_d345729d1593bff7",
@@ -87,20 +87,20 @@
       "name": "叶冕魔力猫",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/a/ab/3lx2tas9ervt8e7hhp8o3nhvofygd1k.png",
       "localFile": "/assets/spirits/spirit_dc6dbc4055d0d9dd.png",
-      "sha256": "4b324c85ea44d9ab894a2a71b64db2e77082438a7f2ee81be9bce233c0d54ea2",
-      "bytes": 418314,
-      "width": 1024,
-      "height": 1024
+      "sha256": "05d93724f16fa6408819a21ec6b4335b1ba0a3c97c40ff93c27a8d04e6faeead",
+      "bytes": 14420,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_a62b9a9c4ae00665",
       "name": "武斗酷猫",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/e/ee/e4w5hjhhbo71cy140prvt6eb3kjmv3y.png",
       "localFile": "/assets/spirits/spirit_a62b9a9c4ae00665.png",
-      "sha256": "a6422b621e8ab35f6a4551da8264d9e2b1df908d7444ad5614022fd2d7f41410",
-      "bytes": 593024,
-      "width": 1024,
-      "height": 1024
+      "sha256": "1639828a99fb0d72fa1f75241b736aafc3179e14dd4c4caf34b0c0a46173643a",
+      "bytes": 18456,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_8b8175b97cd7e6a7",
@@ -137,10 +137,10 @@
       "name": "烈火战神",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/a/ab/7ipufvmyuu0wz7o73cawbo3e29bn0xa.png",
       "localFile": "/assets/spirits/spirit_4c280ecf82adb90e.png",
-      "sha256": "15810cba20d97d065df458d72b4826f5195ff8eb925e8e55596e4520fad71081",
-      "bytes": 748046,
-      "width": 1024,
-      "height": 1024
+      "sha256": "d0beb696ed672f604c76f83d13082a9ea469ecfbb9f50de44acf8e597f60bbff",
+      "bytes": 23491,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_77c2085d2f6e8e87",
@@ -177,10 +177,10 @@
       "name": "圣水守护",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/4/43/p95uogkvpgx6fi1kltoy8xy58yztz4w.png",
       "localFile": "/assets/spirits/spirit_30c62645090ee8af.png",
-      "sha256": "63b92fbd4a06a020b4428b95965cd8eb815d1ca10c2be68748db95a5889d6a7f",
-      "bytes": 751781,
-      "width": 1024,
-      "height": 1024
+      "sha256": "57793180ecf94db822d7ebddf39c476bf1464b4509d868dffaf70e5eacc6ecc3",
+      "bytes": 24583,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_6d78e04a6736155b",
@@ -247,60 +247,60 @@
       "name": "鸭吉吉国王（蓬松的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/0f/j7jkx8rgrp2clyw0za1ptgf51qw3292.png",
       "localFile": "/assets/spirits/spirit_94bd47e9b24b4bac.png",
-      "sha256": "7cddde07f2a64028212d62a53e8d1bd9d908eaaebd3c2e9849c6743c550e140c",
-      "bytes": 449589,
-      "width": 1024,
-      "height": 1024
+      "sha256": "3f548084791bf5a8cb694158dbf2c061cc7c74b039e035cb65e15e0abe1b41ee",
+      "bytes": 15095,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_d307ebe71125e46b",
       "name": "鸭吉吉国王（紧实的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/0f/j7jkx8rgrp2clyw0za1ptgf51qw3292.png",
       "localFile": "/assets/spirits/spirit_d307ebe71125e46b.png",
-      "sha256": "7cddde07f2a64028212d62a53e8d1bd9d908eaaebd3c2e9849c6743c550e140c",
-      "bytes": 449589,
-      "width": 1024,
-      "height": 1024
+      "sha256": "3f548084791bf5a8cb694158dbf2c061cc7c74b039e035cb65e15e0abe1b41ee",
+      "bytes": 15095,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_6a800b542b03bd39",
       "name": "鸭吉吉国王（急急急鸭）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/0f/j7jkx8rgrp2clyw0za1ptgf51qw3292.png",
       "localFile": "/assets/spirits/spirit_6a800b542b03bd39.png",
-      "sha256": "7cddde07f2a64028212d62a53e8d1bd9d908eaaebd3c2e9849c6743c550e140c",
-      "bytes": 449589,
-      "width": 1024,
-      "height": 1024
+      "sha256": "3f548084791bf5a8cb694158dbf2c061cc7c74b039e035cb65e15e0abe1b41ee",
+      "bytes": 15095,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_270232652eb15184",
       "name": "鸭吉吉国王（等一等鸭）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/0f/j7jkx8rgrp2clyw0za1ptgf51qw3292.png",
       "localFile": "/assets/spirits/spirit_270232652eb15184.png",
-      "sha256": "7cddde07f2a64028212d62a53e8d1bd9d908eaaebd3c2e9849c6743c550e140c",
-      "bytes": 449589,
-      "width": 1024,
-      "height": 1024
+      "sha256": "3f548084791bf5a8cb694158dbf2c061cc7c74b039e035cb65e15e0abe1b41ee",
+      "bytes": 15095,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_99c5805b2d1cedb3",
       "name": "鸭吉吉国王（燃了鸭）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/0f/j7jkx8rgrp2clyw0za1ptgf51qw3292.png",
       "localFile": "/assets/spirits/spirit_99c5805b2d1cedb3.png",
-      "sha256": "7cddde07f2a64028212d62a53e8d1bd9d908eaaebd3c2e9849c6743c550e140c",
-      "bytes": 449589,
-      "width": 1024,
-      "height": 1024
+      "sha256": "3f548084791bf5a8cb694158dbf2c061cc7c74b039e035cb65e15e0abe1b41ee",
+      "bytes": 15095,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_14603e412a770707",
       "name": "鸭吉吉国王（起来鸭）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/0f/j7jkx8rgrp2clyw0za1ptgf51qw3292.png",
       "localFile": "/assets/spirits/spirit_14603e412a770707.png",
-      "sha256": "7cddde07f2a64028212d62a53e8d1bd9d908eaaebd3c2e9849c6743c550e140c",
-      "bytes": 449589,
-      "width": 1024,
-      "height": 1024
+      "sha256": "3f548084791bf5a8cb694158dbf2c061cc7c74b039e035cb65e15e0abe1b41ee",
+      "bytes": 15095,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_4a0e048421bc230a",
@@ -517,40 +517,40 @@
       "name": "霜翼领主",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/0f/kxotizvji5i40phgzioega8397t87kb.png",
       "localFile": "/assets/spirits/spirit_7eb586d6475d99d4.png",
-      "sha256": "5694ad6bfa366478797784a8cb4ea79e7dc85f05b05d52e18670f247e51884c0",
-      "bytes": 416682,
-      "width": 1024,
-      "height": 1024
+      "sha256": "7dd19e26da6ae5746573aa5f36c79d8c037bfa556b1059e4d03a4828079bde0f",
+      "bytes": 15684,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_dcd9dd30a0ad5c7f",
       "name": "霜翼领主（春天的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/0f/kxotizvji5i40phgzioega8397t87kb.png",
       "localFile": "/assets/spirits/spirit_dcd9dd30a0ad5c7f.png",
-      "sha256": "5694ad6bfa366478797784a8cb4ea79e7dc85f05b05d52e18670f247e51884c0",
-      "bytes": 416682,
-      "width": 1024,
-      "height": 1024
+      "sha256": "7dd19e26da6ae5746573aa5f36c79d8c037bfa556b1059e4d03a4828079bde0f",
+      "bytes": 15684,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_9f8c8d8139b244ab",
       "name": "霜翼领主（夏天的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/0f/kxotizvji5i40phgzioega8397t87kb.png",
       "localFile": "/assets/spirits/spirit_9f8c8d8139b244ab.png",
-      "sha256": "5694ad6bfa366478797784a8cb4ea79e7dc85f05b05d52e18670f247e51884c0",
-      "bytes": 416682,
-      "width": 1024,
-      "height": 1024
+      "sha256": "7dd19e26da6ae5746573aa5f36c79d8c037bfa556b1059e4d03a4828079bde0f",
+      "bytes": 15684,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_4509a6b87740551b",
       "name": "霜翼领主（秋天的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/0f/kxotizvji5i40phgzioega8397t87kb.png",
       "localFile": "/assets/spirits/spirit_4509a6b87740551b.png",
-      "sha256": "5694ad6bfa366478797784a8cb4ea79e7dc85f05b05d52e18670f247e51884c0",
-      "bytes": 416682,
-      "width": 1024,
-      "height": 1024
+      "sha256": "7dd19e26da6ae5746573aa5f36c79d8c037bfa556b1059e4d03a4828079bde0f",
+      "bytes": 15684,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_5b7a55721521545f",
@@ -677,10 +677,10 @@
       "name": "迷嶂布莱克",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/6b/6th67g9urywyrqkbp3x7rsrhxbynqwc.png",
       "localFile": "/assets/spirits/spirit_3fb98e0a461b35c8.png",
-      "sha256": "314e2197065c1aba0c4b82164a9d641003866668cd2dae8520cf7f5f31fe0381",
-      "bytes": 695518,
-      "width": 1024,
-      "height": 1024
+      "sha256": "35dc91cac04654c01252c944ce58ce1948b184f93e61ce8f8fa97f90e376af16",
+      "bytes": 21676,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_2a9b7b8d99dba59e",
@@ -707,10 +707,10 @@
       "name": "恶魔男爵",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/1a/9qb2zoneu2dk4orrc2jscgbw4oj24oz.png",
       "localFile": "/assets/spirits/spirit_67dcbe51f817669a.png",
-      "sha256": "635fccd9602a0ff06fde34a0fbd344870ff82c0b535bda4be994a67b19fe6fc5",
-      "bytes": 494871,
-      "width": 1024,
-      "height": 1024
+      "sha256": "ef87ff8527d40980175ca03559c8d90f99efd488c80c0879ccf37b4ef31ef6aa",
+      "bytes": 16892,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_0aa69ad38f66402d",
@@ -787,10 +787,10 @@
       "name": "幻影荆棘",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/e/e8/hjxj1y6odgo2eb5n8usjb6t8yd9566b.png",
       "localFile": "/assets/spirits/spirit_95c8a0f91aec8a68.png",
-      "sha256": "72fd342937d0fcd1973d5b2e3e36b800bcf2651831ffa553dc64dc375ae86f57",
-      "bytes": 611031,
-      "width": 1024,
-      "height": 1024
+      "sha256": "06dfd7eed9957e7489cbc3fde5c3fa3634c1095bd616096a92eed2c44f1bfe1c",
+      "bytes": 21802,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_4dbadf64799c9e23",
@@ -897,60 +897,60 @@
       "name": "钻石蜗（西瓜碧玺的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/f5/5d9j04pgl7bm8s22gyimca5auyvrqkk.png",
       "localFile": "/assets/spirits/spirit_4c5b5c6c97c28e2e.png",
-      "sha256": "d54025f2c6cd4e1d6ee3217c0ff3727f7db9b54d993f1fb60f79f0cdf6109c75",
-      "bytes": 749544,
-      "width": 1024,
-      "height": 1024
+      "sha256": "bb8147de14f9917865f1effb91a9e32b287735afaf08c162389ba0a87689eb13",
+      "bytes": 25749,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_ee3cfe5d3b6216b0",
       "name": "钻石蜗（莲花刚玉的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/f5/5d9j04pgl7bm8s22gyimca5auyvrqkk.png",
       "localFile": "/assets/spirits/spirit_ee3cfe5d3b6216b0.png",
-      "sha256": "d54025f2c6cd4e1d6ee3217c0ff3727f7db9b54d993f1fb60f79f0cdf6109c75",
-      "bytes": 749544,
-      "width": 1024,
-      "height": 1024
+      "sha256": "bb8147de14f9917865f1effb91a9e32b287735afaf08c162389ba0a87689eb13",
+      "bytes": 25749,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_47ffaf8c6ef0b369",
       "name": "钻石蜗（星彩榴石的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/f5/5d9j04pgl7bm8s22gyimca5auyvrqkk.png",
       "localFile": "/assets/spirits/spirit_47ffaf8c6ef0b369.png",
-      "sha256": "d54025f2c6cd4e1d6ee3217c0ff3727f7db9b54d993f1fb60f79f0cdf6109c75",
-      "bytes": 749544,
-      "width": 1024,
-      "height": 1024
+      "sha256": "bb8147de14f9917865f1effb91a9e32b287735afaf08c162389ba0a87689eb13",
+      "bytes": 25749,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_f5b53954bf0bee7d",
       "name": "钻石蜗（火山琉璃的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/f5/5d9j04pgl7bm8s22gyimca5auyvrqkk.png",
       "localFile": "/assets/spirits/spirit_f5b53954bf0bee7d.png",
-      "sha256": "d54025f2c6cd4e1d6ee3217c0ff3727f7db9b54d993f1fb60f79f0cdf6109c75",
-      "bytes": 749544,
-      "width": 1024,
-      "height": 1024
+      "sha256": "bb8147de14f9917865f1effb91a9e32b287735afaf08c162389ba0a87689eb13",
+      "bytes": 25749,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_4e4f2c59a5d34b72",
       "name": "钻石蜗（蓝锥矿的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/f5/5d9j04pgl7bm8s22gyimca5auyvrqkk.png",
       "localFile": "/assets/spirits/spirit_4e4f2c59a5d34b72.png",
-      "sha256": "d54025f2c6cd4e1d6ee3217c0ff3727f7db9b54d993f1fb60f79f0cdf6109c75",
-      "bytes": 749544,
-      "width": 1024,
-      "height": 1024
+      "sha256": "bb8147de14f9917865f1effb91a9e32b287735afaf08c162389ba0a87689eb13",
+      "bytes": 25749,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_e1a54a70644c23a8",
       "name": "钻石蜗（烧蓝黄金的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/f5/5d9j04pgl7bm8s22gyimca5auyvrqkk.png",
       "localFile": "/assets/spirits/spirit_e1a54a70644c23a8.png",
-      "sha256": "d54025f2c6cd4e1d6ee3217c0ff3727f7db9b54d993f1fb60f79f0cdf6109c75",
-      "bytes": 749544,
-      "width": 1024,
-      "height": 1024
+      "sha256": "bb8147de14f9917865f1effb91a9e32b287735afaf08c162389ba0a87689eb13",
+      "bytes": 25749,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_170ef71f536a3f8e",
@@ -987,10 +987,10 @@
       "name": "奇丽果",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/7/77/lnsh8ef0s1pba5ykmwzratw9ekazavt.png",
       "localFile": "/assets/spirits/spirit_6ca793b3a062580e.png",
-      "sha256": "2c84b3d22967addaabbb8e0c0ff38876c5b259ffb0bc40fe4717b9104ef7200b",
-      "bytes": 539659,
-      "width": 1024,
-      "height": 1024
+      "sha256": "af9aecbedb8dbf12b217d061604d5a550b988a5832ec723278886485ca7b7da3",
+      "bytes": 19617,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_e4ee051aa2a60ad3",
@@ -1137,10 +1137,10 @@
       "name": "风暴战犬",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/60/sv2cat3v9jai8hjrddhgmon117safut.png",
       "localFile": "/assets/spirits/spirit_41a9a2fb4a1d89c0.png",
-      "sha256": "44b31e789d63bd57406f8403221fb328400cfbcffffc6fde97a51cc64bb438c6",
-      "bytes": 534765,
-      "width": 1024,
-      "height": 1024
+      "sha256": "1c56a2874845b410b6587323aa38956f4f0dad759b0e8a8d7b0f80f9bb039342",
+      "bytes": 17922,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_356f9596b83c83c0",
@@ -1447,40 +1447,40 @@
       "name": "蹦蹦果（海神球形态）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/d/d2/pob6cheep0jkox1mwit377tmqhsfaqc.png",
       "localFile": "/assets/spirits/spirit_2e19e8edb2a60bc2.png",
-      "sha256": "a052ea4835efd8ccc26d1c72c7b9af9678b671c104c0db3680aa4f05c509bc52",
-      "bytes": 619268,
-      "width": 1024,
-      "height": 1024
+      "sha256": "5824394937e32a1bf00687135a6b291ab1f38854cc19490200f6ce3bd0e56033",
+      "bytes": 20744,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_f52c89e7811d8af3",
       "name": "蹦蹦果（彩玉球形态）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/d/d2/pob6cheep0jkox1mwit377tmqhsfaqc.png",
       "localFile": "/assets/spirits/spirit_f52c89e7811d8af3.png",
-      "sha256": "a052ea4835efd8ccc26d1c72c7b9af9678b671c104c0db3680aa4f05c509bc52",
-      "bytes": 619268,
-      "width": 1024,
-      "height": 1024
+      "sha256": "5824394937e32a1bf00687135a6b291ab1f38854cc19490200f6ce3bd0e56033",
+      "bytes": 20744,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_ad6e62ee903dc2fe",
       "name": "蹦蹦果（短毛球形态）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/d/d2/pob6cheep0jkox1mwit377tmqhsfaqc.png",
       "localFile": "/assets/spirits/spirit_ad6e62ee903dc2fe.png",
-      "sha256": "a052ea4835efd8ccc26d1c72c7b9af9678b671c104c0db3680aa4f05c509bc52",
-      "bytes": 619268,
-      "width": 1024,
-      "height": 1024
+      "sha256": "5824394937e32a1bf00687135a6b291ab1f38854cc19490200f6ce3bd0e56033",
+      "bytes": 20744,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_49cd0386a45b533d",
       "name": "蹦蹦果（象牙球形态）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/d/d2/pob6cheep0jkox1mwit377tmqhsfaqc.png",
       "localFile": "/assets/spirits/spirit_49cd0386a45b533d.png",
-      "sha256": "a052ea4835efd8ccc26d1c72c7b9af9678b671c104c0db3680aa4f05c509bc52",
-      "bytes": 619268,
-      "width": 1024,
-      "height": 1024
+      "sha256": "5824394937e32a1bf00687135a6b291ab1f38854cc19490200f6ce3bd0e56033",
+      "bytes": 20744,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_4318b532ca40c05f",
@@ -1647,20 +1647,20 @@
       "name": "千棘海针",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/6c/c12nvd5tzkp8raye3qk3w7bkbujoet0.png",
       "localFile": "/assets/spirits/spirit_786924cd03526ca4.png",
-      "sha256": "24bffa5e7c599706a4ebb08c4e67beaf6c7cc46edb13764b217ac6c7e1c7cc60",
-      "bytes": 570741,
-      "width": 1024,
-      "height": 1024
+      "sha256": "e7b17d4a7af2b09fbce9ceb663ebabd9141748116e84dfb9390541209711f941",
+      "bytes": 20165,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_dbf6e5118a0b051e",
       "name": "千棘海针（磨损的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/6c/c12nvd5tzkp8raye3qk3w7bkbujoet0.png",
       "localFile": "/assets/spirits/spirit_dbf6e5118a0b051e.png",
-      "sha256": "24bffa5e7c599706a4ebb08c4e67beaf6c7cc46edb13764b217ac6c7e1c7cc60",
-      "bytes": 570741,
-      "width": 1024,
-      "height": 1024
+      "sha256": "e7b17d4a7af2b09fbce9ceb663ebabd9141748116e84dfb9390541209711f941",
+      "bytes": 20165,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_70a40653ea0eee33",
@@ -1747,10 +1747,10 @@
       "name": "女王蜂",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/61/dvtxy5v8dk7bfuduwx4bpb6eae5fdrn.png",
       "localFile": "/assets/spirits/spirit_7ae10f79a1849af1.png",
-      "sha256": "80e8d684795724f2e56a2e025ac546cd24792a590f8789b2123ed99c484a7340",
-      "bytes": 493445,
-      "width": 1024,
-      "height": 1024
+      "sha256": "f29113dfd535217402e363fa8b3d968560add68211dd94846a04a9d498d65be9",
+      "bytes": 17228,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_bfe02d4281b32ae4",
@@ -2027,10 +2027,10 @@
       "name": "神谕鲨",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/e/e7/0cnm7xkq50q0bo3q5zuoow48v03dn21.png",
       "localFile": "/assets/spirits/spirit_ebb2563e2410bd6a.png",
-      "sha256": "4b186feb802f6860e6f3a914151d60e8ef87c7214b36fbdb05befe681bfa679b",
-      "bytes": 492801,
-      "width": 1024,
-      "height": 1024
+      "sha256": "f481685d7c35b1157cefc15e3f1ca28b5ad2e3532824b4c6b3d81aecd59d22ac",
+      "bytes": 17240,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_6559cb4bdc43fc21",
@@ -2087,10 +2087,10 @@
       "name": "祭礼巨像",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/1c/sobor11cm2407czen14zaybb5nlj19q.png",
       "localFile": "/assets/spirits/spirit_c8484f0c0681b6ae.png",
-      "sha256": "0d3df8f787b7e87809d7b097b5c7c6e408093003f5c8ccfbdcc9cc3a81ed3cee",
-      "bytes": 722648,
-      "width": 1024,
-      "height": 1024
+      "sha256": "9b7c825cbf29cea6354ed13ba2a42cbd8091551c245005699a7a64b4870e526d",
+      "bytes": 24252,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_efecf4d2f811fc11",
@@ -2117,10 +2117,10 @@
       "name": "彩虹独角兽",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/19/02futi8m26y4y2ug5aphr1yz152jgig.png",
       "localFile": "/assets/spirits/spirit_6a95a48463d87bef.png",
-      "sha256": "40f273edddaea5a020779acf772226a49c61dd2ff556ec57676d5479fa2355ff",
-      "bytes": 596814,
-      "width": 1024,
-      "height": 1024
+      "sha256": "af1dfeec162c29f2537d6170f9e6710fe9584f45afdb1d57fc6e6d12cecd8c76",
+      "bytes": 19444,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_8a056366b4548195",
@@ -2187,20 +2187,20 @@
       "name": "暮风隐者（金黄的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/d/da/0jr3hj3nslqtjvkemzeruw3glg0g3j5.png",
       "localFile": "/assets/spirits/spirit_7ddca2b7aaaf24c4.png",
-      "sha256": "b58f70611b21929e8807049d740f8113591b707fa99dd3fe06da8226be8712f6",
-      "bytes": 647172,
-      "width": 1024,
-      "height": 1024
+      "sha256": "d03bf866cdc0bc57c1251b8369a8552a1cc39146f65bd9b4ff3298d5fdde3cf7",
+      "bytes": 20128,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_75f54f47b35b9e9c",
       "name": "暮风隐者（枯叶的样子）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/d/da/0jr3hj3nslqtjvkemzeruw3glg0g3j5.png",
       "localFile": "/assets/spirits/spirit_75f54f47b35b9e9c.png",
-      "sha256": "b58f70611b21929e8807049d740f8113591b707fa99dd3fe06da8226be8712f6",
-      "bytes": 647172,
-      "width": 1024,
-      "height": 1024
+      "sha256": "d03bf866cdc0bc57c1251b8369a8552a1cc39146f65bd9b4ff3298d5fdde3cf7",
+      "bytes": 20128,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_16c94e4954935fac",
@@ -2227,10 +2227,10 @@
       "name": "黑猫密探",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/4/42/0g2677q4oxakjxcoq3g66jcnxhxvm94.png",
       "localFile": "/assets/spirits/spirit_7f2a9d80e7cec56e.png",
-      "sha256": "8c86869d421f6017792f9c687269d77a643d2bb88758e71a002526ee5a1740d1",
-      "bytes": 491472,
-      "width": 1024,
-      "height": 1024
+      "sha256": "74a4f2129403276040074d216591ccbf7341aa317528250dbd943208615a1d29",
+      "bytes": 16890,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_4e0dc7dc0b877594",
@@ -2327,10 +2327,10 @@
       "name": "恶魔狼王",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/61/nnjkkl0gws6ymqp5xx86vt93hbk67bn.png",
       "localFile": "/assets/spirits/spirit_f7e8528a743eaaf0.png",
-      "sha256": "c63273c0c519b782bee8362c865ea43fcdf57c2173d74d71f7fbe9c5d5b94dbf",
-      "bytes": 498233,
-      "width": 1024,
-      "height": 1024
+      "sha256": "ad30f2d51a510318fe4df42c8d596233744b52010501b1908ac98458d5131fb4",
+      "bytes": 17179,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_49699925c6ec1c8f",
@@ -2467,10 +2467,10 @@
       "name": "雪影冰灵",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/10/n8v8t8x1qtnjbt9dfk9mas6mjtaqk3o.png",
       "localFile": "/assets/spirits/spirit_504ad8ae5cd9a417.png",
-      "sha256": "42d3e829aa2ff5c8d5f77077f4a079cb8f69fe54f1c7af58b9d5bdf71e5d7722",
-      "bytes": 661792,
-      "width": 1024,
-      "height": 1024
+      "sha256": "87b9c8233a92dcf472f21040eb3f66ec4198dbc443009d40a826d4e8d43efc26",
+      "bytes": 22532,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_b7594c978ae26ecc",
@@ -3007,20 +3007,20 @@
       "name": "棋契陛下（白棋棋骑士分支）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9a/9iwy5xzs7f6j0putgp6b9rek6egd51x.png",
       "localFile": "/assets/spirits/spirit_065c69728f30ce93.png",
-      "sha256": "3bdcef794192d34de0e1f0d5bf634246ccc2578008d5a5263604402c51759fb2",
-      "bytes": 463684,
-      "width": 1024,
-      "height": 1024
+      "sha256": "e012adac697885e3f3862271d4e5feb53499274c2ce4f0522f7f2e8097c96dae",
+      "bytes": 16857,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_839cd7d34d2dd422",
       "name": "棋契陛下（黑棋棋骑士分支）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9a/9iwy5xzs7f6j0putgp6b9rek6egd51x.png",
       "localFile": "/assets/spirits/spirit_839cd7d34d2dd422.png",
-      "sha256": "3bdcef794192d34de0e1f0d5bf634246ccc2578008d5a5263604402c51759fb2",
-      "bytes": 463684,
-      "width": 1024,
-      "height": 1024
+      "sha256": "e012adac697885e3f3862271d4e5feb53499274c2ce4f0522f7f2e8097c96dae",
+      "bytes": 16857,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_8748c0a6f05afc2d",
@@ -3047,20 +3047,20 @@
       "name": "棋契陛下（白棋棋绮后分支）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9a/9iwy5xzs7f6j0putgp6b9rek6egd51x.png",
       "localFile": "/assets/spirits/spirit_d4a7177497e7250e.png",
-      "sha256": "3bdcef794192d34de0e1f0d5bf634246ccc2578008d5a5263604402c51759fb2",
-      "bytes": 463684,
-      "width": 1024,
-      "height": 1024
+      "sha256": "e012adac697885e3f3862271d4e5feb53499274c2ce4f0522f7f2e8097c96dae",
+      "bytes": 16857,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_3b52748976f979f2",
       "name": "棋契陛下（黑棋棋绮后分支）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9a/9iwy5xzs7f6j0putgp6b9rek6egd51x.png",
       "localFile": "/assets/spirits/spirit_3b52748976f979f2.png",
-      "sha256": "3bdcef794192d34de0e1f0d5bf634246ccc2578008d5a5263604402c51759fb2",
-      "bytes": 463684,
-      "width": 1024,
-      "height": 1024
+      "sha256": "e012adac697885e3f3862271d4e5feb53499274c2ce4f0522f7f2e8097c96dae",
+      "bytes": 16857,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_e900600e3605dec4",
@@ -3087,20 +3087,20 @@
       "name": "棋契陛下（白棋棋齐垒分支）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9a/9iwy5xzs7f6j0putgp6b9rek6egd51x.png",
       "localFile": "/assets/spirits/spirit_b9046792466d9675.png",
-      "sha256": "3bdcef794192d34de0e1f0d5bf634246ccc2578008d5a5263604402c51759fb2",
-      "bytes": 463684,
-      "width": 1024,
-      "height": 1024
+      "sha256": "e012adac697885e3f3862271d4e5feb53499274c2ce4f0522f7f2e8097c96dae",
+      "bytes": 16857,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_2e04c8791a9f2542",
       "name": "棋契陛下（黑棋棋齐垒分支）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9a/9iwy5xzs7f6j0putgp6b9rek6egd51x.png",
       "localFile": "/assets/spirits/spirit_2e04c8791a9f2542.png",
-      "sha256": "3bdcef794192d34de0e1f0d5bf634246ccc2578008d5a5263604402c51759fb2",
-      "bytes": 463684,
-      "width": 1024,
-      "height": 1024
+      "sha256": "e012adac697885e3f3862271d4e5feb53499274c2ce4f0522f7f2e8097c96dae",
+      "bytes": 16857,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_b8395532616fe541",
@@ -3127,20 +3127,20 @@
       "name": "棋契陛下（白棋棋祈督分支）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9a/9iwy5xzs7f6j0putgp6b9rek6egd51x.png",
       "localFile": "/assets/spirits/spirit_7f340121dd6e8ed4.png",
-      "sha256": "3bdcef794192d34de0e1f0d5bf634246ccc2578008d5a5263604402c51759fb2",
-      "bytes": 463684,
-      "width": 1024,
-      "height": 1024
+      "sha256": "e012adac697885e3f3862271d4e5feb53499274c2ce4f0522f7f2e8097c96dae",
+      "bytes": 16857,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_dca5b460922a95f9",
       "name": "棋契陛下（黑棋棋祈督分支）",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9a/9iwy5xzs7f6j0putgp6b9rek6egd51x.png",
       "localFile": "/assets/spirits/spirit_dca5b460922a95f9.png",
-      "sha256": "3bdcef794192d34de0e1f0d5bf634246ccc2578008d5a5263604402c51759fb2",
-      "bytes": 463684,
-      "width": 1024,
-      "height": 1024
+      "sha256": "e012adac697885e3f3862271d4e5feb53499274c2ce4f0522f7f2e8097c96dae",
+      "bytes": 16857,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_e28371ed91d50b85",
@@ -3227,10 +3227,10 @@
       "name": "奇梦咪",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/e/ec/ctsyqecojfoyr0awkuijgh8cutxte29.png",
       "localFile": "/assets/spirits/spirit_a9c19df7ed7f11ce.png",
-      "sha256": "31df5c5fc0d6bf187958e03ac48cca298e27db6019b862f4f17a99ffc6a84462",
-      "bytes": 591392,
-      "width": 1024,
-      "height": 1024
+      "sha256": "ad7a7b4e79bfeebeda552fbb3625572970614b45e94e51260614c20f5ae372a1",
+      "bytes": 18094,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_a6c418b0b991f459",
@@ -3277,10 +3277,10 @@
       "name": "伊兰龙",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/e/e6/pswa2prbvq89bxk0cvveg5hn2v3otrk.png",
       "localFile": "/assets/spirits/spirit_cc4129b5ab2b9c0c.png",
-      "sha256": "83fc8e48f437f62980cf61bf3c9f3773e7d4b138fac3e2235ab0f3b505a6cca2",
-      "bytes": 706432,
-      "width": 1024,
-      "height": 1024
+      "sha256": "f69b88c369196f7e119468193db72f60fcec17eebcdc2f35d3fe10ee927948f6",
+      "bytes": 22328,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_cb0f3e33d8b40885",
@@ -3307,10 +3307,10 @@
       "name": "风暴酷拉",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/a/a4/enm2j6n09bmh5frhzf5ang8ipqj7soc.png",
       "localFile": "/assets/spirits/spirit_e0332c3637a510c6.png",
-      "sha256": "dfc3e9d669131418a5e248327cee50ff89fd157aba2194796922b8a70a726d2c",
-      "bytes": 454433,
-      "width": 1024,
-      "height": 1024
+      "sha256": "70b3bc8e480db519327d2962affbbcb6aa437e511c4d358a1a6929085981f4e5",
+      "bytes": 15937,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_6fc567ff2b56be9e",
@@ -3567,10 +3567,10 @@
       "name": "波普鹿",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/8/8c/9l5fxcvovnnxnxlze5p65lxy1ynw04c.png",
       "localFile": "/assets/spirits/spirit_7d22156a66708de3.png",
-      "sha256": "b93e6c361586e0dc0978d88f85da081bc265e376df65dab8cb66edb5f8121faa",
-      "bytes": 534736,
-      "width": 1024,
-      "height": 1024
+      "sha256": "0526510a570da821fe2127a21e109653f37276a740b0134deb32a35eebb4fde9",
+      "bytes": 19728,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_2663ae54113f96f0",
@@ -4347,10 +4347,10 @@
       "name": "圣剑骑士",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/96/kot7a5zer39bvlj7o5okzt9mor1npsc.png",
       "localFile": "/assets/spirits/spirit_79830b56df1224ea.png",
-      "sha256": "9cf668fd1583cdd6003b40a78df8fcb7f2fd3625e004f0cb48b8385ad049daa6",
-      "bytes": 655972,
-      "width": 1024,
-      "height": 1024
+      "sha256": "2c3ddd4b1d928af5239896a5a31d0012f1004952b9172c52d3a6e726c627aebf",
+      "bytes": 20252,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_05f3242dd3ab1ac6",
@@ -4377,10 +4377,10 @@
       "name": "淤泥乌泽",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/a/a4/bxy8wzv23f2xvlmqzzml1jbwx89afoa.png",
       "localFile": "/assets/spirits/spirit_77851a382e3aad75.png",
-      "sha256": "42e4ae6a3addb52b7f27a32537fa26e36c1b5080c0d57f6a57d1d3248688b811",
-      "bytes": 540151,
-      "width": 1024,
-      "height": 1024
+      "sha256": "1831ce78238ab46b5757a9d4ce6b4e3e3656ccd64b8187aaa4fbcf6443e00309",
+      "bytes": 17400,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_c62e3343e392241f",
@@ -4797,10 +4797,10 @@
       "name": "暗夜颅主",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/2/2e/hmo0f6is0yzwi459wh0i4e65gaslpip.png",
       "localFile": "/assets/spirits/spirit_2d04c5a107c33674.png",
-      "sha256": "c2c071871dc39b9ad4e1859a4733606457210116f80ceae2708dd97a93940340",
-      "bytes": 662653,
-      "width": 1024,
-      "height": 1024
+      "sha256": "886816c851c67dcb35e81637c02a650be97bcd7600498e3fe8f3f34328548a1e",
+      "bytes": 22291,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_e5e8224c029e15ec",
@@ -5767,10 +5767,10 @@
       "name": "苞米仔",
       "sourceUrl": "https://patchwiki.biligame.com/images/rocom/7/7e/olbb4wztiilvp9ti9nsk35mhzhgtk4m.png",
       "localFile": "/assets/spirits/spirit_e5d60f63ebdd049f.png",
-      "sha256": "357098b70a06dbb5d6fb159d76b9076b7e7b65515f8579e5db93d636a836717d",
-      "bytes": 564283,
-      "width": 1024,
-      "height": 1024
+      "sha256": "bd7c2abddaf6fd45f1015be674504febfcd364f25c25ab1a4d391e39877e1631",
+      "bytes": 18607,
+      "width": 128,
+      "height": 128
     },
     {
       "id": "spirit_d6dda154d3258734",

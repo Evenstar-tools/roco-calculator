@@ -17,7 +17,8 @@
 | `scripts/bwiki` | 数据构建、素材同步和校验 |
 | `scripts/miniapp` | 共享核心同步、小程序发布校验 |
 | `miniapp/src/shared` | 由同步流程维护的小程序共享计算核心 |
-| `public/data` | 当前赛季和历史赛季运行数据 |
+| `public/data` | 运行时数据与预设（`runtime.json`、`presets/`） |
+| `data/snapshots` | 权威审计快照（`current.json` 与历史赛季） |
 | `desktop` | Electron 入口与离线路径处理 |
 | `tests` | Web、桌面、共享核心、数据、UI 与发布门禁 |
 
@@ -25,7 +26,7 @@
 
 1. 伤害公式、技能规则和特性规则以 `src/domain` 为准。
 2. 小程序共享文件不得单独手改；先修改 Web 权威文件，再运行 `npm run miniapp:sync-core`。
-3. `public/data/current.json` 是当前数据快照，`runtime.json` 是构建生成物。
+3. `data/snapshots/current.json` 是当前数据快照，`public/data/runtime.json` 是构建生成物。
 4. 精灵、技能、属性、学习集和头像必须通过数据校验后才能进入发布。
 5. 用户状态兼容以分享参数、本地存储 schema 和配置库 schema 为边界，不随赛季更新直接覆盖。
 

@@ -41,7 +41,7 @@ describe("offline desktop asset routing", () => {
   test("offline smoke expects the current production spirit count", () => {
     const desktopMain = readFileSync("desktop/main.mjs", "utf8");
     const snapshot = JSON.parse(
-      readFileSync("public/data/current.json", "utf8"),
+      readFileSync("data/snapshots/current.json", "utf8"),
     );
     const expectedCount = desktopMain.match(/data\.spirits === (\d+)/)?.[1];
 

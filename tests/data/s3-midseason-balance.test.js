@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-const snapshot = JSON.parse(readFileSync("public/data/current.json", "utf8"));
+const snapshot = JSON.parse(readFileSync("data/snapshots/current.json", "utf8"));
 
 function spirit(name) {
   return snapshot.spirits.find((candidate) => candidate.fullName === name);

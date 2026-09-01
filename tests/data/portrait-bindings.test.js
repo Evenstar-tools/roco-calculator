@@ -6,7 +6,7 @@ import {
   fetchNamedPortraitAssets,
 } from "../../scripts/bwiki/portrait-bindings.mjs";
 
-const snapshot = JSON.parse(readFileSync("public/data/current.json", "utf8"));
+const snapshot = JSON.parse(readFileSync("data/snapshots/current.json", "utf8"));
 const manifest = JSON.parse(
   readFileSync("public/assets/spirits/manifest.json", "utf8"),
 );

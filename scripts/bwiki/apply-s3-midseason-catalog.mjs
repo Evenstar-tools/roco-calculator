@@ -195,7 +195,7 @@ export async function fetchS3MidseasonCatalog() {
 }
 
 async function main() {
-  const snapshotPath = path.join(PROJECT_ROOT, "public", "data", "current.json");
+  const snapshotPath = path.join(PROJECT_ROOT, "data", "snapshots", "current.json");
   const snapshot = JSON.parse(await readFile(snapshotPath, "utf8"));
   const catalog = await fetchS3MidseasonCatalog();
   const next = applyS3MidseasonCatalog(snapshot, catalog);

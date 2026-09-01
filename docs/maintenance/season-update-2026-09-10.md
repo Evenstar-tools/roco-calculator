@@ -47,7 +47,7 @@ npm run -s data:check-updates
 | 类别 | 必要内容 | 落地位置 | 完成标准 |
 | --- | --- | --- | --- |
 | 官方信息 | 赛季名称、生效时间、完整公告、平衡说明 | 本文“执行记录”与新快照 `meta.sources` | 链接、日期、摘要齐全 |
-| 精灵目录 | 图鉴号、形态、阶数、属性、种族值、特性、进化链 | 赛季 CSV、`public/data/current.json` | 稳定 ID 不漂移，新增删除可解释 |
+| 精灵目录 | 图鉴号、形态、阶数、属性、种族值、特性、进化链 | 赛季 CSV、`data/snapshots/current.json` | 稳定 ID 不漂移，新增删除可解释 |
 | 技能目录 | 属性、类别、能耗、威力、描述 | BWIKI 技能筛选与当前快照 | 553 基线差异逐项归类 |
 | 学习集 | 每个形态的技能与获得方式 | BWIKI 详情缓存、`learnsets` | 无未知技能引用，无缺失形态 |
 | 特性与动态规则 | 层数、位置、应对、连击、生命、能量、最终伤害等条件 | `src/domain`、规则参数与测试 | 默认、触发、边界、双向均有回归 |
@@ -78,9 +78,9 @@ npm ci --prefix miniapp
 ```powershell
 $SourceRoot = 'D:\codex\rock-calculator-sources\2026-09-10'
 New-Item -ItemType Directory -Path $SourceRoot -Force | Out-Null
-Copy-Item -LiteralPath '.\public\data\current.json' -Destination (Join-Path $SourceRoot 'baseline-current.json')
+Copy-Item -LiteralPath '.\data\snapshots\current.json' -Destination (Join-Path $SourceRoot 'baseline-current.json')
 npm run -s cli -- meta
-Get-FileHash -Algorithm SHA256 '.\public\data\current.json','.\public\data\runtime.json','.\public\assets\spirits\manifest.json'
+Get-FileHash -Algorithm SHA256 '.\data\snapshots\current.json','.\public\data\runtime.json','.\public\assets\spirits\manifest.json'
 npm run data:validate
 npm test -- --run --testTimeout=30000
 npm run miniapp:test
@@ -131,7 +131,7 @@ npm run data:runtime
 npm run data:validate
 npm run data:verify-bindings
 npm run -s cli -- meta
-git diff --stat -- public/data public/assets
+git diff --stat -- data/snapshots public/data public/assets
 ```
 
 候选快照必须记录上一快照 ID、增删数量、来源修订、抓取时间和内容 SHA256。

@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 
 export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
-  clientTotal: 65 * 1024 * 1024,
+  clientTotal: 13 * 1024 * 1024,
   cssGzip: 24 * 1024,
   jsGzip: 194 * 1024,
   jsRaw: 669 * 1024,
