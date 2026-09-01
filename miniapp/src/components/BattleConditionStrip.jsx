@@ -32,12 +32,18 @@ export default function BattleConditionStrip({
       >
         <View className="conditions-ribbon__heading">
           <Text className="conditions-ribbon__title">战斗条件</Text>
-          <Text className="conditions-ribbon__count">
+          <Text
+            className={count > 0
+              ? "conditions-ribbon__count"
+              : "conditions-ribbon__count conditions-ribbon__count--empty"}
+          >
             {count > 0 ? `${count} 项` : "未设置"}
           </Text>
         </View>
         <Text className="conditions-ribbon__summary">
-          {labels.length ? labels.slice(0, 3).join(" · ") : "特性、印记与环境"}
+          {labels.length
+            ? labels.slice(0, 3).join(" · ")
+            : "点击添加特性、印记或环境"}
         </Text>
       </Button>
       <View className="conditions-ribbon__health">

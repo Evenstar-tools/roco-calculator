@@ -98,6 +98,16 @@ export default function SpiritPicker({
           setQuery(readInputValue(event));
         }}
       />
+      {open && !query.trim() ? (
+        <View className="spirit-picker__hint">
+          <Text className="spirit-picker__hint-title">
+            搜索{sideLabel}宠物
+          </Text>
+          <Text className="spirit-picker__hint-copy">
+            输入名称关键字，选择后自动带出技能与种族值
+          </Text>
+        </View>
+      ) : null}
       {open && query.trim() ? (
         <View
           aria-label={`${sideLabel}宠物搜索结果`}
@@ -141,7 +151,9 @@ export default function SpiritPicker({
               </Button>
             );
           }) : (
-            <Text className="spirit-picker__empty">未找到匹配宠物</Text>
+            <Text className="spirit-picker__empty">
+              未找到匹配宠物，试试全名或换个关键字
+            </Text>
           )}
         </View>
       ) : null}

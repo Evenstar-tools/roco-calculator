@@ -45,10 +45,10 @@ function CompactStageControl({ ariaLabel, label, onChange, side, value }) {
           aria-label={`${formattedValue.stage}，${formattedValue.percent}`}
           className="active-ability-stage__value"
         >
-          <Text className="active-ability-stage__value-line">
+          <Text className="active-ability-stage__value-line active-ability-stage__value-line--stage">
             {formattedValue.stage}
           </Text>
-          <Text className="active-ability-stage__value-line">
+          <Text className="active-ability-stage__value-line active-ability-stage__value-line--percent">
             {formattedValue.percent}
           </Text>
         </Text>

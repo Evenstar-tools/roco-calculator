@@ -206,6 +206,16 @@
     white-space: nowrap;
   }
 
+  .battle-workspace--compact-demo .active-ability-stage__value-line--stage {
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .battle-workspace--compact-demo .active-ability-stage__value-line--percent {
+    color: var(--text-muted);
+    font-size: 9px;
+  }
+
   .battle-workspace--compact-demo .workspace-section--skills {
     padding: 4px;
     gap: 4px;

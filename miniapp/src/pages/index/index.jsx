@@ -379,6 +379,11 @@ export default function IndexPage({ services }) {
       const favoriteIds =
         current.services?.favoritesRepository?.toggle(spiritId) ??
         current.favoriteIds;
+      Promise.resolve(Taro.showToast({
+        duration: 1500,
+        icon: "none",
+        title: favoriteIds.includes(spiritId) ? "已收藏" : "已取消收藏",
+      })).catch(() => {});
       return { ...current, favoriteIds };
     });
   }, []);
@@ -573,6 +578,11 @@ export default function IndexPage({ services }) {
     if (pageState.memoryEnabled && pageState.store) {
       pageState.services?.persistence?.save(pageState.store.getState());
     }
+    Promise.resolve(Taro.showToast({
+      duration: 1500,
+      icon: "success",
+      title: "已重置本页参数",
+    })).catch(() => {});
     return true;
   }, [pageState]);
 

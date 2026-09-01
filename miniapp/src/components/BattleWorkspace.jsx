@@ -807,9 +807,15 @@ export default function BattleWorkspace({
               spirits={snapshot.spirits ?? []}
             />
             <DirectionSwitch
-              onSwap={() => setDirection(
-                direction === "forward" ? "reverse" : "forward",
-              )}
+              onSwap={() => {
+                const next = direction === "forward" ? "reverse" : "forward";
+                setDirection(next);
+                Promise.resolve(Taro.showToast({
+                  duration: 1500,
+                  icon: "none",
+                  title: next === "forward" ? "已切换：攻击方进攻" : "已切换：防守方进攻",
+                })).catch(() => {});
+              }}
             />
             <CombatantCard
               active={direction === "reverse"}

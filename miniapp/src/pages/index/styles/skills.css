@@ -548,6 +548,17 @@
   white-space: nowrap;
 }
 
+/* 数值层级:层数为主、百分比为次,提升一眼可读性。 */
+.active-ability-stage__value-line--stage {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.active-ability-stage__value-line--percent {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
 .ability-stage__heading,
 .ability-stage__side-title {
   display: flex;
@@ -1553,6 +1564,12 @@
   color: var(--success);
   font-size: 12px;
   font-weight: 700;
+}
+
+/* 空态用中性灰,绿色留给"已设置"的积极语义。 */
+.conditions-ribbon__count--empty {
+  color: var(--text-muted);
+  font-weight: var(--weight-emphasis);
 }
 
 .conditions-ribbon__summary {

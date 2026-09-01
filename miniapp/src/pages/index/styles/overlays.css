@@ -25,6 +25,17 @@
   inset: 0;
   z-index: 80;
   background: rgba(27, 31, 34, 0.42);
+  animation: overlay-backdrop-fade 200ms ease-out;
+}
+
+@keyframes overlay-backdrop-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .skill-picker__backdrop {
@@ -86,7 +97,7 @@
   border: 1px solid var(--border-neutral);
   border-radius: 12px;
   background: var(--surface-card);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 12px 32px rgba(28, 31, 34, 0.16);
   overflow-y: auto;
 }
 
@@ -97,6 +108,42 @@
   right: 14px;
   width: auto;
   max-height: min(62vh, 520px);
+}
+
+.spirit-picker__hint {
+  position: absolute;
+  z-index: 83;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  width: 100%;
+  padding: 22px 16px;
+  gap: 4px;
+  border: 1px solid var(--border-neutral);
+  border-radius: 12px;
+  background: var(--surface-card);
+  box-shadow: 0 12px 32px rgba(28, 31, 34, 0.16);
+  text-align: center;
+}
+
+.combatant-card--identity-only .spirit-picker__hint {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 122px);
+  left: 14px;
+  right: 14px;
+  width: auto;
+}
+
+.spirit-picker__hint-title {
+  color: var(--text-primary);
+  font-size: var(--font-body);
+  font-weight: var(--weight-section);
+}
+
+.spirit-picker__hint-copy {
+  color: var(--text-secondary);
+  font-size: var(--font-caption);
+  line-height: 18px;
 }
 
 .spirit-picker__result {
@@ -175,6 +222,39 @@
   align-items: flex-end;
   justify-content: center;
   background: rgba(27, 31, 34, 0.46);
+  animation: overlay-backdrop-fade 200ms ease-out;
+}
+
+/* 抽屉上滑过渡:挂载时 240ms 上滑淡入,替代瞬间出现。 */
+@keyframes sheet-slide-up {
+  from {
+    opacity: 0.55;
+    transform: translateY(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-picker__overlay,
+  .parameter-sheet__overlay,
+  .conditions-sheet__overlay,
+  .result-sheet__overlay,
+  .settings-sheet__overlay,
+  .team-analysis__overlay,
+  .skill-picker__sheet,
+  .parameter-sheet,
+  .conditions-sheet,
+  .result-sheet,
+  .settings-sheet,
+  .team-analysis,
+  .spirit-picker__backdrop,
+  .skill-picker__backdrop {
+    animation: none;
+  }
 }
 
 .skill-picker__sheet,
@@ -183,6 +263,7 @@
 .result-sheet,
 .settings-sheet {
   position: relative;
+  animation: sheet-slide-up 240ms ease-out;
   display: flex;
   width: 100%;
   max-width: 760px;
@@ -494,10 +575,12 @@
   align-items: flex-end;
   justify-content: center;
   background: rgba(27, 31, 34, 0.46);
+  animation: overlay-backdrop-fade 200ms ease-out;
 }
 
 .team-analysis {
   display: flex;
+  animation: sheet-slide-up 240ms ease-out;
   width: 100%;
   max-width: 640px;
   max-height: min(88vh, 820px);
