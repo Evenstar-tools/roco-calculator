@@ -62,6 +62,7 @@ npm run desktop:release-assets
 - [ ] 更新 `package.json`、小程序版本和完整 `CHANGELOG.md`。
 - [ ] 更新应用内用户版更新记录，只写用户可理解的变化。
 - [ ] 创建 Git 标签与 GitHub Release，仅上传带版本号的安装包。
+- [ ] Release 不上传 WebApp ZIP、小程序 ZIP 或 `SHA256SUMS.txt`；校验文件仅保留在本地发布归档。
 - [ ] 不再提供固定文件名的直链；应用内和网页入口统一打开当前 Release 页面。
 - [ ] 发布后下载回读，核对文件大小和 SHA256。
 - [ ] 线上站点验证真实版本，不以本地构建成功代替线上发布。
