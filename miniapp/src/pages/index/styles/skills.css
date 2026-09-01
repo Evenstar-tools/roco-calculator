@@ -202,7 +202,23 @@
 
 .skill-result-row--selected {
   border-color: var(--side-color, var(--defender));
-  box-shadow: inset 3px 0 0 var(--side-color, var(--defender));
+  box-shadow:
+    inset 3px 0 0 var(--side-color, var(--defender)),
+    0 0 0 1px var(--side-color, var(--defender));
+}
+
+/* 选中卡结果块反白,让当前技能一眼可辨。 */
+.skill-result-row--selected .skill-result-row__result--selected {
+  background: var(--side-color, var(--defender));
+}
+
+.skill-result-row--selected
+  .skill-result-row__result--selected
+  .skill-result-row__damage,
+.skill-result-row--selected
+  .skill-result-row__result--selected
+  .skill-result-row__percent {
+  color: #fff;
 }
 
 .skill-picker,

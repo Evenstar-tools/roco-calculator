@@ -302,11 +302,15 @@
     padding: 7px 9px;
   }
 
+  /* 窄屏不再隐藏“目标 HP”标签,缩小后置于输入框上方,数值不再裸奔。 */
   .conditions-ribbon__health-label {
-    display: none;
+    grid-column: 1 / -1;
+    font-size: 10px;
+    line-height: 1.2;
   }
 
   .conditions-ribbon__health {
+    row-gap: 2px;
     grid-template-columns: 60px auto;
   }
 
