@@ -186,6 +186,7 @@ export function DraftNumberInput({
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 非编辑态跟外部数值，渲染期写入会冲掉草稿
     if (!isEditing) setDraft(String(value ?? ""));
   }, [isEditing, value]);
 
@@ -393,7 +394,7 @@ export function SingleSkillEditor({
   powerDisplayMode = "static",
   negativeStatusEnabled = false,
   powerOverride,
-  powerMode = "base",
+  powerMode: _powerMode = "base",
   traitContext = {},
 }) {
   const [hitDraft, setHitDraft] = useState(String(hitCount));
@@ -452,6 +453,7 @@ export function SingleSkillEditor({
   const effectiveType = result?.typeLabel ?? selectedSkill.type;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 命中次数随技能切换，渲染期写入会丢掉半成品输入
     setHitDraft(String(hitCount));
   }, [hitCount]);
 

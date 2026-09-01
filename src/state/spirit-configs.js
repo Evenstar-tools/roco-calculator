@@ -1,7 +1,9 @@
 import { normalizeNatureId } from "../domain/natures.js";
 import {
   STORAGE_NAMESPACE,
+  backupCorruptValue,
   legacyStorageKey,
+  trySetItem,
 } from "./storage-namespace.js";
 import { extractTraitValues } from "./trait-values.js";
 import {
@@ -152,7 +154,15 @@ export function spiritConfigsRepository({
       schemaVersion: SPIRIT_CONFIG_SCHEMA_VERSION,
     };
     validateState(stored);
-    storage.setItem(SPIRIT_CONFIG_STORAGE_KEY, JSON.stringify(stored));
+    if (
+      !trySetItem(
+        storage,
+        SPIRIT_CONFIG_STORAGE_KEY,
+        JSON.stringify(stored),
+      )
+    ) {
+      return null;
+    }
     return stored;
   }
 
@@ -216,14 +226,15 @@ export function spiritConfigsRepository({
             schemaVersion: SPIRIT_CONFIG_SCHEMA_VERSION,
           };
           if (parsed.schemaVersion !== SPIRIT_CONFIG_SCHEMA_VERSION) {
-            storage.setItem(
+            trySetItem(
+              storage,
               SPIRIT_CONFIG_STORAGE_KEY,
               JSON.stringify(restored),
             );
           }
           return restored;
         } catch {
-          storage.setItem(`${source.key}.corrupt.${now()}`, raw);
+          backupCorruptValue(storage, source.key, raw, now());
         }
       }
       return emptyState();

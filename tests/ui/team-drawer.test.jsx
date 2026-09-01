@@ -111,16 +111,14 @@ function DrawerHarness({
   snapshotOverride = snapshot,
 }) {
   const triggerRef = useRef(null);
-  const storeRef = useRef(null);
-  if (!storeRef.current) {
+  const [store] = useState(() => {
     let id = 0;
-    storeRef.current = teamPresetsRepository({
+    return teamPresetsRepository({
       idFactory: () => `team-${(id += 1)}`,
       now: () => "2026-07-24T00:00:00.000Z",
       storage: memoryStorage(),
     });
-  }
-  const store = storeRef.current;
+  });
   const [open, setOpen] = useState(true);
   const [teamsState, setTeamsState] = useState(() => store.load(snapshotOverride));
 

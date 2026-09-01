@@ -15,19 +15,6 @@ const STATUS_LABELS = {
   electrified: "引电",
 };
 
-function addedStatusEntries(settlement, compact = false) {
-  return Object.entries(settlement?.added ?? {})
-    .filter(([, stacks]) => Number(stacks) > 0)
-    .map(([id, stacks]) =>
-      ({
-        id,
-        label: compact
-          ? `+${STATUS_LABELS[id]}${stacks}`
-          : `+${STATUS_LABELS[id]} ${stacks}层`,
-      }),
-    );
-}
-
 function compactStatusSummary(settlement) {
   if (!settlement) return null;
   const breakdown = (settlement.breakdown ?? [])

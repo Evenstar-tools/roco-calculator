@@ -27,6 +27,36 @@ export function readStorageWithLegacy(storage, currentKey, suffix) {
 
 export function finishStorageMigration(storage, currentKey, sourceKey, raw) {
   if (sourceKey === currentKey || raw === null) return;
-  storage.setItem(currentKey, raw);
+  if (!trySetItem(storage, currentKey, raw)) return;
   storage.removeItem(sourceKey);
+}
+
+export function isQuotaExceededError(error) {
+  return (
+    error?.name === "QuotaExceededError" ||
+    error?.code === 22 ||
+    error?.code === 1014 ||
+    /quota/i.test(String(error?.message ?? ""))
+  );
+}
+
+export function trySetItem(storage, key, value) {
+  try {
+    storage.setItem(key, value);
+    return true;
+  } catch (error) {
+    if (isQuotaExceededError(error)) {
+      return false;
+    }
+    throw error;
+  }
+}
+
+export function backupCorruptValue(storage, key, raw, timestamp) {
+  if (raw === null || raw === undefined) return;
+  try {
+    storage.setItem(`${key}.corrupt.${timestamp}`, raw);
+  } catch {
+    // 损坏备份本身也可能触发配额；读取路径仍按空数据降级。
+  }
 }

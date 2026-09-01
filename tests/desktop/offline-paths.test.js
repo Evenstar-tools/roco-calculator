@@ -1,7 +1,10 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
-import { resolveOfflineAssetPath } from "../../desktop/offline-paths.mjs";
+import {
+  buildBundledAssetHeaders,
+  resolveOfflineAssetPath,
+} from "../../desktop/offline-paths.mjs";
 
 describe("offline desktop asset routing", () => {
   const clientRoot = path.resolve("dist/client");
@@ -58,6 +61,23 @@ describe("offline desktop asset routing", () => {
     expect(snapshot.meta.counts.spirits).toBe(snapshot.spirits.length);
     expect(snapshot.meta.counts.skills).toBe(snapshot.skills.length);
     expect(snapshot.learnsets).toHaveLength(snapshot.spirits.length);
+  });
+
+  test("HTML responses include a strict content-security-policy", () => {
+    const htmlHeaders = buildBundledAssetHeaders("text/html");
+    const policy = htmlHeaders["content-security-policy"];
+
+    expect(policy).toContain("default-src 'self' app:");
+    expect(policy).toContain("script-src 'self' app:");
+    expect(policy).toContain("style-src 'self' app: 'unsafe-inline'");
+    expect(policy).toContain("object-src 'none'");
+    expect(policy).not.toMatch(/script-src[^;]*'unsafe-inline'/u);
+    expect(htmlHeaders["cache-control"]).toBe("no-store");
+    expect(buildBundledAssetHeaders("text/css")["content-security-policy"])
+      .toBeUndefined();
+
+    const desktopMain = readFileSync("desktop/main.mjs", "utf8");
+    expect(desktopMain).toContain("buildBundledAssetHeaders");
   });
 
   test("desktop runtime does not register a service worker on the app protocol", () => {

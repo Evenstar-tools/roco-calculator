@@ -63,13 +63,6 @@ export function getSkillSlotView(snapshot, entry) {
   };
 }
 
-const MANAGED_NEGATIVE_STATUS_CONTEXT_KEYS = [
-  "enemyFreezeStacks",
-  "enemyPoisonStacks",
-  "poisonStacks",
-  "targetPoisonMarkStacks",
-];
-
 function negativeStatusContext(state, targetSideKey, enabled) {
   const statuses = enabled
     ? normalizeNegativeStatusSide(state.negativeStatuses?.[targetSideKey])

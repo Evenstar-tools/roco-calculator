@@ -184,7 +184,6 @@ export function resolveBaronGreedHitSequence({
       targetCurrentHp: targetHp,
     });
 
-    const actualHealing = hitHealing.actualHealing;
     requestedHealing += hitHealing.requestedHealing;
     overflowHealing += Math.max(
       0,

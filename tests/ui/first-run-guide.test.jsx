@@ -65,7 +65,7 @@ describe("FirstRunGuide", () => {
   });
 
   test("guides compact settings, skill comparison, and detailed mode before import", () => {
-    const actions = renderGuide({ step: 2 });
+    renderGuide({ step: 2 });
 
     expect(screen.getByRole("dialog", { name: "新手引导 3/6" }))
       .toHaveTextContent("选性格和个体");

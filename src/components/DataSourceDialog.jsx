@@ -160,6 +160,7 @@ export function DataSourceDialog({ onClose, onCopyFeedback, open }) {
 
   useEffect(() => {
     if (!open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 关闭时清掉子视图，避免下次打开闪到旧页
       setView("");
     }
   }, [open]);

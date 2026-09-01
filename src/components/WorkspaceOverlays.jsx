@@ -64,6 +64,8 @@ export function WorkspaceOverlays({
       document.body.style.overflow = previousOverflow;
       mobileRefs.trigger?.current?.focus();
     };
+    // 只在抽屉开关时绑定一次；actions/refs 每轮渲染都是新对象，列入依赖会反复装卸监听。
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 见上
   }, [mobileResult.open]);
 
   useEffect(() => {
@@ -94,6 +96,7 @@ export function WorkspaceOverlays({
         document.querySelector('[aria-label="打开菜单"]')?.focus();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- actions/refs 每轮都是新对象
   }, [share.open, share.pendingState]);
 
   useEffect(() => {
@@ -120,12 +123,14 @@ export function WorkspaceOverlays({
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("mousedown", onMouseDown);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- menu.actions/ref 每轮都是新对象
   }, [menu.open]);
 
   useEffect(() => {
     if (!toast.message) return undefined;
     const timer = setTimeout(() => toast.onExpire?.(), 2200);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 只按 message 重启计时，避免 toast 对象抖动
   }, [toast.message]);
 
   return (
@@ -250,6 +255,7 @@ export function WorkspaceOverlays({
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) mobileActions.onClose?.();
           }}
+          // eslint-disable-next-line react-hooks/refs -- 把父级传入的 ref 挂到抽屉根节点，不是读取 .current
           ref={mobileRefs.drawer}
           role="dialog"
         >
@@ -257,6 +263,7 @@ export function WorkspaceOverlays({
             aria-label="关闭伤害结果"
             className="result-drawer__close"
             onClick={mobileActions.onClose}
+            // eslint-disable-next-line react-hooks/refs -- 把关闭按钮 ref 交给焦点管理
             ref={mobileRefs.close}
             title="关闭结果"
             type="button"
@@ -411,6 +418,7 @@ export function WorkspaceOverlays({
             aria-label="分享版本不一致"
             aria-modal="true"
             className="share-dialog"
+            // eslint-disable-next-line react-hooks/refs -- 把版本冲突对话框 ref 交给焦点管理
             ref={shareRefs.version}
             role="dialog"
           >

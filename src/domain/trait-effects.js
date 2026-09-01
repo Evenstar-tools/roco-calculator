@@ -95,23 +95,6 @@ const automatic = (kind, effect, effectLabel, extra = {}) => ({
   ...extra,
 });
 
-const triggeredStack = (
-  kind,
-  effect,
-  conditionLabel,
-  stackLabel,
-  effectLabel,
-  extra = {},
-) => ({
-  ...stack(kind, effect, stackLabel, effectLabel, extra),
-  condition: {
-    defaultValue: false,
-    key: extra.conditionKey ?? "traitActivated",
-    label: conditionLabel,
-    scope: extra.conditionScope ?? "direction",
-  },
-});
-
 const RULES = Object.freeze({
   换碟: automatic("fixed_power", 15, "固定基础威力", {
     applies: ({ skill }) =>

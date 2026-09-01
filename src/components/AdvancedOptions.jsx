@@ -52,18 +52,6 @@ function displayLevelCoefficient(coefficient, level = 60) {
   return `${numerator / divisor}/${denominator / divisor}`;
 }
 
-function displayDamageCoefficient(value) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric)) return "—";
-  const numerator = numeric * 41;
-  const roundedNumerator = Math.round(numerator);
-  const displayedNumerator =
-    Math.abs(numerator - roundedNumerator) < 0.00001
-      ? roundedNumerator
-      : displayNumber(numerator, 6);
-  return `${displayedNumerator}/41`;
-}
-
 function stepByLabel(result, label) {
   return result?.formulaSteps?.find((step) => step.label === label);
 }

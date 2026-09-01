@@ -11,6 +11,7 @@ export function SkillStep({
   const [mode, setMode] = useState(activeMode);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 受控模式跟外部 activeMode，直接改成完全受控会丢掉尚未回写的本地切换
     setMode(activeMode);
   }, [activeMode]);
 

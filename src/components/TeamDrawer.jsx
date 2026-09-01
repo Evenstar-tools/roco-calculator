@@ -84,9 +84,11 @@ export function TeamDrawer({
   }, [close, open]);
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- 换队伍时重置命名草稿和选中位，渲染期写入会冲掉正在改的队名 */
     setNameDraft(activeTeam?.name ?? "");
     setDeletePending(false);
     setSelectedIndex(0);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [activeTeam?.id, activeTeam?.name]);
 
   if (!open) return null;

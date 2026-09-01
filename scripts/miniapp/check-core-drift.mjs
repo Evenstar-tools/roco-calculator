@@ -18,8 +18,12 @@ import {
 const VALID_SCOPES = new Set(["working-tree", "index", "HEAD"]);
 const DECLARED_RELEASE_PATCHES = Object.freeze({
   "src/domain/baron-greed.js": Object.freeze({
-    mirrorHash: "27db5f973104a9e7e3423b5d925d30d9d3ce4f2adb2e8daf59091fdbf60e2452",
-    reason: "保留贪得无厌结算、吸血后自损顺序与物攻等级说明",
+    mirrorHash: "862900da5f0cdf265097d12e4b82ca9b0f49a06ccbced04d4957ee5f0030c57b",
+    reason: "保留贪得无厌结算、吸血后自损顺序与物攻等级说明，并清理未使用变量",
+  }),
+  "src/domain/calculator-view-model.js": Object.freeze({
+    mirrorHash: "9b8d6173b3b53642de10e5eef1dfd0eac8453c17ae95297adbfa8b2558511d99",
+    reason: "清理 lint 发现的未使用变量，结算语义不变",
   }),
   "src/domain/calculate.js": Object.freeze({
     mirrorHash: "3d6e93c166d12442d4a5f95916a174b15af81b6235c7cda8ae6f38373d4c52b0",
@@ -62,8 +66,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留状态技能重复触发，并区分触发次数与每次连击系数的结算和预览",
   }),
   "src/domain/trait-effects.js": Object.freeze({
-    mirrorHash: "e1ef3d9481dd183d7c2b1b24d85444636cba5eda1da99697306f340cebee7211",
-    reason: "保留迸发默认开启、特性层数上限与最新特性输入语义",
+    mirrorHash: "92714762ab6ae54af7f6a9c2ed3c771c8b4670540998c08f9895c9e456d53837",
+    reason: "保留迸发默认开启、特性层数上限与最新特性输入语义，并清理未使用常量",
   }),
   "src/state/calculator-session.js": Object.freeze({
     mirrorHash: "f1256bb7b7f2caddda017961a371d3430e6188f3d583fcdfe4bfda0322c319d9",
@@ -76,6 +80,14 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
   "src/state/reducer.js": Object.freeze({
     mirrorHash: "134b98a11bfe71961af92aa4919017e3105f1bd14dd25ce56698a937d19796c1",
     reason: "允许按技能保存和清除可选的状态触发次数",
+  }),
+  "src/state/spirit-configs.js": Object.freeze({
+    mirrorHash: "21265aee8a7bf7ef5fd8c2fae58993c978490171c18c071197936097e511a24a",
+    reason: "统一写入配额降级与损坏备份处理",
+  }),
+  "src/state/storage-namespace.js": Object.freeze({
+    mirrorHash: "af92e9c51a67b8f29b58265df312eb4133fbe3e7f52fdc065667f9779cf13e8a",
+    reason: "新增 trySetItem 与损坏备份工具，统一存储配额降级",
   }),
 });
 

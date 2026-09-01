@@ -81,14 +81,18 @@ export function ConfigLibraryDialog({
       document.removeEventListener("keydown", onKeyDown);
       if (trigger instanceof HTMLElement && trigger.isConnected) trigger.focus();
     };
-  }, [mode]);
+  }, [mode, onClose]);
 
   useEffect(() => {
+    // 切换导出摘要或对话框模式时收回折叠，避免沿用上一份列表的展开态。
+    /* eslint-disable react-hooks/set-state-in-effect -- 重置局部 UI，改渲染期 setState 会打断当前预览 */
     setEntriesExpanded(false);
     setImportIssuesExpanded(false);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [exportSummary, mode]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 新解析结果应收回问题列表
     setImportIssuesExpanded(false);
   }, [parsed]);
 

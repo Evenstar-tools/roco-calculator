@@ -104,6 +104,10 @@ export function useStoredCalculatorData(
         side,
         snapshot,
       );
+      if (!nextConfigs) {
+        onToast("配置保存失败");
+        return;
+      }
       spiritConfigsRef.current = nextConfigs;
       setSpiritConfigsState(nextConfigs);
     } catch {
@@ -150,17 +154,25 @@ export function useStoredCalculatorData(
     try {
       const next = new Set(favoriteSpiritIds);
       if (next.has(spirit.id)) {
+        const remaining = stores.favorites.remove(`spirit:${spirit.id}`);
+        if (remaining === null) {
+          onToast("收藏保存失败");
+          return;
+        }
         next.delete(spirit.id);
-        stores.favorites.remove(`spirit:${spirit.id}`);
         onToast(`已取消收藏 ${spirit.fullName}`);
       } else {
-        next.add(spirit.id);
-        stores.favorites.save({
+        const saved = stores.favorites.save({
           fullName: spirit.fullName,
           id: `spirit:${spirit.id}`,
           kind: "spirit",
           spiritId: spirit.id,
         });
+        if (!saved) {
+          onToast("收藏保存失败");
+          return;
+        }
+        next.add(spirit.id);
         onToast(`已收藏 ${spirit.fullName}`);
       }
       setFavoriteSpiritIds(next);
@@ -213,6 +225,10 @@ export function useStoredCalculatorData(
     setTeamsState((current) => {
       try {
         const next = mutation(current);
+        if (next?.writeFailed) {
+          onToast("队伍保存失败");
+          return current;
+        }
         onSuccess?.();
         return next;
       } catch {

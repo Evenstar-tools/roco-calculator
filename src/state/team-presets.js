@@ -2,8 +2,10 @@ import { normalizeNatureId } from "../domain/natures.js";
 import { chooseDefaultSkillIds } from "../domain/skill-loadout.js";
 import {
   STORAGE_NAMESPACE,
+  backupCorruptValue,
   finishStorageMigration,
   readStorageWithLegacy,
+  trySetItem,
 } from "./storage-namespace.js";
 
 const TEAM_STORAGE_SUFFIX = "teams.v1";
@@ -241,7 +243,13 @@ export function teamPresetsRepository({
   function save(state) {
     const stored = sanitizeState(state);
     validateStoredState(stored);
-    storage.setItem(TEAM_STORAGE_KEY, JSON.stringify(stored));
+    if (!trySetItem(storage, TEAM_STORAGE_KEY, JSON.stringify(stored))) {
+      return {
+        ...stored,
+        warning: "队伍保存失败：存储空间不足",
+        writeFailed: true,
+      };
+    }
     return stored;
   }
 
@@ -258,10 +266,7 @@ export function teamPresetsRepository({
       finishStorageMigration(storage, TEAM_STORAGE_KEY, key, raw);
       return markRepairs(parsed, snapshot);
     } catch (error) {
-      storage.setItem(
-        `${TEAM_STORAGE_KEY}.corrupt.${now()}`,
-        raw,
-      );
+      backupCorruptValue(storage, TEAM_STORAGE_KEY, raw, now());
       return emptyState(
         error instanceof SyntaxError
           ? "队伍数据损坏，已保留备份"
@@ -273,6 +278,7 @@ export function teamPresetsRepository({
   function persist(state) {
     const warning = state.warning;
     const stored = save(state);
+    if (stored.writeFailed) return stored;
     return warning ? { ...stored, warning } : stored;
   }
 

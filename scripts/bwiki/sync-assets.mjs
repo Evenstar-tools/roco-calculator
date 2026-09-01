@@ -157,7 +157,7 @@ async function syncGroup(items, directory, transform) {
     const downloaded = await download(item, transform);
     const target = resolvePublicAssetPath(item.localFile);
     await writeFile(target, downloaded.buffer);
-    const { buffer, ...manifestEntry } = downloaded;
+    const { buffer: _buffer, ...manifestEntry } = downloaded;
     return manifestEntry;
   });
 }

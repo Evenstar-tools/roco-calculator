@@ -27,6 +27,7 @@ export function PowerDraftInput({
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 非编辑态跟外部威力，渲染期写入会冲掉正在输入的草稿
     if (!editing) setDraft(String(value ?? ""));
   }, [editing, value]);
 

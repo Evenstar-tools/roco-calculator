@@ -478,7 +478,13 @@ export function applyFavoriteConfigLibraryImport({
   const nextFavorites = [...byFavoriteId.values()];
   try {
     const configs = spiritConfigsRepository.replace(nextConfigs, snapshot);
+    if (!configs) {
+      throw new TypeError("精灵配置保存失败：存储空间不足");
+    }
     const favorites = favoritesRepository.replace(nextFavorites);
+    if (!favorites) {
+      throw new TypeError("收藏保存失败：存储空间不足");
+    }
     return { configs, favorites, preview: parsed.preview };
   } catch (error) {
     const rollbackErrors = [];

@@ -380,6 +380,25 @@ describe("spiritConfigsRepository", () => {
     expect(storage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).toBeNull();
   });
 
+  test("does not throw when spirit config writes hit storage quota", () => {
+    const storage = memoryStorage();
+    storage.setItem = () => {
+      const error = new DOMException(
+        "The quota has been exceeded.",
+        "QuotaExceededError",
+      );
+      throw error;
+    };
+    const repository = spiritConfigsRepository({ storage });
+
+    expect(() =>
+      repository.save(repository.load(snapshot()), configuredSide()),
+    ).not.toThrow();
+    expect(
+      repository.save(repository.load(snapshot()), configuredSide()),
+    ).toBeNull();
+  });
+
   test("backs up a corrupt v2 value and still recovers the intact v1 memory", () => {
     const legacyState = {
       configs: {

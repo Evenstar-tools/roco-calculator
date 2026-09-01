@@ -290,6 +290,7 @@ export function TeamAnalysisPanel({
   const [selectedCell, setSelectedCell] = useState(null);
   const view = mode;
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 攻防矩阵模式切换后清掉高亮格，避免串到另一张表
     setSelectedCell(null);
   }, [mode]);
   const analysis = useMemo(

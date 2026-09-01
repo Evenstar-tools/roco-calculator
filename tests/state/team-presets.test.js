@@ -151,7 +151,7 @@ describe("teamPresetsRepository", () => {
       hitCount: 2,
       skillId: "skill-a",
     };
-    state = store.updateMember(state, state.activeTeamId, 0, member);
+    store.updateMember(state, state.activeTeamId, 0, member);
 
     const restored = repository(storage).load(snapshot());
 
@@ -168,7 +168,7 @@ describe("teamPresetsRepository", () => {
       bloodlineType: "fire",
     };
 
-    state = store.updateMember(state, state.activeTeamId, 0, member);
+    store.updateMember(state, state.activeTeamId, 0, member);
 
     expect(repository(storage).load(snapshot()).teams[0].members[0]).toMatchObject({
       bloodlineType: "fire",
@@ -394,6 +394,25 @@ describe("teamPresetsRepository", () => {
     );
   });
 
+  test("does not throw when team writes hit storage quota", () => {
+    const storage = memoryStorage();
+    storage.setItem = () => {
+      const error = new DOMException(
+        "The quota has been exceeded.",
+        "QuotaExceededError",
+      );
+      throw error;
+    };
+    const store = repository(storage);
+    const empty = store.load(snapshot());
+
+    expect(() => store.create(empty, "主队")).not.toThrow();
+    expect(store.create(empty, "主队")).toMatchObject({
+      writeFailed: true,
+      warning: "队伍保存失败：存储空间不足",
+    });
+  });
+
   test("backs up corrupt JSON and returns an empty warning state", () => {
     const storage = memoryStorage({ [TEAM_STORAGE_KEY]: "{not-json" });
     const store = repository(storage);
@@ -418,7 +437,7 @@ describe("teamPresetsRepository", () => {
     const storage = memoryStorage();
     const store = repository(storage);
     let state = store.create(store.load(snapshot()), "旧队");
-    state = store.updateMember(state, state.activeTeamId, 0, {
+    store.updateMember(state, state.activeTeamId, 0, {
       ...createTeamMember(snapshot(), "spirit-a"),
       skills: {
         four: ["missing-skill", null, null, null],

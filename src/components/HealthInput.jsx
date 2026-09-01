@@ -26,6 +26,7 @@ export function HealthInput({
   const [draft, setDraft] = useState(String(displayedValue));
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 外部生命值变化时同步草稿，渲染期写入会丢掉输入法组字
     setDraft(String(displayedValue));
   }, [displayedValue, mode]);
 

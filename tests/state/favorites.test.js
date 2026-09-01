@@ -19,16 +19,37 @@ function memoryStorage(seed = {}) {
 }
 
 describe("favoritesRepository", () => {
-  test("returns an empty collection for bad JSON without overwriting it", () => {
+  test("backs up corrupt JSON and returns an empty collection without overwriting it", () => {
     const storage = memoryStorage({
       [FAVORITES_STORAGE_KEY]: "{unreadable",
     });
-    const repository = favoritesRepository(storage);
+    const repository = favoritesRepository(storage, {
+      now: () => "2026-09-01T00:00:00.000Z",
+    });
 
     expect(repository.list()).toEqual([]);
     expect(storage.raw()).toBe("{unreadable");
-    expect(storage.setItem).not.toHaveBeenCalled();
+    expect(
+      storage.raw(`${FAVORITES_STORAGE_KEY}.corrupt.2026-09-01T00:00:00.000Z`),
+    ).toBe("{unreadable");
     expect(storage.removeItem).not.toHaveBeenCalled();
+  });
+
+  test("does not throw when favorite writes hit storage quota", () => {
+    const storage = memoryStorage();
+    storage.setItem.mockImplementation(() => {
+      const error = new DOMException(
+        "The quota has been exceeded.",
+        "QuotaExceededError",
+      );
+      throw error;
+    });
+    const repository = favoritesRepository(storage);
+
+    expect(() => repository.save({ id: "a", name: "配置 A" })).not.toThrow();
+    expect(repository.save({ id: "a", name: "配置 A" })).toBeNull();
+    expect(repository.replace([{ id: "b", name: "配置 B" }])).toBeNull();
+    expect(repository.list()).toEqual([]);
   });
 
   test("migrates the previous app namespace without losing favorites", () => {

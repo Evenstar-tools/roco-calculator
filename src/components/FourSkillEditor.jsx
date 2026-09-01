@@ -44,7 +44,6 @@ function useMediaQuery(query) {
     const media = globalThis.matchMedia?.(query);
     if (!media) return undefined;
     const update = (event) => setMatches(event.matches);
-    setMatches(media.matches);
     media.addEventListener?.("change", update);
     return () => media.removeEventListener?.("change", update);
   }, [query]);

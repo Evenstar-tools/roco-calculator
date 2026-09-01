@@ -13,7 +13,10 @@ import {
   handleWillNavigate,
   isSupportedExternalUrl,
 } from "./external-navigation.mjs";
-import { resolveOfflineAssetPath } from "./offline-paths.mjs";
+import {
+  buildBundledAssetHeaders,
+  resolveOfflineAssetPath,
+} from "./offline-paths.mjs";
 
 const APP_SCHEME = "app";
 const APP_ORIGIN = "app://calculator/";
@@ -81,20 +84,22 @@ async function readBundledAsset(requestUrl) {
       assetPath = path.join(assetPath, "index.html");
     }
     const body = await readFile(assetPath);
+    const mimeType = getMimeType(assetPath);
     return {
       data: body,
-      headers: { "cache-control": "no-store" },
-      mimeType: getMimeType(assetPath),
+      headers: buildBundledAssetHeaders(mimeType),
+      mimeType,
       statusCode: 200,
     };
   } catch {
     try {
       const fallbackPath = path.join(clientRoot, "index.html");
       const body = await readFile(fallbackPath);
+      const mimeType = getMimeType(fallbackPath);
       return {
         data: body,
-        headers: { "cache-control": "no-store" },
-        mimeType: getMimeType(fallbackPath),
+        headers: buildBundledAssetHeaders(mimeType),
+        mimeType,
         statusCode: 200,
       };
     } catch {

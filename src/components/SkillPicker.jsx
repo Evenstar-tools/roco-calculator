@@ -57,6 +57,7 @@ export function SkillPicker({
   const [scrollTop, setScrollTop] = useState(0);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 选中技能变化时重置搜索框，避免残留上一次过滤词
     setQuery(selected?.name ?? "");
   }, [selected?.id, selected?.name]);
 
@@ -94,8 +95,10 @@ export function SkillPicker({
   }, [matches, scrollTop]);
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- 过滤结果变化后收回虚拟列表滚动位置 */
     setActiveIndex((index) => Math.min(index, Math.max(0, matches.length - 1)));
     setScrollTop(0);
+    /* eslint-enable react-hooks/set-state-in-effect */
     if (listboxRef.current) listboxRef.current.scrollTop = 0;
   }, [matches]);
 

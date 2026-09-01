@@ -1,8 +1,10 @@
 import {
   STORAGE_NAMESPACE,
+  backupCorruptValue,
   finishStorageMigration,
   legacyStorageKey,
   readStorageWithLegacy,
+  trySetItem,
 } from "./storage-namespace.js";
 
 const FAVORITES_STORAGE_SUFFIX = "favorites.v1";
@@ -71,7 +73,11 @@ function validateFavorites(value) {
   return value;
 }
 
-function readFavorites(storage) {
+function defaultNow() {
+  return new Date().toISOString();
+}
+
+function readFavorites(storage, now) {
   const { key, raw } = readStorageWithLegacy(
     storage,
     FAVORITES_STORAGE_KEY,
@@ -87,17 +93,29 @@ function readFavorites(storage) {
     finishStorageMigration(storage, FAVORITES_STORAGE_KEY, key, raw);
     return favorites;
   } catch {
+    backupCorruptValue(storage, key, raw, now());
     return [];
   }
 }
 
 function writeFavorites(storage, favorites) {
   const validFavorites = validateFavorites(favorites);
-  storage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(validFavorites));
+  if (
+    !trySetItem(
+      storage,
+      FAVORITES_STORAGE_KEY,
+      JSON.stringify(validFavorites),
+    )
+  ) {
+    return null;
+  }
   return validFavorites;
 }
 
-export function favoritesRepository(storage = globalThis.localStorage) {
+export function favoritesRepository(
+  storage = globalThis.localStorage,
+  { now = defaultNow } = {},
+) {
   if (
     !storage ||
     typeof storage.getItem !== "function" ||
@@ -108,30 +126,30 @@ export function favoritesRepository(storage = globalThis.localStorage) {
 
   return {
     list() {
-      return readFavorites(storage);
+      return readFavorites(storage, now);
     },
     save(favorite) {
       validateFavorites([favorite]);
-      const favorites = readFavorites(storage);
+      const favorites = readFavorites(storage, now);
       const index = favorites.findIndex((item) => item.id === favorite.id);
       if (index === -1) {
         favorites.push(favorite);
       } else {
         favorites[index] = favorite;
       }
-      writeFavorites(storage, favorites);
-      return favorite;
+      const written = writeFavorites(storage, favorites);
+      return written ? favorite : null;
     },
     remove(id) {
-      const favorites = readFavorites(storage);
+      const favorites = readFavorites(storage, now);
       const remaining = favorites.filter((favorite) => favorite.id !== id);
       if (remaining.length !== favorites.length) {
-        writeFavorites(storage, remaining);
+        return writeFavorites(storage, remaining);
       }
       return remaining;
     },
     exportJson() {
-      return JSON.stringify(readFavorites(storage));
+      return JSON.stringify(readFavorites(storage, now));
     },
     importJson(json) {
       let favorites;
