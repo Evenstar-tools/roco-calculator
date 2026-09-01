@@ -7,6 +7,7 @@ import {
   UsersThree,
 } from "@phosphor-icons/react";
 import { useState } from "react";
+import { readThemeSetting } from "../state/display-settings.js";
 
 export function AppHeader({
   dataVersion,
@@ -19,7 +20,7 @@ export function AppHeader({
   viewMode = "compact",
   onViewModeChange,
 }) {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(() => readThemeSetting() === "dark");
 
   function toggleTheme() {
     const next = !dark;

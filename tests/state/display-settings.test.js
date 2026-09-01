@@ -1,9 +1,12 @@
 import { describe, expect, test } from "vitest";
 import {
   POWER_DISPLAY_STORAGE_KEY,
+  THEME_STORAGE_KEY,
   readPowerDisplayMode,
+  readThemeSetting,
   readTypeCoverageSetting,
   writePowerDisplayMode,
+  writeThemeSetting,
   writeTypeCoverageSetting,
 } from "../../src/state/display-settings.js";
 
@@ -63,5 +66,42 @@ describe("power display setting", () => {
     };
     expect(readPowerDisplayMode(storage)).toBe("static");
     expect(writePowerDisplayMode(storage, "broken")).toBe("static");
+  });
+});
+
+describe("theme setting", () => {
+  test("defaults to light", () => {
+    expect(readThemeSetting(createStorage())).toBe("light");
+  });
+
+  test("persists dark theme", () => {
+    const values = new Map();
+    const storage = {
+      getItem: (key) => values.get(key) ?? null,
+      setItem: (key, value) => values.set(key, value),
+    };
+
+    expect(writeThemeSetting(storage, "dark")).toBe("dark");
+    expect(values.get(THEME_STORAGE_KEY)).toBe("dark");
+    expect(readThemeSetting(storage)).toBe("dark");
+  });
+
+  test("treats unexpected stored values as light", () => {
+    const storage = {
+      getItem: (key) => (key === THEME_STORAGE_KEY ? "broken" : null),
+      setItem: () => {},
+    };
+    expect(readThemeSetting(storage)).toBe("light");
+    expect(writeThemeSetting(storage, "broken")).toBe("light");
+  });
+
+  test("read failures fall back to light", () => {
+    const storage = {
+      getItem: () => {
+        throw new Error("denied");
+      },
+      setItem: () => {},
+    };
+    expect(readThemeSetting(storage)).toBe("light");
   });
 });

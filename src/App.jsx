@@ -15,7 +15,11 @@ import { SingleSkillEditor } from "./components/SingleSkillEditor.jsx";
 import { SkillStep } from "./components/SkillStep.jsx";
 import { SpiritStep } from "./components/SpiritStep.jsx";
 import { WorkspaceOverlays } from "./components/WorkspaceOverlays.jsx";
-import { readNegativeStatusSettlementSetting } from "./state/display-settings.js";
+import {
+  readNegativeStatusSettlementSetting,
+  readThemeSetting,
+  writeThemeSetting,
+} from "./state/display-settings.js";
 import {
   buildCalculatorViewModel,
   clampStage,
@@ -113,6 +117,11 @@ function CalculatorWorkspace({ snapshot }) {
   useEffect(() => {
     if (teamsState.warning) setToast(teamsState.warning);
   }, [teamsState.warning]);
+
+  // 启动时恢复持久化的主题选择,与 AppHeader 的初始开关状态保持一致。
+  useEffect(() => {
+    document.documentElement.dataset.theme = readThemeSetting();
+  }, []);
 
   const spiritIndex = useMemo(
     () => createSpiritSearchIndex(snapshot.spirits),
@@ -1438,7 +1447,10 @@ function CalculatorWorkspace({ snapshot }) {
           overlays.team.setOpen(true);
         }}
         onThemeChange={(theme) => {
-          document.documentElement.dataset.theme = theme;
+          document.documentElement.dataset.theme = writeThemeSetting(
+            undefined,
+            theme,
+          );
         }}
         teamsButtonRef={overlays.team.buttonRef}
         viewMode={viewMode}

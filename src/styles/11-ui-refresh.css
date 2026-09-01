@@ -1,27 +1,8 @@
 /* Calculator-first UI refresh */
-:root {
-  --attack: #dc3f32;
-  --attack-soft: #fff2ef;
-  --defense: #1672c4;
-  --defense-soft: #eef7ff;
-  --accent: #5546dc;
-  --accent-strong: #4434c6;
-  --accent-soft: #f1efff;
-  --bg: #f1f3f7;
-  --surface: #ffffff;
-  --surface-soft: #f7f8fb;
-  --surface-muted: #e9ecf2;
-  --border: #d4d8e2;
-  --border-strong: #b7bdcc;
-  --text: #171a2b;
-  --text-muted: #596177;
-  --text-faint: #788096;
-  --shadow: 0 14px 36px rgba(31, 37, 68, 0.1);
-  --radius: 11px;
-}
+/* 亮色 token 已并入 01-tokens.css 的唯一 :root;此处只保留暗色补丁。 */
 
-/* Keep the dark palette after the refresh tokens above. This block must stay
-   below the light :root declaration so semantic colors remain theme-correct. */
+/* Keep the dark palette after the light tokens. This block must stay the last
+   dark token declaration so semantic colors remain theme-correct. */
 html[data-theme="dark"] {
   color-scheme: dark;
   --attack: #ff7568;

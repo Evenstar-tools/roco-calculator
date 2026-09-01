@@ -9,11 +9,22 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+// 并行负载下首屏数据就绪会触发头部重渲染,单次点击可能落在被替换的旧节点上,
+// 菜单因此不开;重试直到目标菜单项可见,断言本身不变。
+async function openMenuItem(page, name) {
+  await expect(async () => {
+    await page.getByRole("button", { name: "打开菜单" }).click();
+    await expect(page.getByRole("button", { name })).toBeVisible({
+      timeout: 3000,
+    });
+  }).toPass({ timeout: 15000 });
+  await page.getByRole("button", { name }).click();
+}
+
 test("keeps the concise about summary centered in a wide viewport", async ({ page }) => {
   await page.setViewportSize({ width: 1424, height: 861 });
   await page.goto("/");
-  await page.getByRole("button", { name: "打开菜单" }).click();
-  await page.getByRole("button", { name: "关于与来源" }).click();
+  await openMenuItem(page, "关于与来源");
 
   const dialog = page.getByRole("dialog", { name: "关于与来源" });
   await expect(dialog).toBeVisible();
@@ -46,8 +57,7 @@ test("keeps application access and about dialogs inside a mobile viewport", asyn
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
-  await page.getByRole("button", { name: "打开菜单" }).click();
-  await page.getByRole("button", { name: "获取应用" }).click();
+  await openMenuItem(page, "获取应用");
   const accessDialog = page.getByRole("dialog", { name: "获取应用" });
   await expect(accessDialog).toBeVisible();
   await expect(accessDialog.getByRole("link", { name: "GitHub 发布页" }))
@@ -66,8 +76,7 @@ test("keeps application access and about dialogs inside a mobile viewport", asyn
     .toBe(true);
   await accessDialog.getByRole("button", { name: "关闭获取应用" }).click();
 
-  await page.getByRole("button", { name: "打开菜单" }).click();
-  await page.getByRole("button", { name: "关于与来源" }).click();
+  await openMenuItem(page, "关于与来源");
   const aboutDialog = page.getByRole("dialog", { name: "关于与来源" });
   await expect(aboutDialog).toBeVisible();
   expect(await aboutDialog.evaluate((node) => node.scrollWidth <= node.clientWidth))

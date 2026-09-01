@@ -4,6 +4,29 @@ export const POWER_DISPLAY_STORAGE_KEY =
   "rock-calculator.settings.power-display.v1";
 export const NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY =
   "rock-calculator.settings.negative-status-settlement.v1";
+export const THEME_STORAGE_KEY = "rock-calculator.settings.theme.v1";
+
+function normalizeTheme(value) {
+  return value === "dark" ? "dark" : "light";
+}
+
+export function readThemeSetting(storage = globalThis.localStorage) {
+  try {
+    return normalizeTheme(storage?.getItem(THEME_STORAGE_KEY));
+  } catch {
+    return "light";
+  }
+}
+
+export function writeThemeSetting(storage = globalThis.localStorage, theme) {
+  const normalized = normalizeTheme(theme);
+  try {
+    storage?.setItem(THEME_STORAGE_KEY, normalized);
+  } catch {
+    return normalized;
+  }
+  return normalized;
+}
 
 function normalizePowerDisplayMode(value) {
   return value === "panel" ? "panel" : "static";

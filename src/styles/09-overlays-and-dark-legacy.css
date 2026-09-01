@@ -52,24 +52,8 @@
   background: rgba(24, 25, 44, 0.8);
 }
 
-html[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #171925;
-  --surface: #242736;
-  --surface-soft: #2b2f42;
-  --surface-muted: #363b50;
-  --border: #454b63;
-  --border-strong: #5c647f;
-  --text: #f1f3fb;
-  --text-muted: #b8bfd5;
-  --text-faint: #8e96b2;
-  --selection-bg: #302c52;
-  --selection-border: #9588ff;
-  --selection-hover: #2d3044;
-  --damage-safe: #69db7c;
-  --damage-warning: #ffd166;
-  --damage-danger: #ff7b6b;
-}
+/* 暗色 token 收敛:此处旧的 html[data-theme="dark"] 变量块被 11-ui-refresh.css
+   末位的同选择器块逐项覆盖(含 color-scheme),已删除,生效值不变。 */
 
 html[data-theme="dark"] body {
   background: #171925;
