@@ -50,6 +50,40 @@ describe("trait effect coverage", () => {
     ).toMatchObject({ fixedPowerAdd: 0 });
   });
 
+  test("全神贯注从未行动的物攻加成 100% 起每次衰减 20%", () => {
+    const trait = snapshot.traits.find(
+      (candidate) => candidate.name === "全神贯注",
+    );
+    const skill = { category: "physical", name: "测试技能", type: "火" };
+
+    expect(getTraitEffectInputs(trait, "attacker")).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contextKey: "attackerTraitStacks",
+          defaultValue: 0,
+          label: "已行动次数",
+          min: 0,
+        }),
+      ]),
+    );
+    expect(resolveTraitEffectRule(trait, "attacker", { skill })).toMatchObject({
+      attackLevelBonus: 10,
+      attackMultiplier: 2,
+    });
+    expect(
+      resolveTraitEffectRule(trait, "attacker", {
+        context: { attackerTraitStacks: 1 },
+        skill,
+      }),
+    ).toMatchObject({ attackLevelBonus: 8, attackMultiplier: 1.8 });
+    expect(
+      resolveTraitEffectRule(trait, "attacker", {
+        context: { attackerTraitStacks: 5 },
+        skill,
+      }),
+    ).toMatchObject({ attackLevelBonus: 0, attackMultiplier: 1 });
+  });
+
   test("守护之心按双方场上不同增益种类输入物防加成", () => {
     const trait = snapshot.traits.find(
       (candidate) => candidate.name === "守护之心",

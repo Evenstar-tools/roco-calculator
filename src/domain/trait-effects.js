@@ -1203,7 +1203,7 @@ export function resolveTraitEffectRule(trait, role, input) {
     rule.kind === "weekend_attack_weekday_defense_percent";
   const active =
     (isWeekendAttackWeekdayDefense || triggered) &&
-    (!rule.stack || stacks > 0);
+    (!rule.stack || stacks > 0 || rule.kind === "decay_attack_percent");
   const skillSpecificEffect = rule.fixedPowerBySkillName?.[input.skill?.name];
   const effect = Math.max(
     0,

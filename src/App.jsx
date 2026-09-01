@@ -116,6 +116,8 @@ function CalculatorWorkspace({ snapshot }) {
   });
 
   useEffect(() => {
+    // 存储告警由初始化读取产生，只能在挂载后转成界面提示。
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (teamsState.warning) setToast(teamsState.warning);
   }, [teamsState.warning]);
 

@@ -20,22 +20,13 @@ export default [
     ignores: [
       "dist/**",
       "release/**",
+      "release-*/**",
       "node_modules/**",
       "miniapp/**",
       "artifacts/**",
       "output/**",
       "tmp/**",
       "data/**",
-      // 另一会话的在途功能改动，本轮只记录告警、不改这些文件。
-      // miniapp/ 已整体忽略；此处仍列出 8 个在途文件以免后续放宽 ignore 时被扫到。
-      "src/App.jsx",
-      "src/domain/calculate.js",
-      "src/domain/marks.js",
-      "miniapp/src/shared/domain/calculate.js",
-      "miniapp/src/shared/domain/marks.js",
-      "miniapp/src/components/BattleWorkspace.jsx",
-      "tests/domain/calculate.test.js",
-      "tests/ui/app-integration.test.jsx",
     ],
   },
   {

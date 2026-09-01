@@ -66,8 +66,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留状态技能重复触发，并区分触发次数与每次连击系数的结算和预览",
   }),
   "src/domain/trait-effects.js": Object.freeze({
-    mirrorHash: "92714762ab6ae54af7f6a9c2ed3c771c8b4670540998c08f9895c9e456d53837",
-    reason: "保留迸发默认开启、特性层数上限与最新特性输入语义，并清理未使用常量",
+    mirrorHash: "26fa87354f6bd6727d1a5e2f84236b4d9ae0b9445df5d04b06b234e8a6fb5aeb",
+    reason: "保留迸发默认开启、特性层数上限与最新特性输入语义；全神贯注未行动时物攻加成 100%，每次行动衰减 20%",
   }),
   "src/state/calculator-session.js": Object.freeze({
     mirrorHash: "8f666e87dbd657cc222805b1d3910ba3d7e9a7d1c95db51cbdf51122728b2a5e",
