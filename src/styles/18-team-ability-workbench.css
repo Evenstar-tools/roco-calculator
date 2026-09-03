@@ -748,14 +748,30 @@
   white-space: nowrap;
 }
 
-.ability-speed .ability-section__title > label {
+.ability-speed__controls {
   display: flex;
-  min-width: 210px;
+  min-width: 410px;
   align-items: center;
-  gap: 7px;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
-.ability-speed .ability-section__title > label > span {
+.ability-speed__controls label {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.ability-speed__controls label:first-child {
+  flex: 0 1 126px;
+}
+
+.ability-speed__controls label:last-child {
+  flex: 1 1 220px;
+}
+
+.ability-speed__controls label > span {
   flex: 0 0 auto;
   color: var(--text-muted);
   font-size: 10px;
@@ -774,11 +790,51 @@
   font-weight: 700;
 }
 
+.ability-speed__slider {
+  display: grid;
+  padding: 13px 28px 0;
+  color: var(--text-faint);
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ability-speed__slider input {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: grab;
+  grid-column: 1 / -1;
+}
+
+.ability-speed__slider input:active {
+  cursor: grabbing;
+}
+
+.ability-speed__slider input:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.ability-speed__slider > span:last-child {
+  text-align: right;
+}
+
+.ability-speed__slider strong {
+  overflow: hidden;
+  color: var(--accent-strong);
+  font-size: 10px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .ability-speed__rail {
   position: relative;
   display: grid;
-  min-height: 112px;
-  padding: 16px 28px 10px;
+  min-height: 100px;
+  padding: 8px 28px 10px;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   align-items: center;
 }
@@ -822,6 +878,10 @@
   align-content: center;
   grid-template-rows: 32px 17px 14px 12px;
   gap: 2px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
 }
 
 .ability-speed__marker::after {
@@ -1005,6 +1065,10 @@
   font-size: 9px;
 }
 
+.ability-build-card header span + span {
+  color: var(--text-faint);
+}
+
 .ability-build-card header > b {
   padding: 3px 7px;
   border-radius: 999px;
@@ -1085,10 +1149,27 @@
   cursor: pointer;
 }
 
-.ability-build-card.is-recommended > button {
+.ability-build-card > button:disabled {
+  border-color: var(--border);
+  color: var(--text-faint);
+  background: var(--surface-muted);
+  cursor: default;
+}
+
+.ability-build-card.is-recommended > button:not(:disabled) {
   border-color: var(--accent);
   color: #fff;
   background: var(--accent);
+}
+
+.ability-apply-status {
+  margin: 0;
+  padding: 8px 12px;
+  border-top: 1px solid color-mix(in srgb, var(--damage-safe) 28%, var(--border));
+  color: var(--damage-safe);
+  background: color-mix(in srgb, var(--damage-safe) 7%, var(--surface));
+  font-size: 10px;
+  font-weight: 700;
 }
 
 .ability-build-card.is-empty {
@@ -1420,20 +1501,26 @@
   font-size: 10px;
 }
 
+.ability-ranking-table__rank {
+  width: 58px;
+}
+
+.ability-ranking-table__spirit {
+  width: 34%;
+}
+
 .ability-ranking-table th:nth-child(1),
 .ability-ranking-table th:nth-child(2),
 .ability-ranking-table td:nth-child(1),
 .ability-ranking-table td:nth-child(2) {
-  width: 58px;
   text-align: center;
 }
 
 .ability-ranking-table th:nth-child(3) {
-  width: 34%;
   text-align: left;
 }
 
-.ability-ranking-table tbody th {
+.ability-ranking-spirit {
   display: grid;
   min-width: 0;
   text-align: left;
@@ -1442,20 +1529,20 @@
   gap: 7px;
 }
 
-.ability-ranking-table tbody th img {
+.ability-ranking-spirit img {
   width: 32px;
   height: 32px;
   object-fit: contain;
 }
 
-.ability-ranking-table tbody th span {
+.ability-ranking-spirit span {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.ability-ranking-table tbody th small {
+.ability-ranking-spirit small {
   padding: 2px 5px;
   border-radius: 999px;
   color: var(--text-faint);
@@ -1886,14 +1973,20 @@
     line-height: 1.4;
   }
 
-  .ability-speed .ability-section__title > label {
+  .ability-speed__controls {
+    display: grid;
     width: 100%;
     min-width: 0;
     padding-left: 30px;
+    grid-template-columns: minmax(100px, 0.65fr) minmax(150px, 1.35fr);
   }
 
   .ability-speed .ability-section__title select {
     min-height: 44px;
+  }
+
+  .ability-speed__slider {
+    padding: 12px 16px 0;
   }
 
   .ability-speed__rail {
@@ -2221,14 +2314,16 @@
   }
 
   .ability-ranking-table tbody th {
-    display: grid;
     min-width: 0;
-    grid-template-columns: 34px minmax(0, 1fr) auto;
     grid-column: 2 / 4;
     grid-row: 1;
   }
 
-  .ability-ranking-table tbody th img {
+  .ability-ranking-spirit {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+  }
+
+  .ability-ranking-spirit img {
     width: 34px;
     height: 34px;
   }
@@ -2251,8 +2346,8 @@
   }
 
   .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(1)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(6),
-  .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(2)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(5),
-  .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(3)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(4) {
+  .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(2)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(4),
+  .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(3)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(5) {
     display: block;
   }
 
@@ -2290,6 +2385,15 @@
   }
 
   .ability-build-constraints label > span {
+    display: none;
+  }
+
+  .ability-speed__controls {
+    padding-left: 0;
+    grid-template-columns: minmax(92px, 0.75fr) minmax(0, 1.25fr);
+  }
+
+  .ability-speed__controls label > span {
     display: none;
   }
 

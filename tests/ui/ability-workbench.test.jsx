@@ -10,7 +10,7 @@ const snapshot = {
     {
       asset: null,
       fullName: "音速犬",
-      id: "sonic-dog",
+      id: "spirit_db5a2cb398dc0385",
       raceStats: {
         hp: 85,
         magicalAttack: 46,
@@ -44,7 +44,7 @@ function member(displayIvs) {
     displayIvs,
     natureId: "neutral",
     skills: { four: [], single: null },
-    spiritId: "sonic-dog",
+    spiritId: "spirit_db5a2cb398dc0385",
   };
 }
 
@@ -66,7 +66,7 @@ test("prevents selecting a fourth binary investment and reopens the slot after d
     />,
   );
 
-  const investments = screen.getByRole("group", { name: "能力分析个体投资" });
+  const investments = screen.getByRole("group", { name: "个体值分配" });
   expect(within(investments).getByRole("button", { name: /选择物防/ })).toBeDisabled();
 
   await user.click(within(investments).getByRole("button", { name: /取消生命/ }));
@@ -77,6 +77,89 @@ test("prevents selecting a fourth binary investment and reopens the slot after d
     "true",
   );
   expect(screen.getByText("已用 3 / 3")).toBeVisible();
+});
+
+test("按综合、物理、魔法排列方案并明确展示优化目标和性格", () => {
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 60,
+        physicalAttack: 0,
+        physicalDefense: 60,
+        speed: 0,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  const builds = screen.getByRole("region", { name: "耐久方案对比" });
+  expect(
+    within(builds).getAllByRole("heading", { level: 5 }).map((heading) => heading.textContent),
+  ).toEqual(["综合承伤", "物理承伤", "魔法承伤"]);
+  expect(within(builds).getAllByText(/优化目标：/)).toHaveLength(3);
+  expect(within(builds).getAllByText(/性格：普通/)).toHaveLength(3);
+
+  const firstCard = within(builds).getAllByRole("article")[0];
+  expect(
+    within(firstCard).getAllByRole("term").map((term) => term.textContent),
+  ).toEqual(["速度", "综合耐久", "物理耐久", "魔法耐久"]);
+  expect(within(firstCard).getByRole("button", { name: "当前方案" })).toBeDisabled();
+});
+
+test("速度轴可拖动并能切换四种目标口径", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  expect(screen.getByRole("slider", { name: "速度目标轴" })).toBeEnabled();
+  const profile = screen.getByRole("combobox", { name: "速度目标口径" });
+  await user.selectOptions(profile, "negative-zero");
+  expect(profile).toHaveValue("negative-zero");
+  expect(screen.getByText(/最慢：速度个体0、减速性格/)).toBeVisible();
+});
+
+test("应用方案后给出明确成功反馈", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={() => true}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  await user.click(
+    within(screen.getByRole("region", { name: "耐久方案对比" })).getAllByRole(
+      "button",
+      { name: "应用到成员" },
+    )[0],
+  );
+  expect(screen.getByRole("status")).toHaveTextContent("方案已应用到成员");
 });
 
 test("keeps historical unsupported values visible and pauses analysis until explicit repair", async () => {
@@ -97,11 +180,11 @@ test("keeps historical unsupported values visible and pauses analysis until expl
     />,
   );
 
-  expect(screen.getByRole("alert")).toHaveTextContent("历史配置不符合能力分析规则");
+  expect(screen.getByRole("alert")).toHaveTextContent("历史配置不符合个体值分配规则");
   expect(screen.getByText("54")).toBeVisible();
   expect(screen.queryByRole("region", { name: "耐久方案对比" })).not.toBeInTheDocument();
 
-  await user.click(screen.getByRole("button", { name: "清空投资草稿并重选" }));
+  await user.click(screen.getByRole("button", { name: "清空个体值并重选" }));
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(screen.getByRole("region", { name: "耐久方案对比" })).toBeVisible();
 });
@@ -128,7 +211,7 @@ test("applies an explicit recommendation to the member without mutating the sour
 
   const builds = screen.getByRole("region", { name: "耐久方案对比" });
   const buttons = within(builds).getAllByRole("button", { name: "应用到成员" });
-  await user.click(buttons[0]);
+  await user.click(buttons[1]);
 
   expect(onApplyMember).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -136,7 +219,7 @@ test("applies an explicit recommendation to the member without mutating the sour
         hp: expect.any(Number),
         physicalDefense: expect.any(Number),
       }),
-      spiritId: "sonic-dog",
+      spiritId: "spirit_db5a2cb398dc0385",
     }),
   );
   expect(original.displayIvs).toEqual({
@@ -192,7 +275,7 @@ test("keeps analysis context and advances the local baseline after a successful 
     within(screen.getByRole("region", { name: "耐久方案对比" })).getAllByRole(
       "button",
       { name: "应用到成员" },
-    )[0],
+    )[1],
   );
 
   expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(
@@ -237,7 +320,7 @@ test("advances a temporary side baseline even when its entry prop stays unchange
     within(screen.getByRole("region", { name: "耐久方案对比" })).getAllByRole(
       "button",
       { name: "应用回攻击方" },
-    )[0],
+    )[1],
   );
 
   expect(onApplySide).toHaveBeenCalledOnce();
@@ -290,13 +373,13 @@ test("rebuilds the draft when the same member receives an external configuration
 
   await waitFor(() =>
     expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(
-      "sonic-dog",
+      "spirit_db5a2cb398dc0385",
     ),
   );
-  const investments = screen.getByRole("group", { name: "能力分析个体投资" });
-  expect(within(investments).getByRole("button", { name: /取消物防投资/ })).toBeEnabled();
-  expect(within(investments).getByRole("button", { name: /取消魔防投资/ })).toBeEnabled();
-  expect(within(investments).getByRole("button", { name: /取消速度投资/ })).toBeEnabled();
+  const investments = screen.getByRole("group", { name: "个体值分配" });
+  expect(within(investments).getByRole("button", { name: /取消物防个体值/ })).toBeEnabled();
+  expect(within(investments).getByRole("button", { name: /取消魔防个体值/ })).toBeEnabled();
+  expect(within(investments).getByRole("button", { name: /取消速度个体值/ })).toBeEnabled();
   expect(screen.queryByText(/分析草稿尚未应用/)).not.toBeInTheDocument();
 });
 
@@ -307,7 +390,7 @@ test("does not mark a normalized incoming configuration dirty on first render", 
       configuration={{
         displayIvs: { physicalAttack: 60 },
         skills: { four: [], single: null },
-        spiritId: "sonic-dog",
+        spiritId: "spirit_db5a2cb398dc0385",
       }}
       onApplyMember={vi.fn()}
       onDirtyChange={onDirtyChange}
@@ -344,7 +427,7 @@ test("marks target and solver constraint changes as an unapplied analysis draft"
   const targetPicker = screen.getByRole("combobox", {
     name: "速度目标精灵",
   });
-  expect(targetPicker).toHaveValue("sonic-dog");
+  expect(targetPicker).toHaveValue("spirit_db5a2cb398dc0385");
   await user.selectOptions(
     targetPicker,
     "boss-elephant",

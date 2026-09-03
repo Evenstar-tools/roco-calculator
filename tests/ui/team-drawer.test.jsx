@@ -220,7 +220,7 @@ test("asks before discarding an unapplied ability draft", async () => {
   fireEvent.change(picker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
   await user.click(screen.getByRole("button", { name: "能力分析" }));
-  const investment = screen.getByRole("button", { name: /选择物攻投资/ });
+  const investment = screen.getByRole("button", { name: /选择物攻个体值/ });
   await user.click(investment);
   expect(investment).toHaveFocus();
 
@@ -259,7 +259,7 @@ test("keeps a dirty draft guarded when a confirmed navigation action fails", asy
   fireEvent.change(picker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
   await user.click(screen.getByRole("button", { name: "能力分析" }));
-  await user.click(screen.getByRole("button", { name: /选择物攻投资/ }));
+  await user.click(screen.getByRole("button", { name: /选择物攻个体值/ }));
 
   await user.click(screen.getByRole("button", { name: "删除队伍" }));
   await user.click(screen.getByRole("button", { name: "确认删除" }));

@@ -143,15 +143,32 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
     exact: true,
   });
   await expect(ability).toBeVisible();
+  const speedSlider = ability.getByRole("slider", { name: "速度目标轴" });
+  await expect(speedSlider).toBeEnabled();
+  const speedProfile = ability.getByRole("combobox", { name: "速度目标口径" });
+  await speedProfile.selectOption("negative-zero");
+  await expect(ability.getByText(/最慢：速度个体0、减速性格/)).toBeVisible();
+  await speedProfile.selectOption("neutral-max");
   const target = ability.getByRole("combobox", { name: "速度目标精灵" });
+  const targetBeforeDrag = await target.inputValue();
+  await speedSlider.fill(await speedSlider.getAttribute("max"));
+  await expect(target).not.toHaveValue(targetBeforeDrag);
   await target.selectOption("spirit_b2f1251352d5f670");
   await ability
     .getByRole("combobox", { name: "推荐速度约束" })
     .selectOption("unlocked");
 
   const builds = ability.getByRole("region", { name: "耐久方案对比" });
+  await expect(
+    builds.getByRole("heading", { level: 5 }).allTextContents(),
+  ).resolves.toEqual(["综合承伤", "物理承伤", "魔法承伤"]);
   await builds.getByRole("button", { name: "应用到成员" }).first().click();
+  await expect(ability.getByRole("status")).toContainText("方案已应用到成员");
   await expect(ability.getByText("未知形态默认排除：0")).toBeVisible();
+  await page.screenshot({
+    fullPage: true,
+    path: "artifacts/web-ux-team-ability-fix/ability-after-390.png",
+  });
   const storedMember = await page.evaluate(() => {
     const stored = JSON.parse(
       localStorage.getItem("rock-calculator.teams.v1"),
@@ -201,4 +218,64 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
 
   await ranking.getByRole("button", { name: "返回能力分析" }).click();
   await expect(target).toHaveValue("spirit_b2f1251352d5f670");
+});
+
+test("keeps the full ranking spirit cell aligned at desktop width", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const member = {
+      displayIvs: {
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 60,
+        physicalAttack: 0,
+        physicalDefense: 60,
+        speed: 0,
+      },
+      natureId: "neutral",
+      skills: { four: [null, null, null, null], single: null },
+      spiritId: "spirit_8735efa1d0793f6a",
+    };
+    localStorage.setItem(
+      "rock-calculator.teams.v1",
+      JSON.stringify({
+        activeTeamId: "ability-ranking-e2e",
+        schemaVersion: 1,
+        teams: [{
+          createdAt: "2026-09-03T00:00:00.000Z",
+          id: "ability-ranking-e2e",
+          members: [member, null, null, null, null, null],
+          name: "排行榜布局测试队",
+          updatedAt: "2026-09-03T00:00:00.000Z",
+        }],
+      }),
+    );
+  });
+  await page.setViewportSize({ width: 1424, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "打开队伍" }).click();
+  const drawer = page.getByRole("dialog", { name: "队伍" });
+  await drawer.getByRole("button", { name: "能力分析", exact: true }).click();
+  await drawer.locator(".ability-speed").scrollIntoViewIfNeeded();
+  await page.screenshot({
+    fullPage: false,
+    path: "artifacts/web-ux-team-ability-fix/ability-after-1424.png",
+  });
+  await page.setViewportSize({ width: 927, height: 900 });
+  await drawer.getByRole("button", { name: "查看完整耐久榜" }).click();
+
+  const ranking = drawer.getByRole("region", { name: "完整耐久榜" });
+  const firstSpiritCell = ranking.locator("tbody tr").first().locator("th");
+  const cellBox = await firstSpiritCell.boundingBox();
+  const contentBox = await firstSpiritCell.locator(".ability-ranking-spirit").boundingBox();
+  expect(cellBox).not.toBeNull();
+  expect(contentBox).not.toBeNull();
+  expect(Math.abs(
+    (cellBox.x + cellBox.width - 10) - (contentBox.x + contentBox.width),
+  )).toBeLessThanOrEqual(2);
+  await page.screenshot({
+    fullPage: true,
+    path: "artifacts/web-ux-team-ability-fix/ranking-after-927.png",
+  });
 });
