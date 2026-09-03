@@ -11,6 +11,55 @@ test.beforeEach(async ({ page }) => {
   await resetUiuxStorage(page);
 });
 
+test("keeps the compact swap action centered between both spirit inputs at 320px", async ({ page }) => {
+  await page.setViewportSize({ height: 568, width: 320 });
+  await page.goto("/");
+
+  const attacker = page.getByRole("combobox", { name: "攻击方精灵" });
+  const defender = page.getByRole("combobox", { name: "防御方精灵" });
+  const swap = page.getByRole("button", { name: "交换双方完整配置" });
+  const [attackerBox, defenderBox, swapBox] = await Promise.all([
+    attacker.boundingBox(),
+    defender.boundingBox(),
+    swap.boundingBox(),
+  ]);
+
+  expect(Math.abs(
+    (swapBox.y + swapBox.height / 2) - (attackerBox.y + attackerBox.height / 2),
+  )).toBeLessThanOrEqual(1);
+  expect(Math.abs(
+    (swapBox.y + swapBox.height / 2) - (defenderBox.y + defenderBox.height / 2),
+  )).toBeLessThanOrEqual(1);
+  expect(swapBox.x).toBeGreaterThanOrEqual(attackerBox.x + attackerBox.width);
+  expect(swapBox.x + swapBox.width).toBeLessThanOrEqual(defenderBox.x);
+
+  await page.screenshot({
+    fullPage: false,
+    path: "artifacts/web-ux-team-ability-fix/compact-swap-320.png",
+  });
+});
+
+test("starts with static power and every optional display setting off", async ({ page }) => {
+  await page.setViewportSize({ height: 844, width: 390 });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "打开菜单" }).click();
+  await page.getByRole("button", { name: "显示设置" }).click();
+
+  const dialog = page.getByRole("dialog", { name: "显示设置" });
+  await expect(dialog.getByRole("button", { name: "静态威力" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(dialog.getByRole("button", { name: "显示威力" })).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+  for (const name of ["属性克制与打击面", "显示面板耐久", "负面状态结算"]) {
+    await expect(dialog.getByRole("checkbox", { name })).not.toBeChecked();
+  }
+});
+
 test("keeps the compact workflow usable at 390px", async ({ page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
   await page.goto("/");

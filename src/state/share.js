@@ -369,7 +369,7 @@ function assertSide(side, path) {
   }
   for (const stat of STAT_KEYS) {
     const value = side.displayIvs[stat];
-    if (!Number.isInteger(value) || value < 0 || value > 100) {
+    if (!Number.isInteger(value) || value < 0 || value > 60) {
       throw new TypeError(`${path}.displayIvs.${stat} 无效`);
     }
   }

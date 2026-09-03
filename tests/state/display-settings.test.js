@@ -5,6 +5,7 @@ import {
   THEME_STORAGE_KEY,
   readPowerDisplayMode,
   readDurabilityOverviewSetting,
+  readNegativeStatusSettlementSetting,
   readThemeSetting,
   readTypeCoverageSetting,
   writePowerDisplayMode,
@@ -20,6 +21,14 @@ function createStorage(value = null) {
     setItem: (key, next) => values.set(key, next),
   };
 }
+
+test("all optional display settings default off and power defaults static", () => {
+  const storage = createStorage();
+  expect(readPowerDisplayMode(storage)).toBe("static");
+  expect(readTypeCoverageSetting(storage)).toBe(false);
+  expect(readDurabilityOverviewSetting(storage)).toBe(false);
+  expect(readNegativeStatusSettlementSetting(storage)).toBe(false);
+});
 
 describe("type coverage display setting", () => {
   test("defaults to off", () => {

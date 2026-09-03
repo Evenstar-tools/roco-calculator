@@ -521,9 +521,10 @@
   }
 
   .calculator-layout--compact .swap-action {
+    align-self: start;
     width: 34px;
     height: 34px;
-    margin: 42px 0 0;
+    margin: 23px 0 0;
     transform: none;
   }
 
@@ -696,6 +697,7 @@
   .calculator-layout--compact .swap-action {
     width: 30px;
     height: 30px;
+    margin-top: 31px;
   }
 
   .calculator-layout--compact .spirit-card {
