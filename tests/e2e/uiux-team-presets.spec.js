@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { resetUiuxStorage } from "./helpers/uiux-helpers.js";
+import {
+  openDetailedMode,
+  resetUiuxStorage,
+  selectDefaultSpirits,
+} from "./helpers/uiux-helpers.js";
 
 test.beforeEach(async ({ page }) => {
   await resetUiuxStorage(page);
@@ -89,6 +93,32 @@ test("shows the team label on desktop and keeps the mobile header compact", asyn
   await page.setViewportSize({ height: 844, width: 390 });
   await expect(teamLabel).toBeHidden();
   expect((await teamAction.boundingBox()).width).toBe(44);
+});
+
+test("uses the durability values as the direct ability-analysis entry", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("rock-calculator.settings.durability-overview.v1", "1");
+  });
+  await page.setViewportSize({ width: 1424, height: 900 });
+  await page.goto("/");
+  await selectDefaultSpirits(page);
+  await openDetailedMode(page);
+
+  const overview = page.getByRole("button", { name: "攻击方耐久概览" });
+  await expect(overview).toBeVisible();
+  await expect(overview).not.toContainText("按当前面板");
+  await expect(page.getByRole("button", { name: "分析此精灵" })).toHaveCount(0);
+  await overview.hover();
+  await expect.poll(
+    () => overview.evaluate((node) => getComputedStyle(node, "::after").opacity),
+  ).toBe("1");
+  await page.screenshot({
+    fullPage: false,
+    path: "artifacts/web-ux-team-ability-fix/durability-overview-hover-1424.png",
+  });
+  await overview.click();
+  await expect(page.getByRole("dialog", { name: "队伍" })).toBeVisible();
+  await expect(page.getByText("临时分析 · 不占队伍位置")).toBeVisible();
 });
 
 test("completes the ability workbench flow at 390px without horizontal overflow", async ({
@@ -187,14 +217,13 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   await expect(ranking).toBeVisible();
   const firstRow = ranking.locator("tbody tr").first();
   await expect(firstRow.locator("td:nth-child(1)")).toBeVisible();
-  await expect(firstRow.locator("td:nth-child(2)")).toBeVisible();
-  await expect(firstRow.locator("td:nth-child(6)")).toBeVisible();
-  await expect(firstRow.locator("td:nth-child(4)")).toBeHidden();
+  await expect(firstRow.locator("td:nth-child(5)")).toBeVisible();
+  await expect(firstRow.locator("td:nth-child(3)")).toBeHidden();
 
   const metrics = ranking.getByRole("group", { name: "排行指标" });
   await metrics.getByRole("button", { name: "物理耐久" }).click();
-  await expect(firstRow.locator("td:nth-child(4)")).toBeVisible();
-  await expect(firstRow.locator("td:nth-child(6)")).toBeHidden();
+  await expect(firstRow.locator("td:nth-child(3)")).toBeVisible();
+  await expect(firstRow.locator("td:nth-child(5)")).toBeHidden();
 
   const layout = await page.evaluate(() => ({
     abilityOverflowY: getComputedStyle(
@@ -288,10 +317,19 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
     fullPage: false,
     path: "artifacts/web-ux-team-ability-fix/ability-after-1424.png",
   });
-  await page.setViewportSize({ width: 927, height: 900 });
   await drawer.getByRole("button", { name: "查看完整耐久榜" }).click();
 
   const ranking = drawer.getByRole("region", { name: "完整耐久榜" });
+  await expect(ranking.locator("thead th").allTextContents()).resolves.toEqual([
+    "排名",
+    "精灵",
+    "物理耐久",
+    "魔法耐久",
+    "综合耐久",
+  ]);
+  await expect(ranking.getByText("全体", { exact: true })).toHaveCount(0);
+  await expect(ranking.getByText("筛选内", { exact: true })).toHaveCount(0);
+  await page.setViewportSize({ width: 927, height: 900 });
   const firstSpiritCell = ranking.locator("tbody tr").first().locator("th");
   const cellBox = await firstSpiritCell.boundingBox();
   const contentBox = await firstSpiritCell.locator(".ability-ranking-spirit").boundingBox();

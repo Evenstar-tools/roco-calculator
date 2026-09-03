@@ -620,7 +620,6 @@ function FullRanking({ backButtonRef, currentSpiritId, onBack, ranking, setMetri
         <table aria-label="标准耐久完整榜" className="ability-ranking-table">
           <colgroup>
             <col className="ability-ranking-table__rank" />
-            <col className="ability-ranking-table__rank" />
             <col className="ability-ranking-table__spirit" />
             <col />
             <col />
@@ -628,8 +627,7 @@ function FullRanking({ backButtonRef, currentSpiritId, onBack, ranking, setMetri
           </colgroup>
           <thead>
             <tr>
-              <th>全体</th>
-              <th>筛选内</th>
+              <th>排名</th>
               <th>精灵</th>
               <th>物理耐久</th>
               <th>魔法耐久</th>
@@ -639,8 +637,7 @@ function FullRanking({ backButtonRef, currentSpiritId, onBack, ranking, setMetri
           <tbody>
             {ranking.rows.map((entry) => (
               <tr className={entry.spiritId === currentSpiritId ? "is-current" : ""} key={entry.spiritId}>
-                <td data-label="全体名次">{entry.globalRank[metric]}</td>
-                <td data-label="筛选内名次">{entry.filteredRank[metric]}</td>
+                <td data-label="排名">{entry.filteredRank[metric]}</td>
                 <th scope="row">
                   <div className="ability-ranking-spirit">
                     {assetUrl(entry.spirit) ? <img alt="" src={assetUrl(entry.spirit)} /> : null}
@@ -1141,9 +1138,9 @@ export function AbilityWorkbench({
                     }}
                     value={speedMode}
                   >
-                    <option value="keep">保持当前速度</option>
+                    <option value="keep">保留当前速度</option>
                     <option value="at-least">达到目标速度</option>
-                    <option value="unlocked">不锁速度</option>
+                    <option value="unlocked">只看耐久</option>
                   </select>
                 </label>
                 {["physicalAttack", "magicalAttack"].map((stat) => {

@@ -1,15 +1,64 @@
 .durability-overview {
   --durability-accent: var(--attack);
   --durability-soft: var(--attack-soft);
-  display: grid;
-  align-items: center;
-  gap: 7px 10px;
+  position: relative;
+  display: block;
+  width: 100%;
   margin-top: 8px;
   padding: 8px;
   border: 1px solid color-mix(in srgb, var(--durability-accent) 28%, var(--border));
   border-radius: 8px;
+  color: inherit;
   background: color-mix(in srgb, var(--durability-soft) 45%, var(--surface));
-  grid-template-columns: minmax(0, 1fr) auto;
+  font: inherit;
+  text-align: initial;
+  appearance: none;
+}
+
+.durability-overview:disabled {
+  opacity: 1;
+}
+
+.durability-overview.is-interactive {
+  cursor: pointer;
+}
+
+.durability-overview.is-interactive:hover,
+.durability-overview.is-interactive:focus-visible {
+  border-color: color-mix(in srgb, var(--durability-accent) 52%, var(--border));
+  background: color-mix(in srgb, var(--durability-soft) 65%, var(--surface));
+}
+
+.durability-overview.is-interactive:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--durability-accent) 48%, transparent);
+  outline-offset: 2px;
+}
+
+.durability-overview.is-interactive::after {
+  position: absolute;
+  z-index: 5;
+  right: 8px;
+  bottom: calc(100% + 6px);
+  padding: 5px 8px;
+  border-radius: 6px;
+  color: var(--surface);
+  background: var(--text);
+  box-shadow: var(--shadow);
+  content: attr(data-tooltip);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(3px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  white-space: nowrap;
+}
+
+.durability-overview.is-interactive:hover::after,
+.durability-overview.is-interactive:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .durability-overview--defense {
@@ -19,7 +68,6 @@
 
 .durability-overview__metrics {
   display: grid;
-  grid-column: 1 / -1;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--durability-accent) 20%, var(--border));
   border-radius: 6px;
@@ -58,46 +106,4 @@
 
 .durability-overview__metric:last-child output {
   color: var(--durability-accent);
-}
-
-.durability-overview__note {
-  margin: 0;
-  color: var(--text-faint);
-  font-size: 10px;
-  line-height: 1.45;
-}
-
-.durability-overview__analyze {
-  min-height: 30px;
-  padding: 0 10px;
-  border: 1px solid color-mix(in srgb, var(--durability-accent) 46%, var(--border));
-  border-radius: 6px;
-  color: var(--durability-accent);
-  background: var(--surface);
-  font-size: 11px;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.durability-overview__analyze:not(:disabled) {
-  cursor: pointer;
-}
-
-.durability-overview__analyze:not(:disabled):hover {
-  background: color-mix(in srgb, var(--durability-soft) 72%, var(--surface));
-}
-
-.durability-overview__analyze:disabled {
-  opacity: 0.52;
-}
-
-@media (max-width: 760px) {
-  .durability-overview {
-    grid-template-columns: 1fr;
-  }
-
-  .durability-overview__analyze {
-    width: 100%;
-    min-height: 44px;
-  }
 }

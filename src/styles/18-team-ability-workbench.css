@@ -1611,13 +1611,11 @@
 }
 
 .ability-ranking-table th:nth-child(1),
-.ability-ranking-table th:nth-child(2),
-.ability-ranking-table td:nth-child(1),
-.ability-ranking-table td:nth-child(2) {
+.ability-ranking-table td:nth-child(1) {
   text-align: center;
 }
 
-.ability-ranking-table th:nth-child(3) {
+.ability-ranking-table th:nth-child(2) {
   text-align: left;
 }
 
@@ -2373,23 +2371,7 @@
     font-size: 13px;
     font-weight: 800;
     grid-column: 1;
-    grid-row: 1;
-  }
-
-  .ability-ranking-table tbody td:nth-child(2) {
-    display: flex;
-    color: var(--text-muted);
-    font-size: 10px;
-    font-weight: 700;
-    gap: 2px;
-    grid-column: 1;
-    grid-row: 2;
-    justify-content: center;
-    white-space: nowrap;
-  }
-
-  .ability-ranking-table tbody td:nth-child(2)::before {
-    content: "筛选";
+    grid-row: 1 / 3;
   }
 
   .ability-ranking-table tbody th {
@@ -2407,7 +2389,7 @@
     height: 34px;
   }
 
-  .ability-ranking-table tbody td:nth-child(n + 4) {
+  .ability-ranking-table tbody td:nth-child(n + 3) {
     display: none;
     color: var(--text);
     font-size: 14px;
@@ -2417,28 +2399,28 @@
     grid-row: 2;
   }
 
-  .ability-ranking-table tbody td:nth-child(n + 4)::before {
+  .ability-ranking-table tbody td:nth-child(n + 3)::before {
     margin-right: 8px;
     color: var(--text-muted);
     font-size: 10px;
     font-weight: 500;
   }
 
-  .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(1)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(6),
-  .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(2)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(4),
-  .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(3)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(5) {
+  .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(1)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(5),
+  .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(2)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(3),
+  .ability-full-ranking:has(.ability-ranking-metrics button:nth-child(3)[aria-pressed="true"]) .ability-ranking-table tbody td:nth-child(4) {
     display: block;
   }
 
-  .ability-ranking-table tbody td:nth-child(4)::before {
+  .ability-ranking-table tbody td:nth-child(3)::before {
     content: "物理耐久";
   }
 
-  .ability-ranking-table tbody td:nth-child(5)::before {
+  .ability-ranking-table tbody td:nth-child(4)::before {
     content: "魔法耐久";
   }
 
-  .ability-ranking-table tbody td:nth-child(6)::before {
+  .ability-ranking-table tbody td:nth-child(5)::before {
     content: "综合耐久";
   }
 }

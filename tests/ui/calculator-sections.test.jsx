@@ -579,19 +579,19 @@ test("nature step reveals durability below each side and keeps it in sync with t
   const { rerender } = render(<NatureStatsStep {...commonProps} />);
 
   expect(
-    screen.queryByRole("group", { name: "攻击方耐久概览" }),
+    screen.queryByRole("button", { name: "攻击方耐久概览" }),
   ).not.toBeInTheDocument();
 
   rerender(<NatureStatsStep {...commonProps} showDurabilityOverview />);
   const attackerSide = screen.getByRole("group", { name: "攻击方能力" });
-  const attackerOverview = within(attackerSide).getByRole("group", {
+  const attackerOverview = within(attackerSide).getByRole("button", {
     name: "攻击方耐久概览",
   });
   expect(attackerOverview).toHaveTextContent("物理耐久58,241");
   expect(
     within(screen.getByRole("group", { name: "防御方能力" })).getByRole(
       "button",
-      { name: "分析此精灵" },
+      { name: "防御方耐久概览" },
     ),
   ).toBeDisabled();
 
@@ -602,9 +602,7 @@ test("nature step reveals durability below each side and keeps it in sync with t
   expect(attackerOverview).toHaveTextContent("魔法耐久80,886");
   expect(attackerOverview).toHaveTextContent("综合耐久35,400");
 
-  await user.click(
-    within(attackerOverview).getByRole("button", { name: "分析此精灵" }),
-  );
+  await user.click(attackerOverview);
   expect(onAttackerAnalyze).toHaveBeenCalledOnce();
 });
 

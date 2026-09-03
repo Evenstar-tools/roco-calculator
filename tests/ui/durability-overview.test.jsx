@@ -25,14 +25,16 @@ describe("DurabilityOverview", () => {
       />,
     );
 
-    const overview = screen.getByRole("group", { name: "攻击方耐久概览" });
+    const overview = screen.getByRole("button", { name: "攻击方耐久概览" });
     expect(overview).toHaveTextContent("物理耐久58,241");
     expect(overview).toHaveTextContent("魔法耐久78,772");
     expect(overview).toHaveTextContent("综合耐久33,484");
-    expect(overview).toHaveTextContent("最大生命");
+    expect(overview).not.toHaveTextContent("最大生命");
+    expect(overview).toHaveAttribute("data-tooltip", "点击进入能力分析");
 
-    await user.click(screen.getByRole("button", { name: "分析此精灵" }));
+    await user.click(overview);
     expect(onAnalyze).toHaveBeenCalledOnce();
+    expect(screen.queryByRole("button", { name: "分析此精灵" })).not.toBeInTheDocument();
   });
 });
 

@@ -25,31 +25,22 @@ export function DurabilityOverview({
   ];
 
   return (
-    <div
+    <button
       aria-label={`${label}耐久概览`}
-      className={`durability-overview durability-overview--${accent}`}
-      role="group"
+      className={`durability-overview durability-overview--${accent}${onAnalyze ? " is-interactive" : ""}`}
+      data-tooltip={onAnalyze ? "点击进入能力分析" : undefined}
+      disabled={!onAnalyze}
+      onClick={onAnalyze}
+      type="button"
     >
-      <div className="durability-overview__metrics">
+      <span className="durability-overview__metrics">
         {metrics.map(([metricLabel, value]) => (
-          <div className="durability-overview__metric" key={metricLabel}>
+          <span className="durability-overview__metric" key={metricLabel}>
             <span>{metricLabel}</span>
             <output>{value.toLocaleString("zh-CN")}</output>
-          </div>
+          </span>
         ))}
-      </div>
-      <p className="durability-overview__note">
-        按当前面板最大生命计算，不受当前剩余生命影响。综合耐久 = 最大生命 ×
-        物防 × 魔防 ÷（物防 + 魔防）
-      </p>
-      <button
-        className="durability-overview__analyze"
-        disabled={!onAnalyze}
-        onClick={onAnalyze}
-        type="button"
-      >
-        分析此精灵
-      </button>
-    </div>
+      </span>
+    </button>
   );
 }

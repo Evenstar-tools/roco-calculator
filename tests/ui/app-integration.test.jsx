@@ -2983,7 +2983,7 @@ test("enables the detailed durability overview without changing HP or undo histo
   await openDetailedMode(user);
 
   expect(
-    screen.queryByRole("group", { name: "攻击方耐久概览" }),
+    screen.queryByRole("button", { name: "攻击方耐久概览" }),
   ).not.toBeInTheDocument();
   const undoLabel = screen
     .getByRole("button", { name: /撤回上一步/ })
@@ -2995,9 +2995,9 @@ test("enables the detailed durability overview without changing HP or undo histo
   await user.click(screen.getByRole("button", { name: "完成" }));
 
   expect(
-    screen.getByRole("group", { name: "攻击方耐久概览" }),
+    screen.getByRole("button", { name: "攻击方耐久概览" }),
   ).toBeVisible();
-  const defenderOverview = screen.getByRole("group", {
+  const defenderOverview = screen.getByRole("button", {
     name: "防御方耐久概览",
   });
   expect(screen.getByRole("button", { name: undoLabel })).toBeVisible();
@@ -3008,12 +3008,7 @@ test("enables the detailed durability overview without changing HP or undo histo
   expect(defenderOverview).toHaveTextContent(durabilityText);
   expect(localStorage.getItem(DURABILITY_OVERVIEW_STORAGE_KEY)).toBe("1");
 
-  await user.click(
-    within(screen.getByRole("group", { name: "攻击方耐久概览" })).getByRole(
-      "button",
-      { name: "分析此精灵" },
-    ),
-  );
+  await user.click(screen.getByRole("button", { name: "攻击方耐久概览" }));
   expect(screen.getByRole("dialog", { name: "队伍" })).toBeVisible();
   expect(screen.getByText("临时分析 · 不占队伍位置")).toBeVisible();
   expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBeNull();
@@ -3024,7 +3019,7 @@ test("enables the detailed durability overview without changing HP or undo histo
   await selectDefaultSpirits(user);
   await openDetailedMode(user);
   expect(
-    screen.getByRole("group", { name: "攻击方耐久概览" }),
+    screen.getByRole("button", { name: "攻击方耐久概览" }),
   ).toBeVisible();
 });
 
