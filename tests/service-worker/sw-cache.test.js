@@ -47,13 +47,13 @@ function createHarness({ cached = {}, fetchImpl } = {}) {
   return { cacheApi, caches, listeners, self, stores };
 }
 
-function dispatchFetch(listener, path) {
+function dispatchFetch(listener, path, { mode = "cors" } = {}) {
   const background = [];
   let responsePromise;
   listener({
     request: {
       method: "GET",
-      mode: "cors",
+      mode,
       url: `https://calculator.test${path}`,
     },
     respondWith(value) {
@@ -101,6 +101,22 @@ describe("service worker cache policy", () => {
       expect.objectContaining({
         url: "https://calculator.test/data/runtime.json",
       }),
+      expect.anything(),
+    );
+  });
+
+  test("navigation prefers the latest page and only falls back to the cached shell offline", async () => {
+    const cachedResponse = new Response("old-page");
+    const networkResponse = new Response("new-page");
+    const harness = createHarness({
+      cached: { "/": cachedResponse },
+      fetchImpl: vi.fn(async () => networkResponse),
+    });
+    const event = dispatchFetch(harness.listeners.fetch, "/", { mode: "navigate" });
+
+    await expect(event.responsePromise).resolves.toBe(networkResponse);
+    expect(harness.cacheApi.put).toHaveBeenCalledWith(
+      expect.objectContaining({ url: "https://calculator.test/" }),
       expect.anything(),
     );
   });

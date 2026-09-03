@@ -73,6 +73,15 @@ async function staleWhileRevalidate(event, request, fallbackRequest = request) {
   return (await refresh) ?? caches.match(fallbackRequest);
 }
 
+async function networkFirst(request, fallbackRequest) {
+  const cache = await caches.open(CACHE_NAME);
+  return (
+    (await refreshCache(cache, request)) ??
+    (await cache.match(fallbackRequest)) ??
+    caches.match(fallbackRequest)
+  );
+}
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
@@ -80,7 +89,7 @@ self.addEventListener("fetch", (event) => {
 
   if (event.request.mode === "navigate") {
     event.respondWith(
-      staleWhileRevalidate(event, event.request, "/").then(
+      networkFirst(event.request, "/").then(
         (response) => response ?? caches.match("/index.html"),
       ),
     );

@@ -307,7 +307,6 @@ function InvestmentPicker({ onChange, onReplace, panel, validation, values }) {
 
 function SpeedRail({
   activeModifierIds,
-  baseSpeed,
   currentSpeed,
   modifiers,
   onProfilesChange,
@@ -352,10 +351,12 @@ function SpeedRail({
   ].sort((left, right) => right.speed - left.speed || left.id.localeCompare(right.id));
 
   useEffect(() => {
-    selectedTargetRef.current?.scrollIntoView?.({
+    const viewport = railRef.current;
+    const target = selectedTargetRef.current;
+    if (!viewport || !target) return;
+    viewport.scrollTo?.({
       behavior: "smooth",
-      block: "nearest",
-      inline: "center",
+      left: target.offsetLeft - (viewport.clientWidth - target.offsetWidth) / 2,
     });
   }, [profileIds, selected?.id]);
 
@@ -547,9 +548,7 @@ function SpeedRail({
             })}
           </div>
           <strong>
-            {currentSpeed === baseSpeed
-              ? `当前 ${formatNumber(baseSpeed)}`
-              : `当前 ${formatNumber(currentSpeed)} = 面板 ${formatNumber(baseSpeed)} + ${formatNumber(currentSpeed - baseSpeed)}`}
+            当前 {formatNumber(currentSpeed)}
           </strong>
         </div>
       ) : null}
@@ -612,7 +611,7 @@ function SpeedRail({
         <span>
           {showSpeedTable ? "收起速度表" : "展开速度表"}
         </span>
-        <small>{targetGroups.length} 档 · {targets.length} 项</small>
+        <small>{targetGroups.length}档</small>
       </button>
       {showSpeedTable ? (
         <div className="ability-speed__table-wrap" id="ability-speed-tier-table" ref={speedTableRef}>
@@ -1265,7 +1264,6 @@ export function AbilityWorkbench({
         <>
           <SpeedRail
             activeModifierIds={activeSpeedModifierIds}
-            baseSpeed={panel.speed}
             currentSpeed={panel.speed + speedBonus}
             modifiers={speedModifiers}
             onProfilesChange={(nextProfileIds) => {

@@ -211,6 +211,45 @@ test("目标精灵支持输入搜索并从带头像和速度的候选项锁定",
   expect(input.value).toMatch(/^音速犬 · 260（极速）$/);
 });
 
+test("锁定目标时只平滑移动速度横轴并居中目标", async () => {
+  const previousScrollTo = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "scrollTo");
+  const scrollTo = vi.fn();
+  Object.defineProperty(HTMLElement.prototype, "scrollTo", {
+    configurable: true,
+    value: scrollTo,
+  });
+
+  try {
+    render(
+      <AbilityWorkbench
+        configuration={member({
+          hp: 60,
+          magicalAttack: 0,
+          magicalDefense: 0,
+          physicalAttack: 60,
+          physicalDefense: 0,
+          speed: 60,
+        })}
+        onApplyMember={vi.fn()}
+        snapshot={snapshot}
+        source={{ index: 0, kind: "member" }}
+      />,
+    );
+
+    chooseSpeedTarget("首领象");
+    await waitFor(() => expect(scrollTo).toHaveBeenCalledWith(expect.objectContaining({
+      behavior: "smooth",
+      left: expect.any(Number),
+    })));
+  } finally {
+    if (previousScrollTo) {
+      Object.defineProperty(HTMLElement.prototype, "scrollTo", previousScrollTo);
+    } else {
+      delete HTMLElement.prototype.scrollTo;
+    }
+  }
+});
+
 test("速度表默认收起，展开后按档位展示全部合格精灵并可选目标", async () => {
   const user = userEvent.setup();
   render(
@@ -266,7 +305,7 @@ test("携带速度状态技能时可勾选并用加速后的本体速度比较",
 
   expect(screen.getByText("当前 225")).toBeVisible();
   await user.click(screen.getByRole("checkbox", { name: "快速移动 +80" }));
-  expect(screen.getByText("当前 305 = 面板 225 + 80")).toBeVisible();
+  expect(screen.getByText("当前 305")).toBeVisible();
   expect(
     within(screen.getByRole("region", { name: "速度排行榜横轴" }))
       .getByText("当前配置")
@@ -302,7 +341,8 @@ test("层数型特性按所选层数累计本体速度", async () => {
   await user.selectOptions(stacks, "trait:swarm:3");
   expect(stacks).toHaveValue("trait:swarm:3");
   expect(screen.getByText("本体额外速度").parentElement)
-    .toHaveTextContent("当前 327 = 面板 225 + 102");
+    .toHaveTextContent("当前 327");
+  expect(screen.queryByText(/= 面板/)).not.toBeInTheDocument();
 });
 
 test("耐久目标结果不同时保留综合、物理、魔法三栏", () => {

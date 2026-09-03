@@ -195,6 +195,8 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   await targetOption.click();
   const targetValue = await target.inputValue();
   const speedAxis = ability.getByRole("region", { name: "速度排行榜横轴" });
+  await expect.poll(() => speedAxis.evaluate((element) => getComputedStyle(element).scrollBehavior))
+    .toBe("smooth");
   const lockedTarget = speedAxis.locator('[aria-current="true"]');
   await expect.poll(async () => {
     const viewport = await speedAxis.boundingBox();

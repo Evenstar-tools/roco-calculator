@@ -1115,6 +1115,7 @@
   overflow-y: hidden;
   cursor: grab;
   overscroll-behavior-inline: contain;
+  scroll-behavior: smooth;
   scrollbar-color: var(--border-strong) transparent;
   scrollbar-width: thin;
   touch-action: pan-x;
@@ -2824,5 +2825,9 @@
 @media (prefers-reduced-motion: reduce) {
   .team-workbench .team-slot {
     transition: none;
+  }
+
+  .ability-speed__viewport {
+    scroll-behavior: auto;
   }
 }
