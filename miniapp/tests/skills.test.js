@@ -46,16 +46,20 @@ describe("mini program skill choices", () => {
     ],
   };
 
-  test("returns only existing skills in the spirit learnset", () => {
-    expect(
-      getSkillChoices(snapshot, "spirit-a").map((skill) => skill.id),
-    ).toEqual([
+  test("returns learnable skills first and keeps other skills search-only", () => {
+    const choices = getSkillChoices(snapshot, "spirit-a");
+    expect(choices.map((skill) => skill.id)).toEqual([
       "skill-a",
       "skill-b",
       "skill-c",
       "skill-d",
+      "skill-illegal",
       "calculator_wish_power_light",
     ]);
+    expect(choices.slice(0, 4).every((skill) => skill.learnable)).toBe(true);
+    expect(choices.slice(4).every((skill) =>
+      skill.learnable === false && skill.pickerVisibility === "search-only"
+    )).toBe(true);
   });
 
   test("returns no global fallback skills when the spirit has no learnset", () => {

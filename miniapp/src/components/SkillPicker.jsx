@@ -171,6 +171,9 @@ export default function SkillPicker({
         className={[
           "skill-picker__trigger",
           !displayed ? "skill-picker__trigger--empty" : "",
+          displayed && !displayed.type
+            ? "skill-picker__trigger--without-icon"
+            : "",
           open ? "skill-picker__trigger--expanded" : "",
         ].filter(Boolean).join(" ")}
         hoverClass="button-hover"

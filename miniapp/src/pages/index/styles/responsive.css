@@ -203,6 +203,10 @@
     padding: 5px 4px 5px 6px;
   }
 
+  .skill-slots--matrix .skill-picker__trigger--without-icon {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .skill-slots--matrix .skill-picker__trigger > .element-icon {
     width: 18px;
     height: 18px;

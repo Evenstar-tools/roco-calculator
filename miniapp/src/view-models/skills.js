@@ -1,15 +1,7 @@
 import { getSkillEffectInputs } from "../shared/domain/skill-effects.js";
 import { getSkillStatusEffectInputs } from "../shared/domain/skill-status-effects.js";
 
-function unique(values) {
-  return [...new Set(values)];
-}
-
-function isGlobalCalculatorSkill(skill) {
-  return skill?.pickerVisibility === "search-only" &&
-    skill?.provenance?.ruleId ===
-      "rock-calculator:reviewed-special-skill-2026-07-24";
-}
+const choiceCache = new WeakMap();
 
 export function getSkillChoices(snapshot, spiritId) {
   const spirit = (snapshot?.spirits ?? []).find(
@@ -21,17 +13,33 @@ export function getSkillChoices(snapshot, spiritId) {
   );
   if (!learnset) return [];
 
+  let choicesBySpirit = choiceCache.get(snapshot);
+  if (!choicesBySpirit) {
+    choicesBySpirit = new Map();
+    choiceCache.set(snapshot, choicesBySpirit);
+  }
+  const cached = choicesBySpirit.get(spiritId);
+  if (cached) return cached;
+
   const skillIds = learnset.skillIds ?? [];
+  const legalSet = new Set(skillIds);
   const skillsById = new Map(
     (snapshot?.skills ?? []).map((skill) => [skill.id, skill]),
   );
-  const specialSkillIds = (snapshot?.skills ?? [])
-    .filter(isGlobalCalculatorSkill)
-    .map((skill) => skill.id);
-
-  return unique([...skillIds, ...specialSkillIds])
+  const legal = [...new Set(skillIds)]
     .map((skillId) => skillsById.get(skillId))
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((skill) => ({ ...skill, learnable: true }));
+  const searchable = (snapshot?.skills ?? [])
+    .filter((skill) => !legalSet.has(skill.id))
+    .map((skill) => ({
+      ...skill,
+      learnable: false,
+      pickerVisibility: "search-only",
+    }));
+  const choices = [...legal, ...searchable];
+  choicesBySpirit.set(spiritId, choices);
+  return choices;
 }
 
 export function getSkill(snapshot, entry) {

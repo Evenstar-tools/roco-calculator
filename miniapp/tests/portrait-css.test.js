@@ -194,6 +194,17 @@ describe("reference-first responsive CSS", () => {
     );
   });
 
+  test("lets preview skills without an element icon use the full trigger width", () => {
+    const skills = styles["skills.css"];
+    const responsive = styles["responsive.css"];
+    expect(skills).toMatch(
+      /\.skill-picker__trigger--without-icon\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)/u,
+    );
+    expect(responsive).toMatch(
+      /\.skill-slots--matrix\s+\.skill-picker__trigger--without-icon\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)/u,
+    );
+  });
+
   test("keeps skill groups free of a redundant outer direction rail", () => {
     const skills = styles["skills.css"];
     const responsive = styles["responsive.css"];

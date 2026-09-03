@@ -227,6 +227,10 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+.skill-picker__trigger--without-icon {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .skill-picker__trigger--expanded {
   background: var(--result-soft);
 }

@@ -568,6 +568,67 @@ describe("mini program skill workflow", () => {
     expect(trigger).toHaveTextContent("广播");
     expect(trigger).toHaveTextContent("参数待确认");
     expect(trigger).not.toHaveClass("skill-picker__trigger--empty");
+    expect(trigger).toHaveClass("skill-picker__trigger--without-icon");
+  });
+
+  test("searches the full skill library for an S4 preview spirit", () => {
+    const snapshot = createSnapshot();
+    const previewSkillIds = Array.from(
+      { length: 4 },
+      (_, index) => `preview-skill-${index + 1}`,
+    );
+    snapshot.spirits.push({
+      id: "s4-preview-spirit",
+      fullName: "银月狼王",
+      raceStats: {
+        hp: 83,
+        magicalAttack: 104,
+        magicalDefense: 103,
+        physicalAttack: 128,
+        physicalDefense: 103,
+        speed: 130,
+      },
+      types: ["恶", "幻"],
+    });
+    snapshot.skills.push(...previewSkillIds.map((id, index) => ({
+      basePower: null,
+      calculationStatus: "pending-skill-data",
+      category: null,
+      cost: null,
+      id,
+      name: `前瞻技能 ${index + 1}`,
+      type: null,
+    })));
+    snapshot.learnsets.push({
+      defaultSkillIds: previewSkillIds,
+      skillIds: previewSkillIds,
+      spiritId: "s4-preview-spirit",
+    });
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({
+      legalSkillIds: previewSkillIds,
+      side: "attacker",
+      type: "side/set-spirit",
+      value: "s4-preview-spirit",
+    });
+
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+    fireEvent.click(screen.getByRole("button", { name: "选择攻击方技能 1" }));
+    const dialog = screen.getByRole("dialog", { name: "攻击方技能 1选项" });
+    expect(within(dialog).getByText("共 4 项")).toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: /不可学习/u }))
+      .not.toBeInTheDocument();
+
+    fireEvent.input(within(dialog).getByLabelText("搜索攻击方技能 1"), {
+      target: { value: "不可学习" },
+    });
+
+    expect(within(dialog).getByText("1 项匹配")).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole("button", { name: /不可学习/u }));
+    expect(store.getState().sides.attacker.skills.four[0]).toBe(
+      "skill-illegal",
+    );
   });
 
   test("shows the calculated skill when it is absent from the learnset choices", () => {

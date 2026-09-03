@@ -45,26 +45,26 @@ export const SPEED_TARGET_PROFILES = Object.freeze({
 });
 
 const SPEED_SPECIAL_CASES = Object.freeze([
-  ["yingli-taunt", "影狸", "positive-max", "嘲弄"],
-  ["fallen-rabbit-taunt", "落陨星兔", "positive-max", "嘲弄"],
-  ["green-coral-taunt", "海枝枝（翠绿纶布）", "positive-max", "嘲弄"],
-  ["fluffy-sentry", "绒光优优", "positive-max", "哨兵"],
-  ["night-eve-meshing", "朔夜伊芙", "neutral-max", "啮合传递"],
-  ["sonic-tita-meshing", "声波缇塔", "positive-max", "啮合传递"],
-  ["black-cat-warning-max", "黑猫巫师", "positive-max", "预警"],
-  ["black-cat-warning-neutral", "黑猫巫师", "neutral-max", "预警"],
-  ["platinum-refraction", "白金独角兽", "positive-max", "折射"],
-  ["mimic-meshing", "迷迷箱怪", "positive-max", "啮合传递"],
-  ["meteor-insulation", "陨星虫", "positive-max", "契约的形状"],
-  ["scepter-meshing", "权杖-V", "positive-max", "啮合传递"],
-  ["squid-meshing", "混乱鱿彩", "positive-max", "啮合传递"],
-  ["queen-swarm-3", "女王蜂", "positive-max", "虫群突袭", 3],
-  ["queen-swarm-4", "女王蜂", "positive-max", "虫群突袭", 4],
-  ["queen-swarm-5", "女王蜂", "positive-max", "虫群突袭", 5],
-  ["flower-queen-swarm-3", "花魁蜂后", "positive-max", "虫群鼓舞", 3],
-  ["sword-meshing-max", "圣剑-X", "positive-max", "啮合传递"],
-  ["sword-meshing-zero", "圣剑-X", "neutral-zero", "啮合传递"],
-  ["dimo-partner-1", "迪莫", "positive-max", "最好的伙伴", 1],
+  ["影狸", "positive-max", "嘲弄"],
+  ["落陨星兔", "positive-max", "嘲弄"],
+  ["海枝枝（翠绿纶布）", "positive-max", "嘲弄"],
+  ["绒光优优", "positive-max", "哨兵"],
+  ["朔夜伊芙", "neutral-max", "啮合传递"],
+  ["声波缇塔", "positive-max", "啮合传递"],
+  ["黑猫巫师", "positive-max", "预警"],
+  ["黑猫巫师", "neutral-max", "预警"],
+  ["白金独角兽", "positive-max", "折射"],
+  ["迷迷箱怪", "positive-max", "啮合传递"],
+  ["陨星虫", "positive-max", "契约的形状"],
+  ["权杖-V", "positive-max", "啮合传递"],
+  ["混乱鱿彩", "positive-max", "啮合传递"],
+  ["女王蜂", "positive-max", "虫群突袭", 3],
+  ["女王蜂", "positive-max", "虫群突袭", 4],
+  ["女王蜂", "positive-max", "虫群突袭", 5],
+  ["花魁蜂后", "positive-max", "虫群鼓舞", 3],
+  ["圣剑-X", "positive-max", "啮合传递"],
+  ["圣剑-X", "neutral-zero", "啮合传递"],
+  ["迪莫", "positive-max", "最好的伙伴", 1],
 ]);
 
 function speedProfile(profileId) {
@@ -130,8 +130,8 @@ export function createSpeedSpecialTargets({ profileId = "positive-max", snapshot
   );
 
   return SPEED_SPECIAL_CASES
-    .filter(([, , caseProfileId]) => caseProfileId === profileId)
-    .flatMap(([caseId, spiritName, , sourceName, stack]) => {
+    .filter(([, caseProfileId]) => caseProfileId === profileId)
+    .flatMap(([spiritName, , sourceName, stack]) => {
       const spirit = spirits.find((entry) => entry.fullName === spiritName);
       if (!spirit || !hasCompleteRaceStats(spirit.raceStats)) return [];
       const form = resolveSpiritFormRole(spirit, {
@@ -166,7 +166,7 @@ export function createSpeedSpecialTargets({ profileId = "positive-max", snapshot
       const label = specialLabel(sourceName, stack);
       return [{
         formRole: form.formRole,
-        id: `special:${caseId}`,
+        id: `special:${spirit.id}:${profileId}:${sourceName}:${stack ?? ""}`,
         name: spirit.fullName,
         profileId: profile.id,
         profileLabel: profile.label,

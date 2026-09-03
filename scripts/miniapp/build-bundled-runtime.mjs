@@ -1,15 +1,11 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { deflateRawSync } from "node:zlib";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const projectRoot = path.resolve(path.dirname(scriptPath), "../..");
-const requireFromMiniapp = createRequire(
-  path.join(projectRoot, "miniapp/package.json"),
-);
-const { compressToBase64 } = requireFromMiniapp("lz-string");
 const runtimePath = path.join(projectRoot, "public/data/runtime.json");
 const manifestPath = path.join(
   projectRoot,
@@ -128,7 +124,9 @@ const bundledRuntime = {
 const output = `${JSON.stringify(bundledRuntime)}\n`;
 writeFileSync(outputPath, output, "utf8");
 const compressedOutput = `export default ${JSON.stringify(
-  compressToBase64(output.trim()),
+  deflateRawSync(Buffer.from(output.trim(), "utf8"), { level: 9 }).toString(
+    "base64",
+  ),
 )};\n`;
 writeFileSync(compressedOutputPath, compressedOutput, "utf8");
 process.stdout.write(
