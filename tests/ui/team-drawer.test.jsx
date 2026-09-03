@@ -577,12 +577,11 @@ test("opens the icon-led analysis matrix without changing the member editor layo
   expect(
     within(panel).getByRole("table", { name: "队伍防守与打击面矩阵" }),
   ).toBeVisible();
-  expect(within(panel).getByRole("complementary", { name: "防守概览" })).toBeVisible();
-  expect(within(panel).getByRole("complementary", { name: "打击概览" })).toBeVisible();
+  expect(within(panel).queryByRole("complementary")).not.toBeInTheDocument();
   expect(within(panel).getByRole("checkbox", { name: "计入愿力冲击" })).toBeVisible();
 });
 
-test("does not count immune defense cells as resistances", async () => {
+test("uses the game's real defense multipliers without an abstract count summary", async () => {
   const user = userEvent.setup();
   render(
     <DrawerHarness
@@ -590,8 +589,8 @@ test("does not count immune defense cells as resistances", async () => {
         ...snapshot,
         typeChart: {
           matrix: [
-            [1, 0],
-            [1, 1],
+            [1, 0.5],
+            [2, 1],
           ],
           types: ["草", "火"],
         },
@@ -605,11 +604,11 @@ test("does not count immune defense cells as resistances", async () => {
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
   await user.click(screen.getByRole("button", { name: "队伍分析" }));
 
-  const summary = screen.getByRole("complementary", { name: "防守概览" });
-  expect(within(within(summary).getByText("抗性").closest("span")).getByText("0"))
+  const panel = screen.getByRole("region", { name: "队伍分析" });
+  expect(within(panel).getByRole("button", { name: "音速犬 对草承伤×0.5" }))
     .toBeVisible();
-  expect(within(within(summary).getByText("免疫").closest("span")).getByText("1"))
-    .toBeVisible();
+  expect(within(panel).queryByRole("complementary")).not.toBeInTheDocument();
+  expect(within(panel).queryByText("免疫")).not.toBeInTheDocument();
 });
 
 test("switches to skill coverage and traces a matrix cell to its source skill", async () => {
@@ -624,6 +623,7 @@ test("switches to skill coverage and traces a matrix cell to its source skill", 
 
   const panel = screen.getByRole("region", { name: "队伍分析" });
   await user.click(within(panel).getByRole("button", { name: "技能打击面" }));
+  expect(within(panel).queryByRole("complementary")).not.toBeInTheDocument();
   await user.click(
     within(panel).getByRole("button", { name: "音速犬 对草打击×2" }),
   );

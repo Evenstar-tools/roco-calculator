@@ -44,6 +44,7 @@ import {
   hasNegativeStatusTraitApplication,
 } from "./domain/negative-status-rules.js";
 import {
+  getEditableHitCountInput,
   getSkillEffectInputs,
   hasDeclaredHitCount,
 } from "./domain/skill-effects.js";
@@ -81,6 +82,7 @@ import {
   updateMirroredTraitContext,
 } from "./state/calculator-session.js";
 import { createTeamMemberFromSide } from "./state/team-presets.js";
+import { FEATURED_USER_RELEASE } from "./data/user-release-notes.js";
 
 function CalculatorWorkspace({ snapshot }) {
   const initialState = useMemo(() => {
@@ -301,6 +303,7 @@ function CalculatorWorkspace({ snapshot }) {
       overlays.dataSourceProps.open ||
       overlays.displaySettingsProps.open ||
       overlays.productAccessProps.open ||
+      overlays.whatsNewProps.open ||
       configLibraryFlow.overlayProps.mode ||
       shareFlow.overlayProps.open ||
       shareFlow.overlayProps.pendingState,
@@ -1092,6 +1095,24 @@ function CalculatorWorkspace({ snapshot }) {
     return Math.max(1, Math.floor(Number(effectiveHitCount) || 1) - bonus);
   }
 
+  function editableHitCountPatch(
+    skill,
+    direction,
+    effectiveHitCount,
+    automaticHitCountAdd,
+  ) {
+    const hitCount = storedHitCount(
+      skill,
+      direction,
+      effectiveHitCount,
+      automaticHitCountAdd,
+    );
+    const input = getEditableHitCountInput(skill);
+    return input
+      ? { context: { [input.id]: hitCount } }
+      : { hitCount };
+  }
+
   const singleEditor = configurationReady ? (
     <SingleSkillEditor
       attackerHealth={
@@ -1113,14 +1134,14 @@ function CalculatorWorkspace({ snapshot }) {
       defenderTrait={getTraitView(snapshot, activeDefenseSpirit, "defender")}
       hitCount={resultModel.selectedResult?.hitCount ?? currentDirection.hitCount}
       onHitCountChange={(hitCount) =>
-        updateRememberedSingleDirection({
-          hitCount: storedHitCount(
+        updateRememberedSingleDirection(
+          editableHitCountPatch(
             selectedSingleSkill,
             currentDirection,
             hitCount,
             resultModel.selectedResult?.automaticHitCountAdd,
           ),
-        })
+        )
       }
       onAttackerHealthChange={(currentHp) =>
         updateSideHealth(
@@ -1326,14 +1347,16 @@ function CalculatorWorkspace({ snapshot }) {
         const entry = stateRef.current.sides[side].skills.four[index];
         const automaticHitCountAdd =
           calculation?.[directionKey]?.results?.[index]?.automaticHitCountAdd;
-        updateFourSkillEntry(side, index, {
-          hitCount: storedHitCount(
+        updateFourSkillEntry(
+          side,
+          index,
+          editableHitCountPatch(
             getSkill(snapshot, entry),
             direction,
             hitCount,
             automaticHitCountAdd,
           ),
-        });
+        );
       }}
       onSkillPowerChange={(side, index, powerOverride) =>
         updateFourSkillEntry(side, index, {
@@ -1457,6 +1480,7 @@ function CalculatorWorkspace({ snapshot }) {
         onCleanupConfigs: () => overlays.setCleanupConfigsOpen(true),
         onShare: shareFlow.openShareConfiguration,
         onShowDisplaySettings: () => overlays.setDisplaySettingsOpen(true),
+        onShowWhatsNew: () => overlays.setWhatsNewOpen(true),
         onShowProductAccess: () => overlays.setProductAccessOpen(true),
         onShowDataSource: () => overlays.setDataSourceOpen(true),
       },
@@ -1501,6 +1525,15 @@ function CalculatorWorkspace({ snapshot }) {
       },
     },
     share: shareFlow.overlayProps,
+    whatsNew: {
+      ...overlays.whatsNewProps,
+      onOpenTeam: () => {
+        overlays.whatsNewProps.onClose();
+        overlays.team.setAnalysisEntry(null);
+        overlays.team.setOpen(true);
+      },
+      release: FEATURED_USER_RELEASE,
+    },
     team: {
       drawerProps: {
         analysisEntry: overlays.team.analysisEntry,

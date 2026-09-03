@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { FEEDBACK_QQ } from "../components/DataSourceDialog.jsx";
+import { FEATURED_USER_RELEASE } from "../data/user-release-notes.js";
 import {
   readDurabilityOverviewSetting,
   readPowerDisplayMode,
@@ -32,6 +33,7 @@ export function useWorkspaceOverlays({
   const [productAccessOpen, setProductAccessOpen] = useState(false);
   const [teamAnalysisEntry, setTeamAnalysisEntry] = useState(null);
   const [teamOpen, setTeamOpen] = useState(false);
+  const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [powerDisplayMode, setPowerDisplayMode] = useState(() =>
     readPowerDisplayMode(),
   );
@@ -143,6 +145,7 @@ export function useWorkspaceOverlays({
     setDataSourceOpen,
     setDisplaySettingsOpen,
     setProductAccessOpen,
+    setWhatsNewOpen,
     team: {
       analysisEntry: teamAnalysisEntry,
       buttonRef: teamsButtonRef,
@@ -159,5 +162,11 @@ export function useWorkspaceOverlays({
       setOpen: setTeamOpen,
     },
     typeCoverageEnabled,
+    whatsNewProps: {
+      onClose: () => setWhatsNewOpen(false),
+      open: whatsNewOpen,
+      release: FEATURED_USER_RELEASE,
+      version: FEATURED_USER_RELEASE.version,
+    },
   };
 }

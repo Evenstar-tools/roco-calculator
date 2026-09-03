@@ -47,11 +47,38 @@ describe("版本记录", () => {
     expect(featuredRelease).toMatchObject({
       date: "2026.09.04",
       status: "preview",
-      title: "月涌狂想前瞻 · 速度修复",
+      title: "能力分析与配置体验",
     });
     expect(featuredRelease.version).toBe(`v${packageVersion}`);
-    expect(featuredRelease.highlights.join("\n")).toContain("23个形态");
+    expect(featuredRelease.highlights.join("\n")).toContain("能力分析工作台");
     expect(featuredRelease.highlights.join("\n")).not.toContain("9月10日");
+  });
+
+  test("全部版本按新增功能、修复与优化分类", () => {
+    const allowedKinds = new Set(["feature", "fix"]);
+
+    for (const release of versionedReleases) {
+      expect(release.sections?.length).toBeGreaterThan(0);
+      expect(release.sections.every(({ kind }) => allowedKinds.has(kind))).toBe(true);
+      expect(release.sections.map(({ label }) => label)).toEqual(
+        release.sections.map(({ kind }) =>
+          kind === "feature" ? "新增功能" : "修复与优化",
+        ),
+      );
+      expect(release.highlights).toEqual(
+        release.sections.flatMap(({ items }) => items),
+      );
+    }
+    expect(featuredRelease.sections.map(({ label }) => label)).toEqual([
+      "新增功能",
+      "修复与优化",
+    ]);
+    expect(
+      featuredRelease.sections.find(({ kind }) => kind === "feature").items,
+    ).toEqual(expect.arrayContaining([
+      expect.stringContaining("标准耐久榜"),
+      expect.stringContaining("速度线"),
+    ]));
   });
 
   test("首屏摘要保持精简且每条都能完整显示", () => {

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, test, vi } from "vitest";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 import { getTraitView } from "../../src/domain/calculator-view-model.js";
+import { getNature } from "../../src/domain/natures.js";
 import {
   FAVORITE_CONFIG_LIBRARY_FORMAT,
   FAVORITE_CONFIG_LIBRARY_MAX_BYTES,
@@ -19,6 +20,25 @@ const IVS = {
   physicalDefense: 0,
   magicalDefense: 0,
 };
+
+const AUDITED_POPULAR_CONFIG_IDS = [
+  "spirit_4c280ecf82adb90e",
+  "spirit_f7e8528a743eaaf0",
+  "spirit_03d719be9841704e",
+  "spirit_3b52748976f979f2",
+  "spirit_d4a7177497e7250e",
+  "spirit_5ee78de2be28a163",
+  "spirit_57fff877bf40ffd4",
+  "spirit_7c31fbd89f093c5d",
+  "spirit_800a0042f52851cf",
+  "spirit_b83bc4598f48c604",
+  "spirit_d4f6e1e80d4f396e",
+  "spirit_f99f67a3721ea123",
+  "spirit_ee30eb99632df5ce",
+  "spirit_c245104fe73fad25",
+  "spirit_3ba0ecc3da584c40",
+  "spirit_c81d428eaaa8e87b",
+];
 
 function snapshot() {
   return {
@@ -180,6 +200,74 @@ describe("bundled popular config library", () => {
     expect(parsed.preview.missingSpirits).toBe(0);
     expect(parsed.preview.unknownTraitFields).toBe(0);
     expect(parsed.preview.invalidEntries).toBe(0);
+  });
+
+  test("keeps exactly three full IVs and none in the nature-reduced stat", () => {
+    const library = JSON.parse(readFileSync(
+      "public/data/presets/pvp-popular-configs.json",
+      "utf8",
+    ));
+    const natureConflicts = library.entries.flatMap((entry) => {
+      const nature = getNature(entry.natureId);
+      const reducedIv = nature.downStat
+        ? Number(entry.displayIvs[nature.downStat] ?? 0)
+        : 0;
+      return reducedIv > 0
+        ? [{
+          natureId: entry.natureId,
+          reducedIv,
+          reducedStat: nature.downStat,
+          spiritId: entry.spiritId,
+        }]
+        : [];
+    });
+    const invalidAllocations = library.entries.flatMap((entry) => {
+      const values = Object.values(entry.displayIvs);
+      const fullIvCount = values.filter((value) => value === 60).length;
+      return values.length !== 6 ||
+        values.some((value) => value !== 0 && value !== 60) ||
+        fullIvCount !== 3
+        ? [{ fullIvCount, spiritId: entry.spiritId }]
+        : [];
+    });
+
+    expect(natureConflicts).toEqual([]);
+    expect(invalidAllocations).toEqual([]);
+  });
+
+  test("keeps the audited presets aligned with their equipped attack skills", () => {
+    const library = JSON.parse(readFileSync(
+      "public/data/presets/pvp-popular-configs.json",
+      "utf8",
+    ));
+    const currentSnapshot = JSON.parse(
+      readFileSync("public/data/runtime.json", "utf8"),
+    );
+    const skillById = new Map(
+      currentSnapshot.skills.map((skill) => [skill.id, skill]),
+    );
+    const entryBySpiritId = new Map(
+      library.entries.map((entry) => [entry.spiritId, entry]),
+    );
+
+    for (const spiritId of AUDITED_POPULAR_CONFIG_IDS) {
+      const entry = entryBySpiritId.get(spiritId);
+      const attackCategories = new Set(entry.skills
+        .map((skillId) => skillById.get(skillId)?.category)
+        .filter((category) => category === "physical" || category === "magical"));
+      expect([...attackCategories]).toHaveLength(1);
+      const category = [...attackCategories][0];
+      const investedStat = category === "physical"
+        ? "physicalAttack"
+        : "magicalAttack";
+      const reducedStat = category === "physical"
+        ? "magicalAttack"
+        : "physicalAttack";
+
+      expect(entry.displayIvs[investedStat]).toBe(60);
+      expect(entry.displayIvs[reducedStat]).toBe(0);
+      expect(getNature(entry.natureId).downStat).toBe(reducedStat);
+    }
   });
 });
 

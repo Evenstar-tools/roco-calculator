@@ -80,6 +80,7 @@ describe("mini-program team defensive analysis", () => {
 
     const dialog = screen.getByRole("dialog", { name: "队伍防守面分析" });
     expect(within(dialog).getByText("已配置 2/6")).toBeInTheDocument();
+    expect(within(dialog).queryByText(/^免\s/u)).not.toBeInTheDocument();
     expect(within(dialog).getAllByRole("button", { name: /查看.+防守明细/u }).length)
       .toBeGreaterThan(0);
 

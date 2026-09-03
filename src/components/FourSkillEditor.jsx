@@ -407,6 +407,12 @@ function SkillSide({
             ...skillDynamicInputs,
             ...traitDynamicInputs,
           ];
+          const editableHitCountInput = skillDynamicInputs.find(
+            (input) => input.drivesHitCount === true,
+          );
+          const hitCountMaximum = editableHitCountInput
+            ? editableHitCountInput.max ?? Number.POSITIVE_INFINITY
+            : 99;
           const visibleInputs = (inputs) =>
             inputs
               .filter(
@@ -517,14 +523,14 @@ function SkillSide({
                   <input
                     aria-label={`${label}技能${index + 1}连击次数`}
                     disabled={!selected}
-                    max="99"
+                    max={Number.isFinite(hitCountMaximum) ? hitCountMaximum : undefined}
                     min="1"
                     onChange={(event) =>
                       onSkillHitCountChange?.(
                         side,
                         index,
                         Math.min(
-                          99,
+                          hitCountMaximum,
                           Math.max(1, Number(event.target.value) || 1),
                         ),
                       )

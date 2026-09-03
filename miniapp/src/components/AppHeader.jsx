@@ -161,7 +161,7 @@ export default function AppHeader({
                     队伍防守面分析
                   </Text>
                   <Text className="settings-sheet__description">
-                    分析六人队伍的属性弱点、抗性与免疫
+                    查看六人队伍受到各属性攻击时的伤害倍率
                   </Text>
                 </View>
                 <Button

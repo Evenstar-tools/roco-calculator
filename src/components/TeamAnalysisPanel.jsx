@@ -198,35 +198,6 @@ function ManualOpponentEditor({
   );
 }
 
-function MatrixSummary({ analysis, mode }) {
-  const cells = analysis.members.flatMap((member) => member[mode]);
-  const groups = mode === "defense"
-    ? [
-        ["抗性", cells.filter(({ multiplier }) => multiplier > 0 && multiplier < 1).length, "safe"],
-        ["等倍", cells.filter(({ multiplier }) => multiplier === 1).length, "neutral"],
-        ["弱点", cells.filter(({ multiplier }) => multiplier > 1).length, "danger"],
-        ["免疫", cells.filter(({ multiplier }) => multiplier === 0).length, "immune"],
-      ]
-    : [
-        ["克制", cells.filter(({ multiplier }) => multiplier > 1).length, "safe"],
-        ["等倍", cells.filter(({ multiplier }) => multiplier === 1).length, "neutral"],
-        ["受阻", cells.filter(({ multiplier }) => multiplier !== null && multiplier < 1).length, "danger"],
-        ["无技能", cells.filter(({ multiplier }) => multiplier === null).length, "empty"],
-      ];
-  return (
-    <aside aria-label={mode === "defense" ? "防守概览" : "打击概览"} className="team-analysis__summary">
-      <strong>{mode === "defense" ? "防守概览" : "打击概览"}</strong>
-      {groups.map(([label, count, tone]) => (
-        <span className={`is-${tone}`} key={label}>
-          <i aria-hidden="true" />
-          <small>{label}</small>
-          <b>{count}</b>
-        </span>
-      ))}
-    </aside>
-  );
-}
-
 function MatchupTable({ matchup, onCellSelect }) {
   return (
     <div className="team-analysis__matchup-scroll">
@@ -390,10 +361,6 @@ export function TeamAnalysisPanel({
                 mode={matrixMode}
                 onCellSelect={setSelectedCell}
               />
-              <div className="team-analysis__summaries">
-                <MatrixSummary analysis={analysis} mode="defense" />
-                <MatrixSummary analysis={analysis} mode="offense" />
-              </div>
             </div>
           ) : (
             <div className="team-analysis__empty">添加精灵后查看分析</div>

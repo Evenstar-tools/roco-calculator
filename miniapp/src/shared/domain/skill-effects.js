@@ -671,14 +671,20 @@ const REVIEWED_EFFECTS = Object.freeze({
     2,
     1,
   ),
-  虫鸣: hitCountGrowth(
-    "teamBugChantCount",
-    "队伍携带虫鸣数量",
-    1,
-    1,
-    6,
-    1,
-  ),
+  虫鸣: {
+    inputs: [{
+      ...numberInput("teamBugChantCount", "队伍携带虫鸣数量", 1, undefined, 1),
+      drivesHitCount: true,
+    }],
+    ruleId: "hit_count_scaled",
+    ruleParams: {
+      baseHitCount: 0,
+      contextKey: "teamBugChantCount",
+      defaultValue: 1,
+      label: "队伍携带虫鸣数量",
+      perStack: 1,
+    },
+  },
   散手: booleanHitCount(
     "counterTriggered",
     "触发应对",
@@ -1000,7 +1006,14 @@ export function getDefaultHitCount(skill) {
   return match ? Math.max(1, Number(match[1])) : 1;
 }
 
+export function getEditableHitCountInput(skill) {
+  return getSkillEffectInputs(skill).find(
+    (input) => input.drivesHitCount === true,
+  ) ?? null;
+}
+
 export function hasDeclaredHitCount(skill) {
-  return /(\d+)\s*连击/u.test(String(skill?.description ?? ""));
+  return Boolean(getEditableHitCountInput(skill)) ||
+    /(\d+)\s*连击/u.test(String(skill?.description ?? ""));
 }
 import { normalizeTriggerControls } from "./trigger-controls.js";

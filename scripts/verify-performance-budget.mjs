@@ -11,14 +11,14 @@ import { gzipSync } from "node:zlib";
 export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
   clientTotal: 13 * 1024 * 1024,
   cssGzip: 24 * 1024,
-  // 2026-09-01 重校：核心拆分模块化开销 + 星陨功能（实测 JS gzip 198.53 KiB / JS 原始 683.03 KiB）
-  jsGzip: 208 * 1024,
+  // 2026-09-04 重校：新增版本更新介绍，JS gzip 实测 228.83 KiB，基线上调 2 KiB
+  jsGzip: 210 * 1024,
   jsRaw: 717 * 1024,
   runtimeJson: 1.5 * 1024 * 1024,
 });
 
 export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
-// 2026-09-01：JS gzip 阻断 228 KiB（+20）、JS 原始阻断 786 KiB（+69）；其余指标仍用上面的统一余量
+// 2026-09-04：JS gzip 阻断 230 KiB（+20）、JS 原始阻断 786 KiB（+69）；其余指标仍用上面的统一余量
 export const DEFAULT_HARD_OVERAGE_BY_KEY = Object.freeze({
   jsGzip: 20 * 1024,
   jsRaw: 69 * 1024,

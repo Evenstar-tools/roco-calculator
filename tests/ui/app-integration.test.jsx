@@ -12,6 +12,7 @@ import { App } from "../../src/App.jsx";
 import { createInitialState } from "../../src/state/defaults.js";
 import { FAVORITES_STORAGE_KEY } from "../../src/state/favorites.js";
 import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js";
+import { FEATURED_USER_RELEASE } from "../../src/data/user-release-notes.js";
 import { encodeShareState } from "../../src/state/share.js";
 import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
 import { TEAM_STORAGE_KEY } from "../../src/state/team-presets.js";
@@ -51,6 +52,7 @@ const snapshot = {
         "moe-strike",
         "wish-power-fire",
         "dimensional-hit",
+        "bug-chirp",
       ],
     },
     {
@@ -106,6 +108,16 @@ const snapshot = {
       provenance: { basePower: "test" },
       ruleId: null,
       type: "幻",
+    },
+    {
+      basePower: 45,
+      category: "magical",
+      cost: 2,
+      description: "造成魔伤，队伍中的精灵每携带1个虫鸣，本次技能连击数+1。",
+      id: "bug-chirp",
+      name: "虫鸣",
+      ruleId: null,
+      type: "虫",
     },
     {
       basePower: 0,
@@ -438,6 +450,20 @@ beforeEach(() => {
   localStorage.removeItem(SPIRIT_CONFIG_STORAGE_KEY);
   localStorage.removeItem(TYPE_COVERAGE_STORAGE_KEY);
   localStorage.setItem(FIRST_RUN_GUIDE_STORAGE_KEY, "1");
+});
+
+test("keeps whats new quiet on entry and available in the menu", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  expect(screen.queryByRole("dialog", { name: "新功能介绍" }))
+    .not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(
+    screen.getByRole("button", {
+      name: `新功能 ${FEATURED_USER_RELEASE.version}`,
+    }),
+  );
+  expect(screen.getByRole("dialog", { name: "新功能介绍" })).toBeVisible();
 });
 
 async function selectSpirit(user, side, name) {
@@ -1578,6 +1604,45 @@ test("Warm-up adds three hits to declared combo skills without double-counting m
 
   fireEvent.change(comboHits, { target: { value: "9" } });
   expect(comboHits).toHaveValue(9);
+});
+
+test("Bug Chirp keeps its hit input editable and stacks Warm-up interaction", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const first = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(first);
+  await user.type(first, "虫鸣");
+  await user.click(screen.getByRole("option", { name: /虫鸣/ }));
+
+  const carriedCount = screen.getByRole("spinbutton", {
+    name: "攻击方技能1队伍携带虫鸣数量",
+  });
+  const hits = screen.getByRole("spinbutton", {
+    name: "攻击方技能1连击次数",
+  });
+  fireEvent.change(carriedCount, { target: { value: "6" } });
+  expect(hits).toHaveValue(6);
+
+  const second = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(second);
+  await user.type(second, "热身运动");
+  await user.click(screen.getByRole("option", { name: /热身运动/ }));
+  await user.click(screen.getByText("自己获得连击数+3。"));
+  expect(hits).toHaveValue(9);
+
+  fireEvent.change(hits, { target: { value: "10" } });
+  expect(hits).toHaveValue(10);
+  expect(carriedCount).toHaveValue(7);
+
+  fireEvent.change(hits, { target: { value: "120" } });
+  expect(hits).toHaveValue(120);
+  expect(carriedCount).toHaveValue(117);
+
+  fireEvent.change(carriedCount, { target: { value: "120" } });
+  expect(hits).toHaveValue(123);
 });
 
 test("Storm Eye applies its sprout-amplified hit percentage through the status click", async () => {

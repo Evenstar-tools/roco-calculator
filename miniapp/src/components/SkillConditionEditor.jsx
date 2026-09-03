@@ -6,7 +6,10 @@ import {
   hasStatusHitCountCoefficient,
   isPureStatusSkill,
 } from "../shared/domain/skill-status-effects.js";
-import { getDefaultHitCount } from "../shared/domain/skill-effects.js";
+import {
+  getDefaultHitCount,
+  getEditableHitCountInput,
+} from "../shared/domain/skill-effects.js";
 import { getVisibleSkillInputs } from "../view-models/skills.js";
 
 function eventValue(event) {
@@ -204,8 +207,12 @@ export default function SkillConditionEditor({
   const powerValue = manualPower ?? automaticPower ?? "";
   const powerLabel = powerMode === "panel" ? "显示威力" : "静态威力";
   const basePower = Math.max(0, Number(skill?.basePower) || 0);
+  const editableHitCountInput = getEditableHitCountInput(skill);
+  const resolvedHitCountMaximum = editableHitCountInput
+    ? editableHitCountInput.max ?? Number.POSITIVE_INFINITY
+    : 99;
   const resolvedHitCount = Math.min(
-    99,
+    resolvedHitCountMaximum,
     Math.max(
       1,
       Math.floor(
@@ -214,9 +221,11 @@ export default function SkillConditionEditor({
     ),
   );
   const configuredHitCount = Number(direction?.hitCount);
-  const hitCount = Number.isFinite(configuredHitCount) && configuredHitCount >= 1
-    ? Math.min(99, Math.floor(configuredHitCount))
-    : resolvedHitCount;
+  const hitCount = editableHitCountInput
+    ? resolvedHitCount
+    : Number.isFinite(configuredHitCount) && configuredHitCount >= 1
+      ? Math.min(99, Math.floor(configuredHitCount))
+      : resolvedHitCount;
   const statusHitCountConfigurable = hasStatusHitCountCoefficient(skill);
   const storedStatusTriggerCount = Number(direction?.statusTriggerCount);
   const statusTriggerCount = Number.isFinite(storedStatusTriggerCount) &&
@@ -245,6 +254,24 @@ export default function SkillConditionEditor({
       return;
     }
     onDirectionChange({ hitCount: count });
+  };
+  const updateDamageHitCount = (count) => {
+    const normalized = Math.max(1, Math.floor(Number(count) || 1));
+    if (!editableHitCountInput) {
+      onDirectionChange({ hitCount: normalized });
+      return;
+    }
+    const automaticHitCountAdd = Math.floor(
+      Number(result?.automaticHitCountAdd) || 0,
+    );
+    const baseHitCount = Math.max(
+      editableHitCountInput.min ?? 1,
+      normalized - automaticHitCountAdd,
+    );
+    onContextChange({
+      ...context,
+      [editableHitCountInput.contextKey]: baseHitCount,
+    });
   };
 
   return (
@@ -444,14 +471,7 @@ export default function SkillConditionEditor({
               className="condition-editor__input"
               inputMode="numeric"
               min="1"
-              onInput={(event) =>
-                onDirectionChange({
-                  hitCount: Math.max(
-                    1,
-                    Math.floor(numericValue(event, 1)),
-                  ),
-                })
-              }
+              onInput={(event) => updateDamageHitCount(numericValue(event, 1))}
               type="number"
               value={hitCount}
             />

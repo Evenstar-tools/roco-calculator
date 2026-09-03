@@ -1296,6 +1296,49 @@ describe("calculateMatchup", () => {
     expect(noCombo.totalDamage).toBe(base.totalDamage);
   });
 
+  test("虫鸣的手动连击数会叠加热身运动的连击增益", () => {
+    const bugChirpSnapshot = {
+      ...snapshot,
+      skills: snapshot.skills.map((skill) =>
+        skill.id === "skill_wind"
+          ? {
+              ...skill,
+              basePower: 45,
+              category: "magical",
+              description: "造成魔伤，队伍中的精灵每携带1个虫鸣，本次技能连击数+1。",
+              name: "虫鸣",
+              type: "虫",
+            }
+          : skill,
+      ),
+    };
+    const result = calculateMatchup(
+      bugChirpSnapshot,
+      battleInput({
+        directions: {
+          forward: {
+            context: { teamBugChantCount: 6 },
+            overrides: { hitCountAdd: 3 },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+    const unbounded = calculateMatchup(
+      bugChirpSnapshot,
+      battleInput({
+        directions: {
+          forward: {
+            context: { teamBugChantCount: 120 },
+            overrides: { hitCountAdd: 3 },
+          },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.hitCount).toBe(9);
+    expect(unbounded.hitCount).toBe(123);
+  });
+
   test("暴风眼的连击百分比在固定连击加成后统一结算", () => {
     const comboSnapshot = {
       ...snapshot,

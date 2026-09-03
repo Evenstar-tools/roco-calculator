@@ -7,6 +7,7 @@ import { DataSourceDialog } from "./DataSourceDialog.jsx";
 import { ProductAccessDialog } from "./ProductAccessDialog.jsx";
 import { FirstRunGuide } from "./FirstRunGuide.jsx";
 import { DisplaySettingsDialog } from "./DisplaySettingsDialog.jsx";
+import { WhatsNewDialog } from "./WhatsNewDialog.jsx";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -39,6 +40,7 @@ export function WorkspaceOverlays({
   share,
   team,
   toast,
+  whatsNew = {},
 }) {
   const menuActions = menu.actions ?? {};
   const mobileActions = mobileResult.actions ?? {};
@@ -198,6 +200,20 @@ export function WorkspaceOverlays({
             新手引导
           </button>
           <button
+            aria-label={`新功能 ${whatsNew.version ?? ""}`.trim()}
+            className="app-menu__primary"
+            onClick={() => {
+              menuActions.onShowWhatsNew?.();
+              menuActions.onClose?.();
+            }}
+            type="button"
+          >
+            <span>新功能</span>
+            {whatsNew.version ? (
+              <span className="app-menu__badge">{whatsNew.version}</span>
+            ) : null}
+          </button>
+          <button
             onClick={() => {
               menuActions.onShowDisplaySettings?.();
               menuActions.onClose?.();
@@ -234,6 +250,8 @@ export function WorkspaceOverlays({
       {children}
 
       <FirstRunGuide {...firstRunGuide} />
+
+      <WhatsNewDialog {...whatsNew} />
 
       {mobileResult.configurationReady ? (
         <button

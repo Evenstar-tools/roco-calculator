@@ -52,7 +52,7 @@
     },
     {
       "spiritId": "spirit_4c280ecf82adb90e",
-      "natureId": "timid",
+      "natureId": "cheerful",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -78,7 +78,7 @@
         "physicalAttack": 60,
         "magicalAttack": 0,
         "physicalDefense": 0,
-        "magicalDefense": 60
+        "magicalDefense": 0
       },
       "skills": [
         "skill_97c7d15001dae0f9",
@@ -242,8 +242,8 @@
       "displayIvs": {
         "hp": 60,
         "speed": 60,
-        "physicalAttack": 0,
-        "magicalAttack": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 0,
         "physicalDefense": 0,
         "magicalDefense": 0
       },
@@ -261,8 +261,8 @@
       "displayIvs": {
         "hp": 60,
         "speed": 60,
-        "physicalAttack": 0,
-        "magicalAttack": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 0,
         "physicalDefense": 0,
         "magicalDefense": 0
       },
@@ -280,8 +280,8 @@
       "displayIvs": {
         "hp": 60,
         "speed": 60,
-        "physicalAttack": 0,
-        "magicalAttack": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 0,
         "physicalDefense": 0,
         "magicalDefense": 0
       },
@@ -1678,8 +1678,8 @@
       "displayIvs": {
         "hp": 60,
         "speed": 60,
-        "physicalAttack": 0,
-        "magicalAttack": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 0,
         "physicalDefense": 0,
         "magicalDefense": 0
       },
@@ -2018,14 +2018,14 @@
     },
     {
       "spiritId": "spirit_57fff877bf40ffd4",
-      "natureId": "rash",
+      "natureId": "timid",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
         "physicalAttack": 0,
-        "magicalAttack": 0,
+        "magicalAttack": 60,
         "physicalDefense": 0,
-        "magicalDefense": 60
+        "magicalDefense": 0
       },
       "skills": [
         "skill_82e6c1faf3060843",
@@ -2097,7 +2097,7 @@
     },
     {
       "spiritId": "spirit_7c31fbd89f093c5d",
-      "natureId": "brave",
+      "natureId": "adamant",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -2230,7 +2230,7 @@
     },
     {
       "spiritId": "spirit_800a0042f52851cf",
-      "natureId": "brave",
+      "natureId": "adamant",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -2404,7 +2404,7 @@
     },
     {
       "spiritId": "spirit_b83bc4598f48c604",
-      "natureId": "brave",
+      "natureId": "adamant",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -2480,7 +2480,7 @@
     },
     {
       "spiritId": "spirit_d4f6e1e80d4f396e",
-      "natureId": "timid",
+      "natureId": "cheerful",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -2748,7 +2748,7 @@
     },
     {
       "spiritId": "spirit_f99f67a3721ea123",
-      "natureId": "grounded",
+      "natureId": "peaceful",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -2812,7 +2812,7 @@
         "physicalAttack": 60,
         "magicalAttack": 0,
         "physicalDefense": 60,
-        "magicalDefense": 60
+        "magicalDefense": 0
       },
       "skills": [
         "skill_58cbb8cf698f4244",
@@ -3054,7 +3054,7 @@
     },
     {
       "spiritId": "spirit_c245104fe73fad25",
-      "natureId": "brave",
+      "natureId": "adamant",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -3308,8 +3308,8 @@
       "displayIvs": {
         "hp": 60,
         "speed": 60,
-        "physicalAttack": 60,
-        "magicalAttack": 0,
+        "physicalAttack": 0,
+        "magicalAttack": 60,
         "physicalDefense": 0,
         "magicalDefense": 0
       },
@@ -4052,10 +4052,10 @@
       "displayIvs": {
         "hp": 60,
         "speed": 60,
-        "physicalAttack": 60,
+        "physicalAttack": 0,
         "magicalAttack": 60,
-        "physicalDefense": 60,
-        "magicalDefense": 60
+        "physicalDefense": 0,
+        "magicalDefense": 0
       },
       "skills": [
         "skill_4615df4bd5663a24",

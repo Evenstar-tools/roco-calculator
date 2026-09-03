@@ -277,73 +277,6 @@
   color: var(--text-faint);
 }
 
-.team-analysis__summaries {
-  display: grid;
-  border-top: 1px solid var(--border);
-  background: var(--surface-soft);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.team-analysis__summary {
-  display: grid;
-  background: var(--surface-soft);
-  padding: 4px 8px;
-  grid-template-columns: auto repeat(4, minmax(52px, 1fr));
-  align-items: center;
-  gap: 6px;
-}
-
-.team-analysis__summary + .team-analysis__summary {
-  border-top: 0;
-  border-left: 1px solid var(--border);
-}
-
-.team-analysis__summary > strong {
-  color: var(--text-muted);
-  font-size: 12px;
-  text-align: left;
-}
-
-.team-analysis__summary > span {
-  display: grid;
-  min-width: 0;
-  min-height: 18px;
-  grid-template-columns: 9px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 6px;
-}
-
-.team-analysis__summary i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--text-faint);
-}
-
-.team-analysis__summary span.is-safe i {
-  background: #20a35b;
-}
-
-.team-analysis__summary span.is-danger i {
-  background: var(--attack);
-}
-
-.team-analysis__summary span.is-immune i {
-  background: var(--accent);
-}
-
-.team-analysis__summary small {
-  overflow: hidden;
-  color: var(--text-muted);
-  font-size: 9px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.team-analysis__summary b {
-  font-size: 13px;
-}
-
 .team-analysis__source-strip {
   display: flex;
   min-height: 70px;
@@ -616,19 +549,6 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .team-analysis__summary {
-    grid-template-columns: auto repeat(4, minmax(70px, 1fr));
-    align-items: center;
-  }
-
-  .team-analysis__summaries {
-    border-top: 1px solid var(--border);
-    border-left: 0;
-  }
-
-  .team-analysis__summary > strong {
-    text-align: left;
-  }
 }
 
 @media (max-width: 700px) {
@@ -726,10 +646,6 @@
     white-space: nowrap;
   }
 
-  .team-analysis__summary {
-    overflow: hidden;
-    grid-template-columns: 64px repeat(4, minmax(0, 1fr));
-  }
 }
 
 @container (max-width: 560px) {
@@ -760,34 +676,6 @@
   .team-analysis__matrix tbody th > img {
     width: 22px;
     height: 22px;
-  }
-
-  .team-analysis__summaries {
-    grid-template-columns: 1fr;
-  }
-
-  .team-analysis__summary {
-    padding: 3px 4px;
-    grid-template-columns: 58px repeat(4, minmax(0, 1fr));
-    gap: 3px;
-  }
-
-  .team-analysis__summary + .team-analysis__summary {
-    border-top: 1px solid var(--border);
-    border-left: 0;
-  }
-
-  .team-analysis__summary > strong {
-    font-size: 10px;
-  }
-
-  .team-analysis__summary > span {
-    grid-template-columns: 8px minmax(0, 1fr);
-    gap: 2px;
-  }
-
-  .team-analysis__summary small {
-    display: none;
   }
 
   .team-analysis__matchup-table thead th:first-child,

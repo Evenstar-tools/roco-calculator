@@ -1,7 +1,10 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { WorkspaceOverlays } from "../../src/components/WorkspaceOverlays.jsx";
-import { USER_RELEASE_NOTES } from "../../src/data/user-release-notes.js";
+import {
+  FEATURED_USER_RELEASE,
+  USER_RELEASE_NOTES,
+} from "../../src/data/user-release-notes.js";
 
 function renderOverlays(overrides = {}) {
   const onMenuClose = vi.fn();
@@ -69,6 +72,47 @@ test("exposes a replayable first-run guide from the app menu", () => {
 
   fireEvent.click(screen.getByRole("button", { name: "新手引导" }));
   expect(onFirstRunGuide).toHaveBeenCalledOnce();
+});
+
+test("exposes a replayable whats-new dialog from the app menu", () => {
+  const onShowWhatsNew = vi.fn();
+  renderOverlays({
+    menu: {
+      actions: { onShowWhatsNew },
+      buttonRef: { current: document.createElement("button") },
+      open: true,
+      ref: { current: null },
+    },
+    whatsNew: { open: false, version: FEATURED_USER_RELEASE.version },
+  });
+
+  fireEvent.click(
+    screen.getByRole("button", { name: `新功能 ${FEATURED_USER_RELEASE.version}` }),
+  );
+  expect(onShowWhatsNew).toHaveBeenCalledOnce();
+});
+
+test("introduces the current release and opens the team workspace", () => {
+  const onClose = vi.fn();
+  const onOpenTeam = vi.fn();
+  renderOverlays({
+    menu: { actions: {}, open: false },
+    whatsNew: {
+      onClose,
+      onOpenTeam,
+      open: true,
+      release: FEATURED_USER_RELEASE,
+      version: FEATURED_USER_RELEASE.version,
+    },
+  });
+
+  const dialog = screen.getByRole("dialog", { name: "新功能介绍" });
+  expect(within(dialog).getByText("配队前，先把能力值算清楚")).toBeVisible();
+  expect(within(dialog).getByText("耐久方案")).toBeVisible();
+  expect(within(dialog).getByText("标准耐久榜")).toBeVisible();
+  expect(within(dialog).getByText("速度线")).toBeVisible();
+  fireEvent.click(within(dialog).getByRole("button", { name: "打开队伍" }));
+  expect(onOpenTeam).toHaveBeenCalledOnce();
 });
 
 test("puts clear first and hides cleanup and sharing from the web menu", () => {
@@ -222,6 +266,10 @@ test("opens the complete release notes in a second-level dialog", () => {
 
   fireEvent.click(screen.getByRole("button", { name: "查看完整版本记录" }));
   expect(screen.getByRole("dialog", { name: "完整版本记录" })).toBeVisible();
+  expect(screen.getAllByText("新增功能").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("修复与优化").length).toBeGreaterThan(0);
+  expect(screen.queryByText("前瞻内容")).not.toBeInTheDocument();
+  expect(screen.queryByText("规则适配")).not.toBeInTheDocument();
   for (const release of USER_RELEASE_NOTES) {
     expect(screen.getByText(release.version)).toBeVisible();
   }

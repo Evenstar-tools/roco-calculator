@@ -26,7 +26,6 @@ function memberImageUrl(spirit, petImages) {
 
 function matchupTone(multiplier) {
   if (multiplier > 1) return "weak";
-  if (multiplier === 0) return "immune";
   return "resist";
 }
 
@@ -265,7 +264,6 @@ export default function TeamTypeAnalysisSheet({
                   const details = [
                     ...row.weakMembers,
                     ...row.resistantMembers,
-                    ...row.immuneMembers,
                   ].sort((left, right) => left.slotIndex - right.slotIndex);
                   return (
                     <View className="team-analysis__row-wrap" key={row.type}>
@@ -282,13 +280,10 @@ export default function TeamTypeAnalysisSheet({
                         </View>
                         <View className="team-analysis__counts">
                           <Text className="team-analysis__count team-analysis__count--weak">
-                            弱 {row.weakCount}
+                            增伤 {row.weakCount}
                           </Text>
                           <Text className="team-analysis__count team-analysis__count--resist">
-                            抗 {row.resistanceCount}
-                          </Text>
-                          <Text className="team-analysis__count team-analysis__count--immune">
-                            免 {row.immunityCount}
+                            减伤 {row.resistanceCount}
                           </Text>
                         </View>
                         <Text className="team-analysis__chevron">›</Text>

@@ -1,0 +1,124 @@
+.whats-new-dialog {
+  width: min(560px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  padding: 0;
+  overflow-y: auto;
+}
+
+.whats-new-dialog__header {
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+
+.whats-new-dialog__header > span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--accent-strong);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.whats-new-dialog__header h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.28;
+}
+
+.whats-new-dialog__header p {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.whats-new-dialog__list {
+  margin: 0;
+  padding: 2px 24px;
+  list-style: none;
+}
+
+.whats-new-dialog__list li {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 12px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.whats-new-dialog__list li:last-child {
+  border-bottom: 0;
+}
+
+.whats-new-dialog__list li > span {
+  padding-top: 2px;
+  color: var(--text-faint);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.whats-new-dialog__list strong {
+  display: block;
+  font-size: 14px;
+}
+
+.whats-new-dialog__list p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.whats-new-dialog > .whats-new-dialog__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0;
+  padding: 16px 24px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.whats-new-dialog__actions button {
+  min-height: 40px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.whats-new-dialog__primary {
+  border: 1px solid var(--accent);
+  color: #fff;
+  background: var(--accent);
+}
+
+.whats-new-dialog__primary:hover {
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+}
+
+@media (max-width: 620px) {
+  .whats-new-backdrop {
+    padding: 10px;
+  }
+
+  .whats-new-dialog {
+    width: 100%;
+    max-height: calc(100dvh - 20px);
+  }
+
+  .whats-new-dialog__header {
+    padding: 20px 18px 16px;
+  }
+
+  .whats-new-dialog__header h2 {
+    font-size: 20px;
+  }
+
+  .whats-new-dialog__list {
+    padding-inline: 18px;
+  }
+
+  .whats-new-dialog > .whats-new-dialog__actions {
+    padding: 14px 18px 18px;
+  }
+}

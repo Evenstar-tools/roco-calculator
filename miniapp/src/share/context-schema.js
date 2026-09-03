@@ -86,7 +86,7 @@ const NUMBER_FIELDS = {
   skillSlot: [1, 4],
   skillUseCount: [0, 20],
   stackCount: [0, 100],
-  teamBugChantCount: [0, 6],
+  teamBugChantCount: [1],
   teamDonationCount: [0, 20],
   totalMoeStacks: [0, 20],
   zeroCostSkillCount: [0, 4],
@@ -140,7 +140,7 @@ export function sanitizePublicContext(value) {
       typeof candidate === "number" &&
       Number.isFinite(candidate) &&
       candidate >= minimum &&
-      candidate <= maximum
+      (maximum === undefined || candidate <= maximum)
     ) {
       sanitized[key] = candidate;
     }

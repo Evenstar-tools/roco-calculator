@@ -444,7 +444,8 @@
   background: var(--surface);
 }
 
-.data-source-release__heading strong {
+.data-source-release__heading h3 {
+  margin: 0;
   font-size: 13px;
 }
 
@@ -471,6 +472,37 @@
   color: var(--text-muted);
   font-size: 11px;
   line-height: 1.45;
+}
+
+.data-source-release__sections {
+  display: grid;
+  gap: 9px;
+}
+
+.data-source-release__section {
+  display: grid;
+  gap: 4px;
+}
+
+.data-source-release__section h4 {
+  width: fit-content;
+  margin: 0;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: var(--surface);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.data-source-release__section--feature h4 {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+}
+
+.data-source-release__section--fix h4 {
+  color: var(--damage-safe);
+  background: color-mix(in srgb, #2ca66f 12%, var(--surface));
 }
 
 .release-notes-dialog {
@@ -855,4 +887,3 @@
     grid-template-columns: 1fr;
   }
 }
-

@@ -1093,6 +1093,27 @@ describe("resolveSkillPower", () => {
     ).toMatchObject({ hitCount: 3, status: "exact", value: 20 });
   });
 
+  test("虫鸣输入值就是最终连击数，最少为1且不设上限", () => {
+    const bugChirp = snapshot.skills.find(
+      (candidate) => candidate.name === "虫鸣",
+    );
+    const countInput = getSkillEffectInputs(bugChirp).find(
+      (input) => input.contextKey === "teamBugChantCount",
+    );
+
+    expect(countInput).toMatchObject({
+      defaultValue: 1,
+      min: 1,
+      type: "number",
+    });
+    expect(countInput).not.toHaveProperty("max");
+    expect(resolveSkillPower(bugChirp, {})).toMatchObject({ hitCount: 1 });
+    expect(resolveSkillPower(bugChirp, { teamBugChantCount: 6 }))
+      .toMatchObject({ hitCount: 6 });
+    expect(resolveSkillPower(bugChirp, { teamBugChantCount: 21 }))
+      .toMatchObject({ hitCount: 21 });
+  });
+
   test("虫群的累计中毒奉献每层记录1层中毒", () => {
     const swarm = snapshot.skills.find((candidate) => candidate.name === "虫群");
 

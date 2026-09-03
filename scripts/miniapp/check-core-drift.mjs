@@ -54,8 +54,12 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留 v1.5.7 后已验收的威力覆盖语义",
   }),
   "src/domain/skill-effects.js": Object.freeze({
-    mirrorHash: "705b42e8dc2e7f9a8d079915ace11daa1f37139eb139bbad868a00a334c10f70",
-    reason: "保留迸发联动、虫群奉献、体重挡位、啃咬与飞断最新技能输入语义",
+    mirrorHash: "b06f4de3f77ecec0fde650aab76b7a2326a623c230126ec53aba6ad7be2464a0",
+    reason: "保留迸发联动、虫群奉献、体重挡位、啃咬与飞断最新技能输入语义；虫鸣输入直接驱动连击数，最少为1且不设业务上限，并接受连击增益",
+  }),
+  "src/domain/skill-result/calculate-skill-result.js": Object.freeze({
+    mirrorHash: "02868b0ffc4cd7827c5087fe8716944bc427c897e1c8ba0b5d26cb2eb19ca1fc",
+    reason: "虫鸣使用无业务上限的可调基础连击，并在其后统一叠加热身运动等连击增益",
   }),
   "src/domain/skill-rules.js": Object.freeze({
     mirrorHash: "36a2a2e92b41fbbf44343f9939c1aa362f00b1fc5809f622cc89dc2dcef0b4b8",

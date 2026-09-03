@@ -140,6 +140,32 @@ test("switches between static and panel power overrides and restores automatic c
   });
 });
 
+test("edits Bug Chirp final hits while preserving the Warm-up bonus", () => {
+  const onContextChange = vi.fn();
+  render(
+    <SkillConditionEditor
+      context={{ teamBugChantCount: 6 }}
+      direction={{ hitCount: 1, overrides: {} }}
+      onContextChange={onContextChange}
+      onDirectionChange={vi.fn()}
+      result={{ automaticHitCountAdd: 3, hitCount: 9, staticPower: 45 }}
+      skill={{
+        basePower: 45,
+        category: "magical",
+        description: "造成魔伤，队伍中的精灵每携带1个虫鸣，本次技能连击数+1。",
+        id: "skill-bug-chirp",
+        name: "虫鸣",
+        type: "虫",
+      }}
+    />,
+  );
+
+  const hits = screen.getByLabelText("连击数");
+  expect(hits).toHaveValue(9);
+  fireEvent.input(hits, { target: { value: "10" } });
+  expect(onContextChange).toHaveBeenLastCalledWith({ teamBugChantCount: 7 });
+});
+
 test("shows burst skills enabled by default and lets the user turn them off", () => {
   const onContextChange = vi.fn();
   const { rerender } = render(

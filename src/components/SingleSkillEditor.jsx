@@ -411,6 +411,12 @@ export function SingleSkillEditor({
     }),
     result?.inputs ?? [],
   );
+  const editableHitCountInput = dynamicInputs.find(
+    (input) => input.drivesHitCount === true,
+  );
+  const hitCountMaximum = editableHitCountInput
+    ? editableHitCountInput.max ?? Number.POSITIVE_INFINITY
+    : 99;
   const attackerTraitInputs = attackerTrait?.inputs ??
     (attackerTrait?.conditionKey
       ? [{
@@ -658,14 +664,14 @@ export function SingleSkillEditor({
             <span>连击次数</span>
             <input
               aria-label="连击次数"
-              max="99"
+              max={Number.isFinite(hitCountMaximum) ? hitCountMaximum : undefined}
               min="1"
               onChange={(event) => {
                 setHitDraft(event.target.value);
                 if (event.target.value !== "") {
                   onHitCountChange(
                     Math.min(
-                      99,
+                      hitCountMaximum,
                       Math.max(1, Math.floor(toNumber(event.target.value, 1))),
                     ),
                   );
@@ -673,7 +679,7 @@ export function SingleSkillEditor({
               }}
               onBlur={() => {
                 const normalized = Math.min(
-                  99,
+                  hitCountMaximum,
                   Math.max(1, Math.floor(toNumber(hitDraft, hitCount))),
                 );
                 setHitDraft(String(normalized));

@@ -19,6 +19,7 @@ import {
 import { resolvePowerOverride } from "../power-override.js";
 import {
   getDefaultHitCount,
+  getEditableHitCountInput,
   getSkillEffectInputs,
   hasDeclaredHitCount,
 } from "../skill-effects.js";
@@ -273,6 +274,10 @@ export function calculateSkillResult({
     skill,
   });
   const declaredHitCount = hasDeclaredHitCount(skill);
+  const editableHitCountInput = getEditableHitCountInput(skill);
+  const hitCountMaximum = editableHitCountInput
+    ? editableHitCountInput.max ?? Number.POSITIVE_INFINITY
+    : 99;
   const persistentHitCountAdd = declaredHitCount
     ? finiteNumber(directionOverrides.hitCountAdd) ?? 0
     : 0;
@@ -294,7 +299,7 @@ export function calculateSkillResult({
   const automaticHitCountAdd = fixedHitCount ? 0 : rawAutomaticHitCountAdd;
   const resolveHitCount = (baseHitCount, automaticAdd) =>
     Math.min(
-      99,
+      hitCountMaximum,
       Math.max(
         1,
         Math.floor(

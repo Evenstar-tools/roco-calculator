@@ -14,6 +14,7 @@ const FEATURED_RELEASE_SUMMARY = {
   highlights:
     FEATURED_USER_RELEASE.summaryHighlights ??
     FEATURED_USER_RELEASE.highlights.slice(0, 3),
+  sections: FEATURED_USER_RELEASE.summarySections,
 };
 
 function ReleaseItem({ release, current = false }) {
@@ -25,16 +26,34 @@ function ReleaseItem({ release, current = false }) {
     >
       <div className="data-source-release__heading">
         <div>
-          <strong>{release.title}</strong>
+          <h3>{release.title}</h3>
           {release.date ? <span>{release.date}</span> : null}
         </div>
         <b>{release.version}</b>
       </div>
-      <ul>
-        {release.highlights.map((highlight) => (
-          <li key={highlight}>{highlight}</li>
-        ))}
-      </ul>
+      {release.sections?.length ? (
+        <div className="data-source-release__sections">
+          {release.sections.map((section) => (
+            <section
+              className={`data-source-release__section data-source-release__section--${section.kind}`}
+              key={`${section.kind}-${section.label}`}
+            >
+              <h4>{section.label}</h4>
+              <ul>
+                {section.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <ul>
+          {release.highlights.map((highlight) => (
+            <li key={highlight}>{highlight}</li>
+          ))}
+        </ul>
+      )}
     </article>
   );
 }

@@ -4,6 +4,7 @@ import {
   applyS4PreviewCatalog,
   validateS4PreviewCatalog,
 } from "../../scripts/bwiki/apply-s4-preview-catalog.mjs";
+import { getNature } from "../../src/domain/natures.js";
 
 const candidate = JSON.parse(
   readFileSync("data/candidates/s4-preview-new-spirits.json", "utf8"),
@@ -232,6 +233,8 @@ describe("S4 前瞻新精灵候选目录", () => {
           (value) => value === 60,
         ),
       ).toHaveLength(3);
+      const nature = getNature(spirit.previewDefaults.natureId);
+      expect(spirit.previewDefaults.displayIvs[nature.downStat]).toBe(0);
     }
   });
 
