@@ -143,16 +143,14 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
     exact: true,
   });
   await expect(ability).toBeVisible();
-  const speedSlider = ability.getByRole("slider", { name: "速度目标轴" });
-  await expect(speedSlider).toBeEnabled();
+  await expect(ability.getByRole("slider", { name: "速度目标轴" })).toHaveCount(0);
+  await expect(ability.getByRole("region", { name: "速度排行榜横轴" })).toBeVisible();
   const speedProfile = ability.getByRole("combobox", { name: "速度目标口径" });
+  await expect(speedProfile).toHaveValue("positive-max");
   await speedProfile.selectOption("negative-zero");
-  await expect(ability.getByText(/最慢：速度个体0、减速性格/)).toBeVisible();
+  await expect(ability.getByText(/减速度：速度个体0、减速性格/)).toBeVisible();
   await speedProfile.selectOption("neutral-max");
   const target = ability.getByRole("combobox", { name: "速度目标精灵" });
-  const targetBeforeDrag = await target.inputValue();
-  await speedSlider.fill(await speedSlider.getAttribute("max"));
-  await expect(target).not.toHaveValue(targetBeforeDrag);
   await target.selectOption("spirit_b2f1251352d5f670");
   await ability
     .getByRole("combobox", { name: "推荐速度约束" })
@@ -257,7 +255,27 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
   await page.getByRole("button", { name: "打开队伍" }).click();
   const drawer = page.getByRole("dialog", { name: "队伍" });
   await drawer.getByRole("button", { name: "能力分析", exact: true }).click();
-  await drawer.locator(".ability-speed").scrollIntoViewIfNeeded();
+  const speedAxis = drawer.getByRole("region", { name: "速度排行榜横轴" });
+  await speedAxis.scrollIntoViewIfNeeded();
+  const axisBefore = await speedAxis.evaluate((node) => ({
+    left: node.scrollLeft,
+    max: node.scrollWidth - node.clientWidth,
+  }));
+  expect(axisBefore.max).toBeGreaterThan(0);
+  const axisBox = await speedAxis.boundingBox();
+  expect(axisBox).not.toBeNull();
+  const startX = axisBefore.left > 80
+    ? axisBox.x + axisBox.width * 0.35
+    : axisBox.x + axisBox.width * 0.65;
+  const endX = axisBefore.left > 80 ? startX + 180 : startX - 180;
+  const dragY = axisBox.y + axisBox.height * 0.5;
+  await page.mouse.move(startX, dragY);
+  await page.mouse.down();
+  await page.mouse.move(endX, dragY, { steps: 8 });
+  await page.mouse.up();
+  await expect.poll(
+    () => speedAxis.evaluate((node) => node.scrollLeft),
+  ).not.toBe(axisBefore.left);
   await page.screenshot({
     fullPage: false,
     path: "artifacts/web-ux-team-ability-fix/ability-after-1424.png",

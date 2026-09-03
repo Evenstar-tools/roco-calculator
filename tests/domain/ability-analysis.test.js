@@ -69,6 +69,22 @@ describe("analyzeSpeedBreakpoints", () => {
     });
   });
 
+  test("adds selected status speed to current and invested comparisons", () => {
+    expect(
+      analyzeSpeedBreakpoints({
+        configuration: configuration({ hp: 60, physicalDefense: 60 }),
+        speedBonus: 80,
+        target: 240,
+      }),
+    ).toMatchObject({
+      status: "CURRENTLY_REACHED",
+      currentSpeed: 250,
+      investedSpeed: 283,
+      speedBonus: 80,
+      targetSpeed: 240,
+    });
+  });
+
   test("pauses speed analysis for a historical non-binary configuration", () => {
     const result = analyzeSpeedBreakpoints({
       configuration: configuration({ hp: 54 }),

@@ -40,6 +40,7 @@ function resolveTargetSpeed(target) {
 
 export function analyzeSpeedBreakpoints({
   configuration,
+  speedBonus = 0,
   target,
   rulesetId = BINARY_60_MAX3_RULESET_ID,
   snapshotId = null,
@@ -80,11 +81,14 @@ export function analyzeSpeedBreakpoints({
       conflicts: [{ code: "INVALID_RACE_STATS" }],
     };
   }
-  const currentSpeed = panelStatsFor(configuration).speed;
+  const normalizedSpeedBonus = Number.isFinite(Number(speedBonus))
+    ? Number(speedBonus)
+    : 0;
+  const currentSpeed = panelStatsFor(configuration).speed + normalizedSpeedBonus;
   const investedSpeed = panelStatsFor(configuration, {
     ...configuration.displayIvs,
     speed: 60,
-  }).speed;
+  }).speed + normalizedSpeedBonus;
 
   let status = "REQUIRES_SPEED_INVESTMENT";
   if (currentSpeed >= targetSpeed) {
@@ -104,6 +108,7 @@ export function analyzeSpeedBreakpoints({
     status,
     currentSpeed,
     investedSpeed,
+    ...(normalizedSpeedBonus === 0 ? {} : { speedBonus: normalizedSpeedBonus }),
     targetSpeed,
     needsSpeedInvestment: status === "REQUIRES_SPEED_INVESTMENT",
     validation,
@@ -181,16 +186,19 @@ function normalizeSpeedConstraint(speedConstraint, current) {
     atLeast: "at-least",
   };
   const mode = aliases[raw.mode] ?? raw.mode ?? "unlocked";
-  if (mode === "unlocked") return { mode, targetSpeed: null };
+  const flatBonus = Number.isFinite(Number(raw.flatBonus)) ? Number(raw.flatBonus) : 0;
+  if (mode === "unlocked") return { flatBonus, mode, targetSpeed: null };
   if (mode === "keep") {
     return {
+      flatBonus,
       mode,
-      targetSpeed: panelStatsFor(current).speed,
+      targetSpeed: panelStatsFor(current).speed + flatBonus,
       requiredInvestment: current.displayIvs.speed,
     };
   }
   if (mode === "at-least") {
     return {
+      flatBonus,
       mode,
       targetSpeed: resolveTargetSpeed(raw.targetSpeed ?? raw.speed),
     };
@@ -222,7 +230,7 @@ function candidateMatchesSpeed(values, panel, speedConstraint) {
   if (speedConstraint.mode === "keep") {
     return values.speed === speedConstraint.requiredInvestment;
   }
-  return panel.speed >= speedConstraint.targetSpeed;
+  return panel.speed + speedConstraint.flatBonus >= speedConstraint.targetSpeed;
 }
 
 function compareCandidates(objective) {
@@ -305,12 +313,13 @@ export function recommendDurabilityBuilds({
       {
         values,
         panel,
+        effectiveSpeed: panel.speed + normalizedSpeedConstraint.flatBonus,
         durability,
         natureId: current.natureId ?? current.nature ?? "neutral",
         changedDimensions: changedDimensions(current.displayIvs, values),
         speedRedundancy:
           normalizedSpeedConstraint.mode === "at-least"
-            ? panel.speed - normalizedSpeedConstraint.targetSpeed
+            ? panel.speed + normalizedSpeedConstraint.flatBonus - normalizedSpeedConstraint.targetSpeed
             : 0,
         stableKey: stableInvestmentKey(values),
       },
@@ -334,7 +343,7 @@ export function recommendDurabilityBuilds({
       const maximumSpeed = panelStatsFor(current, {
         ...current.displayIvs,
         speed: 60,
-      }).speed;
+      }).speed + normalizedSpeedConstraint.flatBonus;
       if (maximumSpeed < normalizedSpeedConstraint.targetSpeed) {
         conflict = {
           code: "SPEED_TARGET_UNREACHABLE",

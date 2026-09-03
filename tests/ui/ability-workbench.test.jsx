@@ -6,6 +6,9 @@ import { AbilityWorkbench } from "../../src/components/AbilityWorkbench.jsx";
 
 const snapshot = {
   meta: { id: "test-snapshot" },
+  skills: [
+    { id: "quick", name: "快速移动", category: "status", basePower: 0 },
+  ],
   spirits: [
     {
       asset: null,
@@ -48,7 +51,7 @@ function member(displayIvs) {
   };
 }
 
-test("prevents selecting a fourth binary investment and reopens the slot after deselection", async () => {
+test("满三项后可点第四项并明确替换一个已选个体值", async () => {
   const user = userEvent.setup();
   render(
     <AbilityWorkbench
@@ -67,10 +70,10 @@ test("prevents selecting a fourth binary investment and reopens the slot after d
   );
 
   const investments = screen.getByRole("group", { name: "个体值分配" });
-  expect(within(investments).getByRole("button", { name: /选择物防/ })).toBeDisabled();
-
-  await user.click(within(investments).getByRole("button", { name: /取消生命/ }));
   await user.click(within(investments).getByRole("button", { name: /选择物防/ }));
+  const replacement = screen.getByRole("dialog", { name: "替换个体值" });
+  expect(replacement).toHaveTextContent("要将物防设为 60，请选择替换一项");
+  await user.click(within(replacement).getByRole("button", { name: "替换生命" }));
 
   expect(within(investments).getByRole("button", { name: /取消物防/ })).toHaveAttribute(
     "aria-pressed",
@@ -79,7 +82,7 @@ test("prevents selecting a fourth binary investment and reopens the slot after d
   expect(screen.getByText("已用 3 / 3")).toBeVisible();
 });
 
-test("按综合、物理、魔法排列方案并明确展示优化目标和性格", () => {
+test("三个耐久目标得到同一配置时合并为共同最优方案", () => {
   render(
     <AbilityWorkbench
       configuration={member({
@@ -97,11 +100,10 @@ test("按综合、物理、魔法排列方案并明确展示优化目标和性�
   );
 
   const builds = screen.getByRole("region", { name: "耐久方案对比" });
-  expect(
-    within(builds).getAllByRole("heading", { level: 5 }).map((heading) => heading.textContent),
-  ).toEqual(["综合承伤", "物理承伤", "魔法承伤"]);
-  expect(within(builds).getAllByText(/优化目标：/)).toHaveLength(3);
-  expect(within(builds).getAllByText(/性格：普通/)).toHaveLength(3);
+  expect(within(builds).getAllByRole("article")).toHaveLength(1);
+  expect(within(builds).getByRole("heading", { level: 5 })).toHaveTextContent("共同最优方案");
+  expect(within(builds).getByText(/综合、物理、魔法耐久/)).toBeVisible();
+  expect(within(builds).getByText(/性格：普通/)).toBeVisible();
 
   const firstCard = within(builds).getAllByRole("article")[0];
   expect(
@@ -110,7 +112,7 @@ test("按综合、物理、魔法排列方案并明确展示优化目标和性�
   expect(within(firstCard).getByRole("button", { name: "当前方案" })).toBeDisabled();
 });
 
-test("速度轴可拖动并能切换四种目标口径", async () => {
+test("速度排行榜横轴可拖动并使用 Excel 五档口径，默认极速", async () => {
   const user = userEvent.setup();
   render(
     <AbilityWorkbench
@@ -128,11 +130,74 @@ test("速度轴可拖动并能切换四种目标口径", async () => {
     />,
   );
 
-  expect(screen.getByRole("slider", { name: "速度目标轴" })).toBeEnabled();
+  expect(screen.queryByRole("slider", { name: "速度目标轴" })).not.toBeInTheDocument();
+  expect(screen.getByRole("region", { name: "速度排行榜横轴" })).toHaveAttribute("tabindex", "0");
   const profile = screen.getByRole("combobox", { name: "速度目标口径" });
+  expect(profile).toHaveValue("positive-max");
+  expect(within(profile).getAllByRole("option").map((option) => option.textContent)).toEqual([
+    "极速",
+    "满速",
+    "仅速度性格",
+    "无速度",
+    "减速度",
+  ]);
   await user.selectOptions(profile, "negative-zero");
   expect(profile).toHaveValue("negative-zero");
-  expect(screen.getByText(/最慢：速度个体0、减速性格/)).toBeVisible();
+  expect(screen.getByText(/减速度：速度个体0、减速性格/)).toBeVisible();
+});
+
+test("携带速度状态技能时可勾选并用加速后的本体速度比较", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={{
+        ...member({
+          hp: 60,
+          magicalAttack: 0,
+          magicalDefense: 0,
+          physicalAttack: 60,
+          physicalDefense: 0,
+          speed: 60,
+        }),
+        skills: { four: ["quick", null, null, null], single: null },
+      }}
+      onApplyMember={vi.fn()}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  expect(screen.getByText("当前 225")).toBeVisible();
+  await user.click(screen.getByRole("checkbox", { name: "快速移动 +80" }));
+  expect(screen.getByText("当前 305 = 面板 225 + 80")).toBeVisible();
+  expect(
+    within(screen.getByRole("region", { name: "速度排行榜横轴" }))
+      .getByText("当前配置")
+      .closest("div"),
+  ).toHaveTextContent("305");
+});
+
+test("耐久目标结果不同时保留综合、物理、魔法三栏", () => {
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  const builds = screen.getByRole("region", { name: "耐久方案对比" });
+  expect(
+    within(builds).getAllByRole("heading", { level: 5 }).map((heading) => heading.textContent),
+  ).toEqual(["综合承伤", "物理承伤", "魔法承伤"]);
 });
 
 test("应用方案后给出明确成功反馈", async () => {
@@ -262,7 +327,7 @@ test("keeps analysis context and advances the local baseline after a successful 
   render(<ApplyHarness />);
   await user.selectOptions(
     screen.getByRole("combobox", { name: "速度目标精灵" }),
-    "boss-elephant",
+    "spirit_db5a2cb398dc0385",
   );
   await user.selectOptions(
     screen.getByRole("combobox", { name: "推荐速度约束" }),
@@ -279,7 +344,7 @@ test("keeps analysis context and advances the local baseline after a successful 
   );
 
   expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(
-    "boss-elephant",
+    "spirit_db5a2cb398dc0385",
   );
   expect(screen.getByRole("combobox", { name: "推荐速度约束" })).toHaveValue(
     "unlocked",
@@ -373,7 +438,7 @@ test("rebuilds the draft when the same member receives an external configuration
 
   await waitFor(() =>
     expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(
-      "spirit_db5a2cb398dc0385",
+      "boss-elephant",
     ),
   );
   const investments = screen.getByRole("group", { name: "个体值分配" });
@@ -427,12 +492,12 @@ test("marks target and solver constraint changes as an unapplied analysis draft"
   const targetPicker = screen.getByRole("combobox", {
     name: "速度目标精灵",
   });
-  expect(targetPicker).toHaveValue("spirit_db5a2cb398dc0385");
+  expect(targetPicker).toHaveValue("boss-elephant");
   await user.selectOptions(
     targetPicker,
-    "boss-elephant",
+    "spirit_db5a2cb398dc0385",
   );
-  expect(targetPicker).toHaveValue("boss-elephant");
+  expect(targetPicker).toHaveValue("spirit_db5a2cb398dc0385");
   await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
 
   onDirtyChange.mockClear();

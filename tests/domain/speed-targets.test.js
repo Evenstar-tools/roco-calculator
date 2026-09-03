@@ -40,16 +40,18 @@ test("速度目标只包含已确认最终形态和首领", () => {
   });
 
   expect(targets.map((entry) => entry.id)).toEqual([
-    "boss-form",
     "spirit_db5a2cb398dc0385",
+    "boss-form",
   ]);
-  expect(targets.map((entry) => entry.formRole)).toEqual(["boss", "final"]);
+  expect(targets.map((entry) => entry.formRole)).toEqual(["final", "boss"]);
+  expect(targets[0].qualifier).toBe("100种族·满速");
 });
 
-test("支持极速、满速、中性0速和最慢四种统一口径", () => {
+test("支持 Excel 速度线的五种标准口径", () => {
   expect(Object.keys(SPEED_TARGET_PROFILES)).toEqual([
     "positive-max",
     "neutral-max",
+    "positive-zero",
     "neutral-zero",
     "negative-zero",
   ]);
@@ -65,9 +67,24 @@ test("支持极速、满速、中性0速和最慢四种统一口径", () => {
     speedByProfile["neutral-max"],
   );
   expect(speedByProfile["neutral-max"]).toBeGreaterThan(
+    speedByProfile["positive-zero"],
+  );
+  expect(speedByProfile["positive-zero"]).toBeGreaterThan(
     speedByProfile["neutral-zero"],
   );
   expect(speedByProfile["neutral-zero"]).toBeGreaterThan(
     speedByProfile["negative-zero"],
   );
+});
+
+test("速度排行榜按速度从高到低排列", () => {
+  const targets = createSpeedTargets({
+    profileId: "positive-max",
+    spirits,
+  });
+
+  expect(targets.map((entry) => entry.id)).toEqual([
+    "spirit_db5a2cb398dc0385",
+    "boss-form",
+  ]);
 });

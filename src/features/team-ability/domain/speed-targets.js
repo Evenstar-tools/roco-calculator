@@ -25,24 +25,31 @@ export const SPEED_TARGET_PROFILES = Object.freeze({
     label: "满速",
     natureMultiplier: 1,
   }),
+  "positive-zero": Object.freeze({
+    description: "仅速度性格：速度个体0、加速性格",
+    displayIv: 0,
+    id: "positive-zero",
+    label: "仅速度性格",
+    natureMultiplier: 1.2,
+  }),
   "neutral-zero": Object.freeze({
-    description: "中性0速：速度个体0、中性性格",
+    description: "无速度：速度个体0、中性性格",
     displayIv: 0,
     id: "neutral-zero",
-    label: "中性0速",
+    label: "无速度",
     natureMultiplier: 1,
   }),
   "negative-zero": Object.freeze({
-    description: "最慢：速度个体0、减速性格",
+    description: "减速度：速度个体0、减速性格",
     displayIv: 0,
     id: "negative-zero",
-    label: "最慢",
+    label: "减速度",
     natureMultiplier: 0.9,
   }),
 });
 
 export function createSpeedTargets({
-  profileId = "neutral-max",
+  profileId = "positive-max",
   spiritFilterRevision,
   spirits = [],
 } = {}) {
@@ -67,12 +74,13 @@ export function createSpeedTargets({
         formRole: form.formRole,
         id: spirit.id,
         name: spirit.fullName,
+        qualifier: `${spirit.raceStats.speed}种族·${profile.label}`,
         speed,
         spirit,
       }];
     })
     .sort((left, right) =>
-      left.speed - right.speed ||
+      right.speed - left.speed ||
       left.name.localeCompare(right.name, "zh-CN") ||
       left.id.localeCompare(right.id),
     );
