@@ -2,6 +2,8 @@ import {
   calculateAllPanelStats,
   hasCompleteRaceStats,
 } from "../domain/stat.js";
+import { calculateDurability } from "../features/team-ability/domain/durability.js";
+import { validateAbilityInvestment } from "../features/team-ability/domain/ability-investment.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import {
   getSkillChoices,
@@ -53,6 +55,7 @@ export function TeamMemberEditor({
   index,
   member,
   onChange,
+  onOpenAbilityAnalysis,
   snapshot,
   spiritChoices,
 }) {
@@ -79,6 +82,16 @@ export function TeamMemberEditor({
         natureMultipliers: getNatureMultipliers(member.natureId),
         raceStats: spirit.raceStats,
       })
+    : null;
+  const durability = panel
+    ? calculateDurability({
+        magicalDefense: panel.magicalDefense,
+        maxHp: panel.hp,
+        physicalDefense: panel.physicalDefense,
+      }).display
+    : null;
+  const investmentValidation = member
+    ? validateAbilityInvestment({ values: member.displayIvs })
     : null;
 
   function selectSpirit(spiritId) {
@@ -164,6 +177,22 @@ export function TeamMemberEditor({
             ))}
           </div>
 
+          <section aria-label="成员面板耐久" className="team-member-editor__durability">
+            <header>
+              <strong>面板耐久</strong>
+              <span className={investmentValidation.valid ? "is-ready" : "is-warning"}>
+                {investmentValidation.valid
+                  ? `可用于能力分析 · 已选 ${investmentValidation.activeCount}/3`
+                  : "历史个体需在能力分析中重选"}
+              </span>
+            </header>
+            <div>
+              <span><small>物理耐久</small><b>{durability.physical.toLocaleString("zh-CN")}</b></span>
+              <span><small>魔法耐久</small><b>{durability.magical.toLocaleString("zh-CN")}</b></span>
+              <span><small>综合耐久</small><b>{durability.combined.toLocaleString("zh-CN")}</b></span>
+            </div>
+          </section>
+
           <div className="team-member-editor__skills">
             {Array.from(
               { length: Math.max(4, member.skills.four.length) },
@@ -182,6 +211,13 @@ export function TeamMemberEditor({
               ),
             )}
           </div>
+          <button
+            className="team-member-editor__analysis-cta"
+            onClick={onOpenAbilityAnalysis}
+            type="button"
+          >
+            进入能力分析
+          </button>
         </>
       ) : member && spirit ? (
         <p className="team-member-editor__empty">

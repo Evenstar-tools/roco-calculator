@@ -16,6 +16,7 @@ import { encodeShareState } from "../../src/state/share.js";
 import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
 import { TEAM_STORAGE_KEY } from "../../src/state/team-presets.js";
 import {
+  DURABILITY_OVERVIEW_STORAGE_KEY,
   NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY,
   POWER_DISPLAY_STORAGE_KEY,
   TYPE_COVERAGE_STORAGE_KEY,
@@ -433,6 +434,7 @@ const snapshot = {
 };
 
 beforeEach(() => {
+  localStorage.removeItem(DURABILITY_OVERVIEW_STORAGE_KEY);
   localStorage.removeItem(SPIRIT_CONFIG_STORAGE_KEY);
   localStorage.removeItem(TYPE_COVERAGE_STORAGE_KEY);
   localStorage.setItem(FIRST_RUN_GUIDE_STORAGE_KEY, "1");
@@ -2971,6 +2973,59 @@ test("enables type analysis from display settings and remembers the switch", asy
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
   expect(screen.getByRole("region", { name: "属性分析" })).toBeVisible();
+});
+
+test("enables the detailed durability overview without changing HP or undo history", async () => {
+  localStorage.removeItem(TEAM_STORAGE_KEY);
+  const user = userEvent.setup();
+  const first = render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+
+  expect(
+    screen.queryByRole("group", { name: "攻击方耐久概览" }),
+  ).not.toBeInTheDocument();
+  const undoLabel = screen
+    .getByRole("button", { name: /撤回上一步/ })
+    .getAttribute("aria-label");
+
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "显示设置" }));
+  await user.click(screen.getByRole("checkbox", { name: "显示面板耐久" }));
+  await user.click(screen.getByRole("button", { name: "完成" }));
+
+  expect(
+    screen.getByRole("group", { name: "攻击方耐久概览" }),
+  ).toBeVisible();
+  const defenderOverview = screen.getByRole("group", {
+    name: "防御方耐久概览",
+  });
+  expect(screen.getByRole("button", { name: undoLabel })).toBeVisible();
+  const durabilityText = defenderOverview.textContent;
+  const currentHp = screen.getByRole("spinbutton", { name: "防御方当前生命" });
+  await user.clear(currentHp);
+  await user.type(currentHp, "1");
+  expect(defenderOverview).toHaveTextContent(durabilityText);
+  expect(localStorage.getItem(DURABILITY_OVERVIEW_STORAGE_KEY)).toBe("1");
+
+  await user.click(
+    within(screen.getByRole("group", { name: "攻击方耐久概览" })).getByRole(
+      "button",
+      { name: "分析此精灵" },
+    ),
+  );
+  expect(screen.getByRole("dialog", { name: "队伍" })).toBeVisible();
+  expect(screen.getByText("临时分析 · 不占队伍位置")).toBeVisible();
+  expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBeNull();
+  await user.click(screen.getByRole("button", { name: "关闭队伍" }));
+
+  first.unmount();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+  expect(
+    screen.getByRole("group", { name: "攻击方耐久概览" }),
+  ).toBeVisible();
 });
 
 test("enables negative-status settlement, edits stacks, and remembers the switch", async () => {

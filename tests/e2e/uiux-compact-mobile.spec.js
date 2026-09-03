@@ -29,8 +29,8 @@ test("keeps the compact workflow usable at 390px", async ({ page }) => {
   expect(teamBox.width).toBe(themeBox.width);
   expect(teamBox.height).toBe(themeBox.height);
   expect(teamBox.y).toBe(themeBox.y);
-  expect(teamBox.height).toBe(38);
-  expect(headerMenuBox.height).toBe(38);
+  expect(teamBox.height).toBe(44);
+  expect(headerMenuBox.height).toBe(44);
   await expect(
     page.getByRole("combobox", { name: "攻击方精灵" }),
   ).toHaveValue("");
@@ -121,8 +121,8 @@ test("keeps the compact workflow usable at 390px", async ({ page }) => {
 
   const teamButton = page.getByRole("button", { name: "打开队伍" });
   const teamButtonBox = await teamButton.boundingBox();
-  expect(teamButtonBox.height).toBe(38);
-  expect(teamButtonBox.width).toBe(38);
+  expect(teamButtonBox.height).toBe(44);
+  expect(teamButtonBox.width).toBe(44);
 
   await teamButton.click();
   const drawer = page.getByRole("dialog", { name: "队伍" });

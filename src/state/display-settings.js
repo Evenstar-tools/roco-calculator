@@ -4,6 +4,8 @@ export const POWER_DISPLAY_STORAGE_KEY =
   "rock-calculator.settings.power-display.v1";
 export const NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY =
   "rock-calculator.settings.negative-status-settlement.v1";
+export const DURABILITY_OVERVIEW_STORAGE_KEY =
+  "rock-calculator.settings.durability-overview.v1";
 export const THEME_STORAGE_KEY = "rock-calculator.settings.theme.v1";
 
 function normalizeTheme(value) {
@@ -68,6 +70,32 @@ export function writeTypeCoverageSetting(
   const normalized = Boolean(enabled);
   try {
     storage?.setItem(TYPE_COVERAGE_STORAGE_KEY, normalized ? "1" : "0");
+  } catch {
+    return normalized;
+  }
+  return normalized;
+}
+
+export function readDurabilityOverviewSetting(
+  storage = globalThis.localStorage,
+) {
+  try {
+    return storage?.getItem(DURABILITY_OVERVIEW_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function writeDurabilityOverviewSetting(
+  storage = globalThis.localStorage,
+  enabled,
+) {
+  const normalized = Boolean(enabled);
+  try {
+    storage?.setItem(
+      DURABILITY_OVERVIEW_STORAGE_KEY,
+      normalized ? "1" : "0",
+    );
   } catch {
     return normalized;
   }

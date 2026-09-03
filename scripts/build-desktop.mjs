@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import {
@@ -17,6 +17,9 @@ const builderCli = path.join(
 );
 const outputDirectory = path.join(projectRoot, "release");
 const extractedElectron = path.join(outputDirectory, "win-unpacked.tmp");
+const electronVersion = JSON.parse(
+  readFileSync(path.join(projectRoot, "node_modules", "electron", "package.json"), "utf8"),
+).version;
 
 verifySourceBundle(projectRoot);
 
@@ -30,9 +33,19 @@ function runBuilder(argumentsList) {
 }
 
 const baseArguments = ["--win", "nsis"];
-const hasReusableElectron =
-  existsSync(path.join(extractedElectron, "electron.exe")) &&
-  existsSync(path.join(extractedElectron, "resources.pak"));
+function isReusableElectron(directory) {
+  const versionPath = path.join(directory, "version");
+  if (
+    !existsSync(path.join(directory, "electron.exe")) ||
+    !existsSync(path.join(directory, "resources.pak")) ||
+    !existsSync(versionPath)
+  ) {
+    return false;
+  }
+  return readFileSync(versionPath, "utf8").trim() === electronVersion;
+}
+
+const hasReusableElectron = isReusableElectron(extractedElectron);
 
 if (hasReusableElectron) {
   const status = runBuilder([
@@ -50,9 +63,7 @@ if (initialStatus === 0) {
   process.exit(0);
 }
 
-const extractionCompleted =
-  existsSync(path.join(extractedElectron, "electron.exe")) &&
-  existsSync(path.join(extractedElectron, "resources.pak"));
+const extractionCompleted = isReusableElectron(extractedElectron);
 if (!extractionCompleted) process.exit(initialStatus);
 
 const retryStatus = runBuilder([

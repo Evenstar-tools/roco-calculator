@@ -1,11 +1,14 @@
 import { describe, expect, test } from "vitest";
 import {
+  DURABILITY_OVERVIEW_STORAGE_KEY,
   POWER_DISPLAY_STORAGE_KEY,
   THEME_STORAGE_KEY,
   readPowerDisplayMode,
+  readDurabilityOverviewSetting,
   readThemeSetting,
   readTypeCoverageSetting,
   writePowerDisplayMode,
+  writeDurabilityOverviewSetting,
   writeThemeSetting,
   writeTypeCoverageSetting,
 } from "../../src/state/display-settings.js";
@@ -31,6 +34,41 @@ describe("type coverage display setting", () => {
 
   test("treats unexpected stored values as off", () => {
     expect(readTypeCoverageSetting(createStorage("broken"))).toBe(false);
+  });
+});
+
+describe("durability overview display setting", () => {
+  test("defaults to off", () => {
+    expect(DURABILITY_OVERVIEW_STORAGE_KEY).toBe(
+      "rock-calculator.settings.durability-overview.v1",
+    );
+    expect(readDurabilityOverviewSetting(createStorage())).toBe(false);
+  });
+
+  test("persists an enabled setting independently", () => {
+    const values = new Map();
+    const storage = {
+      getItem: (key) => values.get(key) ?? null,
+      setItem: (key, value) => values.set(key, value),
+    };
+
+    expect(writeDurabilityOverviewSetting(storage, true)).toBe(true);
+    expect(values.get(DURABILITY_OVERVIEW_STORAGE_KEY)).toBe("1");
+    expect(readDurabilityOverviewSetting(storage)).toBe(true);
+  });
+
+  test("falls back safely when local storage is unavailable", () => {
+    const storage = {
+      getItem: () => {
+        throw new Error("denied");
+      },
+      setItem: () => {
+        throw new Error("denied");
+      },
+    };
+
+    expect(readDurabilityOverviewSetting(storage)).toBe(false);
+    expect(writeDurabilityOverviewSetting(storage, true)).toBe(true);
   });
 });
 

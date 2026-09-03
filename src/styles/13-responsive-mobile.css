@@ -432,10 +432,10 @@
   .app-header--compact .view-mode-switch button,
   .app-header--compact .icon-action,
   .app-header--compact .team-action {
-    width: 38px;
-    min-width: 38px;
-    height: 38px;
-    min-height: 38px;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
   }
 
   .calculator-layout--compact {
@@ -729,4 +729,3 @@
     grid-template-columns: 11px minmax(105px, 1fr) 19px minmax(74px, 0.68fr);
   }
 }
-

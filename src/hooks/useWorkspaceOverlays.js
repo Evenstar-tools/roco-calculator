@@ -1,8 +1,10 @@
 import { useRef, useState } from "react";
 import { FEEDBACK_QQ } from "../components/DataSourceDialog.jsx";
 import {
+  readDurabilityOverviewSetting,
   readPowerDisplayMode,
   readTypeCoverageSetting,
+  writeDurabilityOverviewSetting,
   writeNegativeStatusSettlementSetting,
   writePowerDisplayMode,
   writeTypeCoverageSetting,
@@ -22,9 +24,13 @@ export function useWorkspaceOverlays({
   const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
   const [dataSourceOpen, setDataSourceOpen] = useState(false);
   const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
+  const [durabilityOverviewEnabled, setDurabilityOverviewEnabled] = useState(
+    () => readDurabilityOverviewSetting(),
+  );
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileResultOpen, setMobileResultOpen] = useState(false);
   const [productAccessOpen, setProductAccessOpen] = useState(false);
+  const [teamAnalysisEntry, setTeamAnalysisEntry] = useState(null);
   const [teamOpen, setTeamOpen] = useState(false);
   const [powerDisplayMode, setPowerDisplayMode] = useState(() =>
     readPowerDisplayMode(),
@@ -72,6 +78,7 @@ export function useWorkspaceOverlays({
   };
 
   const displaySettingsProps = {
+    durabilityOverviewEnabled,
     negativeStatusSettlementEnabled: negativeStatusEnabled,
     onClose: () => setDisplaySettingsOpen(false),
     onNegativeStatusSettlementChange: (enabled) => {
@@ -80,6 +87,11 @@ export function useWorkspaceOverlays({
         type: "calculation-option/set-negative-status",
         value,
       });
+    },
+    onDurabilityOverviewChange: (enabled) => {
+      setDurabilityOverviewEnabled(
+        writeDurabilityOverviewSetting(undefined, enabled),
+      );
     },
     onPowerDisplayModeChange: (mode) => {
       setPowerDisplayMode(writePowerDisplayMode(undefined, mode));
@@ -117,6 +129,7 @@ export function useWorkspaceOverlays({
     cleanupConfigsProps,
     dataSourceProps,
     displaySettingsProps,
+    durabilityOverviewEnabled,
     menu: {
       buttonRef: menuButtonRef,
       open: menuOpen,
@@ -131,8 +144,18 @@ export function useWorkspaceOverlays({
     setDisplaySettingsOpen,
     setProductAccessOpen,
     team: {
+      analysisEntry: teamAnalysisEntry,
       buttonRef: teamsButtonRef,
+      close: () => {
+        setTeamOpen(false);
+        setTeamAnalysisEntry(null);
+      },
       open: teamOpen,
+      openAbilityAnalysis: (entry) => {
+        setTeamAnalysisEntry(entry);
+        setTeamOpen(true);
+      },
+      setAnalysisEntry: setTeamAnalysisEntry,
       setOpen: setTeamOpen,
     },
     typeCoverageEnabled,

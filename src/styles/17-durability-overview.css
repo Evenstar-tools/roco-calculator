@@ -1,0 +1,103 @@
+.durability-overview {
+  --durability-accent: var(--attack);
+  --durability-soft: var(--attack-soft);
+  display: grid;
+  align-items: center;
+  gap: 7px 10px;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid color-mix(in srgb, var(--durability-accent) 28%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--durability-soft) 45%, var(--surface));
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.durability-overview--defense {
+  --durability-accent: var(--defense);
+  --durability-soft: var(--defense-soft);
+}
+
+.durability-overview__metrics {
+  display: grid;
+  grid-column: 1 / -1;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--durability-accent) 20%, var(--border));
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--surface) 84%, transparent);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.durability-overview__metric {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+}
+
+.durability-overview__metric + .durability-overview__metric {
+  border-left: 1px solid color-mix(in srgb, var(--durability-accent) 16%, var(--border));
+}
+
+.durability-overview__metric span {
+  overflow: hidden;
+  max-width: 100%;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.durability-overview__metric output {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.durability-overview__metric:last-child output {
+  color: var(--durability-accent);
+}
+
+.durability-overview__note {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.durability-overview__analyze {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--durability-accent) 46%, var(--border));
+  border-radius: 6px;
+  color: var(--durability-accent);
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.durability-overview__analyze:not(:disabled) {
+  cursor: pointer;
+}
+
+.durability-overview__analyze:not(:disabled):hover {
+  background: color-mix(in srgb, var(--durability-soft) 72%, var(--surface));
+}
+
+.durability-overview__analyze:disabled {
+  opacity: 0.52;
+}
+
+@media (max-width: 760px) {
+  .durability-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .durability-overview__analyze {
+    width: 100%;
+    min-height: 44px;
+  }
+}

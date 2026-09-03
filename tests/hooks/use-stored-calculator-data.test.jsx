@@ -127,8 +127,12 @@ test.each([
       }),
     );
 
-    act(() => mutate(result.current.teams));
+    let mutationResult;
+    act(() => {
+      mutationResult = mutate(result.current.teams);
+    });
 
+    expect(mutationResult).toBe(false);
     expect(result.current.teamsState).toBe(teamState);
     expect(onToast).toHaveBeenCalledWith("队伍保存失败");
   },
@@ -197,10 +201,17 @@ test("captures only the requested team slot without saving a personal configurat
     spiritId: "fire",
   };
 
+  let captureResult;
   act(() => {
-    result.current.teams.captureSide("attacker", "team-1", 3, side);
+    captureResult = result.current.teams.captureSide(
+      "attacker",
+      "team-1",
+      3,
+      side,
+    );
   });
 
+  expect(captureResult).toBe(true);
   expect(result.current.teamsState.teams[0].members.slice(0, 3)).toEqual([
     null,
     null,

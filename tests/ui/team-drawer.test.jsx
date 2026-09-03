@@ -104,9 +104,12 @@ function memoryStorage() {
 }
 
 function DrawerHarness({
+  analysisEntry,
   getSpiritConfiguration = () => null,
   onApply = vi.fn(),
+  onApplyAnalysisSide = vi.fn(),
   onCaptureSide = vi.fn(),
+  onDeleteTeamOverride,
   spiritChoices,
   snapshotOverride = snapshot,
 }) {
@@ -128,18 +131,21 @@ function DrawerHarness({
         打开队伍
       </button>
       <TeamDrawer
+        analysisEntry={analysisEntry}
         getSpiritConfiguration={getSpiritConfiguration}
         onActiveTeamChange={(id) =>
           setTeamsState((state) => store.setActive(state, id))
         }
         onApply={onApply}
+        onApplyAnalysisSide={onApplyAnalysisSide}
         onCaptureSide={onCaptureSide}
         onClose={() => setOpen(false)}
         onCreateTeam={(name) =>
           setTeamsState((state) => store.create(state, name))
         }
-        onDeleteTeam={(id) =>
-          setTeamsState((state) => store.remove(state, id))
+        onDeleteTeam={
+          onDeleteTeamOverride ??
+          ((id) => setTeamsState((state) => store.remove(state, id)))
         }
         onDuplicateTeam={(id) =>
           setTeamsState((state) => store.duplicate(state, id))
@@ -152,6 +158,7 @@ function DrawerHarness({
         onRenameTeam={(id, name) =>
           setTeamsState((state) => store.rename(state, id, name))
         }
+        onAnalysisEntryClear={() => {}}
         open={open}
         returnFocusRef={triggerRef}
         snapshot={snapshotOverride}
@@ -161,6 +168,109 @@ function DrawerHarness({
     </>
   );
 }
+
+test("opens a temporary calculator-side analysis without creating a team slot", async () => {
+  const onApplyAnalysisSide = vi.fn();
+  const user = userEvent.setup();
+  render(
+    <DrawerHarness
+      analysisEntry={{
+        configuration: {
+          displayIvs: {
+            hp: 60,
+            magicalAttack: 0,
+            magicalDefense: 0,
+            physicalAttack: 60,
+            physicalDefense: 0,
+            speed: 60,
+          },
+          natureId: "neutral",
+          skills: { four: [], single: null },
+          spiritId: "sonic-dog",
+        },
+        side: "attacker",
+      }}
+      onApplyAnalysisSide={onApplyAnalysisSide}
+    />,
+  );
+
+  expect(screen.getByText("临时分析 · 不占队伍位置")).toBeVisible();
+  expect(screen.queryByRole("list", { name: "队伍成员" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "能力分析" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+
+  const builds = screen.getByRole("region", { name: "耐久方案对比" });
+  await user.click(within(builds).getAllByRole("button", { name: "应用回攻击方" })[0]);
+  expect(onApplyAnalysisSide).toHaveBeenCalledWith(
+    "attacker",
+    expect.objectContaining({ spiritId: "sonic-dog" }),
+  );
+});
+
+test("asks before discarding an unapplied ability draft", async () => {
+  const confirmDiscard = vi.fn(() => false);
+  vi.stubGlobal("confirm", confirmDiscard);
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "能力分析" }));
+  const investment = screen.getByRole("button", { name: /选择物攻投资/ });
+  await user.click(investment);
+  expect(investment).toHaveFocus();
+
+  await user.click(screen.getByRole("button", { name: "能力分析" }));
+  expect(confirmDiscard).not.toHaveBeenCalled();
+
+  await user.click(
+    screen.getByRole("button", { name: "队伍分析" }),
+  );
+  expect(confirmDiscard).toHaveBeenCalledOnce();
+  expect(screen.getByRole("button", { name: "能力分析" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+
+  await user.click(screen.getByRole("button", { name: "关闭队伍" }));
+
+  expect(confirmDiscard).toHaveBeenCalledTimes(2);
+  expect(screen.getByRole("dialog", { name: "队伍" })).toBeVisible();
+
+  confirmDiscard.mockReturnValue(true);
+  await user.click(screen.getByRole("button", { name: "关闭队伍" }));
+  expect(screen.queryByRole("dialog", { name: "队伍" })).not.toBeInTheDocument();
+  vi.unstubAllGlobals();
+});
+
+test("keeps a dirty draft guarded when a confirmed navigation action fails", async () => {
+  const confirmDiscard = vi.fn(() => true);
+  const onDeleteTeamOverride = vi.fn(() => false);
+  vi.stubGlobal("confirm", confirmDiscard);
+  const user = userEvent.setup();
+  render(<DrawerHarness onDeleteTeamOverride={onDeleteTeamOverride} />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "能力分析" }));
+  await user.click(screen.getByRole("button", { name: /选择物攻投资/ }));
+
+  await user.click(screen.getByRole("button", { name: "删除队伍" }));
+  await user.click(screen.getByRole("button", { name: "确认删除" }));
+  expect(onDeleteTeamOverride).toHaveBeenCalledOnce();
+  confirmDiscard.mockReturnValue(false);
+  await user.click(screen.getByRole("button", { name: "关闭队伍" }));
+
+  expect(confirmDiscard).toHaveBeenCalledTimes(2);
+  expect(screen.getByRole("dialog", { name: "队伍" })).toBeVisible();
+  vi.unstubAllGlobals();
+});
 
 test("uses the calculator spirit choices in the team member picker", async () => {
   const user = userEvent.setup();
@@ -390,7 +500,7 @@ test("switches the right pane between member editing and team defense analysis",
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
 
   expect(screen.getByRole("region", { name: "成员 1 配置" })).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "分析" }));
+  await user.click(screen.getByRole("button", { name: "队伍分析" }));
 
   expect(screen.getByRole("region", { name: "队伍分析" })).toBeVisible();
   expect(screen.getByRole("list", { name: "队伍成员" })).toBeVisible();
@@ -413,10 +523,10 @@ test("keeps the vertical roster beside three top-level member analysis and match
 
   const paneTabs = screen.getByLabelText("队伍面板");
   expect(within(paneTabs).getByRole("button", { name: "成员" })).toBeVisible();
-  expect(within(paneTabs).getByRole("button", { name: "分析" })).toBeVisible();
+  expect(within(paneTabs).getByRole("button", { name: "队伍分析" })).toBeVisible();
   expect(within(paneTabs).getByRole("button", { name: "对位" })).toBeVisible();
 
-  await user.click(within(paneTabs).getByRole("button", { name: "分析" }));
+  await user.click(within(paneTabs).getByRole("button", { name: "队伍分析" }));
   expect(screen.getByRole("list", { name: "队伍成员" })).toBeVisible();
   expect(screen.queryByRole("list", { name: "分析队伍成员" })).not.toBeInTheDocument();
   expect(screen.getByRole("table", { name: "队伍防守与打击面矩阵" })).toBeVisible();
@@ -436,7 +546,7 @@ test("opens the icon-led analysis matrix without changing the member editor layo
   const picker = screen.getByRole("combobox", { name: "成员精灵" });
   fireEvent.change(picker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
-  await user.click(screen.getByRole("button", { name: "分析" }));
+  await user.click(screen.getByRole("button", { name: "队伍分析" }));
 
   const panel = screen.getByRole("region", { name: "队伍分析" });
   expect(
@@ -468,7 +578,7 @@ test("does not count immune defense cells as resistances", async () => {
   const picker = screen.getByRole("combobox", { name: "成员精灵" });
   fireEvent.change(picker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
-  await user.click(screen.getByRole("button", { name: "分析" }));
+  await user.click(screen.getByRole("button", { name: "队伍分析" }));
 
   const summary = screen.getByRole("complementary", { name: "防守概览" });
   expect(within(within(summary).getByText("抗性").closest("span")).getByText("0"))
@@ -485,7 +595,7 @@ test("switches to skill coverage and traces a matrix cell to its source skill", 
   const picker = screen.getByRole("combobox", { name: "成员精灵" });
   fireEvent.change(picker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
-  await user.click(screen.getByRole("button", { name: "分析" }));
+  await user.click(screen.getByRole("button", { name: "队伍分析" }));
 
   const panel = screen.getByRole("region", { name: "队伍分析" });
   await user.click(within(panel).getByRole("button", { name: "技能打击面" }));
@@ -507,7 +617,7 @@ test("clears a selected matrix cell when switching matrix modes", async () => {
   const picker = screen.getByRole("combobox", { name: "成员精灵" });
   fireEvent.change(picker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
-  await user.click(screen.getByRole("button", { name: "分析" }));
+  await user.click(screen.getByRole("button", { name: "队伍分析" }));
 
   const panel = screen.getByRole("region", { name: "队伍分析" });
   await user.click(
@@ -527,7 +637,7 @@ test("does not restore a stale cell detail after changing analysis views", async
   const picker = screen.getByRole("combobox", { name: "成员精灵" });
   fireEvent.change(picker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
-  await user.click(screen.getByRole("button", { name: "分析" }));
+  await user.click(screen.getByRole("button", { name: "队伍分析" }));
 
   const panel = screen.getByRole("region", { name: "队伍分析" });
   await user.click(
@@ -535,7 +645,7 @@ test("does not restore a stale cell detail after changing analysis views", async
   );
   const paneTabs = screen.getByLabelText("队伍面板");
   await user.click(within(paneTabs).getByRole("button", { name: "对位" }));
-  await user.click(within(paneTabs).getByRole("button", { name: "分析" }));
+  await user.click(within(paneTabs).getByRole("button", { name: "队伍分析" }));
 
   expect(within(panel).queryByLabelText("单元格详情")).not.toBeInTheDocument();
 });
@@ -687,7 +797,7 @@ test("opens the matrix directly without a separate overview home", async () => {
   const picker = screen.getByRole("combobox", { name: "成员精灵" });
   fireEvent.change(picker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
-  await user.click(screen.getByRole("button", { name: "分析" }));
+  await user.click(screen.getByRole("button", { name: "队伍分析" }));
 
   const panel = screen.getByRole("region", { name: "队伍分析" });
   expect(within(panel).getByRole("table", { name: "队伍防守与打击面矩阵" })).toBeVisible();

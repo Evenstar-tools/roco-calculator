@@ -508,6 +508,106 @@ test("nature step keeps final panel, race, individual values, and level controls
   expect(onAttackerLevelChange).toHaveBeenCalledWith(1);
 });
 
+test("nature step reveals durability below each side and keeps it in sync with the panel preview", async () => {
+  const user = userEvent.setup();
+  const onAttackerAnalyze = vi.fn();
+  const durabilityStats = [
+    {
+      key: "physicalAttack",
+      label: "物攻",
+      basePanel: 185,
+      panel: 185,
+      race: 84,
+      displayIv: 60,
+    },
+    {
+      key: "magicalAttack",
+      label: "魔攻",
+      basePanel: 145,
+      panel: 145,
+      race: 86,
+      displayIv: 60,
+    },
+    {
+      key: "speed",
+      label: "速度",
+      basePanel: 228,
+      panel: 228,
+      race: 95,
+      displayIv: 60,
+    },
+    {
+      key: "hp",
+      label: "HP",
+      basePanel: 366,
+      change: "increase",
+      delta: 53,
+      panel: 419,
+      race: 85,
+      displayIv: 60,
+    },
+    {
+      key: "physicalDefense",
+      label: "物防",
+      basePanel: 172,
+      change: "decrease",
+      delta: -33,
+      panel: 139,
+      race: 72,
+      displayIv: 60,
+    },
+    {
+      key: "magicalDefense",
+      label: "魔防",
+      basePanel: 221,
+      change: "decrease",
+      delta: -33,
+      panel: 188,
+      race: 116,
+      displayIv: 60,
+    },
+  ];
+  const commonProps = {
+    attacker: { id: "attacker", nature: "neutral", stats: durabilityStats },
+    defender: { id: "defender", nature: "neutral", stats: durabilityStats },
+    onAttackerAnalyze,
+    onAttackerIvChange: vi.fn(),
+    onAttackerNatureChange: vi.fn(),
+    onDefenderIvChange: vi.fn(),
+    onDefenderNatureChange: vi.fn(),
+  };
+  const { rerender } = render(<NatureStatsStep {...commonProps} />);
+
+  expect(
+    screen.queryByRole("group", { name: "攻击方耐久概览" }),
+  ).not.toBeInTheDocument();
+
+  rerender(<NatureStatsStep {...commonProps} showDurabilityOverview />);
+  const attackerSide = screen.getByRole("group", { name: "攻击方能力" });
+  const attackerOverview = within(attackerSide).getByRole("group", {
+    name: "攻击方耐久概览",
+  });
+  expect(attackerOverview).toHaveTextContent("物理耐久58,241");
+  expect(
+    within(screen.getByRole("group", { name: "防御方能力" })).getByRole(
+      "button",
+      { name: "分析此精灵" },
+    ),
+  ).toBeDisabled();
+
+  await user.click(
+    within(attackerSide).getByRole("button", { name: /物防最终值139/ }),
+  );
+  expect(attackerOverview).toHaveTextContent("物理耐久62,952");
+  expect(attackerOverview).toHaveTextContent("魔法耐久80,886");
+  expect(attackerOverview).toHaveTextContent("综合耐久35,400");
+
+  await user.click(
+    within(attackerOverview).getByRole("button", { name: "分析此精灵" }),
+  );
+  expect(onAttackerAnalyze).toHaveBeenCalledOnce();
+});
+
 test("clicking a modified stat toggles the whole side between final and base panels", async () => {
   const user = userEvent.setup();
   const onAttackerIvChange = vi.fn();

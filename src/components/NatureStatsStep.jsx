@@ -1,5 +1,6 @@
 import { Minus, Plus } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
+import { DurabilityOverview } from "./DurabilityOverview.jsx";
 import { NatureEffect } from "./NatureEffect.jsx";
 import { NatureSelect } from "./NatureSelect.jsx";
 import { StatTile } from "./StatTile.jsx";
@@ -83,9 +84,11 @@ function RepeatLevelButton({
 function SideStats({
   accent,
   label,
+  onAnalyze,
   onIvChange,
   onLevelChange = () => {},
   onNatureChange,
+  showDurabilityOverview,
   side,
 }) {
   const [panelView, setPanelView] = useState({
@@ -136,6 +139,16 @@ function SideStats({
         ))}
       </div>
 
+      {showDurabilityOverview ? (
+        <DurabilityOverview
+          accent={accent}
+          label={label}
+          onAnalyze={onAnalyze}
+          showFinalPanel={showFinalPanel}
+          stats={side.stats}
+        />
+      ) : null}
+
       {levels.map((level) => {
         const levelPercent = Math.round((level.multiplier - 1) * 100);
         const changeLevel = (nextStage) =>
@@ -182,12 +195,15 @@ function SideStats({
 export function NatureStatsStep({
   attacker,
   defender,
+  onAttackerAnalyze,
   onAttackerIvChange,
   onAttackerLevelChange,
   onAttackerNatureChange,
+  onDefenderAnalyze,
   onDefenderIvChange,
   onDefenderLevelChange,
   onDefenderNatureChange,
+  showDurabilityOverview = false,
 }) {
   return (
     <section aria-label="性格配置" className="calculator-step">
@@ -195,17 +211,21 @@ export function NatureStatsStep({
         <SideStats
           accent="attack"
           label="攻击方"
+          onAnalyze={onAttackerAnalyze}
           onIvChange={onAttackerIvChange}
           onLevelChange={onAttackerLevelChange}
           onNatureChange={onAttackerNatureChange}
+          showDurabilityOverview={showDurabilityOverview}
           side={attacker}
         />
         <SideStats
           accent="defense"
           label="防御方"
+          onAnalyze={onDefenderAnalyze}
           onIvChange={onDefenderIvChange}
           onLevelChange={onDefenderLevelChange}
           onNatureChange={onDefenderNatureChange}
+          showDurabilityOverview={showDurabilityOverview}
           side={defender}
         />
       </div>

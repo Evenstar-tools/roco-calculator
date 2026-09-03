@@ -49,11 +49,15 @@ test("shows all six members in the compact team analysis matrix", async ({ page 
   // 抽屉因此不开;重试直到"分析"按钮可见,断言本身不变。
   await expect(async () => {
     await page.getByRole("button", { name: "打开队伍" }).click();
-    await expect(page.getByRole("button", { name: "分析" })).toBeVisible({
+      await expect(
+        page.getByRole("button", { name: "队伍分析", exact: true }),
+      ).toBeVisible({
       timeout: 3000,
     });
   }).toPass({ timeout: 15000 });
-  await page.getByRole("button", { name: "分析" }).click();
+  await page
+    .getByRole("button", { name: "队伍分析", exact: true })
+    .click();
 
   const analysis = page.getByRole("region", { name: "队伍分析" });
   await expect(analysis).toBeVisible();
@@ -84,5 +88,117 @@ test("shows the team label on desktop and keeps the mobile header compact", asyn
 
   await page.setViewportSize({ height: 844, width: 390 });
   await expect(teamLabel).toBeHidden();
-  expect((await teamAction.boundingBox()).width).toBe(38);
+  expect((await teamAction.boundingBox()).width).toBe(44);
+});
+
+test("completes the ability workbench flow at 390px without horizontal overflow", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const member = {
+      displayIvs: {
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      },
+      natureId: "neutral",
+      skills: { four: [null, null, null, null], single: null },
+      spiritId: "spirit_8735efa1d0793f6a",
+    };
+    localStorage.setItem(
+      "rock-calculator.teams.v1",
+      JSON.stringify({
+        activeTeamId: "ability-mobile-e2e",
+        schemaVersion: 1,
+        teams: [
+          {
+            createdAt: "2026-09-03T00:00:00.000Z",
+            id: "ability-mobile-e2e",
+            members: [member, null, null, null, null, null],
+            name: "能力分析测试队",
+            updatedAt: "2026-09-03T00:00:00.000Z",
+          },
+        ],
+      }),
+    );
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "打开队伍" }).click();
+
+  const drawer = page.getByRole("dialog", { name: "队伍" });
+  await expect(drawer).toBeVisible();
+  await expect(
+    drawer.getByRole("region", { name: "成员 1 配置" }),
+  ).toBeVisible();
+
+  await drawer
+    .getByRole("button", { name: "能力分析", exact: true })
+    .click();
+  const ability = drawer.getByRole("region", {
+    name: "能力分析",
+    exact: true,
+  });
+  await expect(ability).toBeVisible();
+  const target = ability.getByRole("combobox", { name: "速度目标精灵" });
+  await target.selectOption("spirit_b2f1251352d5f670");
+  await ability
+    .getByRole("combobox", { name: "推荐速度约束" })
+    .selectOption("unlocked");
+
+  const builds = ability.getByRole("region", { name: "耐久方案对比" });
+  await builds.getByRole("button", { name: "应用到成员" }).first().click();
+  await expect(ability.getByText("未知形态默认排除：0")).toBeVisible();
+  const storedMember = await page.evaluate(() => {
+    const stored = JSON.parse(
+      localStorage.getItem("rock-calculator.teams.v1"),
+    );
+    return stored.teams[0].members[0];
+  });
+  expect(
+    Object.values(storedMember.displayIvs).every(
+      (value) => value === 0 || value === 60,
+    ),
+  ).toBe(true);
+  expect(
+    Object.values(storedMember.displayIvs).filter((value) => value === 60),
+  ).toHaveLength(3);
+
+  await ability.getByRole("button", { name: "查看完整耐久榜" }).click();
+  const ranking = drawer.getByRole("region", { name: "完整耐久榜" });
+  await expect(ranking).toBeVisible();
+  const firstRow = ranking.locator("tbody tr").first();
+  await expect(firstRow.locator("td:nth-child(1)")).toBeVisible();
+  await expect(firstRow.locator("td:nth-child(2)")).toBeVisible();
+  await expect(firstRow.locator("td:nth-child(6)")).toBeVisible();
+  await expect(firstRow.locator("td:nth-child(4)")).toBeHidden();
+
+  const metrics = ranking.getByRole("group", { name: "排行指标" });
+  await metrics.getByRole("button", { name: "物理耐久" }).click();
+  await expect(firstRow.locator("td:nth-child(4)")).toBeVisible();
+  await expect(firstRow.locator("td:nth-child(6)")).toBeHidden();
+
+  const layout = await page.evaluate(() => ({
+    abilityOverflowY: getComputedStyle(
+      document.querySelector(".ability-workbench"),
+    ).overflowY,
+    documentFits:
+      document.documentElement.scrollWidth <=
+      document.documentElement.clientWidth,
+    drawerFits: (() => {
+      const node = document.querySelector(".team-workbench");
+      return node.scrollWidth <= node.clientWidth;
+    })(),
+  }));
+  expect(layout).toEqual({
+    abilityOverflowY: "visible",
+    documentFits: true,
+    drawerFits: true,
+  });
+
+  await ranking.getByRole("button", { name: "返回能力分析" }).click();
+  await expect(target).toHaveValue("spirit_b2f1251352d5f670");
 });

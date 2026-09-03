@@ -80,6 +80,7 @@ import {
   updateGlobalWeather,
   updateMirroredTraitContext,
 } from "./state/calculator-session.js";
+import { createTeamMemberFromSide } from "./state/team-presets.js";
 
 function CalculatorWorkspace({ snapshot }) {
   const initialState = useMemo(() => {
@@ -285,7 +286,11 @@ function CalculatorWorkspace({ snapshot }) {
     updateDirection,
     viewMode,
   });
-  const { powerDisplayMode, typeCoverageEnabled } = overlays;
+  const {
+    durabilityOverviewEnabled,
+    powerDisplayMode,
+    typeCoverageEnabled,
+  } = overlays;
 
   // 任一弹层/抽屉打开时引导浮层让位,关闭后恢复。
   const overlayCoveringGuide = Boolean(
@@ -470,6 +475,15 @@ function CalculatorWorkspace({ snapshot }) {
     });
     commitSession(result);
     setActiveDirection(result.activeDirection);
+  }
+
+  function openSideAbilityAnalysis(side) {
+    const configuration = createTeamMemberFromSide(stateRef.current.sides[side]);
+    overlays.team.openAbilityAnalysis({
+      configuration,
+      side,
+      source: "calculator",
+    });
   }
 
   function changeSpirit(side, spiritId) {
@@ -1489,6 +1503,7 @@ function CalculatorWorkspace({ snapshot }) {
     share: shareFlow.overlayProps,
     team: {
       drawerProps: {
+        analysisEntry: overlays.team.analysisEntry,
         getSpiritConfiguration: storedData.getSpiritConfiguration,
         onActiveTeamChange: teamActions.setActive,
         onApply: (side, member) => {
@@ -1496,7 +1511,7 @@ function CalculatorWorkspace({ snapshot }) {
             remember: false,
             source: "team",
           });
-          overlays.team.setOpen(false);
+          overlays.team.close();
           const spirit = snapshot.spirits.find(
             (candidate) => candidate.id === member.spiritId,
           );
@@ -1506,9 +1521,24 @@ function CalculatorWorkspace({ snapshot }) {
             }`,
           );
         },
+        onAnalysisEntryClear: () => overlays.team.setAnalysisEntry(null),
+        onApplyAnalysisSide: (side, member) => {
+          applySpiritConfiguration(side, member, {
+            remember: false,
+            source: "ability-analysis",
+          });
+          const spirit = snapshot.spirits.find(
+            (candidate) => candidate.id === member.spiritId,
+          );
+          setToast(
+            `能力方案已应用到${side === "attacker" ? "攻击方" : "防御方"} ${
+              spirit?.fullName ?? "当前精灵"
+            }`,
+          );
+        },
         onCaptureSide: (side, teamId, index) =>
           teamActions.captureSide(side, teamId, index, state.sides[side]),
-        onClose: () => overlays.team.setOpen(false),
+        onClose: overlays.team.close,
         onCreateTeam: teamActions.create,
         onDeleteTeam: teamActions.remove,
         onDuplicateTeam: teamActions.duplicate,
@@ -1532,6 +1562,7 @@ function CalculatorWorkspace({ snapshot }) {
         onMenuOpen={() => overlays.menu.setOpen((open) => !open)}
         onTeamsOpen={() => {
           overlays.menu.setOpen(false);
+          overlays.team.setAnalysisEntry(null);
           overlays.team.setOpen(true);
         }}
         onThemeChange={(theme) => {
@@ -1743,6 +1774,7 @@ function CalculatorWorkspace({ snapshot }) {
                 finalStats: viewModel.sides.attacker.finalPanelStats,
               }),
             }}
+            onAttackerAnalyze={() => openSideAbilityAnalysis("attacker")}
             defender={{
               id: defender.id,
               levels: fairPigeonPresent
@@ -1830,6 +1862,8 @@ function CalculatorWorkspace({ snapshot }) {
                     activeDirection === "forward" ? "defense" : "attack",
                     stage,
                   )}
+            onDefenderAnalyze={() => openSideAbilityAnalysis("defender")}
+            showDurabilityOverview={durabilityOverviewEnabled}
               />
               <SkillStep
                 activeMode={state.mode}

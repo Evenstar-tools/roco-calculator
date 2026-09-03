@@ -1,6 +1,8 @@
 export function DisplaySettingsDialog({
+  durabilityOverviewEnabled = false,
   negativeStatusSettlementEnabled = false,
   onClose,
+  onDurabilityOverviewChange,
   onNegativeStatusSettlementChange,
   onPowerDisplayModeChange,
   onTypeCoverageChange,
@@ -66,6 +68,20 @@ export function DisplaySettingsDialog({
             aria-label="属性克制与打击面"
             checked={typeCoverageEnabled}
             onChange={(event) => onTypeCoverageChange?.(event.target.checked)}
+            type="checkbox"
+          />
+        </label>
+        <label className="display-settings-option">
+          <span>
+            <strong>显示面板耐久</strong>
+            <small>在具体版六维下方显示物理、魔法与综合耐久</small>
+          </span>
+          <input
+            aria-label="显示面板耐久"
+            checked={durabilityOverviewEnabled}
+            onChange={(event) =>
+              onDurabilityOverviewChange?.(event.target.checked)
+            }
             type="checkbox"
           />
         </label>

@@ -236,6 +236,7 @@ test("opens the complete release notes in a second-level dialog", () => {
 test("opens display settings from the menu and exposes the type analysis switch", () => {
   const onShowDisplaySettings = vi.fn();
   const onPowerDisplayModeChange = vi.fn();
+  const onDurabilityOverviewChange = vi.fn();
   const onNegativeStatusSettlementChange = vi.fn();
   const onTypeCoverageChange = vi.fn();
   const { rerender } = renderOverlays({
@@ -253,9 +254,11 @@ test("opens display settings from the menu and exposes the type analysis switch"
   rerender(
     <WorkspaceOverlays
       displaySettings={{
+        durabilityOverviewEnabled: false,
         onClose: vi.fn(),
         negativeStatusSettlementEnabled: false,
         onNegativeStatusSettlementChange,
+        onDurabilityOverviewChange,
         onPowerDisplayModeChange,
         onTypeCoverageChange,
         open: true,
@@ -285,6 +288,13 @@ test("opens display settings from the menu and exposes the type analysis switch"
   expect(statusSwitch).not.toBeChecked();
   fireEvent.click(statusSwitch);
   expect(onNegativeStatusSettlementChange).toHaveBeenCalledWith(true);
+
+  const durabilitySwitch = screen.getByRole("checkbox", {
+    name: "显示面板耐久",
+  });
+  expect(durabilitySwitch).not.toBeChecked();
+  fireEvent.click(durabilitySwitch);
+  expect(onDurabilityOverviewChange).toHaveBeenCalledWith(true);
 
   expect(screen.getByRole("button", { name: "静态威力" })).toHaveAttribute(
     "aria-pressed",
