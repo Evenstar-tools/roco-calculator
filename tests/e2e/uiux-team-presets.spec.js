@@ -175,13 +175,25 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   await expect(ability).toBeVisible();
   await expect(ability.getByRole("slider", { name: "速度目标轴" })).toHaveCount(0);
   await expect(ability.getByRole("region", { name: "速度排行榜横轴" })).toBeVisible();
-  const speedProfile = ability.getByRole("combobox", { name: "速度目标口径" });
-  await expect(speedProfile).toHaveValue("positive-max");
-  await speedProfile.selectOption("negative-zero");
-  await expect(ability.getByRole("button", { name: /展开速度表/ })).toContainText("减速度");
-  await speedProfile.selectOption("neutral-max");
+  await ability.getByLabel("速度目标口径").click();
+  await expect(ability.getByRole("checkbox", { name: "极速" })).toBeChecked();
+  await expect(ability.getByRole("checkbox", { name: "满速" })).toBeChecked();
+  await expect(ability.getByRole("checkbox", { name: "无速度" })).toBeChecked();
+  await expect(ability.getByRole("checkbox", { name: "减速度" })).not.toBeChecked();
+  await ability.getByLabel("速度目标口径").click();
   const target = ability.getByRole("combobox", { name: "速度目标精灵" });
-  await target.selectOption("spirit_b2f1251352d5f670");
+  const targetValue = await ability
+    .locator('datalist option[data-target-id="neutral-max:spirit_b2f1251352d5f670"]')
+    .getAttribute("value");
+  await target.fill(targetValue);
+  const speedAxis = ability.getByRole("region", { name: "速度排行榜横轴" });
+  const lockedTarget = speedAxis.locator('[aria-current="true"]');
+  await expect.poll(async () => {
+    const viewport = await speedAxis.boundingBox();
+    const selected = await lockedTarget.boundingBox();
+    if (!viewport || !selected) return false;
+    return selected.x >= viewport.x && selected.x + selected.width <= viewport.x + viewport.width;
+  }).toBe(true);
   await ability
     .getByRole("combobox", { name: "推荐速度约束" })
     .selectOption("unlocked");
@@ -189,6 +201,26 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   await ability.getByRole("button", { name: /展开速度表/ }).click();
   const speedTable = ability.getByRole("table", { name: "速度档位表" });
   await expect(speedTable).toBeVisible();
+  const speedTableViewport = ability.locator(".ability-speed__table-wrap");
+  const selectedSpeedTarget = speedTable.getByRole("button", { pressed: true });
+  await expect.poll(async () => {
+    const viewport = await speedTableViewport.boundingBox();
+    const selected = await selectedSpeedTarget.boundingBox();
+    if (!viewport || !selected) return false;
+    return selected.y >= viewport.y && selected.y + selected.height <= viewport.y + viewport.height;
+  }).toBe(true);
+  const typeSizes = await ability.evaluate((node) => ({
+    markerName: Number.parseFloat(getComputedStyle(node.querySelector(".ability-speed__marker span")).fontSize),
+    speedSelect: Number.parseFloat(getComputedStyle(node.querySelector('.ability-speed__controls input[type="search"]')).fontSize),
+    tierMeta: Number.parseFloat(getComputedStyle(node.querySelector(".ability-speed__tier-spirits small")).fontSize),
+    tierName: Number.parseFloat(getComputedStyle(node.querySelector(".ability-speed__tier-spirits strong")).fontSize),
+  }));
+  expect(typeSizes).toEqual({
+    markerName: 11,
+    speedSelect: 12,
+    tierMeta: 10,
+    tierName: 12,
+  });
   const tableSpeeds = await speedTable.getByRole("rowheader").allTextContents();
   expect(tableSpeeds.map(Number)).toEqual(
     [...tableSpeeds.map(Number)].sort((left, right) => right - left),
@@ -268,7 +300,7 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   });
 
   await ranking.getByRole("button", { name: "返回能力分析" }).click();
-  await expect(target).toHaveValue("spirit_b2f1251352d5f670");
+  await expect(target).toHaveValue(targetValue);
 });
 
 test("keeps the full ranking spirit cell aligned at desktop width", async ({
@@ -316,6 +348,10 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
   await expect(buildCards.nth(2)).toContainText("性格：警惕（+魔防 -物攻）");
   await expect(builds.getByText(/为什么只有一个方案|共同最优方案|三种目标一致/))
     .toHaveCount(0);
+  await page.screenshot({
+    fullPage: false,
+    path: "artifacts/web-ux-team-ability-fix/ability-overview-1424.png",
+  });
   const speedAxis = drawer.getByRole("region", { name: "速度排行榜横轴" });
   await speedAxis.scrollIntoViewIfNeeded();
   const axisBefore = await speedAxis.evaluate((node) => ({
@@ -340,6 +376,14 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
   await drawer.getByRole("button", { name: /展开速度表/ }).click();
   const speedTable = drawer.getByRole("table", { name: "速度档位表" });
   await expect(speedTable).toBeVisible();
+  const speedTableViewport = drawer.locator(".ability-speed__table-wrap");
+  const selectedSpeedTarget = speedTable.getByRole("button", { pressed: true });
+  await expect.poll(async () => {
+    const viewport = await speedTableViewport.boundingBox();
+    const selected = await selectedSpeedTarget.boundingBox();
+    if (!viewport || !selected) return false;
+    return selected.y >= viewport.y && selected.y + selected.height <= viewport.y + viewport.height;
+  }).toBe(true);
   await speedTable.scrollIntoViewIfNeeded();
   await page.screenshot({
     fullPage: false,

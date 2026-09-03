@@ -1,6 +1,5 @@
 import {
   ArrowLeft,
-  ChartBar,
   CheckCircle,
   Crosshair,
   Info,
@@ -77,6 +76,18 @@ const SPEED_STATUS_LABELS = Object.freeze({
   REQUIRES_SPEED_INVESTMENT: "需要启用速度60",
   UNREACHABLE_WITH_SPEED_INVESTMENT: "即使速度60也无法达到",
 });
+
+const DEFAULT_SPEED_PROFILE_IDS = Object.freeze([
+  "positive-max",
+  "neutral-max",
+  "neutral-zero",
+]);
+
+function speedTargetLabel(target) {
+  return target
+    ? `${target.name} · ${target.speed}（${target.profileLabel}）`
+    : "";
+}
 
 function cloneConfiguration(configuration) {
   if (!configuration) return null;
@@ -238,7 +249,7 @@ function InvestmentPicker({ onChange, onReplace, validation, values }) {
       <header>
         <div>
           <strong>个体值分配</strong>
-          <small>每项只能取 0 或 60，最多选择三项</small>
+          <small>0 / 60 · 最多三项</small>
         </div>
         <span>
           已用 {validation.activeCount} / {validation.maxActiveStats}
@@ -247,7 +258,6 @@ function InvestmentPicker({ onChange, onReplace, validation, values }) {
       <div aria-label="个体值分配" className="ability-investments" role="group">
         {INVESTMENT_STATS.map(({ key, label }) => {
           const selected = Number(values[key]) > 0;
-          const needsReplacement = !selected && validation.remainingSlots === 0;
           return (
             <button
               aria-label={`${selected ? "取消" : "选择"}${label}个体值，当前${values[key]}`}
@@ -258,7 +268,6 @@ function InvestmentPicker({ onChange, onReplace, validation, values }) {
             >
               <span>{label}</span>
               <strong>{values[key]}</strong>
-              <small>{selected ? "已分配" : needsReplacement ? "点击替换" : "未分配"}</small>
             </button>
           );
         })}
@@ -292,26 +301,31 @@ function SpeedRail({
   baseSpeed,
   currentSpeed,
   modifiers,
-  onProfileChange,
+  onProfilesChange,
   onToggleModifier,
   onTargetChange,
-  profileId,
+  profileIds,
   speedAnalysis,
   targets,
   targetId,
 }) {
   const railRef = useRef(null);
   const selectedTargetRef = useRef(null);
+  const speedTableRef = useRef(null);
+  const selectedTableTargetRef = useRef(null);
   const dragRef = useRef({ active: false, moved: false, scrollLeft: 0, startX: 0 });
   const [showSpeedTable, setShowSpeedTable] = useState(false);
   const selected = targets.find((target) => target.id === targetId) ?? targets[0];
-  const profile = SPEED_TARGET_PROFILES[profileId];
+  const [targetInput, setTargetInput] = useState(null);
   const targetGroups = groupSpeedTargets(targets);
+  const modifierGroups = Object.values(modifiers.reduce((groups, modifier) => {
+    (groups[modifier.groupId] ??= []).push(modifier);
+    return groups;
+  }, {}));
   const railItems = [
     ...targetGroups.map((group) => {
       const target = group.targets.find((item) => item.id === selected?.id) ?? group.targets[0];
       return {
-        count: group.targets.length,
         id: `speed:${group.speed}`,
         kind: "target",
         speed: group.speed,
@@ -327,7 +341,22 @@ function SpeedRail({
       block: "nearest",
       inline: "center",
     });
-  }, [profileId, selected?.id]);
+  }, [profileIds, selected?.id]);
+
+  useEffect(() => {
+    if (!showSpeedTable) return undefined;
+    const frame = requestAnimationFrame(() => {
+      const viewport = speedTableRef.current;
+      const target = selectedTableTargetRef.current;
+      if (!viewport || !target) return;
+      const viewportRect = viewport.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      viewport.scrollTop +=
+        targetRect.top - viewportRect.top -
+        (viewport.clientHeight - targetRect.height) / 2;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [profileIds, selected?.id, showSpeedTable]);
 
   function startDrag(event) {
     if (event.button !== 0) return;
@@ -369,57 +398,105 @@ function SpeedRail({
           <small>{SPEED_STATUS_LABELS[speedAnalysis?.status] ?? "选择目标后分析"}</small>
         </div>
         <div className="ability-speed__controls">
-          <label>
+          <div className="ability-speed__profile-picker">
             <span>口径</span>
-            <select
-              aria-label="速度目标口径"
-              onChange={(event) => onProfileChange(event.target.value)}
-              value={profileId}
-            >
-              <option value="positive-max">极速</option>
-              <option value="neutral-max">满速</option>
-              <optgroup label="更多口径">
-                <option value="positive-zero">仅速度性格</option>
-                <option value="neutral-zero">无速度</option>
-                <option value="negative-zero">减速度</option>
-              </optgroup>
-            </select>
-          </label>
+            <details>
+              <summary aria-label="速度目标口径">{profileIds.length}种口径</summary>
+              <fieldset>
+                <legend>速度口径</legend>
+                {Object.values(SPEED_TARGET_PROFILES).map((entry) => (
+                  <label key={entry.id}>
+                    <input
+                      checked={profileIds.includes(entry.id)}
+                      disabled={profileIds.length === 1 && profileIds.includes(entry.id)}
+                      onChange={(event) => {
+                        const next = event.target.checked
+                          ? [...profileIds, entry.id]
+                          : profileIds.filter((id) => id !== entry.id);
+                        onProfilesChange(next);
+                      }}
+                      type="checkbox"
+                    />
+                    {entry.label}
+                  </label>
+                ))}
+              </fieldset>
+            </details>
+          </div>
           <label>
             <span>目标精灵</span>
-            <select
+            <input
               aria-label="速度目标精灵"
-              onChange={(event) => onTargetChange(event.target.value)}
-              value={selected?.id ?? ""}
-            >
+              list="ability-speed-target-options"
+              onBlur={() => setTargetInput(null)}
+              onChange={(event) => {
+                const value = event.target.value;
+                setTargetInput(value);
+                const match = targets.find((target) => speedTargetLabel(target) === value);
+                if (match) {
+                  onTargetChange(match.id);
+                  setTargetInput(null);
+                }
+              }}
+              onFocus={(event) => event.currentTarget.select()}
+              placeholder="输入精灵名"
+              type="search"
+              value={targetInput ?? speedTargetLabel(selected)}
+            />
+            <datalist id="ability-speed-target-options">
               {targets.map((target) => (
-                <option key={target.id} value={target.id}>
-                  {target.name} · {target.speed}（{target.qualifier}）
+                <option data-target-id={target.id} key={target.id} value={speedTargetLabel(target)}>
+                  {target.qualifier}
                 </option>
               ))}
-            </select>
+            </datalist>
           </label>
         </div>
       </header>
-      <div className="ability-speed__axis-summary">
-        <span>{profile?.label}</span>
-        <strong>{selected?.name ?? "暂无目标"} · {selected?.speed ?? "—"}</strong>
-        <span>{targetGroups.length} 档</span>
-      </div>
       {modifiers.length > 0 ? (
         <div className="ability-speed__modifiers">
           <span>本体额外速度</span>
           <div>
-            {modifiers.map((modifier) => (
-              <label key={modifier.id}>
-                <input
-                  checked={activeModifierIds.includes(modifier.id)}
-                  onChange={(event) => onToggleModifier(modifier, event.target.checked)}
-                  type="checkbox"
-                />
-                <span>{modifier.label} +{modifier.amount}</span>
-              </label>
-            ))}
+            {modifierGroups.map((group) => {
+              const stacked = group.every(({ stack }) => Number.isInteger(stack));
+              const active = group.find(({ id }) => activeModifierIds.includes(id));
+              if (stacked) {
+                const name = group[0].label.replace(/（\d+层）$/, "");
+                return (
+                  <label className="ability-speed__stack" key={group[0].groupId}>
+                    <span>{name}</span>
+                    <select
+                      aria-label={`${name}层数`}
+                      onChange={(event) => {
+                        if (!event.target.value) {
+                          if (active) onToggleModifier(active, false);
+                          return;
+                        }
+                        onToggleModifier(group.find(({ id }) => id === event.target.value), true);
+                      }}
+                      value={active?.id ?? ""}
+                    >
+                      <option value="">未触发</option>
+                      {group.map((modifier) => (
+                        <option key={modifier.id} value={modifier.id}>
+                          {modifier.stack}层 +{modifier.amount}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                );
+              }
+              return group.map((modifier) => (
+                <label key={modifier.id}>
+                  <input
+                    checked={activeModifierIds.includes(modifier.id)}
+                    onChange={(event) => onToggleModifier(modifier, event.target.checked)}
+                    type="checkbox"
+                  />
+                  <span>{modifier.label} +{modifier.amount}</span>
+                </label>
+              ));
+            })}
           </div>
           <strong>
             {currentSpeed === baseSpeed
@@ -456,6 +533,7 @@ function SpeedRail({
             </div>
           ) : (
             <button
+              aria-current={item.target.id === selected?.id ? "true" : undefined}
               aria-label={`选择速度目标${item.target.name}，速度${item.target.speed}`}
               className={`ability-speed__marker${item.target.id === selected?.id ? " is-target" : ""}`}
               key={item.id}
@@ -469,7 +547,8 @@ function SpeedRail({
               <span>{item.target.name}</span>
               <small>
                 {item.target.spirit.raceStats.speed}族
-                {item.count > 1 ? ` · 同速${item.count}只` : ""}
+                {item.target.formRole === "boss" ? " · 首领" : ""}
+                {` · ${item.target.profileLabel}`}
               </small>
             </button>
           ))}
@@ -483,13 +562,12 @@ function SpeedRail({
         type="button"
       >
         <span>
-          <ChartBar aria-hidden="true" size={15} />
           {showSpeedTable ? "收起速度表" : "展开速度表"}
         </span>
-        <small>{profile?.label} · {targetGroups.length} 档 · {targets.length} 只</small>
+        <small>{targetGroups.length} 档 · {targets.length} 项</small>
       </button>
       {showSpeedTable ? (
-        <div className="ability-speed__table-wrap" id="ability-speed-tier-table">
+        <div className="ability-speed__table-wrap" id="ability-speed-tier-table" ref={speedTableRef}>
           <table aria-label="速度档位表" className="ability-speed__table">
             <colgroup>
               <col className="ability-speed__table-value" />
@@ -498,7 +576,7 @@ function SpeedRail({
             <thead>
               <tr>
                 <th>速度</th>
-                <th>{profile?.label}精灵</th>
+                <th>精灵 · 最终形态与首领</th>
               </tr>
             </thead>
             <tbody>
@@ -516,13 +594,18 @@ function SpeedRail({
                           aria-pressed={target.id === selected?.id}
                           key={target.id}
                           onClick={() => onTargetChange(target.id)}
+                          ref={target.id === selected?.id ? selectedTableTargetRef : null}
                           title={`${target.name} · ${target.qualifier} · ${target.formRole === "boss" ? "首领" : "最终形态"}`}
                           type="button"
                         >
                           {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
                           <span>
                             <strong>{target.name}</strong>
-                            <small>{target.spirit.raceStats.speed}族 · {target.formRole === "boss" ? "首领" : "最终"}</small>
+                            <small>
+                              {target.spirit.raceStats.speed}族
+                              {target.formRole === "boss" ? " · 首领" : ""}
+                              {` · ${target.profileLabel}`}
+                            </small>
                           </span>
                         </button>
                       ))}
@@ -627,10 +710,8 @@ function FullRanking({ backButtonRef, currentSpiritId, onBack, ranking, setMetri
           返回能力分析
         </button>
         <div>
-          <h4>标准耐久榜 · 已审计范围</h4>
-          <small>
-            仅纳入形态清单中的最终形态与双源确认首领；搜索不重新编号
-          </small>
+          <h4>标准耐久榜</h4>
+          <small>最终形态与首领 · 搜索不改变名次</small>
         </div>
       </header>
       <div className="ability-ranking-controls">
@@ -742,7 +823,7 @@ export function AbilityWorkbench({
   const [roleFilter, setRoleFilter] = useState("all");
   const [showCalculation, setShowCalculation] = useState(false);
   const [speedMode, setSpeedMode] = useState("keep");
-  const [speedProfileId, setSpeedProfileId] = useState("positive-max");
+  const [speedProfileIds, setSpeedProfileIds] = useState(DEFAULT_SPEED_PROFILE_IDS);
   const [activeSpeedModifierIds, setActiveSpeedModifierIds] = useState([]);
   const [targetId, setTargetId] = useState("");
   const [templateId, setTemplateId] = useState("standard-hp-v1");
@@ -775,10 +856,12 @@ export function AbilityWorkbench({
     );
     setFullRanking(false);
     setAnalysisOptionsDirty(false);
-    setSpeedMode("keep");
-    setSpeedProfileId("positive-max");
     setActiveSpeedModifierIds([]);
-    setTargetId("");
+    if (identityChanged) {
+      setSpeedMode("keep");
+      setSpeedProfileIds(DEFAULT_SPEED_PROFILE_IDS);
+      setTargetId("");
+    }
     setApplyStatus("");
   }, [incomingSignature, sourceIdentity]);
 
@@ -832,12 +915,17 @@ export function AbilityWorkbench({
   );
   const speedTargets = useMemo(() => {
     if (!panel) return [];
-    return createSpeedTargets({
-      profileId: speedProfileId,
-      spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter,
-      spirits: snapshot.spirits ?? [],
-    });
-  }, [panel, snapshot.meta?.revisions?.spiritFilter, snapshot.spirits, speedProfileId]);
+    return groupSpeedTargets(speedProfileIds.flatMap((profileId) =>
+      createSpeedTargets({
+        profileId,
+        spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter,
+        spirits: snapshot.spirits ?? [],
+      }).map((target) => ({
+        ...target,
+        id: `${profileId}:${target.id}`,
+      })),
+    )).flatMap(({ targets }) => targets);
+  }, [panel, snapshot.meta?.revisions?.spiritFilter, snapshot.spirits, speedProfileIds]);
   const speedModifiers = useMemo(
     () => panel ? createSpeedModifiers({
       configuration: draft,
@@ -1131,8 +1219,8 @@ export function AbilityWorkbench({
             baseSpeed={panel.speed}
             currentSpeed={panel.speed + speedBonus}
             modifiers={speedModifiers}
-            onProfileChange={(nextProfileId) => {
-              setSpeedProfileId(nextProfileId);
+            onProfilesChange={(nextProfileIds) => {
+              setSpeedProfileIds(nextProfileIds);
               setAnalysisOptionsDirty(true);
               setApplyStatus("");
               onDirtyChange?.(true);
@@ -1160,7 +1248,7 @@ export function AbilityWorkbench({
               onDirtyChange?.(true);
             }}
             speedAnalysis={speedAnalysis}
-            profileId={speedProfileId}
+            profileIds={speedProfileIds}
             targetId={resolvedTargetId}
             targets={speedTargets}
           />
@@ -1235,7 +1323,6 @@ export function AbilityWorkbench({
               <p className="ability-apply-status" role="status">{applyStatus}</p>
             ) : null}
             <button className="ability-calculation-toggle" onClick={() => setShowCalculation((current) => !current)} type="button">
-              <ChartBar aria-hidden="true" size={16} />
               {showCalculation ? "收起计算依据" : "查看计算依据"}
             </button>
             {showCalculation ? (

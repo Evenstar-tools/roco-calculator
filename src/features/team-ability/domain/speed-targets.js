@@ -75,9 +75,12 @@ export function createSpeedTargets({
         formRole: form.formRole,
         id: spirit.id,
         name: spirit.fullName,
+        profileId: profile.id,
+        profileLabel: profile.label,
         qualifier: `${spirit.raceStats.speed}种族·${profile.label}`,
         speed,
         spirit,
+        spiritId: spirit.id,
       }];
     })
     .sort(compareSpeedTargets);

@@ -37,11 +37,13 @@ test("特性触发速度复用项目规则并限制蜂后为五名队友", () =>
     spirit: { traitIds: ["swarm"] },
   });
 
-  expect(modifiers).toContainEqual(expect.objectContaining({
-    amount: 115,
-    label: "虫群突袭（5层）",
-    source: "trait",
-  }));
+  expect(modifiers.map(({ amount, label, stack }) => ({ amount, label, stack }))).toEqual([
+    { amount: 23, label: "虫群突袭（1层）", stack: 1 },
+    { amount: 46, label: "虫群突袭（2层）", stack: 2 },
+    { amount: 69, label: "虫群突袭（3层）", stack: 3 },
+    { amount: 92, label: "虫群突袭（4层）", stack: 4 },
+    { amount: 115, label: "虫群突袭（5层）", stack: 5 },
+  ]);
 });
 
 test("契约的形状提供绝缘球速度情景", () => {

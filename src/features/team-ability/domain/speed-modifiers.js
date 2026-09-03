@@ -88,15 +88,19 @@ function traitSpeedModifiers(spirit, traitsById, currentSpeed) {
     const perStack = rule.speedMode === "percent"
       ? Math.round(currentSpeed * speedEffect / 100)
       : speedEffect;
-    const amount = perStack * stacks;
-    if (!Number.isFinite(amount) || amount <= 0) return [];
-    return [{
-      amount,
-      groupId: `trait:${trait.id}`,
-      id: `trait:${trait.id}:${stacks}`,
-      label: rule.stack ? `${trait.name}（${stacks}层）` : trait.name,
-      source: "trait",
-    }];
+    if (!Number.isFinite(perStack) || perStack <= 0) return [];
+    return Array.from({ length: stacks }, (_, index) => {
+      const stack = index + 1;
+      return {
+        amount: perStack * stack,
+        groupId: `trait:${trait.id}`,
+        id: `trait:${trait.id}:${stack}`,
+        label: rule.stack ? `${trait.name}（${stack}层）` : trait.name,
+        maxStacks: stacks,
+        source: "trait",
+        stack: rule.stack ? stack : null,
+      };
+    });
   });
 }
 

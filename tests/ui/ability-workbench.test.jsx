@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { expect, test, vi } from "vitest";
@@ -49,6 +49,14 @@ function member(displayIvs) {
     skills: { four: [], single: null },
     spiritId: "spirit_db5a2cb398dc0385",
   };
+}
+
+function chooseSpeedTarget(name) {
+  const input = screen.getByRole("combobox", { name: "速度目标精灵" });
+  const option = [...input.list.options].find(({ value }) => value.startsWith(`${name} ·`));
+  if (!option) throw new Error(`未找到速度目标：${name}`);
+  fireEvent.change(input, { target: { value: option.value } });
+  return input;
 }
 
 test("满三项后可点第四项并明确替换一个已选个体值", async () => {
@@ -117,7 +125,7 @@ test("生命物防魔防占满三项时按三种防御性格对比", () => {
   expect(within(firstCard).getByRole("button", { name: "应用到成员" })).toBeEnabled();
 });
 
-test("速度排行榜横轴可拖动并使用 Excel 五档口径，默认极速", async () => {
+test("速度排行榜横轴支持多选口径，默认极速、满速和无速", async () => {
   const user = userEvent.setup();
   render(
     <AbilityWorkbench
@@ -137,18 +145,14 @@ test("速度排行榜横轴可拖动并使用 Excel 五档口径，默认极速"
 
   expect(screen.queryByRole("slider", { name: "速度目标轴" })).not.toBeInTheDocument();
   expect(screen.getByRole("region", { name: "速度排行榜横轴" })).toHaveAttribute("tabindex", "0");
-  const profile = screen.getByRole("combobox", { name: "速度目标口径" });
-  expect(profile).toHaveValue("positive-max");
-  expect(within(profile).getAllByRole("option").map((option) => option.textContent)).toEqual([
-    "极速",
-    "满速",
-    "仅速度性格",
-    "无速度",
-    "减速度",
-  ]);
-  await user.selectOptions(profile, "negative-zero");
-  expect(profile).toHaveValue("negative-zero");
-  expect(screen.getByRole("button", { name: /展开速度表/ })).toHaveTextContent("减速度");
+  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("3种口径");
+  expect(screen.getByRole("checkbox", { name: "极速" })).toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "满速" })).toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "无速度" })).toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "仅速度性格" })).not.toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "减速度" })).not.toBeChecked();
+  await user.click(screen.getByRole("checkbox", { name: "减速度" }));
+  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("4种口径");
 });
 
 test("速度表默认收起，展开后按档位展示全部合格精灵并可选目标", async () => {
@@ -175,13 +179,12 @@ test("速度表默认收起，展开后按档位展示全部合格精灵并可�
   const table = screen.getByRole("table", { name: "速度档位表" });
   const speeds = within(table).getAllByRole("rowheader").map((cell) => Number(cell.textContent));
   expect(speeds).toEqual([...speeds].sort((left, right) => right - left));
-  expect(within(table).getByRole("button", { name: /在速度表选择音速犬/ })).toBeVisible();
-  expect(within(table).getByRole("button", { name: /在速度表选择首领象/ })).toBeVisible();
+  expect(within(table).getAllByRole("button", { name: /在速度表选择音速犬/ })).not.toHaveLength(0);
+  expect(within(table).getAllByRole("button", { name: /在速度表选择首领象/ })).not.toHaveLength(0);
 
-  await user.click(within(table).getByRole("button", { name: /在速度表选择音速犬/ }));
-  expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(
-    "spirit_db5a2cb398dc0385",
-  );
+  await user.click(within(table).getAllByRole("button", { name: /在速度表选择音速犬/ })[0]);
+  expect(screen.getByRole("combobox", { name: "速度目标精灵" }).value)
+    .toMatch(/^音速犬 · \d+（/);
 });
 
 test("携带速度状态技能时可勾选并用加速后的本体速度比较", async () => {
@@ -213,6 +216,37 @@ test("携带速度状态技能时可勾选并用加速后的本体速度比较",
       .getByText("当前配置")
       .closest("div"),
   ).toHaveTextContent("305");
+});
+
+test("层数型特性按所选层数累计本体速度", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={{
+        ...snapshot,
+        spirits: snapshot.spirits.map((spirit) => spirit.id === "spirit_db5a2cb398dc0385"
+          ? { ...spirit, traitIds: ["swarm"] }
+          : spirit),
+        traits: [{ id: "swarm", name: "虫群突袭" }],
+      }}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  const stacks = screen.getByRole("combobox", { name: "虫群突袭层数" });
+  await user.selectOptions(stacks, "trait:swarm:3");
+  expect(stacks).toHaveValue("trait:swarm:3");
+  expect(screen.getByText("本体额外速度").parentElement)
+    .toHaveTextContent("当前 327 = 面板 225 + 102");
 });
 
 test("耐久目标结果不同时保留综合、物理、魔法三栏", () => {
@@ -363,10 +397,8 @@ test("keeps analysis context and advances the local baseline after a successful 
   }
 
   render(<ApplyHarness />);
-  await user.selectOptions(
-    screen.getByRole("combobox", { name: "速度目标精灵" }),
-    "spirit_db5a2cb398dc0385",
-  );
+  const targetPicker = chooseSpeedTarget("音速犬");
+  const selectedTarget = targetPicker.value;
   await user.selectOptions(
     screen.getByRole("combobox", { name: "推荐速度约束" }),
     "unlocked",
@@ -381,9 +413,7 @@ test("keeps analysis context and advances the local baseline after a successful 
     )[1],
   );
 
-  expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(
-    "spirit_db5a2cb398dc0385",
-  );
+  expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(selectedTarget);
   expect(screen.getByRole("combobox", { name: "推荐速度约束" })).toHaveValue(
     "unlocked",
   );
@@ -434,7 +464,6 @@ test("advances a temporary side baseline even when its entry prop stays unchange
 });
 
 test("rebuilds the draft when the same member receives an external configuration", async () => {
-  const user = userEvent.setup();
   const source = { index: 0, kind: "member", teamId: "team-1" };
   const first = member({
     hp: 60,
@@ -461,10 +490,7 @@ test("rebuilds the draft when the same member receives an external configuration
     />,
   );
 
-  await user.selectOptions(
-    screen.getByRole("combobox", { name: "速度目标精灵" }),
-    "boss-elephant",
-  );
+  const selectedTarget = chooseSpeedTarget("首领象").value;
   rendered.rerender(
     <AbilityWorkbench
       configuration={second}
@@ -475,9 +501,7 @@ test("rebuilds the draft when the same member receives an external configuration
   );
 
   await waitFor(() =>
-    expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(
-      "boss-elephant",
-    ),
+    expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(selectedTarget),
   );
   const investments = screen.getByRole("group", { name: "个体值分配" });
   expect(within(investments).getByRole("button", { name: /取消物防个体值/ })).toBeEnabled();
@@ -530,12 +554,9 @@ test("marks target and solver constraint changes as an unapplied analysis draft"
   const targetPicker = screen.getByRole("combobox", {
     name: "速度目标精灵",
   });
-  expect(targetPicker).toHaveValue("boss-elephant");
-  await user.selectOptions(
-    targetPicker,
-    "spirit_db5a2cb398dc0385",
-  );
-  expect(targetPicker).toHaveValue("spirit_db5a2cb398dc0385");
+  expect(targetPicker.value).toMatch(/^音速犬 · \d+（/);
+  chooseSpeedTarget("首领象");
+  expect(targetPicker.value).toMatch(/^首领象 · \d+（/);
   await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
 
   onDirtyChange.mockClear();
