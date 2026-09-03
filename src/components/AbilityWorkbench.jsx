@@ -30,6 +30,7 @@ import {
   findNearestSpeedTarget,
   groupSpeedTargets,
   SPEED_TARGET_PROFILES,
+  createSpeedSpecialTargets,
   createSpeedTargets,
 } from "../features/team-ability/domain/speed-targets.js";
 import { createSpeedModifiers } from "../features/team-ability/domain/speed-modifiers.js";
@@ -85,8 +86,16 @@ const DEFAULT_SPEED_PROFILE_IDS = Object.freeze([
 
 function speedTargetLabel(target) {
   return target
-    ? `${target.name} · ${target.speed}（${target.profileLabel}）`
+    ? `${target.name} · ${target.speed}（${target.profileLabel}${target.specialLabel ? ` · ${target.specialLabel}` : ""}）`
     : "";
+}
+
+function speedTargetMeta(target, { compact = false } = {}) {
+  const role = target.formRole === "boss" ? " · 首领" : "";
+  const context = target.specialLabel && compact
+    ? target.specialLabel
+    : `${target.profileLabel}${target.specialLabel ? ` · ${target.specialLabel}` : ""}`;
+  return `${target.spirit.raceStats.speed}族${role} · ${context}`;
 }
 
 function cloneConfiguration(configuration) {
@@ -480,7 +489,7 @@ function SpeedRail({
                 >
                   {targetOptions.map((target) => (
                     <button
-                      aria-label={`选择${target.name} ${target.speed} ${target.profileLabel}`}
+                      aria-label={`选择${target.name} ${target.speed} ${target.profileLabel}${target.specialLabel ? ` ${target.specialLabel}` : ""}`}
                       aria-selected={target.id === selected?.id}
                       data-target-id={target.id}
                       key={target.id}
@@ -492,7 +501,7 @@ function SpeedRail({
                       {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
                       <span>
                         <strong>{target.name}</strong>
-                        <small>{target.spirit.raceStats.speed}族 · {target.profileLabel}</small>
+                        <small>{speedTargetMeta(target)}</small>
                       </span>
                       <b>{target.speed}</b>
                     </button>
@@ -583,7 +592,7 @@ function SpeedRail({
           ) : (
             <button
               aria-current={item.target.id === selected?.id ? "true" : undefined}
-              aria-label={`选择速度目标${item.target.name}，速度${item.target.speed}`}
+              aria-label={`选择速度目标${item.target.name}，速度${item.target.speed}${item.target.specialLabel ? `，${item.target.specialLabel}` : ""}`}
               className={`ability-speed__marker${item.target.id === selected?.id ? " is-target" : ""}`}
               key={item.id}
               onClick={() => selectTarget(item.target.id)}
@@ -595,9 +604,7 @@ function SpeedRail({
               <b>{item.target.speed}</b>
               <span>{item.target.name}</span>
               <small>
-                {item.target.spirit.raceStats.speed}族
-                {item.target.formRole === "boss" ? " · 首领" : ""}
-                {` · ${item.target.profileLabel}`}
+                {speedTargetMeta(item.target, { compact: true })}
               </small>
             </button>
           ))}
@@ -639,7 +646,7 @@ function SpeedRail({
                     <div className="ability-speed__tier-spirits">
                       {group.targets.map((target) => (
                         <button
-                          aria-label={`在速度表选择${target.name}，速度${target.speed}`}
+                          aria-label={`在速度表选择${target.name}，速度${target.speed}${target.specialLabel ? `，${target.specialLabel}` : ""}`}
                           aria-pressed={target.id === selected?.id}
                           key={target.id}
                           onClick={() => onTargetChange(target.id)}
@@ -651,9 +658,7 @@ function SpeedRail({
                           <span>
                             <strong>{target.name}</strong>
                             <small>
-                              {target.spirit.raceStats.speed}族
-                              {target.formRole === "boss" ? " · 首领" : ""}
-                              {` · ${target.profileLabel}`}
+                              {speedTargetMeta(target)}
                             </small>
                           </span>
                         </button>
@@ -963,16 +968,19 @@ export function AbilityWorkbench({
   const speedTargets = useMemo(() => {
     if (!panel) return [];
     return groupSpeedTargets(speedProfileIds.flatMap((profileId) =>
-      createSpeedTargets({
-        profileId,
-        spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter,
-        spirits: snapshot.spirits ?? [],
-      }).map((target) => ({
-        ...target,
-        id: `${profileId}:${target.id}`,
-      })),
-    )).flatMap(({ targets }) => targets);
-  }, [panel, snapshot.meta?.revisions?.spiritFilter, snapshot.spirits, speedProfileIds]);
+      [
+        ...createSpeedTargets({
+          profileId,
+          spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter,
+          spirits: snapshot.spirits ?? [],
+        }).map((target) => ({
+          ...target,
+          id: `${profileId}:${target.id}`,
+        })),
+        ...createSpeedSpecialTargets({ profileId, snapshot }),
+      ]),
+    ).flatMap(({ targets }) => targets);
+  }, [panel, snapshot, speedProfileIds]);
   const speedModifiers = useMemo(
     () => panel ? createSpeedModifiers({
       configuration: draft,

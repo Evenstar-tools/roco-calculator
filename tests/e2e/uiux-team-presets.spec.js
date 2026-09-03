@@ -234,6 +234,11 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
     tierMeta: 11,
     tierName: 12,
   });
+  const clippedSpeedLabels = await speedAxis.locator(".ability-speed__marker span, .ability-speed__marker small")
+    .evaluateAll((nodes) => nodes
+      .filter((node) => node.scrollHeight > node.clientHeight)
+      .map((node) => node.textContent.trim()));
+  expect(clippedSpeedLabels).toEqual([]);
   const tableSpeeds = await speedTable.getByRole("rowheader").allTextContents();
   expect(tableSpeeds.map(Number)).toEqual(
     [...tableSpeeds.map(Number)].sort((left, right) => right - left),

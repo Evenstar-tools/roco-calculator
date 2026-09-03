@@ -19,14 +19,23 @@ function entryContext(entry) {
 }
 
 function skillSpeedModifiers(configuration, skillsById) {
+  const entries = carriedEntries(configuration);
+  const carriedSkills = entries
+    .map((entry) => resolveSkillEntity(entry, skillsById))
+    .filter(Boolean);
   const seenSkills = new Set();
-  return carriedEntries(configuration).flatMap((entry) => {
+  return entries.flatMap((entry) => {
     const skill = resolveSkillEntity(entry, skillsById);
     const skillKey = skill?.id ?? skill?.name;
-    if (!skillKey || seenSkills.has(skillKey) || !isPureStatusSkill(skill)) return [];
+    const isRefraction = skill?.name === "折射";
+    if (
+      !skillKey ||
+      seenSkills.has(skillKey) ||
+      (!isPureStatusSkill(skill) && !isRefraction)
+    ) return [];
     seenSkills.add(skillKey);
 
-    const baseContext = entryContext(entry);
+    const baseContext = { ...entryContext(entry), carriedSkills };
     const contexts = [{ context: baseContext, suffix: "" }];
     for (const input of getSkillStatusEffectInputs(skill)) {
       if (input.type !== "boolean") continue;
@@ -45,7 +54,7 @@ function skillSpeedModifiers(configuration, skillsById) {
         amount,
         groupId: `skill:${skillKey}`,
         id: `skill:${skillKey}:${amount}`,
-        label: `${skill.name}${suffix}`,
+        label: isRefraction ? "折射（携带电系技能）" : `${skill.name}${suffix}`,
         source: "skill",
       }];
     });
@@ -85,14 +94,14 @@ function traitSpeedModifiers(spirit, traitsById, currentSpeed) {
       ? Math.min(5, Number(rule.max ?? rule.stack.max ?? 5))
       : 1;
     const speedEffect = Number(rule.speedEffect ?? 0);
-    const perStack = rule.speedMode === "percent"
-      ? Math.round(currentSpeed * speedEffect / 100)
-      : speedEffect;
-    if (!Number.isFinite(perStack) || perStack <= 0) return [];
+    if (!Number.isFinite(speedEffect) || speedEffect <= 0) return [];
     return Array.from({ length: stacks }, (_, index) => {
       const stack = index + 1;
+      const amount = rule.speedMode === "percent"
+        ? Math.floor(currentSpeed * speedEffect * stack / 100)
+        : speedEffect * stack;
       return {
-        amount: perStack * stack,
+        amount,
         groupId: `trait:${trait.id}`,
         id: `trait:${trait.id}:${stack}`,
         label: rule.stack ? `${trait.name}（${stack}层）` : trait.name,

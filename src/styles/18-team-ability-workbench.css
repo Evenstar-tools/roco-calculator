@@ -1185,7 +1185,7 @@
   min-width: 116px;
   justify-items: center;
   align-content: center;
-  grid-template-rows: 32px 17px 14px 12px 12px;
+  grid-template-rows: 32px 17px 14px 16px 15px;
   gap: 2px;
   border: 0;
   color: inherit;
@@ -1225,6 +1225,7 @@
   overflow: hidden;
   color: var(--text-faint);
   font-size: 12px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
   grid-row: 4;
@@ -1235,6 +1236,7 @@
   overflow: hidden;
   color: var(--text-faint);
   font-size: 11px;
+  line-height: 15px;
   text-overflow: ellipsis;
   white-space: nowrap;
   grid-row: 5;

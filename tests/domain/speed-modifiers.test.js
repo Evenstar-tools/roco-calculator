@@ -46,6 +46,41 @@ test("特性触发速度复用项目规则并限制蜂后为五名队友", () =>
   ]);
 });
 
+test("百分比速度逐层按最终百分比向下取整", () => {
+  const modifiers = createSpeedModifiers({
+    configuration: { skills: { four: [] } },
+    currentSpeed: 223,
+    snapshot: {
+      skills: [],
+      traits: [{ id: "partner", name: "最好的伙伴" }],
+    },
+    spirit: { traitIds: ["partner"] },
+  });
+
+  expect(modifiers.map(({ amount }) => amount)).toEqual([44, 89, 133, 178, 223]);
+});
+
+test("携带折射和电系技能时提供当前20点速度情景", () => {
+  const modifiers = createSpeedModifiers({
+    configuration: { skills: { four: ["refraction", "electric"] } },
+    currentSpeed: 241,
+    snapshot: {
+      skills: [
+        { id: "refraction", name: "折射", category: "magical", type: "光" },
+        { id: "electric", name: "磁干扰", category: "magical", type: "电" },
+      ],
+      traits: [],
+    },
+    spirit: { traitIds: [] },
+  });
+
+  expect(modifiers).toContainEqual(expect.objectContaining({
+    amount: 20,
+    label: "折射（携带电系技能）",
+    source: "skill",
+  }));
+});
+
 test("契约的形状提供绝缘球速度情景", () => {
   const modifiers = createSpeedModifiers({
     configuration: { skills: { four: [] } },

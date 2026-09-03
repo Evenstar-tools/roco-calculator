@@ -341,7 +341,7 @@ test("层数型特性按所选层数累计本体速度", async () => {
   await user.selectOptions(stacks, "trait:swarm:3");
   expect(stacks).toHaveValue("trait:swarm:3");
   expect(screen.getByText("本体额外速度").parentElement)
-    .toHaveTextContent("当前 327");
+    .toHaveTextContent("当前 326");
   expect(screen.queryByText(/= 面板/)).not.toBeInTheDocument();
 });
 

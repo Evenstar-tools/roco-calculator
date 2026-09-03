@@ -1,4 +1,5 @@
 import { calculateAllPanelStats, hasCompleteRaceStats } from "../../../domain/stat.js";
+import { createSpeedModifiers } from "./speed-modifiers.js";
 import { resolveSpiritFormRole } from "./spirit-form-role.js";
 
 const EMPTY_DISPLAY_IVS = Object.freeze({
@@ -43,8 +44,47 @@ export const SPEED_TARGET_PROFILES = Object.freeze({
   }),
 });
 
+const SPEED_SPECIAL_CASES = Object.freeze([
+  ["yingli-taunt", "影狸", "positive-max", "嘲弄"],
+  ["fallen-rabbit-taunt", "落陨星兔", "positive-max", "嘲弄"],
+  ["green-coral-taunt", "海枝枝（翠绿纶布）", "positive-max", "嘲弄"],
+  ["fluffy-sentry", "绒光优优", "positive-max", "哨兵"],
+  ["night-eve-meshing", "朔夜伊芙", "neutral-max", "啮合传递"],
+  ["sonic-tita-meshing", "声波缇塔", "positive-max", "啮合传递"],
+  ["black-cat-warning-max", "黑猫巫师", "positive-max", "预警"],
+  ["black-cat-warning-neutral", "黑猫巫师", "neutral-max", "预警"],
+  ["platinum-refraction", "白金独角兽", "positive-max", "折射"],
+  ["mimic-meshing", "迷迷箱怪", "positive-max", "啮合传递"],
+  ["meteor-insulation", "陨星虫", "positive-max", "契约的形状"],
+  ["scepter-meshing", "权杖-V", "positive-max", "啮合传递"],
+  ["squid-meshing", "混乱鱿彩", "positive-max", "啮合传递"],
+  ["queen-swarm-3", "女王蜂", "positive-max", "虫群突袭", 3],
+  ["queen-swarm-4", "女王蜂", "positive-max", "虫群突袭", 4],
+  ["queen-swarm-5", "女王蜂", "positive-max", "虫群突袭", 5],
+  ["flower-queen-swarm-3", "花魁蜂后", "positive-max", "虫群鼓舞", 3],
+  ["sword-meshing-max", "圣剑-X", "positive-max", "啮合传递"],
+  ["sword-meshing-zero", "圣剑-X", "neutral-zero", "啮合传递"],
+  ["dimo-partner-1", "迪莫", "positive-max", "最好的伙伴", 1],
+]);
+
+function speedProfile(profileId) {
+  const profile = SPEED_TARGET_PROFILES[profileId];
+  if (profile) return profile;
+  const error = new TypeError(`未知速度目标口径：${String(profileId)}`);
+  error.code = "INVALID_SPEED_TARGET_PROFILE";
+  throw error;
+}
+
+function specialLabel(sourceName, stack) {
+  if (sourceName === "啮合传递") return "啮合";
+  if (sourceName === "契约的形状") return "绝缘球";
+  if (sourceName === "折射") return "折射·电";
+  return `${sourceName}${stack ? `${stack}层` : ""}`;
+}
+
 function compareSpeedTargets(left, right) {
   return right.speed - left.speed ||
+    Number(Boolean(right.specialLabel)) - Number(Boolean(left.specialLabel)) ||
     left.name.localeCompare(right.name, "zh-CN") ||
     left.id.localeCompare(right.id);
 }
@@ -54,12 +94,7 @@ export function createSpeedTargets({
   spiritFilterRevision,
   spirits = [],
 } = {}) {
-  const profile = SPEED_TARGET_PROFILES[profileId];
-  if (!profile) {
-    const error = new TypeError(`未知速度目标口径：${String(profileId)}`);
-    error.code = "INVALID_SPEED_TARGET_PROFILE";
-    throw error;
-  }
+  const profile = speedProfile(profileId);
 
   return spirits
     .flatMap((spirit) => {
@@ -79,6 +114,65 @@ export function createSpeedTargets({
         profileLabel: profile.label,
         qualifier: `${spirit.raceStats.speed}种族·${profile.label}`,
         speed,
+        spirit,
+        spiritId: spirit.id,
+      }];
+    })
+    .sort(compareSpeedTargets);
+}
+
+export function createSpeedSpecialTargets({ profileId = "positive-max", snapshot } = {}) {
+  const profile = speedProfile(profileId);
+  const spirits = snapshot?.spirits ?? [];
+  const skills = snapshot?.skills ?? [];
+  const learnsets = new Map(
+    (snapshot?.learnsets ?? []).map((entry) => [entry.spiritId, entry.skillIds ?? []]),
+  );
+
+  return SPEED_SPECIAL_CASES
+    .filter(([, , caseProfileId]) => caseProfileId === profileId)
+    .flatMap(([caseId, spiritName, , sourceName, stack]) => {
+      const spirit = spirits.find((entry) => entry.fullName === spiritName);
+      if (!spirit || !hasCompleteRaceStats(spirit.raceStats)) return [];
+      const form = resolveSpiritFormRole(spirit, {
+        spiritFilterRevision: snapshot?.meta?.revisions?.spiritFilter,
+      });
+      if (form.formRole !== "final" && form.formRole !== "boss") return [];
+
+      const learnedIds = learnsets.get(spirit.id) ?? [];
+      const sourceSkill = skills.find(
+        (skill) => skill.name === sourceName && learnedIds.includes(skill.id),
+      );
+      const extraElectricSkill = sourceName === "折射"
+        ? skills.find((skill) => skill.type === "电" && learnedIds.includes(skill.id))
+        : null;
+      const carriedSkills = [sourceSkill?.id, extraElectricSkill?.id].filter(Boolean);
+      const baseSpeed = calculateAllPanelStats({
+        displayIvs: { ...EMPTY_DISPLAY_IVS, speed: profile.displayIv },
+        natureMultipliers: { speed: profile.natureMultiplier },
+        raceStats: spirit.raceStats,
+      }).speed;
+      const modifier = createSpeedModifiers({
+        configuration: { skills: { four: carriedSkills } },
+        currentSpeed: baseSpeed,
+        snapshot,
+        spirit,
+      }).find((entry) =>
+        entry.label.startsWith(sourceName) &&
+        (stack === undefined || entry.stack === stack),
+      );
+      if (!modifier) return [];
+
+      const label = specialLabel(sourceName, stack);
+      return [{
+        formRole: form.formRole,
+        id: `special:${caseId}`,
+        name: spirit.fullName,
+        profileId: profile.id,
+        profileLabel: profile.label,
+        qualifier: `${spirit.raceStats.speed}种族·${profile.label}·${label}`,
+        specialLabel: label,
+        speed: baseSpeed + modifier.amount,
         spirit,
         spiritId: spirit.id,
       }];
