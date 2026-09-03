@@ -656,7 +656,7 @@
 
 .ability-investments__iv small {
   color: var(--text-faint);
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .ability-investments__iv strong {
@@ -813,7 +813,7 @@
 .ability-section__title small {
   overflow: hidden;
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -835,7 +835,7 @@
 
 .ability-speed__profile-picker {
   display: flex;
-  flex: 0 1 132px;
+  flex: 0 1 190px;
   min-width: 0;
   align-items: center;
   gap: 6px;
@@ -871,6 +871,12 @@
   font-weight: 700;
   list-style: none;
   cursor: pointer;
+}
+
+.ability-speed__profile-picker summary {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ability-speed__profile-picker summary::after {
@@ -1022,7 +1028,7 @@
 
 .ability-speed__target-options small {
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .ability-speed__target-options b {
@@ -1218,7 +1224,7 @@
   max-width: 104px;
   overflow: hidden;
   color: var(--text-faint);
-  font-size: 11px;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
   grid-row: 4;
@@ -1228,7 +1234,7 @@
   max-width: 104px;
   overflow: hidden;
   color: var(--text-faint);
-  font-size: 10px;
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
   grid-row: 5;
@@ -1274,7 +1280,7 @@
 .ability-speed__table-toggle small {
   margin-left: auto;
   color: var(--text-faint);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .ability-speed__table-wrap {
@@ -1388,7 +1394,7 @@
 
 .ability-speed__tier-spirits small {
   color: var(--text-faint);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .ability-build-constraints {
@@ -1408,7 +1414,7 @@
 
 .ability-build-constraints label > span {
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .ability-build-constraints select,
@@ -1418,7 +1424,7 @@
   border-radius: 6px;
   color: var(--text-muted);
   background: var(--surface);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .ability-build-constraints select {
@@ -1528,7 +1534,7 @@
   border-radius: 5px;
   color: var(--text-muted);
   background: var(--surface-muted);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -1564,7 +1570,7 @@
 .ability-build-card dd small {
   min-width: 47px;
   color: var(--text-faint);
-  font-size: 10px;
+  font-size: 11px;
   text-align: right;
 }
 
@@ -1775,7 +1781,7 @@
 
 .ability-ranking-preview > footer > span {
   color: var(--text-faint);
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .ability-ranking-preview > footer button {
@@ -2428,7 +2434,7 @@
     width: 100%;
     min-width: 0;
     padding-left: 30px;
-    grid-template-columns: minmax(100px, 0.65fr) minmax(150px, 1.35fr);
+    grid-template-columns: minmax(152px, 0.8fr) minmax(150px, 1.2fr);
   }
 
   .ability-speed .ability-section__title .ability-speed__target-input input[type="search"],
@@ -2798,7 +2804,7 @@
 
   .ability-speed__controls {
     padding-left: 0;
-    grid-template-columns: minmax(92px, 0.75fr) minmax(0, 1.25fr);
+    grid-template-columns: 128px minmax(0, 1fr);
   }
 
   .ability-speed__controls label > span {
@@ -2807,6 +2813,11 @@
 
   .ability-speed__profile-picker > span {
     display: none;
+  }
+
+  .ability-speed__profile-picker fieldset {
+    right: auto;
+    left: 0;
   }
 
   .ability-speed__target-picker > span {

@@ -423,7 +423,9 @@ function SpeedRail({
           <div className="ability-speed__profile-picker">
             <span>口径</span>
             <details>
-              <summary aria-label="速度目标口径">{profileIds.length}种口径</summary>
+              <summary aria-label="速度目标口径">
+                {profileIds.map((id) => SPEED_TARGET_PROFILES[id].label).join("、")}
+              </summary>
               <fieldset>
                 <legend>速度口径</legend>
                 {Object.values(SPEED_TARGET_PROFILES).map((entry) => (

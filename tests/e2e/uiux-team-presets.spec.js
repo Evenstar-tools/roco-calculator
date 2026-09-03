@@ -180,6 +180,9 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   await expect(ability.getByRole("checkbox", { name: "满速" })).toBeChecked();
   await expect(ability.getByRole("checkbox", { name: "无速度" })).toBeChecked();
   await expect(ability.getByRole("checkbox", { name: "减速度" })).not.toBeChecked();
+  const profileMenuBox = await ability.locator(".ability-speed__profile-picker fieldset").boundingBox();
+  expect(profileMenuBox?.x).toBeGreaterThanOrEqual(0);
+  expect((profileMenuBox?.x ?? 0) + (profileMenuBox?.width ?? 0)).toBeLessThanOrEqual(390);
   await ability.getByLabel("速度目标口径").click();
   const target = ability.getByRole("combobox", { name: "速度目标精灵" });
   await target.fill("伊兰亚龙");
@@ -226,9 +229,9 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
     tierName: Number.parseFloat(getComputedStyle(node.querySelector(".ability-speed__tier-spirits strong")).fontSize),
   }));
   expect(typeSizes).toEqual({
-    markerName: 11,
+    markerName: 12,
     speedSelect: 12,
-    tierMeta: 10,
+    tierMeta: 11,
     tierName: 12,
   });
   const tableSpeeds = await speedTable.getByRole("rowheader").allTextContents();

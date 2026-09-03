@@ -172,14 +172,14 @@ test("速度排行榜横轴支持多选口径，默认极速、满速和无速",
 
   expect(screen.queryByRole("slider", { name: "速度目标轴" })).not.toBeInTheDocument();
   expect(screen.getByRole("region", { name: "速度排行榜横轴" })).toHaveAttribute("tabindex", "0");
-  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("3种口径");
+  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("极速、满速、无速度");
   expect(screen.getByRole("checkbox", { name: "极速" })).toBeChecked();
   expect(screen.getByRole("checkbox", { name: "满速" })).toBeChecked();
   expect(screen.getByRole("checkbox", { name: "无速度" })).toBeChecked();
   expect(screen.getByRole("checkbox", { name: "仅速度性格" })).not.toBeChecked();
   expect(screen.getByRole("checkbox", { name: "减速度" })).not.toBeChecked();
   await user.click(screen.getByRole("checkbox", { name: "减速度" }));
-  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("4种口径");
+  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("极速、满速、无速度、减速度");
 });
 
 test("目标精灵支持输入搜索并从带头像和速度的候选项锁定", async () => {
