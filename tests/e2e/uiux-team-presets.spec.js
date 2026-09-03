@@ -182,10 +182,18 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   await expect(ability.getByRole("checkbox", { name: "减速度" })).not.toBeChecked();
   await ability.getByLabel("速度目标口径").click();
   const target = ability.getByRole("combobox", { name: "速度目标精灵" });
-  const targetValue = await ability
-    .locator('datalist option[data-target-id="neutral-max:spirit_b2f1251352d5f670"]')
-    .getAttribute("value");
-  await target.fill(targetValue);
+  await target.fill("伊兰亚龙");
+  const targetOption = ability.locator(
+    '[role="option"][data-target-id="neutral-max:spirit_b2f1251352d5f670"]',
+  );
+  await expect(targetOption).toBeVisible();
+  await target.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await page.screenshot({
+    fullPage: false,
+    path: "artifacts/web-ux-team-ability-fix/target-picker-390.png",
+  });
+  await targetOption.click();
+  const targetValue = await target.inputValue();
   const speedAxis = ability.getByRole("region", { name: "速度排行榜横轴" });
   const lockedTarget = speedAxis.locator('[aria-current="true"]');
   await expect.poll(async () => {

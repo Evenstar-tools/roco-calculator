@@ -1,6 +1,5 @@
 import {
   ArrowLeft,
-  CheckCircle,
   Crosshair,
   Info,
   LockSimple,
@@ -45,6 +44,7 @@ import {
   hasCompleteRaceStats,
 } from "../domain/stat.js";
 import { NatureSelect } from "./NatureSelect.jsx";
+import { StatIcon } from "./StatIcon.jsx";
 
 const INVESTMENT_STATS = Object.freeze([
   { key: "physicalAttack", label: "物攻" },
@@ -229,7 +229,7 @@ function CurrentSummary({ durability, panel }) {
   );
 }
 
-function InvestmentPicker({ onChange, onReplace, validation, values }) {
+function InvestmentPicker({ onChange, onReplace, panel, validation, values }) {
   const [replacementStat, setReplacementStat] = useState(null);
   const replacementLabel = INVESTMENT_STATS.find(
     ({ key }) => key === replacementStat,
@@ -266,8 +266,17 @@ function InvestmentPicker({ onChange, onReplace, validation, values }) {
               onClick={() => selectStat(key, !selected)}
               type="button"
             >
-              <span>{label}</span>
-              <strong>{values[key]}</strong>
+              <span className="ability-investments__label">
+                <StatIcon size={17} stat={key} />
+                <span>{label}</span>
+              </span>
+              <span aria-label={`${label}实际值`} className="ability-investments__value">
+                {formatNumber(panel?.[key])}
+              </span>
+              <span className="ability-investments__iv">
+                <small>个体</small>
+                <strong>{values[key]}</strong>
+              </span>
             </button>
           );
         })}
@@ -318,6 +327,13 @@ function SpeedRail({
   const selected = targets.find((target) => target.id === targetId) ?? targets[0];
   const [targetInput, setTargetInput] = useState(null);
   const targetGroups = groupSpeedTargets(targets);
+  const targetOptions = targetInput === null
+    ? []
+    : targets.filter((target) => {
+        const query = targetInput.trim();
+        if (!query) return true;
+        return `${target.name}${target.speed}${target.qualifier}`.includes(query);
+      }).slice(0, 12);
   const modifierGroups = Object.values(modifiers.reduce((groups, modifier) => {
     (groups[modifier.groupId] ??= []).push(modifier);
     return groups;
@@ -389,6 +405,11 @@ function SpeedRail({
     onTargetChange(targetIdToSelect);
   }
 
+  function lockTarget(target) {
+    onTargetChange(target.id);
+    setTargetInput(null);
+  }
+
   return (
     <section className="ability-section ability-speed" aria-label="速度目标">
       <header className="ability-section__title">
@@ -423,34 +444,61 @@ function SpeedRail({
               </fieldset>
             </details>
           </div>
-          <label>
+          <div
+            className="ability-speed__target-picker"
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) setTargetInput(null);
+            }}
+          >
             <span>目标精灵</span>
-            <input
-              aria-label="速度目标精灵"
-              list="ability-speed-target-options"
-              onBlur={() => setTargetInput(null)}
-              onChange={(event) => {
-                const value = event.target.value;
-                setTargetInput(value);
-                const match = targets.find((target) => speedTargetLabel(target) === value);
-                if (match) {
-                  onTargetChange(match.id);
-                  setTargetInput(null);
-                }
-              }}
-              onFocus={(event) => event.currentTarget.select()}
-              placeholder="输入精灵名"
-              type="search"
-              value={targetInput ?? speedTargetLabel(selected)}
-            />
-            <datalist id="ability-speed-target-options">
-              {targets.map((target) => (
-                <option data-target-id={target.id} key={target.id} value={speedTargetLabel(target)}>
-                  {target.qualifier}
-                </option>
-              ))}
-            </datalist>
-          </label>
+            <div className="ability-speed__target-input">
+              <MagnifyingGlass aria-hidden="true" size={15} />
+              <input
+                aria-label="速度目标精灵"
+                onChange={(event) => setTargetInput(event.target.value)}
+                onFocus={() => setTargetInput("")}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") setTargetInput(null);
+                  if (event.key === "Enter" && targetOptions[0]) {
+                    event.preventDefault();
+                    lockTarget(targetOptions[0]);
+                  }
+                }}
+                placeholder="搜索"
+                role="combobox"
+                type="search"
+                value={targetInput ?? speedTargetLabel(selected)}
+              />
+              {targetInput !== null ? (
+                <div
+                  aria-label="速度目标候选"
+                  className="ability-speed__target-options"
+                  role="listbox"
+                >
+                  {targetOptions.map((target) => (
+                    <button
+                      aria-label={`选择${target.name} ${target.speed} ${target.profileLabel}`}
+                      aria-selected={target.id === selected?.id}
+                      data-target-id={target.id}
+                      key={target.id}
+                      onClick={() => lockTarget(target)}
+                      onMouseDown={(event) => event.preventDefault()}
+                      role="option"
+                      type="button"
+                    >
+                      {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
+                      <span>
+                        <strong>{target.name}</strong>
+                        <small>{target.spirit.raceStats.speed}族 · {target.profileLabel}</small>
+                      </span>
+                      <b>{target.speed}</b>
+                    </button>
+                  ))}
+                  {targetOptions.length === 0 ? <p>无匹配精灵</p> : null}
+                </div>
+              ) : null}
+            </div>
+          </div>
         </div>
       </header>
       {modifiers.length > 0 ? (
@@ -1180,6 +1228,7 @@ export function AbilityWorkbench({
         <InvestmentPicker
           onChange={updateInvestment}
           onReplace={replaceInvestment}
+          panel={panel}
           validation={validation}
           values={draft.displayIvs}
         />
@@ -1345,7 +1394,7 @@ export function AbilityWorkbench({
             </header>
             {currentRankingEntry ? (
               <div className="ability-ranking-current">
-                <CheckCircle aria-hidden="true" size={17} weight="fill" />
+                <span aria-hidden="true">✓</span>
                 {spirit.fullName}：物理第 {currentRankingEntry.globalRank.physical}、魔法第 {currentRankingEntry.globalRank.magical}、综合第 {currentRankingEntry.globalRank.combined}
               </div>
             ) : (

@@ -11,7 +11,7 @@ const snapshot = {
   ],
   spirits: [
     {
-      asset: null,
+      asset: { localUrl: "/assets/spirit-test/speed-dog.png" },
       fullName: "音速犬",
       id: "spirit_db5a2cb398dc0385",
       raceStats: {
@@ -53,9 +53,12 @@ function member(displayIvs) {
 
 function chooseSpeedTarget(name) {
   const input = screen.getByRole("combobox", { name: "速度目标精灵" });
-  const option = [...input.list.options].find(({ value }) => value.startsWith(`${name} ·`));
+  fireEvent.focus(input);
+  fireEvent.change(input, { target: { value: name } });
+  const option = screen.getAllByRole("option", { name: new RegExp(name) })[0];
   if (!option) throw new Error(`未找到速度目标：${name}`);
-  fireEvent.change(input, { target: { value: option.value } });
+  fireEvent.mouseDown(option);
+  fireEvent.click(option);
   return input;
 }
 
@@ -88,6 +91,30 @@ test("满三项后可点第四项并明确替换一个已选个体值", async ()
     "true",
   );
   expect(screen.getByText("已用 3 / 3")).toBeVisible();
+});
+
+test("个体值分配同时显示属性图标、实际面板值和个体值", () => {
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  const speed = within(screen.getByRole("group", { name: "个体值分配" }))
+    .getByRole("button", { name: /取消速度个体值/ });
+  expect(within(speed).getByLabelText("速度实际值")).toHaveTextContent("225");
+  expect(speed).toHaveTextContent("个体60");
+  expect(speed.querySelector('img[src="/assets/stats/speed.png"]')).toBeInTheDocument();
 });
 
 test("生命物防魔防占满三项时按三种防御性格对比", () => {
@@ -153,6 +180,35 @@ test("速度排行榜横轴支持多选口径，默认极速、满速和无速",
   expect(screen.getByRole("checkbox", { name: "减速度" })).not.toBeChecked();
   await user.click(screen.getByRole("checkbox", { name: "减速度" }));
   expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("4种口径");
+});
+
+test("目标精灵支持输入搜索并从带头像和速度的候选项锁定", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  const input = screen.getByRole("combobox", { name: "速度目标精灵" });
+  await user.click(input);
+  await user.clear(input);
+  await user.type(input, "音速");
+  const listbox = screen.getByRole("listbox", { name: "速度目标候选" });
+  const option = within(listbox).getByRole("option", { name: /音速犬.*260.*极速/ });
+  expect(option.querySelector("img")).toBeInTheDocument();
+  await user.click(option);
+  expect(input.value).toMatch(/^音速犬 · 260（极速）$/);
 });
 
 test("速度表默认收起，展开后按档位展示全部合格精灵并可选目标", async () => {
