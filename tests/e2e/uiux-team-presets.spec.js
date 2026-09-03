@@ -255,6 +255,14 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
   await page.getByRole("button", { name: "打开队伍" }).click();
   const drawer = page.getByRole("dialog", { name: "队伍" });
   await drawer.getByRole("button", { name: "能力分析", exact: true }).click();
+  const builds = drawer.getByRole("region", { name: "耐久方案对比" });
+  const buildCards = builds.getByRole("article");
+  await expect(buildCards).toHaveCount(3);
+  await expect(buildCards.nth(0)).toContainText("性格：沉默（+生命 -物攻）");
+  await expect(buildCards.nth(1)).toContainText("性格：稳重（+物防 -物攻）");
+  await expect(buildCards.nth(2)).toContainText("性格：警惕（+魔防 -物攻）");
+  await expect(builds.getByText(/为什么只有一个方案|共同最优方案|三种目标一致/))
+    .toHaveCount(0);
   const speedAxis = drawer.getByRole("region", { name: "速度排行榜横轴" });
   await speedAxis.scrollIntoViewIfNeeded();
   const axisBefore = await speedAxis.evaluate((node) => ({

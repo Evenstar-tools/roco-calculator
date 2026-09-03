@@ -82,7 +82,7 @@ test("满三项后可点第四项并明确替换一个已选个体值", async ()
   expect(screen.getByText("已用 3 / 3")).toBeVisible();
 });
 
-test("三个耐久目标得到同一配置时合并为共同最优方案", () => {
+test("生命物防魔防占满三项时按三种防御性格对比", () => {
   render(
     <AbilityWorkbench
       configuration={member({
@@ -100,16 +100,21 @@ test("三个耐久目标得到同一配置时合并为共同最优方案", () =>
   );
 
   const builds = screen.getByRole("region", { name: "耐久方案对比" });
-  expect(within(builds).getAllByRole("article")).toHaveLength(1);
-  expect(within(builds).getByRole("heading", { level: 5 })).toHaveTextContent("共同最优方案");
-  expect(within(builds).getByText(/综合、物理、魔法耐久/)).toBeVisible();
-  expect(within(builds).getByText(/性格：普通/)).toBeVisible();
+  const cards = within(builds).getAllByRole("article");
+  expect(cards).toHaveLength(3);
+  expect(within(builds).getAllByRole("heading", { level: 5 }).map((heading) => heading.textContent))
+    .toEqual(["综合承伤", "物理承伤", "魔法承伤"]);
+  expect(cards[0]).toHaveTextContent("性格：沉默（+生命 -物攻）");
+  expect(cards[1]).toHaveTextContent("性格：稳重（+物防 -物攻）");
+  expect(cards[2]).toHaveTextContent("性格：警惕（+魔防 -物攻）");
+  expect(within(builds).queryByText(/为什么只有一个方案|共同最优方案|三种目标一致/))
+    .not.toBeInTheDocument();
 
-  const firstCard = within(builds).getAllByRole("article")[0];
+  const firstCard = cards[0];
   expect(
     within(firstCard).getAllByRole("term").map((term) => term.textContent),
   ).toEqual(["速度", "综合耐久", "物理耐久", "魔法耐久"]);
-  expect(within(firstCard).getByRole("button", { name: "当前方案" })).toBeDisabled();
+  expect(within(firstCard).getByRole("button", { name: "应用到成员" })).toBeEnabled();
 });
 
 test("速度排行榜横轴可拖动并使用 Excel 五档口径，默认极速", async () => {

@@ -1120,14 +1120,6 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.ability-build-grid.is-single {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.ability-build-grid.is-single .ability-build-card {
-  border-right: 0;
-}
-
 .ability-build-card {
   position: relative;
   display: grid;

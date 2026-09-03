@@ -34,7 +34,12 @@ import {
   createSpeedTargets,
 } from "../features/team-ability/domain/speed-targets.js";
 import { createSpeedModifiers } from "../features/team-ability/domain/speed-modifiers.js";
-import { getNature, getNatureMultipliers, STAT_LABELS } from "../domain/natures.js";
+import {
+  getNature,
+  getNatureMultipliers,
+  getQuickNatureId,
+  STAT_LABELS,
+} from "../domain/natures.js";
 import {
   calculateAllPanelStats,
   hasCompleteRaceStats,
@@ -159,6 +164,33 @@ function isCurrentBuild(result, configuration) {
       ({ key }) => Number(result.values[key]) === Number(configuration.displayIvs?.[key]),
     )
   );
+}
+
+const DEFENSIVE_NATURE_STAT = Object.freeze({
+  combined: "hp",
+  physical: "physicalDefense",
+  magical: "magicalDefense",
+});
+
+function withDefensiveNature(result, objective, raceStats, speedBonus) {
+  if (!result) return null;
+  const natureId = getQuickNatureId(DEFENSIVE_NATURE_STAT[objective], "defender");
+  const panel = calculateAllPanelStats({
+    displayIvs: result.values,
+    natureMultipliers: getNatureMultipliers(natureId),
+    raceStats,
+  });
+  return {
+    ...result,
+    durability: calculateDurability({
+      maxHp: panel.hp,
+      magicalDefense: panel.magicalDefense,
+      physicalDefense: panel.physicalDefense,
+    }),
+    effectiveSpeed: panel.speed + speedBonus,
+    natureId,
+    panel,
+  };
 }
 
 function CurrentSummary({ durability, panel }) {
@@ -459,7 +491,7 @@ function SpeedRail({
   );
 }
 
-function BuildCard({ current, currentDurability, duplicateLabel, objective, onApply, result, source }) {
+function BuildCard({ current, currentDurability, objective, onApply, result, source }) {
   if (!result) {
     return (
       <article className="ability-build-card is-empty">
@@ -481,7 +513,7 @@ function BuildCard({ current, currentDurability, duplicateLabel, objective, onAp
           <span>优化目标：{objective.goal}</span>
           <span>性格：{natureLabel}</span>
         </div>
-        {duplicateLabel ? <b>{duplicateLabel}</b> : objective.recommended ? <b>推荐</b> : null}
+        {objective.recommended ? <b>推荐</b> : null}
       </header>
       <div className="ability-build-card__allocation">
         {INVESTMENT_STATS.filter(({ key }) => result.values[key] === 60).map(({ key, label }) => (
@@ -982,32 +1014,22 @@ export function AbilityWorkbench({
     );
   }
 
-  const resultEntries = BUILD_OBJECTIVES.map(({ key }) => recommendations?.results?.[key] ?? null);
-  const duplicateKeys = new Map();
-  resultEntries.forEach((result) => {
-    if (result) duplicateKeys.set(result.stableKey, (duplicateKeys.get(result.stableKey) ?? 0) + 1);
+  const compareDefensiveNatures =
+    validation.valid &&
+    validation.activeCount === 3 &&
+    ["hp", "physicalDefense", "magicalDefense"].every(
+      (stat) => draft.displayIvs[stat] === 60,
+    );
+  const displayedBuilds = BUILD_OBJECTIVES.map((objective) => {
+    const result = recommendations?.results?.[objective.key] ?? null;
+    return {
+      key: objective.key,
+      objective,
+      result: compareDefensiveNatures
+        ? withDefensiveNature(result, objective.key, configured.raceStats, speedBonus)
+        : result,
+    };
   });
-  const allObjectivesShareBuild =
-    resultEntries.every(Boolean) &&
-    new Set(resultEntries.map((result) => `${result.stableKey}:${result.natureId}`)).size === 1;
-  const displayedBuilds = allObjectivesShareBuild
-    ? [{
-        duplicateLabel: "三种目标一致",
-        key: "shared",
-        objective: {
-          goal: "综合、物理、魔法耐久",
-          key: "shared",
-          label: "共同最优方案",
-          recommended: true,
-        },
-        result: resultEntries[0],
-      }]
-    : resultEntries.map((result, index) => ({
-        duplicateLabel: result && duplicateKeys.get(result.stableKey) > 1 ? "与另一方案相同" : null,
-        key: BUILD_OBJECTIVES[index].key,
-        objective: BUILD_OBJECTIVES[index],
-        result,
-      }));
 
   return (
     <div
@@ -1154,12 +1176,11 @@ export function AbilityWorkbench({
                 当前锁定和速度目标冲突，未生成非法方案。{recommendations.conflicts[0]?.code === "SPEED_TARGET_UNREACHABLE" ? "即使速度60也无法达到。" : "请解除锁定或调整速度约束。"}
               </p>
             ) : null}
-            <div className={`ability-build-grid${allObjectivesShareBuild ? " is-single" : ""}`}>
-              {displayedBuilds.map(({ duplicateLabel, key, objective, result }) => (
+            <div className="ability-build-grid">
+              {displayedBuilds.map(({ key, objective, result }) => (
                 <BuildCard
                   current={baselineConfiguration}
                   currentDurability={baselineDurability}
-                  duplicateLabel={duplicateLabel}
                   key={key}
                   objective={objective}
                   onApply={applyBuild}
