@@ -626,7 +626,7 @@ test("does not mark a normalized incoming configuration dirty on first render", 
   expect(screen.queryByText(/分析草稿尚未应用/)).not.toBeInTheDocument();
 });
 
-test("marks target and solver constraint changes as an unapplied analysis draft", async () => {
+test("does not mark analysis-only target and solver controls as an unapplied member draft", async () => {
   const user = userEvent.setup();
   const onDirtyChange = vi.fn();
   render(
@@ -653,14 +653,15 @@ test("marks target and solver constraint changes as an unapplied analysis draft"
   expect(targetPicker.value).toMatch(/^音速犬 · \d+（/);
   chooseSpeedTarget("首领象");
   expect(targetPicker.value).toMatch(/^首领象 · \d+（/);
-  await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
+  expect(onDirtyChange).not.toHaveBeenCalled();
+  expect(screen.queryByText("草稿未应用")).not.toBeInTheDocument();
 
-  onDirtyChange.mockClear();
   await user.selectOptions(
     screen.getByRole("combobox", { name: "推荐速度约束" }),
     "unlocked",
   );
-  await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
+  expect(onDirtyChange).not.toHaveBeenCalled();
+  expect(screen.queryByText("草稿未应用")).not.toBeInTheDocument();
 });
 
 test("restores the actual editor scroll position after viewing the full ranking", async () => {

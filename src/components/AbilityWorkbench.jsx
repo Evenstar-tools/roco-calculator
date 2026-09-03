@@ -861,7 +861,6 @@ export function AbilityWorkbench({
   );
   const [draft, setDraft] = useState(() => cloneConfiguration(configuration));
   const [fullRanking, setFullRanking] = useState(false);
-  const [analysisOptionsDirty, setAnalysisOptionsDirty] = useState(false);
   const [lockedDimensions, setLockedDimensions] = useState(() =>
     ["physicalAttack", "magicalAttack"].filter(
       (stat) => Number(configuration?.displayIvs?.[stat]) === 60,
@@ -904,7 +903,6 @@ export function AbilityWorkbench({
       ),
     );
     setFullRanking(false);
-    setAnalysisOptionsDirty(false);
     setActiveSpeedModifierIds([]);
     if (identityChanged) {
       setSpeedMode("keep");
@@ -1059,8 +1057,7 @@ export function AbilityWorkbench({
   );
   const currentExclusion = ranking.excluded.find((entry) => entry.spiritId === spirit?.id);
   const dirty = Boolean(
-    analysisOptionsDirty ||
-      (draft && configurationSignature(draft, source) !== baselineSignature),
+    draft && configurationSignature(draft, source) !== baselineSignature,
   );
 
   useEffect(() => {
@@ -1141,7 +1138,6 @@ export function AbilityWorkbench({
     setDraft(next);
     setBaselineConfiguration(cloneConfiguration(next));
     setBaselineSignature(configurationSignature(next, source));
-    setAnalysisOptionsDirty(false);
     setApplyStatus(`方案已${getSourceActionLabel(source)}`);
   }
 
@@ -1270,18 +1266,12 @@ export function AbilityWorkbench({
             modifiers={speedModifiers}
             onProfilesChange={(nextProfileIds) => {
               setSpeedProfileIds(nextProfileIds);
-              setAnalysisOptionsDirty(true);
               setApplyStatus("");
-              onDirtyChange?.(true);
             }}
             onTargetChange={(nextTargetId) => {
               if (!nextTargetId) return;
               setTargetId(nextTargetId);
               setApplyStatus("");
-              if (nextTargetId !== resolvedTargetId) {
-                setAnalysisOptionsDirty(true);
-                onDirtyChange?.(true);
-              }
             }}
             onToggleModifier={(modifier, selected) => {
               setActiveSpeedModifierIds((current) => selected
@@ -1292,9 +1282,7 @@ export function AbilityWorkbench({
                     modifier.id,
                   ]
                 : current.filter((id) => id !== modifier.id));
-              setAnalysisOptionsDirty(true);
               setApplyStatus("");
-              onDirtyChange?.(true);
             }}
             speedAnalysis={speedAnalysis}
             profileIds={speedProfileIds}
@@ -1315,8 +1303,6 @@ export function AbilityWorkbench({
                     aria-label="推荐速度约束"
                     onChange={(event) => {
                       setSpeedMode(event.target.value);
-                      setAnalysisOptionsDirty(true);
-                      onDirtyChange?.(true);
                     }}
                     value={speedMode}
                   >
@@ -1333,8 +1319,6 @@ export function AbilityWorkbench({
                       aria-pressed={locked}
                       key={stat}
                       onClick={() => {
-                        setAnalysisOptionsDirty(true);
-                        onDirtyChange?.(true);
                         setLockedDimensions((current) =>
                           locked
                             ? current.filter((entry) => entry !== stat)

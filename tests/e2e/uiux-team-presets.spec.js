@@ -314,6 +314,17 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
 
   await ranking.getByRole("button", { name: "返回能力分析" }).click();
   await expect(target).toHaveValue(targetValue);
+  let discardPrompts = 0;
+  page.on("dialog", async (dialog) => {
+    discardPrompts += 1;
+    await dialog.dismiss();
+  });
+  await drawer.getByRole("button", { name: "队伍分析" }).click();
+  expect(discardPrompts).toBe(0);
+  await expect(drawer.getByRole("button", { name: "队伍分析" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
 });
 
 test("keeps the full ranking spirit cell aligned at desktop width", async ({

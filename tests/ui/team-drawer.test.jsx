@@ -247,6 +247,31 @@ test("asks before discarding an unapplied ability draft", async () => {
   vi.unstubAllGlobals();
 });
 
+test("leaves ability analysis without confirmation after changing analysis-only controls", async () => {
+  const confirmDiscard = vi.fn(() => false);
+  vi.stubGlobal("confirm", confirmDiscard);
+  const user = userEvent.setup();
+  render(<DrawerHarness />);
+
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  const picker = screen.getByRole("combobox", { name: "成员精灵" });
+  fireEvent.change(picker, { target: { value: "音速犬" } });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  await user.click(screen.getByRole("button", { name: "能力分析", exact: true }));
+  await user.selectOptions(
+    screen.getByRole("combobox", { name: "推荐速度约束" }),
+    "unlocked",
+  );
+  await user.click(screen.getByRole("button", { name: "队伍分析" }));
+
+  expect(confirmDiscard).not.toHaveBeenCalled();
+  expect(screen.getByRole("button", { name: "队伍分析" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  vi.unstubAllGlobals();
+});
+
 test("keeps a dirty draft guarded when a confirmed navigation action fails", async () => {
   const confirmDiscard = vi.fn(() => true);
   const onDeleteTeamOverride = vi.fn(() => false);
