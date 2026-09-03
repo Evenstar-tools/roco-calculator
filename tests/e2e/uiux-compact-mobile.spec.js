@@ -241,7 +241,8 @@ test("keeps the result rail and three steps readable at 1280px", async ({
     .locator("xpath=..")
     .locator('.skill-picker__options [role="option"]');
   await expect(skillOptions).toHaveCount(19);
-  await expect(skillOptions.first()).toHaveAttribute("aria-setsize", "571");
+  const librarySize = await skillOptions.first().getAttribute("aria-setsize");
+  expect(Number(librarySize)).toBeGreaterThan(await skillOptions.count());
   const skillList = skillPicker
     .locator("xpath=..")
     .locator(".skill-picker__options");
@@ -249,7 +250,7 @@ test("keeps the result rail and three steps readable at 1280px", async ({
     node.scrollTop = node.scrollHeight;
     node.dispatchEvent(new Event("scroll", { bubbles: true }));
   });
-  await expect(skillOptions.last()).toHaveAttribute("aria-posinset", "571");
+  await expect(skillOptions.last()).toHaveAttribute("aria-posinset", librarySize);
   await skillPicker.fill("愿力冲击");
   await expect(skillOptions).toHaveCount(18);
 

@@ -15,7 +15,7 @@ const publicRuntimePath = path.join(
 );
 
 describe("bundled miniapp runtime", () => {
-  test("keeps every public spirit and gives each one a remote portrait", () => {
+  test("keeps every public spirit and preserves its portrait contract", () => {
     expect(existsSync(bundledRuntimePath)).toBe(true);
     if (!existsSync(bundledRuntimePath)) return;
 
@@ -32,12 +32,64 @@ describe("bundled miniapp runtime", () => {
         expect.arrayContaining(learnset.skillIds),
       );
     }
+    const bundledSpirits = new Map(
+      bundled.spirits.map((spirit) => [spirit.id, spirit]),
+    );
+    const bundledTraits = new Map(
+      bundled.traits.map((trait) => [trait.id, trait]),
+    );
+    const bundledSkills = new Map(
+      bundled.skills.map((skill) => [skill.id, skill]),
+    );
+    const raceStatKeys = [
+      "hp",
+      "speed",
+      "physicalAttack",
+      "magicalAttack",
+      "physicalDefense",
+      "magicalDefense",
+    ];
+    for (const spirit of publicRuntime.spirits) {
+      expect(bundledSpirits.get(spirit.id)?.previewDefaults).toEqual(
+        spirit.previewDefaults,
+      );
+      if (spirit.calculationStatus === "pending-race-stats") {
+        expect(bundledSpirits.get(spirit.id)).toMatchObject({
+          calculationStatus: "pending-race-stats",
+          raceStats: null,
+        });
+        continue;
+      }
+      expect(
+        Object.fromEntries(raceStatKeys.map((key) => [
+          key,
+          bundledSpirits.get(spirit.id)?.raceStats?.[key],
+        ])),
+      ).toEqual(
+        Object.fromEntries(raceStatKeys.map((key) => [key, spirit.raceStats[key]])),
+      );
+    }
+    for (const trait of publicRuntime.traits) {
+      expect(bundledTraits.get(trait.id)?.description).toBe(trait.description);
+    }
+    for (const skill of publicRuntime.skills) {
+      expect(bundledSkills.get(skill.id)).toMatchObject({
+        basePower: skill.basePower,
+        category: skill.category,
+        cost: skill.cost,
+        description: skill.description,
+        name: skill.name,
+        type: skill.type,
+      });
+    }
     const bundledSkillIds = new Set(bundled.skills.map((skill) => skill.id));
     expect(bundled.learnsets.every((learnset) =>
       learnset.skillIds.every((skillId) => bundledSkillIds.has(skillId))
     )).toBe(true);
     expect(bundled.spirits.every((spirit) =>
-      /^https:\/\//u.test(spirit.imageUrl)
+      /^https:\/\//u.test(spirit.imageUrl) ||
+      (spirit.changeInfo?.isNew === true &&
+        spirit.changeInfo?.patch?.status === "preview")
     )).toBe(true);
     expect(
       bundled.spirits.find(
@@ -53,11 +105,7 @@ describe("bundled miniapp runtime", () => {
       JSON.parse(readFileSync(bundledRuntimePath, "utf8")),
     );
 
-    expect(decodedBundledRuntime.meta.id).toBe(bundled.meta.id);
-    expect(decodedBundledRuntime.spirits).toHaveLength(bundled.spirits.length);
-    expect(decodedBundledRuntime.skills).toHaveLength(bundled.skills.length);
-    expect(decodedBundledRuntime.traits).toHaveLength(bundled.traits.length);
-    expect(decodedBundledRuntime.learnsets).toHaveLength(bundled.learnsets.length);
+    expect(decodedBundledRuntime).toEqual(bundled);
   });
 
   test("keeps secure source icons for ordinary skills while calculator-only skills remain compatible", () => {
@@ -106,16 +154,36 @@ describe("bundled miniapp runtime", () => {
 
   test("expands compact learnset indexes into the calculator contract", () => {
     expect(expandBundledRuntime({
+      defaultSkillIndexes: { 0: [0] },
       learnsetSkillIndexes: [[1, 0], []],
       skills: [{ id: "skill-a" }, { id: "skill-b" }],
       spirits: [{ id: "spirit-a" }, { id: "spirit-b" }],
     })).toEqual({
       learnsets: [
-        { spiritId: "spirit-a", skillIds: ["skill-b", "skill-a"] },
+        {
+          defaultSkillIds: ["skill-a"],
+          spiritId: "spirit-a",
+          skillIds: ["skill-b", "skill-a"],
+        },
         { spiritId: "spirit-b", skillIds: [] },
       ],
       skills: [{ id: "skill-a" }, { id: "skill-b" }],
       spirits: [{ id: "spirit-a" }, { id: "spirit-b" }],
     });
+  });
+
+  test("keeps the explicit S4 preview quartet order after compact expansion", () => {
+    const bundled = expandBundledRuntime(
+      JSON.parse(readFileSync(bundledRuntimePath, "utf8")),
+    );
+    const spirit = bundled.spirits.find(({ fullName }) => fullName === "月使鹭纳");
+    const learnset = bundled.learnsets.find(
+      ({ spiritId }) => spiritId === spirit.id,
+    );
+    const skillsById = new Map(bundled.skills.map((skill) => [skill.id, skill]));
+
+    expect(
+      learnset.defaultSkillIds.map((skillId) => skillsById.get(skillId)?.name),
+    ).toEqual(["惊鸿一瞥", "月影交错", "打雪仗", "羽翼庇护"]);
   });
 });

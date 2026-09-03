@@ -73,17 +73,7 @@ function persistentValue(skill, context, contextKey) {
   return { key: contextKey, value: context[contextKey] };
 }
 
-function advancePersistentContext(skill, context, sproutStacks = 0) {
-  const normalizedSproutStacks = Math.min(
-    99,
-    Math.max(0, Math.floor(Number(sproutStacks) || 0)),
-  );
-  const withSproutPower = (value) => ({
-    ...value,
-    sproutFixedPowerBonus:
-      Math.max(0, Number(context.sproutFixedPowerBonus) || 0) +
-      normalizedSproutStacks * 10,
-  });
+function advancePersistentContext(skill, context) {
   if (
     skill?.name === "友谊满溢" &&
     context.friendshipMode === "growth"
@@ -95,14 +85,6 @@ function advancePersistentContext(skill, context, sproutStacks = 0) {
         Math.max(0, Math.floor(Number(stored.value) || 0)) + 1,
     };
   }
-  if (skill?.name === "撒娇") {
-    const stored = persistentValue(skill, context, "moeGainCount");
-    return withSproutPower({
-      ...context,
-      [stored.key]:
-        Math.max(0, Math.floor(Number(stored.value) || 0)) + 1,
-    });
-  }
   return { ...context };
 }
 
@@ -113,13 +95,6 @@ function persistentContextPatch(skill, context) {
       [stored.key]: stored.value,
     };
   }
-  if (skill?.name === "撒娇") {
-    const stored = persistentValue(skill, context, "moeGainCount");
-    return {
-      [stored.key]: stored.value,
-      sproutFixedPowerBonus: context.sproutFixedPowerBonus,
-    };
-  }
   return {};
 }
 
@@ -128,7 +103,7 @@ export function isChoiceSkill(skill) {
 }
 
 export function hasPersistentSkillProgression(skill) {
-  return skill?.name === "友谊满溢" || skill?.name === "撒娇";
+  return skill?.name === "友谊满溢";
 }
 
 export function supportsChoiceTrait(traitName) {
@@ -171,11 +146,7 @@ export function buildChoiceSkillSequence({
     context.choiceTraitTriggered === true;
 
   if (!shouldRepeat) {
-    const afterFirst = advancePersistentContext(
-      skill,
-      firstContext,
-      normalizedSproutStacks,
-    );
+    const afterFirst = advancePersistentContext(skill, firstContext);
     return {
       executions: [
         {
@@ -193,22 +164,14 @@ export function buildChoiceSkillSequence({
     };
   }
 
-  const afterFirst = advancePersistentContext(
-    skill,
-    firstContext,
-    normalizedSproutStacks,
-  );
+  const afterFirst = advancePersistentContext(skill, firstContext);
   const repeated =
     traitName === "有求必应" ? otherChoice(control, selected) : selected;
   const secondContext = withoutResponse(
     skill,
     withSelectedChoice(afterFirst, control, repeated),
   );
-  const afterSecond = advancePersistentContext(
-    skill,
-    secondContext,
-    normalizedSproutStacks,
-  );
+  const afterSecond = advancePersistentContext(skill, secondContext);
 
   return {
     executions: [

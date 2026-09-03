@@ -21,7 +21,7 @@ import {
 const APP_SCHEME = "app";
 const APP_ORIGIN = "app://calculator/";
 const APP_NAME = "洛克计算器";
-const APP_TITLE = "洛克计算器 · S3季中";
+const APP_TITLE = "洛克计算器 · S4前瞻";
 const APP_USER_MODEL_ID = "cn.rock.calculator";
 
 protocol.registerSchemesAsPrivileged([
@@ -173,7 +173,7 @@ async function collectOfflineSmokeResult(window) {
         defenderPicker: Boolean(
           document.querySelector('[aria-label="防御方精灵"]')
         ),
-        loading: document.body.textContent.includes("正在加载 S3 数据"),
+        loading: document.body.textContent.includes("正在加载 S4前瞻数据"),
       }))()
     `);
     if (shell.attackerPicker && shell.defenderPicker && !shell.loading) break;

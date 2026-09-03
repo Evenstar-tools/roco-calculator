@@ -384,6 +384,28 @@ describe("result bar and sheet", () => {
 
   test("selects the bloodline magic result without closing details", () => {
     const onSelectBloodline = vi.fn();
+    const bloodlineResult = {
+      formulaSteps: [
+        { after: 75, before: 75, label: "血脉魔法回复" },
+        {
+          after: 225,
+          before: 75,
+          input: { ticks: 3 },
+          label: "血脉魔法后续回复",
+        },
+        {
+          after: 60,
+          input: { actualHealing: 60, requestedHealing: 75 },
+          label: "戏耍特性伤害",
+        },
+      ],
+      remainingHp: 368,
+      remainingHpPercent: 86,
+      skillName: "戏耍·光合治愈",
+      sourceKind: "bloodline",
+      status: "exact",
+      totalDamage: 60,
+    };
     render(
       <ResultSheet
         onClose={() => {}}
@@ -393,20 +415,11 @@ describe("result bar and sheet", () => {
         selectedIndex={0}
         view={{
           attackerName: "迪莫",
-          bloodlineResult: {
-            skillName: "戏耍·光合治愈",
-            status: "exact",
-            totalDamage: 108,
-          },
+          bloodlineResult,
           defenderName: "圣光迪莫",
           rows: [{ skillName: "抓挠", status: "exact", totalDamage: 27 }],
-          selectedDamageSource: "skill",
-          selectedResult: {
-            remainingHp: 401,
-            remainingHpPercent: 93.7,
-            skillName: "抓挠",
-            totalDamage: 27,
-          },
+          selectedDamageSource: "bloodline",
+          selectedResult: bloodlineResult,
           status: "exact",
         }}
       />,
@@ -416,6 +429,10 @@ describe("result bar and sheet", () => {
     expect(onSelectBloodline).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("dialog", { name: "伤害结果" }))
       .toBeInTheDocument();
+    expect(screen.getByText("立即回复")).toBeInTheDocument();
+    expect(screen.getByText("后续回复")).toBeInTheDocument();
+    expect(screen.getByText("名义合计（未扣溢出）")).toBeInTheDocument();
+    expect(screen.getByText("戏耍真伤")).toBeInTheDocument();
   });
 
   test("keeps type analysis compact and expandable in result details", () => {

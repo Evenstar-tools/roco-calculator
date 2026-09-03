@@ -1,0 +1,26 @@
+{
+  "version": "1.6.8",
+  "channel": "S4前瞻",
+  "identity": "user",
+  "chat_id": "oc_2154a409474e928fdc827f2aaf2673ad",
+  "installer_path": "D:\\codex\\rock-calculator-public\\installers\\v1.6.8\\洛克计算器-1.6.8.exe",
+  "installer_size": 109876681,
+  "installer_url": "https://my.feishu.cn/file/X19rbUDVPossP6xpyGocBAxUnSd",
+  "file_token": "X19rbUDVPossP6xpyGocBAxUnSd",
+  "sha256": "76DE7EBF4E0BC460055FD887B79E2028E6AC1A4C2062C9EDE2D366B4AE8BAE4E",
+  "message_id": "om_x100b66b0de43c4a4c42ce0b902d789f",
+  "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_2154a409474e928fdc827f2aaf2673ad&position=2547",
+  "message_sent_at": "2026-09-03 00:04:25",
+  "file_metadata_readback_verified": true,
+  "message_readback_verified": true,
+  "readback_required_fields": [
+    "v1.6.8",
+    "S4前瞻",
+    "installer_url",
+    "sha256",
+    "Web 1615",
+    "小程序 414",
+    "Chromium 33",
+    "本机已覆盖安装"
+  ]
+}

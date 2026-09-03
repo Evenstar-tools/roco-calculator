@@ -118,6 +118,49 @@ describe("calculator session", () => {
     }
   });
 
+  test("uses preview spirit defaults only when no personal configuration exists", () => {
+    const previewSnapshot = structuredClone(snapshot);
+    previewSnapshot.spirits[1].previewDefaults = {
+      natureId: "smart",
+      displayIvs: {
+        hp: 60,
+        speed: 0,
+        physicalAttack: 0,
+        magicalAttack: 60,
+        physicalDefense: 0,
+        magicalDefense: 60,
+      },
+    };
+    const initialState = createProductInitialState(previewSnapshot);
+
+    const fresh = selectSpirit(initialState, {
+      initialState,
+      personalConfiguration: null,
+      side: "attacker",
+      snapshot: previewSnapshot,
+      spiritId: "beta",
+    });
+    expect(fresh.state.sides.attacker).toMatchObject({
+      displayIvs: previewSnapshot.spirits[1].previewDefaults.displayIvs,
+      nature: "smart",
+      spiritId: "beta",
+    });
+
+    const personalConfiguration = configuration("beta");
+    const restored = selectSpirit(initialState, {
+      initialState,
+      personalConfiguration,
+      side: "attacker",
+      snapshot: previewSnapshot,
+      spiritId: "beta",
+    });
+    expect(restored.state.sides.attacker).toMatchObject({
+      displayIvs: personalConfiguration.displayIvs,
+      nature: "adamant",
+      spiritId: "beta",
+    });
+  });
+
   test("auto-enables moon judgment against a leader and clears the default for a non-leader", () => {
     const moonSpirit = runtimeSnapshot.spirits.find(
       (spirit) => spirit.traitName === "月光审判",
@@ -1012,6 +1055,32 @@ describe("calculator session", () => {
     };
     expect(() => assertSnapshotReferences(sharedState, snapshot)).toThrow(
       "不存在的技能",
+    );
+  });
+
+  test("rejects unknown or unauthorized acquired traits in shared battle state", () => {
+    const moonMemory = { id: "moon-memory", name: "铭记于月亮" };
+    const oldToy = { id: "old-toy", name: "旧玩具" };
+    const fixture = {
+      ...snapshot,
+      spirits: [
+        { id: "wolf", traitIds: [moonMemory.id] },
+        { id: "ordinary", traitIds: [] },
+      ],
+      traits: [moonMemory, oldToy],
+    };
+    const state = createProductInitialState(fixture);
+    state.sides.attacker.spiritId = "wolf";
+    state.sides.defender.spiritId = "ordinary";
+    state.sides.attacker.acquiredTraitIds = ["missing-trait"];
+    expect(() => assertSnapshotReferences(state, fixture)).toThrow(
+      "不存在的特性",
+    );
+
+    state.sides.attacker.spiritId = "ordinary";
+    state.sides.attacker.acquiredTraitIds = [oldToy.id];
+    expect(() => assertSnapshotReferences(state, fixture)).toThrow(
+      "不具备吞噬特性能力",
     );
   });
 

@@ -1,0 +1,272 @@
+.spirit-step__trait-editor {
+  min-width: 0;
+  align-self: start;
+}
+
+.spirit-step__trait-editor--attacker {
+  grid-column: 1;
+}
+
+.spirit-step__trait-editor--defender {
+  grid-column: 3;
+}
+
+.moon-memory-trait-editor {
+  display: grid;
+  gap: 9px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.moon-memory-trait-editor > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.moon-memory-trait-editor > header strong {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.moon-memory-trait-editor > header span {
+  color: var(--text-faint);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.moon-memory-trait-editor__picker {
+  position: relative;
+}
+
+.moon-memory-trait-editor__picker > label {
+  display: grid;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.moon-memory-trait-editor__search {
+  position: relative;
+  display: block;
+}
+
+.moon-memory-trait-editor__search > svg {
+  position: absolute;
+  top: 50%;
+  left: 9px;
+  color: var(--text-faint);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.moon-memory-trait-editor__search > input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px 0 32px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  outline: none;
+  color: var(--text);
+  background: var(--surface);
+  font-size: 12px;
+}
+
+.moon-memory-trait-editor__search > input:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.moon-memory-trait-editor__picker [role="listbox"] {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  max-height: 224px;
+  padding: 4px;
+  margin: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  background: var(--surface);
+  list-style: none;
+}
+
+.moon-memory-trait-editor__picker [role="option"] {
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.moon-memory-trait-editor__picker [role="option"] strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moon-memory-trait-editor__picker [role="option"] small {
+  flex: 0 0 auto;
+  color: var(--text-faint);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.moon-memory-trait-editor__picker [role="option"]:hover,
+.moon-memory-trait-editor__picker [role="option"][aria-selected="true"] {
+  background: var(--selection-hover);
+}
+
+.moon-memory-trait-editor__picker [role="option"][aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.58;
+}
+
+.moon-memory-trait-editor__selected {
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.moon-memory-trait-editor__selected > li {
+  display: grid;
+  min-width: 0;
+  align-items: start;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-soft);
+  grid-template-columns: minmax(0, 1fr) auto 28px;
+}
+
+.moon-memory-trait-editor__copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.moon-memory-trait-editor__copy > strong {
+  color: var(--text);
+  font-size: 11px;
+}
+
+.moon-memory-trait-editor__copy > small {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.moon-memory-trait-editor__support {
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: var(--surface);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.moon-memory-trait-editor__support[data-status="supported"] {
+  border-color: color-mix(in srgb, var(--damage-safe) 30%, var(--border));
+  color: var(--damage-safe);
+}
+
+.moon-memory-trait-editor__selected > li > button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  place-items: center;
+  color: var(--text-faint);
+  background: transparent;
+  cursor: pointer;
+}
+
+.moon-memory-trait-editor__selected > li > button:hover,
+.moon-memory-trait-editor__selected > li > button:focus-visible {
+  color: var(--damage-danger);
+  background: color-mix(in srgb, var(--damage-danger) 9%, transparent);
+}
+
+.moon-memory-trait-editor__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 4px;
+}
+
+.moon-memory-trait-editor__controls > label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.moon-memory-trait-editor__controls select,
+.moon-memory-trait-editor__controls input[type="number"] {
+  min-width: 58px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  background: var(--surface);
+  font-size: 11px;
+}
+
+.moon-memory-trait-editor__controls input[type="number"] {
+  width: 58px;
+  text-align: center;
+}
+
+.moon-memory-trait-editor__toggle input {
+  accent-color: var(--accent);
+}
+
+.moon-memory-trait-editor__number {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.moon-memory-trait-editor__number small {
+  color: var(--text-faint);
+  font-size: 9px;
+}
+
+@media (max-width: 620px) {
+  .spirit-step__trait-editor--attacker,
+  .spirit-step__trait-editor--defender {
+    grid-column: 1 / -1;
+  }
+
+  .moon-memory-trait-editor__selected > li {
+    grid-template-columns: minmax(0, 1fr) 28px;
+  }
+
+  .moon-memory-trait-editor__copy {
+    grid-column: 1 / -1;
+  }
+
+  .moon-memory-trait-editor__support {
+    justify-self: start;
+  }
+}

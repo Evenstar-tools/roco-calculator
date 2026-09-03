@@ -6,6 +6,14 @@ import {
 
 describe("mini program skill choices", () => {
   const snapshot = {
+    spirits: [
+      { id: "spirit-a" },
+      {
+        calculationStatus: "pending-race-stats",
+        id: "spirit-preview",
+        raceStats: null,
+      },
+    ],
     skills: [
       { id: "skill-a", name: "技能 A" },
       { id: "skill-b", name: "技能 B" },
@@ -34,6 +42,7 @@ describe("mini program skill choices", () => {
           "skill-a",
         ],
       },
+      { spiritId: "spirit-preview", skillIds: [] },
     ],
   };
 
@@ -51,6 +60,10 @@ describe("mini program skill choices", () => {
 
   test("returns no global fallback skills when the spirit has no learnset", () => {
     expect(getSkillChoices(snapshot, "spirit-missing")).toEqual([]);
+  });
+
+  test("returns no skills for a pending preview placeholder", () => {
+    expect(getSkillChoices(snapshot, "spirit-preview")).toEqual([]);
   });
 });
 

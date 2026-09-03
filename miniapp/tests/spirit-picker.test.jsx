@@ -5,6 +5,10 @@ import CombatantCard from "../src/components/CombatantCard.jsx";
 import DirectionSwitch from "../src/components/DirectionSwitch.jsx";
 import SpiritPicker from "../src/components/SpiritPicker.jsx";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
+import {
+  createSpiritSearchIndex,
+  searchSpirits,
+} from "../src/view-models/spirit-search.js";
 
 const spirits = [
   {
@@ -120,6 +124,31 @@ describe("SpiritPicker", () => {
       "src",
       "https://images.example/spirit-water.png",
     );
+  });
+
+  test("marks preview placeholders as pending race-stat confirmation", () => {
+    const placeholder = {
+      calculationStatus: "pending-race-stats",
+      fullName: "量风碗",
+      id: "spirit-preview",
+      raceStats: null,
+      types: ["翼", "机械"],
+    };
+    render(
+      <SpiritPicker
+        side="attacker"
+        spirits={[placeholder]}
+        value={null}
+        onChange={() => {}}
+      />,
+    );
+
+    fireEvent.input(screen.getByLabelText("搜索攻击方宠物"), {
+      target: { value: "量风碗" },
+    });
+    expect(screen.getByRole("button", { name: "选择量风碗" }))
+      .toHaveTextContent("种族值待确认");
+    expect(screen.queryByText(/9\.10/u)).not.toBeInTheDocument();
   });
 
   test("closes and clears the search after tapping outside the picker", () => {
@@ -467,5 +496,61 @@ describe("BattleWorkspace combatants", () => {
     });
     expect(screen.getByLabelText("防守方宠物摘要"))
       .toHaveAttribute("aria-pressed", "true");
+  });
+});
+
+describe("spirit search index", () => {
+  function createSearchSnapshot() {
+    return {
+      spirits: [
+        {
+          id: "spirit-sonic-dog",
+          fullName: "音速犬",
+          pinyin: "yinsuquan",
+          initials: "ysq",
+          evolutionChainNames: ["风暴战犬"],
+        },
+        {
+          id: "spirit-water",
+          fullName: "水灵",
+          pinyin: "shuiling",
+          initials: "sl",
+        },
+      ],
+    };
+  }
+
+  test.each(["音速犬", "音速", "yinsuquan", "ysq", "风暴战犬"])(
+    "finds a spirit from precomputed name fields: %s",
+    (query) => {
+      const index = createSpiritSearchIndex(createSearchSnapshot());
+      expect(searchSpirits(index, query).map((item) => item.id))
+        .toContain("spirit-sonic-dog");
+    },
+  );
+
+  test("normalizes spaces and ASCII case without mutating the source", () => {
+    const searchSnapshot = createSearchSnapshot();
+    const index = createSpiritSearchIndex(searchSnapshot);
+
+    expect(searchSpirits(index, " Yin Su Quan ")).toEqual([
+      searchSnapshot.spirits[0],
+    ]);
+    expect(searchSnapshot.spirits[0]).not.toHaveProperty("searchText");
+  });
+
+  test("bounds empty and matching result sets", () => {
+    const searchSnapshot = {
+      spirits: Array.from({ length: 40 }, (_, index) => ({
+        id: `spirit-${index}`,
+        fullName: `测试宠物${index}`,
+        pinyin: `ceshichongwu${index}`,
+        initials: `cscw${index}`,
+      })),
+    };
+    const index = createSpiritSearchIndex(searchSnapshot);
+
+    expect(searchSpirits(index, "")).toHaveLength(30);
+    expect(searchSpirits(index, "测试", 5)).toHaveLength(5);
   });
 });

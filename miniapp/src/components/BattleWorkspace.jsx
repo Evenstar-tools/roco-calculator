@@ -43,6 +43,7 @@ import ActiveAbilityStageBar from "./ActiveAbilityStageBar.jsx";
 import CombatantParameterSheet from "./CombatantParameterSheet.jsx";
 import DirectionSwitch from "./DirectionSwitch.jsx";
 import ModeSwitch from "./ModeSwitch.jsx";
+import MoonMemoryTraitEditor from "./MoonMemoryTraitEditor.jsx";
 import NegativeStatusEditor from "./NegativeStatusEditor.jsx";
 import QuickCombatantControls from "./QuickCombatantControls.jsx";
 import ResultBar from "./ResultBar.jsx";
@@ -85,6 +86,7 @@ function actionUndoGroup(action) {
     action.index,
     action.key,
     action.polarity,
+    action.traitId,
     ...nestedKeys(action.value),
   ].filter((value) => value !== undefined && value !== null && value !== "");
   return scope.join(":");
@@ -867,6 +869,29 @@ export default function BattleWorkspace({
                   }
                   onNatureChange={(value) => setNature(panel.side, value)}
                   side={panel.side}
+                />
+                <MoonMemoryTraitEditor
+                  configuration={panel.configuration}
+                  onAdd={(traitId) => dispatchWithUndo({
+                    side: panel.side,
+                    traitId,
+                    type: "side/add-acquired-trait",
+                  })}
+                  onRemove={(traitId) => dispatchWithUndo({
+                    side: panel.side,
+                    traitId,
+                    type: "side/remove-acquired-trait",
+                  })}
+                  onValueChange={(traitId, key, value) => dispatchWithUndo({
+                    key,
+                    side: panel.side,
+                    traitId,
+                    type: "side/set-acquired-trait-value",
+                    value,
+                  })}
+                  side={panel.side}
+                  snapshot={snapshot}
+                  spirit={getSpirit(snapshot, panel.configuration.spiritId)}
                 />
               </View>
             ))}

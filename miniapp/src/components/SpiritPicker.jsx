@@ -5,6 +5,7 @@ import {
   searchSpiritsWithFavorites,
 } from "../view-models/spirit-search.js";
 import ElementIcon from "./ElementIcon.jsx";
+import EntityChangeHint from "./EntityChangeHint.jsx";
 
 const SIDE_LABELS = {
   attacker: "攻击方",
@@ -138,14 +139,22 @@ export default function SpiritPicker({
                   />
                 ) : null}
                 <View className="spirit-picker__result-copy">
-                  <Text className="spirit-picker__result-name">
-                    {spirit.fullName ?? spirit.name}
-                  </Text>
+                  <View className="spirit-picker__result-title">
+                    <Text className="spirit-picker__result-name">
+                      {spirit.fullName ?? spirit.name}
+                    </Text>
+                    <EntityChangeHint changeInfo={spirit.changeInfo} />
+                  </View>
                   <View className="spirit-picker__result-types">
                     {(spirit.types ?? []).map((type) => (
                       <ElementIcon key={type} type={type} />
                     ))}
                     <Text>{(spirit.types ?? []).join(" · ")}</Text>
+                    {spirit.calculationStatus === "pending-race-stats" ? (
+                      <Text className="spirit-picker__result-pending">
+                        种族值待确认
+                      </Text>
+                    ) : null}
                   </View>
                 </View>
               </Button>

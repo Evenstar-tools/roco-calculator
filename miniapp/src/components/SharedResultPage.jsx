@@ -127,6 +127,11 @@ export default function SharedResultPage({
           {completenessLabel(completeness)}
         </Text>
       </View>
+      {completeness !== "full" ? (
+        <Text className="shared-result__incomplete-warning">
+          吞噬特性/参数可能未完整携带
+        </Text>
+      ) : null}
 
       <View className="shared-result__hero">
         <Text className="shared-result__matchup">

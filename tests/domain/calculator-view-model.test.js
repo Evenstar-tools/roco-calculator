@@ -137,6 +137,75 @@ function state() {
 }
 
 describe("buildCalculatorViewModel", () => {
+  test("settles a negative-status trait acquired through Moon Memory", () => {
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "fire"
+          ? { ...spirit, traitIds: ["moon-memory"] }
+          : spirit,
+      ),
+      traits: [
+        { id: "moon-memory", name: "铭记于月亮" },
+        { id: "soul-burn", name: "灵魂灼伤" },
+      ],
+    };
+    const input = state();
+    input.mode = "four";
+    input.calculationOptions = { includeNegativeStatusSettlement: true };
+    input.negativeStatuses = {
+      attacker: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
+      defender: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
+    };
+    input.sides.attacker.acquiredTraitIds = ["soul-burn"];
+    input.sides.attacker.acquiredTraitValues = {};
+    input.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+
+    const view = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot: fixture,
+      state: input,
+    });
+
+    expect(view.result.selectedResult.negativeStatusApplications).toMatchObject({
+      stacks: { freeze: 2 },
+    });
+  });
+
+  test("keeps a selected preview placeholder visible but blocks calculation", () => {
+    const placeholderSnapshot = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "fire"
+          ? {
+              ...spirit,
+              calculationStatus: "pending-race-stats",
+              raceStats: null,
+              traitIds: [],
+            }
+          : spirit,
+      ),
+    };
+
+    const view = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot: placeholderSnapshot,
+      state: state(),
+    });
+
+    expect(view.configurationReady).toBe(false);
+    expect(view.configurationIssue).toBe(
+      "种族值待确认",
+    );
+    expect(view.sides.attacker.spirit).toMatchObject({
+      calculationStatus: "pending-race-stats",
+      fullName: "火灵",
+      raceStats: null,
+    });
+    expect(view.sides.attacker.panelStats).toBeNull();
+    expect(view.result).toBeNull();
+  });
+
   test("maps direction without mutating raw state and preserves calculation output", () => {
     const input = state();
     const forward = buildCalculatorViewModel({
@@ -278,6 +347,77 @@ describe("buildCalculatorViewModel", () => {
           stacks: { burn: 6 },
         },
         repeated: true,
+      },
+    });
+  });
+
+  test("毒腺按超导本次结算能耗决定是否施加中毒", () => {
+    const superconduct = {
+      basePower: 90,
+      category: "magical",
+      cost: 3,
+      id: "superconduct-toxic-gland",
+      name: "超导",
+      provenance: { basePower: { source: "fixture" } },
+      type: "电",
+    };
+    const toxicGland = {
+      description: "使用1能耗技能时，使敌方获得4层中毒。",
+      id: "toxic-gland-dynamic-cost",
+      name: "毒腺",
+    };
+    const fixture = {
+      ...snapshot,
+      learnsets: snapshot.learnsets.map((entry) =>
+        entry.spiritId === "fire"
+          ? { ...entry, skillIds: [superconduct.id] }
+          : entry,
+      ),
+      skills: [...snapshot.skills, superconduct],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "fire"
+          ? { ...spirit, traitIds: [toxicGland.id] }
+          : spirit,
+      ),
+      traits: [...snapshot.traits, toxicGland],
+    };
+    const calculate = (burstTriggered) => {
+      const input = state();
+      input.calculationOptions = { includeNegativeStatusSettlement: true };
+      input.directions.forward.context = {
+        burstTriggered,
+        negativeStatusUseCountsBySlot: { 1: 1 },
+      };
+      input.negativeStatuses = {
+        attacker: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
+        defender: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
+      };
+      input.sides.attacker.skills = {
+        four: [
+          { context: { burstTriggered }, skillId: superconduct.id },
+          null,
+          null,
+          null,
+        ],
+        single: { context: { burstTriggered }, skillId: superconduct.id },
+      };
+      return buildCalculatorViewModel({
+        activeDirection: "forward",
+        snapshot: fixture,
+        state: input,
+      }).result.selectedResult;
+    };
+
+    expect(calculate(true)).toMatchObject({
+      skillCost: 1,
+      negativeStatusApplications: {
+        stacks: { poison: 4 },
+      },
+    });
+    expect(calculate(false)).toMatchObject({
+      skillCost: 3,
+      negativeStatusApplications: {
+        stacks: { poison: 0 },
       },
     });
   });

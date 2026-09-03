@@ -12,6 +12,10 @@ function isGlobalCalculatorSkill(skill) {
 }
 
 export function getSkillChoices(snapshot, spiritId) {
+  const spirit = (snapshot?.spirits ?? []).find(
+    (entry) => entry.id === spiritId,
+  );
+  if (spirit?.calculationStatus === "pending-race-stats") return [];
   const learnset = (snapshot?.learnsets ?? []).find(
     (entry) => entry.spiritId === spiritId,
   );

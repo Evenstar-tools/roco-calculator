@@ -545,6 +545,31 @@ describe("mini program skill workflow", () => {
     ).toHaveClass("skill-picker__trigger--empty");
   });
 
+  test("shows an S4 preview skill as selected while its parameters are pending", () => {
+    const pendingSkill = {
+      basePower: null,
+      calculationStatus: "pending-skill-data",
+      category: null,
+      cost: null,
+      id: "preview-broadcast",
+      name: "广播",
+      type: null,
+    };
+    render(
+      <SkillPicker
+        choices={[pendingSkill]}
+        label="攻击方技能 1"
+        onChange={() => {}}
+        value={pendingSkill.id}
+      />,
+    );
+
+    const trigger = screen.getByRole("button", { name: "选择攻击方技能 1" });
+    expect(trigger).toHaveTextContent("广播");
+    expect(trigger).toHaveTextContent("参数待确认");
+    expect(trigger).not.toHaveClass("skill-picker__trigger--empty");
+  });
+
   test("shows the calculated skill when it is absent from the learnset choices", () => {
     const snapshot = createSnapshot();
     const initialState = createCalculatorStore(snapshot).getState();

@@ -62,6 +62,41 @@ export function displayDamageCoefficient(value) {
 export function buildResultFormulaAudit(result) {
   if (!result?.formulaSteps?.length) return null;
 
+  if (result.sourceKind === "bloodline") {
+    const healing = stepByLabel(result, "血脉魔法回复");
+    const endTurn = stepByLabel(result, "血脉魔法后续回复");
+    const traitDamage = stepByLabel(result, "戏耍特性伤害");
+    const requestedHealing = numericValue(
+      traitDamage?.input?.requestedHealing,
+      numericValue(healing?.after, 0),
+    );
+    const actualHealing = numericValue(
+      traitDamage?.input?.actualHealing,
+      numericValue(result.totalDamage, 0),
+    );
+    const perTurn = numericValue(endTurn?.before, 0);
+    const nominalTotal = numericValue(endTurn?.after, 0);
+    const derivedTicks = perTurn > 0
+      ? Math.round(nominalTotal / perTurn)
+      : 3;
+
+    return {
+      bloodline: {
+        actualHealing,
+        damage: numericValue(
+          traitDamage?.after,
+          numericValue(result.totalDamage, 0),
+        ),
+        endTurnTicks: numericValue(endTurn?.input?.ticks, derivedTicks),
+        immediateHealing: requestedHealing,
+        nominalEndTurnTotal: nominalTotal,
+        perTurnHealing: perTurn,
+      },
+      kind: "bloodline",
+      skillName: result.skillName,
+    };
+  }
+
   const attackPanel = stepByLabel(result, "攻击面板");
   const basePower = stepByLabel(result, "基础威力");
   const displayedBasePower =

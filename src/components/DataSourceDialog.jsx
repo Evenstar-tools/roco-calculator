@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  CURRENT_USER_RELEASE,
+  FEATURED_USER_RELEASE,
   USER_RELEASE_NOTES,
 } from "../data/user-release-notes.js";
 
@@ -9,11 +9,11 @@ export const FEEDBACK_QQ = "1215583051";
 const FEEDBACK_EMAIL = "1215583051@qq.com";
 const FEEDBACK_BILIBILI_URL =
   "https://space.bilibili.com/9281359?spm_id_from=333.1007.0.0";
-const CURRENT_RELEASE_SUMMARY = {
-  ...CURRENT_USER_RELEASE,
+const FEATURED_RELEASE_SUMMARY = {
+  ...FEATURED_USER_RELEASE,
   highlights:
-    CURRENT_USER_RELEASE.summaryHighlights ??
-    CURRENT_USER_RELEASE.highlights.slice(0, 3),
+    FEATURED_USER_RELEASE.summaryHighlights ??
+    FEATURED_USER_RELEASE.highlights.slice(0, 3),
 };
 
 function ReleaseItem({ release, current = false }) {
@@ -58,7 +58,7 @@ function ReleaseNotesView({ onBack, onClose }) {
         </button>
         <div>
           <h2>完整版本记录</h2>
-          <span>v1.0.0 — {CURRENT_USER_RELEASE.version}</span>
+          <span>v1.0.0 — {FEATURED_USER_RELEASE.version}</span>
         </div>
       </header>
       <div className="release-notes-dialog__list">
@@ -216,7 +216,7 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open })
                 完整记录
               </button>
             </div>
-            <ReleaseItem current release={CURRENT_RELEASE_SUMMARY} />
+            <ReleaseItem current release={FEATURED_RELEASE_SUMMARY} />
           </section>
           <a href={BWIKI_URL} rel="noreferrer" target="_blank">
             <strong>洛克王国：世界 BWIKI</strong>

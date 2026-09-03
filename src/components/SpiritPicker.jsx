@@ -2,6 +2,7 @@ import { CaretDown, MagnifyingGlass, Star } from "@phosphor-icons/react";
 import { useId, useMemo, useRef, useState } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
 import { TraitHint } from "./TraitHint.jsx";
+import { EntityChangeHint } from "./EntityChangeHint.jsx";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -9,6 +10,62 @@ function normalizeSearch(value) {
 
 const INITIAL_PREVIEW_COUNT = 12;
 const PREVIEW_PAGE_SIZE = 20;
+
+function dexNo(spirit) {
+  return String(spirit?.dexNo ?? "").trim();
+}
+
+function isS4PreviewFinalSpirit(spirit) {
+  const identity = spirit?.provenance?.previewIdentity;
+  return identity?.isFinal === true &&
+    String(identity.catalogId ?? "").startsWith("s4-preview-new-spirits-");
+}
+
+function isPendingS4PreviewFinalSpirit(spirit) {
+  return isS4PreviewFinalSpirit(spirit) && dexNo(spirit) === "";
+}
+
+function compareDexOrder(left, right) {
+  const leftDexNo = dexNo(left);
+  const rightDexNo = dexNo(right);
+  if (leftDexNo && rightDexNo) {
+    const dexOrder = leftDexNo.localeCompare(rightDexNo, "zh-CN", {
+      numeric: true,
+    });
+    if (dexOrder !== 0) return dexOrder;
+  } else if (leftDexNo || rightDexNo) {
+    return leftDexNo ? -1 : 1;
+  }
+  return String(left.fullName ?? "").localeCompare(
+    String(right.fullName ?? ""),
+    "zh-CN",
+  );
+}
+
+function compareDefaultPreviewOrder(left, right) {
+  const leftPending = isPendingS4PreviewFinalSpirit(left);
+  const rightPending = isPendingS4PreviewFinalSpirit(right);
+  if (leftPending !== rightPending) return leftPending ? -1 : 1;
+  if (leftPending) {
+    return String(
+      left.provenance.previewIdentity.candidateRowKey ?? left.fullName ?? "",
+    ).localeCompare(
+      String(
+        right.provenance.previewIdentity.candidateRowKey ?? right.fullName ?? "",
+      ),
+      "zh-CN",
+      { numeric: true },
+    );
+  }
+  return compareDexOrder(left, right);
+}
+
+function uniqueSpirits(spirits) {
+  return spirits.filter(
+    (spirit, index) =>
+      spirits.findIndex((candidate) => candidate.id === spirit.id) === index,
+  );
+}
 
 export function SpiritPicker({
   favorite = false,
@@ -53,11 +110,7 @@ export function SpiritPicker({
             Number(Boolean(left.favoriteState));
           if (markedOrder !== 0) return markedOrder;
           if (!left.favoriteState || !right.favoriteState) return 0;
-          return String(left.dexNo ?? "").localeCompare(
-            String(right.dexNo ?? ""),
-            "zh-CN",
-            { numeric: true },
-          );
+          return compareDexOrder(left, right);
         },
       );
     if (!needle) {
@@ -65,18 +118,16 @@ export function SpiritPicker({
         direct.filter((spirit) => Boolean(spirit.favoriteState)),
       );
       const favoriteCount = favorites.length;
-      const orderedRoster = [...direct].sort((left, right) =>
-        String(left.dexNo ?? "").localeCompare(
-          String(right.dexNo ?? ""),
-          "zh-CN",
-          { numeric: true },
-        ),
-      );
-      const previewItems = favoriteCount ? favorites : orderedRoster;
+      const previewFinals = direct.filter(isS4PreviewFinalSpirit);
+      const orderedRoster = [...direct].sort(compareDefaultPreviewOrder);
+      const previewItems = favoriteCount
+        ? uniqueSpirits([...previewFinals, ...favorites])
+            .sort(compareDefaultPreviewOrder)
+        : orderedRoster;
       const visibleCount = Math.min(previewItems.length, previewLimit);
       return {
         allFavoritesVisible:
-          favoriteCount > 0 && visibleCount >= favoriteCount,
+          favoriteCount > 0 && visibleCount >= previewItems.length,
         allPreviewItemsVisible: visibleCount >= previewItems.length,
         favoriteCount,
         isUnfiltered: true,
@@ -235,9 +286,19 @@ export function SpiritPicker({
                     <img alt="" height="36" src={spirit.assetUrl} width="36" />
                   ) : null}
                   <span>
-                    <strong>{spirit.fullName}</strong>
+                    <span className="spirit-picker__option-title">
+                      <strong>{spirit.fullName}</strong>
+                      <EntityChangeHint changeInfo={spirit.changeInfo} />
+                    </span>
                     <small>
-                      {[spirit.dexNo, spirit.stage, related ? "进化链" : null]
+                      {[
+                        spirit.dexNo,
+                        spirit.stage,
+                        spirit.calculationStatus === "pending-race-stats"
+                          ? "种族值待确认"
+                          : null,
+                        related ? "进化链" : null,
+                      ]
                         .filter(Boolean)
                         .join(" · ")}
                     </small>
@@ -275,7 +336,10 @@ export function SpiritPicker({
             />
           ) : null}
           <div className="spirit-card__identity">
-            <strong>{selected.fullName}</strong>
+            <span className="spirit-card__title">
+              <strong>{selected.fullName}</strong>
+              <EntityChangeHint changeInfo={selected.changeInfo} />
+            </span>
             <div className="spirit-card__tags">
               {selected.types.map((type) => (
                 <span
@@ -288,13 +352,19 @@ export function SpiritPicker({
               ))}
               <span>{selected.stage}</span>
             </div>
-            <p>
-              特性：
-              <TraitHint
-                description={selected.traitDescription}
-                name={selected.traitName}
-              />
-            </p>
+            {selected.calculationStatus === "pending-race-stats" ? (
+              <p className="spirit-card__pending">
+                种族值待确认
+              </p>
+            ) : (
+              <p>
+                特性：
+                <TraitHint
+                  description={selected.traitDescription}
+                  name={selected.traitName}
+                />
+              </p>
+            )}
           </div>
           {showFavorite ? (
             <button

@@ -48,7 +48,7 @@ function side(spiritId, displayIvs, natureMultipliers, skillId) {
 }
 
 describe("恶魔男爵逐击吸血实战回归", () => {
-  test("开朗 ads 男爵羽化后吃平和 hab 骨龙隼鳞，再用撕咬逐击结算", () => {
+  test("开朗 ads 男爵羽化后吃平和 hab 骨龙隼鳞，再用新版撕咬逐击结算", () => {
     const baronStats = calculateAllPanelStats({
       raceStats: spirit(BARON_ID).raceStats,
       displayIvs: baronIvs,
@@ -97,16 +97,16 @@ describe("恶魔男爵逐击吸血实战回归", () => {
     expect(input.directions.reverse.currentHp).toBe(147);
     expect(bite).toMatchObject({
       hitCount: 5,
-      hitDamages: [127, 127, 127, 127, 140],
-      mainDamage: 648,
+      hitDamages: [102, 102, 102, 102, 102],
+      mainDamage: 510,
       postAttackEffects: {
         attackLevelStageAdd: 1,
         source: "贪得无厌",
       },
-      totalDamage: 648,
+      totalDamage: 510,
     });
     expect(bite.traitSettlements.at(-1).text).toContain(
-      "逐击 127/127/127/127/140",
+      "逐击 102/102/102/102/102",
     );
   });
 

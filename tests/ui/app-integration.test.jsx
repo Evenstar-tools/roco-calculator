@@ -77,7 +77,7 @@ const snapshot = {
       basePower: 30,
       category: "magical",
       cost: 3,
-      description: "造成魔伤，3连击。自己获得萌化，威力永久+20。",
+      description: "造成魔伤，3连击。自己获得萌化：全技能威力永久+10。",
       id: "moe-strike",
       name: "撒娇",
       ruleId: null,
@@ -495,6 +495,73 @@ test("starts with both spirit selectors empty and hides incomplete configuration
   expect(
     screen.queryByRole("button", { name: "展开伤害结果" }),
   ).not.toBeInTheDocument();
+});
+
+test("wires the Moon Memory editor into the selected wolf side", async () => {
+  const user = userEvent.setup();
+  const wolfSnapshot = {
+    ...snapshot,
+    learnsets: [
+      ...snapshot.learnsets,
+      { spiritId: "moon-wolf", skillIds: ["fire-strike"] },
+    ],
+    spirits: [
+      ...snapshot.spirits.map((spirit) =>
+        spirit.id === "sonic-dog"
+          ? { ...spirit, traitIds: ["old-toy"] }
+          : spirit,
+      ),
+      {
+        asset: null,
+        dexNo: "S4-011",
+        fullName: "银月狼王",
+        id: "moon-wolf",
+        raceStats: {
+          hp: 115,
+          magicalAttack: 51,
+          magicalDefense: 98,
+          physicalAttack: 128,
+          physicalDefense: 128,
+          speed: 130,
+        },
+        stage: "三阶",
+        traitIds: ["moon-memory"],
+        traitName: "铭记于月亮",
+        types: ["幽", "幻"],
+      },
+    ],
+    traits: [
+      ...snapshot.traits,
+      {
+        description: "每次攻击后自己失去5%生命。",
+        id: "moon-memory",
+        name: "铭记于月亮",
+      },
+      {
+        description: "造成伤害时威力增加20%。",
+        id: "old-toy",
+        name: "旧玩具",
+        ruleId: "power_multiplier",
+        value: 1.2,
+      },
+    ],
+  };
+  render(<App initialSnapshot={wolfSnapshot} />);
+
+  await selectSpirit(user, "攻击方", "银月狼王");
+  expect(screen.getAllByText("铭记于月亮")).toHaveLength(2);
+
+  await user.type(
+    screen.getByRole("combobox", { name: "搜索已吞噬特性" }),
+    "音速犬",
+  );
+  await user.click(screen.getByRole("option", { name: /音速犬 · 旧玩具/u }));
+  expect(screen.getByRole("list", { name: "已吞噬特性" }))
+    .toHaveTextContent("旧玩具");
+
+  await user.click(screen.getByRole("button", { name: "删除已吞噬特性旧玩具" }));
+  expect(screen.queryByRole("list", { name: "已吞噬特性" }))
+    .not.toBeInTheDocument();
 });
 
 test("undoes the latest calculator change without treating interface mode as history", async () => {
@@ -1546,7 +1613,7 @@ test("Storm Eye applies its sprout-amplified hit percentage through the status c
   expect(comboHits).toHaveValue(15);
 });
 
-test("clicking 撒娇 advances its permanent power once without input side effects", async () => {
+test("clicking 撒娇 permanently adds 10 power to every allied skill", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -1559,11 +1626,22 @@ test("clicking 撒娇 advances its permanent power once without input side effec
   const power = screen.getByRole("spinbutton", { name: "攻击方技能1静态威力" });
   expect(power).toHaveValue(30);
 
+  const otherPicker = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(otherPicker);
+  await user.type(otherPicker, "风力冲击");
+  await user.click(screen.getByRole("option", { name: /风力冲击/ }));
+  const otherPower = screen.getByRole("spinbutton", {
+    name: "攻击方技能2静态威力",
+  });
+  expect(otherPower).toHaveValue(80);
+
   await user.click(screen.getByText(/自己获得萌化/));
   await waitFor(() => expect(power).toHaveValue(40));
+  expect(otherPower).toHaveValue(90);
 
   await user.click(power);
   expect(power).toHaveValue(40);
+  expect(otherPower).toHaveValue(90);
 });
 
 test("clicking a mark skill adds its mark to the described side", async () => {
@@ -2240,7 +2318,7 @@ test("swapping spirits returns the detailed controls to left attack and right de
   expect(within(rightSide).getByText("防御能力等级")).toBeVisible();
 });
 
-test("selecting Mana Burst clears manual power and resolves zero energy immediately", async () => {
+test("selecting Mana Burst clears manual power and resolves ten energy immediately", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -2257,7 +2335,7 @@ test("selecting Mana Burst clears manual power and resolves zero energy immediat
   expect(screen.queryByText("魔能爆需要当前能量")).not.toBeInTheDocument();
   const singleSkillPanel = screen.getByRole("tabpanel", { name: "单技能" });
   expect(
-    within(singleSkillPanel).getByText("0 能量 → 威力 45"),
+    within(singleSkillPanel).getByText("10 能量 → 威力 210"),
   ).toBeVisible();
 });
 

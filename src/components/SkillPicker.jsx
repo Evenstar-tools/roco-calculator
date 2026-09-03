@@ -7,7 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { ElementIcon } from "./ElementIcon.jsx";
+import { EntityChangeHint } from "./EntityChangeHint.jsx";
+import { SkillIcon } from "./SkillIcon.jsx";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -170,7 +171,19 @@ export function SkillPicker({
         }
       }}
     >
-      <MagnifyingGlass aria-hidden="true" className="skill-picker__search-icon" size={14} />
+      {selected && query === selected.name ? (
+        <SkillIcon
+          className="skill-picker__selected-icon"
+          skill={selected}
+          size={24}
+        />
+      ) : (
+        <MagnifyingGlass
+          aria-hidden="true"
+          className="skill-picker__search-icon"
+          size={14}
+        />
+      )}
       <input
         aria-autocomplete="list"
         aria-controls={listboxId}
@@ -197,6 +210,12 @@ export function SkillPicker({
         role="combobox"
         value={query}
       />
+      {selected?.changeInfo ? (
+        <EntityChangeHint
+          changeInfo={selected.changeInfo}
+          className="skill-picker__change-hint"
+        />
+      ) : null}
       {selected ? (
         <button
           aria-label={`清空${ariaLabel}`}
@@ -238,6 +257,8 @@ export function SkillPicker({
               ) : null}
               {visibleWindow.items.map((skill, offset) => {
                 const index = visibleWindow.start + offset;
+                const isPendingPreview =
+                  skill.calculationStatus === "pending-skill-data";
                 return (
                   <li
                     aria-posinset={index + 1}
@@ -252,15 +273,29 @@ export function SkillPicker({
                     role="option"
                   >
                     <span className="skill-picker__option-name">
-                      <ElementIcon label size={20} type={skill.type} />
+                      <SkillIcon
+                        className="skill-picker__option-icon"
+                        label
+                        skill={skill}
+                        size={30}
+                      />
                       <strong>{skill.name}</strong>
+                      <EntityChangeHint changeInfo={skill.changeInfo} />
                       <small>
-                        {CATEGORY_LABELS[skill.category] ?? skill.category}
+                        {isPendingPreview
+                          ? "参数待确认"
+                          : CATEGORY_LABELS[skill.category] ?? skill.category}
                       </small>
                     </span>
                     <span className="skill-picker__option-meta">
-                      <small>威 {skill.basePower ?? "动态"}</small>
-                      <small>耗 {skill.cost ?? "—"}</small>
+                      {isPendingPreview ? (
+                        <small>威力/能耗待确认</small>
+                      ) : (
+                        <>
+                          <small>威 {skill.basePower ?? "动态"}</small>
+                          <small>耗 {skill.cost ?? "—"}</small>
+                        </>
+                      )}
                       <small
                         className={
                           skill.learnable === false

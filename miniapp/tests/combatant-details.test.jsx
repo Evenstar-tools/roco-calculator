@@ -1,6 +1,9 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
+import CombatantParameterSheet from
+  "../src/components/CombatantParameterSheet.jsx";
+import CombatantStatGrid from "../src/components/CombatantStatGrid.jsx";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
 import {
   clampDisplayIv,
@@ -77,6 +80,60 @@ describe("createCombatantView", () => {
 
     expect(view.spirit.fullName).toBe("精简精灵");
     expect(view.stats).toEqual([]);
+  });
+});
+
+describe("combatant parameter surfaces", () => {
+  const configuration = {
+    spiritId: "spirit-fire",
+    nature: "adamant",
+    displayIvs: {
+      hp: 60,
+      speed: 60,
+      physicalAttack: 60,
+      magicalAttack: 60,
+      physicalDefense: 60,
+      magicalDefense: 60,
+    },
+  };
+
+  test("opens the full editor from any value in the six-stat grid", () => {
+    const onOpen = vi.fn();
+    render(
+      <CombatantStatGrid
+        configuration={configuration}
+        onOpen={onOpen}
+        side="attacker"
+        snapshot={snapshot}
+      />,
+    );
+
+    expect(screen.getByLabelText("攻击方六维参数")).toHaveTextContent("生命");
+    expect(screen.getByLabelText("攻击方物攻 271")).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText("攻击方速度 198"));
+    expect(onOpen).toHaveBeenCalledWith("attacker");
+  });
+
+  test("provides one dismissible parameter dialog for the selected side", () => {
+    const onClose = vi.fn();
+    render(
+      <CombatantParameterSheet
+        configuration={configuration}
+        onClose={onClose}
+        onIvChange={vi.fn()}
+        onNatureChange={vi.fn()}
+        open
+        side="attacker"
+        snapshot={snapshot}
+      />,
+    );
+
+    expect(screen.getByRole("dialog", { name: "攻击方参数设置" }))
+      .toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "完成攻击方参数设置" }),
+    );
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
 

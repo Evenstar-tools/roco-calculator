@@ -9,6 +9,7 @@ import {
 import { FourSkillEditor } from "./components/FourSkillEditor.jsx";
 import { FloatingUndoButton } from "./components/FloatingUndoButton.jsx";
 import { NatureStatsStep } from "./components/NatureStatsStep.jsx";
+import { MoonMemoryTraitEditor } from "./components/MoonMemoryTraitEditor.jsx";
 import { QuickNaturePicker } from "./components/QuickNaturePicker.jsx";
 import { QuickIvPicker } from "./components/QuickIvPicker.jsx";
 import { ResultRail } from "./components/ResultRail.jsx";
@@ -53,6 +54,7 @@ import {
 import { getNatureMultipliers } from "./domain/natures.js";
 import { starfallStacksFromMarkSlot } from "./domain/marks.js";
 import { calculateAllPanelStats } from "./domain/stat.js";
+import { getEffectiveTraits } from "./domain/effective-traits.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
 import { withCalculatorExtras } from "./data/snapshot-extras.js";
 import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
@@ -153,6 +155,14 @@ function CalculatorWorkspace({ snapshot }) {
   const { attacker: attackerView, defender: defenderView } = viewModel.sides;
   const attacker = attackerView.spirit;
   const defender = defenderView.spirit;
+  const attackerTraits = getEffectiveTraits(snapshot, {
+    ...state.sides.attacker,
+    spirit: attacker,
+  });
+  const defenderTraits = getEffectiveTraits(snapshot, {
+    ...state.sides.defender,
+    spirit: defender,
+  });
   const fairPigeonPresent =
     hasFairPigeonBalance(attacker) || hasFairPigeonBalance(defender);
   const attackerHealth = attackerView.health;
@@ -615,12 +625,20 @@ function CalculatorWorkspace({ snapshot }) {
       }
     }
     const spirit = getSpirit(snapshot, latest.sides[side]);
-    const detectedChoiceTrait = getTraitView(snapshot, spirit, "attacker").name;
+    const effectiveTraits = getEffectiveTraits(snapshot, {
+      ...latest.sides[side],
+      spirit,
+    });
+    const effectiveTraitNames = effectiveTraits.map(
+      (trait) => trait?.displayName ?? trait?.name,
+    );
+    const detectedChoiceTrait =
+      effectiveTraitNames.find(supportsChoiceTrait) ?? null;
     let negativeStatusUseCount = null;
     const canApplyNegativeStatus =
       latest.calculationOptions?.includeNegativeStatusSettlement === true &&
       (hasNegativeStatusSkillApplication(skill) ||
-        hasNegativeStatusTraitApplication(detectedChoiceTrait));
+        effectiveTraitNames.some(hasNegativeStatusTraitApplication));
     if (canApplyNegativeStatus) {
       const currentCounts =
         latest.directions[selfDirection].context
@@ -686,6 +704,11 @@ function CalculatorWorkspace({ snapshot }) {
       0,
       Math.floor(Number(postAttackEffects?.attackLevelStageAdd) || 0),
     );
+    const postAttackNotices = [
+      postAttackStageAdd > 0
+        ? `贪得无厌：本次共加攻 +${postAttackStageAdd * 10}%`
+        : null,
+    ].filter(Boolean);
     const rawPostAttackCurrentHp =
       postAttackEffects?.selfCurrentHpAfterSettlement;
     const postAttackCurrentHp = Number(rawPostAttackCurrentHp);
@@ -694,7 +717,9 @@ function CalculatorWorkspace({ snapshot }) {
       rawPostAttackCurrentHp !== null &&
       Number.isFinite(postAttackCurrentHp);
     if (!resolution) {
-      if (postAttackStageAdd > 0 || hasPostAttackCurrentHp) {
+      const hasPostAttackSettlement =
+        postAttackStageAdd > 0 || hasPostAttackCurrentHp;
+      if (hasPostAttackSettlement) {
         const currentOverrides =
           latest.directions[selfDirection].overrides ?? {};
         if (postAttackStageAdd > 0) {
@@ -725,20 +750,22 @@ function CalculatorWorkspace({ snapshot }) {
           });
         }
         setActiveDirection(selfDirection);
-        setToast(
-          postAttackStageAdd > 0
-            ? `贪得无厌：本次共加攻 +${postAttackStageAdd * 10}%`
-            : `${skill.name}：吸血后结算自身掉血`,
-        );
-        return;
       }
       if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
-        if (negativeStatusUseCount !== null) {
+        if (hasPostAttackSettlement || negativeStatusUseCount !== null) {
           setActiveDirection(selfDirection);
           setToast(
-            negativeStatusUseCount === 1
-              ? `${skill.name}：本回合`
-              : `${skill.name}：本回合 + 下回合`,
+            [
+              hasPostAttackSettlement && postAttackNotices.length === 0
+                ? `${skill.name}：吸血后结算自身掉血`
+                : null,
+              ...postAttackNotices,
+              negativeStatusUseCount === 1
+                ? `${skill.name}：本回合`
+                : negativeStatusUseCount === 2
+                  ? `${skill.name}：本回合 + 下回合`
+                  : null,
+            ].filter(Boolean).join("；"),
           );
         }
         return;
@@ -753,11 +780,12 @@ function CalculatorWorkspace({ snapshot }) {
       setActiveDirection(
         side === "attacker" ? "forward" : "reverse",
       );
-      setToast(
+      setToast([
         sequence.executions.length > 1
           ? `${detectedChoiceTrait}已应用：本次按两段结算`
           : `${skill.name}已记为使用1次`,
-      );
+        ...postAttackNotices,
+      ].join("；"));
       return;
     }
     if (!resolution.applied) {
@@ -1012,11 +1040,12 @@ function CalculatorWorkspace({ snapshot }) {
     });
     updateFourSkillEntry(side, index, { context: sequence.nextContext });
     setActiveDirection(selfDirection);
-    setToast(
+    setToast([
       negativeStatusUseCount === 2
         ? `${skill.name}：本回合 + 下回合`
         : `${skill.name}的状态已应用`,
-    );
+      ...postAttackNotices,
+    ].join("；"));
   }
 
   function updateRememberedSingleDirection(value) {
@@ -1058,6 +1087,9 @@ function CalculatorWorkspace({ snapshot }) {
         currentDirection.overrides?.lifestealPercent ?? 0
       }
       attackerTrait={getTraitView(snapshot, activeAttackSpirit, "attacker")}
+      attackerTraits={
+        activeDirection === "forward" ? attackerTraits : defenderTraits
+      }
       carriedSkills={state.sides[activeAttackSideKey].skills.four
         .map((entry) => getSkill(snapshot, entry))
         .filter(Boolean)}
@@ -1185,6 +1217,7 @@ function CalculatorWorkspace({ snapshot }) {
           : 0
       }
       attackerTrait={getTraitView(snapshot, attacker, "attacker")}
+      attackerTraits={attackerTraits}
       attackerTraitContext={state.directions.forward.context}
       attackerTraitDamage={attackerTraitDamage}
       attackerDefenseTrait={
@@ -1209,6 +1242,7 @@ function CalculatorWorkspace({ snapshot }) {
           : 0
       }
       defenderTrait={getTraitView(snapshot, defender, "attacker")}
+      defenderTraits={defenderTraits}
       defenderTraitContext={state.directions.reverse.context}
       defenderTraitDamage={defenderTraitDamage}
       defenderDefenseTrait={
@@ -1441,7 +1475,7 @@ function CalculatorWorkspace({ snapshot }) {
     configLibrary: configLibraryFlow.overlayProps,
     dataSource: {
       ...overlays.dataSourceProps,
-      dataVersion: `${snapshot.meta.seasonId ?? "S3季中"} · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
+      dataVersion: `${snapshot.meta.seasonId ?? "S4前瞻"} · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
     },
     productAccess: overlays.productAccessProps,
     displaySettings: overlays.displaySettingsProps,
@@ -1522,6 +1556,37 @@ function CalculatorWorkspace({ snapshot }) {
                   ? "complete"
                   : null
             }
+            attackerTraitEditor={attacker ? (
+              <MoonMemoryTraitEditor
+                onAdd={(traitId) =>
+                  dispatch({
+                    side: "attacker",
+                    traitId,
+                    type: "side/add-acquired-trait",
+                  })
+                }
+                onRemove={(traitId) =>
+                  dispatch({
+                    side: "attacker",
+                    traitId,
+                    type: "side/remove-acquired-trait",
+                  })
+                }
+                onValueChange={(traitId, key, value) =>
+                  dispatch({
+                    key,
+                    side: "attacker",
+                    traitId,
+                    type: "side/set-acquired-trait-value",
+                    value,
+                  })
+                }
+                side={state.sides.attacker}
+                sideKey="attacker"
+                snapshot={snapshot}
+                spirit={attacker}
+              />
+            ) : null}
             defender={defender}
             defenderFavoriteState={
               favoriteSpiritIds.has(defender?.id)
@@ -1530,6 +1595,37 @@ function CalculatorWorkspace({ snapshot }) {
                   ? "complete"
                   : null
             }
+            defenderTraitEditor={defender ? (
+              <MoonMemoryTraitEditor
+                onAdd={(traitId) =>
+                  dispatch({
+                    side: "defender",
+                    traitId,
+                    type: "side/add-acquired-trait",
+                  })
+                }
+                onRemove={(traitId) =>
+                  dispatch({
+                    side: "defender",
+                    traitId,
+                    type: "side/remove-acquired-trait",
+                  })
+                }
+                onValueChange={(traitId, key, value) =>
+                  dispatch({
+                    key,
+                    side: "defender",
+                    traitId,
+                    type: "side/set-acquired-trait-value",
+                    value,
+                  })
+                }
+                side={state.sides.defender}
+                sideKey="defender"
+                snapshot={snapshot}
+                spirit={defender}
+              />
+            ) : null}
             onAttackerFavoriteToggle={() => toggleSpiritFavorite(attacker)}
             onAttackerSelect={(value) => changeSpirit("attacker", value)}
             onDefenderFavoriteToggle={() => toggleSpiritFavorite(defender)}
@@ -1541,7 +1637,7 @@ function CalculatorWorkspace({ snapshot }) {
             spirits={selectableSpirits}
           />
           {!configurationReady && !firstRunGuideVisible
-            ? <EmptyStateGuide />
+            ? <EmptyStateGuide message={viewModel.configurationIssue} />
             : null}
           {configurationReady && viewMode === "compact" ? (
             <section
@@ -1877,7 +1973,7 @@ export function App({ initialSnapshot = null }) {
       <div className="app">
         <AppHeader />
         <main className="loading-state">
-          <p>{error || "正在加载 S3季中数据…"}</p>
+          <p>{error || "正在加载 S4前瞻数据…"}</p>
         </main>
       </div>
     );

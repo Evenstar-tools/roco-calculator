@@ -203,6 +203,13 @@
   flex-basis: 15px;
 }
 
+.spirit-picker__result-pending {
+  margin-left: 3px;
+  color: var(--warning);
+  font-weight: var(--weight-emphasis);
+  white-space: nowrap;
+}
+
 .spirit-picker__empty,
 .skill-picker__empty {
   padding: 24px 12px;

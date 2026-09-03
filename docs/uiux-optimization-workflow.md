@@ -63,7 +63,7 @@ git add <仅本批文件>; git commit
 Web 批:
 
 ```powershell
-npm test          # 全量单测(pretest 含 core-drift 门禁)
+npm test          # 全量单测（pretest 校验当前权威核心与小程序镜像）
 npm run lint
 npm run e2e
 npm run build     # 含性能预算门禁

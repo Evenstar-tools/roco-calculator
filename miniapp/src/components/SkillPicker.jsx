@@ -16,6 +16,7 @@ import {
 import searchIcon from "../assets/icons/search.png";
 import ElementIcon from "./ElementIcon.jsx";
 import SkillIcon from "./SkillIcon.jsx";
+import EntityChangeHint from "./EntityChangeHint.jsx";
 
 function entryId(entry) {
   if (typeof entry === "string") return entry;
@@ -26,7 +27,24 @@ function readInputValue(event) {
   return event?.detail?.value ?? event?.target?.value ?? "";
 }
 
+function mergeDefinedSkillFields(base, override) {
+  if (!base) return override;
+  if (!override) return base;
+
+  return Object.entries(override).reduce((merged, [key, value]) => {
+    if (value !== undefined) merged[key] = value;
+    return merged;
+  }, { ...base });
+}
+
 function SkillMeta({ skill }) {
+  if (skill?.calculationStatus === "pending-skill-data") {
+    return (
+      <View className="skill-picker__meta">
+        <Text className="skill-picker__meta-item">参数待确认</Text>
+      </View>
+    );
+  }
   const power = Number(skill?.basePower);
   const cost = Number(skill?.cost);
 
@@ -46,6 +64,9 @@ function SkillMeta({ skill }) {
 }
 
 function skillSummary(skill) {
+  if (skill.calculationStatus === "pending-skill-data") {
+    return "参数待确认";
+  }
   const category = SKILL_CATEGORY_LABELS[skill.category] ?? "技能";
   const power = Number(skill.basePower) > 0
     ? `威力 ${skill.basePower}`
@@ -74,20 +95,24 @@ export default function SkillPicker({
   const selectedId = entryId(value);
   const selected = choices.find((skill) => skill.id === selectedId);
   const fallbackName = fallbackSkill?.skillName ?? fallbackSkill?.name;
-  const displayed = selected ?? (
-    fallbackName
-      ? {
-          basePower:
-            fallbackSkill.displayedPower ??
-            fallbackSkill.skillPower ??
-            fallbackSkill.basePower,
-          category:
-            fallbackSkill.skillCategory ?? fallbackSkill.category,
-          cost: fallbackSkill.skillCost ?? fallbackSkill.cost,
-          name: fallbackName,
-          type: fallbackSkill.skillType ?? fallbackSkill.type,
-        }
-      : null
+  const fallbackDisplay = fallbackName
+    ? {
+        basePower:
+          fallbackSkill.displayedPower ??
+          fallbackSkill.skillPower ??
+          fallbackSkill.basePower,
+        category:
+          fallbackSkill.skillCategory ?? fallbackSkill.category,
+        cost: fallbackSkill.skillCost ?? fallbackSkill.cost,
+        name: fallbackName,
+        type: fallbackSkill.skillType ?? fallbackSkill.type,
+      }
+    : null;
+  const fallbackMatchesSelection = !selected ||
+    entryId(fallbackSkill) === selectedId;
+  const displayed = mergeDefinedSkillFields(
+    selected,
+    fallbackMatchesSelection ? fallbackDisplay : null,
   );
   const categoryOptions = useMemo(
     () => buildSkillCategoryOptions(choices),
@@ -145,7 +170,7 @@ export default function SkillPicker({
         aria-label={`选择${label}`}
         className={[
           "skill-picker__trigger",
-          !displayed?.type ? "skill-picker__trigger--empty" : "",
+          !displayed ? "skill-picker__trigger--empty" : "",
           open ? "skill-picker__trigger--expanded" : "",
         ].filter(Boolean).join(" ")}
         hoverClass="button-hover"
@@ -160,9 +185,12 @@ export default function SkillPicker({
         ) : null}
         <View className="skill-picker__trigger-copy">
           <Text className="skill-picker__label">{label}</Text>
-          <Text className="skill-picker__name">
-            {displayed?.name ?? "请选择技能"}
-          </Text>
+          <View className="skill-picker__name-row">
+            <Text className="skill-picker__name">
+              {displayed?.name ?? "请选择技能"}
+            </Text>
+            <EntityChangeHint changeInfo={displayed?.changeInfo} />
+          </View>
           {displayed ? (
             <SkillMeta skill={displayed} />
           ) : (
@@ -297,9 +325,12 @@ export default function SkillPicker({
                         <ElementIcon type={skill.type} />
                       )}
                       <View className="skill-picker__option-copy">
-                        <Text className="skill-picker__option-name">
-                          {skill.name}
-                        </Text>
+                        <View className="skill-picker__option-title">
+                          <Text className="skill-picker__option-name">
+                            {skill.name}
+                          </Text>
+                          <EntityChangeHint changeInfo={skill.changeInfo} />
+                        </View>
                         <SkillMeta skill={skill} />
                       </View>
                       {isSelected ? (

@@ -1,13 +1,14 @@
 import { calculateMatchup } from "./calculate.js";
 import { getNatureMultipliers } from "./natures.js";
 import { getSkillChoices } from "./skill-loadout.js";
-import { calculateAllPanelStats } from "./stat.js";
+import { calculateAllPanelStats, hasCompleteRaceStats } from "./stat.js";
 import { getSnapshotIndexes } from "./snapshot-indexes.js";
 import {
   analyzeDefensiveTypes,
   analyzeSkillTypeCoverage,
 } from "./type-chart.js";
 import { resolveWingExtensionSkill } from "./wing-extension.js";
+import { getEffectiveTraits } from "./effective-traits.js";
 import {
   calculateNegativeStatusSettlement,
   normalizeNegativeStatusSide,
@@ -288,13 +289,14 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
     Math.max(0, state.directions[direction].currentHp ?? defenderPanels.hp),
   );
   const skillEntries = attackSide.skills.four;
-  const traitsById = getSnapshotIndexes(snapshot).traits;
-  const traits = (attacker.traitIds ?? [])
-    .map((traitId) => traitsById[traitId])
-    .filter(Boolean);
-  const defenderTraits = (defender.traitIds ?? [])
-    .map((traitId) => traitsById[traitId])
-    .filter(Boolean);
+  const traits = getEffectiveTraits(snapshot, {
+    ...attackSide,
+    spirit: attacker,
+  });
+  const defenderTraits = getEffectiveTraits(snapshot, {
+    ...defenseSide,
+    spirit: defender,
+  });
   const statusEnabled =
     state.calculationOptions?.includeNegativeStatusSettlement === true;
   const statusSideKey = isForward ? "defender" : "attacker";
@@ -335,6 +337,13 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
   ) => {
     if (!rawResult) return rawResult;
     const selectedSkill = getSkill(snapshot, entry);
+    const settledSkillCost = [null, undefined, ""].includes(rawResult.skillCost)
+      ? Number.NaN
+      : Number(rawResult.skillCost);
+    const settlementSkill =
+      selectedSkill && Number.isFinite(settledSkillCost)
+        ? { ...selectedSkill, cost: settledSkillCost }
+        : selectedSkill;
     const context = {
       targetPoisonMarkStacks,
       ...(directionState.context ?? {}),
@@ -345,7 +354,7 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
           baselineStatuses,
           context,
           selectedSkills: selectedStatusSkills,
-          skill: selectedSkill,
+          skill: settlementSkill,
           skillIndex: index,
           traits,
         })
@@ -450,7 +459,7 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
             baselineStatuses: negativeStatusSettlement.nextStacks,
             context,
             selectedSkills: selectedStatusSkills,
-            skill: selectedSkill,
+            skill: settlementSkill,
             skillIndex: index,
             traits,
           })
@@ -614,7 +623,15 @@ export function buildCalculatorViewModel({
   const defender = selectableSpirits.find(
     (spirit) => spirit.id === state.sides.defender.spiritId,
   );
-  const configurationReady = Boolean(attacker && defender);
+  const selectionsReady = Boolean(attacker && defender);
+  const pendingRaceStatSpirits = [attacker, defender].filter(
+    (spirit) => spirit && !hasCompleteRaceStats(spirit.raceStats),
+  );
+  const configurationReady =
+    selectionsReady && pendingRaceStatSpirits.length === 0;
+  const configurationIssue = selectionsReady && pendingRaceStatSpirits.length > 0
+    ? "种族值待确认"
+    : null;
   const attackerPanelStats = configurationReady
     ? calculateAllPanelStats({
         raceStats: attacker.raceStats,
@@ -652,7 +669,9 @@ export function buildCalculatorViewModel({
     getSkill(snapshot, attackSide.skills.single) ?? activeChoices[0] ?? snapshot.skills[0];
   let calculation;
   if (!configurationReady) {
-    calculation = unresolvedCalculation(new Error("请选择双方精灵"));
+    calculation = unresolvedCalculation(
+      new Error(configurationIssue ?? "请选择双方精灵"),
+    );
   } else {
     try {
       calculation = calculateMatchup(snapshot, buildCombatState(state));
@@ -694,6 +713,7 @@ export function buildCalculatorViewModel({
       direction: activeDirection,
     },
     calculation,
+    configurationIssue,
     configurationReady,
     currentDirection,
     environment: {

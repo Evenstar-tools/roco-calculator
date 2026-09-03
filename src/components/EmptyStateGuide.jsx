@@ -13,24 +13,32 @@ const STEPS = [
   },
 ];
 
-export function EmptyStateGuide() {
+export function EmptyStateGuide({ message = null }) {
   return (
     <section aria-label="使用引导" className="empty-guide">
-      <h2 className="empty-guide__title">三步完成一次伤害计算</h2>
-      <ol className="empty-guide__steps">
-        {STEPS.map((step, index) => (
-          <li className="empty-guide__step" key={step.title}>
-            <span aria-hidden="true" className="empty-guide__step-index">
-              {index + 1}
-            </span>
-            <span className="empty-guide__step-title">{step.title}</span>
-            <span className="empty-guide__step-detail">{step.detail}</span>
-          </li>
-        ))}
-      </ol>
+      <h2 className="empty-guide__title">
+        {message ? "S4 前瞻占位形态" : "三步完成一次伤害计算"}
+      </h2>
+      {message ? (
+        <p className="empty-guide__footnote">{message}</p>
+      ) : (
+        <ol className="empty-guide__steps">
+          {STEPS.map((step, index) => (
+            <li className="empty-guide__step" key={step.title}>
+              <span aria-hidden="true" className="empty-guide__step-index">
+                {index + 1}
+              </span>
+              <span className="empty-guide__step-title">{step.title}</span>
+              <span className="empty-guide__step-detail">{step.detail}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+      {!message ? (
       <p className="empty-guide__footnote">
         顶部「队伍」可管理六人配置 · 菜单内可一键导入常用精灵配置
       </p>
+      ) : null}
     </section>
   );
 }

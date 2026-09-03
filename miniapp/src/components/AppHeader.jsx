@@ -41,7 +41,7 @@ export default function AppHeader({
     >
       <View className="app-header">
         <View className="app-header__identity">
-          <Text className="app-header__title">洛克计算器 · S3季中</Text>
+          <Text className="app-header__title">洛克计算器 · S4前瞻</Text>
         </View>
         <View className="app-header__actions">
           <Button

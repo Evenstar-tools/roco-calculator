@@ -34,38 +34,47 @@ const imageUrls = new Map(
 
 const spirits = runtime.spirits.map((spirit) => {
   const imageUrl = imageUrls.get(spirit.id);
-  if (!/^https:\/\//u.test(imageUrl ?? "")) {
+  const isPreviewEntry = spirit.changeInfo?.isNew === true &&
+    spirit.changeInfo?.patch?.status === "preview";
+  if (!isPreviewEntry && !/^https:\/\//u.test(imageUrl ?? "")) {
     throw new Error(`精灵 ${spirit.id} 缺少可用的 HTTPS 图片地址`);
   }
-  const {
-    hp,
-    speed,
-    physicalAttack,
-    magicalAttack,
-    physicalDefense,
-    magicalDefense,
-  } = spirit.raceStats;
+  const raceStats = spirit.raceStats
+    ? {
+        hp: spirit.raceStats.hp,
+        speed: spirit.raceStats.speed,
+        physicalAttack: spirit.raceStats.physicalAttack,
+        magicalAttack: spirit.raceStats.magicalAttack,
+        physicalDefense: spirit.raceStats.physicalDefense,
+        magicalDefense: spirit.raceStats.magicalDefense,
+      }
+    : null;
   return {
     id: spirit.id,
     baseName: spirit.baseName,
     variantName: spirit.variantName,
     fullName: spirit.fullName,
     types: spirit.types,
-    raceStats: {
-      hp,
-      speed,
-      physicalAttack,
-      magicalAttack,
-      physicalDefense,
-      magicalDefense,
-    },
+    raceStats,
+    ...(spirit.calculationStatus
+      ? { calculationStatus: spirit.calculationStatus }
+      : {}),
+    ...(spirit.previewDefaults
+      ? {
+          previewDefaults: {
+            natureId: spirit.previewDefaults.natureId,
+            displayIvs: { ...spirit.previewDefaults.displayIvs },
+          },
+        }
+      : {}),
     traitIds: spirit.traitIds,
     traitName: spirit.traitName,
     traitDescription: spirit.traitDescription,
     evolutionChainIds: spirit.evolutionChainIds,
     initials: spirit.initials,
     pinyin: spirit.pinyin,
-    imageUrl,
+    ...(imageUrl ? { imageUrl } : {}),
+    ...(spirit.changeInfo ? { changeInfo: spirit.changeInfo } : {}),
   };
 });
 
@@ -83,22 +92,35 @@ const skillIndexById = new Map(
 const learnsetBySpiritId = new Map(
   runtime.learnsets.map((learnset) => [learnset.spiritId, learnset]),
 );
-const learnsetSkillIndexes = spirits.map((spirit) => {
-  const learnset = learnsetBySpiritId.get(spirit.id);
-  if (!learnset) throw new Error(`精灵 ${spirit.id} 缺少技能表`);
-  return learnset.skillIds.map((skillId) => {
+function skillIdsToIndexes(skillIds) {
+  return skillIds.map((skillId) => {
     const skillIndex = skillIndexById.get(skillId);
     if (skillIndex == null) {
       throw new Error(`技能表引用不存在的技能 ${skillId}`);
     }
     return skillIndex;
   });
+}
+
+const learnsetSkillIndexes = spirits.map((spirit) => {
+  const learnset = learnsetBySpiritId.get(spirit.id);
+  if (!learnset) throw new Error(`精灵 ${spirit.id} 缺少技能表`);
+  return skillIdsToIndexes(learnset.skillIds);
 });
+const defaultSkillIndexes = Object.fromEntries(
+  spirits.flatMap((spirit, spiritIndex) => {
+    const defaultSkillIds = learnsetBySpiritId.get(spirit.id)?.defaultSkillIds;
+    return Array.isArray(defaultSkillIds) && defaultSkillIds.length > 0
+      ? [[spiritIndex, skillIdsToIndexes(defaultSkillIds)]]
+      : [];
+  }),
+);
 
 const { learnsets: _learnsets, ...runtimeWithoutLearnsets } = runtime;
 
 const bundledRuntime = {
   ...runtimeWithoutLearnsets,
+  ...(Object.keys(defaultSkillIndexes).length > 0 ? { defaultSkillIndexes } : {}),
   learnsetSkillIndexes,
   skills,
   spirits,

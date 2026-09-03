@@ -7,7 +7,7 @@ const POSITIVE_MARKS = [
   {
     id: "dragon-bite",
     name: "龙噬",
-    summary: "3 能耗技能提升双攻；当前由能力配置结算",
+    summary: "使用 3 能耗技能后双攻 +40%；当前由能力配置结算",
   },
   {
     id: "momentum",

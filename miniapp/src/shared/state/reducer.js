@@ -1,5 +1,6 @@
 import { normalizeNatureId } from "../domain/natures.js";
 import { normalizeMarkSlot } from "../domain/marks.js";
+import { MOON_MEMORY_TRAIT_LIMIT } from "../domain/moon-memory.js";
 import { reconcileSkillLoadout } from "../domain/skill-loadout.js";
 import {
   NEGATIVE_STATUS_KEYS,
@@ -36,6 +37,13 @@ function requireSide(action) {
   }
 
   return action.side;
+}
+
+function requireNonEmptyString(value, message) {
+  if (typeof value !== "string" || value.trim() === "") {
+    throw new TypeError(message);
+  }
+  return value;
 }
 
 function updateSide(state, action, updater) {
@@ -198,6 +206,8 @@ export function calculatorReducer(state, action) {
     case "side/set-spirit":
       return updateSide(state, action, (side) => ({
         ...side,
+        acquiredTraitIds: [],
+        acquiredTraitValues: {},
         skills: Array.isArray(action.legalSkillIds)
           ? reconcileSkillLoadout(
               side.skills,
@@ -233,12 +243,71 @@ export function calculatorReducer(state, action) {
         member.skills.single ?? four.find(Boolean) ?? null,
       );
       return updateSide(state, action, () => ({
+        acquiredTraitIds: [],
+        acquiredTraitValues: {},
         displayIvs: { ...member.displayIvs },
         nature: normalizeNatureId(member.natureId),
         skills: { four, single },
         spiritId: member.spiritId,
         traitValues: { ...(member.traitValues ?? {}) },
       }));
+    }
+    case "side/add-acquired-trait": {
+      const traitId = requireNonEmptyString(
+        action.traitId,
+        "吞噬特性缺少有效标识",
+      );
+      return updateSide(state, action, (side) => {
+        const acquiredTraitIds = side.acquiredTraitIds ?? [];
+        if (
+          acquiredTraitIds.includes(traitId) ||
+          acquiredTraitIds.length >= MOON_MEMORY_TRAIT_LIMIT
+        ) return side;
+        return {
+          ...side,
+          acquiredTraitIds: [...acquiredTraitIds, traitId],
+        };
+      });
+    }
+    case "side/remove-acquired-trait": {
+      const traitId = requireNonEmptyString(
+        action.traitId,
+        "吞噬特性缺少有效标识",
+      );
+      return updateSide(state, action, (side) => {
+        const acquiredTraitValues = { ...(side.acquiredTraitValues ?? {}) };
+        delete acquiredTraitValues[traitId];
+        return {
+          ...side,
+          acquiredTraitIds: (side.acquiredTraitIds ?? []).filter(
+            (id) => id !== traitId,
+          ),
+          acquiredTraitValues,
+        };
+      });
+    }
+    case "side/set-acquired-trait-value": {
+      const traitId = requireNonEmptyString(
+        action.traitId,
+        "吞噬特性缺少有效标识",
+      );
+      const key = requireNonEmptyString(
+        action.key,
+        "吞噬特性控件缺少稳定标识",
+      );
+      return updateSide(state, action, (side) => {
+        if (!(side.acquiredTraitIds ?? []).includes(traitId)) return side;
+        return {
+          ...side,
+          acquiredTraitValues: {
+            ...(side.acquiredTraitValues ?? {}),
+            [traitId]: {
+              ...(side.acquiredTraitValues?.[traitId] ?? {}),
+              [key]: action.value,
+            },
+          },
+        };
+      });
     }
     case "side/set-trait-value":
       return updateSide(state, action, (side) => ({

@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { calculateMatchup } from "../domain/calculate.js";
+import { MOON_MEMORY_TRAIT_LIMIT } from "../domain/moon-memory.js";
+import { hasCompleteRaceStats } from "../domain/stat.js";
 import {
   getNatureMultipliers,
   NATURES,
@@ -19,6 +21,9 @@ const ALL_FULL_IVS = Object.freeze({
 });
 
 const INPUT_SCHEMA_VERSION = 1;
+const MOON_MEMORY_TRAIT_NAME = "铭记于月亮";
+const CANONICAL_TRAIT_VALUE_KEY_PATTERN =
+  /^trait\.[A-Za-z][A-Za-z0-9]*\.[a-f0-9]{8}$/u;
 
 class CliError extends Error {
   constructor(code, message, details = {}) {
@@ -169,6 +174,7 @@ function formatEntity(entity, kind) {
       types: entity.types ?? [],
       stage: entity.stage ?? null,
       traitName: entity.traitName ?? null,
+      calculationStatus: entity.calculationStatus ?? null,
     };
   }
   if (kind === "skill") {
@@ -320,6 +326,120 @@ function resolveDisplayIvs(value, field) {
   return resolved;
 }
 
+function hasNativeMoonMemoryTrait(context, spirit) {
+  return (spirit.traitIds ?? []).some((traitId) => {
+    const trait = context.indexes.traits.get(traitId);
+    return (trait?.displayName ?? trait?.name) === MOON_MEMORY_TRAIT_NAME;
+  });
+}
+
+function isPlainObject(value) {
+  if (value === null || typeof value !== "object") return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+function isSafeTraitScalar(value) {
+  return (
+    typeof value === "boolean" ||
+    typeof value === "string" ||
+    (typeof value === "number" && Number.isFinite(value))
+  );
+}
+
+function resolveAcquiredTraitIds(context, value, field) {
+  if (value === undefined || value === null) return [];
+  if (!Array.isArray(value)) {
+    throw new CliError(
+      "INPUT_VALIDATION_FAILED",
+      `${field} 必须是特性 ID 数组`,
+      { field },
+    );
+  }
+  const resolved = [];
+  const seen = new Set();
+  value.forEach((traitId, index) => {
+    if (
+      typeof traitId !== "string" ||
+      traitId.length === 0 ||
+      !context.indexes.traits.has(traitId)
+    ) {
+      throw new CliError(
+        "INPUT_VALIDATION_FAILED",
+        `${field}[${index}] 不是当前快照中的特性 ID`,
+        {
+          field: `${field}[${index}]`,
+          traitId,
+        },
+      );
+    }
+    if (!seen.has(traitId)) {
+      seen.add(traitId);
+      resolved.push(traitId);
+    }
+  });
+  if (resolved.length > MOON_MEMORY_TRAIT_LIMIT) {
+    throw new CliError(
+      "INPUT_VALIDATION_FAILED",
+      `${field} 最多5个特性`,
+      {
+        field,
+        limit: MOON_MEMORY_TRAIT_LIMIT,
+      },
+    );
+  }
+  return resolved;
+}
+
+function resolveAcquiredTraitValues(value, acquiredTraitIds, field) {
+  if (value === undefined || value === null) return {};
+  if (!isPlainObject(value)) {
+    throw new CliError(
+      "INPUT_VALIDATION_FAILED",
+      `${field} 必须是按特性 ID 分组的对象`,
+      { field },
+    );
+  }
+  const allowedIds = new Set(acquiredTraitIds);
+  const resolved = {};
+  for (const [traitId, traitValues] of Object.entries(value)) {
+    if (!allowedIds.has(traitId)) {
+      throw new CliError(
+        "INPUT_VALIDATION_FAILED",
+        `${field}.${traitId} 不属于已选特性`,
+        { field: `${field}.${traitId}`, traitId },
+      );
+    }
+    if (!isPlainObject(traitValues)) {
+      throw new CliError(
+        "INPUT_VALIDATION_FAILED",
+        `${field}.${traitId} 必须是 canonical trait key 对象`,
+        { field: `${field}.${traitId}`, traitId },
+      );
+    }
+    const resolvedTraitValues = {};
+    for (const [key, candidate] of Object.entries(traitValues)) {
+      if (!CANONICAL_TRAIT_VALUE_KEY_PATTERN.test(key)) {
+        throw new CliError(
+          "INPUT_VALIDATION_FAILED",
+          `${field}.${traitId}.${key} 不是 canonical trait key`,
+          { field: `${field}.${traitId}.${key}`, key, traitId },
+        );
+      }
+      if (!isSafeTraitScalar(candidate)) {
+        throw new CliError(
+          "INPUT_VALIDATION_FAILED",
+          `${field}.${traitId}.${key} 必须是安全标量`,
+          { field: `${field}.${traitId}.${key}`, key, traitId },
+        );
+      }
+      resolvedTraitValues[key] = candidate;
+    }
+    resolved[traitId] = resolvedTraitValues;
+  }
+  return resolved;
+}
+
 function compileSide(context, sideInput, field, mode) {
   if (!sideInput || typeof sideInput !== "object") {
     throw new CliError("INPUT_VALIDATION_FAILED", `${field} 必须是对象`, { field });
@@ -330,6 +450,18 @@ function compileSide(context, sideInput, field, mode) {
     sideInput.spirit ?? sideInput.spiritId,
     `${field}.spirit`,
   );
+  if (!hasCompleteRaceStats(spirit.raceStats)) {
+    throw new CliError(
+      "SPIRIT_DATA_UNAVAILABLE",
+      `${spirit.fullName}种族值待确认，暂不可计算`,
+      {
+        calculationStatus: spirit.calculationStatus ?? null,
+        field: `${field}.spirit`,
+        spiritId: spirit.id,
+        spiritName: spirit.fullName,
+      },
+    );
+  }
   const learnset = context.indexes.learnsets.get(spirit.id);
   const allowedIds = learnset ? new Set(learnset.skillIds ?? []) : null;
   const rawFour = Array.isArray(sideInput.skills)
@@ -355,25 +487,42 @@ function compileSide(context, sideInput, field, mode) {
     resolveSkillEntry(context, entry, `${field}.skills[${index}]`, allowedIds),
   );
   while (four.length < 4) four.push(null);
-  const {
-    currentHp: _currentHp,
-    displayIvs,
-    ivs,
-    nature,
-    skill: _skill,
-    skills: _skills,
-    spirit: _spirit,
-    spiritId: _spiritId,
-    ...rest
-  } = sideInput;
+  const acquiredTraitIds = resolveAcquiredTraitIds(
+    context,
+    sideInput.acquiredTraitIds,
+    `${field}.acquiredTraitIds`,
+  );
+  const acquiredTraitValues = resolveAcquiredTraitValues(
+    sideInput.acquiredTraitValues,
+    acquiredTraitIds,
+    `${field}.acquiredTraitValues`,
+  );
+  if (
+    (acquiredTraitIds.length > 0 ||
+      Object.keys(acquiredTraitValues).length > 0) &&
+    !hasNativeMoonMemoryTrait(context, spirit)
+  ) {
+    throw new CliError(
+      "INPUT_VALIDATION_FAILED",
+      `${field}.acquiredTraitIds 仅限原生持有铭记于月亮的精灵`,
+      { field: `${field}.acquiredTraitIds` },
+    );
+  }
   return {
     side: {
-      ...rest,
+      ...(acquiredTraitIds.length > 0 ? { acquiredTraitIds } : {}),
+      ...(Object.keys(acquiredTraitValues).length > 0
+        ? { acquiredTraitValues }
+        : {}),
       spiritId: spirit.id,
-      displayIvs: resolveDisplayIvs(displayIvs ?? ivs, `${field}.ivs`),
-      natureMultipliers:
-        sideInput.natureMultipliers ??
-        resolveNatureMultipliers(nature, `${field}.nature`),
+      displayIvs: resolveDisplayIvs(
+        sideInput.displayIvs ?? sideInput.ivs,
+        `${field}.ivs`,
+      ),
+      natureMultipliers: resolveNatureMultipliers(
+        sideInput.nature,
+        `${field}.nature`,
+      ),
       skills: {
         single,
         four: mode === "four" ? four : four.slice(0, 4),
@@ -578,6 +727,10 @@ function schemaResponse() {
           nature: "性格中文名或 ID",
           ivs: "六维对象",
           currentHp: "当前生命",
+          acquiredTraitIds:
+            "仅铭记于月亮持有者可用；当前快照特性 ID 数组，重复项自动去重，最多5个",
+          acquiredTraitValues:
+            "按已选特性 ID 分组的 canonical trait key 到安全标量映射",
         },
         direction: {
           skill: "选中技能序号，从1开始",

@@ -33,7 +33,7 @@ test("works offline after the service worker caches the production app", async (
   await context.setOffline(true);
   try {
     await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.getByRole("heading", { name: "洛克计算器 · S3季中" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "洛克计算器 · S4前瞻" })).toBeVisible();
     const cachedRuntime = await page.evaluate(async () => {
       const response = await fetch("/data/runtime.json");
       const runtime = await response.json();
@@ -54,7 +54,7 @@ test("works offline after the service worker caches the production app", async (
 test("stays within cold warm and skill search budgets", async ({ page }) => {
   const coldStartedAt = Date.now();
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "洛克计算器 · S3季中" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "洛克计算器 · S4前瞻" })).toBeVisible();
   expect(Date.now() - coldStartedAt).toBeLessThan(10_000);
 
   const warmStartedAt = Date.now();

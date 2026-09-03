@@ -31,6 +31,44 @@ describe("desktop core and miniapp parity", () => {
     expect(state.calculationOptions.includeNegativeStatusSettlement).toBe(false);
   });
 
+  test("desktop and miniapp defaults skip preview placeholders", async () => {
+    const desktop = await import("../../src/state/defaults.js");
+    const miniapp = await import(
+      "../../miniapp/src/shared/state/defaults.js"
+    );
+    const raceStats = {
+      hp: 100,
+      speed: 100,
+      physicalAttack: 100,
+      magicalAttack: 100,
+      physicalDefense: 100,
+      magicalDefense: 100,
+    };
+    const snapshot = {
+      meta: {},
+      skills: [],
+      spirits: [
+        {
+          calculationStatus: "pending-race-stats",
+          id: "preview",
+          raceStats: null,
+        },
+        { id: "first", raceStats },
+        { id: "second", raceStats },
+      ],
+    };
+
+    for (const createInitialState of [
+      desktop.createInitialState,
+      miniapp.createInitialState,
+    ]) {
+      expect(createInitialState(snapshot).sides).toMatchObject({
+        attacker: { spiritId: "first" },
+        defender: { spiritId: "second" },
+      });
+    }
+  });
+
   test.each([
     ["吨位压制", 100, { targetWeightTier: "<4" }, 160],
     ["以重制重", 120, { targetWeightTier: "120+" }, 160],
@@ -68,6 +106,50 @@ describe("desktop core and miniapp parity", () => {
     expect(miniapp.resolveSkillPower(skill, context)).toMatchObject({
       finalDamageMultiplier: 2,
       value: 85,
+    });
+  });
+
+  test("keeps the season burst costs in desktop and miniapp parity", async () => {
+    const desktop = await import("../../src/domain/skill-rules.js");
+    const miniapp = await import(
+      "../../miniapp/src/shared/domain/skill-rules.js"
+    );
+    const superconduct = {
+      basePower: 90,
+      category: "magical",
+      cost: 3,
+      description: "造成魔伤，迸发：本次能耗-2。",
+      name: "超导",
+      type: "电",
+    };
+    const thunderstorm = {
+      basePower: 55,
+      category: "magical",
+      cost: 1,
+      description: "造成魔伤，迸发：每有1种来源，威力+10、能耗+1。",
+      name: "雷暴",
+      type: "电",
+    };
+    const thunderstormContext = {
+      burstSourceDoublePulse: true,
+      burstSourceSuperconduct: true,
+    };
+
+    expect(miniapp.resolveSkillPower(superconduct, {}))
+      .toEqual(desktop.resolveSkillPower(superconduct, {}));
+    expect(miniapp.resolveSkillPower(superconduct, {})).toMatchObject({
+      resolvedCost: 1,
+      value: 90,
+    });
+    expect(miniapp.resolveSkillPower(thunderstorm, thunderstormContext))
+      .toEqual(desktop.resolveSkillPower(thunderstorm, thunderstormContext));
+    expect(
+      miniapp.resolveSkillPower(thunderstorm, thunderstormContext),
+    ).toMatchObject({
+      activeBurstKinds: 2,
+      inheritedCostReduction: 2,
+      resolvedCost: 1,
+      value: 75,
     });
   });
 

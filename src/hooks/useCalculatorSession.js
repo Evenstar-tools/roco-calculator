@@ -57,6 +57,7 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast }) 
       action?.direction,
       action?.index,
       action?.stat,
+      action?.traitId,
       action?.key,
       valueKeys,
     ].filter((value) => value !== undefined && value !== "").join(":");

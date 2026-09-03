@@ -96,12 +96,60 @@ const automatic = (kind, effect, effectLabel, extra = {}) => ({
 });
 
 const RULES = Object.freeze({
+  威慑: trigger(
+    "attack_percent",
+    30,
+    "已打断敌方技能",
+    "双攻加成",
+  ),
   换碟: automatic("fixed_power", 15, "固定基础威力", {
     applies: ({ skill }) =>
       Object.hasOwn(DISC_SWAP_POWER_BY_SKILL, skill?.name),
     editableEffect: false,
     fixedPowerBySkillName: DISC_SWAP_POWER_BY_SKILL,
   }),
+  旧玩具: stack(
+    "power_percent",
+    10,
+    "己方已使用不同技能系列数",
+    "每种威力",
+    { editableEffect: false, max: 18 },
+  ),
+  宇宙之眼: stack(
+    "physical_defense_percent",
+    10,
+    "敌方星陨层数",
+    "每层物防",
+    {
+      editableEffect: false,
+      max: 99,
+      roles: ["attacker", "defender"],
+    },
+  ),
+  冷光源: trigger(
+    "power_percent",
+    100,
+    "上回合双方使用过翼系技能",
+    "冰系威力",
+    {
+      conditionKey: "previousTurnWingSkillUsed",
+      conditionScope: "battle",
+      editableEffect: false,
+      types: ["冰"],
+    },
+  ),
+  热成像: trigger(
+    "power_percent",
+    100,
+    "上回合双方使用过火系技能",
+    "虫系威力",
+    {
+      conditionKey: "previousTurnFireSkillUsed",
+      conditionScope: "battle",
+      editableEffect: false,
+      types: ["虫"],
+    },
+  ),
   守护之心: stack(
     "physical_defense_percent",
     20,
@@ -374,7 +422,7 @@ const RULES = Object.freeze({
     "其他虫系精灵数",
     "每层攻防速",
     {
-      max: 5,
+      max: 8,
       roles: ["attacker", "defender"],
       speedEffect: 10,
       speedEffectLabel: "每层速度",
@@ -387,7 +435,7 @@ const RULES = Object.freeze({
     "其他虫系精灵数",
     "每层攻防速",
     {
-      max: 5,
+      max: 8,
       roles: ["attacker", "defender"],
       speedEffect: 15,
       speedEffectLabel: "每层速度",
@@ -1058,7 +1106,7 @@ export function resolveBeastFlowerBloodlineTrait({
   if (!trait) return resolveBeastFlowerBloodline({ skill });
 
   const controls = getTraitEffectInputs(trait, role);
-  const projected = projectTriggerContext(context, controls);
+  const projected = projectTraitRuntimeContext(context, trait, controls);
   return {
     ...resolveBeastFlowerBloodline({
     activated: projected.bloodlineActivated,
@@ -1080,7 +1128,7 @@ export function resolveContractShapeTrait({
   if (!trait) return resolveContractShape({ skill });
 
   const controls = getTraitEffectInputs(trait, role);
-  const projected = projectTriggerContext(context, controls);
+  const projected = projectTraitRuntimeContext(context, trait, controls);
   return {
     ...resolveContractShape({
       ballType: projected.contractBallType,
@@ -1143,8 +1191,9 @@ export function resolveTraitEffectRule(trait, role, input) {
   if (!rule) return null;
   input = {
     ...input,
-    context: projectTriggerContext(
+    context: projectTraitRuntimeContext(
       input.context,
+      trait,
       getTraitEffectInputs(trait, role),
     ),
   };
@@ -1383,8 +1432,6 @@ import {
   CONTRACT_SHAPE_TRAIT_NAME,
   resolveContractShape,
 } from "./contract-shape.js";
-import {
-  normalizeTriggerControls,
-  projectTriggerContext,
-} from "./trigger-controls.js";
+import { normalizeTriggerControls } from "./trigger-controls.js";
+import { projectTraitRuntimeContext } from "./trait-runtime.js";
 import { getTraitHitCountInputs } from "./trait-hit-count.js";

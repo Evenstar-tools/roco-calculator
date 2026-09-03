@@ -134,6 +134,7 @@ function SkillSide({
   skills,
   sproutStacks,
   trait,
+  traits = [],
   defenseTrait,
   traitContext,
   traitDamage,
@@ -166,12 +167,27 @@ function SkillSide({
     ) ?? [];
   const defensiveTraitInputs =
     defenseTrait?.inputs?.filter((input) => input.scope !== "slot") ?? [];
+  const effectiveTraits = traits.length > 0
+    ? traits
+    : trait
+      ? [trait]
+      : [];
+  const choiceTraitName = effectiveTraits
+    .map((candidate) => candidate?.displayName ?? candidate?.name)
+    .find(supportsChoiceTrait) ?? null;
+  const wingTraitName = effectiveTraits
+    .map((candidate) => candidate?.displayName ?? candidate?.name)
+    .find((name) => name === "展翅") ?? null;
   const lifesteal = resolveLifestealCapability({
     persistentLifestealPercent: lifestealPercent,
-    traits: trait ? [trait] : [],
+    traits: effectiveTraits,
   });
   const showsLifestealCapability =
-    lifesteal.percent > 0 || ["戏耍", "贪得无厌"].includes(trait?.name);
+    lifesteal.percent > 0 || effectiveTraits.some((candidate) =>
+      ["戏耍", "贪得无厌"].includes(
+        candidate?.displayName ?? candidate?.name,
+      )
+    );
   return (
     <section className={`four-skill-side four-skill-side--${side}`}>
       <header>
@@ -327,13 +343,13 @@ function SkillSide({
           const isSelected =
             active && activeDamageSource !== "trait" && index === activeSkillIndex;
           const choiceTraitInput =
-            selected && supportsChoiceTrait(trait?.name)
+            selected && choiceTraitName
               ? getChoiceTraitInput(selected)
               : null;
           const galeTurbineInput = getGaleTurbineCompanionInput({
             currentIndex: index,
             selectedSkills,
-            traitName: trait?.name,
+            traitName: wingTraitName,
           });
           const skillInputs = selected
             ? [
@@ -670,7 +686,12 @@ function SkillSide({
                                   clampDynamicInput(input, event.target.value),
                                 )
                               }
-                              onFocus={() => onSkillFocus?.(side, index)}
+                              onFocus={(event) => {
+                                onSkillFocus?.(side, index);
+                                if ((input.contextKey ?? input.key) === "energy") {
+                                  event.currentTarget.select();
+                                }
+                              }}
                               type="number"
                               value={
                                 dynamicInputValue(
@@ -707,6 +728,7 @@ export function FourSkillEditor({
   attackerSkills,
   attackerSproutStacks = 0,
   attackerTrait,
+  attackerTraits = [],
   attackerTraitContext = {},
   attackerTraitDamage,
   attackerDefenseTrait,
@@ -717,6 +739,7 @@ export function FourSkillEditor({
   defenderSkills,
   defenderSproutStacks = 0,
   defenderTrait,
+  defenderTraits = [],
   defenderTraitContext = {},
   defenderTraitDamage,
   defenderDefenseTrait,
@@ -757,6 +780,7 @@ export function FourSkillEditor({
       skills: attackerSkillChoices ?? skills,
       sproutStacks: attackerSproutStacks,
       trait: attackerTrait,
+      traits: attackerTraits,
       defenseTrait: attackerDefenseTrait,
       traitContext: attackerTraitContext,
       traitDamage: attackerTraitDamage,
@@ -777,6 +801,7 @@ export function FourSkillEditor({
       skills: defenderSkillChoices ?? skills,
       sproutStacks: defenderSproutStacks,
       trait: defenderTrait,
+      traits: defenderTraits,
       defenseTrait: defenderDefenseTrait,
       traitContext: defenderTraitContext,
       traitDamage: defenderTraitDamage,

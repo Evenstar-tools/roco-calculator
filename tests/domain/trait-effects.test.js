@@ -84,6 +84,40 @@ describe("trait effect coverage", () => {
     ).toMatchObject({ attackLevelBonus: 0, attackMultiplier: 1 });
   });
 
+  test("威慑在打断敌方技能后为双攻增加30%", () => {
+    const trait = { id: "trait_intimidation", name: "威慑" };
+    const controls = getTraitEffectInputs(trait, "attacker");
+
+    expect(controls).toMatchObject([
+      {
+        defaultValue: false,
+        label: "已打断敌方技能",
+        type: "boolean",
+      },
+      {
+        defaultValue: 30,
+        label: "双攻加成",
+        type: "number",
+      },
+    ]);
+    expect(
+      resolveTraitEffectRule(trait, "attacker", {
+        attacker: {},
+        context: contextFor(trait, "attacker", { traitActivated: true }),
+        defender: {},
+        skill: { category: "magical", type: "萌" },
+      }),
+    ).toMatchObject({ attackLevelBonus: 3, attackMultiplier: 1.3 });
+    expect(
+      resolveTraitEffectRule(trait, "attacker", {
+        attacker: {},
+        context: contextFor(trait, "attacker", { traitActivated: false }),
+        defender: {},
+        skill: { category: "physical", type: "普通" },
+      }),
+    ).toMatchObject({ attackLevelBonus: 0, attackMultiplier: 1 });
+  });
+
   test("守护之心按双方场上不同增益种类输入物防加成", () => {
     const trait = snapshot.traits.find(
       (candidate) => candidate.name === "守护之心",
@@ -576,6 +610,24 @@ describe("trait effect coverage", () => {
           type: "number",
         },
       ]);
+    },
+  );
+
+  test.each(["虫群鼓舞", "虫群突袭"])(
+    "%s allows up to eight other Bug-type spirits",
+    (name) => {
+      const trait = snapshot.traits.find((candidate) => candidate.name === name);
+
+      for (const role of ["attacker", "defender"]) {
+        expect(getTraitEffectInputs(trait, role)[0]).toMatchObject({
+          id: expect.stringMatching(new RegExp(`^${role}Trait\\.${role}TraitStacks\\.`)),
+          label: "其他虫系精灵数",
+          max: 8,
+          min: 0,
+          source: `${role}Trait`,
+          type: "number",
+        });
+      }
     },
   );
 
@@ -1097,5 +1149,112 @@ describe("trait effect coverage", () => {
       },
     ]);
     expect(getTraitEffectInputs(trait, "defender")).toHaveLength(1);
+  });
+
+  test("S4旧玩具按己方已使用的不同技能系列数叠加10%威力", () => {
+    const trait = { id: "trait-old-toy", name: "旧玩具" };
+    expect(getTraitEffectInputs(trait, "attacker")).toMatchObject([
+      {
+        defaultValue: 0,
+        key: "attackerTraitStacks",
+        label: "己方已使用不同技能系列数",
+        max: 18,
+        min: 0,
+        type: "number",
+      },
+    ]);
+    expect(getTraitEffectInputs(trait, "attacker")).toHaveLength(1);
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      attacker: {},
+      context: contextFor(trait, "attacker", { attackerTraitStacks: 2 }),
+      defender: {},
+      skill: { category: "physical", type: "光" },
+    })).toMatchObject({ powerPercentAdd: 0.2, powerMultiplier: 1.2 });
+  });
+
+  test("S4宇宙之眼按敌方星陨层数增加持有者物防", () => {
+    const trait = { id: "trait-cosmic-eye", name: "宇宙之眼" };
+    for (const role of ["attacker", "defender"]) {
+      expect(getTraitEffectInputs(trait, role)).toMatchObject([
+        {
+          defaultValue: 0,
+          label: "敌方星陨层数",
+          max: 99,
+          min: 0,
+          type: "number",
+        },
+      ]);
+      expect(getTraitEffectInputs(trait, role)).toHaveLength(1);
+    }
+    const defenderContext = contextFor(trait, "defender", {
+      defenderTraitStacks: 3,
+    });
+    expect(resolveTraitEffectRule(trait, "defender", {
+      attacker: {},
+      context: defenderContext,
+      defender: {},
+      skill: { category: "physical", type: "普通" },
+    })).toMatchObject({
+      defenseLevelBonus: 3,
+      defenderDefenseLevelBonus: 3,
+    });
+    expect(resolveTraitEffectRule(trait, "defender", {
+      attacker: {},
+      context: defenderContext,
+      defender: {},
+      skill: { category: "magical", type: "普通" },
+    })).toMatchObject({
+      defenseLevelBonus: 0,
+      defenderDefenseLevelBonus: 3,
+    });
+  });
+
+  test.each([
+    ["冷光源", "previousTurnWingSkillUsed", "上回合双方使用过翼系技能", "冰"],
+    ["热成像", "previousTurnFireSkillUsed", "上回合双方使用过火系技能", "虫"],
+  ])("S4%s只给指定系别技能增加100%威力", (
+    name,
+    contextKey,
+    conditionLabel,
+    skillType,
+  ) => {
+    const trait = { id: `trait-${name}`, name };
+    expect(getTraitEffectInputs(trait, "attacker")).toMatchObject([
+      {
+        contextKey,
+        defaultValue: false,
+        label: conditionLabel,
+        type: "boolean",
+      },
+    ]);
+    expect(getTraitEffectInputs(trait, "attacker")).toHaveLength(1);
+    expect(getTraitEffectInputs(trait, "defender")).toEqual([]);
+    const activeContext = contextFor(trait, "attacker", { [contextKey]: true });
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      attacker: {},
+      context: activeContext,
+      defender: {},
+      skill: { category: "magical", type: skillType },
+    })).toMatchObject({ powerPercentAdd: 1, powerMultiplier: 2 });
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      attacker: {},
+      context: activeContext,
+      defender: {},
+      skill: { category: "magical", type: "普通" },
+    })).toMatchObject({ powerPercentAdd: 0, powerMultiplier: 1 });
+  });
+
+  test.each([
+    "风速仪",
+    "基因编辑",
+    "乌龟塔理论",
+    "盗魂铃",
+    "活体标本",
+    "翻垃圾桶",
+    "铭记于月亮",
+  ])("S4%s在完整状态模型开发前不产生推断数值", (name) => {
+    const trait = { id: `trait-${name}`, name };
+    expect(getTraitEffectInputs(trait, "attacker")).toEqual([]);
+    expect(getTraitEffectInputs(trait, "defender")).toEqual([]);
   });
 });

@@ -86,6 +86,132 @@ describe("snapshot validation", () => {
     );
   });
 
+  test.each([0, -1])("rejects non-positive race stat %i", (hp) => {
+    const result = validateSnapshot(
+      fixtureSnapshot({
+        spirits: [spirit("卡瓦重", null, { hp, total: 361 + hp })],
+      }),
+    );
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: "INVALID_RACE_STATS" }),
+    );
+  });
+
+  test("allows null race stats only for an explicit preview placeholder", () => {
+    const placeholder = {
+      ...spirit("量风碗"),
+      calculationStatus: "pending-race-stats",
+      raceStats: null,
+    };
+    const accepted = validateSnapshot(
+      fixtureSnapshot({
+        spirits: [placeholder],
+        learnsets: [{ spiritId: placeholder.id, skillIds: [] }],
+      }),
+    );
+    expect(accepted.errors).not.toContainEqual(
+      expect.objectContaining({ code: "INVALID_RACE_STATS" }),
+    );
+
+    const unmarked = validateSnapshot(
+      fixtureSnapshot({
+        spirits: [{ ...placeholder, calculationStatus: undefined }],
+        learnsets: [{ spiritId: placeholder.id, skillIds: [] }],
+      }),
+    );
+    expect(unmarked.errors).toContainEqual(
+      expect.objectContaining({ code: "INVALID_RACE_STATS" }),
+    );
+
+    const nonEmptyLearnset = validateSnapshot(
+      fixtureSnapshot({
+        spirits: [placeholder],
+        learnsets: [{ spiritId: placeholder.id, skillIds: ["skill_hit"] }],
+      }),
+    );
+    expect(nonEmptyLearnset.errors).toContainEqual(
+      expect.objectContaining({ code: "PENDING_SPIRIT_LEARNSET_NOT_EMPTY" }),
+    );
+
+    const missingLearnset = validateSnapshot(
+      fixtureSnapshot({ spirits: [placeholder], learnsets: [] }),
+    );
+    expect(missingLearnset.errors).toContainEqual(
+      expect.objectContaining({ code: "MISSING_PENDING_SPIRIT_LEARNSET" }),
+    );
+  });
+
+  test.each([null, "ready", "pending-stats"])(
+    "rejects unsupported calculation status %p",
+    (calculationStatus) => {
+      const result = validateSnapshot(
+        fixtureSnapshot({
+          spirits: [{ ...spirit("卡瓦重"), calculationStatus }],
+        }),
+      );
+
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({ code: "INVALID_CALCULATION_STATUS" }),
+      );
+    },
+  );
+
+  test("requires preview placeholders to keep race stats null", () => {
+    const result = validateSnapshot(
+      fixtureSnapshot({
+        spirits: [
+          {
+            ...spirit("量风碗"),
+            calculationStatus: "pending-race-stats",
+          },
+        ],
+        learnsets: [
+          { spiritId: spirit("量风碗").id, skillIds: [] },
+        ],
+      }),
+    );
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ code: "INVALID_PLACEHOLDER_RACE_STATS" }),
+    );
+  });
+
+  test("accepts only valid preview nature and exactly three 60 individual values", () => {
+    const previewDefaults = {
+      natureId: "adamant",
+      displayIvs: {
+        hp: 60,
+        speed: 60,
+        physicalAttack: 60,
+        magicalAttack: 0,
+        physicalDefense: 0,
+        magicalDefense: 0,
+      },
+    };
+    const accepted = validateSnapshot(
+      fixtureSnapshot({ spirits: [{ ...spirit("银月狼王"), previewDefaults }] }),
+    );
+    expect(accepted.errors).not.toContainEqual(
+      expect.objectContaining({ code: "INVALID_PREVIEW_DEFAULTS" }),
+    );
+
+    const invalid = validateSnapshot(
+      fixtureSnapshot({
+        spirits: [{
+          ...spirit("银月狼王"),
+          previewDefaults: {
+            ...previewDefaults,
+            displayIvs: { ...previewDefaults.displayIvs, magicalAttack: 60 },
+          },
+        }],
+      }),
+    );
+    expect(invalid.errors).toContainEqual(
+      expect.objectContaining({ code: "INVALID_PREVIEW_DEFAULTS" }),
+    );
+  });
+
   test("rejects broken learnset references", () => {
     const result = validateSnapshot(
       fixtureSnapshot({
@@ -95,6 +221,47 @@ describe("snapshot validation", () => {
 
     expect(result.errors.map((issue) => issue.code)).toEqual(
       expect.arrayContaining(["UNKNOWN_SPIRIT_REFERENCE", "UNKNOWN_SKILL_REFERENCE"]),
+    );
+  });
+
+  test("allows only explicit parameter-free preview skill placeholders", () => {
+    const pendingSkill = {
+      basePower: null,
+      calculationStatus: "pending-skill-data",
+      category: null,
+      cost: null,
+      id: "skill-preview",
+      name: "广播",
+      type: null,
+    };
+    const accepted = validateSnapshot(
+      fixtureSnapshot({
+        skills: [pendingSkill],
+        learnsets: [{ spiritId: spirit("迪莫").id, skillIds: [pendingSkill.id] }],
+      }),
+    );
+    expect(accepted.errors).not.toContainEqual(
+      expect.objectContaining({ code: "INVALID_SKILL_CALCULATION_STATUS" }),
+    );
+
+    const inventedPower = validateSnapshot(
+      fixtureSnapshot({
+        skills: [{ ...pendingSkill, basePower: 1 }],
+        learnsets: [{ spiritId: spirit("迪莫").id, skillIds: [pendingSkill.id] }],
+      }),
+    );
+    expect(inventedPower.errors).toContainEqual(
+      expect.objectContaining({ code: "INVALID_PENDING_SKILL_PARAMETER" }),
+    );
+
+    const unsupportedStatus = validateSnapshot(
+      fixtureSnapshot({
+        skills: [{ ...pendingSkill, calculationStatus: "pending" }],
+        learnsets: [{ spiritId: spirit("迪莫").id, skillIds: [pendingSkill.id] }],
+      }),
+    );
+    expect(unsupportedStatus.errors).toContainEqual(
+      expect.objectContaining({ code: "INVALID_SKILL_CALCULATION_STATUS" }),
     );
   });
 

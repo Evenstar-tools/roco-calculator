@@ -83,8 +83,9 @@ export const THUNDERSTORM_BURST_SOURCES = Object.freeze([
   },
   {
     contextKey: "burstSourceSuperconduct",
-    description: "本技能能耗 -1。",
+    description: "本技能能耗 -2。",
     group: "技能",
+    inheritedCostReduction: 2,
     label: "超导",
   },
   {
@@ -290,7 +291,7 @@ const REVIEWED_EFFECTS = Object.freeze({
     },
   },
   魔能爆: {
-    inputs: [numberInput("energy", "当前能量", 0, 10, 0)],
+    inputs: [numberInput("energy", "当前能量", 0, undefined, 10)],
     ruleId: "mana_burst",
   },
   吨位压制: tierPower(
@@ -466,7 +467,7 @@ const REVIEWED_EFFECTS = Object.freeze({
   草虫冲击: booleanAdd(
     "enemySwitchedThisTurn",
     "敌方本回合换精灵",
-    50,
+    90,
     { ignoreResistanceWhenTriggered: true },
   ),
   天旋地转: booleanAdd("burstTriggered", "触发迸发", 30, {
@@ -531,15 +532,32 @@ const REVIEWED_EFFECTS = Object.freeze({
       defaultValue: 0,
       label: "迸发种类数",
       perStack: 10,
+      inheritedCostReductions: THUNDERSTORM_BURST_SOURCES.flatMap(
+        ({ contextKey, inheritedCostReduction }) =>
+          Number.isFinite(inheritedCostReduction)
+            ? [{ contextKey, reduction: inheritedCostReduction }]
+            : [],
+      ),
       sourceContextKeys: THUNDERSTORM_BURST_SOURCES.map(
         (source) => source.contextKey,
       ),
     },
   },
+  超导: {
+    inputs: [
+      booleanInput("burstTriggered", "触发迸发", { defaultValue: true }),
+    ],
+    ruleId: "burst_cost_reduction",
+    ruleParams: {
+      contextKey: "burstTriggered",
+      label: "迸发能耗",
+      reduction: 2,
+    },
+  },
 
   乘胜追击: hitCountGrowth("skillUseCount", "此前使用次数", 1, 1),
   趁火打劫: hitCountGrowth("defeatedEnemyCount", "此前击败次数", 2, 2, 6),
-  孢子爆散: hitCountGrowth("skillUseCount", "此前使用次数", 1, 2),
+  孢子爆散: hitCountGrowth("skillUseCount", "此前使用次数", 2, 2),
   叠势: hitCountGrowth("counterSuccessCount", "成功应对次数", 2, 2),
   月光合奏: hitCountGrowth("totalMoeStacks", "双方萌化总层数", 1, 1),
   飞断: {
@@ -597,7 +615,7 @@ const REVIEWED_EFFECTS = Object.freeze({
     SWEET_TRAP_ENERGY_RANGE[1],
   ),
   吹火: stackAdd("skillUseCount", "此前使用次数", 20),
-  流星火雨: stackAdd("defeatedEnemyCount", "此前击败次数", 75, 6),
+  流星火雨: stackAdd("defeatedEnemyCount", "此前击败次数", 85, 6),
   山火: exponentialGrowth(
     "otherFireSkillUseCount",
     "其他火系技能使用次数",
@@ -633,15 +651,7 @@ const REVIEWED_EFFECTS = Object.freeze({
   ),
   地陷: counterMultiplier(2),
   滚雪球: counterMultiplier(2),
-  雪原狩猎: {
-    inputs: [booleanInput("blizzardWeather", "当前为暴风雪天气")],
-    ruleId: "boolean_power_percent_add",
-    ruleParams: {
-      add: 0.5,
-      contextKey: "blizzardWeather",
-      label: "暴风雪天气",
-    },
-  },
+  雪原狩猎: booleanAdd("blizzardWeather", "当前为暴风雪天气", 50),
   吹炎: counterMultiplier(2),
   绵里藏针: stackAdd(
     "nonAttackPreviousTurnCount",
@@ -697,16 +707,6 @@ const REVIEWED_EFFECTS = Object.freeze({
     { triggeredHitCount: 3 },
   ),
   远行: stackAdd("actedFirstCount", "此前先手次数", 25),
-  撒娇: (() => {
-    const effect = stackAdd("moeGainCount", "获得萌化次数", 10);
-    return {
-      ...effect,
-      ruleParams: {
-        ...effect.ruleParams,
-        flatBonusContextKey: "sproutFixedPowerBonus",
-      },
-    };
-  })(),
   拆礼物: booleanAdd("enemyMoeActive", "敌方有萌化", 100),
   背袭: thresholdMultiplier(
     "enemyEnergy",
@@ -893,10 +893,19 @@ const REVIEWED_EFFECTS = Object.freeze({
   },
 });
 
+const SEASON_ANNOUNCEMENT_REVISION_11_RULE_NAMES = new Set([
+  "草虫冲击",
+  "流星火雨",
+  "雷暴",
+  "雪原狩猎",
+  "孢子爆散",
+  "超导",
+]);
+
 function inputsForExplicitRule(ruleId, params = {}) {
   switch (ruleId) {
     case "mana_burst":
-      return [numberInput("energy", "当前能量", 0, 10, 0)];
+      return [numberInput("energy", "当前能量", 0, undefined, 10)];
     case "counter_multiplier":
       return [
         booleanInput(
@@ -955,7 +964,9 @@ export function getSkillEffectRule(skill) {
     ...reviewed,
     inputs: reviewed.inputs ?? [],
     ruleParams: reviewed.ruleParams ?? {},
-    source: "reviewed-rule:rock-calculator-and-bwiki-2026-07-24",
+    source: SEASON_ANNOUNCEMENT_REVISION_11_RULE_NAMES.has(skill.name)
+      ? "feishu-doc:season-announcement-revision-11"
+      : "reviewed-rule:rock-calculator-and-bwiki-2026-07-24",
   };
 }
 
@@ -979,7 +990,9 @@ export function getSkillEffectInputs(skill) {
 }
 
 export function getDefaultHitCount(skill) {
-  const reviewedHitCount = getSkillEffectRule(skill)?.ruleParams?.hitCount;
+  const reviewedRuleParams = getSkillEffectRule(skill)?.ruleParams;
+  const reviewedHitCount =
+    reviewedRuleParams?.hitCount ?? reviewedRuleParams?.baseHitCount;
   if (Number.isInteger(reviewedHitCount) && reviewedHitCount > 0) {
     return reviewedHitCount;
   }

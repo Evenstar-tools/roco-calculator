@@ -9,7 +9,7 @@ export const BLOODLINE_MAGIC_OPTIONS = Object.freeze([
     id: "photosynthetic-healing",
     implemented: true,
     name: "光合治愈",
-    note: "回复最大生命的50%；仅小丑家族“戏耍”参与伤害结算。",
+    note: "立即回复最大生命的15%；之后3回合结束时各回复15%。仅本次立即回复参与小丑家族“戏耍”的伤害结算。",
   },
   {
     id: "throttling",
@@ -61,13 +61,19 @@ export function resolveBloodlineMagicHealing({
   const normalized = normalizeBloodlineMagicContext(context);
   const active = normalized.bloodlineMagicTriggered === true &&
     normalized.bloodlineMagicId === "photosynthetic-healing";
+  const healing = active
+    ? Math.round(Math.max(0, Number(maximumHp) || 0) * 0.15)
+    : 0;
+  const endTurnHealing = healing;
+  const endTurnTicks = active ? 3 : 0;
   return {
     active,
+    endTurnHealing,
+    endTurnTicks,
     energy: 0,
-    healing: active
-      ? Math.round(Math.max(0, Number(maximumHp) || 0) * 0.5)
-      : 0,
+    healing,
     magicId: normalized.bloodlineMagicId,
     sourceLabel: active ? "光合治愈" : null,
+    totalPotentialHealing: healing + endTurnHealing * endTurnTicks,
   };
 }

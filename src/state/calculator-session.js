@@ -24,6 +24,7 @@ import {
 } from "./trigger-context.js";
 import { getChoiceTraitInput } from "../domain/choice-skill-sequence.js";
 import { getGaleTurbineCompanionControl } from "../domain/wing-extension.js";
+import { hasMoonMemoryTrait } from "../domain/moon-memory.js";
 import { abilityLevelMultiplier as domainAbilityLevelMultiplier } from "../domain/skill-result/numeric.js";
 
 const CONFIGURATION_SOURCES = new Set(["personal", "team", "share"]);
@@ -136,6 +137,9 @@ export function migrateSharedConfiguration(sharedState, versions, snapshot) {
 export function assertSnapshotReferences(sharedState, snapshot) {
   const spiritIds = new Set(snapshot.spirits.map((spirit) => spirit.id));
   const skillIds = new Set(snapshot.skills.map((skill) => skill.id));
+  const traitsById = new Map(
+    (snapshot.traits ?? []).map((trait) => [trait.id, trait]),
+  );
   for (const side of Object.values(sharedState.sides)) {
     if (!side.spiritId || !spiritIds.has(side.spiritId)) {
       throw new TypeError("分享配置包含当前数据中不存在的精灵");
@@ -151,6 +155,26 @@ export function assertSnapshotReferences(sharedState, snapshot) {
           throw new TypeError("分享配置包含当前数据中不存在的技能");
         }
       }
+    }
+    const acquiredTraitIds = side.acquiredTraitIds ?? [];
+    if (acquiredTraitIds.some((traitId) => !traitsById.has(traitId))) {
+      throw new TypeError("分享配置包含当前数据中不存在的特性");
+    }
+    const spirit = snapshot.spirits.find(
+      (candidate) => candidate.id === side.spiritId,
+    );
+    const nativeTraits = (spirit?.traitIds ?? [])
+      .map((traitId) => traitsById.get(traitId))
+      .filter(Boolean);
+    if (acquiredTraitIds.length > 0 && !hasMoonMemoryTrait(nativeTraits)) {
+      throw new TypeError("分享配置中的精灵不具备吞噬特性能力");
+    }
+    if (
+      Object.keys(side.acquiredTraitValues ?? {}).some(
+        (traitId) => !acquiredTraitIds.includes(traitId),
+      )
+    ) {
+      throw new TypeError("分享配置包含未选中的吞噬特性参数");
     }
   }
 }
@@ -226,9 +250,17 @@ function cloneMarks(marks) {
 
 function createDefaultSpiritSide(initialSide, snapshot, spiritId) {
   const four = chooseDefaultSkillIds(snapshot, spiritId);
+  const previewDefaults = (snapshot.spirits ?? []).find(
+    (spirit) => spirit.id === spiritId,
+  )?.previewDefaults;
   return {
     ...initialSide,
-    displayIvs: { ...initialSide.displayIvs },
+    displayIvs: {
+      ...(previewDefaults?.displayIvs ?? initialSide.displayIvs),
+    },
+    natureId: normalizeNatureId(
+      previewDefaults?.natureId ?? initialSide.nature,
+    ),
     skills: { four, single: four.find(Boolean) ?? null },
     spiritId,
   };
@@ -577,11 +609,8 @@ export function selectSpirit(
   state,
   { initialState, personalConfiguration, side, snapshot, spiritId },
 ) {
-  const configuration =
-    personalConfiguration ?? {
-      ...createDefaultSpiritSide(initialState.sides[side], snapshot, spiritId),
-      natureId: initialState.sides[side].nature,
-    };
+  const configuration = personalConfiguration ??
+    createDefaultSpiritSide(initialState.sides[side], snapshot, spiritId);
   return applyConfiguration(state, configuration, {
     initialState,
     remember: false,

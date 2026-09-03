@@ -5,6 +5,7 @@ import FavoriteButton from "./FavoriteButton.jsx";
 import QuickCombatantControls from "./QuickCombatantControls.jsx";
 import SpiritPicker from "./SpiritPicker.jsx";
 import ElementIcon from "./ElementIcon.jsx";
+import EntityChangeHint from "./EntityChangeHint.jsx";
 
 const SIDE_LABELS = {
   attacker: "攻击方",
@@ -83,7 +84,10 @@ export default function CombatantCard({
         ) : null}
         <View className="combatant-card__identity">
           <Text className="combatant-card__label">{sideLabel}</Text>
-          <Text className="combatant-card__name">{spiritName}</Text>
+          <View className="combatant-card__name-row">
+            <Text className="combatant-card__name">{spiritName}</Text>
+            <EntityChangeHint changeInfo={spirit?.changeInfo} />
+          </View>
           {types ? (
             <View className="combatant-card__types">
               {(spirit?.types ?? []).map((type) => (
@@ -91,6 +95,11 @@ export default function CombatantCard({
               ))}
               <Text>{types}</Text>
             </View>
+          ) : null}
+          {spirit?.calculationStatus === "pending-race-stats" ? (
+            <Text className="combatant-card__pending">
+              种族值待确认
+            </Text>
           ) : null}
         </View>
         {spirit && !identityOnly ? (

@@ -18,6 +18,22 @@ export default function SingleSkillResultRow({
   const damageLabel = exact ? row.totalDamage : "--";
   const percentLabel = exact ? `${row.hpPercent.toFixed(1)}% HP` : "--% HP";
   const skillName = row?.skillName ?? fallbackSkill?.name ?? "当前技能";
+  const displaySkill = row
+    ? {
+        ...fallbackSkill,
+        ...row,
+        basePower:
+          row.displayedPower ??
+          row.skillPower ??
+          row.basePower ??
+          fallbackSkill?.basePower,
+        category:
+          row.skillCategory ?? row.category ?? fallbackSkill?.category,
+        cost: row.skillCost ?? row.cost ?? fallbackSkill?.cost,
+        name: row.skillName ?? row.name ?? fallbackSkill?.name,
+        type: row.skillType ?? row.type ?? fallbackSkill?.type,
+      }
+    : fallbackSkill;
   const damageLength = String(damageLabel).length;
   const percentLength = percentLabel.length;
   const longMetrics = damageLength >= 5 || percentLength >= 9;
@@ -30,7 +46,7 @@ export default function SingleSkillResultRow({
     >
       <SkillPicker
         choices={choices}
-        fallbackSkill={fallbackSkill ?? row}
+        fallbackSkill={displaySkill}
         label={label}
         onChange={onChange}
         onOpen={onOpen}

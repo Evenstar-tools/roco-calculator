@@ -2,6 +2,15 @@ import { describe, expect, test } from "vitest";
 import { createInitialState } from "../../src/state/defaults.js";
 import { calculatorReducer } from "../../src/state/reducer.js";
 
+const COMPLETE_RACE_STATS = {
+  hp: 100,
+  speed: 100,
+  physicalAttack: 100,
+  magicalAttack: 100,
+  physicalDefense: 100,
+  magicalDefense: 100,
+};
+
 const initialState = {
   directions: {
     forward: {
@@ -19,7 +28,10 @@ describe("calculatorReducer", () => {
   test("updates one side negative status and swaps it with the spirits", () => {
     const state = createInitialState({
       meta: { id: "s3", rulesVersion: "rules-v1" },
-      spirits: [{ id: "attacker" }, { id: "defender" }],
+      spirits: [
+        { id: "attacker", raceStats: COMPLETE_RACE_STATS },
+        { id: "defender", raceStats: COMPLETE_RACE_STATS },
+      ],
       skills: [{ id: "skill_a" }],
     });
     const updated = calculatorReducer(state, {
@@ -65,6 +77,83 @@ describe("calculatorReducer", () => {
       "trait.traitActivated.activation": true,
     });
     expect(next.sides.defender.traitValues).toEqual({});
+  });
+
+  test("adds, deduplicates, configures, and removes acquired traits on one side", () => {
+    const state = createInitialState({
+      meta: { id: "data-v1", rulesVersion: "rules-v1" },
+      skills: [{ id: "skill-a" }],
+      spirits: [
+        { id: "spirit-a", raceStats: COMPLETE_RACE_STATS },
+        { id: "spirit-b", raceStats: COMPLETE_RACE_STATS },
+      ],
+    });
+    const withOldToy = calculatorReducer(state, {
+      type: "side/add-acquired-trait",
+      side: "attacker",
+      traitId: "old-toy",
+    });
+    const deduplicated = calculatorReducer(withOldToy, {
+      type: "side/add-acquired-trait",
+      side: "attacker",
+      traitId: "old-toy",
+    });
+    const withColdLight = calculatorReducer(deduplicated, {
+      type: "side/add-acquired-trait",
+      side: "attacker",
+      traitId: "cold-light",
+    });
+    const configured = calculatorReducer(withColdLight, {
+      type: "side/set-acquired-trait-value",
+      side: "attacker",
+      traitId: "old-toy",
+      key: "trait.stacks.12345678",
+      value: 2,
+    });
+    const removed = calculatorReducer(configured, {
+      type: "side/remove-acquired-trait",
+      side: "attacker",
+      traitId: "old-toy",
+    });
+
+    expect(configured.sides.attacker.acquiredTraitIds).toEqual([
+      "old-toy",
+      "cold-light",
+    ]);
+    expect(configured.sides.attacker.acquiredTraitValues).toEqual({
+      "old-toy": { "trait.stacks.12345678": 2 },
+    });
+    expect(removed.sides.attacker.acquiredTraitIds).toEqual(["cold-light"]);
+    expect(removed.sides.attacker.acquiredTraitValues).toEqual({});
+    expect(removed.sides.defender.acquiredTraitIds).toEqual([]);
+  });
+
+  test("keeps at most five acquired traits on one side", () => {
+    const initial = createInitialState({
+      meta: { id: "data-v1", rulesVersion: "rules-v1" },
+      skills: [{ id: "skill-a" }],
+      spirits: [
+        { id: "spirit-a", raceStats: COMPLETE_RACE_STATS },
+        { id: "spirit-b", raceStats: COMPLETE_RACE_STATS },
+      ],
+    });
+    const result = Array.from({ length: 6 }, (_, index) => `trait-${index + 1}`)
+      .reduce(
+        (state, traitId) => calculatorReducer(state, {
+          side: "attacker",
+          traitId,
+          type: "side/add-acquired-trait",
+        }),
+        initial,
+      );
+
+    expect(result.sides.attacker.acquiredTraitIds).toEqual([
+      "trait-1",
+      "trait-2",
+      "trait-3",
+      "trait-4",
+      "trait-5",
+    ]);
   });
 
   test("updates one side and one polarity of marks without touching the other slots", () => {
@@ -174,7 +263,10 @@ describe("calculatorReducer", () => {
   test("updates one side's raw inputs without changing the other side", () => {
     const state = createInitialState({
       meta: { id: "s3", rulesVersion: "rules-v1" },
-      spirits: [{ id: "attacker" }, { id: "defender" }],
+      spirits: [
+        { id: "attacker", raceStats: COMPLETE_RACE_STATS },
+        { id: "defender", raceStats: COMPLETE_RACE_STATS },
+      ],
       skills: [{ id: "skill_a" }, { id: "skill_b" }],
     });
 
@@ -332,6 +424,8 @@ describe("calculatorReducer", () => {
     });
 
     expect(next.sides.attacker).toEqual({
+      acquiredTraitIds: [],
+      acquiredTraitValues: {},
       displayIvs: member.displayIvs,
       nature: "adamant",
       skills: {
@@ -472,8 +566,8 @@ describe("createInitialState", () => {
         rulesVersion: "rules-2026.07",
       },
       spirits: [
-        { id: "spirit_attacker" },
-        { id: "spirit_defender" },
+        { id: "spirit_attacker", raceStats: COMPLETE_RACE_STATS },
+        { id: "spirit_defender", raceStats: COMPLETE_RACE_STATS },
       ],
       skills: [
         { id: "skill_a" },

@@ -2,11 +2,20 @@ import { describe, expect, test } from "vitest";
 import { createInitialState } from "../src/shared/state/defaults.js";
 import { createShareSummary } from "../src/view-models/share-summary.js";
 
+const COMPLETE_RACE_STATS = {
+  hp: 100,
+  speed: 100,
+  physicalAttack: 100,
+  magicalAttack: 100,
+  physicalDefense: 100,
+  magicalDefense: 100,
+};
+
 const snapshot = {
   meta: { id: "data-v1", rulesVersion: "rules-v1" },
   spirits: [
-    { id: "a", fullName: "烈焰兽", traitIds: [] },
-    { id: "b", fullName: "潮汐兽", traitIds: [] },
+    { id: "a", fullName: "烈焰兽", raceStats: COMPLETE_RACE_STATS, traitIds: [] },
+    { id: "b", fullName: "潮汐兽", raceStats: COMPLETE_RACE_STATS, traitIds: [] },
   ],
   skills: [
     { id: "s1", name: "烈焰冲击" },

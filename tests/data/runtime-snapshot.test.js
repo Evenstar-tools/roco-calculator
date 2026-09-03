@@ -27,6 +27,17 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
         fullName: "音速犬",
         id: "spirit-sonic",
         provenance: { identity: { title: "audit-only" } },
+        previewDefaults: {
+          natureId: "adamant",
+          displayIvs: {
+            hp: 60,
+            speed: 60,
+            physicalAttack: 60,
+            magicalAttack: 0,
+            physicalDefense: 0,
+            magicalDefense: 0,
+          },
+        },
         raceStats: { physicalAttack: 128 },
         traitIds: ["trait-focus"],
         types: ["火"],
@@ -57,6 +68,7 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
     learnsets: [
       {
         acquisitions: { "skill-water-ripple": ["解锁：Lv.1"] },
+        defaultSkillIds: ["skill-water-ripple"],
         provenance: { skillIds: { title: "audit-only" } },
         skillIds: ["skill-water-ripple"],
         spiritId: "spirit-sonic",
@@ -112,6 +124,17 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
     fullName: "音速犬",
     initials: "ysq",
     pinyin: "yinsuquan",
+    previewDefaults: {
+      natureId: "adamant",
+      displayIvs: {
+        hp: 60,
+        speed: 60,
+        physicalAttack: 60,
+        magicalAttack: 0,
+        physicalDefense: 0,
+        magicalDefense: 0,
+      },
+    },
   });
   expect(runtime.spirits[0].evolutionChainNames).toBeUndefined();
   expect(runtime.skills[0].searchText).toContain("shuizhibowen");
@@ -120,6 +143,7 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
     "https://example.test/skill-water-ripple.png",
   );
   expect(runtime.learnsets[0]).toEqual({
+    defaultSkillIds: ["skill-water-ripple"],
     skillIds: ["skill-water-ripple"],
     spiritId: "spirit-sonic",
   });

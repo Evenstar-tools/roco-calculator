@@ -15,6 +15,7 @@ import {
   LEGACY_COMMON_CONFIG_ENTRY_SIGNATURES,
 } from "../../data/legacy-common-config-signatures.js";
 import { BUNDLED_PET_IMAGE_OVERRIDES } from "../../data/bundled-pet-image-overrides.js";
+import { S4_PREVIEW_PET_IMAGE_OVERRIDES } from "../../data/s4-preview-pet-image-overrides.js";
 import previewSnapshot from "../../data/preview-runtime.json";
 import { PREVIEW_PET_IMAGES } from "../../data/preview-pet-images.js";
 import { createCloudAdapter } from "../../services/cloud-adapter.js";
@@ -55,6 +56,7 @@ function bundledPetImagesFor(snapshot) {
   return Object.fromEntries(
     (snapshot?.spirits ?? []).flatMap((spirit) => {
       const imageUrl = BUNDLED_PET_IMAGE_OVERRIDES[spirit.id]
+        ?? S4_PREVIEW_PET_IMAGE_OVERRIDES[spirit.id]
         ?? PREVIEW_PET_IMAGES[spirit.id]
         ?? spirit.imageUrl;
       return typeof imageUrl === "string" && imageUrl.trim()
@@ -125,7 +127,7 @@ export default function IndexPage({ services }) {
   const skillIconsEnabled = router?.params?.skillIcons !== "0";
   const sharePayload = router?.params?.share;
   const shareMessage = useRef({
-    title: "洛克计算器 · S3季中",
+    title: "洛克计算器 · S4前瞻",
     path: "/pages/index/index",
   });
   const [pageState, setPageState] = useState({

@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import { calculateMatchup } from "../../src/domain/calculate.js";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 import { getTraitEffectInputs } from "../../src/domain/trait-effects.js";
+import { canonicalTraitControlKey } from "../../src/domain/trait-runtime.js";
 
 const allFullIvs = {
   physicalAttack: 60,
@@ -1842,13 +1843,13 @@ describe("calculateMatchup", () => {
     ).toEqual(expect.arrayContaining([0.5, 0.5, 0.2]));
   });
 
-  test("adds Snowfield Hunt, Ice Soul and Momentum bonuses in one power zone", () => {
+  test("adds Snowfield Hunt fixed power before the remaining percentage zone", () => {
     const snowfieldHunt = {
       id: "skill_snowfield_hunt_additive",
       name: "雪原狩猎",
       type: "冰",
       category: "physical",
-      basePower: 80,
+      basePower: 85,
       provenance: { basePower: { source: "fixture" } },
     };
     const iceSoul = {
@@ -1893,11 +1894,19 @@ describe("calculateMatchup", () => {
       }),
     ).forward.selectedResult;
 
-    expect(result.skillPower).toBe(224);
-    expect(result.panelPower).toBe(224);
+    expect(result.skillPower).toBe(310);
+    expect(result.panelPower).toBe(310);
+    expect(
+      result.formulaSteps.find((step) => step.label === "当前为暴风雪天气"),
+    ).toMatchObject({
+      after: 135,
+      before: 85,
+      input: true,
+      source: "reviewed-rule:boolean-power-add-v1",
+    });
     expect(
       result.formulaSteps.find((step) => step.label === "技能威力百分比")?.input,
-    ).toEqual(expect.arrayContaining([0.5, 1, 0.3]));
+    ).toEqual([1, 0.3]);
   });
 
   test("applies a direction fixed-power status bonus to every selected skill", () => {
@@ -2158,12 +2167,7 @@ describe("calculateMatchup", () => {
     ).find((input) => input.contextKey === "burstTriggered");
     const sourceInput = (contextKey) =>
       skillInputs.find((input) => input.contextKey === contextKey);
-    const context = {
-      [traitInput.id]: true,
-      [sourceInput("burstSourceBioelectric").id]: true,
-      [sourceInput("burstSourceDoublePulse").id]: true,
-    };
-    const result = calculateMatchup(
+    const resultFor = (context) => calculateMatchup(
       fixture,
       battleInput({
         sides: {
@@ -2179,8 +2183,385 @@ describe("calculateMatchup", () => {
         },
       }),
     ).forward.selectedResult;
+    const ordinarySources = resultFor({
+      [traitInput.id]: true,
+      [sourceInput("burstSourceBioelectric").id]: true,
+      [sourceInput("burstSourceDoublePulse").id]: true,
+    });
+    const superconductAndOrdinary = resultFor({
+      [traitInput.id]: true,
+      [sourceInput("burstSourceDoublePulse").id]: true,
+      [sourceInput("burstSourceSuperconduct").id]: true,
+    });
 
-    expect(result).toMatchObject({ skillCost: 3, skillPower: 115 });
+    expect(ordinarySources).toMatchObject({ skillCost: 3, skillPower: 115 });
+    expect(superconductAndOrdinary).toMatchObject({
+      skillCost: 1,
+      skillPower: 115,
+    });
+  });
+
+  test("超导只在迸发开启时把结果能耗从3降为1", () => {
+    const superconduct = {
+      basePower: 90,
+      category: "magical",
+      cost: 3,
+      description: "造成魔伤，迸发：本次能耗-2。",
+      id: "skill_superconduct_fixture",
+      name: "超导",
+      provenance: { basePower: { source: "fixture" } },
+      type: "电",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, superconduct],
+    };
+    const result = (burstTriggered) => calculateMatchup(
+      fixture,
+      battleInput({
+        sides: {
+          attacker: side("spirit_sonic_dog", superconduct.id, [
+            { context: { burstTriggered }, skillId: superconduct.id },
+            null,
+            null,
+            null,
+          ]),
+        },
+        directions: { forward: { context: { burstTriggered } } },
+      }),
+    ).forward.selectedResult;
+
+    expect(result(true)).toMatchObject({ skillCost: 1, skillPower: 90 });
+    expect(result(false)).toMatchObject({ skillCost: 3, skillPower: 90 });
+  });
+
+  test.each(["挺起胸脯", "“国王”的威严"])(
+    "%s按超导的本次结算能耗1触发威力加成",
+    (traitName) => {
+      const superconduct = {
+        basePower: 90,
+        category: "magical",
+        cost: 3,
+        id: `skill_superconduct_${traitName}`,
+        name: "超导",
+        provenance: { basePower: { source: "fixture" } },
+        type: "电",
+      };
+      const trait = {
+        description: "使用1能耗技能时，本次技能威力+50%。",
+        id: `trait_cost_one_${traitName}`,
+        name: traitName,
+      };
+      const fixture = {
+        ...snapshot,
+        skills: [...snapshot.skills, superconduct],
+        spirits: snapshot.spirits.map((spirit) =>
+          spirit.id === "spirit_sonic_dog"
+            ? { ...spirit, traitIds: [trait.id] }
+            : spirit,
+        ),
+        traits: [trait],
+      };
+      const calculate = (burstTriggered) => calculateMatchup(
+        fixture,
+        battleInput({
+          directions: { forward: { context: { burstTriggered } } },
+          sides: {
+            attacker: side("spirit_sonic_dog", superconduct.id, [
+              { context: { burstTriggered }, skillId: superconduct.id },
+              null,
+              null,
+              null,
+            ]),
+          },
+        }),
+      ).forward.selectedResult;
+
+      expect(calculate(true)).toMatchObject({ skillCost: 1, skillPower: 135 });
+      expect(calculate(false)).toMatchObject({ skillCost: 3, skillPower: 90 });
+    },
+  );
+
+  test("逐魂鸟按超导的本次结算能耗1免疫伤害", () => {
+    const superconduct = {
+      basePower: 90,
+      category: "magical",
+      cost: 3,
+      id: "skill_superconduct_soul_bird",
+      name: "超导",
+      provenance: { basePower: { source: "fixture" } },
+      type: "电",
+    };
+    const soulBird = {
+      description: "免疫能耗不高于1的攻击技能伤害。",
+      id: "trait_soul_bird_dynamic_cost",
+      name: "逐魂鸟",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, superconduct],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_water"
+          ? { ...spirit, traitIds: [soulBird.id] }
+          : spirit,
+      ),
+      traits: [soulBird],
+    };
+    const calculate = (burstTriggered) => calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { forward: { context: { burstTriggered } } },
+        sides: {
+          attacker: side("spirit_sonic_dog", superconduct.id, [
+            { context: { burstTriggered }, skillId: superconduct.id },
+            null,
+            null,
+            null,
+          ]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(calculate(true)).toMatchObject({ skillCost: 1, totalDamage: 0 });
+    expect(calculate(false)).toMatchObject({ skillCost: 3 });
+    expect(calculate(false).totalDamage).toBeGreaterThan(0);
+  });
+
+  test("勇敢按雷暴增加后的本次结算能耗触发", () => {
+    const thunderstorm = {
+      basePower: 55,
+      category: "magical",
+      cost: 1,
+      id: "skill_thunderstorm_brave_dynamic_cost",
+      name: "雷暴",
+      provenance: { basePower: { source: "fixture" } },
+      type: "电",
+    };
+    const brave = {
+      description: "使用能耗大于3的技能时，本次技能威力+40%。",
+      id: "trait_brave_dynamic_cost",
+      name: "勇敢",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, thunderstorm],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [brave.id] }
+          : spirit,
+      ),
+      traits: [brave],
+    };
+    const calculate = (burstTriggered) => {
+      const context = { activeBurstKinds: 4, burstTriggered };
+      return calculateMatchup(
+        fixture,
+        battleInput({
+          directions: { forward: { context } },
+          sides: {
+            attacker: side("spirit_sonic_dog", thunderstorm.id, [
+              { context, skillId: thunderstorm.id },
+              null,
+              null,
+              null,
+            ]),
+          },
+        }),
+      ).forward.selectedResult;
+    };
+
+    expect(calculate(true)).toMatchObject({ skillCost: 5, skillPower: 133 });
+    expect(calculate(false)).toMatchObject({ skillCost: 1, skillPower: 55 });
+  });
+
+  test("雷暴继承超导后以最终0费判断精确1费与不高于1费特性", () => {
+    const thunderstorm = {
+      basePower: 55,
+      category: "magical",
+      cost: 1,
+      id: "skill_thunderstorm_superconduct_final_cost",
+      name: "雷暴",
+      provenance: { basePower: { source: "fixture" } },
+      type: "电",
+    };
+    const exactOneCost = {
+      description: "使用1能耗技能时，本次技能威力+50%。",
+      id: "trait_exact_one_final_cost",
+      name: "挺起胸脯",
+    };
+    const atMostOneCost = {
+      description: "免疫能耗不高于1的攻击技能伤害。",
+      id: "trait_at_most_one_final_cost",
+      name: "逐魂鸟",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, thunderstorm],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [exactOneCost.id] }
+          : { ...spirit, traitIds: [atMostOneCost.id] },
+      ),
+      traits: [exactOneCost, atMostOneCost],
+    };
+    const calculate = (context) => calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { forward: { context } },
+        sides: {
+          attacker: side("spirit_sonic_dog", thunderstorm.id, [
+            { context, skillId: thunderstorm.id },
+            null,
+            null,
+            null,
+          ]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(calculate({ burstSourceSuperconduct: true })).toMatchObject({
+      skillCost: 0,
+      skillPower: 65,
+      totalDamage: 0,
+    });
+    expect(calculate({
+      burstSourceDoublePulse: true,
+      burstSourceSuperconduct: true,
+    })).toMatchObject({
+      skillCost: 1,
+      skillPower: 112,
+      totalDamage: 0,
+    });
+  });
+
+  test("超导的动态能耗不被手动威力覆盖或继承显示威力路径吞掉", () => {
+    const superconduct = {
+      basePower: 90,
+      category: "magical",
+      cost: 3,
+      id: "skill_superconduct_power_override",
+      name: "超导",
+      provenance: { basePower: { source: "fixture" } },
+      type: "电",
+    };
+    const dynamicListenBridge = {
+      ...snapshot.skills.find((skill) => skill.id === "skill_listen_bridge"),
+      cost: 3,
+      ruleId: "burst_cost_reduction",
+      ruleParams: { contextKey: "burstTriggered", reduction: 2 },
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [
+        ...snapshot.skills.filter((skill) => skill.id !== dynamicListenBridge.id),
+        superconduct,
+        dynamicListenBridge,
+      ],
+    };
+    const manualOverride = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: { forward: { context: { burstTriggered: true } } },
+        sides: {
+          attacker: side(
+            "spirit_sonic_dog",
+            {
+              context: { burstTriggered: true },
+              overrides: { powerOverride: { mode: "static", value: 120 } },
+              skillId: superconduct.id,
+            },
+            [superconduct.id, null, null, null],
+          ),
+        },
+      }),
+    ).forward.selectedResult;
+    const inheritedPower = calculateMatchup(
+      fixture,
+      battleInput({
+        mode: "four",
+        directions: {
+          forward: { selectedSkillIndex: 0 },
+          reverse: {
+            context: { burstTriggered: true },
+            selectedSkillIndex: 0,
+          },
+        },
+        sides: {
+          attacker: side("spirit_sonic_dog", "skill_wind", [
+            "skill_wind",
+            null,
+            null,
+            null,
+          ]),
+          defender: side("spirit_water", dynamicListenBridge.id, [
+            dynamicListenBridge.id,
+            null,
+            null,
+            null,
+          ]),
+        },
+      }),
+    ).reverse.results[0];
+
+    expect(manualOverride).toMatchObject({ skillCost: 1, skillPower: 120 });
+    expect(inheritedPower).toMatchObject({
+      reflectedPower: expect.any(Number),
+      skillCost: 1,
+      skillName: "听桥",
+    });
+  });
+
+  test("本次动态能耗不改写四技能静态总能耗", () => {
+    const superconduct = {
+      basePower: 90,
+      category: "magical",
+      cost: 3,
+      id: "skill_superconduct_static_loadout_cost",
+      name: "超导",
+      provenance: { basePower: { source: "fixture" } },
+      type: "电",
+    };
+    const iceDrill = {
+      description: "技能威力按敌方四技能总能耗增加。",
+      id: "trait_ice_drill_static_loadout_cost",
+      name: "冰钻",
+    };
+    const fixture = {
+      ...snapshot,
+      skills: [...snapshot.skills, superconduct],
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [iceDrill.id] }
+          : spirit,
+      ),
+      traits: [iceDrill],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        mode: "four",
+        directions: { forward: { context: { burstTriggered: true } } },
+        sides: {
+          attacker: side("spirit_sonic_dog", "skill_wind", [
+            "skill_wind",
+            null,
+            null,
+            null,
+          ]),
+          defender: side("spirit_water", superconduct.id, [
+            { context: { burstTriggered: true }, skillId: superconduct.id },
+            superconduct.id,
+            superconduct.id,
+            superconduct.id,
+          ]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.skillPower).toBe(176);
+    expect(
+      result.formulaSteps.find((step) => step.label === "冰钻")?.input,
+    ).toEqual({ effect: 10, stacks: 12 });
   });
 
   test("uses the target side's starfall mark and does not trigger it for phantom skills", () => {
@@ -3942,6 +4323,38 @@ describe("calculateMatchup", () => {
     });
   });
 
+  test("does not calculate an S4 preview skill whose parameters are pending", () => {
+    const previewSkill = {
+      basePower: null,
+      calculationStatus: "pending-skill-data",
+      category: null,
+      cost: null,
+      id: "skill-s4-preview",
+      name: "广播",
+      type: null,
+    };
+    const input = battleInput({
+      sides: {
+        attacker: side("spirit_sonic_dog", previewSkill.id, [
+          previewSkill.id,
+          null,
+          null,
+          null,
+        ]),
+      },
+    });
+    const result = calculateMatchup(
+      { ...snapshot, skills: [...snapshot.skills, previewSkill] },
+      input,
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      reason: "技能参数待确认，暂不可计算",
+      status: "unsupported",
+      totalDamage: null,
+    });
+  });
+
   test("treats null direction overrides as absent", () => {
     const before = calculateMatchup(snapshot, battleInput());
     const after = calculateMatchup(
@@ -4563,10 +4976,10 @@ describe("calculateMatchup", () => {
 
   test("removes resistance only when the reviewed skill condition is active", () => {
     const grassBugImpact = {
-      basePower: 50,
+      basePower: 75,
       category: "physical",
       cost: 3,
-      description: "若敌方本回合更换精灵，本次技能威力+50，且无视抵抗。",
+      description: "若敌方本回合更换精灵，本次技能威力+90，且无视抵抗。",
       id: "skill_grass_bug_impact",
       name: "草虫冲击",
       provenance: { basePower: { source: "fixture" } },
@@ -4609,10 +5022,10 @@ describe("calculateMatchup", () => {
       }),
     ).forward.selectedResult;
 
-    expect(normal.effectivePower).toBe(25);
+    expect(normal.effectivePower).toBe(38);
     expect(triggered).toMatchObject({
-      effectivePower: 100,
-      skillPower: 100,
+      effectivePower: 165,
+      skillPower: 165,
     });
   });
 
@@ -5109,14 +5522,23 @@ describe("inherited penetration stacks", () => {
       skillName: "戏耍·光合治愈",
       sourceKind: "bloodline",
       status: "exact",
-      totalDamage: 108,
-      traitDamage: 108,
+      totalDamage: 61,
+      traitDamage: 61,
     });
+    expect(result.bloodlineResult.formulaSteps).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          after: 183,
+          before: 61,
+          label: "血脉魔法后续回复",
+        }),
+      ]),
+    );
     expect(result.results[0].totalDamage).toBe(
-      result.results[0].mainDamage + 108,
+      result.results[0].mainDamage + 61,
     );
     expect(result.results[0].traitSettlements.at(-1).text).toContain(
-      "光合治愈 204",
+      "光合治愈 61",
     );
 
     input.directions.forward.selectedDamageSource = "bloodline";
@@ -5230,5 +5652,139 @@ describe("inherited penetration stacks", () => {
     });
     expect(result.traitSettlements[0].text).toContain("溢出122");
     expect(result.traitSettlements[0].text).toContain("本次加攻+50%");
+  });
+
+  test("铭记于月亮前瞻版不结算攻击后自损", () => {
+    const trait = { id: "trait-moon-memory", name: "铭记于月亮" };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [trait.id] }
+          : spirit,
+      ),
+      skills: snapshot.skills.map((skill) =>
+        skill.id === "skill_wind"
+          ? { ...skill, description: "造成物理伤害，3连击。" }
+          : skill
+      ),
+      traits: [trait],
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        directions: {
+          forward: { hitCount: 3 },
+          reverse: { currentHp: 100 },
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.hitCount).toBe(3);
+    expect(result.postAttackEffects?.moonMemorySelfDamage).toBeUndefined();
+    expect(
+      result.formulaSteps.some((step) => step.label.includes("铭记于月亮")),
+    ).toBe(false);
+  });
+
+  test("铭记于月亮在选择技能额外执行时也不结算前瞻自损", () => {
+    const moonMemory = { id: "trait-moon-memory", name: "铭记于月亮" };
+    const choiceTrait = { id: "trait-choice", name: "有求必应" };
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [moonMemory.id, choiceTrait.id] }
+          : spirit,
+      ),
+      traits: [moonMemory, choiceTrait],
+    };
+    const entry = {
+      context: {
+        choiceTraitTriggered: true,
+        friendshipMode: "growth",
+        skillUseCount: 0,
+      },
+      overrides: { basePower: 70 },
+      skillId: "skill_friendship_overflow",
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        mode: "four",
+        directions: { reverse: { currentHp: 100 } },
+        sides: {
+          attacker: side("spirit_sonic_dog", entry.skillId, [
+            entry,
+            null,
+            null,
+            null,
+          ]),
+        },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.choiceTraitSequence.executions).toHaveLength(2);
+    expect(
+      result.formulaSteps.filter((step) =>
+        step.label.includes("铭记于月亮")
+      ),
+    ).toHaveLength(0);
+    expect(
+      (result.traitSettlements ?? []).filter(
+        (settlement) => settlement.kind === "moon-memory",
+      ),
+    ).toHaveLength(0);
+    expect(result.postAttackEffects?.moonMemorySelfDamage).toBeUndefined();
+  });
+
+  test("吞噬的电流刺激使用自己的迸发开关且不会误消耗蓄电", () => {
+    const moonMemory = { id: "trait-moon-memory", name: "铭记于月亮" };
+    const currentStimulus = { id: "trait-current-stimulus", name: "电流刺激" };
+    const burstControl = getTraitEffectInputs(
+      currentStimulus,
+      "attacker",
+    ).find((control) => control.contextKey === "burstTriggered");
+    const fixture = {
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === "spirit_sonic_dog"
+          ? { ...spirit, traitIds: [moonMemory.id] }
+          : spirit,
+      ),
+      traits: [moonMemory, currentStimulus],
+    };
+    const attacker = side("spirit_sonic_dog", "skill_wind", [
+      "skill_wind",
+      null,
+      null,
+      null,
+    ]);
+    attacker.acquiredTraitIds = [currentStimulus.id];
+    attacker.acquiredTraitValues = {
+      [currentStimulus.id]: {
+        [canonicalTraitControlKey(burstControl)]: false,
+      },
+    };
+    const result = calculateMatchup(
+      fixture,
+      battleInput({
+        marks: {
+          attacker: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: "charge", stacks: 3 },
+          },
+          defender: {
+            negative: { id: null, stacks: 0 },
+            positive: { id: null, stacks: 0 },
+          },
+        },
+        sides: { attacker },
+      }),
+    ).forward.selectedResult;
+
+    expect(result.markSettlements).not.toContainEqual(
+      expect.objectContaining({ markId: "charge", status: "applied" }),
+    );
   });
 });

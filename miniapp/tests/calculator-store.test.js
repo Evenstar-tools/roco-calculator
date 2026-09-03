@@ -2,6 +2,15 @@ import { describe, expect, test, vi } from "vitest";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
 
+const COMPLETE_RACE_STATS = {
+  hp: 100,
+  speed: 100,
+  physicalAttack: 100,
+  magicalAttack: 100,
+  physicalDefense: 100,
+  magicalDefense: 100,
+};
+
 function createSnapshot() {
   return {
     meta: {
@@ -9,8 +18,8 @@ function createSnapshot() {
       rulesVersion: "rules-v1",
     },
     spirits: [
-      { id: "spirit-a" },
-      { id: "spirit-b" },
+      { id: "spirit-a", raceStats: COMPLETE_RACE_STATS },
+      { id: "spirit-b", raceStats: COMPLETE_RACE_STATS },
     ],
     skills: [
       { id: "skill-a" },

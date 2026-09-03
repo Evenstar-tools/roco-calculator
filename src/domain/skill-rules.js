@@ -192,7 +192,7 @@ function resolveManaBurst(_skill, context) {
     10,
     Math.max(
       0,
-      Math.floor(isFiniteNumber(context.energy) ? Number(context.energy) : 0),
+      Math.floor(isFiniteNumber(context.energy) ? Number(context.energy) : 10),
     ),
   );
   return exact(MANA_BURST_POWER[energy], [
@@ -693,15 +693,26 @@ function resolveThunderstormBurst(skill, context) {
   const burstKinds = triggered
     ? Math.max(manualKinds, selectedSources.length)
     : 0;
+  const inheritedCostReduction = triggered
+    ? (params.inheritedCostReductions ?? []).reduce(
+        (total, { contextKey, reduction }) =>
+          context[contextKey] === true
+            ? total + Math.max(0, Number(reduction) || 0)
+            : total,
+        0,
+      )
+    : 0;
   const value = Math.max(
     0,
     Math.round(
       Number(skill.basePower) + burstKinds * Number(params.perStack ?? 10),
     ),
   );
+  const baseCost = Math.max(0, Number(skill.cost) || 0);
+  const costAfterBurstKinds = baseCost + burstKinds;
   const resolvedCost = Math.max(
     0,
-    Number(skill.cost ?? 0) + burstKinds,
+    costAfterBurstKinds - inheritedCostReduction,
   );
   return exact(value, [
     {
@@ -713,13 +724,50 @@ function resolveThunderstormBurst(skill, context) {
       },
       before: skill.basePower,
       after: value,
-      source: "reviewed-rule:thunderstorm-burst-v2",
+      source: "reviewed-rule:thunderstorm-burst-v3",
     },
+    {
+      label: "迸发种类能耗增加",
+      input: burstKinds,
+      before: baseCost,
+      after: costAfterBurstKinds,
+      source: "reviewed-rule:thunderstorm-burst-v3",
+    },
+    ...(inheritedCostReduction > 0
+      ? [{
+          label: "继承超导迸发能耗",
+          input: inheritedCostReduction,
+          before: costAfterBurstKinds,
+          after: resolvedCost,
+          source: "reviewed-rule:thunderstorm-burst-v3",
+        }]
+      : []),
   ], {
     activeBurstKinds: burstKinds,
+    inheritedCostReduction,
     resolvedCost,
     selectedBurstSources: selectedSources,
   });
+}
+
+function resolveBurstCostReduction(skill, context) {
+  const params = skill.ruleParams ?? {};
+  const contextKey = params.contextKey ?? "burstTriggered";
+  const triggered = context[contextKey] === true;
+  const baseCost = Math.max(0, Number(skill.cost) || 0);
+  const resolvedCost = Math.max(
+    0,
+    baseCost - (triggered ? Math.max(0, Number(params.reduction) || 0) : 0),
+  );
+  return exact(Number(skill.basePower), [
+    {
+      label: params.label ?? "条件能耗",
+      input: triggered,
+      before: baseCost,
+      after: resolvedCost,
+      source: "reviewed-rule:burst-cost-reduction-v1",
+    },
+  ], { resolvedCost });
 }
 
 function compareThreshold(value, threshold, operator) {
@@ -1079,6 +1127,7 @@ const RULES = new Map([
   ["energy_scaled", resolveEnergyScaled],
   ["stack_scaled", resolveStackScaled],
   ["thunderstorm_burst", resolveThunderstormBurst],
+  ["burst_cost_reduction", resolveBurstCostReduction],
   ["position_power_add", resolvePositionPowerAdd],
   ["boolean_power_add", resolveBooleanPowerAdd],
   ["boolean_power_multiplier", resolveBooleanPowerMultiplier],
@@ -1181,11 +1230,15 @@ export function resolveSkillPower(skill, context = {}) {
     },
     context,
   );
-  if (!hasManualPower || resolution.status !== "exact") {
-    return resolution;
+  const sourcedResolution = {
+    ...resolution,
+    ruleSource: effectRule.source,
+  };
+  if (!hasManualPower || sourcedResolution.status !== "exact") {
+    return sourcedResolution;
   }
   return {
-    ...resolution,
+    ...sourcedResolution,
     steps: [
       {
         label: "手动覆盖基础威力",
@@ -1194,7 +1247,7 @@ export function resolveSkillPower(skill, context = {}) {
         after: manualPower,
         source: "manual-override",
       },
-      ...resolution.steps,
+      ...sourcedResolution.steps,
     ],
   };
 }

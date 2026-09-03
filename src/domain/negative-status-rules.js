@@ -112,7 +112,7 @@ const TRAIT_APPLICATIONS = {
   电子音乐: ({ context, skill }) =>
     context.weatherThunder && skill?.type === "电" ? { electrified: 1 } : {},
   生物碱: ({ skill }) => (skill?.type === "草" ? { poison: 2 } : {}),
-  高浓生物碱: () => ({ poison: 2 }),
+  高浓生物碱: ({ skill }) => (skill?.type === "草" ? { poison: 3 } : {}),
   灵魂灼伤: ({ skill }) =>
     skill?.type === "冰" ? { burn: 4 } : skill?.type === "火" ? { freeze: 2 } : {},
   毒腺: ({ skill }) => (Number(skill?.cost) <= 1 ? { poison: 4 } : {}),

@@ -8,10 +8,10 @@ test("renders the calculator title", () => {
 
   expect(
     screen.getByRole("heading", {
-      name: "洛克计算器 · S3季中",
+      name: "洛克计算器 · S4前瞻",
     }),
   ).toBeVisible();
-  expect(screen.getByText("正在加载 S3季中数据…")).toBeVisible();
+  expect(screen.getByText("正在加载 S4前瞻数据…")).toBeVisible();
 });
 
 test("loads the compact runtime snapshot instead of the audit snapshot", () => {

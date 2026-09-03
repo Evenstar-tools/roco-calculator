@@ -5,6 +5,15 @@ import {
   encodeShareState,
 } from "../../src/state/share.js";
 
+const COMPLETE_RACE_STATS = {
+  hp: 100,
+  speed: 100,
+  physicalAttack: 100,
+  magicalAttack: 100,
+  physicalDefense: 100,
+  magicalDefense: 100,
+};
+
 async function encodeRawPayload(value) {
   const payload = JSON.stringify(value);
   const bytes = new TextEncoder().encode(payload);
@@ -32,8 +41,8 @@ function shareFixture() {
       rulesVersion: "rules-2026.07",
     },
     spirits: [
-      { id: "spirit_attacker" },
-      { id: "spirit_defender" },
+      { id: "spirit_attacker", raceStats: COMPLETE_RACE_STATS },
+      { id: "spirit_defender", raceStats: COMPLETE_RACE_STATS },
     ],
     skills: [
       { id: "skill_a" },
@@ -176,6 +185,51 @@ describe("versioned share state", () => {
     expect(decoded.sides.defender.traitValues).toEqual(
       state.sides.defender.traitValues,
     );
+  });
+
+  test("round trips multiple acquired traits and their isolated values", async () => {
+    const state = shareFixture();
+    state.sides.attacker.acquiredTraitIds = ["old-toy", "cold-light"];
+    state.sides.attacker.acquiredTraitValues = {
+      "old-toy": { "trait.traitStacks.12345678": 2 },
+      "cold-light": { "trait.previousTurnWingSkillUsed.87654321": true },
+    };
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.sides.attacker.acquiredTraitIds).toEqual([
+      "old-toy",
+      "cold-light",
+    ]);
+    expect(decoded.sides.attacker.acquiredTraitValues).toEqual(
+      state.sides.attacker.acquiredTraitValues,
+    );
+  });
+
+  test("keeps only five acquired traits and their values in shared state", async () => {
+    const state = shareFixture();
+    state.sides.attacker.acquiredTraitIds = Array.from(
+      { length: 6 },
+      (_, index) => `trait-${index + 1}`,
+    );
+    state.sides.attacker.acquiredTraitValues = Object.fromEntries(
+      state.sides.attacker.acquiredTraitIds.map((traitId, index) => [
+        traitId,
+        { "trait.traitStacks.12345678": index + 1 },
+      ]),
+    );
+
+    const decoded = await decodeShareState(await encodeShareState(state));
+
+    expect(decoded.sides.attacker.acquiredTraitIds).toEqual([
+      "trait-1",
+      "trait-2",
+      "trait-3",
+      "trait-4",
+      "trait-5",
+    ]);
+    expect(decoded.sides.attacker.acquiredTraitValues)
+      .not.toHaveProperty("trait-6");
   });
 
   test("repairs unknown, malicious, and non-object trait values", async () => {

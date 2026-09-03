@@ -193,9 +193,17 @@ export function FormulaAudit({ result }) {
     const healingStep = result.formulaSteps?.find(
       (step) => step.label === "血脉魔法回复",
     );
+    const endTurnStep = result.formulaSteps?.find(
+      (step) => step.label === "血脉魔法后续回复",
+    );
     const traitStep = result.formulaSteps?.find(
       (step) => step.label === "戏耍特性伤害",
     );
+    const endTurnTicks =
+      Number(endTurnStep?.input?.ticks) ||
+      (Number(endTurnStep?.before) > 0
+        ? Math.round(Number(endTurnStep.after) / Number(endTurnStep.before))
+        : 3);
     const actualHealing = Number(traitStep?.input?.actualHealing) || 0;
     const requestedHealing = Number(traitStep?.input?.requestedHealing) || 0;
 
@@ -207,9 +215,9 @@ export function FormulaAudit({ result }) {
         </header>
         <FormulaRow title="光合治愈" tone="power">
           <AuditChip
-            label="最大生命 × 50%"
+            label="最大生命 × 15%（立即）"
             tone="power"
-            value={displayNumber(healingStep?.output ?? requestedHealing)}
+            value={displayNumber(healingStep?.after ?? requestedHealing)}
           />
           <Operator>→</Operator>
           <AuditChip
@@ -218,6 +226,27 @@ export function FormulaAudit({ result }) {
             value={displayNumber(actualHealing)}
           />
         </FormulaRow>
+        {endTurnStep ? (
+          <FormulaRow title="后续回复" tone="power">
+            <AuditChip
+              label="每回合结束回复"
+              tone="power"
+              value={displayNumber(endTurnStep.before)}
+            />
+            <Operator>×</Operator>
+            <AuditChip
+              label="回合数"
+              tone="power"
+              value={displayNumber(endTurnTicks)}
+            />
+            <Operator>=</Operator>
+            <AuditChip
+              label="名义合计（未扣溢出）"
+              tone="result"
+              value={displayNumber(endTurnStep.after)}
+            />
+          </FormulaRow>
+        ) : null}
         <FormulaRow title="戏耍真伤" tone="total">
           <AuditChip label="实际回复" tone="total" value={displayNumber(actualHealing)} />
           <Operator>=</Operator>

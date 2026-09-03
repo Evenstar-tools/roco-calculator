@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
+import { NATURES } from "../../src/domain/natures.js";
 
 const RACE_STAT_KEYS = [
   "hp",
@@ -9,6 +10,7 @@ const RACE_STAT_KEYS = [
   "physicalDefense",
   "magicalDefense",
 ];
+const NATURE_IDS = new Set(NATURES.map(({ id }) => id));
 
 function issue(code, path, message, details = {}) {
   return { code, path, message, ...details };
@@ -51,14 +53,45 @@ function validateUniqueSpiritForms(spirits) {
 function validateRaceStats(spirits) {
   const errors = [];
   spirits.forEach((spirit, index) => {
+    const isPendingPlaceholder =
+      spirit.calculationStatus === "pending-race-stats";
+    if (
+      spirit.calculationStatus !== undefined &&
+      !isPendingPlaceholder
+    ) {
+      errors.push(
+        issue(
+          "INVALID_CALCULATION_STATUS",
+          `spirits[${index}].calculationStatus`,
+          "计算状态仅允许缺省或 pending-race-stats",
+          { spiritId: spirit.id, value: spirit.calculationStatus },
+        ),
+      );
+    }
+    if (isPendingPlaceholder) {
+      if (spirit.raceStats !== null) {
+        errors.push(
+          issue(
+            "INVALID_PLACEHOLDER_RACE_STATS",
+            `spirits[${index}].raceStats`,
+            "待核实占位形态的种族值必须保持 null",
+            { spiritId: spirit.id },
+          ),
+        );
+      }
+      return;
+    }
     const stats = spirit.raceStats ?? {};
     const values = RACE_STAT_KEYS.map((key) => stats[key]);
-    if (!values.every(Number.isInteger) || !Number.isInteger(stats.total)) {
+    if (
+      !values.every((value) => Number.isInteger(value) && value > 0) ||
+      !Number.isInteger(stats.total)
+    ) {
       errors.push(
         issue(
           "INVALID_RACE_STATS",
           `spirits[${index}].raceStats`,
-          "六项种族值和总种族值必须是整数",
+          "六项种族值必须是正整数，总种族值必须是整数",
           { spiritId: spirit.id },
         ),
       );
@@ -79,17 +112,84 @@ function validateRaceStats(spirits) {
   return errors;
 }
 
+function validatePreviewDefaults(spirits) {
+  const errors = [];
+  spirits.forEach((spirit, index) => {
+    if (spirit.previewDefaults === undefined) return;
+    const { displayIvs, natureId } = spirit.previewDefaults ?? {};
+    const validIvs = displayIvs &&
+      Object.keys(displayIvs).length === RACE_STAT_KEYS.length &&
+      RACE_STAT_KEYS.every((key) => displayIvs[key] === 0 || displayIvs[key] === 60) &&
+      RACE_STAT_KEYS.filter((key) => displayIvs[key] === 60).length === 3;
+    if (
+      spirit.calculationStatus === "pending-race-stats" ||
+      !NATURE_IDS.has(natureId) ||
+      !validIvs
+    ) {
+      errors.push(
+        issue(
+          "INVALID_PREVIEW_DEFAULTS",
+          `spirits[${index}].previewDefaults`,
+          "前瞻默认配置需要有效性格和恰好三项 60 个体，且不能用于占位形态",
+          { spiritId: spirit.id },
+        ),
+      );
+    }
+  });
+  return errors;
+}
+
 function validateSkills(skills) {
-  return [
+  const errors = [
     ...duplicateIssues(skills, (skill) => skill.id, "DUPLICATE_SKILL_ID", "skills"),
     ...duplicateIssues(skills, (skill) => skill.name, "DUPLICATE_SKILL_NAME", "skills"),
   ];
+  skills.forEach((skill, index) => {
+    const isPendingPlaceholder =
+      skill.calculationStatus === "pending-skill-data";
+    if (
+      skill.calculationStatus !== undefined &&
+      !isPendingPlaceholder
+    ) {
+      errors.push(
+        issue(
+          "INVALID_SKILL_CALCULATION_STATUS",
+          `skills[${index}].calculationStatus`,
+          "技能计算状态仅允许缺省或 pending-skill-data",
+          { skillId: skill.id, value: skill.calculationStatus },
+        ),
+      );
+    }
+    if (
+      isPendingPlaceholder &&
+      ["type", "category", "cost", "basePower", "ruleId", "ruleParams"]
+        .some((key) => skill[key] !== null)
+    ) {
+      errors.push(
+        issue(
+          "INVALID_PENDING_SKILL_PARAMETER",
+          `skills[${index}]`,
+          "待确认技能不得写入未经核实的属性、类别、能耗、威力或规则参数",
+          { skillId: skill.id },
+        ),
+      );
+    }
+  });
+  return errors;
 }
 
 function validateReferences(snapshot) {
   const spiritIds = new Set(snapshot.spirits.map((spirit) => spirit.id));
+  const pendingSpiritIds = new Set(
+    snapshot.spirits
+      .filter(({ calculationStatus }) =>
+        calculationStatus === "pending-race-stats"
+      )
+      .map((spirit) => spirit.id),
+  );
   const skillIds = new Set(snapshot.skills.map((skill) => skill.id));
   const traitIds = new Set(snapshot.traits.map((trait) => trait.id));
+  const pendingLearnsetIds = new Set();
   const errors = [];
 
   snapshot.spirits.forEach((spirit, spiritIndex) => {
@@ -108,6 +208,23 @@ function validateReferences(snapshot) {
   });
 
   snapshot.learnsets.forEach((learnset, learnsetIndex) => {
+    const learnsetSkillIds = new Set(learnset.skillIds ?? []);
+    if (pendingSpiritIds.has(learnset.spiritId)) {
+      pendingLearnsetIds.add(learnset.spiritId);
+      if (
+        !Array.isArray(learnset.skillIds) ||
+        learnset.skillIds.length !== 0
+      ) {
+        errors.push(
+          issue(
+            "PENDING_SPIRIT_LEARNSET_NOT_EMPTY",
+            `learnsets[${learnsetIndex}].skillIds`,
+            "待核实占位形态的学习面必须为空数组",
+            { spiritId: learnset.spiritId },
+          ),
+        );
+      }
+    }
     if (!spiritIds.has(learnset.spiritId)) {
       errors.push(
         issue(
@@ -130,7 +247,44 @@ function validateReferences(snapshot) {
         );
       }
     }
+    if (
+      learnset.defaultSkillIds !== undefined &&
+      !Array.isArray(learnset.defaultSkillIds)
+    ) {
+      errors.push(
+        issue(
+          "INVALID_DEFAULT_SKILL_IDS",
+          `learnsets[${learnsetIndex}].defaultSkillIds`,
+          "默认技能必须是数组",
+          { spiritId: learnset.spiritId },
+        ),
+      );
+    }
+    for (const skillId of learnset.defaultSkillIds ?? []) {
+      if (!skillIds.has(skillId) || !learnsetSkillIds.has(skillId)) {
+        errors.push(
+          issue(
+            "INVALID_DEFAULT_SKILL_REFERENCE",
+            `learnsets[${learnsetIndex}].defaultSkillIds`,
+            `默认技能不在该精灵学习面中：${skillId}`,
+            { spiritId: learnset.spiritId, skillId },
+          ),
+        );
+      }
+    }
   });
+  for (const spiritId of pendingSpiritIds) {
+    if (!pendingLearnsetIds.has(spiritId)) {
+      errors.push(
+        issue(
+          "MISSING_PENDING_SPIRIT_LEARNSET",
+          "learnsets",
+          "待核实占位形态必须有一条空学习面记录",
+          { spiritId },
+        ),
+      );
+    }
+  }
   return errors;
 }
 
@@ -233,6 +387,7 @@ export function validateSnapshot(snapshot, options = {}) {
   const errors = [
     ...validateUniqueSpiritForms(normalized.spirits),
     ...validateRaceStats(normalized.spirits),
+    ...validatePreviewDefaults(normalized.spirits),
     ...validateSkills(normalized.skills),
     ...validateReferences(normalized),
     ...validateTypeChart(normalized.typeChart),

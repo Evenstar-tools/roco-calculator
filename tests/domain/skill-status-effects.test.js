@@ -739,14 +739,14 @@ describe("skill status effects", () => {
 
   test("Backroom Operation changes the debuff target after a defense response", () => {
     expect(resolveSkillStatusActivation(skill("暗箱操作"), {})).toMatchObject({
-      deltas: { ownAttack: -10, ownDefense: -10 },
+      deltas: { ownAttack: -5, ownDefense: -5 },
     });
     expect(
       resolveSkillStatusActivation(skill("暗箱操作"), {
         defenseCounterSucceeded: true,
       }),
     ).toMatchObject({
-      deltas: { targetAttack: -10, targetDefense: -10 },
+      deltas: { targetAttack: -12, targetDefense: -12 },
     });
   });
 
@@ -755,14 +755,14 @@ describe("skill status effects", () => {
       deltas: { ownFixedPower: 20 },
     });
     expect(resolveSkillStatusActivation(skill("超声波"), {})).toMatchObject({
-      deltas: { ownFixedPower: 30 },
+      deltas: { ownFixedPower: 20 },
     });
     expect(
       resolveSkillStatusActivation(skill("超声波"), {
         defenseCounterSucceeded: true,
       }),
     ).toMatchObject({
-      deltas: { ownFixedPower: 50 },
+      deltas: { ownFixedPower: 20 },
     });
     expect(
       resolveSkillStatusActivation(skill("超声波"), {
@@ -770,7 +770,7 @@ describe("skill status effects", () => {
         defenseCounterSucceeded: false,
       }),
     ).toMatchObject({
-      deltas: { ownFixedPower: 60 },
+      deltas: { ownFixedPower: 40 },
     });
     expect(
       resolveSkillStatusActivation(skill("超声波"), {
@@ -778,8 +778,18 @@ describe("skill status effects", () => {
         defenseCounterSucceeded: true,
       }),
     ).toMatchObject({
-      deltas: { ownFixedPower: 80 },
+      deltas: { ownFixedPower: 40 },
     });
+  });
+
+  test("撒娇为同侧全技能永久增加10威力，并受萌芽增幅", () => {
+    expect(resolveSkillStatusActivation(skill("撒娇"), {})).toMatchObject({
+      applied: true,
+      deltas: { ownFixedPower: 10 },
+    });
+    expect(
+      resolveSkillStatusActivation(skill("撒娇"), { sproutStacks: 2 }),
+    ).toMatchObject({ deltas: { ownFixedPower: 30 } });
   });
 
   test("verified status skills add persistent power to attacking skills", () => {

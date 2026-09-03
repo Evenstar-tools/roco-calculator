@@ -5,6 +5,7 @@ import {
 } from "../../src/state/battle-activation.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { calculatorReducer } from "../../src/state/reducer.js";
+import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
 
 function createSnapshot() {
   return {
@@ -53,6 +54,13 @@ function createSnapshot() {
         id: "scratch",
         name: "抓挠",
         type: "普通",
+      },
+      {
+        basePower: 30,
+        category: "magical",
+        id: "coax",
+        name: "撒娇",
+        type: "萌",
       },
       {
         basePower: 0,
@@ -134,6 +142,85 @@ function createSnapshot() {
 }
 
 describe("shared battle activation", () => {
+  test("advances a choice skill twice when Moon Memory acquired a choice trait", () => {
+    const snapshot = createSnapshot();
+    snapshot.spirits[0].traitIds = ["moon-memory"];
+    snapshot.traits = [
+      { id: "moon-memory", name: "铭记于月亮" },
+      { id: "single-minded", name: "一意孤行" },
+    ];
+    snapshot.skills = snapshot.skills.map((skill) =>
+      skill.id === "friendship"
+        ? {
+            ...skill,
+            description:
+              "选择：每次使用后威力永久+20或应对状态时本次技能威力+100%。",
+          }
+        : skill,
+    );
+    const state = createInitialState(snapshot);
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.acquiredTraitIds = ["single-minded"];
+    state.sides.attacker.skills.four = [{
+      context: {
+        choiceTraitTriggered: true,
+        friendshipMode: "growth",
+        skillUseCount: 0,
+      },
+      skillId: "friendship",
+    }, null, null, null];
+
+    const result = applyBattleActivation({
+      calculation: { forward: { results: [] } },
+      side: "attacker",
+      skillIndex: 0,
+      snapshot,
+      state,
+    });
+
+    expect(result.applied).toBe(true);
+    expect(result.state.sides.attacker.skills.four[0].context.skillUseCount)
+      .toBe(2);
+  });
+
+  test("does not apply preview self-damage for Moon Memory", () => {
+    const snapshot = createSnapshot();
+    snapshot.spirits[0].traitIds = ["moon-memory"];
+    snapshot.traits = [{ id: "moon-memory", name: "铭记于月亮" }];
+    snapshot.skills = snapshot.skills.map((skill) =>
+      skill.id === "scratch"
+        ? { ...skill, description: "造成物伤，3连击。" }
+        : skill,
+    );
+    const state = createInitialState(snapshot);
+    state.mode = "four";
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.skills.four = ["scratch", null, null, null];
+    state.directions.reverse.currentHp = 100;
+    const view = buildCalculatorViewModel({
+      activeDirection: "forward",
+      snapshot,
+      state,
+    });
+    const postAttackEffects = view.calculation.forward.results[0]
+      .postAttackEffects;
+
+    const result = applyBattleActivation({
+      calculation: view.calculation,
+      side: "attacker",
+      skillIndex: 0,
+      snapshot,
+      state,
+    });
+
+    expect(view.calculation.forward.results[0].hitCount).toBe(3);
+    expect(postAttackEffects?.moonMemorySelfDamage).toBeUndefined();
+    expect(postAttackEffects?.selfCurrentHpAfterSettlement).toBeUndefined();
+    expect(result.state.directions.reverse.currentHp).toBe(100);
+  });
+
   test("stacks Greed lifesteal and adds one layer for each Sprout stack", () => {
     const snapshot = createSnapshot();
     const state = createInitialState(snapshot);
@@ -379,6 +466,35 @@ describe("shared battle activation", () => {
     expect(combo.state.directions.forward.overrides).toMatchObject({
       fixedPowerAdd: 70,
       hitCountAdd: 3,
+    });
+  });
+
+  test("撒娇把每次10点固定威力写入同侧全技能共享加成", () => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.skills.four = ["coax", "scratch", null, null];
+
+    const first = applyBattleActivation({
+      calculation: { forward: { results: [] } },
+      side: "attacker",
+      skillIndex: 0,
+      snapshot,
+      state,
+    });
+    const second = applyBattleActivation({
+      calculation: { forward: { results: [] } },
+      side: "attacker",
+      skillIndex: 0,
+      snapshot,
+      state: first.state,
+    });
+
+    expect(first.state.directions.forward.overrides.fixedPowerAdd).toBe(10);
+    expect(second.state.directions.forward.overrides.fixedPowerAdd).toBe(20);
+    expect(second.state.sides.attacker.skills.four[0]).toMatchObject({
+      skillId: "coax",
     });
   });
 

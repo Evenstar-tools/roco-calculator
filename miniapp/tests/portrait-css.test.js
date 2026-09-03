@@ -17,6 +17,7 @@ const styleFiles = [
   "share.css",
   "responsive.css",
   "compact-demo.css",
+  "entity-change-hints.css",
 ];
 const styles = Object.fromEntries(
   styleFiles.map((file) => [

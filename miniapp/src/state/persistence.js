@@ -1,4 +1,5 @@
 import { normalizeMarksState } from "../shared/domain/marks.js";
+import { MOON_MEMORY_TRAIT_LIMIT } from "../shared/domain/moon-memory.js";
 import { normalizeNegativeStatusState } from "../shared/domain/negative-status.js";
 import { createInitialState } from "../shared/state/defaults.js";
 import { extractTraitValues } from "../shared/state/trait-values.js";
@@ -53,6 +54,10 @@ const OVERRIDE_NUMBER_LIST_KEYS = [
   "otherPowerMultipliers",
   "skillPowerPercentAdds",
 ];
+const ACQUIRED_TRAIT_ID_PATTERN =
+  /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
+const TRAIT_VALUE_KEY_PATTERN =
+  /^trait\.[A-Za-z][A-Za-z0-9]*\.[a-f0-9]{8}$/u;
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -110,7 +115,7 @@ function sanitizeTraitValues(value) {
   return Object.fromEntries(
     Object.entries(value).filter(
       ([key, candidate]) =>
-        /^trait\.[A-Za-z][A-Za-z0-9]*\.[a-f0-9]{8}$/u.test(key) &&
+        TRAIT_VALUE_KEY_PATTERN.test(key) &&
         (
           typeof candidate === "boolean" ||
           typeof candidate === "string" ||
@@ -118,6 +123,59 @@ function sanitizeTraitValues(value) {
         ),
     ),
   );
+}
+
+function sanitizeAcquiredTraitIds(value, allowedTraitIds) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.filter(
+    (traitId) =>
+      typeof traitId === "string" &&
+      ACQUIRED_TRAIT_ID_PATTERN.test(traitId) &&
+      (!allowedTraitIds || allowedTraitIds.has(traitId)),
+  ))].slice(0, MOON_MEMORY_TRAIT_LIMIT);
+}
+
+function sanitizeAcquiredTraitValues(value, traitIds) {
+  if (!isRecord(value)) return {};
+  const allowedTraitIds = new Set(traitIds);
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([traitId, values]) =>
+        allowedTraitIds.has(traitId) && isRecord(values)
+      )
+      .map(([traitId, values]) => [
+        traitId,
+        Object.fromEntries(
+          Object.entries(values).filter(
+            ([key, candidate]) =>
+              TRAIT_VALUE_KEY_PATTERN.test(key) &&
+              (
+                typeof candidate === "boolean" ||
+                typeof candidate === "string" ||
+                finiteNumber(candidate) !== undefined
+              ),
+          ),
+        ),
+      ])
+      .filter(([, values]) => Object.keys(values).length > 0),
+  );
+}
+
+function createPersistenceDefaults(snapshot) {
+  const defaults = createInitialState(snapshot);
+  return {
+    ...defaults,
+    sides: Object.fromEntries(
+      Object.entries(defaults.sides).map(([side, value]) => [
+        side,
+        {
+          ...value,
+          acquiredTraitIds: [],
+          acquiredTraitValues: {},
+        },
+      ]),
+    ),
+  };
 }
 
 function sanitizeSlotValues(value, allowLists) {
@@ -352,7 +410,14 @@ function repairDisplayIvs(displayIvs, defaults) {
   );
 }
 
-function repairSide(side, defaults, snapshot, spiritIds, skillIds) {
+function repairSide(
+  side,
+  defaults,
+  snapshot,
+  spiritIds,
+  skillIds,
+  traitIds,
+) {
   if (
     !isRecord(side) ||
     !isRecord(side.skills) ||
@@ -383,8 +448,17 @@ function repairSide(side, defaults, snapshot, spiritIds, skillIds) {
       four,
     },
   };
+  const acquiredTraitIds = sanitizeAcquiredTraitIds(
+    side.acquiredTraitIds,
+    traitIds,
+  );
   return {
     ...repaired,
+    acquiredTraitIds,
+    acquiredTraitValues: sanitizeAcquiredTraitValues(
+      side.acquiredTraitValues,
+      acquiredTraitIds,
+    ),
     traitValues: extractTraitValues(
       {
         ...repaired,
@@ -433,7 +507,7 @@ function repairDirection(direction, defaults) {
 }
 
 function repairPersistedState(snapshot, persistedState) {
-  const defaults = createInitialState(snapshot);
+  const defaults = createPersistenceDefaults(snapshot);
   if (
     !isRecord(persistedState) ||
     !isRecord(persistedState.sides) ||
@@ -448,12 +522,16 @@ function repairPersistedState(snapshot, persistedState) {
   const skillIds = new Set(
     (snapshot?.skills ?? []).map((skill) => skill.id),
   );
+  const traitIds = new Set(
+    (snapshot?.traits ?? []).map((trait) => trait.id),
+  );
   const attacker = repairSide(
     persistedState.sides.attacker,
     defaults.sides.attacker,
     snapshot,
     spiritIds,
     skillIds,
+    traitIds,
   );
   const defender = repairSide(
     persistedState.sides.defender,
@@ -461,6 +539,7 @@ function repairPersistedState(snapshot, persistedState) {
     snapshot,
     spiritIds,
     skillIds,
+    traitIds,
   );
 
   if (!attacker || !defender) {
@@ -522,7 +601,15 @@ function migratePersistedEnvelope(value) {
 }
 
 function selectSideInputs(side) {
+  const acquiredTraitIds = sanitizeAcquiredTraitIds(
+    side?.acquiredTraitIds,
+  );
   return {
+    acquiredTraitIds,
+    acquiredTraitValues: sanitizeAcquiredTraitValues(
+      side?.acquiredTraitValues,
+      acquiredTraitIds,
+    ),
     spiritId: side?.spiritId,
     nature: side?.nature,
     displayIvs: isRecord(side?.displayIvs)
@@ -655,7 +742,7 @@ export function createPersistence({ storage }) {
     },
 
     load(snapshot) {
-      const defaults = createInitialState(snapshot);
+      const defaults = createPersistenceDefaults(snapshot);
       if (!getMemoryEnabled()) {
         return defaults;
       }

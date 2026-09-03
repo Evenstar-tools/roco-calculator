@@ -1,6 +1,7 @@
 import { createMarksState } from "../domain/marks.js";
 import { createNegativeStatusState } from "../domain/negative-status.js";
 import { getSpiritSkillSlotCapacity } from "../domain/skill-slot-capacity.js";
+import { hasCompleteRaceStats } from "../domain/stat.js";
 
 export const STATE_SCHEMA_VERSION = 1;
 
@@ -34,6 +35,8 @@ function createSide(spiritId, defaultSkillIds, capacity = 4) {
     spiritId: spiritId ?? null,
     nature: "neutral",
     displayIvs: createDisplayIvs(),
+    acquiredTraitIds: [],
+    acquiredTraitValues: {},
     traitValues: {},
     skills: {
       single: defaultSkillIds[0],
@@ -63,7 +66,9 @@ function createDirection() {
 export function createInitialState(snapshot) {
   const meta = snapshot?.meta ?? {};
   const defaultSkillIds = getDefaultSkillIds(snapshot ?? {});
-  const spirits = snapshot?.spirits ?? [];
+  const spirits = (snapshot?.spirits ?? []).filter((spirit) =>
+    hasCompleteRaceStats(spirit.raceStats)
+  );
 
   return {
     schemaVersion: STATE_SCHEMA_VERSION,

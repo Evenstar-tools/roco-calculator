@@ -153,6 +153,11 @@ export default function SharePreviewSheet({
               {completenessLabel(completeness)}
             </Text>
           </View>
+          {completeness !== "full" ? (
+            <Text className="share-preview__incomplete-warning">
+              吞噬特性/参数可能未完整携带
+            </Text>
+          ) : null}
           <View className="share-preview__configuration-list">
             <ConfigurationRow
               label="攻击方配置"

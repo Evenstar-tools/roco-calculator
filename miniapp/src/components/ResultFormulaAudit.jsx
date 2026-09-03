@@ -32,9 +32,69 @@ function FormulaRounding({ children }) {
   return <Text className="result-formula__rounding">{children}</Text>;
 }
 
+function BloodlineFormulaAudit({ audit }) {
+  const bloodline = audit.bloodline;
+  return (
+    <View aria-label="伤害计算过程" className="result-formula">
+      <View className="result-formula__header">
+        <Text className="result-formula__title">伤害计算过程</Text>
+        <Text className="result-formula__skill">{audit.skillName}</Text>
+      </View>
+      <FormulaRow title="立即回复" tone="power">
+        <FormulaChip
+          label="最大生命 × 15%"
+          tone="power"
+          value={displayFormulaNumber(bloodline.immediateHealing)}
+        />
+        <FormulaOperator>→</FormulaOperator>
+        <FormulaChip
+          label="实际回复"
+          tone="result"
+          value={displayFormulaNumber(bloodline.actualHealing)}
+        />
+      </FormulaRow>
+      <FormulaRow title="后续回复" tone="power">
+        <FormulaChip
+          label="每回合结束回复"
+          tone="power"
+          value={displayFormulaNumber(bloodline.perTurnHealing)}
+        />
+        <FormulaOperator>×</FormulaOperator>
+        <FormulaChip
+          label="回合数"
+          tone="power"
+          value={displayFormulaNumber(bloodline.endTurnTicks)}
+        />
+        <FormulaOperator>=</FormulaOperator>
+        <FormulaChip
+          label="名义合计（未扣溢出）"
+          tone="result"
+          value={displayFormulaNumber(bloodline.nominalEndTurnTotal)}
+        />
+      </FormulaRow>
+      <FormulaRow title="戏耍真伤" tone="total">
+        <FormulaChip
+          label="实际立即回复"
+          tone="total"
+          value={displayFormulaNumber(bloodline.actualHealing)}
+        />
+        <FormulaOperator>=</FormulaOperator>
+        <FormulaChip
+          label="真伤"
+          tone="result"
+          value={displayFormulaNumber(bloodline.damage)}
+        />
+      </FormulaRow>
+    </View>
+  );
+}
+
 export default function ResultFormulaAudit({ result }) {
   const audit = buildResultFormulaAudit(result);
   if (!audit) return null;
+  if (audit.kind === "bloodline") {
+    return <BloodlineFormulaAudit audit={audit} />;
+  }
 
   const power = audit.power;
   const numerator = audit.numerator;

@@ -1,4 +1,7 @@
-import { calculateAllPanelStats } from "../domain/stat.js";
+import {
+  calculateAllPanelStats,
+  hasCompleteRaceStats,
+} from "../domain/stat.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import {
   getSkillChoices,
@@ -69,7 +72,8 @@ export function TeamMemberEditor({
   const skillById = new Map(
     (snapshot.skills ?? []).map((skill) => [skill.id, skill]),
   );
-  const panel = spirit
+  const calculationReady = hasCompleteRaceStats(spirit?.raceStats);
+  const panel = calculationReady
     ? calculateAllPanelStats({
         displayIvs: member.displayIvs,
         natureMultipliers: getNatureMultipliers(member.natureId),
@@ -111,7 +115,7 @@ export function TeamMemberEditor({
         spirits={pickerSpirits}
       />
 
-      {member && spirit ? (
+      {member && spirit && calculationReady ? (
         <>
           <div className="team-member-editor__nature">
             <NatureSelect
@@ -179,6 +183,10 @@ export function TeamMemberEditor({
             )}
           </div>
         </>
+      ) : member && spirit ? (
+        <p className="team-member-editor__empty">
+          种族值待确认
+        </p>
       ) : (
         <p className="team-member-editor__empty">选择精灵后配置性格、个体和技能</p>
       )}

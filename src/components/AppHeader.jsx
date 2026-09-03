@@ -30,12 +30,12 @@ export function AppHeader({
   return (
     <header className={`app-header app-header--${viewMode}`}>
       <div className="app-header__brand">
-        <h1 aria-label="洛克计算器 · S3季中">
+        <h1 aria-label="洛克计算器 · S4前瞻">
           <span aria-hidden="true" className="app-header__title-long">
-            洛克计算器 · S3季中
+            洛克计算器 · S4前瞻
           </span>
           <span aria-hidden="true" className="app-header__title-short">
-            S3季中
+            S4前瞻
           </span>
         </h1>
       </div>

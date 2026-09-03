@@ -117,6 +117,25 @@ describe("withCalculatorExtras", () => {
     expect(otherBoss.skillIds).toEqual([]);
   });
 
+  test("does not give calculator-only skills to pending preview placeholders", () => {
+    const snapshot = {
+      meta: {},
+      spirits: [
+        {
+          calculationStatus: "pending-race-stats",
+          id: "spirit_preview",
+          raceStats: null,
+          stage: "一阶",
+        },
+      ],
+      skills: [],
+      learnsets: [{ spiritId: "spirit_preview", skillIds: [] }],
+    };
+
+    const enriched = withCalculatorExtras(snapshot);
+    expect(enriched.learnsets[0].skillIds).toEqual([]);
+  });
+
   test("keeps the real S3 roster aligned with regular and trait-specific boss Wish Power rules", () => {
     const snapshot = JSON.parse(
       readFileSync("data/snapshots/current.json", "utf8"),
@@ -145,7 +164,9 @@ describe("withCalculatorExtras", () => {
         /替换为([^，。；\s]+)系愿力冲击/,
       )?.[1];
 
-      if (spirit.stage !== "首领") {
+      if (spirit.calculationStatus === "pending-race-stats") {
+        expect(learnedWishPower).toHaveLength(0);
+      } else if (spirit.stage !== "首领") {
         expect(learnedWishPower).toHaveLength(18);
       } else if (bossWishPowerType) {
         expect(learnedWishPower).toEqual([

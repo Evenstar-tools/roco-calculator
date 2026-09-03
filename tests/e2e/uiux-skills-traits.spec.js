@@ -398,7 +398,7 @@ test("applies editable Polarization reduction to matching carried skill types", 
   const firstSkill = page.getByRole("combobox", { name: "攻击方技能1" });
   await firstSkill.fill("地刺");
   await page
-    .getByRole("option", { name: /^地 地刺 / })
+    .getByRole("option", { name: /地刺.*物理/ })
     .click();
 
   const reduction = page.getByRole("spinbutton", { name: "减伤比例" });

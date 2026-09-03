@@ -8,6 +8,7 @@ import { getSnapshotIndexes } from "../shared/domain/snapshot-indexes.js";
 import { resolveWingExtensionSkill } from "../shared/domain/wing-extension.js";
 import { buildCalculatorViewModel } from "../shared/domain/calculator-view-model.js";
 import { createCombatantView } from "./combatant.js";
+import { hasCompleteRaceStats } from "../shared/domain/stat.js";
 
 function createTypeAnalysis(snapshot, side, subjectName) {
   const indexes = getSnapshotIndexes(snapshot);
@@ -216,6 +217,28 @@ export function createCalculationView(snapshot, state, direction) {
       ? defenderHp / defenderMaxHp * 100
       : null;
   const typeAnalysis = createTypeAnalysis(snapshot, attackerSide, attackerName);
+  const spiritById = new Map(
+    (snapshot?.spirits ?? []).map((spirit) => [spirit.id, spirit]),
+  );
+  const pendingRaceStatSpirits = [attackerSide, defenderSide]
+    .map((side) => spiritById.get(side.spiritId))
+    .filter((spirit) => spirit && !hasCompleteRaceStats(spirit.raceStats));
+  if (pendingRaceStatSpirits.length > 0) {
+    return {
+      attackerName,
+      bloodlineResult: null,
+      defenderHp,
+      defenderHpPercent,
+      defenderMaxHp,
+      defenderName,
+      message: "种族值待确认",
+      rows: [],
+      selectedResult: null,
+      status: "unresolved",
+      traitResult: null,
+      typeAnalysis,
+    };
+  }
 
   try {
     const combatState = buildCombatState(state, snapshot);

@@ -1,5 +1,6 @@
 import { STATE_SCHEMA_VERSION } from "./defaults.js";
 import { normalizeNatureId } from "../domain/natures.js";
+import { MOON_MEMORY_TRAIT_LIMIT } from "../domain/moon-memory.js";
 import {
   MARK_DEFINITIONS,
   normalizeMarksState,
@@ -37,8 +38,16 @@ const EXTENDED_LEGACY_TOP_LEVEL_KEYS = EXTENDED_TOP_LEVEL_KEYS.filter(
   (key) => key !== "marks",
 );
 const SIDE_KEYS = ["spiritId", "nature", "displayIvs", "skills"];
-const SIDE_KEYS_WITH_TRAITS = [...SIDE_KEYS, "traitValues"];
+const SIDE_OPTIONAL_KEYS = [
+  "traitValues",
+  "acquiredTraitIds",
+  "acquiredTraitValues",
+];
+const SIDE_ALLOWED_KEYS = new Set([...SIDE_KEYS, ...SIDE_OPTIONAL_KEYS]);
 const TRAIT_VALUE_KEY_PATTERN =
+  /^trait\.[A-Za-z][A-Za-z0-9]*\.[a-f0-9]{8}$/u;
+const ACQUIRED_TRAIT_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
+const ACQUIRED_TRAIT_VALUE_KEY_PATTERN =
   /^trait\.[A-Za-z][A-Za-z0-9]*\.[a-f0-9]{8}$/u;
 const DIRECTION_KEYS = [
   "selectedSkillIndex",
@@ -119,6 +128,36 @@ function sanitizeTraitValues(value) {
       ([key, candidate]) =>
         TRAIT_VALUE_KEY_PATTERN.test(key) && isTraitValue(candidate),
     ),
+  );
+}
+
+function sanitizeAcquiredTraitIds(value) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.filter(
+    (traitId) =>
+      typeof traitId === "string" && ACQUIRED_TRAIT_ID_PATTERN.test(traitId),
+  ))].slice(0, MOON_MEMORY_TRAIT_LIMIT);
+}
+
+function sanitizeAcquiredTraitValues(value, traitIds) {
+  if (!isPlainObject(value)) return {};
+  const allowedIds = new Set(traitIds);
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([traitId, values]) =>
+        allowedIds.has(traitId) && isPlainObject(values)
+      )
+      .map(([traitId, values]) => [
+        traitId,
+        Object.fromEntries(
+          Object.entries(values).filter(
+            ([key, candidate]) =>
+              ACQUIRED_TRAIT_VALUE_KEY_PATTERN.test(key) &&
+              isTraitValue(candidate),
+          ),
+        ),
+      ])
+      .filter(([, values]) => Object.keys(values).length > 0),
   );
 }
 
@@ -313,8 +352,9 @@ function assertSkillInput(skill, path) {
 
 function assertSide(side, path) {
   if (
-    !hasExactKeys(side, SIDE_KEYS) &&
-    !hasExactKeys(side, SIDE_KEYS_WITH_TRAITS)
+    !isPlainObject(side) ||
+    !SIDE_KEYS.every((key) => Object.hasOwn(side, key)) ||
+    !Object.keys(side).every((key) => SIDE_ALLOWED_KEYS.has(key))
   ) {
     throw new TypeError(`${path} 结构无效`);
   }
@@ -354,6 +394,25 @@ function assertSide(side, path) {
       if (!TRAIT_VALUE_KEY_PATTERN.test(key) || !isTraitValue(value)) {
         throw new TypeError(`${path}.traitValues.${key} 无效`);
       }
+    }
+  }
+  if (Object.hasOwn(side, "acquiredTraitIds")) {
+    const sanitizedIds = sanitizeAcquiredTraitIds(side.acquiredTraitIds);
+    if (
+      !Array.isArray(side.acquiredTraitIds) ||
+      sanitizedIds.length !== side.acquiredTraitIds.length ||
+      sanitizedIds.some((traitId, index) => traitId !== side.acquiredTraitIds[index])
+    ) {
+      throw new TypeError(`${path}.acquiredTraitIds 无效`);
+    }
+  }
+  if (Object.hasOwn(side, "acquiredTraitValues")) {
+    const sanitizedValues = sanitizeAcquiredTraitValues(
+      side.acquiredTraitValues,
+      side.acquiredTraitIds ?? [],
+    );
+    if (stableStringify(sanitizedValues) !== stableStringify(side.acquiredTraitValues)) {
+      throw new TypeError(`${path}.acquiredTraitValues 无效`);
     }
   }
 }
@@ -564,6 +623,17 @@ function selectSide(side) {
   if (Object.keys(traitValues).length > 0) {
     selected.traitValues = traitValues;
   }
+  const acquiredTraitIds = sanitizeAcquiredTraitIds(side.acquiredTraitIds);
+  if (acquiredTraitIds.length > 0) {
+    selected.acquiredTraitIds = acquiredTraitIds;
+    const acquiredTraitValues = sanitizeAcquiredTraitValues(
+      side.acquiredTraitValues,
+      acquiredTraitIds,
+    );
+    if (Object.keys(acquiredTraitValues).length > 0) {
+      selected.acquiredTraitValues = acquiredTraitValues;
+    }
+  }
   return selected;
 }
 
@@ -573,10 +643,20 @@ function migrateSides(sides) {
     Object.entries(sides).map(([side, value]) => [
       side,
       isPlainObject(value)
-        ? {
-            ...value,
-            traitValues: sanitizeTraitValues(value.traitValues),
-          }
+        ? (() => {
+            const acquiredTraitIds = sanitizeAcquiredTraitIds(
+              value.acquiredTraitIds,
+            );
+            return {
+              ...value,
+              acquiredTraitIds,
+              acquiredTraitValues: sanitizeAcquiredTraitValues(
+                value.acquiredTraitValues,
+                acquiredTraitIds,
+              ),
+              traitValues: sanitizeTraitValues(value.traitValues),
+            };
+          })()
         : value,
     ]),
   );

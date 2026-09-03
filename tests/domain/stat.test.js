@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   calculateAllPanelStats,
   calculatePanelStat,
+  hasCompleteRaceStats,
   normalizeDisplayIv,
   statRound,
 } from "../../src/domain/stat.js";
@@ -103,4 +104,18 @@ test("calculates all six panel stats from the same normalized input shape", () =
     physicalAttack: 271,
     hp: 434,
   });
+});
+
+test("rejects a preview placeholder instead of calculating from missing stats", () => {
+  expect(hasCompleteRaceStats(null)).toBe(false);
+  expect(hasCompleteRaceStats({
+    physicalAttack: 1,
+    magicalAttack: 1,
+    speed: 1,
+    hp: 1,
+    physicalDefense: 1,
+    magicalDefense: "",
+  })).toBe(false);
+  expect(() => calculateAllPanelStats({ raceStats: null }))
+    .toThrow("种族值待确认");
 });

@@ -3,7 +3,7 @@ import {
   hasNamedTraitEffectRule,
   resolveTraitEffectRule,
 } from "./trait-effects.js";
-import { projectTriggerContext } from "./trigger-controls.js";
+import { projectTraitRuntimeContext } from "./trait-runtime.js";
 
 const TRAIT_NAME_TO_RULE = Object.freeze({
   破空: "power_if_acted_before_enemy",
@@ -305,8 +305,9 @@ function resolveOneTrait(traitValue, role, input) {
   const trait = normalizeTrait(traitValue);
   input = {
     ...input,
-    context: projectTriggerContext(
+    context: projectTraitRuntimeContext(
       input.context,
+      trait,
       getTraitEffectInputs(trait, role),
     ),
   };

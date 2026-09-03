@@ -1,5 +1,6 @@
 import { normalizeNatureId } from "../shared/domain/natures.js";
 import { normalizeMarksState } from "../shared/domain/marks.js";
+import { MOON_MEMORY_TRAIT_LIMIT } from "../shared/domain/moon-memory.js";
 import { normalizeNegativeStatusState } from "../shared/domain/negative-status.js";
 import { getSpiritSkillSlotCapacity } from "../shared/domain/skill-slot-capacity.js";
 import { createInitialState } from "../shared/state/defaults.js";
@@ -32,10 +33,22 @@ const CONTEXT_KEY_NAMES = Object.freeze(
     Object.entries(CONTEXT_KEY_ALIASES).map(([name, alias]) => [alias, name]),
   ),
 );
+const ACQUIRED_TRAIT_ID_PATTERN =
+  /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
+const TRAIT_VALUE_KEY_PATTERN =
+  /^trait\.[A-Za-z][A-Za-z0-9]*\.[a-f0-9]{8}$/u;
+const COMPACT_TRAIT_VALUE_KEY_PATTERN =
+  /^[A-Za-z][A-Za-z0-9]*\.[a-f0-9]{8}$/u;
 
 function safeIdentifier(value) {
   return typeof value === "string" &&
     /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/u.test(value)
+    ? value
+    : null;
+}
+
+function safeAcquiredTraitId(value) {
+  return typeof value === "string" && ACQUIRED_TRAIT_ID_PATTERN.test(value)
     ? value
     : null;
 }
@@ -199,6 +212,45 @@ function compactTraitValues(value) {
   return Object.keys(compact).length ? compact : undefined;
 }
 
+function compactAcquiredTraitIds(value) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map(safeAcquiredTraitId).filter(Boolean))]
+    .slice(0, MOON_MEMORY_TRAIT_LIMIT);
+}
+
+function compactAcquiredTraitValues(value, traitIds) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+  const allowedTraitIds = new Set(traitIds);
+  const compact = Object.fromEntries(
+    Object.entries(value)
+      .filter(([traitId, values]) =>
+        allowedTraitIds.has(traitId) &&
+        values &&
+        typeof values === "object" &&
+        !Array.isArray(values)
+      )
+      .map(([traitId, values]) => [
+        traitId,
+        Object.fromEntries(
+          Object.entries(values)
+            .filter(
+              ([key, candidate]) =>
+                TRAIT_VALUE_KEY_PATTERN.test(key) &&
+                isCompactTraitValue(candidate),
+            )
+            .map(([key, candidate]) => [
+              key.slice("trait.".length),
+              candidate,
+            ]),
+        ),
+      ])
+      .filter(([, values]) => Object.keys(values).length > 0),
+  );
+  return Object.keys(compact).length ? compact : undefined;
+}
+
 function compactSide(side) {
   const ivs = STAT_KEYS.map((key) =>
     integerInRange(side?.displayIvs?.[key], 0, 60, 60),
@@ -218,6 +270,15 @@ function compactSide(side) {
   };
   const traitValues = compactTraitValues(side?.traitValues);
   if (traitValues) compact.t = traitValues;
+  const acquiredTraitIds = compactAcquiredTraitIds(side?.acquiredTraitIds);
+  if (acquiredTraitIds.length) {
+    compact.r = acquiredTraitIds;
+    const acquiredTraitValues = compactAcquiredTraitValues(
+      side?.acquiredTraitValues,
+      acquiredTraitIds,
+    );
+    if (acquiredTraitValues) compact.v = acquiredTraitValues;
+  }
   return compact;
 }
 
@@ -420,6 +481,35 @@ function fitPayloadWithMeta(payload) {
     }
   }
 
+  for (const side of [payload.a, payload.d]) {
+    for (const [traitId, values] of Object.entries(side.v ?? {}).reverse()) {
+      for (const key of Object.keys(values).reverse()) {
+        delete values[key];
+        if (Object.keys(values).length === 0) delete side.v[traitId];
+        if (Object.keys(side.v).length === 0) delete side.v;
+        encoded = toBase64Url(JSON.stringify(payload));
+        if (encoded.length <= MAX_ENCODED_LENGTH) {
+          return { completeness: "reduced", encoded };
+        }
+      }
+    }
+  }
+
+  for (const side of [payload.a, payload.d]) {
+    while (side.r?.length) {
+      const traitId = side.r.pop();
+      if (side.v) {
+        delete side.v[traitId];
+        if (Object.keys(side.v).length === 0) delete side.v;
+      }
+      if (side.r.length === 0) delete side.r;
+      encoded = toBase64Url(JSON.stringify(payload));
+      if (encoded.length <= MAX_ENCODED_LENGTH) {
+        return { completeness: "reduced", encoded };
+      }
+    }
+  }
+
   return {
     completeness: "minimal",
     encoded: toBase64Url(
@@ -433,12 +523,16 @@ function fitPayloadWithMeta(payload) {
         n: payload.a.n,
         i: payload.a.i,
         ...(payload.a.t ? { t: payload.a.t } : {}),
+        ...(payload.a.r ? { r: payload.a.r } : {}),
+        ...(payload.a.v ? { v: payload.a.v } : {}),
       },
       d: {
         s: payload.d.s,
         n: payload.d.n,
         i: payload.d.i,
         ...(payload.d.t ? { t: payload.d.t } : {}),
+        ...(payload.d.r ? { r: payload.d.r } : {}),
+        ...(payload.d.v ? { v: payload.d.v } : {}),
       },
       z: payload.z,
       ...(payload.e ? { e: 1, w: payload.w } : {}),
@@ -552,12 +646,49 @@ function expandTraitValues(value) {
   );
 }
 
+function expandAcquiredTraitIds(value, traitIds) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map(safeAcquiredTraitId).filter(
+    (traitId) => traitId && traitIds.has(traitId),
+  ))].slice(0, MOON_MEMORY_TRAIT_LIMIT);
+}
+
+function expandAcquiredTraitValues(value, acquiredTraitIds) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+  const allowedTraitIds = new Set(acquiredTraitIds);
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([traitId, values]) =>
+        allowedTraitIds.has(traitId) &&
+        values &&
+        typeof values === "object" &&
+        !Array.isArray(values)
+      )
+      .map(([traitId, values]) => [
+        traitId,
+        Object.fromEntries(
+          Object.entries(values)
+            .filter(
+              ([key, candidate]) =>
+                COMPACT_TRAIT_VALUE_KEY_PATTERN.test(key) &&
+                isCompactTraitValue(candidate),
+            )
+            .map(([key, candidate]) => [`trait.${key}`, candidate]),
+        ),
+      ])
+      .filter(([, values]) => Object.keys(values).length > 0),
+  );
+}
+
 function expandSide(
   raw,
   fallback,
   snapshot,
   spiritIds,
   skillIds,
+  traitIds,
   includeTraitValues,
 ) {
   const requestedSpiritId = safeIdentifier(raw?.s);
@@ -598,8 +729,17 @@ function expandSide(
     skills: { four, single },
     spiritId,
   };
+  const acquiredTraitIds = expandAcquiredTraitIds(
+    includeTraitValues ? raw?.r : undefined,
+    traitIds,
+  );
   return {
     ...expanded,
+    acquiredTraitIds,
+    acquiredTraitValues: expandAcquiredTraitValues(
+      includeTraitValues ? raw?.v : undefined,
+      acquiredTraitIds,
+    ),
     traitValues: extractTraitValues(
       {
         ...expanded,
@@ -696,6 +836,7 @@ export function decodeSharePayloadResult(encoded, snapshot) {
     const fallback = createInitialState(snapshot ?? {});
     const spiritIds = validIds(snapshot, "spirits");
     const skillIds = validIds(snapshot, "skills");
+    const traitIds = validIds(snapshot, "traits");
     const directions = {
       forward: expandDirection(
         payload.f,
@@ -721,6 +862,7 @@ export function decodeSharePayloadResult(encoded, snapshot) {
           snapshot,
           spiritIds,
           skillIds,
+          traitIds,
           payload.v === SHARE_VERSION,
         ),
         defender: expandSide(
@@ -729,6 +871,7 @@ export function decodeSharePayloadResult(encoded, snapshot) {
           snapshot,
           spiritIds,
           skillIds,
+          traitIds,
           payload.v === SHARE_VERSION,
         ),
       },

@@ -49,6 +49,19 @@ export function chooseDefaultSkillIds(snapshot, spiritId) {
   const capacity = getSpiritSkillSlotCapacity(snapshot, spiritId);
   const legalIds = getLegalSkillIds(snapshot, spiritId);
   const byId = getSnapshotIndexes(snapshot).skills;
+  const explicitDefaultIds = getSnapshotIndexes(snapshot)
+    .learnsets[spiritId]?.defaultSkillIds;
+  if (Array.isArray(explicitDefaultIds)) {
+    const legalSet = new Set(legalIds);
+    const explicitDefaults = [
+      ...new Set(
+        explicitDefaultIds.filter(
+          (id) => legalSet.has(id) && byId[id] && !isWishPowerExtra(byId[id]),
+        ),
+      ),
+    ].slice(0, capacity);
+    return normalizeSkillSlots(explicitDefaults, capacity);
+  }
   const legal = legalIds.map((id) => byId[id]).filter(Boolean);
   const defaultCandidates = legal.filter((skill) => !isWishPowerExtra(skill));
   const damaging = defaultCandidates.filter(

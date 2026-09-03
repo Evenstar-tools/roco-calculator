@@ -5,6 +5,10 @@ import {
   getSkillChoices,
   reconcileSkillLoadout,
 } from "../../src/domain/skill-loadout.js";
+import {
+  getSpiritSkillSlotCapacity,
+  normalizeSkillSlots,
+} from "../../src/domain/skill-slot-capacity.js";
 
 describe("skill loadouts", () => {
   test("keeps legal entries and replaces illegal entries in stable order", () => {
@@ -139,6 +143,43 @@ describe("skill loadouts", () => {
     ]);
   });
 
+  test("uses an explicit preview default quartet without reordering it by damage", () => {
+    const snapshot = {
+      learnsets: [
+        {
+          defaultSkillIds: ["preview-a", "preview-b", "known-c", "known-d"],
+          skillIds: ["preview-a", "preview-b", "known-c", "known-d"],
+          spiritId: "s4-final",
+        },
+      ],
+      skills: [
+        {
+          basePower: null,
+          calculationStatus: "pending-skill-data",
+          category: null,
+          id: "preview-a",
+          name: "前瞻技能甲",
+        },
+        {
+          basePower: null,
+          calculationStatus: "pending-skill-data",
+          category: null,
+          id: "preview-b",
+          name: "前瞻技能乙",
+        },
+        { basePower: 120, category: "physical", id: "known-c", name: "既有技能丙" },
+        { basePower: 100, category: "magical", id: "known-d", name: "既有技能丁" },
+      ],
+    };
+
+    expect(chooseDefaultSkillIds(snapshot, "s4-final")).toEqual([
+      "preview-a",
+      "preview-b",
+      "known-c",
+      "known-d",
+    ]);
+  });
+
   test("deduplicates repeated learnset entries before rendering skill choices", () => {
     const snapshot = {
       learnsets: [
@@ -188,5 +229,38 @@ describe("skill loadouts", () => {
       ["a", "b", "c", "d", "e", "f", "g"],
       7,
     ).four).toEqual(["a", "b", "c", "d", "e", "f", "g"]);
+  });
+});
+
+describe("skill slot capacity", () => {
+  const snapshot = {
+    spirits: [
+      { id: "rainbow-unicorn", traitIds: ["dazzling"] },
+      { id: "platinum-unicorn", traitIds: ["empty-sky"] },
+    ],
+    traits: [
+      {
+        id: "dazzling",
+        name: "夺目",
+        description: "额外获得三个未携带的随机技能，且非光系技能威力+25%。",
+      },
+      { id: "empty-sky", name: "目空", description: "测试特性" },
+    ],
+  };
+
+  test("gives only the dazzling spirit seven carried-skill slots", () => {
+    expect(getSpiritSkillSlotCapacity(snapshot, "rainbow-unicorn")).toBe(7);
+    expect(getSpiritSkillSlotCapacity(snapshot, "platinum-unicorn")).toBe(4);
+    expect(getSpiritSkillSlotCapacity(snapshot, "missing")).toBe(4);
+  });
+
+  test("pads or trims skill entries to the requested capacity", () => {
+    expect(normalizeSkillSlots(["a", "b"], 4)).toEqual([
+      "a", "b", null, null,
+    ]);
+    expect(normalizeSkillSlots(
+      ["a", "b", "c", "d", "e", "f", "g", "h"],
+      7,
+    )).toEqual(["a", "b", "c", "d", "e", "f", "g"]);
   });
 });

@@ -30,7 +30,9 @@ function skillSearchText(skill) {
     type,
     type ? `${type}系` : "",
     SKILL_CATEGORY_LABELS[skill?.category] ?? skill?.category,
-    Number.isFinite(power) && power > 0 ? `威力${power}` : "辅助",
+    skill?.calculationStatus === "pending-skill-data"
+      ? "参数待确认"
+      : Number.isFinite(power) && power > 0 ? `威力${power}` : "辅助",
     Number.isFinite(cost) ? `能量${cost}` : "",
   ]
     .filter(Boolean)

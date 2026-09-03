@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { pinyin } from "pinyin-pro";
 
 const AUDIT_ONLY_KEYS = new Set([
@@ -123,16 +124,36 @@ export function buildRuntimeSnapshot(snapshot, assetManifest = null) {
       .filter((asset) => asset?.id && asset?.localFile)
       .map((asset) => [asset.id, asset.localFile]),
   );
+  const patch = stripAuditFields(snapshot.currentPatchChanges?.patch ?? null);
+  const spiritChangeById = new Map(
+    (snapshot.currentPatchChanges?.spirits ?? []).map((entry) => [entry.entityId, entry]),
+  );
+  const skillChangeById = new Map(
+    (snapshot.currentPatchChanges?.skills ?? []).map((entry) => [entry.entityId, entry]),
+  );
   return {
     meta: stripAuditFields(snapshot.meta ?? {}),
     spirits: (snapshot.spirits ?? []).map((spirit) =>
-      prepareSpirit(spirit, resolveSpiritId, localAssetById),
+      ({
+        ...prepareSpirit(spirit, resolveSpiritId, localAssetById),
+        ...(spiritChangeById.has(spirit.id)
+          ? { changeInfo: { patch, ...stripAuditFields(spiritChangeById.get(spirit.id)) } }
+          : {}),
+      }),
     ),
-    skills: (snapshot.skills ?? []).map(prepareSkill),
-    learnsets: (snapshot.learnsets ?? []).map(({ spiritId, skillIds }) => ({
-      spiritId,
-      skillIds,
+    skills: (snapshot.skills ?? []).map((skill) => ({
+      ...prepareSkill(skill),
+      ...(skillChangeById.has(skill.id)
+        ? { changeInfo: { patch, ...stripAuditFields(skillChangeById.get(skill.id)) } }
+        : {}),
     })),
+    learnsets: (snapshot.learnsets ?? []).map(
+      ({ spiritId, skillIds, defaultSkillIds }) => ({
+        spiritId,
+        skillIds,
+        ...(Array.isArray(defaultSkillIds) ? { defaultSkillIds } : {}),
+      }),
+    ),
     traits: (snapshot.traits ?? []).map(stripAuditFields),
     typeChart: stripAuditFields(snapshot.typeChart ?? null),
   };
@@ -149,14 +170,16 @@ export function writeRuntimeSnapshot(sourcePath, targetPath, manifestPath = null
   return runtime;
 }
 
-const [sourcePath, targetPath, manifestPath] = process.argv.slice(2);
-if (!sourcePath || !targetPath) {
-  throw new TypeError(
-    "Usage: node scripts/runtime-snapshot.mjs <source.json> <target.json>",
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const [sourcePath, targetPath, manifestPath] = process.argv.slice(2);
+  if (!sourcePath || !targetPath) {
+    throw new TypeError(
+      "Usage: node scripts/runtime-snapshot.mjs <source.json> <target.json>",
+    );
+  }
+
+  const runtime = writeRuntimeSnapshot(sourcePath, targetPath, manifestPath);
+  console.log(
+    `runtime spirits=${runtime.spirits.length} skills=${runtime.skills.length}`,
   );
 }
-
-const runtime = writeRuntimeSnapshot(sourcePath, targetPath, manifestPath);
-console.log(
-  `runtime spirits=${runtime.spirits.length} skills=${runtime.skills.length}`,
-);

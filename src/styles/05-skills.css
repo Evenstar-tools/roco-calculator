@@ -91,6 +91,34 @@
   color: var(--text-faint);
 }
 
+.skill-icon {
+  display: block;
+  max-width: 100%;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 7px;
+  background: var(--surface-soft);
+  object-fit: cover;
+}
+
+.skill-icon--fallback {
+  display: inline-grid;
+  place-items: center;
+  background: transparent;
+}
+
+.skill-picker__selected-icon {
+  width: 24px;
+  height: 24px;
+  margin-left: 5px;
+}
+
+.skill-picker__option-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+}
+
 .skill-picker input {
   min-width: 0;
   height: 100%;
@@ -166,7 +194,7 @@
 }
 
 .skill-picker__option-name {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   gap: 6px;
 }
 
@@ -1041,4 +1069,3 @@
   min-height: 0;
   margin: 0 0 0 auto;
 }
-

@@ -48,6 +48,18 @@ describe("negative status source rules", () => {
     });
   });
 
+  test("毒雾把输入的全部增益层数等量转成中毒", () => {
+    expect(
+      resolveNegativeStatusApplications({
+        context: { convertedBuffStacks: 7 },
+        skill: skill("毒雾"),
+      }),
+    ).toMatchObject({
+      sources: [{ kind: "skill", name: "毒雾", stacks: { poison: 7 } }],
+      stacks: { poison: 7 },
+    });
+  });
+
   test("电子音乐只在雷鸣天气使用电系技能时增加引电", () => {
     expect(resolveNegativeStatusApplications({
       context: { weatherThunder: true },
@@ -106,13 +118,30 @@ describe("negative status source rules", () => {
         traits: [trait("加个雪球")],
       }).stacks,
     ).toMatchObject({ freeze: 3 });
+  });
+
+  test("高浓生物碱只在使用草系技能时追加3层中毒", () => {
     expect(
       resolveNegativeStatusApplications({
-        context: {},
+        skill: skill("种子弹"),
+        traits: [trait("高浓生物碱")],
+      }),
+    ).toMatchObject({
+      sources: [
+        {
+          kind: "trait",
+          name: "高浓生物碱",
+          stacks: { poison: 3 },
+        },
+      ],
+      stacks: { poison: 3 },
+    });
+    expect(
+      resolveNegativeStatusApplications({
         skill: skill("毒针"),
         traits: [trait("高浓生物碱")],
       }).stacks,
-    ).toMatchObject({ poison: 3 });
+    ).toMatchObject({ poison: 1 });
   });
 
   test("uses carried poison skills for dissolution traits", () => {
@@ -169,6 +198,7 @@ describe("negative status source rules", () => {
   test("audits every snapshot entry that mentions a supported negative status", () => {
     const keywords = ["寄生", "灼烧", "冻结", "中毒", "引电"];
     const mentionedSkills = snapshot.skills.filter((entry) =>
+      entry.calculationStatus !== "pending-skill-data" &&
       keywords.some((keyword) => entry.description?.includes(keyword)),
     );
     const mentionedTraits = snapshot.traits.filter((entry) =>

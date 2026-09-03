@@ -88,4 +88,39 @@ describe("miniapp skill presentation", () => {
 
     expect(audit.power).toMatchObject({ base: 20, conditional: 80 });
   });
+
+  test("builds a dedicated photosynthetic-healing audit", () => {
+    const audit = buildResultFormulaAudit({
+      formulaSteps: [
+        { after: 75, before: 75, label: "血脉魔法回复" },
+        {
+          after: 225,
+          before: 75,
+          input: { ticks: 3 },
+          label: "血脉魔法后续回复",
+        },
+        {
+          after: 60,
+          input: { actualHealing: 60, requestedHealing: 75 },
+          label: "戏耍特性伤害",
+        },
+      ],
+      skillName: "戏耍·光合治愈",
+      sourceKind: "bloodline",
+      totalDamage: 60,
+    });
+
+    expect(audit).toEqual({
+      bloodline: {
+        actualHealing: 60,
+        damage: 60,
+        endTurnTicks: 3,
+        immediateHealing: 75,
+        nominalEndTurnTotal: 225,
+        perTurnHealing: 75,
+      },
+      kind: "bloodline",
+      skillName: "戏耍·光合治愈",
+    });
+  });
 });

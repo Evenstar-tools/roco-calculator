@@ -1,8 +1,6 @@
 import { hasDeclaredHitCount } from "./skill-effects.js";
-import {
-  normalizeTriggerControls,
-  projectTriggerContext,
-} from "./trigger-controls.js";
+import { normalizeTriggerControls } from "./trigger-controls.js";
+import { projectTraitRuntimeContext } from "./trait-runtime.js";
 
 const RULES = Object.freeze({
   乘风连击: {
@@ -178,7 +176,7 @@ export function resolveGlobalFixedHitCount({
       const rule = GLOBAL_FIXED_RULES[trait?.name];
       if (!rule) continue;
       const controls = getTraitHitCountInputs(trait, role);
-      const projected = projectTriggerContext(context, controls);
+      const projected = projectTraitRuntimeContext(context, trait, controls);
       if (projected[rule.input.contextKey] !== true) continue;
       const source = sourceFor(trait);
       return {
@@ -208,8 +206,9 @@ export function resolveTraitHitCountBonus({
     (combined, trait) => {
       const rule = RULES[trait?.name];
       if (!rule) return combined;
-      const projected = projectTriggerContext(
+      const projected = projectTraitRuntimeContext(
         context,
+        trait,
         getTraitHitCountInputs(trait, "attacker"),
       );
       if (

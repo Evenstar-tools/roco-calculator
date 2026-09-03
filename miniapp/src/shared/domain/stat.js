@@ -24,6 +24,15 @@ function roundScaledStat(value, normalizedIv) {
   return floor % 2 === 0 ? floor + 1 : floor;
 }
 
+export function hasCompleteRaceStats(raceStats) {
+  return Boolean(
+    raceStats &&
+      STAT_KEYS.every(
+        (kind) => Number.isInteger(raceStats[kind]) && raceStats[kind] > 0,
+      ),
+  );
+}
+
 export function calculatePanelStat({
   kind,
   race,
@@ -47,6 +56,9 @@ export function calculateAllPanelStats({
   displayIvs = {},
   natureMultipliers = {},
 }) {
+  if (!hasCompleteRaceStats(raceStats)) {
+    throw new TypeError("种族值待确认");
+  }
   return Object.fromEntries(
     STAT_KEYS.map((kind) => [
       kind,

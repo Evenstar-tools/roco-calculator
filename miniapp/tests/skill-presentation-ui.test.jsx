@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import SkillConditionEditor from "../src/components/SkillConditionEditor.jsx";
+import SkillIcon from "../src/components/SkillIcon.jsx";
 import SkillSlots from "../src/components/SkillSlots.jsx";
 import TraitConditionEditor from "../src/components/TraitConditionEditor.jsx";
 import {
@@ -205,5 +206,37 @@ describe("skill and trait presentation UI", () => {
       name: "\u5c55\u5f00\u7279\u6027\u4e0e\u72b6\u6001",
     }));
     expect(screen.getByText("\u97f3\u6ce2\u5f39 +15")).toBeInTheDocument();
+  });
+});
+
+describe("skill icon presentation", () => {
+  test("falls back to the element icon after an image error", () => {
+    const { container } = render(
+      <SkillIcon
+        className="skill-picker__trigger-icon"
+        skill={{
+          iconUrl: "https://images.example.test/skill.png",
+          type: "光",
+        }}
+      />,
+    );
+
+    const image = container.querySelector(".skill-icon");
+    expect(image).toHaveAttribute("src", "https://images.example.test/skill.png");
+    fireEvent.error(image);
+
+    const fallback = container.querySelector(".skill-icon--fallback");
+    expect(fallback).toBeInTheDocument();
+    expect(fallback.querySelector(".element-icon"))
+      .toHaveAttribute("alt", "光系图标");
+  });
+
+  test("uses the element icon when a skill has no secure image", () => {
+    const { container } = render(<SkillIcon skill={{ type: "水" }} />);
+
+    expect(container.querySelector(".skill-icon--fallback"))
+      .toBeInTheDocument();
+    expect(container.querySelector(".element-icon"))
+      .toHaveAttribute("alt", "水系图标");
   });
 });

@@ -1,5 +1,5 @@
 import { calculateAllPanelStats } from "../stat.js";
-import { getInheritedDamageTraits } from "../trait-effects.js";
+import { getEffectiveTraits } from "../effective-traits.js";
 import { finiteNumber } from "./numeric.js";
 
 function resolveNatureMultipliers(side, snapshot) {
@@ -110,14 +110,7 @@ export function resolveCombatant(
       displayIvs: side.displayIvs,
       natureMultipliers: resolveNatureMultipliers(side, snapshot),
     });
-  const traitIds = side.traitIds ?? spirit.traitIds ?? [];
-  const traits = [
-    ...(side.traits ?? []),
-    ...traitIds
-      .map((traitId) => indexes.traits[traitId])
-      .filter(Boolean),
-    ...getInheritedDamageTraits(spirit),
-  ];
+  const traits = getEffectiveTraits(snapshot, { ...side, spirit });
   const carriedSkills = collectCarriedSkills(side, mode, indexes.skills);
 
   return {

@@ -18,9 +18,6 @@ function trait(name) {
 describe("S3 季中 8 月 13 日平衡补丁", () => {
   test("发布完整精灵与学习集的季中离线快照", () => {
     expect(snapshot.meta).toMatchObject({
-      id: "s3-2026-08-13-midseason",
-      rulesVersion: "2026-08-13",
-      seasonId: "S3季中",
       snapshotVersion: 2,
     });
     expect(snapshot.spirits.length).toBeGreaterThan(0);
@@ -87,19 +84,14 @@ describe("S3 季中 8 月 13 日平衡补丁", () => {
     ["障眼魔", { hp: 134, magicalDefense: 110, physicalDefense: 96, total: 616 }],
     ["流明坎德拉", { hp: 121, magicalAttack: 104, physicalAttack: 96, total: 657 }],
     ["友爱星飞", { hp: 122, magicalAttack: 116, physicalAttack: 37, total: 558 }],
-    ["饮雪狂兽", { magicalAttack: 24, physicalAttack: 85, total: 552 }],
   ])("更新 %s 的种族值", (name, expected) => {
     expect(spirit(name)?.raceStats).toMatchObject(expected);
   });
 
-  test("更新孢子、撒娇和示弱", () => {
+  test("更新孢子和示弱", () => {
     expect(skill("孢子")).toMatchObject({
       cost: 3,
       description: "敌方获得3层寄生。",
-    });
-    expect(skill("撒娇")).toMatchObject({
-      basePower: 30,
-      description: "造成魔伤，3连击。自己获得萌化：威力永久+10。",
     });
     expect(skill("示弱")).toMatchObject({
       cost: 2,

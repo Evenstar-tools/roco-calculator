@@ -17,6 +17,7 @@ import {
 import { getNatureMultipliers } from "../domain/natures.js";
 import { resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
+import { getEffectiveTraits } from "../domain/effective-traits.js";
 
 function clone(value) {
   if (typeof globalThis.structuredClone === "function") {
@@ -229,7 +230,12 @@ export function applyBattleActivation({
       ? entry.statusTriggerCount
       : undefined;
   const spirit = getSpirit(snapshot, next.sides[side]);
-  const traitName = getTraitView(snapshot, spirit, "attacker")?.name;
+  const traitName = getEffectiveTraits(snapshot, {
+    ...next.sides[side],
+    spirit,
+  })
+    .map((trait) => trait?.displayName ?? trait?.name)
+    .find(supportsChoiceTrait) ?? null;
   const choiceTrait = context.choiceTraitTriggered === true &&
       supportsChoiceTrait(traitName)
     ? traitName

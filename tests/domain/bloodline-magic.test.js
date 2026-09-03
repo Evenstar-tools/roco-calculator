@@ -6,7 +6,7 @@ import {
 } from "../../src/domain/bloodline-magic.js";
 
 describe("bloodline magic", () => {
-  test("光合治愈回复最大生命50%且不提供能量", () => {
+  test("光合治愈立即回复15%，并记录后续3回合各15%", () => {
     expect(resolveBloodlineMagicHealing({
       context: {
         bloodlineMagicId: "photosynthetic-healing",
@@ -15,9 +15,12 @@ describe("bloodline magic", () => {
       maximumHp: 401,
     })).toMatchObject({
       active: true,
+      endTurnHealing: 60,
+      endTurnTicks: 3,
       energy: 0,
-      healing: 201,
+      healing: 60,
       sourceLabel: "光合治愈",
+      totalPotentialHealing: 240,
     });
   });
 

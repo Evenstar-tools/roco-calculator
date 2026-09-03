@@ -1,0 +1,28 @@
+{
+  "version": "1.6.7",
+  "channel": "S4前瞻",
+  "identity": "user",
+  "chat_id": "oc_2154a409474e928fdc827f2aaf2673ad",
+  "installer_path": "D:\\codex\\rock-calculator-public\\installers\\v1.6.7\\洛克计算器-1.6.7.exe",
+  "installer_url": "https://my.feishu.cn/file/EwLyb8qPuonHU0xwOpxctLMrnAg",
+  "sha256": "1263FCE67BAA5F4DE47A360CCEA1BC413271458445EDAAB15D4B2AB4ECE01B1A",
+  "message_id": "om_x100b66b777e8a138c3416471c7d1930",
+  "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_2154a409474e928fdc827f2aaf2673ad",
+  "readback_verified": true,
+  "readback_required_fields": [
+    "v1.6.7",
+    "S4前瞻",
+    "installer_url",
+    "sha256",
+    "桌面离线启动"
+  ],
+  "upload_started_at": "2026-09-02T22:30:57.0000000+08:00",
+  "upload_finished_at": "2026-09-02T22:31:23.0000000+08:00",
+  "message_sent_at": "2026-09-02T22:32:50.4402309+08:00",
+  "readback_finished_at": "2026-09-02T22:32:51.0663049+08:00",
+  "observed_upload_wall_time_seconds": 28.2115252,
+  "upload_duration_seconds": 26.0,
+  "upload_to_message_seconds": 87.44,
+  "total_seconds": 114.066,
+  "timing_note": "上传起止时间由飞书文件元数据 create_time/latest_modify_time 回读；首次脚本在解析混合输出时退出，未重复上传，因此上传完成到消息发送耗时超过 15 秒目标。"
+}

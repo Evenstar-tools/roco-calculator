@@ -10,6 +10,14 @@ import {
 } from "../src/share/payload.js";
 
 const statValues = [60, 59, 58, 57, 56, 55];
+const COMPLETE_RACE_STATS = {
+  hp: 100,
+  speed: 100,
+  physicalAttack: 100,
+  magicalAttack: 100,
+  physicalDefense: 100,
+  magicalDefense: 100,
+};
 
 function createSnapshot() {
   return {
@@ -18,11 +26,13 @@ function createSnapshot() {
       {
         id: "spirit-a",
         fullName: "烈焰兽",
+        raceStats: COMPLETE_RACE_STATS,
         traitIds: ["trait-ignite"],
       },
       {
         id: "spirit-b",
         fullName: "潮汐兽",
+        raceStats: COMPLETE_RACE_STATS,
         traitIds: ["trait-ignite"],
       },
     ],
@@ -47,6 +57,16 @@ function createSnapshot() {
         description: "每层增加双攻双防。",
         id: "trait-ignite",
         name: "点燃",
+      },
+      {
+        description: "被铭记后生效。",
+        id: "trait-old-toy",
+        name: "旧日玩具",
+      },
+      {
+        description: "被铭记后生效。",
+        id: "trait-cold-light",
+        name: "冷光",
       },
     ],
   };
@@ -178,6 +198,55 @@ describe("mini program share payload", () => {
     });
   });
 
+  test("round-trips multiple acquired traits and only their scalar control values", () => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.sides.attacker.acquiredTraitIds = [
+      "trait-old-toy",
+      "trait-cold-light",
+      "trait-old-toy",
+      "../bad",
+      "trait-unknown",
+    ];
+    state.sides.attacker.acquiredTraitValues = {
+      "trait-old-toy": {
+        "trait.traitStacks.12345678": 2,
+        "trait.invalid.deadbeef": { nested: "private" },
+        openid: "secret-openid",
+      },
+      "trait-cold-light": {
+        "trait.previousTurnWingSkillUsed.87654321": true,
+        "trait.contractBallType.cafebabe": "prism",
+        "trait.invalid.facefeed": Number.POSITIVE_INFINITY,
+      },
+      "trait-unknown": {
+        "trait.traitActivated.aaaaaaaa": true,
+      },
+      "trait-not-selected": {
+        "trait.traitActivated.bbbbbbbb": true,
+      },
+    };
+
+    const encoded = encodeSharePayload(state);
+    const decoded = decodeSharePayload(encoded, snapshot);
+
+    expect(encoded.length).toBeLessThan(900);
+    expect(encoded).not.toMatch(/private|secret-openid/u);
+    expect(decoded.sides.attacker.acquiredTraitIds).toEqual([
+      "trait-old-toy",
+      "trait-cold-light",
+    ]);
+    expect(decoded.sides.attacker.acquiredTraitValues).toEqual({
+      "trait-old-toy": {
+        "trait.traitStacks.12345678": 2,
+      },
+      "trait-cold-light": {
+        "trait.previousTurnWingSkillUsed.87654321": true,
+        "trait.contractBallType.cafebabe": "prism",
+      },
+    });
+  });
+
   test("round-trips public calculator inputs in bounded Base64URL form", () => {
     const snapshot = createSnapshot();
     const encoded = encodeSharePayload(createState(snapshot));
@@ -300,6 +369,25 @@ describe("mini program share payload", () => {
     expect(decoded.marks).toEqual(createInitialState(snapshot).marks);
     expect(decoded.sides.attacker.traitValues).toEqual({});
     expect(decoded.sides.defender.traitValues).toEqual({});
+    expect(decoded.sides.attacker.acquiredTraitIds).toEqual([]);
+    expect(decoded.sides.attacker.acquiredTraitValues).toEqual({});
+  });
+
+  test("fills empty acquired trait state for older version 2 links", () => {
+    const decoded = decodeSharePayload(
+      encodeFixture({
+        a: { s: "spirit-a" },
+        d: { s: "spirit-b" },
+        m: "single",
+        v: 2,
+      }),
+      createSnapshot(),
+    );
+
+    expect(decoded.sides.attacker.acquiredTraitIds).toEqual([]);
+    expect(decoded.sides.attacker.acquiredTraitValues).toEqual({});
+    expect(decoded.sides.defender.acquiredTraitIds).toEqual([]);
+    expect(decoded.sides.defender.acquiredTraitValues).toEqual({});
   });
 
   test("repairs invalid IDs and numeric boundaries while preserving valid fields", () => {
@@ -476,6 +564,54 @@ describe("mini program share payload", () => {
       }));
 
     expect(encodeSharePayload(state).length).toBeLessThan(900);
+  });
+
+  test("keeps at most five acquired traits even when the complete payload fits", () => {
+    const snapshot = createSnapshot();
+    const traitIds = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg".split("");
+    snapshot.traits.push(...traitIds.map((id) => ({ id, name: id })));
+    const state = createInitialState(snapshot);
+    state.sides.attacker.acquiredTraitIds = traitIds;
+
+    const shared = encodeSharePayloadWithMeta(state);
+    const decoded = decodeSharePayloadResult(shared.encoded, snapshot);
+
+    expect(shared.encoded.length).toBeLessThan(900);
+    expect(decoded.state.sides.attacker.acquiredTraitIds).toEqual(
+      traitIds.slice(0, 5),
+    );
+  });
+
+  test("marks acquired-trait truncation as incomplete when enforcing the route budget", () => {
+    const snapshot = createSnapshot();
+    const traitIds = Array.from(
+      { length: 80 },
+      (_, index) => `trait-${String(index).padStart(2, "0")}-${"x".repeat(80)}`,
+    );
+    snapshot.traits.push(...traitIds.map((id) => ({ id, name: id })));
+    const state = createInitialState(snapshot);
+    state.sides.attacker.acquiredTraitIds = traitIds;
+    state.sides.attacker.acquiredTraitValues = Object.fromEntries(
+      traitIds.map((traitId, index) => [
+        traitId,
+        {
+          [`trait.traitStacks.${index.toString(16).padStart(8, "0")}`]: index,
+        },
+      ]),
+    );
+
+    const shared = encodeSharePayloadWithMeta(state);
+    const decoded = decodeSharePayloadResult(shared.encoded, snapshot);
+    const acquiredIds = decoded.state.sides.attacker.acquiredTraitIds;
+    const acquiredValues = decoded.state.sides.attacker.acquiredTraitValues;
+
+    expect(shared.encoded.length).toBeLessThan(900);
+    expect(shared.completeness).not.toBe("full");
+    expect(decoded.completeness).toBe(shared.completeness);
+    expect(acquiredIds.length).toBeLessThan(traitIds.length);
+    expect(Object.keys(acquiredValues).every((id) =>
+      acquiredIds.includes(id)
+    )).toBe(true);
   });
 
   test("reports full and reduced share completeness", () => {

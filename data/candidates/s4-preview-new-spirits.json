@@ -1,0 +1,628 @@
+{
+  "meta": {
+    "id": "s4-preview-new-spirits-2026-09-02",
+    "status": "candidate",
+    "source": {
+      "title": "S4新精灵_进化链_特性与技能整理.md",
+      "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
+      "revision": "source-file-2026-09-02",
+      "fetchedAt": "2026-09-02T17:33:39+08:00",
+      "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+    },
+    "raceStatMapping": {
+      "精力": "hp"
+    },
+    "counts": {
+      "families": 11,
+      "forms": 23,
+      "finalForms": 11,
+      "placeholderForms": 12,
+      "traits": 11,
+      "skillSlots": 44,
+      "uniqueSkillNames": 43,
+      "existingSkillReferences": 18,
+      "newSkillPlaceholders": 26
+    },
+    "formalVerificationDate": "2026-09-10",
+    "formalVerificationNotes": [
+      "全部 stageIndex 均按进化链位置推定，未完虫与星星眼等单形态的正式阶数仍需核实",
+      "特性名“活体标本”的首字来自受遮挡资料的语境识别，需以正式文本复核",
+      "全部 23 个形态的图鉴号、形态来源与正式身份仍待核实"
+    ]
+  },
+  "families": [
+    {
+      "candidateFamilyKey": "s4-family-01",
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-01-form-01",
+          "name": "量风碗",
+          "stageIndex": 1,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["翼", "机械"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-01-form-02",
+          "name": "测风蝉",
+          "stageIndex": 2,
+          "stageStatus": "inferred",
+          "isFinal": true,
+          "types": ["翼", "机械"],
+          "raceStats": {
+            "hp": 98,
+            "speed": 120,
+            "physicalAttack": 98,
+            "magicalAttack": 97,
+            "physicalDefense": 116,
+            "magicalDefense": 84,
+            "total": 613
+          },
+          "previewDefaults": {
+            "natureId": "silent",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 0,
+              "physicalAttack": 0,
+              "magicalAttack": 0,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "风速仪",
+        "description": "携带的技能每累计传动8，自己获得1层风起印记。",
+        "adaptationStatus": "description-only"
+      },
+      "skills": [
+        { "name": "广播", "description": "对敌方精灵造成魔法伤害。", "status": "placeholder" },
+        { "name": "无风", "description": "减伤50%，应对攻击：敌方和自己均脱离。", "status": "placeholder" },
+        { "name": "齿轮切开", "description": "造成物伤，本技能位于1号或3号位时能耗-2，传动1。", "status": "existing-reference" },
+        { "name": "翼击", "description": "造成魔伤，迅捷。", "status": "existing-reference" }
+      ]
+    },
+    {
+      "candidateFamilyKey": "s4-family-02",
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-02-form-01",
+          "name": "章脑丸",
+          "stageIndex": 1,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["光", "水"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-02-form-02",
+          "name": "智辉章脑",
+          "stageIndex": 2,
+          "stageStatus": "inferred",
+          "isFinal": true,
+          "types": ["光", "水"],
+          "raceStats": {
+            "hp": 112,
+            "speed": 100,
+            "physicalAttack": 53,
+            "magicalAttack": 123,
+            "physicalDefense": 87,
+            "magicalDefense": 124,
+            "total": 599
+          },
+          "previewDefaults": {
+            "natureId": "smart",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 0,
+              "magicalAttack": 60,
+              "physicalDefense": 0,
+              "magicalDefense": 0
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "基因编辑",
+        "description": "自己携带技能的基础能耗，变为上回合双方使用的技能能耗之和。",
+        "adaptationStatus": "description-only"
+      },
+      "skills": [
+        { "name": "汇流", "description": "雨天的回合数延长4回合，应对防御：改为延长8回合。", "status": "placeholder" },
+        { "name": "分光", "description": "自己获得魔攻+20%，己方队伍中每有1个不同系别的精灵，额外获得魔攻+10%。", "status": "placeholder" },
+        { "name": "降雨", "description": "将天气改为雨天，持续8回合。", "status": "placeholder" },
+        { "name": "水波术", "description": "造成魔伤，回合结束时，本技能威力永久+20。", "status": "existing-reference" }
+      ]
+    },
+    {
+      "candidateFamilyKey": "s4-family-03",
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-03-form-01",
+          "name": "玳龟",
+          "stageIndex": 1,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["幻"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-03-form-02",
+          "name": "玳塔",
+          "stageIndex": 2,
+          "stageStatus": "inferred",
+          "isFinal": true,
+          "types": ["幻"],
+          "raceStats": {
+            "hp": 127,
+            "speed": 50,
+            "physicalAttack": 47,
+            "magicalAttack": 107,
+            "physicalDefense": 72,
+            "magicalDefense": 116,
+            "total": 519
+          },
+          "previewDefaults": {
+            "natureId": "silent",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 0,
+              "physicalAttack": 0,
+              "magicalAttack": 0,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "乌龟塔理论",
+        "description": "每受到1次攻击伤害，敌方获得3层星陨印记。",
+        "adaptationStatus": "description-only"
+      },
+      "skills": [
+        { "name": "奇点", "description": "造成魔伤，若上回合双方有精灵使用水系技能，敌方获得4层星陨印记。", "status": "placeholder" },
+        { "name": "引力旋转", "description": "减伤80%，应对攻击：以魔法伤害触发敌方的星陨效果。", "status": "placeholder" },
+        { "name": "超维投射", "description": "敌方获得4层星陨印记。", "status": "existing-reference" },
+        { "name": "错乱", "description": "造成魔伤，应对状态：敌方获得3层星陨印记。", "status": "existing-reference" }
+      ]
+    },
+    {
+      "candidateFamilyKey": "s4-family-04",
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-04-form-01",
+          "name": "幽铃",
+          "stageIndex": 1,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["幽"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-04-form-02",
+          "name": "摇铃魔偶",
+          "stageIndex": 2,
+          "stageStatus": "inferred",
+          "isFinal": true,
+          "types": ["幽"],
+          "raceStats": {
+            "hp": 123,
+            "speed": 95,
+            "physicalAttack": 46,
+            "magicalAttack": 117,
+            "physicalDefense": 99,
+            "magicalDefense": 131,
+            "total": 611
+          },
+          "previewDefaults": {
+            "natureId": "silent",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 0,
+              "physicalAttack": 0,
+              "magicalAttack": 0,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "盗魂铃",
+        "description": "初始能量为0，首次入场前敌方每聚能1次，回复5能量（可突破上限）；在场时自己回复的能量-4。",
+        "adaptationStatus": "description-only"
+      },
+      "skills": [
+        { "name": "小型打劫", "description": "敌方队伍中所有精灵失去1能量。", "status": "placeholder" },
+        { "name": "回收", "description": "造成魔伤，若敌方本回合更换精灵，敌方失去4能量。", "status": "placeholder" },
+        { "name": "热身运动", "description": "自己获得连击数+3。", "status": "existing-reference" },
+        { "name": "午夜爆音", "description": "造成魔伤，5连击。", "status": "placeholder" }
+      ]
+    },
+    {
+      "candidateFamilyKey": "s4-family-05",
+      "sourceNotes": ["特性名首字被截图浮层遮挡，来源整理稿结合可见文字和语义校为“活体标本”，待正式资料核实。"],
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-05-form-01",
+          "name": "未完虫",
+          "stageIndex": 1,
+          "stageStatus": "inferred-single-form",
+          "isFinal": true,
+          "types": ["幽", "虫"],
+          "raceStats": {
+            "hp": 86,
+            "speed": 100,
+            "physicalAttack": 102,
+            "magicalAttack": 111,
+            "physicalDefense": 68,
+            "magicalDefense": 100,
+            "total": 567
+          },
+          "previewDefaults": {
+            "natureId": "adamant",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 0,
+              "physicalDefense": 0,
+              "magicalDefense": 0
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "活体标本",
+        "description": "自己队伍中的其他精灵，在力竭1回合后会变为未完虫。",
+        "adaptationStatus": "description-only"
+      },
+      "skills": [
+        { "name": "信息素", "description": "己方队伍获得1次随机奉献；若上回合双方有精灵使用地系技能，额外获得3次随机奉献。", "status": "placeholder" },
+        { "name": "迁飞扩散", "description": "造成物伤；若敌方本回合更换精灵，己方队伍获得3次随机奉献。", "status": "placeholder" },
+        { "name": "惊吓盒子", "description": "造成物伤，应对状态：使敌方失去6能量。", "status": "existing-reference" },
+        { "name": "降灵", "description": "敌方获得1层降灵印记。", "status": "existing-reference" }
+      ]
+    },
+    {
+      "candidateFamilyKey": "s4-family-06",
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-06-form-01",
+          "name": "小浣蛋",
+          "stageIndex": 1,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["恶"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-06-form-02",
+          "name": "黑手浣熊",
+          "stageIndex": 2,
+          "stageStatus": "inferred",
+          "isFinal": true,
+          "types": ["恶"],
+          "raceStats": {
+            "hp": 97,
+            "speed": 120,
+            "physicalAttack": 116,
+            "magicalAttack": 110,
+            "physicalDefense": 124,
+            "magicalDefense": 115,
+            "total": 682
+          },
+          "previewDefaults": {
+            "natureId": "cheerful",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 0,
+              "physicalDefense": 0,
+              "magicalDefense": 0
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "翻垃圾桶",
+        "description": "入场时自己未携带的技能位置会变为敌方最近使用过的技能，且能耗-2。",
+        "adaptationStatus": "description-only"
+      },
+      "skills": [
+        { "name": "掉包", "description": "敌方的属性增益变为对应的属性减益。", "status": "placeholder" },
+        { "name": "暴打", "description": "对敌方精灵造成魔法伤害。", "status": "placeholder" },
+        { "name": "恶意逃离", "description": "脱离，应对防御：额外使敌方攻击技能能耗+4。", "status": "existing-reference" },
+        { "name": "贪婪", "description": "自己获得100%吸血。", "status": "existing-reference" }
+      ]
+    },
+    {
+      "candidateFamilyKey": "s4-family-07",
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-07-form-01",
+          "name": "布灵",
+          "stageIndex": 1,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["幻", "光"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-07-form-02",
+          "name": "布灵布灵",
+          "stageIndex": 2,
+          "stageStatus": "inferred",
+          "isFinal": true,
+          "types": ["幻", "光"],
+          "raceStats": {
+            "hp": 83,
+            "speed": 125,
+            "physicalAttack": 115,
+            "magicalAttack": 40,
+            "physicalDefense": 123,
+            "magicalDefense": 96,
+            "total": 582
+          },
+          "previewDefaults": {
+            "natureId": "cheerful",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 0,
+              "physicalDefense": 0,
+              "magicalDefense": 0
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "旧玩具",
+        "description": "己方精灵每使用过1个不同系列的技能，自己入场时获得技能威力+10%。",
+        "adaptationStatus": "reviewed-rule"
+      },
+      "skills": [
+        { "name": "闪光弹", "description": "造成物伤，自己脱离。", "status": "placeholder" },
+        { "name": "量子涨落", "description": "造成物伤。若敌方没有星陨印记，则敌方获得3层星陨印记。", "status": "placeholder" },
+        { "name": "光刃", "description": "对敌方精灵造成物理伤害。", "status": "existing-reference" },
+        { "name": "放晴", "description": "光系技能威力永久+50%，应对防御：改为永久+100%。", "status": "existing-reference" }
+      ]
+    },
+    {
+      "candidateFamilyKey": "s4-family-08",
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-08-form-01",
+          "name": "星星眼",
+          "stageIndex": 1,
+          "stageStatus": "inferred-single-form",
+          "isFinal": true,
+          "types": ["幻"],
+          "raceStats": {
+            "hp": 118,
+            "speed": 85,
+            "physicalAttack": 97,
+            "magicalAttack": 120,
+            "physicalDefense": 116,
+            "magicalDefense": 71,
+            "total": 607
+          },
+          "previewDefaults": {
+            "natureId": "smart",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 0,
+              "magicalAttack": 60,
+              "physicalDefense": 0,
+              "magicalDefense": 0
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "宇宙之眼",
+        "description": "敌方每有1层星陨印记，自己获得物防+10%。",
+        "adaptationStatus": "reviewed-rule"
+      },
+      "skills": [
+        { "name": "仰望夜空", "description": "自己获得魔攻和魔防+70%。", "status": "placeholder" },
+        { "name": "观测者效应", "description": "自己脱离，更换入场的精灵以月陨星状态登场。", "status": "placeholder" },
+        { "name": "冥想", "description": "减伤80%，应对攻击：敌方获得2层星陨印记。", "status": "existing-reference" },
+        { "name": "错乱", "description": "造成魔伤，应对状态：敌方获得3层星陨印记。", "status": "existing-reference" }
+      ]
+    },
+    {
+      "candidateFamilyKey": "s4-family-09",
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-09-form-01",
+          "name": "新月鹭",
+          "stageIndex": 1,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["翼", "冰"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-09-form-02",
+          "name": "月辉鹭",
+          "stageIndex": 2,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["翼", "冰"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-09-form-03",
+          "name": "月使鹭纳",
+          "stageIndex": 3,
+          "stageStatus": "inferred",
+          "isFinal": true,
+          "types": ["翼", "冰"],
+          "raceStats": {
+            "hp": 83,
+            "speed": 115,
+            "physicalAttack": 99,
+            "magicalAttack": 100,
+            "physicalDefense": 104,
+            "magicalDefense": 113,
+            "total": 614
+          },
+          "previewDefaults": {
+            "natureId": "hasty",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 0,
+              "magicalAttack": 60,
+              "physicalDefense": 0,
+              "magicalDefense": 0
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "冷光源",
+        "description": "若上回合双方有精灵使用翼系技能，本回合自己冰系技能威力+100%。",
+        "adaptationStatus": "reviewed-rule"
+      },
+      "skills": [
+        { "name": "惊鸿一瞥", "description": "自己获得连击数+1，迅捷。", "status": "placeholder" },
+        { "name": "月影交错", "description": "造成物伤，2连击；若上回合双方有精灵使用幻系技能，本技能获得迅捷。", "status": "placeholder" },
+        { "name": "打雪仗", "description": "造成魔伤，2连击。", "status": "existing-reference" },
+        { "name": "羽翼庇护", "description": "减伤70%，应对攻击：自己获得连击数+2。", "status": "existing-reference" }
+      ]
+    },
+    {
+      "candidateFamilyKey": "s4-family-10",
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-10-form-01",
+          "name": "热团团",
+          "stageIndex": 1,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["火", "虫"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-10-form-02",
+          "name": "焰米龙",
+          "stageIndex": 2,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["火", "虫"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-10-form-03",
+          "name": "圣凯布米龙",
+          "stageIndex": 3,
+          "stageStatus": "inferred",
+          "isFinal": true,
+          "types": ["火", "虫"],
+          "raceStats": {
+            "hp": 79,
+            "speed": 105,
+            "physicalAttack": 116,
+            "magicalAttack": 29,
+            "physicalDefense": 120,
+            "magicalDefense": 120,
+            "total": 569
+          },
+          "previewDefaults": {
+            "natureId": "peaceful",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 0,
+              "physicalAttack": 0,
+              "magicalAttack": 0,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "热成像",
+        "description": "若上回合双方有精灵使用火系技能，本回合自己虫系技能威力+100%。",
+        "adaptationStatus": "reviewed-rule"
+      },
+      "skills": [
+        { "name": "暖阳", "description": "造成物伤，每使用1次其他火系技能，威力+40，使用本技能后重置。", "status": "placeholder" },
+        { "name": "星火", "description": "敌方获得8层灼烧；若上回合双方有使用光系技能，敌方额外获得12层灼烧。", "status": "placeholder" },
+        { "name": "虫群智慧", "description": "己方队伍获得2次随机奉献。", "status": "existing-reference" },
+        { "name": "火焰切割", "description": "对敌方精灵造成物理伤害。", "status": "existing-reference" }
+      ]
+    },
+    {
+      "candidateFamilyKey": "s4-family-11",
+      "forms": [
+        {
+          "candidateRowKey": "s4-family-11-form-01",
+          "name": "诅咒狼灵",
+          "stageIndex": 1,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["幽", "幻"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-11-form-02",
+          "name": "新月狼灵",
+          "stageIndex": 2,
+          "stageStatus": "inferred",
+          "isFinal": false,
+          "types": ["幽", "幻"],
+          "raceStats": null
+        },
+        {
+          "candidateRowKey": "s4-family-11-form-03",
+          "name": "银月狼王",
+          "stageIndex": 3,
+          "stageStatus": "inferred",
+          "isFinal": true,
+          "types": ["幽", "幻"],
+          "raceStats": {
+            "hp": 115,
+            "speed": 130,
+            "physicalAttack": 128,
+            "magicalAttack": 51,
+            "physicalDefense": 128,
+            "magicalDefense": 98,
+            "total": 650
+          },
+          "previewDefaults": {
+            "natureId": "cheerful",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 0,
+              "physicalDefense": 0,
+              "magicalDefense": 0
+            }
+          }
+        }
+      ],
+      "trait": {
+        "name": "铭记于月亮",
+        "description": "获得自己击败的精灵的特性，每次攻击后自己失去5%生命。",
+        "adaptationStatus": "preview-implemented"
+      },
+      "skills": [
+        { "name": "离魂术", "description": "偷取敌方2能量，脱离。", "status": "placeholder" },
+        { "name": "掠影", "description": "造成物伤；若上回合双方有精灵使用火系技能，偷取敌方3能量。", "status": "placeholder" },
+        { "name": "重组", "description": "下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。", "status": "placeholder" },
+        { "name": "月蚀", "description": "造成物伤，若敌方生命低于50%，本次技能能耗-3。", "status": "placeholder" }
+      ]
+    }
+  ]
+}

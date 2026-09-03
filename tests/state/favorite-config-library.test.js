@@ -1,4 +1,6 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, test, vi } from "vitest";
+import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 import { getTraitView } from "../../src/domain/calculator-view-model.js";
 import {
   FAVORITE_CONFIG_LIBRARY_FORMAT,
@@ -150,6 +152,34 @@ describe("buildFavoriteConfigLibrary", () => {
       snapshot: data,
     });
     expect(parsed.entries[0].skills).toEqual(sevenSkills);
+  });
+});
+
+describe("bundled popular config library", () => {
+  test("contains 213 valid spirit configurations", () => {
+    const libraryText = readFileSync(
+      "public/data/presets/pvp-popular-configs.json",
+      "utf8",
+    );
+    const library = JSON.parse(libraryText);
+    const currentSnapshot = withCalculatorExtras(JSON.parse(
+      readFileSync("public/data/runtime.json", "utf8"),
+    ));
+    const parsed = parseFavoriteConfigLibrary(libraryText, {
+      currentVersions: {
+        data: currentSnapshot.meta.id,
+        rules: currentSnapshot.meta.rulesVersion,
+      },
+      snapshot: currentSnapshot,
+    });
+
+    expect(library.format).toBe(FAVORITE_CONFIG_LIBRARY_FORMAT);
+    expect(library.entryCount).toBe(213);
+    expect(library.entries).toHaveLength(213);
+    expect(parsed.entries).toHaveLength(213);
+    expect(parsed.preview.missingSpirits).toBe(0);
+    expect(parsed.preview.unknownTraitFields).toBe(0);
+    expect(parsed.preview.invalidEntries).toBe(0);
   });
 });
 

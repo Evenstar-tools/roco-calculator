@@ -401,6 +401,25 @@ test.each([
 );
 
 describe("createCalculationView", () => {
+  test("returns a clear unresolved result for a preview placeholder", () => {
+    const snapshot = createSnapshot();
+    snapshot.spirits[0] = {
+      ...snapshot.spirits[0],
+      calculationStatus: "pending-race-stats",
+      raceStats: null,
+      traitIds: [],
+    };
+    const state = createState(snapshot);
+    state.sides.attacker.spiritId = snapshot.spirits[0].id;
+
+    expect(createCalculationView(snapshot, state, "forward")).toMatchObject({
+      message: "种族值待确认",
+      rows: [],
+      selectedResult: null,
+      status: "unresolved",
+    });
+  });
+
   test("returns the acting spirit defensive matchups and four-skill coverage", () => {
     const snapshot = createSnapshot();
     snapshot.typeChart = undefined;

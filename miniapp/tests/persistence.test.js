@@ -13,6 +13,15 @@ import {
 import { getSkillEffectInputs } from "../src/shared/domain/skill-effects.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
 
+const COMPLETE_RACE_STATS = {
+  hp: 100,
+  speed: 100,
+  physicalAttack: 100,
+  magicalAttack: 100,
+  physicalDefense: 100,
+  magicalDefense: 100,
+};
+
 function createSnapshot(dataVersion = "data-v1") {
   return {
     meta: {
@@ -23,11 +32,13 @@ function createSnapshot(dataVersion = "data-v1") {
       {
         id: "spirit-a",
         name: "攻击方",
+        raceStats: COMPLETE_RACE_STATS,
         traitIds: ["trait-ignite"],
       },
       {
         id: "spirit-b",
         name: "防守方",
+        raceStats: COMPLETE_RACE_STATS,
         traitIds: ["trait-ignite"],
       },
     ],
@@ -42,6 +53,16 @@ function createSnapshot(dataVersion = "data-v1") {
         description: "每层增加双攻双防。",
         id: "trait-ignite",
         name: "点燃",
+      },
+      {
+        description: "被铭记后生效。",
+        id: "trait-old-toy",
+        name: "旧日玩具",
+      },
+      {
+        description: "被铭记后生效。",
+        id: "trait-cold-light",
+        name: "冷光",
       },
     ],
   };
@@ -112,6 +133,15 @@ function createConfiguredState(snapshot = createSnapshot()) {
     result: { damage: 999 },
     calculation: { damage: 999 },
   };
+}
+
+function createExpectedDefaults(snapshot) {
+  const state = createInitialState(snapshot);
+  for (const side of Object.values(state.sides)) {
+    side.acquiredTraitIds = [];
+    side.acquiredTraitValues = {};
+  }
+  return state;
 }
 
 describe("createPersistence", () => {
@@ -328,6 +358,141 @@ describe("createPersistence", () => {
         },
       },
     });
+  });
+
+  test("safely saves and restores multiple acquired traits with isolated scalar values", () => {
+    const snapshot = createSnapshot();
+    const storage = createMemoryStorage();
+    const persistence = createPersistence({ storage });
+    const state = createConfiguredState(snapshot);
+    state.sides.attacker.acquiredTraitIds = [
+      "trait-old-toy",
+      "trait-cold-light",
+      "trait-old-toy",
+      "../bad",
+      "trait-unknown",
+    ];
+    state.sides.attacker.acquiredTraitValues = {
+      "trait-old-toy": {
+        "trait.traitStacks.12345678": 2,
+        "trait.invalid.deadbeef": { nested: "private" },
+        openid: "secret-openid",
+      },
+      "trait-cold-light": {
+        "trait.previousTurnWingSkillUsed.87654321": true,
+        "trait.contractBallType.cafebabe": "prism",
+        "trait.invalid.facefeed": Number.POSITIVE_INFINITY,
+      },
+      "trait-unknown": {
+        "trait.traitActivated.aaaaaaaa": true,
+      },
+      "trait-not-selected": {
+        "trait.traitActivated.bbbbbbbb": true,
+      },
+    };
+
+    persistence.save(state);
+
+    const saved = storage.set.mock.calls[0][1];
+    expect(saved.state.sides.attacker).toMatchObject({
+      acquiredTraitIds: [
+        "trait-old-toy",
+        "trait-cold-light",
+        "trait-unknown",
+      ],
+      acquiredTraitValues: {
+        "trait-old-toy": {
+          "trait.traitStacks.12345678": 2,
+        },
+        "trait-cold-light": {
+          "trait.previousTurnWingSkillUsed.87654321": true,
+          "trait.contractBallType.cafebabe": "prism",
+        },
+        "trait-unknown": {
+          "trait.traitActivated.aaaaaaaa": true,
+        },
+      },
+    });
+    expect(JSON.stringify(saved)).not.toMatch(/private|secret-openid/u);
+
+    expect(persistence.load(snapshot).sides.attacker).toMatchObject({
+      acquiredTraitIds: ["trait-old-toy", "trait-cold-light"],
+      acquiredTraitValues: {
+        "trait-old-toy": {
+          "trait.traitStacks.12345678": 2,
+        },
+        "trait-cold-light": {
+          "trait.previousTurnWingSkillUsed.87654321": true,
+          "trait.contractBallType.cafebabe": "prism",
+        },
+      },
+    });
+  });
+
+  test("keeps at most five acquired traits and their isolated values", () => {
+    const snapshot = createSnapshot();
+    const acquiredTraitIds = Array.from(
+      { length: 6 },
+      (_, index) => `trait-extra-${index + 1}`,
+    );
+    snapshot.traits.push(
+      ...acquiredTraitIds.map((id, index) => ({
+        description: "被铭记后生效。",
+        id,
+        name: `额外特性 ${index + 1}`,
+      })),
+    );
+    const storage = createMemoryStorage();
+    const persistence = createPersistence({ storage });
+    const state = createConfiguredState(snapshot);
+    state.sides.attacker.acquiredTraitIds = acquiredTraitIds;
+    state.sides.attacker.acquiredTraitValues = Object.fromEntries(
+      acquiredTraitIds.map((traitId) => [
+        traitId,
+        { "trait.traitActivated.aaaaaaaa": true },
+      ]),
+    );
+
+    persistence.save(state);
+
+    const expectedIds = acquiredTraitIds.slice(0, 5);
+    const saved = storage.set.mock.calls[0][1];
+    expect(saved.state.sides.attacker.acquiredTraitIds).toEqual(expectedIds);
+    expect(Object.keys(saved.state.sides.attacker.acquiredTraitValues)).toEqual(
+      expectedIds,
+    );
+    expect(persistence.load(snapshot).sides.attacker).toMatchObject({
+      acquiredTraitIds: expectedIds,
+      acquiredTraitValues: Object.fromEntries(
+        expectedIds.map((traitId) => [
+          traitId,
+          { "trait.traitActivated.aaaaaaaa": true },
+        ]),
+      ),
+    });
+  });
+
+  test("fills empty acquired trait state when loading an existing schema 2 snapshot", () => {
+    const snapshot = createSnapshot();
+    const legacyState = createConfiguredState(snapshot);
+    for (const side of Object.values(legacyState.sides)) {
+      delete side.acquiredTraitIds;
+      delete side.acquiredTraitValues;
+    }
+    const persistence = createPersistence({
+      storage: createMemoryStorage({
+        dataVersion: "data-v1",
+        schemaVersion: 2,
+        state: legacyState,
+      }),
+    });
+
+    const restored = persistence.load(snapshot);
+
+    expect(restored.sides.attacker.acquiredTraitIds).toEqual([]);
+    expect(restored.sides.attacker.acquiredTraitValues).toEqual({});
+    expect(restored.sides.defender.acquiredTraitIds).toEqual([]);
+    expect(restored.sides.defender.acquiredTraitValues).toEqual({});
   });
 
   test("saves and restores only schema-known nested calculator inputs", () => {
@@ -548,7 +713,7 @@ describe("createPersistence", () => {
       storage: createMemoryStorage(storedValue),
     });
 
-    expect(persistence.load(snapshot)).toEqual(createInitialState(snapshot));
+    expect(persistence.load(snapshot)).toEqual(createExpectedDefaults(snapshot));
   });
 
   test("repairs unknown spirit and skill references against the current snapshot", () => {
@@ -645,6 +810,8 @@ describe("createPersistence", () => {
     expect(restored.sides.attacker.traitValues).toEqual({
       "trait.traitStacks.53103d7d": 3,
     });
+    expect(restored.sides.attacker.acquiredTraitIds).toEqual([]);
+    expect(restored.sides.attacker.acquiredTraitValues).toEqual({});
     expect(restored.sides.attacker).not.toHaveProperty("password");
     expect(restored.sides.defender).not.toHaveProperty("openid");
     expect(restored.sides.attacker.skills.single).not.toHaveProperty(
@@ -673,7 +840,7 @@ describe("createPersistence", () => {
       storage: createMemoryStorage(storedValue),
     });
 
-    expect(persistence.load(snapshot)).toEqual(createInitialState(snapshot));
+    expect(persistence.load(snapshot)).toEqual(createExpectedDefaults(snapshot));
   });
 
   test("clears only the mini program calculator state key", () => {
@@ -709,7 +876,7 @@ describe("createPersistence", () => {
       false,
     );
     expect(storage.remove).toHaveBeenCalledWith(MINIAPP_STATE_KEY);
-    expect(persistence.load(snapshot)).toEqual(createInitialState(snapshot));
+    expect(persistence.load(snapshot)).toEqual(createExpectedDefaults(snapshot));
     persistence.save(oldState);
     expect(storage.set).toHaveBeenCalledTimes(1);
   });

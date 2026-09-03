@@ -12,6 +12,21 @@ const packageJson = JSON.parse(
 const snapshot = JSON.parse(
   readFileSync(path.join(projectRoot, "data", "snapshots", "current.json"), "utf8"),
 );
+const moonMemoryOwner = snapshot.spirits.find(
+  ({ traitName }) => traitName === "铭记于月亮",
+);
+const oldToyTrait = snapshot.traits.find(({ name }) => name === "旧玩具");
+const coldLightTrait = snapshot.traits.find(({ name }) => name === "冷光源");
+const moonMemoryCandidateTraitIds = snapshot.traits
+  .filter(({ name }) => name !== "铭记于月亮")
+  .slice(0, 6)
+  .map(({ id }) => id);
+const oldToyStacksKey = "trait.traitStacks.2d041ca6";
+const moonMemorySkill = {
+  name: "愿力冲击",
+  type: "光",
+  category: "dual",
+};
 
 function runCli(args, input) {
   const result = spawnSync(process.execPath, [cliPath, ...args], {
@@ -128,19 +143,35 @@ describe("rock-calculator CLI", () => {
       command: "search",
       kind: "spirit",
       query: "迪莫",
-      results: expect.arrayContaining([
-        {
-          id: "spirit_db5a2cb398dc0385",
-          name: "迪莫",
-          types: ["光"],
-          baseName: expect.anything(),
-          stage: expect.anything(),
-          traitName: expect.anything(),
-          variantName: null,
-        },
-      ]),
     });
+    expect(result.json.results).toContainEqual(
+      expect.objectContaining({
+        id: "spirit_db5a2cb398dc0385",
+        name: "迪莫",
+        types: ["光"],
+        baseName: expect.anything(),
+        stage: expect.anything(),
+        traitName: expect.anything(),
+        variantName: null,
+      }),
+    );
     expect(result.json.results[0].id).toBe("spirit_db5a2cb398dc0385");
+  });
+
+  test("search 标记种族值待确认的前瞻占位精灵", () => {
+    const placeholder = snapshot.spirits.find(
+      ({ calculationStatus }) => calculationStatus === "pending-race-stats",
+    );
+    const result = runCli(["search", "spirit", placeholder.fullName]);
+
+    expect(result.status).toBe(0);
+    expect(result.json.results).toContainEqual(
+      expect.objectContaining({
+        calculationStatus: "pending-race-stats",
+        id: placeholder.id,
+        name: placeholder.fullName,
+      }),
+    );
   });
 
   test("schema 返回紧凑输入契约，供 AI 自发现而不是读取源码", () => {
@@ -158,6 +189,12 @@ describe("rock-calculator CLI", () => {
       },
       compactInput: {
         required: ["attacker", "defender"],
+        fields: {
+          side: {
+            acquiredTraitIds: expect.stringContaining("最多5个"),
+            acquiredTraitValues: expect.any(String),
+          },
+        },
         example: simpleCase,
       },
     });
@@ -209,6 +246,256 @@ describe("rock-calculator CLI", () => {
     });
     expect(result.json.results.forward.selected).not.toHaveProperty(
       "formulaSteps",
+    );
+  });
+
+  test("铭记于月亮持有者可携带已知特性，重复 ID 去重且参数按 canonical key 生效", () => {
+    const acquiredSide = {
+      spirit: moonMemoryOwner.id,
+      skill: moonMemorySkill,
+      acquiredTraitIds: [oldToyTrait.id, oldToyTrait.id],
+      acquiredTraitValues: {
+        [oldToyTrait.id]: { [oldToyStacksKey]: 3 },
+      },
+    };
+    const duplicated = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: acquiredSide,
+    });
+    const deduplicated = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        ...acquiredSide,
+        acquiredTraitIds: [oldToyTrait.id],
+      },
+    });
+
+    expect(duplicated.status).toBe(0);
+    expect(duplicated.json.results.forward.selected.displayPower).toBe(104);
+    expect(duplicated.json.inputDigest).toBe(deduplicated.json.inputDigest);
+  });
+
+  test("铭记于月亮持有者拒绝吞噬超过五个不同特性", () => {
+    const result = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        spirit: moonMemoryOwner.id,
+        skill: moonMemorySkill,
+        acquiredTraitIds: moonMemoryCandidateTraitIds,
+      },
+    });
+
+    expect(result.status).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.errorJson).toMatchObject({
+      ok: false,
+      error: {
+        code: "INPUT_VALIDATION_FAILED",
+        field: "attacker.acquiredTraitIds",
+        message: expect.stringContaining("最多5个"),
+      },
+    });
+  });
+
+  test("铭记于月亮持有者可吞噬五个不同特性", () => {
+    const result = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        spirit: moonMemoryOwner.id,
+        skill: moonMemorySkill,
+        acquiredTraitIds: moonMemoryCandidateTraitIds.slice(0, 5),
+      },
+    });
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe("");
+    expect(result.json).toMatchObject({
+      ok: true,
+      command: "calculate",
+    });
+  });
+
+  test("铭记于月亮吞噬数量先按特性 ID 去重再判断上限", () => {
+    const fiveDistinct = moonMemoryCandidateTraitIds.slice(0, 5);
+    const duplicated = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        spirit: moonMemoryOwner.id,
+        skill: moonMemorySkill,
+        acquiredTraitIds: [fiveDistinct[0], ...fiveDistinct],
+      },
+    });
+    const deduplicated = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        spirit: moonMemoryOwner.id,
+        skill: moonMemorySkill,
+        acquiredTraitIds: fiveDistinct,
+      },
+    });
+
+    expect(duplicated.status).toBe(0);
+    expect(duplicated.json.inputDigest).toBe(deduplicated.json.inputDigest);
+  });
+
+  test("普通精灵拒绝注入 acquired trait 与参数", () => {
+    const result = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        ...simpleCase.attacker,
+        acquiredTraitIds: [oldToyTrait.id],
+        acquiredTraitValues: {
+          [oldToyTrait.id]: { [oldToyStacksKey]: 3 },
+        },
+      },
+    });
+
+    expect(result.status).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.errorJson).toMatchObject({
+      ok: false,
+      error: {
+        code: "INPUT_VALIDATION_FAILED",
+        field: "attacker.acquiredTraitIds",
+      },
+    });
+  });
+
+  test("铭记于月亮持有者拒绝不存在的 acquired trait ID", () => {
+    const result = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        spirit: moonMemoryOwner.id,
+        skill: moonMemorySkill,
+        acquiredTraitIds: ["trait_missing"],
+      },
+    });
+
+    expect(result.status).toBe(2);
+    expect(result.errorJson).toMatchObject({
+      ok: false,
+      error: {
+        code: "INPUT_VALIDATION_FAILED",
+        field: "attacker.acquiredTraitIds[0]",
+        traitId: "trait_missing",
+      },
+    });
+  });
+
+  test("acquiredTraitValues 只能归属于已选 acquired trait", () => {
+    const result = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        spirit: moonMemoryOwner.id,
+        skill: moonMemorySkill,
+        acquiredTraitIds: [oldToyTrait.id],
+        acquiredTraitValues: {
+          [coldLightTrait.id]: {
+            "trait.previousTurnWingSkillUsed.972a1024": true,
+          },
+        },
+      },
+    });
+
+    expect(result.status).toBe(2);
+    expect(result.errorJson).toMatchObject({
+      ok: false,
+      error: {
+        code: "INPUT_VALIDATION_FAILED",
+        field: `attacker.acquiredTraitValues.${coldLightTrait.id}`,
+      },
+    });
+  });
+
+  test("acquiredTraitValues 拒绝非 canonical trait key", () => {
+    const result = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        spirit: moonMemoryOwner.id,
+        skill: moonMemorySkill,
+        acquiredTraitIds: [oldToyTrait.id],
+        acquiredTraitValues: {
+          [oldToyTrait.id]: { attackerTraitStacks: 3 },
+        },
+      },
+    });
+
+    expect(result.status).toBe(2);
+    expect(result.errorJson).toMatchObject({
+      ok: false,
+      error: {
+        code: "INPUT_VALIDATION_FAILED",
+        field:
+          `attacker.acquiredTraitValues.${oldToyTrait.id}.attackerTraitStacks`,
+        key: "attackerTraitStacks",
+      },
+    });
+  });
+
+  test("acquiredTraitValues 只接受安全标量", () => {
+    const result = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        spirit: moonMemoryOwner.id,
+        skill: moonMemorySkill,
+        acquiredTraitIds: [oldToyTrait.id],
+        acquiredTraitValues: {
+          [oldToyTrait.id]: { [oldToyStacksKey]: [3] },
+        },
+      },
+    });
+
+    expect(result.status).toBe(2);
+    expect(result.errorJson).toMatchObject({
+      ok: false,
+      error: {
+        code: "INPUT_VALIDATION_FAILED",
+        field:
+          `attacker.acquiredTraitValues.${oldToyTrait.id}.${oldToyStacksKey}`,
+        key: oldToyStacksKey,
+      },
+    });
+  });
+
+  test("calculate 剥离内部覆盖字段，不能绕过快照实体", () => {
+    const clean = runCli(["calculate", "--input", "-"], simpleCase);
+    const injected = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: {
+        spirit: {
+          id: "spirit_db5a2cb398dc0385",
+          raceStats: { hp: 9999, magicalAttack: 9999 },
+          traitIds: [oldToyTrait.id],
+          types: ["水"],
+        },
+        skill: "光球",
+        fourSkills: ["skill_missing"],
+        natureMultipliers: { magicalAttack: 99 },
+        panelStats: {
+          hp: 9999,
+          speed: 9999,
+          physicalAttack: 9999,
+          magicalAttack: 9999,
+          physicalDefense: 9999,
+          magicalDefense: 9999,
+        },
+        raceStats: { hp: 9999, magicalAttack: 9999 },
+        singleSkill: { category: "magical", basePower: 9999 },
+        skillTypes: ["水"],
+        totalSkillCost: 9999,
+        traitIds: [oldToyTrait.id],
+        traits: [{
+          ...oldToyTrait,
+          runtimeInputValues: { [oldToyStacksKey]: 18 },
+        }],
+        types: ["水"],
+      },
+    });
+
+    expect(injected.status).toBe(0);
+    expect(injected.json.inputDigest).toBe(clean.json.inputDigest);
+    expect(injected.json.results.forward.selected).toEqual(
+      clean.json.results.forward.selected,
     );
   });
 
@@ -315,6 +602,29 @@ describe("rock-calculator CLI", () => {
       error: {
         code: "ENTITY_NOT_FOUND",
         field: "attacker.spirit",
+      },
+    });
+  });
+
+  test("calculate 对前瞻占位精灵提前返回稳定不可用错误", () => {
+    const placeholder = snapshot.spirits.find(
+      ({ calculationStatus }) => calculationStatus === "pending-race-stats",
+    );
+    const result = runCli(["calculate", "--input", "-"], {
+      ...simpleCase,
+      attacker: { ...simpleCase.attacker, spirit: placeholder.fullName },
+    });
+
+    expect(result.status).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.errorJson).toMatchObject({
+      ok: false,
+      error: {
+        calculationStatus: "pending-race-stats",
+        code: "SPIRIT_DATA_UNAVAILABLE",
+        field: "attacker.spirit",
+        spiritId: placeholder.id,
+        spiritName: placeholder.fullName,
       },
     });
   });

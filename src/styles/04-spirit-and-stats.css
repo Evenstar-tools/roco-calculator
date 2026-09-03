@@ -200,6 +200,11 @@
   font-size: 11px;
 }
 
+.spirit-card__identity p.spirit-card__pending {
+  color: var(--warning, #9a6400);
+  font-weight: 700;
+}
+
 .trait-hint {
   position: relative;
   display: inline-flex;
@@ -654,4 +659,3 @@
   font-weight: 800;
   text-align: center;
 }
-

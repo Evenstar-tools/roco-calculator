@@ -86,12 +86,13 @@
   ],
   "coverage": {
     "defaultClassification": "shared-rule",
-    "specialCore": ["听桥", "硬门", "减压阀"],
+    "specialCore": ["听桥", "硬门", "减压阀", "撒娇"],
     "unsupported": []
   },
   "officialOverrides": {
     "孢子": { "pvpParasitismStacks": 3 },
-    "撒娇": { "powerPerUse": 10, "referencePowerPerUse": 20 },
+    "孢子爆散": { "defaultHitCount": 2, "referenceDefaultHitCount": 1 },
+    "撒娇": { "allSkillsPowerPerUse": 10, "referencePowerPerUse": 20 },
     "示弱": { "cost": 2, "speedFlat": 130 },
     "触底强击": { "powerAdd": 120, "referencePowerAdd": 110 }
   }

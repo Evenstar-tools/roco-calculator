@@ -67,7 +67,9 @@ export function withCalculatorExtras(snapshot) {
   let learnsetsChanged = false;
   const learnsets = (snapshot?.learnsets ?? []).map((learnset) => {
     const spirit = spiritsById.get(learnset.spiritId);
-    if (!spirit) return learnset;
+    if (!spirit || spirit.calculationStatus === "pending-race-stats") {
+      return learnset;
+    }
 
     const currentSkillIds = learnset.skillIds ?? [];
     const currentSet = new Set(currentSkillIds);

@@ -4,7 +4,10 @@ import {
   getNature,
   getNatureMultipliers,
 } from "../shared/domain/natures.js";
-import { calculateAllPanelStats } from "../shared/domain/stat.js";
+import {
+  calculateAllPanelStats,
+  hasCompleteRaceStats,
+} from "../shared/domain/stat.js";
 
 export function clampDisplayIv(value) {
   const numeric = Number(value);
@@ -26,12 +29,7 @@ export function createCombatantView(snapshot, side) {
     };
   }
 
-  const hasCompleteRaceStats =
-    spirit.raceStats &&
-    QUICK_STATS.every((key) =>
-      Number.isFinite(Number(spirit.raceStats[key])),
-    );
-  if (!hasCompleteRaceStats) {
+  if (!hasCompleteRaceStats(spirit.raceStats)) {
     return {
       nature,
       spirit,

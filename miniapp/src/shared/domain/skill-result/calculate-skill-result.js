@@ -33,6 +33,7 @@ import {
   resolveTraitHitCountBonus,
 } from "../trait-hit-count.js";
 import { resolveTraitMultipliers } from "../traits.js";
+import { projectTraitRuntimeContext } from "../trait-runtime.js";
 import { projectTriggerContext } from "../trigger-controls.js";
 import { getTypeMultiplier } from "../type-chart.js";
 import { entryDetails, statKeysForCategory } from "./loadout.js";
@@ -54,16 +55,20 @@ import { starfallDamage } from "./starfall.js";
 import { statusOrDefenseSkillResult } from "./status-skill.js";
 
 function resolvesBurstTrigger({ context, skill, traits }) {
-  const controls = [
-    ...getSkillEffectInputs(skill),
-    ...(traits ?? []).flatMap((trait) =>
-      getTraitEffectInputs(trait, "attacker"),
-    ),
-  ].filter((control) => control.contextKey === "burstTriggered");
-  return controls.some(
+  const skillControls = getSkillEffectInputs(skill).filter(
+    (control) => control.contextKey === "burstTriggered",
+  );
+  if (skillControls.some(
     (control) =>
       projectTriggerContext(context, [control]).burstTriggered === true,
-  );
+  )) return true;
+  return (traits ?? []).some((trait) => {
+    const controls = getTraitEffectInputs(trait, "attacker").filter(
+      (control) => control.contextKey === "burstTriggered",
+    );
+    return controls.length > 0 &&
+      projectTraitRuntimeContext(context, trait, controls).burstTriggered === true;
+  });
 }
 
 export function calculateSkillResult({
@@ -87,6 +92,13 @@ export function calculateSkillResult({
   lockedPower,
 }) {
   if (!skill) return emptySlotResult();
+  if (skill.calculationStatus === "pending-skill-data") {
+    return unresolvedResult(skill, {
+      status: "unsupported",
+      reason: "技能参数待确认，暂不可计算",
+      source: skill.provenance?.previewStatus ?? skill.provenance,
+    });
+  }
 
   const details = entryDetails(entry);
   const directionOverrides = direction.overrides ?? {};
@@ -356,6 +368,15 @@ export function calculateSkillResult({
     context.basePowerOverride = powerOverride.value;
   }
 
+  const costResolution = resolveSkillPower(skill, context);
+  const resolvedSkillCost = finiteNumber(
+    costResolution.resolvedCost,
+    skill.cost,
+  );
+  const skillForCostConditions = Object.is(resolvedSkillCost, skill.cost)
+    ? skill
+    : { ...skill, cost: resolvedSkillCost };
+
   const attackLevelStage = finiteNumber(
     slotOverrides.attackLevelStage,
     directionOverrides.attackLevelStage,
@@ -370,7 +391,7 @@ export function calculateSkillResult({
     resolveTraitMultipliers({
       attackerTraits: attacker.traits,
       defenderTraits: defender.traits,
-      skill: { ...skill, category },
+      skill: { ...skillForCostConditions, category },
       attacker,
       defender,
       context,
@@ -1219,6 +1240,7 @@ export function calculateSkillResult({
   ];
   const sources = [
     skill.provenance,
+    powerResolution.ruleSource ?? costResolution.ruleSource,
     snapshot.typeChart?.source,
     ...traitResolution.sources,
     ...traitHitCount.sources,
@@ -1291,7 +1313,11 @@ export function calculateSkillResult({
     panelPower,
     powerSource: powerOverride.source,
     donationPoisonStacks: powerResolution.donationPoisonStacks,
-    skillCost: finiteNumber(powerResolution.resolvedCost) ?? skill.cost,
+    skillCost: finiteNumber(
+      powerResolution.resolvedCost,
+      costResolution.resolvedCost,
+      skill.cost,
+    ),
     skillPower: actualPower,
     effectivePower: panelPower,
     automaticHitCountAdd,

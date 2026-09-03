@@ -523,6 +523,64 @@ test("skill picker prioritizes learnable skills without hiding the rest", async 
   expect(options[1]).toHaveTextContent("水之波纹");
 });
 
+test("skill picker shows real skill artwork and falls back to the element icon", async () => {
+  const user = userEvent.setup();
+  const skillWithIcon = {
+    ...skills[0],
+    iconUrl: "https://images.example.test/wind-impact.png",
+  };
+  const { container } = render(
+    <SkillPicker
+      ariaLabel="选择技能"
+      onSelect={vi.fn()}
+      selected={skillWithIcon}
+      skills={[skillWithIcon, skills[1]]}
+    />,
+  );
+
+  const selectedIcon = container.querySelector(".skill-picker__selected-icon");
+  expect(selectedIcon).toHaveAttribute("src", skillWithIcon.iconUrl);
+
+  await user.click(screen.getByRole("combobox", { name: "选择技能" }));
+  const option = screen.getByRole("option", { name: /风力冲击/ });
+  expect(option.querySelector(".skill-picker__option-icon")).toHaveAttribute(
+    "src",
+    skillWithIcon.iconUrl,
+  );
+
+  fireEvent.error(selectedIcon);
+  expect(
+    container.querySelector(
+      ".skill-picker__selected-icon.skill-icon--fallback .element-icon",
+    ),
+  ).toHaveAttribute("src", "/assets/elements/wing.png");
+});
+
+test("skill picker labels S4 preview skills as parameter pending", async () => {
+  const user = userEvent.setup();
+  const pendingSkill = {
+    basePower: null,
+    calculationStatus: "pending-skill-data",
+    category: null,
+    cost: null,
+    id: "preview-broadcast",
+    name: "广播",
+    type: null,
+  };
+  render(
+    <SkillPicker
+      ariaLabel="选择技能"
+      onSelect={vi.fn()}
+      selected={pendingSkill}
+      skills={[pendingSkill]}
+    />,
+  );
+
+  await user.click(screen.getByRole("combobox", { name: "选择技能" }));
+  expect(screen.getByRole("option", { name: /广播/ }))
+    .toHaveTextContent("参数待确认");
+});
+
 test("skill choices expose type category power cost and learnability", async () => {
   const user = userEvent.setup();
   render(
@@ -630,7 +688,6 @@ test("Beast Flower trait renders all bloodlines and a separate entry trigger", a
 });
 
 test("shows reviewed dynamic skill conditions as editable inputs", async () => {
-  const user = userEvent.setup();
   const onTraitContextChange = vi.fn();
   render(
     <SingleSkillEditor
@@ -650,17 +707,23 @@ test("shows reviewed dynamic skill conditions as editable inputs", async () => {
     />,
   );
 
-  await user.type(screen.getByRole("spinbutton", { name: "当前能量" }), "4");
+  const energyInput = screen.getByRole("spinbutton", { name: "当前能量" });
+  expect(energyInput).toHaveValue(10);
+  expect(energyInput).not.toHaveAttribute("max");
+  const selectSpy = vi.spyOn(energyInput, "select");
+  fireEvent.focus(energyInput);
+  expect(selectSpy).toHaveBeenCalledOnce();
+  fireEvent.change(energyInput, { target: { value: "4" } });
   expect(onTraitContextChange).toHaveBeenLastCalledWith(
     expect.stringMatching(/^skill\.energy\.[a-f0-9]{8}$/),
     4,
   );
-  fireEvent.change(screen.getByRole("spinbutton", { name: "当前能量" }), {
+  fireEvent.change(energyInput, {
     target: { value: "99" },
   });
   expect(onTraitContextChange).toHaveBeenLastCalledWith(
     expect.stringMatching(/^skill\.energy\.[a-f0-9]{8}$/),
-    10,
+    99,
   );
 });
 
@@ -1075,6 +1138,61 @@ test("supported Jal-family traits expose an explicit trigger only on choice skil
   );
 });
 
+test("acquired choice and Wing traits expose their slot controls beside native Moon Memory", () => {
+  const friendship = {
+    basePower: 70,
+    category: "magical",
+    cost: 2,
+    description:
+      "造成魔伤，选择：每次使用后威力永久+20或应对状态时本次技能威力+100%。",
+    id: "friendship-moon-memory",
+    name: "友谊满溢",
+    slotContext: {},
+    type: "普通",
+  };
+  const wingStatus = {
+    basePower: 0,
+    category: "status",
+    cost: 2,
+    id: "wing-status-moon-memory",
+    name: "羽化加速",
+    type: "翼",
+  };
+  const turbine = {
+    basePower: 100,
+    category: "physical",
+    cost: 0,
+    id: "gale-turbine-moon-memory",
+    name: "疾风涡轮",
+    slotContext: {},
+    type: "翼",
+  };
+
+  render(
+    <FourSkillEditor
+      attackerName="银月狼王"
+      attackerSkills={[friendship, wingStatus, turbine, null]}
+      attackerTrait={{ description: "吞噬特性。", inputs: [], name: "铭记于月亮" }}
+      attackerTraits={[
+        { name: "铭记于月亮" },
+        { name: "一意孤行" },
+        { name: "展翅" },
+      ]}
+      defenderName="水灵"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, friendship, wingStatus, turbine]}
+    />,
+  );
+
+  expect(screen.getByRole("checkbox", {
+    name: "攻击方技能1触发特性",
+  })).toBeVisible();
+  expect(screen.getByRole("combobox", {
+    name: "攻击方技能3前置翼技",
+  })).toBeVisible();
+});
+
 test("four-skill rows expose one visible selection and select from the whole row", async () => {
   const user = userEvent.setup();
   const onSkillActivate = vi.fn();
@@ -1208,6 +1326,56 @@ test("compact single-skill editor displays the effective type returned by calcul
 
   expect(screen.getByTitle("翼")).toBeVisible();
   expect(screen.queryByTitle("普通")).not.toBeInTheDocument();
+});
+
+test("compact editors display the dynamically resolved skill cost", () => {
+  const superconduct = {
+    ...skills[0],
+    cost: 3,
+    id: "compact-superconduct",
+    name: "超导",
+  };
+  const result = {
+    hpPercent: 20,
+    skillCost: 1,
+    status: "exact",
+    totalDamage: 80,
+  };
+
+  const { container } = render(
+    <>
+      <CompactFourSkillEditor
+        attackerName="星云旅者"
+        attackerResults={[result]}
+        attackerSkillChoices={[superconduct]}
+        attackerSkills={[superconduct, null, null, null]}
+        defenderName="水灵"
+        defenderResults={[]}
+        defenderSkillChoices={skills}
+        defenderSkills={[skills[1], null, null, null]}
+        onSkillFocus={vi.fn()}
+        onSkillSelect={vi.fn()}
+      />
+      <CompactSingleSkillEditor
+        attackName="星云旅者"
+        defenseName="水灵"
+        onSkillSelect={vi.fn()}
+        result={result}
+        selectedSkill={superconduct}
+        skills={[superconduct]}
+      />
+    </>,
+  );
+
+  expect(
+    within(screen.getByRole("group", { name: "攻击方技能1，当前选中" }))
+      .getByTitle("能耗 1"),
+  ).toBeVisible();
+  expect(
+    within(container.querySelector(".compact-single-skill"))
+      .getByTitle("能耗 1"),
+  ).toBeVisible();
+  expect(screen.queryByTitle("能耗 3")).not.toBeInTheDocument();
 });
 
 test("compact editors show the same dynamic power note", () => {
@@ -1545,6 +1713,27 @@ test("特性栏常驻显示吸血能力等级，恶魔男爵包含基础5层", (
 
   expect(screen.getByText("吸血 16层 · 160%" )).toBeVisible();
   expect(screen.getByRole("spinbutton", { name: "攻击方生命百分比" })).toBeVisible();
+});
+
+test("single-skill view includes lifesteal granted by an acquired Baron trait", () => {
+  render(
+    <SingleSkillEditor
+      attackerLifestealPercent={10}
+      attackerTrait={{ description: "吞噬特性。", inputs: [], name: "铭记于月亮" }}
+      attackerTraits={[
+        { name: "铭记于月亮" },
+        { name: "贪得无厌" },
+      ]}
+      hitCount={1}
+      onHitCountChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      result={{ status: "exact" }}
+      selectedSkill={skills[0]}
+      skills={skills}
+    />,
+  );
+
+  expect(screen.getByText("吸血 6层 · 60%")).toBeVisible();
 });
 
 test("戏耍特性未获得吸血时也常驻显示0层", () => {
@@ -2146,7 +2335,6 @@ test("compact dazzling loadouts keep seven rows and the Refraction preview", () 
 });
 
 test("four-skill slots expose their own dynamic rule context", async () => {
-  const user = userEvent.setup();
   const onSkillContextChange = vi.fn();
   const manaBurst = {
     ...skills[1],
@@ -2171,26 +2359,27 @@ test("four-skill slots expose their own dynamic rule context", async () => {
 
   expect(
     screen.getByRole("spinbutton", { name: "攻击方技能1当前能量" }),
-  ).toHaveValue(0);
-  await user.type(
-    screen.getByRole("spinbutton", { name: "攻击方技能1当前能量" }),
-    "5",
-  );
+  ).toHaveValue(10);
+  const energyInput = screen.getByRole("spinbutton", {
+    name: "攻击方技能1当前能量",
+  });
+  expect(energyInput).not.toHaveAttribute("max");
+  const selectSpy = vi.spyOn(energyInput, "select");
+  fireEvent.focus(energyInput);
+  expect(selectSpy).toHaveBeenCalledOnce();
+  fireEvent.change(energyInput, { target: { value: "5" } });
   expect(onSkillContextChange).toHaveBeenLastCalledWith(
     "attacker",
     0,
     expect.stringMatching(/^skill\.energy\.[a-f0-9]{8}$/),
     5,
   );
-  fireEvent.change(
-    screen.getByRole("spinbutton", { name: "攻击方技能1当前能量" }),
-    { target: { value: "99" } },
-  );
+  fireEvent.change(energyInput, { target: { value: "99" } });
   expect(onSkillContextChange).toHaveBeenLastCalledWith(
     "attacker",
     0,
     expect.stringMatching(/^skill\.energy\.[a-f0-9]{8}$/),
-    10,
+    99,
   );
 });
 
@@ -2554,7 +2743,7 @@ test("advanced settings configure bloodline magic without applying placeholders"
   expect(screen.getByRole("combobox", { name: "血脉魔法" })).toHaveValue(
     "photosynthetic-healing",
   );
-  expect(screen.getByText(/回复最大生命的50%/)).toBeVisible();
+  expect(screen.getByText(/立即回复最大生命的15%/)).toBeVisible();
 
   await user.click(screen.getByRole("checkbox", { name: "使用光合治愈" }));
   expect(onBloodlineMagicChange).toHaveBeenCalledWith(
@@ -2628,15 +2817,21 @@ test("formula audit explains standalone photosynthetic healing damage", async ()
       reductionPercent={0}
       result={{
         formulaSteps: [
-          { label: "血脉魔法回复", output: 250 },
+          { after: 75, label: "血脉魔法回复" },
           {
-            input: { actualHealing: 108, requestedHealing: 250 },
+            after: 225,
+            before: 75,
+            input: { ticks: 3 },
+            label: "血脉魔法后续回复",
+          },
+          {
+            input: { actualHealing: 60, requestedHealing: 75 },
             label: "戏耍特性伤害",
           },
         ],
         skillName: "戏耍·光合治愈",
         sourceKind: "bloodline",
-        totalDamage: 108,
+        totalDamage: 60,
       }}
     />,
   );
@@ -2645,7 +2840,13 @@ test("formula audit explains standalone photosynthetic healing damage", async ()
   expect(screen.getByText("戏耍·光合治愈")).toBeVisible();
   expect(screen.getAllByText("光合治愈")).toHaveLength(2);
   expect(screen.getByText("戏耍真伤")).toBeVisible();
-  expect(screen.getByText("最大生命 × 50%")).toBeVisible();
+  expect(screen.getByText("最大生命 × 15%（立即）")).toBeVisible();
+  expect(screen.getByText("后续回复")).toBeVisible();
+  expect(screen.getByText("每回合结束回复")).toBeVisible();
+  expect(screen.getByText("回合数")).toBeVisible();
+  expect(screen.getByText("名义合计（未扣溢出）")).toBeVisible();
+  expect(screen.getByText("3")).toBeVisible();
+  expect(screen.getByText("225")).toBeVisible();
 });
 
 test("formula audit places defense-skill reduction after defense division", async () => {

@@ -140,6 +140,7 @@ function CompactSkillSide({
         {Array.from({ length: Math.max(4, selectedSkills.length) }, (_, index) => {
           const selected = selectedSkills[index];
           const result = results?.[index];
+          const effectiveCost = result?.skillCost ?? selected?.cost;
           const effectiveType = result?.typeLabel ?? selected?.type;
           const isSelected =
             active && activeDamageSource !== "trait" && index === activeSkillIndex;
@@ -198,10 +199,10 @@ function CompactSkillSide({
               </span>
               <span
                 className="compact-skill__cost"
-                title={selected ? `能耗 ${selected.cost ?? "—"}` : "能耗"}
+                title={selected ? `能耗 ${effectiveCost ?? "—"}` : "能耗"}
               >
                 <Lightning aria-hidden="true" size={14} weight="fill" />
-                {selected?.cost ?? "—"}
+                {effectiveCost ?? "—"}
               </span>
               <CompactDamage
                 label={label}
@@ -307,6 +308,7 @@ export function CompactSingleSkillEditor({
   selectedSkill,
   skills,
 }) {
+  const effectiveCost = result?.skillCost ?? selectedSkill?.cost;
   const effectiveType = result?.typeLabel ?? selectedSkill?.type;
   const powerResolutionHint = selectedSkill
     ? describeResolution(result)
@@ -330,9 +332,9 @@ export function CompactSingleSkillEditor({
             <Sword aria-hidden="true" size={18} weight="fill" />
           )}
         </span>
-        <span title={`能耗 ${selectedSkill?.cost ?? "—"}`}>
+        <span title={`能耗 ${effectiveCost ?? "—"}`}>
           <Lightning aria-hidden="true" size={16} weight="fill" />
-          {selectedSkill?.cost ?? "—"}
+          {effectiveCost ?? "—"}
         </span>
         <CompactDamage
           label=""

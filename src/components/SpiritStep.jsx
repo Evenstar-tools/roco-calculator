@@ -4,8 +4,10 @@ import { SpiritPicker } from "./SpiritPicker.jsx";
 export function SpiritStep({
   attacker,
   attackerFavoriteState,
+  attackerTraitEditor,
   defender,
   defenderFavoriteState,
+  defenderTraitEditor,
   onAttackerFavoriteToggle,
   onAttackerSelect,
   onDefenderFavoriteToggle,
@@ -45,6 +47,16 @@ export function SpiritStep({
           side="defense"
           spirits={spirits}
         />
+        {attackerTraitEditor ? (
+          <div className="spirit-step__trait-editor spirit-step__trait-editor--attacker">
+            {attackerTraitEditor}
+          </div>
+        ) : null}
+        {defenderTraitEditor ? (
+          <div className="spirit-step__trait-editor spirit-step__trait-editor--defender">
+            {defenderTraitEditor}
+          </div>
+        ) : null}
       </div>
     </section>
   );

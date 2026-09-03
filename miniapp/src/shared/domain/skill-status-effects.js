@@ -323,8 +323,8 @@ const STATUS_EFFECTS = Object.freeze({
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     resolve(context) {
       return context.defenseCounterSucceeded === true
-        ? { targetAttack: -10, targetDefense: -10 }
-        : { ownAttack: -10, ownDefense: -10 };
+        ? { targetAttack: -12, targetDefense: -12 }
+        : { ownAttack: -5, ownDefense: -5 };
     },
   },
   盛开: {
@@ -384,12 +384,12 @@ const STATUS_EFFECTS = Object.freeze({
   },
   力量吞噬: { ownFixedPower: 20, targetFixedPower: -20 },
   羽化加速: { ownFixedPower: 20 },
+  撒娇: { ownFixedPower: 10 },
   超声波: {
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     resolve(context) {
-      const first = context.defenseCounterSucceeded === true ? 50 : 30;
       return {
-        ownFixedPower: first + (context.choiceTrait ? 30 : 0),
+        ownFixedPower: 20 + (context.choiceTrait ? 20 : 0),
       };
     },
   },

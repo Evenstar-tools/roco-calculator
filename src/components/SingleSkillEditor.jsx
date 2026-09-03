@@ -374,6 +374,7 @@ export function SingleSkillEditor({
   attackerHealth,
   attackerLifestealPercent = 0,
   attackerTrait,
+  attackerTraits = [],
   carriedSkills = [],
   defenderHealth,
   defenderTrait,
@@ -443,13 +444,20 @@ export function SingleSkillEditor({
       (input) => dynamicInputContextKey(input) === "defenderHpPercent",
     );
   const resolutionSummary = describeResolution(result);
+  const effectiveAttackerTraits = attackerTraits.length > 0
+    ? attackerTraits
+    : attackerTrait
+      ? [attackerTrait]
+      : [];
   const lifesteal = resolveLifestealCapability({
     persistentLifestealPercent: attackerLifestealPercent,
-    traits: attackerTrait ? [attackerTrait] : [],
+    traits: effectiveAttackerTraits,
   });
   const showsLifestealCapability =
     lifesteal.percent > 0 ||
-    ["戏耍", "贪得无厌"].includes(attackerTrait?.name);
+    effectiveAttackerTraits.some((trait) =>
+      ["戏耍", "贪得无厌"].includes(trait?.displayName ?? trait?.name)
+    );
   const effectiveType = result?.typeLabel ?? selectedSkill.type;
 
   useEffect(() => {
@@ -575,6 +583,11 @@ export function SingleSkillEditor({
                     aria-label={input.label}
                     max={input.max}
                     min={input.min}
+                    onFocus={(event) => {
+                      if (dynamicInputContextKey(input) === "energy") {
+                        event.currentTarget.select();
+                      }
+                    }}
                     onChange={(event) => {
                       if (event.target.value !== "") {
                         onTraitContextChange?.(

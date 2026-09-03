@@ -82,6 +82,70 @@ describe("resolveSkillPower", () => {
       { burstGroup: "技能", contextKey: "burstSourceDoublePulse", label: "双联脉冲" },
       { burstGroup: "印记", contextKey: "burstSourceChargeMark", label: "蓄电" },
     ]);
+    expect(
+      inputs.find((input) => input.contextKey === "burstSourceSuperconduct"),
+    ).toMatchObject({ burstDescription: "本技能能耗 -2。" });
+
+    for (const [
+      label,
+      context,
+      value,
+      resolvedCost,
+      activeBurstKinds,
+      inheritedCostReduction,
+      selectedBurstSources,
+    ] of [
+      ["无来源", {}, 55, 1, 0, 0, []],
+      [
+        "普通来源",
+        { burstSourceDoublePulse: true },
+        65,
+        2,
+        1,
+        0,
+        ["burstSourceDoublePulse"],
+      ],
+      [
+        "超导来源",
+        { burstSourceSuperconduct: true },
+        65,
+        0,
+        1,
+        2,
+        ["burstSourceSuperconduct"],
+      ],
+      [
+        "普通来源与超导来源混合",
+        {
+          burstSourceDoublePulse: true,
+          burstSourceSuperconduct: true,
+        },
+        75,
+        1,
+        2,
+        2,
+        ["burstSourceSuperconduct", "burstSourceDoublePulse"],
+      ],
+    ]) {
+      expect(resolveSkillPower(thunderstorm, context), label).toMatchObject({
+        activeBurstKinds,
+        inheritedCostReduction,
+        resolvedCost,
+        selectedBurstSources,
+        value,
+      });
+    }
+
+    expect(
+      resolveSkillPower({ ...thunderstorm, cost: 0 }, {
+        burstSourceSuperconduct: true,
+      }),
+    ).toMatchObject({
+      activeBurstKinds: 1,
+      inheritedCostReduction: 2,
+      resolvedCost: 0,
+      value: 65,
+    });
 
     expect(
       resolveSkillPower(thunderstorm, {
@@ -89,8 +153,23 @@ describe("resolveSkillPower", () => {
         burstSourceBioelectric: true,
         burstSourceDoublePulse: true,
       }),
-    ).toMatchObject({ resolvedCost: 3, value: 75 });
+    ).toMatchObject({
+      inheritedCostReduction: 0,
+      resolvedCost: 3,
+      value: 75,
+    });
     expect(resolveSkillPower(thunderstorm, { activeBurstKinds: 3 })).toMatchObject({
+      value: 85,
+    });
+    expect(
+      resolveSkillPower(thunderstorm, {
+        activeBurstKinds: 3,
+        burstSourceSuperconduct: true,
+      }),
+    ).toMatchObject({
+      activeBurstKinds: 3,
+      inheritedCostReduction: 2,
+      resolvedCost: 2,
       value: 85,
     });
     expect(
@@ -104,8 +183,54 @@ describe("resolveSkillPower", () => {
       resolveSkillPower(thunderstorm, {
         activeBurstKinds: 3,
         burstTriggered: false,
+        burstSourceSuperconduct: true,
       }),
-    ).toMatchObject({ resolvedCost: 1, value: 55 });
+    ).toMatchObject({
+      activeBurstKinds: 0,
+      inheritedCostReduction: 0,
+      resolvedCost: 1,
+      value: 55,
+    });
+
+    expect(
+      resolveSkillPower(thunderstorm, {
+        burstSourceDoublePulse: true,
+        burstSourceSuperconduct: true,
+      }).steps,
+    ).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        after: 3,
+        before: 1,
+        label: "迸发种类能耗增加",
+      }),
+      expect.objectContaining({
+        after: 1,
+        before: 3,
+        label: "继承超导迸发能耗",
+      }),
+    ]));
+  });
+
+  test("超导迸发默认将本次能耗降低2，且可关闭", () => {
+    const superconduct = snapshot.skills.find(
+      (candidate) => candidate.name === "超导",
+    );
+    expect(getSkillEffectInputs(superconduct)).toMatchObject([
+      {
+        contextKey: "burstTriggered",
+        defaultValue: true,
+        label: "触发迸发",
+        type: "boolean",
+      },
+    ]);
+    expect(resolveSkillPower(superconduct, {})).toMatchObject({
+      resolvedCost: 1,
+      ruleSource: "feishu-doc:season-announcement-revision-11",
+      value: 90,
+    });
+    expect(
+      resolveSkillPower(superconduct, { burstTriggered: false }),
+    ).toMatchObject({ resolvedCost: 3, value: 90 });
   });
 
   test("reads the declared default hit count from every skill description", () => {
@@ -289,7 +414,7 @@ describe("resolveSkillPower", () => {
     },
   );
 
-  test("defaults Mana Burst to zero energy instead of blocking damage", () => {
+  test("defaults Mana Burst to ten energy instead of blocking damage", () => {
     expect(
       resolveSkillPower(
         skill({ name: "魔能爆", ruleId: "mana_burst" }),
@@ -297,8 +422,21 @@ describe("resolveSkillPower", () => {
       ),
     ).toMatchObject({
       status: "exact",
-      value: 45,
-      steps: [{ input: 0, after: 45 }],
+      value: 210,
+      steps: [{ input: 10, after: 210 }],
+    });
+  });
+
+  test("caps Mana Burst power at ten energy without clamping the input", () => {
+    expect(
+      resolveSkillPower(
+        skill({ name: "魔能爆", ruleId: "mana_burst" }),
+        { energy: 99 },
+      ),
+    ).toMatchObject({
+      status: "exact",
+      value: 210,
+      steps: [{ input: 10, after: 210 }],
     });
   });
 
@@ -544,14 +682,69 @@ describe("resolveSkillPower", () => {
     });
     expect(
       resolveSkillPower(
-        skill({ basePower: 80, name: "草虫冲击" }),
+        skill({ basePower: 75, name: "草虫冲击" }),
         { enemySwitchedThisTurn: true },
       ),
     ).toMatchObject({
       ignoreResistance: true,
       status: "exact",
-      value: 130,
+      value: 165,
     });
+    expect(
+      resolveSkillPower(
+        skill({ basePower: 85, name: "雪原狩猎" }),
+        { blizzardWeather: true },
+      ),
+    ).toMatchObject({
+      ruleSource: "feishu-doc:season-announcement-revision-11",
+      status: "exact",
+      value: 135,
+    });
+    expect(
+      resolveSkillPower(
+        skill({ basePower: 85, name: "雪原狩猎" }),
+        { blizzardWeather: false },
+      ),
+    ).toMatchObject({ status: "exact", value: 85 });
+    expect(
+      resolveSkillPower(
+        skill({ basePower: 85, name: "流星火雨" }),
+        { defeatedEnemyCount: 1 },
+      ),
+    ).toMatchObject({ status: "exact", value: 170 });
+    expect(
+      resolveSkillPower(
+        skill({ basePower: 30, name: "孢子爆散" }),
+        { skillUseCount: 1 },
+      ),
+    ).toMatchObject({ hitCount: 4, status: "exact", value: 30 });
+  });
+
+  test("流星火雨和孢子爆散按新版永久增量处理零次与多次", () => {
+    expect(
+      resolveSkillPower(
+        skill({ basePower: 85, name: "流星火雨" }),
+        { defeatedEnemyCount: 0 },
+      ),
+    ).toMatchObject({ status: "exact", value: 85 });
+    expect(
+      resolveSkillPower(
+        skill({ basePower: 85, name: "流星火雨" }),
+        { defeatedEnemyCount: 2 },
+      ),
+    ).toMatchObject({ status: "exact", value: 255 });
+    expect(
+      resolveSkillPower(
+        skill({ basePower: 30, name: "孢子爆散" }),
+        { skillUseCount: 0 },
+      ),
+    ).toMatchObject({ hitCount: 2, status: "exact", value: 30 });
+    expect(
+      resolveSkillPower(
+        skill({ basePower: 30, name: "孢子爆散" }),
+        { skillUseCount: 2 },
+      ),
+    ).toMatchObject({ hitCount: 6, status: "exact", value: 30 });
   });
 
   test.each([
@@ -668,7 +861,7 @@ describe("resolveSkillPower", () => {
     ).toMatchObject({ status: "exact", value: 200 });
   });
 
-  test("友谊满溢不读取萌芽固定威力，撒娇仍保留追加", () => {
+  test("友谊满溢不读取萌芽固定威力", () => {
     expect(
       resolveSkillPower(skill({ basePower: 70, name: "友谊满溢" }), {
         friendshipMode: "growth",
@@ -677,20 +870,16 @@ describe("resolveSkillPower", () => {
       }),
     ).toMatchObject({ status: "exact", value: 130 });
 
-    expect(
-      resolveSkillPower(skill({ basePower: 30, name: "撒娇" }), {
-        moeGainCount: 3,
-        sproutFixedPowerBonus: 20,
-      }),
-    ).toMatchObject({ status: "exact", value: 80 });
   });
 
-  test("S3季中撒娇每次萌化只增加10威力", () => {
+  test("撒娇不再读取旧版单槽萌化次数，避免与全技能增益重复", () => {
+    const coax = snapshot.skills.find((candidate) => candidate.name === "撒娇");
+    expect(getSkillEffectInputs(coax)).toEqual([]);
     expect(
       resolveSkillPower(skill({ basePower: 30, name: "撒娇" }), {
         moeGainCount: 3,
       }),
-    ).toMatchObject({ status: "exact", value: 60 });
+    ).toMatchObject({ status: "exact", value: 30 });
   });
 
   test("超级糖果不读取萌芽加成", () => {

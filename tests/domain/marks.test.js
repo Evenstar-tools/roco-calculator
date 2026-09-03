@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   createMarksState,
+  MARK_DEFINITIONS,
   normalizeMarksState,
   resolveSkillMarkApplications,
   resolveSourceMarkEffects,
@@ -28,6 +29,16 @@ function effects(id, stacks, overrides = {}) {
 }
 
 describe("mark rules", () => {
+  test("龙噬记录3能耗技能触发双攻+40%，并明确保持手动能力结算", () => {
+    expect(
+      MARK_DEFINITIONS.positive.find((mark) => mark.id === "dragon-bite"),
+    ).toEqual({
+      id: "dragon-bite",
+      name: "龙噬",
+      summary: "使用 3 能耗技能后双攻 +40%；当前由能力配置结算",
+    });
+  });
+
   test.each([
     ["momentum", 2, 0.6, 0],
     ["attack", 3, 0.3, 0],

@@ -182,7 +182,7 @@ export function calculateDirection({
         )
       : passResults[0];
   });
-  const results = preliminaryResults.map((result, index) => {
+  const calculatedResults = preliminaryResults.map((result, index) => {
     const entry = entries[index];
     const skill = resolveEmbeddedDamageSkill(
       resolveWingExtensionSkill({
@@ -258,6 +258,7 @@ export function calculateDirection({
       targetSide,
     });
   });
+  const results = calculatedResults;
   const selectedIndex =
     mode === "four"
       ? Math.min(
@@ -305,10 +306,21 @@ export function calculateDirection({
         formulaSteps: [
           formulaStep(
             "血脉魔法回复",
-            `${attacker.panelStats.hp} × 50%`,
+            `${attacker.panelStats.hp} × 15%（立即）`,
             bloodlineMagicHealing.healing,
             bloodlineMagicHealing.healing,
-            "bloodline-magic:photosynthetic-healing-v1",
+            "bloodline-magic:photosynthetic-healing-v2",
+          ),
+          formulaStep(
+            "血脉魔法后续回复",
+            {
+              maximumHp: attacker.panelStats.hp,
+              percent: 15,
+              ticks: bloodlineMagicHealing.endTurnTicks,
+            },
+            bloodlineMagicHealing.endTurnHealing,
+            bloodlineMagicHealing.endTurnHealing * bloodlineMagicHealing.endTurnTicks,
+            "bloodline-magic:photosynthetic-healing-v2",
           ),
           formulaStep(
             "戏耍特性伤害",
@@ -334,7 +346,7 @@ export function calculateDirection({
         skillPower: 0,
         sourceKind: "bloodline",
         sources: [
-          "bloodline-magic:photosynthetic-healing-v1",
+          "bloodline-magic:photosynthetic-healing-v2",
           "reviewed-trait:clown-trick-v1",
         ],
         status: "exact",
@@ -406,8 +418,7 @@ export function withListenBridgeCounters({
     const skill = resolveSkillEntity(entry, skillsById);
     if (skill?.name !== "听桥") return result;
     changed = true;
-    return {
-      ...calculateSkillResult({
+    const reflectedResult = calculateSkillResult({
         snapshot,
         mode: "four",
         skill: {
@@ -436,7 +447,9 @@ export function withListenBridgeCounters({
         targetMarks,
         targetSide,
         lockedPower: sourceAttack.result.panelPower,
-      }),
+      });
+    return {
+      ...reflectedResult,
       reflectedPower: sourceAttack.result.panelPower,
       reflectedSourceSkillId: sourceAttack.skill.id,
       reflectedSourceSkillName: sourceAttack.skill.name,

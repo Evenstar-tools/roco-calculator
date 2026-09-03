@@ -38,7 +38,7 @@ describe("miniapp shell", () => {
 
   test("renders the calculator title without requesting identity", () => {
     render(<IndexPage />);
-    expect(screen.getByText("洛克计算器 · S3季中")).toBeInTheDocument();
+    expect(screen.getByText("洛克计算器 · S4前瞻")).toBeInTheDocument();
     expect(screen.queryByText("微信登录")).not.toBeInTheDocument();
   });
 

@@ -125,6 +125,10 @@ describe("BWIKI 精灵头像身份绑定", () => {
     for (const asset of manifest.assets) {
       const spirit = spiritById.get(asset.id);
       expect(spirit?.fullName).toBe(asset.name);
+      if (spirit?.calculationStatus === "pending-race-stats") {
+        expect(spirit.raceStats).toBeNull();
+        continue;
+      }
       expect(spirit?.raceStats.total).toBe(
         spirit.raceStats.hp +
           spirit.raceStats.speed +
