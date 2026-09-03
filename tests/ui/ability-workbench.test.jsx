@@ -148,7 +148,40 @@ test("速度排行榜横轴可拖动并使用 Excel 五档口径，默认极速"
   ]);
   await user.selectOptions(profile, "negative-zero");
   expect(profile).toHaveValue("negative-zero");
-  expect(screen.getByText(/减速度：速度个体0、减速性格/)).toBeVisible();
+  expect(screen.getByRole("button", { name: /展开速度表/ })).toHaveTextContent("减速度");
+});
+
+test("速度表默认收起，展开后按档位展示全部合格精灵并可选目标", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  expect(screen.queryByRole("table", { name: "速度档位表" })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: /展开速度表/ }));
+
+  const table = screen.getByRole("table", { name: "速度档位表" });
+  const speeds = within(table).getAllByRole("rowheader").map((cell) => Number(cell.textContent));
+  expect(speeds).toEqual([...speeds].sort((left, right) => right - left));
+  expect(within(table).getByRole("button", { name: /在速度表选择音速犬/ })).toBeVisible();
+  expect(within(table).getByRole("button", { name: /在速度表选择首领象/ })).toBeVisible();
+
+  await user.click(within(table).getByRole("button", { name: /在速度表选择音速犬/ }));
+  expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(
+    "spirit_db5a2cb398dc0385",
+  );
 });
 
 test("携带速度状态技能时可勾选并用加速后的本体速度比较", async () => {

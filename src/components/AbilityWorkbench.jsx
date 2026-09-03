@@ -30,6 +30,7 @@ import {
 import { calculateDurability } from "../features/team-ability/domain/durability.js";
 import {
   findNearestSpeedTarget,
+  groupSpeedTargets,
   SPEED_TARGET_PROFILES,
   createSpeedTargets,
 } from "../features/team-ability/domain/speed-targets.js";
@@ -72,7 +73,7 @@ const METRIC_LABELS = Object.freeze(Object.fromEntries(METRIC_ENTRIES));
 const SPEED_STATUS_LABELS = Object.freeze({
   CURRENTLY_REACHED: "当前已达标",
   INVALID_INVESTMENT: "请先修正个体值分配",
-  NO_INVESTMENT_SLOT: "速度未达标；三个个体值位置已用满，请先取消一项",
+  NO_INVESTMENT_SLOT: "速度未达标 · 无可用位置",
   REQUIRES_SPEED_INVESTMENT: "需要启用速度60",
   UNREACHABLE_WITH_SPEED_INVESTMENT: "即使速度60也无法达到",
 });
@@ -302,17 +303,10 @@ function SpeedRail({
   const railRef = useRef(null);
   const selectedTargetRef = useRef(null);
   const dragRef = useRef({ active: false, moved: false, scrollLeft: 0, startX: 0 });
+  const [showSpeedTable, setShowSpeedTable] = useState(false);
   const selected = targets.find((target) => target.id === targetId) ?? targets[0];
   const profile = SPEED_TARGET_PROFILES[profileId];
-  const targetGroups = targets.reduce((groups, target) => {
-    const lastGroup = groups.at(-1);
-    if (lastGroup?.speed === target.speed) {
-      lastGroup.targets.push(target);
-      return groups;
-    }
-    groups.push({ speed: target.speed, targets: [target] });
-    return groups;
-  }, []);
+  const targetGroups = groupSpeedTargets(targets);
   const railItems = [
     ...targetGroups.map((group) => {
       const target = group.targets.find((item) => item.id === selected?.id) ?? group.targets[0];
@@ -408,9 +402,9 @@ function SpeedRail({
         </div>
       </header>
       <div className="ability-speed__axis-summary">
-        <span>高速度</span>
+        <span>{profile?.label}</span>
         <strong>{selected?.name ?? "暂无目标"} · {selected?.speed ?? "—"}</strong>
-        <span>拖动横轴浏览</span>
+        <span>{targetGroups.length} 档</span>
       </div>
       {modifiers.length > 0 ? (
         <div className="ability-speed__modifiers">
@@ -474,19 +468,72 @@ function SpeedRail({
               <b>{item.target.speed}</b>
               <span>{item.target.name}</span>
               <small>
-                {item.target.qualifier}
+                {item.target.spirit.raceStats.speed}族
                 {item.count > 1 ? ` · 同速${item.count}只` : ""}
               </small>
             </button>
           ))}
         </div>
       </div>
-      <footer>
+      <button
+        aria-controls="ability-speed-tier-table"
+        aria-expanded={showSpeedTable}
+        className="ability-speed__table-toggle"
+        onClick={() => setShowSpeedTable((current) => !current)}
+        type="button"
+      >
         <span>
-          当前配置 {formatNumber(speedAnalysis?.currentSpeed)} · 目标 {formatNumber(selected?.speed)}
+          <ChartBar aria-hidden="true" size={15} />
+          {showSpeedTable ? "收起速度表" : "展开速度表"}
         </span>
-        <small>{profile?.description}；排行仅含最终形态和首领，特殊加速需满足对应条件</small>
-      </footer>
+        <small>{profile?.label} · {targetGroups.length} 档 · {targets.length} 只</small>
+      </button>
+      {showSpeedTable ? (
+        <div className="ability-speed__table-wrap" id="ability-speed-tier-table">
+          <table aria-label="速度档位表" className="ability-speed__table">
+            <colgroup>
+              <col className="ability-speed__table-value" />
+              <col />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>速度</th>
+                <th>{profile?.label}精灵</th>
+              </tr>
+            </thead>
+            <tbody>
+              {targetGroups.map((group) => (
+                <tr
+                  className={group.targets.some((target) => target.id === selected?.id) ? "is-selected" : ""}
+                  key={group.speed}
+                >
+                  <th scope="row">{group.speed}</th>
+                  <td>
+                    <div className="ability-speed__tier-spirits">
+                      {group.targets.map((target) => (
+                        <button
+                          aria-label={`在速度表选择${target.name}，速度${target.speed}`}
+                          aria-pressed={target.id === selected?.id}
+                          key={target.id}
+                          onClick={() => onTargetChange(target.id)}
+                          title={`${target.name} · ${target.qualifier} · ${target.formRole === "boss" ? "首领" : "最终形态"}`}
+                          type="button"
+                        >
+                          {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
+                          <span>
+                            <strong>{target.name}</strong>
+                            <small>{target.spirit.raceStats.speed}族 · {target.formRole === "boss" ? "首领" : "最终"}</small>
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -510,7 +557,6 @@ function BuildCard({ current, currentDurability, objective, onApply, result, sou
       <header>
         <div>
           <h5>{objective.label}</h5>
-          <span>优化目标：{objective.goal}</span>
           <span>性格：{natureLabel}</span>
         </div>
         {objective.recommended ? <b>推荐</b> : null}
@@ -1038,7 +1084,7 @@ export function AbilityWorkbench({
       <CurrentSummary durability={baselineDurability} panel={baselinePanel} />
       {dirty ? (
         <p className="ability-draft-status" role="status">
-          分析草稿尚未应用；当前配置卡保持原值，以下断点与方案按草稿计算。
+          草稿未应用
         </p>
       ) : null}
 
@@ -1050,7 +1096,7 @@ export function AbilityWorkbench({
           values={draft.displayIvs}
         />
         <label className="ability-draft-nature">
-          <span>分析草稿性格</span>
+          <span>性格</span>
           <NatureSelect
             ariaLabel="能力分析性格"
             onChange={(natureId) => updateDraft({ ...draft, natureId })}
@@ -1124,7 +1170,6 @@ export function AbilityWorkbench({
               <span>2</span>
               <div>
                 <h4>耐久方案对比</h4>
-                <small>三种目标共用同一套锁定与速度约束</small>
               </div>
               <div className="ability-build-constraints">
                 <label>
@@ -1208,9 +1253,6 @@ export function AbilityWorkbench({
               <span>3</span>
               <div>
                 <h4>标准耐久榜定位</h4>
-                <small>
-                  Lv.60 · 生命/物防/魔防60 · 生命性格 · 已审计形态清单口径
-                </small>
               </div>
               <span className="ability-ranking-template">仅最终形态 + 首领</span>
             </header>
@@ -1247,10 +1289,6 @@ export function AbilityWorkbench({
               <RankingPodium active={metric === "combined"} metric="combined" rows={previewRankings.combined} />
             </div>
             <footer>
-              <span>
-                未知形态默认排除：
-                {ranking.counts.excludedByReason.UNKNOWN_FORM_ROLE ?? 0}
-              </span>
               <button onClick={openFullRanking} ref={openRankingButtonRef} type="button">
                 查看完整耐久榜
               </button>

@@ -12,41 +12,42 @@ const EMPTY_DISPLAY_IVS = Object.freeze({
 
 export const SPEED_TARGET_PROFILES = Object.freeze({
   "positive-max": Object.freeze({
-    description: "极速：速度个体60、加速性格",
     displayIv: 60,
     id: "positive-max",
     label: "极速",
     natureMultiplier: 1.2,
   }),
   "neutral-max": Object.freeze({
-    description: "满速：速度个体60、中性性格",
     displayIv: 60,
     id: "neutral-max",
     label: "满速",
     natureMultiplier: 1,
   }),
   "positive-zero": Object.freeze({
-    description: "仅速度性格：速度个体0、加速性格",
     displayIv: 0,
     id: "positive-zero",
     label: "仅速度性格",
     natureMultiplier: 1.2,
   }),
   "neutral-zero": Object.freeze({
-    description: "无速度：速度个体0、中性性格",
     displayIv: 0,
     id: "neutral-zero",
     label: "无速度",
     natureMultiplier: 1,
   }),
   "negative-zero": Object.freeze({
-    description: "减速度：速度个体0、减速性格",
     displayIv: 0,
     id: "negative-zero",
     label: "减速度",
     natureMultiplier: 0.9,
   }),
 });
+
+function compareSpeedTargets(left, right) {
+  return right.speed - left.speed ||
+    left.name.localeCompare(right.name, "zh-CN") ||
+    left.id.localeCompare(right.id);
+}
 
 export function createSpeedTargets({
   profileId = "positive-max",
@@ -79,11 +80,19 @@ export function createSpeedTargets({
         spirit,
       }];
     })
-    .sort((left, right) =>
-      right.speed - left.speed ||
-      left.name.localeCompare(right.name, "zh-CN") ||
-      left.id.localeCompare(right.id),
-    );
+    .sort(compareSpeedTargets);
+}
+
+export function groupSpeedTargets(targets = []) {
+  return [...targets].sort(compareSpeedTargets).reduce((groups, target) => {
+    const lastGroup = groups.at(-1);
+    if (lastGroup?.speed === target.speed) {
+      lastGroup.targets.push(target);
+      return groups;
+    }
+    groups.push({ speed: target.speed, targets: [target] });
+    return groups;
+  }, []);
 }
 
 export function findNearestSpeedTarget(targets, speed) {

@@ -178,7 +178,7 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   const speedProfile = ability.getByRole("combobox", { name: "速度目标口径" });
   await expect(speedProfile).toHaveValue("positive-max");
   await speedProfile.selectOption("negative-zero");
-  await expect(ability.getByText(/减速度：速度个体0、减速性格/)).toBeVisible();
+  await expect(ability.getByRole("button", { name: /展开速度表/ })).toContainText("减速度");
   await speedProfile.selectOption("neutral-max");
   const target = ability.getByRole("combobox", { name: "速度目标精灵" });
   await target.selectOption("spirit_b2f1251352d5f670");
@@ -186,13 +186,37 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
     .getByRole("combobox", { name: "推荐速度约束" })
     .selectOption("unlocked");
 
+  await ability.getByRole("button", { name: /展开速度表/ }).click();
+  const speedTable = ability.getByRole("table", { name: "速度档位表" });
+  await expect(speedTable).toBeVisible();
+  const tableSpeeds = await speedTable.getByRole("rowheader").allTextContents();
+  expect(tableSpeeds.map(Number)).toEqual(
+    [...tableSpeeds.map(Number)].sort((left, right) => right - left),
+  );
+  expect(
+    await speedTable.evaluate((node) => node.scrollWidth <= node.clientWidth),
+  ).toBe(true);
+  expect(await page.evaluate(() => ({
+    documentFits: document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+    drawerFits: (() => {
+      const node = document.querySelector(".team-workbench");
+      return node.scrollWidth <= node.clientWidth;
+    })(),
+  }))).toEqual({ documentFits: true, drawerFits: true });
+  await speedTable.scrollIntoViewIfNeeded();
+  await page.screenshot({
+    fullPage: false,
+    path: "artifacts/web-ux-team-ability-fix/speed-table-390.png",
+  });
+  await ability.getByRole("button", { name: /收起速度表/ }).click();
+
   const builds = ability.getByRole("region", { name: "耐久方案对比" });
   await expect(
     builds.getByRole("heading", { level: 5 }).allTextContents(),
   ).resolves.toEqual(["综合承伤", "物理承伤", "魔法承伤"]);
   await builds.getByRole("button", { name: "应用到成员" }).first().click();
   await expect(ability.getByRole("status")).toContainText("方案已应用到成员");
-  await expect(ability.getByText("未知形态默认排除：0")).toBeVisible();
+  await expect(ability.getByText(/未知形态默认排除/)).toHaveCount(0);
   await page.screenshot({
     fullPage: true,
     path: "artifacts/web-ux-team-ability-fix/ability-after-390.png",
@@ -313,10 +337,15 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
   await expect.poll(
     () => speedAxis.evaluate((node) => node.scrollLeft),
   ).not.toBe(axisBefore.left);
+  await drawer.getByRole("button", { name: /展开速度表/ }).click();
+  const speedTable = drawer.getByRole("table", { name: "速度档位表" });
+  await expect(speedTable).toBeVisible();
+  await speedTable.scrollIntoViewIfNeeded();
   await page.screenshot({
     fullPage: false,
-    path: "artifacts/web-ux-team-ability-fix/ability-after-1424.png",
+    path: "artifacts/web-ux-team-ability-fix/speed-table-1424.png",
   });
+  await drawer.getByRole("button", { name: /收起速度表/ }).click();
   await drawer.getByRole("button", { name: "查看完整耐久榜" }).click();
 
   const ranking = drawer.getByRole("region", { name: "完整耐久榜" });

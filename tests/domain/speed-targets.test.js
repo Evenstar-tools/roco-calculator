@@ -2,6 +2,7 @@ import { expect, test } from "vitest";
 import {
   SPEED_TARGET_PROFILES,
   createSpeedTargets,
+  groupSpeedTargets,
 } from "../../src/features/team-ability/domain/speed-targets.js";
 
 const raceStats = {
@@ -31,6 +32,13 @@ const spirits = [
     sourceCategory: "首领形态",
     stage: "首领",
   },
+  {
+    fullName: "同速首领",
+    id: "boss-same-speed",
+    raceStats,
+    sourceCategory: "首领形态",
+    stage: "首领",
+  },
 ];
 
 test("速度目标只包含已确认最终形态和首领", () => {
@@ -40,11 +48,29 @@ test("速度目标只包含已确认最终形态和首领", () => {
   });
 
   expect(targets.map((entry) => entry.id)).toEqual([
+    "boss-same-speed",
     "spirit_db5a2cb398dc0385",
     "boss-form",
   ]);
-  expect(targets.map((entry) => entry.formRole)).toEqual(["final", "boss"]);
+  expect(targets.map((entry) => entry.formRole)).toEqual(["boss", "final", "boss"]);
   expect(targets[0].qualifier).toBe("100种族·满速");
+});
+
+test("竖排速度表按速度分档并收纳全部同速精灵", () => {
+  const groups = groupSpeedTargets(createSpeedTargets({
+    profileId: "positive-max",
+    spirits,
+  }));
+
+  expect(groups.map((group) => group.speed)).toEqual(
+    [...groups.map((group) => group.speed)].sort((left, right) => right - left),
+  );
+  expect(groups[0].targets.map((entry) => entry.id)).toEqual([
+    "boss-same-speed",
+    "spirit_db5a2cb398dc0385",
+  ]);
+  expect(groups.flatMap((group) => group.targets).some((entry) => entry.id === "growth-form"))
+    .toBe(false);
 });
 
 test("支持 Excel 速度线的五种标准口径", () => {
@@ -84,6 +110,7 @@ test("速度排行榜按速度从高到低排列", () => {
   });
 
   expect(targets.map((entry) => entry.id)).toEqual([
+    "boss-same-speed",
     "spirit_db5a2cb398dc0385",
     "boss-form",
   ]);
