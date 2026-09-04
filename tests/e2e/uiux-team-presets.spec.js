@@ -229,6 +229,33 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   expect(speedOverviewBox.x + speedOverviewBox.width).toBeLessThanOrEqual(391);
   expect(speedOverviewBox.y + speedOverviewBox.height).toBeGreaterThanOrEqual(843);
   expect(speedOverviewBox.y + speedOverviewBox.height).toBeLessThanOrEqual(845);
+  const mobileOverviewLayout = await speedOverview.evaluate((node) => {
+    const header = node.querySelector(":scope > header");
+    const controls = node.querySelector(":scope > .ability-speed-overview__controls");
+    const savedScrollTop = node.scrollTop;
+    node.scrollTop = 0;
+    const overviewBox = node.getBoundingClientRect();
+    const headerBox = header.getBoundingClientRect();
+    const controlsBox = controls.getBoundingClientRect();
+    const layout = {
+      clientWidth: node.clientWidth,
+      controlsBottom: controlsBox.right - overviewBox.left,
+      controlsLeft: controlsBox.left - overviewBox.left,
+      controlsTop: controlsBox.top - overviewBox.top,
+      headerBottom: headerBox.bottom - overviewBox.top,
+      scrollWidth: node.scrollWidth,
+    };
+    node.scrollTop = savedScrollTop;
+    return layout;
+  });
+  expect(mobileOverviewLayout.controlsTop).toBeGreaterThanOrEqual(
+    mobileOverviewLayout.headerBottom - 1,
+  );
+  expect(mobileOverviewLayout.controlsLeft).toBeGreaterThanOrEqual(0);
+  expect(mobileOverviewLayout.controlsBottom)
+    .toBeLessThanOrEqual(mobileOverviewLayout.clientWidth + 1);
+  expect(mobileOverviewLayout.scrollWidth)
+    .toBeLessThanOrEqual(mobileOverviewLayout.clientWidth);
   await expect(drawer.getByRole("region", { name: "耐久方案对比" })).toHaveCount(0);
   await expect(speedOverview.getByLabel("速度目标口径")).toBeVisible();
   const overviewTarget = speedOverview.getByRole("combobox", { name: "速度目标精灵" });
@@ -460,6 +487,20 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
   const speedOverview = drawer.getByRole("region", { name: "速度一览" });
   const speedTable = speedOverview.getByRole("table", { name: "速度档位表" });
   await expect(speedTable).toBeVisible();
+  const desktopOverviewHeaderBox = await speedOverview.locator(":scope > header").boundingBox();
+  const desktopOverviewControlsBox = await speedOverview
+    .locator(":scope > .ability-speed-overview__controls")
+    .boundingBox();
+  expect(desktopOverviewHeaderBox).not.toBeNull();
+  expect(desktopOverviewControlsBox).not.toBeNull();
+  expect(Math.abs(desktopOverviewControlsBox.y - desktopOverviewHeaderBox.y))
+    .toBeLessThanOrEqual(3);
+  expect(desktopOverviewControlsBox.x).toBeGreaterThan(
+    desktopOverviewHeaderBox.x,
+  );
+  expect(desktopOverviewControlsBox.x).toBeGreaterThanOrEqual(
+    desktopOverviewHeaderBox.x + desktopOverviewHeaderBox.width,
+  );
   const speedTableViewport = speedOverview.locator(".ability-speed__table-wrap");
   const selectedSpeedTarget = speedTable.getByRole("button", { pressed: true });
   await expect.poll(async () => {

@@ -1849,23 +1849,37 @@
   font-size: 11px;
 }
 
+.ability-speed-overview {
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 0;
+}
+
 .ability-speed-overview__controls {
   display: grid;
   min-width: 0;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  background: var(--surface-soft);
-  grid-template-columns: minmax(180px, 0.55fr) minmax(260px, 1fr);
+  min-height: 52px;
+  padding: 0 2px 10px 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  grid-template-columns: minmax(160px, 0.55fr) minmax(240px, 1fr);
   align-items: center;
   gap: 8px;
+  grid-column: 2;
+  grid-row: 1;
+  position: sticky;
+  z-index: 5;
+  top: 0;
 }
 
 .ability-speed-overview > header {
   position: sticky;
   z-index: 5;
   top: 0;
+  min-width: 274px;
+  padding-right: 14px;
   background: var(--surface);
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .ability-speed-overview__controls .ability-speed__profile-picker,
@@ -1891,6 +1905,7 @@
   justify-content: space-between;
   gap: 8px 16px;
   font-size: 12px;
+  grid-column: 1 / -1;
 }
 
 .ability-speed-overview__selection b {
@@ -1903,6 +1918,7 @@
   overflow: visible;
   border: 1px solid var(--border);
   border-radius: 9px;
+  grid-column: 1 / -1;
 }
 
 .ability-speed-overview .ability-speed__table thead {
@@ -2721,6 +2737,7 @@
     overflow-y: auto;
     background: var(--surface);
     overscroll-behavior: contain;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .ability-speed-overview > header {
@@ -2731,10 +2748,20 @@
     background: var(--surface);
     align-items: center;
     flex-direction: row;
+    grid-column: 1;
+    grid-row: auto;
+    min-width: 0;
   }
 
   .ability-speed-overview__controls {
+    position: static;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--surface-soft);
     grid-template-columns: minmax(0, 1fr);
+    grid-column: 1;
+    grid-row: auto;
   }
 
   .ability-speed-overview__selection {
