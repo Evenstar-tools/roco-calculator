@@ -380,6 +380,33 @@ test("shows attacker and defender mark settlements separately", () => {
   expect(within(marks).getByText("星陨 ×3 +35 伤害")).toBeVisible();
 });
 
+test("shows a concise reassembly damage note in the settlement rail", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        selectedResult: {
+          ...result.selectedResult,
+          markSettlements: [
+            {
+              damage: 117,
+              markId: "reassembly",
+              side: "attacker",
+              stacks: 3,
+              status: "applied",
+              text: "重组（应对防御）：追加 300% 幻系伤害 117",
+            },
+          ],
+        },
+      }}
+    />,
+  );
+
+  const marks = screen.getByRole("region", { name: "印记结算" });
+  expect(within(marks).getByText("重组（应对防御）：追加 300% 幻系伤害 117"))
+    .toBeVisible();
+});
+
 test("shows Beast Flower bloodline settlements without pretending they are marks", () => {
   render(
     <ResultRail

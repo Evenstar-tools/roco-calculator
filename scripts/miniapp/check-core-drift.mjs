@@ -58,8 +58,12 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留迸发联动、虫群奉献、体重挡位、啃咬与飞断最新技能输入语义；虫鸣输入直接驱动连击数，最少为1且不设业务上限，并接受连击增益",
   }),
   "src/domain/skill-result/calculate-skill-result.js": Object.freeze({
-    mirrorHash: "a3d99fe84c2929721f013aea6ab7f36a766e2d15c93ce11e2797a39546295342",
-    reason: "同步虫鸣连击、迸发来源、星陨与重组额外伤害，并确保已下线的技能能耗覆盖不再隐藏参与结算",
+    mirrorHash: "c06b283728b49ad6b48d7f88eed7ac2fff41f878fb8403c1b62024469c18d6d4",
+    reason: "同步虫鸣连击、迸发来源、星陨与重组额外伤害，并补齐重组独立伤害字段、结算备注与公式明细",
+  }),
+  "src/domain/skill-result/results.js": Object.freeze({
+    mirrorHash: "466a2c86624706ce3b8260b4a5f7e94719a45648ef75acc1c0b6d4d5fa23c828",
+    reason: "合并连续技能结果时保留重组追加伤害，确保总伤害明细可核对",
   }),
   "src/domain/skill-result/starfall.js": Object.freeze({
     mirrorHash: "9c852d3d8bfc78f3a8817833a68302de1267145df5b0b608fc6c6a7c7067bf7c",
@@ -70,8 +74,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留显示威力覆盖、虫群奉献、体重挡位与最终伤害倍率规则语义",
   }),
   "src/domain/skill-status-effects.js": Object.freeze({
-    mirrorHash: "5f035dd1ffa287ea774c402cd0a4aa93df18ed0cc0d83d9749b7d011b1cee6bc",
-    reason: "保留状态技能重复触发，并区分触发次数与每次连击系数的结算和预览",
+    mirrorHash: "0c78c22eb8e58a26b715dfe98ae81a1d6ff3824d24a6fa2f267a6eeeaac14359",
+    reason: "保留状态技能重复触发，并补齐重组普通与应对防御两档状态写入",
   }),
   "src/domain/trait-effects.js": Object.freeze({
     mirrorHash: "26fa87354f6bd6727d1a5e2f84236b4d9ae0b9445df5d04b06b234e8a6fb5aeb",
@@ -82,8 +86,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留威力输入状态管理并停止延续已下线的技能能耗覆盖；按技能记忆状态触发次数，能力等级公式引用 domain/skill-result/numeric.js 单一权威",
   }),
   "src/state/battle-activation.js": Object.freeze({
-    mirrorHash: "af3de0aaf19a8a2621abe18aefccde6739db9fbe3a46517da90c865d93facd07",
-    reason: "保留既有战斗结算，并将状态触发次数传入状态效果核心",
+    mirrorHash: "77b69e9b6dc866eda6f1464563c27ffe47e7c58ae0914af8122bce413127effd",
+    reason: "保留既有战斗结算，并支持重组倍率状态直接替换而非重复累加",
   }),
   "src/state/reducer.js": Object.freeze({
     mirrorHash: "134b98a11bfe71961af92aa4919017e3105f1bd14dd25ce56698a937d19796c1",

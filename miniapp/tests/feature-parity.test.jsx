@@ -20,7 +20,10 @@ function snapshotFixture() {
   };
   return {
     learnsets: [
-      { spiritId: "attacker", skillIds: ["steam", "feather", "scratch"] },
+      {
+        spiritId: "attacker",
+        skillIds: ["steam", "feather", "reassembly", "scratch"],
+      },
       { spiritId: "defender", skillIds: ["scratch"] },
     ],
     meta: { id: "test-data", rulesVersion: "test-rules" },
@@ -45,6 +48,15 @@ function snapshotFixture() {
         id: "feather",
         name: "羽化加速",
         type: "翼",
+      },
+      {
+        basePower: 0,
+        category: "status",
+        description:
+          "下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。",
+        id: "reassembly",
+        name: "重组",
+        type: "幻",
       },
     ],
     spirits: [
@@ -307,6 +319,58 @@ describe("mini-program desktop feature parity", () => {
     expect(store.getState().directions.forward.overrides.fixedPowerAdd).toBe(40);
     expect(screen.getByText("全技能威力 +40")).toBeInTheDocument();
     expect(screen.queryByLabelText("静态威力")).not.toBeInTheDocument();
+  });
+
+  test("reapplies 重组 after its response toggle changes and carries it to an attack", () => {
+    const snapshot = snapshotFixture();
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({ type: "mode/set", value: "four" });
+    store.dispatch({
+      index: 0,
+      side: "attacker",
+      type: "side/set-four-skill",
+      value: { context: {}, skillId: "reassembly" },
+    });
+    store.dispatch({
+      index: 1,
+      side: "attacker",
+      type: "side/set-four-skill",
+      value: { skillId: "scratch" },
+    });
+
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    expect(store.getState().marks.attacker.positive).toEqual({
+      id: "reassembly",
+      stacks: 1,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "应对防御成功" }));
+    expect(store.getState().marks.attacker.positive).toEqual({
+      id: "reassembly",
+      stacks: 3,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "关闭伤害结果" }));
+    fireEvent.click(screen.getByRole("button", { name: "选择攻击方技能 2" }));
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "关闭攻击方技能 2选项" })[1],
+    );
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    const attackResult = createCalculationView(
+      snapshot,
+      store.getState(),
+      "forward",
+    ).rows[1];
+    expect(attackResult.reassemblyDamage).toBeGreaterThan(0);
+    expect(attackResult.totalDamage).toBe(
+      attackResult.mainDamage +
+        attackResult.additionalDamage +
+        attackResult.reassemblyDamage +
+        attackResult.traitDamage,
+    );
+    expect(screen.getByText(/重组（应对防御）：追加 300% 幻系伤害/u))
+      .toBeInTheDocument();
   });
 
   test("does not stack a selected status action after the workspace remounts", () => {

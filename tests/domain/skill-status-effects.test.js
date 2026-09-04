@@ -77,6 +77,40 @@ describe("skill status effects", () => {
     });
   });
 
+  test("重组提供应对防御勾选并写入下一次攻击的幻系追加伤害状态", () => {
+    expect(getSkillStatusEffectInputs(skill("重组"))).toEqual([
+      expect.objectContaining({
+        key: "counterDefenseSucceeded",
+        label: "应对防御成功",
+        type: "boolean",
+      }),
+    ]);
+    expect(resolveSkillStatusActivation(skill("重组"), {})).toMatchObject({
+      applied: true,
+      operations: {
+        markApplications: [
+          {
+            id: "reassembly",
+            mode: "replace",
+            polarity: "positive",
+            stacks: 1,
+            target: "self",
+          },
+        ],
+      },
+    });
+    expect(
+      resolveSkillStatusActivation(skill("重组"), {
+        counterDefenseSucceeded: true,
+      }),
+    ).toMatchObject({
+      applied: true,
+      operations: {
+        markApplications: [expect.objectContaining({ stacks: 3 })],
+      },
+    });
+  });
+
   test.each([
     [
       skill("蓄势待发", {

@@ -198,6 +198,7 @@ export function buildResultFormulaAudit(result) {
     skillName: result.skillName,
     total: {
       additionalDamage: Number(result.additionalDamage) || 0,
+      reassemblyDamage: Number(result.reassemblyDamage) || 0,
       finalMultiplier: settlementInput.finalDamageMultiplier ?? 1,
       hitCount,
       oneHitAfterFinal:

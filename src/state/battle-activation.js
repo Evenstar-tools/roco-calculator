@@ -168,15 +168,19 @@ function positiveMarkStacks(state, side) {
 
 function applyMark(state, side, application) {
   const current = state.marks?.[side]?.[application.polarity];
+  const requestedStacks = Math.max(
+    0,
+    Math.floor(Number(application.stacks) || 0),
+  );
+  const stacks = application.mode === "replace"
+    ? requestedStacks
+    : (current?.id === application.id ? Number(current.stacks) || 0 : 0) +
+      requestedStacks;
   state.marks = state.marks ?? {};
   state.marks[side] = state.marks[side] ?? {};
   state.marks[side][application.polarity] = {
     id: application.id,
-    stacks: Math.min(
-      99,
-      (current?.id === application.id ? Number(current.stacks) || 0 : 0) +
-        Number(application.stacks || 0),
-    ),
+    stacks: Math.min(99, stacks),
   };
 }
 

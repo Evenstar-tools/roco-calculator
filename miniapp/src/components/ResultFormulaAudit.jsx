@@ -283,6 +283,16 @@ export default function ResultFormulaAudit({ result }) {
             />
           </>
         ) : null}
+        {total.reassemblyDamage > 0 ? (
+          <>
+            <FormulaOperator>+</FormulaOperator>
+            <FormulaChip
+              label="重组追加"
+              tone="total"
+              value={displayFormulaNumber(total.reassemblyDamage)}
+            />
+          </>
+        ) : null}
         <FormulaOperator>=</FormulaOperator>
         <FormulaChip
           label="结果"

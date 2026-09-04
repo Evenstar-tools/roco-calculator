@@ -1,4 +1,8 @@
 import { calculateAllPanelStats, hasCompleteRaceStats } from "../../../domain/stat.js";
+import {
+  BEAST_FLOWER_TRAIT_NAME,
+  resolveBeastFlowerBloodline,
+} from "../../../domain/beast-flower-bloodline.js";
 import { createSpeedModifiers } from "./speed-modifiers.js";
 import { resolveSpiritFormRole } from "./spirit-form-role.js";
 
@@ -48,8 +52,14 @@ const SPEED_SPECIAL_CASES = Object.freeze([
   ["影狸", "positive-max", "嘲弄"],
   ["落陨星兔", "positive-max", "嘲弄"],
   ["海枝枝（翠绿纶布）", "positive-max", "嘲弄"],
+  ["海枝枝（碧蓝珊瑚）", "neutral-max", "嘲弄"],
+  ["梦悠悠（穿旧睡衣的样子）", "positive-max", "嘲弄"],
+  ["梦悠悠（穿旧睡衣的样子）", "neutral-max", "嘲弄"],
+  ["梦悠悠（穿星星睡衣的样子）", "positive-max", "嘲弄"],
+  ["梦悠悠（穿星星睡衣的样子）", "neutral-max", "嘲弄"],
   ["绒光优优", "positive-max", "哨兵"],
   ["朔夜伊芙", "neutral-max", "啮合传递"],
+  ["朔夜伊芙", "positive-max", "啮合传递"],
   ["声波缇塔", "positive-max", "啮合传递"],
   ["黑猫巫师", "positive-max", "预警"],
   ["黑猫巫师", "neutral-max", "预警"],
@@ -65,6 +75,16 @@ const SPEED_SPECIAL_CASES = Object.freeze([
   ["圣剑-X", "positive-max", "啮合传递"],
   ["圣剑-X", "neutral-zero", "啮合传递"],
   ["迪莫", "positive-max", "最好的伙伴", 1],
+  ["迪莫", "positive-max", "最好的伙伴", 2],
+  ["兽花蕾", "positive-max", "电血脉"],
+  ["火巨人", "positive-max", "淬炼火", 10],
+  ["蝎子王", "positive-max", "流沙统治者"],
+  ["夜枭", "positive-max", "快速移动"],
+  ["夜枭", "neutral-max", "快速移动"],
+  ["菊花梨", "neutral-zero", "示弱"],
+  ["卡洛儿", "neutral-max", "示弱", undefined, { allowUnlearnedSkill: true }],
+  ["古钟蛇", "positive-max", "示弱", undefined, { allowGrowth: true }],
+  ["寒音蛇", "positive-max", "示弱"],
 ]);
 
 function speedProfile(profileId) {
@@ -125,23 +145,30 @@ export function createSpeedSpecialTargets({ profileId = "positive-max", snapshot
   const profile = speedProfile(profileId);
   const spirits = snapshot?.spirits ?? [];
   const skills = snapshot?.skills ?? [];
+  const traits = snapshot?.traits ?? [];
   const learnsets = new Map(
     (snapshot?.learnsets ?? []).map((entry) => [entry.spiritId, entry.skillIds ?? []]),
   );
 
   return SPEED_SPECIAL_CASES
     .filter(([, caseProfileId]) => caseProfileId === profileId)
-    .flatMap(([spiritName, , sourceName, stack]) => {
+    .flatMap(([spiritName, , sourceName, stack, options = {}]) => {
       const spirit = spirits.find((entry) => entry.fullName === spiritName);
       if (!spirit || !hasCompleteRaceStats(spirit.raceStats)) return [];
       const form = resolveSpiritFormRole(spirit, {
         spiritFilterRevision: snapshot?.meta?.revisions?.spiritFilter,
       });
-      if (form.formRole !== "final" && form.formRole !== "boss") return [];
+      if (
+        form.formRole !== "final" &&
+        form.formRole !== "boss" &&
+        !(options.allowGrowth && form.formRole === "growth")
+      ) return [];
 
       const learnedIds = learnsets.get(spirit.id) ?? [];
       const sourceSkill = skills.find(
-        (skill) => skill.name === sourceName && learnedIds.includes(skill.id),
+        (skill) =>
+          skill.name === sourceName &&
+          (options.allowUnlearnedSkill || learnedIds.includes(skill.id)),
       );
       const extraElectricSkill = sourceName === "折射"
         ? skills.find((skill) => skill.type === "电" && learnedIds.includes(skill.id))
@@ -152,15 +179,28 @@ export function createSpeedSpecialTargets({ profileId = "positive-max", snapshot
         natureMultipliers: { speed: profile.natureMultiplier },
         raceStats: spirit.raceStats,
       }).speed;
-      const modifier = createSpeedModifiers({
-        configuration: { skills: { four: carriedSkills } },
-        currentSpeed: baseSpeed,
-        snapshot,
-        spirit,
-      }).find((entry) =>
-        entry.label.startsWith(sourceName) &&
-        (stack === undefined || entry.stack === stack),
+      const hasBeastFlowerTrait = (spirit.traitIds ?? []).some((traitId) =>
+        traits.find((trait) => trait.id === traitId)?.name === BEAST_FLOWER_TRAIT_NAME,
       );
+      const electricBloodline = sourceName === "电血脉" && hasBeastFlowerTrait
+        ? resolveBeastFlowerBloodline({
+            activated: true,
+            bloodlineType: "electric",
+            skill: {},
+          })
+        : null;
+      const modifier = electricBloodline
+        ? { amount: electricBloodline.ownerSpeedFlat }
+        : createSpeedModifiers({
+            configuration: { skills: { four: carriedSkills } },
+            currentSpeed: baseSpeed,
+            snapshot,
+            spirit,
+            traitStackLimit: Math.max(5, Number(stack) || 0),
+          }).find((entry) =>
+            entry.label.startsWith(sourceName) &&
+            (stack === undefined || entry.stack === stack),
+          );
       if (!modifier) return [];
 
       const label = specialLabel(sourceName, stack);

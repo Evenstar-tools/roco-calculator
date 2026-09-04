@@ -487,7 +487,90 @@ export default function BattleWorkspace({
     setFourSkill(side, index, next);
   }
 
+  function reapplyActiveStatusContext(action, context) {
+    if (!action || !selectedStatusActionActive) return false;
+    const history = resultActionHistoryRef.current;
+    let previousRecord = history.get(action.key);
+    if (!previousRecord) {
+      previousRecord = restorePersistedStatusAction(store.getState(), action);
+      if (previousRecord) history.set(action.key, previousRecord);
+    }
+    if (!previousRecord) return false;
+
+    const restored = restoreResultAction(store.getState(), previousRecord);
+    if (!restored.restored) {
+      setActionFeedback({
+        actionKey: action.key,
+        message: "状态已被其他条件修改，请重新触发后再调整",
+      });
+      return true;
+    }
+
+    const baseState = restored.state;
+    const actionDirection = action.side === "attacker" ? "forward" : "reverse";
+    if (action.mode === "single") {
+      baseState.directions[actionDirection] = {
+        ...baseState.directions[actionDirection],
+        context: {
+          ...(baseState.directions[actionDirection].context ?? {}),
+          ...context,
+        },
+      };
+    } else {
+      const entry = baseState.sides[action.side].skills.four[action.slotIndex];
+      baseState.sides[action.side].skills.four[action.slotIndex] = {
+        ...(entry && typeof entry === "object" ? entry : { skillId: entry }),
+        context: {
+          ...(entry && typeof entry === "object" ? entry.context ?? {} : {}),
+          ...context,
+        },
+      };
+    }
+
+    const updatedCalculation = createCalculationView(
+      snapshot,
+      baseState,
+      actionDirection,
+    );
+    const reapplied = applyBattleActivation({
+      calculation: {
+        [actionDirection]: { results: updatedCalculation.rows },
+      },
+      side: action.side,
+      skillIndex: action.slotIndex,
+      skillMode: action.mode,
+      snapshot,
+      state: baseState,
+    });
+    if (!reapplied.applied) {
+      dispatchWithUndo({ type: "state/replace", value: baseState });
+      history.delete(action.key);
+      setActionFeedback({
+        actionKey: action.key,
+        message: reapplied.reason ?? "当前状态无法重新触发",
+      });
+      return true;
+    }
+
+    const activatedState = persistStatusAction({
+      action,
+      afterState: reapplied.state,
+      beforeState: baseState,
+    });
+    dispatchWithUndo({ type: "state/replace", value: activatedState });
+    history.set(
+      action.key,
+      createResultActionRecord(action.key, baseState, activatedState),
+    );
+    setActionFeedback({
+      actionKey: action.key,
+      message: `${action.name}状态已按新条件更新`,
+    });
+    return true;
+  }
+
   function updateSkillContext(context) {
+    if (reapplyActiveStatusContext(selectedStatusAction, context)) return;
     if (
       selectedSkill?.name === "多维击打" &&
       Object.hasOwn(context, "enemyStarfallMarks")

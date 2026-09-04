@@ -118,7 +118,7 @@ test("速度排行榜按速度从高到低排列", () => {
   ]);
 });
 
-test("S3速度线特殊情况使用当前技能和特性数值", () => {
+test("速度线特殊情况使用当前技能、特性和血脉数值", () => {
   const snapshot = JSON.parse(readFileSync("data/snapshots/current.json", "utf8"));
   const targets = Object.keys(SPEED_TARGET_PROFILES).flatMap((profileId) =>
     createSpeedSpecialTargets({ profileId, snapshot }),
@@ -151,7 +151,24 @@ test("S3速度线特殊情况使用当前技能和特性数值", () => {
     ["圣剑-X", "positive-max", "啮合", 218],
     ["圣剑-X", "neutral-zero", "啮合", 161],
     ["迪莫", "positive-max", "最好的伙伴1层", 267],
+    ["海枝枝（碧蓝珊瑚）", "neutral-max", "嘲弄", 284],
+    ["梦悠悠（穿旧睡衣的样子）", "positive-max", "嘲弄", 324],
+    ["梦悠悠（穿旧睡衣的样子）", "neutral-max", "嘲弄", 290],
+    ["梦悠悠（穿星星睡衣的样子）", "positive-max", "嘲弄", 317],
+    ["梦悠悠（穿星星睡衣的样子）", "neutral-max", "嘲弄", 284],
+    ["兽花蕾", "positive-max", "电血脉", 354],
+    ["火巨人", "positive-max", "淬炼火10层", 266],
+    ["蝎子王", "positive-max", "流沙统治者", 278],
+    ["朔夜伊芙", "positive-max", "啮合", 284],
+    ["迪莫", "positive-max", "最好的伙伴2层", 312],
+    ["夜枭", "positive-max", "快速移动", 287],
+    ["夜枭", "neutral-max", "快速移动", 261],
+    ["菊花梨", "neutral-zero", "示弱", 256],
+    ["卡洛儿", "neutral-max", "示弱", 322],
+    ["古钟蛇", "positive-max", "示弱", 337],
+    ["寒音蛇", "positive-max", "示弱", 364],
   ]));
+  expect(actual).toHaveLength(36);
   expect(actual.some(([, , label]) => label.includes("+80") || label.includes("+100")))
     .toBe(false);
 });

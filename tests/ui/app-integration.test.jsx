@@ -53,6 +53,7 @@ const snapshot = {
         "wish-power-fire",
         "dimensional-hit",
         "bug-chirp",
+        "reassembly",
       ],
     },
     {
@@ -128,6 +129,17 @@ const snapshot = {
       name: "蓄势待发",
       ruleId: null,
       type: "地",
+    },
+    {
+      basePower: 0,
+      category: "status",
+      cost: null,
+      description:
+        "下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。",
+      id: "reassembly",
+      name: "重组",
+      ruleId: null,
+      type: "幻",
     },
     {
       basePower: 0,
@@ -2411,6 +2423,41 @@ test("Sunny buffs light attacking skills without changing other types", async ()
 
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(150);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3静态威力" })).toHaveValue(80);
+});
+
+test("重组应对防御勾选后，切换到攻击技能会自动带入追加幻伤", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+
+  const selections = [
+    ["攻击方技能1", "重组"],
+    ["攻击方技能2", "风力冲击"],
+  ];
+  for (const [label, name] of selections) {
+    const picker = screen.getByRole("combobox", { name: label });
+    await user.clear(picker);
+    await user.type(picker, name);
+    await user.click(screen.getByRole("option", { name: new RegExp(name) }));
+  }
+
+  const reassemblyRow = screen.getByRole("group", { name: "攻击方技能1" });
+  await user.click(
+    within(reassemblyRow).getByRole("checkbox", { name: "攻击方技能1应对防御成功" }),
+  );
+  await user.click(
+    within(reassemblyRow).getByText(
+      "下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。",
+    ),
+  );
+
+  await user.click(screen.getByRole("group", { name: "攻击方技能2" }));
+
+  expect(document.querySelector(".result-rail__skill")).toHaveTextContent("风力冲击");
+  expect(screen.getByRole("region", { name: "印记结算" })).toHaveTextContent(
+    /重组（应对防御）：追加 300% 幻系伤害 \d+/u,
+  );
 });
 
 test("uses the live attacker health percentage when activating Horse Stance", async () => {

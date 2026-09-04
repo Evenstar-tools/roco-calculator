@@ -74,6 +74,10 @@ export function mergeChoiceTraitResults(
       (total, result) => total + result.additionalDamage,
       0,
     ),
+    reassemblyDamage: results.reduce(
+      (total, result) => total + (Number(result.reassemblyDamage) || 0),
+      0,
+    ),
     traitDamage: results.reduce(
       (total, result) => total + (Number(result.traitDamage) || 0),
       0,
@@ -129,6 +133,9 @@ export function mergeGaleTurbineResults({
     ...turbineResult,
     additionalDamage:
       companionResult.additionalDamage + turbineResult.additionalDamage,
+    reassemblyDamage:
+      (Number(companionResult.reassemblyDamage) || 0) +
+      (Number(turbineResult.reassemblyDamage) || 0),
     traitDamage:
       (Number(companionResult.traitDamage) || 0) +
       (Number(turbineResult.traitDamage) || 0),

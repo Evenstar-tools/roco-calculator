@@ -1088,17 +1088,21 @@ function CalculatorWorkspace({ snapshot }) {
         ? side
         : side === "attacker" ? "defender" : "attacker";
       const currentMark = stateRef.current.marks?.[markSide]?.[markApplication.polarity];
+      const requestedStacks = Math.max(
+        0,
+        Math.floor(Number(markApplication.stacks) || 0),
+      );
+      const nextStacks = markApplication.mode === "replace"
+        ? requestedStacks
+        : (currentMark?.id === markApplication.id ? currentMark.stacks : 0) +
+          requestedStacks;
       dispatch({
         polarity: markApplication.polarity,
         side: markSide,
         type: "mark/update",
         value: {
           id: markApplication.id,
-          stacks: Math.min(
-            99,
-            (currentMark?.id === markApplication.id ? currentMark.stacks : 0) +
-              markApplication.stacks,
-          ),
+          stacks: Math.min(99, nextStacks),
         },
       });
     }

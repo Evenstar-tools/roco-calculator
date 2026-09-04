@@ -6,7 +6,10 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
-import { AdvancedOptions } from "../../src/components/AdvancedOptions.jsx";
+import {
+  AdvancedOptions,
+  buildFormulaAudit,
+} from "../../src/components/AdvancedOptions.jsx";
 import {
   CompactFourSkillEditor,
   CompactSingleSkillEditor,
@@ -45,6 +48,31 @@ const skills = [
     type: "水",
   },
 ];
+
+test("formula audit keeps 重组追加伤害 separate from 星陨", () => {
+  const audit = buildFormulaAudit({
+    additionalDamage: 0,
+    formulaSteps: [
+      {
+        after: 90,
+        before: 90,
+        input: { hitCount: 1, oneHitAfterFinal: 90 },
+        label: "减伤、连击与最终倍率",
+      },
+    ],
+    reassemblyDamage: 27,
+    skillName: "抓挠",
+    status: "exact",
+    totalDamage: 117,
+    traitDamage: 0,
+  });
+
+  expect(audit.total).toMatchObject({
+    additionalDamage: 0,
+    reassemblyDamage: 27,
+    value: 117,
+  });
+});
 
 test("雷暴来源显示悬停效果，并与星光狮特性迸发保持独立", async () => {
   const user = userEvent.setup();

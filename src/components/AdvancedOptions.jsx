@@ -102,6 +102,7 @@ export function buildFormulaAudit(result) {
     Math.floor(Number(settlementInput.hitCount ?? result.hitCount) || 1),
   );
   const additionalDamage = Number(result.additionalDamage) || 0;
+  const reassemblyDamage = Number(result.reassemblyDamage) || 0;
   const traitDamage = Number(result.traitDamage) || 0;
 
   return {
@@ -148,6 +149,7 @@ export function buildFormulaAudit(result) {
         settlementInput.oneHitAfterFinal ?? settlement?.before,
       hitCount,
       additionalDamage,
+      reassemblyDamage,
       traitDamage,
       value: result.totalDamage,
     },
@@ -388,6 +390,16 @@ export function FormulaAudit({ result }) {
           <>
             <Operator>+</Operator>
             <AuditChip label="星陨追加" tone="total" value={displayNumber(total.additionalDamage)} />
+          </>
+        ) : null}
+        {total.reassemblyDamage > 0 ? (
+          <>
+            <Operator>+</Operator>
+            <AuditChip
+              label="重组追加"
+              tone="total"
+              value={displayNumber(total.reassemblyDamage)}
+            />
           </>
         ) : null}
         {total.traitDamage > 0 ? (

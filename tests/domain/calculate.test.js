@@ -3648,6 +3648,27 @@ describe("calculateMatchup", () => {
       countered.totalDamage - countered.mainDamage - countered.additionalDamage;
     expect(normalExtra).toBeGreaterThan(0);
     expect(counteredExtra).toBeGreaterThan(normalExtra);
+    expect(normal.reassemblyDamage).toBe(normalExtra);
+    expect(countered.reassemblyDamage).toBe(counteredExtra);
+    expect(normal.markSettlements).toContainEqual(
+      expect.objectContaining({
+        damage: normalExtra,
+        markId: "reassembly",
+        status: "applied",
+        text: `重组：追加 100% 幻系伤害 ${normalExtra}`,
+      }),
+    );
+    expect(countered.markSettlements).toContainEqual(
+      expect.objectContaining({
+        damage: counteredExtra,
+        markId: "reassembly",
+        status: "applied",
+        text: `重组（应对防御）：追加 300% 幻系伤害 ${counteredExtra}`,
+      }),
+    );
+    expect(countered.formulaSteps).toContainEqual(
+      expect.objectContaining({ label: "重组追加伤害" }),
+    );
   });
 
   test("new power override wins over every legacy manual power field", () => {

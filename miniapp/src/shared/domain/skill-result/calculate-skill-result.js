@@ -956,8 +956,22 @@ export function calculateSkillResult({
     side: targetSide,
     skill,
   });
+  const reassemblySettlement = reassemblyMultiplier > 0
+    ? {
+        damage: reassembly.total,
+        markId: "reassembly",
+        name: "重组",
+        side: sourceSide,
+        stacks: reassemblyMultiplier,
+        status: "applied",
+        text: reassemblyMultiplier >= 3
+          ? `重组（应对防御）：追加 300% 幻系伤害 ${reassembly.total}`
+          : `重组：追加 100% 幻系伤害 ${reassembly.total}`,
+      }
+    : null;
   const markSettlements = [
     ...sourceMarkEffects.settlements,
+    ...(reassemblySettlement ? [reassemblySettlement] : []),
     ...(targetMarkSettlement ? [targetMarkSettlement] : []),
   ];
   const traitSettlements = [
@@ -1275,6 +1289,21 @@ export function calculateSkillResult({
       additionalDamage.total,
       "reviewed-rule:starfall-v1",
     ),
+    ...(reassemblyMultiplier > 0
+      ? [
+          formulaStep(
+            "重组追加伤害",
+            {
+              multiplier: reassemblyMultiplier,
+              power: reassembly.power,
+              typeMultiplier: reassembly.typeMultiplier,
+            },
+            mainDamage.total + additionalDamage.total,
+            reassembly.total,
+            "reviewed-rule:reassembly-v1",
+          ),
+        ]
+      : []),
     ...(clownTrick.active
       ? [
           formulaStep(
@@ -1408,6 +1437,7 @@ export function calculateSkillResult({
     totalDamage,
     mainDamage: mainDamage.total,
     additionalDamage: additionalDamage.total,
+    reassemblyDamage: reassembly.total,
     traitDamage: clownTrick.damage,
     combatPanel,
     markSettlements,

@@ -45,6 +45,22 @@ const STATUS_EFFECTS = Object.freeze({
   热身运动: { ownHitCountAdd: 3 },
   惊鸿一瞥: { ownHitCountAdd: 1 },
   仰望夜空: { ownAttack: 7, ownDefense: 7 },
+  重组: {
+    inputs: [booleanInput("counterDefenseSucceeded", "应对防御成功")],
+    operations(context) {
+      return {
+        markApplications: [
+          {
+            id: "reassembly",
+            mode: "replace",
+            polarity: "positive",
+            stacks: context.counterDefenseSucceeded === true ? 3 : 1,
+            target: "self",
+          },
+        ],
+      };
+    },
+  },
   芳香诱引: { ownHitCountAdd: 2 },
   羽翼庇护: {
     inputs: [booleanInput("counterAttackSucceeded", "应对攻击成功")],
@@ -775,6 +791,7 @@ export function resolveSkillStatusActivation(skill, context = {}) {
   const applied =
     Object.values(deltas).some((value) => value !== 0) ||
     markApplications.length > 0 ||
+    (operations.markApplications ?? []).length > 0 ||
     Object.values(operations).some(
       (value) => value === true || (Number.isFinite(Number(value)) && Number(value) !== 0),
     );

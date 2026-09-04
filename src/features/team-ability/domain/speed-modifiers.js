@@ -61,7 +61,7 @@ function skillSpeedModifiers(configuration, skillsById) {
   });
 }
 
-function traitSpeedModifiers(spirit, traitsById, currentSpeed) {
+function traitSpeedModifiers(spirit, traitsById, currentSpeed, traitStackLimit) {
   return (spirit?.traitIds ?? []).flatMap((traitId) => {
     const trait = traitsById[traitId];
     if (!trait) return [];
@@ -91,7 +91,7 @@ function traitSpeedModifiers(spirit, traitsById, currentSpeed) {
     if (rule.speedEffect === undefined) return [];
 
     const stacks = rule.stack
-      ? Math.min(5, Number(rule.max ?? rule.stack.max ?? 5))
+      ? Math.min(traitStackLimit, Number(rule.max ?? rule.stack.max ?? traitStackLimit))
       : 1;
     const speedEffect = Number(rule.speedEffect ?? 0);
     if (!Number.isFinite(speedEffect) || speedEffect <= 0) return [];
@@ -118,12 +118,19 @@ export function createSpeedModifiers({
   currentSpeed,
   snapshot,
   spirit,
+  traitStackLimit = 5,
 } = {}) {
   const normalizedSpeed = Number(currentSpeed);
   if (!Number.isFinite(normalizedSpeed) || normalizedSpeed <= 0) return [];
+  const normalizedTraitStackLimit = Math.max(1, Math.floor(Number(traitStackLimit) || 5));
   const indexes = getSnapshotIndexes(snapshot);
   return [
     ...skillSpeedModifiers(configuration, indexes.skills),
-    ...traitSpeedModifiers(spirit, indexes.traits, normalizedSpeed),
+    ...traitSpeedModifiers(
+      spirit,
+      indexes.traits,
+      normalizedSpeed,
+      normalizedTraitStackLimit,
+    ),
   ];
 }

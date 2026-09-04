@@ -346,6 +346,78 @@ describe("result bar and sheet", () => {
     expect(screen.getByText("总伤害")).toBeInTheDocument();
   });
 
+  test("shows 重组 as a separate total term and a concise settlement note", () => {
+    const selectedResult = {
+      additionalDamage: 0,
+      formulaSteps: [
+        {
+          after: 100,
+          before: 100,
+          input: "physicalAttack",
+          label: "攻击面板",
+        },
+        {
+          after: 90,
+          before: 90,
+          input: {
+            attackerStat: 100,
+            calculationPower: 50,
+            coefficient: 37 / 41,
+            defenderDefense: 50,
+            displayedPower: 50,
+            roundedNumerator: 4500,
+          },
+          label: "等级系数与攻防比",
+        },
+        {
+          after: 90,
+          before: 90,
+          input: {
+            finalDamageMultiplier: 1,
+            hitCount: 1,
+            oneHitAfterFinal: 90,
+          },
+          label: "减伤、连击与最终倍率",
+        },
+      ],
+      hpPercent: 30,
+      mainDamage: 90,
+      markSettlements: [{
+        damage: 27,
+        markId: "reassembly",
+        side: "attacker",
+        stacks: 3,
+        status: "applied",
+        text: "重组（应对防御）：追加 300% 幻系伤害 27",
+      }],
+      reassemblyDamage: 27,
+      remainingHp: 273,
+      skillName: "抓挠",
+      status: "exact",
+      totalDamage: 117,
+      traitDamage: 0,
+    };
+    render(
+      <ResultSheet
+        onClose={() => {}}
+        onSelectSkill={() => {}}
+        open
+        selectedIndex={0}
+        view={{
+          attackerName: "测试攻方",
+          defenderName: "测试守方",
+          rows: [selectedResult],
+          selectedResult,
+          status: "exact",
+        }}
+      />,
+    );
+
+    expect(screen.getByText("重组追加")).toBeInTheDocument();
+    expect(screen.getByText("重组（应对防御）：追加 300% 幻系伤害 27"))
+      .toBeInTheDocument();
+  });
+
   test("keeps the Baron Greed settlement in two readable lines", () => {
     render(
       <ResultSheet

@@ -95,6 +95,15 @@ function createSnapshot() {
       {
         basePower: 0,
         category: "status",
+        description:
+          "下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。",
+        id: "reassembly",
+        name: "重组",
+        type: "幻",
+      },
+      {
+        basePower: 0,
+        category: "status",
         id: "refraction",
         name: "折射",
         type: "光",
@@ -529,6 +538,59 @@ describe("shared battle activation", () => {
     expect(marked.state.marks.defender.negative).toEqual({
       id: "starfall",
       stacks: 2,
+    });
+  });
+
+  test("重组点击后持久化到下一招，并由应对防御分支直接替换倍率", () => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.skills.four = [
+      { context: {}, skillId: "reassembly" },
+      "scratch",
+      null,
+      null,
+    ];
+
+    const normal = applyBattleActivation({
+      calculation: { forward: { results: [] } },
+      side: "attacker",
+      skillIndex: 0,
+      snapshot,
+      state,
+    });
+    expect(normal.state.marks.attacker.positive).toEqual({
+      id: "reassembly",
+      stacks: 1,
+    });
+
+    normal.state.sides.attacker.skills.four[0].context = {
+      counterDefenseSucceeded: true,
+    };
+    const countered = applyBattleActivation({
+      calculation: { forward: { results: [] } },
+      side: "attacker",
+      skillIndex: 0,
+      snapshot,
+      state: normal.state,
+    });
+    expect(countered.state.marks.attacker.positive).toEqual({
+      id: "reassembly",
+      stacks: 3,
+    });
+
+    countered.state.sides.attacker.skills.four[0].context = {};
+    const resetToNormal = applyBattleActivation({
+      calculation: { forward: { results: [] } },
+      side: "attacker",
+      skillIndex: 0,
+      snapshot,
+      state: countered.state,
+    });
+    expect(resetToNormal.state.marks.attacker.positive).toEqual({
+      id: "reassembly",
+      stacks: 1,
     });
   });
 
