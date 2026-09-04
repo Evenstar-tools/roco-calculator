@@ -9,6 +9,14 @@ const teamAnalysisPanel = readFileSync(
   path.join(process.cwd(), "src", "components", "TeamAnalysisPanel.jsx"),
   "utf8",
 );
+const teamWorkbenchCss = readFileSync(
+  path.join(process.cwd(), "src", "styles", "18-team-ability-workbench.css"),
+  "utf8",
+);
+const responsiveMobileCss = readFileSync(
+  path.join(process.cwd(), "src", "styles", "13-responsive-mobile.css"),
+  "utf8",
+);
 
 function ruleBody(selector) {
   const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -22,6 +30,15 @@ function readRule(selector) {
 }
 
 describe("responsive layout contracts", () => {
+  test("wraps the six team slots into 3x2 or 2x3 grids on narrow screens", () => {
+    expect(teamWorkbenchCss).toMatch(
+      /@media \(max-width: 1023px\)[\s\S]*?\.team-workbench \.team-roster \{[\s\S]*?overflow-x: visible;[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);[\s\S]*?grid-auto-flow: row;/,
+    );
+    expect(teamWorkbenchCss).toMatch(
+      /@media \(max-width: 560px\) \{\s*\.team-workbench \.team-roster \{\s*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/,
+    );
+  });
+
   test("hides the team label with the other header labels at narrow widths", () => {
     expect(css).toMatch(
       /@media \(max-width: 760px\) \{[\s\S]{0,700}\.view-mode-switch button span \{[\s\S]*?display: none;[\s\S]{0,500}\.team-action span \{[\s\S]*?display: none;/,
@@ -29,6 +46,20 @@ describe("responsive layout contracts", () => {
     expect(css).toMatch(
       /@media \(max-width: 760px\) \{[\s\S]{0,900}\.team-action \{[\s\S]*?width: 38px;[\s\S]*?padding: 0;/,
     );
+  });
+
+  test("keeps the team label visible on tablet-width headers", () => {
+    const tabletStart = responsiveMobileCss.indexOf("@media (max-width: 1080px)");
+    const tabletEnd = responsiveMobileCss.indexOf(
+      "@media (max-width: 760px)",
+      tabletStart,
+    );
+    const tabletRules = responsiveMobileCss.slice(tabletStart, tabletEnd);
+
+    expect(tabletStart).toBeGreaterThanOrEqual(0);
+    expect(tabletEnd).toBeGreaterThan(tabletStart);
+    expect(tabletRules).not.toMatch(/\.team-action\s*\{\s*width:\s*38px/s);
+    expect(tabletRules).not.toMatch(/\.team-action span\s*\{[^}]*display:\s*none/s);
   });
 
   test("keeps the undo count badge inside the draggable button safe area", () => {

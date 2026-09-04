@@ -49,13 +49,16 @@ export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
     title: "S4更新",
     items: [
       {
-        title: "S4热门配置",
+        title: "S4新精灵前瞻",
+        description: "可直接选择11只新精灵，体验新特性、新技能和前瞻配置。",
       },
       {
-        title: "技能临时图标",
+        title: "综合耐久显示",
+        description: "同时查看物理、魔法与综合耐久，更方便比较精灵的生存能力。",
       },
       {
-        title: "结算校正",
+        title: "精灵能力分析功能",
+        description: "在队伍中查看耐久排行、个体方案和速度线，并可直接应用配置。",
       },
     ],
   },
@@ -63,8 +66,8 @@ export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
     {
       kind: "feature",
       items: [
-        "11只新精灵配置补齐并置顶。",
-        "26个新技能补入分类和临时图，数值可手填。",
+        "11只新精灵配置补齐，增加NEW标识并按是否导入热门配置优先展示。",
+        "26个新技能补入分类和临时图；未知威力可手填，能耗等待正式资料补齐。",
         "重组支持双系伤害，耐久榜自动定位",
       ],
     },
@@ -74,6 +77,7 @@ export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
         "雷暴、生物电、超导和蓄电联动，印记不重复。",
         "威力显示四舍五入，实际值不提前取整，单段向下取整。",
         "虫鸣可手填连击；热门预设性格和个体已修正。",
+        "竖屏队伍槽位改为3×2或2×3，平板宽度恢复顶部队伍文字。",
       ],
     },
   ],

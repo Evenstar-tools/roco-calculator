@@ -4536,7 +4536,7 @@ describe("calculateMatchup", () => {
     });
   });
 
-  test("calculates a partially known S4 attack after manual power and cost input", () => {
+  test("calculates a partially known S4 attack from manual power without reviving a stored cost override", () => {
     const previewSkill = {
       basePower: null,
       calculationStatus: "pending-skill-data",
@@ -4569,10 +4569,10 @@ describe("calculateMatchup", () => {
     ).forward.selectedResult;
 
     expect(result).toMatchObject({
-      skillCost: 4,
       staticPower: 90,
       status: "exact",
     });
+    expect(result.skillCost).toBeUndefined();
     expect(result.totalDamage).toBeGreaterThan(0);
   });
 

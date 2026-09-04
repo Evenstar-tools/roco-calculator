@@ -16,9 +16,7 @@ function dexNo(spirit) {
 }
 
 function isS4PreviewFinalSpirit(spirit) {
-  const identity = spirit?.provenance?.previewIdentity;
-  return identity?.isFinal === true &&
-    String(identity.catalogId ?? "").startsWith("s4-preview-new-spirits-");
+  return Boolean(spirit?.changeInfo?.isNew && spirit.previewDefaults);
 }
 
 function isPendingS4PreviewFinalSpirit(spirit) {
@@ -42,22 +40,23 @@ function compareDexOrder(left, right) {
   );
 }
 
-function compareDefaultPreviewOrder(left, right) {
+function compareSavedPreviewOrder(left, right) {
   const leftPending = isPendingS4PreviewFinalSpirit(left);
   const rightPending = isPendingS4PreviewFinalSpirit(right);
   if (leftPending !== rightPending) return leftPending ? -1 : 1;
   if (leftPending) {
-    return String(
-      left.provenance.previewIdentity.candidateRowKey ?? left.fullName ?? "",
-    ).localeCompare(
-      String(
-        right.provenance.previewIdentity.candidateRowKey ?? right.fullName ?? "",
-      ),
-      "zh-CN",
-      { numeric: true },
-    );
+    if (left.fullName === "银月狼王") return -1;
+    if (right.fullName === "银月狼王") return 1;
+    return 0;
   }
   return compareDexOrder(left, right);
+}
+
+function compareDefaultPreviewOrder(left, right) {
+  const leftDefault = left.fullName === "迪莫";
+  const rightDefault = right.fullName === "迪莫";
+  if (leftDefault !== rightDefault) return leftDefault ? -1 : 1;
+  return compareSavedPreviewOrder(left, right);
 }
 
 function uniqueSpirits(spirits) {
@@ -122,7 +121,7 @@ export function SpiritPicker({
       const orderedRoster = [...direct].sort(compareDefaultPreviewOrder);
       const previewItems = favoriteCount
         ? uniqueSpirits([...previewFinals, ...favorites])
-            .sort(compareDefaultPreviewOrder)
+            .sort(compareSavedPreviewOrder)
         : orderedRoster;
       const visibleCount = Math.min(previewItems.length, previewLimit);
       return {
@@ -287,7 +286,9 @@ export function SpiritPicker({
                   ) : null}
                   <span>
                     <span className="spirit-picker__option-title">
-                      <strong>{spirit.fullName}</strong>
+                      <strong data-new={isS4PreviewFinalSpirit(spirit) || undefined}>
+                        {spirit.fullName}
+                      </strong>
                       <EntityChangeHint changeInfo={spirit.changeInfo} />
                     </span>
                     <small>
@@ -337,7 +338,9 @@ export function SpiritPicker({
           ) : null}
           <div className="spirit-card__identity">
             <span className="spirit-card__title">
-              <strong>{selected.fullName}</strong>
+              <strong data-new={isS4PreviewFinalSpirit(selected) || undefined}>
+                {selected.fullName}
+              </strong>
               <EntityChangeHint changeInfo={selected.changeInfo} />
             </span>
             <div className="spirit-card__tags">

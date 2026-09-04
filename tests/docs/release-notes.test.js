@@ -54,6 +54,19 @@ describe("版本记录", () => {
     expect(featuredRelease.highlights.join("\n")).not.toContain("9月10日");
   });
 
+  test("新功能弹窗只展示用户可直接使用的功能", () => {
+    expect(featuredRelease.whatsNew.items.map(({ title }) => title)).toEqual([
+      "S4新精灵前瞻",
+      "综合耐久显示",
+      "精灵能力分析功能",
+    ]);
+    expect(featuredRelease.whatsNew.items.every(({ description }) =>
+      description?.trim().length > 0
+    )).toBe(true);
+    expect(featuredRelease.whatsNew.items.map(({ title }) => title).join("\n"))
+      .not.toMatch(/修复|校正|临时图标/u);
+  });
+
   test("全部版本按新增功能、修复与优化分类", () => {
     const allowedKinds = new Set(["feature", "fix"]);
 

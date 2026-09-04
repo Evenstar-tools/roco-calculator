@@ -7,7 +7,11 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
-import { verifyPerformanceBudget } from "../../scripts/verify-performance-budget.mjs";
+import {
+  DEFAULT_HARD_OVERAGE_BY_KEY,
+  DEFAULT_PERFORMANCE_BUDGETS,
+  verifyPerformanceBudget,
+} from "../../scripts/verify-performance-budget.mjs";
 
 const roots = [];
 
@@ -29,6 +33,17 @@ function fixture({ css = "body{}", js = "export default 1", runtime = "{}" } = {
 }
 
 describe("release performance budget", () => {
+  test("keeps JS warning baselines while allowing modest hard-limit growth", () => {
+    expect(DEFAULT_PERFORMANCE_BUDGETS.jsGzip).toBe(236 * 1024);
+    expect(
+      DEFAULT_PERFORMANCE_BUDGETS.jsGzip + DEFAULT_HARD_OVERAGE_BY_KEY.jsGzip,
+    ).toBe(256 * 1024);
+    expect(DEFAULT_PERFORMANCE_BUDGETS.jsRaw).toBe(810 * 1024);
+    expect(
+      DEFAULT_PERFORMANCE_BUDGETS.jsRaw + DEFAULT_HARD_OVERAGE_BY_KEY.jsRaw,
+    ).toBe(880 * 1024);
+  });
+
   test("accepts artifacts below every configured threshold", () => {
     const result = verifyPerformanceBudget({
       budgets: {

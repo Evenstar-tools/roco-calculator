@@ -120,7 +120,6 @@ function SkillSide({
   onSkillContextChange,
   onSkillFocus,
   onSkillHitCountChange,
-  onSkillCostChange,
   onSkillPowerClear,
   onSkillPowerChange,
   onSkillSelect,
@@ -491,30 +490,9 @@ function SkillSide({
                     ? `${result?.typeLabel ?? selected.type}·${CATEGORY_LABELS[selected.category]?.slice(0, 1) ?? "—"}`
                     : "—"}
                 </span>
-                {selected?.calculationStatus === "pending-skill-data" ? (
-                  <input
-                    aria-label={`${label}技能${index + 1}能耗`}
-                    className="skill-slot__cost-input"
-                    max="99"
-                    min="0"
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      onSkillCostChange?.(
-                        side,
-                        index,
-                        value === "" ? null : Math.min(99, Math.max(0, Number(value))),
-                      );
-                    }}
-                    placeholder="—"
-                    step="1"
-                    type="number"
-                    value={selected.slotCostOverride ?? ""}
-                  />
-                ) : (
-                  <span className="skill-slot__cost">
-                    {result?.skillCost ?? selected?.cost ?? "—"}
-                  </span>
-                )}
+                <span className="skill-slot__cost">
+                  {result?.skillCost ?? selected?.cost ?? "—"}
+                </span>
                 <PowerDraftInput
                   ariaLabel={`${label}技能${index + 1}${
                     powerDisplayMode === "panel" ? "显示威力" : "静态威力"
@@ -779,7 +757,6 @@ export function FourSkillEditor({
   onSkillContextChange,
   onSkillFocus,
   onSkillHitCountChange,
-  onSkillCostChange,
   onSkillPowerClear,
   onSkillPowerChange,
   onSkillSelect,
@@ -851,7 +828,6 @@ export function FourSkillEditor({
         onHealthPercentChange={onHealthPercentChange}
         onSkillFocus={onSkillFocus}
         onSkillHitCountChange={onSkillHitCountChange}
-        onSkillCostChange={onSkillCostChange}
         onSkillPowerClear={onSkillPowerClear}
         onSkillPowerChange={onSkillPowerChange}
         onSkillSelect={onSkillSelect}

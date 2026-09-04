@@ -229,9 +229,10 @@ test("spirit picker falls back to dex order when there are no favorites", async 
   ).toEqual(["前位精灵100", "后位精灵200"]);
 });
 
-test("spirit picker pins the eleven pending S4 final forms before saved configurations", async () => {
+test("spirit picker starts with Dimo then the eleven new final forms before any config import", async () => {
   const user = userEvent.setup();
   const previewNames = [
+    "银月狼王",
     "测风蝉",
     "智辉章脑",
     "玳塔",
@@ -242,22 +243,75 @@ test("spirit picker pins the eleven pending S4 final forms before saved configur
     "星星眼",
     "月使鹭纳",
     "圣凯布米龙",
-    "银月狼王",
   ];
   const previewFinals = previewNames.map((fullName, index) => ({
+    changeInfo: { entityName: fullName, isNew: true, items: [] },
     dexNo: null,
     evolutionChainIds: [`preview-${index + 1}`],
     favoriteState: null,
     fullName,
     id: `preview-${index + 1}`,
-    provenance: {
-      previewIdentity: {
-        candidateRowKey: `s4-family-${String(index + 1).padStart(2, "0")}-form-02`,
-        catalogId: "s4-preview-new-spirits-2026-09-02",
-        formalIdPending: true,
-        isFinal: true,
-      },
-    },
+    previewDefaults: { natureId: "cheerful" },
+  }));
+  render(
+    <SpiritPicker
+      favoriteState={null}
+      label="攻击方"
+      onFavoriteToggle={vi.fn()}
+      onSelect={vi.fn()}
+      selected={null}
+      side="attack"
+      spirits={[
+        {
+          dexNo: "200",
+          evolutionChainIds: ["ordinary"],
+          favoriteState: null,
+          fullName: "普通精灵",
+          id: "ordinary",
+        },
+        ...previewFinals,
+        {
+          dexNo: "001",
+          evolutionChainIds: ["dimo"],
+          favoriteState: null,
+          fullName: "迪莫",
+          id: "dimo",
+        },
+      ]}
+    />,
+  );
+
+  await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  expect(
+    screen.getAllByRole("option").map((option) =>
+      option.querySelector("strong")?.textContent,
+    ),
+  ).toEqual(["迪莫", ...previewNames]);
+});
+
+test("spirit picker pins the eleven pending S4 final forms before saved configurations", async () => {
+  const user = userEvent.setup();
+  const previewNames = [
+    "银月狼王",
+    "测风蝉",
+    "智辉章脑",
+    "玳塔",
+    "摇铃魔偶",
+    "未完虫",
+    "黑手浣熊",
+    "布灵布灵",
+    "星星眼",
+    "月使鹭纳",
+    "圣凯布米龙",
+  ];
+  const previewFinals = previewNames.map((fullName, index) => ({
+    changeInfo: { entityName: fullName, isNew: true, items: [] },
+    dexNo: null,
+    evolutionChainIds: [`preview-${index + 1}`],
+    favoriteState: null,
+    fullName,
+    id: `preview-${index + 1}`,
+    previewDefaults: { natureId: "cheerful" },
   }));
   render(
     <SpiritPicker
@@ -274,13 +328,7 @@ test("spirit picker pins the eleven pending S4 final forms before saved configur
           favoriteState: null,
           fullName: "量风碗",
           id: "preview-placeholder",
-          provenance: {
-            previewIdentity: {
-              catalogId: "s4-preview-new-spirits-2026-09-02",
-              formalIdPending: true,
-              isFinal: false,
-            },
-          },
+          changeInfo: { entityName: "量风碗", isNew: true, items: [] },
         },
         {
           dexNo: "200",
@@ -334,13 +382,12 @@ test("spirit picker returns S4 final forms to dex order after IDs arrive", async
           favoriteState: null,
           fullName: "已有图鉴号的新精灵",
           id: "preview-final",
-          provenance: {
-            previewIdentity: {
-              catalogId: "s4-preview-new-spirits-2026-09-02",
-              formalIdPending: false,
-              isFinal: true,
-            },
+          changeInfo: {
+            entityName: "已有图鉴号的新精灵",
+            isNew: true,
+            items: [],
           },
+          previewDefaults: { natureId: "cheerful" },
         },
         {
           dexNo: "100",
@@ -361,12 +408,16 @@ test("spirit picker returns S4 final forms to dex order after IDs arrive", async
     "已有图鉴号的新精灵150",
     "后位配置200",
   ]);
+  expect(
+    screen.getByText("已有图鉴号的新精灵", { selector: "strong" }),
+  ).toHaveAttribute("data-new", "true");
 });
 
 test("spirit picker marks a selected S4 placeholder as not calculable", async () => {
   const placeholder = {
     assetUrl: "/assets/spirits/preview.png",
     calculationStatus: "pending-race-stats",
+    changeInfo: { entityName: "量风碗", isNew: true, items: [] },
     fullName: "量风碗",
     id: "preview-spirit",
     stage: "一阶",
@@ -388,9 +439,15 @@ test("spirit picker marks a selected S4 placeholder as not calculable", async ()
 
   expect(screen.getByText("种族值待确认"))
     .toBeVisible();
+  expect(
+    screen.getByText("量风碗", { selector: ".spirit-card__title strong" }),
+  ).not.toHaveAttribute("data-new");
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
-  expect(screen.getByRole("option", { name: /量风碗/ }))
-    .toHaveTextContent("种族值待确认");
+  const placeholderOption = screen.getByRole("option", { name: /量风碗/ });
+  expect(placeholderOption).toHaveTextContent("种族值待确认");
+  expect(placeholderOption.querySelector("strong")).not.toHaveAttribute(
+    "data-new",
+  );
   expect(screen.queryByText(/9\.10/u)).not.toBeInTheDocument();
 });
 

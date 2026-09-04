@@ -2045,13 +2045,13 @@
 
   .team-workbench .team-roster {
     display: grid;
+    width: 100%;
     min-width: 0;
     padding: 1px 2px 5px;
-    overflow-x: auto;
-    grid-template-columns: repeat(6, 150px);
-    grid-auto-flow: column;
+    overflow-x: visible;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-flow: row;
     gap: 7px;
-    overscroll-behavior-inline: contain;
   }
 
   .team-workbench .team-slot {
@@ -2197,7 +2197,7 @@
   .team-workbench .team-roster {
     width: 100%;
     max-width: 100%;
-    grid-template-columns: repeat(6, 154px);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .team-workbench .team-slot {
@@ -2783,6 +2783,12 @@
 
   .ability-ranking-table tbody td:nth-child(5)::before {
     content: "综合耐久";
+  }
+}
+
+@media (max-width: 560px) {
+  .team-workbench .team-roster {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

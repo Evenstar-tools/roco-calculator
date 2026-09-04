@@ -112,6 +112,7 @@ test("introduces the current release and opens the team workspace", () => {
   ).toBeVisible();
   for (const item of FEATURED_USER_RELEASE.whatsNew.items) {
     expect(within(dialog).getByText(item.title)).toBeVisible();
+    expect(within(dialog).getByText(item.description)).toBeVisible();
   }
   fireEvent.click(within(dialog).getByRole("button", { name: "打开队伍" }));
   expect(onOpenTeam).toHaveBeenCalledOnce();

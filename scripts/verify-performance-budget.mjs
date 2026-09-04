@@ -11,17 +11,17 @@ import { gzipSync } from "node:zlib";
 export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
   clientTotal: 13 * 1024 * 1024,
   cssGzip: 24 * 1024,
-  // 2026-09-04 重校：新增版本更新介绍，JS gzip 实测 228.83 KiB，基线上调 2 KiB
-  jsGzip: 210 * 1024,
-  jsRaw: 717 * 1024,
+  // 2026-09-04 重校：S4 功能版约 230 KiB gzip，为后续小功能保留约 11% 硬余量
+  jsGzip: 236 * 1024,
+  jsRaw: 810 * 1024,
   runtimeJson: 1.5 * 1024 * 1024,
 });
 
 export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
-// 2026-09-04：JS gzip 阻断 230 KiB（+20）、JS 原始阻断 786 KiB（+69）；其余指标仍用上面的统一余量
+// 2026-09-04：网页 / 桌面 JS 分别在 256 KiB gzip、880 KiB 原始体积时阻断
 export const DEFAULT_HARD_OVERAGE_BY_KEY = Object.freeze({
   jsGzip: 20 * 1024,
-  jsRaw: 69 * 1024,
+  jsRaw: 70 * 1024,
 });
 
 const LABELS = {

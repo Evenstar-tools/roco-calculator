@@ -140,7 +140,7 @@ test("switches between static and panel power overrides and restores automatic c
   });
 });
 
-test("allows manual cost and static power input for a partially known S4 skill", () => {
+test("allows manual static power without editable cost for a partially known S4 skill", () => {
   const onDirectionChange = vi.fn();
   render(
     <SkillConditionEditor
@@ -163,15 +163,8 @@ test("allows manual cost and static power input for a partially known S4 skill",
 
   expect(screen.getByText("基础威力 待补")).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "显示威力" })).not.toBeInTheDocument();
-  expect(screen.getByLabelText("技能能耗")).toHaveValue(null);
+  expect(screen.queryByLabelText("技能能耗")).not.toBeInTheDocument();
   expect(screen.getByLabelText("静态威力")).toHaveValue(null);
-
-  fireEvent.input(screen.getByLabelText("技能能耗"), {
-    target: { value: "4" },
-  });
-  expect(onDirectionChange).toHaveBeenLastCalledWith({
-    overrides: { costOverride: 4 },
-  });
   fireEvent.input(screen.getByLabelText("静态威力"), {
     target: { value: "90" },
   });

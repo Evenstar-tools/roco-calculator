@@ -72,7 +72,7 @@ describe("移动端实体改动提示", () => {
     expect(screen.queryByRole("dialog", { name: "攻击方技能 1选项" })).not.toBeInTheDocument();
   });
 
-  test("S4 全新精灵和技能不显示改动叹号", () => {
+  test("S4 全新精灵显示 NEW 标识，技能仍不显示改动叹号", () => {
     const newSpirit = {
       id: "silver-moon-wolf-king",
       fullName: "银月狼王",
@@ -112,6 +112,8 @@ describe("移动端实体改动提示", () => {
     expect(
       screen.queryByRole("button", { name: "查看银月狼王本期改动" }),
     ).not.toBeInTheDocument();
+    expect(screen.getByLabelText("银月狼王为本期新增精灵"))
+      .toHaveTextContent("NEW");
     unmount();
 
     render(
@@ -125,5 +127,6 @@ describe("移动端实体改动提示", () => {
     expect(
       screen.queryByRole("button", { name: "查看S4 新技能本期改动" }),
     ).not.toBeInTheDocument();
+    expect(screen.queryByText("NEW")).not.toBeInTheDocument();
   });
 });

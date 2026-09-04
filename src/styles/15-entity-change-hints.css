@@ -41,6 +41,25 @@
   font-size: 15px;
 }
 
+.spirit-card__title > strong[data-new="true"]::after,
+.spirit-picker__option-title > strong[data-new="true"]::after {
+  display: inline-flex;
+  height: 16px;
+  align-items: center;
+  padding: 0 5px;
+  margin-left: 4px;
+  border: 1px solid color-mix(in srgb, #e98a12 42%, transparent);
+  border-radius: 999px;
+  color: #a95800;
+  background: color-mix(in srgb, #fff0d2 82%, var(--surface));
+  content: "NEW";
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  vertical-align: 2px;
+}
+
 .spirit-picker__option-title .entity-change-hint,
 .skill-picker__option-name .entity-change-hint {
   width: 18px;
@@ -214,6 +233,12 @@ html[data-theme="dark"] .entity-change-card > header small,
 html[data-theme="dark"] .entity-change-card__detail em {
   color: #ffd590;
   background: rgb(219 132 16 / 0.18);
+}
+
+html[data-theme="dark"] .spirit-card__title > strong[data-new="true"]::after,
+html[data-theme="dark"] .spirit-picker__option-title > strong[data-new="true"]::after {
+  color: #ffd08a;
+  background: rgb(219 132 16 / 0.16);
 }
 
 @media (max-width: 620px) {

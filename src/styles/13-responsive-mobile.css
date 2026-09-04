@@ -43,15 +43,6 @@
     min-height: 38px;
   }
 
-  .team-action {
-    width: 38px;
-    padding: 0;
-  }
-
-  .team-action span {
-    display: none;
-  }
-
   .stat-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

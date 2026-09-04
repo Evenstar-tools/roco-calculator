@@ -407,9 +407,6 @@ export function calculateSkillResult({
 
   const costResolution = resolveSkillPower(skill, context);
   const resolvedSkillCost = finiteNumber(
-    slotOverrides.costOverride,
-    details.costOverride,
-    mode === "single" ? directionOverrides.costOverride : undefined,
     costResolution.resolvedCost,
     skill.cost,
   );
@@ -1394,9 +1391,6 @@ export function calculateSkillResult({
     powerSource: powerOverride.source,
     donationPoisonStacks: powerResolution.donationPoisonStacks,
     skillCost: finiteNumber(
-      slotOverrides.costOverride,
-      details.costOverride,
-      mode === "single" ? directionOverrides.costOverride : undefined,
       powerResolution.resolvedCost,
       costResolution.resolvedCost,
       skill.cost,

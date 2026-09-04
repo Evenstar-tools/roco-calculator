@@ -22,8 +22,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留贪得无厌结算、吸血后自损顺序与物攻等级说明，并清理未使用变量",
   }),
   "src/domain/calculator-view-model.js": Object.freeze({
-    mirrorHash: "82128fc707adf4b4dc6c71163dc1a8c55b725a17e3c3ea6c71df10ee16382d73",
-    reason: "同步迸发来源与重组印记的计算展示参数",
+    mirrorHash: "660a9799630ee33b16dbaca5ad2277b40701f6870a9785fdf12816035b6a0076",
+    reason: "同步迸发来源与重组印记的计算展示参数，并移除已下线的技能能耗覆盖展示字段",
   }),
   "src/domain/calculate.js": Object.freeze({
     mirrorHash: "61eca5ae03503afade6c7cb28010a6a11d7e7e6f7875ba663f8d4f460019b957",
@@ -58,8 +58,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留迸发联动、虫群奉献、体重挡位、啃咬与飞断最新技能输入语义；虫鸣输入直接驱动连击数，最少为1且不设业务上限，并接受连击增益",
   }),
   "src/domain/skill-result/calculate-skill-result.js": Object.freeze({
-    mirrorHash: "87240eeb15eb2bc154b22d44e996e6c8934444a96a286d2392df148e0ac5f546",
-    reason: "同步虫鸣连击、迸发来源、星陨与重组额外伤害的最新结算",
+    mirrorHash: "a3d99fe84c2929721f013aea6ab7f36a766e2d15c93ce11e2797a39546295342",
+    reason: "同步虫鸣连击、迸发来源、星陨与重组额外伤害，并确保已下线的技能能耗覆盖不再隐藏参与结算",
   }),
   "src/domain/skill-result/starfall.js": Object.freeze({
     mirrorHash: "9c852d3d8bfc78f3a8817833a68302de1267145df5b0b608fc6c6a7c7067bf7c",
@@ -78,8 +78,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留迸发默认开启、特性层数上限与最新特性输入语义；全神贯注未行动时物攻加成 100%，每次行动衰减 20%",
   }),
   "src/state/calculator-session.js": Object.freeze({
-    mirrorHash: "f5f80edc8607d75c9adf466a66361f828278ac114d3bca44a700c811e59e6ab0",
-    reason: "保留威力输入状态管理，并按技能记忆状态触发次数；能力等级公式改为引用 domain/skill-result/numeric.js 单一权威",
+    mirrorHash: "9bf74823d3e66ad826f0a82f8cdcd5b0a60e40ad9ec5b785283ffeefed71a6e0",
+    reason: "保留威力输入状态管理并停止延续已下线的技能能耗覆盖；按技能记忆状态触发次数，能力等级公式引用 domain/skill-result/numeric.js 单一权威",
   }),
   "src/state/battle-activation.js": Object.freeze({
     mirrorHash: "af3de0aaf19a8a2621abe18aefccde6739db9fbe3a46517da90c865d93facd07",

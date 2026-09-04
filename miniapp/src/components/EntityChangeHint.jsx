@@ -45,8 +45,18 @@ function ChangeItem({ item }) {
 
 export default function EntityChangeHint({ changeInfo, className = "" }) {
   const [open, setOpen] = useState(false);
-  if (!changeInfo?.items?.length || changeInfo.isNew) return null;
-  const entityName = changeInfo.entityName ?? "当前项目";
+  const entityName = changeInfo?.entityName ?? "当前项目";
+  if (changeInfo?.isNew) {
+    return changeInfo.items?.[0]?.label === "新增精灵" ? (
+      <Text
+        aria-label={`${entityName}为本期新增精灵`}
+        className={`entity-new-badge ${className}`.trim()}
+      >
+        NEW
+      </Text>
+    ) : null;
+  }
+  if (!changeInfo?.items?.length) return null;
 
   function stopAndClose(event) {
     event?.stopPropagation?.();

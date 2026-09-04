@@ -394,7 +394,6 @@ export function SingleSkillEditor({
   onAttackerHealthPercentChange,
   onDefenderHealthChange,
   onDefenderHealthPercentChange,
-  onCostOverrideChange,
   onManualPowerChange,
   onPowerOverrideChange,
   onSkillSelect,
@@ -404,7 +403,6 @@ export function SingleSkillEditor({
   skills,
   powerDisplayMode = "static",
   negativeStatusEnabled = false,
-  costOverride = null,
   powerOverride,
   powerMode: _powerMode = "base",
   traitContext = {},
@@ -505,32 +503,10 @@ export function SingleSkillEditor({
           >
             {effectiveType}
           </span>
-          {selectedSkill.calculationStatus === "pending-skill-data" ? (
-            <label className="skill-fact skill-fact--editable-cost">
-              <Lightning aria-hidden="true" size={17} weight="fill" />
-              能耗
-              <input
-                aria-label="技能能耗"
-                max="99"
-                min="0"
-                onChange={(event) => {
-                  const value = event.target.value;
-                  onCostOverrideChange?.(
-                    value === "" ? null : Math.min(99, Math.max(0, Number(value))),
-                  );
-                }}
-                placeholder="—"
-                step="1"
-                type="number"
-                value={costOverride ?? ""}
-              />
-            </label>
-          ) : (
-            <span className="skill-fact">
-              <Lightning aria-hidden="true" size={17} weight="fill" />
-              能耗 {result?.skillCost ?? selectedSkill.cost ?? "—"}
-            </span>
-          )}
+          <span className="skill-fact">
+            <Lightning aria-hidden="true" size={17} weight="fill" />
+            能耗 {result?.skillCost ?? selectedSkill.cost ?? "—"}
+          </span>
         </div>
       </div>
 

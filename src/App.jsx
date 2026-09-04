@@ -1194,12 +1194,6 @@ function CalculatorWorkspace({ snapshot }) {
       }
       defenderTrait={getTraitView(snapshot, activeDefenseSpirit, "defender")}
       hitCount={resultModel.selectedResult?.hitCount ?? currentDirection.hitCount}
-      costOverride={currentDirection.overrides.costOverride ?? null}
-      onCostOverrideChange={(costOverride) =>
-        updateRememberedSingleDirection({
-          overrides: { costOverride },
-        })
-      }
       onHitCountChange={(hitCount) =>
         updateRememberedSingleDirection(
           editableHitCountPatch(
@@ -1429,11 +1423,6 @@ function CalculatorWorkspace({ snapshot }) {
           ),
         );
       }}
-      onSkillCostChange={(side, index, costOverride) =>
-        updateFourSkillEntry(side, index, {
-          overrides: { costOverride },
-        })
-      }
       onSkillPowerChange={(side, index, powerOverride) =>
         updateFourSkillEntry(side, index, {
           overrides: { powerOverride },

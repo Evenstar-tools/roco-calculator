@@ -85,11 +85,12 @@ test("技能选择器在已选技能和候选项旁显示叹号，不常驻改�
   expect(screen.getByText("2 → 1")).toBeVisible();
 });
 
-test("S4 全新精灵和技能不显示改动叹号", () => {
+test("S4 全新最终形态显示 NEW 标识，技能仍不显示改动叹号", () => {
   const newSpirit = {
     ...spirit,
     id: "silver-moon-wolf-king",
     fullName: "银月狼王",
+    previewDefaults: { natureId: "cheerful" },
     changeInfo: {
       patch,
       entityName: "银月狼王",
@@ -121,6 +122,7 @@ test("S4 全新精灵和技能不显示改动叹号", () => {
   expect(
     screen.queryByRole("button", { name: "查看银月狼王本期改动" }),
   ).not.toBeInTheDocument();
+  expect(screen.getByText("银月狼王")).toHaveAttribute("data-new", "true");
 
   rerender(
     <SkillPicker
@@ -133,4 +135,5 @@ test("S4 全新精灵和技能不显示改动叹号", () => {
   expect(
     screen.queryByRole("button", { name: "查看S4 新技能本期改动" }),
   ).not.toBeInTheDocument();
+  expect(screen.queryByText("NEW")).not.toBeInTheDocument();
 });

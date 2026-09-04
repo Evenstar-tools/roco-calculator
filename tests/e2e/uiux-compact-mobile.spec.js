@@ -387,7 +387,8 @@ test("collapses cleanly in a 930px half-screen window and steps IV by six", asyn
     expect(action.height).toBe(headerMode.height);
     expect(action.y).toBe(headerMode.y);
   }
-  expect(headerTeam.width).toBe(headerMode.height);
+  expect(headerTeam.width).toBeGreaterThan(headerMode.height);
+  await expect(page.locator(".team-action span")).toBeVisible();
 
   await page.getByRole("button", { name: "具体版" }).click();
   const detailedMode = await page

@@ -22,6 +22,22 @@
   line-height: 1;
 }
 
+.entity-new-badge {
+  display: inline-flex;
+  height: 16px;
+  flex: 0 0 auto;
+  align-items: center;
+  padding: 0 5px;
+  border: 1px solid rgba(216, 120, 0, 0.38);
+  border-radius: 999px;
+  color: #a95800;
+  background: #fff0d2;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
 .combatant-card__name-row,
 .skill-picker__name-row,
 .skill-picker__option-title,

@@ -1983,9 +1983,8 @@ test("four-skill rows keep each skill power directly editable", async () => {
   );
 });
 
-test("partially known S4 skills expose blank manual cost and power inputs", async () => {
+test("partially known S4 skills expose manual power without editable cost", async () => {
   const user = userEvent.setup();
-  const onSkillCostChange = vi.fn();
   const onSkillPowerChange = vi.fn();
   const pendingSkill = {
     basePower: null,
@@ -2003,20 +2002,17 @@ test("partially known S4 skills expose blank manual cost and power inputs", asyn
       attackerSkills={[pendingSkill, null, null, null]}
       defenderName="木桩"
       defenderSkills={[skills[1], null, null, null]}
-      onSkillCostChange={onSkillCostChange}
       onSkillPowerChange={onSkillPowerChange}
       onSkillSelect={vi.fn()}
       skills={[...skills, pendingSkill]}
     />,
   );
 
-  const cost = screen.getByRole("spinbutton", { name: "攻击方技能1能耗" });
   const power = screen.getByRole("spinbutton", { name: "攻击方技能1静态威力" });
-  expect(cost).toHaveValue(null);
+  expect(screen.queryByRole("spinbutton", { name: "攻击方技能1能耗" }))
+    .not.toBeInTheDocument();
   expect(power).toHaveValue(null);
-  await user.type(cost, "4");
   await user.type(power, "90{Enter}");
-  expect(onSkillCostChange).toHaveBeenLastCalledWith("attacker", 0, 4);
   expect(onSkillPowerChange).toHaveBeenLastCalledWith(
     "attacker",
     0,
@@ -2024,9 +2020,9 @@ test("partially known S4 skills expose blank manual cost and power inputs", asyn
   );
 });
 
-test("single-skill editor exposes manual cost for a partially known S4 skill", async () => {
+test("single-skill editor keeps pending cost read-only and manual power editable", async () => {
   const user = userEvent.setup();
-  const onCostOverrideChange = vi.fn();
+  const onManualPowerChange = vi.fn();
   const pendingSkill = {
     basePower: null,
     calculationStatus: "pending-skill-data",
@@ -2040,9 +2036,8 @@ test("single-skill editor exposes manual cost for a partially known S4 skill", a
   render(
     <SingleSkillEditor
       hitCount={1}
-      onCostOverrideChange={onCostOverrideChange}
       onHitCountChange={vi.fn()}
-      onManualPowerChange={vi.fn()}
+      onManualPowerChange={onManualPowerChange}
       onSkillSelect={vi.fn()}
       selectedSkill={pendingSkill}
       skills={[pendingSkill]}
@@ -2051,10 +2046,12 @@ test("single-skill editor exposes manual cost for a partially known S4 skill", a
 
   expect(screen.getByText("魔法")).toBeVisible();
   expect(screen.getByText("机械")).toBeVisible();
-  const cost = screen.getByRole("spinbutton", { name: "技能能耗" });
-  expect(cost).toHaveValue(null);
-  await user.type(cost, "3");
-  expect(onCostOverrideChange).toHaveBeenLastCalledWith(3);
+  expect(screen.getByText("能耗 —")).toBeVisible();
+  expect(screen.queryByRole("spinbutton", { name: "技能能耗" }))
+    .not.toBeInTheDocument();
+  const power = screen.getByRole("spinbutton", { name: "静态威力" });
+  await user.type(power, "90{Enter}");
+  expect(onManualPowerChange).toHaveBeenLastCalledWith(90);
 });
 
 test("单技能显示威力模式提供一个可编辑输入框", () => {
