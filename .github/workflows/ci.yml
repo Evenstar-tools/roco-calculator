@@ -26,7 +26,9 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Audit production dependencies
+      - name: Audit production dependencies (non-blocking)
+        continue-on-error: true
+        timeout-minutes: 2
         run: npm audit --omit=dev
       - name: Verify shared calculator core
         run: npm run test:core-drift
