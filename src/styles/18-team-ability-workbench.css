@@ -951,7 +951,7 @@
   pointer-events: none;
 }
 
-.ability-speed .ability-section__title .ability-speed__target-input input[type="search"] {
+.ability-speed__target-input input[type="search"] {
   width: 100%;
   min-width: 0;
   height: 30px;
@@ -1849,6 +1849,66 @@
   font-size: 11px;
 }
 
+.ability-speed-overview__controls {
+  display: grid;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-soft);
+  grid-template-columns: minmax(180px, 0.55fr) minmax(260px, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.ability-speed-overview > header {
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  background: var(--surface);
+}
+
+.ability-speed-overview__controls .ability-speed__profile-picker,
+.ability-speed-overview__controls .ability-speed__target-picker {
+  width: 100%;
+  min-width: 0;
+}
+
+.ability-speed-overview__controls .ability-speed__profile-picker summary,
+.ability-speed-overview__controls .ability-speed__target-input input[type="search"] {
+  height: 38px;
+}
+
+.ability-speed-overview__selection {
+  display: flex;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  background: var(--surface);
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  font-size: 12px;
+}
+
+.ability-speed-overview__selection b {
+  color: var(--accent-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.ability-speed-overview .ability-speed__table-wrap {
+  max-height: none;
+  overflow: visible;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.ability-speed-overview .ability-speed__table thead {
+  top: 52px;
+}
+
 .ability-ranking-controls {
   display: grid;
   min-width: 0;
@@ -2445,7 +2505,7 @@
     grid-template-columns: minmax(152px, 0.8fr) minmax(150px, 1.2fr);
   }
 
-  .ability-speed .ability-section__title .ability-speed__target-input input[type="search"],
+  .ability-speed__target-input input[type="search"],
   .ability-speed__profile-picker summary {
     min-height: 44px;
   }
@@ -2649,6 +2709,37 @@
 
   .ability-full-ranking > header button {
     min-height: 44px;
+  }
+
+  .ability-speed-overview {
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+    min-height: 100dvh;
+    padding: max(10px, env(safe-area-inset-top)) 9px max(10px, env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: var(--surface);
+    overscroll-behavior: contain;
+  }
+
+  .ability-speed-overview > header {
+    position: sticky;
+    z-index: 5;
+    top: 0;
+    padding: 0 0 9px;
+    background: var(--surface);
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .ability-speed-overview__controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ability-speed-overview__selection {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .ability-ranking-controls {

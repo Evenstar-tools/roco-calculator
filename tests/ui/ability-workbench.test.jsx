@@ -42,6 +42,33 @@ const snapshot = {
   ],
 };
 
+const specialSpeedSnapshot = {
+  ...snapshot,
+  learnsets: [
+    {
+      skillIds: ["quick"],
+      spiritId: "spirit_b0b427cf3d5241fa",
+    },
+  ],
+  spirits: [
+    ...snapshot.spirits,
+    {
+      asset: null,
+      fullName: "夜枭",
+      id: "spirit_b0b427cf3d5241fa",
+      raceStats: {
+        hp: 117,
+        magicalAttack: 61,
+        magicalDefense: 106,
+        physicalAttack: 10,
+        physicalDefense: 90,
+        speed: 80,
+      },
+      stage: "三阶",
+    },
+  ],
+};
+
 function member(displayIvs) {
   return {
     displayIvs,
@@ -152,7 +179,7 @@ test("生命物防魔防占满三项时按三种防御性格对比", () => {
   expect(within(firstCard).getByRole("button", { name: "应用到成员" })).toBeEnabled();
 });
 
-test("速度排行榜横轴支持多选口径，默认极速、满速和无速", async () => {
+test("速度排行榜横轴支持多选口径，默认包含常用口径和特殊口径", async () => {
   const user = userEvent.setup();
   render(
     <AbilityWorkbench
@@ -172,14 +199,112 @@ test("速度排行榜横轴支持多选口径，默认极速、满速和无速",
 
   expect(screen.queryByRole("slider", { name: "速度目标轴" })).not.toBeInTheDocument();
   expect(screen.getByRole("region", { name: "速度排行榜横轴" })).toHaveAttribute("tabindex", "0");
-  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("极速、满速、无速度");
+  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent(
+    "极速、满速、无速度、特殊口径",
+  );
   expect(screen.getByRole("checkbox", { name: "极速" })).toBeChecked();
   expect(screen.getByRole("checkbox", { name: "满速" })).toBeChecked();
   expect(screen.getByRole("checkbox", { name: "无速度" })).toBeChecked();
   expect(screen.getByRole("checkbox", { name: "仅速度性格" })).not.toBeChecked();
   expect(screen.getByRole("checkbox", { name: "减速度" })).not.toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "特殊口径" })).toBeChecked();
   await user.click(screen.getByRole("checkbox", { name: "减速度" }));
-  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("极速、满速、无速度、减速度");
+  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent(
+    "极速、满速、无速度、特殊口径、减速度",
+  );
+});
+
+test("关闭特殊口径后隐藏全部特殊速度档并保留普通速度档", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={specialSpeedSnapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  const target = screen.getByRole("combobox", { name: "速度目标精灵" });
+  await user.click(target);
+  await user.type(target, "夜枭");
+  expect(screen.getAllByRole("option", { name: /夜枭.*快速移动/ })).toHaveLength(2);
+
+  await user.click(screen.getByRole("checkbox", { name: "特殊口径" }));
+  await user.click(target);
+  await user.clear(target);
+  await user.type(target, "夜枭");
+  expect(screen.queryByRole("option", { name: /快速移动/ })).not.toBeInTheDocument();
+  expect(screen.getAllByRole("option", { name: /夜枭/ })).toHaveLength(3);
+});
+
+test("关闭普通口径不影响同基准的特殊速度档", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={specialSpeedSnapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  await user.click(screen.getByRole("checkbox", { name: "极速" }));
+  const target = screen.getByRole("combobox", { name: "速度目标精灵" });
+  await user.click(target);
+  await user.type(target, "夜枭");
+
+  expect(screen.queryByRole("option", { name: /^选择夜枭 \d+ 极速$/ }))
+    .not.toBeInTheDocument();
+  expect(screen.getByRole("option", { name: /^选择夜枭 \d+ 极速 快速移动$/ }))
+    .toBeInTheDocument();
+});
+
+test("特殊口径可以单独保留且不能取消最后一个口径", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={specialSpeedSnapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  await user.click(screen.getByRole("checkbox", { name: "极速" }));
+  await user.click(screen.getByRole("checkbox", { name: "满速" }));
+  await user.click(screen.getByRole("checkbox", { name: "无速度" }));
+
+  expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("特殊口径");
+  expect(screen.getByRole("checkbox", { name: "特殊口径" })).toBeDisabled();
+
+  const target = screen.getByRole("combobox", { name: "速度目标精灵" });
+  await user.click(target);
+  await user.type(target, "夜枭");
+  expect(screen.getAllByRole("option", { name: /夜枭.*快速移动/ })).toHaveLength(2);
+  expect(screen.queryByRole("option", { name: /^选择夜枭 \d+ (极速|满速|无速度)$/ }))
+    .not.toBeInTheDocument();
 });
 
 test("目标精灵支持输入搜索并从带头像和速度的候选项锁定", async () => {
@@ -250,7 +375,7 @@ test("锁定目标时只平滑移动速度横轴并居中目标", async () => {
   }
 });
 
-test("速度表默认收起，展开后按档位展示全部合格精灵并可选目标", async () => {
+test("速度一览独占展示全部档位并可选择目标返回", async () => {
   const user = userEvent.setup();
   render(
     <AbilityWorkbench
@@ -268,18 +393,150 @@ test("速度表默认收起，展开后按档位展示全部合格精灵并可�
     />,
   );
 
-  expect(screen.queryByRole("table", { name: "速度档位表" })).not.toBeInTheDocument();
-  await user.click(screen.getByRole("button", { name: /展开速度表/ }));
+  expect(screen.queryByRole("region", { name: "速度一览" })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: /速度一览/ }));
 
-  const table = screen.getByRole("table", { name: "速度档位表" });
+  const overview = screen.getByRole("region", { name: "速度一览" });
+  expect(screen.queryByRole("region", { name: "耐久方案对比" })).not.toBeInTheDocument();
+  expect(within(overview).getByLabelText("速度目标口径")).toBeVisible();
+  expect(within(overview).getByRole("combobox", { name: "速度目标精灵" })).toBeVisible();
+  const table = within(overview).getByRole("table", { name: "速度档位表" });
   const speeds = within(table).getAllByRole("rowheader").map((cell) => Number(cell.textContent));
   expect(speeds).toEqual([...speeds].sort((left, right) => right - left));
   expect(within(table).getAllByRole("button", { name: /在速度表选择音速犬/ })).not.toHaveLength(0);
   expect(within(table).getAllByRole("button", { name: /在速度表选择首领象/ })).not.toHaveLength(0);
 
   await user.click(within(table).getAllByRole("button", { name: /在速度表选择音速犬/ })[0]);
+  await user.click(within(overview).getByRole("button", { name: "返回能力分析" }));
   expect(screen.getByRole("combobox", { name: "速度目标精灵" }).value)
     .toMatch(/^音速犬 · \d+（/);
+  expect(screen.queryByRole("region", { name: "速度一览" })).not.toBeInTheDocument();
+});
+
+test("速度一览自动定位目标并在返回后保留口径、目标、滚动和焦点", async () => {
+  const user = userEvent.setup();
+  const scrollIntoView = vi.fn();
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
+  Element.prototype.scrollIntoView = scrollIntoView;
+  const editor = document.createElement("div");
+  editor.className = "team-drawer__editor-pane";
+  document.body.append(editor);
+  const rendered = render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+    { container: editor },
+  );
+
+  try {
+    const targetValue = chooseSpeedTarget("首领象").value;
+    editor.scrollTop = 320;
+
+    await user.click(screen.getByRole("button", { name: /速度一览/ }));
+    const overview = screen.getByRole("region", { name: "速度一览" });
+    await waitFor(() => expect(editor.scrollTop).toBe(0));
+    await waitFor(() => expect(scrollIntoView).toHaveBeenCalledWith({ block: "center" }));
+    expect(within(overview).getByRole("button", { name: "返回能力分析" })).toHaveFocus();
+    expect(within(overview).getByRole("button", { pressed: true })).toHaveAccessibleName(
+      /在速度表选择首领象/,
+    );
+
+    await user.click(within(overview).getByLabelText("速度目标口径"));
+    await user.click(within(overview).getByRole("checkbox", { name: "特殊口径" }));
+    expect(within(overview).getByLabelText("速度目标口径")).not.toHaveTextContent("特殊口径");
+
+    await user.click(within(overview).getByRole("button", { name: "返回能力分析" }));
+    await waitFor(() => expect(editor.scrollTop).toBe(320));
+    expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(targetValue);
+    expect(screen.getByRole("checkbox", { name: "特殊口径" })).not.toBeChecked();
+    expect(screen.getByRole("button", { name: /速度一览/ })).toHaveFocus();
+  } finally {
+    rendered.unmount();
+    editor.remove();
+    Element.prototype.scrollIntoView = originalScrollIntoView;
+  }
+});
+
+test("速度一览将 Tab 焦点限制在内页并用 Escape 返回", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  await user.click(screen.getByRole("button", { name: /速度一览/ }));
+  const overview = screen.getByRole("region", { name: "速度一览" });
+  const back = within(overview).getByRole("button", { name: "返回能力分析" });
+  const tableButtons = within(within(overview).getByRole("table", { name: "速度档位表" }))
+    .getAllByRole("button");
+  const lastTarget = tableButtons.at(-1);
+
+  await waitFor(() => expect(back).toHaveFocus());
+  await user.tab({ shift: true });
+  expect(lastTarget).toHaveFocus();
+  await user.tab();
+  expect(back).toHaveFocus();
+
+  await user.keyboard("{Escape}");
+  expect(screen.queryByRole("region", { name: "速度一览" })).not.toBeInTheDocument();
+  expect(screen.getByRole("region", { name: "能力分析" })).toBeVisible();
+  expect(screen.getByRole("button", { name: /速度一览/ })).toHaveFocus();
+});
+
+test("速度一览搜索候选打开时第一次 Escape 只关闭候选", async () => {
+  const user = userEvent.setup();
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 0,
+        physicalAttack: 60,
+        physicalDefense: 0,
+        speed: 60,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={snapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  await user.click(screen.getByRole("button", { name: /速度一览/ }));
+  const overview = screen.getByRole("region", { name: "速度一览" });
+  const search = within(overview).getByRole("combobox", { name: "速度目标精灵" });
+  await user.click(search);
+  await user.type(search, "音速");
+  expect(within(overview).getByRole("listbox", { name: "速度目标候选" })).toBeVisible();
+
+  await user.keyboard("{Escape}");
+  expect(within(overview).queryByRole("listbox", { name: "速度目标候选" }))
+    .not.toBeInTheDocument();
+  expect(screen.getByRole("region", { name: "速度一览" })).toBeVisible();
+
+  await user.keyboard("{Escape}");
+  expect(screen.queryByRole("region", { name: "速度一览" })).not.toBeInTheDocument();
+  expect(screen.getByRole("region", { name: "能力分析" })).toBeVisible();
 });
 
 test("携带速度状态技能时可勾选并用加速后的本体速度比较", async () => {

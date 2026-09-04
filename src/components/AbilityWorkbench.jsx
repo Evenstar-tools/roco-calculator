@@ -78,11 +78,36 @@ const SPEED_STATUS_LABELS = Object.freeze({
   UNREACHABLE_WITH_SPEED_INVESTMENT: "即使速度60也无法达到",
 });
 
+const SPECIAL_SPEED_PROFILE_ID = "special";
+const SPEED_PROFILE_OPTIONS = Object.freeze([
+  ...Object.values(SPEED_TARGET_PROFILES),
+  Object.freeze({ id: SPECIAL_SPEED_PROFILE_ID, label: "特殊口径" }),
+]);
 const DEFAULT_SPEED_PROFILE_IDS = Object.freeze([
   "positive-max",
   "neutral-max",
   "neutral-zero",
+  SPECIAL_SPEED_PROFILE_ID,
 ]);
+
+const OVERVIEW_FOCUSABLE_SELECTOR =
+  'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function trapOverviewFocus(event, container) {
+  if (event.key !== "Tab" || !container) return;
+  const focusable = [...container.querySelectorAll(OVERVIEW_FOCUSABLE_SELECTOR)]
+    .filter((element) => !element.closest("details:not([open])") || element.matches("summary"));
+  if (focusable.length === 0) return;
+  const first = focusable[0];
+  const last = focusable.at(-1);
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
 
 function speedTargetLabel(target) {
   return target
@@ -314,27 +339,43 @@ function InvestmentPicker({ onChange, onReplace, panel, validation, values }) {
   );
 }
 
-function SpeedRail({
-  activeModifierIds,
-  currentSpeed,
-  modifiers,
-  onProfilesChange,
-  onToggleModifier,
-  onTargetChange,
-  profileIds,
-  speedAnalysis,
-  targets,
-  targetId,
-}) {
-  const railRef = useRef(null);
-  const selectedTargetRef = useRef(null);
-  const speedTableRef = useRef(null);
-  const selectedTableTargetRef = useRef(null);
-  const dragRef = useRef({ active: false, moved: false, scrollLeft: 0, startX: 0 });
-  const [showSpeedTable, setShowSpeedTable] = useState(false);
-  const selected = targets.find((target) => target.id === targetId) ?? targets[0];
+function SpeedProfilePicker({ onProfilesChange, profileIds }) {
+  return (
+    <div className="ability-speed__profile-picker">
+      <span>口径</span>
+      <details>
+        <summary aria-label="速度目标口径">
+          {profileIds
+            .map((id) => SPEED_PROFILE_OPTIONS.find((entry) => entry.id === id)?.label)
+            .filter(Boolean)
+            .join("、")}
+        </summary>
+        <fieldset>
+          <legend>速度口径</legend>
+          {SPEED_PROFILE_OPTIONS.map((entry) => (
+            <label key={entry.id}>
+              <input
+                checked={profileIds.includes(entry.id)}
+                disabled={profileIds.length === 1 && profileIds.includes(entry.id)}
+                onChange={(event) => {
+                  const next = event.target.checked
+                    ? [...profileIds, entry.id]
+                    : profileIds.filter((id) => id !== entry.id);
+                  onProfilesChange(next);
+                }}
+                type="checkbox"
+              />
+              {entry.label}
+            </label>
+          ))}
+        </fieldset>
+      </details>
+    </div>
+  );
+}
+
+function SpeedTargetPicker({ onTargetChange, selected, targets }) {
   const [targetInput, setTargetInput] = useState(null);
-  const targetGroups = groupSpeedTargets(targets);
   const targetOptions = targetInput === null
     ? []
     : targets.filter((target) => {
@@ -342,6 +383,95 @@ function SpeedRail({
         if (!query) return true;
         return `${target.name}${target.speed}${target.qualifier}`.includes(query);
       }).slice(0, 12);
+
+  function lockTarget(target) {
+    onTargetChange(target.id);
+    setTargetInput(null);
+  }
+
+  return (
+    <div
+      className="ability-speed__target-picker"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setTargetInput(null);
+      }}
+    >
+      <span>目标精灵</span>
+      <div className="ability-speed__target-input">
+        <MagnifyingGlass aria-hidden="true" size={15} />
+        <input
+          aria-label="速度目标精灵"
+          onChange={(event) => setTargetInput(event.target.value)}
+          onFocus={() => setTargetInput("")}
+          onKeyDown={(event) => {
+            if (event.key === "Escape" && targetInput !== null) {
+              event.preventDefault();
+              event.stopPropagation();
+              setTargetInput(null);
+              return;
+            }
+            if (event.key === "Enter" && targetOptions[0]) {
+              event.preventDefault();
+              lockTarget(targetOptions[0]);
+            }
+          }}
+          placeholder="搜索"
+          role="combobox"
+          type="search"
+          value={targetInput ?? speedTargetLabel(selected)}
+        />
+        {targetInput !== null ? (
+          <div
+            aria-label="速度目标候选"
+            className="ability-speed__target-options"
+            role="listbox"
+          >
+            {targetOptions.map((target) => (
+              <button
+                aria-label={`选择${target.name} ${target.speed} ${target.profileLabel}${target.specialLabel ? ` ${target.specialLabel}` : ""}`}
+                aria-selected={target.id === selected?.id}
+                data-target-id={target.id}
+                key={target.id}
+                onClick={() => lockTarget(target)}
+                onMouseDown={(event) => event.preventDefault()}
+                role="option"
+                type="button"
+              >
+                {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
+                <span>
+                  <strong>{target.name}</strong>
+                  <small>{speedTargetMeta(target)}</small>
+                </span>
+                <b>{target.speed}</b>
+              </button>
+            ))}
+            {targetOptions.length === 0 ? <p>无匹配精灵</p> : null}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function SpeedRail({
+  activeModifierIds,
+  currentSpeed,
+  modifiers,
+  onOpenOverview,
+  onProfilesChange,
+  onToggleModifier,
+  onTargetChange,
+  openOverviewButtonRef,
+  profileIds,
+  speedAnalysis,
+  targets,
+  targetId,
+}) {
+  const railRef = useRef(null);
+  const selectedTargetRef = useRef(null);
+  const dragRef = useRef({ active: false, moved: false, scrollLeft: 0, startX: 0 });
+  const selected = targets.find((target) => target.id === targetId) ?? targets[0];
+  const targetGroups = groupSpeedTargets(targets);
   const modifierGroups = Object.values(modifiers.reduce((groups, modifier) => {
     (groups[modifier.groupId] ??= []).push(modifier);
     return groups;
@@ -368,21 +498,6 @@ function SpeedRail({
       left: target.offsetLeft - (viewport.clientWidth - target.offsetWidth) / 2,
     });
   }, [profileIds, selected?.id]);
-
-  useEffect(() => {
-    if (!showSpeedTable) return undefined;
-    const frame = requestAnimationFrame(() => {
-      const viewport = speedTableRef.current;
-      const target = selectedTableTargetRef.current;
-      if (!viewport || !target) return;
-      const viewportRect = viewport.getBoundingClientRect();
-      const targetRect = target.getBoundingClientRect();
-      viewport.scrollTop +=
-        targetRect.top - viewportRect.top -
-        (viewport.clientHeight - targetRect.height) / 2;
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [profileIds, selected?.id, showSpeedTable]);
 
   function startDrag(event) {
     if (event.button !== 0) return;
@@ -415,11 +530,6 @@ function SpeedRail({
     onTargetChange(targetIdToSelect);
   }
 
-  function lockTarget(target) {
-    onTargetChange(target.id);
-    setTargetInput(null);
-  }
-
   return (
     <section className="ability-section ability-speed" aria-label="速度目标">
       <header className="ability-section__title">
@@ -429,88 +539,15 @@ function SpeedRail({
           <small>{SPEED_STATUS_LABELS[speedAnalysis?.status] ?? "选择目标后分析"}</small>
         </div>
         <div className="ability-speed__controls">
-          <div className="ability-speed__profile-picker">
-            <span>口径</span>
-            <details>
-              <summary aria-label="速度目标口径">
-                {profileIds.map((id) => SPEED_TARGET_PROFILES[id].label).join("、")}
-              </summary>
-              <fieldset>
-                <legend>速度口径</legend>
-                {Object.values(SPEED_TARGET_PROFILES).map((entry) => (
-                  <label key={entry.id}>
-                    <input
-                      checked={profileIds.includes(entry.id)}
-                      disabled={profileIds.length === 1 && profileIds.includes(entry.id)}
-                      onChange={(event) => {
-                        const next = event.target.checked
-                          ? [...profileIds, entry.id]
-                          : profileIds.filter((id) => id !== entry.id);
-                        onProfilesChange(next);
-                      }}
-                      type="checkbox"
-                    />
-                    {entry.label}
-                  </label>
-                ))}
-              </fieldset>
-            </details>
-          </div>
-          <div
-            className="ability-speed__target-picker"
-            onBlur={(event) => {
-              if (!event.currentTarget.contains(event.relatedTarget)) setTargetInput(null);
-            }}
-          >
-            <span>目标精灵</span>
-            <div className="ability-speed__target-input">
-              <MagnifyingGlass aria-hidden="true" size={15} />
-              <input
-                aria-label="速度目标精灵"
-                onChange={(event) => setTargetInput(event.target.value)}
-                onFocus={() => setTargetInput("")}
-                onKeyDown={(event) => {
-                  if (event.key === "Escape") setTargetInput(null);
-                  if (event.key === "Enter" && targetOptions[0]) {
-                    event.preventDefault();
-                    lockTarget(targetOptions[0]);
-                  }
-                }}
-                placeholder="搜索"
-                role="combobox"
-                type="search"
-                value={targetInput ?? speedTargetLabel(selected)}
-              />
-              {targetInput !== null ? (
-                <div
-                  aria-label="速度目标候选"
-                  className="ability-speed__target-options"
-                  role="listbox"
-                >
-                  {targetOptions.map((target) => (
-                    <button
-                      aria-label={`选择${target.name} ${target.speed} ${target.profileLabel}${target.specialLabel ? ` ${target.specialLabel}` : ""}`}
-                      aria-selected={target.id === selected?.id}
-                      data-target-id={target.id}
-                      key={target.id}
-                      onClick={() => lockTarget(target)}
-                      onMouseDown={(event) => event.preventDefault()}
-                      role="option"
-                      type="button"
-                    >
-                      {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
-                      <span>
-                        <strong>{target.name}</strong>
-                        <small>{speedTargetMeta(target)}</small>
-                      </span>
-                      <b>{target.speed}</b>
-                    </button>
-                  ))}
-                  {targetOptions.length === 0 ? <p>无匹配精灵</p> : null}
-                </div>
-              ) : null}
-            </div>
-          </div>
+          <SpeedProfilePicker
+            onProfilesChange={onProfilesChange}
+            profileIds={profileIds}
+          />
+          <SpeedTargetPicker
+            onTargetChange={onTargetChange}
+            selected={selected}
+            targets={targets}
+          />
         </div>
       </header>
       {modifiers.length > 0 ? (
@@ -611,66 +648,139 @@ function SpeedRail({
         </div>
       </div>
       <button
-        aria-controls="ability-speed-tier-table"
-        aria-expanded={showSpeedTable}
         className="ability-speed__table-toggle"
-        onClick={() => setShowSpeedTable((current) => !current)}
+        onClick={onOpenOverview}
+        ref={openOverviewButtonRef}
         type="button"
       >
-        <span>
-          {showSpeedTable ? "收起速度表" : "展开速度表"}
-        </span>
+        <span>速度一览</span>
         <small>{targetGroups.length}档</small>
       </button>
-      {showSpeedTable ? (
-        <div className="ability-speed__table-wrap" id="ability-speed-tier-table" ref={speedTableRef}>
-          <table aria-label="速度档位表" className="ability-speed__table">
-            <colgroup>
-              <col className="ability-speed__table-value" />
-              <col />
-            </colgroup>
-            <thead>
-              <tr>
-                <th>速度</th>
-                <th>精灵 · 最终形态与首领</th>
-              </tr>
-            </thead>
-            <tbody>
-              {targetGroups.map((group) => (
-                <tr
-                  className={group.targets.some((target) => target.id === selected?.id) ? "is-selected" : ""}
-                  key={group.speed}
-                >
-                  <th scope="row">{group.speed}</th>
-                  <td>
-                    <div className="ability-speed__tier-spirits">
-                      {group.targets.map((target) => (
-                        <button
-                          aria-label={`在速度表选择${target.name}，速度${target.speed}${target.specialLabel ? `，${target.specialLabel}` : ""}`}
-                          aria-pressed={target.id === selected?.id}
-                          key={target.id}
-                          onClick={() => onTargetChange(target.id)}
-                          ref={target.id === selected?.id ? selectedTableTargetRef : null}
-                          title={`${target.name} · ${target.qualifier} · ${target.formRole === "boss" ? "首领" : "最终形态"}`}
-                          type="button"
-                        >
-                          {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
-                          <span>
-                            <strong>{target.name}</strong>
-                            <small>
-                              {speedTargetMeta(target)}
-                            </small>
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    </section>
+  );
+}
+
+function SpeedOverview({
+  backButtonRef,
+  currentSpeed,
+  locateTargetId,
+  onBack,
+  onProfilesChange,
+  onTargetChange,
+  profileIds,
+  targetId,
+  targets,
+}) {
+  const locateTargetRef = useRef(null);
+  const selected = targets.find((target) => target.id === targetId) ?? targets[0];
+  const targetGroups = groupSpeedTargets(targets);
+  const nearestCurrentTarget = findNearestSpeedTarget(targets, currentSpeed);
+  const resolvedLocateTargetId = targets.some((target) => target.id === locateTargetId)
+    ? locateTargetId
+    : nearestCurrentTarget?.id;
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      locateTargetRef.current?.scrollIntoView?.({ block: "center" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [profileIds, resolvedLocateTargetId]);
+
+  return (
+    <section
+      aria-label="速度一览"
+      className="ability-full-ranking ability-speed-overview"
+      onKeyDown={(event) => {
+        if (event.key === "Tab") {
+          event.stopPropagation();
+          trapOverviewFocus(event, event.currentTarget);
+          return;
+        }
+        if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopPropagation();
+          onBack();
+        }
+      }}
+      role="region"
+    >
+      <header>
+        <button onClick={onBack} ref={backButtonRef} type="button">
+          <ArrowLeft aria-hidden="true" size={17} />
+          返回能力分析
+        </button>
+        <div>
+          <h4>速度一览</h4>
+          <small>
+            当前配置 {formatNumber(currentSpeed)} · {targetGroups.length}档
+          </small>
         </div>
-      ) : null}
+      </header>
+
+      <div className="ability-speed-overview__controls">
+        <SpeedProfilePicker
+          onProfilesChange={onProfilesChange}
+          profileIds={profileIds}
+        />
+        <SpeedTargetPicker
+          onTargetChange={onTargetChange}
+          selected={selected}
+          targets={targets}
+        />
+      </div>
+
+      <div className="ability-speed-overview__selection" role="status">
+        <span>当前配置 <b>{formatNumber(currentSpeed)}</b></span>
+        {selected ? (
+          <span>已选目标 <b>{selected.name} · {formatNumber(selected.speed)}</b></span>
+        ) : null}
+      </div>
+
+      <div className="ability-speed__table-wrap ability-speed-overview__table-wrap">
+        <table aria-label="速度档位表" className="ability-speed__table">
+          <colgroup>
+            <col className="ability-speed__table-value" />
+            <col />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>速度</th>
+              <th>精灵 · 最终形态与首领</th>
+            </tr>
+          </thead>
+          <tbody>
+            {targetGroups.map((group) => (
+              <tr
+                className={group.targets.some((target) => target.id === selected?.id) ? "is-selected" : ""}
+                key={group.speed}
+              >
+                <th scope="row">{group.speed}</th>
+                <td>
+                  <div className="ability-speed__tier-spirits">
+                    {group.targets.map((target) => (
+                      <button
+                        aria-label={`在速度表选择${target.name}，速度${target.speed}${target.specialLabel ? `，${target.specialLabel}` : ""}`}
+                        aria-pressed={target.id === selected?.id}
+                        key={target.id}
+                        onClick={() => onTargetChange(target.id)}
+                        ref={target.id === resolvedLocateTargetId ? locateTargetRef : null}
+                        title={`${target.name} · ${target.qualifier} · ${target.formRole === "boss" ? "首领" : "最终形态"}`}
+                        type="button"
+                      >
+                        {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
+                        <span>
+                          <strong>{target.name}</strong>
+                          <small>{speedTargetMeta(target)}</small>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }
@@ -869,6 +979,7 @@ export function AbilityWorkbench({
   const backButtonRef = useRef(null);
   const currentRankingRowRef = useRef(null);
   const openRankingButtonRef = useRef(null);
+  const openSpeedOverviewButtonRef = useRef(null);
   const pendingAppliedConfigurationRef = useRef(null);
   const previousIncomingSignatureRef = useRef(
     serializedConfiguration(configuration),
@@ -886,7 +997,7 @@ export function AbilityWorkbench({
     cloneConfiguration(configuration),
   );
   const [draft, setDraft] = useState(() => cloneConfiguration(configuration));
-  const [fullRanking, setFullRanking] = useState(false);
+  const [detailPage, setDetailPage] = useState("analysis");
   const [lockedDimensions, setLockedDimensions] = useState(() =>
     ["physicalAttack", "magicalAttack"].filter(
       (stat) => Number(configuration?.displayIvs?.[stat]) === 60,
@@ -928,7 +1039,7 @@ export function AbilityWorkbench({
         (stat) => Number(nextConfiguration?.displayIvs?.[stat]) === 60,
       ),
     );
-    setFullRanking(false);
+    setDetailPage("analysis");
     setActiveSpeedModifierIds([]);
     if (identityChanged) {
       setSpeedMode("keep");
@@ -988,19 +1099,23 @@ export function AbilityWorkbench({
   );
   const speedTargets = useMemo(() => {
     if (!panel) return [];
-    return groupSpeedTargets(speedProfileIds.flatMap((profileId) =>
-      [
-        ...createSpeedTargets({
+    const standardTargets = speedProfileIds
+      .filter((profileId) => profileId !== SPECIAL_SPEED_PROFILE_ID)
+      .flatMap((profileId) =>
+        createSpeedTargets({
           profileId,
           spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter,
           spirits: snapshot.spirits ?? [],
         }).map((target) => ({
           ...target,
           id: `${profileId}:${target.id}`,
-        })),
-        ...createSpeedSpecialTargets({ profileId, snapshot }),
-      ]),
-    ).flatMap(({ targets }) => targets);
+        })));
+    const specialTargets = speedProfileIds.includes(SPECIAL_SPEED_PROFILE_ID)
+      ? Object.keys(SPEED_TARGET_PROFILES).flatMap((profileId) =>
+          createSpeedSpecialTargets({ profileId, snapshot }))
+      : [];
+    return groupSpeedTargets([...standardTargets, ...specialTargets])
+      .flatMap(({ targets }) => targets);
   }, [panel, snapshot, speedProfileIds]);
   const speedModifiers = useMemo(
     () => panel ? createSpeedModifiers({
@@ -1175,7 +1290,7 @@ export function AbilityWorkbench({
       scrollRef.current?.closest(".team-drawer__editor-pane") ??
       scrollRef.current;
     restoreScrollRef.current = scrollContainer?.scrollTop ?? 0;
-    setFullRanking(true);
+    setDetailPage("ranking");
     requestAnimationFrame(() => {
       const nextScrollContainer =
         scrollRef.current?.closest(".team-drawer__editor-pane") ??
@@ -1187,7 +1302,7 @@ export function AbilityWorkbench({
   }
 
   function closeFullRanking() {
-    setFullRanking(false);
+    setDetailPage("analysis");
     requestAnimationFrame(() => {
       const scrollContainer =
         scrollRef.current?.closest(".team-drawer__editor-pane") ??
@@ -1199,7 +1314,60 @@ export function AbilityWorkbench({
     });
   }
 
-  if (fullRanking) {
+  function openSpeedOverview() {
+    const scrollContainer =
+      scrollRef.current?.closest(".team-drawer__editor-pane") ??
+      scrollRef.current;
+    restoreScrollRef.current = scrollContainer?.scrollTop ?? 0;
+    setDetailPage("speed");
+    requestAnimationFrame(() => {
+      const nextScrollContainer =
+        scrollRef.current?.closest(".team-drawer__editor-pane") ??
+        scrollRef.current;
+      if (nextScrollContainer) nextScrollContainer.scrollTop = 0;
+      backButtonRef.current?.focus({ preventScroll: true });
+    });
+  }
+
+  function closeSpeedOverview() {
+    setDetailPage("analysis");
+    requestAnimationFrame(() => {
+      const scrollContainer =
+        scrollRef.current?.closest(".team-drawer__editor-pane") ??
+        scrollRef.current;
+      if (scrollContainer) {
+        scrollContainer.scrollTop = restoreScrollRef.current;
+      }
+      openSpeedOverviewButtonRef.current?.focus();
+    });
+  }
+
+  if (detailPage === "speed") {
+    return (
+      <div className="ability-workbench" ref={scrollRef}>
+        <SpeedOverview
+          backButtonRef={backButtonRef}
+          currentSpeed={panel.speed + speedBonus}
+          locateTargetId={targetId}
+          onBack={closeSpeedOverview}
+          onProfilesChange={(nextProfileIds) => {
+            setSpeedProfileIds(nextProfileIds);
+            setApplyStatus("");
+          }}
+          onTargetChange={(nextTargetId) => {
+            if (!nextTargetId) return;
+            setTargetId(nextTargetId);
+            setApplyStatus("");
+          }}
+          profileIds={speedProfileIds}
+          targetId={resolvedTargetId}
+          targets={speedTargets}
+        />
+      </div>
+    );
+  }
+
+  if (detailPage === "ranking") {
     return (
       <div className="ability-workbench" ref={scrollRef}>
         <FullRanking
@@ -1295,6 +1463,7 @@ export function AbilityWorkbench({
             activeModifierIds={activeSpeedModifierIds}
             currentSpeed={panel.speed + speedBonus}
             modifiers={speedModifiers}
+            onOpenOverview={openSpeedOverview}
             onProfilesChange={(nextProfileIds) => {
               setSpeedProfileIds(nextProfileIds);
               setApplyStatus("");
@@ -1315,6 +1484,7 @@ export function AbilityWorkbench({
                 : current.filter((id) => id !== modifier.id));
               setApplyStatus("");
             }}
+            openOverviewButtonRef={openSpeedOverviewButtonRef}
             speedAnalysis={speedAnalysis}
             profileIds={speedProfileIds}
             targetId={resolvedTargetId}
