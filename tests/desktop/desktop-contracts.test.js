@@ -58,6 +58,14 @@ describe("desktop identity contracts", () => {
 
     expect(() => assertNoLegacyBrand([directory])).toThrow(/旧品牌/);
   });
+
+  test("allows the acknowledged third-party reference URL", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "rock-brand-reference-test-"));
+    const file = path.join(directory, "bundle.js");
+    await writeFile(file, "参考资料：https://lovepvp.top/", "utf8");
+
+    expect(() => assertNoLegacyBrand([directory])).not.toThrow();
+  });
 });
 
 describe("desktop release artifact contract", () => {

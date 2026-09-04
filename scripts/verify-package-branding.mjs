@@ -11,6 +11,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const LEGACY_BRAND = Buffer.from("lovepvp", "ascii");
+const ALLOWED_REFERENCE_URL = "https://lovepvp.top/";
 
 function filesUnder(target) {
   if (!statSync(target).isDirectory()) return [target];
@@ -20,7 +21,11 @@ function filesUnder(target) {
 }
 
 function containsLegacyBrand(file) {
-  return readFileSync(file).toString("latin1").toLowerCase().includes(
+  const searchableContent = readFileSync(file)
+    .toString("latin1")
+    .toLowerCase()
+    .replaceAll(ALLOWED_REFERENCE_URL, "");
+  return searchableContent.includes(
     LEGACY_BRAND.toString("latin1"),
   );
 }
