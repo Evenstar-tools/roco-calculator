@@ -569,6 +569,17 @@
     font-size: 10px;
   }
 
+  .calculator-layout--compact .quick-nature__option--neutral > svg {
+    display: none;
+  }
+
+  .calculator-layout--compact .quick-iv__caption {
+    width: 44px;
+    min-width: 44px;
+    height: 30px;
+    font-size: 10px;
+  }
+
   .calculator-layout--compact .quick-nature__up {
     right: 2px;
     bottom: 1px;
@@ -717,6 +728,11 @@
   }
 
   .calculator-layout--compact .quick-nature__option--neutral {
+    width: 42px;
+    min-width: 42px;
+  }
+
+  .calculator-layout--compact .quick-iv__caption {
     width: 42px;
     min-width: 42px;
   }

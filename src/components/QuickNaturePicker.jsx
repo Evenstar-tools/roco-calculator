@@ -41,7 +41,7 @@ export function QuickNaturePicker({
         type="button"
       >
         <Equals aria-hidden="true" size={16} weight="bold" />
-        <span>普通</span>
+        <span>性格</span>
       </button>
       {QUICK_STATS.map((stat) => (
         <button

@@ -120,21 +120,23 @@ test("keeps the compact workflow usable at 390px", async ({ page }) => {
   expect(compactWorkspaceBox.x + compactWorkspaceBox.width).toBeLessThanOrEqual(
     390,
   );
-  await expect(
-    page.getByRole("group", { name: "攻击方快捷性格" }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("group", { name: "攻击方快捷个体" }),
-  ).toBeVisible();
+  const quickNature = page.getByRole("group", { name: "攻击方快捷性格" });
+  const quickIv = page.getByRole("group", { name: "攻击方快捷个体" });
+  await expect(quickNature).toBeVisible();
+  await expect(quickIv).toBeVisible();
+  await expect(quickNature.getByText("性格", { exact: true })).toBeVisible();
+  await expect(quickIv.getByText("个体", { exact: true })).toBeVisible();
+  const [natureLabelBox, ivLabelBox] = await Promise.all([
+    quickNature.locator(".quick-nature__option--neutral").boundingBox(),
+    quickIv.locator(".quick-iv__caption").boundingBox(),
+  ]);
+  expect(Math.abs(natureLabelBox.x - ivLabelBox.x)).toBeLessThanOrEqual(1);
+  expect(Math.abs(natureLabelBox.width - ivLabelBox.width)).toBeLessThanOrEqual(1);
   expect(
-    await page
-      .getByRole("group", { name: "攻击方快捷性格" })
-      .evaluate((node) => node.scrollWidth <= node.clientWidth),
+    await quickNature.evaluate((node) => node.scrollWidth <= node.clientWidth),
   ).toBe(true);
   expect(
-    await page
-      .getByRole("group", { name: "攻击方快捷个体" })
-      .evaluate((node) => node.scrollWidth <= node.clientWidth),
+    await quickIv.evaluate((node) => node.scrollWidth <= node.clientWidth),
   ).toBe(true);
   await expect(
     page.getByRole("combobox", { name: "攻击方技能1" }),

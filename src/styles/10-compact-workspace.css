@@ -113,6 +113,7 @@
   padding: 0 7px;
   font-size: 11px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .quick-nature__up {
@@ -141,6 +142,18 @@
   grid-column: 1;
   place-items: center;
   color: var(--text-muted);
+}
+
+.quick-iv__caption {
+  display: inline-grid;
+  width: 58px;
+  height: 34px;
+  grid-column: 2;
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .quick-iv__option {
@@ -653,6 +666,11 @@ html[data-theme="dark"] .quick-iv__option input:checked {
 
   .quick-iv__label {
     width: 24px;
+  }
+
+  .quick-iv__caption {
+    width: 54px;
+    height: 40px;
   }
 
   .quick-nature__option {

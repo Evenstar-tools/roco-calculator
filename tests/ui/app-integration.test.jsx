@@ -773,10 +773,16 @@ test("compact mode defaults to four skills and preserves state when opening deta
   ).toHaveAttribute("aria-selected", "true");
   expect(
     screen.getByRole("group", { name: "攻击方快捷性格" }),
-  ).toHaveTextContent("普通");
+  ).toHaveTextContent("性格");
   expect(
     screen.getByRole("group", { name: "防御方快捷性格" }),
-  ).toHaveTextContent("普通");
+  ).toHaveTextContent("性格");
+  expect(
+    screen.getByRole("group", { name: "攻击方快捷个体" }),
+  ).toHaveTextContent("个体");
+  expect(
+    screen.getByRole("group", { name: "防御方快捷个体" }),
+  ).toHaveTextContent("个体");
   expect(
     screen.getByLabelText(/攻击方风力冲击攻击水灵：\d+伤害/),
   ).toBeVisible();

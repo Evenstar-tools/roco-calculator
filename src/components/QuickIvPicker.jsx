@@ -18,6 +18,7 @@ export function QuickIvPicker({
         <CheckSquareOffset aria-hidden="true" size={18} weight="bold" />
         <span className="sr-only">个体加点</span>
       </span>
+      <span className="quick-iv__caption">个体</span>
       {QUICK_STATS.map((stat) => {
         const checked = Number(values?.[stat]) === 60;
         return (

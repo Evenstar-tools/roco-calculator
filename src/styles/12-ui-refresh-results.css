@@ -835,6 +835,10 @@ html[data-theme="dark"] .four-skill-side > header {
   background: var(--surface-soft);
 }
 
+html[data-theme="dark"] .stat-tile--iv-max {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-soft));
+}
+
 html[data-theme="dark"] .result-rail__direction,
 html[data-theme="dark"] .secondary-action,
 html[data-theme="dark"] .skill-slot input[type="number"],

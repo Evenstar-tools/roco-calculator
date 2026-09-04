@@ -9,6 +9,16 @@ export const FEEDBACK_QQ = "1215583051";
 const FEEDBACK_EMAIL = "1215583051@qq.com";
 const FEEDBACK_BILIBILI_URL =
   "https://space.bilibili.com/9281359?spm_id_from=333.1007.0.0";
+const ACKNOWLEDGED_CREATORS = [
+  { name: "夜降__", url: "https://space.bilibili.com/80872" },
+  { name: "Dr_卡特拉", url: "https://space.bilibili.com/24389699" },
+  { name: "筠与玲珑", url: "https://space.bilibili.com/3494365733325294" },
+  { name: "魔侠陈浪", url: "https://space.bilibili.com/3546852433594934" },
+];
+const REFERENCE_SITES = [
+  { name: "Roco Showdown", url: "https://rocopvp.tzrain.wiki/" },
+  { name: "洛克王国 PVP 伤害计算器", url: "https://lovepvp.top/" },
+];
 const FEATURED_RELEASE_SUMMARY = {
   ...FEATURED_USER_RELEASE,
   highlights:
@@ -157,6 +167,81 @@ function DetailView({ feedback, onBack, onClose }) {
   );
 }
 
+function AcknowledgementsView({ onBack, onClose }) {
+  return (
+    <section
+      aria-label="鸣谢"
+      aria-modal="true"
+      className="share-dialog release-notes-dialog acknowledgements-dialog"
+      role="dialog"
+    >
+      <header className="release-notes-dialog__header">
+        <button
+          aria-label="返回关于与来源"
+          className="release-notes-dialog__back"
+          onClick={onBack}
+          type="button"
+        >
+          ←
+        </button>
+        <h2>鸣谢</h2>
+      </header>
+      <div className="acknowledgements-dialog__content">
+        <p>
+          感谢以下四位 UP 主在本站开发期间给予的支持与友情推荐。点击名字可前往其
+          B 站主页，也欢迎关注。
+        </p>
+        <div
+          aria-label="鸣谢名单"
+          className="acknowledgements-dialog__links"
+          role="group"
+        >
+          {ACKNOWLEDGED_CREATORS.map((creator) => (
+            <a
+              href={creator.url}
+              key={creator.url}
+              rel="noreferrer"
+              target="_blank"
+            >
+              {creator.name}
+            </a>
+          ))}
+        </div>
+        <section className="acknowledgements-dialog__references">
+          <h3>数据参考</h3>
+          <p>部分精灵、技能及对战数据整理时参考了以下网站：</p>
+          <div
+            aria-label="数据参考网站"
+            className="acknowledgements-dialog__links acknowledgements-dialog__links--references"
+            role="group"
+          >
+            {REFERENCE_SITES.map((site) => (
+              <a
+                href={site.url}
+                key={site.url}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {site.name}
+              </a>
+            ))}
+          </div>
+        </section>
+      </div>
+      <div className="dialog-actions">
+        <button
+          aria-label="关闭鸣谢"
+          className="secondary-action"
+          onClick={onClose}
+          type="button"
+        >
+          关闭
+        </button>
+      </div>
+    </section>
+  );
+}
+
 export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open }) {
   const dialogRef = useRef(null);
   const [view, setView] = useState("");
@@ -195,6 +280,11 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open })
     >
       {view === "release" ? (
         <ReleaseNotesView
+          onBack={() => setView("")}
+          onClose={onClose}
+        />
+      ) : view === "acknowledgements" ? (
+        <AcknowledgementsView
           onBack={() => setView("")}
           onClose={onClose}
         />
@@ -261,6 +351,14 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open })
             </button>
           </div>
           <div className="dialog-actions">
+            <button
+              aria-label="查看鸣谢"
+              className="secondary-action data-source-dialog__acknowledgements-action"
+              onClick={() => setView("acknowledgements")}
+              type="button"
+            >
+              鸣谢
+            </button>
             <button
               aria-label="查看免责声明"
               className="secondary-action"

@@ -221,6 +221,10 @@ body {
   background: var(--surface-soft);
 }
 
+.stat-tile--iv-max {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-soft));
+}
+
 .stat-tile__label {
   gap: 4px;
   font-size: 11px;

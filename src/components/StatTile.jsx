@@ -45,6 +45,7 @@ export function StatTile({
   const changeText = numericDelta > 0 ? "增加" : "降低";
   const isModified = Boolean(change);
   const showingBase = isModified && !showFinalPanel;
+  const isMaxIv = Number.parseInt(draft, 10) === 60;
   const displayedPanel = showingBase ? basePanel : panel;
   const panelActionLabel = showingBase
     ? `${label}当前显示基础值${basePanel}，最终值${panel}，点击恢复最终六维`
@@ -76,7 +77,7 @@ export function StatTile({
 
   return (
     <div
-      className={`stat-tile stat-tile--${accent}${showFinalPanel && change ? ` stat-tile--${change}` : ""}${showingBase ? " stat-tile--base-preview" : ""}`}
+      className={`stat-tile stat-tile--${accent}${isMaxIv ? " stat-tile--iv-max" : ""}${showFinalPanel && change ? ` stat-tile--${change}` : ""}${showingBase ? " stat-tile--base-preview" : ""}`}
     >
       {isModified ? (
         <button

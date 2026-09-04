@@ -84,3 +84,54 @@ test("keeps application access and about dialogs inside a mobile viewport", asyn
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
 });
+
+test("opens acknowledgements without overflowing a mobile viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await openMenuItem(page, "关于与来源");
+
+  const aboutDialog = page.getByRole("dialog", { name: "关于与来源" });
+  const acknowledgementsButton = aboutDialog.getByRole("button", { name: "查看鸣谢" });
+  const disclaimerButton = aboutDialog.getByRole("button", { name: "查看免责声明" });
+  const [acknowledgementsBox, disclaimerBox] = await Promise.all([
+    acknowledgementsButton.boundingBox(),
+    disclaimerButton.boundingBox(),
+  ]);
+  expect(acknowledgementsBox).not.toBeNull();
+  expect(disclaimerBox).not.toBeNull();
+  expect(Math.abs(acknowledgementsBox.width - disclaimerBox.width)).toBeLessThanOrEqual(1);
+  expect(Math.abs(acknowledgementsBox.height - disclaimerBox.height)).toBeLessThanOrEqual(1);
+
+  await acknowledgementsButton.click();
+
+  const acknowledgementsDialog = page.getByRole("dialog", { name: "鸣谢" });
+  await expect(acknowledgementsDialog).toBeVisible();
+  await expect(acknowledgementsDialog.getByRole("link", { name: "夜降__" }))
+    .toHaveAttribute("href", "https://space.bilibili.com/80872");
+  await expect(acknowledgementsDialog.getByRole("link", { name: "洛克王国 PVP 伤害计算器" }))
+    .toHaveAttribute("href", "https://lovepvp.top/");
+  expect(await acknowledgementsDialog.evaluate((node) => node.scrollWidth <= node.clientWidth))
+    .toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+    .toBe(true);
+});
+
+test("keeps the three about actions usable at 320px wide", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto("/");
+  await openMenuItem(page, "关于与来源");
+
+  const aboutDialog = page.getByRole("dialog", { name: "关于与来源" });
+  await expect(aboutDialog.getByRole("button", { name: "查看鸣谢" })).toBeVisible();
+  expect(await aboutDialog.evaluate((node) => node.scrollWidth <= node.clientWidth))
+    .toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+    .toBe(true);
+
+  await aboutDialog.getByRole("button", { name: "查看鸣谢" }).click();
+  const acknowledgementsDialog = page.getByRole("dialog", { name: "鸣谢" });
+  await expect(acknowledgementsDialog.getByRole("button", { name: "关闭鸣谢" }))
+    .toBeVisible();
+  expect(await acknowledgementsDialog.evaluate((node) => node.scrollWidth <= node.clientWidth))
+    .toBe(true);
+});

@@ -229,6 +229,37 @@ test("keeps QQ on the first level and moves other feedback contacts deeper", () 
   expect(onClose).toHaveBeenCalledTimes(1);
 });
 
+test("opens acknowledgements and reference links in a second-level dialog", () => {
+  renderOverlays({
+    dataSource: {
+      onClose: vi.fn(),
+      onCopyFeedback: vi.fn(),
+      open: true,
+    },
+    menu: { actions: {}, open: false },
+  });
+
+  fireEvent.click(screen.getByRole("button", { name: "查看鸣谢" }));
+  expect(screen.getByRole("dialog", { name: "鸣谢" })).toBeVisible();
+  expect(screen.getByText(/在本站开发期间给予的支持与友情推荐/)).toBeVisible();
+
+  const links = [
+    ["夜降__", "https://space.bilibili.com/80872"],
+    ["Dr_卡特拉", "https://space.bilibili.com/24389699"],
+    ["筠与玲珑", "https://space.bilibili.com/3494365733325294"],
+    ["魔侠陈浪", "https://space.bilibili.com/3546852433594934"],
+    ["Roco Showdown", "https://rocopvp.tzrain.wiki/"],
+    ["洛克王国 PVP 伤害计算器", "https://lovepvp.top/"],
+  ];
+  for (const [name, href] of links) {
+    expect(screen.getByRole("link", { name })).toHaveAttribute("href", href);
+  }
+
+  fireEvent.click(screen.getByRole("button", { name: "返回关于与来源" }));
+  expect(screen.getByRole("dialog", { name: "关于与来源" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "查看鸣谢" })).toBeVisible();
+});
+
 test("puts the current release first and removes the rule validation card", () => {
   renderOverlays({
     dataSource: { onClose: vi.fn(), onCopyFeedback: vi.fn(), open: true },

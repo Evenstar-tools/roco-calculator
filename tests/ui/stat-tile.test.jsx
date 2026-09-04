@@ -25,10 +25,12 @@ test("shows computed, race, and editable individual values together", async () =
   expect(input).toHaveValue(60);
   expect(input).toHaveAttribute("max", "60");
   expect(input).toHaveAttribute("step", "6");
+  expect(input.closest(".stat-tile")).toHaveClass("stat-tile--iv-max");
   await user.clear(input);
   await user.type(input, "54");
 
   expect(onIvChange).toHaveBeenLastCalledWith(54);
+  expect(input.closest(".stat-tile")).not.toHaveClass("stat-tile--iv-max");
 });
 
 test("clamps individual values to the current sixty-point cap", async () => {
