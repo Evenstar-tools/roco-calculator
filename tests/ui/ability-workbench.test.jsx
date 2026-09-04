@@ -664,8 +664,61 @@ test("does not mark analysis-only target and solver controls as an unapplied mem
   expect(screen.queryByText("草稿未应用")).not.toBeInTheDocument();
 });
 
-test("restores the actual editor scroll position after viewing the full ranking", async () => {
+test("shows the current spirit and nearby entries in each durability preview", () => {
+  const nearbySnapshot = {
+    ...snapshot,
+    spirits: [
+      ...[
+        "spirit_d7a201531161488e",
+        "spirit_537679016e3ec4bb",
+        "spirit_4ec76429db5748d4",
+        "spirit_6d78e04a6736155b",
+        "spirit_39d8b867216c267d",
+      ].map((id, index) => ({
+        fullName: `耐久测试${index + 1}`,
+        id,
+        raceStats: {
+          hp: 200 - index * 10,
+          magicalAttack: 80,
+          magicalDefense: 200 - index * 10,
+          physicalAttack: 80,
+          physicalDefense: 200 - index * 10,
+          speed: 80,
+        },
+        stage: "三阶",
+      })),
+      ...snapshot.spirits,
+    ],
+  };
+  render(
+    <AbilityWorkbench
+      configuration={member({
+        hp: 60,
+        magicalAttack: 0,
+        magicalDefense: 60,
+        physicalAttack: 0,
+        physicalDefense: 60,
+        speed: 0,
+      })}
+      onApplyMember={vi.fn()}
+      snapshot={nearbySnapshot}
+      source={{ index: 0, kind: "member" }}
+    />,
+  );
+
+  for (const metric of ["物理耐久", "魔法耐久", "综合耐久"]) {
+    const preview = screen.getByRole("region", { name: `${metric}当前附近排名` });
+    const current = within(preview).getByText("音速犬").closest("li");
+    expect(current).toHaveAttribute("aria-current", "true");
+    expect(within(preview).getAllByRole("listitem")).toHaveLength(4);
+  }
+});
+
+test("scrolls to the current spirit in the full ranking and restores the editor position", async () => {
   const user = userEvent.setup();
+  const scrollIntoView = vi.fn();
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
+  Element.prototype.scrollIntoView = scrollIntoView;
   const editor = document.createElement("div");
   editor.className = "team-drawer__editor-pane";
   document.body.append(editor);
@@ -689,6 +742,7 @@ test("restores the actual editor scroll position after viewing the full ranking"
 
   await user.click(screen.getByRole("button", { name: "查看完整耐久榜" }));
   await waitFor(() => expect(editor.scrollTop).toBe(0));
+  await waitFor(() => expect(scrollIntoView).toHaveBeenCalledWith({ block: "center" }));
   expect(screen.getByRole("button", { name: "返回能力分析" })).toHaveFocus();
   await user.click(screen.getByRole("button", { name: "返回能力分析" }));
   await waitFor(() => expect(editor.scrollTop).toBe(320));
@@ -696,4 +750,5 @@ test("restores the actual editor scroll position after viewing the full ranking"
 
   rendered.unmount();
   editor.remove();
+  Element.prototype.scrollIntoView = originalScrollIntoView;
 });

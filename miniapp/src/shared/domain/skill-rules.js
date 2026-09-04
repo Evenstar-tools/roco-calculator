@@ -702,6 +702,15 @@ function resolveThunderstormBurst(skill, context) {
         0,
       )
     : 0;
+  const inheritedFixedPowerAdd = triggered
+    ? (params.inheritedFixedPowerAdds ?? []).reduce(
+        (total, { add, contextKey }) =>
+          context[contextKey] === true
+            ? total + Math.max(0, Number(add) || 0)
+            : total,
+        0,
+      )
+    : 0;
   const value = Math.max(
     0,
     Math.round(
@@ -724,27 +733,28 @@ function resolveThunderstormBurst(skill, context) {
       },
       before: skill.basePower,
       after: value,
-      source: "reviewed-rule:thunderstorm-burst-v3",
+      source: "reviewed-rule:thunderstorm-burst-v4",
     },
     {
       label: "迸发种类能耗增加",
       input: burstKinds,
       before: baseCost,
       after: costAfterBurstKinds,
-      source: "reviewed-rule:thunderstorm-burst-v3",
+      source: "reviewed-rule:thunderstorm-burst-v4",
     },
     ...(inheritedCostReduction > 0
       ? [{
-          label: "继承超导迸发能耗",
+          label: "继承迸发能耗降低",
           input: inheritedCostReduction,
           before: costAfterBurstKinds,
           after: resolvedCost,
-          source: "reviewed-rule:thunderstorm-burst-v3",
+          source: "reviewed-rule:thunderstorm-burst-v4",
         }]
       : []),
   ], {
     activeBurstKinds: burstKinds,
     inheritedCostReduction,
+    inheritedFixedPowerAdd,
     resolvedCost,
     selectedBurstSources: selectedSources,
   });

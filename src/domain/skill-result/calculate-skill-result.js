@@ -93,7 +93,25 @@ export function calculateSkillResult({
   lockedPower,
 }) {
   if (!skill) return emptySlotResult();
-  if (skill.calculationStatus === "pending-skill-data") {
+  const details = entryDetails(entry);
+  const directionOverrides = direction.overrides ?? {};
+  const slotOverrides = details.overrides ?? {};
+  const pendingPowerOverride =
+    slotOverrides.powerOverride ??
+    details.powerOverride ??
+    (mode === "single" ? directionOverrides.powerOverride : undefined);
+  const pendingCategoryReady =
+    typeof skill.type === "string" &&
+    ["physical", "magical", "status", "defense"].includes(skill.category);
+  const pendingAttackPowerReady =
+    (skill.category === "status" || skill.category === "defense") ||
+    finiteNumber(skill.basePower) !== undefined ||
+    (pendingPowerOverride?.mode === "static" &&
+      finiteNumber(pendingPowerOverride.value) !== undefined);
+  if (
+    skill.calculationStatus === "pending-skill-data" &&
+    (!pendingCategoryReady || !pendingAttackPowerReady)
+  ) {
     return unresolvedResult(skill, {
       status: "unsupported",
       reason: "技能参数待确认，暂不可计算",
@@ -101,9 +119,6 @@ export function calculateSkillResult({
     });
   }
 
-  const details = entryDetails(entry);
-  const directionOverrides = direction.overrides ?? {};
-  const slotOverrides = details.overrides ?? {};
   const usesLockedPower = finiteNumber(lockedPower) !== undefined;
   const sourceNegativeMark = normalizeMarkSlot(
     sourceMarks?.negative,
@@ -162,6 +177,11 @@ export function calculateSkillResult({
   const enemyStarfallInputId = getSkillEffectInputs(skill).find(
     (input) => input.contextKey === "enemyStarfallMarks",
   )?.id;
+  const chargeBurstSourceInputId = getSkillEffectInputs(skill).find(
+    (input) => input.contextKey === "burstSourceChargeMark",
+  )?.id;
+  const chargeBurstSourceActive =
+    sourceMarks?.positive?.id === "charge" && sourceMarks.positive.stacks > 0;
   const context = {
     attackerSpeed: markedAttackerSpeed,
     defenderSpeed,
@@ -173,6 +193,12 @@ export function calculateSkillResult({
     enemyStarfallMarks,
     ...(enemyStarfallInputId
       ? { [enemyStarfallInputId]: enemyStarfallMarks }
+      : {}),
+    ...(chargeBurstSourceInputId
+      ? {
+          burstSourceChargeMark: chargeBurstSourceActive,
+          [chargeBurstSourceInputId]: chargeBurstSourceActive,
+        }
       : {}),
     attackerHpPercent:
       finiteNumber(attackerHpPercent) ??
@@ -369,12 +395,21 @@ export function calculateSkillResult({
       details.powerMode ??
       (mode === "single" ? directionOverrides.powerMode : undefined),
   });
-  if (powerOverride.mode === "legacy-base") {
+  if (
+    powerOverride.mode === "legacy-base" ||
+    (
+      skill.calculationStatus === "pending-skill-data" &&
+      powerOverride.mode === "static"
+    )
+  ) {
     context.basePowerOverride = powerOverride.value;
   }
 
   const costResolution = resolveSkillPower(skill, context);
   const resolvedSkillCost = finiteNumber(
+    slotOverrides.costOverride,
+    details.costOverride,
+    mode === "single" ? directionOverrides.costOverride : undefined,
     costResolution.resolvedCost,
     skill.cost,
   );
@@ -484,7 +519,15 @@ export function calculateSkillResult({
     0,
   ) ?? 0;
   const fixedPowerAdd = baseFixedPowerAdd + scopedFixedPowerAdd;
+  const inheritedBurstFixedPowerAdd =
+    finiteNumber(powerResolution.inheritedFixedPowerAdd) ?? 0;
   const markFixedPowerAdd = sourceMarkEffects.fixedPowerAdd;
+  const inheritedChargeFixedPowerAdd =
+    powerResolution.selectedBurstSources?.includes("burstSourceChargeMark")
+      ? markFixedPowerAdd
+      : 0;
+  const externalMarkFixedPowerAdd =
+    markFixedPowerAdd - inheritedChargeFixedPowerAdd;
   const skillPercentageAdds = asMultiplierList(
     powerResolution.powerPercentAdds,
   );
@@ -521,7 +564,9 @@ export function calculateSkillResult({
       : [hiddenPanelPowerPercentAdd]),
   ];
   const powerAfterFixed = powerResolution.value + fixedPowerAdd;
-  const powerAfterMarkFixed = powerAfterFixed + markFixedPowerAdd;
+  const powerAfterInheritedBurstFixed =
+    powerAfterFixed + inheritedBurstFixedPowerAdd;
+  const powerAfterMarkFixed = powerAfterInheritedBurstFixed + markFixedPowerAdd;
   const traitFixedPowerAdd = traitResolution.fixedPowerAdd;
   const powerAfterTraitFixed =
     powerAfterMarkFixed + traitFixedPowerAdd;
@@ -535,7 +580,7 @@ export function calculateSkillResult({
     powerAfterContractFixed *
     (1 + percentageAdds.reduce((sum, value) => sum + (Number(value) || 0), 0));
   const automaticStaticPower =
-    powerAfterFixed *
+    (powerAfterInheritedBurstFixed + inheritedChargeFixedPowerAdd) *
     (1 + [...skillPercentageAdds, ...statusPercentageAdds].reduce(
       (sum, value) => sum + (Number(value) || 0),
       0,
@@ -546,7 +591,7 @@ export function calculateSkillResult({
       ? powerOverride.value
       : Math.floor(automaticStaticPower),
   );
-  const manualPowerAfterMarkFixed = staticPower + markFixedPowerAdd;
+  const manualPowerAfterMarkFixed = staticPower + externalMarkFixedPowerAdd;
   const manualPowerAfterTraitFixed =
     manualPowerAfterMarkFixed + traitFixedPowerAdd;
   const manualPowerAfterBloodlineFixed =
@@ -735,7 +780,9 @@ export function calculateSkillResult({
     ? powerOverride.mode === "panel"
       ? panelPower / attackDefenseLevelMultiplier
       : powerAfterWeather * otherPowerMultiplier
-    : panelPower;
+    : powerOverride.mode === "panel"
+      ? panelPower
+      : automaticPanelPower;
   const displayedPower = panelPower;
   const damageReductionMultiplier =
     Math.max(0, finiteNumber(direction.reduction) ?? 1) *
@@ -872,8 +919,7 @@ export function calculateSkillResult({
         attackerContract.targetStarfallStacksAdd,
     ),
   );
-  const additionalDamage = starfallDamage({
-    stacks: starfallStacks,
+  const additionalDamageInput = {
     skill,
     attackerStat,
     defenderDefense,
@@ -886,6 +932,17 @@ export function calculateSkillResult({
       ? 1
       : attackDefenseLevelMultiplier,
     otherPowerMultiplier,
+  };
+  const additionalDamage = starfallDamage({
+    ...additionalDamageInput,
+    stacks: starfallStacks,
+  });
+  const reassemblyMultiplier = sourceMarkEffects.reassemblyMultiplier;
+  const reassembly = starfallDamage({
+    ...additionalDamageInput,
+    stacks: reassemblyMultiplier,
+    powerOverride:
+      actualPower * reassemblyMultiplier * (attacker.types.includes("幻") ? 1.25 : 1),
   });
   const clownTrick = clownTrickFor(mainDamage.total);
   const baronGreed = hasSequentialBaronSettlement
@@ -932,7 +989,10 @@ export function calculateSkillResult({
     traitSettlements.push(baronGreed.settlement);
   }
   const totalDamage =
-    mainDamage.total + additionalDamage.total + clownTrick.damage;
+    mainDamage.total +
+    additionalDamage.total +
+    reassembly.total +
+    clownTrick.damage;
   const currentHp = Math.min(
     defender.panelStats.hp,
     Math.max(
@@ -971,7 +1031,7 @@ export function calculateSkillResult({
           {
             bloodline: bloodlineFixedPowerAdd,
             contract: contractFixedPowerAdd,
-            mark: markFixedPowerAdd,
+            mark: externalMarkFixedPowerAdd,
             trait: traitFixedPowerAdd,
           },
           staticPower,
@@ -1063,9 +1123,18 @@ export function calculateSkillResult({
           fixedPowerAdd === 0 ? "default" : "battle-input",
         ),
         formulaStep(
+          "继承迸发固定威力",
+          inheritedBurstFixedPowerAdd,
+          powerAfterFixed,
+          powerAfterInheritedBurstFixed,
+          inheritedBurstFixedPowerAdd === 0
+            ? "default"
+            : "reviewed-rule:thunderstorm-burst-v4",
+        ),
+        formulaStep(
           "印记固定威力",
           markFixedPowerAdd,
-          powerAfterFixed,
+          powerAfterInheritedBurstFixed,
           powerAfterMarkFixed,
           markFixedPowerAdd === 0 ? "default" : "reviewed-mark-system-v1",
         ),
@@ -1313,12 +1382,21 @@ export function calculateSkillResult({
     staticPowerPercentAdds: staticPowerOverride
       ? []
       : [...skillPercentageAdds, ...statusPercentageAdds],
+    staticPowerSourceAdds: staticPowerOverride
+      ? { inheritedBurst: 0, mark: 0 }
+      : {
+          inheritedBurst: inheritedBurstFixedPowerAdd,
+          mark: inheritedChargeFixedPowerAdd,
+        },
     actualPower,
     displayPower: panelPower,
     panelPower,
     powerSource: powerOverride.source,
     donationPoisonStacks: powerResolution.donationPoisonStacks,
     skillCost: finiteNumber(
+      slotOverrides.costOverride,
+      details.costOverride,
+      mode === "single" ? directionOverrides.costOverride : undefined,
       powerResolution.resolvedCost,
       costResolution.resolvedCost,
       skill.cost,

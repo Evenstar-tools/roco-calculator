@@ -19,6 +19,14 @@ const compressedOutputPath = path.join(
   projectRoot,
   "miniapp/src/data/bundled-runtime.payload.js",
 );
+const PUBLIC_SITE_ORIGIN = "https://rococalc.top";
+const LOCAL_SKILL_ICON_PATTERN = /^\/assets\/skills\/skill_[a-f0-9]{16}\.png$/u;
+
+function miniappSkillIconUrl(value) {
+  return typeof value === "string" && LOCAL_SKILL_ICON_PATTERN.test(value)
+    ? `${PUBLIC_SITE_ORIGIN}${value}`
+    : value;
+}
 
 const runtime = withCalculatorExtras(
   JSON.parse(readFileSync(runtimePath, "utf8")),
@@ -74,13 +82,17 @@ const spirits = runtime.spirits.map((spirit) => {
   };
 });
 
-const skills = runtime.skills.map((skill) => ({
-  ...skill,
-  searchText: String(skill.searchText ?? "")
-    .split("|")
-    .slice(-2)
-    .join("|"),
-}));
+const skills = runtime.skills.map((skill) => {
+  const iconUrl = miniappSkillIconUrl(skill.iconUrl);
+  return {
+    ...skill,
+    ...(iconUrl ? { iconUrl } : {}),
+    searchText: String(skill.searchText ?? "")
+      .split("|")
+      .slice(-2)
+      .join("|"),
+  };
+});
 
 const skillIndexById = new Map(
   skills.map((skill, index) => [skill.id, index]),

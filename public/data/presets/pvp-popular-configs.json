@@ -1,13 +1,13 @@
 {
   "format": "rock-calculator.favorite-config-library",
   "schemaVersion": 1,
-  "appVersion": "1.6.2",
+  "appVersion": "1.6.10",
   "versions": {
-    "data": "s3-2026-08-13-midseason",
-    "rules": "2026-08-13"
+    "data": "s4-preview-2026-09-02",
+    "rules": "s4-preview-2026-09-02"
   },
-  "exportedAt": "2026-08-25T09:37:52.028Z",
-  "entryCount": 213,
+  "exportedAt": "2026-09-04T00:00:00.000Z",
+  "entryCount": 224,
   "entries": [
     {
       "spiritId": "spirit_56b76e5cddf39081",
@@ -4138,6 +4138,215 @@
         "skill_43096fd41b6fa39a",
         "skill_e6645e5c0ad42b90",
         "skill_6f50577eac620d9a"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_8735efa1d0793f6a",
+      "natureId": "silent",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 0,
+        "physicalAttack": 0,
+        "magicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "skills": [
+        "skill_fd5185efa5184db2",
+        "skill_881cda84bed0f5c8",
+        "skill_917448f6d23ba354",
+        "skill_4615df4bd5663a24"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_18d38a10544a16ea",
+      "natureId": "smart",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 0,
+        "magicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalDefense": 0
+      },
+      "skills": [
+        "skill_27f0843f62ffa7bf",
+        "skill_93b5587949fcaad3",
+        "skill_21fab1d8d76bbbfa",
+        "skill_70ce33e2a310129d"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_fa429ea152f6bdad",
+      "natureId": "silent",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 0,
+        "physicalAttack": 0,
+        "magicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "skills": [
+        "skill_459a7fe45bb1a301",
+        "skill_f7eea4de117d30ed",
+        "skill_46f5f9f26fe99d5c",
+        "skill_b1f12cdc4830276c"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_d8e175477972f74d",
+      "natureId": "silent",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 0,
+        "physicalAttack": 0,
+        "magicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "skills": [
+        "skill_35c3bb6b8db8b825",
+        "skill_b53c20641170804b",
+        "skill_ca2b8d247670d95a",
+        "skill_1652bda550a6b2dc"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_200b70f549b632c9",
+      "natureId": "adamant",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 0,
+        "physicalDefense": 0,
+        "magicalDefense": 0
+      },
+      "skills": [
+        "skill_755cc87468b15932",
+        "skill_25621ba1d6a66b50",
+        "skill_4c796437e8ad8a64",
+        "skill_9a50a7c5d3172524"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_586b8e1567f949f6",
+      "natureId": "timid",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 0,
+        "magicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalDefense": 0
+      },
+      "skills": [
+        "skill_61f0f26d1267ca7c",
+        "skill_74c9d6ea4d158c6d",
+        "skill_4f172a368c7f18d6",
+        "skill_573f869efb22f1f1"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_de488be076aaad90",
+      "natureId": "cheerful",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 0,
+        "physicalDefense": 0,
+        "magicalDefense": 0
+      },
+      "skills": [
+        "skill_be1a16f6da08c932",
+        "skill_382a8db9ab4e7a48",
+        "skill_4b633f741c8ebd87",
+        "skill_f9d9220678ca28e1"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_9f9a5018b4cb3927",
+      "natureId": "smart",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 0,
+        "magicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalDefense": 0
+      },
+      "skills": [
+        "skill_38827e39dbdda074",
+        "skill_5f29d7618631421f",
+        "skill_de420bb66be86bf2",
+        "skill_b1f12cdc4830276c"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_2e66129c499359af",
+      "natureId": "hasty",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 0,
+        "magicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalDefense": 0
+      },
+      "skills": [
+        "skill_51055a70ef615a8a",
+        "skill_7b5f9947063960e6",
+        "skill_1eb4b6867c8758e1",
+        "skill_95aa68a3b3284e56"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_5f3ff5817d7871b8",
+      "natureId": "peaceful",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 0,
+        "physicalAttack": 0,
+        "magicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "skills": [
+        "skill_e1053a860bd8180d",
+        "skill_8aa5a117d3f84667",
+        "skill_97ca23a514bcc348",
+        "skill_5de6dc05b8315c7d"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_b689c0de815c95ef",
+      "natureId": "cheerful",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 0,
+        "physicalDefense": 0,
+        "magicalDefense": 0
+      },
+      "skills": [
+        "skill_b688da558b9ff2e8",
+        "skill_a1fec53e8fb5a90d",
+        "skill_f5cf704678e0738c",
+        "skill_befd3ebf2018d7a8"
       ],
       "traitValues": {}
     }

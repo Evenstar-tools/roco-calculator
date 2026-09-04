@@ -2210,12 +2210,18 @@ describe("calculateMatchup", () => {
     ).find((input) => input.contextKey === "burstTriggered");
     const sourceInput = (contextKey) =>
       skillInputs.find((input) => input.contextKey === contextKey);
-    const resultFor = (context) => calculateMatchup(
+    const resultFor = (context, powerOverride = null) => calculateMatchup(
       fixture,
       battleInput({
         sides: {
           attacker: side("spirit_sonic_dog", thunderstorm.id, [
-            { context, skillId: thunderstorm.id },
+            {
+              context,
+              ...(powerOverride
+                ? { overrides: { powerOverride } }
+                : {}),
+              skillId: thunderstorm.id,
+            },
             null,
             null,
             null,
@@ -2231,16 +2237,59 @@ describe("calculateMatchup", () => {
       [sourceInput("burstSourceBioelectric").id]: true,
       [sourceInput("burstSourceDoublePulse").id]: true,
     });
+    const previousAndCurrentStimulus = resultFor({
+      [traitInput.id]: true,
+      [sourceInput("burstSourceBioelectric").id]: true,
+      [sourceInput("burstSourceCurrentStimulus").id]: true,
+      [sourceInput("burstSourceDoublePulse").id]: true,
+    });
+    const manualPreviousAndCurrentStimulus = resultFor({
+      [traitInput.id]: true,
+      [sourceInput("burstSourceBioelectric").id]: true,
+      [sourceInput("burstSourceCurrentStimulus").id]: true,
+      [sourceInput("burstSourceDoublePulse").id]: true,
+    }, { mode: "static", value: 125 });
     const superconductAndOrdinary = resultFor({
       [traitInput.id]: true,
       [sourceInput("burstSourceDoublePulse").id]: true,
       [sourceInput("burstSourceSuperconduct").id]: true,
     });
+    const sourcePower = (contextKey) => resultFor({
+      [traitInput.id]: false,
+      [sourceInput(contextKey).id]: true,
+    });
 
-    expect(ordinarySources).toMatchObject({ skillCost: 3, skillPower: 115 });
+    expect(ordinarySources).toMatchObject({
+      skillCost: 1,
+      skillPower: 115,
+      staticPower: 75,
+    });
+    expect(previousAndCurrentStimulus).toMatchObject({
+      skillCost: 2,
+      skillPower: 165,
+      staticPower: 125,
+    });
+    expect(manualPreviousAndCurrentStimulus).toMatchObject({
+      skillCost: 2,
+      skillPower: 165,
+      staticPower: 125,
+    });
     expect(superconductAndOrdinary).toMatchObject({
       skillCost: 1,
       skillPower: 115,
+      staticPower: 75,
+    });
+    expect(sourcePower("burstSourceHeavenSpin")).toMatchObject({
+      skillPower: 95,
+      staticPower: 95,
+    });
+    expect(sourcePower("burstSourceArc")).toMatchObject({
+      skillPower: 105,
+      staticPower: 105,
+    });
+    expect(sourcePower("burstSourceLightningGuide")).toMatchObject({
+      skillPower: 85,
+      staticPower: 85,
     });
   });
 
@@ -3575,6 +3624,32 @@ describe("calculateMatchup", () => {
     expect(marked.totalDamage).toBe(base.totalDamage);
   });
 
+  test("重组把下一次攻击拆成原属性与幻系两段独立伤害", () => {
+    const withReassembly = (stacks) => battleInput({
+      marks: {
+        attacker: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: "reassembly", stacks },
+        },
+        defender: {
+          negative: { id: "starfall", stacks: 2 },
+          positive: { id: null, stacks: 0 },
+        },
+      },
+    });
+    const normal = calculateMatchup(snapshot, withReassembly(1)).forward.selectedResult;
+    const countered = calculateMatchup(snapshot, withReassembly(3)).forward.selectedResult;
+
+    expect(normal).toMatchObject({
+      status: "exact",
+    });
+    const normalExtra = normal.totalDamage - normal.mainDamage - normal.additionalDamage;
+    const counteredExtra =
+      countered.totalDamage - countered.mainDamage - countered.additionalDamage;
+    expect(normalExtra).toBeGreaterThan(0);
+    expect(counteredExtra).toBeGreaterThan(normalExtra);
+  });
+
   test("new power override wins over every legacy manual power field", () => {
     const result = calculateMatchup(
       snapshot,
@@ -3743,6 +3818,69 @@ describe("calculateMatchup", () => {
     expect(calculateMatchup(fixture, input).forward.selectedResult.hitCount).toBe(6);
   });
 
+  test("雷暴的蓄电来源跟随己方印记层数且不重复计数", () => {
+    const fixture = {
+      ...snapshot,
+      skills: snapshot.skills.map((skill) =>
+        skill.id === "skill_wind"
+          ? {
+              ...skill,
+              basePower: 55,
+              category: "magical",
+              cost: 1,
+              name: "雷暴",
+              type: "电",
+            }
+          : skill,
+      ),
+    };
+    const thunderstorm = fixture.skills.find((skill) => skill.id === "skill_wind");
+    const chargeInputId = getSkillEffectInputs(thunderstorm).find(
+      (input) => input.contextKey === "burstSourceChargeMark",
+    ).id;
+    const calculate = (chargeStacks, staleSelected) =>
+      calculateMatchup(
+        fixture,
+        battleInput({
+          directions: {
+            forward: {
+              context: {
+                [chargeInputId]: staleSelected,
+                burstSourceChargeMark: staleSelected,
+              },
+            },
+          },
+          marks: {
+            attacker: {
+              negative: { id: null, stacks: 0 },
+              positive: chargeStacks > 0
+                ? { id: "charge", stacks: chargeStacks }
+                : { id: null, stacks: 0 },
+            },
+            defender: {
+              negative: { id: null, stacks: 0 },
+              positive: { id: null, stacks: 0 },
+            },
+          },
+        }),
+      ).forward.selectedResult;
+
+    expect(calculate(3, false)).toMatchObject({
+      skillCost: 2,
+      skillPower: 95,
+      staticPower: 95,
+    });
+    expect(calculate(3, true)).toMatchObject({
+      skillCost: 2,
+      skillPower: 95,
+      staticPower: 95,
+    });
+    expect(calculate(0, true)).toMatchObject({
+      skillCost: 1,
+      skillPower: 55,
+    });
+  });
+
   test.each([
     [0, 55, 79],
     [0.2, 66, 94],
@@ -3784,7 +3922,7 @@ describe("calculateMatchup", () => {
     },
   );
 
-  test("本系结算后的显示威力先四舍五入再进入多段伤害", () => {
+  test("本系结算后的显示威力四舍五入展示但伤害沿用未取整值", () => {
     const lightSpear = {
       basePower: 30,
       category: "physical",
@@ -3844,8 +3982,8 @@ describe("calculateMatchup", () => {
     expect(result).toMatchObject({
       effectivePower: 38,
       hitCount: 3,
-      mainDamage: 144,
-      totalDamage: 144,
+      mainDamage: 141,
+      totalDamage: 141,
     });
   });
 
@@ -4396,6 +4534,46 @@ describe("calculateMatchup", () => {
       status: "unsupported",
       totalDamage: null,
     });
+  });
+
+  test("calculates a partially known S4 attack after manual power and cost input", () => {
+    const previewSkill = {
+      basePower: null,
+      calculationStatus: "pending-skill-data",
+      category: "magical",
+      cost: null,
+      id: "skill-s4-preview-broadcast",
+      name: "广播",
+      type: "机械",
+    };
+    const input = battleInput({
+      mode: "four",
+      sides: {
+        attacker: side("spirit_sonic_dog", previewSkill.id, [
+          {
+            skillId: previewSkill.id,
+            overrides: {
+              costOverride: 4,
+              powerOverride: { mode: "static", value: 90 },
+            },
+          },
+          null,
+          null,
+          null,
+        ]),
+      },
+    });
+    const result = calculateMatchup(
+      { ...snapshot, skills: [...snapshot.skills, previewSkill] },
+      input,
+    ).forward.selectedResult;
+
+    expect(result).toMatchObject({
+      skillCost: 4,
+      staticPower: 90,
+      status: "exact",
+    });
+    expect(result.totalDamage).toBeGreaterThan(0);
   });
 
   test("treats null direction overrides as absent", () => {

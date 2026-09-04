@@ -245,6 +245,20 @@ function assertPowerOverride(overrides, path) {
   }
 }
 
+function assertCostOverride(overrides, path) {
+  if (!Object.hasOwn(overrides, "costOverride")) return;
+  const costOverride = overrides.costOverride;
+  if (costOverride === null) return;
+  if (
+    typeof costOverride !== "number" ||
+    !Number.isInteger(costOverride) ||
+    costOverride < 0 ||
+    costOverride > 99
+  ) {
+    throw new TypeError(`${path}.costOverride 能耗必须为 0–99 的整数`);
+  }
+}
+
 function isFiniteNumberOrArray(value) {
   if (typeof value === "number") {
     return Number.isFinite(value);
@@ -301,6 +315,7 @@ function assertSkillInput(skill, path) {
       assertJsonValue(skill[key], `${path}.${key}`);
       if (key === "overrides") {
         assertPowerOverride(skill[key], `${path}.${key}`);
+        assertCostOverride(skill[key], `${path}.${key}`);
       }
     }
   }
@@ -516,6 +531,7 @@ function assertDirection(direction, path) {
   assertJsonValue(direction.context, `${path}.context`);
   assertJsonValue(direction.overrides, `${path}.overrides`);
   assertPowerOverride(direction.overrides, `${path}.overrides`);
+  assertCostOverride(direction.overrides, `${path}.overrides`);
 }
 
 function assertShareState(state) {

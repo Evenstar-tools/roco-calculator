@@ -1440,6 +1440,155 @@ test("links multi-dimensional strike hits with the target starfall mark", async 
   );
 });
 
+test("雷暴同步显示生物电能耗与己方蓄电印记来源", async () => {
+  const user = userEvent.setup();
+  const thunderstormSnapshot = {
+    ...snapshot,
+    learnsets: snapshot.learnsets.map((learnset) =>
+      learnset.spiritId === "sonic-dog"
+        ? { ...learnset, skillIds: [...learnset.skillIds, "thunderstorm"] }
+        : learnset,
+    ),
+    skills: [
+      ...snapshot.skills,
+      {
+        basePower: 55,
+        category: "magical",
+        cost: 1,
+        description: "造成魔伤，迸发：每有1种来源，威力+10、能耗+1。",
+        id: "thunderstorm",
+        name: "雷暴",
+        type: "电",
+      },
+    ],
+  };
+  render(<App initialSnapshot={thunderstormSnapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+
+  const skillPicker = screen.getByRole("combobox", { name: "选择技能" });
+  await user.clear(skillPicker);
+  await user.type(skillPicker, "雷暴");
+  await user.click(screen.getByRole("option", { name: /雷暴/ }));
+  await user.click(screen.getByText("迸发来源", { selector: "summary span" }));
+
+  const bioelectric = screen.getByRole("checkbox", {
+    name: "生物电（迸发来源）",
+  });
+  await user.click(bioelectric);
+  await waitFor(() =>
+    expect(screen.getByText("能耗 0", { selector: ".skill-fact" })).toBeVisible(),
+  );
+  await user.click(bioelectric);
+
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const attackerMarks = screen.getByRole("group", { name: "进攻方印记" });
+  const positiveMark = within(attackerMarks).getByRole("combobox", {
+    name: "进攻方正面印记",
+  });
+  await user.selectOptions(positiveMark, "charge");
+
+  const chargeSource = screen.getByRole("checkbox", {
+    name: "蓄电（迸发来源）",
+  });
+  await waitFor(() => expect(chargeSource).toBeChecked());
+  await waitFor(() =>
+    expect(screen.getByText("能耗 2", { selector: ".skill-fact" })).toBeVisible(),
+  );
+
+  const chargeStacks = within(attackerMarks).getByRole("spinbutton", {
+    name: "进攻方蓄电层数",
+  });
+  await user.clear(chargeStacks);
+  await user.type(chargeStacks, "3");
+  await waitFor(() => expect(chargeStacks).toHaveValue(3));
+  expect(screen.getByText("能耗 2", { selector: ".skill-fact" })).toBeVisible();
+
+  await user.click(chargeSource);
+  await waitFor(() => expect(positiveMark).toHaveValue(""));
+  await waitFor(() =>
+    expect(screen.getByText("能耗 1", { selector: ".skill-fact" })).toBeVisible(),
+  );
+});
+
+test("雷暴把此前电流刺激来源与本次特性触发分别结算", async () => {
+  const user = userEvent.setup();
+  const currentStimulus = {
+    description: "触发迸发时，本次技能威力+40。",
+    id: "current-stimulus",
+    name: "电流刺激",
+  };
+  const thunderstormSnapshot = {
+    ...snapshot,
+    learnsets: snapshot.learnsets.map((learnset) =>
+      learnset.spiritId === "sonic-dog"
+        ? { ...learnset, skillIds: [...learnset.skillIds, "thunderstorm"] }
+        : learnset,
+    ),
+    skills: [
+      ...snapshot.skills,
+      {
+        basePower: 55,
+        category: "magical",
+        cost: 1,
+        description: "造成魔伤，迸发：每有1种来源，威力+10、能耗+1。",
+        id: "thunderstorm",
+        name: "雷暴",
+        type: "电",
+      },
+    ],
+    spirits: snapshot.spirits.map((spirit) =>
+      spirit.id === "sonic-dog"
+        ? { ...spirit, traitIds: [currentStimulus.id] }
+        : spirit,
+    ),
+    traits: [...snapshot.traits, currentStimulus],
+  };
+  render(<App initialSnapshot={thunderstormSnapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  await user.click(screen.getByRole("tab", { name: "四技能" }));
+
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(picker);
+  await user.type(picker, "雷暴");
+  await user.click(screen.getByRole("option", { name: /雷暴/ }));
+  await user.click(screen.getByText("迸发来源", { selector: "summary span" }));
+
+  for (const name of ["生物电", "电流刺激", "双联脉冲"]) {
+    await user.click(screen.getByRole("checkbox", {
+      name: `攻击方技能1${name}（迸发来源）`,
+    }));
+  }
+
+  const row = screen.getByRole("group", { name: "攻击方技能1，当前选中" });
+  const currentDamage = () => Number(
+    row.querySelector(".skill-slot__damage-values span")?.textContent
+      ?.replace("伤害", ""),
+  );
+  await waitFor(() =>
+    expect(screen.getByRole("spinbutton", {
+      name: "攻击方技能1静态威力",
+    })).toHaveValue(125),
+  );
+  expect(within(row).getByText("55 + 30 + 40 = 125")).toBeVisible();
+  expect(within(row).getByText("2", { selector: ".skill-slot__cost" })).toBeVisible();
+  const stackedDamage = currentDamage();
+
+  const traitTrigger = screen.getByRole("checkbox", {
+    name: "攻击方技能1触发电流刺激",
+  });
+  expect(traitTrigger).toBeChecked();
+  await user.click(traitTrigger);
+  await waitFor(() => expect(currentDamage()).toBeLessThan(stackedDamage));
+  expect(screen.getByRole("checkbox", {
+    name: "攻击方技能1电流刺激（迸发来源）",
+  })).toBeChecked();
+  expect(screen.getByRole("spinbutton", {
+    name: "攻击方技能1静态威力",
+  })).toHaveValue(125);
+});
+
 test("uses a selected status skill with the current sprout bonus only after its row is clicked", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);

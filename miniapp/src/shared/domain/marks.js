@@ -39,6 +39,11 @@ const POSITIVE_MARKS = [
     name: "萌芽",
     summary: "当前伤害不变",
   },
+  {
+    id: "reassembly",
+    name: "重组",
+    summary: "幻伤100%/300%",
+  },
 ];
 
 const NEGATIVE_MARKS = [
@@ -135,9 +140,16 @@ export function normalizeMarkSlot(value, polarity) {
   const allowed = new Set(MARK_DEFINITIONS[polarity].map((mark) => mark.id));
   const id =
     typeof value?.id === "string" && allowed.has(value.id) ? value.id : null;
-  const stacks = id
+  const rawStacks = id
     ? Math.min(99, Math.max(0, Math.floor(Number(value?.stacks) || 0)))
     : 0;
+  const stacks = id === "reassembly"
+    ? rawStacks >= 3
+      ? 3
+      : rawStacks > 0
+        ? 1
+        : 0
+    : rawStacks;
   return { id, stacks };
 }
 
@@ -217,6 +229,7 @@ export function resolveSourceMarkEffects({
     fixedPowerAdd: 0,
     hiddenPanelPowerPercentAdd: 0,
     powerPercentAdd: 0,
+    reassemblyMultiplier: 0,
     speedPenalty: negative.id === "slow" ? negative.stacks * 10 : 0,
     settlements: [],
   };
@@ -275,6 +288,8 @@ export function resolveSourceMarkEffects({
           text: `攻击 ×${positive.stacks} 技能威力 +${positive.stacks * 10}%`,
         }),
       );
+    } else if (positive.id === "reassembly" && attacking) {
+      effects.reassemblyMultiplier = positive.stacks >= 3 ? 3 : 1;
     } else if (positive.id === "charge" && attacking && burstTriggered) {
       effects.fixedPowerAdd += positive.stacks * 10;
       effects.settlements.push(

@@ -294,13 +294,16 @@
   .skill-slot {
     min-height: 50px;
     gap: 4px;
-    grid-template-columns: 18px minmax(92px, 1fr) 70px 48px 76px;
+    grid-template-columns: 18px minmax(92px, 1fr) 44px 70px 48px 76px;
   }
 
   .skill-slot > .skill-slot__kind,
-  .skill-slot--head > :nth-child(3),
-  .skill-slot > :nth-child(4) {
+  .skill-slot--head > :nth-child(3) {
     display: none;
+  }
+
+  .skill-slot__cost-input {
+    width: 100%;
   }
 
   .skill-slot .skill-picker,

@@ -140,6 +140,11 @@ function validatePreviewDefaults(spirits) {
 }
 
 function validateSkills(skills) {
+  const allowedTypes = new Set([
+    "普通", "草", "火", "水", "光", "地", "冰", "龙", "电",
+    "毒", "虫", "武", "翼", "萌", "幽", "恶", "机械", "幻",
+  ]);
+  const allowedCategories = new Set(["physical", "magical", "status", "defense"]);
   const errors = [
     ...duplicateIssues(skills, (skill) => skill.id, "DUPLICATE_SKILL_ID", "skills"),
     ...duplicateIssues(skills, (skill) => skill.name, "DUPLICATE_SKILL_NAME", "skills"),
@@ -160,16 +165,23 @@ function validateSkills(skills) {
         ),
       );
     }
+    const hasKnownType = skill.type !== null;
+    const hasKnownCategory = skill.category !== null;
     if (
       isPendingPlaceholder &&
-      ["type", "category", "cost", "basePower", "ruleId", "ruleParams"]
-        .some((key) => skill[key] !== null)
+      (
+        hasKnownType !== hasKnownCategory ||
+        (hasKnownType && !allowedTypes.has(skill.type)) ||
+        (hasKnownCategory && !allowedCategories.has(skill.category)) ||
+        ["cost", "basePower", "ruleId", "ruleParams"]
+          .some((key) => skill[key] !== null && skill[key] !== undefined)
+      )
     ) {
       errors.push(
         issue(
           "INVALID_PENDING_SKILL_PARAMETER",
           `skills[${index}]`,
-          "待确认技能不得写入未经核实的属性、类别、能耗、威力或规则参数",
+          "待确认技能只允许成对写入已核实的属性与类别，能耗、威力和规则参数必须留空",
           { skillId: skill.id },
         ),
       );

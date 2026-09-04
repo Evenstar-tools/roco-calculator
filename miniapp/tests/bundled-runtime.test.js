@@ -108,19 +108,22 @@ describe("bundled miniapp runtime", () => {
     expect(decodedBundledRuntime).toEqual(bundled);
   });
 
-  test("keeps secure source icons for ordinary skills while calculator-only skills remain compatible", () => {
+  test("keeps secure skill icons and resolves preview assets through the production site", () => {
     const bundled = expandBundledRuntime(
       JSON.parse(readFileSync(bundledRuntimePath, "utf8")),
     );
     const publicRuntime = JSON.parse(readFileSync(publicRuntimePath, "utf8"));
     const publicIconCount = publicRuntime.skills.filter(
-      (skill) => /^https:\/\//u.test(skill.iconUrl ?? ""),
+      (skill) => /^(?:https:\/\/|\/assets\/skills\/)/u.test(skill.iconUrl ?? ""),
     ).length;
     const bundledIconCount = bundled.skills.filter(
       (skill) => /^https:\/\//u.test(skill.iconUrl ?? ""),
     ).length;
 
     expect(bundledIconCount).toBe(publicIconCount);
+    expect(bundled.skills.filter(
+      (skill) => /^https:\/\/rococalc\.top\/assets\/skills\/skill_[a-f0-9]{16}\.png$/u.test(skill.iconUrl ?? ""),
+    )).toHaveLength(26);
     expect(bundled.skills.some(
       (skill) => skill.name === "愿力冲击" && !skill.iconUrl,
     )).toBe(true);

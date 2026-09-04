@@ -1020,6 +1020,26 @@ html[data-theme="dark"] .data-source-release__heading b {
   font-weight: 800;
 }
 
+.skill-slot__cost-input,
+.skill-fact--editable-cost input {
+  width: 48px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: center;
+}
+
+.skill-slot__cost-input {
+  height: 32px;
+}
+
+.skill-fact--editable-cost input {
+  height: 28px;
+}
+
 .skill-slot__power-input .power-draft__reset {
   min-width: 22px;
   padding: 0 2px;
@@ -1093,4 +1113,3 @@ html[data-theme="dark"] .mobile-result-bar {
   background: rgba(36, 39, 54, 0.96);
   box-shadow: 0 -7px 24px rgba(0, 0, 0, 0.24);
 }
-

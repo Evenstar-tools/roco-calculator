@@ -545,6 +545,7 @@ describe("createPersistence", () => {
       otherPowerMultipliers: [1.1],
       overrides: {
         basePower: 95,
+        costOverride: 4,
         context: {
           counterTriggered: true,
           token: "private-token",
@@ -570,6 +571,7 @@ describe("createPersistence", () => {
     state.directions.forward.overrides = {
       attackLevelStage: 2,
       basePower: 90,
+      costOverride: 3,
       context: {
         enemyEnergy: 5,
         token: "private-token",
@@ -608,6 +610,7 @@ describe("createPersistence", () => {
       otherPowerMultipliers: [1.1],
       overrides: {
         basePower: 95,
+        costOverride: 4,
         context: { counterTriggered: true },
         fixedPowerAddsBySlot: [0, 10, 20],
         powerOverride: { mode: "panel", value: 175 },
@@ -625,6 +628,7 @@ describe("createPersistence", () => {
     expect(saved.state.directions.forward.overrides).toEqual({
       attackLevelStage: 2,
       basePower: 90,
+      costOverride: 3,
       context: { enemyEnergy: 5 },
       powerOverride: { mode: "static", value: 110 },
     });
@@ -639,6 +643,7 @@ describe("createPersistence", () => {
     expect(restored.directions.forward.overrides).toEqual({
       attackLevelStage: 2,
       basePower: 90,
+      costOverride: 3,
       context: { enemyEnergy: 5 },
       powerOverride: { mode: "static", value: 110 },
     });

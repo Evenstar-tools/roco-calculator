@@ -34,6 +34,7 @@ const OVERRIDE_NUMBER_KEYS = [
   "attackLevelStage",
   "basePower",
   "basePowerOverride",
+  "costOverride",
   "damageReductionMultiplier",
   "defenderDefense",
   "defenderSpeedFlat",

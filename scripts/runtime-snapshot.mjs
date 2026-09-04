@@ -18,6 +18,7 @@ const AUDIT_ONLY_KEYS = new Set([
   "source",
   "sources",
 ]);
+const LOCAL_SKILL_ICON_PATTERN = /^\/assets\/skills\/skill_[a-f0-9]{16}\.png$/u;
 
 function compact(value) {
   return String(value ?? "")
@@ -98,7 +99,8 @@ function prepareSpirit(spirit, resolveSpiritId, localAssetById) {
 function prepareSkill(skill) {
   const nameParts = pinyinParts(skill.name);
   const iconUrl = typeof skill.asset?.sourceUrl === "string" &&
-    /^https:\/\//u.test(skill.asset.sourceUrl)
+    (/^https:\/\//u.test(skill.asset.sourceUrl) ||
+      LOCAL_SKILL_ICON_PATTERN.test(skill.asset.sourceUrl))
     ? skill.asset.sourceUrl
     : null;
   const searchText = [

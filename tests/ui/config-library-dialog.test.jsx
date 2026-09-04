@@ -105,7 +105,10 @@ test("shows import preview and only confirms after a valid entry is ready", () =
           spiritName: "彩虹独角兽",
           type: "invalidEntries",
         }],
-        warnings: ["数据版本不同，已按当前版本校验"],
+        warnings: [
+          "数据版本不同，已按当前版本校验",
+          "规则版本不同，已按当前版本校验",
+        ],
       }}
     />,
   );
@@ -124,6 +127,10 @@ test("shows import preview and only confirms after a valid entry is ready", () =
   expect(screen.getByText("技能槽数量不符合当前版本")).toBeVisible();
   expect(screen.getByText("已跳过，不会写入")).toBeVisible();
   expect(screen.getByText(/采用最后一条有效配置/)).toBeVisible();
+  expect(screen.queryByText("数据版本不同，已按当前版本校验"))
+    .not.toBeInTheDocument();
+  expect(screen.queryByText("规则版本不同，已按当前版本校验"))
+    .not.toBeInTheDocument();
   expect(screen.getByText(/确认后将覆盖 1 只精灵/)).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "确认导入" }));
   expect(onConfirmImport).toHaveBeenCalledTimes(1);
@@ -198,7 +205,7 @@ test("shows the built-in popular configuration preview without a file picker", (
   );
 
   expect(screen.getByRole("dialog", { name: "常用精灵配置" })).toBeVisible();
-  expect(screen.getByText("PVP 热门配置 · 213 只")).toBeVisible();
+  expect(screen.getByText("PVP 热门配置 · 224 只")).toBeVisible();
   expect(screen.getByText("安装后可离线导入")).toBeVisible();
   expect(screen.queryByLabelText("选择配置库文件")).not.toBeInTheDocument();
   expect(screen.getByText("新增配置").nextElementSibling).toHaveTextContent("188");

@@ -60,6 +60,21 @@ describe("mark rules", () => {
     });
   });
 
+  test("重组只接受普通或应对防御两档追加倍率", () => {
+    expect(effects("reassembly", 1)).toMatchObject({
+      reassemblyMultiplier: 1,
+    });
+    expect(effects("reassembly", 3)).toMatchObject({
+      reassemblyMultiplier: 3,
+    });
+    expect(normalizeMarksState({
+      attacker: {
+        negative: { id: null, stacks: 0 },
+        positive: { id: "reassembly", stacks: 2 },
+      },
+    }).attacker.positive).toEqual({ id: "reassembly", stacks: 1 });
+  });
+
   test("reads the charge mark granted by 增程电池", () => {
     expect(
       resolveSkillMarkApplications({

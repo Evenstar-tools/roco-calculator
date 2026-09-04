@@ -1,4 +1,4 @@
-import { calculateDamage, roundDisplayedPower } from "../damage.js";
+import { calculateDamage } from "../damage.js";
 import { getTypeMultiplier } from "../type-chart.js";
 
 export function starfallDamage({
@@ -13,27 +13,26 @@ export function starfallDamage({
   level,
   attackDefenseLevelMultiplier,
   otherPowerMultiplier,
+  powerOverride,
 }) {
   const stackCount = Math.max(0, Math.floor(Number(stacks) || 0));
-  if (stackCount === 0 || skill.type === "幻") {
+  if (stackCount === 0 || (powerOverride === undefined && skill.type === "幻")) {
     return {
       total: 0,
       power: 0,
-      displayedPower: 0,
-      typeMultiplier: 1,
-      arithmetic: null,
     };
   }
 
-  const power = stackCount ** 2 + 24 * stackCount - 24;
+  const power = Number.isFinite(Number(powerOverride))
+    ? Number(powerOverride)
+    : stackCount ** 2 + 24 * stackCount - 24;
   const typeMultiplier = getTypeMultiplier("幻", defenderTypes, typeChart);
   const calculationPower =
     power *
     typeMultiplier *
     attackDefenseLevelMultiplier *
     otherPowerMultiplier;
-  const displayedPower = roundDisplayedPower(calculationPower);
-  const arithmetic = calculateDamage({
+  const total = calculateDamage({
     attackerStat,
     displayedPower: calculationPower,
     defenderDefense,
@@ -41,13 +40,10 @@ export function starfallDamage({
     hitCount: 1,
     finalDamageMultiplier,
     level,
-  });
-
+  }).total;
   return {
-    total: arithmetic.total,
+    total,
     power,
-    displayedPower,
     typeMultiplier,
-    arithmetic,
   };
 }

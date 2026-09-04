@@ -22,8 +22,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留贪得无厌结算、吸血后自损顺序与物攻等级说明，并清理未使用变量",
   }),
   "src/domain/calculator-view-model.js": Object.freeze({
-    mirrorHash: "9b8d6173b3b53642de10e5eef1dfd0eac8453c17ae95297adbfa8b2558511d99",
-    reason: "清理 lint 发现的未使用变量，结算语义不变",
+    mirrorHash: "82128fc707adf4b4dc6c71163dc1a8c55b725a17e3c3ea6c71df10ee16382d73",
+    reason: "同步迸发来源与重组印记的计算展示参数",
   }),
   "src/domain/calculate.js": Object.freeze({
     mirrorHash: "61eca5ae03503afade6c7cb28010a6a11d7e7e6f7875ba663f8d4f460019b957",
@@ -34,7 +34,7 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留下注先吸血后扣除自身生命的已验收结算顺序",
   }),
   "src/domain/damage.js": Object.freeze({
-    mirrorHash: "65f4485c041538ef875c92b2742571321a5a3e5892df59730553939229ece8cd",
+    mirrorHash: "eabf3f10a1b31c7f33e0172b2107b1988cc078b49e350363c41449f17847ab94",
     reason: "保留统一伤害取整策略、最终单段伤害与连击顺序",
   }),
   "src/domain/contract-shape.js": Object.freeze({
@@ -42,8 +42,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留契约的形状14种咕噜球效果对应关系与结算语义",
   }),
   "src/domain/marks.js": Object.freeze({
-    mirrorHash: "703bf5f1c8de01a584034d69898528c16b3ff39a980161d05b11d04fe8fa0b8d",
-    reason: "保留风起印记的已验收威力结算与星陨层数标准读取补丁",
+    mirrorHash: "48630f4ddc4d0a4e6d50f19ab02e3ecc11bccbde10369c8ea98972f6cf2db432",
+    reason: "保留风起、星陨、蓄电与重组印记的最新读取语义",
   }),
   "src/domain/negative-status-rules.js": Object.freeze({
     mirrorHash: "ac5f192d99c5c7ab5a79844c250081beac67900924522365b942474d09678660",
@@ -54,19 +54,23 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留 v1.5.7 后已验收的威力覆盖语义",
   }),
   "src/domain/skill-effects.js": Object.freeze({
-    mirrorHash: "b06f4de3f77ecec0fde650aab76b7a2326a623c230126ec53aba6ad7be2464a0",
+    mirrorHash: "0077a7d235e1abdd7db6756aa2885436b012707d0c2ee842a22c66b39880195e",
     reason: "保留迸发联动、虫群奉献、体重挡位、啃咬与飞断最新技能输入语义；虫鸣输入直接驱动连击数，最少为1且不设业务上限，并接受连击增益",
   }),
   "src/domain/skill-result/calculate-skill-result.js": Object.freeze({
-    mirrorHash: "02868b0ffc4cd7827c5087fe8716944bc427c897e1c8ba0b5d26cb2eb19ca1fc",
-    reason: "虫鸣使用无业务上限的可调基础连击，并在其后统一叠加热身运动等连击增益",
+    mirrorHash: "87240eeb15eb2bc154b22d44e996e6c8934444a96a286d2392df148e0ac5f546",
+    reason: "同步虫鸣连击、迸发来源、星陨与重组额外伤害的最新结算",
+  }),
+  "src/domain/skill-result/starfall.js": Object.freeze({
+    mirrorHash: "9c852d3d8bfc78f3a8817833a68302de1267145df5b0b608fc6c6a7c7067bf7c",
+    reason: "统一星陨与重组额外伤害的显示威力和实际威力取整",
   }),
   "src/domain/skill-rules.js": Object.freeze({
-    mirrorHash: "36a2a2e92b41fbbf44343f9939c1aa362f00b1fc5809f622cc89dc2dcef0b4b8",
+    mirrorHash: "8c010ba2d2d7346de3f167c9296a9415f15f7062bc68df9086d1799007347eda",
     reason: "保留显示威力覆盖、虫群奉献、体重挡位与最终伤害倍率规则语义",
   }),
   "src/domain/skill-status-effects.js": Object.freeze({
-    mirrorHash: "938bb7340974552fe079c68aa0790777e324e15b6a17074eae8f52d511343ed1",
+    mirrorHash: "5f035dd1ffa287ea774c402cd0a4aa93df18ed0cc0d83d9749b7d011b1cee6bc",
     reason: "保留状态技能重复触发，并区分触发次数与每次连击系数的结算和预览",
   }),
   "src/domain/trait-effects.js": Object.freeze({
@@ -74,7 +78,7 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留迸发默认开启、特性层数上限与最新特性输入语义；全神贯注未行动时物攻加成 100%，每次行动衰减 20%",
   }),
   "src/state/calculator-session.js": Object.freeze({
-    mirrorHash: "8f666e87dbd657cc222805b1d3910ba3d7e9a7d1c95db51cbdf51122728b2a5e",
+    mirrorHash: "f5f80edc8607d75c9adf466a66361f828278ac114d3bca44a700c811e59e6ab0",
     reason: "保留威力输入状态管理，并按技能记忆状态触发次数；能力等级公式改为引用 domain/skill-result/numeric.js 单一权威",
   }),
   "src/state/battle-activation.js": Object.freeze({

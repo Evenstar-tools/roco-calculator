@@ -66,6 +66,17 @@ describe("skill status effects", () => {
     });
   });
 
+  test("S4状态技能应用后续伤害所需的连击与能力变化", () => {
+    expect(resolveSkillStatusActivation(skill("惊鸿一瞥"))).toMatchObject({
+      applied: true,
+      deltas: { ownHitCountAdd: 1 },
+    });
+    expect(resolveSkillStatusActivation(skill("仰望夜空"))).toMatchObject({
+      applied: true,
+      deltas: { ownAttack: 7, ownDefense: 7 },
+    });
+  });
+
   test.each([
     [
       skill("蓄势待发", {

@@ -9,6 +9,12 @@
       "fetchedAt": "2026-09-02T17:33:39+08:00",
       "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
     },
+    "skillParameterSource": {
+      "title": "S4新技能属性与类别补充",
+      "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+      "revision": "user-input-2026-09-04",
+      "fetchedAt": "2026-09-04T11:50:00+08:00"
+    },
     "raceStatMapping": {
       "精力": "hp"
     },
@@ -18,9 +24,9 @@
       "finalForms": 11,
       "placeholderForms": 12,
       "traits": 11,
-      "skillSlots": 44,
-      "uniqueSkillNames": 43,
-      "existingSkillReferences": 18,
+      "skillSlots": 46,
+      "uniqueSkillNames": 44,
+      "existingSkillReferences": 20,
       "newSkillPlaceholders": 26
     },
     "formalVerificationDate": "2026-09-10",
@@ -78,8 +84,8 @@
         "adaptationStatus": "description-only"
       },
       "skills": [
-        { "name": "广播", "description": "对敌方精灵造成魔法伤害。", "status": "placeholder" },
-        { "name": "无风", "description": "减伤50%，应对攻击：敌方和自己均脱离。", "status": "placeholder" },
+        { "name": "广播", "description": "对敌方精灵造成魔法伤害。", "status": "placeholder", "type": "机械", "category": "magical" },
+        { "name": "无风", "description": "减伤50%，应对攻击：敌方和自己均脱离。", "status": "placeholder", "type": "翼", "category": "defense" },
         { "name": "齿轮切开", "description": "造成物伤，本技能位于1号或3号位时能耗-2，传动1。", "status": "existing-reference" },
         { "name": "翼击", "description": "造成魔伤，迅捷。", "status": "existing-reference" }
       ]
@@ -131,8 +137,8 @@
         "adaptationStatus": "description-only"
       },
       "skills": [
-        { "name": "汇流", "description": "雨天的回合数延长4回合，应对防御：改为延长8回合。", "status": "placeholder" },
-        { "name": "分光", "description": "自己获得魔攻+20%，己方队伍中每有1个不同系别的精灵，额外获得魔攻+10%。", "status": "placeholder" },
+        { "name": "汇流", "description": "雨天的回合数延长4回合，应对防御：改为延长8回合。", "status": "placeholder", "type": "水", "category": "status" },
+        { "name": "分光", "description": "自己获得魔攻+20%，己方队伍中每有1个不同系别的精灵，额外获得魔攻+10%。", "status": "placeholder", "type": "光", "category": "status" },
         { "name": "降雨", "description": "将天气改为雨天，持续8回合。", "status": "placeholder" },
         { "name": "水波术", "description": "造成魔伤，回合结束时，本技能威力永久+20。", "status": "existing-reference" }
       ]
@@ -184,8 +190,8 @@
         "adaptationStatus": "description-only"
       },
       "skills": [
-        { "name": "奇点", "description": "造成魔伤，若上回合双方有精灵使用水系技能，敌方获得4层星陨印记。", "status": "placeholder" },
-        { "name": "引力旋转", "description": "减伤80%，应对攻击：以魔法伤害触发敌方的星陨效果。", "status": "placeholder" },
+        { "name": "奇点", "description": "造成魔伤，若上回合双方有精灵使用水系技能，敌方获得4层星陨印记。", "status": "placeholder", "type": "幻", "category": "magical" },
+        { "name": "引力旋转", "description": "减伤80%，应对攻击：以魔法伤害触发敌方的星陨效果。", "status": "placeholder", "type": "幻", "category": "defense" },
         { "name": "超维投射", "description": "敌方获得4层星陨印记。", "status": "existing-reference" },
         { "name": "错乱", "description": "造成魔伤，应对状态：敌方获得3层星陨印记。", "status": "existing-reference" }
       ]
@@ -237,8 +243,8 @@
         "adaptationStatus": "description-only"
       },
       "skills": [
-        { "name": "小型打劫", "description": "敌方队伍中所有精灵失去1能量。", "status": "placeholder" },
-        { "name": "回收", "description": "造成魔伤，若敌方本回合更换精灵，敌方失去4能量。", "status": "placeholder" },
+        { "name": "小型打劫", "description": "敌方队伍中所有精灵失去1能量。", "status": "placeholder", "type": "幽", "category": "status" },
+        { "name": "回收", "description": "造成魔伤，若敌方本回合更换精灵，敌方失去4能量。", "status": "placeholder", "type": "幽", "category": "magical" },
         { "name": "热身运动", "description": "自己获得连击数+3。", "status": "existing-reference" },
         { "name": "午夜爆音", "description": "造成魔伤，5连击。", "status": "placeholder" }
       ]
@@ -282,8 +288,8 @@
         "adaptationStatus": "description-only"
       },
       "skills": [
-        { "name": "信息素", "description": "己方队伍获得1次随机奉献；若上回合双方有精灵使用地系技能，额外获得3次随机奉献。", "status": "placeholder" },
-        { "name": "迁飞扩散", "description": "造成物伤；若敌方本回合更换精灵，己方队伍获得3次随机奉献。", "status": "placeholder" },
+        { "name": "信息素", "description": "己方队伍获得1次随机奉献；若上回合双方有精灵使用地系技能，额外获得3次随机奉献。", "status": "placeholder", "type": "虫", "category": "status" },
+        { "name": "迁飞扩散", "description": "造成物伤；若敌方本回合更换精灵，己方队伍获得3次随机奉献。", "status": "placeholder", "type": "虫", "category": "physical" },
         { "name": "惊吓盒子", "description": "造成物伤，应对状态：使敌方失去6能量。", "status": "existing-reference" },
         { "name": "降灵", "description": "敌方获得1层降灵印记。", "status": "existing-reference" }
       ]
@@ -317,12 +323,12 @@
             "total": 682
           },
           "previewDefaults": {
-            "natureId": "cheerful",
+            "natureId": "timid",
             "displayIvs": {
               "hp": 60,
               "speed": 60,
-              "physicalAttack": 60,
-              "magicalAttack": 0,
+              "physicalAttack": 0,
+              "magicalAttack": 60,
               "physicalDefense": 0,
               "magicalDefense": 0
             }
@@ -335,8 +341,8 @@
         "adaptationStatus": "description-only"
       },
       "skills": [
-        { "name": "掉包", "description": "敌方的属性增益变为对应的属性减益。", "status": "placeholder" },
-        { "name": "暴打", "description": "对敌方精灵造成魔法伤害。", "status": "placeholder" },
+        { "name": "掉包", "description": "敌方的属性增益变为对应的属性减益。", "status": "placeholder", "type": "恶", "category": "status" },
+        { "name": "暴打", "description": "对敌方精灵造成魔法伤害。", "status": "placeholder", "type": "恶", "category": "magical" },
         { "name": "恶意逃离", "description": "脱离，应对防御：额外使敌方攻击技能能耗+4。", "status": "existing-reference" },
         { "name": "贪婪", "description": "自己获得100%吸血。", "status": "existing-reference" }
       ]
@@ -388,8 +394,8 @@
         "adaptationStatus": "reviewed-rule"
       },
       "skills": [
-        { "name": "闪光弹", "description": "造成物伤，自己脱离。", "status": "placeholder" },
-        { "name": "量子涨落", "description": "造成物伤。若敌方没有星陨印记，则敌方获得3层星陨印记。", "status": "placeholder" },
+        { "name": "闪光弹", "description": "造成物伤，自己脱离。", "status": "placeholder", "type": "光", "category": "physical", "cost": 2, "basePower": 40 },
+        { "name": "量子涨落", "description": "造成物伤。若敌方没有星陨印记，则敌方获得3层星陨印记。", "status": "placeholder", "type": "幻", "category": "physical" },
         { "name": "光刃", "description": "对敌方精灵造成物理伤害。", "status": "existing-reference" },
         { "name": "放晴", "description": "光系技能威力永久+50%，应对防御：改为永久+100%。", "status": "existing-reference" }
       ]
@@ -432,8 +438,8 @@
         "adaptationStatus": "reviewed-rule"
       },
       "skills": [
-        { "name": "仰望夜空", "description": "自己获得魔攻和魔防+70%。", "status": "placeholder" },
-        { "name": "观测者效应", "description": "自己脱离，更换入场的精灵以月陨星状态登场。", "status": "placeholder" },
+        { "name": "仰望夜空", "description": "自己获得魔攻和魔防+70%。", "status": "placeholder", "type": "幻", "category": "status" },
+        { "name": "观测者效应", "description": "自己脱离，更换入场的精灵以月陨星状态登场。", "status": "placeholder", "type": "幻", "category": "status" },
         { "name": "冥想", "description": "减伤80%，应对攻击：敌方获得2层星陨印记。", "status": "existing-reference" },
         { "name": "错乱", "description": "造成魔伤，应对状态：敌方获得3层星陨印记。", "status": "existing-reference" }
       ]
@@ -494,8 +500,8 @@
         "adaptationStatus": "reviewed-rule"
       },
       "skills": [
-        { "name": "惊鸿一瞥", "description": "自己获得连击数+1，迅捷。", "status": "placeholder" },
-        { "name": "月影交错", "description": "造成物伤，2连击；若上回合双方有精灵使用幻系技能，本技能获得迅捷。", "status": "placeholder" },
+        { "name": "惊鸿一瞥", "description": "自己获得连击数+1，迅捷。", "status": "placeholder", "type": "翼", "category": "status" },
+        { "name": "月影交错", "description": "造成物伤，2连击；若上回合双方有精灵使用幻系技能，本技能获得迅捷。", "status": "placeholder", "type": "翼", "category": "physical" },
         { "name": "打雪仗", "description": "造成魔伤，2连击。", "status": "existing-reference" },
         { "name": "羽翼庇护", "description": "减伤70%，应对攻击：自己获得连击数+2。", "status": "existing-reference" }
       ]
@@ -556,8 +562,8 @@
         "adaptationStatus": "reviewed-rule"
       },
       "skills": [
-        { "name": "暖阳", "description": "造成物伤，每使用1次其他火系技能，威力+40，使用本技能后重置。", "status": "placeholder" },
-        { "name": "星火", "description": "敌方获得8层灼烧；若上回合双方有使用光系技能，敌方额外获得12层灼烧。", "status": "placeholder" },
+        { "name": "暖阳", "description": "造成物伤，每使用1次其他火系技能，威力+40，使用本技能后重置。", "status": "placeholder", "type": "火", "category": "physical" },
+        { "name": "星火", "description": "敌方获得8层灼烧；若上回合双方有使用光系技能，敌方额外获得12层灼烧。", "status": "placeholder", "type": "火", "category": "status" },
         { "name": "虫群智慧", "description": "己方队伍获得2次随机奉献。", "status": "existing-reference" },
         { "name": "火焰切割", "description": "对敌方精灵造成物理伤害。", "status": "existing-reference" }
       ]
@@ -618,10 +624,12 @@
         "adaptationStatus": "preview-implemented"
       },
       "skills": [
-        { "name": "离魂术", "description": "偷取敌方2能量，脱离。", "status": "placeholder" },
-        { "name": "掠影", "description": "造成物伤；若上回合双方有精灵使用火系技能，偷取敌方3能量。", "status": "placeholder" },
-        { "name": "重组", "description": "下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。", "status": "placeholder" },
-        { "name": "月蚀", "description": "造成物伤，若敌方生命低于50%，本次技能能耗-3。", "status": "placeholder" }
+        { "name": "离魂术", "description": "偷取敌方2能量，脱离。", "status": "placeholder", "type": "幽", "category": "status" },
+        { "name": "掠影", "description": "造成物伤；若上回合双方有精灵使用火系技能，偷取敌方3能量。", "status": "placeholder", "type": "幽", "category": "physical" },
+        { "name": "重组", "description": "下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。", "status": "placeholder", "type": "幻", "category": "status" },
+        { "name": "月蚀", "description": "造成物伤，若敌方生命低于50%，本次技能能耗-3。", "status": "placeholder", "type": "幻", "category": "physical", "cost": 5, "basePower": 140 },
+        { "name": "撞鬼", "description": "对敌方精灵造成物理伤害。", "status": "existing-reference" },
+        { "name": "火焰切割", "description": "对敌方精灵造成物理伤害。", "status": "existing-reference" }
       ]
     }
   ]

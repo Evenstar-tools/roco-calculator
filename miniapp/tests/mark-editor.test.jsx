@@ -116,4 +116,62 @@ describe("MarkEditor", () => {
       stacks: 0,
     });
   });
+
+  test("重组状态提供普通与应对防御两档幻系追加伤害", () => {
+    const snapshot = createSnapshot();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    fireEvent.click(screen.getByRole("button", { name: "展开印记" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "攻击方正面印记重组" }),
+    );
+
+    expect(store.getState().marks.attacker.positive).toEqual({
+      id: "reassembly",
+      stacks: 1,
+    });
+    fireEvent.input(screen.getByLabelText("攻击方重组倍率档"), {
+      target: { value: "3" },
+    });
+    expect(store.getState().marks.attacker.positive).toEqual({
+      id: "reassembly",
+      stacks: 3,
+    });
+  });
+
+  test("links the thunderstorm charge source with the attacker's charge mark", () => {
+    const snapshot = createSnapshot();
+    snapshot.skills[0] = {
+      ...snapshot.skills[0],
+      basePower: 55,
+      cost: 1,
+      name: "雷暴",
+    };
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "选择迸发来源" }));
+    fireEvent.click(screen.getByRole("button", { name: "查看印记迸发来源" }));
+    const chargeSource = screen.getByRole("button", { name: "蓄电" });
+    expect(chargeSource).toHaveAttribute("aria-pressed", "false");
+
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    fireEvent.click(screen.getByRole("button", { name: "展开印记" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "攻击方正面印记蓄电" }),
+    );
+
+    expect(chargeSource).toHaveAttribute("aria-pressed", "true");
+    expect(store.getState().marks.attacker.positive).toEqual({
+      id: "charge",
+      stacks: 1,
+    });
+
+    fireEvent.click(chargeSource);
+    expect(store.getState().marks.attacker.positive).toEqual({
+      id: null,
+      stacks: 0,
+    });
+  });
 });

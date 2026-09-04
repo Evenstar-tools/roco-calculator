@@ -524,6 +524,71 @@ describe("rock-calculator CLI", () => {
     expect(result.json).not.toHaveProperty("results");
   });
 
+  test("雷暴使用未取整公式威力计算并复现实战117伤害", () => {
+    const result = runCli(
+      ["explain", "--input", "-", "--direction", "forward", "--skill", "1"],
+      {
+        schemaVersion: 1,
+        mode: "four",
+        level: 60,
+        attacker: {
+          spirit: "spirit_56f8f0077302b8b4",
+          skills: [{
+            name: "雷暴",
+            context: {
+              burstTriggered: true,
+              burstSourceBioelectric: true,
+              burstSourceCurrentStimulus: true,
+              burstSourceDoublePulse: true,
+            },
+          }],
+        },
+        defender: {
+          spirit: "spirit_e0332c3637a510c6",
+          ivs: {
+            hp: 60,
+            physicalAttack: 60,
+            magicalAttack: 60,
+            speed: 60,
+            physicalDefense: 60,
+            magicalDefense: 0,
+          },
+          skills: ["雷暴"],
+        },
+        forward: {
+          skill: 1,
+          context: {
+            burstTriggered: true,
+            burstSourceBioelectric: true,
+            burstSourceCurrentStimulus: true,
+            burstSourceDoublePulse: true,
+          },
+        },
+      },
+    );
+
+    expect(result.status).toBe(0);
+    expect(result.json.result).toMatchObject({
+      combatPanel: {
+        attacker: { magicalAttack: 210 },
+        defender: { magicalDefense: 167 },
+      },
+      displayPower: 103,
+      totalDamage: 117,
+    });
+    expect(result.json.result.formulaSteps).toContainEqual(
+      expect.objectContaining({
+        after: 117,
+        input: expect.objectContaining({
+          calculationPower: 103.125,
+          displayedPower: 103,
+          roundedNumerator: 19543,
+        }),
+        label: "等级系数与攻防比",
+      }),
+    );
+  });
+
   test("实战女王蜂虫群与恶魔狼王听桥配置复现显示威力和543伤害", () => {
     const result = runCli(
       ["calculate", "--input", "-"],

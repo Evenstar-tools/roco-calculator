@@ -53,10 +53,10 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
     skills: [
       {
         basePower: 60,
-      category: "magical",
-      cost: 1,
-      description: "造成魔法伤害。",
-      asset: { sourceUrl: "https://example.test/skill-water-ripple.png" },
+        category: "magical",
+        cost: 1,
+        description: "造成魔法伤害。",
+        asset: { sourceUrl: "/assets/skills/skill_0123456789abcdef.png" },
         id: "skill-water-ripple",
         name: "水之波纹",
         provenance: { basePower: { title: "audit-only" } },
@@ -140,7 +140,7 @@ test("builds a compact runtime snapshot with precomputed pinyin search data", ()
   expect(runtime.skills[0].searchText).toContain("shuizhibowen");
   expect(runtime.skills[0].searchText).toContain("szbw");
   expect(runtime.skills[0].iconUrl).toBe(
-    "https://example.test/skill-water-ripple.png",
+    "/assets/skills/skill_0123456789abcdef.png",
   );
   expect(runtime.learnsets[0]).toEqual({
     defaultSkillIds: ["skill-water-ripple"],

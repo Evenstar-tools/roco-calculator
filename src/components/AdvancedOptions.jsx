@@ -67,7 +67,6 @@ export function buildFormulaAudit(result) {
   const attackPanel = stepByLabel(result, "攻击面板");
   const basePower = stepByLabel(result, "基础威力");
   const fixedPower = stepByLabel(result, "固定威力增加");
-  const markFixedPower = stepByLabel(result, "印记固定威力");
   const traitFixedPower = stepByLabel(result, "特性固定威力");
   const sameType = stepByLabel(result, "本系");
   const type = stepByLabel(result, "属性克制");
@@ -114,7 +113,9 @@ export function buildFormulaAudit(result) {
       base: basePower?.before ?? basePower?.input,
       conditional: basePower?.after,
       fixed: Number(fixedPower?.input) || 0,
-      markFixed: Number(markFixedPower?.input) || 0,
+      inheritedBurstFixed:
+        Number(result.staticPowerSourceAdds?.inheritedBurst) || 0,
+      markFixed: Number(result.staticPowerSourceAdds?.mark) || 0,
       traitFixed: Number(traitFixedPower?.input) || 0,
       percentAdds,
       static: result.staticPower ?? sameType?.before ?? displayPower?.before,
@@ -295,6 +296,8 @@ export function FormulaAudit({ result }) {
         ) : null}
         {[
           ["技能固定", power.fixed],
+          ["继承迸发", power.inheritedBurstFixed],
+          ["蓄电", power.markFixed],
         ].map(([label, value]) =>
           Number(value) !== 0 ? (
             <span className="formula-audit__term" key={label}>

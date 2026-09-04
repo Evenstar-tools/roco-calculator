@@ -403,6 +403,14 @@ function singlePowerOverrides(overrides = {}, { includeTemporary = true } = {}) 
   };
   if (
     includeTemporary &&
+    Number.isInteger(Number(overrides.costOverride)) &&
+    Number(overrides.costOverride) >= 0 &&
+    Number(overrides.costOverride) <= 99
+  ) {
+    selected.costOverride = Number(overrides.costOverride);
+  }
+  if (
+    includeTemporary &&
     overrides.powerOverride &&
     (overrides.powerOverride.mode === "static" ||
       overrides.powerOverride.mode === "actual" ||

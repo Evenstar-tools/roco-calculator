@@ -154,11 +154,18 @@ describe("恶魔男爵逐击吸血实战回归", () => {
     const failures = [];
 
     for (const skill of multiHitSkills) {
+      const attacker = side(BARON_ID, baronIvs, hasty, skill.id);
+      if (skill.calculationStatus === "pending-skill-data") {
+        attacker.skills.four[0] = {
+          skillId: skill.id,
+          overrides: { powerOverride: { mode: "static", value: 100 } },
+        };
+      }
       const result = calculateMatchup(snapshot, {
         mode: "four",
         level: 60,
         sides: {
-          attacker: side(BARON_ID, baronIvs, hasty, skill.id),
+          attacker,
           defender: side(
             BONE_DRAGON_ID,
             boneDragonIvs,

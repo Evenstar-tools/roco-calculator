@@ -13,6 +13,7 @@ import {
   applyBalanceTraitTrigger,
 } from "../shared/state/battle-activation.js";
 import { isPureStatusSkill } from "../shared/domain/skill-status-effects.js";
+import { getSkillEffectInputs } from "../shared/domain/skill-effects.js";
 import { starfallStacksFromMarkSlot } from "../shared/domain/marks.js";
 import { createInitialState } from "../shared/state/defaults.js";
 import {
@@ -215,7 +216,7 @@ export default function BattleWorkspace({
     ? selectedSlotDetails.context ?? {}
     : activeDirectionState.context;
   const targetSide = activeSide === "attacker" ? "defender" : "attacker";
-  const conditionContext = selectedSkill?.name === "多维击打"
+  const starfallLinkedConditionContext = selectedSkill?.name === "多维击打"
     ? {
         ...rawConditionContext,
         enemyStarfallMarks: starfallStacksFromMarkSlot(
@@ -223,6 +224,18 @@ export default function BattleWorkspace({
         ),
       }
     : rawConditionContext;
+  const hasChargeBurstSource = getSkillEffectInputs(selectedSkill).some(
+    (input) => input.contextKey === "burstSourceChargeMark",
+  );
+  const sourcePositiveMark = state.marks?.[activeSide]?.positive;
+  const conditionContext = hasChargeBurstSource
+    ? {
+        ...starfallLinkedConditionContext,
+        burstSourceChargeMark:
+          sourcePositiveMark?.id === "charge" &&
+          Number(sourcePositiveMark.stacks) > 0,
+      }
+    : starfallLinkedConditionContext;
   const conditionDirection = state.mode === "four"
     ? {
         hitCount: selectedSlotDetails.hitCount,
@@ -486,6 +499,23 @@ export default function BattleWorkspace({
           Math.max(0, Math.floor(Number(context.enemyStarfallMarks) || 0)),
         ),
       });
+      return;
+    }
+    if (
+      hasChargeBurstSource &&
+      context.burstSourceChargeMark !== conditionContext.burstSourceChargeMark
+    ) {
+      const currentMark = state.marks?.[activeSide]?.positive;
+      if (context.burstSourceChargeMark === true) {
+        setMark(activeSide, "positive", {
+          id: "charge",
+          stacks: currentMark?.id === "charge"
+            ? Math.max(1, Math.floor(Number(currentMark.stacks) || 0))
+            : 1,
+        });
+      } else if (currentMark?.id === "charge") {
+        setMark(activeSide, "positive", { id: null, stacks: 0 });
+      }
       return;
     }
     if (state.mode === "four") {

@@ -10,7 +10,7 @@
       "skillFilter": 40653
     },
     "fetchedAt": "2026-07-23T13:54:31.332Z",
-    "contentSha256": "7796ab81bef741eb9ed56ac2bf8bf4e9a948d5f099425e348a7b0088c0b591c6",
+    "contentSha256": "1becb30c224178bdbaf451692c442bb9763af36a526889d0fc7426319f243c77",
     "sources": [
       {
         "title": "技能筛选",
@@ -70,6 +70,13 @@
         "revision": "source-file-2026-09-02",
         "fetchedAt": "2026-09-02T17:33:39+08:00",
         "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+      },
+      {
+        "title": "S4新技能属性与类别补充",
+        "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+        "revision": "user-input-2026-09-04",
+        "fetchedAt": "2026-09-04T11:50:00+08:00",
+        "sha256": null
       }
     ],
     "counts": {
@@ -163,10 +170,10 @@
         "finalForms": 11,
         "forms": 23,
         "placeholderForms": 12,
-        "skillSlots": 44,
+        "skillSlots": 46,
         "traits": 11,
-        "uniqueSkillNames": 43,
-        "existingSkillReferences": 18,
+        "uniqueSkillNames": 44,
+        "existingSkillReferences": 20,
         "newSkillPlaceholders": 26
       },
       "idStrategy": "以候选目录ID和完整名称生成临时ID；2026-09-10核实图鉴号后生成正式ID并提供迁移映射",
@@ -175,7 +182,8 @@
         "23个形态图鉴号、正式阶数、形态来源和正式身份",
         "受遮挡资料中的特性名“活体标本”需以正式文本复核",
         "23个形态的正式BWIKI头像绑定（当前使用本地前瞻原色图）",
-        "26个新技能的属性、类别、能耗和基础威力",
+        "22个已分类新技能的能耗和/或基础威力",
+        "其余2个新技能的属性、类别、能耗和基础威力",
         "BWIKI正式数据逐字段核实"
       ]
     }
@@ -57277,12 +57285,12 @@
         "total": 682
       },
       "previewDefaults": {
-        "natureId": "cheerful",
+        "natureId": "timid",
         "displayIvs": {
           "hp": 60,
           "speed": 60,
-          "physicalAttack": 60,
-          "magicalAttack": 0,
+          "physicalAttack": 0,
+          "magicalAttack": 60,
           "physicalDefense": 0,
           "magicalDefense": 0
         }
@@ -100040,13 +100048,18 @@
     {
       "id": "skill_fd5185efa5184db2",
       "name": "广播",
-      "type": null,
-      "category": null,
+      "type": "机械",
+      "category": "magical",
       "cost": null,
       "basePower": null,
       "description": "对敌方精灵造成魔法伤害。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_fd5185efa5184db2.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100069,6 +100082,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100079,13 +100106,18 @@
     {
       "id": "skill_881cda84bed0f5c8",
       "name": "无风",
-      "type": null,
-      "category": null,
+      "type": "翼",
+      "category": "defense",
       "cost": null,
       "basePower": null,
       "description": "减伤50%，应对攻击：敌方和自己均脱离。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_881cda84bed0f5c8.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100108,6 +100140,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100118,13 +100164,18 @@
     {
       "id": "skill_27f0843f62ffa7bf",
       "name": "汇流",
-      "type": null,
-      "category": null,
+      "type": "水",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "雨天的回合数延长4回合，应对防御：改为延长8回合。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_27f0843f62ffa7bf.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100147,6 +100198,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100157,13 +100222,18 @@
     {
       "id": "skill_93b5587949fcaad3",
       "name": "分光",
-      "type": null,
-      "category": null,
+      "type": "光",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "自己获得魔攻+20%，己方队伍中每有1个不同系别的精灵，额外获得魔攻+10%。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_93b5587949fcaad3.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100186,6 +100256,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100203,6 +100287,11 @@
       "description": "将天气改为雨天，持续8回合。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_21fab1d8d76bbbfa.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100235,13 +100324,18 @@
     {
       "id": "skill_459a7fe45bb1a301",
       "name": "奇点",
-      "type": null,
-      "category": null,
+      "type": "幻",
+      "category": "magical",
       "cost": null,
       "basePower": null,
       "description": "造成魔伤，若上回合双方有精灵使用水系技能，敌方获得4层星陨印记。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_459a7fe45bb1a301.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100264,6 +100358,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100274,13 +100382,18 @@
     {
       "id": "skill_f7eea4de117d30ed",
       "name": "引力旋转",
-      "type": null,
-      "category": null,
+      "type": "幻",
+      "category": "defense",
       "cost": null,
       "basePower": null,
       "description": "减伤80%，应对攻击：以魔法伤害触发敌方的星陨效果。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_f7eea4de117d30ed.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100303,6 +100416,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100313,13 +100440,18 @@
     {
       "id": "skill_35c3bb6b8db8b825",
       "name": "小型打劫",
-      "type": null,
-      "category": null,
+      "type": "幽",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "敌方队伍中所有精灵失去1能量。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_35c3bb6b8db8b825.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100342,6 +100474,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100352,13 +100498,18 @@
     {
       "id": "skill_b53c20641170804b",
       "name": "回收",
-      "type": null,
-      "category": null,
+      "type": "幽",
+      "category": "magical",
       "cost": null,
       "basePower": null,
       "description": "造成魔伤，若敌方本回合更换精灵，敌方失去4能量。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_b53c20641170804b.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100381,6 +100532,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100398,6 +100563,11 @@
       "description": "造成魔伤，5连击。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_1652bda550a6b2dc.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100430,13 +100600,18 @@
     {
       "id": "skill_755cc87468b15932",
       "name": "信息素",
-      "type": null,
-      "category": null,
+      "type": "虫",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "己方队伍获得1次随机奉献；若上回合双方有精灵使用地系技能，额外获得3次随机奉献。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_755cc87468b15932.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100459,6 +100634,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100469,13 +100658,18 @@
     {
       "id": "skill_25621ba1d6a66b50",
       "name": "迁飞扩散",
-      "type": null,
-      "category": null,
+      "type": "虫",
+      "category": "physical",
       "cost": null,
       "basePower": null,
       "description": "造成物伤；若敌方本回合更换精灵，己方队伍获得3次随机奉献。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_25621ba1d6a66b50.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100498,6 +100692,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100508,13 +100716,18 @@
     {
       "id": "skill_61f0f26d1267ca7c",
       "name": "掉包",
-      "type": null,
-      "category": null,
+      "type": "恶",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "敌方的属性增益变为对应的属性减益。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_61f0f26d1267ca7c.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100537,6 +100750,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100547,13 +100774,18 @@
     {
       "id": "skill_74c9d6ea4d158c6d",
       "name": "暴打",
-      "type": null,
-      "category": null,
+      "type": "恶",
+      "category": "magical",
       "cost": null,
       "basePower": null,
       "description": "对敌方精灵造成魔法伤害。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_74c9d6ea4d158c6d.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100576,6 +100808,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100586,14 +100832,18 @@
     {
       "id": "skill_be1a16f6da08c932",
       "name": "闪光弹",
-      "type": null,
-      "category": null,
-      "cost": null,
-      "basePower": null,
+      "type": "光",
+      "category": "physical",
+      "cost": 2,
+      "basePower": 40,
       "description": "造成物伤，自己脱离。",
       "ruleId": null,
       "ruleParams": null,
-      "calculationStatus": "pending-skill-data",
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_be1a16f6da08c932.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
         "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
@@ -100615,6 +100865,34 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "cost": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "basePower": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100625,13 +100903,18 @@
     {
       "id": "skill_382a8db9ab4e7a48",
       "name": "量子涨落",
-      "type": null,
-      "category": null,
+      "type": "幻",
+      "category": "physical",
       "cost": null,
       "basePower": null,
       "description": "造成物伤。若敌方没有星陨印记，则敌方获得3层星陨印记。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_382a8db9ab4e7a48.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100654,6 +100937,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100664,13 +100961,18 @@
     {
       "id": "skill_38827e39dbdda074",
       "name": "仰望夜空",
-      "type": null,
-      "category": null,
+      "type": "幻",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "自己获得魔攻和魔防+70%。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_38827e39dbdda074.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100693,6 +100995,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100703,13 +101019,18 @@
     {
       "id": "skill_5f29d7618631421f",
       "name": "观测者效应",
-      "type": null,
-      "category": null,
+      "type": "幻",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "自己脱离，更换入场的精灵以月陨星状态登场。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_5f29d7618631421f.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100732,6 +101053,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100742,13 +101077,18 @@
     {
       "id": "skill_51055a70ef615a8a",
       "name": "惊鸿一瞥",
-      "type": null,
-      "category": null,
+      "type": "翼",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "自己获得连击数+1，迅捷。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_51055a70ef615a8a.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100771,6 +101111,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100781,13 +101135,18 @@
     {
       "id": "skill_7b5f9947063960e6",
       "name": "月影交错",
-      "type": null,
-      "category": null,
+      "type": "翼",
+      "category": "physical",
       "cost": null,
       "basePower": null,
       "description": "造成物伤，2连击；若上回合双方有精灵使用幻系技能，本技能获得迅捷。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_7b5f9947063960e6.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100810,6 +101169,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100820,13 +101193,18 @@
     {
       "id": "skill_e1053a860bd8180d",
       "name": "暖阳",
-      "type": null,
-      "category": null,
+      "type": "火",
+      "category": "physical",
       "cost": null,
       "basePower": null,
       "description": "造成物伤，每使用1次其他火系技能，威力+40，使用本技能后重置。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_e1053a860bd8180d.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100849,6 +101227,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100859,13 +101251,18 @@
     {
       "id": "skill_8aa5a117d3f84667",
       "name": "星火",
-      "type": null,
-      "category": null,
+      "type": "火",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "敌方获得8层灼烧；若上回合双方有使用光系技能，敌方额外获得12层灼烧。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_8aa5a117d3f84667.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100888,6 +101285,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100898,13 +101309,18 @@
     {
       "id": "skill_b688da558b9ff2e8",
       "name": "离魂术",
-      "type": null,
-      "category": null,
+      "type": "幽",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "偷取敌方2能量，脱离。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_b688da558b9ff2e8.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100927,6 +101343,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100937,13 +101367,18 @@
     {
       "id": "skill_a1fec53e8fb5a90d",
       "name": "掠影",
-      "type": null,
-      "category": null,
+      "type": "幽",
+      "category": "physical",
       "cost": null,
       "basePower": null,
       "description": "造成物伤；若上回合双方有精灵使用火系技能，偷取敌方3能量。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_a1fec53e8fb5a90d.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -100966,6 +101401,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -100976,13 +101425,18 @@
     {
       "id": "skill_f5cf704678e0738c",
       "name": "重组",
-      "type": null,
-      "category": null,
+      "type": "幻",
+      "category": "status",
       "cost": null,
       "basePower": null,
       "description": "下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。",
       "ruleId": null,
       "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_f5cf704678e0738c.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "calculationStatus": "pending-skill-data",
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
@@ -101005,6 +101459,20 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -101015,14 +101483,18 @@
     {
       "id": "skill_befd3ebf2018d7a8",
       "name": "月蚀",
-      "type": null,
-      "category": null,
-      "cost": null,
-      "basePower": null,
+      "type": "幻",
+      "category": "physical",
+      "cost": 5,
+      "basePower": 140,
       "description": "造成物伤，若敌方生命低于50%，本次技能能耗-3。",
       "ruleId": null,
       "ruleParams": null,
-      "calculationStatus": "pending-skill-data",
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_befd3ebf2018d7a8.png",
+        "status": "temporary-preview",
+        "replacementPending": true
+      },
       "source": {
         "title": "S4新精灵_进化链_特性与技能整理.md",
         "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
@@ -101044,6 +101516,34 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "type": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "category": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "cost": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
+        },
+        "basePower": {
+          "title": "S4新技能属性与类别补充",
+          "url": "urn:rock-calculator:source:s4-preview-skill-parameters-2026-09-04",
+          "revision": "user-input-2026-09-04",
+          "fetchedAt": "2026-09-04T11:50:00+08:00",
+          "sha256": null
         },
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
@@ -232900,13 +233400,17 @@
         "skill_b688da558b9ff2e8",
         "skill_a1fec53e8fb5a90d",
         "skill_f5cf704678e0738c",
-        "skill_befd3ebf2018d7a8"
+        "skill_befd3ebf2018d7a8",
+        "skill_dfe7184d14b2edcb",
+        "skill_5de6dc05b8315c7d"
       ],
       "defaultSkillIds": [
         "skill_b688da558b9ff2e8",
         "skill_a1fec53e8fb5a90d",
         "skill_f5cf704678e0738c",
-        "skill_befd3ebf2018d7a8"
+        "skill_befd3ebf2018d7a8",
+        "skill_dfe7184d14b2edcb",
+        "skill_5de6dc05b8315c7d"
       ],
       "acquisitions": {
         "skill_b688da558b9ff2e8": [
@@ -232919,6 +233423,12 @@
           "解锁：S4前瞻截图列出，等级待确认"
         ],
         "skill_befd3ebf2018d7a8": [
+          "解锁：S4前瞻截图列出，等级待确认"
+        ],
+        "skill_dfe7184d14b2edcb": [
+          "解锁：S4前瞻截图列出，等级待确认"
+        ],
+        "skill_5de6dc05b8315c7d": [
           "解锁：S4前瞻截图列出，等级待确认"
         ]
       },

@@ -71,7 +71,7 @@ test("雷暴来源显示悬停效果，并与星光狮特性迸发保持独立",
   render(
     <FourSkillEditor
       attackerName="星光狮"
-      attackerResults={[{ skillCost: 3 }]}
+      attackerResults={[{ skillCost: 1 }]}
       attackerSkills={[{ ...thunderstorm, slotContext }, null, null, null]}
       attackerTrait={{
         inputs: [{
@@ -100,7 +100,10 @@ test("雷暴来源显示悬停效果，并与星光狮特性迸发保持独立",
   expect(within(screen.getByRole("group", { name: "攻击方技能1迸发来源" })).getByText("技能")).toBeVisible();
   expect(within(screen.getByRole("group", { name: "攻击方技能1迸发来源" })).getByText("印记")).toBeVisible();
   expect(screen.getByRole("spinbutton", { name: "攻击方技能1迸发种类数" })).toHaveValue(2);
-  expect(screen.getByText("3", { selector: ".skill-slot__cost" })).toBeVisible();
+  expect(
+    within(screen.getByRole("group", { name: "攻击方技能1，当前选中" }))
+      .getByText("1", { selector: ".skill-slot__cost" }),
+  ).toBeVisible();
   expect(screen.getByRole("checkbox", { name: "攻击方技能1雷暴迸发" })).toBeChecked();
   expect(screen.getByRole("checkbox", { name: "攻击方技能1触发电流刺激" })).toBeChecked();
 
@@ -1980,6 +1983,80 @@ test("four-skill rows keep each skill power directly editable", async () => {
   );
 });
 
+test("partially known S4 skills expose blank manual cost and power inputs", async () => {
+  const user = userEvent.setup();
+  const onSkillCostChange = vi.fn();
+  const onSkillPowerChange = vi.fn();
+  const pendingSkill = {
+    basePower: null,
+    calculationStatus: "pending-skill-data",
+    category: "magical",
+    cost: null,
+    id: "preview-broadcast",
+    name: "广播",
+    type: "机械",
+  };
+
+  render(
+    <FourSkillEditor
+      attackerName="测试精灵"
+      attackerSkills={[pendingSkill, null, null, null]}
+      defenderName="木桩"
+      defenderSkills={[skills[1], null, null, null]}
+      onSkillCostChange={onSkillCostChange}
+      onSkillPowerChange={onSkillPowerChange}
+      onSkillSelect={vi.fn()}
+      skills={[...skills, pendingSkill]}
+    />,
+  );
+
+  const cost = screen.getByRole("spinbutton", { name: "攻击方技能1能耗" });
+  const power = screen.getByRole("spinbutton", { name: "攻击方技能1静态威力" });
+  expect(cost).toHaveValue(null);
+  expect(power).toHaveValue(null);
+  await user.type(cost, "4");
+  await user.type(power, "90{Enter}");
+  expect(onSkillCostChange).toHaveBeenLastCalledWith("attacker", 0, 4);
+  expect(onSkillPowerChange).toHaveBeenLastCalledWith(
+    "attacker",
+    0,
+    { mode: "static", value: 90 },
+  );
+});
+
+test("single-skill editor exposes manual cost for a partially known S4 skill", async () => {
+  const user = userEvent.setup();
+  const onCostOverrideChange = vi.fn();
+  const pendingSkill = {
+    basePower: null,
+    calculationStatus: "pending-skill-data",
+    category: "magical",
+    cost: null,
+    id: "preview-broadcast",
+    name: "广播",
+    type: "机械",
+  };
+
+  render(
+    <SingleSkillEditor
+      hitCount={1}
+      onCostOverrideChange={onCostOverrideChange}
+      onHitCountChange={vi.fn()}
+      onManualPowerChange={vi.fn()}
+      onSkillSelect={vi.fn()}
+      selectedSkill={pendingSkill}
+      skills={[pendingSkill]}
+    />,
+  );
+
+  expect(screen.getByText("魔法")).toBeVisible();
+  expect(screen.getByText("机械")).toBeVisible();
+  const cost = screen.getByRole("spinbutton", { name: "技能能耗" });
+  expect(cost).toHaveValue(null);
+  await user.type(cost, "3");
+  expect(onCostOverrideChange).toHaveBeenLastCalledWith(3);
+});
+
 test("单技能显示威力模式提供一个可编辑输入框", () => {
   render(
     <SingleSkillEditor
@@ -2716,6 +2793,41 @@ test("advanced settings stay collapsed until requested", async () => {
     "defender",
     "negative",
     { id: "starfall", stacks: 4 },
+  );
+});
+
+test("advanced settings exposes normal and countered reassembly damage", async () => {
+  const user = userEvent.setup();
+  const onMarkChange = vi.fn();
+  render(
+    <AdvancedOptions
+      finalMultiplier={1}
+      marks={{
+        attacker: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: "reassembly", stacks: 1 },
+        },
+        defender: {
+          negative: { id: null, stacks: 0 },
+          positive: { id: null, stacks: 0 },
+        },
+      }}
+      onFinalMultiplierChange={vi.fn()}
+      onMarkChange={onMarkChange}
+      onReductionChange={vi.fn()}
+      reductionPercent={0}
+      result={null}
+    />,
+  );
+
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const effect = screen.getByRole("spinbutton", { name: "进攻方重组层数" });
+  expect(effect).toHaveValue(1);
+  fireEvent.change(effect, { target: { value: "3" } });
+  expect(onMarkChange).toHaveBeenLastCalledWith(
+    "attacker",
+    "positive",
+    { id: "reassembly", stacks: 3 },
   );
 });
 

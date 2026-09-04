@@ -76,20 +76,26 @@ function MarkSlot({ onChange, polarity, sideLabel, value }) {
             : "mark-editor__stacks mark-editor__stacks--hidden condition-editor__field condition-editor__field--number"
         }
       >
-        <Text className="condition-editor__label">层数</Text>
+        <Text className="condition-editor__label">
+          {selected?.id === "reassembly" ? "倍率档（1=100%，3=300%）" : "层数"}
+        </Text>
         <Input
-          aria-label={selected ? `${sideLabel}${selected.name}层数` : undefined}
+          aria-label={selected
+            ? selected.id === "reassembly"
+              ? `${sideLabel}重组倍率档`
+              : `${sideLabel}${selected.name}层数`
+            : undefined}
           className="mark-editor__control condition-editor__input"
           disabled={!selected}
           inputMode="numeric"
-          max={99}
+          max={selected?.id === "reassembly" ? 3 : 99}
           min={0}
           onInput={(event) => {
             if (!selected) return;
             onChange({
               id: selected.id,
               stacks: Math.min(
-                99,
+                selected.id === "reassembly" ? 3 : 99,
                 Math.max(0, Math.floor(Number(eventValue(event)) || 0)),
               ),
             });

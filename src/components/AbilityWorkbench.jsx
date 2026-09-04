@@ -734,16 +734,31 @@ function BuildCard({ current, currentDurability, objective, onApply, result, sou
   );
 }
 
-function RankingPodium({ active, metric, rows }) {
+function nearbyRankingRows(rows, currentSpiritId, limit = 4) {
+  const currentIndex = rows.findIndex((entry) => entry.spiritId === currentSpiritId);
+  if (currentIndex < 0) return rows.slice(0, limit);
+  const start = Math.min(
+    Math.max(currentIndex - 1, 0),
+    Math.max(rows.length - limit, 0),
+  );
+  return rows.slice(start, start + limit);
+}
+
+function RankingPodium({ active, currentSpiritId, metric, rows }) {
+  const visibleRows = nearbyRankingRows(rows, currentSpiritId);
   return (
     <section
-      aria-label={`${METRIC_LABELS[metric]}前四名`}
+      aria-label={`${METRIC_LABELS[metric]}当前附近排名`}
       className={`ability-ranking-podium${active ? " is-active" : ""}`}
     >
       <h5>{METRIC_LABELS[metric]}</h5>
       <ol>
-        {rows.slice(0, 4).map((entry) => (
-          <li key={entry.spiritId}>
+        {visibleRows.map((entry) => (
+          <li
+            aria-current={entry.spiritId === currentSpiritId ? "true" : undefined}
+            className={entry.spiritId === currentSpiritId ? "is-current" : ""}
+            key={entry.spiritId}
+          >
             <span>{entry.globalRank[metric]}</span>
             {assetUrl(entry.spirit) ? <img alt="" src={assetUrl(entry.spirit)} /> : null}
             <strong>{entry.spirit.fullName}</strong>
@@ -755,7 +770,7 @@ function RankingPodium({ active, metric, rows }) {
   );
 }
 
-function FullRanking({ backButtonRef, currentSpiritId, onBack, ranking, setMetric, setQuery, setRoleFilter, setTemplateId, metric, query, roleFilter, templateId }) {
+function FullRanking({ backButtonRef, currentRowRef, currentSpiritId, onBack, ranking, setMetric, setQuery, setRoleFilter, setTemplateId, metric, query, roleFilter, templateId }) {
   return (
     <section aria-label="完整耐久榜" className="ability-full-ranking">
       <header>
@@ -817,7 +832,12 @@ function FullRanking({ backButtonRef, currentSpiritId, onBack, ranking, setMetri
           </thead>
           <tbody>
             {ranking.rows.map((entry) => (
-              <tr className={entry.spiritId === currentSpiritId ? "is-current" : ""} key={entry.spiritId}>
+              <tr
+                aria-current={entry.spiritId === currentSpiritId ? "true" : undefined}
+                className={entry.spiritId === currentSpiritId ? "is-current" : ""}
+                key={entry.spiritId}
+                ref={entry.spiritId === currentSpiritId ? currentRowRef : undefined}
+              >
                 <td data-label="排名">{entry.filteredRank[metric]}</td>
                 <th scope="row">
                   <div className="ability-ranking-spirit">
@@ -847,6 +867,7 @@ export function AbilityWorkbench({
   source,
 }) {
   const backButtonRef = useRef(null);
+  const currentRankingRowRef = useRef(null);
   const openRankingButtonRef = useRef(null);
   const pendingAppliedConfigurationRef = useRef(null);
   const previousIncomingSignatureRef = useRef(
@@ -1160,7 +1181,8 @@ export function AbilityWorkbench({
         scrollRef.current?.closest(".team-drawer__editor-pane") ??
         scrollRef.current;
       if (nextScrollContainer) nextScrollContainer.scrollTop = 0;
-      backButtonRef.current?.focus();
+      currentRankingRowRef.current?.scrollIntoView?.({ block: "center" });
+      backButtonRef.current?.focus({ preventScroll: true });
     });
   }
 
@@ -1182,6 +1204,7 @@ export function AbilityWorkbench({
       <div className="ability-workbench" ref={scrollRef}>
         <FullRanking
           backButtonRef={backButtonRef}
+          currentRowRef={currentRankingRowRef}
           currentSpiritId={spirit.id}
           metric={metric}
           onBack={closeFullRanking}
@@ -1412,9 +1435,9 @@ export function AbilityWorkbench({
               ))}
             </div>
             <div className="ability-ranking-grid">
-              <RankingPodium active={metric === "physical"} metric="physical" rows={previewRankings.physical} />
-              <RankingPodium active={metric === "magical"} metric="magical" rows={previewRankings.magical} />
-              <RankingPodium active={metric === "combined"} metric="combined" rows={previewRankings.combined} />
+              <RankingPodium active={metric === "physical"} currentSpiritId={spirit.id} metric="physical" rows={previewRankings.physical} />
+              <RankingPodium active={metric === "magical"} currentSpiritId={spirit.id} metric="magical" rows={previewRankings.magical} />
+              <RankingPodium active={metric === "combined"} currentSpiritId={spirit.id} metric="combined" rows={previewRankings.combined} />
             </div>
             <footer>
               <button onClick={openFullRanking} ref={openRankingButtonRef} type="button">

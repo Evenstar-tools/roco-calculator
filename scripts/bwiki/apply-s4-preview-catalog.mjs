@@ -42,6 +42,7 @@ const ALLOWED_TYPES = new Set([
   "机械",
   "幻",
 ]);
+const ALLOWED_CATEGORIES = new Set(["physical", "magical", "status", "defense"]);
 const STAGE_LABELS = Object.freeze({ 1: "一阶", 2: "二阶", 3: "三阶" });
 const NATURE_IDS = new Set(NATURES.map(({ id }) => id));
 
@@ -144,13 +145,39 @@ export function validateS4PreviewCatalog(catalog) {
       }
     }
 
-    requireCondition(Array.isArray(family.skills) && family.skills.length === 4, `${family.candidateFamilyKey} 必须保留四条技能记录`);
+    requireCondition(
+      Array.isArray(family.skills) && family.skills.length >= 4,
+      `${family.candidateFamilyKey} 至少需要四条技能记录`,
+    );
     for (const skill of family.skills) {
       requireCondition(skill.name && skill.description, `${family.candidateFamilyKey} 存在不完整技能记录`);
       requireCondition(
         skill.status === "placeholder" || skill.status === "existing-reference",
         `${skill.name} 候选状态无效`,
       );
+      if (skill.status === "placeholder") {
+        const hasType = skill.type !== undefined && skill.type !== null;
+        const hasCategory = skill.category !== undefined && skill.category !== null;
+        requireCondition(
+          hasType === hasCategory,
+          `${skill.name} 的属性与类别必须同时提供或同时留空`,
+        );
+        requireCondition(!hasType || ALLOWED_TYPES.has(skill.type), `${skill.name} 技能属性无效`);
+        requireCondition(
+          !hasCategory || ALLOWED_CATEGORIES.has(skill.category),
+          `${skill.name} 技能类别无效`,
+        );
+        requireCondition(
+          skill.cost === undefined ||
+            (Number.isInteger(skill.cost) && skill.cost >= 0),
+          `${skill.name} 技能能耗无效`,
+        );
+        requireCondition(
+          skill.basePower === undefined ||
+            (Number.isInteger(skill.basePower) && skill.basePower >= 0),
+          `${skill.name} 技能基础威力无效`,
+        );
+      }
       const previous = skillByName.get(skill.name);
       if (previous) {
         requireCondition(previous.status === skill.status, `${skill.name} 在不同家族的候选状态不一致`);
@@ -225,6 +252,7 @@ export function applyS4PreviewCatalog(snapshot, catalog) {
   const next = structuredClone(snapshot);
   const catalogId = catalog.meta.id;
   const source = sourceRef(catalog.meta.source);
+  const skillParameterSource = sourceRef(catalog.meta.skillParameterSource);
   const formEntries = catalog.families.flatMap((family) =>
     family.forms.map((form) => ({ family, form })),
   );
@@ -284,21 +312,47 @@ export function applyS4PreviewCatalog(snapshot, catalog) {
   next.skills = next.skills.filter(({ id }) => !previewSkillIds.has(id));
 
   for (const skill of placeholderSkills) {
+    const skillId = provisionalSkillId(catalogId, skill.name);
+    const hasCompleteIdentity = Boolean(skill.type && skill.category);
+    const hasCompleteDamageData =
+      ["status", "defense"].includes(skill.category) ||
+      Number.isFinite(Number(skill.basePower));
+    const hasCompleteParameters =
+      hasCompleteIdentity &&
+      hasCompleteDamageData &&
+      Number.isFinite(Number(skill.cost));
     replaceOrAppend(next.skills, {
-      id: provisionalSkillId(catalogId, skill.name),
+      id: skillId,
       name: skill.name,
-      type: null,
-      category: null,
-      cost: null,
-      basePower: null,
+      type: skill.type ?? null,
+      category: skill.category ?? null,
+      cost: skill.cost ?? null,
+      basePower: skill.basePower ?? null,
       description: skill.description,
       ruleId: null,
       ruleParams: null,
-      calculationStatus: "pending-skill-data",
+      asset: {
+        sourceUrl: `/assets/skills/${skillId}.png`,
+        status: "temporary-preview",
+        replacementPending: true,
+      },
+      ...(hasCompleteParameters
+        ? {}
+        : { calculationStatus: "pending-skill-data" }),
       source,
       provenance: {
         identity: source,
         description: source,
+        ...(skill.type && skill.category
+          ? {
+              type: skillParameterSource,
+              category: skillParameterSource,
+            }
+          : {}),
+        ...(skill.cost !== undefined ? { cost: skillParameterSource } : {}),
+        ...(skill.basePower !== undefined
+          ? { basePower: skillParameterSource }
+          : {}),
         previewStatus: {
           catalogId,
           formalDataPending: true,
@@ -460,11 +514,15 @@ export function applyS4PreviewCatalog(snapshot, catalog) {
         "23个形态图鉴号、正式阶数、形态来源和正式身份",
         "受遮挡资料中的特性名“活体标本”需以正式文本复核",
         "23个形态的正式BWIKI头像绑定（当前使用本地前瞻原色图）",
-        "26个新技能的属性、类别、能耗和基础威力",
+        "22个已分类新技能的能耗和/或基础威力",
+        "其余2个新技能的属性、类别、能耗和基础威力",
         "BWIKI正式数据逐字段核实",
       ],
     },
-    sources: replaceSourceByUrl(next.meta?.sources, source),
+    sources: replaceSourceByUrl(
+      replaceSourceByUrl(next.meta?.sources, source),
+      skillParameterSource,
+    ),
     contentSha256: null,
   };
   next.meta.contentSha256 = sha256Hex(JSON.stringify(next));

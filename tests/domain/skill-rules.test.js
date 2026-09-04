@@ -85,6 +85,9 @@ describe("resolveSkillPower", () => {
     expect(
       inputs.find((input) => input.contextKey === "burstSourceSuperconduct"),
     ).toMatchObject({ burstDescription: "本技能能耗 -2。" });
+    expect(
+      inputs.find((input) => input.contextKey === "burstSourceBioelectric"),
+    ).toMatchObject({ burstDescription: "携带的电系技能获得迸发：能耗 -2。" });
 
     for (const [
       label,
@@ -104,6 +107,24 @@ describe("resolveSkillPower", () => {
         1,
         0,
         ["burstSourceDoublePulse"],
+      ],
+      [
+        "生物电来源",
+        { burstSourceBioelectric: true },
+        65,
+        0,
+        1,
+        2,
+        ["burstSourceBioelectric"],
+      ],
+      [
+        "电流刺激来源",
+        { burstSourceCurrentStimulus: true },
+        65,
+        2,
+        1,
+        0,
+        ["burstSourceCurrentStimulus"],
       ],
       [
         "超导来源",
@@ -136,6 +157,19 @@ describe("resolveSkillPower", () => {
       });
     }
 
+    expect(resolveSkillPower(thunderstorm, {
+      burstSourceCurrentStimulus: true,
+    })).toMatchObject({ inheritedFixedPowerAdd: 40, value: 65 });
+    for (const [contextKey, inheritedFixedPowerAdd] of [
+      ["burstSourceHeavenSpin", 30],
+      ["burstSourceArc", 40],
+      ["burstSourceLightningGuide", 20],
+    ]) {
+      expect(resolveSkillPower(thunderstorm, {
+        [contextKey]: true,
+      })).toMatchObject({ inheritedFixedPowerAdd, value: 65 });
+    }
+
     expect(
       resolveSkillPower({ ...thunderstorm, cost: 0 }, {
         burstSourceSuperconduct: true,
@@ -154,8 +188,8 @@ describe("resolveSkillPower", () => {
         burstSourceDoublePulse: true,
       }),
     ).toMatchObject({
-      inheritedCostReduction: 0,
-      resolvedCost: 3,
+      inheritedCostReduction: 2,
+      resolvedCost: 1,
       value: 75,
     });
     expect(resolveSkillPower(thunderstorm, { activeBurstKinds: 3 })).toMatchObject({
@@ -206,7 +240,7 @@ describe("resolveSkillPower", () => {
       expect.objectContaining({
         after: 1,
         before: 3,
-        label: "继承超导迸发能耗",
+        label: "继承迸发能耗降低",
       }),
     ]));
   });

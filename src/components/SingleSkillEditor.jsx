@@ -335,6 +335,15 @@ export function describeResolution(result) {
   const before = Number(step.before);
   const after = Number(step.after);
   const source = String(step.source);
+  if (result?.skillName === "雷暴" && step.label === "迸发种类威力加成") {
+    const sourceAdds = result.staticPowerSourceAdds ?? {};
+    const additions = [
+      after - before,
+      Number(sourceAdds.inheritedBurst) || 0,
+      Number(sourceAdds.mark) || 0,
+    ].filter((value) => value !== 0);
+    return `${before}${additions.map((value) => ` + ${value}`).join("")} = ${result.staticPower}`;
+  }
   if (source.includes("blazing-wave")) {
     return String(step.label);
   }
@@ -385,6 +394,7 @@ export function SingleSkillEditor({
   onAttackerHealthPercentChange,
   onDefenderHealthChange,
   onDefenderHealthPercentChange,
+  onCostOverrideChange,
   onManualPowerChange,
   onPowerOverrideChange,
   onSkillSelect,
@@ -394,6 +404,7 @@ export function SingleSkillEditor({
   skills,
   powerDisplayMode = "static",
   negativeStatusEnabled = false,
+  costOverride = null,
   powerOverride,
   powerMode: _powerMode = "base",
   traitContext = {},
@@ -494,10 +505,32 @@ export function SingleSkillEditor({
           >
             {effectiveType}
           </span>
-          <span className="skill-fact">
-            <Lightning aria-hidden="true" size={17} weight="fill" />
-            能耗 {result?.skillCost ?? selectedSkill.cost}
-          </span>
+          {selectedSkill.calculationStatus === "pending-skill-data" ? (
+            <label className="skill-fact skill-fact--editable-cost">
+              <Lightning aria-hidden="true" size={17} weight="fill" />
+              能耗
+              <input
+                aria-label="技能能耗"
+                max="99"
+                min="0"
+                onChange={(event) => {
+                  const value = event.target.value;
+                  onCostOverrideChange?.(
+                    value === "" ? null : Math.min(99, Math.max(0, Number(value))),
+                  );
+                }}
+                placeholder="—"
+                step="1"
+                type="number"
+                value={costOverride ?? ""}
+              />
+            </label>
+          ) : (
+            <span className="skill-fact">
+              <Lightning aria-hidden="true" size={17} weight="fill" />
+              能耗 {result?.skillCost ?? selectedSkill.cost ?? "—"}
+            </span>
+          )}
         </div>
       </div>
 

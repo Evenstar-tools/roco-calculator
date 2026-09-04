@@ -158,6 +158,8 @@ function compactOverrides(value) {
     compact.m = mode === "panel" ? "p" : "s";
     compact.v = power;
   }
+  const cost = integerInRange(value?.costOverride, 0, 99, undefined);
+  if (cost !== undefined) compact.c = cost;
   return Object.keys(compact).length ? compact : undefined;
 }
 
@@ -607,6 +609,8 @@ function expandOverrides(value) {
   if (mode && power !== undefined) {
     expanded.powerOverride = { mode, value: power };
   }
+  const cost = integerInRange(value?.c, 0, 99, undefined);
+  if (cost !== undefined) expanded.costOverride = cost;
   return Object.keys(expanded).length ? expanded : undefined;
 }
 

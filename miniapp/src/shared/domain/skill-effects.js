@@ -49,12 +49,14 @@ export const THUNDERSTORM_BURST_SOURCES = Object.freeze([
     contextKey: "burstSourceBioelectric",
     description: "携带的电系技能获得迸发：能耗 -2。",
     group: "特性",
+    inheritedCostReduction: 2,
     label: "生物电",
   },
   {
     contextKey: "burstSourceCurrentStimulus",
     description: "携带的攻击技能获得迸发：威力 +40。",
     group: "特性",
+    inheritedFixedPowerAdd: 40,
     label: "电流刺激",
   },
   {
@@ -73,12 +75,14 @@ export const THUNDERSTORM_BURST_SOURCES = Object.freeze([
     contextKey: "burstSourceHeavenSpin",
     description: "本次技能威力 +30。",
     group: "技能",
+    inheritedFixedPowerAdd: 30,
     label: "天旋地转",
   },
   {
     contextKey: "burstSourceArc",
     description: "本次技能威力 +40。",
     group: "技能",
+    inheritedFixedPowerAdd: 40,
     label: "电弧",
   },
   {
@@ -92,6 +96,7 @@ export const THUNDERSTORM_BURST_SOURCES = Object.freeze([
     contextKey: "burstSourceLightningGuide",
     description: "本次技能威力 +20。",
     group: "技能",
+    inheritedFixedPowerAdd: 20,
     label: "引雷",
   },
   {
@@ -536,6 +541,12 @@ const REVIEWED_EFFECTS = Object.freeze({
         ({ contextKey, inheritedCostReduction }) =>
           Number.isFinite(inheritedCostReduction)
             ? [{ contextKey, reduction: inheritedCostReduction }]
+            : [],
+      ),
+      inheritedFixedPowerAdds: THUNDERSTORM_BURST_SOURCES.flatMap(
+        ({ contextKey, inheritedFixedPowerAdd }) =>
+          Number.isFinite(inheritedFixedPowerAdd)
+            ? [{ add: inheritedFixedPowerAdd, contextKey }]
             : [],
       ),
       sourceContextKeys: THUNDERSTORM_BURST_SOURCES.map(

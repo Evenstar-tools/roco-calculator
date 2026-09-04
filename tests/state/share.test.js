@@ -402,14 +402,18 @@ describe("versioned share state", () => {
     );
   });
 
-  test("round trips static and panel power overrides", async () => {
+  test("round trips manual cost plus static and panel power overrides", async () => {
     const state = shareFixture();
     state.directions.forward.overrides = {
+      costOverride: 4,
       powerOverride: { mode: "static", value: 88 },
     };
     state.sides.attacker.skills.four[0] = {
       skillId: "skill_a",
-      overrides: { powerOverride: { mode: "panel", value: 281 } },
+      overrides: {
+        costOverride: 2,
+        powerOverride: { mode: "panel", value: 281 },
+      },
     };
 
     const decoded = await decodeShareState(await encodeShareState(state));
@@ -418,10 +422,12 @@ describe("versioned share state", () => {
       mode: "static",
       value: 88,
     });
+    expect(decoded.directions.forward.overrides.costOverride).toBe(4);
     expect(decoded.sides.attacker.skills.four[0].overrides.powerOverride).toEqual({
       mode: "panel",
       value: 281,
     });
+    expect(decoded.sides.attacker.skills.four[0].overrides.costOverride).toBe(2);
   });
 
   test("rejects individual values above the in-game cap of 60", async () => {

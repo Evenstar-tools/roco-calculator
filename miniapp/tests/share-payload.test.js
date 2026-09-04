@@ -102,6 +102,7 @@ function createState(snapshot) {
           hitCount: 3,
           overrides: {
             basePower: 95,
+            costOverride: 4,
             powerOverride: { mode: "panel", value: 175 },
           },
           skillId: "skill-b",
@@ -144,6 +145,7 @@ function createState(snapshot) {
     overrides: {
       attackLevelStage: 2,
       basePower: 90,
+      costOverride: 3,
       defenseLevelStage: -1,
       powerOverride: { mode: "static", value: 110 },
     },

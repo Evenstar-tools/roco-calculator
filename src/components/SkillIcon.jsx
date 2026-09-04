@@ -2,7 +2,9 @@ import { useState } from "react";
 import { ElementIcon } from "./ElementIcon.jsx";
 
 function secureIconUrl(value) {
-  return typeof value === "string" && /^https:\/\//u.test(value)
+  return typeof value === "string" &&
+    (/^https:\/\//u.test(value) ||
+      /^\/assets\/skills\/skill_[a-f0-9]{16}\.png$/u.test(value))
     ? value
     : null;
 }

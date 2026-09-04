@@ -65,7 +65,7 @@ export function WhatsNewDialog({
         <header className="whats-new-dialog__header">
           <span>{content.eyebrow ?? release.version}</span>
           <h2>{content.title}</h2>
-          <p>{content.description}</p>
+          {content.description ? <p>{content.description}</p> : null}
         </header>
         <ol className="whats-new-dialog__list">
           {content.items.map((item, index) => (
@@ -73,7 +73,7 @@ export function WhatsNewDialog({
               <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               <div>
                 <strong>{item.title}</strong>
-                <p>{item.description}</p>
+                {item.description ? <p>{item.description}</p> : null}
               </div>
             </li>
           ))}

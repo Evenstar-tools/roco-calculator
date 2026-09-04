@@ -34,7 +34,7 @@ test("keeps the concise about summary centered in a wide viewport", async ({ pag
 
   await expect(dialog.getByText(latestRelease.version)).toBeVisible();
   await expect(dialog.getByText(latestRelease.title)).toBeVisible();
-  for (const highlight of latestRelease.summaryHighlights) {
+  for (const highlight of latestRelease.summaryHighlights ?? latestRelease.highlights.slice(0, 3)) {
     await expect(dialog.getByText(highlight)).toBeVisible();
   }
   await expect(dialog.getByText("QQ 1215583051")).toBeVisible();

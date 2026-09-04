@@ -224,7 +224,7 @@ describe("snapshot validation", () => {
     );
   });
 
-  test("allows only explicit parameter-free preview skill placeholders", () => {
+  test("allows verified type and category on preview skill placeholders", () => {
     const pendingSkill = {
       basePower: null,
       calculationStatus: "pending-skill-data",
@@ -242,6 +242,26 @@ describe("snapshot validation", () => {
     );
     expect(accepted.errors).not.toContainEqual(
       expect.objectContaining({ code: "INVALID_SKILL_CALCULATION_STATUS" }),
+    );
+
+    const partial = validateSnapshot(
+      fixtureSnapshot({
+        skills: [{ ...pendingSkill, type: "机械", category: "magical" }],
+        learnsets: [{ spiritId: spirit("迪莫").id, skillIds: [pendingSkill.id] }],
+      }),
+    );
+    expect(partial.errors).not.toContainEqual(
+      expect.objectContaining({ code: "INVALID_PENDING_SKILL_PARAMETER" }),
+    );
+
+    const incompletePair = validateSnapshot(
+      fixtureSnapshot({
+        skills: [{ ...pendingSkill, type: "机械" }],
+        learnsets: [{ spiritId: spirit("迪莫").id, skillIds: [pendingSkill.id] }],
+      }),
+    );
+    expect(incompletePair.errors).toContainEqual(
+      expect.objectContaining({ code: "INVALID_PENDING_SKILL_PARAMETER" }),
     );
 
     const inventedPower = validateSnapshot(

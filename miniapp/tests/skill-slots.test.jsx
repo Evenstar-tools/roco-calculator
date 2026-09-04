@@ -140,6 +140,49 @@ test("switches between static and panel power overrides and restores automatic c
   });
 });
 
+test("allows manual cost and static power input for a partially known S4 skill", () => {
+  const onDirectionChange = vi.fn();
+  render(
+    <SkillConditionEditor
+      context={{}}
+      direction={{ overrides: {} }}
+      onContextChange={vi.fn()}
+      onDirectionChange={onDirectionChange}
+      result={{}}
+      skill={{
+        basePower: null,
+        calculationStatus: "pending-skill-data",
+        category: "magical",
+        cost: null,
+        id: "preview-broadcast",
+        name: "广播",
+        type: "机械",
+      }}
+    />,
+  );
+
+  expect(screen.getByText("基础威力 待补")).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "显示威力" })).not.toBeInTheDocument();
+  expect(screen.getByLabelText("技能能耗")).toHaveValue(null);
+  expect(screen.getByLabelText("静态威力")).toHaveValue(null);
+
+  fireEvent.input(screen.getByLabelText("技能能耗"), {
+    target: { value: "4" },
+  });
+  expect(onDirectionChange).toHaveBeenLastCalledWith({
+    overrides: { costOverride: 4 },
+  });
+  fireEvent.input(screen.getByLabelText("静态威力"), {
+    target: { value: "90" },
+  });
+  expect(onDirectionChange).toHaveBeenLastCalledWith({
+    overrides: {
+      basePower: undefined,
+      powerOverride: { mode: "static", value: 90 },
+    },
+  });
+});
+
 test("edits Bug Chirp final hits while preserving the Warm-up bonus", () => {
   const onContextChange = vi.fn();
   render(

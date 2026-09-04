@@ -156,7 +156,7 @@ function needsAlignment(rect, cardHeight) {
 
 export function FirstRunGuide({
   error = "",
-  importCount = 213,
+  importCount = 224,
   importing = false,
   layoutKey,
   onBack,

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getNature } from "../domain/natures.js";
 
-const POPULAR_CONFIG_COUNT = 213;
+const POPULAR_CONFIG_COUNT = 224;
 const PRIMARY_PREVIEW_ROWS = [
   ["added", "新增配置"],
   ["overwritten", "覆盖本机配置"],
@@ -281,9 +281,6 @@ export function ConfigLibraryDialog({
                     ) : null}
                   </div>
                 )}
-                {parsed.warnings.map((warning) => (
-                  <p className="config-library-warning" key={warning}>{warning}</p>
-                ))}
                 {isPopular ? (
                   <p className="config-library-note">
                     只覆盖同 ID 精灵配置，队伍与当前页面不会改变。

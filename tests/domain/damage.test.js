@@ -25,6 +25,7 @@ function goldenInput(overrides = {}) {
 describe("calculateDamage", () => {
   test("exposes one shared rounding policy for every damage boundary", () => {
     expect(DAMAGE_ROUNDING_POLICY).toEqual({
+      calculationPower: "preserve",
       damageNumerator: "round-half-up",
       displayedPower: "round-half-up",
       effectiveSkillPower: "floor",

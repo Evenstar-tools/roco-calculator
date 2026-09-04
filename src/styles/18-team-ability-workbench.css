@@ -1771,6 +1771,12 @@
   font-variant-numeric: tabular-nums;
 }
 
+.ability-ranking-podium li.is-current {
+  border-radius: 6px;
+  color: var(--accent-strong);
+  background: var(--selection-bg);
+}
+
 .ability-ranking-preview > footer {
   display: flex;
   min-height: 42px;

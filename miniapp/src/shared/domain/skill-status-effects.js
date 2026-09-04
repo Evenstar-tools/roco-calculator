@@ -43,6 +43,8 @@ const STATUS_EFFECTS = Object.freeze({
     requiresCounter: true,
   },
   热身运动: { ownHitCountAdd: 3 },
+  惊鸿一瞥: { ownHitCountAdd: 1 },
+  仰望夜空: { ownAttack: 7, ownDefense: 7 },
   芳香诱引: { ownHitCountAdd: 2 },
   羽翼庇护: {
     inputs: [booleanInput("counterAttackSucceeded", "应对攻击成功")],

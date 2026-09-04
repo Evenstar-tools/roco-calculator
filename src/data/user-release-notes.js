@@ -1,4 +1,4 @@
-function createStructuredRelease({ sections, summarySections, ...release }) {
+function createStructuredRelease({ sections, ...release }) {
   const normalizeSections = (groups) => {
     const features = groups
       .filter(({ kind }) => kind !== "fix")
@@ -17,19 +17,10 @@ function createStructuredRelease({ sections, summarySections, ...release }) {
     ];
   };
   const normalizedSections = normalizeSections(sections);
-  const normalizedSummarySections = summarySections
-    ? normalizeSections(summarySections)
-    : null;
   const flatten = (groups) => groups.flatMap(({ items }) => items);
 
   return Object.freeze({
     ...release,
-    ...(normalizedSummarySections
-      ? {
-          summaryHighlights: flatten(normalizedSummarySections),
-          summarySections: normalizedSummarySections,
-        }
-      : {}),
     highlights: flatten(normalizedSections),
     sections: normalizedSections,
   });
@@ -50,50 +41,51 @@ function createRelease({ features = [], fixes = [], ...release }) {
 }
 
 export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
-  version: "v1.6.9",
+  version: "v1.6.10",
   date: "2026.09.04",
-  title: "能力分析与配置体验",
+  title: "S4技能与结算校正",
   status: "preview",
-  summarySections: [
-    {
-      kind: "feature",
-      label: "新增功能",
-      items: ["新增能力分析：耐久方案、标准耐久榜和特殊速度档。"],
-    },
-    {
-      kind: "feature",
-      label: "新增功能",
-      items: ["S4新精灵在图鉴号待定期间优先展示。"],
-    },
-    {
-      kind: "fix",
-      label: "修复与优化",
-      items: ["修正技能连击、热门预设和队伍分析中的易错内容。"],
-    },
-  ],
   whatsNew: {
-    eyebrow: "v1.6.9 · S4前瞻",
-    title: "配队前，先把能力值算清楚",
-    description: "耐久分配、全服排行和速度线，现在可以放在一起比较。",
+    title: "S4更新",
     items: [
       {
-        title: "耐久方案",
-        description: "对比物理、魔法和综合耐久，直接应用推荐分配。",
+        title: "S4热门配置",
       },
       {
-        title: "标准耐久榜",
-        description: "按物理、魔法或综合耐久查看排名，并可搜索定位精灵。",
+        title: "技能临时图标",
       },
       {
-        title: "速度线",
-        description: "搜索目标精灵，查看20个特殊速度档和实时超速结果。",
+        title: "结算校正",
       },
     ],
   },
   sections: [
     {
       kind: "feature",
-      label: "新增功能",
+      items: [
+        "11只新精灵配置补齐并置顶。",
+        "26个新技能补入分类和临时图，数值可手填。",
+        "重组支持双系伤害，耐久榜自动定位",
+      ],
+    },
+    {
+      kind: "fix",
+      items: [
+        "雷暴、生物电、超导和蓄电联动，印记不重复。",
+        "威力显示四舍五入，实际值不提前取整，单段向下取整。",
+        "虫鸣可手填连击；热门预设性格和个体已修正。",
+      ],
+    },
+  ],
+});
+
+const S4_PREVIEW_V169_RELEASE = createStructuredRelease({
+  version: "v1.6.9",
+  date: "2026.09.04",
+  title: "能力分析与配置体验",
+  sections: [
+    {
+      kind: "feature",
       items: [
         "新增队伍能力分析工作台，将当前配置、个体分配、耐久方案、标准耐久榜和速度线集中到同一界面。",
         "耐久方案可比较综合、物理和魔法承伤，按锁定项与速度要求推荐合法的0/60个体组合，并可直接应用。",
@@ -107,7 +99,6 @@ export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
     },
     {
       kind: "feature",
-      label: "新增功能",
       items: [
         "S4最终形态在图鉴号待定期间于配置列表置顶，补齐图鉴号后恢复正常排序。",
         "已有精灵和技能的平衡调整显示改动叹号；S4全新内容不重复标记。",
@@ -115,7 +106,6 @@ export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
     },
     {
       kind: "fix",
-      label: "修复与优化",
       items: [
         "修正速度档长名称截断和按层百分比速度未逐层向下取整的问题。",
         "魔能爆当前能量默认10，超过10时威力仍按10能计算。",
@@ -130,11 +120,9 @@ const S4_PREVIEW_V168_RELEASE = createStructuredRelease({
   version: "v1.6.8",
   date: "2026.09.02",
   title: "S4前瞻配置",
-  status: "preview",
   sections: [
     {
       kind: "feature",
-      label: "新增功能",
       items: [
         "为11个S4最终形态补入前瞻默认性格、三项60个体和四技能。",
         "默认值只在没有个人保存配置时应用，不加入或改写旧版213套热门配置。",
@@ -146,6 +134,7 @@ const S4_PREVIEW_V168_RELEASE = createStructuredRelease({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   S4_PREVIEW_USER_RELEASE,
+  S4_PREVIEW_V169_RELEASE,
   S4_PREVIEW_V168_RELEASE,
   createStructuredRelease({
     version: "v1.6.7",
@@ -154,7 +143,6 @@ export const USER_RELEASE_NOTES = Object.freeze([
     sections: [
       {
         kind: "feature",
-        label: "新增功能",
         items: [
           "应用阶段切换为S4前瞻，同步桌面、网页、PWA缓存和数据快照身份。",
           "录入11条新精灵进化链，共23个形态和前瞻头像；12个成长形态保留不可计算占位。",
@@ -163,7 +151,6 @@ export const USER_RELEASE_NOTES = Object.freeze([
       },
       {
         kind: "feature",
-        label: "新增功能",
         items: [
           "新增精灵、特性和技能改动提示；鼠标悬停或键盘聚焦叹号即可查看调整时间与明细。",
           "铭记于月亮支持按精灵或特性搜索，并可配置最多5项已适配特性。",
@@ -171,7 +158,6 @@ export const USER_RELEASE_NOTES = Object.freeze([
       },
       {
         kind: "feature",
-        label: "新增功能",
         items: [
           "录入11种S4新特性；旧玩具、宇宙之眼、冷光源、热成像和铭记于月亮已接入计算。",
           "雪原狩猎改为固定威力加算；超导接入迸发威力、能耗和自身减耗规则。",
@@ -186,7 +172,6 @@ export const USER_RELEASE_NOTES = Object.freeze([
     sections: [
       {
         kind: "feature",
-        label: "新增功能",
         items: [
           "首页增加三步空状态引导，首次引导会随攻防选择自动推进，其他弹层打开时自动让位。",
           "主题选择自动保存；菜单、队伍抽屉和弹层增加切换反馈。",
@@ -195,7 +180,6 @@ export const USER_RELEASE_NOTES = Object.freeze([
       },
       {
         kind: "fix",
-        label: "修复与优化",
         items: [
           "多维击打的额外连击数改为读取对方星陨印记层数，印记变化时结果同步更新。",
           "修正风暴战犬“全神贯注”：未行动时物攻+100%，之后每行动1次衰减20%。",
@@ -212,7 +196,6 @@ export const USER_RELEASE_NOTES = Object.freeze([
     sections: [
       {
         kind: "fix",
-        label: "修复与优化",
         items: [
           "有效技能威力完成固定值和百分比加成后先向下取整，再进入伤害公式。",
           "显示威力和伤害分子继续四舍五入，单段伤害继续向下取整，各阶段不再混用取整方式。",

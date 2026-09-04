@@ -49,7 +49,7 @@ test("keeps menu before workspace and closes it with Escape", () => {
 
   expect(screen.getByRole("navigation", { name: "应用菜单" })).toBeTruthy();
   expect(screen.getByRole("button", { name: "常用精灵配置" }))
-    .toHaveTextContent("213");
+    .toHaveTextContent("224");
   expect(screen.getByText("工作区").previousElementSibling).toHaveAttribute(
     "aria-label",
     "应用菜单",
@@ -107,10 +107,12 @@ test("introduces the current release and opens the team workspace", () => {
   });
 
   const dialog = screen.getByRole("dialog", { name: "新功能介绍" });
-  expect(within(dialog).getByText("配队前，先把能力值算清楚")).toBeVisible();
-  expect(within(dialog).getByText("耐久方案")).toBeVisible();
-  expect(within(dialog).getByText("标准耐久榜")).toBeVisible();
-  expect(within(dialog).getByText("速度线")).toBeVisible();
+  expect(
+    within(dialog).getByText(FEATURED_USER_RELEASE.whatsNew.title),
+  ).toBeVisible();
+  for (const item of FEATURED_USER_RELEASE.whatsNew.items) {
+    expect(within(dialog).getByText(item.title)).toBeVisible();
+  }
   fireEvent.click(within(dialog).getByRole("button", { name: "打开队伍" }));
   expect(onOpenTeam).toHaveBeenCalledOnce();
 });
@@ -256,7 +258,7 @@ test("opens the complete release notes in a second-level dialog", () => {
   expect(screen.getByText("版本记录")).toBeVisible();
   expect(screen.getByText(latestRelease.title)).toBeVisible();
   expect(screen.getByText(latestRelease.version)).toBeVisible();
-  for (const highlight of latestRelease.summaryHighlights) {
+  for (const highlight of latestRelease.summaryHighlights ?? latestRelease.highlights.slice(0, 3)) {
     expect(screen.getByText(highlight)).toBeVisible();
   }
   for (const release of previousReleases) {

@@ -240,15 +240,76 @@ function CalculatorWorkspace({ snapshot }) {
     };
   }
 
+  function chargeStacksForSide(side, currentState = state) {
+    const positiveMark = currentState.marks?.[side]?.positive;
+    return positiveMark?.id === "charge"
+      ? Math.min(99, Math.max(0, Math.floor(Number(positiveMark.stacks) || 0)))
+      : 0;
+  }
+
+  function updateChargeBurstSource(side, active) {
+    const currentMark = stateRef.current.marks?.[side]?.positive;
+    if (!active && currentMark?.id !== "charge") return;
+    dispatch({
+      polarity: "positive",
+      side,
+      type: "mark/update",
+      value: active
+        ? {
+            id: "charge",
+            stacks: currentMark?.id === "charge"
+              ? Math.max(1, Math.floor(Number(currentMark.stacks) || 0))
+              : 1,
+          }
+        : { id: null, stacks: 0 },
+    });
+  }
+
+  function chargeBurstSourceInputId(skill) {
+    return getSkillEffectInputs(skill).find(
+      (input) => input.contextKey === "burstSourceChargeMark",
+    )?.id;
+  }
+
+  function isChargeBurstSourceInput(skill, key) {
+    return key === "burstSourceChargeMark" || key === chargeBurstSourceInputId(skill);
+  }
+
+  function linkedChargeBurstSourceContext(skill, context, stacks) {
+    const inputId = chargeBurstSourceInputId(skill);
+    if (!inputId) return context ?? {};
+    const active = stacks > 0;
+    return {
+      ...(context ?? {}),
+      burstSourceChargeMark: active,
+      [inputId]: active,
+    };
+  }
+
+  function linkedSkillContext(side, skill, context) {
+    const starfallLinked = skill?.name === "多维击打"
+      ? linkedEnemyStarfallContext(
+          skill,
+          context,
+          targetStarfallStacksForSide(side),
+        )
+      : context ?? {};
+    return linkedChargeBurstSourceContext(
+      skill,
+      starfallLinked,
+      chargeStacksForSide(side),
+    );
+  }
+
   function linkedSkillSlotView(side, entry) {
     const view = getSkillSlotView(snapshot, entry);
-    if (view?.name !== "多维击打") return view;
+    if (!view) return view;
     return {
       ...view,
-      slotContext: linkedEnemyStarfallContext(
+      slotContext: linkedSkillContext(
+        side,
         view,
         view.slotContext,
-        targetStarfallStacksForSide(side),
       ),
     };
   }
@@ -1133,6 +1194,12 @@ function CalculatorWorkspace({ snapshot }) {
       }
       defenderTrait={getTraitView(snapshot, activeDefenseSpirit, "defender")}
       hitCount={resultModel.selectedResult?.hitCount ?? currentDirection.hitCount}
+      costOverride={currentDirection.overrides.costOverride ?? null}
+      onCostOverrideChange={(costOverride) =>
+        updateRememberedSingleDirection({
+          overrides: { costOverride },
+        })
+      }
       onHitCountChange={(hitCount) =>
         updateRememberedSingleDirection(
           editableHitCountPatch(
@@ -1181,6 +1248,10 @@ function CalculatorWorkspace({ snapshot }) {
           updateTargetStarfallStacks(activeAttackSideKey, value);
           return;
         }
+        if (isChargeBurstSourceInput(selectedSingleSkill, key)) {
+          updateChargeBurstSource(activeAttackSideKey, value);
+          return;
+        }
         updateTraitContext(activeDirection, key, value);
       }}
       result={resultModel.selectedResult}
@@ -1191,15 +1262,11 @@ function CalculatorWorkspace({ snapshot }) {
       }
       powerDisplayMode={powerDisplayMode}
       powerOverride={currentDirection.overrides.powerOverride ?? null}
-      traitContext={
-        selectedSingleSkill?.name === "多维击打"
-          ? linkedEnemyStarfallContext(
-              selectedSingleSkill,
-              currentDirection.context,
-              targetStarfallStacksForSide(activeAttackSideKey),
-            )
-          : currentDirection.context
-      }
+      traitContext={linkedSkillContext(
+        activeAttackSideKey,
+        selectedSingleSkill,
+        currentDirection.context,
+      )}
     />
   ) : null;
 
@@ -1300,6 +1367,10 @@ function CalculatorWorkspace({ snapshot }) {
           updateTargetStarfallStacks(side, value);
           return;
         }
+        if (isChargeBurstSourceInput(skill, key)) {
+          updateChargeBurstSource(side, value);
+          return;
+        }
         updateFourSkillEntry(side, index, {
           context: { [key]: value },
         });
@@ -1358,6 +1429,11 @@ function CalculatorWorkspace({ snapshot }) {
           ),
         );
       }}
+      onSkillCostChange={(side, index, costOverride) =>
+        updateFourSkillEntry(side, index, {
+          overrides: { costOverride },
+        })
+      }
       onSkillPowerChange={(side, index, powerOverride) =>
         updateFourSkillEntry(side, index, {
           overrides: { powerOverride },

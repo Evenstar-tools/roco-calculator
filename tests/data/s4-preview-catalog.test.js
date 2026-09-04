@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import {
   applyS4PreviewCatalog,
@@ -46,6 +46,12 @@ const PLACEHOLDER_NAMES = [
 ];
 
 const ALL_NAMES = [...FINAL_NAMES, ...PLACEHOLDER_NAMES];
+const PREVIEW_SKILL_NAMES = new Set(
+  candidate.families
+    .flatMap(({ skills }) => skills)
+    .filter(({ status }) => status === "placeholder")
+    .map(({ name }) => name),
+);
 
 const PREVIEW_DEFAULTS_BY_NAME = {
   测风蝉: ["silent", ["hp", "physicalDefense", "magicalDefense"]],
@@ -53,7 +59,7 @@ const PREVIEW_DEFAULTS_BY_NAME = {
   玳塔: ["silent", ["hp", "physicalDefense", "magicalDefense"]],
   摇铃魔偶: ["silent", ["hp", "physicalDefense", "magicalDefense"]],
   未完虫: ["adamant", ["hp", "speed", "physicalAttack"]],
-  黑手浣熊: ["cheerful", ["hp", "speed", "physicalAttack"]],
+  黑手浣熊: ["timid", ["hp", "speed", "magicalAttack"]],
   布灵布灵: ["cheerful", ["hp", "speed", "physicalAttack"]],
   星星眼: ["smart", ["hp", "speed", "magicalAttack"]],
   月使鹭纳: ["hasty", ["hp", "speed", "magicalAttack"]],
@@ -89,7 +95,7 @@ function baselineSnapshot() {
     ({ spiritId }) => !removedSpiritIds.has(spiritId),
   );
   baseline.skills = baseline.skills.filter(
-    ({ calculationStatus }) => calculationStatus !== "pending-skill-data",
+    ({ name }) => !PREVIEW_SKILL_NAMES.has(name),
   );
   baseline.traits = baseline.traits.filter(
     ({ name }) => !TRAIT_NAMES.includes(name),
@@ -130,10 +136,10 @@ describe("S4 前瞻新精灵候选目录", () => {
       finalForms: 11,
       forms: 23,
       placeholderForms: 12,
-      skillSlots: 44,
+      skillSlots: 46,
       traits: 11,
-      uniqueSkillNames: 43,
-      existingSkillReferences: 18,
+      uniqueSkillNames: 44,
+      existingSkillReferences: 20,
       newSkillPlaceholders: 26,
     });
   });
@@ -150,6 +156,16 @@ describe("S4 前瞻新精灵候选目录", () => {
     expect(patched.learnsets).toHaveLength(before.learnsets.length + 23);
     expect(patched.traits).toHaveLength(before.traits.length + 11);
     expect(patched.skills).toHaveLength(before.skills.length + 26);
+    const previewSkills = patched.skills.filter(({ name }) =>
+      PREVIEW_SKILL_NAMES.has(name)
+    );
+    expect(previewSkills).toHaveLength(26);
+    expect(previewSkills.every((skill) =>
+      skill.asset?.status === "temporary-preview" &&
+      skill.asset?.replacementPending === true &&
+      skill.asset?.sourceUrl === `/assets/skills/${skill.id}.png` &&
+      existsSync(`public${skill.asset.sourceUrl}`)
+    )).toBe(true);
     expect(
       patched.spirits.filter(({ fullName }) => FINAL_NAMES.includes(fullName)),
     ).toHaveLength(11);
@@ -172,7 +188,7 @@ describe("S4 前瞻新精灵候选目录", () => {
     });
   });
 
-  test("最终形态默认四技能严格保持高清图顺序，未知参数只作展示占位", () => {
+  test("最终形态学习面严格保持资料顺序，未知参数只作展示占位", () => {
     const patched = applyS4PreviewCatalog(baselineSnapshot(), candidate);
     const skillById = new Map(patched.skills.map((skill) => [skill.id, skill]));
 
@@ -195,11 +211,69 @@ describe("S4 前瞻新精灵候选目录", () => {
     expect(placeholder).toMatchObject({
       basePower: null,
       calculationStatus: "pending-skill-data",
-      category: null,
+      category: "magical",
       cost: null,
       description: "对敌方精灵造成魔法伤害。",
-      type: null,
+      type: "机械",
     });
+
+    expect(Object.fromEntries(
+      ["掉包", "暴打", "暖阳", "星火", "广播", "无风", "分光", "汇流", "奇点", "引力旋转"]
+        .map((name) => {
+          const skill = patched.skills.find((candidate) => candidate.name === name);
+          return [name, [skill.type, skill.category, skill.cost, skill.basePower]];
+        }),
+    )).toEqual({
+      掉包: ["恶", "status", null, null],
+      暴打: ["恶", "magical", null, null],
+      暖阳: ["火", "physical", null, null],
+      星火: ["火", "status", null, null],
+      广播: ["机械", "magical", null, null],
+      无风: ["翼", "defense", null, null],
+      分光: ["光", "status", null, null],
+      汇流: ["水", "status", null, null],
+      奇点: ["幻", "magical", null, null],
+      引力旋转: ["幻", "defense", null, null],
+    });
+
+    expect(Object.fromEntries(
+      ["小型打劫", "惊鸿一瞥", "月影交错", "信息素", "迁飞扩散", "仰望夜空", "观测者效应", "闪光弹", "量子涨落", "回收", "离魂术", "掠影", "重组", "月蚀"]
+        .map((name) => {
+          const skill = patched.skills.find((candidate) => candidate.name === name);
+          return [name, [skill.type, skill.category, skill.cost, skill.basePower]];
+        }),
+    )).toEqual({
+      小型打劫: ["幽", "status", null, null],
+      惊鸿一瞥: ["翼", "status", null, null],
+      月影交错: ["翼", "physical", null, null],
+      信息素: ["虫", "status", null, null],
+      迁飞扩散: ["虫", "physical", null, null],
+      仰望夜空: ["幻", "status", null, null],
+      观测者效应: ["幻", "status", null, null],
+      闪光弹: ["光", "physical", 2, 40],
+      量子涨落: ["幻", "physical", null, null],
+      回收: ["幽", "magical", null, null],
+      离魂术: ["幽", "status", null, null],
+      掠影: ["幽", "physical", null, null],
+      重组: ["幻", "status", null, null],
+      月蚀: ["幻", "physical", 5, 140],
+    });
+
+    for (const name of ["闪光弹", "月蚀"]) {
+      expect(patched.skills.find((skill) => skill.name === name))
+        .not.toHaveProperty("calculationStatus");
+    }
+
+    const wolf = patched.spirits.find(({ fullName }) => fullName === "银月狼王");
+    const wolfLearnset = patched.learnsets.find(({ spiritId }) => spiritId === wolf.id);
+    expect(wolfLearnset.skillIds.map((id) => skillById.get(id)?.name)).toEqual([
+      "离魂术",
+      "掠影",
+      "重组",
+      "月蚀",
+      "撞鬼",
+      "火焰切割",
+    ]);
   });
 
   test("最终形态带有推导的默认性格和恰好三项 60 个体", () => {
@@ -238,19 +312,25 @@ describe("S4 前瞻新精灵候选目录", () => {
     }
   });
 
-  test("旧版 213 套热门配置不注入 S4 前瞻精灵", () => {
+  test("224 套热门配置包含 11 只 S4 最终形态及其默认性格、个体和四技能", () => {
     const patched = applyS4PreviewCatalog(baselineSnapshot(), candidate);
-    const previewSpiritIds = new Set(
-      patched.spirits
-        .filter(({ sourceCategory }) => sourceCategory === "S4前瞻")
-        .map(({ id }) => id),
+    const skillByName = new Map(patched.skills.map((skill) => [skill.name, skill.id]));
+    const entryBySpiritId = new Map(
+      popularConfigs.entries.map((entry) => [entry.spiritId, entry]),
     );
 
-    expect(popularConfigs.entryCount).toBe(213);
-    expect(popularConfigs.entries).toHaveLength(213);
-    expect(
-      popularConfigs.entries.some(({ spiritId }) => previewSpiritIds.has(spiritId)),
-    ).toBe(false);
+    expect(popularConfigs.entryCount).toBe(224);
+    expect(popularConfigs.entries).toHaveLength(224);
+    for (const family of candidate.families) {
+      const form = family.forms.find(({ isFinal }) => isFinal);
+      const spirit = patched.spirits.find(({ fullName }) => fullName === form.name);
+      const entry = entryBySpiritId.get(spirit.id);
+      expect(entry).toMatchObject({
+        natureId: form.previewDefaults.natureId,
+        displayIvs: form.previewDefaults.displayIvs,
+        skills: family.skills.slice(0, 4).map(({ name }) => skillByName.get(name)),
+      });
+    }
   });
 
   test("非最终形态只作为待核实占位实体，不伪造种族值、特性或学习面", () => {

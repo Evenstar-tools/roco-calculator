@@ -188,14 +188,15 @@ export default function SkillConditionEditor({
   const burstInputs = inputs.filter((input) => input.burstSource === true);
   const regularInputs = inputs.filter((input) => input.burstSource !== true);
   const pureStatusSkill = isPureStatusSkill(skill);
+  const pendingSkillData = skill?.calculationStatus === "pending-skill-data";
   const savedMode = direction.overrides?.powerOverride?.mode;
   const [powerMode, setPowerMode] = useState(
     savedMode === "panel" ? "panel" : "static",
   );
 
   useEffect(() => {
-    setPowerMode(savedMode === "panel" ? "panel" : "static");
-  }, [savedMode, skill?.id]);
+    setPowerMode(!pendingSkillData && savedMode === "panel" ? "panel" : "static");
+  }, [pendingSkillData, savedMode, skill?.id]);
 
   const powerOverride = direction.overrides?.powerOverride;
   const manualPower = powerOverride?.mode === powerMode
@@ -206,7 +207,11 @@ export default function SkillConditionEditor({
     : result?.staticPower ?? result?.skillPower ?? skill?.basePower;
   const powerValue = manualPower ?? automaticPower ?? "";
   const powerLabel = powerMode === "panel" ? "显示威力" : "静态威力";
-  const basePower = Math.max(0, Number(skill?.basePower) || 0);
+  const basePower = skill?.basePower === null || skill?.basePower === undefined
+    ? null
+    : Math.max(0, Number(skill.basePower) || 0);
+  const costOverride = direction.overrides?.costOverride;
+  const costValue = costOverride ?? skill?.cost ?? "";
   const editableHitCountInput = getEditableHitCountInput(skill);
   const resolvedHitCountMaximum = editableHitCountInput
     ? editableHitCountInput.max ?? Number.POSITIVE_INFINITY
@@ -392,10 +397,10 @@ export default function SkillConditionEditor({
       ) : (
       <View className="condition-editor__manual">
         <View aria-label="威力口径" className="condition-editor__power-modes">
-          {[
-            ["static", "静态威力"],
-            ["panel", "显示威力"],
-          ].map(([mode, label]) => (
+          {(pendingSkillData
+            ? [["static", "静态威力"]]
+            : [["static", "静态威力"], ["panel", "显示威力"]]
+          ).map(([mode, label]) => (
             <Button
               aria-pressed={powerMode === mode}
               className={powerMode === mode
@@ -409,12 +414,42 @@ export default function SkillConditionEditor({
           ))}
         </View>
         <View aria-label="基础技能参数" className="condition-editor__base-reference">
-          <Text>基础威力 {basePower}</Text>
+          <Text>基础威力 {basePower ?? "待补"}</Text>
           <Text>{resolvedHitCount > 1
             ? `技能默认 ${resolvedHitCount} 连击`
             : "单段伤害"}</Text>
         </View>
         <View aria-label="威力与连击参数" className="condition-editor__manual-fields">
+          {pendingSkillData ? (
+            <View className="condition-editor__field condition-editor__field--number">
+              <View className="condition-editor__field-heading">
+                <Text className="condition-editor__label">能耗</Text>
+                <Text className="condition-editor__power-status">
+                  {costOverride === null || costOverride === undefined ? "待补" : "手动"}
+                </Text>
+              </View>
+              <Input
+                aria-label="技能能耗"
+                className="condition-editor__input"
+                inputMode="numeric"
+                max="99"
+                min="0"
+                onInput={(event) => {
+                  const raw = eventValue(event);
+                  onDirectionChange({
+                    overrides: {
+                      costOverride: raw === ""
+                        ? null
+                        : Math.round(numericValue(event, 0, 99)),
+                    },
+                  });
+                }}
+                placeholder="待补"
+                type="number"
+                value={costValue}
+              />
+            </View>
+          ) : null}
           <View className="condition-editor__field condition-editor__field--number">
             <View className="condition-editor__field-heading condition-editor__power-heading">
               <Text className="condition-editor__label">{powerLabel}</Text>
