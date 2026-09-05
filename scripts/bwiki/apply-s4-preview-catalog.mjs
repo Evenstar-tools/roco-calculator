@@ -609,6 +609,20 @@ export function applyS4PreviewCatalog(snapshot, catalog) {
         boss.name,
       ]),
     ];
+    const evolutionChainNameSet = new Set(evolutionChainNames);
+    next.spirits = next.spirits.map((spirit) =>
+      evolutionChainNameSet.has(spirit.fullName)
+        ? {
+            ...spirit,
+            evolutionChainNames: [
+              ...new Set([
+                ...(spirit.evolutionChainNames ?? [spirit.fullName]),
+                ...evolutionChainNames,
+              ]),
+            ],
+          }
+        : spirit,
+    );
 
     replaceOrAppend(next.traits, {
       id: bossTraitId,

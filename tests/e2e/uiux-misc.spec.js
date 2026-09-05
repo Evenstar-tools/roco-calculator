@@ -46,3 +46,20 @@ test("keeps Hai Zhizhi portraits centered in fixed avatar boxes", async ({
   await expect(cardPortrait).toHaveCSS("object-position", "50% 50%");
   await expect(cardPortrait).toHaveCSS("justify-self", "center");
 });
+
+test("finds S4 preview bosses through their inherited evolution chains", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const picker = page.getByRole("combobox", { name: "攻击方精灵" });
+  for (const { bossName, query } of [
+    { bossName: "烈焰狂战士", query: "烈火守护" },
+    { bossName: "满月砣", query: "月亮砣" },
+  ]) {
+    await picker.fill(query);
+    await expect(
+      page.getByRole("option", { name: new RegExp(`^${bossName}`, "u") }),
+    ).toBeVisible();
+  }
+});

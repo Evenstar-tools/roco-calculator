@@ -466,6 +466,19 @@ describe("S4 前瞻新精灵候选目录", () => {
       });
       expect(boss.types).toEqual(baseSpirit.types);
       expect(boss.raceStats).toEqual(baseSpirit.raceStats);
+      const expectedEvolutionChainNames = [
+        ...new Set([
+          ...(baseSpirit.evolutionChainNames ?? [baseSpirit.fullName]),
+          expected.name,
+        ]),
+      ];
+      expect(boss.evolutionChainNames).toEqual(expectedEvolutionChainNames);
+      for (const chainName of expectedEvolutionChainNames) {
+        const chainSpirit = patched.spirits.find(
+          ({ fullName }) => fullName === chainName,
+        );
+        expect(chainSpirit.evolutionChainNames).toContain(expected.name);
+      }
       if (expected.assetStrategy === "official-video-frame-temporary") {
         expect(boss.asset).toMatchObject({
           sourceUrl: `/assets/spirits/${boss.id}.png`,
