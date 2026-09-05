@@ -91,8 +91,14 @@ test("shows the team label on desktop and keeps the mobile header compact", asyn
   expect((await teamAction.boundingBox()).width).toBeGreaterThan(38);
 
   await page.setViewportSize({ height: 844, width: 390 });
-  await expect(teamLabel).toBeHidden();
-  expect((await teamAction.boundingBox()).width).toBe(44);
+  await expect(teamLabel).toBeVisible();
+  await expect(teamLabel).toHaveText("队伍");
+  const mobileTeamBox = await teamAction.boundingBox();
+  expect(mobileTeamBox.width).toBe(42);
+  expect(mobileTeamBox.height).toBe(46);
+  expect(await page.locator(".app-header--compact").evaluate(
+    (node) => node.scrollWidth <= node.clientWidth,
+  )).toBe(true);
 });
 
 test("uses the durability values as the direct ability-analysis entry", async ({ page }) => {

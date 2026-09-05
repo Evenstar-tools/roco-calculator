@@ -741,3 +741,253 @@
     grid-template-columns: 11px minmax(105px, 1fr) 19px minmax(74px, 0.68fr);
   }
 }
+
+/* 窄屏导航与精灵卡片：保留控件语义，并让名称、收藏和特性各自占位。 */
+@media (max-width: 620px) {
+  .app-header--compact {
+    min-height: 52px;
+    padding-block: 3px;
+  }
+
+  .app-header--compact .view-mode-switch button,
+  .app-header--compact .team-action {
+    width: 42px;
+    min-width: 42px;
+    height: 46px;
+    min-height: 46px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1px;
+    padding: 3px 4px;
+  }
+
+  .app-header--compact .view-mode-switch button span,
+  .app-header--compact .team-action span {
+    display: block;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .app-header--compact .icon-action {
+    width: 38px;
+    min-width: 38px;
+    height: 46px;
+    min-height: 46px;
+  }
+
+  .calculator-layout--compact .spirit-card {
+    min-height: 82px;
+    align-items: center;
+    gap: 4px 7px;
+    padding: 7px;
+    grid-template-areas:
+      "avatar identity"
+      "favorite identity";
+    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-rows: 48px minmax(24px, auto);
+  }
+
+  .calculator-layout--compact .spirit-picker--attack,
+  .calculator-layout--compact .spirit-picker--defense {
+    align-self: start;
+  }
+
+  .calculator-layout--compact .spirit-card__image {
+    align-self: center;
+    width: 42px;
+    height: 46px;
+    grid-area: avatar;
+  }
+
+  .calculator-layout--compact .spirit-card__identity {
+    align-self: center;
+    min-width: 0;
+    padding-right: 0;
+    grid-area: identity;
+  }
+
+  .calculator-layout--compact .spirit-card__title {
+    align-items: flex-start;
+    padding-right: 0;
+  }
+
+  .calculator-layout--compact .spirit-card__title > strong {
+    display: -webkit-box;
+    overflow: hidden;
+    line-height: 1.15;
+    text-overflow: clip;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .calculator-layout--compact .spirit-card__title .entity-change-hint {
+    width: 16px;
+    height: 18px;
+    flex-basis: 16px;
+  }
+
+  .calculator-layout--compact .spirit-card__identity p {
+    padding-right: 0;
+    white-space: normal;
+  }
+
+  .calculator-layout--compact .spirit-card__tags {
+    flex-wrap: wrap;
+  }
+
+  .calculator-layout--compact .spirit-card__tags > span:last-child {
+    white-space: nowrap;
+  }
+
+  .calculator-layout--compact .favorite-action {
+    position: static;
+    width: 24px;
+    height: 24px;
+    align-self: center;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgb(27 31 54 / 12%);
+    grid-area: favorite;
+    justify-self: center;
+  }
+}
+
+/* 窄屏技能分行与输入标签：第一行看技能结果，第二行调整威力和连击。 */
+@media (max-width: 420px) {
+  .calculator-step--skills,
+  .four-skill-editor,
+  .four-skill-side-switch,
+  .four-skill-side {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .skill-slot-list {
+    padding: 5px;
+  }
+
+  .skill-slot-group {
+    padding-inline: 3px;
+    margin-inline: 0;
+  }
+
+  .skill-slot--head {
+    display: none;
+  }
+
+  .skill-slot:not(.skill-slot--head) {
+    min-height: 86px;
+    align-items: center;
+    gap: 5px 3px;
+    grid-template-columns: 14px 34px minmax(70px, 1fr) 56px 70px;
+    grid-template-rows: 40px 36px;
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-slot__number {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-picker,
+  .skill-slot:not(.skill-slot--head) > .skill-slot__trait-skill {
+    min-width: 0;
+    height: 40px;
+    grid-column: 2 / 5;
+    grid-row: 1;
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-slot__kind {
+    display: none;
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-slot__cost,
+  .skill-slot--trait > :nth-child(4) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-slot__cost::before,
+  .skill-slot--trait > :nth-child(4)::before {
+    color: var(--text-faint);
+    content: "耗";
+    font-size: 9px;
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-slot__power-input,
+  .skill-slot:not(.skill-slot--head) > .skill-slot__trait-power {
+    display: grid;
+    min-width: 0;
+    align-items: center;
+    gap: 3px;
+    grid-column: 3 / 5;
+    grid-row: 2;
+    grid-template-columns: auto minmax(48px, 1fr);
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-slot__power-input::before,
+  .skill-slot:not(.skill-slot--head) > .skill-slot__trait-power::before {
+    color: var(--text-faint);
+    content: "威力";
+    font-size: 9px;
+    font-weight: 500;
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-slot__hits {
+    display: grid;
+    min-width: 0;
+    align-items: center;
+    gap: 3px;
+    grid-column: 5;
+    grid-row: 2;
+    grid-template-columns: auto 32px;
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-slot__hits::before {
+    color: var(--text-faint);
+    content: "连击";
+    font-size: 9px;
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-slot__power-input input,
+  .skill-slot:not(.skill-slot--head) > .skill-slot__hits input,
+  .skill-slot:not(.skill-slot--head) > .skill-slot__power-input .power-draft__control {
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+  }
+
+  .skill-slot:not(.skill-slot--head) > .skill-slot__damage {
+    width: 70px;
+    min-width: 0;
+    grid-column: 5;
+    grid-row: 1;
+  }
+
+  .skill-slot__context {
+    padding-left: 18px;
+  }
+
+  html[data-theme="dark"] .four-skill-side--attacker .skill-slot-group {
+    background: transparent;
+  }
+
+  html[data-theme="dark"] .four-skill-side--attacker .skill-slot-group:hover:not(.is-selected) {
+    background: color-mix(in srgb, white 4%, transparent);
+  }
+
+  html[data-theme="dark"] .four-skill-side--attacker .skill-slot-group.is-selected {
+    background: color-mix(in srgb, var(--attack) 8%, #171b2b);
+    box-shadow:
+      inset 3px 0 0 var(--attack),
+      inset 0 0 0 1px var(--attack);
+  }
+}

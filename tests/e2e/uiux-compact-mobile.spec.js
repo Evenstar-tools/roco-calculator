@@ -11,6 +11,251 @@ test.beforeEach(async ({ page }) => {
   await resetUiuxStorage(page);
 });
 
+test("keeps narrow header labels and long spirit identity controls readable at 320px", async ({ page }) => {
+  await page.setViewportSize({ height: 720, width: 320 });
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "卡瓦重（火山附近的样子）");
+  await selectSpirit(page, "防御方", "水灵");
+
+  await expect(page.locator(".view-mode-switch button span").first()).toBeVisible();
+  await expect(page.locator(".team-action span")).toBeVisible();
+  const pickerTopDelta = await page.locator(".versus-grid").evaluate((grid) => {
+    const attack = grid.querySelector(".spirit-picker--attack .spirit-picker__eyebrow").getBoundingClientRect();
+    const defense = grid.querySelector(".spirit-picker--defense .spirit-picker__eyebrow").getBoundingClientRect();
+    return Math.abs(attack.top - defense.top);
+  });
+  expect(pickerTopDelta).toBeLessThanOrEqual(1);
+
+  const attacker = page.locator(".spirit-picker--attack");
+  const layout = await attacker.locator(".spirit-card").evaluate((card) => {
+    const box = (selector) => {
+      const rect = card.querySelector(selector).getBoundingClientRect();
+      return { bottom: rect.bottom, left: rect.left, right: rect.right, top: rect.top };
+    };
+    const overlaps = (left, right) =>
+      left.left < right.right && left.right > right.left &&
+      left.top < right.bottom && left.bottom > right.top;
+    const name = card.querySelector(".spirit-card__title strong");
+    const nameStyle = getComputedStyle(name);
+    const favorite = box(".favorite-action");
+    const identity = box(".spirit-card__identity");
+    const image = box(".spirit-card__image");
+    const stage = card.querySelector(".spirit-card__tags > span:last-child");
+    const stageStyle = getComputedStyle(stage);
+    const trait = box(".spirit-card__identity p");
+    const cardBox = card.getBoundingClientRect();
+    return {
+      identityFitsCard: identity.top >= cardBox.top && identity.bottom <= cardBox.bottom,
+      favoriteBelowImage: favorite.top >= image.bottom - 1,
+      favoriteOverlapsIdentity: overlaps(favorite, identity),
+      favoriteOverlapsImage: overlaps(favorite, image),
+      favoriteOverlapsTrait: overlaps(favorite, trait),
+      name: name.textContent.trim(),
+      nameHeight: name.getBoundingClientRect().height,
+      nameLineHeight: Number.parseFloat(nameStyle.lineHeight),
+      stageHeight: stage.getBoundingClientRect().height,
+      stageWhiteSpace: stageStyle.whiteSpace,
+    };
+  });
+  expect(layout).toMatchObject({
+    favoriteBelowImage: true,
+    favoriteOverlapsIdentity: false,
+    favoriteOverlapsImage: false,
+    favoriteOverlapsTrait: false,
+    identityFitsCard: true,
+    name: "卡瓦重（火山附近的样子）",
+    stageWhiteSpace: "nowrap",
+  });
+  expect(layout.nameHeight).toBeGreaterThan(layout.nameLineHeight + 1);
+  expect(layout.nameHeight).toBeLessThanOrEqual(layout.nameLineHeight * 2 + 2);
+  expect(layout.stageHeight).toBeLessThanOrEqual(16);
+
+  const favorite = attacker.getByRole("button", { name: /收藏卡瓦重（火山附近的样子）$/ });
+  await favorite.click();
+  await expect(attacker.getByRole("button", { name: "取消收藏卡瓦重（火山附近的样子）" })).toBeVisible();
+
+  await selectSpirit(page, "攻击方", "迷嶂布莱克");
+  await attacker.getByRole("button", { name: "查看迷嶂布莱克本期改动" }).click();
+  await expect(page.getByRole("tooltip", { name: "迷嶂布莱克本期改动" })).toBeVisible();
+  await page.getByRole("button", { name: "关闭改动详情" }).last().click();
+  await expect(page.getByRole("tooltip", { name: "迷嶂布莱克本期改动" })).toHaveCount(0);
+
+  await selectSpirit(page, "攻击方", "银月狼王");
+  const longTraitLayout = await attacker.locator(".spirit-card").evaluate((card) => {
+    const cardBox = card.getBoundingClientRect();
+    const trait = card.querySelector(".spirit-card__identity p");
+    const traitBox = trait.getBoundingClientRect();
+    return {
+      fitsCard: traitBox.right <= cardBox.right && traitBox.bottom <= cardBox.bottom,
+      fullyRendered: trait.scrollWidth <= trait.clientWidth && trait.scrollHeight <= trait.clientHeight,
+      whiteSpace: getComputedStyle(trait).whiteSpace,
+    };
+  });
+  expect(longTraitLayout).toEqual({ fitsCard: true, fullyRendered: true, whiteSpace: "normal" });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+for (const width of [320, 390]) {
+  test(`keeps detailed four-skill controls editable and within ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ height: 844, width });
+    await page.goto("/");
+    await selectDefaultSpirits(page);
+    await page.getByRole("button", { name: "具体版" }).click();
+    await page.getByRole("tab", { name: "四技能" }).click();
+
+    await expect(page.locator(".skill-slot--head").first()).toBeHidden();
+    const row = page.getByRole("group", { name: "攻击方技能1，当前选中" });
+    const energy = row.locator(".skill-slot__cost");
+    const power = row.getByRole("spinbutton", { name: "攻击方技能1静态威力" });
+    const hits = row.getByRole("spinbutton", { name: "攻击方技能1连击次数" });
+    const damage = row.locator(".skill-slot__damage");
+    await expect(energy).toHaveText(/^\d+$/);
+    await expect(energy.locator("input, select, textarea, button")).toHaveCount(0);
+    await expect(power).toBeEditable();
+    await expect(hits).toBeEditable();
+
+    const labels = await row.evaluate((node) => ({
+      cost: getComputedStyle(node.querySelector(".skill-slot__cost"), "::before").content,
+      hits: getComputedStyle(node.querySelector(".skill-slot__hits"), "::before").content,
+      power: getComputedStyle(node.querySelector(".skill-slot__power-input"), "::before").content,
+    }));
+    expect(labels).toEqual({ cost: '"耗"', hits: '"连击"', power: '"威力"' });
+
+    const initialDamage = await damage.getAttribute("aria-label");
+    const initialPower = Number(await power.inputValue());
+    await power.fill(String(initialPower + 20));
+    await power.press("Enter");
+    await expect.poll(() => damage.getAttribute("aria-label")).not.toBe(initialDamage);
+    const powerDamage = await damage.getAttribute("aria-label");
+    const initialHits = Number(await hits.inputValue());
+    await hits.fill(String(initialHits + 1));
+    await hits.press("Enter");
+    await expect.poll(() => damage.getAttribute("aria-label")).not.toBe(powerDamage);
+
+    const geometry = await row.evaluate((node) => {
+      const box = (selector) => {
+        const rect = node.querySelector(selector).getBoundingClientRect();
+        return { bottom: rect.bottom, left: rect.left, right: rect.right, top: rect.top };
+      };
+      const overlaps = (left, right) =>
+        left.left < right.right && left.right > right.left &&
+        left.top < right.bottom && left.bottom > right.top;
+      const picker = box(".skill-picker");
+      const result = box(".skill-slot__damage");
+      const powerField = box(".skill-slot__power-input");
+      const hitsField = box(".skill-slot__hits");
+      return {
+        pickerOverlapsResult: overlaps(picker, result),
+        powerOverlapsHits: overlaps(powerField, hitsField),
+      };
+    });
+    expect(geometry).toEqual({ pickerOverlapsResult: false, powerOverlapsHits: false });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+    await page.getByRole("button", { name: "切换主题" }).click();
+    const hovered = page.getByRole("group", { name: "攻击方技能3" });
+    await hovered.hover();
+    const darkStates = await page.evaluate(() => ({
+      hovered: getComputedStyle(document.querySelectorAll(".four-skill-side--attacker .skill-slot-group")[2]).backgroundColor,
+      selected: getComputedStyle(document.querySelector(".four-skill-side--attacker .skill-slot-group.is-selected")).backgroundColor,
+      selectedShadow: getComputedStyle(document.querySelector(".four-skill-side--attacker .skill-slot-group.is-selected")).boxShadow,
+    }));
+    expect(darkStates.hovered).not.toBe(darkStates.selected);
+    expect(darkStates.selectedShadow).not.toBe("none");
+  });
+}
+
+test("keeps narrow manual-power restore and trait-damage controls separated", async ({ page }) => {
+  await page.setViewportSize({ height: 844, width: 320 });
+  await page.goto("/");
+  await selectDefaultSpirits(page);
+  await page.getByRole("button", { name: "具体版" }).click();
+  await page.getByRole("tab", { name: "四技能" }).click();
+
+  const firstRow = page.getByRole("group", { name: "攻击方技能1，当前选中" });
+  const power = firstRow.getByRole("spinbutton", { name: "攻击方技能1静态威力" });
+  const originalPower = await power.inputValue();
+  for (const value of ["100", "125", "9999"]) {
+    await power.fill(value);
+    await power.press("Enter");
+    await expect(power).toHaveValue(value);
+    const textFits = await power.evaluate((input) => {
+      const style = getComputedStyle(input);
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      context.font = style.font;
+      const textWidth = context.measureText(input.value).width;
+      const horizontalPadding = Number.parseFloat(style.paddingLeft) + Number.parseFloat(style.paddingRight);
+      return textWidth + horizontalPadding + 4 <= input.clientWidth;
+    });
+    expect(textFits).toBe(true);
+  }
+  const restore = firstRow.getByRole("button", { name: "恢复自动威力" });
+  await expect(restore).toBeVisible();
+  const manualLayout = await firstRow.evaluate((row) => {
+    const powerField = row.querySelector(".skill-slot__power-input").getBoundingClientRect();
+    const hitsField = row.querySelector(".skill-slot__hits").getBoundingClientRect();
+    const control = row.querySelector(".power-draft__control");
+    const input = row.querySelector(".skill-slot__power-input input").getBoundingClientRect();
+    const reset = row.querySelector(".power-draft__reset").getBoundingClientRect();
+    return {
+      controlFits: control.scrollWidth <= control.clientWidth,
+      inputSeparatedFromReset: input.right <= reset.left + 1,
+      powerRight: powerField.right,
+      resetRight: reset.right,
+      separatedFromHits: powerField.right <= hitsField.left,
+    };
+  });
+  expect(manualLayout.controlFits).toBe(true);
+  expect(manualLayout.inputSeparatedFromReset).toBe(true);
+  expect(manualLayout.separatedFromHits).toBe(true);
+  expect(manualLayout.resetRight).toBeLessThanOrEqual(manualLayout.powerRight + 1);
+  await restore.click();
+  await expect(power).toHaveValue(originalPower);
+
+  await page.reload();
+  const attackerPicker = page.getByRole("combobox", { name: "攻击方精灵" });
+  await attackerPicker.fill("石冠王蜥");
+  await page.getByRole("option", { name: /^石冠王蜥\s/ }).click();
+  await selectSpirit(page, "防御方", "水灵");
+  await page.getByRole("button", { name: "具体版" }).click();
+  await page.getByRole("tab", { name: "四技能" }).click();
+  const trait = page.getByRole("group", { name: "攻击方特性伤害刺肤" });
+  await expect(trait).toBeVisible();
+  const traitLayout = await trait.evaluate((row) => {
+    const damage = row.querySelector(".skill-slot__damage");
+    const slot = row.querySelector(".skill-slot");
+    const slotBox = slot.getBoundingClientRect();
+    const children = Array.from(slot.children).map((child) => child.getBoundingClientRect());
+    return {
+      costLabel: getComputedStyle(row.querySelector(".skill-slot > :nth-child(4)"), "::before").content,
+      damageClipped: damage.scrollWidth > damage.clientWidth,
+      maxChildRight: Math.max(...children.map(({ right }) => right)) - slotBox.right,
+      pageFits: document.documentElement.scrollWidth <= innerWidth,
+      powerLabel: getComputedStyle(row.querySelector(".skill-slot__trait-power"), "::before").content,
+      rowFits: slot.scrollWidth <= slot.clientWidth,
+      slotClientWidth: slot.clientWidth,
+      slotScrollWidth: slot.scrollWidth,
+    };
+  });
+  expect(traitLayout).toEqual({
+    costLabel: '"耗"',
+    damageClipped: false,
+    maxChildRight: expect.any(Number),
+    pageFits: true,
+    powerLabel: '"威力"',
+    rowFits: expect.any(Boolean),
+    slotClientWidth: expect.any(Number),
+    slotScrollWidth: expect.any(Number),
+  });
+  expect(traitLayout.rowFits, JSON.stringify(traitLayout)).toBe(true);
+  expect(traitLayout.maxChildRight).toBeLessThanOrEqual(1);
+  const traitHits = trait.getByRole("spinbutton", { name: "攻击方刺肤连击次数" });
+  await expect(traitHits).toBeEditable();
+  await traitHits.fill("3");
+  await expect(traitHits).toHaveValue("3");
+});
+
 test("keeps the compact swap action centered between both spirit inputs at 320px", async ({ page }) => {
   await page.setViewportSize({ height: 568, width: 320 });
   await page.goto("/");
@@ -75,11 +320,17 @@ test("keeps the compact workflow usable at 390px", async ({ page }) => {
   const headerMenuBox = await page
     .getByRole("button", { name: "打开菜单" })
     .boundingBox();
-  expect(teamBox.width).toBe(themeBox.width);
   expect(teamBox.height).toBe(themeBox.height);
   expect(teamBox.y).toBe(themeBox.y);
-  expect(teamBox.height).toBe(44);
-  expect(headerMenuBox.height).toBe(44);
+  expect(teamBox.width).toBe(42);
+  expect(themeBox.width).toBe(38);
+  expect(teamBox.height).toBe(46);
+  expect(headerMenuBox.height).toBe(46);
+  expect(headerMenuBox.y).toBe(teamBox.y);
+  await expect(page.locator(".team-action span")).toBeVisible();
+  expect(await page.locator(".app-header--compact").evaluate(
+    (node) => node.scrollWidth <= node.clientWidth,
+  )).toBe(true);
   await expect(
     page.getByRole("combobox", { name: "攻击方精灵" }),
   ).toHaveValue("");
@@ -172,8 +423,8 @@ test("keeps the compact workflow usable at 390px", async ({ page }) => {
 
   const teamButton = page.getByRole("button", { name: "打开队伍" });
   const teamButtonBox = await teamButton.boundingBox();
-  expect(teamButtonBox.height).toBe(44);
-  expect(teamButtonBox.width).toBe(44);
+  expect(teamButtonBox.height).toBe(46);
+  expect(teamButtonBox.width).toBe(42);
 
   await teamButton.click();
   const drawer = page.getByRole("dialog", { name: "队伍" });
