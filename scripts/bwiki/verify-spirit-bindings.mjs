@@ -104,30 +104,24 @@ export async function verifySpiritBindings() {
     }
   }
 
-  const miniImportByVariable = new Map(
+  const miniRemoteIds = new Set(
     [...miniOverrideSource.matchAll(
-      /^import\s+(portrait\d{2})\s+from\s+"\.\.\/assets\/spirits\/(spirit_[a-f0-9]+\.png)";$/gmu,
-    )].map((match) => [match[1], match[2]]),
+      /^\s+(spirit_[a-f0-9]+):\s+publicSpiritImageUrl\("(spirit_[a-f0-9]+)"\),$/gmu,
+    )].map((match) => {
+      if (match[1] !== match[2]) {
+        errors.push(`小程序 S4 前瞻头像映射错配：${match[1]}`);
+      }
+      return match[1];
+    }),
   );
-  const miniVariableById = new Map(
-    [...miniOverrideSource.matchAll(
-      /^\s+(spirit_[a-f0-9]+):\s+(portrait\d{2}),$/gmu,
-    )].map((match) => [match[1], match[2]]),
-  );
-  if (
-    miniImportByVariable.size !== S4_PREVIEW_FORM_COUNT ||
-    miniVariableById.size !== S4_PREVIEW_FORM_COUNT
-  ) {
+  if (miniRemoteIds.size !== S4_PREVIEW_FORM_COUNT) {
     errors.push(
-      `小程序 S4 前瞻头像导入与映射必须各为 ${S4_PREVIEW_FORM_COUNT} 个唯一项`,
+      `小程序 S4 前瞻远程头像映射必须为 ${S4_PREVIEW_FORM_COUNT} 个唯一项`,
     );
   }
-  for (const [id, variable] of miniVariableById) {
+  for (const id of miniRemoteIds) {
     if (!s4PreviewIds.has(id)) {
       errors.push(`小程序存在候选集合外的 S4 前瞻头像映射：${id}`);
-    }
-    if (miniImportByVariable.get(variable) !== `${id}.png`) {
-      errors.push(`小程序 S4 前瞻头像映射错配：${id}`);
     }
   }
 
@@ -228,11 +222,7 @@ export async function verifySpiritBindings() {
       ) {
         errors.push(`${asset.name} S4 前瞻头像尺寸或字节数与清单不一致`);
       }
-      const mappedVariable = miniVariableById.get(asset.id);
-      if (
-        !mappedVariable ||
-        miniImportByVariable.get(mappedVariable) !== path.basename(asset.localFile)
-      ) {
+      if (!miniRemoteIds.has(asset.id)) {
         errors.push(`${asset.name} 小程序前瞻头像未正确注册覆盖映射`);
       }
     }

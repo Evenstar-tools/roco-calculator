@@ -67,15 +67,11 @@ function sourceName(fileName) {
 }
 
 function renderMiniappOverrides(entries) {
-  const imports = entries.map(
-    ({ id }, index) =>
-      `import portrait${String(index + 1).padStart(2, "0")} from "../assets/spirits/${id}.png";`,
-  );
   const mappings = entries.map(
-    ({ id }, index) =>
-      `  ${id}: portrait${String(index + 1).padStart(2, "0")},`,
+    ({ id }) =>
+      `  ${id}: publicSpiritImageUrl("${id}"),`,
   );
-  return `${imports.join("\n")}\n\nexport const S4_PREVIEW_PET_IMAGE_OVERRIDES = Object.freeze({\n${mappings.join("\n")}\n});\n`;
+  return `import { publicSpiritImageUrl } from "./public-asset-urls.js";\n\nexport const S4_PREVIEW_PET_IMAGE_OVERRIDES = Object.freeze({\n${mappings.join("\n")}\n});\n`;
 }
 
 export async function importS4PreviewPortraits({

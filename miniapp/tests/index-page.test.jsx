@@ -20,6 +20,7 @@ import IndexPage, {
 import { encodeSharePayload } from "../src/share/payload.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
 import { createRuntimeConfig } from "../src/config/runtime.js";
+import { publicSpiritImageUrl } from "../src/data/public-asset-urls.js";
 
 function createSnapshot() {
   return {
@@ -299,11 +300,11 @@ describe("IndexPage", () => {
 
     await expect(services.dataService.load()).resolves.toEqual({
       petImages: {
-        spirit_db5a2cb398dc0385: expect.stringMatching(
-          /spirit_db5a2cb398dc0385\.webp$/u,
+        spirit_db5a2cb398dc0385: publicSpiritImageUrl(
+          "spirit_db5a2cb398dc0385",
         ),
-        spirit_f60e2755ae42cf41: expect.stringMatching(
-          /spirit_f60e2755ae42cf41\.webp$/u,
+        spirit_f60e2755ae42cf41: publicSpiritImageUrl(
+          "spirit_f60e2755ae42cf41",
         ),
       },
       snapshot,
@@ -353,7 +354,7 @@ describe("IndexPage", () => {
     expect(taro.cloud.init).not.toHaveBeenCalled();
   });
 
-  test("海枝枝四种配色使用按精灵 ID 固定的本地头像", async () => {
+  test("海枝枝四种配色使用按精灵 ID 固定的公共站点头像", async () => {
     const snapshot = createSnapshot();
     snapshot.spirits = [
       ["spirit_9d8badfc01f62f16", "海枝枝（碧蓝珊瑚）"],
@@ -372,17 +373,17 @@ describe("IndexPage", () => {
 
     await expect(services.dataService.load()).resolves.toMatchObject({
       petImages: {
-        spirit_9d8badfc01f62f16: expect.stringMatching(
-          /spirit_9d8badfc01f62f16\.png$/u,
+        spirit_9d8badfc01f62f16: publicSpiritImageUrl(
+          "spirit_9d8badfc01f62f16",
         ),
-        spirit_e6f44a2b7c94c74f: expect.stringMatching(
-          /spirit_e6f44a2b7c94c74f\.png$/u,
+        spirit_e6f44a2b7c94c74f: publicSpiritImageUrl(
+          "spirit_e6f44a2b7c94c74f",
         ),
-        spirit_1ae8bf8691ced64f: expect.stringMatching(
-          /spirit_1ae8bf8691ced64f\.png$/u,
+        spirit_1ae8bf8691ced64f: publicSpiritImageUrl(
+          "spirit_1ae8bf8691ced64f",
         ),
-        spirit_dcad4af678b05dcc: expect.stringMatching(
-          /spirit_dcad4af678b05dcc\.png$/u,
+        spirit_dcad4af678b05dcc: publicSpiritImageUrl(
+          "spirit_dcad4af678b05dcc",
         ),
       },
     });
