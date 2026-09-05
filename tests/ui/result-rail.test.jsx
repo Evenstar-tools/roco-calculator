@@ -248,7 +248,10 @@ test("keeps a status-only result readable when negative settlement is enabled", 
   expect(within(settlement).queryByText(/合计/)).not.toBeInTheDocument();
   const results = screen.getByRole("region", { name: "技能结果" });
   const row = within(results).getByText("打喷嚏").closest(".skill-result-row");
-  expect(within(row).getByText("—")).toBeVisible();
+  expect(within(row).getByLabelText("打喷嚏实际伤害"))
+    .toHaveTextContent("—");
+  expect(within(row).getByLabelText("打喷嚏生命百分比"))
+    .toHaveTextContent("—");
   expect(within(row).queryByText("0.0%")).not.toBeInTheDocument();
 });
 
@@ -523,7 +526,117 @@ test("keeps the four-skill comparison visible in four-skill mode", () => {
     .toHaveAttribute("data-tone", "warning");
   expect(within(skillResults).getByText("125.6%").closest(".skill-result-row"))
     .toHaveAttribute("data-tone", "danger");
-  expect(within(skillResults).queryByText("545")).not.toBeInTheDocument();
+  expect(within(skillResults).getByLabelText("追打实际伤害"))
+    .toHaveTextContent("545");
+});
+
+test("shows actual damage and HP columns without inventing unavailable values", () => {
+  render(
+    <ResultRail
+      result={{
+        ...result,
+        mode: "four",
+        skillResults: [
+          { id: "exact", name: "精准打击", damage: 1234, hpPercent: 87.6 },
+          { id: "pending", name: "参数待补", damage: null, hpPercent: null },
+          {
+            id: "status",
+            name: "状态技能",
+            damage: 0,
+            hpPercent: 0,
+            statusOnly: true,
+            negativeStatusSettlement: {
+              actualStatusDamage: 40,
+              maxHp: 400,
+            },
+          },
+        ],
+        traitResult: {
+          damage: 54,
+          hpPercent: 12.5,
+          name: "刺肤",
+        },
+      }}
+    />,
+  );
+
+  const list = screen.getByRole("region", { name: "技能结果" });
+  expect(within(list).getByText("伤害")).toBeVisible();
+  expect(within(list).getByText("HP")).toBeVisible();
+  expect(within(list).getByLabelText("精准打击实际伤害")).toHaveTextContent("1234");
+  expect(within(list).getByLabelText("精准打击生命百分比")).toHaveTextContent("87.6%");
+  expect(within(list).getByLabelText("参数待补实际伤害")).toHaveTextContent("—");
+  expect(within(list).getByLabelText("参数待补生命百分比")).toHaveTextContent("—");
+  expect(within(list).getByLabelText("状态技能实际伤害")).toHaveTextContent("40");
+  expect(within(list).getByLabelText("状态技能生命百分比")).toHaveTextContent("10.0%");
+  expect(within(list).getByLabelText("刺肤实际伤害")).toHaveTextContent("54");
+  expect(within(list).getByLabelText("刺肤生命百分比")).toHaveTextContent("12.5%");
+});
+
+test("only offers the calculation-process entry for a current result with formula steps", () => {
+  const onFormulaAuditOpen = vi.fn();
+  const { rerender } = render(
+    <ResultRail
+      onFormulaAuditOpen={onFormulaAuditOpen}
+      result={{ ...result, mode: "four" }}
+    />,
+  );
+
+  expect(screen.getByRole("button", { name: "查看当前技能计算过程" }))
+    .toBeVisible();
+
+  rerender(
+    <ResultRail
+      onFormulaAuditOpen={onFormulaAuditOpen}
+      result={{
+        ...result,
+        mode: "four",
+        selectedResult: {
+          ...result.selectedResult,
+          statusOnly: true,
+          totalDamage: 0,
+        },
+      }}
+    />,
+  );
+  expect(screen.queryByRole("button", { name: "查看当前技能计算过程" }))
+    .not.toBeInTheDocument();
+
+  rerender(
+    <ResultRail
+      onFormulaAuditOpen={onFormulaAuditOpen}
+      result={{
+        ...result,
+        mode: "four",
+        selectedResult: {
+          formulaSteps: [],
+          hpPercent: null,
+          status: "needs_input",
+          totalDamage: null,
+        },
+      }}
+    />,
+  );
+  expect(screen.queryByRole("button", { name: "查看当前技能计算过程" }))
+    .not.toBeInTheDocument();
+
+  for (const sourceKind of ["trait", "bloodline"]) {
+    rerender(
+      <ResultRail
+        onFormulaAuditOpen={onFormulaAuditOpen}
+        result={{
+          ...result,
+          mode: "four",
+          selectedResult: {
+            ...result.selectedResult,
+            sourceKind,
+          },
+        }}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "查看当前技能计算过程" }))
+      .toBeVisible();
+  }
 });
 
 test("shows direct trait damage as a separate selected result above skills", () => {

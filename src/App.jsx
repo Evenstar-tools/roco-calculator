@@ -98,6 +98,8 @@ function CalculatorWorkspace({ snapshot }) {
   }, [snapshot]);
   const [toast, setToast] = useState("");
   const [activeDirection, setActiveDirection] = useState("forward");
+  const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(false);
+  const [formulaAuditRequest, setFormulaAuditRequest] = useState(0);
   const [viewMode, setViewMode] = useState("compact");
   const storedData = useStoredCalculatorData(snapshot, { onToast: setToast });
   const {
@@ -1974,6 +1976,7 @@ function CalculatorWorkspace({ snapshot }) {
                 singleSkillContent={singleEditor}
               />
               <AdvancedOptions
+                locateFormulaAuditRequest={formulaAuditRequest}
                 bloodlineMagicId={
                   currentDirection.context?.bloodlineMagicId ?? "none"
                 }
@@ -2017,6 +2020,7 @@ function CalculatorWorkspace({ snapshot }) {
                     value,
                   })
                 }
+                onOpenChange={setAdvancedOptionsOpen}
                 onRainTurnsChange={updateWeatherRainTurns}
                 onWeatherChange={updateWeather}
                 onReductionChange={(percent) =>
@@ -2038,6 +2042,7 @@ function CalculatorWorkspace({ snapshot }) {
                   (1 - reductionDirection.reduction) * 100,
                 )}
                 result={resultModel.selectedResult}
+                open={advancedOptionsOpen}
               />
             </>
           ) : null}
@@ -2055,6 +2060,14 @@ function CalculatorWorkspace({ snapshot }) {
               }
               onDirectionToggle={() =>
                 setActiveDirection(toggleDirection)
+              }
+              onFormulaAuditOpen={
+                viewMode === "detailed" && state.mode === "four"
+                  ? () => {
+                      setAdvancedOptionsOpen(true);
+                      setFormulaAuditRequest((request) => request + 1);
+                    }
+                  : undefined
               }
               onSkillResultSelect={selectSkillResult}
               result={resultModel}

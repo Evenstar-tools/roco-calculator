@@ -991,3 +991,230 @@
       inset 0 0 0 1px var(--attack);
   }
 }
+
+/* 详细模式桌面首屏：压实配置区并扩大宽屏工作区，保留完整字段与原字号。 */
+@media (min-width: 1081px) {
+  .calculator-layout.calculator-layout--detailed {
+    width: min(100%, 1760px);
+    max-width: 1760px;
+    gap: 12px;
+    padding: 10px 16px 24px;
+    grid-template-columns: minmax(0, 1fr) clamp(320px, 19vw, 360px);
+  }
+
+  .calculator-layout--detailed .calculator-step {
+    margin-bottom: 8px;
+  }
+
+  .calculator-layout--detailed .versus-grid {
+    padding: 8px 12px 10px;
+  }
+
+  .calculator-layout--detailed .spirit-picker__eyebrow {
+    min-height: 23px;
+  }
+
+  .calculator-layout--detailed .spirit-picker__search {
+    height: 34px;
+  }
+
+  .calculator-layout--detailed .spirit-card {
+    min-height: 68px;
+    gap: 10px;
+    margin-top: 5px;
+    padding: 5px 38px 5px 8px;
+    grid-template-columns: 62px minmax(0, 1fr);
+  }
+
+  .calculator-layout--detailed .spirit-card__image {
+    width: 62px;
+    height: 56px;
+  }
+
+  .calculator-layout--detailed .favorite-action {
+    top: 8px;
+    right: 8px;
+  }
+
+  .calculator-layout--detailed .nature-grid {
+    padding: 9px 11px;
+  }
+
+  .calculator-layout--detailed .nature-side:first-child {
+    padding-right: 11px;
+  }
+
+  .calculator-layout--detailed .nature-side:last-child {
+    padding-left: 11px;
+  }
+
+  .calculator-layout--detailed .nature-select select {
+    height: 34px;
+  }
+
+  .calculator-layout--detailed .nature-select > svg {
+    top: 10px;
+  }
+
+  .calculator-layout--detailed .nature-effect {
+    min-height: 28px;
+    padding: 3px 8px;
+  }
+
+  .calculator-layout--detailed .stat-grid {
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  .calculator-layout--detailed .stat-tile {
+    min-height: 54px;
+    gap: 6px;
+    padding: 5px 6px 5px 8px;
+  }
+
+  .calculator-layout--detailed .stat-tile__iv-input {
+    height: 28px;
+  }
+
+  .calculator-layout--detailed .level-control {
+    min-height: 34px;
+    margin-top: 5px;
+    padding-block: 2px;
+  }
+
+  .calculator-layout--detailed .level-control button {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* 桌面技能对照：减轻嵌套边框，保留攻防颜色与明确选中态。 */
+  .calculator-layout--detailed .four-skill-side {
+    border-color: color-mix(in srgb, var(--border) 68%, transparent);
+    background: transparent;
+  }
+
+  .calculator-layout--detailed .four-skill-side > header {
+    background: transparent;
+  }
+
+  .calculator-layout--detailed .skill-slot-group {
+    border-radius: 4px;
+  }
+
+  .calculator-layout--detailed .skill-slot-group + .skill-slot-group {
+    border-color: color-mix(in srgb, var(--border) 62%, transparent);
+  }
+
+  .calculator-layout--detailed .four-skill-side--attacker .skill-slot-group.is-selected {
+    background: color-mix(in srgb, var(--attack) 7%, var(--surface));
+    box-shadow: inset 3px 0 0 var(--attack);
+  }
+
+  html[data-theme="dark"] .calculator-layout--detailed .skill-slot-group:hover:not(.is-selected) {
+    background: color-mix(in srgb, white 4%, transparent);
+  }
+}
+
+/* 中等桌面仍并排呈现攻防技能，1280 保持单行参数。 */
+@media (min-width: 1081px) and (max-width: 1340px) {
+  .calculator-layout--detailed .four-skill-editor {
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .calculator-layout--detailed .skill-slot {
+    gap: 3px;
+    grid-template-columns: 14px minmax(100px, 1fr) 40px 22px 84px 38px 68px;
+  }
+
+  .calculator-layout--detailed .skill-slot-list {
+    padding-inline: 5px;
+  }
+}
+
+/* 更窄桌面将技能参数放到第二行，防止名称、四位威力和恢复按钮互相挤压。 */
+@media (min-width: 1081px) and (max-width: 1202px) {
+  .calculator-layout--detailed .skill-slot--head {
+    display: none;
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) {
+    min-height: 82px;
+    align-items: center;
+    gap: 4px 2px;
+    grid-template-columns: 14px 52px 32px minmax(82px, 1fr) 48px 68px;
+    grid-template-rows: 34px minmax(44px, auto);
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__number {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-picker,
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__trait-skill {
+    min-width: 0;
+    grid-column: 2 / 6;
+    grid-row: 1;
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__kind {
+    display: grid;
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__kind::before {
+    color: var(--text-faint);
+    content: "属性";
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__cost,
+  .calculator-layout--detailed .skill-slot--trait > :nth-child(4) {
+    display: grid;
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__cost::before,
+  .calculator-layout--detailed .skill-slot--trait > :nth-child(4)::before {
+    color: var(--text-faint);
+    content: "耗";
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__power-input,
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__trait-power {
+    display: grid;
+    min-width: 0;
+    grid-column: 4;
+    grid-row: 2;
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__power-input::before,
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__trait-power::before {
+    color: var(--text-faint);
+    content: "威力";
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__hits {
+    display: grid;
+    min-width: 0;
+    grid-column: 5;
+    grid-row: 2;
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__hits::before {
+    color: var(--text-faint);
+    content: "连击";
+  }
+
+  .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__damage {
+    min-width: 0;
+    grid-column: 6;
+    grid-row: 1;
+  }
+
+  .calculator-layout--detailed .skill-slot__context {
+    padding-left: 18px;
+  }
+}

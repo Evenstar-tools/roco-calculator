@@ -1,5 +1,5 @@
 import { CaretDown, SlidersHorizontal } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   MARK_DEFINITIONS,
   markDefinition,
@@ -191,7 +191,7 @@ function Operator({ children }) {
   return <span className="formula-audit__operator">{children}</span>;
 }
 
-export function FormulaAudit({ result }) {
+export function FormulaAudit({ result, targetRef }) {
   if (result?.sourceKind === "bloodline") {
     const healingStep = result.formulaSteps?.find(
       (step) => step.label === "血脉魔法回复",
@@ -211,7 +211,7 @@ export function FormulaAudit({ result }) {
     const requestedHealing = Number(traitStep?.input?.requestedHealing) || 0;
 
     return (
-      <section className="formula-audit">
+      <section className="formula-audit" ref={targetRef} tabIndex="-1">
         <header>
           <strong>伤害计算过程</strong>
           <span>{result.skillName}</span>
@@ -262,7 +262,7 @@ export function FormulaAudit({ result }) {
   const audit = buildFormulaAudit(result);
   if (!audit) {
     return (
-      <section className="formula-audit">
+      <section className="formula-audit" ref={targetRef} tabIndex="-1">
         <header>
           <strong>伤害计算过程</strong>
           <span>{result?.reason ?? "选择技能后显示"}</span>
@@ -277,7 +277,7 @@ export function FormulaAudit({ result }) {
   const total = audit.total;
 
   return (
-    <section className="formula-audit">
+    <section className="formula-audit" ref={targetRef} tabIndex="-1">
       <header>
         <strong>伤害计算过程</strong>
         <span>{audit.skillName}</span>
@@ -555,26 +555,47 @@ export function AdvancedOptions({
   marks,
   negativeStatusEnabled = false,
   negativeStatuses,
+  locateFormulaAuditRequest = 0,
   onBloodlineMagicChange = () => {},
   onFinalMultiplierChange,
   onMarkChange,
   onNegativeStatusChange = () => {},
+  onOpenChange,
   onWeatherChange = () => {},
   onReductionChange,
   rainTurns,
   reductionPercent,
   result,
   weather = rainTurns > 0 ? "rain" : "none",
+  open: controlledOpen,
 }) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const consumedFormulaAuditRequestRef = useRef(locateFormulaAuditRequest);
+  const formulaAuditRef = useRef(null);
+  const open = controlledOpen ?? internalOpen;
   const bloodlineMagic = getBloodlineMagicOption(bloodlineMagicId);
+
+  function setOpen(value) {
+    if (controlledOpen === undefined) setInternalOpen(value);
+    onOpenChange?.(value);
+  }
+
+  useEffect(() => {
+    if (
+      !open ||
+      locateFormulaAuditRequest <= consumedFormulaAuditRequestRef.current
+    ) return;
+    consumedFormulaAuditRequestRef.current = locateFormulaAuditRequest;
+    formulaAuditRef.current?.scrollIntoView?.({ block: "center" });
+    formulaAuditRef.current?.focus();
+  }, [locateFormulaAuditRequest, open]);
 
   return (
     <section className={`advanced-options${open ? " is-open" : ""}`}>
       <button
         aria-expanded={open}
         className="advanced-options__toggle"
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => setOpen(!open)}
         type="button"
       >
         <span>
@@ -703,7 +724,7 @@ export function AdvancedOptions({
               value={finalMultiplier}
             />
           </label>
-          <FormulaAudit result={result} />
+          <FormulaAudit result={result} targetRef={formulaAuditRef} />
         </div>
       ) : null}
     </section>

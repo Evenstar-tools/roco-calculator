@@ -245,6 +245,12 @@ function SkillResultRow({ index, item, onClick }) {
   const displayPercent = item.statusOnly
     ? statusPercent
     : Number.isFinite(statusPercent) ? statusPercent : item.hpPercent;
+  const statusDamageValue = item.negativeStatusSettlement?.actualStatusDamage;
+  const displayDamage = item.statusOnly
+    ? Number.isFinite(statusDamageValue) && statusDamageValue > 0
+      ? statusDamageValue
+      : null
+    : Number.isFinite(item.damage) ? item.damage : null;
   return (
     <Tag
       {...(onClick
@@ -277,7 +283,13 @@ function SkillResultRow({ index, item, onClick }) {
       <span className="skill-result-row__bar" aria-hidden="true">
         <span style={{ width: `${clampPercent(displayPercent)}%` }} />
       </span>
-      <strong>
+      <span
+        aria-label={`${item.name}实际伤害`}
+        className="skill-result-row__damage"
+      >
+        {displayDamage ?? "—"}
+      </span>
+      <strong aria-label={`${item.name}生命百分比`}>
         {Number.isFinite(displayPercent)
           ? `${displayPercent.toFixed(1)}%`
             : "—"}
@@ -291,11 +303,16 @@ export function ResultRail({
   onCurrentHpChange,
   onCurrentHpPercentChange,
   onDirectionToggle,
+  onFormulaAuditOpen,
   onSkillResultSelect,
   result,
   showTypeCoverage = false,
 }) {
   const primary = result.selectedResult;
+  const hasFormulaAudit =
+    primary?.status === "exact" &&
+    primary.statusOnly !== true &&
+    primary.formulaSteps?.length > 0;
   const isExact =
     primary.status === "exact" &&
     Number.isFinite(primary.totalDamage) &&
@@ -439,6 +456,10 @@ export function ResultRail({
       {result.mode === "four" ? (
         <section aria-label="技能结果" className="skill-result-list">
           <h2>技能结果</h2>
+          <div aria-hidden="true" className="skill-result-list__columns">
+            <span>伤害</span>
+            <span>HP</span>
+          </div>
           {result.bloodlineResult ? (
             <SkillResultRow
               index={-1}
@@ -463,6 +484,16 @@ export function ResultRail({
             />
           ))}
         </section>
+      ) : null}
+
+      {result.mode === "four" && hasFormulaAudit && onFormulaAuditOpen ? (
+        <button
+          className="result-rail__process-link"
+          onClick={onFormulaAuditOpen}
+          type="button"
+        >
+          查看当前技能计算过程
+        </button>
       ) : null}
 
       {showTypeCoverage ? (

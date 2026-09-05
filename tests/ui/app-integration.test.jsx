@@ -3368,6 +3368,44 @@ test("四技能模式下点击技能结果行可切换当前技能", async () =>
   expect(rows[0]).not.toHaveClass("is-selected");
 });
 
+test("四技能结果入口会展开并定位当前技能计算过程", async () => {
+  const user = userEvent.setup();
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
+  const scrollIntoView = vi.fn();
+  Element.prototype.scrollIntoView = scrollIntoView;
+  try {
+    render(<App initialSnapshot={snapshot} />);
+    await selectDefaultSpirits(user);
+    await user.click(screen.getByRole("button", { name: "具体版" }));
+
+    const processButton = screen.getByRole("button", {
+      name: "查看当前技能计算过程",
+    });
+    processButton.focus();
+    await user.keyboard("{Enter}");
+
+    expect(screen.getByRole("button", { name: "高级选项" }))
+      .toHaveAttribute("aria-expanded", "true");
+    const formulaAudit = document.querySelector(".formula-audit");
+    expect(formulaAudit).toHaveFocus();
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: "center" });
+
+    const advancedToggle = screen.getByRole("button", { name: "高级选项" });
+    await user.click(advancedToggle);
+    await user.click(advancedToggle);
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole("button", { name: "精简版" }));
+    expect(screen.queryByRole("button", {
+      name: "查看当前技能计算过程",
+    })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "具体版" }));
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
+  } finally {
+    Element.prototype.scrollIntoView = originalScrollIntoView;
+  }
+});
+
 test("切换四技能行到可编辑的显示威力并记住设置", async () => {
   const user = userEvent.setup();
   const first = render(<App initialSnapshot={snapshot} />);

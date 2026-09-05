@@ -429,6 +429,52 @@ html[data-theme="dark"] .result-rail__warning {
 .skill-result-row {
   min-height: 38px;
   font-size: 11px;
+  gap: 5px;
+  grid-template-columns: 15px minmax(58px, 0.8fr) minmax(56px, 1fr) 48px 44px;
+}
+
+.skill-result-list__columns {
+  display: grid;
+  min-height: 22px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-faint);
+  font-size: 10px;
+  font-weight: 700;
+  grid-template-columns: 15px minmax(58px, 0.8fr) minmax(56px, 1fr) 48px 44px;
+}
+
+.skill-result-list__columns span:first-child {
+  grid-column: 4;
+  text-align: right;
+}
+
+.skill-result-list__columns span:last-child {
+  grid-column: 5;
+  text-align: right;
+}
+
+.skill-result-row__damage {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.result-rail__process-link {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  color: var(--accent-strong);
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .type-analysis-panel {
