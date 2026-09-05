@@ -8,8 +8,12 @@ function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
 }
 
-const INITIAL_PREVIEW_COUNT = 12;
+const INITIAL_PREVIEW_COUNT = 14;
 const PREVIEW_PAGE_SIZE = 20;
+const S4_PREVIEW_BOSS_ORDER = new Map([
+  ["烈焰狂战士", 0],
+  ["满月砣", 1],
+]);
 
 function dexNo(spirit) {
   return String(spirit?.dexNo ?? "").trim();
@@ -28,6 +32,15 @@ function shouldShowNewBadge(spirit) {
 
 function isPendingS4PreviewFinalSpirit(spirit) {
   return isS4PreviewFinalSpirit(spirit) && dexNo(spirit) === "";
+}
+
+function getS4PreviewBossOrder(spirit) {
+  if (!spirit?.changeInfo?.isNew || spirit.stage !== "首领") return null;
+  return S4_PREVIEW_BOSS_ORDER.get(spirit?.fullName) ?? null;
+}
+
+function isS4PreviewBossSpirit(spirit) {
+  return getS4PreviewBossOrder(spirit) !== null;
 }
 
 function compareDexOrder(left, right) {
@@ -56,6 +69,12 @@ function compareSavedPreviewOrder(left, right) {
     if (right.fullName === "银月狼王") return 1;
     return 0;
   }
+  const leftBossOrder = getS4PreviewBossOrder(left);
+  const rightBossOrder = getS4PreviewBossOrder(right);
+  if ((leftBossOrder !== null) !== (rightBossOrder !== null)) {
+    return leftBossOrder !== null ? -1 : 1;
+  }
+  if (leftBossOrder !== null) return leftBossOrder - rightBossOrder;
   return compareDexOrder(left, right);
 }
 
@@ -125,9 +144,10 @@ export function SpiritPicker({
       );
       const favoriteCount = favorites.length;
       const previewFinals = direct.filter(isS4PreviewFinalSpirit);
+      const previewBosses = direct.filter(isS4PreviewBossSpirit);
       const orderedRoster = [...direct].sort(compareDefaultPreviewOrder);
       const previewItems = favoriteCount
-        ? uniqueSpirits([...previewFinals, ...favorites])
+        ? uniqueSpirits([...previewFinals, ...previewBosses, ...favorites])
             .sort(compareSavedPreviewOrder)
         : orderedRoster;
       const visibleCount = Math.min(previewItems.length, previewLimit);

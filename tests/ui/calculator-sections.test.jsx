@@ -229,7 +229,7 @@ test("spirit picker falls back to dex order when there are no favorites", async 
   ).toEqual(["前位精灵100", "后位精灵200"]);
 });
 
-test("spirit picker starts with Dimo then the eleven new final forms before any config import", async () => {
+test("spirit picker starts with Dimo, the eleven new final forms, then both S4 bosses before any config import", async () => {
   const user = userEvent.setup();
   const previewNames = [
     "银月狼王",
@@ -253,6 +253,15 @@ test("spirit picker starts with Dimo then the eleven new final forms before any 
     id: `preview-${index + 1}`,
     previewDefaults: { natureId: "cheerful" },
   }));
+  const previewBosses = ["烈焰狂战士", "满月砣"].map((fullName, index) => ({
+    changeInfo: { entityName: fullName, isNew: true, items: [] },
+    dexNo: String(300 + index),
+    evolutionChainIds: [`preview-boss-${index + 1}`],
+    favoriteState: null,
+    fullName,
+    id: `preview-boss-${index + 1}`,
+    stage: "首领",
+  }));
   render(
     <SpiritPicker
       favoriteState={null}
@@ -270,6 +279,7 @@ test("spirit picker starts with Dimo then the eleven new final forms before any 
           id: "ordinary",
         },
         ...previewFinals,
+        ...previewBosses,
         {
           dexNo: "001",
           evolutionChainIds: ["dimo"],
@@ -286,10 +296,10 @@ test("spirit picker starts with Dimo then the eleven new final forms before any 
     screen.getAllByRole("option").map((option) =>
       option.querySelector("strong")?.textContent,
     ),
-  ).toEqual(["迪莫", ...previewNames]);
+  ).toEqual(["迪莫", ...previewNames, "烈焰狂战士", "满月砣"]);
 });
 
-test("spirit picker pins the eleven pending S4 final forms before saved configurations", async () => {
+test("spirit picker pins the eleven pending S4 final forms and both bosses before saved configurations", async () => {
   const user = userEvent.setup();
   const previewNames = [
     "银月狼王",
@@ -312,6 +322,15 @@ test("spirit picker pins the eleven pending S4 final forms before saved configur
     fullName,
     id: `preview-${index + 1}`,
     previewDefaults: { natureId: "cheerful" },
+  }));
+  const previewBosses = ["烈焰狂战士", "满月砣"].map((fullName, index) => ({
+    changeInfo: { entityName: fullName, isNew: true, items: [] },
+    dexNo: String(300 + index),
+    evolutionChainIds: [`preview-boss-${index + 1}`],
+    favoriteState: null,
+    fullName,
+    id: `preview-boss-${index + 1}`,
+    stage: "首领",
   }));
   render(
     <SpiritPicker
@@ -338,6 +357,7 @@ test("spirit picker pins the eleven pending S4 final forms before saved configur
           id: "saved-later",
         },
         ...previewFinals,
+        ...previewBosses,
         {
           dexNo: "100",
           evolutionChainIds: ["saved-earlier"],
@@ -354,7 +374,12 @@ test("spirit picker pins the eleven pending S4 final forms before saved configur
     screen.getAllByRole("option").map((option) =>
       option.querySelector("strong")?.textContent,
     ),
-  ).toEqual([...previewNames, "前位配置"]);
+  ).toEqual([
+    ...previewNames,
+    "烈焰狂战士",
+    "满月砣",
+    "前位配置",
+  ]);
   expect(screen.queryByRole("option", { name: /量风碗/ })).not.toBeInTheDocument();
 });
 
@@ -481,7 +506,7 @@ test("spirit preview loads twenty more favorites per scroll until all are visibl
 
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
   const listbox = screen.getByRole("listbox");
-  expect(screen.getAllByRole("option")).toHaveLength(12);
+  expect(screen.getAllByRole("option")).toHaveLength(14);
   expect(screen.queryByText("已预览所有已收藏精灵")).not.toBeInTheDocument();
 
   Object.defineProperties(listbox, {
@@ -490,7 +515,7 @@ test("spirit preview loads twenty more favorites per scroll until all are visibl
     scrollTop: { configurable: true, value: 200, writable: true },
   });
   fireEvent.scroll(listbox);
-  expect(screen.getAllByRole("option")).toHaveLength(32);
+  expect(screen.getAllByRole("option")).toHaveLength(34);
   expect(screen.queryByText("已预览所有已收藏精灵")).not.toBeInTheDocument();
 
   Object.defineProperties(listbox, {
