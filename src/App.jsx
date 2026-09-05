@@ -899,7 +899,7 @@ function CalculatorWorkspace({ snapshot }) {
           Number(operations.fixedPowerOncePerType),
           selfOverrides.fixedPowerAddsBySlot,
         )
-      : selfOverrides.fixedPowerAddsBySlot;
+      : selfOverrides.fixedPowerAddsBySlot ?? {};
     let ownSkillPowerPercentAddsBySlot = selfOverrides.skillPowerPercentAddsBySlot;
     if (operations.powerPercentForAllAttacks) {
       ownSkillPowerPercentAddsBySlot = addPowerPercentToAllAttacks(

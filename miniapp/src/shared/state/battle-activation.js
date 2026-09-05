@@ -348,7 +348,7 @@ export function applyBattleActivation({
   const ownFixedPower = doublePositive(
     Number(selfOverrides.fixedPowerAdd ?? 0) + deltas.ownFixedPower,
   );
-  let fixedPowerAddsBySlot = selfOverrides.fixedPowerAddsBySlot;
+  let fixedPowerAddsBySlot = selfOverrides.fixedPowerAddsBySlot ?? {};
   if (operations.fixedPowerOncePerType) {
     fixedPowerAddsBySlot = addFixedPowerToFirstAttackOfEachType(
       next,
@@ -358,7 +358,8 @@ export function applyBattleActivation({
       Number(operations.fixedPowerOncePerType),
     );
   }
-  let skillPowerPercentAddsBySlot = selfOverrides.skillPowerPercentAddsBySlot;
+  let skillPowerPercentAddsBySlot =
+    selfOverrides.skillPowerPercentAddsBySlot ?? {};
   if (operations.powerPercentForAllAttacks) {
     skillPowerPercentAddsBySlot = addBySlot(
       next,

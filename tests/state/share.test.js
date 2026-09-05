@@ -514,6 +514,18 @@ describe("versioned share state", () => {
     });
   });
 
+  test("keeps legacy links without per-slot additions re-shareable", async () => {
+    const legacy = shareFixture();
+    delete legacy.directions.forward.overrides.fixedPowerAddsBySlot;
+    delete legacy.directions.forward.overrides.skillPowerPercentAddsBySlot;
+    delete legacy.directions.reverse.overrides.fixedPowerAddsBySlot;
+    delete legacy.directions.reverse.overrides.skillPowerPercentAddsBySlot;
+
+    const decoded = await decodeShareState(await encodeRawPayload(legacy));
+
+    await expect(encodeShareState(decoded)).resolves.toMatch(/^#v1\./u);
+  });
+
   test("round trips optional per-skill single memories without changing the v1 schema", async () => {
     const state = shareFixture();
     state.sides.attacker.skills.single = {

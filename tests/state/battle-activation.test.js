@@ -5,6 +5,10 @@ import {
 } from "../../src/state/battle-activation.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { calculatorReducer } from "../../src/state/reducer.js";
+import {
+  decodeShareState,
+  encodeShareState,
+} from "../../src/state/share.js";
 import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
 
 function createSnapshot() {
@@ -620,6 +624,68 @@ describe("shared battle activation", () => {
       id: "starfall",
       stacks: 1,
     });
+  });
+
+  test("keeps a refraction activation shareable without undefined slot maps", async () => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.skills.four = [
+      "refraction",
+      "grass-skill",
+      "illusion-skill",
+      null,
+    ];
+
+    const result = applyBattleActivation({
+      calculation: { forward: { results: [] } },
+      side: "attacker",
+      skillIndex: 0,
+      snapshot,
+      state,
+    });
+    const decoded = await decodeShareState(
+      await encodeShareState(result.state),
+    );
+
+    expect(decoded.directions.forward.overrides.fixedPowerAddsBySlot)
+      .toEqual({});
+    expect(decoded.directions.forward.overrides.skillPowerPercentAddsBySlot)
+      .toEqual({});
+  });
+
+  test("keeps reverse status activation shareable and preserves slot maps", async () => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.defender.skills.four = [
+      "refraction",
+      "grass-skill",
+      "illusion-skill",
+      null,
+    ];
+    state.directions.reverse.overrides = {
+      fixedPowerAddsBySlot: { 2: 35 },
+      skillPowerPercentAddsBySlot: { 3: 0.5 },
+    };
+
+    const result = applyBattleActivation({
+      calculation: { reverse: { results: [] } },
+      side: "defender",
+      skillIndex: 0,
+      snapshot,
+      state,
+    });
+    const decoded = await decodeShareState(
+      await encodeShareState(result.state),
+    );
+
+    expect(decoded.directions.reverse.overrides.fixedPowerAddsBySlot)
+      .toEqual({ 2: 35 });
+    expect(decoded.directions.reverse.overrides.skillPowerPercentAddsBySlot)
+      .toEqual({ 3: 0.5 });
   });
 
   test("persists progression counters for repeat-use skills", () => {

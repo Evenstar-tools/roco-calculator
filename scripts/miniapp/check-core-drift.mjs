@@ -86,8 +86,8 @@ const DECLARED_RELEASE_PATCHES = Object.freeze({
     reason: "保留威力输入状态管理并停止延续已下线的技能能耗覆盖；按技能记忆状态触发次数，能力等级公式引用 domain/skill-result/numeric.js 单一权威",
   }),
   "src/state/battle-activation.js": Object.freeze({
-    mirrorHash: "77b69e9b6dc866eda6f1464563c27ffe47e7c58ae0914af8122bce413127effd",
-    reason: "保留既有战斗结算，并支持重组倍率状态直接替换而非重复累加",
+    mirrorHash: "c045d4efac5a74e21af98612f111883712b0bc67981d1cb240f24d1922634662",
+    reason: "保留既有战斗结算，并支持重组倍率状态直接替换而非重复累加；槽增益缺省为空映射，保证状态触发可分享",
   }),
   "src/state/reducer.js": Object.freeze({
     mirrorHash: "134b98a11bfe71961af92aa4919017e3105f1bd14dd25ce56698a937d19796c1",

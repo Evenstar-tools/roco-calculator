@@ -13,7 +13,10 @@ import { createInitialState } from "../../src/state/defaults.js";
 import { FAVORITES_STORAGE_KEY } from "../../src/state/favorites.js";
 import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js";
 import { FEATURED_USER_RELEASE } from "../../src/data/user-release-notes.js";
-import { encodeShareState } from "../../src/state/share.js";
+import {
+  decodeShareState,
+  encodeShareState,
+} from "../../src/state/share.js";
 import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
 import { TEAM_STORAGE_KEY } from "../../src/state/team-presets.js";
 import {
@@ -22,6 +25,20 @@ import {
   POWER_DISPLAY_STORAGE_KEY,
   TYPE_COVERAGE_STORAGE_KEY,
 } from "../../src/state/display-settings.js";
+
+const workspaceOverlayCapture = vi.hoisted(() => ({ onShare: null }));
+
+vi.mock("../../src/components/WorkspaceOverlays.jsx", async (importOriginal) => {
+  const actual = await importOriginal();
+  const { createElement } = await import("react");
+  return {
+    ...actual,
+    WorkspaceOverlays(props) {
+      workspaceOverlayCapture.onShare = props.menu.actions.onShare;
+      return createElement(actual.WorkspaceOverlays, props);
+    },
+  };
+});
 
 const snapshot = {
   learnsets: [
@@ -458,6 +475,7 @@ const snapshot = {
 };
 
 beforeEach(() => {
+  workspaceOverlayCapture.onShare = null;
   localStorage.removeItem(DURABILITY_OVERVIEW_STORAGE_KEY);
   localStorage.removeItem(SPIRIT_CONFIG_STORAGE_KEY);
   localStorage.removeItem(TYPE_COVERAGE_STORAGE_KEY);
@@ -1738,6 +1756,17 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   expect(within(attackSide).getByText("4层 · +40%")) .toBeVisible();
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(100);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(3);
+
+  expect(workspaceOverlayCapture.onShare).toBeTypeOf("function");
+  await act(async () => {
+    await workspaceOverlayCapture.onShare();
+  });
+  const shareDialog = await screen.findByRole("dialog", { name: "分享当前配置" });
+  const shareLink = within(shareDialog).getByRole("textbox", { name: "当前配置链接" });
+  const sharedState = await decodeShareState(new URL(shareLink.value).hash);
+  expect(sharedState.directions.forward.overrides.fixedPowerAddsBySlot).toEqual({});
+  expect(sharedState.directions.forward.overrides.fixedPowerAdd).toBe(20);
+  await user.click(within(shareDialog).getByRole("button", { name: "关闭" }));
 
   await user.click(within(refractionRow).getByText(refraction.description));
   expect(within(attackSide).getByText("8层 · +80%")) .toBeVisible();
