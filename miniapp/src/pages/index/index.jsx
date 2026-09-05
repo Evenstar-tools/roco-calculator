@@ -10,7 +10,7 @@ import ErrorState from "../../components/ErrorState.jsx";
 import LoadingState from "../../components/LoadingState.jsx";
 import SharedResultPage from "../../components/SharedResultPage.jsx";
 import SharedSessionStrip from "../../components/SharedSessionStrip.jsx";
-import commonSpiritConfig from "../../data/common-spirit-config.json";
+import commonSpiritConfig from "../../data/common-spirit-config.js";
 import {
   LEGACY_COMMON_CONFIG_ENTRY_SIGNATURES,
 } from "../../data/legacy-common-config-signatures.js";

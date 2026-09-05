@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import bundledRuntimePayload from "../src/data/bundled-runtime.json";
 import { expandBundledRuntime } from "../src/data/expand-bundled-runtime.js";
 import commonSpiritConfig from "../src/data/common-spirit-config.json";
+import runtimeCommonSpiritConfig from "../src/data/common-spirit-config.js";
 import {
   LEGACY_COMMON_CONFIG_ENTRY_SIGNATURES,
 } from "../src/data/legacy-common-config-signatures.js";
@@ -41,6 +42,7 @@ describe("bundled common spirit configuration", () => {
     expect(text).not.toMatch(
       /appSecret|secretKey|privateKey|openid|password/iu,
     );
+    expect(runtimeCommonSpiritConfig).toEqual(commonSpiritConfig);
   });
 
   test("all supplied entries remain usable with the current bundled data", () => {

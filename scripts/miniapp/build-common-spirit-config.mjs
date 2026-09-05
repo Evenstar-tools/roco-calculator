@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { deflateRawSync } from "node:zlib";
 
 const inputPath = process.argv[2];
 const outputPath = process.argv[3];
@@ -61,10 +62,22 @@ const bundled = {
   entries,
 };
 
-await writeFile(
-  path.resolve(outputPath),
-  `${JSON.stringify(bundled)}\n`,
-  "utf8",
-);
+const resolvedOutputPath = path.resolve(outputPath);
+const output = `${JSON.stringify(bundled)}\n`;
+const payloadPath = resolvedOutputPath.endsWith(".json")
+  ? resolvedOutputPath.replace(/\.json$/u, ".payload.js")
+  : `${resolvedOutputPath}.payload.js`;
+const compressedOutput = `export default ${JSON.stringify(
+  deflateRawSync(Buffer.from(output.trim(), "utf8"), { level: 9 }).toString(
+    "base64",
+  ),
+)};\n`;
 
-console.log(`Built ${entries.length} bundled common spirit configs.`);
+await Promise.all([
+  writeFile(resolvedOutputPath, output, "utf8"),
+  writeFile(payloadPath, compressedOutput, "utf8"),
+]);
+
+console.log(
+  `Built ${entries.length} bundled common spirit configs (${Buffer.byteLength(output)} raw bytes, ${Buffer.byteLength(compressedOutput)} compressed bytes).`,
+);
