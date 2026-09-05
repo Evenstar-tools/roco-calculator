@@ -64,7 +64,10 @@ export function WorkspaceOverlays({
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
-      mobileRefs.trigger?.current?.focus();
+      if (mobileRefs.restoreFocus?.current !== false) {
+        mobileRefs.trigger?.current?.focus();
+      }
+      if (mobileRefs.restoreFocus) mobileRefs.restoreFocus.current = true;
     };
     // 只在抽屉开关时绑定一次；actions/refs 每轮渲染都是新对象，列入依赖会反复装卸监听。
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 见上
@@ -299,6 +302,8 @@ export function WorkspaceOverlays({
             <X aria-hidden="true" size={22} weight="bold" />
           </button>
           <ResultRail
+            activeAdvancedConditions={mobileResult.activeAdvancedConditions}
+            onAdvancedOptionsOpen={mobileActions.onAdvancedOptionsOpen}
             onCurrentHpChange={mobileActions.onCurrentHpChange}
             onCurrentHpPercentChange={mobileActions.onCurrentHpPercentChange}
             onDirectionToggle={mobileActions.onDirectionToggle}

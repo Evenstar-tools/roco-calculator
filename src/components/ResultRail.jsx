@@ -299,7 +299,9 @@ function SkillResultRow({ index, item, onClick }) {
 }
 
 export function ResultRail({
+  activeAdvancedConditions = [],
   onBloodlineResultFocus,
+  onAdvancedOptionsOpen,
   onCurrentHpChange,
   onCurrentHpPercentChange,
   onDirectionToggle,
@@ -483,6 +485,23 @@ export function ResultRail({
                 : undefined}
             />
           ))}
+        </section>
+      ) : null}
+
+      {activeAdvancedConditions.length > 0 ? (
+        <section
+          aria-label="当前非默认高级条件"
+          className="result-rail__active-conditions"
+        >
+          <div>
+            <strong>计算条件</strong>
+            {onAdvancedOptionsOpen ? (
+              <button onClick={onAdvancedOptionsOpen} type="button">
+                调整
+              </button>
+            ) : null}
+          </div>
+          <p>{activeAdvancedConditions.join(" · ")}</p>
         </section>
       ) : null}
 

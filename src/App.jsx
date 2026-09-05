@@ -38,6 +38,7 @@ import {
   isChoiceSkill,
   supportsChoiceTrait,
 } from "./domain/choice-skill-sequence.js";
+import { getBloodlineMagicOption } from "./domain/bloodline-magic.js";
 import { resolveSkillStatusActivation } from "./domain/skill-status-effects.js";
 import {
   hasNegativeStatusSkillApplication,
@@ -77,7 +78,6 @@ import {
   selectSingleSkill as selectSessionSingleSkill,
   selectSpirit,
   toggleDirection,
-  updateGlobalRain,
   updateGlobalWeather,
   updateMirroredTraitContext,
 } from "./state/calculator-session.js";
@@ -99,6 +99,8 @@ function CalculatorWorkspace({ snapshot }) {
   const [toast, setToast] = useState("");
   const [activeDirection, setActiveDirection] = useState("forward");
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(false);
+  const [advancedOptionsTopRequest, setAdvancedOptionsTopRequest] = useState(null);
+  const nextAdvancedOptionsTopRequestRef = useRef(0);
   const [formulaAuditRequest, setFormulaAuditRequest] = useState(0);
   const [viewMode, setViewMode] = useState("compact");
   const storedData = useStoredCalculatorData(snapshot, { onToast: setToast });
@@ -200,8 +202,46 @@ function CalculatorWorkspace({ snapshot }) {
   const {
     attackLevelStage,
     defenseLevelStage,
-    weatherRainTurns,
   } = viewModel.environment;
+  const activeWeatherRainTurns = Math.min(
+    8,
+    Math.max(
+      0,
+      Math.floor(Number(currentDirection.context?.weatherRainTurns) || 0),
+    ),
+  );
+  const activeWeather = currentDirection.context?.weatherThunder === true
+    ? "thunder"
+    : activeWeatherRainTurns > 0
+      ? "rain"
+      : "none";
+  const activeReductionPercent = Math.round(
+    (1 - reductionDirection.reduction) * 100,
+  );
+  const activeFinalMultiplier = Number.isFinite(
+    Number(currentDirection.finalDamageMultiplier),
+  )
+    ? Number(currentDirection.finalDamageMultiplier)
+    : 1;
+  const activeBloodlineMagic = getBloodlineMagicOption(
+    currentDirection.context?.bloodlineMagicId,
+  );
+  const activeAdvancedConditions = [
+    activeWeather === "rain"
+      ? "雨天"
+      : activeWeather === "thunder"
+        ? "雷鸣"
+        : null,
+    activeReductionPercent > 0 ? `减伤 ${activeReductionPercent}%` : null,
+    activeFinalMultiplier !== 1
+      ? `最终倍率 ×${Number(activeFinalMultiplier.toFixed(4))}`
+      : null,
+    currentDirection.context?.bloodlineMagicTriggered === true &&
+    activeBloodlineMagic.id !== "none" &&
+    activeBloodlineMagic.implemented
+      ? `血脉 ${activeBloodlineMagic.name}`
+      : null,
+  ].filter(Boolean);
 
   function targetStarfallStacksForSide(side, currentState = state) {
     const targetSide = side === "attacker" ? "defender" : "attacker";
@@ -357,6 +397,16 @@ function CalculatorWorkspace({ snapshot }) {
     typeCoverageEnabled,
   } = overlays;
 
+  function openAdvancedOptionsAtTop({ closeMobileResult = false } = {}) {
+    if (closeMobileResult) {
+      overlays.mobileResultProps.actions.onClose({ restoreFocus: false });
+    }
+    setViewMode("detailed");
+    setAdvancedOptionsOpen(true);
+    nextAdvancedOptionsTopRequestRef.current += 1;
+    setAdvancedOptionsTopRequest(nextAdvancedOptionsTopRequestRef.current);
+  }
+
   // 任一弹层/抽屉打开时引导浮层让位,关闭后恢复。
   const overlayCoveringGuide = Boolean(
     overlays.menu.open ||
@@ -474,10 +524,6 @@ function CalculatorWorkspace({ snapshot }) {
     if (!inputId) return false;
     const direction = side === "attacker" ? "forward" : "reverse";
     return currentState.directions[direction].context?.[inputId] === true;
-  }
-
-  function updateWeatherRainTurns(value) {
-    commitSession(updateGlobalRain(stateRef.current, value));
   }
 
   function updateWeather(weather) {
@@ -1590,8 +1636,11 @@ function CalculatorWorkspace({ snapshot }) {
     displaySettings: overlays.displaySettingsProps,
     mobileResult: {
       ...overlays.mobileResultProps,
+      activeAdvancedConditions,
       actions: {
         ...overlays.mobileResultProps.actions,
+        onAdvancedOptionsOpen: () =>
+          openAdvancedOptionsAtTop({ closeMobileResult: true }),
         onSkillResultSelect: selectSkillResult,
       },
     },
@@ -1976,6 +2025,7 @@ function CalculatorWorkspace({ snapshot }) {
                 singleSkillContent={singleEditor}
               />
               <AdvancedOptions
+                locateAdvancedTopRequest={advancedOptionsTopRequest}
                 locateFormulaAuditRequest={formulaAuditRequest}
                 bloodlineMagicId={
                   currentDirection.context?.bloodlineMagicId ?? "none"
@@ -2020,8 +2070,12 @@ function CalculatorWorkspace({ snapshot }) {
                     value,
                   })
                 }
+                onAdvancedTopLocated={(request) =>
+                  setAdvancedOptionsTopRequest((pendingRequest) =>
+                    pendingRequest === request ? null : pendingRequest
+                  )
+                }
                 onOpenChange={setAdvancedOptionsOpen}
-                onRainTurnsChange={updateWeatherRainTurns}
                 onWeatherChange={updateWeather}
                 onReductionChange={(percent) =>
                   dispatch({
@@ -2030,17 +2084,9 @@ function CalculatorWorkspace({ snapshot }) {
                     value: Math.max(0, 1 - percent / 100),
                   })
                 }
-                rainTurns={weatherRainTurns}
-                weather={
-                  currentDirection.context?.weatherThunder === true
-                    ? "thunder"
-                    : weatherRainTurns > 0
-                      ? "rain"
-                      : "none"
-                }
-                reductionPercent={Math.round(
-                  (1 - reductionDirection.reduction) * 100,
-                )}
+                rainTurns={activeWeatherRainTurns}
+                weather={activeWeather}
+                reductionPercent={activeReductionPercent}
                 result={resultModel.selectedResult}
                 open={advancedOptionsOpen}
               />
@@ -2051,9 +2097,11 @@ function CalculatorWorkspace({ snapshot }) {
         {configurationReady ? (
           <div className="result-column">
             <ResultRail
+              activeAdvancedConditions={activeAdvancedConditions}
               onBloodlineResultFocus={() =>
                 updateDirection({ selectedDamageSource: "bloodline" })
               }
+              onAdvancedOptionsOpen={openAdvancedOptionsAtTop}
               onCurrentHpChange={(currentHp) => updateDirection({ currentHp })}
               onCurrentHpPercentChange={(currentHpPercent) =>
                 updateDirection({ context: { currentHpPercent } })

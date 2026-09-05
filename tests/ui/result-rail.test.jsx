@@ -639,6 +639,48 @@ test("only offers the calculation-process entry for a current result with formul
   }
 });
 
+test("places active advanced conditions between the skill list and process entry", async () => {
+  const user = userEvent.setup();
+  const onAdvancedOptionsOpen = vi.fn();
+  const { rerender } = render(
+    <ResultRail
+      activeAdvancedConditions={["雨天", "减伤 20%", "最终倍率 ×1.25"]}
+      onAdvancedOptionsOpen={onAdvancedOptionsOpen}
+      onFormulaAuditOpen={vi.fn()}
+      result={{ ...result, mode: "four", skillResults: [] }}
+    />,
+  );
+
+  const skillList = screen.getByRole("region", { name: "技能结果" });
+  const summary = screen.getByRole("region", {
+    name: "当前非默认高级条件",
+  });
+  const process = screen.getByRole("button", {
+    name: "查看当前技能计算过程",
+  });
+  expect(within(summary).getByText("计算条件")).toBeVisible();
+  expect(summary).toHaveTextContent("雨天 · 减伤 20% · 最终倍率 ×1.25");
+  expect(skillList.compareDocumentPosition(summary))
+    .toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  expect(summary.compareDocumentPosition(process))
+    .toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+
+  await user.click(within(summary).getByRole("button", { name: "调整" }));
+  expect(onAdvancedOptionsOpen).toHaveBeenCalledOnce();
+
+  rerender(
+    <ResultRail
+      activeAdvancedConditions={[]}
+      onAdvancedOptionsOpen={onAdvancedOptionsOpen}
+      onFormulaAuditOpen={vi.fn()}
+      result={{ ...result, mode: "four", skillResults: [] }}
+    />,
+  );
+  expect(screen.queryByRole("region", {
+    name: "当前非默认高级条件",
+  })).not.toBeInTheDocument();
+});
+
 test("shows direct trait damage as a separate selected result above skills", () => {
   render(
     <ResultRail

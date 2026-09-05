@@ -477,6 +477,52 @@ html[data-theme="dark"] .result-rail__warning {
   font-weight: 800;
 }
 
+.result-rail__active-conditions {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  padding: 0 2px;
+  margin-top: 9px;
+}
+
+.result-rail__active-conditions > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.result-rail__active-conditions strong {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.result-rail__active-conditions button {
+  min-width: 34px;
+  min-height: 28px;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: 4px;
+  color: var(--accent-strong);
+  background: transparent;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.result-rail__active-conditions button:hover {
+  background: var(--accent-soft);
+}
+
+.result-rail__active-conditions p {
+  min-width: 0;
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
 .type-analysis-panel {
   display: grid;
   gap: 8px;

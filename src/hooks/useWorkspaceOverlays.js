@@ -42,6 +42,7 @@ export function useWorkspaceOverlays({
   );
   const drawerCloseRef = useRef(null);
   const menuButtonRef = useRef(null);
+  const mobileResultRestoreFocusRef = useRef(true);
   const menuRef = useRef(null);
   const mobileResultTriggerRef = useRef(null);
   const resultDrawerRef = useRef(null);
@@ -108,18 +109,25 @@ export function useWorkspaceOverlays({
 
   const mobileResultProps = {
     actions: {
-      onClose: () => setMobileResultOpen(false),
+      onClose: ({ restoreFocus = true } = {}) => {
+        mobileResultRestoreFocusRef.current = restoreFocus;
+        setMobileResultOpen(false);
+      },
       onCurrentHpChange: (currentHp) => updateDirection({ currentHp }),
       onCurrentHpPercentChange: (currentHpPercent) =>
         updateDirection({ context: { currentHpPercent } }),
       onDirectionToggle,
-      onOpen: () => setMobileResultOpen(true),
+      onOpen: () => {
+        mobileResultRestoreFocusRef.current = true;
+        setMobileResultOpen(true);
+      },
     },
     configurationReady,
     open: mobileResultOpen,
     refs: {
       close: drawerCloseRef,
       drawer: resultDrawerRef,
+      restoreFocus: mobileResultRestoreFocusRef,
       trigger: mobileResultTriggerRef,
     },
     result: resultModel,

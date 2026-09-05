@@ -169,7 +169,7 @@ test("allows importing legacy favorites even when they contain no configuration"
   expect(onConfirmImport).toHaveBeenCalledTimes(1);
 });
 
-test("shows the built-in popular configuration preview without a file picker", () => {
+test("searches the popular preview without changing the full import action", () => {
   const onConfirmImport = vi.fn();
   render(
     <ConfigLibraryDialog
@@ -177,11 +177,18 @@ test("shows the built-in popular configuration preview without a file picker", (
       onClose={vi.fn()}
       onConfirmImport={onConfirmImport}
       parsed={{
-        entries: [{
-          natureId: "adamant",
-          skills: ["skill-fire", null, null, null],
-          spiritId: "spirit-dog",
-        }],
+        entries: [
+          {
+            natureId: "adamant",
+            skills: ["skill-fire", null, null, null],
+            spiritId: "spirit-dog",
+          },
+          {
+            natureId: "timid",
+            skills: ["skill-fire", null, null, null],
+            spiritId: "spirit-wolf",
+          },
+        ],
         favoriteSpiritIds: ["spirit-dog"],
         preview: {
           added: 188,
@@ -199,7 +206,10 @@ test("shows the built-in popular configuration preview without a file picker", (
       }}
       snapshot={{
         skills: [{ id: "skill-fire", name: "烈焰冲锋" }],
-        spirits: [{ fullName: "音速犬", id: "spirit-dog" }],
+        spirits: [
+          { fullName: "音速犬", id: "spirit-dog" },
+          { fullName: "银月狼王", id: "spirit-wolf" },
+        ],
       }}
     />,
   );
@@ -214,8 +224,28 @@ test("shows the built-in popular configuration preview without a file picker", (
 
   fireEvent.click(screen.getByRole("button", { name: "查看精灵和技能" }));
   expect(screen.getByText("音速犬")).toBeVisible();
-  expect(screen.getByText("烈焰冲锋")).toBeVisible();
+  expect(screen.getAllByText("烈焰冲锋")).toHaveLength(2);
+  const search = screen.getByRole("searchbox", { name: "搜索精灵名" });
+  expect(search).toHaveFocus();
+  expect(screen.getByText("2 / 2")).toBeVisible();
 
-  fireEvent.click(screen.getByRole("button", { name: "导入常用配置" }));
+  fireEvent.change(search, { target: { value: "银月" } });
+  expect(screen.queryByText("音速犬")).not.toBeInTheDocument();
+  expect(screen.getByText("银月狼王")).toBeVisible();
+  expect(screen.getByText("1 / 2")).toBeVisible();
+  expect(screen.getByText("新增配置").nextElementSibling).toHaveTextContent("188");
+
+  fireEvent.click(screen.getByRole("button", { name: "清除" }));
+  expect(search).toHaveFocus();
+  expect(search).toHaveValue("");
+  expect(screen.getByText("音速犬")).toBeVisible();
+  expect(screen.getByText("2 / 2")).toBeVisible();
+
+  fireEvent.change(search, { target: { value: "不存在的精灵" } });
+  expect(screen.getByText("没有匹配的精灵")).toBeVisible();
+  expect(screen.getByText("0 / 2")).toBeVisible();
+  expect(document.querySelector("#config-library-entries")).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole("button", { name: "导入全部配置" }));
   expect(onConfirmImport).toHaveBeenCalledTimes(1);
 });

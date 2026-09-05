@@ -557,8 +557,10 @@ export function AdvancedOptions({
   marks,
   negativeStatusEnabled = false,
   negativeStatuses,
+  locateAdvancedTopRequest = null,
   locateFormulaAuditRequest = 0,
   onBloodlineMagicChange = () => {},
+  onAdvancedTopLocated = () => {},
   onFinalMultiplierChange,
   onMarkChange,
   onNegativeStatusChange = () => {},
@@ -572,6 +574,9 @@ export function AdvancedOptions({
   open: controlledOpen,
 }) {
   const [internalOpen, setInternalOpen] = useState(false);
+  const advancedOptionsRef = useRef(null);
+  const advancedToggleRef = useRef(null);
+  const consumedAdvancedTopRequestRef = useRef(null);
   const consumedFormulaAuditRequestRef = useRef(locateFormulaAuditRequest);
   const formulaAuditRef = useRef(null);
   const open = controlledOpen ?? internalOpen;
@@ -585,6 +590,18 @@ export function AdvancedOptions({
   useEffect(() => {
     if (
       !open ||
+      locateAdvancedTopRequest === null ||
+      locateAdvancedTopRequest === consumedAdvancedTopRequestRef.current
+    ) return;
+    consumedAdvancedTopRequestRef.current = locateAdvancedTopRequest;
+    advancedOptionsRef.current?.scrollIntoView?.({ block: "start" });
+    advancedToggleRef.current?.focus();
+    onAdvancedTopLocated(locateAdvancedTopRequest);
+  }, [locateAdvancedTopRequest, onAdvancedTopLocated, open]);
+
+  useEffect(() => {
+    if (
+      !open ||
       locateFormulaAuditRequest <= consumedFormulaAuditRequestRef.current
     ) return;
     consumedFormulaAuditRequestRef.current = locateFormulaAuditRequest;
@@ -593,11 +610,15 @@ export function AdvancedOptions({
   }, [locateFormulaAuditRequest, open]);
 
   return (
-    <section className={`advanced-options${open ? " is-open" : ""}`}>
+    <section
+      className={`advanced-options${open ? " is-open" : ""}`}
+      ref={advancedOptionsRef}
+    >
       <button
         aria-expanded={open}
         className="advanced-options__toggle"
         onClick={() => setOpen(!open)}
+        ref={advancedToggleRef}
         type="button"
       >
         <span>

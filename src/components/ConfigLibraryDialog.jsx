@@ -17,9 +17,15 @@ const ISSUE_PREVIEW_ROWS = [
 ];
 const ISSUE_LABELS = Object.fromEntries(ISSUE_PREVIEW_ROWS);
 
-function ConfigEntryList({ entries, skillById, spiritById }) {
+function ConfigEntryList({ entries, emptyMessage, skillById, spiritById, stableHeight = false }) {
   return (
-    <ul className="config-library-entry-list" id="config-library-entries">
+    <ul
+      className={`config-library-entry-list${stableHeight ? " config-library-entry-list--searchable" : ""}${entries.length === 0 ? " is-empty" : ""}`}
+      id="config-library-entries"
+    >
+      {entries.length === 0 && emptyMessage ? (
+        <li className="config-library-entry-empty">{emptyMessage}</li>
+      ) : null}
       {entries.map((entry) => {
         const spirit = spiritById.get(entry.spiritId);
         const spiritName = spirit?.fullName ?? entry.spiritId;
@@ -66,7 +72,9 @@ export function ConfigLibraryDialog({
   snapshot,
 }) {
   const dialogRef = useRef(null);
+  const entrySearchRef = useRef(null);
   const [entriesExpanded, setEntriesExpanded] = useState(false);
+  const [entryQuery, setEntryQuery] = useState("");
   const [importIssuesExpanded, setImportIssuesExpanded] = useState(false);
 
   useEffect(() => {
@@ -87,14 +95,21 @@ export function ConfigLibraryDialog({
     // 切换导出摘要或对话框模式时收回折叠，避免沿用上一份列表的展开态。
     /* eslint-disable react-hooks/set-state-in-effect -- 重置局部 UI，改渲染期 setState 会打断当前预览 */
     setEntriesExpanded(false);
+    setEntryQuery("");
     setImportIssuesExpanded(false);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [exportSummary, mode]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- 新解析结果应收回问题列表
+    /* eslint-disable react-hooks/set-state-in-effect -- 新解析结果应重置对应的局部预览状态 */
+    setEntryQuery("");
     setImportIssuesExpanded(false);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [parsed]);
+
+  useEffect(() => {
+    if (mode === "popular" && entriesExpanded) entrySearchRef.current?.focus();
+  }, [entriesExpanded, mode]);
 
   if (!mode) return null;
   const isExport = mode === "export";
@@ -115,6 +130,13 @@ export function ConfigLibraryDialog({
   const skillById = new Map(
     (snapshot?.skills ?? []).map((skill) => [skill.id, skill]),
   );
+  const normalizedEntryQuery = entryQuery.trim().toLocaleLowerCase("zh-CN");
+  const visibleEntries = isPopular && normalizedEntryQuery
+    ? listedEntries.filter((entry) => {
+      const spiritName = spiritById.get(entry.spiritId)?.fullName ?? entry.spiritId;
+      return spiritName.toLocaleLowerCase("zh-CN").includes(normalizedEntryQuery);
+    })
+    : listedEntries;
   const importIssues = parsed
     ? ISSUE_PREVIEW_ROWS.filter(([key]) => Number(parsed.preview[key]) > 0)
     : [];
@@ -137,7 +159,7 @@ export function ConfigLibraryDialog({
       <section
         aria-label={dialogTitle}
         aria-modal="true"
-        className="share-dialog config-library-dialog"
+        className={`share-dialog config-library-dialog${isPopular && entriesExpanded ? " config-library-dialog--popular-expanded" : ""}`}
         ref={dialogRef}
         role="dialog"
       >
@@ -214,11 +236,42 @@ export function ConfigLibraryDialog({
                 />
               </label>
             )}
+            {isPopular && entriesExpanded ? (
+              <div className="config-library-search">
+                <label className="config-library-search-field">
+                  <span>精灵名</span>
+                  <input
+                    aria-label="搜索精灵名"
+                    onChange={(event) => setEntryQuery(event.target.value)}
+                    placeholder="输入精灵名查找"
+                    ref={entrySearchRef}
+                    type="search"
+                    value={entryQuery}
+                  />
+                </label>
+                <strong aria-live="polite" className="config-library-search-count">
+                  {visibleEntries.length} / {listedEntries.length}
+                </strong>
+                <button
+                  className="secondary-action config-library-search-clear"
+                  disabled={!entryQuery.trim()}
+                  onClick={() => {
+                    setEntryQuery("");
+                    entrySearchRef.current?.focus();
+                  }}
+                  type="button"
+                >
+                  清除
+                </button>
+              </div>
+            ) : null}
             {entriesExpanded ? (
               <ConfigEntryList
-                entries={listedEntries}
+                emptyMessage={isPopular ? "没有匹配的精灵" : undefined}
+                entries={isPopular ? visibleEntries : listedEntries}
                 skillById={skillById}
                 spiritById={spiritById}
+                stableHeight={isPopular}
               />
             ) : null}
             {parsed ? (
@@ -308,7 +361,7 @@ export function ConfigLibraryDialog({
             onClick={isExport ? onExport : onConfirmImport}
             type="button"
           >
-            {isExport ? "导出" : isPopular ? "导入常用配置" : "确认导入"}
+            {isExport ? "导出" : isPopular ? "导入全部配置" : "确认导入"}
           </button>
           <button className="secondary-action" onClick={onClose} type="button">
             取消

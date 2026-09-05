@@ -3406,6 +3406,107 @@ test("四技能结果入口会展开并定位当前技能计算过程", async ()
   }
 });
 
+test("高级条件摘要跟随有效方向并从调整入口定位常用条件", async () => {
+  const user = userEvent.setup();
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
+  const scrollIntoView = vi.fn();
+  Element.prototype.scrollIntoView = scrollIntoView;
+  try {
+    render(<App initialSnapshot={snapshot} />);
+    await selectDefaultSpirits(user);
+    await user.click(screen.getByRole("button", { name: "具体版" }));
+
+    expect(screen.queryByRole("region", {
+      name: "当前非默认高级条件",
+    })).not.toBeInTheDocument();
+
+    let advancedToggle = screen.getByRole("button", { name: "高级选项" });
+    await user.click(advancedToggle);
+    await user.selectOptions(screen.getByRole("combobox", { name: "天气" }), "rain");
+    fireEvent.change(screen.getByRole("spinbutton", {
+      name: "防御技能减伤",
+    }), { target: { value: "20" } });
+    fireEvent.change(screen.getByRole("spinbutton", {
+      name: "最终伤害倍率",
+    }), { target: { value: "1.25" } });
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "血脉魔法" }),
+      "photosynthetic-healing",
+    );
+    await user.click(screen.getByRole("checkbox", { name: "使用光合治愈" }));
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "进攻方正面印记" }),
+      "tailwind",
+    );
+    await user.click(advancedToggle);
+
+    const summary = screen.getByRole("region", {
+      name: "当前非默认高级条件",
+    });
+    expect(summary).toHaveTextContent(
+      "雨天 · 减伤 20% · 最终倍率 ×1.25 · 血脉 光合治愈",
+    );
+    expect(summary).not.toHaveTextContent("印记");
+
+    await user.click(screen.getByRole("button", { name: "精简版" }));
+    expect(screen.queryByRole("button", { name: "高级选项" }))
+      .not.toBeInTheDocument();
+    const adjust = within(summary).getByRole("button", { name: "调整" });
+    adjust.focus();
+    await user.keyboard("{Enter}");
+    advancedToggle = screen.getByRole("button", { name: "高级选项" });
+    expect(advancedToggle).toHaveAttribute("aria-expanded", "true");
+    expect(advancedToggle).toHaveFocus();
+    expect(scrollIntoView).toHaveBeenLastCalledWith({ block: "start" });
+    expect(document.querySelector(".formula-audit")).not.toHaveFocus();
+
+    await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+    expect(screen.getByRole("region", {
+      name: "当前非默认高级条件",
+    })).toHaveTextContent("雨天");
+    expect(screen.getByRole("region", {
+      name: "当前非默认高级条件",
+    })).not.toHaveTextContent("减伤");
+
+    fireEvent.change(screen.getByRole("spinbutton", {
+      name: "防御技能减伤",
+    }), { target: { value: "35" } });
+    await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+    const defenseSkill = screen.getByRole("combobox", { name: "攻击方技能1" });
+    await user.clear(defenseSkill);
+    await user.type(defenseSkill, "水泡盾");
+    await user.click(screen.getByRole("option", { name: /水泡盾/u }));
+    expect(screen.getByRole("region", {
+      name: "当前非默认高级条件",
+    })).toHaveTextContent("减伤 35%");
+  } finally {
+    Element.prototype.scrollIntoView = originalScrollIntoView;
+  }
+});
+
+test("分享恢复后天气摘要按正反方向分别读取", async () => {
+  const user = userEvent.setup();
+  const sharedState = createInitialState(snapshot);
+  sharedState.mode = "four";
+  sharedState.directions.forward.context.weatherRainTurns = 0;
+  sharedState.directions.reverse.context.weatherRainTurns = 8;
+  window.history.replaceState(null, "", await encodeShareState(sharedState));
+  try {
+    render(<App initialSnapshot={snapshot} />);
+    await user.click(screen.getByRole("button", { name: "具体版" }));
+
+    expect(screen.queryByRole("region", {
+      name: "当前非默认高级条件",
+    })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+    expect(screen.getByRole("region", {
+      name: "当前非默认高级条件",
+    })).toHaveTextContent("雨天");
+  } finally {
+    window.history.replaceState(null, "", window.location.pathname);
+  }
+});
+
 test("切换四技能行到可编辑的显示威力并记住设置", async () => {
   const user = userEvent.setup();
   const first = render(<App initialSnapshot={snapshot} />);
@@ -3444,21 +3545,37 @@ test("loads the built-in popular library only on demand and imports through the 
   localStorage.setItem(TEAM_STORAGE_KEY, teamBytes);
   const library = {
     appVersion: "1.5.0",
-    entries: [{
-      displayIvs: {
-        hp: 0,
-        magicalAttack: 60,
-        magicalDefense: 0,
-        physicalAttack: 60,
-        physicalDefense: 0,
-        speed: 60,
+    entries: [
+      {
+        displayIvs: {
+          hp: 0,
+          magicalAttack: 60,
+          magicalDefense: 0,
+          physicalAttack: 60,
+          physicalDefense: 0,
+          speed: 60,
+        },
+        natureId: "adamant",
+        skills: ["fire-strike", "mana-burst", null, null],
+        spiritId: "sonic-dog",
+        traitValues: {},
       },
-      natureId: "adamant",
-      skills: ["fire-strike", "mana-burst", null, null],
-      spiritId: "sonic-dog",
-      traitValues: {},
-    }],
-    entryCount: 1,
+      {
+        displayIvs: {
+          hp: 60,
+          magicalAttack: 0,
+          magicalDefense: 0,
+          physicalAttack: 60,
+          physicalDefense: 0,
+          speed: 60,
+        },
+        natureId: "adamant",
+        skills: ["fire-strike", "mana-burst", null, null],
+        spiritId: "storm-dog",
+        traitValues: {},
+      },
+    ],
+    entryCount: 2,
     exportedAt: "2026-08-12T10:16:00.000Z",
     format: "rock-calculator.favorite-config-library",
     schemaVersion: 1,
@@ -3477,13 +3594,27 @@ test("loads the built-in popular library only on demand and imports through the 
 
   const dialog = await screen.findByRole("dialog", { name: "常用精灵配置" });
   expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json");
-  expect(within(dialog).getByText("新增配置").nextElementSibling).toHaveTextContent("1");
-  await user.click(within(dialog).getByRole("button", { name: "导入常用配置" }));
+  expect(within(dialog).getByText("新增配置").nextElementSibling).toHaveTextContent("2");
+  expect(within(dialog).getByText("覆盖本机配置").nextElementSibling)
+    .toHaveTextContent("0");
+  await user.click(within(dialog).getByRole("button", {
+    name: "查看精灵和技能",
+  }));
+  await user.type(within(dialog).getByRole("searchbox", {
+    name: "搜索精灵名",
+  }), "音速");
+  expect(within(dialog).getByText("音速犬", { exact: true })).toBeVisible();
+  expect(within(dialog).queryByText("风暴战犬", { exact: true }))
+    .not.toBeInTheDocument();
+  await user.click(within(dialog).getByRole("button", { name: "导入全部配置" }));
 
-  expect(screen.getByText(/已导入 1 只配置/)).toBeVisible();
+  expect(screen.getByText(/已导入 2 只配置/)).toBeVisible();
   expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);
   expect(JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY))).toEqual(
-    expect.arrayContaining([expect.objectContaining({ spiritId: "sonic-dog" })]),
+    expect.arrayContaining([
+      expect.objectContaining({ spiritId: "sonic-dog" }),
+      expect.objectContaining({ spiritId: "storm-dog" }),
+    ]),
   );
   fetchMock.mockRestore();
 });
