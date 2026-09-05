@@ -620,6 +620,15 @@ body {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.advanced-options__common {
+  display: grid;
+  min-width: 0;
+  align-items: start;
+  gap: 10px;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .mark-config {
   display: grid;
   min-width: 0;
@@ -815,6 +824,11 @@ body {
   color: var(--defense);
 }
 
+.mark-side__fields {
+  display: grid;
+  min-width: 0;
+}
+
 .mark-slot {
   display: grid;
   min-width: 0;
@@ -867,6 +881,74 @@ body {
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@media (min-width: 1203px) {
+  .advanced-options__common {
+    gap: 12px;
+    grid-template-columns: 1fr .8fr .8fr 1.2fr;
+  }
+
+  .advanced-options__common .bloodline-magic-field {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .advanced-options__common .bloodline-magic-field legend {
+    float: left;
+    width: 100%;
+    padding: 0;
+    margin: 0 0 4px;
+    color: var(--text-muted);
+    font-weight: inherit;
+    line-height: 16px;
+  }
+
+  .advanced-options__common .bloodline-magic-field legend small {
+    margin-left: 4px;
+  }
+
+  .advanced-options__common .bloodline-magic-field__controls {
+    clear: both;
+  }
+
+  .advanced-options__common .bloodline-magic-field select {
+    width: 100%;
+    height: 38px;
+    padding: 0 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    background: var(--surface);
+    font: inherit;
+    font-size: 12px;
+  }
+
+  .advanced-options__common .bloodline-magic-field > small {
+    margin-top: 4px;
+  }
+
+  .mark-side__fields {
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mark-side__fields .mark-slot {
+    grid-template-columns: minmax(0, 1fr) 56px;
+  }
+
+  .mark-side__fields .mark-slot + .mark-slot {
+    padding: 0 0 0 12px;
+    border-top: 0;
+    border-left: 1px solid var(--border);
+    margin: 0;
+  }
+
+  .mark-side__fields .mark-slot > small {
+    min-height: 15px;
+    white-space: normal;
+  }
 }
 
 .result-rail__marks {
@@ -1159,4 +1241,3 @@ body {
   color: #d9dcff;
   background: #303153;
 }
-

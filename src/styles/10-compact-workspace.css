@@ -407,7 +407,7 @@
   width: max(100%, min(340px, calc(100vw - 56px)));
 }
 
-.compact-skill__row:nth-last-child(-n + 2) .skill-picker__options {
+.compact-skill__row:nth-last-child(-n + 2) .skill-picker__options[data-placement="up"] {
   top: auto;
   bottom: calc(100% + 4px);
 }

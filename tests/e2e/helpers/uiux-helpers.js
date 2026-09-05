@@ -79,9 +79,11 @@ export async function inspectDetailedSkillMenu(page, side, slot) {
       menuBottom: menu.bottom,
       menuTop: menu.top,
       nameWidth: name?.getBoundingClientRect().width ?? 0,
+      placement: node.dataset.placement,
       pickerBottom: picker.bottom,
       pickerTop: picker.top,
       requiredNameWidth: context.measureText(text).width,
+      viewportHeight: window.innerHeight,
     };
   });
 

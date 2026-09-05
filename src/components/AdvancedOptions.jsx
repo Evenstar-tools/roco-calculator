@@ -488,20 +488,22 @@ function SideMarks({ label, marks, onChange, side, tone }) {
       data-tone={tone}
     >
       <legend>{label}印记</legend>
-      <MarkSlot
-        label="正面"
-        onChange={(value) => onChange(side, "positive", value)}
-        polarity="positive"
-        sideLabel={label}
-        value={marks?.positive}
-      />
-      <MarkSlot
-        label="负面"
-        onChange={(value) => onChange(side, "negative", value)}
-        polarity="negative"
-        sideLabel={label}
-        value={marks?.negative}
-      />
+      <div className="mark-side__fields">
+        <MarkSlot
+          label="正面"
+          onChange={(value) => onChange(side, "positive", value)}
+          polarity="positive"
+          sideLabel={label}
+          value={marks?.positive}
+        />
+        <MarkSlot
+          label="负面"
+          onChange={(value) => onChange(side, "negative", value)}
+          polarity="negative"
+          sideLabel={label}
+          value={marks?.negative}
+        />
+      </div>
     </fieldset>
   );
 }
@@ -607,62 +609,87 @@ export function AdvancedOptions({
 
       {open ? (
         <div className="advanced-options__content">
-          <label className="field-group">
-            <span>防御技能减伤</span>
-            <span className="input-with-unit">
-              <input
-                aria-label="防御技能减伤"
-                max="100"
-                min="0"
-                onChange={(event) => onReductionChange(numericValue(event.target.value))}
-                type="number"
-                value={reductionPercent}
-              />
-              <span>%</span>
-            </span>
-          </label>
-          <fieldset className="bloodline-magic-field">
-            <legend>
-              血脉魔法 <small>给进攻方使用</small>
-            </legend>
-            <div className="bloodline-magic-field__controls">
+          <div className="advanced-options__common">
+            <label className="field-group">
+              <span>天气</span>
               <select
-                aria-label="血脉魔法"
-                onChange={(event) =>
-                  onBloodlineMagicChange(event.target.value, false)
-                }
-                value={bloodlineMagic.id}
+                aria-label="天气"
+                onChange={(event) => onWeatherChange(event.target.value)}
+                value={weather}
               >
-                {BLOODLINE_MAGIC_OPTIONS.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name}
-                  </option>
-                ))}
+                <option value="none">无天气</option>
+                <option value="rain">雨天 · 水系 ×1.75</option>
+                <option value="thunder">雷鸣 · 回合末引电 +1</option>
               </select>
-              <label className="bloodline-magic-field__trigger">
+            </label>
+            <label className="field-group">
+              <span>防御技能减伤</span>
+              <span className="input-with-unit">
                 <input
-                  aria-label={`使用${bloodlineMagic.name}`}
-                  checked={bloodlineMagicTriggered && bloodlineMagic.id !== "none"}
-                  disabled={bloodlineMagic.id === "none"}
-                  onChange={(event) =>
-                    onBloodlineMagicChange(
-                      bloodlineMagic.id,
-                      event.target.checked,
-                    )
-                  }
-                  type="checkbox"
+                  aria-label="防御技能减伤"
+                  max="100"
+                  min="0"
+                  onChange={(event) => onReductionChange(numericValue(event.target.value))}
+                  type="number"
+                  value={reductionPercent}
                 />
-                使用
-              </label>
-            </div>
-            <small>
-              {bloodlineMagic.implemented
-                ? bloodlineMagic.note
-                : bloodlineMagic.id === "none"
-                  ? "未使用血脉魔法"
-                  : "暂不参与伤害计算"}
-            </small>
-          </fieldset>
+                <span>%</span>
+              </span>
+            </label>
+            <label className="field-group">
+              <span>最终伤害倍率</span>
+              <input
+                aria-label="最终伤害倍率"
+                min="0"
+                onChange={(event) => onFinalMultiplierChange(numericValue(event.target.value, 1))}
+                step="0.05"
+                type="number"
+                value={finalMultiplier}
+              />
+            </label>
+            <fieldset className="bloodline-magic-field">
+              <legend>
+                血脉魔法 <small>给进攻方使用</small>
+              </legend>
+              <div className="bloodline-magic-field__controls">
+                <select
+                  aria-label="血脉魔法"
+                  onChange={(event) =>
+                    onBloodlineMagicChange(event.target.value, false)
+                  }
+                  value={bloodlineMagic.id}
+                >
+                  {BLOODLINE_MAGIC_OPTIONS.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name}
+                    </option>
+                  ))}
+                </select>
+                <label className="bloodline-magic-field__trigger">
+                  <input
+                    aria-label={`使用${bloodlineMagic.name}`}
+                    checked={bloodlineMagicTriggered && bloodlineMagic.id !== "none"}
+                    disabled={bloodlineMagic.id === "none"}
+                    onChange={(event) =>
+                      onBloodlineMagicChange(
+                        bloodlineMagic.id,
+                        event.target.checked,
+                      )
+                    }
+                    type="checkbox"
+                  />
+                  使用
+                </label>
+              </div>
+              <small>
+                {bloodlineMagic.implemented
+                  ? bloodlineMagic.note
+                  : bloodlineMagic.id === "none"
+                    ? "未使用血脉魔法"
+                    : "暂不参与伤害计算"}
+              </small>
+            </fieldset>
+          </div>
           <div className="mark-config">
             <SideMarks
               label="进攻方"
@@ -701,29 +728,6 @@ export function AdvancedOptions({
               </div>
             </section>
           ) : null}
-          <label className="field-group">
-            <span>天气</span>
-            <select
-              aria-label="天气"
-              onChange={(event) => onWeatherChange(event.target.value)}
-              value={weather}
-            >
-              <option value="none">无天气</option>
-              <option value="rain">雨天 · 水系 ×1.75</option>
-              <option value="thunder">雷鸣 · 回合末引电 +1</option>
-            </select>
-          </label>
-          <label className="field-group">
-            <span>最终伤害倍率</span>
-            <input
-              aria-label="最终伤害倍率"
-              min="0"
-              onChange={(event) => onFinalMultiplierChange(numericValue(event.target.value, 1))}
-              step="0.05"
-              type="number"
-              value={finalMultiplier}
-            />
-          </label>
           <FormulaAudit result={result} targetRef={formulaAuditRef} />
         </div>
       ) : null}

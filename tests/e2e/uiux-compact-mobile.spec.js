@@ -608,9 +608,12 @@ test("keeps detailed four-skill menus readable outside every attack and defense 
       expect(layout.nameWidth).toBeGreaterThanOrEqual(
         layout.requiredNameWidth,
       );
-      if (slot >= 3) {
+      expect(layout.menuTop).toBeGreaterThanOrEqual(0);
+      expect(layout.menuBottom).toBeLessThanOrEqual(layout.viewportHeight);
+      if (layout.placement === "up") {
         expect(layout.menuBottom).toBeLessThanOrEqual(layout.pickerTop + 1);
       } else {
+        expect(layout.placement).toBe("down");
         expect(layout.menuTop).toBeGreaterThanOrEqual(layout.pickerBottom - 1);
       }
     }

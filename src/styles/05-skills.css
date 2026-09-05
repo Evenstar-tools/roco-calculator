@@ -172,6 +172,16 @@
   list-style: none;
 }
 
+.skill-picker__options[data-placement="up"] {
+  top: auto;
+  bottom: calc(100% + 4px);
+}
+
+.skill-picker__options[data-placement="down"] {
+  top: calc(100% + 4px);
+  bottom: auto;
+}
+
 .skill-picker__options li {
   display: flex;
   min-height: 34px;
@@ -911,7 +921,7 @@
   min-width: 210px;
 }
 
-.skill-slot-group:nth-last-child(-n + 2) .skill-picker__options {
+.skill-slot-group:nth-last-child(-n + 2) .skill-picker__options[data-placement="up"] {
   top: auto;
   bottom: calc(100% + 4px);
 }

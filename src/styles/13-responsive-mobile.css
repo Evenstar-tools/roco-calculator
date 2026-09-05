@@ -87,6 +87,10 @@
     grid-template-columns: 1fr;
   }
 
+  .advanced-options__common {
+    grid-template-columns: 1fr;
+  }
+
   .mark-config {
     grid-template-columns: 1fr;
   }

@@ -449,3 +449,44 @@ final result: passed
 - 本轮不声称完整无障碍合规，也未执行安装/卸载链路。
 
 final result: passed
+
+---
+
+# 2026-09-05 Web 与桌面完整面板 R3-2/R3-4
+
+用户确认只实施 2「高级条件宽屏重排」和 4「技能菜单自动选择展开方向」；1「结果栏展示当前条件」与 3「热门配置搜索/双列」明确不做。本轮 Web 与桌面共用同一实现，不改小程序、计算规则或版本号，不推送、不打包。
+
+## 参考与实装
+
+- source visual truth：`artifacts/web-desktop-ux-20260905-round3/mockups/mock-r2-{light,dark}-after.png` 与 `artifacts/web-desktop-ux-20260905-round3/agent-supplement/mock-r4-{light,dark}-after.png`。
+- implementation：`http://127.0.0.1:4175/` 当前源码；高级条件截图和验证在 `implemented-r2-web-quality/`，技能菜单证据在 `implemented/r4/`，完整面板复核在 `implemented/integrated-audit/`。
+- full-view comparison：`implemented/integrated-audit/1920x1080-light-complete-panel.png`；1920 与 1366 的亮暗主题完整面板均已读回。
+- focused comparison：`implemented-r2-web-quality/approved-vs-actual-{light,dark}.png`、`implemented/r4/comparison-{light,dark}.png`，均把确认稿与实装置于同一画布比较。
+- normalization：聚焦对照保持确认稿与实装相同状态、相同主题及 1440×900 视口，deviceScaleFactor=1；补充实测覆盖 1920×1080、1366×768、1203/1202、761/760、621/620、390 与 320。
+- state：音速犬对水灵，具体版；高级选项展开并启用雨天、20% 减伤，技能菜单分别处于下方空间充足与接近视口底部状态。
+
+## 五项保真检查
+
+- 字体与排版：沿用项目字体栈、字号、字重及表单标签体系；没有缩小正文或新增解释文案。
+- 间距与布局：1203px 及以上四个常用条件同排，双方印记各自正负并排；1202px 以下回落两列，620px 及以下单列。1920/1366 高级区分别使用主区 99.4%/99.2% 宽度，无超框。
+- 颜色与视觉令牌：亮暗主题均复用现有 surface、border、attack、defense 令牌；未增加装饰性渐变、阴影或无意义卡片层级。
+- 素材：没有新增或替换图片、图标、SVG 或占位资源。
+- 文案：所有字段名、技能名和结果文案保持原样；血脉 `fieldset/legend`、四组印记与条件负面状态语义保留。
+
+## 交互与比较历史
+
+1. 高级条件首次重排后复测 13 个基础输入/选择控件，天气、减伤、最终倍率、血脉选择/使用、四组印记层数、负面状态加层与公式定位均保持原回调和键盘顺序。
+2. 技能菜单打开、窗口 resize、页面及祖先容器滚动、再次打开时都会重算上下空间；上下都不足时选较宽一侧并按真实空间限高。
+3. 首轮代码复核发现动态限高后键盘滚动仍残留固定 360px 位移，可能把活动项留在视口外；已统一使用实际 `clientHeight/maxHeight`，测试收紧为活动项确实位于可视区。
+4. 四技能旧测试原先硬编码前两槽向下、后两槽向上，与动态规则冲突；已改为按 `data-placement` 验证对应几何，同时要求菜单始终位于视口内。虚拟列表滚到末项“月蚀”后可点击选择并关闭。
+5. 1920×1080、1366×768 亮暗四场景集成检查 20/20；上下菜单均无遮挡、页面无横向溢出，console warning/error/pageerror 为 0。确认稿与实装同屏复核未发现 P0、P1、P2 或 P3。
+
+## 门禁结果
+
+- 隔离工作树全量单测：99 个文件、1776 项通过；ESLint 通过。
+- 全量端到端在 4 workers 下 48/48 通过；10 workers 中间轮的 3 个超时经降并发复跑全部通过，判定为资源竞争，不是功能失败。
+- 构建与性能阻断门禁通过：617 个精灵、579 个技能、4675 modules；客户端 12.25/13.00 MiB；JS gzip 232.59/236.00 KiB，原始 JS 793.17/810.00 KiB，runtime 1.35/1.50 MiB。
+- CSS gzip 34.08 KiB，高于 24 KiB 提示基线但低于 46 KiB 阻断上限；本轮增加量未触发阻断。
+- 验证在仅包含本轮 11 个源码/测试文件的 detached worktree 完成，避免旁路 S4 数据改动污染；临时 worktree 与依赖 Junction 已按明确路径清理。
+
+final result: passed
