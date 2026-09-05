@@ -158,11 +158,11 @@
   }
 
   .mode-switch__short-label {
-    display: block;
+    display: none;
   }
 
   .mode-switch__long-label {
-    display: none;
+    display: block;
   }
 
   .skills-grid {
@@ -530,8 +530,16 @@
     line-height: 16px;
   }
 
-  .iv-editor {
-    grid-template-columns: minmax(0, 1fr);
+  .parameter-sheet .iv-editor__stat {
+    padding: 9px;
+  }
+
+  .parameter-sheet .iv-editor__stat-heading {
+    gap: 4px;
+  }
+
+  .parameter-sheet .iv-editor__panel {
+    font-size: 16px;
   }
 }
 
@@ -542,6 +550,30 @@
 }
 
 @media (max-width: 359px) {
+  .skill-slots--matrix .skill-result-row {
+    grid-template-columns: minmax(0, 1fr) 55px;
+  }
+
+  .skill-slots--matrix .skill-picker__trigger {
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 3px;
+    padding: 5px 3px 5px 4px;
+  }
+
+  .skill-slots--matrix .skill-picker__trigger > .skill-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .skill-slots--matrix .skill-picker__name {
+    font-size: 12px;
+    letter-spacing: -0.15px;
+  }
+
+  .skill-slots--matrix .skill-result-row__result {
+    padding: 4px 1px;
+  }
+
   .team-analysis__slots {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

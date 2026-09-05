@@ -690,7 +690,7 @@ describe("result bar and sheet", () => {
     expect(within(process).getByText("段数")).toBeInTheDocument();
   });
 
-  test("shows the current result before the four-skill comparison", () => {
+  test("shows the current result and four-skill comparison before adjustments", () => {
     render(
       <ResultSheet
         onClose={() => {}}
@@ -717,8 +717,13 @@ describe("result bar and sheet", () => {
 
     const current = screen.getByLabelText("伤害摘要");
     const comparison = screen.getByText("技能结果");
+    const adjustments = screen.getByLabelText("结果调整工作台");
     expect(
       current.compareDocumentPosition(comparison) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      comparison.compareDocumentPosition(adjustments) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });

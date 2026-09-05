@@ -302,6 +302,18 @@ export default function ResultSheet({
               settlement={result?.negativeStatusSettlement}
             />
           ) : null}
+          {exact && view?.rows?.length > 1 ? (
+            <View className="result-sheet__comparison">
+              <Text className="result-sheet__section-title">
+                技能结果
+              </Text>
+              <SkillResultRows
+                onSelect={onSelectSkill}
+                rows={view.rows}
+                selectedIndex={selectedIndex}
+              />
+            </View>
+          ) : null}
           <ResultActionPanel
             actions={actions}
             activeActionKeys={activeActionKeys}
@@ -325,18 +337,6 @@ export default function ResultSheet({
           />
           {exact ? (
             <>
-              {view?.rows?.length > 1 ? (
-                <View className="result-sheet__comparison">
-                  <Text className="result-sheet__section-title">
-                    技能结果
-                  </Text>
-                  <SkillResultRows
-                    onSelect={onSelectSkill}
-                    rows={view.rows}
-                    selectedIndex={selectedIndex}
-                  />
-                </View>
-              ) : null}
               {view?.traitResult ? (
                 <View className="result-sheet__trait-result">
                   <Button

@@ -1423,6 +1423,16 @@
   margin-top: 14px;
 }
 
+.result-sheet__summary + .result-sheet__comparison {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-neutral);
+}
+
+.result-sheet__comparison + .result-actions {
+  margin-top: 14px;
+}
+
 .result-actions {
   display: grid;
   min-width: 0;
