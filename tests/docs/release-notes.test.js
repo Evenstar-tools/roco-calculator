@@ -45,7 +45,7 @@ describe("版本记录", () => {
   test("S4 前瞻作为当前桌面版本置顶", () => {
     expect(featuredRelease).toBe(S4_PREVIEW_USER_RELEASE);
     expect(featuredRelease).toMatchObject({
-      date: "2026.09.04",
+      date: "2026.09.05",
       status: "preview",
     });
     expect(featuredRelease.version).toBe(`v${packageVersion}`);

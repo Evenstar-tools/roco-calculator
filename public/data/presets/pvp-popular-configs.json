@@ -1,7 +1,7 @@
 {
   "format": "rock-calculator.favorite-config-library",
   "schemaVersion": 1,
-  "appVersion": "1.6.10",
+  "appVersion": "1.6.11",
   "versions": {
     "data": "s4-preview-2026-09-02",
     "rules": "s4-preview-2026-09-02"

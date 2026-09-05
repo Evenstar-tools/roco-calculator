@@ -41,6 +41,46 @@ function createRelease({ features = [], fixes = [], ...release }) {
 }
 
 export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
+  version: "v1.6.11",
+  date: "2026.09.05",
+  title: "S4前瞻规则与交互补丁",
+  status: "preview",
+  whatsNew: {
+    title: "S4更新",
+    items: [
+      {
+        title: "S4新精灵前瞻",
+        description: "补齐本轮首领、头像和规则适配，搜索与计算口径同步。",
+      },
+      {
+        title: "综合耐久显示",
+        description: "速度总览与战斗条件更集中，减少反复切换页面。",
+      },
+      {
+        title: "精灵能力分析功能",
+        description: "移动端配置说明与结果比较更清楚，窄屏操作更顺手。",
+      },
+    ],
+  },
+  sections: [
+    {
+      kind: "feature",
+      items: [
+        "补齐本轮S4前瞻首领、头像和规则适配，网页与小程序共享数据同步。",
+        "新增统一速度总览，常用配置支持搜索，战斗条件与技能入口更集中。",
+      ],
+    },
+    {
+      kind: "fix",
+      items: [
+        "分享七技能配置时保留选中槽位，已触发状态效果可跨端序列化。",
+        "小程序优化配置说明和结果比较顺序，窄屏弹层与状态提示更清楚。",
+      ],
+    },
+  ],
+});
+
+const S4_PREVIEW_V1610_RELEASE = createStructuredRelease({
   version: "v1.6.10",
   date: "2026.09.04",
   title: "S4技能与结算校正",
@@ -138,6 +178,7 @@ const S4_PREVIEW_V168_RELEASE = createStructuredRelease({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   S4_PREVIEW_USER_RELEASE,
+  S4_PREVIEW_V1610_RELEASE,
   S4_PREVIEW_V169_RELEASE,
   S4_PREVIEW_V168_RELEASE,
   createStructuredRelease({
