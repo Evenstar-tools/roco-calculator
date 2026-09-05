@@ -145,16 +145,65 @@ describe("versioned share state", () => {
     );
   });
 
-  test("round trips a seven-slot carried skill loadout", async () => {
-    const state = shareFixture();
-    state.sides.attacker.skills.four = [
+  test.each([
+    ["forward", "attacker"],
+    ["reverse", "defender"],
+  ])("round trips slots five through seven in the %s direction", async (
+    direction,
+    side,
+  ) => {
+    const carriedSkills = [
       "skill_a", "skill_b", "skill_c", "skill_d", "skill_a", "skill_b", "skill_c",
     ];
+    for (const selectedSkillIndex of [4, 5, 6]) {
+      const state = shareFixture();
+      state.sides[side].skills.four = carriedSkills;
+      state.directions[direction].selectedSkillIndex = selectedSkillIndex;
+
+      const decoded = await decodeShareState(await encodeShareState(state));
+
+      expect(decoded.sides[side].skills.four).toEqual(carriedSkills);
+      expect(decoded.directions[direction].selectedSkillIndex).toBe(
+        selectedSkillIndex,
+      );
+    }
+  });
+
+  test("round trips the default first-slot selection", async () => {
+    const state = shareFixture();
+    state.directions.forward.selectedSkillIndex = 0;
+    state.directions.reverse.selectedSkillIndex = 0;
 
     const decoded = await decodeShareState(await encodeShareState(state));
 
-    expect(decoded.sides.attacker.skills.four).toEqual(
-      state.sides.attacker.skills.four,
+    expect(decoded.directions.forward.selectedSkillIndex).toBe(0);
+    expect(decoded.directions.reverse.selectedSkillIndex).toBe(0);
+  });
+
+  test.each([
+    ["missing", undefined, 4],
+    ["negative", -1, 4],
+    ["fractional", 1.5, 4],
+    ["four-slot overflow", 4, 4],
+    ["seven-slot overflow", 7, 7],
+  ])("rejects a %s selected skill index", async (
+    _case,
+    selectedSkillIndex,
+    slotCount,
+  ) => {
+    const state = shareFixture();
+    state.sides.attacker.skills.four = Array.from(
+      { length: slotCount },
+      (_, index) => `skill_${String.fromCharCode(97 + (index % 4))}`,
+    );
+    if (selectedSkillIndex === undefined) {
+      delete state.directions.forward.selectedSkillIndex;
+    } else {
+      state.directions.forward.selectedSkillIndex = selectedSkillIndex;
+    }
+
+    await expect(encodeShareState(state)).rejects.toThrow(
+      "directions.forward.selectedSkillIndex 无效",
     );
   });
 

@@ -463,7 +463,7 @@ function assertMarks(marks) {
   }
 }
 
-function assertDirection(direction, path) {
+function assertDirection(direction, path, skillSlotCount) {
   if (
     !LEGACY_DIRECTION_KEYS.every((key) => Object.hasOwn(direction, key)) ||
     !Object.keys(direction).every((key) => DIRECTION_KEYS.includes(key))
@@ -473,7 +473,7 @@ function assertDirection(direction, path) {
   if (
     !Number.isInteger(direction.selectedSkillIndex) ||
     direction.selectedSkillIndex < 0 ||
-    direction.selectedSkillIndex > 3
+    direction.selectedSkillIndex >= skillSlotCount
   ) {
     throw new TypeError(`${path}.selectedSkillIndex 无效`);
   }
@@ -592,8 +592,16 @@ function assertShareState(state) {
   if (!hasExactKeys(state.directions, ["forward", "reverse"])) {
     throw new TypeError("分享配置方向结构无效");
   }
-  assertDirection(state.directions.forward, "directions.forward");
-  assertDirection(state.directions.reverse, "directions.reverse");
+  assertDirection(
+    state.directions.forward,
+    "directions.forward",
+    state.sides.attacker.skills.four.length,
+  );
+  assertDirection(
+    state.directions.reverse,
+    "directions.reverse",
+    state.sides.defender.skills.four.length,
+  );
 }
 
 function selectSkillInput(skill) {
