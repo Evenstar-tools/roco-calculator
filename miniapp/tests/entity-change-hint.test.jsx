@@ -1,7 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import CombatantCard from "../src/components/CombatantCard.jsx";
 import SkillPicker from "../src/components/SkillPicker.jsx";
+import SpiritPicker from "../src/components/SpiritPicker.jsx";
 
 const patch = {
   id: "s4-preview-2026-09-10",
@@ -72,7 +73,7 @@ describe("移动端实体改动提示", () => {
     expect(screen.queryByRole("dialog", { name: "攻击方技能 1选项" })).not.toBeInTheDocument();
   });
 
-  test("S4 全新精灵显示 NEW 标识，技能仍不显示改动叹号", () => {
+  test("S4 全新精灵与首领显示 NEW 标识，技能仍不显示改动叹号", () => {
     const newSpirit = {
       id: "silver-moon-wolf-king",
       fullName: "银月狼王",
@@ -98,8 +99,22 @@ describe("移动端实体改动提示", () => {
         items: [{ kind: "new", label: "新增技能", after: "S4 新增" }],
       },
     };
+    const newBoss = {
+      id: "flame-berserker",
+      fullName: "烈焰狂战士",
+      stage: "首领",
+      types: ["火"],
+      changeInfo: {
+        patch,
+        entityName: "烈焰狂战士",
+        isNew: true,
+        items: [
+          { kind: "new", label: "新增首领占位", after: "特性·蒸汽革命" },
+        ],
+      },
+    };
 
-    const { unmount } = render(
+    const newSpiritView = render(
       <CombatantCard
         identityOnly
         onActivate={vi.fn()}
@@ -114,7 +129,38 @@ describe("移动端实体改动提示", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByLabelText("银月狼王为本期新增精灵"))
       .toHaveTextContent("NEW");
-    unmount();
+    newSpiritView.unmount();
+
+    const newBossView = render(
+      <CombatantCard
+        identityOnly
+        onActivate={vi.fn()}
+        onChange={() => {}}
+        side="attacker"
+        spirit={newBoss}
+        spirits={[newBoss]}
+      />,
+    );
+    expect(screen.getByLabelText("烈焰狂战士为本期新增首领"))
+      .toHaveTextContent("NEW");
+    newBossView.unmount();
+
+    const newBossPickerView = render(
+      <SpiritPicker
+        onChange={vi.fn()}
+        side="attacker"
+        spirits={[newBoss]}
+        value={null}
+      />,
+    );
+    fireEvent.input(screen.getByLabelText("搜索攻击方宠物"), {
+      target: { value: "烈焰" },
+    });
+    expect(
+      within(screen.getByRole("button", { name: "选择烈焰狂战士" }))
+        .getByLabelText("烈焰狂战士为本期新增首领"),
+    ).toHaveTextContent("NEW");
+    newBossPickerView.unmount();
 
     render(
       <SkillPicker

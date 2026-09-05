@@ -637,6 +637,18 @@ const RULES = Object.freeze({
     "每层威力",
     { max: 20 },
   ),
+  蒸汽革命: stack(
+    "fixed_power_physical_defense",
+    10,
+    "入场前己方火系技能次数",
+    "每层威力",
+    {
+      defenseEffect: 5,
+      defenseEffectLabel: "每层物防",
+      max: 99,
+      roles: ["attacker", "defender"],
+    },
+  ),
   定向精炼: stack(
     "power_percent",
     10,
@@ -888,6 +900,11 @@ export function getTraitEffectRule(trait, role = "attacker") {
       };
     }
     return named;
+  }
+  if (
+    trait?.provenance?.previewStatus?.adaptationStatus === "description-only"
+  ) {
+    return null;
   }
   return inferredRule(trait, role);
 }
@@ -1348,6 +1365,16 @@ export function resolveTraitEffectRule(trait, role, input) {
     result.powerMultiplier = 1 + amount / 100;
   } else if (rule.kind === "fixed_power") {
     result.fixedPowerAdd = amount;
+  } else if (rule.kind === "fixed_power_physical_defense") {
+    if (role === "attacker") {
+      result.fixedPowerAdd = amount;
+      result.attackerDefenseLevelBonus = defenseAmount / 10;
+    } else {
+      result.defenderDefenseLevelBonus = defenseAmount / 10;
+      if (input.skill?.category === "physical") {
+        result.defenseLevelBonus = defenseAmount / 10;
+      }
+    }
   } else if (rule.kind === "damage_reduction_percent") {
     result.damageReductionMultiplier = Math.max(0, 1 - amount / 100);
   } else if (rule.kind === "final_damage_percent") {
@@ -1370,8 +1397,11 @@ export function resolveTraitEffectRule(trait, role, input) {
     step: active
       ? {
           after:
-            rule.kind === "fixed_power"
+            rule.kind === "fixed_power" ||
+            (rule.kind === "fixed_power_physical_defense" && role === "attacker")
               ? result.fixedPowerAdd
+              : rule.kind === "fixed_power_physical_defense"
+                ? 1 + defenseAmount / 100
               : rule.kind === "speed_flat"
                 ? amount
               : rule.kind === "attack_percent" ||
@@ -1401,7 +1431,11 @@ export function resolveTraitEffectRule(trait, role, input) {
                     ? result.damageReductionMultiplier
                     : result.finalDamageMultiplier,
           before:
-            rule.kind === "fixed_power" || rule.kind === "speed_flat" ? 0 : 1,
+            rule.kind === "fixed_power" ||
+            (rule.kind === "fixed_power_physical_defense" && role === "attacker") ||
+            rule.kind === "speed_flat"
+              ? 0
+              : 1,
           input: rule.stack
             ? {
                 ...(rule.defenseEffect === undefined ? {} : { defenseEffect }),

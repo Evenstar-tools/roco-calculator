@@ -147,7 +147,7 @@ test("current snapshot has no unclassified form and only finals or bosses are el
   }, {});
 
   expect(roleCounts).toEqual({
-    boss: 61,
+    boss: 63,
     final: 253,
     growth: 303,
   });

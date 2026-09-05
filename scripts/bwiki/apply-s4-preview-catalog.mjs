@@ -60,6 +60,7 @@ function compactDescription(value) {
 
 function computedCounts(catalog) {
   const families = catalog.families ?? [];
+  const bosses = catalog.bossPlaceholders ?? [];
   const forms = families.flatMap((family) => family.forms ?? []);
   const skills = families.flatMap((family) => family.skills ?? []);
   const placeholders = skills.filter(({ status }) => status === "placeholder");
@@ -68,6 +69,8 @@ function computedCounts(catalog) {
     finalForms: forms.filter(({ isFinal }) => isFinal === true).length,
     forms: forms.length,
     placeholderForms: forms.filter(({ isFinal }) => isFinal !== true).length,
+    bossPlaceholders: bosses.length,
+    bossTraits: bosses.filter(({ trait }) => trait).length,
     skillSlots: skills.length,
     traits: families.filter(({ trait }) => trait).length,
     uniqueSkillNames: uniqueCount(skills.map(({ name }) => name)),
@@ -90,6 +93,9 @@ export function validateS4PreviewCatalog(catalog) {
   const rowKeys = [];
   const formNames = [];
   const traitNames = [];
+  const bossKeys = [];
+  const bossNames = [];
+  const bossTraitNames = [];
   const skillByName = new Map();
   for (const family of catalog.families) {
     familyKeys.push(family.candidateFamilyKey);
@@ -191,10 +197,74 @@ export function validateS4PreviewCatalog(catalog) {
     }
   }
 
+  requireCondition(
+    Array.isArray(catalog?.bossPlaceholders),
+    "S4 前瞻目录缺少 bossPlaceholders",
+  );
+  for (const boss of catalog.bossPlaceholders) {
+    bossKeys.push(boss.candidateRowKey);
+    bossNames.push(boss.name);
+    bossTraitNames.push(boss.trait?.name);
+    requireCondition(
+      typeof boss.candidateRowKey === "string" &&
+        boss.candidateRowKey.length > 0 &&
+        typeof boss.name === "string" &&
+        boss.name.length > 0,
+      "S4 首领占位缺少候选标识或名称",
+    );
+    requireCondition(
+      typeof boss.baseSpiritId === "string" &&
+        boss.baseSpiritId.length > 0 &&
+        typeof boss.baseSpiritFullName === "string" &&
+        boss.baseSpiritFullName.length > 0,
+      `${boss.name} 缺少明确的继承基底`,
+    );
+    requireCondition(
+      boss.stage === "首领" && boss.sourceCategory === "首领形态",
+      `${boss.name} 首领身份字段无效`,
+    );
+    requireCondition(
+      boss.dexNoStrategy === "copy-base-exact" &&
+        boss.raceStatsStrategy === "copy-base-exact" &&
+        boss.learnsetStrategy === "copy-base-exact" &&
+        ["copy-base-placeholder", "official-video-frame-temporary"].includes(
+          boss.assetStrategy,
+        ),
+      `${boss.name} 继承策略无效`,
+    );
+    if (boss.assetStrategy === "official-video-frame-temporary") {
+      requireCondition(
+        typeof boss.assetEvidenceTimestamp === "string" &&
+          boss.assetEvidenceTimestamp.length > 0 &&
+          typeof boss.assetSourceFile === "string" &&
+          boss.assetSourceFile.length > 0,
+        `${boss.name} 临时视频帧缺少时间戳或源文件`,
+      );
+    }
+    requireCondition(
+      boss.trait?.name &&
+        boss.trait?.description &&
+        ["description-only", "reviewed-rule"].includes(
+          boss.trait?.adaptationStatus,
+        ),
+      `${boss.name} 缺少可追踪的新特性状态`,
+    );
+  }
+
   requireCondition(uniqueCount(familyKeys) === familyKeys.length, "S4 前瞻目录存在重复家族标识");
-  requireCondition(uniqueCount(rowKeys) === rowKeys.length, "S4 前瞻目录存在重复候选行标识");
-  requireCondition(uniqueCount(formNames) === formNames.length, "S4 前瞻目录存在重复形态名");
-  requireCondition(uniqueCount(traitNames) === traitNames.length, "S4 前瞻目录存在重复特性名");
+  requireCondition(
+    uniqueCount([...rowKeys, ...bossKeys]) === rowKeys.length + bossKeys.length,
+    "S4 前瞻目录存在重复候选行标识",
+  );
+  requireCondition(
+    uniqueCount([...formNames, ...bossNames]) === formNames.length + bossNames.length,
+    "S4 前瞻目录存在重复形态名",
+  );
+  requireCondition(
+    uniqueCount([...traitNames, ...bossTraitNames]) ===
+      traitNames.length + bossTraitNames.length,
+    "S4 前瞻目录存在重复特性名",
+  );
 
   const counts = computedCounts(catalog);
   for (const [key, actual] of Object.entries(counts)) {
@@ -247,24 +317,74 @@ function requireExistingSkill(skillByName, candidateSkill) {
   return skill;
 }
 
+function requireBossBase(snapshot, boss) {
+  const baseSpirit = snapshot.spirits.find(
+    ({ id }) => id === boss.baseSpiritId,
+  );
+  requireCondition(
+    baseSpirit?.fullName === boss.baseSpiritFullName,
+    `${boss.name} 继承基底不存在或名称漂移：${boss.baseSpiritFullName}`,
+  );
+  requireCondition(
+    baseSpirit.raceStats &&
+      RACE_STAT_KEYS.every((key) => Number.isInteger(baseSpirit.raceStats[key])) &&
+      Number.isInteger(baseSpirit.raceStats.total),
+    `${boss.name} 继承基底缺少完整种族值`,
+  );
+  requireCondition(
+    Array.isArray(baseSpirit.types) && baseSpirit.types.length > 0,
+    `${boss.name} 继承基底缺少属性`,
+  );
+  requireCondition(
+    typeof baseSpirit.asset?.sourceUrl === "string" &&
+      /^https:\/\//u.test(baseSpirit.asset.sourceUrl),
+    `${boss.name} 继承基底缺少可用头像`,
+  );
+  const baseLearnset = snapshot.learnsets.find(
+    ({ spiritId }) => spiritId === baseSpirit.id,
+  );
+  requireCondition(
+    baseLearnset && Array.isArray(baseLearnset.skillIds),
+    `${boss.name} 继承基底缺少学习面`,
+  );
+  return { baseLearnset, baseSpirit };
+}
+
 export function applyS4PreviewCatalog(snapshot, catalog) {
   const counts = validateS4PreviewCatalog(catalog);
   const next = structuredClone(snapshot);
   const catalogId = catalog.meta.id;
   const source = sourceRef(catalog.meta.source);
   const skillParameterSource = sourceRef(catalog.meta.skillParameterSource);
+  const bossEntries = catalog.bossPlaceholders ?? [];
   const formEntries = catalog.families.flatMap((family) =>
     family.forms.map((form) => ({ family, form })),
   );
   const previewIds = new Set(
-    formEntries.map(({ form }) => provisionalSpiritId(catalogId, form.name)),
+    [
+      ...formEntries.map(({ form }) =>
+        provisionalSpiritId(catalogId, form.name),
+      ),
+      ...bossEntries.map(({ name }) => provisionalSpiritId(catalogId, name)),
+    ],
   );
-  const previewNames = new Set(formEntries.map(({ form }) => form.name));
+  const previewNames = new Set(
+    [
+      ...formEntries.map(({ form }) => form.name),
+      ...bossEntries.map(({ name }) => name),
+    ],
+  );
   const previewTraitIds = new Set(
-    catalog.families.map(({ trait }) => traitId(trait)),
+    [
+      ...catalog.families.map(({ trait }) => traitId(trait)),
+      ...bossEntries.map(({ trait }) => traitId(trait)),
+    ],
   );
   const previewTraitNames = new Set(
-    catalog.families.map(({ trait }) => trait.name),
+    [
+      ...catalog.families.map(({ trait }) => trait.name),
+      ...bossEntries.map(({ trait }) => trait.name),
+    ],
   );
   const placeholderSkills = [
     ...new Map(
@@ -300,6 +420,9 @@ export function applyS4PreviewCatalog(snapshot, catalog) {
   requireCondition(
     !conflictingSkill,
     `S4 前瞻技能名称已被其他实体占用：${conflictingSkill?.name}`,
+  );
+  const bossBaseByName = new Map(
+    bossEntries.map((boss) => [boss.name, requireBossBase(next, boss)]),
   );
 
   const priorPreviewCount = next.spirits.filter(({ id }) => previewIds.has(id)).length;
@@ -451,6 +574,121 @@ export function applyS4PreviewCatalog(snapshot, catalog) {
     }
   }
 
+  for (const boss of bossEntries) {
+    const spiritId = provisionalSpiritId(catalogId, boss.name);
+    const bossTraitId = traitId(boss.trait);
+    const { baseLearnset, baseSpirit } = bossBaseByName.get(boss.name);
+    const inheritedSource = baseSpirit.source ?? source;
+    const inheritedProvenance = baseSpirit.provenance ?? {};
+    const usesTemporaryVideoFrame =
+      boss.assetStrategy === "official-video-frame-temporary";
+    const bossAsset = usesTemporaryVideoFrame
+      ? {
+          sourceUrl: `/assets/spirits/${spiritId}.png`,
+          width: 128,
+          height: 128,
+          status: "temporary-preview",
+          replacementPending: true,
+        }
+      : {
+          ...baseSpirit.asset,
+          status: "inherited-placeholder",
+          replacementPending: true,
+        };
+    const bossAssetProvenance = usesTemporaryVideoFrame
+      ? {
+          ...skillParameterSource,
+          evidenceTimestamp: boss.assetEvidenceTimestamp,
+          sourceFile: boss.assetSourceFile,
+          usage: "temporary-video-frame",
+        }
+      : inheritedProvenance.asset ?? inheritedSource;
+    const evolutionChainNames = [
+      ...new Set([
+        ...(baseSpirit.evolutionChainNames ?? [baseSpirit.fullName]),
+        boss.name,
+      ]),
+    ];
+
+    replaceOrAppend(next.traits, {
+      id: bossTraitId,
+      name: boss.trait.name,
+      description: boss.trait.description,
+      provenance: {
+        identity: skillParameterSource,
+        description: skillParameterSource,
+        previewStatus: {
+          catalogId,
+          adaptationStatus: boss.trait.adaptationStatus,
+          evidenceTimestamp: boss.evidenceTimestamp,
+        },
+      },
+    });
+
+    next.spirits.push({
+      id: spiritId,
+      dexNo: baseSpirit.dexNo,
+      baseName: boss.name,
+      variantName: null,
+      fullName: boss.name,
+      stage: boss.stage,
+      sourceCategory: boss.sourceCategory,
+      types: [...baseSpirit.types],
+      raceStats: { ...baseSpirit.raceStats },
+      traitIds: [bossTraitId],
+      traitName: boss.trait.name,
+      evolutionChainNames,
+      asset: bossAsset,
+      source: skillParameterSource,
+      provenance: {
+        identity: skillParameterSource,
+        stage: skillParameterSource,
+        sourceCategory: skillParameterSource,
+        types: inheritedProvenance.types ?? inheritedSource,
+        raceStats: inheritedProvenance.raceStats ?? inheritedSource,
+        traitIds: skillParameterSource,
+        evolutionChainNames: skillParameterSource,
+        asset: bossAssetProvenance,
+        previewIdentity: {
+          candidateRowKey: boss.candidateRowKey,
+          catalogId,
+          baseSpiritId: baseSpirit.id,
+          formalDataPending: true,
+          inheritedFields: [
+            "dexNo",
+            "types",
+            "raceStats",
+            "learnset",
+            ...(usesTemporaryVideoFrame ? [] : ["asset"]),
+          ],
+          evidenceTimestamp: boss.evidenceTimestamp,
+          ...(boss.baseMatchEvidence
+            ? { baseMatchEvidence: boss.baseMatchEvidence }
+            : {}),
+        },
+      },
+    });
+
+    next.learnsets.push({
+      ...structuredClone(baseLearnset),
+      spiritId,
+      skillIds: [...baseLearnset.skillIds],
+      ...(Array.isArray(baseLearnset.defaultSkillIds)
+        ? { defaultSkillIds: [...baseLearnset.defaultSkillIds] }
+        : {}),
+      acquisitions: structuredClone(baseLearnset.acquisitions ?? {}),
+      sources: replaceSourceByUrl(baseLearnset.sources, skillParameterSource),
+      provenance: {
+        ...(baseLearnset.provenance ?? {}),
+        previewStatus: {
+          catalogId,
+          baseSpiritId: baseSpirit.id,
+          inheritance: "copy-base-exact",
+        },
+      },
+    });
+  }
+
   if (next.currentPatchChanges) {
     const entries = new Map(
       next.currentPatchChanges.spirits.map((entry) => [entry.entityId, entry]),
@@ -469,6 +707,21 @@ export function applyS4PreviewCatalog(snapshot, catalog) {
             after: isFinal
               ? `特性·${family.trait.name}`
               : "种族值待确认",
+          },
+        ],
+      });
+    }
+    for (const boss of bossEntries) {
+      const entityId = provisionalSpiritId(catalogId, boss.name);
+      entries.set(entityId, {
+        entityId,
+        entityName: boss.name,
+        isNew: true,
+        items: [
+          {
+            kind: "new",
+            label: "新增首领占位",
+            after: `继承${boss.baseSpiritFullName}种族值；特性·${boss.trait.name}`,
           },
         ],
       });
@@ -499,7 +752,9 @@ export function applyS4PreviewCatalog(snapshot, catalog) {
     diff: {
       ...(next.meta?.diff ?? {}),
       spiritsAdded:
-        Math.max(0, previousSpiritsAdded - priorPreviewCount) + counts.forms,
+        Math.max(0, previousSpiritsAdded - priorPreviewCount) +
+        counts.forms +
+        counts.bossPlaceholders,
       skillsAdded:
         Math.max(0, previousSkillsAdded - priorPreviewSkillCount) +
         counts.newSkillPlaceholders,
@@ -514,8 +769,9 @@ export function applyS4PreviewCatalog(snapshot, catalog) {
         "23个形态图鉴号、正式阶数、形态来源和正式身份",
         "受遮挡资料中的特性名“活体标本”需以正式文本复核",
         "23个形态的正式BWIKI头像绑定（当前使用本地前瞻原色图）",
-        "22个已分类新技能的能耗和/或基础威力",
-        "其余2个新技能的属性、类别、能耗和基础威力",
+        "2个首领的正式透明头像（当前均使用官方视频帧临时抠图）",
+        "降雨、午夜爆音的属性、类别、能耗和基础威力",
+        "24个视频确认新技能及首领特性“月相”的计算规则适配",
         "BWIKI正式数据逐字段核实",
       ],
     },
@@ -544,7 +800,7 @@ async function main() {
     "utf8",
   );
   process.stdout.write(
-    `S4 前瞻目录已写入：spirits=${patched.meta.s4PreviewCatalog.counts.forms} placeholderForms=${patched.meta.s4PreviewCatalog.counts.placeholderForms} traits=${patched.meta.s4PreviewCatalog.counts.traits} newSkillPlaceholders=${patched.meta.s4PreviewCatalog.counts.newSkillPlaceholders}\n`,
+    `S4 前瞻目录已写入：spirits=${patched.meta.s4PreviewCatalog.counts.forms} bossPlaceholders=${patched.meta.s4PreviewCatalog.counts.bossPlaceholders} placeholderForms=${patched.meta.s4PreviewCatalog.counts.placeholderForms} traits=${patched.meta.s4PreviewCatalog.counts.traits + patched.meta.s4PreviewCatalog.counts.bossTraits} newSkillPlaceholders=${patched.meta.s4PreviewCatalog.counts.newSkillPlaceholders}\n`,
   );
 }
 

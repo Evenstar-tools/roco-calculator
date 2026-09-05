@@ -3265,6 +3265,64 @@ describe("calculateMatchup", () => {
     expect(stacked.totalDamage).toBeGreaterThan(base.totalDamage);
   });
 
+  test("蒸汽革命把同一入场前火系次数结算为固定威力和仅物理生效的物防", () => {
+    const trait = {
+      id: "trait_steam_revolution",
+      name: "蒸汽革命",
+      description:
+        "己方精灵每使用1次火系技能，自己入场时获得全技能威力+10和物防+5%。",
+    };
+    const fixtureWithTraitOn = (spiritId) => ({
+      ...snapshot,
+      spirits: snapshot.spirits.map((spirit) =>
+        spirit.id === spiritId ? { ...spirit, traitIds: [trait.id] } : spirit,
+      ),
+      traits: [trait],
+    });
+    const resultFor = (fixture, skillId, context = {}) =>
+      calculateMatchup(
+        fixture,
+        battleInput({
+          directions: { forward: { context } },
+          sides: {
+            attacker: side("spirit_sonic_dog", skillId, [
+              skillId,
+              null,
+              null,
+              null,
+            ]),
+          },
+        }),
+      ).forward.selectedResult;
+
+    const attackerFixture = fixtureWithTraitOn("spirit_sonic_dog");
+    const basePower = resultFor(attackerFixture, "skill_wind");
+    const stackedPower = resultFor(attackerFixture, "skill_wind", {
+      attackerTraitStacks: 3,
+    });
+    expect(stackedPower.skillPower - basePower.skillPower).toBe(30);
+    expect(stackedPower.totalDamage).toBeGreaterThan(basePower.totalDamage);
+
+    const defenderFixture = fixtureWithTraitOn("spirit_water");
+    const basePhysical = resultFor(defenderFixture, "skill_wind");
+    const stackedPhysical = resultFor(defenderFixture, "skill_wind", {
+      defenderTraitStacks: 3,
+    });
+    expect(stackedPhysical.combatPanel.defender.physicalDefense).toBeGreaterThan(
+      basePhysical.combatPanel.defender.physicalDefense,
+    );
+    expect(stackedPhysical.totalDamage).toBeLessThan(basePhysical.totalDamage);
+
+    const baseMagical = resultFor(defenderFixture, "skill_water");
+    const stackedMagical = resultFor(defenderFixture, "skill_water", {
+      defenderTraitStacks: 3,
+    });
+    expect(stackedMagical.combatPanel.defender.magicalDefense).toBe(
+      baseMagical.combatPanel.defender.magicalDefense,
+    );
+    expect(stackedMagical.totalDamage).toBe(baseMagical.totalDamage);
+  });
+
   test("uses trait speed bonuses before resolving speed-difference skill power", () => {
     const speedSkill = {
       id: "skill_trait_speed_difference",

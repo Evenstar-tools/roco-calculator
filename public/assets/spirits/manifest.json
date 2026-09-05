@@ -6194,6 +6194,32 @@
       "bytes": 20524,
       "width": 128,
       "height": 107
+    },
+    {
+      "id": "spirit_8ac693cfd57fea1c",
+      "name": "烈焰狂战士",
+      "localFile": "/assets/spirits/spirit_8ac693cfd57fea1c.png",
+      "sourceKind": "s4-boss-preview-local",
+      "sourceVideoUrl": "https://www.bilibili.com/video/BV1Cpt66oEnz/",
+      "sourceTimestamp": "02:00.700",
+      "sourceFrame": "烈焰狂战士_进化完成_120.700s.png",
+      "sha256": "fffca1f046fdfbbb82a7f21bb09ced10f5bad886bd76008ac8596bb16ad2ccc9",
+      "bytes": 26404,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "spirit_59a68cf08569c4a7",
+      "name": "满月砣",
+      "localFile": "/assets/spirits/spirit_59a68cf08569c4a7.png",
+      "sourceKind": "s4-boss-preview-local",
+      "sourceVideoUrl": "https://www.bilibili.com/video/BV1Cpt66oEnz/",
+      "sourceTimestamp": "02:26.467",
+      "sourceFrame": "满月砣_进化完成_146.4667s.png",
+      "sha256": "f420be958eeccd5463fb4afc5889dfbd5a8a45197c9815dae1f9c99c1fad062f",
+      "bytes": 20301,
+      "width": 128,
+      "height": 128
     }
   ]
 }

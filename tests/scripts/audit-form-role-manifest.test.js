@@ -37,9 +37,9 @@ describe("form-role manifest audit", () => {
         missingFamilies: 0,
         missingManifestSpirits: 0,
         nameMismatches: 0,
-        snapshotSpirits: 617,
+        snapshotSpirits: 619,
         unknownForms: 0,
-        verifiedBosses: 61,
+        verifiedBosses: 63,
       },
       errors: [],
     });

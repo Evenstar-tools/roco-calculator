@@ -73,6 +73,15 @@ describe("negative status source rules", () => {
     }).stacks).toMatchObject({ electrified: 1 });
   });
 
+  test("星火按上回合双方是否使用光系技能施加灼烧", () => {
+    expect(resolveNegativeStatusApplications({ skill: skill("星火") }).stacks)
+      .toMatchObject({ burn: 8 });
+    expect(resolveNegativeStatusApplications({
+      context: { previousTurnBothUsedLightSkill: true },
+      skill: skill("星火"),
+    }).stacks).toMatchObject({ burn: 20 });
+  });
+
   test("exposes explicit controls for conditional status branches", () => {
     expect(getNegativeStatusInputs(skill("天火"))).toEqual([
       expect.objectContaining({
@@ -87,6 +96,13 @@ describe("negative status source rules", () => {
         label: "驱散印记层数",
         max: 99,
         type: "number",
+      }),
+    ]);
+    expect(getNegativeStatusInputs(skill("星火"))).toEqual([
+      expect.objectContaining({
+        contextKey: "previousTurnBothUsedLightSkill",
+        label: "上回合双方使用光系技能",
+        type: "boolean",
       }),
     ]);
   });
@@ -176,6 +192,16 @@ describe("negative status source rules", () => {
         traits: [trait("扩散侵蚀")],
       }).stacks,
     ).toMatchObject({ poison: 1 });
+  });
+
+  test("月相仅保留描述占位，不推断中毒施加层数", () => {
+    expect(NEGATIVE_STATUS_RULE_AUDIT.traits.月相).toBe("description-only");
+    expect(
+      resolveNegativeStatusApplications({
+        skill: skill("水刃"),
+        traits: [trait("月相")],
+      }).stacks,
+    ).toEqual({ burn: 0, electrified: 0, freeze: 0, parasitism: 0, poison: 0 });
   });
 
   test("doubles existing freeze only when extreme cold counters a status move", () => {

@@ -37,7 +37,7 @@
     "test:core-drift": "node scripts/miniapp/check-core-drift.mjs",
     "test:core-current": "node scripts/miniapp/check-core-drift.mjs --current-only",
     "miniapp:test": "npm run test:core-current && npm --prefix miniapp test -- --run",
-    "miniapp:build": "npm run miniapp:sync-core && npm run test:core-drift && npm --prefix miniapp run build:weapp -- --mode development",
+    "miniapp:build": "npm run miniapp:sync-core && npm run test:core-current && npm --prefix miniapp run build:weapp -- --mode development",
     "miniapp:build:prod": "node scripts/miniapp/verify-release.mjs --preflight && npm run data:verify-bindings && npm run miniapp:sync-core && npm run test:core-drift && npm --prefix miniapp run build:weapp -- --mode production && node scripts/miniapp/verify-release.mjs",
     "miniapp:portrait-probe": "node scripts/miniapp/verify-portrait-layout.mjs",
     "lint": "eslint .",

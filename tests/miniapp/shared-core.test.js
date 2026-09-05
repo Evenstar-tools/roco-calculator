@@ -229,6 +229,12 @@ describe("miniapp shared calculator core", () => {
     );
     expect(rootPackage.scripts.build).toContain("npm run test:core-current");
     expect(rootPackage.scripts.build).not.toContain("npm run test:core-drift");
+    expect(rootPackage.scripts["miniapp:build"]).toContain(
+      "npm run test:core-current",
+    );
+    expect(rootPackage.scripts["miniapp:build"]).not.toContain(
+      "npm run test:core-drift",
+    );
     expect(
       coreDriftModule.runCoreDriftCheck({
         currentOnly: true,

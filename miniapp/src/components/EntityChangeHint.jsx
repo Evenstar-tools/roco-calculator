@@ -47,9 +47,14 @@ export default function EntityChangeHint({ changeInfo, className = "" }) {
   const [open, setOpen] = useState(false);
   const entityName = changeInfo?.entityName ?? "当前项目";
   if (changeInfo?.isNew) {
-    return changeInfo.items?.[0]?.label === "新增精灵" ? (
+    const newEntityKind = changeInfo.items?.[0]?.label === "新增精灵"
+      ? "精灵"
+      : changeInfo.items?.[0]?.label === "新增首领占位"
+        ? "首领"
+        : null;
+    return newEntityKind ? (
       <Text
-        aria-label={`${entityName}为本期新增精灵`}
+        aria-label={`${entityName}为本期新增${newEntityKind}`}
         className={`entity-new-badge ${className}`.trim()}
       >
         NEW

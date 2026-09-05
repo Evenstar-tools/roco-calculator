@@ -30,8 +30,8 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: npm audit --omit=dev
-      - name: Verify shared calculator core
-        run: npm run test:core-drift
+      - name: Verify current shared calculator core
+        run: npm run test:core-current
       - name: Verify release acceptance evidence
         run: npm run acceptance:verify
       - name: Validate data
@@ -63,8 +63,8 @@ jobs:
         run: npm ci
       - name: Install miniapp dependencies
         run: npm ci --prefix miniapp
-      - name: Verify shared calculator core
-        run: npm run test:core-drift
+      - name: Verify current shared calculator core
+        run: npm run test:core-current
       - name: Generate runtime data
         run: npm run data:runtime
       - name: Run miniapp tests

@@ -45,7 +45,29 @@ const PLACEHOLDER_NAMES = [
   "新月狼灵",
 ];
 
-const ALL_NAMES = [...FINAL_NAMES, ...PLACEHOLDER_NAMES];
+const BOSS_CONFIGS = [
+  {
+    name: "烈焰狂战士",
+    baseSpiritFullName: "烈火守护",
+    traitName: "蒸汽革命",
+    adaptationStatus: "reviewed-rule",
+    assetStrategy: "official-video-frame-temporary",
+    assetEvidenceTimestamp: "02:00.700",
+    assetSourceFile: "烈焰狂战士_进化完成_120.700s.png",
+  },
+  {
+    name: "满月砣",
+    baseSpiritFullName: "月亮砣（下弦的样子）",
+    traitName: "月相",
+    adaptationStatus: "description-only",
+    assetStrategy: "official-video-frame-temporary",
+    assetEvidenceTimestamp: "02:26.467",
+    assetSourceFile: "满月砣_进化完成_146.4667s.png",
+  },
+];
+
+const BOSS_NAMES = BOSS_CONFIGS.map(({ name }) => name);
+const ALL_NAMES = [...FINAL_NAMES, ...PLACEHOLDER_NAMES, ...BOSS_NAMES];
 const PREVIEW_SKILL_NAMES = new Set(
   candidate.families
     .flatMap(({ skills }) => skills)
@@ -79,7 +101,36 @@ const TRAIT_NAMES = [
   "冷光源",
   "热成像",
   "铭记于月亮",
+  "蒸汽革命",
+  "月相",
 ];
+
+const OFFICIAL_SKILL_PARAMETERS = {
+  掠影: ["幽", "physical", 3, 65],
+  离魂术: ["幽", "status", 3, null],
+  重组: ["幻", "status", 1, null],
+  月蚀: ["幻", "physical", 5, 130],
+  暖阳: ["火", "physical", 2, 70],
+  星火: ["火", "status", 3, null],
+  月影交错: ["翼", "physical", 2, 25],
+  惊鸿一瞥: ["翼", "status", 2, null],
+  分光: ["光", "status", 1, null],
+  汇流: ["水", "status", 1, null],
+  无风: ["翼", "defense", 2, null],
+  广播: ["机械", "magical", 5, 140],
+  迁飞扩散: ["虫", "physical", 3, 55],
+  信息素: ["虫", "status", 4, null],
+  掉包: ["恶", "status", 2, null],
+  暴打: ["恶", "magical", 3, 100],
+  小型打劫: ["幽", "status", 2, null],
+  回收: ["幽", "magical", 3, 80],
+  观测者效应: ["幻", "status", 3, null],
+  仰望夜空: ["幻", "status", 2, null],
+  量子涨落: ["幻", "physical", 3, 75],
+  闪光弹: ["光", "physical", 2, 40],
+  奇点: ["幻", "magical", 4, 60],
+  引力旋转: ["幻", "defense", 2, null],
+};
 
 function baselineSnapshot() {
   const baseline = structuredClone(current);
@@ -136,6 +187,8 @@ describe("S4 前瞻新精灵候选目录", () => {
       finalForms: 11,
       forms: 23,
       placeholderForms: 12,
+      bossPlaceholders: 2,
+      bossTraits: 2,
       skillSlots: 46,
       traits: 11,
       uniqueSkillNames: 44,
@@ -144,7 +197,7 @@ describe("S4 前瞻新精灵候选目录", () => {
     });
   });
 
-  test("把 23 个形态、11 个特性和 26 个展示占位技能写入活动快照", () => {
+  test("把 23 个新形态、2 个首领占位、13 个特性和 26 个展示占位技能写入活动快照", () => {
     const before = baselineSnapshot();
     const beforeSpiritNames = new Set(before.spirits.map(({ fullName }) => fullName));
     const beforeTraitNames = new Set(before.traits.map(({ name }) => name));
@@ -152,9 +205,9 @@ describe("S4 前瞻新精灵候选目录", () => {
     expect(TRAIT_NAMES.every((name) => !beforeTraitNames.has(name))).toBe(true);
 
     const patched = applyS4PreviewCatalog(before, candidate);
-    expect(patched.spirits).toHaveLength(before.spirits.length + 23);
-    expect(patched.learnsets).toHaveLength(before.learnsets.length + 23);
-    expect(patched.traits).toHaveLength(before.traits.length + 11);
+    expect(patched.spirits).toHaveLength(before.spirits.length + 25);
+    expect(patched.learnsets).toHaveLength(before.learnsets.length + 25);
+    expect(patched.traits).toHaveLength(before.traits.length + 13);
     expect(patched.skills).toHaveLength(before.skills.length + 26);
     const previewSkills = patched.skills.filter(({ name }) =>
       PREVIEW_SKILL_NAMES.has(name)
@@ -177,14 +230,15 @@ describe("S4 前瞻新精灵候选目录", () => {
       counts: {
         finalForms: 11,
         placeholderForms: 12,
+        bossPlaceholders: 2,
         newSkillPlaceholders: 26,
       },
     });
     expect(patched.meta.counts).toMatchObject({
-      spirits: before.spirits.length + 23,
-      learnsets: before.learnsets.length + 23,
+      spirits: before.spirits.length + 25,
+      learnsets: before.learnsets.length + 25,
       skills: before.skills.length + 26,
-      traits: before.traits.length + 11,
+      traits: before.traits.length + 13,
     });
   });
 
@@ -207,61 +261,29 @@ describe("S4 前瞻新精灵候选目录", () => {
       expect(learnset.defaultSkillIds).toEqual(learnset.skillIds);
     }
 
-    const placeholder = patched.skills.find(({ name }) => name === "广播");
-    expect(placeholder).toMatchObject({
-      basePower: null,
-      calculationStatus: "pending-skill-data",
-      category: "magical",
-      cost: null,
-      description: "对敌方精灵造成魔法伤害。",
-      type: "机械",
-    });
-
     expect(Object.fromEntries(
-      ["掉包", "暴打", "暖阳", "星火", "广播", "无风", "分光", "汇流", "奇点", "引力旋转"]
-        .map((name) => {
-          const skill = patched.skills.find((candidate) => candidate.name === name);
-          return [name, [skill.type, skill.category, skill.cost, skill.basePower]];
-        }),
-    )).toEqual({
-      掉包: ["恶", "status", null, null],
-      暴打: ["恶", "magical", null, null],
-      暖阳: ["火", "physical", null, null],
-      星火: ["火", "status", null, null],
-      广播: ["机械", "magical", null, null],
-      无风: ["翼", "defense", null, null],
-      分光: ["光", "status", null, null],
-      汇流: ["水", "status", null, null],
-      奇点: ["幻", "magical", null, null],
-      引力旋转: ["幻", "defense", null, null],
-    });
+      Object.keys(OFFICIAL_SKILL_PARAMETERS).map((name) => {
+        const skill = patched.skills.find((candidate) => candidate.name === name);
+        return [name, [skill.type, skill.category, skill.cost, skill.basePower]];
+      }),
+    )).toEqual(OFFICIAL_SKILL_PARAMETERS);
 
-    expect(Object.fromEntries(
-      ["小型打劫", "惊鸿一瞥", "月影交错", "信息素", "迁飞扩散", "仰望夜空", "观测者效应", "闪光弹", "量子涨落", "回收", "离魂术", "掠影", "重组", "月蚀"]
-        .map((name) => {
-          const skill = patched.skills.find((candidate) => candidate.name === name);
-          return [name, [skill.type, skill.category, skill.cost, skill.basePower]];
-        }),
-    )).toEqual({
-      小型打劫: ["幽", "status", null, null],
-      惊鸿一瞥: ["翼", "status", null, null],
-      月影交错: ["翼", "physical", null, null],
-      信息素: ["虫", "status", null, null],
-      迁飞扩散: ["虫", "physical", null, null],
-      仰望夜空: ["幻", "status", null, null],
-      观测者效应: ["幻", "status", null, null],
-      闪光弹: ["光", "physical", 2, 40],
-      量子涨落: ["幻", "physical", null, null],
-      回收: ["幽", "magical", null, null],
-      离魂术: ["幽", "status", null, null],
-      掠影: ["幽", "physical", null, null],
-      重组: ["幻", "status", null, null],
-      月蚀: ["幻", "physical", 5, 140],
-    });
+    for (const name of Object.keys(OFFICIAL_SKILL_PARAMETERS)) {
+      const skill = patched.skills.find((entry) => entry.name === name);
+      expect(skill).not.toHaveProperty("calculationStatus");
+      expect(skill.provenance.cost.url).toBe(
+        candidate.meta.skillParameterSource.url,
+      );
+    }
 
-    for (const name of ["闪光弹", "月蚀"]) {
-      expect(patched.skills.find((skill) => skill.name === name))
-        .not.toHaveProperty("calculationStatus");
+    for (const name of ["降雨", "午夜爆音"]) {
+      expect(patched.skills.find((skill) => skill.name === name)).toMatchObject({
+        basePower: null,
+        calculationStatus: "pending-skill-data",
+        category: null,
+        cost: null,
+        type: null,
+      });
     }
 
     const wolf = patched.spirits.find(({ fullName }) => fullName === "银月狼王");
@@ -401,6 +423,97 @@ describe("S4 前瞻新精灵候选目录", () => {
       before.skills.find(({ name }) => name === "羽翼庇护").id,
     ]);
     expect(learnset.defaultSkillIds).toEqual(learnset.skillIds);
+  });
+
+  test("两个首领占位继承基础战斗数据，并分别采用声明的头像策略", () => {
+    const before = baselineSnapshot();
+    const patched = applyS4PreviewCatalog(before, candidate);
+
+    for (const expected of BOSS_CONFIGS) {
+      const catalogEntry = candidate.bossPlaceholders.find(
+        ({ name }) => name === expected.name,
+      );
+      const baseSpirit = before.spirits.find(
+        ({ fullName }) => fullName === expected.baseSpiritFullName,
+      );
+      const baseLearnset = before.learnsets.find(
+        ({ spiritId }) => spiritId === baseSpirit.id,
+      );
+      const boss = patched.spirits.find(
+        ({ fullName }) => fullName === expected.name,
+      );
+      const trait = patched.traits.find(
+        ({ name }) => name === expected.traitName,
+      );
+      const learnset = patched.learnsets.find(
+        ({ spiritId }) => spiritId === boss.id,
+      );
+
+      expect(catalogEntry).toMatchObject({
+        baseSpiritId: baseSpirit.id,
+        baseSpiritFullName: expected.baseSpiritFullName,
+        dexNoStrategy: "copy-base-exact",
+        raceStatsStrategy: "copy-base-exact",
+        assetStrategy: expected.assetStrategy,
+      });
+      expect(boss).toMatchObject({
+        dexNo: baseSpirit.dexNo,
+        fullName: expected.name,
+        stage: "首领",
+        sourceCategory: "首领形态",
+        traitIds: [trait.id],
+        traitName: expected.traitName,
+      });
+      expect(boss.types).toEqual(baseSpirit.types);
+      expect(boss.raceStats).toEqual(baseSpirit.raceStats);
+      if (expected.assetStrategy === "official-video-frame-temporary") {
+        expect(boss.asset).toMatchObject({
+          sourceUrl: `/assets/spirits/${boss.id}.png`,
+          width: 128,
+          height: 128,
+          status: "temporary-preview",
+          replacementPending: true,
+        });
+        expect(boss.provenance.asset).toMatchObject({
+          url: candidate.meta.skillParameterSource.url,
+          evidenceTimestamp: expected.assetEvidenceTimestamp,
+          sourceFile: expected.assetSourceFile,
+          usage: "temporary-video-frame",
+        });
+        expect(boss.provenance.previewIdentity.inheritedFields)
+          .not.toContain("asset");
+      } else {
+        expect(boss.asset).toMatchObject({
+          sourceUrl: baseSpirit.asset.sourceUrl,
+          status: "inherited-placeholder",
+          replacementPending: true,
+        });
+        expect(boss.provenance.previewIdentity.inheritedFields)
+          .toContain("asset");
+      }
+      expect(boss.provenance.previewIdentity).toMatchObject({
+        baseSpiritId: baseSpirit.id,
+        catalogId: candidate.meta.id,
+        formalDataPending: true,
+      });
+      expect(boss.traitIds).not.toContain(baseSpirit.traitIds[0]);
+      expect(trait.provenance.previewStatus.adaptationStatus)
+        .toBe(expected.adaptationStatus);
+      expect(learnset.skillIds).toEqual(baseLearnset.skillIds);
+      expect(learnset.defaultSkillIds).toEqual(baseLearnset.defaultSkillIds);
+      expect(learnset.acquisitions).toEqual(baseLearnset.acquisitions);
+      expect(
+        patched.currentPatchChanges.spirits.find(
+          ({ entityId }) => entityId === boss.id,
+        ),
+      ).toMatchObject({
+        entityName: expected.name,
+        isNew: true,
+        items: [
+          expect.objectContaining({ kind: "new", label: "新增首领占位" }),
+        ],
+      });
+    }
   });
 
   test("铭记于月亮标记为前瞻实现而非待开发", () => {

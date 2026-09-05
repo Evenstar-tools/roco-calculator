@@ -304,13 +304,13 @@ test("current snapshot ranks only explicit final forms and corroborated bosses",
   const ranking = createDurabilityRanking({ spirits: snapshot.spirits });
 
   expect(ranking.counts).toEqual({
-    eligible: 314,
+    eligible: 316,
     excluded: 303,
     excludedByReason: {
       GROWTH_FORM: 303,
     },
-    total: 617,
-    visible: 314,
+    total: 619,
+    visible: 316,
   });
   expect(ranking.rows.every(({ formRole }) =>
     formRole === "final" || formRole === "boss")).toBe(true);

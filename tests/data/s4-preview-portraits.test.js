@@ -4,6 +4,7 @@ import path from "node:path";
 import { describe, expect, test } from "vitest";
 import { validateS4PreviewPortraitBuffer } from "../../scripts/bwiki/import-s4-preview-portraits.mjs";
 import { readImageDimensions } from "../../scripts/bwiki/sync-assets.mjs";
+import { BUNDLED_PET_IMAGE_OVERRIDES } from "../../miniapp/src/data/bundled-pet-image-overrides.js";
 import { S4_PREVIEW_PET_IMAGE_OVERRIDES } from "../../miniapp/src/data/s4-preview-pet-image-overrides.js";
 
 const candidate = JSON.parse(
@@ -19,6 +20,17 @@ const formNames = candidate.families.flatMap((family) =>
   family.forms.map(({ name }) => name)
 );
 const EXPECTED_FORM_COUNT = 23;
+const BOSS_ASSET_CONFIGS = [
+  {
+    id: "spirit_8ac693cfd57fea1c",
+    name: "烈焰狂战士",
+  },
+  {
+    id: "spirit_59a68cf08569c4a7",
+    name: "满月砣",
+    mustDifferFromSpiritId: "spirit_d9990ad61778d9ec",
+  },
+];
 
 function digest(buffer) {
   return createHash("sha256").update(buffer).digest("hex");
@@ -107,5 +119,57 @@ describe("S4 前瞻本地原色头像", () => {
         "rgb.png",
       ),
     ).toThrow("必须是 RGBA PNG");
+  });
+
+  test("两个首领都使用带来源记录的本地临时视频帧", () => {
+    for (const config of BOSS_ASSET_CONFIGS) {
+      const bossCandidate = candidate.bossPlaceholders.find(
+        ({ name }) => name === config.name,
+      );
+      const asset = manifest.assets.find(({ id }) => id === config.id);
+      expect(asset).toMatchObject({
+        name: config.name,
+        localFile: `/assets/spirits/${config.id}.png`,
+        sourceKind: "s4-boss-preview-local",
+        sourceVideoUrl: candidate.meta.skillParameterSource.url,
+        sourceTimestamp: bossCandidate.assetEvidenceTimestamp,
+        sourceFrame: bossCandidate.assetSourceFile,
+        width: 128,
+        height: 128,
+      });
+      expect(asset.sourceUrl).toBeUndefined();
+      expect(asset.sourceSpiritId).toBeUndefined();
+
+      const publicPath = path.resolve(
+        "public",
+        asset.localFile.replace(/^[/\\]+/u, ""),
+      );
+      const miniPath = path.resolve(
+        "miniapp/src/assets/spirits",
+        `${config.id}.png`,
+      );
+      const publicImage = readFileSync(publicPath);
+      const miniImage = readFileSync(miniPath);
+      expect(digest(publicImage)).toBe(asset.sha256);
+      expect(digest(miniImage)).toBe(asset.sha256);
+      expect(digest(publicImage)).toBe(digest(miniImage));
+      expect(publicImage[25]).toBe(6);
+      expect(miniImage[25]).toBe(6);
+      expect(readImageDimensions(publicImage)).toEqual({
+        width: 128,
+        height: 128,
+      });
+      expect(asset.bytes).toBe(publicImage.length);
+      expect(asset.bytes).toBeLessThanOrEqual(200 * 1024);
+      expect(BUNDLED_PET_IMAGE_OVERRIDES[config.id]).toMatch(
+        new RegExp(`(?:^|/)${config.id}\\.png(?:\\?.*)?$`, "u"),
+      );
+      if (config.mustDifferFromSpiritId) {
+        const inheritedAsset = manifest.assets.find(
+          ({ id }) => id === config.mustDifferFromSpiritId,
+        );
+        expect(asset.sha256).not.toBe(inheritedAsset.sha256);
+      }
+    }
   });
 });

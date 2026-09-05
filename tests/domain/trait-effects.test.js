@@ -799,6 +799,74 @@ describe("trait effect coverage", () => {
     })).toMatchObject({ defenseLevelBonus: 2, defenderDefenseLevelBonus: 2 });
   });
 
+  test("蒸汽革命按入场前己方火系技能次数同时增加全技能威力和物防", () => {
+    const trait = snapshot.traits.find(
+      (candidate) => candidate.name === "蒸汽革命",
+    );
+
+    for (const role of ["attacker", "defender"]) {
+      const inputs = getTraitEffectInputs(trait, role);
+      expect(inputs).toMatchObject([
+        {
+          defaultValue: 0,
+          key: `${role}TraitStacks`,
+          label: "入场前己方火系技能次数",
+          max: 99,
+          min: 0,
+          type: "number",
+        },
+        {
+          defaultValue: 10,
+          key: `${role}TraitEffect`,
+          label: "每层威力",
+          suffix: "",
+          type: "number",
+        },
+        {
+          defaultValue: 5,
+          key: `${role}TraitSecondaryEffect`,
+          label: "每层物防",
+          suffix: "%",
+          type: "number",
+        },
+      ]);
+    }
+
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      attacker: {},
+      context: contextFor(trait, "attacker", { attackerTraitStacks: 3 }),
+      defender: {},
+      skill: { category: "magical", type: "水" },
+    })).toMatchObject({
+      attackerDefenseLevelBonus: 1.5,
+      fixedPowerAdd: 30,
+    });
+
+    const defenderContext = contextFor(trait, "defender", {
+      defenderTraitStacks: 3,
+    });
+    expect(resolveTraitEffectRule(trait, "defender", {
+      attacker: {},
+      context: defenderContext,
+      defender: {},
+      skill: { category: "physical", type: "水" },
+    })).toMatchObject({
+      defenseLevelBonus: 1.5,
+      defenderDefenseLevelBonus: 1.5,
+      fixedPowerAdd: 0,
+    });
+    expect(resolveTraitEffectRule(trait, "defender", {
+      attacker: {},
+      context: defenderContext,
+      defender: {},
+      skill: { category: "magical", type: "水" },
+    })).toMatchObject({
+      defenseLevelBonus: 0,
+      defenderDefenseLevelBonus: 1.5,
+      fixedPowerAdd: 0,
+    });
+  });
+
   test("S3季中冰雪魂魄只需勾选暴风雪天气即增加100%冰系威力", () => {
     const trait = snapshot.traits.find((candidate) => candidate.name === "冰雪魂魄");
     expect(getTraitEffectInputs(trait, "attacker").map(({ label }) => label)).toEqual([

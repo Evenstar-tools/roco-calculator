@@ -173,10 +173,12 @@ describe("trigger controls", () => {
 
     expect(audited.sort()).toEqual([
       "attackerTrait.attackerTraitEffect",
+      "attackerTrait.attackerTraitSecondaryEffect",
       "attackerTrait.attackerTraitSpeedEffect",
       "attackerTrait.attackerTraitStacks",
       "attackerTrait.traitActivated",
       "defenderTrait.defenderTraitEffect",
+      "defenderTrait.defenderTraitSecondaryEffect",
       "defenderTrait.defenderTraitSpeedEffect",
       "defenderTrait.defenderTraitStacks",
       "skill.actualSkillCost",

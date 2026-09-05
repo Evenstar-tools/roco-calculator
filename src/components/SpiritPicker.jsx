@@ -19,6 +19,13 @@ function isS4PreviewFinalSpirit(spirit) {
   return Boolean(spirit?.changeInfo?.isNew && spirit.previewDefaults);
 }
 
+function shouldShowNewBadge(spirit) {
+  return Boolean(
+    spirit?.changeInfo?.isNew &&
+      (spirit.previewDefaults || spirit.stage === "首领"),
+  );
+}
+
 function isPendingS4PreviewFinalSpirit(spirit) {
   return isS4PreviewFinalSpirit(spirit) && dexNo(spirit) === "";
 }
@@ -286,7 +293,7 @@ export function SpiritPicker({
                   ) : null}
                   <span>
                     <span className="spirit-picker__option-title">
-                      <strong data-new={isS4PreviewFinalSpirit(spirit) || undefined}>
+                      <strong data-new={shouldShowNewBadge(spirit) || undefined}>
                         {spirit.fullName}
                       </strong>
                       <EntityChangeHint changeInfo={spirit.changeInfo} />
@@ -338,7 +345,7 @@ export function SpiritPicker({
           ) : null}
           <div className="spirit-card__identity">
             <span className="spirit-card__title">
-              <strong data-new={isS4PreviewFinalSpirit(selected) || undefined}>
+              <strong data-new={shouldShowNewBadge(selected) || undefined}>
                 {selected.fullName}
               </strong>
               <EntityChangeHint changeInfo={selected.changeInfo} />

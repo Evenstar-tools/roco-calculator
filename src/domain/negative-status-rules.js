@@ -47,6 +47,10 @@ const SKILL_RULES = {
     resolve: (context) => ({ burn: (Number(context.dispelledMarkStacks) || 0) * 5 }),
   },
   花火: { stacks: { burn: 4 } },
+  星火: {
+    inputs: [booleanInput("previousTurnBothUsedLightSkill", "上回合双方使用光系技能")],
+    resolve: (context) => ({ burn: context.previousTurnBothUsedLightSkill ? 20 : 8 }),
+  },
   野火: { resolve: (context) => ({ burn: context.applyDefenseReduction ? 0 : 7 }) },
   暴风雪: { stacks: { freeze: 1 } },
   极寒领域: {
@@ -163,6 +167,7 @@ const TRAIT_CLASSIFICATIONS = {
   焰色反应: "settlement-conversion",
   不死鸟: "lethal-event",
   爆裂玉米: "application",
+  月相: "description-only",
 };
 
 export const NEGATIVE_STATUS_RULE_AUDIT = {
