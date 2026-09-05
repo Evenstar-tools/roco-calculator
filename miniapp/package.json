@@ -1,7 +1,7 @@
 {
   "name": "rock-calculator-miniapp",
   "private": true,
-  "version": "1.1.10",
+  "version": "1.1.11",
   "scripts": {
     "build:h5": "node --no-deprecation ./scripts/run-taro.cjs build --type h5",
     "build:weapp": "node --no-deprecation ./scripts/run-taro.cjs build --type weapp",
