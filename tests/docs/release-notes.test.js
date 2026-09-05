@@ -67,6 +67,20 @@ describe("版本记录", () => {
       .not.toMatch(/修复|校正|临时图标/u);
   });
 
+  test("补丁只进入版本记录，不冒充新的功能介绍", () => {
+    expect(featuredRelease.summaryHighlights).toEqual(expect.arrayContaining([
+      expect.stringContaining("找不到对应首领"),
+      expect.stringContaining("正式包体积"),
+    ]));
+    expect(featuredRelease.sections.find(({ kind }) => kind === "fix")?.items)
+      .toEqual(expect.arrayContaining([
+        expect.stringContaining("进化链现在可以双向查找"),
+        expect.stringContaining("不删减内容"),
+      ]));
+    expect(featuredRelease.whatsNew.items.map(({ title }) => title).join("\n"))
+      .not.toMatch(/进化链|包体积/u);
+  });
+
   test("全部版本按新增功能、修复与优化分类", () => {
     const allowedKinds = new Set(["feature", "fix"]);
 

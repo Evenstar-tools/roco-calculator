@@ -45,6 +45,11 @@ export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
   date: "2026.09.05",
   title: "S4前瞻规则与交互补丁",
   status: "preview",
+  summaryHighlights: [
+    "补齐本轮S4前瞻首领、头像和规则适配，网页与小程序共享数据同步。",
+    "修复从烈火守护、月亮砣等原形态搜索时找不到对应首领的问题。",
+    "压缩小程序内置数据与热门配置，正式包体积降到上传限制内。",
+  ],
   whatsNew: {
     title: "S4更新",
     items: [
@@ -73,6 +78,8 @@ export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
     {
       kind: "fix",
       items: [
+        "修复从烈火守护、月亮砣等原形态搜索时找不到对应S4首领的问题，进化链现在可以双向查找。",
+        "压缩小程序内置数据与热门配置，在不删减内容的前提下降低正式包体积。",
         "分享七技能配置时保留选中槽位，已触发状态效果可跨端序列化。",
         "小程序优化配置说明和结果比较顺序，窄屏弹层与状态提示更清楚。",
       ],
