@@ -18,6 +18,7 @@ const styleFiles = [
   "responsive.css",
   "compact-demo.css",
   "entity-change-hints.css",
+  "season.css",
 ];
 const styles = Object.fromEntries(
   styleFiles.map((file) => [
@@ -44,10 +45,31 @@ describe("reference-first responsive CSS", () => {
     );
   });
 
-  test("uses a warm neutral palette without purple or decorative gradients", () => {
+  test("keeps gradients limited to the approved seasonal background", () => {
     expect(tokensCss).toContain("--surface-page: #f4f2ed");
-    expect(allCss).not.toMatch(/linear-gradient|radial-gradient/iu);
+    const workspaceCss = [tokensCss, ...Object.entries(styles)
+      .filter(([file]) => file !== "season.css")
+      .map(([, css]) => css)].join("\n");
+    expect(workspaceCss).not.toMatch(/linear-gradient|radial-gradient/iu);
     expect(allCss).not.toMatch(/#7c3aed|#7457d7|#f4f0ff/iu);
+  });
+
+  test("pairs native system theme colors with the full-bleed seasonal stylesheet", () => {
+    const config = readSource("src/app.config.js");
+    const theme = JSON.parse(readSource("src/theme.json"));
+    const season = styles["season.css"];
+    expect(config).toContain("darkmode: true");
+    expect(config).toContain('themeLocation: "theme.json"');
+    for (const token of ["navigationBackground", "pageBackground", "backgroundTextStyle"]) {
+      expect(config).toContain(`"@${token}"`);
+      expect(theme.light[token]).toBeTruthy();
+      expect(theme.dark[token]).toBeTruthy();
+    }
+    expect(theme.dark.pageBackground).toBe("#101722");
+    expect(season).toContain("@media (prefers-color-scheme: dark)");
+    expect(season).toContain(`--surface-page: ${theme.dark.pageBackground}`);
+    expect(season).toMatch(/\.season-sky\s*\{[^}]*position: absolute;[^}]*right: 0;[^}]*left: 0;[^}]*pointer-events: none;/u);
+    expect(season).toMatch(/\.app-header\s*\{[^}]*border-radius: 0;/u);
   });
 
   test("keeps the compact result dock SVG-free with explicit three-state colors", () => {
@@ -359,7 +381,10 @@ describe("reference-first responsive CSS", () => {
     expect(styles["base.css"]).toContain("min-width: 320px");
     expect(allCss).toMatch(/box-sizing:\s*border-box/u);
     expect(allCss).not.toMatch(/writing-mode\s*:\s*vertical/iu);
-    expect(allCss).not.toMatch(/(?:^|[;{]\s*)width:\s*[5-9]\d{2}px/gmu);
+    expect(Object.entries(styles).filter(([file]) => file !== "season.css")
+      .map(([, css]) => css).join("\n"))
+      .not.toMatch(/(?:^|[;{]\s*)width:\s*[5-9]\d{2}px/gmu);
+    expect(styles["season.css"]).toMatch(/\.season-sky\s*\{[^}]*overflow: hidden;/u);
   });
 
   test("contains the target HP editor inside its mobile grid column", () => {

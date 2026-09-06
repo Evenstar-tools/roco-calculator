@@ -77,6 +77,9 @@ const spirits = runtime.spirits.map((spirit) => {
     evolutionChainIds: spirit.evolutionChainIds,
     initials: spirit.initials,
     pinyin: spirit.pinyin,
+    ...(Array.isArray(spirit.aliases) && spirit.aliases.length > 0
+      ? { aliases: spirit.aliases }
+      : {}),
     ...(imageUrl ? { imageUrl } : {}),
     ...(spirit.changeInfo ? { changeInfo: spirit.changeInfo } : {}),
   };

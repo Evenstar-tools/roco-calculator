@@ -31,6 +31,7 @@ export function createSpiritSearchIndex(snapshot) {
         spirit.variantName,
         spirit.pinyin,
         spirit.initials,
+        ...(spirit.aliases ?? []),
         ...getEvolutionSearchFields(spirit, byId),
       ].filter(Boolean).join("|")),
     })),

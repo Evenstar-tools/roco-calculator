@@ -144,6 +144,28 @@ describe("bundled miniapp runtime", () => {
     expect(new Set(wishPowerSkills.map((skill) => skill.type)).size).toBe(18);
   });
 
+  test("preserves calculator community aliases without changing official names", () => {
+    const bundled = expandBundledRuntime(
+      JSON.parse(readFileSync(bundledRuntimePath, "utf8")),
+    );
+    const waterBlue = bundled.spirits.find(
+      (spirit) => spirit.id === "spirit_77c2085d2f6e8e87",
+    );
+
+    expect(waterBlue).toMatchObject({
+      aliases: ["塑料袋", "大牌姐"],
+      fullName: "水蓝蓝",
+    });
+    expect(
+      bundled.spirits.find(
+        (spirit) => spirit.id === "spirit_cd669a9720f51fe4",
+      ),
+    ).toMatchObject({
+      aliases: ["UFO", "扫地机器人"],
+      fullName: "食尘短绒",
+    });
+  });
+
   test("keeps only pinyin search aliases in the bundled skill payload", () => {
     const bundled = expandBundledRuntime(
       JSON.parse(readFileSync(bundledRuntimePath, "utf8")),

@@ -1,10 +1,12 @@
 export default defineAppConfig({
   pages: ["pages/index/index"],
+  darkmode: true,
+  themeLocation: "theme.json",
   window: {
-    navigationBarTitleText: "洛克计算器 · S4前瞻",
-    navigationBarBackgroundColor: "#0f172a",
+    navigationBarTitleText: "洛克计算器 · S4「月涌狂想」",
+    navigationBarBackgroundColor: "@navigationBackground",
     navigationBarTextStyle: "white",
-    backgroundColor: "#f5f7fb",
-    backgroundTextStyle: "dark"
+    backgroundColor: "@pageBackground",
+    backgroundTextStyle: "@backgroundTextStyle"
   }
 });

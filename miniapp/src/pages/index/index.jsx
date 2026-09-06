@@ -5,6 +5,7 @@ import Taro, {
 } from "@tarojs/taro";
 import { View } from "@tarojs/components";
 import AppHeader from "../../components/AppHeader.jsx";
+import SeasonBackdrop from "../../components/SeasonBackdrop.jsx";
 import BattleWorkspace from "../../components/BattleWorkspace.jsx";
 import ErrorState from "../../components/ErrorState.jsx";
 import LoadingState from "../../components/LoadingState.jsx";
@@ -127,7 +128,7 @@ export default function IndexPage({ services }) {
   const skillIconsEnabled = router?.params?.skillIcons !== "0";
   const sharePayload = router?.params?.share;
   const shareMessage = useRef({
-    title: "洛克计算器 · S4前瞻",
+    title: "洛克计算器 · S4「月涌狂想」",
     path: "/pages/index/index",
   });
   const [pageState, setPageState] = useState({
@@ -631,6 +632,7 @@ export default function IndexPage({ services }) {
 
   return (
     <View className={compactDemo ? "page page--compact-demo" : "page"}>
+      <SeasonBackdrop />
       <AppHeader
         commonConfigCount={pageState.configLibrary.entries.length}
         commonConfigStatus={
@@ -642,7 +644,7 @@ export default function IndexPage({ services }) {
               : "available"
         }
         dataVersion={[
-          pageState.snapshot.meta?.seasonId,
+          "S4「月涌狂想」",
           pageState.snapshot.meta?.bwikiRevision
             ?? pageState.snapshot.meta?.snapshotVersion,
         ].filter(Boolean).join(" · ") || pageState.snapshot.meta?.id}

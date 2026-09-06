@@ -101,10 +101,10 @@ export default function EntityChangeHint({ changeInfo, className = "" }) {
             <View className="entity-change-sheet__header">
               <View className="entity-change-sheet__patch">
                 <Text className="entity-change-sheet__status">
-                  {changeInfo.patch?.status === "preview" ? "前瞻" : "更新"}
+                  更新
                 </Text>
                 <Text className="entity-change-sheet__label">
-                  {changeInfo.patch?.label ?? "本期改动"}
+                  {changeInfo.patch?.label?.replace(/前瞻/g, "").replace(/S3[\s-]*季中/g, "赛季平衡") ?? "本期改动"}
                 </Text>
                 <Text className="entity-change-sheet__date">{changeInfo.patch?.date}</Text>
               </View>

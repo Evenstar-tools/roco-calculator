@@ -504,6 +504,7 @@ describe("spirit search index", () => {
     return {
       spirits: [
         {
+          aliases: ["狗哥", "uu"],
           id: "spirit-sonic-dog",
           fullName: "音速犬",
           pinyin: "yinsuquan",
@@ -528,6 +529,12 @@ describe("spirit search index", () => {
         .toContain("spirit-sonic-dog");
     },
   );
+
+  test.each(["狗哥", "UU"])("finds a spirit from a community alias: %s", (query) => {
+    const index = createSpiritSearchIndex(createSearchSnapshot());
+    expect(searchSpirits(index, query).map((item) => item.id))
+      .toContain("spirit-sonic-dog");
+  });
 
   test("normalizes spaces and ASCII case without mutating the source", () => {
     const searchSnapshot = createSearchSnapshot();

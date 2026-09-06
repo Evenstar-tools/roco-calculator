@@ -1,0 +1,291 @@
+/*postcss-pxtransform disable*/
+
+/* S4 满幅月夜只作背景，不改变顶栏和计算区域的排版。 */
+.page {
+  position: relative;
+  isolation: isolate;
+}
+
+.season-sky {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 180px;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(180deg, #121e38 0px, #1d2c4c 36px, #536480 65px, #a9b4c1 99px, #e3e4e0 137px, #f4f2ed 176px);
+}
+
+.season-sky__scene,
+.season-sky__quiet {
+  position: absolute;
+  inset: 0;
+}
+
+.season-sky__scene {
+  opacity: 0.84;
+  -webkit-mask-image: linear-gradient(180deg, #000 0px, #000 38px, #0009 68px, transparent 140px);
+  mask-image: linear-gradient(180deg, #000 0px, #000 38px, #0009 68px, transparent 140px);
+}
+
+.season-sky__panorama {
+  position: absolute;
+  left: calc(78% - 530.4px);
+  top: calc(40% - 90.7px);
+  width: 680px;
+  height: 226.78px;
+}
+
+.season-sky__quiet {
+  background: linear-gradient(90deg, #131f3bec 0%, #152340c7 42%, #15234000 67%);
+  -webkit-mask-image: linear-gradient(180deg, #000 38px, transparent 96px);
+  mask-image: linear-gradient(180deg, #000 38px, transparent 96px);
+}
+
+.season-sky__wolf {
+  position: absolute;
+  top: -7px;
+  right: 45px;
+  width: 112px;
+  height: 93.57px;
+  opacity: 0.95;
+  -webkit-mask-image: linear-gradient(180deg, #000 40%, #000d 67%, transparent 98%);
+  mask-image: linear-gradient(180deg, #000 40%, #000d 67%, transparent 98%);
+}
+
+.season-sky__portrait {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.season-sky__orbit {
+  position: absolute;
+  top: -58px;
+  right: -18px;
+  width: 258px;
+  height: 100px;
+  border: 1px solid #dfc77f69;
+  border-radius: 50%;
+  transform: rotate(-12deg);
+}
+
+.season-sky__star {
+  position: absolute;
+  top: 9px;
+  right: 129px;
+  width: 5px;
+  height: 5px;
+  background: #e6ce85;
+  clip-path: polygon(50% 0, 61% 36%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 36%);
+}
+
+.app-header {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-header__title {
+  color: #f5f2e6;
+  text-shadow: 0 1px 2px #101b3577;
+}
+
+.app-header__season-title {
+  color: #ecd78c;
+}
+
+.app-header__action {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  color: #f3eee0;
+  box-shadow: none;
+}
+
+.app-header__action--expanded {
+  background: #30415a;
+}
+
+.app-header__action::after {
+  border: 0;
+}
+
+@media (max-width: 350px) {
+  .season-sky__wolf {
+    top: 0;
+    right: 44px;
+    width: 78px;
+    height: 65.16px;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 27%, #000 85%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 27%, #000 85%, transparent);
+  }
+
+  .season-sky__star {
+    top: 7px;
+    right: 66px;
+  }
+
+  .season-sky__panorama {
+    left: calc(72% - 489.6px);
+  }
+}
+
+@media (min-width: 681px) {
+  .season-sky__panorama {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+}
+
+/* 与微信系统主题联动，H5 预览使用同一媒体查询。 */
+@media (prefers-color-scheme: dark) {
+  page,
+  body,
+  #app,
+  .taro_page {
+    background: #101722;
+    color: #e7edf5;
+    color-scheme: dark;
+  }
+
+  .page {
+    --surface-page: #101722;
+    --surface-card: #1b2636;
+    --surface-muted: #152030;
+    --surface-pressed: #2a3a50;
+    --surface: #1b2636;
+    --text-primary: #e7edf5;
+    --text-secondary: #b9c6d6;
+    --text-muted: #99abc1;
+    --text-tertiary: #99abc1;
+    --border-neutral: #35445b;
+    --border-strong: #61728b;
+    --attacker: #f58f83;
+    --attacker-soft: #30262f;
+    --defender: #86bff0;
+    --defender-soft: #1d3448;
+    --result: #dcc68d;
+    --result-soft: #29384b;
+    --success: #82cead;
+    --success-soft: #1b3937;
+    --danger: #f58f83;
+    --warning: #e6cb8e;
+    --result-success: #82cead;
+    --result-warning: #e6cb8e;
+    --result-danger: #f58f83;
+    --shadow-card: 0 2px 9px #050c1718;
+    --shadow-sheet: 0 -12px 36px #04091188;
+    color: var(--text-primary);
+  }
+
+  .season-sky {
+    height: 230px;
+    background: linear-gradient(180deg, #0d1730 0px, #182a46 62px, #19293d 117px, #142030 172px, #101722 229px);
+  }
+
+  .season-sky__scene {
+    opacity: 0.8;
+    -webkit-mask-image: linear-gradient(180deg, #000 25px, #000b 80px, transparent 200px);
+    mask-image: linear-gradient(180deg, #000 25px, #000b 80px, transparent 200px);
+  }
+
+  .season-sky__quiet {
+    -webkit-mask-image: linear-gradient(180deg, #000 35px, transparent 120px);
+    mask-image: linear-gradient(180deg, #000 35px, transparent 120px);
+  }
+
+  .quick-undo,
+  .quick-undo:disabled {
+    border-color: var(--border-neutral);
+    background: var(--surface-muted);
+    color: var(--text-secondary) !important;
+  }
+
+  .mode-switch__button--active {
+    background: #dcc68d;
+    color: #142030;
+    box-shadow: none;
+  }
+
+  .quick-controls__option--selected {
+    box-shadow: inset 0 0 0 1px #568b79;
+  }
+
+  .quick-controls__option--selected .quick-controls__stat-label {
+    color: #9cdbbd;
+  }
+
+  .quick-controls__icon-stage .stat-icon {
+    filter: brightness(1.65) saturate(0.6);
+  }
+
+  .direction-switch__icon,
+  .result-bar__action-icon {
+    filter: brightness(0) invert(0.85);
+  }
+
+  .conditions-ribbon__main {
+    background: transparent;
+    color: var(--text-primary);
+  }
+
+  .result-bar {
+    --result-success: #82cead;
+    --result-warning: #e6cb8e;
+    --result-danger: #f58f83;
+    background: #1b2839;
+  }
+
+  .result-bar__damage {
+    color: #efdda8;
+  }
+
+  .result-bar__track-line,
+  .result-bar__row-track {
+    background: #35445b;
+  }
+
+  .condition-editor__power-mode--active {
+    border-color: #749dbd;
+    background: #293d50;
+    color: #a3d4f8;
+  }
+
+  .settings-sheet__switch--on {
+    background: #72bfa0;
+  }
+
+  .settings-sheet__switch-thumb {
+    background: #e4edf1;
+  }
+
+  .settings-sheet__close,
+  .spirit-picker__close,
+  .skill-picker__close,
+  .skill-picker__option,
+  .skill-picker__option-name {
+    color: #e7edf5;
+  }
+
+  .skill-picker__category--active {
+    color: #172233;
+  }
+
+  .skill-picker__search-icon {
+    filter: brightness(0) invert(0.8);
+  }
+
+  .settings-sheet__overlay,
+  .spirit-picker__backdrop,
+  .skill-picker__backdrop {
+    background: #060b15ad;
+  }
+
+  input::placeholder {
+    color: #99abc1;
+  }
+}

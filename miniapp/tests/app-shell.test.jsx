@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import AppHeader from "../src/components/AppHeader.jsx";
+import SeasonBackdrop from "../src/components/SeasonBackdrop.jsx";
 import MarkEditor from "../src/components/MarkEditor.jsx";
 import TraitConditionEditor from "../src/components/TraitConditionEditor.jsx";
 import IndexPage from "../src/pages/index/index.jsx";
@@ -14,6 +15,23 @@ import {
 import miniappPackage from "../package.json";
 
 describe("miniapp shell", () => {
+  test("keeps the seasonal background decorative and settings interactive", () => {
+    const { container } = render(<><SeasonBackdrop /><AppHeader /></>);
+    const background = container.querySelector(".season-sky");
+    expect(background).toHaveAttribute("aria-hidden", "true");
+    expect(background.querySelectorAll("img")).toHaveLength(2);
+    for (const image of background.querySelectorAll("img")) {
+      expect(image).toHaveAttribute("alt", "");
+      expect(image.getAttribute("src")).toMatch(/assets\/season\/s4-.+\.webp/u);
+    }
+    expect(screen.queryAllByRole("img")).toHaveLength(0);
+    expect(container.querySelector(".app-header__title")).toHaveTextContent("洛克计算器 · S4「月涌狂想」");
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    expect(screen.getByRole("dialog", { name: "设置" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
+    expect(screen.queryByRole("dialog", { name: "设置" })).not.toBeInTheDocument();
+  });
+
   test("uses a static startup indicator that does not block WeChat rendering", () => {
     const { container } = render(<LoadingState />);
 
@@ -38,7 +56,7 @@ describe("miniapp shell", () => {
 
   test("renders the calculator title without requesting identity", () => {
     render(<IndexPage />);
-    expect(screen.getByText("洛克计算器 · S4前瞻")).toBeInTheDocument();
+    expect(screen.getByText("洛克计算器 · S4「月涌狂想」")).toBeInTheDocument();
     expect(screen.queryByText("微信登录")).not.toBeInTheDocument();
   });
 

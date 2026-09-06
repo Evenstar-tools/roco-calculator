@@ -141,7 +141,7 @@ describe("IndexPage", () => {
     expect(screen.queryByText(/数据 S3季中/u)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     expect(
-      screen.getByText("数据快照：S3季中 · 41360"),
+      screen.getByText("数据快照：S4「月涌狂想」 · 41360"),
     ).toBeInTheDocument();
   });
 
@@ -546,7 +546,7 @@ describe("IndexPage", () => {
     );
     expect(screen.getByLabelText("防守方配置")).toHaveTextContent("水灵");
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
-    expect(screen.getByText("数据快照：S3季中 · 41360")).toBeInTheDocument();
+    expect(screen.getByText("数据快照：S4「月涌狂想」 · 41360")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "重置本页" }).tagName,
     ).toBe("BUTTON");

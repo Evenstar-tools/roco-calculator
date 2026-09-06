@@ -41,7 +41,9 @@ export default function AppHeader({
     >
       <View className="app-header">
         <View className="app-header__identity">
-          <Text className="app-header__title">洛克计算器 · S4前瞻</Text>
+          <Text className="app-header__title">
+            洛克计算器 · <Text className="app-header__season-title">S4「月涌狂想」</Text>
+          </Text>
         </View>
         <View className="app-header__actions">
           <Button

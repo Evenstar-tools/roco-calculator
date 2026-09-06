@@ -5,7 +5,7 @@ export default function ErrorState({ message, onRetry }) {
     <View className="page page--state">
       <View className="state-card state-card--error">
         <Text className="state-card__eyebrow">洛克王国对战辅助工具</Text>
-        <Text className="state-card__title">洛克计算器 · S4前瞻</Text>
+        <Text className="state-card__title">洛克计算器 · S4「月涌狂想」</Text>
         <Text className="state-card__message">
           {message || "计算数据加载失败，请检查网络后重试"}
         </Text>

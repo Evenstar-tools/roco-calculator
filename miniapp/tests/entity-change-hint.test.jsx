@@ -40,6 +40,8 @@ describe("移动端实体改动提示", () => {
     fireEvent.click(screen.getByRole("button", { name: "查看加油蟹本期改动" }));
     expect(screen.getByRole("dialog", { name: "加油蟹本期改动" })).toBeVisible();
     expect(screen.getByText("108 → 92")).toBeVisible();
+    expect(screen.getByText("更新")).toBeVisible();
+    expect(screen.queryByText(/前瞻/u)).not.toBeInTheDocument();
     expect(onActivate).not.toHaveBeenCalled();
   });
 
