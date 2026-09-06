@@ -21,7 +21,7 @@ test("season header keeps desktop geometry and persists the lunar dark theme", a
   expect(scene.ok()).toBe(true);
   expect(scene.headers()["content-type"]).toContain("image/webp");
 
-  for (const width of [900, 1280, 1440]) {
+  for (const width of [801, 900, 1100, 1101, 1280, 1299, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     const geometry = await page.locator(".app-header").evaluate((header) => {
       const actions = header.querySelector(".app-header__actions").getBoundingClientRect();
@@ -34,6 +34,29 @@ test("season header keeps desktop geometry and persists the lunar dark theme", a
       };
     });
     expect(geometry).toEqual({ fits: true, height: width <= 1080 ? 52 : 50, noOverlap: true, decorationIgnoresClicks: true });
+    const lightWolf = await wolf.boundingBox();
+    await page.getByRole("button", { name: "切换主题" }).click();
+    const darkWolf = await page.locator("body").evaluate((body) => {
+      const style = getComputedStyle(body, "::before");
+      const bodyRect = body.getBoundingClientRect();
+      const imageWidth = parseFloat(style.backgroundSize.split(", ")[1]);
+      // 背景百分比以容器减去图片后的剩余空间为基准，用浏览器解析实际绘制位置。
+      const ruler = document.createElement("div");
+      ruler.style.cssText = `position:fixed;left:0;top:0;width:${bodyRect.width - imageWidth}px;visibility:hidden;pointer-events:none`;
+      const marker = document.createElement("span");
+      marker.style.position = "absolute";
+      marker.style.left = style.backgroundPositionX.split(", ")[1];
+      ruler.append(marker);
+      body.append(ruler);
+      const x = bodyRect.left + marker.getBoundingClientRect().left;
+      ruler.remove();
+      return { x, y: bodyRect.top + parseFloat(style.backgroundPositionY.split(", ")[1]), width: imageWidth };
+    });
+    expect(Math.abs(darkWolf.x - lightWolf.x), `wolf x at ${width}px`).toBeLessThan(0.1);
+    expect(darkWolf.y, `wolf y at ${width}px`).toBe(lightWolf.y);
+    expect(darkWolf.width, `wolf width at ${width}px`).toBe(lightWolf.width);
+    await page.getByRole("button", { name: "切换主题" }).click();
+    expect(await wolf.boundingBox()).toEqual(lightWolf);
   }
   await page.getByRole("button", { name: "切换主题" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");

@@ -127,7 +127,7 @@ html[data-theme="dark"] body::before {
   height: 240px;
   background:
     linear-gradient(180deg, #0d173033 0, #15243a66 64px, #142030e6 150px, #101722 240px),
-    url("/assets/season/s4-silver-wolf.webp") no-repeat 56% -26px / 162px auto,
+    url("/assets/season/s4-silver-wolf.webp") no-repeat calc(56% + 162px * 0.56) -26px / 162px auto,
     url("/assets/season/s4-moon-night.webp") no-repeat center 44% / cover;
   content: "";
   pointer-events: none;
@@ -188,7 +188,8 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
 /* 桌面最小窗口保留角色；更窄的网页只保留低对比月夜纹理。 */
 @media (min-width: 801px) and (max-width: 1100px) {
   html[data-theme="dark"] body::before {
-    background-position: 0 0, calc(100% - 400px) -22px, center 44%;
+    /* 补回背景图宽度与顶栏 3px 上边框，和亮色图片的实际坐标一致。 */
+    background-position: 0 0, calc(100% - 490px + 140px) -19px, center 44%;
     background-size: auto, 140px auto, cover;
   }
 
