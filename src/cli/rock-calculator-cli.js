@@ -120,6 +120,7 @@ function entitySearchText(entity, kind) {
       entity.pinyin,
       entity.initials,
       entity.dexNo,
+      ...(entity.aliases ?? []),
     ]
       .filter(Boolean)
       .map(compact);

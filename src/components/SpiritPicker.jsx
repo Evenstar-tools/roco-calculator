@@ -124,6 +124,7 @@ export function SpiritPicker({
             spirit.pinyin,
             spirit.initials,
             spirit.dexNo,
+            ...(spirit.aliases ?? []),
           ].some((field) => normalizeSearch(field).includes(needle)),
         )
       : spirits;

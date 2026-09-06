@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <sub>最新发布：<a href="https://github.com/Evenstar-tools/roco-calculator/releases/tag/v1.6.5">v1.6.5</a> · 更新于 2026-09-01　｜　数据支持：S3-季中</sub>
+  <sub>当前赛季：S4「月涌狂想」　｜　源码版本：v1.6.12　｜　<a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">下载最新 Windows 安装包</a></sub>
 </p>
 
 ![洛克计算器界面](docs/images/app-overview.png)
@@ -47,7 +47,7 @@
 - **队伍预设**：支持多支六人队伍、四技能配置及攻防方快捷载入。
 - **离线可用**：内置当前赛季快照和本地素材，可作为网页、PWA 或 Windows 桌面应用运行。
 
-当前数据快照包含 **594 个精灵形态**与 **553 个技能**。
+当前数据快照包含 **619 个精灵形态**与 **579 个技能**。种族值未确认的形态仍保留占位说明。
 
 ## 操作流程
 

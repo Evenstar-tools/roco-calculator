@@ -42,6 +42,55 @@ const WISH_POWER_ID_BY_TYPE = new Map(
   WISH_POWER_SKILLS.map((skill) => [skill.type, skill.id]),
 );
 
+const SPIRIT_COMMUNITY_ALIASES_BY_ID = Object.freeze({
+  spirit_07cdb4d4a94ac1bd: Object.freeze(["马头"]),
+  spirit_6a95a48463d87bef: Object.freeze(["马头"]),
+  spirit_77c2085d2f6e8e87: Object.freeze(["塑料袋", "大牌姐"]),
+  spirit_8e02f5b94a74428b: Object.freeze(["教练"]),
+  spirit_dcb0504a22dc89a2: Object.freeze(["毛豆"]),
+  spirit_b5f7f523f4cb4178: Object.freeze(["毛豆"]),
+  spirit_d345729d1593bff7: Object.freeze(["胖猫"]),
+  spirit_d7a201531161488e: Object.freeze(["胖猫"]),
+  spirit_e926effbf164759a: Object.freeze(["马超"]),
+  spirit_552a95c89d0867e1: Object.freeze(["凶", "区", "蛆"]),
+  spirit_9dd866cafbbf24f3: Object.freeze(["凶", "区", "蛆"]),
+  spirit_30c4c0a5620c04b2: Object.freeze(["凶", "区", "蛆"]),
+  spirit_aab4cd6a788bef56: Object.freeze(["凶", "区", "蛆"]),
+  spirit_7ec0b892b12a44fc: Object.freeze(["凶", "区", "蛆"]),
+  spirit_56b76e5cddf39081: Object.freeze(["uu"]),
+  spirit_3fb98e0a461b35c8: Object.freeze(["石王", "布莱克岩"]),
+  spirit_b75ef6a541e92530: Object.freeze(["书王"]),
+  spirit_7c31fbd89f093c5d: Object.freeze(["我红"]),
+  spirit_c43a0b85bf30c248: Object.freeze(["科比"]),
+  spirit_3a0b383ca1a11675: Object.freeze(["火狗"]),
+  spirit_17446a2b41bf4052: Object.freeze(["电羊"]),
+  spirit_563a4e078a1d8cba: Object.freeze(["莎莎"]),
+  spirit_4bc9a982e5888257: Object.freeze(["菠萝"]),
+  spirit_cd669a9720f51fe4: Object.freeze(["UFO", "扫地机器人"]),
+});
+
+function addSpiritCommunityAliases(spirits) {
+  let changed = false;
+  const enriched = spirits.map((spirit) => {
+    const aliases = SPIRIT_COMMUNITY_ALIASES_BY_ID[spirit.id];
+    if (!aliases) return spirit;
+
+    const currentAliases = Array.isArray(spirit.aliases)
+      ? spirit.aliases
+      : [];
+    const knownAliases = new Set(currentAliases);
+    const missingAliases = aliases.filter((alias) => !knownAliases.has(alias));
+    if (missingAliases.length === 0) return spirit;
+
+    changed = true;
+    return {
+      ...spirit,
+      aliases: [...currentAliases, ...missingAliases],
+    };
+  });
+  return { changed, spirits: enriched };
+}
+
 function bossWishPowerIds(spirit, traitsById) {
   const descriptions = (spirit.traitIds ?? [])
     .map((traitId) => traitsById.get(traitId)?.description ?? "")
@@ -52,6 +101,7 @@ function bossWishPowerIds(spirit, traitsById) {
 }
 
 export function withCalculatorExtras(snapshot) {
+  const aliasResult = addSpiritCommunityAliases(snapshot?.spirits ?? []);
   const skills = snapshot?.skills ?? [];
   const existingIds = new Set(skills.map((skill) => skill.id));
   const missing = WISH_POWER_SKILLS.filter(
@@ -59,7 +109,7 @@ export function withCalculatorExtras(snapshot) {
   );
   const wishPowerIds = WISH_POWER_SKILLS.map((skill) => skill.id);
   const spiritsById = new Map(
-    (snapshot?.spirits ?? []).map((spirit) => [spirit.id, spirit]),
+    aliasResult.spirits.map((spirit) => [spirit.id, spirit]),
   );
   const traitsById = new Map(
     (snapshot?.traits ?? []).map((trait) => [trait.id, trait]),
@@ -88,9 +138,12 @@ export function withCalculatorExtras(snapshot) {
     };
   });
 
-  if (missing.length === 0 && !learnsetsChanged) return snapshot;
+  if (missing.length === 0 && !learnsetsChanged && !aliasResult.changed) {
+    return snapshot;
+  }
   return {
     ...snapshot,
+    spirits: aliasResult.spirits,
     skills: [...skills, ...missing],
     learnsets,
   };

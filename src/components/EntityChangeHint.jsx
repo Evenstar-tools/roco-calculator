@@ -152,8 +152,8 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
           >
             <header>
               <span>
-                <small>{changeInfo.patch?.status === "preview" ? "前瞻" : "更新"}</small>
-                <strong>{changeInfo.patch?.label ?? "本期改动"}</strong>
+                <small>更新</small>
+                <strong>{changeInfo.patch?.label?.replace(/前瞻/g, "").replace(/S3[\s-]*季中/g, "赛季平衡") ?? "本期改动"}</strong>
                 <time>{changeInfo.patch?.date}</time>
               </span>
               <button

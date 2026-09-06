@@ -60,6 +60,8 @@ test("精灵改动只在叹号交互后展示，点击后可固定", async () =>
   await user.hover(trigger);
   expect(screen.getByRole("tooltip", { name: "加油蟹本期改动" })).toBeVisible();
   expect(screen.getByText("108 → 92")).toBeVisible();
+  expect(screen.getByText("更新")).toBeVisible();
+  expect(screen.queryByText(/前瞻/u)).not.toBeInTheDocument();
 
   await user.click(trigger);
   await user.unhover(trigger);

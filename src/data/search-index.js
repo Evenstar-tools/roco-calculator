@@ -14,6 +14,7 @@ function searchFields(spirit) {
     spirit.dexNo,
     spirit.pinyin,
     spirit.initials,
+    ...(spirit.aliases ?? []),
   ]
     .filter(Boolean)
     .map(compact);

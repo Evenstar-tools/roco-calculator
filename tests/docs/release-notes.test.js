@@ -42,21 +42,18 @@ describe("版本记录", () => {
     expect(versions.every((version) => /^v\d+\.\d+\.\d+$/u.test(version))).toBe(true);
   });
 
-  test("S4 前瞻作为当前桌面版本置顶", () => {
-    expect(featuredRelease).toBe(S4_PREVIEW_USER_RELEASE);
-    expect(featuredRelease).toMatchObject({
-      date: "2026.09.05",
-      status: "preview",
-    });
+  test("S4 月涌狂想作为当前桌面版本置顶", () => {
+    expect(featuredRelease.status).not.toBe("preview");
     expect(featuredRelease.version).toBe(`v${packageVersion}`);
     expect(featuredRelease.title.trim().length).toBeGreaterThan(0);
     expect(featuredRelease.title).toContain("S4");
     expect(featuredRelease.highlights.join("\n")).not.toContain("9月10日");
+    expect(JSON.stringify(USER_RELEASE_NOTES)).not.toMatch(/前瞻|S3[\s-]*季中/u);
   });
 
   test("新功能弹窗只展示用户可直接使用的功能", () => {
     expect(featuredRelease.whatsNew.items.map(({ title }) => title)).toEqual([
-      "S4新精灵前瞻",
+      "S4赛季主题",
       "综合耐久显示",
       "精灵能力分析功能",
     ]);
@@ -68,11 +65,11 @@ describe("版本记录", () => {
   });
 
   test("补丁只进入版本记录，不冒充新的功能介绍", () => {
-    expect(featuredRelease.summaryHighlights).toEqual(expect.arrayContaining([
+    expect(S4_PREVIEW_USER_RELEASE.summaryHighlights).toEqual(expect.arrayContaining([
       expect.stringContaining("找不到对应首领"),
       expect.stringContaining("正式包体积"),
     ]));
-    expect(featuredRelease.sections.find(({ kind }) => kind === "fix")?.items)
+    expect(S4_PREVIEW_USER_RELEASE.sections.find(({ kind }) => kind === "fix")?.items)
       .toEqual(expect.arrayContaining([
         expect.stringContaining("进化链现在可以双向查找"),
         expect.stringContaining("不删减内容"),

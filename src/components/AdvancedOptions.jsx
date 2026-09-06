@@ -191,7 +191,7 @@ function Operator({ children }) {
   return <span className="formula-audit__operator">{children}</span>;
 }
 
-export function FormulaAudit({ result, targetRef }) {
+export function FormulaAudit({ result }) {
   if (result?.sourceKind === "bloodline") {
     const healingStep = result.formulaSteps?.find(
       (step) => step.label === "血脉魔法回复",
@@ -211,7 +211,7 @@ export function FormulaAudit({ result, targetRef }) {
     const requestedHealing = Number(traitStep?.input?.requestedHealing) || 0;
 
     return (
-      <section className="formula-audit" ref={targetRef} tabIndex="-1">
+      <section className="formula-audit">
         <header>
           <strong>伤害计算过程</strong>
           <span>{result.skillName}</span>
@@ -262,7 +262,7 @@ export function FormulaAudit({ result, targetRef }) {
   const audit = buildFormulaAudit(result);
   if (!audit) {
     return (
-      <section className="formula-audit" ref={targetRef} tabIndex="-1">
+      <section className="formula-audit">
         <header>
           <strong>伤害计算过程</strong>
           <span>{result?.reason ?? "选择技能后显示"}</span>
@@ -277,7 +277,7 @@ export function FormulaAudit({ result, targetRef }) {
   const total = audit.total;
 
   return (
-    <section className="formula-audit" ref={targetRef} tabIndex="-1">
+    <section className="formula-audit">
       <header>
         <strong>伤害计算过程</strong>
         <span>{audit.skillName}</span>
@@ -558,7 +558,6 @@ export function AdvancedOptions({
   negativeStatusEnabled = false,
   negativeStatuses,
   locateAdvancedTopRequest = null,
-  locateFormulaAuditRequest = 0,
   onBloodlineMagicChange = () => {},
   onAdvancedTopLocated = () => {},
   onFinalMultiplierChange,
@@ -577,8 +576,6 @@ export function AdvancedOptions({
   const advancedOptionsRef = useRef(null);
   const advancedToggleRef = useRef(null);
   const consumedAdvancedTopRequestRef = useRef(null);
-  const consumedFormulaAuditRequestRef = useRef(locateFormulaAuditRequest);
-  const formulaAuditRef = useRef(null);
   const open = controlledOpen ?? internalOpen;
   const bloodlineMagic = getBloodlineMagicOption(bloodlineMagicId);
 
@@ -598,16 +595,6 @@ export function AdvancedOptions({
     advancedToggleRef.current?.focus();
     onAdvancedTopLocated(locateAdvancedTopRequest);
   }, [locateAdvancedTopRequest, onAdvancedTopLocated, open]);
-
-  useEffect(() => {
-    if (
-      !open ||
-      locateFormulaAuditRequest <= consumedFormulaAuditRequestRef.current
-    ) return;
-    consumedFormulaAuditRequestRef.current = locateFormulaAuditRequest;
-    formulaAuditRef.current?.scrollIntoView?.({ block: "center" });
-    formulaAuditRef.current?.focus();
-  }, [locateFormulaAuditRequest, open]);
 
   return (
     <section
@@ -749,7 +736,7 @@ export function AdvancedOptions({
               </div>
             </section>
           ) : null}
-          <FormulaAudit result={result} targetRef={formulaAuditRef} />
+          <FormulaAudit result={result} />
         </div>
       ) : null}
     </section>

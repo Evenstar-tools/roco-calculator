@@ -176,7 +176,7 @@ describe("buildFavoriteConfigLibrary", () => {
 });
 
 describe("bundled popular config library", () => {
-  test("contains 224 valid spirit configurations", () => {
+  test("contains 226 valid spirit configurations", () => {
     const libraryText = readFileSync(
       "public/data/presets/pvp-popular-configs.json",
       "utf8",
@@ -194,9 +194,9 @@ describe("bundled popular config library", () => {
     });
 
     expect(library.format).toBe(FAVORITE_CONFIG_LIBRARY_FORMAT);
-    expect(library.entryCount).toBe(224);
-    expect(library.entries).toHaveLength(224);
-    expect(parsed.entries).toHaveLength(224);
+    expect(library.entryCount).toBe(226);
+    expect(library.entries).toHaveLength(226);
+    expect(parsed.entries).toHaveLength(226);
     expect(parsed.preview.missingSpirits).toBe(0);
     expect(parsed.preview.unknownTraitFields).toBe(0);
     expect(parsed.preview.invalidEntries).toBe(0);

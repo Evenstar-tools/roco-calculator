@@ -8,8 +8,9 @@
 
 | 项目 | 版本 | 你可以做什么 |
 | --- | --- | --- |
-| 最新可下载版本 | [`v1.6.5`](https://github.com/Evenstar-tools/roco-calculator/releases/tag/v1.6.5) | 下载 Windows 安装包 `roco-calculator-1.6.5-windows-x64.exe`。 |
-| 当前源码版本 | `v1.6.6` | 本地候选版本，尚未发布；可查看 [v1.6.6 更新内容](../../CHANGELOG.md#v166)。 |
+| 最新可下载版本 | [Latest 发布页](https://github.com/Evenstar-tools/roco-calculator/releases/latest) | 下载带版本号的 `洛克计算器-版本号.exe`；可下载版本以发布页为准。 |
+| 当前源码版本 | `v1.6.12` | S4「月涌狂想」；可查看 [v1.6.12 更新内容](../../CHANGELOG.md#v1612)。 |
+| 小程序源码版本 | `v1.1.13` | 使用网页核心 v1.6.12；代码上传、平台审核与公开发布分别验收。 |
 
 ## 这三类记录分别代表什么
 
@@ -21,7 +22,7 @@
 
 ## 现有下载资产
 
-截至本页更新，`v1.6.5` Release 公开提供 Windows 安装包 `roco-calculator-1.6.5-windows-x64.exe`；SHA-256 校验文件仅保留在本地发布归档。请只从上方的 GitHub Release 页面下载安装包。
+GitHub Release 仅公开带版本号的 Windows 安装包；WebApp、小程序 ZIP 与 SHA-256 校验文件仅保留在本地发布归档。请只从上方的 GitHub Release 页面下载安装包。
 
 ## 历史版本
 

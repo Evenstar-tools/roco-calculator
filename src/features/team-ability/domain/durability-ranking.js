@@ -120,6 +120,7 @@ function matchesQuery(entry, query) {
     entry.spirit.variantName,
     entry.spirit.dexNo,
     entry.spirit.searchText,
+    ...(entry.spirit.aliases ?? []),
     ...(entry.spirit.types ?? []),
   ].some((value) => normalizeSearchText(value).includes(normalizedQuery));
 }

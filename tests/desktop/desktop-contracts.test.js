@@ -46,7 +46,7 @@ describe("desktop identity contracts", () => {
       'app.commandLine.appendSwitch("disable-direct-composition")',
     );
     expect(desktopMain).toContain('window.once("ready-to-show"');
-    expect(desktopMain).toContain('const APP_TITLE = "洛克计算器 · S4前瞻";');
+    expect(desktopMain).toContain('const APP_TITLE = "洛克计算器 · S4「月涌狂想」";');
     expect(desktopMain).toContain("icon: getAppIconPath()");
     expect(desktopMain).not.toMatch(/lovepvp/i);
   });

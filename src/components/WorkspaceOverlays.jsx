@@ -187,7 +187,7 @@ export function WorkspaceOverlays({
             type="button"
           >
             <span>常用精灵配置</span>
-            <span className="app-menu__badge">224</span>
+            <span className="app-menu__badge">226</span>
           </button>
           <div aria-hidden="true" className="app-menu__separator" />
           <div aria-hidden="true" className="app-menu__group-label">

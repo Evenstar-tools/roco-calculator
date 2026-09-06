@@ -7,6 +7,7 @@ import {
 const spirits = [
   {
     asset: { localUrl: "/assets/spirits/sonic-dog.png" },
+    aliases: ["狗哥"],
     dexNo: "128",
     fullName: "音速犬",
     id: "sonic-dog",
@@ -41,6 +42,7 @@ test("searches spirits by Chinese, full pinyin, initials, variant, and dex numbe
   expect(index.search("ysq").map((spirit) => spirit.id)).toEqual(["sonic-dog"]);
   expect(index.search("火山附近").map((spirit) => spirit.id)).toEqual(["kaka-volcano"]);
   expect(index.search("311").map((spirit) => spirit.id)).toEqual(["kaka-volcano"]);
+  expect(index.search("狗哥").map((spirit) => spirit.id)).toEqual(["sonic-dog"]);
 });
 
 test("prefers locally synchronized assets while preserving source fallback", () => {

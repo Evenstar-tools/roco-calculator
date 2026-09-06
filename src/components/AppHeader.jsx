@@ -29,13 +29,27 @@ export function AppHeader({
 
   return (
     <header className={`app-header app-header--${viewMode}`}>
+      <div aria-hidden="true" className="app-header__season">
+        <span className="app-header__season-scene" />
+        <span className="app-header__season-orbit" />
+        <img
+          alt=""
+          className="app-header__season-wolf"
+          decoding="async"
+          draggable="false"
+          height="406"
+          src="/assets/season/s4-silver-wolf.webp"
+          width="486"
+        />
+        <span className="app-header__season-star" />
+      </div>
       <div className="app-header__brand">
-        <h1 aria-label="洛克计算器 · S4前瞻">
+        <h1 aria-label="洛克计算器 · S4「月涌狂想」">
           <span aria-hidden="true" className="app-header__title-long">
-            洛克计算器 · S4前瞻
+            洛克计算器 · <span className="app-header__season-title">S4「月涌狂想」</span>
           </span>
           <span aria-hidden="true" className="app-header__title-short">
-            S4前瞻
+            <span className="app-header__season-title">S4「月涌狂想」</span>
           </span>
         </h1>
       </div>

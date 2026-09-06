@@ -573,80 +573,20 @@ test("shows actual damage and HP columns without inventing unavailable values", 
   expect(within(list).getByLabelText("刺肤生命百分比")).toHaveTextContent("12.5%");
 });
 
-test("only offers the calculation-process entry for a current result with formula steps", () => {
-  const onFormulaAuditOpen = vi.fn();
-  const { rerender } = render(
-    <ResultRail
-      onFormulaAuditOpen={onFormulaAuditOpen}
-      result={{ ...result, mode: "four" }}
-    />,
-  );
+test("keeps the calculation-process entry out of the result rail", () => {
+  render(<ResultRail result={{ ...result, mode: "four" }} />);
 
-  expect(screen.getByRole("button", { name: "查看当前技能计算过程" }))
-    .toBeVisible();
-
-  rerender(
-    <ResultRail
-      onFormulaAuditOpen={onFormulaAuditOpen}
-      result={{
-        ...result,
-        mode: "four",
-        selectedResult: {
-          ...result.selectedResult,
-          statusOnly: true,
-          totalDamage: 0,
-        },
-      }}
-    />,
-  );
   expect(screen.queryByRole("button", { name: "查看当前技能计算过程" }))
     .not.toBeInTheDocument();
-
-  rerender(
-    <ResultRail
-      onFormulaAuditOpen={onFormulaAuditOpen}
-      result={{
-        ...result,
-        mode: "four",
-        selectedResult: {
-          formulaSteps: [],
-          hpPercent: null,
-          status: "needs_input",
-          totalDamage: null,
-        },
-      }}
-    />,
-  );
-  expect(screen.queryByRole("button", { name: "查看当前技能计算过程" }))
-    .not.toBeInTheDocument();
-
-  for (const sourceKind of ["trait", "bloodline"]) {
-    rerender(
-      <ResultRail
-        onFormulaAuditOpen={onFormulaAuditOpen}
-        result={{
-          ...result,
-          mode: "four",
-          selectedResult: {
-            ...result.selectedResult,
-            sourceKind,
-          },
-        }}
-      />,
-    );
-    expect(screen.getByRole("button", { name: "查看当前技能计算过程" }))
-      .toBeVisible();
-  }
 });
 
-test("places active advanced conditions between the skill list and process entry", async () => {
+test("places active advanced conditions after the skill list without a process entry", async () => {
   const user = userEvent.setup();
   const onAdvancedOptionsOpen = vi.fn();
   const { rerender } = render(
     <ResultRail
       activeAdvancedConditions={["雨天", "减伤 20%", "最终倍率 ×1.25"]}
       onAdvancedOptionsOpen={onAdvancedOptionsOpen}
-      onFormulaAuditOpen={vi.fn()}
       result={{ ...result, mode: "four", skillResults: [] }}
     />,
   );
@@ -655,15 +595,12 @@ test("places active advanced conditions between the skill list and process entry
   const summary = screen.getByRole("region", {
     name: "当前非默认高级条件",
   });
-  const process = screen.getByRole("button", {
-    name: "查看当前技能计算过程",
-  });
   expect(within(summary).getByText("计算条件")).toBeVisible();
   expect(summary).toHaveTextContent("雨天 · 减伤 20% · 最终倍率 ×1.25");
   expect(skillList.compareDocumentPosition(summary))
     .toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-  expect(summary.compareDocumentPosition(process))
-    .toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  expect(screen.queryByRole("button", { name: "查看当前技能计算过程" }))
+    .not.toBeInTheDocument();
 
   await user.click(within(summary).getByRole("button", { name: "调整" }));
   expect(onAdvancedOptionsOpen).toHaveBeenCalledOnce();
@@ -672,7 +609,6 @@ test("places active advanced conditions between the skill list and process entry
     <ResultRail
       activeAdvancedConditions={[]}
       onAdvancedOptionsOpen={onAdvancedOptionsOpen}
-      onFormulaAuditOpen={vi.fn()}
       result={{ ...result, mode: "four", skillResults: [] }}
     />,
   );

@@ -1,0 +1,224 @@
+/* S4 月面星轨：只改变装饰和配色，不占用顶栏排版空间。 */
+.app-header,
+html[data-theme="dark"] .app-header {
+  isolation: isolate;
+  border-top-color: #c7b66f;
+  border-bottom-color: #37485f;
+  background: #101b35;
+  box-shadow: none;
+}
+
+.app-header__season {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.app-header__season-scene {
+  position: absolute;
+  inset: 0;
+  background: url("/assets/season/s4-moon-night.webp") no-repeat 20% 54% / 1000px auto;
+  opacity: 0.84;
+  mask-image: linear-gradient(90deg, transparent 22%, #000 53%, #000 72%, transparent 92%);
+}
+
+.app-header__season-wolf {
+  position: absolute;
+  top: -29px;
+  left: 56%;
+  width: 162px;
+  height: auto;
+  opacity: 0.93;
+}
+
+.app-header__season-orbit {
+  position: absolute;
+  top: -145px;
+  left: 50%;
+  width: 420px;
+  height: 168px;
+  border: 1px solid #daca9066;
+  border-radius: 50%;
+  transform: rotate(-11deg);
+}
+
+.app-header__season-star {
+  position: absolute;
+  top: 9px;
+  left: 72%;
+  width: 7px;
+  height: 7px;
+  background: #f3d876;
+  clip-path: polygon(50% 0, 60% 36%, 100% 50%, 60% 61%, 50% 100%, 39% 61%, 0 50%, 39% 36%);
+}
+
+.app-header h1,
+html[data-theme="dark"] .app-header h1 {
+  color: #f4f2e5;
+}
+
+.app-header__season-title {
+  color: #ecd78c;
+}
+
+.app-header .view-mode-switch,
+.app-header .team-action,
+html[data-theme="dark"] .app-header .view-mode-switch,
+html[data-theme="dark"] .app-header .team-action {
+  border-color: #4e627a;
+  background: #1b2943;
+  color: #e2e8ee;
+  box-shadow: none;
+}
+
+.app-header .view-mode-switch button,
+html[data-theme="dark"] .app-header .view-mode-switch button {
+  background: transparent;
+  color: #c8d5e1;
+}
+
+.app-header .view-mode-switch button[aria-pressed="true"],
+html[data-theme="dark"] .app-header .view-mode-switch button[aria-pressed="true"] {
+  border-color: transparent;
+  background: #e0ce95;
+  color: #26384a;
+  box-shadow: none;
+}
+
+.app-header .icon-action,
+html[data-theme="dark"] .app-header .icon-action {
+  background: transparent;
+  color: #e2e6db;
+}
+
+.app-header .team-action:hover,
+.app-header .icon-action:hover,
+.app-header .icon-action[aria-expanded="true"],
+.app-header .view-mode-switch button:not([aria-pressed="true"]):hover,
+html[data-theme="dark"] .app-header .team-action:hover,
+html[data-theme="dark"] .app-header .icon-action:hover,
+html[data-theme="dark"] .app-header .icon-action[aria-expanded="true"],
+html[data-theme="dark"] .app-header .view-mode-switch button:not([aria-pressed="true"]):hover {
+  border-color: #9aa9bb;
+  background: #30415a;
+  color: #f4f2e5;
+}
+
+.app-header button:focus-visible,
+html[data-theme="dark"] .app-header button:focus-visible {
+  outline: 2px solid #ecd78c;
+  outline-offset: 2px;
+}
+
+html[data-theme="dark"] body {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--bg);
+}
+
+/* 月夜从页面顶端铺开，向内容区淡出，不再形成独立的深色横条。 */
+html[data-theme="dark"] body::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: 240px;
+  background:
+    linear-gradient(180deg, #0d173033 0, #15243a66 64px, #142030e6 150px, #101722 240px),
+    url("/assets/season/s4-silver-wolf.webp") no-repeat 56% -26px / 162px auto,
+    url("/assets/season/s4-moon-night.webp") no-repeat center 44% / cover;
+  content: "";
+  pointer-events: none;
+}
+
+html[data-theme="dark"] .app-header {
+  border-color: transparent;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+html[data-theme="dark"] .app-header::before {
+  position: absolute;
+  z-index: -1;
+  inset: -3px 0 -16px;
+  background: linear-gradient(180deg, #0d1730eb, #12213a99 55%, transparent);
+  content: "";
+  pointer-events: none;
+}
+
+html[data-theme="dark"] .app-header__season {
+  opacity: 0;
+}
+
+html[data-theme="dark"] .result-rail {
+  border-top-color: #c7b66f;
+}
+
+html[data-theme="dark"] .result-rail__damage {
+  color: #eed89e;
+}
+
+html[data-theme="dark"] .quick-nature__option .stat-icon,
+html[data-theme="dark"] .quick-iv__option .stat-icon {
+  filter: brightness(1.6) saturate(0.65);
+}
+
+html[data-theme="dark"] .quick-nature__option[aria-pressed="true"] {
+  border-color: #b6a476;
+  background: #343a42;
+  color: #ebd697;
+}
+
+html[data-theme="dark"] .floating-undo {
+  border-color: #667b93;
+  background: #233145;
+  color: #c6d3e2;
+}
+
+html[data-theme="dark"] .type-tag--幻 {
+  color: #261f31;
+}
+
+html[data-theme="dark"] :is(button, input, select):focus-visible {
+  outline-color: #88badb;
+}
+
+/* 桌面最小窗口保留角色；更窄的网页只保留低对比月夜纹理。 */
+@media (min-width: 801px) and (max-width: 1100px) {
+  html[data-theme="dark"] body::before {
+    background-position: 0 0, calc(100% - 400px) -22px, center 44%;
+    background-size: auto, 140px auto, cover;
+  }
+
+  .app-header__season-wolf {
+    top: -22px;
+    left: calc(100% - 490px);
+    width: 140px;
+  }
+
+  .app-header__season-star {
+    left: calc(100% - 358px);
+  }
+}
+
+@media (max-width: 800px) {
+  html[data-theme="dark"] body::before {
+    background-image:
+      linear-gradient(180deg, #0d173033, #142030e6 150px, #101722 240px),
+      url("/assets/season/s4-moon-night.webp");
+    background-position: 0 0, center 44%;
+    background-size: auto, auto 320px;
+  }
+
+  .app-header__season-wolf,
+  .app-header__season-orbit,
+  .app-header__season-star {
+    display: none;
+  }
+
+  .app-header__season-scene {
+    opacity: 0.35;
+  }
+}

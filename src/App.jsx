@@ -101,7 +101,6 @@ function CalculatorWorkspace({ snapshot }) {
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(false);
   const [advancedOptionsTopRequest, setAdvancedOptionsTopRequest] = useState(null);
   const nextAdvancedOptionsTopRequestRef = useRef(0);
-  const [formulaAuditRequest, setFormulaAuditRequest] = useState(0);
   const [viewMode, setViewMode] = useState("compact");
   const storedData = useStoredCalculatorData(snapshot, { onToast: setToast });
   const {
@@ -1630,7 +1629,7 @@ function CalculatorWorkspace({ snapshot }) {
     configLibrary: configLibraryFlow.overlayProps,
     dataSource: {
       ...overlays.dataSourceProps,
-      dataVersion: `${snapshot.meta.seasonId ?? "S4前瞻"} · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
+      dataVersion: `S4「月涌狂想」 · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
     },
     productAccess: overlays.productAccessProps,
     displaySettings: overlays.displaySettingsProps,
@@ -2026,7 +2025,6 @@ function CalculatorWorkspace({ snapshot }) {
               />
               <AdvancedOptions
                 locateAdvancedTopRequest={advancedOptionsTopRequest}
-                locateFormulaAuditRequest={formulaAuditRequest}
                 bloodlineMagicId={
                   currentDirection.context?.bloodlineMagicId ?? "none"
                 }
@@ -2109,14 +2107,6 @@ function CalculatorWorkspace({ snapshot }) {
               onDirectionToggle={() =>
                 setActiveDirection(toggleDirection)
               }
-              onFormulaAuditOpen={
-                viewMode === "detailed" && state.mode === "four"
-                  ? () => {
-                      setAdvancedOptionsOpen(true);
-                      setFormulaAuditRequest((request) => request + 1);
-                    }
-                  : undefined
-              }
               onSkillResultSelect={selectSkillResult}
               result={resultModel}
               showTypeCoverage={typeCoverageEnabled}
@@ -2170,7 +2160,7 @@ export function App({ initialSnapshot = null }) {
       <div className="app">
         <AppHeader />
         <main className="loading-state">
-          <p>{error || "正在加载 S4前瞻数据…"}</p>
+          <p>{error || "正在加载 S4「月涌狂想」数据…"}</p>
         </main>
       </div>
     );

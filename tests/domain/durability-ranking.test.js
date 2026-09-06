@@ -244,6 +244,21 @@ describe("createDurabilityRanking", () => {
     });
   });
 
+  test("searches a durability row by community alias", () => {
+    const ranking = createDurabilityRanking({
+      query: "扛王",
+      spirits: [
+        bossSpirit({ dexNo: "001", fullName: "甲", hp: 120, id: "first" }),
+        {
+          ...bossSpirit({ dexNo: "002", fullName: "乙", hp: 110, id: "second" }),
+          aliases: ["扛王"],
+        },
+      ],
+    });
+
+    expect(ranking.rows.map(({ spiritId }) => spiritId)).toEqual(["second"]);
+  });
+
   test("rejects a non-durability sort metric with a machine-readable code", () => {
     expect(() =>
       createDurabilityRanking({

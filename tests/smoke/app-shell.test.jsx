@@ -2,16 +2,50 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { App } from "../../src/App.jsx";
+import { AppHeader } from "../../src/components/AppHeader.jsx";
 
 test("renders the calculator title", () => {
   render(<App />);
 
   expect(
     screen.getByRole("heading", {
-      name: "洛克计算器 · S4前瞻",
+      name: "洛克计算器 · S4「月涌狂想」",
     }),
   ).toBeVisible();
-  expect(screen.getByText("正在加载 S4前瞻数据…")).toBeVisible();
+  expect(screen.getByText("正在加载 S4「月涌狂想」数据…")).toBeVisible();
+});
+
+test("season decoration stays local and decorative without changing header actions", async () => {
+  const onThemeChange = vi.fn();
+  const onTeamsOpen = vi.fn();
+  const onMenuOpen = vi.fn();
+  const onViewModeChange = vi.fn();
+  const { container } = render(
+    <AppHeader
+      onMenuOpen={onMenuOpen}
+      onTeamsOpen={onTeamsOpen}
+      onThemeChange={onThemeChange}
+      onViewModeChange={onViewModeChange}
+    />,
+  );
+  const decoration = container.querySelector(".app-header__season");
+  expect(decoration).toHaveAttribute("aria-hidden", "true");
+  expect(decoration.querySelector("img")).toHaveAttribute("alt", "");
+  expect(decoration.querySelector("img")).toHaveAttribute(
+    "src", "/assets/season/s4-silver-wolf.webp",
+  );
+  expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "洛克计算器 · S4「月涌狂想」" })).toBeVisible();
+
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: "切换主题" }));
+  await user.click(screen.getByRole("button", { name: "打开队伍" }));
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  expect(onThemeChange).toHaveBeenCalledWith("dark");
+  expect(onTeamsOpen).toHaveBeenCalledOnce();
+  expect(onMenuOpen).toHaveBeenCalledOnce();
+  expect(onViewModeChange).toHaveBeenCalledWith("detailed");
 });
 
 test("loads the compact runtime snapshot instead of the audit snapshot", () => {

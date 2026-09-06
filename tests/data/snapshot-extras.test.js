@@ -3,6 +3,86 @@ import { describe, expect, test } from "vitest";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 
 describe("withCalculatorExtras", () => {
+  test("adds community aliases without changing official spirit names or mutating source data", () => {
+    const snapshot = {
+      meta: {},
+      spirits: [
+        {
+          aliases: ["已有别名"],
+          fullName: "白金独角兽",
+          id: "spirit_07cdb4d4a94ac1bd",
+        },
+        {
+          fullName: "水蓝蓝",
+          id: "spirit_77c2085d2f6e8e87",
+        },
+      ],
+      skills: [],
+      learnsets: [],
+    };
+
+    const enriched = withCalculatorExtras(snapshot);
+
+    expect(enriched.spirits[0]).toMatchObject({
+      aliases: ["已有别名", "马头"],
+      fullName: "白金独角兽",
+    });
+    expect(enriched.spirits[1]).toMatchObject({
+      aliases: ["塑料袋", "大牌姐"],
+      fullName: "水蓝蓝",
+    });
+    expect(snapshot.spirits[0].aliases).toEqual(["已有别名"]);
+    expect(snapshot.spirits[1]).not.toHaveProperty("aliases");
+    expect(withCalculatorExtras(enriched).spirits).toEqual(enriched.spirits);
+  });
+
+  test("covers every supplied community alias against the current roster", () => {
+    const snapshot = JSON.parse(
+      readFileSync("data/snapshots/current.json", "utf8"),
+    );
+    const enriched = withCalculatorExtras(snapshot);
+    const aliasesByName = new Map(
+      enriched.spirits.map((spirit) => [spirit.fullName, spirit.aliases ?? []]),
+    );
+
+    expect(aliasesByName.get("白金独角兽")).toContain("马头");
+    expect(aliasesByName.get("彩虹独角兽")).toContain("马头");
+    expect(aliasesByName.get("水蓝蓝")).toEqual(
+      expect.arrayContaining(["塑料袋", "大牌姐"]),
+    );
+    expect(aliasesByName.get("烈火守护")).toContain("教练");
+    expect(aliasesByName.get("大耳帽兜")).toContain("毛豆");
+    expect(aliasesByName.get("雪影娃娃")).toContain("毛豆");
+    expect(aliasesByName.get("喵喵")).toContain("胖猫");
+    expect(aliasesByName.get("魔力猫")).toContain("胖猫");
+    expect(aliasesByName.get("冰钻布鲁斯")).toContain("马超");
+    for (const name of [
+      "爬爬",
+      "化蝶（平常的样子）",
+      "化蝶（幽冥眼的样子）",
+      "化蝶（喵喵的样子）",
+      "化蝶（奇丽花的样子）",
+    ]) {
+      expect(aliasesByName.get(name)).toEqual(
+        expect.arrayContaining(["凶", "区", "蛆"]),
+      );
+    }
+    expect(aliasesByName.get("绒光优优")).toContain("uu");
+    expect(aliasesByName.get("迷嶂布莱克")).toEqual(
+      expect.arrayContaining(["石王", "布莱克岩"]),
+    );
+    expect(aliasesByName.get("古卷执政官")).toContain("书王");
+    expect(aliasesByName.get("恶魔红钻")).toContain("我红");
+    expect(aliasesByName.get("瞌睡王")).toContain("科比");
+    expect(aliasesByName.get("音速犬")).toContain("火狗");
+    expect(aliasesByName.get("电球咩咩")).toContain("电羊");
+    expect(aliasesByName.get("彩蝶鲨")).toContain("莎莎");
+    expect(aliasesByName.get("嗜波螺")).toContain("菠萝");
+    expect(aliasesByName.get("食尘短绒")).toEqual(
+      expect.arrayContaining(["UFO", "扫地机器人"]),
+    );
+  });
+
   test("adds all 18 typed Wish Power variants without mutating the snapshot count", () => {
     const snapshot = {
       meta: { counts: { skills: 553 } },

@@ -1,13 +1,13 @@
 {
   "format": "rock-calculator.favorite-config-library",
   "schemaVersion": 1,
-  "appVersion": "1.6.11",
+  "appVersion": "1.6.12",
   "versions": {
     "data": "s4-preview-2026-09-02",
     "rules": "s4-preview-2026-09-02"
   },
-  "exportedAt": "2026-09-04T00:00:00.000Z",
-  "entryCount": 224,
+  "exportedAt": "2026-09-05T07:48:00.000Z",
+  "entryCount": 226,
   "entries": [
     {
       "spiritId": "spirit_56b76e5cddf39081",
@@ -4347,6 +4347,44 @@
         "skill_a1fec53e8fb5a90d",
         "skill_f5cf704678e0738c",
         "skill_befd3ebf2018d7a8"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_8ac693cfd57fea1c",
+      "natureId": "peaceful",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 0,
+        "physicalAttack": 60,
+        "magicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalDefense": 0
+      },
+      "skills": [
+        "skill_3491d62ec7b41367",
+        "skill_a50a822755130f87",
+        "skill_9403fd3a6850b653",
+        "skill_4375736cdfafd6a1"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_59a68cf08569c4a7",
+      "natureId": "silent",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 0,
+        "physicalAttack": 0,
+        "magicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "skills": [
+        "skill_1d6374f73a6e6612",
+        "skill_02605c25bb1ea52d",
+        "skill_e8ae25185fcd9973",
+        "skill_e6ea0fbb90847402"
       ],
       "traitValues": {}
     }

@@ -14,6 +14,12 @@ test.beforeEach(async ({ page }) => {
 test("keeps narrow header labels and long spirit identity controls readable at 320px", async ({ page }) => {
   await page.setViewportSize({ height: 720, width: 320 });
   await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "洛克计算器 · S4「月涌狂想」" }),
+  ).toBeVisible();
+  expect(await page.locator(".app-header").evaluate(
+    (header) => header.scrollWidth <= header.clientWidth,
+  )).toBe(true);
   await selectSpirit(page, "攻击方", "卡瓦重（火山附近的样子）");
   await selectSpirit(page, "防御方", "水灵");
 
@@ -287,6 +293,7 @@ test("keeps the compact swap action centered between both spirit inputs at 320px
 test("starts with static power and every optional display setting off", async ({ page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
   await page.goto("/");
+  await expect(page.getByRole("combobox", { name: "攻击方精灵" })).toBeVisible();
 
   await page.getByRole("button", { name: "打开菜单" }).click();
   await page.getByRole("button", { name: "显示设置" }).click();

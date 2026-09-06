@@ -36,11 +36,11 @@ const stats = [
   { key: "magicDefense", label: "魔防", panel: 150, race: 82, displayIv: 60 },
 ];
 
-test("header uses the S4 preview title and exposes compact controls", () => {
+test("header uses the S4 月涌狂想 title and exposes compact controls", () => {
   render(<AppHeader onTeamsOpen={vi.fn()} />);
 
   expect(
-    screen.getByRole("heading", { name: "洛克计算器 · S4前瞻" }),
+    screen.getByRole("heading", { name: "洛克计算器 · S4「月涌狂想」" }),
   ).toBeVisible();
   expect(screen.queryByText(/41360/u)).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "打开队伍" })).toHaveAttribute(
@@ -192,6 +192,41 @@ test("spirit picker previews only favorites and searches the full roster", async
   const input = screen.getByRole("combobox", { name: "攻击方精灵" });
   await user.type(input, "普通");
   expect(screen.getByRole("option", { name: /普通精灵/ })).toBeVisible();
+});
+
+test("spirit picker searches community aliases without changing its visible copy", async () => {
+  const user = userEvent.setup();
+  render(
+    <SpiritPicker
+      favoriteState={null}
+      label="攻击方"
+      onFavoriteToggle={vi.fn()}
+      onSelect={vi.fn()}
+      selected={null}
+      side="attack"
+      spirits={[
+        {
+          aliases: ["马头"],
+          evolutionChainIds: ["platinum", "rainbow"],
+          fullName: "白金独角兽",
+          id: "platinum",
+        },
+        {
+          aliases: ["马头"],
+          evolutionChainIds: ["platinum", "rainbow"],
+          fullName: "彩虹独角兽",
+          id: "rainbow",
+        },
+      ]}
+    />,
+  );
+
+  const input = screen.getByRole("combobox", { name: "攻击方精灵" });
+  expect(input).toHaveAttribute("placeholder", "选精灵");
+  await user.type(input, "马头");
+  expect(
+    screen.getAllByRole("option").map((option) => option.textContent),
+  ).toEqual(["白金独角兽", "彩虹独角兽"]);
 });
 
 test("spirit picker falls back to dex order when there are no favorites", async () => {

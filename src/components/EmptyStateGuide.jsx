@@ -17,7 +17,7 @@ export function EmptyStateGuide({ message = null }) {
   return (
     <section aria-label="使用引导" className="empty-guide">
       <h2 className="empty-guide__title">
-        {message ? "S4 前瞻占位形态" : "三步完成一次伤害计算"}
+        {message ? "种族值待确认" : "三步完成一次伤害计算"}
       </h2>
       {message ? (
         <p className="empty-guide__footnote">{message}</p>

@@ -30,17 +30,19 @@ test("shows only active conditions and keeps adjust separate from formula focus"
   const summary = page.getByRole("region", { name: "当前非默认高级条件" });
   await expect(summary).toContainText("雨天 · 减伤 20% · 最终倍率 ×1.25");
   await expect(summary).not.toContainText("印记");
-  const order = await page.locator(".result-rail").evaluate((rail) => {
+  const layout = await page.locator(".result-rail").evaluate((rail) => {
     const list = rail.querySelector(".skill-result-list");
     const conditions = rail.querySelector(".result-rail__active-conditions");
     const process = rail.querySelector(".result-rail__process-link");
-    return Boolean(
-      list && conditions && process &&
-      list.compareDocumentPosition(conditions) & Node.DOCUMENT_POSITION_FOLLOWING &&
-      conditions.compareDocumentPosition(process) & Node.DOCUMENT_POSITION_FOLLOWING
-    );
+    return {
+      conditionsFollowList: Boolean(
+        list && conditions &&
+        list.compareDocumentPosition(conditions) & Node.DOCUMENT_POSITION_FOLLOWING
+      ),
+      hasProcessEntry: Boolean(process),
+    };
   });
-  expect(order).toBe(true);
+  expect(layout).toEqual({ conditionsFollowList: true, hasProcessEntry: false });
 
   await summary.getByRole("button", { name: "调整" }).focus();
   await page.keyboard.press("Enter");

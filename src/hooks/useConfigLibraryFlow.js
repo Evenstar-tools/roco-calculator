@@ -1,7 +1,7 @@
 import { useState } from "react";
 import packageInfo from "../../package.json";
 
-export const POPULAR_CONFIG_COUNT = 224;
+export const POPULAR_CONFIG_COUNT = 226;
 
 function configLibraryFileName(date = new Date()) {
   const pad = (value) => String(value).padStart(2, "0");

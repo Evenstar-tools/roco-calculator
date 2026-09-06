@@ -305,16 +305,11 @@ export function ResultRail({
   onCurrentHpChange,
   onCurrentHpPercentChange,
   onDirectionToggle,
-  onFormulaAuditOpen,
   onSkillResultSelect,
   result,
   showTypeCoverage = false,
 }) {
   const primary = result.selectedResult;
-  const hasFormulaAudit =
-    primary?.status === "exact" &&
-    primary.statusOnly !== true &&
-    primary.formulaSteps?.length > 0;
   const isExact =
     primary.status === "exact" &&
     Number.isFinite(primary.totalDamage) &&
@@ -503,16 +498,6 @@ export function ResultRail({
           </div>
           <p>{activeAdvancedConditions.join(" · ")}</p>
         </section>
-      ) : null}
-
-      {result.mode === "four" && hasFormulaAudit && onFormulaAuditOpen ? (
-        <button
-          className="result-rail__process-link"
-          onClick={onFormulaAuditOpen}
-          type="button"
-        >
-          查看当前技能计算过程
-        </button>
       ) : null}
 
       {showTypeCoverage ? (

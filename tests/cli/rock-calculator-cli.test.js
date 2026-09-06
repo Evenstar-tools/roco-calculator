@@ -158,6 +158,18 @@ describe("rock-calculator CLI", () => {
     expect(result.json.results[0].id).toBe("spirit_db5a2cb398dc0385");
   });
 
+  test("search 支持社区别名但保持正式名称输出", () => {
+    const result = runCli(["search", "spirit", "塑料袋"]);
+
+    expect(result.status).toBe(0);
+    expect(result.json.results).toContainEqual(
+      expect.objectContaining({
+        id: "spirit_77c2085d2f6e8e87",
+        name: "水蓝蓝",
+      }),
+    );
+  });
+
   test("search 标记种族值待确认的前瞻占位精灵", () => {
     const placeholder = snapshot.spirits.find(
       ({ calculationStatus }) => calculationStatus === "pending-race-stats",

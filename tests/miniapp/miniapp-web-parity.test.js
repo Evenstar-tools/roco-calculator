@@ -166,11 +166,11 @@ describe("desktop core and miniapp parity", () => {
     ]));
   });
 
-  test("bundles the current 224-entry PVP configuration library", () => {
+  test("bundles the current 226-entry PVP configuration library", () => {
     const library = readJson("miniapp/src/data/common-spirit-config.json");
 
-    expect(library.entryCount).toBe(224);
-    expect(library.entries).toHaveLength(224);
+    expect(library.entryCount).toBe(226);
+    expect(library.entries).toHaveLength(226);
   });
 
   test("shares the desktop team defensive analysis domain with miniapp", async () => {

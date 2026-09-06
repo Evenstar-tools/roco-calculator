@@ -513,14 +513,14 @@ async function openDetailedMode(user) {
   await user.click(screen.getByRole("tab", { name: "单技能" }));
 }
 
-test("labels the current dataset with its S3 midseason name", async () => {
+test("labels the current dataset with the S4 season name", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
 
   expect(screen.queryByText(/S3季中 · 41360/u)).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "关于与来源" }));
-  expect(screen.getByText("数据快照：S3季中 · 41360")).toBeVisible();
+  expect(screen.getByText("数据快照：S4「月涌狂想」 · 41360")).toBeVisible();
 });
 
 test("starts with both spirit selectors empty and hides incomplete configuration", () => {
@@ -3368,42 +3368,19 @@ test("四技能模式下点击技能结果行可切换当前技能", async () =>
   expect(rows[0]).not.toHaveClass("is-selected");
 });
 
-test("四技能结果入口会展开并定位当前技能计算过程", async () => {
+test("四技能结果卡不重复显示过程入口，高级选项仍保留计算过程", async () => {
   const user = userEvent.setup();
-  const originalScrollIntoView = Element.prototype.scrollIntoView;
-  const scrollIntoView = vi.fn();
-  Element.prototype.scrollIntoView = scrollIntoView;
-  try {
-    render(<App initialSnapshot={snapshot} />);
-    await selectDefaultSpirits(user);
-    await user.click(screen.getByRole("button", { name: "具体版" }));
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
 
-    const processButton = screen.getByRole("button", {
-      name: "查看当前技能计算过程",
-    });
-    processButton.focus();
-    await user.keyboard("{Enter}");
+  expect(screen.queryByRole("button", {
+    name: "查看当前技能计算过程",
+  })).not.toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: "高级选项" }))
-      .toHaveAttribute("aria-expanded", "true");
-    const formulaAudit = document.querySelector(".formula-audit");
-    expect(formulaAudit).toHaveFocus();
-    expect(scrollIntoView).toHaveBeenCalledWith({ block: "center" });
-
-    const advancedToggle = screen.getByRole("button", { name: "高级选项" });
-    await user.click(advancedToggle);
-    await user.click(advancedToggle);
-    expect(scrollIntoView).toHaveBeenCalledTimes(1);
-
-    await user.click(screen.getByRole("button", { name: "精简版" }));
-    expect(screen.queryByRole("button", {
-      name: "查看当前技能计算过程",
-    })).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "具体版" }));
-    expect(scrollIntoView).toHaveBeenCalledTimes(1);
-  } finally {
-    Element.prototype.scrollIntoView = originalScrollIntoView;
-  }
+  const advancedToggle = screen.getByRole("button", { name: "高级选项" });
+  await user.click(advancedToggle);
+  expect(screen.getByText("伤害计算过程")).toBeVisible();
 });
 
 test("高级条件摘要跟随有效方向并从调整入口定位常用条件", async () => {

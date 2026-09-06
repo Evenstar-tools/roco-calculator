@@ -5,34 +5,34 @@
    dark token declaration so semantic colors remain theme-correct. */
 html[data-theme="dark"] {
   color-scheme: dark;
-  --attack: #ff7568;
-  --attack-soft: #3b292f;
-  --defense: #66b5ff;
-  --defense-soft: #26394c;
-  --accent: #9b8cff;
-  --accent-strong: #b7adff;
-  --accent-soft: #353152;
-  --selection-bg: #353152;
-  --selection-border: #9b8cff;
-  --selection-hover: #30354a;
-  --bg: #171925;
-  --surface: #242736;
-  --surface-soft: #2b2f42;
-  --surface-subtle: #202331;
-  --surface-muted: #363b50;
-  --border: #4b526c;
-  --border-soft: #3d4359;
-  --border-strong: #65708f;
-  --text: #f1f3fb;
-  --text-muted: #c2c8dc;
-  --text-faint: #aab3ce;
-  --primary: #9b8cff;
-  --interactive: #9b8cff;
-  --warning: #ffd166;
-  --damage-safe: #69db7c;
-  --damage-warning: #ffd166;
-  --damage-danger: #ff7b6b;
-  --shadow: 0 14px 36px rgba(0, 0, 0, 0.32);
+  --attack: #f58f83;
+  --attack-soft: #30262f;
+  --defense: #86bff0;
+  --defense-soft: #1d3448;
+  --accent: #cfb878;
+  --accent-strong: #ebd697;
+  --accent-soft: #39372f;
+  --selection-bg: #343a42;
+  --selection-border: #b6a476;
+  --selection-hover: #304253;
+  --bg: #101722;
+  --surface: #1b2636;
+  --surface-soft: #233145;
+  --surface-subtle: #152030;
+  --surface-muted: #2b3b50;
+  --border: #495d77;
+  --border-soft: #35445b;
+  --border-strong: #7186a0;
+  --text: #e7edf5;
+  --text-muted: #bac7d8;
+  --text-faint: #9bacc2;
+  --primary: #98c6e4;
+  --interactive: #98c6e4;
+  --warning: #e6cb8e;
+  --damage-safe: #82cead;
+  --damage-warning: #e6cb8e;
+  --damage-danger: #f58f83;
+  --shadow: 0 10px 30px #03091433;
 }
 
 body {

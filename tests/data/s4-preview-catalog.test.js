@@ -334,15 +334,15 @@ describe("S4 前瞻新精灵候选目录", () => {
     }
   });
 
-  test("224 套热门配置包含 11 只 S4 最终形态及其默认性格、个体和四技能", () => {
+  test("226 套热门配置包含 11 只 S4 最终形态和两只首领的完整预设", () => {
     const patched = applyS4PreviewCatalog(baselineSnapshot(), candidate);
     const skillByName = new Map(patched.skills.map((skill) => [skill.name, skill.id]));
     const entryBySpiritId = new Map(
       popularConfigs.entries.map((entry) => [entry.spiritId, entry]),
     );
 
-    expect(popularConfigs.entryCount).toBe(224);
-    expect(popularConfigs.entries).toHaveLength(224);
+    expect(popularConfigs.entryCount).toBe(226);
+    expect(popularConfigs.entries).toHaveLength(226);
     for (const family of candidate.families) {
       const form = family.forms.find(({ isFinal }) => isFinal);
       const spirit = patched.spirits.find(({ fullName }) => fullName === form.name);
@@ -351,6 +351,44 @@ describe("S4 前瞻新精灵候选目录", () => {
         natureId: form.previewDefaults.natureId,
         displayIvs: form.previewDefaults.displayIvs,
         skills: family.skills.slice(0, 4).map(({ name }) => skillByName.get(name)),
+      });
+    }
+    for (const expected of [
+      {
+        name: "烈焰狂战士",
+        natureId: "peaceful",
+        displayIvs: {
+          hp: 60,
+          speed: 0,
+          physicalAttack: 60,
+          magicalAttack: 0,
+          physicalDefense: 60,
+          magicalDefense: 0,
+        },
+        skills: ["撕咬", "双响炮", "先发制人", "力量增效"],
+      },
+      {
+        name: "满月砣",
+        natureId: "silent",
+        displayIvs: {
+          hp: 60,
+          speed: 0,
+          physicalAttack: 0,
+          magicalAttack: 0,
+          physicalDefense: 60,
+          magicalDefense: 60,
+        },
+        skills: ["不可接触", "疫病吐息", "毒孢子", "毒雾"],
+      },
+    ]) {
+      const spirit = patched.spirits.find(
+        ({ fullName }) => fullName === expected.name,
+      );
+      expect(entryBySpiritId.get(spirit.id)).toMatchObject({
+        natureId: expected.natureId,
+        displayIvs: expected.displayIvs,
+        skills: expected.skills.map((name) => skillByName.get(name)),
+        traitValues: {},
       });
     }
   });

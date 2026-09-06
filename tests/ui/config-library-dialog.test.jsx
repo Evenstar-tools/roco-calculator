@@ -215,7 +215,7 @@ test("searches the popular preview without changing the full import action", () 
   );
 
   expect(screen.getByRole("dialog", { name: "常用精灵配置" })).toBeVisible();
-  expect(screen.getByText("PVP 热门配置 · 224 只")).toBeVisible();
+  expect(screen.getByText("PVP 热门配置 · 226 只")).toBeVisible();
   expect(screen.getByText("安装后可离线导入")).toBeVisible();
   expect(screen.queryByLabelText("选择配置库文件")).not.toBeInTheDocument();
   expect(screen.getByText("新增配置").nextElementSibling).toHaveTextContent("188");

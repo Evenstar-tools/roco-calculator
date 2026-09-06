@@ -49,7 +49,7 @@ test("keeps menu before workspace and closes it with Escape", () => {
 
   expect(screen.getByRole("navigation", { name: "应用菜单" })).toBeTruthy();
   expect(screen.getByRole("button", { name: "常用精灵配置" }))
-    .toHaveTextContent("224");
+    .toHaveTextContent("226");
   expect(screen.getByText("工作区").previousElementSibling).toHaveAttribute(
     "aria-label",
     "应用菜单",

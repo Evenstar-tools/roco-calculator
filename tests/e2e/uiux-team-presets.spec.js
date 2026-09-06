@@ -84,6 +84,7 @@ test("shows the team label on desktop and keeps the mobile header compact", asyn
 }) => {
   await page.setViewportSize({ height: 900, width: 1424 });
   await page.goto("/");
+  await expect(page.getByRole("combobox", { name: "攻击方精灵" })).toBeVisible();
 
   const teamAction = page.locator(".team-action");
   const teamLabel = teamAction.locator("span");

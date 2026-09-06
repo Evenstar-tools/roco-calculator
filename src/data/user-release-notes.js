@@ -40,13 +40,42 @@ function createRelease({ features = [], fixes = [], ...release }) {
   });
 }
 
+const S4_MOON_USER_RELEASE = createStructuredRelease({
+  version: "v1.6.12",
+  date: "2026.09.06",
+  title: "S4「月涌狂想」赛季主题",
+  summaryHighlights: [
+    "月夜星轨融入桌面深色页面，小程序同步通栏渐隐与系统深色主题。",
+    "统一S4「月涌狂想」名称，首页与提示文案不再显示旧阶段标记。",
+    "补齐进化链搜索，改善配置、特性条件和伤害结果的窄屏显示。",
+  ],
+  whatsNew: {
+    title: "S4更新",
+    items: [
+      { title: "S4赛季主题", description: "月夜、星轨与狼灵装饰融入主页，深色模式延伸到整页。" },
+      { title: "综合耐久显示", description: "比较物理、魔法与综合承伤，更方便选择生存方案。" },
+      { title: "精灵能力分析功能", description: "集中查看个体分配、耐久排行和速度线，并可应用配置。" },
+    ],
+  },
+  sections: [
+    { kind: "feature", items: [
+      "桌面与网页加入月夜、星轨和狼灵赛季装饰，深色顶栏向内容区渐隐，原有操作布局保持不变。",
+      "小程序加入通栏渐隐背景与系统深色主题，设置、精灵和技能弹层同步适配。",
+    ] },
+    { kind: "fix", items: [
+      "统一首页、窗口、网页和PWA的S4「月涌狂想」名称；种族值未确认的形态保留简短说明。",
+      "补齐精灵进化链与形态别名搜索，改善配置、特性条件和伤害结果的窄屏呈现。",
+    ] },
+  ],
+});
+
 export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
   version: "v1.6.11",
   date: "2026.09.05",
-  title: "S4前瞻规则与交互补丁",
+  title: "S4规则与交互补丁",
   status: "preview",
   summaryHighlights: [
-    "补齐本轮S4前瞻首领、头像和规则适配，网页与小程序共享数据同步。",
+    "补齐本轮S4首领、头像和规则适配，网页与小程序共享数据同步。",
     "修复从烈火守护、月亮砣等原形态搜索时找不到对应首领的问题。",
     "压缩小程序内置数据与热门配置，正式包体积降到上传限制内。",
   ],
@@ -54,7 +83,7 @@ export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
     title: "S4更新",
     items: [
       {
-        title: "S4新精灵前瞻",
+        title: "S4新精灵",
         description: "补齐本轮首领、头像和规则适配，搜索与计算口径同步。",
       },
       {
@@ -71,7 +100,7 @@ export const S4_PREVIEW_USER_RELEASE = createStructuredRelease({
     {
       kind: "feature",
       items: [
-        "补齐本轮S4前瞻首领、头像和规则适配，网页与小程序共享数据同步。",
+        "补齐本轮S4首领、头像和规则适配，网页与小程序共享数据同步。",
         "新增统一速度总览，常用配置支持搜索，战斗条件与技能入口更集中。",
       ],
     },
@@ -96,8 +125,8 @@ const S4_PREVIEW_V1610_RELEASE = createStructuredRelease({
     title: "S4更新",
     items: [
       {
-        title: "S4新精灵前瞻",
-        description: "可直接选择11只新精灵，体验新特性、新技能和前瞻配置。",
+        title: "S4新精灵",
+        description: "可直接选择11只新精灵，体验新特性、新技能和初始配置。",
       },
       {
         title: "综合耐久显示",
@@ -170,12 +199,12 @@ const S4_PREVIEW_V169_RELEASE = createStructuredRelease({
 const S4_PREVIEW_V168_RELEASE = createStructuredRelease({
   version: "v1.6.8",
   date: "2026.09.02",
-  title: "S4前瞻配置",
+  title: "S4初始配置",
   sections: [
     {
       kind: "feature",
       items: [
-        "为11个S4最终形态补入前瞻默认性格、三项60个体和四技能。",
+        "为11个S4最终形态补入默认性格、三项60个体和四技能。",
         "默认值只在没有个人保存配置时应用，不加入或改写旧版213套热门配置。",
         "Web、桌面和小程序内置数据保持一致，正式资料发布后仍需二次核实。",
       ],
@@ -184,6 +213,7 @@ const S4_PREVIEW_V168_RELEASE = createStructuredRelease({
 });
 
 export const USER_RELEASE_NOTES = Object.freeze([
+  S4_MOON_USER_RELEASE,
   S4_PREVIEW_USER_RELEASE,
   S4_PREVIEW_V1610_RELEASE,
   S4_PREVIEW_V169_RELEASE,
@@ -191,13 +221,13 @@ export const USER_RELEASE_NOTES = Object.freeze([
   createStructuredRelease({
     version: "v1.6.7",
     date: "2026.09.02",
-    title: "S4首轮前瞻",
+    title: "S4首轮更新",
     sections: [
       {
         kind: "feature",
         items: [
-          "应用阶段切换为S4前瞻，同步桌面、网页、PWA缓存和数据快照身份。",
-          "录入11条新精灵进化链，共23个形态和前瞻头像；12个成长形态保留不可计算占位。",
+          "应用进入S4数据更新阶段，同步桌面、网页、PWA缓存和数据快照身份。",
+          "录入11条新精灵进化链，共23个形态和头像；12个成长形态保留不可计算占位。",
           "同步29只既有精灵的种族值、20项技能调整与32组学习关系。",
         ],
       },
@@ -439,7 +469,7 @@ export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v1.5.4",
     date: "2026.08.13",
-    title: "S3季中收口",
+    title: "赛季平衡收口",
     features: [
       "补齐六自由度、钢钻的相邻技能动态威力，并校正愿力冲击等条件结算。",
       "首次引导的精灵选择改为聚光输入栏，展开后同时框住候选列表、头像和特性，并修复滚轮浏览。",
@@ -460,10 +490,10 @@ export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v1.5.2",
     date: "2026.08.12",
-    title: "S3季中数据与六步引导",
+    title: "赛季平衡数据与六步引导",
     features: [
       "更新炮米花、障眼魔、流明坎德拉、友爱星飞、饮雪狂兽的种族值，并补入宝藏小狐、宝藏沙狐。",
-      "调整孢子、撒娇、示弱、光度换算和冰雪魂魄，应用标题更新为“洛克计算器 · S3季中”。",
+      "调整孢子、撒娇、示弱、光度换算和冰雪魂魄，应用标题同步当期赛季。",
       "首次使用引导扩展为六步：选择攻方、选择守方、调整性格与个体、查看单／四技能、进入具体版、导入热门配置。",
     ],
     fixes: [
