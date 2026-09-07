@@ -3,6 +3,7 @@ import { familyIds } from "../src/features/skill-query/catalog.js";
 
 const read = async (path) => JSON.parse(await readFile(path, "utf8"));
 const source = await read("data/skill-query/s3-source.json");
+const wikiSeasons = await read("data/skill-query/bwiki-seasons.json");
 const baseline = await read("data/snapshots/seasons/s3-2026-07-15.json");
 const manifest = await read("data/skill-query/seasons.json");
 if (!manifest.seasons.length || new Set(manifest.seasons.map(({ id }) => id)).size !== manifest.seasons.length || !manifest.seasons.some(({ id }) => id === manifest.currentSeason)) {
@@ -49,7 +50,7 @@ const compact = (snapshot, season) => {
     const record = sourceSkills.get(skill.name);
     return { id: skill.id, name: skill.name, type: skill.type, category: skill.category,
       cost: skill.cost ?? null, basePower: skill.basePower ?? null, description: skill.description,
-      introducedSeason: record?.introducedSeason ?? (baselineSkills.has(skill.id) ? null : season),
+      introducedSeason: wikiSeasons.records[skill.name] ?? record?.introducedSeason ?? (baselineSkills.has(skill.id) ? null : season),
       detailUrl: skill.detailUrl };
   }),
   spirits: snapshot.spirits.map(({ id, fullName, types, stage }) => ({ id, fullName, types, stage, familyId: families.get(id) })),

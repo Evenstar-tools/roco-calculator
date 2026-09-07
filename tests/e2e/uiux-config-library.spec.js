@@ -49,7 +49,7 @@ test("exports and imports the favorite configuration library without touching te
   await page.reload();
 
   await page.getByRole("button", { name: "打开菜单" }).click();
-  await page.getByRole("button", { name: "配置库导出" }).click();
+  await page.getByRole("button", { name: "导入导出" }).click();
   await expect(page.getByText("可导出 1 只精灵")).toBeVisible();
   await page.getByRole("button", { name: "查看精灵和技能" }).click();
   await expect(page.getByText(spirit.fullName, { exact: true })).toBeVisible();
@@ -90,7 +90,8 @@ test("exports and imports the favorite configuration library without touching te
   });
   await page.reload();
   await page.getByRole("button", { name: "打开菜单" }).click();
-  await page.getByRole("button", { name: "配置库导入" }).click();
+  await page.getByRole("button", { name: "导入导出" }).click();
+  await page.getByRole("button", { name: "导入", exact: true }).click();
   await page.getByLabel("选择配置库文件").setInputFiles({
     buffer: Buffer.from(JSON.stringify(library), "utf8"),
     mimeType: "application/json",
@@ -149,7 +150,8 @@ test("imports a legacy four-skill dazzling config and explains the compatibility
   };
 
   await page.getByRole("button", { name: "打开菜单" }).click();
-  await page.getByRole("button", { name: "配置库导入" }).click();
+  await page.getByRole("button", { name: "导入导出" }).click();
+  await page.getByRole("button", { name: "导入", exact: true }).click();
   await page.getByLabel("选择配置库文件").setInputFiles({
     buffer: Buffer.from(JSON.stringify(library), "utf8"),
     mimeType: "application/json",

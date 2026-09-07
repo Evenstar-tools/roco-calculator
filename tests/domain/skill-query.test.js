@@ -1,8 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { seasonChanges, skillLearners, unpackCatalog, familyIds, learnerFamilies } from "../../src/features/skill-query/catalog.js";
+import { parseSkillSeasons } from "../../scripts/import-skill-query-seasons.mjs";
 
 describe("技能查询赛季对比", () => {
+  it("基础身份相同的形态分支合并，不重复展示地鼠家族", () => {
+    const ids = familyIds([
+      { id: "dry", baseName: "地鼠", variantName: "枯水", fullName: "地鼠（枯水）", evolutionChainNames: ["遁地鼠（枯水）"] },
+      { id: "wet", baseName: "地鼠", variantName: "储水", fullName: "地鼠（储水）", evolutionChainNames: ["遁地鼠（储水）"] },
+      { id: "dry3", fullName: "遁地鼠（枯水）" },
+      { id: "wet3", fullName: "遁地鼠（储水）" },
+    ]);
+    expect(new Set(ids.values()).size).toBe(1);
+  });
   it("单向进化链合为一家，代表必须能学，途径筛选不混淆形态", () => {
     const spirits = [
       { id: "a", fullName: "幼体", stage: "一阶", evolutionChainNames: ["成体", "首领"] },
@@ -13,15 +23,28 @@ describe("技能查询赛季对比", () => {
     const ids = familyIds(spirits);
     const season = { spirits: spirits.map(s => ({ ...s, familyId: ids.get(s.id) })), learnsets: [
       { spiritId: "a", skillIds: ["s"], acquisitions: { s: ["默认学习"] } },
-      { spiritId: "b", skillIds: ["s"], acquisitions: { s: ["技能石"] } },
+      { spiritId: "b", skillIds: ["s", "evolved-only"], acquisitions: { s: ["技能石"], "evolved-only": ["默认学习"] } },
       { spiritId: "d", skillIds: ["s"], acquisitions: { s: ["默认学习"] } },
     ] };
     expect(learnerFamilies(season, "s")).toHaveLength(2);
     const family = learnerFamilies(season, "s", "首领")[0];
-    expect(family.representative.id).toBe("b");
+    expect(family.representative.id).toBe("a");
     expect(family.members.map(s => s.id)).toEqual(["a", "b"]);
     expect(learnerFamilies(season, "s", "成体", "default")[0].representative.id).toBe("a");
+    expect(learnerFamilies(season, "s", "幼体", "技能石")[0].representative.id).toBe("b");
     expect(learnerFamilies(season, "s", "", "血脉")).toEqual([]);
+    expect(learnerFamilies(season, "evolved-only")[0].representative.id).toBe("b");
+  });
+  it("赛季来自 BWIKI 技能栏，拒绝缺失或相互冲突的字段", () => {
+    const row = (season) => `<tr class="divsort" data-param6="${season}"><td></td><td><a title="疾风涡轮">疾风涡轮</a></td></tr>`;
+    expect(parseSkillSeasons(`<table>${row("S2")}</table>`)).toEqual({ 疾风涡轮: "S2" });
+    expect(() => parseSkillSeasons(`<table>${row("")}</table>`)).toThrow();
+    expect(() => parseSkillSeasons(`<table>${row("S1")}${row("S2")}</table>`)).toThrow();
+    const data = unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
+    const wiki = JSON.parse(readFileSync("data/skill-query/bwiki-seasons.json", "utf8"));
+    for (const season of data.seasons) for (const skill of season.skills) {
+      if (wiki.records[skill.name]) expect(skill.introducedSeason, skill.name).toBe(wiki.records[skill.name]);
+    }
   });
   it("实际压缩资源完整保留 S3 源表学习面，不误报为新赛季获得", () => {
     const read = (path) => JSON.parse(readFileSync(path, "utf8"));

@@ -11,20 +11,28 @@ for (const width of [320, 390, 1440]) {
     await page.goto("/");
     await selectDefaultSpirits(page);
     await page.getByRole("button", { name: "打开菜单" }).click();
-    await page.getByRole("button", { name: "技能查询", exact: true }).click();
+    await page.getByRole("button", { name: "技能检索", exact: true }).click();
     const panel = page.getByRole("dialog", { name: "技能查询" });
     await expect(panel).toBeVisible();
+    await expect(panel).not.toContainText("查技能，也查谁能学");
+    await expect(panel).not.toContainText("每个家族仅展示一只");
+    await expect(panel).not.toContainText("学习面基线");
+    await panel.getByLabel("技能所属赛季").selectOption("S2");
+    await expect(panel.locator(".skill-query__list")).toContainText("疾风涡轮");
+    await expect(panel.locator(".skill-query__list")).not.toContainText("抓挠");
+    await panel.getByLabel("技能所属赛季").selectOption("");
     await panel.getByLabel("搜索技能或精灵").fill("抓挠");
     await panel.getByRole("button", { name: "抓挠 普通 · 物攻" }).click();
     await expect(panel.getByRole("heading", { name: "抓挠", exact: true })).toBeVisible();
     await expect(panel.locator("dd").first()).toHaveText("0");
     await panel.getByLabel("筛选学习精灵").fill("喵喵");
     await expect(panel.locator(".skill-query__families details")).toHaveCount(1);
+    await expect(panel.locator(".skill-query__families summary")).toContainText("喵喵");
     await panel.locator(".skill-query__families summary").click();
     await expect(panel.locator(".skill-query__family-methods")).toContainText("喵喵");
     await panel.locator(".skill-query__families summary").click();
     await panel.getByLabel("筛选学习精灵").fill("");
-    await expect(panel.locator(".skill-query__families details")).toHaveCount(13);
+    await expect(panel.locator(".skill-query__families details")).toHaveCount(12);
     await expect(panel.locator(".skill-query__families summary img").first()).toBeVisible();
     expect(await panel.locator(".skill-query__families summary img").first().evaluate(async image => { await image.decode(); return image.naturalWidth > 0; })).toBe(true);
     await panel.getByLabel("搜索技能或精灵").fill("");
@@ -34,6 +42,9 @@ for (const width of [320, 390, 1440]) {
     await panel.getByLabel("搜索技能或精灵").fill("");
     await panel.getByRole("tab", { name: "赛季新技能" }).click();
     await expect(panel.locator(".skill-query__list")).toContainText("重组");
+    await panel.getByLabel("查询赛季").selectOption("S3");
+    await expect(panel.locator(".skill-query__list > p").first()).toHaveText("57 个技能");
+    await panel.getByLabel("查询赛季").selectOption("S4");
     await panel.getByRole("tab", { name: "老精灵新学" }).click();
     await panel.getByLabel("搜索技能或精灵").fill("针叶巡林");
     await expect(panel.locator(".skill-query__gains")).toContainText("回旋踢");
@@ -51,7 +62,7 @@ test("failed catalog can retry and Escape restores menu focus", async ({ page })
   await page.route("**/data/skill-query/catalog.json", (route) => fail ? route.abort() : route.continue());
   await page.goto("/");
   await page.getByRole("button", { name: "打开菜单" }).click();
-  await page.getByRole("button", { name: "技能查询", exact: true }).click();
+  await page.getByRole("button", { name: "技能检索", exact: true }).click();
   const panel = page.getByRole("dialog", { name: "技能查询" });
   await expect(panel.getByRole("alert")).toContainText("暂时无法加载");
   fail = false;
@@ -62,4 +73,41 @@ test("failed catalog can retry and Escape restores menu focus", async ({ page })
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
   await expect(page.getByRole("button", { name: "打开菜单" })).toBeFocused();
+});
+
+test("menu order, prefetch and repeat opens reuse one catalog request", async ({ page }) => {
+  await resetUiuxStorage(page);
+  let requests = 0;
+  await page.route("**/data/skill-query/catalog.json", async (route) => {
+    requests += 1;
+    await route.continue();
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "打开菜单" }).click();
+  const menu = page.getByRole("navigation", { name: "应用菜单" });
+  await expect(async () => {
+    if (!await menu.isVisible()) await page.getByRole("button", { name: "打开菜单" }).click();
+    await expect(menu).toBeVisible();
+  }).toPass();
+  const names = await menu.getByRole("button").allTextContents();
+  expect(names.slice(0, 4).map(name => name.replace(/\s+/g, "").replace(/226$/, ""))).toEqual(["清除当前页配置", "常用精灵配置", "导入导出", "技能检索"]);
+  await expect.poll(() => requests).toBe(1);
+  await page.screenshot({ path: "output/playwright/skill-query-menu.png" });
+  await menu.getByRole("button", { name: "导入导出", exact: true }).click();
+  const transfer = page.getByRole("dialog", { name: "配置库导入导出" });
+  await expect(transfer.getByRole("button", { name: "导入", exact: true })).toBeEnabled();
+  await page.screenshot({ path: "output/playwright/config-transfer.png" });
+  await transfer.getByRole("button", { name: "导入", exact: true }).click();
+  await expect(page.getByLabel("选择配置库文件")).toBeVisible();
+  await page.getByRole("button", { name: "取消", exact: true }).click();
+  for (let i = 0; i < 2; i += 1) {
+    await page.getByRole("button", { name: "打开菜单" }).click();
+    const start = Date.now();
+    await page.getByRole("button", { name: "技能检索", exact: true }).click();
+    const panel = page.getByRole("dialog", { name: "技能查询" });
+    await expect(panel.getByLabel("搜索技能或精灵")).toBeVisible();
+    console.log(`cached skill panel open ${i + 1}: ${Date.now() - start}ms`);
+    await panel.getByRole("button", { name: "关闭技能查询" }).click();
+  }
+  expect(requests).toBe(1);
 });

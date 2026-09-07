@@ -3630,9 +3630,9 @@ test("opens configuration library export from the system menu with live counts",
   render(<App initialSnapshot={snapshot} />);
 
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "配置库导出" }));
+  await user.click(screen.getByRole("button", { name: "导入导出" }));
 
-  const dialog = screen.getByRole("dialog", { name: "配置库导出" });
+  const dialog = screen.getByRole("dialog", { name: "配置库导入导出" });
   expect(within(dialog).getByText("可导出 1 只精灵")).toBeVisible();
   expect(
     within(dialog).getByText("跳过").nextElementSibling,
@@ -3667,9 +3667,9 @@ test("configuration library export recognizes complete legacy memories without m
   render(<App initialSnapshot={snapshot} />);
 
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "配置库导出" }));
+  await user.click(screen.getByRole("button", { name: "导入导出" }));
 
-  const dialog = screen.getByRole("dialog", { name: "配置库导出" });
+  const dialog = screen.getByRole("dialog", { name: "配置库导入导出" });
   expect(within(dialog).getByText("可导出 1 只精灵")).toBeVisible();
   const autoMetric = within(dialog).getByText("自动识别").parentElement;
   expect(within(autoMetric).getByText("1")).toBeVisible();

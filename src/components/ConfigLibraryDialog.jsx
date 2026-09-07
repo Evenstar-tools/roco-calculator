@@ -68,6 +68,7 @@ export function ConfigLibraryDialog({
   onConfirmImport,
   onExport,
   onFile,
+  onStartImport,
   parsed,
   snapshot,
 }) {
@@ -115,7 +116,7 @@ export function ConfigLibraryDialog({
   const isExport = mode === "export";
   const isPopular = mode === "popular";
   const dialogTitle = isExport
-    ? "配置库导出"
+    ? "配置库导入导出"
     : isPopular
       ? "常用精灵配置"
       : "配置库导入";
@@ -353,6 +354,7 @@ export function ConfigLibraryDialog({
           <p className="config-library-error" role="alert">{error}</p>
         ) : null}
         <div className="dialog-actions">
+          {isExport && <button className="secondary-action" onClick={onStartImport} type="button">导入</button>}
           <button
             className="secondary-action"
             disabled={isExport

@@ -84,7 +84,12 @@ import {
 import { createTeamMemberFromSide } from "./state/team-presets.js";
 import { FEATURED_USER_RELEASE } from "./data/user-release-notes.js";
 
-const SkillQueryPanel = lazy(() => import("./features/skill-query/SkillQueryPanel.jsx"));
+const loadSkillQueryPanel = () => import("./features/skill-query/SkillQueryPanel.jsx");
+const SkillQueryPanel = lazy(loadSkillQueryPanel);
+const preloadSkillQuery = () => {
+  void loadSkillQueryPanel().catch(() => {});
+  void import("./features/skill-query/load-catalog.js").then(({ loadSkillCatalog }) => loadSkillCatalog()).catch(() => {});
+};
 
 function CalculatorWorkspace({ snapshot }) {
   const [skillQueryOpen, setSkillQueryOpen] = useState(false);
@@ -1715,7 +1720,7 @@ function CalculatorWorkspace({ snapshot }) {
       <AppHeader
         menuButtonRef={overlays.menu.buttonRef}
         menuOpen={overlays.menu.open}
-        onMenuOpen={() => overlays.menu.setOpen((open) => !open)}
+        onMenuOpen={() => { if (!overlays.menu.open) preloadSkillQuery(); overlays.menu.setOpen((open) => !open); }}
         onTeamsOpen={() => {
           overlays.menu.setOpen(false);
           overlays.team.setAnalysisEntry(null);

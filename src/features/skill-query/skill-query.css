@@ -29,6 +29,7 @@
 .skill-query__family-methods p{margin:10px 0;line-height:1.6;overflow-wrap:anywhere}
 .skill-query__family-methods small{display:block}
 @media(max-width:650px){
+  .skill-query>.skill-query__filters>select{flex:1;min-width:0;padding-inline:8px}
   .skill-query__heading{gap:10px}
   .skill-query__heading>.skill-icon{width:48px;height:48px}
   .skill-query__heading h3{font-size:21px}

@@ -183,7 +183,7 @@ test("hides permission errors from the configuration export dialog", () => {
     },
   });
 
-  expect(screen.getByRole("dialog", { name: "配置库导出" })).toBeVisible();
+  expect(screen.getByRole("dialog", { name: "配置库导入导出" })).toBeVisible();
   expect(screen.queryByText(/permission denied/i)).not.toBeInTheDocument();
 });
 

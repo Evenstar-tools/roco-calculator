@@ -6,6 +6,12 @@
 
 生成资源：`public/data/skill-query/catalog.json`。映射报告：`output/skill-query/data-report.json`。未知能耗/威力保持 `null`，不要填零占位；真实零值会显示为零。
 
+技能归属赛季使用 `data/skill-query/bwiki-seasons.json` 中 BWIKI 技能栏 `data-param6` 字段，优先于旧 S3 表。运行 `node scripts/import-skill-query-seasons.mjs` 可全量重新读取并生成带修订号、抓取时间、哈希的记录；缺失字段、来源冲突或基线技能未覆盖时阻止写入。变更清单位于 `output/skill-query/season-audit.json`。S4 新技能尚未出现在本次 BWIKI 553 条列表中，继续使用快照首次收录赛季，不伪称已经从 BWIKI 核实。
+
+普通查询顶部为“所属赛季”筛选，默认全部赛季；“赛季新技能”按技能归属筛选，未保存 S2 快照也不影响列出 S3 的 57 个新技能。“老精灵新学”才使用相邻快照比较。菜单入口为配置组最后的“技能检索”。
+
+家族代表改为最早可学习形态，不能学的幼体不作为代表；途径筛选后按匹配形态选代表。页面内缓存预取结果，菜单打开时预取代码与资料；重新打开无需重复下载或解码，失败可重试，网页刷新后重新获取。
+
 ## 新增后续赛季
 
 先冻结上一赛季快照，将 `data/skill-query/seasons.json` 中上一赛季的路径指向冻结文件，再追加新赛季和快照路径，并设置 `currentSeason`。清单按时间从旧到新排列；界面对比所选赛季与其前一赛季，自动区分新技能、老精灵新增学习关系，不将新精灵计入老精灵新增。

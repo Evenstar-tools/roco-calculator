@@ -45,10 +45,20 @@ export const categoryNames = { physical: "物攻", magical: "魔攻", status: "�
 export function familyIds(spirits) {
   const names = new Map(spirits.map((spirit) => [spirit.fullName, spirit.id]));
   const parents = new Map(spirits.map(({ id }) => [id, id]));
+  const variants = new Map();
   const find = (id) => {
     if (parents.get(id) !== id) parents.set(id, find(parents.get(id)));
     return parents.get(id);
   };
+  // 同一基础精灵的形态分支可能各有独立进化链，使用显式身份字段连接。
+  for (const spirit of spirits) {
+    if (!spirit.baseName) continue;
+    const previous = variants.get(spirit.baseName);
+    if (previous && (previous.variantName || spirit.variantName)) {
+      const roots = [find(previous.id), find(spirit.id)].sort();
+      parents.set(roots[1], roots[0]);
+    } else variants.set(spirit.baseName, spirit);
+  }
   for (const spirit of spirits) for (const name of spirit.evolutionChainNames ?? []) {
     if (names.has(name)) {
       const roots = [find(names.get(name)), find(spirit.id)].sort();
@@ -58,19 +68,27 @@ export function familyIds(spirits) {
   return new Map(spirits.map(({ id }) => [id, find(id)]));
 }
 
+const familyCache = new WeakMap();
 export function learnerFamilies(season, skillId, query = "", method = "") {
-  const groups = new Map();
-  const ranks = { 一阶: 1, 二阶: 2, 三阶: 3, 首领: 4 };
-  for (const spirit of skillLearners(season, skillId)) {
-    const id = spirit.familyId ?? spirit.id;
-    if (!groups.has(id)) groups.set(id, []);
-    groups.get(id).push(spirit);
+  if (!familyCache.has(season)) familyCache.set(season, new Map());
+  const cache = familyCache.get(season);
+  if (!cache.has(skillId)) {
+    const groups = new Map();
+    const ranks = { 一阶: 1, 二阶: 2, 三阶: 3, 首领: 4 };
+    for (const spirit of skillLearners(season, skillId)) {
+      const id = spirit.familyId ?? spirit.id;
+      if (!groups.has(id)) groups.set(id, []);
+      groups.get(id).push(spirit);
+    }
+    cache.set(skillId, [...groups].map(([id, members]) => ({ id,
+      members: members.sort((a, b) => (ranks[a.stage] ?? 99) - (ranks[b.stage] ?? 99)),
+      names: season.spirits.filter((spirit) => (spirit.familyId ?? spirit.id) === id).map((spirit) => spirit.fullName),
+    })));
   }
-  return [...groups].flatMap(([id, members]) => {
+  return cache.get(skillId).flatMap(({ id, members, names }) => {
     const matched = members.filter((spirit) => !method || spirit.methods.some((text) => method === "default" ? /默认学习|Lv\./.test(text) : text.includes(method)));
-    const familyNames = season.spirits.filter((spirit) => (spirit.familyId ?? spirit.id) === id).map((spirit) => spirit.fullName);
-    if (!matched.length || !familyNames.some((name) => name.includes(query.trim()))) return [];
-    const representative = [...matched].sort((a, b) => (ranks[b.stage] ?? 0) - (ranks[a.stage] ?? 0))[0];
+    if (!matched.length || !names.some((name) => name.includes(query.trim()))) return [];
+    const representative = matched[0];
     return [{ id, representative, members: matched }];
   });
 }

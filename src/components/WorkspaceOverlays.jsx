@@ -159,25 +159,6 @@ export function WorkspaceOverlays({
           >
             清除当前页配置
           </button>
-          <button type="button" onClick={() => { menuActions.onShowSkillQuery?.(); menuActions.onClose?.(); }}>技能查询</button>
-          <button
-            onClick={() => {
-              menuActions.onConfigLibraryExport?.();
-              menuActions.onClose?.();
-            }}
-            type="button"
-          >
-            配置库导出
-          </button>
-          <button
-            onClick={() => {
-              menuActions.onConfigLibraryImport?.();
-              menuActions.onClose?.();
-            }}
-            type="button"
-          >
-            配置库导入
-          </button>
           <button
             aria-label="常用精灵配置"
             className="app-menu__primary"
@@ -190,6 +171,8 @@ export function WorkspaceOverlays({
             <span>常用精灵配置</span>
             <span className="app-menu__badge">226</span>
           </button>
+          <button type="button" onClick={() => { menuActions.onConfigLibraryExport?.(); menuActions.onClose?.(); }}>导入导出</button>
+          <button type="button" onClick={() => { menuActions.onShowSkillQuery?.(); menuActions.onClose?.(); }}>技能检索</button>
           <div aria-hidden="true" className="app-menu__separator" />
           <div aria-hidden="true" className="app-menu__group-label">
             帮助

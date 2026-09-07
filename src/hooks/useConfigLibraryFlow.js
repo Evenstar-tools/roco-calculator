@@ -138,6 +138,7 @@ export function useConfigLibraryFlow({
         ));
     },
     onFile: previewConfigLibraryFile,
+    onStartImport: openConfigLibraryImport,
     parsed: configLibraryParsed,
     snapshot,
   };
