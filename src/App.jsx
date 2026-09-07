@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { AdvancedOptions } from "./components/AdvancedOptions.jsx";
 import { AppHeader } from "./components/AppHeader.jsx";
 import { EmptyStateGuide } from "./components/EmptyStateGuide.jsx";
@@ -84,7 +84,10 @@ import {
 import { createTeamMemberFromSide } from "./state/team-presets.js";
 import { FEATURED_USER_RELEASE } from "./data/user-release-notes.js";
 
+const SkillQueryPanel = lazy(() => import("./features/skill-query/SkillQueryPanel.jsx"));
+
 function CalculatorWorkspace({ snapshot }) {
+  const [skillQueryOpen, setSkillQueryOpen] = useState(false);
   const initialState = useMemo(() => {
     const next = createProductInitialState(snapshot);
     return {
@@ -1599,6 +1602,7 @@ function CalculatorWorkspace({ snapshot }) {
         onShowWhatsNew: () => overlays.setWhatsNewOpen(true),
         onShowProductAccess: () => overlays.setProductAccessOpen(true),
         onShowDataSource: () => overlays.setDataSourceOpen(true),
+        onShowSkillQuery: () => setSkillQueryOpen(true),
       },
       buttonRef: overlays.menu.buttonRef,
       open: overlays.menu.open,
@@ -2116,6 +2120,7 @@ function CalculatorWorkspace({ snapshot }) {
       </div>
 
       </WorkspaceOverlays>
+      {skillQueryOpen && <Suspense fallback={<div role="status">正在打开技能查询…</div>}><SkillQueryPanel skills={snapshot.skills} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>
   );

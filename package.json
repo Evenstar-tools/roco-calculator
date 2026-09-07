@@ -45,7 +45,8 @@
     "data:build": "node scripts/bwiki/build-snapshot.mjs",
     "data:check-updates": "node scripts/bwiki/check-source-updates.mjs",
     "data:audit-form-roles": "node scripts/audit-form-role-manifest.mjs",
-    "data:runtime": "node scripts/runtime-snapshot.mjs data/snapshots/current.json public/data/runtime.json public/assets/spirits/manifest.json",
+    "data:runtime": "node scripts/runtime-snapshot.mjs data/snapshots/current.json public/data/runtime.json public/assets/spirits/manifest.json && node scripts/build-skill-query-data.mjs",
+    "data:skill-query": "node scripts/build-skill-query-data.mjs",
     "data:verify-bindings": "node scripts/bwiki/verify-spirit-bindings.mjs",
     "data:validate": "node scripts/bwiki/validate.mjs data/snapshots/current.json"
   },

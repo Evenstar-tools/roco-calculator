@@ -159,6 +159,7 @@ export function WorkspaceOverlays({
           >
             清除当前页配置
           </button>
+          <button type="button" onClick={() => { menuActions.onShowSkillQuery?.(); menuActions.onClose?.(); }}>技能查询</button>
           <button
             onClick={() => {
               menuActions.onConfigLibraryExport?.();

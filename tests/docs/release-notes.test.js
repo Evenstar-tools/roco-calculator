@@ -56,6 +56,7 @@ describe("版本记录", () => {
       "S4赛季主题",
       "综合耐久显示",
       "精灵能力分析功能",
+      "技能查询",
     ]);
     expect(featuredRelease.whatsNew.items.every(({ description }) =>
       description?.trim().length > 0

@@ -1,0 +1,7 @@
+{
+  "currentSeason": "S4",
+  "seasons": [
+    { "id": "S3", "snapshot": "data/snapshots/seasons/s3-2026-07-15.json" },
+    { "id": "S4", "snapshot": "data/snapshots/current.json" }
+  ]
+}
