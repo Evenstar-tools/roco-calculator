@@ -35,10 +35,15 @@ for (const width of [320, 390, 1440]) {
     await expect(panel.locator(".skill-query__families details")).toHaveCount(12);
     await expect(panel.locator(".skill-query__families summary img").first()).toBeVisible();
     expect(await panel.locator(".skill-query__families summary img").first().evaluate(async image => { await image.decode(); return image.naturalWidth > 0; })).toBe(true);
-    await panel.getByLabel("搜索技能或精灵").fill("");
+    const portrait = await panel.locator(".skill-query__families summary img").first().boundingBox();
+    expect(portrait.width).toBe(width < 650 ? 56 : 64);
+    expect(portrait.height).toBe(width < 650 ? 56 : 64);
+    if (width < 650) await expect(panel.getByLabel("搜索技能或精灵")).toBeHidden();
+    else await expect(panel.locator(".skill-query__browser").getByLabel("搜索技能或精灵")).toBeVisible();
     expect(await panel.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
     await page.screenshot({ path: `output/playwright/skill-query-${width}.png` });
     if (width < 650) await panel.getByRole("button", { name: "返回技能列表" }).click();
+    await expect(panel.getByLabel("搜索技能或精灵")).toHaveValue("抓挠");
     await panel.getByLabel("搜索技能或精灵").fill("");
     await panel.getByRole("tab", { name: "赛季新技能" }).click();
     await expect(panel.locator(".skill-query__list")).toContainText("重组");
@@ -55,6 +60,39 @@ for (const width of [320, 390, 1440]) {
     await expect(page.getByRole("combobox", { name: "防御方精灵" })).toHaveValue("水灵");
   });
 }
+
+test("技能筛选跨越手机断点仍保持条件与家族展开状态", async ({ page }) => {
+  await resetUiuxStorage(page);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "打开菜单" }).click();
+  await page.getByRole("button", { name: "技能检索", exact: true }).click();
+  const panel = page.getByRole("dialog", { name: "技能查询" });
+  const search = panel.getByLabel("搜索技能或精灵");
+  await search.fill("抓挠");
+  await panel.getByLabel("技能属性").selectOption("普通");
+  await panel.getByLabel("技能种类").selectOption("physical");
+  await panel.getByLabel("技能所属赛季").selectOption("S1");
+  await panel.getByRole("button", { name: "抓挠 普通 · 物攻" }).click();
+  await panel.getByLabel("筛选学习精灵").fill("喵喵");
+  await panel.locator(".skill-query__families summary").click();
+  for (const width of [650, 651, 320, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    if (width <= 650) await expect(search).toBeHidden();
+    else await expect(search).toBeVisible();
+    await expect(panel.locator(".skill-query__families details[open]")).toHaveCount(1);
+    await expect(panel.getByLabel("筛选学习精灵")).toHaveValue("喵喵");
+    expect(await panel.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+    expect(await panel.locator(".skill-query__detail").evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+  }
+  await page.setViewportSize({ width: 320, height: 900 });
+  await panel.getByRole("button", { name: "返回技能列表" }).click();
+  await expect(search).toBeVisible();
+  await expect(search).toHaveValue("抓挠");
+  await expect(panel.getByLabel("技能属性")).toHaveValue("普通");
+  await expect(panel.getByLabel("技能种类")).toHaveValue("physical");
+  await expect(panel.getByLabel("技能所属赛季")).toHaveValue("S1");
+});
 
 test("failed catalog can retry and Escape restores menu focus", async ({ page }) => {
   await resetUiuxStorage(page);

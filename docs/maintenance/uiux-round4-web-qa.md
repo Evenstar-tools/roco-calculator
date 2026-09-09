@@ -27,7 +27,7 @@
 
 - M2 不实施，不能通过缩小文字让结果栏变紧凑。
 - W1 推荐暂不改。逐项取消三项只需 3 次点击；清空重选需要 4 次，自动保留会替玩家决定属性。备选仅改明确勾选态，不减少步骤：`artifacts/web-ux4/w1-research/comparison.png`。
-- W2 新方向待确认，正式组件未修改：保留桌面 64px、手机 56px 头像及原卡片与字号，仅重排筛选区。示例桌面完整可见家族 8→12；手机详情页内容上移 109px，但修改技能筛选需返回列表。对比图：`artifacts/web-ux4/w2-research/w2-current-proposed-combined.png`。
+- W2 新方向已获用户确认并另批实施，详见 `uiux-round4-w2-qa.md`：保留桌面 64px、手机 56px 头像及原卡片与字号，仅重排筛选区。示例桌面完整可见家族 8→12；手机详情页内容上移 109px，但修改技能筛选需返回列表。对比图：`artifacts/web-ux4/w2-research/w2-current-proposed-combined.png`。
 
 ## 回退与回归要求
 

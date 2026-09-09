@@ -28,8 +28,23 @@
 .skill-query__family-methods{padding:0 10px 8px;border-top:1px solid var(--border)}
 .skill-query__family-methods p{margin:10px 0;line-height:1.6;overflow-wrap:anywhere}
 .skill-query__family-methods small{display:block}
+.skill-query__browser{min-width:0;min-height:0;display:flex;flex-direction:column;border-right:1px solid var(--border)}
+.skill-query__browser>.skill-query__list{min-height:0;border-right:0;flex:1}
+@media(min-width:651px){
+  .skill-query__browser>.skill-query__filters{padding:18px 12px 10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .skill-query__browser>.skill-query__filters>input{grid-column:1/-1;width:100%}
+  .skill-query__browser>.skill-query__filters>select{min-width:0;padding-inline:8px}
+  .skill-query__browser>.skill-query__filters>select:last-child{grid-column:1/-1}
+  .skill-query__learning-heading{gap:16px;flex-wrap:wrap;align-items:center}
+  .skill-query__learning-heading>.skill-query__filters{flex:1;min-width:280px}
+  .skill-query__learning-heading>.skill-query__filters input{width:0}
+}
 @media(max-width:650px){
   .skill-query>.skill-query__filters>select{flex:1;min-width:0;padding-inline:8px}
+  .skill-query__browser{height:100%;border:0}
+  .skill-query__browser>.skill-query__filters>select{flex:1;min-width:0;padding-inline:8px}
+  .skill-query__body--selected .skill-query__browser{display:none}
+  .skill-query__learning-heading{flex-direction:column;align-items:stretch;gap:14px;margin-bottom:0}
   .skill-query__heading{gap:10px}
   .skill-query__heading>.skill-icon{width:48px;height:48px}
   .skill-query__heading h3{font-size:21px}
