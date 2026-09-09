@@ -754,7 +754,9 @@ function SpeedOverview({
                 className={group.targets.some((target) => target.id === selected?.id) ? "is-selected" : ""}
                 key={group.speed}
               >
-                <th scope="row">{group.speed}</th>
+                <th scope="row">
+                  <span className="ability-speed-overview__tier-value">{group.speed}</span>
+                </th>
                 <td>
                   <div className="ability-speed__tier-spirits">
                     {group.targets.map((target) => (

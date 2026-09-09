@@ -530,6 +530,8 @@ test("switches the right pane between member editing and team defense analysis",
   expect(screen.getByRole("region", { name: "队伍分析" })).toBeVisible();
   expect(screen.getByRole("list", { name: "队伍成员" })).toBeVisible();
   expect(screen.getByRole("table", { name: "队伍防守与打击面矩阵" })).toBeVisible();
+  expect(screen.getByRole("region", { name: "队伍属性矩阵横向滚动" }))
+    .toHaveAttribute("tabindex", "0");
   expect(screen.queryByRole("region", { name: "成员 1 配置" })).not.toBeInTheDocument();
 
   await user.click(screen.getByRole("button", { name: "成员" }));

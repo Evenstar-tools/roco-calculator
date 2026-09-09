@@ -183,6 +183,10 @@
   min-width: 0;
 }
 
+.team-analysis__matrix-scroll-hint {
+  display: none;
+}
+
 .team-analysis__matrix th,
 .team-analysis__matrix td {
   height: 30px;
@@ -649,12 +653,39 @@
 }
 
 @container (max-width: 560px) {
+  .team-analysis__matrix-scroll {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  .team-analysis__matrix {
+    min-width: 960px;
+  }
+
+  .team-analysis__matrix th,
+  .team-analysis__matrix td {
+    height: 48px;
+  }
+
+  .team-analysis__matrix-scroll-hint {
+    display: block;
+    margin: 0;
+    padding: 8px 10px;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-align: right;
+  }
+
   .team-analysis__cell-symbol {
     display: none;
   }
 
   .team-analysis button.team-analysis__cell {
-    font-size: 8px;
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
+    height: 44px;
+    font-size: 12px;
   }
 
   .team-analysis__matrix thead th:first-child,

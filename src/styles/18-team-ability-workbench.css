@@ -1925,6 +1925,14 @@
   top: 52px;
 }
 
+.ability-speed-overview__tier-value {
+  position: sticky;
+  top: 94px;
+  display: block;
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
 .ability-ranking-controls {
   display: grid;
   min-width: 0;

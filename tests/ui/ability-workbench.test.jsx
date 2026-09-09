@@ -402,6 +402,9 @@ test("速度一览独占展示全部档位并可选择目标返回", async () =>
   expect(within(overview).getByRole("combobox", { name: "速度目标精灵" })).toBeVisible();
   const table = within(overview).getByRole("table", { name: "速度档位表" });
   const speeds = within(table).getAllByRole("rowheader").map((cell) => Number(cell.textContent));
+  expect([...table.querySelectorAll("tbody th")].every((cell) =>
+    cell.querySelector(".ability-speed-overview__tier-value")?.textContent === cell.textContent,
+  )).toBe(true);
   expect(speeds).toEqual([...speeds].sort((left, right) => right - left));
   expect(within(table).getAllByRole("button", { name: /在速度表选择音速犬/ })).not.toHaveLength(0);
   expect(within(table).getAllByRole("button", { name: /在速度表选择首领象/ })).not.toHaveLength(0);

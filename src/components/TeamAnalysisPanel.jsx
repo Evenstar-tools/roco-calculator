@@ -42,43 +42,51 @@ function toneForMultiplier(value, mode) {
 
 function MatrixTable({ analysis, mode, onCellSelect }) {
   return (
-    <div className="team-analysis__matrix-scroll">
-      <table aria-label="队伍防守与打击面矩阵" className="team-analysis__matrix">
-        <thead>
-          <tr>
-            <th scope="col">成员</th>
-            {analysis.types.map((type) => (
-              <th aria-label={type} key={type} scope="col" title={type}>
-                <ElementIcon size={20} type={type} />
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {analysis.members.map((member) => (
-            <tr key={member.slotIndex}>
-              <th scope="row" title={member.name}>
-                <span>{member.slotIndex + 1}</span>
-                {member.assetUrl ? <img alt="" src={member.assetUrl} /> : null}
-                <strong className="sr-only">{member.name}</strong>
-              </th>
-              {member[mode].map((cell) => (
-                <td key={cell.type}>
-                  <button
-                    aria-label={`${member.name} 对${cell.type}${mode === "defense" ? "承伤" : "打击"}${formatMultiplier(cell.multiplier)}`}
-                    className={`team-analysis__cell is-${toneForMultiplier(cell.multiplier, mode)}`}
-                    onClick={() => onCellSelect({ ...cell, member, mode })}
-                    type="button"
-                  >
-                    <MultiplierText value={cell.multiplier} />
-                  </button>
-                </td>
+    <>
+      <div
+        aria-label="队伍属性矩阵横向滚动"
+        className="team-analysis__matrix-scroll"
+        role="region"
+        tabIndex={0}
+      >
+        <table aria-label="队伍防守与打击面矩阵" className="team-analysis__matrix">
+          <thead>
+            <tr>
+              <th scope="col">成员</th>
+              {analysis.types.map((type) => (
+                <th aria-label={type} key={type} scope="col" title={type}>
+                  <ElementIcon size={20} type={type} />
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {analysis.members.map((member) => (
+              <tr key={member.slotIndex}>
+                <th scope="row" title={member.name}>
+                  <span>{member.slotIndex + 1}</span>
+                  {member.assetUrl ? <img alt="" src={member.assetUrl} /> : null}
+                  <strong className="sr-only">{member.name}</strong>
+                </th>
+                {member[mode].map((cell) => (
+                  <td key={cell.type}>
+                    <button
+                      aria-label={`${member.name} 对${cell.type}${mode === "defense" ? "承伤" : "打击"}${formatMultiplier(cell.multiplier)}`}
+                      className={`team-analysis__cell is-${toneForMultiplier(cell.multiplier, mode)}`}
+                      onClick={() => onCellSelect({ ...cell, member, mode })}
+                      type="button"
+                    >
+                      <MultiplierText value={cell.multiplier} />
+                    </button>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="team-analysis__matrix-scroll-hint">左右滑动查看全部属性</p>
+    </>
   );
 }
 
