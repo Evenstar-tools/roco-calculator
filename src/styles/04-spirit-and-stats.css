@@ -366,6 +366,18 @@
   min-width: 0;
 }
 
+.nature-side__identity {
+  display: none;
+}
+
+.nature-side__identity--attack {
+  color: var(--attack);
+}
+
+.nature-side__identity--defense {
+  color: var(--defense);
+}
+
 .nature-side:first-child {
   padding-right: 14px;
   border-right: 1px solid var(--border);

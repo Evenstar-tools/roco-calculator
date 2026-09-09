@@ -2,7 +2,7 @@ import { createSpiritSearchIndex } from "../../data/search-index.js";
 
 export function matchesSource(text, source) {
   if (!source) return true;
-  if (source === "default") return /默认学习|Lv\./i.test(text);
+  if (source === "default") return !/血脉|技能石/.test(text) && /默认学习|Lv\.|传说技能/i.test(text);
   return text.includes(source);
 }
 

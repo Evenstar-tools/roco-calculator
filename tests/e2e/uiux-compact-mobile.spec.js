@@ -737,22 +737,38 @@ test("collapses cleanly in a 930px half-screen window and steps IV by six", asyn
   await expect(ivInput).toHaveValue("54");
 });
 
-test("stacks both stat panels before their values collide at 640px", async ({
+test("keeps mobile stat panels identified and stacked at 390px", async ({
   page,
 }) => {
-  await page.setViewportSize({ height: 820, width: 640 });
+  await page.setViewportSize({ height: 844, width: 390 });
   await page.goto("/");
   await selectDefaultSpirits(page);
   await openDetailedMode(page);
 
   const sides = page.locator(".nature-side");
   await expect(sides).toHaveCount(2);
+  await expect(sides.nth(0).locator(".nature-side__identity")).toHaveText("攻击方 · 音速犬");
+  await expect(sides.nth(1).locator(".nature-side__identity")).toHaveText("防御方 · 水灵");
   const attackBox = await sides.nth(0).boundingBox();
   const defenseBox = await sides.nth(1).boundingBox();
 
   expect(defenseBox.y).toBeGreaterThanOrEqual(
     attackBox.y + attackBox.height,
   );
+
+  const identityLayout = await sides.evaluateAll((panels) => panels.map((panel) => {
+    const identity = panel.querySelector(".nature-side__identity");
+    const nature = panel.querySelector(".nature-select");
+    return {
+      color: getComputedStyle(identity).color,
+      fits: identity.scrollWidth <= identity.clientWidth,
+      precedesNature: identity.getBoundingClientRect().bottom <= nature.getBoundingClientRect().top,
+    };
+  }));
+  expect(identityLayout).toEqual([
+    { color: "rgb(220, 63, 50)", fits: true, precedesNature: true },
+    { color: "rgb(22, 114, 196)", fits: true, precedesNature: true },
+  ]);
 
   const firstTile = page.locator(".stat-tile").first();
   const panelBox = await firstTile.locator(".stat-tile__panel").boundingBox();

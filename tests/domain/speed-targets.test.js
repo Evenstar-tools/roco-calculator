@@ -135,6 +135,7 @@ test("速度线特殊情况使用当前技能、特性和血脉数值", () => {
     ["落陨星兔", "positive-max", "嘲弄", 343],
     ["海枝枝（翠绿纶布）", "positive-max", "嘲弄", 330],
     ["绒光优优", "positive-max", "哨兵", 304],
+    ["绒仙子", "positive-max", "啮合", 284],
     ["朔夜伊芙", "neutral-max", "啮合", 250],
     ["声波缇塔", "positive-max", "啮合", 271],
     ["黑猫巫师", "positive-max", "预警", 244],
@@ -168,7 +169,7 @@ test("速度线特殊情况使用当前技能、特性和血脉数值", () => {
     ["古钟蛇", "positive-max", "示弱", 337],
     ["寒音蛇", "positive-max", "示弱", 364],
   ]));
-  expect(actual).toHaveLength(36);
+  expect(actual).toHaveLength(37);
   expect(actual.some(([, , label]) => label.includes("+80") || label.includes("+100")))
     .toBe(false);
 });

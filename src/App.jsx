@@ -10,6 +10,7 @@ import { FourSkillEditor } from "./components/FourSkillEditor.jsx";
 import { FloatingUndoButton } from "./components/FloatingUndoButton.jsx";
 import { NatureStatsStep } from "./components/NatureStatsStep.jsx";
 import { MoonMemoryTraitEditor } from "./components/MoonMemoryTraitEditor.jsx";
+import { hasNativeMoonMemoryTrait } from "./domain/moon-memory-trait-options.js";
 import { QuickNaturePicker } from "./components/QuickNaturePicker.jsx";
 import { QuickIvPicker } from "./components/QuickIvPicker.jsx";
 import { ResultRail } from "./components/ResultRail.jsx";
@@ -1233,6 +1234,33 @@ function CalculatorWorkspace({ snapshot }) {
       : { hitCount };
   }
 
+  const moonMemoryEditors = Object.fromEntries(
+    [["attacker", attacker], ["defender", defender]].map(([side, spirit]) => [
+      side,
+      hasNativeMoonMemoryTrait(snapshot, spirit) ? (
+        <MoonMemoryTraitEditor
+          key={spirit.id}
+          onAdd={(traitId) => dispatch({ side, traitId, type: "side/add-acquired-trait" })}
+          onRemove={(traitId) => dispatch({ side, traitId, type: "side/remove-acquired-trait" })}
+          onValueChange={(traitId, key, value) => dispatch({ side, traitId, key, value, type: "side/set-acquired-trait-value" })}
+          side={state.sides[side]}
+          sideKey={side}
+          snapshot={snapshot}
+          spirit={spirit}
+        />
+      ) : null,
+    ]),
+  );
+  const singleTraitContent = Object.values(moonMemoryEditors).some(Boolean) ? (
+    <div className="moon-memory-single">
+      {[["attacker", attacker, "攻击方"], ["defender", defender, "防御方"]].map(([side, spirit, label]) => moonMemoryEditors[side] ? (
+        <div className={`moon-memory-single__side moon-memory-single__side--${side}`} key={side}>
+          <small>{label} · {spirit.fullName}</small>
+          {moonMemoryEditors[side]}
+        </div>
+      ) : null)}
+    </div>
+  ) : null;
   const singleEditor = configurationReady ? (
     <SingleSkillEditor
       attackerHealth={
@@ -1352,6 +1380,7 @@ function CalculatorWorkspace({ snapshot }) {
 
   const fourEditor = configurationReady ? (
     <FourSkillEditor
+      traitEditors={state.mode === "four" ? moonMemoryEditors : {}}
       activeDamageSource={activeDamageSource}
       activeSide={activeAttackSideKey}
       activeSkillIndex={currentDirection.selectedSkillIndex}
@@ -1512,6 +1541,7 @@ function CalculatorWorkspace({ snapshot }) {
 
   const compactFourEditor = configurationReady ? (
     <CompactFourSkillEditor
+      traitEditors={state.mode === "four" ? moonMemoryEditors : {}}
       activeDamageSource={activeDamageSource}
       activeSide={activeAttackSideKey}
       activeSkillIndex={currentDirection.selectedSkillIndex}
@@ -1750,37 +1780,6 @@ function CalculatorWorkspace({ snapshot }) {
                   ? "complete"
                   : null
             }
-            attackerTraitEditor={attacker ? (
-              <MoonMemoryTraitEditor
-                onAdd={(traitId) =>
-                  dispatch({
-                    side: "attacker",
-                    traitId,
-                    type: "side/add-acquired-trait",
-                  })
-                }
-                onRemove={(traitId) =>
-                  dispatch({
-                    side: "attacker",
-                    traitId,
-                    type: "side/remove-acquired-trait",
-                  })
-                }
-                onValueChange={(traitId, key, value) =>
-                  dispatch({
-                    key,
-                    side: "attacker",
-                    traitId,
-                    type: "side/set-acquired-trait-value",
-                    value,
-                  })
-                }
-                side={state.sides.attacker}
-                sideKey="attacker"
-                snapshot={snapshot}
-                spirit={attacker}
-              />
-            ) : null}
             defender={defender}
             defenderFavoriteState={
               favoriteSpiritIds.has(defender?.id)
@@ -1789,37 +1788,6 @@ function CalculatorWorkspace({ snapshot }) {
                   ? "complete"
                   : null
             }
-            defenderTraitEditor={defender ? (
-              <MoonMemoryTraitEditor
-                onAdd={(traitId) =>
-                  dispatch({
-                    side: "defender",
-                    traitId,
-                    type: "side/add-acquired-trait",
-                  })
-                }
-                onRemove={(traitId) =>
-                  dispatch({
-                    side: "defender",
-                    traitId,
-                    type: "side/remove-acquired-trait",
-                  })
-                }
-                onValueChange={(traitId, key, value) =>
-                  dispatch({
-                    key,
-                    side: "defender",
-                    traitId,
-                    type: "side/set-acquired-trait-value",
-                    value,
-                  })
-                }
-                side={state.sides.defender}
-                sideKey="defender"
-                snapshot={snapshot}
-                spirit={defender}
-              />
-            ) : null}
             onAttackerFavoriteToggle={() => toggleSpiritFavorite(attacker)}
             onAttackerSelect={(value) => changeSpirit("attacker", value)}
             onDefenderFavoriteToggle={() => toggleSpiritFavorite(defender)}
@@ -1882,6 +1850,7 @@ function CalculatorWorkspace({ snapshot }) {
                 fourSkillContent={compactFourEditor}
                 onModeChange={setSkillMode}
                 singleSkillContent={compactSingleEditor}
+                singleTraitContent={singleTraitContent}
               />
             </section>
           ) : null}
@@ -1890,6 +1859,7 @@ function CalculatorWorkspace({ snapshot }) {
               <NatureStatsStep
             attacker={{
               id: attacker.id,
+              fullName: attacker.fullName,
               levels: fairPigeonPresent
                 ? [
                     {
@@ -1940,6 +1910,7 @@ function CalculatorWorkspace({ snapshot }) {
             onAttackerAnalyze={() => openSideAbilityAnalysis("attacker")}
             defender={{
               id: defender.id,
+              fullName: defender.fullName,
               levels: fairPigeonPresent
                 ? [
                     {
@@ -2033,6 +2004,7 @@ function CalculatorWorkspace({ snapshot }) {
                 fourSkillContent={fourEditor}
                 onModeChange={setSkillMode}
                 singleSkillContent={singleEditor}
+                singleTraitContent={singleTraitContent}
               />
               <AdvancedOptions
                 locateAdvancedTopRequest={advancedOptionsTopRequest}

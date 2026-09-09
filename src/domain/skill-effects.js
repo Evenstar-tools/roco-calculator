@@ -759,7 +759,7 @@ const REVIEWED_EFFECTS = Object.freeze({
     ],
     ruleId: "hp_scaled",
     ruleParams: {
-      changePerInterval: 10,
+      changePerInterval: 15,
       contextKey: "attackerHpPercent",
       defaultValue: 100,
       direction: "increase",

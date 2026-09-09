@@ -3,6 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { fetchRevisions } from "./fetch-page.mjs";
+import { checkNrcSourceUpdates } from "./nrc-source.mjs";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname, "../..");
 const DEFAULT_SNAPSHOT = path.join(PROJECT_ROOT, "data/snapshots/current.json");
@@ -56,6 +57,7 @@ export async function checkSourceUpdates(options = {}) {
   const detailCachePath =
     options.detailCachePath ?? process.env.ROCOM_BWIKI_CACHE ?? DEFAULT_DETAIL_CACHE;
   const snapshot = JSON.parse(await readFile(snapshotPath, "utf8"));
+  if (snapshot.meta.nrcSync) return checkNrcSourceUpdates(snapshot, { fetchImpl: options.fetchImpl });
   const revisions = await (options.fetchRevisionsFn ?? fetchRevisions)([
     "精灵筛选",
     "技能筛选",
@@ -92,6 +94,7 @@ export async function checkSourceUpdates(options = {}) {
 }
 
 function formatReport(report) {
+  if (report.inputs.source === "nrc-data-modules") return JSON.stringify(report, null, 2);
   const changes = report.changes.length === 0
     ? "none"
     : report.changes

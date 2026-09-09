@@ -1,15 +1,15 @@
 {
   "meta": {
     "counts": {
-      "boss": 61,
-      "final": 253,
+      "boss": 64,
+      "final": 255,
       "growth": 303,
       "manual": 23,
-      "records": 617,
-      "runtimeRecords": 556,
-      "verified": 594
+      "records": 622,
+      "runtimeRecords": 558,
+      "verified": 599
     },
-    "normalizedRecordsSha256": "fe0513379ec49967b817292850ba9aeb66e9dc2efe5d492ed4252e74f55b1e92",
+    "normalizedRecordsSha256": "afa5dbeefa6661f96d779f759bc470c1daa58ba89b19bf233b84856bd3823bb3",
     "sources": [
       {
         "title": "精灵筛选",
@@ -31,6 +31,14 @@
         "fetchedAt": "2026-09-02T17:33:39+08:00",
         "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f",
         "id": "s4-preview-new-spirits-2026-09-02"
+      },
+      {
+        "title": "模块:Pets/data/Catalog",
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+        "revision": 7265,
+        "fetchedAt": "2026-09-09T16:57:54.897Z",
+        "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7",
+        "id": "nrc-catalog-7265"
       }
     ],
     "version": "form-role-v1"
@@ -3317,7 +3325,7 @@
       "evolutionPosition": null,
       "formRole": "growth",
       "formRoleStatus": "verified",
-      "fullName": "香草甜甜",
+      "fullName": "香草甜甜（樱桃饰品）",
       "sourceId": "bwiki-spirit-filter-41360",
       "spiritId": "spirit_219690deb9569dc6"
     },
@@ -3344,7 +3352,7 @@
       "evolutionPosition": "最终",
       "formRole": "final",
       "formRoleStatus": "verified",
-      "fullName": "圣代甜甜",
+      "fullName": "圣代甜甜（樱桃巧克力口味）",
       "sourceId": "bwiki-spirit-filter-41360",
       "spiritId": "spirit_41869713b59c286d"
     },
@@ -4640,7 +4648,7 @@
       "evolutionPosition": "最终",
       "formRole": "final",
       "formRoleStatus": "verified",
-      "fullName": "加油蟹",
+      "fullName": "加油蟹（两只海葵的样子）",
       "sourceId": "bwiki-spirit-filter-41360",
       "spiritId": "spirit_07b444210032f19b"
     },
@@ -5588,6 +5596,51 @@
       "fullName": "银月狼王",
       "sourceId": "s4-preview-new-spirits-2026-09-02",
       "spiritId": "spirit_b689c0de815c95ef"
+    },
+    {
+      "evolutionFamilyId": "evolution_02719244cec9",
+      "evolutionPosition": null,
+      "formRole": "boss",
+      "formRoleStatus": "verified",
+      "fullName": "烈焰狂战士",
+      "sourceId": "nrc-catalog-7265",
+      "spiritId": "spirit_8ac693cfd57fea1c"
+    },
+    {
+      "evolutionFamilyId": "evolution_29a03ad53c7b",
+      "evolutionPosition": null,
+      "formRole": "boss",
+      "formRoleStatus": "verified",
+      "fullName": "满月砣（下弦的样子）",
+      "sourceId": "nrc-catalog-7265",
+      "spiritId": "spirit_59a68cf08569c4a7"
+    },
+    {
+      "evolutionFamilyId": "pet_000532",
+      "evolutionPosition": "初始|最终",
+      "formRole": "final",
+      "formRoleStatus": "verified",
+      "fullName": "幽影树（突变的样子）",
+      "sourceId": "nrc-catalog-7265",
+      "spiritId": "spirit_6b6f44bd83a5f495"
+    },
+    {
+      "evolutionFamilyId": "evolution_0c2babc864dc",
+      "evolutionPosition": "初始|最终",
+      "formRole": "final",
+      "formRoleStatus": "verified",
+      "fullName": "果实立方人",
+      "sourceId": "nrc-catalog-7265",
+      "spiritId": "spirit_eb091eba9d871d80"
+    },
+    {
+      "evolutionFamilyId": "evolution_3a148e999006",
+      "evolutionPosition": null,
+      "formRole": "boss",
+      "formRoleStatus": "verified",
+      "fullName": "满月砣（上弦的样子）",
+      "sourceId": "nrc-catalog-7265",
+      "spiritId": "spirit_b49b24f5ad669162"
     }
   ]
 }

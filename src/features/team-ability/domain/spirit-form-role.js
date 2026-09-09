@@ -12,7 +12,7 @@ function isVerifiedLegacySpirit(spirit, spiritFilterRevision) {
       ? Number(spirit.source.revision)
       : Number(spiritFilterRevision);
   return (
-    revision === 41360 &&
+    (revision === 41360 || spirit?.provenance?.nrc?.id) &&
     spirit?.sourceCategory !== "S4前瞻"
   );
 }

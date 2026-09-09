@@ -4,7 +4,9 @@ import {
   USER_RELEASE_NOTES,
 } from "../data/user-release-notes.js";
 
-const BWIKI_URL = "https://wiki.biligame.com/rocom/";
+const BWIKI_URL = "https://wiki.biligame.com/nrc/";
+const BWIKI_LICENSE_URL =
+  "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans";
 export const FEEDBACK_QQ = "1215583051";
 const FEEDBACK_EMAIL = "1215583051@qq.com";
 const FEEDBACK_BILIBILI_URL =
@@ -331,6 +333,22 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open })
             <strong>洛克王国：世界 BWIKI</strong>
             <span>精灵、技能、属性与美术资料</span>
           </a>
+          <section
+            aria-label="BWIKI 署名与许可"
+            className="data-source-dialog__license"
+          >
+            <strong>BWIKI 署名与许可</strong>
+            <p>
+              BWIKI 来源数据经结构化、校验及补充；其中受许可覆盖的数据与改编按
+              <a href={BWIKI_LICENSE_URL} rel="noreferrer" target="_blank">
+                CC BY-NC-SA 4.0
+              </a>
+              共享。
+            </p>
+            <p>
+              代码适用 MIT；游戏素材与商标权利归原权利人。本项目非官方、非商业，不代表相关方背书。
+            </p>
+          </section>
           <div className="data-source-dialog__feedback">
             <button
               aria-label="查看问题反馈"

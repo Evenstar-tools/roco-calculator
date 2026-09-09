@@ -170,20 +170,20 @@ describe("rock-calculator CLI", () => {
     );
   });
 
-  test("search 标记种族值待确认的前瞻占位精灵", () => {
+  test("search 返回已由正式资料补齐的 S4 幼体", () => {
     const placeholder = snapshot.spirits.find(
-      ({ calculationStatus }) => calculationStatus === "pending-race-stats",
+      ({ fullName }) => fullName === "量风碗",
     );
     const result = runCli(["search", "spirit", placeholder.fullName]);
 
     expect(result.status).toBe(0);
     expect(result.json.results).toContainEqual(
       expect.objectContaining({
-        calculationStatus: "pending-race-stats",
         id: placeholder.id,
         name: placeholder.fullName,
       }),
     );
+    expect(result.json.results[0].calculationStatus).not.toBe("pending-race-stats");
   });
 
   test("schema 返回紧凑输入契约，供 AI 自发现而不是读取源码", () => {
@@ -683,27 +683,17 @@ describe("rock-calculator CLI", () => {
     });
   });
 
-  test("calculate 对前瞻占位精灵提前返回稳定不可用错误", () => {
+  test("calculate 已补齐种族值的 S4 幼体可以正常计算", () => {
     const placeholder = snapshot.spirits.find(
-      ({ calculationStatus }) => calculationStatus === "pending-race-stats",
+      ({ fullName }) => fullName === "量风碗",
     );
     const result = runCli(["calculate", "--input", "-"], {
       ...simpleCase,
       attacker: { ...simpleCase.attacker, spirit: placeholder.fullName },
     });
 
-    expect(result.status).toBe(2);
-    expect(result.stdout).toBe("");
-    expect(result.errorJson).toMatchObject({
-      ok: false,
-      error: {
-        calculationStatus: "pending-race-stats",
-        code: "SPIRIT_DATA_UNAVAILABLE",
-        field: "attacker.spirit",
-        spiritId: placeholder.id,
-        spiritName: placeholder.fullName,
-      },
-    });
+    expect(result.status).toBe(0);
+    expect(result.json.ok).toBe(true);
   });
 
   test("未知性格不会静默退回普通性格", () => {

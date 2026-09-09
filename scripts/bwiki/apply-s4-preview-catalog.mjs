@@ -351,6 +351,7 @@ function requireBossBase(snapshot, boss) {
 }
 
 export function applyS4PreviewCatalog(snapshot, catalog) {
+  if (snapshot.meta.nrcSync?.authoritativeLearnsets) return structuredClone(snapshot);
   const counts = validateS4PreviewCatalog(catalog);
   const next = structuredClone(snapshot);
   const catalogId = catalog.meta.id;

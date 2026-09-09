@@ -123,10 +123,10 @@ describe("bundled miniapp runtime", () => {
     expect(bundledIconCount).toBe(publicIconCount);
     expect(bundled.skills.filter(
       (skill) => /^https:\/\/rococalc\.top\/assets\/skills\/skill_[a-f0-9]{16}\.png$/u.test(skill.iconUrl ?? ""),
-    )).toHaveLength(27);
-    expect(bundled.skills.some(({ name }) => name === "麦芒")).toBe(false);
+    )).toHaveLength(28);
+    expect(bundled.skills.some(({ name }) => name === "麦芒")).toBe(true);
     expect(bundled.skills.find(({ name }) => name === "冰锋横扫")?.basePower).toBe(1);
-    for (const name of ["拖拉机"]) {
+    for (const name of ["拖拉机", "麦芒"]) {
       const skill = bundled.skills.find((entry) => entry.name === name);
       expect(skill?.iconUrl).toBe(`https://rococalc.top/assets/skills/${skill?.id}.png`);
     }

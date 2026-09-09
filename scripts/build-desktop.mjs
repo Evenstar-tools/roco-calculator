@@ -1,6 +1,7 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { prepareDesktopClient } from "./desktop-skill-icons.mjs";
 import {
   verifyPackagedBundle,
   verifySourceBundle,
@@ -22,6 +23,10 @@ const electronVersion = JSON.parse(
 ).version;
 
 verifySourceBundle(projectRoot);
+const clientRoot = prepareDesktopClient(projectRoot);
+const buildConfig = JSON.parse(readFileSync(path.join(projectRoot, "package.json"), "utf8")).build;
+const configPath = `${clientRoot}.json`;
+writeFileSync(configPath, JSON.stringify({ ...buildConfig, extraResources: [{ from: clientRoot, to: "client" }] }), "utf8");
 
 function runBuilder(argumentsList) {
   const result = spawnSync(process.execPath, [builderCli, ...argumentsList], {
@@ -32,7 +37,7 @@ function runBuilder(argumentsList) {
   return result.status ?? 1;
 }
 
-const baseArguments = ["--win", "nsis"];
+const baseArguments = ["--win", "nsis", "--config", configPath];
 function isReusableElectron(directory) {
   const versionPath = path.join(directory, "version");
   if (

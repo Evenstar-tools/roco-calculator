@@ -24,10 +24,12 @@ export function seasonChanges(previous, next) {
   const skills = new Set(previous.skills.map(({ id }) => id));
   const oldSpirits = new Set(previous.spirits.map(({ id }) => id));
   const oldSets = new Map(previous.learnsets.map(({ spiritId, skillIds }) => [spiritId, new Set(skillIds)]));
+  const newSkillIds = new Set(next.skills.filter(({ id }) => !skills.has(id)).map(({ id }) => id));
   return {
-    newSkillIds: new Set(next.skills.filter(({ id }) => !skills.has(id)).map(({ id }) => id)),
-    gains: next.learnsets.filter(({ spiritId }) => oldSpirits.has(spiritId) && oldSets.has(spiritId))
-      .map(({ spiritId, skillIds }) => ({ spiritId, skillIds: skillIds.filter((id) => !oldSets.get(spiritId).has(id)) }))
+    newSkillIds,
+    gains: next.learnsets
+      .map(({ spiritId, skillIds }) => ({ spiritId, skillIds: skillIds.filter((id) => newSkillIds.has(id) ||
+        (oldSpirits.has(spiritId) && oldSets.has(spiritId) && !oldSets.get(spiritId).has(id))) }))
       .filter(({ skillIds }) => skillIds.length),
   };
 }
@@ -86,7 +88,7 @@ export function learnerFamilies(season, skillId, query = "", method = "") {
     })));
   }
   return cache.get(skillId).flatMap(({ id, members, names }) => {
-    const matched = members.filter((spirit) => !method || spirit.methods.some((text) => method === "default" ? /默认学习|Lv\./.test(text) : text.includes(method)));
+    const matched = members.filter((spirit) => !method || spirit.methods.some((text) => method === "default" ? !/血脉|技能石/.test(text) && /默认学习|Lv\.|传说技能/.test(text) : text.includes(method)));
     if (!matched.length || !names.some((name) => name.includes(query.trim()))) return [];
     const representative = matched[0];
     return [{ id, representative, members: matched }];

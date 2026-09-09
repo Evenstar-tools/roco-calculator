@@ -1,4 +1,4 @@
-import { MagnifyingGlass, X } from "@phosphor-icons/react";
+import { CaretDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { useId, useMemo, useState } from "react";
 import {
   createMoonMemoryTraitSearchIndex,
@@ -161,6 +161,8 @@ export function MoonMemoryTraitEditor({
 }) {
   const listboxId = useId();
   const controlIdPrefix = useId();
+  const detailId = useId();
+  const [expandedTraitId, setExpandedTraitId] = useState(null);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -187,6 +189,7 @@ export function MoonMemoryTraitEditor({
   if (!hasNativeMoonMemoryTrait(snapshot, spirit)) return null;
 
   const isAtTraitLimit = selectedTraits.length >= MOON_MEMORY_TRAIT_LIMIT;
+  const expanded = selectedTraits.find(({ trait }) => trait.id === expandedTraitId);
   const isOptionDisabled = (option) =>
     isAtTraitLimit ||
     acquiredTraitIds.has(option.traitId) ||
@@ -207,9 +210,9 @@ export function MoonMemoryTraitEditor({
           已吞噬 {selectedTraits.length}/{MOON_MEMORY_TRAIT_LIMIT}
         </span>
       </header>
-      <div className="moon-memory-trait-editor__picker">
+      {!isAtTraitLimit ? <div className="moon-memory-trait-editor__picker">
         <label>
-          <span>搜索精灵或特性</span>
+          <span className="sr-only">搜索精灵或特性</span>
           <span className="moon-memory-trait-editor__search">
             <MagnifyingGlass aria-hidden="true" size={17} />
             <input
@@ -256,7 +259,7 @@ export function MoonMemoryTraitEditor({
                   setOpen(false);
                 }
               }}
-              placeholder="输入精灵、图鉴号、拼音或特性"
+              placeholder="搜索精灵或特性"
               role="combobox"
               type="search"
               value={query}
@@ -294,34 +297,34 @@ export function MoonMemoryTraitEditor({
             })}
           </ul>
         ) : null}
-      </div>
+      </div> : null}
       {selectedTraits.length > 0 ? (
         <ul aria-label="已吞噬特性" className="moon-memory-trait-editor__selected">
           {selectedTraits.map(({ support, trait }) => {
             const name = trait.displayName ?? trait.name;
-            const values = side.acquiredTraitValues?.[trait.id] ?? {};
             return (
-              <li aria-label={`${name}，${support.label}`} key={trait.id}>
-                <div className="moon-memory-trait-editor__copy">
-                  <strong>{name}</strong>
-                  <small>{trait.description}</small>
-                  <TraitControls
-                    idPrefix={controlIdPrefix}
-                    onValueChange={onValueChange}
-                    sideKey={sideKey}
-                    trait={trait}
-                    values={values}
-                  />
-                </div>
-                <span
-                  className="moon-memory-trait-editor__support"
-                  data-status={support.id}
+              <li aria-label={`${name}，${support.label}`} data-expanded={expanded?.trait.id === trait.id} key={trait.id}>
+                <button
+                  aria-controls={detailId}
+                  aria-expanded={expanded?.trait.id === trait.id}
+                  aria-label={`查看${name}条件与效果`}
+                  className="moon-memory-trait-editor__chip"
+                  onClick={() => setExpandedTraitId(expanded?.trait.id === trait.id ? null : trait.id)}
+                  title={`${name} · ${support.label}`}
+                  type="button"
                 >
-                  {support.label}
-                </span>
+                  <strong>{name}</strong>
+                  {support.id !== "supported" ? (
+                    <small className="moon-memory-trait-editor__support" data-status={support.id}>{support.label}</small>
+                  ) : null}
+                </button>
                 <button
                   aria-label={`删除已吞噬特性${name}`}
-                  onClick={() => onRemove?.(trait.id)}
+                  className="moon-memory-trait-editor__remove"
+                  onClick={() => {
+                    if (expandedTraitId === trait.id) setExpandedTraitId(null);
+                    onRemove?.(trait.id);
+                  }}
                   title={`删除${name}`}
                   type="button"
                 >
@@ -331,6 +334,34 @@ export function MoonMemoryTraitEditor({
             );
           })}
         </ul>
+      ) : null}
+      {expanded ? (
+        <div aria-label="特性条件与效果" className="moon-memory-trait-editor__detail" id={detailId} role="region">
+          <div className="moon-memory-trait-editor__detail-heading">
+            <strong>{expanded.trait.displayName ?? expanded.trait.name}</strong>
+            <small className="moon-memory-trait-editor__support" data-status={expanded.support.id}>{expanded.support.label}</small>
+          </div>
+          <p>{expanded.trait.description}</p>
+          <TraitControls
+            idPrefix={controlIdPrefix}
+            onValueChange={onValueChange}
+            sideKey={sideKey}
+            trait={expanded.trait}
+            values={side.acquiredTraitValues?.[expanded.trait.id] ?? {}}
+          />
+        </div>
+      ) : null}
+      {selectedTraits.length > 0 ? (
+        <button
+          aria-controls={detailId}
+          aria-expanded={Boolean(expanded)}
+          className="moon-memory-trait-editor__details-toggle"
+          onClick={() => setExpandedTraitId(expanded ? null : selectedTraits[0].trait.id)}
+          type="button"
+        >
+          条件与效果 <CaretDown aria-hidden="true" size={12} />
+          <small>收起不影响计算</small>
+        </button>
       ) : null}
     </section>
   );

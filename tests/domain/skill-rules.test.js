@@ -1026,7 +1026,7 @@ describe("resolveSkillPower", () => {
       "血契",
       75,
       { attackerHpPercent: 55 },
-      { status: "exact", value: 115 },
+      { status: "exact", value: 135 },
     ],
   ])(
     "resolves newly reviewed %s power rules",

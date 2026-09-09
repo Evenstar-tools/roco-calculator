@@ -107,6 +107,14 @@ function SideStats({
   const multipleLevels = levels.length > 1;
   return (
     <div aria-label={`${label}能力`} className="nature-side" role="group">
+      {side.fullName ? (
+        <div
+          className={`nature-side__identity nature-side__identity--${accent}`}
+          title={`${label} · ${side.fullName}`}
+        >
+          {label} · {side.fullName}
+        </div>
+      ) : null}
       <NatureSelect
         ariaLabel={`${label}性格`}
         onChange={onNatureChange}

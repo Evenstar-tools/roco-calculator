@@ -1219,13 +1219,13 @@ describe("trait effect coverage", () => {
     expect(getTraitEffectInputs(trait, "defender")).toHaveLength(1);
   });
 
-  test("S4旧玩具按己方已使用的不同技能系列数叠加10%威力", () => {
+  test("S4旧玩具按己方已使用的不同技能系别数叠加10%双攻", () => {
     const trait = { id: "trait-old-toy", name: "旧玩具" };
     expect(getTraitEffectInputs(trait, "attacker")).toMatchObject([
       {
         defaultValue: 0,
         key: "attackerTraitStacks",
-        label: "己方已使用不同技能系列数",
+        label: "己方已使用不同技能系别数",
         max: 18,
         min: 0,
         type: "number",
@@ -1237,7 +1237,7 @@ describe("trait effect coverage", () => {
       context: contextFor(trait, "attacker", { attackerTraitStacks: 2 }),
       defender: {},
       skill: { category: "physical", type: "光" },
-    })).toMatchObject({ powerPercentAdd: 0.2, powerMultiplier: 1.2 });
+    })).toMatchObject({ attackMultiplier: 1.2, powerMultiplier: 1 });
   });
 
   test("S4宇宙之眼按敌方星陨层数增加持有者物防", () => {

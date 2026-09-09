@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { categoryNames, seasonChanges } from "./catalog.js";
 import { getCachedCatalog, loadSkillCatalog } from "./load-catalog.js";
 import "./skill-query.css";
@@ -43,6 +44,7 @@ export default function SkillQueryPanel({ onClose, skills = [], spirits = [] }) 
   const season = data?.seasons.find(({ id }) => id === (view === "all" ? entry?.seasonId || data.currentSeason : seasonId || data.currentSeason));
   const previous = data?.seasons[data.seasons.indexOf(season) - 1];
   const changes = useMemo(() => previous && season ? seasonChanges(previous, season) : null, [previous, season]);
+  const skillMap = useMemo(() => new Map(skills.map((skill) => [skill.id, skill])), [skills]);
   const filtered = useMemo(() => (season?.skills ?? []).filter((skill) =>
     (!type || skill.type === type) && (!category || skill.category === category) &&
     `${skill.name} ${skill.description}`.toLowerCase().includes(query.trim().toLowerCase()) &&
@@ -59,15 +61,15 @@ export default function SkillQueryPanel({ onClose, skills = [], spirits = [] }) 
   </div>;
   return <div className="skill-query-backdrop"><section aria-label="技能查询" aria-modal="true" role="dialog" tabIndex={-1} ref={root} className="skill-query">
     <header className="skill-query__header"><h2>技能检索</h2><button onClick={onClose} aria-label="关闭技能查询">关闭 ×</button></header>
-    <div className="skill-query__tabs" role="tablist" aria-label="技能查询视图">{[["all", "查询"], ["new", "赛季新技能"], ["gains", "老精灵新学"]].map(([id, label]) => <button key={id} role="tab" aria-selected={view === id} onClick={() => changeView(id)}>{label}</button>)}</div>
+    <div className="skill-query__tabs" role="tablist" aria-label="技能查询视图">{[["all", "查询"], ["new", "赛季新技能"], ["gains", "赛季学习更新"]].map(([id, label]) => <button key={id} role="tab" aria-selected={view === id} onClick={() => changeView(id)}>{label}</button>)}</div>
     {error ? <div role="alert" className="skill-query__empty">{error}<button onClick={() => { setError(""); setAttempt((value) => value + 1); }}>重试</button></div> : !data ? <p role="status" className="skill-query__empty">正在加载技能资料…</p> : <>
       {view === "gains" && filters}
-      {view === "gains" && <p className="skill-query__context">{previous ? `${previous.id} → ${season.id}` : "当前赛季没有可比较的前一赛季资料"}</p>}
+      {view === "gains" && <p className="skill-query__context">{previous ? `${previous.id} → ${season.id} · 老精灵新学与新技能学习面` : "当前赛季没有可比较的前一赛季资料"}</p>}
       {view === "all" && entry && <p className="skill-query__context">{season.id} 资料 <button onClick={() => { setView(entry.fromView); setSeasonId(season.id); }}>返回赛季查询</button></p>}
       {view === "all" ? <BidirectionalQuery key={`${season.id}-${entry?.spiritId ?? ""}-${entry?.skillId ?? ""}`} season={season} skills={skills} spirits={spirits} initialSpiritId={entry?.spiritId} initialSkillId={entry?.skillId} gains={changes?.gains} /> : view === "gains" ? <div className="skill-query__gains">{gains.length ? gains.map((entry) => <article key={entry.spiritId}><h3><button onClick={() => openQuery({ spiritId: entry.spiritId })}>{entry.spirit.fullName}</button></h3><div>{entry.skills.map((item) => <button key={item.id} onClick={() => openQuery({ skillId: item.id })}>{item.name} <small>{item.type} · {categoryNames[item.category]}</small></button>)}</div></article>) : <p className="skill-query__empty">{previous ? "当前资料中没有符合条件的新增记录。" : "请切换到有前一赛季资料的赛季。"}</p>}</div> : <div className="skill-query__body">
         <div className="skill-query__browser">
           {filters}
-          <div className="skill-query__list" aria-label="技能列表"><p>{filtered.length} 个技能</p>{filtered.length ? filtered.map((entry) => <button key={entry.id} onClick={() => openQuery({ skillId: entry.id })}><strong>{entry.name}</strong><small>{entry.type} · {categoryNames[entry.category] ?? entry.category}</small></button>) : <p className="skill-query__empty">没有找到符合条件的技能。</p>}</div>
+          <div className="skill-query__list" aria-label="技能列表"><p>{filtered.length} 个技能</p>{filtered.length ? filtered.map((entry) => <button key={entry.id} onClick={() => openQuery({ skillId: entry.id })}><SkillIcon skill={{ ...entry, iconUrl: skillMap.get(entry.id)?.iconUrl }} size={32} /><span className="skill-query__skill-text"><strong>{entry.name}</strong><small>{entry.type} · {categoryNames[entry.category] ?? entry.category}</small></span></button>) : <p className="skill-query__empty">没有找到符合条件的技能。</p>}</div>
         </div>
         <div className="skill-query__detail"><p className="skill-query__empty">选择一个技能，查看效果和学习面。</p></div>
       </div>}

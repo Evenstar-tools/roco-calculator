@@ -57,7 +57,7 @@ describe("S4 前瞻本地原色头像", () => {
     expect(spirits).toHaveLength(EXPECTED_FORM_COUNT);
     const expectedIds = spirits.map(({ id }) => id).sort();
     const previewAssets = manifest.assets.filter(
-      ({ sourceKind }) => sourceKind === "s4-preview-local",
+      ({ id, sourceKind }) => expectedIds.includes(id) && sourceKind === "nrc-catalog",
     );
     expect(previewAssets.map(({ id }) => id).sort()).toEqual(expectedIds);
     expect(Object.keys(S4_PREVIEW_PET_IMAGE_OVERRIDES).sort()).toEqual(
@@ -68,9 +68,9 @@ describe("S4 前瞻本地原色头像", () => {
       const asset = manifest.assets.find(({ id }) => id === spirit.id);
       expect(asset).toMatchObject({
         name: spirit.fullName,
-        sourceKind: "s4-preview-local",
+        sourceKind: "nrc-catalog",
       });
-      expect(asset.sourceUrl).toBeUndefined();
+      expect(asset.sourceUrl).toMatch(/^https:\/\/patchwiki.biligame.com\/images\/nrc\//);
       const publicPath = path.resolve(
         "public",
         asset.localFile.replace(/^[/\\]+/u, ""),
@@ -121,23 +121,17 @@ describe("S4 前瞻本地原色头像", () => {
     ).toThrow("必须是 RGBA PNG");
   });
 
-  test("两个首领都使用带来源记录的本地临时视频帧", () => {
+  test("两个首领已替换为新站头像并保留原 ID", () => {
     for (const config of BOSS_ASSET_CONFIGS) {
-      const bossCandidate = candidate.bossPlaceholders.find(
-        ({ name }) => name === config.name,
-      );
       const asset = manifest.assets.find(({ id }) => id === config.id);
       expect(asset).toMatchObject({
-        name: config.name,
+        name: config.name === "满月砣" ? "满月砣（下弦的样子）" : config.name,
         localFile: `/assets/spirits/${config.id}.png`,
-        sourceKind: "s4-boss-preview-local",
-        sourceVideoUrl: candidate.meta.skillParameterSource.url,
-        sourceTimestamp: bossCandidate.assetEvidenceTimestamp,
-        sourceFrame: bossCandidate.assetSourceFile,
+        sourceKind: "nrc-catalog",
         width: 128,
         height: 128,
       });
-      expect(asset.sourceUrl).toBeUndefined();
+      expect(asset.sourceUrl).toMatch(/^https:\/\/patchwiki.biligame.com\/images\/nrc\//);
       expect(asset.sourceSpiritId).toBeUndefined();
 
       const publicPath = path.resolve(

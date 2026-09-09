@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
+import { readS4PreviewSnapshot } from "../fixtures/s4-preview-snapshot.js";
 import { describe, expect, test } from "vitest";
 import {
   applyS4PreviewCatalog,
@@ -9,9 +10,7 @@ import { getNature } from "../../src/domain/natures.js";
 const candidate = JSON.parse(
   readFileSync("data/candidates/s4-preview-new-spirits.json", "utf8"),
 );
-const current = JSON.parse(
-  readFileSync("data/snapshots/current.json", "utf8"),
-);
+const current = readS4PreviewSnapshot();
 const popularConfigs = JSON.parse(
   readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"),
 );

@@ -331,10 +331,10 @@ test("spirit picker starts with Dimo, the eleven new final forms, then both S4 b
     screen.getAllByRole("option").map((option) =>
       option.querySelector("strong")?.textContent,
     ),
-  ).toEqual(["迪莫", ...previewNames, "烈焰狂战士", "满月砣"]);
+  ).toEqual(["迪莫", ...previewNames, "烈焰狂战士", "满月砣", "普通精灵"]);
 });
 
-test("spirit picker pins the eleven pending S4 final forms and both bosses before saved configurations", async () => {
+test("spirit picker pins S4 final forms with mixed confirmed and pending dex IDs before both bosses and saved configurations", async () => {
   const user = userEvent.setup();
   const previewNames = [
     "银月狼王",
@@ -351,7 +351,7 @@ test("spirit picker pins the eleven pending S4 final forms and both bosses befor
   ];
   const previewFinals = previewNames.map((fullName, index) => ({
     changeInfo: { entityName: fullName, isNew: true, items: [] },
-    dexNo: null,
+    dexNo: fullName === "星星眼" ? null : String(445 + index),
     evolutionChainIds: [`preview-${index + 1}`],
     favoriteState: null,
     fullName,
@@ -414,11 +414,12 @@ test("spirit picker pins the eleven pending S4 final forms and both bosses befor
     "烈焰狂战士",
     "满月砣",
     "前位配置",
+    "后位配置",
   ]);
   expect(screen.queryByRole("option", { name: /量风碗/ })).not.toBeInTheDocument();
 });
 
-test("spirit picker returns S4 final forms to dex order after IDs arrive", async () => {
+test("spirit picker keeps S4 final forms pinned after dex IDs arrive", async () => {
   const user = userEvent.setup();
   render(
     <SpiritPicker
@@ -464,8 +465,8 @@ test("spirit picker returns S4 final forms to dex order after IDs arrive", async
   expect(
     screen.getAllByRole("option").map((option) => option.textContent),
   ).toEqual([
-    "前位配置100",
     "已有图鉴号的新精灵150",
+    "前位配置100",
     "后位配置200",
   ]);
   expect(
@@ -541,7 +542,7 @@ test("spirit preview loads twenty more favorites per scroll until all are visibl
 
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
   const listbox = screen.getByRole("listbox");
-  expect(screen.getAllByRole("option")).toHaveLength(14);
+  expect(screen.getAllByRole("option")).toHaveLength(16);
   expect(screen.queryByText("已预览所有已收藏精灵")).not.toBeInTheDocument();
 
   Object.defineProperties(listbox, {
@@ -550,7 +551,7 @@ test("spirit preview loads twenty more favorites per scroll until all are visibl
     scrollTop: { configurable: true, value: 200, writable: true },
   });
   fireEvent.scroll(listbox);
-  expect(screen.getAllByRole("option")).toHaveLength(34);
+  expect(screen.getAllByRole("option")).toHaveLength(36);
   expect(screen.queryByText("已预览所有已收藏精灵")).not.toBeInTheDocument();
 
   Object.defineProperties(listbox, {
@@ -569,11 +570,13 @@ test("nature step keeps final panel, race, individual values, and level controls
   render(
     <NatureStatsStep
       attacker={{
+        fullName: "音速犬",
         level: { label: "攻击能力等级", multiplier: 1, stage: 0 },
         nature: "固执（+物攻，-魔攻）",
         stats,
       }}
       defender={{
+        fullName: "水灵",
         level: { label: "防御能力等级", multiplier: 1, stage: 0 },
         nature: "普通（无修正）",
         stats,
@@ -589,6 +592,14 @@ test("nature step keeps final panel, race, individual values, and level controls
 
   expect(
     screen.getByRole("region", { name: "性格配置" }),
+  ).toBeVisible();
+  expect(
+    within(screen.getByRole("group", { name: "攻击方能力" }))
+      .getByText("攻击方 · 音速犬"),
+  ).toBeVisible();
+  expect(
+    within(screen.getByRole("group", { name: "防御方能力" }))
+      .getByText("防御方 · 水灵"),
   ).toBeVisible();
   expect(
     screen.queryByRole("heading", { name: "性格与个体" }),

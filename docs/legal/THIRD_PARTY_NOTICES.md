@@ -16,7 +16,7 @@ MIT 允许在保留版权声明和许可证文本的前提下使用、复制、�
 
 ## BWIKI 资料
 
-精灵、技能、属性和部分美术资料主要参考 [洛克王国：世界 BWIKI](https://wiki.biligame.com/rocom/) 的公开页面。BWIKI 页面标注采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans)：使用受该许可保护的内容时，应按原许可完成署名、标明修改，并不得将其用于商业目的；改编后还应按相同方式共享。
+精灵、技能、属性和部分美术资料主要参考 [洛克王国：世界 BWIKI](https://wiki.biligame.com/rocom/) 的公开页面。本项目已对来源数据进行抓取、结构化、校验、纠错及补充。源自 BWIKI、且受其许可覆盖的数据整理和改编部分，依据 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans) 共享：使用时应完成署名、标明修改、不得用于商业目的，并按相同方式共享。
 
 本仓库在快照中保留来源地址、修订号和本地素材索引，以便核查与更新。该记录不等于项目维护者对 BWIKI 内容享有著作权，也不改变原页面和原权利人的权利。
 

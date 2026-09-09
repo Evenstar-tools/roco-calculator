@@ -607,7 +607,10 @@ test("wires the Moon Memory editor into the selected wolf side", async () => {
   render(<App initialSnapshot={wolfSnapshot} />);
 
   await selectSpirit(user, "攻击方", "银月狼王");
+  await selectSpirit(user, "防御方", "音速犬");
   expect(screen.getAllByText("铭记于月亮")).toHaveLength(2);
+  expect(screen.getByRole("region", { name: "精灵配置" }).querySelector(".moon-memory-trait-editor")).toBeNull();
+  expect(screen.getByRole("combobox", { name: "搜索已吞噬特性" }).closest(".calculator-step--skills")).not.toBeNull();
 
   await user.type(
     screen.getByRole("combobox", { name: "搜索已吞噬特性" }),

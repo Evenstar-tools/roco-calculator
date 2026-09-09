@@ -183,8 +183,7 @@ export function auditFormRoleManifest({
     }
     if (!manifestIds.has(spirit?.id) && !(stageBoss && sourceBoss)) {
       const verifiedLegacyGrowth =
-        spirit?.source?.title === "精灵筛选" &&
-        Number(spirit?.source?.revision) === 41360 &&
+        ((spirit?.source?.title === "精灵筛选" && Number(spirit?.source?.revision) === 41360) || spirit?.provenance?.nrc?.id) &&
         spirit?.sourceCategory !== "S4前瞻";
       if (verifiedLegacyGrowth) growth += 1;
       else unknownForms += 1;

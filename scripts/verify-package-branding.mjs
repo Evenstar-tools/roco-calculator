@@ -9,6 +9,7 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { verifyDesktopSkillIcons } from "./desktop-skill-icons.mjs";
 
 const LEGACY_BRAND = Buffer.from("lovepvp", "ascii");
 const ALLOWED_REFERENCE_URL = "https://lovepvp.top/";
@@ -68,6 +69,7 @@ export function verifySourceBundle(projectRoot) {
 
 export function verifyPackagedBundle(projectRoot) {
   const resources = path.join(projectRoot, "release", "win-unpacked", "resources");
+  verifyDesktopSkillIcons(path.join(resources, "client"));
   const asarPath = path.join(resources, "app.asar");
   const extracted = mkdtempSync(path.join(tmpdir(), "rock-calculator-asar-"));
   try {

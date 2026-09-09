@@ -7,6 +7,7 @@ export function SkillStep({
   fourSkillContent,
   onModeChange,
   singleSkillContent,
+  singleTraitContent,
 }) {
   const [mode, setMode] = useState(activeMode);
 
@@ -72,6 +73,7 @@ export function SkillStep({
         id="single-skill-panel"
         role="tabpanel"
       >
+        {mode === "single" ? singleTraitContent : null}
         {singleSkillContent}
       </div>
       <div

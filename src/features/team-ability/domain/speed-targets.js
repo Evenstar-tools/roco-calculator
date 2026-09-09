@@ -58,6 +58,7 @@ const SPEED_SPECIAL_CASES = Object.freeze([
   ["梦悠悠（穿星星睡衣的样子）", "positive-max", "嘲弄"],
   ["梦悠悠（穿星星睡衣的样子）", "neutral-max", "嘲弄"],
   ["绒光优优", "positive-max", "哨兵"],
+  ["绒仙子", "positive-max", "啮合传递"],
   ["朔夜伊芙", "neutral-max", "啮合传递"],
   ["朔夜伊芙", "positive-max", "啮合传递"],
   ["声波缇塔", "positive-max", "啮合传递"],

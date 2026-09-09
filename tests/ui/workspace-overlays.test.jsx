@@ -204,8 +204,16 @@ test("keeps QQ on the first level and moves other feedback contacts deeper", () 
   expect(screen.getByRole("dialog", { name: "关于与来源" })).toBeVisible();
   expect(screen.getByRole("link", { name: /洛克王国：世界 BWIKI/ })).toHaveAttribute(
     "href",
-    "https://wiki.biligame.com/rocom/",
+    "https://wiki.biligame.com/nrc/",
   );
+  expect(screen.getByRole("region", { name: "BWIKI 署名与许可" }))
+    .toHaveTextContent(/来源数据经结构化、校验及补充/);
+  expect(screen.getByRole("link", { name: "CC BY-NC-SA 4.0" }))
+    .toHaveAttribute(
+      "href",
+      "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans",
+    );
+  expect(screen.getByText(/不代表相关方背书/)).toBeVisible();
   expect(screen.getByText("QQ 1215583051")).toBeVisible();
   expect(screen.queryByRole("link", { name: "诛仙剑下伤心花" }))
     .not.toBeInTheDocument();

@@ -199,6 +199,22 @@ async function collectOfflineSmokeResult(window) {
       }))
   `);
 
+  const skillIcons = await window.webContents.executeJavaScript(`
+    (async () => {
+      const { skills } = await fetch("/data/runtime.json").then((response) => response.json());
+      const failed = [];
+      for (let start = 0; start < skills.length; start += 16) {
+        await Promise.all(skills.slice(start, start + 16).map(async (skill) => {
+          if (!skill.iconUrl?.startsWith("/assets/skills/")) { failed.push(skill.name); return; }
+          const image = new Image();
+          image.src = skill.iconUrl;
+          try { await image.decode(); } catch { failed.push(skill.name); }
+        }));
+      }
+      return { total: skills.length, loaded: skills.length - failed.length, failed };
+    })()
+  `);
+
   // 数量期望来自打包内 runtime.json 自身声明的 meta.counts：
   // 只校验内部一致性，赛季增删精灵不需要改桌面代码。
   const ok =
@@ -210,7 +226,9 @@ async function collectOfflineSmokeResult(window) {
     data.spirits === data.declaredSpirits &&
     data.skills === data.declaredSkills &&
     data.learnsets === data.spirits &&
-    data.portraits === data.spirits;
+    data.portraits === data.spirits &&
+    skillIcons.total === data.skills &&
+    skillIcons.failed.length === 0;
 
   return {
     ok,
@@ -224,6 +242,7 @@ async function collectOfflineSmokeResult(window) {
     portraits: data.portraits,
     spirits: data.spirits,
     skills: data.skills,
+    skillIcons,
   };
 }
 

@@ -18,7 +18,6 @@ for (const width of [320, 390, 1440]) for (const theme of ["light", "dark"]) {
     await selectDefaultSpirits(page);
     const panel = await openPanel(page);
     for (const name of ["掠影", "月蚀"]) {
-      if (width <= 650 && name === "月蚀") await panel.getByRole("button", { name: "编辑条件" }).click();
       await panel.getByLabel("搜索技能或精灵").fill(name);
       await panel.getByRole("button", { name: `添加${name}`, exact: true }).click();
     }
@@ -35,12 +34,11 @@ for (const width of [320, 390, 1440]) for (const theme of ["light", "dark"]) {
     await page.screenshot({ path: `artifacts/skill-query-v2-final/effect-${width}-${theme}.png` });
     await panel.locator(".sq-results").evaluate((node) => { node.scrollTop = 0; });
     await page.screenshot({ path: `artifacts/skill-query-v2-final/actual-${width}-${theme}.png` });
-    await panel.getByRole("button", { name: "查可学精灵", exact: true }).click();
+    await panel.getByRole("button", { name: "查重组的可学精灵", exact: true }).click();
     await panel.getByRole("button", { name: "返回银月狼王技能" }).click();
     await expect(panel.getByRole("button", { name: "查看重组详情" })).toHaveAttribute("aria-expanded", "true");
     await panel.getByRole("button", { name: "返回匹配结果" }).click();
     await expect(panel.locator(".sq-families article")).toHaveCount(1);
-    if (width <= 650) await panel.getByRole("button", { name: "编辑条件" }).click();
     await expect(panel.locator(".sq-selected-heading")).toContainText("2 / 4");
     await panel.getByRole("button", { name: "查精灵技能" }).click();
     await panel.getByLabel("搜索技能或精灵").fill("火狗");
@@ -55,7 +53,7 @@ for (const width of [320, 390, 1440]) for (const theme of ["light", "dark"]) {
     await panel.getByLabel("查询赛季").selectOption("S3");
     await expect(panel.locator(".skill-query__list > p").first()).toHaveText("57 个技能");
     await panel.getByLabel("查询赛季").selectOption("S4");
-    await panel.getByRole("tab", { name: "老精灵新学" }).click();
+    await panel.getByRole("tab", { name: "赛季学习更新" }).click();
     await panel.getByLabel("搜索技能或精灵").fill("针叶巡林");
     await expect(panel.locator(".skill-query__gains")).toContainText("回旋踢");
     await panel.locator(".skill-query__gains h3 button").first().click();
@@ -71,7 +69,7 @@ test("条件筛选、跨断点、四技能上限与清空", async ({ page }) => 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const panel = await openPanel(page);
-  await panel.locator(".sq-query .sq-filter-fold summary").click();
+  await expect(panel.getByLabel("技能所属赛季")).toBeVisible();
   await panel.getByLabel("技能所属赛季").selectOption("S2");
   await expect(panel.getByLabel("技能列表")).toContainText("疾风涡轮");
   await expect(panel.getByLabel("技能列表")).not.toContainText("抓挠");

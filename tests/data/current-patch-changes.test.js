@@ -1,10 +1,11 @@
 import { readFileSync } from "node:fs";
+import { readS4PreviewSnapshot } from "../fixtures/s4-preview-snapshot.js";
 import { describe, expect, test } from "vitest";
 import { apply2026SeptemberSeasonAnnouncement } from "../../scripts/bwiki/apply-2026-09-season-announcement.mjs";
 import { applyS4PreviewCatalog } from "../../scripts/bwiki/apply-s4-preview-catalog.mjs";
 import { buildRuntimeSnapshot } from "../../scripts/runtime-snapshot.mjs";
 
-const snapshot = JSON.parse(readFileSync("data/snapshots/current.json", "utf8"));
+const snapshot = readS4PreviewSnapshot();
 const catalog = JSON.parse(
   readFileSync("data/candidates/s4-preview-new-spirits.json", "utf8"),
 );

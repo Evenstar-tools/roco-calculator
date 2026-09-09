@@ -286,7 +286,7 @@ describe("MoonMemoryTraitEditor", () => {
       },
     });
 
-    const input = screen.getByLabelText("己方已使用不同技能系列数");
+    const input = screen.getByLabelText("己方已使用不同技能系别数");
     expect(input).toHaveValue(2);
     fireEvent.input(input, { target: { value: "4" } });
 
@@ -367,7 +367,7 @@ describe("MoonMemoryTraitEditor", () => {
     const dispatch = vi.spyOn(store, "dispatch");
 
     render(<BattleWorkspace snapshot={snapshot} store={store} />);
-    fireEvent.input(screen.getByLabelText("己方已使用不同技能系列数"), {
+    fireEvent.input(screen.getByLabelText("己方已使用不同技能系别数"), {
       target: { value: "4" },
     });
 

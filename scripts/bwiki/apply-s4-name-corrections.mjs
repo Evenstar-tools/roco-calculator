@@ -14,6 +14,7 @@ const source = (index, sha256) => ({
 });
 
 export function applyS4NameCorrections(snapshot) {
+  if (snapshot.meta.nrcSync?.authoritativeLearnsets) return structuredClone(snapshot);
   const next = structuredClone(snapshot);
   const gravity = next.skills.find(({ id }) => id === GRAVITY_ID);
   const midnight = next.skills.find(({ id }) => id === MIDNIGHT_ID);

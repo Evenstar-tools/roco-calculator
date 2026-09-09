@@ -109,12 +109,16 @@ const RULES = Object.freeze({
     fixedPowerBySkillName: DISC_SWAP_POWER_BY_SKILL,
   }),
   旧玩具: stack(
-    "power_percent",
+    "attack_percent",
     10,
-    "己方已使用不同技能系列数",
-    "每种威力",
+    "己方已使用不同技能系别数",
+    "每种双攻",
     { editableEffect: false, max: 18 },
   ),
+  秋收: trigger("power_percent", 50, "处于草系环境中", "机械系威力", {
+    editableEffect: false,
+    types: ["机械"],
+  }),
   宇宙之眼: stack(
     "physical_defense_percent",
     10,

@@ -74,7 +74,7 @@ test("stays within cold warm and skill search budgets", async ({ page }) => {
   const searchStartedAt = Date.now();
   await skillPicker.fill(searchableSkill.slice(0, 2));
   await expect(
-    page.getByRole("option", { name: new RegExp(searchableSkill) }),
+    page.getByRole("option").filter({ has: page.getByText(searchableSkill, { exact: true }) }),
   ).toBeVisible();
   expect(Date.now() - searchStartedAt).toBeLessThan(1_500);
 });

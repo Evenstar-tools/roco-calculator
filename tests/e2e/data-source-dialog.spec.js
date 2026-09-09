@@ -38,6 +38,13 @@ test("keeps the concise about summary centered in a wide viewport", async ({ pag
     await expect(dialog.getByText(highlight)).toBeVisible();
   }
   await expect(dialog.getByText("QQ 1215583051")).toBeVisible();
+  await expect(dialog.getByRole("region", { name: "BWIKI 署名与许可" }))
+    .toContainText("来源数据经结构化、校验及补充");
+  await expect(dialog.getByRole("link", { name: "CC BY-NC-SA 4.0" }))
+    .toHaveAttribute(
+      "href",
+      "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans",
+    );
   await expect(dialog.getByText("规则校验")).toHaveCount(0);
   await expect(dialog.getByRole("link", { name: "诛仙剑下伤心花" })).toHaveCount(0);
 

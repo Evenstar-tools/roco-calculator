@@ -181,7 +181,7 @@ test("shows support status for every selected trait and removes one item at a ti
 
   const supportedItem = screen.getByRole("listitem", { name: /旧玩具/ });
   const displayOnlyItem = screen.getByRole("listitem", { name: /待验证特性/ });
-  expect(supportedItem).toHaveTextContent("已适配");
+  expect(supportedItem).toHaveAccessibleName("旧玩具，已适配");
   expect(displayOnlyItem).toHaveTextContent("仅展示");
 
   await user.click(screen.getByRole("button", { name: "删除已吞噬特性旧玩具" }));
@@ -234,14 +234,8 @@ test("stops at five swallowed traits and allows adding again after removal", asy
   );
 
   expect(screen.getByText("已吞噬 5/5")).toBeVisible();
-  const search = screen.getByRole("combobox", { name: "搜索已吞噬特性" });
-  await user.type(search, "冷光源");
-  const optionAtLimit = screen.getByRole("option", {
-    name: /机械方方 · 冷光源/,
-  });
-  expect(optionAtLimit).toHaveAttribute("aria-disabled", "true");
-  expect(optionAtLimit).toHaveTextContent("已达上限");
-  await user.click(optionAtLimit);
+  expect(screen.queryByRole("combobox", { name: "搜索已吞噬特性" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("region", { name: "特性条件与效果" })).not.toBeInTheDocument();
   expect(callbacks.onAdd).not.toHaveBeenCalled();
 
   await user.click(screen.getByRole("button", { name: "删除已吞噬特性旧玩具" }));
@@ -262,7 +256,8 @@ test("stops at five swallowed traits and allows adding again after removal", asy
   );
 
   expect(screen.getByText("已吞噬 4/5")).toBeVisible();
-  await user.click(search);
+  const search = screen.getByRole("combobox", { name: "搜索已吞噬特性" });
+  await user.type(search, "冷光源");
   const optionAfterRemoval = screen.getByRole("option", {
     name: /机械方方 · 冷光源/,
   });
@@ -286,14 +281,10 @@ test("isolates controls with the same canonical key by trait id", async () => {
     />,
   );
 
+  await user.click(screen.getByRole("button", { name: "查看威慑条件与效果" }));
   const intimidation = screen.getByRole("checkbox", {
     name: "威慑 · 已打断敌方技能",
   });
-  const embolden = screen.getByRole("checkbox", {
-    name: "壮胆 · 队伍存在虫系精灵",
-  });
-  expect(intimidation.id).not.toBe(embolden.id);
-
   await user.click(intimidation);
   expect(callbacks.onValueChange).toHaveBeenCalledWith(
     "intimidation",
@@ -305,6 +296,9 @@ test("isolates controls with the same canonical key by trait id", async () => {
     expect.anything(),
     expect.anything(),
   );
+  await user.click(screen.getByRole("button", { name: "查看壮胆条件与效果" }));
+  expect(screen.queryByRole("checkbox", { name: "威慑 · 已打断敌方技能" })).not.toBeInTheDocument();
+  expect(screen.getByRole("checkbox", { name: "壮胆 · 队伍存在虫系精灵" }).id).not.toBe(intimidation.id);
 });
 
 test("reads and writes number controls from the selected trait namespace", () => {
@@ -323,11 +317,17 @@ test("reads and writes number controls from the selected trait namespace", () =>
     />,
   );
 
+  fireEvent.click(screen.getByRole("button", { name: "查看旧玩具条件与效果" }));
   const input = screen.getByRole("spinbutton", {
-    name: "旧玩具 · 己方已使用不同技能系列数",
+    name: "旧玩具 · 己方已使用不同技能系别数",
   });
   expect(input).toHaveValue(3);
-  fireEvent.change(input, { target: { value: "5" } });
+  fireEvent.click(screen.getByRole("button", { name: "查看旧玩具条件与效果" }));
+  expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
+  expect(callbacks.onValueChange).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "查看旧玩具条件与效果" }));
+  expect(screen.getByRole("spinbutton")).toHaveValue(3);
+  fireEvent.change(screen.getByRole("spinbutton"), { target: { value: "5" } });
   expect(callbacks.onValueChange).toHaveBeenCalledWith(
     "old-toy",
     "trait.traitStacks.2d041ca6",
@@ -346,6 +346,7 @@ test("writes choice controls with their canonical trait key", () => {
     />,
   );
 
+  fireEvent.click(screen.getByRole("button", { name: "查看稀兽花宝条件与效果" }));
   fireEvent.change(
     screen.getByRole("combobox", { name: "稀兽花宝 · 血脉" }),
     { target: { value: "normal" } },

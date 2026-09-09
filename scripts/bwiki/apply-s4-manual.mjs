@@ -61,6 +61,7 @@ export async function importManualEvidence(inputPath) {
 }
 
 export function applyS4Manual(snapshot, evidence) {
+  if (snapshot.meta.nrcSync?.authoritativeLearnsets) return structuredClone(snapshot);
   requireValue(evidence.schemaVersion === 1 && evidence.spirits.length === 10 && evidence.images.length === 32,
     "正式资料清单结构或数量异常");
   const relationships = evidence.spirits.flatMap((spirit) => Object.values(spirit.learnsets).flat());

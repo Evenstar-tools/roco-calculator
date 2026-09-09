@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readS4PreviewSnapshot } from "../fixtures/s4-preview-snapshot.js";
 import { describe, expect, test } from "vitest";
 import { apply2026SeptemberSeasonAnnouncement } from "../../scripts/bwiki/apply-2026-09-season-announcement.mjs";
 
-const baseline = JSON.parse(readFileSync("data/snapshots/current.json", "utf8"));
+const baseline = readS4PreviewSnapshot();
 const ANNOUNCEMENT_URL = "https://my.feishu.cn/docx/KnSddeY5DovSkpxqEh8cIZTvnod";
 
 const RACE_STAT_TARGETS = [

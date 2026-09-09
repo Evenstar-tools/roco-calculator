@@ -100,7 +100,7 @@ for (const viewport of [
     await expect(dialog.getByText("烈焰狂战士", { exact: true })).toBeVisible();
     await expect(dialog.getByText("1 / 226")).toBeVisible();
     await search.fill("满月砣");
-    await expect(dialog.getByText("满月砣", { exact: true })).toBeVisible();
+    await expect(dialog.getByText("满月砣（下弦的样子）", { exact: true })).toBeVisible();
     await expect(dialog.getByText("1 / 226")).toBeVisible();
 
     await dialog.getByRole("button", { name: "清除" }).click();

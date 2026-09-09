@@ -119,13 +119,13 @@ test("catalog preserves fixed source identity, coverage, and evidence status", (
 
   expect(catalog.meta).toEqual(FORM_ROLE_MANIFEST_META);
   expect(catalog.meta.counts).toEqual({
-    boss: 61,
-    final: 253,
+    boss: 64,
+    final: 255,
     growth: 303,
     manual: 23,
-    records: 617,
-    runtimeRecords: 556,
-    verified: 594,
+    records: 622,
+    runtimeRecords: 558,
+    verified: 599,
   });
   expect(manifestBwikiSource).toMatchObject({
     ...bwikiSource,
@@ -147,8 +147,8 @@ test("current snapshot has no unclassified form and only finals or bosses are el
   }, {});
 
   expect(roleCounts).toEqual({
-    boss: 63,
-    final: 253,
+    boss: 64,
+    final: 255,
     growth: 303,
   });
 });

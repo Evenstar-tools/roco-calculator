@@ -68,12 +68,17 @@ describe("技能查询赛季对比", () => {
     expect(seasonChanges(current, { ...current, id: "S5" }).gains).toEqual([]);
     expect(seasonChanges(current, { ...current, id: "S5" }).newSkillIds.size).toBe(0);
   });
-  it("同时识别新技能和老精灵新增旧技能，排除新精灵", () => {
+  it("包含新技能的学习面和老精灵新学，但不混入新精灵的旧技能", () => {
     const previous = { skills: [{ id: "a" }, { id: "b" }], spirits: [{ id: "old" }], learnsets: [{ spiritId: "old", skillIds: ["a"] }] };
     const next = { skills: [...previous.skills, { id: "c" }], spirits: [{ id: "old" }, { id: "new" }], learnsets: [{ spiritId: "old", skillIds: ["a", "b", "c"] }, { spiritId: "new", skillIds: ["a", "c"] }] };
     const result = seasonChanges(previous, next);
     expect([...result.newSkillIds]).toEqual(["c"]);
-    expect(result.gains).toEqual([{ spiritId: "old", skillIds: ["b", "c"] }]);
+    expect(result.gains).toEqual([{ spiritId: "old", skillIds: ["b", "c"] }, { spiritId: "new", skillIds: ["c"] }]);
+  });
+  it("历史学习面缺失时只展示确定的新技能，未确认学习者的新技能不伪造关系", () => {
+    const previous = { skills: [{ id: "a" }], spirits: [{ id: "old" }], learnsets: [] };
+    const next = { skills: [...previous.skills, { id: "b" }, { id: "pending" }], spirits: previous.spirits, learnsets: [{ spiritId: "old", skillIds: ["a", "b"] }] };
+    expect(seasonChanges(previous, next).gains).toEqual([{ spiritId: "old", skillIds: ["b"] }]);
   });
   it("保留同一精灵的多种学习途径并还原后续赛季数据", () => {
     const packed = { schemaVersion: 1, currentSeason: "S5", seasons: [{ id: "S5", skills: [{ id: "a" }], spirits: [{ id: "s", fullName: "精灵" }], methodTexts: ["默认学习", "技能石"], relations: [[0, [[0, 0, 1]]]] }] };

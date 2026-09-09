@@ -329,6 +329,7 @@ function mergeCurrentPatchChanges(snapshot) {
 }
 
 export function apply2026SeptemberSeasonAnnouncement(snapshot) {
+  if (snapshot.meta.nrcSync?.authoritativeLearnsets) return structuredClone(snapshot);
   const next = structuredClone(snapshot);
   for (const patch of RACE_STAT_PATCHES) {
     const spirit = requireSpirit(next, patch.id, patch.fullName);

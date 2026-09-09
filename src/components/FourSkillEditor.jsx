@@ -138,6 +138,7 @@ function SkillSide({
   defenseTrait,
   traitContext,
   traitDamage,
+  traitEditor,
 }) {
   const hasSelfHpRule =
     selectedSkills.some((skill) =>
@@ -194,6 +195,7 @@ function SkillSide({
         <span>{label}</span>
         <strong>{name}</strong>
       </header>
+      {traitEditor}
       {offensiveTraitInputs.length > 0 ||
       trait?.skillPowerBonuses?.length > 0 ||
       showsLifestealCapability ? (
@@ -722,6 +724,7 @@ function SkillSide({
 }
 
 export function FourSkillEditor({
+  traitEditors = {},
   activeDamageSource = "skill",
   activeSide = "attacker",
   activeSkillIndex = 0,
@@ -818,6 +821,7 @@ export function FourSkillEditor({
     return (
       <SkillSide
         {...sideProps[side]}
+        traitEditor={traitEditors[side]}
         active={activeSide === side}
         activeDamageSource={activeDamageSource}
         activeSkillIndex={activeSkillIndex}

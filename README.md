@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <sub>当前赛季：S4「月涌狂想」　｜　源码版本：v1.6.12　｜　<a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">下载最新 Windows 安装包</a></sub>
+  <sub>当前赛季：S4「月涌狂想」　｜　源码版本：v2.0.0　｜　<a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">下载最新 Windows 安装包</a></sub>
 </p>
 
 ![洛克计算器界面](docs/images/app-overview.png)
@@ -77,7 +77,7 @@
 - 数据与美术资料主要参考 [洛克王国：世界 BWIKI](https://wiki.biligame.com/rocom/)。
 - 感谢 [lovepvp.top](https://lovepvp.top/) 和 [Roco Showdown 战斗模拟计算原理](https://rocopvp.tzrain.wiki/battle-use-guide) 对规则整理与核对方式的长期积累。
 
-参考页面仅用于资料核验和规则研究，不作为本项目的运行时依赖。
+本项目已对 BWIKI 来源数据进行抓取、结构化、校验、纠错及补充。源自 BWIKI、且受其许可覆盖的数据整理和改编部分依据 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans) 共享。其他参考页面仅用于资料核验和规则研究，不作为本项目的运行时依赖。
 
 ## 许可证与声明
 

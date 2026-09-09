@@ -8,7 +8,7 @@ function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
 }
 
-const INITIAL_PREVIEW_COUNT = 14;
+const INITIAL_PREVIEW_COUNT = 16;
 const PREVIEW_PAGE_SIZE = 20;
 const S4_PREVIEW_BOSS_ORDER = new Map([
   ["烈焰狂战士", 0],
@@ -20,23 +20,19 @@ function dexNo(spirit) {
 }
 
 function isS4PreviewFinalSpirit(spirit) {
-  return Boolean(spirit?.changeInfo?.isNew && spirit.previewDefaults);
+  return Boolean(spirit?.changeInfo?.isNew && (spirit.previewDefaults || spirit.changeInfo.isFinal));
 }
 
 function shouldShowNewBadge(spirit) {
   return Boolean(
     spirit?.changeInfo?.isNew &&
-      (spirit.previewDefaults || spirit.stage === "首领"),
+      (spirit.previewDefaults || spirit.changeInfo.isFinal || spirit.stage === "首领"),
   );
-}
-
-function isPendingS4PreviewFinalSpirit(spirit) {
-  return isS4PreviewFinalSpirit(spirit) && dexNo(spirit) === "";
 }
 
 function getS4PreviewBossOrder(spirit) {
   if (!spirit?.changeInfo?.isNew || spirit.stage !== "首领") return null;
-  return S4_PREVIEW_BOSS_ORDER.get(spirit?.fullName) ?? null;
+  return S4_PREVIEW_BOSS_ORDER.get(spirit?.baseName ?? spirit?.fullName) ?? null;
 }
 
 function isS4PreviewBossSpirit(spirit) {
@@ -61,10 +57,11 @@ function compareDexOrder(left, right) {
 }
 
 function compareSavedPreviewOrder(left, right) {
-  const leftPending = isPendingS4PreviewFinalSpirit(left);
-  const rightPending = isPendingS4PreviewFinalSpirit(right);
-  if (leftPending !== rightPending) return leftPending ? -1 : 1;
-  if (leftPending) {
+  const leftFinal = isS4PreviewFinalSpirit(left);
+  const rightFinal = isS4PreviewFinalSpirit(right);
+  if (leftFinal !== rightFinal) return leftFinal ? -1 : 1;
+  if (leftFinal) {
+    if (left.id === right.id) return 0;
     if (left.fullName === "银月狼王") return -1;
     if (right.fullName === "银月狼王") return 1;
     return 0;

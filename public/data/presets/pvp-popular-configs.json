@@ -1,10 +1,10 @@
 {
   "format": "rock-calculator.favorite-config-library",
   "schemaVersion": 1,
-  "appVersion": "1.6.12",
+  "appVersion": "2.0.0",
   "versions": {
-    "data": "s4-preview-2026-09-02",
-    "rules": "s4-preview-2026-09-02"
+    "data": "s4-2026-09-10",
+    "rules": "s4-2026-09-10"
   },
   "exportedAt": "2026-09-05T07:48:00.000Z",
   "entryCount": 226,

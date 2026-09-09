@@ -5,6 +5,7 @@ import { validateSnapshot } from "../../scripts/bwiki/validate.mjs";
 import { matchesSource, spiritSkills, querySpiritFamilies } from "../../src/features/skill-query/query-model.js";
 import { getLegalSkillIds, chooseDefaultSkillIds } from "../../src/domain/skill-loadout.js";
 import { unpackCatalog } from "../../src/features/skill-query/catalog.js";
+import { readS4PreviewSnapshot } from "../fixtures/s4-preview-snapshot.js";
 
 const read = (path) => JSON.parse(readFileSync(path, "utf8"));
 const evidence = read("data/reviewed/s4-manual-2026-09-09.json");
@@ -17,7 +18,7 @@ describe("S4 正式手册学习面", () => {
     staleEvidence.standaloneSkills.push({ name: "麦芒", cost: 5, damageClass: "物理", element: "草",
       basePower: 105, description: "截图候选", imageIndex: 2, spiritBinding: null });
     staleEvidence.corrections.push({ name: "冰锋横扫", type: "冰", cost: 4, basePower: 0, imageIndex: 6 });
-    const result = applyS4Manual(current, staleEvidence);
+    const result = applyS4Manual(readS4PreviewSnapshot(), staleEvidence);
     expect(result.skills.some(({ name }) => name === "麦芒")).toBe(false);
     expect(result.skills.find(({ name }) => name === "冰锋横扫")?.basePower).toBe(1);
     expect(result.skills.find(({ id }) => id === "skill_f7eea4de117d30ed")?.name).toBe("引力偏转");
@@ -29,7 +30,7 @@ describe("S4 正式手册学习面", () => {
     const season = unpackCatalog(read("public/data/skill-query/catalog.json")).seasons.find(({ id }) => id === "S4");
     let count = 0;
     for (const record of evidence.spirits) {
-      expect(current.spirits.find(({ id }) => id === record.spiritId)?.dexNo).toBe(record.dexNo);
+      expect(Number(current.spirits.find(({ id }) => id === record.spiritId)?.dexNo)).toBe(record.dexNo);
       const entry = current.learnsets.find(({ spiritId }) => spiritId === record.spiritId);
       const rows = spiritSkills(season, record.spiritId);
       expect(getLegalSkillIds(current, record.spiritId)).toEqual(entry.skillIds);
@@ -40,8 +41,8 @@ describe("S4 正式手册学习面", () => {
         expect(filtered.map(({ name }) => name).sort()).toEqual([...record.learnsets[category]].sort());
         count += filtered.length;
       }
-      expect(Object.values(entry.acquisitions).flat().some((text) => /Lv\./i.test(text))).toBe(false);
-      expect(entry.sources).toHaveLength(3);
+      expect(Object.values(entry.acquisitions).flat().some((text) => /Lv\./i.test(text))).toBe(true);
+      expect(entry.sources).toEqual([expect.objectContaining({ revision: 7271 })]);
       expect(chooseDefaultSkillIds(current, record.spiritId).filter(Boolean).every((id) => entry.skillIds.includes(id))).toBe(true);
     }
     expect(count).toBe(463);
@@ -56,14 +57,14 @@ describe("S4 正式手册学习面", () => {
     expect(current.skills.some(({ name }) => name === "引力旋转")).toBe(false);
     expect(current.skills.find(({ name }) => name === "冰锋横扫")).toMatchObject({ type: "冰", cost: 4, basePower: 1 });
     const maimang = current.skills.find(({ name }) => name === "麦芒");
-    expect(maimang).toBeUndefined();
+    expect(maimang).toMatchObject({ basePower: 105, cost: 5, type: "草", category: "physical" });
     expect(evidence.pending.map(({ name }) => name)).toEqual(["麦芒", "冰锋横扫"]);
     expect(evidence.standaloneSkills.some(({ name }) => name === "麦芒")).toBe(false);
     expect(evidence.corrections.some(({ name }) => name === "冰锋横扫")).toBe(false);
     const tractor = current.skills.find(({ name }) => name === "拖拉机");
     expect(tractor).toMatchObject({ type: "机械", category: "physical", cost: 3, basePower: 85,
       description: "造成物伤，位于1号位时，先手+1。传动1。" });
-    expect(current.learnsets.some(({ skillIds }) => skillIds.includes(tractor.id))).toBe(false);
+    expect(current.learnsets.some(({ skillIds }) => skillIds.includes(tractor.id))).toBe(true);
     for (const skill of [tractor]) {
       const png = readFileSync(`public${skill.asset.sourceUrl}`);
       expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
@@ -93,6 +94,7 @@ describe("S4 正式手册学习面", () => {
   });
 
   test("来源错误、重复归属和已存在同名实体会阻断", () => {
+    const current = readS4PreviewSnapshot();
     const broken = structuredClone(evidence);
     broken.spirits[0].raceStats.生命++;
     expect(() => applyS4Manual(current, broken)).toThrow("种族值不匹配");

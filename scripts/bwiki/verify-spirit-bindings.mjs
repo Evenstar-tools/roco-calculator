@@ -82,7 +82,7 @@ export async function verifySpiritBindings() {
   }
   const s4PreviewIds = new Set(s4PreviewSpirits.map(({ id }) => id));
   const s4PreviewAssets = manifest.assets.filter(
-    ({ sourceKind }) => sourceKind === S4_PREVIEW_SOURCE_KIND,
+    ({ id, sourceKind }) => sourceKind === S4_PREVIEW_SOURCE_KIND || (s4PreviewIds.has(id) && sourceKind === "nrc-catalog"),
   );
   if (
     s4PreviewAssets.length !== S4_PREVIEW_FORM_COUNT ||
@@ -99,7 +99,7 @@ export async function verifySpiritBindings() {
   }
   for (const spirit of s4PreviewSpirits) {
     const asset = manifestById.get(spirit.id);
-    if (asset?.sourceKind !== S4_PREVIEW_SOURCE_KIND) {
+    if (![S4_PREVIEW_SOURCE_KIND, "nrc-catalog"].includes(asset?.sourceKind)) {
       errors.push(`${spirit.fullName} 缺少 S4 前瞻本地头像清单绑定`);
     }
   }
@@ -152,6 +152,10 @@ export async function verifySpiritBindings() {
       }
     }
     const asset = manifestById.get(spirit.id);
+    if (asset?.sourceKind === "nrc-catalog") {
+      const expectedFile = spirit.provenance?.asset?.file;
+      if (!expectedFile || asset.nrcFile !== expectedFile) errors.push(`${spirit.fullName} 新站头像文件绑定错配`);
+    }
     const runtimeSpirit = runtimeById.get(spirit.id);
     const bundledSpirit = bundledById.get(spirit.id);
     if (asset?.name !== spirit.fullName) {

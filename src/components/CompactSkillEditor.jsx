@@ -76,6 +76,7 @@ function CompactSkillSide({
   skills,
   sproutStacks,
   traitDamage,
+  traitEditor,
 }) {
   const SideIcon = side === "attacker" ? Sword : Shield;
 
@@ -85,6 +86,7 @@ function CompactSkillSide({
         <SideIcon aria-hidden="true" size={18} weight="fill" />
         <strong>{name}</strong>
       </header>
+      {traitEditor}
       <div className="compact-skill__list">
         {traitDamage ? (
           <div
@@ -235,6 +237,7 @@ function CompactSkillSide({
 }
 
 export function CompactFourSkillEditor({
+  traitEditors = {},
   activeDamageSource = "skill",
   activeSide = "attacker",
   activeSkillIndex = 0,
@@ -276,6 +279,7 @@ export function CompactFourSkillEditor({
         skills={attackerSkillChoices}
         sproutStacks={attackerSproutStacks}
         traitDamage={attackerTraitDamage}
+        traitEditor={traitEditors.attacker}
       />
       <CompactSkillSide
         active={activeSide === "defender"}
@@ -295,6 +299,7 @@ export function CompactFourSkillEditor({
         skills={defenderSkillChoices}
         sproutStacks={defenderSproutStacks}
         traitDamage={defenderTraitDamage}
+        traitEditor={traitEditors.defender}
       />
     </div>
   );

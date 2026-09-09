@@ -9,6 +9,7 @@
 .skill-query__body{display:grid;grid-template-columns:280px minmax(0,1fr);flex:1;min-height:0}.skill-query__browser{min-width:0;min-height:0;display:flex;flex-direction:column;border-right:1px solid var(--border)}
 .skill-query__list{overflow:auto;padding:0 12px 12px;min-height:0;flex:1}.skill-query__list p{padding:0 10px}.skill-query__list button{width:100%;text-align:left;display:flex;justify-content:space-between;gap:8px;border:0;border-radius:6px;padding:12px 10px}.skill-query__list button:hover{background:var(--accent-soft)}
 .skill-query__detail{overflow:auto;padding:18px 24px}.skill-query__empty{padding:32px;text-align:center}
+.skill-query__list button{align-items:center;justify-content:flex-start}.skill-query__list .skill-icon{flex:none}.skill-query__skill-text{display:grid;gap:3px;min-width:0;overflow-wrap:anywhere}
 .skill-query__gains{overflow:auto;padding:0 24px 24px}.skill-query__gains article{border-bottom:1px solid var(--border);padding:8px 0 16px}.skill-query__gains article>div{display:flex;flex-wrap:wrap;gap:8px}.skill-query__gains small{margin-left:6px}.skill-query__gains h3 button{border:0;padding:0;background:transparent;text-align:left;font-weight:700}
 @media(min-width:651px){
   .skill-query__browser>.skill-query__filters{padding:18px 12px 10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.skill-query__browser>.skill-query__filters>input{grid-column:1/-1;width:100%}.skill-query__browser>.skill-query__filters>select{min-width:0;padding-inline:8px}.skill-query__browser>.skill-query__filters>select:last-child{grid-column:1/-1}

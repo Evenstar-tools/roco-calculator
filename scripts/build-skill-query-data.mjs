@@ -36,6 +36,7 @@ for (const record of source.skills) {
   }
 }
 const mergedLearnsets = (snapshot) => snapshot.learnsets.map((entry) => {
+  if (snapshot.meta.nrcSync?.authoritativeLearnsets) return entry;
   const additions = sourceRelations.get(entry.spiritId) ?? new Map();
   const skillIds = [...new Set([...entry.skillIds, ...additions.keys()])];
   return { spiritId: entry.spiritId, skillIds, acquisitions: Object.fromEntries(skillIds.map((id) => [id,
@@ -46,7 +47,7 @@ const compact = (snapshot, season) => {
   const families = familyIds(snapshot.spirits);
   return {
   id: season,
-  skills: snapshot.skills.map((skill) => {
+  skills: snapshot.skills.filter((skill) => skill.provenance?.nrc?.status !== "legacy-unconfirmed").map((skill) => {
     const record = sourceSkills.get(skill.name);
     return { id: skill.id, name: skill.name, type: skill.type, category: skill.category,
       cost: skill.cost ?? null, basePower: skill.basePower ?? null, description: skill.description,
