@@ -1,0 +1,90 @@
+import mapping from "../../public/data/lineup-code-map.json";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { expect, test, vi } from "vitest";
+import snapshot from "../../data/snapshots/current.json";
+import fixture from "../fixtures/qiandao-lineup.json";
+import { TeamExchange } from "../../src/components/TeamExchange.jsx";
+import { importLineupCode, decodeLineupCode, encodeLineupCode } from "../../src/state/lineup-code.js";
+
+test("preview requires explicit IV assumption acknowledgement and never imports stale input", () => {
+  const onImport = vi.fn(() => true);
+  const viewSnapshot = { ...snapshot, spirits: snapshot.spirits.map(spirit => ({ ...spirit, asset: { localUrl: `./assets/spirits/${spirit.id}.png` } })) };
+  render(<TeamExchange mapping={mapping} mode="import" snapshot={viewSnapshot} onImport={onImport} />);
+  const input = screen.getByLabelText("阵容码或分享链接");
+  fireEvent.change(input, { target: { value: fixture.code } });
+  fireEvent.click(screen.getByText("解析阵容"));
+  expect(screen.getByText("加油蟹（单只海葵的样子）")).toBeVisible();
+  expect(screen.queryByLabelText("阵容码或分享链接")).not.toBeInTheDocument();
+  expect(screen.getByText("已解析 6 位精灵 · 24 个技能")).toBeVisible();
+  expect(screen.getAllByText("原码个体待确认")).toHaveLength(6);
+  expect(screen.getAllByRole("img")).toHaveLength(6);
+  expect(screen.getByText("保存并调整个体")).toBeDisabled();
+  fireEvent.click(screen.getByRole("checkbox"));
+  fireEvent.change(screen.getByLabelText("新队伍名称"), { target: { value: "S4电鹿轮转" } });
+  fireEvent.click(screen.getByText("保存并调整个体"));
+  expect(onImport).toHaveBeenCalledWith(expect.objectContaining({ name: "S4电鹿轮转" }));
+  fireEvent.click(screen.getByText("修改代码"));
+  expect(screen.getByLabelText("阵容码或分享链接")).toHaveValue(fixture.code);
+  expect(screen.getByLabelText("阵容码或分享链接")).toHaveFocus();
+  fireEvent.change(screen.getByLabelText("阵容码或分享链接"), { target: { value: "bad" } });
+  expect(screen.queryByText("保存并调整个体")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByText("解析阵容"));
+  expect(screen.getByRole("alert")).toBeVisible();
+  expect(onImport).toHaveBeenCalledTimes(1);
+});
+
+test("recommendations are opt-in, reversible, and never replace known or unknown source selections", () => {
+  const raw = decodeLineupCode(fixture.code);
+  raw.members[0].talents = [null, null, null];
+  raw.members[1].talents = [1, 4, 5];
+  const onImport = vi.fn(() => true);
+  render(<TeamExchange mapping={mapping} presets={[]} mode="import" snapshot={snapshot} onImport={onImport} />);
+  fireEvent.change(screen.getByLabelText("阵容码或分享链接"), { target: { value: encodeLineupCode(raw) } });
+  fireEvent.click(screen.getByText("解析阵容"));
+  const recommendation = screen.getByRole("checkbox", { name: /使用推荐/ });
+  expect(recommendation).not.toBeChecked();
+  expect(screen.getAllByText("原码个体待确认")).toHaveLength(4);
+  expect(screen.getByText("原码选择 · 按 60 恢复")).toBeVisible();
+  fireEvent.click(screen.getByText("缺失项全部推荐"));
+  expect(recommendation).toBeChecked();
+  fireEvent.click(recommendation);
+  expect(recommendation).not.toBeChecked();
+  fireEvent.click(recommendation);
+  fireEvent.click(screen.getByRole("checkbox", { name: /已确认个体处理/ }));
+  fireEvent.click(screen.getByText("保存并调整个体"));
+  const members = onImport.mock.calls[0][0].members;
+  expect(members[0].ivsPending).toBe(false);
+  expect(Object.values(members[0].displayIvs).filter(value => value === 60)).toHaveLength(3);
+  expect(members[1].displayIvs).toMatchObject({ hp: 60, physicalDefense: 60, magicalDefense: 60 });
+  expect(members[2].ivsPending).toBe(true);
+  expect(members[2].lineupSource.talents).toEqual([80, 80, 80]);
+});
+
+test("export exposes the exact code and provides a manual fallback when clipboard fails", async () => {
+  const writeText = vi.fn().mockRejectedValue(new Error("denied"));
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+  const update = vi.fn(() => true);
+  render(<TeamExchange mapping={mapping} mode="export" team={{ ...importLineupCode(fixture.code, snapshot, mapping), id: "test" }} snapshot={snapshot} onUpdateLineup={update} />);
+  expect(screen.getByLabelText("阵容代码")).toHaveValue(fixture.code);
+  expect(screen.getAllByRole("textbox")).toHaveLength(1);
+  expect(screen.queryByLabelText("官方分享链接")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByText("复制分享链接"));
+  expect(await screen.findByLabelText("官方分享链接")).toHaveFocus();
+  expect(screen.getByLabelText("官方分享链接").value).toContain("shareData=" + fixture.code);
+  expect(screen.getAllByRole("textbox")).toHaveLength(1);
+  fireEvent.click(screen.getByText("复制阵容码"));
+  expect(await screen.findByRole("alert")).toHaveTextContent("手动复制");
+  expect(await screen.findByLabelText("阵容代码")).toHaveValue(fixture.code);
+  expect(writeText).toHaveBeenCalledWith(fixture.code);
+  expect(update).toHaveBeenCalledWith("test", { magicId: 104007, mode: 5 });
+});
+
+test("successful copying keeps one code preview and announces the copied kind", async () => {
+  const writeText = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+  render(<TeamExchange mapping={mapping} mode="export" team={{ ...importLineupCode(fixture.code, snapshot, mapping), id: "test" }} snapshot={snapshot} onUpdateLineup={() => true} />);
+  fireEvent.click(screen.getByText("复制分享链接"));
+  expect(await screen.findByRole("status")).toHaveTextContent("分享链接已复制");
+  expect(screen.getAllByRole("textbox")).toHaveLength(1);
+  expect(screen.getByLabelText("阵容代码")).toHaveValue(fixture.code);
+});

@@ -1,0 +1,60 @@
+{
+  "code": "B~G0f~~~T~X~BQBQBQbH6w~bAjg~bZCE~bH7Y~6f~~~E~c~BQBQBQbUFM~bUF0~bUHO~a5QA~4P~~~E~X~BQBQBQbPNe~a5SC~bPOk~a5QU~wF~~~D~e~BQBQBQa230~bC--~a2zw~a20s~6p~~~D~e~BQBQBQa20E~bRq-~bRq0~ayJy~2h~~~P~e~BQBQBQbWis~bMyo~ayJA~bY-e~ZZH~FA~A~A~A~A~A~A~A~A~A~A~A~",
+  "name": "S4电鹿轮转",
+  "members": [
+    {
+      "spiritId": "spirit_906f78a278f66fb9",
+      "skills": [
+        "skill_4188771ab355d49b",
+        "skill_bb40473fa454804c",
+        "skill_1c52276f3f3d4b3e",
+        "skill_5601e4ddfa232a5f"
+      ]
+    },
+    {
+      "spiritId": "spirit_190dc8281c5049b1",
+      "skills": [
+        "skill_f5d921b97fb279d7",
+        "skill_81fc9d5acbe7cff4",
+        "skill_78b4bc981bfa5ba5",
+        "skill_730f89409835a4b8"
+      ]
+    },
+    {
+      "spiritId": "spirit_40bee517b3857b1d",
+      "skills": [
+        "skill_d2b3e8ce739d1e22",
+        "skill_ae54736ec243485b",
+        "skill_26ce8cdd80ae1c08",
+        "skill_487351fbd9ad93df"
+      ]
+    },
+    {
+      "spiritId": "spirit_2f24d4018a1545f7",
+      "skills": [
+        "skill_5741f4f365ff20a1",
+        "skill_d1d973cc929fbdf0",
+        "skill_b0ab24f11414ad8d",
+        "skill_789931a5192251f8"
+      ]
+    },
+    {
+      "spiritId": "spirit_03d19450769b55c0",
+      "skills": [
+        "skill_86f3589b9aa6430e",
+        "skill_5234d44b19807824",
+        "skill_cc4cd560f063ab21",
+        "skill_e6645e5c0ad42b90"
+      ]
+    },
+    {
+      "spiritId": "spirit_a0dd7aaab165d94a",
+      "skills": [
+        "skill_7f07532c0b252f52",
+        "skill_56c139dc1b022395",
+        "skill_9a667e0207635c62",
+        "skill_4f172a368c7f18d6"
+      ]
+    }
+  ]
+}

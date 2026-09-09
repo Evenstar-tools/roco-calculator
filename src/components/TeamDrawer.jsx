@@ -1,5 +1,7 @@
 import {
   ArrowsLeftRight,
+  DownloadSimple,
+  UploadSimple,
   CheckCircle,
   Copy,
   PencilSimple,
@@ -15,6 +17,7 @@ import { AbilityWorkbench } from "./AbilityWorkbench.jsx";
 import { TeamAnalysisPanel } from "./TeamAnalysisPanel.jsx";
 import { TeamMemberEditor } from "./TeamMemberEditor.jsx";
 import { TeamRoster } from "./TeamRoster.jsx";
+import { TeamExchange } from "./TeamExchange.jsx";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -48,6 +51,8 @@ export function TeamDrawer({
   onCaptureSide,
   onClose,
   onCreateTeam,
+  onImportTeam,
+  onUpdateLineup,
   onDeleteTeam,
   onDuplicateTeam,
   onMemberChange,
@@ -61,7 +66,9 @@ export function TeamDrawer({
   const closeRef = useRef(null);
   const closeActionRef = useRef(null);
   const drawerRef = useRef(null);
+  const importedIndexRef = useRef(null);
   const [analysisDirty, setAnalysisDirty] = useState(false);
+  const [exchangeMode, setExchangeMode] = useState(null);
   const [deletePending, setDeletePending] = useState(false);
   const [memberPage, setMemberPage] = useState("configure");
   const [nameDraft, setNameDraft] = useState("");
@@ -146,8 +153,15 @@ export function TeamDrawer({
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect -- 换队伍时重置删除确认和选中位，渲染期写入会冲掉当前交互 */
     setDeletePending(false);
-    setSelectedIndex(0);
+    setSelectedIndex(importedIndexRef.current ?? 0);
     /* eslint-enable react-hooks/set-state-in-effect */
+    if (importedIndexRef.current !== null) {
+      const frame = requestAnimationFrame(() => {
+        drawerRef.current?.querySelector('.team-member-editor__stats input')?.focus();
+        importedIndexRef.current = null;
+      });
+      return () => cancelAnimationFrame(frame);
+    }
   }, [activeTeam?.id]);
 
   useEffect(() => {
@@ -230,7 +244,7 @@ export function TeamDrawer({
             type="button"
           >
             <Plus aria-hidden="true" size={17} weight="bold" />
-            新建
+            <span className="team-drawer__toolbar-label">新建</span>
           </button>
           <button
             aria-label="复制队伍"
@@ -252,6 +266,16 @@ export function TeamDrawer({
             <Trash aria-hidden="true" size={17} />
             <span className="team-drawer__toolbar-label">删除</span>
           </button>
+          <button aria-label="导入阵容" title="导入阵容" type="button"
+            onClick={() => navigate(() => setExchangeMode("import"))}>
+            <DownloadSimple aria-hidden="true" size={17} />
+            <span className="team-drawer__toolbar-label">导入</span>
+          </button>
+          <button aria-label="导出阵容" title="导出阵容" type="button" disabled={!activeTeam}
+            onClick={() => navigate(() => setExchangeMode("export"))}>
+            <UploadSimple aria-hidden="true" size={17} />
+            <span className="team-drawer__toolbar-label">导出</span>
+          </button>
         </div>
 
         <nav aria-label="队伍面板" className="team-drawer__pane-tabs">
@@ -259,9 +283,10 @@ export function TeamDrawer({
             aria-pressed={paneMode === "member"}
             onClick={() =>
               navigate(() => {
+                setExchangeMode(null);
                 setPaneMode("member");
                 return true;
-              }, paneMode !== "member")
+              }, Boolean(exchangeMode || paneMode !== "member"))
             }
             type="button"
           >
@@ -273,9 +298,10 @@ export function TeamDrawer({
             disabled={!activeTeam}
             onClick={() =>
               navigate(() => {
+                setExchangeMode(null);
                 setPaneMode("analysis");
                 return true;
-              }, paneMode !== "analysis")
+              }, Boolean(exchangeMode || paneMode !== "analysis"))
             }
             type="button"
           >
@@ -287,9 +313,10 @@ export function TeamDrawer({
             disabled={!activeTeam}
             onClick={() =>
               navigate(() => {
+                setExchangeMode(null);
                 setPaneMode("matchup");
                 return true;
-              }, paneMode !== "matchup")
+              }, Boolean(exchangeMode || paneMode !== "matchup"))
             }
             type="button"
           >
@@ -320,7 +347,25 @@ export function TeamDrawer({
           </div>
         ) : null}
 
-        {hasWorkspaceContent ? (
+        {exchangeMode ? (
+          <TeamExchange
+            key={`${exchangeMode}-${activeTeam?.id ?? "empty"}`}
+            mode={exchangeMode}
+            team={activeTeam}
+            snapshot={snapshot}
+            onCancel={() => setExchangeMode(null)}
+            onUpdateLineup={onUpdateLineup}
+            onImport={(team) => {
+              if (onImportTeam?.(team) !== true) return false;
+              importedIndexRef.current = Math.max(0, team.members.findIndex(Boolean));
+              onAnalysisEntryClear?.();
+              setPaneMode("member");
+              setMemberPage("configure");
+              setExchangeMode(null);
+              return true;
+            }}
+          />
+        ) : hasWorkspaceContent ? (
           <div className="team-drawer__content">
             <div className="team-drawer__roster-pane">
               {activeTeam ? (

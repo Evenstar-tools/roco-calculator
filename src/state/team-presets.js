@@ -125,6 +125,8 @@ function sanitizeMember(member) {
       single: cloneJson(member.skills?.single ?? null),
     },
     spiritId: member.spiritId,
+    ...(member.ivsPending === true ? { ivsPending: true } : {}),
+    ...(member.lineupSource ? { lineupSource: cloneJson(member.lineupSource) } : {}),
   };
 }
 
@@ -140,6 +142,7 @@ function sanitizeState(state) {
         (_, index) => sanitizeMember(team.members[index]),
       ),
       name: team.name,
+      ...(team.lineup ? { lineup: cloneJson(team.lineup) } : {}),
       updatedAt: team.updatedAt,
     })),
   };
@@ -283,6 +286,17 @@ export function teamPresetsRepository({
   }
 
   return {
+    importTeam(state, imported) {
+      if (!Array.isArray(imported.members) || imported.members.length !== 6) {
+        throw new TypeError("导入队伍必须包含六个位置");
+      }
+      const team = { ...createEmptyTeam(imported.name, { idFactory, now }), members: imported.members, lineup: imported.lineup };
+      return persist({ ...state, activeTeamId: team.id, teams: [...state.teams, team] });
+    },
+    updateLineup(state, teamId, lineup) {
+      return persist({ ...state, teams: state.teams.map((team) => team.id === teamId
+        ? { ...team, lineup: { ...team.lineup, ...lineup }, updatedAt: now() } : team) });
+    },
     create(state, name) {
       const team = createEmptyTeam(name, { idFactory, now });
       return persist({
@@ -344,7 +358,13 @@ export function teamPresetsRepository({
         teams: state.teams.map((team) => {
           if (team.id !== teamId) return team;
           const members = [...team.members];
-          members[index] = sanitizeMember(member);
+          const previous = members[index];
+          members[index] = sanitizeMember(member && { ...member,
+            ivsPending: previous?.ivsPending === true && previous.spiritId === member.spiritId &&
+              STAT_KEYS.every((stat) => Number(previous.displayIvs[stat]) === Number(member.displayIvs?.[stat] ?? 0)),
+            ...(previous?.spiritId === member.spiritId && previous.lineupSource
+              ? { lineupSource: previous.lineupSource } : {}),
+          });
           return { ...team, members, updatedAt: now() };
         }),
       });

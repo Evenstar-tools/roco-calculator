@@ -1701,6 +1701,8 @@ function CalculatorWorkspace({ snapshot }) {
           teamActions.captureSide(side, teamId, index, state.sides[side]),
         onClose: overlays.team.close,
         onCreateTeam: teamActions.create,
+        onImportTeam: teamActions.importTeam,
+        onUpdateLineup: teamActions.updateLineup,
         onDeleteTeam: teamActions.remove,
         onDuplicateTeam: teamActions.duplicate,
         onMemberChange: teamActions.updateMember,

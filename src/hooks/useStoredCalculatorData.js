@@ -309,6 +309,8 @@ export function useStoredCalculatorData(
     teams: {
       captureSide,
       create: createTeam,
+      importTeam: (team) => mutateTeams((current) => stores.teams.importTeam(current, team)),
+      updateLineup: (id, lineup) => mutateTeams((current) => stores.teams.updateLineup(current, id, lineup)),
       duplicate: duplicateTeam,
       remove: deleteTeam,
       rename: renameTeam,

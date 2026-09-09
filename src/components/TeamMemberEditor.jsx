@@ -158,6 +158,7 @@ export function TeamMemberEditor({
             </label>
           </div>
 
+          {member.ivsPending ? <p className="team-member-editor__iv-notice"><span className="team-iv-pending">个体待设置</span> 原码个体为空或暂无法识别，请按实际配置调整。</p> : null}
           <div className="stat-grid team-member-editor__stats">
             {STAT_VIEW.map(({ key, label }) => (
               <StatTile

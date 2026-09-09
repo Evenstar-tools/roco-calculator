@@ -59,6 +59,7 @@ export function TeamRoster({
                       : getNature(member.natureId).name
                     : "添加精灵"}
                 </small>
+                {member?.ivsPending ? <small className="team-iv-pending">个体待设置</small> : null}
               </span>
               <span aria-label="携带技能" className="team-slot__types">
                 {member?.skills?.four?.map((entry, skillIndex) => {
