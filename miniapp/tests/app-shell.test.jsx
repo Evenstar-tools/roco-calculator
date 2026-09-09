@@ -126,10 +126,12 @@ describe("miniapp shell", () => {
     expect(screen.getByRole("button", { name: "重置本页" }))
       .toBeInTheDocument();
     const settingsText = dialog.textContent;
-    expect(settingsText.indexOf("常用精灵配置"))
-      .toBeLessThan(settingsText.indexOf("重置本页"));
     expect(settingsText.indexOf("重置本页"))
-      .toBeLessThan(settingsText.indexOf("配置记忆"));
+      .toBeLessThan(settingsText.indexOf("常用精灵配置"));
+    expect(dialog.querySelector(".settings-sheet__body-content").firstElementChild)
+      .toHaveAttribute("aria-label", "重置本页");
+    expect(settingsText.indexOf("重置本页"))
+      .toBeLessThan(settingsText.indexOf("数据来源"));
     expect(screen.getByText("数据来源")).toBeInTheDocument();
     expect(screen.getByText(/BWIKI 洛克王国公开资料/u))
       .toBeInTheDocument();

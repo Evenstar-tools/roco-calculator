@@ -316,6 +316,16 @@
   gap: 6px;
 }
 
+.iv-editor--attacker .iv-editor__stat--max {
+  border-color: rgba(219, 90, 67, 0.35);
+  background: var(--attacker-soft);
+}
+
+.iv-editor--defender .iv-editor__stat--max {
+  border-color: rgba(61, 138, 204, 0.35);
+  background: var(--defender-soft);
+}
+
 .iv-editor__stat-name {
   flex: 1;
   min-width: 0;

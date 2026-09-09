@@ -1005,6 +1005,25 @@
   color: var(--attacker);
 }
 
+.parameter-sheet__identity {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.parameter-sheet__identity .parameter-sheet__eyebrow {
+  font-size: 16px;
+  font-weight: var(--weight-title);
+}
+
+.parameter-sheet__identity .parameter-sheet__title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .parameter-sheet--defender .parameter-sheet__eyebrow {
   color: var(--defender);
 }

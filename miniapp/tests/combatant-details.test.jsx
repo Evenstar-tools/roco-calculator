@@ -130,10 +130,27 @@ describe("combatant parameter surfaces", () => {
 
     expect(screen.getByRole("dialog", { name: "攻击方参数设置" }))
       .toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "攻击方参数设置" }))
+      .toHaveTextContent("攻击方· 烈焰兽");
     fireEvent.click(
       screen.getByRole("button", { name: "完成攻击方参数设置" }),
     );
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  test("marks only maxed IVs and follows the selected side and spirit", () => {
+    const props = { configuration, onClose: vi.fn(), onIvChange: vi.fn(),
+      onNatureChange: vi.fn(), open: true, side: "attacker", snapshot };
+    const { rerender } = render(<CombatantParameterSheet {...props} />);
+    expect(screen.getByLabelText("攻击方生命能力")).toHaveClass("iv-editor__stat--max");
+    rerender(<CombatantParameterSheet {...props} side="defender" configuration={{
+      ...configuration, displayIvs: { ...configuration.displayIvs, hp: 59 },
+    }} snapshot={{ ...snapshot, spirits: [{ ...spirit, fullName: "烈焰兽（另一形态）" }] }} />);
+    expect(screen.getByRole("dialog", { name: "防守方参数设置" }))
+      .toHaveTextContent("防守方· 烈焰兽（另一形态）");
+    expect(screen.getByLabelText("防守方生命能力")).not.toHaveClass("iv-editor__stat--max");
+    expect(screen.getByLabelText("防守方速度能力")).toHaveClass("iv-editor__stat--max");
+    expect(screen.getByLabelText("防守方六项能力")).toHaveClass("iv-editor--defender");
   });
 });
 

@@ -88,6 +88,23 @@ export default function AppHeader({
             <ScrollView className="settings-sheet__body" scrollY>
               <View className="settings-sheet__body-content">
               <Button
+                aria-label="重置本页"
+                className="settings-sheet__reset"
+                hoverClass="settings-sheet__reset--pressed"
+                onClick={resetCurrentPage}
+              >
+                <View className="settings-sheet__copy">
+                  <Text className="settings-sheet__label">重置本页</Text>
+                  <Text className="settings-sheet__description">
+                    恢复计算参数，不影响收藏
+                  </Text>
+                </View>
+                <Text aria-hidden="true" className="settings-sheet__chevron">
+                  ›
+                </Text>
+              </Button>
+              <View className="settings-sheet__divider" />
+              <Button
                 aria-label={commonConfigCurrent
                   ? "PVP热门配置已更新"
                   : "导入PVP热门配置"}
@@ -116,23 +133,6 @@ export default function AppHeader({
                     : commonConfigCount > 0
                       ? "更新"
                       : "一键导入"}
-                </Text>
-              </Button>
-              <View className="settings-sheet__divider" />
-              <Button
-                aria-label="重置本页"
-                className="settings-sheet__reset"
-                hoverClass="settings-sheet__reset--pressed"
-                onClick={resetCurrentPage}
-              >
-                <View className="settings-sheet__copy">
-                  <Text className="settings-sheet__label">重置本页</Text>
-                  <Text className="settings-sheet__description">
-                    恢复计算参数，不影响收藏
-                  </Text>
-                </View>
-                <Text aria-hidden="true" className="settings-sheet__chevron">
-                  ›
                 </Text>
               </Button>
               <View className="settings-sheet__divider" />

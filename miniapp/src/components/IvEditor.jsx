@@ -27,7 +27,7 @@ function StatEditor({ onChange, sideLabel, stat }) {
   return (
     <View
       aria-label={`${sideLabel}${stat.label}能力`}
-      className="iv-editor__stat"
+      className={`iv-editor__stat${stat.displayIv === 60 ? " iv-editor__stat--max" : ""}`}
     >
       <View className="iv-editor__stat-heading">
         <Text className="iv-editor__stat-name">{stat.label}</Text>
@@ -56,7 +56,7 @@ export default function IvEditor({ onChange, side, stats }) {
   const sideLabel = SIDE_LABELS[side] ?? "当前";
 
   return (
-    <View aria-label={`${sideLabel}六项能力`} className="iv-editor">
+    <View aria-label={`${sideLabel}六项能力`} className={`iv-editor iv-editor--${side}`}>
       {stats.map((stat) => (
         <StatEditor
           key={stat.key}

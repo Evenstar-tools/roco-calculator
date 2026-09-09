@@ -18,6 +18,8 @@ export default function CombatantParameterSheet({
 }) {
   if (!open) return null;
   const sideLabel = SIDE_LABELS[side] ?? "当前";
+  const spirit = snapshot?.spirits?.find((entry) => entry.id === configuration?.spiritId);
+  const spiritName = spirit?.fullName ?? spirit?.name;
 
   return (
     <View className="parameter-sheet__overlay" onClick={onClose}>
@@ -29,9 +31,9 @@ export default function CombatantParameterSheet({
         role="dialog"
       >
         <View className="parameter-sheet__header">
-          <View>
+          <View className="parameter-sheet__identity">
             <Text className="parameter-sheet__eyebrow">{sideLabel}</Text>
-            <Text className="parameter-sheet__title">能力参数</Text>
+            <Text className="parameter-sheet__title">{spiritName ? `· ${spiritName}` : "能力参数"}</Text>
           </View>
           <Button
             aria-label={`完成${sideLabel}参数设置`}
