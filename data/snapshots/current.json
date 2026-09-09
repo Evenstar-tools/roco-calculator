@@ -10,7 +10,7 @@
       "skillFilter": 40653
     },
     "fetchedAt": "2026-07-23T13:54:31.332Z",
-    "contentSha256": "69dd16f4a5f02b7632d9ad12c55b0409ed39775ac1c401925fef9739b4b543a1",
+    "contentSha256": "682cd5d2668b9e51f3a242c92f01b56d2769f5194d88cf0095b178d959b88c58",
     "sources": [
       {
         "title": "技能筛选",
@@ -84,11 +84,18 @@
         "revision": "BV1Cpt66oEnz/cid-41585937756",
         "fetchedAt": "2026-09-05T11:49:32+08:00",
         "sha256": "b196e03855215c19b5f084d6f2e09ca88ab26020d366c32dc7e8866d0e8f8345"
+      },
+      {
+        "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+        "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+        "revision": "2026-09-09",
+        "fetchedAt": "2026-09-09T20:15:00+08:00",
+        "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
       }
     ],
     "counts": {
       "spirits": 619,
-      "skills": 579,
+      "skills": 580,
       "learnsets": 619,
       "traits": 241,
       "typeChart": 18,
@@ -98,7 +105,7 @@
       "previousSnapshot": "s3-2026-07-15",
       "spiritsAdded": 27,
       "spiritsRemoved": 0,
-      "skillsAdded": 26,
+      "skillsAdded": 27,
       "skillsRemoved": 0
     },
     "assetSources": {
@@ -195,6 +202,25 @@
         "降雨、午夜爆音的属性、类别、能耗和基础威力",
         "24个视频确认新技能及首领特性“月相”的计算规则适配",
         "BWIKI正式数据逐字段核实"
+      ]
+    },
+    "s4Manual": {
+      "source": {
+        "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+        "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+        "revision": "2026-09-09",
+        "fetchedAt": "2026-09-09T20:15:00+08:00",
+        "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+      },
+      "spiritCount": 10,
+      "relationshipCount": 463,
+      "uniqueSkillCount": 241,
+      "idStrategy": "保留现有稳定 ID，只补正式图鉴号；引力偏转沿用前瞻实体 ID",
+      "limitations": [
+        "截图未展示自学技能的解锁等级，不能补写等级。",
+        "血脉页只证明技能属于血脉影响池，没有展示每项对应的具体血脉。",
+        "图 2 的 麦芒 未展示所属精灵，不能建立精灵绑定。",
+        "图 1 中 NO.466、467、468 的名称显示为 ???，未作推断。"
       ]
     },
     "s4NameCorrections": {
@@ -56431,7 +56457,7 @@
     },
     {
       "id": "spirit_8735efa1d0793f6a",
-      "dexNo": null,
+      "dexNo": 458,
       "baseName": "测风蝉",
       "variantName": null,
       "fullName": "测风蝉",
@@ -56529,9 +56555,17 @@
         "previewIdentity": {
           "candidateRowKey": "s4-family-01-form-02",
           "catalogId": "s4-preview-new-spirits-2026-09-02",
-          "formalIdPending": true,
+          "formalIdPending": false,
           "isFinal": true,
           "stageStatus": "inferred"
+        },
+        "dexNo": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:1",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "a15d5bf50c4a4e33814e3f33ef45a3bf3c5bd09d2ee36c18637e92f67381b29f",
+          "sourceFile": "img_v3_0215c_fc334ed5-0f10-4919-bb55-24653ea6cabg.png"
         }
       }
     },
@@ -56623,7 +56657,7 @@
     },
     {
       "id": "spirit_18d38a10544a16ea",
-      "dexNo": null,
+      "dexNo": 453,
       "baseName": "智辉章脑",
       "variantName": null,
       "fullName": "智辉章脑",
@@ -56721,9 +56755,17 @@
         "previewIdentity": {
           "candidateRowKey": "s4-family-02-form-02",
           "catalogId": "s4-preview-new-spirits-2026-09-02",
-          "formalIdPending": true,
+          "formalIdPending": false,
           "isFinal": true,
           "stageStatus": "inferred"
+        },
+        "dexNo": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:1",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "a15d5bf50c4a4e33814e3f33ef45a3bf3c5bd09d2ee36c18637e92f67381b29f",
+          "sourceFile": "img_v3_0215c_fc334ed5-0f10-4919-bb55-24653ea6cabg.png"
         }
       }
     },
@@ -56814,7 +56856,7 @@
     },
     {
       "id": "spirit_fa429ea152f6bdad",
-      "dexNo": null,
+      "dexNo": 456,
       "baseName": "玳塔",
       "variantName": null,
       "fullName": "玳塔",
@@ -56911,9 +56953,17 @@
         "previewIdentity": {
           "candidateRowKey": "s4-family-03-form-02",
           "catalogId": "s4-preview-new-spirits-2026-09-02",
-          "formalIdPending": true,
+          "formalIdPending": false,
           "isFinal": true,
           "stageStatus": "inferred"
+        },
+        "dexNo": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:1",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "a15d5bf50c4a4e33814e3f33ef45a3bf3c5bd09d2ee36c18637e92f67381b29f",
+          "sourceFile": "img_v3_0215c_fc334ed5-0f10-4919-bb55-24653ea6cabg.png"
         }
       }
     },
@@ -57004,7 +57054,7 @@
     },
     {
       "id": "spirit_d8e175477972f74d",
-      "dexNo": null,
+      "dexNo": 462,
       "baseName": "摇铃魔偶",
       "variantName": null,
       "fullName": "摇铃魔偶",
@@ -57101,15 +57151,23 @@
         "previewIdentity": {
           "candidateRowKey": "s4-family-04-form-02",
           "catalogId": "s4-preview-new-spirits-2026-09-02",
-          "formalIdPending": true,
+          "formalIdPending": false,
           "isFinal": true,
           "stageStatus": "inferred"
+        },
+        "dexNo": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:1",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "a15d5bf50c4a4e33814e3f33ef45a3bf3c5bd09d2ee36c18637e92f67381b29f",
+          "sourceFile": "img_v3_0215c_fc334ed5-0f10-4919-bb55-24653ea6cabg.png"
         }
       }
     },
     {
       "id": "spirit_200b70f549b632c9",
-      "dexNo": null,
+      "dexNo": 454,
       "baseName": "未完虫",
       "variantName": null,
       "fullName": "未完虫",
@@ -57206,9 +57264,17 @@
         "previewIdentity": {
           "candidateRowKey": "s4-family-05-form-01",
           "catalogId": "s4-preview-new-spirits-2026-09-02",
-          "formalIdPending": true,
+          "formalIdPending": false,
           "isFinal": true,
           "stageStatus": "inferred-single-form"
+        },
+        "dexNo": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:1",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "a15d5bf50c4a4e33814e3f33ef45a3bf3c5bd09d2ee36c18637e92f67381b29f",
+          "sourceFile": "img_v3_0215c_fc334ed5-0f10-4919-bb55-24653ea6cabg.png"
         }
       }
     },
@@ -57299,7 +57365,7 @@
     },
     {
       "id": "spirit_586b8e1567f949f6",
-      "dexNo": null,
+      "dexNo": 460,
       "baseName": "黑手浣熊",
       "variantName": null,
       "fullName": "黑手浣熊",
@@ -57396,9 +57462,17 @@
         "previewIdentity": {
           "candidateRowKey": "s4-family-06-form-02",
           "catalogId": "s4-preview-new-spirits-2026-09-02",
-          "formalIdPending": true,
+          "formalIdPending": false,
           "isFinal": true,
           "stageStatus": "inferred"
+        },
+        "dexNo": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:1",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "a15d5bf50c4a4e33814e3f33ef45a3bf3c5bd09d2ee36c18637e92f67381b29f",
+          "sourceFile": "img_v3_0215c_fc334ed5-0f10-4919-bb55-24653ea6cabg.png"
         }
       }
     },
@@ -57490,7 +57564,7 @@
     },
     {
       "id": "spirit_de488be076aaad90",
-      "dexNo": null,
+      "dexNo": 465,
       "baseName": "布灵布灵",
       "variantName": null,
       "fullName": "布灵布灵",
@@ -57588,9 +57662,17 @@
         "previewIdentity": {
           "candidateRowKey": "s4-family-07-form-02",
           "catalogId": "s4-preview-new-spirits-2026-09-02",
-          "formalIdPending": true,
+          "formalIdPending": false,
           "isFinal": true,
           "stageStatus": "inferred"
+        },
+        "dexNo": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:1",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "a15d5bf50c4a4e33814e3f33ef45a3bf3c5bd09d2ee36c18637e92f67381b29f",
+          "sourceFile": "img_v3_0215c_fc334ed5-0f10-4919-bb55-24653ea6cabg.png"
         }
       }
     },
@@ -57874,7 +57956,7 @@
     },
     {
       "id": "spirit_2e66129c499359af",
-      "dexNo": null,
+      "dexNo": 448,
       "baseName": "月使鹭纳",
       "variantName": null,
       "fullName": "月使鹭纳",
@@ -57973,9 +58055,17 @@
         "previewIdentity": {
           "candidateRowKey": "s4-family-09-form-03",
           "catalogId": "s4-preview-new-spirits-2026-09-02",
-          "formalIdPending": true,
+          "formalIdPending": false,
           "isFinal": true,
           "stageStatus": "inferred"
+        },
+        "dexNo": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:1",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "a15d5bf50c4a4e33814e3f33ef45a3bf3c5bd09d2ee36c18637e92f67381b29f",
+          "sourceFile": "img_v3_0215c_fc334ed5-0f10-4919-bb55-24653ea6cabg.png"
         }
       }
     },
@@ -58155,7 +58245,7 @@
     },
     {
       "id": "spirit_5f3ff5817d7871b8",
-      "dexNo": null,
+      "dexNo": 451,
       "baseName": "圣凯布米龙",
       "variantName": null,
       "fullName": "圣凯布米龙",
@@ -58254,9 +58344,17 @@
         "previewIdentity": {
           "candidateRowKey": "s4-family-10-form-03",
           "catalogId": "s4-preview-new-spirits-2026-09-02",
-          "formalIdPending": true,
+          "formalIdPending": false,
           "isFinal": true,
           "stageStatus": "inferred"
+        },
+        "dexNo": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:1",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "a15d5bf50c4a4e33814e3f33ef45a3bf3c5bd09d2ee36c18637e92f67381b29f",
+          "sourceFile": "img_v3_0215c_fc334ed5-0f10-4919-bb55-24653ea6cabg.png"
         }
       }
     },
@@ -58436,7 +58534,7 @@
     },
     {
       "id": "spirit_b689c0de815c95ef",
-      "dexNo": null,
+      "dexNo": 445,
       "baseName": "银月狼王",
       "variantName": null,
       "fullName": "银月狼王",
@@ -58535,9 +58633,17 @@
         "previewIdentity": {
           "candidateRowKey": "s4-family-11-form-03",
           "catalogId": "s4-preview-new-spirits-2026-09-02",
-          "formalIdPending": true,
+          "formalIdPending": false,
           "isFinal": true,
           "stageStatus": "inferred"
+        },
+        "dexNo": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:1",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "a15d5bf50c4a4e33814e3f33ef45a3bf3c5bd09d2ee36c18637e92f67381b29f",
+          "sourceFile": "img_v3_0215c_fc334ed5-0f10-4919-bb55-24653ea6cabg.png"
         }
       }
     },
@@ -102022,6 +102128,89 @@
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
           "formalDataPending": true
+        }
+      }
+    },
+    {
+      "id": "skill_e76ee2ef859cb0dd",
+      "name": "拖拉机",
+      "type": "机械",
+      "category": "physical",
+      "cost": 3,
+      "basePower": 85,
+      "description": "造成物伤，位于1号位时，先手+1。传动1。",
+      "ruleId": null,
+      "ruleParams": null,
+      "asset": {
+        "sourceUrl": "/assets/skills/skill_e76ee2ef859cb0dd.png",
+        "width": 128,
+        "height": 128,
+        "status": "screenshot-crop"
+      },
+      "source": {
+        "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+        "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:33",
+        "revision": "2026-09-09",
+        "fetchedAt": "2026-09-09T20:15:00+08:00",
+        "sha256": "fc63fc0c38c7aa2ae68582846dc5acdd52036c16f646c1706582445b7766d607",
+        "sourceFile": "codex-clipboard-9ca4d6c2-f048-4ef1-8b97-d42064177a0d.jpg"
+      },
+      "provenance": {
+        "identity": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:33",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "fc63fc0c38c7aa2ae68582846dc5acdd52036c16f646c1706582445b7766d607",
+          "sourceFile": "codex-clipboard-9ca4d6c2-f048-4ef1-8b97-d42064177a0d.jpg"
+        },
+        "type": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:33",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "fc63fc0c38c7aa2ae68582846dc5acdd52036c16f646c1706582445b7766d607",
+          "sourceFile": "codex-clipboard-9ca4d6c2-f048-4ef1-8b97-d42064177a0d.jpg"
+        },
+        "category": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:33",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "fc63fc0c38c7aa2ae68582846dc5acdd52036c16f646c1706582445b7766d607",
+          "sourceFile": "codex-clipboard-9ca4d6c2-f048-4ef1-8b97-d42064177a0d.jpg"
+        },
+        "cost": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:33",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "fc63fc0c38c7aa2ae68582846dc5acdd52036c16f646c1706582445b7766d607",
+          "sourceFile": "codex-clipboard-9ca4d6c2-f048-4ef1-8b97-d42064177a0d.jpg"
+        },
+        "basePower": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:33",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "fc63fc0c38c7aa2ae68582846dc5acdd52036c16f646c1706582445b7766d607",
+          "sourceFile": "codex-clipboard-9ca4d6c2-f048-4ef1-8b97-d42064177a0d.jpg"
+        },
+        "description": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:33",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "fc63fc0c38c7aa2ae68582846dc5acdd52036c16f646c1706582445b7766d607",
+          "sourceFile": "codex-clipboard-9ca4d6c2-f048-4ef1-8b97-d42064177a0d.jpg"
+        },
+        "asset": {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:33",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "fc63fc0c38c7aa2ae68582846dc5acdd52036c16f646c1706582445b7766d607",
+          "sourceFile": "codex-clipboard-9ca4d6c2-f048-4ef1-8b97-d42064177a0d.jpg"
         }
       }
     }
@@ -232990,10 +233179,55 @@
     {
       "spiritId": "spirit_8735efa1d0793f6a",
       "skillIds": [
-        "skill_fd5185efa5184db2",
-        "skill_881cda84bed0f5c8",
+        "skill_a83116e54e77178f",
         "skill_917448f6d23ba354",
-        "skill_4615df4bd5663a24"
+        "skill_cccbc69b6bcb1e1f",
+        "skill_fd5185efa5184db2",
+        "skill_7435a26c20c14c4f",
+        "skill_82c1a19a39d76d90",
+        "skill_5e7e0f2ae7020f3a",
+        "skill_ab9ba7a1d903bcc4",
+        "skill_4615df4bd5663a24",
+        "skill_c530605e22a6ce09",
+        "skill_95aa68a3b3284e56",
+        "skill_881cda84bed0f5c8",
+        "skill_341b45bb083e30a9",
+        "skill_4375736cdfafd6a1",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_0526eea492e16e50",
+        "skill_87c9f33eaa047cf1",
+        "skill_573f869efb22f1f1",
+        "skill_3c102358be2143b5",
+        "skill_4130a3912192b5c5",
+        "skill_1d9ad604e5ce65c8",
+        "skill_355dbb9f12ce5907",
+        "skill_0a381682aee6ac13",
+        "skill_e8ae25185fcd9973",
+        "skill_5529fd3e886a8ecb",
+        "skill_5359801a9ff210ec",
+        "skill_98a642b207c860a7",
+        "skill_fb7a382355deaebc",
+        "skill_f8c45a30b534886b",
+        "skill_41f160394e4aedc8",
+        "skill_86f3589b9aa6430e",
+        "skill_4878eaad6afa62c3",
+        "skill_c5aa5d8e7a7b1d05",
+        "skill_76a94d02f7d6c642",
+        "skill_50d37932783c1b9d",
+        "skill_808e1f607ccd30fa",
+        "skill_86e09ccf773b08c4",
+        "skill_5617ecc3caef7918",
+        "skill_8179925bc9f9c43c",
+        "skill_502e821d8361f462",
+        "skill_e6645e5c0ad42b90",
+        "skill_d0f5b82ecca23745",
+        "skill_b67699fa9b91b710",
+        "skill_786a8a593755414b",
+        "skill_61e7f1b651f38d4a",
+        "skill_e3e36c8edad7c536",
+        "skill_58d84e9ffcc63857",
+        "skill_9a667e0207635c62",
+        "skill_9c542e8f33ddac60"
       ],
       "defaultSkillIds": [
         "skill_fd5185efa5184db2",
@@ -233002,42 +233236,220 @@
         "skill_4615df4bd5663a24"
       ],
       "acquisitions": {
-        "skill_fd5185efa5184db2": [
-          "解锁：S4前瞻截图列出，等级待确认"
-        ],
-        "skill_881cda84bed0f5c8": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_a83116e54e77178f": [
+          "默认学习（等级待确认）"
         ],
         "skill_917448f6d23ba354": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_cccbc69b6bcb1e1f": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_fd5185efa5184db2": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_7435a26c20c14c4f": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_82c1a19a39d76d90": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_5e7e0f2ae7020f3a": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_ab9ba7a1d903bcc4": [
+          "默认学习（等级待确认）"
         ],
         "skill_4615df4bd5663a24": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_c530605e22a6ce09": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_95aa68a3b3284e56": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_881cda84bed0f5c8": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_341b45bb083e30a9": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_4375736cdfafd6a1": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_0526eea492e16e50": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_87c9f33eaa047cf1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_573f869efb22f1f1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_3c102358be2143b5": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_4130a3912192b5c5": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_1d9ad604e5ce65c8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_355dbb9f12ce5907": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_0a381682aee6ac13": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e8ae25185fcd9973": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5529fd3e886a8ecb": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5359801a9ff210ec": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_98a642b207c860a7": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_fb7a382355deaebc": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_f8c45a30b534886b": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_41f160394e4aedc8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_86f3589b9aa6430e": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_4878eaad6afa62c3": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_c5aa5d8e7a7b1d05": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_76a94d02f7d6c642": [
+          "技能石"
+        ],
+        "skill_50d37932783c1b9d": [
+          "技能石"
+        ],
+        "skill_808e1f607ccd30fa": [
+          "技能石"
+        ],
+        "skill_86e09ccf773b08c4": [
+          "技能石"
+        ],
+        "skill_5617ecc3caef7918": [
+          "技能石"
+        ],
+        "skill_8179925bc9f9c43c": [
+          "技能石"
+        ],
+        "skill_502e821d8361f462": [
+          "技能石"
+        ],
+        "skill_e6645e5c0ad42b90": [
+          "技能石"
+        ],
+        "skill_d0f5b82ecca23745": [
+          "技能石"
+        ],
+        "skill_b67699fa9b91b710": [
+          "技能石"
+        ],
+        "skill_786a8a593755414b": [
+          "技能石"
+        ],
+        "skill_61e7f1b651f38d4a": [
+          "技能石"
+        ],
+        "skill_e3e36c8edad7c536": [
+          "技能石"
+        ],
+        "skill_58d84e9ffcc63857": [
+          "技能石"
+        ],
+        "skill_9a667e0207635c62": [
+          "技能石"
+        ],
+        "skill_9c542e8f33ddac60": [
+          "技能石"
         ]
       },
       "sources": [
         {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:21",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "fcb776f193fe35e1b38bc0f5bc2aef146e2714bcf6ac0834aee3066f4d8e277b",
+          "sourceFile": "img_v3_0215c_8dd7fad2-04b2-450c-8bae-26e1f859853g.jpg"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:22",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1d6f1dc0c4b791782d9c945e75cf2a6784b5e35ff325008920f7a12b7513193a",
+          "sourceFile": "img_v3_0215c_b681f9b0-f104-4b0c-85d2-26ad7cd6d28g.jpg"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:23",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "de05d5f3a2d90bbb9f3ff6803fa7a7cbc6d49dd11ed22bab87bd65794276107d",
+          "sourceFile": "img_v3_0215c_0980e350-b495-4269-98fd-18fef248db5g.jpg"
         }
       ],
       "provenance": {
         "skillIds": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
         },
         "acquisitions": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+        },
+        "categorySources": {
+          "默认学习（等级待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:21",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "fcb776f193fe35e1b38bc0f5bc2aef146e2714bcf6ac0834aee3066f4d8e277b",
+            "sourceFile": "img_v3_0215c_8dd7fad2-04b2-450c-8bae-26e1f859853g.jpg"
+          },
+          "血脉（具体血脉待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:22",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "1d6f1dc0c4b791782d9c945e75cf2a6784b5e35ff325008920f7a12b7513193a",
+            "sourceFile": "img_v3_0215c_b681f9b0-f104-4b0c-85d2-26ad7cd6d28g.jpg"
+          },
+          "技能石": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:23",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "de05d5f3a2d90bbb9f3ff6803fa7a7cbc6d49dd11ed22bab87bd65794276107d",
+            "sourceFile": "img_v3_0215c_0980e350-b495-4269-98fd-18fef248db5g.jpg"
+          }
         }
       }
     },
@@ -233075,54 +233487,255 @@
     {
       "spiritId": "spirit_18d38a10544a16ea",
       "skillIds": [
-        "skill_27f0843f62ffa7bf",
+        "skill_c755850f7ec322ad",
+        "skill_f8c45a30b534886b",
+        "skill_84cbd72303b690c8",
         "skill_93b5587949fcaad3",
-        "skill_21fab1d8d76bbbfa",
-        "skill_70ce33e2a310129d"
+        "skill_f9d9220678ca28e1",
+        "skill_e2919df1e36e8bcd",
+        "skill_2590cc9439b7ed97",
+        "skill_6f5b33bad0062683",
+        "skill_27f0843f62ffa7bf",
+        "skill_a20d29c715beb8e3",
+        "skill_341b45bb083e30a9",
+        "skill_e3e36c8edad7c536",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_2c13db2ea2a8e6dd",
+        "skill_eebef36388bb0777",
+        "skill_573f869efb22f1f1",
+        "skill_7765dc6fa9ee3343",
+        "skill_774cf40886b35f94",
+        "skill_1d9ad604e5ce65c8",
+        "skill_355dbb9f12ce5907",
+        "skill_78d036a116263446",
+        "skill_eab46176b3d58739",
+        "skill_8a8ab5807470c01c",
+        "skill_5359801a9ff210ec",
+        "skill_6da0f1f109b4e20f",
+        "skill_bd5b618f26cf4004",
+        "skill_6f3151169f83f693",
+        "skill_e0a643d803158d08",
+        "skill_86f3589b9aa6430e",
+        "skill_4878eaad6afa62c3",
+        "skill_f8e63db3ac09a6fc",
+        "skill_3790e75019a19a26",
+        "skill_5601e4ddfa232a5f",
+        "skill_6839492d3ccfba38",
+        "skill_ad5b57d0e9427544",
+        "skill_accd13acb74ee445",
+        "skill_2ae4c263b33b942e",
+        "skill_730f89409835a4b8",
+        "skill_9e8d4a52964136a3",
+        "skill_cae90e69fc3dbab5",
+        "skill_e44e19ea6a979598",
+        "skill_4b96abe6649fb598",
+        "skill_58fc0a8993745ce6",
+        "skill_9c542e8f33ddac60"
       ],
       "defaultSkillIds": [
         "skill_27f0843f62ffa7bf",
-        "skill_93b5587949fcaad3",
-        "skill_21fab1d8d76bbbfa",
-        "skill_70ce33e2a310129d"
+        "skill_93b5587949fcaad3"
       ],
       "acquisitions": {
-        "skill_27f0843f62ffa7bf": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_c755850f7ec322ad": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_f8c45a30b534886b": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_84cbd72303b690c8": [
+          "默认学习（等级待确认）"
         ],
         "skill_93b5587949fcaad3": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
         ],
-        "skill_21fab1d8d76bbbfa": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_f9d9220678ca28e1": [
+          "默认学习（等级待确认）"
         ],
-        "skill_70ce33e2a310129d": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_e2919df1e36e8bcd": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_2590cc9439b7ed97": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_6f5b33bad0062683": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_27f0843f62ffa7bf": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a20d29c715beb8e3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_341b45bb083e30a9": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_e3e36c8edad7c536": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_2c13db2ea2a8e6dd": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_eebef36388bb0777": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_573f869efb22f1f1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_7765dc6fa9ee3343": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_774cf40886b35f94": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_1d9ad604e5ce65c8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_355dbb9f12ce5907": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_78d036a116263446": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_eab46176b3d58739": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_8a8ab5807470c01c": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5359801a9ff210ec": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_6da0f1f109b4e20f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_bd5b618f26cf4004": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_6f3151169f83f693": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e0a643d803158d08": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_86f3589b9aa6430e": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_4878eaad6afa62c3": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_f8e63db3ac09a6fc": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_3790e75019a19a26": [
+          "技能石"
+        ],
+        "skill_5601e4ddfa232a5f": [
+          "技能石"
+        ],
+        "skill_6839492d3ccfba38": [
+          "技能石"
+        ],
+        "skill_ad5b57d0e9427544": [
+          "技能石"
+        ],
+        "skill_accd13acb74ee445": [
+          "技能石"
+        ],
+        "skill_2ae4c263b33b942e": [
+          "技能石"
+        ],
+        "skill_730f89409835a4b8": [
+          "技能石"
+        ],
+        "skill_9e8d4a52964136a3": [
+          "技能石"
+        ],
+        "skill_cae90e69fc3dbab5": [
+          "技能石"
+        ],
+        "skill_e44e19ea6a979598": [
+          "技能石"
+        ],
+        "skill_4b96abe6649fb598": [
+          "技能石"
+        ],
+        "skill_58fc0a8993745ce6": [
+          "技能石"
+        ],
+        "skill_9c542e8f33ddac60": [
+          "技能石"
         ]
       },
       "sources": [
         {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:12",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "20cef567bcac795ade97aa3bc0a784956747f65216d6469d127eb294e07c08cd",
+          "sourceFile": "img_v3_0215c_28e0d80a-a48a-4a3b-9e28-b2e7ea510c0g.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:13",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "3bff17a4550b82a146155d68ee5304d11843e29fa0e99ddce2af520a3eab6eff",
+          "sourceFile": "img_v3_0215c_c519f656-c64f-45c6-bd67-1c24b7b004fg.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:14",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "cdd5df22cebd6140e537379d347da005b46de5f2b7b0d48ddb1043f988779ca9",
+          "sourceFile": "img_v3_0215c_ec0ef237-ca7e-46fc-aca6-56b9eebe552g.png"
         }
       ],
       "provenance": {
         "skillIds": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
         },
         "acquisitions": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+        },
+        "categorySources": {
+          "默认学习（等级待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:12",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "20cef567bcac795ade97aa3bc0a784956747f65216d6469d127eb294e07c08cd",
+            "sourceFile": "img_v3_0215c_28e0d80a-a48a-4a3b-9e28-b2e7ea510c0g.png"
+          },
+          "血脉（具体血脉待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:13",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "3bff17a4550b82a146155d68ee5304d11843e29fa0e99ddce2af520a3eab6eff",
+            "sourceFile": "img_v3_0215c_c519f656-c64f-45c6-bd67-1c24b7b004fg.png"
+          },
+          "技能石": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:14",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "cdd5df22cebd6140e537379d347da005b46de5f2b7b0d48ddb1043f988779ca9",
+            "sourceFile": "img_v3_0215c_ec0ef237-ca7e-46fc-aca6-56b9eebe552g.png"
+          }
         }
       }
     },
@@ -233160,10 +233773,50 @@
     {
       "spiritId": "spirit_fa429ea152f6bdad",
       "skillIds": [
+        "skill_b1f12cdc4830276c",
+        "skill_0526eea492e16e50",
+        "skill_dff9b37bb2e32613",
+        "skill_225351c5447336e4",
         "skill_459a7fe45bb1a301",
-        "skill_f7eea4de117d30ed",
         "skill_46f5f9f26fe99d5c",
-        "skill_b1f12cdc4830276c"
+        "skill_22f9a7b376621f56",
+        "skill_f7eea4de117d30ed",
+        "skill_de420bb66be86bf2",
+        "skill_7a3282500b58d354",
+        "skill_341b45bb083e30a9",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_5b4d21e36f02d1c9",
+        "skill_291aedad72467821",
+        "skill_74a47a4ef535a1d3",
+        "skill_573f869efb22f1f1",
+        "skill_3c102358be2143b5",
+        "skill_4130a3912192b5c5",
+        "skill_95aa68a3b3284e56",
+        "skill_355dbb9f12ce5907",
+        "skill_0a381682aee6ac13",
+        "skill_e8ae25185fcd9973",
+        "skill_8a8ab5807470c01c",
+        "skill_5359801a9ff210ec",
+        "skill_6da0f1f109b4e20f",
+        "skill_be2ecc615bf1b487",
+        "skill_6f3151169f83f693",
+        "skill_1f2ec7814d0918a3",
+        "skill_789931a5192251f8",
+        "skill_04ace7dedf7de769",
+        "skill_eecbee3c980e6cf8",
+        "skill_56c139dc1b022395",
+        "skill_b19cdf8a2a33faec",
+        "skill_c6c54cd54376332b",
+        "skill_9b95db92bf2684a4",
+        "skill_896e934052ee67f7",
+        "skill_f12910ae575da2a1",
+        "skill_9403fd3a6850b653",
+        "skill_5e251bc583c39f6c",
+        "skill_502e821d8361f462",
+        "skill_1f5eb0c97d3aaacd",
+        "skill_d0f5b82ecca23745",
+        "skill_4fa8c5ed32c2040d",
+        "skill_9a667e0207635c62"
       ],
       "defaultSkillIds": [
         "skill_459a7fe45bb1a301",
@@ -233172,42 +233825,205 @@
         "skill_b1f12cdc4830276c"
       ],
       "acquisitions": {
-        "skill_459a7fe45bb1a301": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_b1f12cdc4830276c": [
+          "默认学习（等级待确认）"
         ],
-        "skill_f7eea4de117d30ed": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_0526eea492e16e50": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_dff9b37bb2e32613": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_225351c5447336e4": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_459a7fe45bb1a301": [
+          "默认学习（等级待确认）"
         ],
         "skill_46f5f9f26fe99d5c": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
         ],
-        "skill_b1f12cdc4830276c": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_22f9a7b376621f56": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_f7eea4de117d30ed": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_de420bb66be86bf2": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_7a3282500b58d354": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_341b45bb083e30a9": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_5b4d21e36f02d1c9": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_291aedad72467821": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_74a47a4ef535a1d3": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_573f869efb22f1f1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_3c102358be2143b5": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_4130a3912192b5c5": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_95aa68a3b3284e56": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_355dbb9f12ce5907": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_0a381682aee6ac13": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e8ae25185fcd9973": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_8a8ab5807470c01c": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5359801a9ff210ec": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_6da0f1f109b4e20f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_be2ecc615bf1b487": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_6f3151169f83f693": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_1f2ec7814d0918a3": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_789931a5192251f8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_04ace7dedf7de769": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_eecbee3c980e6cf8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_56c139dc1b022395": [
+          "技能石"
+        ],
+        "skill_b19cdf8a2a33faec": [
+          "技能石"
+        ],
+        "skill_c6c54cd54376332b": [
+          "技能石"
+        ],
+        "skill_9b95db92bf2684a4": [
+          "技能石"
+        ],
+        "skill_896e934052ee67f7": [
+          "技能石"
+        ],
+        "skill_f12910ae575da2a1": [
+          "技能石"
+        ],
+        "skill_9403fd3a6850b653": [
+          "技能石"
+        ],
+        "skill_5e251bc583c39f6c": [
+          "技能石"
+        ],
+        "skill_502e821d8361f462": [
+          "技能石"
+        ],
+        "skill_1f5eb0c97d3aaacd": [
+          "技能石"
+        ],
+        "skill_d0f5b82ecca23745": [
+          "技能石"
+        ],
+        "skill_4fa8c5ed32c2040d": [
+          "技能石"
+        ],
+        "skill_9a667e0207635c62": [
+          "技能石"
         ]
       },
       "sources": [
         {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:18",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "9d97c61143f754f6a82ed936fa0c3af4f7d5f9d207450732592020a33e66ac0e",
+          "sourceFile": "img_v3_0215c_4f84eea1-31e0-49eb-95c6-3807bcaab35g.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:19",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "efc04416cd30d402f02b43cce185d795573a36c6b88da5386b2ba845afed0e4f",
+          "sourceFile": "img_v3_0215c_17820b0b-db3e-41fe-8f7d-7b73ebd2ed4g.jpg"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:20",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "af08681af9745aecfaaf5586baae5e8b08217ca05185db6b311f280b46ba9953",
+          "sourceFile": "img_v3_0215c_196e4715-ce9c-4dc1-878c-a163f140353g.jpg"
         }
       ],
       "provenance": {
         "skillIds": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
         },
         "acquisitions": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+        },
+        "categorySources": {
+          "默认学习（等级待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:18",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "9d97c61143f754f6a82ed936fa0c3af4f7d5f9d207450732592020a33e66ac0e",
+            "sourceFile": "img_v3_0215c_4f84eea1-31e0-49eb-95c6-3807bcaab35g.png"
+          },
+          "血脉（具体血脉待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:19",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "efc04416cd30d402f02b43cce185d795573a36c6b88da5386b2ba845afed0e4f",
+            "sourceFile": "img_v3_0215c_17820b0b-db3e-41fe-8f7d-7b73ebd2ed4g.jpg"
+          },
+          "技能石": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:20",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "af08681af9745aecfaaf5586baae5e8b08217ca05185db6b311f280b46ba9953",
+            "sourceFile": "img_v3_0215c_196e4715-ce9c-4dc1-878c-a163f140353g.jpg"
+          }
         }
       }
     },
@@ -233245,10 +234061,51 @@
     {
       "spiritId": "spirit_d8e175477972f74d",
       "skillIds": [
-        "skill_35c3bb6b8db8b825",
+        "skill_7fc5944e9ba283ba",
         "skill_b53c20641170804b",
+        "skill_15fb272dc50faf16",
+        "skill_dfb8d477f5610076",
+        "skill_d6c5ebd689e6d3d5",
+        "skill_7765dc6fa9ee3343",
+        "skill_1d7df104c2853832",
+        "skill_35c3bb6b8db8b825",
+        "skill_3c102358be2143b5",
+        "skill_463c9348ada7f1e8",
+        "skill_53412248b681bf1d",
+        "skill_58fc0a8993745ce6",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_2c13db2ea2a8e6dd",
+        "skill_87c9f33eaa047cf1",
+        "skill_bce8810cad08f9b1",
+        "skill_7f07532c0b252f52",
+        "skill_774cf40886b35f94",
+        "skill_1d9ad604e5ce65c8",
+        "skill_355dbb9f12ce5907",
+        "skill_78d036a116263446",
+        "skill_e8ae25185fcd9973",
+        "skill_f672fb0ad904722a",
+        "skill_5359801a9ff210ec",
+        "skill_6da0f1f109b4e20f",
+        "skill_fb7a382355deaebc",
+        "skill_f8c45a30b534886b",
+        "skill_e0a643d803158d08",
+        "skill_86f3589b9aa6430e",
+        "skill_b68a704c5f54dffb",
+        "skill_c5aa5d8e7a7b1d05",
+        "skill_eebef36388bb0777",
+        "skill_fd5185efa5184db2",
+        "skill_e73ed354589cdf0b",
+        "skill_9a50a7c5d3172524",
+        "skill_b688da558b9ff2e8",
+        "skill_78629ddef30b4cb5",
+        "skill_607b6959872976e7",
+        "skill_e8af11b6128233ec",
+        "skill_a715d54e2d6644e4",
+        "skill_d0f5b82ecca23745",
+        "skill_70c1070bdc3f1a2c",
+        "skill_39c0fb554f575c6f",
         "skill_ca2b8d247670d95a",
-        "skill_15fb272dc50faf16"
+        "skill_abb64873ec8f5dc8"
       ],
       "defaultSkillIds": [
         "skill_35c3bb6b8db8b825",
@@ -233257,42 +234114,208 @@
         "skill_15fb272dc50faf16"
       ],
       "acquisitions": {
-        "skill_35c3bb6b8db8b825": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_7fc5944e9ba283ba": [
+          "默认学习（等级待确认）"
         ],
         "skill_b53c20641170804b": [
-          "解锁：S4前瞻截图列出，等级待确认"
-        ],
-        "skill_ca2b8d247670d95a": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
         ],
         "skill_15fb272dc50faf16": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_dfb8d477f5610076": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_d6c5ebd689e6d3d5": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_7765dc6fa9ee3343": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_1d7df104c2853832": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_35c3bb6b8db8b825": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_3c102358be2143b5": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_463c9348ada7f1e8": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_53412248b681bf1d": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_58fc0a8993745ce6": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_2c13db2ea2a8e6dd": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_87c9f33eaa047cf1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_bce8810cad08f9b1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_7f07532c0b252f52": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_774cf40886b35f94": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_1d9ad604e5ce65c8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_355dbb9f12ce5907": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_78d036a116263446": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e8ae25185fcd9973": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_f672fb0ad904722a": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5359801a9ff210ec": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_6da0f1f109b4e20f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_fb7a382355deaebc": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_f8c45a30b534886b": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e0a643d803158d08": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_86f3589b9aa6430e": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_b68a704c5f54dffb": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_c5aa5d8e7a7b1d05": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_eebef36388bb0777": [
+          "技能石"
+        ],
+        "skill_fd5185efa5184db2": [
+          "技能石"
+        ],
+        "skill_e73ed354589cdf0b": [
+          "技能石"
+        ],
+        "skill_9a50a7c5d3172524": [
+          "技能石"
+        ],
+        "skill_b688da558b9ff2e8": [
+          "技能石"
+        ],
+        "skill_78629ddef30b4cb5": [
+          "技能石"
+        ],
+        "skill_607b6959872976e7": [
+          "技能石"
+        ],
+        "skill_e8af11b6128233ec": [
+          "技能石"
+        ],
+        "skill_a715d54e2d6644e4": [
+          "技能石"
+        ],
+        "skill_d0f5b82ecca23745": [
+          "技能石"
+        ],
+        "skill_70c1070bdc3f1a2c": [
+          "技能石"
+        ],
+        "skill_39c0fb554f575c6f": [
+          "技能石"
+        ],
+        "skill_ca2b8d247670d95a": [
+          "技能石"
+        ],
+        "skill_abb64873ec8f5dc8": [
+          "技能石"
         ]
       },
       "sources": [
         {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:27",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "f73a8e9031a1a76f06c7c7865a97296ee25fe52bd58505eadf778553feb7a173",
+          "sourceFile": "img_v3_0215c_bdaa2577-e548-42ff-843a-b188f9697fbg.jpg"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:32",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "7bf840eb54d1212e372dd0bbfa4f723a56a6c1cdc26648cf747205ae302e57de",
+          "sourceFile": "img_v3_0215c_e942535d-fb3b-4eb4-a43c-2e9f549ca49g.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:28",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "600fed71036345fd9b48c459711521edec27fe4998d9c96b5e16b2fc08d46e85",
+          "sourceFile": "img_v3_0215c_d7e16660-2c09-41c8-af47-adf9e4c6313g.png"
         }
       ],
       "provenance": {
         "skillIds": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
         },
         "acquisitions": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+        },
+        "categorySources": {
+          "默认学习（等级待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:27",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "f73a8e9031a1a76f06c7c7865a97296ee25fe52bd58505eadf778553feb7a173",
+            "sourceFile": "img_v3_0215c_bdaa2577-e548-42ff-843a-b188f9697fbg.jpg"
+          },
+          "血脉（具体血脉待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:32",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "7bf840eb54d1212e372dd0bbfa4f723a56a6c1cdc26648cf747205ae302e57de",
+            "sourceFile": "img_v3_0215c_e942535d-fb3b-4eb4-a43c-2e9f549ca49g.png"
+          },
+          "技能石": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:28",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "600fed71036345fd9b48c459711521edec27fe4998d9c96b5e16b2fc08d46e85",
+            "sourceFile": "img_v3_0215c_d7e16660-2c09-41c8-af47-adf9e4c6313g.png"
+          }
         },
         "midnightNameCorrection": {
           "source": {
@@ -233312,10 +234335,54 @@
     {
       "spiritId": "spirit_200b70f549b632c9",
       "skillIds": [
-        "skill_755cc87468b15932",
-        "skill_25621ba1d6a66b50",
         "skill_4c796437e8ad8a64",
-        "skill_9a50a7c5d3172524"
+        "skill_dfe7184d14b2edcb",
+        "skill_d31ba9b9dd9e614f",
+        "skill_7fc5944e9ba283ba",
+        "skill_dfb8d477f5610076",
+        "skill_1d7df104c2853832",
+        "skill_c796ce77cdbb8b37",
+        "skill_14a0d67f9225c4a5",
+        "skill_182083cf02594b1f",
+        "skill_25621ba1d6a66b50",
+        "skill_7023738b1f109dc1",
+        "skill_8f114ead81519b8e",
+        "skill_755cc87468b15932",
+        "skill_4375736cdfafd6a1",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_2c13db2ea2a8e6dd",
+        "skill_87c9f33eaa047cf1",
+        "skill_573f869efb22f1f1",
+        "skill_7765dc6fa9ee3343",
+        "skill_110d607c50432c6a",
+        "skill_1d9ad604e5ce65c8",
+        "skill_ef22bd690a632eed",
+        "skill_9a1fcd3fea626421",
+        "skill_e0923b3609b93a8d",
+        "skill_f672fb0ad904722a",
+        "skill_5359801a9ff210ec",
+        "skill_98a642b207c860a7",
+        "skill_fb7a382355deaebc",
+        "skill_f8c45a30b534886b",
+        "skill_1f2ec7814d0918a3",
+        "skill_e62203589974729b",
+        "skill_b68a704c5f54dffb",
+        "skill_7a3282500b58d354",
+        "skill_83f039bd249fdc0d",
+        "skill_74c9d6ea4d158c6d",
+        "skill_4f172a368c7f18d6",
+        "skill_170d83a12962b768",
+        "skill_d6c5ebd689e6d3d5",
+        "skill_9a50a7c5d3172524",
+        "skill_3b66c4e84bd0b3fa",
+        "skill_92df7f7570e328b5",
+        "skill_51c5bfa6bc862ce5",
+        "skill_97ca23a514bcc348",
+        "skill_5617ecc3caef7918",
+        "skill_99def79e1cabb7c0",
+        "skill_502e821d8361f462",
+        "skill_cae90e69fc3dbab5",
+        "skill_786a8a593755414b"
       ],
       "defaultSkillIds": [
         "skill_755cc87468b15932",
@@ -233324,42 +234391,217 @@
         "skill_9a50a7c5d3172524"
       ],
       "acquisitions": {
-        "skill_755cc87468b15932": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_4c796437e8ad8a64": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_dfe7184d14b2edcb": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_d31ba9b9dd9e614f": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_7fc5944e9ba283ba": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_dfb8d477f5610076": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_1d7df104c2853832": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_c796ce77cdbb8b37": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_14a0d67f9225c4a5": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_182083cf02594b1f": [
+          "默认学习（等级待确认）"
         ],
         "skill_25621ba1d6a66b50": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
         ],
-        "skill_4c796437e8ad8a64": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_7023738b1f109dc1": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_8f114ead81519b8e": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_755cc87468b15932": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_4375736cdfafd6a1": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_2c13db2ea2a8e6dd": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_87c9f33eaa047cf1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_573f869efb22f1f1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_7765dc6fa9ee3343": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_110d607c50432c6a": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_1d9ad604e5ce65c8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_ef22bd690a632eed": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_9a1fcd3fea626421": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e0923b3609b93a8d": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_f672fb0ad904722a": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5359801a9ff210ec": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_98a642b207c860a7": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_fb7a382355deaebc": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_f8c45a30b534886b": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_1f2ec7814d0918a3": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e62203589974729b": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_b68a704c5f54dffb": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_7a3282500b58d354": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_83f039bd249fdc0d": [
+          "技能石"
+        ],
+        "skill_74c9d6ea4d158c6d": [
+          "技能石"
+        ],
+        "skill_4f172a368c7f18d6": [
+          "技能石"
+        ],
+        "skill_170d83a12962b768": [
+          "技能石"
+        ],
+        "skill_d6c5ebd689e6d3d5": [
+          "技能石"
         ],
         "skill_9a50a7c5d3172524": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "技能石"
+        ],
+        "skill_3b66c4e84bd0b3fa": [
+          "技能石"
+        ],
+        "skill_92df7f7570e328b5": [
+          "技能石"
+        ],
+        "skill_51c5bfa6bc862ce5": [
+          "技能石"
+        ],
+        "skill_97ca23a514bcc348": [
+          "技能石"
+        ],
+        "skill_5617ecc3caef7918": [
+          "技能石"
+        ],
+        "skill_99def79e1cabb7c0": [
+          "技能石"
+        ],
+        "skill_502e821d8361f462": [
+          "技能石"
+        ],
+        "skill_cae90e69fc3dbab5": [
+          "技能石"
+        ],
+        "skill_786a8a593755414b": [
+          "技能石"
         ]
       },
       "sources": [
         {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:15",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "2e5c46fdc0d96a1ff6ec26d4ae2674358f63b849e5b170f18300b13bb7bf064b",
+          "sourceFile": "img_v3_0215c_970bcf9e-9634-4aec-aa20-e34bc4bf6aeg.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:16",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "4fc51d3490d2d245bc9edcbf04d55dbc1d2a713fe9c1010563bfa35f16e1cf0a",
+          "sourceFile": "img_v3_0215c_851633f4-3ec0-478b-8758-972b43d9290g.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:17",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "f50a9b6104a6dc5248bf507f92ddab017924321e7b6a9401242bf8cb5ffd41a1",
+          "sourceFile": "img_v3_0215c_a0337116-d242-40f8-8b19-aa1546bea83g.png"
         }
       ],
       "provenance": {
         "skillIds": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
         },
         "acquisitions": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+        },
+        "categorySources": {
+          "默认学习（等级待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:15",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "2e5c46fdc0d96a1ff6ec26d4ae2674358f63b849e5b170f18300b13bb7bf064b",
+            "sourceFile": "img_v3_0215c_970bcf9e-9634-4aec-aa20-e34bc4bf6aeg.png"
+          },
+          "血脉（具体血脉待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:16",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "4fc51d3490d2d245bc9edcbf04d55dbc1d2a713fe9c1010563bfa35f16e1cf0a",
+            "sourceFile": "img_v3_0215c_851633f4-3ec0-478b-8758-972b43d9290g.png"
+          },
+          "技能石": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:17",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "f50a9b6104a6dc5248bf507f92ddab017924321e7b6a9401242bf8cb5ffd41a1",
+            "sourceFile": "img_v3_0215c_a0337116-d242-40f8-8b19-aa1546bea83g.png"
+          }
         }
       }
     },
@@ -233397,10 +234639,55 @@
     {
       "spiritId": "spirit_586b8e1567f949f6",
       "skillIds": [
-        "skill_61f0f26d1267ca7c",
+        "skill_7493c1e48121d954",
+        "skill_1088703aa840932b",
+        "skill_688196982d3155cc",
         "skill_74c9d6ea4d158c6d",
+        "skill_189154e647f22ee3",
         "skill_4f172a368c7f18d6",
-        "skill_573f869efb22f1f1"
+        "skill_573f869efb22f1f1",
+        "skill_170d83a12962b768",
+        "skill_61f0f26d1267ca7c",
+        "skill_81927b6bea078602",
+        "skill_e78a7b6aa04a955f",
+        "skill_7389ae26b2802757",
+        "skill_ecf734d95fe4d91f",
+        "skill_eecbee3c980e6cf8",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_de420bb66be86bf2",
+        "skill_74a47a4ef535a1d3",
+        "skill_a30b13352947fd8f",
+        "skill_7765dc6fa9ee3343",
+        "skill_110d607c50432c6a",
+        "skill_1d9ad604e5ce65c8",
+        "skill_355dbb9f12ce5907",
+        "skill_0a381682aee6ac13",
+        "skill_eab46176b3d58739",
+        "skill_6839492d3ccfba38",
+        "skill_5359801a9ff210ec",
+        "skill_6da0f1f109b4e20f",
+        "skill_fb7a382355deaebc",
+        "skill_32bb236ac6c2a963",
+        "skill_1f2ec7814d0918a3",
+        "skill_b564513e11abe41c",
+        "skill_b68a704c5f54dffb",
+        "skill_89cbae1947b58702",
+        "skill_a9f8a2511af20079",
+        "skill_dff9b37bb2e32613",
+        "skill_3898b5e8144d66f5",
+        "skill_5f29d7618631421f",
+        "skill_46f5f9f26fe99d5c",
+        "skill_e0923b3609b93a8d",
+        "skill_28dc433a09ac75e8",
+        "skill_55c6fb367bcb1f6f",
+        "skill_e8ae25185fcd9973",
+        "skill_e6645e5c0ad42b90",
+        "skill_cae90e69fc3dbab5",
+        "skill_e3dff6f875ec6ba7",
+        "skill_d0f5b82ecca23745",
+        "skill_882b1acf94b595e9",
+        "skill_b67699fa9b91b710",
+        "skill_e44e19ea6a979598"
       ],
       "defaultSkillIds": [
         "skill_61f0f26d1267ca7c",
@@ -233409,42 +234696,220 @@
         "skill_573f869efb22f1f1"
       ],
       "acquisitions": {
-        "skill_61f0f26d1267ca7c": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_7493c1e48121d954": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_1088703aa840932b": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_688196982d3155cc": [
+          "默认学习（等级待确认）"
         ],
         "skill_74c9d6ea4d158c6d": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_189154e647f22ee3": [
+          "默认学习（等级待确认）"
         ],
         "skill_4f172a368c7f18d6": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
         ],
         "skill_573f869efb22f1f1": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_170d83a12962b768": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_61f0f26d1267ca7c": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_81927b6bea078602": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_e78a7b6aa04a955f": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_7389ae26b2802757": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_ecf734d95fe4d91f": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_eecbee3c980e6cf8": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_de420bb66be86bf2": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_74a47a4ef535a1d3": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_a30b13352947fd8f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_7765dc6fa9ee3343": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_110d607c50432c6a": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_1d9ad604e5ce65c8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_355dbb9f12ce5907": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_0a381682aee6ac13": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_eab46176b3d58739": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_6839492d3ccfba38": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5359801a9ff210ec": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_6da0f1f109b4e20f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_fb7a382355deaebc": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_32bb236ac6c2a963": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_1f2ec7814d0918a3": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_b564513e11abe41c": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_b68a704c5f54dffb": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_89cbae1947b58702": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_a9f8a2511af20079": [
+          "技能石"
+        ],
+        "skill_dff9b37bb2e32613": [
+          "技能石"
+        ],
+        "skill_3898b5e8144d66f5": [
+          "技能石"
+        ],
+        "skill_5f29d7618631421f": [
+          "技能石"
+        ],
+        "skill_46f5f9f26fe99d5c": [
+          "技能石"
+        ],
+        "skill_e0923b3609b93a8d": [
+          "技能石"
+        ],
+        "skill_28dc433a09ac75e8": [
+          "技能石"
+        ],
+        "skill_55c6fb367bcb1f6f": [
+          "技能石"
+        ],
+        "skill_e8ae25185fcd9973": [
+          "技能石"
+        ],
+        "skill_e6645e5c0ad42b90": [
+          "技能石"
+        ],
+        "skill_cae90e69fc3dbab5": [
+          "技能石"
+        ],
+        "skill_e3dff6f875ec6ba7": [
+          "技能石"
+        ],
+        "skill_d0f5b82ecca23745": [
+          "技能石"
+        ],
+        "skill_882b1acf94b595e9": [
+          "技能石"
+        ],
+        "skill_b67699fa9b91b710": [
+          "技能石"
+        ],
+        "skill_e44e19ea6a979598": [
+          "技能石"
         ]
       },
       "sources": [
         {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:24",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "e1d5a8519169caa9bf3d0ea2cbf4ce9263f190a65764f8815f8237b14155b248",
+          "sourceFile": "img_v3_0215c_f49c84ce-18d8-408a-baa6-99e54d39fa6g.jpg"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:25",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "0c87f0eccdd4ebf2df1d7017119beb406ee4bea6d2799e27b42d43a4a1bbd9c0",
+          "sourceFile": "img_v3_0215c_e051c1d1-2073-476c-8db6-493bd309c2ag.jpg"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:26",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "11c16a94da43212cf8bc61246322a91a254e81a3f9bdf1fb1ee8bacef1a9da57",
+          "sourceFile": "img_v3_0215c_97fc2d94-6a68-4b25-b3f8-4b79830b6d6g.jpg"
         }
       ],
       "provenance": {
         "skillIds": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
         },
         "acquisitions": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+        },
+        "categorySources": {
+          "默认学习（等级待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:24",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "e1d5a8519169caa9bf3d0ea2cbf4ce9263f190a65764f8815f8237b14155b248",
+            "sourceFile": "img_v3_0215c_f49c84ce-18d8-408a-baa6-99e54d39fa6g.jpg"
+          },
+          "血脉（具体血脉待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:25",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "0c87f0eccdd4ebf2df1d7017119beb406ee4bea6d2799e27b42d43a4a1bbd9c0",
+            "sourceFile": "img_v3_0215c_e051c1d1-2073-476c-8db6-493bd309c2ag.jpg"
+          },
+          "技能石": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:26",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "11c16a94da43212cf8bc61246322a91a254e81a3f9bdf1fb1ee8bacef1a9da57",
+            "sourceFile": "img_v3_0215c_97fc2d94-6a68-4b25-b3f8-4b79830b6d6g.jpg"
+          }
         }
       }
     },
@@ -233482,10 +234947,50 @@
     {
       "spiritId": "spirit_de488be076aaad90",
       "skillIds": [
-        "skill_be1a16f6da08c932",
         "skill_382a8db9ab4e7a48",
+        "skill_a9f8a2511af20079",
+        "skill_26b6100192f808d2",
+        "skill_3898b5e8144d66f5",
+        "skill_32bb236ac6c2a963",
+        "skill_be1a16f6da08c932",
         "skill_4b633f741c8ebd87",
-        "skill_f9d9220678ca28e1"
+        "skill_449f5343c9affb33",
+        "skill_f9d9220678ca28e1",
+        "skill_da9314e5139d17c9",
+        "skill_89cbae1947b58702",
+        "skill_db13fac307bec662",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_2c13db2ea2a8e6dd",
+        "skill_74a47a4ef535a1d3",
+        "skill_573f869efb22f1f1",
+        "skill_3c102358be2143b5",
+        "skill_110d607c50432c6a",
+        "skill_1d9ad604e5ce65c8",
+        "skill_ef22bd690a632eed",
+        "skill_78d036a116263446",
+        "skill_eab46176b3d58739",
+        "skill_696c538690bf2343",
+        "skill_5359801a9ff210ec",
+        "skill_547ffe057610c450",
+        "skill_d88cc9f8513c5b7f",
+        "skill_f8c45a30b534886b",
+        "skill_41f160394e4aedc8",
+        "skill_b564513e11abe41c",
+        "skill_b68a704c5f54dffb",
+        "skill_c5aa5d8e7a7b1d05",
+        "skill_f5cf704678e0738c",
+        "skill_46f5f9f26fe99d5c",
+        "skill_0aab6f4d0ebd64f0",
+        "skill_555cc907937ac495",
+        "skill_ded0bceda822d044",
+        "skill_532ba5362df4944e",
+        "skill_c0df0e7e60dc9250",
+        "skill_f327d11c4fd7e0d6",
+        "skill_dbd391c5f03728c9",
+        "skill_e2718a5f947417c5",
+        "skill_5617ecc3caef7918",
+        "skill_d0f5b82ecca23745",
+        "skill_b67699fa9b91b710"
       ],
       "defaultSkillIds": [
         "skill_be1a16f6da08c932",
@@ -233494,42 +234999,205 @@
         "skill_f9d9220678ca28e1"
       ],
       "acquisitions": {
-        "skill_be1a16f6da08c932": [
-          "解锁：S4前瞻截图列出，等级待确认"
-        ],
         "skill_382a8db9ab4e7a48": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_a9f8a2511af20079": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_26b6100192f808d2": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_3898b5e8144d66f5": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_32bb236ac6c2a963": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_be1a16f6da08c932": [
+          "默认学习（等级待确认）"
         ],
         "skill_4b633f741c8ebd87": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_449f5343c9affb33": [
+          "默认学习（等级待确认）"
         ],
         "skill_f9d9220678ca28e1": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_da9314e5139d17c9": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_89cbae1947b58702": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_db13fac307bec662": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_2c13db2ea2a8e6dd": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_74a47a4ef535a1d3": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_573f869efb22f1f1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_3c102358be2143b5": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_110d607c50432c6a": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_1d9ad604e5ce65c8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_ef22bd690a632eed": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_78d036a116263446": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_eab46176b3d58739": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_696c538690bf2343": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5359801a9ff210ec": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_547ffe057610c450": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_d88cc9f8513c5b7f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_f8c45a30b534886b": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_41f160394e4aedc8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_b564513e11abe41c": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_b68a704c5f54dffb": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_c5aa5d8e7a7b1d05": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_f5cf704678e0738c": [
+          "技能石"
+        ],
+        "skill_46f5f9f26fe99d5c": [
+          "技能石"
+        ],
+        "skill_0aab6f4d0ebd64f0": [
+          "技能石"
+        ],
+        "skill_555cc907937ac495": [
+          "技能石"
+        ],
+        "skill_ded0bceda822d044": [
+          "技能石"
+        ],
+        "skill_532ba5362df4944e": [
+          "技能石"
+        ],
+        "skill_c0df0e7e60dc9250": [
+          "技能石"
+        ],
+        "skill_f327d11c4fd7e0d6": [
+          "技能石"
+        ],
+        "skill_dbd391c5f03728c9": [
+          "技能石"
+        ],
+        "skill_e2718a5f947417c5": [
+          "技能石"
+        ],
+        "skill_5617ecc3caef7918": [
+          "技能石"
+        ],
+        "skill_d0f5b82ecca23745": [
+          "技能石"
+        ],
+        "skill_b67699fa9b91b710": [
+          "技能石"
         ]
       },
       "sources": [
         {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:29",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "b29d76d84e6823f8b156fac482174d719f7cee1e569eb478746219e712c9aee8",
+          "sourceFile": "img_v3_0215c_df45e2ce-2205-4e09-b579-31b2c93ec7ag.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:30",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "c33ced9bf5d68ba3c6cd17bb23f486951b2b07e0eea62578d5d1ba9359c52224",
+          "sourceFile": "img_v3_0215c_5190fb6e-fa1e-4dd4-9862-73029ba9d57g.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:31",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "4ecefa4a3a1a7c133c317c4e9cf6a022de78ac481f3f0ed976d541a04f48b5b0",
+          "sourceFile": "img_v3_0215c_af311823-701e-453b-ac60-4ef2c19d859g.png"
         }
       ],
       "provenance": {
         "skillIds": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
         },
         "acquisitions": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+        },
+        "categorySources": {
+          "默认学习（等级待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:29",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "b29d76d84e6823f8b156fac482174d719f7cee1e569eb478746219e712c9aee8",
+            "sourceFile": "img_v3_0215c_df45e2ce-2205-4e09-b579-31b2c93ec7ag.png"
+          },
+          "血脉（具体血脉待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:30",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "c33ced9bf5d68ba3c6cd17bb23f486951b2b07e0eea62578d5d1ba9359c52224",
+            "sourceFile": "img_v3_0215c_5190fb6e-fa1e-4dd4-9862-73029ba9d57g.png"
+          },
+          "技能石": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:31",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "4ecefa4a3a1a7c133c317c4e9cf6a022de78ac481f3f0ed976d541a04f48b5b0",
+            "sourceFile": "img_v3_0215c_af311823-701e-453b-ac60-4ef2c19d859g.png"
+          }
         }
       }
     },
@@ -233652,10 +235320,55 @@
     {
       "spiritId": "spirit_2e66129c499359af",
       "skillIds": [
-        "skill_51055a70ef615a8a",
+        "skill_3b66c4e84bd0b3fa",
+        "skill_f8f49246c39a2b4d",
         "skill_7b5f9947063960e6",
+        "skill_51c5bfa6bc862ce5",
+        "skill_c530605e22a6ce09",
+        "skill_cc4cd560f063ab21",
+        "skill_fe9e3e9049ae6822",
+        "skill_51055a70ef615a8a",
+        "skill_1e62cd9041b34ec7",
+        "skill_16bb336abe3ee282",
+        "skill_408890141c6b2eba",
+        "skill_c1fcce14bee7aa89",
+        "skill_95085de446d87820",
+        "skill_db13fac307bec662",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_2c13db2ea2a8e6dd",
+        "skill_87c9f33eaa047cf1",
+        "skill_573f869efb22f1f1",
+        "skill_223a2e5113de216f",
+        "skill_774cf40886b35f94",
+        "skill_8a5d7e3348e34058",
+        "skill_355dbb9f12ce5907",
+        "skill_0a381682aee6ac13",
+        "skill_e8ae25185fcd9973",
+        "skill_5529fd3e886a8ecb",
+        "skill_5359801a9ff210ec",
+        "skill_b67ed3c744455dd1",
+        "skill_d88cc9f8513c5b7f",
+        "skill_32bb236ac6c2a963",
+        "skill_85e9742becdd68f8",
+        "skill_86f3589b9aa6430e",
+        "skill_4878eaad6afa62c3",
+        "skill_c5aa5d8e7a7b1d05",
+        "skill_a9f8a2511af20079",
+        "skill_225351c5447336e4",
+        "skill_1ce5c51eb700de1e",
+        "skill_1d9ad604e5ce65c8",
+        "skill_95aa68a3b3284e56",
+        "skill_881cda84bed0f5c8",
         "skill_1eb4b6867c8758e1",
-        "skill_95aa68a3b3284e56"
+        "skill_607b6959872976e7",
+        "skill_e551b4af60785302",
+        "skill_a715d54e2d6644e4",
+        "skill_d0f5b82ecca23745",
+        "skill_39c0fb554f575c6f",
+        "skill_d517c00d36955ca7",
+        "skill_70c1070bdc3f1a2c",
+        "skill_ca2b8d247670d95a",
+        "skill_9a667e0207635c62"
       ],
       "defaultSkillIds": [
         "skill_51055a70ef615a8a",
@@ -233664,42 +235377,220 @@
         "skill_95aa68a3b3284e56"
       ],
       "acquisitions": {
-        "skill_51055a70ef615a8a": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_3b66c4e84bd0b3fa": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_f8f49246c39a2b4d": [
+          "默认学习（等级待确认）"
         ],
         "skill_7b5f9947063960e6": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
         ],
-        "skill_1eb4b6867c8758e1": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_51c5bfa6bc862ce5": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_c530605e22a6ce09": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_cc4cd560f063ab21": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_fe9e3e9049ae6822": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_51055a70ef615a8a": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_1e62cd9041b34ec7": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_16bb336abe3ee282": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_408890141c6b2eba": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_c1fcce14bee7aa89": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_95085de446d87820": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_db13fac307bec662": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_2c13db2ea2a8e6dd": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_87c9f33eaa047cf1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_573f869efb22f1f1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_223a2e5113de216f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_774cf40886b35f94": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_8a5d7e3348e34058": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_355dbb9f12ce5907": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_0a381682aee6ac13": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e8ae25185fcd9973": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5529fd3e886a8ecb": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5359801a9ff210ec": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_b67ed3c744455dd1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_d88cc9f8513c5b7f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_32bb236ac6c2a963": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_85e9742becdd68f8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_86f3589b9aa6430e": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_4878eaad6afa62c3": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_c5aa5d8e7a7b1d05": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_a9f8a2511af20079": [
+          "技能石"
+        ],
+        "skill_225351c5447336e4": [
+          "技能石"
+        ],
+        "skill_1ce5c51eb700de1e": [
+          "技能石"
+        ],
+        "skill_1d9ad604e5ce65c8": [
+          "技能石"
         ],
         "skill_95aa68a3b3284e56": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "技能石"
+        ],
+        "skill_881cda84bed0f5c8": [
+          "技能石"
+        ],
+        "skill_1eb4b6867c8758e1": [
+          "技能石"
+        ],
+        "skill_607b6959872976e7": [
+          "技能石"
+        ],
+        "skill_e551b4af60785302": [
+          "技能石"
+        ],
+        "skill_a715d54e2d6644e4": [
+          "技能石"
+        ],
+        "skill_d0f5b82ecca23745": [
+          "技能石"
+        ],
+        "skill_39c0fb554f575c6f": [
+          "技能石"
+        ],
+        "skill_d517c00d36955ca7": [
+          "技能石"
+        ],
+        "skill_70c1070bdc3f1a2c": [
+          "技能石"
+        ],
+        "skill_ca2b8d247670d95a": [
+          "技能石"
+        ],
+        "skill_9a667e0207635c62": [
+          "技能石"
         ]
       },
       "sources": [
         {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:6",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "f2f3d601ba9adc19fb61f66154579497bea988b7bc228140b3504529db27a231",
+          "sourceFile": "img_v3_0215c_a0160284-dbac-4488-92ef-368d6d8985dg.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:7",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "e2895ef626c2de2f4b2b7a0b41a74995e44713828012867e8e8663ae05d2eb21",
+          "sourceFile": "img_v3_0215c_427d5575-60ac-4144-bd7f-30d63b33db7g.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:8",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "336da12f73368f643237ca06d7f780cc6da648d65e02b33f7b2bbf52eb02d4d6",
+          "sourceFile": "img_v3_0215c_6dc08940-c704-42e4-b8eb-bfee56baadeg.png"
         }
       ],
       "provenance": {
         "skillIds": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
         },
         "acquisitions": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+        },
+        "categorySources": {
+          "默认学习（等级待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:6",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "f2f3d601ba9adc19fb61f66154579497bea988b7bc228140b3504529db27a231",
+            "sourceFile": "img_v3_0215c_a0160284-dbac-4488-92ef-368d6d8985dg.png"
+          },
+          "血脉（具体血脉待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:7",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "e2895ef626c2de2f4b2b7a0b41a74995e44713828012867e8e8663ae05d2eb21",
+            "sourceFile": "img_v3_0215c_427d5575-60ac-4144-bd7f-30d63b33db7g.png"
+          },
+          "技能石": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:8",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "336da12f73368f643237ca06d7f780cc6da648d65e02b33f7b2bbf52eb02d4d6",
+            "sourceFile": "img_v3_0215c_6dc08940-c704-42e4-b8eb-bfee56baadeg.png"
+          }
         }
       }
     },
@@ -233768,10 +235659,50 @@
     {
       "spiritId": "spirit_5f3ff5817d7871b8",
       "skillIds": [
-        "skill_e1053a860bd8180d",
-        "skill_8aa5a117d3f84667",
+        "skill_61bacb7c594bdfec",
+        "skill_c796ce77cdbb8b37",
+        "skill_7023738b1f109dc1",
+        "skill_e01509f59dbc4412",
         "skill_97ca23a514bcc348",
-        "skill_5de6dc05b8315c7d"
+        "skill_bc826e11a5d23c09",
+        "skill_d4f1da4e7ba6e68c",
+        "skill_e1053a860bd8180d",
+        "skill_5de6dc05b8315c7d",
+        "skill_8aa5a117d3f84667",
+        "skill_4375736cdfafd6a1",
+        "skill_b67699fa9b91b710",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_2c13db2ea2a8e6dd",
+        "skill_abc3b01b7002c62e",
+        "skill_573f869efb22f1f1",
+        "skill_223a2e5113de216f",
+        "skill_110d607c50432c6a",
+        "skill_5e7e0f2ae7020f3a",
+        "skill_355dbb9f12ce5907",
+        "skill_9a1fcd3fea626421",
+        "skill_e0923b3609b93a8d",
+        "skill_6839492d3ccfba38",
+        "skill_5359801a9ff210ec",
+        "skill_547ffe057610c450",
+        "skill_bd5b618f26cf4004",
+        "skill_32bb236ac6c2a963",
+        "skill_41f160394e4aedc8",
+        "skill_e62203589974729b",
+        "skill_b68a704c5f54dffb",
+        "skill_f8e63db3ac09a6fc",
+        "skill_a9f8a2511af20079",
+        "skill_14a0d67f9225c4a5",
+        "skill_f6e489eef5911790",
+        "skill_182083cf02594b1f",
+        "skill_25621ba1d6a66b50",
+        "skill_0afb6fd344d6d8cb",
+        "skill_d88cc9f8513c5b7f",
+        "skill_be2ecc615bf1b487",
+        "skill_1f1798619ec1665a",
+        "skill_61fe3d8079d22ca4",
+        "skill_2ec5f2d4695a7f7c",
+        "skill_5617ecc3caef7918",
+        "skill_cae90e69fc3dbab5"
       ],
       "defaultSkillIds": [
         "skill_e1053a860bd8180d",
@@ -233780,42 +235711,205 @@
         "skill_5de6dc05b8315c7d"
       ],
       "acquisitions": {
-        "skill_e1053a860bd8180d": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_61bacb7c594bdfec": [
+          "默认学习（等级待确认）"
         ],
-        "skill_8aa5a117d3f84667": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_c796ce77cdbb8b37": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_7023738b1f109dc1": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_e01509f59dbc4412": [
+          "默认学习（等级待确认）"
         ],
         "skill_97ca23a514bcc348": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_bc826e11a5d23c09": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_d4f1da4e7ba6e68c": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_e1053a860bd8180d": [
+          "默认学习（等级待确认）"
         ],
         "skill_5de6dc05b8315c7d": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_8aa5a117d3f84667": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_4375736cdfafd6a1": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_b67699fa9b91b710": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_2c13db2ea2a8e6dd": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_abc3b01b7002c62e": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_573f869efb22f1f1": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_223a2e5113de216f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_110d607c50432c6a": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5e7e0f2ae7020f3a": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_355dbb9f12ce5907": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_9a1fcd3fea626421": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e0923b3609b93a8d": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_6839492d3ccfba38": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5359801a9ff210ec": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_547ffe057610c450": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_bd5b618f26cf4004": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_32bb236ac6c2a963": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_41f160394e4aedc8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e62203589974729b": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_b68a704c5f54dffb": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_f8e63db3ac09a6fc": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_a9f8a2511af20079": [
+          "技能石"
+        ],
+        "skill_14a0d67f9225c4a5": [
+          "技能石"
+        ],
+        "skill_f6e489eef5911790": [
+          "技能石"
+        ],
+        "skill_182083cf02594b1f": [
+          "技能石"
+        ],
+        "skill_25621ba1d6a66b50": [
+          "技能石"
+        ],
+        "skill_0afb6fd344d6d8cb": [
+          "技能石"
+        ],
+        "skill_d88cc9f8513c5b7f": [
+          "技能石"
+        ],
+        "skill_be2ecc615bf1b487": [
+          "技能石"
+        ],
+        "skill_1f1798619ec1665a": [
+          "技能石"
+        ],
+        "skill_61fe3d8079d22ca4": [
+          "技能石"
+        ],
+        "skill_2ec5f2d4695a7f7c": [
+          "技能石"
+        ],
+        "skill_5617ecc3caef7918": [
+          "技能石"
+        ],
+        "skill_cae90e69fc3dbab5": [
+          "技能石"
         ]
       },
       "sources": [
         {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:9",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "5d48d1321a72d1972aeef0972b61e7bc01e3c1a47ca711095b67c6be59b73f98",
+          "sourceFile": "img_v3_0215c_6dd8c22f-ad80-49e6-953c-c826af2a06bg.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:10",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "e594252b555de88ea26699f396e2502cb2760e3ec794a557887036b5b325d3db",
+          "sourceFile": "img_v3_0215c_e1c61f6e-6cf9-4c91-a1c8-5574f168ddcg.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:11",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "71ee6ceb4693a7b6b037afe51b4061a743d62b39be0001b8364bdbe07cb23589",
+          "sourceFile": "img_v3_0215c_6621f10b-5cb3-4557-95be-a0c3fcd24a5g.png"
         }
       ],
       "provenance": {
         "skillIds": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
         },
         "acquisitions": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+        },
+        "categorySources": {
+          "默认学习（等级待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:9",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "5d48d1321a72d1972aeef0972b61e7bc01e3c1a47ca711095b67c6be59b73f98",
+            "sourceFile": "img_v3_0215c_6dd8c22f-ad80-49e6-953c-c826af2a06bg.png"
+          },
+          "血脉（具体血脉待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:10",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "e594252b555de88ea26699f396e2502cb2760e3ec794a557887036b5b325d3db",
+            "sourceFile": "img_v3_0215c_e1c61f6e-6cf9-4c91-a1c8-5574f168ddcg.png"
+          },
+          "技能石": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:11",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "71ee6ceb4693a7b6b037afe51b4061a743d62b39be0001b8364bdbe07cb23589",
+            "sourceFile": "img_v3_0215c_6621f10b-5cb3-4557-95be-a0c3fcd24a5g.png"
+          }
         }
       }
     },
@@ -233884,64 +235978,270 @@
     {
       "spiritId": "spirit_b689c0de815c95ef",
       "skillIds": [
-        "skill_b688da558b9ff2e8",
-        "skill_a1fec53e8fb5a90d",
-        "skill_f5cf704678e0738c",
+        "skill_c2b2ed548ac99037",
+        "skill_a9f8a2511af20079",
+        "skill_26b6100192f808d2",
         "skill_befd3ebf2018d7a8",
+        "skill_f5cf704678e0738c",
+        "skill_3898b5e8144d66f5",
+        "skill_c9d031d10d97fac6",
+        "skill_4c796437e8ad8a64",
+        "skill_a1fec53e8fb5a90d",
+        "skill_9d7e8cf644d86b9c",
         "skill_dfe7184d14b2edcb",
-        "skill_5de6dc05b8315c7d"
+        "skill_b688da558b9ff2e8",
+        "skill_4375736cdfafd6a1",
+        "skill_a3f4f08b6e1a60b3",
+        "skill_291aedad72467821",
+        "skill_74a47a4ef535a1d3",
+        "skill_a30b13352947fd8f",
+        "skill_7765dc6fa9ee3343",
+        "skill_110d607c50432c6a",
+        "skill_5e7e0f2ae7020f3a",
+        "skill_ef22bd690a632eed",
+        "skill_78d036a116263446",
+        "skill_e0923b3609b93a8d",
+        "skill_696c538690bf2343",
+        "skill_5359801a9ff210ec",
+        "skill_547ffe057610c450",
+        "skill_d88cc9f8513c5b7f",
+        "skill_6f3151169f83f693",
+        "skill_41f160394e4aedc8",
+        "skill_e62203589974729b",
+        "skill_b68a704c5f54dffb",
+        "skill_c5aa5d8e7a7b1d05",
+        "skill_382a8db9ab4e7a48",
+        "skill_867fc1b5f1fe54db",
+        "skill_82e45a30aef4d77f",
+        "skill_66a6be2105b227c9",
+        "skill_573f869efb22f1f1",
+        "skill_a3cda3d9a2bcb243",
+        "skill_803bb4da56d33ce1",
+        "skill_be2ecc615bf1b487",
+        "skill_9403fd3a6850b653",
+        "skill_15580f0fc4ab4918",
+        "skill_4102c0ceabe81ead",
+        "skill_0f0d04b74dbfbb37",
+        "skill_5617ecc3caef7918",
+        "skill_97c7d15001dae0f9",
+        "skill_882b1acf94b595e9"
       ],
       "defaultSkillIds": [
         "skill_b688da558b9ff2e8",
         "skill_a1fec53e8fb5a90d",
         "skill_f5cf704678e0738c",
         "skill_befd3ebf2018d7a8",
-        "skill_dfe7184d14b2edcb",
-        "skill_5de6dc05b8315c7d"
+        "skill_dfe7184d14b2edcb"
       ],
       "acquisitions": {
-        "skill_b688da558b9ff2e8": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_c2b2ed548ac99037": [
+          "默认学习（等级待确认）"
         ],
-        "skill_a1fec53e8fb5a90d": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_a9f8a2511af20079": [
+          "默认学习（等级待确认）"
         ],
-        "skill_f5cf704678e0738c": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_26b6100192f808d2": [
+          "默认学习（等级待确认）"
         ],
         "skill_befd3ebf2018d7a8": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
+        ],
+        "skill_f5cf704678e0738c": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_3898b5e8144d66f5": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_c9d031d10d97fac6": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_4c796437e8ad8a64": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a1fec53e8fb5a90d": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_9d7e8cf644d86b9c": [
+          "默认学习（等级待确认）"
         ],
         "skill_dfe7184d14b2edcb": [
-          "解锁：S4前瞻截图列出，等级待确认"
+          "默认学习（等级待确认）"
         ],
-        "skill_5de6dc05b8315c7d": [
-          "解锁：S4前瞻截图列出，等级待确认"
+        "skill_b688da558b9ff2e8": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_4375736cdfafd6a1": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_a3f4f08b6e1a60b3": [
+          "默认学习（等级待确认）"
+        ],
+        "skill_291aedad72467821": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_74a47a4ef535a1d3": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_a30b13352947fd8f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_7765dc6fa9ee3343": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_110d607c50432c6a": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5e7e0f2ae7020f3a": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_ef22bd690a632eed": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_78d036a116263446": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e0923b3609b93a8d": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_696c538690bf2343": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_5359801a9ff210ec": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_547ffe057610c450": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_d88cc9f8513c5b7f": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_6f3151169f83f693": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_41f160394e4aedc8": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_e62203589974729b": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_b68a704c5f54dffb": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_c5aa5d8e7a7b1d05": [
+          "血脉（具体血脉待确认）"
+        ],
+        "skill_382a8db9ab4e7a48": [
+          "技能石"
+        ],
+        "skill_867fc1b5f1fe54db": [
+          "技能石"
+        ],
+        "skill_82e45a30aef4d77f": [
+          "技能石"
+        ],
+        "skill_66a6be2105b227c9": [
+          "技能石"
+        ],
+        "skill_573f869efb22f1f1": [
+          "技能石"
+        ],
+        "skill_a3cda3d9a2bcb243": [
+          "技能石"
+        ],
+        "skill_803bb4da56d33ce1": [
+          "技能石"
+        ],
+        "skill_be2ecc615bf1b487": [
+          "技能石"
+        ],
+        "skill_9403fd3a6850b653": [
+          "技能石"
+        ],
+        "skill_15580f0fc4ab4918": [
+          "技能石"
+        ],
+        "skill_4102c0ceabe81ead": [
+          "技能石"
+        ],
+        "skill_0f0d04b74dbfbb37": [
+          "技能石"
+        ],
+        "skill_5617ecc3caef7918": [
+          "技能石"
+        ],
+        "skill_97c7d15001dae0f9": [
+          "技能石"
+        ],
+        "skill_882b1acf94b595e9": [
+          "技能石"
         ]
       },
       "sources": [
         {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:3",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "8d3cbb2ede901692ffd1eb0a63352d9fca2aec14f12f7e3e15c2fed9b4246674",
+          "sourceFile": "img_v3_0215c_4d5fa41c-ff20-40d5-b6f2-5351ab62266g.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:4",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "6cead6015d8cc139330d15d58413675a5ec7edff6984681f14647a255ff60a3d",
+          "sourceFile": "img_v3_0215c_340aed6a-356e-4992-b267-4cbb831530bg.png"
+        },
+        {
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:5",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "2e497e2b78049a47f33ce33bb663b68347f64f3cf156439bf9de54c2b04ab41b",
+          "sourceFile": "img_v3_0215c_ccfc0bc0-bd29-499a-a46f-d01e3e1e51fg.png"
         }
       ],
       "provenance": {
         "skillIds": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
         },
         "acquisitions": {
-          "title": "S4新精灵_进化链_特性与技能整理.md",
-          "url": "urn:rock-calculator:source:s4-preview-new-spirits-2026-09-02",
-          "revision": "source-file-2026-09-02",
-          "fetchedAt": "2026-09-02T17:33:39+08:00",
-          "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+          "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09",
+          "revision": "2026-09-09",
+          "fetchedAt": "2026-09-09T20:15:00+08:00",
+          "sha256": "1f74555cbbe14e8563d265e86004ef261c906bdc76770810c8b972c2023c8c92"
+        },
+        "categorySources": {
+          "默认学习（等级待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:3",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "8d3cbb2ede901692ffd1eb0a63352d9fca2aec14f12f7e3e15c2fed9b4246674",
+            "sourceFile": "img_v3_0215c_4d5fa41c-ff20-40d5-b6f2-5351ab62266g.png"
+          },
+          "血脉（具体血脉待确认）": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:4",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "6cead6015d8cc139330d15d58413675a5ec7edff6984681f14647a255ff60a3d",
+            "sourceFile": "img_v3_0215c_340aed6a-356e-4992-b267-4cbb831530bg.png"
+          },
+          "技能石": {
+            "title": "洛克手册 S4 正式图鉴及学习面截图（32 张，经复核）",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:5",
+            "revision": "2026-09-09",
+            "fetchedAt": "2026-09-09T20:15:00+08:00",
+            "sha256": "2e497e2b78049a47f33ce33bb663b68347f64f3cf156439bf9de54c2b04ab41b",
+            "sourceFile": "img_v3_0215c_ccfc0bc0-bd29-499a-a46f-d01e3e1e51fg.png"
+          }
         }
       }
     },

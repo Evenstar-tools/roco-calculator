@@ -9,7 +9,8 @@ import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 
 export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
-  clientTotal: 13 * 1024 * 1024,
+  // 2026-09-09：S4 完整学习面与技能素材扩容，13.5 MiB 警告、14 MiB 阻断。
+  clientTotal: 13.5 * 1024 * 1024,
   cssGzip: 24 * 1024,
   // 2026-09-04 重校：S4 功能版约 230 KiB gzip，为后续小功能保留约 11% 硬余量
   jsGzip: 236 * 1024,
@@ -20,6 +21,7 @@ export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
 export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
 // 2026-09-04：网页 / 桌面 JS 分别在 256 KiB gzip、880 KiB 原始体积时阻断
 export const DEFAULT_HARD_OVERAGE_BY_KEY = Object.freeze({
+  clientTotal: 0.5 * 1024 * 1024,
   jsGzip: 20 * 1024,
   jsRaw: 70 * 1024,
 });

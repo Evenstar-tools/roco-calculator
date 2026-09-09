@@ -808,6 +808,11 @@ async function main() {
     JSON.parse(snapshotText),
     JSON.parse(candidateText),
   );
+  // 已纳入正式手册的工作区重跑前瞻生成时，必须重放较新的字段覆盖。
+  if (JSON.parse(snapshotText).meta.s4Manual) {
+    const { applyS4Manual, EVIDENCE_PATH } = await import("./apply-s4-manual.mjs");
+    patched = applyS4Manual(patched, JSON.parse(await readFile(EVIDENCE_PATH, "utf8")));
+  }
   const { applyS4NameCorrections } = await import("./apply-s4-name-corrections.mjs");
   patched = applyS4NameCorrections(patched);
   await writeFile(

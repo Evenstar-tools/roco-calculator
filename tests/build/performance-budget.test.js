@@ -33,6 +33,20 @@ function fixture({ css = "body{}", js = "export default 1", runtime = "{}" } = {
 }
 
 describe("release performance budget", () => {
+  test("S4 总资源适度扩容，超过 14 MiB 仍阻断", () => {
+    expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal).toBe(13.5 * 1024 * 1024);
+    expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal + DEFAULT_HARD_OVERAGE_BY_KEY.clientTotal).toBe(14 * 1024 * 1024);
+    expect(DEFAULT_PERFORMANCE_BUDGETS.cssGzip).toBe(24 * 1024);
+    expect(DEFAULT_PERFORMANCE_BUDGETS.runtimeJson).toBe(1.5 * 1024 * 1024);
+    const root = fixture();
+    const base = verifyPerformanceBudget({ distRoot: root }).metrics.clientTotal;
+    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(14 * 1024 * 1024 - base));
+    expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([]);
+    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(14 * 1024 * 1024 - base + 1));
+    expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([
+      expect.objectContaining({ key: "clientTotal", hardLimit: 14 * 1024 * 1024 }),
+    ]);
+  });
   test("keeps JS warning baselines while allowing modest hard-limit growth", () => {
     expect(DEFAULT_PERFORMANCE_BUDGETS.jsGzip).toBe(236 * 1024);
     expect(
