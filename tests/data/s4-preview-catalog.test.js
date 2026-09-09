@@ -146,7 +146,7 @@ function baselineSnapshot() {
     ({ spiritId }) => !removedSpiritIds.has(spiritId),
   );
   baseline.skills = baseline.skills.filter(
-    ({ name }) => !PREVIEW_SKILL_NAMES.has(name),
+    ({ id, name }) => !PREVIEW_SKILL_NAMES.has(name) && id !== "skill_f7eea4de117d30ed",
   );
   baseline.traits = baseline.traits.filter(
     ({ name }) => !TRAIT_NAMES.includes(name),
@@ -350,7 +350,7 @@ describe("S4 前瞻新精灵候选目录", () => {
       expect(entry).toMatchObject({
         natureId: form.previewDefaults.natureId,
         displayIvs: form.previewDefaults.displayIvs,
-        skills: family.skills.slice(0, 4).map(({ name }) => skillByName.get(name)),
+        skills: family.skills.slice(0, 4).map(({ name }) => skillByName.get(name === "午夜爆音" ? "午夜噪音" : name)),
       });
     }
     for (const expected of [

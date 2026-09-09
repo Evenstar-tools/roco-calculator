@@ -10,7 +10,7 @@
       "skillFilter": 40653
     },
     "fetchedAt": "2026-07-23T13:54:31.332Z",
-    "contentSha256": "0df6362801675ecc9f167e04de3edd4731a526cc6a025533cb47c93cf64768d7",
+    "contentSha256": "69dd16f4a5f02b7632d9ad12c55b0409ed39775ac1c401925fef9739b4b543a1",
     "sources": [
       {
         "title": "技能筛选",
@@ -196,6 +196,24 @@
         "24个视频确认新技能及首领特性“月相”的计算规则适配",
         "BWIKI正式数据逐字段核实"
       ]
+    },
+    "s4NameCorrections": {
+      "gravitySource": {
+        "title": "洛克手册截图 18：用户确认技能名称修正",
+        "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:18",
+        "revision": "user-confirmed-2026-09-09",
+        "fetchedAt": "2026-09-09T00:00:00+08:00",
+        "sha256": "9d97c61143f754f6a82ed936fa0c3af4f7d5f9d207450732592020a33e66ac0e"
+      },
+      "midnightSource": {
+        "title": "洛克手册截图 27：用户确认技能名称修正",
+        "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:27",
+        "revision": "user-confirmed-2026-09-09",
+        "fetchedAt": "2026-09-09T00:00:00+08:00",
+        "sha256": "f73a8e9031a1a76f06c7c7865a97296ee25fe52bd58505eadf778553feb7a173"
+      },
+      "status": "user-confirmed-screenshot",
+      "note": "按用户确认的截图更正；不代表 BWIKI 已确认 S4 名称或摇铃魔偶学习关系。保留历史占位实体，不扩大到其他待核字段。"
     }
   },
   "spirits": [
@@ -100679,7 +100697,7 @@
     },
     {
       "id": "skill_f7eea4de117d30ed",
-      "name": "引力旋转",
+      "name": "引力偏转",
       "type": "幻",
       "category": "defense",
       "cost": 2,
@@ -100738,6 +100756,13 @@
         "previewStatus": {
           "catalogId": "s4-preview-new-spirits-2026-09-02",
           "formalDataPending": true
+        },
+        "name": {
+          "title": "洛克手册截图 18：用户确认技能名称修正",
+          "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:18",
+          "revision": "user-confirmed-2026-09-09",
+          "fetchedAt": "2026-09-09T00:00:00+08:00",
+          "sha256": "9d97c61143f754f6a82ed936fa0c3af4f7d5f9d207450732592020a33e66ac0e"
         }
       }
     },
@@ -233223,13 +233248,13 @@
         "skill_35c3bb6b8db8b825",
         "skill_b53c20641170804b",
         "skill_ca2b8d247670d95a",
-        "skill_1652bda550a6b2dc"
+        "skill_15fb272dc50faf16"
       ],
       "defaultSkillIds": [
         "skill_35c3bb6b8db8b825",
         "skill_b53c20641170804b",
         "skill_ca2b8d247670d95a",
-        "skill_1652bda550a6b2dc"
+        "skill_15fb272dc50faf16"
       ],
       "acquisitions": {
         "skill_35c3bb6b8db8b825": [
@@ -233241,7 +233266,7 @@
         "skill_ca2b8d247670d95a": [
           "解锁：S4前瞻截图列出，等级待确认"
         ],
-        "skill_1652bda550a6b2dc": [
+        "skill_15fb272dc50faf16": [
           "解锁：S4前瞻截图列出，等级待确认"
         ]
       },
@@ -233268,6 +233293,19 @@
           "revision": "source-file-2026-09-02",
           "fetchedAt": "2026-09-02T17:33:39+08:00",
           "sha256": "1319e5edcc8f1e9b33bdac69e09fc8a374865dad633c60b27662146ea0e34e9f"
+        },
+        "midnightNameCorrection": {
+          "source": {
+            "title": "洛克手册截图 27：用户确认技能名称修正",
+            "url": "urn:rock-calculator:source:s4-manual-2026-09-09:image:27",
+            "revision": "user-confirmed-2026-09-09",
+            "fetchedAt": "2026-09-09T00:00:00+08:00",
+            "sha256": "f73a8e9031a1a76f06c7c7865a97296ee25fe52bd58505eadf778553feb7a173"
+          },
+          "previousSkillId": "skill_1652bda550a6b2dc",
+          "skillId": "skill_15fb272dc50faf16",
+          "status": "user-confirmed-screenshot",
+          "bwikiLearnsetConfirmed": false
         }
       }
     },

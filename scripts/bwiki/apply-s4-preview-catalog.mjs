@@ -804,10 +804,12 @@ async function main() {
     readFile(DEFAULT_SNAPSHOT_PATH, "utf8"),
     readFile(DEFAULT_CANDIDATE_PATH, "utf8"),
   ]);
-  const patched = applyS4PreviewCatalog(
+  let patched = applyS4PreviewCatalog(
     JSON.parse(snapshotText),
     JSON.parse(candidateText),
   );
+  const { applyS4NameCorrections } = await import("./apply-s4-name-corrections.mjs");
+  patched = applyS4NameCorrections(patched);
   await writeFile(
     DEFAULT_SNAPSHOT_PATH,
     `${JSON.stringify(patched, null, 2)}\n`,
