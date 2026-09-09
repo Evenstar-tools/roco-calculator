@@ -88,6 +88,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: |
+          # Playwright 使用自带 Chromium；无需 runner 的 Google Chrome 软件源。
+          # 该源索引同步期间可能哈希不一致，仅在此临时 runner 停用它，保留 APT 校验。
+          for source in /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+            if [ -f "$source" ] && grep -q 'dl.google.com/linux/chrome' "$source"; then
+              sudo mv "$source" "$RUNNER_TEMP/$(basename "$source").disabled"
+            fi
+          done
+          npx playwright install --with-deps chromium
       - name: Run end-to-end tests
         run: npm run e2e
