@@ -1,0 +1,89 @@
+/* 已确认的二级面板微调；分享、清理确认和新手引导不在此范围。 */
+:is(.config-library-dialog, .display-settings-dialog, .data-source-dialog, .release-notes-dialog, .whats-new-dialog, .product-access-dialog) {
+  border-radius: 12px;
+  box-shadow: 0 18px 56px #17213a26;
+}
+:is(.config-library-dialog, .display-settings-dialog, .data-source-dialog) > h2 {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+:is(.config-library-dialog, .display-settings-dialog, .data-source-dialog, .release-notes-dialog, .whats-new-dialog, .product-access-dialog) .dialog-actions {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.secondary-action.secondary-panel-primary:not(:disabled) {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+html[data-theme="dark"] .secondary-panel-primary:not(:disabled),
+html[data-theme="dark"] .team-drawer .team-drawer__zero-cta { color: #1b2636; }
+
+.team-drawer.team-workbench .team-drawer__pane-tabs { background: var(--surface-soft); }
+.team-drawer.team-workbench .team-drawer__zero {
+  flex: 0 1 auto;
+  min-height: 0;
+  width: min(460px, calc(100% - 40px));
+  margin: clamp(36px, 12vh, 120px) auto 0;
+  padding: 30px 22px;
+  gap: 4px;
+  background: var(--surface-soft);
+  border-radius: 12px;
+  text-align: center;
+}
+.team-drawer__zero > svg { color: var(--accent); }
+.team-drawer .team-drawer__zero > p:first-of-type { font-size: 16px; font-weight: 700; color: var(--text); }
+.team-drawer .team-drawer__zero-hint { max-width: 300px; line-height: 1.7; }
+.team-drawer[data-empty="true"] .team-drawer__toolbar button:disabled { display: none; }
+.team-drawer__zero-actions { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.team-drawer__zero-actions button { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; margin: 0; }
+.team-drawer__zero-import { padding: 0 16px; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; color: var(--text); }
+
+.display-settings-dialog .display-settings-option {
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  padding: 14px 0;
+}
+.display-settings-dialog .display-settings-option--power { padding: 12px; background: var(--surface-soft); border-radius: 8px; border: 0; margin-bottom: 4px; }
+.display-settings-dialog label.display-settings-option { display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 12px; align-items: center; }
+.display-settings-dialog label.display-settings-option > span { gap: 4px; }
+.display-settings-dialog label.display-settings-option input { width: 22px; height: 22px; justify-self: center; margin: 0; }
+.display-settings-dialog label.display-settings-option:last-of-type { border-bottom: 0; }
+.display-settings-dialog .display-settings-option small { line-height: 1.6; }
+
+.config-library-dialog .config-library-primary-preview { background: transparent; padding: 0; gap: 6px; }
+.config-library-dialog .config-library-primary-preview > div { background: var(--surface-soft); border: 0; padding: 6px 10px; }
+.config-library-dialog .config-library-primary-preview dd { font-size: 18px; color: var(--accent); font-variant-numeric: tabular-nums; }
+.config-library-dialog { max-height: calc(100dvh - 40px); overflow-y: auto; }
+.data-source-dialog .data-source-dialog__license { background: transparent; border: 0; border-top: 1px solid var(--border); border-radius: 0; padding: 12px 0; }
+.data-source-dialog .data-source-history { background: var(--surface-soft); border: 0; }
+.release-notes-dialog__list .data-source-release { background: transparent; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; }
+
+.product-access-dialog .product-access-card--desktop { display: flex; flex-direction: column; background: transparent; }
+.product-access-card--desktop .product-access-desktop-link--primary { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 8px; color: var(--accent); margin-bottom: 8px; }
+.product-access-dialog .product-access-card--miniapp { background: var(--surface-soft); text-align: center; }
+
+.skill-query .skill-query__tabs { background: var(--surface-soft); }
+.skill-query .skill-query__tabs button { background: transparent; padding-inline: 8px; }
+.skill-query .skill-query__tabs [aria-selected="true"] { background: var(--surface); border-radius: 7px 7px 0 0; }
+.skill-query .sq-library, .skill-query .skill-query__browser--cards { background: var(--surface-soft); }
+.skill-query .sq-suggestions > button, .skill-query .skill-query__cards > button { background: var(--surface); border-color: color-mix(in srgb, var(--border) 70%, transparent); border-radius: 9px; }
+.skill-query .sq-suggestions > button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.skill-query .sq-suggestions > button:hover, .skill-query .skill-query__cards > button:hover { border-color: var(--accent); }
+.skill-query .sq-card-description { color: var(--text-muted); }
+.skill-query .sq-rail { background: var(--surface); }
+.skill-query .skill-query__gains article { padding: 12px 0; }
+.skill-query .skill-query__gains h3 { margin: 0 0 8px; }
+.skill-query .skill-query__gains article > div button { background: var(--surface-soft); border-color: transparent; }
+
+@media (max-width: 650px) {
+  :is(.config-library-dialog, .display-settings-dialog, .data-source-dialog, .release-notes-dialog, .whats-new-dialog, .product-access-dialog) { padding: 18px; }
+  .team-drawer.team-workbench .team-drawer__zero { margin-top: 32px; padding: 24px 16px; }
+  .display-settings-dialog .dialog-actions { margin-top: 6px; }
+  .skill-query .skill-query__tabs { gap: 10px; }
+  .skill-query .skill-query__tabs button { padding-inline: 4px; }
+}

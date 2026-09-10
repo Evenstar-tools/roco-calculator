@@ -354,9 +354,9 @@ export function ConfigLibraryDialog({
           <p className="config-library-error" role="alert">{error}</p>
         ) : null}
         <div className="dialog-actions">
-          {isExport && <button className="secondary-action" onClick={onStartImport} type="button">导入</button>}
+          {isExport && <button className={`secondary-action${(exportSummary?.exportedCount ?? 0) === 0 ? " secondary-panel-primary" : ""}`} onClick={onStartImport} type="button">导入</button>}
           <button
-            className="secondary-action"
+            className="secondary-action secondary-panel-primary"
             disabled={isExport
               ? (exportSummary?.exportedCount ?? 0) === 0
               : !canImport}

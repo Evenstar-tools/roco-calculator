@@ -169,6 +169,23 @@ function DrawerHarness({
   );
 }
 
+test("空队伍导入入口复用阵容导入，返回后仍可新建队伍", async () => {
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ spirits: {}, skills: {}, magic: {} }) }));
+  const { unmount } = render(<DrawerHarness />);
+  try {
+    const dialog = screen.getByRole("dialog", { name: "队伍" });
+    expect(dialog).toHaveAttribute("data-empty", "true");
+    fireEvent.click(screen.getByRole("button", { name: "导入已有阵容" }));
+    expect(await screen.findByRole("region", { name: "阵容导入" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "解析阵容" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "返回队伍" }));
+    expect(screen.getByRole("button", { name: "导入已有阵容" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "新建六人队伍" }));
+    expect(dialog).toHaveAttribute("data-empty", "false");
+    expect(screen.getByRole("button", { name: "复制队伍" })).toBeEnabled();
+  } finally { unmount(); vi.unstubAllGlobals(); }
+});
+
 test("opens a temporary calculator-side analysis without creating a team slot", async () => {
   const onApplyAnalysisSide = vi.fn();
   const user = userEvent.setup();

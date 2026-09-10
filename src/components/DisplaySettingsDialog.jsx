@@ -100,7 +100,7 @@ export function DisplaySettingsDialog({
           />
         </label>
         <div className="dialog-actions">
-          <button className="secondary-action" onClick={onClose} type="button">
+          <button className="secondary-action secondary-panel-primary" onClick={onClose} type="button">
             完成
           </button>
         </div>

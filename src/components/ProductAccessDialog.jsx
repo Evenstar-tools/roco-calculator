@@ -44,6 +44,16 @@ export function ProductAccessDialog({ onClose, open }) {
         <div className="product-access-dialog__grid">
           <article className="product-access-card product-access-card--desktop">
             <a
+              aria-label="获取 Windows 电脑版"
+              className="product-access-desktop-link product-access-desktop-link--primary"
+              href={DESKTOP_RELEASES_URL}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <strong>获取 Windows 电脑版</strong>
+              <span>查看最新版本与安装包</span>
+            </a>
+            <a
               aria-label="GitHub 发布页"
               className="product-access-desktop-link"
               href={GITHUB_REPOSITORY_URL}
@@ -52,16 +62,6 @@ export function ProductAccessDialog({ onClose, open }) {
             >
               <strong>GitHub 发布页</strong>
               <span>项目主页与发布记录</span>
-            </a>
-            <a
-              aria-label="获取 Windows 电脑版"
-              className="product-access-desktop-link"
-              href={DESKTOP_RELEASES_URL}
-              rel="noreferrer"
-              target="_blank"
-            >
-              <strong>获取 Windows 电脑版</strong>
-              <span>查看最新版本与安装包</span>
             </a>
           </article>
           <article className="product-access-card product-access-card--miniapp">

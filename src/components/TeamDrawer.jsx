@@ -190,6 +190,7 @@ export function TeamDrawer({
         aria-label="队伍"
         aria-modal="true"
         className="team-drawer team-workbench"
+        data-empty={!activeTeam}
         ref={drawerRef}
         role="dialog"
       >
@@ -559,14 +560,25 @@ export function TeamDrawer({
           <div className="team-drawer__zero">
             <UsersThree aria-hidden="true" size={38} />
             <p>还没有队伍</p>
-            <button
-              className="team-drawer__zero-cta"
-              onClick={() => onCreateTeam(`队伍 ${teamsState.teams.length + 1}`)}
-              type="button"
-            >
-              <Plus aria-hidden="true" size={16} weight="bold" />
-              新建六人队伍
-            </button>
+            <div className="team-drawer__zero-actions">
+              <button
+                className="team-drawer__zero-cta"
+                onClick={() => onCreateTeam(`队伍 ${teamsState.teams.length + 1}`)}
+                type="button"
+              >
+                <Plus aria-hidden="true" size={16} weight="bold" />
+                新建六人队伍
+              </button>
+              <button
+                aria-label="导入已有阵容"
+                className="team-drawer__zero-import"
+                onClick={() => navigate(() => setExchangeMode("import"))}
+                type="button"
+              >
+                <DownloadSimple aria-hidden="true" size={17} />
+                导入
+              </button>
+            </div>
             <p className="team-drawer__zero-hint">
               保存常用阵容，进行属性弱点、能力与对位分析
             </p>
