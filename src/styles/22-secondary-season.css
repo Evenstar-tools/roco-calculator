@@ -1,8 +1,8 @@
 /* 复用赛季原图，仅装饰标题和空状态，不占用内容空间。 */
 :is(.team-drawer__header, .skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header) {
   isolation: isolate;
-  background: linear-gradient(100deg, #faf8f0, #f4f6fc 75%, #eff3fa);
-  box-shadow: inset 0 1px #d8c58d99;
+  background: transparent;
+  box-shadow: none;
 }
 
 :is(.skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header) {
@@ -13,43 +13,19 @@
   content: "";
   position: absolute;
   z-index: -1;
-  inset: 0 0 0 auto;
-  width: min(100%, 480px);
+  inset: auto 0 auto auto;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(38%, 220px);
+  height: 64px;
   pointer-events: none;
-  background: url("/assets/season/s4-moon-night.webp") no-repeat right center / 480px auto;
-  opacity: .22;
-  mask-image: linear-gradient(90deg, transparent 10%, #000 65%, #000 85%, transparent);
+  background: url("/assets/season/s4-moon-night.webp") no-repeat right center / 340px auto;
+  opacity: .14;
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 5%, transparent 100%);
 }
 
-:is(.display-settings-dialog, .config-library-dialog, .data-source-dialog) > h2 {
-  background: transparent;
-}
-
-:is(.display-settings-dialog, .config-library-dialog, .data-source-dialog) > h2::before {
-  opacity: .17;
-  border-radius: 5px;
-}
-
-html[data-theme="dark"] :is(.team-drawer__header, .skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header) {
-  background: linear-gradient(100deg, #1b283b, #24314b);
-  box-shadow: inset 0 1px #d8c58d77;
-}
-
-html[data-theme="dark"] :is(.team-drawer__header, .skill-query__header, .product-access-dialog__header, .release-notes-dialog__header)::before {
-  opacity: .5;
-}
-
-html[data-theme="dark"] :is(.display-settings-dialog, .config-library-dialog, .data-source-dialog) > h2 {
-  background: transparent;
-}
-
-html[data-theme="dark"] :is(.display-settings-dialog, .config-library-dialog, .data-source-dialog) > h2::before {
-  opacity: .4;
-}
-
-.team-workbench > .team-drawer__header,
-html[data-theme="dark"] .team-workbench > .team-drawer__header {
-  background: transparent;
+html[data-theme="dark"] :is(.team-drawer__header, .skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header)::before {
+  opacity: .2;
 }
 
 .team-drawer__zero,
@@ -114,16 +90,5 @@ html[data-theme="dark"] :is(.team-drawer__zero, .sq-results:has(> .sq-empty:only
 @media (max-width: 719px) {
   .team-workbench > .team-drawer__header {
     position: relative;
-  }
-}
-
-@media (max-width: 650px) {
-  :is(.team-drawer__header, .skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header)::before {
-    background-size: 340px auto;
-    mask-image: linear-gradient(90deg, transparent 34%, #000 75%, transparent);
-  }
-
-  :is(.display-settings-dialog, .config-library-dialog, .data-source-dialog) > h2::before {
-    background-size: 280px auto;
   }
 }
