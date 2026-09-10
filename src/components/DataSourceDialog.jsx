@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { USER_MANUAL_URL } from "../data/product-links.js";
 import {
   FEATURED_USER_RELEASE,
   USER_RELEASE_NOTES,
@@ -333,6 +334,19 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open })
               数据快照：{dataVersion}
             </p>
           ) : null}
+          <a
+            aria-label="查看使用说明书（飞书文档，新窗口打开）"
+            className="data-source-dialog__manual"
+            href={USER_MANUAL_URL}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <div>
+              <strong>使用说明书</strong>
+              <small>操作步骤与实战示例 · 飞书文档</small>
+            </div>
+            <span>阅读</span>
+          </a>
           <section aria-label="版本记录" className="data-source-history">
             <div className="data-source-history__header">
               <strong>版本记录</strong>

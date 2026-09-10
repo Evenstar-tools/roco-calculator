@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { FEATURED_USER_RELEASE } from "../data/user-release-notes.js";
+import { USER_MANUAL_URL } from "../data/product-links.js";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
@@ -78,6 +79,16 @@ export function WhatsNewDialog({
             </li>
           ))}
         </ol>
+        <a
+          aria-label="查看使用说明书（飞书文档，新窗口打开）"
+          className="whats-new-dialog__manual"
+          href={USER_MANUAL_URL}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span>查看使用说明书</span>
+          <small>飞书文档 · 新窗口打开</small>
+        </a>
         <div className="dialog-actions whats-new-dialog__actions">
           <button className="secondary-action" onClick={onClose} type="button">
             知道了

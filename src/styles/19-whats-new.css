@@ -78,6 +78,35 @@
   border-top: 1px solid var(--border);
 }
 
+.whats-new-dialog > .whats-new-dialog__manual {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  margin: 0 24px 6px;
+  color: var(--accent-strong);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.whats-new-dialog__manual small {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.whats-new-dialog__manual:hover {
+  text-decoration: underline;
+}
+
+.whats-new-dialog__manual:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 .whats-new-dialog__actions button {
   min-height: 40px;
   border-radius: 7px;
@@ -97,6 +126,14 @@
 }
 
 @media (max-width: 620px) {
+  .whats-new-dialog > .whats-new-dialog__manual {
+    margin-inline: 18px;
+    flex-wrap: wrap;
+    column-gap: 8px;
+    row-gap: 0;
+    padding-block: 5px;
+  }
+
   .whats-new-backdrop {
     padding: 10px;
   }
