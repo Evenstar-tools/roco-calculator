@@ -13,6 +13,47 @@ const surfaces = [
 
 for (const width of [1440, 390, 320]) {
   for (const theme of ["light", "dark"]) {
+    test(`secondary empty-state art has no rectangular edges at ${width}px ${theme}`, async ({ page }) => {
+      await resetUiuxStorage(page);
+      await page.setViewportSize({ width, height: 900 });
+      for (const mode of ["spirit", "skill", "team"]) {
+        // 手机未选技能时隐藏结果区，避免占用技能库的可视空间。
+        if (mode === "skill" && width < 720) continue;
+        await page.goto("/");
+        await expect(page.getByRole("combobox", { name: "攻击方精灵" })).toBeVisible();
+        if (await page.locator("html").getAttribute("data-theme") !== theme) {
+          await page.getByRole("button", { name: "切换主题" }).click();
+        }
+        if (mode === "team") {
+          await page.getByRole("button", { name: "打开队伍" }).click();
+        } else {
+          await page.getByRole("button", { name: "打开菜单" }).click();
+          await page.getByRole("button", { name: "技能检索", exact: true }).click();
+          if (mode === "spirit") await page.getByRole("button", { name: "查精灵技能", exact: true }).click();
+        }
+        const area = page.locator(mode === "team" ? ".team-drawer__zero" : ".sq-results");
+        await expect(area).toBeVisible();
+        const style = await area.evaluate(el => {
+          const decoration = getComputedStyle(el, "::before");
+          return {
+            mask: decoration.maskImage,
+            width: parseFloat(decoration.width),
+            height: parseFloat(decoration.height),
+            opacity: decoration.opacity,
+            pointerEvents: decoration.pointerEvents,
+            overflow: document.documentElement.scrollWidth > innerWidth,
+          };
+        });
+        expect(style.mask, mode).toContain("radial-gradient");
+        expect(style.mask, mode).toContain("rgba(0, 0, 0, 0) 100%");
+        expect(style.width, mode).toBeLessThanOrEqual(380);
+        expect(style.height, mode).toBeLessThanOrEqual(180);
+        expect(style.opacity, mode).toBe(theme === "dark" ? "0.16" : "0.09");
+        expect(style.pointerEvents, mode).toBe("none");
+        expect(style.overflow, mode).toBe(false);
+      }
+    });
+
     test(`secondary season headers blend into their surface at ${width}px ${theme}`, async ({ page }) => {
       await resetUiuxStorage(page);
       await page.setViewportSize({ width, height: 900 });

@@ -39,18 +39,18 @@ html[data-theme="dark"] :is(.team-drawer__header, .skill-query__header, .display
   content: "";
   position: absolute;
   z-index: -1;
-  inset: 0 0 auto;
-  height: min(100%, 220px);
+  inset: 0 0 auto auto;
+  width: min(100%, 380px);
+  height: min(100%, 180px);
   pointer-events: none;
   border-radius: inherit;
-  background: url("/assets/season/s4-moon-night.webp") no-repeat right top / auto 100%;
-  opacity: .14;
-  mask-image: linear-gradient(110deg, transparent 5%, #000 85%), linear-gradient(180deg, #000 35%, transparent);
-  mask-composite: intersect;
+  background: url("/assets/season/s4-moon-night.webp") no-repeat right center / cover;
+  opacity: .09;
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 5%, transparent 100%);
 }
 
 html[data-theme="dark"] :is(.team-drawer__zero, .sq-results:has(> .sq-empty:only-child))::before {
-  opacity: .23;
+  opacity: .16;
 }
 
 .skill-query__tabs [aria-selected="true"],
