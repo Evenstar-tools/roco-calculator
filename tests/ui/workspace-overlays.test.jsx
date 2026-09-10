@@ -207,13 +207,18 @@ test("keeps QQ on the first level and moves other feedback contacts deeper", () 
     "https://wiki.biligame.com/nrc/",
   );
   expect(screen.getByRole("region", { name: "BWIKI 署名与许可" }))
-    .toHaveTextContent(/来源数据经结构化、校验及补充/);
+    .toHaveTextContent("资料授权");
   expect(screen.getByRole("link", { name: "CC BY-NC-SA 4.0" }))
     .toHaveAttribute(
       "href",
       "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans",
     );
+  expect(screen.queryByText(/不代表相关方背书/)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "查看完整许可" }));
+  expect(screen.getByRole("dialog", { name: "署名与许可" })).toBeVisible();
+  expect(screen.getByText(/来源数据经结构化、校验及补充/)).toBeVisible();
   expect(screen.getByText(/不代表相关方背书/)).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "返回关于与来源" }));
   expect(screen.getByText("QQ 1215583051")).toBeVisible();
   expect(screen.queryByRole("link", { name: "诛仙剑下伤心花" }))
     .not.toBeInTheDocument();

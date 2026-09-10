@@ -1,0 +1,129 @@
+/* 复用赛季原图，仅装饰标题和空状态，不占用内容空间。 */
+:is(.team-drawer__header, .skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header) {
+  isolation: isolate;
+  background: linear-gradient(100deg, #faf8f0, #f4f6fc 75%, #eff3fa);
+  box-shadow: inset 0 1px #d8c58d99;
+}
+
+:is(.skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header) {
+  position: relative;
+}
+
+:is(.team-drawer__header, .skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header)::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 0 auto;
+  width: min(100%, 480px);
+  pointer-events: none;
+  background: url("/assets/season/s4-moon-night.webp") no-repeat right center / 480px auto;
+  opacity: .22;
+  mask-image: linear-gradient(90deg, transparent 10%, #000 65%, #000 85%, transparent);
+}
+
+:is(.display-settings-dialog, .config-library-dialog, .data-source-dialog) > h2 {
+  background: transparent;
+}
+
+:is(.display-settings-dialog, .config-library-dialog, .data-source-dialog) > h2::before {
+  opacity: .17;
+  border-radius: 5px;
+}
+
+html[data-theme="dark"] :is(.team-drawer__header, .skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header) {
+  background: linear-gradient(100deg, #1b283b, #24314b);
+  box-shadow: inset 0 1px #d8c58d77;
+}
+
+html[data-theme="dark"] :is(.team-drawer__header, .skill-query__header, .product-access-dialog__header, .release-notes-dialog__header)::before {
+  opacity: .5;
+}
+
+html[data-theme="dark"] :is(.display-settings-dialog, .config-library-dialog, .data-source-dialog) > h2 {
+  background: transparent;
+}
+
+html[data-theme="dark"] :is(.display-settings-dialog, .config-library-dialog, .data-source-dialog) > h2::before {
+  opacity: .4;
+}
+
+.team-workbench > .team-drawer__header,
+html[data-theme="dark"] .team-workbench > .team-drawer__header {
+  background: transparent;
+}
+
+.team-drawer__zero,
+.sq-results:has(> .sq-empty:only-child) {
+  position: relative;
+  isolation: isolate;
+}
+
+.team-drawer__zero::before,
+.sq-results:has(> .sq-empty:only-child)::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: min(100%, 220px);
+  pointer-events: none;
+  border-radius: inherit;
+  background: url("/assets/season/s4-moon-night.webp") no-repeat right top / auto 100%;
+  opacity: .14;
+  mask-image: linear-gradient(110deg, transparent 5%, #000 85%), linear-gradient(180deg, #000 35%, transparent);
+  mask-composite: intersect;
+}
+
+html[data-theme="dark"] :is(.team-drawer__zero, .sq-results:has(> .sq-empty:only-child))::before {
+  opacity: .23;
+}
+
+.skill-query__tabs [aria-selected="true"],
+.team-drawer__pane-tabs [aria-pressed="true"] {
+  border-bottom-color: #b89743;
+}
+
+.data-source-dialog__license {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.data-source-dialog__license > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.data-source-dialog__license > div strong {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.data-source-dialog__license > div a {
+  font-size: 12px;
+}
+
+.data-source-dialog__license > button {
+  min-height: 44px;
+  padding: 0 10px;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+@media (max-width: 719px) {
+  .team-workbench > .team-drawer__header {
+    position: relative;
+  }
+}
+
+@media (max-width: 650px) {
+  :is(.team-drawer__header, .skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header)::before {
+    background-size: 340px auto;
+    mask-image: linear-gradient(90deg, transparent 34%, #000 75%, transparent);
+  }
+
+  :is(.display-settings-dialog, .config-library-dialog, .data-source-dialog) > h2::before {
+    background-size: 280px auto;
+  }
+}

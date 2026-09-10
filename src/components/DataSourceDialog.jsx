@@ -115,8 +115,8 @@ function ReleaseNotesView({ onBack, onClose }) {
   );
 }
 
-function DetailView({ feedback, onBack, onClose }) {
-  const title = feedback ? "问题反馈" : "免责声明";
+function DetailView({ feedback, license, onBack, onClose }) {
+  const title = license ? "署名与许可" : feedback ? "问题反馈" : "免责声明";
   return (
     <section
       aria-label={title}
@@ -135,7 +135,24 @@ function DetailView({ feedback, onBack, onClose }) {
         </button>
         <h2>{title}</h2>
       </header>
-      {feedback ? (
+      {license ? (
+        <div className="legal-notice-dialog__content">
+          <a href={BWIKI_URL} rel="noreferrer" target="_blank">
+            洛克王国：世界 BWIKI
+          </a>
+          <p><strong>BWIKI 署名与许可</strong></p>
+          <p>
+            BWIKI 来源数据经结构化、校验及补充；其中受许可覆盖的数据与改编按
+            <a href={BWIKI_LICENSE_URL} rel="noreferrer" target="_blank">
+              CC BY-NC-SA 4.0
+            </a>
+            共享。
+          </p>
+          <p>
+            代码适用 MIT；游戏素材与商标权利归原权利人。本项目非官方、非商业，不代表相关方背书。
+          </p>
+        </div>
+      ) : feedback ? (
         <div className="feedback-detail-list">
           <div>
             <strong>B站私信</strong>
@@ -293,6 +310,7 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open })
       ) : view ? (
         <DetailView
           feedback={view === "feedback"}
+          license={view === "license"}
           onBack={() => setView("")}
           onClose={onClose}
         />
@@ -337,17 +355,20 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open })
             aria-label="BWIKI 署名与许可"
             className="data-source-dialog__license"
           >
-            <strong>BWIKI 署名与许可</strong>
-            <p>
-              BWIKI 来源数据经结构化、校验及补充；其中受许可覆盖的数据与改编按
+            <div>
+              <strong>资料授权</strong>
               <a href={BWIKI_LICENSE_URL} rel="noreferrer" target="_blank">
                 CC BY-NC-SA 4.0
               </a>
-              共享。
-            </p>
-            <p>
-              代码适用 MIT；游戏素材与商标权利归原权利人。本项目非官方、非商业，不代表相关方背书。
-            </p>
+            </div>
+            <button
+              aria-label="查看完整许可"
+              className="secondary-action"
+              onClick={() => setView("license")}
+              type="button"
+            >
+              查看许可
+            </button>
           </section>
           <div className="data-source-dialog__feedback">
             <button
