@@ -2009,7 +2009,7 @@
 
 .ability-ranking-table-wrap {
   min-width: 0;
-  overflow-x: auto;
+  overflow: visible;
   border: 1px solid var(--border);
   border-radius: 9px;
 }
@@ -2028,6 +2028,12 @@
   border-bottom: 1px solid var(--border);
   text-align: right;
   font-variant-numeric: tabular-nums;
+}
+
+.ability-ranking-table thead {
+  position: sticky;
+  z-index: 3;
+  top: 0;
 }
 
 .ability-ranking-table thead th {

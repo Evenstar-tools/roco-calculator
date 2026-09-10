@@ -543,6 +543,35 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
   expect(Math.abs(
     (cellBox.x + cellBox.width - 10) - (contentBox.x + contentBox.width),
   )).toBeLessThanOrEqual(2);
+  // 列名存在还不够：自动定位当前精灵及滚到榜单中段、底部后仍须可读。
+  const editorPane = drawer.locator(".team-drawer__editor-pane");
+  const assertPinnedHeader = async () => {
+    const viewport = await editorPane.boundingBox();
+    const header = await ranking.locator("thead").boundingBox();
+    expect(header.y).toBeGreaterThanOrEqual(viewport.y);
+    expect(header.y + header.height).toBeLessThanOrEqual(viewport.y + 50);
+    for (const column of await ranking.locator("thead th").all()) {
+      expect(await column.evaluate((node) => {
+        const box = node.getBoundingClientRect();
+        return node.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2));
+      })).toBe(true);
+    }
+  };
+  for (const width of [1141, 927]) {
+    await page.setViewportSize({ width, height: 932 });
+    for (const theme of ["light", "dark"]) {
+      await page.evaluate((value) => document.documentElement.dataset.theme = value, theme);
+      for (const fraction of [0.35, 0.7, 1]) {
+        await editorPane.evaluate((node, value) => node.scrollTop = (node.scrollHeight - node.clientHeight) * value, fraction);
+        await expect.poll(async () => {
+          const box = await ranking.locator("thead").boundingBox();
+          const viewport = await editorPane.boundingBox();
+          return box.y >= viewport.y && box.y <= viewport.y + 2;
+        }).toBe(true);
+        await assertPinnedHeader();
+      }
+    }
+  }
   await page.screenshot({
     fullPage: true,
     path: "artifacts/web-ux-team-ability-fix/ranking-after-927.png",
