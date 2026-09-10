@@ -218,6 +218,34 @@ afterEach(() => {
 });
 
 describe("miniapp shared calculator core", () => {
+  test("same-version rebuild pins an exact core revision and rejects later drift", async () => {
+    const { runCoreDriftCheck } = await import("../../scripts/miniapp/check-core-drift.mjs");
+    const fixture = createRepositoryFixture();
+    const revision = execFileSync("git", ["rev-parse", "HEAD"], { cwd: fixture.root }).toString().trim();
+    const versionPath = path.join(fixture.root, "miniapp/src/version.js");
+    writeFileSync(versionPath, `export const WEB_CORE_VERSION = "1.0.0";\nexport const WEB_CORE_REVISION = "${revision}";\n`);
+    const options = { manifest: fixtureManifest, repositoryRoot: fixture.root };
+    expect(runCoreDriftCheck(options)).toEqual({ releaseRef: revision });
+    writeFileSync(fixture.sourcePath, "export const value = 2;\n");
+    writeFileSync(fixture.mirrorPath, "export const value = 2;\n");
+    execFileSync("git", ["add", "."], { cwd: fixture.root });
+    execFileSync("git", ["commit", "--quiet", "-m", "changed core"], { cwd: fixture.root });
+    expect(() => runCoreDriftCheck(options)).toThrow("Declared release core drift detected");
+  });
+
+  test("release core ref falls back to version tags but rejects non-SHA revisions", async () => {
+    const { runCoreDriftCheck } = await import("../../scripts/miniapp/check-core-drift.mjs");
+    const fixture = createRepositoryFixture();
+    const versionPath = path.join(fixture.root, "miniapp/src/version.js");
+    const version = 'export const WEB_CORE_VERSION = "1.0.0";\n';
+    writeFileSync(versionPath, version);
+    execFileSync("git", ["tag", "v1.0.0"], { cwd: fixture.root });
+    const options = { manifest: fixtureManifest, repositoryRoot: fixture.root };
+    expect(runCoreDriftCheck(options)).toEqual({ releaseRef: "v1.0.0" });
+    writeFileSync(versionPath, version + 'export const WEB_CORE_REVISION = "main";\n');
+    expect(() => runCoreDriftCheck(options)).toThrow("must be a full commit SHA");
+  });
+
   test("web build validates current mirrors without requiring release tags", async () => {
     const coreDriftModule = await import(
       "../../scripts/miniapp/check-core-drift.mjs"

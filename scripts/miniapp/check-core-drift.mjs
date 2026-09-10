@@ -455,6 +455,15 @@ function declaredReleaseRef(repositoryRoot) {
   if (!match) {
     throw new Error("WEB_CORE_VERSION is missing from miniapp/src/version.js");
   }
+  const revision = versionSource.match(
+    /export const WEB_CORE_REVISION = ["']([^"']*)["'];/u,
+  );
+  if (revision) {
+    if (!/^[a-f0-9]{40}$/u.test(revision[1])) {
+      throw new Error("WEB_CORE_REVISION must be a full commit SHA");
+    }
+    return revision[1];
+  }
   return `v${match[1]}`;
 }
 
@@ -469,7 +478,7 @@ export function runCoreDriftCheck({
 
   const releaseRef = declaredReleaseRef(repositoryRoot);
   assertReleaseCoreMatches({
-    allowedReleasePatches,
+    allowedReleasePatches: releaseRef.startsWith("v") ? allowedReleasePatches : {},
     manifest,
     releaseRef,
     repositoryRoot,
