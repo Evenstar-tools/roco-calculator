@@ -53,6 +53,10 @@ test("赛季新技能显示图标，新技能学习面可双向跳转且排除�
   expect(screen.getByRole("button", { name: "喵喵 查看技能" })).toBeInTheDocument();
   fireEvent.click(screen.getByRole("tab", { name: "赛季学习更新" }));
   expect(screen.queryByRole("button", { name: /抓挠/ })).not.toBeInTheDocument();
+  const gainedSkill = screen.getByRole("button", { name: "防御 普通 · 防御" });
+  expect(gainedSkill.querySelector("img")).toHaveAttribute("src", iconUrl);
+  fireEvent.error(gainedSkill.querySelector("img"));
+  expect(gainedSkill.querySelector(".skill-icon--fallback")).not.toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "喵喵", exact: true }));
   expect(screen.getByRole("button", { name: "查看抓挠详情" })).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "返回赛季查询" }));

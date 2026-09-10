@@ -54,6 +54,16 @@ for (const width of [320, 390, 1440]) for (const theme of ["light", "dark"]) {
     await expect(panel.locator(".skill-query__list > p").first()).toHaveText("57 个技能");
     await panel.getByLabel("查询赛季").selectOption("S4");
     await panel.getByRole("tab", { name: "赛季学习更新" }).click();
+    await panel.getByLabel("搜索技能或精灵").fill("果");
+    const gainedSkills = panel.locator(".skill-query__gains article > div > button");
+    expect(await gainedSkills.count()).toBeGreaterThan(0);
+    await expect(gainedSkills.locator("img.skill-icon")).toHaveCount(await gainedSkills.count());
+    await gainedSkills.locator("img").evaluateAll(images => Promise.all(images.map(image => image.decode())));
+    expect(await panel.locator(".skill-query__gains").evaluate(node => node.scrollWidth <= node.clientWidth)).toBe(true);
+    await page.screenshot({ path: `artifacts/skill-query-v2-final/gains-icons-${width}-${theme}.png` });
+    await panel.getByRole("button", { name: "麦芒 草 · 物攻", exact: true }).click();
+    await expect(panel.locator(".sq-selected")).toContainText("麦芒");
+    await panel.getByRole("button", { name: "返回赛季查询" }).click();
     await panel.getByLabel("搜索技能或精灵").fill("针叶巡林");
     await expect(panel.locator(".skill-query__gains")).toContainText("回旋踢");
     await panel.locator(".skill-query__gains h3 button").first().click();
