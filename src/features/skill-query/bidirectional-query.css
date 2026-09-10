@@ -33,5 +33,13 @@
   .sq-workspace .sq-show-results{display:flex;min-height:44px;width:100%;margin-top:8px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--border)}.sq-workspace--spirit:not(.sq-workspace--detail) .sq-families{grid-template-columns:repeat(2,minmax(0,1fr))}.sq-workspace--detail .sq-results{padding:12px}.sq-detail-filters .sq-sources{flex-basis:100%}.sq-detail-filters>input{flex-basis:100%}.sq-detail-filters>select{flex:1 1 104px}.sq-workspace .sq-effect-toggle{width:44px;height:44px}.sq-workspace .sq-reverse{min-height:44px}
 }
 @media(max-width:650px){
+  .sq-query{padding:8px 12px;gap:6px}
+  .sq-directions{border:0;background:transparent;padding:0;gap:6px}.sq-directions button{min-height:44px;padding:6px}
+  .sq-query-editor{gap:6px}.sq-search{min-height:44px}.sq-query .sq-search input{min-height:42px}.sq-search .sq-effect-toggle{border:0;border-radius:0 6px 6px 0;background:transparent;width:44px;min-width:44px;height:44px}
+  .sq-selection{position:relative;padding:6px 60px 6px 12px;min-height:56px}.sq-selection--empty{display:none}
+  .sq-selection .sq-selected-heading{position:absolute;right:12px;top:6px;margin:0;min-height:44px}.sq-selected-heading>strong{display:none}.sq-selected-heading button{width:44px;height:44px;padding:0}
+  .sq-selected{display:flex;flex-wrap:wrap;gap:4px}.sq-selected>div{min-height:44px;padding:0 0 0 8px;gap:0;max-width:calc(50% - 2px);border-radius:6px;background:var(--surface-soft)}.sq-selected>div:only-child{max-width:100%}
+  .sq-selected .skill-icon,.sq-selected small{display:none}.sq-selected strong{display:block;font-size:14px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.sq-selected button{min-width:44px;min-height:44px}
+  .sq-library-heading{display:none}.sq-library{padding-top:8px}.sq-mobile-nav{padding-block:6px}
   .skill-query:has(.sq-workspace){height:100dvh}.sq-suggestions,.sq-skill-table{grid-template-columns:minmax(0,1fr)}.sq-query select,.sq-query input,.sq-learner-filters input,.sq-learner-filters select{min-height:44px}.sq-filter-fields{gap:6px}.sq-filter-fields select{font-size:14px;padding-inline:6px}.sq-selected{grid-template-columns:minmax(0,1fr)}.sq-selected-heading{font-size:14px}.sq-selected-heading button{min-height:44px}.sq-card-heading strong,.sq-skill-name strong{font-size:15px}.sq-spirit-heading h3{font-size:20px}.sq-spirit-heading select{width:100%}.sq-sources{gap:5px}.sq-sources button{padding:8px 7px;min-height:44px}.sq-detail-filters{gap:6px}.sq-detail-filters>select{min-width:0;font-size:14px}.sq-workspace--spirit:not(.sq-workspace--detail) .sq-families{grid-template-columns:minmax(0,1fr)}
 }

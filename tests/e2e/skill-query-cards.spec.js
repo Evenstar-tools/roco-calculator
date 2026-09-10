@@ -84,3 +84,49 @@ test("桌面低高度选满仍可访问结果，效果切换和双向返回恢�
   await panel.getByRole("button", { name: "返回匹配结果" }).click();
   expect(await library.evaluate(node => node.scrollTop)).toBeCloseTo(scroll, 0);
 });
+
+for (const width of [320, 390]) for (const theme of ["light", "dark"]) {
+  test(`手机操作区密度门禁 0/1/4 个已选 ${width} ${theme}`, async ({ page }) => {
+    const panel = await open(page, width, theme);
+    const search = panel.getByLabel("搜索技能或精灵");
+    for (const count of [0, 1, 4]) {
+      if (count === 1) {
+        await search.fill("血契");
+        await panel.getByRole("button", { name: "添加血契", exact: true }).click();
+      }
+      if (count === 4) for (const name of ["防御", "重组", "月蚀"]) {
+        await search.fill(name);
+        await panel.getByRole("button", { name: `添加${name}`, exact: true }).click();
+      }
+      await search.fill("");
+      for (const height of [700, 650]) {
+        await page.setViewportSize({ width, height });
+        await panel.locator(".sq-workspace").evaluate(node => { node.scrollTop = 0; });
+        await panel.getByRole("heading", { name: "技能检索", exact: true }).click();
+        const card = await panel.locator(".sq-suggestions>button").first().boundingBox();
+        const bottom = count ? (await panel.locator(".sq-mobile-nav").boundingBox()).y : height;
+        expect(card.y).toBeLessThanOrEqual(count === 4 ? 430 : 350);
+        expect(card.y + card.height).toBeLessThanOrEqual(bottom);
+        expect(await panel.evaluate(node => node.scrollWidth <= node.clientWidth)).toBe(true);
+        await expect(panel.locator(".sq-search .sq-effect-toggle")).toBeVisible();
+        await expect(panel.locator(".sq-library-heading")).toBeHidden();
+        await expect(panel.getByRole("button", { name: /查看匹配家族/ })).toHaveCount(0);
+        await panel.locator("img").evaluateAll(async images => Promise.all(images.filter(img => { const rect = img.getBoundingClientRect(); return rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight; }).map(img => img.decode().catch(() => {}))));
+        await page.screenshot({ path: `artifacts/web-ux6-mobile-density/actual-${width}-${height}-${count}-${theme}.png` });
+      }
+    }
+    await panel.getByRole("button", { name: "移除月蚀" }).click();
+    await search.fill("观测者效应");
+    await panel.getByRole("button", { name: "添加观测者效应", exact: true }).click();
+    const remove = panel.getByRole("button", { name: "移除观测者效应", exact: true });
+    const bounds = await remove.boundingBox();
+    expect(bounds.width).toBeGreaterThanOrEqual(44);
+    expect(bounds.height).toBeGreaterThanOrEqual(44);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+    await remove.click();
+    await expect(search).toHaveValue("观测者效应");
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(panel.locator(".sq-library-heading .sq-effect-toggle")).toBeVisible();
+    await expect(panel.locator(".sq-search .sq-effect-toggle")).toHaveCount(0);
+  });
+}

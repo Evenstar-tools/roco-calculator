@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowLeft, CaretRight, CheckCircle, Eye, EyeSlash, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { ElementIcon } from "../../components/ElementIcon.jsx";
@@ -8,6 +8,13 @@ import SkillQueryEffect from "./SkillQueryEffect.jsx";
 import "./bidirectional-query.css";
 
 const SOURCES = [["", "全部来源"], ["default", "自学"], ["血脉", "血脉"], ["技能石", "技能石"]];
+const phoneQuery = "(max-width: 650px)";
+const isPhone = () => window.matchMedia?.(phoneQuery).matches ?? false;
+function subscribePhone(callback) {
+  const media = window.matchMedia?.(phoneQuery);
+  media?.addEventListener("change", callback);
+  return () => media?.removeEventListener("change", callback);
+}
 
 function Portrait({ spirit }) {
   const [failed, setFailed] = useState(false);
@@ -15,6 +22,7 @@ function Portrait({ spirit }) {
 }
 
 export default function BidirectionalQuery({ season, skills, spirits, initialSpiritId, initialSkillId, gains = [], hideEffects: sharedHideEffects, onHideEffectsChange }) {
+  const phone = useSyncExternalStore(subscribePhone, isPhone, () => false);
   const [direction, setDirection] = useState(initialSpiritId ? "spirit" : "skill");
   const [query, setQuery] = useState(() => season.skills.find(skill => skill.id === initialSkillId)?.name ?? "");
   const [selected, setSelected] = useState(initialSkillId ? [initialSkillId] : []);
@@ -134,7 +142,7 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
       <div className="sq-directions" aria-label="查询方向">{[["skill", "找可学精灵"], ["spirit", "查精灵技能"]].map(([id, name]) => <button key={id} aria-pressed={direction === id} onClick={() => changeDirection(id)}>{name}</button>)}</div>
       <div className="sq-query-editor">
         <label className="sq-search-label" htmlFor="sq-search">{direction === "skill" ? "搜索并添加技能" : "搜索精灵"}</label>
-        <div className="sq-search"><MagnifyingGlass size={18} /><input id="sq-search" aria-label="搜索技能或精灵" placeholder={direction === "skill" ? "搜索技能名称或效果" : "名称、图鉴号、拼音或别名"} value={query} onChange={(event) => setQuery(event.target.value)} /></div>
+        <div className="sq-search"><MagnifyingGlass size={18} /><input id="sq-search" aria-label="搜索技能或精灵" placeholder={direction === "skill" ? "搜索技能名称或效果" : "名称、图鉴号、拼音或别名"} value={query} onChange={(event) => setQuery(event.target.value)} />{phone && direction === "skill" && !spirit && effectToggle}</div>
         {direction === "skill" && <>
           <div className="sq-filter-fields" aria-label="技能筛选">{typeSelect(type, setType, "技能属性")}{categorySelect(category, setCategory, "技能种类")}<select aria-label="技能所属赛季" value={introduced} onChange={(event) => setIntroduced(event.target.value)}><option value="">全部赛季</option>{[...new Set(season.skills.map((skill) => skill.introducedSeason))].filter(Boolean).sort().map((id) => <option key={id} value={id}>{id} 技能</option>)}</select></div>
           {hasQueryFilters && <button className="sq-clear-filters" aria-label="清除技能筛选" onClick={clearQueryFilters}>清除筛选</button>}
@@ -143,7 +151,7 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
     </aside>
     <div className="sq-body">
     {direction === "skill" && !spirit && <section className="sq-library" ref={library} aria-label="技能库">
-      <div className="sq-library-heading"><h3>技能库 <small>{filtered.length}</small></h3><span>点击添加或取消</span>{effectToggle}</div>
+      <div className="sq-library-heading"><h3>技能库 <small>{filtered.length}</small></h3><span>点击添加或取消</span>{!phone && effectToggle}</div>
       {returnState && <button className="sq-back" onClick={returnToSpirit}><ArrowLeft size={18} />返回{season.spirits.find((item) => item.id === returnState.spiritId)?.fullName}技能</button>}
       <div className="sq-suggestions" aria-label="技能列表">{filtered.map(skill => <button key={skill.id} data-skill-id={skill.id} aria-label={`${selected.includes(skill.id) ? "取消" : "添加"}${skill.name}`} aria-pressed={selected.includes(skill.id)} aria-disabled={!selected.includes(skill.id) && selected.length === 4} onClick={() => add(skill.id)}>
         <span className="sq-card-heading"><SkillIcon skill={iconSkill(skill)} size={48} /><span><strong>{skill.name}</strong><small><ElementIcon type={skill.type} size={16} />{skill.type} · {categoryNames[skill.category]}</small></span>{selected.includes(skill.id) && <CheckCircle className="sq-card-check" size={18} weight="fill" />}</span>
@@ -152,11 +160,11 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
       </button>)}</div>{!filtered.length && <p className="sq-empty">没有找到符合条件的技能。</p>}
     </section>}
     <div className="sq-rail" ref={rail}>
-    <aside className="sq-selection" hidden={direction !== "skill" || Boolean(spirit)} aria-label="已选技能">
+    <aside className={`sq-selection${selected.length === 0 ? " sq-selection--empty" : ""}`} hidden={direction !== "skill" || Boolean(spirit)} aria-label="已选技能">
       <div className="sq-selected-heading"><strong>已选 {selected.length} / 4</strong>{selected.length > 0 && <button onClick={() => setSelected([])}>清空</button>}</div>
-      <div className="sq-selected">{chosen.map(skill => <div key={skill.id}><SkillIcon skill={iconSkill(skill)} size={32} /><span><strong>{skill.name}</strong><small>威力 {skill.basePower ?? "—"} · 能耗 {skill.cost ?? "—"}</small></span><button aria-label={`移除${skill.name}`} onClick={() => setSelected(selected.filter(id => id !== skill.id))}><X size={18} /></button></div>)}</div>
+      <div className="sq-selected">{chosen.map(skill => <div key={skill.id}><SkillIcon skill={iconSkill(skill)} size={32} /><span><strong title={skill.name}>{skill.name}</strong><small>威力 {skill.basePower ?? "—"} · 能耗 {skill.cost ?? "—"}</small></span><button aria-label={`移除${skill.name}`} onClick={() => setSelected(selected.filter(id => id !== skill.id))}><X size={18} /></button></div>)}</div>
       {selected.length === 4 && <p className="sq-limit" role="status">已选满 4 个技能，请先移除一个。</p>}
-      {selected.length > 0 && <button className="sq-show-results" onClick={showResults}>查看匹配家族（{families.length}）</button>}
+      {!phone && selected.length > 0 && <button className="sq-show-results" onClick={showResults}>查看匹配家族（{families.length}）</button>}
     </aside>
     <main className="sq-results" ref={results}>
       {spirit ? <>

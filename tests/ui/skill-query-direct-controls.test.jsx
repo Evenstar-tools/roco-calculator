@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import BidirectionalQuery from "../../src/features/skill-query/BidirectionalQuery.jsx";
 
 const skills = ["甲", "乙", "丙", "丁", "戊"].map((name, i) => ({
@@ -13,6 +13,22 @@ function add(name) {
   fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: name } });
   fireEvent.click(screen.getByRole("button", { name: `添加${name}` }));
 }
+
+test("手机搜索栏只有一个效果开关，已选标签仍可逐个删除且不重复展示结果入口", () => {
+  vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+  const { container, unmount } = setup();
+  try {
+    expect(screen.getAllByRole("button", { name: "隐藏效果说明" })).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "隐藏效果说明" }).closest(".sq-search")).not.toBeNull();
+    add("甲"); add("乙");
+    expect(screen.queryByRole("button", { name: /查看匹配家族/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "移除甲" }));
+    expect(container.querySelectorAll(".sq-selected strong")).toHaveLength(1);
+    expect(screen.getByLabelText("搜索技能或精灵")).toHaveValue("乙");
+    fireEvent.click(screen.getByRole("button", { name: "隐藏效果说明" }));
+    expect(container.querySelector(".sq-card-description")).toBeNull();
+  } finally { unmount(); vi.unstubAllGlobals(); }
+});
 
 test("筛选常驻、连续四技能无需切页、删除中间条件后可补充", () => {
   const { container } = setup();
