@@ -155,6 +155,32 @@ function createSnapshot() {
 }
 
 describe("shared battle activation", () => {
+  test.each([
+    ["落雨", "rain"], ["降雨", "rain"], ["惊雷", "thunder"],
+    ["沙涌", "sandstorm"], ["冬至", "blizzard"],
+  ])("%s切换全场天气并清除旧天气，持续8回合", async (name, weather) => {
+    const snapshot = createSnapshot();
+    snapshot.skills.push({ id: "weather-skill", name, category: "status", basePower: 0, type: "水" });
+    const state = createInitialState(snapshot);
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.defender.skills.four = ["weather-skill", null, null, null];
+    for (const direction of ["forward", "reverse"]) {
+      state.directions[direction].context = { weatherRainTurns: 3, weatherThunder: true, weatherSandstorm: true, weatherBlizzard: true };
+    }
+    const result = applyBattleActivation({ side: "defender", skillIndex: 0, snapshot, state });
+    expect(result.applied).toBe(true);
+    const expected = {
+      weatherRainTurns: weather === "rain" ? 8 : 0,
+      weatherThunder: weather === "thunder",
+      weatherSandstorm: weather === "sandstorm",
+      weatherBlizzard: weather === "blizzard",
+      weatherTurns: 8,
+    };
+    for (const direction of ["forward", "reverse"]) expect(result.state.directions[direction].context).toMatchObject(expected);
+    const decoded = await decodeShareState(await encodeShareState(result.state));
+    expect(decoded.directions.forward.context).toMatchObject(expected);
+  });
   test("寒风吹使用后只降低敌方魔防，保留物防及另一方向并支持分享", async () => {
     const snapshot = createSnapshot();
     snapshot.skills.push({ id: "chill-wind", name: "寒风吹", category: "magical", basePower: 70, type: "冰", description: "造成魔伤，敌方获得魔防-50%。" });

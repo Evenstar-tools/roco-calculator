@@ -628,6 +628,8 @@ export function AdvancedOptions({
                 <option value="none">无天气</option>
                 <option value="rain">雨天 · 水系 ×1.75</option>
                 <option value="thunder">雷鸣 · 回合末引电 +1</option>
+                <option value="sandstorm">沙暴 · 仅记录，暂不参与计算</option>
+                <option value="blizzard">暴风雪 · 仅记录，暂不参与计算</option>
               </select>
             </label>
             <label className="field-group">

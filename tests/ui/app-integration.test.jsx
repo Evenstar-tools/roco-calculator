@@ -94,6 +94,10 @@ const snapshot = {
     seasonId: "S3季中",
   },
   skills: [
+    ...[["落雨", "雨天"], ["降雨", "雨天"], ["惊雷", "雷鸣"], ["沙涌", "沙暴"], ["冬至", "暴风雪"]].map(([name, weather]) => ({
+      id: `weather-${name}`, name, basePower: 0, category: "status", cost: 5, type: "水",
+      description: `将天气改为${weather}，持续8回合。`,
+    })),
     {
       basePower: 30,
       category: "magical",
@@ -1046,6 +1050,32 @@ test("rainy weather boosts water damage and stays global across directions", asy
 
   await user.click(screen.getByRole("button", { name: "切换计算方向" }));
   expect(screen.getByRole("combobox", { name: "天气" })).toHaveValue("rain");
+});
+
+test("使用天气技能切换全场天气，沙暴与暴风雪不沿用雨天加成", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  const second = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(second);
+  await user.type(second, "水之波纹");
+  await user.click(screen.getByRole("option", { name: /水之波纹/ }));
+  const waterDamage = () => Number(screen.getByLabelText(/攻击方水之波纹攻击水灵：\d+伤害/).getAttribute("aria-label").match(/：(\d+)伤害/)[1]);
+  const dry = waterDamage();
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  for (const [name, label, value] of [["落雨", "雨天", "rain"], ["惊雷", "雷鸣", "thunder"], ["降雨", "雨天", "rain"], ["沙涌", "沙暴", "sandstorm"], ["冬至", "暴风雪", "blizzard"]]) {
+    const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
+    await user.clear(picker);
+    await user.type(picker, name);
+    await user.click(screen.getByRole("option", { name: new RegExp(name) }));
+    await user.click(screen.getByText(`将天气改为${label}，持续8回合。`));
+    expect(screen.getByRole("combobox", { name: "天气" })).toHaveValue(value);
+    if (value === "rain") expect(waterDamage()).toBeGreaterThan(dry);
+    else expect(waterDamage()).toBe(dry);
+  }
+  await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+  expect(screen.getByRole("combobox", { name: "天气" })).toHaveValue("blizzard");
 });
 
 test("shows a base result for Skybreaker and recalculates when it acts first", async () => {

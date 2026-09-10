@@ -116,6 +116,13 @@ describe("responsive battle workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "雨天" }));
     expect(screen.getByLabelText("雨天回合")).toHaveValue(8);
 
+    for (const name of ["沙暴", "暴风雪"]) {
+      fireEvent.click(screen.getByRole("button", { name }));
+      expect(screen.getByRole("button", { name })).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByText("仅记录天气，暂不参与计算")).toBeVisible();
+      expect(screen.queryByLabelText("雨天回合")).not.toBeInTheDocument();
+    }
+
     fireEvent.click(screen.getByRole("button", { name: "无天气" }));
     expect(screen.queryByLabelText("雨天回合")).not.toBeInTheDocument();
   });

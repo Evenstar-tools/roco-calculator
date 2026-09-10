@@ -23,6 +23,9 @@ export function createConditionSummary({
     Math.floor(Number(context.weatherRainTurns) || 0),
   );
   if (rainTurns > 0) labels.push(`雨天 ${rainTurns} 回合`);
+  else if (context.weatherThunder === true) labels.push("雷鸣");
+  else if (context.weatherSandstorm === true) labels.push("沙暴（仅记录）");
+  else if (context.weatherBlizzard === true) labels.push("暴风雪（仅记录）");
   if (directionState.currentHp !== null && directionState.currentHp !== undefined) {
     labels.push(`目标 HP ${Math.max(0, Number(directionState.currentHp) || 0)}`);
   }

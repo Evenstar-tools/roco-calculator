@@ -222,7 +222,9 @@ function CalculatorWorkspace({ snapshot }) {
     ? "thunder"
     : activeWeatherRainTurns > 0
       ? "rain"
-      : "none";
+      : currentDirection.context?.weatherSandstorm === true
+        ? "sandstorm"
+        : currentDirection.context?.weatherBlizzard === true ? "blizzard" : "none";
   const activeReductionPercent = Math.round(
     (1 - reductionDirection.reduction) * 100,
   );
@@ -1182,6 +1184,7 @@ function CalculatorWorkspace({ snapshot }) {
     });
     updateFourSkillEntry(side, index, { context: sequence.nextContext });
     setActiveDirection(selfDirection);
+    if (operations.weather) updateWeather(operations.weather);
     setToast([
       negativeStatusUseCount === 2
         ? `${skill.name}：本回合 + 下回合`

@@ -18,6 +18,7 @@ import { getNatureMultipliers } from "../domain/natures.js";
 import { resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
 import { getEffectiveTraits } from "../domain/effective-traits.js";
+import { updateGlobalWeather } from "./calculator-session.js";
 
 function clone(value) {
   if (typeof globalThis.structuredClone === "function") {
@@ -553,5 +554,10 @@ export function applyBattleActivation({
     sequence.nextContext,
     skillMode,
   );
-  return { applied: true, reason: null, state: next, stateChanged: true };
+  return {
+    applied: true,
+    reason: null,
+    state: operations.weather ? updateGlobalWeather(next, operations.weather).state : next,
+    stateChanged: true,
+  };
 }

@@ -731,14 +731,20 @@ export function updateGlobalRain(state, value) {
     nextState = calculatorReducer(nextState, {
       direction,
       type: "direction/update",
-      value: { context: { weatherRainTurns } },
+      value: { context: {
+        weatherRainTurns,
+        weatherThunder: false,
+        weatherSandstorm: false,
+        weatherBlizzard: false,
+        weatherTurns: weatherRainTurns,
+      } },
     });
   }
   return { persistence: persistence(), state: nextState };
 }
 
 export function updateGlobalWeather(state, weather) {
-  const nextWeather = ["rain", "thunder"].includes(weather) ? weather : "none";
+  const nextWeather = ["rain", "thunder", "sandstorm", "blizzard"].includes(weather) ? weather : "none";
   let nextState = state;
   for (const direction of ["forward", "reverse"]) {
     nextState = calculatorReducer(nextState, {
@@ -748,6 +754,9 @@ export function updateGlobalWeather(state, weather) {
         context: {
           weatherRainTurns: nextWeather === "rain" ? 8 : 0,
           weatherThunder: nextWeather === "thunder",
+          weatherSandstorm: nextWeather === "sandstorm",
+          weatherBlizzard: nextWeather === "blizzard",
+          weatherTurns: nextWeather === "none" ? 0 : 8,
         },
       },
     });

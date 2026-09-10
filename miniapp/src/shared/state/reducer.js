@@ -107,6 +107,10 @@ export function calculatorReducer(state, action) {
               context: {
                 ...(value.context ?? {}),
                 weatherRainTurns,
+                weatherThunder: false,
+                weatherSandstorm: false,
+                weatherBlizzard: false,
+                weatherTurns: weatherRainTurns,
               },
             },
           ]),

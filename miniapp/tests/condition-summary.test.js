@@ -2,6 +2,9 @@ import { describe, expect, test } from "vitest";
 import { createConditionSummary } from "../src/view-models/condition-summary.js";
 
 describe("createConditionSummary", () => {
+  test.each([["weatherThunder", "雷鸣"], ["weatherSandstorm", "沙暴（仅记录）"], ["weatherBlizzard", "暴风雪（仅记录）"]])("显示%s的天气记录", (key, label) => {
+    expect(createConditionSummary({ direction: "forward", state: { directions: { forward: { context: { [key]: true } } } } }).labels).toContain(label);
+  });
   test("counts battle-wide values without mixing in current skill parameters", () => {
     const state = {
       directions: {

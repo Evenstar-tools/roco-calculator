@@ -23,6 +23,11 @@ const numberInput = (key, label, min, max, defaultValue) => ({
 });
 
 const STATUS_EFFECTS = Object.freeze({
+  落雨: { operations: () => ({ weather: "rain" }) },
+  降雨: { operations: () => ({ weather: "rain" }) },
+  惊雷: { operations: () => ({ weather: "thunder" }) },
+  沙涌: { operations: () => ({ weather: "sandstorm" }) },
+  冬至: { operations: () => ({ weather: "blizzard" }) },
   减压阀: {
     inputs: [numberInput("pressureValveUseCount", "已使用次数", 0, 20, 0)],
   },
@@ -803,6 +808,7 @@ export function resolveSkillStatusActivation(skill, context = {}) {
     operations.markApplications = markApplications;
   }
   const applied =
+    Boolean(operations.weather) ||
     Object.values(deltas).some((value) => value !== 0) ||
     markApplications.length > 0 ||
     (operations.markApplications ?? []).length > 0 ||

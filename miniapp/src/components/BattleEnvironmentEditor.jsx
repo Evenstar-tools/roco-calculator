@@ -44,7 +44,9 @@ export default function BattleEnvironmentEditor({
     Math.floor(Number(direction.context?.weatherRainTurns) || 0),
   );
   const thunder = direction.context?.weatherThunder === true;
-  const weather = thunder ? "thunder" : rainTurns > 0 ? "rain" : "none";
+  const weather = thunder ? "thunder" : rainTurns > 0 ? "rain"
+    : direction.context?.weatherSandstorm === true ? "sandstorm"
+    : direction.context?.weatherBlizzard === true ? "blizzard" : "none";
 
   return (
     <View aria-label="常用条件" className="battle-environment">
@@ -92,7 +94,7 @@ export default function BattleEnvironmentEditor({
             >
               雨天
             </Button>
-            {showThunder ? (
+            {showThunder || weather === "thunder" ? (
               <Button
                 aria-label="雷暴"
                 aria-pressed={weather === "thunder"}
@@ -104,7 +106,19 @@ export default function BattleEnvironmentEditor({
                 雷暴
               </Button>
             ) : null}
+            {[['sandstorm', '沙暴'], ['blizzard', '暴风雪']].map(([value, label]) => (
+              <Button
+                key={value}
+                aria-label={label}
+                aria-pressed={weather === value}
+                className={`battle-environment__weather-button${weather === value ? ' battle-environment__weather-button--active' : ''}`}
+                onClick={() => onWeatherChange?.(value)}
+              >{label}</Button>
+            ))}
           </View>
+          {["sandstorm", "blizzard"].includes(weather) ? (
+            <Text className="battle-environment__hint">仅记录天气，暂不参与计算</Text>
+          ) : null}
         </View>
         {weather === "rain" ? (
           <NumericField
