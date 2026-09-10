@@ -46,7 +46,13 @@ export function querySpiritFamilies(season, { skillIds = [], query = "", source 
     if (!groups.has(familyId)) groups.set(familyId, []);
     groups.get(familyId).push(spirit);
   }
-  return [...groups].map(([id, members]) => ({
-    id, members, representative: members.find((member) => matchedIds.has(member.id)) ?? members[0],
-  }));
+  const ranks = { 一阶: 1, 二阶: 2, 三阶: 3 };
+  return [...groups].map(([id, members]) => {
+    const ordinary = members.filter(member => member.stage !== "首领");
+    const candidates = ordinary.length ? ordinary : members;
+    // 搜索具体精灵时仍精确定位；技能反查优先使用可学的最终普通形态。
+    const representative = (!skillIds.length && query.trim() && members.find(member => matchedIds.has(member.id))) ||
+      [...candidates].sort((a, b) => (ranks[b.stage] ?? 0) - (ranks[a.stage] ?? 0))[0];
+    return { id, members, representative };
+  });
 }

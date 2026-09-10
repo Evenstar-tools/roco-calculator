@@ -19,7 +19,7 @@ test("筛选常驻、连续四技能无需切页、删除中间条件后可补�
   expect(screen.getByLabelText("技能属性").closest("details")).toBeNull();
   for (const name of ["甲", "乙", "丙", "丁"]) add(name);
   expect(screen.getByText(/已选满 4 个技能/)).toBeInTheDocument();
-  expect(screen.getByLabelText("搜索技能或精灵")).toHaveValue("");
+  expect(screen.getByLabelText("搜索技能或精灵")).toHaveValue("丁");
   expect(screen.queryByRole("button", { name: "编辑条件" })).not.toBeInTheDocument();
   expect(container.querySelector(".sq-workspace--results")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "移除乙" }));
@@ -66,4 +66,43 @@ test("摘要和反查无需展开，往返恢复筛选及桌面和手机滚动�
   fireEvent.click(screen.getByRole("button", { name: "返回匹配结果" }));
   expect(workspace.scrollTop).toBe(200); expect(results.scrollTop).toBe(120);
   expect(container.querySelector("button button")).toBeNull();
+});
+
+test("卡片原位选中和取消，选满不替换，清空条件不清搜索", () => {
+  const { container } = setup();
+  const list = container.querySelector(".sq-suggestions");
+  const first = list.firstElementChild;
+  fireEvent.click(first);
+  expect(list.firstElementChild).toBe(first);
+  expect(first).toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(first);
+  expect(first).toHaveAttribute("aria-pressed", "false");
+  for (const name of ["甲", "乙", "丙", "丁"]) add(name);
+  fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "戊" } });
+  const fifth = screen.getByRole("button", { name: "添加戊" });
+  expect(fifth).toHaveAttribute("aria-disabled", "true");
+  fireEvent.click(fifth);
+  expect(container.querySelectorAll(".sq-selected strong")).toHaveLength(4);
+  fireEvent.click(screen.getByRole("button", { name: "清空", exact: true }));
+  expect(screen.getByLabelText("搜索技能或精灵")).toHaveValue("戊");
+  expect(fifth).toHaveAttribute("aria-disabled", "false");
+});
+
+test("隐藏只移除效果文字，保留数值和效果检索，详情及返回共用开关", () => {
+  const { container } = setup();
+  fireEvent.click(screen.getByRole("button", { name: "隐藏效果说明" }));
+  fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "甲的效果" } });
+  const card = screen.getByRole("button", { name: "添加甲" });
+  expect(card).toHaveTextContent("威力 50");
+  expect(card).toHaveTextContent("能耗 0");
+  expect(container.querySelector(".sq-card-description")).toBeNull();
+  fireEvent.click(card);
+  fireEvent.click(screen.getByRole("button", { name: "测试精灵 查看技能" }));
+  expect(container.querySelectorAll(".sq-skill-table article")).toHaveLength(5);
+  expect(container.querySelector(".sq-effect")).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "显示效果说明" }));
+  expect(screen.getByText("甲的效果")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "返回匹配结果" }));
+  expect(screen.getByRole("button", { name: "隐藏效果说明" })).toBeInTheDocument();
+  expect(container.querySelector(".sq-card-description")).toHaveTextContent("甲的效果");
 });

@@ -31,7 +31,7 @@ test("查询条件保持，家族进入完整学习面，技能反查可返回�
   fireEvent.click(screen.getByRole("button", { name: "返回喵喵技能" }));
   expect(screen.getByRole("button", { name: "查看防御详情" })).toHaveAttribute("aria-expanded", "true");
   fireEvent.click(screen.getByRole("button", { name: "返回匹配结果" }));
-  expect(search).toHaveValue("");
+  expect(search).toHaveValue("抓挠");
   expect(screen.getByLabelText("技能属性")).toHaveValue("普通");
   expect(screen.getByLabelText("技能种类")).toHaveValue("physical");
   expect(screen.getByLabelText("技能所属赛季")).toHaveValue("S1");
@@ -44,7 +44,7 @@ test("赛季新技能显示图标，新技能学习面可双向跳转且排除�
   const iconUrl = "/assets/skills/skill_1234567890abcdef.png";
   render(<SkillQueryPanel onClose={vi.fn()} skills={[{ id: "guard", iconUrl }]} />);
   fireEvent.click(screen.getByRole("tab", { name: "赛季新技能" }));
-  const skill = screen.getByRole("button", { name: "防御 普通 · 防御" });
+  const skill = screen.getByRole("button", { name: /防御 普通 · 防御.*威力/ });
   const icon = skill.querySelector("img");
   expect(icon).toHaveAttribute("src", iconUrl);
   fireEvent.error(icon);
@@ -66,7 +66,7 @@ test("精灵别名查询、来源筛选与空态不伪造学习条件", () => {
   expect(screen.queryByRole("button", { name: "喵喵 查看技能" })).not.toBeInTheDocument();
   fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "猫猫" } });
   fireEvent.click(screen.getByRole("button", { name: "喵喵 查看技能" }));
-  fireEvent.click(screen.getByRole("button", { name: "默认", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "自学", exact: true }));
   expect(screen.queryByRole("button", { name: "查看防御详情" })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "血脉", exact: true }));
   expect(screen.getByText(/没有符合筛选条件的技能/)).toBeInTheDocument();

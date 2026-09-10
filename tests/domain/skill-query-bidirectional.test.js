@@ -32,6 +32,17 @@ test("完整学习面不受技能查询条件影响，多来源去重，未知�
   expect(matchesSource("解锁：Lv.1", "default")).toBe(true);
   expect(spiritSkills(season, "missing")).toEqual([]);
 });
+
+test("家族反查默认最终普通形态，不选首领，不使用无法同时学习的终阶", () => {
+  const data = { spirits: [
+    { id: "a", fullName: "幼体", stage: "一阶", familyId: "f" },
+    { id: "b", fullName: "终阶", stage: "三阶", familyId: "f" },
+    { id: "c", fullName: "首领", stage: "首领", familyId: "f" },
+  ], learnsets: [{ spiritId: "a", skillIds: ["x", "y"] }, { spiritId: "b", skillIds: ["x"] }, { spiritId: "c", skillIds: ["x"] }] };
+  expect(querySpiritFamilies(data, { skillIds: ["x"] })[0].representative.id).toBe("b");
+  expect(querySpiritFamilies(data, { skillIds: ["x", "y"] })[0].representative.id).toBe("a");
+  expect(querySpiritFamilies(data, { query: "幼体" })[0].representative.id).toBe("a");
+});
 test("真实 S4 掠影与月蚀交集只含银月狼王，完整学习表包含其他技能", () => {
   const catalog = unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
   const current = catalog.seasons.find((item) => item.id === "S4");
