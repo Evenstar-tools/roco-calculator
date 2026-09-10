@@ -155,6 +155,33 @@ function createSnapshot() {
 }
 
 describe("shared battle activation", () => {
+  test("寒风吹使用后只降低敌方魔防，保留物防及另一方向并支持分享", async () => {
+    const snapshot = createSnapshot();
+    snapshot.skills.push({ id: "chill-wind", name: "寒风吹", category: "magical", basePower: 70, type: "冰", description: "造成魔伤，敌方获得魔防-50%。" });
+    const state = createInitialState(snapshot);
+    state.mode = "four";
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.skills.four = ["chill-wind", "scratch", "grass-skill", "opportunity"];
+    const view = (current) => buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: current }).calculation.forward.results;
+    const before = view(state);
+    const applied = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state });
+    expect(applied.applied).toBe(true);
+    expect(applied.state.directions.forward.overrides.magicalDefenseLevelStageAdd).toBe(-5);
+    const after = view(applied.state);
+    expect(after[2].totalDamage).toBeGreaterThan(before[2].totalDamage);
+    expect(after[1].totalDamage).toBe(before[1].totalDamage);
+    expect(after[2].combatPanel.defender.magicalDefense).toBeLessThan(before[2].combatPanel.defender.magicalDefense);
+    expect(after[2].combatPanel.defender.physicalDefense).toBe(before[2].combatPanel.defender.physicalDefense);
+    expect(applied.state.directions.reverse.overrides.magicalDefenseLevelStageAdd ?? 0).toBe(0);
+    expect((await decodeShareState(await encodeShareState(applied.state))).directions.forward.overrides.magicalDefenseLevelStageAdd).toBe(-5);
+    const stacked = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state: applied.state });
+    expect(stacked.state.directions.forward.overrides.magicalDefenseLevelStageAdd).toBe(-10);
+    state.sides.defender.skills.four = ["chill-wind", "scratch", "grass-skill", null];
+    const reverse = applyBattleActivation({ side: "defender", skillIndex: 0, snapshot, state });
+    expect(reverse.state.directions.reverse.overrides.magicalDefenseLevelStageAdd).toBe(-5);
+    expect(reverse.state.directions.forward.overrides.magicalDefenseLevelStageAdd ?? 0).toBe(0);
+  });
   test("热身的临时威力支持2倍与4倍切换，再次触发取消且不改其他方向", () => {
     const snapshot = createSnapshot();
     snapshot.skills.push({ id: "warm-up-power", name: "热身", category: "status", basePower: 0, type: "火" });

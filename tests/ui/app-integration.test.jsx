@@ -304,6 +304,11 @@ const snapshot = {
       type: "火",
     },
     {
+      basePower: 70, category: "magical", cost: 3,
+      description: "造成魔伤，敌方获得魔防-50%。",
+      id: "chill-wind", name: "寒风吹", ruleId: null, type: "冰",
+    },
+    {
       basePower: 0,
       category: "defense",
       cost: 2,
@@ -2374,6 +2379,25 @@ test("热身在未启用、普通触发、应对防御之间按1、2、4倍切�
   expect(power()).toHaveValue(80);
   await user.click(trigger());
   expect(power()).toHaveValue(320);
+});
+
+test("点击寒风吹应用魔防降低，仅提升魔法伤害", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  for (const [index, name] of ["寒风吹", "风力冲击", "光能冲击"].entries()) {
+    const picker = screen.getByRole("combobox", { name: `攻击方技能${index + 1}` });
+    await user.clear(picker);
+    await user.type(picker, name);
+    await user.click(screen.getByRole("option", { name: new RegExp(name) }));
+  }
+  const damage = (name) => Number(screen.getByLabelText(new RegExp(`攻击方${name}攻击水灵：\\d+伤害`)).getAttribute("aria-label").match(/：(\d+)伤害/)[1]);
+  const physical = damage("风力冲击");
+  const magical = damage("光能冲击");
+  await user.click(screen.getByText("造成魔伤，敌方获得魔防-50%。"));
+  expect(damage("风力冲击")).toBe(physical);
+  expect(damage("光能冲击")).toBeGreaterThan(magical);
 });
 
 test("toggles Quench's checked response without stacking its doubling", async () => {

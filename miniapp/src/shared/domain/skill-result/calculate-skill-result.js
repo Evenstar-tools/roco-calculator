@@ -424,6 +424,9 @@ export function calculateSkillResult({
     directionOverrides.defenseLevelStage,
     direction.defenseLevelStage,
   );
+  const magicalDefenseLevelStageAdd = finiteNumber(
+    directionOverrides.magicalDefenseLevelStageAdd,
+  ) ?? 0;
   const traitResolutionForCategory = (category) =>
     resolveTraitMultipliers({
       attackerTraits: attacker.traits,
@@ -636,7 +639,7 @@ export function calculateSkillResult({
       magicalDefense: Math.round(
         abilityAdjustedStat(
           defender.panelStats.magicalDefense,
-          (defenseLevelStage ?? 0) + traitResolution.defenseLevelBonus,
+          (defenseLevelStage ?? 0) + traitResolution.defenseLevelBonus + magicalDefenseLevelStageAdd,
         ),
       ),
       physicalDefense: Math.round(
@@ -698,6 +701,7 @@ export function calculateSkillResult({
       : resolvedTypeMultiplier;
   const categoryKey =
     statKeys.attack === "magicalAttack" ? "magical" : "physical";
+  const categoryDefenseLevelStageAdd = categoryKey === "magical" ? magicalDefenseLevelStageAdd : 0;
   const bloodlineAttackLevelBonus =
     attackerBloodline.attackLevelBonusByCategory[categoryKey] +
     defenderBloodline.targetAttackLevelBonusByCategory[categoryKey];
@@ -711,6 +715,7 @@ export function calculateSkillResult({
     defenderContract.defenseLevelBonusByCategory[categoryKey] +
     attackerContract.targetDefenseLevelBonusByCategory[categoryKey];
   const hasStageInput =
+    categoryDefenseLevelStageAdd !== 0 ||
     attackLevelStage !== undefined ||
     defenseLevelStage !== undefined ||
     traitResolution.attackLevelBonus !== 0 ||
@@ -726,6 +731,7 @@ export function calculateSkillResult({
     contractAttackLevelBonus;
   const totalDefenseLevelStage =
     (defenseLevelStage ?? 0) +
+    categoryDefenseLevelStageAdd +
     traitResolution.defenseLevelBonus +
     bloodlineDefenseLevelBonus +
     contractDefenseLevelBonus;
@@ -1358,6 +1364,7 @@ export function calculateSkillResult({
   const attackStageFor = (category) => attackStageForCategory(category);
   const defenseStageFor = (category) =>
     (defenseLevelStage ?? 0) +
+    (category === "magical" ? magicalDefenseLevelStageAdd : 0) +
     (categoryTraitResolutions[category]?.status === "exact"
       ? categoryTraitResolutions[category].defenseLevelBonus
       : 0) +

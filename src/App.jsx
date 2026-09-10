@@ -1027,6 +1027,10 @@ function CalculatorWorkspace({ snapshot }) {
           defenseLevelStage: clampStage(
             Number(selfOverrides.defenseLevelStage ?? 0) + deltas.targetDefense,
           ),
+          magicalDefenseLevelStageAdd: clampStage(
+            Number(selfOverrides.magicalDefenseLevelStageAdd ?? 0) +
+              Number(operations.targetMagicalDefenseStageAdd ?? 0),
+          ),
           fixedPowerAdd: ownFixedPower,
           fixedPowerAddsBySlot: ownFixedPowerAddsBySlot,
           skillPowerPercentAddsBySlot: ownSkillPowerPercentAddsBySlot,

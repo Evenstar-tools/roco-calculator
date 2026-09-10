@@ -77,6 +77,7 @@ export function statusOrDefenseSkillResult({
       defenderContract.targetAttackLevelBonusByCategory[category];
     const statusDefenseStageFor = (category) =>
       defenseLevelStage +
+      (category === "magical" ? finiteNumber(directionOverrides.magicalDefenseLevelStageAdd) ?? 0 : 0) +
       panelTrait.defenseLevelBonus +
       defenderBloodline.defenseLevelBonusByCategory[category] +
       attackerBloodline.targetDefenseLevelBonusByCategory[category] +

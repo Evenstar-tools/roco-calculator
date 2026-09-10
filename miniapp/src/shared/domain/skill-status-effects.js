@@ -174,6 +174,11 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   霜冻: { targetDefense: -10 },
+  寒风吹: {
+    operations() {
+      return { targetMagicalDefenseStageAdd: -5 };
+    },
+  },
   龙吟: { ownAttack: 15, ownSpeedFlat: 80 },
   麻痹: {
     conditional: {
