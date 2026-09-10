@@ -222,12 +222,29 @@ export function applyBattleActivation({
   const previousReduction = Number(
     next.directions[targetDirection]?.reduction ?? 1,
   );
-  const stateChanged = previousReduction !== 1;
+  let stateChanged = previousReduction !== 1;
   updateDirection(next, targetDirection, { reduction: 1 });
 
   const context = skillMode === "single"
     ? next.directions[selfDirection].context ?? {}
     : skillContext(entry);
+  const activeStatus = next.directions[selfDirection].overrides?.activeDefenseStatus;
+  if (activeStatus) {
+    const remaining = { ...next.directions[selfDirection].overrides.skillPowerPercentAddsBySlot };
+    for (const [slot, amount] of Object.entries(activeStatus.powerPercentAddsBySlot ?? {})) {
+      const value = Number(remaining[slot] ?? 0) - Number(amount);
+      if (Math.abs(value) < 1e-9) delete remaining[slot];
+      else remaining[slot] = value;
+    }
+    updateDirection(next, selfDirection, {
+      overrides: { activeDefenseStatus: null, skillPowerPercentAddsBySlot: remaining },
+    });
+    stateChanged = true;
+    if (activeStatus.skillId === skill.id && activeStatus.slotIndex === skillIndex &&
+      activeStatus.contextSignature === JSON.stringify(context)) {
+      return { applied: true, reason: null, state: next };
+    }
+  }
   const statusTriggerCount = skillMode === "single"
     ? next.directions[selfDirection].statusTriggerCount
     : entry && typeof entry === "object"
@@ -379,6 +396,26 @@ export function applyBattleActivation({
       (candidate) => candidate.type === operations.powerPercentType,
       Number(operations.powerPercentForType),
     );
+  }
+  const transientPowerPercent = Number(operations.transientPowerPercentForAllAttacks);
+  if (Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0) {
+    const additions = addBySlot(next, snapshot, side, {}, () => true, transientPowerPercent);
+    for (const [slot, amount] of Object.entries(additions)) {
+      skillPowerPercentAddsBySlot = {
+        ...skillPowerPercentAddsBySlot,
+        [slot]: Number(skillPowerPercentAddsBySlot[slot] ?? 0) + amount,
+      };
+    }
+    updateDirection(next, selfDirection, {
+      overrides: {
+        activeDefenseStatus: {
+          contextSignature: JSON.stringify(context),
+          powerPercentAddsBySlot: additions,
+          skillId: skill.id,
+          slotIndex: skillIndex,
+        },
+      },
+    });
   }
   const ownSpeedFlat = doublePositive(
     Number(selfOverrides.attackerSpeedFlat ?? 0) + deltas.ownSpeedFlat,

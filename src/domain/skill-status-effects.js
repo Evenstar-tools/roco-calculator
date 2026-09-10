@@ -43,6 +43,15 @@ const STATUS_EFFECTS = Object.freeze({
     requiresCounter: true,
   },
   热身运动: { ownHitCountAdd: 3 },
+  热身: {
+    inputs: [booleanInput("counterDefenseSucceeded", "应对防御成功")],
+    operations(context) {
+      return {
+        transientPowerPercentForAllAttacks:
+          context.counterDefenseSucceeded === true ? 3 : 1,
+      };
+    },
+  },
   惊鸿一瞥: { ownHitCountAdd: 1 },
   仰望夜空: { ownAttack: 7, ownDefense: 7 },
   重组: {

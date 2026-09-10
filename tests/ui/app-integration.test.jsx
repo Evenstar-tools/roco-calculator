@@ -295,6 +295,16 @@ const snapshot = {
     },
     {
       basePower: 0,
+      category: "status",
+      cost: 1,
+      description: "下一次攻击时，技能威力翻倍，应对防御：改为威力变为4倍。",
+      id: "warm-up-power",
+      name: "热身",
+      ruleId: null,
+      type: "火",
+    },
+    {
+      basePower: 0,
       category: "defense",
       cost: 2,
       description:
@@ -2337,6 +2347,33 @@ test("manual static power ignores later fixed bonuses until restored", async () 
   await user.click(screen.getByRole("button", { name: "恢复自动威力" }));
 
   expect(power).toHaveValue(100);
+});
+
+test("热身在未启用、普通触发、应对防御之间按1、2、4倍切换而不累加", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  const first = screen.getByRole("combobox", { name: "攻击方技能1" });
+  await user.clear(first);
+  await user.type(first, "热身");
+  await user.click(screen.getByRole("option", { name: /热身(?!运动)/ }));
+  const second = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(second);
+  await user.type(second, "风力冲击");
+  await user.click(screen.getByRole("option", { name: /风力冲击/ }));
+  const power = () => screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" });
+  const trigger = () => screen.getByText("下一次攻击时，技能威力翻倍，应对防御：改为威力变为4倍。");
+  expect(power()).toHaveValue(80);
+  await user.click(trigger());
+  expect(power()).toHaveValue(160);
+  await user.click(screen.getByRole("checkbox", { name: "攻击方技能1应对防御成功" }));
+  await user.click(trigger());
+  expect(power()).toHaveValue(320);
+  await user.click(trigger());
+  expect(power()).toHaveValue(80);
+  await user.click(trigger());
+  expect(power()).toHaveValue(320);
 });
 
 test("toggles Quench's checked response without stacking its doubling", async () => {

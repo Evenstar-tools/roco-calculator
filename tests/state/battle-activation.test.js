@@ -155,6 +155,26 @@ function createSnapshot() {
 }
 
 describe("shared battle activation", () => {
+  test("热身的临时威力支持2倍与4倍切换，再次触发取消且不改其他方向", () => {
+    const snapshot = createSnapshot();
+    snapshot.skills.push({ id: "warm-up-power", name: "热身", category: "status", basePower: 0, type: "火" });
+    const state = createInitialState(snapshot);
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.skills.four = [{ skillId: "warm-up-power", context: {} }, "scratch", "grass-skill", "test-shield"];
+    const activate = (current, skillIndex = 0) => applyBattleActivation({ side: "attacker", skillIndex, snapshot, state: current });
+    const doubled = activate(state);
+    expect(doubled.applied).toBe(true);
+    expect(doubled.state.directions.forward.overrides.skillPowerPercentAddsBySlot).toEqual({ 2: 1, 3: 1 });
+    doubled.state.sides.attacker.skills.four[0].context.counterDefenseSucceeded = true;
+    const quadrupled = activate(doubled.state);
+    expect(quadrupled.state.directions.forward.overrides.skillPowerPercentAddsBySlot).toEqual({ 2: 3, 3: 3 });
+    const cleared = activate(quadrupled.state);
+    expect(cleared.state.directions.forward.overrides.skillPowerPercentAddsBySlot).toEqual({});
+    const attack = activate(activate(cleared.state).state, 1);
+    expect(attack.state.directions.forward.overrides.skillPowerPercentAddsBySlot).toEqual({});
+    expect(quadrupled.state.directions.reverse.overrides.skillPowerPercentAddsBySlot ?? {}).toEqual({});
+  });
   test("advances a choice skill twice when Moon Memory acquired a choice trait", () => {
     const snapshot = createSnapshot();
     snapshot.spirits[0].traitIds = ["moon-memory"];

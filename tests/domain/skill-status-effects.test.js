@@ -8,6 +8,18 @@ import {
 const skill = (name, extra = {}) => ({ name, ...extra });
 
 describe("skill status effects", () => {
+  test("热身默认让下次攻击翻倍，应对防御成功改为四倍且不受萌芽叠加", () => {
+    const warmUp = skill("热身", { category: "status", basePower: 0 });
+    expect(getSkillStatusEffectInputs(warmUp)).toEqual([
+      expect.objectContaining({ contextKey: "counterDefenseSucceeded", label: "应对防御成功" }),
+    ]);
+    expect(resolveSkillStatusActivation(warmUp)).toMatchObject({
+      applied: true, operations: { transientPowerPercentForAllAttacks: 1 },
+    });
+    expect(resolveSkillStatusActivation(warmUp, { counterDefenseSucceeded: true, sproutStacks: 3 })).toMatchObject({
+      applied: true, operations: { transientPowerPercentForAllAttacks: 3 },
+    });
+  });
   test("减压阀暴露已使用次数供相邻技能结算", () => {
     expect(getSkillStatusEffectInputs(skill("减压阀"))).toEqual([
       expect.objectContaining({
