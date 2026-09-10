@@ -50,8 +50,12 @@ export function querySpiritFamilies(season, { skillIds = [], query = "", source 
   return [...groups].map(([id, members]) => {
     const ordinary = members.filter(member => member.stage !== "首领");
     const candidates = ordinary.length ? ordinary : members;
-    // 搜索具体精灵时仍精确定位；技能反查优先使用可学的最终普通形态。
-    const representative = (!skillIds.length && query.trim() && members.find(member => matchedIds.has(member.id))) ||
+    // 正式名称保留具体形态；家族共有别名和技能反查优先最终普通形态。
+    const matchedMembers = members.filter(member => matchedIds.has(member.id));
+    const namedMatch = matchedMembers.find(member => member.fullName.includes(query.trim()));
+    const aliasMatch = [...matchedMembers.filter(member => member.stage !== "首领")]
+      .sort((a, b) => (ranks[b.stage] ?? 0) - (ranks[a.stage] ?? 0))[0];
+    const representative = (!skillIds.length && query.trim() && (namedMatch || aliasMatch)) ||
       [...candidates].sort((a, b) => (ranks[b.stage] ?? 0) - (ranks[a.stage] ?? 0))[0];
     return { id, members, representative };
   });

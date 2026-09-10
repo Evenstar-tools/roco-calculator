@@ -170,6 +170,10 @@ describe("bundled miniapp runtime", () => {
       aliases: ["UFO", "扫地机器人"],
       fullName: "食尘短绒",
     });
+    expect(
+      bundled.spirits.filter((spirit) => spirit.aliases?.includes("苹果"))
+        .map((spirit) => spirit.fullName).sort(),
+    ).toEqual(["半朽蜜果灵", "蜜果骸"]);
   });
 
   test("keeps only pinyin search aliases in the bundled skill payload", () => {

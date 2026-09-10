@@ -1,6 +1,8 @@
 import { expect, test } from "vitest";
 import { readFileSync } from "node:fs";
 import { unpackCatalog } from "../../src/features/skill-query/catalog.js";
+import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
+import { createSpiritSearchIndex } from "../../src/data/search-index.js";
 import { matchesSource, querySpiritFamilies, spiritSkills } from "../../src/features/skill-query/query-model.js";
 
 const season = {
@@ -12,6 +14,17 @@ const season = {
     { spiritId: "c", skillIds: ["x", "y", "z"], acquisitions: { x: ["默认学习", "技能石", "技能石"], y: ["火血脉"], z: ["等级待确认"] } },
   ],
 };
+
+test("苹果搜索蜜果骸家族，别名进入最终形态，正式名称仍精确定位", () => {
+  const catalog = unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
+  const current = catalog.seasons.find(item => item.id === "S4");
+  const metadata = withCalculatorExtras(JSON.parse(readFileSync("data/snapshots/current.json", "utf8"))).spirits;
+  expect(createSpiritSearchIndex(metadata).search("苹果").map(item => item.fullName).sort()).toEqual(["半朽蜜果灵", "蜜果骸"].sort());
+  const families = querySpiritFamilies(current, { query: "苹果", metadata });
+  expect(families).toHaveLength(1);
+  expect(families[0].representative.fullName).toBe("半朽蜜果灵");
+  expect(querySpiritFamilies(current, { query: "蜜果骸", metadata })[0].representative.fullName).toBe("蜜果骸");
+});
 test("先判断同一形态全部可学，再按家族聚合，不能跨形态凑技能", () => {
   expect(querySpiritFamilies(season, { skillIds: ["x", "y"] }).map((family) => family.representative.id)).toEqual(["c"]);
   expect(querySpiritFamilies(season, { skillIds: ["y"], query: "幼体" })[0].representative.id).toBe("b");

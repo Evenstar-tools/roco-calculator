@@ -48,6 +48,7 @@ export default function SkillQueryPanel({ onClose, skills = [], spirits = [] }) 
   const previous = data?.seasons[data.seasons.indexOf(season) - 1];
   const changes = useMemo(() => previous && season ? seasonChanges(previous, season) : null, [previous, season]);
   const skillMap = useMemo(() => new Map(skills.map((skill) => [skill.id, skill])), [skills]);
+  const spiritMap = useMemo(() => new Map(spirits.map((spirit) => [spirit.id, spirit])), [spirits]);
   const filtered = useMemo(() => (season?.skills ?? []).filter((skill) =>
     (!type || skill.type === type) && (!category || skill.category === category) &&
     `${skill.name} ${skill.description}`.toLowerCase().includes(query.trim().toLowerCase()) &&
@@ -57,7 +58,9 @@ export default function SkillQueryPanel({ onClose, skills = [], spirits = [] }) 
   const gains = (changes?.gains ?? []).map((entry) => ({ ...entry,
     spirit: season.spirits.find(({ id }) => id === entry.spiritId),
     skills: entry.skillIds.map((id) => season.skills.find((item) => item.id === id)).filter(Boolean),
-  })).filter((entry) => entry.spirit?.fullName.includes(query.trim()) || entry.skills.some((item) => item.name.includes(query.trim())));
+  })).filter((entry) => entry.spirit?.fullName.includes(query.trim()) ||
+    spiritMap.get(entry.spiritId)?.aliases?.some((alias) => alias.includes(query.trim())) ||
+    entry.skills.some((item) => item.name.includes(query.trim())));
   const filters = data && <div className="skill-query__filters"><input aria-label="搜索技能或精灵" placeholder={view === "gains" ? "搜索精灵或新学技能" : "搜索技能名称或效果"} value={query} onChange={(event) => setQuery(event.target.value)} />
     {view !== "gains" && <><select aria-label="技能属性" value={type} onChange={(event) => setType(event.target.value)}><option value="">全部属性</option>{[...new Set(season.skills.map((entry) => entry.type))].map((item) => <option key={item}>{item}</option>)}</select><select aria-label="技能种类" value={category} onChange={(event) => setCategory(event.target.value)}><option value="">全部种类</option>{Object.entries(categoryNames).map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></>}
     <select aria-label="查询赛季" value={season.id} onChange={(event) => setSeasonId(event.target.value)}>{data.seasons.map(({ id }) => <option key={id}>{id}</option>)}</select>

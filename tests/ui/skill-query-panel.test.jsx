@@ -64,6 +64,14 @@ test("赛季新技能显示图标，新技能学习面可双向跳转且排除�
   expect(screen.getByRole("button", { name: "喵喵 查看技能" })).toBeInTheDocument();
 });
 
+test("赛季学习更新支持精灵社区别名且保留正式名称", () => {
+  render(<SkillQueryPanel onClose={vi.fn()} spirits={[{ id: "cat", aliases: ["苹果"] }]} />);
+  fireEvent.click(screen.getByRole("tab", { name: "赛季学习更新" }));
+  fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "苹果" } });
+  expect(screen.getByRole("button", { name: "喵喵", exact: true })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "防御 普通 · 防御" })).toBeInTheDocument();
+});
+
 test("精灵别名查询、来源筛选与空态不伪造学习条件", () => {
   render(<SkillQueryPanel onClose={vi.fn()} spirits={[{ id: "cat", aliases: ["猫猫"] }]} />);
   fireEvent.click(screen.getByRole("button", { name: "查精灵技能" }));

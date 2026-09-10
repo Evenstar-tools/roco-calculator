@@ -78,6 +78,8 @@ describe("withCalculatorExtras", () => {
     expect(aliasesByName.get("电球咩咩")).toContain("电羊");
     expect(aliasesByName.get("彩蝶鲨")).toContain("莎莎");
     expect(aliasesByName.get("嗜波螺")).toContain("菠萝");
+    expect(aliasesByName.get("蜜果骸")).toContain("苹果");
+    expect(aliasesByName.get("半朽蜜果灵")).toContain("苹果");
     expect(aliasesByName.get("食尘短绒")).toEqual(
       expect.arrayContaining(["UFO", "扫地机器人"]),
     );
