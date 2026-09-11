@@ -87,6 +87,7 @@ import { FEATURED_USER_RELEASE } from "./data/user-release-notes.js";
 
 const loadSkillQueryPanel = () => import("./features/skill-query/SkillQueryPanel.jsx");
 const SkillQueryPanel = lazy(loadSkillQueryPanel);
+const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
 const preloadSkillQuery = () => {
   void loadSkillQueryPanel().catch(() => {});
   void import("./features/skill-query/load-catalog.js").then(({ loadSkillCatalog }) => loadSkillCatalog()).catch(() => {});
@@ -94,6 +95,8 @@ const preloadSkillQuery = () => {
 
 function CalculatorWorkspace({ snapshot }) {
   const [skillQueryOpen, setSkillQueryOpen] = useState(false);
+  const [rankingKind, setRankingKind] = useState(null);
+  const [rankingsVisited, setRankingsVisited] = useState(false);
   const initialState = useMemo(() => {
     const next = createProductInitialState(snapshot);
     return {
@@ -1645,6 +1648,7 @@ function CalculatorWorkspace({ snapshot }) {
         onShowProductAccess: () => overlays.setProductAccessOpen(true),
         onShowDataSource: () => overlays.setDataSourceOpen(true),
         onShowSkillQuery: () => setSkillQueryOpen(true),
+        onShowRanking: (kind) => { setRankingsVisited(true); setRankingKind(kind); },
       },
       buttonRef: overlays.menu.buttonRef,
       open: overlays.menu.open,
@@ -2106,6 +2110,7 @@ function CalculatorWorkspace({ snapshot }) {
       </div>
 
       </WorkspaceOverlays>
+      {rankingsVisited ? <Suspense fallback={<div role="status">正在打开排行榜…</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}
       {skillQueryOpen && <Suspense fallback={<div role="status">正在打开技能查询…</div>}><SkillQueryPanel skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>

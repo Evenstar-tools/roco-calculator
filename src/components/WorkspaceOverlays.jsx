@@ -172,7 +172,11 @@ export function WorkspaceOverlays({
             <span className="app-menu__badge">226</span>
           </button>
           <button type="button" onClick={() => { menuActions.onConfigLibraryExport?.(); menuActions.onClose?.(); }}>导入导出</button>
+          <div aria-hidden="true" className="app-menu__separator" />
+          <div aria-hidden="true" className="app-menu__group-label">查询工具</div>
           <button type="button" onClick={() => { menuActions.onShowSkillQuery?.(); menuActions.onClose?.(); }}>技能检索</button>
+          <button type="button" onClick={() => { menuActions.onShowRanking?.("speed"); menuActions.onClose?.(); }}>速度线排行</button>
+          <button type="button" onClick={() => { menuActions.onShowRanking?.("durability"); menuActions.onClose?.(); }}>耐久排行</button>
           <div aria-hidden="true" className="app-menu__separator" />
           <div aria-hidden="true" className="app-menu__group-label">
             帮助

@@ -7,6 +7,8 @@ import {
   MagnifyingGlass,
 } from "@phosphor-icons/react";
 import {
+  lazy,
+  Suspense,
   useEffect,
   useMemo,
   useRef,
@@ -22,7 +24,6 @@ import {
   validateAbilityInvestment,
 } from "../features/team-ability/domain/ability-investment.js";
 import {
-  STANDARD_DURABILITY_TEMPLATES,
   createDurabilityRanking,
 } from "../features/team-ability/domain/durability-ranking.js";
 import { calculateDurability } from "../features/team-ability/domain/durability.js";
@@ -46,6 +47,7 @@ import {
 } from "../domain/stat.js";
 import { NatureSelect } from "./NatureSelect.jsx";
 import { StatIcon } from "./StatIcon.jsx";
+const DurabilityRankingView = lazy(() => import("./RankingsPanel.jsx").then((module) => ({ default: module.DurabilityRankingView })));
 
 const INVESTMENT_STATS = Object.freeze([
   { key: "physicalAttack", label: "物攻" },
@@ -660,7 +662,7 @@ function SpeedRail({
   );
 }
 
-function SpeedOverview({
+export function SpeedOverview({
   backButtonRef,
   currentSpeed,
   locateTargetId,
@@ -670,11 +672,14 @@ function SpeedOverview({
   profileIds,
   targetId,
   targets,
+  standalone = false,
+  query = "",
+  onQueryChange,
 }) {
   const locateTargetRef = useRef(null);
-  const selected = targets.find((target) => target.id === targetId) ?? targets[0];
+  const selected = standalone ? null : targets.find((target) => target.id === targetId) ?? targets[0];
   const targetGroups = groupSpeedTargets(targets);
-  const nearestCurrentTarget = findNearestSpeedTarget(targets, currentSpeed);
+  const nearestCurrentTarget = standalone ? null : findNearestSpeedTarget(targets, currentSpeed);
   const resolvedLocateTargetId = targets.some((target) => target.id === locateTargetId)
     ? locateTargetId
     : nearestCurrentTarget?.id;
@@ -689,9 +694,9 @@ function SpeedOverview({
   return (
     <section
       aria-label="速度一览"
-      className="ability-full-ranking ability-speed-overview"
+      className={`ability-full-ranking ability-speed-overview${standalone ? " rank-speed-standalone" : ""}`}
       onKeyDown={(event) => {
-        if (event.key === "Tab") {
+        if (event.key === "Tab" && !standalone) {
           event.stopPropagation();
           trapOverviewFocus(event, event.currentTarget);
           return;
@@ -704,7 +709,7 @@ function SpeedOverview({
       }}
       role="region"
     >
-      <header>
+      {!standalone ? <header>
         <button onClick={onBack} ref={backButtonRef} type="button">
           <ArrowLeft aria-hidden="true" size={17} />
           返回能力分析
@@ -715,26 +720,26 @@ function SpeedOverview({
             当前配置 {formatNumber(currentSpeed)} · {targetGroups.length}档
           </small>
         </div>
-      </header>
+      </header> : null}
 
       <div className="ability-speed-overview__controls">
         <SpeedProfilePicker
           onProfilesChange={onProfilesChange}
           profileIds={profileIds}
         />
-        <SpeedTargetPicker
+        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input aria-label="搜索速度榜精灵" placeholder="名称、图鉴号或别名" value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
           onTargetChange={onTargetChange}
           selected={selected}
           targets={targets}
-        />
+        />}
       </div>
 
-      <div className="ability-speed-overview__selection" role="status">
+      {standalone ? <div className="rank-summary"><span>共 {targetGroups.length} 档 · 同速聚合</span><button type="button" onClick={() => {onQueryChange(""); onProfilesChange(["positive-max", "neutral-max"]);}}>重置</button></div> : <div className="ability-speed-overview__selection" role="status">
         <span>当前配置 <b>{formatNumber(currentSpeed)}</b></span>
         {selected ? (
           <span>已选目标 <b>{selected.name} · {formatNumber(selected.speed)}</b></span>
         ) : null}
-      </div>
+      </div>}
 
       <div className="ability-speed__table-wrap ability-speed-overview__table-wrap">
         <table aria-label="速度档位表" className="ability-speed__table">
@@ -882,92 +887,8 @@ function RankingPodium({ active, currentSpiritId, metric, rows }) {
   );
 }
 
-function FullRanking({ backButtonRef, currentRowRef, currentSpiritId, onBack, ranking, setMetric, setQuery, setRoleFilter, setTemplateId, metric, query, roleFilter, templateId }) {
-  return (
-    <section aria-label="完整耐久榜" className="ability-full-ranking">
-      <header>
-        <button onClick={onBack} ref={backButtonRef} type="button">
-          <ArrowLeft aria-hidden="true" size={17} />
-          返回能力分析
-        </button>
-        <div>
-          <h4>标准耐久榜</h4>
-          <small>最终形态与首领 · 搜索不改变名次</small>
-        </div>
-      </header>
-      <div className="ability-ranking-controls">
-        <label className="ability-ranking-search">
-          <MagnifyingGlass aria-hidden="true" size={16} />
-          <input
-            aria-label="搜索耐久榜精灵"
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="搜索精灵、图鉴号或属性"
-            value={query}
-          />
-        </label>
-        <select aria-label="耐久榜模板" onChange={(event) => setTemplateId(event.target.value)} value={templateId}>
-          {Object.values(STANDARD_DURABILITY_TEMPLATES).map((template) => (
-            <option key={template.id} value={template.id}>{template.label}</option>
-          ))}
-        </select>
-        <select aria-label="形态筛选" onChange={(event) => setRoleFilter(event.target.value)} value={roleFilter}>
-          <option value="all">最终形态 + 首领</option>
-          <option value="final">仅最终形态</option>
-          <option value="boss">仅首领</option>
-        </select>
-      </div>
-      <div aria-label="排行指标" className="ability-ranking-metrics" role="group">
-        {Object.entries(METRIC_LABELS).map(([key, label]) => (
-          <button aria-pressed={metric === key} key={key} onClick={() => setMetric(key)} type="button">{label}</button>
-        ))}
-      </div>
-      <p className="ability-ranking-counts">
-        已纳入 {ranking.counts.eligible} · 已排除 {ranking.counts.excluded} · 当前显示 {ranking.counts.visible}
-      </p>
-      <div className="ability-ranking-table-wrap">
-        <table aria-label="标准耐久完整榜" className="ability-ranking-table">
-          <colgroup>
-            <col className="ability-ranking-table__rank" />
-            <col className="ability-ranking-table__spirit" />
-            <col />
-            <col />
-            <col />
-          </colgroup>
-          <thead>
-            <tr>
-              <th>排名</th>
-              <th>精灵</th>
-              <th>物理耐久</th>
-              <th>魔法耐久</th>
-              <th>综合耐久</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ranking.rows.map((entry) => (
-              <tr
-                aria-current={entry.spiritId === currentSpiritId ? "true" : undefined}
-                className={entry.spiritId === currentSpiritId ? "is-current" : ""}
-                key={entry.spiritId}
-                ref={entry.spiritId === currentSpiritId ? currentRowRef : undefined}
-              >
-                <td data-label="排名">{entry.filteredRank[metric]}</td>
-                <th scope="row">
-                  <div className="ability-ranking-spirit">
-                    {assetUrl(entry.spirit) ? <img alt="" src={assetUrl(entry.spirit)} /> : null}
-                    <span>{entry.spirit.fullName}</span>
-                    <small>{entry.formRole === "boss" ? "首领" : "最终形态"}</small>
-                  </div>
-                </th>
-                <td data-label="物理耐久">{formatNumber(entry.durability.display.physical)}</td>
-                <td data-label="魔法耐久">{formatNumber(entry.durability.display.magical)}</td>
-                <td data-label="综合耐久">{formatNumber(entry.durability.display.combined)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  );
+function FullRanking(props) {
+  return <Suspense fallback={<div role="status">正在打开耐久榜…</div>}><DurabilityRankingView {...props} /></Suspense>;
 }
 
 export function AbilityWorkbench({
@@ -1000,6 +921,7 @@ export function AbilityWorkbench({
   );
   const [draft, setDraft] = useState(() => cloneConfiguration(configuration));
   const [detailPage, setDetailPage] = useState("analysis");
+  const [rankingResistance, setRankingResistance] = useState(undefined);
   const [lockedDimensions, setLockedDimensions] = useState(() =>
     ["physicalAttack", "magicalAttack"].filter(
       (stat) => Number(configuration?.displayIvs?.[stat]) === 60,
@@ -1373,6 +1295,9 @@ export function AbilityWorkbench({
     return (
       <div className="ability-workbench" ref={scrollRef}>
         <FullRanking
+          snapshot={snapshot}
+          resistance={rankingResistance}
+          setResistance={setRankingResistance}
           backButtonRef={backButtonRef}
           currentRowRef={currentRankingRowRef}
           currentSpiritId={spirit.id}

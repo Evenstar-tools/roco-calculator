@@ -51,7 +51,7 @@ describe("release performance budget", () => {
     expect(DEFAULT_PERFORMANCE_BUDGETS.jsGzip).toBe(236 * 1024);
     expect(
       DEFAULT_PERFORMANCE_BUDGETS.jsGzip + DEFAULT_HARD_OVERAGE_BY_KEY.jsGzip,
-    ).toBe(256 * 1024);
+    ).toBe(272 * 1024);
     expect(DEFAULT_PERFORMANCE_BUDGETS.jsRaw).toBe(810 * 1024);
     expect(
       DEFAULT_PERFORMANCE_BUDGETS.jsRaw + DEFAULT_HARD_OVERAGE_BY_KEY.jsRaw,

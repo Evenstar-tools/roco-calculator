@@ -525,6 +525,7 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
   await drawer.getByRole("button", { name: "查看完整耐久榜" }).click();
 
   const ranking = drawer.getByRole("region", { name: "完整耐久榜" });
+  await expect(ranking).toBeVisible();
   await expect(ranking.locator("thead th").allTextContents()).resolves.toEqual([
     "排名",
     "精灵",
@@ -537,17 +538,17 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
   await page.setViewportSize({ width: 927, height: 900 });
   const firstSpiritCell = ranking.locator("tbody tr").first().locator("th");
   const cellBox = await firstSpiritCell.boundingBox();
-  const contentBox = await firstSpiritCell.locator(".ability-ranking-spirit").boundingBox();
+  const contentBox = await firstSpiritCell.locator(".rank-spirit").boundingBox();
   expect(cellBox).not.toBeNull();
   expect(contentBox).not.toBeNull();
   expect(Math.abs(
-    (cellBox.x + cellBox.width - 10) - (contentBox.x + contentBox.width),
+    (cellBox.x + 9) - contentBox.x,
   )).toBeLessThanOrEqual(2);
   // 列名存在还不够：自动定位当前精灵及滚到榜单中段、底部后仍须可读。
-  const editorPane = drawer.locator(".team-drawer__editor-pane");
+  const editorPane = ranking.locator(".rank-table-scroll");
   const assertPinnedHeader = async () => {
     const viewport = await editorPane.boundingBox();
-    const header = await ranking.locator("thead").boundingBox();
+    const header = await ranking.locator("thead th").first().boundingBox();
     expect(header.y).toBeGreaterThanOrEqual(viewport.y);
     expect(header.y + header.height).toBeLessThanOrEqual(viewport.y + 50);
     for (const column of await ranking.locator("thead th").all()) {
@@ -564,7 +565,7 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
       for (const fraction of [0.35, 0.7, 1]) {
         await editorPane.evaluate((node, value) => node.scrollTop = (node.scrollHeight - node.clientHeight) * value, fraction);
         await expect.poll(async () => {
-          const box = await ranking.locator("thead").boundingBox();
+          const box = await ranking.locator("thead th").first().boundingBox();
           const viewport = await editorPane.boundingBox();
           return box.y >= viewport.y && box.y <= viewport.y + 2;
         }).toBe(true);

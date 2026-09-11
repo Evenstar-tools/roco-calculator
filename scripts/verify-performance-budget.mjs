@@ -19,10 +19,10 @@ export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
 });
 
 export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
-// 2026-09-04：网页 / 桌面 JS 分别在 256 KiB gzip、880 KiB 原始体积时阻断
+// 2026-09-11：独立排行榜扩充，经确认将 gzip 硬上限调至 272 KiB；原始体积仍为 880 KiB。
 export const DEFAULT_HARD_OVERAGE_BY_KEY = Object.freeze({
   clientTotal: 0.5 * 1024 * 1024,
-  jsGzip: 20 * 1024,
+  jsGzip: 36 * 1024,
   jsRaw: 70 * 1024,
 });
 
