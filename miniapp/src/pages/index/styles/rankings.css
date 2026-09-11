@@ -1,7 +1,7 @@
 /*postcss-pxtransform disable*/
 .ranking-sheet { position: fixed; inset: 0; z-index: 1800; display: flex; flex-direction: column; background: var(--surface-card); color: var(--text-primary); padding-top: env(safe-area-inset-top, 0px); font-size: 13px; }
-.ranking-sheet button { width: auto; flex-shrink: 0; margin: 0; font-size: 12px; line-height: 1.4; padding: 9px; border: 1px solid var(--border-neutral); border-radius: 6px; background: var(--surface-card); color: var(--text-primary); }
-.ranking-sheet button::after { border: 0; }
+.ranking-sheet .ranking-action { width: auto; flex-shrink: 0; margin: 0; font-size: 12px; line-height: 1.4; padding: 9px; border: 1px solid var(--border-neutral); border-radius: 6px; background: var(--surface-card); color: var(--text-primary); }
+.ranking-sheet .ranking-action::after { border: 0; }
 .ranking-sheet__heading { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; min-height: 36px; border-bottom: 1px solid var(--border-neutral); font-size: 18px; font-weight: 700; background: var(--surface-muted); }
 .ranking-toolbar { display: flex; gap: 6px; padding: 10px 12px 6px; align-items: center; }
 .ranking-toolbar input,.ranking-toolbar taro-input-core { flex: 1; min-width: 0; border: 1px solid var(--border-neutral); border-radius: 6px; padding: 0 8px; height: 40px; display: flex; align-items: center; }
@@ -15,11 +15,11 @@
 .ranking-sheet .ranking-check--severe,.ranking-tone--severe { color: #b63a40; }
 .ranking-sheet .ranking-check.is-checked { background: var(--surface-pressed); border-color: currentColor; }
 .ranking-metrics { display: flex; margin: 0 12px 6px; padding: 3px; background: var(--surface-muted); border-radius: 7px; }
-.ranking-metrics button { flex: 1; border: 0; background: transparent; }
-.ranking-metrics button.is-active { color: #5846dc; background: var(--surface-card); font-weight: 700; }
+.ranking-sheet .ranking-metrics .ranking-action { flex: 1; border: 0; background: transparent; }
+.ranking-sheet .ranking-metrics .is-active { color: #5846dc; background: var(--surface-card); font-weight: 700; }
 .ranking-summary,.ranking-columns { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 14px; border-bottom: 1px solid var(--border-neutral); font-size: 11px; }
 .ranking-summary { background: var(--surface-muted); color: var(--text-secondary); }
-.ranking-summary button { padding: 3px; border: 0; background: transparent; color: var(--text-secondary); flex-shrink: 0; }
+.ranking-sheet .ranking-summary .ranking-action { padding: 3px; border: 0; background: transparent; color: var(--text-secondary); flex-shrink: 0; }
 .ranking-columns { color: var(--text-secondary); }
 .ranking-sheet__scroll { flex: 1; min-height: 0; height: 0; overflow-y: auto; }
 .ranking-sheet .ranking-row { display: flex; width: calc(100% - 24px); margin: 0 12px; align-items: center; gap: 8px; border: 0; border-bottom: 1px solid var(--border-neutral); border-radius: 0; min-height: 72px; padding: 10px 0; text-align: left; }

@@ -1,9 +1,13 @@
 import { useMemo, useState } from "react";
-import { Button, Image, Input, Picker, ScrollView, Text, View } from "@tarojs/components";
+import { Button as NativeButton, Image, Input, Picker, ScrollView, Text, View } from "@tarojs/components";
 import { ELEMENT_TYPES } from "../shared/domain/type-chart.js";
 import { createDurabilityRanking, getDurabilityMultipliers, STANDARD_DURABILITY_TEMPLATES } from "../shared/features/team-ability/domain/durability-ranking.js";
 import { SPEED_TARGET_PROFILES } from "../shared/features/team-ability/domain/speed-targets.js";
 import { createSpeedRanking, DEFAULT_RANKING_PROFILES, RANKING_METRIC_LABELS, multiplierSummary, multiplierTone } from "../shared/features/team-ability/domain/ranking-tools.js";
+
+function Button({ className = "", ...props }) {
+  return <NativeButton className={`ranking-action ${className}`} {...props} />;
+}
 
 function Choice({ label, options, value, onChange }) {
   const index = Math.max(0, options.findIndex(([id]) => id === value));
