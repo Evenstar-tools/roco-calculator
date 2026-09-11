@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <sub>当前赛季：S4「月涌狂想」　｜　源码版本：v2.0.0　｜　<a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">下载最新 Windows 安装包</a></sub>
+  <sub>当前赛季：S4「月涌狂想」　｜　源码版本：v2.0.1　｜　<a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">下载最新 Windows 安装包</a></sub>
 </p>
 
 ![洛克计算器界面](docs/images/app-overview.png)

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { resetUiuxStorage } from "./helpers/uiux-helpers.js";
+import { FEATURED_USER_RELEASE } from "../../src/data/user-release-notes.js";
 import { readFileSync } from "node:fs";
 
 const fixture = JSON.parse(readFileSync(new URL("../fixtures/qiandao-lineup.json", import.meta.url), "utf8"));
@@ -80,7 +81,7 @@ for (const width of [1440, 390, 320]) for (const theme of ["light", "dark"]) {
       await capture(page, page.getByRole("dialog").last(), `${name}-${width}-${theme}`);
       await page.getByRole("button", { name: "返回关于与来源", exact: true }).click();
     }
-    dialog = await menu(page, "新功能 v2.0.0");
+    dialog = await menu(page, `新功能 ${FEATURED_USER_RELEASE.version}`);
     await capture(page, dialog, `updates-${width}-${theme}`);
 
     dialog = await menu(page, "获取应用");

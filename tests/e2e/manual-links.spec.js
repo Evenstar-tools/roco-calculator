@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { resetUiuxStorage } from "./helpers/uiux-helpers.js";
+import { FEATURED_USER_RELEASE } from "../../src/data/user-release-notes.js";
 
 const manualUrl = "https://my.feishu.cn/docx/SGXddHIWgoZLd4xeouScumb3ngb?from=from_copylink";
 
@@ -9,7 +10,7 @@ for (const width of [1440, 390, 320]) for (const theme of ["light", "dark"]) {
     await page.setViewportSize({ width, height: 900 });
     // 仅验证应用的外链跳转契约，不依赖飞书登录或共享权限。
     await context.route("https://my.feishu.cn/**", route => route.fulfill({ body: "manual destination" }));
-    for (const [entry, title] of [["关于与来源", "关于与来源"], ["新功能 v2.0.0", "新功能介绍"]]) {
+    for (const [entry, title] of [["关于与来源", "关于与来源"], [`新功能 ${FEATURED_USER_RELEASE.version}`, "新功能介绍"]]) {
       await page.goto("/");
       await expect(page.getByRole("combobox", { name: "攻击方精灵" })).toBeVisible();
       if (await page.locator("html").getAttribute("data-theme") !== theme) await page.getByRole("button", { name: "切换主题" }).click();

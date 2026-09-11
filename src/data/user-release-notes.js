@@ -221,6 +221,20 @@ const S4_PREVIEW_V168_RELEASE = createStructuredRelease({
 });
 
 export const USER_RELEASE_NOTES = Object.freeze([
+  createRelease({
+    version: "v2.0.1",
+    date: "2026.09.11",
+    title: "S4独立排行榜",
+    whatsNew: {
+      title: "S4工具更新",
+      items: [
+        { title: "独立排行榜", description: "菜单直达两榜，原入口保留。" },
+        { title: "倍率多选", description: "按承受属性与倍率筛选有效耐久。" },
+      ],
+    },
+    features: ["新增独立排行榜、倍率筛选与只读详情。"],
+    fixes: ["修复小程序入口和结果栏，同步四只预设。"],
+  }),
   createStructuredRelease({
     version: "v2.0.0",
     date: "2026.09.10",

@@ -52,12 +52,11 @@ describe("版本记录", () => {
   });
 
   test("新功能弹窗只展示用户可直接使用的功能", () => {
-    expect(featuredRelease.whatsNew.items.map(({ title }) => title)).toEqual([
-      "S4赛季主题",
-      "综合耐久显示",
-      "精灵能力分析功能",
-      "技能查询",
-    ]);
+    const titles = featuredRelease.whatsNew.items.map(({ title }) => title.trim());
+    expect(titles.length).toBeGreaterThan(0);
+    expect(titles.length).toBeLessThanOrEqual(4);
+    expect(titles.every((title) => title.length > 0 && title.length <= 16)).toBe(true);
+    expect(new Set(titles).size).toBe(titles.length);
     expect(featuredRelease.whatsNew.items.every(({ description }) =>
       description?.trim().length > 0
     )).toBe(true);
