@@ -474,6 +474,10 @@
     display: block;
   }
 
+  .result-bar__action-label {
+    display: none;
+  }
+
   .parameter-sheet,
   .conditions-sheet,
   .result-sheet,

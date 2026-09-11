@@ -169,6 +169,7 @@ const ResultBar = forwardRef(function ResultBar(
         ref={ref}
         tabIndex={0}
       >
+        <Text className="result-bar__action-label">查看伤害详情</Text>
         <Image
           alt=""
           aria-hidden="true"

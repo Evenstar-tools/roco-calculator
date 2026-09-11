@@ -37,6 +37,14 @@ const quickControlsSource = readSource("src/components/QuickCombatantControls.js
 const resultSheetSource = readSource("src/components/ResultSheet.jsx");
 
 describe("reference-first responsive CSS", () => {
+  test("centers the H5 result HP input and keeps the desktop details action anchored", () => {
+    const skills = styles["skills.css"];
+    expect(skills).toMatch(/\.result-bar__target-input\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*center;/u);
+    expect(skills).toMatch(/\.result-bar__target-input\s*>\s*\.weui-input\s*\{[^}]*text-align:\s*center;/u);
+    expect(skills).toMatch(/\.result-bar__action\s*\{[^}]*width:\s*100%;[^}]*margin:\s*0;/u);
+    expect(styles["responsive.css"]).toMatch(/\.result-bar__action-label\s*\{[^}]*display:\s*none;/u);
+  });
+
   test("loads shared tokens before the ordered style modules", () => {
     expect(pageCss.trim()).toBe(
       [
