@@ -16,6 +16,10 @@ export function Text({ children, ...props }) {
   return <span {...props}>{children}</span>;
 }
 
+export function Picker({ children, range, value, mode: _mode, onChange, ...props }) {
+  return <label>{children}<select {...props} value={value} onChange={(event) => onChange({ detail: { value: event.target.value } })}>{range.map((text, index) => <option key={text} value={index}>{text}</option>)}</select></label>;
+}
+
 export const Button = React.forwardRef(function Button(
   { children, hoverClass, openType, ...props },
   ref,

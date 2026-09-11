@@ -9,6 +9,13 @@ const MANIFEST_END = "\nSHARED_SOURCE_MANIFEST_END */";
 const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
 {
   "shared": [
+    "src/data/form-role-manifest-v1.js",
+    "src/features/team-ability/domain/durability.js",
+    "src/features/team-ability/domain/ranking-tools.js",
+    "src/features/team-ability/domain/durability-ranking.js",
+    "src/features/team-ability/domain/spirit-form-role.js",
+    "src/features/team-ability/domain/speed-targets.js",
+    "src/features/team-ability/domain/speed-modifiers.js",
     "src/domain/beast-flower-bloodline.js",
     "src/domain/baron-greed.js",
     "src/domain/bloodline-magic.js",

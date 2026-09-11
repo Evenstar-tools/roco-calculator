@@ -39,6 +39,7 @@ import { createFavoritesRepository } from "../../state/favorites.js";
 import { createPersistence } from "../../state/persistence.js";
 import bundledRuntime from "../../data/bundled-runtime.js";
 import "./index.css";
+import RankingSheet from "../../components/RankingSheet.jsx";
 
 const EXPANDED_COMMON_SPIRIT_CONFIG = expandBundledConfigLibrary(
   commonSpiritConfig,
@@ -122,6 +123,8 @@ export function createDefaultServices({
 
 export default function IndexPage({ services }) {
   const autosave = useRef(null);
+  const [rankingKind, setRankingKind] = useState(null);
+  const [visitedRankings, setVisitedRankings] = useState([]);
   const loadId = useRef(0);
   const router = useRouter();
   const compactDemo = router?.params?.legacyLayout !== "1";
@@ -655,6 +658,7 @@ export default function IndexPage({ services }) {
         onNegativeStatusChange={changeNegativeStatusEnabled}
         onQuickUndoChange={changeQuickUndoEnabled}
         onReset={resetCurrentPage}
+        onOpenRanking={(kind) => { setVisitedRankings((current) => [...new Set([...current, kind])]); setRankingKind(kind); }}
         onTeamAnalysisChange={changeTeamAnalysisEnabled}
         onTypeAnalysisChange={changeTypeAnalysisEnabled}
         quickUndoEnabled={pageState.quickUndoEnabled}
@@ -688,6 +692,7 @@ export default function IndexPage({ services }) {
         teamAnalysisMembers={pageState.teamAnalysisMembers}
         onTeamAnalysisMembersChange={changeTeamAnalysisMembers}
       />
+      {visitedRankings.map((kind) => <View key={kind} style={{ display: rankingKind === kind ? "block" : "none" }}><RankingSheet kind={kind} snapshot={pageState.snapshot} petImages={pageState.petImages} onClose={() => setRankingKind(null)} /></View>)}
     </View>
   );
 }

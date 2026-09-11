@@ -3,6 +3,8 @@ import path from "node:path";
 import { describe, expect, test } from "vitest";
 import { expandBundledRuntime } from "../src/data/expand-bundled-runtime.js";
 import decodedBundledRuntime from "../src/data/bundled-runtime.js";
+import { createDurabilityRanking } from "../src/shared/features/team-ability/domain/durability-ranking.js";
+import { createSpeedRanking } from "../src/shared/features/team-ability/domain/ranking-tools.js";
 
 const miniappRoot = process.cwd();
 const bundledRuntimePath = path.join(
@@ -15,6 +17,17 @@ const publicRuntimePath = path.join(
 );
 
 describe("bundled miniapp runtime", () => {
+  test("小程序与网页的耐久及速度排行保持一致", () => {
+    const bundled = expandBundledRuntime(JSON.parse(readFileSync(bundledRuntimePath, "utf8")));
+    const web = JSON.parse(readFileSync(publicRuntimePath, "utf8"));
+    for (const attackType of ["", "火", "水"]) {
+      const options = { attackType, multipliers: [0.25, 0.5], typeChart: web.typeChart };
+      const project = (snapshot) => createDurabilityRanking({ ...options, spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter }).rows.map((row) => [row.spiritId, row.filteredRank, row.durability.display]);
+      expect(project(bundled)).toEqual(project(web));
+    }
+    const projectSpeed = (snapshot) => createSpeedRanking({ snapshot }).map((group) => [group.speed, group.targets.map((target) => [target.spiritId, target.profileId])]);
+    expect(projectSpeed(bundled)).toEqual(projectSpeed(web));
+  });
   test("keeps every public spirit and preserves its portrait contract", () => {
     expect(existsSync(bundledRuntimePath)).toBe(true);
     if (!existsSync(bundledRuntimePath)) return;

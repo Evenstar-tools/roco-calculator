@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import AppHeader from "../src/components/AppHeader.jsx";
 import SeasonBackdrop from "../src/components/SeasonBackdrop.jsx";
@@ -129,7 +129,9 @@ describe("miniapp shell", () => {
     expect(settingsText.indexOf("重置本页"))
       .toBeLessThan(settingsText.indexOf("常用精灵配置"));
     expect(dialog.querySelector(".settings-sheet__body-content").firstElementChild)
-      .toHaveAttribute("aria-label", "重置本页");
+      .toHaveTextContent("查询工具");
+    expect(within(dialog).getByRole("button", { name: "耐久排行" })).toBeEnabled();
+    expect(within(dialog).getByRole("button", { name: "速度线排行" })).toBeEnabled();
     expect(settingsText.indexOf("重置本页"))
       .toBeLessThan(settingsText.indexOf("数据来源"));
     expect(screen.getByText("数据来源")).toBeInTheDocument();

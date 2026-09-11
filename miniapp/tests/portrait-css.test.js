@@ -19,6 +19,7 @@ const styleFiles = [
   "compact-demo.css",
   "entity-change-hints.css",
   "season.css",
+  "rankings.css",
 ];
 const styles = Object.fromEntries(
   styleFiles.map((file) => [

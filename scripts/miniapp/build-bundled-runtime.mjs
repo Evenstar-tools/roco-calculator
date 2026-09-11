@@ -58,6 +58,12 @@ const spirits = runtime.spirits.map((spirit) => {
     baseName: spirit.baseName,
     variantName: spirit.variantName,
     fullName: spirit.fullName,
+    dexNo: spirit.dexNo,
+    stage: spirit.stage,
+    sourceCategory: spirit.sourceCategory,
+    source: spirit.source,
+    ...(spirit.provenance?.nrc?.id ? { provenance: { nrc: { id: spirit.provenance.nrc.id } } } : {}),
+    searchText: spirit.searchText,
     types: spirit.types,
     raceStats,
     ...(spirit.calculationStatus

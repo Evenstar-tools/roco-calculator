@@ -16,6 +16,7 @@ export default function AppHeader({
   onNegativeStatusChange,
   onQuickUndoChange,
   onReset,
+  onOpenRanking,
   onTeamAnalysisChange,
   onTypeAnalysisChange,
   quickUndoEnabled = true,
@@ -87,6 +88,9 @@ export default function AppHeader({
             </View>
             <ScrollView className="settings-sheet__body" scrollY>
               <View className="settings-sheet__body-content">
+              <Text className="settings-sheet__label">查询工具</Text>
+              {[["speed", "速度线排行"], ["durability", "耐久排行"]].map(([kind, label]) => <Button key={kind} className="settings-sheet__action-row" onClick={() => { setSettingsOpen(false); onOpenRanking?.(kind); }}>{label}</Button>)}
+              <View className="settings-sheet__divider" />
               <Button
                 aria-label="重置本页"
                 className="settings-sheet__reset"
