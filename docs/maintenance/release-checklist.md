@@ -75,5 +75,6 @@ npm run desktop:release-assets
 - [ ] Release 不上传 WebApp ZIP、小程序 ZIP 或 `SHA256SUMS.txt`；校验文件仅保留在本地发布归档。
 - [ ] 不再提供固定文件名的直链；应用内和网页入口统一打开当前 Release 页面。
 - [ ] 发布后下载回读，核对文件大小和 SHA256。
+- [ ] `rococalc.top` 已绑定 GitHub 自动部署：先推送 `origin/main`，再比对线上首页、Service Worker、运行数据及 JS/CSS 与本地发布构建的哈希；只有线上未更新或部署失败时才进入腾讯云控制台排查，不把控制台登录当作默认发布前置条件。
 - [ ] 线上站点验证真实版本，不以本地构建成功代替线上发布。
 - [ ] 本机安装包只保留当前稳定版和上一稳定版；旧版由 Release 保存。
