@@ -15,6 +15,21 @@ import {
 import miniappPackage from "../package.json";
 
 describe("miniapp shell", () => {
+  test("ranking entrances use the menu row anatomy and close settings before navigation", () => {
+    const onOpenRanking = vi.fn();
+    render(<AppHeader onOpenRanking={onOpenRanking} />);
+    for (const [kind, label] of [["speed", "速度线排行"], ["durability", "耐久排行"]]) {
+      fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+      const entry = screen.getByRole("button", { name: label });
+      expect(entry.querySelector(".settings-sheet__copy .settings-sheet__label")).toHaveTextContent(label);
+      expect(entry.querySelector(".settings-sheet__description")).not.toBeEmptyDOMElement();
+      expect(entry.querySelector(".settings-sheet__entry-icon")).toHaveAttribute("mode", "aspectFit");
+      fireEvent.click(entry);
+      expect(onOpenRanking).toHaveBeenLastCalledWith(kind);
+      expect(screen.queryByRole("dialog", { name: "设置" })).not.toBeInTheDocument();
+    }
+  });
+
   test("keeps the seasonal background decorative and settings interactive", () => {
     const { container } = render(<><SeasonBackdrop /><AppHeader /></>);
     const background = container.querySelector(".season-sky");

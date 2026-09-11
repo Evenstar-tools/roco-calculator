@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Button, ScrollView, Text, View } from "@tarojs/components";
+import { Button, Image, ScrollView, Text, View } from "@tarojs/components";
+import caretRightIcon from "../assets/icons/caret-right.png";
 import {
   MINIAPP_RELEASE_LABEL,
   MINIAPP_UPDATE_DATE,
@@ -88,8 +89,25 @@ export default function AppHeader({
             </View>
             <ScrollView className="settings-sheet__body" scrollY>
               <View className="settings-sheet__body-content">
-              <Text className="settings-sheet__label">查询工具</Text>
-              {[["speed", "速度线排行"], ["durability", "耐久排行"]].map(([kind, label]) => <Button key={kind} className="settings-sheet__action-row" onClick={() => { setSettingsOpen(false); onOpenRanking?.(kind); }}>{label}</Button>)}
+              <Text className="settings-sheet__group-label">查询工具</Text>
+              {[
+                ["speed", "速度线排行", "按速度档位查看精灵与配置"],
+                ["durability", "耐久排行", "按属性倍率筛选，比较精灵耐久"],
+              ].map(([kind, label, description], index) => <View key={kind}>
+                {index > 0 ? <View className="settings-sheet__divider" /> : null}
+                <Button
+                  aria-label={label}
+                  className="settings-sheet__action-row"
+                  hoverClass="settings-sheet__action-row--pressed"
+                  onClick={() => { setSettingsOpen(false); onOpenRanking?.(kind); }}
+                >
+                  <View className="settings-sheet__copy">
+                    <Text className="settings-sheet__label">{label}</Text>
+                    <Text className="settings-sheet__description">{description}</Text>
+                  </View>
+                  <Image alt="" aria-hidden="true" className="settings-sheet__entry-icon" mode="aspectFit" src={caretRightIcon} />
+                </Button>
+              </View>)}
               <View className="settings-sheet__divider" />
               <Button
                 aria-label="重置本页"
@@ -103,9 +121,7 @@ export default function AppHeader({
                     恢复计算参数，不影响收藏
                   </Text>
                 </View>
-                <Text aria-hidden="true" className="settings-sheet__chevron">
-                  ›
-                </Text>
+                <Image alt="" aria-hidden="true" className="settings-sheet__entry-icon" mode="aspectFit" src={caretRightIcon} />
               </Button>
               <View className="settings-sheet__divider" />
               <Button

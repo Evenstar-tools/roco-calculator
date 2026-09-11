@@ -224,6 +224,7 @@
   }
 
   .direction-switch__icon,
+  .settings-sheet__entry-icon,
   .result-bar__action-icon {
     filter: brightness(0) invert(0.85);
   }
