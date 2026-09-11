@@ -2249,7 +2249,7 @@
     },
     {
       "spiritId": "spirit_7d22156a66708de3",
-      "natureId": "adamant",
+      "natureId": "cheerful",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -2259,7 +2259,7 @@
         "magicalDefense": 0
       },
       "skills": [
-        "skill_3798b922d42fc1aa",
+        "skill_50d37932783c1b9d",
         "skill_bb40473fa454804c",
         "skill_1c52276f3f3d4b3e",
         "skill_9403fd3a6850b653"
@@ -3372,9 +3372,9 @@
       },
       "skills": [
         "skill_f299a496d784ca41",
-        "skill_d1d973cc929fbdf0",
-        "skill_b81224abae3ff5a5",
-        "skill_368e5d1a3556c828"
+        "skill_e85e1da0055eb0db",
+        "skill_d88cc9f8513c5b7f",
+        "skill_4375736cdfafd6a1"
       ],
       "traitValues": {
         "trait.blizzardWeather.844e52ec": true
@@ -4270,7 +4270,7 @@
         "skill_be1a16f6da08c932",
         "skill_382a8db9ab4e7a48",
         "skill_4b633f741c8ebd87",
-        "skill_f9d9220678ca28e1"
+        "skill_dbd391c5f03728c9"
       ],
       "traitValues": {}
     },
@@ -4343,9 +4343,9 @@
         "magicalDefense": 0
       },
       "skills": [
-        "skill_b688da558b9ff2e8",
-        "skill_a1fec53e8fb5a90d",
-        "skill_f5cf704678e0738c",
+        "skill_4375736cdfafd6a1",
+        "skill_dfe7184d14b2edcb",
+        "skill_867fc1b5f1fe54db",
         "skill_befd3ebf2018d7a8"
       ],
       "traitValues": {}

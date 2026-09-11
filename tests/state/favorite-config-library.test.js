@@ -176,6 +176,27 @@ describe("buildFavoriteConfigLibrary", () => {
 });
 
 describe("bundled popular config library", () => {
+  test.each([
+    ["波普鹿", "spirit_7d22156a66708de3", ["电弧", "裂石", "下注", "先发制人"]],
+    ["银月狼王", "spirit_b689c0de815c95ef", ["力量增效", "撞鬼", "困兽", "月蚀"]],
+    ["布灵布灵", "spirit_de488be076aaad90", ["闪光弹", "量子涨落", "光刃", "影袭"]],
+    ["饮雪狂兽", "spirit_c0b03ac594c86309", ["雪原狩猎", "冷凝", "跺地", "力量增效"]],
+  ])("keeps %s aligned with the requested preset", (_name, spiritId, skillNames) => {
+    const library = JSON.parse(readFileSync(
+      "public/data/presets/pvp-popular-configs.json", "utf8",
+    ));
+    const snapshot = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+    const entry = library.entries.find((item) => item.spiritId === spiritId);
+
+    expect(entry.natureId).toBe("cheerful");
+    expect(entry.displayIvs).toEqual({
+      hp: 60, speed: 60, physicalAttack: 60,
+      magicalAttack: 0, physicalDefense: 0, magicalDefense: 0,
+    });
+    expect(entry.skills.map((id) => snapshot.skills.find((skill) => skill.id === id)?.name))
+      .toEqual(skillNames);
+  });
+
   test("contains 226 valid spirit configurations", () => {
     const libraryText = readFileSync(
       "public/data/presets/pvp-popular-configs.json",

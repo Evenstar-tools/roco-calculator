@@ -346,10 +346,14 @@ describe("S4 前瞻新精灵候选目录", () => {
       const form = family.forms.find(({ isFinal }) => isFinal);
       const spirit = patched.spirits.find(({ fullName }) => fullName === form.name);
       const entry = entryBySpiritId.get(spirit.id);
+      const adjustedSkills = {
+        银月狼王: ["力量增效", "撞鬼", "困兽", "月蚀"],
+        布灵布灵: ["闪光弹", "量子涨落", "光刃", "影袭"],
+      }[form.name];
       expect(entry).toMatchObject({
         natureId: form.previewDefaults.natureId,
         displayIvs: form.previewDefaults.displayIvs,
-        skills: family.skills.slice(0, 4).map(({ name }) => skillByName.get(name === "午夜爆音" ? "午夜噪音" : name)),
+        skills: (adjustedSkills ?? family.skills.slice(0, 4).map(({ name }) => name)).map((name) => skillByName.get(name === "午夜爆音" ? "午夜噪音" : name)),
       });
     }
     for (const expected of [
