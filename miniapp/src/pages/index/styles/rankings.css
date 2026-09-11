@@ -40,4 +40,20 @@
 .ranking-speed-group { display: grid; grid-template-columns: 40px 1fr; gap: 8px; padding: 12px; border-bottom: 1px solid var(--border-neutral); }
 .ranking-speed-number { color: #6552dc; font-weight: 700; font-size: 18px; padding-top: 8px; }
 .ranking-sheet .ranking-speed-target { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; text-align: left; }
+.ranking-sheet .ranking-eye { width: 38px; height: 38px; padding: 8px; }
+.ranking-eye image,.ranking-eye img,.ranking-eye taro-image-core { width: 20px; height: 20px; }
+.ranking-speed-guide { padding: 0 12px 6px; }
+.ranking-query-modes { display: flex; gap: 4px; }
+.ranking-sheet .ranking-query-modes .ranking-action { flex: 1; padding: 7px 4px; background: var(--surface-muted); border-color: transparent; }
+.ranking-sheet .ranking-query-modes .is-active { color: #6552dc; border-color: currentColor; background: var(--surface-card); }
+.ranking-reference { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 36px; font-size: 11px; color: var(--text-secondary); }
+.ranking-sheet .ranking-reference .ranking-action { padding: 6px; color: #6552dc; }
+.ranking-speed-targets { display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; }
+.ranking-sheet .ranking-speed-target { width: auto; max-width: 100%; padding: 5px 7px; border: 1px solid var(--border-neutral); }
+.ranking-speed-target image,.ranking-speed-target img,.ranking-speed-target taro-image-core { width: 48px; height: 48px; }
+.ranking-speed-group.is-reference { background: var(--surface-pressed); border-left: 3px solid #6552dc; padding-left: 9px; }
+.ranking-sheet .is-icon-only .ranking-speed-target { width: 60px; flex-direction: column; gap: 0; padding: 3px; }
+.is-icon-only .ranking-speed-target image,.is-icon-only .ranking-speed-target img,.is-icon-only .ranking-speed-target taro-image-core { width: 52px; height: 52px; }
+.ranking-speed-badge { font-size: 10px; line-height: 16px; color: var(--text-secondary); }
+.ranking-eye img,.ranking-speed-target img { position: static; transform: none; object-fit: contain; }
 @media (prefers-color-scheme: dark) { .ranking-sheet .ranking-check--resist,.ranking-tone--resist { color: #6cd5b3; } .ranking-sheet .ranking-check--weak,.ranking-tone--weak { color: #efb16b; } .ranking-sheet .ranking-check--severe,.ranking-tone--severe { color: #f9949d; } .ranking-row__score,.ranking-speed-number,.ranking-metrics button.is-active { color: #b6aaff; } }
