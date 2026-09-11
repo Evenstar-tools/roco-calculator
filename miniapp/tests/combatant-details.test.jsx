@@ -97,6 +97,19 @@ describe("combatant parameter surfaces", () => {
     },
   };
 
+  test("keeps selection usable when a status badge image fails to load", () => {
+    render(<CombatantParameterSheet open configuration={configuration}
+      onClose={vi.fn()} onIvChange={vi.fn()} onNatureChange={vi.fn()}
+      side="attacker" snapshot={snapshot} />);
+    const selected = screen.getByLabelText("攻击方物攻正面性格");
+    const badge = selected.querySelector(".quick-controls__status-badge");
+    expect(badge).not.toBeNull();
+    fireEvent.error(badge);
+    expect(selected.querySelector(".quick-controls__status-badge")).toBeNull();
+    expect(selected).toHaveAttribute("aria-pressed", "true");
+    expect(selected).toHaveClass("quick-controls__option--selected");
+  });
+
   test("opens the full editor from any value in the six-stat grid", () => {
     const onOpen = vi.fn();
     render(

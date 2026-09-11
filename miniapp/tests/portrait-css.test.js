@@ -37,6 +37,15 @@ const quickControlsSource = readSource("src/components/QuickCombatantControls.js
 const resultSheetSource = readSource("src/components/ResultSheet.jsx");
 
 describe("reference-first responsive CSS", () => {
+  test("keeps tablet landscape in one workspace column and centers IV input content", () => {
+    const responsive = styles["responsive.css"];
+    expect(responsive).toContain("@media (min-width: 768px) and (max-width: 1023px) {");
+    expect(responsive).not.toContain("(max-width: 899px) and (orientation: portrait)");
+    expect(styles["parameters.css"]).toMatch(/\.iv-editor__input\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*center;/u);
+    expect(styles["parameters.css"]).toMatch(/\.iv-editor__input\s*>\s*\.weui-input\s*\{[^}]*text-align:\s*center;/u);
+    expect(styles["overlays.css"]).toMatch(/\.parameter-sheet__done,[^{]+\{[^}]*color:\s*var\(--text-primary\);/u);
+  });
+
   test("centers the H5 result HP input and keeps the desktop details action anchored", () => {
     const skills = styles["skills.css"];
     expect(skills).toMatch(/\.result-bar__target-input\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*center;/u);

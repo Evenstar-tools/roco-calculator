@@ -317,13 +317,13 @@
 }
 
 .iv-editor--attacker .iv-editor__stat--max {
-  border-color: rgba(219, 90, 67, 0.35);
-  background: var(--attacker-soft);
+  border-color: var(--border-neutral);
+  background: var(--surface-muted);
 }
 
 .iv-editor--defender .iv-editor__stat--max {
-  border-color: rgba(61, 138, 204, 0.35);
-  background: var(--defender-soft);
+  border-color: var(--border-neutral);
+  background: var(--surface-muted);
 }
 
 .iv-editor__stat-name {
@@ -356,11 +356,35 @@
 }
 
 .iv-editor__input {
+  display: flex;
   width: 72px;
-  min-height: var(--touch-target);
+  height: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+  align-items: center;
   padding: 0 8px;
   border: 1px solid var(--border-neutral);
   border-radius: 8px;
   background: var(--surface-card);
   text-align: center;
+}
+
+.iv-editor__input > .weui-input {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: inherit;
+}
+
+.parameter-sheet .quick-controls__summary {
+  margin: 0;
+  min-height: 28px;
+  padding: 4px 8px;
+  border-radius: 0;
+}
+
+@media (min-width: 768px) {
+  .parameter-sheet .iv-editor {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }

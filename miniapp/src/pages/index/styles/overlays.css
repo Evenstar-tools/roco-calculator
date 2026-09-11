@@ -1061,6 +1061,7 @@
   border: 1px solid var(--border-neutral);
   border-radius: var(--radius-control);
   background: var(--surface-muted);
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 680;
   line-height: 1;

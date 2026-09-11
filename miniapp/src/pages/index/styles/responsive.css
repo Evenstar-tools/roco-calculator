@@ -815,7 +815,7 @@
   }
 }
 
-@media (min-width: 768px) and (max-width: 899px) and (orientation: portrait) {
+@media (min-width: 768px) and (max-width: 1023px) {
   .workspace-layout {
     grid-template-columns: minmax(0, 1fr);
   }

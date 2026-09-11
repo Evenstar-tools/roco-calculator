@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button, Image, Text, View } from "@tarojs/components";
 import {
   getNature,
@@ -20,6 +21,7 @@ export default function QuickCombatantControls({
   onNatureChange,
   side,
 }) {
+  const [failedBadges, setFailedBadges] = useState({});
   const sideLabel = SIDE_LABELS[side] ?? "当前";
   const displayIvs = configuration?.displayIvs ?? {};
   const nature = getNature(configuration?.nature);
@@ -73,12 +75,13 @@ export default function QuickCombatantControls({
               <Text className="quick-controls__stat-label">
                 {STAT_LABELS[stat]}
               </Text>
-              {selected ? (
+              {selected && !failedBadges.nature ? (
                 <Image
                   alt=""
                   aria-hidden="true"
                   className="quick-controls__status-badge quick-controls__status-badge--nature"
                   mode="aspectFit"
+                  onError={() => setFailedBadges((current) => ({ ...current, nature: true }))}
                   src={statusUpIcon}
                 />
               ) : null}
@@ -111,12 +114,13 @@ export default function QuickCombatantControls({
               <Text className="quick-controls__stat-label">
                 {STAT_LABELS[stat]}
               </Text>
-              {selected ? (
+              {selected && !failedBadges.iv ? (
                 <Image
                   alt=""
                   aria-hidden="true"
                   className="quick-controls__status-badge quick-controls__status-badge--iv"
                   mode="aspectFit"
+                  onError={() => setFailedBadges((current) => ({ ...current, iv: true }))}
                   src={statusCheckIcon}
                 />
               ) : null}
