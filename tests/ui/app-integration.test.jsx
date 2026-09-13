@@ -1816,7 +1816,7 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   expect(sharedState.directions.forward.overrides.fixedPowerAddsBySlot).toEqual({});
   expect(sharedState.directions.forward.overrides.fixedPowerAdd).toBe(20);
   expect(within(refractionRow).getByLabelText("已使用 1 次")).toBeVisible();
-  expect(within(refractionRow).getByText(/当前：.*魔攻 \+4 层/)).toBeVisible();
+  expect(within(refractionRow).getByText(/增益：.*攻击\+4层/)).toBeVisible();
   await user.click(within(shareDialog).getByRole("button", { name: "关闭" }));
 
   await user.click(within(refractionRow).getByText(refraction.description));
@@ -1825,7 +1825,7 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(5);
   expect(within(refractionRow).getByLabelText("已使用 2 次")).toBeVisible();
   expect(within(refractionRow).queryByText("查看增益明细")).not.toBeInTheDocument();
-  expect(within(refractionRow).getByText(/增益：威力\+40 · 连击\+4/)).toBeVisible();
+  expect(within(refractionRow).getByText(/增益：威力\+40.*连击\+4/)).toBeVisible();
   expect(within(refractionRow).getByLabelText("已使用 2 次")).toBeVisible();
 });
 
@@ -1956,6 +1956,9 @@ test("clicking 撒娇 permanently adds 10 power to every allied skill", async ()
   await user.click(screen.getByText(/自己获得萌化/));
   await waitFor(() => expect(power).toHaveValue(40));
   expect(otherPower).toHaveValue(90);
+  expect(screen.getAllByText(/累计状态：已使用×1\s+增益：威力\+10/).at(-1)).toBeVisible();
+  expect(screen.getByRole("region", { name: "当前非默认高级条件" })).toHaveTextContent("撒娇×1");
+  expect(screen.getByRole("region", { name: "当前非默认高级条件" })).not.toHaveTextContent("手动");
 
   await user.click(power);
   expect(power).toHaveValue(40);
@@ -2161,6 +2164,7 @@ test("requires a successful defense response before applying Water Bubble Shield
     screen.getByText("减伤80%，应对攻击：自己获得魔攻+70%。"),
   );
   expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+  expect([...document.querySelectorAll(".skill-usage__main")].map((item) => item.textContent).join(" ")).toMatch(/累计状态：已使用×2.*应对成功×1.*攻击\+7层/);
 });
 
 test("applies a clicked defense skill reduction and clears it after another skill is used", async () => {
@@ -2258,6 +2262,8 @@ test("applies the same status-skill interaction to the defense-side loadout", as
   await user.click(within(selectedRow).getByText("自己获得魔攻+70%。"));
 
   expect(within(defenseSide).getByText("7层 · +70%")).toBeVisible();
+  expect(within(selectedRow).getByText(/累计状态：已使用×1.*攻击\+7层/)).toBeVisible();
+  expect(screen.getByRole("region", { name: "当前非默认高级条件" })).toHaveTextContent("魔法增效×1");
 });
 
 test("applies both Steam March branches to attack level and the displayed speed panel", async () => {

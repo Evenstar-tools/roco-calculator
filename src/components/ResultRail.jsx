@@ -317,7 +317,7 @@ export function ResultRail({
     Number.isFinite(primary.hpPercent);
   const isStatusOnly = isExact && primary.statusOnly === true;
   const barWidth = isExact ? clampPercent(primary.hpPercent) : 0;
-  const percentText = isExact ? `${primary.hpPercent.toFixed(1)}% HP` : "待补充条件";
+  const percentText = isExact ? `${primary.hpPercent.toFixed(1)}% HP` : primary.reason === "非伤害技能不计算伤害" ? "非伤害技能" : "待补充条件";
   const outcomeText = isExact
     ? primary.lethal
       ? "可击倒"
@@ -485,7 +485,7 @@ export function ResultRail({
         </section>
       ) : null}
 
-      {activeAdvancedConditions.length > 0 ? (
+      {activeAdvancedConditions.length > 0 || primary.gainSummary ? (
         <section
           aria-label="当前非默认高级条件"
           className="result-rail__active-conditions"
@@ -498,7 +498,8 @@ export function ResultRail({
               </button>
             ) : null}
           </div>
-          <p>{activeAdvancedConditions.join(" · ")}</p>
+          {activeAdvancedConditions.length > 0 ? <p>{activeAdvancedConditions.join(" · ")}</p> : null}
+          {primary.gainSummary ? <p className="result-rail__gains"><span>增益来源</span><strong>{primary.gainSummary}</strong></p> : null}
         </section>
       ) : null}
 

@@ -1,4 +1,4 @@
-import { SkillUsageSummary } from "./SkillUsageSummary.jsx";
+import { gainLabels, gainTermLabel, sourceLabel } from "../domain/gain-provenance.js";
 import { CaretDown, SlidersHorizontal } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -67,6 +67,7 @@ export function buildFormulaAudit(result) {
 
   const attackPanel = stepByLabel(result, "攻击面板");
   const basePower = stepByLabel(result, "基础威力");
+  const manualPower = stepByLabel(result, "手动显示威力") ?? stepByLabel(result, "手动静态威力");
   const fixedPower = stepByLabel(result, "固定威力增加");
   const traitFixedPower = stepByLabel(result, "特性固定威力");
   const sameType = stepByLabel(result, "本系");
@@ -112,6 +113,7 @@ export function buildFormulaAudit(result) {
     defenseLabel:
       attackPanel?.input === "magicalAttack" ? "魔防" : "物防",
     power: {
+      manual: manualPower?.label,
       base: basePower?.before ?? basePower?.input,
       conditional: basePower?.after,
       fixed: Number(fixedPower?.input) || 0,
@@ -120,12 +122,12 @@ export function buildFormulaAudit(result) {
       markFixed: Number(result.staticPowerSourceAdds?.mark) || 0,
       traitFixed: Number(traitFixedPower?.input) || 0,
       percentAdds,
-      static: result.staticPower ?? sameType?.before ?? displayPower?.before,
-      effective: sameType?.before ?? displayPower?.before,
+      static: result.staticPower ?? sameType?.before ?? displayPower?.before ?? manualPower?.after,
+      effective: sameType?.before ?? displayPower?.before ?? manualPower?.after,
     },
     formulaPower: {
       factors: powerFactors,
-      internal: damageInput.calculationPower ?? displayPower?.before,
+      internal: displayPower?.before ?? manualPower?.after ?? damageInput.calculationPower,
       displayed: damageInput.displayedPower ?? result.effectivePower,
     },
     numerator: {
@@ -276,6 +278,7 @@ export function FormulaAudit({ result }) {
   const numerator = audit.numerator;
   const oneHit = audit.oneHit;
   const total = audit.total;
+  const gains = result.gainSources ?? {};
 
   return (
     <section className="formula-audit">
@@ -284,27 +287,26 @@ export function FormulaAudit({ result }) {
         <span>{audit.skillName}</span>
       </header>
 
-      <SkillUsageSummary result={result} />
       <FormulaRow title="静态威力" tone="power">
         {Number.isFinite(Number(power.base)) ? (
           <AuditChip label="基础" tone="power" value={displayNumber(power.base)} />
         ) : (
-          <AuditChip label="规则值" tone="power" value={displayNumber(power.static)} />
+          <AuditChip label={power.manual || "规则值"} tone="power" value={displayNumber(power.static)} />
         )}
         {Number.isFinite(Number(power.conditional)) &&
         Number(power.conditional) !== Number(power.base) ? (
           <>
             <Operator>→</Operator>
-            <AuditChip label="条件后" tone="power" value={displayNumber(power.conditional)} />
+            <AuditChip label={gainTermLabel("条件后", gains.condition)} tone="power" value={displayNumber(power.conditional)} />
           </>
         ) : null}
         {[
-          ["技能固定", power.fixed],
+          ...(gains.fixed?.length ? gains.fixed.map((source) => [sourceLabel(source), source.amount]) : [["技能固定", power.fixed]]),
           ["继承迸发", power.inheritedBurstFixed],
           ["蓄电", power.markFixed],
-        ].map(([label, value]) =>
+        ].map(([label, value], index) =>
           Number(value) !== 0 ? (
-            <span className="formula-audit__term" key={label}>
+            <span className="formula-audit__term" key={`${label}-${index}`}>
               <Operator>{Number(value) > 0 ? "+" : "−"}</Operator>
               <AuditChip label={label} tone="power" value={displayNumber(Math.abs(value))} />
             </span>
@@ -314,7 +316,7 @@ export function FormulaAudit({ result }) {
           <>
             <Operator>×</Operator>
             <AuditChip
-              label="威力加成"
+              label={gainTermLabel("威力加成", (gains.staticPercent ?? []).map((source) => ({ ...source, amount: source.amount * 100 })), "%")}
               tone="power"
               value={displayNumber(1 + power.percentAdds)}
             />
@@ -325,7 +327,7 @@ export function FormulaAudit({ result }) {
       </FormulaRow>
 
       <FormulaRow title="显示威力" tone="display">
-        <AuditChip label="结算前威力" tone="display" value={displayNumber(power.effective)} />
+        <AuditChip label={gainTermLabel(gainTermLabel("结算前威力", gains.traitFixed), (gains.powerPercent ?? []).map((source) => ({ ...source, amount: source.amount * 100 })), "%")} tone="display" value={displayNumber(power.effective)} />
         {audit.formulaPower.factors
           .filter((factor) => Math.abs(Number(factor.value) - 1) > 1e-10)
           .map((factor) => (
@@ -346,7 +348,7 @@ export function FormulaAudit({ result }) {
       </FormulaRow>
 
       <FormulaRow title="每段伤害" tone="one-hit">
-        <AuditChip label={audit.attackLabel} tone="one-hit" value={displayNumber(numerator.attack)} />
+        <AuditChip label={gainTermLabel(audit.attackLabel, gains.attack, "层")} tone="one-hit" value={displayNumber(numerator.attack)} />
         <Operator>×</Operator>
         <AuditChip label="威力" tone="one-hit" value={displayNumber(numerator.power)} />
         <Operator>×</Operator>
@@ -359,11 +361,11 @@ export function FormulaAudit({ result }) {
         <span className="formula-audit__rounding">四舍五入</span>
         <AuditChip label="伤害分子" tone="one-hit" value={displayNumber(numerator.afterRound)} />
         <Operator>÷</Operator>
-        <AuditChip label={audit.defenseLabel} tone="one-hit" value={displayNumber(oneHit.defense)} />
+        <AuditChip label={gainTermLabel(audit.defenseLabel, gains.defense, "层")} tone="one-hit" value={displayNumber(oneHit.defense)} />
         {Number(oneHit.reduction) !== 1 ? (
           <>
             <Operator>×</Operator>
-            <AuditChip label="伤害保留" tone="one-hit" value={displayNumber(oneHit.reduction)} />
+            <AuditChip label={gainLabels(gains.reduction) || "伤害保留"} tone="one-hit" value={displayNumber(oneHit.reduction)} />
           </>
         ) : null}
         <Operator>→</Operator>
@@ -376,7 +378,7 @@ export function FormulaAudit({ result }) {
         {Number(total.finalMultiplier) !== 1 ? (
           <>
             <Operator>×</Operator>
-            <AuditChip label="最终倍率" tone="total" value={displayNumber(total.finalMultiplier)} />
+            <AuditChip label={gainLabels(gains.final) || "最终倍率"} tone="total" value={displayNumber(total.finalMultiplier)} />
             <Operator>→</Operator>
             <span className="formula-audit__rounding">向下取整</span>
             <AuditChip label="结算后每段" tone="total" value={displayNumber(total.oneHitAfterFinal)} />
@@ -385,7 +387,7 @@ export function FormulaAudit({ result }) {
         {total.hitCount > 1 ? (
           <>
             <Operator>×</Operator>
-            <AuditChip label="段数" tone="total" value={total.hitCount} />
+            <AuditChip label={gainTermLabel(gainTermLabel("段数", gains.hits), (gains.hitPercent ?? []).map((source) => ({ ...source, amount: source.amount * 100 })), "%")} tone="total" value={total.hitCount} />
           </>
         ) : null}
         {total.additionalDamage > 0 ? (

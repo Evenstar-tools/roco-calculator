@@ -39,6 +39,15 @@ test("keeps the exact damage and percent prominent", () => {
   expect(screen.queryByText(/随机|范围|置信/)).not.toBeInTheDocument();
 });
 
+test("生效来源紧跟血条，无来源时不留下空行", () => {
+  const { container, rerender } = render(<ResultRail result={result} />);
+  expect(container.querySelector(".result-rail__gains")).toBeNull();
+  rerender(<ResultRail result={{ ...result, selectedResult: { ...result.selectedResult, gainSummary: "折射×2 · 夺目" } }} />);
+  expect(container.querySelector(".result-rail__active-conditions")).toHaveTextContent("增益来源折射×2 · 夺目");
+  expect(container.querySelector(".damage-bar").nextElementSibling).not.toHaveClass("result-rail__gains");
+  expect(container.querySelector(".result-rail__gains details")).toBeNull();
+});
+
 test("separates actual status damage from freeze threshold without ambiguous loss copy", () => {
   render(
     <ResultRail

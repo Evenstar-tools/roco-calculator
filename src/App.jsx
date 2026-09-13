@@ -1,4 +1,6 @@
 import { recordRefractionUsage } from "./domain/refraction.js";
+import { expireTransientGainSources, recordGainChanges } from "./domain/gain-provenance.js";
+import { recordSkillActivation } from "./domain/skill-gain-summary.js";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { AdvancedOptions } from "./components/AdvancedOptions.jsx";
 import { AppHeader } from "./components/AppHeader.jsx";
@@ -536,6 +538,28 @@ function CalculatorWorkspace({ snapshot }) {
     const copied = copyPositiveAbilityStages(source, target);
     updateSideAbilityLevel(targetSide, "attack", copied.attack);
     updateSideAbilityLevel(targetSide, "defense", copied.defense);
+    recordAppliedGains(latest, { kind: "trait", id: "balance", name: "衡量" });
+  }
+
+  function gainSnapshot() {
+    const current = stateRef.current;
+    return { ...current, directions: Object.fromEntries(["forward", "reverse"].map((key) =>
+      [key, { ...current.directions[key], overrides: { ...current.directions[key].overrides } }])) };
+  }
+
+  function recordAppliedGains(before, source) {
+    const next = recordGainChanges(before, gainSnapshot(), source);
+    for (const direction of ["forward", "reverse"]) {
+      dispatch({ type: "direction/update", direction,
+        value: { overrides: { gainSources: next.directions[direction].overrides.gainSources ?? {} } } });
+    }
+  }
+
+  function recordAppliedSkill(side, skill, context, operations, count) {
+    const next = recordSkillActivation(gainSnapshot(), side, skill, context, operations, count);
+    const direction = side === "attacker" ? "forward" : "reverse";
+    dispatch({ type: "direction/update", direction,
+      value: { overrides: { skillActivations: next.directions[direction].overrides.skillActivations } } });
   }
 
   function balanceTriggerId(side) {
@@ -751,12 +775,15 @@ function CalculatorWorkspace({ snapshot }) {
     if (activeDefenseStatus) {
       const currentOverrides =
         latest.directions[selfDirection].overrides ?? {};
+      const expiredOverrides = { ...currentOverrides };
+      expireTransientGainSources(expiredOverrides);
       dispatch({
         direction: selfDirection,
         type: "direction/update",
         value: {
           overrides: {
             activeDefenseStatus: null,
+            gainSources: expiredOverrides.gainSources ?? {},
             skillPowerPercentAddsBySlot: removePowerPercentAdds(
               currentOverrides.skillPowerPercentAddsBySlot,
               activeDefenseStatus.powerPercentAddsBySlot,
@@ -903,6 +930,10 @@ function CalculatorWorkspace({ snapshot }) {
         }
         setActiveDirection(selfDirection);
       }
+      if (hasPostAttackSettlement) {
+        recordAppliedGains(latest, { kind: "trait", id: postAttackEffects?.source ?? skill.id, name: postAttackEffects?.source ?? skill.name });
+        recordAppliedSkill(side, skill, context);
+      }
       if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
         if (hasPostAttackSettlement || negativeStatusUseCount !== null) {
           setActiveDirection(selfDirection);
@@ -929,6 +960,7 @@ function CalculatorWorkspace({ snapshot }) {
         traitName: detectedChoiceTrait,
       });
       updateFourSkillEntry(side, index, { context: sequence.nextContext });
+      if (!hasPostAttackSettlement) recordAppliedSkill(side, skill, context);
       setActiveDirection(
         side === "attacker" ? "forward" : "reverse",
       );
@@ -1096,6 +1128,8 @@ function CalculatorWorkspace({ snapshot }) {
       },
     });
     const oppositeSide = side === "attacker" ? "defender" : "attacker";
+    recordAppliedGains(latest, { kind: "skill", id: `${side}:${skill.id}`, name: skill.name,
+      countDelta: resolution.triggerCount, transient: Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0 });
     if (
       hasFairPigeonBalance(oppositeSide === "attacker" ? attacker : defender) &&
       balanceIsTriggered(stateRef.current, oppositeSide)
@@ -1207,6 +1241,7 @@ function CalculatorWorkspace({ snapshot }) {
     updateFourSkillEntry(side, index, { context: sequence.nextContext });
     setActiveDirection(selfDirection);
     if (operations.weather) updateWeather(operations.weather);
+    recordAppliedSkill(side, skill, context, operations, resolution.triggerCount);
     setToast([
       negativeStatusUseCount === 2
         ? `${skill.name}：本回合 + 下回合`

@@ -511,6 +511,10 @@ html[data-theme="dark"] .result-rail__warning {
   overflow-wrap: anywhere;
 }
 
+.result-rail__active-conditions .result-rail__gains { display: flex; gap: 8px; align-items: baseline; font-weight: 400; line-height: 1.6; }
+.result-rail__gains span { flex-shrink: 0; color: var(--text-muted); }
+.result-rail__gains strong { color: var(--text); font-size: 12px; font-weight: 500; }
+
 .type-analysis-panel {
   display: grid;
   gap: 8px;
