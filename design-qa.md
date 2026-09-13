@@ -619,3 +619,12 @@ final result: minimal implementation locally verified on Web and native phone; i
 - 收尾使用独立 `dist/export-closeout-client` 构建，避免覆盖另一发布任务的资源。Electron 以隔离用户目录运行真实桌面入口和该生产资源，`app://calculator/` 下 Markdown／XLSX 两次下载均 completed；文件读回版本为 2.0.2、数据和规则为 s4-2026-09-10。
 - 按工作区当时已有门禁检查独立构建：总量 14.58 MiB、JS gzip 293.17 KiB、原始 JS 972.45 KiB、CSS gzip 45.59 KiB，硬门禁通过、保留警告。本轮没有修改预算文件；此前旧上限失败仅是过程记录。
 - 证据：`output/playwright/damage-export-closeout-tests.json`、`damage-export-closeout-recheck.json`、`damage-export-electron.md`、`damage-export-electron.xlsx`。本轮不提交、推送、打安装包或发布；保留其他任务的工作区改动。
+# 承伤对比 2.0.2 同版修复 · 2026-09-13
+
+- 反馈：首次打开不关联已有星陨／冻结；宽屏筛选点击无视觉变化。截图参考 codex-clipboard-6357e357-eb0c-4bbb-9573-b4ac903b2294.png、codex-clipboard-ea1c9935-46fd-4f7c-99e1-831c3ec74cc0.png。
+- 根因：状态初值固定 false；桌面选项区固定 display:flex，只有手机响应 is-open。新增失败回归先证实两点，再修复。
+- 修复：无显式选择时按逻辑目标状态自动关联；手动选择按原来源记忆，旧自动 false 可迁移。筛选在桌面／手机均实际展开收起，保留选值，并用既有强调色显示展开态。
+- 验收：Web 1983 项、小程序 450 项、E2E 120 项通过。1617×950 桌面和 390×844 手机实测显隐、搜索恶魔、自动星陨6层和取消后重开；手机无横向溢出。
+- 原生微信 iPhone 12/13 Pro 模拟器 390×844、基础库3.17.2：生产构建启动，星陨6／冻结2自动关联、手动取消记忆、筛选开关通过；异常0，测试配置已恢复。未额外声称原生 iPad／真机验收。
+- 截图：output/playwright/comparison-hotfix-desktop-open.png、comparison-hotfix-desktop-closed.png、comparison-hotfix-mobile-open.png、comparison-hotfix-native/auto-linked.png、comparison-hotfix-native/manual-opt-out.png；已读回检查。
+- 防回归：tests/ui/damage-comparison.test.jsx 验证真实 CSS 显隐与 aria-expanded 一致，不再只测状态或元素存在；小程序补同一路径交互回归。

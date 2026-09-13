@@ -54,6 +54,23 @@ test("导出失败允许重试，Escape只关闭格式菜单", async () => {
   expect(screen.getByRole("button", { name: "Excel（.xlsx）" })).toBeEnabled();
 });
 
+test("无双防模板导出的条件和逐只配点不再标注满双防", async () => {
+  const download = vi.spyOn(exporter, "downloadDamageComparison").mockResolvedValue();
+  const data = { ...snapshot, spirits: snapshot.spirits.slice(0, 2) };
+  render(<DamageComparisonDialog snapshot={data} source={{ state: createInitialState(data), direction: "forward" }} onClose={vi.fn()} />);
+  for (const [index, templateId] of ["hp-only-v1", "neutral-hp-only-v1"].entries()) {
+    fireEvent.change(screen.getByLabelText("承伤耐久模板"), { target: { value: templateId } });
+    await waitFor(() => expect(screen.getByRole("button", { name: "导出", exact: true })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "导出", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Markdown（.md）" }));
+    await waitFor(() => expect(download).toHaveBeenCalledTimes(index + 1));
+    const report = download.mock.lastCall[0];
+    expect(report.metadata.find(([key]) => key === "耐久模板")[1]).toContain("生命60个体，其余0");
+    expect(report.rows.every((row) => row[8].includes("生命60个体，其余0"))).toBe(true);
+    expect(report.rows[0][8]).toContain(index === 0 ? "踏实" : "普通");
+  }
+});
+
 test("XLSX是真实工作簿，数值百分比不转文本，特殊字符不破坏结构或执行公式", () => {
   const report = { title: "结论 <测试>", metadata: [["口径", "生命模板"]], headers: ["排名", "精灵", "属性", "满血", "伤害", "比例", "剩余", "结论", "配点"],
     rows: [[1, '=HYPERLINK("https://example.com")|\n<script>', "冰&水", 100, 51, .51, 49, "未击倒", "生命60"]] };
@@ -82,7 +99,7 @@ test.each(["forward", "reverse"])("%s导出跟随实际攻击方及状态，并�
   state.negativeStatuses[target].freeze = 2;
   const before = JSON.stringify(state);
   render(<DamageComparisonDialog snapshot={data} source={{ state, direction }} onClose={vi.fn()} />);
-  fireEvent.click(screen.getByRole("checkbox", { name: "沿用星陨／冻结" }));
+  expect(screen.getByRole("checkbox", { name: "沿用星陨／冻结" })).toBeChecked();
   await waitFor(() => expect(screen.getByRole("button", { name: "导出", exact: true })).toBeEnabled());
   fireEvent.click(screen.getByRole("button", { name: "导出", exact: true }));
   fireEvent.click(screen.getByRole("button", { name: "Markdown（.md）" }));

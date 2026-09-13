@@ -4,6 +4,29 @@ import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
 
+test("已有星陨冻结自动关联，手动取消后重开仍保持取消，筛选可反复开关", async () => {
+  const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
+  const snapshot = { meta: { id: "auto-status" }, traits: [], spirits: ["甲", "乙"].map((name) => ({ id: name, fullName: name, types: ["火"], raceStats: stats, stage: "首领" })), skills: [{ id: "fire", name: "火焰", basePower: 80, type: "火", category: "magical" }] };
+  const state = createInitialState(snapshot);
+  state.marks.defender.negative = { id: "starfall", stacks: 6 };
+  state.negativeStatuses.defender.freeze = 2;
+  render(<BattleWorkspace damageComparisonEnabled snapshot={snapshot} store={createCalculatorStore(snapshot, state)} />);
+  fireEvent.click(screen.getByRole("button", { name: "承伤对比" }));
+  let dialog = within(screen.getByRole("dialog", { name: "承伤对比" }));
+  expect(dialog.queryByLabelText("耐久模板")).not.toBeInTheDocument();
+  fireEvent.click(dialog.getByRole("button", { name: "筛选" }));
+  expect(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" })).toHaveAttribute("aria-checked", "true");
+  expect(dialog.getByText(/星陨 6 层 · 冻结 2 层/)).toBeInTheDocument();
+  fireEvent.click(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" }));
+  fireEvent.click(dialog.getByRole("button", { name: "筛选" }));
+  expect(dialog.queryByLabelText("耐久模板")).not.toBeInTheDocument();
+  fireEvent.click(dialog.getByRole("button", { name: "关闭", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "承伤对比" }));
+  dialog = within(screen.getByRole("dialog", { name: "承伤对比" }));
+  fireEvent.click(dialog.getByRole("button", { name: "筛选" }));
+  expect(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" })).toHaveAttribute("aria-checked", "false");
+});
+
 test("导入超过200条默认使用各自预设，代入和撤回保留配点", async () => {
   const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
   const snapshot = { meta: { id: "comparison-presets" }, traits: [], spirits: ["甲", "乙"].map((name) => ({ id: name, fullName: name, types: ["火"], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })), skills: [{ id: "skill", name: "火焰", basePower: 80, type: "火", category: "magical" }] };
@@ -17,7 +40,7 @@ test("导入超过200条默认使用各自预设，代入和撤回保留配点",
   await dialog.findByRole("button", { name: "查看乙承伤详情" });
   expect(dialog.getByText(/只 · 用户预设/)).toBeInTheDocument();
   fireEvent.click(dialog.getByRole("button", { name: "筛选" }));
-  expect(dialog.getByLabelText("耐久模板")).toHaveValue("5");
+  expect(dialog.getByLabelText("耐久模板")).toHaveValue("4");
   fireEvent.click(dialog.getByRole("button", { name: "查看乙承伤详情" }));
   expect(dialog.getByText(/胆小 · 生命60／魔攻60／速度60个体/)).toBeInTheDocument();
   fireEvent.click(dialog.getByRole("button", { name: "代入防守方复算" }));
@@ -74,9 +97,9 @@ test("承伤选择关闭重开保留，沿用最新冻结和自定义配点且�
   let dialog = await open();
   fireEvent.click(dialog.getByRole("button", { name: "筛选" }));
   expect(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" })).toHaveAttribute("aria-checked", "false");
-  expect(within(dialog.getByLabelText("耐久模板")).getAllByRole("option")).toHaveLength(5);
+  expect(within(dialog.getByLabelText("耐久模板")).getAllByRole("option").map((option) => option.textContent)).toEqual(["生命性格满双防个体", "生命性格无双防个体", "中立性格生命个体", "当前防守方配点"]);
   fireEvent.change(dialog.getByLabelText("技能"), { target: { value: "1" } });
-  fireEvent.change(dialog.getByLabelText("耐久模板"), { target: { value: "4" } });
+  fireEvent.change(dialog.getByLabelText("耐久模板"), { target: { value: "3" } });
   fireEvent.click(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" }));
   fireEvent.click(dialog.getByRole("button", { name: "未击倒", exact: true }));
   fireEvent.input(dialog.getByRole("textbox", { name: "搜索承伤精灵" }), { target: { value: "乙" } });
@@ -88,7 +111,7 @@ test("承伤选择关闭重开保留，沿用最新冻结和自定义配点且�
   const beforeImport = store.getState();
   dialog = await open();
   expect(dialog.getByLabelText("技能")).toHaveValue("1");
-  expect(dialog.getByLabelText("耐久模板")).toHaveValue("4");
+  expect(dialog.getByLabelText("耐久模板")).toHaveValue("3");
   expect(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" })).toHaveAttribute("aria-checked", "true");
   expect(dialog.getByRole("button", { name: "未击倒", exact: true })).toHaveAttribute("aria-pressed", "true");
   expect(dialog.getByRole("textbox", { name: "搜索承伤精灵" })).toHaveValue("乙");
