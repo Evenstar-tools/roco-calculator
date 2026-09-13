@@ -76,7 +76,7 @@ function persistentValue(skill, context, contextKey) {
 function advancePersistentContext(skill, context) {
   if (
     skill?.name === "友谊满溢" &&
-    context.friendshipMode === "growth"
+    selectedChoice(choiceControl(skill), context) === "growth"
   ) {
     const stored = persistentValue(skill, context, "skillUseCount");
     return {

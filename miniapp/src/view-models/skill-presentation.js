@@ -42,6 +42,7 @@ export function createSkillPresentation({
   ].filter(Boolean).join("\u00b7");
   return {
     description: skill.description ?? "",
+    choiceTrait: context.choiceTraitTriggered === true && supportsChoiceTrait(traitName) && getChoiceTraitInput(skill) ? traitName : null,
     effectHint,
     usageSummary: describeSkillUsage(result),
     usage: result?.usageSummary,

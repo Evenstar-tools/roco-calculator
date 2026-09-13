@@ -4,12 +4,24 @@ import SkillConditionEditor from "../src/components/SkillConditionEditor.jsx";
 import SkillIcon from "../src/components/SkillIcon.jsx";
 import SkillSlots from "../src/components/SkillSlots.jsx";
 import TraitConditionEditor from "../src/components/TraitConditionEditor.jsx";
+import { createSkillPresentation } from "../src/view-models/skill-presentation.js";
 import {
   getStatusSkillTriggerPreview,
   resolveSkillStatusActivation,
 } from "../src/shared/domain/skill-status-effects.js";
 
 describe("skill and trait presentation UI", () => {
+  test.each([["有求必应", "己方双攻 +9层 · 己方速度 +60"], ["一意孤行", "己方双攻 +18层"]])("纯状态技能预览带入 %s 并在取消特性后恢复", (traitName, expected) => {
+    const skill = { id: "steam", name: "蒸汽进行曲", category: "status", basePower: 0, description: "选择：自己获得速度+60或物攻+90%。" };
+    const editor = (triggered) => {
+      const context = { applyAttackBoost: true, choiceTraitTriggered: triggered };
+      return <SkillConditionEditor context={context} direction={{ statusTriggerCount: 1 }} skill={skill} presentation={createSkillPresentation({ skill, context, traitName })} onContextChange={vi.fn()} onDirectionChange={vi.fn()} />;
+    };
+    const { rerender } = render(editor(true));
+    expect(screen.getByText(expected)).toBeInTheDocument();
+    rerender(editor(false));
+    expect(screen.getByText("己方双攻 +9层")).toBeInTheDocument();
+  });
   test("shows one note for the selected four-skill row", () => {
     render(
       <SkillSlots

@@ -240,7 +240,7 @@ export default function SkillConditionEditor({
       : hitCount;
   const statusPreview = pureStatusSkill
     ? getStatusSkillTriggerPreview(skill, {
-        context,
+        context: { ...context, choiceTrait: presentation?.choiceTrait },
         hitCount,
         triggerCount: statusTriggerCount,
       })

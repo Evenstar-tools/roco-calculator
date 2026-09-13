@@ -116,7 +116,7 @@ function skillAction(snapshot, state, side, candidate, calculation, traitViews) 
     ? 1
     : configuredHitCount;
   const statusPreview = getStatusSkillTriggerPreview(skill, {
-    context,
+    context: { ...context, choiceTrait: presentation.choiceTrait },
     hitCount: configuredHitCount,
     triggerCount: configuredStatusTriggerCount ?? legacyStatusTriggerCount,
   });

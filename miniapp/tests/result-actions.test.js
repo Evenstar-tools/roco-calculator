@@ -58,6 +58,16 @@ function snapshotFixture() {
 }
 
 describe("result action view model", () => {
+  test.each([["有求必应", "己方双攻 +9层 · 己方速度 +60"], ["一意孤行", "己方双攻 +18层"]])("状态动作的预览包含 %s 实际增益", (name, expected) => {
+    const snapshot = snapshotFixture();
+    snapshot.skills[0].description = "选择：自己获得速度+60或物攻+90%。";
+    const state = createInitialState(snapshot);
+    state.mode = "four";
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.attacker.skills.four = [{ skillId: "steam", context: { applyAttackBoost: true, choiceTraitTriggered: true } }];
+    const actions = createResultActions({ snapshot, state, direction: "forward", traitViews: { attacker: { name, controls: [] } } });
+    expect(actions.modifiers.find((action) => action.name === "蒸汽进行曲").effectHint).toBe(expected);
+  });
   test("classifies carried skill and trait triggers into one action each", () => {
     const snapshot = snapshotFixture();
     const state = createInitialState(snapshot);
