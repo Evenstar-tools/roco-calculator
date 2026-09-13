@@ -5,6 +5,8 @@ import { damageComparisonSourceKey } from "../../state/damage-comparison.js";
 function initialChoices(snapshot, source, saved) {
   const selection = getDamageComparisonSelection(snapshot, source.state, source.direction);
   const previous = saved?.sourceKey === damageComparisonSourceKey(source) ? saved : {};
+  const statuses = getDamageComparisonTargetStatuses(source.state, source.direction);
+  const inheritTargetStatusesExplicit = previous.inheritTargetStatusesExplicit ?? previous.inheritTargetStatuses === true;
   const templates = getDamageComparisonTemplates(source.presetsBySpirit);
   const preserveTemplate = previous.templateExplicit === true && templates.some((template) => template.id === previous.templateId);
   const selected = selection.options.find((option) => option.index === previous.selectedSkillIndex && option.skill.id === previous.selectedSkillId)
@@ -15,7 +17,8 @@ function initialChoices(snapshot, source, saved) {
     templateId: preserveTemplate ? previous.templateId : Object.keys(source.presetsBySpirit ?? {}).length > 200 ? "user-presets" : "standard-hp-v1",
     templateExplicit: preserveTemplate,
     scope: previous.scope ?? "final", query: previous.query ?? "", filter: previous.filter ?? "all",
-    descending: previous.descending ?? false, inheritTargetStatuses: previous.inheritTargetStatuses ?? false,
+    descending: previous.descending ?? false, inheritTargetStatusesExplicit,
+    inheritTargetStatuses: inheritTargetStatusesExplicit ? previous.inheritTargetStatuses : statuses.starfall > 0 || statuses.freeze > 0,
     filtersOpen: previous.filtersOpen ?? false,
   };
 }
@@ -55,7 +58,8 @@ export function useDamageComparison(snapshot, source, preferences, onPreferences
     selectedSkillIndex, setSelectedSkillIndex: change("selectedSkillIndex"), templateId,
     setTemplateId: (value) => setChoices((current) => ({ ...current, templateId: value, templateExplicit: true })), scope, setScope: change("scope"),
     query, setQuery: change("query"), filter, setFilter: change("filter"), descending, setDescending: change("descending"), expanded, setExpanded,
-    filtersOpen, setFiltersOpen: change("filtersOpen"), inheritTargetStatuses, setInheritTargetStatuses: change("inheritTargetStatuses"),
+    filtersOpen, setFiltersOpen: change("filtersOpen"), inheritTargetStatuses,
+    setInheritTargetStatuses: (value) => setChoices((current) => ({ ...current, inheritTargetStatuses: value, inheritTargetStatusesExplicit: true })),
     template, templates: getDamageComparisonTemplates(source.presetsBySpirit), templateDescription: (row) => describeDamageComparisonTemplate(row.template),
     scopeDescription: `${templateId === "user-presets" ? DAMAGE_COMPARISON_SCOPE.replace("统一模板", "各自预设，未配按生命性格") : DAMAGE_COMPARISON_SCOPE}${inheritTargetStatuses ? ` · 星陨 ${statuses.starfall} 层 · 冻结 ${statuses.freeze} 层` : ""}`,
     showExcluded, setShowExcluded, progress: progress?.request === request ? progress.value : null, ranking, error, rows, selection,
