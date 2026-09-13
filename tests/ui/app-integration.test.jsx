@@ -1800,7 +1800,7 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
     .toBeVisible();
 
   const refractionRow = screen.getByRole("group", { name: "攻击方技能1" });
-  expect(within(refractionRow).getByText("未使用｜无增益")).toBeVisible();
+  expect(within(refractionRow).getByLabelText("未使用｜无增益")).toBeVisible();
   await user.click(within(refractionRow).getByText(refraction.description));
   expect(within(attackSide).getByText("4层 · +40%")) .toBeVisible();
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(100);
@@ -1815,17 +1815,17 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   const sharedState = await decodeShareState(new URL(shareLink.value).hash);
   expect(sharedState.directions.forward.overrides.fixedPowerAddsBySlot).toEqual({});
   expect(sharedState.directions.forward.overrides.fixedPowerAdd).toBe(20);
-  expect(within(refractionRow).getByText("已使用×1｜增益：威力+20 · 连击+2")).toBeVisible();
+  expect(within(refractionRow).getByLabelText("已使用×1｜增益：威力+20 · 连击+2")).toBeVisible();
   await user.click(within(shareDialog).getByRole("button", { name: "关闭" }));
 
   await user.click(within(refractionRow).getByText(refraction.description));
   expect(within(attackSide).getByText("8层 · +80%")) .toBeVisible();
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(120);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(5);
-  expect(within(refractionRow).getByText("已使用×2｜增益：威力+40 · 连击+4")).toBeVisible();
+  expect(within(refractionRow).getByLabelText("已使用×2｜增益：威力+40 · 连击+4")).toBeVisible();
   await user.click(within(refractionRow).getByText("查看增益明细"));
   expect(within(refractionRow).getByText(/来源：携带.*萌芽1层；成功使用2次 → 威力\+40 · 连击\+4/)).toBeVisible();
-  expect(within(refractionRow).getByText("已使用×2｜增益：威力+40 · 连击+4")).toBeVisible();
+  expect(within(refractionRow).getByLabelText("已使用×2｜增益：威力+40 · 连击+4")).toBeVisible();
 });
 
 test("Warm-up adds three hits to declared combo skills without double-counting manual edits", async () => {

@@ -49,6 +49,25 @@ const skills = [
   },
 ];
 
+test("精简单技能保留累计摘要和下次预览", () => {
+  render(<CompactSingleSkillEditor attackName="攻击方" defenseName="防御方" skills={skills} selectedSkill={skills[0]} onSkillSelect={vi.fn()} result={{ usageSummary: { count: 2, powerGain: 20, hitCountGain: 2, nextHint: "本次可得：威力+10" } }} />);
+  expect(screen.getByText("累计威力", { exact: false })).toBeVisible();
+  expect(screen.getByText("本次可得：威力+10")).toBeVisible();
+});
+
+test("手动连击加减和恢复默认沿用现有回调，默认保留自动增益", () => {
+  const onHitCountChange = vi.fn();
+  render(<SingleSkillEditor skills={skills} selectedSkill={{ ...skills[0], description: "造成物伤，3连击。" }} hitCount={7} onHitCountChange={onHitCountChange} result={{ automaticHitCountAdd: 2 }} />);
+  fireEvent.click(screen.getByText("手动调整"));
+  fireEvent.click(screen.getByRole("button", { name: "减少连击次数" }));
+  expect(onHitCountChange).toHaveBeenLastCalledWith(6);
+  fireEvent.click(screen.getByRole("button", { name: "增加连击次数" }));
+  expect(onHitCountChange).toHaveBeenLastCalledWith(7);
+  fireEvent.click(screen.getByRole("button", { name: "恢复默认", exact: true }));
+  expect(onHitCountChange).toHaveBeenLastCalledWith(5);
+  expect(screen.getByLabelText("连击次数")).toHaveValue(5);
+});
+
 test("formula audit keeps 重组追加伤害 separate from 星陨", () => {
   const audit = buildFormulaAudit({
     additionalDamage: 0,
@@ -839,7 +858,7 @@ test("shows every skill effect and calculates Head-on Blow from its condition", 
   expect(
     screen.getByRole("spinbutton", { name: "静态威力" }),
   ).toHaveValue(180);
-  expect(within(screen.getByLabelText("技能威力")).getByText("静态威力")).toBeVisible();
+  expect(screen.getByLabelText("静态威力")).toBeVisible();
   expect(screen.getByText("80 + 100 = 180")).toBeVisible();
   const condition = screen.getByRole("checkbox", {
     name: "敌方本回合换精灵",

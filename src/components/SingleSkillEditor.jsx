@@ -2,7 +2,7 @@ import { SkillUsageSummary, UsageCountActions } from "./SkillUsageSummary.jsx";
 import { Lightning, Shield, Sword } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
-import { getSkillEffectInputs } from "../domain/skill-effects.js";
+import { getDefaultHitCount, getSkillEffectInputs } from "../domain/skill-effects.js";
 import { usesAbsolutePowerRule } from "../domain/skill-rules.js";
 import { getSkillStatusEffectInputs } from "../domain/skill-status-effects.js";
 import { getNegativeStatusInputs } from "../domain/negative-status-rules.js";
@@ -493,6 +493,22 @@ export function SingleSkillEditor({
           />
         </div>
 
+        <label className="skill-effect-card__power-input single-skill-power">
+          <small>{normalizedPowerDisplayMode === "panel" ? "显示威力" : "静态威力"}</small>
+          <PowerDraftInput
+            ariaLabel={normalizedPowerDisplayMode === "panel" ? "显示威力" : "静态威力"}
+            isManual={Boolean(activePowerOverride)}
+            mode={normalizedPowerDisplayMode}
+            onClear={() => onPowerOverrideChange?.(null)}
+            onCommit={(value) => {
+              if (hasUnifiedPowerOverride) onPowerOverrideChange?.({ mode: normalizedPowerDisplayMode, value });
+              else onManualPowerChange?.(value);
+            }}
+            value={normalizedPowerDisplayMode === "panel"
+              ? result?.panelPower ?? result?.effectivePower ?? manualPower ?? selectedSkill?.basePower
+              : result?.staticPower ?? displayedSkillPower(selectedSkill, result) ?? manualPower ?? selectedSkill?.basePower}
+          />
+        </label>
         <div className="skill-facts" aria-label="技能属性">
           <span className="skill-fact">
             <Sword aria-hidden="true" size={17} weight="fill" />
@@ -515,8 +531,8 @@ export function SingleSkillEditor({
         <div className="skill-effect-card__copy">
           <Lightning aria-hidden="true" size={16} weight="fill" />
           <p>{selectedSkill.description || "无额外效果。"}</p>
-          <SkillUsageSummary result={result} />
         </div>
+        <SkillUsageSummary result={result} />
         {dynamicInputs.length > 0 || hasAttackerHpRule || hasDefenderHpRule ? (
           <div aria-label="动态技能条件" className="skill-effect-card__conditions">
             {hasAttackerHpRule && attackerHealth ? (
@@ -625,34 +641,6 @@ export function SingleSkillEditor({
           </div>
         ) : null}
         <div className="skill-effect-card__power" aria-label="技能威力">
-          <label className="skill-effect-card__power-input">
-            <small>
-              {normalizedPowerDisplayMode === "panel" ? "显示威力" : "静态威力"}
-            </small>
-            <PowerDraftInput
-              ariaLabel={
-                normalizedPowerDisplayMode === "panel" ? "显示威力" : "静态威力"
-              }
-              isManual={Boolean(activePowerOverride)}
-              mode={normalizedPowerDisplayMode}
-              onClear={() => onPowerOverrideChange?.(null)}
-              onCommit={(value) => {
-                if (hasUnifiedPowerOverride) {
-                  onPowerOverrideChange?.({
-                    mode: normalizedPowerDisplayMode,
-                    value,
-                  });
-                } else {
-                  onManualPowerChange?.(value);
-                }
-              }}
-              value={
-                normalizedPowerDisplayMode === "panel"
-                  ? result?.panelPower ?? result?.effectivePower ?? manualPower ?? selectedSkill?.basePower
-                  : result?.staticPower ?? displayedSkillPower(selectedSkill, result) ?? manualPower ?? selectedSkill?.basePower
-              }
-            />
-          </label>
           {resolutionSummary ? (
             <span className="skill-effect-card__formula">
               {resolutionSummary}
@@ -672,8 +660,18 @@ export function SingleSkillEditor({
       <details className="manual-skill-settings">
         <summary>手动调整</summary>
         <div className="manual-parameter-grid">
-          <label className="field-group">
+          <div className="field-group manual-hit-field">
             <span>连击次数</span>
+            <button className="manual-hit-reset" type="button" onClick={() => {
+              const value = Math.min(hitCountMaximum, getDefaultHitCount(selectedSkill) + (Number(result?.automaticHitCountAdd) || 0));
+              setHitDraft(String(value));
+              onHitCountChange(value);
+            }}>恢复默认</button>
+            <div className="manual-hit-stepper">
+            <button type="button" aria-label="减少连击次数" disabled={Number(hitDraft) <= 1} onClick={() => {
+              const value = Math.max(1, Math.floor(toNumber(hitDraft, hitCount)) - 1);
+              setHitDraft(String(value)); onHitCountChange(value);
+            }}>−</button>
             <input
               aria-label="连击次数"
               max={Number.isFinite(hitCountMaximum) ? hitCountMaximum : undefined}
@@ -700,7 +698,12 @@ export function SingleSkillEditor({
               type="number"
               value={hitDraft}
             />
-          </label>
+            <button type="button" aria-label="增加连击次数" disabled={Number(hitDraft) >= hitCountMaximum} onClick={() => {
+              const value = Math.min(hitCountMaximum, Math.max(1, Math.floor(toNumber(hitDraft, hitCount))) + 1);
+              setHitDraft(String(value)); onHitCountChange(value);
+            }}>+</button>
+            </div>
+          </div>
         </div>
       </details>
 

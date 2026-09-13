@@ -347,6 +347,7 @@ export function CompactSingleSkillEditor({
           {selectedSkill.description}
         </p>
       ) : null}
+      <SkillUsageSummary result={result} />
       {powerResolutionHint ? (
         <small
           className="compact-single-skill__power-note"
