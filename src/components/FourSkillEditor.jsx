@@ -570,7 +570,7 @@ function SkillSide({
                       {selected.description}
                     </p>
                   ) : null}
-                  {powerResolutionHint ? (
+                  {powerResolutionHint && !result?.usageSummary ? (
                     <p
                       className="skill-slot__power-note"
                       title={powerResolutionHint}
@@ -591,7 +591,7 @@ function SkillSide({
                       {counterReflectionHint}
                     </p>
                   ) : null}
-                  <div
+                  {hasBurstSources || visibleDynamicInputs.length > 0 ? <div
                     className={`skill-slot__control-row${
                       hasBurstSources ? " has-burst-sources" : ""
                     }`}
@@ -711,7 +711,7 @@ function SkillSide({
                         ),
                       )}
                     </div>
-                  </div>
+                  </div> : null}
                   <SkillUsageSummary result={result} nextHint={refractionHint} />
                 </div>
               ) : null}

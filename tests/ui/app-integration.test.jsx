@@ -1796,7 +1796,7 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   expect(within(attackSide).getByText("0层 · 0%")).toBeVisible();
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(80);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(1);
-  expect(screen.getByText(/使用后可得：.*普·威力\+20.*翼·连击\+2.*光·双攻\+4层/))
+  expect(screen.getByText(/本次可得：.*普·威力\+20.*翼·连击\+2.*光·双攻\+4层/))
     .toBeVisible();
 
   const refractionRow = screen.getByRole("group", { name: "攻击方技能1" });
@@ -1816,7 +1816,7 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   expect(sharedState.directions.forward.overrides.fixedPowerAddsBySlot).toEqual({});
   expect(sharedState.directions.forward.overrides.fixedPowerAdd).toBe(20);
   expect(within(refractionRow).getByLabelText("已使用 1 次")).toBeVisible();
-  expect(within(refractionRow).getByText(/当前计算：.*魔攻 \+4 层/)).toBeVisible();
+  expect(within(refractionRow).getByText(/当前：.*魔攻 \+4 层/)).toBeVisible();
   await user.click(within(shareDialog).getByRole("button", { name: "关闭" }));
 
   await user.click(within(refractionRow).getByText(refraction.description));
@@ -1824,8 +1824,8 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(120);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(5);
   expect(within(refractionRow).getByLabelText("已使用 2 次")).toBeVisible();
-  await user.click(within(refractionRow).getByText("查看增益明细"));
-  expect(within(refractionRow).getByText(/来源：携带.*萌芽1层；成功使用2次 → 威力\+40 · 连击\+4/)).toBeVisible();
+  expect(within(refractionRow).queryByText("查看增益明细")).not.toBeInTheDocument();
+  expect(within(refractionRow).getByText(/增益：威力\+40 · 连击\+4/)).toBeVisible();
   expect(within(refractionRow).getByLabelText("已使用 2 次")).toBeVisible();
 });
 

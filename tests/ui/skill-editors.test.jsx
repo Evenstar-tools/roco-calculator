@@ -51,8 +51,8 @@ const skills = [
 
 test("精简单技能保留累计摘要和下次预览", () => {
   render(<CompactSingleSkillEditor attackName="攻击方" defenseName="防御方" skills={skills} selectedSkill={skills[0]} onSkillSelect={vi.fn()} result={{ usageSummary: { count: 2, powerGain: 20, hitCountGain: 2, currentEffects: ["威力 +20"], nextHint: "本次可得：威力+10" } }} />);
-  expect(screen.getByText("当前计算：威力 +20")).toBeVisible();
-  expect(screen.getByText("使用后可得：威力+10")).toBeVisible();
+  expect(screen.getByText(/增益：威力\+20/)).toBeVisible();
+  expect(screen.getByText("本次可得：威力+10")).toBeVisible();
 });
 
 test("手动连击加减和恢复默认沿用现有回调，默认保留自动增益", () => {
@@ -2418,7 +2418,7 @@ test("dazzling loadouts render seven slots and a two-line Refraction preview", (
   );
 
   expect(screen.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
-  expect(screen.getByTitle(/^使用后可得：/))
+  expect(screen.getByTitle(/^本次可得：/))
     .toHaveTextContent("普·威力+10 翼·连击+1");
 });
 
@@ -2451,7 +2451,7 @@ test("compact dazzling loadouts keep seven rows and the Refraction preview", () 
   );
 
   expect(screen.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
-  expect(screen.getByTitle("使用后可得：普·威力+10"))
+  expect(screen.getByTitle("本次可得：普·威力+10"))
     .toHaveClass("skill-usage__next");
 });
 
