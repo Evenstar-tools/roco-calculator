@@ -620,7 +620,9 @@ html[data-theme="dark"] .result-rail__warning {
 }
 
 .display-settings-dialog {
-  width: min(430px, calc(100vw - 32px));
+  width: min(430px, 100%);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
 }
 
 .display-settings-option {

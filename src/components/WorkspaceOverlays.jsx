@@ -245,9 +245,10 @@ export function WorkspaceOverlays({
       <WhatsNewDialog {...whatsNew} />
 
       {mobileResult.configurationReady ? (
+        <>
         <button
           aria-label="展开伤害结果"
-          className={`mobile-result-bar mobile-result-bar--${mobileResult.viewMode}`}
+          className={`mobile-result-bar mobile-result-bar--${mobileResult.viewMode}${mobileActions.onOpenComparison ? " mobile-result-bar--with-comparison" : ""}`}
           onClick={mobileActions.onOpen}
           ref={mobileRefs.trigger}
           type="button"
@@ -264,6 +265,8 @@ export function WorkspaceOverlays({
               : "待输入"}
           </span>
         </button>
+        {mobileActions.onOpenComparison ? <button type="button" className="mobile-comparison-entry damage-comparison-entry" onClick={mobileActions.onOpenComparison}>承伤对比</button> : null}
+        </>
       ) : null}
 
       {mobileResult.configurationReady && mobileResult.open ? (
@@ -296,6 +299,7 @@ export function WorkspaceOverlays({
             onCurrentHpPercentChange={mobileActions.onCurrentHpPercentChange}
             onDirectionToggle={mobileActions.onDirectionToggle}
             onSkillResultSelect={mobileActions.onSkillResultSelect}
+            onOpenComparison={mobileActions.onOpenComparison}
             result={mobileResult.result}
             showTypeCoverage={mobileResult.showTypeCoverage}
           />

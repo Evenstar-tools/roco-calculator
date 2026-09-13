@@ -1,7 +1,9 @@
 export function DisplaySettingsDialog({
+  damageComparisonEnabled = false,
   durabilityOverviewEnabled = false,
   negativeStatusSettlementEnabled = false,
   onClose,
+  onDamageComparisonChange,
   onDurabilityOverviewChange,
   onNegativeStatusSettlementChange,
   onPowerDisplayModeChange,
@@ -96,6 +98,18 @@ export function DisplaySettingsDialog({
             onChange={(event) =>
               onNegativeStatusSettlementChange?.(event.target.checked)
             }
+            type="checkbox"
+          />
+        </label>
+        <label className="display-settings-option">
+          <span>
+            <strong>承伤对比</strong>
+            <small>在技能结果旁显示全精灵承伤对比入口</small>
+          </span>
+          <input
+            aria-label="承伤对比"
+            checked={damageComparisonEnabled}
+            onChange={(event) => onDamageComparisonChange?.(event.target.checked)}
             type="checkbox"
           />
         </label>

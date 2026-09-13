@@ -30,6 +30,12 @@ function readRule(selector) {
 }
 
 describe("responsive layout contracts", () => {
+  test("keeps display settings scrollable within a short viewport", () => {
+    const dialog = ruleBody(".display-settings-dialog");
+    expect(dialog).toContain("max-height: calc(100dvh - 40px)");
+    expect(dialog).toContain("overflow-y: auto");
+  });
+
   test("wraps the six team slots into 3x2 or 2x3 grids on narrow screens", () => {
     expect(teamWorkbenchCss).toMatch(
       /@media \(max-width: 1023px\)[\s\S]*?\.team-workbench \.team-roster \{[\s\S]*?overflow-x: visible;[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);[\s\S]*?grid-auto-flow: row;/,

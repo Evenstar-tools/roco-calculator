@@ -3413,6 +3413,33 @@ test("enables the detailed durability overview without changing HP or undo histo
   ).toBeVisible();
 });
 
+test("承伤对比由显示设置控制，默认隐藏、启用后保留且不占撤回记录", async () => {
+  const user = userEvent.setup();
+  const first = render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  expect(screen.queryByRole("button", { name: "查看全精灵承伤" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "承伤对比" })).not.toBeInTheDocument();
+  const undoLabel = screen.getByRole("button", { name: /撤回上一步/ }).getAttribute("aria-label");
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "显示设置" }));
+  expect(screen.getByRole("checkbox", { name: "承伤对比" })).not.toBeChecked();
+  await user.click(screen.getByRole("checkbox", { name: "承伤对比" }));
+  await user.click(screen.getByRole("button", { name: "完成" }));
+  expect(screen.getByRole("button", { name: "查看全精灵承伤" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "承伤对比" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: undoLabel })).toBeInTheDocument();
+  first.unmount();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  expect(screen.getByRole("button", { name: "查看全精灵承伤" })).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "显示设置" }));
+  await user.click(screen.getByRole("checkbox", { name: "承伤对比" }));
+  await user.click(screen.getByRole("button", { name: "完成" }));
+  expect(screen.queryByRole("button", { name: "查看全精灵承伤" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "承伤对比" })).not.toBeInTheDocument();
+});
+
 test("enables negative-status settlement, edits stacks, and remembers the switch", async () => {
   const user = userEvent.setup();
   const first = render(<App initialSnapshot={snapshot} />);
@@ -3555,7 +3582,7 @@ test("高级条件摘要跟随有效方向并从调整入口定位常用条件",
   }
 });
 
-test("分享恢复后天气摘要按正反方向分别读取", async () => {
+test("旧分享含冲突天气时按正向天气统一，切换攻守不再改变天气", async () => {
   const user = userEvent.setup();
   const sharedState = createInitialState(snapshot);
   sharedState.mode = "four";
@@ -3570,9 +3597,9 @@ test("分享恢复后天气摘要按正反方向分别读取", async () => {
       name: "当前非默认高级条件",
     })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "切换计算方向" }));
-    expect(screen.getByRole("region", {
+    expect(screen.queryByRole("region", {
       name: "当前非默认高级条件",
-    })).toHaveTextContent("雨天");
+    })).not.toBeInTheDocument();
   } finally {
     window.history.replaceState(null, "", window.location.pathname);
   }

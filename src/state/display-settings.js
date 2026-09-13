@@ -6,6 +6,8 @@ export const NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY =
   "rock-calculator.settings.negative-status-settlement.v1";
 export const DURABILITY_OVERVIEW_STORAGE_KEY =
   "rock-calculator.settings.durability-overview.v1";
+export const DAMAGE_COMPARISON_STORAGE_KEY =
+  "rock-calculator.settings.damage-comparison.v1";
 export const THEME_STORAGE_KEY = "rock-calculator.settings.theme.v1";
 
 function normalizeTheme(value) {
@@ -96,6 +98,27 @@ export function writeDurabilityOverviewSetting(
       DURABILITY_OVERVIEW_STORAGE_KEY,
       normalized ? "1" : "0",
     );
+  } catch {
+    return normalized;
+  }
+  return normalized;
+}
+
+export function readDamageComparisonSetting(storage = globalThis.localStorage) {
+  try {
+    return storage?.getItem(DAMAGE_COMPARISON_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function writeDamageComparisonSetting(
+  storage = globalThis.localStorage,
+  enabled,
+) {
+  const normalized = Boolean(enabled);
+  try {
+    storage?.setItem(DAMAGE_COMPARISON_STORAGE_KEY, normalized ? "1" : "0");
   } catch {
     return normalized;
   }

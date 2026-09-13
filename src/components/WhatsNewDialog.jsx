@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { FEATURED_USER_RELEASE } from "../data/user-release-notes.js";
+import { FEATURED_USER_RELEASE, S4_FEATURE_INTRO } from "../data/user-release-notes.js";
 import { USER_MANUAL_URL } from "../data/product-links.js";
 
 const FOCUSABLE_SELECTOR =
@@ -8,11 +8,13 @@ const FOCUSABLE_SELECTOR =
 export function WhatsNewDialog({
   onClose,
   onOpenTeam,
+  onOpenFeature,
+  onOpenHistory,
   open = false,
   release = FEATURED_USER_RELEASE,
 }) {
   const dialogRef = useRef(null);
-  const content = release?.whatsNew;
+  const content = S4_FEATURE_INTRO;
 
   useEffect(() => {
     if (!open || !content) return undefined;
@@ -73,9 +75,10 @@ export function WhatsNewDialog({
             <li key={item.title}>
               <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               <div>
-                <strong>{item.title}</strong>
+                <strong>{item.title}{item.enhanced ? <small className="whats-new-dialog__badge">增强</small> : null}</strong>
                 {item.description ? <p>{item.description}</p> : null}
               </div>
+              <button type="button" className="whats-new-dialog__feature" aria-label={`${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{item.action}</button>
             </li>
           ))}
         </ol>
@@ -89,6 +92,7 @@ export function WhatsNewDialog({
           <span>查看使用说明书</span>
           <small>飞书文档 · 新窗口打开</small>
         </a>
+        <button className="whats-new-dialog__history" type="button" onClick={onOpenHistory}>完整版本记录</button>
         <div className="dialog-actions whats-new-dialog__actions">
           <button className="secondary-action" onClick={onClose} type="button">
             知道了

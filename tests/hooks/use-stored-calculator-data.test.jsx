@@ -8,6 +8,21 @@ const snapshot = {
   spirits: [{ fullName: "火灵", id: "fire" }],
 };
 
+test("临时配置不冒充预设，收藏时保存当前分配并跟随后续修改", () => {
+  const values = new Map();
+  const favoriteStore = { list: () => [], save: vi.fn((value) => [value]) };
+  const spiritStore = { load: () => ({ configs: {}, schemaVersion: 2 }), save: (_current, side) => { values.set(side.spiritId, side); return { configs: Object.fromEntries(values), schemaVersion: 2 }; } };
+  const factories = { favorites: () => favoriteStore, spiritConfigs: () => spiritStore, teams: () => ({ load: () => ({ teams: [] }) }) };
+  const { result } = renderHook(() => useStoredCalculatorData(snapshot, { factories }));
+  const side = { spiritId: "fire", nature: "neutral", displayIvs: { hp: 60 }, skills: { four: [] } };
+  act(() => result.current.rememberSide(side));
+  expect(result.current.comparisonPresets).toEqual({});
+  act(() => result.current.toggleSpiritFavorite(snapshot.spirits[0], side));
+  expect(result.current.comparisonPresets.fire).toEqual(side);
+  act(() => result.current.rememberSide({ ...side, nature: "timid" }));
+  expect(result.current.comparisonPresets.fire.nature).toBe("timid");
+});
+
 test("loads repositories once and coordinates personal persistence", () => {
   const favoriteStore = {
     list: vi.fn(() => []),

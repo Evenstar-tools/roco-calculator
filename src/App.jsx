@@ -84,10 +84,13 @@ import {
 } from "./state/calculator-session.js";
 import { createTeamMemberFromSide } from "./state/team-presets.js";
 import { FEATURED_USER_RELEASE } from "./data/user-release-notes.js";
+import { captureDamageComparison, damageComparisonSourceKey, importDamageComparisonCandidate } from "./state/damage-comparison.js";
+import { DAMAGE_COMPARISON_IMPORT_NOTICE } from "./domain/skill-damage-ranking.js";
 
 const loadSkillQueryPanel = () => import("./features/skill-query/SkillQueryPanel.jsx");
 const SkillQueryPanel = lazy(loadSkillQueryPanel);
 const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
+const DamageComparisonDialog = lazy(() => import("./components/DamageComparisonDialog.jsx"));
 const preloadSkillQuery = () => {
   void loadSkillQueryPanel().catch(() => {});
   void import("./features/skill-query/load-catalog.js").then(({ loadSkillCatalog }) => loadSkillCatalog()).catch(() => {});
@@ -96,6 +99,8 @@ const preloadSkillQuery = () => {
 function CalculatorWorkspace({ snapshot }) {
   const [skillQueryOpen, setSkillQueryOpen] = useState(false);
   const [rankingKind, setRankingKind] = useState(null);
+  const [comparisonSource, setComparisonSource] = useState(null);
+  const [comparisonPreferences, setComparisonPreferences] = useState(null);
   const [rankingsVisited, setRankingsVisited] = useState(false);
   const initialState = useMemo(() => {
     const next = createProductInitialState(snapshot);
@@ -405,6 +410,7 @@ function CalculatorWorkspace({ snapshot }) {
     viewMode,
   });
   const {
+    damageComparisonEnabled,
     durabilityOverviewEnabled,
     powerDisplayMode,
     typeCoverageEnabled,
@@ -420,9 +426,15 @@ function CalculatorWorkspace({ snapshot }) {
     setAdvancedOptionsTopRequest(nextAdvancedOptionsTopRequestRef.current);
   }
 
+  function openDamageComparison() {
+    if (!damageComparisonEnabled) return;
+    overlays.mobileResultProps.actions.onClose({ restoreFocus: false });
+    setComparisonSource(captureDamageComparison(stateRef.current, activeDirection, storedData.comparisonPresets));
+  }
+
   // 任一弹层/抽屉打开时引导浮层让位,关闭后恢复。
   const overlayCoveringGuide = Boolean(
-    overlays.menu.open ||
+    (damageComparisonEnabled && comparisonSource) || overlays.menu.open ||
       overlays.team.open ||
       overlays.mobileResultProps.open ||
       overlays.cleanupConfigsProps.open ||
@@ -1691,11 +1703,27 @@ function CalculatorWorkspace({ snapshot }) {
         onAdvancedOptionsOpen: () =>
           openAdvancedOptionsAtTop({ closeMobileResult: true }),
         onSkillResultSelect: selectSkillResult,
+        onOpenComparison: damageComparisonEnabled ? openDamageComparison : undefined,
       },
     },
     share: shareFlow.overlayProps,
     whatsNew: {
       ...overlays.whatsNewProps,
+      onOpenHistory: () => {
+        overlays.whatsNewProps.onClose();
+        overlays.setDataSourceOpen("release");
+      },
+      onOpenFeature: (id) => {
+        if (id === "theme") {
+          document.documentElement.dataset.theme = writeThemeSetting(undefined, document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+          return;
+        }
+        overlays.whatsNewProps.onClose();
+        if (id === "skills") setSkillQueryOpen(true);
+        else if (id === "speed" || id === "durability") { setRankingsVisited(true); setRankingKind(id); }
+        else if (stateRef.current.sides.attacker.spiritId) openSideAbilityAnalysis("attacker");
+        else { overlays.team.setAnalysisEntry(null); overlays.team.setOpen(true); }
+      },
       onOpenTeam: () => {
         overlays.whatsNewProps.onClose();
         overlays.team.setAnalysisEntry(null);
@@ -1799,9 +1827,9 @@ function CalculatorWorkspace({ snapshot }) {
                   ? "complete"
                   : null
             }
-            onAttackerFavoriteToggle={() => toggleSpiritFavorite(attacker)}
+            onAttackerFavoriteToggle={() => toggleSpiritFavorite(attacker, state.sides.attacker)}
             onAttackerSelect={(value) => changeSpirit("attacker", value)}
-            onDefenderFavoriteToggle={() => toggleSpiritFavorite(defender)}
+            onDefenderFavoriteToggle={() => toggleSpiritFavorite(defender, state.sides.defender)}
             onDefenderSelect={(value) => changeSpirit("defender", value)}
             onSwap={() => {
               dispatch({ type: "sides/swap" });
@@ -2089,6 +2117,7 @@ function CalculatorWorkspace({ snapshot }) {
         {configurationReady ? (
           <div className="result-column">
             <ResultRail
+              onOpenComparison={damageComparisonEnabled ? openDamageComparison : undefined}
               activeAdvancedConditions={activeAdvancedConditions}
               onBloodlineResultFocus={() =>
                 updateDirection({ selectedDamageSource: "bloodline" })
@@ -2110,6 +2139,20 @@ function CalculatorWorkspace({ snapshot }) {
       </div>
 
       </WorkspaceOverlays>
+      {damageComparisonEnabled && comparisonSource ? <Suspense fallback={<div role="status">正在打开承伤对比…</div>}><DamageComparisonDialog
+        key={damageComparisonSourceKey(comparisonSource)} preferences={comparisonPreferences} onPreferencesChange={setComparisonPreferences}
+        snapshot={snapshot} source={comparisonSource} onClose={() => setComparisonSource(null)}
+        onImport={(spirit, templateId, selectedSkillIndex, inheritTargetStatuses) => {
+          if (JSON.stringify(stateRef.current) !== JSON.stringify(comparisonSource.state)) {
+            setToast("主配置已变化，请重新打开承伤对比");
+            return;
+          }
+          dispatch({ type: "state/replace", value: importDamageComparisonCandidate({ snapshot, ...comparisonSource, spirit, templateId, selectedSkillIndex, inheritTargetStatuses }) });
+          setActiveDirection(comparisonSource.direction);
+          setComparisonSource(null);
+          setToast(DAMAGE_COMPARISON_IMPORT_NOTICE);
+        }}
+      /></Suspense> : null}
       {rankingsVisited ? <Suspense fallback={<div role="status">正在打开排行榜…</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}
       {skillQueryOpen && <Suspense fallback={<div role="status">正在打开技能查询…</div>}><SkillQueryPanel skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />

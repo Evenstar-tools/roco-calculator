@@ -69,6 +69,8 @@ describe("offline desktop asset routing", () => {
 
     expect(policy).toContain("default-src 'self' app:");
     expect(policy).toContain("script-src 'self' app:");
+    expect(policy).toContain("'wasm-unsafe-eval'");
+    expect(policy).not.toMatch(/script-src[^;]*'unsafe-eval'/u);
     expect(policy).toContain("style-src 'self' app: 'unsafe-inline'");
     expect(policy).toContain("object-src 'none'");
     expect(policy).not.toMatch(/script-src[^;]*'unsafe-inline'/u);

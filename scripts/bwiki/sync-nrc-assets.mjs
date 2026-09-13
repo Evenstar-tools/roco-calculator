@@ -6,10 +6,12 @@ const read = async (name) => JSON.parse(await readFile(name, "utf8"));
 const evidence = await read("data/reviewed/nrc-2026-09-10.json");
 const snapshot = await read("data/snapshots/current.json");
 const manifest = await read("public/assets/spirits/manifest.json");
+const family = process.argv.find((arg) => arg.startsWith("--family="))?.slice("--family=".length);
 const rows = evidence.spirits.filter((raw) => {
   const spirit = snapshot.spirits.find(({ fullName }) => fullName === raw.title);
+  if (family && spirit.baseName !== family) return false;
   const asset = manifest.assets.find(({ id }) => id === spirit.id);
-  return !asset || asset.name !== spirit.fullName || !asset.sourceUrl?.startsWith("https://") || asset.sourceKind === "s4-preview-local";
+  return !asset || asset.name !== spirit.fullName || !asset.sourceUrl?.startsWith("https://") || asset.sourceKind === "s4-preview-local" || (family && asset.nrcFile !== raw.image.head);
 });
 if (rows.length) {
   const url = new URL("https://wiki.biligame.com/nrc/api.php");

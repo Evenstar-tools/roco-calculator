@@ -38,3 +38,18 @@ test("关闭重开保留独立筛选，速度口径不串状态且无伪造参�
   rerender(<RankingsPanel kind="durability" snapshot={snapshot} onClose={close} />);
   expect(screen.getByRole("status")).toHaveTextContent("火系 · ×2 / ×3 · 1只");
 });
+
+test("数字基准、种族速度和去字模式保留可点击详情", () => {
+  render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "试查 267" }));
+  expect(screen.getByRole("status")).toHaveTextContent("比 267 快 0 · 同速 0 · 慢 6 个配置");
+  expect(screen.getByText("基准位置 · 没有同速配置")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "种族速度" }));
+  expect(screen.queryByRole("button", { name: /水测试/ })).not.toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("搜索速度榜精灵"), { target: { value: "100" } });
+  expect(screen.getAllByRole("button", { name: /水测试/ })).toHaveLength(2);
+  fireEvent.click(screen.getByRole("button", { name: "隐藏精灵文字" }));
+  expect(screen.queryByText("水测试")).not.toBeVisible();
+  fireEvent.click(screen.getAllByRole("button", { name: /水测试/ })[0]);
+  expect(screen.getByRole("region", { name: "榜单配置详情" })).toBeInTheDocument();
+});

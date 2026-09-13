@@ -1,0 +1,18 @@
+{
+  "code": "B~Gxf~~~H~B~BQBSBPayBM~bDBK~ax_K~bAjC~y7~~~G~D~BQBSBPayBM~ayGq~bDBo~bAi4~6f~~~J~B~BQBPBUbUFM~a5SC~a5S0~a5QA~6z~~~M~X~BQBPBUbWjy~bbfG~bbee~bAkI~6p~~~H~d~BSBPBTbRq0~ayJy~bRq-~bMzk~7A~~~P~X~BQBPBUa7sk~bbee~bWhm~ayEy~ZZC~FA~D~A~D~A~D~A~A~A~C~A~A~",
+  "memberNames": ["巨噬针鼹", "冰钻布鲁斯", "加油蟹（单只海葵的样子）", "银月狼王", "飞飞钥", "布灵布灵"],
+  "skillNames": [
+    ["力量增效", "冰爪", "偷袭", "地刺"],
+    ["力量增效", "先发制人", "丢冰块", "跺地"],
+    ["超级糖果", "水幕冲击", "潮汐", "打湿"],
+    ["撞鬼", "月蚀", "叠加态", "泥浆铠甲"],
+    ["飞羽", "倾泻", "风隐", "拟寄生"],
+    ["透镜实验", "叠加态", "报复", "取念"]
+  ],
+  "verifiedSources": {
+    "checkedAt": "2026-09-12",
+    "spirits": "https://rocom.qq.com/cp/rocom_game_manager_json/prod/sprite/base_info/list.json",
+    "skills": "https://rocom.qq.com/cp/rocom_game_manager_json/prod/skill/list.json",
+    "entries": { "3763": "银月狼王", "3776": "布灵布灵", "7190470": "月蚀" }
+  }
+}

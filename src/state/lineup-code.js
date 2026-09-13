@@ -24,14 +24,19 @@ function writeNumber(value, width, nullable = false) {
 }
 
 export function decodeLineupCode(input) {
-  const text = String(input ?? "").trim().replace(/\\~/g, "~");
+  const text = String(input ?? "").trim().replace(/\\([~_])/g, "$1");
   if (text.length > 4096) throw new Error("阵容码或分享链接过长");
   const shared = text.match(/[?&]shareData=([^&#\s]+)/);
+  // 游戏分享文案中的阵容码独占一行；只提取原码，不从说明文字推断字段。
+  const candidates = shared ? [] : [...new Set(text.split(/\r?\n/)
+    .map(line => line.trim().replace(/^#+\s*/, ""))
+    .filter(line => line.includes("~") && /^[A-Za-z0-9_~+/-]{8,512}$/.test(line)))];
+  if (candidates.length > 1) throw new Error("检测到多个阵容码，请一次只粘贴一套阵容");
   let code;
   let name = "导入的队伍";
   try {
-    code = decodeURIComponent(shared ? shared[1] : text).replace(/\+/g, "-").replace(/\//g, "_");
-    const named = text.match(/[?&]name=([^&#\s]*)/);
+    code = decodeURIComponent(shared ? shared[1] : candidates[0] ?? text).replace(/\+/g, "-").replace(/\//g, "_");
+    const named = shared ? text.match(/[?&]name=([^&#\s]*)/) : null;
     if (named) name = decodeURIComponent(named[1].replace(/\+/g, " ")).slice(0, 80) || name;
   } catch { throw new Error("分享链接编码无效"); }
   if (!/^[A-Za-z0-9_~-]{8,512}$/.test(code)) throw new Error("请粘贴完整的游戏／千岛阵容码或官方分享链接");
@@ -147,7 +152,9 @@ export function exportLineupCode(team, snapshot, mapping, options = team.lineup 
       skills: Array.from({ length: 4 }, (_, slot) => {
         const id = skillId(member.skills.four[slot]);
         if (id && !skills.has(id)) throw new Error(`${spirit.fullName}的技能数据不存在`);
-        return externalId(mapping.skills, id, source?.skills[slot], skills.get(id)?.name ?? "技能");
+        // 旧配置的预览技能名导出为正式技能，游戏 ID 仍从已核验映射中取得。
+        const canonicalId = mapping.skillAliases?.[id] ?? id;
+        return externalId(mapping.skills, canonicalId, source?.skills[slot], skills.get(id)?.name ?? "技能");
       }),
     };
   });

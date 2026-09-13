@@ -3,6 +3,7 @@ import { getNature, STAT_LABELS } from "../domain/natures.js";
 import { inspectLineupIvs, recommendLineupIvs } from "../state/lineup-ivs.js";
 import { TEAM_BLOODLINE_OPTIONS } from "../state/team-presets.js";
 import { exportLineupCode, importLineupCode, LINEUP_MODES } from "../state/lineup-code.js";
+import { decodeLineupImage } from "../state/lineup-image.js";
 import "../styles/team-exchange.css";
 
 let mappingRequest;
@@ -43,12 +44,16 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
   const [message, setMessage] = useState("");
   const [manualCopy, setManualCopy] = useState(null);
   const exportTextRef = useRef(null);
+  const imageInputRef = useRef(null);
+  const imageRequest = useRef(0);
+  const [decodingImage, setDecodingImage] = useState(false);
+  const [imageResult, setImageResult] = useState(null);
   const [accepted, setAccepted] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
   const [recommended, setRecommended] = useState([]);
   const [loadingPresets, setLoadingPresets] = useState(false);
   const parseRequest = useRef(0);
-  useEffect(() => () => { parseRequest.current++; }, []);
+  useEffect(() => () => { parseRequest.current++; imageRequest.current++; }, []);
   const [magicId, setMagicId] = useState(team?.lineup?.magicId ?? "");
   const [formation, setFormation] = useState(team?.lineup ? team.lineup.mode ?? "" : 2);
   const isImport = mode === "import";
@@ -66,15 +71,16 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
     catch (failure) { exportError = failure.message; }
   }
 
-  async function parse() {
+  async function parse(value = input) {
     const request = ++parseRequest.current;
     setError("");
     setPreview(null);
     setAccepted(false);
     setRecommended([]);
     setRecommendations([]);
+    setLoadingPresets(false);
     try {
-      const result = importLineupCode(input, snapshot, mapping);
+      const result = importLineupCode(value, snapshot, mapping);
       setPreview(result);
       setName(result.name);
       if (result.members.some(member => member && inspectLineupIvs(member.lineupSource.talents).status === "missing")) {
@@ -92,6 +98,32 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
         setLoadingPresets(false);
       }
     } catch (failure) { setError(failure.message); }
+  }
+
+  async function uploadImage(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    const request = ++imageRequest.current;
+    parseRequest.current++;
+    setDecodingImage(true);
+    setError("");
+    setImageResult(null);
+    try {
+      const result = await decodeLineupImage(file);
+      if (request !== imageRequest.current) return;
+      setImageResult(result);
+      if (!result.supported) {
+        setError("二维码已识别，但内容不是已支持的阵容格式。可查看原始内容，或从游戏复制阵容码。");
+        return;
+      }
+      setInput(result.text);
+      await parse(result.text);
+    } catch (failure) {
+      if (request === imageRequest.current) setError(failure.message);
+    } finally {
+      if (request === imageRequest.current) setDecodingImage(false);
+    }
   }
 
   async function copy(value, kind) {
@@ -117,10 +149,17 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
       <header><h3>{isImport ? "导入阵容" : "导出阵容"}</h3><button type="button" onClick={onCancel}>返回队伍</button></header>
       {isImport ? <>
         {!preview ? <><label>阵容码或分享链接
-          <textarea autoFocus rows={4} value={input} maxLength={4096} placeholder="粘贴游戏或千岛复制的阵容代码"
-            onChange={(event) => { setInput(event.target.value); setPreview(null); setError(""); }} />
+          <textarea autoFocus rows={4} value={input} maxLength={4096} placeholder="可粘贴游戏整段分享文案、阵容码或分享链接"
+            onChange={(event) => { imageRequest.current++; parseRequest.current++; setDecodingImage(false); setImageResult(null); setInput(event.target.value); setPreview(null); setError(""); }} />
         </label>
-        <div className="team-exchange__actions"><button type="button" disabled={!input.trim()} onClick={parse}>解析阵容</button></div></> : (
+        <input ref={imageInputRef} hidden type="file" accept="image/png,image/jpeg,image/webp" aria-label="上传配队图" onChange={uploadImage} />
+        <div className="team-exchange__actions">
+          <button type="button" disabled={!input.trim() || decodingImage} onClick={() => parse()}>解析阵容</button>
+          <button type="button" disabled={decodingImage} onClick={() => imageInputRef.current?.click()}>上传配队图</button>
+        </div>
+        <p className="team-exchange__note">支持带二维码的 PNG、JPG、WebP 图片（最大 10 MB），在本机识别。</p>
+        {decodingImage ? <p role="status">正在本机识别二维码…</p> : null}
+        </> : (
           <div className="team-exchange__summary">
             <span>已解析 {preview.members.filter(Boolean).length} 位精灵 · {preview.members.reduce((count, member) => count + (member?.skills.four.filter(Boolean).length ?? 0), 0)} 个技能</span>
             <button type="button" onClick={() => { parseRequest.current++; setLoadingPresets(false); setPreview(null); setAccepted(false); setError(""); }}>修改代码</button>
@@ -175,6 +214,7 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
           <div className="team-exchange__actions"><button type="button" onClick={() => copy(exported.code, "code")}>复制阵容码</button><button type="button" onClick={() => copy(exported.url, "url")}>复制分享链接</button></div>
         </> : null}
       </>}
+      {imageResult ? <details className="team-exchange__payload"><summary>二维码原始内容 · {imageResult.kind}</summary><textarea aria-label="二维码原始内容" readOnly rows={3} value={imageResult.text} /></details> : null}
       {error || exportError ? <p className="team-exchange__error" role="alert">{error || exportError}</p> : null}
       {message ? <p role="status">{message}</p> : null}
     </section>

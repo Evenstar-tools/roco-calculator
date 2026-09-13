@@ -140,3 +140,43 @@ describe("service worker cache policy", () => {
     await expect(Promise.all(event.background)).resolves.toBeDefined();
   });
 });
+
+
+describe("repeat requests and cache failures", () => {
+  test.each(["/assets/index-Ab12_cd9.js", "/assets/index-12345678.css", "/app-icon-192.png", "/app-icon-512.png"])("serves %s without a redundant network request", async (path) => {
+    const cachedResponse = new Response("cached");
+    const fetchImpl = vi.fn();
+    const harness = createHarness({ cached: { [`https://calculator.test${path}`]: cachedResponse }, fetchImpl });
+    const event = dispatchFetch(harness.listeners.fetch, path);
+    await expect(event.responsePromise).resolves.toBe(cachedResponse);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  test("fetches and stores a previously unseen build asset", async () => {
+    const response = new Response("new build");
+    const fetchImpl = vi.fn(async () => response);
+    const harness = createHarness({ fetchImpl });
+    const event = dispatchFetch(harness.listeners.fetch, "/assets/index-NewBuild.js");
+    await expect(event.responsePromise).resolves.toBe(response);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(harness.cacheApi.put).toHaveBeenCalledTimes(1);
+  });
+
+  test("still refreshes mutable portraits rather than freezing their contents", async () => {
+    const response = new Response("portrait");
+    const fetchImpl = vi.fn(async () => new Response("updated portrait"));
+    const harness = createHarness({ cached: { "https://calculator.test/assets/spirits/example.png": response }, fetchImpl });
+    const event = dispatchFetch(harness.listeners.fetch, "/assets/spirits/example.png");
+    await expect(event.responsePromise).resolves.toBe(response);
+    await Promise.all(event.background);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  test("cache quota exhaustion does not discard successful network content", async () => {
+    const response = new Response("online page");
+    const harness = createHarness({ fetchImpl: vi.fn(async () => response) });
+    harness.cacheApi.put.mockRejectedValue(new Error("quota exceeded"));
+    const event = dispatchFetch(harness.listeners.fetch, "/", { mode: "navigate" });
+    await expect(event.responsePromise).resolves.toBe(response);
+  });
+});

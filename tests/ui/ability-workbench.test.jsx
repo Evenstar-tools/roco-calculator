@@ -504,7 +504,7 @@ test("速度一览将 Tab 焦点限制在内页并用 Escape 返回", async () =
   await user.keyboard("{Escape}");
   expect(screen.queryByRole("region", { name: "速度一览" })).not.toBeInTheDocument();
   expect(screen.getByRole("region", { name: "能力分析" })).toBeVisible();
-  expect(screen.getByRole("button", { name: /速度一览/ })).toHaveFocus();
+  await waitFor(() => expect(screen.getByRole("button", { name: /速度一览/ })).toHaveFocus());
 });
 
 test("速度一览搜索候选打开时第一次 Escape 只关闭候选", async () => {

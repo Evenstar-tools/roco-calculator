@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { describe, expect, test, vi } from "vitest";
 import {
@@ -12,6 +13,28 @@ const manifest = JSON.parse(
 );
 
 describe("BWIKI 精灵头像身份绑定", () => {
+  test("圣代甜甜九种口味按正式图鉴文件绑定，不混淆水果饰品与冰淇淋口味", () => {
+    const evidence = JSON.parse(readFileSync("data/reviewed/nrc-2026-09-10.json", "utf8"));
+    const bundled = JSON.parse(readFileSync("miniapp/src/data/bundled-runtime.json", "utf8"));
+    const forms = evidence.spirits.filter(({ title }) => title.startsWith("圣代甜甜（"));
+    expect(forms).toHaveLength(9);
+    for (const form of forms) {
+      const spirit = snapshot.spirits.find(({ fullName }) => fullName === form.title);
+      const asset = manifest.assets.find(({ id }) => id === spirit.id);
+      expect(asset, form.title).toMatchObject({
+        name: form.title,
+        sourceKind: "nrc-catalog",
+        nrcFile: form.image.head,
+      });
+      expect(spirit.provenance.asset.file, form.title).toBe(form.image.head);
+      expect(spirit.asset.sourceUrl, form.title).toBe(asset.sourceUrl);
+      expect(bundled.spirits.find(({ id }) => id === spirit.id).imageUrl, form.title)
+        .toBe(asset.sourceUrl);
+      const image = readFileSync(`public${asset.localFile}`);
+      expect(createHash("sha256").update(image).digest("hex"), form.title).toBe(asset.sha256);
+    }
+  });
+
   test("用完整形态名解析头像，不依赖接口返回顺序", async () => {
     const spirits = [
       {

@@ -13,7 +13,7 @@
       "nrcLearnsets": 7271
     },
     "fetchedAt": "2026-07-23T13:54:31.332Z",
-    "contentSha256": "3def18e7ceac399f032171ff7301cd056400cf55f11ce38bf663fcf19dfd8506",
+    "contentSha256": "1420ae1de05420d6a276a8746a7454c29b1ce3c75ae88e621e612cf6db84ea18",
     "sources": [
       {
         "title": "技能筛选",
@@ -39277,7 +39277,7 @@
       "traitName": "加个雪球",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E4%BB%A3%E7%94%9C%E7%94%9C%EF%BC%88%E6%A8%B1%E6%A1%83%E8%8D%89%E8%8E%93%E5%8F%A3%E5%91%B3%EF%BC%89",
       "asset": {
-        "sourceUrl": "https://patchwiki.biligame.com/images/rocom/5/54/l5z78rklhieufah8ceixewgpq5ecydo.png",
+        "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a2/npx15qnvsk9s3rbskb2sqsiwfolk2ah.png",
         "width": 128,
         "height": 128
       },
@@ -39318,11 +39318,12 @@
           "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
         },
         "asset": {
-          "title": "精灵筛选",
-          "url": "https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E7%AD%9B%E9%80%89",
-          "revision": 41360,
-          "fetchedAt": "2026-07-23T13:54:31.648Z",
-          "sha256": "e1dc235b3d2a7f24f7e4e06f21b7ce6186f5c8265eb82b761124ce862ab1e8f8"
+          "title": "模块:Pets/data/Catalog",
+          "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+          "revision": 7265,
+          "fetchedAt": "2026-09-09T16:57:54.897Z",
+          "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7",
+          "file": "PetAvatar_3463.png"
         },
         "stage": {
           "title": "模块:Pets/data/Catalog",
@@ -39382,7 +39383,7 @@
       "traitName": "加个雪球",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E4%BB%A3%E7%94%9C%E7%94%9C%EF%BC%88%E6%A8%B1%E6%A1%83%E6%8A%B9%E8%8C%B6%E5%8F%A3%E5%91%B3%EF%BC%89",
       "asset": {
-        "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/1e/9o8dmijwrwslrocpb4pbadojjgpxf91.png",
+        "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e0/h4d0lt09kc93fxz4hmopertqi6y2m99.png",
         "width": 128,
         "height": 128
       },
@@ -39423,11 +39424,12 @@
           "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
         },
         "asset": {
-          "title": "精灵筛选",
-          "url": "https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E7%AD%9B%E9%80%89",
-          "revision": 41360,
-          "fetchedAt": "2026-07-23T13:54:31.648Z",
-          "sha256": "e1dc235b3d2a7f24f7e4e06f21b7ce6186f5c8265eb82b761124ce862ab1e8f8"
+          "title": "模块:Pets/data/Catalog",
+          "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+          "revision": 7265,
+          "fetchedAt": "2026-09-09T16:57:54.897Z",
+          "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7",
+          "file": "PetAvatar_3460.png"
         },
         "stage": {
           "title": "模块:Pets/data/Catalog",
@@ -39487,7 +39489,7 @@
       "traitName": "加个雪球",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E4%BB%A3%E7%94%9C%E7%94%9C%EF%BC%88%E8%93%9D%E8%8E%93%E5%B7%A7%E5%85%8B%E5%8A%9B%E5%8F%A3%E5%91%B3%EF%BC%89",
       "asset": {
-        "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9e/ph8t6j26mamknm8m2aymwkpghawg3lq.png",
+        "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3a/4do1w9yykwg56esib9bgp2s8cr99gf2.png",
         "width": 128,
         "height": 128
       },
@@ -39528,11 +39530,12 @@
           "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
         },
         "asset": {
-          "title": "精灵筛选",
-          "url": "https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E7%AD%9B%E9%80%89",
-          "revision": 41360,
-          "fetchedAt": "2026-07-23T13:54:31.648Z",
-          "sha256": "e1dc235b3d2a7f24f7e4e06f21b7ce6186f5c8265eb82b761124ce862ab1e8f8"
+          "title": "模块:Pets/data/Catalog",
+          "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+          "revision": 7265,
+          "fetchedAt": "2026-09-09T16:57:54.897Z",
+          "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7",
+          "file": "PetAvatar_3458.png"
         },
         "stage": {
           "title": "模块:Pets/data/Catalog",
@@ -39592,7 +39595,7 @@
       "traitName": "加个雪球",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E4%BB%A3%E7%94%9C%E7%94%9C%EF%BC%88%E8%93%9D%E8%8E%93%E8%8D%89%E8%8E%93%E5%8F%A3%E5%91%B3%EF%BC%89",
       "asset": {
-        "sourceUrl": "https://patchwiki.biligame.com/images/rocom/7/76/c436fl3rdkn955kgwgflb2bw3oqg6kf.png",
+        "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/5e/pkh57p21r4vzx78bhs4pycyntxbteah.png",
         "width": 128,
         "height": 128
       },
@@ -39633,11 +39636,12 @@
           "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
         },
         "asset": {
-          "title": "精灵筛选",
-          "url": "https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E7%AD%9B%E9%80%89",
-          "revision": 41360,
-          "fetchedAt": "2026-07-23T13:54:31.648Z",
-          "sha256": "e1dc235b3d2a7f24f7e4e06f21b7ce6186f5c8265eb82b761124ce862ab1e8f8"
+          "title": "模块:Pets/data/Catalog",
+          "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+          "revision": 7265,
+          "fetchedAt": "2026-09-09T16:57:54.897Z",
+          "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7",
+          "file": "PetAvatar_3464.png"
         },
         "stage": {
           "title": "模块:Pets/data/Catalog",
@@ -39697,7 +39701,7 @@
       "traitName": "加个雪球",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E4%BB%A3%E7%94%9C%E7%94%9C%EF%BC%88%E8%93%9D%E8%8E%93%E6%8A%B9%E8%8C%B6%E5%8F%A3%E5%91%B3%EF%BC%89",
       "asset": {
-        "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/fe/80k9200qdyva28hbfrg2y924ysj3j83.png",
+        "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fc/4s1nycqkmqiq95wlzetku2xec3te2yl.png",
         "width": 128,
         "height": 128
       },
@@ -39738,11 +39742,12 @@
           "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
         },
         "asset": {
-          "title": "精灵筛选",
-          "url": "https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E7%AD%9B%E9%80%89",
-          "revision": 41360,
-          "fetchedAt": "2026-07-23T13:54:31.648Z",
-          "sha256": "e1dc235b3d2a7f24f7e4e06f21b7ce6186f5c8265eb82b761124ce862ab1e8f8"
+          "title": "模块:Pets/data/Catalog",
+          "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+          "revision": 7265,
+          "fetchedAt": "2026-09-09T16:57:54.897Z",
+          "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7",
+          "file": "PetAvatar_3461.png"
         },
         "stage": {
           "title": "模块:Pets/data/Catalog",
@@ -39802,7 +39807,7 @@
       "traitName": "加个雪球",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E4%BB%A3%E7%94%9C%E7%94%9C%EF%BC%88%E6%9D%A8%E6%A1%83%E5%B7%A7%E5%85%8B%E5%8A%9B%E5%8F%A3%E5%91%B3%EF%BC%89",
       "asset": {
-        "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/92/8yltdi5v60vu7eqfn5nesv1tq4qgdnr.png",
+        "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e1/pxfz0sffuxewymwoxtei8rbind5f9xr.png",
         "width": 128,
         "height": 128
       },
@@ -39843,11 +39848,12 @@
           "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
         },
         "asset": {
-          "title": "精灵筛选",
-          "url": "https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E7%AD%9B%E9%80%89",
-          "revision": 41360,
-          "fetchedAt": "2026-07-23T13:54:31.648Z",
-          "sha256": "e1dc235b3d2a7f24f7e4e06f21b7ce6186f5c8265eb82b761124ce862ab1e8f8"
+          "title": "模块:Pets/data/Catalog",
+          "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+          "revision": 7265,
+          "fetchedAt": "2026-09-09T16:57:54.897Z",
+          "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7",
+          "file": "PetAvatar_3459.png"
         },
         "stage": {
           "title": "模块:Pets/data/Catalog",
@@ -39907,7 +39913,7 @@
       "traitName": "加个雪球",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E4%BB%A3%E7%94%9C%E7%94%9C%EF%BC%88%E6%9D%A8%E6%A1%83%E8%8D%89%E8%8E%93%E5%8F%A3%E5%91%B3%EF%BC%89",
       "asset": {
-        "sourceUrl": "https://patchwiki.biligame.com/images/rocom/b/b7/lyfdao0dmsyv1dze4mz6rxe6qbbzp0j.png",
+        "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/ff/cz92289r6p68rawxyzkbbbatqv661cn.png",
         "width": 128,
         "height": 128
       },
@@ -39948,11 +39954,12 @@
           "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
         },
         "asset": {
-          "title": "精灵筛选",
-          "url": "https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E7%AD%9B%E9%80%89",
-          "revision": 41360,
-          "fetchedAt": "2026-07-23T13:54:31.648Z",
-          "sha256": "e1dc235b3d2a7f24f7e4e06f21b7ce6186f5c8265eb82b761124ce862ab1e8f8"
+          "title": "模块:Pets/data/Catalog",
+          "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+          "revision": 7265,
+          "fetchedAt": "2026-09-09T16:57:54.897Z",
+          "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7",
+          "file": "PetAvatar_3465.png"
         },
         "stage": {
           "title": "模块:Pets/data/Catalog",
@@ -40012,7 +40019,7 @@
       "traitName": "加个雪球",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E4%BB%A3%E7%94%9C%E7%94%9C%EF%BC%88%E6%9D%A8%E6%A1%83%E6%8A%B9%E8%8C%B6%E5%8F%A3%E5%91%B3%EF%BC%89",
       "asset": {
-        "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/1b/escwwssipqximllhaiqxqp78sx2bz3c.png",
+        "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4d/3vn9xqykluiy3pmjo0g9solxnv2lqew.png",
         "width": 128,
         "height": 128
       },
@@ -40053,11 +40060,12 @@
           "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
         },
         "asset": {
-          "title": "精灵筛选",
-          "url": "https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E7%AD%9B%E9%80%89",
-          "revision": 41360,
-          "fetchedAt": "2026-07-23T13:54:31.648Z",
-          "sha256": "e1dc235b3d2a7f24f7e4e06f21b7ce6186f5c8265eb82b761124ce862ab1e8f8"
+          "title": "模块:Pets/data/Catalog",
+          "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+          "revision": 7265,
+          "fetchedAt": "2026-09-09T16:57:54.897Z",
+          "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7",
+          "file": "PetAvatar_3462.png"
         },
         "stage": {
           "title": "模块:Pets/data/Catalog",

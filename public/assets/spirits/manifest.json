@@ -3689,82 +3689,98 @@
     {
       "id": "spirit_837b4392da6139fa",
       "name": "圣代甜甜（樱桃草莓口味）",
-      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/5/54/l5z78rklhieufah8ceixewgpq5ecydo.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a2/npx15qnvsk9s3rbskb2sqsiwfolk2ah.png",
       "localFile": "/assets/spirits/spirit_837b4392da6139fa.png",
-      "sha256": "6c819a1f7edf6a0eb297771e04ef1c01c5aae6d4b0f4f8517a8d7d5256036563",
-      "bytes": 12890,
+      "sha256": "b5410f0ceace230063910442ba3e6dc41b72bc168cea1435b073bcbdff827232",
+      "bytes": 15089,
       "width": 128,
-      "height": 128
+      "height": 128,
+      "sourceKind": "nrc-catalog",
+      "nrcFile": "PetAvatar_3463.png"
     },
     {
       "id": "spirit_eeb5cb4fca4e17dd",
       "name": "圣代甜甜（樱桃抹茶口味）",
-      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/1e/9o8dmijwrwslrocpb4pbadojjgpxf91.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e0/h4d0lt09kc93fxz4hmopertqi6y2m99.png",
       "localFile": "/assets/spirits/spirit_eeb5cb4fca4e17dd.png",
-      "sha256": "e5afb924b54078c23e2ffbb4dd0fb8b1e7ab9216c0c46be900f8e42717b5abb5",
-      "bytes": 12897,
+      "sha256": "81c2e3f10bfa8a78a5dd34815ba1081e7e2be902d02e6b108854c8581f21776f",
+      "bytes": 14097,
       "width": 128,
-      "height": 128
+      "height": 128,
+      "sourceKind": "nrc-catalog",
+      "nrcFile": "PetAvatar_3460.png"
     },
     {
       "id": "spirit_7e8447269b167ed9",
       "name": "圣代甜甜（蓝莓巧克力口味）",
-      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9e/ph8t6j26mamknm8m2aymwkpghawg3lq.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3a/4do1w9yykwg56esib9bgp2s8cr99gf2.png",
       "localFile": "/assets/spirits/spirit_7e8447269b167ed9.png",
-      "sha256": "7d81fefa387853f6e0bae675206661fb75abfbf449853a22c6efa07536251a39",
-      "bytes": 14162,
+      "sha256": "64e0b261d3515d7f37e3ab011a02f5515d9cef47041434ac88015935dfcc1543",
+      "bytes": 12797,
       "width": 128,
-      "height": 128
+      "height": 128,
+      "sourceKind": "nrc-catalog",
+      "nrcFile": "PetAvatar_3458.png"
     },
     {
       "id": "spirit_839523317c1f9cac",
       "name": "圣代甜甜（蓝莓草莓口味）",
-      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/7/76/c436fl3rdkn955kgwgflb2bw3oqg6kf.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/5e/pkh57p21r4vzx78bhs4pycyntxbteah.png",
       "localFile": "/assets/spirits/spirit_839523317c1f9cac.png",
-      "sha256": "c9b904c369099c5124f84c52a2b3e115a2f880c231ddae87e770ef4446e3bcf4",
-      "bytes": 14176,
+      "sha256": "95426acc7da5279c7c92adf41fdaab49d6749070b3a9f88ba78390f0d5d01cc9",
+      "bytes": 15115,
       "width": 128,
-      "height": 128
+      "height": 128,
+      "sourceKind": "nrc-catalog",
+      "nrcFile": "PetAvatar_3464.png"
     },
     {
       "id": "spirit_f6d8309391798193",
       "name": "圣代甜甜（蓝莓抹茶口味）",
-      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/fe/80k9200qdyva28hbfrg2y924ysj3j83.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fc/4s1nycqkmqiq95wlzetku2xec3te2yl.png",
       "localFile": "/assets/spirits/spirit_f6d8309391798193.png",
-      "sha256": "e4f134c1f26f29850021bd84a1c13d3e62d8e492bad9a371afe4dfec65eecb87",
-      "bytes": 14303,
+      "sha256": "4003b0755ea5e15ecd1d5477db2c3d2940def94f162d9f0b8363c2b95a65c095",
+      "bytes": 14108,
       "width": 128,
-      "height": 128
+      "height": 128,
+      "sourceKind": "nrc-catalog",
+      "nrcFile": "PetAvatar_3461.png"
     },
     {
       "id": "spirit_82c2311d4036c4ee",
       "name": "圣代甜甜（杨桃巧克力口味）",
-      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/92/8yltdi5v60vu7eqfn5nesv1tq4qgdnr.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e1/pxfz0sffuxewymwoxtei8rbind5f9xr.png",
       "localFile": "/assets/spirits/spirit_82c2311d4036c4ee.png",
-      "sha256": "ef8cd4770effdba4b4c2d920f1b03334feb4e3688abee218b1ef377ef0c04861",
-      "bytes": 15226,
+      "sha256": "9afaeb0cf41c9c081865096033f5c5e2c7300aa28bfac7e09e45d791f30a7668",
+      "bytes": 12797,
       "width": 128,
-      "height": 128
+      "height": 128,
+      "sourceKind": "nrc-catalog",
+      "nrcFile": "PetAvatar_3459.png"
     },
     {
       "id": "spirit_5f38897fa15dae2c",
       "name": "圣代甜甜（杨桃草莓口味）",
-      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/b/b7/lyfdao0dmsyv1dze4mz6rxe6qbbzp0j.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/ff/cz92289r6p68rawxyzkbbbatqv661cn.png",
       "localFile": "/assets/spirits/spirit_5f38897fa15dae2c.png",
-      "sha256": "1a2ce9bb4d2b705561082920fdad4d7e2f6805fb02ad74dfe4d1aa6ca2b1b78e",
-      "bytes": 15256,
+      "sha256": "fb0fce53560e7e5538a64eb0520d0fc1f41491f0ab9dc878cee038548a7b0a6f",
+      "bytes": 14989,
       "width": 128,
-      "height": 128
+      "height": 128,
+      "sourceKind": "nrc-catalog",
+      "nrcFile": "PetAvatar_3465.png"
     },
     {
       "id": "spirit_659ec5a995873fbe",
       "name": "圣代甜甜（杨桃抹茶口味）",
-      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/1b/escwwssipqximllhaiqxqp78sx2bz3c.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4d/3vn9xqykluiy3pmjo0g9solxnv2lqew.png",
       "localFile": "/assets/spirits/spirit_659ec5a995873fbe.png",
-      "sha256": "d41203cb91757663e8755763955e1c1a5421580555ba2254e4729795ec620028",
-      "bytes": 15144,
+      "sha256": "06bd83637ec62397e09841341dec8b847c8afcaa71302707f6f0016aa00ad0ab",
+      "bytes": 14228,
       "width": 128,
-      "height": 128
+      "height": 128,
+      "sourceKind": "nrc-catalog",
+      "nrcFile": "PetAvatar_3462.png"
     },
     {
       "id": "spirit_09a6740ea932b071",

@@ -1,6 +1,6 @@
 {
   "name": "rock-calculator",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "内置完整赛季数据、可断网使用的洛克王国 PVP 伤害计算器。",
   "author": "洛克计算器",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "cli": "node scripts/cli/rock-calculator.mjs",
     "cli:test": "vitest run tests/cli/rock-calculator-cli.test.js",
     "dev": "npm run data:runtime && vite --config config/vite.config.mjs",
-    "build": "npm run acceptance:verify && npm run test:core-current && npm run data:runtime && npm run data:verify-bindings && vite build --config config/vite.config.mjs && npm run performance:verify",
+    "build": "npm run acceptance:verify && npm run test:core-current && npm run data:runtime && npm run data:verify-bindings && vite build --config config/vite.config.mjs && node scripts/minify-service-worker.mjs && npm run performance:verify",
     "desktop": "npm run build && electron .",
     "desktop:pack": "npm run build && node scripts/build-desktop.mjs",
     "desktop:release-assets": "node scripts/create-desktop-release-artifacts.mjs",
@@ -52,8 +52,10 @@
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",
+    "fflate": "0.8.2",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zxing-wasm": "3.1.4"
   },
   "devDependencies": {
     "@babel/parser": "7.29.7",
@@ -74,6 +76,7 @@
     "jsdom": "26.1.0",
     "miniprogram-automator": "0.12.1",
     "pinyin-pro": "3.28.2",
+    "terser": "5.49.0",
     "vite": "8.2.2",
     "vitest": "4.1.11"
   },

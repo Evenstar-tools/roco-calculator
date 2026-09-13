@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 
 export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
-  // 2026-09-09：S4 完整学习面与技能素材扩容，13.5 MiB 警告、14 MiB 阻断。
+  // 保留警告基线，硬上限由下方经确认的增量控制。
   clientTotal: 13.5 * 1024 * 1024,
   cssGzip: 24 * 1024,
   // 2026-09-04 重校：S4 功能版约 230 KiB gzip，为后续小功能保留约 11% 硬余量
@@ -19,11 +19,11 @@ export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
 });
 
 export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
-// 2026-09-11：独立排行榜扩充，经确认将 gzip 硬上限调至 272 KiB；原始体积仍为 880 KiB。
+// 2026-09-13：经用户确认，总资源 16 MiB、原始 JS 1 MiB、gzip JS 304 KiB。
 export const DEFAULT_HARD_OVERAGE_BY_KEY = Object.freeze({
-  clientTotal: 0.5 * 1024 * 1024,
-  jsGzip: 36 * 1024,
-  jsRaw: 70 * 1024,
+  clientTotal: 2.5 * 1024 * 1024,
+  jsGzip: 68 * 1024,
+  jsRaw: 214 * 1024,
 });
 
 const LABELS = {

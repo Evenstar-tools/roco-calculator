@@ -16,7 +16,11 @@ async function open(page, width, theme) {
   await page.addInitScript(value => localStorage.setItem("rock-calculator.settings.theme.v1", value), theme);
   await page.setViewportSize({ width, height: 900 });
   await page.goto("/");
-  await page.getByRole("button", { name: "打开菜单" }).click();
+  const menu = page.getByRole("navigation", { name: "应用菜单" });
+  await expect(async () => {
+    if (!await menu.isVisible()) await page.getByRole("button", { name: "打开菜单" }).click();
+    await expect(menu).toBeVisible();
+  }).toPass();
   await page.getByRole("button", { name: "技能检索", exact: true }).click();
   const panel = page.getByRole("dialog", { name: "技能查询" });
   await expect(panel.getByLabel("搜索技能或精灵")).toBeVisible();

@@ -50,6 +50,13 @@
 .rank-speed-standalone .ability-speed__table-wrap { flex: 1; overflow: auto; min-height: 0; margin: 0 12px; border: 0; }
 .rank-speed-standalone .ability-speed__table thead { top: 0; }
 .rank-speed-standalone .ability-speed-overview__tier-value { top: 38px; }
+.speed-query-guide { padding: 0 12px 8px; }
+.speed-query-modes { display: flex; gap: 4px; }
+.speed-query-modes button { padding: 7px 12px; border: 1px solid transparent; border-radius: 6px; background: var(--surface-soft); color: var(--text-muted); font-size: 12px; }
+.speed-query-modes button[aria-pressed="true"] { color: var(--accent-strong); background: var(--surface); border-color: var(--accent); }
+.speed-reference-summary { min-height: 38px; display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--text-muted); font-size: 12px; }
+.speed-reference-summary button { padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--accent-strong); white-space: nowrap; }
+.ability-speed-overview__tier-value > small { display: block; color: var(--text-muted); font-size: 10px; font-weight: 400; }
 @media(max-width: 600px) {
  .rank-speed-standalone .ability-speed-overview__controls .ability-speed__profile-picker { flex: 0 0 110px; }
  .rank-speed-standalone .ability-speed__profile-picker summary { width: 110px; }

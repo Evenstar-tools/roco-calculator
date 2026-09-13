@@ -147,7 +147,7 @@ export function useStoredCalculatorData(
     return nextConfigs;
   }
 
-  function toggleSpiritFavorite(spirit) {
+  function toggleSpiritFavorite(spirit, configuration) {
     if (!stores.favorites) {
       onToast("当前环境无法保存收藏");
       return;
@@ -174,6 +174,7 @@ export function useStoredCalculatorData(
           return;
         }
         next.add(spirit.id);
+        if (configuration?.spiritId === spirit.id) rememberSide(configuration);
         onToast(`已收藏 ${spirit.fullName}`);
       }
       setFavoriteSpiritIds(next);
@@ -297,6 +298,7 @@ export function useStoredCalculatorData(
   }
 
   return {
+    comparisonPresets: Object.fromEntries(Object.entries(spiritConfigsState.configs).filter(([id, config]) => favoriteSpiritIds.has(id) || isCompleteSpiritConfig(config))),
     buildFavoriteConfigLibrary,
     clearIncompleteSpiritConfigs,
     clearSpiritConfigs,

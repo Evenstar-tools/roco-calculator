@@ -306,6 +306,7 @@ export function ResultRail({
   onCurrentHpPercentChange,
   onDirectionToggle,
   onSkillResultSelect,
+  onOpenComparison,
   result,
   showTypeCoverage = false,
 }) {
@@ -384,6 +385,7 @@ export function ResultRail({
       ) : null}
 
       <NegativeStatusSettlement settlement={primary.negativeStatusSettlement} />
+      {onOpenComparison ? <button type="button" className="damage-comparison-entry" onClick={onOpenComparison}>查看全精灵承伤</button> : null}
 
       {primary.markSettlements?.length > 0 ? (
         <section aria-label="印记结算" className="result-rail__marks">

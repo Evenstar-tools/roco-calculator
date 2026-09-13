@@ -2,9 +2,11 @@ import { useRef, useState } from "react";
 import { FEEDBACK_QQ } from "../components/DataSourceDialog.jsx";
 import { FEATURED_USER_RELEASE } from "../data/user-release-notes.js";
 import {
+  readDamageComparisonSetting,
   readDurabilityOverviewSetting,
   readPowerDisplayMode,
   readTypeCoverageSetting,
+  writeDamageComparisonSetting,
   writeDurabilityOverviewSetting,
   writeNegativeStatusSettlementSetting,
   writePowerDisplayMode,
@@ -25,6 +27,9 @@ export function useWorkspaceOverlays({
   const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
   const [dataSourceOpen, setDataSourceOpen] = useState(false);
   const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
+  const [damageComparisonEnabled, setDamageComparisonEnabled] = useState(
+    () => readDamageComparisonSetting(),
+  );
   const [durabilityOverviewEnabled, setDurabilityOverviewEnabled] = useState(
     () => readDurabilityOverviewSetting(),
   );
@@ -59,6 +64,7 @@ export function useWorkspaceOverlays({
   };
 
   const dataSourceProps = {
+    initialView: dataSourceOpen === "release" ? "release" : "",
     onClose: () => setDataSourceOpen(false),
     onCopyFeedback: async () => {
       if (!globalThis.navigator?.clipboard?.writeText) {
@@ -81,9 +87,13 @@ export function useWorkspaceOverlays({
   };
 
   const displaySettingsProps = {
+    damageComparisonEnabled,
     durabilityOverviewEnabled,
     negativeStatusSettlementEnabled: negativeStatusEnabled,
     onClose: () => setDisplaySettingsOpen(false),
+    onDamageComparisonChange: (enabled) => {
+      setDamageComparisonEnabled(writeDamageComparisonSetting(undefined, enabled));
+    },
     onNegativeStatusSettlementChange: (enabled) => {
       const value = writeNegativeStatusSettlementSetting(undefined, enabled);
       dispatch({
@@ -137,6 +147,7 @@ export function useWorkspaceOverlays({
 
   return {
     cleanupConfigsProps,
+    damageComparisonEnabled,
     dataSourceProps,
     displaySettingsProps,
     durabilityOverviewEnabled,

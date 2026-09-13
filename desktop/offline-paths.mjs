@@ -7,7 +7,7 @@ const OFFLINE_ORIGIN = "app://calculator";
 // script-src 不放行 unsafe-inline；源码与样式也没有 data: 图片。
 export const HTML_CONTENT_SECURITY_POLICY = [
   "default-src 'self' app:",
-  "script-src 'self' app:",
+  "script-src 'self' app: 'wasm-unsafe-eval'",
   "style-src 'self' app: 'unsafe-inline'",
   "img-src 'self' app:",
   "font-src 'self' app:",

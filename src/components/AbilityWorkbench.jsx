@@ -1,11 +1,14 @@
 import {
   ArrowLeft,
   Crosshair,
+  Eye,
+  EyeSlash,
   Info,
   LockSimple,
   LockSimpleOpen,
   MagnifyingGlass,
 } from "@phosphor-icons/react";
+import { speedQuery, speedReference, speedBadge } from "../features/team-ability/domain/ranking-tools.js";
 import {
   lazy,
   Suspense,
@@ -675,10 +678,19 @@ export function SpeedOverview({
   standalone = false,
   query = "",
   onQueryChange,
+  queryMode = "auto",
+  onQueryModeChange,
 }) {
   const locateTargetRef = useRef(null);
+  const referenceRef = useRef(null);
+  const scrollRef = useRef(null);
+  const [iconOnly, setIconOnly] = useState(false);
+  const [jump, setJump] = useState(0);
   const selected = standalone ? null : targets.find((target) => target.id === targetId) ?? targets[0];
   const targetGroups = groupSpeedTargets(targets);
+  const search = speedQuery(query, queryMode);
+  const reference = speedReference(targetGroups, standalone && search.kind === "actual" ? search.value : null);
+  const displayGroups = reference?.groups ?? targetGroups;
   const nearestCurrentTarget = standalone ? null : findNearestSpeedTarget(targets, currentSpeed);
   const resolvedLocateTargetId = targets.some((target) => target.id === locateTargetId)
     ? locateTargetId
@@ -691,10 +703,20 @@ export function SpeedOverview({
     return () => cancelAnimationFrame(frame);
   }, [profileIds, resolvedLocateTargetId]);
 
+  useEffect(() => {
+    if (!standalone || search.kind !== "actual" || search.value === null) return;
+    const frame = requestAnimationFrame(() => {
+      const row = referenceRef.current;
+      const scroll = scrollRef.current;
+      if (row && scroll) scroll.scrollTop += row.getBoundingClientRect().top - scroll.getBoundingClientRect().top - (scroll.querySelector("thead")?.offsetHeight ?? 0);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [standalone, search.kind, search.value, profileIds, jump, iconOnly]);
+
   return (
     <section
       aria-label="速度一览"
-      className={`ability-full-ranking ability-speed-overview${standalone ? " rank-speed-standalone" : ""}`}
+      className={`ability-full-ranking ability-speed-overview${standalone ? " rank-speed-standalone" : ""}${iconOnly ? " is-icon-only" : ""}`}
       onKeyDown={(event) => {
         if (event.key === "Tab" && !standalone) {
           event.stopPropagation();
@@ -723,25 +745,31 @@ export function SpeedOverview({
       </header> : null}
 
       <div className="ability-speed-overview__controls">
+        <button type="button" className="speed-portrait-toggle" aria-label={iconOnly ? "显示精灵文字" : "隐藏精灵文字"} aria-pressed={iconOnly} title={iconOnly ? "显示精灵文字" : "隐藏精灵文字"} onClick={() => setIconOnly(!iconOnly)}>{iconOnly ? <Eye size={19} /> : <EyeSlash size={19} />}</button>
         <SpeedProfilePicker
           onProfilesChange={onProfilesChange}
           profileIds={profileIds}
         />
-        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input aria-label="搜索速度榜精灵" placeholder="名称、图鉴号或别名" value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
+        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input aria-label="搜索速度榜精灵" placeholder="精灵名称或速度值，如 267" value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
           onTargetChange={onTargetChange}
           selected={selected}
           targets={targets}
         />}
       </div>
 
-      {standalone ? <div className="rank-summary"><span>共 {targetGroups.length} 档 · 同速聚合</span><button type="button" onClick={() => {onQueryChange(""); onProfilesChange(["positive-max", "neutral-max"]);}}>重置</button></div> : <div className="ability-speed-overview__selection" role="status">
+      {standalone ? <div className="speed-query-guide">
+        <div className="speed-query-modes">{[["auto", "实际速度"], ["base", "种族速度"], ["text", "名称 / 图鉴"]].map(([id, label]) => <button type="button" key={id} aria-pressed={queryMode === id} onClick={() => onQueryModeChange(id)}>{label}</button>)}</div>
+        <div className="speed-reference-summary" role="status">{search.invalid ? <span>请输入非负整数速度值</span> : reference ? <><span>比 <b>{reference.value}</b> 快 <b>{reference.faster}</b> · 同速 <b>{reference.equal}</b> · 慢 <b>{reference.slower}</b> 个配置</span><button type="button" onClick={() => setJump(jump + 1)}>定位 {reference.value}</button></> : <><span>{search.kind === "base" && search.value !== null ? `种族速度 ${search.value} · 按实际速度排列` : "输入名称找精灵，输入速度看快慢"}</span>{!query ? <button type="button" onClick={() => { onQueryModeChange("auto"); onQueryChange("267"); }}>试查 267</button> : null}</>}</div>
+      </div> : null}
+
+      {standalone ? <div className="rank-summary"><span>共 {targetGroups.length} 档 · 同速聚合</span><button type="button" onClick={() => {onQueryChange(""); onQueryModeChange("auto"); onProfilesChange(["positive-max", "neutral-max"]);}}>重置</button></div> : <div className="ability-speed-overview__selection" role="status">
         <span>当前配置 <b>{formatNumber(currentSpeed)}</b></span>
         {selected ? (
           <span>已选目标 <b>{selected.name} · {formatNumber(selected.speed)}</b></span>
         ) : null}
       </div>}
 
-      <div className="ability-speed__table-wrap ability-speed-overview__table-wrap">
+      <div ref={scrollRef} className="ability-speed__table-wrap ability-speed-overview__table-wrap">
         <table aria-label="速度档位表" className="ability-speed__table">
           <colgroup>
             <col className="ability-speed__table-value" />
@@ -754,16 +782,18 @@ export function SpeedOverview({
             </tr>
           </thead>
           <tbody>
-            {targetGroups.map((group) => (
+            {displayGroups.map((group) => (
               <tr
-                className={group.targets.some((target) => target.id === selected?.id) ? "is-selected" : ""}
+                className={group.speed === reference?.value || group.targets.some((target) => target.id === selected?.id) ? "is-selected" : ""}
+                ref={group.speed === reference?.value ? referenceRef : null}
                 key={group.speed}
               >
                 <th scope="row">
-                  <span className="ability-speed-overview__tier-value">{group.speed}</span>
+                  <span className="ability-speed-overview__tier-value">{group.speed}{reference ? <small>{group.speed === reference.value ? "基准" : `${group.speed > reference.value ? "+" : ""}${group.speed - reference.value}`}</small> : null}</span>
                 </th>
                 <td>
                   <div className="ability-speed__tier-spirits">
+                    {!group.targets.length ? <span className="rank-note">基准位置 · 没有同速配置</span> : null}
                     {group.targets.map((target) => (
                       <button
                         aria-label={`在速度表选择${target.name}，速度${target.speed}${target.specialLabel ? `，${target.specialLabel}` : ""}`}
@@ -775,10 +805,10 @@ export function SpeedOverview({
                         type="button"
                       >
                         {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
-                        <span>
+                        {iconOnly ? <small className="speed-profile-badge">{speedBadge(target)}</small> : <span>
                           <strong>{target.name}</strong>
                           <small>{speedTargetMeta(target)}</small>
-                        </span>
+                        </span>}
                       </button>
                     ))}
                   </div>

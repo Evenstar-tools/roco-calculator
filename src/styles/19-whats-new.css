@@ -40,7 +40,7 @@
 
 .whats-new-dialog__list li {
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-columns: 24px minmax(0, 1fr) auto;
   gap: 12px;
   padding: 15px 0;
   border-bottom: 1px solid var(--border);
@@ -62,6 +62,10 @@
   display: block;
   font-size: 14px;
 }
+.whats-new-dialog__list strong { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.whats-new-dialog .whats-new-dialog__badge { display: inline-block; width: auto; margin: 0; padding: 1px 5px; border-radius: 4px; background: var(--selection-bg); color: var(--accent-strong); font-size: 10px; font-weight: 500; }
+.whats-new-dialog__list .whats-new-dialog__feature { align-self: center; padding: 7px 10px; min-height: 36px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--accent-strong); font-size: 12px; }
+.whats-new-dialog .whats-new-dialog__history { display: block; margin: 0 24px 12px; padding: 5px 0; border: 0; background: transparent; color: var(--text-muted); font-size: 12px; }
 
 .whats-new-dialog__list p {
   margin: 4px 0 0;

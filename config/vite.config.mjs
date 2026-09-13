@@ -4,11 +4,14 @@ import { fileURLToPath } from "node:url";
 
 export default defineConfig({
   build: {
+    minify: "terser",
+    terserOptions: { compress: { passes: 2 } },
     outDir: "dist/client",
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) return undefined;
+          if (id.includes("zxing-wasm")) return "qr-reader";
           if (id.includes("react")) return "react-vendor";
           if (id.includes("@phosphor-icons")) return "icons";
           if (id.includes("pinyin-pro")) return "pinyin";

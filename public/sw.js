@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.0.1" + "-20260911-ranking-tools";
+const CACHE_NAME = "rock-calculator-webapp-v2.0.2";
 const APP_SHELL = [
   "/",
   "/manifest.webmanifest",
@@ -50,10 +50,25 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// 构建指纹随内容变化；图标由当前发布缓存隔离，发布时更新 CACHE_NAME。
+const IMMUTABLE_ASSET_RE = /^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css)$/;
+const RELEASE_ASSETS = new Set(["/app-icon-192.png", "/app-icon-512.png"]);
+
+async function cacheFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+  return (await cache.match(request)) ?? refreshCache(cache, request);
+}
+
 async function refreshCache(cache, request) {
   try {
     const response = await fetch(request);
-    if (response.ok) await cache.put(request, response.clone());
+    if (response.ok) {
+      try {
+        await cache.put(request, response.clone());
+      } catch {
+        // 存储额度不足时仍返回已取得的在线内容。
+      }
+    }
     return response;
   } catch {
     return null;
@@ -93,6 +108,11 @@ self.addEventListener("fetch", (event) => {
         (response) => response ?? caches.match("/index.html"),
       ),
     );
+    return;
+  }
+
+  if (IMMUTABLE_ASSET_RE.test(url.pathname) || RELEASE_ASSETS.has(url.pathname)) {
+    event.respondWith(cacheFirst(event.request));
     return;
   }
 

@@ -5,6 +5,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
+import { randomBytes } from "node:crypto";
 import path from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 import {
@@ -33,29 +34,48 @@ function fixture({ css = "body{}", js = "export default 1", runtime = "{}" } = {
 }
 
 describe("release performance budget", () => {
-  test("S4 总资源适度扩容，超过 14 MiB 仍阻断", () => {
+  test("S4 总资源经确认扩容，超过 16 MiB 仍阻断", () => {
     expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal).toBe(13.5 * 1024 * 1024);
-    expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal + DEFAULT_HARD_OVERAGE_BY_KEY.clientTotal).toBe(14 * 1024 * 1024);
+    expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal + DEFAULT_HARD_OVERAGE_BY_KEY.clientTotal).toBe(16 * 1024 * 1024);
     expect(DEFAULT_PERFORMANCE_BUDGETS.cssGzip).toBe(24 * 1024);
     expect(DEFAULT_PERFORMANCE_BUDGETS.runtimeJson).toBe(1.5 * 1024 * 1024);
     const root = fixture();
     const base = verifyPerformanceBudget({ distRoot: root }).metrics.clientTotal;
-    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(14 * 1024 * 1024 - base));
+    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(16 * 1024 * 1024 - base));
     expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([]);
-    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(14 * 1024 * 1024 - base + 1));
+    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(16 * 1024 * 1024 - base + 1));
     expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([
-      expect.objectContaining({ key: "clientTotal", hardLimit: 14 * 1024 * 1024 }),
+      expect.objectContaining({ key: "clientTotal", hardLimit: 16 * 1024 * 1024 }),
     ]);
   });
   test("keeps JS warning baselines while allowing modest hard-limit growth", () => {
     expect(DEFAULT_PERFORMANCE_BUDGETS.jsGzip).toBe(236 * 1024);
     expect(
       DEFAULT_PERFORMANCE_BUDGETS.jsGzip + DEFAULT_HARD_OVERAGE_BY_KEY.jsGzip,
-    ).toBe(272 * 1024);
+    ).toBe(304 * 1024);
     expect(DEFAULT_PERFORMANCE_BUDGETS.jsRaw).toBe(810 * 1024);
     expect(
       DEFAULT_PERFORMANCE_BUDGETS.jsRaw + DEFAULT_HARD_OVERAGE_BY_KEY.jsRaw,
-    ).toBe(880 * 1024);
+    ).toBe(1024 * 1024);
+  });
+
+  test("原始 JS 恰好 1 MiB 通过，多 1 字节阻断", () => {
+    const root = fixture({ js: "x".repeat(1024 * 1024) });
+    expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([]);
+    writeFileSync(path.join(root, "assets", "app.js"), "x".repeat(1024 * 1024 + 1));
+    expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([
+      expect.objectContaining({ key: "jsRaw", hardLimit: 1024 * 1024 }),
+    ]);
+  });
+
+  test("gzip JS 在硬边界通过，超过边界 1 字节阻断", () => {
+    const root = fixture({ js: randomBytes(400 * 1024).toString("hex") });
+    const actual = verifyPerformanceBudget({ distRoot: root }).metrics.jsGzip;
+    const budgets = { jsGzip: actual - DEFAULT_HARD_OVERAGE_BY_KEY.jsGzip };
+    expect(verifyPerformanceBudget({ distRoot: root, budgets }).violations).toEqual([]);
+    expect(verifyPerformanceBudget({ distRoot: root, budgets: { jsGzip: budgets.jsGzip - 1 } }).violations).toEqual([
+      expect.objectContaining({ key: "jsGzip", actual, hardLimit: actual - 1 }),
+    ]);
   });
 
   test("accepts artifacts below every configured threshold", () => {

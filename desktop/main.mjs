@@ -61,6 +61,7 @@ function getMimeType(filePath) {
       ".svg": "image/svg+xml",
       ".webmanifest": "application/manifest+json",
       ".webp": "image/webp",
+      ".wasm": "application/wasm",
       ".woff": "font/woff",
       ".woff2": "font/woff2",
     }[extension] ?? "application/octet-stream"

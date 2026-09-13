@@ -529,3 +529,84 @@ final result: passed
 - 最终无未解决 P0、P1、P2；未执行推送、打包、版本号变更或小程序改动。
 
 final result: passed
+
+---
+
+# 2026-09-13 技能承伤对比
+
+本轮按已确认“选技能 → 承伤榜 → 代入复算”的示意图实现，先小程序，后 Web／桌面共用界面。不替换首页布局，不新增假头像，不修改已有其他功能的未提交内容。
+
+## 参考与实装
+
+- Source visual truth：`C:/Users/Administrator/.codex/generated_images/01a06037-84fc-7251-ae6c-57d4516c1334/exec-0db8ecca-218f-4c02-ab66-972ed18c81b7.png`。
+- Web 截图：`output/ux-incoming-damage/05-desktop-expanded.png`（1280×720）、`06-mobile-expanded.png`（390×844）、`07-mobile-320-dark-long-name.png`（320×740）、`09-desktop-dark.png`（1280×900）。
+- 同屏比较：`08-reference-vs-mobile.png`、`10-reference-vs-native.png`，均为参考图手机部分与实际完整页面并排，不修改任一画面中的数据。
+- 原生截图与机器结果：`output/ux-incoming-damage/native/01-entry.png`、`02-open.png`、`02-ranking.png`、`03-long-name.png`、`report.json`。iPhone 12/13 Pro，390×844，SDK 3.17.2。
+
+## 五项保真与交互
+
+- 字体排版：复用项目字体和字号；小屏长名称换行，不省略精灵形态。手机突出伤害比例，细节行保留实际伤害和剩余生命。
+- 布局间距：桌面单层宽弹窗，窄屏全屏直角容器；单一列表滚动，行内展开，不新开抽屉。640px 复测发现原 600px 断点不够，已调整到 760px；修后无横向溢出。
+- 颜色令牌：亮色紫色强调、暗色赛季金色强调。暗色主按钮文字改深色保证辨识；小程序暗色入口和链接使用浅金。未添加装饰渐变或重复卡片层。
+- 素材：使用现有本地精灵头像和 Phosphor 图标。示意图头像及伤害仅演示，实装以当前核心真实计算结果为准，示例精灵顺序和数字不同是有意差异。
+- 文案口径：固定显示“不计防守特性／仅本次直接伤害”；详情解释代入恢复特性。新增候选计数、未纳入原因、达到 100% 筛选、耐久明细，均来自已确认方案，不将结果表述为换入安全结论。
+- 搜索与展开不修改主配置；切换携带技能重算，搜索不改全榜名次。点击显式代入才替换逻辑防守方，保留攻击方和方向；Web 和原生均验证一步撤回。
+- Web 验证空结果、长名称、正向代入、切换技能、Esc 关闭、键盘焦点和亮暗样式，error 日志为 0。小程序验证反向代入及两侧完整恢复，原生运行异常为 0。
+
+## 发现与修复
+
+1. 仅清空特性数组会回退到原生特性：在共享特性解析入口增加显式忽略，配套回归通过。
+2. 带 `skill.` 前缀的旧目标条件可能残留：按语义段清除，保留自身技能和特性条件，回归通过。
+3. WXSS 不支持新增的 `>*` 选择器，原生无法启动：改为明确的按钮类选择器，加入样式回归；使用微信原生编译器确认通过后再次运行模拟器。
+4. 640px 横向溢出与暗色金色按钮白字已修复，实际页面复核通过。对照图中第 07 张为修色前截图；第 09 张是最终暗色文字样式。
+5. 原生对照发现标签选择器未给搜索框正确套用边框和伸缩宽度：改为显式 `dc-search-input` 类，补上真实来源头像，再次原生验收。最终比较图使用此次修正后的截图。
+
+## 验收边界
+
+- 领域／UI 本轮最终 19 项通过；Web 全量 1953 项首轮 4 项并发超时，涉及的 22 项低并发复跑全部通过。小程序全量 444 项通过。
+- 当前共享核心一致、Web 与小程序 production 编译成功；微信原生编译与手机模拟器动线验收通过。Web 320／390／640／1280 视口通过。
+- 未进行原生 iPad、真机、EXE 安装运行；Web 整包体积门禁和小程序旧发布声明校验尚未通过，详见 `docs/maintenance/skill-damage-comparison.md`。没有放宽门禁、修改发布记录、推送或打包。
+
+final result: local feature passed; release gates blocked
+
+## 2026-09-13 追加：承伤对比显示开关
+
+- 按用户要求放入现有设置，不调整榜单布局。Web／桌面复用显示设置复选框，小程序复用设置行开关；默认关闭，独立本地保存，关闭隐藏全部入口。
+- 复核截图：`output/ux-incoming-damage/11-settings-switch.png`、`12-mobile-switch-off.png`、`13-settings-320-dark.png`、`native/04-settings-off.png`、`native/05-settings-persisted.png`。
+- 字体、间距、主题色沿用既有设置；没有新增图标、素材或装饰。说明统一为“在技能结果旁显示全精灵承伤对比入口”。
+- 390px Web 关闭开关后底栏宽 375px，与扣除桌面浏览器滚动条的可用宽度一致，没有残留按钮空位。
+- 320×740 暗色实测发现新增行使“完成”按钮超出屏幕，已限制弹窗高度并允许内部滚动。最终弹窗范围为 x=20～300、y=20～720；滚动到底后完整按钮位于可视区域。
+- 原生 iPhone 12/13 Pro 390×844 确认开启、重进保存、关闭隐藏，并复跑榜单搜索、详情、代入和撤回；异常为 0。
+- Web 相关测试 110 项与样式回归 16 项通过；小程序全量 445 项通过。未打包、上传或变更版本；既有整包发布门禁不在本次开关验收范围。
+
+final result: settings toggle passed locally
+
+## 2026-09-13 追加：承伤对比最小收敛版
+
+- 确认稿：`artifacts/web-ux-minimal-comparison-20260913/mockups-combined.png` 右半部分、`durability-dropdown-open.png`。保持原窗口、四个筛选、三项设置、结果列和行内展开，仅新增状态复用勾选及第五个模板。
+- 实际共用 Web 控件维持最小 44px 高度、14px 基础字号、12px 说明、18px 复选框。1280px 弹窗外框 1080×820，792px 外框 744×820；390／320px 直角全屏。新增控件在窄屏换到筛选下方，模板随既有“筛选”展开，不新建卡片。
+- Web 实拍 `output/playwright/dc-minimal-1280.png`、`dc-minimal-792.png`、`dc-minimal-390.png`、`dc-minimal-320.png`，暗色 `dc-minimal-dark-1280.png`、`dc-minimal-dark-320.png`。四档弹窗和列表 scrollWidth 均不超 clientWidth；长名称自然换行，详情及主动作可在单一列表内滚动到达。
+- 同屏参考比较：`output/playwright/dc-minimal-reference-vs-actual.png`。左侧是确认稿裁切，右侧是 792×900 真实同类筛选态；仅对齐容器，不篡改数字或头像。布局次序一致，示意中的星陨 3 层及结果数是演示，实拍显示当前真实 0 层及实际结果，不要求复制假数值。
+- 小程序保留既有原生 Picker；沿用项目设置开关外观作为短布尔控件（与 Web 复选框为有意平台差异），不新增图标。iPhone 12/13 Pro 390×844 原生截图：`output/ux-incoming-damage/native-minimal-20260913/06-minimal-filters.png`、`02-ranking.png`；模拟器缩放导出约 149×322，文本与交互另由原生节点读回确认。
+- 代码验收：Web 1961／1961、小程序 446／446；主界面代入一致性补断言后定向 15／15。实际 Web 记忆、五模板、筛选、状态开关、导入撤回通过，console error 为 0；原生机器报告 passed 且 exceptions 为 0。
+- 本次 Design Craft 仅用于约束最小结构和实拍复核，复用项目头像、图标、字体、紫／金主题。没有复刻图片中的数值、增加装饰或扩充新模式。
+- 未完成范围：原生 iPad／真机、EXE 安装运行及完整发布门禁。Web 体积仍超既有上限，不放宽预算；本次未提交、推送或打包。不能据手机和 Web 验收宣称全平台发布完成。
+
+final result: minimal implementation locally verified on Web and native phone; iPad and release acceptance pending
+# 用户预设耐久模板追加验收 · 2026-09-13
+
+- 视觉决策：仅在原耐久模板下拉增加“用户预设”，沿用现有摘要和详情，无新增面板或样式；未配置候选的兜底口径在原文字位置说明。
+- Web 本地生产页面：1280、390、320px 实拍；320px 弹窗 scrollWidth/clientWidth 均为 320，390px 均为 390；深色详情、筛选、代入按钮完整可见。截图：`output/playwright/user-presets-desktop.png`、`user-presets-web-320.png`、`user-presets-dark-390.png`。
+- 微信原生 iPhone 12/13 Pro（390×844）：第六项用户预设、默认选择、单只性格和实际个体详情通过；截图 `output/playwright/user-presets-native/01-default.png`、`02-preset-detail.png`。测试后原配置与设置已回读恢复，未上传。
+- 实际导入 226 条时默认用户预设，修改本地单只分配后重新打开正确更新；未配置候选按生命性格，手动模板选择优先。两端保留原筛选、展开和显式代入动线。
+- 本轮为局部功能增项，不涉及季节美术或布局翻新。桌面 EXE／真机与正式发布未验收；仅本地 Web 和模拟器编译运行证据。
+
+## 承伤结论导出追加验收 · 2026-09-13
+
+- 仅 Web／PC 标题栏新增一个「导出」按钮，展开 Excel／Markdown 两项。没有新增内容模块，小程序不变。Design Craft 用于约束入口密度、键盘焦点和窄屏菜单宽度。
+- 深色 1280px 和 320px 实拍：`output/playwright/damage-export-desktop.png`、`damage-export-320.png`。320px 下菜单位于 x=44～252，scrollWidth 与 clientWidth 均为 206，无横向溢出。
+- 真实 Web：离心舞者、翼击、1层特性、8层星陨、用户预设、可击倒筛选，界面仅渲染60条，下载两种格式均保留174条。文件标题和条件包含星陨8、冻结0、特性印记种类1与每种魔攻50。
+- 实际 Excel 普通模式只读打开 XLSX 成功：1张表、187行（13行标题条件和表头＋174条结果）；首项獠牙猪、末项卷毛鸭，F14为数值1.0116279069767442、格式0.0%。未调用修复模式。
+- 实际 Electron 开发运行：隔离用户数据目录，使用本地生产资源 `app://calculator/`，两种下载的 Electron done 状态均为 completed；没有修改用户已安装客户端或用户原配置。
+- 定向测试35项通过，涵盖完整导出、筛选排序、空结果、失败重试、Escape焦点、XLSX结构、公式文本安全和原榜单回归；焦点收尾变更后10项UI再通过。ESLint与diff检查通过，核心镜像无变化。
+- 本次仅本地实现与生产资源编译，未打安装包、推送或发布；没有调整原有体积预算或执行完整发布门禁。

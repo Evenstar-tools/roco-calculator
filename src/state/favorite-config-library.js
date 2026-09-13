@@ -202,6 +202,8 @@ function validateAndRepairEntry(raw, snapshot) {
   let unknownTraitFields = 0;
   const unknownTraitKeys = [];
   for (const [key, rawValue] of Object.entries(raw.traitValues)) {
+    // 旧版把天气保存在精灵预设中；现在随整场对战，不再导入该条件。
+    if (key === "trait.blizzardWeather.844e52ec") continue;
     if (!Object.hasOwn(traitValues, key) || !Object.is(traitValues[key], rawValue)) {
       delete traitValues[key];
       unknownTraitFields += 1;

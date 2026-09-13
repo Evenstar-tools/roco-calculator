@@ -262,9 +262,9 @@ function AcknowledgementsView({ onBack, onClose }) {
   );
 }
 
-export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open }) {
+export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open, initialView = "" }) {
   const dialogRef = useRef(null);
-  const [view, setView] = useState("");
+  const [view, setView] = useState(initialView);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -283,11 +283,9 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open })
   }, [onClose, open, view]);
 
   useEffect(() => {
-    if (!open) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- 关闭时清掉子视图，避免下次打开闪到旧页
-      setView("");
-    }
-  }, [open]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 按入口打开指定子视图，关闭后重置
+    setView(open ? initialView : "");
+  }, [open, initialView]);
 
   if (!open) return null;
   return (

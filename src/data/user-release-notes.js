@@ -220,18 +220,51 @@ const S4_PREVIEW_V168_RELEASE = createStructuredRelease({
   ],
 });
 
+// 赛季功能入口独立维护，不随补丁记录替换。
+export const S4_FEATURE_INTRO = Object.freeze({
+  title: "S4 功能介绍",
+  items: [
+    { id: "skills", title: "技能查询", description: "查技能效果、学习精灵与赛季学习面。", action: "查询" },
+    { id: "durability", title: "耐久排行", description: "按承受属性与倍率筛选，比较有效耐久。", action: "打开", enhanced: true },
+    { id: "speed", title: "速度线排行", description: "输入精灵或速度查快慢，头像模式更直观。", action: "打开", enhanced: true },
+    { id: "ability", title: "精灵能力分析", description: "查看个体分配与面板，选择适合的配置。", action: "分析" },
+    { id: "theme", title: "S4 赛季主题", description: "月夜与星轨装饰，支持深浅色切换。", action: "切换" },
+  ],
+});
+
 export const USER_RELEASE_NOTES = Object.freeze([
+  createRelease({
+    version: "v2.0.2",
+    date: "2026.09.13",
+    title: "S4查询与对战工具更新",
+    whatsNew: S4_FEATURE_INTRO,
+    summaryHighlights: [
+      "支持配队图二维码与完整分享文案导入，确认后另存新队伍。",
+      "速度榜可输入数值比快慢、切换大头像，五项功能入口常驻。",
+      "新增承伤对比与用户预设耐久模板，天气相关条件自动联动。",
+    ],
+    features: [
+      "网页与桌面可上传带二维码的配队图，在本机识别并预览阵容；不上传图片，确认后另存新队伍。",
+      "支持直接粘贴游戏完整分享文案，自动提取其中的阵容码。",
+      "速度线支持实际速度比较与种族速度筛选，可一键定位基准、切换大头像并查看配置详情。",
+      "S4 五项功能介绍独立保留，可直接进入功能及完整版本记录。",
+      "在显示设置开启承伤对比，可筛选候选、切换耐久模板、代入复算；网页支持导出 Excel 和 Markdown。",
+      "承伤对比支持逐只读取本地用户预设的性格和个体。",
+    ],
+    fixes: [
+      "补齐 S4 精灵形态和技能的阵容码映射，兼容旧配置中的技能名称。",
+      "修正圣代甜甜各口味头像，并同步小程序数据。",
+      "修正小程序 H5 头像裁切与速度榜基准定位。",
+      "重复访问复用已缓存的版本资源，缓存空间不足时保持在线可用。",
+      "天气、技能与特性条件同步勾选或取消，不同天气互斥。",
+      "承伤对比优先沿用主界面手动特性条件，不再被旧预设覆盖。",
+    ],
+  }),
   createRelease({
     version: "v2.0.1",
     date: "2026.09.11",
     title: "S4独立排行榜",
-    whatsNew: {
-      title: "S4工具更新",
-      items: [
-        { title: "独立排行榜", description: "菜单直达两榜，原入口保留。" },
-        { title: "倍率多选", description: "按承受属性与倍率筛选有效耐久。" },
-      ],
-    },
+    whatsNew: S4_FEATURE_INTRO,
     features: ["新增独立排行榜、倍率筛选与只读详情。"],
     fixes: ["修复小程序入口和结果栏，同步四只预设。"],
   }),

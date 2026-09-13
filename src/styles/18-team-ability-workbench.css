@@ -1377,6 +1377,14 @@
   object-fit: contain;
 }
 
+.ability-speed-overview .speed-portrait-toggle { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 38px; width: 38px; height: 38px; padding: 0; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text-muted); }
+.ability-speed-overview .ability-speed__tier-spirits button { grid-template-columns: 48px minmax(0,1fr); }
+.ability-speed-overview .ability-speed__tier-spirits img { width: 48px; height: 48px; }
+.ability-speed-overview.is-icon-only .ability-speed__tier-spirits { display: flex; flex-wrap: wrap; gap: 6px; }
+.ability-speed-overview.is-icon-only .ability-speed__tier-spirits button { display: flex; flex-direction: column; width: 66px; min-width: 66px; max-width: 66px; padding: 3px; gap: 0; border-color: var(--border); }
+.ability-speed-overview.is-icon-only .ability-speed__tier-spirits img { width: 56px; height: 56px; }
+.ability-speed-overview .speed-profile-badge { font-size: 10px; line-height: 16px; }
+
 .ability-speed__tier-spirits button > span {
   display: grid;
   min-width: 0;

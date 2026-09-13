@@ -136,6 +136,7 @@ test("menu order, prefetch and repeat opens reuse one catalog request", async ({
   await page.goto("/");
   await page.getByRole("button", { name: "打开菜单" }).click();
   const menu = page.getByRole("navigation", { name: "应用菜单" });
+  await expect(menu).toBeVisible();
   const names = await menu.getByRole("button").allTextContents();
   expect(names.slice(0, 4).map(name => name.replace(/\s+/g, "").replace(/226$/, ""))).toEqual(["清除当前页配置", "常用精灵配置", "导入导出", "技能检索"]);
   await expect.poll(() => requests).toBe(1);

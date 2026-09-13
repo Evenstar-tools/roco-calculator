@@ -20,6 +20,8 @@
 .team-exchange .team-exchange__check { flex-direction: row; align-items: flex-start; line-height: 1.6; }
 .team-exchange__check input { flex: none; margin-top: 4px; }
 .team-exchange__error { color: var(--danger, #c03434); font-size: 13px; line-height: 1.6; }
+.team-exchange__payload { margin-top: 12px; font-size: 12px; color: var(--text-muted); }
+.team-exchange__payload summary { cursor: pointer; padding: 8px 0; }
 .team-exchange--import > * { max-width: 1100px; }
 .team-exchange--export > * { max-width: 880px; }
 .team-exchange__summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--surface-soft); border-bottom: 1px solid var(--border); padding: 4px 0 10px; margin-bottom: 16px; font-size: 13px; color: var(--text-muted); }
