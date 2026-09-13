@@ -1,5 +1,7 @@
 import { gainSourcesFor, sanitizeGainSources, sourceLabel } from "./gain-provenance.js";
 import { markDefinition } from "./marks.js";
+import { getSkillStatusEffectInputs } from "./skill-status-effects.js";
+import { projectTriggerContext } from "./trigger-controls.js";
 
 const signed = (value) => `${value > 0 ? "+" : ""}${Number(value.toFixed(2))}`;
 const directionFor = (side) => side === "attacker" ? "forward" : "reverse";
@@ -17,6 +19,7 @@ export function sanitizeSkillActivations(value) {
 
 // 点击次数与连击数分开，撤回沿用整个战斗快照；不再执行任何增益。
 export function recordSkillActivation(state, side, skill, context = {}, operations = {}, count = 1) {
+  context = projectTriggerContext(context, getSkillStatusEffectInputs(skill));
   const overrides = state.directions[directionFor(side)].overrides;
   const records = sanitizeSkillActivations(overrides.skillActivations);
   const previous = records[skill.id] ?? { count: 0, successCount: 0 };
