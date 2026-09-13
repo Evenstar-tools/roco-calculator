@@ -610,3 +610,12 @@ final result: minimal implementation locally verified on Web and native phone; i
 - 实际 Electron 开发运行：隔离用户数据目录，使用本地生产资源 `app://calculator/`，两种下载的 Electron done 状态均为 completed；没有修改用户已安装客户端或用户原配置。
 - 定向测试35项通过，涵盖完整导出、筛选排序、空结果、失败重试、Escape焦点、XLSX结构、公式文本安全和原榜单回归；焦点收尾变更后10项UI再通过。ESLint与diff检查通过，核心镜像无变化。
 - 本次仅本地实现与生产资源编译，未打安装包、推送或发布；没有调整原有体积预算或执行完整发布门禁。
+
+### 导出收尾复核（2026-09-13）
+
+- 修复旧存档版本优先级：导出标记当前实际数据／规则版本，正反方向各补一条回归；没有改变计算公式、筛选文案、星陨勾选或小程序入口。
+- 导出及相关定向 46 项通过。工作区并行全量验收报告为 1975 项通过、3 项失败；失败所在的 CLI、头像资料和技能图标文件低并发复跑 31 项全部通过。此记录不冒充一次性全量绿灯；构建会重写资料，后续资料生成与全量测试必须串行。
+- Excel 普通模式只读打开后，174 条名称及伤害与参考榜逐项一致；固定表头、筛选、数值比例有效。不是仅检查文件扩展名或 ZIP 结构。
+- 收尾使用独立 `dist/export-closeout-client` 构建，避免覆盖另一发布任务的资源。Electron 以隔离用户目录运行真实桌面入口和该生产资源，`app://calculator/` 下 Markdown／XLSX 两次下载均 completed；文件读回版本为 2.0.2、数据和规则为 s4-2026-09-10。
+- 按工作区当时已有门禁检查独立构建：总量 14.58 MiB、JS gzip 293.17 KiB、原始 JS 972.45 KiB、CSS gzip 45.59 KiB，硬门禁通过、保留警告。本轮没有修改预算文件；此前旧上限失败仅是过程记录。
+- 证据：`output/playwright/damage-export-closeout-tests.json`、`damage-export-closeout-recheck.json`、`damage-export-electron.md`、`damage-export-electron.xlsx`。本轮不提交、推送、打安装包或发布；保留其他任务的工作区改动。
