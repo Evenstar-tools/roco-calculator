@@ -8,7 +8,10 @@ test("结果栏无增益不占行，有增益只显示普通文本", () => {
   const { container, rerender } = render(<ResultSheet open view={view} />);
   expect(container.querySelector(".result-sheet__gains")).toBeNull();
   rerender(<ResultSheet open view={{ ...view, selectedResult: { ...view.selectedResult, gainSummary: "折射×2 · 夺目" } }} />);
-  expect(screen.getByText("增益：折射×2 · 夺目")).toBeTruthy();
+  expect(screen.getByLabelText("计算条件").textContent).toContain("增益来源　折射×2 · 夺目");
+  expect(container.querySelector(".result-sheet__summary .result-sheet__gains")).toBeNull();
+  rerender(<ResultSheet open view={{ status: "unresolved", rows: [], selectedResult: { skillName: "力量增效", gainSummary: "力量增效×1" } }} />);
+  expect(screen.getByLabelText("计算条件").textContent).toContain("力量增效×1");
 });
 
 test("公式原项带来源，不再重复使用摘要和下次预览", () => {

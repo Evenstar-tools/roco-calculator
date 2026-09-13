@@ -198,7 +198,6 @@ function ResultSummary({
             : "--"}
         </Text>
       </View>
-      {result.gainSummary ? <Text className="result-sheet__gains">增益：{result.gainSummary}</Text> : null}
     </View>
   );
 }
@@ -336,6 +335,12 @@ export default function ResultSheet({
             ) : null}
             parameterSummary={skillConditionSkill?.name}
           />
+          {result?.gainSummary ? (
+            <View className="result-sheet__conditions" aria-label="计算条件">
+              <Text className="result-sheet__section-title">计算条件</Text>
+              <Text className="result-sheet__gains"><Text className="result-sheet__gain-label">增益来源</Text>　{result.gainSummary}</Text>
+            </View>
+          ) : null}
           {exact ? (
             <>
               {view?.traitResult ? (
@@ -432,7 +437,7 @@ export default function ResultSheet({
               className="result-sheet__unresolved"
             >
               <Text className="result-sheet__unresolved-title">
-                伤害暂未解析
+                {view?.message === "非伤害技能不计算伤害" ? "非伤害技能" : "伤害暂未解析"}
               </Text>
               <Text className="result-sheet__message">
                 {view?.message}

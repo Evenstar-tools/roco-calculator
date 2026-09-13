@@ -1,5 +1,6 @@
 import { normalizeMarksState } from "../shared/domain/marks.js";
 import { sanitizeGainSources } from "../shared/domain/gain-provenance.js";
+import { sanitizeSkillActivations } from "../shared/domain/skill-gain-summary.js";
 import { MOON_MEMORY_TRAIT_LIMIT } from "../shared/domain/moon-memory.js";
 import { normalizeNegativeStatusState } from "../shared/domain/negative-status.js";
 import { createInitialState } from "../shared/state/defaults.js";
@@ -216,6 +217,8 @@ function sanitizeOverrides(value) {
   if (!isRecord(value)) return {};
   const sanitized = {};
   const gainSources = sanitizeGainSources(value.gainSources);
+  const skillActivations = sanitizeSkillActivations(value.skillActivations);
+  if (Object.keys(skillActivations).length) sanitized.skillActivations = skillActivations;
   if (Object.keys(gainSources).length) sanitized.gainSources = gainSources;
   for (const key of OVERRIDE_NUMBER_KEYS) {
     const selected = finiteNumber(value[key]);

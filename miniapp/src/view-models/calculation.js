@@ -58,6 +58,7 @@ function getDefenderMaxHp(snapshot, side) {
 
 function unresolvedMessage(result) {
   if (!result?.skillId) return "请选择技能";
+  if (result.reason === "非伤害技能不计算伤害") return result.reason;
   if (result.status === "needs_input") {
     return result.reason || "请补充技能条件";
   }
@@ -306,7 +307,7 @@ export function createCalculationView(snapshot, state, direction) {
         defenderName,
         message: selectedRow?.message ?? UNRESOLVED_MESSAGE,
         rows,
-        selectedResult: null,
+        selectedResult: selectedRow?.usageSummary || selectedRow?.gainSummary ? selectedRow : null,
         selectedDamageSource,
         status: "unresolved",
         traitResult,
