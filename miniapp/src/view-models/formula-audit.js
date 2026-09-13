@@ -99,6 +99,8 @@ export function buildResultFormulaAudit(result) {
 
   const attackPanel = stepByLabel(result, "攻击面板");
   const basePower = stepByLabel(result, "基础威力");
+  const manualStatic = stepByLabel(result, "手动静态威力");
+  const externalFixed = stepByLabel(result, "外部固定威力")?.input ?? {};
   const displayedBasePower =
     stepByLabel(result, "手动显示威力") ??
     stepByLabel(result, "手动面板威力") ??
@@ -107,7 +109,7 @@ export function buildResultFormulaAudit(result) {
   const fixedPower = stepByLabel(result, "固定威力增加");
   const markFixedPower = stepByLabel(result, "印记固定威力");
   const traitFixedPower = stepByLabel(result, "特性固定威力");
-  const percentPower = stepByLabel(result, "技能威力百分比");
+  const percentPower = stepByLabel(result, "技能威力百分比") ?? stepByLabel(result, "外部威力加成");
   const sameType = stepByLabel(result, "本系");
   const type = stepByLabel(result, "属性克制");
   const weather = stepByLabel(result, "天气");
@@ -122,7 +124,7 @@ export function buildResultFormulaAudit(result) {
     stepByLabel(result, "连击总伤害");
   const damageInput = damage?.input ?? {};
   const settlementInput = settlement?.input ?? {};
-  const primaryPower = basePower ?? displayedBasePower;
+  const primaryPower = basePower ?? manualStatic ?? displayedBasePower;
 
   const powerFactors = [
     { label: "本系", value: sameType?.input },
@@ -164,8 +166,8 @@ export function buildResultFormulaAudit(result) {
         result.effectivePower,
       factors: powerFactors,
       internal:
-        damageInput.calculationPower ??
         displayPower?.before ??
+        damageInput.calculationPower ??
         primaryPower?.after,
     },
     numerator: {
@@ -184,6 +186,7 @@ export function buildResultFormulaAudit(result) {
       reduction: damageInput.damageReductionMultiplier ?? 1,
     },
     power: {
+      manual: Boolean(manualStatic || displayedBasePower),
       base: primaryPower?.before ?? primaryPower?.input,
       conditional: primaryPower?.after,
       effective:
@@ -191,9 +194,9 @@ export function buildResultFormulaAudit(result) {
         displayPower?.before ??
         primaryPower?.after,
       fixed: Number(fixedPower?.input) || 0,
-      markFixed: Number(markFixedPower?.input) || 0,
+      markFixed: Number(markFixedPower?.input ?? externalFixed.mark) || 0,
       percentAdds,
-      traitFixed: Number(traitFixedPower?.input) || 0,
+      traitFixed: (Number(traitFixedPower?.input ?? externalFixed.trait) || 0) + (Number(externalFixed.bloodline) || 0) + (Number(externalFixed.contract) || 0),
     },
     skillName: result.skillName,
     total: {

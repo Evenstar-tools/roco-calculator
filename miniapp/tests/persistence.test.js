@@ -22,6 +22,16 @@ const COMPLETE_RACE_STATS = {
   magicalDefense: 100,
 };
 
+test("保存并读回生效来源，不接受对不上合计的来源", () => {
+  const snapshot = createSnapshot();
+  const state = createInitialState(snapshot);
+  const persistence = createPersistence({ storage: createMemoryStorage(undefined, true) });
+  const gainSources = { fixedPowerAdd: { value: 20, sources: [{ kind: "skill", id: "coax", name: "撒娇", count: 2, amount: 20 }] } };
+  state.directions.forward.overrides = { fixedPowerAdd: 20, gainSources };
+  persistence.save(state);
+  expect(persistence.load(snapshot).directions.forward.overrides.gainSources).toEqual(gainSources);
+});
+
 test("重新打开保留折射次数和仅记录效果，不保留未知字段或损坏来源", () => {
   const snapshot = createSnapshot();
   const state = createInitialState(snapshot);

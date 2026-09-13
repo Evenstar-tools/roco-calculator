@@ -104,6 +104,7 @@ const ResultBar = forwardRef(function ResultBar(
               : "--"}
           </Text>
         </View>
+        {exact && result.gainSummary ? <Text className="result-sheet__gains result-bar__gains">增益：{result.gainSummary}</Text> : null}
         <View className="result-bar__target-hp">
           <Text>目标 HP</Text>
           <Input

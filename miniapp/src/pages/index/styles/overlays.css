@@ -1939,6 +1939,15 @@
   font-weight: 620;
 }
 
+.result-sheet__gains {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
 .result-sheet__health {
   display: grid;
   min-width: 0;

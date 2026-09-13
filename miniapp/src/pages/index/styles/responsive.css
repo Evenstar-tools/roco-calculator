@@ -417,6 +417,7 @@
   }
 
   .result-bar__metric-label,
+  .result-bar__gains,
   .result-bar__rows,
   .result-bar__target-hp {
     display: none;

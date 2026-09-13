@@ -198,6 +198,7 @@ function ResultSummary({
             : "--"}
         </Text>
       </View>
+      {result.gainSummary ? <Text className="result-sheet__gains">增益：{result.gainSummary}</Text> : null}
     </View>
   );
 }

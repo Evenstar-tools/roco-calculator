@@ -1,5 +1,4 @@
-import SkillUsageSummary from "./SkillUsageSummary.jsx";
-import { describeSkillUsage, skillUsageDetails } from "../shared/domain/skill-presentation.js";
+import { gainLabels, gainTermLabel, sourceLabel } from "../shared/domain/gain-provenance.js";
 import { Text, View } from "@tarojs/components";
 import {
   buildResultFormulaAudit,
@@ -102,6 +101,7 @@ export default function ResultFormulaAudit({ result }) {
   const numerator = audit.numerator;
   const oneHit = audit.oneHit;
   const total = audit.total;
+  const gains = result.gainSources ?? {};
 
   return (
     <View aria-label="伤害计算过程" className="result-formula">
@@ -110,10 +110,9 @@ export default function ResultFormulaAudit({ result }) {
         <Text className="result-formula__skill">{audit.skillName}</Text>
       </View>
 
-      <SkillUsageSummary summary={describeSkillUsage(result)} usage={result?.usageSummary} nextHint={result?.usageSummary?.nextHint} details={skillUsageDetails(result)} />
       <FormulaRow title="技能威力" tone="power">
         <FormulaChip
-          label={Number.isFinite(Number(power.base)) ? "基础" : "规则值"}
+          label={power.manual ? "手动" : Number.isFinite(Number(power.base)) ? "基础" : "规则值"}
           tone="power"
           value={displayFormulaNumber(
             Number.isFinite(Number(power.base)) ? power.base : power.effective,
@@ -124,16 +123,16 @@ export default function ResultFormulaAudit({ result }) {
           <>
             <FormulaOperator>→</FormulaOperator>
             <FormulaChip
-              label="条件后"
+              label={gainTermLabel("条件后", gains.condition)}
               tone="power"
               value={displayFormulaNumber(power.conditional)}
             />
           </>
         ) : null}
         {[
-          ["技能固定", power.fixed],
+          ...(gains.fixed?.length ? gains.fixed.map((source) => [sourceLabel(source), source.amount]) : [["技能固定", power.fixed]]),
           ["印记固定", power.markFixed],
-          ["特性固定", power.traitFixed],
+          [gainLabels(gains.traitFixed) || "特性固定", power.traitFixed],
         ].map(([label, value]) =>
           Number(value) !== 0 ? (
             <View className="result-formula__term" key={label}>
@@ -150,7 +149,7 @@ export default function ResultFormulaAudit({ result }) {
           <>
             <FormulaOperator>×</FormulaOperator>
             <FormulaChip
-              label="威力加成"
+              label={gainTermLabel("威力加成", [...(gains.staticPercent ?? []), ...(gains.powerPercent ?? [])].map((source) => ({ ...source, amount: source.amount * 100 })), "%")}
               tone="power"
               value={displayFormulaNumber(1 + power.percentAdds)}
             />
@@ -199,7 +198,7 @@ export default function ResultFormulaAudit({ result }) {
 
       <FormulaRow title="每段伤害" tone="one-hit">
         <FormulaChip
-          label={audit.attackLabel}
+          label={gainTermLabel(audit.attackLabel, gains.attack, "层")}
           tone="one-hit"
           value={displayFormulaNumber(numerator.attack)}
         />
@@ -224,7 +223,7 @@ export default function ResultFormulaAudit({ result }) {
         />
         <FormulaOperator>÷</FormulaOperator>
         <FormulaChip
-          label={audit.defenseLabel}
+          label={gainTermLabel(audit.defenseLabel, gains.defense, "层")}
           tone="one-hit"
           value={displayFormulaNumber(oneHit.defense)}
         />
@@ -232,7 +231,7 @@ export default function ResultFormulaAudit({ result }) {
           <>
             <FormulaOperator>×</FormulaOperator>
             <FormulaChip
-              label="伤害保留"
+              label={gainLabels(gains.reduction) || "伤害保留"}
               tone="one-hit"
               value={displayFormulaNumber(oneHit.reduction)}
             />
@@ -257,7 +256,7 @@ export default function ResultFormulaAudit({ result }) {
           <>
             <FormulaOperator>×</FormulaOperator>
             <FormulaChip
-              label="最终倍率"
+              label={gainLabels(gains.final) || "最终倍率"}
               tone="total"
               value={displayFormulaNumber(total.finalMultiplier)}
             />
@@ -273,7 +272,7 @@ export default function ResultFormulaAudit({ result }) {
         {total.hitCount > 1 ? (
           <>
             <FormulaOperator>×</FormulaOperator>
-            <FormulaChip label="段数" tone="total" value={total.hitCount} />
+            <FormulaChip label={gainTermLabel("段数", gains.hits)} tone="total" value={total.hitCount} />
           </>
         ) : null}
         {total.additionalDamage > 0 ? (
