@@ -1036,6 +1036,7 @@ describe("trait effect coverage", () => {
     ["流沙统治者", "沙暴天气"],
   ])("%s在条件确认后为特性持有方增加50速度", (name, conditionLabel) => {
     const trait = snapshot.traits.find((candidate) => candidate.name === name);
+    const conditionKey = name === "流沙统治者" ? "sandstormWeather" : "traitActivated";
     for (const role of ["attacker", "defender"]) {
       expect(getTraitEffectInputs(trait, role).map(({ label }) => label)).toEqual([
         conditionLabel,
@@ -1043,13 +1044,13 @@ describe("trait effect coverage", () => {
       ]);
       const inactive = resolveTraitEffectRule(trait, role, {
         attacker: {},
-        context: contextFor(trait, role, { traitActivated: false }),
+        context: contextFor(trait, role, { [conditionKey]: false }),
         defender: {},
         skill: { category: "physical", cost: 2, type: "普通" },
       });
       const active = resolveTraitEffectRule(trait, role, {
         attacker: {},
-        context: contextFor(trait, role, { traitActivated: true }),
+        context: contextFor(trait, role, { [conditionKey]: true }),
         defender: {},
         skill: { category: "physical", cost: 2, type: "普通" },
       });

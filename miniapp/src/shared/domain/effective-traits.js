@@ -17,6 +17,7 @@ function appendUnique(target, seen, trait) {
 }
 
 export function getEffectiveTraits(snapshot, side = {}) {
+  if (side.ignoreTraits === true) return [];
   const spirit = side.spirit ?? null;
   const traitsById = Object.fromEntries(
     (snapshot?.traits ?? []).map((trait) => [trait.id, trait]),

@@ -1,4 +1,5 @@
 import { normalizeNatureId } from "../domain/natures.js";
+import { reconcileWeatherAction } from "./weather.js";
 import { normalizeMarkSlot } from "../domain/marks.js";
 import { MOON_MEMORY_TRAIT_LIMIT } from "../domain/moon-memory.js";
 import { reconcileSkillLoadout } from "../domain/skill-loadout.js";
@@ -66,6 +67,10 @@ function cloneSkillEntry(entry) {
 }
 
 export function calculatorReducer(state, action) {
+  return reconcileWeatherAction(state, reduceCalculatorAction(state, action), action);
+}
+
+function reduceCalculatorAction(state, action) {
   switch (action.type) {
     case "calculation-option/set-negative-status":
       return {

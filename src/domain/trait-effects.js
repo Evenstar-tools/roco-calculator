@@ -534,6 +534,8 @@ const RULES = Object.freeze({
     "沙暴天气",
     "速度加成",
     {
+      conditionKey: "sandstormWeather",
+      conditionScope: "battle",
       roles: ["attacker", "defender"],
     },
   ),
@@ -701,6 +703,7 @@ const RULES = Object.freeze({
     "冰系威力",
     {
       conditionKey: "blizzardWeather",
+      conditionScope: "battle",
       editableEffect: false,
       types: ["冰"],
     },
@@ -1064,9 +1067,14 @@ export function getTraitEffectInputs(trait, role = "attacker") {
   const rule = getTraitEffectRule(trait, role);
   if (!rule) return [];
   const inputs = [];
+  if (trait?.name === "得寸进尺") {
+    inputs.push({ key: "rainWeather", label: "雨天天气", type: "boolean",
+      defaultValue: false, scope: "battle" });
+  }
   if (rule.condition) {
     inputs.push({
       ...rule.condition,
+      ...(trait?.name === "得寸进尺" ? { label: "水系环境（非天气）" } : {}),
       type: "boolean",
     });
   }
@@ -1218,6 +1226,9 @@ export function resolveTraitEffectRule(trait, role, input) {
       getTraitEffectInputs(trait, role),
     ),
   };
+  if (trait?.name === "得寸进尺" && input.context.rainWeather === true) {
+    input.context.traitActivated = true;
+  }
   if (!categoryMatches(rule, input) || !typeMatches(rule, input.skill)) {
     return {
       attackLevelBonus: 0,

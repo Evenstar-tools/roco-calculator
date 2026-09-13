@@ -12,6 +12,15 @@ import { canonicalTraitControlKey } from "../../src/domain/trait-runtime.js";
 import { resolveTraitMultipliers } from "../../src/domain/traits.js";
 
 describe("getEffectiveTraits", () => {
+  test("comparison inputs can suppress all traits without changing the spirit", () => {
+    const snapshot = { traits: [{ id: "moon", name: "铭记于月亮" }, { id: "extra", name: "旧玩具" }] };
+    const spirit = { id: "wolf", traitIds: ["moon"], traitName: "铭记于月亮" };
+    const side = { spirit, acquiredTraitIds: ["extra"], traits: [{ name: "额外特性" }] };
+    expect(getEffectiveTraits(snapshot, { ...side, ignoreTraits: true })).toEqual([]);
+    expect(getEffectiveTraits(snapshot, side).map(({ name }) => name)).toContain("铭记于月亮");
+    expect(spirit.traitIds).toEqual(["moon"]);
+  });
+
   test("keeps the native Moon Memory trait and deduplicates acquired traits with isolated values", () => {
     const snapshot = {
       traits: [
