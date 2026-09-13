@@ -580,6 +580,13 @@ describe("shared battle activation", () => {
 
     expect(first.state.directions.forward.overrides.fixedPowerAdd).toBe(10);
     expect(second.state.directions.forward.overrides.fixedPowerAdd).toBe(20);
+    const calculate = (current) => buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: { ...current, mode: "four" } }).calculation.forward.results[1];
+    expect(calculate(second.state).gainSummary).toContain("撒娇×2");
+    expect(calculate(second.state).gainSources.fixed).toEqual([expect.objectContaining({ name: "撒娇", count: 2, amount: 20 })]);
+    const withoutSources = structuredClone(second.state);
+    delete withoutSources.directions.forward.overrides.gainSources;
+    expect(calculate(second.state).totalDamage).toBe(calculate(withoutSources).totalDamage);
+    expect(calculate(withoutSources).gainSummary).toContain("未记录");
     expect(second.state.sides.attacker.skills.four[0]).toMatchObject({
       skillId: "coax",
     });

@@ -31,6 +31,7 @@ const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
     "src/features/damage-comparison/useDamageComparison.js",
     "src/state/damage-comparison.js",
     "src/domain/fair-pigeon.js",
+    "src/domain/gain-provenance.js",
     "src/domain/marks.js",
     "src/domain/moon-memory.js",
     "src/domain/moon-memory-trait-options.js",

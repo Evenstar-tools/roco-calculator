@@ -17,6 +17,7 @@ import {
   targetNegativeMarkSettlement,
 } from "../marks.js";
 import { buildRefractionHint } from "../refraction.js";
+import { gainSourcesFor, limitGainSources, summarizeGains } from "../gain-provenance.js";
 import { resolvePowerOverride } from "../power-override.js";
 import {
   getDefaultHitCount,
@@ -1478,7 +1479,64 @@ export function calculateSkillResult({
     }
     usageSummary.recordedEffects = [...recordedCounts].map(([label, count]) => `${label}${count > 1 ? ` ×${count}次` : ""}`);
   }
+  const namedGain = (name, amount, kind = "trait", count = 0) => amount
+    ? [{ kind, id: name, name, amount, count }] : [];
+  const stateGains = (field, value, overridden = false) => overridden
+    ? namedGain("手动", value, "manual")
+    : gainSourcesFor(directionOverrides, field, value);
+  const traitGains = (field, neutral = 0) => (traitResolution.contributions ?? [])
+    .filter(({ values }) => Number.isFinite(values[field]) && values[field] !== neutral)
+    .map(({ source, values }) => ({ ...source, amount: values[field] - neutral }));
+  const scopedPercent = asMultiplierList(directionOverrides.skillPowerPercentAddsBySlot?.[skillPosition]).reduce((sum, value) => sum + Number(value || 0), 0);
+  const staticPercentSources = [
+    ...stateGains(`skillPowerPercentAddsBySlot.${skillPosition}`, scopedPercent),
+    ...namedGain(skill.name, skillPercentageAdds.reduce((sum, value) => sum + value, 0), "skill"),
+  ];
+  const extraStatusPercent = statusPercentageAdds.reduce((sum, value) => sum + value, 0) - scopedPercent;
+  staticPercentSources.push(...namedGain("未记录", extraStatusPercent, "unknown"));
+  const gainSources = {
+    fixed: panelPowerOverride || staticPowerOverride ? [] : [
+      ...stateGains("fixedPowerAdd", baseFixedPowerAdd, slotOverrides.fixedPowerAdd !== undefined || details.fixedPowerAdd !== undefined),
+      ...stateGains(`fixedPowerAddsBySlot.${skillPosition}`, scopedFixedPowerAdd),
+    ],
+    staticPercent: panelPowerOverride || staticPowerOverride ? [] : staticPercentSources,
+    powerPercent: panelPowerOverride ? [] : traitGains("powerPercentAdd"),
+    traitFixed: panelPowerOverride ? [] : [
+      ...traitGains("fixedPowerAdd"),
+      ...namedGain(attackerBloodline.label, bloodlineFixedPowerAdd),
+      ...namedGain(attackerContract.label, contractFixedPowerAdd),
+    ],
+    attack: panelPowerOverride ? [] : limitGainSources([
+      ...stateGains("attackLevelStage", attackLevelStage ?? 0, slotOverrides.attackLevelStage !== undefined),
+      ...traitGains("attackLevelBonus"),
+      ...namedGain(attackerBloodline.label || defenderBloodline.label || "血脉", bloodlineAttackLevelBonus),
+      ...namedGain(attackerContract.label || defenderContract.label || "契约形态", contractAttackLevelBonus),
+    ], -99, 99),
+    defense: panelPowerOverride ? [] : limitGainSources([
+      ...stateGains("defenseLevelStage", defenseLevelStage ?? 0, slotOverrides.defenseLevelStage !== undefined),
+      ...stateGains("magicalDefenseLevelStageAdd", categoryDefenseLevelStageAdd),
+      ...traitGains("defenseLevelBonus"),
+      ...namedGain(defenderBloodline.label || attackerBloodline.label || "血脉", bloodlineDefenseLevelBonus),
+      ...namedGain(defenderContract.label || attackerContract.label || "契约形态", contractDefenseLevelBonus),
+    ], -99, 99),
+    hits: fixedHitCount ? namedGain(fixedHitCount.traitName, hitCount - getDefaultHitCount(skill)) : limitGainSources([
+      ...stateGains("hitCountAdd", persistentHitCountAdd),
+      ...traitHitCount.steps.flatMap((step) => namedGain(step.label, step.after - step.before)),
+      ...namedGain(attackerBloodline.label || defenderBloodline.label || "血脉", bloodlineHitCountAdd),
+      ...namedGain(attackerContract.label || defenderContract.label || "契约形态", contractHitCountAdd),
+    ], 1 - baseHitCount, Math.max(0, hitCountMaximum - baseHitCount)),
+    hitPercent: !fixedHitCount && hitCount !== Math.min(hitCountMaximum, Math.max(1, baseHitCount + automaticHitCountAdd))
+      ? stateGains("hitCountPercentAdd", persistentHitCountPercentAdd) : [],
+    reduction: traitGains("damageReductionMultiplier", 1),
+    final: traitGains("finalDamageMultiplier", 1),
+    condition: !panelPowerOverride && !staticPowerOverride && !usesLockedPower
+      ? namedGain(skill.name, powerResolution.value - Number(skill.basePower || 0), "skill", usageSummary?.scope === "skill" ? usageSummary.count : 0) : [],
+    weather: panelPowerOverride ? [] : namedGain("雨天", weatherMultiplier - 1),
+    manual: panelPowerOverride || staticPowerOverride ? namedGain("手动", 1, "manual") : [],
+  };
   return {
+    gainSources,
+    gainSummary: summarizeGains(gainSources),
     ...(usageSummary ? { usageSummary } : {}),
     skillId: skill.id,
     skillName: skill.name,

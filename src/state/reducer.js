@@ -1,4 +1,5 @@
 import { normalizeNatureId } from "../domain/natures.js";
+import { recordManualGainChanges } from "../domain/gain-provenance.js";
 import { reconcileWeatherAction } from "./weather.js";
 import { normalizeMarkSlot } from "../domain/marks.js";
 import { MOON_MEMORY_TRAIT_LIMIT } from "../domain/moon-memory.js";
@@ -445,6 +446,9 @@ function reduceCalculatorAction(state, action) {
           ...current.overrides,
           ...action.value.overrides,
         };
+        if (!Object.hasOwn(action.value.overrides, "gainSources")) {
+          next.overrides = recordManualGainChanges(current.overrides ?? {}, next.overrides);
+        }
       }
 
       return {

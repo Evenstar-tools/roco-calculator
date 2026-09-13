@@ -65,6 +65,7 @@ function exactContribution(overrides = {}, step = undefined) {
     steps: step ? [step] : [],
     sources: [],
     warnings: [],
+    contributions: [],
     ...overrides,
   };
 }
@@ -418,12 +419,8 @@ export function resolveTraitMultipliers({
 
   const input = { skill, attacker, defender, context };
   const resolutions = [
-    ...attackerTraits.map((trait) =>
-      resolveOneTrait(trait, "attacker", input),
-    ),
-    ...defenderTraits.map((trait) =>
-      resolveOneTrait(trait, "defender", input),
-    ),
+    ...attackerTraits.map((trait) => ({ ...resolveOneTrait(trait, "attacker", input), gainSource: normalizeTrait(trait) })),
+    ...defenderTraits.map((trait) => ({ ...resolveOneTrait(trait, "defender", input), gainSource: normalizeTrait(trait) })),
   ];
   const unsupported = resolutions.find(
     (resolution) => resolution.status === "unsupported",
@@ -478,6 +475,10 @@ export function resolveTraitMultipliers({
       steps: [...combined.steps, ...resolution.steps],
       sources: [...combined.sources, ...resolution.sources],
       warnings: [...combined.warnings, ...resolution.warnings],
+      contributions: [...combined.contributions, {
+        source: { kind: "trait", id: resolution.gainSource.id ?? resolution.gainSource.name, name: resolution.gainSource.displayName ?? resolution.gainSource.name ?? resolution.gainSource.id, count: 0 },
+        values: Object.fromEntries(Object.entries(resolution).filter(([, value]) => typeof value === "number")),
+      }],
     }),
     exactContribution(),
   );

@@ -15,6 +15,7 @@ import {
   hasFairPigeonBalance,
 } from "../domain/fair-pigeon.js";
 import { recordRefractionUsage } from "../domain/refraction.js";
+import { expireTransientGainSources, recordGainChanges } from "../domain/gain-provenance.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import { resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
@@ -201,7 +202,7 @@ export function applyBalanceTraitTrigger({ side, state }) {
     abilityStagesForSide(next, side),
   );
   setAbilityStagesForSide(next, side, copied);
-  return next;
+  return recordGainChanges(state, next, { kind: "trait", id: "balance", name: "衡量" });
 }
 
 export function applyBattleActivation({
@@ -241,6 +242,7 @@ export function applyBattleActivation({
     updateDirection(next, selfDirection, {
       overrides: { activeDefenseStatus: null, skillPowerPercentAddsBySlot: remaining },
     });
+    expireTransientGainSources(next.directions[selfDirection].overrides);
     stateChanged = true;
     if (activeStatus.skillId === skill.id && activeStatus.slotIndex === skillIndex &&
       activeStatus.contextSignature === JSON.stringify(context)) {
@@ -252,6 +254,7 @@ export function applyBattleActivation({
     : entry && typeof entry === "object"
       ? entry.statusTriggerCount
       : undefined;
+  const gainBaseline = clone(next);
   const spirit = getSpirit(snapshot, next.sides[side]);
   const traitName = getEffectiveTraits(snapshot, {
     ...next.sides[side],
@@ -323,6 +326,7 @@ export function applyBattleActivation({
           },
         });
       }
+      recordGainChanges(gainBaseline, next, { kind: "trait", id: postAttackEffects?.source ?? skill.id, name: postAttackEffects?.source ?? skill.name });
       return { applied: true, reason: null, state: next };
     }
     if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
@@ -474,6 +478,7 @@ export function applyBattleActivation({
     },
   });
 
+  recordGainChanges(gainBaseline, next, { kind: "skill", id: skill.id, name: skill.name, transient: Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0 });
   const targetSpirit = getSpirit(snapshot, next.sides[targetSide]);
   if (
     hasFairPigeonBalance(targetSpirit) &&
@@ -494,7 +499,9 @@ export function applyBattleActivation({
         gained,
         abilityStagesForSide(next, targetSide),
       );
+      const beforeCopy = clone(next);
       setAbilityStagesForSide(next, targetSide, copied);
+      recordGainChanges(beforeCopy, next, { kind: "trait", id: "balance", name: "衡量" });
     }
   }
 
