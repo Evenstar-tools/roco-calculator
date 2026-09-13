@@ -37,12 +37,14 @@ test("keeps Dazzling's seven slots readable and exposes Refraction effects", asy
   await expect(usage).not.toContainText("已使用 0");
   await expect(usage.locator(".skill-usage__next")).toContainText("普·威力+10");
   await expect(usage.locator("details, summary")).toHaveCount(0);
-  expect(await usage.evaluate((node) => {
+  const previewGap = await usage.evaluate((node) => {
     const context = node.closest('.skill-slot__context');
     const description = context.querySelector('.skill-slot__description');
     const preview = node.querySelector('.skill-usage__next');
     return preview.getBoundingClientRect().top - description.getBoundingClientRect().bottom;
-  })).toBeLessThanOrEqual(6);
+  });
+  expect(previewGap).toBeGreaterThanOrEqual(0);
+  expect(previewGap).toBeLessThanOrEqual(6);
   await expect(usage.locator('.skill-usage__next')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   expect(await usage.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   expect(
