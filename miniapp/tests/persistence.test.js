@@ -22,6 +22,19 @@ const COMPLETE_RACE_STATS = {
   magicalDefense: 100,
 };
 
+test("重新打开保留折射次数和仅记录效果，不保留未知字段或损坏来源", () => {
+  const snapshot = createSnapshot();
+  const state = createInitialState(snapshot);
+  const storage = createMemoryStorage(undefined, true);
+  const persistence = createPersistence({ storage });
+  const usage = { count: 1, powerGain: 0, hitCountGain: 0, historyIncomplete: false,
+    sources: [{ key: JSON.stringify([["光", "水"], 0]), types: ["光", "水"], sproutStacks: 0, count: 1, powerGain: 0, hitCountGain: 0 }] };
+  state.directions.forward.overrides = { attackLevelStage: 3, refractionUsage: { ...usage, unknown: "drop" }, refractionStatuses: [{ type: "水", label: "全技能能耗-1", unknown: "drop" }, null] };
+  persistence.save(state);
+  expect(persistence.load(snapshot).directions.forward.overrides).toMatchObject({ attackLevelStage: 3, refractionUsage: usage, refractionStatuses: [{ type: "水", label: "全技能能耗-1" }] });
+  expect(persistence.load(snapshot).directions.forward.overrides.refractionUsage).not.toHaveProperty("unknown");
+});
+
 function createSnapshot(dataVersion = "data-v1") {
   return {
     meta: {

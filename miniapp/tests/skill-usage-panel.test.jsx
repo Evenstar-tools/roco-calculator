@@ -6,11 +6,10 @@ import SkillConditionEditor from "../src/components/SkillConditionEditor.jsx";
 
 test("累计值与下次预览分层，通用规则不铺开，手动覆盖有提示", () => {
   render(<SkillUsageSummary summary="未使用｜无增益" usage={{ count: 0, powerGain: 0, hitCountGain: 0, manualPower: true }} nextHint="本次可得：威力+10" details={["累计已生效：通用说明", "折射无独立上限"]} />);
-  expect(screen.getByText("累计威力", { exact: false })).toBeVisible();
-  expect(screen.getByText("本次可得：威力+10")).toBeVisible();
-  expect(screen.getByText("威力已手动覆盖，累计记录保留")).toBeVisible();
-  fireEvent.click(screen.getByRole("button", { name: "查看增益明细" }));
-  expect(screen.getByText("暂无使用记录")).toBeVisible();
+  expect(screen.queryByText(/累计威力|累计连击|已使用/)).not.toBeInTheDocument();
+  expect(screen.getByText("使用后可得：威力+10")).toBeVisible();
+  expect(screen.getByText("威力已手动覆盖，以当前值为准")).toBeVisible();
+  expect(screen.queryByRole("button", { name: "查看增益明细" })).not.toBeInTheDocument();
   expect(screen.queryByText("累计已生效：通用说明")).not.toBeInTheDocument();
 });
 

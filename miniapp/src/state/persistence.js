@@ -241,6 +241,27 @@ function sanitizeOverrides(value) {
   }
   const powerOverride = sanitizePowerOverride(value.powerOverride);
   if (powerOverride) sanitized.powerOverride = powerOverride;
+  // 能力值与使用记录一起保留，避免重开后有增益却显示为从未使用。
+  const usage = value.refractionUsage;
+  if (isRecord(usage) && Number.isSafeInteger(usage.count) && usage.count >= 0) {
+    const sources = (Array.isArray(usage.sources) ? usage.sources : []).filter((source) =>
+      isRecord(source) && Number.isSafeInteger(source.count) && source.count > 0 &&
+      Array.isArray(source.types) && source.types.every((type) => typeof type === "string"),
+    ).map((source) => {
+      const types = [...source.types];
+      const sproutStacks = Math.min(99, Math.max(0, Math.floor(finiteNumber(source.sproutStacks) ?? 0)));
+      return { key: JSON.stringify([types, sproutStacks]), types, sproutStacks, count: source.count,
+        powerGain: finiteNumber(source.powerGain) ?? 0, hitCountGain: finiteNumber(source.hitCountGain) ?? 0 };
+    });
+    sanitized.refractionUsage = { count: usage.count, sources,
+      powerGain: finiteNumber(usage.powerGain) ?? 0, hitCountGain: finiteNumber(usage.hitCountGain) ?? 0,
+      historyIncomplete: usage.historyIncomplete === true || sources.reduce((sum, source) => sum + source.count, 0) !== usage.count };
+  }
+  if (Array.isArray(value.refractionStatuses)) {
+    sanitized.refractionStatuses = value.refractionStatuses.filter((status) =>
+      isRecord(status) && typeof status.label === "string" && typeof status.type === "string",
+    ).map(({ label, type }) => ({ label, type }));
+  }
   if (isRecord(value.context)) {
     const context = sanitizeContext(value.context);
     if (Object.keys(context).length) sanitized.context = context;
