@@ -111,7 +111,7 @@ export function skillUsageDisplay(usage, nextHint, details = []) {
     hasHistory,
     current,
     recorded: usage?.recordedEffects ?? [],
-    next: nextHint?.replace(/^本次可得：/, "使用后可得：")
+    next: (usage?.nextHint ?? nextHint)?.replace(/^本次可得：/, "使用后可得：")
       .replace(/([水火冰毒幽恶]·[^\s　]+)/g, "$1（仅记录）"),
     details: hasHistory || !usage ? details.filter((line) =>
       !line.startsWith("累计已生效：") && !line.startsWith("折射无独立") &&
