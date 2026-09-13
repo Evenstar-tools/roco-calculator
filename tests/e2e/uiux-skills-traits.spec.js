@@ -25,16 +25,19 @@ test("keeps Dazzling's seven slots readable and exposes Refraction effects", asy
       .evaluateAll((rows) => rows.every((row) => row.scrollWidth <= row.clientWidth)),
   ).toBe(true);
 
-  await expect(page.locator(".compact-skill__effect-hint")).toContainText(
-    "普·威力+10",
-  );
+  const compactUsage = page.locator(".compact-skill-side--attacker .skill-usage");
+  await expect(compactUsage.locator(".skill-usage__main")).toHaveText("未使用｜无增益");
+  await expect(compactUsage.locator(".skill-usage__next")).toContainText("普·威力+10");
+  await compactUsage.locator("summary").click();
+  await expect(compactUsage.locator("details")).toHaveAttribute("open", "");
+  await expect(compactUsage.locator(".skill-usage__main")).toHaveText("未使用｜无增益");
 
   await page.getByRole("button", { name: "具体版" }).click();
   await expect(page.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
-  const hint = page.locator(".skill-slot__effect-hint");
-  await expect(hint).toContainText("普·威力+10");
-  expect(await hint.evaluate((node) => getComputedStyle(node).webkitLineClamp))
-    .toBe("2");
+  const usage = page.locator(".four-skill-side--attacker .skill-usage");
+  await expect(usage.locator(".skill-usage__main")).toHaveText("未使用｜无增益");
+  await expect(usage.locator(".skill-usage__next")).toContainText("普·威力+10");
+  expect(await usage.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
   ).toBe(true);
