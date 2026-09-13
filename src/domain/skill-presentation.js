@@ -84,7 +84,8 @@ export function skillUsageDetails(result) {
     : "累计已生效：复用配置区的此前使用次数与当前分支，按现有规则结算。"];
   if (usage.scope === "persistent") {
     for (const source of usage.sources ?? []) {
-      lines.push(`来源：携带${source.types.join("、") || "未记录"}系；萌芽${source.sproutStacks}层；成功使用${source.count}次 → 威力+${source.powerGain} · 连击+${source.hitCountGain}`);
+      const gains = [source.powerGain ? `威力+${source.powerGain}` : "", source.hitCountGain ? `连击+${source.hitCountGain}` : ""].filter(Boolean);
+      lines.push(`来源：携带${source.types.join("、") || "未记录"}系；萌芽${source.sproutStacks}层；成功使用${source.count}次${gains.length ? ` → ${gains.join(" · ")}` : ""}`);
     }
     const recorded = (usage.sources ?? []).reduce((sum, source) => sum + source.count, 0);
     if (recorded < usage.count || usage.historyIncomplete) lines.push("此前来源或次数未记录，不按当前条件倒推。" );
@@ -100,4 +101,22 @@ export function skillUsageDetails(result) {
   if (Number.isFinite(usage.hitCountLimit)) lines.push(`当前技能最终连击上限：${usage.hitCountLimit}${usage.hitCountCapped ? "，已达上限" : ""}；这不是累计状态上限。`);
   if (usage.manualPower) lines.push("当前威力已手动覆盖，累计状态仍保留，伤害以当前公式为准。" );
   return lines;
+}
+
+// 当前值来自解算结果，历史仅作溯源；两者不相加，也不倒推使用次数。
+export function skillUsageDisplay(usage, nextHint, details = []) {
+  const hasHistory = Boolean(usage?.count > 0 || usage?.historyIncomplete);
+  const current = usage?.currentEffects ?? [];
+  return {
+    hasHistory,
+    current,
+    recorded: usage?.recordedEffects ?? [],
+    next: nextHint?.replace(/^本次可得：/, "使用后可得：")
+      .replace(/([水火冰毒幽恶]·[^\s　]+)/g, "$1（仅记录）"),
+    details: hasHistory || !usage ? details.filter((line) =>
+      !line.startsWith("累计已生效：") && !line.startsWith("折射无独立") &&
+      (!line.startsWith("当前技能最终连击上限") || usage?.hitCountCapped) &&
+      (!line.startsWith("当前技能未声明连击") || usage?.hitCountGain > 0),
+    ) : [],
+  };
 }

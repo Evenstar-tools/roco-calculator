@@ -42,6 +42,7 @@ import { entryDetails, resolveSkillEntity, statKeysForCategory } from "./loadout
 import {
   abilityAdjustedStat,
   abilityLevelMultiplier,
+  clampAbilityStage,
   asMultiplierList,
   finiteNumber,
   normalizedPower,
@@ -1450,6 +1451,32 @@ export function calculateSkillResult({
     usageSummary.hitCountCapped = declaredHitCount && !fixedHitCount && hitCount >= hitCountMaximum;
     usageSummary.hitCountEligible = declaredHitCount && !fixedHitCount;
     usageSummary.manualPower = Boolean(staticPowerOverride || powerOverride.mode === "panel");
+    const signed = (value) => `${value > 0 ? "+" : ""}${Number(value.toFixed(2))}`;
+    const currentEffects = [];
+    const add = (label, value, unit = "") => {
+      if (Number.isFinite(value) && Number(value.toFixed(2)) !== 0) currentEffects.push(`${label} ${signed(value)}${unit}`);
+    };
+    if (powerOverride.mode === "panel") {
+      currentEffects.push(`显示威力 ${normalizedPower(panelPower)}（手动）`);
+    } else {
+      if (staticPowerOverride) currentEffects.push(`静态威力 ${staticPower}（手动）`);
+      else add("静态威力", staticPower - powerResolution.value + (usageSummary.scope === "skill" ? usageSummary.powerGain : 0));
+      add("附加威力", actualPower - staticPower);
+      add(resolvedSkillCategory === "magical" ? "魔攻" : "物攻", clampAbilityStage(totalAttackLevelStage), " 层");
+      add(resolvedSkillCategory === "magical" ? "敌方魔防" : "敌方物防", clampAbilityStage(totalDefenseLevelStage), " 层");
+      if (weatherMultiplier !== 1) currentEffects.push(`雨天 ×${weatherMultiplier}`);
+    }
+    add("速度", context.attackerSpeed - Number(attacker.panelStats.speed));
+    add("敌方速度", context.defenderSpeed - Number(defender.panelStats.speed));
+    const manualHits = finiteNumber(slotOverrides.hitCount, details.hitCount, mode === "single" ? direction.hitCount : undefined);
+    if (!fixedHitCount && powerResolution.hitCount === undefined && manualHits !== undefined && manualHits !== getDefaultHitCount(skill)) currentEffects.push(`最终连击 ${hitCount}（手动）`);
+    else add("连击", hitCount - getDefaultHitCount(skill));
+    usageSummary.currentEffects = currentEffects;
+    const recordedCounts = new Map();
+    for (const { label } of directionOverrides.refractionStatuses ?? []) {
+      recordedCounts.set(label, (recordedCounts.get(label) ?? 0) + 1);
+    }
+    usageSummary.recordedEffects = [...recordedCounts].map(([label, count]) => `${label}${count > 1 ? ` ×${count}次` : ""}`);
   }
   return {
     ...(usageSummary ? { usageSummary } : {}),

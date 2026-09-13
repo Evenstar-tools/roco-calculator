@@ -808,6 +808,22 @@ describe("累计使用与实际增益摘要", () => {
     return { snapshot, state, calculate, activate };
   }
 
+  test("摘要读取实际魔攻、速度与手动配置，记录状态不会假装参与结算", () => {
+    const { snapshot, state, calculate, activate } = setup();
+    snapshot.skills.push({ id: "light", name: "光技能", type: "光", category: "magical", basePower: 20 });
+    snapshot.skills.push({ id: "electric", name: "电技能", type: "电", category: "magical", basePower: 20 });
+    snapshot.skills.push({ id: "water", name: "水技能", type: "水", category: "magical", basePower: 20 });
+    state.sides.attacker.skills.four = ["refraction", "light", "electric", "water"];
+    const first = activate(state).state;
+    expect(calculate(first).forward.results[0].usageSummary.currentEffects).toEqual(expect.arrayContaining(["魔攻 +3 层", "速度 +20"]));
+    expect(calculate(first).forward.results[0].usageSummary.recordedEffects).toEqual(["全技能能耗-1"]);
+    first.directions.forward.overrides.attackLevelStage = 5;
+    first.sides.attacker.skills.four[0] = { skillId: "refraction", overrides: { powerOverride: { mode: "static", value: 80 } } };
+    expect(calculate(first).forward.results[0].usageSummary.currentEffects).toEqual(expect.arrayContaining(["魔攻 +5 层", "静态威力 80（手动）"]));
+    expect(calculate(first).forward.results[0].usageSummary.currentEffects).not.toContain("魔攻 +3 层");
+    expect(calculate(first).forward.results[0].usageSummary.count).toBe(1);
+  });
+
   test("零次、一次、多次按实际状态差累计，重复系别只生效一次，展示不重复计伤", async () => {
     const { state, calculate, activate } = setup();
     expect(calculate(state).forward.results[0].usageSummary).toMatchObject({ count: 0, powerGain: 0, hitCountGain: 0 });
