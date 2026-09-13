@@ -114,7 +114,7 @@ describe("skill and trait presentation UI", () => {
       .toMatchObject({ deltas: { ownFixedPower: 40 } });
   });
 
-  test("keeps a status skill's trigger count separate from its hit coefficient", () => {
+  test.each([true, false])("keeps a status skill's trigger count separate from its hit coefficient (active: %s)", (active) => {
     const onHitCountChange = vi.fn();
     const onTriggerCountChange = vi.fn();
     const flower = {
@@ -133,7 +133,7 @@ describe("skill and trait presentation UI", () => {
         onDirectionChange={vi.fn()}
         skill={flower}
         statusActivation={{
-          active: true,
+          active,
           available: true,
           onHitCountChange,
           onToggle: vi.fn(),
@@ -143,6 +143,7 @@ describe("skill and trait presentation UI", () => {
     );
 
     expect(screen.getByLabelText("状态触发次数")).toHaveValue(2);
+    expect(screen.getByText(active ? "累计效果" : "触发后预览")).toBeInTheDocument();
     expect(screen.getByLabelText("每次连击数")).toHaveValue(3);
     expect(screen.getByText("己方双攻 +36层")).toBeInTheDocument();
     expect(screen.getByText("每次触发（3 连击）：己方双攻 +18层"))

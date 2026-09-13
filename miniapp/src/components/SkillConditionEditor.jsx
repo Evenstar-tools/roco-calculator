@@ -368,7 +368,7 @@ export default function SkillConditionEditor({
                 : "condition-editor__field condition-editor__field--preview"}
               >
                 <View className="condition-editor__field-heading">
-                  <Text className="condition-editor__label">累计效果</Text>
+                  <Text className="condition-editor__label">{(statusActivation?.active ?? result?.usageSummary?.count > 0) ? "累计效果" : "触发后预览"}</Text>
                   <Text className="condition-editor__power-status">
                     {statusPreview.hitCountConfigurable
                       ? `${statusTriggerCount} 次 × ${hitCount} 连击`
