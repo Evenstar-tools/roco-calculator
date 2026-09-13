@@ -107,11 +107,28 @@ export function skillUsageDetails(result) {
 export function skillUsageDisplay(usage, nextHint, details = []) {
   const hasHistory = Boolean(usage?.count > 0 || usage?.historyIncomplete);
   const current = usage?.currentEffects ?? [];
+  const gains = hasHistory ? [
+    !usage.manualPower && usage.powerGain ? `威力+${usage.powerGain}` : "",
+    usage.hitCountGain ? `连击+${usage.hitCountGain}` : "",
+  ].filter(Boolean) : [];
+  const active = current.filter((effect) =>
+    !(gains.some((gain) => gain.startsWith("威力")) && /^(静态)?威力 \+/.test(effect)) &&
+    !(gains.some((gain) => gain.startsWith("连击")) && /^连击 \+/.test(effect)),
+  );
+  const status = [
+    hasHistory ? `累计状态：${usage.historyIncomplete ? "已记录" : "已使用"}×${usage.count}` : "",
+    gains.length ? `增益：${gains.join(" · ")}` : "",
+    active.length ? `当前：${active.join(" · ")}` : "",
+    usage?.manualPower && !active.some((effect) => effect.includes("手动")) ? "威力手动覆盖" : "",
+    usage?.hitCountCapped ? `连击已达上限 ${usage.hitCountLimit}` : "",
+    usage?.historyIncomplete ? "此前记录不完整" : "",
+  ].filter(Boolean).join("　");
   return {
     hasHistory,
     current,
+    status,
     recorded: usage?.recordedEffects ?? [],
-    next: (usage?.nextHint ?? nextHint)?.replace(/^本次可得：/, "使用后可得：")
+    next: (usage?.nextHint ?? nextHint)?.replace(/^使用后可得：/, "本次可得：")
       .replace(/([水火冰毒幽恶]·[^\s　]+)/g, "$1（仅记录）"),
     details: hasHistory || !usage ? details.filter((line) =>
       !line.startsWith("累计已生效：") && !line.startsWith("折射无独立") &&
