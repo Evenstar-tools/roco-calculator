@@ -1,3 +1,4 @@
+import { SkillUsageSummary } from "./SkillUsageSummary.jsx";
 import {
   Lightning,
   MagicWand,
@@ -212,14 +213,7 @@ function CompactSkillSide({
                 result={result}
                 selected={selected}
               />
-              {refractionHint ? (
-                <small
-                  className="compact-skill__effect-hint"
-                  title={refractionHint}
-                >
-                  {refractionHint}
-                </small>
-              ) : null}
+              <SkillUsageSummary result={result} nextHint={refractionHint} />
               {powerResolutionHint ? (
                 <small
                   className="compact-skill__power-note"

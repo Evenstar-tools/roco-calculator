@@ -1079,3 +1079,13 @@
   min-height: 0;
   margin: 0 0 0 auto;
 }
+
+.skill-usage { min-width: 0; margin: 6px 0; grid-column: 2 / -1; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.skill-usage__main { display: block; color: var(--text-primary); font-weight: 700; white-space: normal; }
+.skill-usage .skill-usage__next { margin: 4px 0; color: var(--text-muted); font-size: 11px; font-weight: 400; white-space: normal; }
+.skill-usage__details { margin-top: 4px; color: var(--text-muted); font-size: 11px; }
+.skill-usage__details summary { cursor: pointer; }
+.skill-usage__details ul { margin: 5px 0; padding-left: 18px; }
+.usage-count-actions { display: inline-flex; gap: 3px; flex-wrap: wrap; }
+.usage-count-actions button { padding: 2px 5px; font-size: 11px; cursor: pointer; }
+.usage-count-actions button:disabled { opacity: .45; cursor: default; }

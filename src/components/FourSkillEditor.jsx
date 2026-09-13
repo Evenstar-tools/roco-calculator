@@ -1,3 +1,5 @@
+import { SkillUsageSummary, UsageCountActions } from "./SkillUsageSummary.jsx";
+import { describeSkillUsage } from "../domain/skill-presentation.js";
 import {
   BurstSourceControls,
   clampDynamicInput,
@@ -553,6 +555,7 @@ function SkillSide({
                 />
               </div>
               {selected?.description ||
+              describeSkillUsage(result) ||
               refractionHint ||
               counterReflectionHint ||
               powerResolutionHint ||
@@ -579,11 +582,6 @@ function SkillSide({
                     <small className="skill-slot__power-source">
                       {powerSourceHint}
                     </small>
-                  ) : null}
-                  {refractionHint ? (
-                    <p className="skill-slot__effect-hint" title={refractionHint}>
-                      {refractionHint}
-                    </p>
                   ) : null}
                   {counterReflectionHint ? (
                     <p
@@ -708,11 +706,13 @@ function SkillSide({
                                 ) ?? ""
                               }
                             />
+                            <UsageCountActions input={input} value={dynamicInputValue(input, selected?.slotContext)} onChange={(value) => onSkillContextChange?.(side, index, input.id ?? input.key, value)} />
                           </label>
                         ),
                       )}
                     </div>
                   </div>
+                  <SkillUsageSummary result={result} nextHint={refractionHint} />
                 </div>
               ) : null}
             </div>

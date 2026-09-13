@@ -906,7 +906,7 @@ describe("calculateMatchup", () => {
     expect(result).not.toHaveProperty("donationLifestealPercent");
   });
 
-  test("参考站实战口径下虫群显示威力613并由听桥重算为245和544伤害", () => {
+  test("虫群显示威力取整为612，听桥继承取整值并保留后续公式精度", () => {
     const input = battleInput({
       mode: "four",
       sides: {
@@ -953,23 +953,23 @@ describe("calculateMatchup", () => {
     const result = calculateMatchup(snapshot, input);
 
     expect(result.forward.results[0]).toMatchObject({
-      displayPower: 613,
-      panelPower: 613,
+      displayPower: 612,
+      panelPower: 612,
       staticPower: 140,
       totalDamage: 511,
     });
     expect(result.reverse.results[0]).toMatchObject({
-      displayPower: 245,
+      displayPower: 244,
       hitCount: 1,
-      panelPower: 245,
-      reflectedPower: 613,
-      skillPower: 613,
-      totalDamage: 544,
+      panelPower: 244,
+      reflectedPower: 612,
+      skillPower: 612,
+      totalDamage: 543,
     });
     expect(result.reverse.results[0].formulaSteps).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          after: 613,
+          after: 612,
           label: "继承显示威力",
         }),
       ]),
@@ -1017,8 +1017,8 @@ describe("calculateMatchup", () => {
     const result = calculateMatchup(snapshot, input).reverse.results[0];
 
     expect(result).toMatchObject({
-      displayPower: 177,
-      panelPower: 177,
+      displayPower: 176,
+      panelPower: 176,
       reflectedPower: 85,
       skillPower: 157,
       totalDamage: 159,
@@ -3540,11 +3540,11 @@ describe("calculateMatchup", () => {
 
     expect(result).toMatchObject({
       actualPower: 100,
-      panelPower: 413,
+      panelPower: 412,
       powerSource: "manual-static",
       staticPower: 100,
       skillPower: 100,
-      effectivePower: 413,
+      effectivePower: 412,
     });
     expect(result.formulaSteps.map((step) => step.label)).toContain(
       "手动静态威力",
@@ -3788,7 +3788,23 @@ describe("calculateMatchup", () => {
     });
   });
 
-  test("显示威力四舍五入后才进入伤害公式", () => {
+  test("75乘本系1.25只将显示威力取整为93，公式和伤害保留93.75", () => {
+    const fixture = {
+      ...snapshot,
+      skills: snapshot.skills.map((skill) => skill.id === "skill_wind" ? { ...skill, basePower: 75 } : skill),
+    };
+    const result = calculateMatchup(fixture, battleInput({
+      directions: { forward: { overrides: { stabMultiplier: 1.25, typeMultiplier: 1, attackerStat: 271, defenderDefense: 170 } } },
+    })).forward.selectedResult;
+    const steps = Object.fromEntries(result.formulaSteps.map((step) => [step.label, step]));
+    expect(result.panelPower).toBe(93);
+    expect(result.displayPower).toBe(93);
+    expect(steps["显示威力"]).toMatchObject({ before: 93.75, after: 93, input: { method: "floor" } });
+    expect(steps["等级系数与攻防比"].input.calculationPower).toBe(93.75);
+    expect(result.totalDamage).toBe(Math.floor(Math.round(271 * 93.75 * 37 / 41) / 170));
+  });
+
+  test("有效技能威力取整后进入后续威力结算", () => {
     const result = calculateMatchup(
       snapshot,
       battleInput({
@@ -3847,7 +3863,7 @@ describe("calculateMatchup", () => {
     expect(steps["显示威力"]).toMatchObject({
       before: 82,
       after: 82,
-      input: { method: "round" },
+      input: { method: "floor" },
     });
     expect(steps["等级系数与攻防比"]).toMatchObject({
       after: 117,
@@ -4001,7 +4017,7 @@ describe("calculateMatchup", () => {
     },
   );
 
-  test("本系结算后的显示威力四舍五入展示但伤害沿用未取整值", () => {
+  test("本系结算后的显示威力取整展示但伤害沿用未取整值", () => {
     const lightSpear = {
       basePower: 30,
       category: "physical",
@@ -4059,7 +4075,7 @@ describe("calculateMatchup", () => {
     ).forward.selectedResult;
 
     expect(result).toMatchObject({
-      effectivePower: 38,
+      effectivePower: 37,
       hitCount: 3,
       mainDamage: 141,
       totalDamage: 141,
@@ -4706,7 +4722,7 @@ describe("calculateMatchup", () => {
       before: 288,
       after: 316.8,
     });
-    expect(steps["显示威力"]).toMatchObject({ before: 316.8, after: 317 });
+    expect(steps["显示威力"]).toMatchObject({ before: 316.8, after: 316 });
   });
 
   test("accepts the state-layer stab and type-effectiveness override names", () => {
@@ -5322,7 +5338,7 @@ describe("calculateMatchup", () => {
       }),
     ).forward.selectedResult;
 
-    expect(normal.effectivePower).toBe(38);
+    expect(normal.effectivePower).toBe(37);
     expect(triggered).toMatchObject({
       effectivePower: 165,
       skillPower: 165,

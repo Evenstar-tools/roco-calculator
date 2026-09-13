@@ -3,7 +3,7 @@ import {
   supportsChoiceTrait,
 } from "../shared/domain/choice-skill-sequence.js";
 import { buildRefractionHint } from "../shared/domain/refraction.js";
-import { describeSkillResolution } from "../shared/domain/skill-presentation.js";
+import { describeSkillResolution, describeSkillUsage, skillUsageExplanation, skillUsageDetails } from "../shared/domain/skill-presentation.js";
 import { getGaleTurbineCompanionInput } from "../shared/domain/wing-extension.js";
 import { getVisibleSkillInputs } from "./skills.js";
 
@@ -43,6 +43,9 @@ export function createSkillPresentation({
   return {
     description: skill.description ?? "",
     effectHint,
+    usageSummary: describeSkillUsage(result),
+    usageExplanation: skillUsageExplanation(result),
+    usageDetails: skillUsageDetails(result),
     inputs: getVisibleSkillInputs(skill, context, extraInputs),
   };
 }

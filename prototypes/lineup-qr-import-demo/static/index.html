@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>阵容二维码本地识别 Demo</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">洛克计算器 · 隔离功能原型</p>
+          <h1>从配队图导入阵容</h1>
+          <p>图片只传到本机 <code>127.0.0.1</code>；二维码网址不会被自动打开。</p>
+        </div>
+        <span class="local-badge">LOCAL ONLY</span>
+      </header>
+
+      <section class="workflow" aria-labelledby="upload-title">
+        <div class="upload-panel">
+          <div class="step-heading">
+            <span>1</span>
+            <div><h2 id="upload-title">选择配队图片</h2><p>支持 JPG、PNG、WebP，最大 15 MB</p></div>
+          </div>
+          <label class="drop-zone" id="drop-zone">
+            <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp" />
+            <strong>拖进图片，或点击选择</strong>
+            <span>识别只读取二维码，不使用 OCR 猜阵容</span>
+          </label>
+          <button id="decode-button" type="button" disabled>本地识别二维码</button>
+          <p id="status" class="status" role="status">等待选择图片</p>
+        </div>
+
+        <div class="image-panel">
+          <div class="step-heading">
+            <span>2</span>
+            <div><h2>定位二维码</h2><p id="image-meta">识别后会框出实际码区</p></div>
+          </div>
+          <div class="image-stage" id="image-stage">
+            <p>图片预览</p>
+            <img id="preview-image" alt="待识别的配队图" hidden />
+            <svg id="qr-overlay" aria-hidden="true" hidden><polygon /></svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="result-panel" id="result-panel" hidden>
+        <div class="result-heading">
+          <div class="step-heading">
+            <span>3</span>
+            <div><h2>载荷与协议判断</h2><p id="classification-note"></p></div>
+          </div>
+          <span id="classification-badge" class="classification-badge"></span>
+        </div>
+        <pre id="raw-payload"></pre>
+        <p id="protocol-error" class="protocol-error" hidden></p>
+      </section>
+
+      <section class="lineup-panel" id="lineup-panel" hidden>
+        <div class="lineup-summary">
+          <div>
+            <p class="eyebrow">可导入计算器</p>
+            <h2 id="team-name"></h2>
+            <p id="team-meta"></p>
+          </div>
+          <div class="export-actions">
+            <button type="button" data-copy="code">复制阵容码</button>
+            <button type="button" data-copy="url" class="secondary">复制官方分享链接</button>
+          </div>
+        </div>
+        <div id="member-grid" class="member-grid"></div>
+      </section>
+    </main>
+    <script type="module" src="/static/app.js"></script>
+  </body>
+</html>

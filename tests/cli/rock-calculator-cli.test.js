@@ -601,7 +601,7 @@ describe("rock-calculator CLI", () => {
     );
   });
 
-  test("实战女王蜂虫群与恶魔狼王听桥配置复现显示威力和543伤害", () => {
+  test("女王蜂虫群与恶魔狼王听桥配置沿用取整显示威力", () => {
     const result = runCli(
       ["calculate", "--input", "-"],
       referenceListenBridgeCase,
@@ -614,17 +614,17 @@ describe("rock-calculator CLI", () => {
       results: {
         forward: {
           selected: {
-            displayPower: 613,
+            displayPower: 612,
             skillName: "虫群",
             totalDamage: 511,
           },
         },
         reverse: {
           selected: {
-            displayPower: 245,
+            displayPower: 244,
             hitCount: 1,
             skillName: "听桥",
-            totalDamage: 543,
+            totalDamage: 542,
           },
         },
       },

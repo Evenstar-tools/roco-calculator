@@ -1,3 +1,4 @@
+import { SkillUsageSummary, UsageCountActions } from "./SkillUsageSummary.jsx";
 import { Lightning, Shield, Sword } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
@@ -514,6 +515,7 @@ export function SingleSkillEditor({
         <div className="skill-effect-card__copy">
           <Lightning aria-hidden="true" size={16} weight="fill" />
           <p>{selectedSkill.description || "无额外效果。"}</p>
+          <SkillUsageSummary result={result} />
         </div>
         {dynamicInputs.length > 0 || hasAttackerHpRule || hasDefenderHpRule ? (
           <div aria-label="动态技能条件" className="skill-effect-card__conditions">
@@ -616,6 +618,7 @@ export function SingleSkillEditor({
                       dynamicInputValue(input, traitContext) ?? ""
                     }
                   />
+                  <UsageCountActions input={input} value={dynamicInputValue(input, traitContext)} onChange={(value) => onTraitContextChange?.(dynamicInputId(input), value)} />
                 </label>
               ),
             )}

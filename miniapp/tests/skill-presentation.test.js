@@ -124,3 +124,26 @@ describe("miniapp skill presentation", () => {
     });
   });
 });
+
+
+test("累计摘要读取结算结果，不把本次可得当作历史增益", () => {
+  const presentation = createSkillPresentation({
+    skill: refraction,
+    carriedSkills: [refraction, { name: "普通技能", type: "普通" }],
+    result: { usageSummary: { count: 2, powerGain: 30, hitCountGain: 1, scope: "persistent" } },
+  });
+  expect(presentation.usageSummary).toBe("已使用×2｜增益：威力+30 · 连击+1");
+  expect(presentation.effectHint).toContain("本次可得：普·威力+10");
+  expect(presentation.usageExplanation).toContain("连击增益仅用于声明连击的技能");
+});
+
+
+test("未使用时显示无增益，保留本次可得", () => {
+  const presentation = createSkillPresentation({
+    skill: refraction,
+    carriedSkills: [refraction, { name: "普通技能", type: "普通" }],
+    result: { usageSummary: { count: 0, powerGain: 0, hitCountGain: 0, scope: "persistent" } },
+  });
+  expect(presentation.usageSummary).toBe("未使用｜无增益");
+  expect(presentation.effectHint).toContain("本次可得：普·威力+10");
+});

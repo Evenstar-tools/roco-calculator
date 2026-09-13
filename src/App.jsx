@@ -1,3 +1,4 @@
+import { recordRefractionUsage } from "./domain/refraction.js";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { AdvancedOptions } from "./components/AdvancedOptions.jsx";
 import { AppHeader } from "./components/AppHeader.jsx";
@@ -1057,6 +1058,12 @@ function CalculatorWorkspace({ snapshot }) {
             Number(selfOverrides.lifestealPercent ?? 0) +
             Number(operations.lifestealPercent ?? 0),
           refractionStatuses,
+          ...(skill.name === "折射" ? {
+            refractionUsage: recordRefractionUsage(selfOverrides, {
+              fixedPowerAdd: ownFixedPower,
+              hitCountAdd: ownHitCountAdd,
+            }, { types: operations.refractionTypes, sproutStacks }),
+          } : {}),
           ...(hasTransientDefenseStatus
             ? {
                 activeDefenseStatus: {

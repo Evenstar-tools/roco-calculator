@@ -16,6 +16,7 @@ import {
   starfallStacksFromMarkSlot,
   targetNegativeMarkSettlement,
 } from "../marks.js";
+import { buildRefractionHint } from "../refraction.js";
 import { resolvePowerOverride } from "../power-override.js";
 import {
   getDefaultHitCount,
@@ -37,7 +38,7 @@ import { resolveTraitMultipliers } from "../traits.js";
 import { projectTraitRuntimeContext } from "../trait-runtime.js";
 import { projectTriggerContext } from "../trigger-controls.js";
 import { getTypeMultiplier } from "../type-chart.js";
-import { entryDetails, statKeysForCategory } from "./loadout.js";
+import { entryDetails, resolveSkillEntity, statKeysForCategory } from "./loadout.js";
 import {
   abilityAdjustedStat,
   abilityLevelMultiplier,
@@ -1103,7 +1104,7 @@ export function calculateSkillResult({
         ),
         formulaStep(
           "显示威力",
-          { method: "round" },
+          { method: "floor" },
           automaticPanelPower,
           panelPower,
           "damage-formula-v1",
@@ -1237,7 +1238,7 @@ export function calculateSkillResult({
         ),
         formulaStep(
           "显示威力",
-          { method: "round" },
+          { method: "floor" },
           automaticPanelPower,
           displayedPower,
           "damage-formula-v1",
@@ -1407,7 +1408,51 @@ export function calculateSkillResult({
     },
   };
 
+  let usageSummary;
+  if (skill.name === "折射") {
+    const usage = directionOverrides.refractionUsage;
+    const skillsById = Object.fromEntries(snapshot.skills.map((item) => [item.id, item]));
+    usageSummary = {
+      count: usage?.count ?? 0,
+      powerGain: usage?.powerGain ?? 0,
+      hitCountGain: usage?.hitCountGain ?? 0,
+      scope: "persistent",
+      sources: usage?.sources ?? [],
+      nextHint: buildRefractionHint({
+        selectedSkill: skill,
+        carriedSkills: (attacker.skills?.four ?? []).map((candidate) => resolveSkillEntity(candidate, skillsById)),
+        sproutStacks: sourceMarks?.positive?.id === "sprout" ? sourceMarks.positive.stacks : 0,
+      }),
+      historyIncomplete: usage?.historyIncomplete ?? Boolean(
+        directionOverrides.fixedPowerAdd || directionOverrides.hitCountAdd ||
+          directionOverrides.refractionStatuses?.length,
+      ),
+    };
+  } else if (getSkillEffectInputs(skill).some(({ contextKey }) => contextKey === "skillUseCount")) {
+    // 复用同一规则的零次结果作基准，保留分支、触发条件和最终连击上限。
+    const usageContext = projectTriggerContext(context, getSkillEffectInputs(skill));
+    const baseline = resolveSkillPower(skill, { ...usageContext, skillUseCount: 0 });
+    if (Number.isFinite(baseline.value) && Number.isFinite(powerResolution.value)) {
+      usageSummary = {
+        count: Math.max(0, Math.floor(Number(usageContext.skillUseCount) || 0)),
+        powerGain: staticPowerOverride || usesLockedPower ? 0 : powerResolution.value - baseline.value,
+        hitCountGain: fixedHitCount ? 0 : hitCount - resolveHitCount(
+          baseline.hitCount ?? baseHitCount, automaticHitCountAdd,
+        ),
+        scope: "skill",
+        ruleSteps: (powerResolution.steps ?? []).map(({ label, before, after }) => ({ label, before, after })),
+      };
+    }
+  }
+
+  if (usageSummary) {
+    usageSummary.hitCountLimit = Number.isFinite(hitCountMaximum) ? hitCountMaximum : null;
+    usageSummary.hitCountCapped = declaredHitCount && !fixedHitCount && hitCount >= hitCountMaximum;
+    usageSummary.hitCountEligible = declaredHitCount && !fixedHitCount;
+    usageSummary.manualPower = Boolean(staticPowerOverride || powerOverride.mode === "panel");
+  }
   return {
+    ...(usageSummary ? { usageSummary } : {}),
     skillId: skill.id,
     skillName: skill.name,
     resolvedPower: powerResolution.value,

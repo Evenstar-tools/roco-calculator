@@ -1,0 +1,126 @@
+{
+  "name": "大世界小队3",
+  "codeLength": 242,
+  "imageSha256": "9db6e2e88462455afab1d3078130ddc87c4ce3ca07408130b975a55b2d4e04a1",
+  "expectedSource": "用户配队原图可见个体资质和性格；图片只作预期，不替代二维码和原码解析",
+  "observedAttributeIds": {
+    "79": "hp",
+    "80": "physicalAttack",
+    "81": "magicalAttack",
+    "82": "physicalDefense",
+    "84": "speed"
+  },
+  "unobservedAttributeIds": [
+    83
+  ],
+  "members": [
+    {
+      "name": "罗隐",
+      "encodedTalents": [
+        80,
+        82,
+        79
+      ],
+      "selectedAttributes": [
+        "physicalAttack",
+        "physicalDefense",
+        "hp"
+      ],
+      "numericIvs": null,
+      "nature": {
+        "upStat": "physicalAttack",
+        "downStat": "magicalAttack"
+      }
+    },
+    {
+      "name": "白金独角兽",
+      "encodedTalents": [
+        79,
+        81,
+        84
+      ],
+      "selectedAttributes": [
+        "hp",
+        "magicalAttack",
+        "speed"
+      ],
+      "numericIvs": null,
+      "nature": {
+        "upStat": "speed",
+        "downStat": "physicalAttack"
+      }
+    },
+    {
+      "name": "银月狼王",
+      "encodedTalents": [
+        80,
+        79,
+        84
+      ],
+      "selectedAttributes": [
+        "physicalAttack",
+        "hp",
+        "speed"
+      ],
+      "numericIvs": null,
+      "nature": {
+        "upStat": "speed",
+        "downStat": "magicalAttack"
+      }
+    },
+    {
+      "name": "蒲公英娃娃",
+      "encodedTalents": [
+        80,
+        82,
+        84
+      ],
+      "selectedAttributes": [
+        "physicalAttack",
+        "physicalDefense",
+        "speed"
+      ],
+      "numericIvs": null,
+      "nature": {
+        "upStat": "physicalAttack",
+        "downStat": "magicalAttack"
+      }
+    },
+    {
+      "name": "画间法师手",
+      "encodedTalents": [
+        79,
+        81,
+        84
+      ],
+      "selectedAttributes": [
+        "hp",
+        "magicalAttack",
+        "speed"
+      ],
+      "numericIvs": null,
+      "nature": {
+        "upStat": "magicalAttack",
+        "downStat": "physicalAttack"
+      }
+    },
+    {
+      "name": "冰钻布鲁斯",
+      "encodedTalents": [
+        80,
+        79,
+        84
+      ],
+      "selectedAttributes": [
+        "physicalAttack",
+        "hp",
+        "speed"
+      ],
+      "numericIvs": null,
+      "nature": {
+        "upStat": "physicalAttack",
+        "downStat": "magicalAttack"
+      }
+    }
+  ]
+}

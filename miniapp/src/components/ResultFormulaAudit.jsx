@@ -1,3 +1,5 @@
+import SkillUsageSummary from "./SkillUsageSummary.jsx";
+import { describeSkillUsage, skillUsageDetails } from "../shared/domain/skill-presentation.js";
 import { Text, View } from "@tarojs/components";
 import {
   buildResultFormulaAudit,
@@ -108,6 +110,7 @@ export default function ResultFormulaAudit({ result }) {
         <Text className="result-formula__skill">{audit.skillName}</Text>
       </View>
 
+      <SkillUsageSummary summary={describeSkillUsage(result)} details={skillUsageDetails(result)} />
       <FormulaRow title="技能威力" tone="power">
         <FormulaChip
           label={Number.isFinite(Number(power.base)) ? "基础" : "规则值"}
@@ -186,7 +189,7 @@ export default function ResultFormulaAudit({ result }) {
           value={displayFormulaNumber(audit.formulaPower.internal)}
         />
         <FormulaOperator>→</FormulaOperator>
-        <FormulaRounding>四舍五入</FormulaRounding>
+        <FormulaRounding>取整</FormulaRounding>
         <FormulaChip
           label="界面值"
           tone="result"

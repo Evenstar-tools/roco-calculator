@@ -148,3 +148,33 @@ export function buildRefractionHint({
     ? `本次可得：${result.summary}`
     : "本次可得：需再携带其他系别技能";
 }
+
+
+export function recordRefractionUsage(before, after, { types = [], sproutStacks = 0 } = {}) {
+  const previous = before.refractionUsage;
+  const powerGain = after.fixedPowerAdd - Number(before.fixedPowerAdd ?? 0);
+  const hitCountGain = after.hitCountAdd - Number(before.hitCountAdd ?? 0);
+  const sources = (previous?.sources ?? []).map((source) => ({ ...source }));
+  const key = JSON.stringify([types, sproutStacks]);
+  const existing = sources.find((source) => source.key === key);
+  if (existing) {
+    existing.count += 1;
+    existing.powerGain += powerGain;
+    existing.hitCountGain += hitCountGain;
+  } else {
+    sources.push({ key, types: [...types], sproutStacks, count: 1, powerGain, hitCountGain });
+  }
+  // 只记录成功结算前后的状态差，不用当前携带技能重算历史增益。
+  return {
+    count: Number(previous?.count ?? 0) + 1,
+    sources,
+    powerGain: Number(previous?.powerGain ?? 0) +
+      after.fixedPowerAdd - Number(before.fixedPowerAdd ?? 0),
+    hitCountGain: Number(previous?.hitCountGain ?? 0) +
+      after.hitCountAdd - Number(before.hitCountAdd ?? 0),
+    historyIncomplete: previous?.historyIncomplete ?? Boolean(
+      !previous && (before.fixedPowerAdd || before.hitCountAdd ||
+        before.refractionStatuses?.length),
+    ),
+  };
+}

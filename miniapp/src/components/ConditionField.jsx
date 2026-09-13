@@ -84,7 +84,7 @@ export function ConditionField({ className, input, onChange, value }) {
   return (
     <View className="condition-editor__field condition-editor__field--number">
       <Text className="condition-editor__label">{input.label}</Text>
-      <View className="condition-editor__number-stepper">
+      <View className={classes("condition-editor__number-stepper", (input.contextKey ?? input.key) === "skillUseCount" && "condition-editor__number-stepper--usage")}>
         <Button
           aria-label={`${input.label}减少`}
           className={classes(
@@ -122,6 +122,12 @@ export function ConditionField({ className, input, onChange, value }) {
         >
           ＋
         </Button>
+        {(input.contextKey ?? input.key) === "skillUseCount" ? <Button
+          aria-label={`${input.label}重置`}
+          className="condition-editor__step-button"
+          disabled={current === minimum}
+          onClick={() => onChange(minimum)}
+        >重置</Button> : null}
       </View>
     </View>
   );

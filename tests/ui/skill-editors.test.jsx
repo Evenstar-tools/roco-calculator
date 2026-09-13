@@ -2433,7 +2433,7 @@ test("compact dazzling loadouts keep seven rows and the Refraction preview", () 
 
   expect(screen.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
   expect(screen.getByTitle("本次可得：普·威力+10"))
-    .toHaveClass("compact-skill__effect-hint");
+    .toHaveClass("skill-usage__next");
 });
 
 test("four-skill slots expose their own dynamic rule context", async () => {
@@ -2697,7 +2697,7 @@ test("advanced settings stay collapsed until requested", async () => {
       reductionPercent={0}
       result={{
         additionalDamage: 0,
-        effectivePower: 38,
+        effectivePower: 37,
         formulaSteps: [
           {
             after: 37.5,
@@ -2716,9 +2716,9 @@ test("advanced settings stay collapsed until requested", async () => {
             label: "天气",
           },
           {
-            after: 38,
+            after: 37,
             before: 37.5,
-            input: { method: "round" },
+            input: { method: "floor" },
             label: "显示威力",
           },
           {
@@ -2729,7 +2729,7 @@ test("advanced settings stay collapsed until requested", async () => {
               calculationPower: 37.5,
               coefficient: 37 / 41,
               defenderDefense: 175,
-              displayedPower: 38,
+              displayedPower: 37,
               roundedNumerator: 8265,
               unroundedNumerator: 8264.63,
               unroundedOneHit: 47.228,
@@ -2781,7 +2781,8 @@ test("advanced settings stay collapsed until requested", async () => {
   expect(screen.getByText("每段伤害")).toBeVisible();
   expect(screen.getByText("总伤害")).toBeVisible();
   expect(screen.getByText("37/41")).toBeVisible();
-  expect(screen.getAllByText("四舍五入")).toHaveLength(2);
+  expect(screen.getAllByText("四舍五入")).toHaveLength(1);
+  expect(screen.getByText("取整")).toBeVisible();
   expect(screen.getByText("向下取整")).toBeVisible();
   expect(screen.getByText("8265")).toBeVisible();
   expect(screen.getByText("37/41")).toBeVisible();

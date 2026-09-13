@@ -14,6 +14,7 @@ import {
   copyPositiveAbilityStages,
   hasFairPigeonBalance,
 } from "../domain/fair-pigeon.js";
+import { recordRefractionUsage } from "../domain/refraction.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import { resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
@@ -547,6 +548,12 @@ export function applyBattleActivation({
     );
   }
 
+  if (skill.name === "折射") {
+    const settled = next.directions[selfDirection].overrides;
+    settled.refractionUsage = recordRefractionUsage(selfOverrides, settled, {
+      types: operations.refractionTypes, sproutStacks,
+    });
+  }
   updateSkillContext(
     next,
     side,

@@ -57,7 +57,7 @@ export function DisplaySettingsDialog({
               <strong>静态威力：</strong>技能自身规则、固定威力和继承迸发调整后的结果；不含本次额外触发的特性、本系和克制。
             </small>
             <small>
-              <strong>显示威力：</strong>有效威力结算本系、克制、天气、能力等级与其他威力乘区后四舍五入；手动填写后直接用于伤害计算。
+              <strong>显示威力：</strong>有效威力结算本系、克制、天气、能力等级与其他威力乘区后取整（非负威力向下取整）；手动填写后直接用于伤害计算。
             </small>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import SkillUsageSummary from "./SkillUsageSummary.jsx";
 import { Text, View } from "@tarojs/components";
 import SingleSkillResultRow from "./SingleSkillResultRow.jsx";
 
@@ -47,7 +48,7 @@ export default function SkillSlots({
           />
         );
       })}
-      {presentation?.description || presentation?.effectHint ? (
+      {presentation?.description || presentation?.effectHint || presentation?.usageSummary ? (
         <View
           aria-label={`${label}\u5f53\u524d\u6280\u80fd\u8bf4\u660e`}
           className="skill-context-note"
@@ -57,8 +58,9 @@ export default function SkillSlots({
               {presentation.description}
             </Text>
           ) : null}
+          <SkillUsageSummary summary={presentation.usageSummary} details={presentation.usageDetails} />
           {presentation.effectHint ? (
-            <Text className="skill-context-note__effect">
+            <Text className={presentation.usageSummary ? "skill-usage__next" : "skill-context-note__effect"}>
               {presentation.effectHint}
             </Text>
           ) : null}

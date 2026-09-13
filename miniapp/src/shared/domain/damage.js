@@ -7,7 +7,7 @@ function finiteNumber(value, fallback) {
 export const DAMAGE_ROUNDING_POLICY = Object.freeze({
   calculationPower: "preserve",
   damageNumerator: "round-half-up",
-  displayedPower: "round-half-up",
+  displayedPower: "floor",
   effectiveSkillPower: "floor",
   finalOneHitDamage: "floor",
   hitCount: "floor-then-multiply",
@@ -19,7 +19,7 @@ export function floorEffectiveSkillPower(value) {
 }
 
 export function roundDisplayedPower(value) {
-  return Math.round(finiteNumber(value, 0));
+  return Math.floor(finiteNumber(value, 0));
 }
 
 export function roundDamageNumerator(value) {

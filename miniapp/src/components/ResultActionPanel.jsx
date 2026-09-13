@@ -1,3 +1,4 @@
+import SkillUsageSummary from "./SkillUsageSummary.jsx";
 import { useState } from "react";
 import { Button, Text, View } from "@tarojs/components";
 import { ConditionField } from "./ConditionField.jsx";
@@ -126,8 +127,9 @@ export default function ResultActionPanel({
                       触发说明 · {action.triggerHint}
                     </Text>
                   ) : null}
+                  <SkillUsageSummary summary={action.usageSummary} details={action.usageDetails} />
                   {action.effectHint ? (
-                    <Text className="result-actions__effect">
+                    <Text className={action.usageSummary ? "skill-usage__next" : "result-actions__effect"}>
                       {action.effectHint}
                     </Text>
                   ) : null}

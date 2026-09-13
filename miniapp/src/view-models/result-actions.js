@@ -127,6 +127,7 @@ function skillAction(snapshot, state, side, candidate, calculation, traitViews) 
     controls,
     description: skill.description ?? "应用该技能产生的战斗状态",
     effectHint: statusPreview?.cumulativeEffect || presentation.effectHint,
+    ...(presentation.usageSummary ? { usageSummary: presentation.usageSummary, usageDetails: presentation.usageDetails } : {}),
     key: `skill:${side}:${candidate.mode}:${candidate.slotIndex}`,
     kind: "skill",
     mode: candidate.mode,

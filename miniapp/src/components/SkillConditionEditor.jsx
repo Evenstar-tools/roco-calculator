@@ -1,3 +1,4 @@
+import SkillUsageSummary from "./SkillUsageSummary.jsx";
 import { useEffect, useState } from "react";
 import { Button, Input, Text, View } from "@tarojs/components";
 import { ConditionField } from "./ConditionField.jsx";
@@ -279,15 +280,16 @@ export default function SkillConditionEditor({
 
   return (
     <View aria-label="技能条件" className="condition-editor">
-      {presentation?.description || presentation?.effectHint ? (
+      {presentation?.description || presentation?.effectHint || presentation?.usageSummary ? (
         <View className="condition-editor__skill-note">
           {presentation.description ? (
             <Text className="condition-editor__skill-description">
               {presentation.description}
             </Text>
           ) : null}
+          <SkillUsageSummary summary={presentation.usageSummary} details={presentation.usageDetails} />
           {presentation.effectHint ? (
-            <Text className="condition-editor__skill-effect">
+            <Text className={presentation.usageSummary ? "skill-usage__next" : "condition-editor__skill-effect"}>
               {presentation.effectHint}
             </Text>
           ) : null}

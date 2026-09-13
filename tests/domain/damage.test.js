@@ -23,11 +23,16 @@ function goldenInput(overrides = {}) {
 }
 
 describe("calculateDamage", () => {
+  test.each([[75 * 1.25, 93], [93, 93], [93.5, 93], [93.99, 93]])(
+    "显示威力 %s 取整数部分为 %s",
+    (value, expected) => expect(roundDisplayedPower(value)).toBe(expected),
+  );
+
   test("exposes one shared rounding policy for every damage boundary", () => {
     expect(DAMAGE_ROUNDING_POLICY).toEqual({
       calculationPower: "preserve",
       damageNumerator: "round-half-up",
-      displayedPower: "round-half-up",
+      displayedPower: "floor",
       effectiveSkillPower: "floor",
       finalOneHitDamage: "floor",
       hitCount: "floor-then-multiply",
@@ -35,7 +40,7 @@ describe("calculateDamage", () => {
     });
     expect(floorEffectiveSkillPower(82.5)).toBe(82);
     expect(roundDisplayedPower(356.25)).toBe(356);
-    expect(roundDisplayedPower(356.5)).toBe(357);
+    expect(roundDisplayedPower(356.5)).toBe(356);
     expect(roundDamageNumerator(20053.5)).toBe(20054);
     expect(floorOneHitDamage(117.99)).toBe(117);
     expect(normalizeDamageHitCount(3.99)).toBe(3);

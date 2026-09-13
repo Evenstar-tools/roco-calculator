@@ -1,3 +1,4 @@
+import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 import { describe, expect, test } from "vitest";
 import {
   applyBalanceTraitTrigger,
@@ -788,5 +789,120 @@ describe("shared battle activation", () => {
       friendshipMode: "growth",
       skillUseCount: 1,
     });
+  });
+});
+
+
+describe("累计使用与实际增益摘要", () => {
+  function setup() {
+    const snapshot = createSnapshot();
+    Object.assign(snapshot.skills.find(({ id }) => id === "refraction"), { basePower: 50, category: "magical" });
+    snapshot.skills.push({ id: "wing", name: "测试连击", type: "翼", category: "magical", basePower: 40, description: "造成魔伤，1连击。" });
+    const state = createInitialState(snapshot);
+    state.mode = "four";
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.skills.four = ["refraction", "scratch", "wing", "scratch"];
+    const calculate = (current) => buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: current }).calculation;
+    const activate = (current) => applyBattleActivation({ calculation: calculate(current), side: "attacker", skillIndex: 0, snapshot, state: current });
+    return { snapshot, state, calculate, activate };
+  }
+
+  test("零次、一次、多次按实际状态差累计，重复系别只生效一次，展示不重复计伤", async () => {
+    const { state, calculate, activate } = setup();
+    expect(calculate(state).forward.results[0].usageSummary).toMatchObject({ count: 0, powerGain: 0, hitCountGain: 0 });
+    const first = activate(state).state;
+    expect(calculate(first).forward.results[0].usageSummary).toMatchObject({ count: 1, powerGain: 10, hitCountGain: 1 });
+    first.marks.attacker.positive = { id: "sprout", stacks: 1 };
+    const second = activate(first).state;
+    const result = calculate(second).forward.results[0];
+    expect(result.usageSummary).toMatchObject({ count: 2, powerGain: 30, hitCountGain: 3 });
+    expect(result.usageSummary.sources).toMatchObject([
+      { sproutStacks: 0, count: 1, powerGain: 10, hitCountGain: 1 },
+      { sproutStacks: 1, count: 1, powerGain: 20, hitCountGain: 2 },
+    ]);
+    expect(calculate(second).forward.results[2].hitCount).toBe(4);
+    // 去掉展示记录不会改变公式、静态威力或任何伤害结果。
+    const withoutRecord = structuredClone(second);
+    delete withoutRecord.directions.forward.overrides.refractionUsage;
+    const { usageSummary: _record, ...actual } = result;
+    const { usageSummary: _missing, ...baseline } = calculate(withoutRecord).forward.results[0];
+    expect(actual).toEqual(baseline);
+    const restored = await decodeShareState(await encodeShareState(second));
+    expect(calculate(restored).forward.results[0].usageSummary).toEqual(result.usageSummary);
+    expect(state.directions.forward.overrides.refractionUsage).toBeUndefined();
+  });
+
+  test("携带条件变化不改写过去增益；无可触发系别不记使用", () => {
+    const { state, calculate, activate } = setup();
+    const first = activate(state).state;
+    first.sides.attacker.skills.four = ["refraction", "wing", null, null];
+    const second = activate(first).state;
+    expect(calculate(second).forward.results[0].usageSummary).toMatchObject({ count: 2, powerGain: 10, hitCountGain: 2 });
+    second.sides.attacker.skills.four = ["refraction", null, null, null];
+    const failed = activate(second);
+    expect(failed.applied).toBe(false);
+    expect(calculate(failed.state).forward.results[0].usageSummary.count).toBe(2);
+  });
+
+  test("累计状态超过最终连击上限时不虚增实际连击；旧状态不倒推次数", () => {
+    const { state, calculate, activate } = setup();
+    state.directions.forward.overrides.hitCountAdd = 98;
+    const first = activate(state).state;
+    expect(calculate(first).forward.results[2].hitCount).toBe(99);
+    expect(calculate(first).forward.results[0].usageSummary).toMatchObject({ count: 1, hitCountGain: 1, historyIncomplete: true });
+    const second = activate(first).state;
+    expect(calculate(second).forward.results[2].hitCount).toBe(99);
+    expect(calculate(second).forward.results[0].usageSummary.hitCountGain).toBe(2);
+  });
+
+  test("切换技能不丢失仍在生效的状态，重置或切换精灵同时清空记录", async () => {
+    const { snapshot, state, calculate, activate } = setup();
+    const { selectFourSkill, selectSpirit } = await import("../../src/state/calculator-session.js");
+    let current = activate(state).state;
+    current = selectFourSkill(current, { side: "attacker", index: 0, skillId: "scratch", snapshot }).state;
+    expect(calculate(current).forward.results[0].usageSummary).toBeUndefined();
+    current = selectFourSkill(current, { side: "attacker", index: 0, skillId: "refraction", snapshot }).state;
+    expect(calculate(current).forward.results[0].usageSummary.count).toBe(1);
+    current = selectSpirit(current, { side: "attacker", spiritId: "defender", initialState: state, snapshot }).state;
+    expect(current.directions.forward.overrides.refractionUsage).toBeUndefined();
+    expect(calculate(state).forward.results[0].usageSummary.count).toBe(0);
+  });
+
+  test("手动威力不推算使用次数；次数成长的手动威力覆盖和连击上限按实际结果展示", () => {
+    const { snapshot, state, calculate } = setup();
+    state.sides.attacker.skills.four[0] = { skillId: "refraction", overrides: { powerOverride: { mode: "static", value: 610 } } };
+    expect(calculate(state).forward.results[0].usageSummary).toMatchObject({ count: 0, powerGain: 0, hitCountGain: 0 });
+    snapshot.skills.push({ id: "growth", name: "孢子爆散", type: "草", category: "magical", basePower: 40, description: "造成魔伤，2连击。" });
+    state.sides.attacker.skills.four[0] = { skillId: "growth", context: { skillUseCount: 20 } };
+    state.directions.forward.overrides.hitCountAdd = 96;
+    const capped = calculate(state).forward.results[0];
+    expect(capped.hitCount).toBe(99);
+    expect(capped.usageSummary.hitCountCapped).toBe(true);
+    expect(capped.usageSummary).toMatchObject({ count: 20, hitCountGain: 1 });
+    snapshot.skills.find(({ id }) => id === "growth").name = "吹火";
+    state.sides.attacker.skills.four[0].overrides = { powerOverride: { mode: "static", value: 610 } };
+    expect(calculate(state).forward.results[0].usageSummary).toMatchObject({ count: 20, powerGain: 0 });
+  });
+
+  test.each([
+    ["吹火", {}, 60, 0],
+    ["迫近攻击", {}, 135, 0],
+    ["乘胜追击", {}, 0, 3],
+    ["孢子爆散", {}, 0, 6],
+    ["试飞", { flightMode: "power" }, 30, 0],
+    ["试飞", { flightMode: "hits" }, 0, 3],
+    ["友谊满溢", { friendshipMode: "counter", counterTriggered: true }, 120, 0],
+  ])("%s读取次数控件和当前规则分支 %j", (name, context, powerGain, hitCountGain) => {
+    const { snapshot, state, calculate } = setup();
+    snapshot.skills.push({ id: "growth", name, type: "火", category: "magical", basePower: 40, description: "造成魔伤，1连击。" });
+    const controls = getSkillEffectInputs(snapshot.skills.find(({ id }) => id === "growth"));
+    const inputContext = { ...context, skillUseCount: 3 };
+    state.sides.attacker.skills.four[0] = {
+      skillId: "growth",
+      context: Object.fromEntries(controls.filter((control) => Object.hasOwn(inputContext, control.contextKey)).map((control) => [control.id, inputContext[control.contextKey]])),
+    };
+    const result = calculate(state).forward.results[0];
+    expect(result.usageSummary).toMatchObject({ count: 3, powerGain, hitCountGain });
   });
 });

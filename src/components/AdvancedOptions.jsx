@@ -1,3 +1,4 @@
+import { SkillUsageSummary } from "./SkillUsageSummary.jsx";
 import { CaretDown, SlidersHorizontal } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -283,6 +284,7 @@ export function FormulaAudit({ result }) {
         <span>{audit.skillName}</span>
       </header>
 
+      <SkillUsageSummary result={result} />
       <FormulaRow title="静态威力" tone="power">
         {Number.isFinite(Number(power.base)) ? (
           <AuditChip label="基础" tone="power" value={displayNumber(power.base)} />
@@ -339,7 +341,7 @@ export function FormulaAudit({ result }) {
         <Operator>=</Operator>
         <AuditChip label="公式值" tone="display" value={displayNumber(audit.formulaPower.internal)} />
         <Operator>→</Operator>
-        <span className="formula-audit__rounding">四舍五入</span>
+        <span className="formula-audit__rounding">取整</span>
         <AuditChip label="显示威力" tone="result" value={displayNumber(audit.formulaPower.displayed)} />
       </FormulaRow>
 
