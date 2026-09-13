@@ -467,7 +467,7 @@ export default function SkillConditionEditor({
           <View className="condition-editor__field condition-editor__field--number">
             <View className="condition-editor__field-heading">
               <Text className="condition-editor__label">伤害连击数</Text>
-              <Button className="condition-editor__power-reset" aria-label="恢复默认连击数" onClick={() => updateDamageHitCount(Math.min(resolvedHitCountMaximum, getDefaultHitCount(skill) + (Number(result?.automaticHitCountAdd) || 0)))}>恢复默认</Button>
+              <Button className="condition-editor__power-reset" aria-label="恢复默认连击数" onClick={() => updateDamageHitCount(Math.min(resolvedHitCountMaximum, getDefaultHitCount(skill) + (editableHitCountInput ? Number(result?.automaticHitCountAdd) || 0 : 0)))}>恢复默认</Button>
             </View>
             <View className="condition-editor__number-stepper">
             <Button className="condition-editor__step-button" aria-label="减少连击数" disabled={hitCount <= 1} onClick={() => updateDamageHitCount(hitCount - 1)}>−</Button>

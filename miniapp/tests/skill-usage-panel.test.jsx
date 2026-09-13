@@ -14,7 +14,7 @@ test("累计值与下次预览分层，通用规则不铺开，手动覆盖有�
   expect(screen.queryByText("累计已生效：通用说明")).not.toBeInTheDocument();
 });
 
-test("连击可加减并恢复技能默认，保留自动连击增益", () => {
+test("连击可加减并恢复基础默认，自动增益不重复写入基础值", () => {
   const onDirectionChange = vi.fn();
   render(<SkillConditionEditor context={{}} direction={{ hitCount: 7 }} skill={{ id: "test", name: "连击", category: "physical", basePower: 20, description: "造成物伤，3连击。" }} result={{ automaticHitCountAdd: 2 }} onContextChange={vi.fn()} onDirectionChange={onDirectionChange} />);
   fireEvent.click(screen.getByRole("button", { name: "减少连击数" }));
@@ -22,7 +22,7 @@ test("连击可加减并恢复技能默认，保留自动连击增益", () => {
   fireEvent.click(screen.getByRole("button", { name: "增加连击数" }));
   expect(onDirectionChange).toHaveBeenLastCalledWith({ hitCount: 8 });
   fireEvent.click(screen.getByRole("button", { name: "恢复默认连击数" }));
-  expect(onDirectionChange).toHaveBeenLastCalledWith({ hitCount: 5 });
+  expect(onDirectionChange).toHaveBeenLastCalledWith({ hitCount: 3 });
 });
 
 test("增益明细可展开收起，点击不会重复激活技能", () => {

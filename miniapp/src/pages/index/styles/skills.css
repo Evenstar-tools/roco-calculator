@@ -1871,8 +1871,8 @@
 }
 
 .skill-usage { min-width: 0; margin: 6px 0; line-height: 1.5; }
-.skill-usage__main { display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--text-secondary); font-size: 12px; white-space: normal; overflow-wrap: anywhere; }
-.skill-usage__value { color: var(--text-primary); font-weight: 700; }
+.skill-usage__main { display: flex; flex-wrap: wrap; gap: 4px 8px; color: var(--text-secondary); font-size: 12px; white-space: normal; overflow-wrap: anywhere; }
+.skill-usage__value { color: var(--text-primary); font-size: 14px; font-weight: 700; }
 .skill-usage__next { display: block; margin-top: 6px; padding: 6px 8px; border-radius: 6px; background: var(--surface-muted); color: var(--text-secondary); font-size: 11px; font-weight: 400; white-space: normal; overflow-wrap: anywhere; }
 .skill-usage__notice { display: block; color: var(--text-secondary); font-size: 11px; }
 .skill-usage__toggle { width: auto; margin: 3px 0; padding: 0; background: transparent; color: var(--text-secondary); font-size: 11px; line-height: 1.8; text-align: left; border: 0; }
