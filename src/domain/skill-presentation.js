@@ -59,6 +59,7 @@ export function describeSkillResolution(result) {
 export function describeSkillUsage(result) {
   const usage = result?.usageSummary;
   if (!usage) return null;
+  if (usage.appliedEffects) return skillUsageDisplay(usage).status || null;
   if (!(usage.count > 0) && !usage.historyIncomplete) return "未使用｜无增益";
   const signed = (value) => `${value >= 0 ? "+" : ""}${value}`;
   const count = usage.historyIncomplete
@@ -105,6 +106,18 @@ export function skillUsageDetails(result) {
 
 // 当前值来自解算结果，历史仅作溯源；两者不相加，也不倒推使用次数。
 export function skillUsageDisplay(usage, nextHint, details = []) {
+  if (usage?.appliedEffects) {
+    const history = usage.successCount === undefined ? `已使用×${usage.count}`
+      : `已使用×${usage.count}${usage.successCount ? ` · 应对成功×${usage.successCount}` : ""}`;
+    return {
+      hasHistory: usage.count > 0,
+      current: usage.appliedEffects,
+      status: usage.count > 0 ? `累计状态：${history}${usage.appliedEffects.length ? `　增益：${usage.appliedEffects.join(" · ")}` : ""}` : "",
+      recorded: usage.recordedEffects ?? [],
+      next: skillUsageDisplay(undefined, usage.nextHint ?? nextHint).next,
+      details: [],
+    };
+  }
   const hasHistory = Boolean(usage?.count > 0 || usage?.historyIncomplete);
   const current = usage?.currentEffects ?? [];
   const gains = hasHistory ? [

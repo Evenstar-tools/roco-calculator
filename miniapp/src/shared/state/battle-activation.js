@@ -16,6 +16,7 @@ import {
 } from "../domain/fair-pigeon.js";
 import { recordRefractionUsage } from "../domain/refraction.js";
 import { expireTransientGainSources, recordGainChanges } from "../domain/gain-provenance.js";
+import { recordSkillActivation } from "../domain/skill-gain-summary.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import { resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
@@ -327,6 +328,7 @@ export function applyBattleActivation({
         });
       }
       recordGainChanges(gainBaseline, next, { kind: "trait", id: postAttackEffects?.source ?? skill.id, name: postAttackEffects?.source ?? skill.name });
+      recordSkillActivation(next, side, skill, context);
       return { applied: true, reason: null, state: next };
     }
     if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
@@ -344,6 +346,7 @@ export function applyBattleActivation({
       sequence.nextContext,
       skillMode,
     );
+    recordSkillActivation(next, side, skill, context);
     return { applied: true, reason: null, state: next };
   }
   if (!resolution.applied) {
@@ -478,7 +481,7 @@ export function applyBattleActivation({
     },
   });
 
-  recordGainChanges(gainBaseline, next, { kind: "skill", id: skill.id, name: skill.name, transient: Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0 });
+  recordGainChanges(gainBaseline, next, { kind: "skill", id: `${side}:${skill.id}`, name: skill.name, countDelta: resolution.triggerCount, transient: Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0 });
   const targetSpirit = getSpirit(snapshot, next.sides[targetSide]);
   if (
     hasFairPigeonBalance(targetSpirit) &&
@@ -568,6 +571,7 @@ export function applyBattleActivation({
     sequence.nextContext,
     skillMode,
   );
+  recordSkillActivation(next, side, skill, context, operations, resolution.triggerCount);
   return {
     applied: true,
     reason: null,

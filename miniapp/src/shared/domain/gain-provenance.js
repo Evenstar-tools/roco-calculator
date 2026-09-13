@@ -45,7 +45,7 @@ export function recordGainChanges(before, after, source) {
     const oldValues = values(previous);
     const nextValues = values(current);
     const ledger = { ...sanitizeGainSources(current.gainSources) };
-    const count = 1 + Math.max(0, ...Object.values(sanitizeGainSources(previous.gainSources)).flatMap((entry) => entry.sources.filter((item) => item.id === source.id && item.kind === source.kind).map((item) => item.count)));
+    const count = (source.countDelta ?? 1) + Math.max(0, ...Object.values(sanitizeGainSources(previous.gainSources)).flatMap((entry) => entry.sources.filter((item) => item.id === source.id && item.kind === source.kind).map((item) => item.count)));
     for (const field of new Set([...Object.keys(oldValues), ...Object.keys(nextValues)])) {
       const oldValue = oldValues[field] ?? 0;
       const value = nextValues[field] ?? 0;

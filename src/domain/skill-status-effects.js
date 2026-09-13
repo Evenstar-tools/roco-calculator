@@ -819,6 +819,7 @@ export function resolveSkillStatusActivation(skill, context = {}) {
     applied,
     deltas,
     operations,
+    triggerCount: repeatedTriggerCount,
     reason:
       applied
         ? null

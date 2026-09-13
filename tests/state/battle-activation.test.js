@@ -155,6 +155,54 @@ function createSnapshot() {
   };
 }
 
+test.each([
+  ["力量增效", "status", {}, "攻击+10层"],
+  ["水泡盾", "defense", { defenseCounterSucceeded: true }, "攻击+7层"],
+  ["防御反击", "defense", { defenseCounterSucceeded: true }, "威力+40"],
+  ["撒娇", "magical", {}, "威力+10"],
+])("%s 原位显示实际生效增益，次数与连击分开", (name, category, context, effect) => {
+  const snapshot = createSnapshot();
+  snapshot.skills.push({ id: "gain-skill", name, category, type: "普通", basePower: category === "magical" ? 30 : 0, description: category === "defense" ? "减伤80%。" : "" });
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  state.sides.attacker.skills.four = [{ skillId: "gain-skill", context }, "scratch"];
+  const view = (current) => buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: current }).calculation.forward.results;
+  expect(view(state)[0].usageSummary).toBeUndefined();
+  const next = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state }).state;
+  expect(view(next)[0].usageSummary).toMatchObject({ count: 1, appliedEffects: expect.arrayContaining([effect]) });
+  expect(view(next)[1].gainSummary).toContain(`${name}×1`);
+  const manual = calculatorReducer(next, { type: "direction/update", direction: "forward", value: { overrides: { attackLevelStage: 0, fixedPowerAdd: 0 } } });
+  expect(view(manual)[0].usageSummary.appliedEffects).not.toContain(effect);
+  expect(view(state)[0].usageSummary).toBeUndefined();
+});
+
+test("防御未应对成功只显示减伤，不虚报成功次数或能力增益", () => {
+  const snapshot = createSnapshot();
+  snapshot.skills.push({ id: "shield", name: "水泡盾", category: "defense", type: "水", basePower: 0, description: "减伤80%。" });
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  state.sides.attacker.skills.four = ["shield", "scratch"];
+  const next = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state }).state;
+  const result = buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: next }).calculation.forward.results[0];
+  expect(result.usageSummary).toMatchObject({ count: 1, successCount: 0, appliedEffects: ["减伤80%"] });
+  expect(result.gainSummary).not.toContain("水泡盾");
+});
+
+test("纯状态技能触发次数控件与摘要、来源一致，双方同名技能互不串记录", () => {
+  const snapshot = createSnapshot();
+  snapshot.skills.push({ id: "boost", name: "力量增效", category: "status", type: "普通", basePower: 0 });
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  state.sides.attacker.skills.four = [{ skillId: "boost", statusTriggerCount: 3 }, "scratch"];
+  state.sides.defender.skills.four = ["boost", "scratch"];
+  const one = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state }).state;
+  const both = applyBattleActivation({ side: "defender", skillIndex: 0, snapshot, state: one }).state;
+  const result = buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: both }).calculation;
+  expect(result.forward.results[0].usageSummary).toMatchObject({ count: 3, appliedEffects: ["攻击+30层"] });
+  expect(result.reverse.results[0].usageSummary).toMatchObject({ count: 1, appliedEffects: ["攻击+10层"] });
+  expect(result.forward.results[1].gainSummary).toContain("力量增效×3");
+});
+
 describe("shared battle activation", () => {
   test.each([
     ["落雨", "rain"], ["降雨", "rain"], ["惊雷", "thunder"],

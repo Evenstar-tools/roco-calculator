@@ -7,6 +7,7 @@ import {
 } from "./skill-result/direction.js";
 import { resolveCombatant } from "./skill-result/loadout.js";
 import { finiteNumber } from "./skill-result/numeric.js";
+import { attachSkillGainSummaries } from "./skill-gain-summary.js";
 
 export function calculateMatchup(snapshot, battleInput) {
   const mode = battleInput.mode === "four" ? "four" : "single";
@@ -122,8 +123,8 @@ export function calculateMatchup(snapshot, battleInput) {
   });
 
   return {
-    forward,
-    reverse,
+    forward: attachSkillGainSummaries(forward, { directions, marks }, "attacker", snapshot.skills),
+    reverse: attachSkillGainSummaries(reverse, { directions, marks }, "defender", snapshot.skills),
     versions: {
       data: snapshot.meta.id,
       rules: snapshot.meta.rulesVersion ?? RULES_VERSION,
