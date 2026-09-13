@@ -26,16 +26,15 @@ test("keeps Dazzling's seven slots readable and exposes Refraction effects", asy
   ).toBe(true);
 
   const compactUsage = page.locator(".compact-skill-side--attacker .skill-usage");
-  await expect(compactUsage.locator(".skill-usage__main")).toHaveAttribute("aria-label", "未使用｜无增益");
+  await expect(compactUsage).not.toContainText("已使用 0");
   await expect(compactUsage.locator(".skill-usage__next")).toContainText("普·威力+10");
-  await compactUsage.locator("summary").click();
-  await expect(compactUsage.locator("details")).toHaveAttribute("open", "");
-  await expect(compactUsage.locator(".skill-usage__main")).toHaveAttribute("aria-label", "未使用｜无增益");
+  await expect(compactUsage.locator("summary")).toHaveCount(0);
+  await expect(compactUsage.locator(".skill-usage__next")).toContainText("使用后可得");
 
   await page.getByRole("button", { name: "具体版" }).click();
   await expect(page.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
   const usage = page.locator(".four-skill-side--attacker .skill-usage");
-  await expect(usage.locator(".skill-usage__main")).toHaveAttribute("aria-label", "未使用｜无增益");
+  await expect(usage).not.toContainText("已使用 0");
   await expect(usage.locator(".skill-usage__next")).toContainText("普·威力+10");
   expect(await usage.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   expect(
@@ -59,7 +58,7 @@ test("keeps Dazzling's seven slots readable and exposes Refraction effects", asy
   await page.getByRole("tab", { name: "单技能", exact: true }).click();
   await page.getByRole("combobox", { name: "选择技能", exact: true }).fill("折射");
   await page.getByRole("option", { name: /^折射/ }).click();
-  await expect(page.locator(".single-skill-editor .skill-usage__main")).toContainText("累计威力 +0");
+  await expect(page.locator(".single-skill-editor .skill-usage")).not.toContainText("累计威力 +0");
   await page.getByText("手动调整", { exact: true }).click();
   await page.getByRole("button", { name: "增加连击次数", exact: true }).click();
   await expect(page.getByLabel("连击次数", { exact: true })).toHaveValue("2");
@@ -72,7 +71,7 @@ test("keeps Dazzling's seven slots readable and exposes Refraction effects", asy
   await page.setViewportSize({ height: 740, width: 320 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole("button", { name: "精简版", exact: true }).click();
-  await expect(page.locator(".compact-single-skill .skill-usage__main")).toContainText("累计连击 +0");
+  await expect(page.locator(".compact-single-skill .skill-usage")).not.toContainText("累计连击 +0");
 });
 
 test("applies and explains Beast Flower bloodlines without retaining the battle trigger", async ({

@@ -1,27 +1,27 @@
-import { describeSkillUsage, skillUsageDetails } from "../domain/skill-presentation.js";
+import { describeSkillUsage, skillUsageDetails, skillUsageDisplay } from "../domain/skill-presentation.js";
 
 export function SkillUsageSummary({ result, nextHint }) {
   const summary = describeSkillUsage(result);
   const usage = result?.usageSummary;
-  const signed = (value = 0) => `${value >= 0 ? "+" : ""}${value}`;
   nextHint ??= result?.usageSummary?.nextHint;
   if (!summary && !nextHint) return null;
+  const display = skillUsageDisplay(usage, nextHint, skillUsageDetails(result));
   return (
     <div className="skill-usage" onClick={(event) => event.stopPropagation()}>
-      {usage ? <div className="skill-usage__main" aria-label={summary}>
+      {usage?.count > 0 ? <div className="skill-usage__main" aria-label={`${usage.historyIncomplete ? "已记录" : "已使用"} ${usage.count} 次`}>
         <span>{usage.historyIncomplete ? "已记录" : "已使用"} <b>{usage.count}</b> 次</span>
-        <span>累计威力 <b>{signed(usage.powerGain)}</b></span>
-        <span>累计连击 <b>{signed(usage.hitCountGain)}</b></span>
       </div> : null}
-      {nextHint ? <p className="skill-usage__next" title={nextHint}>{nextHint}</p> : null}
-      {usage?.manualPower ? <p className="skill-usage__notice">威力已手动覆盖，累计记录保留</p> : null}
+      {display.current.length ? <p className="skill-usage__main">当前计算：{display.current.join(" · ")}</p> : null}
+      {display.next ? <p className="skill-usage__next" title={display.next}>{display.next}</p> : null}
+      {display.recorded.length ? <p className="skill-usage__notice">仅记录：{display.recorded.join(" · ")}（未参与结算）</p> : null}
+      {usage?.manualPower ? <p className="skill-usage__notice">{display.hasHistory ? "威力已手动覆盖，累计记录保留" : "威力已手动覆盖，以当前值为准"}</p> : null}
       {usage?.hitCountCapped ? <p className="skill-usage__notice">连击已达上限 {usage.hitCountLimit}</p> : null}
       {usage?.historyIncomplete ? <p className="skill-usage__notice">此前记录不完整，不按当前条件倒推</p> : null}
-      {summary ? <details className="skill-usage__details">
+      {display.details.length ? <details className="skill-usage__details">
         <summary>查看增益明细</summary>
         <ul>
-          {usage.count === 0 && !usage.historyIncomplete ? <li>暂无使用记录</li> : null}
-          {skillUsageDetails(result).filter((line) => !line.startsWith("累计已生效：") && !line.startsWith("折射无独立")).map((line, index) => <li key={index}>{line}</li>)}
+          <li>来源：当前配置与战斗状态（含特性、印记及手动调整）；以下为历史记录，不再次叠加。</li>
+          {display.details.map((line, index) => <li key={index}>{line}</li>)}
         </ul>
       </details> : null}
     </div>
