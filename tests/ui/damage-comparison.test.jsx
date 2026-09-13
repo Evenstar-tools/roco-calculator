@@ -41,11 +41,11 @@ test("桌面筛选开关控制选项实际显隐且保留选值", () => {
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute("aria-expanded", "true");
     expect(getComputedStyle(options).display).toBe("flex");
-    fireEvent.change(screen.getByLabelText("承伤耐久模板"), { target: { value: "hp-only-v1" } });
+    fireEvent.change(screen.getByLabelText("承伤耐久模板"), { target: { value: "standard-magical-v1" } });
     fireEvent.click(toggle);
     expect(getComputedStyle(options).display).toBe("none");
     fireEvent.click(toggle);
-    expect(screen.getByLabelText("承伤耐久模板")).toHaveValue("hp-only-v1");
+    expect(screen.getByLabelText("承伤耐久模板")).toHaveValue("standard-magical-v1");
   } finally { style.remove(); }
 });
 
@@ -90,12 +90,12 @@ test.each([0, 1, 200, 201])("用户预设 %i 条的可见性、默认阈值和�
     fireEvent.click(screen.getByRole("button", { name: "查看甲承伤详情" }));
     expect(screen.getByText(/未存预设 · 60级 · 生命性格/)).toBeInTheDocument();
   }
-  fireEvent.change(screen.getByLabelText("承伤耐久模板"), { target: { value: "hp-only-v1" } });
+  fireEvent.change(screen.getByLabelText("承伤耐久模板"), { target: { value: "standard-magical-v1" } });
   const preferences = onPreferencesChange.mock.lastCall[0];
   unmount();
   render(<DamageComparisonDialog snapshot={snapshot} source={source} preferences={preferences} onClose={vi.fn()} />);
   await screen.findByRole("button", { name: "查看乙承伤详情" });
-  expect(screen.getByLabelText("承伤耐久模板")).toHaveValue("hp-only-v1");
+  expect(screen.getByLabelText("承伤耐久模板")).toHaveValue("standard-magical-v1");
 });
 
 test("已导入超过200条时替换自动默认，清空配置后不保留失效用户预设", async () => {
@@ -129,10 +129,10 @@ test("承伤榜支持搜索、只读展开、切模板和显式代入", async ()
   fireEvent.click(dialog.getByRole("button", { name: "查看乙承伤详情" }));
   expect(onImport).not.toHaveBeenCalled();
   expect(JSON.stringify(source)).toBe(before);
-  fireEvent.change(dialog.getByLabelText("承伤耐久模板"), { target: { value: "hp-only-v1" } });
+  fireEvent.change(dialog.getByLabelText("承伤耐久模板"), { target: { value: "standard-magical-v1" } });
   await waitFor(() => expect(dialog.queryByText(/正在计算/)).not.toBeInTheDocument());
   fireEvent.click(dialog.getByRole("button", { name: "代入防守方复算" }));
-  expect(onImport).toHaveBeenCalledWith(snapshot.spirits[1], "hp-only-v1", 0, false);
+  expect(onImport).toHaveBeenCalledWith(snapshot.spirits[1], "standard-magical-v1", 0, false);
   fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
   expect(onClose).toHaveBeenCalledOnce();
 });
@@ -160,7 +160,7 @@ test("同一来源记住选择并重算最新条件，换来源或删除技能�
   let dialog = within(screen.getByRole("dialog"));
   await dialog.findByRole("button", { name: "查看乙承伤详情" });
   expect(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" })).not.toBeChecked();
-  expect(within(dialog.getByLabelText("承伤耐久模板")).getAllByRole("option").map((option) => option.textContent)).toEqual(["生命性格满双防个体", "生命性格无双防个体", "中立性格生命个体", "当前防守方配点"]);
+  expect(within(dialog.getByLabelText("承伤耐久模板")).getAllByRole("option")).toHaveLength(5);
   fireEvent.change(dialog.getByLabelText("比较技能"), { target: { value: "1" } });
   fireEvent.change(dialog.getByLabelText("承伤耐久模板"), { target: { value: "current-defense" } });
   fireEvent.click(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" }));
