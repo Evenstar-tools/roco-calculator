@@ -287,8 +287,8 @@ export default function SkillConditionEditor({
               {presentation.description}
             </Text>
           ) : null}
-          <SkillUsageSummary summary={presentation.usageSummary} details={presentation.usageDetails} />
-          {presentation.effectHint ? (
+          <SkillUsageSummary summary={presentation.usageSummary} usage={presentation.usage} nextHint={presentation.effectHint} details={presentation.usageDetails} />
+          {presentation.effectHint && !presentation.usageSummary ? (
             <Text className={presentation.usageSummary ? "skill-usage__next" : "condition-editor__skill-effect"}>
               {presentation.effectHint}
             </Text>
@@ -467,19 +467,22 @@ export default function SkillConditionEditor({
           <View className="condition-editor__field condition-editor__field--number">
             <View className="condition-editor__field-heading">
               <Text className="condition-editor__label">伤害连击数</Text>
-              <Text className="condition-editor__power-status">
-                {hitCount} 段伤害
-              </Text>
+              <Button className="condition-editor__power-reset" aria-label="恢复默认连击数" onClick={() => updateDamageHitCount(Math.min(resolvedHitCountMaximum, getDefaultHitCount(skill) + (Number(result?.automaticHitCountAdd) || 0)))}>恢复默认</Button>
             </View>
+            <View className="condition-editor__number-stepper">
+            <Button className="condition-editor__step-button" aria-label="减少连击数" disabled={hitCount <= 1} onClick={() => updateDamageHitCount(hitCount - 1)}>−</Button>
             <Input
               aria-label="连击数"
               className="condition-editor__input"
               inputMode="numeric"
               min="1"
-              onInput={(event) => updateDamageHitCount(numericValue(event, 1))}
+              max={resolvedHitCountMaximum}
+              onInput={(event) => updateDamageHitCount(numericValue(event, 1, resolvedHitCountMaximum))}
               type="number"
               value={hitCount}
             />
+            <Button className="condition-editor__step-button" aria-label="增加连击数" disabled={hitCount >= resolvedHitCountMaximum} onClick={() => updateDamageHitCount(hitCount + 1)}>+</Button>
+            </View>
           </View>
         </View>
       </View>

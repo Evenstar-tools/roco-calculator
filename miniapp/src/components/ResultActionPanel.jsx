@@ -127,8 +127,8 @@ export default function ResultActionPanel({
                       触发说明 · {action.triggerHint}
                     </Text>
                   ) : null}
-                  <SkillUsageSummary summary={action.usageSummary} details={action.usageDetails} />
-                  {action.effectHint ? (
+                  <SkillUsageSummary summary={action.usageSummary} usage={action.usage} nextHint={action.effectHint} details={action.usageDetails} />
+                  {action.effectHint && !action.usageSummary ? (
                     <Text className={action.usageSummary ? "skill-usage__next" : "result-actions__effect"}>
                       {action.effectHint}
                     </Text>

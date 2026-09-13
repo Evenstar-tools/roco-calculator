@@ -2,6 +2,28 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import SkillUsageSummary from "../src/components/SkillUsageSummary.jsx";
 import { ConditionField } from "../src/components/ConditionField.jsx";
+import SkillConditionEditor from "../src/components/SkillConditionEditor.jsx";
+
+test("累计值与下次预览分层，通用规则不铺开，手动覆盖有提示", () => {
+  render(<SkillUsageSummary summary="未使用｜无增益" usage={{ count: 0, powerGain: 0, hitCountGain: 0, manualPower: true }} nextHint="本次可得：威力+10" details={["累计已生效：通用说明", "折射无独立上限"]} />);
+  expect(screen.getByText("累计威力", { exact: false })).toBeVisible();
+  expect(screen.getByText("本次可得：威力+10")).toBeVisible();
+  expect(screen.getByText("威力已手动覆盖，累计记录保留")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "查看增益明细" }));
+  expect(screen.getByText("暂无使用记录")).toBeVisible();
+  expect(screen.queryByText("累计已生效：通用说明")).not.toBeInTheDocument();
+});
+
+test("连击可加减并恢复技能默认，保留自动连击增益", () => {
+  const onDirectionChange = vi.fn();
+  render(<SkillConditionEditor context={{}} direction={{ hitCount: 7 }} skill={{ id: "test", name: "连击", category: "physical", basePower: 20, description: "造成物伤，3连击。" }} result={{ automaticHitCountAdd: 2 }} onContextChange={vi.fn()} onDirectionChange={onDirectionChange} />);
+  fireEvent.click(screen.getByRole("button", { name: "减少连击数" }));
+  expect(onDirectionChange).toHaveBeenLastCalledWith({ hitCount: 6 });
+  fireEvent.click(screen.getByRole("button", { name: "增加连击数" }));
+  expect(onDirectionChange).toHaveBeenLastCalledWith({ hitCount: 8 });
+  fireEvent.click(screen.getByRole("button", { name: "恢复默认连击数" }));
+  expect(onDirectionChange).toHaveBeenLastCalledWith({ hitCount: 5 });
+});
 
 test("增益明细可展开收起，点击不会重复激活技能", () => {
   const activate = vi.fn();

@@ -110,7 +110,7 @@ export default function ResultFormulaAudit({ result }) {
         <Text className="result-formula__skill">{audit.skillName}</Text>
       </View>
 
-      <SkillUsageSummary summary={describeSkillUsage(result)} details={skillUsageDetails(result)} />
+      <SkillUsageSummary summary={describeSkillUsage(result)} usage={result?.usageSummary} nextHint={result?.usageSummary?.nextHint} details={skillUsageDetails(result)} />
       <FormulaRow title="技能威力" tone="power">
         <FormulaChip
           label={Number.isFinite(Number(power.base)) ? "基础" : "规则值"}

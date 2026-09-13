@@ -44,6 +44,7 @@ export function createSkillPresentation({
     description: skill.description ?? "",
     effectHint,
     usageSummary: describeSkillUsage(result),
+    usage: result?.usageSummary,
     usageExplanation: skillUsageExplanation(result),
     usageDetails: skillUsageDetails(result),
     inputs: getVisibleSkillInputs(skill, context, extraInputs),

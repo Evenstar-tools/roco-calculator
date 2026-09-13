@@ -58,8 +58,8 @@ export default function SkillSlots({
               {presentation.description}
             </Text>
           ) : null}
-          <SkillUsageSummary summary={presentation.usageSummary} details={presentation.usageDetails} />
-          {presentation.effectHint ? (
+          <SkillUsageSummary summary={presentation.usageSummary} usage={presentation.usage} nextHint={presentation.effectHint} details={presentation.usageDetails} />
+          {presentation.effectHint && !presentation.usageSummary ? (
             <Text className={presentation.usageSummary ? "skill-usage__next" : "skill-context-note__effect"}>
               {presentation.effectHint}
             </Text>
