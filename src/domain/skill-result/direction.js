@@ -93,7 +93,7 @@ export function calculateDirection({
     );
     const details = entryDetails(entry);
     const sequence = buildChoiceSkillSequence({
-      context: details.context,
+      context: mode === "single" ? { ...direction.context, ...details.context } : details.context,
       skill,
       sproutStacks:
         sourceMarks?.positive?.id === "sprout"
@@ -102,7 +102,6 @@ export function calculateDirection({
       traitName,
     });
     const executions =
-      mode === "four" &&
       skill &&
       skill.category !== "status" &&
       skill.category !== "defense"
