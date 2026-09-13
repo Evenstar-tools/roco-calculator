@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { calculateMatchup } from "../../src/domain/calculate.js";
 import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
 import { createInitialState } from "../../src/state/defaults.js";
-import { buildDamageComparisonInput, createSkillDamageRanking, damageComparisonIssue, describeDamageComparisonTemplate, filterSkillDamageRanking } from "../../src/domain/skill-damage-ranking.js";
+import { buildDamageComparisonInput, createSkillDamageRanking, damageComparisonIssue, describeDamageComparisonTemplate, filterSkillDamageRanking, getDamageComparisonTemplates, STANDARD_DURABILITY_TEMPLATES } from "../../src/domain/skill-damage-ranking.js";
 import { captureDamageComparison, importDamageComparisonCandidate } from "../../src/state/damage-comparison.js";
 
 const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
@@ -15,6 +15,28 @@ const snapshot = {
 };
 
 describe("技能承伤对比", () => {
+  test("固定模板收敛为三种配点，保留动态模板且不改变独立耐久榜", async () => {
+    const templates = getDamageComparisonTemplates({ grass: {} });
+    expect(templates.map(({ label }) => label)).toEqual(["生命性格满双防个体", "生命性格无双防个体", "中立性格生命个体", "当前防守方配点", "用户预设"]);
+    expect(STANDARD_DURABILITY_TEMPLATES["standard-magical-v1"].natureId).toBe("cautious");
+    const state = createInitialState(snapshot);
+    const expected = [["standard-hp-v1", "grounded", 60], ["hp-only-v1", "grounded", 0], ["neutral-hp-only-v1", "neutral", 0]];
+    for (const direction of ["forward", "reverse"]) {
+      const target = direction === "reverse" ? "attacker" : "defender";
+      for (const [templateId, nature, defense] of expected) {
+        const options = { snapshot, state, direction, templateId };
+        const ranking = await createSkillDamageRanking(options);
+        const row = ranking.rows.find((entry) => entry.spirit.id === "grass");
+        const imported = importDamageComparisonCandidate({ ...options, spirit: row.spirit });
+        expect(imported.sides[target]).toMatchObject({ nature, displayIvs: { hp: 60, physicalDefense: defense, magicalDefense: defense, physicalAttack: 0, magicalAttack: 0, speed: 0 } });
+        expect(buildCalculatorViewModel({ snapshot, state: imported, activeDirection: direction }).result.selectedResult.totalDamage).toBe(row.damage);
+        const description = describeDamageComparisonTemplate(row.template);
+        expect(description).toContain("生命60");
+        expect(description.includes("物防60")).toBe(defense === 60);
+        expect(description.includes("魔防60")).toBe(defense === 60);
+      }
+    }
+  });
   test.each(["forward", "reverse"])("%s 按各自用户预设配点计算，未配置回退，代入与榜单一致", async (direction) => {
     const state = createInitialState(snapshot);
     const presets = {

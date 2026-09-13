@@ -12,8 +12,11 @@ import { STANDARD_DURABILITY_TEMPLATES } from "../features/team-ability/domain/d
 import { resolveSpiritFormRole } from "../features/team-ability/domain/spirit-form-role.js";
 
 export { STANDARD_DURABILITY_TEMPLATES };
+const HP_ONLY_DISPLAY_IVS = Object.freeze({ ...STANDARD_DURABILITY_TEMPLATES["standard-hp-v1"].displayIvs, physicalDefense: 0, magicalDefense: 0 });
 export const DAMAGE_COMPARISON_TEMPLATES = Object.freeze({
-  ...STANDARD_DURABILITY_TEMPLATES,
+  "standard-hp-v1": Object.freeze({ ...STANDARD_DURABILITY_TEMPLATES["standard-hp-v1"], label: "生命性格满双防个体" }),
+  "hp-only-v1": Object.freeze({ id: "hp-only-v1", label: "生命性格无双防个体", level: 60, natureId: "grounded", displayIvs: HP_ONLY_DISPLAY_IVS }),
+  "neutral-hp-only-v1": Object.freeze({ id: "neutral-hp-only-v1", label: "中立性格生命个体", level: 60, natureId: "neutral", displayIvs: HP_ONLY_DISPLAY_IVS }),
   "current-defense": Object.freeze({ id: "current-defense", label: "当前防守方配点", level: 60 }),
   "user-presets": Object.freeze({ id: "user-presets", label: "用户预设", level: 60 }),
 });
@@ -42,7 +45,6 @@ export function getDamageComparisonTemplate(state, direction, templateId, preset
 export function describeDamageComparisonTemplate(template) {
   if (template.id === "user-presets" && !template.displayIvs) return "各自用户预设，未配置按生命性格";
   if (template.presetFallback) return "未存预设 · 60级 · 生命性格 · 生命／双防各60个体";
-  if (!["current-defense", "user-presets"].includes(template.id)) return `60级 · ${template.label} · 生命／双防各60个体`;
   const ivs = Object.entries(STAT_LABELS).filter(([key]) => Number(template.displayIvs[key]) > 0)
     .map(([key, label]) => `${label}${template.displayIvs[key]}`);
   return `60级 · ${getNature(template.natureId).name} · ${ivs.length ? `${ivs.join("／")}个体${ivs.length < 6 ? "，其余0" : ""}` : "全部0个体"}`;

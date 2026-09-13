@@ -40,7 +40,7 @@ test("导入超过200条默认使用各自预设，代入和撤回保留配点",
   await dialog.findByRole("button", { name: "查看乙承伤详情" });
   expect(dialog.getByText(/只 · 用户预设/)).toBeInTheDocument();
   fireEvent.click(dialog.getByRole("button", { name: "筛选" }));
-  expect(dialog.getByLabelText("耐久模板")).toHaveValue("5");
+  expect(dialog.getByLabelText("耐久模板")).toHaveValue("4");
   fireEvent.click(dialog.getByRole("button", { name: "查看乙承伤详情" }));
   expect(dialog.getByText(/胆小 · 生命60／魔攻60／速度60个体/)).toBeInTheDocument();
   fireEvent.click(dialog.getByRole("button", { name: "代入防守方复算" }));
@@ -97,9 +97,9 @@ test("承伤选择关闭重开保留，沿用最新冻结和自定义配点且�
   let dialog = await open();
   fireEvent.click(dialog.getByRole("button", { name: "筛选" }));
   expect(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" })).toHaveAttribute("aria-checked", "false");
-  expect(within(dialog.getByLabelText("耐久模板")).getAllByRole("option")).toHaveLength(5);
+  expect(within(dialog.getByLabelText("耐久模板")).getAllByRole("option").map((option) => option.textContent)).toEqual(["生命性格满双防个体", "生命性格无双防个体", "中立性格生命个体", "当前防守方配点"]);
   fireEvent.change(dialog.getByLabelText("技能"), { target: { value: "1" } });
-  fireEvent.change(dialog.getByLabelText("耐久模板"), { target: { value: "4" } });
+  fireEvent.change(dialog.getByLabelText("耐久模板"), { target: { value: "3" } });
   fireEvent.click(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" }));
   fireEvent.click(dialog.getByRole("button", { name: "未击倒", exact: true }));
   fireEvent.input(dialog.getByRole("textbox", { name: "搜索承伤精灵" }), { target: { value: "乙" } });
@@ -111,7 +111,7 @@ test("承伤选择关闭重开保留，沿用最新冻结和自定义配点且�
   const beforeImport = store.getState();
   dialog = await open();
   expect(dialog.getByLabelText("技能")).toHaveValue("1");
-  expect(dialog.getByLabelText("耐久模板")).toHaveValue("4");
+  expect(dialog.getByLabelText("耐久模板")).toHaveValue("3");
   expect(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" })).toHaveAttribute("aria-checked", "true");
   expect(dialog.getByRole("button", { name: "未击倒", exact: true })).toHaveAttribute("aria-pressed", "true");
   expect(dialog.getByRole("textbox", { name: "搜索承伤精灵" })).toHaveValue("乙");
