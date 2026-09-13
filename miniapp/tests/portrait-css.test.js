@@ -20,6 +20,7 @@ const styleFiles = [
   "entity-change-hints.css",
   "season.css",
   "rankings.css",
+  "damage-comparison.css",
 ];
 const styles = Object.fromEntries(
   styleFiles.map((file) => [
@@ -577,5 +578,6 @@ describe("reference-first responsive CSS", () => {
 
   test("avoids unsupported compound pseudo selectors in native WXSS", () => {
     expect(allCss).not.toContain(":last-child:nth-child(odd)");
+    expect(styles["damage-comparison.css"]).not.toMatch(/>\s*\*/u);
   });
 });

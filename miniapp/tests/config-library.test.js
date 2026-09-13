@@ -61,6 +61,20 @@ function library({
 }
 
 describe("createConfigLibraryRepository", () => {
+  test("收藏配点可持久化，后续修改只更新性格个体并保留技能和导入标记", () => {
+    const storage = createMemoryStorage();
+    const repository = createConfigLibraryRepository({ storage });
+    const before = { entries: [entry()], commonConfig: { bundleId: "bundle", entrySignatures: { "spirit-a": "original" } }, schemaVersion: 1 };
+    storage.set(MINIAPP_CONFIG_LIBRARY_KEY, before);
+    const saved = repository.saveAllocation({ ...entry({ natureId: "timid" }), skills: { four: ["skill-b", null, null, null] }, displayIvs: { ...entry().displayIvs, magicalDefense: 0 } }, snapshot);
+    expect(saved.entries[0]).toMatchObject({ natureId: "timid", skills: ["skill-a", null, null, null], displayIvs: { magicalDefense: 0 } });
+    expect(saved.commonConfig).toEqual(before.commonConfig);
+    repository.saveAllocation({ ...entry({ spiritId: "spirit-b" }), skills: { four: ["skill-b", null, null, null] } }, snapshot);
+    expect(repository.load(snapshot).entries).toHaveLength(2);
+    expect(repository.load(snapshot).entries[1].skills[0]).toBe("skill-b");
+    expect(() => repository.saveAllocation({ spiritId: "spirit-a" }, snapshot)).toThrow("预设配点无效");
+    expect(repository.load(snapshot).entries).toHaveLength(2);
+  });
   test("imports a bundled configuration into favorites and persistent presets", () => {
     const storage = createMemoryStorage();
     const favoritesRepository = createFavoritesRepository({ storage });

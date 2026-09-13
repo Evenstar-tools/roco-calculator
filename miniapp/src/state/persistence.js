@@ -18,6 +18,8 @@ export const MINIAPP_QUICK_UNDO_POSITION_KEY =
   "rock-calculator.miniapp.quick-undo-position.v1";
 export const MINIAPP_TEAM_ANALYSIS_ENABLED_KEY =
   "rock-calculator.miniapp.team-analysis-enabled.v1";
+export const MINIAPP_DAMAGE_COMPARISON_ENABLED_KEY =
+  "rock-calculator.miniapp.damage-comparison-enabled.v1";
 export const MINIAPP_TEAM_ANALYSIS_MEMBERS_KEY =
   "rock-calculator.miniapp.team-analysis-members.v1";
 export const MINIAPP_PERSISTENCE_SCHEMA_VERSION = 2;
@@ -726,6 +728,14 @@ export function createPersistence({ storage }) {
     }
   }
 
+  function getDamageComparisonEnabled() {
+    try {
+      return storage.get(MINIAPP_DAMAGE_COMPARISON_ENABLED_KEY) === true;
+    } catch {
+      return false;
+    }
+  }
+
   function getTeamAnalysisMembers(snapshot) {
     try {
       return sanitizeTeamAnalysisMembers(
@@ -807,6 +817,7 @@ export function createPersistence({ storage }) {
     getQuickUndoPosition,
 
     getTeamAnalysisEnabled,
+    getDamageComparisonEnabled,
 
     getTeamAnalysisMembers,
 
@@ -868,6 +879,14 @@ export function createPersistence({ storage }) {
         throw new TypeError("队伍防守面分析开关必须是布尔值");
       }
       storage.set(MINIAPP_TEAM_ANALYSIS_ENABLED_KEY, enabled);
+      return enabled;
+    },
+
+    setDamageComparisonEnabled(enabled) {
+      if (typeof enabled !== "boolean") {
+        throw new TypeError("承伤对比开关必须是布尔值");
+      }
+      storage.set(MINIAPP_DAMAGE_COMPARISON_ENABLED_KEY, enabled);
       return enabled;
     },
 

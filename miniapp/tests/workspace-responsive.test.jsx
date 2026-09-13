@@ -65,6 +65,29 @@ function createSnapshot() {
 }
 
 describe("responsive battle workspace", () => {
+  test("技能天气勾选联动环境与特性，并且切换雨天后同时取消", () => {
+    const snapshot = createSnapshot();
+    snapshot.skills[0].name = "雪原狩猎";
+    snapshot.spirits[0].traitIds = ["snow-soul"];
+    snapshot.traits.push({ id: "snow-soul", name: "冰雪魂魄" });
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "当前为暴风雪天气" }));
+    expect(store.getState().directions.forward.context.weatherBlizzard).toBe(true);
+    expect(store.getState().directions.reverse.context.blizzardWeather).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "编辑战斗条件" }));
+    const dialog = within(screen.getByRole("dialog", { name: "战斗条件" }));
+    expect(dialog.getByRole("button", { name: "暴风雪" })).toHaveAttribute("aria-pressed", "true");
+    expect(dialog.getByRole("button", { name: "暴风雪天气" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(dialog.getByRole("button", { name: "雨天" }));
+    expect(dialog.getByRole("button", { name: "暴风雪天气" })).toHaveAttribute("aria-pressed", "false");
+    expect(store.getState().directions.forward.context.blizzardWeather).toBe(false);
+    expect(store.getState().directions.reverse.context.weatherRainTurns).toBe(8);
+    fireEvent.click(dialog.getByRole("button", { name: "暴风雪天气" }));
+    expect(dialog.getByRole("button", { name: "暴风雪" })).toHaveAttribute("aria-pressed", "true");
+    expect(dialog.getByRole("button", { name: "雨天" })).toHaveAttribute("aria-pressed", "false");
+  });
+
   test("keeps the inline current-skill parameters exclusive to single mode", () => {
     const snapshot = createSnapshot();
     const store = createCalculatorStore(snapshot);
@@ -119,7 +142,7 @@ describe("responsive battle workspace", () => {
     for (const name of ["沙暴", "暴风雪"]) {
       fireEvent.click(screen.getByRole("button", { name }));
       expect(screen.getByRole("button", { name })).toHaveAttribute("aria-pressed", "true");
-      expect(screen.getByText("仅记录天气，暂不参与计算")).toBeVisible();
+      expect(screen.getByText("自动联动相关技能与特性，无通用伤害加成")).toBeVisible();
       expect(screen.queryByLabelText("雨天回合")).not.toBeInTheDocument();
     }
 

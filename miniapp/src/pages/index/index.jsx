@@ -198,6 +198,8 @@ export default function IndexPage({ services }) {
         pageServices.persistence?.getQuickUndoPosition?.() ?? null;
       const teamAnalysisEnabled =
         pageServices.persistence?.getTeamAnalysisEnabled?.() ?? false;
+      const damageComparisonEnabled =
+        pageServices.persistence?.getDamageComparisonEnabled?.() ?? false;
       const teamAnalysisMembers =
         pageServices.persistence?.getTeamAnalysisMembers?.(snapshot)
         ?? [null, null, null, null, null, null];
@@ -251,6 +253,7 @@ export default function IndexPage({ services }) {
         quickUndoEnabled,
         quickUndoPosition,
         teamAnalysisEnabled,
+        damageComparisonEnabled,
         teamAnalysisMembers,
         typeAnalysisEnabled,
         services: pageServices,
@@ -380,17 +383,40 @@ export default function IndexPage({ services }) {
     });
   }, []);
 
-  const toggleFavorite = useCallback((spiritId) => {
+  const toggleFavorite = useCallback((spiritId, configuration) => {
     setPageState((current) => {
       const favoriteIds =
         current.services?.favoritesRepository?.toggle(spiritId) ??
         current.favoriteIds;
+      let configLibrary = current.configLibrary;
+      if (favoriteIds.includes(spiritId) && configuration?.spiritId === spiritId) {
+        try {
+          configLibrary = current.services?.configLibraryRepository?.saveAllocation?.(configuration, current.snapshot) ?? configLibrary;
+        } catch {
+          current.services?.favoritesRepository?.toggle(spiritId);
+          Promise.resolve(Taro.showToast({ icon: "none", title: "预设保存失败，未收藏" })).catch(() => {});
+          return current;
+        }
+      }
       Promise.resolve(Taro.showToast({
         duration: 1500,
         icon: "none",
         title: favoriteIds.includes(spiritId) ? "已收藏" : "已取消收藏",
       })).catch(() => {});
-      return { ...current, favoriteIds };
+      return { ...current, favoriteIds, configLibrary };
+    });
+  }, []);
+
+  const savePresetAllocation = useCallback((configuration) => {
+    setPageState((current) => {
+      if (!current.favoriteIds.includes(configuration.spiritId) && !current.configLibrary.entries.some((entry) => entry.spiritId === configuration.spiritId)) return current;
+      try {
+        const configLibrary = current.services?.configLibraryRepository?.saveAllocation?.(configuration, current.snapshot);
+        return configLibrary ? { ...current, configLibrary } : current;
+      } catch {
+        Promise.resolve(Taro.showToast({ icon: "none", title: "预设配点保存失败" })).catch(() => {});
+        return current;
+      }
     });
   }, []);
 
@@ -548,6 +574,23 @@ export default function IndexPage({ services }) {
     }
   }, [pageState]);
 
+  const changeDamageComparisonEnabled = useCallback((enabled) => {
+    try {
+      pageState.services?.persistence?.setDamageComparisonEnabled?.(enabled);
+      setPageState((current) => current.store === pageState.store
+        ? { ...current, damageComparisonEnabled: enabled }
+        : current);
+      return true;
+    } catch {
+      Promise.resolve(Taro.showToast({
+        duration: 2400,
+        icon: "none",
+        title: "承伤对比设置失败，请重试",
+      })).catch(() => {});
+      return false;
+    }
+  }, [pageState]);
+
   const changeTeamAnalysisMembers = useCallback((members) => {
     try {
       const saved = pageState.services?.persistence
@@ -637,6 +680,8 @@ export default function IndexPage({ services }) {
     <View className={compactDemo ? "page page--compact-demo" : "page"}>
       <SeasonBackdrop />
       <AppHeader
+        damageComparisonEnabled={pageState.damageComparisonEnabled === true}
+        onDamageComparisonChange={changeDamageComparisonEnabled}
         commonConfigCount={pageState.configLibrary.entries.length}
         commonConfigStatus={
           pageState.configLibrary.commonConfig?.bundleId
@@ -672,12 +717,14 @@ export default function IndexPage({ services }) {
         />
       ) : null}
       <BattleWorkspace
+        damageComparisonEnabled={pageState.damageComparisonEnabled === true}
         compactDemo={compactDemo}
         configPresetsBySpirit={configPresetsBySpirit(
           pageState.configLibrary.entries,
         )}
         favoriteIds={pageState.favoriteIds}
         onFavoriteToggle={toggleFavorite}
+        onPresetAllocationChange={savePresetAllocation}
         onQuickUndoPositionChange={changeQuickUndoPosition}
         onShareChange={updateShareMessage}
         negativeStatusEnabled={pageState.negativeStatusEnabled}

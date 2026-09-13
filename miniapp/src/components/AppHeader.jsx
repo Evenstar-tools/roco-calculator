@@ -10,6 +10,8 @@ export default function AppHeader({
   commonConfigCount = 0,
   commonConfigStatus,
   dataVersion,
+  damageComparisonEnabled = false,
+  onDamageComparisonChange,
   memoryEnabled = true,
   negativeStatusEnabled = false,
   onImportCommonConfig,
@@ -238,6 +240,25 @@ export default function AppHeader({
                     : "settings-sheet__switch"}
                   hoverClass="settings-sheet__switch--pressed"
                   onClick={() => onNegativeStatusChange?.(!negativeStatusEnabled)}
+                  role="switch"
+                >
+                  <View className="settings-sheet__switch-thumb" />
+                </Button>
+              </View>
+              <View className="settings-sheet__divider" />
+              <View className="settings-sheet__row">
+                <View className="settings-sheet__copy">
+                  <Text className="settings-sheet__label">承伤对比</Text>
+                  <Text className="settings-sheet__description">在技能结果旁显示全精灵承伤对比入口</Text>
+                </View>
+                <Button
+                  aria-checked={damageComparisonEnabled}
+                  aria-label="承伤对比"
+                  className={damageComparisonEnabled
+                    ? "settings-sheet__switch settings-sheet__switch--on"
+                    : "settings-sheet__switch"}
+                  hoverClass="settings-sheet__switch--pressed"
+                  onClick={() => onDamageComparisonChange?.(!damageComparisonEnabled)}
                   role="switch"
                 >
                   <View className="settings-sheet__switch-thumb" />

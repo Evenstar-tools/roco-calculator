@@ -54,6 +54,9 @@ import SkillConditionEditor from "./SkillConditionEditor.jsx";
 import SkillSlots from "./SkillSlots.jsx";
 import TraitConditionEditor from "./TraitConditionEditor.jsx";
 import TeamTypeAnalysisSheet from "./TeamTypeAnalysisSheet.jsx";
+import DamageComparisonSheet from "./DamageComparisonSheet.jsx";
+import { captureDamageComparison, damageComparisonSourceKey, importDamageComparisonCandidate } from "../shared/state/damage-comparison.js";
+import { DAMAGE_COMPARISON_IMPORT_NOTICE } from "../shared/domain/skill-damage-ranking.js";
 
 const SIDE_LABELS = Object.freeze({
   attacker: "攻击方",
@@ -158,9 +161,11 @@ function presentationForSide({
 
 export default function BattleWorkspace({
   compactDemo = true,
+  damageComparisonEnabled = false,
   configPresetsBySpirit = {},
   favoriteIds = [],
   onFavoriteToggle,
+  onPresetAllocationChange,
   onShareChange,
   negativeStatusEnabled = false,
   petImages,
@@ -174,6 +179,9 @@ export default function BattleWorkspace({
   onTeamAnalysisMembersChange,
 }) {
   const [activeLayer, setActiveLayer] = useState(null);
+  const [comparisonSource, setComparisonSource] = useState(null);
+  const [comparisonPreferences, setComparisonPreferences] = useState(null);
+  const [comparisonUndo, setComparisonUndo] = useState(null);
   const [actionFeedback, setActionFeedback] = useState(null);
   const [direction, setDirection] = useState("forward");
   const [quickUndoDepth, setQuickUndoDepth] = useState(0);
@@ -372,6 +380,7 @@ export default function BattleWorkspace({
     const previous = quickUndoHistoryRef.current.undo();
     if (!previous) return;
     store.dispatch({ type: "state/replace", value: previous.state });
+    for (const side of previous.rememberSides) onPresetAllocationChange?.(previous.state.sides[side]);
     setQuickUndoDepth(quickUndoHistoryRef.current.size());
   }
 
@@ -405,11 +414,13 @@ export default function BattleWorkspace({
   }
 
   function setNature(side, value) {
-    dispatchWithUndo({ type: "side/set-nature", side, value });
+    dispatchWithUndo({ type: "side/set-nature", side, value }, { rememberSide: side });
+    onPresetAllocationChange?.(store.getState().sides[side]);
   }
 
   function setIv(side, stat, value) {
-    dispatchWithUndo({ type: "side/set-iv", side, stat, value });
+    dispatchWithUndo({ type: "side/set-iv", side, stat, value }, { rememberSide: side });
+    onPresetAllocationChange?.(store.getState().sides[side]);
   }
 
   function setTraitValue(side, key, value, control) {
@@ -912,7 +923,7 @@ export default function BattleWorkspace({
               imageUrls={petImages}
               onActivate={() => setDirection("forward")}
               onChange={(value) => setSpirit("attacker", value)}
-              onFavoriteToggle={onFavoriteToggle}
+              onFavoriteToggle={(id) => onFavoriteToggle?.(id, store.getState().sides.attacker)}
               onPickerOpenChange={(open) =>
                 setActiveLayer(open ? "spirit-attacker" : null)
               }
@@ -941,7 +952,7 @@ export default function BattleWorkspace({
               imageUrls={petImages}
               onActivate={() => setDirection("reverse")}
               onChange={(value) => setSpirit("defender", value)}
-              onFavoriteToggle={onFavoriteToggle}
+              onFavoriteToggle={(id) => onFavoriteToggle?.(id, store.getState().sides.defender)}
               onPickerOpenChange={(open) =>
                 setActiveLayer(open ? "spirit-defender" : null)
               }
@@ -1193,6 +1204,10 @@ export default function BattleWorkspace({
         </View>
 
         <ResultBar
+          onOpenComparison={damageComparisonEnabled && selectedSkill ? () => {
+            setComparisonSource(captureDamageComparison(store.getState(), direction, configPresetsBySpirit));
+            setActiveLayer("damage-comparison");
+          } : undefined}
           mode={state.mode}
           onCurrentHpChange={setTargetHp}
           onOpen={openResults}
@@ -1350,6 +1365,28 @@ export default function BattleWorkspace({
         traitDamageHitCount={activeDirectionState.traitDamageHitCount}
         view={calculation}
       />
+      {damageComparisonEnabled && activeLayer === "damage-comparison" && comparisonSource ? <DamageComparisonSheet
+        key={damageComparisonSourceKey(comparisonSource)} preferences={comparisonPreferences} onPreferencesChange={setComparisonPreferences}
+        snapshot={snapshot} source={comparisonSource} petImages={petImages}
+        onClose={() => setActiveLayer(null)}
+        onImport={(spirit, templateId, selectedSkillIndex, inheritTargetStatuses) => {
+          const before = store.getState();
+          if (JSON.stringify(before) !== JSON.stringify(comparisonSource.state)) {
+            Taro.showToast({ icon: "none", title: "主配置已变化，请重新打开承伤对比" });
+            return;
+          }
+          const value = importDamageComparisonCandidate({ snapshot, ...comparisonSource, spirit, templateId, selectedSkillIndex, inheritTargetStatuses });
+          dispatchWithUndo({ type: "state/replace", value });
+          setComparisonUndo({ before, after: store.getState() });
+          setDirection(comparisonSource.direction);
+          setActiveLayer(null);
+        }}
+      /> : null}
+      {comparisonUndo?.after === state ? <View className="dc-notice" role="status"><Text>{DAMAGE_COMPARISON_IMPORT_NOTICE}</Text><Button className="dc-button" onClick={() => {
+        if (quickUndoEnabled) undoLastChange();
+        else store.dispatch({ type: "state/replace", value: comparisonUndo.before });
+        setComparisonUndo(null);
+      }}>撤回代入</Button></View> : null}
     </View>
   );
 }

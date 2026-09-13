@@ -10,6 +10,7 @@ const ResultBar = forwardRef(function ResultBar(
     onCurrentHpChange,
     open,
     onOpen,
+    onOpenComparison,
     selectedSkillIndex = 0,
     view,
   },
@@ -159,6 +160,7 @@ const ResultBar = forwardRef(function ResultBar(
           })}
         </View>
       ) : null}
+      <View className="dc-result-actions">
       <Button
         aria-expanded={open}
         aria-haspopup="dialog"
@@ -178,6 +180,8 @@ const ResultBar = forwardRef(function ResultBar(
           src={caretRightIcon}
         />
       </Button>
+      {onOpenComparison ? <Button className="dc-entry" onClick={onOpenComparison}>承伤对比</Button> : null}
+      </View>
     </View>
   );
 });

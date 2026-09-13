@@ -117,7 +117,7 @@ export default function BattleEnvironmentEditor({
             ))}
           </View>
           {["sandstorm", "blizzard"].includes(weather) ? (
-            <Text className="battle-environment__hint">仅记录天气，暂不参与计算</Text>
+            <Text className="battle-environment__hint">自动联动相关技能与特性，无通用伤害加成</Text>
           ) : null}
         </View>
         {weather === "rain" ? (

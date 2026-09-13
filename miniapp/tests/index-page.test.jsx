@@ -122,6 +122,52 @@ function createStorageTaro(overrides = {}) {
 }
 
 describe("IndexPage", () => {
+  test("已收藏配点修改同步预设，重新打开仍可使用用户预设", async () => {
+    const snapshot = createSnapshot();
+    const services = createDefaultServices({ bundledData: snapshot, taro: createStorageTaro() });
+    services.persistence.setQuickUndoEnabled(true);
+    services.persistence.setDamageComparisonEnabled(true);
+    services.configLibraryRepository.saveAllocation(createInitialState(snapshot).sides.attacker, snapshot);
+    services.favoritesRepository.replace(["spirit-a"]);
+    const first = render(<IndexPage services={services} />);
+    await screen.findByRole("button", { name: "攻击方速度正面性格" });
+    expect(services.configLibraryRepository.load(snapshot).entries[0]).toMatchObject({ spiritId: "spirit-a", natureId: "neutral" });
+    fireEvent.click(screen.getByRole("button", { name: "攻击方速度正面性格" }));
+    const updated = services.configLibraryRepository.load(snapshot).entries[0];
+    expect(updated.natureId).not.toBe("neutral");
+    fireEvent.click(screen.getByRole("button", { name: "攻击方生命个体加点" }));
+    expect(services.configLibraryRepository.load(snapshot).entries[0].displayIvs.hp).toBe(0);
+    fireEvent.click(screen.getByRole("button", { name: "撤回上一步" }));
+    expect(services.configLibraryRepository.load(snapshot).entries[0].displayIvs.hp).toBe(60);
+    fireEvent.click(screen.getByRole("button", { name: "攻击方生命个体加点" }));
+    first.unmount();
+    render(<IndexPage services={services} />);
+    await screen.findByRole("button", { name: "承伤对比" });
+    expect(services.configLibraryRepository.load(snapshot).entries[0]).toMatchObject({ natureId: updated.natureId, displayIvs: { hp: 0 } });
+    fireEvent.click(screen.getByRole("button", { name: "承伤对比" }));
+    const dialog = within(screen.getByRole("dialog", { name: "承伤对比" }));
+    fireEvent.click(dialog.getByRole("button", { name: "筛选" }));
+    expect(dialog.getByRole("option", { name: "用户预设" })).toBeInTheDocument();
+  });
+  test("承伤对比默认关闭，可在设置启用且重新打开页面仍保留", async () => {
+    const services = createDefaultServices({ bundledData: createSnapshot(), taro: createStorageTaro() });
+    const first = render(<IndexPage services={services} />);
+    await screen.findByRole("button", { name: "打开设置" });
+    expect(screen.queryByRole("button", { name: "承伤对比" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    const toggle = screen.getByRole("switch", { name: "承伤对比" });
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+    fireEvent.click(toggle);
+    fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
+    expect(screen.getByRole("button", { name: "承伤对比" })).toBeInTheDocument();
+    first.unmount();
+    render(<IndexPage services={services} />);
+    expect(await screen.findByRole("button", { name: "承伤对比" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    fireEvent.click(screen.getByRole("switch", { name: "承伤对比" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
+    expect(screen.queryByRole("button", { name: "承伤对比" })).not.toBeInTheDocument();
+  });
   afterEach(() => {
     __setRouterParams();
     vi.useRealTimers();

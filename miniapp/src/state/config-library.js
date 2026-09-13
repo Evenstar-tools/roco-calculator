@@ -303,6 +303,19 @@ export function createConfigLibraryRepository({
   }
 
   return {
+    saveAllocation(side, snapshot) {
+      const current = load(snapshot);
+      const existing = current.entries.find((entry) => entry.spiritId === side.spiritId);
+      const skills = (side.skills?.four ?? [null, null, null, null]).map((skill) => typeof skill === "string" ? skill : skill?.skillId ?? null);
+      const parsed = parseBundledConfigLibrary({ format: FORMAT, schemaVersion: SCHEMA_VERSION, entries: [{
+        ...(existing ?? { skills, traitValues: {} }),
+        spiritId: side.spiritId, natureId: side.natureId ?? side.nature, displayIvs: side.displayIvs,
+      }] }, { snapshot });
+      if (parsed.entries.length !== 1) throw new TypeError("预设配点无效，未保存");
+      const next = { ...current, entries: [...current.entries.filter((entry) => entry.spiritId !== side.spiritId), parsed.entries[0]] };
+      storage.set(MINIAPP_CONFIG_LIBRARY_KEY, next);
+      return load(snapshot);
+    },
     commit(parsed, snapshot, { legacyEntrySignatures = {} } = {}) {
       if (!favoritesRepository) {
         throw new TypeError("配置库导入仓库尚未就绪");

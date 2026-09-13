@@ -2,7 +2,10 @@ import { createInitialState } from "../shared/state/defaults.js";
 import { calculatorReducer } from "../shared/state/reducer.js";
 
 export function createCalculatorStore(snapshot, persistedState) {
-  let state = persistedState ?? createInitialState(snapshot);
+  const initialState = createInitialState(snapshot);
+  let state = persistedState
+    ? calculatorReducer(initialState, { type: "state/replace", value: persistedState })
+    : initialState;
   const listeners = new Set();
 
   function notify() {
