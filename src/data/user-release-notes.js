@@ -235,7 +235,7 @@ export const S4_FEATURE_INTRO = Object.freeze({
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v2.0.2",
-    date: "2026.09.13",
+    date: "2026.09.14",
     title: "S4查询与对战工具更新",
     whatsNew: S4_FEATURE_INTRO,
     summaryHighlights: [
@@ -253,6 +253,8 @@ export const USER_RELEASE_NOTES = Object.freeze([
       "承伤对比精简为生命性格满双防、生命性格无双防、中立性格仅生命三种固定模板，保留当前配点与用户预设，导出同步实际配点。",
     ],
     fixes: [
+      "攻击、防御和纯状态技能统一显示累计增益，来源移入计算条件，公式标明技能与次数；未触发只显示预览，取消后不留空行。",
+      "修复加尔、黑化加尔选择技能的成长漏记和单技能追加段漏算，小程序预览同步特性增益。",
       "补齐 S4 精灵形态和技能的阵容码映射，兼容旧配置中的技能名称。",
       "修正圣代甜甜各口味头像，并同步小程序数据。",
       "修正小程序 H5 头像裁切与速度榜基准定位。",
