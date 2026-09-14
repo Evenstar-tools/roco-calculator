@@ -18,6 +18,7 @@ import { recordRefractionUsage } from "../domain/refraction.js";
 import { expireTransientGainSources, recordGainChanges } from "../domain/gain-provenance.js";
 import { recordSkillActivation } from "../domain/skill-gain-summary.js";
 import { getNatureMultipliers } from "../domain/natures.js";
+import { normalizeNegativeStatusSide } from "../domain/negative-status.js";
 import { resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
 import { getEffectiveTraits } from "../domain/effective-traits.js";
@@ -535,6 +536,12 @@ export function applyBattleActivation({
     });
   }
 
+  if (operations.targetFreezeStacks > 0) {
+    const statuses = normalizeNegativeStatusSide(next.negativeStatuses?.[targetSide]);
+    next.negativeStatuses = { ...next.negativeStatuses, [targetSide]: normalizeNegativeStatusSide({
+      ...statuses, freeze: statuses.freeze + operations.targetFreezeStacks,
+    }) };
+  }
   const starfallStacks = Number(operations.targetStarfallStacks ?? 0);
   if (starfallStacks > 0) {
     applyMark(next, targetSide, {

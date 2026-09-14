@@ -4,6 +4,17 @@ import SkillUsageSummary from "../src/components/SkillUsageSummary.jsx";
 import { ConditionField } from "../src/components/ConditionField.jsx";
 import SkillConditionEditor from "../src/components/SkillConditionEditor.jsx";
 
+test("折射减耗后实际能耗输入与计算结果一致，手动修改仍可提交", () => {
+  const onContextChange = vi.fn();
+  render(<SkillConditionEditor context={{}} direction={{ overrides: {} }}
+    skill={{ id: "wave", name: "叠浪", type: "水", category: "physical", basePower: 10, cost: 3 }}
+    result={{ effectiveCostInput: 2, skillCost: 2 }} onContextChange={onContextChange} onDirectionChange={vi.fn()} />);
+  const input = screen.getByRole("spinbutton", { name: "实际能耗" });
+  expect(input).toHaveValue(2);
+  fireEvent.input(input, { target: { value: "1" } });
+  expect(onContextChange).toHaveBeenCalledWith(expect.objectContaining({ actualSkillCost: 1 }));
+});
+
 test("累计值与下次预览分层，通用规则不铺开，手动覆盖有提示", () => {
   render(<SkillUsageSummary summary="未使用｜无增益" usage={{ count: 0, powerGain: 0, hitCountGain: 0, manualPower: true }} nextHint="本次可得：威力+10" details={["累计已生效：通用说明", "折射无独立上限"]} />);
   expect(screen.queryByText(/累计威力|累计连击|已使用/)).not.toBeInTheDocument();

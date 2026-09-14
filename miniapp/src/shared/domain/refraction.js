@@ -7,7 +7,7 @@ const EFFECTS = Object.freeze({
   机械: { deltas: { ownDefense: 3 }, label: "机·双防+3层" },
   草: { label: "草·回复15%", operations: { healPercent: 15 } },
   火: { label: "火·敌灼烧+4", status: "敌方灼烧+4" },
-  冰: { label: "冰·敌冰冻+2", status: "敌方冰冻+2" },
+  冰: { label: "冰·敌冻结+2", operations: { targetFreezeStacks: 2 } },
   毒: { label: "毒·敌中毒+2", status: "敌方中毒+2" },
   虫: { deltas: { targetDefense: -4 }, label: "虫·敌双防-4层" },
   龙: { deltas: { targetDefense: -4 }, label: "龙·敌双防-4层" },
@@ -147,6 +147,20 @@ export function buildRefractionHint({
   return result.summary
     ? `本次可得：${result.summary}`
     : "本次可得：需再携带其他系别技能";
+}
+
+// 历史水系记录已经包含当次萌芽加成，不能按当前配招或萌芽重新推算。
+export function refractionEnergyReduction(overrides = {}) {
+  return (overrides.refractionStatuses ?? []).reduce((total, record) => {
+    if (record.type !== "水") return total;
+    const amount = Number(/^全技能能耗-(\d+)$/.exec(record.label)?.[1] ?? 0);
+    return total + amount;
+  }, 0);
+}
+
+export function reducedSkillCost(cost, overrides) {
+  if (cost === undefined || cost === null || cost === "" || !Number.isFinite(Number(cost))) return undefined;
+  return Math.max(0, Number(cost) - refractionEnergyReduction(overrides));
 }
 
 

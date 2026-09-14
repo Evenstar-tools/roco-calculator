@@ -142,7 +142,8 @@ export function skillUsageDisplay(usage, nextHint, details = []) {
     status,
     recorded: usage?.recordedEffects ?? [],
     next: (usage?.nextHint ?? nextHint)?.replace(/^使用后可得：/, "本次可得：")
-      .replace(/([水火冰毒幽恶]·[^\s　]+)/g, "$1（仅记录）"),
+      .replace(/([火毒幽恶]·[^\s　]+)/g, "$1（仅记录）")
+      .replace(/(冰·[^\s　]+)/g, "$1（异常结算）"),
     details: hasHistory || !usage ? details.filter((line) =>
       !line.startsWith("累计已生效：") && !line.startsWith("折射无独立") &&
       (!line.startsWith("当前技能最终连击上限") || usage?.hitCountCapped) &&

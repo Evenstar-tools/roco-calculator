@@ -306,6 +306,7 @@ export default function SkillConditionEditor({
             })
           }
           value={
+            ((input.contextKey ?? input.key) === "actualSkillCost" ? result?.effectiveCostInput : undefined) ??
             context[input.contextKey ?? input.key ?? input.id] ??
             input.defaultValue
           }
