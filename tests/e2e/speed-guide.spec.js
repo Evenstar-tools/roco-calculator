@@ -15,6 +15,7 @@ for (const width of [320, 1440]) test(`五项功能直达与速度基准 ${width
   await intro.getByRole("button", { name: "打开速度线排行" }).click();
   const ranking = page.getByRole("dialog", { name: "速度线排行", exact: true });
   await ranking.getByRole("button", { name: "试查 267" }).click();
+  await ranking.getByRole("button", { name: "显示精灵文字" }).click();
   await ranking.getByRole("button", { name: "隐藏精灵文字" }).click();
   const table = ranking.getByRole("table", { name: "速度档位表" });
   const current = table.locator("tbody tr.is-selected");
@@ -22,9 +23,14 @@ for (const width of [320, 1440]) test(`五项功能直达与速度基准 ${width
   await expect(table.locator("thead")).toBeInViewport();
   await ranking.getByLabel("搜索速度榜精灵").fill("268");
   await expect(ranking.getByText("基准位置 · 没有同速配置")).toBeVisible();
-  await ranking.getByRole("button", { name: "种族速度", exact: true }).click();
   await ranking.getByLabel("搜索速度榜精灵").fill("125");
   await expect(ranking.getByRole("status")).toContainText("种族速度 125");
   await table.locator("tbody button").first().click();
-  await expect(ranking.getByRole("region", { name: "榜单配置详情" })).toBeVisible();
+  await expect(ranking.getByRole("region", { name: "速度配置详情" })).toBeVisible();
+  await ranking.getByRole("button", { name: "按种族速查", exact: true }).click();
+  await ranking.getByLabel("搜索种族总览").fill("125");
+  const baseTable = ranking.getByRole("table", { name: "种族速度档位表" });
+  await expect(baseTable).toBeVisible();
+  await baseTable.getByRole("button", { name: /查看.*标准速度详情/ }).first().click();
+  await expect(ranking.getByRole("region", { name: "速度配置详情" })).toBeVisible();
 });

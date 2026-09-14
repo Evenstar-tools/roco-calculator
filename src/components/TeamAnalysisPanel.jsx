@@ -434,7 +434,7 @@ export function TeamAnalysisPanel({
           )}
         </>
       )}
-      {selectedCell && !(view === "analysis" && matrixMode === "defense") ? (
+      {selectedCell ? (
         <div aria-label="单元格详情" className="team-analysis__source-strip">
           {selectedCell.member.assetUrl ? (
             <img alt="" src={selectedCell.member.assetUrl} />
