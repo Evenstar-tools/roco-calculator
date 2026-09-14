@@ -88,7 +88,7 @@ for (const viewport of [
     }
 
     await search.fill("银月");
-    await expect(dialog.getByText("银月狼王", { exact: true })).toBeVisible();
+    await expect(dialog.locator("#config-library-entries").getByText("银月狼王", { exact: true })).toBeVisible();
     await expect(dialog.getByText("1 / 226")).toBeVisible();
     const matched = await readListLayout(dialog, search);
     expect(Math.abs(matched.inputY - initial.inputY)).toBeLessThanOrEqual(1);
@@ -97,10 +97,10 @@ for (const viewport of [
     expect(Math.abs(matched.firstEntryHeight - initial.firstEntryHeight)).toBeLessThanOrEqual(1);
 
     await search.fill("烈焰狂战士");
-    await expect(dialog.getByText("烈焰狂战士", { exact: true })).toBeVisible();
+    await expect(dialog.locator("#config-library-entries").getByText("烈焰狂战士", { exact: true })).toBeVisible();
     await expect(dialog.getByText("1 / 226")).toBeVisible();
     await search.fill("满月砣");
-    await expect(dialog.getByText("满月砣（下弦的样子）", { exact: true })).toBeVisible();
+    await expect(dialog.locator("#config-library-entries").getByText("满月砣（下弦的样子）", { exact: true })).toBeVisible();
     await expect(dialog.getByText("1 / 226")).toBeVisible();
 
     await dialog.getByRole("button", { name: "清除" }).click();
@@ -136,7 +136,7 @@ for (const viewport of [
     expect(initial.listScrollWidth).toBeLessThanOrEqual(initial.listWidth);
 
     await search.fill("银月");
-    await expect(dialog.getByText("银月狼王", { exact: true })).toBeVisible();
+    await expect(dialog.locator("#config-library-entries").getByText("银月狼王", { exact: true })).toBeVisible();
     await expect(dialog.getByText("1 / 226")).toBeVisible();
     const matched = await readListLayout(dialog, search);
     expect(Math.abs(matched.inputY - initial.inputY)).toBeLessThanOrEqual(1);
