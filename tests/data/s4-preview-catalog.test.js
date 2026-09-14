@@ -348,7 +348,7 @@ describe("S4 前瞻新精灵候选目录", () => {
       const entry = entryBySpiritId.get(spirit.id);
       const adjustedSkills = {
         银月狼王: ["力量增效", "撞鬼", "困兽", "月蚀"],
-        布灵布灵: ["闪光弹", "量子涨落", "光刃", "影袭"],
+        布灵布灵: ["闪光弹", "量子涨落", "透镜实验", "影袭"],
       }[form.name];
       expect(entry).toMatchObject({
         natureId: form.previewDefaults.natureId,
