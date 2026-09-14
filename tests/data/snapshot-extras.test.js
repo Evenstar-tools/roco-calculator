@@ -1,8 +1,20 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
+import { createSpiritSearchIndex } from "../../src/data/search-index.js";
 
 describe("withCalculatorExtras", () => {
+  test.each([
+    ["红鸟", "岚鸟（夏天的样子）"],
+    ["绿鸟", "岚鸟（春天的样子）"],
+    ["蓝鸟", "岚鸟"],
+    ["灰鸟", "岚鸟（秋天的样子）"],
+  ])("%s 只命中对应的岚鸟形态", (alias, name) => {
+    const snapshot = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+    const index = createSpiritSearchIndex(withCalculatorExtras(snapshot).spirits);
+    expect(index.search(alias).map((spirit) => spirit.fullName)).toEqual([name]);
+  });
+
   test("adds community aliases without changing official spirit names or mutating source data", () => {
     const snapshot = {
       meta: {},

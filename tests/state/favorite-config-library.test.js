@@ -210,6 +210,32 @@ describe("bundled popular config library", () => {
     expect(entry.skills.map((id) => snapshot.skills.find((skill) => skill.id === id)?.name)).toEqual(skills);
   });
 
+  test("画间沉铁兽使用固执，不再由性格降低物防", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    const entry = library.entries.find((item) => item.spiritId === "spirit_4a91bd3db13b8a07");
+    expect(entry.natureId).toBe("adamant");
+  });
+
+  test.each([
+    ["女王蜂", "spirit_7ae10f79a1849af1"],
+    ["声波缇塔", "spirit_24ff0f0e3504e1ca"],
+    ["霜翼领主（夏天的样子）", "spirit_9f8c8d8139b244ab"],
+  ])("%s 使用开朗，不再由性格降低魔防", (_name, id) => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    expect(library.entries.find((entry) => entry.spiritId === id).natureId).toBe("cheerful");
+  });
+
+  test("格兰球按截图携带色散、吹散、灵媒、叶绿光束，保留其余配置", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    const snapshot = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+    const entry = library.entries.find((item) => item.spiritId === "spirit_8de88e249e9a78f0");
+    expect(entry.skills.map((id) => snapshot.skills.find((skill) => skill.id === id)?.name))
+      .toEqual(["色散", "吹散", "灵媒", "叶绿光束"]);
+    expect(entry.natureId).toBe("smart");
+    expect(entry.displayIvs).toEqual({ hp: 60, speed: 0, physicalAttack: 0, magicalAttack: 60, physicalDefense: 60, magicalDefense: 0 });
+    expect(entry.traitValues).toEqual({});
+  });
+
   test("contains 226 valid spirit configurations", () => {
     const libraryText = readFileSync(
       "public/data/presets/pvp-popular-configs.json",

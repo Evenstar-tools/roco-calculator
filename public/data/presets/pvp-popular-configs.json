@@ -298,7 +298,7 @@
     },
     {
       "spiritId": "spirit_4a91bd3db13b8a07",
-      "natureId": "bold",
+      "natureId": "adamant",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -1111,7 +1111,7 @@
     },
     {
       "spiritId": "spirit_7ae10f79a1849af1",
-      "natureId": "rash",
+      "natureId": "cheerful",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -2271,7 +2271,7 @@
     },
     {
       "spiritId": "spirit_24ff0f0e3504e1ca",
-      "natureId": "rash",
+      "natureId": "cheerful",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -3696,7 +3696,7 @@
     },
     {
       "spiritId": "spirit_9f8c8d8139b244ab",
-      "natureId": "rash",
+      "natureId": "cheerful",
       "displayIvs": {
         "hp": 60,
         "speed": 60,
@@ -4134,9 +4134,9 @@
         "magicalDefense": 0
       },
       "skills": [
-        "skill_f8c45a30b534886b",
-        "skill_43096fd41b6fa39a",
-        "skill_e6645e5c0ad42b90",
+        "skill_791ddec9e482af5d",
+        "skill_36daddc54d5080ac",
+        "skill_7f07532c0b252f52",
         "skill_6f50577eac620d9a"
       ],
       "traitValues": {}
