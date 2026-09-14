@@ -179,7 +179,7 @@ describe("bundled popular config library", () => {
   test.each([
     ["波普鹿", "spirit_7d22156a66708de3", ["电弧", "裂石", "下注", "先发制人"]],
     ["银月狼王", "spirit_b689c0de815c95ef", ["力量增效", "撞鬼", "困兽", "月蚀"]],
-    ["布灵布灵", "spirit_de488be076aaad90", ["闪光弹", "量子涨落", "光刃", "影袭"]],
+    ["布灵布灵", "spirit_de488be076aaad90", ["闪光弹", "量子涨落", "透镜实验", "影袭"]],
     ["饮雪狂兽", "spirit_c0b03ac594c86309", ["雪原狩猎", "冷凝", "跺地", "力量增效"]],
   ])("keeps %s aligned with the requested preset", (_name, spiritId, skillNames) => {
     const library = JSON.parse(readFileSync(
@@ -195,6 +195,19 @@ describe("bundled popular config library", () => {
     });
     expect(entry.skills.map((id) => snapshot.skills.find((skill) => skill.id === id)?.name))
       .toEqual(skillNames);
+  });
+
+  test.each([
+    ["布灵布灵", 7, ["闪光弹", "量子涨落", "透镜实验", "影袭"]],
+    ["离心舞者", 1, ["翼击", "离子震荡", "大爆炸", "多维击打"]],
+  ])("保留 9 月 14 日确认的 %s 层数及配招顺序", (name, stacks, skills) => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+    const spirit = snapshot.spirits.find((item) => item.fullName === name);
+    const entry = library.entries.find((item) => item.spiritId === spirit.id);
+    const control = getTraitView(snapshot, spirit, "attacker").inputs.find((item) => item.contextKey === "attackerTraitStacks");
+    expect(entry.traitValues[canonicalTraitControlKey(control)]).toBe(stacks);
+    expect(entry.skills.map((id) => snapshot.skills.find((skill) => skill.id === id)?.name)).toEqual(skills);
   });
 
   test("contains 226 valid spirit configurations", () => {
