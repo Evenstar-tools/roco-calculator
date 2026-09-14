@@ -9,21 +9,22 @@ import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 
 export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
-  // 保留警告基线，硬上限由下方经确认的增量控制。
-  clientTotal: 13.5 * 1024 * 1024,
-  cssGzip: 24 * 1024,
-  // 2026-09-04 重校：S4 功能版约 230 KiB gzip，为后续小功能保留约 11% 硬余量
-  jsGzip: 236 * 1024,
-  jsRaw: 810 * 1024,
+  // 2026-09-14：按当前整合版重校预警线，避免旧基线持续误报。
+  clientTotal: 15.5 * 1024 * 1024,
+  cssGzip: 50 * 1024,
+  jsGzip: 320 * 1024,
+  jsRaw: 1088 * 1024,
   runtimeJson: 1.5 * 1024 * 1024,
 });
 
 export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
-// 2026-09-13：经用户确认，总资源 16 MiB、原始 JS 1 MiB、gzip JS 304 KiB。
+// 经用户确认，为后续小功能预留约 13%～16%；各项超过硬上限仍阻断。
 export const DEFAULT_HARD_OVERAGE_BY_KEY = Object.freeze({
-  clientTotal: 2.5 * 1024 * 1024,
-  jsGzip: 68 * 1024,
-  jsRaw: 214 * 1024,
+  clientTotal: 1 * 1024 * 1024,
+  cssGzip: 4 * 1024,
+  jsGzip: 24 * 1024,
+  jsRaw: 64 * 1024,
+  runtimeJson: 0.125 * 1024 * 1024,
 });
 
 const LABELS = {

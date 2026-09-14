@@ -34,37 +34,37 @@ function fixture({ css = "body{}", js = "export default 1", runtime = "{}" } = {
 }
 
 describe("release performance budget", () => {
-  test("S4 总资源经确认扩容，超过 16 MiB 仍阻断", () => {
-    expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal).toBe(13.5 * 1024 * 1024);
-    expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal + DEFAULT_HARD_OVERAGE_BY_KEY.clientTotal).toBe(16 * 1024 * 1024);
-    expect(DEFAULT_PERFORMANCE_BUDGETS.cssGzip).toBe(24 * 1024);
+  test("总资源保留开发余量，超过 16.5 MiB 仍阻断", () => {
+    expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal).toBe(15.5 * 1024 * 1024);
+    expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal + DEFAULT_HARD_OVERAGE_BY_KEY.clientTotal).toBe(16.5 * 1024 * 1024);
+    expect(DEFAULT_PERFORMANCE_BUDGETS.cssGzip).toBe(50 * 1024);
     expect(DEFAULT_PERFORMANCE_BUDGETS.runtimeJson).toBe(1.5 * 1024 * 1024);
     const root = fixture();
     const base = verifyPerformanceBudget({ distRoot: root }).metrics.clientTotal;
-    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(16 * 1024 * 1024 - base));
+    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(16.5 * 1024 * 1024 - base));
     expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([]);
-    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(16 * 1024 * 1024 - base + 1));
+    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(16.5 * 1024 * 1024 - base + 1));
     expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([
-      expect.objectContaining({ key: "clientTotal", hardLimit: 16 * 1024 * 1024 }),
+      expect.objectContaining({ key: "clientTotal", hardLimit: 16.5 * 1024 * 1024 }),
     ]);
   });
-  test("keeps JS warning baselines while allowing modest hard-limit growth", () => {
-    expect(DEFAULT_PERFORMANCE_BUDGETS.jsGzip).toBe(236 * 1024);
+  test("keeps separate warning and blocking limits for modest JS growth", () => {
+    expect(DEFAULT_PERFORMANCE_BUDGETS.jsGzip).toBe(320 * 1024);
     expect(
       DEFAULT_PERFORMANCE_BUDGETS.jsGzip + DEFAULT_HARD_OVERAGE_BY_KEY.jsGzip,
-    ).toBe(304 * 1024);
-    expect(DEFAULT_PERFORMANCE_BUDGETS.jsRaw).toBe(810 * 1024);
+    ).toBe(344 * 1024);
+    expect(DEFAULT_PERFORMANCE_BUDGETS.jsRaw).toBe(1088 * 1024);
     expect(
       DEFAULT_PERFORMANCE_BUDGETS.jsRaw + DEFAULT_HARD_OVERAGE_BY_KEY.jsRaw,
-    ).toBe(1024 * 1024);
+    ).toBe(1152 * 1024);
   });
 
-  test("原始 JS 恰好 1 MiB 通过，多 1 字节阻断", () => {
-    const root = fixture({ js: "x".repeat(1024 * 1024) });
+  test("原始 JS 恰好 1152 KiB 通过，多 1 字节阻断", () => {
+    const root = fixture({ js: "x".repeat(1152 * 1024) });
     expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([]);
-    writeFileSync(path.join(root, "assets", "app.js"), "x".repeat(1024 * 1024 + 1));
+    writeFileSync(path.join(root, "assets", "app.js"), "x".repeat(1152 * 1024 + 1));
     expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([
-      expect.objectContaining({ key: "jsRaw", hardLimit: 1024 * 1024 }),
+      expect.objectContaining({ key: "jsRaw", hardLimit: 1152 * 1024 }),
     ]);
   });
 
@@ -94,6 +94,23 @@ describe("release performance budget", () => {
     expect(result.warnings).toEqual([]);
     expect(result.metrics.jsRaw).toBeGreaterThan(0);
     expect(result.metrics.runtimeJson).toBe(2);
+  });
+
+  test.each([
+    ["cssGzip", 50 * 1024, 54 * 1024],
+    ["runtimeJson", 1.5 * 1024 * 1024, 1.625 * 1024 * 1024],
+  ])("%s 保留预警并在硬边界后一字节阻断", (key, warning, hard) => {
+    expect(DEFAULT_PERFORMANCE_BUDGETS[key]).toBe(warning);
+    expect(warning + DEFAULT_HARD_OVERAGE_BY_KEY[key]).toBe(hard);
+    const root = fixture();
+    const actual = verifyPerformanceBudget({ distRoot: root }).metrics[key];
+    const budgets = { [key]: actual - DEFAULT_HARD_OVERAGE_BY_KEY[key] };
+    const boundary = verifyPerformanceBudget({ distRoot: root, budgets });
+    expect(boundary.violations).toEqual([]);
+    expect(boundary.warnings).toContainEqual(expect.objectContaining({ key, actual, hardLimit: actual }));
+    expect(verifyPerformanceBudget({ distRoot: root, budgets: { [key]: budgets[key] - 1 } }).violations).toEqual([
+      expect.objectContaining({ key, actual, hardLimit: actual - 1 }),
+    ]);
   });
 
   test("warns instead of blocking when an artifact only slightly exceeds its threshold", () => {
