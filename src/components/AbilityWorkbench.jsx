@@ -8,7 +8,7 @@ import {
   LockSimpleOpen,
   MagnifyingGlass,
 } from "@phosphor-icons/react";
-import { speedQuery, speedReference, speedBadge } from "../features/team-ability/domain/ranking-tools.js";
+import { speedQuery, speedReference, speedBadge, speedMatchSummary } from "../features/team-ability/domain/ranking-tools.js";
 import {
   lazy,
   Suspense,
@@ -666,6 +666,11 @@ function SpeedRail({
 }
 
 export function SpeedOverview({
+  location,
+  onLocateResult,
+  onLocateBase,
+  detail,
+  detailPanel,
   backButtonRef,
   currentSpeed,
   locateTargetId,
@@ -684,13 +689,20 @@ export function SpeedOverview({
   const locateTargetRef = useRef(null);
   const referenceRef = useRef(null);
   const scrollRef = useRef(null);
-  const [iconOnly, setIconOnly] = useState(false);
+  const [iconOnly, setIconOnly] = useState(standalone);
   const [jump, setJump] = useState(0);
   const selected = standalone ? null : targets.find((target) => target.id === targetId) ?? targets[0];
   const targetGroups = groupSpeedTargets(targets);
   const search = speedQuery(query, queryMode);
-  const reference = speedReference(targetGroups, standalone && search.kind === "actual" ? search.value : null);
-  const displayGroups = reference?.groups ?? targetGroups;
+  const reference = speedReference(targetGroups, standalone ? location?.speed ?? (search.kind === "actual" ? search.value : null) : null);
+  const referenceValue = reference?.value;
+  const matchSummary = standalone && query && reference ? speedMatchSummary(targets, reference.value) : "";
+  const namedTargets = standalone && query ? [...new Map(targets.filter(target => search.kind === "text" || target.matchReasons?.some(reason => reason === "图鉴号" || reason === "名称 / 别名")).map(target => [target.spiritId, target])).values()] : [];
+  const namedLocations = namedTargets.map(target => <button type="button" key={target.spiritId} onClick={() => onLocateResult?.(target.speed, target.id)}>定位 {target.name}</button>);
+  const hasBaseMatch = standalone && query && targets.some(target => target.matchReasons?.includes("种族速度"));
+  const hasActualMatch = targets.some(target => target.matchReasons?.includes("实际速度"));
+  const baseOnlyMatch = hasBaseMatch && !hasActualMatch;
+  const displayGroups = baseOnlyMatch ? targetGroups : reference?.groups ?? targetGroups;
   const nearestCurrentTarget = standalone ? null : findNearestSpeedTarget(targets, currentSpeed);
   const resolvedLocateTargetId = targets.some((target) => target.id === locateTargetId)
     ? locateTargetId
@@ -704,14 +716,14 @@ export function SpeedOverview({
   }, [profileIds, resolvedLocateTargetId]);
 
   useEffect(() => {
-    if (!standalone || search.kind !== "actual" || search.value === null) return;
+    if (!standalone || referenceValue === undefined || location?.targetId) return;
     const frame = requestAnimationFrame(() => {
       const row = referenceRef.current;
       const scroll = scrollRef.current;
       if (row && scroll) scroll.scrollTop += row.getBoundingClientRect().top - scroll.getBoundingClientRect().top - (scroll.querySelector("thead")?.offsetHeight ?? 0);
     });
     return () => cancelAnimationFrame(frame);
-  }, [standalone, search.kind, search.value, profileIds, jump, iconOnly]);
+  }, [standalone, search.kind, search.value, profileIds, jump, iconOnly, location, referenceValue]);
 
   return (
     <section
@@ -724,6 +736,7 @@ export function SpeedOverview({
           return;
         }
         if (event.key === "Escape") {
+          if (standalone && detail) return;
           event.preventDefault();
           event.stopPropagation();
           onBack();
@@ -750,7 +763,7 @@ export function SpeedOverview({
           onProfilesChange={onProfilesChange}
           profileIds={profileIds}
         />
-        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input aria-label="搜索速度榜精灵" placeholder="精灵名称或速度值，如 267" value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
+        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input aria-label="搜索速度榜精灵" placeholder="搜索名称、别名、图鉴号或速度" value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
           onTargetChange={onTargetChange}
           selected={selected}
           targets={targets}
@@ -758,8 +771,8 @@ export function SpeedOverview({
       </div>
 
       {standalone ? <div className="speed-query-guide">
-        <div className="speed-query-modes">{[["auto", "实际速度"], ["base", "种族速度"], ["text", "名称 / 图鉴"]].map(([id, label]) => <button type="button" key={id} aria-pressed={queryMode === id} onClick={() => onQueryModeChange(id)}>{label}</button>)}</div>
-        <div className="speed-reference-summary" role="status">{search.invalid ? <span>请输入非负整数速度值</span> : reference ? <><span>比 <b>{reference.value}</b> 快 <b>{reference.faster}</b> · 同速 <b>{reference.equal}</b> · 慢 <b>{reference.slower}</b> 个配置</span><button type="button" onClick={() => setJump(jump + 1)}>定位 {reference.value}</button></> : <><span>{search.kind === "base" && search.value !== null ? `种族速度 ${search.value} · 按实际速度排列` : "输入名称找精灵，输入速度看快慢"}</span>{!query ? <button type="button" onClick={() => { onQueryModeChange("auto"); onQueryChange("267"); }}>试查 267</button> : null}</>}</div>
+
+        <div className="speed-reference-summary" role="status">{search.invalid ? <span>请输入非负整数速度值</span> : reference ? <><span>{matchSummary ? <span className="speed-match-summary">{matchSummary.split("；").map(item => { const [label, ...value] = item.split("："); return <span key={label}>{label}：<strong>{value.join("：")}</strong></span>; })}</span> : null}当前结果比 <b>{reference.value}</b> 快 <b>{reference.faster}</b> · 同速 <b>{reference.equal}</b> · 慢 <b>{reference.slower}</b> 个配置</span><span className="speed-locate-actions">{namedLocations}{hasBaseMatch ? <button type="button" onClick={() => onLocateBase?.(reference.value)}>定位种族 {reference.value}</button> : null}{!baseOnlyMatch ? <button type="button" onClick={() => { if (onLocateResult) onLocateResult(reference.value); setJump(jump + 1); }}>定位 {reference.value}</button> : null}</span></> : <><span>{search.kind === "base" && search.value !== null ? `种族速度 ${search.value} · 按实际速度排列` : "输入名称找精灵，输入速度看快慢"}</span><span className="speed-locate-actions">{namedLocations}</span>{!query ? <button type="button" onClick={() => { onQueryModeChange("auto"); onQueryChange("267"); }}>试查 267</button> : null}</>}</div>
       </div> : null}
 
       {standalone ? <div className="rank-summary"><span>共 {targetGroups.length} 档 · 同速聚合</span><button type="button" onClick={() => {onQueryChange(""); onQueryModeChange("auto"); onProfilesChange(["positive-max", "neutral-max"]);}}>重置</button></div> : <div className="ability-speed-overview__selection" role="status">
@@ -797,11 +810,11 @@ export function SpeedOverview({
                     {group.targets.map((target) => (
                       <button
                         aria-label={`在速度表选择${target.name}，速度${target.speed}${target.specialLabel ? `，${target.specialLabel}` : ""}`}
-                        aria-pressed={target.id === selected?.id}
+                        aria-pressed={target.id === selected?.id || target.id === location?.targetId}
                         key={target.id}
                         onClick={() => onTargetChange(target.id)}
                         ref={target.id === resolvedLocateTargetId ? locateTargetRef : null}
-                        title={`${target.name} · ${target.qualifier} · ${target.formRole === "boss" ? "首领" : "最终形态"}`}
+                        title={`${target.matchReasons?.length ? `命中${target.matchReasons.join("、")} · ` : ""}${target.name} · ${target.qualifier} · ${target.formRole === "boss" ? "首领" : "最终形态"}`}
                         type="button"
                       >
                         {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
@@ -812,6 +825,7 @@ export function SpeedOverview({
                       </button>
                     ))}
                   </div>
+                  {detail && group.targets.some(target => target.id === detail.id) ? detailPanel : null}
                 </td>
               </tr>
             ))}

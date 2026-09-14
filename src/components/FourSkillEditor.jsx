@@ -700,7 +700,7 @@ function SkillSide({
                               }}
                               type="number"
                               value={
-                                dynamicInputValue(
+                                ((input.contextKey ?? input.key) === "actualSkillCost" ? result?.effectiveCostInput : undefined) ?? dynamicInputValue(
                                   input,
                                   selected?.slotContext,
                                 ) ?? ""

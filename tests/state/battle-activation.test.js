@@ -863,6 +863,20 @@ describe("累计使用与实际增益摘要", () => {
     return { snapshot, state, calculate, activate };
   }
 
+  test("折射水系减耗应用到攻击、防御、状态技能并兼容历史记录", async () => {
+    const { snapshot, state, calculate, activate } = setup();
+    snapshot.skills.forEach((skill) => { skill.cost = 3; });
+    state.sides.attacker.skills.four = ["refraction", "test-shield", "steam-march", "scratch"];
+    const first = activate(state).state;
+    expect(calculate(first).forward.results.map((row) => row.skillCost)).toEqual([2, 2, 2, 2]);
+    const restored = await decodeShareState(await encodeShareState(first));
+    expect(calculate(restored).forward.results[0].skillCost).toBe(2);
+    const repeated = activate(activate(activate(first).state).state).state;
+    expect(calculate(repeated).forward.results.map((row) => row.skillCost)).toEqual([0, 0, 0, 0]);
+    state.directions.forward.overrides.refractionStatuses = [{ type: "水", label: "全技能能耗-2" }];
+    expect(calculate(state).forward.results[0].skillCost).toBe(1);
+  });
+
   test("摘要读取实际魔攻、速度与手动配置，记录状态不会假装参与结算", () => {
     const { snapshot, state, calculate, activate } = setup();
     snapshot.skills.push({ id: "light", name: "光技能", type: "光", category: "magical", basePower: 20 });
@@ -871,12 +885,73 @@ describe("累计使用与实际增益摘要", () => {
     state.sides.attacker.skills.four = ["refraction", "light", "electric", "water"];
     const first = activate(state).state;
     expect(calculate(first).forward.results[0].usageSummary.currentEffects).toEqual(expect.arrayContaining(["魔攻 +3 层", "速度 +20"]));
-    expect(calculate(first).forward.results[0].usageSummary.recordedEffects).toEqual(["全技能能耗-1"]);
+    expect(calculate(first).forward.results[0].usageSummary.recordedEffects).toEqual([]);
+    expect(calculate(first).forward.results[0].usageSummary.appliedEffects).toContain("全技能能耗-1");
     first.directions.forward.overrides.attackLevelStage = 5;
     first.sides.attacker.skills.four[0] = { skillId: "refraction", overrides: { powerOverride: { mode: "static", value: 80 } } };
     expect(calculate(first).forward.results[0].usageSummary.currentEffects).toEqual(expect.arrayContaining(["魔攻 +5 层", "静态威力 80（手动）"]));
     expect(calculate(first).forward.results[0].usageSummary.currentEffects).not.toContain("魔攻 +3 层");
     expect(calculate(first).forward.results[0].usageSummary.count).toBe(1);
+  });
+
+  test("折射冻结随使用累积，异常结算开关不删除或重复叠加状态", () => {
+    const { snapshot, state, activate } = setup();
+    snapshot.skills.push({ id: "ice", name: "冰技能", type: "冰", category: "magical", basePower: 20 });
+    state.sides.attacker.skills.four = ["refraction", "ice", "ice", "scratch"];
+    state.negativeStatuses.defender.freeze = 1;
+    const first = activate(state).state;
+    expect(first.negativeStatuses.defender.freeze).toBe(3);
+    const second = activate(first).state;
+    expect(second.negativeStatuses.defender.freeze).toBe(5);
+    const view = () => buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: second }).result.selectedResult;
+    expect(view().negativeStatusSettlement).toBeNull();
+    second.calculationOptions.includeNegativeStatusSettlement = true;
+    expect(view().negativeStatusSettlement.freeze).toMatchObject({ stacks: 5, thresholdPercent: 25 });
+    expect(view().negativeStatusSettlement.freeze.stacks).toBe(5);
+    second.calculationOptions.includeNegativeStatusSettlement = false;
+    expect(view().negativeStatusSettlement).toBeNull();
+    expect(second.negativeStatuses.defender.freeze).toBe(5);
+  });
+
+  test("折射减耗影响低耗技能特性，动态能耗先解算再减免", () => {
+    const { snapshot, state, calculate, activate } = setup();
+    snapshot.traits = [{ id: "low-cost", name: "挺起胸脯" }];
+    snapshot.spirits[0].traitIds = ["low-cost"];
+    snapshot.skills.forEach((skill) => { skill.cost = 2; });
+    state.sides.attacker.skills.four = ["refraction", "test-shield", "scratch", null];
+    const first = activate(state).state;
+    const boosted = calculate(first).forward.results[0];
+    expect(boosted.skillCost).toBe(1);
+    const withoutWater = structuredClone(first);
+    withoutWater.directions.forward.overrides.refractionStatuses = [];
+    expect(boosted.totalDamage).toBeGreaterThan(calculate(withoutWater).forward.results[0].totalDamage);
+    snapshot.skills.push({ id: "thunderstorm", name: "雷暴", type: "电", category: "magical", basePower: 55, cost: 1 });
+    first.sides.attacker.skills.four[2] = { skillId: "thunderstorm", context: { activeBurstKinds: 3, burstSourceSuperconduct: true } };
+    expect(calculate(first).forward.results[2].skillCost).toBe(1);
+    snapshot.skills.push({ id: "wave", name: "叠浪", type: "水", category: "magical", basePower: 60, cost: 3 });
+    first.sides.attacker.skills.four[2] = "wave";
+    expect(calculate(first).forward.results[2]).toMatchObject({ skillCost: 2, resolvedPower: 70, effectiveCostInput: 2 });
+    first.sides.attacker.skills.four[2] = { skillId: "wave", context: { actualSkillCost: 1 } };
+    expect(calculate(first).forward.results[2]).toMatchObject({ skillCost: 1, resolvedPower: 80 });
+  });
+
+  test.each(["attacker", "defender"])("%s 折射冻结支持反向、单技能、分享和冰系免疫", async (side) => {
+    const { snapshot, state } = setup();
+    snapshot.skills.push({ id: "ice", name: "冰技能", type: "冰", category: "magical", basePower: 20 });
+    state.mode = "single";
+    state.sides[side].skills.single = "refraction";
+    state.sides[side].skills.four = ["refraction", "ice", "test-shield", null];
+    const direction = side === "attacker" ? "forward" : "reverse";
+    const target = side === "attacker" ? "defender" : "attacker";
+    const result = applyBattleActivation({ snapshot, state, side, skillIndex: 0, skillMode: "single" });
+    expect(result.state.negativeStatuses[target].freeze).toBe(2);
+    expect(result.state.negativeStatuses[side].freeze).toBe(0);
+    const restored = await decodeShareState(await encodeShareState(result.state));
+    restored.calculationOptions.includeNegativeStatusSettlement = true;
+    snapshot.spirits.find((item) => item.id === target).types = ["冰"];
+    const view = buildCalculatorViewModel({ activeDirection: direction, snapshot, state: restored });
+    expect(view.result.selectedResult.negativeStatusSettlement.freeze).toMatchObject({ stacks: 2, immune: true, thresholdPercent: 0 });
+    expect(state.negativeStatuses[target].freeze).toBe(0);
   });
 
   test("零次、一次、多次按实际状态差累计，重复系别只生效一次，展示不重复计伤", async () => {

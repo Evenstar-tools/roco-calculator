@@ -4,6 +4,8 @@ import { ELEMENT_TYPES } from "../domain/type-chart.js";
 import { createDurabilityRanking, getDurabilityMultipliers, STANDARD_DURABILITY_TEMPLATES } from "../features/team-ability/domain/durability-ranking.js";
 import { SpeedOverview } from "./AbilityWorkbench.jsx";
 import { createSpeedRanking, DEFAULT_RANKING_PROFILES, RANKING_METRIC_LABELS, multiplierSummary, multiplierTone } from "../features/team-ability/domain/ranking-tools.js";
+import SpeedDetail from "./SpeedDetail.jsx";
+import BaseSpeedOverview from "./BaseSpeedOverview.jsx";
 import "../styles/23-rankings.css";
 
 const portrait = (spirit) => spirit?.asset?.localUrl ?? spirit?.imageUrl;
@@ -94,6 +96,10 @@ function StandaloneDurability({ snapshot, onClose }) {
 }
 
 function StandaloneSpeed({ snapshot, onClose }) {
+  const [view, setView] = useState("actual");
+  const [location, setLocation] = useState(null);
+  const [baseLocation, setBaseLocation] = useState(null);
+  const [baseQuery, setBaseQuery] = useState("");
   const [query, setQuery] = useState("");
   const [queryMode, setQueryMode] = useState("auto");
   const [profiles, setProfiles] = useState([...DEFAULT_RANKING_PROFILES]);
@@ -101,12 +107,17 @@ function StandaloneSpeed({ snapshot, onClose }) {
   const trigger = useRef(null);
   const targets = useMemo(() => createSpeedRanking({ snapshot, profiles, query, queryMode }).flatMap((group) => group.targets.map((target) => ({...target, id: `${target.profileId}:${target.id}`}))), [snapshot, profiles, query, queryMode]);
   const back = () => {setDetail(null); requestAnimationFrame(() => trigger.current?.focus({preventScroll:true}));};
+  const locate = (profileId, speed) => { setDetail(null); setProfiles([profileId]); setQueryMode("auto"); setQuery(""); setLocation({ speed }); setView("actual"); };
+  const detailPanel = detail ? <SpeedDetail entry={detail} snapshot={snapshot} reference={/^\d+$/.test(query) ? Number(query) : null} onClose={back} onLocate={locate} /> : null;
   return <section className="rank-view" aria-label="速度线榜单" onKeyDown={(event) => {if (event.key === "Escape" && detail) {event.stopPropagation(); back();}}}>
-    {detail ? <ReadonlyDetail entry={detail} onBack={back} /> : null}
-    <div className="rank-view__content" hidden={Boolean(detail)}>
-      <SpeedOverview standalone targets={targets} query={query} queryMode={queryMode} onQueryModeChange={setQueryMode} onQueryChange={setQuery} profileIds={profiles} onProfilesChange={setProfiles} onBack={onClose} onTargetChange={(id) => {trigger.current = document.activeElement; setDetail(targets.find((target) => target.id === id));}} />
+    <div className="rank-view__content">
+      <div className="speed-view-switch" role="group" aria-label="速度榜视图">{[["actual", "实速排行"], ["base", "按种族速查"]].map(([id, label]) => <button type="button" key={id} aria-pressed={view === id} onClick={() => { setDetail(null); setView(id); }}>{label}</button>)}</div>
+      <div className="speed-view-body" hidden={view !== "base"}><BaseSpeedOverview location={baseLocation} detail={detail} detailPanel={detailPanel} snapshot={snapshot} query={baseQuery} onQueryChange={setBaseQuery} onDetail={(target) => { trigger.current = document.activeElement; setDetail(detail?.spiritId === target.spiritId ? null : target); }} onLocate={locate} /></div>
+      <div className="speed-view-body" hidden={view !== "actual"}>
+      <SpeedOverview onLocateBase={(base) => { setDetail(null); setQuery(""); setBaseQuery(""); setBaseLocation({ base }); setView("base"); }} location={location} locateTargetId={location?.targetId} onLocateResult={(speed, targetId) => { setDetail(null); setQuery(""); setLocation({ speed, targetId }); }} detail={detail} detailPanel={detailPanel} standalone targets={targets} query={query} queryMode={queryMode} onQueryModeChange={setQueryMode} onQueryChange={(value) => { setLocation(null); setQueryMode("auto"); setQuery(value); }} profileIds={profiles} onProfilesChange={setProfiles} onBack={onClose} onTargetChange={(id) => {trigger.current = document.activeElement; setDetail(detail?.id === id ? null : targets.find((target) => target.id === id));}} />
       {!targets.length ? <p className="rank-empty">没有符合当前口径或搜索条件的速度档位。</p> : null}
       <footer className="rank-footer">极 / 满 / 性 / 无 / 减：速度口径 · 特：条件触发 · 点头像看详情</footer>
+      </div>
     </div>
   </section>;
 }

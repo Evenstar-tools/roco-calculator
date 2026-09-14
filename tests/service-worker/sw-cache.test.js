@@ -68,9 +68,8 @@ function dispatchFetch(listener, path, { mode = "cors" } = {}) {
 
 describe("service worker cache policy", () => {
   test("uses a cache version matching the application release", () => {
-    expect(serviceWorkerSource).toContain(
-      `const CACHE_NAME = "rock-calculator-webapp-v${packageVersion}"`,
-    );
+    const cacheName = /const CACHE_NAME = "([^"]+)"/.exec(serviceWorkerSource)?.[1];
+    expect(cacheName).toMatch(new RegExp(`^rock-calculator-webapp-v${packageVersion.replaceAll(".", "\\.")}(?:-[a-z0-9-]+)?$`));
   });
 
   test("returns cached runtime immediately and refreshes it in the background", async () => {

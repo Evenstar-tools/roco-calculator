@@ -1,0 +1,39 @@
+.type-candidates { padding:12px; }
+.type-candidates header,.tc-controls,.tc-detail { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
+.type-candidates header { justify-content:space-between; }
+.type-candidates h3 { display:flex; align-items:center; gap:6px; }
+.type-candidates p,.type-candidates small { color:var(--text-muted); font-size:12px; }
+.tc-controls input { flex:1; min-width:140px; }
+.tc-roster { display:grid; grid-template-columns:repeat(auto-fill,minmax(108px,1fr)); gap:6px; }
+.tc-roster button { display:flex; flex-direction:column; align-items:center; padding:8px 3px; gap:4px; }
+.tc-roster img { width:64px; height:64px; object-fit:contain; }
+.tc-roster span { white-space:normal; font-size:12px; }
+.tc-roster button[aria-pressed=true] { border-color:var(--accent); background:var(--selection-bg); }
+.tc-detail { padding:12px; background:var(--surface-soft); margin-top:12px; }
+.tc-detail small { flex-basis:100%; }
+
+.type-candidates button,.type-candidates input,.type-candidates select { font:inherit; color:var(--text); border:1px solid var(--border); border-radius:6px; background:var(--surface); padding:8px; }
+.type-candidates h3 { margin:8px 0; font-size:17px; }
+.tc-roster button { padding:8px 3px; }
+.tc-roster button:hover { border-color:var(--accent); }
+
+.team-weakness-summary { margin-top:6px; }
+.team-weakness-summary h3 { font-size:16px; }
+.team-weakness-summary small { color:var(--text-muted); font-size:12px; font-weight:400; }
+.team-weakness-summary h3 small { display:block; }
+.team-analysis .team-weakness-row { display:flex; align-items:center; gap:12px; padding:10px 4px; width:100%; text-align:left; border:0; border-bottom:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; }
+.team-weakness-row:hover { background:var(--selection-bg); }
+.team-weakness-row strong { display:flex; align-items:center; gap:6px; min-width:165px; font-size:14px; }
+.team-weakness-row .weakness-members { flex:1; }
+.weakness-members,.weakness-resistance { display:flex; align-items:center; flex-wrap:wrap; gap:4px; }
+.team-weakness-row .weakness-resistance { flex:1; }
+.team-weakness-row img { width:40px; height:40px; object-fit:contain; }
+.team-weakness-row strong img { width:22px; height:22px; }
+.team-analysis.is-analysis { flex:none; grid-template-rows:none; }
+.team-analysis__matrix-layout { flex-shrink:0; grid-template-rows:max-content; }
+@media(max-width:650px) { .team-analysis .team-weakness-row { flex-wrap:wrap; gap:6px; } .team-weakness-row strong { flex-basis:100%; } }
+
+.team-analysis.is-analysis.is-defense-summary { flex:1; min-height:0; grid-template-rows:max-content max-content minmax(100px,1fr); overflow:hidden; }
+.team-analysis.is-defense-summary > .team-analysis__matrix-layout { min-height:max-content; grid-template-rows:max-content; overflow:visible; }
+.team-analysis.is-defense-summary .team-analysis__matrix-scroll { height:auto; max-height:none; overflow-y:hidden; }
+.team-analysis.is-defense-summary > .team-weakness-summary { min-height:0; overflow-y:auto; margin-top:0; }

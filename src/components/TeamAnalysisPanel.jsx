@@ -10,6 +10,8 @@ import {
   analyzeTeamMatchups,
   analyzeTeamTypes,
 } from "../domain/team-type-analysis.js";
+import TeamWeaknessSummary from "./TeamWeaknessSummary.jsx";
+import TypeCandidates from "./TypeCandidates.jsx";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { TeamMemberEditor } from "./TeamMemberEditor.jsx";
 
@@ -251,6 +253,7 @@ function MatchupTable({ matchup, onCellSelect }) {
 }
 
 export function TeamAnalysisPanel({
+  onApplyCandidate,
   getSpiritConfiguration,
   mode = "analysis",
   snapshot,
@@ -258,6 +261,7 @@ export function TeamAnalysisPanel({
   team,
   teams,
 }) {
+  const [candidateType, setCandidateType] = useState(null);
   const [includeWishPower, setIncludeWishPower] = useState(false);
   const [isDirectionReversed, setIsDirectionReversed] = useState(false);
   const [matrixMode, setMatrixMode] = useState("defense");
@@ -322,8 +326,9 @@ export function TeamAnalysisPanel({
       team?.members,
     ],
   );
+  if (candidateType) return <TypeCandidates key={candidateType} type={candidateType} snapshot={snapshot} onClose={() => setCandidateType(null)} onApply={onApplyCandidate} />;
   return (
-    <section aria-label="队伍分析" className={`team-analysis is-${view}`}>
+    <section aria-label="队伍分析" className={`team-analysis is-${view}${view === "analysis" && matrixMode === "defense" ? " is-defense-summary" : ""}`}>
       {view === "analysis" ? (
         <>
           <div className="team-analysis__toolbar">
@@ -363,6 +368,7 @@ export function TeamAnalysisPanel({
             </label>
           </div>
           {analysis.members.length ? (
+            <>
             <div className="team-analysis__matrix-layout">
               <MatrixTable
                 analysis={analysis}
@@ -370,6 +376,8 @@ export function TeamAnalysisPanel({
                 onCellSelect={setSelectedCell}
               />
             </div>
+            {matrixMode === "defense" ? <TeamWeaknessSummary analysis={analysis} onCandidates={setCandidateType} /> : null}
+            </>
           ) : (
             <div className="team-analysis__empty">添加精灵后查看分析</div>
           )}
@@ -426,7 +434,7 @@ export function TeamAnalysisPanel({
           )}
         </>
       )}
-      {selectedCell ? (
+      {selectedCell && !(view === "analysis" && matrixMode === "defense") ? (
         <div aria-label="单元格详情" className="team-analysis__source-strip">
           {selectedCell.member.assetUrl ? (
             <img alt="" src={selectedCell.member.assetUrl} />
@@ -438,6 +446,7 @@ export function TeamAnalysisPanel({
           ) : null}
           <span>{selectedCell.skillName ?? selectedCell.type}</span>
           <strong>{formatMultiplier(selectedCell.multiplier)}</strong>
+          {selectedCell.type ? <button type="button" onClick={() => setCandidateType(selectedCell.type)}>查看抗性候选</button> : null}
         </div>
       ) : null}
     </section>

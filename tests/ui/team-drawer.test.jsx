@@ -667,7 +667,7 @@ test("clears a selected matrix cell when switching matrix modes", async () => {
   await user.click(
     within(panel).getByRole("button", { name: "音速犬 对草承伤×0.5" }),
   );
-  expect(within(panel).getByLabelText("单元格详情")).toBeVisible();
+  expect(within(panel).queryByLabelText("单元格详情")).not.toBeInTheDocument();
 
   await user.click(within(panel).getByRole("button", { name: "技能打击面" }));
   expect(within(panel).queryByLabelText("单元格详情")).not.toBeInTheDocument();

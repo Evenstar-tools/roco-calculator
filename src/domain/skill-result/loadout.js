@@ -1,6 +1,6 @@
 import { calculateAllPanelStats } from "../stat.js";
+import { reducedSkillCost } from "../refraction.js";
 import { getEffectiveTraits } from "../effective-traits.js";
-import { finiteNumber } from "./numeric.js";
 
 function resolveNatureMultipliers(side, snapshot) {
   if (side.natureMultipliers) return side.natureMultipliers;
@@ -94,6 +94,7 @@ export function resolveCombatant(
   side,
   mode,
   indexes,
+  costOverrides,
 ) {
   const spirit =
     indexes.spirits[side.spiritId] ??
@@ -121,7 +122,7 @@ export function resolveCombatant(
     traits,
     skillTypes: carriedSkills.map((skill) => skill.type).filter(Boolean),
     totalSkillCost: carriedSkills.reduce(
-      (total, skill) => total + (finiteNumber(skill.cost) ?? 0),
+      (total, skill) => total + (reducedSkillCost(skill.cost, costOverrides) ?? 0),
       0,
     ),
   };

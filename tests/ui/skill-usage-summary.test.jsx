@@ -24,12 +24,12 @@ test("当前计算、历史与仅记录分开，零值不显示，手动值不�
   render(<SkillUsageSummary result={{ usageSummary: {
     count: 0, powerGain: 0, hitCountGain: 0, manualPower: true,
     currentEffects: ["静态威力 80（手动）", "魔攻 +3 层", "速度 +20"],
-    recordedEffects: ["全技能能耗-1"],
-    nextHint: "本次可得：水·能耗-1",
+    recordedEffects: ["敌方能量-2"],
+    nextHint: "本次可得：水·能耗-1　冰·敌冻结+2",
   } }} nextHint="172 − 172 = 0 · 本次可得：水·能耗-1" />);
   expect(screen.getByText(/当前：静态威力 80（手动） · 魔攻 \+3 层 · 速度 \+20/)).toBeVisible();
-  expect(screen.getByText("仅记录：全技能能耗-1（未参与结算）")).toBeVisible();
-  expect(screen.getByText("本次可得：水·能耗-1（仅记录）")).toBeVisible();
+  expect(screen.getByText("仅记录：敌方能量-2（未参与结算）")).toBeVisible();
+  expect(screen.getByText("本次可得：水·能耗-1 冰·敌冻结+2（异常结算）")).toBeVisible();
   expect(screen.queryByText(/172 − 172/)).not.toBeInTheDocument();
   expect(screen.queryByText(/已使用 0|累计威力|累计连击|查看增益明细/)).not.toBeInTheDocument();
 });

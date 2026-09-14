@@ -25,12 +25,14 @@ export function calculateMatchup(snapshot, battleInput) {
     sides.attacker,
     mode,
     indexes,
+    directions.forward?.overrides,
   );
   const defender = resolveCombatant(
     snapshot,
     sides.defender,
     mode,
     indexes,
+    directions.reverse?.overrides,
   );
   const level = finiteNumber(battleInput.level) ?? 60;
   const marks = battleInput.marks ?? null;
@@ -123,8 +125,8 @@ export function calculateMatchup(snapshot, battleInput) {
   });
 
   return {
-    forward: attachSkillGainSummaries(forward, { directions, marks }, "attacker", snapshot.skills),
-    reverse: attachSkillGainSummaries(reverse, { directions, marks }, "defender", snapshot.skills),
+    forward: attachSkillGainSummaries(forward, { ...battleInput, directions, marks }, "attacker", snapshot.skills),
+    reverse: attachSkillGainSummaries(reverse, { ...battleInput, directions, marks }, "defender", snapshot.skills),
     versions: {
       data: snapshot.meta.id,
       rules: snapshot.meta.rulesVersion ?? RULES_VERSION,

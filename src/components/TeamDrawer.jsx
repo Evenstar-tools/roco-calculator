@@ -14,6 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AbilityWorkbench } from "./AbilityWorkbench.jsx";
+import { createTeamMember } from "../state/team-presets.js";
 import { TeamAnalysisPanel } from "./TeamAnalysisPanel.jsx";
 import { TeamMemberEditor } from "./TeamMemberEditor.jsx";
 import { TeamRoster } from "./TeamRoster.jsx";
@@ -546,6 +547,7 @@ export function TeamDrawer({
                 </>
               ) : (
                 <TeamAnalysisPanel
+                  onApplyCandidate={(spirit, template) => { const config = getSpiritConfiguration(spirit.id) ?? createTeamMember(snapshot, spirit.id); onApply?.("defender", { ...config, spiritId: spirit.id, displayIvs: { ...template.displayIvs }, natureId: template.natureId }); onClose(); }}
                   getSpiritConfiguration={getSpiritConfiguration}
                   mode={paneMode}
                   snapshot={snapshot}

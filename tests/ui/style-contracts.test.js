@@ -243,7 +243,8 @@ describe("team analysis density contracts", () => {
     );
     const analysis = readRule(".team-analysis.is-analysis");
 
-    expect(teamAnalysisPanel).toContain('className={`team-analysis is-${view}`}');
+    expect(teamAnalysisPanel).toContain('className={`team-analysis is-${view}');
+    expect(teamAnalysisPanel).toContain('" is-defense-summary"');
     expect(editor).toContain("display: flex");
     expect(editor).toContain("flex-direction: column");
     expect(analysis).toContain("flex: 1");

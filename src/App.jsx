@@ -1183,6 +1183,11 @@ function CalculatorWorkspace({ snapshot }) {
         },
       });
     }
+    if (operations.targetFreezeStacks > 0) {
+      const targetSide = side === "attacker" ? "defender" : "attacker";
+      dispatch({ type: "negative-status/update", side: targetSide, key: "freeze",
+        value: Number(stateRef.current.negativeStatuses?.[targetSide]?.freeze ?? 0) + operations.targetFreezeStacks });
+    }
     const targetStarfallStacks = Number(operations.targetStarfallStacks ?? 0);
     if (targetStarfallStacks > 0) {
       const targetSide = side === "attacker" ? "defender" : "attacker";

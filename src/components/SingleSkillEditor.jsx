@@ -631,7 +631,7 @@ export function SingleSkillEditor({
                     }}
                     type="number"
                     value={
-                      dynamicInputValue(input, traitContext) ?? ""
+                      (dynamicInputContextKey(input) === "actualSkillCost" ? result?.effectiveCostInput : undefined) ?? dynamicInputValue(input, traitContext) ?? ""
                     }
                   />
                   <UsageCountActions input={input} value={dynamicInputValue(input, traitContext)} onChange={(value) => onTraitContextChange?.(dynamicInputId(input), value)} />

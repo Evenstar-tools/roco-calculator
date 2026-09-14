@@ -16,7 +16,7 @@ import {
   starfallStacksFromMarkSlot,
   targetNegativeMarkSettlement,
 } from "../marks.js";
-import { buildRefractionHint } from "../refraction.js";
+import { buildRefractionHint, reducedSkillCost, refractionEnergyReduction } from "../refraction.js";
 import { gainSourcesFor, limitGainSources, summarizeGains } from "../gain-provenance.js";
 import { resolvePowerOverride } from "../power-override.js";
 import {
@@ -338,7 +338,8 @@ export function calculateSkillResult({
       ),
     );
   if (skill.category === "status" || skill.category === "defense") {
-    return statusOrDefenseSkillResult({
+    const skillCost = reducedSkillCost(skill.cost, directionOverrides);
+    const result = statusOrDefenseSkillResult({
       attacker,
       attackerBloodline,
       attackerContract,
@@ -357,10 +358,11 @@ export function calculateSkillResult({
       mode,
       rawAutomaticHitCountAdd,
       resolveHitCount,
-      skill,
+      skill: { ...skill, cost: skillCost },
       slotOverrides,
       traitHitCount,
     });
+    return { ...result, skillCost };
   }
   const sourceMarkEffects = resolveSourceMarkEffects({
     actedBeforeEnemy: context.actedBeforeEnemy,
@@ -408,11 +410,20 @@ export function calculateSkillResult({
     context.basePowerOverride = powerOverride.value;
   }
 
+  const costInput = getSkillEffectInputs(skill).find((input) => input.contextKey === "actualSkillCost");
+  const manualCostInput = costInput ? finiteNumber(rawContext[costInput.id], rawContext.actualSkillCost) : undefined;
+  let effectiveCostInput;
+  if (costInput && refractionEnergyReduction(directionOverrides) > 0) {
+    effectiveCostInput = manualCostInput === undefined ? reducedSkillCost(skill.cost, directionOverrides)
+      : Math.min(costInput.max ?? Infinity, Math.max(0, manualCostInput));
+    context.actualSkillCost = effectiveCostInput;
+    context[costInput.id] = effectiveCostInput;
+  }
   const costResolution = resolveSkillPower(skill, context);
-  const resolvedSkillCost = finiteNumber(
+  const resolvedSkillCost = effectiveCostInput ?? reducedSkillCost(finiteNumber(
     costResolution.resolvedCost,
     skill.cost,
-  );
+  ), directionOverrides);
   const skillForCostConditions = Object.is(resolvedSkillCost, skill.cost)
     ? skill
     : { ...skill, cost: resolvedSkillCost };
@@ -1247,6 +1258,11 @@ export function calculateSkillResult({
         ),
       ];
   const formulaSteps = [
+    ...(refractionEnergyReduction(directionOverrides) > 0 && resolvedSkillCost !== undefined ? [
+      formulaStep(manualCostInput === undefined ? "能耗减免（折射·水）" : "实际能耗（手动）",
+        { reduction: manualCostInput === undefined ? refractionEnergyReduction(directionOverrides) : 0 },
+        finiteNumber(costResolution.resolvedCost, skill.cost), resolvedSkillCost, manualCostInput === undefined ? "refraction-energy" : "manual-cost"),
+    ] : []),
     formulaStep(
       "攻击面板",
       statKeys.attack,
@@ -1468,13 +1484,15 @@ export function calculateSkillResult({
       if (weatherMultiplier !== 1) currentEffects.push(`雨天 ×${weatherMultiplier}`);
     }
     add("速度", context.attackerSpeed - Number(attacker.panelStats.speed));
+    if (refractionEnergyReduction(directionOverrides) > 0) currentEffects.push(`全技能能耗 -${refractionEnergyReduction(directionOverrides)}`);
     add("敌方速度", context.defenderSpeed - Number(defender.panelStats.speed));
     const manualHits = finiteNumber(slotOverrides.hitCount, details.hitCount, mode === "single" ? direction.hitCount : undefined);
     if (!fixedHitCount && powerResolution.hitCount === undefined && manualHits !== undefined && manualHits !== getDefaultHitCount(skill)) currentEffects.push(`最终连击 ${hitCount}（手动）`);
     else add("连击", hitCount - getDefaultHitCount(skill));
     usageSummary.currentEffects = currentEffects;
     const recordedCounts = new Map();
-    for (const { label } of directionOverrides.refractionStatuses ?? []) {
+    for (const { label, type } of directionOverrides.refractionStatuses ?? []) {
+      if (type === "水") continue;
       recordedCounts.set(label, (recordedCounts.get(label) ?? 0) + 1);
     }
     usageSummary.recordedEffects = [...recordedCounts].map(([label, count]) => `${label}${count > 1 ? ` ×${count}次` : ""}`);
@@ -1556,11 +1574,12 @@ export function calculateSkillResult({
     panelPower,
     powerSource: powerOverride.source,
     donationPoisonStacks: powerResolution.donationPoisonStacks,
-    skillCost: finiteNumber(
+    ...(effectiveCostInput !== undefined ? { effectiveCostInput, manualCostOverride: manualCostInput !== undefined } : {}),
+    skillCost: effectiveCostInput ?? reducedSkillCost(finiteNumber(
       powerResolution.resolvedCost,
       costResolution.resolvedCost,
       skill.cost,
-    ),
+    ), directionOverrides),
     skillPower: actualPower,
     effectivePower: panelPower,
     automaticHitCountAdd,

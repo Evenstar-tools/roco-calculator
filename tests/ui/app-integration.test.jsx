@@ -1754,7 +1754,7 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
         ],
       },
     ],
-    skills: [...snapshot.skills, refraction, wingCombo],
+    skills: [...snapshot.skills, refraction, wingCombo, { id: "ice-test", name: "冰系测试", type: "冰", category: "magical", basePower: 20, cost: 3 }],
     spirits: [...snapshot.spirits, rainbow],
     traits: [dazzling],
   };
@@ -1771,6 +1771,8 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
     ["攻击方技能2", "当头棒喝"],
     ["攻击方技能3", "回旋风暴"],
     ["攻击方技能4", "光能冲击"],
+    ["攻击方技能5", "水之波纹"],
+    ["攻击方技能6", "冰系测试"],
   ];
   for (const [label, name] of selections) {
     const picker = screen.getByRole("combobox", { name: label });
@@ -1815,6 +1817,9 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   const sharedState = await decodeShareState(new URL(shareLink.value).hash);
   expect(sharedState.directions.forward.overrides.fixedPowerAddsBySlot).toEqual({});
   expect(sharedState.directions.forward.overrides.fixedPowerAdd).toBe(20);
+  expect(sharedState.negativeStatuses.defender.freeze).toBe(2);
+  expect(within(refractionRow).getByText(/全技能能耗-2/)).toBeVisible();
+  expect(within(refractionRow).getByText(/敌方冻结2层（异常结算未开启）/)).toBeVisible();
   expect(within(refractionRow).getByLabelText("已使用 1 次")).toBeVisible();
   expect(within(refractionRow).getByText(/增益：.*攻击\+4层/)).toBeVisible();
   await user.click(within(shareDialog).getByRole("button", { name: "关闭" }));

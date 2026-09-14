@@ -2,6 +2,7 @@ import { gainSourcesFor, sanitizeGainSources, sourceLabel } from "./gain-provena
 import { markDefinition } from "./marks.js";
 import { getSkillStatusEffectInputs } from "./skill-status-effects.js";
 import { projectTriggerContext } from "./trigger-controls.js";
+import { refractionEnergyReduction } from "./refraction.js";
 
 const signed = (value) => `${value > 0 ? "+" : ""}${Number(value.toFixed(2))}`;
 const directionFor = (side) => side === "attacker" ? "forward" : "reverse";
@@ -10,7 +11,8 @@ export function sanitizeSkillActivations(value) {
   return Object.fromEntries(Object.entries(value ?? {}).filter(([, entry]) =>
     entry && Number.isSafeInteger(entry.count) && entry.count > 0 &&
     Number.isSafeInteger(entry.successCount) && entry.successCount >= 0 && entry.successCount <= entry.count,
-  ).map(([id, { count, successCount, marks, weather, reduction }]) => [id, { count, successCount,
+  ).map(([id, { count, successCount, marks, weather, reduction, freeze }]) => [id, { count, successCount,
+    ...(Number.isInteger(freeze) && freeze > 0 && freeze <= 99 ? { freeze } : {}),
     ...(Number.isFinite(reduction) && reduction > 0 && reduction <= 100 ? { reduction } : {}),
     ...(Array.isArray(marks) ? { marks: marks.filter((mark) => ["attacker", "defender"].includes(mark?.side) && ["positive", "negative"].includes(mark?.polarity) && markDefinition(mark.id) && Number.isFinite(mark.stacks)) } : {}),
     ...(["rain", "thunder", "sandstorm", "blizzard"].includes(weather) ? { weather } : {}),
@@ -36,6 +38,9 @@ export function recordSkillActivation(state, side, skill, context = {}, operatio
     return { ...state.marks?.[targetSide]?.[application.polarity], side: targetSide, polarity: application.polarity };
   });
   if (operations.weather) records[skill.id].weather = operations.weather;
+  if (operations.targetFreezeStacks > 0) {
+    records[skill.id].freeze = state.negativeStatuses?.[side === "attacker" ? "defender" : "attacker"]?.freeze;
+  }
   if (operations.defenseReductionPercent > 0) records[skill.id].reduction = operations.defenseReductionPercent;
   overrides.skillActivations = records;
   return state;
@@ -87,6 +92,12 @@ export function attachSkillGainSummaries(result, state, side, skills) {
     const otherSources = activeContributions(opposite, side, skill.id);
     const effects = [...ownSources.map((source) => effectLabel(source, false)),
       ...otherSources.map((source) => effectLabel(source, true))].filter(Boolean);
+    if (skill.name === "折射" && refractionEnergyReduction(self.overrides) > 0) {
+      effects.push(`全技能能耗-${refractionEnergyReduction(self.overrides)}`);
+    }
+    if (record?.freeze && record.freeze === state.negativeStatuses?.[side === "attacker" ? "defender" : "attacker"]?.freeze) {
+      effects.push(`敌方冻结${record.freeze}层${state.calculationOptions?.includeNegativeStatusSettlement ? "" : "（异常结算未开启）"}`);
+    }
     for (const mark of record?.marks ?? []) {
       const current = state.marks?.[mark.side]?.[mark.polarity];
       if (current?.id === mark.id && current.stacks === mark.stacks && mark.stacks > 0) {
@@ -120,6 +131,9 @@ export function attachSkillGainSummaries(result, state, side, skills) {
         });
       });
       row.gainSummary = [...new Set(sources.map(sourceLabel))].join(" · ");
+    }
+    if (refractionEnergyReduction(self.overrides) > 0 && row.skillCost !== undefined) {
+      row.gainSummary = [...new Set([row.gainSummary, row.manualCostOverride ? "手动能耗" : "折射·减耗"].filter(Boolean))].join(" · ");
     }
   }
   return result;
