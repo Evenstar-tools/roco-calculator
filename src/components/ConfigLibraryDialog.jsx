@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { getNature } from "../domain/natures.js";
+import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 
 const POPULAR_CONFIG_COUNT = 226;
 const PRIMARY_PREVIEW_ROWS = [
-  ["added", "新增配置"],
-  ["overwritten", "覆盖本机配置"],
-  ["favoritesAdded", "新增收藏"],
+  ["same", "相同"],
+  ["different", "不同"],
+  ["added", "新增"],
 ];
 const ISSUE_PREVIEW_ROWS = [
   ["repairedEntries", "兼容修复"],
@@ -73,6 +74,7 @@ export function ConfigLibraryDialog({
   snapshot,
 }) {
   const dialogRef = useRef(null);
+  const presetBrowse = usePresetBrowseMode();
   const entrySearchRef = useRef(null);
   const [entriesExpanded, setEntriesExpanded] = useState(false);
   const [entryQuery, setEntryQuery] = useState("");
@@ -120,7 +122,7 @@ export function ConfigLibraryDialog({
     : isPopular
       ? "常用精灵配置"
       : "配置库导入";
-  const listedEntries = isExport
+  const sourceEntries = isExport
     ? exportSummary?.library?.entries ?? []
     : isPopular
       ? parsed?.entries ?? []
@@ -131,6 +133,13 @@ export function ConfigLibraryDialog({
   const skillById = new Map(
     (snapshot?.skills ?? []).map((skill) => [skill.id, skill]),
   );
+  const entryDexNo = (entry) => {
+    const value = Number(spiritById.get(entry.spiritId)?.dexNo);
+    return Number.isFinite(value) && value > 0 ? value : Infinity;
+  };
+  const listedEntries = isPopular
+    ? [...sourceEntries].sort((left, right) => entryDexNo(left) - entryDexNo(right))
+    : sourceEntries;
   const normalizedEntryQuery = entryQuery.trim().toLocaleLowerCase("zh-CN");
   const visibleEntries = isPopular && normalizedEntryQuery
     ? listedEntries.filter((entry) => {
@@ -146,9 +155,8 @@ export function ConfigLibraryDialog({
     0,
   );
   const importIssueDetails = parsed?.issueDetails ?? [];
-  const canImport = Boolean(parsed) && (
-    parsed.entries.length > 0 || parsed.favoriteSpiritIds.length > 0
-  );
+  const canImport = Boolean(parsed) && (parsed.preview.added > 0 || parsed.preview.favoritesAdded > 0);
+  const importChanges = [...(parsed?.changes ?? [])].sort((left, right) => entryDexNo(left) - entryDexNo(right));
 
   return (
     <div
@@ -281,10 +289,26 @@ export function ConfigLibraryDialog({
                   {PRIMARY_PREVIEW_ROWS.map(([key, label]) => (
                     <div key={key}>
                       <dt>{label}</dt>
-                      <dd>{parsed.preview[key]}</dd>
+                      <dd>{parsed.preview[key] ?? 0}</dd>
                     </div>
                   ))}
                 </dl>
+                {parsed.preview.favoritesAdded > 0 ? <p className="config-library-note">新增收藏 {parsed.preview.favoritesAdded} 只</p> : null}
+                {importChanges.length > 0 ? (
+                  <ul className="config-library-issue-details config-library-changes" aria-label="配置变动项目">
+                    {importChanges.map((change) => (
+                      <li key={change.spiritId}>
+                        <div className="config-library-issue-heading">
+                          <strong>{change.spiritName}</strong>
+                          <span>{change.status === "added" ? "新增 · 可导入" : "不同 · 保留本地"}</span>
+                        </div>
+                        {change.differences.map((difference) => (
+                          <p key={difference.field}>{difference.field}：本地 {difference.local}；导入 {difference.incoming}</p>
+                        ))}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
                 {importIssueCount === 0 ? (
                   <p className="config-library-check-ok">
                     检查通过，未发现兼容问题
@@ -335,15 +359,12 @@ export function ConfigLibraryDialog({
                     ) : null}
                   </div>
                 )}
-                {isPopular ? (
-                  <p className="config-library-note">
-                    只覆盖同 ID 精灵配置，队伍与当前页面不会改变。
-                  </p>
-                ) : parsed.preview.overwritten > 0 ? (
-                  <p className="config-library-warning">
-                    确认后将覆盖 {parsed.preview.overwritten} 只精灵的现有配置。
-                  </p>
-                ) : null}
+                <p className="config-library-note">
+                  {parsed.preview.same > 0 && !parsed.preview.different && !parsed.preview.added
+                    ? "全部配置与本地一致，无需更新。"
+                    : "相同自动跳过，不同保留本地，只导入新增。"}
+                  队伍与当前页面不会改变。
+                </p>
               </>
             ) : (
               <p>{isPopular ? "正在检查内置配置…" : "选择文件后先校验，不会立即写入。"}</p>
@@ -354,6 +375,17 @@ export function ConfigLibraryDialog({
           <p className="config-library-error" role="alert">{error}</p>
         ) : null}
         <div className="dialog-actions">
+          {isPopular ? (
+            <label className="config-library-preset-toggle" title="展开精灵列表时只浏览预设；输入文字仍搜索全部精灵">
+              <input
+                type="checkbox"
+                role="switch"
+                checked={presetBrowse.enabled}
+                onChange={(event) => presetBrowse.setEnabled(event.target.checked)}
+              />
+              <span>仅预览配置项</span>
+            </label>
+          ) : null}
           {isExport && <button className={`secondary-action${(exportSummary?.exportedCount ?? 0) === 0 ? " secondary-panel-primary" : ""}`} onClick={onStartImport} type="button">导入</button>}
           <button
             className="secondary-action secondary-panel-primary"
@@ -363,7 +395,7 @@ export function ConfigLibraryDialog({
             onClick={isExport ? onExport : onConfirmImport}
             type="button"
           >
-            {isExport ? "导出" : isPopular ? "导入全部配置" : "确认导入"}
+            {isExport ? "导出" : parsed?.preview.added > 0 ? `导入新增配置（${parsed.preview.added}）` : parsed?.preview.favoritesAdded > 0 ? `添加收藏（${parsed.preview.favoritesAdded}）` : "无需导入"}
           </button>
           <button className="secondary-action" onClick={onClose} type="button">
             取消

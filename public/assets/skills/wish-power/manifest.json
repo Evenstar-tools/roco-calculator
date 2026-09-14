@@ -1,0 +1,132 @@
+{
+  "source": "BWIKI",
+  "license": "CC BY-NC-SA 4.0",
+  "assets": [
+    {
+      "id": 7700001,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700001.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/12/azss58vl05zypdw8cgheh3e7yopwsc6.png",
+      "localFile": "/assets/skills/wish-power/7700001.png",
+      "sha256": "c2c5fb67c3a882c179ae090c05500a626c2d1e187d19db65585343a9ec6ee02d"
+    },
+    {
+      "id": 7700002,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700002.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/b/b1/f54bjhp7kafep6ze019agoznxko6gjb.png",
+      "localFile": "/assets/skills/wish-power/7700002.png",
+      "sha256": "5afea700d8ececf837a7ff99d2c6598a33df8f0624ec467ada8c76cd8174f1e8"
+    },
+    {
+      "id": 7700003,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700003.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/2/25/d6mjub2jdyvl5s0gwvukcghl03h0bjv.png",
+      "localFile": "/assets/skills/wish-power/7700003.png",
+      "sha256": "719e7d3219af2a2143bb18e4ed8afe106ce444ed82ce2de69c2852195fe3569b"
+    },
+    {
+      "id": 7700004,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700004.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/3/33/kb7q55dvjeeq3y588qgm1l1zwm8qgl6.png",
+      "localFile": "/assets/skills/wish-power/7700004.png",
+      "sha256": "4e9cf0153d0a0014d14f0d0c868b647c9c894108eef79a49ae08dc1ff103cb66"
+    },
+    {
+      "id": 7700005,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700005.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/99/8e62zf4uwis9jgzantrih701w3sdgoa.png",
+      "localFile": "/assets/skills/wish-power/7700005.png",
+      "sha256": "a4afd217fc1e1d88314cd1c7ad0a00acb1613d8e1727ce9582f194f0df760ccd"
+    },
+    {
+      "id": 7700007,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700007.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/91/httw38i7y159s5g2o4ehzdxgt1a9xob.png",
+      "localFile": "/assets/skills/wish-power/7700007.png",
+      "sha256": "0a081407de446660998018c0ac4c5c386b3a366417cf07b73af78ad767219e94"
+    },
+    {
+      "id": 7700008,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700008.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/10/l7h547pz6azbmmshmryoike62ayajpu.png",
+      "localFile": "/assets/skills/wish-power/7700008.png",
+      "sha256": "8e180a3925f1da185d9826f8da0fdeb6a1179fa587d4ca817d8519446f3a4035"
+    },
+    {
+      "id": 7700009,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700009.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/99/3y6zdrg4of75ce1647amtusc8y7xpjx.png",
+      "localFile": "/assets/skills/wish-power/7700009.png",
+      "sha256": "354275181b47d8f6a6dba40c36d0a7ae6d4ed1669ac1243914387479f985303f"
+    },
+    {
+      "id": 7700010,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700010.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/5/52/f81vl4h6puhnwrnhrutqjh0hvykmirs.png",
+      "localFile": "/assets/skills/wish-power/7700010.png",
+      "sha256": "d4711ec67907c3f3ffd88ed5bc7fd7344b5187c14ce1f1a7ddd78e27fd4fea7d"
+    },
+    {
+      "id": 7700011,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700011.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/5/5e/9ui2jsrzvswbmhly2oxhryd2wt195go.png",
+      "localFile": "/assets/skills/wish-power/7700011.png",
+      "sha256": "fbef6d722d48b68a0c7f6be278a0670b7c1cbc0917e56bc229024dbc0e7d90e0"
+    },
+    {
+      "id": 7700012,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700012.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/04/f7wyg1iumfcrqj23wq9d1hw78klayfm.png",
+      "localFile": "/assets/skills/wish-power/7700012.png",
+      "sha256": "f637044a84c676ed71b6bbe9eea15cb1df600d63cc8046e2f4aabadaa39113ad"
+    },
+    {
+      "id": 7700013,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700013.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/7/76/5atcq2jdrogvzfa4jv8s2pk9qsnbm40.png",
+      "localFile": "/assets/skills/wish-power/7700013.png",
+      "sha256": "69bd70a289f3c8be370c4b17362a4690129ed8bd2374c42a7b411985fb8f73a8"
+    },
+    {
+      "id": 7700014,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700014.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/5/53/garr4d9lawfphrecfj2g5oakvfb6jcn.png",
+      "localFile": "/assets/skills/wish-power/7700014.png",
+      "sha256": "54a3b82a38406c3ef2b63dfa85e3ca32548f53dbd9ef7120f7b84a6ff1d7a03e"
+    },
+    {
+      "id": 7700015,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700015.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/c/c4/0ww2pq5l20cdc8zdpz69foytctjgyld.png",
+      "localFile": "/assets/skills/wish-power/7700015.png",
+      "sha256": "b99111b5fe50c21d90d3aeb724f99741dc788518584db4483880ce0b45661880"
+    },
+    {
+      "id": 7700016,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700016.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/c/c1/bjzypae7jttbiobmaermuq9kdz167k8.png",
+      "localFile": "/assets/skills/wish-power/7700016.png",
+      "sha256": "39d7f5f176a27764a6fd05b111551bc2193b1e4985ab0b3a4ce14b716aff95cc"
+    },
+    {
+      "id": 7700017,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700017.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/94/btjdanzl14qjmrxq376p9enc72k6278.png",
+      "localFile": "/assets/skills/wish-power/7700017.png",
+      "sha256": "523dc38c2d2c449c1afa6a620816372321e1042a7c5f5357ca7747b48c1875e0"
+    },
+    {
+      "id": 7700018,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700018.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/a/a1/i6asm4edz1mn773f1p0pe2o7y8cktwi.png",
+      "localFile": "/assets/skills/wish-power/7700018.png",
+      "sha256": "b838f8cc4b3b3aac6e601918c1d7d941b434afe19a6c345a36a1e881730efa24"
+    },
+    {
+      "id": 7700019,
+      "sourcePage": "https://wiki.biligame.com/rocom/%E6%96%87%E4%BB%B6:Skill_7700019.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/d/d7/kolrst4ewqzui5ny7j6taazr4kg5w0d.png",
+      "localFile": "/assets/skills/wish-power/7700019.png",
+      "sha256": "3cf84cc1dbeb37d7fcc91b39c265811a3fd8e6cdb3f8255874b76fc43b78dde4"
+    }
+  ]
+}

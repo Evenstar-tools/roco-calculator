@@ -31,6 +31,36 @@ function fixtureFor(traitName) {
 }
 
 describe("TraitConditionEditor", () => {
+  test("冰钻能耗自动读取配招，手动零值不被自动覆盖", () => {
+    const snapshot = { spirits: [{ id: "ice", traitIds: ["drill"] }, { id: "target", traitIds: [] }], traits: [{ id: "drill", name: "冰钻" }], skills: [{ id: "hit", cost: 4 }] };
+    const state = { sides: { attacker: { spiritId: "ice", traitValues: {} }, defender: { spiritId: "target", skills: { four: ["hit", "hit", null, null] } } } };
+    const view = createDirectionTraitViews(snapshot, state, "forward").attacker;
+    const cost = view.controls.find((control) => control.contextKey === "enemyTotalSkillCost");
+    const automatic = view.controls.find((control) => control.contextKey === "enemyTotalSkillCostAuto");
+    expect(cost.linkedAutomaticValue).toBe(8);
+    state.sides.attacker.traitValues = { [automatic.canonicalKey]: false, [cost.canonicalKey]: 0 };
+    expect(createDirectionTraitViews(snapshot, state, "forward").attacker.controls.find((control) => control.contextKey === "enemyTotalSkillCost").linkedAutomaticValue).toBeUndefined();
+  });
+
+  test("星陨特性显示持有者敌方的实时印记，切换方向不串边", () => {
+    const snapshot = {
+      spirits: [{ id: "a", traitIds: ["fall"] }, { id: "b", traitIds: ["eye"] }],
+      traits: [{ id: "fall", name: "坠星" }, { id: "eye", name: "宇宙之眼" }],
+      skills: [],
+    };
+    const state = {
+      sides: { attacker: { spiritId: "a" }, defender: { spiritId: "b" } },
+      marks: { attacker: { negative: { id: "starfall", stacks: 2 } }, defender: { negative: { id: "starfall", stacks: 5 } } },
+    };
+    const forward = createDirectionTraitViews(snapshot, state, "forward");
+    expect(forward.attacker.controls.find((control) => control.label === "敌方星陨层数").linkedMarkValue).toBe(5);
+    expect(forward.defender.controls[0].linkedMarkValue).toBe(2);
+    const reverse = createDirectionTraitViews(snapshot, state, "reverse");
+    expect(reverse.attacker.controls[0].linkedMarkValue).toBe(2);
+    state.marks.attacker.negative = { id: "freeze", stacks: 9 };
+    expect(createDirectionTraitViews(snapshot, state, "reverse").attacker.controls[0].linkedMarkValue).toBe(0);
+  });
+
   test("shows the permanent lifesteal ability level in the trait section", () => {
     const fixture = fixtureFor("贪得无厌");
     fixture.views.attacker.lifesteal = { levels: 16, percent: 160 };

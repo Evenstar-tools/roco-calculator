@@ -31,6 +31,7 @@ import { createUndoHistory } from "../state/undo-history.js";
 import { createCalculationView } from "../view-models/calculation.js";
 import { createConditionSummary } from "../view-models/condition-summary.js";
 import { createDirectionTraitViews } from "../view-models/traits.js";
+import { isEnemyStarfallTraitControl } from "../shared/domain/trait-runtime.js";
 import { createResultActions } from "../view-models/result-actions.js";
 import { createShareSummary } from "../view-models/share-summary.js";
 import { createSkillPresentation } from "../view-models/skill-presentation.js";
@@ -424,6 +425,17 @@ export default function BattleWorkspace({
   }
 
   function setTraitValue(side, key, value, control) {
+    if (control?.contextKey === "enemyTotalSkillCost") {
+      const ownerView = Object.values(traitViews).find((view) => view?.ownerSide === side && view.controls.some((input) => input.contextKey === "enemyTotalSkillCostAuto"));
+      const autoControl = ownerView?.controls.find((input) => input.contextKey === "enemyTotalSkillCostAuto");
+      if (autoControl) dispatchWithUndo({ key: autoControl.canonicalKey, side, type: "side/set-trait-value", value: false });
+    }
+    if (isEnemyStarfallTraitControl(control)) {
+      setMark(side === "attacker" ? "defender" : "attacker", "negative", {
+        id: "starfall", stacks: Math.min(99, Math.max(0, Math.floor(Number(value) || 0))),
+      });
+      return;
+    }
     if (control?.scope === "battle") {
       const previousValue = state.directions[direction].context?.[control.id];
       recordQuickUndo();

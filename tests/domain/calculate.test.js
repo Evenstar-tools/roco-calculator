@@ -3913,6 +3913,33 @@ describe("calculateMatchup", () => {
     expect(calculateMatchup(fixture, input).forward.selectedResult.hitCount).toBe(6);
   });
 
+  test.each(["坠星", "观星", "宇宙之眼"])("%s 的计算跟随印记且不受旧特性层数干扰", (name) => {
+    const trait = { id: "starfall-linked", name };
+    const fixture = {
+      ...snapshot,
+      traits: [trait],
+      spirits: snapshot.spirits.map((spirit) => ({ ...spirit, traitIds: [trait.id] })),
+      skills: snapshot.skills.map((skill) => ({ ...skill, type: "地", category: "physical" })),
+    };
+    const input = battleInput({ marks: {
+      attacker: { negative: { id: "starfall", stacks: 2 } },
+      defender: { negative: { id: "starfall", stacks: 3 } },
+    } });
+    const baseline = calculateMatchup(fixture, input);
+    for (const role of ["attacker", "defender"]) {
+      const control = getTraitEffectInputs(trait, role).find((entry) => entry.label === "敌方星陨层数");
+      if (control) {
+        input.directions.forward.context = { ...input.directions.forward.context, [control.id]: 9 };
+        input.directions.reverse.context = { ...input.directions.reverse.context, [control.id]: 9 };
+      }
+    }
+    expect(calculateMatchup(fixture, input).forward.selectedResult.totalDamage).toBe(baseline.forward.selectedResult.totalDamage);
+    input.marks.defender.negative.stacks = 0;
+    const cleared = calculateMatchup(fixture, input);
+    const direction = name === "宇宙之眼" ? "reverse" : "forward";
+    expect(cleared[direction].selectedResult.totalDamage).not.toBe(baseline[direction].selectedResult.totalDamage);
+  });
+
   test("雷暴的蓄电来源跟随己方印记层数且不重复计数", () => {
     const fixture = {
       ...snapshot,

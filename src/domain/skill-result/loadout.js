@@ -89,6 +89,12 @@ function collectCarriedSkills(side, mode, skillsById) {
     .filter(Boolean);
 }
 
+export function carriedSkillTotalCost(side, mode, skillsById, costOverrides) {
+  return collectCarriedSkills(side, mode, skillsById).reduce(
+    (total, skill) => total + (reducedSkillCost(skill.cost, costOverrides) ?? 0), 0,
+  );
+}
+
 export function resolveCombatant(
   snapshot,
   side,
@@ -121,10 +127,7 @@ export function resolveCombatant(
     panelStats,
     traits,
     skillTypes: carriedSkills.map((skill) => skill.type).filter(Boolean),
-    totalSkillCost: carriedSkills.reduce(
-      (total, skill) => total + (reducedSkillCost(skill.cost, costOverrides) ?? 0),
-      0,
-    ),
+    totalSkillCost: carriedSkillTotalCost(side, mode, indexes.skills, costOverrides),
   };
 }
 

@@ -1067,6 +1067,9 @@ export function getTraitEffectInputs(trait, role = "attacker") {
   const rule = getTraitEffectRule(trait, role);
   if (!rule) return [];
   const inputs = [];
+  if (trait?.name === "冰钻") {
+    inputs.push({ key: "enemyTotalSkillCostAuto", label: "自动能耗", type: "boolean", defaultValue: true, scope: "direction" });
+  }
   if (trait?.name === "得寸进尺") {
     inputs.push({ key: "rainWeather", label: "雨天天气", type: "boolean",
       defaultValue: false, scope: "battle" });

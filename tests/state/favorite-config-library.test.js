@@ -9,6 +9,7 @@ import {
   applyFavoriteConfigLibraryImport,
   buildFavoriteConfigLibrary,
   parseFavoriteConfigLibrary,
+  formatConfigLibraryImportResult,
 } from "../../src/state/favorite-config-library.js";
 import { canonicalTraitControlKey } from "../../src/state/trait-values.js";
 
@@ -178,7 +179,7 @@ describe("buildFavoriteConfigLibrary", () => {
 describe("bundled popular config library", () => {
   test.each([
     ["波普鹿", "spirit_7d22156a66708de3", ["电弧", "裂石", "下注", "先发制人"]],
-    ["银月狼王", "spirit_b689c0de815c95ef", ["力量增效", "撞鬼", "困兽", "月蚀"]],
+    ["银月狼王", "spirit_b689c0de815c95ef", ["岩脉崩毁", "撞鬼", "困兽", "月蚀"]],
     ["布灵布灵", "spirit_de488be076aaad90", ["闪光弹", "量子涨落", "透镜实验", "影袭"]],
     ["饮雪狂兽", "spirit_c0b03ac594c86309", ["雪原狩猎", "冷凝", "跺地", "力量增效"]],
   ])("keeps %s aligned with the requested preset", (_name, spiritId, skillNames) => {
@@ -368,7 +369,8 @@ describe("parseFavoriteConfigLibrary", () => {
       favoritesAdded: 1,
       missingSkills: 1,
       missingSpirits: 1,
-      overwritten: 1,
+      overwritten: 0,
+      different: 1,
       unknownTraitFields: 1,
     });
     expect(parsed.warnings).toHaveLength(2);
@@ -530,6 +532,76 @@ describe("parseFavoriteConfigLibrary", () => {
 });
 
 describe("applyFavoriteConfigLibraryImport", () => {
+  function memoryStores(initialConfigs = {}, initialFavorites = []) {
+    let configs = { configs: structuredClone(initialConfigs), schemaVersion: 2 };
+    let favorites = structuredClone(initialFavorites);
+    return {
+      spiritConfigsRepository: { load: () => configs, replace: vi.fn((next) => (configs = next)) },
+      favoritesRepository: { list: () => favorites, replace: vi.fn((next) => (favorites = next)) },
+    };
+  }
+  function encodedConfig() {
+    return { spiritId: "spirit-a", natureId: "adamant", displayIvs: IVS, skills: ["skill-a", "skill-b", null, null], traitValues: {} };
+  }
+
+  test("重复导入内容相同的配置零写入，保留时间和手动技能参数", () => {
+    const local = config();
+    const favorites = [{ id: "spirit:spirit-a", kind: "spirit", spiritId: "spirit-a", note: "本地信息" }];
+    const stores = memoryStores({ "spirit-a": local }, favorites);
+    const parsed = parseFavoriteConfigLibrary(JSON.stringify(library([encodedConfig()])), {
+      snapshot: snapshot(), existingSpiritConfigs: stores.spiritConfigsRepository.load(), existingFavorites: favorites,
+    });
+    expect(parsed.preview).toMatchObject({ same: 1, different: 0, added: 0 });
+    expect(parsed.changes).toEqual([]);
+    const result = applyFavoriteConfigLibraryImport({ ...stores, parsed, snapshot: snapshot() });
+    expect(result.configs.configs["spirit-a"]).toEqual(local);
+    expect(stores.spiritConfigsRepository.replace).not.toHaveBeenCalled();
+    expect(stores.favoritesRepository.replace).not.toHaveBeenCalled();
+    expect(formatConfigLibraryImportResult(result.preview)).toBe("配置与本地一致，无需更新。");
+  });
+
+  test("不同项只报告字段差异，新增可导入，确认时保护预览后新建的本地配置", () => {
+    const local = config();
+    const changed = { ...encodedConfig(), natureId: "timid", skills: ["skill-b", "skill-a", null, null] };
+    const stores = memoryStores({ "spirit-a": local });
+    const parsed = parseFavoriteConfigLibrary(JSON.stringify(library([changed, { ...encodedConfig(), spiritId: "spirit-b" }])), {
+      snapshot: snapshot(), existingSpiritConfigs: stores.spiritConfigsRepository.load(),
+    });
+    expect(parsed.preview).toMatchObject({ same: 0, different: 1, added: 1 });
+    expect(parsed.changes[0].differences.map((d) => d.field)).toEqual(["性格", "技能1", "技能2"]);
+    const newLocal = { ...config("spirit-b"), natureId: "smart" };
+    stores.spiritConfigsRepository.load().configs["spirit-b"] = newLocal;
+    const result = applyFavoriteConfigLibraryImport({ ...stores, parsed, snapshot: snapshot() });
+    expect(result.preview).toMatchObject({ added: 0, different: 2, overwritten: 0 });
+    expect(result.configs.configs).toEqual({ "spirit-a": local, "spirit-b": newLocal });
+    expect(stores.spiritConfigsRepository.replace).not.toHaveBeenCalled();
+    expect(formatConfigLibraryImportResult(result.preview)).toContain("2 只不同，已保留本地配置");
+  });
+
+  test("新增后再次导入为相同，配置和收藏不重复写入", () => {
+    const stores = memoryStores();
+    const parsed = parseFavoriteConfigLibrary(JSON.stringify(library([encodedConfig()])), { snapshot: snapshot() });
+    expect(applyFavoriteConfigLibraryImport({ ...stores, parsed, snapshot: snapshot() }).preview.added).toBe(1);
+    const result = applyFavoriteConfigLibraryImport({ ...stores, parsed, snapshot: snapshot() });
+    expect(result.preview).toMatchObject({ added: 0, same: 1, favoritesAdded: 0 });
+    expect(stores.spiritConfigsRepository.replace).toHaveBeenCalledTimes(1);
+    expect(stores.favoritesRepository.replace).toHaveBeenCalledTimes(1);
+  });
+
+  test("显式默认特性值和省略默认值视为相同，特性层数变化能显示", () => {
+    const control = getTraitView(snapshot(), snapshot().spirits[0], "attacker").inputs.find((input) => input.type === "number" && input.defaultValue !== undefined);
+    expect(control).toBeDefined();
+    const key = canonicalTraitControlKey(control);
+    const local = { ...config(), traitValues: { [key]: control.defaultValue } };
+    const parse = (traitValues) => parseFavoriteConfigLibrary(JSON.stringify(library([{ ...encodedConfig(), traitValues }])), {
+      snapshot: snapshot(), existingSpiritConfigs: { configs: { "spirit-a": local } },
+    });
+    expect(parse({}).preview.same).toBe(1);
+    const changed = parse({ [key]: control.defaultValue + 1 });
+    expect(changed.preview.different).toBe(1);
+    expect(changed.changes[0].differences[0].field).toContain("特性·");
+  });
+
   test("commits both stores and rolls both back if the second write fails", () => {
     let favorites = [{ id: "spirit:local", kind: "spirit", spiritId: "local" }];
     let configs = { configs: { local: config("local") }, schemaVersion: 2 };

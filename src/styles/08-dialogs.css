@@ -62,6 +62,36 @@
   padding: 0 12px;
 }
 
+.config-library-preset-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  min-height: 36px;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.config-library-preset-toggle input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.config-library-dialog > .dialog-actions {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.config-library-changes {
+  max-height: 240px;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+
 .share-config-dialog {
   width: min(500px, 100%);
 }

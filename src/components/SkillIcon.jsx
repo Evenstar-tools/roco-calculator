@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ElementIcon } from "./ElementIcon.jsx";
+import { getWishPowerIconUrl } from "../data/wish-power-icons.js";
 
 function secureIconUrl(value) {
   return typeof value === "string" &&
@@ -10,7 +11,7 @@ function secureIconUrl(value) {
 }
 
 export function SkillIcon({ className = "", label = false, skill, size = 28 }) {
-  const iconUrl = secureIconUrl(skill?.iconUrl);
+  const iconUrl = getWishPowerIconUrl(skill?.id) ?? secureIconUrl(skill?.iconUrl);
   const [failedUrl, setFailedUrl] = useState(null);
   const loadFailed = iconUrl !== null && failedUrl === iconUrl;
 

@@ -1,6 +1,7 @@
-import { NATURES } from "../domain/natures.js";
+import { NATURES, getNature, normalizeNatureId } from "../domain/natures.js";
+import { getTraitView } from "../domain/calculator-view-model.js";
 import { isCompleteSpiritConfig } from "./spirit-configs.js";
-import { extractTraitValues } from "./trait-values.js";
+import { extractTraitValues, canonicalTraitControlKey } from "./trait-values.js";
 import {
   getSpiritSkillSlotCapacity,
   normalizeSkillSlots,
@@ -275,6 +276,56 @@ function decodeInput(decoded, snapshot) {
   };
 }
 
+function compareLibraryEntries(entries, existing, snapshot) {
+  const counts = { added: 0, same: 0, different: 0, overwritten: 0 };
+  const changes = [];
+  const spirits = new Map((snapshot?.spirits ?? []).map((spirit) => [spirit.id, spirit]));
+  const skills = new Map((snapshot?.skills ?? []).map((skill) => [skill.id, skill]));
+  const skillLabel = (id) => {
+    const skill = skills.get(id);
+    return skill ? `${skill.name}${skill.type ? `（${skill.type}）` : ""}` : id ?? "空";
+  };
+  const valueLabel = (value) => typeof value === "boolean" ? (value ? "开启" : "关闭") : String(value ?? "默认");
+  for (const entry of entries) {
+    const local = existing?.configs?.[entry.spiritId];
+    const spirit = spirits.get(entry.spiritId);
+    const differences = [];
+    const addDifference = (field, before, after, format = valueLabel) => {
+      if (!Object.is(before, after)) differences.push({ field, local: format(before), incoming: format(after) });
+    };
+    if (local) {
+      addDifference("性格", normalizeNatureId(local.natureId ?? local.nature), entry.natureId, (id) => getNature(id)?.name ?? id);
+      for (const key of STAT_KEYS) addDifference(`${STAT_LABELS[key]}个体`, Number(local.displayIvs?.[key]) || 0, entry.displayIvs[key]);
+      const slots = normalizeSkillSlots(local.skills?.four, entry.skills.length);
+      entry.skills.forEach((id, index) => addDifference(`技能${index + 1}`, skillId(slots[index]), id, skillLabel));
+      const localTraits = extractTraitValues(local, snapshot);
+      const controls = new Map();
+      for (const role of ["attacker", "defender"]) {
+        for (const control of spirit ? getTraitView(snapshot, spirit, role)?.inputs ?? [] : []) {
+          if (control.scope !== "battle") controls.set(canonicalTraitControlKey(control), control);
+        }
+      }
+      for (const [key, control] of controls) {
+        addDifference(`特性·${control.label}`, localTraits[key] ?? control.defaultValue, entry.traitValues[key] ?? control.defaultValue);
+      }
+    }
+    const status = !local ? "added" : differences.length ? "different" : "same";
+    counts[status] += 1;
+    if (status !== "same") changes.push({ spiritId: entry.spiritId, spiritName: spirit?.fullName ?? entry.spiritId, status, differences });
+  }
+  return { counts, changes };
+}
+
+export function formatConfigLibraryImportResult(preview) {
+  const parts = [];
+  if (preview.added) parts.push(`已新增 ${preview.added} 只配置`);
+  if (preview.different) parts.push(`${preview.different} 只不同，已保留本地配置`);
+  if (preview.favoritesAdded) parts.push(`新增收藏 ${preview.favoritesAdded} 只`);
+  const skipped = (preview.missingSpirits ?? 0) + (preview.invalidEntries ?? 0);
+  if (skipped) parts.push(`跳过异常 ${skipped} 条`);
+  return parts.length ? `${parts.join("；")}。` : "配置与本地一致，无需更新。";
+}
+
 export function parseFavoriteConfigLibrary(json, {
   currentVersions = {},
   existingFavorites = [],
@@ -375,7 +426,7 @@ export function parseFavoriteConfigLibrary(json, {
     validBySpirit.set(spiritId, { entryIndex, raw, validated });
   }
   const entries = [];
-  for (const [spiritId, candidate] of validBySpirit) {
+  for (const candidate of validBySpirit.values()) {
     const { entryIndex, raw, validated } = candidate;
     preview.missingSkills += validated.missingSkills;
     preview.unknownTraitFields += validated.unknownTraitFields;
@@ -409,10 +460,10 @@ export function parseFavoriteConfigLibrary(json, {
         type: "repairedEntries",
       });
     }
-    if (existingSpiritConfigs?.configs?.[spiritId]) preview.overwritten += 1;
-    else preview.added += 1;
     entries.push(validated.entry);
   }
+  const comparison = compareLibraryEntries(entries, existingSpiritConfigs, snapshot);
+  Object.assign(preview, comparison.counts);
   const existingFavoriteIds = new Set(favoriteSpiritIds(existingFavorites));
   const favoriteCandidates = decoded.format === FAVORITE_CONFIG_LIBRARY_FORMAT
     ? entries.map((entry) => entry.spiritId)
@@ -435,6 +486,7 @@ export function parseFavoriteConfigLibrary(json, {
   }
   return {
     entries,
+    changes: comparison.changes,
     favoriteSpiritIds: requestedFavorites,
     format: decoded.format,
     issueDetails,
@@ -461,13 +513,20 @@ export function applyFavoriteConfigLibraryImport({
 }) {
   const beforeFavorites = favoritesRepository.list();
   const beforeConfigs = spiritConfigsRepository.load(snapshot);
+  // 确认时再次读取本地；预览后新建或修改的配置也绝不覆盖。
+  const comparison = compareLibraryEntries(parsed.entries, beforeConfigs, snapshot);
+  const preview = { ...parsed.preview, ...comparison.counts, favoritesAdded: 0 };
   const byFavoriteId = new Map(beforeFavorites.map((favorite) => [favorite.id, favorite]));
   for (const spiritId of parsed.favoriteSpiritIds) {
     const record = favoriteRecord(spiritId, snapshot);
-    byFavoriteId.set(record.id, record);
+    if (!byFavoriteId.has(record.id)) {
+      byFavoriteId.set(record.id, record);
+      preview.favoritesAdded += 1;
+    }
   }
   const nextConfigs = cloneJson(beforeConfigs);
   for (const entry of parsed.entries) {
+    if (beforeConfigs.configs[entry.spiritId]) continue;
     nextConfigs.configs[entry.spiritId] = {
       displayIvs: cloneJson(entry.displayIvs),
       natureId: entry.natureId,
@@ -478,20 +537,24 @@ export function applyFavoriteConfigLibraryImport({
     };
   }
   const nextFavorites = [...byFavoriteId.values()];
+  let configsTouched = false;
+  let favoritesTouched = false;
   try {
-    const configs = spiritConfigsRepository.replace(nextConfigs, snapshot);
+    configsTouched = preview.added > 0;
+    const configs = configsTouched ? spiritConfigsRepository.replace(nextConfigs, snapshot) : beforeConfigs;
     if (!configs) {
       throw new TypeError("精灵配置保存失败：存储空间不足");
     }
-    const favorites = favoritesRepository.replace(nextFavorites);
+    favoritesTouched = preview.favoritesAdded > 0;
+    const favorites = favoritesTouched ? favoritesRepository.replace(nextFavorites) : beforeFavorites;
     if (!favorites) {
       throw new TypeError("收藏保存失败：存储空间不足");
     }
-    return { configs, favorites, preview: parsed.preview };
+    return { configs, favorites, preview, changes: comparison.changes };
   } catch (error) {
     const rollbackErrors = [];
     try {
-      spiritConfigsRepository.replace(beforeConfigs, snapshot);
+      if (configsTouched) spiritConfigsRepository.replace(beforeConfigs, snapshot);
     } catch (rollbackError) {
       rollbackErrors.push(new Error(
         `精灵配置回滚失败：${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}`,
@@ -499,7 +562,7 @@ export function applyFavoriteConfigLibraryImport({
       ));
     }
     try {
-      favoritesRepository.replace(beforeFavorites);
+      if (favoritesTouched) favoritesRepository.replace(beforeFavorites);
     } catch (rollbackError) {
       rollbackErrors.push(new Error(
         `收藏回滚失败：${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}`,

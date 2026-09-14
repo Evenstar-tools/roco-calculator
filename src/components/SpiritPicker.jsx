@@ -1,8 +1,9 @@
 import { CaretDown, MagnifyingGlass, Star } from "@phosphor-icons/react";
-import { useId, useMemo, useRef, useState } from "react";
+import { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
 import { TraitHint } from "./TraitHint.jsx";
 import { EntityChangeHint } from "./EntityChangeHint.jsx";
+import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -103,15 +104,38 @@ export function SpiritPicker({
 }) {
   const listboxId = useId();
   const inputRef = useRef(null);
+  const optionsRef = useRef(null);
+  const presetBrowse = usePresetBrowseMode();
   const [open, setOpen] = useState(false);
+  const [searching, setSearching] = useState(false);
   const selectedName = selected?.fullName ?? "";
   const [query, setQuery] = useState(selectedName);
   const [activeIndex, setActiveIndex] = useState(0);
   const [previewLimit, setPreviewLimit] = useState(INITIAL_PREVIEW_COUNT);
   const resolvedFavoriteState =
     favoriteState ?? (favorite ? "manual" : null);
+  const browsingPresets = presetBrowse.enabled && !searching;
+  const presetSpirits = useMemo(() => spirits
+    .filter((spirit) => presetBrowse.spiritIds.has(spirit.id))
+    .sort(compareDexOrder), [spirits, presetBrowse.spiritIds]);
+
+  useLayoutEffect(() => {
+    if (!open || !browsingPresets) return;
+    const options = optionsRef.current;
+    const selectedOption = [...(options?.children ?? [])].find((option) => option.dataset.spiritId === selected?.id);
+    if (options) options.scrollTop = selectedOption
+      ? Math.max(0, selectedOption.offsetTop - options.offsetTop - (options.clientHeight - selectedOption.offsetHeight) / 2)
+      : 0;
+  }, [open, browsingPresets, selected?.id, presetSpirits]);
 
   const preview = useMemo(() => {
+    if (browsingPresets) return {
+      allFavoritesVisible: false,
+      allPreviewItemsVisible: true,
+      isUnfiltered: true,
+      items: presetSpirits.map((spirit) => ({ related: false, spirit })),
+      totalCount: presetSpirits.length,
+    };
     const needle = normalizeSearch(query);
     const direct = needle
       ? spirits.filter((spirit) =>
@@ -194,8 +218,18 @@ export function SpiritPicker({
           spirit,
         })),
     };
-  }, [previewLimit, query, spirits]);
+  }, [browsingPresets, presetSpirits, previewLimit, query, spirits]);
   const matches = preview.items;
+
+  function openOptions() {
+    setQuery(selectedName);
+    setSearching(false);
+    setPreviewLimit(INITIAL_PREVIEW_COUNT);
+    setActiveIndex(presetBrowse.enabled
+      ? Math.max(0, presetSpirits.findIndex((spirit) => spirit.id === selected?.id))
+      : 0);
+    setOpen(true);
+  }
 
   function commit(spirit) {
     setQuery(spirit.fullName);
@@ -206,6 +240,7 @@ export function SpiritPicker({
   function handleKeyDown(event) {
     if (event.key === "ArrowDown") {
       event.preventDefault();
+      if (!open) { openOptions(); return; }
       setOpen(true);
       setActiveIndex((index) => Math.min(index + 1, matches.length - 1));
     } else if (event.key === "ArrowUp") {
@@ -258,16 +293,13 @@ export function SpiritPicker({
           aria-label={`${label}精灵`}
           onChange={(event) => {
             setQuery(event.target.value);
+            setSearching(Boolean(event.target.value.trim()));
             setActiveIndex(0);
             setPreviewLimit(INITIAL_PREVIEW_COUNT);
             setOpen(true);
           }}
           onFocus={() => {
-            if (!open) {
-              setQuery(selectedName);
-              setPreviewLimit(INITIAL_PREVIEW_COUNT);
-            }
-            setOpen(true);
+            if (!open) openOptions();
           }}
           onKeyDown={handleKeyDown}
           placeholder="选精灵"
@@ -278,9 +310,13 @@ export function SpiritPicker({
         <button
           aria-label={`展开${label}精灵列表`}
           className="spirit-picker__caret"
+          onMouseDown={(event) => event.preventDefault()}
           onClick={() => {
-            setOpen((value) => !value);
-            inputRef.current?.focus();
+            if (open) setOpen(false);
+            else {
+              inputRef.current?.focus();
+              openOptions();
+            }
           }}
           title={`展开${label}精灵列表`}
           type="button"
@@ -293,6 +329,7 @@ export function SpiritPicker({
             data-guide-part="options"
             id={listboxId}
             onScroll={handleOptionsScroll}
+            ref={optionsRef}
             role="listbox"
           >
             {matches.length ? (
@@ -300,6 +337,7 @@ export function SpiritPicker({
                 <li
                   aria-selected={spirit.id === selected?.id}
                   className={index === activeIndex ? "is-active" : ""}
+                  data-spirit-id={spirit.id}
                   key={spirit.id}
                   onMouseDown={(event) => event.preventDefault()}
                   onMouseEnter={() => setActiveIndex(index)}
@@ -333,7 +371,9 @@ export function SpiritPicker({
               ))
             ) : (
               <li className="spirit-picker__empty">
-                {preview.isUnfiltered
+                {browsingPresets
+                  ? presetBrowse.error || (presetBrowse.loading ? "正在读取预设…" : "暂无预设精灵，请输入搜索")
+                  : preview.isUnfiltered
                   ? "暂无收藏精灵，请输入搜索"
                   : "没有匹配精灵"}
               </li>

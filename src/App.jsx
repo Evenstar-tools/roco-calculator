@@ -20,6 +20,7 @@ import { ResultRail } from "./components/ResultRail.jsx";
 import { SingleSkillEditor } from "./components/SingleSkillEditor.jsx";
 import { SkillStep } from "./components/SkillStep.jsx";
 import { SpiritStep } from "./components/SpiritStep.jsx";
+import { PresetBrowseProvider } from "./components/PresetBrowseMode.jsx";
 import { WorkspaceOverlays } from "./components/WorkspaceOverlays.jsx";
 import {
   readNegativeStatusSettlementSetting,
@@ -59,6 +60,9 @@ import {
 } from "./domain/fair-pigeon.js";
 import { getNatureMultipliers } from "./domain/natures.js";
 import { starfallStacksFromMarkSlot } from "./domain/marks.js";
+import { isEnemyStarfallTraitControl, linkStarfallTraitControls, linkEnemyCostTraitControls } from "./domain/trait-runtime.js";
+import { carriedSkillTotalCost } from "./domain/skill-result/loadout.js";
+import { getSnapshotIndexes } from "./domain/snapshot-indexes.js";
 import { calculateAllPanelStats } from "./domain/stat.js";
 import { getEffectiveTraits } from "./domain/effective-traits.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
@@ -269,6 +273,19 @@ function CalculatorWorkspace({ snapshot }) {
     return starfallStacksFromMarkSlot(
       currentState.marks?.[targetSide]?.negative,
     );
+  }
+
+  function linkedStarfallTraitContext(side, context) {
+    const opponent = side === "attacker" ? "defender" : "attacker";
+    let linked = context;
+    for (const [owner, role] of [[side, "attacker"], [opponent, "defender"]]) {
+      const spirit = owner === "attacker" ? attacker : defender;
+      if (!spirit) continue;
+      linked = linkStarfallTraitControls(linked, getTraitView(snapshot, spirit, role)?.inputs ?? [], targetStarfallStacksForSide(owner));
+      const target = owner === "attacker" ? "defender" : "attacker";
+      linked = linkEnemyCostTraitControls(linked, getTraitView(snapshot, spirit, role)?.inputs ?? [], carriedSkillTotalCost(state.sides[target], state.mode, getSnapshotIndexes(snapshot).skills, state.directions[target === "attacker" ? "forward" : "reverse"].overrides));
+    }
+    return linked;
   }
 
   function updateTargetStarfallStacks(side, value) {
@@ -581,6 +598,20 @@ function CalculatorWorkspace({ snapshot }) {
   }
 
   function updateTraitContext(direction, key, value) {
+    const sourceSide = direction === "forward" ? "attacker" : "defender";
+    const traitOwnerSide = key.startsWith("defenderTrait.")
+      ? (sourceSide === "attacker" ? "defender" : "attacker") : sourceSide;
+    const traitOwner = traitOwnerSide === "attacker" ? attacker : defender;
+    const role = key.startsWith("defenderTrait.") ? "defender" : "attacker";
+    const control = traitOwner && getTraitView(snapshot, traitOwner, role)?.inputs.find((input) => input.id === key);
+    if (control?.contextKey === "enemyTotalSkillCost") {
+      const autoControl = getTraitView(snapshot, traitOwner, role).inputs.find((input) => input.contextKey === "enemyTotalSkillCostAuto");
+      if (autoControl) commitSession(updateMirroredTraitContext(stateRef.current, { direction, key: autoControl.id, value: false }));
+    }
+    if (isEnemyStarfallTraitControl(control)) {
+      updateTargetStarfallStacks(traitOwnerSide, value);
+      return;
+    }
     const previousValue = stateRef.current.directions[direction].context?.[key];
     commitSession(
       updateMirroredTraitContext(stateRef.current, { direction, key, value }),
@@ -1415,7 +1446,7 @@ function CalculatorWorkspace({ snapshot }) {
       traitContext={linkedSkillContext(
         activeAttackSideKey,
         selectedSingleSkill,
-        currentDirection.context,
+        linkedStarfallTraitContext(activeAttackSideKey, currentDirection.context),
       )}
     />
   ) : null;
@@ -1471,7 +1502,7 @@ function CalculatorWorkspace({ snapshot }) {
       }
       attackerTrait={getTraitView(snapshot, attacker, "attacker")}
       attackerTraits={attackerTraits}
-      attackerTraitContext={state.directions.forward.context}
+      attackerTraitContext={linkedStarfallTraitContext("attacker", state.directions.forward.context)}
       attackerTraitDamage={attackerTraitDamage}
       attackerDefenseTrait={
         hasFairPigeonBalance(defender)
@@ -1496,7 +1527,7 @@ function CalculatorWorkspace({ snapshot }) {
       }
       defenderTrait={getTraitView(snapshot, defender, "attacker")}
       defenderTraits={defenderTraits}
-      defenderTraitContext={state.directions.reverse.context}
+      defenderTraitContext={linkedStarfallTraitContext("defender", state.directions.reverse.context)}
       defenderTraitDamage={defenderTraitDamage}
       defenderDefenseTrait={
         hasFairPigeonBalance(attacker)
@@ -2254,7 +2285,7 @@ export function App({ initialSnapshot = null }) {
 
   return (
     <div className="app">
-      <CalculatorWorkspace key={snapshot.meta.id} snapshot={snapshot} />
+      <PresetBrowseProvider><CalculatorWorkspace key={snapshot.meta.id} snapshot={snapshot} /></PresetBrowseProvider>
     </div>
   );
 }

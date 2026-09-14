@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { formatConfigLibraryImportResult } from "../state/favorite-config-library.js";
 import {
   completeFirstRunGuide,
   isFirstRunGuideCompleted,
@@ -36,9 +37,7 @@ export function useFirstRunGuide({
       const parsed = await loadPopularConfigLibrary();
       const result = importFavoriteConfigLibrary(parsed);
       finish();
-      onToast(
-        `已导入 ${result.preview.added + result.preview.overwritten} 只常用配置，后续修改仍会记忆`,
-      );
+      onToast(formatConfigLibraryImportResult(result.preview));
     } catch (importError) {
       setError(
         importError instanceof Error ? importError.message : "常用配置导入失败",

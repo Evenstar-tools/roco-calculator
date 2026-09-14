@@ -68,7 +68,7 @@ for (const width of [1440, 390, 320]) for (const theme of ["light", "dark"]) {
 
     dialog = await menu(page, "常用精灵配置");
     await dialog.getByRole("button", { name: "查看精灵和技能", exact: true }).waitFor();
-    await expect(dialog.getByRole("button", { name: "导入全部配置", exact: true })).toHaveClass(/secondary-panel-primary/);
+    await expect(dialog.getByRole("button", { name: /^导入新增配置（\d+）$/ })).toHaveClass(/secondary-panel-primary/);
     await capture(page, dialog, `w4-${width}-${theme}`);
     dialog = await menu(page, "导入导出");
     await expect(dialog.getByRole("button", { name: "导出", exact: true })).toBeDisabled();

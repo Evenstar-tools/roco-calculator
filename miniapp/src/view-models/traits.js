@@ -2,6 +2,10 @@ import { getTraitView } from "../shared/domain/calculator-view-model.js";
 import { canonicalTraitControlKey } from "../shared/state/trait-values.js";
 import { getSkill } from "./skills.js";
 import { resolveLifestealCapability } from "../shared/domain/baron-greed.js";
+import { isEnemyStarfallTraitControl, projectTraitRuntimeContext } from "../shared/domain/trait-runtime.js";
+import { carriedSkillTotalCost } from "../shared/domain/skill-result/loadout.js";
+import { getSnapshotIndexes } from "../shared/domain/snapshot-indexes.js";
+import { starfallStacksFromMarkSlot } from "../shared/domain/marks.js";
 
 export function createTraitView(
   snapshot,
@@ -42,7 +46,7 @@ export function createDirectionTraitViews(snapshot, state, direction) {
     .filter((skill, index, values) =>
       skill && values.findIndex((candidate) => candidate?.id === skill.id) === index
     );
-  return {
+  const views = {
     attacker: createTraitView(
       snapshot,
       state.sides[attackerSide],
@@ -59,4 +63,18 @@ export function createDirectionTraitViews(snapshot, state, direction) {
       carriedSkills(defenderSide),
     ),
   };
+  for (const view of Object.values(views)) {
+    if (!view) continue;
+    const target = view.ownerSide === "attacker" ? "defender" : "attacker";
+    view.controls = view.controls.map((control) => isEnemyStarfallTraitControl(control)
+      ? { ...control, linkedMarkValue: starfallStacksFromMarkSlot(state.marks?.[target]?.negative) }
+      : control);
+    const runtime = projectTraitRuntimeContext({}, { runtimeInputValues: state.sides[view.ownerSide].traitValues }, view.controls);
+    if (runtime.enemyTotalSkillCostAuto === true) {
+      const totalCost = carriedSkillTotalCost(state.sides[target], state.mode, getSnapshotIndexes(snapshot).skills, state.directions?.[target === "attacker" ? "forward" : "reverse"]?.overrides);
+      view.controls = view.controls.map((control) => control.contextKey === "enemyTotalSkillCost"
+        ? { ...control, linkedAutomaticValue: totalCost } : control);
+    }
+  }
+  return views;
 }

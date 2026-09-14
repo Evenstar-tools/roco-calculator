@@ -14,6 +14,9 @@ const current = readS4PreviewSnapshot();
 const popularConfigs = JSON.parse(
   readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"),
 );
+const approvedConfigs = JSON.parse(
+  readFileSync("docs/preset-review/2026-09-14-1759/常用精灵预设-可导入.json", "utf8"),
+);
 
 const FINAL_NAMES = [
   "测风蝉",
@@ -335,64 +338,28 @@ describe("S4 前瞻新精灵候选目录", () => {
 
   test("226 套热门配置包含 11 只 S4 最终形态和两只首领的完整预设", () => {
     const patched = applyS4PreviewCatalog(baselineSnapshot(), candidate);
-    const skillByName = new Map(patched.skills.map((skill) => [skill.name, skill.id]));
     const entryBySpiritId = new Map(
       popularConfigs.entries.map((entry) => [entry.spiritId, entry]),
     );
 
+    // 当前用户确认的预设独立于前瞻目录的默认性格与配招。
+    expect(popularConfigs).toEqual(approvedConfigs);
     expect(popularConfigs.entryCount).toBe(226);
     expect(popularConfigs.entries).toHaveLength(226);
     for (const family of candidate.families) {
       const form = family.forms.find(({ isFinal }) => isFinal);
       const spirit = patched.spirits.find(({ fullName }) => fullName === form.name);
       const entry = entryBySpiritId.get(spirit.id);
-      const adjustedSkills = {
-        银月狼王: ["力量增效", "撞鬼", "困兽", "月蚀"],
-        布灵布灵: ["闪光弹", "量子涨落", "透镜实验", "影袭"],
-      }[form.name];
-      expect(entry).toMatchObject({
-        natureId: form.previewDefaults.natureId,
-        displayIvs: form.previewDefaults.displayIvs,
-        skills: (adjustedSkills ?? family.skills.slice(0, 4).map(({ name }) => name)).map((name) => skillByName.get(name === "午夜爆音" ? "午夜噪音" : name)),
-      });
+      expect(entry).toEqual(approvedConfigs.entries.find(({ spiritId }) => spiritId === spirit.id));
+      expect(entry.skills.filter(Boolean)).toHaveLength(4);
     }
-    for (const expected of [
-      {
-        name: "烈焰狂战士",
-        natureId: "peaceful",
-        displayIvs: {
-          hp: 60,
-          speed: 0,
-          physicalAttack: 60,
-          magicalAttack: 0,
-          physicalDefense: 60,
-          magicalDefense: 0,
-        },
-        skills: ["撕咬", "双响炮", "先发制人", "力量增效"],
-      },
-      {
-        name: "满月砣",
-        natureId: "silent",
-        displayIvs: {
-          hp: 60,
-          speed: 0,
-          physicalAttack: 0,
-          magicalAttack: 0,
-          physicalDefense: 60,
-          magicalDefense: 60,
-        },
-        skills: ["不可接触", "疫病吐息", "毒孢子", "毒雾"],
-      },
-    ]) {
+    for (const expected of BOSS_CONFIGS) {
       const spirit = patched.spirits.find(
         ({ fullName }) => fullName === expected.name,
       );
-      expect(entryBySpiritId.get(spirit.id)).toMatchObject({
-        natureId: expected.natureId,
-        displayIvs: expected.displayIvs,
-        skills: expected.skills.map((name) => skillByName.get(name)),
-        traitValues: {},
-      });
+      expect(entryBySpiritId.get(spirit.id)).toEqual(
+        approvedConfigs.entries.find(({ spiritId }) => spiritId === spirit.id),
+      );
     }
   });
 

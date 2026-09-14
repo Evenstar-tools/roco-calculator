@@ -1470,7 +1470,13 @@ test("shows defense power levels as the original positive multiplier", async () 
 
 test("links multi-dimensional strike hits with the target starfall mark", async () => {
   const user = userEvent.setup();
-  render(<App initialSnapshot={snapshot} />);
+  const linkedSnapshot = {
+    ...snapshot,
+    traits: [...(snapshot.traits ?? []), { id: "starfall-link-trait", name: "坠星" }],
+    spirits: snapshot.spirits.map((spirit) => spirit.fullName === "音速犬"
+      ? { ...spirit, traitIds: ["starfall-link-trait"] } : spirit),
+  };
+  render(<App initialSnapshot={linkedSnapshot} />);
   await selectDefaultSpirits(user);
   await openDetailedMode(user);
 
@@ -1505,6 +1511,13 @@ test("links multi-dimensional strike hits with the target starfall mark", async 
     name: "敌方星陨印记",
   });
   await waitFor(() => expect(linkedStarfall).toHaveValue(3));
+  const traitStarfall = screen.getByRole("spinbutton", { name: "敌方星陨层数" });
+  expect(traitStarfall).toHaveValue(3);
+  fireEvent.change(traitStarfall, { target: { value: "4" } });
+  fireEvent.blur(traitStarfall);
+  await waitFor(() => expect(linkedStarfall).toHaveValue(4));
+  fireEvent.change(traitStarfall, { target: { value: "3" } });
+  fireEvent.blur(traitStarfall);
   await waitFor(() =>
     expect(screen.getByRole("spinbutton", { name: "连击次数" })).toHaveValue(4),
   );
@@ -3710,8 +3723,8 @@ test("loads the built-in popular library only on demand and imports through the 
 
   const dialog = await screen.findByRole("dialog", { name: "常用精灵配置" });
   expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json");
-  expect(within(dialog).getByText("新增配置").nextElementSibling).toHaveTextContent("2");
-  expect(within(dialog).getByText("覆盖本机配置").nextElementSibling)
+  expect(within(dialog).getByText("新增").nextElementSibling).toHaveTextContent("2");
+  expect(within(dialog).getByText("不同").nextElementSibling)
     .toHaveTextContent("0");
   await user.click(within(dialog).getByRole("button", {
     name: "查看精灵和技能",
@@ -3719,12 +3732,13 @@ test("loads the built-in popular library only on demand and imports through the 
   await user.type(within(dialog).getByRole("searchbox", {
     name: "搜索精灵名",
   }), "音速");
-  expect(within(dialog).getByText("音速犬", { exact: true })).toBeVisible();
-  expect(within(dialog).queryByText("风暴战犬", { exact: true }))
+  const configEntries = dialog.querySelector("#config-library-entries");
+  expect(within(configEntries).getByText("音速犬", { exact: true })).toBeVisible();
+  expect(within(configEntries).queryByText("风暴战犬", { exact: true }))
     .not.toBeInTheDocument();
-  await user.click(within(dialog).getByRole("button", { name: "导入全部配置" }));
+  await user.click(within(dialog).getByRole("button", { name: /导入新增配置/ }));
 
-  expect(screen.getByText(/已导入 2 只配置/)).toBeVisible();
+  expect(screen.getByText(/已新增 2 只配置/)).toBeVisible();
   expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);
   expect(JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY))).toEqual(
     expect.arrayContaining([

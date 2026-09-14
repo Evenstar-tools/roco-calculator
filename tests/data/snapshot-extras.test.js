@@ -4,6 +4,22 @@ import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 import { createSpiritSearchIndex } from "../../src/data/search-index.js";
 
 describe("withCalculatorExtras", () => {
+  test("提塔只命中声波缇塔，不混入缇塔", () => {
+    const snapshot = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+    const index = createSpiritSearchIndex(withCalculatorExtras(snapshot).spirits);
+    expect(index.search("提塔").map((spirit) => spirit.fullName)).toEqual(["声波缇塔"]);
+  });
+
+  test.each([
+    ["冰布丁", "椰浆布丁"],
+    ["草布丁", "抹茶布丁"],
+    ["火布丁", "熔岩布丁"],
+  ])("%s 只命中对应的布丁形态", (alias, name) => {
+    const snapshot = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+    const index = createSpiritSearchIndex(withCalculatorExtras(snapshot).spirits);
+    expect(index.search(alias).map((spirit) => spirit.fullName)).toEqual([name]);
+  });
+
   test.each([
     ["红鸟", "岚鸟（夏天的样子）"],
     ["绿鸟", "岚鸟（春天的样子）"],

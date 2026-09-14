@@ -193,7 +193,10 @@ export function calculateSkillResult({
     enemyTotalSkillCost: defender.totalSkillCost,
     skillPosition,
     ...rawContext,
+    automaticEnemyTotalSkillCost: defender.totalSkillCost,
     enemyStarfallMarks,
+    attackerEnemyStarfallStacks: enemyStarfallMarks,
+    defenderEnemyStarfallStacks: starfallStacksFromMarkSlot(sourceMarks?.negative),
     ...(enemyStarfallInputId
       ? { [enemyStarfallInputId]: enemyStarfallMarks }
       : {}),

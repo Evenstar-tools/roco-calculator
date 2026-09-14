@@ -29,7 +29,7 @@ test("first-run guide appears once, can be replayed, and imports popular configs
   await expect(page.getByText("以后修改性格、个体和技能，都会继续记住"))
     .toBeVisible();
   await page.getByRole("button", { name: "导入并完成" }).click();
-  await expect(page.getByText(/已导入 \d+ 只常用配置/)).toBeVisible();
+  await expect(page.getByText(/已新增 \d+ 只配置/)).toBeVisible();
   await expect(page.getByRole("dialog", { name: /新手引导/ })).toHaveCount(0);
   expect(await page.evaluate(() =>
     localStorage.getItem("rock-calculator.first-run-guide.v1"),

@@ -100,7 +100,7 @@ test("exports and imports the favorite configuration library without touching te
   await expect(page.getByText("新增配置").locator("..").getByText("1")).toBeVisible();
   await expect(page.getByText("检查通过，未发现兼容问题")).toBeVisible();
   await expect(page.getByText("失效技能槽")).toHaveCount(0);
-  await page.getByRole("button", { name: "确认导入" }).click();
+  await page.getByRole("button", { name: "导入新增配置（1）", exact: true }).click();
 
   const stored = await page.evaluate((spiritId) => ({
     configs: JSON.parse(
@@ -161,10 +161,10 @@ test("imports a legacy four-skill dazzling config and explains the compatibility
   await expect(page.getByText("无效配置")).toHaveCount(0);
   await page.getByRole("button", { name: /检查详情/ }).click();
   await expect(page.getByText("兼容修复", { exact: true })).toBeVisible();
-  await expect(page.getByText("彩虹独角兽", { exact: true })).toBeVisible();
+  await expect(page.locator("#config-library-import-issues").getByText("彩虹独角兽", { exact: true })).toBeVisible();
   await expect(page.getByText("旧版技能槽结构已兼容当前形态")).toBeVisible();
   await expect(page.getByText("已保留原四技能，并补齐 3 个空技能槽")).toBeVisible();
-  await page.getByRole("button", { name: "确认导入" }).click();
+  await page.getByRole("button", { name: "导入新增配置（1）", exact: true }).click();
 
   const storedSkills = await page.evaluate((spiritId) => JSON.parse(
     localStorage.getItem("rock-calculator.spirit-configs.v2"),

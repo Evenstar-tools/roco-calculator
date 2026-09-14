@@ -16,6 +16,8 @@ function storedValue(values, ownerSide, key) {
 }
 
 function controlValue(battleContext, values, view, control) {
+  if (control.linkedMarkValue !== undefined) return control.linkedMarkValue;
+  if (control.linkedAutomaticValue !== undefined) return control.linkedAutomaticValue;
   if (control.scope === "battle") {
     if (Object.hasOwn(battleContext ?? {}, control.id)) {
       return battleContext[control.id];

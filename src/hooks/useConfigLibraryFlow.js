@@ -1,5 +1,6 @@
 import { useState } from "react";
 import packageInfo from "../../package.json";
+import { formatConfigLibraryImportResult } from "../state/favorite-config-library.js";
 
 export const POPULAR_CONFIG_COUNT = 226;
 
@@ -118,9 +119,7 @@ export function useConfigLibraryFlow({
           configLibraryParsed,
         );
         closeConfigLibrary();
-        onToast(
-          `已导入 ${result.preview.added + result.preview.overwritten} 只配置，新增收藏 ${result.preview.favoritesAdded} 只，覆盖 ${result.preview.overwritten} 只，跳过 ${result.preview.missingSpirits + result.preview.invalidEntries} 只。`,
-        );
+        onToast(formatConfigLibraryImportResult(result.preview));
       } catch (error) {
         setConfigLibraryError(
           error instanceof Error ? error.message : "配置库导入失败",
