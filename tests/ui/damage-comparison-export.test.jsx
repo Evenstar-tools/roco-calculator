@@ -65,6 +65,9 @@ test("无双防模板导出的条件和逐只配点不再标注满双防", async
     fireEvent.click(screen.getByRole("button", { name: "Markdown（.md）" }));
     await waitFor(() => expect(download).toHaveBeenCalledTimes(index + 1));
     const report = download.mock.lastCall[0];
+    expect(report.headers[9]).toBe("克制倍率");
+    expect(report.rows.every((row) => typeof row[9] === "number")).toBe(true);
+    expect(report.metadata.some(([key]) => key === "增益来源")).toBe(true);
     expect(report.metadata.find(([key]) => key === "耐久模板")[1]).toContain("生命60个体，其余0");
     expect(report.rows.every((row) => row[8].includes("生命60个体，其余0"))).toBe(true);
     expect(report.rows[0][8]).toContain(index === 0 ? "踏实" : "普通");
@@ -83,6 +86,10 @@ test("XLSX是真实工作簿，数值百分比不转文本，特殊字符不破�
   expect(sheet.querySelector('c[r="B5"] t').textContent).toBe(report.rows[0][1]);
   expect(sheet.querySelector("f")).toBeNull();
   expect(sheet.querySelector("autoFilter").getAttribute("ref")).toBe("A4:I5");
+  const extended = { ...report, headers: [...report.headers, "克制倍率"], rows: report.rows.map((row) => [...row, 0.5]) };
+  const extendedSheet = new DOMParser().parseFromString(strFromU8(unzipSync(damageComparisonXlsx(extended))["xl/worksheets/sheet1.xml"]), "text/xml");
+  expect(extendedSheet.querySelector("autoFilter").getAttribute("ref")).toBe("A4:J5");
+  expect(extendedSheet.querySelector('c[r="J5"] v').textContent).toBe("0.5");
   const md = exporter.damageComparisonMarkdown(report);
   expect(md).toContain("51.0%");
   expect(md).toContain("\\|<br>&lt;script&gt;");

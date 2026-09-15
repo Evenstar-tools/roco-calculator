@@ -6,7 +6,7 @@ import { projectTriggerContext } from "../../domain/trigger-controls.js";
 import { getSkillEffectInputs } from "../../domain/skill-effects.js";
 import { currentWeather } from "../../state/weather.js";
 
-const headers = ["排名", "精灵／形态", "属性", "满血 HP", "伤害 HP", "承伤比例", "剩余 HP", "结论", "耐久配点"];
+const headers = ["排名", "精灵／形态", "属性", "满血 HP", "伤害 HP", "承伤比例", "剩余 HP", "结论", "耐久配点", "克制倍率"];
 const cleanText = (value) => String(value ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/gu, "");
 const markdown = (value) => cleanText(value).replace(/&/gu, "&amp;").replace(/</gu, "&lt;").replace(/>/gu, "&gt;").replace(/([\\`*_[\]{}|])/gu, "\\$1").replace(/\r?\n/gu, "<br>");
 
@@ -32,7 +32,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
     return `${control.label} ${label ?? (typeof value === "boolean" ? value ? "开启" : "关闭" : value)}`;
   }).filter(Boolean))];
   const allocation = Object.entries(STAT_LABELS).map(([key, label]) => `${label}${side.displayIvs[key] ?? 0}`).join("／");
-  const filter = DAMAGE_COMPARISON_FILTERS.find(([key]) => key === model.filter)?.[1] ?? "全部";
+  const filter = Array.isArray(model.filter) ? model.filter[1] === null ? `≥${model.filter[0]}%` : `${model.filter[0]}%–${model.filter[1]}%` : DAMAGE_COMPARISON_FILTERS.find(([key]) => key === model.filter)?.[1] ?? "全部";
   const title = `${selection.spirit.fullName} · ${selection.selected.skill.name} · 承伤结论`;
   const resultRange = (key) => {
     const values = model.rows.map((row) => row.result?.[key]).filter(Number.isFinite);
@@ -44,6 +44,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
     ["攻击方", `${selection.spirit.fullName} · 60级 · ${getNature(side.nature).name} · ${allocation}`],
     ["技能", `${selection.selected.skill.name} · ${selection.selected.skill.type} · ${{ physical: "物理", magical: "魔法", dual: "双攻", status: "变化", defense: "防御" }[selection.selected.skill.category] ?? "未知"} · 静态威力 ${resultRange("staticPower")} · 连击 ${resultRange("hitCount")}`],
     ["特性／条件", `${trait?.name ?? "无"}${conditions.length ? `；${conditions.join("；")}` : ""}`],
+    ["增益来源", model.gainSummary || "无额外增益"],
     ["耐久模板", describeDamageComparisonTemplate(model.template)],
     ["计算口径", `目标满血；${model.scopeDescription}${model.inheritTargetStatuses ? "" : "；未沿用星陨／冻结（按0层）"}；不含回合末结算`],
     ["天气", ({ none: "无天气", rain: "雨天", thunder: "雷暴", sandstorm: "沙暴", blizzard: "暴风雪" })[currentWeather(context)]],
@@ -53,7 +54,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
     ["说明", "本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。"],
   ];
   const rows = model.rows.map((row) => [row.rank, row.spirit.fullName, row.spirit.types?.join("／") ?? "", row.panelStats.hp,
-    row.damage, row.percent / 100, row.remainingHp, row.lethal ? "可击倒" : "未击倒", describeDamageComparisonTemplate(row.template)]);
+    row.damage, row.percent / 100, row.remainingHp, row.lethal ? "可击倒" : "未击倒", describeDamageComparisonTemplate(row.template), row.result?.typeMultiplier ?? "—"]);
   const pad = (value) => String(value).padStart(2, "0");
   const stamp = `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
   const statuses = getDamageComparisonTargetStatuses(input, direction);

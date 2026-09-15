@@ -20,6 +20,7 @@ import {
 import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
 import { TEAM_STORAGE_KEY } from "../../src/state/team-presets.js";
 import {
+  DAMAGE_COMPARISON_STORAGE_KEY,
   DURABILITY_OVERVIEW_STORAGE_KEY,
   NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY,
   POWER_DISPLAY_STORAGE_KEY,
@@ -496,9 +497,47 @@ const snapshot = {
 beforeEach(() => {
   workspaceOverlayCapture.onShare = null;
   localStorage.removeItem(DURABILITY_OVERVIEW_STORAGE_KEY);
+  localStorage.removeItem(DAMAGE_COMPARISON_STORAGE_KEY);
   localStorage.removeItem(SPIRIT_CONFIG_STORAGE_KEY);
   localStorage.removeItem(TYPE_COVERAGE_STORAGE_KEY);
   localStorage.setItem(FIRST_RUN_GUIDE_STORAGE_KEY, "1");
+});
+
+test("承伤榜用户预设代入主页面恢复配招及手动威力，不更改攻击方", async () => {
+  const user = userEvent.setup();
+  localStorage.setItem(SPIRIT_CONFIG_STORAGE_KEY, JSON.stringify({ schemaVersion: 2, configs: {
+    "fair-pigeon": { spiritId: "fair-pigeon", natureId: "timid",
+      displayIvs: { hp: 60, magicalAttack: 60, speed: 60 },
+      skills: { four: ["water-strike", { skillId: "fire-strike", overrides: { basePower: 123 } }, null, "magic-boost"], single: "water-strike" },
+      traitValues: {},
+    },
+  } }));
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  const attackerBefore = screen.getByRole("combobox", { name: "攻击方技能1" }).value;
+  const attackSkill = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(attackSkill);
+  await user.type(attackSkill, "风力冲击");
+  await user.click(screen.getByRole("option", { name: /风力冲击/ }));
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "显示设置" }));
+  await user.click(screen.getByRole("checkbox", { name: "承伤对比" }));
+  await user.click(screen.getByRole("button", { name: "完成" }));
+  await user.click(screen.getByRole("button", { name: "查看全精灵承伤" }));
+  await user.click(await screen.findByRole("button", { name: "筛选", exact: true }));
+  await user.selectOptions(screen.getByLabelText("承伤耐久模板"), "user-presets");
+  await user.selectOptions(screen.getByLabelText("承伤形态范围"), "all");
+  await user.click(await screen.findByRole("button", { name: "查看公平鸽承伤详情" }));
+  await user.click(screen.getByRole("button", { name: "代入防守方复算" }));
+  expect(screen.queryByRole("dialog", { name: "承伤对比" })).not.toBeInTheDocument();
+  expect(screen.getByRole("combobox", { name: "防御方精灵" })).toHaveValue("公平鸽");
+  expect(screen.getByRole("combobox", { name: "防御方技能1" })).toHaveValue(snapshot.skills.find((skill) => skill.id === "water-strike").name);
+  expect(screen.getByRole("combobox", { name: "防御方技能2" })).toHaveValue(snapshot.skills.find((skill) => skill.id === "fire-strike").name);
+  expect(screen.getByRole("spinbutton", { name: "防御方技能2静态威力" })).toHaveValue(123);
+  expect(screen.getByRole("combobox", { name: "防御方技能3" })).toHaveValue("");
+  expect(screen.getByRole("combobox", { name: "防御方技能4" })).toHaveValue("魔法增效");
+  expect(screen.getByRole("combobox", { name: "攻击方技能1" })).toHaveValue(attackerBefore);
 });
 
 test("keeps whats new quiet on entry and available in the menu", async () => {
@@ -2377,6 +2416,44 @@ test("keeps Feather Acceleration as a persistent bonus for the other carried ski
   await user.click(screen.getByText("自己全部技能威力+20。"));
 
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(100);
+});
+
+test("减压阀点击增强相邻被动，衔接手调次数并可撤回", async () => {
+  const user = userEvent.setup();
+  const valve = {
+    id: "pressure-valve", name: "减压阀", category: "status", type: "机械",
+    basePower: 0, cost: 1,
+    description: "主动：本技能被动永久额外+20威力，被动：两侧技能威力+10，传动1。",
+  };
+  render(<App initialSnapshot={{ ...snapshot, skills: [...snapshot.skills, valve] }} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  for (const [index, name] of ["减压阀", "风力冲击"].entries()) {
+    const picker = screen.getByRole("combobox", { name: `攻击方技能${index + 1}` });
+    await user.clear(picker);
+    await user.type(picker, name);
+    await user.click(screen.getByRole("option", { name: new RegExp(name) }));
+  }
+  const count = () => screen.getByRole("spinbutton", { name: "攻击方技能1已使用次数" });
+  const power = () => screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" });
+  expect(count()).toHaveValue(0);
+  expect(power()).toHaveValue(90);
+  await user.click(screen.getByText(valve.description));
+  expect(count()).toHaveValue(1);
+  expect(power()).toHaveValue(110);
+  await user.click(screen.getByText(valve.description));
+  expect(count()).toHaveValue(2);
+  expect(power()).toHaveValue(130);
+  await user.clear(count());
+  await user.type(count(), "5{Enter}");
+  await user.tab();
+  expect(power()).toHaveValue(190);
+  await user.click(screen.getByText(valve.description));
+  expect(count()).toHaveValue(6);
+  expect(power()).toHaveValue(210);
+  await user.click(screen.getByRole("button", { name: /撤回上一步/ }));
+  expect(count()).toHaveValue(5);
+  expect(power()).toHaveValue(190);
 });
 
 test("manual static power ignores later fixed bonuses until restored", async () => {

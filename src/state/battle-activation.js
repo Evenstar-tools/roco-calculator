@@ -19,7 +19,7 @@ import { expireTransientGainSources, recordGainChanges } from "../domain/gain-pr
 import { recordSkillActivation } from "../domain/skill-gain-summary.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import { normalizeNegativeStatusSide } from "../domain/negative-status.js";
-import { resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
+import { advancePressureValveContext, resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
 import { getEffectiveTraits } from "../domain/effective-traits.js";
 import { updateGlobalWeather } from "./calculator-session.js";
@@ -575,7 +575,9 @@ export function applyBattleActivation({
     next,
     side,
     skillIndex,
-    sequence.nextContext,
+    operations.pressureValveUseCountAdd
+      ? advancePressureValveContext(skill, sequence.nextContext)
+      : sequence.nextContext,
     skillMode,
   );
   recordSkillActivation(next, side, skill, context, operations, resolution.triggerCount);

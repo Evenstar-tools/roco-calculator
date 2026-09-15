@@ -18,6 +18,7 @@
 .dc-inherit::after { border: 0; }
 .dc-inherit .settings-sheet__switch { pointer-events: none; flex-shrink: 0; }
 .dc-filters { display: flex; gap: 4px; padding: 6px 14px; }
+.dc-range-mini-controls { display: grid; grid-template-columns: 100px minmax(0, 1fr); align-items: center; padding: 0 14px; font-size: 12px; }
 .dc-sheet .dc-filters .dc-button { flex: 1; min-width: 0; padding: 10px 2px; font-size: 12px; }
 .dc-sheet .is-selected,.dc-sheet .dc-primary { color: #fff; background: #5546dc; border-color: #5546dc; }
 .dc-summary { display: flex; align-items: center; justify-content: space-between; padding: 0 14px; background: var(--surface-muted); color: var(--text-secondary); font-size: 12px; }

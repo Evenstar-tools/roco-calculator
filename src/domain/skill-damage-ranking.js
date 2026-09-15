@@ -5,6 +5,7 @@ import { normalizeNegativeStatusSide } from "./negative-status.js";
 import { calculateAllPanelStats, hasCompleteRaceStats } from "./stat.js";
 import { getSnapshotIndexes } from "./snapshot-indexes.js";
 import { resolvePowerOverride } from "./power-override.js";
+import { chooseDefaultSkillIds } from "./skill-loadout.js";
 import { skillEntriesForMode, resolveSkillEntity } from "./skill-result/loadout.js";
 import { createInitialState } from "../state/defaults.js";
 import { materializeTraitContext } from "../state/trait-values.js";
@@ -44,7 +45,7 @@ export function getDamageComparisonTemplate(state, direction, templateId, preset
 
 export function describeDamageComparisonTemplate(template) {
   if (template.id === "user-presets" && !template.displayIvs) return "各自用户预设，未配置按生命性格";
-  if (template.presetFallback) return "未存预设 · 60级 · 生命性格 · 生命／双防各60个体";
+  if (template.presetFallback) return "未配置预设，使用默认分配：60级 · 生命性格 · 生命／双防各60个体，其余0";
   const ivs = Object.entries(STAT_LABELS).filter(([key]) => Number(template.displayIvs[key]) > 0)
     .map(([key, label]) => `${label}${template.displayIvs[key]}`);
   return `60级 · ${getNature(template.natureId).name} · ${ivs.length ? `${ivs.join("／")}个体${ivs.length < 6 ? "，其余0" : ""}` : "全部0个体"}`;
@@ -70,8 +71,25 @@ function cleanTargetValues(value) {
   if (!value || typeof value !== "object") return value;
   if (Array.isArray(value)) return value.map(cleanTargetValues);
   return Object.fromEntries(Object.entries(value)
-    .filter(([key]) => !key.split(".").some((part) => TARGET_KEYS.has(part) || /^(defender|target|enemy)/u.test(part)))
+    .filter(([key]) => key.split(".").some((part) => part.startsWith("enemyTotalSkillCost")) || !key.split(".").some((part) => TARGET_KEYS.has(part) || /^(defender|target|enemy)/u.test(part)))
     .map(([key, entry]) => [key, cleanTargetValues(entry)]));
+}
+
+export function getDamageComparisonLoadout(snapshot, spirit, templateId, presetsBySpirit = {}) {
+  const preset = templateId === "user-presets" ? presetsBySpirit[spirit.id] : null;
+  const four = chooseDefaultSkillIds(snapshot, spirit.id);
+  return JSON.parse(JSON.stringify({
+    skills: preset?.skills ?? { four, single: four.find(Boolean) ?? null },
+    traitValues: preset?.traitValues ?? {},
+  }));
+}
+
+export function describeDamageComparisonLoadout(snapshot, spirit, templateId, presetsBySpirit = {}) {
+  const { skills } = getDamageComparisonLoadout(snapshot, spirit, templateId, presetsBySpirit);
+  const indexes = getSnapshotIndexes(snapshot);
+  const names = (skills.four ?? []).map((entry) => resolveSkillEntity(entry, indexes.skills)?.name ?? "空位");
+  const preset = templateId === "user-presets" && presetsBySpirit[spirit.id]?.skills;
+  return `${preset ? "预设配招" : "默认配招"}：${names.join("／") || "无"}`;
 }
 
 export function getDamageComparisonSelection(snapshot, state, direction = "forward", selectedSkillIndex) {
@@ -133,7 +151,7 @@ export function buildDamageComparisonInput({ snapshot, state, spirit, direction 
     sides: {
       ...state.sides,
       [sourceSide]: { ...source, natureMultipliers: getNatureMultipliers(source.nature), skills: cleanTargetValues(source.skills) },
-      [targetSide]: { ...initial.sides[targetSide], spiritId: spirit.id, nature: template.natureId, displayIvs: { ...template.displayIvs }, panelStats, ignoreTraits, skills: { single: null, four: [null, null, null, null] } },
+      [targetSide]: { ...initial.sides[targetSide], spiritId: spirit.id, nature: template.natureId, displayIvs: { ...template.displayIvs }, panelStats, ignoreTraits, ...getDamageComparisonLoadout(snapshot, spirit, templateId, presetsBySpirit) },
     },
     directions: {
       [direction]: { ...cleanTargetValues(attackDirection), context, currentHp: panelStats.hp, reduction: 1, starfallStacks: statuses.starfall, selectedSkillIndex: index, selectedDamageSource: "skill" },
@@ -151,7 +169,7 @@ export function filterSkillDamageRanking(rows, { query = "", filter = "all", des
   const normalized = String(query).normalize("NFKC").toLowerCase().trim();
   return [...rows].sort((a, b) => (descending ? b.percent - a.percent : a.percent - b.percent) || compareIdentity(a, b))
     .map((row, index) => ({ ...row, rank: index + 1 }))
-    .filter((row) => (filter === "all" || (filter === "half" && row.damage * 2 < row.panelStats.hp)
+    .filter((row) => ((Array.isArray(filter) && row.damage * 100 >= filter[0] * row.panelStats.hp && (filter[1] === null || row.damage * 100 < filter[1] * row.panelStats.hp)) || filter === "all" || (filter === "half" && row.damage * 2 < row.panelStats.hp)
       || (filter === "survive" && !row.lethal) || (filter === "ko" && row.lethal))
       && (!normalized || [row.spirit.fullName, row.spirit.baseName, row.spirit.dexNo, row.spirit.searchText, ...(row.spirit.aliases ?? [])]
         .some((value) => String(value ?? "").normalize("NFKC").toLowerCase().includes(normalized))));

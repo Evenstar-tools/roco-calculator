@@ -1,4 +1,5 @@
 import { buildChoiceSkillSequence } from "../choice-skill-sequence.js";
+import { gainSourcesFor } from "../gain-provenance.js";
 import {
   hasClownTrickTrait,
   resolveClownTrickDamage,
@@ -16,7 +17,7 @@ import { calculateDirectTraitDamageResult } from "./direct-trait-damage.js";
 import {
   entryDetails,
   isAdjacentPowerSkill,
-  pressureValveFixedPowerAdds,
+  pressureValvePowerSources,
   resolveEmbeddedDamageSkill,
   resolveSkillEntity,
   skillEntriesForMode,
@@ -50,15 +51,28 @@ export function calculateDirection({
   targetSide,
 }) {
   const entries = skillEntriesForMode(attackerSide, mode);
-  const pressureValveAdds = mode === "four"
-    ? pressureValveFixedPowerAdds(entries, skillsById)
+  const pressureValveSources = mode === "four"
+    ? pressureValvePowerSources(entries, skillsById)
     : {};
+  const pressureValveAdds = Object.fromEntries(Object.entries(pressureValveSources)
+    .map(([slot, sources]) => [slot, sources.reduce((sum, source) => sum + source.amount, 0)]));
   const existingFixedPowerAdds = direction.overrides?.fixedPowerAddsBySlot ?? {};
   const directionWithPressureValve = Object.keys(pressureValveAdds).length > 0
     ? {
         ...direction,
         overrides: {
           ...direction.overrides,
+          gainSources: {
+            ...direction.overrides?.gainSources,
+            ...Object.fromEntries(Object.entries(pressureValveSources).map(([slot, sources]) => {
+              const field = `fixedPowerAddsBySlot.${slot}`;
+              const previous = Number(existingFixedPowerAdds[slot]) || 0;
+              return [field, {
+                value: previous + pressureValveAdds[slot],
+                sources: [...gainSourcesFor(direction.overrides, field, previous), ...sources],
+              }];
+            })),
+          },
           fixedPowerAddsBySlot: Object.fromEntries(
             [...new Set([
               ...Object.keys(existingFixedPowerAdds),

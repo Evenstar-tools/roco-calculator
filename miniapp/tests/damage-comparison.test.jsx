@@ -3,6 +3,21 @@ import { expect, test } from "vitest";
 import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
+import DamageComparisonSheet from "../src/components/DamageComparisonSheet.jsx";
+
+test("范围可选75%以上，触底自动追加目标且没有手动加载入口", async () => {
+  const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
+  const snapshot = { meta: { id: "range-pagination" }, traits: [], spirits: Array.from({ length: 72 }, (_, index) => ({ id: String(index), fullName: `目标${index}`, types: ["火"], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })), skills: [{ id: "fire", name: "火焰", basePower: 80, type: "火", category: "magical" }] };
+  const { container } = render(<DamageComparisonSheet snapshot={snapshot} source={{ state: createInitialState(snapshot), direction: "forward" }} />);
+  await waitFor(() => expect(container.querySelectorAll(".dc-row")).toHaveLength(60));
+  fireEvent.scroll(container.querySelector(".dc-scroll"));
+  expect(container.querySelectorAll(".dc-row")).toHaveLength(72);
+  expect(screen.queryByRole("button", { name: /继续显示/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /未纳入/ })).not.toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("承伤范围下限"), { target: { value: "75" } });
+  expect(screen.getByText("承伤范围 ≥75%")).toBeInTheDocument();
+  expect(screen.getByLabelText("承伤范围上限")).toHaveValue("125");
+});
 
 test("已有星陨冻结自动关联，手动取消后重开仍保持取消，筛选可反复开关", async () => {
   const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
@@ -101,7 +116,7 @@ test("承伤选择关闭重开保留，沿用最新冻结和自定义配点且�
   fireEvent.change(dialog.getByLabelText("技能"), { target: { value: "1" } });
   fireEvent.change(dialog.getByLabelText("耐久模板"), { target: { value: "3" } });
   fireEvent.click(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" }));
-  fireEvent.click(dialog.getByRole("button", { name: "未击倒", exact: true }));
+  fireEvent.change(dialog.getByLabelText("承伤范围上限"), { target: { value: "100" } });
   fireEvent.input(dialog.getByRole("textbox", { name: "搜索承伤精灵" }), { target: { value: "乙" } });
   await waitFor(() => expect(dialog.queryByText(/正在计算/)).not.toBeInTheDocument());
   const previousRow = dialog.getByRole("button", { name: "查看乙承伤详情" }).textContent;
@@ -113,7 +128,7 @@ test("承伤选择关闭重开保留，沿用最新冻结和自定义配点且�
   expect(dialog.getByLabelText("技能")).toHaveValue("1");
   expect(dialog.getByLabelText("耐久模板")).toHaveValue("3");
   expect(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" })).toHaveAttribute("aria-checked", "true");
-  expect(dialog.getByRole("button", { name: "未击倒", exact: true })).toHaveAttribute("aria-pressed", "true");
+  expect(dialog.getByLabelText("承伤范围上限")).toHaveValue("100");
   expect(dialog.getByRole("textbox", { name: "搜索承伤精灵" })).toHaveValue("乙");
   expect(dialog.getByText(/星陨 0 层 · 冻结 4 层/)).toBeInTheDocument();
   expect(dialog.getByRole("button", { name: "查看乙承伤详情" }).textContent).not.toBe(previousRow);

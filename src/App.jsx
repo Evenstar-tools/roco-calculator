@@ -44,7 +44,7 @@ import {
   supportsChoiceTrait,
 } from "./domain/choice-skill-sequence.js";
 import { getBloodlineMagicOption } from "./domain/bloodline-magic.js";
-import { resolveSkillStatusActivation } from "./domain/skill-status-effects.js";
+import { advancePressureValveContext, resolveSkillStatusActivation } from "./domain/skill-status-effects.js";
 import {
   hasNegativeStatusSkillApplication,
   hasNegativeStatusTraitApplication,
@@ -1274,7 +1274,9 @@ function CalculatorWorkspace({ snapshot }) {
       sproutStacks,
       traitName: detectedChoiceTrait,
     });
-    updateFourSkillEntry(side, index, { context: sequence.nextContext });
+    updateFourSkillEntry(side, index, { context: operations.pressureValveUseCountAdd
+      ? advancePressureValveContext(skill, sequence.nextContext)
+      : sequence.nextContext });
     setActiveDirection(selfDirection);
     if (operations.weather) updateWeather(operations.weather);
     recordAppliedSkill(side, skill, context, operations, resolution.triggerCount);

@@ -17,6 +17,8 @@ test("临时配置不冒充预设，收藏时保存当前分配并跟随后续�
   const side = { spiritId: "fire", nature: "neutral", displayIvs: { hp: 60 }, skills: { four: [] } };
   act(() => result.current.rememberSide(side));
   expect(result.current.comparisonPresets).toEqual({});
+  act(() => result.current.rememberSide({ ...side, presetBaseline: "imported-preset" }));
+  expect(result.current.comparisonPresets.fire.nature).toBe("neutral");
   act(() => result.current.toggleSpiritFavorite(snapshot.spirits[0], side));
   expect(result.current.comparisonPresets.fire).toEqual(side);
   act(() => result.current.rememberSide({ ...side, nature: "timid" }));

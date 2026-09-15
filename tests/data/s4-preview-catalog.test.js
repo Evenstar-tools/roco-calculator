@@ -17,6 +17,10 @@ const popularConfigs = JSON.parse(
 const approvedConfigs = JSON.parse(
   readFileSync("docs/preset-review/2026-09-14-1759/常用精灵预设-可导入.json", "utf8"),
 );
+// 9月15日用户确认：摇铃魔偶沉默，生命／魔攻／物防，羽化／热身／减压阀／午夜。
+const approvedBell = approvedConfigs.entries.find(({ spiritId }) => spiritId === "spirit_d8e175477972f74d");
+approvedBell.displayIvs = { ...approvedBell.displayIvs, magicalAttack: 60, magicalDefense: 0 };
+approvedBell.skills = ["skill_1d9ad604e5ce65c8", "skill_ca2b8d247670d95a", "skill_e73ed354589cdf0b", "skill_15fb272dc50faf16"];
 
 const FINAL_NAMES = [
   "测风蝉",

@@ -1,6 +1,6 @@
 import { gainSourcesFor, sanitizeGainSources, sourceLabel } from "./gain-provenance.js";
 import { markDefinition } from "./marks.js";
-import { getSkillStatusEffectInputs } from "./skill-status-effects.js";
+import { getSkillStatusEffectInputs, pressureValveUseCount } from "./skill-status-effects.js";
 import { projectTriggerContext } from "./trigger-controls.js";
 import { refractionEnergyReduction } from "./refraction.js";
 
@@ -84,7 +84,7 @@ export function attachSkillGainSummaries(result, state, side, skills) {
   const self = state.directions?.[selfKey] ?? {};
   const opposite = state.directions?.[oppositeKey] ?? {};
   const records = sanitizeSkillActivations(self.overrides?.skillActivations);
-  for (const row of result.results ?? []) {
+  for (const [index, row] of (result.results ?? []).entries()) {
     const skill = skills.find((item) => item.id === row.skillId);
     if (!skill) continue;
     const record = records[skill.id];
@@ -118,6 +118,13 @@ export function attachSkillGainSummaries(result, state, side, skills) {
         successCount: skill.category === "defense" ? record.successCount : undefined,
         appliedEffects: [...new Set(effects)],
       };
+    }
+    if (skill.name === "减压阀") {
+      const entry = state.sides[side].skills.four[index];
+      const context = state.mode === "single" ? self.context : entry?.context;
+      const count = pressureValveUseCount(skill, context);
+      if (count) row.usageSummary = { count, appliedEffects: [`相邻技能威力+${10 + count * 20}`] };
+      else delete row.usageSummary;
     }
     // 非伤害技能也保留已生效来源，不以伤害是否可计算作为展示条件。
     if (skill.category === "status" || skill.category === "defense") {

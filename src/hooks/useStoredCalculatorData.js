@@ -299,7 +299,8 @@ export function useStoredCalculatorData(
   }
 
   return {
-    comparisonPresets: Object.fromEntries(Object.entries(spiritConfigsState.configs).filter(([id, config]) => favoriteSpiritIds.has(id) || isCompleteSpiritConfig(config))),
+    comparisonPresets: Object.fromEntries(Object.entries(spiritConfigsState.configs).filter(([id, config]) =>
+      favoriteSpiritIds.has(id) || config.presetBaseline || isCompleteSpiritConfig(config))),
     buildFavoriteConfigLibrary,
     clearIncompleteSpiritConfigs,
     clearSpiritConfigs,

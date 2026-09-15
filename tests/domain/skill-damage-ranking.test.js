@@ -44,8 +44,8 @@ describe("技能承伤对比", () => {
       water: { natureId: "cautious", displayIvs: { hp: 0, magicalAttack: 0, speed: 0, physicalDefense: 60, magicalDefense: 60, physicalAttack: 0 } },
     };
     const source = captureDamageComparison(state, direction, presets);
-    expect(source.presetsBySpirit.grass).not.toHaveProperty("traitValues");
-    expect(source.presetsBySpirit.grass).not.toHaveProperty("skills");
+    expect(source.presetsBySpirit.grass.traitValues).toEqual({ ignored: 99 });
+    expect(source.presetsBySpirit.grass.skills).toEqual(presets.grass.skills);
     presets.grass.displayIvs.hp = 0;
     expect(source.presetsBySpirit.grass.displayIvs.hp).toBe(60);
     const options = { snapshot, ...source, templateId: "user-presets" };
@@ -56,12 +56,38 @@ describe("技能承伤对比", () => {
       const expected = source.presetsBySpirit[row.spirit.id] ?? { natureId: "grounded", displayIvs: { hp: 60, physicalDefense: 60, magicalDefense: 60, speed: 0, physicalAttack: 0, magicalAttack: 0 } };
       expect(input.sides[target]).toMatchObject({ nature: expected.natureId, displayIvs: expected.displayIvs, ignoreTraits: true });
       const imported = importDamageComparisonCandidate({ ...options, spirit: row.spirit });
-      expect(imported.sides[target]).toMatchObject({ nature: expected.natureId, displayIvs: expected.displayIvs });
+      expect(imported.sides[target]).toMatchObject({ nature: expected.natureId, displayIvs: expected.displayIvs, traitValues: expected.traitValues ?? {} });
       expect(buildCalculatorViewModel({ snapshot, state: imported, activeDirection: direction }).result.selectedResult.totalDamage).toBe(row.damage);
       expect(row.template.natureId).toBe(expected.natureId);
     }
-    expect(describeDamageComparisonTemplate(ranking.rows.find((row) => row.spirit.id === "source").template)).toContain("未存预设");
+    expect(describeDamageComparisonTemplate(ranking.rows.find((row) => row.spirit.id === "source").template)).toBe("未配置预设，使用默认分配：60级 · 生命性格 · 生命／双防各60个体，其余0");
     expect(describeDamageComparisonTemplate(ranking.rows.find((row) => row.spirit.id === "grass").template)).toContain("胆小 · 生命60／魔攻60／速度60个体");
+  });
+  test.each(["forward", "reverse"])("%s 用户预设代入保留技能顺序、空位、手调与单技能配置，不改来源", (direction) => {
+    const data = { ...snapshot, skills: [...snapshot.skills,
+      { id: "water-skill", name: "水球", type: "水", category: "magical", basePower: 50 },
+    ] };
+    const state = createInitialState(data);
+    const sourceSide = direction === "forward" ? "attacker" : "defender";
+    const targetSide = sourceSide === "attacker" ? "defender" : "attacker";
+    state.sides[sourceSide].skills.four = [{ skillId: "fire", context: { skillSlot: 1 }, overrides: { basePower: 95 } }, "water-skill", null, null];
+    const skills = { four: ["water-skill", null, { skillId: "fire", context: { skillSlot: 3 }, overrides: { basePower: 120, hitCount: 2 } }, null], single: { skillId: "water-skill", context: { skillSlot: 2 }, overrides: { basePower: 70 } } };
+    const preset = { natureId: "timid", displayIvs: { hp: 60, magicalAttack: 60, speed: 60 }, skills };
+    const captured = captureDamageComparison(state, direction, { water: preset });
+    const before = JSON.stringify({ state, captured, preset });
+    const options = { snapshot: data, ...captured, templateId: "user-presets", spirit: data.spirits[2] };
+    const imported = importDamageComparisonCandidate(options);
+    expect(buildDamageComparisonInput(options).sides[targetSide].skills).toEqual(skills);
+    expect(imported.sides[targetSide].skills).toEqual(skills);
+    expect(imported.sides[sourceSide]).toEqual(state.sides[sourceSide]);
+    expect(JSON.stringify({ state, captured, preset })).toBe(before);
+    imported.sides[targetSide].skills.four[2].overrides.basePower = 1;
+    expect(captured.presetsBySpirit.water.skills.four[2].overrides.basePower).toBe(120);
+    expect(preset.skills.four[2].overrides.basePower).toBe(120);
+    const withoutPreset = importDamageComparisonCandidate({ ...options, presetsBySpirit: {} });
+    const standard = importDamageComparisonCandidate({ ...options, templateId: "standard-hp-v1" });
+    expect(standard.sides[targetSide].skills).toEqual(withoutPreset.sides[targetSide].skills);
+    expect(standard.sides[targetSide].skills).not.toEqual(skills);
   });
   test.each(["forward", "reverse"])("%s 手动特性条件优先于默认值和旧预设，承伤榜与主计算器一致", async (direction) => {
     const data = { ...snapshot,

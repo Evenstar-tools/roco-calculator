@@ -1,6 +1,7 @@
 import { calculateAllPanelStats } from "../stat.js";
 import { reducedSkillCost } from "../refraction.js";
 import { getEffectiveTraits } from "../effective-traits.js";
+import { pressureValveUseCount } from "../skill-status-effects.js";
 
 function resolveNatureMultipliers(side, snapshot) {
   if (side.natureMultipliers) return side.natureMultipliers;
@@ -55,18 +56,22 @@ export function entryDetails(entry) {
 }
 
 export function pressureValveFixedPowerAdds(entries, skillsById) {
+  return Object.fromEntries(Object.entries(pressureValvePowerSources(entries, skillsById))
+    .map(([slot, sources]) => [slot, sources.reduce((sum, source) => sum + source.amount, 0)]));
+}
+
+export function pressureValvePowerSources(entries, skillsById) {
   if (entries.length < 4) return {};
   const additions = {};
   entries.slice(0, 4).forEach((entry, index) => {
-    if (resolveSkillEntity(entry, skillsById)?.name !== "减压阀") return;
-    const useCount = Math.max(
-      0,
-      Math.floor(Number(entryDetails(entry).context?.pressureValveUseCount) || 0),
-    );
+    const skill = resolveSkillEntity(entry, skillsById);
+    if (skill?.name !== "减压阀") return;
+    const useCount = pressureValveUseCount(skill, entryDetails(entry).context);
     const bonus = 10 + useCount * 20;
+    const sources = [{ kind: "skill", id: `${skill.id}:${index}:passive`, name: `减压阀·被动 +${bonus}${useCount ? `（使用${useCount}次）` : ""}`, count: 0, amount: bonus }];
     for (const adjacentIndex of [(index + 3) % 4, (index + 1) % 4]) {
       const skillPosition = adjacentIndex + 1;
-      additions[skillPosition] = (additions[skillPosition] ?? 0) + bonus;
+      additions[skillPosition] = [...(additions[skillPosition] ?? []), ...sources];
     }
   });
   return additions;

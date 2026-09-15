@@ -1,0 +1,47 @@
+import { readFileSync } from "node:fs";
+import { expect, test } from "vitest";
+import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
+import { createInitialState } from "../../src/state/defaults.js";
+import { captureDamageComparison, importDamageComparisonCandidate } from "../../src/state/damage-comparison.js";
+import { buildDamageComparisonInput, createSkillDamageRanking } from "../../src/domain/skill-damage-ranking.js";
+import { calculateMatchup } from "../../src/domain/calculate.js";
+import { getTraitView } from "../../src/domain/calculator-view-model.js";
+import { canonicalTraitControlKey } from "../../src/state/trait-values.js";
+
+const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+const attacker = snapshot.spirits.find((spirit) => spirit.fullName === "冰钻布鲁斯");
+const defender = snapshot.spirits.find((spirit) => spirit.fullName === "游蛇魔使");
+const skillId = (name) => snapshot.skills.find((skill) => skill.name === name).id;
+
+test.each(["forward", "reverse"])("%s 冰钻榜单按目标完整配招自动计算，支持手动零能耗，代入保留特性参数", async (direction) => {
+  const state = createInitialState(snapshot);
+  const sourceSide = direction === "forward" ? "attacker" : "defender";
+  const targetSide = sourceSide === "attacker" ? "defender" : "attacker";
+  state.mode = "four";
+  state.sides[sourceSide].spiritId = attacker.id;
+  state.sides[sourceSide].skills.four = ["暴风雪", "力量增效", "火焰冲锋", "先发制人"].map(skillId);
+  const skills = { four: ["潮涌", "影袭", "水幕冲击", "叠势"].map(skillId), single: skillId("潮涌") };
+  const preset = { natureId: "jolly", displayIvs: { hp: 60, physicalAttack: 60, speed: 60, physicalDefense: 0, magicalDefense: 0, magicalAttack: 0 }, skills, traitValues: { savedValue: 7 } };
+  const options = { snapshot, ...captureDamageComparison(state, direction, { [defender.id]: preset }), spirit: defender, templateId: "user-presets", selectedSkillIndex: 0 };
+  const before = JSON.stringify(options.state);
+  const input = buildDamageComparisonInput(options);
+  const damage = (value) => calculateMatchup(snapshot, value)[direction].selectedResult.totalDamage;
+  const expected = damage(input);
+  const empty = { ...input, sides: { ...input.sides, [targetSide]: { ...input.sides[targetSide], skills: { four: [], single: null } } } };
+  expect(expected).toBeGreaterThan(damage(empty));
+  const ranking = await createSkillDamageRanking(options);
+  expect(ranking.rows.find((row) => row.spirit.id === defender.id).damage).toBe(expected);
+  const imported = importDamageComparisonCandidate(options);
+  expect(imported.sides[targetSide].skills).toEqual(skills);
+  expect(imported.sides[targetSide].traitValues).toEqual(preset.traitValues);
+  imported.sides[targetSide].ignoreTraits = true;
+  expect(damage(imported)).toBe(expected);
+  const controls = getTraitView(snapshot, attacker, "attacker").inputs;
+  const auto = controls.find((control) => control.contextKey === "enemyTotalSkillCostAuto");
+  const cost = controls.find((control) => control.contextKey === "enemyTotalSkillCost");
+  options.state.sides[sourceSide].traitValues = { [canonicalTraitControlKey(auto)]: false, [canonicalTraitControlKey(cost)]: 0 };
+  expect(damage(buildDamageComparisonInput(options))).toBe(damage(empty));
+  options.state.sides[sourceSide].traitValues[canonicalTraitControlKey(auto)] = true;
+  expect(damage(buildDamageComparisonInput(options))).toBe(expected);
+  expect(JSON.stringify(state)).toBe(before);
+});

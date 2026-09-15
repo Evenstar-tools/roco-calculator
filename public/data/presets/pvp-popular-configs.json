@@ -4204,14 +4204,14 @@
         "hp": 60,
         "speed": 0,
         "physicalAttack": 0,
-        "magicalAttack": 0,
+        "magicalAttack": 60,
         "physicalDefense": 60,
-        "magicalDefense": 60
+        "magicalDefense": 0
       },
       "skills": [
-        "skill_35c3bb6b8db8b825",
-        "skill_b53c20641170804b",
+        "skill_1d9ad604e5ce65c8",
         "skill_ca2b8d247670d95a",
+        "skill_e73ed354589cdf0b",
         "skill_15fb272dc50faf16"
       ],
       "traitValues": {}

@@ -6,6 +6,30 @@ import { createInitialState } from "../../src/state/defaults.js";
 import { damageComparisonSourceKey } from "../../src/state/damage-comparison.js";
 import { readFileSync } from "node:fs";
 
+test("承伤列表接近底部自动追加，搜索后可继续滚动且不需要按钮", async () => {
+  const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
+  const snapshot = { meta: { id: "scroll-pagination" }, traits: [],
+    spirits: Array.from({ length: 132 }, (_, index) => ({ id: `scroll-${index}`, fullName: `精灵${index}`, types: ["火"], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })),
+    skills: [{ id: "fire", name: "火焰", basePower: 80, type: "火", category: "magical" }],
+  };
+  const { container } = render(<DamageComparisonDialog snapshot={snapshot} source={{ state: createInitialState(snapshot), direction: "forward" }} onClose={vi.fn()} />);
+  await waitFor(() => expect(container.querySelectorAll(".dc-web-row")).toHaveLength(60));
+  const scroll = container.querySelector(".dc-web-scroll");
+  Object.defineProperties(scroll, { scrollHeight: { configurable: true, get: () => container.querySelectorAll(".dc-web-row").length * 80 }, clientHeight: { value: 400 } });
+  fireEvent.scroll(scroll, { target: { scrollTop: 100 } });
+  expect(container.querySelectorAll(".dc-web-row")).toHaveLength(60);
+  fireEvent.scroll(scroll, { target: { scrollTop: 4300 } });
+  expect(container.querySelectorAll(".dc-web-row")).toHaveLength(120);
+  fireEvent.change(screen.getByLabelText("搜索承伤精灵"), { target: { value: "不存在的精灵" } });
+  expect(container.querySelectorAll(".dc-web-row")).toHaveLength(0);
+  fireEvent.change(screen.getByLabelText("搜索承伤精灵"), { target: { value: "" } });
+  fireEvent.scroll(scroll, { target: { scrollTop: 9100 } });
+  expect(container.querySelectorAll(".dc-web-row")).toHaveLength(132);
+  fireEvent.scroll(scroll, { target: { scrollTop: 10060 } });
+  expect(container.querySelectorAll(".dc-web-row")).toHaveLength(132);
+  expect(screen.queryByRole("button", { name: /继续显示/ })).not.toBeInTheDocument();
+});
+
 test.each(["forward", "reverse"])("%s 首次关联目标星陨冻结，显式取消跨重开保留", async (direction) => {
   const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
   const snapshot = { meta: { id: "status-default" }, traits: [], spirits: ["甲", "乙"].map((name) => ({ id: name, fullName: name, types: ["火"], raceStats: stats, stage: "首领" })), skills: [{ id: "fire", name: "火焰", basePower: 80, type: "火", category: "magical" }] };
@@ -69,7 +93,7 @@ test.each(["starfall", "freeze"])("自动关联随最新 %s 更新，旧自动�
   expect(screen.getByRole("checkbox", { name: "沿用星陨／冻结" })).toBeChecked();
 });
 
-test.each([0, 1, 200, 201])("用户预设 %i 条的可见性、默认阈值和手动选择记忆", async (count) => {
+test.each([0, 1, 200, 201])("用户预设 %i 条的可见性、无数量阈值和手动选择记忆", async (count) => {
   const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
   const snapshot = { meta: { id: "preset-defaults" }, traits: [],
     spirits: ["甲", "乙"].map((name) => ({ id: name, fullName: name, types: ["火"], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })),
@@ -81,14 +105,16 @@ test.each([0, 1, 200, 201])("用户预设 %i 条的可见性、默认阈值和�
   const { unmount } = render(<DamageComparisonDialog snapshot={snapshot} source={source} onClose={vi.fn()} onPreferencesChange={onPreferencesChange} />);
   await screen.findByRole("button", { name: "查看乙承伤详情" });
   expect(screen.queryByRole("option", { name: "用户预设" }) !== null).toBe(count > 0);
-  expect(screen.getByLabelText("承伤耐久模板")).toHaveValue(count > 200 ? "user-presets" : "standard-hp-v1");
+  expect(screen.getByLabelText("承伤耐久模板")).toHaveValue(count > 0 ? "user-presets" : "standard-hp-v1");
   if (count) {
     fireEvent.change(screen.getByLabelText("承伤耐久模板"), { target: { value: "user-presets" } });
     await screen.findByRole("button", { name: "查看乙承伤详情" });
     fireEvent.click(screen.getByRole("button", { name: "查看乙承伤详情" }));
     expect(screen.getByText(/胆小 · 生命60／魔攻60／速度60个体/)).toBeInTheDocument();
+    expect(screen.queryByText(/未配置预设，使用默认分配/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "查看甲承伤详情" }));
-    expect(screen.getByText(/未存预设 · 60级 · 生命性格/)).toBeInTheDocument();
+    expect(screen.getByText(/未配置预设，使用默认分配：60级 · 生命性格 · 生命／双防各60个体，其余0/)).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("2 只 · 用户预设");
   }
   fireEvent.change(screen.getByLabelText("承伤耐久模板"), { target: { value: "hp-only-v1" } });
   const preferences = onPreferencesChange.mock.lastCall[0];
@@ -164,7 +190,8 @@ test("同一来源记住选择并重算最新条件，换来源或删除技能�
   fireEvent.change(dialog.getByLabelText("比较技能"), { target: { value: "1" } });
   fireEvent.change(dialog.getByLabelText("承伤耐久模板"), { target: { value: "current-defense" } });
   fireEvent.click(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" }));
-  fireEvent.click(dialog.getByRole("button", { name: "未击倒", exact: true }));
+  fireEvent.click(dialog.getByRole("button", { name: "0%至25%", exact: true }));
+  fireEvent.change(dialog.getByLabelText("承伤范围上限"), { target: { value: 100 } });
   fireEvent.change(dialog.getByLabelText("搜索承伤精灵"), { target: { value: "乙" } });
   await waitFor(() => expect(dialog.queryByText(/正在计算/)).not.toBeInTheDocument());
   const oldRow = dialog.getByRole("button", { name: "查看乙承伤详情" }).textContent;
@@ -177,7 +204,7 @@ test("同一来源记住选择并重算最新条件，换来源或删除技能�
   expect(dialog.getByLabelText("比较技能")).toHaveValue("1");
   expect(dialog.getByLabelText("承伤耐久模板")).toHaveValue("current-defense");
   expect(dialog.getByRole("checkbox", { name: "沿用星陨／冻结" })).toBeChecked();
-  expect(dialog.getByRole("button", { name: "未击倒", exact: true })).toHaveAttribute("aria-pressed", "true");
+  expect(dialog.getByText("0%–100%")).toBeInTheDocument();
   expect(dialog.getByLabelText("搜索承伤精灵")).toHaveValue("乙");
   expect(dialog.getByRole("button", { name: "查看乙承伤详情" }).textContent).not.toBe(oldRow);
   fireEvent.click(dialog.getByRole("button", { name: "查看乙承伤详情" }));

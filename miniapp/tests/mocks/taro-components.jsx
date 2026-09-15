@@ -66,17 +66,24 @@ export function ScrollView({
   scrollIntoView,
   scrollY,
   showScrollbar: _showScrollbar,
+  lowerThreshold: _lowerThreshold,
+  onScrollToLower,
   ...props
 }) {
   return (
     <div
       data-scroll-into-view={scrollIntoView}
       data-scroll-y={scrollY ? "true" : "false"}
+      onScroll={onScrollToLower}
       {...props}
     >
       {children}
     </div>
   );
+}
+
+export function Slider({ onChange, activeColor: _activeColor, ...props }) {
+  return <input type="range" {...props} onChange={(event) => onChange?.({ detail: { value: Number(event.target.value) } })} />;
 }
 
 export function Progress({

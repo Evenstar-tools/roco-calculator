@@ -30,6 +30,7 @@ const STATUS_EFFECTS = Object.freeze({
   冬至: { operations: () => ({ weather: "blizzard" }) },
   减压阀: {
     inputs: [numberInput("pressureValveUseCount", "已使用次数", 0, 20, 0)],
+    operations: (context) => ({ pressureValveUseCountAdd: Number(context.pressureValveUseCount || 0) >= 20 ? 0 : 1 }),
   },
   贪婪: {
     operations(context) {
@@ -594,8 +595,9 @@ export function getStatusSkillTriggerPreview(skill, {
         statusTriggerCount: count,
       })
     : unitResolution;
-  const unitEffect = describeDeltas(unitResolution?.deltas);
-  const cumulativeEffect = describeDeltas(totalResolution?.deltas);
+  const valveEffect = skill.name === "减压阀" && unitResolution?.applied ? "被动威力+20" : "";
+  const unitEffect = valveEffect || describeDeltas(unitResolution?.deltas);
+  const cumulativeEffect = valveEffect || describeDeltas(totalResolution?.deltas);
   return {
     count,
     cumulativeEffect: cumulativeEffect || "待满足触发条件",
@@ -687,6 +689,22 @@ function stageDeltas(effect, multiplier, context) {
 
 export function getSkillStatusEffect(skill) {
   return STATUS_EFFECTS[skill?.name] ?? null;
+}
+
+export function pressureValveUseCount(skill, context = {}) {
+  const projected = projectTriggerContext(context, getSkillStatusEffectInputs(skill));
+  return Math.min(20, Math.max(0, Math.floor(Number(projected.pressureValveUseCount) || 0)));
+}
+
+export function advancePressureValveContext(skill, context) {
+  const inputs = getSkillStatusEffectInputs(skill);
+  const control = inputs.find((input) => input.contextKey === "pressureValveUseCount");
+  const count = Math.min(20, pressureValveUseCount(skill, context) + 1);
+  return {
+    ...context,
+    pressureValveUseCount: count,
+    ...(control && Object.hasOwn(context, control.id) ? { [control.id]: count } : {}),
+  };
 }
 
 export function getSkillStatusEffectInputs(skill) {
