@@ -192,9 +192,10 @@ export function useStoredCalculatorData(
     });
   }
 
-  function previewFavoriteConfigLibrary(json, currentVersions) {
+  function previewFavoriteConfigLibrary(json, currentVersions, historicalEntries = []) {
     return parseLibrary(json, {
       currentVersions,
+      historicalEntries,
       existingFavorites: stores.favorites?.list() ?? [],
       existingSpiritConfigs: spiritConfigsRef.current,
       snapshot,

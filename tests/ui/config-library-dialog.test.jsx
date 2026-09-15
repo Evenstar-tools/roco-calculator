@@ -2,6 +2,20 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { ConfigLibraryDialog } from "../../src/components/ConfigLibraryDialog.jsx";
 
+test("没有新增时旧预设仍可更新，按钮不计入手改项", () => {
+  const onConfirmImport = vi.fn();
+  render(<ConfigLibraryDialog mode="popular" onConfirmImport={onConfirmImport} parsed={{
+    entries: [], favoriteSpiritIds: [], issueDetails: [],
+    preview: { same: 174, different: 52, added: 0, updated: 51, preserved: 1, favoritesAdded: 0 },
+    changes: [{ spiritId: "a", spiritName: "旧预设", status: "different", canUpdate: true, differences: [] },
+      { spiritId: "b", spiritName: "手改项", status: "different", canUpdate: false, differences: [] }],
+  }} />);
+  expect(screen.getByText("不同 · 将更新")).toBeVisible();
+  expect(screen.getByText("不同 · 保留手改")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "更新配置（51）" }));
+  expect(onConfirmImport).toHaveBeenCalledTimes(1);
+});
+
 test("全部相同时仅显示数量和无需更新，不列清单也不允许再次导入", () => {
   render(<ConfigLibraryDialog mode="popular" parsed={{
     entries: [], favoriteSpiritIds: [], changes: [], issueDetails: [],
@@ -10,7 +24,7 @@ test("全部相同时仅显示数量和无需更新，不列清单也不允许�
   expect(screen.getByText("相同").nextElementSibling).toHaveTextContent("226");
   expect(screen.getByText(/全部配置与本地一致，无需更新/)).toBeVisible();
   expect(screen.queryByRole("list", { name: "配置变动项目" })).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "无需导入" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "已是最新" })).toBeDisabled();
   expect(screen.queryByText(/覆盖/)).not.toBeInTheDocument();
 });
 
@@ -23,10 +37,10 @@ test("仅列新增和不同，差异标注本地值与导入值及保留本地",
       { spiritId: "b", spiritName: "精灵乙", status: "added", differences: [] },
     ],
   }} />);
-  expect(screen.getByText("不同 · 保留本地")).toBeVisible();
+  expect(screen.getByText("不同 · 保留手改")).toBeVisible();
   expect(screen.getByText("性格：本地 固执；导入 开朗")).toBeVisible();
-  expect(screen.getByText("新增 · 可导入")).toBeVisible();
-  expect(screen.getByRole("button", { name: "导入新增配置（1）" })).toBeEnabled();
+  expect(screen.getByText("新增 · 将导入")).toBeVisible();
+  expect(screen.getByRole("button", { name: "更新配置（1）" })).toBeEnabled();
 });
 
 test("常用配置按数字图鉴号升序展示，搜索保持顺序且不修改导入数据", () => {
@@ -54,7 +68,7 @@ test("常用配置按数字图鉴号升序展示，搜索保持顺序且不修�
   expect(names()).toEqual(["测试一号", "测试二号异形", "测试二号", "测试十号"]);
   fireEvent.click(screen.getByRole("button", { name: "清除" }));
   expect(names()).toEqual(["测试一号", "测试二号异形", "测试二号", "测试十号", "未知编号"]);
-  fireEvent.click(screen.getByRole("button", { name: /导入新增配置/ }));
+  fireEvent.click(screen.getByRole("button", { name: /更新配置/ }));
   expect(onConfirmImport).toHaveBeenCalledTimes(1);
   expect(entries.map((entry) => entry.spiritId)).toEqual(["ten", "unknown", "two-b", "two-a", "one"]);
 });
@@ -188,8 +202,8 @@ test("shows import preview and only confirms after a valid entry is ready", () =
     .not.toBeInTheDocument();
   expect(screen.queryByText("规则版本不同，已按当前版本校验"))
     .not.toBeInTheDocument();
-  expect(screen.getByText(/不同保留本地/)).toBeVisible();
-  fireEvent.click(screen.getByRole("button", { name: /导入新增配置/ }));
+  expect(screen.getByText(/手改配置保留/)).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: /更新配置/ }));
   expect(onConfirmImport).toHaveBeenCalledTimes(1);
 });
 
@@ -303,6 +317,6 @@ test("searches the popular preview without changing the full import action", () 
   expect(screen.getByText("0 / 2")).toBeVisible();
   expect(document.querySelector("#config-library-entries")).toBeInTheDocument();
 
-  fireEvent.click(screen.getByRole("button", { name: /导入新增配置/ }));
+  fireEvent.click(screen.getByRole("button", { name: /更新配置/ }));
   expect(onConfirmImport).toHaveBeenCalledTimes(1);
 });

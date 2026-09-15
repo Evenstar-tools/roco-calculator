@@ -73,6 +73,7 @@ function sanitizeConfig(
       ? extractTraitValues(config, snapshot)
       : cloneJson(config.traitValues ?? {}),
     updatedAt,
+    ...(typeof config.presetBaseline === "string" ? { presetBaseline: config.presetBaseline } : {}),
   };
 }
 
@@ -243,7 +244,7 @@ export function spiritConfigsRepository({
       return write(state, snapshot);
     },
     save(state, side, snapshot = null) {
-      const config = sanitizeConfig(side, now(), snapshot);
+      const config = sanitizeConfig({ ...side, presetBaseline: state?.configs?.[side.spiritId]?.presetBaseline }, now(), snapshot);
       return write({
         configs: {
           ...(state?.configs ?? {}),

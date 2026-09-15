@@ -155,7 +155,8 @@ export function ConfigLibraryDialog({
     0,
   );
   const importIssueDetails = parsed?.issueDetails ?? [];
-  const canImport = Boolean(parsed) && (parsed.preview.added > 0 || parsed.preview.favoritesAdded > 0);
+  const updateCount = (parsed?.preview.added ?? 0) + (parsed?.preview.updated ?? 0);
+  const canImport = Boolean(parsed) && (updateCount > 0 || parsed.preview.favoritesAdded > 0);
   const importChanges = [...(parsed?.changes ?? [])].sort((left, right) => entryDexNo(left) - entryDexNo(right));
 
   return (
@@ -300,7 +301,7 @@ export function ConfigLibraryDialog({
                       <li key={change.spiritId}>
                         <div className="config-library-issue-heading">
                           <strong>{change.spiritName}</strong>
-                          <span>{change.status === "added" ? "新增 · 可导入" : "不同 · 保留本地"}</span>
+                          <span>{change.status === "added" ? "新增 · 将导入" : change.canUpdate ? "不同 · 将更新" : "不同 · 保留手改"}</span>
                         </div>
                         {change.differences.map((difference) => (
                           <p key={difference.field}>{difference.field}：本地 {difference.local}；导入 {difference.incoming}</p>
@@ -362,7 +363,7 @@ export function ConfigLibraryDialog({
                 <p className="config-library-note">
                   {parsed.preview.same > 0 && !parsed.preview.different && !parsed.preview.added
                     ? "全部配置与本地一致，无需更新。"
-                    : "相同自动跳过，不同保留本地，只导入新增。"}
+                    : "旧预设更新，手改配置保留，相同跳过。"}
                   队伍与当前页面不会改变。
                 </p>
               </>
@@ -395,7 +396,7 @@ export function ConfigLibraryDialog({
             onClick={isExport ? onExport : onConfirmImport}
             type="button"
           >
-            {isExport ? "导出" : parsed?.preview.added > 0 ? `导入新增配置（${parsed.preview.added}）` : parsed?.preview.favoritesAdded > 0 ? `添加收藏（${parsed.preview.favoritesAdded}）` : "无需导入"}
+            {isExport ? "导出" : updateCount > 0 ? `更新配置（${updateCount}）` : parsed?.preview.favoritesAdded > 0 ? `添加收藏（${parsed.preview.favoritesAdded}）` : parsed?.preview.different > 0 ? "手改配置已保留" : "已是最新"}
           </button>
           <button className="secondary-action" onClick={onClose} type="button">
             取消

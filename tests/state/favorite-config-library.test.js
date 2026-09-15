@@ -575,7 +575,7 @@ describe("applyFavoriteConfigLibraryImport", () => {
     expect(result.preview).toMatchObject({ added: 0, different: 2, overwritten: 0 });
     expect(result.configs.configs).toEqual({ "spirit-a": local, "spirit-b": newLocal });
     expect(stores.spiritConfigsRepository.replace).not.toHaveBeenCalled();
-    expect(formatConfigLibraryImportResult(result.preview)).toContain("2 只不同，已保留本地配置");
+    expect(formatConfigLibraryImportResult(result.preview)).toContain("保留手改 2 条");
   });
 
   test("新增后再次导入为相同，配置和收藏不重复写入", () => {

@@ -3736,7 +3736,7 @@ test("loads the built-in popular library only on demand and imports through the 
   expect(within(configEntries).getByText("音速犬", { exact: true })).toBeVisible();
   expect(within(configEntries).queryByText("风暴战犬", { exact: true }))
     .not.toBeInTheDocument();
-  await user.click(within(dialog).getByRole("button", { name: /导入新增配置/ }));
+  await user.click(within(dialog).getByRole("button", { name: /更新配置/ }));
 
   expect(screen.getByText(/已新增 2 只配置/)).toBeVisible();
   expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);

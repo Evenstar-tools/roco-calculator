@@ -15,7 +15,7 @@ async function openPopularConfigList(page, theme) {
   await page.getByRole("button", { name: "常用精灵配置" }).click();
   const dialog = page.getByRole("dialog", { name: "常用精灵配置" });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole("button", { name: /^导入新增配置（\d+）$/ })).toBeEnabled();
+  await expect(dialog.getByRole("button", { name: /^更新配置（\d+）$/ })).toBeEnabled();
   await dialog.getByRole("button", { name: "查看精灵和技能" }).click();
   const search = dialog.getByRole("searchbox", { name: "搜索精灵名" });
   await expect(search).toBeFocused();
@@ -115,7 +115,7 @@ for (const viewport of [
     expect(Math.abs(empty.inputY - initial.inputY)).toBeLessThanOrEqual(1);
     expect(Math.abs(empty.listHeight - initial.listHeight)).toBeLessThanOrEqual(1);
     expect(Math.abs(empty.dialogHeight - initial.dialogHeight)).toBeLessThanOrEqual(1);
-    await expect(dialog.getByRole("button", { name: /^导入新增配置（\d+）$/ })).toBeEnabled();
+    await expect(dialog.getByRole("button", { name: /^更新配置（\d+）$/ })).toBeEnabled();
 
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);

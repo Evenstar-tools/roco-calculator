@@ -4,6 +4,12 @@ import { formatConfigLibraryImportResult } from "../state/favorite-config-librar
 
 export const POPULAR_CONFIG_COUNT = 226;
 
+async function loadPresetHistory() {
+  const history = await fetch("/data/presets/pvp-preset-history.json")
+    .then((result) => result.ok ? result.json() : null).catch(() => null);
+  return Array.isArray(history?.entries) ? history.entries : [];
+}
+
 function configLibraryFileName(date = new Date()) {
   const pad = (value) => String(value).padStart(2, "0");
   return `洛克计算器-收藏配置-${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}.json`;
@@ -68,9 +74,11 @@ export function useConfigLibraryFlow({
     if (!response.ok) {
       throw new Error(`内置配置读取失败：${response.status}`);
     }
+    const history = await loadPresetHistory();
     return storedData.previewFavoriteConfigLibrary(
       await response.text(),
       initialState.versions,
+      history,
     );
   }
 
@@ -99,6 +107,7 @@ export function useConfigLibraryFlow({
       const parsed = storedData.previewFavoriteConfigLibrary(
         await file.text(),
         initialState.versions,
+        await loadPresetHistory(),
       );
       setConfigLibraryParsed(parsed);
     } catch (error) {

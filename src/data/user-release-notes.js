@@ -235,7 +235,7 @@ export const S4_FEATURE_INTRO = Object.freeze({
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v2.0.2",
-    date: "2026.09.14",
+    date: "2026.09.15",
     title: "S4查询与对战工具更新",
     whatsNew: S4_FEATURE_INTRO,
     summaryHighlights: [
@@ -257,6 +257,7 @@ export const USER_RELEASE_NOTES = Object.freeze([
       "承伤对比精简为生命性格满双防、生命性格无双防、中立性格仅生命三种固定模板，保留当前配点与用户预设，导出同步实际配点。",
     ],
     fixes: [
+      "常用配置可直接更新旧预设，保留手改配置；更新按钮只统计实际更新与新增项。",
       "更新本地版 9 月 14 日 17:59 的全量 226 条预设。导入区分相同、不同和新增，跳过相同项，保留用户已有配置。",
       "星陨印记与坠星、观星、宇宙之眼同步；补齐愿力冲击各系图标及冰布丁、草布丁、火布丁、提塔别名。",
       "布灵布灵预设改为 7 层及闪光弹、量子涨落、透镜实验、影袭；离心舞者保留 1 层，配招为翼击、离子震荡、大爆炸、多维击打。",
