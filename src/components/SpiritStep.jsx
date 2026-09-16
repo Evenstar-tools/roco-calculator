@@ -11,6 +11,7 @@ export function SpiritStep({
   onDefenderFavoriteToggle,
   onDefenderSelect,
   onSwap,
+  onOpenDeer,
   spirits,
 }) {
   return (
@@ -22,6 +23,7 @@ export function SpiritStep({
           label="攻击方"
           onFavoriteToggle={onAttackerFavoriteToggle}
           onSelect={onAttackerSelect}
+          onOpenDeer={["波普鹿", "爵士鹿"].includes(attacker?.fullName) ? onOpenDeer : undefined}
           selected={attacker}
           side="attack"
           spirits={spirits}

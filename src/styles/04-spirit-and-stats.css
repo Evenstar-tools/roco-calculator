@@ -200,6 +200,20 @@
   font-size: 11px;
 }
 
+.spirit-card__deer-entry {
+  display: inline-flex;
+  margin: 3px 0 0 8px;
+  padding: 3px 7px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.spirit-card__deer-entry:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
 .spirit-card__identity p.spirit-card__pending {
   color: var(--warning, #9a6400);
   font-weight: 700;

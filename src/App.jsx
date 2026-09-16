@@ -103,13 +103,14 @@ const preloadSkillQuery = () => {
   void import("./features/skill-query/load-catalog.js").then(({ loadSkillCatalog }) => loadSkillCatalog()).catch(() => {});
 };
 
-function CalculatorWorkspace({ snapshot }) {
+function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
   const [skillQueryOpen, setSkillQueryOpen] = useState(false);
   const [rankingKind, setRankingKind] = useState(null);
   const [comparisonSource, setComparisonSource] = useState(null);
   const [comparisonPreferences, setComparisonPreferences] = useState(null);
   const [rankingsVisited, setRankingsVisited] = useState(false);
   const initialState = useMemo(() => {
+    if (initialWorkspace?.state) return structuredClone(initialWorkspace.state);
     const next = createProductInitialState(snapshot);
     return {
       ...next,
@@ -119,13 +120,13 @@ function CalculatorWorkspace({ snapshot }) {
           readNegativeStatusSettlementSetting(),
       },
     };
-  }, [snapshot]);
+  }, [snapshot, initialWorkspace]);
   const [toast, setToast] = useState("");
-  const [activeDirection, setActiveDirection] = useState("forward");
-  const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(false);
+  const [activeDirection, setActiveDirection] = useState(initialWorkspace?.activeDirection ?? "forward");
+  const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(initialWorkspace?.advancedOptionsOpen ?? false);
   const [advancedOptionsTopRequest, setAdvancedOptionsTopRequest] = useState(null);
   const nextAdvancedOptionsTopRequestRef = useRef(0);
-  const [viewMode, setViewMode] = useState("compact");
+  const [viewMode, setViewMode] = useState(initialWorkspace?.viewMode ?? "compact");
   const storedData = useStoredCalculatorData(snapshot, { onToast: setToast });
   const {
     completeSpiritIds,
@@ -1914,6 +1915,7 @@ function CalculatorWorkspace({ snapshot }) {
             }
             onAttackerFavoriteToggle={() => toggleSpiritFavorite(attacker, state.sides.attacker)}
             onAttackerSelect={(value) => changeSpirit("attacker", value)}
+            onOpenDeer={onOpenDeer ? () => onOpenDeer({ state: stateRef.current, viewMode, activeDirection, advancedOptionsOpen }) : undefined}
             onDefenderFavoriteToggle={() => toggleSpiritFavorite(defender, state.sides.defender)}
             onDefenderSelect={(value) => changeSpirit("defender", value)}
             onSwap={() => {
@@ -2245,7 +2247,7 @@ function CalculatorWorkspace({ snapshot }) {
   );
 }
 
-export function App({ initialSnapshot = null }) {
+export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDeer }) {
   const [snapshot, setSnapshot] = useState(() =>
     initialSnapshot ? withCalculatorExtras(initialSnapshot) : null,
   );
@@ -2292,7 +2294,7 @@ export function App({ initialSnapshot = null }) {
 
   return (
     <div className="app">
-      <PresetBrowseProvider><CalculatorWorkspace key={snapshot.meta.id} snapshot={snapshot} /></PresetBrowseProvider>
+      <PresetBrowseProvider><CalculatorWorkspace key={snapshot.meta.id} snapshot={snapshot} initialWorkspace={initialWorkspace} onOpenDeer={onOpenDeer} /></PresetBrowseProvider>
     </div>
   );
 }

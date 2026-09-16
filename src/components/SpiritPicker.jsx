@@ -97,6 +97,7 @@ export function SpiritPicker({
   label,
   onFavoriteToggle,
   onSelect,
+  onOpenDeer,
   selected,
   showFavorite = true,
   side,
@@ -431,6 +432,7 @@ export function SpiritPicker({
                   description={selected.traitDescription}
                   name={selected.traitName}
                 />
+                {onOpenDeer && <button className="spirit-card__deer-entry" type="button" onClick={onOpenDeer}>电鹿斩杀线 →</button>}
               </p>
             )}
           </div>
