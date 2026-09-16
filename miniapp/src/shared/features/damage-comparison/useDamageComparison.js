@@ -63,7 +63,7 @@ export function useDamageComparison(snapshot, source, preferences, onPreferences
     template, templates: getDamageComparisonTemplates(source.presetsBySpirit), templateDescription: (row) => describeDamageComparisonTemplate(row.template),
     loadoutDescription: (row) => describeDamageComparisonLoadout(snapshot, row.spirit, templateId, source.presetsBySpirit),
     gainSummary: [...new Set((ranking?.rows ?? []).map((row) => row.result?.gainSummary).filter(Boolean))].join("；"),
-    scopeDescription: `${templateId === "user-presets" ? DAMAGE_COMPARISON_SCOPE.replace("统一模板", "各自预设，未配按生命性格") : DAMAGE_COMPARISON_SCOPE}${inheritTargetStatuses ? ` · 星陨 ${statuses.starfall} 层 · 冻结 ${statuses.freeze} 层` : ""}`,
+    scopeDescription: `${templateId === "user-presets" ? DAMAGE_COMPARISON_SCOPE.replace("统一模板", "各自预设，未配按中立性格、生命60、双防0个体") : DAMAGE_COMPARISON_SCOPE}${inheritTargetStatuses ? ` · 星陨 ${statuses.starfall} 层 · 冻结 ${statuses.freeze} 层` : ""}`,
     showExcluded, setShowExcluded, progress: progress?.request === request ? progress.value : null, ranking, error, rows, selection,
     limit: Math.max(limit, rows.findIndex((row) => row.spirit.id === choices.expanded) + 1),
     showMore: () => setLimit((value) => Math.max(value, rows.findIndex((row) => row.spirit.id === choices.expanded) + 1) + 60),

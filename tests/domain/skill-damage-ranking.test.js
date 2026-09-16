@@ -54,14 +54,15 @@ describe("技能承伤对比", () => {
     const target = direction === "forward" ? "defender" : "attacker";
     for (const row of ranking.rows) {
       const input = buildDamageComparisonInput({ ...options, spirit: row.spirit });
-      const expected = source.presetsBySpirit[row.spirit.id] ?? { natureId: "grounded", displayIvs: { hp: 60, physicalDefense: 60, magicalDefense: 60, speed: 0, physicalAttack: 0, magicalAttack: 0 } };
+      const expected = source.presetsBySpirit[row.spirit.id] ?? { natureId: "neutral", displayIvs: { hp: 60, physicalDefense: 0, magicalDefense: 0, speed: 0, physicalAttack: 0, magicalAttack: 0 } };
+      expect(Boolean(row.template.presetFallback)).toBe(!source.presetsBySpirit[row.spirit.id]);
       expect(input.sides[target]).toMatchObject({ nature: expected.natureId, displayIvs: expected.displayIvs, ignoreTraits: true });
       const imported = importDamageComparisonCandidate({ ...options, spirit: row.spirit });
       expect(imported.sides[target]).toMatchObject({ nature: expected.natureId, displayIvs: expected.displayIvs, traitValues: expected.traitValues ?? {} });
       expect(buildCalculatorViewModel({ snapshot, state: imported, activeDirection: direction }).result.selectedResult.totalDamage).toBe(row.damage);
       expect(row.template.natureId).toBe(expected.natureId);
     }
-    expect(describeDamageComparisonTemplate(ranking.rows.find((row) => row.spirit.id === "source").template)).toBe("未配置预设，使用默认分配：60级 · 生命性格 · 生命／双防各60个体，其余0");
+    expect(describeDamageComparisonTemplate(ranking.rows.find((row) => row.spirit.id === "source").template)).toBe("未配置预设，使用默认分配：60级 · 中立性格 · 生命60个体，双防及其余0");
     expect(describeDamageComparisonTemplate(ranking.rows.find((row) => row.spirit.id === "grass").template)).toContain("胆小 · 生命60／魔攻60／速度60个体");
   });
   test.each(["forward", "reverse"])("%s 用户预设代入保留技能顺序、空位、手调与单技能配置，不改来源", (direction) => {

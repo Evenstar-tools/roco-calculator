@@ -52,6 +52,7 @@ html[data-theme="dark"] .damage-comparison button[aria-pressed="true"],html[data
 .dc-web-rank { font-size: 12px; color: var(--text-muted); text-align: center; }
 .dc-web-identity { display: flex; align-items: center; gap: 10px; min-width: 0; }.dc-web-identity>span { min-width: 0; }
 .dc-web-identity img { width: 40px; height: 40px; object-fit: contain; }.dc-web-identity strong { display: block; overflow-wrap: anywhere; }.dc-web-identity small { display: block; }
+.dc-web-no-preset { display: inline-block; margin-left: 6px; padding: 1px 5px; border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); background: var(--surface-soft); font-size: 10px; font-weight: 400; line-height: 1.4; vertical-align: middle; white-space: nowrap; }
 .dc-web-mobile-damage { display: none; }
 .dc-web-score { display: flex; align-items: center; gap: 12px; padding-right: 8px; }
 .dc-web-score>span:has(strong) { min-width: 88px; text-align: right; }.dc-web-score small { display: block; font-size: 11px; }

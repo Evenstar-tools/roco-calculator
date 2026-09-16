@@ -39,6 +39,21 @@ test("导出当前筛选全量而非60条可见行，保留排序和搜索，空
   expect(screen.getByRole("button", { name: "导出", exact: true })).toBeDisabled();
 });
 
+test("用户预设导出区分已有配置与中立性格默认分配", async () => {
+  const download = vi.spyOn(exporter, "downloadDamageComparison").mockResolvedValue();
+  const data = { ...snapshot, spirits: snapshot.spirits.slice(0, 2) };
+  const presetsBySpirit = { "1": { natureId: "timid", displayIvs: { hp: 60, speed: 60, magicalAttack: 60 } } };
+  render(<DamageComparisonDialog snapshot={data} source={{ state: createInitialState(data), direction: "forward", presetsBySpirit }} onClose={vi.fn()} />);
+  await waitFor(() => expect(screen.getByRole("button", { name: "导出", exact: true })).toBeEnabled());
+  fireEvent.click(screen.getByRole("button", { name: "导出", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Markdown（.md）" }));
+  await waitFor(() => expect(download).toHaveBeenCalledOnce());
+  const report = download.mock.lastCall[0];
+  expect(report.rows.find((row) => row[1] === "精灵0")[8]).toBe("未配置预设，使用默认分配：60级 · 中立性格 · 生命60个体，双防及其余0");
+  expect(report.rows.find((row) => row[1] === "精灵1")[8]).toContain("胆小");
+  expect(report.metadata.find(([key]) => key === "耐久模板")[1]).toContain("未配置按中立性格");
+});
+
 test("导出失败允许重试，Escape只关闭格式菜单", async () => {
   vi.spyOn(exporter, "downloadDamageComparison").mockRejectedValue(new Error("disk"));
   const onClose = vi.fn();

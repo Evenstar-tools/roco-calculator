@@ -30,6 +30,7 @@
 .dc-avatar { width: 34px; height: 34px; flex-shrink: 0; }
 .dc-identity { flex: 1; min-width: 0; }
 .dc-name { display: block; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.dc-no-preset { display: inline-block; margin-left: 6px; padding: 1px 5px; border: 1px solid var(--border-neutral); border-radius: 4px; color: var(--text-secondary); background: var(--surface-card); font-size: 10px; font-weight: 400; line-height: 1.4; vertical-align: middle; white-space: nowrap; }
 .dc-score { flex-shrink: 0; font-size: 17px; font-weight: 700; text-align: right; }
 .dc-track { display: flex; width: 100%; min-width: 90px; height: 6px; margin: 4px 0; border-radius: 3px; overflow: hidden; background: var(--surface-muted); }
 .dc-track > view { height: 100%; flex-shrink: 0; }

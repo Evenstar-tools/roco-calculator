@@ -35,7 +35,7 @@ export function getDamageComparisonTemplate(state, direction, templateId, preset
   if (templateId === "user-presets") {
     if (!spiritId) return template;
     const preset = presetsBySpirit[spiritId];
-    if (!preset) return { ...STANDARD_DURABILITY_TEMPLATES["standard-hp-v1"], ...template, presetFallback: true };
+    if (!preset) return { ...DAMAGE_COMPARISON_TEMPLATES["neutral-hp-only-v1"], ...template, presetFallback: true };
     return { ...template, natureId: getNature(preset.natureId).id, displayIvs: { ...preset.displayIvs } };
   }
   if (templateId !== "current-defense") return template;
@@ -44,8 +44,8 @@ export function getDamageComparisonTemplate(state, direction, templateId, preset
 }
 
 export function describeDamageComparisonTemplate(template) {
-  if (template.id === "user-presets" && !template.displayIvs) return "各自用户预设，未配置按生命性格";
-  if (template.presetFallback) return "未配置预设，使用默认分配：60级 · 生命性格 · 生命／双防各60个体，其余0";
+  if (template.id === "user-presets" && !template.displayIvs) return "各自用户预设，未配置按中立性格、生命60、双防0个体";
+  if (template.presetFallback) return "未配置预设，使用默认分配：60级 · 中立性格 · 生命60个体，双防及其余0";
   const ivs = Object.entries(STAT_LABELS).filter(([key]) => Number(template.displayIvs[key]) > 0)
     .map(([key, label]) => `${label}${template.displayIvs[key]}`);
   return `60级 · ${getNature(template.natureId).name} · ${ivs.length ? `${ivs.join("／")}个体${ivs.length < 6 ? "，其余0" : ""}` : "全部0个体"}`;

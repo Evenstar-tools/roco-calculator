@@ -107,13 +107,15 @@ test.each([0, 1, 200, 201])("用户预设 %i 条的可见性、无数量阈值�
   expect(screen.queryByRole("option", { name: "用户预设" }) !== null).toBe(count > 0);
   expect(screen.getByLabelText("承伤耐久模板")).toHaveValue(count > 0 ? "user-presets" : "standard-hp-v1");
   if (count) {
+    expect(within(screen.getByRole("button", { name: "查看甲承伤详情" })).getByText("无预设")).toBeVisible();
+    expect(within(screen.getByRole("button", { name: "查看乙承伤详情" })).queryByText("无预设")).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("承伤耐久模板"), { target: { value: "user-presets" } });
     await screen.findByRole("button", { name: "查看乙承伤详情" });
     fireEvent.click(screen.getByRole("button", { name: "查看乙承伤详情" }));
     expect(screen.getByText(/胆小 · 生命60／魔攻60／速度60个体/)).toBeInTheDocument();
     expect(screen.queryByText(/未配置预设，使用默认分配/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "查看甲承伤详情" }));
-    expect(screen.getByText(/未配置预设，使用默认分配：60级 · 生命性格 · 生命／双防各60个体，其余0/)).toBeInTheDocument();
+    expect(screen.getByText(/未配置预设，使用默认分配：60级 · 中立性格 · 生命60个体，双防及其余0/)).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("2 只 · 用户预设");
   }
   fireEvent.change(screen.getByLabelText("承伤耐久模板"), { target: { value: "hp-only-v1" } });
@@ -121,6 +123,7 @@ test.each([0, 1, 200, 201])("用户预设 %i 条的可见性、无数量阈值�
   unmount();
   render(<DamageComparisonDialog snapshot={snapshot} source={source} preferences={preferences} onClose={vi.fn()} />);
   await screen.findByRole("button", { name: "查看乙承伤详情" });
+  expect(screen.queryByText("无预设")).not.toBeInTheDocument();
   expect(screen.getByLabelText("承伤耐久模板")).toHaveValue("hp-only-v1");
 });
 

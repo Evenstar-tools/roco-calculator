@@ -5,6 +5,18 @@ import { createCalculatorStore } from "../src/state/calculator-store.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
 import DamageComparisonSheet from "../src/components/DamageComparisonSheet.jsx";
 
+test("无预设标记直接显示，详情使用中立性格生命60双防0", async () => {
+  const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
+  const snapshot = { meta: { id: "fallback-mini" }, traits: [], spirits: ["source", "target"].map((id) => ({ id, fullName: id, types: ["草"], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })), skills: [{ id: "hit", name: "测试", type: "普通", category: "magical", basePower: 80 }] };
+  const source = { state: createInitialState(snapshot), direction: "forward", presetsBySpirit: { source: { natureId: "timid", displayIvs: { hp: 60, speed: 60 } } } };
+  render(<DamageComparisonSheet snapshot={snapshot} source={source} />);
+  const row = await screen.findByRole("button", { name: "查看target承伤详情" });
+  expect(within(row).getByText("无预设")).toBeVisible();
+  expect(within(screen.getByRole("button", { name: "查看source承伤详情" })).queryByText("无预设")).not.toBeInTheDocument();
+  fireEvent.click(row);
+  expect(screen.getByText(/未配置预设，使用默认分配：60级 · 中立性格 · 生命60个体，双防及其余0/)).toBeInTheDocument();
+});
+
 test("冻结蓝条同步实伤拆分、满条筛选与免疫", async () => {
   const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
   const snapshot = { meta: { id: "freeze-mini" }, traits: [], spirits: [["source", "普通"], ["target", "草"], ["ice", "冰"]].map(([id, type]) => ({ id, fullName: id, types: [type], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })), skills: [{ id: "hit", name: "测试", type: "普通", category: "magical", basePower: 320 }] };

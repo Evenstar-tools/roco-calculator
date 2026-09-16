@@ -59,7 +59,7 @@ export default function DamageComparisonSheet({ snapshot, source, petImages = {}
           <Button className="dc-row" aria-label={`查看${row.spirit.fullName}承伤详情`} aria-expanded={expanded} onClick={() => model.setExpanded(expanded ? null : row.spirit.id)}>
             <Text className="dc-rank">{row.rank}</Text>
             {imageUrl ? <Image src={imageUrl} className="dc-avatar" mode="aspectFit" aria-hidden="true" /> : null}
-            <View className="dc-identity"><Text className="dc-name">{row.spirit.fullName}</Text><Text className="dc-note">{row.spirit.types?.join(" · ")} · 克制 {row.result?.typeMultiplier ?? "—"} · 伤害 {row.damage} HP</Text></View>
+            <View className="dc-identity"><Text className="dc-name">{row.spirit.fullName}{row.template.presetFallback ? <Text className="dc-no-preset">无预设</Text> : null}</Text><Text className="dc-note">{row.spirit.types?.join(" · ")} · 克制 {row.result?.typeMultiplier ?? "—"} · 伤害 {row.damage} HP</Text></View>
             <View className={`dc-score ${row.lethal ? "is-ko" : row.percent < 50 ? "is-low" : "is-mid"}`}><Text>{row.percent.toFixed(1)}%</Text><View className="dc-track" role="img" aria-label={breakdown}>{freezePercent > 0 ? <View className="dc-track-freeze" style={{ width: `${freezePercent}%` }} /> : null}<View className="dc-track-damage" style={{ width: `${Math.min(100 - freezePercent, damagePercent)}%` }} /></View>{freezePercent > 0 ? <Text className="dc-note dc-freeze-breakdown">{breakdown}</Text> : null}<Text className="dc-note">{row.freezeLethal ? "冻结击倒" : row.lethal ? "本次可击倒" : `剩余 ${row.remainingHp} HP`}</Text></View>
           </Button>
           {expanded ? <View className="dc-detail">
