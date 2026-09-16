@@ -176,6 +176,7 @@ export function WorkspaceOverlays({
           <div aria-hidden="true" className="app-menu__separator" />
           <div aria-hidden="true" className="app-menu__group-label">查询工具</div>
           <button type="button" onClick={() => { menuActions.onShowSkillQuery?.(); menuActions.onClose?.(); }}>技能检索</button>
+          <button type="button" onClick={() => { menuActions.onShowTransmission?.(); menuActions.onClose?.(); }}>传动计算器</button>
           <button type="button" onClick={() => { menuActions.onShowRanking?.("speed"); menuActions.onClose?.(); }}>速度线排行</button>
           <button type="button" onClick={() => { menuActions.onShowRanking?.("durability"); menuActions.onClose?.(); }}>耐久排行</button>
           <div aria-hidden="true" className="app-menu__separator" />

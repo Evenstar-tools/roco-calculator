@@ -60,6 +60,23 @@ test("keeps menu before workspace and closes it with Escape", () => {
   expect(document.activeElement).toBe(menuButtonRef.current);
 });
 
+test("opens transmission from the query tools menu and closes the menu", () => {
+  const onShowTransmission = vi.fn();
+  const onClose = vi.fn();
+  renderOverlays({
+    menu: {
+      actions: { onShowTransmission, onClose },
+      buttonRef: { current: document.createElement("button") },
+      open: true,
+      ref: { current: null },
+    },
+  });
+  const menu = screen.getByRole("navigation", { name: "应用菜单" });
+  fireEvent.click(within(menu).getByRole("button", { name: "传动计算器" }));
+  expect(onShowTransmission).toHaveBeenCalledOnce();
+  expect(onClose).toHaveBeenCalledOnce();
+});
+
 test("exposes a replayable first-run guide from the app menu", () => {
   const onFirstRunGuide = vi.fn();
   renderOverlays({

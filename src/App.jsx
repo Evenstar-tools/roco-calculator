@@ -96,6 +96,7 @@ import { DAMAGE_COMPARISON_IMPORT_NOTICE } from "./domain/skill-damage-ranking.j
 
 const loadSkillQueryPanel = () => import("./features/skill-query/SkillQueryPanel.jsx");
 const SkillQueryPanel = lazy(loadSkillQueryPanel);
+const TransmissionPanel = lazy(() => import("./features/transmission/TransmissionPanel.jsx"));
 const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
 const DamageComparisonDialog = lazy(() => import("./components/DamageComparisonDialog.jsx"));
 const preloadSkillQuery = () => {
@@ -105,6 +106,7 @@ const preloadSkillQuery = () => {
 
 function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
   const [skillQueryOpen, setSkillQueryOpen] = useState(false);
+  const [transmissionOpen, setTransmissionOpen] = useState(false);
   const [rankingKind, setRankingKind] = useState(null);
   const [comparisonSource, setComparisonSource] = useState(null);
   const [comparisonPreferences, setComparisonPreferences] = useState(null);
@@ -1746,6 +1748,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
         onShowProductAccess: () => overlays.setProductAccessOpen(true),
         onShowDataSource: () => overlays.setDataSourceOpen(true),
         onShowSkillQuery: () => setSkillQueryOpen(true),
+        onShowTransmission: () => setTransmissionOpen(true),
         onShowRanking: (kind) => { setRankingsVisited(true); setRankingKind(kind); },
       },
       buttonRef: overlays.menu.buttonRef,
@@ -2241,6 +2244,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
         }}
       /></Suspense> : null}
       {rankingsVisited ? <Suspense fallback={<div role="status">正在打开排行榜…</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}
+      {transmissionOpen && <Suspense fallback={<div role="status">正在打开传动计算器…</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} onClose={() => setTransmissionOpen(false)} /></Suspense>}
       {skillQueryOpen && <Suspense fallback={<div role="status">正在打开技能查询…</div>}><SkillQueryPanel skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>
