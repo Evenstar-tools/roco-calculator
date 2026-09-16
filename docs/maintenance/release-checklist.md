@@ -11,7 +11,7 @@
 ## 版本号单一事实来源
 
 - [ ] 版本号只改两处：根 `package.json`（网页 / 桌面）与 `miniapp/package.json`（小程序）。
-- [ ] 在 `CHANGELOG.md` 与 `src/data/user-release-notes.js` 顶部各新增一条对应新版本的记录。
+- [ ] 网页／桌面升级版本时，在 `CHANGELOG.md` 与 `src/data/user-release-notes.js` 顶部各新增对应记录；同版本修复追加当前版本。小程序独立发布只追加仓库日志的平台小节，不新增或污染网页用户记录。
 - [ ] 同步展示型版本文件：`public/sw.js` 的 `CACHE_NAME`、`miniapp/src/version.js` 的 `MINIAPP_VERSION` 与 `MINIAPP_UPDATE_DATE`。
 - [ ] 不修改任何测试或门禁脚本里的版本字符串与发布文案；它们全部从上述来源派生，出现需要手改的断言就是回归，应改断言的取数方式而不是改字面量。
 
@@ -72,7 +72,8 @@ npm run desktop:release-assets
 ## 发布
 
 - [ ] 已完成“版本号单一事实来源”一节的全部改动。
-- [ ] 更新应用内用户版更新记录，只写用户可理解的变化，且不复述历史版本条目。
+- [ ] 应用内用户记录只写网页／桌面用户可理解的变化，不混入小程序独立版本、构建上传与提审过程，且不复述历史条目；GitHub `CHANGELOG.md` 保留各平台完整维护记录。
+- [ ] 运行 `npx vitest run --config config/vite.config.mjs tests/docs/release-notes.test.js` 验证用户日志与仓库记录的边界。
 - [ ] 创建 Git 标签与 GitHub Release，仅上传带版本号的安装包。
 - [ ] Release 不上传 WebApp ZIP、小程序 ZIP 或 `SHA256SUMS.txt`；校验文件仅保留在本地发布归档。
 - [ ] 不再提供固定文件名的直链；应用内和网页入口统一打开当前 Release 页面。

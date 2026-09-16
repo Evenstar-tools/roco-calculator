@@ -35,6 +35,13 @@ describe("版本记录", () => {
     expect(currentRelease.title.trim().length).toBeGreaterThan(0);
   });
 
+  test("网页桌面用户记录不混入小程序发布与构建日志，仓库保留完整记录", () => {
+    expect(JSON.stringify(USER_RELEASE_NOTES)).not.toMatch(/小程序|微信|miniapp|weapp|Intl\.Collator|生产包|提审/u);
+    const changelog = readFileSync(path.join(process.cwd(), "CHANGELOG.md"), "utf8");
+    expect(changelog).toContain("### 小程序");
+    expect(changelog).toContain("Intl.Collator");
+  });
+
   test("正式版本号唯一且按发布顺序从新到旧排列", () => {
     const versions = versionedReleases.map(({ version }) => version);
 
@@ -67,12 +74,10 @@ describe("版本记录", () => {
   test("补丁只进入版本记录，不冒充新的功能介绍", () => {
     expect(S4_PREVIEW_USER_RELEASE.summaryHighlights).toEqual(expect.arrayContaining([
       expect.stringContaining("找不到对应首领"),
-      expect.stringContaining("正式包体积"),
     ]));
     expect(S4_PREVIEW_USER_RELEASE.sections.find(({ kind }) => kind === "fix")?.items)
       .toEqual(expect.arrayContaining([
         expect.stringContaining("进化链现在可以双向查找"),
-        expect.stringContaining("不删减内容"),
       ]));
     expect(featuredRelease.whatsNew.items.map(({ title }) => title).join("\n"))
       .not.toMatch(/进化链|包体积/u);

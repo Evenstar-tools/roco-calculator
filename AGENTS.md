@@ -52,4 +52,7 @@
 
 - “已测试”不等于“已打包”，“已上传云盘”不等于“已发送给晚星”，三者必须分开记录。
 - 工作树有未提交改动时，安装包必须由当前工作树重新构建；不得发送同版本目录中的旧包。
-- 每次打包前先补齐 `CHANGELOG.md` 和 `src/data/user-release-notes.js`，再执行项目发布门禁。
+- 每次发布前更新 `CHANGELOG.md` 的完整维护记录；仅当网页／桌面存在用户可感知的变化时更新 `src/data/user-release-notes.js`，再执行项目发布门禁。
+- `CHANGELOG.md` 在 GitHub 保留各平台完整历史、技术修复、构建与验收记录；小程序条目明确写平台及独立版本号，不因应用内精简而删除历史。
+- `src/data/user-release-notes.js` 仅用于网页／桌面用户日志，不写小程序独立更新、版本号、打包上传或提审过程；跨端修复只描述网页／桌面的实际影响。
+- 维护发布记录后运行 `npx vitest run --config config/vite.config.mjs tests/docs/release-notes.test.js`，检查版本对应关系及平台日志隔离；小程序独立发布不要求新增网页版本记录。
