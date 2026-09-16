@@ -9,6 +9,7 @@ vi.mock("../../src/features/damage-comparison/useDamageComparison.js", () => ({
       spirit: { id: String(index), fullName: `精灵${index}`, types: ["光"] },
       rank: index + 1, damage: 10, percent: 10, remainingHp: 90,
       result: { typeMultiplier: value },
+      template: { id: "standard-hp-v1", presetFallback: false },
     })), limit: 20,
   }),
 }));
