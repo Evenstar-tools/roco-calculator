@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import {
+  MINIAPP_DAMAGE_COMPARISON_ENABLED_KEY,
   MINIAPP_MEMORY_ENABLED_KEY,
   MINIAPP_NEGATIVE_STATUS_ENABLED_KEY,
   MINIAPP_PERSISTENCE_SCHEMA_VERSION,
@@ -21,6 +22,28 @@ const COMPLETE_RACE_STATS = {
   physicalDefense: 100,
   magicalDefense: 100,
 };
+
+test.each([undefined, false, "true", 1, null, true])("承伤对比仅在明确手动开启时启用 (%s)", (value) => {
+  const storage = createMemoryStorage();
+  if (value !== undefined) storage.set(MINIAPP_DAMAGE_COMPARISON_ENABLED_KEY, value);
+  expect(createPersistence({ storage }).getDamageComparisonEnabled()).toBe(value === true);
+});
+
+test("承伤对比读存储失败仍默认关闭", () => {
+  const storage = createMemoryStorage();
+  storage.get.mockImplementation(() => { throw new Error("storage unavailable"); });
+  expect(createPersistence({ storage }).getDamageComparisonEnabled()).toBe(false);
+});
+
+test("承伤对比手动开启和关闭均保留至下次启动", () => {
+  const storage = createMemoryStorage();
+  const persistence = createPersistence({ storage });
+  expect(persistence.getDamageComparisonEnabled()).toBe(false);
+  persistence.setDamageComparisonEnabled(true);
+  expect(createPersistence({ storage }).getDamageComparisonEnabled()).toBe(true);
+  persistence.setDamageComparisonEnabled(false);
+  expect(createPersistence({ storage }).getDamageComparisonEnabled()).toBe(false);
+});
 
 test("保存并读回生效来源，不接受对不上合计的来源", () => {
   const snapshot = createSnapshot();

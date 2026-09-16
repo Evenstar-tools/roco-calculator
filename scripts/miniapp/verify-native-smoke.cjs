@@ -27,6 +27,9 @@ async function run() {
   const checks = [];
   let page;
   let root;
+  const comparisonKey = "rock-calculator.miniapp.damage-comparison-enabled.v1";
+  let previousComparisonChoice;
+  let comparisonChoiceCaptured = false;
   miniProgram.on("exception", (error) => errors.push(error));
   const report = { version, passed: false, checks, errors };
   async function refresh() {
@@ -95,7 +98,12 @@ async function run() {
   }
   try {
     report.toolInfo = await miniProgram.send("Tool.getInfo");
+    previousComparisonChoice = await miniProgram.callWxMethod("getStorageSync", comparisonKey);
+    comparisonChoiceCaptured = true;
+    await miniProgram.callWxMethod("removeStorageSync", comparisonKey);
     await refresh();
+    assert.equal(await root.$(".dc-entry"), null, "fresh settings must hide damage comparison");
+    checks.push("comparison-default: no saved preference means entry hidden");
     checks.push("cold-start: bundled S4 workspace rendered");
     await screenshot("01-cold-start.png");
 
@@ -106,8 +114,25 @@ async function run() {
     const switches = await root.$$(".settings-sheet__switch");
     report.memoryEnabled = String(await switches[0].attribute("class")).includes("--on");
     checks.push("settings: new runtime version displayed");
+    const comparisonRow = await matchText(".settings-sheet__row", "承伤对比");
+    const comparisonToggle = await comparisonRow.$(".settings-sheet__switch");
+    assert.ok(comparisonToggle, "comparison settings switch is missing");
+    assert.ok(!String(await comparisonToggle.attribute("class")).includes("--on"), "comparison must default to off");
     await screenshot("02-settings-version.png");
+    await comparisonToggle.tap();
+    await wait(350);
     await tap(".settings-sheet__close");
+    await find(".dc-entry");
+    await refresh();
+    await find(".dc-entry");
+    checks.push("comparison-opt-in: manually enabled choice persists after restart");
+    await tap(".app-header__action");
+    const enabledRow = await matchText(".settings-sheet__row", "承伤对比");
+    await (await enabledRow.$(".settings-sheet__switch")).tap();
+    await wait(350);
+    await tap(".settings-sheet__close");
+    assert.equal(await root.$(".dc-entry"), null, "disabled comparison entry must disappear");
+    checks.push("comparison-disable: entry disappears when turned off");
 
     await spirit("defender", "圣光迪莫");
     await spirit("attacker", "迪莫");
@@ -171,6 +196,13 @@ async function run() {
     await screenshot("failure.png").catch(() => {});
     throw error;
   } finally {
+    if (comparisonChoiceCaptured) {
+      if (previousComparisonChoice === "" || previousComparisonChoice === undefined) {
+        await miniProgram.callWxMethod("removeStorageSync", comparisonKey);
+      } else {
+        await miniProgram.callWxMethod("setStorageSync", comparisonKey, previousComparisonChoice);
+      }
+    }
     await writeFile(path.join(outputDir, "native-smoke-report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
     miniProgram.disconnect();
     process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
