@@ -565,7 +565,7 @@ test("承伤榜用户预设代入主页面恢复配招及手动威力，不更�
   await user.click(screen.getByRole("option", { name: /风力冲击/ }));
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "显示设置" }));
-  await user.click(screen.getByRole("checkbox", { name: "承伤对比" }));
+  expect(screen.getByRole("checkbox", { name: "承伤对比" })).toBeChecked();
   await user.click(screen.getByRole("button", { name: "完成" }));
   await user.click(screen.getByRole("button", { name: "查看全精灵承伤" }));
   await user.click(await screen.findByRole("button", { name: "筛选", exact: true }));
@@ -3496,24 +3496,25 @@ test("menu keeps clear first and hides cleanup and sharing", async () => {
   expect(screen.queryByRole("button", { name: "赛季记录" })).not.toBeInTheDocument();
 });
 
-test("enables type analysis from display settings and remembers the switch", async () => {
+test("type analysis defaults on and remembers explicitly disabling it", async () => {
   const user = userEvent.setup();
   const first = render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
 
-  expect(screen.queryByRole("region", { name: "属性分析" })).not.toBeInTheDocument();
+  expect(screen.getByRole("region", { name: "属性分析" })).toBeVisible();
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "显示设置" }));
+  expect(screen.getByRole("checkbox", { name: "属性克制与打击面" })).toBeChecked();
   await user.click(screen.getByRole("checkbox", { name: "属性克制与打击面" }));
   await user.click(screen.getByRole("button", { name: "完成" }));
 
-  expect(screen.getByRole("region", { name: "属性分析" })).toBeVisible();
-  expect(localStorage.getItem(TYPE_COVERAGE_STORAGE_KEY)).toBe("1");
+  expect(screen.queryByRole("region", { name: "属性分析" })).not.toBeInTheDocument();
+  expect(localStorage.getItem(TYPE_COVERAGE_STORAGE_KEY)).toBe("0");
 
   first.unmount();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
-  expect(screen.getByRole("region", { name: "属性分析" })).toBeVisible();
+  expect(screen.queryByRole("region", { name: "属性分析" })).not.toBeInTheDocument();
 });
 
 test("enables the detailed durability overview without changing HP or undo history", async () => {
@@ -3564,31 +3565,31 @@ test("enables the detailed durability overview without changing HP or undo histo
   ).toBeVisible();
 });
 
-test("承伤对比由显示设置控制，默认隐藏、启用后保留且不占撤回记录", async () => {
+test("承伤对比默认开启、手动关闭后保留且不占撤回记录", async () => {
   const user = userEvent.setup();
   const first = render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
-  expect(screen.queryByRole("button", { name: "查看全精灵承伤" })).not.toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: "承伤对比" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "查看全精灵承伤" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "承伤对比" })).toBeInTheDocument();
   const undoLabel = screen.getByRole("button", { name: /撤回上一步/ }).getAttribute("aria-label");
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "显示设置" }));
-  expect(screen.getByRole("checkbox", { name: "承伤对比" })).not.toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "承伤对比" })).toBeChecked();
   await user.click(screen.getByRole("checkbox", { name: "承伤对比" }));
   await user.click(screen.getByRole("button", { name: "完成" }));
-  expect(screen.getByRole("button", { name: "查看全精灵承伤" })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "承伤对比" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "查看全精灵承伤" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "承伤对比" })).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: undoLabel })).toBeInTheDocument();
   first.unmount();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
-  expect(screen.getByRole("button", { name: "查看全精灵承伤" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "查看全精灵承伤" })).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "显示设置" }));
   await user.click(screen.getByRole("checkbox", { name: "承伤对比" }));
   await user.click(screen.getByRole("button", { name: "完成" }));
-  expect(screen.queryByRole("button", { name: "查看全精灵承伤" })).not.toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: "承伤对比" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "查看全精灵承伤" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "承伤对比" })).toBeInTheDocument();
 });
 
 test("enables negative-status settlement, edits stacks, and remembers the switch", async () => {

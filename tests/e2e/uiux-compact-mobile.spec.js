@@ -290,7 +290,7 @@ test("keeps the compact swap action centered between both spirit inputs at 320px
   });
 });
 
-test("starts with static power and every optional display setting off", async ({ page }) => {
+test("starts with static power and the requested analysis settings on", async ({ page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
   await page.goto("/");
   await expect(page.getByRole("combobox", { name: "攻击方精灵" })).toBeVisible();
@@ -307,7 +307,10 @@ test("starts with static power and every optional display setting off", async ({
     "aria-pressed",
     "false",
   );
-  for (const name of ["属性克制与打击面", "显示面板耐久", "负面状态结算"]) {
+  for (const name of ["属性克制与打击面", "承伤对比"]) {
+    await expect(dialog.getByRole("checkbox", { name })).toBeChecked();
+  }
+  for (const name of ["显示面板耐久", "负面状态结算"]) {
     await expect(dialog.getByRole("checkbox", { name })).not.toBeChecked();
   }
 });

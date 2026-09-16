@@ -59,9 +59,10 @@ export function writePowerDisplayMode(
 
 export function readTypeCoverageSetting(storage = globalThis.localStorage) {
   try {
-    return storage?.getItem(TYPE_COVERAGE_STORAGE_KEY) === "1";
+    const value = storage?.getItem(TYPE_COVERAGE_STORAGE_KEY);
+    return value == null || value === "1";
   } catch {
-    return false;
+    return true;
   }
 }
 
@@ -106,9 +107,10 @@ export function writeDurabilityOverviewSetting(
 
 export function readDamageComparisonSetting(storage = globalThis.localStorage) {
   try {
-    return storage?.getItem(DAMAGE_COMPARISON_STORAGE_KEY) === "1";
+    const value = storage?.getItem(DAMAGE_COMPARISON_STORAGE_KEY);
+    return value == null || value === "1";
   } catch {
-    return false;
+    return true;
   }
 }
 

@@ -8,6 +8,8 @@ import {
   readNegativeStatusSettlementSetting,
   readThemeSetting,
   readTypeCoverageSetting,
+  readDamageComparisonSetting,
+  writeDamageComparisonSetting,
   writePowerDisplayMode,
   writeDurabilityOverviewSetting,
   writeThemeSetting,
@@ -22,17 +24,18 @@ function createStorage(value = null) {
   };
 }
 
-test("all optional display settings default off and power defaults static", () => {
+test("type coverage and damage comparison default on while other defaults stay unchanged", () => {
   const storage = createStorage();
   expect(readPowerDisplayMode(storage)).toBe("static");
-  expect(readTypeCoverageSetting(storage)).toBe(false);
+  expect(readTypeCoverageSetting(storage)).toBe(true);
+  expect(readDamageComparisonSetting(storage)).toBe(true);
   expect(readDurabilityOverviewSetting(storage)).toBe(false);
   expect(readNegativeStatusSettlementSetting(storage)).toBe(false);
 });
 
 describe("type coverage display setting", () => {
-  test("defaults to off", () => {
-    expect(readTypeCoverageSetting(createStorage())).toBe(false);
+  test("defaults to on", () => {
+    expect(readTypeCoverageSetting(createStorage())).toBe(true);
   });
 
   test("persists an enabled setting", () => {
@@ -44,6 +47,21 @@ describe("type coverage display setting", () => {
   test("treats unexpected stored values as off", () => {
     expect(readTypeCoverageSetting(createStorage("broken"))).toBe(false);
   });
+});
+
+test.each([
+  [readTypeCoverageSetting, writeTypeCoverageSetting],
+  [readDamageComparisonSetting, writeDamageComparisonSetting],
+])("default-on setting preserves explicit choices and handles unavailable storage", (read, write) => {
+  const storage = createStorage();
+  expect(read(storage)).toBe(true);
+  write(storage, false);
+  expect(read(storage)).toBe(false);
+  write(storage, true);
+  expect(read(storage)).toBe(true);
+  expect(read(null)).toBe(true);
+  expect(read({ getItem() { throw new Error("denied"); } })).toBe(true);
+  expect(read({ getItem() { return "broken"; } })).toBe(false);
 });
 
 describe("durability overview display setting", () => {
