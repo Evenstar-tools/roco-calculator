@@ -397,6 +397,7 @@ function sanitizePresetSkills(state, snapshot) {
 
 function singlePowerOverrides(overrides = {}, { includeTemporary = true } = {}) {
   const selected = {
+    hitCount: overrides.hitCount ?? null,
     basePower: overrides.basePower ?? null,
     displayedPower: overrides.displayedPower ?? null,
     powerMode: overrides.powerMode ?? "base",
@@ -909,6 +910,7 @@ export function selectSingleSkill(
         powerOverride: null,
       }
     : {
+        hitCount: null,
         basePower: null,
         displayedPower: null,
         powerMode: "base",

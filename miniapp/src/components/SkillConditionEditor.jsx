@@ -225,7 +225,7 @@ export default function SkillConditionEditor({
     ),
   );
   const configuredHitCount = Number(direction?.hitCount);
-  const hitCount = editableHitCountInput
+  const hitCount = editableHitCountInput || skill?.name === "传感器"
     ? resolvedHitCount
     : Number.isFinite(configuredHitCount) && configuredHitCount >= 1
       ? Math.min(99, Math.floor(configuredHitCount))
@@ -259,10 +259,15 @@ export default function SkillConditionEditor({
     }
     onDirectionChange({ hitCount: count });
   };
-  const updateDamageHitCount = (count) => {
+  const updateDamageHitCount = (count, { reset = false } = {}) => {
     const normalized = Math.max(1, Math.floor(Number(count) || 1));
     if (!editableHitCountInput) {
-      onDirectionChange({ hitCount: normalized });
+      onDirectionChange({
+        hitCount: normalized,
+        ...(skill?.name === "传感器" ? {
+          overrides: { hitCount: reset ? null : Math.max(1, normalized - (Number(result?.automaticHitCountAdd) || 0)) },
+        } : {}),
+      });
       return;
     }
     const automaticHitCountAdd = Math.floor(
@@ -468,7 +473,7 @@ export default function SkillConditionEditor({
           <View className="condition-editor__field condition-editor__field--number">
             <View className="condition-editor__field-heading">
               <Text className="condition-editor__label">伤害连击数</Text>
-              <Button className="condition-editor__power-reset" aria-label="恢复默认连击数" onClick={() => updateDamageHitCount(Math.min(resolvedHitCountMaximum, getDefaultHitCount(skill) + (editableHitCountInput ? Number(result?.automaticHitCountAdd) || 0 : 0)))}>恢复默认</Button>
+              <Button className="condition-editor__power-reset" aria-label="恢复默认连击数" onClick={() => updateDamageHitCount(skill?.name === "传感器" && result?.automaticHitCount !== undefined ? result.automaticHitCount : Math.min(resolvedHitCountMaximum, getDefaultHitCount(skill) + (editableHitCountInput ? Number(result?.automaticHitCountAdd) || 0 : 0)), { reset: true })}>恢复默认</Button>
             </View>
             <View className="condition-editor__number-stepper">
             <Button className="condition-editor__step-button" aria-label="减少连击数" disabled={hitCount <= 1} onClick={() => updateDamageHitCount(hitCount - 1)}>−</Button>

@@ -20,6 +20,19 @@ import {
   updateMirroredTraitContext,
 } from "../../src/state/calculator-session.js";
 
+test("传感器显式连击随技能记忆保存，不串到别的单技能", () => {
+  const sensor = runtimeSnapshot.skills.find(({ name }) => name === "传感器");
+  const other = runtimeSnapshot.skills.find(({ name }) => name === "拆卸");
+  let state = createProductInitialState(runtimeSnapshot);
+  state.sides.attacker.skills.single = { skillId: sensor.id };
+  state.directions.forward.overrides.hitCount = 6;
+  state.directions.forward.hitCount = 6;
+  state = selectSingleSkill(state, { direction: "forward", side: "attacker", skillId: other.id, snapshot: runtimeSnapshot }).state;
+  expect(state.directions.forward.overrides.hitCount).toBeNull();
+  state = selectSingleSkill(state, { direction: "forward", side: "attacker", skillId: sensor.id, snapshot: runtimeSnapshot }).state;
+  expect(state.directions.forward.overrides.hitCount).toBe(6);
+});
+
 test("能力等级按正负九十九层封顶", () => {
   expect(abilityLevelMultiplier(99, 0)).toBeCloseTo(10.9);
   expect(abilityLevelMultiplier(100, 0)).toBeCloseTo(10.9);

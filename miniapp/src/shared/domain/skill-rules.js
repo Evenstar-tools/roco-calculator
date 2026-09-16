@@ -349,6 +349,26 @@ function resolvePositionPowerAdd(skill, context) {
   ]);
 }
 
+function resolvePositionHitCount(skill, context) {
+  const params = skill.ruleParams ?? {};
+  if (!isFiniteNumber(context.skillPosition)) {
+    return needsInput(
+      [numberInput("skillPosition", "技能位置")],
+      "需要技能位置才能确定连击数",
+    );
+  }
+  const position = Math.floor(Number(context.skillPosition));
+  const hitCount = params.baseHitCount +
+    (params.positions.includes(position) ? params.add : 0);
+  return exact(Number(skill.basePower), [{
+    label: "技能位置连击",
+    input: position,
+    before: params.baseHitCount,
+    after: hitCount,
+    source: "reviewed-rule:position-hit-count-v1",
+  }], { hitCount });
+}
+
 function resolveBooleanPowerAdd(skill, context) {
   const params = skill.ruleParams ?? {};
   const contextKey = params.contextKey ?? "conditionTriggered";
@@ -1148,6 +1168,7 @@ const RULES = new Map([
   ["stack_plus_counter_add", resolveStackPlusCounterAdd],
   ["cost_scaled", resolveCostScaled],
   ["hit_count_scaled", resolveHitCountScaled],
+  ["position_hit_count", resolvePositionHitCount],
   ["swarm_donations", resolveSwarmDonations],
   ["threshold_power_multiplier", resolveThresholdPowerMultiplier],
   ["exponential_scaled", resolveExponentialScaled],

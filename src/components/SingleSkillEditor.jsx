@@ -459,7 +459,9 @@ export function SingleSkillEditor({
     defenderTraitInputs.some(
       (input) => dynamicInputContextKey(input) === "defenderHpPercent",
     );
-  const resolutionSummary = describeResolution(result);
+  const positionTraitStep = result?.formulaSteps?.find((step) => step.label === "向心力");
+  const resolutionSummary = describeResolution(result) ||
+    (positionTraitStep ? `向心力：威力 +${positionTraitStep.after}` : "");
   const effectiveAttackerTraits = attackerTraits.length > 0
     ? attackerTraits
     : attackerTrait
@@ -663,9 +665,12 @@ export function SingleSkillEditor({
           <div className="field-group manual-hit-field">
             <span>连击次数</span>
             <button className="manual-hit-reset" type="button" onClick={() => {
-              const value = Math.min(hitCountMaximum, getDefaultHitCount(selectedSkill) + (Number(result?.automaticHitCountAdd) || 0));
+              const value = selectedSkill?.name === "传感器" && result?.automaticHitCount !== undefined
+                ? result.automaticHitCount
+                : Math.min(hitCountMaximum, getDefaultHitCount(selectedSkill) + (Number(result?.automaticHitCountAdd) || 0));
               setHitDraft(String(value));
-              onHitCountChange(value);
+              if (selectedSkill?.name === "传感器") onHitCountChange(value, { reset: true });
+              else onHitCountChange(value);
             }}>恢复默认</button>
             <div className="manual-hit-stepper">
             <button type="button" aria-label="减少连击次数" disabled={Number(hitDraft) <= 1} onClick={() => {

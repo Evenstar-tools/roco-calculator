@@ -433,6 +433,10 @@ html[data-theme="dark"] .result-rail__warning {
   grid-template-columns: 15px minmax(58px, 0.8fr) minmax(56px, 1fr) 48px 44px;
 }
 
+.skill-result-row--freeze {
+  grid-template-columns: 15px minmax(78px, 0.8fr) minmax(32px, 1fr) 48px 44px;
+}
+
 .skill-result-list__columns {
   display: grid;
   min-height: 22px;

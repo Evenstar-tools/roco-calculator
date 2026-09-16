@@ -26,11 +26,8 @@ function compactStatusSummary(settlement) {
         .filter(([, stacks]) => Number(stacks) > 0)
         .map(([id, stacks]) => `${STATUS_LABELS[id]}×${stacks}`);
   const freezeThreshold = Number(settlement.freeze?.thresholdPercent) || 0;
-  const freezeThresholdHp = Number.isFinite(Number(settlement.freeze?.thresholdHp))
-    ? Math.max(0, Number(settlement.freeze.thresholdHp))
-    : Math.floor((Number(settlement.maxHp) || 0) * freezeThreshold / 100);
   if (freezeThreshold > 0) {
-    parts.push(freezeThresholdHp > 0 ? `斩杀≤${freezeThresholdHp}HP` : `斩杀线${freezeThreshold}%`);
+    parts.push(settlement.freeze?.lethal ? "冻结击倒" : `冻结覆盖${freezeThreshold}%`);
   }
   return parts.join(" · ") || null;
 }
@@ -260,7 +257,7 @@ function SkillResultRow({ index, item, onClick }) {
             type: "button",
           }
         : {})}
-      className={`skill-result-row${isTrait || isBloodline ? " skill-result-row--trait" : ""}${onClick ? " skill-result-row--action" : ""}${item.selected ? " is-selected" : ""}`}
+      className={`skill-result-row${isTrait || isBloodline ? " skill-result-row--trait" : ""}${Number(item.negativeStatusSettlement?.freeze?.thresholdPercent) > 0 ? " skill-result-row--freeze" : ""}${onClick ? " skill-result-row--action" : ""}${item.selected ? " is-selected" : ""}`}
       data-tone={damageTone(displayPercent)}
     >
       <span className={`skill-result-row__index${isTrait || isBloodline ? " skill-result-row__index--trait" : ""}`}>

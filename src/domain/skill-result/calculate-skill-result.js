@@ -133,6 +133,32 @@ export function calculateSkillResult({
     ...directionOverrides.context,
     ...slotOverrides.context,
   };
+  const positionControl = getSkillEffectInputs(skill).find(
+    (input) => input.contextKey === "skillPosition",
+  );
+  const positionContext = mode === "four"
+    ? { ...details.context, ...slotOverrides.context }
+    : rawContext;
+  const resolvedPosition = finiteNumber(
+    (positionControl
+      ? projectTriggerContext(positionContext, [positionControl])
+      : positionContext).skillPosition,
+    skillPosition,
+  );
+  rawContext.skillPosition = resolvedPosition;
+  if (positionControl) rawContext[positionControl.id] = resolvedPosition;
+  const positionInputs = mode === "single" &&
+    skill.category !== "status" && skill.category !== "defense" &&
+    attacker.traits.some((trait) => trait.name === "向心力")
+    ? [{ key: "skillPosition", label: "技能位置", type: "number", min: 1, max: 4 }]
+    : [];
+  if (positionInputs.length > 0 && finiteNumber(rawContext.skillPosition) === undefined) {
+    return unresolvedResult(skill, {
+      status: "needs_input",
+      reason: "向心力需要技能位置才能确定威力加成",
+      inputs: positionInputs,
+    });
+  }
   const attackerBloodline = resolveBeastFlowerBloodlineTrait({
     traits: attacker.traits,
     role: "attacker",
@@ -814,10 +840,14 @@ export function calculateSkillResult({
         directionOverrides.damageReductionMultiplier,
       ) ?? 1,
     );
+  const manualHitCount = finiteNumber(
+    slotOverrides.hitCount,
+    mode === "single" ? directionOverrides.hitCount : undefined,
+  );
   const baseHitCount =
     finiteNumber(
+      manualHitCount,
       powerResolution.hitCount,
-      slotOverrides.hitCount,
       details.hitCount,
       mode === "single" ? direction.hitCount : undefined,
       getDefaultHitCount(skill),
@@ -1274,6 +1304,9 @@ export function calculateSkillResult({
       "panel-stat",
     ),
     ...powerFormulaSteps,
+    ...(manualHitCount !== undefined && !fixedHitCount ? [
+      formulaStep("手动连击", manualHitCount, powerResolution.hitCount ?? getDefaultHitCount(skill), baseHitCount, "manual-override"),
+    ] : []),
     ...traitHitCount.steps,
     ...fixedHitCountSteps,
     formulaStep(
@@ -1489,8 +1522,8 @@ export function calculateSkillResult({
     add("速度", context.attackerSpeed - Number(attacker.panelStats.speed));
     if (refractionEnergyReduction(directionOverrides) > 0) currentEffects.push(`全技能能耗 -${refractionEnergyReduction(directionOverrides)}`);
     add("敌方速度", context.defenderSpeed - Number(defender.panelStats.speed));
-    const manualHits = finiteNumber(slotOverrides.hitCount, details.hitCount, mode === "single" ? direction.hitCount : undefined);
-    if (!fixedHitCount && powerResolution.hitCount === undefined && manualHits !== undefined && manualHits !== getDefaultHitCount(skill)) currentEffects.push(`最终连击 ${hitCount}（手动）`);
+    const manualHits = finiteNumber(manualHitCount, details.hitCount, mode === "single" ? direction.hitCount : undefined);
+    if (!fixedHitCount && (manualHitCount !== undefined || powerResolution.hitCount === undefined && manualHits !== undefined && manualHits !== getDefaultHitCount(skill))) currentEffects.push(`最终连击 ${hitCount}（手动）`);
     else add("连击", hitCount - getDefaultHitCount(skill));
     usageSummary.currentEffects = currentEffects;
     const recordedCounts = new Map();
@@ -1557,6 +1590,8 @@ export function calculateSkillResult({
   };
   return {
     gainSources,
+    automaticHitCount: fixedHitCount?.hitCount ?? resolveHitCount(powerResolution.hitCount ?? getDefaultHitCount(skill), automaticHitCountAdd),
+    ...(positionInputs.length > 0 ? { inputs: positionInputs } : {}),
     gainSummary: summarizeGains(gainSources),
     ...(usageSummary ? { usageSummary } : {}),
     skillId: skill.id,

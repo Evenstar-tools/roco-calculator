@@ -11,6 +11,18 @@ import {
 } from "../src/shared/domain/skill-status-effects.js";
 
 describe("skill and trait presentation UI", () => {
+  test("传感器展示自动连击，显式手调并可清除覆盖", () => {
+    const onDirectionChange = vi.fn();
+    render(<SkillConditionEditor context={{ skillPosition: 1 }}
+      direction={{ hitCount: 2, overrides: {} }}
+      skill={{ id: "sensor", name: "传感器", category: "physical", basePower: 20, description: "2连击" }}
+      result={{ hitCount: 3, automaticHitCount: 3 }} onContextChange={vi.fn()} onDirectionChange={onDirectionChange} />);
+    expect(screen.getByLabelText("连击数")).toHaveValue(3);
+    fireEvent.input(screen.getByLabelText("连击数"), { target: { value: "6" } });
+    expect(onDirectionChange).toHaveBeenLastCalledWith({ hitCount: 6, overrides: { hitCount: 6 } });
+    fireEvent.click(screen.getByLabelText("恢复默认连击数"));
+    expect(onDirectionChange).toHaveBeenLastCalledWith({ hitCount: 3, overrides: { hitCount: null } });
+  });
   test.each([["有求必应", "己方双攻 +9层 · 己方速度 +60"], ["一意孤行", "己方双攻 +18层"]])("纯状态技能预览带入 %s 并在取消特性后恢复", (traitName, expected) => {
     const skill = { id: "steam", name: "蒸汽进行曲", category: "status", basePower: 0, description: "选择：自己获得速度+60或物攻+90%。" };
     const editor = (triggered) => {

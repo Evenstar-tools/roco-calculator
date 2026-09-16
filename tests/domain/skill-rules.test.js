@@ -950,10 +950,10 @@ describe("resolveSkillPower", () => {
     });
   });
 
-  test("registers all 105 reviewed dynamic skills in the current snapshot", () => {
+  test("registers all 106 reviewed dynamic skills in the current snapshot", () => {
     expect(
       snapshot.skills.filter((entry) => getSkillEffectRule(entry)).length,
-    ).toBe(105);
+    ).toBe(106);
   });
 
   test("keeps every reviewed rule default-safe and every choice default valid", () => {

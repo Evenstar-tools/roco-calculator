@@ -166,6 +166,15 @@ function encodeFixture(value) {
 }
 
 describe("mini program share payload", () => {
+  test("显式手动连击在方向与技能分享中保留", () => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.directions.forward.overrides.hitCount = 6;
+    state.sides.attacker.skills.four[1].overrides.hitCount = 2;
+    const decoded = decodeSharePayload(encodeSharePayload(state), snapshot);
+    expect(decoded.directions.forward.overrides.hitCount).toBe(6);
+    expect(decoded.sides.attacker.skills.four[1].overrides.hitCount).toBe(2);
+  });
   test("round-trips status trigger count separately from skill hit count", () => {
     const snapshot = createSnapshot();
     const state = createState(snapshot);

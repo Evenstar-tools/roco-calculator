@@ -703,7 +703,7 @@ function SkillSide({
                                 ((input.contextKey ?? input.key) === "actualSkillCost" ? result?.effectiveCostInput : undefined) ?? dynamicInputValue(
                                   input,
                                   selected?.slotContext,
-                                ) ?? ""
+                                ) ?? ((input.contextKey ?? input.key) === "skillPosition" ? index + 1 : "")
                               }
                             />
                             <UsageCountActions input={input} value={dynamicInputValue(input, selected?.slotContext)} onChange={(value) => onSkillContextChange?.(side, index, input.id ?? input.key, value)} />

@@ -122,6 +122,8 @@ function integerInRange(value, minimum, maximum, fallback) {
 
 function compactOverrides(value) {
   const compact = {};
+  const hitCount = integerInRange(value?.hitCount, 1, 99, undefined);
+  if (hitCount !== undefined) compact.h = hitCount;
   const basePower = finiteInRange(
     value?.basePower,
     0,
@@ -590,6 +592,8 @@ function legalSkillIds(snapshot, spiritId, allSkillIds) {
 
 function expandOverrides(value) {
   const expanded = {};
+  const hitCount = integerInRange(value?.h, 1, 99, undefined);
+  if (hitCount !== undefined) expanded.hitCount = hitCount;
   const basePower = finiteInRange(value?.p, 0, 5000, undefined);
   const attackLevelStage = integerInRange(value?.a, -6, 6, undefined);
   const defenseLevelStage = integerInRange(value?.d, -6, 6, undefined);

@@ -49,6 +49,48 @@ const skills = [
   },
 ];
 
+test("单技能位置控件持续显示，向心力加成不会标成未触发", () => {
+  render(<SingleSkillEditor
+    hitCount={1} selectedSkill={skills[0]} skills={skills}
+    traitContext={{ skillPosition: 1 }}
+    result={{ status: "exact", inputs: [{ key: "skillPosition", label: "技能位置", type: "number", min: 1, max: 4 }], formulaSteps: [{ label: "向心力", after: 30 }] }}
+    onHitCountChange={vi.fn()} onSkillSelect={vi.fn()} />);
+  expect(screen.getByRole("spinbutton", { name: "技能位置" })).toHaveValue(1);
+  expect(screen.getByText("向心力：威力 +30")).toBeVisible();
+  expect(screen.queryByText("当前条件未触发加成")).not.toBeInTheDocument();
+});
+
+test("传感器反复恢复默认仍显示按槽位计算的 3 连击", () => {
+  const sensor = snapshot.skills.find(({ name }) => name === "传感器");
+  const onHitCountChange = vi.fn();
+  render(<SingleSkillEditor hitCount={3} selectedSkill={sensor} skills={[sensor]}
+    result={{ status: "exact", automaticHitCount: 3 }}
+    onHitCountChange={onHitCountChange} onSkillSelect={vi.fn()} />);
+  fireEvent.click(screen.getByText("手动调整"));
+  fireEvent.click(screen.getByRole("button", { name: "恢复默认", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "恢复默认", exact: true }));
+  expect(onHitCountChange).toHaveBeenLastCalledWith(3, { reset: true });
+  expect(screen.getByRole("spinbutton", { name: "连击次数", exact: true })).toHaveValue(3);
+});
+
+test("传感器位置控件显示当前槽位，连击显示计算结果", () => {
+  const sensor = snapshot.skills.find(({ name }) => name === "传感器");
+  render(<FourSkillEditor
+    attackerName="声波缇塔"
+    attackerSkills={[sensor, sensor, sensor, { ...sensor, slotContext: { skillPosition: 1 } }]}
+    attackerResults={[3, 2, 3, 3].map((hitCount) => ({ hitCount }))}
+    defenderSkills={[null, null, null, null]}
+    onSkillSelect={vi.fn()}
+    skills={[sensor]}
+  />);
+  [1, 2, 3, 1].forEach((position, index) => {
+    expect(screen.getByRole("spinbutton", { name: `攻击方技能${index + 1}技能位置` }))
+      .toHaveValue(position);
+    expect(screen.getByRole("spinbutton", { name: `攻击方技能${index + 1}连击次数` }))
+      .toHaveValue([3, 2, 3, 3][index]);
+  });
+});
+
 test("精简单技能保留累计摘要和下次预览", () => {
   render(<CompactSingleSkillEditor attackName="攻击方" defenseName="防御方" skills={skills} selectedSkill={skills[0]} onSkillSelect={vi.fn()} result={{ usageSummary: { count: 2, powerGain: 20, hitCountGain: 2, currentEffects: ["威力 +20"], nextHint: "本次可得：威力+10" } }} />);
   expect(screen.getByText(/增益：威力\+20/)).toBeVisible();

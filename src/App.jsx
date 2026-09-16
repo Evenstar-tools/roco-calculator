@@ -1323,6 +1323,7 @@ function CalculatorWorkspace({ snapshot }) {
     direction,
     effectiveHitCount,
     automaticHitCountAdd,
+    { reset = false } = {},
   ) {
     const hitCount = storedHitCount(
       skill,
@@ -1331,6 +1332,9 @@ function CalculatorWorkspace({ snapshot }) {
       automaticHitCountAdd,
     );
     const input = getEditableHitCountInput(skill);
+    if (skill?.name === "传感器") {
+      return { hitCount, overrides: { hitCount: reset ? null : hitCount } };
+    }
     return input
       ? { context: { [input.id]: hitCount } }
       : { hitCount };
@@ -1383,13 +1387,14 @@ function CalculatorWorkspace({ snapshot }) {
       }
       defenderTrait={getTraitView(snapshot, activeDefenseSpirit, "defender")}
       hitCount={resultModel.selectedResult?.hitCount ?? currentDirection.hitCount}
-      onHitCountChange={(hitCount) =>
+      onHitCountChange={(hitCount, options) =>
         updateRememberedSingleDirection(
           editableHitCountPatch(
             selectedSingleSkill,
             currentDirection,
             hitCount,
             resultModel.selectedResult?.automaticHitCountAdd,
+            options,
           ),
         )
       }

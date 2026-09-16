@@ -343,6 +343,11 @@ const REVIEWED_EFFECTS = Object.freeze({
   械斗: positionAdd([1], 60),
   离子震荡: positionAdd([3], 40),
   磁暴: positionAdd([1, 3], 30),
+  传感器: {
+    inputs: [numberInput("skillPosition", "技能位置", 1, 4)],
+    ruleId: "position_hit_count",
+    ruleParams: { baseHitCount: 2, positions: [1, 3], add: 1 },
+  },
 
   偷袭: counterMultiplier(3),
   突袭: counterMultiplier(3),

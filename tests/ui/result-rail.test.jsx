@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { ResultRail } from "../../src/components/ResultRail.jsx";
+import { calculateNegativeStatusSettlement } from "../../src/domain/negative-status.js";
 
 const result = {
   attackerName: "音速犬",
@@ -28,6 +29,32 @@ const result = {
     { id: "empty-2", name: "技能2", damage: null, hpPercent: null },
   ],
 };
+
+test.each([
+  [44, 2, [], true, "冻结覆盖10%"],
+  [400, 2, [], true, "冻结覆盖10%"],
+  [401, 2, [], true, "冻结击倒"],
+  [44, 4, [], true, "冻结覆盖20%"],
+  [445, 2, [], true, null],
+  [44, 0, [], true, null],
+  [44, 2, ["冰"], true, null],
+  [44, 2, [], false, null],
+])("伤害%d、冻结%d层：结果行区分覆盖与实际击倒", (damage, freeze, types, enabled, label) => {
+  const settlement = calculateNegativeStatusSettlement({
+    enabled, defender: { maxHp: 445, currentHp: 445, types },
+    directDamage: damage, statuses: { freeze },
+  });
+  render(<ResultRail result={{ ...result, mode: "four", skillResults: [{
+    id: "stomp", name: "跺地", damage, hpPercent: damage / 445 * 100,
+    negativeStatusSettlement: settlement,
+  }] }} />);
+  const row = within(screen.getByRole("region", { name: "技能结果" })).getByText("跺地").closest(".skill-result-row");
+  expect(within(row).getByLabelText("跺地实际伤害")).toHaveTextContent(String(damage));
+  expect(row).not.toHaveTextContent(/斩杀≤|斩杀线/);
+  if (label) expect(row.querySelector(".skill-result-row__status")).toHaveTextContent(label);
+  else expect(row.querySelector(".skill-result-row__status")).toBeNull();
+  if (label !== "冻结击倒") expect(row).not.toHaveTextContent("冻结击倒");
+});
 
 test("keeps the exact damage and percent prominent", () => {
   render(<ResultRail onShare={vi.fn()} result={result} />);
