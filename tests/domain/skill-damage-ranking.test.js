@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import { calculateMatchup } from "../../src/domain/calculate.js";
 import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
 import { createInitialState } from "../../src/state/defaults.js";
+import { calculatorReducer } from "../../src/state/reducer.js";
 import { buildDamageComparisonInput, createSkillDamageRanking, damageComparisonIssue, describeDamageComparisonTemplate, filterSkillDamageRanking, getDamageComparisonTemplates, STANDARD_DURABILITY_TEMPLATES } from "../../src/domain/skill-damage-ranking.js";
 import { captureDamageComparison, importDamageComparisonCandidate } from "../../src/state/damage-comparison.js";
 
@@ -113,11 +114,13 @@ describe("技能承伤对比", () => {
       expect(JSON.stringify(state)).toBe(before);
     }
   });
-  test.each(["forward", "reverse"])("%s 仅显式沿用星陨和冻结，默认仍清空目标状态", (direction) => {
-    const state = createInitialState(snapshot);
+  test.each(["forward", "reverse"])("%s 手填星陨和冻结仅显式沿用，关闭仍清空目标状态", (direction) => {
+    let state = createInitialState(snapshot);
     const target = direction === "forward" ? "defender" : "attacker";
-    state.marks[target] = { negative: { id: "starfall", stacks: 3 }, positive: { id: "charge", stacks: 9 } };
-    state.negativeStatuses[target] = { burn: 7, poison: 8, freeze: 4, electrified: 2, parasitism: 6 };
+    state.marks[target].positive = { id: "charge", stacks: 9 };
+    state.negativeStatuses[target] = { burn: 7, poison: 8, freeze: 0, electrified: 2, parasitism: 6 };
+    state = calculatorReducer(state, { type: "mark/update", side: target, polarity: "negative", value: { id: "starfall", stacks: "3" } });
+    state = calculatorReducer(state, { type: "negative-status/update", side: target, key: "freeze", value: "4" });
     state.directions[direction].context = { enemyFreezeStacks: 88, defenderHpPercent: 5 };
     state.directions[direction].currentHp = 1;
     const options = { snapshot, state, direction, spirit: snapshot.spirits[2] };

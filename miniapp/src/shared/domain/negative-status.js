@@ -51,6 +51,13 @@ function hasType(types, type) {
   return Array.isArray(types) && types.includes(type);
 }
 
+export function calculateFreezeThreshold({ maxHp, stacks = 0, types = [] }) {
+  const immune = hasType(types, "冰");
+  const thresholdPercent = immune ? 0 : Math.min(100, normalizeNegativeStatusSide({ freeze: stacks }).freeze * 5);
+  const thresholdHp = Math.floor(Math.max(1, Math.floor(Number(maxHp) || 1)) * thresholdPercent / 100);
+  return { immune, thresholdPercent, thresholdHp };
+}
+
 function statusMultiplier(type, defenderTypes, chart) {
   if (!chart) return 1;
   const value = getTypeMultiplier(type, defenderTypes, chart);
@@ -127,7 +134,7 @@ export function calculateNegativeStatusSettlement({
   const burnImmune = hasType(types, "火");
   const poisonImmune = hasType(types, "毒") || hasType(types, "机械");
   const parasiteImmune = hasType(types, "草");
-  const freezeImmune = hasType(types, "冰");
+  const { immune: freezeImmune, thresholdPercent, thresholdHp } = calculateFreezeThreshold({ maxHp, stacks: stacks.freeze, types });
   const electrifiedImmune = hasType(types, "电");
   const burnMultiplier = burnImmune
     ? 0
@@ -216,8 +223,6 @@ export function calculateNegativeStatusSettlement({
   const statusDamage = breakdown.reduce((sum, entry) => sum + entry.damage, 0);
   const actualStatusDamage = Math.min(remainingAfterDirect, statusDamage);
   const remainingHp = Math.max(0, remainingAfterDirect - actualStatusDamage);
-  const thresholdPercent = freezeImmune ? 0 : Math.min(100, stacks.freeze * 5);
-  const thresholdHp = Math.floor(maxHp * thresholdPercent / 100);
   const freezeLethal = thresholdHp > 0 && remainingHp <= thresholdHp;
   const lethal = remainingHp === 0 || freezeLethal;
 

@@ -1,7 +1,7 @@
 import { calculateMatchup } from "./calculate.js";
 import { getNature, getNatureMultipliers, STAT_LABELS } from "./natures.js";
 import { normalizeMarksState, starfallStacksFromMarkSlot } from "./marks.js";
-import { normalizeNegativeStatusSide } from "./negative-status.js";
+import { calculateFreezeThreshold, normalizeNegativeStatusSide } from "./negative-status.js";
 import { calculateAllPanelStats, hasCompleteRaceStats } from "./stat.js";
 import { getSnapshotIndexes } from "./snapshot-indexes.js";
 import { resolvePowerOverride } from "./power-override.js";
@@ -167,9 +167,10 @@ function compareIdentity(a, b) {
 
 export function filterSkillDamageRanking(rows, { query = "", filter = "all", descending = false } = {}) {
   const normalized = String(query).normalize("NFKC").toLowerCase().trim();
+  const coveredHp100 = (row) => row.damage * 100 + (row.freezePercent ?? 0) * row.panelStats.hp;
   return [...rows].sort((a, b) => (descending ? b.percent - a.percent : a.percent - b.percent) || compareIdentity(a, b))
     .map((row, index) => ({ ...row, rank: index + 1 }))
-    .filter((row) => ((Array.isArray(filter) && row.damage * 100 >= filter[0] * row.panelStats.hp && (filter[1] === null || row.damage * 100 < filter[1] * row.panelStats.hp)) || filter === "all" || (filter === "half" && row.damage * 2 < row.panelStats.hp)
+    .filter((row) => ((Array.isArray(filter) && coveredHp100(row) >= filter[0] * row.panelStats.hp && (filter[1] === null || coveredHp100(row) < filter[1] * row.panelStats.hp)) || filter === "all" || (filter === "half" && coveredHp100(row) < 50 * row.panelStats.hp)
       || (filter === "survive" && !row.lethal) || (filter === "ko" && row.lethal))
       && (!normalized || [row.spirit.fullName, row.spirit.baseName, row.spirit.dexNo, row.spirit.searchText, ...(row.spirit.aliases ?? [])]
         .some((value) => String(value ?? "").normalize("NFKC").toLowerCase().includes(normalized))));
@@ -197,8 +198,14 @@ export async function createSkillDamageRanking({ snapshot, state, direction = "f
         else if (["status", "defense"].includes(selection.selected.skill.category) && result.totalDamage === 0) reason = "该技能无直接伤害";
         else {
           const panelStats = input.sides[targetSide].panelStats;
-          rows.push({ spirit, panelStats, template: getDamageComparisonTemplate(state, direction, templateId, presetsBySpirit, spirit.id), damage: result.totalDamage, percent: result.totalDamage / panelStats.hp * 100,
-            remainingHp: Math.max(0, panelStats.hp - result.totalDamage), lethal: result.totalDamage >= panelStats.hp,
+          const freeze = calculateFreezeThreshold({ maxHp: panelStats.hp, stacks: input.negativeStatuses[targetSide].freeze, types: spirit.types });
+          const damagePercent = result.totalDamage / panelStats.hp * 100;
+          const remainingAfterDirect = Math.max(0, panelStats.hp - result.totalDamage);
+          const freezeLethal = remainingAfterDirect > 0 && freeze.thresholdHp > 0 && remainingAfterDirect <= freeze.thresholdHp;
+          const lethal = remainingAfterDirect === 0 || freezeLethal;
+          rows.push({ spirit, panelStats, template: getDamageComparisonTemplate(state, direction, templateId, presetsBySpirit, spirit.id), damage: result.totalDamage, damagePercent, percent: damagePercent + freeze.thresholdPercent,
+            freezePercent: freeze.thresholdPercent, freezeThresholdHp: freeze.thresholdHp, freezeImmune: freeze.immune, freezeLethal,
+            remainingAfterDirect, remainingHp: lethal ? 0 : remainingAfterDirect, lethal,
             formRole: form.formRole, result });
         }
       } catch (error) { reason = error.message || "当前条件无法计算"; }

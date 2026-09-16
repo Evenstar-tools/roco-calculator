@@ -235,7 +235,7 @@ export const S4_FEATURE_INTRO = Object.freeze({
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v2.0.2",
-    date: "2026.09.15",
+    date: "2026.09.16",
     title: "S4查询与对战工具更新",
     whatsNew: S4_FEATURE_INTRO,
     summaryHighlights: [
@@ -257,6 +257,8 @@ export const USER_RELEASE_NOTES = Object.freeze([
       "承伤对比精简为生命性格满双防、生命性格无双防、中立性格仅生命三种固定模板，保留当前配点与用户预设，导出同步实际配点。",
     ],
     fixes: [
+      "承伤血条加入蓝色冻结覆盖：4层冻结加80%伤害即可达到100%斩杀线，范围筛选与导出同步；冰系仍免疫冻结。",
+      "手动输入的冻结、星陨及折射施加的状态均可沿用至承伤榜，代入复算保留层数；取消沿用后按0层计算。",
       "常用配置可直接更新旧预设，保留手改配置；更新按钮只统计实际更新与新增项。",
       "承伤对比完整读取目标配招与特性参数，修复冰钻能耗联动；无预设详情说明默认分配，代入复算使用同一份配置。",
       "承伤范围支持75%以上，滚动自动加载；详情补充配招和增益来源，导出增加克制倍率。",

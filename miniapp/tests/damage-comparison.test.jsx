@@ -5,6 +5,23 @@ import { createCalculatorStore } from "../src/state/calculator-store.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
 import DamageComparisonSheet from "../src/components/DamageComparisonSheet.jsx";
 
+test("冻结蓝条同步实伤拆分、满条筛选与免疫", async () => {
+  const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
+  const snapshot = { meta: { id: "freeze-mini" }, traits: [], spirits: [["source", "普通"], ["target", "草"], ["ice", "冰"]].map(([id, type]) => ({ id, fullName: id, types: [type], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })), skills: [{ id: "hit", name: "测试", type: "普通", category: "magical", basePower: 320 }] };
+  const state = createInitialState(snapshot);
+  state.negativeStatuses.defender.freeze = 4;
+  render(<DamageComparisonSheet snapshot={snapshot} source={{ state, direction: "forward" }} />);
+  const row = await screen.findByRole("button", { name: "查看target承伤详情" });
+  expect(row).toHaveTextContent("100.2%");
+  expect(row).toHaveTextContent("冻结击倒");
+  expect(within(row).getByRole("img", { name: "伤害80.2%＋冻结20%" }).firstChild).toHaveStyle({ width: "20%" });
+  fireEvent.click(screen.getByRole("button", { name: "≥100%", exact: true }));
+  expect(screen.getByRole("button", { name: "查看target承伤详情" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "查看ice承伤详情" })).not.toBeInTheDocument();
+  fireEvent.click(row);
+  expect(screen.getByText(/冻结斩杀≤89 HP/)).toBeInTheDocument();
+});
+
 test("范围可选75%以上，触底自动追加目标且没有手动加载入口", async () => {
   const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
   const snapshot = { meta: { id: "range-pagination" }, traits: [], spirits: Array.from({ length: 72 }, (_, index) => ({ id: String(index), fullName: `目标${index}`, types: ["火"], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })), skills: [{ id: "fire", name: "火焰", basePower: 80, type: "火", category: "magical" }] };

@@ -94,16 +94,19 @@ export default function DamageComparisonDialog({ snapshot, source, preferences, 
         {model.rows.length > 0 ? <div className="dc-web-columns" aria-hidden="true"><span>排名</span><span>精灵</span><span className="dc-web-effectiveness">克制</span><span>伤害 HP</span><span>承伤比例</span></div> : null}
         {model.rows.slice(0, model.limit).map((row) => {
           const expanded = model.expanded === row.spirit.id;
+          const freezePercent = row.freezePercent ?? 0;
+          const damagePercent = row.damagePercent ?? row.percent;
+          const breakdown = `伤害${damagePercent.toFixed(1)}%＋冻结${freezePercent}%`;
           return <div key={row.spirit.id} className={`dc-web-item${expanded ? " is-expanded" : ""}`}>
             <button type="button" className="dc-web-row" aria-label={`查看${row.spirit.fullName}承伤详情`} aria-expanded={expanded} aria-controls={`damage-detail-${row.spirit.id}`} onClick={() => model.setExpanded(expanded ? null : row.spirit.id)}>
               <span className="dc-web-rank">{row.rank}</span>
               <span className="dc-web-identity">{portrait(row.spirit) ? <img alt="" src={portrait(row.spirit)} loading="lazy" /> : null}<span><strong>{row.spirit.fullName}</strong><small>{row.spirit.types?.join(" · ")}<span className="dc-web-mobile-damage"> · 伤害 {row.damage} HP</span></small></span></span>
               <span className="dc-web-effectiveness" title="当前技能的属性克制倍率" aria-label={`克制倍率 ${Number.isFinite(row.result?.typeMultiplier) ? row.result.typeMultiplier : "不适用"}`}>{Number.isFinite(row.result?.typeMultiplier) ? row.result.typeMultiplier : "—"}</span>
               <span className="dc-web-damage">{row.damage}</span>
-              <span className={`dc-web-score${row.lethal ? " is-ko" : row.percent < 50 ? " is-low" : " is-mid"}`}><span className="dc-web-track" aria-hidden="true"><span style={{ width: `${Math.min(100, row.percent)}%` }} /></span><span><strong>{row.percent.toFixed(1)}%</strong><small>{row.lethal ? "本次可击倒" : `剩余 ${row.remainingHp} HP`}</small></span>{expanded ? <CaretUp size={16} /> : <CaretDown size={16} />}</span>
+              <span className={`dc-web-score${row.lethal ? " is-ko" : row.percent < 50 ? " is-low" : " is-mid"}`}><span className="dc-web-track" role="img" aria-label={breakdown} title={breakdown}>{freezePercent > 0 ? <span className="dc-web-freeze" style={{ width: `${freezePercent}%` }} /> : null}<span style={{ width: `${Math.min(100 - freezePercent, damagePercent)}%` }} /></span><span><strong>{row.percent.toFixed(1)}%</strong>{freezePercent > 0 ? <small className="dc-web-freeze-breakdown">{breakdown}</small> : null}<small>{row.freezeLethal ? "冻结击倒" : row.lethal ? "本次可击倒" : `剩余 ${row.remainingHp} HP`}</small></span>{expanded ? <CaretUp size={16} /> : <CaretDown size={16} />}</span>
             </button>
             {expanded ? <div className="dc-web-detail" id={`damage-detail-${row.spirit.id}`}>
-              <div><strong>{row.spirit.fullName}</strong><p>生命 {row.panelStats.hp} · 物防 {row.panelStats.physicalDefense} · 魔防 {row.panelStats.magicalDefense}</p><p>本次伤害 {row.damage} · 剩余 {row.remainingHp} HP</p><small>{model.templateDescription(row)}<br />{model.loadoutDescription(row)}<br />本榜不计防守方特性，代入后恢复特性及预设参数。</small></div>
+              <div><strong>{row.spirit.fullName}</strong><p>生命 {row.panelStats.hp} · 物防 {row.panelStats.physicalDefense} · 魔防 {row.panelStats.magicalDefense}</p><p>本次伤害 {row.damage} · 剩余 {row.remainingHp} HP</p>{freezePercent > 0 ? <p className="dc-web-freeze-detail">冻结斩杀≤{row.freezeThresholdHp} HP · 伤害后{row.remainingAfterDirect} HP · 冻结不额外扣血</p> : row.freezeImmune && model.inheritTargetStatuses ? <p className="dc-web-freeze-detail">冰系免疫冻结</p> : null}<small>{model.templateDescription(row)}<br />{model.loadoutDescription(row)}<br />本榜不计防守方特性，代入后恢复特性及预设参数。</small></div>
               <button type="button" className="dc-web-primary" onClick={() => onImport(row.spirit, model.templateId, model.selectedSkillIndex, model.inheritTargetStatuses)}>代入防守方复算</button>
             </div> : null}
           </div>;

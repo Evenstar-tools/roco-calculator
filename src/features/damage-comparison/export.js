@@ -6,7 +6,7 @@ import { projectTriggerContext } from "../../domain/trigger-controls.js";
 import { getSkillEffectInputs } from "../../domain/skill-effects.js";
 import { currentWeather } from "../../state/weather.js";
 
-const headers = ["排名", "精灵／形态", "属性", "满血 HP", "伤害 HP", "承伤比例", "剩余 HP", "结论", "耐久配点", "克制倍率"];
+const headers = ["排名", "精灵／形态", "属性", "满血 HP", "伤害 HP", "承伤比例", "剩余 HP", "结论", "耐久配点", "克制倍率", "冻结覆盖"];
 const cleanText = (value) => String(value ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/gu, "");
 const markdown = (value) => cleanText(value).replace(/&/gu, "&amp;").replace(/</gu, "&lt;").replace(/>/gu, "&gt;").replace(/([\\`*_[\]{}|])/gu, "\\$1").replace(/\r?\n/gu, "<br>");
 
@@ -46,7 +46,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
     ["特性／条件", `${trait?.name ?? "无"}${conditions.length ? `；${conditions.join("；")}` : ""}`],
     ["增益来源", model.gainSummary || "无额外增益"],
     ["耐久模板", describeDamageComparisonTemplate(model.template)],
-    ["计算口径", `目标满血；${model.scopeDescription}${model.inheritTargetStatuses ? "" : "；未沿用星陨／冻结（按0层）"}；不含回合末结算`],
+    ["计算口径", `目标满血；${model.scopeDescription}${model.inheritTargetStatuses ? "" : "；未沿用星陨／冻结（按0层）"}；承伤比例＝伤害／最大生命＋有效冻结层数×5%；冻结不额外扣血；不含回合末结算`],
     ["天气", ({ none: "无天气", rain: "雨天", thunder: "雷暴", sandstorm: "沙暴", blizzard: "暴风雪" })[currentWeather(context)]],
     ["筛选", `${filter}；${model.scope === "all" ? "全部完整种族值形态" : "最终形态＋首领"}；${model.descending ? "承伤从高到低" : "承伤从低到高"}${model.query ? `；搜索：${model.query}` : ""}`],
     ["结果", `${model.rows.length} 个形态（当前筛选完整名单）；未纳入 ${model.ranking.excluded.length} 个`],
@@ -54,7 +54,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
     ["说明", "本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。"],
   ];
   const rows = model.rows.map((row) => [row.rank, row.spirit.fullName, row.spirit.types?.join("／") ?? "", row.panelStats.hp,
-    row.damage, row.percent / 100, row.remainingHp, row.lethal ? "可击倒" : "未击倒", describeDamageComparisonTemplate(row.template), row.result?.typeMultiplier ?? "—"]);
+    row.damage, row.percent / 100, row.remainingHp, row.freezeLethal ? "冻结击倒" : row.lethal ? "可击倒" : "未击倒", describeDamageComparisonTemplate(row.template), row.result?.typeMultiplier ?? "—", (row.freezePercent ?? 0) / 100]);
   const pad = (value) => String(value).padStart(2, "0");
   const stamp = `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
   const statuses = getDamageComparisonTargetStatuses(input, direction);
@@ -63,7 +63,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
 }
 
 export function damageComparisonMarkdown(report) {
-  return `# ${markdown(report.title)}\n\n${report.metadata.map(([key, value]) => `- ${markdown(key)}：${markdown(value)}`).join("\n")}\n\n| ${report.headers.map(markdown).join(" | ")} |\n| ${report.headers.map(() => "---").join(" | ")} |\n${report.rows.map((row) => `| ${row.map((value, index) => markdown(index === 5 ? `${(value * 100).toFixed(1)}%` : value)).join(" | ")} |`).join("\n")}\n`;
+  return `# ${markdown(report.title)}\n\n${report.metadata.map(([key, value]) => `- ${markdown(key)}：${markdown(value)}`).join("\n")}\n\n| ${report.headers.map(markdown).join(" | ")} |\n| ${report.headers.map(() => "---").join(" | ")} |\n${report.rows.map((row) => `| ${row.map((value, index) => markdown(index === 5 || index === 10 ? `${(value * 100).toFixed(1)}%` : value)).join(" | ")} |`).join("\n")}\n`;
 }
 
 export async function downloadDamageComparison(report, format) {

@@ -31,6 +31,11 @@
 .dc-identity { flex: 1; min-width: 0; }
 .dc-name { display: block; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
 .dc-score { flex-shrink: 0; font-size: 17px; font-weight: 700; text-align: right; }
+.dc-track { display: flex; width: 100%; min-width: 90px; height: 6px; margin: 4px 0; border-radius: 3px; overflow: hidden; background: var(--surface-muted); }
+.dc-track > view { height: 100%; flex-shrink: 0; }
+.dc-track-freeze { background: #38bdf8; }
+.dc-track-damage { background: currentColor; }
+.dc-score .dc-freeze-breakdown { font-size: 10px; }
 .dc-score.is-low { color: var(--success); }.dc-score.is-mid { color: var(--warning); }.dc-score.is-ko { color: var(--danger); }
 .dc-item.is-expanded { background: var(--surface-muted); }
 .dc-detail { display: flex; flex-direction: column; gap: 6px; padding: 0 12px 12px; font-size: 13px; line-height: 1.6; }

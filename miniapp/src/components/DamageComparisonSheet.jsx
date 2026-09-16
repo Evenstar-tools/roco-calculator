@@ -51,16 +51,20 @@ export default function DamageComparisonSheet({ snapshot, source, petImages = {}
       {!model.loading && !model.error && !model.ranking?.issue && !model.rows.length ? <View className="dc-empty">没有符合当前筛选的结果<Button className="dc-button" onClick={() => { model.setQuery(""); model.setFilter("all"); }}>清除搜索与筛选</Button></View> : null}
       {model.rows.slice(0, model.limit).map((row) => {
         const expanded = model.expanded === row.spirit.id;
+        const freezePercent = row.freezePercent ?? 0;
+        const damagePercent = row.damagePercent ?? row.percent;
+        const breakdown = `伤害${damagePercent.toFixed(1)}%＋冻结${freezePercent}%`;
         const imageUrl = petImages[row.spirit.id] ?? row.spirit.imageUrl;
         return <View key={row.spirit.id} id={`dc-row-${row.spirit.id}`} className={`dc-item${expanded ? " is-expanded" : ""}`}>
           <Button className="dc-row" aria-label={`查看${row.spirit.fullName}承伤详情`} aria-expanded={expanded} onClick={() => model.setExpanded(expanded ? null : row.spirit.id)}>
             <Text className="dc-rank">{row.rank}</Text>
             {imageUrl ? <Image src={imageUrl} className="dc-avatar" mode="aspectFit" aria-hidden="true" /> : null}
             <View className="dc-identity"><Text className="dc-name">{row.spirit.fullName}</Text><Text className="dc-note">{row.spirit.types?.join(" · ")} · 克制 {row.result?.typeMultiplier ?? "—"} · 伤害 {row.damage} HP</Text></View>
-            <View className={`dc-score ${row.lethal ? "is-ko" : row.percent < 50 ? "is-low" : "is-mid"}`}><Text>{row.percent.toFixed(1)}%</Text><Text className="dc-note">{row.lethal ? "本次可击倒" : `剩余 ${row.remainingHp} HP`}</Text></View>
+            <View className={`dc-score ${row.lethal ? "is-ko" : row.percent < 50 ? "is-low" : "is-mid"}`}><Text>{row.percent.toFixed(1)}%</Text><View className="dc-track" role="img" aria-label={breakdown}>{freezePercent > 0 ? <View className="dc-track-freeze" style={{ width: `${freezePercent}%` }} /> : null}<View className="dc-track-damage" style={{ width: `${Math.min(100 - freezePercent, damagePercent)}%` }} /></View>{freezePercent > 0 ? <Text className="dc-note dc-freeze-breakdown">{breakdown}</Text> : null}<Text className="dc-note">{row.freezeLethal ? "冻结击倒" : row.lethal ? "本次可击倒" : `剩余 ${row.remainingHp} HP`}</Text></View>
           </Button>
           {expanded ? <View className="dc-detail">
             <Text>生命 {row.panelStats.hp} · 物防 {row.panelStats.physicalDefense} · 魔防 {row.panelStats.magicalDefense}</Text>
+            {freezePercent > 0 ? <Text className="dc-note">冻结斩杀≤{row.freezeThresholdHp} HP · 伤害后{row.remainingAfterDirect} HP · 冻结不额外扣血</Text> : row.freezeImmune && model.inheritTargetStatuses ? <Text className="dc-note">冰系免疫冻结</Text> : null}
             <Text className="dc-note">{model.templateDescription(row)}</Text>
             <Text className="dc-note">{model.loadoutDescription(row)}</Text>
             <Text className="dc-note">本榜不计防守方特性，代入后恢复特性及预设参数。</Text>

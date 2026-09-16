@@ -503,6 +503,49 @@ beforeEach(() => {
   localStorage.setItem(FIRST_RUN_GUIDE_STORAGE_KEY, "1");
 });
 
+test("手填冻结和星陨沿用至承伤榜，关闭清空，重开读取新值并代入复算", async () => {
+  const user = userEvent.setup();
+  localStorage.setItem(DAMAGE_COMPARISON_STORAGE_KEY, "1");
+  localStorage.setItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY, "1");
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await openDetailedMode(user);
+  const picker = screen.getByRole("combobox", { name: "选择技能" });
+  await user.clear(picker);
+  await user.type(picker, "多维击打");
+  await user.click(screen.getByRole("option", { name: /多维击打/ }));
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  await user.selectOptions(screen.getByRole("combobox", { name: "防御方负面印记" }), "starfall");
+  fireEvent.change(screen.getByRole("spinbutton", { name: "防御方星陨层数" }), { target: { value: "3" } });
+  fireEvent.change(screen.getByRole("spinbutton", { name: "防御方冻结层数" }), { target: { value: "4" } });
+  await user.click(screen.getByRole("button", { name: "查看全精灵承伤" }));
+  let dialog = await screen.findByRole("dialog", { name: "承伤对比" });
+  expect(within(dialog).getByRole("checkbox", { name: "沿用星陨／冻结" })).toBeChecked();
+  expect(dialog).toHaveTextContent("星陨 3 层 · 冻结 4 层");
+  await user.click(within(dialog).getByRole("button", { name: "筛选", exact: true }));
+  await user.selectOptions(within(dialog).getByLabelText("承伤形态范围"), "all");
+  const row = await within(dialog).findByRole("button", { name: "查看公平鸽承伤详情" });
+  expect(within(row).getByRole("img")).toHaveAccessibleName(/冻结20%/);
+  const damage = row.querySelector(".dc-web-damage").textContent;
+  await user.click(within(dialog).getByRole("checkbox", { name: "沿用星陨／冻结" }));
+  await waitFor(() => expect(within(dialog).getByRole("button", { name: "查看公平鸽承伤详情" }).querySelector(".dc-web-damage").textContent).not.toBe(damage));
+  expect(within(dialog).getByRole("button", { name: "查看公平鸽承伤详情" })).not.toHaveTextContent("冻结20%");
+  await user.click(within(dialog).getByRole("checkbox", { name: "沿用星陨／冻结" }));
+  await user.click(within(dialog).getByRole("button", { name: "关闭承伤对比" }));
+  fireEvent.change(screen.getByRole("spinbutton", { name: "防御方星陨层数" }), { target: { value: "2" } });
+  fireEvent.change(screen.getByRole("spinbutton", { name: "防御方冻结层数" }), { target: { value: "6" } });
+  await user.click(screen.getByRole("button", { name: "查看全精灵承伤" }));
+  dialog = await screen.findByRole("dialog", { name: "承伤对比" });
+  expect(dialog).toHaveTextContent("星陨 2 层 · 冻结 6 层");
+  const updated = await within(dialog).findByRole("button", { name: "查看公平鸽承伤详情" });
+  expect(within(updated).getByRole("img")).toHaveAccessibleName(/冻结30%/);
+  await user.click(updated);
+  await user.click(within(dialog).getByRole("button", { name: "代入防守方复算" }));
+  expect(screen.getByRole("spinbutton", { name: "防御方星陨层数" })).toHaveValue(2);
+  expect(screen.getByRole("spinbutton", { name: "防御方冻结层数" })).toHaveValue(6);
+  expect(screen.getByRole("spinbutton", { name: "敌方星陨印记" })).toHaveValue(2);
+});
+
 test("承伤榜用户预设代入主页面恢复配招及手动威力，不更改攻击方", async () => {
   const user = userEvent.setup();
   localStorage.setItem(SPIRIT_CONFIG_STORAGE_KEY, JSON.stringify({ schemaVersion: 2, configs: {
