@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { WorkspaceOverlays } from "../../src/components/WorkspaceOverlays.jsx";
+import { USER_MANUAL_URL } from "../../src/data/product-links.js";
 import {
   FEATURED_USER_RELEASE,
   USER_RELEASE_NOTES,
@@ -129,6 +130,19 @@ test("puts clear first and hides cleanup and sharing from the web menu", () => {
   expect(buttons).not.toContain("清理未完成配置");
   expect(buttons).not.toContain("分享当前配置");
   expect(buttons.indexOf("新手引导")).toBeLessThan(buttons.indexOf("显示设置"));
+});
+
+test("manual is first under About and opens externally without changing the workspace", () => {
+  const { onMenuClose } = renderOverlays();
+  const link = screen.getByRole("link", { name: /使用说明书/ });
+  expect(link.previousElementSibling).toHaveTextContent("关于");
+  expect(link.nextElementSibling).toHaveTextContent("获取应用");
+  expect(link).toHaveAttribute("href", USER_MANUAL_URL);
+  expect(link).toHaveAttribute("target", "_blank");
+  expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  fireEvent.click(link);
+  expect(onMenuClose).toHaveBeenCalledOnce();
+  expect(screen.getByText("工作区")).toBeVisible();
 });
 
 test("opens application access and about from the lower utility menu", () => {

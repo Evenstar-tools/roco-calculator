@@ -16,7 +16,8 @@
   box-shadow: var(--shadow);
 }
 
-.app-menu button {
+.app-menu button,
+.app-menu a {
   display: block;
   width: 100%;
   padding: 9px 10px;
@@ -26,9 +27,11 @@
   background: transparent;
   font-size: 12px;
   text-align: left;
+  text-decoration: none;
 }
 
-.app-menu button:hover {
+.app-menu button:hover,
+.app-menu a:hover {
   background: var(--surface-soft);
 }
 
@@ -845,4 +848,3 @@
     animation: none;
   }
 }
-

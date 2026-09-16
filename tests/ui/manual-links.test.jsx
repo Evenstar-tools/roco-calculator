@@ -4,7 +4,12 @@ import { DataSourceDialog } from "../../src/components/DataSourceDialog.jsx";
 import { WhatsNewDialog } from "../../src/components/WhatsNewDialog.jsx";
 import { USER_MANUAL_URL } from "../../src/data/product-links.js";
 
-for (const Component of [DataSourceDialog, WhatsNewDialog]) {
+test("about dialog no longer duplicates the menu manual entry", () => {
+  render(<DataSourceDialog open onClose={vi.fn()} />);
+  expect(screen.queryByRole("link", { name: /使用说明书/ })).not.toBeInTheDocument();
+});
+
+for (const Component of [WhatsNewDialog]) {
   test(`${Component.name} opens the shared manual without closing the current dialog`, () => {
     const onClose = vi.fn();
     render(<Component open onClose={onClose} />);

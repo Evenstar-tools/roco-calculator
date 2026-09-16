@@ -481,9 +481,12 @@ test("persists type analysis and keeps it readable in the mobile result drawer",
   await selectSpirit(page, "攻击方", "音速犬");
   await selectSpirit(page, "防御方", "水灵");
 
-  await expect(page.getByRole("region", { name: "属性分析" })).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "属性分析" })).toBeVisible();
   await page.getByRole("button", { name: "打开菜单" }).click();
   await page.getByRole("button", { name: "显示设置" }).click();
+  await expect(page.getByRole("checkbox", { name: "属性克制与打击面" })).toBeChecked();
+  await page.getByRole("checkbox", { name: "属性克制与打击面" }).uncheck();
+  await expect(page.getByRole("region", { name: "属性分析" })).toHaveCount(0);
   await page.getByRole("checkbox", { name: "属性克制与打击面" }).check();
   await page.getByRole("button", { name: "完成" }).click();
 

@@ -8,6 +8,7 @@ import { ProductAccessDialog } from "./ProductAccessDialog.jsx";
 import { FirstRunGuide } from "./FirstRunGuide.jsx";
 import { DisplaySettingsDialog } from "./DisplaySettingsDialog.jsx";
 import { WhatsNewDialog } from "./WhatsNewDialog.jsx";
+import { USER_MANUAL_URL } from "../data/product-links.js";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -217,6 +218,15 @@ export function WorkspaceOverlays({
           <div aria-hidden="true" className="app-menu__group-label">
             关于
           </div>
+          <a
+            aria-label="查看使用说明书（飞书文档，新窗口打开）"
+            href={USER_MANUAL_URL}
+            onClick={() => menuActions.onClose?.()}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            使用说明书
+          </a>
           <button
             onClick={() => {
               menuActions.onShowProductAccess?.();

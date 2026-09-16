@@ -767,7 +767,8 @@ html[data-theme="dark"] .result-rail__warning {
   font-size: 11px;
 }
 
-.app-menu button {
+.app-menu button,
+.app-menu a {
   min-height: 38px;
   font-size: 13px;
 }
