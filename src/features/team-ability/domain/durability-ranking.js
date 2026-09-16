@@ -55,10 +55,17 @@ export function getDurabilityMultipliers(typeChart) {
   return typeChart?.matrix?.some((row) => row.includes(0))
     ? [0, ...DURABILITY_MULTIPLIERS] : [...DURABILITY_MULTIPLIERS];
 }
-const identityCollator = new Intl.Collator("zh-CN", {
-  numeric: true,
-  sensitivity: "base",
-});
+const identityCollator = typeof Intl !== "undefined" && typeof Intl.Collator === "function"
+  ? new Intl.Collator("zh-CN", { numeric: true, sensitivity: "base" })
+  : {
+      compare(left, right) {
+        if (left !== "" && right !== "" &&
+          Number.isFinite(Number(left)) && Number.isFinite(Number(right))) {
+          return Number(left) - Number(right);
+        }
+        return left.localeCompare(right);
+      },
+    };
 
 function compareIdentity(left, right) {
   const leftDexNo = left.spirit.dexNo;

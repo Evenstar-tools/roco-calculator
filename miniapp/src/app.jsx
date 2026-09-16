@@ -1,3 +1,4 @@
+import "./platform/runtime-compat.js";
 import Taro, { useLaunch } from "@tarojs/taro";
 import { setupUpdateManager } from "./platform/update-manager.js";
 import "./app.css";

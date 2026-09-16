@@ -1,3 +1,4 @@
+import "../../platform/runtime-compat.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Taro, {
   useRouter,
