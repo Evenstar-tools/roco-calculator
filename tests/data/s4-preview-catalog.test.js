@@ -11,6 +11,7 @@ const candidate = JSON.parse(
   readFileSync("data/candidates/s4-preview-new-spirits.json", "utf8"),
 );
 const current = readS4PreviewSnapshot();
+const { version: appVersion } = JSON.parse(readFileSync("package.json", "utf8"));
 const popularConfigs = JSON.parse(
   readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"),
 );
@@ -347,7 +348,7 @@ describe("S4 前瞻新精灵候选目录", () => {
     );
 
     // 当前用户确认的预设独立于前瞻目录的默认性格与配招。
-    expect(popularConfigs).toEqual(approvedConfigs);
+    expect(popularConfigs).toEqual({ ...approvedConfigs, appVersion });
     expect(popularConfigs.entryCount).toBe(226);
     expect(popularConfigs.entries).toHaveLength(226);
     for (const family of candidate.families) {
