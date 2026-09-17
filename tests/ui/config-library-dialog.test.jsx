@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { ConfigLibraryDialog } from "../../src/components/ConfigLibraryDialog.jsx";
+import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 
 test("没有新增时旧预设仍可更新，按钮不计入手改项", () => {
   const onConfirmImport = vi.fn();
@@ -286,7 +287,7 @@ test("searches the popular preview without changing the full import action", () 
   );
 
   expect(screen.getByRole("dialog", { name: "常用精灵配置" })).toBeVisible();
-  expect(screen.getByText("PVP 热门配置 · 226 只")).toBeVisible();
+  expect(screen.getByText(`PVP 热门配置 · ${POPULAR_CONFIG_COUNT} 只`)).toBeVisible();
   expect(screen.getByText("安装后可离线导入")).toBeVisible();
   expect(screen.queryByLabelText("选择配置库文件")).not.toBeInTheDocument();
   expect(screen.getByText("新增").nextElementSibling).toHaveTextContent("188");

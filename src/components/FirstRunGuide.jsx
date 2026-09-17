@@ -5,6 +5,7 @@ import {
   SlidersHorizontal,
 } from "@phosphor-icons/react";
 import { useLayoutEffect, useRef, useState } from "react";
+import { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
 
 const GUIDE_STEPS = [
   {
@@ -156,7 +157,7 @@ function needsAlignment(rect, cardHeight) {
 
 export function FirstRunGuide({
   error = "",
-  importCount = 226,
+  importCount = POPULAR_CONFIG_COUNT,
   importing = false,
   layoutKey,
   onBack,

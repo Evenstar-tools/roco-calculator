@@ -1,13 +1,13 @@
 {
   "format": "rock-calculator.favorite-config-library",
   "schemaVersion": 1,
-  "appVersion": "2.1.0",
+  "appVersion": "2.1.1",
   "versions": {
     "data": "s4-2026-09-10",
     "rules": "s4-2026-09-10"
   },
-  "exportedAt": "2026-09-14T09:59:16.907Z",
-  "entryCount": 226,
+  "exportedAt": "2026-09-16T10:06:43.553Z",
+  "entryCount": 227,
   "entries": [
     {
       "spiritId": "spirit_56b76e5cddf39081",
@@ -4386,6 +4386,25 @@
         "skill_02605c25bb1ea52d",
         "skill_e8ae25185fcd9973",
         "skill_e6ea0fbb90847402"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_37e0a0d6a0d4b993",
+      "natureId": "silent",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 0,
+        "physicalAttack": 0,
+        "magicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "skills": [
+        "skill_373ec31edf013da6",
+        "skill_87c9f33eaa047cf1",
+        "calculator_wish_power_electric",
+        "skill_58d84e9ffcc63857"
       ],
       "traitValues": {}
     }

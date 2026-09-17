@@ -2,7 +2,7 @@ import { useState } from "react";
 import packageInfo from "../../package.json";
 import { formatConfigLibraryImportResult } from "../state/favorite-config-library.js";
 
-export const POPULAR_CONFIG_COUNT = 226;
+export { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
 
 async function loadPresetHistory() {
   const history = await fetch("/data/presets/pvp-preset-history.json")

@@ -341,16 +341,18 @@ describe("S4 前瞻新精灵候选目录", () => {
     }
   });
 
-  test("226 套热门配置包含 11 只 S4 最终形态和两只首领的完整预设", () => {
+  test("热门配置保留已确认的 226 套配置及 S4 最终形态和首领预设", () => {
     const patched = applyS4PreviewCatalog(baselineSnapshot(), candidate);
     const entryBySpiritId = new Map(
       popularConfigs.entries.map((entry) => [entry.spiritId, entry]),
     );
 
     // 当前用户确认的预设独立于前瞻目录的默认性格与配招。
-    expect(popularConfigs).toEqual({ ...approvedConfigs, appVersion });
-    expect(popularConfigs.entryCount).toBe(226);
-    expect(popularConfigs.entries).toHaveLength(226);
+    expect(popularConfigs.appVersion).toBe(appVersion);
+    expect(popularConfigs.entries.filter(({ spiritId }) => spiritId !== "spirit_37e0a0d6a0d4b993"))
+      .toEqual(approvedConfigs.entries);
+    expect(popularConfigs.entries).toHaveLength(approvedConfigs.entries.length + 1);
+    expect(popularConfigs.entryCount).toBe(popularConfigs.entries.length);
     for (const family of candidate.families) {
       const form = family.forms.find(({ isFinal }) => isFinal);
       const spirit = patched.spirits.find(({ fullName }) => fullName === form.name);

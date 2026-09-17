@@ -229,6 +229,24 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.1.1",
+    date: "2026.09.17",
+    title: "S4完整桌面版 · 电鹿与传动",
+    whatsNew: S4_FEATURE_INTRO,
+    summaryHighlights: [
+      "完整桌面版同时收录电鹿斩杀线与传动计算器，断网也可使用。",
+      "机幕方舟常用预设加入配置库，共227套配置。",
+    ],
+    features: [
+      "桌面端可从波普鹿或爵士鹿卡片打开电鹿斩杀线，比较技能逐层伤害并一键填入层数。",
+      "桌面主菜单的查询工具收录传动计算器，支持四槽推演、回合推进与撤回。",
+    ],
+    fixes: [
+      "新增机幕方舟常用预设：沉默、生命与双防各60个体，配招为铁蒺藜、离子震荡、电系愿力冲击、有效预防。",
+      "统一完整安装包、应用版本与源码标签，内置赛季数据、精灵立绘和技能图标。",
+    ],
+  }),
+  createRelease({
     version: "v2.1.0",
     date: "2026.09.17",
     title: "S4电鹿与传动工具",

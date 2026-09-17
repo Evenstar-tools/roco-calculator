@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { resetUiuxStorage } from "./helpers/uiux-helpers.js";
+import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 
 test.beforeEach(async ({ page }) => {
   await resetUiuxStorage(page);
@@ -19,7 +20,7 @@ async function openPopularConfigList(page, theme) {
   await dialog.getByRole("button", { name: "查看精灵和技能" }).click();
   const search = dialog.getByRole("searchbox", { name: "搜索精灵名" });
   await expect(search).toBeFocused();
-  await expect(dialog.getByText("226 / 226")).toBeVisible();
+  await expect(dialog.getByText(`${POPULAR_CONFIG_COUNT} / ${POPULAR_CONFIG_COUNT}`)).toBeVisible();
   return { dialog, search };
 }
 
@@ -89,7 +90,7 @@ for (const viewport of [
 
     await search.fill("银月");
     await expect(dialog.locator("#config-library-entries").getByText("银月狼王", { exact: true })).toBeVisible();
-    await expect(dialog.getByText("1 / 226")).toBeVisible();
+    await expect(dialog.getByText(`1 / ${POPULAR_CONFIG_COUNT}`)).toBeVisible();
     const matched = await readListLayout(dialog, search);
     expect(Math.abs(matched.inputY - initial.inputY)).toBeLessThanOrEqual(1);
     expect(Math.abs(matched.listHeight - initial.listHeight)).toBeLessThanOrEqual(1);
@@ -98,19 +99,19 @@ for (const viewport of [
 
     await search.fill("烈焰狂战士");
     await expect(dialog.locator("#config-library-entries").getByText("烈焰狂战士", { exact: true })).toBeVisible();
-    await expect(dialog.getByText("1 / 226")).toBeVisible();
+    await expect(dialog.getByText(`1 / ${POPULAR_CONFIG_COUNT}`)).toBeVisible();
     await search.fill("满月砣");
     await expect(dialog.locator("#config-library-entries").getByText("满月砣（下弦的样子）", { exact: true })).toBeVisible();
-    await expect(dialog.getByText("1 / 226")).toBeVisible();
+    await expect(dialog.getByText(`1 / ${POPULAR_CONFIG_COUNT}`)).toBeVisible();
 
     await dialog.getByRole("button", { name: "清除" }).click();
     await expect(search).toBeFocused();
     await expect(search).toHaveValue("");
-    await expect(dialog.getByText("226 / 226")).toBeVisible();
+    await expect(dialog.getByText(`${POPULAR_CONFIG_COUNT} / ${POPULAR_CONFIG_COUNT}`)).toBeVisible();
 
     await search.fill("不存在的精灵名称");
     await expect(dialog.getByText("没有匹配的精灵", { exact: true })).toBeVisible();
-    await expect(dialog.getByText("0 / 226")).toBeVisible();
+    await expect(dialog.getByText(`0 / ${POPULAR_CONFIG_COUNT}`)).toBeVisible();
     const empty = await readListLayout(dialog, search);
     expect(Math.abs(empty.inputY - initial.inputY)).toBeLessThanOrEqual(1);
     expect(Math.abs(empty.listHeight - initial.listHeight)).toBeLessThanOrEqual(1);
@@ -137,14 +138,14 @@ for (const viewport of [
 
     await search.fill("银月");
     await expect(dialog.locator("#config-library-entries").getByText("银月狼王", { exact: true })).toBeVisible();
-    await expect(dialog.getByText("1 / 226")).toBeVisible();
+    await expect(dialog.getByText(`1 / ${POPULAR_CONFIG_COUNT}`)).toBeVisible();
     const matched = await readListLayout(dialog, search);
     expect(Math.abs(matched.inputY - initial.inputY)).toBeLessThanOrEqual(1);
     expect(Math.abs(matched.listHeight - initial.listHeight)).toBeLessThanOrEqual(1);
 
     await dialog.getByRole("button", { name: "清除" }).click();
     await expect(search).toBeFocused();
-    await expect(dialog.getByText("226 / 226")).toBeVisible();
+    await expect(dialog.getByText(`${POPULAR_CONFIG_COUNT} / ${POPULAR_CONFIG_COUNT}`)).toBeVisible();
     await search.fill("无匹配");
     await expect(dialog.getByText("没有匹配的精灵", { exact: true })).toBeVisible();
     const empty = await readListLayout(dialog, search);

@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { WorkspaceOverlays } from "../../src/components/WorkspaceOverlays.jsx";
 import { USER_MANUAL_URL } from "../../src/data/product-links.js";
+import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 import {
   FEATURED_USER_RELEASE,
   USER_RELEASE_NOTES,
@@ -50,7 +51,7 @@ test("keeps menu before workspace and closes it with Escape", () => {
 
   expect(screen.getByRole("navigation", { name: "应用菜单" })).toBeTruthy();
   expect(screen.getByRole("button", { name: "常用精灵配置" }))
-    .toHaveTextContent("226");
+    .toHaveTextContent(String(POPULAR_CONFIG_COUNT));
   expect(screen.getByText("工作区").previousElementSibling).toHaveAttribute(
     "aria-label",
     "应用菜单",

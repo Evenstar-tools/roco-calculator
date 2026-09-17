@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { getNature } from "../domain/natures.js";
 import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 
-const POPULAR_CONFIG_COUNT = 226;
+import { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
 const PRIMARY_PREVIEW_ROWS = [
   ["same", "相同"],
   ["different", "不同"],

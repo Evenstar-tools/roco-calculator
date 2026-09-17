@@ -19,24 +19,25 @@ const DESKTOP_CONFIG_FILE = resolve(
   "../public/data/presets/pvp-popular-configs.json",
 );
 const bundledRuntime = expandBundledRuntime(bundledRuntimePayload);
+const desktopConfigCount = JSON.parse(readFileSync(DESKTOP_CONFIG_FILE, "utf8")).entryCount;
 const rootPackage = JSON.parse(
   readFileSync(resolve(process.cwd(), "../package.json"), "utf8"),
 );
 
 describe("bundled common spirit configuration", () => {
-  test("contains the supplied 226-entry PVP library without sensitive fields", () => {
+  test("contains the current PVP library without sensitive fields", () => {
     expect(existsSync(CONFIG_FILE)).toBe(true);
     const text = readFileSync(CONFIG_FILE, "utf8");
     const library = JSON.parse(text);
 
     expect(library).toMatchObject({
       appVersion: rootPackage.version,
-      entryCount: 226,
+      entryCount: desktopConfigCount,
       entryEncoding: "tuple-v1",
       format: "rock-calculator.favorite-config-library",
       schemaVersion: 1,
     });
-    expect(library.entries).toHaveLength(226);
+    expect(library.entries).toHaveLength(desktopConfigCount);
     expect(library.entries.every((entry) => Array.isArray(entry)))
       .toBe(true);
     expect(text).not.toMatch(
@@ -51,7 +52,7 @@ describe("bundled common spirit configuration", () => {
       { snapshot: bundledRuntime },
     );
 
-    expect(parsed.entries).toHaveLength(226);
+    expect(parsed.entries).toHaveLength(desktopConfigCount);
     expect(parsed.preview).toMatchObject({
       invalidEntries: 0,
       missingSpirits: 0,

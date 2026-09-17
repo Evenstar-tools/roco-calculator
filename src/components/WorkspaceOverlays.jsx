@@ -9,6 +9,7 @@ import { FirstRunGuide } from "./FirstRunGuide.jsx";
 import { DisplaySettingsDialog } from "./DisplaySettingsDialog.jsx";
 import { WhatsNewDialog } from "./WhatsNewDialog.jsx";
 import { USER_MANUAL_URL } from "../data/product-links.js";
+import { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -170,7 +171,7 @@ export function WorkspaceOverlays({
             type="button"
           >
             <span>常用精灵配置</span>
-            <span className="app-menu__badge">226</span>
+            <span className="app-menu__badge">{POPULAR_CONFIG_COUNT}</span>
           </button>
           <button type="button" onClick={() => { menuActions.onConfigLibraryExport?.(); menuActions.onClose?.(); }}>导入导出</button>
           <div aria-hidden="true" className="app-menu__separator" />

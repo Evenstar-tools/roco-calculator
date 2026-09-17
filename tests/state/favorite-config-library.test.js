@@ -12,6 +12,7 @@ import {
   formatConfigLibraryImportResult,
 } from "../../src/state/favorite-config-library.js";
 import { canonicalTraitControlKey } from "../../src/state/trait-values.js";
+import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 
 const IVS = {
   hp: 0,
@@ -177,6 +178,16 @@ describe("buildFavoriteConfigLibrary", () => {
 });
 
 describe("bundled popular config library", () => {
+  test("机幕方舟按截图使用沉默、满生命双防及电系愿力冲击", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    const entry = library.entries.find(({ spiritId }) => spiritId === "spirit_37e0a0d6a0d4b993");
+    expect(entry).toEqual({
+      spiritId: "spirit_37e0a0d6a0d4b993", natureId: "silent",
+      displayIvs: { hp: 60, speed: 0, physicalAttack: 0, magicalAttack: 0, physicalDefense: 60, magicalDefense: 60 },
+      skills: ["skill_373ec31edf013da6", "skill_87c9f33eaa047cf1", "calculator_wish_power_electric", "skill_58d84e9ffcc63857"],
+      traitValues: {},
+    });
+  });
   test.each([
     ["波普鹿", "spirit_7d22156a66708de3", ["电弧", "裂石", "下注", "先发制人"]],
     ["银月狼王", "spirit_b689c0de815c95ef", ["岩脉崩毁", "撞鬼", "困兽", "月蚀"]],
@@ -237,7 +248,7 @@ describe("bundled popular config library", () => {
     expect(entry.traitValues).toEqual({});
   });
 
-  test("contains 226 valid spirit configurations", () => {
+  test("contains the declared number of valid spirit configurations", () => {
     const libraryText = readFileSync(
       "public/data/presets/pvp-popular-configs.json",
       "utf8",
@@ -255,9 +266,9 @@ describe("bundled popular config library", () => {
     });
 
     expect(library.format).toBe(FAVORITE_CONFIG_LIBRARY_FORMAT);
-    expect(library.entryCount).toBe(226);
-    expect(library.entries).toHaveLength(226);
-    expect(parsed.entries).toHaveLength(226);
+    expect(library.entryCount).toBe(POPULAR_CONFIG_COUNT);
+    expect(library.entries).toHaveLength(POPULAR_CONFIG_COUNT);
+    expect(parsed.entries).toHaveLength(POPULAR_CONFIG_COUNT);
     expect(parsed.preview.missingSpirits).toBe(0);
     expect(parsed.preview.unknownTraitFields).toBe(0);
     expect(parsed.preview.invalidEntries).toBe(0);
