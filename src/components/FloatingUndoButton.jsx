@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 export const UNDO_POSITION_STORAGE_KEY =
   "rock-calculator.floating-undo-position.v1";
 
-const BUTTON_SIZE = 46;
+const BUTTON_WIDTH = 84;
+const BUTTON_HEIGHT = 44;
 const VIEWPORT_GAP = 18;
 
 function clamp(value, minimum, maximum) {
@@ -16,16 +17,16 @@ function clampPosition(position) {
   const height = globalThis.innerHeight || 768;
   const bottomGap = width <= 760 ? 82 : VIEWPORT_GAP;
   return {
-    x: clamp(Number(position?.x) || 0, VIEWPORT_GAP, width - BUTTON_SIZE - VIEWPORT_GAP),
-    y: clamp(Number(position?.y) || 0, VIEWPORT_GAP, height - BUTTON_SIZE - bottomGap),
+    x: clamp(Number(position?.x) || 0, VIEWPORT_GAP, width - BUTTON_WIDTH - VIEWPORT_GAP),
+    y: clamp(Number(position?.y) || 0, VIEWPORT_GAP, height - BUTTON_HEIGHT - bottomGap),
   };
 }
 
 function defaultPosition() {
   const mobileBottomGap = (globalThis.innerWidth || 1024) <= 760 ? 82 : VIEWPORT_GAP;
   return clampPosition({
-    x: (globalThis.innerWidth || 1024) - BUTTON_SIZE - VIEWPORT_GAP,
-    y: (globalThis.innerHeight || 768) - BUTTON_SIZE - mobileBottomGap,
+    x: (globalThis.innerWidth || 1024) - BUTTON_WIDTH - VIEWPORT_GAP,
+    y: (globalThis.innerHeight || 768) - BUTTON_HEIGHT - mobileBottomGap,
   });
 }
 
@@ -125,7 +126,7 @@ export function FloatingUndoButton({ count = 0, onUndo }) {
       type="button"
     >
       <ArrowCounterClockwise aria-hidden="true" size={23} weight="bold" />
-      {available ? <span aria-hidden="true">{Math.min(count, 50)}</span> : null}
+      <span aria-hidden="true">{Math.min(count, 50)}</span>
     </button>
   );
 }

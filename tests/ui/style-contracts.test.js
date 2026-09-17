@@ -69,13 +69,20 @@ describe("responsive layout contracts", () => {
   });
 
   test("keeps the undo count badge inside the draggable button safe area", () => {
+    const button = ruleBody(".floating-undo");
     const badge = ruleBody(".floating-undo > span");
 
-    expect(badge).toMatch(/(?:^|;)\s*top:\s*[0-9.]+px\s*;/);
-    expect(badge).toMatch(/(?:^|;)\s*right:\s*[0-9.]+px\s*;/);
-    expect(badge).toMatch(/color:\s*var\(--accent/);
-    expect(badge).toMatch(/background:\s*transparent/);
+    expect(button).toMatch(/display:\s*flex/);
+    expect(button).toMatch(/width:\s*84px/);
+    expect(button).toMatch(/height:\s*44px/);
+    expect(badge).not.toMatch(/position:\s*absolute/);
+    expect(badge).toMatch(/min-width:\s*24px/);
+    expect(badge).toMatch(/color:\s*inherit/);
     expect(badge).toMatch(/border:\s*0/);
+    expect(ruleBody(".floating-undo--available")).toMatch(/background:\s*var\(--accent/);
+    expect(ruleBody("html[data-theme=\"dark\"] .floating-undo--available"))
+      .toMatch(/color:\s*#fff/);
+    expect(css).toContain('html[data-theme="dark"] .floating-undo:not(.floating-undo--available)');
   });
 });
 

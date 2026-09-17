@@ -171,7 +171,7 @@ html[data-theme="dark"] .quick-nature__option[aria-pressed="true"] {
   color: #ebd697;
 }
 
-html[data-theme="dark"] .floating-undo {
+html[data-theme="dark"] .floating-undo:not(.floating-undo--available) {
   border-color: #667b93;
   background: #233145;
   color: #c6d3e2;

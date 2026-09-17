@@ -419,19 +419,21 @@ html[data-theme="dark"] .formula-group {
 .floating-undo {
   position: fixed;
   z-index: 48;
-  display: grid;
-  width: 46px;
-  height: 46px;
-  padding: 0;
-  place-items: center;
+  display: flex;
+  width: 84px;
+  height: 44px;
+  padding: 0 10px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   color: var(--text-muted, #7b8499);
   touch-action: none;
   cursor: grab;
   user-select: none;
   background: var(--surface, #fff);
   border: 1px solid var(--line-strong, #c8d0df);
-  border-radius: 50%;
-  box-shadow: 0 7px 20px rgb(36 43 67 / 18%);
+  border-radius: 22px;
+  box-shadow: 0 3px 10px rgb(36 43 67 / 8%);
 }
 
 .floating-undo:active {
@@ -439,25 +441,37 @@ html[data-theme="dark"] .formula-group {
 }
 
 .floating-undo--available {
-  color: var(--accent, #5945e6);
-  border-color: color-mix(in srgb, var(--accent, #5945e6) 45%, transparent);
+  color: #fff;
+  background: var(--accent, #5546dc);
+  border-color: var(--accent, #5546dc);
+  box-shadow: 0 5px 14px rgb(85 70 220 / 24%);
+  cursor: pointer;
+}
+
+.floating-undo--available:hover {
+  background: var(--accent-strong, #4434c6);
+}
+
+.floating-undo:focus-visible {
+  outline: 2px solid var(--accent, #5546dc);
+  outline-offset: 3px;
 }
 
 .floating-undo > span {
-  position: absolute;
-  top: 4px;
-  right: 5px;
-  min-width: 12px;
-  height: auto;
-  padding: 0;
-  color: var(--accent, #5945e6);
-  font-size: 11px;
+  display: grid;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 3px;
+  place-items: center;
+  border-radius: 7px;
+  color: inherit;
+  font-size: 13px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  text-align: right;
+  text-align: center;
   pointer-events: none;
-  background: transparent;
+  background: var(--surface-muted, #e9ecf2);
   border: 0;
 }
 
@@ -468,13 +482,18 @@ html[data-theme="dark"] .formula-group {
   box-shadow: 0 8px 22px rgb(0 0 0 / 36%);
 }
 
-[data-theme="dark"] .floating-undo--available {
-  color: #a99cff;
-  border-color: #7969e8;
+.floating-undo--available > span {
+  background: rgb(255 255 255 / 20%);
 }
 
-[data-theme="dark"] .floating-undo > span {
-  color: #a99cff;
+html[data-theme="dark"] .floating-undo--available {
+  color: #fff;
+  background: #6b57e8;
+  border-color: #8d7cf0;
+}
+
+html[data-theme="dark"] .floating-undo--available:hover {
+  background: #5945d5;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -487,4 +506,3 @@ html[data-theme="dark"] .formula-group {
     animation-iteration-count: 1 !important;
   }
 }
-
