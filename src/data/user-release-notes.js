@@ -229,6 +229,20 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.1.2",
+    date: "2026.09.17",
+    title: "S4悬浮撤回优化",
+    whatsNew: S4_FEATURE_INTRO,
+    summaryHighlights: [
+      "撤回入口改为紫色短条，仅显示箭头与步数，可用状态更醒目。",
+      "修正深色状态和拖动边界，手机避开底部操作栏。",
+    ],
+    fixes: [
+      "悬浮撤回采用紧凑条状按钮，保留箭头与可撤回步数，不可用时弱化显示，亮暗主题均可清楚区分。",
+      "同步按钮变宽后的拖动边界，默认右下角，保留已保存的位置；窄屏避开底部操作栏。",
+    ],
+  }),
+  createRelease({
     version: "v2.1.1",
     date: "2026.09.17",
     title: "S4完整桌面版 · 电鹿与传动",

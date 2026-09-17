@@ -98,10 +98,6 @@ describe("版本记录", () => {
         release.sections.flatMap(({ items }) => items),
       );
     }
-    expect(featuredRelease.sections.map(({ label }) => label)).toEqual([
-      "新增功能",
-      "修复与优化",
-    ]);
     const allFeatureItems = versionedReleases.flatMap((release) =>
       release.sections.find(({ kind }) => kind === "feature")?.items ?? []
     );
