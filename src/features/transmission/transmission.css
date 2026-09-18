@@ -26,10 +26,9 @@
 
 .transmission-round-controls .transmission-round-undo { display: grid; place-items: center; width: 44px; padding: 8px; margin-left: auto; }
 
-.transmission-slots li.is-unusable { background: color-mix(in srgb, var(--surface-soft) 70%, #94a3b8); outline: 1px solid #94a3b8; outline-offset: -1px; opacity: 0.72; }
-.transmission-slot-blocked { display: block; margin-top: 2px; color: var(--text-muted); font-size: 12px; }
-.transmission-wind, .transmission-drive-by-slot { margin: 8px 0 12px; color: var(--text-muted); font-size: 13px; }
-.transmission-wind { color: var(--text); }
-
-.transmission-config > .is-unusable { border: 1px solid #94a3b8; border-radius: 8px; padding: 8px; background: color-mix(in srgb, var(--surface-soft) 70%, #94a3b8); opacity: 0.78; }
-.transmission-config > .is-unusable label { color: var(--text-muted); }
+.transmission-slots li.is-unusable{background:#e2e8f0;opacity:.72}
+.transmission-slot-blocked{display:block;margin-top:2px;color:var(--text-muted);font-size:12px}
+.transmission-wind,.transmission-drive-by-slot{margin:8px 0 12px;color:var(--text-muted);font-size:13px}
+.transmission-wind{color:var(--text)}
+.transmission-config>.is-unusable{border:1px solid #94a3b8;border-radius:8px;padding:8px;background:#e2e8f0;opacity:.78}
+.transmission-config>.is-unusable label{color:var(--text-muted)}
