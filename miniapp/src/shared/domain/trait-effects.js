@@ -348,14 +348,14 @@ const RULES = Object.freeze({
     30,
     "入场次数",
     "每层双攻",
-    { max: null},
+    { max: null, stackId: "attackerTrait.attackerTraitStacks.b0f10b7e" },
   ),
   超级电池: stack(
     "attack_percent",
     40,
     "入场次数",
     "每层双攻",
-    { max: null},
+    { max: null, stackId: "attackerTrait.attackerTraitStacks.b0f10b7e" },
   ),
   冰钻: stack(
     "power_percent",
@@ -552,7 +552,7 @@ const RULES = Object.freeze({
     20,
     "本次攻击前回复能量",
     "每点双攻",
-    { max: null},
+    { max: null, stackId: "attackerTrait.attackerTraitStacks.e3e1d862" },
   ),
   合拍: stack(
     "attack_defense_percent",
@@ -668,7 +668,7 @@ const RULES = Object.freeze({
     30,
     "应对成功次数",
     "每层威力",
-    { max: null},
+    { max: null, stackId: "attackerTrait.attackerTraitStacks.b0f10b7e" },
   ),
   血型吸引: stack(
     "fixed_power",
@@ -727,7 +727,7 @@ const RULES = Object.freeze({
     40,
     "完整选择次数",
     "每层物攻",
-    { categories: ["physical"], max: null},
+    { categories: ["physical"], max: null, stackId: "attackerTrait.attackerTraitStacks.b0f10b7e" },
   ),
   贪得无厌: stack(
     "attack_percent",

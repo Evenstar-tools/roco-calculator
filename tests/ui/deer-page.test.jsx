@@ -26,7 +26,7 @@ test("通电位于先发上方，默认只算直伤，勾选触发2层引电显�
   expect(skillRow("电弧 · 普通")).toHaveTextContent(arc);
   fireEvent.click(screen.getByRole("button", { name: "查看通电详情" }));
   expect(screen.getByText(/合计：通电 .* 引电 .*凑齐2层引电触发一次/)).toBeInTheDocument();
-  expect(document.querySelectorAll('.deer-layer-grid > div')).toHaveLength(11);
+  expect(document.querySelectorAll('.deer-layer-grid > div')).toHaveLength(100);
   fireEvent.click(toggle);
   expect(row.querySelector('.deer-damage')).toHaveTextContent(direct);
   expect(screen.queryByText(/合计：通电/)).not.toBeInTheDocument();
@@ -399,7 +399,7 @@ test("技能详情展示11层实算，暗注49%与50%边界联动", () => {
   fireEvent.change(screen.getByLabelText("自身HP"), { target: { value: "49" } });
   expect(skillRow("下注 · 暗").textContent).not.toBe(at100);
   fireEvent.click(screen.getByRole("button", { name: "查看下注 · 暗详情" }));
-  expect(document.querySelectorAll(".deer-layer-grid > div")).toHaveLength(11);
+  expect(document.querySelectorAll(".deer-layer-grid > div")).toHaveLength(100);
   expect(screen.getByText(/实际威力 185/)).toBeInTheDocument();
   fireEvent.click(screen.getByLabelText("显示先发补刀"));
   expect(screen.getByRole("columnheader", { name: "接先发最低" })).toBeInTheDocument();
