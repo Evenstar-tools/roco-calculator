@@ -30,6 +30,35 @@ export function settleLayers(slots, layers) {
   return { slots: order.map((entry) => entry.skill), steps };
 }
 
+/** 本回合携带技能计入累计的传动层数（自身传动 + 特性追加）。 */
+export function roundDriveTotal(sources = []) {
+  return sources.reduce((sum, source) => sum + Number(source.own || 0) + Number(source.extra || 0), 0);
+}
+
+export function windStacksFromDrive(driveTotal) {
+  return Math.max(0, Math.floor((Number(driveTotal) || 0) / 8));
+}
+
+
+export function slotDriveLayers(slots, traitName = "") {
+  return slots.map((skill, index) => {
+    if (!skill) return 0;
+    const own = baseDrive(skill);
+    const extra =
+      (traitName === "向心力" && index < 2) ||
+      (["翼轴", "贪心算法"].includes(traitName) && index === 0)
+        ? 1
+        : 0;
+    return own + extra;
+  });
+}
+
+export function isSlotUsable(traitName, index) {
+  if (traitName === "正位宝剑") return index === 0;
+  if (traitName === "宝剑王牌") return index === 0 || index === 2;
+  return true;
+}
+
 export function startRound(slots, traitName = "") {
   if (slots.some((skill) => !skill)) return { issue: "请先配置四个技能。" };
   if (slots.some((skill) => ["借用", "取念", "复写"].includes(skill.name))) return { issue: "随机变招需要记录实际技能身份及与传动的先后顺序；请先按实战技能重新配置，当前不能自动推演。" };

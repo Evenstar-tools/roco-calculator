@@ -5,7 +5,7 @@ import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { SpiritPicker } from "../../components/SpiritPicker.jsx";
 import { chooseDefaultSkillIds, getSkillChoices } from "../../domain/skill-loadout.js";
 import { prepareSpiritForView } from "../../data/search-index.js";
-import { resolveAction, startRound } from "./engine.js";
+import { isSlotUsable, resolveAction, roundDriveTotal, slotDriveLayers, startRound, windStacksFromDrive } from "./engine.js";
 import "./transmission.css";
 
 const SELECTABLE_TRAITS = ["向心力", "翼轴", "贪心算法", "盲拧", "机械变式", "风速仪", "正位宝剑", "宝剑王牌"];
@@ -29,6 +29,7 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
   const [roundUndo, setRoundUndo] = useState([]);
   const [showInitial, setShowInitial] = useState(false);
   const [spirit, setSpirit] = useState(null);
+  const [driveAccum, setDriveAccum] = useState(0);
   const relevantTraits = SELECTABLE_TRAITS.map((name) => snapshot.traits.find((entry) => entry.name === name)).filter(Boolean);
   const skillChoices = spirit ? getSkillChoices(snapshot, spirit.id).filter((entry) => entry.learnable) : snapshot.skills;
   const effectiveTrait = trait || snapshot.traits.find((entry) => spirit?.traitIds?.includes(entry.id))?.name || "";
@@ -36,6 +37,8 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
   const actionResults = slots.map((skill, index) => skill ? resolveAction(slots, index, effectiveTrait, "power") : null);
   const shiftIndex = slots.findIndex((skill) => skill?.name === "轮班");
   const selectedIssue = selected >= 0 ? resolveAction(slots, selected, effectiveTrait, branch).issue ?? "" : "";
+  const driveLayers = slotDriveLayers(slots, effectiveTrait);
+  const windStacks = windStacksFromDrive(driveAccum);
   const dialog = useRef(null);
   useEffect(() => {
     const closeOnEscape = (event) => {
@@ -53,7 +56,7 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
   function reset(next = initial, nextTrait = trait) {
     setInitial(next); setSlots(next); setTrait(nextTrait); setRound(0); setPhase("start");
     setHistory([]); setSelected(-1); setIssue(""); setCooldown(null); setBranch("power");
-    setRoundUndo([]);
+    setRoundUndo([]); setDriveAccum(0);
   }
   function record(title, next, details = []) {
     setSlots(next); setHistory((previous) => [...previous, { title, slots: next, details }]);
@@ -66,13 +69,14 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
     ];
   }
   function saveRound() {
-    setRoundUndo((previous) => [...previous, { slots, round, phase, history, selected, branch, cooldown }]);
+    setRoundUndo((previous) => [...previous, { slots, round, phase, history, selected, branch, cooldown, driveAccum }]);
   }
   function previousRound() {
     const previous = roundUndo.at(-1);
     if (!previous) return;
     setSlots(previous.slots); setRound(previous.round); setPhase(previous.phase); setHistory(previous.history);
     setSelected(previous.selected); setBranch(previous.branch); setCooldown(previous.cooldown);
+    setDriveAccum(previous.driveAccum ?? 0);
     setIssue(""); setRoundUndo((entries) => entries.slice(0, -1));
   }
   function calculateRound() {
@@ -86,8 +90,15 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
     saveRound();
     const entries = [{ round: round + 1, title: `第 ${round + 1} 回合 · 开始`, slots: result.slots, details: roundDetails(result) }];
     if (round && phase === "action") entries.unshift({ title: `第 ${round} 回合 · 待机（连续推演）`, slots, details: [] });
+    const gained = effectiveTrait === "风速仪" ? roundDriveTotal(result.sources) : 0;
+    const nextDrive = driveAccum + gained;
+    if (effectiveTrait === "风速仪" && gained > 0) {
+      const last = entries[entries.length - 1];
+      last.details = [...last.details, "累计传动 +" + gained + " → " + nextDrive + "（风起印记 ×" + windStacksFromDrive(nextDrive) + "）"];
+    }
     setHistory((previous) => [...previous, ...entries]);
     setSlots(result.slots); setRound(round + 1); setPhase("action"); setSelected(-1); setBranch("power"); setIssue("");
+    if (effectiveTrait === "风速仪") setDriveAccum(nextDrive);
     if (phase === "action") setCooldown(null);
   }
   function finish() {
@@ -98,6 +109,11 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
   }
   function finishAction(next, result) {
     setCooldown(selected >= 0 ? slots[selected].id : null);
+
+    if (effectiveTrait === "风速仪") {
+      const driveRuns = (result.executions ?? []).filter((execution) => execution.branch === "drive").length;
+      if (driveRuns > 0) setDriveAccum((previous) => previous + driveRuns);
+    }
     record(`第 ${round} 回合 · ${result.label}`, next,
       (result.executions ?? []).map((execution, i) => `第 ${i + 1} 次效果：${execution.branch === "drive" ? "额外传动" : execution.branch === "power" ? "1号位加威" : "当前技能"}${i > 0 ? `（${trait}）` : ""}`));
     setPhase("start"); setIssue("");
@@ -138,7 +154,7 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
     <section className="transmission-panel" role="dialog" aria-modal="true" aria-label="传动计算器" ref={dialog} tabIndex={-1} onKeyDown={keydown}>
       <header><div><h2>传动计算器</h2><p>配置四个技能，逐回合查看槽位与变化来源</p></div><button type="button" aria-label="关闭传动计算器" onClick={onClose}>关闭</button></header>
       <div className="transmission-body" data-layout={layout}>
-        <div className="transmission-spirit"><SpiritPicker label="推演" side="attack" spirits={spirits} selected={spirit} onSelect={selectSpirit} showFavorite={false} /><label className="transmission-trait">特性<select aria-label="传动特性" value={trait} onChange={(event) => selectTrait(event.target.value)}><option value="" disabled>{spirit ? "无相关特性" : "请选择特性"}</option>{relevantTraits.map((entry) => <option key={entry.id} value={entry.name} disabled={entry.name === "盲拧"}>{entry.name}{entry.name === "盲拧" ? "（不支持）" : ["机械变式", "风速仪"].includes(entry.name) ? "（仅顺序）" : ""}</option>)}</select></label></div>
+        <div className="transmission-spirit"><SpiritPicker label="推演" side="attack" spirits={spirits} selected={spirit} onSelect={selectSpirit} showFavorite={false} /><label className="transmission-trait">特性<select aria-label="传动特性" value={trait} onChange={(event) => selectTrait(event.target.value)}><option value="" disabled>{spirit ? "无相关特性" : "请选择特性"}</option>{relevantTraits.map((entry) => <option key={entry.id} value={entry.name} disabled={entry.name === "盲拧"}>{entry.name}{entry.name === "盲拧" ? "（不支持）" : entry.name === "机械变式" ? "（仅顺序）" : ""}</option>)}</select></label></div>
         {trait && <details className="transmission-trait-description"><summary>特性说明</summary><p className="transmission-muted">{snapshot.traits.find((entry) => entry.name === trait)?.description}</p></details>}
         <div className="transmission-layout" role="group" aria-label="技能布局"><span>技能布局</span><button type="button" aria-pressed={layout === "vertical"} onClick={() => setLayout("vertical")}>竖排</button><button type="button" aria-pressed={layout === "grid"} onClick={() => setLayout("grid")}>2×2</button></div>
         <div className="transmission-slot-heading">
@@ -149,10 +165,28 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
           </div>
           <button type="button" aria-label="重置推演" onClick={() => reset()}>重置</button>
         </div>
-        {round === 0 ? <div className="transmission-config">{initial.map((skill, index) => <div key={index}><label>{index + 1} 号位</label><SkillPicker ariaLabel={`初始${index + 1}号位技能`} skills={skillChoices} selected={skill} onSelect={(next) => reset(initial.map((item, i) => i === index ? snapshot.skills.find((entry) => entry.id === next) ?? null : item))} /></div>)}</div> :
-          <ol className="transmission-slots" aria-label="当前技能槽位">{slots.map((skill, index) => <li key={index}>{skill ? <SkillIcon skill={skill} size={32} label /> : <span className="transmission-empty-icon" aria-hidden="true">—</span>}<div><span className="transmission-slot-number">{index + 1} 号位</span><strong>{skill?.name ?? "未配置"}</strong></div></li>)}</ol>}
+        {round === 0 ? <div className="transmission-config">{initial.map((skill, index) => {
+            const usable = isSlotUsable(effectiveTrait, index);
+            return <div key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"}>
+              <label>{index + 1} 号位-{driveLayers[index]}{!usable ? " · 不可使用" : ""}</label>
+              <SkillPicker ariaLabel={`初始${index + 1}号位技能`} skills={skillChoices} selected={skill} onSelect={(next) => reset(initial.map((item, i) => i === index ? snapshot.skills.find((entry) => entry.id === next) ?? null : item))} />
+            </div>;
+          })}</div> :
+          <ol className="transmission-slots" aria-label="当前技能槽位">{slots.map((skill, index) => {
+            const usable = isSlotUsable(effectiveTrait, index);
+            return <li key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"}>
+              {skill ? <SkillIcon skill={skill} size={32} label /> : <span className="transmission-empty-icon" aria-hidden="true">—</span>}
+              <div>
+                <span className="transmission-slot-number">{index + 1} 号位-{driveLayers[index]}</span>
+                <strong>{skill?.name ?? "未配置"}</strong>
+                {!usable && skill ? <small className="transmission-slot-blocked">不可使用</small> : null}
+              </div>
+            </li>;
+          })}</ol>}
         {unsupported && <p role="status" className="transmission-issue">不支持：{unsupported}</p>}
-        {["机械变式", "风速仪"].includes(trait) && <p className="transmission-muted">仅支持技能顺序推演；{trait === "机械变式" ? "能耗递减" : "风起印记累计"}暂不支持。</p>}
+        {trait === "机械变式" && <p className="transmission-muted">仅支持技能顺序推演；能耗递减暂不支持。</p>}
+        {trait === "风速仪" && <p className="transmission-wind" aria-live="polite">已累计传动数 {driveAccum}，风起印记 ×{windStacks}</p>}
+        <p className="transmission-drive-by-slot" aria-live="polite">{driveLayers.map((layers, index) => (index + 1) + "号位-" + layers).join(" ")}</p>
         <div className="transmission-round-controls" role="group" aria-label="回合控制">
           <button className={round === 0 ? "transmission-primary" : ""} type="button" disabled={round > 0 || slots.some((skill) => !skill) || Boolean(unsupported)} onClick={calculateRound}>开始</button>
           <button className={round > 0 ? "transmission-primary" : ""} type="button" disabled={round === 0 || Boolean(unsupported)} onClick={calculateRound}>下一回合</button>

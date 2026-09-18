@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import snapshot from "../../data/snapshots/current.json";
-import { baseDrive, observedOrder, resolveAction, settleLayers, startRound } from "../../src/features/transmission/engine.js";
+import { baseDrive, observedOrder, resolveAction, settleLayers, startRound, isSlotUsable, roundDriveTotal, slotDriveLayers, windStacksFromDrive } from "../../src/features/transmission/engine.js";
 
 const named = (name) => snapshot.skills.find((skill) => skill.name === name);
 const plain = "ABCD".split("").map((name) => ({ id: name, name, description: "" }));
@@ -87,4 +87,36 @@ test.each(["裁决", "滋养", "点燃", "净化", "夺目"])("%s 保留明确�
 test.each([["正位宝剑", [0]], ["宝剑王牌", [0, 2]]])("%s引擎结算同样阻断非法槽位", (trait, allowed) => {
   plain.forEach((_, index) => expect(Boolean(resolveAction(plain, index, trait).issue)).toBe(!allowed.includes(index)));
   expect(resolveAction(plain, -1, trait).issue).toBeUndefined();
+});
+
+
+test("风速仪累计传动按 8 层换 1 层风起", () => {
+  expect(windStacksFromDrive(0)).toBe(0);
+  expect(windStacksFromDrive(7)).toBe(0);
+  expect(windStacksFromDrive(8)).toBe(1);
+  expect(windStacksFromDrive(17)).toBe(2);
+});
+
+test("号位传动层含特性追加", () => {
+  const slots = [
+    { id: "a", name: "A", description: "传动2" },
+    { id: "b", name: "B", description: "传动1" },
+    { id: "c", name: "C", description: "传动0" },
+    { id: "d", name: "D", description: "传动3" },
+  ];
+  expect(slotDriveLayers(slots, "")).toEqual([2, 1, 0, 3]);
+  expect(slotDriveLayers(slots, "向心力")).toEqual([3, 2, 0, 3]);
+  expect(slotDriveLayers(slots, "翼轴")).toEqual([3, 1, 0, 3]);
+  expect(roundDriveTotal([
+    { own: 2, extra: 1 },
+    { own: 1, extra: 0 },
+    { own: 0, extra: 0 },
+    { own: 3, extra: 0 },
+  ])).toBe(7);
+});
+
+test("正位宝剑与宝剑王牌可用槽位", () => {
+  expect([0, 1, 2, 3].map((i) => isSlotUsable("正位宝剑", i))).toEqual([true, false, false, false]);
+  expect([0, 1, 2, 3].map((i) => isSlotUsable("宝剑王牌", i))).toEqual([true, false, true, false]);
+  expect([0, 1, 2, 3].map((i) => isSlotUsable("风速仪", i))).toEqual([true, true, true, true]);
 });

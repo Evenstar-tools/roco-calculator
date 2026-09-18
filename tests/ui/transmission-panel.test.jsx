@@ -128,3 +128,27 @@ test.each([["正位宝剑", "圣剑-X", ["金属噪音", "轮班", "齿轮扭矩
   expect(screen.getByText("本回合轮班（可选）")).toBeInTheDocument();
   expect(within(screen.getByLabelText("本回合轮班")).getByRole("option", { name: /^使用/ })).toBeDisabled();
 });
+
+test("风速仪累计传动与风起印记，并显示各号位传动数", () => {
+  const skills = ["广播", "无风", "齿轮切开", "翼击"].map((name) => skill(name));
+  const owner = snapshot.spirits.find((entry) => entry.fullName === "测风蝉");
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: { spiritId: owner.id, skills: { four: skills.map((entry) => ({ skillId: entry.id })) } } }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  expect(screen.getByLabelText("传动特性")).toHaveValue("风速仪");
+  expect(screen.getByText(/1号位-\d+/)).toBeInTheDocument();
+  expect(screen.getByText("已累计传动数 0，风起印记 ×0")).toBeInTheDocument();
+  advance();
+  const wind = screen.getByText(/已累计传动数 \d+，风起印记 ×\d+/);
+  expect(wind).toBeInTheDocument();
+  expect(wind.textContent).not.toBe("已累计传动数 0，风起印记 ×0");
+});
+
+test("正位宝剑不可用槽位标记为灰", () => {
+  const owner = snapshot.spirits.find((entry) => entry.fullName === "圣剑-X");
+  const skills = ["金属噪音", "轮班", "齿轮扭矩", "倾泻"].map((name) => skill(name));
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: { spiritId: owner.id, skills: { four: skills.map((entry) => ({ skillId: entry.id })) } } }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  expect(screen.getByLabelText("传动特性")).toHaveValue("正位宝剑");
+  const blocked = document.querySelectorAll('.transmission-config > .is-unusable');
+  expect(blocked.length).toBe(3);
+});
