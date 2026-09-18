@@ -12,7 +12,7 @@ const out=process.env.IV_FIX_EVIDENCE_DIR??'artifacts/lineup-iv-fix-20260918/loc
 test.use({serviceWorkers:'block'});
 async function open(page,width){
   await page.setViewportSize({width,height:width>700?1000:844});
-  await resetUiuxStorage(page);await page.goto('/');
+  await resetUiuxStorage(page);await page.goto('/');await page.getByRole('combobox',{name:'攻击方精灵',exact:true}).waitFor();
   await expect(page.getByRole('button',{name:'打开队伍',exact:true})).toBeVisible();
   if(await page.locator('html').getAttribute('data-theme')!=='light')await page.getByRole('button',{name:'切换主题',exact:true}).click();
   await page.getByRole('button',{name:'打开队伍',exact:true}).click();
@@ -46,7 +46,7 @@ for(const width of [1440,390]){
   expect(saved.teams[0].members.every(m=>!m.ivsPending)).toBe(true);
   await expect(drawer.locator('.team-slot__identity .team-iv-pending')).toHaveCount(0);
   await page.screenshot({path:`${out}/restored-team-${width}.png`});
-  await page.reload();await page.getByRole('button',{name:'打开队伍',exact:true}).click();
+  await page.reload();await page.getByRole('combobox',{name:'攻击方精灵',exact:true}).waitFor();await page.getByRole('button',{name:'打开队伍',exact:true}).click();
   await page.getByRole('button',{name:'导出阵容',exact:true}).click();
   await expect(page.getByLabel('阵容代码')).toHaveValue(fixture.code);
   // Some existing skill portraits use BWIKI URLs; they were blocked, not sent.
