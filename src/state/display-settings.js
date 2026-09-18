@@ -9,6 +9,23 @@ export const DURABILITY_OVERVIEW_STORAGE_KEY =
 export const DAMAGE_COMPARISON_STORAGE_KEY =
   "rock-calculator.settings.damage-comparison.v1";
 export const THEME_STORAGE_KEY = "rock-calculator.settings.theme.v1";
+export const VIEW_MODE_STORAGE_KEY = "rock-calculator.settings.view-mode.v1";
+
+export function readViewModeSetting() {
+  try {
+    return globalThis.localStorage?.getItem(VIEW_MODE_STORAGE_KEY) === "detailed" ? "detailed" : "compact";
+  } catch {
+    return "compact";
+  }
+}
+
+export function writeViewModeSetting(mode) {
+  try {
+    globalThis.localStorage?.setItem(VIEW_MODE_STORAGE_KEY, mode === "detailed" ? "detailed" : "compact");
+  } catch {
+    // 存储不可用时仍允许本次会话切换界面。
+  }
+}
 
 function normalizeTheme(value) {
   return value === "dark" ? "dark" : "light";

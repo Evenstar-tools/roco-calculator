@@ -4,7 +4,7 @@ import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 
 test.use({ serviceWorkers: "block" });
 async function openPanel(page) {
-  await page.getByRole("button", { name: "打开菜单" }).click();
+  await page.getByRole("button", { name: "工具箱" }).click();
   await page.getByRole("button", { name: "技能检索", exact: true }).click();
   const panel = page.getByRole("dialog", { name: "技能查询" });
   await expect(panel.getByLabel("搜索技能或精灵")).toBeVisible();
@@ -118,7 +118,7 @@ test("failed catalog can retry and Escape restores menu focus", async ({ page })
   let fail = true;
   await page.route("**/data/skill-query/catalog.json", (route) => fail ? route.abort() : route.continue());
   await page.goto("/");
-  await page.getByRole("button", { name: "打开菜单" }).click();
+  await page.getByRole("button", { name: "工具箱" }).click();
   await page.getByRole("button", { name: "技能检索", exact: true }).click();
   const panel = page.getByRole("dialog", { name: "技能查询" });
   await expect(panel.getByRole("alert")).toContainText("暂时无法加载");
@@ -128,7 +128,7 @@ test("failed catalog can retry and Escape restores menu focus", async ({ page })
   await expect(panel).toContainText("没有找到符合条件的技能");
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "打开菜单" })).toBeFocused();
+  await expect(page.getByRole("button", { name: "工具箱" })).toBeFocused();
 });
 test("menu order, prefetch and repeat opens reuse one catalog request", async ({ page }) => {
   await resetUiuxStorage(page);
@@ -139,8 +139,8 @@ test("menu order, prefetch and repeat opens reuse one catalog request", async ({
   const menu = page.getByRole("navigation", { name: "应用菜单" });
   await expect(menu).toBeVisible();
   const names = await menu.getByRole("button").allTextContents();
-  expect(names.slice(0, 4).map(name => name.replace(/\s+/g, "").replace(new RegExp(`${POPULAR_CONFIG_COUNT}$`), ""))).toEqual(["清除当前页配置", "常用精灵配置", "导入导出", "技能检索"]);
-  await expect.poll(() => requests).toBe(1);
+  expect(names.slice(0, 3).map(name => name.replace(/\s+/g, "").replace(new RegExp(`${POPULAR_CONFIG_COUNT}$`), ""))).toEqual(["清除当前页配置", "常用精灵配置", "导入导出"]);
+  expect(requests).toBe(0);
   await menu.getByRole("button", { name: "导入导出", exact: true }).click();
   const transfer = page.getByRole("dialog", { name: "配置库导入导出" });
   await transfer.getByRole("button", { name: "导入", exact: true }).click();

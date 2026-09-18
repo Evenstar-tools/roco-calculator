@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.1.2-undo-20260917";
+const CACHE_NAME = "rock-calculator-webapp-v2.2.0-toolbox-20260918";
 const APP_SHELL = [
   "/",
   "/manifest.webmanifest",

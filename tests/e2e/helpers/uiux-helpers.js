@@ -1,5 +1,11 @@
 import { expect } from "@playwright/test";
 
+export async function waitForAppReady(page) {
+  await expect(page.locator(".loading-state")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "工具箱", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "工具箱", exact: true })).toBeEnabled();
+}
+
 export async function resetUiuxStorage(page) {
   await page.addInitScript(() => {
     if (sessionStorage.getItem("e2e-storage-initialized")) return;
@@ -27,8 +33,21 @@ export async function selectDefaultSpirits(page) {
 }
 
 export async function openDetailedMode(page) {
-  await page.getByRole("button", { name: "具体版" }).click();
+  await setViewMode(page, "具体版");
   await page.getByRole("tab", { name: "单技能" }).click();
+}
+
+export async function setViewMode(page, name) {
+  await waitForAppReady(page);
+  await page.getByRole("combobox", { name: "攻击方精灵", exact: true }).waitFor();
+  const group = page.getByRole("group", { name: "界面模式" });
+  const toggle = group.getByRole("button", { name: /^当前/ });
+  if (await toggle.count()) {
+    if (!(await toggle.getAttribute("aria-label")).startsWith(`当前${name}`)) await toggle.click();
+  } else {
+    await group.getByRole("button", { name, exact: true }).click();
+  }
+  await expect(page.locator(`.app-header--${name === "具体版" ? "detailed" : "compact"}`)).toBeVisible();
 }
 
 export async function inspectDetailedSkillMenu(page, side, slot) {

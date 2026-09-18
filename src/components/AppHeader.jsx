@@ -8,6 +8,7 @@ import {
 } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { readThemeSetting } from "../state/display-settings.js";
+import { Toolbox } from "./Toolbox.jsx";
 
 export function AppHeader({
   menuButtonRef,
@@ -20,8 +21,16 @@ export function AppHeader({
   onViewModeChange,
   pageTitle,
   toolAction,
+  toolbox,
 }) {
   const [dark, setDark] = useState(() => readThemeSetting() === "dark");
+  const [portrait, setPortrait] = useState(() => window.matchMedia("(orientation: portrait)").matches);
+  useEffect(() => {
+    const media = window.matchMedia("(orientation: portrait)");
+    const update = () => setPortrait(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
   useEffect(() => {
     const observer = new MutationObserver(() => setDark(document.documentElement.dataset.theme === "dark"));
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
@@ -56,13 +65,23 @@ export function AppHeader({
             洛克计算器 · <span className="app-header__season-title">S4「月涌狂想」</span>
           </span>
           <span aria-hidden="true" className="app-header__title-short">
-            <span className="app-header__season-title">S4「月涌狂想」</span>
+            <span className="app-header__season-title">{portrait ? "洛克计算器" : "S4「月涌狂想」"}</span>
           </span>
         </h1>}
       </div>
 
       <div className="app-header__actions">
         {!pageTitle && <><div aria-label="界面模式" className="view-mode-switch" role="group">
+          {portrait ? <button
+            aria-label={`当前${viewMode === "compact" ? "精简版" : "具体版"}，切换到${viewMode === "compact" ? "具体版" : "精简版"}`}
+            aria-pressed={viewMode === "detailed"}
+            data-guide-target="detailed-mode"
+            onClick={() => onViewModeChange?.(viewMode === "compact" ? "detailed" : "compact")}
+            title="点击切换界面模式" type="button"
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 42, height: 38, minHeight: 38, padding: 3, gap: 2 }}>
+            {viewMode === "compact" ? <Lightning aria-hidden="true" size={12} weight="fill" /> : <SlidersHorizontal aria-hidden="true" size={12} weight="bold" />}
+            <span style={{ display: "block", fontSize: 10, lineHeight: 1 }}>{viewMode === "compact" ? "精简" : "具体"}</span>
+          </button> : <>
           <button
             aria-label="精简版"
             aria-pressed={viewMode === "compact"}
@@ -84,6 +103,7 @@ export function AppHeader({
             <SlidersHorizontal aria-hidden="true" size={16} weight="bold" />
             <span>具体版</span>
           </button>
+          </>}
         </div>
         <button
           aria-label="打开队伍"
@@ -95,7 +115,7 @@ export function AppHeader({
         >
           <UsersThree aria-hidden="true" size={19} weight="fill" />
           <span>队伍</span>
-        </button></>}
+        </button>{toolbox ? <Toolbox {...toolbox} /> : null}</>}
         <button
           aria-label="切换主题"
           className="icon-action"

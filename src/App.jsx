@@ -26,6 +26,8 @@ import {
   readNegativeStatusSettlementSetting,
   readThemeSetting,
   writeThemeSetting,
+  readViewModeSetting,
+  writeViewModeSetting,
 } from "./state/display-settings.js";
 import {
   buildCalculatorViewModel,
@@ -97,6 +99,7 @@ import { DAMAGE_COMPARISON_IMPORT_NOTICE } from "./domain/skill-damage-ranking.j
 const loadSkillQueryPanel = () => import("./features/skill-query/SkillQueryPanel.jsx");
 const SkillQueryPanel = lazy(loadSkillQueryPanel);
 const TransmissionPanel = lazy(() => import("./features/transmission/TransmissionPanel.jsx"));
+const TypeQueryPanel = lazy(() => import("./features/type-query/TypeQueryPanel.jsx"));
 const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
 const DamageComparisonDialog = lazy(() => import("./components/DamageComparisonDialog.jsx"));
 const preloadSkillQuery = () => {
@@ -107,6 +110,8 @@ const preloadSkillQuery = () => {
 function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
   const [skillQueryOpen, setSkillQueryOpen] = useState(false);
   const [transmissionOpen, setTransmissionOpen] = useState(false);
+  const [typeQueryOpen, setTypeQueryOpen] = useState(false);
+  const [queryTypes, setQueryTypes] = useState([]);
   const [rankingKind, setRankingKind] = useState(null);
   const [comparisonSource, setComparisonSource] = useState(null);
   const [comparisonPreferences, setComparisonPreferences] = useState(null);
@@ -128,7 +133,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(initialWorkspace?.advancedOptionsOpen ?? false);
   const [advancedOptionsTopRequest, setAdvancedOptionsTopRequest] = useState(null);
   const nextAdvancedOptionsTopRequestRef = useRef(0);
-  const [viewMode, setViewMode] = useState(initialWorkspace?.viewMode ?? "compact");
+  const [viewMode, setViewMode] = useState(() => initialWorkspace?.viewMode ?? readViewModeSetting());
+  useEffect(() => { writeViewModeSetting(viewMode); }, [viewMode]);
   const storedData = useStoredCalculatorData(snapshot, { onToast: setToast });
   const {
     completeSpiritIds,
@@ -1748,6 +1754,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
         onShowProductAccess: () => overlays.setProductAccessOpen(true),
         onShowDataSource: () => overlays.setDataSourceOpen(true),
         onShowSkillQuery: () => setSkillQueryOpen(true),
+        onShowTypeQuery: () => setTypeQueryOpen(true),
         onShowTransmission: () => setTransmissionOpen(true),
         onShowRanking: (kind) => { setRankingsVisited(true); setRankingKind(kind); },
       },
@@ -1880,7 +1887,30 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
       <AppHeader
         menuButtonRef={overlays.menu.buttonRef}
         menuOpen={overlays.menu.open}
-        onMenuOpen={() => { if (!overlays.menu.open) preloadSkillQuery(); overlays.menu.setOpen((open) => !open); }}
+        onMenuOpen={() => overlays.menu.setOpen((open) => !open)}
+        toolbox={{
+          onOpen: () => { overlays.menu.setOpen(false); preloadSkillQuery(); },
+          activeTool: typeQueryOpen ? "types" : skillQueryOpen ? "skills" : transmissionOpen ? "transmission" : rankingKind,
+          actions: {
+            types: () => setTypeQueryOpen(true),
+            skills: () => setSkillQueryOpen(true),
+            transmission: () => setTransmissionOpen(true),
+            speed: () => { setRankingsVisited(true); setRankingKind("speed"); },
+            durability: () => { setRankingsVisited(true); setRankingKind("durability"); },
+            deer: () => {
+              if (!onOpenDeer) { window.location.href = "/dianlu"; return; }
+              let next = stateRef.current;
+              for (const [side, name] of [["attacker", "波普鹿"], ["defender", "银月狼王"]]) {
+                const current = snapshot.spirits.find((spirit) => spirit.id === next.sides[side].spiritId);
+                if (current && (side === "defender" || current.fullName === name)) continue;
+                const spirit = snapshot.spirits.find((entry) => entry.fullName === name);
+                if (!spirit) { next = null; break; }
+                next = selectSpirit(next, { initialState, snapshot, side, spiritId: spirit.id }).state;
+              }
+              onOpenDeer({ state: next, viewMode, activeDirection, advancedOptionsOpen });
+            },
+          },
+        }}
         onTeamsOpen={() => {
           overlays.menu.setOpen(false);
           overlays.team.setAnalysisEntry(null);
@@ -2245,6 +2275,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
       /></Suspense> : null}
       {rankingsVisited ? <Suspense fallback={<div role="status">正在打开排行榜…</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}
       {transmissionOpen && <Suspense fallback={<div role="status">正在打开传动计算器…</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} onClose={() => setTransmissionOpen(false)} /></Suspense>}
+      {typeQueryOpen && <Suspense fallback={<div role="status">正在打开属性查询…</div>}><TypeQueryPanel typeChart={snapshot.typeChart} selectedTypes={queryTypes} onTypesChange={setQueryTypes} onClose={() => setTypeQueryOpen(false)} /></Suspense>}
       {skillQueryOpen && <Suspense fallback={<div role="status">正在打开技能查询…</div>}><SkillQueryPanel skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>
@@ -2288,7 +2319,7 @@ export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDee
   if (!snapshot) {
     return (
       <div className="app">
-        <AppHeader />
+        <AppHeader viewMode={initialWorkspace?.viewMode ?? readViewModeSetting()} />
         <main className="loading-state">
           <p>{error || "正在加载 S4「月涌狂想」数据…"}</p>
         </main>

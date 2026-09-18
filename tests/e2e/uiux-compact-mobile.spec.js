@@ -1,3 +1,4 @@
+import { setViewMode } from "./helpers/uiux-helpers.js";
 import { expect, test } from "@playwright/test";
 import {
   inspectDetailedSkillMenu,
@@ -24,7 +25,7 @@ test("keeps narrow header labels and long spirit identity controls readable at 3
   await selectSpirit(page, "防御方", "水灵");
 
   await expect(page.locator(".view-mode-switch button span").first()).toBeVisible();
-  await expect(page.locator(".team-action span")).toBeVisible();
+  await expect(page.locator(".team-action:not(.toolbox-trigger) span")).toBeVisible();
   const pickerTopDelta = await page.locator(".versus-grid").evaluate((grid) => {
     const attack = grid.querySelector(".spirit-picker--attack .spirit-picker__eyebrow").getBoundingClientRect();
     const defense = grid.querySelector(".spirit-picker--defense .spirit-picker__eyebrow").getBoundingClientRect();
@@ -106,7 +107,7 @@ for (const width of [320, 390]) {
     await page.setViewportSize({ height: 844, width });
     await page.goto("/");
     await selectDefaultSpirits(page);
-    await page.getByRole("button", { name: "具体版" }).click();
+    await setViewMode(page, "具体版");
     await page.getByRole("tab", { name: "四技能" }).click();
 
     await expect(page.locator(".skill-slot--head").first()).toBeHidden();
@@ -175,7 +176,7 @@ test("keeps narrow manual-power restore and trait-damage controls separated", as
   await page.setViewportSize({ height: 844, width: 320 });
   await page.goto("/");
   await selectDefaultSpirits(page);
-  await page.getByRole("button", { name: "具体版" }).click();
+  await setViewMode(page, "具体版");
   await page.getByRole("tab", { name: "四技能" }).click();
 
   const firstRow = page.getByRole("group", { name: "攻击方技能1，当前选中" });
@@ -224,7 +225,7 @@ test("keeps narrow manual-power restore and trait-damage controls separated", as
   await attackerPicker.fill("石冠王蜥");
   await page.getByRole("option", { name: /^石冠王蜥\s/ }).click();
   await selectSpirit(page, "防御方", "水灵");
-  await page.getByRole("button", { name: "具体版" }).click();
+  await setViewMode(page, "具体版");
   await page.getByRole("tab", { name: "四技能" }).click();
   const trait = page.getByRole("group", { name: "攻击方特性伤害刺肤" });
   await expect(trait).toBeVisible();
@@ -337,7 +338,7 @@ test("keeps the compact workflow usable at 390px", async ({ page }) => {
   expect(teamBox.height).toBe(46);
   expect(headerMenuBox.height).toBe(46);
   expect(headerMenuBox.y).toBe(teamBox.y);
-  await expect(page.locator(".team-action span")).toBeVisible();
+  await expect(page.locator(".team-action:not(.toolbox-trigger) span")).toBeVisible();
   expect(await page.locator(".app-header--compact").evaluate(
     (node) => node.scrollWidth <= node.clientWidth,
   )).toBe(true);
@@ -657,9 +658,9 @@ test("collapses cleanly in a 930px half-screen window and steps IV by six", asyn
     expect(action.y).toBe(headerMode.y);
   }
   expect(headerTeam.width).toBeGreaterThan(headerMode.height);
-  await expect(page.locator(".team-action span")).toBeVisible();
+  await expect(page.locator(".team-action:not(.toolbox-trigger) span")).toBeVisible();
 
-  await page.getByRole("button", { name: "具体版" }).click();
+  await setViewMode(page, "具体版");
   const detailedMode = await page
     .getByRole("group", { name: "界面模式" })
     .boundingBox();
@@ -668,7 +669,7 @@ test("collapses cleanly in a 930px half-screen window and steps IV by six", asyn
     expect(action.height).toBe(detailedMode.height);
     expect(action.y).toBe(detailedMode.y);
   }
-  await page.getByRole("button", { name: "精简版" }).click();
+  await setViewMode(page, "精简版");
 
   await selectDefaultSpirits(page);
 

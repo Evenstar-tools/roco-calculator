@@ -1,3 +1,4 @@
+import { setViewMode } from "./helpers/uiux-helpers.js";
 import { expect, test } from "@playwright/test";
 import {
   openDetailedMode,
@@ -31,7 +32,7 @@ test("keeps Dazzling's seven slots readable and exposes Refraction effects", asy
   await expect(compactUsage.locator("summary")).toHaveCount(0);
   await expect(compactUsage.locator(".skill-usage__next")).toContainText("本次可得");
 
-  await page.getByRole("button", { name: "具体版" }).click();
+  await setViewMode(page, "具体版");
   await expect(page.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
   const usage = page.locator(".four-skill-side--attacker .skill-usage");
   await expect(usage).not.toContainText("已使用 0");
@@ -81,7 +82,7 @@ test("keeps Dazzling's seven slots readable and exposes Refraction effects", asy
   await page.getByRole("button", { name: "恢复自动威力", exact: true }).click();
   await page.setViewportSize({ height: 740, width: 320 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.getByRole("button", { name: "精简版", exact: true }).click();
+  await setViewMode(page, "精简版");
   await expect(page.locator(".compact-single-skill .skill-usage")).not.toContainText("累计连击 +0");
 });
 
@@ -259,7 +260,7 @@ test("calculates Stone Lizard family's Skin Spikes as a selectable trait source"
   await expect(page.getByText("特性", { exact: true })).toBeVisible();
   await expect(page.getByText("刺肤", { exact: true }).last()).toBeVisible();
 
-  await page.getByRole("button", { name: "精简版" }).click();
+  await setViewMode(page, "精简版");
   const compactTraitSource = page.getByRole("group", {
     name: "攻击方特性伤害刺肤，当前选中",
   });

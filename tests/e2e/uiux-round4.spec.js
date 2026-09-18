@@ -1,3 +1,4 @@
+import { setViewMode } from "./helpers/uiux-helpers.js";
 import { expect, test } from "@playwright/test";
 import { resetUiuxStorage, selectSpirit } from "./helpers/uiux-helpers.js";
 
@@ -6,7 +7,7 @@ async function openAbility(page) {
   await page.goto("/");
   await selectSpirit(page, "攻击方", "绒仙子");
   await selectSpirit(page, "防御方", "银月狼王");
-  await page.getByRole("button", { name: "具体版", exact: true }).click();
+  await setViewMode(page, "具体版");
   await page.getByRole("button", { name: "打开队伍" }).click();
   await page.getByRole("button", { name: "新建六人队伍" }).click();
   await page.getByRole("button", { name: "用当前攻击方填入1号位" }).click();

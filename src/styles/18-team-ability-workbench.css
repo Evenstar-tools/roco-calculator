@@ -225,7 +225,7 @@
   grid-column: 1 / -1;
 }
 
-.team-workbench__identity span,
+.team-workbench__identity :is(span, button),
 .team-workbench__identity small {
   display: inline-flex;
   min-height: 26px;
@@ -235,7 +235,7 @@
   font-size: 11px;
 }
 
-.team-workbench__identity span {
+.team-workbench__identity :is(span, button) {
   width: max-content;
   padding: 0 9px;
   border: 1px solid var(--border);

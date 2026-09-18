@@ -419,10 +419,19 @@ export function TeamDrawer({
                         <h3>
                           {sourceLabel} · {activeSpirit?.fullName ?? "待选择精灵"}
                         </h3>
-                        <span>
-                          <PencilSimple aria-hidden="true" size={13} />
-                          {analysisEntry ? "临时配置" : "队伍配置"}
-                        </span>
+                        {analysisEntry ? <span>临时配置</span> : (
+                          <button type="button" onClick={() => navigate(() => {
+                            setMemberPage("configure");
+                            requestAnimationFrame(() => {
+                              const picker = drawerRef.current?.querySelector('.team-member-editor input[role="combobox"]');
+                              picker?.scrollIntoView({ block: "center" });
+                              picker?.focus({ preventScroll: true });
+                            });
+                            return true;
+                          })}>
+                            <PencilSimple aria-hidden="true" size={13} />更换精灵
+                          </button>
+                        )}
                         {!analysisEntry ? (
                           <small>
                             <CheckCircle aria-hidden="true" size={14} weight="fill" />

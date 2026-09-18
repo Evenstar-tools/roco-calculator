@@ -61,7 +61,7 @@ test("keeps menu before workspace and closes it with Escape", () => {
   expect(document.activeElement).toBe(menuButtonRef.current);
 });
 
-test("opens transmission from the query tools menu and closes the menu", () => {
+test("工具移至工具箱，菜单不保留重复传动入口", () => {
   const onShowTransmission = vi.fn();
   const onClose = vi.fn();
   renderOverlays({
@@ -73,9 +73,7 @@ test("opens transmission from the query tools menu and closes the menu", () => {
     },
   });
   const menu = screen.getByRole("navigation", { name: "应用菜单" });
-  fireEvent.click(within(menu).getByRole("button", { name: "传动计算器" }));
-  expect(onShowTransmission).toHaveBeenCalledOnce();
-  expect(onClose).toHaveBeenCalledOnce();
+  expect(within(menu).queryByRole("button", { name: "传动计算器" })).toBeNull();
 });
 
 test("exposes a replayable first-run guide from the app menu", () => {
@@ -148,6 +146,12 @@ test("puts clear first and hides cleanup and sharing from the web menu", () => {
   expect(buttons).not.toContain("清理未完成配置");
   expect(buttons).not.toContain("分享当前配置");
   expect(buttons.indexOf("新手引导")).toBeLessThan(buttons.indexOf("显示设置"));
+});
+
+test("属性查询不再重复出现在设置菜单", () => {
+  const onShowTypeQuery = vi.fn(), onClose = vi.fn();
+  renderOverlays({ menu: { open: true, actions: { onShowTypeQuery, onClose }, ref: { current: null } } });
+  expect(screen.queryByRole("button", { name: "属性查询", exact: true })).toBeNull();
 });
 
 test("manual is first under About and opens externally without changing the workspace", () => {

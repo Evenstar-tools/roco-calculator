@@ -27,7 +27,7 @@ for (const width of [1440, 390, 320]) {
         if (mode === "team") {
           await page.getByRole("button", { name: "打开队伍" }).click();
         } else {
-          await page.getByRole("button", { name: "打开菜单" }).click();
+          await page.getByRole("button", { name: "工具箱" }).click();
           await page.getByRole("button", { name: "技能检索", exact: true }).click();
           if (mode === "spirit") await page.getByRole("button", { name: "查精灵技能", exact: true }).click();
         }
@@ -66,7 +66,7 @@ for (const width of [1440, 390, 320]) {
         if (name === "队伍") {
           await page.getByRole("button", { name: "打开队伍" }).click();
         } else {
-          await page.getByRole("button", { name: "打开菜单" }).click();
+          await page.getByRole("button", { name: name === "技能检索" ? "工具箱" : "打开菜单" }).click();
           await page.getByRole("button", { name: name === "完整版本记录" ? "关于与来源" : name, exact: true }).click();
           if (name === "完整版本记录") await page.getByRole("button", { name: "查看完整版本记录" }).click();
         }

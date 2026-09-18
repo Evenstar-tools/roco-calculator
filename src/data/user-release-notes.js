@@ -229,6 +229,14 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.2.0",
+    date: "2026.09.18",
+    title: "S4属性查询与工具箱",
+    whatsNew: S4_FEATURE_INTRO,
+    features: ["新增属性查询：最多选择两种属性，查看抗性、打击面与倍率来源。", "标题栏新增工具箱，集中查询、计算和排行入口。"],
+    fixes: ["精简／具体模式自动记忆，队伍页可一键定位更换精灵。", "竖屏合并模式按钮并压低高度，窄屏属性排列与结果说明更清晰。"],
+  }),
+  createRelease({
     version: "v2.1.2",
     date: "2026.09.17",
     title: "S4悬浮撤回优化",

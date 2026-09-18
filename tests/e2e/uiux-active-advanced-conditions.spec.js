@@ -1,3 +1,4 @@
+import { setViewMode } from "./helpers/uiux-helpers.js";
 import { expect, test } from "@playwright/test";
 import {
   resetUiuxStorage,
@@ -5,7 +6,7 @@ import {
 } from "./helpers/uiux-helpers.js";
 
 async function configureConditions(page) {
-  await page.getByRole("button", { name: "具体版" }).click();
+  await setViewMode(page, "具体版");
   await page.getByRole("button", { name: "高级选项" }).click();
   await page.getByRole("combobox", { name: "天气" }).selectOption("rain");
   await page.getByRole("spinbutton", { name: "防御技能减伤" }).fill("20");
@@ -21,7 +22,7 @@ test.beforeEach(async ({ page }) => {
 
 test("shows only active conditions and keeps adjust separate from formula focus", async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 1440 });
-  await page.getByRole("button", { name: "具体版" }).click();
+  await setViewMode(page, "具体版");
   await expect(page.getByRole("region", {
     name: "当前非默认高级条件",
   })).toHaveCount(0);
@@ -61,7 +62,7 @@ test("mobile result drawer closes before adjust and stays within 320 and 390", a
 
   for (const width of [390, 320]) {
     await page.setViewportSize({ height: 844, width });
-    await page.getByRole("button", { name: "精简版" }).click();
+    await setViewMode(page, "精简版");
     await expect(page.getByRole("button", { name: "高级选项" })).toHaveCount(0);
     await page.getByRole("button", { name: "展开伤害结果" }).click();
     const drawer = page.getByRole("dialog", { name: "完整伤害结果" });

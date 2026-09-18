@@ -9,7 +9,7 @@ test.use({ serviceWorkers: "block" });
 async function menu(page, name) {
   await page.goto("/");
   await page.getByRole("combobox", { name: "攻击方精灵", exact: true }).waitFor();
-  await page.getByRole("button", { name: "打开菜单", exact: true }).click();
+  await page.getByRole("button", { name: ["技能检索", "传动计算器", "速度线排行", "耐久排行"].includes(name) ? "工具箱" : "打开菜单", exact: true }).click();
   await page.getByRole("button", { name, exact: true }).click();
   const dialog = page.getByRole("dialog").last();
   await dialog.waitFor();
@@ -31,6 +31,7 @@ for (const width of [1440, 390, 320]) for (const theme of ["light", "dark"]) {
     await page.addInitScript(value => localStorage.setItem("rock-calculator.settings.theme.v1", value), theme);
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
+    await page.getByRole("combobox", { name: "攻击方精灵", exact: true }).waitFor();
     await page.getByRole("button", { name: "打开队伍", exact: true }).click();
     let dialog = page.getByRole("dialog", { name: "队伍", exact: true });
     await expect(dialog.getByRole("button", { name: "复制队伍", exact: true })).toBeHidden();

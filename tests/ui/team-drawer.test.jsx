@@ -169,6 +169,26 @@ function DrawerHarness({
   );
 }
 
+test("更换精灵定位并展开选择框，也能从能力分析返回", async () => {
+  const scrollIntoView = HTMLElement.prototype.scrollIntoView;
+  HTMLElement.prototype.scrollIntoView = vi.fn();
+  try {
+    render(<DrawerHarness />);
+    fireEvent.click(screen.getByRole("button", { name: "新建六人队伍" }));
+    for (const fromAnalysis of [false, true]) {
+      if (fromAnalysis) fireEvent.click(screen.getByRole("button", { name: "能力分析", exact: true }));
+      fireEvent.click(screen.getByRole("button", { name: "更换精灵" }));
+      await waitFor(() => expect(screen.getByRole("combobox", { name: "成员精灵" })).toHaveFocus());
+      expect(screen.getByRole("combobox", { name: "成员精灵" })).toHaveAttribute("aria-expanded", "true");
+      fireEvent.click(screen.getByRole("option", { name: /音速犬/ }));
+      expect(screen.getByRole("heading", { name: "1号位 · 音速犬" })).toBeVisible();
+    }
+  } finally {
+    if (scrollIntoView) HTMLElement.prototype.scrollIntoView = scrollIntoView;
+    else delete HTMLElement.prototype.scrollIntoView;
+  }
+});
+
 test("空队伍导入入口复用阵容导入，返回后仍可新建队伍", async () => {
   vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ spirits: {}, skills: {}, magic: {} }) }));
   const { unmount } = render(<DrawerHarness />);

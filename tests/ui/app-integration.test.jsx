@@ -495,12 +495,27 @@ const snapshot = {
 };
 
 beforeEach(() => {
+  localStorage.removeItem("rock-calculator.settings.view-mode.v1");
   workspaceOverlayCapture.onShare = null;
   localStorage.removeItem(DURABILITY_OVERVIEW_STORAGE_KEY);
   localStorage.removeItem(DAMAGE_COMPARISON_STORAGE_KEY);
   localStorage.removeItem(SPIRIT_CONFIG_STORAGE_KEY);
   localStorage.removeItem(TYPE_COVERAGE_STORAGE_KEY);
   localStorage.setItem(FIRST_RUN_GUIDE_STORAGE_KEY, "1");
+});
+
+test("精简与具体版在重新打开后记住上次选择", async () => {
+  const user = userEvent.setup();
+  let app = render(<App initialSnapshot={snapshot} />);
+  expect(screen.getByRole("button", { name: "精简版" })).toHaveAttribute("aria-pressed", "true");
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  app.unmount();
+  app = render(<App initialSnapshot={snapshot} />);
+  expect(screen.getByRole("button", { name: "具体版" })).toHaveAttribute("aria-pressed", "true");
+  await user.click(screen.getByRole("button", { name: "精简版" }));
+  app.unmount();
+  render(<App initialSnapshot={snapshot} />);
+  expect(screen.getByRole("button", { name: "精简版" })).toHaveAttribute("aria-pressed", "true");
 });
 
 test("手填冻结和星陨沿用至承伤榜，关闭清空，重开读取新值并代入复算", async () => {
@@ -3948,6 +3963,50 @@ test("configuration library export recognizes complete legacy memories without m
   const autoMetric = within(dialog).getByText("自动识别").parentElement;
   expect(within(autoMetric).getByText("1")).toBeVisible();
   expect(within(dialog).getByRole("button", { name: "导出" })).toBeEnabled();
+});
+
+test("工具箱进入电鹿时补齐攻击方但不改变主页双方配置", async () => {
+  const user = userEvent.setup();
+  const onOpenDeer = vi.fn();
+  const withDeer = { ...snapshot, spirits: [...snapshot.spirits, { ...snapshot.spirits[0], id: "toolbox-deer", fullName: "波普鹿" }] };
+  render(<App initialSnapshot={withDeer} onOpenDeer={onOpenDeer} />);
+  await selectDefaultSpirits(user);
+  const attacker = screen.getByRole("combobox", { name: "攻击方精灵", exact: true }).value;
+  const defender = screen.getByRole("combobox", { name: "防御方精灵", exact: true }).value;
+  await user.click(screen.getByRole("button", { name: "工具箱", exact: true }));
+  await user.click(screen.getByRole("button", { name: "电鹿斩杀线", exact: true }));
+  expect(onOpenDeer).toHaveBeenCalledOnce();
+  expect(onOpenDeer.mock.calls[0][0].state.sides.attacker.spiritId).toBe("toolbox-deer");
+  expect(screen.getByRole("combobox", { name: "攻击方精灵", exact: true })).toHaveValue(attacker);
+  expect(screen.getByRole("combobox", { name: "防御方精灵", exact: true })).toHaveValue(defender);
+  expect(screen.queryByRole("navigation", { name: "工具箱" })).toBeNull();
+});
+
+test("属性查询与计算配置及撤回隔离，关闭重开保留选择", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  const attacker = screen.getByRole("combobox", { name: "攻击方精灵", exact: true }).value;
+  const defender = screen.getByRole("combobox", { name: "防御方精灵", exact: true }).value;
+  const undo = screen.getByRole("button", { name: /撤回上一步/ }).textContent;
+  const open = async () => {
+    await user.click(screen.getByRole("button", { name: "工具箱", exact: true }));
+    await user.click(screen.getByRole("button", { name: "属性查询", exact: true }));
+    return screen.findByRole("dialog", { name: "属性查询" });
+  };
+  const dialog = await open();
+  const group = within(dialog).getByRole("group", { name: "选择属性" });
+  await user.click(within(group).getByRole("button", { name: "水", exact: true }));
+  await user.click(within(group).getByRole("button", { name: "地", exact: true }));
+  await user.keyboard("{Escape}");
+  expect(screen.queryByRole("dialog", { name: "属性查询" })).toBeNull();
+  expect(screen.getByRole("button", { name: "工具箱", exact: true })).toHaveFocus();
+  expect(screen.getByRole("combobox", { name: "攻击方精灵", exact: true })).toHaveValue(attacker);
+  expect(screen.getByRole("combobox", { name: "防御方精灵", exact: true })).toHaveValue(defender);
+  expect(screen.getByRole("button", { name: /撤回上一步/ }).textContent).toBe(undo);
+  await open();
+  expect(screen.getByRole("button", { name: "取消水" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "取消地" })).toBeVisible();
 });
 
 test("moves focus into the mobile result dialog and closes it with Escape", async () => {
