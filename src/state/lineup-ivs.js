@@ -3,11 +3,29 @@ import { getNature } from "../domain/natures.js";
 export const LINEUP_IV_STATS = ["hp", "physicalAttack", "magicalAttack", "physicalDefense", "magicalDefense", "speed"];
 const valuesFor = (stats) => Object.fromEntries(LINEUP_IV_STATS.map(stat => [stat, stats.includes(stat) ? 60 : 0]));
 
-// 官方 individual/list.json 的 1～6 是属性选择，不是数值。
+// Game lineup fields use attribute IDs 79–84; 1–6 are legacy picker ordinals.
+// Verified against the supplied QR and Module:LineupData/Game (2026-09-18).
+// These select stats, not numeric IV amounts. Preserve unknown/duplicate fields.
 export function inspectLineupIvs(talents) {
+  if (talents != null && !Array.isArray(talents)) return { status: "unknown", values: valuesFor([]) };
   const ids = (talents ?? []).filter(id => id != null);
-  const status = !ids.length ? "missing" : ids.every(id => Number.isInteger(id) && id >= 1 && id <= 6) && new Set(ids).size === ids.length ? "selected" : "unknown";
-  return { status, values: valuesFor(status === "selected" ? ids.map(id => LINEUP_IV_STATS[id - 1]) : []) };
+  const stats = ids.map(id => Number.isInteger(id)
+    ? LINEUP_IV_STATS[id >= 79 && id <= 84 ? id - 79 : id - 1]
+    : undefined);
+  const status = !ids.length ? "missing"
+    : ids.length <= 3 && stats.every(Boolean) && new Set(stats).size === stats.length ? "selected" : "unknown";
+  return { status, values: valuesFor(status === "selected" ? stats : []) };
+}
+
+// Repair only the old importer failure state. User-edited IVs are never replaced.
+export function recoverPendingLineupIvs(member) {
+  if (member?.ivsPending !== true || !member.lineupSource ||
+      !LINEUP_IV_STATS.every(stat => Number(member.displayIvs?.[stat] ?? 0) === 0)) return member;
+  const decoded = inspectLineupIvs(member.lineupSource.talents);
+  if (decoded.status !== "selected") return member;
+  const repaired = { ...member, displayIvs: decoded.values };
+  delete repaired.ivsPending;
+  return repaired;
 }
 
 export function recommendLineupIvs(member, snapshot, presets = []) {

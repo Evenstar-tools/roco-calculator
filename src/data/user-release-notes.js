@@ -236,6 +236,7 @@ export const USER_RELEASE_NOTES = Object.freeze([
     whatsNew: S4_FEATURE_INTRO,
     fixes: [
       "修复技能拖拽、推荐速度约束，以及队伍、传动的窄屏与深色显示。",
+      "阵容码恢复个体分配，旧导入队伍自动补齐未编辑项；更换精灵直接清空搜索。",
     ],
   }),
   createRelease({

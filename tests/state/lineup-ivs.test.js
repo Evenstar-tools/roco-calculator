@@ -51,7 +51,7 @@ test("adopted and manual selections export, but concrete IV amounts are not seri
   team.members[0].displayIvs = inspectLineupIvs([1, 2, 6]).values;
   team.members[0].displayIvs.hp = 30;
   const raw = decodeLineupCode(exportLineupCode(team, snapshot, mapping).code);
-  expect(raw.members[0].talents).toEqual([1, 2, 6]);
+  expect(raw.members[0].talents).toEqual([79, 80, 84]);
   expect(raw.members[1].talents).toEqual([80, 80, 80]);
   team.members[0].displayIvs.magicalAttack = 60;
   expect(() => exportLineupCode(team, snapshot, mapping)).toThrow("超过三项");

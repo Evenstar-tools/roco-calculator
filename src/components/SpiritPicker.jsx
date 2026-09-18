@@ -91,6 +91,7 @@ function uniqueSpirits(spirits) {
 }
 
 export function SpiritPicker({
+  clearOnOpen = false,
   favorite = false,
   favoriteState,
   guideTarget,
@@ -223,10 +224,10 @@ export function SpiritPicker({
   const matches = preview.items;
 
   function openOptions() {
-    setQuery(selectedName);
-    setSearching(false);
+    setQuery(clearOnOpen ? "" : selectedName);
+    setSearching(clearOnOpen);
     setPreviewLimit(INITIAL_PREVIEW_COUNT);
-    setActiveIndex(presetBrowse.enabled
+    setActiveIndex(presetBrowse.enabled && !clearOnOpen
       ? Math.max(0, presetSpirits.findIndex((spirit) => spirit.id === selected?.id))
       : 0);
     setOpen(true);
@@ -251,6 +252,7 @@ export function SpiritPicker({
       event.preventDefault();
       commit(matches[activeIndex].spirit);
     } else if (event.key === "Escape") {
+      if (open) { event.preventDefault(); event.stopPropagation(); }
       setQuery(selectedName);
       setOpen(false);
     }

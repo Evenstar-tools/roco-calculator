@@ -880,3 +880,39 @@ test("closes with Escape and restores focus to the trigger", async () => {
   ).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "打开队伍" })).toHaveFocus();
 });
+
+
+test("更换精灵清空搜索词但不清除已存成员，取消和连续更换安全", async () => {
+  const original = HTMLElement.prototype.scrollIntoView;
+  HTMLElement.prototype.scrollIntoView = vi.fn();
+  try {
+    const user = userEvent.setup();
+    render(<DrawerHarness />);
+    await user.click(screen.getByRole("button", { name: "新建六人队伍" }));
+    const input = () => screen.getByRole("combobox", { name: "成员精灵" });
+    await user.click(input());
+    await user.click(screen.getByRole("option", { name: /音速犬/ }));
+    await user.selectOptions(screen.getByLabelText("成员性格"), "adamant");
+    for (const fromAnalysis of [false, true]) {
+      if (fromAnalysis) await user.click(screen.getByRole("button", { name: "能力分析", exact: true }));
+      await user.click(screen.getByRole("button", { name: "更换精灵" }));
+      await waitFor(() => expect(input()).toHaveFocus());
+      expect(input()).toHaveValue("");
+      expect(input()).toHaveAttribute("aria-expanded", "true");
+      expect(screen.getByRole("heading", { name: "1号位 · 音速犬" })).toBeVisible();
+      expect(screen.getByLabelText("成员性格")).toHaveValue("adamant");
+      expect(screen.getByRole("option", { name: /水灵/ })).toBeVisible();
+      await user.keyboard("{Escape}");
+      expect(input()).toHaveValue("音速犬");
+      expect(screen.getByRole("dialog", { name: "队伍", exact: true })).toBeVisible();
+    }
+    await user.click(screen.getByRole("button", { name: "更换精灵" }));
+    await waitFor(() => expect(input()).toHaveValue(""));
+    await user.click(screen.getByRole("option", { name: /水灵/ }));
+    expect(input()).toHaveValue("水灵");
+    expect(screen.getByRole("heading", { name: "1号位 · 水灵" })).toBeVisible();
+  } finally {
+    if (original) HTMLElement.prototype.scrollIntoView = original;
+    else delete HTMLElement.prototype.scrollIntoView;
+  }
+});

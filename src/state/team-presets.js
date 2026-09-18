@@ -1,4 +1,5 @@
 import { normalizeNatureId } from "../domain/natures.js";
+import { recoverPendingLineupIvs } from "./lineup-ivs.js";
 import { chooseDefaultSkillIds } from "../domain/skill-loadout.js";
 import {
   STORAGE_NAMESPACE,
@@ -179,7 +180,7 @@ function markRepairs(state, snapshot) {
               needsRepair: true,
               repairReason: reasons.join("、"),
             }
-          : member;
+          : recoverPendingLineupIvs(member);
       }),
     })),
   };

@@ -96,10 +96,11 @@ export function importLineupCode(input, snapshot, mapping) {
       if (!skillIds.has(skillId)) throw new Error(`第 ${index + 1} 位技能尚未支持（${id}），未导入队伍`);
       return skillId;
     });
+    const ivs = inspectLineupIvs(raw.talents);
     return {
       spiritId, natureId: effectiveNature(raw), bloodlineType: BLOODS[raw.bloodlineId] ?? "normal",
-      displayIvs: inspectLineupIvs(raw.talents).values,
-      ...(inspectLineupIvs(raw.talents).status !== "selected" ? { ivsPending: true } : {}),
+      displayIvs: ivs.values,
+      ...(ivs.status !== "selected" ? { ivsPending: true } : {}),
       skills: { four, single: four.find(Boolean) ?? null },
       lineupSource: raw,
     };
@@ -140,7 +141,7 @@ export function exportLineupCode(team, snapshot, mapping, options = team.lineup 
     const originalTalents = source?.spriteId && mapping.spirits[source.spriteId] === member.spiritId ? source.talents : [null, null, null];
     const originalValues = inspectLineupIvs(originalTalents).values;
     const unchangedIvs = STATS.every(stat => Number(member.displayIvs?.[stat] ?? 0) === originalValues[stat]);
-    const selected = STATS.flatMap((stat, index) => Number(member.displayIvs?.[stat] ?? 0) > 0 ? [index + 1] : []);
+    const selected = STATS.flatMap((stat, index) => Number(member.displayIvs?.[stat] ?? 0) > 0 ? [index + 79] : []);
     if (!unchangedIvs && selected.length > 3) throw new Error(`${spirit.fullName}超过三项个体选择，无法导出`);
     return {
       spriteId: externalId(mapping.spirits, member.spiritId, source?.spriteId, spirit.fullName),

@@ -118,6 +118,7 @@ export function TeamMemberEditor({
   return (
     <section aria-label={`成员 ${index + 1} 配置`} className="team-member-editor">
       <SpiritPicker
+        clearOnOpen
         favorite={false}
         label="成员"
         onFavoriteToggle={() => {}}

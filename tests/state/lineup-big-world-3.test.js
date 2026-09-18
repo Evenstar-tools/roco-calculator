@@ -61,12 +61,12 @@ test("忽略图中排列顺序，按六只出现组合仍唯一对应五项属�
   expect(derived).not.toHaveProperty("83");
 });
 
-test("当前缺口：非空字段未适配，保留待确认及原码，不把零占位当实际数值", () => {
+test("识别非空属性选择，明示60计算口径，原码仍无损往返", () => {
   const team = importLineupCode(text, snapshot, mapping);
   for (const member of team.members) {
-    expect(inspectLineupIvs(member.lineupSource.talents).status).toBe("unknown");
-    expect(member.ivsPending).toBe(true);
-    expect(Object.values(member.displayIvs)).toEqual([0, 0, 0, 0, 0, 0]);
+    expect(inspectLineupIvs(member.lineupSource.talents).status).toBe("selected");
+    expect(member.ivsPending).toBeUndefined();
+    expect(Object.values(member.displayIvs).filter(value => value === 60)).toHaveLength(3);
   }
   expect(exportLineupCode(team, snapshot, mapping).code).toBe(code);
 });

@@ -98,7 +98,7 @@ describe("game / Qiandao lineup exchange", () => {
     expect(store.load(snapshot).teams[1].members[1].ivsPending).toBe(true);
     state = store.rename(state, team.id, "新队名");
     state = store.duplicate(state, team.id);
-    expect(decodeLineupCode(exportLineupCode(store.load(snapshot).teams[2], snapshot).code).members[0].talents).toEqual([1, null, null]);
+    expect(decodeLineupCode(exportLineupCode(store.load(snapshot).teams[2], snapshot).code).members[0].talents).toEqual([79, null, null]);
     storage.setItem = () => { throw new Error("quota"); };
     expect(store.importTeam(state, importLineupCode(fixture.code, snapshot)).writeFailed).toBe(true);
     expect(store.load(snapshot).teams).toHaveLength(3);
