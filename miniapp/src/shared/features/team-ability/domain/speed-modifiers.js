@@ -91,7 +91,14 @@ function traitSpeedModifiers(spirit, traitsById, currentSpeed, traitStackLimit) 
     if (rule.speedEffect === undefined) return [];
 
     const stacks = rule.stack
-      ? Math.min(traitStackLimit, Number(rule.max ?? rule.stack.max ?? traitStackLimit))
+      ? Math.min(
+          traitStackLimit,
+          Number(
+            rule.max ??
+              (Number.isFinite(rule.stack.max) ? rule.stack.max : null) ??
+              traitStackLimit,
+          ),
+        )
       : 1;
     const speedEffect = Number(rule.speedEffect ?? 0);
     if (!Number.isFinite(speedEffect) || speedEffect <= 0) return [];
