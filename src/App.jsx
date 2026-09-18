@@ -1816,9 +1816,25 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
         }
         overlays.whatsNewProps.onClose();
         if (id === "skills") setSkillQueryOpen(true);
+        else if (id === "types") setTypeQueryOpen(true);
+        else if (id === "transmission") setTransmissionOpen(true);
+        else if (id === "deer") {
+          if (!onOpenDeer) { window.location.href = "/dianlu"; return; }
+          let next = stateRef.current;
+          for (const [side, name] of [["attacker", "波普鹿"], ["defender", "银月狼王"]]) {
+            const current = snapshot.spirits.find((spirit) => spirit.id === next.sides[side].spiritId);
+            if (current && (side === "defender" || current.fullName === name)) continue;
+            const spirit = snapshot.spirits.find((entry) => entry.fullName === name);
+            if (!spirit) { next = null; break; }
+            next = selectSpirit(next, { initialState, snapshot, side, spiritId: spirit.id }).state;
+          }
+          onOpenDeer({ state: next, viewMode, activeDirection, advancedOptionsOpen });
+        }
         else if (id === "speed" || id === "durability") { setRankingsVisited(true); setRankingKind(id); }
-        else if (stateRef.current.sides.attacker.spiritId) openSideAbilityAnalysis("attacker");
-        else { overlays.team.setAnalysisEntry(null); overlays.team.setOpen(true); }
+        else if (id === "ability") {
+          if (stateRef.current.sides.attacker.spiritId) openSideAbilityAnalysis("attacker");
+          else { overlays.team.setAnalysisEntry(null); overlays.team.setOpen(true); }
+        }
       },
       onOpenTeam: () => {
         overlays.whatsNewProps.onClose();

@@ -61,7 +61,7 @@ describe("版本记录", () => {
   test("新功能弹窗只展示用户可直接使用的功能", () => {
     const titles = featuredRelease.whatsNew.items.map(({ title }) => title.trim());
     expect(titles.length).toBeGreaterThan(0);
-    expect(titles).toEqual(["技能查询", "耐久排行", "速度线排行", "精灵能力分析", "S4 赛季主题"]);
+    expect(titles).toEqual(["传动计算器", "属性查询", "电鹿计算器", "耐久排行", "速度线排行", "S4 赛季主题"]);
     expect(titles.every((title) => title.length > 0 && title.length <= 16)).toBe(true);
     expect(new Set(titles).size).toBe(titles.length);
     expect(featuredRelease.whatsNew.items.every(({ description }) =>

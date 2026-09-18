@@ -219,10 +219,11 @@ const S4_PREVIEW_V168_RELEASE = createStructuredRelease({
 export const S4_FEATURE_INTRO = Object.freeze({
   title: "S4 功能介绍",
   items: [
-    { id: "skills", title: "技能查询", description: "查技能效果、学习精灵与赛季学习面。", action: "查询" },
+    { id: "transmission", title: "传动计算器", description: "配置四技能，逐回合查看槽位变化与累计传动。", action: "打开" },
+    { id: "types", title: "属性查询", description: "最多选择两种属性，查看抗性、打击面与倍率来源。", action: "查询" },
+    { id: "deer", title: "电鹿计算器", description: "按特性层数估算波普鹿斩杀与先发连招。", action: "打开" },
     { id: "durability", title: "耐久排行", description: "按承受属性与倍率筛选，比较有效耐久。", action: "打开", enhanced: true },
     { id: "speed", title: "速度线排行", description: "输入精灵或速度查快慢，头像模式更直观。", action: "打开", enhanced: true },
-    { id: "ability", title: "精灵能力分析", description: "查看个体分配与面板，选择适合的配置。", action: "分析" },
     { id: "theme", title: "S4 赛季主题", description: "月夜与星轨装饰，支持深浅色切换。", action: "切换" },
   ],
 });
