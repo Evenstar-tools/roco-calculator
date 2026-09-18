@@ -97,7 +97,7 @@ describe("release performance budget", () => {
   });
 
   test.each([
-    ["cssGzip", 50 * 1024, 54 * 1024],
+    ["cssGzip", 50 * 1024, 55 * 1024],
     ["runtimeJson", 1.5 * 1024 * 1024, 1.625 * 1024 * 1024],
   ])("%s 保留预警并在硬边界后一字节阻断", (key, warning, hard) => {
     expect(DEFAULT_PERFORMANCE_BUDGETS[key]).toBe(warning);

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { resetUiuxStorage } from "./helpers/uiux-helpers.js";
 
-for (const width of [320, 1440]) test(`五项功能直达与速度基准 ${width}`, async ({ page }) => {
+for (const width of [320, 1440]) test(`六项功能直达与速度基准 ${width}`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   await resetUiuxStorage(page); await page.goto("/");
   const menu = page.getByRole("navigation", { name: "应用菜单" });
@@ -11,7 +11,7 @@ for (const width of [320, 1440]) test(`五项功能直达与速度基准 ${width
   }).toPass();
   await menu.getByRole("button", { name: /^新功能 / }).click();
   const intro = page.getByRole("dialog", { name: "新功能介绍" });
-  await expect(intro.getByRole("listitem")).toHaveCount(5);
+  await expect(intro.getByRole("listitem")).toHaveCount(6);
   await intro.getByRole("button", { name: "打开速度线排行" }).click();
   const ranking = page.getByRole("dialog", { name: "速度线排行", exact: true });
   await ranking.getByRole("button", { name: "试查 267" }).click();
