@@ -1,22 +1,18 @@
 import { defineConfig } from "vite";
+import { manualChunks } from "./chunk-groups.mjs";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
+
+import { buildAttributionPlugin } from "../scripts/build-attribution.mjs";
 
 export default defineConfig({
   build: {
     minify: "terser",
-    terserOptions: { compress: { passes: 2 } },
+    terserOptions: { ecma: 2020, compress: { passes: 3 } },
     outDir: "dist/client",
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (!id.includes("node_modules")) return undefined;
-          if (id.includes("zxing-wasm")) return "qr-reader";
-          if (id.includes("react")) return "react-vendor";
-          if (id.includes("@phosphor-icons")) return "icons";
-          if (id.includes("pinyin-pro")) return "pinyin";
-          return "vendor";
-        },
+        manualChunks,
       },
     },
   },
@@ -43,5 +39,5 @@ export default defineConfig({
       "dist/**",
     ],
   },
-  plugins: [react()],
+  plugins: [react(), buildAttributionPlugin()],
 });

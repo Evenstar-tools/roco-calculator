@@ -1,6 +1,6 @@
 {
   "name": "rock-calculator",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "内置完整赛季数据、可断网使用的洛克王国 PVP 伤害计算器。",
   "author": "洛克计算器",
   "license": "MIT",
@@ -32,6 +32,7 @@
     "test": "vitest run --config config/vite.config.mjs",
     "test:watch": "vitest --config config/vite.config.mjs",
     "acceptance:verify": "node scripts/verify-acceptance.mjs",
+    "performance:report": "node scripts/build-attribution.mjs",
     "performance:verify": "node scripts/verify-performance-budget.mjs",
     "miniapp:sync-core": "node scripts/miniapp/sync-core.mjs",
     "test:core-drift": "node scripts/miniapp/check-core-drift.mjs",

@@ -8,7 +8,7 @@ import {
   LockSimpleOpen,
   MagnifyingGlass,
 } from "@phosphor-icons/react";
-import { speedQuery, speedReference, speedBadge, speedMatchSummary } from "../features/team-ability/domain/ranking-tools.js";
+import { createSpeedTargetCatalog, speedQuery, speedReference, speedBadge, speedMatchSummary } from "../features/team-ability/domain/ranking-tools.js";
 import {
   lazy,
   Suspense,
@@ -19,6 +19,7 @@ import {
 } from "react";
 import {
   analyzeSpeedBreakpoints,
+  isDurabilityBuildApplicable,
   recommendDurabilityBuilds,
 } from "../features/team-ability/domain/ability-analysis.js";
 import {
@@ -28,20 +29,18 @@ import {
 } from "../features/team-ability/domain/ability-investment.js";
 import {
   createDurabilityRanking,
+  selectDurabilityRanking,
 } from "../features/team-ability/domain/durability-ranking.js";
 import { calculateDurability } from "../features/team-ability/domain/durability.js";
 import {
   findNearestSpeedTarget,
   groupSpeedTargets,
   SPEED_TARGET_PROFILES,
-  createSpeedSpecialTargets,
-  createSpeedTargets,
 } from "../features/team-ability/domain/speed-targets.js";
 import { createSpeedModifiers } from "../features/team-ability/domain/speed-modifiers.js";
 import {
   getNature,
   getNatureMultipliers,
-  getQuickNatureId,
   STAT_LABELS,
 } from "../domain/natures.js";
 import {
@@ -174,7 +173,11 @@ function sourceIdentitySignature(configuration, source) {
 }
 
 function serializedConfiguration(configuration) {
-  return JSON.stringify(cloneConfiguration(configuration));
+  // Persistence may reorder keys; equivalent saved configurations are still the same acknowledgement.
+  return JSON.stringify(cloneConfiguration(configuration), (_, value) =>
+    value && typeof value === "object" && !Array.isArray(value)
+      ? Object.fromEntries(Object.entries(value).sort(([left], [right]) => left.localeCompare(right)))
+      : value);
 }
 
 function calculationConfiguration(configuration, spirit) {
@@ -217,53 +220,18 @@ function isCurrentBuild(result, configuration) {
   );
 }
 
-const DEFENSIVE_NATURE_STAT = Object.freeze({
-  combined: "hp",
-  physical: "physicalDefense",
-  magical: "magicalDefense",
-});
-
-function withDefensiveNature(result, objective, raceStats, speedBonus) {
-  if (!result) return null;
-  const natureId = getQuickNatureId(DEFENSIVE_NATURE_STAT[objective], "defender");
-  const panel = calculateAllPanelStats({
-    displayIvs: result.values,
-    natureMultipliers: getNatureMultipliers(natureId),
-    raceStats,
-  });
-  return {
-    ...result,
-    durability: calculateDurability({
-      maxHp: panel.hp,
-      magicalDefense: panel.magicalDefense,
-      physicalDefense: panel.physicalDefense,
-    }),
-    effectiveSpeed: panel.speed + speedBonus,
-    natureId,
-    panel,
-  };
-}
-
 function CurrentSummary({ durability, panel }) {
   return (
     <section aria-label="当前配置摘要" className="ability-current-summary">
       <strong>当前配置</strong>
-      <span>
-        <small>速度</small>
-        <b>{formatNumber(panel?.speed)}</b>
-      </span>
-      <span>
-        <small>物理耐久</small>
-        <b>{formatNumber(durability?.display.physical)}</b>
-      </span>
-      <span>
-        <small>魔法耐久</small>
-        <b>{formatNumber(durability?.display.magical)}</b>
-      </span>
-      <span>
-        <small>综合耐久</small>
-        <b>{formatNumber(durability?.display.combined)}</b>
-      </span>
+      {[
+        ["速度", panel?.speed], ["综合耐久", durability?.display.combined],
+        ["物理耐久", durability?.display.physical], ["魔法耐久", durability?.display.magical],
+      ].map(([label, value], index) => (
+        <span className={index < 2 ? "is-primary" : undefined} key={label}>
+          <small>{label}</small><b>{formatNumber(value)}</b>
+        </span>
+      ))}
     </section>
   );
 }
@@ -442,7 +410,7 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
                 role="option"
                 type="button"
               >
-                {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
+                {assetUrl(target.spirit) ? <img alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
                 <span>
                   <strong>{target.name}</strong>
                   <small>{speedTargetMeta(target)}</small>
@@ -454,6 +422,9 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
           </div>
         ) : null}
       </div>
+      {targetInput === null && selected ? (
+        <span className="ability-speed__selected-target">{speedTargetLabel(selected)}</span>
+      ) : null}
     </div>
   );
 }
@@ -476,7 +447,7 @@ function SpeedRail({
   const selectedTargetRef = useRef(null);
   const dragRef = useRef({ active: false, moved: false, scrollLeft: 0, startX: 0 });
   const selected = targets.find((target) => target.id === targetId) ?? targets[0];
-  const targetGroups = groupSpeedTargets(targets);
+  const targetGroups = useMemo(() => groupSpeedTargets(targets), [targets]);
   const modifierGroups = Object.values(modifiers.reduce((groups, modifier) => {
     (groups[modifier.groupId] ??= []).push(modifier);
     return groups;
@@ -605,6 +576,10 @@ function SpeedRail({
           </strong>
         </div>
       ) : null}
+      <details className="ability-speed-reference" onToggle={(event) => {
+        if (event.currentTarget.open) requestAnimationFrame(() => selectedTargetRef.current?.scrollIntoView?.({ block: "nearest", inline: "center" }));
+      }}>
+        <summary>速度参考与断点</summary>
       <div
         aria-label="速度排行榜横轴"
         className="ability-speed__viewport"
@@ -652,6 +627,7 @@ function SpeedRail({
           ))}
         </div>
       </div>
+      </details>
       <button
         className="ability-speed__table-toggle"
         onClick={onOpenOverview}
@@ -692,7 +668,7 @@ export function SpeedOverview({
   const [iconOnly, setIconOnly] = useState(standalone);
   const [jump, setJump] = useState(0);
   const selected = standalone ? null : targets.find((target) => target.id === targetId) ?? targets[0];
-  const targetGroups = groupSpeedTargets(targets);
+  const targetGroups = useMemo(() => groupSpeedTargets(targets), [targets]);
   const search = speedQuery(query, queryMode);
   const reference = speedReference(targetGroups, standalone ? location?.speed ?? (search.kind === "actual" ? search.value : null) : null);
   const referenceValue = reference?.value;
@@ -817,7 +793,7 @@ export function SpeedOverview({
                         title={`${target.matchReasons?.length ? `命中${target.matchReasons.join("、")} · ` : ""}${target.name} · ${target.qualifier} · ${target.formRole === "boss" ? "首领" : "最终形态"}`}
                         type="button"
                       >
-                        {assetUrl(target.spirit) ? <img alt="" src={assetUrl(target.spirit)} /> : null}
+                        {assetUrl(target.spirit) ? <img alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
                         {iconOnly ? <small className="speed-profile-badge">{speedBadge(target)}</small> : <span>
                           <strong>{target.name}</strong>
                           <small>{speedTargetMeta(target)}</small>
@@ -1026,10 +1002,8 @@ export function AbilityWorkbench({
     () => validateAbilityInvestment({ values: draft?.displayIvs ?? {} }),
     [draft?.displayIvs],
   );
-  const configured = ready ? calculationConfiguration(draft, spirit) : null;
-  const baselineConfigured = ready
-    ? calculationConfiguration(baselineConfiguration, spirit)
-    : null;
+  const configured = useMemo(() => ready ? calculationConfiguration(draft, spirit) : null, [ready, draft, spirit]);
+  const baselineConfigured = useMemo(() => ready ? calculationConfiguration(baselineConfiguration, spirit) : null, [ready, baselineConfiguration, spirit]);
   const panel = useMemo(
     () =>
       configured
@@ -1065,26 +1039,10 @@ export function AbilityWorkbench({
         : null,
     [baselinePanel],
   );
-  const speedTargets = useMemo(() => {
-    if (!panel) return [];
-    const standardTargets = speedProfileIds
-      .filter((profileId) => profileId !== SPECIAL_SPEED_PROFILE_ID)
-      .flatMap((profileId) =>
-        createSpeedTargets({
-          profileId,
-          spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter,
-          spirits: snapshot.spirits ?? [],
-        }).map((target) => ({
-          ...target,
-          id: `${profileId}:${target.id}`,
-        })));
-    const specialTargets = speedProfileIds.includes(SPECIAL_SPEED_PROFILE_ID)
-      ? Object.keys(SPEED_TARGET_PROFILES).flatMap((profileId) =>
-          createSpeedSpecialTargets({ profileId, snapshot }))
-      : [];
-    return groupSpeedTargets([...standardTargets, ...specialTargets])
-      .flatMap(({ targets }) => targets);
-  }, [panel, snapshot, speedProfileIds]);
+  const speedTargets = useMemo(() => groupSpeedTargets(
+    createSpeedTargetCatalog({ snapshot, profiles: speedProfileIds }).map((target) =>
+      target.specialLabel ? target : { ...target, id: `${target.profileId}:${target.id}` }),
+  ).flatMap(({ targets }) => targets), [snapshot, speedProfileIds]);
   const speedModifiers = useMemo(
     () => panel ? createSpeedModifiers({
       configuration: draft,
@@ -1106,6 +1064,18 @@ export function AbilityWorkbench({
     : null;
   const selectedTarget = speedTargets.find((entry) => entry.id === targetId) ?? nearestTarget;
   const resolvedTargetId = selectedTarget?.id ?? "";
+  // Percentage-based speed modifiers must be recomputed from the final candidate speed.
+  const speedBonusForSpeed = useMemo(() => {
+    if (!activeSpeedModifierIds.length) return undefined;
+    const cache = new Map();
+    return (currentSpeed) => {
+      if (!cache.has(currentSpeed)) cache.set(currentSpeed, createSpeedModifiers({
+        configuration: draft, currentSpeed, snapshot, spirit,
+      }).filter(({ id }) => activeSpeedModifierIds.includes(id))
+        .reduce((total, modifier) => total + modifier.amount, 0));
+      return cache.get(currentSpeed);
+    };
+  }, [activeSpeedModifierIds, draft, snapshot, spirit]);
   const speedAnalysis = useMemo(
     () =>
       configured && selectedTarget
@@ -1114,60 +1084,38 @@ export function AbilityWorkbench({
             rulesetId: BINARY_60_MAX3_RULESET_ID,
             snapshotId: snapshot.meta?.id,
             speedBonus,
+            speedBonusForSpeed,
             target: selectedTarget.speed,
           })
         : null,
-    [configured, selectedTarget, snapshot.meta?.id, speedBonus],
+    [configured, selectedTarget, snapshot.meta?.id, speedBonus, speedBonusForSpeed],
   );
+  const speedConstraint = useMemo(() => speedMode === "at-least"
+    ? { flatBonus: speedBonus, speedBonusForSpeed, mode: "at-least", targetSpeed: selectedTarget?.speed }
+    : { flatBonus: speedBonus, speedBonusForSpeed, mode: speedMode }, [speedBonus, speedBonusForSpeed, speedMode, selectedTarget?.speed]);
   const recommendations = useMemo(() => {
     if (!configured || !validation.valid) return null;
     return recommendDurabilityBuilds({
       current: configured,
+      compareDefensiveNatures: true,
       lockedDimensions,
       rulesetId: BINARY_60_MAX3_RULESET_ID,
       snapshotId: snapshot.meta?.id,
-      speedConstraint:
-        speedMode === "at-least"
-          ? { flatBonus: speedBonus, mode: "at-least", targetSpeed: selectedTarget?.speed }
-          : { flatBonus: speedBonus, mode: speedMode },
+      speedConstraint,
     });
-  }, [configured, lockedDimensions, selectedTarget?.speed, snapshot.meta?.id, speedBonus, speedMode, validation.valid]);
-  const rankingFilter = useMemo(
-    () =>
-      roleFilter === "all" ? undefined : (entry) => entry.formRole === roleFilter,
-    [roleFilter],
-  );
-  const ranking = useMemo(
-    () =>
-      createDurabilityRanking({
-        filter: rankingFilter,
-        query,
-        sortBy: metric,
-        spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter,
-        spirits: snapshot.spirits ?? [],
-        templateId,
-      }),
-    [metric, query, rankingFilter, snapshot.meta?.revisions?.spiritFilter, snapshot.spirits, templateId],
-  );
-  const previewRankings = useMemo(
-    () =>
-      Object.fromEntries(
-        Object.keys(METRIC_LABELS).map((previewMetric) => [
-          previewMetric,
-          createDurabilityRanking({
-            sortBy: previewMetric,
-            spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter,
-            spirits: snapshot.spirits ?? [],
-            templateId: "standard-hp-v1",
-          }).rows,
-        ]),
-      ),
-    [snapshot.meta?.revisions?.spiritFilter, snapshot.spirits],
-  );
+  }, [configured, lockedDimensions, snapshot.meta?.id, speedConstraint, validation.valid]);
+  const previewRanking = useMemo(() => createDurabilityRanking({
+    spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter,
+    spirits: snapshot.spirits ?? [],
+    templateId: "standard-hp-v1",
+  }), [snapshot.meta?.revisions?.spiritFilter, snapshot.spirits]);
+  const previewRankings = useMemo(() => Object.fromEntries(
+    Object.keys(METRIC_LABELS).map((sortBy) => [sortBy, selectDurabilityRanking(previewRanking, { sortBy }).rows]),
+  ), [previewRanking]);
   const currentRankingEntry = previewRankings.combined.find(
     (entry) => entry.spiritId === spirit?.id,
   );
-  const currentExclusion = ranking.excluded.find((entry) => entry.spiritId === spirit?.id);
+  const currentExclusion = previewRanking.excluded.find((entry) => entry.spiritId === spirit?.id);
   const dirty = Boolean(
     draft && configurationSignature(draft, source) !== baselineSignature,
   );
@@ -1231,6 +1179,10 @@ export function AbilityWorkbench({
   }
 
   function applyBuild(result) {
+    if (!isDurabilityBuildApplicable({ current: configured, candidate: result, lockedDimensions, speedConstraint })) {
+      setApplyStatus("方案不再满足当前约束，请重新选择");
+      return;
+    }
     const next = {
       ...draft,
       displayIvs: { ...result.values },
@@ -1348,7 +1300,6 @@ export function AbilityWorkbench({
           metric={metric}
           onBack={closeFullRanking}
           query={query}
-          ranking={ranking}
           roleFilter={roleFilter}
           setMetric={setMetric}
           setQuery={setQuery}
@@ -1360,22 +1311,9 @@ export function AbilityWorkbench({
     );
   }
 
-  const compareDefensiveNatures =
-    validation.valid &&
-    validation.activeCount === 3 &&
-    ["hp", "physicalDefense", "magicalDefense"].every(
-      (stat) => draft.displayIvs[stat] === 60,
-    );
-  const displayedBuilds = BUILD_OBJECTIVES.map((objective) => {
-    const result = recommendations?.results?.[objective.key] ?? null;
-    return {
-      key: objective.key,
-      objective,
-      result: compareDefensiveNatures
-        ? withDefensiveNature(result, objective.key, configured.raceStats, speedBonus)
-        : result,
-    };
-  });
+  const displayedBuilds = BUILD_OBJECTIVES.map((objective) => ({
+    key: objective.key, objective, result: recommendations?.results?.[objective.key] ?? null,
+  }));
 
   return (
     <div

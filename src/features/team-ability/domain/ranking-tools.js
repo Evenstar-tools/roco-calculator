@@ -40,11 +40,19 @@ export function speedMatchSummary(targets, value) {
   }).join("；");
 }
 
-export function createSpeedRanking({ snapshot, profiles = DEFAULT_RANKING_PROFILES, query = "", queryMode = "text" }) {
-  const targets = Object.keys(SPEED_TARGET_PROFILES).flatMap((profileId) => [
+export function createSpeedTargetCatalog({ snapshot, profiles = DEFAULT_RANKING_PROFILES }) {
+  return Object.keys(SPEED_TARGET_PROFILES).flatMap((profileId) => [
     ...(profiles.includes(profileId) ? createSpeedTargets({ profileId, spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter }) : []),
     ...(profiles.includes("special") ? createSpeedSpecialTargets({ profileId, snapshot }) : []),
   ]);
+}
+
+export function createSpeedRanking(options) {
+  return selectSpeedRanking(createSpeedTargetCatalog(options), options);
+}
+
+// Search only filters existing configurations; it does not recalculate spirit panels.
+export function selectSpeedRanking(targets, { query = "", queryMode = "text" } = {}) {
   const search = speedQuery(query, queryMode);
   if (queryMode === "auto" && search.kind === "actual" && !search.invalid && search.text) {
     const matches = targets.map(target => ({ ...target, matchReasons: speedMatchReasons(target, search) })).filter(target => target.matchReasons.length);
@@ -73,15 +81,27 @@ export function createBaseSpeedGroups({ snapshot, query = "" }) {
       bySpirit.get(target.spiritId).targets[profileId] = target;
     }
   }
-  const search = query.normalize("NFKC").trim().toLowerCase();
   const groups = new Map();
   for (const member of bySpirit.values()) {
     const base = member.spirit.raceStats.speed;
-    if (search && !([member.spirit.fullName, member.spirit.dexNo, member.spirit.searchText, ...(member.spirit.aliases ?? [])].some(value => String(value ?? "").normalize("NFKC").toLowerCase().includes(search)) || /^\d+$/.test(search) && (base === Number(search) || Object.values(member.targets).some(target => target.speed === Number(search))))) continue;
     const values = BASE_SPEED_PROFILES.map(id => member.targets[id].speed);
     const key = [base, ...values].join(":");
     if (!groups.has(key)) groups.set(key, { key, base, values, members: [] });
     groups.get(key).members.push(member);
   }
-  return [...groups.values()].sort((a, b) => b.base - a.base);
+  return selectBaseSpeedGroups([...groups.values()].sort((a, b) => b.base - a.base), query);
+}
+
+// Filter members, not just tiers: equal-speed spirits can have different name matches.
+export function selectBaseSpeedGroups(groups, query = "") {
+  const search = query.normalize("NFKC").trim().toLowerCase();
+  if (!search) return groups;
+  const numeric = /^\d+$/.test(search) ? Number(search) : null;
+  return groups.flatMap(group => {
+    if (numeric !== null && (group.base === numeric || group.values.includes(numeric))) return [group];
+    const members = group.members.filter(({ spirit }) =>
+      [spirit.fullName, spirit.dexNo, spirit.searchText, ...(spirit.aliases ?? [])]
+        .some(value => String(value ?? "").normalize("NFKC").toLowerCase().includes(search)));
+    return members.length ? [{ ...group, members }] : [];
+  });
 }

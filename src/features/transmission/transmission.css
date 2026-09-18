@@ -1,10 +1,10 @@
-.transmission-overlay { position: fixed; inset: 0; z-index: 2100; display: grid; place-items: center; background: #10162770; padding: 24px; }
-.transmission-panel { background: var(--surface); color: var(--text); width: min(840px, 100%); max-height: calc(100dvh - 48px); display: flex; flex-direction: column; border-radius: 12px; box-shadow: var(--shadow); min-width: 0; font-size: 14px; }
+.transmission-overlay { position: fixed; top: var(--transmission-viewport-top, 0px); right: 0; left: 0; height: var(--transmission-viewport-height, 100dvh); box-sizing: border-box; z-index: 2100; display: grid; place-items: center; background: #10162770; padding: 24px; }
+.transmission-panel { background: var(--surface); color: var(--text); width: min(840px, 100%); max-height: calc(var(--transmission-viewport-height, 100dvh) - 48px); display: flex; flex-direction: column; border-radius: 12px; box-shadow: var(--shadow); min-width: 0; font-size: 14px; }
 .transmission-panel header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 22px; border-bottom: 1px solid var(--border); }
 .transmission-panel header>button { flex: none; white-space: nowrap; }
 .transmission-panel h2 { margin: 0; font-size: 22px; }.transmission-panel h3 { font-size: 16px; margin: 20px 0 12px; }.transmission-panel p { line-height: 1.65; margin: 8px 0; overflow-wrap: anywhere; }
 .transmission-panel header p,.transmission-muted { color: var(--text-muted); }.transmission-panel small { color: var(--text-muted); font-weight: 400; }
-.transmission-body { overflow-y: auto; padding: 18px 22px; min-height: 0; }
+.transmission-body { overflow-y: auto; padding: 18px 22px; min-height: 0; overscroll-behavior: contain; }
 .transmission-panel>header>button,.transmission-toolbar>button,.transmission-layout>button,.transmission-round-controls>button,.transmission-observed>button,.transmission-panel select,.transmission-observed input { font: inherit; min-height: 44px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); max-width: 100%; }
 .transmission-panel button,.transmission-panel summary { cursor: pointer; }.transmission-panel button:disabled { opacity: .5; cursor: not-allowed; }
 .transmission-panel .transmission-primary { background: var(--accent); color: white; border-color: var(--accent); }
@@ -22,13 +22,19 @@
 .transmission-slot-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 14px 0 10px; }.transmission-slot-heading h3 { flex: 1; margin: 0; min-width: 130px; }.transmission-slot-heading button { font: inherit; min-height: 36px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; color: var(--text); background: var(--surface); }.transmission-initial-peek { position: relative; }.transmission-initial-preview { position: absolute; top: 100%; right: 0; z-index: 40; width: 210px; max-width: calc(100vw - 56px); margin: 0; padding: 10px; list-style: none; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow); }.transmission-initial-preview li { display: flex; gap: 8px; align-items: center; min-height: 36px; }.transmission-initial-preview strong { overflow-wrap: anywhere; font-size: 13px; }.transmission-initial-preview .skill-icon { flex: none; }
 .transmission-issue { padding: 12px; border-left: 3px solid var(--damage-warning); background: var(--surface-soft); }.transmission-observed { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; margin: 12px 0; }.transmission-observed label { display: grid; gap: 8px; }
 .transmission-boundary { border-block: 1px solid var(--border); padding: 12px 0; color: var(--text-muted); }.transmission-history { list-style: none; margin: 0; padding: 0; }.transmission-history>li { padding: 12px 0; border-bottom: 1px solid var(--border); }.transmission-history details { color: var(--text-muted); font-size: 13px; }
-@media(max-width:600px) { .transmission-overlay { padding: 8px; }.transmission-panel { max-height: calc(100dvh - 16px); }.transmission-panel header,.transmission-body { padding: 14px; }.transmission-panel h2 { font-size: 20px; }.transmission-panel header p { font-size: 12px; }.transmission-toolbar select { width: 100%; } }
+@media(max-width:600px) { .transmission-overlay { padding: 8px; }.transmission-panel { max-height: calc(var(--transmission-viewport-height, 100dvh) - 16px); }.transmission-panel header,.transmission-body { padding: 14px; }.transmission-panel h2 { font-size: 20px; }.transmission-panel header p { font-size: 12px; }.transmission-toolbar select { width: 100%; } }
 
 .transmission-round-controls .transmission-round-undo { display: grid; place-items: center; width: 44px; padding: 8px; margin-left: auto; }
 
-.transmission-slots li.is-unusable{background:#e2e8f0;opacity:.72}
-.transmission-slot-blocked{display:block;margin-top:2px;color:var(--text-muted);font-size:12px}
+.transmission-slots li.is-unusable{background:var(--surface);opacity:1}
+.transmission-slots li.is-unusable .skill-icon{opacity:.45;filter:grayscale(.8)}
+.transmission-slot-blocked{display:block;margin-top:2px;color:var(--text);font-size:12px}
 .transmission-wind,.transmission-drive-by-slot{margin:8px 0 12px;color:var(--text-muted);font-size:13px}
 .transmission-wind{color:var(--text)}
-.transmission-config>.is-unusable{border:1px solid #94a3b8;border-radius:8px;padding:8px;background:#e2e8f0;opacity:.78}
+.transmission-config>.is-unusable{border:1px dashed var(--border);border-radius:8px;padding:8px;background:var(--surface);opacity:1}
 .transmission-config>.is-unusable label{color:var(--text-muted)}
+
+/* Dialog menus use the available dialog width, never the half-width skill slot. */
+.transmission-panel > header { flex-shrink: 0; }
+.transmission-panel .skill-picker--readable input { font-size: 16px; }
+.transmission-panel .skill-picker--readable .skill-picker__options { box-sizing: border-box; right: auto; overscroll-behavior: contain; }

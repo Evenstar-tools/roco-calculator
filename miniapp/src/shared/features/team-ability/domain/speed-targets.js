@@ -1,19 +1,10 @@
-import { calculateAllPanelStats, hasCompleteRaceStats } from "../../../domain/stat.js";
+import { calculatePanelStat, hasCompleteRaceStats } from "../../../domain/stat.js";
 import {
   BEAST_FLOWER_TRAIT_NAME,
   resolveBeastFlowerBloodline,
 } from "../../../domain/beast-flower-bloodline.js";
 import { createSpeedModifiers } from "./speed-modifiers.js";
 import { resolveSpiritFormRole } from "./spirit-form-role.js";
-
-const EMPTY_DISPLAY_IVS = Object.freeze({
-  hp: 0,
-  magicalAttack: 0,
-  magicalDefense: 0,
-  physicalAttack: 0,
-  physicalDefense: 0,
-  speed: 0,
-});
 
 export const SPEED_TARGET_PROFILES = Object.freeze({
   "positive-max": Object.freeze({
@@ -122,11 +113,10 @@ export function createSpeedTargets({
       if (!hasCompleteRaceStats(spirit?.raceStats)) return [];
       const form = resolveSpiritFormRole(spirit, { spiritFilterRevision });
       if (form.formRole !== "final" && form.formRole !== "boss") return [];
-      const speed = calculateAllPanelStats({
-        displayIvs: { ...EMPTY_DISPLAY_IVS, speed: profile.displayIv },
-        natureMultipliers: { speed: profile.natureMultiplier },
-        raceStats: spirit.raceStats,
-      }).speed;
+      const speed = calculatePanelStat({
+        kind: "speed", race: spirit.raceStats.speed,
+        displayIv: profile.displayIv, natureMultiplier: profile.natureMultiplier,
+      });
       return [{
         formRole: form.formRole,
         id: spirit.id,
@@ -175,11 +165,10 @@ export function createSpeedSpecialTargets({ profileId = "positive-max", snapshot
         ? skills.find((skill) => skill.type === "电" && learnedIds.includes(skill.id))
         : null;
       const carriedSkills = [sourceSkill?.id, extraElectricSkill?.id].filter(Boolean);
-      const baseSpeed = calculateAllPanelStats({
-        displayIvs: { ...EMPTY_DISPLAY_IVS, speed: profile.displayIv },
-        natureMultipliers: { speed: profile.natureMultiplier },
-        raceStats: spirit.raceStats,
-      }).speed;
+      const baseSpeed = calculatePanelStat({
+        kind: "speed", race: spirit.raceStats.speed,
+        displayIv: profile.displayIv, natureMultiplier: profile.natureMultiplier,
+      });
       const hasBeastFlowerTrait = (spirit.traitIds ?? []).some((traitId) =>
         traits.find((trait) => trait.id === traitId)?.name === BEAST_FLOWER_TRAIT_NAME,
       );

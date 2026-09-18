@@ -1,9 +1,9 @@
 import { ArrowLeft, MagnifyingGlass, SlidersHorizontal, X } from "@phosphor-icons/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ELEMENT_TYPES } from "../domain/type-chart.js";
-import { createDurabilityRanking, getDurabilityMultipliers, STANDARD_DURABILITY_TEMPLATES } from "../features/team-ability/domain/durability-ranking.js";
+import { createDurabilityRanking, selectDurabilityRanking, getDurabilityMultipliers, STANDARD_DURABILITY_TEMPLATES } from "../features/team-ability/domain/durability-ranking.js";
 import { SpeedOverview } from "./AbilityWorkbench.jsx";
-import { createSpeedRanking, DEFAULT_RANKING_PROFILES, RANKING_METRIC_LABELS, multiplierSummary, multiplierTone } from "../features/team-ability/domain/ranking-tools.js";
+import { createSpeedTargetCatalog, selectSpeedRanking, DEFAULT_RANKING_PROFILES, RANKING_METRIC_LABELS, multiplierSummary, multiplierTone } from "../features/team-ability/domain/ranking-tools.js";
 import SpeedDetail from "./SpeedDetail.jsx";
 import BaseSpeedOverview from "./BaseSpeedOverview.jsx";
 import "../styles/23-rankings.css";
@@ -27,7 +27,7 @@ function ReadonlyDetail({ entry, attackType, templateId, onBack }) {
   useEffect(() => { back.current?.focus(); }, [entry]);
   return <section className="rank-detail" aria-label="榜单配置详情">
     <button type="button" ref={back} onClick={onBack}><ArrowLeft size={16} />返回榜单</button>
-    <div className="rank-detail__identity">{portrait(entry.spirit) ? <img alt="" src={portrait(entry.spirit)} /> : null}<div><h3>{entry.spirit.fullName}</h3><p>{entry.spirit.types?.join(" · ")}</p></div></div>
+    <div className="rank-detail__identity">{portrait(entry.spirit) ? <img alt="" loading="lazy" decoding="async" src={portrait(entry.spirit)} /> : null}<div><h3>{entry.spirit.fullName}</h3><p>{entry.spirit.types?.join(" · ")}</p></div></div>
     {entry.speed != null ? <><h4>速度 {entry.speed}</h4><p>{entry.qualifier}</p><p>该档配置的显示值，不代表所有配置的速度。</p></> : <>
       <h4>{STANDARD_DURABILITY_TEMPLATES[templateId].label} · 60级统一模板</h4>
       <p>生命／物防／魔防个体均为60 · 其他个体为0</p><p>HP {entry.panelStats.hp} · 物防 {entry.panelStats.physicalDefense} · 魔防 {entry.panelStats.magicalDefense}</p>
@@ -50,7 +50,8 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
     backButtonRef?.current?.focus({ preventScroll: true });
     currentRowRef?.current?.scrollIntoView?.({ block: "center" });
   }, [backButtonRef, currentRowRef]);
-  const ranking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, attackType, multipliers, typeChart: snapshot.typeChart, query, sortBy: metric, templateId, filter: roleFilter === "all" ? undefined : (row) => row.formRole === roleFilter }), [snapshot, attackType, multipliers, query, metric, templateId, roleFilter]);
+  const baseRanking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, attackType, multipliers, typeChart: snapshot.typeChart, templateId, filter: roleFilter === "all" ? undefined : (row) => row.formRole === roleFilter }), [snapshot, attackType, multipliers, templateId, roleFilter]);
+  const ranking = useMemo(() => selectDurabilityRanking(baseRanking, { query, sortBy: metric }), [baseRanking, query, metric]);
   const rows = [...ranking.immuneRows, ...ranking.rows];
   const closeDetail = () => { setDetail(null); requestAnimationFrame(() => detailTrigger.current?.focus({ preventScroll: true })); };
   const reset = () => { setQuery(""); setRoleFilter("all"); setTemplateId("standard-hp-v1"); updateResistance({ attackType: "", multipliers: bins }); };
@@ -75,7 +76,7 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
       <div className="rank-table-scroll">
         <table aria-label="标准耐久完整榜" className={`rank-table rank-table--${metric}`}><thead><tr><th>排名</th><th>精灵</th>{attackType ? <th className="rank-type-column">{attackType}倍率</th> : null}{tableMetrics.map((key) => <th key={key} className={`rank-value--${key}`} aria-sort={metric === key ? "descending" : "none"}>{attackType ? "有效" : ""}{RANKING_METRIC_LABELS[key]}</th>)}</tr></thead><tbody>
           {rows.map((entry) => <tr aria-current={entry.spiritId === currentSpiritId ? "true" : undefined} key={entry.spiritId} ref={entry.spiritId === currentSpiritId ? currentRowRef : undefined}>
-            <td>{entry.multiplier === 0 ? "免疫" : entry.filteredRank[metric]}</td><th scope="row"><button className="rank-spirit" onClick={(event) => { detailTrigger.current = event.currentTarget; setDetail(entry); }} type="button">{portrait(entry.spirit) ? <img alt="" src={portrait(entry.spirit)} /> : null}<span>{entry.spirit.fullName}<small>{entry.spirit.types?.join(" · ")} <span className="rank-form">· {entry.formRole === "boss" ? "首领" : "最终形态"}</span></small>{attackType ? <small className={`rank-mobile-mult rank-tone--${multiplierTone(entry.multiplier)}`}>{attackType} ×{entry.multiplier}</small> : null}</span></button></th>
+            <td>{entry.multiplier === 0 ? "免疫" : entry.filteredRank[metric]}</td><th scope="row"><button className="rank-spirit" onClick={(event) => { detailTrigger.current = event.currentTarget; setDetail(entry); }} type="button">{portrait(entry.spirit) ? <img alt="" loading="lazy" decoding="async" src={portrait(entry.spirit)} /> : null}<span>{entry.spirit.fullName}<small>{entry.spirit.types?.join(" · ")} <span className="rank-form">· {entry.formRole === "boss" ? "首领" : "最终形态"}</span></small>{attackType ? <small className={`rank-mobile-mult rank-tone--${multiplierTone(entry.multiplier)}`}>{attackType} ×{entry.multiplier}</small> : null}</span></button></th>
             {attackType ? <td className={`rank-type-column rank-tone--${multiplierTone(entry.multiplier)}`}>×{entry.multiplier}</td> : null}
             {tableMetrics.map((key) => <td key={key} className={`rank-value--${key}${metric === key ? " rank-active-value" : ""}`}>{number(entry.durability.display[key])}</td>)}
           </tr>)}
@@ -87,16 +88,17 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
   </section>;
 }
 
-function StandaloneDurability({ snapshot, onClose }) {
+const StandaloneDurability = memo(function StandaloneDurability({ snapshot, onClose }) {
   const [metric, setMetric] = useState("combined");
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [templateId, setTemplateId] = useState("standard-hp-v1");
   return <DurabilityRankingView {...{snapshot, metric, setMetric, query, setQuery, roleFilter, setRoleFilter, templateId, setTemplateId}} onBack={onClose} standalone />;
-}
+});
 
-function StandaloneSpeed({ snapshot, onClose }) {
+const StandaloneSpeed = memo(function StandaloneSpeed({ snapshot, onClose }) {
   const [view, setView] = useState("actual");
+  const [baseVisited, setBaseVisited] = useState(false);
   const [location, setLocation] = useState(null);
   const [baseLocation, setBaseLocation] = useState(null);
   const [baseQuery, setBaseQuery] = useState("");
@@ -105,26 +107,31 @@ function StandaloneSpeed({ snapshot, onClose }) {
   const [profiles, setProfiles] = useState([...DEFAULT_RANKING_PROFILES]);
   const [detail, setDetail] = useState(null);
   const trigger = useRef(null);
-  const targets = useMemo(() => createSpeedRanking({ snapshot, profiles, query, queryMode }).flatMap((group) => group.targets.map((target) => ({...target, id: `${target.profileId}:${target.id}`}))), [snapshot, profiles, query, queryMode]);
+  const catalog = useMemo(() => createSpeedTargetCatalog({ snapshot, profiles }), [snapshot, profiles]);
+  const targets = useMemo(() => selectSpeedRanking(catalog, { query, queryMode }).flatMap((group) => group.targets.map((target) => ({...target, id: `${target.profileId}:${target.id}`}))), [catalog, query, queryMode]);
   const back = () => {setDetail(null); requestAnimationFrame(() => trigger.current?.focus({preventScroll:true}));};
   const locate = (profileId, speed) => { setDetail(null); setProfiles([profileId]); setQueryMode("auto"); setQuery(""); setLocation({ speed }); setView("actual"); };
+  const showView = (next) => { if (next === "base") setBaseVisited(true); setView(next); };
   const detailPanel = detail ? <SpeedDetail entry={detail} snapshot={snapshot} reference={/^\d+$/.test(query) ? Number(query) : null} onClose={back} onLocate={locate} /> : null;
   return <section className="rank-view" aria-label="速度线榜单" onKeyDown={(event) => {if (event.key === "Escape" && detail) {event.stopPropagation(); back();}}}>
     <div className="rank-view__content">
-      <div className="speed-view-switch" role="group" aria-label="速度榜视图">{[["actual", "实速排行"], ["base", "按种族速查"]].map(([id, label]) => <button type="button" key={id} aria-pressed={view === id} onClick={() => { setDetail(null); setView(id); }}>{label}</button>)}</div>
-      <div className="speed-view-body" hidden={view !== "base"}><BaseSpeedOverview location={baseLocation} detail={detail} detailPanel={detailPanel} snapshot={snapshot} query={baseQuery} onQueryChange={setBaseQuery} onDetail={(target) => { trigger.current = document.activeElement; setDetail(detail?.spiritId === target.spiritId ? null : target); }} onLocate={locate} /></div>
+      <div className="speed-view-switch" role="group" aria-label="速度榜视图">{[["actual", "实速排行"], ["base", "按种族速查"]].map(([id, label]) => <button type="button" key={id} aria-pressed={view === id} onClick={() => { setDetail(null); showView(id); }}>{label}</button>)}</div>
+      <div className="speed-view-body" hidden={view !== "base"}>{baseVisited && <BaseSpeedOverview location={baseLocation} detail={detail} detailPanel={detailPanel} snapshot={snapshot} query={baseQuery} onQueryChange={setBaseQuery} onDetail={(target) => { trigger.current = document.activeElement; setDetail(detail?.spiritId === target.spiritId ? null : target); }} onLocate={locate} />}</div>
       <div className="speed-view-body" hidden={view !== "actual"}>
-      <SpeedOverview onLocateBase={(base) => { setDetail(null); setQuery(""); setBaseQuery(""); setBaseLocation({ base }); setView("base"); }} location={location} locateTargetId={location?.targetId} onLocateResult={(speed, targetId) => { setDetail(null); setQuery(""); setLocation({ speed, targetId }); }} detail={detail} detailPanel={detailPanel} standalone targets={targets} query={query} queryMode={queryMode} onQueryModeChange={setQueryMode} onQueryChange={(value) => { setLocation(null); setQueryMode("auto"); setQuery(value); }} profileIds={profiles} onProfilesChange={setProfiles} onBack={onClose} onTargetChange={(id) => {trigger.current = document.activeElement; setDetail(detail?.id === id ? null : targets.find((target) => target.id === id));}} />
+      <SpeedOverview onLocateBase={(base) => { setDetail(null); setQuery(""); setBaseQuery(""); setBaseLocation({ base }); showView("base"); }} location={location} locateTargetId={location?.targetId} onLocateResult={(speed, targetId) => { setDetail(null); setQuery(""); setLocation({ speed, targetId }); }} detail={detail} detailPanel={detailPanel} standalone targets={targets} query={query} queryMode={queryMode} onQueryModeChange={setQueryMode} onQueryChange={(value) => { setLocation(null); setQueryMode("auto"); setQuery(value); }} profileIds={profiles} onProfilesChange={setProfiles} onBack={onClose} onTargetChange={(id) => {trigger.current = document.activeElement; setDetail(detail?.id === id ? null : targets.find((target) => target.id === id));}} />
       {!targets.length ? <p className="rank-empty">没有符合当前口径或搜索条件的速度档位。</p> : null}
       <footer className="rank-footer">极 / 满 / 性 / 无 / 减：速度口径 · 特：条件触发 · 点头像看详情</footer>
       </div>
     </div>
   </section>;
-}
+});
 
 export default function RankingsPanel({ kind, snapshot, onClose }) {
   const root = useRef(null);
+  const [visited, setVisited] = useState(() => ({ [kind]: true }));
+  if (kind && !visited[kind]) setVisited({ ...visited, [kind]: true });
   const close = useRef(onClose);
+  const closePanel = useCallback(() => close.current(), []);
   useEffect(() => { close.current = onClose; }, [onClose]);
   useEffect(() => {
     if (!kind) return undefined;
@@ -145,8 +152,8 @@ export default function RankingsPanel({ kind, snapshot, onClose }) {
   return <div className="rank-overlay" hidden={!kind} onMouseDown={(event) => {if(event.target === event.currentTarget) onClose();}}>
     <div className="rank-dialog" role="dialog" aria-modal="true" aria-label={kind === "speed" ? "速度线排行" : "耐久排行"} ref={root}>
       <header className="rank-dialog__heading"><h2>{kind === "speed" ? "速度线排行" : "耐久排行"}</h2><button aria-label="关闭排行榜" onClick={onClose} type="button"><X size={20} /></button></header>
-      <div className="rank-tool-host" hidden={kind !== "durability"}><StandaloneDurability snapshot={snapshot} onClose={onClose} /></div>
-      <div className="rank-tool-host" hidden={kind !== "speed"}><StandaloneSpeed snapshot={snapshot} onClose={onClose} /></div>
+      <div className="rank-tool-host" hidden={kind !== "durability"}>{visited.durability && <StandaloneDurability snapshot={snapshot} onClose={closePanel} />}</div>
+      <div className="rank-tool-host" hidden={kind !== "speed"}>{visited.speed && <StandaloneSpeed snapshot={snapshot} onClose={closePanel} />}</div>
     </div>
   </div>;
 }

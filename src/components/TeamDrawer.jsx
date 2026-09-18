@@ -192,6 +192,7 @@ export function TeamDrawer({
         aria-modal="true"
         className="team-drawer team-workbench"
         data-empty={!activeTeam}
+        data-compact-roster={paneMode === "member" && memberPage === "ability" && !exchangeMode}
         ref={drawerRef}
         role="dialog"
       >
@@ -386,6 +387,7 @@ export function TeamDrawer({
                     />
                   </label>
                   <TeamRoster
+                    compact={paneMode === "member" && memberPage === "ability"}
                     members={activeTeam.members}
                     onApply={onApply}
                     onSelect={(index) =>

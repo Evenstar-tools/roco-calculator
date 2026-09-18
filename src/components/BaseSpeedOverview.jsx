@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BASE_SPEED_PROFILES, createBaseSpeedGroups } from "../features/team-ability/domain/ranking-tools.js";
+import { BASE_SPEED_PROFILES, createBaseSpeedGroups, selectBaseSpeedGroups } from "../features/team-ability/domain/ranking-tools.js";
 
 const labels = ["无个体", "满个体", "极速"];
 
 export default function BaseSpeedOverview({ location, detail, detailPanel, snapshot, query, onQueryChange, onDetail, onLocate }) {
   const [mobileProfile, setMobileProfile] = useState("positive-max");
-  const groups = useMemo(() => createBaseSpeedGroups({ snapshot, query }), [snapshot, query]);
+  const baseGroups = useMemo(() => createBaseSpeedGroups({ snapshot }), [snapshot]);
+  const groups = useMemo(() => selectBaseSpeedGroups(baseGroups, query), [baseGroups, query]);
   const locationRef = useRef(null);
   useEffect(() => {
     const frame = requestAnimationFrame(() => locationRef.current?.scrollIntoView?.({ block: "center" }));

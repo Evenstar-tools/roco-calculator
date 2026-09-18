@@ -230,6 +230,15 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.2.1",
+    date: "2026.09.18",
+    title: "S4布局与交互修复",
+    whatsNew: S4_FEATURE_INTRO,
+    fixes: [
+      "修复技能拖拽、推荐速度约束，以及队伍、传动的窄屏与深色显示。",
+    ],
+  }),
+  createRelease({
     version: "v2.2.0",
     date: "2026.09.18",
     title: "S4属性查询与工具箱",

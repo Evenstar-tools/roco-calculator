@@ -4,7 +4,7 @@ import {
 } from "./ability-investment.js";
 import { STAT_KEYS } from "../../../domain/constants.js";
 import { calculateDurability } from "./durability.js";
-import { getNatureMultipliers } from "../../../domain/natures.js";
+import { getNatureMultipliers, getQuickNatureId } from "../../../domain/natures.js";
 import {
   calculateAllPanelStats,
   hasCompleteRaceStats,
@@ -16,12 +16,12 @@ const DURABILITY_OBJECTIVES = Object.freeze([
   "combined",
 ]);
 
-function panelStatsFor(configuration, displayIvs = configuration.displayIvs) {
+function panelStatsFor(configuration, displayIvs = configuration.displayIvs, natureId) {
   return calculateAllPanelStats({
     raceStats: configuration.raceStats,
     displayIvs,
     natureMultipliers: getNatureMultipliers(
-      configuration.natureId ?? configuration.nature,
+      natureId ?? configuration.natureId ?? configuration.nature,
     ),
   });
 }
@@ -41,6 +41,7 @@ function resolveTargetSpeed(target) {
 export function analyzeSpeedBreakpoints({
   configuration,
   speedBonus = 0,
+  speedBonusForSpeed,
   target,
   rulesetId = BINARY_60_MAX3_RULESET_ID,
   snapshotId = null,
@@ -84,11 +85,12 @@ export function analyzeSpeedBreakpoints({
   const normalizedSpeedBonus = Number.isFinite(Number(speedBonus))
     ? Number(speedBonus)
     : 0;
-  const currentSpeed = panelStatsFor(configuration).speed + normalizedSpeedBonus;
-  const investedSpeed = panelStatsFor(configuration, {
+  const speedOptions = { flatBonus: normalizedSpeedBonus, speedBonusForSpeed };
+  const currentSpeed = effectiveSpeedFor(panelStatsFor(configuration).speed, speedOptions);
+  const investedSpeed = effectiveSpeedFor(panelStatsFor(configuration, {
     ...configuration.displayIvs,
     speed: 60,
-  }).speed + normalizedSpeedBonus;
+  }).speed, speedOptions);
 
   let status = "REQUIRES_SPEED_INVESTMENT";
   if (currentSpeed >= targetSpeed) {
@@ -175,6 +177,13 @@ function normalizeLockedDimensions(current, lockedDimensions) {
   return new Map(entries);
 }
 
+function effectiveSpeedFor(speed, constraint) {
+  const bonus = typeof constraint.speedBonusForSpeed === "function"
+    ? constraint.speedBonusForSpeed(speed) : constraint.flatBonus;
+  if (!Number.isFinite(bonus)) throw new TypeError("速度修正必须是有限数值");
+  return speed + bonus;
+}
+
 function normalizeSpeedConstraint(speedConstraint, current) {
   const raw =
     typeof speedConstraint === "string"
@@ -187,18 +196,21 @@ function normalizeSpeedConstraint(speedConstraint, current) {
   };
   const mode = aliases[raw.mode] ?? raw.mode ?? "unlocked";
   const flatBonus = Number.isFinite(Number(raw.flatBonus)) ? Number(raw.flatBonus) : 0;
-  if (mode === "unlocked") return { flatBonus, mode, targetSpeed: null };
+  const speedBonusForSpeed = raw.speedBonusForSpeed;
+  if (mode === "unlocked") return { flatBonus, speedBonusForSpeed, mode, targetSpeed: null };
   if (mode === "keep") {
     return {
       flatBonus,
+      speedBonusForSpeed,
       mode,
-      targetSpeed: panelStatsFor(current).speed + flatBonus,
+      targetSpeed: effectiveSpeedFor(panelStatsFor(current).speed, { flatBonus, speedBonusForSpeed }),
       requiredInvestment: current.displayIvs.speed,
     };
   }
   if (mode === "at-least") {
     return {
       flatBonus,
+      speedBonusForSpeed,
       mode,
       targetSpeed: resolveTargetSpeed(raw.targetSpeed ?? raw.speed),
     };
@@ -228,9 +240,9 @@ function candidateMatchesLocks(values, locks) {
 function candidateMatchesSpeed(values, panel, speedConstraint) {
   if (speedConstraint.mode === "unlocked") return true;
   if (speedConstraint.mode === "keep") {
-    return values.speed === speedConstraint.requiredInvestment;
+    if (values.speed !== speedConstraint.requiredInvestment) return false;
   }
-  return panel.speed + speedConstraint.flatBonus >= speedConstraint.targetSpeed;
+  return effectiveSpeedFor(panel.speed, speedConstraint) >= speedConstraint.targetSpeed;
 }
 
 function compareCandidates(objective) {
@@ -247,8 +259,19 @@ function compareCandidates(objective) {
   };
 }
 
+// Revalidate the final configuration at the application boundary; never trust cached display numbers.
+export function isDurabilityBuildApplicable({ current, candidate, speedConstraint, lockedDimensions, rulesetId = BINARY_60_MAX3_RULESET_ID } = {}) {
+  if (!hasCompleteRaceStats(current?.raceStats) ||
+      !validateAbilityInvestment({ values: current?.displayIvs, rulesetId }).valid ||
+      !validateAbilityInvestment({ values: candidate?.values, rulesetId }).valid) return false;
+  const panel = panelStatsFor(current, candidate.values, candidate.natureId);
+  return candidateMatchesLocks(candidate.values, normalizeLockedDimensions(current, lockedDimensions)) &&
+    candidateMatchesSpeed(candidate.values, panel, normalizeSpeedConstraint(speedConstraint, current));
+}
+
 export function recommendDurabilityBuilds({
   current,
+  compareDefensiveNatures = false,
   objective,
   speedConstraint,
   lockedDimensions,
@@ -260,35 +283,15 @@ export function recommendDurabilityBuilds({
     values: current?.displayIvs,
     rulesetId,
   });
-  if (!currentValidation.valid) {
+  const invalidConflict = !currentValidation.valid
+    ? { code: "INVALID_INVESTMENT", violations: currentValidation.violations }
+    : !hasCompleteRaceStats(current?.raceStats) ? { code: "INVALID_RACE_STATS" } : null;
+  if (invalidConflict) {
     return {
-      status: "invalid-configuration",
-      rulesetId,
-      snapshotId,
-      primaryObjective,
+      status: "invalid-configuration", rulesetId, snapshotId, primaryObjective,
       candidatesEvaluated: 0,
-      results: Object.fromEntries(
-        DURABILITY_OBJECTIVES.map((key) => [key, null]),
-      ),
-      conflicts: [
-        {
-          code: "INVALID_INVESTMENT",
-          violations: currentValidation.violations,
-        },
-      ],
-    };
-  }
-  if (!hasCompleteRaceStats(current?.raceStats)) {
-    return {
-      status: "invalid-configuration",
-      rulesetId,
-      snapshotId,
-      primaryObjective,
-      candidatesEvaluated: 0,
-      results: Object.fromEntries(
-        DURABILITY_OBJECTIVES.map((key) => [key, null]),
-      ),
-      conflicts: [{ code: "INVALID_RACE_STATS" }],
+      results: Object.fromEntries(DURABILITY_OBJECTIVES.map((key) => [key, null])),
+      conflicts: [invalidConflict],
     };
   }
 
@@ -298,52 +301,55 @@ export function recommendDurabilityBuilds({
     current,
   );
   const allValues = enumerateLegalInvestmentValues();
-  const candidates = allValues.flatMap((values) => {
-    if (!candidateMatchesLocks(values, locks)) return [];
-    const panel = panelStatsFor(current, values);
-    if (!candidateMatchesSpeed(values, panel, normalizedSpeedConstraint)) {
-      return [];
-    }
-    const durability = calculateDurability({
-      maxHp: panel.hp,
-      physicalDefense: panel.physicalDefense,
-      magicalDefense: panel.magicalDefense,
-    });
-    return [
-      {
-        values,
-        panel,
-        effectiveSpeed: panel.speed + normalizedSpeedConstraint.flatBonus,
-        durability,
-        natureId: current.natureId ?? current.nature ?? "neutral",
+  const defensiveStats = { combined: "hp", physical: "physicalDefense", magical: "magicalDefense" };
+  const compareNatures = compareDefensiveNatures &&
+    Object.values(defensiveStats).every((stat) => current.displayIvs[stat] === 60);
+  const natureByObjective = Object.fromEntries(DURABILITY_OBJECTIVES.map((key) => [key,
+    compareNatures ? getQuickNatureId(defensiveStats[key], "defender") : (current.natureId ?? current.nature ?? "neutral"),
+  ]));
+  const natureIds = [...new Set(Object.values(natureByObjective))];
+  // Pick the final nature BEFORE checking locks/speed. Share candidate work for equal natures.
+  const results = Object.fromEntries(DURABILITY_OBJECTIVES.map((key) => [key, null]));
+  const comparisons = Object.fromEntries(DURABILITY_OBJECTIVES.map((key) => [key, compareCandidates(key)]));
+  let candidatesEligible = 0;
+  // Stream candidates: retain only each objective's best build, not every allocated panel.
+  for (const natureId of natureIds) {
+    const objectives = DURABILITY_OBJECTIVES.filter((key) => natureByObjective[key] === natureId);
+    for (const values of allValues) {
+      if (!candidateMatchesLocks(values, locks)) continue;
+      const panel = panelStatsFor(current, values, natureId);
+      if (!candidateMatchesSpeed(values, panel, normalizedSpeedConstraint)) continue;
+      candidatesEligible += 1;
+      const effectiveSpeed = effectiveSpeedFor(panel.speed, normalizedSpeedConstraint);
+      const candidate = {
+        values, panel, natureId, effectiveSpeed,
+        durability: calculateDurability({ maxHp: panel.hp, physicalDefense: panel.physicalDefense, magicalDefense: panel.magicalDefense }),
         changedDimensions: changedDimensions(current.displayIvs, values),
-        speedRedundancy:
-          normalizedSpeedConstraint.mode === "at-least"
-            ? panel.speed + normalizedSpeedConstraint.flatBonus - normalizedSpeedConstraint.targetSpeed
-            : 0,
+        speedRedundancy: normalizedSpeedConstraint.mode === "at-least" ? effectiveSpeed - normalizedSpeedConstraint.targetSpeed : 0,
         stableKey: stableInvestmentKey(values),
-      },
-    ];
-  });
+      };
+      for (const key of objectives) {
+        if (!results[key] || comparisons[key](candidate, results[key]) < 0) {
+          results[key] = { ...candidate, values: { ...values }, objective: key };
+        }
+      }
+    }
+  }
 
-  const results = Object.fromEntries(
-    DURABILITY_OBJECTIVES.map((key) => {
-      const best = [...candidates].sort(compareCandidates(key))[0];
-      return [key, best ? { objective: key, ...best } : null];
-    }),
-  );
-
-  if (candidates.length === 0) {
+  const summary = {
+    rulesetId, snapshotId, primaryObjective,
+    candidatesEvaluated: allValues.length * natureIds.length, results,
+  };
+  if (candidatesEligible === 0) {
     let conflict = {
       code: "NO_LEGAL_BUILD",
       lockedDimensions: Object.fromEntries(locks),
       speedConstraint: normalizedSpeedConstraint,
     };
     if (normalizedSpeedConstraint.mode === "at-least") {
-      const maximumSpeed = panelStatsFor(current, {
-        ...current.displayIvs,
-        speed: 60,
-      }).speed + normalizedSpeedConstraint.flatBonus;
+      const maximumSpeed = Math.max(...natureIds.map((natureId) => effectiveSpeedFor(panelStatsFor(current, {
+        ...current.displayIvs, speed: 60,
+      }, natureId).speed, normalizedSpeedConstraint)));
       if (maximumSpeed < normalizedSpeedConstraint.targetSpeed) {
         conflict = {
           code: "SPEED_TARGET_UNREACHABLE",
@@ -372,25 +378,7 @@ export function recommendDurabilityBuilds({
         }
       }
     }
-    return {
-      status: "no-solution",
-      rulesetId,
-      snapshotId,
-      primaryObjective,
-      candidatesEvaluated: allValues.length,
-      results,
-      conflicts: [conflict],
-    };
+    return { ...summary, status: "no-solution", conflicts: [conflict] };
   }
-
-  return {
-    status: "ok",
-    rulesetId,
-    snapshotId,
-    primaryObjective,
-    candidatesEvaluated: allValues.length,
-    candidatesEligible: candidates.length,
-    results,
-    conflicts: [],
-  };
+  return { ...summary, status: "ok", candidatesEligible, conflicts: [] };
 }

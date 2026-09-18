@@ -7,7 +7,27 @@ function entryId(entry) {
   return entry?.skillId ?? entry?.id ?? null;
 }
 
+function MemberActions({ member, name, onApply }) {
+  return (
+    <div className="team-slot__actions">
+      {[["attacker", Sword, "攻击方", "攻"], ["defender", Shield, "防御方", "防"]].map(([side, Icon, label, short]) => (
+        <button
+          aria-label={name + "设为" + label}
+          disabled={!member || member.needsRepair}
+          key={side}
+          onClick={() => onApply(side, member)}
+          title={"设为" + label}
+          type="button"
+        >
+          <Icon aria-hidden="true" size={16} weight="bold" />{short}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function TeamRoster({
+  compact = false,
   members,
   onApply,
   onSelect,
@@ -22,7 +42,8 @@ export function TeamRoster({
   );
 
   return (
-    <ol aria-label="队伍成员" className="team-roster">
+    <>
+    <ol aria-label="队伍成员" className={`team-roster${compact ? " team-roster--compact" : ""}`}>
       {Array.from({ length: 6 }, (_, index) => {
         const member = members[index] ?? null;
         const spirit = member ? spirits.get(member.spiritId) : null;
@@ -34,10 +55,13 @@ export function TeamRoster({
           >
             <button
               aria-label={`编辑${name}`}
+              aria-pressed={selectedIndex === index}
+              title={`${index + 1}号位 · ${name}`}
               className="team-slot__select"
               onClick={() => onSelect(index)}
               type="button"
             >
+              <span aria-hidden="true" className="team-slot__number">{index + 1}</span>
               {spirit?.asset?.localUrl ? (
                 <img
                   alt=""
@@ -80,31 +104,21 @@ export function TeamRoster({
                 })}
               </span>
             </button>
-            <div className="team-slot__actions">
-              <button
-                aria-label={`${name}设为攻击方`}
-                disabled={!member || member.needsRepair}
-                onClick={() => onApply("attacker", member)}
-                title="设为攻击方"
-                type="button"
-              >
-                <Sword aria-hidden="true" size={16} weight="bold" />
-                攻
-              </button>
-              <button
-                aria-label={`${name}设为防御方`}
-                disabled={!member || member.needsRepair}
-                onClick={() => onApply("defender", member)}
-                title="设为防御方"
-                type="button"
-              >
-                <Shield aria-hidden="true" size={16} weight="bold" />
-                防
-              </button>
-            </div>
+            <MemberActions member={member} name={name} onApply={onApply} />
           </li>
         );
       })}
     </ol>
+    {compact && selectedIndex >= 0 ? (
+      <details className="team-roster__current-actions" key={selectedIndex}>
+        <summary>当前成员操作</summary>
+        <MemberActions
+          member={members[selectedIndex]}
+          name={spirits.get(members[selectedIndex]?.spiritId)?.fullName ?? `空位 ${selectedIndex + 1}`}
+          onApply={onApply}
+        />
+      </details>
+    ) : null}
+    </>
   );
 }

@@ -181,6 +181,7 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   });
   await expect(ability).toBeVisible();
   await expect(ability.getByRole("slider", { name: "速度目标轴" })).toHaveCount(0);
+  await ability.locator(".ability-speed-reference > summary").click();
   await expect(ability.getByRole("region", { name: "速度排行榜横轴" })).toBeVisible();
   await ability.getByLabel("速度目标口径").click();
   await expect(ability.getByRole("checkbox", { name: "极速" })).toBeChecked();
@@ -469,6 +470,7 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
     fullPage: false,
     path: "artifacts/web-ux-team-ability-fix/ability-overview-1424.png",
   });
+  await drawer.locator(".ability-speed-reference > summary").click();
   const speedAxis = drawer.getByRole("region", { name: "速度排行榜横轴" });
   await speedAxis.scrollIntoViewIfNeeded();
   const axisBefore = await speedAxis.evaluate((node) => ({

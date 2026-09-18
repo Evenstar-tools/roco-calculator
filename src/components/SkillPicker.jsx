@@ -29,14 +29,15 @@ export function resolveSkillMenuLayout({
   inputBottom,
   inputTop,
   viewportHeight,
+  viewportTop = 0,
 }) {
   const availableAbove = Math.max(
     0,
-    inputTop - VIEWPORT_MARGIN - MENU_GAP,
+    inputTop - viewportTop - VIEWPORT_MARGIN - MENU_GAP,
   );
   const availableBelow = Math.max(
     0,
-    viewportHeight - inputBottom - VIEWPORT_MARGIN - MENU_GAP,
+    viewportTop + viewportHeight - inputBottom - VIEWPORT_MARGIN - MENU_GAP,
   );
   const placement =
     availableBelow >= OPTION_VIEWPORT_HEIGHT ||
@@ -71,11 +72,14 @@ function searchText(skill) {
 export function SkillPicker({
   ariaLabel,
   className = "",
+  menuBoundaryRef,
+  readable = false,
   onFocus,
   onSelect,
   selected,
   skills,
 }) {
+  const optionHeight = readable ? 72 : OPTION_HEIGHT;
   const listboxId = useId();
   const inputRef = useRef(null);
   const listboxRef = useRef(null);
@@ -109,11 +113,11 @@ export function SkillPicker({
 
   const visibleWindow = useMemo(() => {
     const viewportItems = Math.ceil(
-      Math.max(OPTION_HEIGHT, menuLayout.maxHeight) / OPTION_HEIGHT,
+      Math.max(optionHeight, menuLayout.maxHeight) / optionHeight,
     );
     const start = Math.max(
       0,
-      Math.floor(scrollTop / OPTION_HEIGHT) - OPTION_OVERSCAN,
+      Math.floor(scrollTop / optionHeight) - OPTION_OVERSCAN,
     );
     const end = Math.min(
       matches.length,
@@ -124,7 +128,7 @@ export function SkillPicker({
       items: matches.slice(start, end),
       start,
     };
-  }, [matches, menuLayout.maxHeight, scrollTop]);
+  }, [matches, menuLayout.maxHeight, optionHeight, scrollTop]);
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect -- 过滤结果变化后收回虚拟列表滚动位置 */
@@ -141,14 +145,27 @@ export function SkillPicker({
       const input = inputRef.current;
       if (!input) return;
       const box = input.getBoundingClientRect();
+      const viewport = window.visualViewport;
+      const bounds = menuBoundaryRef?.current?.getBoundingClientRect();
+      const top = Math.max(viewport?.offsetTop ?? 0, bounds?.top ?? 0);
+      const bottom = Math.min((viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight), bounds?.bottom ?? Infinity);
       const next = resolveSkillMenuLayout({
         inputBottom: box.bottom,
         inputTop: box.top,
-        viewportHeight: window.innerHeight,
+        viewportTop: top,
+        viewportHeight: Math.max(0, bottom - top),
       });
+      if (bounds) {
+        const left = Math.max(viewport?.offsetLeft ?? 0, bounds.left) + VIEWPORT_MARGIN;
+        const right = Math.min((viewport?.offsetLeft ?? 0) + (viewport?.width ?? window.innerWidth), bounds.right) - VIEWPORT_MARGIN;
+        next.width = Math.max(0, Math.min(Math.max(320, box.width), right - left));
+        const anchor = input.parentElement.getBoundingClientRect();
+        next.left = Math.max(left, Math.min(box.left, right - next.width)) - anchor.left;
+      }
       setMenuLayout((current) =>
         current.maxHeight === next.maxHeight &&
-        current.placement === next.placement
+        current.placement === next.placement &&
+        current.width === next.width && current.left === next.left
           ? current
           : next,
       );
@@ -172,12 +189,12 @@ export function SkillPicker({
       window.visualViewport?.removeEventListener("resize", scheduleUpdate);
       window.visualViewport?.removeEventListener("scroll", scheduleUpdate);
     };
-  }, [open]);
+  }, [menuBoundaryRef, open]);
 
   useLayoutEffect(() => {
     if (!open || !listboxRef.current || !matches[activeIndex]) return;
-    const top = activeIndex * OPTION_HEIGHT;
-    const bottom = top + OPTION_HEIGHT;
+    const top = activeIndex * optionHeight;
+    const bottom = top + optionHeight;
     const viewportTop = listboxRef.current.scrollTop;
     const viewportHeight =
       listboxRef.current.clientHeight || menuLayout.maxHeight;
@@ -191,9 +208,13 @@ export function SkillPicker({
       listboxRef.current.scrollTop = nextScrollTop;
       setScrollTop(nextScrollTop);
     }
-  }, [activeIndex, matches, menuLayout.maxHeight, open]);
+  }, [activeIndex, matches, menuLayout.maxHeight, open, optionHeight]);
 
   function commit(skill) {
+    // Native scrollbar interaction focuses the list. Return focus before closing it.
+    if (listboxRef.current?.contains(document.activeElement)) {
+      inputRef.current?.focus({ preventScroll: true });
+    }
     setQuery(skill?.name ?? "");
     setOpen(false);
     onSelect(skill?.id ?? null);
@@ -211,6 +232,11 @@ export function SkillPicker({
       event.preventDefault();
       commit(matches[activeIndex]);
     } else if (event.key === "Escape") {
+      if (open) {
+        event.preventDefault();
+        event.stopPropagation();
+        inputRef.current?.focus({ preventScroll: true });
+      }
       setQuery(selected?.name ?? "");
       setOpen(false);
     }
@@ -221,13 +247,13 @@ export function SkillPicker({
     const viewportHeight =
       event.currentTarget.clientHeight || menuLayout.maxHeight;
     const viewportStart = Math.min(
-      Math.ceil(nextScrollTop / OPTION_HEIGHT),
+      Math.ceil(nextScrollTop / optionHeight),
       Math.max(0, matches.length - 1),
     );
     const viewportEnd = Math.min(
       matches.length - 1,
       Math.ceil(
-        (nextScrollTop + viewportHeight) / OPTION_HEIGHT,
+        (nextScrollTop + viewportHeight) / optionHeight,
       ) - 1,
     );
     setScrollTop(nextScrollTop);
@@ -238,7 +264,7 @@ export function SkillPicker({
 
   return (
     <div
-      className={`skill-picker ${className}`.trim()}
+      className={`skill-picker ${readable ? "skill-picker--readable" : ""} ${className}`.trim()}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
           setQuery(selected?.name ?? "");
@@ -317,10 +343,14 @@ export function SkillPicker({
           className="skill-picker__options"
           data-placement={menuLayout.placement}
           id={listboxId}
+          // Let the native scrollbar focus this list; cancelling mousedown prevents dragging.
+          onClick={(event) => event.stopPropagation()}
           onScroll={handleScroll}
+          onKeyDown={handleKeyDown}
+          tabIndex={-1}
           ref={listboxRef}
           role="listbox"
-          style={{ maxHeight: `${menuLayout.maxHeight}px` }}
+          style={{ maxHeight: `${menuLayout.maxHeight}px`, width: menuLayout.width, left: menuLayout.left }}
         >
           {matches.length ? (
             <>
@@ -329,7 +359,7 @@ export function SkillPicker({
                   aria-hidden="true"
                   className="skill-picker__spacer"
                   role="presentation"
-                  style={{ height: visibleWindow.start * OPTION_HEIGHT }}
+                  style={{ height: visibleWindow.start * optionHeight }}
                 />
               ) : null}
               {visibleWindow.items.map((skill, offset) => {
@@ -392,7 +422,7 @@ export function SkillPicker({
                   className="skill-picker__spacer"
                   role="presentation"
                   style={{
-                    height: (matches.length - visibleWindow.end) * OPTION_HEIGHT,
+                    height: (matches.length - visibleWindow.end) * optionHeight,
                   }}
                 />
               ) : null}

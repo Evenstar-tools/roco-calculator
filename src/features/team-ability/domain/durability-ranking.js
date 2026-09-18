@@ -92,33 +92,19 @@ function compareByMetric(metric) {
 }
 
 function rankEntries(entries, rankKey) {
-  const rankByMetric = Object.fromEntries(
-    RANKING_METRICS.map((metric) => {
-      const sorted = [...entries].sort(compareByMetric(metric));
-      const ranks = new Map();
-      let previousScore;
-      let previousRank = 0;
-      sorted.forEach((entry, index) => {
-        const score = entry.durability.display[metric];
-        const rank = index > 0 && score === previousScore
-          ? previousRank
-          : index + 1;
-        ranks.set(entry.spiritId, rank);
-        previousRank = rank;
-        previousScore = score;
-      });
-      return [metric, ranks];
-    }),
-  );
-  return entries.map((entry) => ({
-    ...entry,
-    [rankKey]: Object.fromEntries(
-      RANKING_METRICS.map((metric) => [
-        metric,
-        rankByMetric[metric].get(entry.spiritId),
-      ]),
-    ),
-  }));
+  // Rank cloned entries directly, without allocating three intermediate Maps.
+  const ranked = entries.map((entry) => ({ ...entry, [rankKey]: {} }));
+  for (const metric of RANKING_METRICS) {
+    let previousScore;
+    let rank = 0;
+    [...ranked].sort(compareByMetric(metric)).forEach((entry, index) => {
+      const score = entry.durability.display[metric];
+      if (index === 0 || score !== previousScore) rank = index + 1;
+      entry[rankKey][metric] = rank;
+      previousScore = score;
+    });
+  }
+  return ranked;
 }
 
 function normalizeSearchText(value) {
@@ -234,22 +220,20 @@ export function createDurabilityRanking({
   });
   const selected = multipliers ?? getDurabilityMultipliers(typeChart);
   const immuneRows = entries.filter((entry) => entry.multiplier === 0
-    && selected.includes(0) && (!filter || filter(entry)) && matchesQuery(entry, query)).sort(compareIdentity);
+    && selected.includes(0) && (!filter || filter(entry))).sort(compareIdentity);
   const globallyRanked = rankEntries(entries.filter((entry) => entry.multiplier !== 0), "globalRank");
   const filtered = typeof filter === "function"
     ? globallyRanked.filter((entry) => filter(entry))
     : globallyRanked;
   const candidates = attackType ? filtered.filter((entry) => selected.includes(entry.multiplier)) : filtered;
-  const rows = rankEntries(candidates, "filteredRank")
-    .filter((entry) => matchesQuery(entry, query))
-    .sort(compareByMetric(sortBy));
+  const rows = rankEntries(candidates, "filteredRank");
   const excludedByReason = Object.fromEntries(
     [...new Set(excluded.map(({ reason }) => reason))].map((reason) => [
       reason,
       excluded.filter((entry) => entry.reason === reason).length,
     ]),
   );
-  return {
+  return selectDurabilityRanking({
     counts: {
       eligible: entries.length,
       excluded: excluded.length,
@@ -262,5 +246,13 @@ export function createDurabilityRanking({
     rows,
     immuneRows,
     template,
-  };
+  }, { query, sortBy });
+}
+
+// Search and metric changes operate on existing ranked values, not on recalculated panels.
+export function selectDurabilityRanking(ranking, { query = "", sortBy = "combined" } = {}) {
+  if (!RANKING_METRICS.includes(sortBy)) throw new TypeError(String(sortBy));
+  const rows = ranking.rows.filter((entry) => matchesQuery(entry, query)).sort(compareByMetric(sortBy));
+  const immuneRows = ranking.immuneRows.filter((entry) => matchesQuery(entry, query));
+  return { ...ranking, rows, immuneRows, counts: { ...ranking.counts, visible: rows.length + immuneRows.length } };
 }

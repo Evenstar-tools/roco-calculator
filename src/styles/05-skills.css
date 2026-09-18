@@ -1088,3 +1088,11 @@
 .manual-hit-stepper button, .manual-hit-stepper input { min-width: 0; width: 100%; min-height: 40px; text-align: center; }
 .manual-hit-stepper button { border: 1px solid var(--border); border-radius: 5px; color: var(--text-primary); background: var(--surface); }
 .manual-hit-stepper button:disabled { opacity: .45; }
+
+/* Readable dialog variant; row height matches SkillPicker virtualization. */
+.skill-picker--readable .skill-picker__options [role="option"] { display: grid; grid-template-columns: minmax(0,1fr); grid-template-rows: 34px 18px; height: 72px; min-height: 72px; padding: 8px; gap: 2px; box-sizing: border-box; content-visibility: visible; }
+.skill-picker--readable .skill-picker__option-name { width: 100%; gap: 8px; }
+.skill-picker--readable .skill-picker__option-name .skill-icon { flex: none; }
+.skill-picker--readable .skill-picker__option-name strong { flex: 1; min-width: 0; font-size: 14px; line-height: 17px; white-space: normal; overflow-wrap: anywhere; overflow: visible; text-overflow: clip; }
+.skill-picker--readable .skill-picker__option-name > small { flex: none; }
+.skill-picker--readable .skill-picker__option-meta { margin-left: 38px; gap: 12px; }

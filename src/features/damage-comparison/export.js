@@ -1,4 +1,4 @@
-import packageInfo from "../../../package.json";
+import { version as appVersion } from "../../../package.json";
 import { buildDamageComparisonInput, DAMAGE_COMPARISON_FILTERS, describeDamageComparisonTemplate, getDamageComparisonSelection, getDamageComparisonTargetStatuses } from "../../domain/skill-damage-ranking.js";
 import { getTraitView } from "../../domain/calculator-view-model.js";
 import { getNature, STAT_LABELS } from "../../domain/natures.js";
@@ -50,7 +50,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
     ["天气", ({ none: "无天气", rain: "雨天", thunder: "雷暴", sandstorm: "沙暴", blizzard: "暴风雪" })[currentWeather(context)]],
     ["筛选", `${filter}；${model.scope === "all" ? "全部完整种族值形态" : "最终形态＋首领"}；${model.descending ? "承伤从高到低" : "承伤从低到高"}${model.query ? `；搜索：${model.query}` : ""}`],
     ["结果", `${model.rows.length} 个形态（当前筛选完整名单）；未纳入 ${model.ranking.excluded.length} 个`],
-    ["版本／时间", `洛克计算器 ${packageInfo.version}；数据 ${snapshot.meta?.id ?? snapshot.meta?.dataVersion ?? snapshot.meta?.version ?? source.state.versions?.data ?? "未知"}；规则 ${snapshot.meta?.rulesVersion ?? snapshot.meta?.ruleVersion ?? source.state.versions?.rules ?? "未知"}；${date.toLocaleString("zh-CN", { hour12: false })}`],
+    ["版本／时间", `洛克计算器 ${appVersion}；数据 ${snapshot.meta?.id ?? snapshot.meta?.dataVersion ?? snapshot.meta?.version ?? source.state.versions?.data ?? "未知"}；规则 ${snapshot.meta?.rulesVersion ?? snapshot.meta?.ruleVersion ?? source.state.versions?.rules ?? "未知"}；${date.toLocaleString("zh-CN", { hour12: false })}`],
     ["说明", "本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。"],
   ];
   const rows = model.rows.map((row) => [row.rank, row.spirit.fullName, row.spirit.types?.join("／") ?? "", row.panelStats.hp,

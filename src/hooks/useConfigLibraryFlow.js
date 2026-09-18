@@ -1,5 +1,5 @@
 import { useState } from "react";
-import packageInfo from "../../package.json";
+import { version as appVersion } from "../../package.json";
 import { formatConfigLibraryImportResult } from "../state/favorite-config-library.js";
 
 export { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
@@ -56,7 +56,7 @@ export function useConfigLibraryFlow({
     setConfigLibraryError("");
     setConfigLibraryParsed(null);
     setConfigLibrarySummary(storedData.buildFavoriteConfigLibrary({
-      appVersion: packageInfo.version,
+      appVersion: appVersion,
       versions: initialState.versions,
     }));
     setConfigLibraryMode("export");

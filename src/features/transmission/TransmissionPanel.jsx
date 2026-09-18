@@ -40,6 +40,7 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
   const driveLayers = slotDriveLayers(slots, effectiveTrait);
   const windStacks = windStacksFromDrive(driveAccum);
   const dialog = useRef(null);
+  const body = useRef(null);
   useEffect(() => {
     const closeOnEscape = (event) => {
       if (event.key === "Escape" && !event.defaultPrevented) onClose();
@@ -52,6 +53,27 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
     document.body.style.overflow = "hidden";
     dialog.current.focus();
     return () => { document.body.style.overflow = overflow; trigger?.focus?.(); };
+  }, []);
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return undefined;
+    const overlay = dialog.current.parentElement;
+    let frame;
+    let previousHeight;
+    const update = () => {
+      overlay.style.setProperty("--transmission-viewport-top", viewport.offsetTop + "px");
+      overlay.style.setProperty("--transmission-viewport-height", viewport.height + "px");
+      const active = document.activeElement;
+      if (previousHeight !== viewport.height && body.current?.contains(active) && active.matches("input,select")) {
+        active.scrollIntoView?.({ block: "nearest" });
+      }
+      previousHeight = viewport.height;
+    };
+    const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); };
+    update();
+    viewport.addEventListener("resize", schedule);
+    viewport.addEventListener("scroll", schedule);
+    return () => { cancelAnimationFrame(frame); viewport.removeEventListener("resize", schedule); viewport.removeEventListener("scroll", schedule); };
   }, []);
   function reset(next = initial, nextTrait = trait) {
     setInitial(next); setSlots(next); setTrait(nextTrait); setRound(0); setPhase("start");
@@ -153,7 +175,7 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
   return <div className="transmission-overlay">
     <section className="transmission-panel" role="dialog" aria-modal="true" aria-label="传动计算器" ref={dialog} tabIndex={-1} onKeyDown={keydown}>
       <header><div><h2>传动计算器</h2><p>配置四个技能，逐回合查看槽位与变化来源</p></div><button type="button" aria-label="关闭传动计算器" onClick={onClose}>关闭</button></header>
-      <div className="transmission-body" data-layout={layout}>
+      <div className="transmission-body" data-layout={layout} ref={body}>
         <div className="transmission-spirit"><SpiritPicker label="推演" side="attack" spirits={spirits} selected={spirit} onSelect={selectSpirit} showFavorite={false} /><label className="transmission-trait">特性<select aria-label="传动特性" value={trait} onChange={(event) => selectTrait(event.target.value)}><option value="" disabled>{spirit ? "无相关特性" : "请选择特性"}</option>{relevantTraits.map((entry) => <option key={entry.id} value={entry.name} disabled={entry.name === "盲拧"}>{entry.name}{entry.name === "盲拧" ? "（不支持）" : entry.name === "机械变式" ? "（仅顺序）" : ""}</option>)}</select></label></div>
         {trait && <details className="transmission-trait-description"><summary>特性说明</summary><p className="transmission-muted">{snapshot.traits.find((entry) => entry.name === trait)?.description}</p></details>}
         <div className="transmission-layout" role="group" aria-label="技能布局"><span>技能布局</span><button type="button" aria-pressed={layout === "vertical"} onClick={() => setLayout("vertical")}>竖排</button><button type="button" aria-pressed={layout === "grid"} onClick={() => setLayout("grid")}>2×2</button></div>
@@ -169,7 +191,7 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
             const usable = isSlotUsable(effectiveTrait, index);
             return <div key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"}>
               <label>{index + 1} 号位-{driveLayers[index]}{!usable ? " · 不可使用" : ""}</label>
-              <SkillPicker ariaLabel={`初始${index + 1}号位技能`} skills={skillChoices} selected={skill} onSelect={(next) => reset(initial.map((item, i) => i === index ? snapshot.skills.find((entry) => entry.id === next) ?? null : item))} />
+              <SkillPicker readable menuBoundaryRef={body} ariaLabel={`初始${index + 1}号位技能`} skills={skillChoices} selected={skill} onSelect={(next) => reset(initial.map((item, i) => i === index ? snapshot.skills.find((entry) => entry.id === next) ?? null : item))} />
             </div>;
           })}</div> :
           <ol className="transmission-slots" aria-label="当前技能槽位">{slots.map((skill, index) => {
