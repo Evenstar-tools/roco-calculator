@@ -69,6 +69,12 @@ export function hasDeerDefenseTrait(snapshot, side) {
   });
 }
 
+
+function deerStackScanLimit(stackControl, setupStacks = 0) {
+  if (Number.isFinite(stackControl?.max)) return Math.max(0, Math.floor(stackControl.max));
+  return Math.max(0, Math.floor(Number(setupStacks) || 0), 99);
+}
+
 export function createDeerSetup(snapshot, currentState = null) {
   if (currentState) {
     const setup = createDeerSetup(snapshot);
@@ -79,7 +85,9 @@ export function createDeerSetup(snapshot, currentState = null) {
     const attacker = snapshot.spirits.find((spirit) => spirit.id === setup.state.sides.attacker.spiritId);
     const stackControl = getTraitView(snapshot, attacker, "attacker").inputs.find((input) => input.contextKey === "attackerTraitStacks");
     const traits = materializeTraitContext(setup.state.sides.attacker.traitValues, snapshot, attacker.id, "attacker");
-    setup.stacks = Math.max(0, Math.min(10, Math.floor(Number(context[stackControl.id] ?? traits[stackControl.id] ?? stackControl.defaultValue) || 0)));
+    const stackCap = Number.isFinite(stackControl.max) ? stackControl.max : null;
+    const rawStacks = Math.floor(Number(context[stackControl.id] ?? traits[stackControl.id] ?? stackControl.defaultValue) || 0);
+    setup.stacks = Math.max(0, stackCap == null ? rawStacks : Math.min(stackCap, rawStacks));
     for (const [side, direction, key] of [["attacker", "reverse", "attackerHp"], ["defender", "forward", "defenderHp"]]) {
       if (!setup.state.sides[side].spiritId) continue;
       const maxHp = panelFor(snapshot, setup.state.sides[side]).hp;
@@ -209,8 +217,11 @@ export function evaluateDeerAttack(snapshot, setup, variant, stacks) {
 }
 
 export function calculateDeerRows(snapshot, setup) {
+  const attacker = snapshot.spirits.find((spirit) => spirit.id === setup.state.sides.attacker.spiritId);
+  const stackControl = getTraitView(snapshot, attacker, "attacker").inputs.find((input) => input.contextKey === "attackerTraitStacks");
   return DEER_VARIANTS.map((variant) => {
-    const byStack = Array.from({ length: 11 }, (_, stacks) => evaluateDeerAttack(snapshot, setup, variant, stacks));
+    const scanLimit = deerStackScanLimit(stackControl, setup.stacks);
+    const byStack = Array.from({ length: scanLimit + 1 }, (_, stacks) => evaluateDeerAttack(snapshot, setup, variant, stacks));
     const name = variant.id === "arc" ? setup.normalElectric : variant.name;
     return {
       ...variant,

@@ -202,7 +202,8 @@ describe("电鹿斩杀线", () => {
     const rows = calculateDeerRows(snapshot, setup);
     expect(rows).toHaveLength(9);
     for (const row of rows) {
-      expect(row.byStack).toHaveLength(11);
+      expect(row.byStack.length).toBeGreaterThan(setup.stacks);
+      expect(row.byStack[setup.stacks]).toBeTruthy();
       for (const result of row.byStack) {
         const direct = calculateMatchup(snapshot, buildDeerInput(snapshot, setup, row, result.stacks)).forward.results[0];
         expect(result.damage).toBe(direct.totalDamage);

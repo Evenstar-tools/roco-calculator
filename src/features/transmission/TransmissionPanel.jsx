@@ -34,6 +34,7 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
   const effectiveTrait = trait || snapshot.traits.find((entry) => spirit?.traitIds?.includes(entry.id))?.name || "";
   const unsupported = trait === "盲拧" ? "盲拧随机重排计算，请更换精灵或特性。" : slots.every(Boolean) ? startRound(slots, effectiveTrait).issue ?? "" : "";
   const actionResults = slots.map((skill, index) => skill ? resolveAction(slots, index, effectiveTrait, "power") : null);
+  const shiftIndex = slots.findIndex((skill) => skill?.name === "轮班");
   const selectedIssue = selected >= 0 ? resolveAction(slots, selected, effectiveTrait, branch).issue ?? "" : "";
   const dialog = useRef(null);
   useEffect(() => {
@@ -86,7 +87,7 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
     const entries = [{ round: round + 1, title: `第 ${round + 1} 回合 · 开始`, slots: result.slots, details: roundDetails(result) }];
     if (round && phase === "action") entries.unshift({ title: `第 ${round} 回合 · 待机（连续推演）`, slots, details: [] });
     setHistory((previous) => [...previous, ...entries]);
-    setSlots(result.slots); setRound(round + 1); setPhase("action"); setSelected(-1); setIssue("");
+    setSlots(result.slots); setRound(round + 1); setPhase("action"); setSelected(-1); setBranch("power"); setIssue("");
     if (phase === "action") setCooldown(null);
   }
   function finish() {
@@ -158,12 +159,23 @@ export default function TransmissionPanel({ snapshot, sides, onClose }) {
           <button className="transmission-round-undo" type="button" aria-label="回到上回合" title="回到上回合" disabled={!roundUndo.length} onClick={previousRound}><ArrowCounterClockwise size={20} aria-hidden="true" /></button>
         </div>
         <p className="transmission-muted">连续推演默认不使用技能；特殊行动可在下方设置。</p>
-        {phase === "action" && <details className="transmission-action"><summary>本回合使用技能（可选）</summary><div className="transmission-toolbar">
-          {phase === "action" && <>
-            <select aria-label="本回合技能" value={selected} disabled={Boolean(unsupported)} onChange={(event) => { setSelected(Number(event.target.value)); setBranch("power"); setIssue(""); }}><option value={-1}>待机 / 不使用技能</option>{slots.map((skill, i) => <option value={i} key={i} disabled={Boolean(actionResults[i]?.issue)}>{i + 1}号位 · {skill.name}{actionResults[i]?.issue ? actionResults[i].issue.includes("当前槽位不可使用") ? "（槽位不可用）" : "（不支持）" : ""}{cooldown === skill.id && ["有求必应", "一意孤行"].includes(trait) ? "（冷却）" : ""}</option>)}</select>
-            {slots[selected]?.name === "轮班" && <select aria-label="轮班选择效果" value={branch} disabled={Boolean(unsupported)} onChange={(event) => setBranch(event.target.value)}><option value="power">1号位加威（仅顺序）</option><option value="drive" disabled>额外传动（不支持）</option></select>}
+        {phase === "action" && shiftIndex >= 0 && <details className="transmission-action" open><summary>本回合轮班（可选）</summary><div className="transmission-toolbar">
+            <select aria-label="本回合轮班" value={selected === shiftIndex ? "use" : "idle"} disabled={Boolean(unsupported)} onChange={(event) => {
+              const use = event.target.value === "use";
+              setSelected(use ? shiftIndex : -1);
+              setBranch("power");
+              setIssue("");
+            }}>
+              <option value="idle">待机 / 不使用轮班</option>
+              <option value="use" disabled={Boolean(actionResults[shiftIndex]?.issue) || (cooldown === slots[shiftIndex]?.id && ["有求必应", "一意孤行"].includes(trait))}>
+                使用 {shiftIndex + 1}号位 · 轮班{actionResults[shiftIndex]?.issue ? (actionResults[shiftIndex].issue.includes("当前槽位不可使用") ? "（槽位不可用）" : "（不可用）") : ""}{cooldown === slots[shiftIndex]?.id && ["有求必应", "一意孤行"].includes(trait) ? "（冷却）" : ""}
+              </option>
+            </select>
+            {selected === shiftIndex && <select aria-label="轮班选择效果" value={branch} disabled={Boolean(unsupported)} onChange={(event) => setBranch(event.target.value)}>
+              <option value="power">1号位加威（仅顺序）</option>
+              <option value="drive">额外传动</option>
+            </select>}
             <button className="transmission-primary" type="button" disabled={Boolean(unsupported) || Boolean(selectedIssue)} onClick={finish}>结算行动</button>
-          </>}
         </div></details>}
         {issue && <p role="alert" className="transmission-issue">{issue}</p>}
         {selectedIssue && <p role="status" className="transmission-issue">不支持：{selectedIssue}</p>}

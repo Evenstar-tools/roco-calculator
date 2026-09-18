@@ -44,12 +44,25 @@ test("杠杆置换首尾相邻，并阻断固定槽冲突", () => {
   slots[1] = named("主轴");
   expect(resolveAction(slots, 0, "").issue).toContain("冲突");
 });
-test("轮班加威不在行动时再结算基础传动，额外传动明确阻断", () => {
+test("轮班加威不在行动时再结算基础传动，额外传动按层移动到正确位置", () => {
   const slots = [named("轮班"), ...plain.slice(1)];
   expect(resolveAction(slots, 0, "", "power").slots).toBe(slots);
-  expect(resolveAction(slots, 0, "", "drive").issue).toContain("尚未确认");
+  expect(order(resolveAction(slots, 0, "", "drive"))).toBe("B" + named("轮班").name + "CD");
   expect(resolveAction(slots, 0, "有求必应", "power").executions.map((entry) => entry.branch)).toEqual(["power", "drive"]);
+  expect(order(resolveAction(slots, 0, "有求必应", "power"))).toBe("B" + named("轮班").name + "CD");
   expect(resolveAction(slots, 0, "一意孤行", "drive").executions.map((entry) => entry.branch)).toEqual(["drive", "drive"]);
+  expect(order(resolveAction(slots, 0, "一意孤行", "drive"))).toBe("BC" + named("轮班").name + "D");
+});
+
+test("某一回合使用轮班额外传动后，下回合开始传动落在正确槽位", () => {
+  const initial = [named("轮班"), named("金属噪音"), named("齿轮扭矩"), named("倾泻")];
+  const afterStart = startRound(initial, "翼轴");
+  expect(afterStart.slots.map((skill) => skill.name)).toEqual(["金属噪音", "齿轮扭矩", "轮班", "倾泻"]);
+  const afterAction = resolveAction(afterStart.slots, 2, "翼轴", "drive");
+  expect(afterAction.issue).toBeUndefined();
+  expect(afterAction.slots.map((skill) => skill.name)).toEqual(["金属噪音", "齿轮扭矩", "倾泻", "轮班"]);
+  const nextRound = startRound(afterAction.slots, "翼轴");
+  expect(nextRound.slots.map((skill) => skill.name)).toEqual(["轮班", "金属噪音", "倾泻", "齿轮扭矩"]);
 });
 test("未确认机制不返回伪造顺序", () => {
   expect(startRound(plain, "盲拧").slots).toBeUndefined();

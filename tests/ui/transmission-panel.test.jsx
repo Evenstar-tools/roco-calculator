@@ -76,16 +76,25 @@ test("选择精灵自动匹配特性与四技能，换精灵清除上次推演",
   expect(screen.queryByRole("list", { name: "当前技能槽位" })).toBeNull();
   expect(screen.getByRole("button", { name: "开始", exact: true })).toBeEnabled();
 });
-test("轮班额外传动提前标记不支持，正常待机仍可推进", () => {
+test("无轮班时不显示本回合行动区", () => {
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["金属噪音", "齿轮扭矩", "杠杆置换", "倾泻"]) }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  advance();
+  expect(screen.queryByText("本回合轮班（可选）")).toBeNull();
+  expect(screen.queryByLabelText("本回合轮班")).toBeNull();
+});
+
+test("有轮班时显示行动区，额外传动可结算并进入下一回合", () => {
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["轮班", "金属噪音", "齿轮扭矩", "杠杆置换"]) }} onClose={vi.fn()} />);
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   advance();
-  fireEvent.change(screen.getByLabelText("本回合技能"), { target: { value: "1" } });
-  expect(within(screen.getByLabelText("轮班选择效果")).getByRole("option", { name: "额外传动（不支持）" })).toBeDisabled();
+  expect(screen.getByText("本回合轮班（可选）")).toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("本回合轮班"), { target: { value: "use" } });
+  expect(within(screen.getByLabelText("轮班选择效果")).getByRole("option", { name: "额外传动" })).toBeEnabled();
   fireEvent.change(screen.getByLabelText("轮班选择效果"), { target: { value: "drive" } });
-  expect(screen.getByRole("button", { name: "结算行动" })).toBeDisabled();
-  expect(screen.queryByLabelText("实战顺序")).toBeNull();
-  fireEvent.change(screen.getByLabelText("本回合技能"), { target: { value: "-1" } });
+  expect(screen.getByRole("button", { name: "结算行动" })).toBeEnabled();
+  fireEvent.click(screen.getByRole("button", { name: "结算行动" }));
+  expect(screen.getByText(/轮班 · 额外传动/)).toBeInTheDocument();
   advance();
   expect(screen.getByRole("heading", { name: "第 2 回合 · 传动后顺序" })).toBeInTheDocument();
 });
@@ -110,10 +119,12 @@ test("不支持的技能身份变化在开始前阻断", () => {
   expect(screen.getByRole("button", { name: "开始", exact: true })).toBeDisabled();
 });
 
-test.each([["正位宝剑", [0]], ["宝剑王牌", [0, 2]]])("%s仅允许合法槽位行动", (trait, allowed) => {
-  render(<TransmissionPanel snapshot={snapshot} onClose={vi.fn()} />);
-  fireEvent.change(screen.getByLabelText("传动特性"), { target: { value: trait } });
+test.each([["正位宝剑", "圣剑-X", ["金属噪音", "轮班", "齿轮扭矩", "倾泻"]], ["宝剑王牌", "圣剑骑士", ["金属噪音", "齿轮扭矩", "轮班", "倾泻"]]])("%s下轮班不在合法槽位时不可使用", (trait, ownerName, skills) => {
+  const owner = snapshot.spirits.find((entry) => entry.fullName === ownerName);
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: { spiritId: owner.id, skills: { four: skills.map((name) => ({ skillId: skill(name).id })) } } }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  expect(screen.getByLabelText("传动特性")).toHaveValue(trait);
   advance();
-  const actions = within(screen.getByLabelText("本回合技能")).getAllByRole("option").slice(1);
-  actions.forEach((option, index) => expect(option.disabled).toBe(!allowed.includes(index)));
+  expect(screen.getByText("本回合轮班（可选）")).toBeInTheDocument();
+  expect(within(screen.getByLabelText("本回合轮班")).getByRole("option", { name: /^使用/ })).toBeDisabled();
 });

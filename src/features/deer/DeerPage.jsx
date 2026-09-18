@@ -56,6 +56,8 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
   const presetId = attack ? setup.attackPreset : setup.defenseTemplate;
   const defenseTemplates = DEFENSE_TEMPLATES.map((template) => template.id === "none" && presets[side.spiritId] ? { id: "saved", label: "精灵预设" } : template);
   const effectControl = attack && spirit ? getTraitView(snapshot, spirit, "attacker").inputs.find((input) => input.contextKey === "attackerTraitEffect") : null;
+  const stackControl = attack && spirit ? getTraitView(snapshot, spirit, "attacker").inputs.find((input) => input.contextKey === "attackerTraitStacks") : null;
+  const stackMax = Number.isFinite(stackControl?.max) ? stackControl.max : null;
   const effectValue = effectControl ? setup.state.directions.forward.context[effectControl.id] ?? materializeTraitContext(side.traitValues, snapshot, spirit.id, "attacker")[effectControl.id] ?? effectControl.defaultValue : 0;
   if (!spirit) return <section className="deer-side deer-side--defender" aria-label="防御方配置"><div className="deer-side-heading"><span>防御方</span></div><SpiritPicker label={label} side={sideKey} spirits={options} selected={null} onSelect={onSelect} showFavorite={false} /><p className="deer-muted">请选择防御方，当前未代入默认对手。</p></section>;
   return <section className={`deer-side deer-side--${sideKey}`} aria-label={`${label}配置`}>
@@ -67,7 +69,7 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
       <div className="deer-templates" role="group" aria-label="防守模板">{defenseTemplates.map((template) => <button key={template.id} type="button" aria-pressed={presetId === template.id} onClick={() => selectPreset(template.id)}>{template.label}</button>)}</div>
       <div className="deer-config-summary"><span>{presetId === "current" ? "当前配置 · " : presetId === "custom" ? "自定义 · " : ""}{getNature(side.nature).name} · 生命{side.displayIvs.hp} / 物防{side.displayIvs.physicalDefense} / 魔防{side.displayIvs.magicalDefense}</span></div>
     </>}
-    <div className="deer-side-bottom">{attack && <><div className="deer-stacks"><span>特性层数</span><button type="button" aria-label="特性层数减一" disabled={setup.stacks === 0} onClick={() => onSetup({ stacks: setup.stacks - 1 })}>−</button><DraftNumberInput ariaLabel="特性层数" min={0} max={10} step={1} value={setup.stacks} onCommit={(next) => onSetup({ stacks: Math.trunc(next) })} /><button type="button" aria-label="特性层数加一" disabled={setup.stacks === 10} onClick={() => onSetup({ stacks: setup.stacks + 1 })}>＋</button></div><small className="deer-stack-help">{spirit.stage} · {spirit.traitName} · {side.ignoreTraits ? "特性已关闭" : `每层双攻＋${effectValue}%`}</small></>}
+    <div className="deer-side-bottom">{attack && <><div className="deer-stacks"><span>特性层数</span><button type="button" aria-label="特性层数减一" disabled={setup.stacks === 0} onClick={() => onSetup({ stacks: setup.stacks - 1 })}>−</button><DraftNumberInput ariaLabel="特性层数" min={0} max={Number.isFinite(stackMax) ? stackMax : undefined} step={1} value={setup.stacks} onCommit={(next) => onSetup({ stacks: Math.trunc(next) })} /><button type="button" aria-label="特性层数加一" disabled={Number.isFinite(stackMax) && setup.stacks >= stackMax} onClick={() => onSetup({ stacks: setup.stacks + 1 })}>＋</button></div><small className="deer-stack-help">{spirit.stage} · {spirit.traitName} · {side.ignoreTraits ? "特性已关闭" : `每层双攻＋${effectValue}%`}</small></>}
       {!attack && <NumberField label="目标HP" value={setup.defenderHp} min={1} suffix="%" onChange={(value) => onSetup({ defenderHp: value })} />}
     </div>
     {children}
@@ -93,7 +95,7 @@ function DefenderTraitConfiguration({ snapshot, spirit, side, trait, context, on
   </section>;
 }
 
-function minimumText(value, ready) { return value === null ? (ready ? "10层内未达" : "待确认") : `${value} 层`; }
+function minimumText(value, ready) { return value === null ? (ready ? "查询范围内未达" : "待确认") : `${value} 层`; }
 function bestRow(rows, field) { return rows.filter((row) => row[field] !== null).sort((a, b) => a[field] - b[field])[0]; }
 
 export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onReturn }) {
@@ -202,7 +204,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     </section>
     {defenseLimitations.length > 0 && <p className="deer-warning" role="note">{defenseLimitations.join("、")}的保命效果尚未纳入本页。仅展示理论伤害，不提供确定斩杀层数或先发连招结论。</p>}
     {warnings.length > 0 && <p className="deer-warning" role="status">{warnings.join("；")}。以下为当前内核条件下的估算，请核对特性。</p>}
-    <div className="deer-summary" aria-live="polite"><span>单招最低 <strong>{best ? `${best.minimum} 层` : rows.some((row) => !row.current.lethalKnown) ? "条件待确认" : "10层内未达"}</strong>{best?.label}{best?.condition && <small>{best.condition}</small>}<button className="deer-fill-minimum" type="button" disabled={updating || !best} onClick={fillMinimum} title="填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启">一键填层数</button></span>{setup.showFollowup && <span>接先发最低 <strong>{combo ? `${combo.comboMinimum} 层` : rows.some((row) => !row.current.lethalKnown) ? "条件待确认" : "10层内未达"}</strong>{combo?.label}{combo?.condition && <small>{combo.condition}</small>}</span>}</div>
+    <div className="deer-summary" aria-live="polite"><span>单招最低 <strong>{best ? `${best.minimum} 层` : rows.some((row) => !row.current.lethalKnown) ? "条件待确认" : "查询范围内未达"}</strong>{best?.label}{best?.condition && <small>{best.condition}</small>}<button className="deer-fill-minimum" type="button" disabled={updating || !best} onClick={fillMinimum} title="填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启">一键填层数</button></span>{setup.showFollowup && <span>接先发最低 <strong>{combo ? `${combo.comboMinimum} 层` : rows.some((row) => !row.current.lethalKnown) ? "条件待确认" : "查询范围内未达"}</strong>{combo?.label}{combo?.condition && <small>{combo.condition}</small>}</span>}</div>
     {activeMinimum && <p className="deer-fill-notice" role="status">已填入 {setup.stacks} 层 · {activeMinimum.label}{activeMinimum.condition ? `（${activeMinimum.condition}；条件未自动变更）` : ""}</p>}
     <section className="deer-results" aria-label="技能斩杀线" aria-busy={updating}><div className="deer-results-heading"><h2>技能斩杀线</h2><span className="deer-muted">{updating ? "正在复算…" : `目标生命 ${stats.hp} · 当前 ${setup.defenderHp}%`}</span><label className="deer-check"><input type="checkbox" checked={setup.showFollowup} onChange={(event) => { setOptions({ showFollowup: event.target.checked }); if (!event.target.checked && expandedRow === "stone-counter") setExpandedRow("stone"); }} />显示先发补刀</label></div>
       <div className="deer-table-scroll"><table className="deer-table"><thead><tr><th>技能 / 条件</th><th>属性</th><th>单招最低</th>{setup.showFollowup && <th>接先发最低</th>}<th>当前 {deferredSetup.stacks} 层伤害</th><th><span className="sr-only">详情</span></th></tr></thead><tbody>
@@ -221,7 +223,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
       </tbody></table></div>
     </section></>}
     {!defender && <p className="deer-summary" role="status">请选择防御方后查看技能斩杀线。</p>}
-    <footer className="deer-footer"><span>查询 0–10 层 · 点击技能查看逐层伤害</span><span>先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害</span></footer>
+    <footer className="deer-footer"><span>按特性层数查询 · 点击技能查看逐层伤害</span><span>先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害</span></footer>
   </main></>;
 }
 

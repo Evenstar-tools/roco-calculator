@@ -52,7 +52,16 @@ export function resolveAction(slots, index, traitName, branch = "power") {
   const sequence = buildChoiceSkillSequence({ skill, traitName, context: { shiftMode: branch, choiceTraitTriggered: true } });
   const label = `${skill.name}${skill.name === "轮班" ? ` · ${branch === "drive" ? "额外传动" : "1号位加威"}` : ""}`;
   if (REPLACEMENT_SKILLS.includes(skill.name)) return { issue: `${skill.name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。`, label, executions: sequence.executions };
-  if (skill.name === "轮班" && (branch === "drive" || sequence.executions.length > 1)) return { issue: "轮班额外传动的结算时机、重复选择时基础传动是否重复尚未确认；明/暗与两个效果的对应也未核实。当前不支持该效果。", allowObserved: true, label, executions: sequence.executions };
+  if (skill.name === "轮班") {
+    let next = slots;
+    const driveRuns = sequence.executions.filter((execution) => execution.branch === "drive");
+    for (const _ of driveRuns) {
+      const at = next.findIndex((entry) => entry?.id === skill.id);
+      if (at < 0) return { issue: "轮班已不在当前四槽，无法结算额外传动。", label, executions: sequence.executions };
+      next = settleLayers(next, next.map((_, index) => (index === at ? 1 : 0))).slots;
+    }
+    return { slots: next, label, executions: sequence.executions };
+  }
   if (/交换两侧技能位置/.test(skill.description)) {
     const next = [...slots], left = (index + 3) % 4, right = (index + 1) % 4;
     if (isFixed(next[left]) || isFixed(next[right])) return { issue: "杠杆置换与固定槽位的冲突规则未确认，当前不支持该操作。", allowObserved: true, label, executions: sequence.executions };
