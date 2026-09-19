@@ -4,6 +4,7 @@ import {
   getNature,
   getNatureMultipliers,
 } from "../shared/domain/natures.js";
+import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
 import {
   calculateAllPanelStats,
   hasCompleteRaceStats,
@@ -16,9 +17,7 @@ export function clampDisplayIv(value) {
 }
 
 export function createCombatantView(snapshot, side) {
-  const spirit = (snapshot?.spirits ?? []).find(
-    (candidate) => candidate.id === side?.spiritId,
-  );
+  const spirit = resolveBattleSpirit(snapshot, side);
   const nature = getNature(side?.nature);
 
   if (!spirit) {

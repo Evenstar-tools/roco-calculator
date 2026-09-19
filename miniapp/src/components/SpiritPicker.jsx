@@ -6,6 +6,7 @@ import {
 } from "../view-models/spirit-search.js";
 import ElementIcon from "./ElementIcon.jsx";
 import EntityChangeHint from "./EntityChangeHint.jsx";
+import { getBattleFormChoices } from "../shared/domain/battle-form.js";
 
 const SIDE_LABELS = {
   attacker: "攻击方",
@@ -23,6 +24,8 @@ export default function SpiritPicker({
   value,
   spirits,
   onChange,
+  onFormChange,
+  formSide,
   onOpenChange,
   open: controlledOpen,
   side,
@@ -38,7 +41,9 @@ export default function SpiritPicker({
   );
   const sideLabel = SIDE_LABELS[side] ?? "当前";
   const selected = spirits.find((spirit) => spirit.id === value);
-  const results = query.trim()
+  const family = onFormChange ? getBattleFormChoices(spirits, formSide) : [];
+  const choosingForm = !query.trim() && family.length > 1;
+  const results = choosingForm ? family : query.trim()
     ? searchSpiritsWithFavorites(index, query, favoriteIds)
     : [];
 
@@ -53,7 +58,8 @@ export default function SpiritPicker({
   }
 
   function selectSpirit(spiritId) {
-    onChange(spiritId);
+    if (choosingForm) onFormChange(spiritId);
+    else onChange(spiritId);
     setQuery("");
     setOpen(false);
   }
@@ -99,7 +105,7 @@ export default function SpiritPicker({
           setQuery(readInputValue(event));
         }}
       />
-      {open && !query.trim() ? (
+      {open && !query.trim() && !choosingForm ? (
         <View className="spirit-picker__hint">
           <Text className="spirit-picker__hint-title">
             搜索{sideLabel}宠物
@@ -109,16 +115,21 @@ export default function SpiritPicker({
           </Text>
         </View>
       ) : null}
-      {open && query.trim() ? (
+      {open && (query.trim() || choosingForm) ? (
         <View
           aria-label={`${sideLabel}宠物搜索结果`}
           className="spirit-picker__results"
         >
+          {choosingForm ? (
+            <View className="spirit-picker__form-heading">
+              <Text>同族形态</Text><Text>保留本场配置</Text>
+            </View>
+          ) : null}
           {results.length ? results.map((spirit) => {
             const imageUrl = imageUrls[spirit.id] ?? spirit.imageUrl;
             return (
               <Button
-                aria-label={`选择${spirit.fullName ?? spirit.name}`}
+                aria-label={`${choosingForm ? "切换形态" : "选择"}${spirit.fullName ?? spirit.name}`}
                 className={[
                   "spirit-picker__result",
                   spirit.id === value
@@ -150,6 +161,7 @@ export default function SpiritPicker({
                       <ElementIcon key={type} type={type} />
                     ))}
                     <Text>{(spirit.types ?? []).join(" · ")}</Text>
+                    {choosingForm ? <Text>{spirit.id === value ? "当前形态" : spirit.stage}</Text> : null}
                     {spirit.calculationStatus === "pending-race-stats" ? (
                       <Text className="spirit-picker__result-pending">
                         种族值待确认
@@ -164,6 +176,12 @@ export default function SpiritPicker({
               未找到匹配宠物，试试全名或换个关键字
             </Text>
           )}
+          {choosingForm ? (
+            <Button className="spirit-picker__form-reload" onClick={() => {
+              onChange(value);
+              closePicker();
+            }}>重新载入当前形态预设</Button>
+          ) : null}
         </View>
       ) : null}
     </View>

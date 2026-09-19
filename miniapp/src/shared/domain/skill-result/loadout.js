@@ -1,4 +1,5 @@
 import { calculateAllPanelStats } from "../stat.js";
+import { resolveBattleSpirit } from "../battle-form.js";
 import { reducedSkillCost } from "../refraction.js";
 import { getEffectiveTraits } from "../effective-traits.js";
 import { pressureValveUseCount } from "../skill-status-effects.js";
@@ -108,7 +109,7 @@ export function resolveCombatant(
   costOverrides,
 ) {
   const spirit =
-    indexes.spirits[side.spiritId] ??
+    resolveBattleSpirit(snapshot, side) ??
     side.spirit ??
     (side.raceStats ? side : null);
   if (!spirit) {

@@ -1,4 +1,5 @@
 import { getNature, STAT_LABELS } from "../shared/domain/natures.js";
+import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
 import { createConditionSummary } from "./condition-summary.js";
 import { createDirectionTraitViews } from "./traits.js";
 
@@ -11,9 +12,8 @@ const STAT_KEYS = [
   "magicalDefense",
 ];
 
-function spiritName(snapshot, spiritId) {
-  return (snapshot?.spirits ?? []).find((spirit) => spirit.id === spiritId)
-    ?.fullName ?? "未选择宠物";
+function spiritName(snapshot, side) {
+  return resolveBattleSpirit(snapshot, side)?.fullName ?? "未选择宠物";
 }
 
 function natureLabel(side) {
@@ -120,7 +120,7 @@ export function createShareSummary({
   return {
     appliedSkillEffects: appliedSkillEffectLabels(actions, activeActionKeys),
     attackerIvs: ivLabel(attackerSide),
-    attackerName: spiritName(snapshot, attackerSide.spiritId),
+    attackerName: spiritName(snapshot, attackerSide),
     attackerNature: natureLabel(attackerSide),
     attackStageLabel: stageLabel(
       directionState.overrides?.attackLevelStage,
@@ -132,7 +132,7 @@ export function createShareSummary({
       ...traitConditions,
     ]),
     defenderIvs: ivLabel(defenderSide),
-    defenderName: spiritName(snapshot, defenderSide.spiritId),
+    defenderName: spiritName(snapshot, defenderSide),
     defenderNature: natureLabel(defenderSide),
     defenseStageLabel: stageLabel(
       directionState.overrides?.defenseLevelStage,

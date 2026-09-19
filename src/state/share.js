@@ -39,6 +39,7 @@ const EXTENDED_LEGACY_TOP_LEVEL_KEYS = EXTENDED_TOP_LEVEL_KEYS.filter(
 );
 const SIDE_KEYS = ["spiritId", "nature", "displayIvs", "skills"];
 const SIDE_OPTIONAL_KEYS = [
+  "battleForm",
   "traitValues",
   "acquiredTraitIds",
   "acquiredTraitValues",
@@ -376,6 +377,11 @@ function assertSide(side, path) {
   if (!isNullableId(side.spiritId)) {
     throw new TypeError(`${path}.spiritId 无效`);
   }
+  if (Object.hasOwn(side, "battleForm") &&
+    (!hasExactKeys(side.battleForm, ["spiritId", "branchId"]) ||
+      !isNonEmptyString(side.battleForm.spiritId) || !isNonEmptyString(side.battleForm.branchId))) {
+    throw new TypeError(`${path}.battleForm 无效`);
+  }
   if (!isNonEmptyString(side.nature)) {
     throw new TypeError(`${path}.nature 无效`);
   }
@@ -643,6 +649,7 @@ function selectSide(side) {
       four: side.skills.four.map(selectSkillInput),
     },
   };
+  if (side.battleForm) selected.battleForm = { ...side.battleForm };
   const traitValues = sanitizeTraitValues(side.traitValues);
   if (Object.keys(traitValues).length > 0) {
     selected.traitValues = traitValues;

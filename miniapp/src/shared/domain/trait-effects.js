@@ -39,6 +39,7 @@ const PENETRATION_INHERITANCE = Object.freeze({
 });
 
 export function getInheritedDamageTraits(spirit) {
+  spirit = spirit?.traitSourceSpirit ?? spirit;
   const isChessQueenBranch =
     spirit?.baseName === "棋契陛下" &&
     String(spirit?.variantName ?? spirit?.fullName ?? "").includes(

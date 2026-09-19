@@ -390,7 +390,7 @@ export default function IndexPage({ services }) {
         current.services?.favoritesRepository?.toggle(spiritId) ??
         current.favoriteIds;
       let configLibrary = current.configLibrary;
-      if (favoriteIds.includes(spiritId) && configuration?.spiritId === spiritId) {
+      if (favoriteIds.includes(spiritId) && configuration?.spiritId === spiritId && !configuration.battleForm) {
         try {
           configLibrary = current.services?.configLibraryRepository?.saveAllocation?.(configuration, current.snapshot) ?? configLibrary;
         } catch {
@@ -409,6 +409,7 @@ export default function IndexPage({ services }) {
   }, []);
 
   const savePresetAllocation = useCallback((configuration) => {
+    if (configuration.battleForm) return;
     setPageState((current) => {
       if (!current.favoriteIds.includes(configuration.spiritId) && !current.configLibrary.entries.some((entry) => entry.spiritId === configuration.spiritId)) return current;
       try {

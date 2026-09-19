@@ -1,4 +1,5 @@
 import { buildCombatState } from "../shared/build-combat-state.js";
+import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
 import { calculateMatchup } from "../shared/domain/calculate.js";
 import {
   analyzeDefensiveTypes,
@@ -12,7 +13,7 @@ import { hasCompleteRaceStats } from "../shared/domain/stat.js";
 
 function createTypeAnalysis(snapshot, side, subjectName) {
   const indexes = getSnapshotIndexes(snapshot);
-  const spirit = indexes.spirits[side.spiritId];
+  const spirit = resolveBattleSpirit(snapshot, side);
   if (!spirit) return null;
   const traits = (spirit.traitIds ?? [])
     .map((traitId) => indexes.traits[traitId])
@@ -40,12 +41,8 @@ const POWER_RESOLUTION_SOURCES = new Set([
   "reviewed-rule:enemy-skill-power-multiplier-v1",
 ]);
 
-function getSpiritName(snapshot, spiritId) {
-  return (
-    (snapshot?.spirits ?? []).find(
-      (spirit) => spirit.id === spiritId,
-    )?.fullName ?? "未选择宠物"
-  );
+function getSpiritName(snapshot, side) {
+  return resolveBattleSpirit(snapshot, side)?.fullName ?? "未选择宠物";
 }
 
 function getDefenderMaxHp(snapshot, side) {
@@ -197,11 +194,11 @@ export function createCalculationView(snapshot, state, direction) {
       : state.sides.attacker;
   const attackerName = getSpiritName(
     snapshot,
-    attackerSide.spiritId,
+    attackerSide,
   );
   const defenderName = getSpiritName(
     snapshot,
-    defenderSide.spiritId,
+    defenderSide,
   );
   const defenderMaxHp = getDefenderMaxHp(snapshot, defenderSide);
   const rawConfiguredHp =
@@ -218,11 +215,8 @@ export function createCalculationView(snapshot, state, direction) {
       ? defenderHp / defenderMaxHp * 100
       : null;
   const typeAnalysis = createTypeAnalysis(snapshot, attackerSide, attackerName);
-  const spiritById = new Map(
-    (snapshot?.spirits ?? []).map((spirit) => [spirit.id, spirit]),
-  );
   const pendingRaceStatSpirits = [attackerSide, defenderSide]
-    .map((side) => spiritById.get(side.spiritId))
+    .map((side) => resolveBattleSpirit(snapshot, side))
     .filter((spirit) => spirit && !hasCompleteRaceStats(spirit.raceStats));
   if (pendingRaceStatSpirits.length > 0) {
     return {

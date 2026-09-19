@@ -1,4 +1,5 @@
 import { normalizeMarksState } from "../shared/domain/marks.js";
+import { isValidBattleForm } from "../shared/domain/battle-form.js";
 import { sanitizeGainSources } from "../shared/domain/gain-provenance.js";
 import { sanitizeSkillActivations } from "../shared/domain/skill-gain-summary.js";
 import { MOON_MEMORY_TRAIT_LIMIT } from "../shared/domain/moon-memory.js";
@@ -482,6 +483,9 @@ function repairSide(
     side.acquiredTraitIds,
     traitIds,
   );
+  if (side.battleForm && isValidBattleForm(snapshot, { ...repaired, battleForm: side.battleForm })) {
+    repaired.battleForm = { spiritId: side.battleForm.spiritId, branchId: side.battleForm.branchId };
+  }
   return {
     ...repaired,
     acquiredTraitIds,
@@ -641,6 +645,7 @@ function selectSideInputs(side) {
       acquiredTraitIds,
     ),
     spiritId: side?.spiritId,
+    ...(side?.battleForm ? { battleForm: { ...side.battleForm } } : {}),
     nature: side?.nature,
     displayIvs: isRecord(side?.displayIvs)
       ? { ...side.displayIvs }

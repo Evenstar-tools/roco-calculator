@@ -18,6 +18,7 @@ const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
     "src/features/team-ability/domain/speed-modifiers.js",
     "src/domain/beast-flower-bloodline.js",
     "src/domain/baron-greed.js",
+    "src/domain/battle-form.js",
     "src/domain/bloodline-magic.js",
     "src/domain/calculate.js",
     "src/domain/calculator-view-model.js",

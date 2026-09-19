@@ -1,4 +1,5 @@
 import { calculateMatchup } from "./calculate.js";
+import { resolveBattleSpirit } from "./battle-form.js";
 import { getNatureMultipliers } from "./natures.js";
 import { getSkillChoices } from "./skill-loadout.js";
 import { calculateAllPanelStats, hasCompleteRaceStats } from "./stat.js";
@@ -148,7 +149,7 @@ function buildCombatState(state) {
 }
 
 export function getSpirit(snapshot, side) {
-  return getSnapshotIndexes(snapshot).spirits[side.spiritId];
+  return resolveBattleSpirit(snapshot, side);
 }
 
 function getSpiritCardView(snapshot, spirit) {
@@ -617,12 +618,16 @@ export function buildCalculatorViewModel({
         ? "complete"
         : null,
   }));
-  const attacker = selectableSpirits.find(
-    (spirit) => spirit.id === state.sides.attacker.spiritId,
-  );
-  const defender = selectableSpirits.find(
-    (spirit) => spirit.id === state.sides.defender.spiritId,
-  );
+  const selectedSpirit = (side) => {
+    const resolved = getSpirit(snapshot, side);
+    if (!resolved) return undefined;
+    return getSpiritCardView(snapshot, {
+      ...selectableSpirits.find((spirit) => spirit.id === resolved.id),
+      ...resolved,
+    });
+  };
+  const attacker = selectedSpirit(state.sides.attacker);
+  const defender = selectedSpirit(state.sides.defender);
   const selectionsReady = Boolean(attacker && defender);
   const pendingRaceStatSpirits = [attacker, defender].filter(
     (spirit) => spirit && !hasCompleteRaceStats(spirit.raceStats),

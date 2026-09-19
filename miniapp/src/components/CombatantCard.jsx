@@ -23,6 +23,7 @@ export default function CombatantCard({
   onActivate,
   onIvChange,
   onChange,
+  onFormChange,
   onFavoriteToggle,
   onNatureChange,
   onPickerOpenChange,
@@ -101,6 +102,11 @@ export default function CombatantCard({
               种族值待确认
             </Text>
           ) : null}
+          {configuration?.battleForm ? (
+            <Text className="combatant-card__form-note">
+              {spirit?.battleFormTraitRetained ? `特性沿用：${spirit.traitName}` : "本场形态 · 配置已保留"}
+            </Text>
+          ) : null}
         </View>
         {spirit && !identityOnly ? (
           <FavoriteButton
@@ -115,6 +121,8 @@ export default function CombatantCard({
         hideTrigger={identityOnly}
         imageUrls={imageUrls}
         onChange={onChange}
+        onFormChange={onFormChange}
+        formSide={configuration}
         onOpenChange={identityOnly ? setPickerOpen : undefined}
         open={identityOnly ? pickerOpen : undefined}
         side={side}

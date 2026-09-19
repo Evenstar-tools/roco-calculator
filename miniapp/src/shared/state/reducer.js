@@ -215,7 +215,7 @@ function reduceCalculatorAction(state, action) {
     }
     case "side/set-spirit":
       return updateSide(state, action, (side) => ({
-        ...side,
+        ...Object.fromEntries(Object.entries(side).filter(([key]) => key !== "battleForm")),
         acquiredTraitIds: [],
         acquiredTraitValues: {},
         skills: Array.isArray(action.legalSkillIds)

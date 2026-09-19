@@ -140,6 +140,35 @@
   font-weight: var(--weight-section);
 }
 
+.spirit-picker__form-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 8px;
+  color: var(--text-secondary);
+  font-size: var(--font-caption);
+}
+
+.spirit-picker__form-reload {
+  margin: 4px 0 0;
+  padding: 8px;
+  border-top: 1px solid var(--border-neutral);
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: var(--font-caption);
+  line-height: 20px;
+}
+
+.combatant-card__form-note {
+  display: block;
+  color: var(--text-secondary);
+  font-size: var(--font-caption);
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+
 .spirit-picker__hint-copy {
   color: var(--text-secondary);
   font-size: var(--font-caption);

@@ -1,4 +1,4 @@
-import { getTraitView } from "../shared/domain/calculator-view-model.js";
+import { getSpirit, getTraitView } from "../shared/domain/calculator-view-model.js";
 import { canonicalTraitControlKey } from "../shared/state/trait-values.js";
 import { getSkill } from "./skills.js";
 import { resolveLifestealCapability } from "../shared/domain/baron-greed.js";
@@ -15,9 +15,7 @@ export function createTraitView(
   skills = [],
   persistentLifestealPercent = 0,
 ) {
-  const spirit = (snapshot?.spirits ?? []).find(
-    (entry) => entry.id === side?.spiritId,
-  );
+  const spirit = getSpirit(snapshot, side);
   const trait = spirit ? getTraitView(snapshot, spirit, role, skills) : null;
   if (!trait) return null;
   const lifesteal = resolveLifestealCapability({

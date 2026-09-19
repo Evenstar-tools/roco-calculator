@@ -1,4 +1,5 @@
 import { normalizeNatureId } from "../shared/domain/natures.js";
+import { isValidBattleForm } from "../shared/domain/battle-form.js";
 import { normalizeMarksState } from "../shared/domain/marks.js";
 import { MOON_MEMORY_TRAIT_LIMIT } from "../shared/domain/moon-memory.js";
 import { normalizeNegativeStatusState } from "../shared/domain/negative-status.js";
@@ -273,6 +274,7 @@ function compactSide(side) {
     ),
   };
   const traitValues = compactTraitValues(side?.traitValues);
+  if (side?.battleForm) compact.f = [side.battleForm.spiritId, side.battleForm.branchId];
   if (traitValues) compact.t = traitValues;
   const acquiredTraitIds = compactAcquiredTraitIds(side?.acquiredTraitIds);
   if (acquiredTraitIds.length) {
@@ -737,6 +739,10 @@ function expandSide(
     skills: { four, single },
     spiritId,
   };
+  if (Array.isArray(raw?.f) && raw.f.length === 2) {
+    const battleForm = { spiritId: safeIdentifier(raw.f[0]), branchId: safeIdentifier(raw.f[1]) };
+    if (isValidBattleForm(snapshot, { ...expanded, battleForm })) expanded.battleForm = battleForm;
+  }
   const acquiredTraitIds = expandAcquiredTraitIds(
     includeTraitValues ? raw?.r : undefined,
     traitIds,

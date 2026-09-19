@@ -18,8 +18,10 @@ import { starfallStacksFromMarkSlot } from "../shared/domain/marks.js";
 import { createInitialState } from "../shared/state/defaults.js";
 import {
   selectSpirit,
+  switchBattleForm,
   updateGlobalWeather,
 } from "../shared/state/calculator-session.js";
+import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
 import {
   createResultActionRecord,
   hasPersistedStatusAction,
@@ -95,12 +97,6 @@ function actionUndoGroup(action) {
     ...nestedKeys(action.value),
   ].filter((value) => value !== undefined && value !== null && value !== "");
   return scope.join(":");
-}
-
-function getSpirit(snapshot, spiritId) {
-  return (snapshot.spirits ?? []).find(
-    (candidate) => candidate.id === spiritId,
-  );
 }
 
 function getSpiritImageUrl(petImages, spirit) {
@@ -198,8 +194,8 @@ export default function BattleWorkspace({
     store.getState,
     store.getState,
   );
-  const attacker = getSpirit(snapshot, state.sides.attacker.spiritId);
-  const defender = getSpirit(snapshot, state.sides.defender.spiritId);
+  const attacker = resolveBattleSpirit(snapshot, state.sides.attacker);
+  const defender = resolveBattleSpirit(snapshot, state.sides.defender);
   const calculations = {
     forward: createCalculationView(snapshot, state, "forward"),
     reverse: createCalculationView(snapshot, state, "reverse"),
@@ -368,6 +364,9 @@ export default function BattleWorkspace({
   }
 
   function dispatchWithUndo(action, options = {}) {
+    if (options.rememberSide && store.getState().sides[options.rememberSide]?.battleForm) {
+      options = { ...options, rememberSide: null };
+    }
     if (action.type !== "mode/set") {
       recordQuickUndo({
         groupKey: actionUndoGroup(action),
@@ -404,6 +403,12 @@ export default function BattleWorkspace({
     });
   }
 
+  function setForm(side, spiritId) {
+    const current = store.getState();
+    const result = switchBattleForm(current, { side, spiritId, snapshot });
+    if (result.state !== current) dispatchWithUndo({ type: "state/replace", value: result.state });
+  }
+
   function resetBattleState(nextState = store.getState()) {
     const initialState = createInitialState(snapshot);
     return {
@@ -416,12 +421,12 @@ export default function BattleWorkspace({
 
   function setNature(side, value) {
     dispatchWithUndo({ type: "side/set-nature", side, value }, { rememberSide: side });
-    onPresetAllocationChange?.(store.getState().sides[side]);
+    if (!store.getState().sides[side].battleForm) onPresetAllocationChange?.(store.getState().sides[side]);
   }
 
   function setIv(side, stat, value) {
     dispatchWithUndo({ type: "side/set-iv", side, stat, value }, { rememberSide: side });
-    onPresetAllocationChange?.(store.getState().sides[side]);
+    if (!store.getState().sides[side].battleForm) onPresetAllocationChange?.(store.getState().sides[side]);
   }
 
   function setTraitValue(side, key, value, control) {
@@ -928,6 +933,7 @@ export default function BattleWorkspace({
           <View aria-label="对战对象" className="battle-workspace__duel">
             <CombatantCard
               active={direction === "forward"}
+              configuration={state.sides.attacker}
               favorite={favoriteIds.includes(attacker?.id)}
               favoriteIds={favoriteIds}
               identityOnly
@@ -935,6 +941,7 @@ export default function BattleWorkspace({
               imageUrls={petImages}
               onActivate={() => setDirection("forward")}
               onChange={(value) => setSpirit("attacker", value)}
+              onFormChange={(value) => setForm("attacker", value)}
               onFavoriteToggle={(id) => onFavoriteToggle?.(id, store.getState().sides.attacker)}
               onPickerOpenChange={(open) =>
                 setActiveLayer(open ? "spirit-attacker" : null)
@@ -957,6 +964,7 @@ export default function BattleWorkspace({
             />
             <CombatantCard
               active={direction === "reverse"}
+              configuration={state.sides.defender}
               favorite={favoriteIds.includes(defender?.id)}
               favoriteIds={favoriteIds}
               identityOnly
@@ -964,6 +972,7 @@ export default function BattleWorkspace({
               imageUrls={petImages}
               onActivate={() => setDirection("reverse")}
               onChange={(value) => setSpirit("defender", value)}
+              onFormChange={(value) => setForm("defender", value)}
               onFavoriteToggle={(id) => onFavoriteToggle?.(id, store.getState().sides.defender)}
               onPickerOpenChange={(open) =>
                 setActiveLayer(open ? "spirit-defender" : null)
@@ -1027,7 +1036,7 @@ export default function BattleWorkspace({
                   })}
                   side={panel.side}
                   snapshot={snapshot}
-                  spirit={getSpirit(snapshot, panel.configuration.spiritId)}
+                  spirit={resolveBattleSpirit(snapshot, panel.configuration)}
                 />
               </View>
             ))}
@@ -1110,7 +1119,7 @@ export default function BattleWorkspace({
                 >
                   <Text className="skill-panel__title">
                     {panel.configuration.spiritId
-                      ? getSpirit(snapshot, panel.configuration.spiritId)?.fullName
+                      ? resolveBattleSpirit(snapshot, panel.configuration)?.fullName
                       : panel.label}
                   </Text>
                   {state.mode === "four" ? (

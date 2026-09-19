@@ -14,6 +14,9 @@ import {
   getTraitView,
 } from "../domain/calculator-view-model.js";
 import { normalizeNatureId } from "../domain/natures.js";
+import { getNatureMultipliers } from "../domain/natures.js";
+import { getBattleFormChoices, isValidBattleForm } from "../domain/battle-form.js";
+import { calculateAllPanelStats } from "../domain/stat.js";
 import { createInitialState } from "./defaults.js";
 import { calculatorReducer } from "./reducer.js";
 import { materializeTraitContext } from "./trait-values.js";
@@ -143,6 +146,9 @@ export function assertSnapshotReferences(sharedState, snapshot) {
   for (const side of Object.values(sharedState.sides)) {
     if (!side.spiritId || !spiritIds.has(side.spiritId)) {
       throw new TypeError("分享配置包含当前数据中不存在的精灵");
+    }
+    if (!isValidBattleForm(snapshot, side)) {
+      throw new TypeError("分享配置包含无效的本场形态或分支");
     }
     for (const input of [side.skills.single, ...side.skills.four]) {
       const skillId =
@@ -516,6 +522,7 @@ export function reduceSessionAction(state, action) {
   const rememberSide =
     action.remember !== false &&
     action.side &&
+    !nextState.sides[action.side]?.battleForm &&
     REMEMBERED_SIDE_ACTIONS.has(action.type)
       ? action.side
       : null;
@@ -619,6 +626,37 @@ export function selectSpirit(
     snapshot,
     source: "personal",
   });
+}
+
+export function switchBattleForm(state, { side, snapshot, spiritId }) {
+  if (side !== "attacker" && side !== "defender") throw new TypeError("无效阵营");
+  const current = state.sides[side];
+  if ((current.battleForm?.spiritId ?? current.spiritId) === spiritId) {
+    return { persistence: persistence(), state };
+  }
+  const target = getBattleFormChoices(snapshot.spirits, current).find((spirit) => spirit.id === spiritId);
+  if (!target) throw new TypeError("请选择当前分支的同族形态");
+  const branchId = current.battleForm?.branchId ?? current.spiritId;
+  const branch = snapshot.spirits.find((spirit) => spirit.id === branchId);
+  const nextSide = {
+    ...current,
+    battleForm: {
+      spiritId,
+      branchId: (target.evolutionChainIds?.length ?? 1) < (branch.evolutionChainIds?.length ?? 1) ? spiritId : branchId,
+    },
+  };
+  const healthDirection = side === "attacker" ? "reverse" : "forward";
+  const health = state.directions[healthDirection];
+  const maxHp = calculateAllPanelStats({ raceStats: target.raceStats, displayIvs: current.displayIvs, natureMultipliers: getNatureMultipliers(current.nature) }).hp;
+  const clampHp = Number.isFinite(health.currentHp) && health.currentHp > maxHp;
+  return {
+    persistence: persistence(),
+    state: {
+      ...state,
+      sides: { ...state.sides, [side]: nextSide },
+      directions: clampHp ? { ...state.directions, [healthDirection]: { ...health, currentHp: maxHp } } : state.directions,
+    },
+  };
 }
 
 export function replaceConfiguration(state, configuration, { remember, source } = {}) {
