@@ -763,7 +763,7 @@ test("keeps analysis context and advances the local baseline after a successful 
   );
   await user.click(screen.getByRole("button", { name: "物攻已锁" }));
 
-  const previousHp = screen.getByLabelText("当前配置摘要").textContent;
+  const previousHp = screen.getByLabelText("已保存配置摘要").textContent;
   await user.click(
     within(screen.getByRole("region", { name: "耐久方案对比" })).getAllByRole(
       "button",
@@ -780,7 +780,7 @@ test("keeps analysis context and advances the local baseline after a successful 
     "false",
   );
   await waitFor(() =>
-    expect(screen.getByLabelText("当前配置摘要").textContent).not.toBe(
+    expect(screen.getByLabelText("已保存配置摘要").textContent).not.toBe(
       previousHp,
     ),
   );
@@ -917,14 +917,14 @@ test("does not mark analysis-only target and solver controls as an unapplied mem
   chooseSpeedTarget("首领象");
   expect(targetPicker.value).toMatch(/^首领象 · \d+（/);
   expect(onDirtyChange).not.toHaveBeenCalled();
-  expect(screen.queryByText("草稿未应用")).not.toBeInTheDocument();
+  expect(screen.queryByText(/试算草稿/)).not.toBeInTheDocument();
 
   await user.selectOptions(
     screen.getByRole("combobox", { name: "推荐速度约束" }),
     "unlocked",
   );
   expect(onDirtyChange).not.toHaveBeenCalled();
-  expect(screen.queryByText("草稿未应用")).not.toBeInTheDocument();
+  expect(screen.queryByText(/试算草稿/)).not.toBeInTheDocument();
 });
 
 test("shows the current spirit and nearby entries in each durability preview", () => {

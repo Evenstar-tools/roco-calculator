@@ -220,15 +220,15 @@ function isCurrentBuild(result, configuration) {
   );
 }
 
-function CurrentSummary({ durability, panel }) {
+function CurrentSummary({ durability, panel, label }) {
   return (
-    <section aria-label="当前配置摘要" className="ability-current-summary">
-      <strong>当前配置</strong>
+    <section aria-label={`${label}摘要`} className="ability-current-summary">
+      <strong>{label}</strong>
       {[
         ["速度", panel?.speed], ["综合耐久", durability?.display.combined],
         ["物理耐久", durability?.display.physical], ["魔法耐久", durability?.display.magical],
-      ].map(([label, value], index) => (
-        <span className={index < 2 ? "is-primary" : undefined} key={label}>
+      ].map(([label, value]) => (
+        <span key={label}>
           <small>{label}</small><b>{formatNumber(value)}</b>
         </span>
       ))}
@@ -433,6 +433,8 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
 function SpeedRail({
   activeModifierIds,
   currentSpeed,
+  currentSpirit,
+  isDraft,
   modifiers,
   onOpenOverview,
   onProfilesChange,
@@ -538,7 +540,7 @@ function SpeedRail({
         <div>
           <h4>速度目标</h4>
           <small className="ability-speed__comparison" data-relation={relation}>
-            {selected ? `当前 ${formatNumber(currentSpeed)} / 目标 ${formatNumber(selected.speed)} · ${comparisonLabel}` : "选择目标后分析"}
+            {selected ? `${isDraft ? "试算" : "当前"} ${formatNumber(currentSpeed)} / 目标 ${formatNumber(selected.speed)} · ${comparisonLabel}` : "选择目标后分析"}
           </small>
           {speedAnalysis && speedAnalysis.status !== "CURRENTLY_REACHED" ? (
             <small>{SPEED_STATUS_LABELS[speedAnalysis.status]}</small>
@@ -602,7 +604,7 @@ function SpeedRail({
             })}
           </div>
           <strong>
-            当前 {formatNumber(currentSpeed)}
+            {isDraft ? "试算" : "当前"} {formatNumber(currentSpeed)}
           </strong>
         </div>
       ) : null}
@@ -629,8 +631,9 @@ function SpeedRail({
           <span aria-hidden="true" className="ability-speed__line" />
           {railItems.map((item) => item.kind === "current" ? (
             <div className="ability-speed__marker is-current" key={item.id} ref={currentMarkerRef} role="listitem">
+              {assetUrl(currentSpirit) ? <img alt="" src={assetUrl(currentSpirit)} /> : null}
               <b>{formatNumber(item.speed)}</b>
-              <span>当前配置</span>
+              <span>{isDraft ? "试算配置" : "当前配置"}</span>
             </div>
           ) : (
             <button
@@ -674,6 +677,7 @@ export function SpeedOverview({
   detailPanel,
   backButtonRef,
   currentSpeed,
+  isDraft = false,
   locateTargetId,
   onBack,
   onProfilesChange,
@@ -753,7 +757,7 @@ export function SpeedOverview({
         <div>
           <h4>速度一览</h4>
           <small>
-            当前配置 {formatNumber(currentSpeed)} · {targetGroups.length}档
+            {isDraft ? "试算配置" : "当前配置"} {formatNumber(currentSpeed)} · {targetGroups.length}档
           </small>
         </div>
       </header> : null}
@@ -777,7 +781,7 @@ export function SpeedOverview({
       </div> : null}
 
       {standalone ? <div className="rank-summary"><span>共 {targetGroups.length} 档 · 同速聚合</span><button type="button" onClick={() => {onQueryChange(""); onQueryModeChange("auto"); onProfilesChange(["positive-max", "neutral-max"]);}}>重置</button></div> : <div className="ability-speed-overview__selection" role="status">
-        <span>当前配置 <b>{formatNumber(currentSpeed)}</b></span>
+        <span>{isDraft ? "试算配置" : "当前配置"} <b>{formatNumber(currentSpeed)}</b></span>
         {selected ? (
           <span>已选目标 <b>{selected.name} · {formatNumber(selected.speed)}</b></span>
         ) : null}
@@ -1293,6 +1297,7 @@ export function AbilityWorkbench({
         <SpeedOverview
           backButtonRef={backButtonRef}
           currentSpeed={panel.speed + speedBonus}
+          isDraft={dirty}
           locateTargetId={targetId}
           onBack={closeSpeedOverview}
           onProfilesChange={(nextProfileIds) => {
@@ -1375,10 +1380,10 @@ export function AbilityWorkbench({
       ref={scrollRef}
       role="region"
     >
-      <CurrentSummary durability={baselineDurability} panel={baselinePanel} />
+      <CurrentSummary durability={baselineDurability} panel={baselinePanel} label={source?.kind === "side" ? "当前配置" : "已保存配置"} />
       {dirty ? (
         <p className="ability-draft-status" role="status">
-          草稿未应用
+          试算草稿 · 尚未{source?.kind === "side" ? "应用回计算器" : "应用到成员"}
         </p>
       ) : null}
 
@@ -1409,6 +1414,8 @@ export function AbilityWorkbench({
           <SpeedRail
             activeModifierIds={activeSpeedModifierIds}
             currentSpeed={panel.speed + speedBonus}
+            currentSpirit={spirit}
+            isDraft={dirty}
             modifiers={speedModifiers}
             onOpenOverview={openSpeedOverview}
             onProfilesChange={(nextProfileIds) => {

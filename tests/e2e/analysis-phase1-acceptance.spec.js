@@ -41,7 +41,7 @@ for (const [width, theme] of [[1424, "light"], [390, "light"], [390, "dark"]]) {
     await drawer.getByRole("button", { name: "能力分析", exact: true }).click();
     const ability = drawer.getByRole("region", { name: "能力分析", exact: true });
     const builds = ability.getByRole("region", { name: "耐久方案对比" });
-    await expect(ability.getByRole("region", { name: "当前配置摘要" })).toContainText("194");
+    await expect(ability.getByRole("region", { name: "已保存配置摘要" })).toContainText("194");
     await expect(builds.getByRole("button", { name: "应用到成员" })).toHaveCount(0);
     await expect(builds.getByText("当前锁定条件下没有合法方案。", { exact: true })).toHaveCount(3);
 

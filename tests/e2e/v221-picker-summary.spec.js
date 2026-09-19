@@ -69,7 +69,7 @@ for (const width of [320,390,700,1024,1424]) for (const theme of ['light','dark'
     await page.getByRole('button',{name:'打开队伍',exact:true}).click();
     const drawer=page.getByRole('dialog',{name:'队伍',exact:true});
     await drawer.getByRole('button',{name:'能力分析',exact:true}).click();
-    const summary=drawer.getByRole('region',{name:'当前配置摘要'});
+    const summary=drawer.getByRole('region',{name:'已保存配置摘要'});
     await summary.evaluate(n=>n.scrollIntoView({block:'start'}));
     await page.evaluate(()=>document.fonts.ready);
     await expect.poll(async()=>summary.evaluate(n=>{
@@ -77,13 +77,15 @@ for (const width of [320,390,700,1024,1424]) for (const theme of ['light','dark'
       const h=heading.getBoundingClientRect();
       return n.contains(document.elementFromPoint(r.left+16,h.top+h.height/2));
     })).toBe(true);
-    await expect(summary).toContainText('当前配置');
+    await expect(summary).toContainText('已保存配置');
     expect(await summary.locator('b').allTextContents()).toEqual(['192','35,306','74,664','66,978']);
     const parts=await summary.evaluate(n=>[...n.querySelectorAll('strong,small,b')].map(e=>{
       const b=e.getBoundingClientRect(),host=n.getBoundingClientRect(),r=document.createRange();r.selectNodeContents(e);
       return {text:e.textContent,inside:b.left>=host.left&&b.right<=host.right+1,complete:[...r.getClientRects()].every(t=>t.left>=b.left-1&&t.right<=b.right+1&&t.bottom<=b.bottom+1),font:parseFloat(getComputedStyle(e).fontSize)};
     }));
     expect(parts.every(e=>e.inside&&e.complete)).toBe(true);
+    expect(await summary.locator('b').evaluateAll(nodes => [...new Set(nodes.map(n => getComputedStyle(n).fontSize))])).toEqual(['18px']);
+    expect(await summary.locator('small').evaluateAll(nodes => [...new Set(nodes.map(n => getComputedStyle(n).fontSize))])).toEqual(['12px']);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
     await summary.screenshot({path:`${out}/summary-card-${width}-${theme}-after.png`});
     await page.screenshot({path:`${out}/summary-${width}-${theme}-after.png`,animations:'disabled'});

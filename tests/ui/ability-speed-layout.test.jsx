@@ -6,6 +6,7 @@ const snapshot = {
   meta: { id: "speed-layout" }, skills: [], learnsets: [],
   spirits: [120, 90].map((speed, i) => ({
     id: `speed-${i}`, fullName: i ? "对比精灵" : "当前精灵", stage: "首领", sourceCategory: "首领形态",
+    asset: { localUrl: `/assets/spirit-test/${i}.png` },
     raceStats: { hp: 100, physicalAttack: 100, magicalAttack: 100, physicalDefense: 100, magicalDefense: 100, speed },
   })),
 };
@@ -35,7 +36,23 @@ test("速度轴常显；微调默认收起，展开和收起不会应用草稿",
   expect(manual).not.toHaveAttribute("open");
   expect(manual).toHaveTextContent("沉默");
   expect(apply).not.toHaveBeenCalled();
-  expect(screen.getByRole("status")).toHaveTextContent("草稿未应用");
+  expect(screen.getByRole("status")).toHaveTextContent("试算草稿 · 尚未应用到成员");
+});
+
+test("保存摘要和试算分开标注，速度一览沿用草稿状态且本体使用自己的头像", () => {
+  const { apply } = open();
+  const summary = screen.getByRole("region", { name: "已保存配置摘要" });
+  const saved = summary.textContent;
+  const current = document.querySelector(".ability-speed__marker.is-current");
+  expect(current.querySelector("img")).toHaveAttribute("src", "/assets/spirit-test/0.png");
+  fireEvent.click(screen.getByText("手动微调"));
+  fireEvent.change(screen.getByLabelText("能力分析性格"), { target: { value: "timid" } });
+  expect(current).toHaveTextContent("试算配置");
+  expect(document.querySelector(".ability-speed__comparison")).toHaveTextContent("试算 220");
+  expect(summary.textContent).toBe(saved);
+  fireEvent.click(screen.getByRole("button", { name: /速度一览/ }));
+  expect(screen.getByRole("region", { name: "速度一览", exact: true })).toHaveTextContent("试算配置 220");
+  expect(apply).not.toHaveBeenCalled();
 });
 
 test.each([

@@ -41,6 +41,13 @@ for (const width of [320, 390, 1440, 3840]) for (const theme of ["light", "dark"
     const rail = page.getByRole("region", { name: "速度排行榜横轴" });
     const speed = page.getByRole("region", { name: "速度目标", exact: true });
     await expect(rail).toBeVisible();
+    const savedSummary = await page.getByRole("region", { name: "已保存配置摘要" }).textContent();
+    await expect(rail.locator(".is-current img")).toHaveAttribute("src", spirit.asset.localUrl);
+    expect(await rail.evaluate(node => {
+      const self = getComputedStyle(node.querySelector(".is-current"), "::after");
+      const target = getComputedStyle(node.querySelector(".is-target"), "::after");
+      return self.backgroundColor !== target.backgroundColor && target.boxShadow !== "none";
+    })).toBe(true);
     await expect(page.locator(".ability-manual")).not.toHaveAttribute("open");
     await expect(page.locator(".ability-speed__comparison")).toContainText("当前 192 / 目标 192 · 同速需拼速");
     await expect.poll(() => rail.evaluate(node => {
@@ -90,6 +97,10 @@ for (const width of [320, 390, 1440, 3840]) for (const theme of ["light", "dark"
     await page.getByText("手动微调", { exact: true }).click();
     await expect(page.locator(".ability-manual")).not.toHaveAttribute("open");
     await expect(page.locator(".ability-manual > summary")).toContainText("沉默");
+    await expect(page.locator(".ability-draft-status")).toHaveText("试算草稿 · 尚未应用到成员");
+    await expect(rail.locator(".is-current")).toContainText("试算配置");
+    await expect(page.locator(".ability-speed__comparison")).toContainText("试算 192");
+    await expect(page.getByRole("region", { name: "已保存配置摘要" })).toHaveText(savedSummary);
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem("rock-calculator.teams.v1")).teams[0].members[0].natureId)).toBe("neutral");
     const input = page.getByRole("combobox", { name: "速度目标精灵" });
     await input.fill("音速犬");
@@ -100,6 +111,7 @@ for (const width of [320, 390, 1440, 3840]) for (const theme of ["light", "dark"
     await expect(page.locator(".ability-speed__comparison")).toContainText("可以先手");
     await page.getByRole("button", { name: /速度一览/ }).click();
     await expect(page.getByRole("region", { name: "速度一览", exact: true })).toBeVisible();
+    await expect(page.locator(".ability-speed-overview__selection")).toContainText("试算配置 192");
     await page.getByRole("button", { name: "返回能力分析", exact: true }).click();
     await expect(rail).toBeVisible();
     expect(await page.getByRole("dialog", { name: "队伍", exact: true }).evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
