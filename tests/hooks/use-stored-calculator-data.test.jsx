@@ -8,6 +8,24 @@ const snapshot = {
   spirits: [{ fullName: "火灵", id: "fire" }],
 };
 
+test("本场形态不写入个人预设或静默存成原精灵队伍成员", () => {
+  const save = vi.fn(), updateMember = vi.fn(), onToast = vi.fn();
+  const factories = {
+    favorites: () => ({ list: () => [] }),
+    spiritConfigs: () => ({ load: () => ({ configs: {}, schemaVersion: 2 }), save }),
+    teams: () => ({ load: () => ({ teams: [] }), updateMember }),
+  };
+  const { result } = renderHook(() => useStoredCalculatorData(snapshot, { factories, onToast }));
+  const side = { spiritId: "fire", battleForm: { spiritId: "small", branchId: "fire" } };
+  act(() => {
+    result.current.rememberSide(side);
+    expect(result.current.teams.captureSide("attacker", "team-1", 0, side)).toBe(false);
+  });
+  expect(save).not.toHaveBeenCalled();
+  expect(updateMember).not.toHaveBeenCalled();
+  expect(onToast).toHaveBeenCalledWith(expect.stringContaining("本场形态"));
+});
+
 test("临时配置不冒充预设，收藏时保存当前分配并跟随后续修改", () => {
   const values = new Map();
   const favoriteStore = { list: () => [], save: vi.fn((value) => [value]) };

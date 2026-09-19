@@ -98,7 +98,7 @@ export function useStoredCalculatorData(
   );
 
   function rememberSide(side) {
-    if (!stores.spiritConfigs || !side?.spiritId) return;
+    if (!stores.spiritConfigs || !side?.spiritId || side.battleForm) return;
     try {
       const nextConfigs = stores.spiritConfigs.save(
         spiritConfigsRef.current,
@@ -246,6 +246,10 @@ export function useStoredCalculatorData(
   }
 
   function captureSide(side, teamId, index, calculatorSide) {
+    if (calculatorSide?.battleForm) {
+      onToast("当前为本场形态，请重新载入预设后再存入队伍");
+      return false;
+    }
     if (!stores.teams) {
       onToast("当前环境无法保存队伍");
       return false;

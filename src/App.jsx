@@ -87,6 +87,7 @@ import {
   selectFourSkill as selectSessionFourSkill,
   selectSingleSkill as selectSessionSingleSkill,
   selectSpirit,
+  switchBattleForm,
   toggleDirection,
   updateGlobalWeather,
   updateMirroredTraitContext,
@@ -699,6 +700,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
     });
     commitSession(result);
     setActiveDirection(result.activeDirection);
+  }
+
+  function changeForm(side, spiritId) {
+    commitSession(switchBattleForm(stateRef.current, { side, snapshot, spiritId }));
   }
 
   function updateFourSkillEntry(side, index, patch) {
@@ -1964,6 +1969,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
             }
             onAttackerFavoriteToggle={() => toggleSpiritFavorite(attacker, state.sides.attacker)}
             onAttackerSelect={(value) => changeSpirit("attacker", value)}
+            formSides={state.sides}
+            onFormSelect={changeForm}
             onOpenDeer={onOpenDeer ? () => onOpenDeer({ state: stateRef.current, viewMode, activeDirection, advancedOptionsOpen }) : undefined}
             onDefenderFavoriteToggle={() => toggleSpiritFavorite(defender, state.sides.defender)}
             onDefenderSelect={(value) => changeSpirit("defender", value)}

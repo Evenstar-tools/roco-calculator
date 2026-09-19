@@ -1,8 +1,9 @@
 // Pure build grouping policy; importable in tests without loading Vite configuration.
 export function manualChunks(id) {
-          // Both roots are already initial dependencies; share one compressed core without preloading new features.
+          // Session transitions and calculation roots are initial dependencies; compress the shared form runtime together.
           const normalized = id.replaceAll("\\", "/");
           if (normalized.endsWith("/src/domain/snapshot-indexes.js") ||
+              normalized.endsWith("/src/state/calculator-session.js") ||
               normalized.endsWith("/src/domain/skill-result/loadout.js")) return "calculator-core";
           // This tiny shared icon already depends on react-vendor; avoid a separate entry-time chunk.
           if (normalized.endsWith("/src/components/ElementIcon.jsx")) return "react-vendor";

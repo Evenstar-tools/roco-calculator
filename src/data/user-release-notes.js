@@ -230,6 +230,14 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.2.2",
+    date: "2026.09.19",
+    title: "S4同族形态与速度线",
+    whatsNew: S4_FEATURE_INTRO,
+    features: ["同族切形态保留威力、能力和特性层数，支持撤回与分享，不覆盖原预设。"],
+    fixes: ["速度线恢复横向全宽，统一配置摘要字号，窄屏保留赛季标题。"],
+  }),
+  createRelease({
     version: "v2.2.1",
     date: "2026.09.18",
     title: "S4布局与交互修复",

@@ -6,6 +6,8 @@ export function SpiritStep({
   attackerFavoriteState,
   defender,
   defenderFavoriteState,
+  formSides,
+  onFormSelect,
   onAttackerFavoriteToggle,
   onAttackerSelect,
   onDefenderFavoriteToggle,
@@ -23,6 +25,8 @@ export function SpiritStep({
           label="攻击方"
           onFavoriteToggle={onAttackerFavoriteToggle}
           onSelect={onAttackerSelect}
+          formSide={formSides?.attacker}
+          onFormSelect={onFormSelect?.bind(null, "attacker")}
           onOpenDeer={["波普鹿", "爵士鹿"].includes(attacker?.fullName) ? onOpenDeer : undefined}
           selected={attacker}
           side="attack"
@@ -43,6 +47,8 @@ export function SpiritStep({
           label="防御方"
           onFavoriteToggle={onDefenderFavoriteToggle}
           onSelect={onDefenderSelect}
+          formSide={formSides?.defender}
+          onFormSelect={onFormSelect?.bind(null, "defender")}
           selected={defender}
           side="defense"
           spirits={spirits}

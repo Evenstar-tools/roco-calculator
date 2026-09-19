@@ -125,6 +125,37 @@
   background: var(--accent-soft);
 }
 
+.spirit-picker__options li.spirit-picker__form-heading {
+  min-height: 30px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.spirit-picker__options li.spirit-picker__form-footer {
+  min-height: 34px;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+}
+
+.spirit-picker__form-footer button {
+  width: 100%;
+  padding: 6px 0;
+  border: 0;
+  color: var(--text-muted);
+  background: transparent;
+  text-align: left;
+  font-size: 12px;
+}
+
+.spirit-card__form-note {
+  display: block;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .spirit-picker__options img {
   display: block;
   width: 36px;

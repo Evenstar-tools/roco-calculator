@@ -4,6 +4,7 @@ import { getElementToneStyle } from "../domain/element-colors.js";
 import { TraitHint } from "./TraitHint.jsx";
 import { EntityChangeHint } from "./EntityChangeHint.jsx";
 import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
+import { getBattleFormChoices } from "../domain/battle-form.js";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -98,6 +99,8 @@ export function SpiritPicker({
   label,
   onFavoriteToggle,
   onSelect,
+  onFormSelect,
+  formSide,
   onOpenDeer,
   selected,
   showFavorite = true,
@@ -116,7 +119,9 @@ export function SpiritPicker({
   const [previewLimit, setPreviewLimit] = useState(INITIAL_PREVIEW_COUNT);
   const resolvedFavoriteState =
     favoriteState ?? (favorite ? "manual" : null);
-  const browsingPresets = presetBrowse.enabled && !searching;
+  const family = useMemo(() => formSide ? getBattleFormChoices(spirits, formSide) : [], [spirits, formSide]);
+  const choosingForm = Boolean(onFormSelect && !searching && family.length > 1);
+  const browsingPresets = presetBrowse.enabled && !searching && !choosingForm;
   const presetSpirits = useMemo(() => spirits
     .filter((spirit) => presetBrowse.spiritIds.has(spirit.id))
     .sort(compareDexOrder), [spirits, presetBrowse.spiritIds]);
@@ -131,6 +136,12 @@ export function SpiritPicker({
   }, [open, browsingPresets, selected?.id, presetSpirits]);
 
   const preview = useMemo(() => {
+    if (choosingForm) return {
+      allFavoritesVisible: false,
+      allPreviewItemsVisible: true,
+      isUnfiltered: false,
+      items: family.map((spirit) => ({ related: false, spirit })),
+    };
     if (browsingPresets) return {
       allFavoritesVisible: false,
       allPreviewItemsVisible: true,
@@ -220,14 +231,16 @@ export function SpiritPicker({
           spirit,
         })),
     };
-  }, [browsingPresets, presetSpirits, previewLimit, query, spirits]);
+  }, [choosingForm, family, browsingPresets, presetSpirits, previewLimit, query, spirits]);
   const matches = preview.items;
 
   function openOptions() {
-    setQuery(clearOnOpen ? "" : selectedName);
+    setQuery(onFormSelect && family.length > 1 ? "" : clearOnOpen ? "" : selectedName);
     setSearching(clearOnOpen);
     setPreviewLimit(INITIAL_PREVIEW_COUNT);
-    setActiveIndex(presetBrowse.enabled && !clearOnOpen
+    setActiveIndex(onFormSelect && family.length > 1
+      ? Math.max(0, family.findIndex((spirit) => spirit.id === selected?.id))
+      : presetBrowse.enabled && !clearOnOpen
       ? Math.max(0, presetSpirits.findIndex((spirit) => spirit.id === selected?.id))
       : 0);
     setOpen(true);
@@ -236,7 +249,8 @@ export function SpiritPicker({
   function commit(spirit) {
     setQuery(spirit.fullName);
     setOpen(false);
-    onSelect(spirit.id);
+    if (choosingForm) onFormSelect(spirit.id);
+    else onSelect(spirit.id);
   }
 
   function handleKeyDown(event) {
@@ -335,6 +349,11 @@ export function SpiritPicker({
             ref={optionsRef}
             role="listbox"
           >
+            {choosingForm ? (
+              <li className="spirit-picker__form-heading" role="presentation">
+                <span>同族形态</span><span>保留本场配置</span>
+              </li>
+            ) : null}
             {matches.length ? (
               matches.map(({ related, spirit }, index) => (
                 <li
@@ -364,7 +383,7 @@ export function SpiritPicker({
                         spirit.calculationStatus === "pending-race-stats"
                           ? "种族值待确认"
                           : null,
-                        related ? "进化链" : null,
+                        choosingForm && spirit.id === selected?.id ? "当前形态" : related ? "进化链" : null,
                       ]
                         .filter(Boolean)
                         .join(" · ")}
@@ -387,6 +406,14 @@ export function SpiritPicker({
                 role="presentation"
               >
                 已预览所有已收藏精灵
+              </li>
+            ) : null}
+            {choosingForm ? (
+              <li className="spirit-picker__form-footer" role="presentation">
+                <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => {
+                  setOpen(false);
+                  onSelect(selected.id);
+                }}>重新载入当前形态预设</button>
               </li>
             ) : null}
           </ul>
@@ -429,7 +456,7 @@ export function SpiritPicker({
               </p>
             ) : (
               <p>
-                特性：
+                {selected.battleFormTraitRetained ? "特性沿用：" : "特性："}
                 <TraitHint
                   description={selected.traitDescription}
                   name={selected.traitName}
@@ -437,6 +464,7 @@ export function SpiritPicker({
                 {onOpenDeer && <button className="spirit-card__deer-entry" type="button" onClick={onOpenDeer}>电鹿斩杀线 →</button>}
               </p>
             )}
+            {formSide?.battleForm ? <small className="spirit-card__form-note">本场形态 · 配置已保留</small> : null}
           </div>
           {showFavorite ? (
             <button
