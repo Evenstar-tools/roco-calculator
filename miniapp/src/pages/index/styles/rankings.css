@@ -56,4 +56,7 @@
 .is-icon-only .ranking-speed-target image,.is-icon-only .ranking-speed-target img,.is-icon-only .ranking-speed-target taro-image-core { width: 52px; height: 52px; }
 .ranking-speed-badge { font-size: 10px; line-height: 16px; color: var(--text-secondary); }
 .ranking-eye img,.ranking-speed-target img { position: static; transform: none; object-fit: contain; }
+@media (prefers-color-scheme: dark) {
+  .ranking-eye image,.ranking-eye taro-image-core { filter: brightness(0) invert(.88); }
+}
 @media (prefers-color-scheme: dark) { .ranking-sheet .ranking-check--resist,.ranking-tone--resist { color: #6cd5b3; } .ranking-sheet .ranking-check--weak,.ranking-tone--weak { color: #efb16b; } .ranking-sheet .ranking-check--severe,.ranking-tone--severe { color: #f9949d; } .ranking-row__score,.ranking-speed-number,.ranking-metrics button.is-active { color: #b6aaff; } }

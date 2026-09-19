@@ -38,6 +38,11 @@ const quickControlsSource = readSource("src/components/QuickCombatantControls.js
 const resultSheetSource = readSource("src/components/ResultSheet.jsx");
 
 describe("reference-first responsive CSS", () => {
+  test("keeps result names and ranking visibility icons readable in dark mode", () => {
+    expect(styles["overlays.css"]).toMatch(/\.result-row\s*\{[^}]*color:\s*var\(--text-primary\);/u);
+    expect(styles["rankings.css"]).toMatch(/@media\s*\(prefers-color-scheme:\s*dark\)\s*\{\s*\.ranking-eye image,\.ranking-eye taro-image-core\s*\{\s*filter:\s*brightness\(0\) invert\(\.88\);/u);
+  });
+
   test("keeps tablet landscape in one workspace column and centers IV input content", () => {
     const responsive = styles["responsive.css"];
     expect(responsive).toContain("@media (min-width: 768px) and (max-width: 1023px) {");

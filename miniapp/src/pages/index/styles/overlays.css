@@ -2120,6 +2120,7 @@
   border-bottom: 1px solid var(--border-neutral);
   border-radius: 0;
   background: var(--surface-card);
+  color: var(--text-primary);
   text-align: left;
 }
 
