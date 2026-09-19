@@ -13,6 +13,7 @@
 - [ ] 版本号只改两处：根 `package.json`（网页 / 桌面）与 `miniapp/package.json`（小程序）。
 - [ ] 网页／桌面升级版本时，在 `CHANGELOG.md` 与 `src/data/user-release-notes.js` 顶部各新增对应记录；同版本修复追加当前版本。小程序独立发布只追加仓库日志的平台小节，不新增或污染网页用户记录。
 - [ ] 同步展示型版本文件：`public/sw.js` 的 `CACHE_NAME`、`miniapp/src/version.js` 的 `MINIAPP_VERSION` 与 `MINIAPP_UPDATE_DATE`。
+- [ ] 根版本变更后同步 `public/data/presets/pvp-popular-configs.json` 的 `appVersion`，运行 `node scripts/miniapp/build-common-spirit-config.mjs public/data/presets/pvp-popular-configs.json miniapp/src/data/common-spirit-config.json` 重建内置预设及压缩载荷，再运行 `npm --prefix miniapp test -- --run tests/common-spirit-config.test.js`；这是预设来源版本，不代表升级小程序独立版本。
 - [ ] 不修改任何测试或门禁脚本里的版本字符串与发布文案；它们全部从上述来源派生，出现需要手改的断言就是回归，应改断言的取数方式而不是改字面量。
 
 ## 通用门禁
