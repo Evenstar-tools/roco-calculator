@@ -92,11 +92,12 @@ test("shows the team label on desktop and keeps the mobile header compact", asyn
   expect((await teamAction.boundingBox()).width).toBeGreaterThan(38);
 
   await page.setViewportSize({ height: 844, width: 390 });
-  await expect(teamLabel).toBeVisible();
+  await expect(teamLabel).toBeHidden();
+  await expect(teamAction).toHaveAccessibleName("打开队伍");
   await expect(teamLabel).toHaveText("队伍");
   const mobileTeamBox = await teamAction.boundingBox();
-  expect(mobileTeamBox.width).toBe(42);
-  expect(mobileTeamBox.height).toBe(46);
+  expect(mobileTeamBox.width).toBe(36);
+  expect(mobileTeamBox.height).toBe(38);
   expect(await page.locator(".app-header--compact").evaluate(
     (node) => node.scrollWidth <= node.clientWidth,
   )).toBe(true);
@@ -181,7 +182,7 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
   });
   await expect(ability).toBeVisible();
   await expect(ability.getByRole("slider", { name: "速度目标轴" })).toHaveCount(0);
-  await ability.locator(".ability-speed-reference > summary").click();
+  await expect(ability.locator(".ability-speed-reference")).toHaveCount(0);
   await expect(ability.getByRole("region", { name: "速度排行榜横轴" })).toBeVisible();
   await ability.getByLabel("速度目标口径").click();
   await expect(ability.getByRole("checkbox", { name: "极速" })).toBeChecked();
@@ -470,8 +471,8 @@ test("keeps the full ranking spirit cell aligned at desktop width", async ({
     fullPage: false,
     path: "artifacts/web-ux-team-ability-fix/ability-overview-1424.png",
   });
-  await drawer.locator(".ability-speed-reference > summary").click();
   const speedAxis = drawer.getByRole("region", { name: "速度排行榜横轴" });
+  await expect(speedAxis).toBeVisible();
   await speedAxis.scrollIntoViewIfNeeded();
   const axisBefore = await speedAxis.evaluate((node) => ({
     left: node.scrollLeft,

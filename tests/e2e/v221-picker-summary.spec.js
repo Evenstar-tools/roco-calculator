@@ -89,6 +89,7 @@ for (const width of [320,390,700,1024,1424]) for (const theme of ['light','dark'
     await page.screenshot({path:`${out}/summary-${width}-${theme}-after.png`,animations:'disabled'});
     writeFileSync(`${out}/summary-${width}-${theme}.json`,JSON.stringify({box:await summary.boundingBox(),parts},null,2));
     // Editing the draft must not silently change the saved-configuration baseline.
+    await drawer.getByText('手动微调',{exact:true}).click();
     const saved=await summary.innerText();await drawer.getByLabel('能力分析性格').selectOption('grounded');await expect(summary).toHaveText(saved, { useInnerText: true });
   });
 }

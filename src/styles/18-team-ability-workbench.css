@@ -515,6 +515,28 @@
   .ability-current-summary .is-primary b { font-size: 18px; }
 }
 
+.ability-manual {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-soft);
+}
+
+.ability-manual > summary {
+  min-height: 40px;
+  padding: 10px 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.ability-manual > summary span { margin-left: 8px; }
+.ability-manual > summary:focus-visible { outline: 2px solid var(--selection-border); outline-offset: -2px; }
+.ability-manual[open] > summary { border-bottom: 1px solid var(--border); }
+.ability-manual > .ability-draft-controls { border: 0; }
+
 .ability-draft-controls {
   display: grid;
   min-width: 0;
@@ -792,6 +814,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.ability-speed__comparison[data-relation] { font-weight: 700; white-space: normal; line-height: 1.5; }
+.ability-speed__comparison[data-relation="faster"] { color: var(--damage-safe); }
+.ability-speed__comparison[data-relation="equal"] { color: var(--damage-warning); }
+.ability-speed__comparison[data-relation="slower"] { color: var(--damage-danger); }
 
 .ability-speed__controls {
   display: flex;
@@ -1099,12 +1126,13 @@
   scroll-behavior: smooth;
   scrollbar-color: var(--border-strong) transparent;
   scrollbar-width: thin;
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
   user-select: none;
 }
 
 .ability-speed__viewport:active {
   cursor: grabbing;
+  scroll-behavior: auto;
 }
 
 .ability-speed__viewport:focus-visible {
@@ -2784,9 +2812,28 @@
   box-sizing: border-box;
 }
 
-/* Approved V1 flow: keep controls readable; make the recommendation the main content. */
-.ability-speed-reference > summary { padding: 10px 12px; min-height: 44px; box-sizing: border-box; color: var(--text-muted); cursor: pointer; font-size: 12px; }
-.ability-speed-reference[open] > summary { border-bottom: 1px solid var(--border); }
+/* 融合布局：速度轴常显，微调可收起，三种耐久方案保持横向对照。 */
+.team-workbench .ability-speed__controls {
+  flex: 0 1 570px;
+  width: auto;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+.team-workbench .ability-speed__profile-picker > span,
+.team-workbench .ability-speed__target-picker > span:not(.ability-speed__selected-target) { display: none; }
+.team-workbench .ability-speed__profile-picker summary { min-height: 36px; }
+.team-workbench .ability-speed__target-input input[type="search"] { min-height: 36px; }
+.ability-speed__table-toggle { flex-wrap: wrap; }
+.ability-speed__table-toggle small { line-height: 1.5; }
+.ability-build-card dl > div { flex-wrap: wrap; }
+@media (min-width: 761px) {
+  .ability-speed .ability-speed__selected-target { display: none; }
+}
+@media (max-width: 760px) {
+  .team-workbench .ability-speed__controls { flex-basis: 100%; grid-template-columns: minmax(0, 1fr); }
+  .team-workbench .ability-speed__profile-picker summary,
+  .team-workbench .ability-speed__target-input input[type="search"],
+  .ability-manual > summary { min-height: 44px; }
+}
 @media (min-width: 1200px) {
   .team-workbench[data-compact-roster="true"] > .team-drawer__content { grid-template-columns: 160px minmax(0, 1fr); gap: 12px; }
   .team-workbench[data-compact-roster="true"] .team-drawer__editor-pane { padding-left: 12px; }
@@ -2800,27 +2847,4 @@
   .team-roster__current-actions > summary { font-size: 12px; line-height: 40px; cursor: pointer; }
   .team-roster__current-actions .team-slot__actions { display: flex; gap: 6px; }
   .team-roster__current-actions .team-slot__actions button { flex: 1; min-height: 40px; }
-  .team-workbench .ability-workbench[role="region"] { display: grid; grid-template-columns: minmax(270px,300px) minmax(0,1fr); align-items: start; gap: 12px; }
-  .team-workbench .ability-workbench[role="region"] > .ability-current-summary { grid-column: 1 / -1; grid-row: 1; }
-  .team-workbench .ability-workbench[role="region"] > .ability-draft-controls { grid-column: 1; grid-row: 3; display: block; }
-  .team-workbench .ability-workbench[role="region"] > .ability-speed { grid-column: 1; grid-row: 2; }
-  .team-workbench .ability-workbench[role="region"] > .ability-builds { grid-column: 2; grid-row: 2 / 4; }
-  .team-workbench .ability-workbench[role="region"] > .ability-ranking-preview { grid-column: 1 / -1; }
-  .team-workbench .ability-workbench[role="region"] > .ability-draft-status,
-  .team-workbench .ability-workbench[role="region"] > .ability-rule-warning { grid-column: 1 / -1; }
-  .team-workbench .ability-draft-nature { border-left: 0; border-top: 1px solid var(--border); padding: 10px 12px; }
-  .team-workbench .ability-build-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  .team-workbench .ability-build-card:first-child { grid-column: 1 / -1; }
-  .team-workbench .ability-build-card:first-child dl { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px 16px; }
-  .team-workbench .ability-build-card dl > div { flex-wrap: wrap; }
-}
-@media (max-width: 1199px) {
-  .team-workbench .ability-workbench[role="region"] { display: flex; flex-direction: column; gap: 12px; }
-  .team-workbench .ability-workbench[role="region"] > .ability-current-summary { order: 0; }
-  .team-workbench .ability-workbench[role="region"] > .ability-speed { order: 1; }
-  .team-workbench .ability-workbench[role="region"] > .ability-builds { order: 2; }
-  .team-workbench .ability-workbench[role="region"] > .ability-draft-controls { order: 3; }
-  .team-workbench .ability-workbench[role="region"] > .ability-ranking-preview { order: 4; }
-  .team-workbench .ability-workbench[role="region"] > .ability-draft-status,
-  .team-workbench .ability-workbench[role="region"] > .ability-rule-warning { order: -1; }
 }

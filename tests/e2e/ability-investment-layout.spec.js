@@ -17,6 +17,7 @@ async function open(page,width,theme){
  if(await page.locator('html').getAttribute('data-theme')!==theme)await page.getByRole('button',{name:'切换主题',exact:true}).click();
  await page.getByRole('button',{name:'打开队伍',exact:true}).click();
  await page.getByRole('dialog',{name:'队伍',exact:true}).getByRole('button',{name:'能力分析',exact:true}).click();
+ await page.getByText('手动微调',{exact:true}).click();
  const grid=page.locator('.ability-investments');
  await grid.scrollIntoViewIfNeeded();
  await page.evaluate(()=>document.fonts.ready);

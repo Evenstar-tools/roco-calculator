@@ -374,6 +374,7 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
         <MagnifyingGlass aria-hidden="true" size={15} />
         <input
           aria-label="速度目标精灵"
+          title={speedTargetLabel(selected)}
           onChange={(event) => setTargetInput(event.target.value)}
           onFocus={() => setTargetInput("")}
           onKeyDown={(event) => {
@@ -445,8 +446,11 @@ function SpeedRail({
 }) {
   const railRef = useRef(null);
   const selectedTargetRef = useRef(null);
+  const currentMarkerRef = useRef(null);
   const dragRef = useRef({ active: false, moved: false, scrollLeft: 0, startX: 0 });
   const selected = targets.find((target) => target.id === targetId) ?? targets[0];
+  const relation = !selected ? null : currentSpeed > selected.speed ? "faster" : currentSpeed === selected.speed ? "equal" : "slower";
+  const comparisonLabel = { faster: "可以先手", equal: "同速需拼速", slower: "无法先手" }[relation];
   const targetGroups = useMemo(() => groupSpeedTargets(targets), [targets]);
   const modifierGroups = Object.values(modifiers.reduce((groups, modifier) => {
     (groups[modifier.groupId] ??= []).push(modifier);
@@ -469,33 +473,54 @@ function SpeedRail({
     const viewport = railRef.current;
     const target = selectedTargetRef.current;
     if (!viewport || !target) return;
-    viewport.scrollTo?.({
-      behavior: "smooth",
-      left: target.offsetLeft - (viewport.clientWidth - target.offsetWidth) / 2,
-    });
-  }, [profileIds, selected?.id]);
+    function centerMarkers() {
+      const current = currentMarkerRef.current;
+      const left = Math.min(target.offsetLeft, current?.offsetLeft ?? target.offsetLeft);
+      const right = Math.max(target.offsetLeft + target.offsetWidth, current ? current.offsetLeft + current.offsetWidth : 0);
+      // 相邻时同时展示本体与目标；相距太远时定位目标，避免两个标记都在屏外。
+      const center = right - left + 32 <= viewport.clientWidth
+        ? (left + right) / 2
+        : target.offsetLeft + target.offsetWidth / 2;
+      viewport.scrollTo?.({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+        left: center - viewport.clientWidth / 2,
+      });
+    }
+    centerMarkers();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(centerMarkers);
+    observer?.observe(viewport);
+    return () => observer?.disconnect();
+  }, [currentSpeed, profileIds, selected?.id]);
 
   function startDrag(event) {
-    if (event.button !== 0) return;
+    if (event.button !== 0 || event.pointerType === "touch") return;
     dragRef.current = {
       active: true,
       moved: false,
       scrollLeft: railRef.current?.scrollLeft ?? 0,
       startX: event.clientX,
     };
-    event.currentTarget.setPointerCapture?.(event.pointerId);
   }
 
   function moveDrag(event) {
     if (!dragRef.current.active || !railRef.current) return;
+    if (event.buttons === 0) {
+      dragRef.current.active = false;
+      return;
+    }
     const delta = event.clientX - dragRef.current.startX;
-    if (Math.abs(delta) > 4) dragRef.current.moved = true;
+    if (Math.abs(delta) <= 4 && !dragRef.current.moved) return;
+    // 普通点击交给目标按钮，只有实际拖动才接管指针。
+    if (!dragRef.current.moved) event.currentTarget.setPointerCapture?.(event.pointerId);
+    dragRef.current.moved = true;
     railRef.current.scrollLeft = dragRef.current.scrollLeft - delta;
   }
 
   function endDrag(event) {
     dragRef.current.active = false;
-    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
   }
 
   function selectTarget(targetIdToSelect) {
@@ -512,7 +537,12 @@ function SpeedRail({
         <span>1</span>
         <div>
           <h4>速度目标</h4>
-          <small>{SPEED_STATUS_LABELS[speedAnalysis?.status] ?? "选择目标后分析"}</small>
+          <small className="ability-speed__comparison" data-relation={relation}>
+            {selected ? `当前 ${formatNumber(currentSpeed)} / 目标 ${formatNumber(selected.speed)} · ${comparisonLabel}` : "选择目标后分析"}
+          </small>
+          {speedAnalysis && speedAnalysis.status !== "CURRENTLY_REACHED" ? (
+            <small>{SPEED_STATUS_LABELS[speedAnalysis.status]}</small>
+          ) : null}
         </div>
         <div className="ability-speed__controls">
           <SpeedProfilePicker
@@ -576,10 +606,6 @@ function SpeedRail({
           </strong>
         </div>
       ) : null}
-      <details className="ability-speed-reference" onToggle={(event) => {
-        if (event.currentTarget.open) requestAnimationFrame(() => selectedTargetRef.current?.scrollIntoView?.({ block: "nearest", inline: "center" }));
-      }}>
-        <summary>速度参考与断点</summary>
       <div
         aria-label="速度排行榜横轴"
         className="ability-speed__viewport"
@@ -602,7 +628,7 @@ function SpeedRail({
         <div className="ability-speed__rail" role="list" aria-label="速度排行断点">
           <span aria-hidden="true" className="ability-speed__line" />
           {railItems.map((item) => item.kind === "current" ? (
-            <div className="ability-speed__marker is-current" key={item.id} role="listitem">
+            <div className="ability-speed__marker is-current" key={item.id} ref={currentMarkerRef} role="listitem">
               <b>{formatNumber(item.speed)}</b>
               <span>当前配置</span>
             </div>
@@ -627,7 +653,6 @@ function SpeedRail({
           ))}
         </div>
       </div>
-      </details>
       <button
         className="ability-speed__table-toggle"
         onClick={onOpenOverview}
@@ -635,7 +660,7 @@ function SpeedRail({
         type="button"
       >
         <span>速度一览</span>
-        <small>{targetGroups.length}档</small>
+        <small>{targetGroups.length}档 · 同优先度，仅比较速度</small>
       </button>
     </section>
   );
@@ -1314,21 +1339,15 @@ export function AbilityWorkbench({
   const displayedBuilds = BUILD_OBJECTIVES.map((objective) => ({
     key: objective.key, objective, result: recommendations?.results?.[objective.key] ?? null,
   }));
-
-  return (
-    <div
-      aria-label="能力分析"
-      className="ability-workbench"
-      ref={scrollRef}
-      role="region"
-    >
-      <CurrentSummary durability={baselineDurability} panel={baselinePanel} />
-      {dirty ? (
-        <p className="ability-draft-status" role="status">
-          草稿未应用
-        </p>
-      ) : null}
-
+  const manualControls = (
+    <details className="ability-manual" open={!validation.valid || undefined}>
+      <summary>
+        <strong>手动微调</strong>
+        <span>{getNature(draft.natureId).name} · {INVESTMENT_STATS
+          .filter(({ key }) => Number(draft.displayIvs[key]) > 0)
+          .map(({ key, label }) => `${label} ${draft.displayIvs[key]}`)
+          .join(" / ") || "无个体投入"}</span>
+      </summary>
       <div className="ability-draft-controls">
         <InvestmentPicker
           onChange={updateInvestment}
@@ -1346,26 +1365,45 @@ export function AbilityWorkbench({
           />
         </label>
       </div>
+    </details>
+  );
+
+  return (
+    <div
+      aria-label="能力分析"
+      className="ability-workbench"
+      ref={scrollRef}
+      role="region"
+    >
+      <CurrentSummary durability={baselineDurability} panel={baselinePanel} />
+      {dirty ? (
+        <p className="ability-draft-status" role="status">
+          草稿未应用
+        </p>
+      ) : null}
 
       {!validation.valid ? (
-        <div className="ability-rule-warning" role="alert">
-          <Info aria-hidden="true" size={19} weight="fill" />
-          <div>
-            <strong>历史配置不符合个体值分配规则</strong>
-            <span>原值已保留，计算暂停。请在草稿中明确改为最多三项 60。</span>
+        <>
+          <div className="ability-rule-warning" role="alert">
+            <Info aria-hidden="true" size={19} weight="fill" />
+            <div>
+              <strong>历史配置不符合个体值分配规则</strong>
+              <span>原值已保留，计算暂停。请在草稿中明确改为最多三项 60。</span>
+            </div>
+            <button
+              onClick={() =>
+                updateDraft({
+                  ...draft,
+                  displayIvs: Object.fromEntries(INVESTMENT_STATS.map(({ key }) => [key, 0])),
+                })
+              }
+              type="button"
+            >
+              清空个体值并重选
+            </button>
           </div>
-          <button
-            onClick={() =>
-              updateDraft({
-                ...draft,
-                displayIvs: Object.fromEntries(INVESTMENT_STATS.map(({ key }) => [key, 0])),
-              })
-            }
-            type="button"
-          >
-            清空个体值并重选
-          </button>
-        </div>
+          {manualControls}
+        </>
       ) : (
         <>
           <SpeedRail
@@ -1400,6 +1438,7 @@ export function AbilityWorkbench({
             targets={speedTargets}
           />
 
+          {manualControls}
           <section aria-label="耐久方案对比" className="ability-section ability-builds">
             <header className="ability-section__title">
               <span>2</span>

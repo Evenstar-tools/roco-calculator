@@ -42,6 +42,7 @@ test("three previews share one ranking and disclosure does not rebuild calculati
   expect(speed.createSpeedSpecialTargets).toHaveBeenCalledTimes(specialCalls);
   expect(analysis.recommendDurabilityBuilds).toHaveBeenCalledTimes(solverCalls);
   expect(ranking.createDurabilityRanking).toHaveBeenCalledTimes(1);
+  fireEvent.click(screen.getByText("手动微调"));
   fireEvent.change(screen.getByRole("combobox", { name: "能力分析性格" }), { target: { value: "grounded" } });
   expect(analysis.recommendDurabilityBuilds.mock.calls.length).toBeGreaterThan(solverCalls);
   expect(speed.createSpeedTargets).toHaveBeenCalledTimes(speedCalls);

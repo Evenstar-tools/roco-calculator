@@ -107,6 +107,7 @@ test("满三项后可点第四项并明确替换一个已选个体值", async ()
     />,
   );
 
+  await user.click(screen.getByText("手动微调"));
   const investments = screen.getByRole("group", { name: "个体值分配" });
   await user.click(within(investments).getByRole("button", { name: /选择物防/ }));
   const replacement = screen.getByRole("dialog", { name: "替换个体值" });
@@ -137,6 +138,7 @@ test("个体值分配同时显示属性图标、实际面板值和个体值", ()
     />,
   );
 
+  fireEvent.click(screen.getByText("手动微调"));
   const speed = within(screen.getByRole("group", { name: "个体值分配" }))
     .getByRole("button", { name: /取消速度个体值/ });
   expect(within(speed).getByLabelText("速度实际值")).toHaveTextContent("225");
@@ -859,6 +861,7 @@ test("rebuilds the draft when the same member receives an external configuration
   await waitFor(() =>
     expect(screen.getByRole("combobox", { name: "速度目标精灵" })).toHaveValue(selectedTarget),
   );
+  fireEvent.click(screen.getByText("手动微调"));
   const investments = screen.getByRole("group", { name: "个体值分配" });
   expect(within(investments).getByRole("button", { name: /取消物防个体值/ })).toBeEnabled();
   expect(within(investments).getByRole("button", { name: /取消魔防个体值/ })).toBeEnabled();

@@ -65,7 +65,7 @@ export function AppHeader({
             洛克计算器 · <span className="app-header__season-title">S4「月涌狂想」</span>
           </span>
           <span aria-hidden="true" className="app-header__title-short">
-            <span className="app-header__season-title">{portrait ? "洛克计算器" : "S4「月涌狂想」"}</span>
+            <span className="app-header__season-title">S4「月涌狂想」</span>
           </span>
         </h1>}
       </div>

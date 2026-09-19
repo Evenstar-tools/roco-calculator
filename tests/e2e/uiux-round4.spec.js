@@ -12,6 +12,9 @@ async function openAbility(page) {
   await page.getByRole("button", { name: "新建六人队伍" }).click();
   await page.getByRole("button", { name: "用当前攻击方填入1号位" }).click();
   await page.getByRole("button", { name: "能力分析", exact: true }).click();
+  if (await page.locator(".ability-manual").getAttribute("open") === null) {
+    await page.getByText("手动微调", { exact: true }).click();
+  }
 }
 
 for (const width of [320, 390, 1440]) {

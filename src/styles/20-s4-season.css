@@ -223,3 +223,27 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
     opacity: 0.35;
   }
 }
+
+/* 竖屏保留完整赛季名，图标操作同高，不挤掉标题末尾。 */
+@media (max-width: 620px) and (orientation: portrait) {
+  .app-header:not(.app-header--tool) {
+    min-height: 48px;
+    padding: 3px 8px;
+    gap: 6px;
+  }
+  .app-header:not(.app-header--tool) .app-header__actions { flex: none; gap: 2px; }
+  .app-header:not(.app-header--tool) .team-action {
+    width: 36px;
+    min-width: 36px;
+    height: 38px;
+    min-height: 38px;
+    padding: 0;
+  }
+  .app-header:not(.app-header--tool) .team-action span { display: none; }
+  .app-header:not(.app-header--tool) .icon-action {
+    width: 34px;
+    min-width: 34px;
+    height: 38px;
+    min-height: 38px;
+  }
+}

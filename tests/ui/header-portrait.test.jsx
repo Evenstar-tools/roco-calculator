@@ -10,6 +10,7 @@ test("仅竖屏合并模式按钮，点击双向切换，旋转恢复双按钮",
   vi.stubGlobal("matchMedia", () => media);
   function Harness() { const [mode, setMode] = useState("compact"); return <AppHeader viewMode={mode} onViewModeChange={setMode} />; }
   render(<Harness />);
+  expect(document.querySelector(".app-header__title-short")).toHaveTextContent("S4「月涌狂想」");
   const group = within(screen.getByRole("group", { name: "界面模式" }));
   expect(group.getAllByRole("button")).toHaveLength(1);
   expect(group.getByRole("button")).toHaveStyle({ height: "38px", minHeight: "38px" });

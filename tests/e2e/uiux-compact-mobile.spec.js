@@ -25,7 +25,9 @@ test("keeps narrow header labels and long spirit identity controls readable at 3
   await selectSpirit(page, "防御方", "水灵");
 
   await expect(page.locator(".view-mode-switch button span").first()).toBeVisible();
-  await expect(page.locator(".team-action:not(.toolbox-trigger) span")).toBeVisible();
+  await expect(page.getByRole("button", { name: "打开队伍", exact: true })).toBeVisible();
+  await expect(page.locator(".team-action:not(.toolbox-trigger) span")).toBeHidden();
+  await expect(page.locator(".app-header__title-short")).toHaveText("S4「月涌狂想」");
   const pickerTopDelta = await page.locator(".versus-grid").evaluate((grid) => {
     const attack = grid.querySelector(".spirit-picker--attack .spirit-picker__eyebrow").getBoundingClientRect();
     const defense = grid.querySelector(".spirit-picker--defense .spirit-picker__eyebrow").getBoundingClientRect();
@@ -333,12 +335,12 @@ test("keeps the compact workflow usable at 390px", async ({ page }) => {
     .boundingBox();
   expect(teamBox.height).toBe(themeBox.height);
   expect(teamBox.y).toBe(themeBox.y);
-  expect(teamBox.width).toBe(42);
-  expect(themeBox.width).toBe(38);
-  expect(teamBox.height).toBe(46);
-  expect(headerMenuBox.height).toBe(46);
+  expect(teamBox.width).toBe(36);
+  expect(themeBox.width).toBe(34);
+  expect(teamBox.height).toBe(38);
+  expect(headerMenuBox.height).toBe(38);
   expect(headerMenuBox.y).toBe(teamBox.y);
-  await expect(page.locator(".team-action:not(.toolbox-trigger) span")).toBeVisible();
+  await expect(page.locator(".team-action:not(.toolbox-trigger) span")).toBeHidden();
   expect(await page.locator(".app-header--compact").evaluate(
     (node) => node.scrollWidth <= node.clientWidth,
   )).toBe(true);
@@ -434,8 +436,8 @@ test("keeps the compact workflow usable at 390px", async ({ page }) => {
 
   const teamButton = page.getByRole("button", { name: "打开队伍" });
   const teamButtonBox = await teamButton.boundingBox();
-  expect(teamButtonBox.height).toBe(46);
-  expect(teamButtonBox.width).toBe(42);
+  expect(teamButtonBox.height).toBe(38);
+  expect(teamButtonBox.width).toBe(36);
 
   await teamButton.click();
   const drawer = page.getByRole("dialog", { name: "队伍" });
