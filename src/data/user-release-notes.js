@@ -235,7 +235,7 @@ export const USER_RELEASE_NOTES = Object.freeze([
     title: "S4同族形态与速度线",
     whatsNew: S4_FEATURE_INTRO,
     features: ["同族切形态保留威力、能力和特性层数，支持撤回与分享，不覆盖原预设。"],
-    fixes: ["速度线恢复横向全宽，统一配置摘要字号，窄屏保留赛季标题。"],
+    fixes: ["统一速度摘要字号，放大萌化提示；仅窄屏合并模式按钮，宽屏保留双按钮。"],
   }),
   createRelease({
     version: "v2.2.1",

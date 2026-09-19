@@ -50,3 +50,21 @@ test("Escape 取消不重置配置，其他选择器不启用此功能", () => {
   fireEvent.keyDown(screen.getByRole("combobox"), { key: "Escape" });
   expect(actions.onSelect).not.toHaveBeenCalled();
 });
+
+test.each([["气球猫", 1], ["逗逗", 2], ["梦想三三", 0], ["奇梦咪", 0]])(
+  "切到%s仅显示萌化图标与数字%i，不把特性层数当萌化层数",
+  (name, layers) => {
+    const form = snapshot.spirits.find((spirit) => spirit.fullName === name);
+    setup({ selected: form, formSide: { spiritId: selected.id, battleForm: { spiritId: form.id, branchId: selected.id } } });
+    const badge = screen.getByLabelText(`萌化 ${layers} 层`);
+    expect(badge).toHaveTextContent(String(layers));
+    expect(badge.querySelector("img")).toHaveAttribute("src", "/assets/elements/cute.png");
+    expect(badge.closest(".spirit-card__form-note")).toHaveTextContent(`${layers} · 配置已保留`);
+    expect(screen.queryByText(/本场形态/)).not.toBeInTheDocument();
+  },
+);
+
+test("普通载入不显示萌化提示", () => {
+  setup();
+  expect(document.querySelector(".spirit-card__form-note")).toBeNull();
+});

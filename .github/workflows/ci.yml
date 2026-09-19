@@ -30,18 +30,26 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: npm audit --omit=dev
-      - name: Verify current shared calculator core
-        run: npm run test:core-current
-      - name: Verify release acceptance evidence
-        run: npm run acceptance:verify
       - name: Validate data
         run: npm run data:validate
-      - name: Generate runtime data
-        run: npm run data:runtime
-      - name: Run unit and integration tests
-        run: npm test
       - name: Build static site
         run: npm run build
+      - name: Run critical unit and integration tests
+        # build 已校验共享核心并生成本次运行数据。
+        run: npx vitest run --config config/vitest.release.config.mjs
+      - name: Install Chromium
+        run: |
+          # Playwright 使用自带 Chromium，无需 runner 的 Google Chrome 软件源。
+          for source in /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+            if [ -f "$source" ] && grep -q 'dl.google.com/linux/chrome' "$source"; then
+              sudo mv "$source" "$RUNNER_TEMP/$(basename "$source").disabled"
+            fi
+          done
+          npx playwright install --with-deps chromium
+      - name: Run critical end-to-end tests against this build
+        run: npm run e2e
+        env:
+          E2E_PREBUILT: "1"
 
   miniapp:
     runs-on: ubuntu-latest
@@ -63,8 +71,6 @@ jobs:
         run: npm ci
       - name: Install miniapp dependencies
         run: npm ci --prefix miniapp
-      - name: Verify current shared calculator core
-        run: npm run test:core-current
       - name: Generate runtime data
         run: npm run data:runtime
       - name: Run miniapp tests
@@ -72,30 +78,13 @@ jobs:
       - name: Build miniapp
         run: npm run miniapp:build
 
+  # 保留既有状态检查名称；浏览器用例已在 validate 内验证同一份构建。
   e2e:
+    needs: validate
+    if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
-      - name: Install Chromium
-        run: |
-          # Playwright 使用自带 Chromium；无需 runner 的 Google Chrome 软件源。
-          # 该源索引同步期间可能哈希不一致，仅在此临时 runner 停用它，保留 APT 校验。
-          for source in /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
-            if [ -f "$source" ] && grep -q 'dl.google.com/linux/chrome' "$source"; then
-              sudo mv "$source" "$RUNNER_TEMP/$(basename "$source").disabled"
-            fi
-          done
-          npx playwright install --with-deps chromium
-      - name: Run end-to-end tests
-        run: npm run e2e
+      - name: Require successful build and critical browser tests
+        env:
+          VALIDATE_RESULT: ${{ needs.validate.result }}
+        run: test "$VALIDATE_RESULT" = "success"

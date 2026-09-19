@@ -24,9 +24,9 @@ export function AppHeader({
   toolbox,
 }) {
   const [dark, setDark] = useState(() => readThemeSetting() === "dark");
-  const [portrait, setPortrait] = useState(() => window.matchMedia("(orientation: portrait)").matches);
+  const [portrait, setPortrait] = useState(() => window.matchMedia("(max-width: 620px) and (orientation: portrait)").matches);
   useEffect(() => {
-    const media = window.matchMedia("(orientation: portrait)");
+    const media = window.matchMedia("(max-width: 620px) and (orientation: portrait)");
     const update = () => setPortrait(media.matches);
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);

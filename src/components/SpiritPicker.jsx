@@ -5,6 +5,7 @@ import { TraitHint } from "./TraitHint.jsx";
 import { EntityChangeHint } from "./EntityChangeHint.jsx";
 import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 import { getBattleFormChoices } from "../domain/battle-form.js";
+import { ElementIcon } from "./ElementIcon.jsx";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -120,6 +121,9 @@ export function SpiritPicker({
   const resolvedFavoriteState =
     favoriteState ?? (favorite ? "manual" : null);
   const family = useMemo(() => formSide ? getBattleFormChoices(spirits, formSide) : [], [spirits, formSide]);
+  const formStages = ["一阶", "二阶", "三阶", "首领"].filter((stage) => family.some((spirit) => spirit.stage === stage));
+  const sourceStage = family.find((spirit) => spirit.id === formSide?.spiritId)?.stage;
+  const moeLayers = Math.max(0, formStages.indexOf(sourceStage) - formStages.indexOf(selected?.stage));
   const choosingForm = Boolean(onFormSelect && !searching && family.length > 1);
   const browsingPresets = presetBrowse.enabled && !searching && !choosingForm;
   const presetSpirits = useMemo(() => spirits
@@ -464,7 +468,12 @@ export function SpiritPicker({
                 {onOpenDeer && <button className="spirit-card__deer-entry" type="button" onClick={onOpenDeer}>电鹿斩杀线 →</button>}
               </p>
             )}
-            {formSide?.battleForm ? <small className="spirit-card__form-note">本场形态 · 配置已保留</small> : null}
+            {formSide?.battleForm ? <small className="spirit-card__form-note">
+              <span className="spirit-card__moe-count" role="img" aria-label={`萌化 ${moeLayers} 层`} title={`萌化 ${moeLayers} 层：相对初始形态的降阶数`}>
+                <ElementIcon type="萌" size={16} /><span>{moeLayers}</span>
+              </span>
+              <span> · 配置已保留</span>
+            </small> : null}
           </div>
           {showFavorite ? (
             <button

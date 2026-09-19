@@ -61,7 +61,9 @@ describe("acceptance matrix release gate", () => {
     expect(packageJson.scripts["acceptance:verify"]).not.toMatch(
       /npm run (?:build|desktop:pack)/,
     );
-    expect(ci).toContain("run: npm run acceptance:verify");
+    // CI 通过 build 继承验收门禁，不再单独重复运行。
+    expect(ci.match(/run: npm run build\b/g)).toHaveLength(1);
+    expect(ci).not.toContain("run: npm run acceptance:verify");
   });
 
   test("accepts the current repository matrix", () => {

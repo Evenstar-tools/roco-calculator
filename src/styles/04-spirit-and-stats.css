@@ -150,10 +150,20 @@
 }
 
 .spirit-card__form-note {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.5;
+}
+
+.spirit-card__moe-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 
 .spirit-picker__options img {
