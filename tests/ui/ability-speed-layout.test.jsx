@@ -61,6 +61,23 @@ test("非法历史分配自动展开微调，保留修正入口", () => {
   expect(screen.getByLabelText("能力分析性格")).toBeVisible();
 });
 
+test("速度轴拖动后首次键盘激活不被吞掉，拖动产生的鼠标点击仍被拦截", () => {
+  open();
+  const rail = screen.getByRole("region", { name: "速度排行榜横轴" });
+  const target = within(rail).getByRole("listitem", { name: "选择速度目标当前精灵，速度260", exact: true });
+  const drag = () => {
+    fireEvent(rail, new MouseEvent("pointerdown", { bubbles: true, button: 0, buttons: 1, clientX: 120 }));
+    fireEvent(rail, new MouseEvent("pointermove", { bubbles: true, buttons: 1, clientX: 200 }));
+    fireEvent(rail, new MouseEvent("pointerup", { bubbles: true, button: 0, clientX: 200 }));
+  };
+  drag();
+  fireEvent.click(target, { detail: 1 });
+  expect(target).not.toHaveAttribute("aria-current", "true");
+  drag();
+  fireEvent.click(target, { detail: 0 });
+  expect(target).toHaveAttribute("aria-current", "true");
+});
+
 test("屏幕变化重新定位速度标记，卸载清理观察器", () => {
   let resize;
   const disconnect = vi.fn();

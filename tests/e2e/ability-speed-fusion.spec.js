@@ -70,9 +70,9 @@ for (const width of [320, 390, 1440, 3840]) for (const theme of ["light", "dark"
     await expect(page.locator(".ability-speed__comparison")).toContainText("目标 194 · 无法先手");
     const beforeDrag = await rail.evaluate(node => node.scrollLeft);
     const bounds = await rail.boundingBox();
-    await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + 20);
+    await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + 4);
     await page.mouse.down();
-    await page.mouse.move(bounds.x + bounds.width / 2 + 80, bounds.y + 20, { steps: 5 });
+    await page.mouse.move(bounds.x + bounds.width / 2 + 80, bounds.y + 4, { steps: 5 });
     await page.mouse.up();
     expect(await rail.evaluate(node => node.scrollLeft)).toBeLessThan(beforeDrag - 60);
     await expect(page.locator(".ability-speed__comparison")).toContainText("目标 194 · 无法先手");
@@ -80,6 +80,10 @@ for (const width of [320, 390, 1440, 3840]) for (const theme of ["light", "dark"
     const beforeKey = await rail.evaluate(node => node.scrollLeft);
     await page.keyboard.press("ArrowLeft");
     await expect.poll(() => rail.evaluate(node => node.scrollLeft)).toBeLessThan(beforeKey - 100);
+    const keyboardTarget = rail.getByRole("listitem", { name: "选择速度目标白发路路，速度198", exact: true });
+    await keyboardTarget.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".ability-speed__comparison")).toContainText("目标 198 · 无法先手");
     await page.getByText("手动微调", { exact: true }).click();
     await expect(page.getByLabel("能力分析性格")).toBeVisible();
     await page.getByLabel("能力分析性格").selectOption("silent");

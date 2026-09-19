@@ -523,11 +523,11 @@ function SpeedRail({
     }
   }
 
-  function selectTarget(targetIdToSelect) {
-    if (dragRef.current.moved) {
-      dragRef.current.moved = false;
-      return;
-    }
+  function selectTarget(targetIdToSelect, event) {
+    const dragged = dragRef.current.moved;
+    dragRef.current.moved = false;
+    // 拦截拖动产生的指针点击，不吞掉键盘或辅助技术的激活。
+    if (dragged && event.detail !== 0) return;
     onTargetChange(targetIdToSelect);
   }
 
@@ -638,7 +638,7 @@ function SpeedRail({
               aria-label={`选择速度目标${item.target.name}，速度${item.target.speed}${item.target.specialLabel ? `，${item.target.specialLabel}` : ""}`}
               className={`ability-speed__marker${item.target.id === selected?.id ? " is-target" : ""}`}
               key={item.id}
-              onClick={() => selectTarget(item.target.id)}
+              onClick={(event) => selectTarget(item.target.id, event)}
               ref={item.target.id === selected?.id ? selectedTargetRef : null}
               role="listitem"
               type="button"
