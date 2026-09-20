@@ -6,6 +6,7 @@
 - [ ] 工作树无来源不明的大量生成文件。
 - [ ] 规则改动有来源、参数说明、失败测试和回退点。
 - [ ] 数据改动有精灵、技能、特性、学习集和素材差异统计。
+- [ ] 只要修改 `public/data/presets/pvp-popular-configs.json`（含同版本配招更新），必须用 `build-common-spirit-config.mjs` 同步小程序内置 JSON 与 payload，并运行 `verify-common-spirit-config.mjs` 和 `miniapp/tests/common-spirit-config.test.js`；不能仅在版本号变化时同步。此操作不代表小程序发布。
 - [ ] 未修改用户分享、收藏、配置库和队伍 schema；如有修改则已补迁移测试。
 
 ## 版本号单一事实来源
@@ -41,7 +42,7 @@ git diff --check
 
 ## Web
 
-2026-09-20 经确认的体积预算：总资源预警 15.5 MiB／阻断 16.5 MiB，JS gzip 320／348 KiB，CSS gzip 50／56 KiB，原始 JS 1088／1152 KiB，运行数据 1.5／1.625 MiB。本次仅按用户批准为异常与印记说明窗微调 JS/CSS 硬上限，预警不变。以 `scripts/verify-performance-budget.mjs` 为执行来源；超过预警先检查新增依赖和重复资源，超过硬上限停止发布，不自动扩容。小程序主包平台限制仍为 2 MiB。
+2026-09-20 经确认的体积预算：总资源预警 15.5 MiB／阻断 16.5 MiB，JS gzip 320／348.25 KiB，CSS gzip 50／56 KiB，原始 JS 1088／1152 KiB，运行数据 1.5／1.625 MiB。UX20 经用户本次批准将 JS 硬上限从 348 调至 348.25 KiB，CSS 与预警不变，后续体积另议。以 `scripts/verify-performance-budget.mjs` 为执行来源；超过预警先检查新增依赖和重复资源，超过硬上限停止发布，不自动扩容。小程序主包平台限制仍为 2 MiB。
 
 ```text
 npm run e2e
