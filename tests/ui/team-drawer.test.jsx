@@ -246,6 +246,32 @@ test("opens a temporary calculator-side analysis without creating a team slot", 
   );
 });
 
+test("成员配置与能力分析保持完整成员栏和每行攻防操作", async () => {
+  const user = userEvent.setup();
+  const onApply = vi.fn();
+  render(<DrawerHarness onApply={onApply} />);
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  fireEvent.change(screen.getByRole("combobox", { name: "成员精灵" }), {
+    target: { value: "音速犬" },
+  });
+  await user.click(screen.getByRole("option", { name: /音速犬/ }));
+  const roster = screen.getByRole("list", { name: "队伍成员" });
+  const configuredRoster = roster.innerHTML;
+
+  await user.click(screen.getByRole("button", { name: "能力分析", exact: true }));
+  expect(screen.getByRole("dialog", { name: "队伍" }))
+    .not.toHaveAttribute("data-compact-roster", "true");
+  expect(roster).not.toHaveClass("team-roster--compact");
+  expect(roster.innerHTML).toBe(configuredRoster);
+  expect(screen.queryByText("当前成员操作")).not.toBeInTheDocument();
+  await user.click(within(roster).getByRole("button", { name: "音速犬设为攻击方" }));
+  await user.click(within(roster).getByRole("button", { name: "音速犬设为防御方" }));
+  expect(onApply).toHaveBeenNthCalledWith(1, "attacker", expect.objectContaining({ spiritId: "sonic-dog" }));
+  expect(onApply).toHaveBeenNthCalledWith(2, "defender", expect.objectContaining({ spiritId: "sonic-dog" }));
+  await user.click(screen.getByRole("button", { name: "成员配置", exact: true }));
+  expect(roster.innerHTML).toBe(configuredRoster);
+});
+
 test("asks before discarding an unapplied ability draft", async () => {
   const confirmDiscard = vi.fn(() => false);
   vi.stubGlobal("confirm", confirmDiscard);
