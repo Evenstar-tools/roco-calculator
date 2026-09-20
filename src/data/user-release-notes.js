@@ -231,11 +231,11 @@ export const S4_FEATURE_INTRO = Object.freeze({
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v2.2.2",
-    date: "2026.09.19",
+    date: "2026.09.20",
     title: "S4同族形态与速度线",
     whatsNew: S4_FEATURE_INTRO,
-    features: ["同族切形态保留威力、能力和特性层数，支持撤回与分享，不覆盖原预设。"],
-    fixes: ["统一速度摘要字号，放大萌化提示；仅窄屏合并模式按钮，宽屏保留双按钮。"],
+    features: ["同族切形态可开启配置保留，三三家族默认开启，支持撤回与分享，不覆盖原预设。", "异常与印记配置旁增加小问号，可就地查看说明与计算范围。"],
+    fixes: ["统一速度摘要字号，放大萌化提示；仅窄屏合并模式按钮，宽屏保留双按钮。", "修复满血按钮与输入框不同步；点击精灵名可全选，删除后恢复默认候选列表。"],
   }),
   createRelease({
     version: "v2.2.1",

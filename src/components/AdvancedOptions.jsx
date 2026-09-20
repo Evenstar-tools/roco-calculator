@@ -1,6 +1,7 @@
 import { gainLabels, gainTermLabel, sourceLabel } from "../domain/gain-provenance.js";
 import { CaretDown, SlidersHorizontal } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
+import { StatusHelpButton, StatusReference } from "./StatusReference.jsx";
 import {
   MARK_DEFINITIONS,
   markDefinition,
@@ -484,14 +485,14 @@ function MarkSlot({
   );
 }
 
-function SideMarks({ label, marks, onChange, side, tone }) {
+function SideMarks({ label, marks, onChange, onHelp, side, tone }) {
   return (
     <fieldset
       aria-label={`${label}印记`}
       className="mark-side"
       data-tone={tone}
     >
-      <legend>{label}印记</legend>
+      <legend>{label}印记<StatusHelpButton label={`查看${label}印记说明`} onClick={onHelp} /></legend>
       <div className="mark-side__fields">
         <MarkSlot
           label="正面"
@@ -577,6 +578,7 @@ export function AdvancedOptions({
   open: controlledOpen,
 }) {
   const [internalOpen, setInternalOpen] = useState(false);
+  const [referenceGroup, setReferenceGroup] = useState(null);
   const advancedOptionsRef = useRef(null);
   const advancedToggleRef = useRef(null);
   const consumedAdvancedTopRequestRef = useRef(null);
@@ -709,6 +711,7 @@ export function AdvancedOptions({
               label="进攻方"
               marks={marks?.attacker}
               onChange={onMarkChange}
+              onHelp={() => setReferenceGroup("negative")}
               side="attacker"
               tone="attack"
             />
@@ -716,6 +719,7 @@ export function AdvancedOptions({
               label="防御方"
               marks={marks?.defender}
               onChange={onMarkChange}
+              onHelp={() => setReferenceGroup("negative")}
               side="defender"
               tone="defense"
             />
@@ -723,7 +727,7 @@ export function AdvancedOptions({
           {negativeStatusEnabled ? (
             <section aria-label="负面状态层数" className="negative-status-config">
               <header>
-                <strong>负面状态</strong>
+                <strong>负面状态<StatusHelpButton label="查看负面状态说明" onClick={() => setReferenceGroup("status")} /></strong>
                 <small>这里填行动前已有层数；点异常技能 1 次算本回合，2 次续到下回合</small>
               </header>
               <div>
@@ -745,6 +749,7 @@ export function AdvancedOptions({
           <FormulaAudit result={result} />
         </div>
       ) : null}
+      {referenceGroup && <StatusReference initialGroup={referenceGroup} onClose={() => setReferenceGroup(null)} />}
     </section>
   );
 }

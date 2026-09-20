@@ -41,7 +41,7 @@ git diff --check
 
 ## Web
 
-2026-09-14 经确认的体积预算：总资源预警 15.5 MiB／阻断 16.5 MiB，JS gzip 320／344 KiB，CSS gzip 50／55 KiB，原始 JS 1088／1152 KiB，运行数据 1.5／1.625 MiB。以 `scripts/verify-performance-budget.mjs` 为执行来源；超过预警先检查新增依赖和重复资源，超过硬上限停止发布，不自动扩容。小程序主包平台限制仍为 2 MiB。
+2026-09-20 经确认的体积预算：总资源预警 15.5 MiB／阻断 16.5 MiB，JS gzip 320／348 KiB，CSS gzip 50／56 KiB，原始 JS 1088／1152 KiB，运行数据 1.5／1.625 MiB。本次仅按用户批准为异常与印记说明窗微调 JS/CSS 硬上限，预警不变。以 `scripts/verify-performance-budget.mjs` 为执行来源；超过预警先检查新增依赖和重复资源，超过硬上限停止发布，不自动扩容。小程序主包平台限制仍为 2 MiB。
 
 ```text
 npm run e2e

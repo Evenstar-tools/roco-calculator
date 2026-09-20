@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { expect, test, vi } from "vitest";
 import { ResultRail } from "../../src/components/ResultRail.jsx";
 import { calculateNegativeStatusSettlement } from "../../src/domain/negative-status.js";
@@ -761,6 +762,37 @@ test("edits the defender current HP without leaving the result rail", async () =
 
   await user.click(screen.getByRole("button", { name: "恢复满血" }));
   expect(onCurrentHpChange).toHaveBeenLastCalledWith(434);
+});
+
+test.each(["hp", "percent"])("恢复满血同步 %s 输入和百分比状态", async (mode) => {
+  const user = userEvent.setup();
+  function ControlledRail() {
+    const [hp, setHp] = useState(result.defenderMaxHp);
+    const [percent, setPercent] = useState(100);
+    return <ResultRail
+      result={{ ...result, defenderHp: hp, defenderHpPercent: percent }}
+      onCurrentHpChange={setHp}
+      onCurrentHpPercentChange={setPercent}
+    />;
+  }
+  render(<ControlledRail />);
+  if (mode === "percent") {
+    await user.click(screen.getByRole("button", { name: "按百分比输入" }));
+  }
+  const input = screen.getByRole("spinbutton", {
+    name: mode === "percent" ? "防御方生命百分比" : "防御方当前生命",
+  });
+  await user.clear(input);
+  await user.type(input, "90");
+  expect(input).toHaveValue(90);
+  await user.click(screen.getByRole("button", { name: "恢复满血" }));
+  expect(input).toHaveValue(mode === "percent" ? 100 : result.defenderMaxHp);
+  await user.click(screen.getByRole("button", {
+    name: mode === "percent" ? "按当前值输入" : "按百分比输入",
+  }));
+  expect(screen.getByRole("spinbutton", {
+    name: mode === "percent" ? "防御方当前生命" : "防御方生命百分比",
+  })).toHaveValue(mode === "percent" ? result.defenderMaxHp : 100);
 });
 
 test("switches target HP to percentage input without committing an empty draft", async () => {

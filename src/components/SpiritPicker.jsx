@@ -114,6 +114,7 @@ export function SpiritPicker({
   const presetBrowse = usePresetBrowseMode();
   const [open, setOpen] = useState(false);
   const [searching, setSearching] = useState(false);
+  const [formConfigPreferences, setFormConfigPreferences] = useState({});
   const selectedName = selected?.fullName ?? "";
   const [query, setQuery] = useState(selectedName);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -121,11 +122,13 @@ export function SpiritPicker({
   const resolvedFavoriteState =
     favoriteState ?? (favorite ? "manual" : null);
   const family = useMemo(() => formSide ? getBattleFormChoices(spirits, formSide) : [], [spirits, formSide]);
+  const familyKey = family.map((spirit) => spirit.id).sort().join(",");
+  const preserveFormConfig = formConfigPreferences[familyKey] ?? family.some((spirit) => spirit.fullName === "梦想三三");
   const formStages = ["一阶", "二阶", "三阶", "首领"].filter((stage) => family.some((spirit) => spirit.stage === stage));
   const sourceStage = family.find((spirit) => spirit.id === formSide?.spiritId)?.stage;
   const moeLayers = Math.max(0, formStages.indexOf(sourceStage) - formStages.indexOf(selected?.stage));
   const choosingForm = Boolean(onFormSelect && !searching && family.length > 1);
-  const browsingPresets = presetBrowse.enabled && !searching && !choosingForm;
+  const browsingPresets = presetBrowse.enabled && (!searching || !query.trim()) && !choosingForm;
   const presetSpirits = useMemo(() => spirits
     .filter((spirit) => presetBrowse.spiritIds.has(spirit.id))
     .sort(compareDexOrder), [spirits, presetBrowse.spiritIds]);
@@ -239,7 +242,7 @@ export function SpiritPicker({
   const matches = preview.items;
 
   function openOptions() {
-    setQuery(onFormSelect && family.length > 1 ? "" : clearOnOpen ? "" : selectedName);
+    setQuery(clearOnOpen ? "" : selectedName);
     setSearching(clearOnOpen);
     setPreviewLimit(INITIAL_PREVIEW_COUNT);
     setActiveIndex(onFormSelect && family.length > 1
@@ -253,7 +256,7 @@ export function SpiritPicker({
   function commit(spirit) {
     setQuery(spirit.fullName);
     setOpen(false);
-    if (choosingForm) onFormSelect(spirit.id);
+    if (choosingForm && preserveFormConfig) onFormSelect(spirit.id);
     else onSelect(spirit.id);
   }
 
@@ -314,13 +317,18 @@ export function SpiritPicker({
           aria-label={`${label}精灵`}
           onChange={(event) => {
             setQuery(event.target.value);
-            setSearching(Boolean(event.target.value.trim()));
+            setSearching(true);
             setActiveIndex(0);
             setPreviewLimit(INITIAL_PREVIEW_COUNT);
             setOpen(true);
           }}
-          onFocus={() => {
+          onFocus={(event) => {
             if (!open) openOptions();
+            if (selectedName && !clearOnOpen) event.currentTarget.select();
+          }}
+          onClick={(event) => {
+            if (!open) openOptions();
+            if (selectedName && event.currentTarget.value === selectedName) event.currentTarget.select();
           }}
           onKeyDown={handleKeyDown}
           placeholder="选精灵"
@@ -346,7 +354,7 @@ export function SpiritPicker({
         </button>
         {open ? (
           <ul
-            className="spirit-picker__options"
+            className={`spirit-picker__options${choosingForm ? " spirit-picker__options--forms" : ""}`}
             data-guide-part="options"
             id={listboxId}
             onScroll={handleOptionsScroll}
@@ -355,7 +363,16 @@ export function SpiritPicker({
           >
             {choosingForm ? (
               <li className="spirit-picker__form-heading" role="presentation">
-                <span>同族形态</span><span>保留本场配置</span>
+                <span>同族形态</span>
+                <label className="spirit-picker__form-toggle" title="开启：保留本场配置；关闭：下次选择时按普通换精灵载入目标预设，重置临时战斗条件">
+                  <span>萌化 · 配置保留</span>
+                  <input type="checkbox" role="switch" aria-label={`${label}同族切换保留本场配置`}
+                    checked={preserveFormConfig} onChange={event => {
+                      const enabled = event.target.checked;
+                      setFormConfigPreferences(current => ({ ...current, [familyKey]: enabled }));
+                    }}
+                    onKeyDown={event => { if (event.key === "Escape") { inputRef.current?.focus(); handleKeyDown(event); } }} />
+                </label>
               </li>
             ) : null}
             {matches.length ? (

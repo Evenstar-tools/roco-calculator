@@ -440,7 +440,10 @@ export function ResultRail({
           />
           <button
             aria-label="恢复满血"
-            onClick={() => onCurrentHpChange(result.defenderMaxHp)}
+            onClick={() => {
+              onCurrentHpChange(result.defenderMaxHp);
+              onCurrentHpPercentChange?.(100);
+            }}
             title="恢复满血"
             type="button"
           >

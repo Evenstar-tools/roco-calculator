@@ -111,6 +111,15 @@
   list-style: none;
 }
 
+.spirit-picker__options--forms {
+  min-width: min(240px, calc(100vw - 32px));
+}
+
+.spirit-picker--defense .spirit-picker__options--forms {
+  left: auto;
+  width: 100%;
+}
+
 .spirit-picker__options li {
   display: flex;
   min-height: 48px;
@@ -138,6 +147,45 @@
   border-top: 1px solid var(--border);
   border-radius: 0;
 }
+
+.spirit-picker__form-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.spirit-picker__form-toggle input {
+  appearance: none;
+  position: relative;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 16px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: var(--border-strong);
+  cursor: pointer;
+}
+
+.spirit-picker__form-toggle input::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.spirit-picker__form-toggle input:checked { background: var(--accent); }
+.spirit-picker__form-toggle input:checked::before { transform: translateX(12px); }
+.spirit-picker__form-toggle input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .spirit-picker__form-footer button {
   width: 100%;

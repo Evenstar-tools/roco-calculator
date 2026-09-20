@@ -52,7 +52,7 @@ describe("release performance budget", () => {
     expect(DEFAULT_PERFORMANCE_BUDGETS.jsGzip).toBe(320 * 1024);
     expect(
       DEFAULT_PERFORMANCE_BUDGETS.jsGzip + DEFAULT_HARD_OVERAGE_BY_KEY.jsGzip,
-    ).toBe(344 * 1024);
+    ).toBe(348 * 1024);
     expect(DEFAULT_PERFORMANCE_BUDGETS.jsRaw).toBe(1088 * 1024);
     expect(
       DEFAULT_PERFORMANCE_BUDGETS.jsRaw + DEFAULT_HARD_OVERAGE_BY_KEY.jsRaw,
@@ -97,7 +97,7 @@ describe("release performance budget", () => {
   });
 
   test.each([
-    ["cssGzip", 50 * 1024, 55 * 1024],
+    ["cssGzip", 50 * 1024, 56 * 1024],
     ["runtimeJson", 1.5 * 1024 * 1024, 1.625 * 1024 * 1024],
   ])("%s 保留预警并在硬边界后一字节阻断", (key, warning, hard) => {
     expect(DEFAULT_PERFORMANCE_BUDGETS[key]).toBe(warning);

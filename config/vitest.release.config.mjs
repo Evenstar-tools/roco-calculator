@@ -30,7 +30,7 @@ export default defineConfig({
           css: true,
           include: [
             "tests/smoke/*.test.jsx",
-            "tests/ui/{battle-form-picker,header-portrait,floating-undo-button,team-exchange,team-lineup-flow,toolbox,type-query-panel,transmission-panel,deer-critical,deer-entry,ability-speed-layout,skill-picker-scrollbar,calculator-sections}.test.jsx",
+            "tests/ui/{battle-form-picker,header-portrait,floating-undo-button,team-exchange,team-lineup-flow,toolbox,type-query-panel,transmission-panel,deer-critical,deer-entry,ability-speed-layout,skill-picker-scrollbar,calculator-sections,status-reference}.test.jsx",
           ],
         },
       },
