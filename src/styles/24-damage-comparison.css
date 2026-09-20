@@ -17,6 +17,7 @@
 .dc-web-search label { display: flex; flex: 1; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 6px; padding: 0 10px; color: var(--accent); }
 .dc-web-search input { width: 100%; min-width: 0; height: 42px; border: 0; background: transparent; color: var(--text); font: inherit; }
 .dc-web-search button { display: flex; align-items: center; gap: 6px; }
+.dc-web-search .dc-web-clear { flex: none; justify-content: center; width: 28px; min-height: 28px; height: 28px; padding: 4px; border: 0; background: transparent; color: var(--text-muted); }
 .dc-web-options { display: none; gap: 14px; flex-wrap: wrap; align-items: center; padding: 4px 20px 8px; }
 .dc-web-options.is-open { display: flex; }
 .dc-web-search button[aria-expanded="true"] { background: var(--selection-bg); color: var(--accent); border-color: var(--accent); }
@@ -27,7 +28,7 @@
 .dc-web-inherit input { margin: 0; width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
 .damage-comparison button[aria-pressed="true"],.damage-comparison .dc-web-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
 html[data-theme="dark"] .damage-comparison button[aria-pressed="true"],html[data-theme="dark"] .damage-comparison .dc-web-primary { color: #202735; }
-.dc-web-summary { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: var(--text-muted); font-size: 12px; background: var(--surface-soft); }
+.dc-web-summary { display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: center; justify-content: space-between; padding: 0 20px; color: var(--text-muted); font-size: 12px; background: var(--surface-soft); }
 .dc-web-summary button { border: 0; background: transparent; color: var(--accent); padding-right: 0; }
 .dc-web-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 20px; }
 .dc-web-columns,.damage-comparison .dc-web-row { display: grid; grid-template-columns: 35px minmax(180px, 1fr) 64px 90px minmax(240px, 1fr); align-items: center; gap: 12px; }
@@ -82,6 +83,7 @@ html[data-theme="dark"] .damage-comparison button[aria-pressed="true"],html[data
   .dc-web-source small { width: 100%; margin: 0; }.dc-web-source select { max-width: 180px; }
   .dc-web-options.is-open { gap: 6px; }.dc-web-options label { font-size: 12px; }
   .dc-web-options>select { margin: 0; }
+  .dc-web-search .dc-web-clear { width: 44px; height: 44px; }
   .dc-web-filters { gap: 4px; }.dc-web-filters button { flex: 1; min-width: 0; padding: 8px 2px; font-size: 12px; }
   .dc-web-inherit { flex-basis: 100%; margin-left: 0; }
   .dc-range { flex-basis: 100%; }.dc-range-controls { gap: 10px; }.damage-comparison .dc-range-heading button { flex: none; }

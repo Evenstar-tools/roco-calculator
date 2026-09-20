@@ -21,9 +21,9 @@ export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
 // 经用户确认，为后续小功能预留约 13%～16%；各项超过硬上限仍阻断。
 export const DEFAULT_HARD_OVERAGE_BY_KEY = Object.freeze({
   clientTotal: 1 * 1024 * 1024,
-  // 2026-09-20：用户批准异常/印记说明窗，硬上限仅调至 CSS 56 / JS 348 KiB。
+  // 2026-09-20：用户本次批准 UX20，JS 硬上限调至 348.25 KiB；CSS 保持 56 KiB，后续另议。
   cssGzip: 6 * 1024,
-  jsGzip: 28 * 1024,
+  jsGzip: 28.25 * 1024,
   jsRaw: 64 * 1024,
   runtimeJson: 0.125 * 1024 * 1024,
 });

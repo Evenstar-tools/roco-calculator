@@ -21,6 +21,16 @@ function skill(overrides = {}) {
 }
 
 describe("resolveSkillPower", () => {
+  test("暖阳按其他火系技能次数每次增加40威力，清零恢复基础值", () => {
+    const warmSun = snapshot.skills.find(({ name }) => name === "暖阳");
+    expect(getSkillEffectInputs(warmSun)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ contextKey: "otherFireSkillUseCount", label: "其他火系技能使用次数", defaultValue: 0, min: 0, type: "number" }),
+    ]));
+    expect(resolveSkillPower(warmSun, {})).toMatchObject({ value: 70 });
+    for (const count of [1, 3, 0]) {
+      expect(resolveSkillPower(warmSun, { otherFireSkillUseCount: count })).toMatchObject({ value: 70 + count * 40 });
+    }
+  });
   test.each([
     ["天旋地转", 90, 60],
     ["电弧", 120, 80],
@@ -950,10 +960,10 @@ describe("resolveSkillPower", () => {
     });
   });
 
-  test("registers all 106 reviewed dynamic skills in the current snapshot", () => {
+  test("registers all 107 reviewed dynamic skills in the current snapshot", () => {
     expect(
       snapshot.skills.filter((entry) => getSkillEffectRule(entry)).length,
-    ).toBe(106);
+    ).toBe(107);
   });
 
   test("keeps every reviewed rule default-safe and every choice default valid", () => {

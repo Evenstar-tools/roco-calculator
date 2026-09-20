@@ -143,8 +143,9 @@ export function ConfigLibraryDialog({
   const normalizedEntryQuery = entryQuery.trim().toLocaleLowerCase("zh-CN");
   const visibleEntries = isPopular && normalizedEntryQuery
     ? listedEntries.filter((entry) => {
-      const spiritName = spiritById.get(entry.spiritId)?.fullName ?? entry.spiritId;
-      return spiritName.toLocaleLowerCase("zh-CN").includes(normalizedEntryQuery);
+      const spirit = spiritById.get(entry.spiritId);
+      return [spirit?.fullName ?? entry.spiritId, ...(spirit?.aliases ?? [])]
+        .some((name) => name.toLocaleLowerCase("zh-CN").includes(normalizedEntryQuery));
     })
     : listedEntries;
   const importIssues = parsed
@@ -377,7 +378,7 @@ export function ConfigLibraryDialog({
         ) : null}
         <div className="dialog-actions">
           {isPopular ? (
-            <label className="config-library-preset-toggle" title="展开精灵列表时只浏览预设；输入文字仍搜索全部精灵">
+            <label className="config-library-preset-toggle" title="展开精灵列表时浏览预设与手动收藏；输入文字仍搜索全部精灵">
               <input
                 type="checkbox"
                 role="switch"

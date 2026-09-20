@@ -3,6 +3,40 @@ import { expect, test, vi } from "vitest";
 import { ConfigLibraryDialog } from "../../src/components/ConfigLibraryDialog.jsx";
 import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 
+test("常用配置支持已有别名，搜索不扩大清单或改变导入与统计", () => {
+  const onConfirmImport = vi.fn();
+  const entries = [{ spiritId: "beetle", natureId: "cheerful", skills: [] },
+    { spiritId: "dog", natureId: "neutral", skills: [] }];
+  render(<ConfigLibraryDialog mode="popular" onConfirmImport={onConfirmImport} parsed={{
+    entries, favoriteSpiritIds: [], issueDetails: [],
+    preview: { same: 1, different: 1, updated: 1, added: 0 },
+  }} snapshot={{ skills: [], spirits: [
+    { id: "beetle", fullName: "圣凯布米龙", aliases: ["圣甲虫", "Scarab"] },
+    { id: "dog", fullName: "音速犬" },
+    { id: "unlisted", fullName: "未收录精灵", aliases: ["圣甲虫", "独有别名"] },
+  ] }} />);
+  fireEvent.click(screen.getByRole("button", { name: "查看精灵和技能" }));
+  const search = screen.getByRole("searchbox", { name: "搜索精灵名" });
+  for (const query of ["圣凯布米龙", "圣甲虫", "  SCARAB  "]) {
+    fireEvent.change(search, { target: { value: query } });
+    expect(screen.getByText("圣凯布米龙")).toBeVisible();
+    expect(screen.queryByText("音速犬")).not.toBeInTheDocument();
+    expect(screen.queryByText("未收录精灵")).not.toBeInTheDocument();
+    expect(screen.getByText("1 / 2")).toBeVisible();
+  }
+  fireEvent.change(search, { target: { value: "独有别名" } });
+  expect(screen.getByText("没有匹配的精灵")).toBeVisible();
+  expect(screen.getByText("0 / 2")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "清除" }));
+  expect(search).toHaveFocus();
+  expect(search).toHaveValue("");
+  expect(screen.getByText("2 / 2")).toBeVisible();
+  expect(screen.getByText("不同").nextElementSibling).toHaveTextContent("1");
+  expect(screen.getByRole("switch", { name: "仅预览配置项" })).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "更新配置（1）" }));
+  expect(onConfirmImport).toHaveBeenCalledTimes(1);
+});
+
 test("没有新增时旧预设仍可更新，按钮不计入手改项", () => {
   const onConfirmImport = vi.fn();
   render(<ConfigLibraryDialog mode="popular" onConfirmImport={onConfirmImport} parsed={{

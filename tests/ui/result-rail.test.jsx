@@ -798,6 +798,19 @@ test.each(["hp", "percent"])("恢复满血同步 %s 输入和百分比状态", a
     name: mode === "percent" ? "防御方生命百分比" : "防御方当前生命",
   });
   expect(screen.getByRole("button", { name: mode === "percent" ? "按百分比输入" : "按当前值输入" })).toHaveAttribute("aria-pressed", "true");
+  for (const finish of ["blur", "enter"]) {
+    fireEvent.change(input, { target: { value: "9999" } });
+    expect(input).toHaveValue(9999);
+    if (finish === "blur") fireEvent.blur(input);
+    else fireEvent.keyDown(input, { key: "Enter" });
+    expect(input).toHaveValue(mode === "percent" ? 100 : result.defenderMaxHp);
+  }
+  fireEvent.change(input, { target: { value: "-10" } });
+  fireEvent.blur(input);
+  expect(input).toHaveValue(0);
+  fireEvent.change(input, { target: { value: "" } });
+  fireEvent.keyDown(input, { key: "Enter" });
+  expect(input).toHaveValue(0);
   await user.clear(input);
   await user.type(input, "90");
   expect(input).toHaveValue(90);

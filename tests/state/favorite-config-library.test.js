@@ -3,6 +3,7 @@ import { describe, expect, test, vi } from "vitest";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 import { getTraitView } from "../../src/domain/calculator-view-model.js";
 import { getNature } from "../../src/domain/natures.js";
+import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 import {
   FAVORITE_CONFIG_LIBRARY_FORMAT,
   FAVORITE_CONFIG_LIBRARY_MAX_BYTES,
@@ -178,6 +179,90 @@ describe("buildFavoriteConfigLibrary", () => {
 });
 
 describe("bundled popular config library", () => {
+  test("遁地鼠储水形态按截图使用平和、生命物攻速度个体及指定四技能顺序", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    expect(library.entries.find(({ spiritId }) => spiritId === "spirit_7da7428d895df131")).toEqual({
+      spiritId: "spirit_7da7428d895df131", natureId: "peaceful",
+      displayIvs: { hp: 60, speed: 60, physicalAttack: 60, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0 },
+      skills: ["skill_e8ae25185fcd9973", "skill_803bb4da56d33ce1", "skill_d2858245ecbdd89d", "skill_b67699fa9b91b710"],
+      traitValues: {},
+    });
+  });
+  test("星光狮月光形态按截图配招并保存电流刺激开启，电弧迸发默认开启", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    const entry = library.entries.find(({ spiritId }) => spiritId === "spirit_e0fd67c2b0e5c25a");
+    expect(entry).toEqual({
+      spiritId: "spirit_e0fd67c2b0e5c25a", natureId: "cheerful",
+      displayIvs: { hp: 60, speed: 60, physicalAttack: 60, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0 },
+      skills: ["skill_794ee1751d9411e8", "skill_be1a16f6da08c932", "skill_50d37932783c1b9d", "skill_dbd391c5f03728c9"],
+      traitValues: { "trait.burstTriggered.9472be83": true, "trait.traitEffect.3c554174": 40 },
+    });
+    const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+    const spirit = snapshot.spirits.find(({ id }) => id === entry.spiritId);
+    const trigger = getTraitView(snapshot, spirit, "attacker").inputs.find(({ contextKey }) => contextKey === "burstTriggered");
+    expect(entry.traitValues[canonicalTraitControlKey(trigger)]).toBe(true);
+    const arc = snapshot.skills.find(({ id }) => id === entry.skills[2]);
+    expect(getSkillEffectInputs(arc).find(({ contextKey }) => contextKey === "burstTriggered").defaultValue).toBe(true);
+  });
+  test.each([
+    ["棋绮后（白子）", "spirit_b8395532616fe541"],
+    ["棋绮后（黑子）", "spirit_03d719be9841704e"],
+    ["棋契陛下（白棋棋绮后分支）", "spirit_d4a7177497e7250e"],
+    ["棋契陛下（黑棋棋绮后分支）", "spirit_3b52748976f979f2"],
+  ])("%s 按截图统一开朗、生命物攻速度个体、四技能及默认特性层数", (_name, spiritId) => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    expect(library.entries.find((entry) => entry.spiritId === spiritId)).toEqual({
+      spiritId, natureId: "cheerful",
+      displayIvs: { hp: 60, speed: 60, physicalAttack: 60, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0 },
+      skills: ["skill_210a30ff4c9d8a00", "skill_dbd391c5f03728c9", "skill_d2b3e8ce739d1e22", "skill_3d69dc97bb34a4d3"],
+      traitValues: {},
+    });
+  });
+  test("水泡壳蜕皮形态按截图使用踏实、生命魔攻物防个体及指定四技能顺序", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    expect(library.entries.find(({ spiritId }) => spiritId === "spirit_fd0cadca98778205")).toEqual({
+      spiritId: "spirit_fd0cadca98778205", natureId: "grounded",
+      displayIvs: { hp: 60, speed: 0, physicalAttack: 0, magicalAttack: 60, physicalDefense: 60, magicalDefense: 0 },
+      skills: ["skill_b563342aca04c471", "skill_a52aca8607fb6062", "skill_dd8c685af8c6ab28", "skill_193d9030cf2063a5"],
+      traitValues: {},
+    });
+  });
+  test("星星眼按截图使用聪明、生命魔攻速度个体及指定四技能顺序", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    expect(library.entries.find(({ spiritId }) => spiritId === "spirit_9f9a5018b4cb3927")).toEqual({
+      spiritId: "spirit_9f9a5018b4cb3927", natureId: "smart",
+      displayIvs: { hp: 60, speed: 60, physicalAttack: 0, magicalAttack: 60, physicalDefense: 0, magicalDefense: 0 },
+      skills: ["skill_38827e39dbdda074", "skill_e7190f67c1436b31", "skill_de420bb66be86bf2", "skill_b1f12cdc4830276c"],
+      traitValues: {},
+    });
+  });
+  test("智辉章脑按截图使用聪明、生命魔攻速度个体及指定四技能顺序", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    expect(library.entries.find(({ spiritId }) => spiritId === "spirit_18d38a10544a16ea")).toEqual({
+      spiritId: "spirit_18d38a10544a16ea", natureId: "smart",
+      displayIvs: { hp: 60, speed: 60, physicalAttack: 0, magicalAttack: 60, physicalDefense: 0, magicalDefense: 0 },
+      skills: ["skill_3790e75019a19a26", "skill_730f89409835a4b8", "skill_2ae4c263b33b942e", "skill_ad5b57d0e9427544"],
+      traitValues: {},
+    });
+  });
+  test("未完虫按截图使用固执、生命物攻速度个体及指定四技能顺序", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    expect(library.entries.find(({ spiritId }) => spiritId === "spirit_200b70f549b632c9")).toEqual({
+      spiritId: "spirit_200b70f549b632c9", natureId: "adamant",
+      displayIvs: { hp: 60, speed: 60, physicalAttack: 60, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0 },
+      skills: ["skill_dfe7184d14b2edcb", "skill_7023738b1f109dc1", "skill_5617ecc3caef7918", "skill_4375736cdfafd6a1"],
+      traitValues: {},
+    });
+  });
+  test("测风蝉按截图使用踏实、生命双防个体及指定四技能顺序", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    expect(library.entries.find(({ spiritId }) => spiritId === "spirit_8735efa1d0793f6a")).toEqual({
+      spiritId: "spirit_8735efa1d0793f6a", natureId: "grounded",
+      displayIvs: { hp: 60, speed: 0, physicalAttack: 0, magicalAttack: 0, physicalDefense: 60, magicalDefense: 60 },
+      skills: ["skill_7435a26c20c14c4f", "skill_87c9f33eaa047cf1", "skill_917448f6d23ba354", "skill_808e1f607ccd30fa"],
+      traitValues: {},
+    });
+  });
   test("加尔按截图使用沉默、生命魔攻速度个体及指定四技能顺序", () => {
     const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
     const entry = library.entries.find(({ spiritId }) => spiritId === "spirit_837f83264c04abe9");
@@ -199,6 +284,7 @@ describe("bundled popular config library", () => {
     });
   });
   test.each([
+    ["圣凯布米龙", "spirit_5f3ff5817d7871b8", ["暖阳", "星火", "热身", "虫击"]],
     ["波普鹿", "spirit_7d22156a66708de3", ["电弧", "裂石", "下注", "先发制人"]],
     ["银月狼王", "spirit_b689c0de815c95ef", ["岩脉崩毁", "撞鬼", "困兽", "月蚀"]],
     ["布灵布灵", "spirit_de488be076aaad90", ["闪光弹", "量子涨落", "透镜实验", "影袭"]],

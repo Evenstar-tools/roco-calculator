@@ -43,6 +43,7 @@ const WISH_POWER_ID_BY_TYPE = new Map(
 );
 
 const SPIRIT_COMMUNITY_ALIASES_BY_ID = Object.freeze({
+  spirit_5f3ff5817d7871b8: Object.freeze(["圣甲虫"]),
   spirit_24ff0f0e3504e1ca: Object.freeze(["提塔"]),
   spirit_80fbf0bae1147e9c: Object.freeze(["冰布丁"]),
   spirit_6aa27664c730f95a: Object.freeze(["草布丁"]),

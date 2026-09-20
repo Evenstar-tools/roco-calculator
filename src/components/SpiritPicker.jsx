@@ -130,7 +130,7 @@ export function SpiritPicker({
   const choosingForm = Boolean(onFormSelect && !searching && family.length > 1);
   const browsingPresets = presetBrowse.enabled && (!searching || !query.trim()) && !choosingForm;
   const presetSpirits = useMemo(() => spirits
-    .filter((spirit) => presetBrowse.spiritIds.has(spirit.id))
+    .filter((spirit) => presetBrowse.spiritIds.has(spirit.id) || spirit.favoriteState === "manual")
     .sort(compareDexOrder), [spirits, presetBrowse.spiritIds]);
 
   useLayoutEffect(() => {

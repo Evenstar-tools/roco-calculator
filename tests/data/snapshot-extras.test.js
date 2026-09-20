@@ -104,6 +104,7 @@ describe("withCalculatorExtras", () => {
     expect(aliasesByName.get("瞌睡王")).toContain("科比");
     expect(aliasesByName.get("音速犬")).toContain("火狗");
     expect(aliasesByName.get("电球咩咩")).toContain("电羊");
+    expect(aliasesByName.get("圣凯布米龙")).toContain("圣甲虫");
     expect(aliasesByName.get("彩蝶鲨")).toContain("莎莎");
     expect(aliasesByName.get("嗜波螺")).toContain("菠萝");
     expect(aliasesByName.get("蜜果骸")).toContain("苹果");

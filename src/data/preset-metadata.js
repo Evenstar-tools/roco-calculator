@@ -1,1 +1,1 @@
-export const POPULAR_CONFIG_COUNT = 227;
+export const POPULAR_CONFIG_COUNT = 230;

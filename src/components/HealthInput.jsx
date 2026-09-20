@@ -79,8 +79,12 @@ export function HealthInput({
           inputMode="decimal"
           max={mode === "percent" ? 100 : maxHp}
           min="0"
-          onBlur={() => {
-            if (draft === "") setDraft(String(displayedValue));
+          onBlur={() => setDraft(String(displayedValue))}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              setDraft(String(displayedValue));
+            }
           }}
           onChange={(event) => {
             setDraft(event.target.value);

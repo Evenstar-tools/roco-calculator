@@ -62,14 +62,32 @@ test("桌面筛选开关控制选项实际显隐且保留选值", () => {
     const options = screen.getByLabelText("承伤耐久模板").closest(".dc-web-options");
     expect(toggle).toHaveAttribute("aria-expanded", "false");
     expect(getComputedStyle(options).display).toBe("none");
+    expect(screen.getByText("最终形态＋首领 · 承伤低→高")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "清空搜索" })).toBeNull();
     fireEvent.click(toggle);
+    expect(screen.queryByText("最终形态＋首领 · 承伤低→高")).toBeNull();
     expect(toggle).toHaveAttribute("aria-expanded", "true");
     expect(getComputedStyle(options).display).toBe("flex");
     fireEvent.change(screen.getByLabelText("承伤耐久模板"), { target: { value: "hp-only-v1" } });
+    fireEvent.change(screen.getByLabelText("承伤形态范围"), { target: { value: "all" } });
+    fireEvent.change(screen.getByLabelText("承伤排序"), { target: { value: "desc" } });
+    fireEvent.click(screen.getByRole("button", { name: "0%至25%" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "沿用星陨／冻结" }));
     fireEvent.click(toggle);
     expect(getComputedStyle(options).display).toBe("none");
+    expect(screen.getByText("全部形态 · 承伤高→低")).toBeVisible();
+    const search = screen.getByRole("textbox", { name: "搜索承伤精灵" });
+    fireEvent.change(search, { target: { value: "甲" } });
+    fireEvent.click(screen.getByRole("button", { name: "清空搜索" }));
+    expect(search).toHaveValue("");
+    expect(search).toHaveFocus();
+    expect(screen.queryByRole("button", { name: "清空搜索" })).toBeNull();
+    expect(screen.getByRole("button", { name: "0%至25%" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("checkbox", { name: "沿用星陨／冻结" })).toBeChecked();
     fireEvent.click(toggle);
     expect(screen.getByLabelText("承伤耐久模板")).toHaveValue("hp-only-v1");
+    expect(screen.getByLabelText("承伤形态范围")).toHaveValue("all");
+    expect(screen.getByLabelText("承伤排序")).toHaveValue("desc");
   } finally { style.remove(); }
 });
 

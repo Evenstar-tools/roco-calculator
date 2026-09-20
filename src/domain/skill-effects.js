@@ -631,6 +631,7 @@ const REVIEWED_EFFECTS = Object.freeze({
     SWEET_TRAP_ENERGY_RANGE[1],
   ),
   吹火: stackAdd("skillUseCount", "此前使用次数", 20),
+  暖阳: stackAdd("otherFireSkillUseCount", "其他火系技能使用次数", 40),
   流星火雨: stackAdd("defeatedEnemyCount", "此前击败次数", 85, 6),
   山火: exponentialGrowth(
     "otherFireSkillUseCount",

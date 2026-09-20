@@ -185,6 +185,7 @@ describe("trigger controls", () => {
       "skill.attackerHpPercent",
       "skill.counterTriggered",
       "skill.energy",
+      "skill.otherFireSkillUseCount",
       "skill.skillPosition",
     ]);
   });

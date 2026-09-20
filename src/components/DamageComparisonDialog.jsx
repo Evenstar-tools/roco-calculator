@@ -11,6 +11,7 @@ export default function DamageComparisonDialog({ snapshot, source, preferences, 
   const model = useDamageComparison(snapshot, source, preferences, onPreferencesChange);
   const dialog = useRef(null);
   const exportControl = useRef(null);
+  const searchInput = useRef(null);
   const restored = useRef(false);
   useEffect(() => {
     if (model.loading || restored.current) return;
@@ -78,14 +79,14 @@ export default function DamageComparisonDialog({ snapshot, source, preferences, 
         <small>{model.scopeDescription}</small>
         {model.gainSummary ? <small>增益来源：{model.gainSummary}</small> : null}
       </div>
-      <div className="dc-web-search"><label><MagnifyingGlass size={18} aria-hidden="true" /><input aria-label="搜索承伤精灵" placeholder="搜索名称、别名或图鉴号" value={model.query} onChange={(event) => model.setQuery(event.target.value)} /></label><button type="button" aria-expanded={model.filtersOpen} aria-controls="dc-filter-options" onClick={() => model.setFiltersOpen(!model.filtersOpen)}><SlidersHorizontal size={18} />筛选</button></div>
+      <div className="dc-web-search"><label><MagnifyingGlass size={18} aria-hidden="true" /><input ref={searchInput} aria-label="搜索承伤精灵" placeholder="搜索名称、别名或图鉴号" value={model.query} onChange={(event) => model.setQuery(event.target.value)} />{model.query ? <button className="dc-web-clear" type="button" aria-label="清空搜索" onClick={() => { model.setQuery(""); searchInput.current?.focus(); }}><X size={16} aria-hidden="true" /></button> : null}</label><button type="button" aria-expanded={model.filtersOpen} aria-controls="dc-filter-options" onClick={() => model.setFiltersOpen(!model.filtersOpen)}><SlidersHorizontal size={18} />筛选</button></div>
       <div id="dc-filter-options" className={`dc-web-options${model.filtersOpen ? " is-open" : ""}`}>
         <label>耐久模板<select aria-label="承伤耐久模板" value={model.templateId} onChange={(event) => model.setTemplateId(event.target.value)}>{model.templates.map((template) => <option key={template.id} value={template.id}>{template.label}</option>)}</select></label>
         <label>形态范围<select aria-label="承伤形态范围" value={model.scope} onChange={(event) => model.setScope(event.target.value)}><option value="final">最终形态＋首领</option><option value="all">全部完整种族值形态</option></select></label>
         <select aria-label="承伤排序" value={model.descending ? "desc" : "asc"} onChange={(event) => model.setDescending(event.target.value === "desc")}><option value="asc">承伤从低到高</option><option value="desc">承伤从高到低</option></select>
       </div>
       <div className="dc-web-filters" role="group" aria-label="承伤筛选"><DamageRangeFilter value={model.filter} onChange={model.setFilter} /><label className="dc-web-inherit"><input type="checkbox" checked={model.inheritTargetStatuses} onChange={(event) => model.setInheritTargetStatuses(event.target.checked)} />沿用星陨／冻结</label></div>
-      <div className="dc-web-summary"><span role="status">{model.loading ? `正在计算 ${model.progress?.completed ?? 0}/${snapshot.spirits.length}` : `${model.rows.length} 只 · ${model.template.label}`}</span></div>
+      <div className="dc-web-summary"><span role="status">{model.loading ? `正在计算 ${model.progress?.completed ?? 0}/${snapshot.spirits.length}` : `${model.rows.length} 只 · ${model.template.label}`}</span>{!model.filtersOpen ? <span>{model.scope === "all" ? "全部形态" : "最终形态＋首领"} · 承伤{model.descending ? "高→低" : "低→高"}</span> : null}</div>
       <div className="dc-web-scroll" aria-busy={model.loading} onScroll={(event) => {
         const { scrollHeight, scrollTop, clientHeight } = event.currentTarget;
         if (!model.loading && model.rows.length > model.limit && scrollHeight - scrollTop - clientHeight <= 160) model.showMore();
