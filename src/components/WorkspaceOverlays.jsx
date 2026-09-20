@@ -251,7 +251,7 @@ export function WorkspaceOverlays({
       <WhatsNewDialog {...whatsNew} />
 
       {mobileResult.configurationReady ? (
-        <>
+        <div className="mobile-result-dock">
         <button
           aria-label="展开伤害结果"
           className={`mobile-result-bar mobile-result-bar--${mobileResult.viewMode}${mobileActions.onOpenComparison ? " mobile-result-bar--with-comparison" : ""}`}
@@ -272,7 +272,7 @@ export function WorkspaceOverlays({
           </span>
         </button>
         {mobileActions.onOpenComparison ? <button type="button" className="mobile-comparison-entry damage-comparison-entry" onClick={mobileActions.onOpenComparison}>承伤对比</button> : null}
-        </>
+        </div>
       ) : null}
 
       {mobileResult.configurationReady && mobileResult.open ? (

@@ -46,6 +46,41 @@ function renderOverlays(overrides = {}) {
   return { ...result, menuButtonRef, onMenuClose };
 }
 
+test.each([true, false])("底栏共用容器且两个入口独立，承伤对比开启=%s", (comparisonEnabled) => {
+  const onOpen = vi.fn();
+  const onOpenComparison = vi.fn();
+  renderOverlays({
+    menu: { open: false },
+    mobileResult: {
+      configurationReady: true,
+      open: false,
+      viewMode: "compact",
+      actions: { onOpen, onOpenComparison: comparisonEnabled ? onOpenComparison : undefined },
+      result: {
+        attackerName: "武斗酷猫",
+        defenderName: "迪莫",
+        selectedResult: { totalDamage: 47, hpPercent: 11.1 },
+      },
+    },
+  });
+  const result = screen.getByRole("button", { name: "展开伤害结果" });
+  expect(result.parentElement).toHaveClass("mobile-result-dock");
+  expect(result).toHaveTextContent("武斗酷猫 → 迪莫");
+  expect(result).toHaveTextContent("47");
+  expect(result).toHaveTextContent("11.1%");
+  fireEvent.click(result);
+  expect(onOpen).toHaveBeenCalledOnce();
+  if (comparisonEnabled) {
+    const comparison = screen.getByRole("button", { name: "承伤对比" });
+    expect(comparison.parentElement).toBe(result.parentElement);
+    fireEvent.click(comparison);
+    expect(onOpenComparison).toHaveBeenCalledOnce();
+    expect(onOpen).toHaveBeenCalledOnce();
+  } else {
+    expect(screen.queryByRole("button", { name: "承伤对比" })).toBeNull();
+  }
+});
+
 test("keeps menu before workspace and closes it with Escape", () => {
   const { menuButtonRef, onMenuClose } = renderOverlays();
 
