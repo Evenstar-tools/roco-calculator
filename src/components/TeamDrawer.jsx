@@ -455,11 +455,11 @@ export function TeamDrawer({
                               ),
                             )
                           }
-                          title="载入当前攻击方"
+                          title="从攻方复制"
                           type="button"
                         >
                           <Sword aria-hidden="true" size={16} weight="bold" />
-                          载入当前攻方
+                          从攻方复制
                         </button>
                         <button
                           aria-label={`用当前防御方填入${selectedIndex + 1}号位`}
@@ -472,11 +472,11 @@ export function TeamDrawer({
                               ),
                             )
                           }
-                          title="载入当前防御方"
+                          title="从防方复制"
                           type="button"
                         >
                           <Shield aria-hidden="true" size={16} weight="bold" />
-                          载入当前防方
+                          从防方复制
                         </button>
                       </div>
                     ) : null}
