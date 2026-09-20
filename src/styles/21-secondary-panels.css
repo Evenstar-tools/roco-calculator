@@ -75,6 +75,7 @@ html[data-theme="dark"] .team-drawer .team-drawer__zero-cta { color: #1b2636; }
 .display-settings-dialog label.display-settings-option input { width: 22px; height: 22px; justify-self: center; margin: 0; }
 .display-settings-dialog label.display-settings-option:last-of-type { border-bottom: 0; }
 .display-settings-dialog .display-settings-option small { line-height: 1.6; }
+.display-settings-power-details > summary { cursor: pointer; color: var(--text-muted); font-size: 12px; }
 
 .config-library-dialog .config-library-primary-preview { background: transparent; padding: 0; gap: 6px; }
 .config-library-dialog .config-library-primary-preview > div { background: var(--surface-soft); border: 0; padding: 6px 10px; }

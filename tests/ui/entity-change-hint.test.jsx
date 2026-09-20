@@ -139,7 +139,7 @@ test("S4 全新最终形态与首领显示 NEW 标识，技能仍不显示改动
   expect(
     screen.queryByRole("button", { name: "查看银月狼王本期改动" }),
   ).not.toBeInTheDocument();
-  expect(screen.getByText("银月狼王")).toHaveAttribute("data-new", "true");
+  expect(screen.getByText("银月狼王", { selector: ".spirit-card__title strong" })).toHaveAttribute("data-new", "true");
 
   rerender(
     <SpiritPicker
@@ -150,7 +150,7 @@ test("S4 全新最终形态与首领显示 NEW 标识，技能仍不显示改动
       spirits={[newBoss]}
     />,
   );
-  expect(screen.getByText("烈焰狂战士")).toHaveAttribute("data-new", "true");
+  expect(screen.getByText("烈焰狂战士", { selector: ".spirit-card__title strong" })).toHaveAttribute("data-new", "true");
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
   expect(
     screen.getByRole("option", { name: /烈焰狂战士/u }).querySelector("strong"),

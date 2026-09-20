@@ -61,14 +61,22 @@ export function DisplaySettingsDialog({
               显示威力
             </button>
           </div>
-          <div className="display-settings-power-help">
-            <small>
-              <strong>静态威力：</strong>技能自身规则、固定威力和继承迸发调整后的结果；不含本次额外触发的特性、本系和克制。
-            </small>
-            <small>
-              <strong>显示威力：</strong>有效威力结算本系、克制、天气、能力等级与其他威力乘区后取整（非负威力向下取整）；手动填写后直接用于伤害计算。
-            </small>
-          </div>
+          <small>
+            {powerDisplayMode === "panel"
+              ? "结算本次增益并取整；手填值直接参与伤害计算。"
+              : "技能自身规则调整后的威力，额外增益另算。"}
+          </small>
+          <details className="display-settings-power-details">
+            <summary>口径说明</summary>
+            <div className="display-settings-power-help">
+              <small>
+                <strong>静态威力：</strong>技能自身规则、固定威力和继承迸发调整后的结果；不含本次额外触发的特性、本系和克制。
+              </small>
+              <small>
+                <strong>显示威力：</strong>有效威力结算本系、克制、天气、能力等级与其他威力乘区后取整（非负威力向下取整）；手动填写后直接用于伤害计算。
+              </small>
+            </div>
+          </details>
         </div>
         <label className="display-settings-option">
           <span>

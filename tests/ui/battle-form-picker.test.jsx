@@ -21,6 +21,26 @@ test("再次打开直接显示同族，鼠标切形态不走普通载入", () =>
   expect(actions.onSelect).not.toHaveBeenCalled();
 });
 
+test("完整名称展示不妨碍全选删除和取消恢复", async () => {
+  const user = userEvent.setup();
+  const actions = setup();
+  const input = screen.getByRole("combobox", { name: "攻击方精灵" });
+  const presentation = () => document.querySelector(".spirit-picker__selected-name");
+  expect(presentation()).toHaveTextContent("梦想三三");
+  expect(presentation()).toHaveAttribute("aria-hidden", "true");
+  await user.click(input);
+  expect(presentation()).toBeNull();
+  expect(input.selectionStart).toBe(0);
+  expect(input.selectionEnd).toBe(selected.fullName.length);
+  await user.keyboard("{Backspace}");
+  expect(input).toHaveValue("");
+  expect(screen.getAllByRole("option").length).toBeGreaterThan(1);
+  await user.keyboard("{Escape}");
+  expect(presentation()).toHaveTextContent("梦想三三");
+  expect(input).toHaveValue("梦想三三");
+  expect(actions.onSelect).not.toHaveBeenCalled();
+});
+
 test("明确搜索走普通换宠，形态预设重载入口也不混用", () => {
   const actions = setup();
   const input = screen.getByRole("combobox", { name: "攻击方精灵" });

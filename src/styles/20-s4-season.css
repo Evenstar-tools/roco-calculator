@@ -247,3 +247,11 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
     min-height: 38px;
   }
 }
+
+@media (max-width: 360px) {
+  .app-header:not(.app-header--tool) { padding-inline: 6px; gap: 4px; }
+  .app-header:not(.app-header--tool) .app-header__actions { gap: 1px; }
+  .app-header:not(.app-header--tool) :is(.team-action, .icon-action) { width: 32px; min-width: 32px; }
+  .calculator-layout--compact .spirit-card { column-gap: 4px; grid-template-columns: 36px minmax(0, 1fr); }
+  .calculator-layout--compact .spirit-card__image { width: 36px; height: 36px; }
+}

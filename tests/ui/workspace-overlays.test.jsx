@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { WorkspaceOverlays } from "../../src/components/WorkspaceOverlays.jsx";
+import { DisplaySettingsDialog } from "../../src/components/DisplaySettingsDialog.jsx";
 import { USER_MANUAL_URL } from "../../src/data/product-links.js";
 import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 import {
@@ -45,6 +46,22 @@ function renderOverlays(overrides = {}) {
   );
   return { ...result, menuButtonRef, onMenuClose };
 }
+
+test("显示设置默认收起完整口径，简述随模式切换且不丢失原文", () => {
+  const onPowerDisplayModeChange = vi.fn();
+  const { rerender } = render(<DisplaySettingsDialog open onPowerDisplayModeChange={onPowerDisplayModeChange} />);
+  const details = screen.getByText("口径说明").closest("details");
+  expect(details).not.toHaveAttribute("open");
+  expect(screen.getByText("技能自身规则调整后的威力，额外增益另算。")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "显示威力" }));
+  expect(onPowerDisplayModeChange).toHaveBeenCalledWith("panel");
+  rerender(<DisplaySettingsDialog open powerDisplayMode="panel" />);
+  expect(screen.getByText("结算本次增益并取整；手填值直接参与伤害计算。")).toBeVisible();
+  expect(details).toHaveTextContent("非负威力向下取整");
+  expect(details).toHaveTextContent("继承迸发");
+  fireEvent.click(screen.getByText("口径说明"));
+  expect(details).toHaveAttribute("open");
+});
 
 test.each([true, false])("底栏共用容器且两个入口独立，承伤对比开启=%s", (comparisonEnabled) => {
   const onOpen = vi.fn();

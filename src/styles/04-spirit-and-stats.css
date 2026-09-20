@@ -94,6 +94,35 @@
   height: 24px;
 }
 
+.spirit-picker__selected-name { display: none; }
+
+@media (max-width: 620px) {
+  .spirit-picker__search:has(> .spirit-picker__selected-name) {
+    height: auto;
+    min-height: 44px;
+    padding-block: 6px;
+  }
+  .spirit-picker__search:has(> .spirit-picker__selected-name) > svg { display: none; }
+  .spirit-picker__search:has(> .spirit-picker__selected-name) > input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+  .spirit-picker__selected-name {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+  }
+  .spirit-picker__search > .spirit-picker__caret { position: relative; flex: none; }
+}
+
 .spirit-picker__options {
   position: absolute;
   z-index: 30;

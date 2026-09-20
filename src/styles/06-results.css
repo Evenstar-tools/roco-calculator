@@ -214,6 +214,7 @@
 .skill-result-row.is-selected {
   color: var(--text);
   background: #f5f3ff;
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .skill-result-row--action {

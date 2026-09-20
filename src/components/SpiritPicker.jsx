@@ -336,6 +336,9 @@ export function SpiritPicker({
           role="combobox"
           value={open ? query : selectedName}
         />
+        {!open && selectedName ? (
+          <span aria-hidden="true" className="spirit-picker__selected-name">{selectedName}</span>
+        ) : null}
         <button
           aria-label={`展开${label}精灵列表`}
           className="spirit-picker__caret"
