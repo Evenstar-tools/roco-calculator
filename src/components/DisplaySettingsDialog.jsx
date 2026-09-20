@@ -1,4 +1,7 @@
+import { X } from "@phosphor-icons/react";
+
 export function DisplaySettingsDialog({
+  dialogRef,
   damageComparisonEnabled = false,
   durabilityOverviewEnabled = false,
   negativeStatusSettlementEnabled = false,
@@ -25,8 +28,14 @@ export function DisplaySettingsDialog({
         aria-modal="true"
         className="share-dialog display-settings-dialog"
         role="dialog"
+        ref={dialogRef}
       >
-        <h2>显示设置</h2>
+        <h2>
+          显示设置
+          <button aria-label="关闭显示设置" className="display-settings-close" onClick={onClose} type="button">
+            <X aria-hidden="true" size={18} />
+          </button>
+        </h2>
         <div className="display-settings-option display-settings-option--power">
           <span>
             <strong>技能威力口径</strong>

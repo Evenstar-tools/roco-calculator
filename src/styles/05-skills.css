@@ -778,6 +778,25 @@
   border-top-right-radius: inherit;
 }
 
+.four-skill-side__conditions { display: contents; }
+
+@media (min-width: 1081px) {
+  .calculator-layout--detailed .four-skill-editor {
+    grid-template-rows: auto auto auto;
+    row-gap: 0;
+  }
+  .calculator-layout--detailed .four-skill-side {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+  .calculator-layout--detailed .four-skill-side__conditions {
+    display: block;
+    align-self: start;
+  }
+}
+
 .four-skill-side--attacker > header span {
   color: var(--attack);
 }
@@ -1012,6 +1031,17 @@
   align-items: center;
   gap: 7px;
 }
+
+.advanced-options__toggle > span { min-width: 0; white-space: nowrap; }
+.advanced-options__summary {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 12px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+}
+.advanced-options__toggle > svg { flex-shrink: 0; }
 
 .advanced-options.is-open .advanced-options__toggle > svg {
   transform: rotate(180deg);

@@ -29,6 +29,31 @@ import {
 import snapshot from "../../data/snapshots/current.json";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 
+test("收起高级选项仅显示非默认配置，最多两项并保留完整说明", () => {
+  const { rerender } = render(<AdvancedOptions finalMultiplier={1} reductionPercent={0} />);
+  const toggle = screen.getByRole("button", { name: "高级选项" });
+  expect(toggle.querySelector("small")).toBeNull();
+  rerender(<AdvancedOptions finalMultiplier={1} weather="rain" />);
+  expect(toggle.querySelector("small")).toHaveTextContent(/^雨天$/);
+  rerender(<AdvancedOptions finalMultiplier={1.5} weather="rain" reductionPercent={20} marks={{ attacker: { positive: { id: "tailwind", stacks: 2 } } }} />);
+  expect(toggle.querySelector("small")).toHaveTextContent(/^雨天 · 减伤 20% \+2$/);
+  expect(toggle).toHaveAttribute("aria-description", expect.stringContaining("是否生效以计算结果为准"));
+  expect(toggle.querySelector("small").title).toContain("2层");
+  fireEvent.click(toggle);
+  expect(toggle.querySelector("small")).toBeNull();
+});
+
+test("已关闭的负面状态不计入摘要，启用后带双方与层数", () => {
+  const props = { negativeStatuses: { defender: { poison: 2 } } };
+  const { rerender } = render(<AdvancedOptions {...props} />);
+  const toggle = screen.getByRole("button", { name: "高级选项" });
+  expect(toggle.querySelector("small")).toBeNull();
+  rerender(<AdvancedOptions {...props} negativeStatusEnabled />);
+  expect(toggle.querySelector("small")).toHaveTextContent("防御中毒 2层");
+  rerender(<AdvancedOptions finalMultiplier="1" rainTurns={2} bloodlineMagicId="photosynthetic-healing" />);
+  expect(toggle.querySelector("small")).toHaveTextContent("雨天 · 光合治愈（未使用）");
+});
+
 const skills = [
   {
     basePower: 80,

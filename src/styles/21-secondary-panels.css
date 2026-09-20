@@ -41,6 +41,27 @@ html[data-theme="dark"] .team-drawer .team-drawer__zero-cta { color: #1b2636; }
 .team-drawer__zero-actions button { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; margin: 0; }
 .team-drawer__zero-import { padding: 0 16px; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; color: var(--text); }
 
+.display-settings-dialog > h2 { position: relative; padding-right: 44px; }
+.display-settings-close {
+  position: absolute;
+  right: 0;
+  top: -6px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.display-settings-close:hover { color: var(--text); }
+@media (max-width: 620px) {
+  .display-settings-close { width: 44px; height: 44px; top: -10px; }
+}
+
 .display-settings-dialog .display-settings-option {
   border: 0;
   border-bottom: 1px solid var(--border);

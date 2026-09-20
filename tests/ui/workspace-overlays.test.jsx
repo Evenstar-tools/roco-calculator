@@ -81,6 +81,43 @@ test.each([true, false])("底栏共用容器且两个入口独立，承伤对比
   }
 });
 
+test.each(["close", "done", "escape", "backdrop"])("显示设置限制焦点并恢复滚动与菜单焦点：%s", (method) => {
+  const trigger = document.createElement("button");
+  trigger.setAttribute("aria-label", "打开菜单");
+  document.body.append(trigger);
+  trigger.focus();
+  const previousOverflow = document.body.style.overflow;
+  const priorLock = method === "backdrop" ? "hidden" : "clip";
+  document.body.style.overflow = priorLock;
+  const onClose = vi.fn();
+  const onTypeCoverageChange = vi.fn();
+  const { unmount } = renderOverlays({
+    menu: { open: false },
+    displaySettings: { open: true, onClose, onTypeCoverageChange },
+  });
+  const dialog = screen.getByRole("dialog", { name: "显示设置" });
+  const close = within(dialog).getByRole("button", { name: "关闭显示设置" });
+  const done = within(dialog).getByRole("button", { name: "完成" });
+  expect(close).toHaveFocus();
+  expect(document.body.style.overflow).toBe("hidden");
+  fireEvent.keyDown(close, { key: "Tab", shiftKey: true });
+  expect(done).toHaveFocus();
+  fireEvent.keyDown(done, { key: "Tab" });
+  expect(close).toHaveFocus();
+  fireEvent.click(within(dialog).getByRole("checkbox", { name: "属性克制与打击面" }));
+  expect(onTypeCoverageChange).toHaveBeenCalledWith(true);
+  expect(onClose).not.toHaveBeenCalled();
+  if (method === "escape") fireEvent.keyDown(document, { key: "Escape" });
+  else if (method === "backdrop") fireEvent.mouseDown(dialog.parentElement);
+  else fireEvent.click(method === "close" ? close : done);
+  expect(onClose).toHaveBeenCalledOnce();
+  unmount();
+  expect(trigger).toHaveFocus();
+  expect(document.body.style.overflow).toBe(priorLock);
+  trigger.remove();
+  document.body.style.overflow = previousOverflow;
+});
+
 test("keeps menu before workspace and closes it with Escape", () => {
   const { menuButtonRef, onMenuClose } = renderOverlays();
 

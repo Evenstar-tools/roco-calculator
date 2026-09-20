@@ -1,5 +1,5 @@
 import { X } from "@phosphor-icons/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ResultRail } from "./ResultRail.jsx";
 import { TeamDrawer } from "./TeamDrawer.jsx";
 import { ConfigLibraryDialog } from "./ConfigLibraryDialog.jsx";
@@ -49,6 +49,7 @@ export function WorkspaceOverlays({
   const mobileRefs = mobileResult.refs ?? {};
   const shareActions = share.actions ?? {};
   const shareRefs = share.refs ?? {};
+  const displaySettingsRef = useRef(null);
 
   useEffect(() => {
     if (!mobileResult.open) return undefined;
@@ -76,17 +77,19 @@ export function WorkspaceOverlays({
   }, [mobileResult.open]);
 
   useEffect(() => {
-    if (!share.open && !share.pendingState) {
+    if (!share.open && !share.pendingState && !displaySettings.open) {
       return undefined;
     }
     const trigger = document.activeElement;
-    const dialog = share.open
+    const dialog = displaySettings.open ? displaySettingsRef.current : share.open
       ? shareRefs.dialog?.current
       : shareRefs.version?.current;
     dialog?.querySelector(FOCUSABLE_SELECTOR)?.focus();
     const onKeyDown = (event) => {
       if (event.key === "Escape") {
-        shareActions.onCloseAll?.();
+        event.preventDefault();
+        if (displaySettings.open) displaySettings.onClose?.();
+        else shareActions.onCloseAll?.();
         return;
       }
       trapFocus(event, dialog);
@@ -97,14 +100,14 @@ export function WorkspaceOverlays({
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
-      if (trigger instanceof HTMLElement && trigger.isConnected) {
+      if (trigger instanceof HTMLElement && trigger !== document.body && trigger.isConnected) {
         trigger.focus();
       } else {
         document.querySelector('[aria-label="打开菜单"]')?.focus();
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- actions/refs 每轮都是新对象
-  }, [share.open, share.pendingState]);
+  }, [share.open, share.pendingState, displaySettings.open]);
 
   useEffect(() => {
     if (!menu.open) return undefined;
@@ -322,7 +325,7 @@ export function WorkspaceOverlays({
 
       <ProductAccessDialog {...productAccess} />
 
-      <DisplaySettingsDialog {...displaySettings} />
+      <DisplaySettingsDialog {...displaySettings} dialogRef={displaySettingsRef} />
 
       {cleanupConfigs.open ? (
         <div

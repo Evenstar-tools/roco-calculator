@@ -584,6 +584,25 @@ export function AdvancedOptions({
   const consumedAdvancedTopRequestRef = useRef(null);
   const open = controlledOpen ?? internalOpen;
   const bloodlineMagic = getBloodlineMagicOption(bloodlineMagicId);
+  const conditions = [];
+  const weatherLabel = { rain: "雨天", thunder: "雷鸣", sandstorm: "沙暴", blizzard: "暴风雪" }[weather];
+  if (weatherLabel) conditions.push(weatherLabel);
+  if (reductionPercent > 0) conditions.push(`减伤 ${reductionPercent}%`);
+  if (finalMultiplier != null && Number(finalMultiplier) !== 1) conditions.push(`伤害 ×${finalMultiplier}`);
+  if (bloodlineMagic.id !== "none") conditions.push(`${bloodlineMagic.name}${bloodlineMagicTriggered ? "" : "（未使用）"}`);
+  for (const [side, label] of [["attacker", "进攻"], ["defender", "防御"]]) {
+    for (const value of Object.values(marks?.[side] ?? {})) {
+      const mark = markDefinition(value?.id);
+      if (mark && value.stacks > 0) conditions.push(`${label}${mark.name} ${value.stacks}层`);
+    }
+    if (negativeStatusEnabled) {
+      const statuses = normalizeNegativeStatusSide(negativeStatuses?.[side]);
+      for (const key of NEGATIVE_STATUS_KEYS) {
+        if (statuses[key] > 0) conditions.push(`${label}${NEGATIVE_STATUS_DEFINITIONS[key].label} ${statuses[key]}层`);
+      }
+    }
+  }
+  const conditionSummary = conditions.slice(0, 2).join(" · ") + (conditions.length > 2 ? ` +${conditions.length - 2}` : "");
 
   function setOpen(value) {
     if (controlledOpen === undefined) setInternalOpen(value);
@@ -609,6 +628,8 @@ export function AdvancedOptions({
     >
       <button
         aria-expanded={open}
+        aria-label="高级选项"
+        aria-description={!open && conditions.length ? `已配置：${conditions.join("、")}；是否生效以计算结果为准` : undefined}
         className="advanced-options__toggle"
         onClick={() => setOpen(!open)}
         ref={advancedToggleRef}
@@ -617,6 +638,11 @@ export function AdvancedOptions({
         <span>
           <SlidersHorizontal aria-hidden="true" size={19} />
           高级选项
+          {!open && conditionSummary ? (
+            <small className="advanced-options__summary" title={`已配置：${conditions.join("、")}；是否生效以计算结果为准`}>
+              {conditionSummary}
+            </small>
+          ) : null}
         </span>
         <CaretDown aria-hidden="true" size={16} weight="bold" />
       </button>

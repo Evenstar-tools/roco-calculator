@@ -197,83 +197,85 @@ function SkillSide({
         <span>{label}</span>
         <strong>{name}</strong>
       </header>
-      {traitEditor}
-      {offensiveTraitInputs.length > 0 ||
-      trait?.skillPowerBonuses?.length > 0 ||
-      showsLifestealCapability ? (
-        <div className="four-skill-trait-controls">
-          <TraitHint description={trait.description} name={trait.name} />
-          <TraitSkillPowerBonuses
-            ariaLabel={`${trait.name}技能加成`}
-            bonuses={trait.skillPowerBonuses}
-          />
-          <TraitAutomaticStack
-            automaticStack={trait.automaticStack}
-            skills={selectedSkills}
-          />
-          {showsLifestealCapability ? (
-            <small className="trait-capability-note">
-              吸血 {lifesteal.levels}层 · {lifesteal.percent}%
-            </small>
-          ) : null}
-          <TraitInputs
-            context={traitContext}
-            inputs={offensiveTraitInputs}
-            onChange={(key, value) =>
-              onTraitContextChange?.(side, key, value)
-            }
-          />
-        </div>
-      ) : null}
-      {defensiveTraitInputs.length > 0 ? (
-        <div className="four-skill-trait-controls four-skill-trait-controls--defense">
-          <TraitHint
-            description={defenseTrait.description}
-            name={`${opponentName} · ${defenseTrait.name}`}
-          />
-          <TraitInputs
-            context={traitContext}
-            inputs={defensiveTraitInputs}
-            onChange={(key, value) =>
-              onTraitContextChange?.(side, key, value)
-            }
-          />
-        </div>
-      ) : null}
-      {hasSelfHpRule && health ? (
-        <div className="four-skill-health">
-          <span>自身生命</span>
-          <HealthInput
-            currentHp={health.currentHp}
-            defaultMode="percent"
-            label={label}
-            maxHp={health.maxHp}
-            onCurrentHpChange={(value) => onHealthChange?.(side, value)}
-            onPercentChange={(value) =>
-              onHealthPercentChange?.(side, value)
-            }
-            percentValue={health.percent}
-          />
-        </div>
-      ) : null}
-      {hasTargetHpRule && opponentHealth ? (
-        <div className="four-skill-health">
-          <span>对方生命</span>
-          <HealthInput
-            currentHp={opponentHealth.currentHp}
-            defaultMode="percent"
-            label={opponentLabel}
-            maxHp={opponentHealth.maxHp}
-            onCurrentHpChange={(value) =>
-              onHealthChange?.(opponentSide, value)
-            }
-            onPercentChange={(value) =>
-              onHealthPercentChange?.(opponentSide, value)
-            }
-            percentValue={opponentHealth.percent}
-          />
-        </div>
-      ) : null}
+      <div className="four-skill-side__conditions">
+        {traitEditor}
+        {offensiveTraitInputs.length > 0 ||
+        trait?.skillPowerBonuses?.length > 0 ||
+        showsLifestealCapability ? (
+          <div className="four-skill-trait-controls">
+            <TraitHint description={trait.description} name={trait.name} />
+            <TraitSkillPowerBonuses
+              ariaLabel={`${trait.name}技能加成`}
+              bonuses={trait.skillPowerBonuses}
+            />
+            <TraitAutomaticStack
+              automaticStack={trait.automaticStack}
+              skills={selectedSkills}
+            />
+            {showsLifestealCapability ? (
+              <small className="trait-capability-note">
+                吸血 {lifesteal.levels}层 · {lifesteal.percent}%
+              </small>
+            ) : null}
+            <TraitInputs
+              context={traitContext}
+              inputs={offensiveTraitInputs}
+              onChange={(key, value) =>
+                onTraitContextChange?.(side, key, value)
+              }
+            />
+          </div>
+        ) : null}
+        {defensiveTraitInputs.length > 0 ? (
+          <div className="four-skill-trait-controls four-skill-trait-controls--defense">
+            <TraitHint
+              description={defenseTrait.description}
+              name={`${opponentName} · ${defenseTrait.name}`}
+            />
+            <TraitInputs
+              context={traitContext}
+              inputs={defensiveTraitInputs}
+              onChange={(key, value) =>
+                onTraitContextChange?.(side, key, value)
+              }
+            />
+          </div>
+        ) : null}
+        {hasSelfHpRule && health ? (
+          <div className="four-skill-health">
+            <span>自身生命</span>
+            <HealthInput
+              currentHp={health.currentHp}
+              defaultMode="percent"
+              label={label}
+              maxHp={health.maxHp}
+              onCurrentHpChange={(value) => onHealthChange?.(side, value)}
+              onPercentChange={(value) =>
+                onHealthPercentChange?.(side, value)
+              }
+              percentValue={health.percent}
+            />
+          </div>
+        ) : null}
+        {hasTargetHpRule && opponentHealth ? (
+          <div className="four-skill-health">
+            <span>对方生命</span>
+            <HealthInput
+              currentHp={opponentHealth.currentHp}
+              defaultMode="percent"
+              label={opponentLabel}
+              maxHp={opponentHealth.maxHp}
+              onCurrentHpChange={(value) =>
+                onHealthChange?.(opponentSide, value)
+              }
+              onPercentChange={(value) =>
+                onHealthPercentChange?.(opponentSide, value)
+              }
+              percentValue={opponentHealth.percent}
+            />
+          </div>
+        ) : null}
+      </div>
       <div className="skill-slot-list">
         <div aria-hidden="true" className="skill-slot skill-slot--head">
           <span />
