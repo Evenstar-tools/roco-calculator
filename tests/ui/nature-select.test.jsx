@@ -5,8 +5,8 @@ import { expect, test, vi } from "vitest";
 import { NatureSelect } from "../../src/components/NatureSelect.jsx";
 import { NATURES, STAT_LABELS } from "../../src/domain/natures.js";
 
-function Harness({ onChange = () => {} }) {
-  const [value, setValue] = useState("timid");
+function Harness({ onChange = () => {}, initialValue = "timid" }) {
+  const [value, setValue] = useState(initialValue);
   return <><NatureSelect ariaLabel="测试性格" value={value} onChange={id => { setValue(id); onChange(id); }} /><button>外部</button></>;
 }
 const trigger = () => screen.getByRole("combobox", { name: "测试性格" });
@@ -26,13 +26,12 @@ test("窄选择栏展开保持可读宽度，并在小窗口边缘限位", () =>
   } finally { width.mockRestore(); height.mockRestore(); }
 });
 
-test("首开七行，点击展开后最多十二行，再次打开收起且保留已选", async () => {
+test("已有性格自动展开所属组，重新打开定位已选而非上次浏览组", async () => {
   const user = userEvent.setup();
   render(<Harness />);
   await user.click(trigger());
-  expect(screen.getAllByRole("treeitem")).toHaveLength(7);
-  await user.click(group("速度"));
   expect(screen.getAllByRole("treeitem")).toHaveLength(12);
+  expect(group("速度")).toHaveAttribute("aria-expanded", "true");
   expect(screen.getByRole("treeitem", { name: "胆小（+速度 -物攻）" })).toHaveAttribute("aria-selected", "true");
   await user.click(group("速度"));
   expect(screen.getAllByRole("treeitem")).toHaveLength(12);
@@ -41,7 +40,23 @@ test("首开七行，点击展开后最多十二行，再次打开收起且保�
   expect(trigger()).toHaveFocus();
   expect(screen.queryByRole("tree")).not.toBeInTheDocument();
   await user.click(trigger());
-  expect(screen.getAllByRole("treeitem")).toHaveLength(7);
+  expect(screen.getAllByRole("treeitem")).toHaveLength(12);
+  expect(screen.getByRole("treeitem", { name: "开朗（+速度 -魔攻）" })).toHaveAttribute("aria-selected", "true");
+  await user.click(group("生命"));
+  await user.keyboard("{Escape}");
+  await user.click(trigger());
+  expect(group("速度")).toHaveAttribute("aria-expanded", "true");
+  expect(group("生命")).toHaveAttribute("aria-expanded", "false");
+});
+
+test.each(NATURES.filter(n => n.upStat))("打开 $name 时展开其增益组且不提交修改", ({ id, name, upStat, downStat }) => {
+  const onChange = vi.fn();
+  render(<Harness initialValue={id} onChange={onChange} />);
+  fireEvent.click(trigger());
+  expect(group(STAT_LABELS[upStat])).toHaveAttribute("aria-expanded", "true");
+  expect(screen.getAllByRole("treeitem")).toHaveLength(12);
+  expect(screen.getByRole("treeitem", { name: `${name}（+${STAT_LABELS[upStat]} -${STAT_LABELS[downStat]}）` })).toHaveAttribute("aria-selected", "true");
+  expect(onChange).not.toHaveBeenCalled();
 });
 
 test("六组各五项均可选择且共用原性格映射，普通可直接选择", async () => {
@@ -60,13 +75,16 @@ test("六组各五项均可选择且共用原性格映射，普通可直接选�
   await user.click(screen.getByRole("treeitem", { name: "普通（无修正）" }));
   expect(trigger()).toHaveValue("neutral");
   expect(onChange).toHaveBeenCalledTimes(31);
+  await user.click(trigger());
+  expect(screen.getAllByRole("treeitem")).toHaveLength(7);
+  expect(screen.getByRole("treeitem", { name: "普通（无修正）" })).toHaveAttribute("aria-selected", "true");
 });
 
 test("悬停延迟展开，不提交；跨组替换，离开标题进入子项不收起，卸载清定时器", () => {
   vi.useFakeTimers();
   try {
     const onChange = vi.fn();
-    const view = render(<Harness onChange={onChange} />);
+    const view = render(<Harness onChange={onChange} initialValue="neutral" />);
     fireEvent.click(trigger());
     fireEvent.pointerEnter(group("速度"), { pointerType: "mouse" });
     act(() => vi.advanceTimersByTime(149));

@@ -612,8 +612,10 @@ test("nature step keeps final panel, race, individual values, and level controls
   });
   expect(attackerNature).toHaveTextContent("固执（+物攻 -魔攻）");
   await user.click(attackerNature);
-  expect(screen.getAllByRole("treeitem")).toHaveLength(7);
-  expect(screen.getAllByRole("treeitem").slice(1).map(item => item.textContent))
+  expect(screen.getAllByRole("treeitem")).toHaveLength(12);
+  expect(screen.getByRole("treeitem", { name: "物攻增益 +20%" })).toHaveAttribute("aria-expanded", "true");
+  expect(screen.getByRole("treeitem", { name: "固执（+物攻 -魔攻）" })).toHaveAttribute("aria-selected", "true");
+  expect(screen.getAllByRole("treeitem").filter(item => item.hasAttribute("data-group")).map(item => item.textContent))
     .toEqual(["生命增益+20%", "物攻增益+20%", "魔攻增益+20%", "速度增益+20%", "物防增益+20%", "魔防增益+20%"]);
   await user.click(screen.getByRole("treeitem", { name: "生命增益 +20%" }));
   expect(screen.getByRole("treeitem", { name: "踏实（+生命 -速度）" })).toBeVisible();

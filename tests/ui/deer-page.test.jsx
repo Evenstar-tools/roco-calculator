@@ -341,6 +341,43 @@ test("四种模板直接改变伤害，手调显示自定义，不覆盖本地�
   expect(JSON.stringify(localStorage)).toBe(before);
 });
 
+test("暗注勾选调整自身血量并复算，取消恢复满血且不改目标或通电", () => {
+  render(<DeerWorkspace snapshot={snapshot} />);
+  const toggle = screen.getByRole("checkbox", { name: "触发暗特效" });
+  const before = skillRow("下注 · 暗").textContent;
+  const defenderHp = screen.getByLabelText("目标HP").value;
+  expect(toggle).not.toBeChecked();
+  fireEvent.click(toggle);
+  expect(toggle).toBeChecked();
+  expect(screen.getByRole("button", { name: /战斗条件/ })).toHaveTextContent("自身HP 49%");
+  expect(skillRow("下注 · 暗").textContent).not.toBe(before);
+  expect(screen.getByLabelText("目标HP")).toHaveValue(Number(defenderHp));
+  expect(screen.getByLabelText("触发2层引电")).not.toBeChecked();
+  fireEvent.click(screen.getByRole("button", { name: /战斗条件/ }));
+  expect(screen.getByLabelText("自身HP")).toHaveValue(49);
+  fireEvent.click(screen.getByRole("button", { name: "查看下注 · 暗详情" }));
+  expect(screen.getByText(/实际威力 185/)).toBeInTheDocument();
+  fireEvent.click(toggle);
+  expect(toggle).not.toBeChecked();
+  expect(screen.getByLabelText("自身HP")).toHaveValue(100);
+  expect(screen.getByText(/实际威力 85/)).toBeInTheDocument();
+});
+
+test("暗注勾选状态跟随手动血量，边界按实际整数生命判定", () => {
+  render(<DeerWorkspace snapshot={snapshot} />);
+  fireEvent.click(screen.getByRole("button", { name: /战斗条件/ }));
+  const hp = screen.getByLabelText("自身HP");
+  const toggle = screen.getByRole("checkbox", { name: "触发暗特效" });
+  // 默认最大生命377：49.99%取整为188，仍严格低于半血188.5。
+  for (const [value, active] of [[49, true], [50, false], [20, true], [100, false], [49.99, true]]) {
+    fireEvent.change(hp, { target: { value: String(value) } });
+    if (active) expect(toggle).toBeChecked();
+    else expect(toggle).not.toBeChecked();
+  }
+  fireEvent.click(screen.getByRole("button", { name: "查看下注 · 暗详情" }));
+  expect(screen.getByText(/实际威力 185/)).toBeInTheDocument();
+});
+
 test("技能详情展示11层实算，暗注49%与50%边界联动", () => {
   render(<DeerWorkspace snapshot={snapshot} />);
   const at100 = skillRow("下注 · 暗").textContent;

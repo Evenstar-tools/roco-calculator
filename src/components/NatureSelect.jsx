@@ -40,7 +40,7 @@ export function NatureSelect({ ariaLabel, onChange, value }) {
     if (restoreFocus) trigger.current?.focus();
   }
   function show() {
-    setExpanded(null);
+    setExpanded(selected.upStat ?? null);
     setOpen(true);
   }
   function choose(id) {
