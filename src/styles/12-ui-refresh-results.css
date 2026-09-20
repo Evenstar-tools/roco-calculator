@@ -295,6 +295,10 @@ html[data-theme="dark"] .result-rail__warning {
   font-size: 24px;
 }
 
+.result-rail__percent[data-status="非伤害技能不计算伤害"] {
+  color: var(--text-muted);
+}
+
 .result-rail__lethal,
 .damage-bar__label {
   font-size: 12px;
@@ -457,7 +461,7 @@ html[data-theme="dark"] .health-input__modes .health-input__mode[aria-pressed="t
 
 .skill-result-row {
   min-height: 38px;
-  font-size: 11px;
+  font-size: 12px;
   gap: 5px;
   grid-template-columns: 15px minmax(58px, 0.8fr) minmax(56px, 1fr) 48px 44px;
 }
@@ -474,7 +478,7 @@ html[data-theme="dark"] .health-input__modes .health-input__mode[aria-pressed="t
   padding: 0 9px;
   border-bottom: 1px solid var(--border);
   color: var(--text-faint);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   grid-template-columns: 15px minmax(58px, 0.8fr) minmax(56px, 1fr) 48px 44px;
 }
@@ -491,7 +495,7 @@ html[data-theme="dark"] .health-input__modes .health-input__mode[aria-pressed="t
 
 .skill-result-row__damage {
   color: var(--text);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   text-align: right;

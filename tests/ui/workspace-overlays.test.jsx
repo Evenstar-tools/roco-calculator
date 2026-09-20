@@ -98,6 +98,21 @@ test.each([true, false])("底栏共用容器且两个入口独立，承伤对比
   }
 });
 
+test.each([
+  ["非伤害技能不计算伤害", "非伤害"],
+  ["需要更多输入", "待输入"],
+  ["该规则暂未验证", "待输入"],
+])("底栏区分非伤害与待输入：%s", (reason, text) => {
+  renderOverlays({ menu: { open: false }, mobileResult: {
+    configurationReady: true, open: false, viewMode: "compact",
+    result: { attackerName: "银月狼王", defenderName: "布灵布灵",
+      selectedResult: { totalDamage: null, hpPercent: null, reason } },
+  } });
+  const bar = screen.getByRole("button", { name: "展开伤害结果" });
+  expect(bar.querySelector(".mobile-result-bar__percent")).toHaveTextContent(text);
+  expect(bar.querySelector(".mobile-result-bar__damage")).toHaveTextContent("—");
+});
+
 test.each(["close", "done", "escape", "backdrop"])("显示设置限制焦点并恢复滚动与菜单焦点：%s", (method) => {
   const trigger = document.createElement("button");
   trigger.setAttribute("aria-label", "打开菜单");

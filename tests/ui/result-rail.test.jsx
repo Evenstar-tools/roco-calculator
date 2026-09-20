@@ -63,8 +63,21 @@ test("keeps the exact damage and percent prominent", () => {
   expect(screen.queryByText("技能直接伤害")).not.toBeInTheDocument();
   expect(screen.getByTestId("primary-damage")).toHaveTextContent("399");
   expect(screen.getByText("91.9% HP")).toBeVisible();
+  expect(screen.getByText("91.9% HP")).not.toHaveAttribute("data-status", "非伤害技能不计算伤害");
   expect(screen.queryByText("技能2")).not.toBeInTheDocument();
   expect(screen.queryByText(/随机|范围|置信/)).not.toBeInTheDocument();
+});
+
+test("非伤害使用中性提示，条件不足不冒充非伤害", () => {
+  const withReason = reason => ({ ...result, selectedResult: {
+    status: "unsupported", totalDamage: null, hpPercent: null, reason,
+  } });
+  const { rerender } = render(<ResultRail result={withReason("非伤害技能不计算伤害")} />);
+  expect(screen.getByText("非伤害技能")).toHaveAttribute("data-status", "非伤害技能不计算伤害");
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent("—");
+  rerender(<ResultRail result={withReason("需要更多输入")} />);
+  expect(screen.queryByText("非伤害技能")).toBeNull();
+  expect(screen.getByText("待补充条件")).not.toHaveAttribute("data-status", "非伤害技能不计算伤害");
 });
 
 test("生效来源紧跟血条，无来源时不留下空行", () => {

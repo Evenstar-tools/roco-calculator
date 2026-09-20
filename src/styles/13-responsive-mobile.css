@@ -392,6 +392,10 @@
     padding: 54px 10px 10px;
   }
 
+  .result-drawer :is(.skill-result-row, .skill-result-list__columns) {
+    grid-template-columns: 15px minmax(58px, 0.8fr) minmax(0, 1fr) 48px 44px;
+  }
+
   .result-rail__damage {
     font-size: 44px;
   }

@@ -271,7 +271,7 @@ export function WorkspaceOverlays({
           <span className="mobile-result-bar__percent">
             {Number.isFinite(mobileResult.result.selectedResult.hpPercent)
               ? `${mobileResult.result.selectedResult.hpPercent.toFixed(1)}%`
-              : "待输入"}
+              : mobileResult.result.selectedResult.reason === "非伤害技能不计算伤害" ? "非伤害" : "待输入"}
           </span>
         </button>
         {mobileActions.onOpenComparison ? <button type="button" className="mobile-comparison-entry damage-comparison-entry" onClick={mobileActions.onOpenComparison}>承伤对比</button> : null}

@@ -355,7 +355,7 @@ export function ResultRail({
             <output className="result-rail__damage" data-testid="primary-damage">
               {isExact ? primary.totalDamage : "—"}
             </output>
-            <p className="result-rail__percent">{percentText}</p>
+            <p className="result-rail__percent" data-status={primary.reason}>{percentText}</p>
             <p className="result-rail__lethal">
               {outcomeText}
               {koHits !== null ? (
