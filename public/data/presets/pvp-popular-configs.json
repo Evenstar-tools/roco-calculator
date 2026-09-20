@@ -396,17 +396,17 @@
       "natureId": "silent",
       "displayIvs": {
         "hp": 60,
-        "speed": 0,
+        "speed": 60,
         "physicalAttack": 0,
-        "magicalAttack": 0,
-        "physicalDefense": 60,
-        "magicalDefense": 60
+        "magicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalDefense": 0
       },
       "skills": [
-        "skill_36daddc54d5080ac",
         "skill_5b63e27eb533acc7",
-        "skill_9160e6b56ed66168",
-        "skill_cbd9a78a962384b4"
+        "skill_36daddc54d5080ac",
+        "skill_ae8d9f6a8367af02",
+        "skill_87a6120cd7f66c8e"
       ],
       "traitValues": {}
     },

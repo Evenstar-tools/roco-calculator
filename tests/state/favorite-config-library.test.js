@@ -178,6 +178,16 @@ describe("buildFavoriteConfigLibrary", () => {
 });
 
 describe("bundled popular config library", () => {
+  test("加尔按截图使用沉默、生命魔攻速度个体及指定四技能顺序", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    const entry = library.entries.find(({ spiritId }) => spiritId === "spirit_837f83264c04abe9");
+    expect(entry).toEqual({
+      spiritId: "spirit_837f83264c04abe9", natureId: "silent",
+      displayIvs: { hp: 60, speed: 60, physicalAttack: 0, magicalAttack: 60, physicalDefense: 0, magicalDefense: 0 },
+      skills: ["skill_5b63e27eb533acc7", "skill_36daddc54d5080ac", "skill_ae8d9f6a8367af02", "skill_87a6120cd7f66c8e"],
+      traitValues: {},
+    });
+  });
   test("机幕方舟按截图使用沉默、满生命双防及电系愿力冲击", () => {
     const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
     const entry = library.entries.find(({ spiritId }) => spiritId === "spirit_37e0a0d6a0d4b993");
