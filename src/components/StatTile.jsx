@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from "react";
 import { StatIcon } from "./StatIcon.jsx";
+import { getNature } from "../domain/natures.js";
 
 function clampIv(value) {
   const numeric = Number.parseInt(String(value), 10);
@@ -14,6 +15,7 @@ export function StatTile({
   delta = 0,
   displayIv,
   label,
+  natureId = "neutral",
   onIvChange,
   onPanelToggle,
   panel,
@@ -53,7 +55,7 @@ export function StatTile({
   const valueContent = (
     <>
       <span className="stat-tile__label" title={label}>
-        <StatIcon stat={stat} />
+        <StatIcon gain={getNature(natureId).upStat === stat} stat={stat} />
         <span className="stat-tile__label-text">{label}</span>
       </span>
       <div className="stat-tile__panel-row">

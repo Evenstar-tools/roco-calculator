@@ -132,6 +132,7 @@ function SideStats({
             displayIv={stat.displayIv}
             key={stat.key}
             label={stat.label}
+            natureId={side.nature}
             onIvChange={(value) => onIvChange(stat.key, value)}
             onPanelToggle={() =>
               setPanelView({

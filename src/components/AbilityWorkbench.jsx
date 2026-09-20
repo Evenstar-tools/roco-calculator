@@ -236,7 +236,7 @@ function CurrentSummary({ durability, panel, label }) {
   );
 }
 
-function InvestmentPicker({ onChange, onReplace, panel, validation, values }) {
+function InvestmentPicker({ natureId, onChange, onReplace, panel, validation, values }) {
   const [replacementStat, setReplacementStat] = useState(null);
   const replacementLabel = INVESTMENT_STATS.find(
     ({ key }) => key === replacementStat,
@@ -274,7 +274,7 @@ function InvestmentPicker({ onChange, onReplace, panel, validation, values }) {
               type="button"
             >
               <span className="ability-investments__label">
-                <StatIcon size={17} stat={key} />
+                <StatIcon gain={getNature(natureId).upStat === key} size={17} stat={key} />
                 <span>{label}</span>
               </span>
               <span aria-label={`${label}实际值`} className="ability-investments__value">
@@ -1355,6 +1355,7 @@ export function AbilityWorkbench({
       </summary>
       <div className="ability-draft-controls">
         <InvestmentPicker
+          natureId={draft.natureId}
           onChange={updateInvestment}
           onReplace={replaceInvestment}
           panel={panel}

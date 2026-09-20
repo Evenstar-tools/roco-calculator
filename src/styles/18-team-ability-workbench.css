@@ -732,7 +732,7 @@
   font-weight: 700;
 }
 
-.ability-draft-nature .nature-select select {
+.ability-draft-nature .nature-select .nature-select__trigger {
   height: 40px;
   background: var(--surface);
 }
@@ -2247,7 +2247,7 @@
     gap: 6px;
   }
 
-  .team-workbench .team-member-editor__nature .nature-select select,
+  .team-workbench .team-member-editor__nature .nature-select .nature-select__trigger,
   .team-workbench .team-member-editor__bloodline select,
   .team-workbench .team-member-editor__skills .skill-picker {
     min-height: 44px;
@@ -2349,7 +2349,7 @@
     padding: 10px;
   }
 
-  .ability-draft-nature .nature-select select {
+  .ability-draft-nature .nature-select .nature-select__trigger {
     min-height: 44px;
   }
 

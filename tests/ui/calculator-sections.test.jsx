@@ -610,22 +610,14 @@ test("nature step keeps final panel, race, individual values, and level controls
   const attackerNature = screen.getByRole("combobox", {
     name: "攻击方性格",
   });
-  expect(
-    within(attackerNature).getByRole("option", {
-      name: "固执（+物攻 -魔攻）",
-    }),
-  ).toBeVisible();
-  expect(
-    within(attackerNature).getByRole("option", {
-      name: "踏实（+生命 -速度）",
-    }),
-  ).toBeVisible();
-  expect(
-    Array.from(attackerNature.querySelectorAll("optgroup")).map(
-      (group) => group.label,
-    ),
-  ).toEqual(["+生命", "+物攻", "+魔攻", "+速度", "+物防", "+魔防"]);
-  expect(screen.getAllByRole("option")).toHaveLength(62);
+  expect(attackerNature).toHaveTextContent("固执（+物攻 -魔攻）");
+  await user.click(attackerNature);
+  expect(screen.getAllByRole("treeitem")).toHaveLength(7);
+  expect(screen.getAllByRole("treeitem").slice(1).map(item => item.textContent))
+    .toEqual(["生命增益+20%", "物攻增益+20%", "魔攻增益+20%", "速度增益+20%", "物防增益+20%", "魔防增益+20%"]);
+  await user.click(screen.getByRole("treeitem", { name: "生命增益 +20%" }));
+  expect(screen.getByRole("treeitem", { name: "踏实（+生命 -速度）" })).toBeVisible();
+  await user.keyboard("{Escape}");
   expect(screen.getByText("+20% ↑")).toBeVisible();
   expect(screen.getByText("-10% ↓")).toBeVisible();
   expect(screen.getAllByRole("spinbutton")).toHaveLength(12);

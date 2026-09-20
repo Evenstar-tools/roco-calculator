@@ -184,6 +184,7 @@ export function TeamMemberEditor({
                 displayIv={member.displayIvs[key]}
                 key={key}
                 label={label}
+                natureId={member.natureId}
                 onIvChange={(value) =>
                   onChange({
                     ...member,

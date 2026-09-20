@@ -31,7 +31,9 @@ test("速度轴常显；微调默认收起，展开和收起不会应用草稿",
   fireEvent.click(screen.getByText("手动微调"));
   expect(manual).toHaveAttribute("open");
   expect(screen.getByLabelText("能力分析性格")).toBeVisible();
-  fireEvent.change(screen.getByLabelText("能力分析性格"), { target: { value: "silent" } });
+  fireEvent.click(screen.getByLabelText("能力分析性格"));
+  fireEvent.click(screen.getByRole("treeitem", { name: "生命增益 +20%" }));
+  fireEvent.click(screen.getByRole("treeitem", { name: "沉默（+生命 -物攻）" }));
   fireEvent.click(screen.getByText("手动微调"));
   expect(manual).not.toHaveAttribute("open");
   expect(manual).toHaveTextContent("沉默");
@@ -46,7 +48,9 @@ test("保存摘要和试算分开标注，速度一览沿用草稿状态且本�
   const current = document.querySelector(".ability-speed__marker.is-current");
   expect(current.querySelector("img")).toHaveAttribute("src", "/assets/spirit-test/0.png");
   fireEvent.click(screen.getByText("手动微调"));
-  fireEvent.change(screen.getByLabelText("能力分析性格"), { target: { value: "timid" } });
+  fireEvent.click(screen.getByLabelText("能力分析性格"));
+  fireEvent.click(screen.getByRole("treeitem", { name: "速度增益 +20%" }));
+  fireEvent.click(screen.getByRole("treeitem", { name: "胆小（+速度 -物攻）" }));
   expect(current).toHaveTextContent("试算配置");
   expect(document.querySelector(".ability-speed__comparison")).toHaveTextContent("试算 220");
   expect(summary.textContent).toBe(saved);

@@ -71,6 +71,7 @@ import { createSpiritSearchIndex } from "./data/search-index.js";
 import { withCalculatorExtras } from "./data/snapshot-extras.js";
 import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
 import { useCalculatorSession } from "./hooks/useCalculatorSession.js";
+import { useCalculatorShortcuts } from "./hooks/useCalculatorShortcuts.js";
 import {
   POPULAR_CONFIG_COUNT,
   useConfigLibraryFlow,
@@ -134,8 +135,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(initialWorkspace?.advancedOptionsOpen ?? false);
   const [advancedOptionsTopRequest, setAdvancedOptionsTopRequest] = useState(null);
   const nextAdvancedOptionsTopRequestRef = useRef(0);
-  const [viewMode, setViewMode] = useState(() => initialWorkspace?.viewMode ?? readViewModeSetting());
-  useEffect(() => { writeViewModeSetting(viewMode); }, [viewMode]);
+  const [savedViewMode, setViewMode] = useState(() => initialWorkspace?.viewMode ?? readViewModeSetting());
+  const [previewViewMode, setPreviewViewMode] = useState(null);
+  const viewMode = previewViewMode ?? savedViewMode;
+  useEffect(() => { writeViewModeSetting(savedViewMode); }, [savedViewMode]);
   const storedData = useStoredCalculatorData(snapshot, { onToast: setToast });
   const {
     completeSpiritIds,
@@ -477,6 +480,14 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
       shareFlow.overlayProps.pendingState,
   );
   const firstRunGuideVisible = firstRunGuide.open && !overlayCoveringGuide;
+  useCalculatorShortcuts({
+    enabled: !overlayCoveringGuide && !firstRunGuideVisible && !skillQueryOpen && !transmissionOpen && !typeQueryOpen && !rankingKind,
+    viewMode: savedViewMode,
+    onPreview: setPreviewViewMode,
+    onModeChange: setViewMode,
+    canUndo: undoCount > 0,
+    onUndo: undoLastChange,
+  });
 
   // 完成"选攻击方/选防御方"时引导自动推进;只在选择从无到有时前进,不干扰"上一步"。
   const guideSelectionRef = useRef({

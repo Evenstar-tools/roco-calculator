@@ -415,10 +415,9 @@ test("creates and edits one of six team members", async () => {
     ).toBeVisible(),
   );
 
-  await user.selectOptions(
-    screen.getByRole("combobox", { name: "成员性格" }),
-    "adamant",
-  );
+  await user.click(screen.getByRole("combobox", { name: "成员性格" }));
+  await user.click(screen.getByRole("treeitem", { name: "物攻增益 +20%" }));
+  await user.click(screen.getByRole("treeitem", { name: "固执（+物攻 -魔攻）" }));
   const attackIv = screen.getByRole("spinbutton", { name: "物攻个体" });
   await user.clear(attackIv);
   await user.type(attackIv, "60");
@@ -949,7 +948,9 @@ test("更换精灵清空搜索词但不清除已存成员，取消和连续更�
     const input = () => screen.getByRole("combobox", { name: "成员精灵" });
     await user.click(input());
     await user.click(screen.getByRole("option", { name: /音速犬/ }));
-    await user.selectOptions(screen.getByLabelText("成员性格"), "adamant");
+    await user.click(screen.getByLabelText("成员性格"));
+    await user.click(screen.getByRole("treeitem", { name: "物攻增益 +20%" }));
+    await user.click(screen.getByRole("treeitem", { name: "固执（+物攻 -魔攻）" }));
     for (const fromAnalysis of [false, true]) {
       if (fromAnalysis) await user.click(screen.getByRole("button", { name: "能力分析", exact: true }));
       await user.click(screen.getByRole("button", { name: "更换精灵" }));

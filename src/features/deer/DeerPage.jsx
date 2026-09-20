@@ -73,7 +73,7 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
       {!attack && <NumberField label="目标HP" value={setup.defenderHp} min={1} suffix="%" onChange={(value) => onSetup({ defenderHp: value })} />}
     </div>
     {children}
-    {expanded && <div className="deer-manual"><NatureSelect ariaLabel={`${label}性格`} value={side.nature} onChange={(nature) => onSide({ nature })} /><NatureEffect natureId={side.nature} /><div className="stat-grid">{QUICK_STATS.map((stat) => <StatTile key={stat} label={STAT_LABELS[stat]} stat={stat} race={spirit.raceStats[stat]} panel={panels[stat]} displayIv={side.displayIvs[stat]} onIvChange={(value) => setIv(stat, value)} accent={attack ? "attack" : "defense"} />)}</div><p className="deer-muted">仅修改本页，不覆盖计算器收藏配置。</p></div>}
+    {expanded && <div className="deer-manual"><NatureSelect ariaLabel={`${label}性格`} value={side.nature} onChange={(nature) => onSide({ nature })} /><NatureEffect natureId={side.nature} /><div className="stat-grid">{QUICK_STATS.map((stat) => <StatTile key={stat} label={STAT_LABELS[stat]} natureId={side.nature} stat={stat} race={spirit.raceStats[stat]} panel={panels[stat]} displayIv={side.displayIvs[stat]} onIvChange={(value) => setIv(stat, value)} accent={attack ? "attack" : "defense"} />)}</div><p className="deer-muted">仅修改本页，不覆盖计算器收藏配置。</p></div>}
   </section>;
 }
 

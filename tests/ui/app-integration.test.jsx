@@ -3332,10 +3332,9 @@ test("loads one team member into the attack side without linking later edits", a
       within(memberEditor).getByRole("option", { name: /水灵/ }),
     );
   });
-  await user.selectOptions(
-    within(memberEditor).getByRole("combobox", { name: "成员性格" }),
-    "adamant",
-  );
+  await user.click(within(memberEditor).getByRole("combobox", { name: "成员性格" }));
+  await user.click(screen.getByRole("treeitem", { name: "物攻增益 +20%" }));
+  await user.click(screen.getByRole("treeitem", { name: "固执（+物攻 -魔攻）" }));
   const memberAttackIv = within(memberEditor).getByRole("spinbutton", {
     name: "物攻个体",
   });

@@ -332,7 +332,9 @@ test("四种模板直接改变伤害，手调显示自定义，不覆盖本地�
   expect(skillRow("电弧 · 普通").textContent).not.toBe(base);
   const defense = screen.getByRole("region", { name: "防御方配置" });
   fireEvent.click(within(defense).getByRole("button", { name: "手调配置" }));
-  fireEvent.change(screen.getByLabelText("防御方性格"), { target: { value: "silent" } });
+  fireEvent.click(screen.getByLabelText("防御方性格"));
+  fireEvent.click(screen.getByRole("treeitem", { name: "生命增益 +20%" }));
+  fireEvent.click(screen.getByRole("treeitem", { name: "沉默（+生命 -物攻）" }));
   fireEvent.change(within(defense).getByLabelText("生命个体"), { target: { value: "42" } });
   expect(within(defense).getByText(/自定义 · 沉默 · 生命42/)).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "无耐久", exact: true })).toHaveAttribute("aria-pressed", "false");

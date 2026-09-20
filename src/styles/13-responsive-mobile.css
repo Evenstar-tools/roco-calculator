@@ -1088,7 +1088,7 @@
     padding-left: 11px;
   }
 
-  .calculator-layout--detailed .nature-select select {
+  .calculator-layout--detailed .nature-select .nature-select__trigger {
     height: 34px;
   }
 

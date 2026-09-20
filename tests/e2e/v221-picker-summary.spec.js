@@ -92,6 +92,6 @@ for (const width of [320,390,700,1024,1424]) for (const theme of ['light','dark'
     writeFileSync(`${out}/summary-${width}-${theme}.json`,JSON.stringify({box:await summary.boundingBox(),parts},null,2));
     // Editing the draft must not silently change the saved-configuration baseline.
     await drawer.getByText('手动微调',{exact:true}).click();
-    const saved=await summary.innerText();await drawer.getByLabel('能力分析性格').selectOption('grounded');await expect(summary).toHaveText(saved, { useInnerText: true });
+    const saved=await summary.innerText();await drawer.getByLabel('能力分析性格').click();await drawer.getByRole('treeitem',{name:'生命增益 +20%'}).click();await drawer.getByRole('treeitem',{name:'踏实（+生命 -速度）'}).click();await expect(summary).toHaveText(saved, { useInnerText: true });
   });
 }

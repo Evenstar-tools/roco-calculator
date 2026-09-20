@@ -116,7 +116,7 @@ export function FloatingUndoButton({ count = 0, onUndo }) {
       onPointerCancel={handlePointerUp}
       onPointerUp={handlePointerUp}
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
-      title={label}
+      title={`${label} · Ctrl+Z，按住连续撤回`}
       type="button"
     >
       <ArrowCounterClockwise aria-hidden="true" size={23} weight="bold" />

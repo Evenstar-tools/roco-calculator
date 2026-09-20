@@ -23,7 +23,7 @@ test("explains the unavailable and available undo states", () => {
 
   view.rerender(<FloatingUndoButton count={3} onUndo={onUndo} />);
   expect(button.textContent).toBe("3");
-  expect(button).toHaveAttribute("title", "撤回上一步（3）");
+  expect(button).toHaveAttribute("title", "撤回上一步（3） · Ctrl+Z，按住连续撤回");
   fireEvent.click(screen.getByRole("button", { name: "撤回上一步（3）" }));
   expect(onUndo).toHaveBeenCalledTimes(1);
 });

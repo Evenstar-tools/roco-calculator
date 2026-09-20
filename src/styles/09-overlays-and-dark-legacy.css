@@ -67,7 +67,7 @@ html[data-theme="dark"] .result-rail,
 html[data-theme="dark"] .spirit-card,
 html[data-theme="dark"] .field-group input,
 html[data-theme="dark"] .field-group select,
-html[data-theme="dark"] .nature-select select,
+html[data-theme="dark"] .nature-select .nature-select__trigger,
 html[data-theme="dark"] .spirit-picker__options,
 html[data-theme="dark"] .skill-picker,
 html[data-theme="dark"] .skill-picker__options,
@@ -274,7 +274,7 @@ html[data-theme="dark"] .formula-group {
   }
 
   .spirit-picker__search,
-  .nature-select select,
+  .nature-select .nature-select__trigger,
   .field-group input,
   .field-group select,
   .skill-picker,
@@ -386,7 +386,7 @@ html[data-theme="dark"] .formula-group {
     grid-template-columns: 126px minmax(0, 1fr);
   }
 
-  .team-member-editor__nature .nature-select select,
+  .team-member-editor__nature .nature-select .nature-select__trigger,
   .team-member-editor__nature .nature-effect {
     min-height: 44px;
   }

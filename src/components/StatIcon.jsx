@@ -9,9 +9,16 @@ const STAT_ASSETS = Object.freeze({
   speed: "speed",
 });
 
-export function StatIcon({ label = false, size = 18, stat }) {
+export function StatIcon({ gain = false, label = false, size = 18, stat }) {
   const asset = STAT_ASSETS[stat];
   if (!asset) return null;
+  if (gain) return <span
+    aria-label={`${STAT_LABELS[stat]}性格增益 +20%`}
+    className="stat-icon stat-icon--nature-gain"
+    role="img"
+    title={`${STAT_LABELS[stat]}性格增益 +20%`}
+    style={{ width: size, height: size, "--stat-icon-url": `url(/assets/stats/${asset}.png)` }}
+  />;
   return (
     <img
       alt={label ? STAT_LABELS[stat] : ""}

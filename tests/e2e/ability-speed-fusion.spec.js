@@ -93,7 +93,9 @@ for (const width of [320, 390, 1440, 3840]) for (const theme of ["light", "dark"
     await expect(page.locator(".ability-speed__comparison")).toContainText("目标 198 · 无法先手");
     await page.getByText("手动微调", { exact: true }).click();
     await expect(page.getByLabel("能力分析性格")).toBeVisible();
-    await page.getByLabel("能力分析性格").selectOption("silent");
+    await page.getByLabel("能力分析性格").click();
+    await page.getByRole("treeitem", { name: "生命增益 +20%" }).click();
+    await page.getByRole("treeitem", { name: "沉默（+生命 -物攻）" }).click();
     await page.getByText("手动微调", { exact: true }).click();
     await expect(page.locator(".ability-manual")).not.toHaveAttribute("open");
     await expect(page.locator(".ability-manual > summary")).toContainText("沉默");

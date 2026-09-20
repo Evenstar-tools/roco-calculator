@@ -184,7 +184,7 @@ body {
   padding-left: 15px;
 }
 
-.nature-select select {
+.nature-select .nature-select__trigger {
   height: 38px;
   border-radius: 7px;
   font-size: 13px;

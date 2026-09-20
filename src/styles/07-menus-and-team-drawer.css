@@ -741,7 +741,7 @@
   grid-template-columns: minmax(130px, 0.42fr) minmax(0, 1fr);
 }
 
-.team-member-editor__nature .nature-select select {
+.team-member-editor__nature .nature-select .nature-select__trigger {
   height: 38px;
   border-radius: 6px 0 0 6px;
 }
