@@ -7,7 +7,6 @@ import {
   PencilSimple,
   Plus,
   Shield,
-  Sword,
   Trash,
   UsersThree,
   X,
@@ -442,40 +441,28 @@ export function TeamDrawer({
                     </div>
                     {activeTeam && !analysisEntry && memberPage === "configure" ? (
                       <div className="team-drawer__capture-actions">
-                        <button
-                          aria-label={`用当前攻击方填入${selectedIndex + 1}号位`}
-                          onClick={() =>
-                            navigate(() =>
-                              onCaptureSide(
-                                "attacker",
-                                activeTeam.id,
-                                selectedIndex,
-                              ),
-                            )
-                          }
-                          title="从攻方复制"
-                          type="button"
-                        >
-                          <Sword aria-hidden="true" size={16} weight="bold" />
-                          从攻方复制
-                        </button>
-                        <button
-                          aria-label={`用当前防御方填入${selectedIndex + 1}号位`}
-                          onClick={() =>
-                            navigate(() =>
-                              onCaptureSide(
-                                "defender",
-                                activeTeam.id,
-                                selectedIndex,
-                              ),
-                            )
-                          }
-                          title="从防方复制"
-                          type="button"
-                        >
-                          <Shield aria-hidden="true" size={16} weight="bold" />
-                          从防方复制
-                        </button>
+                        {[true, false].flatMap((apply) => ["attacker", "defender"].map((side) => {
+                          const name = side === "attacker" ? "攻击方" : "防御方";
+                          const label = apply ? `设为${name}` : `从${side === "attacker" ? "攻" : "防"}方复制`;
+                          return (
+                            <button
+                              aria-label={apply ? label : `用当前${name}填入${selectedIndex + 1}号位`}
+                              data-side={side}
+                              disabled={apply && (!selectedMember || selectedMember.needsRepair)}
+                              key={`${side}-${apply}`}
+                              onClick={() => navigate(() => apply
+                                ? onApply(side, selectedMember)
+                                : onCaptureSide(side, activeTeam.id, selectedIndex))}
+                              title={apply ? `将${selectedIndex + 1}号位设为${name}` : label}
+                              type="button"
+                            >
+                              <svg aria-hidden="true" className={apply ? undefined : "team-capture-icon"} width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+                                <use href={`/assets/ui/team-actions.svg#${apply ? "set" : "copy"}`} />
+                              </svg>
+                              {label}
+                            </button>
+                          );
+                        }))}
                       </div>
                     ) : null}
                   </header>

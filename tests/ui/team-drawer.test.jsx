@@ -579,6 +579,29 @@ test("captures the current attack or defense configuration into the selected slo
   );
 });
 
+test("顶部设为与复制按相反方向操作当前选中成员，空位禁止设为", async () => {
+  const user = userEvent.setup();
+  const onApply = vi.fn();
+  const onCaptureSide = vi.fn();
+  render(<DrawerHarness onApply={onApply} onCaptureSide={onCaptureSide} />);
+  await user.click(screen.getByRole("button", { name: "新建队伍" }));
+  expect(screen.getByRole("button", { name: "设为攻击方", exact: true })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "设为防御方", exact: true })).toBeDisabled();
+  await user.click(screen.getByRole("button", { name: "编辑空位 2" }));
+  fireEvent.change(screen.getByRole("combobox", { name: "成员精灵" }), { target: { value: "水灵" } });
+  await user.click(screen.getByRole("option", { name: /水灵/ }));
+  await user.click(screen.getByRole("button", { name: "设为攻击方", exact: true }));
+  await user.click(screen.getByRole("button", { name: "设为防御方", exact: true }));
+  expect(onApply).toHaveBeenNthCalledWith(1, "attacker", expect.objectContaining({ spiritId: "water-spirit" }));
+  expect(onApply).toHaveBeenNthCalledWith(2, "defender", expect.objectContaining({ spiritId: "water-spirit" }));
+  expect(onCaptureSide).not.toHaveBeenCalled();
+  await user.click(screen.getByRole("button", { name: "用当前攻击方填入2号位" }));
+  await user.click(screen.getByRole("button", { name: "用当前防御方填入2号位" }));
+  expect(onCaptureSide).toHaveBeenNthCalledWith(1, "attacker", "team-1", 1);
+  expect(onCaptureSide).toHaveBeenNthCalledWith(2, "defender", "team-1", 1);
+  expect(within(screen.getByRole("list", { name: "队伍成员" })).getByRole("button", { name: "水灵设为攻击方" })).toBeEnabled();
+});
+
 test("switches the right pane between member editing and team defense analysis", async () => {
   const user = userEvent.setup();
   render(<DrawerHarness />);

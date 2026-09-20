@@ -249,22 +249,28 @@
 }
 
 .team-workbench .team-drawer__capture-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
   padding: 0;
   margin: 0;
   border: 0;
   flex: 0 0 auto;
-  gap: 8px;
+  gap: 6px 8px;
 }
 
 .team-workbench .team-drawer__capture-actions button {
-  min-height: 44px;
-  padding: 0 14px;
+  min-height: 36px;
+  padding: 0 12px;
+  gap: 6px;
   border-color: var(--border);
   border-radius: 8px;
   background: var(--surface);
   cursor: pointer;
 }
+
+.team-workbench .team-drawer__capture-actions [data-side="attacker"] { color: var(--attack); }
+.team-workbench .team-drawer__capture-actions [data-side="defender"] { color: var(--defense); }
+.team-capture-icon { transform: rotate(180deg); }
 
 .team-workbench__member-tabs {
   display: flex;
@@ -2198,7 +2204,7 @@
     min-width: 0;
     min-height: 44px;
     padding: 0 7px;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .team-workbench__member-tabs {

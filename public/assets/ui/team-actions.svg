@@ -1,0 +1,6 @@
+<!-- Phosphor Icons 2.1.10, MIT: ArrowSquareOut / ArrowSquareIn, bold.
+     Paths exported unchanged from @phosphor-icons/react; only the used weight is shipped. -->
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="set" viewBox="0 0 256 256"><path d="M228,104a12,12,0,0,1-24,0V69l-59.51,59.51a12,12,0,0,1-17-17L187,52H152a12,12,0,0,1,0-24h64a12,12,0,0,1,12,12Zm-44,24a12,12,0,0,0-12,12v64H52V84h64a12,12,0,0,0,0-24H48A20,20,0,0,0,28,80V208a20,20,0,0,0,20,20H176a20,20,0,0,0,20-20V140A12,12,0,0,0,184,128Z"/></symbol>
+  <symbol id="copy" viewBox="0 0 256 256"><path d="M132,136v64a12,12,0,0,1-24,0V165L48.49,224.49a12,12,0,0,1-17-17L91,148H56a12,12,0,0,1,0-24h64A12,12,0,0,1,132,136ZM208,28H80A20,20,0,0,0,60,48V92a12,12,0,0,0,24,0V52H204V172H164a12,12,0,0,0,0,24h44a20,20,0,0,0,20-20V48A20,20,0,0,0,208,28Z"/></symbol>
+</svg>
