@@ -27,7 +27,6 @@ function MemberActions({ member, name, onApply }) {
 }
 
 export function TeamRoster({
-  compact = false,
   members,
   onApply,
   onSelect,
@@ -43,7 +42,7 @@ export function TeamRoster({
 
   return (
     <>
-    <ol aria-label="队伍成员" className={`team-roster${compact ? " team-roster--compact" : ""}`}>
+    <ol aria-label="队伍成员" className="team-roster">
       {Array.from({ length: 6 }, (_, index) => {
         const member = members[index] ?? null;
         const spirit = member ? spirits.get(member.spiritId) : null;
@@ -109,7 +108,7 @@ export function TeamRoster({
         );
       })}
     </ol>
-    {compact && selectedIndex >= 0 ? (
+    {selectedIndex >= 0 ? (
       <details className="team-roster__current-actions" key={selectedIndex}>
         <summary>当前成员操作</summary>
         <MemberActions

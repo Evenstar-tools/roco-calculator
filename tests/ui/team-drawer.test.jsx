@@ -263,7 +263,12 @@ test("成员配置与能力分析保持完整成员栏和每行攻防操作", as
     .not.toHaveAttribute("data-compact-roster", "true");
   expect(roster).not.toHaveClass("team-roster--compact");
   expect(roster.innerHTML).toBe(configuredRoster);
-  expect(screen.queryByText("当前成员操作")).not.toBeInTheDocument();
+  const currentActions = screen.getByText("当前成员操作").closest("details");
+  expect(currentActions).not.toHaveAttribute("open");
+  await user.click(within(currentActions).getByText("当前成员操作"));
+  await user.click(within(currentActions).getByRole("button", { name: "音速犬设为攻击方" }));
+  expect(onApply).toHaveBeenCalledWith("attacker", expect.objectContaining({ spiritId: "sonic-dog" }));
+  onApply.mockClear();
   await user.click(within(roster).getByRole("button", { name: "音速犬设为攻击方" }));
   await user.click(within(roster).getByRole("button", { name: "音速犬设为防御方" }));
   expect(onApply).toHaveBeenNthCalledWith(1, "attacker", expect.objectContaining({ spiritId: "sonic-dog" }));
@@ -520,10 +525,11 @@ test("applies a member as attack or defense and confirms deletion inline", async
   fireEvent.change(spiritPicker, { target: { value: "音速犬" } });
   await user.click(screen.getByRole("option", { name: /音速犬/ }));
 
-  const applyAttack = screen.getByRole("button", {
+  const roster = within(screen.getByRole("list", { name: "队伍成员" }));
+  const applyAttack = roster.getByRole("button", {
     name: "音速犬设为攻击方",
   });
-  const applyDefense = screen.getByRole("button", {
+  const applyDefense = roster.getByRole("button", {
     name: "音速犬设为防御方",
   });
   expect(applyAttack).toHaveAttribute("title", "设为攻击方");

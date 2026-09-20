@@ -38,7 +38,23 @@ for (const [width, theme] of [[1424, "light"], [390, "light"], [390, "dark"]]) {
     await page.evaluate(value => { document.documentElement.dataset.theme = value; }, theme);
     await page.getByRole("button", { name: "打开队伍" }).click();
     const drawer = page.getByRole("dialog", { name: "队伍", exact: true });
+    const roster = drawer.locator(".team-drawer__roster-pane");
+    const configuredHeight = (await roster.boundingBox()).height;
     await drawer.getByRole("button", { name: "能力分析", exact: true }).click();
+    expect((await roster.boundingBox()).height).toBeCloseTo(configuredHeight, 0);
+    await expect(roster.locator(".team-slot__select:visible")).toHaveCount(6);
+    await expect(roster.locator(".team-roster .team-slot__actions button:visible")).toHaveCount(width < 1024 ? 0 : 12);
+    if (width < 1024) {
+      expect(configuredHeight).toBeLessThan(220);
+      expect(await roster.evaluate(el => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+    } else {
+      await expect(roster.locator(".team-roster__current-actions")).toBeHidden();
+    }
+    const manual = drawer.locator(".ability-manual");
+    await manual.locator("summary").click();
+    const columns = await manual.locator(".ability-investments").evaluate(el => getComputedStyle(el).gridTemplateColumns.split(" ").length);
+    expect([2, 3, 6]).toContain(columns);
+    await manual.locator("summary").click();
     const ability = drawer.getByRole("region", { name: "能力分析", exact: true });
     const builds = ability.getByRole("region", { name: "耐久方案对比" });
     await expect(ability.getByRole("region", { name: "已保存配置摘要" })).toContainText("194");

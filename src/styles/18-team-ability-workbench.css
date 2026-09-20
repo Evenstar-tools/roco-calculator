@@ -2687,50 +2687,52 @@
   }
 }
 
-/* Compact ability navigation: remove the old action track, not just its content. */
+/* Narrow navigation is shared by configuration and ability pages. */
 .team-slot__number,
 .team-roster__current-actions { display: none; }
 @media (max-width: 1023px) {
-  .team-workbench[data-compact-roster="true"] .team-drawer__roster-pane {
+  .team-workbench .team-drawer__roster-pane {
     display: block;
+    max-height: none;
     overflow: visible;
     scrollbar-gutter: auto;
   }
-  .team-workbench .team-roster--compact {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 92px), 1fr));
+  .team-workbench .team-roster {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 4px;
     padding: 2px 0;
   }
-  .team-workbench .team-roster--compact .team-slot {
+  .team-workbench .team-roster .team-slot {
     display: block;
     grid-template-columns: none;
     min-height: 64px;
   }
-  .team-workbench .team-roster--compact .team-slot__select {
+  .team-workbench .team-roster .team-slot__select {
     position: relative;
     display: flex;
     width: 100%;
     min-height: 62px;
+    height: 100%;
     padding: 5px 2px;
     gap: 2px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
   }
-  .team-workbench .team-roster--compact .team-slot__select > img,
-  .team-workbench .team-roster--compact .team-slot__empty {
+  .team-workbench .team-roster .team-slot__select > img,
+  .team-workbench .team-roster .team-slot__empty {
     flex: none;
     width: 30px;
     height: 30px;
     min-width: 0;
     object-fit: contain;
   }
-  .team-workbench .team-roster--compact .team-slot__identity { width: 100%; text-align: center; }
-  .team-workbench .team-roster--compact .team-slot__identity strong { font-size: 12px; line-height: 18px; white-space: normal; overflow-wrap: anywhere; }
-  .team-workbench .team-roster--compact .team-slot__identity small,
-  .team-workbench .team-roster--compact .team-slot__types,
-  .team-workbench .team-roster--compact .team-slot__actions { display: none; }
-  .team-roster--compact .team-slot__number {
+  .team-workbench .team-roster .team-slot__identity { width: 100%; text-align: center; }
+  .team-workbench .team-roster .team-slot__identity strong { font-size: 12px; line-height: 18px; white-space: normal; overflow-wrap: anywhere; }
+  .team-workbench .team-roster .team-slot__identity small,
+  .team-workbench .team-roster .team-slot__types,
+  .team-workbench .team-roster .team-slot__actions { display: none; }
+  .team-roster .team-slot__number {
     display: block;
     position: absolute;
     top: 2px;
@@ -2751,12 +2753,16 @@
 }
 
 
-@media (max-width: 379px) {
-  .team-workbench .team-roster--compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
 /* Content-safe investment tiles: columns follow available width, not viewport width. */
+.ability-investment-panel { container-type: inline-size; }
 .ability-investment-panel .ability-investments {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 114px), 1fr));
+}
+@container (min-width: 354px) {
+  .ability-investment-panel .ability-investments { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container (min-width: 714px) {
+  .ability-investment-panel .ability-investments { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
 .ability-investment-panel .ability-investments > button {
   grid-template-columns: minmax(54px, 1fr) 34px;
@@ -2774,7 +2780,6 @@
 
 /* Content-safe controls and short-height navigation. */
 .team-workbench .team-slot__identity strong, .team-workbench .team-slot__identity small, .team-workbench__identity h3 { white-space: normal; overflow: visible; overflow-wrap: anywhere; text-overflow: clip; }
-.team-workbench .team-roster--compact .team-slot__select { height: 100%; }
 .team-workbench .ability-section__title { flex-wrap: wrap; }
 .team-workbench .ability-speed__controls { display: grid; width: 100%; min-width: 0; padding-left: 0; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); align-items: start; }
 .team-workbench .ability-speed__profile-picker, .team-workbench .ability-speed__target-picker { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr); gap: 4px; }
@@ -2782,14 +2787,6 @@
 .team-workbench .ability-speed__target-options { width: 100%; min-width: 0; left: 0; right: auto; }
 .team-workbench .ability-speed__target-options strong, .team-workbench .ability-speed__target-options small { white-space: normal; overflow-wrap: anywhere; overflow: visible; }
 .ability-speed__selected-target { min-width: 0; color: var(--text-muted); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
-@media (max-width: 1023px) {
-.team-workbench .team-drawer__roster-pane { max-height: 38dvh; overflow-y: auto; }
-}
-@media (max-width: 700px) {
-.team-workbench .team-roster:not(.team-roster--compact) .team-slot { grid-template-columns: minmax(0, 1fr); }
-.team-workbench .team-roster:not(.team-roster--compact) .team-slot__actions { display: flex; width: 100%; border-left: 0; border-top: 1px solid var(--border); }
-.team-workbench .team-roster:not(.team-roster--compact) .team-slot__actions button { flex: 1; }
-}
 @media (max-height: 550px) and (max-width: 1023px) {
 .team-workbench > .team-drawer__content { display: block; overflow-y: auto; }
 .team-workbench .team-drawer__roster-pane { max-height: none; overflow: visible; }
@@ -2839,18 +2836,4 @@
   .team-workbench .ability-speed__profile-picker summary,
   .team-workbench .ability-speed__target-input input[type="search"],
   .ability-manual > summary { min-height: 44px; }
-}
-@media (min-width: 1200px) {
-  .team-workbench[data-compact-roster="true"] > .team-drawer__content { grid-template-columns: 160px minmax(0, 1fr); gap: 12px; }
-  .team-workbench[data-compact-roster="true"] .team-drawer__editor-pane { padding-left: 12px; }
-  .team-workbench .team-roster--compact { grid-template-columns: minmax(0,1fr); gap: 6px; }
-  .team-workbench .team-roster--compact .team-slot { display: block; min-height: 62px; }
-  .team-workbench .team-roster--compact .team-slot__select { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px; min-height: 62px; }
-  .team-workbench .team-roster--compact .team-slot__select > img { width: 32px; height: 32px; flex: none; object-fit: contain; }
-  .team-workbench .team-roster--compact .team-slot__types,
-  .team-workbench .team-roster--compact .team-slot__actions { display: none; }
-  .team-roster__current-actions { display: block; margin-top: 8px; }
-  .team-roster__current-actions > summary { font-size: 12px; line-height: 40px; cursor: pointer; }
-  .team-roster__current-actions .team-slot__actions { display: flex; gap: 6px; }
-  .team-roster__current-actions .team-slot__actions button { flex: 1; min-height: 40px; }
 }
