@@ -236,6 +236,7 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
     gap: 6px;
   }
   .app-header:not(.app-header--tool) .app-header__actions { flex: none; gap: 2px; }
+  .app-header:not(.app-header--tool) h1 { font-size: 14px; }
   .app-header:not(.app-header--tool) .team-action {
     width: 36px;
     min-width: 36px;

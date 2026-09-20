@@ -25,14 +25,16 @@ test("keeps portrait mode switch styling stable", async ({ page }) => {
         const style = getComputedStyle(button);
         const rect = button.getBoundingClientRect();
         const outer = el.getBoundingClientRect();
+        const title = getComputedStyle(document.querySelector('.app-header__title-short .app-header__season-title'));
         return { direction: style.flexDirection, background: style.backgroundColor,
           color: style.color, width: rect.width, height: rect.height,
           outerWidth: outer.width, outerHeight: outer.height,
-          padding: getComputedStyle(el).padding };
+          padding: getComputedStyle(el).padding, titleSize: title.fontSize,
+          titleWeight: title.fontWeight, titleLineHeight: title.lineHeight };
       });
       const before = await readStyle();
       expect(before).toMatchObject({ direction: "row", background: "rgb(224, 206, 149)",
-        width: 42, height: 38, outerWidth: 48, outerHeight: 44, padding: "2px" });
+        width: 42, height: 38, outerWidth: 48, outerHeight: 44, padding: "2px", titleSize: "14px", titleWeight: "800" });
       await button.click();
       await expect(button).toHaveAccessibleName("当前具体版，切换到精简版");
       expect(await readStyle()).toEqual(before);
