@@ -54,15 +54,21 @@ export function HealthInput({
 
   return (
     <div className="health-input">
-      <button
-        aria-label={mode === "hp" ? "按百分比输入" : "按当前值输入"}
-        className="health-input__mode"
-        onClick={() => changeMode(mode === "hp" ? "percent" : "hp")}
-        title={mode === "hp" ? "切换为百分比" : "切换为当前生命"}
-        type="button"
-      >
-        {mode === "hp" ? "%" : "HP"}
-      </button>
+      <div className="health-input__modes" role="group" aria-label={`${label}生命输入单位`}>
+        {["hp", "percent"].map((unit) => (
+          <button
+            key={unit}
+            aria-label={unit === "hp" ? "按当前值输入" : "按百分比输入"}
+            aria-pressed={mode === unit}
+            className="health-input__mode"
+            onClick={() => changeMode(unit)}
+            title={unit === "hp" ? "按当前生命输入" : "按百分比输入"}
+            type="button"
+          >
+            {unit === "hp" ? "HP" : "%"}
+          </button>
+        ))}
+      </div>
       <label className="health-input__field">
         <input
           aria-label={
@@ -84,7 +90,7 @@ export function HealthInput({
           type="number"
           value={draft}
         />
-        <span>{mode === "percent" ? "%" : `/ ${maxHp}`}</span>
+        {mode === "hp" && <span>{`/ ${maxHp}`}</span>}
       </label>
     </div>
   );

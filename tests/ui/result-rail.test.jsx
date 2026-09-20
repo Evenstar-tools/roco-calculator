@@ -776,12 +776,15 @@ test.each(["hp", "percent"])("恢复满血同步 %s 输入和百分比状态", a
     />;
   }
   render(<ControlledRail />);
+  expect(screen.getByRole("button", { name: "按当前值输入" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("button", { name: "按百分比输入" })).toHaveAttribute("aria-pressed", "false");
   if (mode === "percent") {
     await user.click(screen.getByRole("button", { name: "按百分比输入" }));
   }
   const input = screen.getByRole("spinbutton", {
     name: mode === "percent" ? "防御方生命百分比" : "防御方当前生命",
   });
+  expect(screen.getByRole("button", { name: mode === "percent" ? "按百分比输入" : "按当前值输入" })).toHaveAttribute("aria-pressed", "true");
   await user.clear(input);
   await user.type(input, "90");
   expect(input).toHaveValue(90);

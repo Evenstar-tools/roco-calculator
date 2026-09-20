@@ -333,20 +333,40 @@ html[data-theme="dark"] .result-rail__warning {
   gap: 5px;
 }
 
-.health-input__mode {
-  width: 30px;
-  height: 30px;
-  padding: 0;
+.health-input__modes {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 2px;
+  padding: 2px;
   border: 1px solid var(--border);
-  border-radius: 5px;
-  background: var(--surface);
-  color: var(--accent);
-  font-size: 10px;
-  font-weight: 800;
+  border-radius: 6px;
+  background: var(--surface-soft);
+}
+
+.health-input__modes .health-input__mode {
+  width: 30px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.health-input__modes .health-input__mode[aria-pressed="true"] {
+  background: var(--accent);
+  color: #fff;
+}
+
+html[data-theme="dark"] .health-input__modes .health-input__mode[aria-pressed="true"] {
+  color: var(--surface);
 }
 
 .health-input__field {
   display: inline-flex;
+  flex: 1;
   min-width: 0;
   align-items: center;
   gap: 5px;
@@ -354,6 +374,7 @@ html[data-theme="dark"] .result-rail__warning {
 
 .health-input__field input {
   width: 70px;
+  min-width: 44px;
   height: 30px;
   padding: 0 7px;
   border: 1px solid var(--border-strong);
@@ -362,6 +383,13 @@ html[data-theme="dark"] .result-rail__warning {
   color: var(--text);
   font: inherit;
   font-weight: 700;
+  appearance: textfield;
+}
+
+.health-input__field input::-webkit-inner-spin-button,
+.health-input__field input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
 }
 
 .health-input__field span {
@@ -375,7 +403,8 @@ html[data-theme="dark"] .result-rail__warning {
 }
 
 .result-rail__hp-control input {
-  width: 76px;
+  width: 100%;
+  max-width: 76px;
   height: 34px;
   padding: 0 8px;
   border: 1px solid var(--border-strong);

@@ -12,34 +12,32 @@ function clamp(value, minimum, maximum) {
   return Math.min(Math.max(value, minimum), Math.max(minimum, maximum));
 }
 
-function clampPosition(position) {
-  const width = globalThis.innerWidth || 1024;
-  const height = globalThis.innerHeight || 768;
-  const bottomGap = width <= 760 ? 82 : VIEWPORT_GAP;
+function readViewport() {
+  return { width: globalThis.innerWidth || 1024, height: globalThis.innerHeight || 768 };
+}
+
+function clampPosition(position, { width, height }) {
+  const bottomGap = width <= 1080 ? 82 : VIEWPORT_GAP;
   return {
     x: clamp(Number(position?.x) || 0, VIEWPORT_GAP, width - BUTTON_WIDTH - VIEWPORT_GAP),
     y: clamp(Number(position?.y) || 0, VIEWPORT_GAP, height - BUTTON_HEIGHT - bottomGap),
   };
 }
 
-function defaultPosition() {
-  const mobileBottomGap = (globalThis.innerWidth || 1024) <= 760 ? 82 : VIEWPORT_GAP;
-  return clampPosition({
-    x: (globalThis.innerWidth || 1024) - BUTTON_WIDTH - VIEWPORT_GAP,
-    y: (globalThis.innerHeight || 768) - BUTTON_HEIGHT - mobileBottomGap,
-  });
+function defaultPosition({ width, height }) {
+  return { x: width - BUTTON_WIDTH - VIEWPORT_GAP, y: height - BUTTON_HEIGHT - VIEWPORT_GAP };
 }
 
 function readPosition() {
   try {
     const stored = JSON.parse(localStorage.getItem(UNDO_POSITION_STORAGE_KEY));
     if (Number.isFinite(stored?.x) && Number.isFinite(stored?.y)) {
-      return clampPosition(stored);
+      return stored;
     }
   } catch {
     // 损坏的位置缓存不影响计算器使用。
   }
-  return defaultPosition();
+  return null;
 }
 
 function writePosition(position) {
@@ -51,8 +49,9 @@ function writePosition(position) {
 }
 
 export function FloatingUndoButton({ count = 0, onUndo }) {
-  const [position, setPosition] = useState(readPosition);
-  const positionRef = useRef(position);
+  const [preferredPosition, setPreferredPosition] = useState(readPosition);
+  const [viewport, setViewport] = useState(readViewport);
+  const position = clampPosition(preferredPosition ?? defaultPosition(viewport), viewport);
   const dragRef = useRef(null);
   const suppressClickRef = useRef(false);
   const available = count > 0;
@@ -60,12 +59,7 @@ export function FloatingUndoButton({ count = 0, onUndo }) {
 
   useEffect(() => {
     function handleResize() {
-      setPosition((current) => {
-        const next = clampPosition(current);
-        positionRef.current = next;
-        writePosition(next);
-        return next;
-      });
+      setViewport(readViewport());
     }
     globalThis.addEventListener?.("resize", handleResize);
     return () => globalThis.removeEventListener?.("resize", handleResize);
@@ -92,15 +86,15 @@ export function FloatingUndoButton({ count = 0, onUndo }) {
     const next = clampPosition({
       x: drag.origin.x + deltaX,
       y: drag.origin.y + deltaY,
-    });
-    positionRef.current = next;
-    setPosition(next);
+    }, viewport);
+    drag.position = next;
+    setPreferredPosition(next);
   }
 
   function handlePointerUp(event) {
     if (!dragRef.current || dragRef.current.pointerId !== event.pointerId) return;
+    if (dragRef.current.position) writePosition(dragRef.current.position);
     dragRef.current = null;
-    writePosition(positionRef.current);
   }
 
   function handleClick() {

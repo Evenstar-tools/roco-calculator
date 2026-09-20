@@ -61,6 +61,17 @@
 }
 
 @media (max-width: 760px) {
+  .calculator-layout .spirit-picker__options {
+    width: calc(100vw - 32px);
+    min-width: 0;
+    right: auto;
+  }
+
+  .calculator-layout .spirit-picker--defense .spirit-picker__options {
+    left: auto;
+    right: 0;
+  }
+
   .nature-grid {
     grid-template-columns: 1fr;
     gap: 14px;
@@ -390,7 +401,16 @@
   }
 
   .result-rail__hp-control {
+    gap: 4px;
     grid-template-columns: auto minmax(0, 1fr) 44px;
+  }
+
+  .result-rail__hp-control label {
+    gap: 4px;
+  }
+
+  .result-rail__hp-control input {
+    padding-inline: 4px;
   }
 
   .result-rail__hp-control input,
