@@ -71,14 +71,13 @@ export function AppHeader({
       </div>
 
       <div className="app-header__actions">
-        {!pageTitle && <><div aria-label="界面模式" className="view-mode-switch" role="group">
+        {!pageTitle && <><div aria-label="界面模式" className="view-mode-switch" data-portrait={portrait || undefined} role="group">
           {portrait ? <button
             aria-label={`当前${viewMode === "compact" ? "精简版" : "具体版"}，切换到${viewMode === "compact" ? "具体版" : "精简版"}`}
-            aria-pressed={viewMode === "detailed"}
             data-guide-target="detailed-mode"
             onClick={() => onViewModeChange?.(viewMode === "compact" ? "detailed" : "compact")}
             title="点击切换界面模式" type="button"
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 42, height: 38, minHeight: 38, padding: 3, gap: 2 }}>
+            style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: 42, height: 38, minHeight: 38, padding: 3, gap: 2 }}>
             {viewMode === "compact" ? <Lightning aria-hidden="true" size={12} weight="fill" /> : <SlidersHorizontal aria-hidden="true" size={12} weight="bold" />}
             <span style={{ display: "block", fontSize: 10, lineHeight: 1 }}>{viewMode === "compact" ? "精简" : "具体"}</span>
           </button> : <>

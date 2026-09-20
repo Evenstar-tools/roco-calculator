@@ -80,6 +80,10 @@ html[data-theme="dark"] .app-header .view-mode-switch button {
   color: #c8d5e1;
 }
 
+.app-header .view-mode-switch[data-portrait] { padding: 2px; border-radius: 9px; }
+
+.app-header .view-mode-switch[data-portrait] button,
+html[data-theme="dark"] .app-header .view-mode-switch[data-portrait] button,
 .app-header .view-mode-switch button[aria-pressed="true"],
 html[data-theme="dark"] .app-header .view-mode-switch button[aria-pressed="true"] {
   border-color: transparent;
@@ -97,11 +101,11 @@ html[data-theme="dark"] .app-header .icon-action {
 .app-header .team-action:hover,
 .app-header .icon-action:hover,
 .app-header .icon-action[aria-expanded="true"],
-.app-header .view-mode-switch button:not([aria-pressed="true"]):hover,
+.app-header .view-mode-switch:not([data-portrait]) button:not([aria-pressed="true"]):hover,
 html[data-theme="dark"] .app-header .team-action:hover,
 html[data-theme="dark"] .app-header .icon-action:hover,
 html[data-theme="dark"] .app-header .icon-action[aria-expanded="true"],
-html[data-theme="dark"] .app-header .view-mode-switch button:not([aria-pressed="true"]):hover {
+html[data-theme="dark"] .app-header .view-mode-switch:not([data-portrait]) button:not([aria-pressed="true"]):hover {
   border-color: #9aa9bb;
   background: #30415a;
   color: #f4f2e5;

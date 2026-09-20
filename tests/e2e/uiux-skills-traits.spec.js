@@ -11,6 +11,44 @@ test.beforeEach(async ({ page }) => {
   await resetUiuxStorage(page);
 });
 
+test("keeps portrait mode switch styling stable", async ({ page }) => {
+  await page.goto("/");
+  const group = page.getByRole("group", { name: "界面模式" });
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(value => { document.documentElement.dataset.theme = value; }, theme);
+    for (const width of [320, 390, 470, 620]) {
+      await page.setViewportSize({ width, height: 900 });
+      const button = group.getByRole("button");
+      await expect(button).toHaveCount(1);
+      const readStyle = () => group.evaluate(el => {
+        const button = el.querySelector("button");
+        const style = getComputedStyle(button);
+        const rect = button.getBoundingClientRect();
+        const outer = el.getBoundingClientRect();
+        return { direction: style.flexDirection, background: style.backgroundColor,
+          color: style.color, width: rect.width, height: rect.height,
+          outerWidth: outer.width, outerHeight: outer.height,
+          padding: getComputedStyle(el).padding };
+      });
+      const before = await readStyle();
+      expect(before).toMatchObject({ direction: "row", background: "rgb(224, 206, 149)",
+        width: 42, height: 38, outerWidth: 48, outerHeight: 44, padding: "2px" });
+      await button.click();
+      await expect(button).toHaveAccessibleName("当前具体版，切换到精简版");
+      expect(await readStyle()).toEqual(before);
+      await button.press("Enter");
+      await expect(button).toHaveAccessibleName("当前精简版，切换到具体版");
+      expect(await readStyle()).toEqual(before);
+    }
+  }
+  for (const [width, height] of [[621, 900], [1920, 1080], [600, 400]]) {
+    await page.setViewportSize({ width, height });
+    await expect(group.getByRole("button")).toHaveCount(2);
+    await expect(group.getByRole("button", { name: "精简版", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(group.getByRole("button", { name: "具体版", exact: true })).toHaveAttribute("aria-pressed", "false");
+  }
+});
+
 test("keeps Dazzling's seven slots readable and exposes Refraction effects", async ({
   page,
 }) => {

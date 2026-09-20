@@ -11,5 +11,5 @@ export default defineConfig(base, {
     "skill-query.spec.js",
     "transmission-visual-regression.spec.js",
   ],
-  grep: /works offline|actual user QR.*390$|old pending roster.*390$|recalculates current stacked|persists single-skill state|uses negative-status skills|final speed, explicit apply.*(?:1424 light|390 dark)$|双向查询与完整学习面 320px light$|failed catalog can retry|readable skill menus and keyboard bounds 390 dark$/,
+  grep: /works offline|actual user QR.*390$|old pending roster.*390$|recalculates current stacked|persists single-skill state|keeps portrait mode switch styling stable|uses negative-status skills|final speed, explicit apply.*(?:1424 light|390 dark)$|双向查询与完整学习面 320px light$|failed catalog can retry|readable skill menus and keyboard bounds 390 dark$/,
 });

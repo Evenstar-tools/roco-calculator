@@ -13,13 +13,18 @@ test("仅窄屏竖向合并模式按钮，点击双向切换，尺寸变化恢�
   expect(document.querySelector(".app-header__title-short")).toHaveTextContent("S4「月涌狂想」");
   const group = within(screen.getByRole("group", { name: "界面模式" }));
   expect(group.getAllByRole("button")).toHaveLength(1);
-  expect(group.getByRole("button")).toHaveStyle({ height: "38px", minHeight: "38px" });
+  expect(screen.getByRole("group", { name: "界面模式" })).toHaveAttribute("data-portrait", "true");
+  expect(group.getByRole("button")).toHaveStyle({ height: "38px", minHeight: "38px", flexDirection: "row" });
+  expect(group.getByRole("button")).not.toHaveAttribute("aria-pressed");
   fireEvent.click(group.getByRole("button", { name: "当前精简版，切换到具体版" }));
   expect(group.getByRole("button", { name: "当前具体版，切换到精简版" })).toBeVisible();
+  expect(group.getByRole("button")).toHaveStyle({ height: "38px", minHeight: "38px", flexDirection: "row" });
+  expect(group.getByRole("button")).not.toHaveAttribute("aria-pressed");
   fireEvent.click(group.getByRole("button"));
   expect(group.getByRole("button", { name: "当前精简版，切换到具体版" })).toBeVisible();
   act(() => { media.matches = false; change(); });
   expect(group.getAllByRole("button")).toHaveLength(2);
+  expect(screen.getByRole("group", { name: "界面模式" })).not.toHaveAttribute("data-portrait");
   expect(group.getByRole("button", { name: "精简版" })).toHaveAttribute("aria-pressed", "true");
 });
 
