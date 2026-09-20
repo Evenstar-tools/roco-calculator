@@ -18,6 +18,7 @@ export default defineConfig({
             "tests/data/{validate,runtime-snapshot,parsers,current-patch-changes}.test.js",
             "tests/service-worker/*.test.js",
             "tests/docs/release-notes.test.js",
+            "tests/build/{performance-budget,build-attribution}.test.js",
           ],
         },
       },
@@ -30,7 +31,7 @@ export default defineConfig({
           css: true,
           include: [
             "tests/smoke/*.test.jsx",
-            "tests/ui/{battle-form-picker,header-portrait,floating-undo-button,team-exchange,team-lineup-flow,toolbox,type-query-panel,transmission-panel,deer-critical,deer-entry,ability-speed-layout,skill-picker-scrollbar,calculator-sections,status-reference}.test.jsx",
+            "tests/ui/{battle-form-picker,header-portrait,floating-undo-button,team-exchange,team-member-types,team-lineup-flow,toolbox,type-query-panel,transmission-panel,deer-critical,deer-entry,ability-speed-layout,skill-picker-scrollbar,calculator-sections,status-reference}.test.jsx",
           ],
         },
       },

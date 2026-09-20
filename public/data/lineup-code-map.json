@@ -13,6 +13,13 @@
       "officialSkills": "https://rocom.qq.com/cp/rocom_game_manager_json/prod/skill/list.json"
     }
   },
+  "skillExportIds": {
+    "skill_882b1acf94b595e9": 7020840,
+    "skill_d0f5b82ecca23745": 7020850,
+    "skill_cae90e69fc3dbab5": 7020860,
+    "skill_59a43615100e03f2": 7140100,
+    "skill_f8f49246c39a2b4d": 7150090
+  },
   "spirits": {
     "3001": "spirit_d345729d1593bff7",
     "3002": "spirit_77c2085d2f6e8e87",

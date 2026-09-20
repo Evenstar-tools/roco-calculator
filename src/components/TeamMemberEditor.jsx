@@ -18,6 +18,7 @@ import { NatureSelect } from "./NatureSelect.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
 import { SpiritPicker } from "./SpiritPicker.jsx";
 import { StatTile } from "./StatTile.jsx";
+import { ElementIcon } from "./ElementIcon.jsx";
 
 const STAT_VIEW = [
   { key: "physicalAttack", label: "物攻" },
@@ -54,6 +55,7 @@ export function TeamMemberEditor({
   getSpiritConfiguration = () => null,
   index,
   member,
+  members = [],
   onChange,
   onOpenAbilityAnalysis,
   snapshot,
@@ -75,6 +77,11 @@ export function TeamMemberEditor({
   const skillById = new Map(
     (snapshot.skills ?? []).map((skill) => [skill.id, skill]),
   );
+  const teamSkillTypes = ["布灵", "布灵布灵"].includes(spirit?.fullName)
+    ? [...new Set(members.slice(0, 6).flatMap((entry) =>
+        (entry?.skills?.four ?? []).slice(0, 4).map((skill) => skillById.get(entryId(skill))?.type),
+      ).filter(Boolean))]
+    : null;
   const calculationReady = hasCompleteRaceStats(spirit?.raceStats);
   const panel = calculationReady
     ? calculateAllPanelStats({
@@ -128,6 +135,17 @@ export function TeamMemberEditor({
         side="team"
         spirits={pickerSpirits}
       />
+
+      {teamSkillTypes ? (
+        <section aria-label="旧玩具队伍技能系别" className="team-member-editor__types">
+          <strong>旧玩具 · 队伍技能系别</strong>
+          <b>{teamSkillTypes.length} 种</b>
+          <small>按配招去重，非已使用次数</small>
+          <div>{teamSkillTypes.map((type) => (
+            <span key={type}><ElementIcon size={16} type={type} />{type}</span>
+          ))}</div>
+        </section>
+      ) : null}
 
       {member && spirit && calculationReady ? (
         <>

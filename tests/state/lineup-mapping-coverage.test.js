@@ -40,6 +40,25 @@ test("newly created current members export their verified IDs without source met
   }
 });
 
+test.each([7020840, 7020850, 7020860, 7140100, 7150090])("new and edited skills export reviewed primary ID %s while preserving imported variants", (id) => {
+  const localId = mapping.skills[id];
+  const raw = evidence.skills.find(skill => skill.game_id === id);
+  expect(snapshot.skills.find(skill => skill.id === localId).provenance.nrc.id).toBe(raw.id);
+  const team = importLineupCode(makeCode({ skills: [id, null, null, null] }), snapshot, mapping);
+  delete team.members[0].lineupSource;
+  delete team.lineup;
+  const out = decodeLineupCode(exportLineupCode(team, snapshot, mapping).code);
+  expect(out.members[0].skills[0]).toBe(id);
+  expect(out.mode).toBe(5);
+  for (const variant of Object.keys(mapping.skills).filter(key => mapping.skills[key] === localId)) {
+    const code = makeCode({ skills: [Number(variant), null, null, null] });
+    const imported = importLineupCode(code, snapshot, mapping);
+    expect(exportLineupCode(imported, snapshot, mapping).code).toBe(code);
+    imported.members[0].skills.four = [null, { skillId: localId }, null, null];
+    expect(decodeLineupCode(exportLineupCode(imported, snapshot, mapping).code).members[0].skills[1]).toBe(id);
+  }
+});
+
 test.each([
   ["skill_21fab1d8d76bbbfa", 7050250, "落雨"],
   ["skill_1652bda550a6b2dc", 7170210, "午夜噪音"],

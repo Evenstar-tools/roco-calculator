@@ -55,7 +55,7 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
   const parseRequest = useRef(0);
   useEffect(() => () => { parseRequest.current++; imageRequest.current++; }, []);
   const [magicId, setMagicId] = useState(team?.lineup?.magicId ?? "");
-  const [formation, setFormation] = useState(team?.lineup ? team.lineup.mode ?? "" : 2);
+  const [formation, setFormation] = useState(team?.lineup ? team.lineup.mode ?? "" : 5);
   const isImport = mode === "import";
   useEffect(() => {
     if (manualCopy) {
@@ -202,9 +202,8 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
             {Object.entries(mapping.magic).filter(([id]) => Number(id) <= 104010 || String(magicId) === id).map(([id, label]) => <option key={id} value={id}>{label}{Number(id) > 104010 ? "（原阵容）" : ""}</option>)}
           </select></label>
           <label>编队模式<select value={formation} onChange={(event) => { setFormation(event.target.value); setMessage(""); setError(""); setManualCopy(null); }}>
-            <option value="">未指定</option>
-            {formation && !LINEUP_MODES[formation] ? <option value={formation}>模式 {formation}</option> : null}
-            {Object.entries(LINEUP_MODES).map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+            <option value="5">PVP</option>
+            {team?.lineup && team.lineup.mode !== 5 ? <option value={team.lineup.mode ?? ""}>{LINEUP_MODES[team.lineup.mode] ?? (team.lineup.mode == null ? "未指定" : `模式 ${team.lineup.mode}`)}（原阵容）</option> : null}
           </select></label>
         </div>
         <p className="team-exchange__note">包含成员、性格、血脉及四技能；不含实际个体值、月相记忆和战斗参数。</p>

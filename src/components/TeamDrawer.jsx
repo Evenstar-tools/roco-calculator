@@ -500,6 +500,7 @@ export function TeamDrawer({
                       getSpiritConfiguration={getSpiritConfiguration}
                       index={selectedIndex}
                       member={selectedMember}
+                      members={activeTeam.members}
                       onChange={(member) =>
                         onMemberChange(activeTeam.id, selectedIndex, member)
                       }

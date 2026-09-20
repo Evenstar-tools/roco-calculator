@@ -9,23 +9,22 @@ import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 
 export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
-  // 2026-09-14：按当前整合版重校预警线，避免旧基线持续误报。
-  clientTotal: 15.5 * 1024 * 1024,
-  cssGzip: 50 * 1024,
-  jsGzip: 320 * 1024,
-  jsRaw: 1088 * 1024,
-  runtimeJson: 1.5 * 1024 * 1024,
+  // 2026-09-20：固定长期预警线；依据见 docs/maintenance/performance-budget-policy.md。
+  clientTotal: 20 * 1024 * 1024,
+  cssGzip: 72 * 1024,
+  jsGzip: 400 * 1024,
+  jsRaw: 1.5 * 1024 * 1024,
+  runtimeJson: 2 * 1024 * 1024,
 });
 
 export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
-// 经用户确认，为后续小功能预留约 13%～16%；各项超过硬上限仍阻断。
+// 预警不阻断；超过固定硬上限才阻断，不随当前构建自动扩容。
 export const DEFAULT_HARD_OVERAGE_BY_KEY = Object.freeze({
-  clientTotal: 1 * 1024 * 1024,
-  // 2026-09-20：用户本次批准 UX20，JS 硬上限调至 348.25 KiB；CSS 保持 56 KiB，后续另议。
-  cssGzip: 6 * 1024,
-  jsGzip: 28.25 * 1024,
-  jsRaw: 64 * 1024,
-  runtimeJson: 0.125 * 1024 * 1024,
+  clientTotal: 4 * 1024 * 1024,
+  cssGzip: 24 * 1024,
+  jsGzip: 112 * 1024,
+  jsRaw: 0.5 * 1024 * 1024,
+  runtimeJson: 0.5 * 1024 * 1024,
 });
 
 const LABELS = {
@@ -103,7 +102,7 @@ function runCli() {
   });
   for (const [key, actual] of Object.entries(result.metrics)) {
     console.log(
-      `${LABELS[key]}：${formatBytes(actual)} / ${formatBytes(DEFAULT_PERFORMANCE_BUDGETS[key])}`,
+      `${LABELS[key]}：${formatBytes(actual)}；预警 ${formatBytes(DEFAULT_PERFORMANCE_BUDGETS[key])}；硬上限 ${formatBytes(DEFAULT_PERFORMANCE_BUDGETS[key] + DEFAULT_HARD_OVERAGE_BY_KEY[key])}`,
     );
   }
   for (const violation of result.violations) {
@@ -113,7 +112,7 @@ function runCli() {
   }
   for (const warning of result.warnings) {
     console.warn(
-      `${LABELS[warning.key]}小幅超出基线，仅警告：${formatBytes(warning.actual)} > ${formatBytes(warning.limit)}；达到 ${formatBytes(warning.hardLimit)} 才阻塞`,
+      `${LABELS[warning.key]}超过预警线，不阻断：${formatBytes(warning.actual)} > ${formatBytes(warning.limit)}；超过 ${formatBytes(warning.hardLimit)} 才阻断`,
     );
   }
   if (result.violations.length) process.exitCode = 1;

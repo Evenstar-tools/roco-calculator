@@ -343,6 +343,23 @@
   margin-top: 10px;
 }
 
+.team-member-editor__types {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 10px 12px;
+  background: var(--surface-soft);
+  border-block: 1px solid var(--border);
+  color: var(--text);
+}
+
+.team-member-editor__types > strong { font-size: 13px; }
+.team-member-editor__types > b { color: var(--accent); font-size: 18px; }
+.team-member-editor__types > small { margin-left: auto; color: var(--text-muted); font-size: 12px; }
+.team-member-editor__types > div { display: flex; flex-wrap: wrap; flex-basis: 100%; gap: 8px 18px; }
+.team-member-editor__types > div > span { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
+
 .team-workbench .team-member-editor__stats {
   margin-top: 10px;
 }

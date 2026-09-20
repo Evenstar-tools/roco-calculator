@@ -1,10 +1,45 @@
 import mapping from "../../public/data/lineup-code-map.json";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import snapshot from "../../data/snapshots/current.json";
 import fixture from "../fixtures/qiandao-lineup.json";
 import { TeamExchange } from "../../src/components/TeamExchange.jsx";
 import { importLineupCode, decodeLineupCode, encodeLineupCode } from "../../src/state/lineup-code.js";
+
+test("new team defaults to one PVP option and actually copies a lineup containing duplicate-name skills", async () => {
+  const team = importLineupCode(fixture.code, snapshot, mapping);
+  delete team.lineup;
+  delete team.members[0].lineupSource;
+  team.members[0].skills.four[0] = mapping.skills[7020860];
+  team.id = "test";
+  const update = vi.fn(() => true);
+  const writeText = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+  render(<TeamExchange mapping={mapping} mode="export" team={team} snapshot={snapshot} onUpdateLineup={update} />);
+  const mode = screen.getByLabelText("编队模式");
+  expect(mode).toHaveValue("5");
+  expect(within(mode).getAllByRole("option").map(option => option.textContent)).toEqual(["PVP"]);
+  const code = screen.getByLabelText("阵容代码").value;
+  expect(decodeLineupCode(code).members[0].skills[0]).toBe(7020860);
+  fireEvent.click(screen.getByText("复制阵容码"));
+  expect(await screen.findByRole("status")).toHaveTextContent("阵容码已复制");
+  expect(writeText).toHaveBeenCalledWith(code);
+  expect(update).toHaveBeenCalledWith("test", { magicId: null, mode: 5 });
+});
+
+test.each([1, 2, null, 42])("preserves imported mode %s and allows explicit conversion to PVP", (mode) => {
+  const raw = decodeLineupCode(fixture.code);
+  raw.mode = mode;
+  const code = encodeLineupCode(raw);
+  const team = importLineupCode(code, snapshot, mapping);
+  render(<TeamExchange mapping={mapping} mode="export" team={team} snapshot={snapshot} />);
+  expect(screen.getByLabelText("阵容代码")).toHaveValue(code);
+  const select = screen.getByLabelText("编队模式");
+  expect(within(select).getAllByRole("option")).toHaveLength(2);
+  expect(select.selectedOptions[0].textContent).toContain("原阵容");
+  fireEvent.change(select, { target: { value: "5" } });
+  expect(decodeLineupCode(screen.getByLabelText("阵容代码").value).mode).toBe(5);
+});
 
 test("preview requires explicit IV assumption acknowledgement and never imports stale input", () => {
   const onImport = vi.fn(() => true);

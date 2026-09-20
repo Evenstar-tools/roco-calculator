@@ -6,7 +6,7 @@ const BLOODS = [null, "normal", "grass", "fire", "water", "light", "ground", "ic
 const STATS = ["hp", "physicalAttack", "magicalAttack", "physicalDefense", "magicalDefense", "speed"];
 const OFFICIAL_URL = "https://rocom.qq.com/act/a20250703array/index.html";
 
-export const LINEUP_MODES = { 1: "大世界", 2: "PVP 1v1", 3: "PVP 2v2", 4: "PVP 3v3", 5: "PVP 4v4", 6: "PVP 随机", 7: "PVE 挑战替补", 8: "PVE NPC", 9: "PVE BOSS", 10: "PVP 5v5", 11: "PVE 周挑战" };
+export const LINEUP_MODES = { 1: "大世界", 2: "PVP 1v1", 3: "PVP 2v2", 4: "PVP 3v3", 5: "PVP", 6: "PVP 随机", 7: "PVE 挑战替补", 8: "PVE NPC", 9: "PVE BOSS", 10: "PVP 5v5", 11: "PVE 周挑战" };
 
 function readNumber(field, nullable = false) {
   if (nullable && /^0+$/.test(field)) return null;
@@ -113,17 +113,18 @@ export function importLineupCode(input, snapshot, mapping) {
   };
 }
 
-function externalId(table, localId, original, label) {
+function externalId(table, localId, original, label, preferred) {
   if (!localId) return null;
   if (original != null && table[original] === localId) return original;
+  if (preferred != null && table[preferred] === localId) return preferred;
   const candidates = Object.keys(table).filter((id) => table[id] === localId);
-  if (candidates.length !== 1) throw new Error(`${label}${candidates.length ? "有多个游戏形态，无法确定导出 ID" : "尚无游戏 ID 映射"}`);
+  if (candidates.length !== 1) throw new Error(`${label}${candidates.length ? "有多个游戏 ID，尚未核定导出项" : "尚无游戏 ID 映射"}`);
   return Number(candidates[0]);
 }
 
 function skillId(value) { return typeof value === "string" ? value : value?.skillId ?? value?.id ?? null; }
 
-export function exportLineupCode(team, snapshot, mapping, options = team.lineup ?? {}) {
+export function exportLineupCode(team, snapshot, mapping, options = team.lineup ?? { mode: 5 }) {
   if (!team.members.some(Boolean)) throw new Error("请先添加队伍成员");
   const spirits = new Map(snapshot.spirits.map((entry) => [entry.id, entry]));
   const skills = new Map(snapshot.skills.map((entry) => [entry.id, entry]));
@@ -155,7 +156,7 @@ export function exportLineupCode(team, snapshot, mapping, options = team.lineup 
         if (id && !skills.has(id)) throw new Error(`${spirit.fullName}的技能数据不存在`);
         // 旧配置的预览技能名导出为正式技能，游戏 ID 仍从已核验映射中取得。
         const canonicalId = mapping.skillAliases?.[id] ?? id;
-        return externalId(mapping.skills, canonicalId, source?.skills[slot], skills.get(id)?.name ?? "技能");
+        return externalId(mapping.skills, canonicalId, source?.skills[slot], skills.get(id)?.name ?? "技能", mapping.skillExportIds?.[canonicalId]);
       }),
     };
   });
