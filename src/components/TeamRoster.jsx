@@ -1,5 +1,6 @@
-import { Shield, Sword, Wrench } from "@phosphor-icons/react";
+import { Shield, Sword, WarningCircle, Wrench } from "@phosphor-icons/react";
 import { getNature } from "../domain/natures.js";
+import { getBossBloodlineConflicts } from "../domain/skill-loadout.js";
 import { ElementIcon } from "./ElementIcon.jsx";
 
 function entryId(entry) {
@@ -47,9 +48,10 @@ export function TeamRoster({
         const member = members[index] ?? null;
         const spirit = member ? spirits.get(member.spiritId) : null;
         const name = spirit?.fullName ?? (member ? "需修复" : `空位 ${index + 1}`);
+        const conflicts = getBossBloodlineConflicts(snapshot, member);
         return (
           <li
-            className={`team-slot${selectedIndex === index ? " is-selected" : ""}${member?.needsRepair ? " needs-repair" : ""}`}
+            className={`team-slot${selectedIndex === index ? " is-selected" : ""}${member?.needsRepair ? " needs-repair" : ""}${conflicts.length ? " has-bloodline-conflict" : ""}`}
             key={index}
           >
             <button
@@ -61,6 +63,7 @@ export function TeamRoster({
               type="button"
             >
               <span aria-hidden="true" className="team-slot__number">{index + 1}</span>
+              {conflicts.length ? <span className="team-slot__bloodline-flag" role="img" aria-label="血脉技能与首领冲突" title={`首领与血脉技能冲突：${conflicts.map(skill => skill.name).join("、")}`}><WarningCircle aria-hidden="true" size={16} weight="fill" /></span> : null}
               {spirit?.asset?.localUrl ? (
                 <img
                   alt=""
@@ -83,6 +86,7 @@ export function TeamRoster({
                     : "添加精灵"}
                 </small>
                 {member?.ivsPending ? <small className="team-iv-pending">个体待设置</small> : null}
+                {conflicts.length ? <small className="team-slot__bloodline-warning" title={`首领与血脉技能冲突：${conflicts.map(skill => skill.name).join("、")}`}>血脉技能冲突</small> : null}
               </span>
               <span aria-label="携带技能" className="team-slot__types">
                 {member?.skills?.four?.map((entry, skillIndex) => {

@@ -21,6 +21,23 @@ export function getLegalSkillIds(snapshot, spiritId) {
   ])];
 }
 
+export function getBloodlineSkillIds(learnset) {
+  if (Array.isArray(learnset?.bloodlineSkillIds)) return learnset.bloodlineSkillIds;
+  return (learnset?.skillIds ?? []).filter(id => {
+    const methods = learnset.acquisitions?.[id] ?? [];
+    return methods.length > 0 && methods.every(method => /血脉/.test(method));
+  });
+}
+
+export function getBossBloodlineConflicts(snapshot, member) {
+  if (!member) return [];
+  const { spirits, learnsets, skills } = getSnapshotIndexes(snapshot);
+  if (member.bloodlineType !== "boss" && spirits[member.spiritId]?.stage !== "首领") return [];
+  const bloodlineIds = new Set(getBloodlineSkillIds(learnsets[member.spiritId]));
+  return [...new Set((member.skills?.four ?? []).map(entryId))]
+    .filter(id => bloodlineIds.has(id)).map(id => skills[id]).filter(Boolean);
+}
+
 export function getSkillChoices(snapshot, spiritId) {
   let choicesBySpirit = choiceCache.get(snapshot);
   if (!choicesBySpirit) {
@@ -33,10 +50,11 @@ export function getSkillChoices(snapshot, spiritId) {
   const legalIds = getLegalSkillIds(snapshot, spiritId);
   const legalSet = new Set(legalIds);
   const byId = getSnapshotIndexes(snapshot).skills;
+  const bloodlineIds = new Set(getBloodlineSkillIds(getSnapshotIndexes(snapshot).learnsets[spiritId]));
   const legal = legalIds
     .map((id) => byId[id])
     .filter(Boolean)
-    .map((skill) => ({ ...skill, learnable: true }));
+    .map((skill) => ({ ...skill, learnable: true, ...(bloodlineIds.has(skill.id) ? { bloodlineSkill: true } : {}) }));
   const other = Object.values(byId)
     .filter((skill) => !legalSet.has(skill.id))
     .map((skill) => ({ ...skill, learnable: false }));

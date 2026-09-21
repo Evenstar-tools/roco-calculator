@@ -3,6 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { pinyin } from "pinyin-pro";
+import { getBloodlineSkillIds } from "../src/domain/skill-loadout.js";
 
 const AUDIT_ONLY_KEYS = new Set([
   "acquisitions",
@@ -150,11 +151,16 @@ export function buildRuntimeSnapshot(snapshot, assetManifest = null) {
         : {}),
     })),
     learnsets: (snapshot.learnsets ?? []).map(
-      ({ spiritId, skillIds, defaultSkillIds }) => ({
-        spiritId,
-        skillIds,
-        ...(Array.isArray(defaultSkillIds) ? { defaultSkillIds } : {}),
-      }),
+      (learnset) => {
+        const { spiritId, skillIds, defaultSkillIds } = learnset;
+        const bloodlineSkillIds = getBloodlineSkillIds(learnset);
+        return {
+          spiritId,
+          skillIds,
+          ...(Array.isArray(defaultSkillIds) ? { defaultSkillIds } : {}),
+          ...(bloodlineSkillIds.length ? { bloodlineSkillIds } : {}),
+        };
+      },
     ),
     traits: (snapshot.traits ?? []).map(stripAuditFields),
     typeChart: stripAuditFields(snapshot.typeChart ?? null),

@@ -1,5 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import { unpackCatalog } from "../../src/features/skill-query/catalog.js";
 import BidirectionalQuery from "../../src/features/skill-query/BidirectionalQuery.jsx";
 
 const skills = ["甲", "乙", "丙", "丁", "戊"].map((name, i) => ({
@@ -13,6 +15,23 @@ function add(name) {
   fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: name } });
   fireEvent.click(screen.getByRole("button", { name: `添加${name}` }));
 }
+
+test("布丁家族的各技能池都可直接进入，返回后仍保留全部分支", () => {
+  const catalog = unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
+  const current = catalog.seasons.find(item => item.id === catalog.currentSeason);
+  render(<BidirectionalQuery season={current} skills={current.skills} spirits={[]} />);
+  fireEvent.click(screen.getByRole("button", { name: "查精灵技能" }));
+  fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "布丁" } });
+  expect(screen.getByText("1 个匹配家族 · 4 个技能池")).toBeInTheDocument();
+  for (const [name, skill, absent] of [["抹茶布丁", "花炮", "冷风"], ["椰浆布丁", "冷风", "花炮"], ["熔岩布丁", "火焰切割", "冷风"]]) {
+    fireEvent.click(screen.getByRole("button", { name: `${name} 查看技能` }));
+    expect(screen.getByRole("heading", { name })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: `查看${skill}详情` })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: `查看${absent}详情` })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "返回匹配结果" }));
+    expect(screen.getAllByRole("button", { name: / 查看技能$/ })).toHaveLength(4);
+  }
+});
 
 test("手机搜索栏只有一个效果开关，已选标签仍可逐个删除且不重复展示结果入口", () => {
   vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));

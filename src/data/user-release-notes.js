@@ -230,6 +230,20 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.2.3",
+    date: "2026.09.21",
+    title: "S4形态关联与血脉提示",
+    whatsNew: S4_FEATURE_INTRO,
+    features: [
+      "血脉限定技能显示专属标记；与首领血脉或首领形态冲突时，队伍和技能行就地提示。",
+      "数值、搜索、队伍名称等单行输入首次点入全选，直接输入替换；再次点击和拖选保持正常。",
+    ],
+    fixes: [
+      "技能检索区分同族分支的独立技能池，不再只显示一个家族代表。",
+      "选中精灵后可直接查看同族高阶、分支和地区形态；跨分支载入目标预设，不混用原配置。",
+    ],
+  }),
+  createRelease({
     version: "v2.2.2",
     date: "2026.09.21",
     title: "S4同族形态与速度线",

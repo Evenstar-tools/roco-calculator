@@ -1,7 +1,11 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { CalculatorRouter } from "./CalculatorRouter.jsx";
+import { installInputSelection } from "./input-selection.js";
 import "./styles.css";
+
+const removeInputSelection = installInputSelection(document);
+if (import.meta.hot) import.meta.hot.dispose(removeInputSelection);
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>

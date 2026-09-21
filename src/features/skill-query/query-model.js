@@ -47,7 +47,7 @@ export function querySpiritFamilies(season, { skillIds = [], query = "", source 
     groups.get(familyId).push(spirit);
   }
   const ranks = { 一阶: 1, 二阶: 2, 三阶: 3 };
-  return [...groups].map(([id, members]) => {
+  const representativeFor = (members) => {
     const ordinary = members.filter(member => member.stage !== "首领");
     const candidates = ordinary.length ? ordinary : members;
     // 正式名称保留具体形态；家族共有别名和技能反查优先最终普通形态。
@@ -55,8 +55,22 @@ export function querySpiritFamilies(season, { skillIds = [], query = "", source 
     const namedMatch = matchedMembers.find(member => member.fullName.includes(query.trim()));
     const aliasMatch = [...matchedMembers.filter(member => member.stage !== "首领")]
       .sort((a, b) => (ranks[b.stage] ?? 0) - (ranks[a.stage] ?? 0))[0];
-    const representative = (!skillIds.length && query.trim() && (namedMatch || aliasMatch)) ||
+    return (!skillIds.length && query.trim() && (namedMatch || aliasMatch)) ||
       [...candidates].sort((a, b) => (ranks[b.stage] ?? 0) - (ranks[a.stage] ?? 0))[0];
-    return { id, members, representative };
+  };
+  return [...groups].map(([id, members]) => {
+    const representative = representativeFor(members);
+    const pools = new Map();
+    // 家族相同不代表技能池相同；只有技能及学习途径都相同才共用入口。
+    for (const member of members) {
+      const entry = learnsets.get(member.id);
+      const key = entry ? JSON.stringify([...new Set(entry.skillIds)].sort().map(skillId =>
+        [skillId, [...new Set(entry.acquisitions?.[skillId] ?? [])].sort()])) : member.id;
+      if (!pools.has(key)) pools.set(key, []);
+      pools.get(key).push(member);
+    }
+    return { id, members, representative, pools: [...pools.values()].map(members => ({
+      members, representative: representativeFor(members),
+    })).sort((a, b) => Number(b.representative.id === representative.id) - Number(a.representative.id === representative.id)) };
   });
 }

@@ -6,6 +6,7 @@ import { EntityChangeHint } from "./EntityChangeHint.jsx";
 import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 import { getBattleFormChoices } from "../domain/battle-form.js";
 import { ElementIcon } from "./ElementIcon.jsx";
+import { buildSpiritFamilyIndex } from "./spirit-family.js";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -122,13 +123,28 @@ export function SpiritPicker({
   const resolvedFavoriteState =
     favoriteState ?? (favorite ? "manual" : null);
   const family = useMemo(() => formSide ? getBattleFormChoices(spirits, formSide) : [], [spirits, formSide]);
+  const familyIndex = useMemo(() => buildSpiritFamilyIndex(spirits), [spirits]);
+  const relatedFamily = useMemo(() => {
+    const ownPath = new Set(family.length ? family.map(spirit => spirit.id) : selected?.evolutionChainIds ?? [selected?.id]);
+    const stages = ["一阶", "二阶", "三阶", "首领"];
+    return [...(familyIndex.get(selected?.id) ?? [])].sort((left, right) => {
+      const ownOrder = Number(ownPath.has(right.id)) - Number(ownPath.has(left.id));
+      if (ownOrder) return ownOrder;
+      if (!ownPath.has(left.id)) {
+        const stageOrder = stages.indexOf(right.stage) - stages.indexOf(left.stage);
+        if (stageOrder) return stageOrder;
+      }
+      return compareDexOrder(left, right);
+    });
+  }, [familyIndex, family, selected]);
   const familyKey = family.map((spirit) => spirit.id).sort().join(",");
   const preserveFormConfig = formConfigPreferences[familyKey] ?? family.some((spirit) => spirit.fullName === "梦想三三");
   const formStages = ["一阶", "二阶", "三阶", "首领"].filter((stage) => family.some((spirit) => spirit.stage === stage));
   const sourceStage = family.find((spirit) => spirit.id === formSide?.spiritId)?.stage;
   const moeLayers = Math.max(0, formStages.indexOf(sourceStage) - formStages.indexOf(selected?.stage));
-  const choosingForm = Boolean(onFormSelect && !searching && family.length > 1);
-  const browsingPresets = presetBrowse.enabled && (!searching || !query.trim()) && !choosingForm;
+  const browsingFamily = !searching && relatedFamily.length > 1 && (Boolean(onFormSelect) || !presetBrowse.enabled);
+  const choosingForm = Boolean(onFormSelect && browsingFamily && family.length > 1);
+  const browsingPresets = presetBrowse.enabled && (!searching || !query.trim()) && !browsingFamily;
   const presetSpirits = useMemo(() => spirits
     .filter((spirit) => presetBrowse.spiritIds.has(spirit.id) || spirit.favoriteState === "manual")
     .sort(compareDexOrder), [spirits, presetBrowse.spiritIds]);
@@ -143,11 +159,11 @@ export function SpiritPicker({
   }, [open, browsingPresets, selected?.id, presetSpirits]);
 
   const preview = useMemo(() => {
-    if (choosingForm) return {
+    if (browsingFamily) return {
       allFavoritesVisible: false,
       allPreviewItemsVisible: true,
       isUnfiltered: false,
-      items: family.map((spirit) => ({ related: false, spirit })),
+      items: relatedFamily.map((spirit) => ({ related: false, spirit })),
     };
     if (browsingPresets) return {
       allFavoritesVisible: false,
@@ -207,13 +223,11 @@ export function SpiritPicker({
       };
     }
 
-    const byId = new Map(spirits.map((spirit) => [spirit.id, spirit]));
     const directIds = new Set(direct.map((spirit) => spirit.id));
     const shown = new Set();
     const expanded = [];
     for (const match of direct) {
-      for (const spiritId of match.evolutionChainIds ?? [match.id]) {
-        const spirit = byId.get(spiritId);
+      for (const spirit of familyIndex.get(match.id) ?? [match]) {
         if (!spirit || shown.has(spirit.id)) continue;
         shown.add(spirit.id);
         expanded.push({
@@ -232,21 +246,22 @@ export function SpiritPicker({
       favoriteCount: 0,
       isUnfiltered: false,
       items: markedFirst(expanded.map(({ spirit }) => spirit))
+        .sort((left, right) => Number(directIds.has(right.id)) - Number(directIds.has(left.id)))
         .slice(0, 20)
         .map((spirit) => ({
           related: !directIds.has(spirit.id),
           spirit,
         })),
     };
-  }, [choosingForm, family, browsingPresets, presetSpirits, previewLimit, query, spirits]);
+  }, [browsingFamily, relatedFamily, familyIndex, browsingPresets, presetSpirits, previewLimit, query, spirits]);
   const matches = preview.items;
 
   function openOptions() {
     setQuery(clearOnOpen ? "" : selectedName);
     setSearching(clearOnOpen);
     setPreviewLimit(INITIAL_PREVIEW_COUNT);
-    setActiveIndex(onFormSelect && family.length > 1
-      ? Math.max(0, family.findIndex((spirit) => spirit.id === selected?.id))
+    setActiveIndex(!clearOnOpen && relatedFamily.length > 1 && (onFormSelect || !presetBrowse.enabled)
+      ? Math.max(0, relatedFamily.findIndex((spirit) => spirit.id === selected?.id))
       : presetBrowse.enabled && !clearOnOpen
       ? Math.max(0, presetSpirits.findIndex((spirit) => spirit.id === selected?.id))
       : 0);
@@ -256,7 +271,7 @@ export function SpiritPicker({
   function commit(spirit) {
     setQuery(spirit.fullName);
     setOpen(false);
-    if (choosingForm && preserveFormConfig) onFormSelect(spirit.id);
+    if (choosingForm && preserveFormConfig && family.some(entry => entry.id === spirit.id)) onFormSelect(spirit.id);
     else onSelect(spirit.id);
   }
 
@@ -357,17 +372,17 @@ export function SpiritPicker({
         </button>
         {open ? (
           <ul
-            className={`spirit-picker__options${choosingForm ? " spirit-picker__options--forms" : ""}`}
+            className={`spirit-picker__options${browsingFamily ? " spirit-picker__options--forms" : ""}`}
             data-guide-part="options"
             id={listboxId}
             onScroll={handleOptionsScroll}
             ref={optionsRef}
             role="listbox"
           >
-            {choosingForm ? (
+            {browsingFamily ? (
               <li className="spirit-picker__form-heading" role="presentation">
                 <span>同族形态</span>
-                <label className="spirit-picker__form-toggle" title="开启：保留本场配置；关闭：下次选择时按普通换精灵载入目标预设，重置临时战斗条件">
+                {choosingForm ? <label className="spirit-picker__form-toggle" title="仅直系萌化可保留本场配置；其他关联分支始终载入目标预设。关闭时所有选择均载入目标预设，重置临时战斗条件。">
                   <span>萌化 · 配置保留</span>
                   <input type="checkbox" role="switch" aria-label={`${label}同族切换保留本场配置`}
                     checked={preserveFormConfig} onChange={event => {
@@ -375,7 +390,7 @@ export function SpiritPicker({
                       setFormConfigPreferences(current => ({ ...current, [familyKey]: enabled }));
                     }}
                     onKeyDown={event => { if (event.key === "Escape") { inputRef.current?.focus(); handleKeyDown(event); } }} />
-                </label>
+                </label> : null}
               </li>
             ) : null}
             {matches.length ? (
@@ -407,7 +422,9 @@ export function SpiritPicker({
                         spirit.calculationStatus === "pending-race-stats"
                           ? "种族值待确认"
                           : null,
-                        choosingForm && spirit.id === selected?.id ? "当前形态" : related ? "进化链" : null,
+                        browsingFamily && spirit.id === selected?.id ? "当前形态"
+                          : browsingFamily && choosingForm && !family.some(entry => entry.id === spirit.id) ? "关联形态 · 载入预设"
+                          : related || browsingFamily && !choosingForm ? (selected?.evolutionChainIds?.includes(spirit.id) ? "进化链" : "关联形态") : null,
                       ]
                         .filter(Boolean)
                         .join(" · ")}

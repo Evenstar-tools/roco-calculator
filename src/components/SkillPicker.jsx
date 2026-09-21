@@ -407,10 +407,10 @@ export function SkillPicker({
                         className={
                           skill.learnable === false
                             ? "is-unlearnable"
-                            : "is-learnable"
+                            : skill.bloodlineSkill ? "is-bloodline" : "is-learnable"
                         }
                       >
-                        {skill.learnable === false ? "不可学习" : "可学习"}
+                        {skill.learnable === false ? "不可学习" : skill.bloodlineSkill ? "血脉技能" : "可学习"}
                       </small>
                     </span>
                   </li>

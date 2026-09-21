@@ -6,6 +6,7 @@ import { calculateDurability } from "../features/team-ability/domain/durability.
 import { validateAbilityInvestment } from "../features/team-ability/domain/ability-investment.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import {
+  getBossBloodlineConflicts,
   getSkillChoices,
 } from "../domain/skill-loadout.js";
 import {
@@ -77,6 +78,9 @@ export function TeamMemberEditor({
   const skillById = new Map(
     (snapshot.skills ?? []).map((skill) => [skill.id, skill]),
   );
+  const bloodlineSkillIds = new Set(legalSkills.filter(skill => skill.bloodlineSkill).map(skill => skill.id));
+  const bloodlineConflicts = getBossBloodlineConflicts(snapshot, member);
+  const conflictIds = new Set(bloodlineConflicts.map(skill => skill.id));
   const teamSkillTypes = ["布灵", "布灵布灵"].includes(spirit?.fullName)
     ? [...new Set(members.slice(0, 6).flatMap((entry) =>
         (entry?.skills?.four ?? []).slice(0, 4).map((skill) => skillById.get(entryId(skill))?.type),
@@ -160,6 +164,8 @@ export function TeamMemberEditor({
               <span>血脉</span>
               <select
                 aria-label="血脉"
+                aria-invalid={bloodlineConflicts.length > 0 || undefined}
+                aria-describedby={bloodlineConflicts.length ? `team-bloodline-conflict-${index}` : undefined}
                 onChange={(event) =>
                   onChange({ ...member, bloodlineType: event.target.value })
                 }
@@ -176,6 +182,12 @@ export function TeamMemberEditor({
               </select>
             </label>
           </div>
+
+          {bloodlineConflicts.length > 0 ? (
+            <p className="team-member-editor__bloodline-warning" id={`team-bloodline-conflict-${index}`} role="alert">
+              首领化／首领形态不能携带血脉技能：{bloodlineConflicts.map(skill => skill.name).join("、")}。请更换这些技能，或改用非首领配置。
+            </p>
+          ) : null}
 
           {member.ivsPending ? <p className="team-member-editor__iv-notice"><span className="team-iv-pending">个体待设置</span> 原码个体为空或暂无法识别，请按实际配置调整。</p> : null}
           <div className="stat-grid team-member-editor__stats">
@@ -218,7 +230,7 @@ export function TeamMemberEditor({
             {Array.from(
               { length: Math.max(4, member.skills.four.length) },
               (_, skillIndex) => (
-                <label key={skillIndex}>
+                <label key={skillIndex} className={`${bloodlineSkillIds.has(entryId(member.skills.four[skillIndex])) ? "has-bloodline" : ""}${conflictIds.has(entryId(member.skills.four[skillIndex])) ? " has-bloodline-conflict" : ""}`}>
                   <span>{skillIndex + 1}</span>
                   <SkillPicker
                     ariaLabel={`成员技能${skillIndex + 1}`}
@@ -228,6 +240,9 @@ export function TeamMemberEditor({
                     )}
                     skills={legalSkills}
                   />
+                  {bloodlineSkillIds.has(entryId(member.skills.four[skillIndex])) ? <small className="team-member-editor__skill-source">
+                    {conflictIds.has(entryId(member.skills.four[skillIndex])) ? "血脉技能 · 冲突" : "血脉技能"}
+                  </small> : null}
                 </label>
               ),
             )}

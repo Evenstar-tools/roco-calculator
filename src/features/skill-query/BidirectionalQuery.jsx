@@ -61,6 +61,7 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
     skillIds: direction === "skill" ? selected : [], query: direction === "skill" ? learnerQuery : query,
     source: direction === "skill" ? learnerSource : "", metadata: spirits,
   }), [season, selected, direction, learnerQuery, query, learnerSource, spirits]);
+  const pools = families.flatMap(family => family.pools);
   const learnset = useMemo(() => spiritSkills(season, spiritId), [season, spiritId]);
   const rows = learnset.filter((skill) => (!source || skill.methods.some((method) => matchesSource(method, source))) &&
     `${skill.name} ${skill.description ?? ""}`.toLowerCase().includes(detailQuery.trim().toLowerCase()) &&
@@ -179,9 +180,9 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
         </article>)}</div>{!rows.length && <p className="sq-empty">没有符合筛选条件的技能；可切回全部来源或清除筛选。</p>}
       </> : <>
         {direction === "skill" && selected.length === 0 ? <p className="sq-empty">添加技能，查找全部可学的精灵。</p> : direction === "spirit" && !query.trim() ? <p className="sq-empty">搜索精灵，查看当前形态的完整技能表。</p> : <>
-          <h3 className="sq-result-title" aria-live="polite">{families.length} 个匹配家族</h3>
+          <h3 className="sq-result-title" aria-live="polite">{families.length} 个匹配家族{pools.length > families.length && ` · ${pools.length} 个技能池`}</h3>
           {direction === "skill" && <div className="sq-learner-filters"><input aria-label="筛选学习精灵" placeholder="搜索家族" value={learnerQuery} onChange={(event) => setLearnerQuery(event.target.value)} /><select aria-label="学习途径" value={learnerSource} onChange={(event) => setLearnerSource(event.target.value)}>{SOURCES.map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select>{(learnerQuery || learnerSource) && <button className="sq-clear-filters" aria-label="清除学习精灵筛选" onClick={() => { setLearnerQuery(""); setLearnerSource(""); }}>清除筛选</button>}</div>}
-          <div className="sq-families">{families.map((family) => <article key={family.id}><button className="sq-family-main" aria-label={`${family.representative.fullName} 查看技能`} data-spirit-id={family.representative.id} onClick={() => openSpirit(family.representative.id)}><Portrait key={family.representative.id} spirit={family.representative} /><strong>{family.representative.fullName}</strong><CaretRight size={16} /></button></article>)}</div>{!families.length && <p className="sq-empty">没有符合条件的精灵，可减少技能条件或清除筛选。</p>}
+          <div className="sq-families">{pools.map(({ representative }) => <article key={representative.id}><button className="sq-family-main" aria-label={`${representative.fullName} 查看技能`} data-spirit-id={representative.id} onClick={() => openSpirit(representative.id)}><Portrait key={representative.id} spirit={representative} /><strong>{representative.fullName}</strong><CaretRight size={16} /></button></article>)}</div>{!families.length && <p className="sq-empty">没有符合条件的精灵，可减少技能条件或清除筛选。</p>}
           {direction === "skill" && <button className="sq-show-results" onClick={returnToLibrary}>返回技能库</button>}
         </>}
       </>}

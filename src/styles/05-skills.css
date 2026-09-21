@@ -224,6 +224,11 @@
   color: #27834a;
 }
 
+.skill-picker__option-meta .is-bloodline {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 .skill-picker__option-meta .is-unlearnable {
   color: #b44343;
 }

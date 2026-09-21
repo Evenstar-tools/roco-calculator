@@ -1,4 +1,49 @@
 /* Team bloodline and analysis views */
+.team-workbench { --bloodline-warning: #99620b; }
+html[data-theme="dark"] .team-workbench { --bloodline-warning: #e6cb8e; }
+
+.team-member-editor__bloodline-warning {
+  margin: 8px 0;
+  padding: 8px 10px;
+  border-left: 3px solid var(--bloodline-warning);
+  background: var(--surface-soft);
+  color: var(--bloodline-warning);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.team-member-editor__skills > label.has-bloodline {
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+}
+
+.team-member-editor__skill-source {
+  color: var(--accent);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.team-workbench .team-roster .team-slot.has-bloodline-conflict,
+.team-member-editor__skills .has-bloodline-conflict .skill-picker,
+.team-member-editor__bloodline select[aria-invalid="true"] {
+  border-color: var(--bloodline-warning);
+}
+
+.team-slot__identity .team-slot__bloodline-warning,
+.has-bloodline-conflict .team-member-editor__skill-source {
+  color: var(--bloodline-warning);
+}
+
+.team-slot__bloodline-flag { display: none; }
+@media (max-width: 1023px) {
+  .team-slot__bloodline-flag {
+    display: inline-flex;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    color: var(--bloodline-warning);
+  }
+}
+
 .team-member-editor__nature {
   grid-template-columns: minmax(126px, 0.36fr) minmax(0, 1fr) minmax(130px, 0.4fr);
 }

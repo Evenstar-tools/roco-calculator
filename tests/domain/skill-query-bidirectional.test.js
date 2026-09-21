@@ -15,6 +15,47 @@ const season = {
   ],
 };
 
+test("同一家族的不同技能池分别展示，相同技能但学习途径不同也不能合并", () => {
+  const data = { ...season, spirits: [...season.spirits,
+    { id: "d", fullName: "同池终阶", familyId: "family", stage: "三阶" },
+    { id: "e", fullName: "异途径分支", familyId: "family", stage: "二阶" },
+  ], learnsets: [...season.learnsets,
+    { spiritId: "d", skillIds: ["x"], acquisitions: { x: ["解锁：Lv.2", "解锁：Lv.2"] } },
+    { spiritId: "e", skillIds: ["x"], acquisitions: { x: ["技能石"] } },
+  ] };
+  const family = querySpiritFamilies(data, { query: "幼体" })[0];
+  expect(family.pools.map(pool => pool.representative.id)).toEqual(["a", "b", "e"]);
+  expect(family.pools[0].members.map(spirit => spirit.id)).toEqual(["a", "d"]);
+  expect(querySpiritFamilies(data, { skillIds: ["x"], query: "幼体", source: "default" })[0].pools
+    .map(pool => pool.representative.id)).toEqual(["d"]);
+});
+
+test("真实布丁家族保留果冻及三个分支，各自独立技能池且不能跨分支凑技能", () => {
+  const catalog = unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
+  const current = catalog.seasons.find(item => item.id === catalog.currentSeason);
+  const [family] = querySpiritFamilies(current, { query: "布丁" });
+  expect(family.pools.map(pool => pool.representative.fullName).sort()).toEqual(["果冻", "抹茶布丁", "椰浆布丁", "熔岩布丁"].sort());
+  const skillId = name => current.skills.find(skill => skill.name === name).id;
+  for (const [name, exclusive] of [["抹茶布丁", "花炮"], ["椰浆布丁", "冷风"], ["熔岩布丁", "火焰切割"]]) {
+    const result = querySpiritFamilies(current, { query: "布丁", skillIds: [skillId(exclusive)], source: "default" });
+    expect(result.flatMap(family => family.pools.map(pool => pool.representative.fullName))).toEqual([name]);
+  }
+  expect(querySpiritFamilies(current, { query: "布丁", skillIds: [skillId("花炮"), skillId("冷风")] })).toEqual([]);
+});
+
+test("所有赛季的每只家族成员均有等价技能池入口，不因代表选择丢失技能或途径", () => {
+  const catalog = unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
+  for (const current of catalog.seasons) {
+    const signature = id => spiritSkills(current, id).map(skill => [skill.id, [...skill.methods].sort()]).sort(([a], [b]) => a.localeCompare(b));
+    const families = querySpiritFamilies(current);
+    expect(families.flatMap(family => family.pools.flatMap(pool => pool.members)).map(spirit => spirit.id).sort())
+      .toEqual(current.spirits.map(spirit => spirit.id).sort());
+    for (const family of families) for (const pool of family.pools) for (const member of pool.members) {
+      expect(signature(member.id), `${current.id}: ${member.fullName}`).toEqual(signature(pool.representative.id));
+    }
+  }
+});
+
 test("苹果搜索蜜果骸家族，别名进入最终形态，正式名称仍精确定位", () => {
   const catalog = unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
   const current = catalog.seasons.find(item => item.id === "S4");
