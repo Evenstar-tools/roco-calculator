@@ -1,5 +1,6 @@
 import { Fragment, useDeferredValue, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, CaretDown, CaretRight, SlidersHorizontal } from "@phosphor-icons/react";
+import { ArrowLeft, CaretDown, CaretRight, Minus, Plus, SlidersHorizontal } from "@phosphor-icons/react";
+import { RepeatLevelButton } from "../../components/NatureStatsStep.jsx";
 import { withCalculatorExtras } from "../../data/snapshot-extras.js";
 import { SpiritPicker } from "../../components/SpiritPicker.jsx";
 import { AppHeader } from "../../components/AppHeader.jsx";
@@ -13,7 +14,7 @@ import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { ElementIcon } from "../../components/ElementIcon.jsx";
 import { DraftNumberInput, TraitInputs } from "../../components/SingleSkillEditor.jsx";
 import { MoonMemoryTraitEditor } from "../../components/MoonMemoryTraitEditor.jsx";
-import { getTraitView } from "../../domain/calculator-view-model.js";
+import { getTraitView, stageMultiplier } from "../../domain/calculator-view-model.js";
 import { getNature, QUICK_STATS, STAT_LABELS } from "../../domain/natures.js";
 import { hasCompleteRaceStats } from "../../domain/stat.js";
 import { chooseDefaultSkillIds } from "../../domain/skill-loadout.js";
@@ -33,10 +34,12 @@ function NumberField({ label, value, onChange, min = 0, max = 100, suffix = "", 
   return <label className="deer-number"><span>{label}</span><DraftNumberInput ariaLabel={label} value={value} min={min} max={max} step={step} onCommit={(next) => onChange(integer ? Math.trunc(next) : next)} />{suffix && <span>{suffix}</span>}</label>;
 }
 
-function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup, onSelect, children }) {
+function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup, onSelect, onDefenseLevel, children }) {
   const [expanded, setExpanded] = useState(false);
   const side = setup.state.sides[sideKey];
   const attack = sideKey === "attacker";
+  const defenseStage = setup.state.directions.forward.overrides.defenseLevelStage ?? 0;
+  const defensePercent = Math.round((stageMultiplier(defenseStage) - 1) * 100);
   const label = attack ? "攻击方" : "防御方";
   const spirit = snapshot.spirits.find((entry) => entry.id === side.spiritId);
   const panels = spirit ? panelFor(snapshot, side) : null;
@@ -69,8 +72,13 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
       <div className="deer-templates" role="group" aria-label="防守模板">{defenseTemplates.map((template) => <button key={template.id} type="button" aria-pressed={presetId === template.id} onClick={() => selectPreset(template.id)}>{template.label}</button>)}</div>
       <div className="deer-config-summary"><span>{presetId === "current" ? "当前配置 · " : presetId === "custom" ? "自定义 · " : ""}{getNature(side.nature).name} · 生命{side.displayIvs.hp} / 物防{side.displayIvs.physicalDefense} / 魔防{side.displayIvs.magicalDefense}</span></div>
     </>}
-    <div className="deer-side-bottom">{attack && <><div className="deer-stacks"><span>特性层数</span><button type="button" aria-label="特性层数减一" disabled={setup.stacks === 0} onClick={() => onSetup({ stacks: setup.stacks - 1 })}>−</button><DraftNumberInput ariaLabel="特性层数" min={0} max={Number.isFinite(stackMax) ? stackMax : undefined} step={1} value={setup.stacks} onCommit={(next) => onSetup({ stacks: Math.trunc(next) })} /><button type="button" aria-label="特性层数加一" disabled={Number.isFinite(stackMax) && setup.stacks >= stackMax} onClick={() => onSetup({ stacks: setup.stacks + 1 })}>＋</button></div><small className="deer-stack-help">{spirit.stage} · {spirit.traitName} · {side.ignoreTraits ? "特性已关闭" : `每层双攻＋${effectValue}%`}</small></>}
+    <div className={`deer-side-bottom${attack ? "" : " deer-side-bottom--defender"}`}>{attack && <><div className="deer-stacks"><span>特性层数</span><button type="button" aria-label="特性层数减一" disabled={setup.stacks === 0} onClick={() => onSetup({ stacks: setup.stacks - 1 })}>−</button><DraftNumberInput ariaLabel="特性层数" min={0} max={Number.isFinite(stackMax) ? stackMax : undefined} step={1} value={setup.stacks} onCommit={(next) => onSetup({ stacks: Math.trunc(next) })} /><button type="button" aria-label="特性层数加一" disabled={Number.isFinite(stackMax) && setup.stacks >= stackMax} onClick={() => onSetup({ stacks: setup.stacks + 1 })}>＋</button></div><small className="deer-stack-help">{spirit.stage} · {spirit.traitName} · {side.ignoreTraits ? "特性已关闭" : `每层双攻＋${effectValue}%`}</small></>}
       {!attack && <NumberField label="目标HP" value={setup.defenderHp} min={1} suffix="%" onChange={(value) => onSetup({ defenderHp: value })} />}
+      {!attack && <div className="level-control" role="group" aria-label="防御能力等级"><span>防御能力等级</span><div>
+      <RepeatLevelButton ariaLabel="防御方等级减一" delta={-1} disabled={defenseStage <= -99} onChange={onDefenseLevel} value={defenseStage}><Minus aria-hidden="true" size={14} /></RepeatLevelButton>
+      <output>{defenseStage}层 · {defensePercent > 0 ? "+" : ""}{defensePercent}%</output>
+      <RepeatLevelButton ariaLabel="防御方等级加一" delta={1} disabled={defenseStage >= 99} onChange={onDefenseLevel} value={defenseStage}><Plus aria-hidden="true" size={14} /></RepeatLevelButton>
+      </div></div>}
     </div>
     {children}
     {expanded && <div className="deer-manual"><NatureSelect ariaLabel={`${label}性格`} value={side.nature} onChange={(nature) => onSide({ nature })} /><NatureEffect natureId={side.nature} /><div className="stat-grid">{QUICK_STATS.map((stat) => <StatTile key={stat} label={STAT_LABELS[stat]} natureId={side.nature} stat={stat} race={spirit.raceStats[stat]} panel={panels[stat]} displayIv={side.displayIvs[stat]} onIvChange={(value) => setIv(stat, value)} accent={attack ? "attack" : "defense"} />)}</div><p className="deer-muted">仅修改本页，不覆盖计算器收藏配置。</p></div>}
@@ -186,7 +194,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
   return <><DeerHeader onReturn={onReturn} /><main className="deer-page">
     <div className="deer-scenery" aria-hidden="true"><div className="deer-scenery-shards" /><img className="deer-scenery-portrait" src="/assets/deer/bopulu-background-v2.webp" alt="" width="1024" height="1536" decoding="async" draggable={false} /><div className="deer-scenery-spark deer-scenery-spark--right" /><div className="deer-scenery-spark deer-scenery-spark--left" /></div>
     <div className="deer-header"><span>共享计算内核 · 60级</span></div>
-    <div className="deer-configs">{["attacker", "defender"].map((sideKey) => <div className="deer-config-column" key={sideKey}><SideConfiguration snapshot={snapshot} setup={setup} sideKey={sideKey} presets={presets} onSide={(patch, manual) => setSide(sideKey, patch, manual)} onSetup={setOptions} onSelect={(id) => selectSpirit(sideKey, id)}>
+    <div className="deer-configs">{["attacker", "defender"].map((sideKey) => <div className="deer-config-column" key={sideKey}><SideConfiguration snapshot={snapshot} setup={setup} sideKey={sideKey} presets={presets} onSide={(patch, manual) => setSide(sideKey, patch, manual)} onSetup={setOptions} onSelect={(id) => selectSpirit(sideKey, id)} onDefenseLevel={(value) => setOverride("defenseLevelStage", value)}>
       {sideKey === "defender" && hasDeerDefenseTrait(snapshot, setup.state.sides.defender) && <DefenderTraitConfiguration snapshot={snapshot} spirit={defender} side={setup.state.sides.defender} trait={defenseTrait} context={defenseContext} onTrait={setTrait} onSide={(patch) => setSide("defender", patch, false)} />}
     </SideConfiguration>{sideKey === "attacker" && defender && speed && <section className="deer-speed" aria-label="速度对比" aria-live="polite" aria-busy={updating}>
       <span>速度对比</span><strong data-state={speed.state}>{updating ? "正在复算…" : speed.label}</strong>
@@ -198,7 +206,6 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
         <NumberField label="自身HP" value={setup.attackerHp} min={1} suffix="%" onChange={(attackerHp) => setOptions({ attackerHp })} />
         <label className="deer-number">天气<select aria-label="天气" value={setup.weather} onChange={(event) => setOptions({ weather: event.target.value })}><option value="none">无</option><option value="rain">雨天</option><option value="thunder">雷暴</option><option value="sandstorm">沙尘暴</option><option value="blizzard">暴风雪</option></select></label>
         <NumberField label="攻击能力等级" integer min={-99} max={99} value={setup.state.directions.forward.overrides.attackLevelStage ?? 0} onChange={(value) => setOverride("attackLevelStage", value)} />
-        <NumberField label="防御能力等级" integer min={-99} max={99} value={setup.state.directions.forward.overrides.defenseLevelStage ?? 0} onChange={(value) => setOverride("defenseLevelStage", value)} />
         <NumberField label="防守技能减伤" suffix="%" value={setup.reduction} onChange={(reduction) => setOptions({ reduction })} />
         <NumberField label="敌方星陨" integer max={99} value={setup.starfall} onChange={(starfall) => setOptions({ starfall })} />
         <NumberField label="敌方冻结" integer max={20} value={setup.freeze} onChange={(freeze) => setOptions({ freeze })} />

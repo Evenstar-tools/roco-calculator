@@ -5,10 +5,10 @@ const UNDO_HOLD_MS = 450;
 const UNDO_REPEAT_MS = 120;
 const INPUT_SELECTOR = 'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"]';
 
-export function useCalculatorShortcuts({ enabled, viewMode, onPreview, onModeChange, canUndo, onUndo }) {
+export function useCalculatorShortcuts({ enabled, viewMode, onPreview, onModeChange, canUndo, onUndo, canRedo, onRedo, onSearch, onSwap, onTeam, onHelp, bindings = {} }) {
   const actions = useRef(null);
   useEffect(() => {
-    actions.current = { enabled, viewMode, onPreview, onModeChange, canUndo, onUndo };
+    actions.current = { enabled, viewMode, onPreview, onModeChange, canUndo, onUndo, canRedo, onRedo, onSearch, onSwap, onTeam, onHelp, bindings };
   });
 
   useEffect(() => {
@@ -45,6 +45,31 @@ export function useCalculatorShortcuts({ enabled, viewMode, onPreview, onModeCha
 
     function keyDown(event) {
       if (!actions.current.enabled || event.defaultPrevented || event.isComposing || event.keyCode === 229 || inputFocused(event.target)) return;
+      const current = actions.current;
+      const key = event.key.toLowerCase();
+      const shortcutKey = key === "/" && event.shiftKey ? "?" : key;
+      if (key === "z" && event.ctrlKey && event.shiftKey && !event.metaKey && !event.altKey && current.onRedo) {
+        event.preventDefault();
+        stopUndo();
+        if (!event.repeat && current.canRedo) current.onRedo();
+        return;
+      }
+      if (!event.ctrlKey && !event.metaKey && !event.altKey) {
+        const commands = {
+          [current.bindings.attacker ?? "a"]: () => current.onSearch?.("attacker"),
+          [current.bindings.defender ?? "d"]: () => current.onSearch?.("defender"),
+          [current.bindings.swap ?? "x"]: current.onSwap,
+          [current.bindings.team ?? "t"]: current.onTeam,
+          [current.bindings.help ?? "?"]: current.onHelp,
+        };
+        const command = (!event.shiftKey || shortcutKey === "?") && commands[shortcutKey];
+        if (command) {
+          event.preventDefault();
+          stopUndo();
+          if (!event.repeat) command();
+          return;
+        }
+      }
       if (event.key === "Tab" && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
         event.preventDefault();
         if (tab || event.repeat) return;

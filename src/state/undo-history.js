@@ -5,6 +5,8 @@ function normalizedRememberSides(value) {
 
 export function createUndoHistory({ limit = 50, coalesceMs = 400 } = {}) {
   let entries = [];
+  let future = [];
+  let restored = false;
 
   function record(state, {
     batchToken = null,
@@ -12,13 +14,15 @@ export function createUndoHistory({ limit = 50, coalesceMs = 400 } = {}) {
     now = Date.now(),
     rememberSide = null,
   } = {}) {
+    future = [];
     const last = entries.at(-1);
-    const sameBatch = batchToken !== null && last?.batchToken === batchToken;
+    const sameBatch = !restored && batchToken !== null && last?.batchToken === batchToken;
     const sameRapidControl = Boolean(
-      groupKey &&
+      !restored && groupKey &&
       last?.groupKey === groupKey &&
       now - last.timestamp <= coalesceMs,
     );
+    restored = false;
     if (sameBatch || sameRapidControl) {
       for (const side of normalizedRememberSides(rememberSide)) {
         last.rememberSides.add(side);
@@ -39,9 +43,11 @@ export function createUndoHistory({ limit = 50, coalesceMs = 400 } = {}) {
     return entries.length;
   }
 
-  function undo() {
+  function undo(currentState) {
     const entry = entries.pop();
     if (!entry) return null;
+    if (currentState !== undefined) future.push({ ...entry, state: currentState });
+    restored = true;
     return {
       rememberSides: [...entry.rememberSides],
       state: entry.state,
@@ -51,7 +57,17 @@ export function createUndoHistory({ limit = 50, coalesceMs = 400 } = {}) {
   return {
     clear() {
       entries = [];
+      future = [];
+      restored = false;
     },
+    redo(currentState) {
+      const entry = future.pop();
+      if (!entry) return null;
+      entries.push({ ...entry, state: currentState });
+      restored = true;
+      return { rememberSides: [...entry.rememberSides], state: entry.state };
+    },
+    redoSize() { return future.length; },
     record,
     size() {
       return entries.length;

@@ -155,6 +155,7 @@ export function WorkspaceOverlays({
           <div aria-hidden="true" className="app-menu__group-label">
             配置
           </div>
+          <button type="button" onClick={() => { menuActions.onShowShortcuts?.(); menuActions.onClose?.(); }}>快捷键</button>
           <button
             onClick={() => {
               menuActions.onClearCurrent?.();

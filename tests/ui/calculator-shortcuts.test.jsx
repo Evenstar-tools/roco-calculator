@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { useCalculatorShortcuts } from "../../src/hooks/useCalculatorShortcuts.js";
 
-function Harness({ enabled = true, onSave = () => {} }) {
+function Harness({ enabled = true, onSave = () => {}, onCommand = () => {} }) {
   const [mode, setMode] = useState("compact");
   const [preview, setPreview] = useState(null);
   const [steps, setSteps] = useState(5);
@@ -12,6 +12,9 @@ function Harness({ enabled = true, onSave = () => {} }) {
     enabled, viewMode: mode, onPreview: setPreview,
     onModeChange: (next) => { setMode(next); onSave(next); },
     canUndo: steps > 0, onUndo: () => setSteps((value) => value - 1),
+    canRedo: true, onRedo: () => onCommand("redo"),
+    onSearch: (side) => onCommand(`search:${side}`), onSwap: () => onCommand("swap"),
+    onTeam: () => onCommand("team"), onHelp: () => onCommand("help"),
   });
   return <><output data-testid="mode">{preview ?? mode}</output><output data-testid="steps">{steps}</output><output data-testid="nature">{nature}</output><input aria-label="输入" /><select aria-label="选择" value={nature} onChange={event => setNature(event.target.value)}><option value="neutral">普通</option><option value="cheerful">开朗</option></select><div contentEditable suppressContentEditableWarning aria-label="编辑">text</div></>;
 }
@@ -90,13 +93,33 @@ test.each([{ shiftKey: true }, { altKey: true }, { ctrlKey: true }, { metaKey: t
   expect(mode()).toBe("compact");
 });
 
-test("Ctrl+Shift+Z 不触发撤回，已处理的事件不再处理", () => {
-  render(<Harness />);
-  expect(down("z", { ctrlKey: true, shiftKey: true })).toBe(true);
+test("Ctrl+Shift+Z 不触发撤回，已交给重做动作", () => {
+  const onCommand = vi.fn();
+  render(<Harness onCommand={onCommand} />);
+  expect(down("z", { ctrlKey: true, shiftKey: true })).toBe(false);
   const event = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
   event.preventDefault(); fireEvent(document.body, event);
   expect(mode()).toBe("compact");
   expect(steps()).toBe(5);
+  expect(onCommand).toHaveBeenCalledWith("redo");
+});
+
+test("常用快捷键避开输入框并触发对应动作", () => {
+  const onCommand = vi.fn();
+  render(<Harness onCommand={onCommand} />);
+  down("a"); down("d"); down("x"); down("t"); down("?", { shiftKey: true });
+  expect(onCommand.mock.calls.map(([value]) => value)).toEqual(["search:attacker", "search:defender", "swap", "team", "help"]);
+  const input = screen.getByLabelText("输入");
+  down("a", {}, input); expect(onCommand).toHaveBeenCalledTimes(5);
+});
+
+test("Ctrl+Shift+Z 触发重做且不连发", () => {
+  const onCommand = vi.fn();
+  render(<Harness onCommand={onCommand} />);
+  down("z", { ctrlKey: true, shiftKey: true });
+  down("z", { ctrlKey: true, shiftKey: true, repeat: true });
+  expect(onCommand).toHaveBeenCalledTimes(1);
+  expect(onCommand).toHaveBeenCalledWith("redo");
 });
 
 test.each(["blur", "hidden"])("%s 中断临时模式与连撤，不会卡住", (reason) => {

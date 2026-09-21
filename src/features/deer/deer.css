@@ -58,6 +58,14 @@ html[data-theme="dark"] .app-header--tool::before { content: none; }
 .deer-config-summary { min-height: 30px; background: var(--surface-soft); border-radius: 5px; padding: 7px 8px; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 11px; line-height: 1.5; }
 .deer-config-summary .deer-link { flex-shrink: 0; }
 .deer-side-bottom { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 7px; padding-top: 7px; border-top: 1px solid var(--border); min-height: 31px; }
+.deer-side-bottom--defender { display: grid; grid-template-columns: minmax(112px, .62fr) minmax(225px, 1.38fr); align-items: center; gap: 10px; }
+.deer-side-bottom--defender > .deer-number,
+.deer-side-bottom--defender .level-control { min-width: 0; min-height: 32px; box-sizing: border-box; }
+.deer-side-bottom--defender > .deer-number,
+.deer-side-bottom--defender .level-control { border: 0; border-radius: 0; background: transparent; }
+.deer-side-bottom--defender > .deer-number { justify-content: flex-start; padding: 4px 0; }
+.deer-side-bottom--defender .level-control { margin-top: 0; padding: 4px 0; font-size: inherit; }
+.deer-side-bottom--defender .level-control output { flex: 1 1 auto; min-width: 0; }
 .deer-number, .deer-stacks, .deer-check { display: inline-flex; align-items: center; gap: 7px; color: var(--text-muted); white-space: nowrap; }
 .deer-number input { width: 59px; padding: 5px 3px; text-align: center; }
 .deer-stacks { gap: 0; }
@@ -71,6 +79,7 @@ html[data-theme="dark"] .app-header--tool::before { content: none; }
 .deer-manual { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 10px; }
 .deer-manual .stat-grid { margin-top: 6px; }
 .deer-muted { font-size: 11px; color: var(--text-muted); }
+@media (max-width: 560px) { .deer-side-bottom--defender { grid-template-columns: 1fr; align-items: stretch; } }
 .deer-warning { color: #805708; background: #fff8e5; padding: 9px 12px; border-radius: 5px; }
 .deer-conditions { border: 1px solid var(--border); border-radius: 7px; background: var(--surface); margin-top: 12px; }
 .deer-conditions > button { width: 100%; display: flex; gap: 8px; align-items: center; border: 0; padding: 10px 12px; background: transparent; text-align: left; }

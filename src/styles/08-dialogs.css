@@ -9,6 +9,17 @@
   backdrop-filter: blur(4px);
 }
 
+.shortcut-dialog { max-height: calc(100dvh - 40px); overflow-y: auto; }
+.shortcut-dialog header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.shortcut-dialog > label { display: flex; align-items: center; gap: 8px; }
+.shortcut-dialog > label input[type="checkbox"] { width: 16px; height: 16px; }
+.shortcut-dialog dl > div { display: grid; grid-template-columns: 120px 1fr; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.shortcut-dialog dt { font-weight: 700; }
+.shortcut-dialog dd { margin: 0; color: var(--text-muted); }
+.shortcut-dialog .shortcut-binding { justify-content: space-between; margin-top: 6px; }
+.shortcut-dialog .shortcut-binding input { width: 46px; height: 30px; text-align: center; }
+@media (max-width: 400px) { .shortcut-dialog dl > div { grid-template-columns: 100px 1fr; } }
+
 .share-dialog {
   width: min(440px, 100%);
   padding: 20px;

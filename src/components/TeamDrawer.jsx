@@ -18,6 +18,7 @@ import { TeamAnalysisPanel } from "./TeamAnalysisPanel.jsx";
 import { TeamMemberEditor } from "./TeamMemberEditor.jsx";
 import { TeamRoster } from "./TeamRoster.jsx";
 import { TeamExchange } from "./TeamExchange.jsx";
+import { isShortcutInput } from "../state/shortcut-settings.js";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -62,11 +63,13 @@ export function TeamDrawer({
   snapshot,
   spiritChoices,
   teamsState,
+  shortcutSettings = { enabled: true, bindings: { team: "t" } },
 }) {
   const closeRef = useRef(null);
   const closeActionRef = useRef(null);
   const drawerRef = useRef(null);
   const importedIndexRef = useRef(null);
+  const shortcutActionRef = useRef(null);
   const [analysisDirty, setAnalysisDirty] = useState(false);
   const [exchangeMode, setExchangeMode] = useState(null);
   const [deletePending, setDeletePending] = useState(false);
@@ -121,13 +124,26 @@ export function TeamDrawer({
   }, [close]);
 
   useEffect(() => {
+    shortcutActionRef.current = (event) => {
+      if (!shortcutSettings.enabled || event.defaultPrevented || event.repeat || event.isComposing || event.keyCode === 229 || event.ctrlKey || event.altKey || event.metaKey || event.shiftKey || isShortcutInput(event.target)) return;
+      if (event.key.toLowerCase() === shortcutSettings.bindings.team) { event.preventDefault(); close(); return; }
+      if (!activeTeam || exchangeMode || deletePending || !/^[1-6]$/.test(event.key)) return;
+      const index = Number(event.key) - 1;
+      event.preventDefault();
+      navigate(() => { onAnalysisEntryClear?.(); setSelectedIndex(index); setPaneMode("member"); return true; }, Boolean(analysisEntry || index !== selectedIndex || paneMode !== "member"));
+    };
+  });
+
+  useEffect(() => {
     if (!open) return undefined;
     closeRef.current?.focus();
     function handleKeyDown(event) {
+      if (event.defaultPrevented) return;
       if (event.key === "Escape") {
         event.preventDefault();
         closeActionRef.current?.();
       } else {
+        shortcutActionRef.current?.(event);
         trapFocus(event, drawerRef.current);
       }
     }

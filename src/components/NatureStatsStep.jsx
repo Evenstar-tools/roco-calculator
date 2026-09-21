@@ -8,7 +8,7 @@ import { StatTile } from "./StatTile.jsx";
 const HOLD_DELAY_MS = 350;
 const HOLD_INTERVAL_MS = 80;
 
-function RepeatLevelButton({
+export function RepeatLevelButton({
   ariaLabel,
   children,
   delta,

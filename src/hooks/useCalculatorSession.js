@@ -9,6 +9,7 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast }) 
   const undoBatchRef = useRef(null);
   const undoBatchSequenceRef = useRef(0);
   const [undoCount, setUndoCount] = useState(0);
+  const [redoCount, setRedoCount] = useState(0);
 
   function startUndoBatch() {
     if (undoBatchRef.current !== null) return undoBatchRef.current;
@@ -32,6 +33,7 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast }) 
         rememberSide,
       });
       setUndoCount(undoHistoryRef.current.size());
+      setRedoCount(undoHistoryRef.current.redoSize());
     }
     stateRef.current = nextState;
     setState(nextState);
@@ -65,7 +67,14 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast }) 
   }
 
   function undoLastChange() {
-    const previous = undoHistoryRef.current.undo();
+    restoreHistory(undoHistoryRef.current.undo(stateRef.current), "已撤回上一步");
+  }
+
+  function redoLastChange() {
+    restoreHistory(undoHistoryRef.current.redo(stateRef.current), "已重做一步");
+  }
+
+  function restoreHistory(previous, message) {
     if (!previous) return;
     undoBatchRef.current = null;
     stateRef.current = previous.state;
@@ -75,7 +84,8 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast }) 
       if (configuredSide?.spiritId) onRememberSide(configuredSide);
     }
     setUndoCount(undoHistoryRef.current.size());
-    onToast("已撤回上一步");
+    setRedoCount(undoHistoryRef.current.redoSize());
+    onToast(message);
   }
 
   return {
@@ -85,5 +95,7 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast }) 
     stateRef,
     undoCount,
     undoLastChange,
+    redoCount,
+    redoLastChange,
   };
 }

@@ -72,6 +72,8 @@ import { withCalculatorExtras } from "./data/snapshot-extras.js";
 import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
 import { useCalculatorSession } from "./hooks/useCalculatorSession.js";
 import { useCalculatorShortcuts } from "./hooks/useCalculatorShortcuts.js";
+import { readShortcutSettings, writeShortcutSettings } from "./state/shortcut-settings.js";
+import { ShortcutDialog } from "./components/ShortcutDialog.jsx";
 import {
   POPULAR_CONFIG_COUNT,
   useConfigLibraryFlow,
@@ -110,6 +112,9 @@ const preloadSkillQuery = () => {
 };
 
 function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
+  const [shortcutSettings, setShortcutSettings] = useState(readShortcutSettings);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  useEffect(() => { writeShortcutSettings(shortcutSettings); }, [shortcutSettings]);
   const [skillQueryOpen, setSkillQueryOpen] = useState(false);
   const [transmissionOpen, setTransmissionOpen] = useState(false);
   const [typeQueryOpen, setTypeQueryOpen] = useState(false);
@@ -154,6 +159,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
     stateRef,
     undoCount,
     undoLastChange,
+    redoCount,
+    redoLastChange,
   } = useCalculatorSession({
     initialState,
     onRememberSide: storedData.rememberSide,
@@ -467,7 +474,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
 
   // 任一弹层/抽屉打开时引导浮层让位,关闭后恢复。
   const overlayCoveringGuide = Boolean(
-    (damageComparisonEnabled && comparisonSource) || overlays.menu.open ||
+    shortcutsOpen || (damageComparisonEnabled && comparisonSource) || overlays.menu.open ||
       overlays.team.open ||
       overlays.mobileResultProps.open ||
       overlays.cleanupConfigsProps.open ||
@@ -481,12 +488,22 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
   );
   const firstRunGuideVisible = firstRunGuide.open && !overlayCoveringGuide;
   useCalculatorShortcuts({
-    enabled: !overlayCoveringGuide && !firstRunGuideVisible && !skillQueryOpen && !transmissionOpen && !typeQueryOpen && !rankingKind,
+    enabled: shortcutSettings.enabled && !overlayCoveringGuide && !firstRunGuideVisible && !skillQueryOpen && !transmissionOpen && !typeQueryOpen && !rankingKind,
     viewMode: savedViewMode,
     onPreview: setPreviewViewMode,
     onModeChange: setViewMode,
     canUndo: undoCount > 0,
     onUndo: undoLastChange,
+    canRedo: redoCount > 0,
+    onRedo: redoLastChange,
+    bindings: shortcutSettings.bindings,
+    onSearch: (side) => {
+      const input = document.querySelector(`[aria-label="${side === "attacker" ? "攻击方" : "防御方"}精灵"]`);
+      input?.focus(); input?.select();
+    },
+    onSwap: () => { dispatch({ type: "sides/swap" }); setActiveDirection("forward"); },
+    onTeam: () => { overlays.team.setAnalysisEntry(null); overlays.team.setOpen(true); },
+    onHelp: () => setShortcutsOpen(true),
   });
 
   // 完成"选攻击方/选防御方"时引导自动推进;只在选择从无到有时前进,不干扰"上一步"。
@@ -1766,6 +1783,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
         onCleanupConfigs: () => overlays.setCleanupConfigsOpen(true),
         onShare: shareFlow.openShareConfiguration,
         onShowDisplaySettings: () => overlays.setDisplaySettingsOpen(true),
+        onShowShortcuts: () => setShortcutsOpen(true),
         onShowWhatsNew: () => overlays.setWhatsNewOpen(true),
         onShowProductAccess: () => overlays.setProductAccessOpen(true),
         onShowDataSource: () => overlays.setDataSourceOpen(true),
@@ -1861,6 +1879,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
     },
     team: {
       drawerProps: {
+        shortcutSettings,
         analysisEntry: overlays.team.analysisEntry,
         getSpiritConfiguration: storedData.getSpiritConfiguration,
         onActiveTeamChange: teamActions.setActive,
@@ -1959,6 +1978,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
         onViewModeChange={setViewMode}
       />
       <WorkspaceOverlays {...overlayProps}>
+      {shortcutsOpen && <ShortcutDialog settings={shortcutSettings} onChange={setShortcutSettings} onClose={() => setShortcutsOpen(false)} />}
       <div className={`calculator-layout calculator-layout--${viewMode}`}>
         <main className="calculator-main">
           <SpiritStep
