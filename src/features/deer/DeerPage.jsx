@@ -76,7 +76,7 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
       {!attack && <NumberField label="目标HP" value={setup.defenderHp} min={1} suffix="%" onChange={(value) => onSetup({ defenderHp: value })} />}
       {!attack && <div className="level-control" role="group" aria-label="防御能力等级"><span>防御能力等级</span><div>
       <RepeatLevelButton ariaLabel="防御方等级减一" delta={-1} disabled={defenseStage <= -99} onChange={onDefenseLevel} value={defenseStage}><Minus aria-hidden="true" size={14} /></RepeatLevelButton>
-      <output>{defenseStage}层 · {defensePercent > 0 ? "+" : ""}{defensePercent}%</output>
+      <span className="deer-level-value">{defenseStage}层 · {defensePercent > 0 ? "+" : ""}{defensePercent}%</span>
       <RepeatLevelButton ariaLabel="防御方等级加一" delta={1} disabled={defenseStage >= 99} onChange={onDefenseLevel} value={defenseStage}><Plus aria-hidden="true" size={14} /></RepeatLevelButton>
       </div></div>}
     </div>
