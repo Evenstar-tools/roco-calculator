@@ -6,7 +6,7 @@ import TypeQueryPanel from "../../src/features/type-query/TypeQueryPanel.jsx";
 
 function Harness({ initial = [], onClose = vi.fn(), chart = snapshot.typeChart }) {
   const [types, setTypes] = useState(initial);
-  return <TypeQueryPanel typeChart={chart} selectedTypes={types} onTypesChange={setTypes} onClose={onClose} />;
+  return <TypeQueryPanel typeChart={chart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={types} onTypesChange={setTypes} onClose={onClose} />;
 }
 const choices = () => within(screen.getByRole("group", { name: "选择属性" }));
 
@@ -16,8 +16,9 @@ test("首次空选，18属性最多双选；再点取消和清空", () => {
   expect(screen.getByText("点击上方属性，即时查看抗性和打击面")).toBeVisible();
   expect(screen.getByRole("button", { name: "清空" })).toBeDisabled();
   fireEvent.click(choices().getByRole("button", { name: "水", exact: true }));
-  expect(screen.getByText("我用这一系打谁")).toBeVisible();
+  expect(screen.getByRole("heading", { name: "进攻打击面" })).toBeVisible();
   fireEvent.click(choices().getByRole("button", { name: "地", exact: true }));
+  expect(screen.getByRole("region", { name: "对应属性精灵" })).toBeVisible();
   expect(choices().getAllByRole("button").filter((button) => button.disabled)).toHaveLength(16);
   fireEvent.click(choices().getByRole("button", { name: "火", exact: true }));
   expect(screen.getByRole("button", { name: "取消水" })).toBeVisible();
@@ -50,7 +51,15 @@ test("攻防倍率与可展开中性结果，点击来源不改查询属性", ()
   expect(screen.getByRole("button", { name: "取消水" })).toBeVisible();
   expect(screen.getByRole("button", { name: "取消地" })).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "取消水" }));
-  expect(screen.getByRole("status")).toHaveTextContent("点击结果查看倍率来源");
+  expect(screen.queryByRole("status")).toBeNull();
+});
+
+test("双属性显示每条进化链的最终形态，单属性隐藏", () => {
+  render(<Harness initial={["地", "冰"]} />);
+  expect(screen.getByRole("region", { name: "对应属性精灵" })).toHaveTextContent("獠牙猪");
+  expect(screen.getByRole("region", { name: "对应属性精灵" })).toHaveTextContent("冰 · 地 · 二阶");
+  fireEvent.click(choices().getByRole("button", { name: "地", exact: true }));
+  expect(screen.queryByRole("region", { name: "对应属性精灵" })).toBeNull();
 });
 
 test("按传入矩阵显示免疫，不补造属性关系", () => {

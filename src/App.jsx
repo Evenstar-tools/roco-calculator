@@ -2329,7 +2329,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
       /></Suspense> : null}
       {rankingsVisited ? <Suspense fallback={<div role="status">正在打开排行榜…</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}
       {transmissionOpen && <Suspense fallback={<div role="status">正在打开传动计算器…</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} onClose={() => setTransmissionOpen(false)} /></Suspense>}
-      {typeQueryOpen && <Suspense fallback={<div role="status">正在打开属性查询…</div>}><TypeQueryPanel typeChart={snapshot.typeChart} selectedTypes={queryTypes} onTypesChange={setQueryTypes} onClose={() => setTypeQueryOpen(false)} /></Suspense>}
+      {typeQueryOpen && <Suspense fallback={<div role="status">正在打开属性查询…</div>}><TypeQueryPanel typeChart={snapshot.typeChart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={queryTypes} onTypesChange={setQueryTypes} onClose={() => setTypeQueryOpen(false)} /></Suspense>}
       {skillQueryOpen && <Suspense fallback={<div role="status">正在打开技能查询…</div>}><SkillQueryPanel skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>

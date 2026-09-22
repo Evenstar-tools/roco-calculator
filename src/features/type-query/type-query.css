@@ -8,7 +8,7 @@
 .type-query__body { overflow-y: auto; min-height: 0; padding: 0 24px; }
 .type-query__selection { padding-top: 20px; }
 .type-query__label { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; }
-.type-query__label span, .type-query__column h3 small, .type-query__column > p, .type-query__none, .type-query__neutral, .type-query__note { font-size: 12px; color: var(--text-muted); }
+.type-query__label span, .type-query__column > p, .type-query__none, .type-query__neutral, .type-query__note { font-size: 12px; color: var(--text-muted); }
 .type-query__rail { display: grid; grid-template-columns: repeat(18, minmax(0, 1fr)); gap: 6px; padding: 2px 1px 8px; }
 .type-query__type { position: relative; height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: 1px solid transparent; border-radius: 6px; background: var(--surface-soft); font-size: 13px; }
 .type-query__type:disabled, .type-query__quiet:disabled { opacity: .55; }
@@ -38,6 +38,16 @@
 .type-query__explanation { display: flex; gap: 14px; padding: 12px 14px; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-soft); font-size: 13px; }
 .type-query__explanation strong, .type-query__note svg { flex: none; }
 .type-query__explanation span { display: block; color: var(--text-muted); }
+.type-query__spirits { margin: 0 0 20px; padding: 14px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface-soft); }
+.type-query__spirits-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.type-query__spirits-heading h3 { margin: 0; font-size: 16px; }
+.type-query__spirits-heading p, .type-query__spirits-heading > span, .type-query__spirit-card span, .type-query__spirits-empty { margin: 2px 0 0; font-size: 12px; color: var(--text-muted); }
+.type-query__spirit-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.type-query__spirit-card { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 7px 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+.type-query__spirit-card img { width: 42px; height: 42px; flex: none; object-fit: contain; }
+.type-query__spirit-card div { min-width: 0; display: flex; flex-direction: column; }
+.type-query__spirit-card strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.type-query__spirits-empty { margin: 0; }
 .type-query__note { display: flex; gap: 10px; border-top: 1px solid var(--border); padding: 12px 0; }
 .type-query__empty { padding: 55px 0; text-align: center; color: var(--text-muted); }
 @media (max-width: 1100px) {
@@ -55,6 +65,7 @@
   .type-query__group { grid-template-columns: 77px minmax(0, 1fr); padding: 11px 0; gap: 5px; }
   .type-query__explanation { display: block; font-size: 12px; }
   .type-query__explanation strong { display: block; margin-bottom: 4px; }
+  .type-query__spirit-list { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
   .type-query__rail { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; margin-inline: -11px; }

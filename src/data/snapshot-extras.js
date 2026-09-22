@@ -90,6 +90,10 @@ const SPIRIT_COMMUNITY_ALIASES_BY_ID = Object.freeze({
   spirit_7709f87e848d6006: Object.freeze(["蚊子"]),
   spirit_faed11065c114c00: Object.freeze(["大象"]),
   spirit_fa429ea152f6bdad: Object.freeze(["乌龟"]),
+  spirit_b8395532616fe541: Object.freeze(["皇后"]),
+  spirit_03d719be9841704e: Object.freeze(["皇后"]),
+  spirit_d4a7177497e7250e: Object.freeze(["国王"]),
+  spirit_3b52748976f979f2: Object.freeze(["国王"]),
 });
 
 function addSpiritCommunityAliases(spirits) {

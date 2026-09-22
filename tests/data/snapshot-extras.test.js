@@ -125,9 +125,29 @@ describe("withCalculatorExtras", () => {
       ["窃光蚊", "蚊子"],
       ["巨鼓象", "大象"],
       ["玳塔", "乌龟"],
+      ["棋绮后（白子）", "皇后"],
+      ["棋绮后（黑子）", "皇后"],
+      ["棋契陛下（白棋棋绮后分支）", "国王"],
+      ["棋契陛下（黑棋棋绮后分支）", "国王"],
     ]) {
       expect(aliasesByName.get(name)).toContain(alias);
     }
+  });
+
+  test("皇后与国王别名优先展示指定棋子分支", () => {
+    const snapshot = JSON.parse(
+      readFileSync("data/snapshots/current.json", "utf8"),
+    );
+    const index = createSpiritSearchIndex(withCalculatorExtras(snapshot).spirits);
+
+    expect(index.search("皇后").slice(0, 2).map((spirit) => spirit.fullName)).toEqual([
+      "棋绮后（白子）",
+      "棋绮后（黑子）",
+    ]);
+    expect(index.search("国王").slice(0, 2).map((spirit) => spirit.fullName)).toEqual([
+      "棋契陛下（白棋棋绮后分支）",
+      "棋契陛下（黑棋棋绮后分支）",
+    ]);
   });
 
   test("adds all 18 typed Wish Power variants without mutating the snapshot count", () => {

@@ -20,6 +20,15 @@ function searchFields(spirit) {
     .map(compact);
 }
 
+function searchRank(spirit, needle) {
+  const aliases = (spirit.aliases ?? []).map(compact);
+  if (aliases.includes(needle)) return 0;
+  if (compact(spirit.fullName) === needle) return 1;
+  const fields = searchFields(spirit);
+  if (fields.some((field) => field.startsWith(needle))) return 2;
+  return 3;
+}
+
 export function prepareSpiritForView(spirit) {
   return {
     ...spirit,
@@ -47,8 +56,14 @@ export function createSpiritSearchIndex(spirits) {
 
       return entries
         .filter((entry) => entry.fields.some((field) => field.includes(needle)))
+        .map((entry, index) => ({
+          entry,
+          index,
+          rank: searchRank(entry.spirit, needle),
+        }))
+        .sort((left, right) => left.rank - right.rank || left.index - right.index)
         .slice(0, limit)
-        .map((entry) => entry.spirit);
+        .map(({ entry }) => entry.spirit);
     },
     values() {
       return entries.map((entry) => entry.spirit);

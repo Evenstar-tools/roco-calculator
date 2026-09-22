@@ -1,7 +1,8 @@
 import { describe, expect, test } from "vitest";
 import snapshot from "../../data/snapshots/current.json";
 import { ELEMENT_TYPES, getTypeMultiplier } from "../../src/domain/type-chart.js";
-import { buildTypeQuery, toggleQueryType } from "../../src/features/type-query/model.js";
+import { buildTypeQuery, findFinalDualTypeSpirits, toggleQueryType } from "../../src/features/type-query/model.js";
+import { resolveSpiritFormRole } from "../../src/features/team-ability/domain/spirit-form-role.js";
 
 const chart = snapshot.typeChart;
 const row = (rows, type) => rows.find((entry) => entry.type === type);
@@ -33,6 +34,13 @@ describe("属性查询", () => {
     expect(row(buildTypeQuery(["普通"], custom).defense, "普通").multiplier).toBe(0);
     expect(row(buildTypeQuery(["普通"], custom).offense, "普通").multiplier).toBe(0);
     expect(buildTypeQuery(["水", "地"], chart).defense.some(({ multiplier }) => multiplier === 0)).toBe(false);
+  });
+  test("双属性精灵只展示已确认的最终形态", () => {
+    const spiritFilterRevision = snapshot.meta?.revisions?.spiritFilter;
+    const matches = findFinalDualTypeSpirits(snapshot.spirits, ["地", "冰"], { spiritFilterRevision });
+    expect(matches.map(({ fullName }) => fullName)).toEqual(["獠牙猪"]);
+    expect(matches.every((spirit) => resolveSpiritFormRole(spirit, { spiritFilterRevision }).formRole === "final")).toBe(true);
+    expect(findFinalDualTypeSpirits(snapshot.spirits, ["地"])).toEqual([]);
   });
   const combinations = ELEMENT_TYPES.flatMap((type, i) => [[type], ...ELEMENT_TYPES.slice(i + 1).map((other) => [type, other])]);
   test.each(combinations.map((types) => [types.join("/"), types]))("%s：18行无遗漏且与内核一致，选中顺序不影响结果", (_, types) => {

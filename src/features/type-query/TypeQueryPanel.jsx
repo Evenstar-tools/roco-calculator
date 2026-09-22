@@ -2,7 +2,7 @@ import { Check, Info, Plus, X } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ElementIcon } from "../../components/ElementIcon.jsx";
 import { ELEMENT_TYPES } from "../../domain/type-chart.js";
-import { buildTypeQuery, toggleQueryType } from "./model.js";
+import { buildTypeQuery, findFinalDualTypeSpirits, toggleQueryType } from "./model.js";
 import "./type-query.css";
 
 const DEFENSE_GROUPS = [[3, "双重弱点"], [2, "弱点"], [0.5, "抗性"], [0.25, "双重抗性"]];
@@ -35,7 +35,18 @@ function explainRow(row, side, types) {
   return [`${row.type}系攻击${types.join("＋")}系防守：承受 ${row.multiplier} 倍伤害。`, row.parts.map((part) => `${row.type}打${part.type}：${part.multiplier} 倍`).join("；") + "。", raw >= 4 ? "两项均克制，按游戏规则双重弱点为 3 倍，不是 4 倍。" : types.length === 2 ? "双属性防守按两项倍率相乘计算。" : "单属性防守，直接使用对应倍率。"];
 }
 
-export default function TypeQueryPanel({ typeChart, selectedTypes, onTypesChange, onClose }) {
+function SpiritResults({ spirits, types, spiritFilterRevision }) {
+  const matches = findFinalDualTypeSpirits(spirits, types, { spiritFilterRevision });
+  return <section className="type-query__spirits" aria-label="对应属性精灵">
+    <div className="type-query__spirits-heading"><div><h3>对应属性精灵</h3><p>{types.join(" ＋ ")} · 仅展示每条进化链的最终形态</p></div><span>{matches.length} 个结果</span></div>
+    {matches.length ? <div className="type-query__spirit-list" role="list">{matches.map((spirit) => <article className="type-query__spirit-card" key={spirit.id} role="listitem">
+      <img src={`${import.meta.env.BASE_URL}assets/spirits/${spirit.id}.png`} alt="" loading="lazy" />
+      <div><strong>{spirit.fullName}</strong><span>{spirit.types.join(" · ")} · {spirit.stage}</span></div>
+    </article>)}</div> : <p className="type-query__spirits-empty">当前没有匹配的双属性最终形态。</p>}
+  </section>;
+}
+
+export default function TypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision, selectedTypes, onTypesChange, onClose }) {
   const root = useRef(null);
   const [inspected, setInspected] = useState(null);
   const query = useMemo(() => buildTypeQuery(selectedTypes, typeChart), [selectedTypes, typeChart]);
@@ -99,18 +110,19 @@ export default function TypeQueryPanel({ typeChart, selectedTypes, onTypesChange
         </section>
         {!query.types.length ? <p className="type-query__empty" role="status">点击上方属性，即时查看抗性和打击面</p> : <>
           <div className="type-query__columns">
-            <section className="type-query__column" aria-label="防守抗性"><h3>防守抗性<small>别人打我</small></h3><p>{query.types.join(" / ")}作为防御属性 · 优先看弱点</p>
+            <section className="type-query__column" aria-label="防守抗性"><h3>防守抗性</h3><p>{query.types.join(" / ")}作为防御属性 · 优先看弱点</p>
               {DEFENSE_GROUPS.map(([multiplier, label]) => <ResultGroup key={multiplier} rows={query.defense} side="defense" {...{ multiplier, label, inspected }} onInspect={setInspected} />)}
               {query.defense.some(({ multiplier }) => multiplier === 0) && <ResultGroup rows={query.defense} side="defense" multiplier={0} label="免疫" inspected={inspected} onInspect={setInspected} />}
               <details className="type-query__neutral"><summary>常规承伤 1× · {neutral.length} 种属性</summary><div className="type-query__chips">{neutral.map((row) => <ResultChip key={row.type} row={row} side="defense" inspected={inspected} onInspect={setInspected} />)}</div></details>
             </section>
-            <section className="type-query__column type-query__column--attack" aria-label="进攻打击面"><h3>进攻打击面<small>{query.types.length === 2 ? "我用这两系打谁" : "我用这一系打谁"}</small></h3><p>针对 18 种单属性 · {query.types.length === 2 ? "两系取较优倍率" : "按所选属性计算"}</p>
+            <section className="type-query__column type-query__column--attack" aria-label="进攻打击面"><h3>进攻打击面</h3><p>针对 18 种单属性 · {query.types.length === 2 ? "两系取较优倍率" : "按所选属性计算"}</p>
               {OFFENSE_GROUPS.map(([multiplier, label]) => <ResultGroup key={multiplier} rows={query.offense} side="offense" {...{ multiplier, label, inspected }} onInspect={setInspected} />)}
               {query.offense.some(({ multiplier }) => multiplier === 0) && <ResultGroup rows={query.offense} side="offense" multiplier={0} label="无法打击" inspected={inspected} onInspect={setInspected} />}
               <div className="type-query__neutral">双系攻击分别计算，不把两个技能当作一招叠乘。</div>
             </section>
           </div>
-          <div className="type-query__explanation" role="status"><strong>{inspectedRow ? "倍率来源" : "点击结果查看倍率来源"}</strong><div>{(inspectedRow ? explainRow(inspectedRow, inspected.side, query.types) : ["可查每一系单独的关系，以及组合后的实际倍率。"]).map((line) => <span key={line}>{line}</span>)}</div></div>
+          {inspectedRow && <div className="type-query__explanation" role="status"><strong>倍率来源</strong><div>{explainRow(inspectedRow, inspected.side, query.types).map((line) => <span key={line}>{line}</span>)}</div></div>}
+          {query.types.length === 2 && <SpiritResults spirits={spirits} types={query.types} spiritFilterRevision={spiritFilterRevision} />}
         </>}
         <footer className="type-query__note"><Info size={16} aria-hidden="true" /><span>仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。</span></footer>
       </div>
