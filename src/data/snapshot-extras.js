@@ -78,6 +78,18 @@ const SPIRIT_COMMUNITY_ALIASES_BY_ID = Object.freeze({
   spirit_563a4e078a1d8cba: Object.freeze(["莎莎"]),
   spirit_4bc9a982e5888257: Object.freeze(["菠萝"]),
   spirit_cd669a9720f51fe4: Object.freeze(["UFO", "扫地机器人"]),
+  spirit_e268b7cfd84f0a1f: Object.freeze(["火马"]),
+  spirit_14a25ce7b8d65623: Object.freeze(["食蚁兽"]),
+  spirit_07b444210032f19b: Object.freeze(["螃蟹"]),
+  spirit_190dc8281c5049b1: Object.freeze(["螃蟹"]),
+  spirit_2f24d4018a1545f7: Object.freeze(["狐狸"]),
+  spirit_3247e9dd6602e72c: Object.freeze(["鱿鱼"]),
+  spirit_d4f6e1e80d4f396e: Object.freeze(["鱿鱼"]),
+  spirit_de22accf29301363: Object.freeze(["草鹿"]),
+  spirit_7d22156a66708de3: Object.freeze(["电鹿"]),
+  spirit_7709f87e848d6006: Object.freeze(["蚊子"]),
+  spirit_faed11065c114c00: Object.freeze(["大象"]),
+  spirit_fa429ea152f6bdad: Object.freeze(["乌龟"]),
 });
 
 function addSpiritCommunityAliases(spirits) {

@@ -112,6 +112,22 @@ describe("withCalculatorExtras", () => {
     expect(aliasesByName.get("食尘短绒")).toEqual(
       expect.arrayContaining(["UFO", "扫地机器人"]),
     );
+    for (const [name, alias] of [
+      ["雅丹鬃", "火马"],
+      ["巨噬针鼹", "食蚁兽"],
+      ["加油蟹（两只海葵的样子）", "螃蟹"],
+      ["加油蟹（单只海葵的样子）", "螃蟹"],
+      ["尖嘴狐仙", "狐狸"],
+      ["混乱鱿彩", "鱿鱼"],
+      ["秩序鱿墨", "鱿鱼"],
+      ["针叶巡林", "草鹿"],
+      ["波普鹿", "电鹿"],
+      ["窃光蚊", "蚊子"],
+      ["巨鼓象", "大象"],
+      ["玳塔", "乌龟"],
+    ]) {
+      expect(aliasesByName.get(name)).toContain(alias);
+    }
   });
 
   test("adds all 18 typed Wish Power variants without mutating the snapshot count", () => {
