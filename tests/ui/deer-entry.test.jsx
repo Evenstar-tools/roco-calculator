@@ -48,6 +48,30 @@ test.each([false, true])("直接打开时使用预设，用户预设优先于内
   repository.clear();
 });
 
+test("主页带入未完成电鹿配置时自动使用常用配置，完整配置才保留", () => {
+  const incomplete = createDeerSetup(snapshot).state;
+  incomplete.sides.attacker.nature = "neutral";
+  incomplete.sides.attacker.displayIvs = {
+    hp: 0,
+    physicalAttack: 0,
+    magicalAttack: 0,
+    physicalDefense: 0,
+    magicalDefense: 0,
+    speed: 0,
+  };
+  const first = render(<DeerWorkspace snapshot={snapshot} initialState={incomplete} />);
+  expect(screen.getByRole("combobox", { name: "电鹿配置预设" })).toHaveValue("standard");
+  expect(screen.getByRole("button", { name: "攻击方速度增益" })).toHaveAttribute("aria-pressed", "true");
+  first.unmount();
+
+  const complete = createDeerSetup(snapshot).state;
+  complete.sides.attacker.nature = "adamant";
+  const second = render(<DeerWorkspace snapshot={snapshot} initialState={complete} />);
+  expect(screen.getByRole("combobox", { name: "电鹿配置预设" })).toHaveValue("current");
+  expect(screen.getByRole("button", { name: "攻击方物攻增益" })).toHaveAttribute("aria-pressed", "true");
+  second.unmount();
+});
+
 test("主页带入当前配置不被默认精灵预设覆盖，可主动取用预设", () => {
   const source = createDeerSetup(snapshot).state;
   source.sides.defender.displayIvs.hp = 42;

@@ -38,10 +38,10 @@ function explainRow(row, side, types) {
 function SpiritResults({ spirits, types, spiritFilterRevision }) {
   const matches = findFinalDualTypeSpirits(spirits, types, { spiritFilterRevision });
   return <section className="type-query__spirits" aria-label="对应属性精灵">
-    <div className="type-query__spirits-heading"><div><h3>对应属性精灵</h3><p>{types.join(" ＋ ")} · 仅展示每条进化链的最终形态</p></div><span>{matches.length} 个结果</span></div>
+    <div className="type-query__spirits-heading"><div><h3>对应属性精灵</h3><p>{types.join(" ＋ ")} · 仅展示已确认最终形态</p></div><span>{matches.length} 个结果</span></div>
     {matches.length ? <div className="type-query__spirit-list" role="list">{matches.map((spirit) => <article className="type-query__spirit-card" key={spirit.id} role="listitem">
       <img src={`${import.meta.env.BASE_URL}assets/spirits/${spirit.id}.png`} alt="" loading="lazy" />
-      <div><strong>{spirit.fullName}</strong><span>{spirit.types.join(" · ")} · {spirit.stage}</span></div>
+      <div><strong>{spirit.fullName}</strong><span>{spirit.stage}</span></div>
     </article>)}</div> : <p className="type-query__spirits-empty">当前没有匹配的双属性最终形态。</p>}
   </section>;
 }

@@ -18,7 +18,7 @@ import { getTraitView, stageMultiplier } from "../../domain/calculator-view-mode
 import { getNature, QUICK_STATS, STAT_LABELS } from "../../domain/natures.js";
 import { hasCompleteRaceStats } from "../../domain/stat.js";
 import { chooseDefaultSkillIds } from "../../domain/skill-loadout.js";
-import { spiritConfigsRepository } from "../../state/spirit-configs.js";
+import { isCompleteSpiritConfig, spiritConfigsRepository } from "../../state/spirit-configs.js";
 import { canonicalTraitControlKey, materializeTraitContext } from "../../state/trait-values.js";
 import { DEER_NAMES, DEFENSE_TEMPLATES, applyDeerPreset, calculateDeerRows, createDeerSetup, getDeerDefenseLimitations, hasDeerDefenseTrait, panelFor } from "./deer-model.js";
 import "./deer.css";
@@ -109,7 +109,16 @@ function bestRow(rows, field) { return rows.filter((row) => row[field] !== null)
 export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onReturn }) {
   const [setup, setSetup] = useState(() => {
     const next = { ...createDeerSetup(snapshot, initialState), showFollowup: false };
-    if (!initialState) {
+    if (initialState) {
+      const attacker = next.state.sides.attacker;
+      if (!isCompleteSpiritConfig(attacker)) {
+        next.state.sides.attacker = applyDeerPreset(attacker, {
+          nature: "cheerful",
+          displayIvs: { hp: 60, physicalAttack: 60, speed: 60, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0 },
+        });
+        next.attackPreset = "standard";
+      }
+    } else {
       const side = next.state.sides.defender;
       const preset = presets[side.spiritId];
       next.state.sides.defender = applyDeerPreset(side, preset ?? DEFENSE_TEMPLATES.find((entry) => entry.id === "hp"));
@@ -121,7 +130,53 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
   const [appliedMinimum, setAppliedMinimum] = useState(null);
   const [conditionsOpen, setConditionsOpen] = useState(false);
   const deferredSetup = useDeferredValue(setup);
-  const rows = useMemo(() => deferredSetup.state.sides.defender.spiritId ? calculateDeerRows(snapshot, deferredSetup) : [], [snapshot, deferredSetup]);
+  const {
+    state: deferredState,
+    stacks: deferredStacks,
+    attackerHp: deferredAttackerHp,
+    defenderHp: deferredDefenderHp,
+    freeze: deferredFreeze,
+    starfall: deferredStarfall,
+    weather: deferredWeather,
+    reduction: deferredReduction,
+    showFollowup: deferredShowFollowup,
+    normalElectric: deferredNormalElectric,
+    dischargeElectrified: deferredDischargeElectrified,
+  } = deferredSetup;
+  const scanStacks = Math.max(99, Math.floor(Number(deferredStacks) || 0));
+  const scanRows = useMemo(() => {
+    if (!deferredState.sides.defender.spiritId) return [];
+    return calculateDeerRows(snapshot, {
+      state: deferredState,
+      stacks: scanStacks,
+      attackerHp: deferredAttackerHp,
+      defenderHp: deferredDefenderHp,
+      freeze: deferredFreeze,
+      starfall: deferredStarfall,
+      weather: deferredWeather,
+      reduction: deferredReduction,
+      showFollowup: deferredShowFollowup,
+      normalElectric: deferredNormalElectric,
+      dischargeElectrified: deferredDischargeElectrified,
+    });
+  }, [
+    snapshot,
+    deferredState,
+    scanStacks,
+    deferredAttackerHp,
+    deferredDefenderHp,
+    deferredFreeze,
+    deferredStarfall,
+    deferredWeather,
+    deferredReduction,
+    deferredShowFollowup,
+    deferredNormalElectric,
+    deferredDischargeElectrified,
+  ]);
+  const rows = useMemo(() => scanRows.map((row) => ({
+    ...row,
+    current: row.byStack[deferredStacks] ?? row.byStack.at(-1),
+  })), [scanRows, deferredStacks]);
   const visibleRows = setup.showFollowup ? rows : rows.filter((row) => row.id !== "stone-counter").map((row) => row.id === "stone" ? { ...row, label: "裂石", note: "应对状态不改变本击伤害；勾选显示先发补刀后，区分普通与应对降防的后续伤害。" } : row);
   const updating = deferredSetup !== setup;
   const speed = rows[0]?.current.speed;
