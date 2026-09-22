@@ -12,6 +12,22 @@ function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
 }
 
+function searchMatchRank(spirit, needle) {
+  const aliases = (spirit.aliases ?? []).map(normalizeSearch);
+  if (aliases.includes(needle)) return 0;
+  if (normalizeSearch(spirit.fullName) === needle) return 1;
+  const fields = [
+    spirit.fullName,
+    spirit.variantName,
+    spirit.pinyin,
+    spirit.initials,
+    spirit.dexNo,
+    ...(spirit.aliases ?? []),
+  ].map(normalizeSearch);
+  if (fields.some((field) => field.startsWith(needle))) return 2;
+  return 3;
+}
+
 const INITIAL_PREVIEW_COUNT = 16;
 const PREVIEW_PAGE_SIZE = 20;
 const S4_PREVIEW_BOSS_ORDER = new Map([
@@ -174,16 +190,21 @@ export function SpiritPicker({
     };
     const needle = normalizeSearch(query);
     const direct = needle
-      ? spirits.filter((spirit) =>
-          [
-            spirit.fullName,
-            spirit.variantName,
-            spirit.pinyin,
-            spirit.initials,
-            spirit.dexNo,
-            ...(spirit.aliases ?? []),
-          ].some((field) => normalizeSearch(field).includes(needle)),
-        )
+      ? spirits
+          .filter((spirit) =>
+            [
+              spirit.fullName,
+              spirit.variantName,
+              spirit.pinyin,
+              spirit.initials,
+              spirit.dexNo,
+              ...(spirit.aliases ?? []),
+            ].some((field) => normalizeSearch(field).includes(needle)),
+          )
+          .sort((left, right) =>
+            searchMatchRank(left, needle) - searchMatchRank(right, needle)
+            || compareDexOrder(left, right),
+          )
       : spirits;
     const markedFirst = (items) =>
       [...items].sort(

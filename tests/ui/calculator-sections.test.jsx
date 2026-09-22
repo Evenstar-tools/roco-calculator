@@ -229,6 +229,43 @@ test("spirit picker searches community aliases without changing its visible copy
   ).toEqual(["白金独角兽", "彩虹独角兽"]);
 });
 
+test("spirit picker ranks exact community aliases ahead of incidental name matches", async () => {
+  const user = userEvent.setup();
+  render(
+    <SpiritPicker
+      favoriteState={null}
+      label="攻击方"
+      onFavoriteToggle={vi.fn()}
+      onSelect={vi.fn()}
+      selected={null}
+      side="attack"
+      spirits={[
+        {
+          dexNo: "011",
+          evolutionChainIds: ["duck-king"],
+          fullName: "鸭吉吉国王（蓬松的样子）",
+          id: "duck-king",
+        },
+        {
+          aliases: ["国王"],
+          dexNo: "192",
+          evolutionChainIds: ["chess-king"],
+          fullName: "棋契陛下（白棋棋绮后分支）",
+          id: "chess-king",
+        },
+      ]}
+    />,
+  );
+
+  const input = screen.getByRole("combobox", { name: "攻击方精灵" });
+  await user.type(input, "国王");
+  expect(
+    screen.getAllByRole("option").map((option) =>
+      option.querySelector("strong")?.textContent,
+    ),
+  ).toEqual(["棋契陛下（白棋棋绮后分支）", "鸭吉吉国王（蓬松的样子）"]);
+});
+
 test("spirit picker falls back to dex order when there are no favorites", async () => {
   const user = userEvent.setup();
   render(
