@@ -20,7 +20,7 @@ import { hasCompleteRaceStats } from "../../domain/stat.js";
 import { chooseDefaultSkillIds } from "../../domain/skill-loadout.js";
 import { isCompleteSpiritConfig, spiritConfigsRepository } from "../../state/spirit-configs.js";
 import { canonicalTraitControlKey, materializeTraitContext } from "../../state/trait-values.js";
-import { DEER_NAMES, DEFENSE_TEMPLATES, applyDeerPreset, calculateDeerRows, createDeerSetup, getDeerDefenseLimitations, hasDeerDefenseTrait, panelFor } from "./deer-model.js";
+import { DEER_NAMES, DEFENSE_TEMPLATES, applyDeerPreset, calculateDeerRow, calculateDeerSummaryRows, createDeerSetup, evaluateDeerAttack, getDeerDefenseLimitations, hasDeerDefenseTrait, panelFor } from "./deer-model.js";
 import "./deer.css";
 
 function DeerHeader({ onReturn }) {
@@ -144,9 +144,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     dischargeElectrified: deferredDischargeElectrified,
   } = deferredSetup;
   const scanStacks = Math.max(99, Math.floor(Number(deferredStacks) || 0));
-  const scanRows = useMemo(() => {
-    if (!deferredState.sides.defender.spiritId) return [];
-    return calculateDeerRows(snapshot, {
+  const scanSetup = useMemo(() => ({
       state: deferredState,
       stacks: scanStacks,
       attackerHp: deferredAttackerHp,
@@ -158,9 +156,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
       showFollowup: deferredShowFollowup,
       normalElectric: deferredNormalElectric,
       dischargeElectrified: deferredDischargeElectrified,
-    });
-  }, [
-    snapshot,
+  }), [
     deferredState,
     scanStacks,
     deferredAttackerHp,
@@ -173,10 +169,17 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     deferredNormalElectric,
     deferredDischargeElectrified,
   ]);
+  const scanRows = useMemo(() => deferredState.sides.defender.spiritId
+    ? calculateDeerSummaryRows(snapshot, scanSetup)
+    : [], [snapshot, scanSetup, deferredState]);
   const rows = useMemo(() => scanRows.map((row) => ({
     ...row,
-    current: row.byStack[deferredStacks] ?? row.byStack.at(-1),
-  })), [scanRows, deferredStacks]);
+    current: row.evaluatedByStack[deferredStacks] ?? evaluateDeerAttack(snapshot, scanSetup, row, deferredStacks),
+  })), [scanRows, deferredStacks, snapshot, scanSetup]);
+  const expandedDetails = useMemo(() => {
+    const variant = scanRows.find((row) => row.id === expandedRow);
+    return variant ? calculateDeerRow(snapshot, scanSetup, variant) : null;
+  }, [scanRows, expandedRow, snapshot, scanSetup]);
   const visibleRows = setup.showFollowup ? rows : rows.filter((row) => row.id !== "stone-counter").map((row) => row.id === "stone" ? { ...row, label: "裂石", note: "应对状态不改变本击伤害；勾选显示先发补刀后，区分普通与应对降防的后续伤害。" } : row);
   const updating = deferredSetup !== setup;
   const speed = rows[0]?.current.speed;
@@ -281,7 +284,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
           <td><button type="button" className="deer-expand" aria-label={`查看${row.label}详情`} aria-expanded={expandedRow === row.id} onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}>{expandedRow === row.id ? <CaretDown size={14} /> : <CaretRight size={14} />}</button></td>
         </tr>{expandedRow === row.id && <tr className="deer-detail"><td colSpan={setup.showFollowup ? 6 : 5}><p><strong>{row.label}</strong> · {row.skill.description}</p>{row.note && <p>{row.note}</p>}{row.current.electrified && <p>合计：通电 {row.current.first.totalDamage ?? "—"} ＋ 引电 {row.current.electrified.damage} ＝ {row.current.damage ?? "—"} HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。</p>}<p>实际威力 {row.current.first.staticPower ?? "—"} · 克制 ×{row.current.first.typeMultiplier ?? "—"} · 目标剩余 {row.current.remainingHp ?? "—"} HP{setup.freeze > 0 ? ` · 冻结占 ${row.current.freeze.thresholdPercent}%（${row.current.freeze.thresholdHp} HP）` : ""}</p>{row.current.followup && <p>本次 {row.current.damage} ＋ 先发 {row.current.followup.totalDamage} ＝ {row.current.comboDamage} 伤害 · {row.current.comboLethal ? "可击倒" : "未击倒"}</p>}{row.current.followupReason && <p>{row.current.followupReason}</p>}
           {row.current.first.warnings?.map((warning, index) => <p role="note" key={index}>{typeof warning === "string" ? warning : warning.message ?? JSON.stringify(warning)}</p>)}
-          <div className="deer-layer-grid">{row.byStack.map((entry) => <div key={entry.stacks} data-lethal={entry.lethal}><strong>{entry.stacks} 层</strong><span>{entry.damage ?? "待定"} HP</span><small>{!entry.lethalKnown ? "待确认" : entry.lethal ? "单招击倒" : entry.comboLethal && setup.showFollowup ? "接先发击倒" : "未击倒"}</small></div>)}</div>
+          <div className="deer-layer-grid">{expandedDetails?.byStack.map((entry) => <div key={entry.stacks} data-lethal={entry.lethal}><strong>{entry.stacks} 层</strong><span>{entry.damage ?? "待定"} HP</span><small>{!entry.lethalKnown ? "待确认" : entry.lethal ? "单招击倒" : entry.comboLethal && setup.showFollowup ? "接先发击倒" : "未击倒"}</small></div>)}</div>
           <details><summary>查看当前层计算过程</summary>{row.current.first.formulaSteps?.map((step, index) => <p key={index}>{step.label}：{typeof step.value === "object" ? JSON.stringify(step.value) : step.value ?? step.after ?? "—"}</p>)}</details>
         </td></tr>}</Fragment>)}
       </tbody></table></div>

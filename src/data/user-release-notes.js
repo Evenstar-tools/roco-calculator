@@ -231,7 +231,7 @@ export const S4_FEATURE_INTRO = Object.freeze({
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v2.2.3",
-    date: "2026.09.21",
+    date: "2026.09.23",
     title: "S4形态关联与血脉提示",
     whatsNew: S4_FEATURE_INTRO,
     features: [
@@ -239,6 +239,9 @@ export const USER_RELEASE_NOTES = Object.freeze([
       "数值、搜索、队伍名称等单行输入首次点入全选，直接输入替换；再次点击和拖选保持正常。",
     ],
     fixes: [
+      "电鹿斩杀线按需计算当前层和首次达标层，展开时再载入逐层明细，切换配置更顺畅。",
+      "技能检索分批呈现技能卡，打开与清空搜索更顺畅，仍可滚动查看完整结果。",
+      "双属性查询的对应精灵移到倍率表前，结果只显示最终形态头像与名称，窄屏可横向查看。",
       "技能检索区分同族分支的独立技能池，不再只显示一个家族代表。",
       "选中精灵后可直接查看同族高阶、分支和地区形态；跨分支载入目标预设，不混用原配置。",
     ],

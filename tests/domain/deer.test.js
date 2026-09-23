@@ -5,13 +5,57 @@ import { calculateMatchup } from "../../src/domain/calculate.js";
 import { calculateNegativeStatusSettlement } from "../../src/domain/negative-status.js";
 import { getTraitView } from "../../src/domain/calculator-view-model.js";
 import { canonicalTraitControlKey } from "../../src/state/trait-values.js";
-import { DEER_VARIANTS, DEFENSE_TEMPLATES, applyDeerPreset, buildDeerInput, calculateDeerRows, createDeerSetup, evaluateDeerAttack, getDeerSpeedComparison, hasDeerDefenseTrait } from "../../src/features/deer/deer-model.js";
+import { DEER_VARIANTS, DEFENSE_TEMPLATES, applyDeerPreset, buildDeerInput, calculateDeerRow, calculateDeerRows, calculateDeerSummaryRows, createDeerSetup, evaluateDeerAttack, findDeerThresholds, getDeerSpeedComparison, hasDeerDefenseTrait } from "../../src/features/deer/deer-model.js";
 
 const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
 const variant = (id) => DEER_VARIANTS.find((row) => row.id === id);
 const evaluate = (setup, id, stacks = 1) => evaluateDeerAttack(snapshot, setup, variant(id), stacks);
 
 describe("电鹿斩杀线", () => {
+  test("逐层阈值必须找首次命中，不能依赖伤害单调或扫描到99层后才停止", () => {
+    const checks = [];
+    const states = [
+      { lethal: false, comboLethal: false },
+      { lethal: false, comboLethal: true },
+      { lethal: true, comboLethal: false },
+      { lethal: false, comboLethal: false },
+      { lethal: true, comboLethal: true },
+    ];
+    const found = findDeerThresholds(99, (stacks) => {
+      checks.push(stacks);
+      return { stacks, ...states[stacks] };
+    }, true);
+    expect(found).toEqual({ minimum: 2, comboMinimum: 1 });
+    expect(checks).toEqual([0, 1, 2]);
+  });
+
+  test("折叠表格的当前结果和两个最低层数与完整逐层计算一致，展开时才需要完整明细", () => {
+    const cases = [
+      createDeerSetup(snapshot),
+      { ...createDeerSetup(snapshot), showFollowup: false },
+      { ...createDeerSetup(snapshot), showFollowup: true, stacks: 120 },
+      { ...createDeerSetup(snapshot), showFollowup: true },
+    ];
+    cases[3].state.sides.defender.spiritId = snapshot.spirits.find((entry) => entry.fullName === "圣草迪莫").id;
+    for (const setup of cases) {
+      const before = JSON.stringify(setup);
+      const full = calculateDeerRows(snapshot, setup);
+      const summary = calculateDeerSummaryRows(snapshot, setup);
+      expect(summary).toHaveLength(full.length);
+      for (let i = 0; i < full.length; i++) {
+        expect(summary[i]).toMatchObject({
+          id: full[i].id,
+          label: full[i].label,
+          minimum: full[i].minimum,
+          comboMinimum: full[i].comboMinimum,
+          current: full[i].current,
+        });
+        expect(summary[i]).not.toHaveProperty("byStack");
+      }
+      expect(calculateDeerRow(snapshot, setup, summary[0]).byStack).toEqual(full[0].byStack);
+      expect(JSON.stringify(setup)).toBe(before);
+    }
+  }, 60_000);
   test.each(["银月狼王", "圣水迪莫", "蹦床松鼠", "波普鹿"])("通电对%s只追加一次两层引电，遵循克制与电系免疫", (name) => {
     const setup = createDeerSetup(snapshot);
     const defender = snapshot.spirits.find((entry) => entry.fullName === name);

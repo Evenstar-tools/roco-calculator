@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowLeft, CaretRight, CheckCircle, Eye, EyeSlash, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { ElementIcon } from "../../components/ElementIcon.jsx";
@@ -8,6 +8,7 @@ import SkillQueryEffect from "./SkillQueryEffect.jsx";
 import "./bidirectional-query.css";
 
 const SOURCES = [["", "全部来源"], ["default", "自学"], ["血脉", "血脉"], ["技能石", "技能石"]];
+const LIBRARY_BATCH_SIZE = 36;
 const phoneQuery = "(max-width: 650px)";
 const isPhone = () => window.matchMedia?.(phoneQuery).matches ?? false;
 function subscribePhone(callback) {
@@ -40,6 +41,7 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
   const [detailCategory, setDetailCategory] = useState("");
   const [expanded, setExpanded] = useState(null);
   const [returnState, setReturnState] = useState(null);
+  const [libraryBatch, setLibraryBatch] = useState({ key: "", count: LIBRARY_BATCH_SIZE });
   const results = useRef(null);
   const rail = useRef(null);
   const library = useRef(null);
@@ -50,17 +52,35 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
   const restoreScroll = useRef(null);
   const returnFamily = useRef(null);
   const detailTitle = useRef(null);
+  const loadMore = useRef(null);
   const skillMap = useMemo(() => new Map(skills.map((skill) => [skill.id, skill])), [skills]);
   const iconSkill = (skill) => ({ ...skill, iconUrl: skillMap.get(skill.id)?.iconUrl });
   const chosen = season.skills.filter(({ id }) => selected.includes(id));
   const spirit = season.spirits.find(({ id }) => id === spiritId);
-  const filtered = season.skills.filter((skill) =>
+  const filtered = useMemo(() => season.skills.filter((skill) =>
     `${skill.name} ${skill.description ?? ""}`.toLowerCase().includes(query.trim().toLowerCase()) &&
-    (!type || skill.type === type) && (!category || skill.category === category) && (!introduced || skill.introducedSeason === introduced));
-  const families = useMemo(() => querySpiritFamilies(season, {
+    (!type || skill.type === type) && (!category || skill.category === category) && (!introduced || skill.introducedSeason === introduced)), [season, query, type, category, introduced]);
+  const libraryKey = JSON.stringify([query.trim().toLowerCase(), type, category, introduced]);
+  const visibleCount = libraryBatch.key === libraryKey ? libraryBatch.count : LIBRARY_BATCH_SIZE;
+  const visibleSkills = filtered.slice(0, visibleCount);
+  const showMoreSkills = useCallback(() => setLibraryBatch((previous) => ({
+    key: libraryKey,
+    count: Math.min(filtered.length, (previous.key === libraryKey ? previous.count : LIBRARY_BATCH_SIZE) + LIBRARY_BATCH_SIZE),
+  })), [libraryKey, filtered.length]);
+  const resetLibraryBatch = () => setLibraryBatch({ key: null, count: LIBRARY_BATCH_SIZE });
+  useEffect(() => {
+    if (direction !== "skill" || spiritId || visibleCount >= filtered.length || !loadMore.current || !window.IntersectionObserver) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) showMoreSkills();
+    }, { rootMargin: "480px 0px" });
+    observer.observe(loadMore.current);
+    return () => observer.disconnect();
+  }, [direction, spiritId, visibleCount, filtered.length, showMoreSkills]);
+  const shouldMatchFamilies = !spiritId && (direction === "skill" ? selected.length > 0 : Boolean(query.trim()));
+  const families = useMemo(() => shouldMatchFamilies ? querySpiritFamilies(season, {
     skillIds: direction === "skill" ? selected : [], query: direction === "skill" ? learnerQuery : query,
     source: direction === "skill" ? learnerSource : "", metadata: spirits,
-  }), [season, selected, direction, learnerQuery, query, learnerSource, spirits]);
+  }) : [], [season, selected, direction, learnerQuery, query, learnerSource, spirits, shouldMatchFamilies]);
   const pools = families.flatMap(family => family.pools);
   const learnset = useMemo(() => spiritSkills(season, spiritId), [season, spiritId]);
   const rows = learnset.filter((skill) => (!source || skill.methods.some((method) => matchesSource(method, source))) &&
@@ -113,23 +133,23 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
     setSelected([...selected, id]);
   };
   const changeDirection = (value) => {
-    setDirection(value); setQuery(""); setSpiritId(null); setReturnState(null);
+    setDirection(value); setQuery(""); setSpiritId(null); setReturnState(null); resetLibraryBatch();
   };
   const reverse = (id) => {
-    setReturnState({ spiritId, direction, selected, query, type, category, introduced, source, detailQuery, detailType, detailCategory, expanded, learnerQuery, learnerSource, resultScroll: resultScroll.current, returnFamily: returnFamily.current, scroll: readScroll() });
-    setDirection("skill"); setSelected([id]); setQuery(season.skills.find(skill => skill.id === id)?.name ?? ""); setType(""); setCategory(""); setIntroduced(""); setLearnerQuery(""); setLearnerSource(""); setSpiritId(null); setExpanded(null); restoreScroll.current = { results: 0, workspace: 0 };
+    setReturnState({ spiritId, direction, selected, query, type, category, introduced, source, detailQuery, detailType, detailCategory, expanded, learnerQuery, learnerSource, libraryBatch, resultScroll: resultScroll.current, returnFamily: returnFamily.current, scroll: readScroll() });
+    setDirection("skill"); setSelected([id]); setQuery(season.skills.find(skill => skill.id === id)?.name ?? ""); setType(""); setCategory(""); setIntroduced(""); setLearnerQuery(""); setLearnerSource(""); setSpiritId(null); setExpanded(null); resetLibraryBatch(); restoreScroll.current = { results: 0, workspace: 0 };
   };
   const returnToSpirit = () => {
     const state = returnState;
     setSpiritId(state.spiritId); setDirection(state.direction); setSelected(state.selected); setQuery(state.query);
     setType(state.type); setCategory(state.category); setIntroduced(state.introduced);
     setSource(state.source); setDetailQuery(state.detailQuery); setDetailType(state.detailType); setDetailCategory(state.detailCategory);
-    setExpanded(state.expanded); setLearnerQuery(state.learnerQuery); setLearnerSource(state.learnerSource);
+    setExpanded(state.expanded); setLearnerQuery(state.learnerQuery); setLearnerSource(state.learnerSource); setLibraryBatch(state.libraryBatch);
     resultScroll.current = state.resultScroll; returnFamily.current = state.returnFamily;
     restoreScroll.current = state.scroll; setReturnState(null);
     requestAnimationFrame(() => detailTitle.current?.focus({ preventScroll: true }));
   };
-  const clearQueryFilters = () => { setQuery(""); setType(""); setCategory(""); setIntroduced(""); };
+  const clearQueryFilters = () => { setQuery(""); setType(""); setCategory(""); setIntroduced(""); resetLibraryBatch(); };
   const clearDetailFilters = () => { setSource(""); setDetailQuery(""); setDetailType(""); setDetailCategory(""); };
   const hasQueryFilters = Boolean(query || type || category || introduced);
   const hasDetailFilters = Boolean(source || detailQuery || detailType || detailCategory);
@@ -143,9 +163,9 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
       <div className="sq-directions" aria-label="查询方向">{[["skill", "找可学精灵"], ["spirit", "查精灵技能"]].map(([id, name]) => <button key={id} aria-pressed={direction === id} onClick={() => changeDirection(id)}>{name}</button>)}</div>
       <div className="sq-query-editor">
         <label className="sq-search-label" htmlFor="sq-search">{direction === "skill" ? "搜索并添加技能" : "搜索精灵"}</label>
-        <div className="sq-search"><MagnifyingGlass size={18} /><input id="sq-search" aria-label="搜索技能或精灵" placeholder={direction === "skill" ? "搜索技能名称或效果" : "名称、图鉴号、拼音或别名"} value={query} onChange={(event) => setQuery(event.target.value)} />{phone && direction === "skill" && !spirit && effectToggle}</div>
+        <div className="sq-search"><MagnifyingGlass size={18} /><input id="sq-search" aria-label="搜索技能或精灵" placeholder={direction === "skill" ? "搜索技能名称或效果" : "名称、图鉴号、拼音或别名"} value={query} onChange={(event) => { setQuery(event.target.value); resetLibraryBatch(); }} />{phone && direction === "skill" && !spirit && effectToggle}</div>
         {direction === "skill" && <>
-          <div className="sq-filter-fields" aria-label="技能筛选">{typeSelect(type, setType, "技能属性")}{categorySelect(category, setCategory, "技能种类")}<select aria-label="技能所属赛季" value={introduced} onChange={(event) => setIntroduced(event.target.value)}><option value="">全部赛季</option>{[...new Set(season.skills.map((skill) => skill.introducedSeason))].filter(Boolean).sort().map((id) => <option key={id} value={id}>{id} 技能</option>)}</select></div>
+          <div className="sq-filter-fields" aria-label="技能筛选">{typeSelect(type, (value) => { setType(value); resetLibraryBatch(); }, "技能属性")}{categorySelect(category, (value) => { setCategory(value); resetLibraryBatch(); }, "技能种类")}<select aria-label="技能所属赛季" value={introduced} onChange={(event) => { setIntroduced(event.target.value); resetLibraryBatch(); }}><option value="">全部赛季</option>{[...new Set(season.skills.map((skill) => skill.introducedSeason))].filter(Boolean).sort().map((id) => <option key={id} value={id}>{id} 技能</option>)}</select></div>
           {hasQueryFilters && <button className="sq-clear-filters" aria-label="清除技能筛选" onClick={clearQueryFilters}>清除筛选</button>}
         </>}
       </div>
@@ -154,11 +174,11 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
     {direction === "skill" && !spirit && <section className="sq-library" ref={library} aria-label="技能库">
       <div className="sq-library-heading"><h3>技能库 <small>{filtered.length}</small></h3><span>点击添加或取消</span>{!phone && effectToggle}</div>
       {returnState && <button className="sq-back" onClick={returnToSpirit}><ArrowLeft size={18} />返回{season.spirits.find((item) => item.id === returnState.spiritId)?.fullName}技能</button>}
-      <div className="sq-suggestions" aria-label="技能列表">{filtered.map(skill => <button key={skill.id} data-skill-id={skill.id} aria-label={`${selected.includes(skill.id) ? "取消" : "添加"}${skill.name}`} aria-pressed={selected.includes(skill.id)} aria-disabled={!selected.includes(skill.id) && selected.length === 4} onClick={() => add(skill.id)}>
+      <div className="sq-suggestions" aria-label="技能列表">{visibleSkills.map(skill => <button key={skill.id} data-skill-id={skill.id} aria-label={`${selected.includes(skill.id) ? "取消" : "添加"}${skill.name}`} aria-pressed={selected.includes(skill.id)} aria-disabled={!selected.includes(skill.id) && selected.length === 4} onClick={() => add(skill.id)}>
         <span className="sq-card-heading"><SkillIcon skill={iconSkill(skill)} size={48} /><span><strong>{skill.name}</strong><small><ElementIcon type={skill.type} size={16} />{skill.type} · {categoryNames[skill.category]}</small></span>{selected.includes(skill.id) && <CheckCircle className="sq-card-check" size={18} weight="fill" />}</span>
         <span className="sq-card-values"><span>威力 <b>{skill.basePower ?? "—"}</b></span><span>能耗 <b>{skill.cost ?? "—"}</b></span></span>
         {!hideEffects && <span className="sq-card-description">{skill.description || "技能效果待补充"}</span>}
-      </button>)}</div>{!filtered.length && <p className="sq-empty">没有找到符合条件的技能。</p>}
+      </button>)}</div>{visibleCount < filtered.length && <button ref={loadMore} className="sq-load-more" onClick={showMoreSkills}>显示更多技能 · {Math.min(visibleCount, filtered.length)} / {filtered.length}</button>}{!filtered.length && <p className="sq-empty">没有找到符合条件的技能。</p>}
     </section>}
     <div className="sq-rail" ref={rail}>
     <aside className={`sq-selection${selected.length === 0 ? " sq-selection--empty" : ""}`} hidden={direction !== "skill" || Boolean(spirit)} aria-label="已选技能">

@@ -11,6 +11,16 @@ import { getTraitView } from "../../src/domain/calculator-view-model.js";
 const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
 const skillRow = (name) => screen.getByRole("button", { name, exact: true }).closest("tr");
 
+test("折叠时不渲染完整逐层明细，展开单行仍提供 0–99 层", () => {
+  render(<DeerWorkspace snapshot={snapshot} />);
+  expect(screen.queryByText("99 层")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "查看电弧 · 普通详情" }));
+  expect(screen.getByText("0 层")).toBeInTheDocument();
+  expect(screen.getByText("99 层")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "查看电弧 · 普通详情" }));
+  expect(screen.queryByText("99 层")).not.toBeInTheDocument();
+});
+
 test.each(["满月砣（下弦的样子）", "满月砣（上弦的样子）", "波普鹿"])("%s非防守特性隐藏，不修改带入状态", (name) => {
   const source = createDeerSetup(snapshot).state;
   source.sides.defender.spiritId = snapshot.spirits.find((entry) => entry.fullName === name).id;

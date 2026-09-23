@@ -216,22 +216,74 @@ export function evaluateDeerAttack(snapshot, setup, variant, stacks) {
   };
 }
 
-export function calculateDeerRows(snapshot, setup) {
+function deerScanLimit(snapshot, setup) {
   const attacker = snapshot.spirits.find((spirit) => spirit.id === setup.state.sides.attacker.spiritId);
   const stackControl = getTraitView(snapshot, attacker, "attacker").inputs.find((input) => input.contextKey === "attackerTraitStacks");
+  return deerStackScanLimit(stackControl, setup.stacks);
+}
+
+function deerRowMetadata(snapshot, setup, variant) {
+  const name = variant.id === "arc" ? setup.normalElectric : variant.name;
+  return {
+    ...variant,
+    ...(variant.id === "discharge" && setup.dischargeElectrified ? { condition: "含一次引电" } : {}),
+    label: variant.id === "arc" && name === "离子火花" ? "离子火花" : variant.label,
+    skill: snapshot.skills.find((skill) => skill.name === name),
+  };
+}
+
+// 从低到高找首次命中，不假设逐层伤害单调；两个阈值都确定后无需继续算折叠行。
+export function findDeerThresholds(scanLimit, evaluateAt, includeCombo) {
+  let minimum = null;
+  let comboMinimum = null;
+  for (let stacks = 0; stacks <= scanLimit; stacks++) {
+    const entry = evaluateAt(stacks);
+    if (minimum === null && entry.lethal) minimum = stacks;
+    if (includeCombo && comboMinimum === null && entry.comboLethal) comboMinimum = stacks;
+    if (minimum !== null && (!includeCombo || comboMinimum !== null)) break;
+  }
+  return { minimum, comboMinimum: includeCombo ? comboMinimum : minimum };
+}
+
+function calculateDeerRowAtLimit(snapshot, setup, variant, scanLimit) {
+  const byStack = Array.from({ length: scanLimit + 1 }, (_, stacks) => evaluateDeerAttack(snapshot, setup, variant, stacks));
+  return {
+    ...deerRowMetadata(snapshot, setup, variant),
+    byStack,
+    current: byStack[setup.stacks],
+    minimum: byStack.find((entry) => entry.lethal)?.stacks ?? null,
+    comboMinimum: variant.id === "first" ? null : byStack.find((entry) => entry.comboLethal)?.stacks ?? null,
+  };
+}
+
+export function calculateDeerRow(snapshot, setup, variant) {
+  return calculateDeerRowAtLimit(snapshot, setup, variant, deerScanLimit(snapshot, setup));
+}
+
+export function calculateDeerRows(snapshot, setup) {
+  const scanLimit = deerScanLimit(snapshot, setup);
+  return DEER_VARIANTS.map((variant) => calculateDeerRowAtLimit(snapshot, setup, variant, scanLimit));
+}
+
+export function calculateDeerSummaryRows(snapshot, setup) {
+  const scanLimit = deerScanLimit(snapshot, setup);
+  const hasUncertainDefense = getDeerDefenseLimitations(snapshot, setup.state.sides.defender).length > 0;
   return DEER_VARIANTS.map((variant) => {
-    const scanLimit = deerStackScanLimit(stackControl, setup.stacks);
-    const byStack = Array.from({ length: scanLimit + 1 }, (_, stacks) => evaluateDeerAttack(snapshot, setup, variant, stacks));
-    const name = variant.id === "arc" ? setup.normalElectric : variant.name;
+    const evaluatedByStack = [];
+    const evaluateAt = (stacks) => {
+      if (!evaluatedByStack[stacks]) evaluatedByStack[stacks] = evaluateDeerAttack(snapshot, setup, variant, stacks);
+      return evaluatedByStack[stacks];
+    };
+    const current = evaluateAt(setup.stacks);
+    const thresholds = hasUncertainDefense
+      ? { minimum: null, comboMinimum: null }
+      : findDeerThresholds(scanLimit, evaluateAt, variant.id !== "first" && setup.showFollowup);
     return {
-      ...variant,
-      ...(variant.id === "discharge" && setup.dischargeElectrified ? { condition: "含一次引电" } : {}),
-      label: variant.id === "arc" && name === "离子火花" ? "离子火花" : variant.label,
-      skill: snapshot.skills.find((skill) => skill.name === name),
-      byStack,
-      current: byStack[setup.stacks],
-      minimum: byStack.find((entry) => entry.lethal)?.stacks ?? null,
-      comboMinimum: variant.id === "first" ? null : byStack.find((entry) => entry.comboLethal)?.stacks ?? null,
+      ...deerRowMetadata(snapshot, setup, variant),
+      evaluatedByStack,
+      current,
+      minimum: thresholds.minimum,
+      comboMinimum: variant.id === "first" ? null : thresholds.comboMinimum,
     };
   });
 }
