@@ -5,6 +5,7 @@ import {
   selectDefaultSpirits,
   selectSpirit,
   resetUiuxStorage,
+  waitForAppReady,
 } from "./helpers/uiux-helpers.js";
 
 test.beforeEach(async ({ page }) => {
@@ -13,6 +14,7 @@ test.beforeEach(async ({ page }) => {
 
 test("keeps portrait mode switch styling stable", async ({ page }) => {
   await page.goto("/");
+  await waitForAppReady(page);
   const group = page.getByRole("group", { name: "界面模式" });
   for (const theme of ["light", "dark"]) {
     await page.evaluate(value => { document.documentElement.dataset.theme = value; }, theme);

@@ -16,6 +16,7 @@ import { DraftNumberInput, TraitInputs } from "../../components/SingleSkillEdito
 import { MoonMemoryTraitEditor } from "../../components/MoonMemoryTraitEditor.jsx";
 import { getTraitView, stageMultiplier } from "../../domain/calculator-view-model.js";
 import { getNature, QUICK_STATS, STAT_LABELS } from "../../domain/natures.js";
+import { ELEMENT_TYPES } from "../../domain/type-chart.js";
 import { hasCompleteRaceStats } from "../../domain/stat.js";
 import { chooseDefaultSkillIds } from "../../domain/skill-loadout.js";
 import { isCompleteSpiritConfig, spiritConfigsRepository } from "../../state/spirit-configs.js";
@@ -34,6 +35,10 @@ function NumberField({ label, value, onChange, min = 0, max = 100, suffix = "", 
   return <label className="deer-number"><span>{label}</span><DraftNumberInput ariaLabel={label} value={value} min={min} max={max} step={step} onCommit={(next) => onChange(integer ? Math.trunc(next) : next)} />{suffix && <span>{suffix}</span>}</label>;
 }
 
+function standardAttackPreset(spiritName) {
+  return { nature: spiritName === "爵士鹿" ? "adamant" : "cheerful", displayIvs: { hp: 60, physicalAttack: 60, speed: 60, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0 } };
+}
+
 function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup, onSelect, onDefenseLevel, children }) {
   const [expanded, setExpanded] = useState(false);
   const side = setup.state.sides[sideKey];
@@ -49,7 +54,7 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
   function selectPreset(id) {
     if (id === "custom") return;
     const preset = id === "saved" ? presets[side.spiritId] : attack
-      ? { nature: "cheerful", displayIvs: { hp: 60, physicalAttack: 60, speed: 60, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0 } }
+      ? standardAttackPreset(spirit.fullName)
       : DEFENSE_TEMPLATES.find((entry) => entry.id === id);
     if (!preset) return;
     const next = applyDeerPreset(side, preset);
@@ -72,7 +77,7 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
       <div className="deer-templates" role="group" aria-label="防守模板">{defenseTemplates.map((template) => <button key={template.id} type="button" aria-pressed={presetId === template.id} onClick={() => selectPreset(template.id)}>{template.label}</button>)}</div>
       <div className="deer-config-summary"><span>{presetId === "current" ? "当前配置 · " : presetId === "custom" ? "自定义 · " : ""}{getNature(side.nature).name} · 生命{side.displayIvs.hp} / 物防{side.displayIvs.physicalDefense} / 魔防{side.displayIvs.magicalDefense}</span></div>
     </>}
-    <div className={`deer-side-bottom${attack ? "" : " deer-side-bottom--defender"}`}>{attack && <><div className="deer-stacks"><span>特性层数</span><button type="button" aria-label="特性层数减一" disabled={setup.stacks === 0} onClick={() => onSetup({ stacks: setup.stacks - 1 })}>−</button><DraftNumberInput ariaLabel="特性层数" min={0} max={Number.isFinite(stackMax) ? stackMax : undefined} step={1} value={setup.stacks} onCommit={(next) => onSetup({ stacks: Math.trunc(next) })} /><button type="button" aria-label="特性层数加一" disabled={Number.isFinite(stackMax) && setup.stacks >= stackMax} onClick={() => onSetup({ stacks: setup.stacks + 1 })}>＋</button></div><small className="deer-stack-help">{spirit.stage} · {spirit.traitName} · {side.ignoreTraits ? "特性已关闭" : `每层双攻＋${effectValue}%`}</small></>}
+    <div className={`deer-side-bottom${attack ? "" : " deer-side-bottom--defender"}`}>{attack && <><div className="deer-stacks"><span>特性层数</span><button type="button" aria-label="特性层数减一" disabled={setup.stacks === 0} onClick={() => onSetup({ stacks: setup.stacks - 1 })}>−</button><DraftNumberInput ariaLabel="特性层数" min={0} max={Number.isFinite(stackMax) ? stackMax : undefined} step={1} value={setup.stacks} onCommit={(next) => onSetup({ stacks: Math.trunc(next) })} /><button type="button" aria-label="特性层数加一" disabled={Number.isFinite(stackMax) && setup.stacks >= stackMax} onClick={() => onSetup({ stacks: setup.stacks + 1 })}>＋</button></div><small className="deer-stack-help">{spirit.stage} · {spirit.traitName} · {side.ignoreTraits ? "特性已关闭" : `每层双攻＋${effectValue}%`}</small>{spirit.fullName === "爵士鹿" && <label className="deer-bloodline"><span>血脉</span><ElementIcon type={setup.wishPowerType ?? "武"} size={16} /><select aria-label="爵士鹿血脉" value={setup.wishPowerType ?? "武"} onChange={(event) => onSetup({ wishPowerType: event.target.value })}>{ELEMENT_TYPES.map((type) => <option key={type} value={type}>{type}系</option>)}</select></label>}</>}
       {!attack && <NumberField label="目标HP" value={setup.defenderHp} min={1} suffix="%" onChange={(value) => onSetup({ defenderHp: value })} />}
       {!attack && <div className="level-control" role="group" aria-label="防御能力等级"><span>防御能力等级</span><div>
       <RepeatLevelButton ariaLabel="防御方等级减一" delta={-1} disabled={defenseStage <= -99} onChange={onDefenseLevel} value={defenseStage}><Minus aria-hidden="true" size={14} /></RepeatLevelButton>
@@ -112,10 +117,8 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     if (initialState) {
       const attacker = next.state.sides.attacker;
       if (!isCompleteSpiritConfig(attacker)) {
-        next.state.sides.attacker = applyDeerPreset(attacker, {
-          nature: "cheerful",
-          displayIvs: { hp: 60, physicalAttack: 60, speed: 60, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0 },
-        });
+        const spiritName = snapshot.spirits.find((spirit) => spirit.id === attacker.spiritId)?.fullName;
+        next.state.sides.attacker = applyDeerPreset(attacker, standardAttackPreset(spiritName));
         next.attackPreset = "standard";
       }
     } else {
@@ -142,6 +145,8 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     showFollowup: deferredShowFollowup,
     normalElectric: deferredNormalElectric,
     dischargeElectrified: deferredDischargeElectrified,
+    wishPowerType: deferredWishPowerType,
+    wishPowerResponse: deferredWishPowerResponse,
   } = deferredSetup;
   const scanStacks = Math.max(99, Math.floor(Number(deferredStacks) || 0));
   const scanSetup = useMemo(() => ({
@@ -156,6 +161,8 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
       showFollowup: deferredShowFollowup,
       normalElectric: deferredNormalElectric,
       dischargeElectrified: deferredDischargeElectrified,
+      wishPowerType: deferredWishPowerType,
+      wishPowerResponse: deferredWishPowerResponse,
   }), [
     deferredState,
     scanStacks,
@@ -168,6 +175,8 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     deferredShowFollowup,
     deferredNormalElectric,
     deferredDischargeElectrified,
+    deferredWishPowerType,
+    deferredWishPowerResponse,
   ]);
   const scanRows = useMemo(() => deferredState.sides.defender.spiritId
     ? calculateDeerSummaryRows(snapshot, scanSetup)
@@ -230,6 +239,9 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
         direction.context = Object.fromEntries(Object.entries(direction.context).filter(([id]) => !id.startsWith(role)));
       }
       if (sideKey === "attacker" && next.attackPreset === "saved") next.attackPreset = "custom";
+      if (sideKey === "attacker" && next.attackPreset === "standard") {
+        Object.assign(next.state.sides.attacker, standardAttackPreset(snapshot.spirits.find((spirit) => spirit.id === id)?.fullName));
+      }
       if (sideKey === "defender") {
         const preset = presets[id];
         next.state.sides.defender = applyDeerPreset(next.state.sides.defender, preset ?? DEFENSE_TEMPLATES.find((entry) => entry.id === "hp"));
@@ -276,7 +288,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     <section className="deer-results" aria-label="技能斩杀线" aria-busy={updating}><div className="deer-results-heading"><h2>技能斩杀线</h2><span className="deer-muted">{updating ? "正在复算…" : `目标生命 ${stats.hp} · 当前 ${setup.defenderHp}%`}</span><label className="deer-check"><input type="checkbox" checked={setup.showFollowup} onChange={(event) => { setOptions({ showFollowup: event.target.checked }); if (!event.target.checked && expandedRow === "stone-counter") setExpandedRow("stone"); }} />显示先发补刀</label></div>
       <div className="deer-table-scroll"><table className="deer-table"><thead><tr><th>技能 / 条件</th><th>属性</th><th>单招最低</th>{setup.showFollowup && <th>接先发最低</th>}<th>当前 {deferredSetup.stacks} 层伤害</th><th><span className="sr-only">详情</span></th></tr></thead><tbody>
         {visibleRows.map((row) => <Fragment key={row.id}><tr className={`${expandedRow === row.id ? "is-selected" : ""}${activeMinimum?.id === row.id ? " is-recommended" : ""}`} aria-selected={activeMinimum?.id === row.id || undefined}>
-          <td><div className="deer-skill"><SkillIcon skill={row.skill} size={28} /><div><button type="button" className="deer-skill-name" aria-expanded={expandedRow === row.id} onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}>{row.label}</button>{row.condition && <small className="deer-condition-tag">{row.condition}</small>}{row.id === "bet-dark" && <label className="deer-check deer-electric" title="勾选将自身HP设为49%，取消恢复100%；手动修改血量时同步状态"><input type="checkbox" checked={darkBetActive} onChange={(event) => setOptions({ attackerHp: event.target.checked ? 49 : 100 })} />触发暗特效</label>}{row.id === "discharge" && <label className="deer-check deer-electric"><input type="checkbox" checked={setup.dischargeElectrified === true} onChange={(event) => setOptions({ dischargeElectrified: event.target.checked })} />触发2层引电</label>}{row.id === "arc" && <label className="deer-electric"><span className="sr-only">普通电系技能</span><select aria-label="普通电系技能" value={setup.normalElectric} onChange={(event) => setOptions({ normalElectric: event.target.value })}><option>电弧</option><option>离子火花</option></select><small>同威力 · 不同能耗</small></label>}</div></div></td>
+          <td><div className="deer-skill"><SkillIcon skill={row.skill} size={28} /><div><button type="button" className="deer-skill-name" aria-expanded={expandedRow === row.id} onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}>{row.label}</button>{row.condition && <small className="deer-condition-tag">{row.condition}</small>}{row.id === "bet-dark" && <label className="deer-check deer-electric" title="勾选将自身HP设为49%，取消恢复100%；手动修改血量时同步状态"><input type="checkbox" checked={darkBetActive} onChange={(event) => setOptions({ attackerHp: event.target.checked ? 49 : 100 })} />触发暗特效</label>}{row.id === "discharge" && <label className="deer-check deer-electric"><input type="checkbox" checked={setup.dischargeElectrified === true} onChange={(event) => setOptions({ dischargeElectrified: event.target.checked })} />触发2层引电</label>}{row.id === "wish-power" && <label className="deer-check deer-electric" title="目标本回合使用状态技能时，愿力冲击威力×2.5"><input type="checkbox" aria-label="愿力冲击触发应对" checked={setup.wishPowerResponse === true} onChange={(event) => setOptions({ wishPowerResponse: event.target.checked })} />触发应对</label>}{row.id === "arc" && <label className="deer-electric"><span className="sr-only">普通电系技能</span><select aria-label="普通电系技能" value={setup.normalElectric} onChange={(event) => setOptions({ normalElectric: event.target.value })}><option>电弧</option><option>离子火花</option></select><small>同威力 · 不同能耗</small></label>}</div></div></td>
           <td><span className="deer-element"><ElementIcon type={row.skill.type} size={17} />{row.skill.type}</span></td>
           <td className="deer-threshold">{minimumText(row.minimum, row.current.lethalKnown)}</td>
           {setup.showFollowup && <td className="deer-threshold">{row.id === "first" ? "—" : minimumText(row.comboMinimum, row.current.lethalKnown)}</td>}

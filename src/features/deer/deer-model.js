@@ -31,6 +31,23 @@ export const DEER_VARIANTS = [
   { id: "first", name: "先发制人", label: "先发制人", context: {} },
 ];
 
+export function deerVariantsFor(snapshot, setup) {
+  const attacker = snapshot.spirits.find((spirit) => spirit.id === setup.state.sides.attacker.spiritId);
+  if (attacker?.fullName !== "爵士鹿") return DEER_VARIANTS;
+  return [...DEER_VARIANTS, {
+    id: "wish-power",
+    name: "愿力冲击",
+    label: "愿力冲击",
+    type: setup.wishPowerType ?? "武",
+    context: { enemyUsedStatusSkill: setup.wishPowerResponse === true },
+  }];
+}
+
+function skillForVariant(snapshot, setup, variant) {
+  const name = variant.id === "arc" ? setup.normalElectric ?? "电弧" : variant.name;
+  return snapshot.skills.find((skill) => skill.name === name && (variant.id !== "wish-power" || skill.type === variant.type));
+}
+
 export function panelFor(snapshot, side) {
   const spirit = snapshot.spirits.find((entry) => entry.id === side.spiritId);
   return calculateAllPanelStats({ raceStats: spirit.raceStats, displayIvs: side.displayIvs, natureMultipliers: getNatureMultipliers(side.nature) });
@@ -111,7 +128,7 @@ export function createDeerSetup(snapshot, currentState = null) {
   }
   Object.assign(state.sides.attacker, { nature: "cheerful", displayIvs: { ...zeroIvs, hp: 60, physicalAttack: 60, speed: 60 } });
   Object.assign(state.sides.defender, { nature: "silent", displayIvs: { ...DEFENSE_TEMPLATES[0].displayIvs } });
-  return { state, stacks: 1, attackerHp: 100, defenderHp: 100, defenseTemplate: "tank", attackPreset: "standard", freeze: 0, starfall: 0, weather: "none", reduction: 0, showFollowup: true, normalElectric: "电弧" };
+  return { state, stacks: 1, attackerHp: 100, defenderHp: 100, defenseTemplate: "tank", attackPreset: "standard", freeze: 0, starfall: 0, weather: "none", reduction: 0, showFollowup: true, normalElectric: "电弧", wishPowerType: "武", wishPowerResponse: false };
 }
 
 export function applyDeerPreset(side, preset) {
@@ -128,9 +145,8 @@ export function applyDeerPreset(side, preset) {
 export function buildDeerInput(snapshot, setup, variant, stacks) {
   const state = structuredClone(setup.state);
   state.mode = "single";
-  const name = variant.id === "arc" ? setup.normalElectric ?? "电弧" : variant.name;
-  const skill = snapshot.skills.find((entry) => entry.name === name);
-  if (!skill) throw new Error(`缺少技能数据：${name}`);
+  const skill = skillForVariant(snapshot, setup, variant);
+  if (!skill) throw new Error(`缺少技能数据：${variant.type ?? ""}${variant.name}`);
   const attackerSpirit = snapshot.spirits.find((entry) => entry.id === state.sides.attacker.spiritId);
   const attackerControls = getTraitView(snapshot, attackerSpirit, "attacker")?.inputs ?? [];
   const stackControl = attackerControls.find((input) => input.contextKey === "attackerTraitStacks");
@@ -228,7 +244,7 @@ function deerRowMetadata(snapshot, setup, variant) {
     ...variant,
     ...(variant.id === "discharge" && setup.dischargeElectrified ? { condition: "含一次引电" } : {}),
     label: variant.id === "arc" && name === "离子火花" ? "离子火花" : variant.label,
-    skill: snapshot.skills.find((skill) => skill.name === name),
+    skill: skillForVariant(snapshot, setup, variant),
   };
 }
 
@@ -262,13 +278,13 @@ export function calculateDeerRow(snapshot, setup, variant) {
 
 export function calculateDeerRows(snapshot, setup) {
   const scanLimit = deerScanLimit(snapshot, setup);
-  return DEER_VARIANTS.map((variant) => calculateDeerRowAtLimit(snapshot, setup, variant, scanLimit));
+  return deerVariantsFor(snapshot, setup).map((variant) => calculateDeerRowAtLimit(snapshot, setup, variant, scanLimit));
 }
 
 export function calculateDeerSummaryRows(snapshot, setup) {
   const scanLimit = deerScanLimit(snapshot, setup);
   const hasUncertainDefense = getDeerDefenseLimitations(snapshot, setup.state.sides.defender).length > 0;
-  return DEER_VARIANTS.map((variant) => {
+  return deerVariantsFor(snapshot, setup).map((variant) => {
     const evaluatedByStack = [];
     const evaluateAt = (stacks) => {
       if (!evaluatedByStack[stacks]) evaluatedByStack[stacks] = evaluateDeerAttack(snapshot, setup, variant, stacks);

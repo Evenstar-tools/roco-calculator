@@ -107,31 +107,47 @@ html[data-theme="dark"] .app-header .view-mode-switch button[aria-pressed="true"
   display: inline-flex;
   flex: 0 0 auto;
   padding: 2px;
-  border: 1px solid #4e627a;
+  border: 1px solid var(--border);
   border-radius: 9px;
-  background: #1b2943;
+  background: var(--surface-soft);
 }
 
-.power-basis-switch button,
-html[data-theme="dark"] .power-basis-switch button {
+.power-basis-switch button {
   min-height: 32px;
   padding: 0 8px;
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: #c8d5e1;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
 
-.power-basis-switch button[aria-pressed="true"],
+.power-basis-switch button[aria-pressed="true"] {
+  background: var(--accent);
+  color: #fff;
+}
+
+.power-basis-switch button:not([aria-pressed="true"]):hover {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+html[data-theme="dark"] .power-basis-switch {
+  border-color: #4e627a;
+  background: #1b2943;
+}
+
+html[data-theme="dark"] .power-basis-switch button {
+  color: #c8d5e1;
+}
+
 html[data-theme="dark"] .power-basis-switch button[aria-pressed="true"] {
   background: #e0ce95;
   color: #26384a;
 }
 
-.power-basis-switch button:not([aria-pressed="true"]):hover,
 html[data-theme="dark"] .power-basis-switch button:not([aria-pressed="true"]):hover {
   background: #30415a;
   color: #f4f2e5;

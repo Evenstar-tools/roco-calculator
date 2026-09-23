@@ -7,9 +7,64 @@ import { AppHeader } from "../../src/components/AppHeader.jsx";
 import { createDeerSetup } from "../../src/features/deer/deer-model.js";
 import userEvent from "@testing-library/user-event";
 import { getTraitView } from "../../src/domain/calculator-view-model.js";
+import { ELEMENT_TYPES } from "../../src/domain/type-chart.js";
 
 const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
 const skillRow = (name) => screen.getByRole("button", { name, exact: true }).closest("tr");
+
+test("爵士鹿常用配置切换成物攻增益，血脉默认武系，愿力冲击为额外最后一行", () => {
+  render(<DeerWorkspace snapshot={snapshot} />);
+  expect(screen.queryByLabelText("爵士鹿血脉")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "愿力冲击", exact: true })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "攻击方速度增益" })).toHaveAttribute("aria-pressed", "true");
+  fireEvent.change(screen.getByLabelText("攻击方精灵"), { target: { value: "爵士鹿" } });
+  fireEvent.click(screen.getByRole("option", { name: /爵士鹿/ }));
+  const attacker = screen.getByRole("region", { name: "攻击方配置" });
+  expect(within(attacker).getByRole("button", { name: "攻击方物攻增益" })).toHaveAttribute("aria-pressed", "true");
+  for (const stat of ["生命", "物攻", "速度"]) expect(within(attacker).getByLabelText(`攻击方${stat}个体加点`)).toBeChecked();
+  const bloodline = within(attacker).getByRole("combobox", { name: "爵士鹿血脉" });
+  expect(bloodline).toHaveValue("武");
+  expect(within(bloodline).getAllByRole("option").map((entry) => entry.value)).toEqual(ELEMENT_TYPES);
+  expect(screen.getAllByRole("row")).toHaveLength(10);
+  expect(skillRow("愿力冲击")).toBe(screen.getAllByRole("row").at(-1));
+  expect(skillRow("愿力冲击")).toHaveTextContent("武");
+  expect(screen.getByRole("checkbox", { name: "愿力冲击触发应对" })).not.toBeChecked();
+  fireEvent.click(screen.getByRole("button", { name: "查看愿力冲击详情" }));
+  expect(screen.getByText(/实际威力 80/)).toBeInTheDocument();
+});
+
+test("爵士鹿切换血脉与应对复算愿力冲击；切回波普鹿隐藏专属功能并恢复开朗常用配置", () => {
+  render(<DeerWorkspace snapshot={snapshot} />);
+  fireEvent.change(screen.getByLabelText("攻击方精灵"), { target: { value: "爵士鹿" } });
+  fireEvent.click(screen.getByRole("option", { name: /爵士鹿/ }));
+  const bloodline = screen.getByRole("combobox", { name: "爵士鹿血脉" });
+  const response = screen.getByRole("checkbox", { name: "愿力冲击触发应对" });
+  const ordinaryDamage = skillRow("愿力冲击").textContent;
+  fireEvent.change(bloodline, { target: { value: "水" } });
+  expect(skillRow("愿力冲击")).toHaveTextContent("水");
+  expect(skillRow("愿力冲击").textContent).not.toBe(ordinaryDamage);
+  fireEvent.click(response);
+  expect(response).toBeChecked();
+  fireEvent.click(screen.getByRole("button", { name: "查看愿力冲击详情" }));
+  expect(screen.getByText(/实际威力 200/)).toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("攻击方精灵"), { target: { value: "波普鹿" } });
+  fireEvent.click(screen.getByRole("option", { name: /波普鹿/ }));
+  expect(screen.queryByRole("combobox", { name: "爵士鹿血脉" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "愿力冲击", exact: true })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "攻击方速度增益" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getAllByRole("row")).toHaveLength(9);
+});
+
+test("先手调配置再切爵士鹿，不把自定义性格与个体重置为常用", () => {
+  render(<DeerWorkspace snapshot={snapshot} />);
+  fireEvent.click(screen.getByRole("button", { name: "攻击方普通性格" }));
+  fireEvent.click(screen.getByLabelText("攻击方物攻个体加点"));
+  fireEvent.change(screen.getByLabelText("攻击方精灵"), { target: { value: "爵士鹿" } });
+  fireEvent.click(screen.getByRole("option", { name: /爵士鹿/ }));
+  const attacker = screen.getByRole("region", { name: "攻击方配置" });
+  expect(within(attacker).getByRole("button", { name: "攻击方普通性格" })).toHaveAttribute("aria-pressed", "true");
+  expect(within(attacker).getByLabelText("攻击方物攻个体加点")).not.toBeChecked();
+});
 
 test("折叠时不渲染完整逐层明细，展开单行仍提供 0–99 层", () => {
   render(<DeerWorkspace snapshot={snapshot} />);

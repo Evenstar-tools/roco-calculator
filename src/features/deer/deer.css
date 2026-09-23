@@ -71,6 +71,8 @@ html[data-theme="dark"] .app-header--tool::before { content: none; }
 .deer-stacks { gap: 0; }
 .deer-stacks > span { margin-right: 8px; }
 .deer-stack-help { color: var(--text-muted); font-size: 11px; line-height: 1.5; }
+.deer-bloodline { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; color: var(--text-muted); white-space: nowrap; font-size: 12px; }
+.deer-bloodline select { min-width: 72px; height: 30px; padding: 4px 5px; color: var(--text); }
 .deer-stacks input { width: 38px; text-align: center; border-radius: 0; padding: 5px 0; appearance: textfield; }
 .deer-stacks input::-webkit-inner-spin-button { appearance: none; }
 .deer-stacks button { padding: 5px 7px; color: var(--accent); }

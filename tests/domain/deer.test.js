@@ -3,15 +3,67 @@ import { describe, expect, test } from "vitest";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 import { calculateMatchup } from "../../src/domain/calculate.js";
 import { calculateNegativeStatusSettlement } from "../../src/domain/negative-status.js";
+import { ELEMENT_TYPES } from "../../src/domain/type-chart.js";
 import { getTraitView } from "../../src/domain/calculator-view-model.js";
 import { canonicalTraitControlKey } from "../../src/state/trait-values.js";
-import { DEER_VARIANTS, DEFENSE_TEMPLATES, applyDeerPreset, buildDeerInput, calculateDeerRow, calculateDeerRows, calculateDeerSummaryRows, createDeerSetup, evaluateDeerAttack, findDeerThresholds, getDeerSpeedComparison, hasDeerDefenseTrait } from "../../src/features/deer/deer-model.js";
+import { DEER_VARIANTS, DEFENSE_TEMPLATES, applyDeerPreset, buildDeerInput, calculateDeerRow, calculateDeerRows, calculateDeerSummaryRows, createDeerSetup, deerVariantsFor, evaluateDeerAttack, findDeerThresholds, getDeerSpeedComparison, hasDeerDefenseTrait } from "../../src/features/deer/deer-model.js";
 
 const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
 const variant = (id) => DEER_VARIANTS.find((row) => row.id === id);
 const evaluate = (setup, id, stacks = 1) => evaluateDeerAttack(snapshot, setup, variant(id), stacks);
 
 describe("电鹿斩杀线", () => {
+  test("愿力冲击仅属于爵士鹿，默认武系；波普鹿保持原九行", () => {
+    const boss = createDeerSetup(snapshot);
+    expect(boss.wishPowerType).toBe("武");
+    expect(boss.wishPowerResponse).toBe(false);
+    expect(deerVariantsFor(snapshot, boss)).toHaveLength(9);
+    expect(deerVariantsFor(snapshot, boss).some((row) => row.id === "wish-power")).toBe(false);
+    const regular = structuredClone(boss);
+    regular.state.sides.attacker.spiritId = snapshot.spirits.find((spirit) => spirit.fullName === "爵士鹿").id;
+    const variants = deerVariantsFor(snapshot, regular);
+    expect(variants).toHaveLength(10);
+    expect(variants.at(-1)).toMatchObject({ id: "wish-power", label: "愿力冲击", type: "武", context: { enemyUsedStatusSkill: false } });
+    const first = evaluateDeerAttack(snapshot, regular, variants.at(-1), regular.stacks);
+    expect(first.first.staticPower).toBe(80);
+  });
+
+  test("爵士鹿血脉可选择全部属性，愿力冲击技能与伤害属性一致且不污染配置", () => {
+    const setup = createDeerSetup(snapshot);
+    setup.state.sides.attacker.spiritId = snapshot.spirits.find((spirit) => spirit.fullName === "爵士鹿").id;
+    const before = JSON.stringify(setup.state);
+    const actual = [];
+    for (const type of ELEMENT_TYPES) {
+      setup.wishPowerType = type;
+      const variant = deerVariantsFor(snapshot, setup).at(-1);
+      const input = buildDeerInput(snapshot, setup, variant, setup.stacks);
+      const skill = snapshot.skills.find((entry) => entry.id === input.sides.attacker.skills.single.skillId);
+      actual.push(skill.type);
+      expect(variant.type).toBe(type);
+      expect(skill).toMatchObject({ name: "愿力冲击", type, basePower: 80 });
+      expect(input.sides.attacker.skills.single.context.enemyUsedStatusSkill).toBe(false);
+    }
+    expect(actual).toEqual(ELEMENT_TYPES);
+    expect(JSON.stringify(setup.state)).toBe(before);
+  });
+
+  test("愿力冲击应对只改变本招上下文，静态威力 80→200 并复算伤害", () => {
+    const setup = createDeerSetup(snapshot);
+    setup.state.sides.attacker.spiritId = snapshot.spirits.find((spirit) => spirit.fullName === "爵士鹿").id;
+    const before = JSON.stringify(setup);
+    const ordinary = deerVariantsFor(snapshot, setup).at(-1);
+    const withoutResponse = evaluateDeerAttack(snapshot, setup, ordinary, setup.stacks);
+    setup.wishPowerResponse = true;
+    const response = deerVariantsFor(snapshot, setup).at(-1);
+    const withResponse = evaluateDeerAttack(snapshot, setup, response, setup.stacks);
+    expect(response.context.enemyUsedStatusSkill).toBe(true);
+    expect(withoutResponse.first.staticPower).toBe(80);
+    expect(withResponse.first.staticPower).toBe(200);
+    expect(withResponse.damage).toBeGreaterThan(withoutResponse.damage);
+    expect(withResponse.first.typeMultiplier).toBe(withoutResponse.first.typeMultiplier);
+    expect(JSON.stringify(setup.state)).toBe(JSON.stringify(JSON.parse(before).state));
+  });
+
   test("逐层阈值必须找首次命中，不能依赖伤害单调或扫描到99层后才停止", () => {
     const checks = [];
     const states = [
