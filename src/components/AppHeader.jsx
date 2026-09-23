@@ -29,6 +29,7 @@ export function AppHeader({
     const media = window.matchMedia("(max-width: 620px) and (orientation: portrait)");
     const update = () => setPortrait(media.matches);
     media.addEventListener("change", update);
+    update();
     return () => media.removeEventListener("change", update);
   }, []);
   useEffect(() => {
