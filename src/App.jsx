@@ -2216,6 +2216,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
                 activeMode={state.mode}
                 fourSkillContent={fourEditor}
                 onModeChange={setSkillMode}
+                onPowerDisplayModeChange={overlays.displaySettingsProps.onPowerDisplayModeChange}
+                powerDisplayMode={powerDisplayMode}
                 singleSkillContent={singleEditor}
                 singleTraitContent={singleTraitContent}
               />

@@ -6,6 +6,8 @@ export function SkillStep({
   compact = false,
   fourSkillContent,
   onModeChange,
+  onPowerDisplayModeChange,
+  powerDisplayMode = "static",
   singleSkillContent,
   singleTraitContent,
 }) {
@@ -26,46 +28,62 @@ export function SkillStep({
       aria-label="技能配置"
       className="calculator-step calculator-step--skills"
     >
-      <div
-        aria-label="技能模式"
-        className="mode-tabs"
-        data-guide-target="skills"
-        role="tablist"
-      >
-        <button
-          aria-label="单技能"
-          aria-controls="single-skill-panel"
-          aria-selected={mode === "single"}
-          id="single-skill-tab"
-          onClick={() => selectMode("single")}
-          role="tab"
-          tabIndex={mode === "single" ? 0 : -1}
-          title="单技能"
-          type="button"
+      <div className="skill-step-toolbar">
+        <div
+          aria-label="技能模式"
+          className="mode-tabs"
+          data-guide-target="skills"
+          role="tablist"
         >
-          {compact ? (
-            <Crosshair aria-hidden="true" size={18} weight="bold" />
-          ) : (
-            "单技能"
-          )}
-        </button>
-        <button
-          aria-label="四技能"
-          aria-controls="four-skill-panel"
-          aria-selected={mode === "four"}
-          id="four-skill-tab"
-          onClick={() => selectMode("four")}
-          role="tab"
-          tabIndex={mode === "four" ? 0 : -1}
-          title="四技能"
-          type="button"
-        >
-          {compact ? (
-            <SquaresFour aria-hidden="true" size={18} weight="fill" />
-          ) : (
-            "四技能"
-          )}
-        </button>
+          <button
+            aria-label="单技能"
+            aria-controls="single-skill-panel"
+            aria-selected={mode === "single"}
+            id="single-skill-tab"
+            onClick={() => selectMode("single")}
+            role="tab"
+            tabIndex={mode === "single" ? 0 : -1}
+            title="单技能"
+            type="button"
+          >
+            {compact ? (
+              <Crosshair aria-hidden="true" size={18} weight="bold" />
+            ) : (
+              "单技能"
+            )}
+          </button>
+          <button
+            aria-label="四技能"
+            aria-controls="four-skill-panel"
+            aria-selected={mode === "four"}
+            id="four-skill-tab"
+            onClick={() => selectMode("four")}
+            role="tab"
+            tabIndex={mode === "four" ? 0 : -1}
+            title="四技能"
+            type="button"
+          >
+            {compact ? (
+              <SquaresFour aria-hidden="true" size={18} weight="fill" />
+            ) : (
+              "四技能"
+            )}
+          </button>
+        </div>
+        {!compact && onPowerDisplayModeChange ? (
+          <div aria-label="技能威力口径" className="power-basis-switch" role="group">
+            <button
+              aria-pressed={powerDisplayMode !== "panel"}
+              onClick={() => onPowerDisplayModeChange("static")}
+              type="button"
+            >静态威力</button>
+            <button
+              aria-pressed={powerDisplayMode === "panel"}
+              onClick={() => onPowerDisplayModeChange("panel")}
+              type="button"
+            >显示威力</button>
+          </div>
+        ) : null}
       </div>
       <div
         aria-labelledby="single-skill-tab"

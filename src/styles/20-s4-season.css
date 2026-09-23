@@ -92,6 +92,51 @@ html[data-theme="dark"] .app-header .view-mode-switch button[aria-pressed="true"
   box-shadow: none;
 }
 
+.skill-step-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 13px;
+}
+
+.skill-step-toolbar .mode-tabs { flex: 0 0 auto; margin: 0; }
+.compact-workspace .skill-step-toolbar { margin-bottom: 8px; }
+
+.power-basis-switch {
+  display: inline-flex;
+  flex: 0 0 auto;
+  padding: 2px;
+  border: 1px solid #4e627a;
+  border-radius: 9px;
+  background: #1b2943;
+}
+
+.power-basis-switch button,
+html[data-theme="dark"] .power-basis-switch button {
+  min-height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #c8d5e1;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.power-basis-switch button[aria-pressed="true"],
+html[data-theme="dark"] .power-basis-switch button[aria-pressed="true"] {
+  background: #e0ce95;
+  color: #26384a;
+}
+
+.power-basis-switch button:not([aria-pressed="true"]):hover,
+html[data-theme="dark"] .power-basis-switch button:not([aria-pressed="true"]):hover {
+  background: #30415a;
+  color: #f4f2e5;
+}
+
 .app-header .icon-action,
 html[data-theme="dark"] .app-header .icon-action {
   background: transparent;
@@ -253,10 +298,20 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
   }
 }
 
+@media (max-width: 620px) {
+  .calculator-step--skills .skill-step-toolbar .mode-tabs {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+  }
+  .power-basis-switch button { min-height: 42px; padding-inline: 6px; }
+}
+
 @media (max-width: 360px) {
   .app-header:not(.app-header--tool) { padding-inline: 6px; gap: 4px; }
   .app-header:not(.app-header--tool) .app-header__actions { gap: 1px; }
   .app-header:not(.app-header--tool) :is(.team-action, .icon-action) { width: 32px; min-width: 32px; }
   .calculator-layout--compact .spirit-card { column-gap: 4px; grid-template-columns: 36px minmax(0, 1fr); }
   .calculator-layout--compact .spirit-card__image { width: 36px; height: 36px; }
+  .power-basis-switch button { padding-inline: 5px; font-size: 11px; }
 }

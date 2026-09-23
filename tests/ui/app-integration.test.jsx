@@ -3352,7 +3352,8 @@ test("loads one team member into the attack side without linking later edits", a
   const teamStorageBeforeLoad = localStorage.getItem(TEAM_STORAGE_KEY);
 
   await user.click(
-    screen.getByRole("button", { name: "水灵设为攻击方" }),
+    within(screen.getByRole("list", { name: "队伍成员" }))
+      .getByRole("button", { name: "水灵设为攻击方" }),
   );
 
   expect(
@@ -3786,10 +3787,15 @@ test("切换四技能行到可编辑的显示威力并记住设置", async () =>
   expect(
     screen.getByRole("spinbutton", { name: "攻击方技能1静态威力" }),
   ).toBeVisible();
+  const powerSwitch = within(screen.getByRole("group", { name: "技能威力口径" }));
+  await user.click(powerSwitch.getByRole("button", { name: "显示威力" }));
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能1显示威力" })).toBeVisible();
+  expect(localStorage.getItem(POWER_DISPLAY_STORAGE_KEY)).toBe("panel");
+
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "显示设置" }));
-  expect(screen.getByText("显示威力：")).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "显示威力" }));
+  const dialog = within(screen.getByRole("dialog", { name: "显示设置" }));
+  expect(dialog.getByRole("button", { name: "显示威力" })).toHaveAttribute("aria-pressed", "true");
   await user.click(screen.getByRole("button", { name: "完成" }));
 
   expect(screen.getByRole("spinbutton", { name: "攻击方技能1显示威力" })).toBeVisible();

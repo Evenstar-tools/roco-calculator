@@ -1012,3 +1012,30 @@ test("skill step has only single and four-skill top modes and keeps both editors
   await user.click(screen.getByRole("tab", { name: "四技能" }));
   expect(screen.getByText("四技能配置已保留")).toBeVisible();
 });
+
+test("详细版技能页签右侧切换威力口径，不增加说明行", async () => {
+  const user = userEvent.setup();
+  const onPowerDisplayModeChange = vi.fn();
+  const props = {
+    activeMode: "four",
+    fourSkillContent: <div>四技能配置</div>,
+    onPowerDisplayModeChange,
+    singleSkillContent: <div>单技能配置</div>,
+  };
+  const { rerender } = render(<SkillStep {...props} />);
+  const group = within(screen.getByRole("group", { name: "技能威力口径" }));
+
+  expect(group.getByRole("button", { name: "静态威力" })).toHaveAttribute("aria-pressed", "true");
+  expect(group.getByRole("button", { name: "显示威力" })).toHaveAttribute("aria-pressed", "false");
+  expect(screen.queryByText("决定技能栏显示和手动输入代表的数值；切换本身不改变伤害。"))
+    .not.toBeInTheDocument();
+
+  await user.click(group.getByRole("button", { name: "显示威力" }));
+  expect(onPowerDisplayModeChange).toHaveBeenCalledWith("panel");
+  rerender(<SkillStep {...props} powerDisplayMode="panel" />);
+  expect(group.getByRole("button", { name: "显示威力" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("tab", { name: "四技能" })).toHaveAttribute("aria-selected", "true");
+
+  rerender(<SkillStep {...props} compact />);
+  expect(screen.queryByRole("group", { name: "技能威力口径" })).not.toBeInTheDocument();
+});

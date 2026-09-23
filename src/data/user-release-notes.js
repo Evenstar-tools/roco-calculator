@@ -235,6 +235,7 @@ export const USER_RELEASE_NOTES = Object.freeze([
     title: "S4形态关联与血脉提示",
     whatsNew: S4_FEATURE_INTRO,
     features: [
+      "具体版技能栏右上角可直接切换静态威力与显示威力，和显示设置保持同步。",
       "血脉限定技能显示专属标记；与首领血脉或首领形态冲突时，队伍和技能行就地提示。",
       "数值、搜索、队伍名称等单行输入首次点入全选，直接输入替换；再次点击和拖选保持正常。",
     ],
