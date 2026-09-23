@@ -39,9 +39,9 @@ function SpiritResults({ spirits, types, spiritFilterRevision }) {
   const matches = findFinalDualTypeSpirits(spirits, types, { spiritFilterRevision });
   return <section className="type-query__spirits" aria-label="对应属性精灵">
     <div className="type-query__spirits-heading"><div><h3>对应属性精灵</h3><p>{types.join(" ＋ ")} · 仅展示已确认最终形态</p></div><span>{matches.length} 个结果</span></div>
-    {matches.length ? <div className="type-query__spirit-list" role="list">{matches.map((spirit) => <article className="type-query__spirit-card" key={spirit.id} role="listitem">
+    {matches.length ? <div className="type-query__spirit-list" role="list" aria-label={`匹配精灵，共 ${matches.length} 个`} tabIndex={matches.length > 1 ? 0 : undefined}>{matches.map((spirit) => <article className="type-query__spirit-card" key={spirit.id} role="listitem">
       <img src={`${import.meta.env.BASE_URL}assets/spirits/${spirit.id}.png`} alt="" loading="lazy" />
-      <div><strong>{spirit.fullName}</strong><span>{spirit.stage}</span></div>
+      <strong>{spirit.fullName}</strong>
     </article>)}</div> : <p className="type-query__spirits-empty">当前没有匹配的双属性最终形态。</p>}
   </section>;
 }
@@ -109,6 +109,7 @@ export default function TypeQueryPanel({ typeChart, spirits = [], spiritFilterRe
           </div>
         </section>
         {!query.types.length ? <p className="type-query__empty" role="status">点击上方属性，即时查看抗性和打击面</p> : <>
+          {query.types.length === 2 && <SpiritResults spirits={spirits} types={query.types} spiritFilterRevision={spiritFilterRevision} />}
           <div className="type-query__columns">
             <section className="type-query__column" aria-label="防守抗性"><h3>防守抗性</h3><p>{query.types.join(" / ")}作为防御属性 · 优先看弱点</p>
               {DEFENSE_GROUPS.map(([multiplier, label]) => <ResultGroup key={multiplier} rows={query.defense} side="defense" {...{ multiplier, label, inspected }} onInspect={setInspected} />)}
@@ -122,7 +123,6 @@ export default function TypeQueryPanel({ typeChart, spirits = [], spiritFilterRe
             </section>
           </div>
           {inspectedRow && <div className="type-query__explanation" role="status"><strong>倍率来源</strong><div>{explainRow(inspectedRow, inspected.side, query.types).map((line) => <span key={line}>{line}</span>)}</div></div>}
-          {query.types.length === 2 && <SpiritResults spirits={spirits} types={query.types} spiritFilterRevision={spiritFilterRevision} />}
         </>}
         <footer className="type-query__note"><Info size={16} aria-hidden="true" /><span>仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。</span></footer>
       </div>

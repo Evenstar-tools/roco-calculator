@@ -56,11 +56,20 @@ test("攻防倍率与可展开中性结果，点击来源不改查询属性", ()
 
 test("双属性显示每条进化链的最终形态，单属性隐藏", () => {
   render(<Harness initial={["地", "冰"]} />);
-  expect(screen.getByRole("region", { name: "对应属性精灵" })).toHaveTextContent("獠牙猪");
-  expect(screen.getByRole("region", { name: "对应属性精灵" })).toHaveTextContent("二阶");
-  expect(screen.getByRole("region", { name: "对应属性精灵" })).not.toHaveTextContent("冰 · 地 · 二阶");
-  fireEvent.click(choices().getByRole("button", { name: "地", exact: true }));
+  const results = screen.getByRole("region", { name: "对应属性精灵" });
+  expect(results).toHaveTextContent("獠牙猪");
+  expect(results).not.toHaveTextContent("二阶");
+  expect(results.previousElementSibling).toHaveClass("type-query__selection");
+  expect(results.nextElementSibling).toHaveClass("type-query__columns");
+  expect(within(results).getAllByRole("listitem")).toHaveLength(1);
+  fireEvent.click(choices().getByRole("button", { name: "冰", exact: true }));
   expect(screen.queryByRole("region", { name: "对应属性精灵" })).toBeNull();
+  fireEvent.click(choices().getByRole("button", { name: "武", exact: true }));
+  const newResults = screen.getByRole("region", { name: "对应属性精灵" });
+  const list = within(newResults).getByRole("list", { name: "匹配精灵，共 8 个" });
+  expect(within(list).getAllByRole("listitem")).toHaveLength(8);
+  expect(list).toHaveAttribute("tabindex", "0");
+  expect(newResults).not.toHaveTextContent("獠牙猪");
 });
 
 test("按传入矩阵显示免疫，不补造属性关系", () => {

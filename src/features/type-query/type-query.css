@@ -38,14 +38,17 @@
 .type-query__explanation { display: flex; gap: 14px; padding: 12px 14px; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-soft); font-size: 13px; }
 .type-query__explanation strong, .type-query__note svg { flex: none; }
 .type-query__explanation span { display: block; color: var(--text-muted); }
-.type-query__spirits { margin: 0 0 20px; padding: 14px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface-soft); }
-.type-query__spirits-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-.type-query__spirits-heading h3 { margin: 0; font-size: 16px; }
-.type-query__spirits-heading p, .type-query__spirits-heading > span, .type-query__spirit-card span, .type-query__spirits-empty { margin: 2px 0 0; font-size: 12px; color: var(--text-muted); }
-.type-query__spirit-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
-.type-query__spirit-card { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 7px 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
-.type-query__spirit-card img { width: 42px; height: 42px; flex: none; object-fit: contain; }
-.type-query__spirit-card div { min-width: 0; display: flex; flex-direction: column; }
+.type-query__spirits { min-width: 0; margin: 0 0 2px; padding: 8px 0 11px; border-top: 1px solid var(--border); }
+.type-query__spirits-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.type-query__spirits-heading > div { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.type-query__spirits-heading h3 { margin: 0; flex: none; font-size: 14px; }
+.type-query__spirits-heading p, .type-query__spirits-heading > span, .type-query__spirits-empty { margin: 2px 0 0; font-size: 12px; color: var(--text-muted); }
+.type-query__spirits-heading p { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.type-query__spirits-heading > span { flex: none; }
+.type-query__spirit-list { display: flex; flex-wrap: wrap; gap: 4px 16px; min-width: 0; max-width: 100%; }
+.type-query__spirit-list:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.type-query__spirit-card { display: flex; align-items: center; gap: 10px; flex: none; min-width: 154px; max-width: 220px; padding: 2px 0; }
+.type-query__spirit-card img { width: 36px; height: 36px; flex: none; object-fit: contain; }
 .type-query__spirit-card strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
 .type-query__spirits-empty { margin: 0; }
 .type-query__note { display: flex; gap: 10px; border-top: 1px solid var(--border); padding: 12px 0; }
@@ -65,7 +68,9 @@
   .type-query__group { grid-template-columns: 77px minmax(0, 1fr); padding: 11px 0; gap: 5px; }
   .type-query__explanation { display: block; font-size: 12px; }
   .type-query__explanation strong { display: block; margin-bottom: 4px; }
-  .type-query__spirit-list { grid-template-columns: 1fr; }
+  .type-query__spirits-heading > div { display: block; }
+  .type-query__spirit-list { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; }
+  .type-query__spirit-card { min-width: 190px; max-width: 190px; }
 }
 @media (max-width: 480px) {
   .type-query__rail { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; margin-inline: -11px; }
