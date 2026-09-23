@@ -433,6 +433,7 @@ const REVIEWED_EFFECTS = Object.freeze({
     "敌方星陨印记",
     1,
     1,
+    99,
   ),
 
   超级糖果: booleanAdd("attackerMoeActive", "自身获得萌化", 60),

@@ -3911,6 +3911,15 @@ describe("calculateMatchup", () => {
 
     input.marks.defender.negative.stacks = 5;
     expect(calculateMatchup(fixture, input).forward.selectedResult.hitCount).toBe(6);
+
+    input.marks.defender.negative.stacks = 21;
+    expect(calculateMatchup(fixture, input).forward.selectedResult.hitCount).toBe(22);
+
+    input.marks.defender.negative.stacks = 99;
+    expect(calculateMatchup(fixture, input).forward.selectedResult.hitCount).toBe(100);
+
+    input.marks.defender.negative.stacks = 100;
+    expect(calculateMatchup(fixture, input).forward.selectedResult.hitCount).toBe(100);
   });
 
   test.each(["坠星", "观星", "宇宙之眼"])("%s 的计算跟随印记且不受旧特性层数干扰", (name) => {

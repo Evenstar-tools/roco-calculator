@@ -1632,6 +1632,12 @@ test("links multi-dimensional strike hits with the target starfall mark", async 
   await waitFor(() =>
     expect(screen.getByRole("spinbutton", { name: "连击次数" })).toHaveValue(6),
   );
+
+  fireEvent.change(linkedStarfall, { target: { value: "99" } });
+  fireEvent.blur(linkedStarfall);
+  await waitFor(() => expect(linkedStarfall).toHaveValue(99));
+  expect(traitStarfall).toHaveAttribute("max", "99");
+  await waitFor(() => expect(traitStarfall).toHaveValue(99));
 });
 
 test("雷暴同步显示生物电能耗与己方蓄电印记来源", async () => {

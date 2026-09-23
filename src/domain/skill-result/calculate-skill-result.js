@@ -335,7 +335,7 @@ export function calculateSkillResult({
   const editableHitCountInput = getEditableHitCountInput(skill);
   const hitCountMaximum = editableHitCountInput
     ? editableHitCountInput.max ?? Number.POSITIVE_INFINITY
-    : 99;
+    : skill.name === "多维击打" ? 100 : 99;
   const persistentHitCountAdd = declaredHitCount
     ? finiteNumber(directionOverrides.hitCountAdd) ?? 0
     : 0;

@@ -336,13 +336,14 @@ const RULES = Object.freeze({
     20,
     "敌方星陨层数",
     "每层威力",
-    { types: ["地"] },
+    { max: 99, types: ["地"] },
   ),
   坠星: stack(
     "power_percent",
     20,
     "敌方星陨层数",
     "每层威力",
+    { max: 99 },
   ),
   蓄电池: stack(
     "attack_percent",

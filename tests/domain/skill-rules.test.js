@@ -714,6 +714,9 @@ describe("resolveSkillPower", () => {
   );
 
   test("returns automatic hit count and resistance handling with dynamic effects", () => {
+    expect(getSkillEffectInputs(skill({ basePower: 15, name: "多维击打" })).find(
+      (input) => input.contextKey === "enemyStarfallMarks",
+    )?.max).toBe(99);
     expect(
       resolveSkillPower(
         skill({ basePower: 15, name: "多维击打" }),
