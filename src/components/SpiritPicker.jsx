@@ -7,6 +7,7 @@ import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 import { getBattleFormChoices } from "../domain/battle-form.js";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { buildSpiritFamilyIndex } from "./spirit-family.js";
+import { readFormConfigPreferences, writeFormConfigPreference } from "../state/form-config-preferences.js";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -131,7 +132,7 @@ export function SpiritPicker({
   const presetBrowse = usePresetBrowseMode();
   const [open, setOpen] = useState(false);
   const [searching, setSearching] = useState(false);
-  const [formConfigPreferences, setFormConfigPreferences] = useState({});
+  const [formConfigPreferences, setFormConfigPreferences] = useState(() => readFormConfigPreferences(side));
   const selectedName = selected?.fullName ?? "";
   const [query, setQuery] = useState(selectedName);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -409,6 +410,7 @@ export function SpiritPicker({
                     checked={preserveFormConfig} onChange={event => {
                       const enabled = event.target.checked;
                       setFormConfigPreferences(current => ({ ...current, [familyKey]: enabled }));
+                      writeFormConfigPreference(side, familyKey, enabled);
                     }}
                     onKeyDown={event => { if (event.key === "Escape") { inputRef.current?.focus(); handleKeyDown(event); } }} />
                 </label> : null}

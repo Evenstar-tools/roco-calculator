@@ -231,12 +231,13 @@ export const S4_FEATURE_INTRO = Object.freeze({
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v2.2.3",
-    date: "2026.09.23",
+    date: "2026.09.25",
     title: "S4形态关联与血脉提示",
     whatsNew: S4_FEATURE_INTRO,
     features: [
       "具体版技能栏右上角可直接切换静态威力与显示威力，和显示设置保持同步。",
       "电鹿斩杀线选择爵士鹿时可切换血脉属性，查看对应愿力冲击；勾选应对后立即复算，波普鹿不显示此项。",
+      "同族形态的萌化配置保留开关会记住攻防方及各家族的选择，刷新后再次打开仍保持原设置。",
       "血脉限定技能显示专属标记；与首领血脉或首领形态冲突时，队伍和技能行就地提示。",
       "数值、搜索、队伍名称等单行输入首次点入全选，直接输入替换；再次点击和拖选保持正常。",
     ],
