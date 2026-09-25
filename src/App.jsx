@@ -67,12 +67,14 @@ import { carriedSkillTotalCost } from "./domain/skill-result/loadout.js";
 import { getSnapshotIndexes } from "./domain/snapshot-indexes.js";
 import { calculateAllPanelStats } from "./domain/stat.js";
 import { getEffectiveTraits } from "./domain/effective-traits.js";
+import { getBattleFormChoices } from "./domain/battle-form.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
 import { withCalculatorExtras } from "./data/snapshot-extras.js";
 import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
 import { useCalculatorSession } from "./hooks/useCalculatorSession.js";
 import { useCalculatorShortcuts } from "./hooks/useCalculatorShortcuts.js";
 import { readShortcutSettings, writeShortcutSettings } from "./state/shortcut-settings.js";
+import { readFormConfigPreferences, writeFormConfigPreference } from "./state/form-config-preferences.js";
 import { ShortcutDialog } from "./components/ShortcutDialog.jsx";
 import {
   POPULAR_CONFIG_COUNT,
@@ -504,6 +506,14 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
     onSwap: () => { dispatch({ type: "sides/swap" }); setActiveDirection("forward"); },
     onTeam: () => { overlays.team.setAnalysisEntry(null); overlays.team.setOpen(true); },
     onHelp: () => setShortcutsOpen(true),
+    onToggleFormConfig: (side) => {
+      const battleSide = side === "attack" ? "attacker" : "defender";
+      const family = getBattleFormChoices(snapshot.spirits, stateRef.current.sides[battleSide]);
+      const current = readFormConfigPreferences(side)
+        ?? family.some((spirit) => spirit.fullName === "梦想三三");
+      const enabled = writeFormConfigPreference(side, !current);
+      setToast(`${side === "attack" ? "攻击方" : "防御方"}萌化配置保留已${enabled ? "开启" : "关闭"}（本标签页）`);
+    },
   });
 
   // 完成"选攻击方/选防御方"时引导自动推进;只在选择从无到有时前进,不干扰"上一步"。

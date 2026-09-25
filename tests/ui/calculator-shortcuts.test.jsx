@@ -15,6 +15,7 @@ function Harness({ enabled = true, onSave = () => {}, onCommand = () => {} }) {
     canRedo: true, onRedo: () => onCommand("redo"),
     onSearch: (side) => onCommand(`search:${side}`), onSwap: () => onCommand("swap"),
     onTeam: () => onCommand("team"), onHelp: () => onCommand("help"),
+    onToggleFormConfig: (side) => onCommand(`form:${side}`),
   });
   return <><output data-testid="mode">{preview ?? mode}</output><output data-testid="steps">{steps}</output><output data-testid="nature">{nature}</output><input aria-label="输入" /><select aria-label="选择" value={nature} onChange={event => setNature(event.target.value)}><option value="neutral">普通</option><option value="cheerful">开朗</option></select><div contentEditable suppressContentEditableWarning aria-label="编辑">text</div></>;
 }
@@ -111,6 +112,34 @@ test("常用快捷键避开输入框并触发对应动作", () => {
   expect(onCommand.mock.calls.map(([value]) => value)).toEqual(["search:attacker", "search:defender", "swap", "team", "help"]);
   const input = screen.getByLabelText("输入");
   down("a", {}, input); expect(onCommand).toHaveBeenCalledTimes(5);
+});
+
+test("Ctrl+Alt+1/2 在页面与输入框内分别切攻防方萌化开关，连发只切一次", () => {
+  const onCommand = vi.fn();
+  render(<Harness onCommand={onCommand} />);
+  expect(down("1", { ctrlKey: true, altKey: true })).toBe(false);
+  down("1", { ctrlKey: true, altKey: true, repeat: true });
+  expect(onCommand.mock.calls.map(([value]) => value)).toEqual(["form:attack"]);
+  expect(down("2", { ctrlKey: true, altKey: true }, screen.getByLabelText("输入"))).toBe(false);
+  expect(down("2", { ctrlKey: true, altKey: true }, screen.getByLabelText("选择"))).toBe(false);
+  expect(onCommand.mock.calls.map(([value]) => value)).toEqual(["form:attack", "form:defense", "form:defense"]);
+});
+
+test("萌化快捷键不响应缺少修饰键、输入法合成、已阻止事件或停用状态", () => {
+  const onCommand = vi.fn();
+  const view = render(<Harness onCommand={onCommand} />);
+  down("1", { ctrlKey: true });
+  down("1", { altKey: true });
+  down("1", { ctrlKey: true, altKey: true, isComposing: true });
+  down("1", { ctrlKey: true, altKey: true, keyCode: 229 });
+  down("1", { ctrlKey: true, altKey: true, shiftKey: true });
+  down("1", { ctrlKey: true, altKey: true, metaKey: true });
+  const prevented = new KeyboardEvent("keydown", { key: "1", ctrlKey: true, altKey: true, bubbles: true, cancelable: true });
+  prevented.preventDefault(); fireEvent(document.body, prevented);
+  expect(onCommand).not.toHaveBeenCalled();
+  view.rerender(<Harness onCommand={onCommand} enabled={false} />);
+  down("1", { ctrlKey: true, altKey: true });
+  expect(onCommand).not.toHaveBeenCalled();
 });
 
 test("Ctrl+Shift+Z 触发重做且不连发", () => {

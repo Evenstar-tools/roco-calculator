@@ -1,14 +1,20 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import snapshot from "../../public/data/runtime.json";
 import { SpiritPicker } from "../../src/components/SpiritPicker.jsx";
-import { FORM_CONFIG_PREFERENCES_STORAGE_KEY } from "../../src/state/form-config-preferences.js";
+import { FORM_CONFIG_PREFERENCES_STORAGE_KEY, writeFormConfigPreference } from "../../src/state/form-config-preferences.js";
 
 const selected = snapshot.spirits.find((spirit) => spirit.fullName === "梦想三三");
 
-beforeEach(() => localStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY));
-afterEach(() => localStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY));
+beforeEach(() => {
+  sessionStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY);
+  localStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY);
+});
+afterEach(() => {
+  sessionStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY);
+  localStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY);
+});
 
 function setup(extra = {}) {
   const onSelect = vi.fn(), onFormSelect = vi.fn();
@@ -63,7 +69,7 @@ test("键盘选择同族形态沿用专用入口", () => {
   const actions = setup();
   const input = screen.getByRole("combobox", { name: "攻击方精灵" });
   fireEvent.keyDown(input, { key: "ArrowDown" });
-  fireEvent.keyDown(input, { key: "ArrowDown" });
+  fireEvent.keyDown(input, { key: "ArrowUp" });
   fireEvent.keyDown(input, { key: "Enter" });
   expect(actions.onFormSelect).toHaveBeenCalledTimes(1);
   expect(actions.onSelect).not.toHaveBeenCalled();
@@ -163,18 +169,30 @@ test("双方保留开关独立", () => {
   expect(screen.getByRole("switch", { name: "防御方同族切换保留本场配置" })).toBeChecked();
 });
 
-test.each(["逗逗", "气球猫", "梦想三三", "奇梦咪", "武斗酷猫", "波普鹿"])("%s：仅三三家族默认保留配置", (name) => {
+test("页面级快捷键写入同侧偏好时，已打开的形态开关即时同步", () => {
+  const spirit = snapshot.spirits.find(entry => entry.fullName === "武斗酷猫");
+  setup({ selected: spirit, formSide: { spiritId: spirit.id } });
+  const input = screen.getByRole("combobox", { name: "攻击方精灵" });
+  fireEvent.focus(input);
+  const toggle = screen.getByRole("switch", { name: "攻击方同族切换保留本场配置" });
+  expect(toggle).not.toBeChecked();
+  act(() => writeFormConfigPreference("attack", true));
+  expect(toggle).toBeChecked();
+  act(() => writeFormConfigPreference("defense", false));
+  expect(toggle).toBeChecked();
+  act(() => writeFormConfigPreference("attack", false));
+  expect(toggle).not.toBeChecked();
+});
+
+test.each(["逗逗", "气球猫", "梦想三三", "奇梦咪", "武斗酷猫", "波普鹿"])("%s：仅三三家族默认开启保留开关", (name) => {
   const spirit = snapshot.spirits.find(entry => entry.fullName === name);
-  const actions = setup({ selected: spirit, formSide: { spiritId: spirit.id } });
+  setup({ selected: spirit, formSide: { spiritId: spirit.id } });
   fireEvent.focus(screen.getByRole("combobox", { name: "攻击方精灵" }));
   const enabled = ["逗逗", "气球猫", "梦想三三", "奇梦咪"].includes(name);
   expect(screen.getByRole("switch").checked).toBe(enabled);
-  fireEvent.click(screen.getAllByRole("option")[0]);
-  expect(enabled ? actions.onFormSelect : actions.onSelect).toHaveBeenCalledOnce();
-  expect(enabled ? actions.onSelect : actions.onFormSelect).not.toHaveBeenCalled();
 });
 
-test("首次选宠及跨家族切换使用各自默认值，手动选择仅在对应家族内保留", () => {
+test("手动选择是同侧全局偏好，跨家族切换也保留", () => {
   const props = { label: "攻击方", side: "attack", spirits: snapshot.spirits, onSelect: vi.fn(), onFormSelect: vi.fn() };
   const { rerender } = render(<SpiritPicker {...props} />);
   function show(name) {
@@ -188,9 +206,9 @@ test("首次选宠及跨家族切换使用各自默认值，手动选择仅在�
   expect(show("气球猫")).not.toBeChecked();
   expect(show("武斗酷猫")).not.toBeChecked();
   fireEvent.click(screen.getByRole("switch"));
-  expect(show("梦想三三")).not.toBeChecked();
+  expect(show("梦想三三")).toBeChecked();
   expect(show("武斗酷猫")).toBeChecked();
-  expect(show("波普鹿")).not.toBeChecked();
+  expect(show("波普鹿")).toBeChecked();
   expect(props.onSelect).not.toHaveBeenCalled();
   expect(props.onFormSelect).not.toHaveBeenCalled();
 });
@@ -204,7 +222,8 @@ test("三三家族显式关闭萌化配置保留后，组件卸载重挂载仍�
   expect(toggle).toBeChecked();
   fireEvent.click(toggle);
   expect(toggle).not.toBeChecked();
-  expect(localStorage.getItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY)).not.toBeNull();
+  expect(sessionStorage.getItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY)).not.toBeNull();
+  expect(localStorage.getItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY)).toBeNull();
   firstMount.unmount();
 
   render(<SpiritPicker {...props} />);
@@ -215,7 +234,7 @@ test("三三家族显式关闭萌化配置保留后，组件卸载重挂载仍�
   expect(props.onFormSelect).not.toHaveBeenCalled();
 });
 
-test("萌化配置保留的记忆按攻防方与家族隔离，重挂载后恢复各自显式选择", () => {
+test("萌化配置保留只按攻防方隔离，会话内重挂载跨家族仍恢复显式选择", () => {
   function mount(side, name) {
     const spirit = snapshot.spirits.find((entry) => entry.fullName === name);
     const label = side === "attack" ? "攻击方" : "防御方";
@@ -241,7 +260,7 @@ test("萌化配置保留的记忆按攻防方与家族隔离，重挂载后恢�
   current.view.unmount();
 
   current = mount("attack", "梦想三三");
-  expect(current.toggle).not.toBeChecked();
+  expect(current.toggle).toBeChecked();
   current.view.unmount();
 
   current = mount("attack", "武斗酷猫");
@@ -250,4 +269,46 @@ test("萌化配置保留的记忆按攻防方与家族隔离，重挂载后恢�
 
   current = mount("defense", "梦想三三");
   expect(current.toggle).toBeChecked();
+});
+
+test("关闭标签页后的新会话不继承萌化偏好，也不读取旧的长期保存记录", () => {
+  const spirit = snapshot.spirits.find(entry => entry.fullName === "武斗酷猫");
+  const props = { label: "攻击方", side: "attack", spirits: snapshot.spirits, selected: spirit,
+    formSide: { spiritId: spirit.id }, onSelect: vi.fn(), onFormSelect: vi.fn() };
+  const firstMount = render(<SpiritPicker {...props} />);
+  fireEvent.focus(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  fireEvent.click(screen.getByRole("switch"));
+  expect(screen.getByRole("switch")).toBeChecked();
+  firstMount.unmount();
+
+  sessionStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY);
+  localStorage.setItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY, JSON.stringify({ attack: true }));
+  render(<SpiritPicker {...props} />);
+  fireEvent.focus(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  expect(screen.getByRole("switch")).not.toBeChecked();
+});
+
+test.each([
+  ["attack", "攻击方", "逗逗"],
+  ["attack", "攻击方", "气球猫"],
+  ["defense", "防御方", "逗逗"],
+])("%s %s：%s 作为底座切回高阶时，即使保留开启仍载入高阶独立预设", (side, label, name) => {
+  const lower = snapshot.spirits.find(entry => entry.fullName === name);
+  const actions = setup({ side, label, selected: lower, formSide: { spiritId: lower.id } });
+  fireEvent.focus(screen.getByRole("combobox", { name: `${label}精灵` }));
+  expect(screen.getByRole("switch")).toBeChecked();
+  fireEvent.click(screen.getByRole("option", { name: /梦想三三/ }));
+  expect(actions.onSelect).toHaveBeenCalledWith(selected.id);
+  expect(actions.onFormSelect).not.toHaveBeenCalled();
+});
+
+test("高阶为配置底座，降阶萌化后返回高阶仍保留同一份本场配置", () => {
+  const lower = snapshot.spirits.find(entry => entry.fullName === "气球猫");
+  const actions = setup({ selected: lower,
+    formSide: { spiritId: selected.id, battleForm: { spiritId: lower.id, branchId: selected.id } } });
+  fireEvent.focus(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  expect(screen.getByRole("switch")).toBeChecked();
+  fireEvent.click(screen.getByRole("option", { name: /梦想三三/ }));
+  expect(actions.onFormSelect).toHaveBeenCalledWith(selected.id);
+  expect(actions.onSelect).not.toHaveBeenCalled();
 });

@@ -5,10 +5,10 @@ const UNDO_HOLD_MS = 450;
 const UNDO_REPEAT_MS = 120;
 const INPUT_SELECTOR = 'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"]';
 
-export function useCalculatorShortcuts({ enabled, viewMode, onPreview, onModeChange, canUndo, onUndo, canRedo, onRedo, onSearch, onSwap, onTeam, onHelp, bindings = {} }) {
+export function useCalculatorShortcuts({ enabled, viewMode, onPreview, onModeChange, canUndo, onUndo, canRedo, onRedo, onSearch, onSwap, onTeam, onHelp, onToggleFormConfig, bindings = {} }) {
   const actions = useRef(null);
   useEffect(() => {
-    actions.current = { enabled, viewMode, onPreview, onModeChange, canUndo, onUndo, canRedo, onRedo, onSearch, onSwap, onTeam, onHelp, bindings };
+    actions.current = { enabled, viewMode, onPreview, onModeChange, canUndo, onUndo, canRedo, onRedo, onSearch, onSwap, onTeam, onHelp, onToggleFormConfig, bindings };
   });
 
   useEffect(() => {
@@ -44,8 +44,16 @@ export function useCalculatorShortcuts({ enabled, viewMode, onPreview, onModeCha
     }
 
     function keyDown(event) {
-      if (!actions.current.enabled || event.defaultPrevented || event.isComposing || event.keyCode === 229 || inputFocused(event.target)) return;
+      if (!actions.current.enabled || event.defaultPrevented || event.isComposing || event.keyCode === 229) return;
       const current = actions.current;
+      if (event.ctrlKey && event.altKey && !event.metaKey && !event.shiftKey && !event.getModifierState?.("AltGraph")
+        && (event.key === "1" || event.key === "2")) {
+        event.preventDefault();
+        stopUndo();
+        if (!event.repeat) current.onToggleFormConfig?.(event.key === "1" ? "attack" : "defense");
+        return;
+      }
+      if (inputFocused(event.target)) return;
       const key = event.key.toLowerCase();
       const shortcutKey = key === "/" && event.shiftKey ? "?" : key;
       if (key === "z" && event.ctrlKey && event.shiftKey && !event.metaKey && !event.altKey && current.onRedo) {

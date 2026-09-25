@@ -1,5 +1,5 @@
 import { CaretDown, MagnifyingGlass, Star } from "@phosphor-icons/react";
-import { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
 import { TraitHint } from "./TraitHint.jsx";
 import { EntityChangeHint } from "./EntityChangeHint.jsx";
@@ -7,7 +7,7 @@ import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 import { getBattleFormChoices } from "../domain/battle-form.js";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { buildSpiritFamilyIndex } from "./spirit-family.js";
-import { readFormConfigPreferences, writeFormConfigPreference } from "../state/form-config-preferences.js";
+import { canPreserveBattleFormConfig, readFormConfigPreferences, subscribeFormConfigPreferences, writeFormConfigPreference } from "../state/form-config-preferences.js";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -132,7 +132,11 @@ export function SpiritPicker({
   const presetBrowse = usePresetBrowseMode();
   const [open, setOpen] = useState(false);
   const [searching, setSearching] = useState(false);
-  const [formConfigPreferences, setFormConfigPreferences] = useState(() => readFormConfigPreferences(side));
+  const formConfigPreference = useSyncExternalStore(
+    subscribeFormConfigPreferences,
+    () => readFormConfigPreferences(side),
+    () => undefined,
+  );
   const selectedName = selected?.fullName ?? "";
   const [query, setQuery] = useState(selectedName);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -154,8 +158,8 @@ export function SpiritPicker({
       return compareDexOrder(left, right);
     });
   }, [familyIndex, family, selected]);
-  const familyKey = family.map((spirit) => spirit.id).sort().join(",");
-  const preserveFormConfig = formConfigPreferences[familyKey] ?? family.some((spirit) => spirit.fullName === "梦想三三");
+  const preserveFormConfig = formConfigPreference ?? family.some((spirit) => spirit.fullName === "梦想三三");
+  const sourceForm = family.find((spirit) => spirit.id === formSide?.spiritId);
   const formStages = ["一阶", "二阶", "三阶", "首领"].filter((stage) => family.some((spirit) => spirit.stage === stage));
   const sourceStage = family.find((spirit) => spirit.id === formSide?.spiritId)?.stage;
   const moeLayers = Math.max(0, formStages.indexOf(sourceStage) - formStages.indexOf(selected?.stage));
@@ -293,7 +297,8 @@ export function SpiritPicker({
   function commit(spirit) {
     setQuery(spirit.fullName);
     setOpen(false);
-    if (choosingForm && preserveFormConfig && family.some(entry => entry.id === spirit.id)) onFormSelect(spirit.id);
+    if (choosingForm && preserveFormConfig && family.some(entry => entry.id === spirit.id)
+      && canPreserveBattleFormConfig(sourceForm, spirit)) onFormSelect(spirit.id);
     else onSelect(spirit.id);
   }
 
@@ -404,13 +409,11 @@ export function SpiritPicker({
             {browsingFamily ? (
               <li className="spirit-picker__form-heading" role="presentation">
                 <span>同族形态</span>
-                {choosingForm ? <label className="spirit-picker__form-toggle" title="仅直系萌化可保留本场配置；其他关联分支始终载入目标预设。关闭时所有选择均载入目标预设，重置临时战斗条件。">
+                {choosingForm ? <label className="spirit-picker__form-toggle" title="攻防方开关分别记忆：刷新保留，新开页面重置。先选高阶再萌化可保留配置；直接选低阶后升阶、同阶换形态或选关联分支时载入目标预设。">
                   <span>萌化 · 配置保留</span>
                   <input type="checkbox" role="switch" aria-label={`${label}同族切换保留本场配置`}
                     checked={preserveFormConfig} onChange={event => {
-                      const enabled = event.target.checked;
-                      setFormConfigPreferences(current => ({ ...current, [familyKey]: enabled }));
-                      writeFormConfigPreference(side, familyKey, enabled);
+                      writeFormConfigPreference(side, event.target.checked);
                     }}
                     onKeyDown={event => { if (event.key === "Escape") { inputRef.current?.focus(); handleKeyDown(event); } }} />
                 </label> : null}
@@ -447,6 +450,7 @@ export function SpiritPicker({
                           : null,
                         browsingFamily && spirit.id === selected?.id ? "当前形态"
                           : browsingFamily && choosingForm && !family.some(entry => entry.id === spirit.id) ? "关联形态 · 载入预设"
+                          : browsingFamily && choosingForm && !canPreserveBattleFormConfig(sourceForm, spirit) ? "独立形态 · 载入预设"
                           : related || browsingFamily && !choosingForm ? (selected?.evolutionChainIds?.includes(spirit.id) ? "进化链" : "关联形态") : null,
                       ]
                         .filter(Boolean)

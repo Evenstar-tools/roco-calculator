@@ -103,6 +103,29 @@ test("当前形态无操作，不相关精灵拒绝，原预设载入仍清除�
   expect(reset.sides.attacker.spiritId).toBe(spirit("气球猫").id);
 });
 
+test("低阶配置载入高阶个人预设时使用高阶独立数据，不写回或继承低阶输入", () => {
+  const initialState = createProductInitialState(snapshot);
+  const low = configured("气球猫");
+  low.sides.attacker.nature = "timid";
+  low.sides.attacker.displayIvs.speed = 0;
+  const highPreset = structuredClone(configured("梦想三三").sides.attacker);
+  highPreset.natureId = "adamant";
+  highPreset.displayIvs.speed = 60;
+  const originalPreset = structuredClone(highPreset);
+
+  const result = selectSpirit(low, {
+    initialState, personalConfiguration: highPreset, side: "attacker", snapshot, spiritId: spirit("梦想三三").id,
+  });
+  expect(result.state.sides.attacker).toMatchObject({
+    spiritId: spirit("梦想三三").id,
+    nature: "adamant",
+    displayIvs: { speed: 60 },
+  });
+  expect(result.state.sides.attacker.battleForm).toBeUndefined();
+  expect(result.persistence.rememberSide).toBeNull();
+  expect(highPreset).toEqual(originalPreset);
+});
+
 test("形态期间改个体不自动记入个人预设，撤回完整恢复", () => {
   const before = configured("梦想三三");
   const history = createUndoHistory();
