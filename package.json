@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",
+    "aegis-web-sdk": "1.41.15",
     "fflate": "0.8.2",
     "react": "19.2.8",
     "react-dom": "19.2.8",

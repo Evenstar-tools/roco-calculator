@@ -1,3 +1,4 @@
+import { useFeatureMetrics } from "./analytics/use-feature-metrics.js";
 import { recordRefractionUsage } from "./domain/refraction.js";
 import { expireTransientGainSources, recordGainChanges } from "./domain/gain-provenance.js";
 import { recordSkillActivation } from "./domain/skill-gain-summary.js";
@@ -451,6 +452,14 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
     updateDirection,
     viewMode,
   });
+  useFeatureMetrics([
+    skillQueryOpen && "skills",
+    transmissionOpen && "transmission",
+    typeQueryOpen && "types",
+    rankingKind && (["speed", "durability"].includes(rankingKind) ? rankingKind : "rankings"),
+    overlays.team.open && "teams",
+    overlays.productAccessProps.open && "desktop",
+  ]);
   const {
     damageComparisonEnabled,
     durabilityOverviewEnabled,

@@ -1,8 +1,22 @@
 import React from "react";
+import { metrics } from "./analytics/metrics.js";
 import { createRoot } from "react-dom/client";
 import { CalculatorRouter } from "./CalculatorRouter.jsx";
 import { installInputSelection } from "./input-selection.js";
 import "./styles.css";
+
+void metrics.start();
+let lastMetricsActivity = 0;
+const noteActivity = () => {
+  const now = Date.now();
+  if (now - lastMetricsActivity < 1000) return;
+  lastMetricsActivity = now;
+  metrics.activity();
+};
+for (const type of ["pointerdown", "keydown", "scroll"]) window.addEventListener(type, noteActivity, { passive: true });
+if (import.meta.hot) import.meta.hot.dispose(() => {
+  for (const type of ["pointerdown", "keydown", "scroll"]) window.removeEventListener(type, noteActivity);
+});
 
 const removeInputSelection = installInputSelection(document);
 if (import.meta.hot) import.meta.hot.dispose(removeInputSelection);
