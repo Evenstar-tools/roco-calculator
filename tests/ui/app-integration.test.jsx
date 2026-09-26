@@ -580,7 +580,7 @@ test("承伤榜用户预设代入主页面恢复配招及手动威力，不更�
   await user.click(screen.getByRole("option", { name: /风力冲击/ }));
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "显示设置" }));
-  expect(screen.getByRole("checkbox", { name: "承伤对比" })).toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "显示全精灵承伤入口" })).toBeChecked();
   await user.click(screen.getByRole("button", { name: "完成" }));
   await user.click(screen.getByRole("button", { name: "查看全精灵承伤" }));
   await user.click(await screen.findByRole("button", { name: "筛选", exact: true }));
@@ -3595,8 +3595,8 @@ test("承伤对比默认开启、手动关闭后保留且不占撤回记录", as
   const undoLabel = screen.getByRole("button", { name: /撤回上一步/ }).getAttribute("aria-label");
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "显示设置" }));
-  expect(screen.getByRole("checkbox", { name: "承伤对比" })).toBeChecked();
-  await user.click(screen.getByRole("checkbox", { name: "承伤对比" }));
+  expect(screen.getByRole("checkbox", { name: "显示全精灵承伤入口" })).toBeChecked();
+  await user.click(screen.getByRole("checkbox", { name: "显示全精灵承伤入口" }));
   await user.click(screen.getByRole("button", { name: "完成" }));
   expect(screen.queryByRole("button", { name: "查看全精灵承伤" })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "承伤对比" })).not.toBeInTheDocument();
@@ -3607,7 +3607,7 @@ test("承伤对比默认开启、手动关闭后保留且不占撤回记录", as
   expect(screen.queryByRole("button", { name: "查看全精灵承伤" })).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "显示设置" }));
-  await user.click(screen.getByRole("checkbox", { name: "承伤对比" }));
+  await user.click(screen.getByRole("checkbox", { name: "显示全精灵承伤入口" }));
   await user.click(screen.getByRole("button", { name: "完成" }));
   expect(screen.getByRole("button", { name: "查看全精灵承伤" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "承伤对比" })).toBeInTheDocument();

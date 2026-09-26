@@ -310,7 +310,7 @@ test("starts with static power and the requested analysis settings on", async ({
     "aria-pressed",
     "false",
   );
-  for (const name of ["属性克制与打击面", "承伤对比"]) {
+  for (const name of ["属性克制与打击面", "显示全精灵承伤入口"]) {
     await expect(dialog.getByRole("checkbox", { name })).toBeChecked();
   }
   for (const name of ["显示面板耐久", "负面状态结算"]) {

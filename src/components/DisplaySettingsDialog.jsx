@@ -120,11 +120,11 @@ export function DisplaySettingsDialog({
         </label>
         <label className="display-settings-option">
           <span>
-            <strong>承伤对比</strong>
-            <small>在技能结果旁显示全精灵承伤对比入口</small>
+            <strong>显示全精灵承伤入口</strong>
+            <small>关闭后隐藏结果栏和手机底栏的承伤对比按钮，不影响伤害计算</small>
           </span>
           <input
-            aria-label="承伤对比"
+            aria-label="显示全精灵承伤入口"
             checked={damageComparisonEnabled}
             onChange={(event) => onDamageComparisonChange?.(event.target.checked)}
             type="checkbox"
