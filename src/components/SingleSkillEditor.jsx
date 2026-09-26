@@ -19,12 +19,6 @@ const CATEGORY_LABELS = {
   status: "变化",
 };
 
-const MANAGED_NEGATIVE_STATUS_INPUTS = new Set([
-  "enemyFreezeStacks",
-  "enemyPoisonStacks",
-  "poisonStacks",
-]);
-
 export function displayedSkillPower(skill, result) {
   if (Number.isFinite(Number(result?.staticPower))) {
     return Number(result.staticPower);
@@ -60,9 +54,6 @@ export function dynamicInputsForSkill(
   ];
   return inputs.filter(
     (input, index) =>
-      !MANAGED_NEGATIVE_STATUS_INPUTS.has(
-        input.contextKey ?? input.id ?? input.key,
-      ) &&
       inputs.findIndex((candidate) => candidate.id === input.id) === index,
   );
 }

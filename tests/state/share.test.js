@@ -118,6 +118,16 @@ function shareFixture() {
   };
 }
 
+test("龙噬触发次数可分享往返，旧印记默认未触发", async () => {
+  const state = shareFixture();
+  state.marks.attacker.positive = { id: "dragon-bite", stacks: 1, triggerCount: 3 };
+  expect((await decodeShareState(await encodeShareState(state))).marks.attacker.positive)
+    .toEqual({ id: "dragon-bite", stacks: 1, triggerCount: 3 });
+  delete state.marks.attacker.positive.triggerCount;
+  expect((await decodeShareState(await encodeShareState(state))).marks.attacker.positive)
+    .toEqual({ id: "dragon-bite", stacks: 1, triggerCount: 0 });
+});
+
 describe("versioned share state", () => {
   test("round trips negative status inputs and the opt-in settlement switch", async () => {
     const state = shareFixture();

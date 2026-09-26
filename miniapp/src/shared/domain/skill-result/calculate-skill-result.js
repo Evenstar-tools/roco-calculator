@@ -12,6 +12,7 @@ import {
 } from "../damage.js";
 import {
   normalizeMarkSlot,
+  dragonBiteAttackLevelBonus,
   resolveSourceMarkEffects,
   starfallStacksFromMarkSlot,
   targetNegativeMarkSettlement,
@@ -123,6 +124,7 @@ export function calculateSkillResult({
   }
 
   const usesLockedPower = finiteNumber(lockedPower) !== undefined;
+  const markAttackLevelBonus = dragonBiteAttackLevelBonus(sourceMarks);
   const sourceNegativeMark = normalizeMarkSlot(
     sourceMarks?.negative,
     "negative",
@@ -390,6 +392,7 @@ export function calculateSkillResult({
       skill: { ...skill, cost: skillCost },
       slotOverrides,
       traitHitCount,
+      markAttackLevelBonus,
     });
     return { ...result, skillCost };
   }
@@ -487,6 +490,7 @@ export function calculateSkillResult({
     const categoryResolution = categoryTraitResolutions[category];
     return (
       (attackLevelStage ?? 0) +
+      markAttackLevelBonus +
       (categoryResolution?.status === "exact"
         ? categoryResolution.attackLevelBonus
         : 0) +
@@ -758,6 +762,7 @@ export function calculateSkillResult({
     defenderContract.defenseLevelBonusByCategory[categoryKey] +
     attackerContract.targetDefenseLevelBonusByCategory[categoryKey];
   const hasStageInput =
+    markAttackLevelBonus !== 0 ||
     categoryDefenseLevelStageAdd !== 0 ||
     attackLevelStage !== undefined ||
     defenseLevelStage !== undefined ||
@@ -769,6 +774,7 @@ export function calculateSkillResult({
     contractDefenseLevelBonus !== 0;
   const totalAttackLevelStage =
     (attackLevelStage ?? 0) +
+    markAttackLevelBonus +
     traitResolution.attackLevelBonus +
     bloodlineAttackLevelBonus +
     contractAttackLevelBonus;

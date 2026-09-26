@@ -2,13 +2,29 @@ import mapping from "../../public/data/lineup-code-map.json";
 import { describe, expect, test } from "vitest";
 import snapshot from "../../data/snapshots/current.json";
 import fixture from "../fixtures/qiandao-lineup.json";
-import { decodeLineupCode, encodeLineupCode, exportLineupCode as exportCode, importLineupCode as importCode } from "../../src/state/lineup-code.js";
+import { defaultLineupMagicId, decodeLineupCode, encodeLineupCode, exportLineupCode as exportCode, importLineupCode as importCode } from "../../src/state/lineup-code.js";
 import { teamPresetsRepository } from "../../src/state/team-presets.js";
 
 const importLineupCode = (input, data) => importCode(input, data, mapping);
 const exportLineupCode = (team, data) => exportCode(team, data, mapping);
 
 describe("game / Qiandao lineup exchange", () => {
+  test("普通队伍默认愿力强化，首领形态与首领血脉均默认进化之力", () => {
+    const team = importLineupCode(fixture.code, snapshot);
+    delete team.lineup;
+    team.members[0].bloodlineType = "electric";
+    expect(decodeLineupCode(exportLineupCode(team, snapshot).code).magicId).toBe(104002);
+    team.members[0].bloodlineType = "boss";
+    expect(decodeLineupCode(exportLineupCode(team, snapshot).code).magicId).toBe(104007);
+    const boss = snapshot.spirits.find((spirit) => spirit.stage === "首领");
+    // Boss form qualifies even if its bloodline was explicitly changed to a normal element.
+    expect(defaultLineupMagicId({ members: [null, { spiritId: boss.id, bloodlineType: "fire" }] }, snapshot)).toBe(104007);
+    expect(defaultLineupMagicId({ members: [null] }, snapshot)).toBe(104002);
+    team.lineup = { mode: 5, magicId: 104001, magicSelection: "manual" };
+    expect(decodeLineupCode(exportLineupCode(team, snapshot).code).magicId).toBe(104001);
+    team.lineup = { mode: 5, magicId: 104002, magicSelection: "auto" };
+    expect(decodeLineupCode(exportLineupCode(team, snapshot).code).magicId).toBe(104007);
+  });
   test("matches all six screenshot members and 24 skills, then exports the exact real code", () => {
     const team = importLineupCode(fixture.code, snapshot);
     expect(team.members.map(({ spiritId, skills }) => ({ spiritId, skills: skills.four }))).toEqual(fixture.members);

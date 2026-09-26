@@ -7,7 +7,7 @@ const POSITIVE_MARKS = [
   {
     id: "dragon-bite",
     name: "龙噬",
-    summary: "使用 3 能耗技能后双攻 +40%；当前由能力配置结算",
+    summary: "使用 3 能耗技能后触发；每次双攻 +40%",
   },
   {
     id: "momentum",
@@ -150,7 +150,18 @@ export function normalizeMarkSlot(value, polarity) {
         ? 1
         : 0
     : rawStacks;
-  return { id, stacks };
+  return {
+    id,
+    stacks,
+    ...(id === "dragon-bite" ? {
+      triggerCount: Math.min(99, Math.max(0, Math.floor(Number(value?.triggerCount) || 0))),
+    } : {}),
+  };
+}
+
+export function dragonBiteAttackLevelBonus(marks) {
+  const mark = normalizeMarkSlot(marks?.positive, "positive");
+  return mark.id === "dragon-bite" && mark.stacks > 0 ? mark.triggerCount * 4 : 0;
 }
 
 export function starfallStacksFromMarkSlot(value) {
@@ -266,6 +277,14 @@ export function resolveSourceMarkEffects({
           }),
         );
       }
+    } else if (positive.id === "dragon-bite") {
+      effects.settlements.push(settlement({
+        mark,
+        side,
+        stacks: positive.stacks,
+        status: positive.triggerCount > 0 ? "applied" : "inactive",
+        text: `龙噬触发 ${positive.triggerCount} 次 · 双攻 +${positive.triggerCount * 40}%`,
+      }));
     } else if (positive.id === "momentum" && attacking) {
       effects.powerPercentAdd += positive.stacks * 0.3;
       effects.settlements.push(

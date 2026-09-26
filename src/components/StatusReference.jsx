@@ -20,9 +20,9 @@ const markScope = {
   tailwind: ["翼", "条件触发"],
   charge: ["电", "条件触发"],
   reassembly: ["幻", "条件触发", "攻击技能触发；1～2 层为 100% 幻系伤害，3 层及以上为 300%。"],
-  "dragon-bite": ["龙", "手动配置", "请在能力配置中填写，不会自动叠加能力等级。"],
+  "dragon-bite": ["龙", "触发计数", "开启印记后填写已触发次数，每次自动增加双攻40%；与手动能力等级叠加，总等级沿用99层上限。请勿重复填写同一份增益。"],
   poison: ["毒"], thorn: ["地"], "spirit-drop": ["幽"],
-  wet: ["水"], photosynthesis: ["草"], sprout: ["草"], undertow: ["水"],
+  wet: ["水"], photosynthesis: ["草"], sprout: ["萌"], undertow: ["水"],
 };
 
 export function StatusHelpButton({ label, onClick }) {

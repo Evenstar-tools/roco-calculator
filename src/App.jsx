@@ -48,6 +48,7 @@ import {
 } from "./domain/choice-skill-sequence.js";
 import { getBloodlineMagicOption } from "./domain/bloodline-magic.js";
 import { advancePressureValveContext, resolveSkillStatusActivation } from "./domain/skill-status-effects.js";
+import { linkedNegativeStatusContext, negativeStatusInputUpdate } from "./domain/negative-status-context.js";
 import {
   hasNegativeStatusSkillApplication,
   hasNegativeStatusTraitApplication,
@@ -390,18 +391,26 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
   }
 
   function linkedSkillContext(side, skill, context) {
-    const starfallLinked = skill?.name === "多维击打"
+    let starfallLinked = skill?.name === "多维击打"
       ? linkedEnemyStarfallContext(
           skill,
           context,
           targetStarfallStacksForSide(side),
         )
       : context ?? {};
+    starfallLinked = linkedNegativeStatusContext(state, side, starfallLinked);
     return linkedChargeBurstSourceContext(
       skill,
       starfallLinked,
       chargeStacksForSide(side),
     );
+  }
+
+  function updateLinkedNegativeStatus(side, skill, key, value) {
+    const action = negativeStatusInputUpdate(stateRef.current, side, skill, key, value);
+    if (!action) return false;
+    dispatch(action);
+    return true;
   }
 
   function linkedSkillSlotView(side, entry) {
@@ -852,8 +861,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
     let latest = stateRef.current;
     const entry = latest.sides[side].skills.four[index];
     const skill = getSkill(snapshot, entry);
-    const context =
-      entry && typeof entry === "object" ? entry.context ?? {} : {};
+    const context = linkedNegativeStatusContext(latest, side,
+      entry && typeof entry === "object" ? entry.context ?? {} : {});
     const activationContextSignature = JSON.stringify(context);
     const selfDirection = side === "attacker" ? "forward" : "reverse";
     const oppositeDirection =
@@ -1330,7 +1339,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
     }
 
     const sequence = buildChoiceSkillSequence({
-      context,
+      // Shared status is a live projection, not a replacement for saved per-skill conditions.
+      context: entry && typeof entry === "object" ? entry.context ?? {} : {},
       skill,
       sproutStacks,
       traitName: detectedChoiceTrait,
@@ -1490,6 +1500,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
       }
       onSkillSelect={selectSingleSkill}
       onTraitContextChange={(key, value) => {
+        if (updateLinkedNegativeStatus(activeAttackSideKey, selectedSingleSkill, key, value)) return;
         if (
           selectedSingleSkill?.name === "多维击打" &&
           isEnemyStarfallInput(selectedSingleSkill, key)
@@ -1613,6 +1624,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
           snapshot,
           stateRef.current.sides[side].skills.four[index],
         );
+        if (updateLinkedNegativeStatus(side, skill, key, value)) return;
         if (skill?.name === "多维击打" && isEnemyStarfallInput(skill, key)) {
           updateTargetStarfallStacks(side, value);
           return;

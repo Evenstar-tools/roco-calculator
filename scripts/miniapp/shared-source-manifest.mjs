@@ -39,6 +39,7 @@ const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
     "src/domain/moon-memory-trait-options.js",
     "src/domain/natures.js",
     "src/domain/negative-status-rules.js",
+    "src/domain/negative-status-context.js",
     "src/domain/negative-status.js",
     "src/domain/power-override.js",
     "src/domain/refraction.js",

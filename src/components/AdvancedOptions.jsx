@@ -433,6 +433,12 @@ function MarkSlot({
 }) {
   const selected = markDefinition(value?.id);
   const stacks = selected ? Math.max(0, Number(value?.stacks) || 0) : 0;
+  const dragonBite = selected?.id === "dragon-bite";
+  const triggerCount = Math.min(99, Math.max(0, Math.floor(Number(value?.triggerCount) || 0)));
+  const changeTriggers = (count) => onChange({
+    ...value,
+    triggerCount: Math.min(99, Math.max(0, Math.floor(numericValue(count)))),
+  });
   const stackLabel = selected
     ? `${sideLabel}${selected.name}层数`
     : `${sideLabel}${label}层数`;
@@ -468,6 +474,7 @@ function MarkSlot({
           min="0"
           onChange={(event) =>
             onChange({
+              ...value,
               id: value?.id ?? null,
               stacks: Math.min(
                 99,
@@ -480,6 +487,21 @@ function MarkSlot({
           value={stacks}
         />
       </label>
+      {dragonBite ? (
+        <div className="mark-slot__triggers">
+          <label htmlFor={`${sideLabel}-dragon-bite-triggers`}>已触发次数</label>
+          <div className="mark-trigger-stepper">
+            <button type="button" aria-label={`${sideLabel}减少龙噬触发次数`}
+              disabled={stacks === 0 || triggerCount === 0} onClick={() => changeTriggers(triggerCount - 1)}>−</button>
+            <input id={`${sideLabel}-dragon-bite-triggers`} aria-label={`${sideLabel}龙噬触发次数`}
+              type="number" min="0" max="99" step="1" value={triggerCount} disabled={stacks === 0}
+              onChange={(event) => changeTriggers(event.target.value)} />
+            <button type="button" aria-label={`${sideLabel}增加龙噬触发次数`}
+              disabled={stacks === 0 || triggerCount === 99} onClick={() => changeTriggers(triggerCount + 1)}>+</button>
+          </div>
+          <span>双攻 +{stacks > 0 ? triggerCount * 40 : 0}%</span>
+        </div>
+      ) : null}
       <small>{selected?.summary ?? "未设置"}</small>
     </div>
   );

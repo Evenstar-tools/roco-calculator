@@ -1565,6 +1565,111 @@ test("shows defense power levels as the original positive multiplier", async () 
   );
 });
 
+test.each(["single", "four"])("碎冰冰%s模式支持独立冻结输入及开启结算后的双向关联", async (mode) => {
+  localStorage.removeItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY);
+  const user = userEvent.setup();
+  const skill = { id: "ice-break", name: "碎冰冰", basePower: 25, category: "magical", type: "冰", cost: 3,
+    description: "造成魔伤，敌方每有1层冻结，本次技能威力+20。" };
+  const fixture = { ...snapshot, skills: [...snapshot.skills, skill], learnsets: snapshot.learnsets.map((entry) =>
+    ({ ...entry, skillIds: [...entry.skillIds, skill.id] })) };
+  render(<App initialSnapshot={fixture} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  if (mode === "single") await user.click(screen.getByRole("tab", { name: "单技能" }));
+  const picker = screen.getByRole("combobox", { name: mode === "single" ? "选择技能" : "攻击方技能1", exact: true });
+  await user.clear(picker);
+  await user.type(picker, "碎冰冰");
+  await user.click(screen.getByRole("option", { name: /碎冰冰/ }));
+  const freeze = () => screen.getByRole("spinbutton", { name: mode === "single" ? "敌方冻结层数" : "攻击方技能1敌方冻结层数", exact: true });
+  expect(freeze()).toHaveValue(0);
+  fireEvent.change(freeze(), { target: { value: "3" } });
+  expect(freeze()).toHaveValue(3);
+  const unlinkedDamage = screen.getByTestId("primary-damage").textContent;
+  async function toggleSettlement() {
+    await user.click(screen.getByRole("button", { name: "打开菜单" }));
+    await user.click(screen.getByRole("button", { name: "显示设置" }));
+    await user.click(screen.getByRole("checkbox", { name: "负面状态结算" }));
+    await user.click(screen.getByRole("button", { name: "完成" }));
+  }
+  await toggleSettlement();
+  expect(freeze()).toHaveValue(0);
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const sharedFreeze = () => screen.getByRole("spinbutton", { name: "防御方冻结层数", exact: true });
+  fireEvent.change(freeze(), { target: { value: "2" } });
+  expect(sharedFreeze()).toHaveValue(2);
+  fireEvent.change(sharedFreeze(), { target: { value: "4" } });
+  expect(freeze()).toHaveValue(4);
+  fireEvent.change(sharedFreeze(), { target: { value: "50" } });
+  expect(freeze()).toHaveValue(50);
+  expect(freeze()).toHaveAttribute("max", "99");
+  expect(screen.getByRole("spinbutton", { name: "进攻方冻结层数", exact: true })).toHaveValue(0);
+  if (mode === "four") {
+    fireEvent.change(screen.getByRole("spinbutton", { name: "防御方技能2敌方冻结层数" }), { target: { value: "2" } });
+    expect(screen.getByRole("spinbutton", { name: "进攻方冻结层数", exact: true })).toHaveValue(2);
+    expect(sharedFreeze()).toHaveValue(50);
+  }
+  await toggleSettlement();
+  expect(freeze()).toHaveValue(3);
+  expect(screen.getByTestId("primary-damage").textContent).toBe(unlinkedDamage);
+});
+
+test.each([
+  ["鸩毒", "敌方中毒层数", "magical"],
+  ["以毒攻毒", "中毒层数", "status"],
+  ["腐化", "中毒层数", "status"],
+  ["不可接触", "中毒层数", "defense"],
+  ["极寒领域", "敌方已有冻结", "magical"],
+  ["过敏原", "敌方有中毒", "magical"],
+])("%s 技能条件与对应全局异常双向同步", async (name, label, category) => {
+  localStorage.removeItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY);
+  const user = userEvent.setup();
+  const isBoolean = ["极寒领域", "过敏原"].includes(name);
+  const status = name === "极寒领域" ? "冻结" : "中毒";
+  const skill = { id: "linked-status", name, category, basePower: category === "magical" ? 60 : 0, type: "毒", cost: 3,
+    description: name === "不可接触" ? "减伤50%，敌方每有1层中毒效果，本技能减伤+10%，应对攻击。" : `${name}状态测试` };
+  const fixture = { ...snapshot, skills: [...snapshot.skills, skill], learnsets: snapshot.learnsets.map((entry) =>
+    ({ ...entry, skillIds: [...entry.skillIds, skill.id] })) };
+  render(<App initialSnapshot={fixture} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1", exact: true });
+  await user.clear(picker);
+  await user.type(picker, name);
+  await user.click(screen.getByRole("option", { name: new RegExp(name) }));
+  const control = () => screen.getByRole(isBoolean ? "checkbox" : "spinbutton", { name: `攻击方技能1${label}`, exact: true });
+  if (!isBoolean) fireEvent.change(control(), { target: { value: "7" } });
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "显示设置" }));
+  await user.click(screen.getByRole("checkbox", { name: "负面状态结算" }));
+  await user.click(screen.getByRole("button", { name: "完成" }));
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  const shared = () => screen.getByRole("spinbutton", { name: `防御方${status}层数`, exact: true });
+  fireEvent.change(shared(), { target: { value: "3" } });
+  if (isBoolean) {
+    expect(control()).toBeChecked();
+    await user.click(control());
+    expect(shared()).toHaveValue(0);
+    await user.click(control());
+    expect(shared()).toHaveValue(1);
+  } else {
+    expect(control()).toHaveValue(3);
+    fireEvent.change(control(), { target: { value: "4" } });
+    expect(shared()).toHaveValue(4);
+    if (name === "不可接触") {
+      await user.click(within(screen.getByRole("group", { name: /^攻击方技能1，/ })).getByText(skill.description));
+      // The defender's attack receives the reduction after activating the attacker's defense.
+      await user.click(screen.getByRole("group", { name: /^防御方技能1/ }));
+      expect(screen.getByRole("spinbutton", { name: "防御技能减伤", exact: true })).toHaveValue(90);
+    }
+  }
+  await user.click(screen.getByRole("button", { name: "打开菜单" }));
+  await user.click(screen.getByRole("button", { name: "显示设置" }));
+  await user.click(screen.getByRole("checkbox", { name: "负面状态结算" }));
+  await user.click(screen.getByRole("button", { name: "完成" }));
+  if (isBoolean) expect(control()).not.toBeChecked();
+  else expect(control()).toHaveValue(7);
+});
+
 test("links multi-dimensional strike hits with the target starfall mark", async () => {
   const user = userEvent.setup();
   const linkedSnapshot = {

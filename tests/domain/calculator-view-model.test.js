@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 import {
   buildCalculatorViewModel,
   clampStage,
@@ -611,7 +612,39 @@ describe("buildCalculatorViewModel", () => {
       snapshot: fixture,
       state: disabled,
     });
-    expect(disabledView.result.selectedResult.effectivePower).toBe(60);
+    expect(disabledView.result.selectedResult.effectivePower).toBe(240);
+    const freezeInput = getSkillEffectInputs(fixture.skills.find((skill) => skill.id === "ice-break"))[0];
+    enabled.sides.attacker.skills.four[0].context[freezeInput.id] = 50;
+    enabled.sides.attacker.skills.single.context[freezeInput.id] = 50;
+    // Shared freeze wins over both the old alias and the editor's canonical key.
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: enabled })
+      .result.selectedResult.effectivePower).toBe(100);
+    disabled.sides.attacker.skills.four[0].context[freezeInput.id] = 50;
+    disabled.sides.attacker.skills.single.context[freezeInput.id] = 50;
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: disabled })
+      .result.selectedResult.effectivePower).toBe(1060);
+  });
+
+  test.each([
+    ["鸩毒", "enemyPoisonStacks", "poison", 80, 150],
+    ["极寒领域", "enemyFrozen", "freeze", 120, 60],
+    ["过敏原", "enemyPoisoned", "poison", 60, 60],
+  ])("%s 按结算开关关联状态并覆盖旧 canonical 条件", (name, key, status, linkedPower, manualPower) => {
+    const skill = { id: "status-linked", name, basePower: 60, category: "magical", type: "普通" };
+    const input = getSkillEffectInputs(skill).find((control) => control.contextKey === key);
+    const manual = input.type === "boolean" ? false : 9;
+    const fixture = { ...snapshot, skills: [...snapshot.skills, skill] };
+    const value = state();
+    value.negativeStatuses = { attacker: {}, defender: { [status]: 2 } };
+    value.sides.attacker.skills.four = [{ skillId: skill.id, context: { [key]: manual, [input.id]: manual } }];
+    value.sides.attacker.skills.single = value.sides.attacker.skills.four[0];
+    value.calculationOptions = { includeNegativeStatusSettlement: true };
+    const calculate = () => buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: value }).result.selectedResult;
+    expect(calculate().effectivePower).toBe(linkedPower);
+    if (name === "过敏原") expect(calculate().hitCount).toBe(3);
+    value.calculationOptions.includeNegativeStatusSettlement = false;
+    expect(calculate().effectivePower).toBe(manualPower);
+    if (name === "过敏原") expect(calculate().hitCount).toBe(1);
   });
 
   test("returns an unresolved model when both spirits are not selected", () => {

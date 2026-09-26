@@ -1,6 +1,8 @@
 import { describe, expect, test } from "vitest";
 import {
   createMarksState,
+  dragonBiteAttackLevelBonus,
+  normalizeMarkSlot,
   MARK_DEFINITIONS,
   normalizeMarksState,
   resolveSkillMarkApplications,
@@ -29,14 +31,22 @@ function effects(id, stacks, overrides = {}) {
 }
 
 describe("mark rules", () => {
-  test("龙噬记录3能耗技能触发双攻+40%，并明确保持手动能力结算", () => {
+  test("龙噬按独立触发次数增加双攻，旧配置不自动产生增益", () => {
     expect(
       MARK_DEFINITIONS.positive.find((mark) => mark.id === "dragon-bite"),
     ).toEqual({
       id: "dragon-bite",
       name: "龙噬",
-      summary: "使用 3 能耗技能后双攻 +40%；当前由能力配置结算",
+      summary: "使用 3 能耗技能后触发；每次双攻 +40%",
     });
+    const bonus = (stacks, triggerCount) => dragonBiteAttackLevelBonus({ positive: { id: "dragon-bite", stacks, triggerCount } });
+    expect(bonus(1)).toBe(0);
+    expect(bonus(1, 2)).toBe(8);
+    expect(bonus(3, 2)).toBe(8);
+    expect(bonus(0, 2)).toBe(0);
+    expect(bonus(1, -2)).toBe(0);
+    expect(bonus(1, 999)).toBe(396);
+    expect(normalizeMarkSlot({ id: "wet", stacks: 1, triggerCount: 4 }, "positive")).toEqual({ id: "wet", stacks: 1 });
   });
 
   test.each([

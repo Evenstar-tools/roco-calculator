@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { getNature, STAT_LABELS } from "../domain/natures.js";
 import { inspectLineupIvs, recommendLineupIvs } from "../state/lineup-ivs.js";
 import { TEAM_BLOODLINE_OPTIONS } from "../state/team-presets.js";
-import { exportLineupCode, importLineupCode, LINEUP_MODES } from "../state/lineup-code.js";
+import { defaultLineupMagicId, usesAutomaticLineupMagic, exportLineupCode, importLineupCode, LINEUP_MODES } from "../state/lineup-code.js";
 import { decodeLineupImage } from "../state/lineup-image.js";
 import "../styles/team-exchange.css";
 
@@ -33,7 +33,7 @@ export function TeamExchange(props) {
     {failed ? <button type="button" onClick={() => { setFailed(false); setRetry(retry + 1); }}>重试</button> : null}
     <button type="button" onClick={props.onCancel}>返回队伍</button>
   </section>;
-  return <TeamExchangeForm {...props} mapping={mapping} />;
+  return <TeamExchangeForm key={`${props.mode}:${props.team?.id ?? ""}`} {...props} mapping={mapping} />;
 }
 
 function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLineup, mapping, presets }) {
@@ -54,7 +54,9 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
   const [loadingPresets, setLoadingPresets] = useState(false);
   const parseRequest = useRef(0);
   useEffect(() => () => { parseRequest.current++; imageRequest.current++; }, []);
-  const [magicId, setMagicId] = useState(team?.lineup?.magicId ?? "");
+  const [magicOverride, setMagicOverride] = useState(undefined);
+  const automaticMagic = magicOverride === undefined && usesAutomaticLineupMagic(team);
+  const magicId = magicOverride ?? (automaticMagic ? defaultLineupMagicId(team, snapshot) : team?.lineup?.magicId ?? "");
   const [formation, setFormation] = useState(team?.lineup ? team.lineup.mode ?? "" : 5);
   const isImport = mode === "import";
   useEffect(() => {
@@ -63,7 +65,7 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
       exportTextRef.current?.select();
     }
   }, [manualCopy]);
-  const options = { magicId: magicId === "" ? null : Number(magicId), mode: formation === "" ? null : Number(formation) };
+  const options = { magicId: magicId === "" ? null : Number(magicId), magicSelection: automaticMagic ? "auto" : "manual", mode: formation === "" ? null : Number(formation) };
   let exported = null;
   let exportError = "";
   if (!isImport && team) {
@@ -196,7 +198,7 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
       </> : <>
         <p className="team-exchange__note">{team?.name} · 可粘贴到游戏或千岛的阵容导入入口</p>
         <div className="team-exchange__options">
-          <label>共鸣魔法<select value={magicId} onChange={(event) => { setMagicId(event.target.value); setMessage(""); setError(""); setManualCopy(null); }}>
+          <label>共鸣魔法<select value={magicId} onChange={(event) => { setMagicOverride(event.target.value); setMessage(""); setError(""); setManualCopy(null); }}>
             <option value="">无共鸣魔法</option>
             {magicId && !mapping.magic[magicId] ? <option value={magicId}>魔法 {magicId}</option> : null}
             {Object.entries(mapping.magic).filter(([id]) => Number(id) <= 104010 || String(magicId) === id).map(([id, label]) => <option key={id} value={id}>{label}{Number(id) > 104010 ? "（原阵容）" : ""}</option>)}

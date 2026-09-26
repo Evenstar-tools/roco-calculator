@@ -1,4 +1,5 @@
 import { calculateDamage } from "../damage.js";
+import { dragonBiteAttackLevelBonus } from "../marks.js";
 import { resolveTraitMultipliers } from "../traits.js";
 import {
   abilityAdjustedStat,
@@ -13,6 +14,7 @@ export function calculateDirectTraitDamageResult({
   direction,
   level,
   rule,
+  sourceMarks,
 }) {
   if (!rule) return null;
   const skill = {
@@ -54,7 +56,7 @@ export function calculateDirectTraitDamageResult({
     finiteNumber(directionOverrides.defenseLevelStage, direction.defenseLevelStage) ??
     0;
   const totalAttackLevelStage =
-    attackLevelStage + traitResolution.attackLevelBonus;
+    attackLevelStage + traitResolution.attackLevelBonus + dragonBiteAttackLevelBonus(sourceMarks);
   const totalDefenseLevelStage =
     defenseLevelStage + traitResolution.defenseLevelBonus;
   const attackDefenseLevelMultiplier = abilityLevelMultiplier(

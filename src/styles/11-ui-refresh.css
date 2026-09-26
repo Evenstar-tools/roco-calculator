@@ -869,6 +869,41 @@ body {
   background: var(--surface-soft);
 }
 
+.mark-slot__triggers {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.mark-trigger-stepper {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.mark-trigger-stepper button {
+  width: 28px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--accent);
+}
+
+.mark-trigger-stepper button:disabled {
+  opacity: .45;
+}
+
+.mark-trigger-stepper input {
+  width: 48px;
+  text-align: center;
+}
+
 .mark-slot > small {
   overflow: hidden;
   color: var(--text-muted);

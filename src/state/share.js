@@ -448,7 +448,9 @@ function assertMarks(marks) {
     }
     for (const polarity of ["positive", "negative"]) {
       const slot = marks[side][polarity];
-      if (!hasExactKeys(slot, MARK_SLOT_KEYS)) {
+      const slotKeys = slot?.id === "dragon-bite" && Object.hasOwn(slot, "triggerCount")
+        ? [...MARK_SLOT_KEYS, "triggerCount"] : MARK_SLOT_KEYS;
+      if (!hasExactKeys(slot, slotKeys)) {
         throw new TypeError(`marks.${side}.${polarity} 结构无效`);
       }
       const allowed = new Set(
@@ -456,6 +458,10 @@ function assertMarks(marks) {
       );
       if (slot.id !== null && !allowed.has(slot.id)) {
         throw new TypeError(`marks.${side}.${polarity}.id 无效`);
+      }
+      if (Object.hasOwn(slot, "triggerCount") &&
+        (!Number.isInteger(slot.triggerCount) || slot.triggerCount < 0 || slot.triggerCount > 99)) {
+        throw new TypeError(`marks.${side}.${polarity}.triggerCount 无效`);
       }
       if (
         !Number.isInteger(slot.stacks) ||

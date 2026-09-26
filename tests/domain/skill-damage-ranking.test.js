@@ -156,7 +156,7 @@ describe("技能承伤对比", () => {
     }
   });
   test("冻结和星陨确实进入相关技能的直接伤害，而非仅显示层数", async () => {
-    for (const [name, mark] of [["碎冰冰", false], ["多维击打", true]]) {
+    for (const [name, mark] of [["碎冰冰", false], ["极寒领域", false], ["多维击打", true]]) {
       const data = { ...snapshot, skills: [{ id: "hit", name, type: "冰", category: "magical", basePower: 60 }] };
       const state = createInitialState(data);
       state.negativeStatuses.defender.freeze = 4;

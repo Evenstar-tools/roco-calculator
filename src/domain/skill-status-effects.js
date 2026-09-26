@@ -319,6 +319,9 @@ const STATUS_EFFECTS = Object.freeze({
       };
     },
   },
+  不可接触: {
+    inputs: [numberInput("poisonStacks", "中毒层数", 0, 99, 0)],
+  },
   腐化: {
     inputs: [numberInput("poisonStacks", "中毒层数", 0, 99, 0)],
     resolve(context) {
@@ -713,13 +716,15 @@ export function getSkillStatusEffectInputs(skill) {
   });
 }
 
-export function getDefenseSkillReductionPercent(skill) {
+export function getDefenseSkillReductionPercent(skill, context = {}) {
   if (skill?.category !== "defense") return null;
   const match = String(skill.description ?? "").match(
     /减伤\s*(\d+(?:\.\d+)?)\s*[%％]/,
   );
   if (!match) return null;
-  return Math.min(100, Math.max(0, Number(match[1])));
+  const projected = projectTriggerContext(context, getSkillStatusEffectInputs(skill));
+  const poisonBonus = skill.name === "不可接触" ? integerInput(projected.poisonStacks, 0, 99) * 10 : 0;
+  return Math.min(100, Math.max(0, Number(match[1]) + poisonBonus));
 }
 
 export function resolveSkillStatusActivation(skill, context = {}) {
@@ -739,7 +744,7 @@ export function resolveSkillStatusActivation(skill, context = {}) {
     };
   }
   const effect = getSkillStatusEffect(skill);
-  const defenseReductionPercent = getDefenseSkillReductionPercent(skill);
+  const defenseReductionPercent = getDefenseSkillReductionPercent(skill, context);
   const markApplications = resolveSkillMarkApplications(skill);
   if (
     !effect &&

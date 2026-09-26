@@ -124,7 +124,21 @@ function externalId(table, localId, original, label, preferred) {
 
 function skillId(value) { return typeof value === "string" ? value : value?.skillId ?? value?.id ?? null; }
 
-export function exportLineupCode(team, snapshot, mapping, options = team.lineup ?? { mode: 5 }) {
+export function usesAutomaticLineupMagic(team) {
+  return !team?.lineup || team.lineup.magicSelection === "auto" || !Object.hasOwn(team.lineup, "magicId");
+}
+
+export function defaultLineupMagicId(team, snapshot) {
+  const spirits = new Map(snapshot.spirits.map((spirit) => [spirit.id, spirit]));
+  const hasBoss = (team?.members ?? []).some((member) => member &&
+    (member.bloodlineType === "boss" || spirits.get(member.spiritId)?.stage === "首领"));
+  return hasBoss ? 104007 : 104002;
+}
+
+export function exportLineupCode(team, snapshot, mapping, options = {
+  ...(team.lineup ?? { mode: 5 }),
+  magicId: usesAutomaticLineupMagic(team) ? defaultLineupMagicId(team, snapshot) : team.lineup.magicId,
+}) {
   if (!team.members.some(Boolean)) throw new Error("请先添加队伍成员");
   const spirits = new Map(snapshot.spirits.map((entry) => [entry.id, entry]));
   const skills = new Map(snapshot.skills.map((entry) => [entry.id, entry]));

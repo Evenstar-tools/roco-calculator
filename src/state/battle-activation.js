@@ -186,6 +186,9 @@ function applyMark(state, side, application) {
   state.marks[side][application.polarity] = {
     id: application.id,
     stacks: Math.min(99, stacks),
+    ...(application.id === "dragon-bite" ? {
+      triggerCount: current?.id === application.id ? current.triggerCount ?? 0 : 0,
+    } : {}),
   };
 }
 

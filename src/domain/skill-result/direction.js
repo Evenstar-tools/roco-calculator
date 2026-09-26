@@ -287,6 +287,7 @@ export function calculateDirection({
           direction,
           level,
           rule: findDirectTraitDamageRule(attacker.traits),
+          sourceMarks,
         })
       : null;
   const bloodlineMagicHealing = resolveBloodlineMagicHealing({

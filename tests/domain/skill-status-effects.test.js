@@ -8,6 +8,11 @@ import {
 const skill = (name, extra = {}) => ({ name, ...extra });
 
 describe("skill status effects", () => {
+  test.each([[0, 50], [3, 80], [5, 100], [99, 100]])("不可接触读取 %s 层中毒增加减伤", (poisonStacks, reduction) => {
+    expect(resolveSkillStatusActivation(skill("不可接触", {
+      category: "defense", description: "减伤50%，敌方每有1层中毒效果，本技能减伤+10%，应对攻击。",
+    }), { poisonStacks })).toMatchObject({ operations: { defenseReductionPercent: reduction } });
+  });
   test("热身默认让下次攻击翻倍，应对防御成功改为四倍且不受萌芽叠加", () => {
     const warmUp = skill("热身", { category: "status", basePower: 0 });
     expect(getSkillStatusEffectInputs(warmUp)).toEqual([

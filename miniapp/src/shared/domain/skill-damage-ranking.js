@@ -138,7 +138,10 @@ export function buildDamageComparisonInput({ snapshot, state, spirit, direction 
   });
   const weather = Object.fromEntries(Object.entries(context).filter(([key]) => key.startsWith("weather")));
   // 共享核心直接读取技能条件；仅复制状态对象不会让冻结联动生效。
-  if (inheritTargetStatuses) context.enemyFreezeStacks = statuses.freeze;
+  if (inheritTargetStatuses) {
+    context.enemyFreezeStacks = statuses.freeze;
+    context.enemyFrozen = statuses.freeze > 0;
+  }
   const panelStats = calculateAllPanelStats({ raceStats: spirit.raceStats, displayIvs: template.displayIvs, natureMultipliers: getNatureMultipliers(template.natureId) });
   return {
     ...state,

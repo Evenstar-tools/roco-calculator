@@ -6,6 +6,44 @@ import fixture from "../fixtures/qiandao-lineup.json";
 import { TeamExchange } from "../../src/components/TeamExchange.jsx";
 import { importLineupCode, decodeLineupCode, encodeLineupCode } from "../../src/state/lineup-code.js";
 
+test("自动共鸣随首领血脉增删切换，手动选择优先且切换队伍不串值", () => {
+  const team = importLineupCode(fixture.code, snapshot, mapping);
+  delete team.lineup;
+  team.id = "auto-team";
+  team.members[0].bloodlineType = "electric";
+  const props = { mapping, mode: "export", team, snapshot };
+  const { rerender } = render(<TeamExchange {...props} />);
+  const magic = () => screen.getByLabelText("共鸣魔法");
+  const codeMagic = () => decodeLineupCode(screen.getByLabelText("阵容代码").value).magicId;
+  expect(magic()).toHaveValue("104002");
+  expect(codeMagic()).toBe(104002);
+  const bossTeam = { ...team, members: team.members.map((member, index) => index === 0 ? { ...member, bloodlineType: "boss" } : member) };
+  rerender(<TeamExchange {...props} team={bossTeam} />);
+  expect(magic()).toHaveValue("104007");
+  expect(codeMagic()).toBe(104007);
+  rerender(<TeamExchange {...props} />);
+  expect(magic()).toHaveValue("104002");
+  fireEvent.change(magic(), { target: { value: "104001" } });
+  rerender(<TeamExchange {...props} team={bossTeam} />);
+  expect(magic()).toHaveValue("104001");
+  expect(codeMagic()).toBe(104001);
+  rerender(<TeamExchange {...props} team={{ ...bossTeam, id: "other-team" }} />);
+  expect(magic()).toHaveValue("104007");
+});
+
+test("已保存自动选择会重新计算，手动无共鸣和原导入值保持不变", () => {
+  const team = importLineupCode(fixture.code, snapshot, mapping);
+  team.id = "auto";
+  team.lineup = { ...team.lineup, magicId: 104002, magicSelection: "auto" };
+  const props = { mapping, mode: "export", team, snapshot };
+  const { rerender } = render(<TeamExchange {...props} />);
+  expect(screen.getByLabelText("共鸣魔法")).toHaveValue("104007");
+  rerender(<TeamExchange {...props} team={{ ...team, id: "manual", lineup: { magicId: null, magicSelection: "manual", mode: 5 } }} />);
+  expect(screen.getByLabelText("共鸣魔法")).toHaveValue("");
+  rerender(<TeamExchange {...props} team={{ ...team, id: "imported", lineup: { magicId: 104002, mode: 5 } }} />);
+  expect(screen.getByLabelText("共鸣魔法")).toHaveValue("104002");
+});
+
 test("new team defaults to one PVP option and actually copies a lineup containing duplicate-name skills", async () => {
   const team = importLineupCode(fixture.code, snapshot, mapping);
   delete team.lineup;
@@ -24,7 +62,7 @@ test("new team defaults to one PVP option and actually copies a lineup containin
   fireEvent.click(screen.getByText("复制阵容码"));
   expect(await screen.findByRole("status")).toHaveTextContent("阵容码已复制");
   expect(writeText).toHaveBeenCalledWith(code);
-  expect(update).toHaveBeenCalledWith("test", { magicId: null, mode: 5 });
+  expect(update).toHaveBeenCalledWith("test", { magicId: 104007, magicSelection: "auto", mode: 5 });
 });
 
 test.each([1, 2, null, 42])("preserves imported mode %s and allows explicit conversion to PVP", (mode) => {
@@ -111,7 +149,7 @@ test("export exposes the exact code and provides a manual fallback when clipboar
   expect(await screen.findByRole("alert")).toHaveTextContent("手动复制");
   expect(await screen.findByLabelText("阵容代码")).toHaveValue(fixture.code);
   expect(writeText).toHaveBeenCalledWith(fixture.code);
-  expect(update).toHaveBeenCalledWith("test", { magicId: 104007, mode: 5 });
+  expect(update).toHaveBeenCalledWith("test", { magicId: 104007, magicSelection: "manual", mode: 5 });
 });
 
 test("successful copying keeps one code preview and announces the copied kind", async () => {

@@ -1,4 +1,5 @@
 import { calculateMatchup } from "./calculate.js";
+import { linkedNegativeStatusContext } from "./negative-status-context.js";
 import { resolveBattleSpirit } from "./battle-form.js";
 import { getNatureMultipliers } from "./natures.js";
 import { getSkillChoices } from "./skill-loadout.js";
@@ -12,7 +13,6 @@ import { resolveWingExtensionSkill } from "./wing-extension.js";
 import { getEffectiveTraits } from "./effective-traits.js";
 import {
   calculateNegativeStatusSettlement,
-  normalizeNegativeStatusSide,
   projectNegativeStatusTurns,
 } from "./negative-status.js";
 import {
@@ -66,14 +66,9 @@ export function getSkillSlotView(snapshot, entry) {
 }
 
 function negativeStatusContext(state, targetSideKey, enabled) {
-  const statuses = enabled
-    ? normalizeNegativeStatusSide(state.negativeStatuses?.[targetSideKey])
-    : normalizeNegativeStatusSide();
   const targetNegativeMark = state.marks?.[targetSideKey]?.negative;
   return {
-    enemyFreezeStacks: statuses.freeze,
-    enemyPoisonStacks: statuses.poison,
-    poisonStacks: statuses.poison,
+    ...linkedNegativeStatusContext(state, targetSideKey === "attacker" ? "defender" : "attacker"),
     targetPoisonMarkStacks:
       enabled && targetNegativeMark?.id === "poison"
         ? Math.max(0, Math.floor(Number(targetNegativeMark.stacks) || 0))

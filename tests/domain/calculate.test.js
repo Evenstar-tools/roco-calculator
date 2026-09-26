@@ -436,6 +436,40 @@ function transmissionSide(skillIds) {
 }
 
 describe("calculateMatchup", () => {
+  test.each(["single", "four"])("龙噬触发次数在%s中等效双攻等级，双向生效且不修改手动配置", (mode) => {
+    const input = battleInput({ mode });
+    input.marks.attacker.positive = { id: "dragon-bite", stacks: 1, triggerCount: 2 };
+    input.marks.defender.positive = { id: "dragon-bite", stacks: 1, triggerCount: 1 };
+    input.directions.forward.overrides.attackLevelStage = 3;
+    const before = structuredClone(input);
+    const result = calculateMatchup(snapshot, input);
+    const manual = battleInput({ mode });
+    manual.directions.forward.overrides.attackLevelStage = 11;
+    manual.directions.reverse.overrides.attackLevelStage = 4;
+    const expected = calculateMatchup(snapshot, manual);
+    for (const direction of ["forward", "reverse"]) {
+      expect(result[direction].selectedResult.totalDamage).toBeGreaterThan(0);
+      expect(result[direction].selectedResult.totalDamage).toBe(expected[direction].selectedResult.totalDamage);
+      expect(result[direction].selectedResult.combatPanel).toEqual(expected[direction].selectedResult.combatPanel);
+    }
+    expect(input).toEqual(before);
+    input.marks.attacker.positive.stacks = 0;
+    manual.directions.forward.overrides.attackLevelStage = 3;
+    expect(calculateMatchup(snapshot, input).forward.selectedResult.combatPanel).toEqual(calculateMatchup(snapshot, manual).forward.selectedResult.combatPanel);
+  });
+
+  test("龙噬仅装备无触发不加攻，状态技能面板同样反映双攻", () => {
+    const input = battleInput();
+    input.sides.attacker.skills.single = "skill_pressure_valve";
+    input.marks.attacker.positive = { id: "dragon-bite", stacks: 1, triggerCount: 2 };
+    const manual = structuredClone(input);
+    manual.marks.attacker.positive = { id: null, stacks: 0 };
+    manual.directions.forward.overrides.attackLevelStage = 8;
+    expect(calculateMatchup(snapshot, input).forward.selectedResult.combatPanel).toEqual(calculateMatchup(snapshot, manual).forward.selectedResult.combatPanel);
+    delete input.marks.attacker.positive.triggerCount;
+    manual.directions.forward.overrides.attackLevelStage = 0;
+    expect(calculateMatchup(snapshot, input).forward.selectedResult.combatPanel).toEqual(calculateMatchup(snapshot, manual).forward.selectedResult.combatPanel);
+  });
   test("六自由度读取相邻最终显示威力，变化技能按 0，并在离心舞者本系后结算", () => {
     const result = calculateMatchup(
       transmissionSnapshot(),

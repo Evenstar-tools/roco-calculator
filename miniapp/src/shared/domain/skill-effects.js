@@ -400,12 +400,12 @@ const REVIEWED_EFFECTS = Object.freeze({
       percentPerEnergy: 0.1,
     },
   },
-  碎冰冰: stackAdd("enemyFreezeStacks", "敌方冻结层数", 20),
+  碎冰冰: stackAdd("enemyFreezeStacks", "敌方冻结层数", 20, 99),
   极寒领域: booleanAdd("enemyFrozen", "敌方已有冻结", 60),
   牵连: stackAdd("enemyExhaustedCount", "敌方力竭精灵数", 30, 6),
   鸩毒: {
     inputs: [
-      numberInput("enemyPoisonStacks", "敌方中毒层数", 0, 20),
+      numberInput("enemyPoisonStacks", "敌方中毒层数", 0, 99),
       booleanInput("counterTriggered", "触发应对"),
     ],
     ruleId: "stack_plus_counter_add",

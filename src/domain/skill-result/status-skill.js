@@ -29,6 +29,7 @@ export function statusOrDefenseSkillResult({
   skill,
   slotOverrides,
   traitHitCount,
+  markAttackLevelBonus = 0,
 }) {
     const baseHitCount =
       finiteNumber(
@@ -70,6 +71,7 @@ export function statusOrDefenseSkillResult({
       ) ?? 0;
     const statusAttackStageFor = (category) =>
       attackLevelStage +
+      markAttackLevelBonus +
       panelTrait.attackLevelBonus +
       attackerBloodline.attackLevelBonusByCategory[category] +
       defenderBloodline.targetAttackLevelBonusByCategory[category] +

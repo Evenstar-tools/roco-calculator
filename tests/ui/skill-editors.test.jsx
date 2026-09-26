@@ -22,12 +22,21 @@ import {
 } from "../../src/domain/trait-effects.js";
 import {
   describeResolution,
+  dynamicInputsForSkill,
   dynamicInputValue,
   SingleSkillEditor,
   TraitInputs,
 } from "../../src/components/SingleSkillEditor.jsx";
 import snapshot from "../../data/snapshots/current.json";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
+
+test.each(["鸩毒", "以毒攻毒", "腐化", "不可接触"])("%s 的中毒条件可手动输入且支持 99 层", (name) => {
+  const skill = snapshot.skills.find((entry) => entry.name === name);
+  for (const enabled of [false, true]) {
+    expect(dynamicInputsForSkill(skill, { includeStatusEffects: true, includeNegativeStatusEffects: enabled }))
+      .toContainEqual(expect.objectContaining({ type: "number", max: 99, contextKey: expect.stringMatching(/poisonStacks|enemyPoisonStacks/) }));
+  }
+});
 
 test("收起高级选项仅显示非默认配置，最多两项并保留完整说明", () => {
   const { rerender } = render(<AdvancedOptions finalMultiplier={1} reductionPercent={0} />);
