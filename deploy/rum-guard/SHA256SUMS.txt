@@ -1,1 +1,1 @@
-e69fbe87db66dee2fff9ee13cca416590cf26b9ab228499d7aa84c79f0fd2b40  rum-guard-linux-py311.zip
+673e03a8c993e6b9b9c6f6ab55cb519be4bdb8a8877e88662a139bf51e3b79d5  rum-guard-linux-py311.zip
