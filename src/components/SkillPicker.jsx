@@ -155,12 +155,14 @@ export function SkillPicker({
         viewportTop: top,
         viewportHeight: Math.max(0, bottom - top),
       });
-      if (bounds) {
-        const left = Math.max(viewport?.offsetLeft ?? 0, bounds.left) + VIEWPORT_MARGIN;
-        const right = Math.min((viewport?.offsetLeft ?? 0) + (viewport?.width ?? window.innerWidth), bounds.right) - VIEWPORT_MARGIN;
+      const viewportWidth = viewport?.width ?? window.innerWidth;
+      // Stacked mobile defenders cannot use the desktop right-aligned wide menu.
+      if (bounds || viewportWidth <= 760) {
+        const left = Math.max(viewport?.offsetLeft ?? 0, bounds?.left ?? 0) + VIEWPORT_MARGIN;
+        const right = Math.min((viewport?.offsetLeft ?? 0) + viewportWidth, bounds?.right ?? Infinity) - VIEWPORT_MARGIN;
         next.width = Math.max(0, Math.min(Math.max(320, box.width), right - left));
         const anchor = input.parentElement.getBoundingClientRect();
-        next.left = Math.max(left, Math.min(box.left, right - next.width)) - anchor.left;
+        next.left = Math.max(left, Math.min(box.left, right - next.width)) - anchor.left - input.parentElement.clientLeft;
       }
       setMenuLayout((current) =>
         current.maxHeight === next.maxHeight &&
@@ -350,7 +352,13 @@ export function SkillPicker({
           tabIndex={-1}
           ref={listboxRef}
           role="listbox"
-          style={{ maxHeight: `${menuLayout.maxHeight}px`, width: menuLayout.width, left: menuLayout.left }}
+          style={{
+            maxHeight: `${menuLayout.maxHeight}px`,
+            width: menuLayout.width,
+            left: menuLayout.left,
+            right: menuLayout.width === undefined ? undefined : "auto",
+            minWidth: menuLayout.width === undefined ? undefined : 0,
+          }}
         >
           {matches.length ? (
             <>

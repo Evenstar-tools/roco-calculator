@@ -16,13 +16,59 @@ const skills = Array.from({ length: 40 }, (_, index) => ({
 }));
 
 const originalInnerHeight = window.innerHeight;
+const originalInnerWidth = window.innerWidth;
 
 afterEach(() => {
+  Object.defineProperty(window, "innerWidth", {
+    configurable: true,
+    value: originalInnerWidth,
+  });
   Object.defineProperty(window, "innerHeight", {
     configurable: true,
     value: originalInnerHeight,
   });
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
+
+test("clamps mobile menus without a dialog boundary and remeasures narrow viewports", async () => {
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 393 });
+  const user = userEvent.setup();
+  render(<SkillPicker ariaLabel="手机技能" onSelect={vi.fn()} selected={skills[0]} skills={skills} />);
+  const picker = screen.getByRole("combobox", { name: "手机技能" });
+  const inputRect = { ...rect(400, 440), left: 39, right: 214, width: 175 };
+  vi.spyOn(picker, "getBoundingClientRect").mockReturnValue(inputRect);
+  vi.spyOn(picker.parentElement, "getBoundingClientRect").mockReturnValue(inputRect);
+  Object.defineProperty(picker.parentElement, "clientLeft", { configurable: true, value: 1 });
+  await user.click(picker);
+  const menu = screen.getByRole("listbox");
+  expect(menu).toHaveStyle({ width: "320px", left: "-1px", right: "auto" });
+  expect(menu.style.minWidth).toBe("0");
+
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 280 });
+  fireEvent(window, new Event("resize"));
+  await waitFor(() => expect(menu).toHaveStyle({ width: "264px", left: "-32px" }));
+
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 1440 });
+  const viewport = Object.assign(new EventTarget(), { width: 300, height: 600, offsetLeft: 50, offsetTop: 0 });
+  vi.stubGlobal("visualViewport", viewport);
+  // Reopen to install the visual viewport listeners, as on a mobile browser.
+  await user.keyboard("{Escape}");
+  fireEvent.blur(picker, { relatedTarget: document.body });
+  fireEvent.focus(picker);
+  const reopenedMenu = screen.getByRole("listbox");
+  expect(reopenedMenu).toHaveStyle({ width: "284px", left: "18px" });
+  viewport.width = 240;
+  viewport.offsetLeft = 80;
+  viewport.dispatchEvent(new Event("resize"));
+  await waitFor(() => expect(reopenedMenu).toHaveStyle({ width: "224px", left: "48px" }));
+
+  viewport.width = 1440;
+  viewport.offsetLeft = 0;
+  fireEvent(window, new Event("resize"));
+  await waitFor(() => expect(reopenedMenu.style.width).toBe(""));
+  expect(reopenedMenu.style.left).toBe("");
+  expect(reopenedMenu.style.right).toBe("");
 });
 
 function setViewportHeight(value) {
