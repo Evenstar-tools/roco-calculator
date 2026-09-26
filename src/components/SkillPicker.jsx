@@ -9,6 +9,7 @@ import {
 } from "react";
 import { EntityChangeHint } from "./EntityChangeHint.jsx";
 import { SkillIcon } from "./SkillIcon.jsx";
+import { fitPickerMenu, getPickerBounds } from "./picker-menu-layout.js";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -144,11 +145,11 @@ export function SkillPicker({
     const updateLayout = () => {
       const input = inputRef.current;
       if (!input) return;
-      const box = input.getBoundingClientRect();
+      const anchor = input.parentElement.getBoundingClientRect();
+      const box = anchor.height ? anchor : input.getBoundingClientRect();
       const viewport = window.visualViewport;
-      const bounds = menuBoundaryRef?.current?.getBoundingClientRect();
-      const top = Math.max(viewport?.offsetTop ?? 0, bounds?.top ?? 0);
-      const bottom = Math.min((viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight), bounds?.bottom ?? Infinity);
+      const bounds = getPickerBounds(input.parentElement, menuBoundaryRef?.current);
+      const { top, bottom } = bounds;
       const next = resolveSkillMenuLayout({
         inputBottom: box.bottom,
         inputTop: box.top,
@@ -157,12 +158,14 @@ export function SkillPicker({
       });
       const viewportWidth = viewport?.width ?? window.innerWidth;
       // Stacked mobile defenders cannot use the desktop right-aligned wide menu.
-      if (bounds || viewportWidth <= 760) {
-        const left = Math.max(viewport?.offsetLeft ?? 0, bounds?.left ?? 0) + VIEWPORT_MARGIN;
-        const right = Math.min((viewport?.offsetLeft ?? 0) + viewportWidth, bounds?.right ?? Infinity) - VIEWPORT_MARGIN;
-        next.width = Math.max(0, Math.min(Math.max(320, box.width), right - left));
-        const anchor = input.parentElement.getBoundingClientRect();
-        next.left = Math.max(left, Math.min(box.left, right - next.width)) - anchor.left - input.parentElement.clientLeft;
+      if (bounds.clipped || viewportWidth <= 760) {
+        const horizontal = fitPickerMenu(box, bounds, next.maxHeight, 320);
+        next.width = horizontal.width;
+        next.left = horizontal.left - anchor.left - input.parentElement.clientLeft;
+      }
+      // Fit complete compact rows on opening; keep short viewports scrollable.
+      if (!readable && viewportWidth <= 760 && next.maxHeight >= OPTION_HEIGHT + 12) {
+        next.maxHeight = Math.floor((next.maxHeight - 12) / OPTION_HEIGHT) * OPTION_HEIGHT + 12;
       }
       setMenuLayout((current) =>
         current.maxHeight === next.maxHeight &&
@@ -191,7 +194,7 @@ export function SkillPicker({
       window.visualViewport?.removeEventListener("resize", scheduleUpdate);
       window.visualViewport?.removeEventListener("scroll", scheduleUpdate);
     };
-  }, [menuBoundaryRef, open]);
+  }, [menuBoundaryRef, open, readable]);
 
   useLayoutEffect(() => {
     if (!open || !listboxRef.current || !matches[activeIndex]) return;

@@ -15,6 +15,7 @@ const group = name => screen.getByRole("treeitem", { name: `${name}增益 +20%` 
 test("窄选择栏展开保持可读宽度，并在小窗口边缘限位", () => {
   const width = vi.spyOn(window, "innerWidth", "get").mockReturnValue(320);
   const height = vi.spyOn(window, "innerHeight", "get").mockReturnValue(420);
+  const scrollHeight = vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockReturnValue(392);
   try {
     render(<Harness />);
     vi.spyOn(trigger(), "getBoundingClientRect").mockReturnValue({ left: 150, top: 290, bottom: 328, width: 185 });
@@ -23,7 +24,24 @@ test("窄选择栏展开保持可读宽度，并在小窗口边缘限位", () =>
     expect(menu.style.width).toBe("260px");
     expect(menu.style.left).toBe("52px");
     expect(menu.style.top).toBe("8px");
-  } finally { width.mockRestore(); height.mockRestore(); }
+  } finally { width.mockRestore(); height.mockRestore(); scrollHeight.mockRestore(); }
+});
+
+test("中性与增益分组按实际菜单高度贴近输入框", () => {
+  const height = vi.spyOn(window, "innerHeight", "get").mockReturnValue(852);
+  const scrollHeight = vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockImplementation(function () {
+    return this.querySelectorAll('[role="treeitem"]').length * 32 + 8;
+  });
+  try {
+    render(<Harness initialValue="neutral" />);
+    vi.spyOn(trigger(), "getBoundingClientRect").mockReturnValue({left:30,top:600,bottom:632,width:300});
+    fireEvent.click(trigger());
+    const menu = screen.getByRole("tree");
+    expect(menu.style.top).toBe("362px");
+    fireEvent.click(group("速度"));
+    expect(menu.style.top).toBe("202px");
+    expect(menu.style.maxHeight).toBe("394px");
+  } finally { height.mockRestore(); scrollHeight.mockRestore(); }
 });
 
 test("已有性格自动展开所属组，重新打开定位已选而非上次浏览组", async () => {

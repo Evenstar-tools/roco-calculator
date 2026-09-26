@@ -1,6 +1,7 @@
 import { CaretDown } from "@phosphor-icons/react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { StatIcon } from "./StatIcon.jsx";
+import { fitPickerMenu, getPickerBounds } from "./picker-menu-layout.js";
 import {
   NATURES,
   STAT_LABELS,
@@ -31,6 +32,7 @@ export function NatureSelect({ ariaLabel, onChange, value }) {
   const trigger = useRef(null);
   const menu = useRef(null);
   const hoverTimer = useRef(null);
+  const reposition = useRef(null);
   const menuId = useId();
 
   function clearHover() { clearTimeout(hoverTimer.current); }
@@ -58,29 +60,31 @@ export function NatureSelect({ ariaLabel, onChange, value }) {
     function position() {
       const box = trigger.current.getBoundingClientRect();
       const viewport = window.visualViewport;
-      const leftEdge = (viewport?.offsetLeft ?? 0) + 8;
-      const topEdge = (viewport?.offsetTop ?? 0) + 8;
-      const width = (viewport?.width ?? window.innerWidth) - 16;
-      const height = (viewport?.height ?? window.innerHeight) - 16;
-      const popupWidth = Math.min(Math.max(box.width, 260), width);
-      const fullHeight = Math.min(394, height);
-      const bottom = topEdge + height;
-      const top = box.bottom + 4 + fullHeight <= bottom
-        ? box.bottom + 4
-        : Math.max(topEdge, Math.min(box.top - fullHeight - 4, bottom - fullHeight));
+      // Top-layer nature menus escape drawer clipping, but still avoid app bars.
+      const bounds = getPickerBounds(trigger.current);
+      if (trigger.current.closest('[role="dialog"]')) {
+        bounds.top = viewport?.offsetTop ?? 0;
+        bounds.bottom = bounds.top + (viewport?.height ?? window.innerHeight);
+      }
+      const initial = fitPickerMenu(box, bounds, 0, 260);
+      popup.style.width = `${initial.width}px`;
+      const fullHeight = popup.scrollHeight + 2;
+      const layout = fitPickerMenu(box, bounds, fullHeight, 260);
+      const top = layout.placement === "down" ? box.bottom + 4 : box.top - layout.maxHeight - 4;
       Object.assign(popup.style, {
-        left: `${Math.max(leftEdge, Math.min(box.left, leftEdge + width - popupWidth))}px`,
-        top: `${top}px`, width: `${popupWidth}px`, maxHeight: `${height}px`,
+        left: `${layout.left}px`, top: `${top}px`, maxHeight: `${layout.maxHeight}px`,
       });
     }
     // 原生顶层浮层不被队伍抽屉裁切，DOM 仍留在原弹层内以兼容焦点约束。
     popup.showPopover?.();
+    reposition.current = position;
     position();
     window.addEventListener("resize", position);
     window.addEventListener("scroll", position, true);
     window.visualViewport?.addEventListener("resize", position);
     window.visualViewport?.addEventListener("scroll", position);
     return () => {
+      reposition.current = null;
       popup.hidePopover?.();
       window.removeEventListener("resize", position);
       window.removeEventListener("scroll", position, true);
@@ -88,6 +92,8 @@ export function NatureSelect({ ariaLabel, onChange, value }) {
       window.visualViewport?.removeEventListener("scroll", position);
     };
   }, [open]);
+
+  useLayoutEffect(() => { reposition.current?.(); }, [expanded]);
 
   useEffect(() => {
     if (!open) return;

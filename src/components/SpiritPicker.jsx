@@ -6,6 +6,7 @@ import { EntityChangeHint } from "./EntityChangeHint.jsx";
 import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 import { getBattleFormChoices } from "../domain/battle-form.js";
 import { ElementIcon } from "./ElementIcon.jsx";
+import { usePickerMenuLayout } from "./picker-menu-layout.js";
 import { buildSpiritFamilyIndex } from "./spirit-family.js";
 import { canPreserveBattleFormConfig, readFormConfigPreferences, subscribeFormConfigPreferences, writeFormConfigPreference } from "../state/form-config-preferences.js";
 
@@ -129,6 +130,7 @@ export function SpiritPicker({
   const listboxId = useId();
   const inputRef = useRef(null);
   const optionsRef = useRef(null);
+  const searchRef = useRef(null);
   const presetBrowse = usePresetBrowseMode();
   const [open, setOpen] = useState(false);
   const [searching, setSearching] = useState(false);
@@ -332,6 +334,8 @@ export function SpiritPicker({
     );
   }
 
+  usePickerMenuLayout({ open, anchorRef: searchRef, menuRef: optionsRef, maxHeight: 282, minWidth: 240, contentKey: `${query}-${matches.length}-${browsingFamily}` });
+
   return (
     <article
       className={`spirit-picker spirit-picker--${side}`}
@@ -350,7 +354,7 @@ export function SpiritPicker({
         <span>{label}</span>
       </div>
 
-      <div className="spirit-picker__search" data-guide-target={guideTarget}>
+      <div className="spirit-picker__search" data-guide-target={guideTarget} ref={searchRef}>
         <MagnifyingGlass aria-hidden="true" size={18} />
         <input
           aria-autocomplete="list"
@@ -405,6 +409,8 @@ export function SpiritPicker({
             onScroll={handleOptionsScroll}
             ref={optionsRef}
             role="listbox"
+            tabIndex={-1}
+            onKeyDown={handleKeyDown}
           >
             {browsingFamily ? (
               <li className="spirit-picker__form-heading" role="presentation">

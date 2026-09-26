@@ -1,5 +1,6 @@
 import { CaretDown, MagnifyingGlass, X } from "@phosphor-icons/react";
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
+import { usePickerMenuLayout } from "./picker-menu-layout.js";
 import {
   createMoonMemoryTraitSearchIndex,
   getMoonMemorySelectedTraits,
@@ -166,6 +167,8 @@ export function MoonMemoryTraitEditor({
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const pickerRef = useRef(null);
+  const optionsRef = useRef(null);
   const searchIndex = useMemo(
     () => createMoonMemoryTraitSearchIndex(snapshot),
     [snapshot],
@@ -186,6 +189,7 @@ export function MoonMemoryTraitEditor({
     () => new Set(spirit?.traitIds ?? []),
     [spirit?.traitIds],
   );
+  usePickerMenuLayout({ open: open && options.length > 0, anchorRef: pickerRef, menuRef: optionsRef, maxHeight: 224, contentKey: `${query}-${options.length}` });
   if (!hasNativeMoonMemoryTrait(snapshot, spirit)) return null;
 
   const isAtTraitLimit = selectedTraits.length >= MOON_MEMORY_TRAIT_LIMIT;
@@ -210,7 +214,8 @@ export function MoonMemoryTraitEditor({
           已吞噬 {selectedTraits.length}/{MOON_MEMORY_TRAIT_LIMIT}
         </span>
       </header>
-      {!isAtTraitLimit ? <div className="moon-memory-trait-editor__picker">
+      {!isAtTraitLimit ? <div className="moon-memory-trait-editor__picker" ref={pickerRef}
+        onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false); }}>
         <label>
           <span className="sr-only">搜索精灵或特性</span>
           <span className="moon-memory-trait-editor__search">
@@ -230,7 +235,6 @@ export function MoonMemoryTraitEditor({
                 setActiveIndex(-1);
                 setOpen(true);
               }}
-              onBlur={() => setOpen(false)}
               onFocus={() => setOpen(true)}
               onKeyDown={(event) => {
                 if (event.key === "ArrowDown") {
@@ -267,7 +271,8 @@ export function MoonMemoryTraitEditor({
           </span>
         </label>
         {open && options.length > 0 ? (
-          <ul id={listboxId} role="listbox">
+          <ul id={listboxId} role="listbox" ref={optionsRef} tabIndex={-1}
+            onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); pickerRef.current?.querySelector("input")?.focus(); setOpen(false); } }}>
             {options.map((option, index) => {
               const alreadyAdded = acquiredTraitIds.has(option.traitId);
               const alreadyOwned = nativeTraitIds.has(option.traitId);

@@ -36,9 +36,9 @@ test("clamps mobile menus without a dialog boundary and remeasures narrow viewpo
   const user = userEvent.setup();
   render(<SkillPicker ariaLabel="手机技能" onSelect={vi.fn()} selected={skills[0]} skills={skills} />);
   const picker = screen.getByRole("combobox", { name: "手机技能" });
-  const inputRect = { ...rect(400, 440), left: 39, right: 214, width: 175 };
+  const inputRect = { ...rect(400, 440), left: 69, right: 214, width: 145 };
   vi.spyOn(picker, "getBoundingClientRect").mockReturnValue(inputRect);
-  vi.spyOn(picker.parentElement, "getBoundingClientRect").mockReturnValue(inputRect);
+  vi.spyOn(picker.parentElement, "getBoundingClientRect").mockReturnValue({ ...inputRect, left: 39, width: 175 });
   Object.defineProperty(picker.parentElement, "clientLeft", { configurable: true, value: 1 });
   await user.click(picker);
   const menu = screen.getByRole("listbox");

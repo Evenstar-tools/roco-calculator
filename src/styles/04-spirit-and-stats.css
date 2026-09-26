@@ -124,6 +124,7 @@
 }
 
 .spirit-picker__options {
+  overscroll-behavior: contain;
   position: absolute;
   z-index: 30;
   top: calc(100% + 5px);

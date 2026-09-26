@@ -74,6 +74,7 @@
 }
 
 .moon-memory-trait-editor__picker [role="listbox"] {
+  overscroll-behavior: contain;
   position: absolute;
   z-index: 30;
   top: calc(100% + 4px);
