@@ -1,19 +1,15 @@
-# RUM 每日保护任务（待云端部署验收）
+# RUM 每日保护任务
 
-目标：每天北京时间累计主账号用量达到 400000 条后停止应用 159589；按分钟执行，次日 00:05–00:09 在累计量正常时恢复。其余时段不自动恢复，以避免手动停止或故障后反复启停。
+GitHub 部署包：`deploy/rum-guard/rum-guard-linux-py311.zip`，下载后核对 SHA256SUMS.txt。
 
-执行入口 function.main_handler；Python 3.11；128 MB；超时建议 45 秒；使用定时事件函数，无 HTTP 入口。建议定时触发每分钟一次、禁止并发执行，关闭不必要的运行日志投递。外网需能连接 rum.tencentcloudapi.com。
+- 云函数 rococalc-rum-daily-guard，广州/default，Python 3.11，128 MB，45 秒超时，并发 1，无 HTTP 入口，无 CLS 日志投递。
+- 入口 function.main_handler。默认演练；RUM_GUARD_APPLY=true 才执行启停，RUM_GUARD_AUTO_RESUME=true 才允许北京时间次日 00:05–00:09 恢复。
+- 目标应用固定 159589。按分钟查询账号全部业务系统，广州所有实例合计达到 400000 条后停止本站；每日重置采用 UTC+8。
+- 实测 DescribeTawInstances 跨三个地域返回相同的全局列表；当前账号只有广州 rococalc-web。DescribeDataReportCountV2 必须带 InstanceID，不传会返回 AuthFailure。
+- 遇到非广州实例、实例列表不完整、格式未知、超时或查询失败，均尝试停止本站，不把未知用量当零。停止失败向外抛错。云端故障不能保证实际停止。
+- 当前无数据时实测返回 results 中 total=0、offset=""、无 series；已加入严格兼容。11 项本地测试通过。
+- 权限仅四项：DescribeTawInstances、DescribeDataReportCountV2、StopProject、ResumeProject。运行角色临时凭据，不创建长期密钥。IAM 资源范围 *，代码只启停本站。
+- maintenance_handler 仅用于显式、固定应用的启停验收，仍需 SCF 调用权限，没有公网入口。
+- 这是延迟保护，不是计费硬封顶；接口统计和定时调用延迟、突发流量可能超额。停报后的访客统计会缺失。
 
-默认 RUM_GUARD_APPLY 与 RUM_GUARD_AUTO_RESUME 未开启，只演练。完成实时接口返回核对与强制 StopProject/ResumeProject 回读验收后，再设两者为 true 并开启定时触发。
-
-使用 SCF 运行角色临时凭据，不创建主账号密钥。cam-policy.json 仅包含读用量、停止、恢复三个动作；资源范围为 *，不能声称云权限已限定仅本站。代码只写入固定 ProjectId=159589。创建该权限必须获得用户明确确认；云函数平台另要求 SCF_QcsRole / QcloudAccessForScfRole 服务授权。
-
-首次部署先读取三个地域真实结果，核对不传 ID/InstanceID 的返回范围确为主账号全部应用、所有上报类别；公开文档只给出参数/示例，因此目前这一点还未实测，不能标记完成。空 results/series、未知格式和接口失败均尝试停止上报，不把未知用量当 0。StopProject 失败会向外抛错；平台/API 故障仍不能保证实际停止。
-
-本地已验证：8 项单测，包含共享额度合计、阈值边界、UTC+8 重置、日内不自动恢复、查询失败停报、演练无写操作、坏格式不当零、停止失败暴露。官方 SDK 请求类与 HttpProfile 构造检查通过。没有使用真实云 API 凭据测试。
-
-这是延迟保护，不是计费硬封顶。平台用量延迟、定时器延迟/故障、突发流量可能导致超额；达到阈值后数据不完整。40 万是保护阈值，50 万是主账号共享免费额度，不能只按本站单应用判断费用。
-
-SCF 当前账号界面未有试用额度，提示可以领取三个月试用；到期按量计费，不能声明永久免费。领取套餐和服务授权尚未执行。
-
-部署前所需步骤：服务授权、专用运行角色授权、确认函数计费或试用套餐、安装 requirements.txt 生成 Linux 依赖包、上传代码、演练读量和启停、定时触发验证、再发布网站。网站上报 ID 为 Dv3ovhEPXPRZx6XD0R。
+当前进度：SCF 服务授权和运行角色已创建；用户完成了免费试用购买。云端代码已部署，定时保护与网站统计尚未启用，仍须真实启停回读验收。试用不是永久免费。

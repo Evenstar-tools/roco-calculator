@@ -4,6 +4,7 @@
     {
       "effect": "allow",
       "action": [
+        "rum:DescribeTawInstances",
         "rum:DescribeDataReportCountV2",
         "rum:StopProject",
         "rum:ResumeProject"

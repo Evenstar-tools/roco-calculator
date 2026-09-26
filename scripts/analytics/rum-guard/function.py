@@ -1,11 +1,13 @@
 """RUM 每日用量保护：SCF 每分钟调用，默认仅演练，不恢复上报。"""
 import json
 import os
+import time
 from datetime import datetime, timezone, timedelta
 
 PROJECT_ID = 159589
 REGION = "ap-guangzhou"
 REGIONS = ("ap-guangzhou", "ap-singapore", "na-siliconvalley")
+INSTANCE_ID = "rum-8NszeyHgNeZp5y"
 LIMIT = 400_000
 TZ = timezone(timedelta(hours=8))
 
@@ -20,6 +22,9 @@ def parse_count(result):
         if statement.get("error"):
             raise ValueError("query error")
         series = statement.get("series")
+        # Live RUM response for a confirmed empty query (2026-09-26).
+        if series is None and statement.get("total") == 0 and statement.get("offset") == "":
+            continue
         if not isinstance(series, list) or not series:
             raise ValueError("missing series")
         for item in series:
@@ -41,10 +46,23 @@ def protect(api, now, apply=False, allow_resume=False):
     end = int(now.timestamp())
     totals = {}
     try:
-        # 不传 ID/InstanceID，读取各地域主账号总量，避免只看本站漏掉共享免费额度。
-        for region in REGIONS:
-            response = api(region, "DescribeDataReportCountV2", {"StartTime": start, "EndTime": end})
-            totals[region] = parse_count(response["Result"])
+        began = time.monotonic()
+        inventory = api(REGION, "DescribeTawInstances", {"Limit": 100, "Offset": 0})
+        instances = inventory.get("InstanceSet")
+        if not isinstance(instances, list) or inventory.get("TotalCount") != len(instances):
+            raise ValueError("incomplete instance inventory")
+        if INSTANCE_ID not in [item.get("InstanceId") for item in instances]:
+            raise ValueError("target missing from inventory")
+        for instance in instances:
+            # The instance listing is global (verified in all three API regions).
+            # Unknown regions stop this app until their billing scope is verified.
+            if instance.get("AreaId") != 1 or time.monotonic() - began > 25:
+                raise ValueError("unsupported region or query deadline")
+            instance_id = instance["InstanceId"]
+            if instance_id in totals:
+                raise ValueError("duplicate instance")
+            response = api(REGION, "DescribeDataReportCountV2", {"StartTime": start, "EndTime": end, "InstanceID": instance_id})
+            totals[instance_id] = parse_count(response["Result"])
         total = sum(totals.values())
     except Exception:
         if apply:
@@ -60,7 +78,7 @@ def protect(api, now, apply=False, allow_resume=False):
         action = None
     if apply and action:
         api(REGION, action, {"ProjectId": PROJECT_ID})
-    return {"status": action or "below_limit", "applied": bool(apply and action), "day": local.date().isoformat(), "total": total, "regions": totals, "limit": LIMIT}
+    return {"status": action or "below_limit", "applied": bool(apply and action), "day": local.date().isoformat(), "total": total, "instances": totals, "limit": LIMIT}
 
 
 def cloud_api(region, action, parameters):
@@ -82,3 +100,11 @@ def main_handler(event, context):
                      allow_resume=os.environ.get("RUM_GUARD_AUTO_RESUME") == "true")
     print(json.dumps(result, ensure_ascii=False))
     return result
+
+
+def maintenance_handler(event, context):
+    """Explicit, IAM-authenticated stop/resume acceptance check; no public URL."""
+    action = event.get("action")
+    if action not in ("StopProject", "ResumeProject") or event.get("project_id") != PROJECT_ID:
+        raise ValueError("explicit fixed-project maintenance action required")
+    return cloud_api(REGION, action, {"ProjectId": PROJECT_ID})
