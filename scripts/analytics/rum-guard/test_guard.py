@@ -48,6 +48,20 @@ class GuardTest(unittest.TestCase):
         self.assertEqual(guard.parse_count(json.dumps({"results":[{"series":[{"columns":["time","allCount"],"values":[]}]}]})),0)
     def test_live_empty_query_is_zero(self):
         self.assertEqual(guard.parse_count('{"results":[{"statement_id":0,"offset":"","total":0}]}'),0)
+    def test_live_minute_gaps_preserve_counts_and_threshold(self):
+        data={"results":[{"series":[{"name":"report_count_1m","columns":["time","allCount"],"values":[[1790386980,None],[1790387040,399999],[1790387100,1],[1790387160,None]]}]}]}
+        calls=[]
+        def api(region,action,params):
+            calls.append(action)
+            if action == "DescribeTawInstances":
+                return {"TotalCount":1,"InstanceSet":[{"InstanceId":guard.INSTANCE_ID,"AreaId":1}]}
+            if action == "DescribeDataReportCountV2": return {"Result":json.dumps(data)}
+            return {}
+        report=guard.protect(api,datetime.now(timezone.utc),apply=True)
+        self.assertEqual(report["total"],400000)
+        self.assertEqual(calls[-1],"StopProject")
+    def test_unrecognized_null_is_not_zero(self):
+        with self.assertRaises(ValueError): guard.parse_count(result(None)["Result"])
     def test_incomplete_inventory_stops(self):
         calls=[]
         def api(region,action,params):

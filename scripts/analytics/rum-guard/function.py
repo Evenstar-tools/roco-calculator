@@ -34,6 +34,11 @@ def parse_count(result):
             index = columns.index("allCount")
             for row in item["values"]:
                 value = row[index]
+                # Live minute buckets are null when that minute had no reports.
+                if (value is None and item.get("name") == "report_count_1m"
+                        and columns == ["time", "allCount"] and len(row) == 2
+                        and isinstance(row[0], int) and not isinstance(row[0], bool)):
+                    continue
                 if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0 or int(value) != value:
                     raise ValueError("invalid count")
                 total += int(value)
