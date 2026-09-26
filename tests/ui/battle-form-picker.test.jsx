@@ -3,15 +3,17 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import snapshot from "../../public/data/runtime.json";
 import { SpiritPicker } from "../../src/components/SpiritPicker.jsx";
-import { FORM_CONFIG_PREFERENCES_STORAGE_KEY, writeFormConfigPreference } from "../../src/state/form-config-preferences.js";
+import { FORM_CONFIG_MEMORY_STORAGE_KEY, FORM_CONFIG_PREFERENCES_STORAGE_KEY, writeFormConfigMemoryEnabled, writeFormConfigPreference } from "../../src/state/form-config-preferences.js";
 
 const selected = snapshot.spirits.find((spirit) => spirit.fullName === "梦想三三");
 
 beforeEach(() => {
+  localStorage.removeItem(FORM_CONFIG_MEMORY_STORAGE_KEY);
   sessionStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY);
   localStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY);
 });
 afterEach(() => {
+  localStorage.removeItem(FORM_CONFIG_MEMORY_STORAGE_KEY);
   sessionStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY);
   localStorage.removeItem(FORM_CONFIG_PREFERENCES_STORAGE_KEY);
 });
@@ -297,6 +299,25 @@ test.each([
   const actions = setup({ side, label, selected: lower, formSide: { spiritId: lower.id } });
   fireEvent.focus(screen.getByRole("combobox", { name: `${label}精灵` }));
   expect(screen.getByRole("switch")).toBeChecked();
+  fireEvent.click(screen.getByRole("option", { name: /梦想三三/ }));
+  expect(actions.onSelect).toHaveBeenCalledWith(selected.id);
+  expect(actions.onFormSelect).not.toHaveBeenCalled();
+});
+
+test("开启长期记忆仍保护三三低阶升阶预设，关闭记忆不触发配置载入", () => {
+  act(() => {
+    writeFormConfigPreference("attack", true);
+    writeFormConfigMemoryEnabled(true);
+  });
+  const lower = snapshot.spirits.find(entry => entry.fullName === "气球猫");
+  const actions = setup({ selected: lower, formSide: { spiritId: lower.id } });
+  fireEvent.focus(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  expect(screen.getByRole("switch")).toBeChecked();
+  act(() => writeFormConfigMemoryEnabled(false));
+  expect(screen.getByRole("switch")).toBeChecked();
+  expect(actions.onSelect).not.toHaveBeenCalled();
+  expect(actions.onFormSelect).not.toHaveBeenCalled();
+  act(() => writeFormConfigMemoryEnabled(true));
   fireEvent.click(screen.getByRole("option", { name: /梦想三三/ }));
   expect(actions.onSelect).toHaveBeenCalledWith(selected.id);
   expect(actions.onFormSelect).not.toHaveBeenCalled();

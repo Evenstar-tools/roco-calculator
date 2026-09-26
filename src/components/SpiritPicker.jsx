@@ -415,7 +415,7 @@ export function SpiritPicker({
             {browsingFamily ? (
               <li className="spirit-picker__form-heading" role="presentation">
                 <span>同族形态</span>
-                {choosingForm ? <label className="spirit-picker__form-toggle" title="攻防方开关分别记忆：刷新保留，新开页面重置。先选高阶再萌化可保留配置；直接选低阶后升阶、同阶换形态或选关联分支时载入目标预设。">
+                {choosingForm ? <label className="spirit-picker__form-toggle" title="攻防方开关分别记忆；跨页面保留可在显示设置中开启。先选高阶再萌化可保留配置；直接选低阶后升阶、同阶换形态或选关联分支时载入目标预设。">
                   <span>萌化 · 配置保留</span>
                   <input type="checkbox" role="switch" aria-label={`${label}同族切换保留本场配置`}
                     checked={preserveFormConfig} onChange={event => {

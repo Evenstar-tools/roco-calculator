@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
+import { readFormConfigMemoryEnabled, subscribeFormConfigPreferences, writeFormConfigMemoryEnabled } from "../state/form-config-preferences.js";
 import { FEEDBACK_QQ } from "../components/DataSourceDialog.jsx";
 import { FEATURED_USER_RELEASE } from "../data/user-release-notes.js";
 import {
@@ -27,6 +28,9 @@ export function useWorkspaceOverlays({
   const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
   const [dataSourceOpen, setDataSourceOpen] = useState(false);
   const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
+  const formConfigMemoryEnabled = useSyncExternalStore(
+    subscribeFormConfigPreferences, readFormConfigMemoryEnabled, () => false,
+  );
   const [damageComparisonEnabled, setDamageComparisonEnabled] = useState(
     () => readDamageComparisonSetting(),
   );
@@ -87,6 +91,8 @@ export function useWorkspaceOverlays({
   };
 
   const displaySettingsProps = {
+    formConfigMemoryEnabled,
+    onFormConfigMemoryChange: writeFormConfigMemoryEnabled,
     damageComparisonEnabled,
     durabilityOverviewEnabled,
     negativeStatusSettlementEnabled: negativeStatusEnabled,

@@ -76,7 +76,7 @@ import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
 import { useCalculatorSession } from "./hooks/useCalculatorSession.js";
 import { useCalculatorShortcuts } from "./hooks/useCalculatorShortcuts.js";
 import { readShortcutSettings, writeShortcutSettings } from "./state/shortcut-settings.js";
-import { readFormConfigPreferences, writeFormConfigPreference } from "./state/form-config-preferences.js";
+import { readFormConfigMemoryEnabled, readFormConfigPreferences, writeFormConfigPreference } from "./state/form-config-preferences.js";
 import { ShortcutDialog } from "./components/ShortcutDialog.jsx";
 import {
   POPULAR_CONFIG_COUNT,
@@ -530,7 +530,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
       const current = readFormConfigPreferences(side)
         ?? family.some((spirit) => spirit.fullName === "梦想三三");
       const enabled = writeFormConfigPreference(side, !current);
-      setToast(`${side === "attack" ? "攻击方" : "防御方"}萌化配置保留已${enabled ? "开启" : "关闭"}（本标签页）`);
+      setToast(`${side === "attack" ? "攻击方" : "防御方"}萌化配置保留已${enabled ? "开启" : "关闭"}（${readFormConfigMemoryEnabled() ? "跨页面记忆" : "本标签页"}）`);
     },
   });
 

@@ -2,6 +2,8 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { WorkspaceOverlays } from "../../src/components/WorkspaceOverlays.jsx";
 import { DisplaySettingsDialog } from "../../src/components/DisplaySettingsDialog.jsx";
+import { useWorkspaceOverlays } from "../../src/hooks/useWorkspaceOverlays.js";
+import { FORM_CONFIG_MEMORY_STORAGE_KEY, readFormConfigMemoryEnabled } from "../../src/state/form-config-preferences.js";
 import { USER_MANUAL_URL } from "../../src/data/product-links.js";
 import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 import {
@@ -46,6 +48,28 @@ function renderOverlays(overrides = {}) {
   );
   return { ...result, menuButtonRef, onMenuClose };
 }
+
+test("显示设置记忆萌化状态勾选即时保存，关闭弹窗后重挂载仍恢复", () => {
+  localStorage.removeItem(FORM_CONFIG_MEMORY_STORAGE_KEY);
+  function Settings() {
+    const overlays = useWorkspaceOverlays({});
+    return <DisplaySettingsDialog {...overlays.displaySettingsProps} open />;
+  }
+  const first = render(<Settings />);
+  try {
+    const toggle = screen.getByRole("checkbox", { name: "记忆萌化状态" });
+    expect(toggle).not.toBeChecked();
+    expect(screen.getByText("跨页面记住双方萌化开关，可能影响低阶精灵预设的加载。")).toBeVisible();
+    fireEvent.click(toggle);
+    expect(toggle).toBeChecked();
+    expect(readFormConfigMemoryEnabled()).toBe(true);
+    first.unmount();
+    render(<Settings />);
+    expect(screen.getByRole("checkbox", { name: "记忆萌化状态" })).toBeChecked();
+    fireEvent.click(screen.getByRole("checkbox", { name: "记忆萌化状态" }));
+    expect(readFormConfigMemoryEnabled()).toBe(false);
+  } finally { localStorage.removeItem(FORM_CONFIG_MEMORY_STORAGE_KEY); }
+});
 
 test("显示设置默认收起完整口径，简述随模式切换且不丢失原文", () => {
   const onPowerDisplayModeChange = vi.fn();

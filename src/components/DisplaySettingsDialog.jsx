@@ -4,10 +4,12 @@ export function DisplaySettingsDialog({
   dialogRef,
   damageComparisonEnabled = false,
   durabilityOverviewEnabled = false,
+  formConfigMemoryEnabled = false,
   negativeStatusSettlementEnabled = false,
   onClose,
   onDamageComparisonChange,
   onDurabilityOverviewChange,
+  onFormConfigMemoryChange,
   onNegativeStatusSettlementChange,
   onPowerDisplayModeChange,
   onTypeCoverageChange,
@@ -127,6 +129,18 @@ export function DisplaySettingsDialog({
             aria-label="显示全精灵承伤入口"
             checked={damageComparisonEnabled}
             onChange={(event) => onDamageComparisonChange?.(event.target.checked)}
+            type="checkbox"
+          />
+        </label>
+        <label className="display-settings-option">
+          <span>
+            <strong>记忆萌化状态</strong>
+            <small>跨页面记住双方萌化开关，可能影响低阶精灵预设的加载。</small>
+          </span>
+          <input
+            aria-label="记忆萌化状态"
+            checked={formConfigMemoryEnabled}
+            onChange={(event) => onFormConfigMemoryChange?.(event.target.checked)}
             type="checkbox"
           />
         </label>
