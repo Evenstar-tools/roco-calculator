@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { metrics } from "./analytics/metrics.js";
 import { App } from "./App.jsx";
 
 const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
@@ -20,6 +21,7 @@ export function CalculatorRouter({ initialSnapshot = null }) {
   }, []);
   useEffect(() => {
     window.scrollTo(0, route.deer ? 0 : homeScroll.current);
+    metrics.route(route.deer ? "deer" : "calculator");
   }, [route.deer]);
   function openDeer(input) {
     homeScroll.current = window.scrollY;

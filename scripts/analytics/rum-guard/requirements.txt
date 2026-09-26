@@ -1,0 +1,7 @@
+certifi==2026.7.22
+charset-normalizer==3.5.1
+idna==3.20
+requests==2.34.2
+tencentcloud-sdk-python-common==3.1.181
+tencentcloud-sdk-python-rum==3.1.145
+urllib3==2.8.0
