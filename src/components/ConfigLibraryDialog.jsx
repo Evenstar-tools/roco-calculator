@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useModalFocus } from "../hooks/useModalFocus.js";
 import { getNature } from "../domain/natures.js";
 import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 
@@ -80,19 +81,7 @@ export function ConfigLibraryDialog({
   const [entryQuery, setEntryQuery] = useState("");
   const [importIssuesExpanded, setImportIssuesExpanded] = useState(false);
 
-  useEffect(() => {
-    if (!mode) return undefined;
-    const trigger = document.activeElement;
-    dialogRef.current?.querySelector("button, input")?.focus();
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") onClose?.();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      if (trigger instanceof HTMLElement && trigger.isConnected) trigger.focus();
-    };
-  }, [mode, onClose]);
+  useModalFocus(Boolean(mode), dialogRef, onClose);
 
   useEffect(() => {
     // 切换导出摘要或对话框模式时收回折叠，避免沿用上一份列表的展开态。

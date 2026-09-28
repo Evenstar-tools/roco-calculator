@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { X } from "@phosphor-icons/react";
+import { useRef } from "react";
+import { useModalFocus } from "../hooks/useModalFocus.js";
 
 const GITHUB_REPOSITORY_URL =
   "https://github.com/Evenstar-tools/roco-calculator";
@@ -9,19 +11,7 @@ const MINIAPP_CODE_URL = "/assets/downloads/wechat-miniapp-code.jpg";
 export function ProductAccessDialog({ onClose, open }) {
   const dialogRef = useRef(null);
 
-  useEffect(() => {
-    if (!open) return undefined;
-    const trigger = document.activeElement;
-    dialogRef.current?.querySelector("a, button")?.focus();
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") onClose?.();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      if (trigger instanceof HTMLElement && trigger.isConnected) trigger.focus();
-    };
-  }, [onClose, open]);
+  useModalFocus(open, dialogRef, onClose);
 
   if (!open) return null;
   return (
@@ -40,6 +30,9 @@ export function ProductAccessDialog({ onClose, open }) {
       >
         <header className="product-access-dialog__header">
           <h2>获取应用</h2>
+          <button aria-label="关闭获取应用" className="product-access-close" onClick={onClose} type="button">
+            <X aria-hidden="true" size={18} />
+          </button>
         </header>
         <div className="product-access-dialog__grid">
           <article className="product-access-card product-access-card--desktop">
@@ -51,17 +44,15 @@ export function ProductAccessDialog({ onClose, open }) {
               target="_blank"
             >
               <strong>获取 Windows 电脑版</strong>
-              <span>查看最新版本与安装包</span>
             </a>
             <a
-              aria-label="GitHub 发布页"
+              aria-label="GitHub 项目主页"
               className="product-access-desktop-link"
               href={GITHUB_REPOSITORY_URL}
               rel="noreferrer"
               target="_blank"
             >
-              <strong>GitHub 发布页</strong>
-              <span>项目主页与发布记录</span>
+              <strong>GitHub 项目主页</strong>
             </a>
           </article>
           <article className="product-access-card product-access-card--miniapp">
@@ -81,7 +72,6 @@ export function ProductAccessDialog({ onClose, open }) {
         </div>
         <div className="dialog-actions">
           <button
-            aria-label="关闭获取应用"
             className="secondary-action"
             onClick={onClose}
             type="button"

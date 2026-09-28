@@ -3,6 +3,62 @@ import { USER_RELEASE_NOTES } from "../../src/data/user-release-notes.js";
 
 const [latestRelease] = USER_RELEASE_NOTES;
 
+test("utility dialogs keep keyboard focus 320", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto("/");
+  for (const [entry, name] of [["获取应用", "获取应用"], ["导入导出", "配置库导入导出"]]) {
+    await openMenuItem(page, entry);
+    const dialog = page.getByRole("dialog", { name });
+    await expect(dialog).toBeVisible();
+    if (name === "获取应用") {
+      const close = dialog.getByRole("button", { name: "关闭获取应用", exact: true });
+      await expect(close).toBeInViewport();
+      const label = dialog.getByText("微信小程序", { exact: true });
+      const lineCount = await label.evaluate(node => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        return range.getClientRects().length;
+      });
+      expect(lineCount).toBe(1);
+    }
+    for (const key of ["Tab", "Tab", "Tab", "Tab", "Shift+Tab", "Shift+Tab", "Shift+Tab", "Shift+Tab"]) {
+      await page.keyboard.press(key);
+      expect(await dialog.evaluate(node => node.contains(document.activeElement))).toBe(true);
+    }
+    expect(await page.evaluate(() => document.body.style.overflow)).toBe("hidden");
+    expect(await dialog.evaluate(node => node.scrollWidth <= node.clientWidth)).toBe(true);
+    await page.keyboard.press("Escape");
+    await expect(dialog).not.toBeVisible();
+    await expect(page.getByRole("button", { name: "打开菜单", exact: true })).toBeFocused();
+    expect(await page.evaluate(() => document.body.style.overflow)).not.toBe("hidden");
+  }
+});
+
+test("application access bottom close stays reachable in a short viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 667, height: 375 });
+  await page.goto("/");
+  await openMenuItem(page, "获取应用");
+  const dialog = page.getByRole("dialog", { name: "获取应用", exact: true });
+  const bottomClose = dialog.getByRole("button", { name: "关闭", exact: true });
+  const box = await dialog.boundingBox();
+  expect(box).not.toBeNull();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.wheel(0, 800);
+  await expect(bottomClose).toBeInViewport({ ratio: 1 });
+  await bottomClose.click();
+  await expect(dialog).not.toBeVisible();
+  await expect(page.getByRole("button", { name: "打开菜单", exact: true })).toBeFocused();
+
+  await openMenuItem(page, "获取应用");
+  await expect(dialog.getByRole("button", { name: "关闭获取应用", exact: true })).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(bottomClose).toBeFocused();
+  await expect(bottomClose).toBeInViewport({ ratio: 1 });
+  await page.keyboard.press("Enter");
+  await expect(dialog).not.toBeVisible();
+  await expect(page.getByRole("button", { name: "打开菜单", exact: true })).toBeFocused();
+});
+
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("rock-calculator.first-run-guide.v1", "1");
@@ -77,7 +133,7 @@ test("keeps application access and about dialogs inside a mobile viewport", asyn
   await openMenuItem(page, "获取应用");
   const accessDialog = page.getByRole("dialog", { name: "获取应用" });
   await expect(accessDialog).toBeVisible();
-  await expect(accessDialog.getByRole("link", { name: "GitHub 发布页" }))
+  await expect(accessDialog.getByRole("link", { name: "GitHub 项目主页" }))
     .toHaveAttribute(
       "href",
       "https://github.com/Evenstar-tools/roco-calculator",

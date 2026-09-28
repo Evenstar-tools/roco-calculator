@@ -321,7 +321,7 @@ test("shows desktop downloads and the mini program code", () => {
   });
 
   expect(screen.getByRole("dialog", { name: "获取应用" })).toBeVisible();
-  expect(screen.getByRole("link", { name: "GitHub 发布页" }))
+  expect(screen.getByRole("link", { name: "GitHub 项目主页" }))
     .toHaveAttribute(
       "href",
       "https://github.com/Evenstar-tools/roco-calculator",

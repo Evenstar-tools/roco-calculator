@@ -10,6 +10,8 @@ export default defineConfig({
   },
   webServer: {
     // CI 在同一工作区先构建一次；本地默认仍从源码重新构建，避免验收旧包。
+    // 本地启动还包括数据校验和生产构建，不能与仅启动预览服务共用 60 秒预算。
+    timeout: process.env.E2E_PREBUILT === "1" ? 60_000 : 180_000,
     command: process.env.E2E_PREBUILT === "1"
       ? "npm run preview:test"
       : "npm run build && npm run preview:test",

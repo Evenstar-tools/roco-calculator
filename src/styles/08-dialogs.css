@@ -662,11 +662,15 @@
 
 .product-access-dialog {
   width: min(620px, calc(100vw - 40px));
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
 }
 
 .product-access-dialog__header {
+  position: relative;
   display: grid;
   gap: 2px;
+  padding-right: 44px;
 }
 
 .product-access-dialog__header h2 {
@@ -709,18 +713,22 @@
 }
 
 .product-access-card strong {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .product-access-card span {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 16px;
   line-height: 1.45;
+}
+
+.product-access-dialog .dialog-actions button {
+  font-size: 16px;
 }
 
 .product-access-desktop-link {
   display: grid;
-  min-height: 88px;
+  min-height: 56px;
   align-content: center;
   gap: 3px;
   padding: 16px;
@@ -784,12 +792,23 @@
   }
 
   .product-access-card--miniapp {
-    grid-template-columns: minmax(0, 1fr) 132px;
+    grid-template-columns: minmax(0, 1fr);
     align-items: center;
+  }
+
+  .product-access-card__title {
+    justify-content: center;
   }
 
   .product-access-card--miniapp img {
     width: 132px;
+  }
+}
+
+@media (max-width: 360px) {
+  .product-access-card--miniapp {
+    gap: 8px;
+    padding: 12px;
   }
 }
 
