@@ -36,7 +36,6 @@ const AUDITED_POPULAR_CONFIG_IDS = [
   "spirit_800a0042f52851cf",
   "spirit_b83bc4598f48c604",
   "spirit_d4f6e1e80d4f396e",
-  "spirit_f99f67a3721ea123",
   "spirit_ee30eb99632df5ce",
   "spirit_c245104fe73fad25",
   "spirit_3ba0ecc3da584c40",
@@ -179,6 +178,22 @@ describe("buildFavoriteConfigLibrary", () => {
 });
 
 describe("bundled popular config library", () => {
+  test("帕帕斯卡按指定顺序配招，保留固执和生命物攻速度个体", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    const snapshot = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+    const entry = library.entries.find(({ spiritId }) => spiritId === "spirit_01295eab9380e02c");
+    expect(entry.natureId).toBe("adamant");
+    expect(entry.displayIvs).toEqual({ hp: 60, speed: 60, physicalAttack: 60, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0 });
+    expect(entry.skills.map((id) => snapshot.skills.find((skill) => skill.id === id)?.name)).toEqual(["钢铁洪流", "倾泻", "轴承支撑", "轮班"]);
+  });
+  test("火布丁使用踏实、生命物攻物防个体及指定四技能顺序", () => {
+    const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
+    const snapshot = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+    const entry = library.entries.find(({ spiritId }) => spiritId === "spirit_f99f67a3721ea123");
+    expect(entry.natureId).toBe("grounded");
+    expect(entry.displayIvs).toEqual({ hp: 60, speed: 0, physicalAttack: 60, magicalAttack: 0, physicalDefense: 60, magicalDefense: 0 });
+    expect(entry.skills.map((id) => snapshot.skills.find((skill) => skill.id === id)?.name)).toEqual(["暖阳", "高温回火", "水刃", "超级糖果"]);
+  });
   test("遁地鼠储水形态按截图使用平和、生命物攻速度个体及指定四技能顺序", () => {
     const library = JSON.parse(readFileSync("public/data/presets/pvp-popular-configs.json", "utf8"));
     expect(library.entries.find(({ spiritId }) => spiritId === "spirit_7da7428d895df131")).toEqual({

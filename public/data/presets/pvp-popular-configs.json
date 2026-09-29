@@ -6,7 +6,7 @@
     "data": "s4-2026-09-10",
     "rules": "s4-2026-09-10"
   },
-  "exportedAt": "2026-09-16T10:06:43.553Z",
+  "exportedAt": "2026-09-29T08:52:20.361Z",
   "entryCount": 230,
   "entries": [
     {
@@ -104,9 +104,9 @@
       },
       "skills": [
         "skill_6eac3d616ee2580a",
-        "skill_7338c2b2619d877c",
-        "skill_5a0e55497774d6a3",
-        "skill_e6645e5c0ad42b90"
+        "skill_e6645e5c0ad42b90",
+        "skill_7557b6b5d0679ea5",
+        "skill_5a0e55497774d6a3"
       ],
       "traitValues": {}
     },
@@ -2783,19 +2783,19 @@
     },
     {
       "spiritId": "spirit_f99f67a3721ea123",
-      "natureId": "peaceful",
+      "natureId": "grounded",
       "displayIvs": {
         "hp": 60,
-        "speed": 60,
+        "speed": 0,
         "physicalAttack": 60,
         "magicalAttack": 0,
-        "physicalDefense": 0,
+        "physicalDefense": 60,
         "magicalDefense": 0
       },
       "skills": [
-        "skill_5de6dc05b8315c7d",
+        "skill_e1053a860bd8180d",
+        "skill_b0ab24f11414ad8d",
         "skill_d0d442331827d39c",
-        "skill_487351fbd9ad93df",
         "skill_f5d921b97fb279d7"
       ],
       "traitValues": {}
