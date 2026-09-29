@@ -21,7 +21,6 @@ export default function TransmissionPanel({ snapshot, sides, getSpiritConfigurat
   const [slots, setSlots] = useState(initial);
   const [trait, setTrait] = useState("");
   const [round, setRound] = useState(0);
-  const [phase, setPhase] = useState("start");
   const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(-1);
   const [branch, setBranch] = useState("power");
@@ -49,8 +48,8 @@ export default function TransmissionPanel({ snapshot, sides, getSpiritConfigurat
   const unsupported = trait === "盲拧" ? "盲拧随机重排计算，请更换精灵或特性。" : slots.every(Boolean) ? startRound(slots, effectiveTrait).issue ?? "" : "";
   const actionResults = slots.map((skill, index) => skill ? resolveAction(slots, index, effectiveTrait, "power") : null);
   const specialActions = slots.flatMap((skill, index) => skill?.name === "轮班" || /交换两侧技能位置/.test(skill?.description ?? "") ? [index] : []);
-  const actionTitle = specialActions.every((index) => slots[index].name === "轮班") ? "本回合轮班" : "本回合行动";
-  const selectedIssue = selected >= 0 ? resolveAction(slots, selected, effectiveTrait, branch).issue ?? "" : "";
+  const isCoolingDown = (index) => cooldown === slots[index]?.id && ["有求必应", "一意孤行"].includes(effectiveTrait);
+  const selectedIssue = selected >= 0 ? isCoolingDown(selected) ? "该技能本回合冷却；请选择其他技能或待机。" : resolveAction(slots, selected, effectiveTrait, branch).issue ?? "" : "";
   const driveLayers = slotDriveLayers(slots, effectiveTrait);
   const windStacks = windStacksFromDrive(driveAccum);
   const dialog = useRef(null);
@@ -91,12 +90,9 @@ export default function TransmissionPanel({ snapshot, sides, getSpiritConfigurat
   }, []);
   function reset(next = initial, nextTrait = trait) {
     setPlayback(null);
-    setInitial(next); setSlots(next); setTrait(nextTrait); setRound(0); setPhase("start");
+    setInitial(next); setSlots(next); setTrait(nextTrait); setRound(0);
     setHistory([]); setSelected(-1); setIssue(""); setCooldown(null); setBranch("power");
     setRoundUndo([]); setDriveAccum(0);
-  }
-  function record(title, next, details = []) {
-    setSlots(next); setHistory((previous) => [...previous, { title, slots: next, details }]);
   }
   function roundDetails(result) {
     return [
@@ -106,13 +102,13 @@ export default function TransmissionPanel({ snapshot, sides, getSpiritConfigurat
     ];
   }
   function saveRound() {
-    setRoundUndo((previous) => [...previous, { slots, round, phase, history, selected, branch, cooldown, driveAccum }]);
+    setRoundUndo((previous) => [...previous, { slots, round, history, selected, branch, cooldown, driveAccum }]);
   }
   function previousRound() {
     const previous = roundUndo.at(-1);
     if (!previous) return;
     setPlayback(null);
-    setSlots(previous.slots); setRound(previous.round); setPhase(previous.phase); setHistory(previous.history);
+    setSlots(previous.slots); setRound(previous.round); setHistory(previous.history);
     setSelected(previous.selected); setBranch(previous.branch); setCooldown(previous.cooldown);
     setDriveAccum(previous.driveAccum ?? 0);
     setIssue(""); setRoundUndo((entries) => entries.slice(0, -1));
@@ -120,45 +116,37 @@ export default function TransmissionPanel({ snapshot, sides, getSpiritConfigurat
   function calculateRound() {
     if (playback) return;
     if (unsupported) { setIssue(unsupported); return; }
-    if (phase === "action" && selected >= 0) { setIssue("请先结算已选择的技能，或改为待机后继续计算。"); return; }
-    const result = startRound(slots, effectiveTrait);
+    if (selectedIssue) { setIssue(selectedIssue); return; }
+    const action = round ? resolveAction(slots, selected, effectiveTrait, branch) : null;
+    if (action?.issue) { setIssue(action.issue); return; }
+    const result = startRound(action?.slots ?? slots, effectiveTrait);
     if (result.issue) {
       setIssue(result.issue);
       return;
     }
-    playResult(result, "回合传动");
+    // Both traces use their own input identities; rebase the next round onto this operation.
+    const actionKeys = action?.steps.at(-1)?.keys ?? slots.map((_, index) => index);
+    const steps = [
+      ...(action?.steps ?? []).map((step) => ({ ...step, label: action.label })),
+      ...result.steps.map((step) => ({ ...step, keys: step.keys.map((key) => actionKeys[key]), label: `第 ${round + 1} 回合传动` })),
+    ];
+    playResult({ steps }, "回合传动");
     saveRound();
     const entries = [{ round: round + 1, title: `第 ${round + 1} 回合 · 开始`, slots: result.slots, details: roundDetails(result) }];
-    if (round && phase === "action") entries.unshift({ title: `第 ${round} 回合 · 待机（连续推演）`, slots, details: [] });
-    const gained = effectiveTrait === "风速仪" ? roundDriveTotal(result.sources) : 0;
-    const nextDrive = driveAccum + gained;
-    if (effectiveTrait === "风速仪" && gained > 0) {
-      const last = entries[entries.length - 1];
-      last.details = [...last.details, "累计传动 +" + gained + " → " + nextDrive + "（风起印记 ×" + windStacksFromDrive(nextDrive) + "）"];
+    if (action) entries.unshift({ title: `第 ${round} 回合 · ${action.label}${selected >= 0 ? " · 使用后" : ""}`, slots: action.slots,
+      details: action.executions.map((execution, i) => `第 ${i + 1} 次效果：${execution.branch === "drive" ? "额外传动" : execution.branch === "power" ? "1号位加威" : "当前技能"}${i > 0 ? `（${effectiveTrait}）` : ""}`) });
+    const actionDrive = action?.executions.filter((execution) => execution.branch === "drive").length ?? 0;
+    const roundDrive = roundDriveTotal(result.sources);
+    const nextDrive = driveAccum + actionDrive + roundDrive;
+    if (effectiveTrait === "风速仪") {
+      const cumulativeDetail = (gained, total) => `累计传动 +${gained} → ${total}（风起印记 ×${windStacksFromDrive(total)}）`;
+      if (actionDrive) entries[0].details.push(cumulativeDetail(actionDrive, driveAccum + actionDrive));
+      if (roundDrive) entries.at(-1).details.push(cumulativeDetail(roundDrive, nextDrive));
     }
     setHistory((previous) => [...previous, ...entries]);
-    setSlots(result.slots); setRound(round + 1); setPhase("action"); setSelected(-1); setBranch("power"); setIssue("");
+    setSlots(result.slots); setRound(round + 1); setSelected(-1); setBranch("power"); setIssue("");
     if (effectiveTrait === "风速仪") setDriveAccum(nextDrive);
-    if (phase === "action") setCooldown(null);
-  }
-  function finish() {
-    if (playback) return;
-    if (selected >= 0 && cooldown === slots[selected]?.id && ["有求必应", "一意孤行"].includes(effectiveTrait)) { setIssue("该技能本回合冷却；请选择其他技能或待机。"); return; }
-    const result = resolveAction(slots, selected, effectiveTrait, branch);
-    if (result.issue) { setIssue(result.issue); return; }
-    finishAction(result.slots, result);
-  }
-  function finishAction(next, result) {
-    playResult(result, result.label);
-    setCooldown(selected >= 0 ? slots[selected].id : null);
-
-    if (effectiveTrait === "风速仪") {
-      const driveRuns = (result.executions ?? []).filter((execution) => execution.branch === "drive").length;
-      if (driveRuns > 0) setDriveAccum((previous) => previous + driveRuns);
-    }
-    record(`第 ${round} 回合 · ${result.label}`, next,
-      (result.executions ?? []).map((execution, i) => `第 ${i + 1} 次效果：${execution.branch === "drive" ? "额外传动" : execution.branch === "power" ? "1号位加威" : "当前技能"}${i > 0 ? `（${effectiveTrait}）` : ""}`));
-    setPhase("start"); setIssue("");
+    setCooldown(round && selected >= 0 ? slots[selected].id : null);
   }
   function playResult(result, label) {
     if (!motionEnabled || !Element.prototype.animate || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
@@ -216,7 +204,7 @@ export default function TransmissionPanel({ snapshot, sides, getSpiritConfigurat
         </div>
         {trait && <details className="transmission-trait-description"><summary>特性说明</summary><p className="transmission-muted">{snapshot.traits.find((entry) => entry.name === trait)?.description}</p></details>}
         <div className="transmission-slot-heading">
-          <h3 aria-live="polite">{round ? `第 ${round} 回合 · ${playback ? "传动中" : phase === "action" ? "传动后顺序" : "行动结束"}` : "初始配置"}</h3>
+          <h3 aria-live="polite">{round ? `第 ${round} 回合 · ${playback ? "传动中" : "传动后顺序"}` : "初始配置"}</h3>
           <div className="transmission-layout" role="group" aria-label="技能布局">
           <button type="button" aria-pressed={layout === "vertical"} onClick={() => { setPlayback(null); setLayout("vertical"); }}>竖排</button>
           <button type="button" aria-pressed={layout === "grid"} onClick={() => { setPlayback(null); setLayout("grid"); }}>2×2</button>
@@ -254,27 +242,24 @@ export default function TransmissionPanel({ snapshot, sides, getSpiritConfigurat
         {trait === "机械变式" && <p className="transmission-muted">仅支持技能顺序推演；能耗递减暂不支持。</p>}
         {trait === "风速仪" && <p className="transmission-wind" aria-live="polite">已累计传动数 {driveAccum}，风起印记 ×{windStacks}</p>}
         <div className="transmission-round-controls" role="group" aria-label="回合控制">
-          <button className="transmission-primary" type="button" disabled={(round === 0 && slots.some((skill) => !skill)) || Boolean(unsupported) || Boolean(playback)} onClick={calculateRound}>{round === 0 ? "开始" : phase === "action" && selected < 0 ? "待机到下一回合" : "下一回合"}</button>
+          {round > 0 && specialActions.length > 0 && <label className="transmission-action">本回合行动
+            <select aria-label="本回合行动" value={selected < 0 ? "idle" : `${selected}:${branch}`} disabled={Boolean(unsupported) || Boolean(playback)} onChange={(event) => {
+              const [index, effect = "power"] = event.target.value.split(":");
+              setSelected(index === "idle" ? -1 : Number(index));
+              setBranch(effect);
+              setIssue("");
+            }}>
+              <option value="idle">待机</option>
+              {specialActions.flatMap((index) => (slots[index].name === "轮班" ? ["power", "drive"] : ["power"]).map((effect) => <option key={`${index}:${effect}`} value={`${index}:${effect}`} disabled={Boolean(actionResults[index]?.issue) || isCoolingDown(index)}>
+                {specialActions.length > 1 ? `${index + 1}号位 · ` : ""}{slots[index].name}{slots[index].name === "轮班" ? effect === "drive" ? " · 额外传动" : " · 加威" : ""}{actionResults[index]?.issue ? (actionResults[index].issue.includes("当前槽位不可使用") ? "（槽位不可用）" : "（不可用）") : ""}{isCoolingDown(index) ? "（冷却）" : ""}
+              </option>))}
+            </select>
+          </label>}
+          <button className="transmission-primary" type="button" disabled={(round === 0 && slots.some((skill) => !skill)) || Boolean(unsupported) || Boolean(selectedIssue) || Boolean(playback)} onClick={calculateRound}>{round === 0 ? "开始" : "推演下一回合"}</button>
           {playback && <button type="button" onClick={() => setPlayback(null)}>跳过动效</button>}
           <button className="transmission-round-undo" type="button" aria-label="回到上回合" title="回到上回合" disabled={!roundUndo.length} onClick={previousRound}><ArrowCounterClockwise size={20} aria-hidden="true" /></button>
         </div>
-        {phase === "action" && specialActions.length > 0 && <details className="transmission-action" open><summary>{actionTitle === "本回合轮班" ? "轮班" : "行动"}</summary><div className="transmission-toolbar" data-has-branch={slots[selected]?.name === "轮班"}>
-            <select aria-label={actionTitle} value={selected} disabled={Boolean(unsupported) || Boolean(playback)} onChange={(event) => {
-              setSelected(Number(event.target.value));
-              setBranch("power");
-              setIssue("");
-            }}>
-              <option value={-1}>待机</option>
-              {specialActions.map((index) => <option key={index} value={index} disabled={Boolean(actionResults[index]?.issue) || (cooldown === slots[index]?.id && ["有求必应", "一意孤行"].includes(effectiveTrait))}>
-                使用 {index + 1}号位 · {slots[index].name}{actionResults[index]?.issue ? (actionResults[index].issue.includes("当前槽位不可使用") ? "（槽位不可用）" : "（不可用）") : ""}{cooldown === slots[index]?.id && ["有求必应", "一意孤行"].includes(effectiveTrait) ? "（冷却）" : ""}
-              </option>)}
-            </select>
-            {slots[selected]?.name === "轮班" && <select aria-label="轮班选择效果" value={branch} disabled={Boolean(unsupported) || Boolean(playback)} onChange={(event) => setBranch(event.target.value)}>
-              <option value="power">1号位加威（仅顺序）</option>
-              <option value="drive">额外传动</option>
-            </select>}
-            <button className="transmission-primary" type="button" disabled={Boolean(unsupported) || Boolean(selectedIssue) || Boolean(playback)} onClick={finish}>结算行动</button>
-        </div></details>}
+        {round > 0 && selected >= 0 && slots[selected]?.name === "轮班" && branch === "power" && <p className="transmission-muted">加威仅记录顺序，不计算伤害与能耗。</p>}
         {issue && <p role="alert" className="transmission-issue">{issue}</p>}
         {selectedIssue && <p role="status" className="transmission-issue">不支持：{selectedIssue}</p>}
 

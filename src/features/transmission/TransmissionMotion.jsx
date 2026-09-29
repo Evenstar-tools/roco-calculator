@@ -34,7 +34,7 @@ export default function TransmissionMotion({ playback, boardRef, onComplete }) {
         for (const [frame, step] of playback.steps.entries()) {
           if (cancelled) return;
           const nextPositions = positions.map((_, key) => step.keys.indexOf(key));
-          progress.current.textContent = `${playback.label} · ${frame + 1}/${playback.steps.length}`;
+          progress.current.textContent = `${step.label ?? playback.label} · ${frame + 1}/${playback.steps.length}`;
           animations = cards.current.flatMap((card, key) => {
             const from = positions[key], to = nextPositions[key];
             card.dataset.moving = String(from !== to);

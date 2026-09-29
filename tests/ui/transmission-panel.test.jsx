@@ -4,8 +4,11 @@ import snapshot from "../../data/snapshots/current.json";
 import popularConfigs from "../../public/data/presets/pvp-popular-configs.json";
 import TransmissionPanel from "../../src/features/transmission/TransmissionPanel.jsx";
 
-const roundButton = () => screen.getByRole("button", { name: /^(开始|待机到下一回合|下一回合)$/ });
+const roundButton = () => screen.getByRole("button", { name: /^(开始|推演下一回合)$/ });
 const advance = () => fireEvent.click(roundButton());
+const actionSelector = () => screen.getByLabelText("本回合行动");
+const selectAction = (value) => fireEvent.change(actionSelector(), { target: { value } });
+const historyEntries = () => [...document.querySelectorAll(".transmission-history > li")];
 const skill = (name) => snapshot.skills.find((entry) => entry.name === name);
 const side = (names) => ({ skills: { four: names.map((name) => ({ skillId: skill(name).id })) } });
 const currentOrder = () => [...screen.getByRole("list", { name: "当前技能槽位" }).querySelectorAll("strong")].map((entry) => entry.textContent);
@@ -27,10 +30,10 @@ afterEach(() => {
 
 function mockMotion(reduced = false) {
   const animations = [];
-  Object.defineProperty(Element.prototype, "animate", { configurable: true, value: vi.fn(() => {
+  Object.defineProperty(Element.prototype, "animate", { configurable: true, value: vi.fn(function (frames) {
     let resolve;
     const finished = new Promise((done) => { resolve = done; });
-    const animation = { finished, resolve, cancel: vi.fn() };
+    const animation = { finished, resolve, cancel: vi.fn(), frames, instance: Number(this.dataset.instance) };
     animations.push(animation);
     return animation;
   }) });
@@ -57,14 +60,14 @@ function mockMotion(reduced = false) {
   };
 }
 
-test("合并回合按钮切换到待机后，焦点移出弹层仍可Escape关闭", () => {
+test("开始后复用同一个推进按钮，焦点移出弹层仍可Escape关闭", () => {
   const onClose = vi.fn();
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["啮合传递", "地刺", "传感器", "主轴"]) }} onClose={onClose} />);
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   const button = roundButton();
   advance();
   expect(roundButton()).toBe(button);
-  expect(button).toHaveTextContent("待机到下一回合");
+  expect(button).toHaveTextContent("推演下一回合");
   fireEvent.keyDown(document, { key: "Escape" });
   expect(onClose).toHaveBeenCalledOnce();
 });
@@ -133,14 +136,14 @@ test("开始立即传动，下一回合及撤回恢复完整回合状态", () =>
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   const back = () => fireEvent.click(screen.getByRole("button", { name: "回到上回合" }));
   const order = () => [...screen.getByRole("list", { name: "当前技能槽位" }).querySelectorAll("strong")].map((entry) => entry.textContent);
-  expect(screen.queryByRole("button", { name: "下一回合", exact: true })).toBeNull();
+  expect(screen.queryByRole("button", { name: "推演下一回合", exact: true })).toBeNull();
   expect(roundButton()).toHaveTextContent("开始");
   expect(screen.getByRole("button", { name: "回到上回合" })).toBeDisabled();
   expect(screen.queryByLabelText("计算回合")).toBeNull();
   advance();
   expect(order()).toEqual(["D", "A", "B", "C"]);
   expect(screen.queryByRole("button", { name: "开始", exact: true })).toBeNull();
-  expect(roundButton()).toHaveTextContent("待机到下一回合");
+  expect(roundButton()).toHaveTextContent("推演下一回合");
   expect(screen.queryByLabelText("初始1号位技能")).toBeNull();
   fireEvent.mouseEnter(screen.getByRole("button", { name: "查看初始配置" }).parentElement);
   expect(within(screen.getByRole("list", { name: "初始配置预览" })).getAllByRole("listitem").map((entry) => entry.textContent)).toEqual(["1A", "2B", "3C", "4D"]);
@@ -204,33 +207,90 @@ test("记忆配置中的空槽、重复和技能顺序原样带入，不被自�
   expect(initialOrder()).toEqual(["轮班", "", "轮班", "钢铁洪流"]);
   expect(roundButton()).toBeDisabled();
 });
-test("杠杆置换有行动入口并交换相邻技能，不显示轮班分支", () => {
+test("杠杆置换保留行动入口，一次推进交换相邻技能后进入下回合", () => {
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["金属噪音", "齿轮扭矩", "杠杆置换", "倾泻"]) }} onClose={vi.fn()} />);
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   advance();
-  expect(document.querySelector(".transmission-action > summary")).toHaveTextContent(/^行动$/);
   expect(screen.queryByLabelText("本回合轮班")).toBeNull();
-  fireEvent.change(screen.getByLabelText("本回合行动"), { target: { value: "2" } });
+  selectAction("2:power");
   expect(screen.queryByLabelText("轮班选择效果")).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "结算行动" }));
+  expect(screen.queryByRole("button", { name: "结算行动" })).toBeNull();
+  advance();
   expect(currentOrder()).toEqual(["金属噪音", "倾泻", "杠杆置换", "齿轮扭矩"]);
+  expect(screen.getByRole("heading", { name: "第 2 回合 · 传动后顺序" })).toBeInTheDocument();
 });
 
-test("有轮班时显示行动区，额外传动可结算并进入下一回合", () => {
+test("轮班两分支直接选择，一次推进并清除行动选择", () => {
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["轮班", "金属噪音", "齿轮扭矩", "杠杆置换"]) }} onClose={vi.fn()} />);
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   advance();
-  expect(document.querySelector(".transmission-action > summary")).toHaveTextContent(/^行动$/);
-  fireEvent.change(screen.getByLabelText("本回合行动"), { target: { value: "1" } });
-  expect(roundButton()).toHaveTextContent(/^下一回合$/);
-  expect(within(screen.getByLabelText("轮班选择效果")).getByRole("option", { name: "额外传动" })).toBeEnabled();
-  fireEvent.change(screen.getByLabelText("轮班选择效果"), { target: { value: "drive" } });
-  expect(screen.getByRole("button", { name: "结算行动" })).toBeEnabled();
-  fireEvent.click(screen.getByRole("button", { name: "结算行动" }));
-  expect(screen.getByText(/轮班 · 额外传动/)).toBeInTheDocument();
-  expect(roundButton()).toHaveTextContent(/^下一回合$/);
+  expect(within(actionSelector()).getByRole("option", { name: /轮班 · 加威/ })).toBeEnabled();
+  expect(within(actionSelector()).getByRole("option", { name: /轮班 · 额外传动/ })).toBeEnabled();
+  selectAction("1:drive");
+  expect(roundButton()).toHaveTextContent(/^推演下一回合$/);
+  expect(screen.queryByLabelText("轮班选择效果")).toBeNull();
+  expect(screen.queryByRole("button", { name: "结算行动" })).toBeNull();
   advance();
   expect(screen.getByRole("heading", { name: "第 2 回合 · 传动后顺序" })).toBeInTheDocument();
+  expect(actionSelector()).toHaveValue("idle");
+  expect(historyEntries()[1]).toHaveTextContent("第 1 回合 · 轮班 · 额外传动 · 使用后");
+  expect(historyEntries()[2]).toHaveTextContent("第 2 回合 · 开始");
+});
+
+test.each([
+  ["drive", ["倾泻", "轮班", "轴承支撑", "钢铁洪流"], ["倾泻", "钢铁洪流", "轮班", "轴承支撑"]],
+  ["power", ["轮班", "倾泻", "轴承支撑", "钢铁洪流"], ["倾泻", "钢铁洪流", "轮班", "轴承支撑"]],
+])("帕帕斯卡翼轴轮班 %s 一次推进保存两步，撤回完整恢复行动选择", (branch, afterAction, nextRound) => {
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: nativeSide("帕帕斯卡", ["钢铁洪流", "倾泻", "轴承支撑", "轮班"]) }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  advance();
+  const before = ["轮班", "倾泻", "轴承支撑", "钢铁洪流"];
+  expect(currentOrder()).toEqual(before);
+  selectAction(`0:${branch}`);
+  if (branch === "power") expect(screen.getByText("加威仅记录顺序，不计算伤害与能耗。")).toBeInTheDocument();
+  advance();
+  expect(currentOrder()).toEqual(nextRound);
+  expect(actionSelector()).toHaveValue("idle");
+  expect(historyEntries()).toHaveLength(3);
+  expect(historyEntries()[1].querySelector("p").textContent).toBe(afterAction.map((name, i) => `${i + 1}. ${name}`).join(" → "));
+  expect(historyEntries()[1].querySelector("strong")).toHaveTextContent("使用后");
+  expect(historyEntries()[2].querySelector("strong")).toHaveTextContent("第 2 回合 · 开始");
+  fireEvent.click(screen.getByRole("button", { name: "回到上回合" }));
+  expect(currentOrder()).toEqual(before);
+  expect(actionSelector()).toHaveValue(`0:${branch}`);
+  expect(historyEntries()).toHaveLength(1);
+  expect(screen.getByRole("heading", { name: "第 1 回合 · 传动后顺序" })).toBeInTheDocument();
+  advance();
+  expect(currentOrder()).toEqual(nextRound);
+  expect(historyEntries()).toHaveLength(3);
+});
+
+test("风速仪合并轮班与回合传动跨印记阈值，撤回累计和两步记录", () => {
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: nativeSide("测风蝉", ["广播", "无风", "齿轮切开", "轮班"]) }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  advance();
+  expect(screen.getByText("已累计传动数 2，风起印记 ×0")).toBeInTheDocument();
+  const wheel = () => within(actionSelector()).getByRole("option", { name: /轮班 · 额外传动/ }).value;
+  selectAction(wheel());
+  advance();
+  expect(screen.getByText("已累计传动数 5，风起印记 ×0")).toBeInTheDocument();
+  expect(historyEntries()[1]).toHaveTextContent("累计传动 +1 → 3（风起印记 ×0）");
+  expect(historyEntries()[2]).toHaveTextContent("累计传动 +2 → 5（风起印记 ×0）");
+  const before = currentOrder(), selected = wheel();
+  selectAction(selected);
+  advance();
+  expect(screen.getByText("已累计传动数 8，风起印记 ×1")).toBeInTheDocument();
+  expect(historyEntries()).toHaveLength(5);
+  expect(historyEntries()[3]).toHaveTextContent("累计传动 +1 → 6（风起印记 ×0）");
+  expect(historyEntries()[4]).toHaveTextContent("累计传动 +2 → 8（风起印记 ×1）");
+  fireEvent.click(screen.getByRole("button", { name: "回到上回合" }));
+  expect(currentOrder()).toEqual(before);
+  expect(actionSelector()).toHaveValue(selected);
+  expect(screen.getByText("已累计传动数 5，风起印记 ×0")).toBeInTheDocument();
+  expect(historyEntries()).toHaveLength(3);
+  selectAction("idle");
+  advance();
+  expect(screen.getByText("已累计传动数 7，风起印记 ×0")).toBeInTheDocument();
 });
 
 test("盲拧选项禁用，直接选择对应精灵也不能绕过阻断", () => {
@@ -266,8 +326,7 @@ test.each([["正位宝剑", "圣剑-X", ["金属噪音", "轮班", "齿轮扭矩
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   expect(screen.getByLabelText("传动特性")).toHaveValue(trait);
   advance();
-  expect(document.querySelector(".transmission-action > summary")).toHaveTextContent(/^轮班$/);
-  expect(within(screen.getByLabelText("本回合轮班")).getByRole("option", { name: /^使用/ })).toBeDisabled();
+  for (const option of within(actionSelector()).getAllByRole("option", { name: /轮班/ })) expect(option).toBeDisabled();
 });
 
 test("风速仪累计传动与风起印记，并显示各号位传动数", () => {
@@ -303,10 +362,8 @@ test.each([["加尔", "有求必应"], ["黑化加尔", "一意孤行"]])("%s原
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   expect(screen.getByLabelText("传动特性")).toHaveValue(trait);
   advance();
-  const option = () => within(screen.getByLabelText("本回合轮班")).getByRole("option", { name: /使用.*轮班/ });
-  fireEvent.change(screen.getByLabelText("本回合轮班"), { target: { value: option().value } });
-  fireEvent.change(screen.getByLabelText("轮班选择效果"), { target: { value: "drive" } });
-  fireEvent.click(screen.getByRole("button", { name: "结算行动" }));
+  const option = () => within(actionSelector()).getByRole("option", { name: /轮班 · 额外传动/ });
+  selectAction(option().value);
   advance();
   expect(option()).toBeDisabled();
   expect(option()).toHaveTextContent("冷却");
@@ -314,22 +371,51 @@ test.each([["加尔", "有求必应"], ["黑化加尔", "一意孤行"]])("%s原
   expect(option()).toBeEnabled();
   fireEvent.click(screen.getByRole("button", { name: "回到上回合" }));
   expect(option()).toBeDisabled();
-  fireEvent.click(screen.getByRole("button", { name: "结算行动" }));
   advance();
   expect(option()).toBeEnabled();
 });
 
-test("重复轮班可以指定第二张，额外传动不移动第一张", () => {
+test("重复轮班可以指定第二张，历史保留该张行动后的独立顺序", () => {
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["轮班", "金属噪音", "齿轮扭矩", "轮班"]) }} onClose={vi.fn()} />);
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   advance();
   expect(currentOrder()).toEqual(["轮班", "轮班", "齿轮扭矩", "金属噪音"]);
-  const selector = screen.getByLabelText("本回合轮班");
-  expect(within(selector).getAllByRole("option", { name: /使用.*轮班/ })).toHaveLength(2);
-  fireEvent.change(selector, { target: { value: "1" } });
-  fireEvent.change(screen.getByLabelText("轮班选择效果"), { target: { value: "drive" } });
-  fireEvent.click(screen.getByRole("button", { name: "结算行动" }));
-  expect(currentOrder()).toEqual(["轮班", "齿轮扭矩", "轮班", "金属噪音"]);
+  expect(within(actionSelector()).getAllByRole("option", { name: /轮班 · 额外传动/ })).toHaveLength(2);
+  selectAction("1:drive");
+  advance();
+  expect(historyEntries()[1].querySelector("p")).toHaveTextContent("1. 轮班 → 2. 齿轮扭矩 → 3. 轮班 → 4. 金属噪音");
+});
+
+test("一意孤行重复轮班的行动与下回合动效串联保留实例身份，撤回不丢选项", async () => {
+  const motion = mockMotion();
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: nativeSide("黑化加尔", ["轮班", "金属噪音", "齿轮扭矩", "轮班"]) }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  advance();
+  await motion.finish();
+  const before = ["轮班", "轮班", "齿轮扭矩", "金属噪音"];
+  expect(currentOrder()).toEqual(before);
+  const previousAnimations = motion.animations.length;
+  selectAction("1:drive");
+  advance();
+  expect(currentOrder()).toEqual(["轮班", "轮班", "金属噪音", "齿轮扭矩"]);
+  expect(historyEntries()[1].querySelector("p")).toHaveTextContent("1. 轮班 → 2. 齿轮扭矩 → 3. 金属噪音 → 4. 轮班");
+  expect(roundButton()).toBeDisabled();
+  await motion.finish();
+  const moves = motion.animations.slice(previousAnimations);
+  expect(moves.filter((animation) => animation.instance === 1).map((animation) => animation.frames.map((frame) => frame.transform))).toEqual([
+    ["translate(200px, 0px)", "translate(0px, 84px)"],
+    ["translate(0px, 84px)", "translate(200px, 84px)"],
+    ["translate(200px, 84px)", "translate(0px, 0px)"],
+  ]);
+  expect(moves.filter((animation) => animation.instance === 0).map((animation) => animation.frames.map((frame) => frame.transform))).toEqual([
+    ["translate(0px, 0px)", "translate(200px, 0px)"],
+  ]);
+  for (const option of within(actionSelector()).getAllByRole("option", { name: /轮班/ })) expect(option).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: "回到上回合" }));
+  expect(currentOrder()).toEqual(before);
+  expect(actionSelector()).toHaveValue("1:drive");
+  expect(historyEntries()).toHaveLength(1);
+  for (const option of within(actionSelector()).getAllByRole("option", { name: /轮班/ })) expect(option).toBeEnabled();
 });
 
 test("杠杆置换邻接固定技能时禁用，不能绕过引擎阻断", () => {
@@ -338,9 +424,9 @@ test("杠杆置换邻接固定技能时禁用，不能绕过引擎阻断", () =>
   advance();
   const selector = screen.getByLabelText("本回合行动");
   expect(within(selector).getByRole("option", { name: /杠杆置换/ })).toBeDisabled();
-  fireEvent.change(selector, { target: { value: "0" } });
+  fireEvent.change(selector, { target: { value: "0:power" } });
   expect(screen.getByRole("status")).toHaveTextContent("固定槽位的冲突规则未确认");
-  expect(screen.getByRole("button", { name: "结算行动" })).toBeDisabled();
+  expect(roundButton()).toBeDisabled();
   expect(currentOrder()).toEqual(["杠杆置换", "主轴", "金属噪音", "倾泻"]);
 });
 
@@ -382,7 +468,7 @@ test("图标动效开关提示当前状态，播放中关闭不改结果并可�
   expect(toggle).toHaveAttribute("aria-pressed", "true");
   expect(toggle.title).toContain("已开启");
   advance();
-  expect(roundButton()).toHaveTextContent(/^待机到下一回合$/);
+  expect(roundButton()).toHaveTextContent(/^推演下一回合$/);
   expect(roundButton()).toBeDisabled();
   const oldAnimations = [...motion.animations];
   expect(oldAnimations.length).toBeGreaterThan(0);
