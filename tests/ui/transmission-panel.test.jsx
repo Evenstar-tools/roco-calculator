@@ -1,11 +1,52 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, expect, test, vi } from "vitest";
 import snapshot from "../../data/snapshots/current.json";
 import TransmissionPanel from "../../src/features/transmission/TransmissionPanel.jsx";
 
 const advance = () => fireEvent.click(screen.getByRole("button", { name: screen.getByRole("button", { name: "开始", exact: true }).disabled ? "下一回合" : "开始", exact: true }));
 const skill = (name) => snapshot.skills.find((entry) => entry.name === name);
 const side = (names) => ({ skills: { four: names.map((name) => ({ skillId: skill(name).id })) } });
+const currentOrder = () => [...screen.getByRole("list", { name: "当前技能槽位" }).querySelectorAll("strong")].map((entry) => entry.textContent);
+const nativeSide = (owner, names) => ({ ...side(names), spiritId: snapshot.spirits.find((entry) => entry.fullName === owner).id });
+const originalAnimate = Object.getOwnPropertyDescriptor(Element.prototype, "animate");
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  if (originalAnimate) Object.defineProperty(Element.prototype, "animate", originalAnimate);
+  else delete Element.prototype.animate;
+});
+
+function mockMotion(reduced = false) {
+  const animations = [];
+  Object.defineProperty(Element.prototype, "animate", { configurable: true, value: vi.fn(() => {
+    let resolve;
+    const finished = new Promise((done) => { resolve = done; });
+    const animation = { finished, resolve, cancel: vi.fn() };
+    animations.push(animation);
+    return animation;
+  }) });
+  vi.spyOn(window, "matchMedia").mockReturnValue({ matches: reduced, addEventListener: vi.fn(), removeEventListener: vi.fn() });
+  const getRect = Element.prototype.getBoundingClientRect;
+  vi.spyOn(Element.prototype, "getBoundingClientRect").mockImplementation(function () {
+    const index = this.parentElement?.classList.contains("transmission-slots") ? [...this.parentElement.children].indexOf(this) : 0;
+    if (this.classList.contains("transmission-slots") || this.parentElement?.classList.contains("transmission-slots")) {
+      const x = index % 2 * 200, y = Math.floor(index / 2) * 84;
+      return { x, y, left: x, top: y, right: x + 198, bottom: y + 80, width: 198, height: 80, toJSON() {} };
+    }
+    return getRect.call(this);
+  });
+  return {
+    animations,
+    async finish() {
+      let completed = 0;
+      while (completed < animations.length) {
+        const pending = animations.slice(completed);
+        completed = animations.length;
+        await act(async () => { pending.forEach((animation) => animation.resolve()); });
+      }
+    },
+  };
+}
 
 test("开始按钮禁用导致焦点移出弹层后Escape仍可关闭", () => {
   const onClose = vi.fn();
@@ -19,8 +60,8 @@ test("开始按钮禁用导致焦点移出弹层后Escape仍可关闭", () => {
 test("相关特性列表反向选择最终形态，并重置旧推演", () => {
   render(<TransmissionPanel snapshot={snapshot} onClose={vi.fn()} />);
   const selector = screen.getByLabelText("传动特性");
-  expect(within(selector).getAllByRole("option").filter((entry) => entry.value).map((entry) => entry.value)).toEqual(["向心力", "翼轴", "贪心算法", "盲拧", "机械变式", "风速仪", "正位宝剑", "宝剑王牌"]);
-  for (const [trait, owner] of [["向心力", "声波缇塔"], ["翼轴", "帕帕斯卡"], ["贪心算法", "贝古斯"], ["机械变式", "权杖-V"], ["风速仪", "测风蝉"], ["正位宝剑", "圣剑-X"], ["宝剑王牌", "圣剑骑士"]]) {
+  expect(within(selector).getAllByRole("option").filter((entry) => entry.value).map((entry) => entry.value)).toEqual(["向心力", "翼轴", "贪心算法", "盲拧", "机械变式", "风速仪", "正位宝剑", "宝剑王牌", "有求必应", "一意孤行"]);
+  for (const [trait, owner] of [["向心力", "声波缇塔"], ["翼轴", "帕帕斯卡"], ["贪心算法", "贝古斯"], ["机械变式", "权杖-V"], ["风速仪", "测风蝉"], ["正位宝剑", "圣剑-X"], ["宝剑王牌", "圣剑骑士"], ["有求必应", "加尔"], ["一意孤行", "黑化加尔"]]) {
     fireEvent.change(selector, { target: { value: trait } });
     expect(screen.getByLabelText("推演精灵")).toHaveValue(owner);
     expect(selector).toHaveValue(trait);
@@ -76,20 +117,24 @@ test("选择精灵自动匹配特性与四技能，换精灵清除上次推演",
   expect(screen.queryByRole("list", { name: "当前技能槽位" })).toBeNull();
   expect(screen.getByRole("button", { name: "开始", exact: true })).toBeEnabled();
 });
-test("无轮班时不显示本回合行动区", () => {
+test("杠杆置换有行动入口并交换相邻技能，不显示轮班分支", () => {
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["金属噪音", "齿轮扭矩", "杠杆置换", "倾泻"]) }} onClose={vi.fn()} />);
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   advance();
   expect(screen.queryByText("本回合轮班（可选）")).toBeNull();
   expect(screen.queryByLabelText("本回合轮班")).toBeNull();
+  fireEvent.change(screen.getByLabelText("本回合行动"), { target: { value: "2" } });
+  expect(screen.queryByLabelText("轮班选择效果")).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "结算行动" }));
+  expect(currentOrder()).toEqual(["金属噪音", "倾泻", "杠杆置换", "齿轮扭矩"]);
 });
 
 test("有轮班时显示行动区，额外传动可结算并进入下一回合", () => {
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["轮班", "金属噪音", "齿轮扭矩", "杠杆置换"]) }} onClose={vi.fn()} />);
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   advance();
-  expect(screen.getByText("本回合轮班（可选）")).toBeInTheDocument();
-  fireEvent.change(screen.getByLabelText("本回合轮班"), { target: { value: "use" } });
+  expect(screen.getByText("本回合行动（可选）")).toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("本回合行动"), { target: { value: "1" } });
   expect(within(screen.getByLabelText("轮班选择效果")).getByRole("option", { name: "额外传动" })).toBeEnabled();
   fireEvent.change(screen.getByLabelText("轮班选择效果"), { target: { value: "drive" } });
   expect(screen.getByRole("button", { name: "结算行动" })).toBeEnabled();
@@ -151,4 +196,106 @@ test("正位宝剑不可用槽位标记为灰", () => {
   expect(screen.getByLabelText("传动特性")).toHaveValue("正位宝剑");
   const blocked = document.querySelectorAll('.transmission-config > .is-unusable');
   expect(blocked.length).toBe(3);
+});
+
+test.each([["加尔", "有求必应"], ["黑化加尔", "一意孤行"]])("%s原生特性轮班冷却随回合和撤回恢复", (owner, trait) => {
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: nativeSide(owner, ["轮班", "金属噪音", "齿轮扭矩", "倾泻"]) }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  expect(screen.getByLabelText("传动特性")).toHaveValue(trait);
+  advance();
+  const option = () => within(screen.getByLabelText("本回合轮班")).getByRole("option", { name: /使用.*轮班/ });
+  fireEvent.change(screen.getByLabelText("本回合轮班"), { target: { value: option().value } });
+  fireEvent.change(screen.getByLabelText("轮班选择效果"), { target: { value: "drive" } });
+  fireEvent.click(screen.getByRole("button", { name: "结算行动" }));
+  advance();
+  expect(option()).toBeDisabled();
+  expect(option()).toHaveTextContent("冷却");
+  advance();
+  expect(option()).toBeEnabled();
+  fireEvent.click(screen.getByRole("button", { name: "回到上回合" }));
+  expect(option()).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: "结算行动" }));
+  advance();
+  expect(option()).toBeEnabled();
+});
+
+test("重复轮班可以指定第二张，额外传动不移动第一张", () => {
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["轮班", "金属噪音", "齿轮扭矩", "轮班"]) }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  advance();
+  expect(currentOrder()).toEqual(["轮班", "轮班", "齿轮扭矩", "金属噪音"]);
+  const selector = screen.getByLabelText("本回合轮班");
+  expect(within(selector).getAllByRole("option", { name: /使用.*轮班/ })).toHaveLength(2);
+  fireEvent.change(selector, { target: { value: "1" } });
+  fireEvent.change(screen.getByLabelText("轮班选择效果"), { target: { value: "drive" } });
+  fireEvent.click(screen.getByRole("button", { name: "结算行动" }));
+  expect(currentOrder()).toEqual(["轮班", "齿轮扭矩", "轮班", "金属噪音"]);
+});
+
+test("杠杆置换邻接固定技能时禁用，不能绕过引擎阻断", () => {
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["杠杆置换", "主轴", "金属噪音", "倾泻"]) }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  advance();
+  const selector = screen.getByLabelText("本回合行动");
+  expect(within(selector).getByRole("option", { name: /杠杆置换/ })).toBeDisabled();
+  fireEvent.change(selector, { target: { value: "0" } });
+  expect(screen.getByRole("status")).toHaveTextContent("固定槽位的冲突规则未确认");
+  expect(screen.getByRole("button", { name: "结算行动" })).toBeDisabled();
+  expect(currentOrder()).toEqual(["杠杆置换", "主轴", "金属噪音", "倾泻"]);
+});
+
+function renderWindMotion() {
+  const demo = { ...snapshot, skills: ["A", "B", "C", "D"].map((name) => ({ id: name, name, description: "传动2" })) };
+  const owner = snapshot.spirits.find((entry) => entry.fullName === "测风蝉");
+  const view = render(<TransmissionPanel snapshot={demo} sides={{ attacker: { spiritId: owner.id, skills: { four: ["A", "B", "C", "D"] } } }} onClose={() => view.unmount()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  return view;
+}
+
+test.each(["开启", "关闭", "减少动态效果"])("动效%s不改变多层终态或重复累计风速仪", async (mode) => {
+  const motion = mockMotion(mode === "减少动态效果");
+  renderWindMotion();
+  if (mode === "关闭") fireEvent.click(screen.getByRole("checkbox", { name: "传动动效" }));
+  advance();
+  expect(currentOrder()).toEqual(["C", "D", "A", "B"]);
+  expect(screen.getByText("已累计传动数 8，风起印记 ×1")).toBeInTheDocument();
+  if (mode === "开启") {
+    expect(screen.getByRole("button", { name: "下一回合" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "下一回合" }));
+    expect(screen.getByText("已累计传动数 8，风起印记 ×1")).toBeInTheDocument();
+  } else expect(motion.animations).toHaveLength(0);
+  await motion.finish();
+  expect(screen.getByRole("list", { name: "当前技能槽位" })).toHaveAttribute("aria-busy", "false");
+  advance();
+  await motion.finish();
+  expect(currentOrder()).toEqual(["A", "B", "C", "D"]);
+  expect(screen.getByText("已累计传动数 16，风起印记 ×2")).toBeInTheDocument();
+  expect(screen.getByText("逐步记录 · 3 条")).toBeInTheDocument();
+});
+
+test.each(["跳过动效", "重置推演", "回到上回合", "竖排", "关闭传动计算器"])("播放时%s取消旧轨迹，迟到完成不覆盖状态", async (control) => {
+  const motion = mockMotion();
+  renderWindMotion();
+  advance();
+  const oldAnimations = [...motion.animations];
+  expect(oldAnimations.length).toBeGreaterThan(0);
+  fireEvent.click(screen.getByRole("button", { name: control, exact: true }));
+  expect(oldAnimations.every((animation) => animation.cancel.mock.calls.length > 0)).toBe(true);
+  if (control === "关闭传动计算器") {
+    await motion.finish();
+    expect(screen.queryByRole("dialog", { name: "传动计算器" })).toBeNull();
+    return;
+  }
+  const restored = ["重置推演", "回到上回合"].includes(control);
+  if (restored) {
+    expect(screen.getByLabelText("初始1号位技能")).toHaveValue("A");
+    expect(screen.getByText("已累计传动数 0，风起印记 ×0")).toBeInTheDocument();
+  }
+  advance();
+  await act(async () => { oldAnimations.forEach((animation) => animation.resolve()); });
+  expect(screen.getByRole("list", { name: "当前技能槽位" })).toHaveAttribute("aria-busy", "true");
+  await motion.finish();
+  expect(currentOrder()).toEqual(restored ? ["C", "D", "A", "B"] : ["A", "B", "C", "D"]);
+  expect(screen.getByText(restored ? "已累计传动数 8，风起印记 ×1" : "已累计传动数 16，风起印记 ×2")).toBeInTheDocument();
+  expect(screen.getByText(restored ? "逐步记录 · 1 条" : "逐步记录 · 3 条")).toBeInTheDocument();
 });

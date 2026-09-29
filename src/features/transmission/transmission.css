@@ -38,3 +38,24 @@
 .transmission-panel > header { flex-shrink: 0; }
 .transmission-panel .skill-picker--readable input { font-size: 16px; }
 .transmission-panel .skill-picker--readable .skill-picker__options { box-sizing: border-box; right: auto; overscroll-behavior: contain; }
+
+.transmission-layout { flex-wrap: wrap; }
+.transmission-motion-toggle { display: flex; align-items: center; gap: 6px; min-height: 44px; cursor: pointer; white-space: nowrap; color: var(--text-muted); font-size: 13px; }
+.transmission-motion-toggle input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+.transmission-board { position: relative; margin-bottom: 24px; }
+.transmission-board .transmission-slots { margin-bottom: 0; }
+.transmission-board[data-playing="true"] .transmission-slots > li > * { opacity: 0; }
+.transmission-motion-layer { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; pointer-events: none; }
+.transmission-motion-layer > li { position: absolute; inset: 0 auto auto 0; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 12px 10px; min-width: 0; background: var(--surface-soft); border-radius: 6px; }
+.transmission-motion-layer > li > div { min-width: 0; }
+.transmission-motion-layer .skill-icon { flex: none; }
+.transmission-motion-layer strong { overflow-wrap: anywhere; }
+.transmission-motion-layer > li[data-moving="true"] { z-index: 1; outline: 1px solid var(--accent); outline-offset: -1px; box-shadow: 0 3px 10px #00000014; }
+.transmission-motion-progress { position: absolute; bottom: -20px; left: 0; color: var(--accent); font-size: 12px; line-height: 18px; }
+@media (prefers-reduced-motion: reduce) {
+  .transmission-motion-layer, .transmission-motion-progress { display: none; }
+  .transmission-board[data-playing="true"] .transmission-slots > li > * { opacity: 1; }
+}
+@media (max-width: 400px) {
+  .transmission-board[data-playing="true"] ~ .transmission-round-controls > button:first-child { display: none; }
+}

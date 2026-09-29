@@ -40,9 +40,14 @@ test.each(["主轴", "锁芯"])("%s 固定，剩余槽位构成环", (name) => {
 });
 test("杠杆置换首尾相邻，并阻断固定槽冲突", () => {
   const slots = [named("杠杆置换"), ...plain.slice(1)];
-  expect(resolveAction(slots, 0, "").slots).toEqual([slots[0], slots[3], slots[2], slots[1]]);
+  const result = resolveAction(slots, 0, "");
+  expect(result.slots).toEqual([slots[0], slots[3], slots[2], slots[1]]);
+  expect(result.steps).toEqual([{ slots: result.slots, keys: [0, 3, 2, 1], remaining: [0, 0, 0, 0] }]);
   slots[1] = named("主轴");
-  expect(resolveAction(slots, 0, "").issue).toContain("冲突");
+  const blocked = resolveAction(slots, 0, "");
+  expect(blocked.issue).toContain("冲突");
+  expect(blocked.slots).toBeUndefined();
+  expect(blocked.steps).toBeUndefined();
 });
 test("轮班加威不在行动时再结算基础传动，额外传动按层移动到正确位置", () => {
   const slots = [named("轮班"), ...plain.slice(1)];
@@ -64,6 +69,52 @@ test("某一回合使用轮班额外传动后，下回合开始传动落在正�
   const nextRound = startRound(afterAction.slots, "翼轴");
   expect(nextRound.slots.map((skill) => skill.name)).toEqual(["轮班", "金属噪音", "倾泻", "齿轮扭矩"]);
 });
+
+test.each([
+  ["", "power", []],
+  ["", "drive", [[1, 0, 2, 3]]],
+  ["有求必应", "power", [[1, 0, 2, 3]]],
+  ["有求必应", "drive", [[1, 0, 2, 3]]],
+  ["一意孤行", "power", []],
+  ["一意孤行", "drive", [[1, 0, 2, 3], [1, 2, 0, 3]]],
+])("%s 轮班 %s 轨迹身份始终对应本次行动输入", (trait, branch, keys) => {
+  const slots = Object.freeze([named("轮班"), ...plain.slice(1)]);
+  const result = resolveAction(slots, 0, trait, branch);
+  expect(result.steps.map((step) => step.keys)).toEqual(keys);
+  for (const step of result.steps) {
+    expect(step.slots).toEqual(step.keys.map((key) => slots[key]));
+    expect(step.remaining).toEqual([0, 0, 0, 0]);
+  }
+  expect(result.slots).toEqual(keys.length ? keys.at(-1).map((key) => slots[key]) : slots);
+});
+
+test("相同技能 ID 的轮班只移动选中实例，追加效果继续追踪它", () => {
+  const shift = named("轮班");
+  const slots = Object.freeze([shift, plain[1], plain[2], shift]);
+  const result = resolveAction(slots, 3, "一意孤行", "drive");
+  expect(result.steps.map((step) => step.keys)).toEqual([[3, 1, 2, 0], [1, 3, 2, 0]]);
+  expect(result.slots).toEqual([plain[1], shift, plain[2], shift]);
+});
+
+test("行动轨迹遵守固定槽，只有一个可动槽时不伪造位移", () => {
+  const slots = [named("轮班"), named("主轴"), plain[2], named("锁芯")];
+  const result = resolveAction(slots, 0, "一意孤行", "drive");
+  expect(result.steps.map((step) => step.keys)).toEqual([[2, 1, 0, 3], [0, 1, 2, 3]]);
+  expect(result.slots).toEqual(slots);
+  const single = [named("轮班"), named("主轴"), named("锁芯"), named("主轴")];
+  const unchanged = resolveAction(single, 0, "", "drive");
+  expect(unchanged.steps).toEqual([{ slots: single, keys: [0, 1, 2, 3], remaining: [0, 0, 0, 0] }]);
+  expect(unchanged.slots).toEqual(single);
+});
+
+test("待机和无位置行动返回空轨迹，不补做回合开始传动", () => {
+  const slots = [named("械斗"), ...plain.slice(1)];
+  for (const index of [-1, 0]) {
+    const result = resolveAction(slots, index, "");
+    expect(result.slots).toBe(slots);
+    expect(result.steps).toEqual([]);
+  }
+});
 test("未确认机制不返回伪造顺序", () => {
   expect(startRound(plain, "盲拧").slots).toBeUndefined();
   expect(startRound(plain, "翻垃圾桶").slots).toBeUndefined();
@@ -78,6 +129,7 @@ test.each(["借用", "取念", "复写"])("%s 身份未确定时不伪造回合�
 test.each(["镜像反射", "隐藏条款", "过山车"])("%s 不能以原技能排列冒充身份变化", (name) => {
   const result = resolveAction([named(name), ...plain.slice(1)], 0, "");
   expect(result.slots).toBeUndefined();
+  expect(result.steps).toBeUndefined();
   expect(result.allowObserved).not.toBe(true);
 });
 test.each(["裁决", "滋养", "点燃", "净化", "夺目"])("%s 保留明确能力边界", (trait) => {
