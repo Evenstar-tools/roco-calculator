@@ -1,6 +1,6 @@
 import { Fragment, useDeferredValue, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, CaretDown, CaretRight, Minus, Plus, SlidersHorizontal } from "@phosphor-icons/react";
-import { RepeatLevelButton } from "../../components/NatureStatsStep.jsx";
+import { abilityLevelHint, RepeatLevelButton } from "../../components/NatureStatsStep.jsx";
 import { withCalculatorExtras } from "../../data/snapshot-extras.js";
 import { SpiritPicker } from "../../components/SpiritPicker.jsx";
 import { AppHeader } from "../../components/AppHeader.jsx";
@@ -44,7 +44,7 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
   const side = setup.state.sides[sideKey];
   const attack = sideKey === "attacker";
   const defenseStage = setup.state.directions.forward.overrides.defenseLevelStage ?? 0;
-  const defensePercent = Math.round((stageMultiplier(defenseStage) - 1) * 100);
+  const defensePercent = defenseStage * 10;
   const label = attack ? "攻击方" : "防御方";
   const spirit = snapshot.spirits.find((entry) => entry.id === side.spiritId);
   const panels = spirit ? panelFor(snapshot, side) : null;
@@ -81,7 +81,7 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
       {!attack && <NumberField label="目标HP" value={setup.defenderHp} min={1} suffix="%" onChange={(value) => onSetup({ defenderHp: value })} />}
       {!attack && <div className="level-control" role="group" aria-label="防御能力等级"><span>防御能力等级</span><div>
       <RepeatLevelButton ariaLabel="防御方等级减一" delta={-1} disabled={defenseStage <= -99} onChange={onDefenseLevel} value={defenseStage}><Minus aria-hidden="true" size={14} /></RepeatLevelButton>
-      <span className="deer-level-value">{defenseStage}层 · {defensePercent > 0 ? "+" : ""}{defensePercent}%</span>
+      <span className="deer-level-value" title={abilityLevelHint(stageMultiplier(defenseStage))}>{defenseStage}层 · {defensePercent > 0 ? "+" : ""}{defensePercent}%</span>
       <RepeatLevelButton ariaLabel="防御方等级加一" delta={1} disabled={defenseStage >= 99} onChange={onDefenseLevel} value={defenseStage}><Plus aria-hidden="true" size={14} /></RepeatLevelButton>
       </div></div>}
     </div>

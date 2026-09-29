@@ -49,6 +49,13 @@ export function abilityAdjustedStat(value, stage) {
   return Number(value) * numerator / denominator;
 }
 
+export function defenseStatForDamage(value, stage) {
+  const adjusted = abilityAdjustedStat(value, stage);
+  // 减防除法的小数参与伤害结算；整数面板仅用于展示。
+  // 非负层数沿用已验证的取整规则，不扩大本次修正范围。
+  return clampAbilityStage(stage) < 0 ? adjusted : Math.round(adjusted);
+}
+
 export function traitAdjustedSpeed(value, stage, flatBonus = 0) {
   const base = Number(value) || 0;
   const percent = clampAbilityStage(stage) * 10;

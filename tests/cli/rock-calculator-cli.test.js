@@ -114,6 +114,31 @@ const referenceListenBridgeCase = {
 };
 
 describe("rock-calculator CLI", () => {
+  test.each([
+    ["火神", 0, 163, 438],
+    ["音速犬", 0, 171, 418],
+    ["音速犬", 60, 204, 350],
+  ])("水刃对减四层物防的%s（物防个体%s）保留内部防御小数", (spirit, physicalDefense, baseDefense, damage) => {
+    const result = runCli(["explain", "--input", "-", "--direction", "forward"], {
+      schemaVersion: 1,
+      mode: "single",
+      level: 60,
+      attacker: { spirit: "圣羽翼王", skill: "水刃", nature: "固执" },
+      defender: {
+        spirit,
+        skill: "水刃",
+        nature: "普通",
+        ivs: { hp: 60, physicalAttack: 0, magicalAttack: 0, physicalDefense, magicalDefense: 0, speed: 0 },
+      },
+      directions: { forward: { overrides: { defenseLevelStage: -4 } } },
+    });
+
+    expect(result.status).toBe(0);
+    expect(result.json.result.totalDamage).toBe(damage);
+    expect(result.json.result.combatPanel.defender.physicalDefense).toBe(Math.round(baseDefense / 1.4));
+    const formula = result.json.result.formulaSteps.find((step) => step.label === "等级系数与攻防比");
+    expect(formula.input.defenderDefense).toBeCloseTo(baseDefense / 1.4, 10);
+  });
   test("meta 返回当前引擎和数据版本，不加载源码说明", () => {
     const result = runCli(["meta"]);
 

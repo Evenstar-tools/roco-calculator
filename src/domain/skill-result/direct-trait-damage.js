@@ -4,6 +4,7 @@ import { resolveTraitMultipliers } from "../traits.js";
 import {
   abilityAdjustedStat,
   abilityLevelMultiplier,
+  defenseStatForDamage,
   finiteNumber,
 } from "./numeric.js";
 import { formulaStep, unresolvedResult } from "./results.js";
@@ -66,9 +67,7 @@ export function calculateDirectTraitDamageResult({
   const attackerStat = Math.round(
     abilityAdjustedStat(baseAttackerStat, totalAttackLevelStage),
   );
-  const defenderDefense = Math.round(
-    abilityAdjustedStat(baseDefenderDefense, totalDefenseLevelStage),
-  );
+  const defenderDefense = defenseStatForDamage(baseDefenderDefense, totalDefenseLevelStage);
   const displayedPower = rule.basePower * attackDefenseLevelMultiplier;
   const calculationPower = rule.basePower;
   const damageReductionMultiplier =

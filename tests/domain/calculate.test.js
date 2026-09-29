@@ -4292,7 +4292,7 @@ describe("calculateMatchup", () => {
     ).toMatchObject({ input: 2.4 });
   });
 
-  test("普通伤害统一使用取整后的实际攻防面板并保留内部威力小数", () => {
+  test("正向强化仍使用取整后的实际攻防面板并保留内部威力小数", () => {
     const result = calculateMatchup(
       snapshot,
       battleInput({
@@ -4327,6 +4327,27 @@ describe("calculateMatchup", () => {
     });
   });
 
+  test("直接特性伤害同样保留负防御层数的小数", () => {
+    const traitSnapshot = {
+      ...snapshot,
+      traits: [{ id: "trait-skin-spikes", name: "刺肤" }],
+      spirits: snapshot.spirits.map((spirit, index) => index === 0
+        ? { ...spirit, traitIds: ["trait-skin-spikes"] }
+        : spirit),
+    };
+    const result = calculateMatchup(traitSnapshot, battleInput({
+      mode: "four",
+      directions: { forward: { overrides: {
+        attackerStat: 500,
+        defenderDefense: 163,
+        defenseLevelStage: -4,
+      } } },
+    })).forward.traitResult;
+
+    expect(result.totalDamage).toBe(193);
+    const formula = result.formulaSteps.find((step) => step.label === "每段伤害");
+    expect(formula.input.defenderDefense).toBeCloseTo(163 / 1.4, 10);
+  });
   test("caps calculated attack and defense ability stages at positive and negative 99", () => {
     const calculateAtStages = (attackLevelStage, defenseLevelStage) =>
       calculateMatchup(

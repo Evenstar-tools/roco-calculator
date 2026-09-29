@@ -44,6 +44,7 @@ import { entryDetails, resolveSkillEntity, statKeysForCategory } from "./loadout
 import {
   abilityAdjustedStat,
   abilityLevelMultiplier,
+  defenseStatForDamage,
   clampAbilityStage,
   asMultiplierList,
   finiteNumber,
@@ -803,9 +804,7 @@ export function calculateSkillResult({
     ? Math.round(abilityAdjustedStat(baseAttackerStat, totalAttackLevelStage))
     : baseAttackerStat;
   const defenderDefense = usesActualCombatPanelForDamage
-    ? Math.round(
-        abilityAdjustedStat(baseDefenderDefense, totalDefenseLevelStage),
-      )
+    ? defenseStatForDamage(baseDefenderDefense, totalDefenseLevelStage)
     : baseDefenderDefense;
   const otherPowerMultiplier =
     product([

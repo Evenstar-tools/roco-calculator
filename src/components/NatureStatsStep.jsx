@@ -8,6 +8,10 @@ import { StatTile } from "./StatTile.jsx";
 const HOLD_DELAY_MS = 350;
 const HOLD_INTERVAL_MS = 80;
 
+export function abilityLevelHint(multiplier) {
+  return `原值的 ${Math.round(multiplier * 1000) / 10}%`;
+}
+
 export function RepeatLevelButton({
   ariaLabel,
   children,
@@ -159,7 +163,7 @@ function SideStats({
       ) : null}
 
       {levels.map((level) => {
-        const levelPercent = Math.round((level.multiplier - 1) * 100);
+        const levelPercent = level.stage * 10;
         const changeLevel = (nextStage) =>
           multipleLevels
             ? onLevelChange(level.role, nextStage)
@@ -180,7 +184,7 @@ function SideStats({
               >
                 <Minus aria-hidden="true" size={14} />
               </RepeatLevelButton>
-              <output>
+              <output title={abilityLevelHint(level.multiplier)}>
                 {level.stage}层 · {levelPercent > 0 ? "+" : ""}
                 {levelPercent}%
               </output>
