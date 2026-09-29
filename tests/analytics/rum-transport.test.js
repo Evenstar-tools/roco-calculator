@@ -21,11 +21,14 @@ test("the installed SDK sends PV and events without the page query or referrer",
   try {
     transport = await loadRum({ id: "local-test-only", version: "2.0.1", visitorId: "anonymous-test-visitor" });
     transport.send({ name: "page_view", feature: "calculator", sessionId: "test-session", id: "event-0001", at: 1000 });
+    transport.send({ name: "calculation_ready", feature: "calculator", sessionId: "test-session", id: "event-0002", at: 1001, result_kind: "damage", secret: "private-input" });
     await vi.waitFor(() => {
       expect(requests.some(({ url }) => url.includes("/collect/pv"))).toBe(true);
       expect(requests.some(({ url }) => url.includes("/collect/events"))).toBe(true);
     }, { timeout: 5000 });
     expect(JSON.stringify(requests)).not.toMatch(/private-input|private-lineup|secret/);
+    expect(JSON.stringify(requests)).toContain("result_kind");
+    expect(JSON.stringify(requests)).toContain("damage");
     expect(requests.every(({ url }) => ["/rateConfig", "/collect/pv", "/collect/events"].includes(new URL(url).pathname))).toBe(true);
   } finally {
     transport?.destroy();

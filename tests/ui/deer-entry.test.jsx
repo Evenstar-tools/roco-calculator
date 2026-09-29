@@ -7,6 +7,7 @@ import DeerPage, { DeerWorkspace } from "../../src/features/deer/DeerPage.jsx";
 import { spiritConfigsRepository } from "../../src/state/spirit-configs.js";
 import { createDeerSetup } from "../../src/features/deer/deer-model.js";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
+import { metrics } from "../../src/analytics/metrics.js";
 
 const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
 beforeEach(() => {
@@ -17,6 +18,34 @@ beforeEach(() => {
 afterEach(() => {
   window.history.replaceState(null, "", "/");
   vi.unstubAllGlobals();
+});
+
+test("统计排除初始配置和过期结果，电鹿和主站各次访问只完成一次", async () => {
+  const track = vi.spyOn(metrics, "track").mockImplementation(() => {});
+  try {
+    const source = createDeerSetup(snapshot).state;
+    window.history.replaceState({ deerInput: { state: source } }, "", "/");
+    render(<CalculatorRouter initialSnapshot={snapshot} />);
+    const completions = (feature) => track.mock.calls.filter(([name, target]) => name === "calculation_ready" && target === feature);
+    expect(completions("calculator")).toHaveLength(0);
+    fireEvent.click(screen.getByRole("button", { name: "电鹿斩杀线 →" }));
+    await screen.findByRole("region", { name: "技能斩杀线" });
+    expect(completions("deer")).toHaveLength(0);
+    fireEvent.click(screen.getByRole("button", { name: "无耐久", exact: true }));
+    await waitFor(() => expect(completions("deer")).toHaveLength(1));
+    expect(screen.getByRole("region", { name: "技能斩杀线" })).toHaveAttribute("aria-busy", "false");
+    fireEvent.click(screen.getByRole("button", { name: "满耐久", exact: true }));
+    expect(completions("deer")).toHaveLength(1);
+    expect(completions("calculator")).toHaveLength(0);
+    fireEvent.click(screen.getByRole("link", { name: "返回主站" }));
+    await waitFor(() => expect(window.location.pathname).toBe("/"));
+    expect(completions("calculator")).toHaveLength(0);
+    fireEvent.click(screen.getByRole("button", { name: "电鹿斩杀线 →" }));
+    await screen.findByRole("region", { name: "技能斩杀线" });
+    expect(completions("deer")).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: "无耐久", exact: true }));
+    await waitFor(() => expect(completions("deer")).toHaveLength(2));
+  } finally { track.mockRestore(); }
 });
 
 test("攻击方电鹿才显示入口，防御方和其他精灵不显示", () => {

@@ -8,7 +8,7 @@ const STEPS = [
     title: "挑选技能与条件",
   },
   {
-    detail: "右侧实时显示伤害区间与剩余 HP",
+    detail: "实时查看伤害与剩余 HP",
     title: "查看伤害结果",
   },
 ];

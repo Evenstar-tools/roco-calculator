@@ -40,7 +40,7 @@ export function CalculatorRouter({ initialSnapshot = null }) {
     }
   }
   return <>
-    {homeVisited && <div hidden={route.deer} inert={route.deer || undefined}><App initialSnapshot={initialSnapshot} initialWorkspace={initialWorkspace} onOpenDeer={openDeer} /></div>}
+    {homeVisited && <div hidden={route.deer} inert={route.deer || undefined}><App initialSnapshot={initialSnapshot} initialWorkspace={initialWorkspace} onOpenDeer={openDeer} active={!route.deer} /></div>}
     {route.deer && <Suspense fallback={<p role="status">正在加载电鹿斩杀线…</p>}><DeerPage initialState={route.input?.state} onReturn={returnHome} /></Suspense>}
   </>;
 }

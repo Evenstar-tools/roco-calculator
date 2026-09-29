@@ -19,6 +19,8 @@ describe("visitor metrics", () => {
     const h = harness({ enabled: false, storage });
     await h.metrics.start();
     h.metrics.track("download_click", "desktop");
+    h.metrics.track("calculation_ready", "calculator", { result_kind: "damage" });
+    h.metrics.track("lineup_use", "teams", { action: "apply_member", side: "attacker" });
     h.metrics.activity();
     expect(storage).not.toHaveBeenCalled();
     expect(h.loadTransport).not.toHaveBeenCalled();
@@ -83,5 +85,17 @@ test("route changes count one view per transition including browser back", async
   h.metrics.route("private-query");
   expect(h.send.mock.calls.filter(([e]) => e.name === "page_view").map(([e]) => e.feature)).toEqual(["deer", "calculator", "deer"]);
   expect(h.send.mock.calls.filter(([e]) => e.name === "feature_view")).toHaveLength(3);
+  expect(h.send.mock.calls.filter(([e]) => e.name === "feature_view").map(([e]) => e.entry_source)).toEqual(["initial", "navigate", "reopen"]);
   expect(h.send.mock.calls.filter(([e]) => e.name === "session_start")).toHaveLength(1);
+});
+
+test("only controlled event metadata can leave the browser", async () => {
+  const h = harness();
+  await h.metrics.start();
+  h.send.mockClear();
+  h.metrics.track("calculation_ready", "calculator", { result_kind: "damage", secret: "private", entry_source: "private" });
+  h.metrics.track("lineup_use", "teams", { action: "apply_member", side: "defender", member: { spiritId: "private" } });
+  expect(h.send.mock.calls[0][0]).toMatchObject({ result_kind: "damage" });
+  expect(h.send.mock.calls[1][0]).toMatchObject({ action: "apply_member", side: "defender" });
+  expect(JSON.stringify(h.send.mock.calls)).not.toContain("private");
 });

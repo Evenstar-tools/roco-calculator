@@ -15,6 +15,17 @@ test("feature opens count once through strict effects and rerenders, then again 
     hook.rerender({ open: false });
     hook.rerender({ open: true });
     expect(track).toHaveBeenCalledTimes(2);
-    expect(track).toHaveBeenLastCalledWith("feature_view", "skills");
+    expect(track.mock.calls[0]).toEqual(["feature_view", "skills", { entry_source: "initial" }]);
+    expect(track).toHaveBeenLastCalledWith("feature_view", "skills", { entry_source: "reopen" });
+  } finally { track.mockRestore(); }
+});
+
+test("closed initial panels count their first explicit opening as navigation", () => {
+  const track = vi.spyOn(metrics, "track").mockImplementation(() => {});
+  try {
+    const hook = renderHook(({ open }) => useFeatureMetrics([open && "teams"]), { initialProps: { open: false } });
+    hook.rerender({ open: true });
+    hook.rerender({ open: true });
+    expect(track.mock.calls).toEqual([["feature_view", "teams", { entry_source: "navigate" }]]);
   } finally { track.mockRestore(); }
 });

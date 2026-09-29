@@ -9,6 +9,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 import { App } from "../../src/App.jsx";
+import { metrics } from "../../src/analytics/metrics.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { FAVORITES_STORAGE_KEY } from "../../src/state/favorites.js";
 import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js";
@@ -27,7 +28,7 @@ import {
   TYPE_COVERAGE_STORAGE_KEY,
 } from "../../src/state/display-settings.js";
 
-const workspaceOverlayCapture = vi.hoisted(() => ({ onShare: null }));
+const workspaceOverlayCapture = vi.hoisted(() => ({ onShare: null, onTeamApply: null }));
 
 vi.mock("../../src/components/WorkspaceOverlays.jsx", async (importOriginal) => {
   const actual = await importOriginal();
@@ -36,6 +37,7 @@ vi.mock("../../src/components/WorkspaceOverlays.jsx", async (importOriginal) => 
     ...actual,
     WorkspaceOverlays(props) {
       workspaceOverlayCapture.onShare = props.menu.actions.onShare;
+      workspaceOverlayCapture.onTeamApply = props.team.drawerProps.onApply;
       return createElement(actual.WorkspaceOverlays, props);
     },
   };
@@ -623,6 +625,30 @@ async function selectDefaultSpirits(user) {
   await selectSpirit(user, "攻击方", "音速犬");
   await selectSpirit(user, "防御方", "水灵");
 }
+
+test("统计只在有效结果提交后完成；队伍同配置重复代入不重计", async () => {
+  const track = vi.spyOn(metrics, "track").mockImplementation(() => {});
+  try {
+    const user = userEvent.setup();
+    render(<App initialSnapshot={snapshot} />);
+    const completions = () => track.mock.calls.filter(([name]) => name === "calculation_ready");
+    expect(completions()).toHaveLength(0);
+    await selectSpirit(user, "攻击方", "音速犬");
+    expect(completions()).toHaveLength(0);
+    await selectSpirit(user, "防御方", "水灵");
+    expect(completions()).toHaveLength(1);
+    const member = { spiritId: "sonic-dog", natureId: "neutral", displayIvs: { hp: 60 }, skills: { single: "fire-strike", four: ["fire-strike", null, null, null] } };
+    act(() => workspaceOverlayCapture.onTeamApply("attacker", member));
+    act(() => workspaceOverlayCapture.onTeamApply("attacker", member));
+    act(() => workspaceOverlayCapture.onTeamApply("defender", member));
+    act(() => workspaceOverlayCapture.onTeamApply("defender", { ...member, spiritId: null }));
+    expect(track.mock.calls.filter(([name]) => name === "lineup_use")).toEqual([
+      ["lineup_use", "teams", { action: "apply_member", side: "attacker" }],
+      ["lineup_use", "teams", { action: "apply_member", side: "defender" }],
+    ]);
+    expect(completions()).toHaveLength(1);
+  } finally { track.mockRestore(); }
+});
 
 async function openDetailedMode(user) {
   await user.click(screen.getByRole("button", { name: "具体版" }));

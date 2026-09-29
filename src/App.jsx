@@ -1,4 +1,5 @@
 import { useFeatureMetrics } from "./analytics/use-feature-metrics.js";
+import { calculatorResultKind, useCalculationMetrics, useLineupMetrics } from "./analytics/use-completion-metrics.js";
 import { recordRefractionUsage } from "./domain/refraction.js";
 import { expireTransientGainSources, recordGainChanges } from "./domain/gain-provenance.js";
 import { recordSkillActivation } from "./domain/skill-gain-summary.js";
@@ -115,7 +116,7 @@ const preloadSkillQuery = () => {
   void import("./features/skill-query/load-catalog.js").then(({ loadSkillCatalog }) => loadSkillCatalog()).catch(() => {});
 };
 
-function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
+function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active }) {
   const [shortcutSettings, setShortcutSettings] = useState(readShortcutSettings);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   useEffect(() => { writeShortcutSettings(shortcutSettings); }, [shortcutSettings]);
@@ -169,6 +170,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
     initialState,
     onRememberSide: storedData.rememberSide,
     onToast: setToast,
+    onCommit: (next, previous, userInitiated) => recordCalculationInput(next, previous, userInitiated),
   });
 
   useEffect(() => {
@@ -230,6 +232,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
   const selectedSingleSkill = viewModel.skills.selectedSingle;
   const selectableSpirits = viewModel.selectableSpirits;
   const resultModel = viewModel.result;
+  const recordCalculationInput = useCalculationMetrics({ feature: "calculator", input: state, active,
+    resultKind: calculatorResultKind(configurationReady, resultModel?.selectedResult) });
+  const recordLineupApply = useLineupMetrics(state, active);
   const selectedFourSkill =
     state.mode === "four"
       ? getSkill(
@@ -734,6 +739,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
     });
     commitSession(result);
     setActiveDirection(result.activeDirection);
+    return result.state;
   }
 
   function openSideAbilityAnalysis(side) {
@@ -1915,10 +1921,12 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
         getSpiritConfiguration: storedData.getSpiritConfiguration,
         onActiveTeamChange: teamActions.setActive,
         onApply: (side, member) => {
-          applySpiritConfiguration(side, member, {
+          if (!snapshot.spirits.some((spirit) => spirit.id === member?.spiritId)) return;
+          const committed = applySpiritConfiguration(side, member, {
             remember: false,
             source: "team",
           });
+          if (committed.sides[side]?.spiritId === member.spiritId) recordLineupApply(side, committed);
           overlays.team.close();
           const spirit = snapshot.spirits.find(
             (candidate) => candidate.id === member.spiritId,
@@ -2369,7 +2377,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer }) {
   );
 }
 
-export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDeer }) {
+export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDeer, active = true }) {
   const [snapshot, setSnapshot] = useState(() =>
     initialSnapshot ? withCalculatorExtras(initialSnapshot) : null,
   );
@@ -2416,7 +2424,7 @@ export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDee
 
   return (
     <div className="app">
-      <PresetBrowseProvider><CalculatorWorkspace key={snapshot.meta.id} snapshot={snapshot} initialWorkspace={initialWorkspace} onOpenDeer={onOpenDeer} /></PresetBrowseProvider>
+      <PresetBrowseProvider><CalculatorWorkspace key={snapshot.meta.id} snapshot={snapshot} initialWorkspace={initialWorkspace} onOpenDeer={onOpenDeer} active={active} /></PresetBrowseProvider>
     </div>
   );
 }

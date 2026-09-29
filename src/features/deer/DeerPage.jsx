@@ -1,4 +1,5 @@
-import { Fragment, useDeferredValue, useEffect, useMemo, useState } from "react";
+import { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { deerResultKind, useCalculationMetrics } from "../../analytics/use-completion-metrics.js";
 import { ArrowLeft, CaretDown, CaretRight, Minus, Plus, SlidersHorizontal } from "@phosphor-icons/react";
 import { abilityLevelHint, RepeatLevelButton } from "../../components/NatureStatsStep.jsx";
 import { withCalculatorExtras } from "../../data/snapshot-extras.js";
@@ -112,7 +113,7 @@ function minimumText(value, ready) { return value === null ? (ready ? "查询范
 function bestRow(rows, field) { return rows.filter((row) => row[field] !== null).sort((a, b) => a[field] - b[field])[0]; }
 
 export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onReturn }) {
-  const [setup, setSetup] = useState(() => {
+  const [setup, commitSetup] = useState(() => {
     const next = { ...createDeerSetup(snapshot, initialState), showFollowup: false };
     if (initialState) {
       const attacker = next.state.sides.attacker;
@@ -129,6 +130,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     }
     return next;
   });
+  const setupRef = useRef(setup);
   const [expandedRow, setExpandedRow] = useState(null);
   const [appliedMinimum, setAppliedMinimum] = useState(null);
   const [conditionsOpen, setConditionsOpen] = useState(false);
@@ -191,6 +193,15 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
   }, [scanRows, expandedRow, snapshot, scanSetup]);
   const visibleRows = setup.showFollowup ? rows : rows.filter((row) => row.id !== "stone-counter").map((row) => row.id === "stone" ? { ...row, label: "裂石", note: "应对状态不改变本击伤害；勾选显示先发补刀后，区分普通与应对降防的后续伤害。" } : row);
   const updating = deferredSetup !== setup;
+  const recordCalculationInput = useCalculationMetrics({ feature: "deer", input: deferredSetup,
+    resultKind: deerResultKind(visibleRows, updating) });
+  function setSetup(update) {
+    const previous = setupRef.current;
+    const next = typeof update === "function" ? update(previous) : update;
+    setupRef.current = next;
+    recordCalculationInput(next, previous);
+    commitSetup(next);
+  }
   const speed = rows[0]?.current.speed;
   const best = bestRow(visibleRows, "minimum");
   const activeMinimum = appliedMinimum?.setup === setup ? appliedMinimum : null;

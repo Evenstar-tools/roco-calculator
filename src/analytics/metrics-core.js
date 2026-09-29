@@ -4,12 +4,20 @@ const SESSION_KEY = "rococalc.metrics.session.v1";
 const FEATURES = new Set(["calculator", "teams", "rankings", "skills", "desktop", "deer", "types", "transmission", "speed", "durability"]);
 const EVENTS = new Set(["page_view", "session_start", "feature_view", "calculation_ready", "lineup_use", "download_click"]);
 
+export function eventMetadata(name, metadata = {}) {
+  const allowed = name === "feature_view" ? { entry_source: ["initial", "navigate", "reopen"] }
+    : name === "calculation_ready" ? { result_kind: ["damage", "status", "threshold", "range_not_reached"] }
+      : name === "lineup_use" ? { action: ["apply_member"], side: ["attacker", "defender"] } : {};
+  return Object.fromEntries(Object.entries(allowed).filter(([key, values]) => values.includes(metadata?.[key])).map(([key]) => [key, metadata[key]]));
+}
+
 export function createMetrics({ enabled, storage, initialFeature = "calculator", now = Date.now, uuid = () => crypto.randomUUID(), loadTransport }) {
   let transport;
   let starting;
   let visitorId;
   let session;
   let currentFeature = initialFeature;
+  const visited = new Set([initialFeature]);
   const pending = [];
   const read = (key) => {
     try { return JSON.parse(storage()?.getItem(key) ?? "null"); } catch { return null; }
@@ -17,8 +25,8 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
   const write = (key, value) => {
     try { storage()?.setItem(key, JSON.stringify(value)); } catch { /* 禁用存储时仅在当前页面计数。 */ }
   };
-  const emit = (name, feature, at) => {
-    const event = { id: uuid(), name, feature, at, sessionId: session.id };
+  const emit = (name, feature, at, metadata) => {
+    const event = { id: uuid(), name, feature, at, sessionId: session.id, ...eventMetadata(name, metadata) };
     if (transport) {
       try { transport.send(event); } catch { /* 统计不能中断功能。 */ }
     } else if (pending.length < 30) pending.push(event);
@@ -46,7 +54,7 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
           }
           const at = touch();
           emit("page_view", currentFeature, at);
-          emit("feature_view", currentFeature, at);
+          emit("feature_view", currentFeature, at, { entry_source: "initial" });
           transport = await loadTransport({ visitorId });
           for (const event of pending.splice(0)) {
             try { transport.send(event); } catch { /* 不重试，避免阻塞或重复计数。 */ }
@@ -61,16 +69,17 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
       try {
         const at = touch();
         emit("page_view", feature, at);
-        emit("feature_view", feature, at);
+        emit("feature_view", feature, at, { entry_source: visited.has(feature) ? "reopen" : "navigate" });
+        visited.add(feature);
       } catch { /* 路由统计不影响导航。 */ }
     },
     activity() {
       if (!enabled || !starting) return;
       try { touch(); } catch { /* 统计故障不影响交互。 */ }
     },
-    track(name, feature = "calculator") {
+    track(name, feature = "calculator", metadata) {
       if (!enabled || !starting || !EVENTS.has(name) || !FEATURES.has(feature)) return;
-      try { emit(name, feature, touch()); } catch { /* 不读取或上报业务参数。 */ }
+      try { emit(name, feature, touch(), metadata); } catch { /* 不读取或上报业务参数。 */ }
     },
   };
 }

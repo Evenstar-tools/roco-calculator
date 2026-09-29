@@ -1,4 +1,5 @@
 import { version as appVersion } from "../../package.json";
+import { eventMetadata } from "./metrics-core.js";
 
 const PAGE_URL = "https://rococalc.top/";
 
@@ -50,7 +51,7 @@ export async function loadRum({ id, version = appVersion, visitorId }) {
         originFrom: PAGE_URL,
         ext1: event.feature,
         ext2: event.sessionId,
-        ext3: JSON.stringify({ id: event.id, at: event.at }),
+        ext3: JSON.stringify({ id: event.id, at: event.at, ...eventMetadata(event.name, event) }),
       });
     },
     destroy: () => sdk.destroy(),

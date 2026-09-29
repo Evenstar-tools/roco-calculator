@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { reduceSessionAction } from "../state/calculator-session.js";
 import { createUndoHistory } from "../state/undo-history.js";
 
-export function useCalculatorSession({ initialState, onRememberSide, onToast }) {
+export function useCalculatorSession({ initialState, onRememberSide, onToast, onCommit }) {
   const [state, setState] = useState(initialState);
   const stateRef = useRef(initialState);
   const undoHistoryRef = useRef(createUndoHistory({ limit: 50 }));
@@ -35,8 +35,10 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast }) 
       setUndoCount(undoHistoryRef.current.size());
       setRedoCount(undoHistoryRef.current.redoSize());
     }
+    const previous = stateRef.current;
     stateRef.current = nextState;
     setState(nextState);
+    onCommit?.(nextState, previous, recordHistory);
     const configuredSide = rememberSide
       ? nextState.sides[rememberSide]
       : null;
@@ -77,8 +79,10 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast }) 
   function restoreHistory(previous, message) {
     if (!previous) return;
     undoBatchRef.current = null;
+    const current = stateRef.current;
     stateRef.current = previous.state;
     setState(previous.state);
+    onCommit?.(previous.state, current, true);
     for (const side of previous.rememberSides) {
       const configuredSide = previous.state.sides?.[side];
       if (configuredSide?.spiritId) onRememberSide(configuredSide);
