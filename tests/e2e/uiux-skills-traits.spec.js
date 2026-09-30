@@ -540,7 +540,7 @@ test("persists single-skill state across reloads and isolates spirit switches", 
   ).toHaveValue("137");
 });
 
-test("uses negative-status skills once this turn, twice through next turn, and cancels on the third click", async ({
+test("uses negative-status skills explicitly and controls next-turn reuse independently", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -571,7 +571,7 @@ test("uses negative-status skills once this turn, twice through next turn, and c
   await expect(preview).toContainText("灼烧 ×10");
   await expect(preview.getByText("续用")).toHaveCount(0);
 
-  await description.click();
+  await page.getByRole("checkbox", { name: "下回合继续此技能" }).check();
   preview = page.getByRole("region", { name: "回合状态预估" });
   await expect(preview.getByText("续用")).toBeVisible();
   await expect(preview.locator(".result-rail__turn-row")).toHaveCount(2);
@@ -582,6 +582,9 @@ test("uses negative-status skills once this turn, twice through next turn, and c
     path: "artifacts/audit/negative-status-two-turn-1424.png",
   });
 
+  await page.getByRole("checkbox", { name: "下回合继续此技能" }).uncheck();
+  await expect(preview.getByText("续用", { exact: true })).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "负面状态结算" })).toContainText("灼烧 ×10");
   await description.click();
   await expect(page.getByRole("region", { name: "回合状态预估" }))
     .toHaveCount(0);

@@ -116,6 +116,8 @@ function SkillSide({
   opponentSide,
   powerDisplayMode,
   negativeStatusEnabled,
+  canSkillActivate,
+  skillActivationLabel,
   onSkillActivate,
   onSkillContextChange,
   onSkillFocus,
@@ -460,7 +462,7 @@ function SkillSide({
               key={`${side}-${index}`}
               onClick={(event) => {
                 onSkillFocus?.(side, index);
-                if (selected && !isInteractiveSkillTarget(event.target)) {
+                if (["status", "defense"].includes(selected?.category) && !isInteractiveSkillTarget(event.target)) {
                   onSkillActivate?.(side, index);
                 }
               }}
@@ -560,6 +562,7 @@ function SkillSide({
               counterReflectionHint ||
               powerResolutionHint ||
               powerSourceHint ||
+              canSkillActivate?.(side, index) ||
               dynamicInputs.length > 0 ? (
                 <div className="skill-slot__context">
                   {selected?.description ? (
@@ -713,6 +716,13 @@ function SkillSide({
                     </div>
                   </div> : null}
                   <SkillUsageSummary result={result} nextHint={refractionHint} />
+                  {canSkillActivate?.(side, index) ? (
+                    <button className="skill-follow-up" type="button"
+                      aria-label={`${label}技能${index + 1}${skillActivationLabel?.(side, index) ?? "使用技能"}`}
+                      onClick={() => onSkillActivate?.(side, index)}>
+                      {skillActivationLabel?.(side, index) ?? "使用技能"}
+                    </button>
+                  ) : null}
                 </div>
               ) : null}
             </div>
@@ -724,6 +734,8 @@ function SkillSide({
 }
 
 export function FourSkillEditor({
+  canSkillActivate,
+  skillActivationLabel,
   traitEditors = {},
   activeDamageSource = "skill",
   activeSide = "attacker",
@@ -827,6 +839,8 @@ export function FourSkillEditor({
         activeSkillIndex={activeSkillIndex}
         key={side}
         onSkillActivate={onSkillActivate}
+        canSkillActivate={canSkillActivate}
+        skillActivationLabel={skillActivationLabel}
         onSkillContextChange={onSkillContextChange}
         onHealthChange={onHealthChange}
         onHealthPercentChange={onHealthPercentChange}

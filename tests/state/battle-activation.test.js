@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 import {
   applyBalanceTraitTrigger,
   applyBattleActivation,
+  canApplyBattleActivation,
 } from "../../src/state/battle-activation.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { calculatorReducer } from "../../src/state/reducer.js";
@@ -11,6 +12,73 @@ import {
   encodeShareState,
 } from "../../src/state/share.js";
 import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
+
+test("explicit pure-negative activation toggles once while attacks never apply preview status history", () => {
+  const fixture = createSnapshot();
+  const burn = { id: "explicit-burn", name: "引燃", category: "status", type: "火", basePower: 0, cost: 1 };
+  const cold = { id: "preview-freeze", name: "寒潮", category: "magical", type: "冰", basePower: 60, cost: 3 };
+  fixture.skills.push(burn, cold);
+  const state = createInitialState({ data: fixture.meta.id, rules: fixture.meta.rulesVersion });
+  state.sides.attacker.spiritId = "attacker";
+  state.sides.defender.spiritId = "defender";
+  state.sides.attacker.skills.four = [{ skillId: burn.id }, { skillId: cold.id }, null, null];
+  state.calculationOptions.includeNegativeStatusSettlement = true;
+  expect(canApplyBattleActivation(burn, {}, { negativeStatusEnabled: true })).toBe(true);
+  expect(canApplyBattleActivation(cold, {}, { negativeStatusEnabled: true })).toBe(false);
+  expect(canApplyBattleActivation(cold, {}, { postAttackEffects: { attackLevelStageAdd: 1 } })).toBe(true);
+  const first = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot: fixture, state });
+  expect(first.applied).toBe(true);
+  expect(first.state.directions.forward.context).toMatchObject({ negativeStatusUseCountsBySlot: { 1: 1 }, negativeStatusRepeatSkillsBySlot: {} });
+  expect(first.state.negativeStatuses).toEqual(state.negativeStatuses);
+  const second = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot: fixture, state: first.state });
+  expect(second.state.directions.forward.context.negativeStatusUseCountsBySlot[1]).toBe(0);
+  const attack = applyBattleActivation({ side: "attacker", skillIndex: 1, snapshot: fixture, state: second.state });
+  expect(attack.state.directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ 1: 0 });
+  state.sides.attacker.skills.single = { skillId: burn.id };
+  const single = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode: "single", snapshot: fixture, state });
+  expect(single.state.directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ single: 1 });
+});
+
+test.each(["four", "single"])("%s keeps trait-only negative application explicit and cancellable", (skillMode) => {
+  const fixture = createSnapshot();
+  const skill = { id: "pure-ice-trait", name: "测试冰系状态", category: "status", type: "冰", basePower: 0, cost: 1 };
+  fixture.skills.push(skill);
+  fixture.traits.push({ id: "soul-burn", name: "灵魂灼伤" });
+  fixture.spirits[0].traitIds = ["soul-burn"];
+  const state = createInitialState({ data: fixture.meta.id, rules: fixture.meta.rulesVersion });
+  state.sides.attacker.spiritId = "attacker";
+  state.sides.defender.spiritId = "defender";
+  state.sides.attacker.skills.four = [{ skillId: skill.id }, null, null, null];
+  state.sides.attacker.skills.single = { skillId: skill.id };
+  state.calculationOptions.includeNegativeStatusSettlement = true;
+  const key = skillMode === "single" ? "single" : "1";
+  expect(canApplyBattleActivation(skill, {}, { negativeStatusEnabled: true, negativeStatusCanApply: true })).toBe(true);
+  const first = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode, snapshot: fixture, state });
+  expect(first.applied).toBe(true);
+  expect(first.state.directions.forward.context.negativeStatusUseCountsBySlot[key]).toBe(1);
+  expect(first.state.negativeStatuses).toEqual(state.negativeStatuses);
+  const cancel = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode, snapshot: fixture, state: first.state });
+  expect(cancel.state.directions.forward.context.negativeStatusUseCountsBySlot[key]).toBe(0);
+});
+
+test.each(["four", "single"])("%s retains repeated positive use when a trait also adds a negative preview", (skillMode) => {
+  const fixture = createSnapshot();
+  const skill = { id: "mixed-magic-boost", name: "魔法增效", category: "status", type: "普通", basePower: 0, cost: 1 };
+  fixture.skills.push(skill);
+  fixture.traits.push({ id: "greedy-algorithm", name: "贪心算法" });
+  fixture.spirits[0].traitIds = ["greedy-algorithm"];
+  const state = createInitialState({ data: fixture.meta.id, rules: fixture.meta.rulesVersion });
+  state.sides.attacker.spiritId = "attacker";
+  state.sides.defender.spiritId = "defender";
+  state.sides.attacker.skills.four = [{ skillId: skill.id }, null, null, null];
+  state.sides.attacker.skills.single = { skillId: skill.id };
+  state.calculationOptions.includeNegativeStatusSettlement = true;
+  const first = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode, snapshot: fixture, state });
+  expect(first.state.directions.forward.overrides.attackLevelStage).toBe(7);
+  const second = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode, snapshot: fixture, state: first.state });
+  expect(second.state.directions.forward.overrides.attackLevelStage).toBe(14);
+  expect(second.state.directions.forward.context.negativeStatusUseCountsBySlot[skillMode === "single" ? "single" : "1"]).toBe(1);
+});
 
 function createSnapshot() {
   return {

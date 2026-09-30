@@ -1550,7 +1550,7 @@ test("caps positive power levels at 99 with ten percent per level", async () => 
   expect(addLevel).toBeDisabled();
 });
 
-test("uses the original site's reciprocal multiplier down to level -99", async () => {
+test("shows negative ability levels as stage percentages with the actual reciprocal multiplier in the tooltip", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -1563,12 +1563,14 @@ test("uses the original site's reciprocal multiplier down to level -99", async (
   });
 
   await user.click(subtractLevel);
-  expect(within(attackSide).getByText("-1层 · -9%")).toBeVisible();
+  expect(within(attackSide).getByText("-1层 · -10%")).toBeVisible();
+  expect(within(attackSide).getByText("-1层 · -10%")).toHaveAttribute("title", "原值的 90.9%");
 
   for (let level = -1; level > -99; level -= 1) {
     fireEvent.click(subtractLevel);
   }
-  expect(within(attackSide).getByText("-99层 · -91%")).toBeVisible();
+  expect(within(attackSide).getByText("-99层 · -990%")).toBeVisible();
+  expect(within(attackSide).getByText("-99层 · -990%")).toHaveAttribute("title", "原值的 9.2%");
   expect(subtractLevel).toBeDisabled();
 });
 
@@ -2051,6 +2053,8 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   const refractionRow = screen.getByRole("group", { name: "攻击方技能1" });
   expect(within(refractionRow).queryByText(/已使用|查看增益明细/)).not.toBeInTheDocument();
   await user.click(within(refractionRow).getByText(refraction.description));
+  expect(within(attackSide).getByText("0层 · 0%")).toBeVisible();
+  await user.click(within(refractionRow).getByRole("button", { name: "攻击方技能1应用后续变化" }));
   expect(within(attackSide).getByText("4层 · +40%")) .toBeVisible();
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(100);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(3);
@@ -2071,7 +2075,7 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   expect(within(refractionRow).getByText(/增益：.*攻击\+4层/)).toBeVisible();
   await user.click(within(shareDialog).getByRole("button", { name: "关闭" }));
 
-  await user.click(within(refractionRow).getByText(refraction.description));
+  await user.click(within(refractionRow).getByRole("button", { name: "攻击方技能1应用后续变化" }));
   expect(within(attackSide).getByText("8层 · +80%")) .toBeVisible();
   expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(120);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3连击次数" })).toHaveValue(5);
@@ -2206,6 +2210,8 @@ test("clicking 撒娇 permanently adds 10 power to every allied skill", async ()
   expect(otherPower).toHaveValue(80);
 
   await user.click(screen.getByText(/自己获得萌化/));
+  expect(power).toHaveValue(30);
+  await user.click(screen.getByRole("button", { name: "攻击方技能1应用后续变化" }));
   await waitFor(() => expect(power).toHaveValue(40));
   expect(otherPower).toHaveValue(90);
   expect(screen.getAllByText(/累计状态：已使用×1\s+增益：威力\+10/).at(-1)).toBeVisible();
@@ -2385,7 +2391,7 @@ test("applies Prepared Stance attack gain and only applies its counter debuff wh
   );
   await user.click(screen.getByText("自身物攻+80%；应对防御：对方物防-80%。"));
   expect(within(attackSide).getByText("16层 · +160%")).toBeVisible();
-  expect(within(defenseSide).getByText("-8层 · -44%")).toBeVisible();
+  expect(within(defenseSide).getByText("-8层 · -80%")).toBeVisible();
 });
 
 test("requires a successful defense response before applying Water Bubble Shield", async () => {
@@ -2455,7 +2461,7 @@ test("applies a clicked defense skill reduction and clears it after another skil
       screen.getByRole("group", {
         name: "攻击方技能2，当前选中",
       }),
-    ).getByText("对敌方精灵造成物理伤害。"),
+    ).getByRole("button", { name: "攻击方技能2应用后续变化" }),
   );
 
   await user.click(screen.getByRole("button", { name: "切换计算方向" }));
@@ -2729,6 +2735,8 @@ test("点击寒风吹应用魔防降低，仅提升魔法伤害", async () => {
   const physical = damage("风力冲击");
   const magical = damage("光能冲击");
   await user.click(screen.getByText("造成魔伤，敌方获得魔防-50%。"));
+  expect(damage("光能冲击")).toBe(magical);
+  await user.click(screen.getByRole("button", { name: "攻击方技能1应用后续变化" }));
   expect(damage("风力冲击")).toBe(physical);
   expect(damage("光能冲击")).toBeGreaterThan(magical);
 });
@@ -3774,10 +3782,36 @@ test("enables negative-status settlement, edits stacks, and remembers the switch
   expect(screen.getByRole("region", { name: "负面状态层数" })).toBeVisible();
 });
 
+test.each(["four", "single"])("%s 混合正面技能与特性异常仍可重复使用，异常预览不累加", async (mode) => {
+  localStorage.setItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY, "1");
+  const user = userEvent.setup();
+  const fixture = { ...snapshot,
+    traits: [...(snapshot.traits ?? []), { id: "mixed-greedy", name: "贪心算法" }],
+    spirits: snapshot.spirits.map((spirit) => spirit.id === "sonic-dog"
+      ? { ...spirit, traitIds: ["mixed-greedy"], traitName: "贪心算法" } : spirit),
+  };
+  render(<App initialSnapshot={fixture} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  if (mode === "single") await user.click(screen.getByRole("tab", { name: "单技能" }));
+  const picker = screen.getByRole("combobox", { name: mode === "single" ? "选择技能" : "攻击方技能1", exact: true });
+  await user.clear(picker);
+  await user.type(picker, "魔法增效");
+  await user.click(screen.getByRole("option", { name: /魔法增效/ }));
+  const attackSide = within(screen.getByRole("region", { name: "性格配置" })).getByRole("group", { name: "攻击方能力" });
+  const use = () => screen.getByRole("button", { name: mode === "single" ? "使用技能" : "攻击方技能1使用技能", exact: true });
+  await user.click(use());
+  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+  await user.click(use());
+  expect(within(attackSide).getByText("14层 · +140%")).toBeVisible();
+  expect(screen.getByRole("region", { name: "负面状态结算" })).toHaveTextContent("灼烧 ×6");
+  expect(screen.queryByRole("button", { name: /取消使用/ })).not.toBeInTheDocument();
+});
+
 test.each([
   ["寒潮", "magical", "冰", 60, false],
   ["引燃", "status", "火", 0, true],
-])("异常应用循环：%s第二次不叠加本回合，仅有灼烧才提示续用预估", async (name, category, type, basePower, hasPreview) => {
+])("%s：攻击直接查看，纯状态明确使用，灼烧续用独立勾选", async (name, category, type, basePower, hasPreview) => {
   localStorage.setItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY, "1");
   const user = userEvent.setup();
   const skill = { id: "status-use-cycle", name, category, type, basePower, cost: 3, description: `${name}应用循环测试` };
@@ -3791,18 +3825,33 @@ test.each([
   await user.type(picker, name);
   await user.click(screen.getByRole("option", { name: new RegExp(name) }));
   const slot = () => screen.getByRole("group", { name: /^攻击方技能1/u });
-  await user.click(within(slot()).getByText(skill.description));
-  expect(screen.getByText(`${name}：本回合`)).toBeVisible();
+  if (category === "status") {
+    expect(screen.queryByRole("region", { name: "负面状态结算" })).not.toBeInTheDocument();
+    await user.click(within(slot()).getByRole("button", { name: "攻击方技能1使用状态" }));
+  } else {
+    expect(screen.getByRole("region", { name: "负面状态结算" })).toHaveTextContent("冻结 ×1");
+  }
   const firstResult = within(slot()).getByRole("status").textContent;
-  await user.click(within(slot()).getByText(skill.description));
-  expect(within(slot()).getByRole("status").textContent).toBe(firstResult);
-  expect(screen.getByText(hasPreview
-    ? `${name}：下回合灼烧续用预估；再点取消`
-    : `${name}：仍按本回合结算；再点取消`)).toBeVisible();
-  expect(screen.queryByText(`${name}：本回合 + 下回合`)).not.toBeInTheDocument();
   expect(screen.queryByRole("region", { name: "回合状态预估" }) !== null).toBe(hasPreview);
-  await user.click(within(slot()).getByText(skill.description));
-  expect(screen.getByText(`${name}的负面状态已取消`)).toBeVisible();
+  if (category === "status") {
+    const repeat = screen.getByRole("checkbox", { name: "下回合继续此技能" });
+    expect(repeat).not.toBeChecked();
+    await user.click(repeat);
+    expect(repeat).toBeChecked();
+    expect(within(slot()).getByRole("status").textContent).toBe(firstResult);
+    await user.click(repeat);
+    expect(repeat).not.toBeChecked();
+    await user.click(within(slot()).getByRole("button", { name: "攻击方技能1取消使用" }));
+    expect(screen.getByText(`${name}的负面状态已取消`)).toBeVisible();
+  } else {
+    const undoLabel = screen.getByRole("button", { name: /撤回上一步/ }).getAttribute("aria-label");
+    for (let index = 0; index < 3; index++) {
+      await user.click(within(slot()).getByText(skill.description));
+      expect(within(slot()).getByRole("status").textContent).toBe(firstResult);
+    }
+    expect(screen.getByRole("button", { name: /撤回上一步/ })).toHaveAttribute("aria-label", undoLabel);
+    expect(screen.queryByRole("button", { name: "攻击方技能1应用后续变化" })).not.toBeInTheDocument();
+  }
   localStorage.removeItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY);
 });
 

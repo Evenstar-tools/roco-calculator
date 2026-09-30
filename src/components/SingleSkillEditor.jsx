@@ -372,6 +372,9 @@ export function describeResolution(result) {
 }
 
 export function SingleSkillEditor({
+  canActivateSkill = false,
+  skillActivationLabel = "使用技能",
+  onSkillActivate,
   attackerHealth,
   attackerLifestealPercent = 0,
   attackerTrait,
@@ -526,6 +529,9 @@ export function SingleSkillEditor({
           <p>{selectedSkill.description || "无额外效果。"}</p>
         </div>
         <SkillUsageSummary result={result} />
+        {canActivateSkill ? <button type="button" className="skill-follow-up" onClick={onSkillActivate}>
+          {skillActivationLabel}
+        </button> : null}
         {dynamicInputs.length > 0 || hasAttackerHpRule || hasDefenderHpRule ? (
           <div aria-label="动态技能条件" className="skill-effect-card__conditions">
             {hasAttackerHpRule && attackerHealth ? (

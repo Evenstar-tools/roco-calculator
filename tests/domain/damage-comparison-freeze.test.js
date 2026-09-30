@@ -86,7 +86,8 @@ test.each(["forward", "reverse"])("%s 寒潮本次自动冻结按每个候选解
   state.sides[target].spiritId = fixture.spirits[1].id;
   const coldId = data.skills.find((skill) => skill.name === "寒潮").id;
   state.sides[side].skills.four = [coldId, null, null, null];
-  state.directions[direction].context.negativeStatusUseCountsBySlot = { 1: 1 };
+  // 初次查看就带本次附冻结，不预先写入“已使用”。
+  state.directions[direction].context.negativeStatusUseCountsBySlot = { 1: 0 };
   const options = { snapshot: fixture, state, direction, selectedSkillIndex: 0, templateId: "current-defense", scope: "all" };
   const before = JSON.stringify(state);
   for (const [inheritTargetStatuses, counter, expectedStacks] of [[false, false, 3], [true, false, 5], [false, true, 7]]) {

@@ -776,7 +776,7 @@ export function AdvancedOptions({
             <section aria-label="负面状态层数" className="negative-status-config">
               <header>
                 <strong>负面状态<StatusHelpButton label="查看负面状态说明" onClick={() => setReferenceGroup("status")} /></strong>
-                <small>这里填行动前已有层数；点异常技能：1次应用，2次本回合不叠加（仅灼烧预估续用），3次取消</small>
+                <small>行动前已有层数；攻击自动预览，状态技能需使用。</small>
               </header>
               <div>
                 <NegativeStatusSide

@@ -6,12 +6,25 @@ import {
   NEGATIVE_STATUS_RULE_AUDIT,
   getNegativeStatusInputs,
   resolveNegativeStatusApplications,
+  resolveNegativeStatusRepeatNextTurn,
 } from "../../src/domain/negative-status-rules.js";
 
 const skill = (name) => snapshot.skills.find((candidate) => candidate.name === name);
 const trait = (name) => snapshot.traits.find((candidate) => candidate.name === name);
 
 describe("negative status source rules", () => {
+  test("repeat skill identity covers extended slots and does not borrow legacy slot one in single mode", () => {
+    const selected = { id: "selected" };
+    expect(resolveNegativeStatusRepeatNextTurn({ mode: "four", skillIndex: 6, skill: selected,
+      context: { negativeStatusRepeatSkillsBySlot: { 7: "selected" } } })).toBe(true);
+    expect(resolveNegativeStatusRepeatNextTurn({ mode: "four", skillIndex: 6, skill: selected,
+      context: { negativeStatusRepeatSkillsBySlot: { 7: "different" } }, useCount: 2 })).toBe(false);
+    expect(resolveNegativeStatusRepeatNextTurn({ mode: "four", skill: selected,
+      context: { negativeStatusRepeatSkillsBySlot: {} }, useCount: 2 })).toBe(false);
+    expect(resolveNegativeStatusRepeatNextTurn({ mode: "single", skill: selected, useCount: 2 })).toBe(false);
+    expect(resolveNegativeStatusRepeatNextTurn({ mode: "four", skill: selected, useCount: 2 })).toBe(true);
+  });
+
   test.each([
     ["寒潮", "negativeStatusCounterState", true, { freeze: 5 }],
     ["天火", "negativeStatusCounterDefense", true, { burn: 30 }],
@@ -49,6 +62,20 @@ describe("negative status source rules", () => {
     for (const name of ["冰冻光线", "碎冰冰", "冷凝", "鸩毒"]) {
       expect(resolveNegativeStatusApplications({ skill: skill(name) }).stacks)
         .toEqual({ burn: 0, electrified: 0, freeze: 0, parasitism: 0, poison: 0 });
+    }
+  });
+
+  test.each([
+    ["易燃物质", "burn", 2],
+    ["连续毒针", "poison", 1],
+    ["打喷嚏", "freeze", 1],
+  ])("%s applies each-hit stacks from effective hit count, without multiplying traits", (name, status, perHit) => {
+    for (const effectiveHitCount of [1, 2, 5]) {
+      const application = resolveNegativeStatusApplications({
+        effectiveHitCount, skill: skill(name),
+        traits: name === "打喷嚏" ? [trait("加个雪球")] : [],
+      });
+      expect(application.stacks[status]).toBe(effectiveHitCount * perHit + (name === "打喷嚏" ? 2 : 0));
     }
   });
 
@@ -93,6 +120,32 @@ describe("negative status source rules", () => {
       skill: skill("通电"),
       traits: [trait("电子音乐")],
     }).stacks).toMatchObject({ electrified: 1 });
+  });
+
+  test.each([
+    ["电子音乐", { skill: { type: "电" }, context: { weatherThunder: true } }, { skill: { type: "水" }, context: { weatherThunder: true } }],
+    ["生物碱", { skill: { type: "草" } }, { skill: { type: "水" } }],
+    ["高浓生物碱", { skill: { type: "草" } }, { skill: { type: "水" } }],
+    ["灵魂灼伤", { skill: { type: "冰" } }, { skill: { type: "水" } }],
+    ["毒腺", { skill: { cost: 1 } }, { skill: { cost: 2 } }],
+    ["加个雪球", { skill: { name: "暴风雪" } }, { skill: { name: "测试技能" } }],
+    ["贪心算法", { skillIndex: 0 }, { skillIndex: 1 }],
+    ["爆裂玉米", { skill: { type: "草" } }, { skill: { type: "水" } }],
+    ["溶解扩散", { skill: { type: "水" }, selectedSkills: [{ type: "毒" }] }, { skill: { type: "水" }, selectedSkills: [] }],
+    ["溶解腐蚀", { skill: { type: "水" }, selectedSkills: [{ type: "毒" }] }, { skill: { type: "火" }, selectedSkills: [{ type: "毒" }] }],
+    ["扩散侵蚀", { skill: { type: "水" }, context: { targetPoisonMarkStacks: 3 } }, { skill: { type: "水" }, context: { targetPoisonMarkStacks: 0 } }],
+  ])("%s first-preview eligibility does not bypass its trait condition", (name, matching, missing) => {
+    const resolve = (input) => resolveNegativeStatusApplications({
+      ...input,
+      skill: { name: "测试技能", category: "magical", type: "普通", cost: 3, ...input.skill },
+      traits: [trait(name)],
+    }).sources.filter((source) => source.kind === "trait");
+    expect(resolve(matching)).toEqual([expect.objectContaining({ name })]);
+    expect(resolve(missing)).toEqual([]);
+  });
+
+  test("虫群未输入奉献次数时不凭空增加中毒", () => {
+    expect(resolveNegativeStatusApplications({ skill: skill("虫群") }).stacks.poison).toBe(0);
   });
 
   test("星火按上回合双方是否使用光系技能施加灼烧", () => {

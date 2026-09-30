@@ -1,5 +1,5 @@
 import { createNegativeStatusSide } from "./negative-status.js";
-import { getSkillEffectInputs } from "./skill-effects.js";
+import { getDefaultHitCount, getSkillEffectInputs } from "./skill-effects.js";
 import { getSkillStatusEffectInputs } from "./skill-status-effects.js";
 import { normalizeTriggerControls, projectTriggerContext } from "./trigger-controls.js";
 
@@ -25,7 +25,7 @@ const SKILL_RULES = {
   惊雷: { classification: "weather" },
   通电: { stacks: { electrified: 1 } },
   孢子: { stacks: { parasitism: 3 } },
-  易燃物质: { stacks: { burn: 4 } },
+  易燃物质: { resolve: (_context, { effectiveHitCount }) => ({ burn: effectiveHitCount * 2 }) },
   引燃: { stacks: { burn: 10 } },
   充分燃烧: {
     resolve: (_context, { baselineStatuses }) => ({
@@ -78,10 +78,10 @@ const SKILL_RULES = {
     inputs: [booleanInput("negativeStatusCounterState", "应对状态")],
     resolve: (context) => ({ freeze: context.negativeStatusCounterState ? 5 : 1 }),
   },
-  打喷嚏: { stacks: { freeze: 3 } },
+  打喷嚏: { resolve: (_context, { effectiveHitCount }) => ({ freeze: effectiveHitCount }) },
   毒针: { stacks: { poison: 1 } },
   腐蚀酸液: { stacks: { poison: 2 } },
-  连续毒针: { stacks: { poison: 2 } },
+  连续毒针: { resolve: (_context, { effectiveHitCount }) => ({ poison: effectiveHitCount }) },
   毒囊: {
     inputs: [booleanInput("negativeStatusCounterState", "应对状态")],
     resolve: (context) => ({ poison: context.negativeStatusCounterState ? 6 : 2 }),
@@ -201,9 +201,26 @@ export function hasNegativeStatusTraitApplication(traitName) {
   return Boolean(TRAIT_APPLICATIONS[traitName]);
 }
 
+// 查看攻击就是预览出招一次；非攻击施加仍须显式使用。零伤害不等于未出招。
+export function shouldPreviewNegativeStatusApplications({ enabled, result, skill, useCount = 0 } = {}) {
+  if (!enabled) return false;
+  if (["physical", "magical"].includes(skill?.category)) return result?.status === "exact";
+  return ["status", "defense"].includes(skill?.category) && useCount > 0;
+}
+
+export function resolveNegativeStatusRepeatNextTurn({ context = {}, mode, skill, skillIndex = 0, useCount = 0 } = {}) {
+  if (Object.hasOwn(context, "negativeStatusRepeatSkillsBySlot")) {
+    const key = mode === "four" ? String(skillIndex + 1) : "single";
+    return Boolean(skill?.id && context.negativeStatusRepeatSkillsBySlot?.[key] === skill.id);
+  }
+  // 旧次数只带槽号，不能推断单技能身份；四技能原槽可继续兼容旧预估。
+  return mode === "four" && useCount > 1;
+}
+
 export function resolveNegativeStatusApplications({
   baselineStatuses = {},
   context = {},
+  effectiveHitCount,
   selectedSkills = [],
   skill,
   skillIndex = 0,
@@ -217,8 +234,9 @@ export function resolveNegativeStatusApplications({
   const stacks = createNegativeStatusSide();
   const sources = [];
   const rule = SKILL_RULES[skill?.name];
+  const hits = Math.max(1, Math.floor(Number(effectiveHitCount ?? getDefaultHitCount(skill)) || 1));
   const skillStacks =
-    rule?.resolve?.(context, { baselineStatuses, selectedSkills }) ??
+    rule?.resolve?.(context, { baselineStatuses, effectiveHitCount: hits, selectedSkills }) ??
     rule?.stacks ??
     {};
   addStacks(stacks, skillStacks);

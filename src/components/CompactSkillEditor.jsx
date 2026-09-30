@@ -64,6 +64,8 @@ function CompactSkillSide({
   label,
   name,
   onSkillActivate,
+  canSkillActivate,
+  skillActivationLabel,
   onSkillFocus,
   onSkillSelect,
   onTraitDamageFocus,
@@ -161,7 +163,7 @@ function CompactSkillSide({
               onClick={(event) => {
                 onSkillFocus?.(side, index);
                 if (
-                  selected &&
+                  ["status", "defense"].includes(selected?.category) &&
                   event.target instanceof Element &&
                   !event.target.closest("button, input, [role='combobox'], [role='option']")
                 ) {
@@ -212,6 +214,11 @@ function CompactSkillSide({
                 selected={selected}
               />
               <SkillUsageSummary result={result} nextHint={refractionHint} />
+              {canSkillActivate?.(side, index) ? <button type="button" className="skill-follow-up"
+                aria-label={`${label}技能${index + 1}${skillActivationLabel?.(side, index) ?? "使用技能"}`}
+                onClick={() => onSkillActivate?.(side, index)}>
+                {skillActivationLabel?.(side, index) ?? "使用技能"}
+              </button> : null}
               {powerResolutionHint ? (
                 <small
                   className="compact-skill__power-note"
@@ -229,6 +236,8 @@ function CompactSkillSide({
 }
 
 export function CompactFourSkillEditor({
+  canSkillActivate,
+  skillActivationLabel,
   traitEditors = {},
   activeDamageSource = "skill",
   activeSide = "attacker",
@@ -261,6 +270,8 @@ export function CompactFourSkillEditor({
         name={attackerName}
         onSkillFocus={onSkillFocus}
         onSkillActivate={onSkillActivate}
+        canSkillActivate={canSkillActivate}
+        skillActivationLabel={skillActivationLabel}
         onSkillSelect={onSkillSelect}
         onTraitDamageFocus={onTraitDamageFocus}
         onTraitDamageHitCountChange={onTraitDamageHitCountChange}
@@ -281,6 +292,8 @@ export function CompactFourSkillEditor({
         name={defenderName}
         onSkillFocus={onSkillFocus}
         onSkillActivate={onSkillActivate}
+        canSkillActivate={canSkillActivate}
+        skillActivationLabel={skillActivationLabel}
         onSkillSelect={onSkillSelect}
         onTraitDamageFocus={onTraitDamageFocus}
         onTraitDamageHitCountChange={onTraitDamageHitCountChange}
@@ -298,6 +311,9 @@ export function CompactFourSkillEditor({
 }
 
 export function CompactSingleSkillEditor({
+  canActivateSkill = false,
+  skillActivationLabel = "使用技能",
+  onSkillActivate,
   attackName,
   defenseName,
   onSkillSelect,
@@ -346,6 +362,9 @@ export function CompactSingleSkillEditor({
         </p>
       ) : null}
       <SkillUsageSummary result={result} />
+      {canActivateSkill ? <button type="button" className="skill-follow-up" onClick={onSkillActivate}>
+        {skillActivationLabel}
+      </button> : null}
       {powerResolutionHint ? (
         <small
           className="compact-single-skill__power-note"

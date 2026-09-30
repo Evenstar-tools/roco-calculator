@@ -1350,16 +1350,16 @@ test("four-skill rows expose one visible selection and select from the whole row
 
   await user.click(selectedRow);
   expect(onSkillFocus).toHaveBeenLastCalledWith("attacker", 1);
-  expect(onSkillActivate).toHaveBeenLastCalledWith("attacker", 1);
+  expect(onSkillActivate).not.toHaveBeenCalled();
 
   await user.click(
     screen.getByRole("combobox", { name: "攻击方技能2" }),
   );
-  expect(onSkillActivate).toHaveBeenCalledTimes(1);
+  expect(onSkillActivate).not.toHaveBeenCalled();
 
   await user.click(screen.getByRole("group", { name: "防御方技能1" }));
   expect(onSkillFocus).toHaveBeenLastCalledWith("defender", 0);
-  expect(onSkillActivate).toHaveBeenLastCalledWith("defender", 0);
+  expect(onSkillActivate).not.toHaveBeenCalled();
 });
 
 test("compact four-skill rows use the same mutually exclusive selection state", async () => {
@@ -3057,7 +3057,7 @@ test("advanced settings edit both sides' negative-status stacks only when enable
 
   await user.click(screen.getByRole("button", { name: "高级选项" }));
   const region = screen.getByRole("region", { name: "负面状态层数" });
-  expect(within(region).getByText("这里填行动前已有层数；点异常技能：1次应用，2次本回合不叠加（仅灼烧预估续用），3次取消"))
+  expect(within(region).getByText("行动前已有层数；攻击自动预览，状态技能需使用。"))
     .toBeVisible();
   expect(within(region).getByRole("spinbutton", { name: "防御方中毒层数" }))
     .toHaveValue(3);

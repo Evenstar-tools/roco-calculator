@@ -879,6 +879,9 @@ describe("calculator session", () => {
       1: 2,
       2: 1,
     };
+    state.directions.forward.context.negativeStatusRepeatSkillsBySlot = {
+      1: manaBurst.id, 2: "untouched", single: "single-only",
+    };
     const untouched = { skillId: runtimeSkill("突袭").id };
     state.sides.attacker.skills.four = [
       {
@@ -908,6 +911,8 @@ describe("calculator session", () => {
     expect(
       result.state.directions.forward.context.negativeStatusUseCountsBySlot,
     ).toEqual({ 2: 1 });
+    expect(result.state.directions.forward.context.negativeStatusRepeatSkillsBySlot)
+      .toEqual({ 2: "untouched", single: "single-only" });
   });
 
   test("stores direction traits with the selected single skill but excludes battle context from per-skill memory", () => {

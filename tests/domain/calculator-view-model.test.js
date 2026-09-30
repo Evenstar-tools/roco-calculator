@@ -330,7 +330,8 @@ describe("buildCalculatorViewModel", () => {
   test("attaches optional negative-status settlement without changing direct damage", () => {
     const input = state();
     input.calculationOptions = { includeNegativeStatusSettlement: true };
-    input.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 2 };
+    input.directions.forward.hitCount = 2;
+    input.directions.forward.context.negativeStatusRepeatSkillsBySlot = { single: "fire-hit" };
     input.negativeStatuses = {
       attacker: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
       defender: { burn: 1, freeze: 0, parasitism: 0, poison: 0 },
@@ -493,14 +494,191 @@ describe("buildCalculatorViewModel", () => {
     });
   });
 
-  test("applies a negative-status source only after use and repeats it next turn after a second use", () => {
+  test.each(["single", "four"])("%s attacks preview one application independently of legacy use counts", (mode) => {
     const fixture = {
       ...snapshot,
       skills: snapshot.skills.map((entry) =>
-        entry.id === "fire-hit" ? { ...entry, name: "引燃" } : entry,
+        entry.id === "fire-hit" ? { ...entry, name: "寒潮", type: "冰" } : entry,
+      ),
+      spirits: snapshot.spirits.map((entry) => entry.id === "fire"
+        ? { ...entry, traitIds: ["snowball"] } : entry),
+      traits: [{ id: "snowball", name: "加个雪球" }],
+    };
+    const input = state();
+    input.mode = mode;
+    input.calculationOptions = { includeNegativeStatusSettlement: true };
+    input.negativeStatuses = { attacker: {}, defender: { freeze: 2 } };
+    const before = structuredClone(input);
+    for (const count of [0, 1, 2]) {
+      input.directions.forward.context.negativeStatusUseCountsBySlot = { 1: count };
+      const view = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input });
+      expect(view.result.selectedResult.negativeStatusSettlement).toMatchObject({
+        added: { freeze: 3 }, freeze: { stacks: 5, thresholdPercent: 25 },
+      });
+      expect(view.result.selectedResult.negativeStatusApplications.sources).toHaveLength(2);
+    }
+    delete input.directions.forward.context.negativeStatusUseCountsBySlot;
+    expect(input).toEqual(before);
+    input.calculationOptions.includeNegativeStatusSettlement = false;
+    const disabled = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input });
+    expect(disabled.result.selectedResult.negativeStatusSettlement).toBeNull();
+  });
+
+  test.each([
+    ["易燃物质", "火", "burn", 4, {}],
+    ["炙热波动", "火", "burn", 8, { counterTriggered: true }],
+    ["烈焰风暴", "火", "burn", 6, {}],
+    ["花火", "火", "burn", 4, {}],
+    ["暴风雪", "冰", "freeze", 1, {}],
+    ["极寒领域", "冰", "freeze", 2, { negativeStatusCounterState: true }],
+    ["滚雪球", "冰", "freeze", 4, { counterTriggered: true }],
+    ["寒潮", "冰", "freeze", 5, { negativeStatusCounterState: true }],
+    ["通电", "电", "electrified", 1, {}],
+    ["毒针", "毒", "poison", 1, {}],
+    ["腐蚀酸液", "毒", "poison", 2, {}],
+    ["连续毒针", "毒", "poison", 2, {}],
+    ["毒囊", "毒", "poison", 6, { negativeStatusCounterState: true }],
+    ["毒液渗透", "毒", "poison", 1, {}],
+    ["虫群", "虫", "poison", 3, { donationPoisonCount: 3 }],
+  ])("%s source is automatic in both modes and directions, with no four-row accumulation", (name, type, status, stacks, context) => {
+    const fixture = { ...snapshot,
+      skills: snapshot.skills.map((entry) => ({ ...entry, name, type, basePower: 1 })),
+      spirits: snapshot.spirits.map((entry) => ({ ...entry, traitIds: [] })),
+    };
+    for (const mode of ["single", "four"]) for (const direction of ["forward", "reverse"]) {
+      const input = state();
+      input.mode = mode;
+      const source = direction === "forward" ? "attacker" : "defender";
+      const target = source === "attacker" ? "defender" : "attacker";
+      const id = input.sides[source].skills.single;
+      input.sides[source].skills.four = [{ skillId: id, hitCount: 2 }, { skillId: id, hitCount: 2 }, null, null];
+      input.directions[direction].hitCount = 2;
+      input.directions[direction].context = { ...context };
+      input.calculationOptions = { includeNegativeStatusSettlement: true };
+      input.negativeStatuses = { attacker: { freeze: 2, poison: 2 }, defender: { freeze: 2, poison: 2 } };
+      const before = structuredClone(input);
+      const view = buildCalculatorViewModel({ activeDirection: direction, snapshot: fixture, state: input });
+      expect(view.result.selectedResult.status).toBe("exact");
+      expect(view.result.selectedResult.negativeStatusApplications.stacks[status]).toBe(stacks);
+      expect(view.result.selectedResult.totalDamage).toBe(view.calculation[direction].selectedResult.totalDamage);
+      if (mode === "four") {
+        expect(view.result.results[1].negativeStatusApplications.stacks[status]).toBe(stacks);
+        expect(view.result.skillResults[1].negativeStatusSettlement.stacks[status])
+          .toBe((input.negativeStatuses[target][status] ?? 0) + stacks);
+      }
+      expect(input).toEqual(before);
+      input.calculationOptions.includeNegativeStatusSettlement = false;
+      expect(buildCalculatorViewModel({ activeDirection: direction, snapshot: fixture, state: input })
+        .result.selectedResult.negativeStatusSettlement).toBeNull();
+    }
+  });
+
+  test.each([
+    ["电子音乐", "电", "通电", "electrified", 2, 3, { weatherThunder: true }],
+    ["生物碱", "草", "测试攻击", "poison", 2, 3, {}],
+    ["高浓生物碱", "草", "测试攻击", "poison", 3, 3, {}],
+    ["灵魂灼伤", "冰", "测试攻击", "burn", 4, 3, {}],
+    ["毒腺", "普通", "测试攻击", "poison", 4, 1, {}],
+    ["加个雪球", "冰", "暴风雪", "freeze", 3, 3, {}],
+    ["贪心算法", "普通", "测试攻击", "burn", 6, 3, {}],
+    ["爆裂玉米", "火", "测试攻击", "parasitism", 1, 3, {}],
+    ["溶解扩散", "水", "测试攻击", "poison", 2, 3, {}],
+    ["溶解腐蚀", "水", "测试攻击", "poison", 4, 3, {}],
+    ["扩散侵蚀", "水", "测试攻击", "poison", 6, 3, {}],
+  ])("%s trait joins the first attack preview only once", (traitName, type, name, status, stacks, cost, context) => {
+    const fixture = { ...snapshot,
+      skills: [...snapshot.skills.map((entry) => ({ ...entry, basePower: 1, cost, name, type })),
+        { id: "poison-one", name: "毒孢子", category: "status", type: "毒", basePower: 0 },
+        { id: "poison-two", name: "剧毒", category: "status", type: "毒", basePower: 0 }],
+      spirits: snapshot.spirits.map((entry) => ({ ...entry, traitIds: ["application-trait"] })),
+      traits: [{ id: "application-trait", name: traitName }],
+    };
+    for (const mode of ["single", "four"]) for (const direction of ["forward", "reverse"]) {
+      const input = state();
+      input.mode = mode;
+      const source = direction === "forward" ? "attacker" : "defender";
+      const target = source === "attacker" ? "defender" : "attacker";
+      input.sides[source].skills.four = [input.sides[source].skills.single, "poison-one", "poison-two", null];
+      input.directions[direction].context = { ...context };
+      input.directions[direction].hitCount = 5;
+      input.calculationOptions = { includeNegativeStatusSettlement: true };
+      input.negativeStatuses = { attacker: {}, defender: {} };
+      input.marks[target].negative = { id: "poison", stacks: 3 };
+      const result = buildCalculatorViewModel({ activeDirection: direction, snapshot: fixture, state: input }).result.selectedResult;
+      expect(result.negativeStatusApplications.stacks[status]).toBe(stacks);
+      expect(result.negativeStatusApplications.sources.some((entry) => entry.kind === "trait" && entry.name === traitName)).toBe(true);
+    }
+  });
+
+  test.each(["physical", "magical"])("legal zero damage %s attacks still preview their application; unsupported attacks do not", (category) => {
+    const fixture = { ...snapshot,
+      skills: snapshot.skills.map((entry) => ({ ...entry, category, name: "寒潮", type: "冰" })),
+      spirits: snapshot.spirits.map((entry) => ({ ...entry, traitIds: [] })),
+    };
+    const input = state();
+    input.calculationOptions = { includeNegativeStatusSettlement: true };
+    input.directions.forward.reduction = 0;
+    const zero = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input }).result.selectedResult;
+    expect(zero).toMatchObject({ status: "exact", totalDamage: 0, negativeStatusApplications: { stacks: { freeze: 1 } } });
+    const unsupportedFixture = { ...fixture, skills: fixture.skills.map((entry) => ({ ...entry, basePower: null })) };
+    input.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 2, single: 2 };
+    const unsupported = buildCalculatorViewModel({ activeDirection: "forward", snapshot: unsupportedFixture, state: input }).result.selectedResult;
+    expect(unsupported.status).not.toBe("exact");
+    expect(unsupported.negativeStatusApplications.stacks).toEqual({});
+  });
+
+  test.each(["易燃物质", "连续毒针", "打喷嚏"])("%s uses capped effective hits, not raw entry input", (name) => {
+    const category = name === "打喷嚏" ? "status" : "physical";
+    const status = name === "易燃物质" ? "burn" : name === "连续毒针" ? "poison" : "freeze";
+    const fixture = { ...snapshot,
+      skills: snapshot.skills.map((entry) => ({ ...entry, name, category, basePower: 1 })),
+      spirits: snapshot.spirits.map((entry) => ({ ...entry, traitIds: [] })),
+    };
+    const input = state();
+    input.calculationOptions = { includeNegativeStatusSettlement: true };
+    input.directions.forward.hitCount = 150;
+    input.directions.forward.context.negativeStatusUseCountsBySlot = { single: 1 };
+    const result = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input }).result.selectedResult;
+    expect(result.hitCount).toBe(99);
+    expect(result.negativeStatusApplications.stacks[status]).toBe(99);
+    expect(result.negativeStatusApplications.sources[0].stacks[status]).toBe(99 * (name === "易燃物质" ? 2 : 1));
+  });
+
+  test("single result rows use the selected single skill, not the saved four-slot first skill", () => {
+    const fixture = { ...snapshot, skills: snapshot.skills.map((entry) => ({ ...entry,
+      name: entry.id === "fire-hit" ? "花火" : "暴风雪", basePower: 1,
+    })) };
+    const input = state();
+    input.sides.attacker.skills.single = "water-hit";
+    input.calculationOptions = { includeNegativeStatusSettlement: true };
+    const view = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input });
+    expect(view.result.selectedResult.negativeStatusSettlement).toMatchObject({ added: { freeze: 1, burn: 0 } });
+    expect(view.result.results[0].negativeStatusSettlement).toEqual(view.result.selectedResult.negativeStatusSettlement);
+  });
+
+  test("per-hit applications use the final trait-fixed hit count", () => {
+    const fixture = { ...snapshot,
+      skills: snapshot.skills.map((entry) => ({ ...entry, name: "易燃物质", description: "2连击，每次连击使敌方获得2层灼烧。", basePower: 1 })),
+      spirits: snapshot.spirits.map((entry) => ({ ...entry, traitIds: ["filter"] })),
+      traits: [{ id: "filter", name: "强制过滤" }],
+    };
+    const input = state();
+    input.calculationOptions = { includeNegativeStatusSettlement: true };
+    input.directions.forward.hitCount = 7;
+    input.directions.forward.context.forcedFilterActivated = true;
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input }).result.selectedResult)
+      .toMatchObject({ hitCount: 1, negativeStatusApplications: { stacks: { burn: 2 } } });
+  });
+
+  test("pure status still needs explicit use; repeat preview is keyed by mode and skill identity", () => {
+    const fixture = {
+      ...snapshot,
+      skills: snapshot.skills.map((entry) =>
+        entry.id === "fire-hit" ? { ...entry, name: "引燃", category: "status" } : entry,
       ),
     };
     const input = state();
+    input.mode = "four";
     input.calculationOptions = { includeNegativeStatusSettlement: true };
     input.negativeStatuses = {
       attacker: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
@@ -508,7 +686,7 @@ describe("buildCalculatorViewModel", () => {
     };
 
     const unused = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input });
-    expect(unused.result.selectedResult.negativeStatusSettlement.added.burn).toBe(0);
+    expect(unused.result.selectedResult.negativeStatusSettlement).toBeNull();
 
     input.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
     const once = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input });
@@ -523,6 +701,18 @@ describe("buildCalculatorViewModel", () => {
       added: { burn: 10 },
       turnPreview: { repeated: true, next: { added: { burn: 10 } } },
     });
+    input.directions.forward.context.negativeStatusRepeatSkillsBySlot = {};
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input })
+      .result.selectedResult.negativeStatusSettlement.turnPreview.repeated).toBe(false);
+    input.directions.forward.context.negativeStatusRepeatSkillsBySlot = { 1: "fire-hit" };
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input })
+      .result.selectedResult.negativeStatusRepeatNextTurn).toBe(true);
+    input.mode = "single";
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input })
+      .result.selectedResult.negativeStatusRepeatNextTurn).toBe(false);
+    input.directions.forward.context.negativeStatusRepeatSkillsBySlot = { single: "fire-hit" };
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: input })
+      .result.selectedResult.negativeStatusRepeatNextTurn).toBe(true);
   });
 
   test("does not attach status settlement while the display setting is off", () => {
@@ -571,7 +761,12 @@ describe("buildCalculatorViewModel", () => {
 
     const enabled = structuredClone(disabled);
     enabled.calculationOptions = { includeNegativeStatusSettlement: true };
+    // 旧四技能槽1不能假定为单技能已使用。
     enabled.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: enabled })
+      .result.selectedResult.negativeStatusSettlement).toBeNull();
+    enabled.directions.forward.context.negativeStatusUseCountsBySlot = { single: 1 };
+    enabled.directions.forward.hitCount = 3;
     const enabledView = buildCalculatorViewModel({
       activeDirection: "forward",
       snapshot: fixture,
@@ -591,6 +786,9 @@ describe("buildCalculatorViewModel", () => {
       hpPercent: 0,
       statusOnly: true,
     });
+    enabled.directions.forward.context.negativeStatusUseCountsBySlot.single = 0;
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: enabled })
+      .result.selectedResult.negativeStatusSettlement).toBeNull();
   });
 
   test("passes the target poison mark into diffusion erosion settlement", () => {

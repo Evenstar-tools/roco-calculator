@@ -18,7 +18,7 @@ function burnLossText(phase) {
   return statusLossText(phase, burn);
 }
 
-function TurnStatusPreview({ current, preview }) {
+function TurnStatusPreview({ current, preview, onRepeatChange, repeated }) {
   if (!hasBurnPreview(current)) return null;
   const rows = [
     {
@@ -38,6 +38,11 @@ function TurnStatusPreview({ current, preview }) {
       className="result-rail__turn-preview"
       data-status="burn"
     >
+      {onRepeatChange ? <label className="result-rail__repeat">
+        <input type="checkbox" checked={repeated === true}
+          onChange={(event) => onRepeatChange(event.target.checked)} />
+        下回合继续此技能
+      </label> : null}
       {rows.map((row) => (
         <div className="result-rail__turn-row" key={row.label}>
           <span>
@@ -54,8 +59,10 @@ function TurnStatusPreview({ current, preview }) {
   );
 }
 
-function NegativeStatusSettlement({ settlement }) {
+function NegativeStatusSettlement({ settlement, onRepeatChange, repeated }) {
   if (!settlement || settlement.skipped === "direct-ko") return null;
+  if (!settlement.breakdown?.some((entry) => entry.stacks > 0) &&
+      !(settlement.freeze?.stacks > 0) && !(Number(settlement.totalHealing) > 0)) return null;
   const maxHp = Math.max(1, Number(settlement.maxHp) || 1);
   const actualStatusDamage = Math.max(
     0,
@@ -129,6 +136,8 @@ function NegativeStatusSettlement({ settlement }) {
       <TurnStatusPreview
         current={settlement}
         preview={settlement.turnPreview}
+        onRepeatChange={onRepeatChange}
+        repeated={repeated}
       />
     </section>
   );
@@ -198,6 +207,7 @@ export function ResultRail({
   onCurrentHpPercentChange,
   onDirectionToggle,
   onSkillResultSelect,
+  onNegativeStatusRepeatChange,
   onOpenComparison,
   result,
   showTypeCoverage = false,
@@ -284,7 +294,9 @@ export function ResultRail({
         <p className="result-rail__warning">{primary.warnings.join("；")}</p>
       ) : null}
 
-      <NegativeStatusSettlement settlement={primary.negativeStatusSettlement} />
+      <NegativeStatusSettlement settlement={primary.negativeStatusSettlement}
+        onRepeatChange={primary.negativeStatusCanRepeatNextTurn ? onNegativeStatusRepeatChange : undefined}
+        repeated={primary.negativeStatusRepeatNextTurn} />
       {onOpenComparison ? <button type="button" className="damage-comparison-entry" onClick={onOpenComparison}>查看全精灵承伤</button> : null}
 
       {primary.markSettlements?.length > 0 ? (

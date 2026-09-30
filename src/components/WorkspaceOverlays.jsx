@@ -319,6 +319,7 @@ export function WorkspaceOverlays({
             onCurrentHpPercentChange={mobileActions.onCurrentHpPercentChange}
             onDirectionToggle={mobileActions.onDirectionToggle}
             onSkillResultSelect={mobileActions.onSkillResultSelect}
+            onNegativeStatusRepeatChange={mobileActions.onNegativeStatusRepeatChange}
             onOpenComparison={mobileActions.onOpenComparison}
             result={mobileResult.result}
             showTypeCoverage={mobileResult.showTypeCoverage}

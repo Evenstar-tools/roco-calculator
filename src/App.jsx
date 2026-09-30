@@ -52,8 +52,8 @@ import { advancePressureValveContext, resolveSkillStatusActivation } from "./dom
 import { linkedNegativeStatusContext, negativeStatusInputUpdate } from "./domain/negative-status-context.js";
 import {
   hasNegativeStatusSkillApplication,
-  hasNegativeStatusTraitApplication,
 } from "./domain/negative-status-rules.js";
+import { applyBattleActivation, canApplyBattleActivation, canToggleNegativeStatusActivation } from "./state/battle-activation.js";
 import {
   getEditableHitCountInput,
   getSkillEffectInputs,
@@ -91,6 +91,7 @@ import {
   abilityLevelMultiplier,
   createProductInitialState,
   patchFourSkill,
+  reduceSessionAction,
   rememberSingleSkill as rememberSessionSingleSkill,
   selectFourSkill as selectSessionFourSkill,
   selectSingleSkill as selectSessionSingleSkill,
@@ -571,9 +572,18 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
 
   // 四技能模式下点结果行即可切换当前技能;单技能模式行不可点。
   const selectSkillResult = state.mode === "four"
-    ? (index) =>
-        updateDirection({ selectedDamageSource: "skill", selectedSkillIndex: index })
+    ? (index) => focusSkillResult(activeAttackSideKey, index)
     : undefined;
+
+  function focusSkillResult(side, index) {
+    const direction = side === "attacker" ? "forward" : "reverse";
+    setActiveDirection(direction);
+    const latest = stateRef.current;
+    const current = latest.directions[direction];
+    if (current.selectedDamageSource === "skill" && current.selectedSkillIndex === index) return;
+    commitSession(reduceSessionAction(latest, { direction, type: "direction/update",
+      value: { selectedDamageSource: "skill", selectedSkillIndex: index } }), { recordHistory: false });
+  }
 
   function updatePowerLevel(role, nextStage) {
     const stage = clampStage(nextStage);
@@ -905,6 +915,13 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       });
       latest = stateRef.current;
       if (isSameActiveStatus) {
+        if (hasNegativeStatusSkillApplication(skill) || viewModel.skillResultsByDirection[selfDirection]?.[index]?.negativeStatusCanApply) {
+          const counts = latest.directions[selfDirection].context?.negativeStatusUseCountsBySlot ?? {};
+          dispatch({ direction: selfDirection, type: "direction/update", value: { context: {
+            negativeStatusUseCountsBySlot: { ...counts, [index + 1]: 0 },
+            negativeStatusRepeatSkillsBySlot: latest.directions[selfDirection].context?.negativeStatusRepeatSkillsBySlot ?? {},
+          } } });
+        }
         setActiveDirection(selfDirection);
         setToast(`${skill.name}的状态已解除`);
         return;
@@ -923,8 +940,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     let negativeStatusUseCount = null;
     const canApplyNegativeStatus =
       latest.calculationOptions?.includeNegativeStatusSettlement === true &&
-      (hasNegativeStatusSkillApplication(skill) ||
-        effectiveTraitNames.some(hasNegativeStatusTraitApplication));
+      ["status", "defense"].includes(skill?.category) &&
+      (hasNegativeStatusSkillApplication(skill) || viewModel.skillResultsByDirection[selfDirection]?.[index]?.negativeStatusCanApply);
     if (canApplyNegativeStatus) {
       const currentCounts =
         latest.directions[selfDirection].context
@@ -933,7 +950,11 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         2,
         Math.max(0, Math.floor(Number(currentCounts[index + 1]) || 0)),
       );
-      negativeStatusUseCount = currentCount >= 2 ? 0 : currentCount + 1;
+      negativeStatusUseCount = canToggleNegativeStatusActivation(skill, context, {
+        negativeStatusEnabled: true,
+        negativeStatusCanApply: viewModel.skillResultsByDirection[selfDirection]?.[index]?.negativeStatusCanApply,
+        postAttackEffects: calculation?.[selfDirection]?.results?.[index]?.postAttackEffects,
+      }) && currentCount > 0 ? 0 : 1;
       dispatch({
         direction: selfDirection,
         type: "direction/update",
@@ -943,6 +964,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
               ...currentCounts,
               [index + 1]: negativeStatusUseCount,
             },
+            negativeStatusRepeatSkillsBySlot: latest.directions[selfDirection].context
+              ?.negativeStatusRepeatSkillsBySlot ?? {},
           },
         },
       });
@@ -952,17 +975,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         return;
       }
     }
-    const statusSettlement = viewModel.skillResultsByDirection[selfDirection]?.[index]
-      ?.negativeStatusSettlement;
-    const canPreviewBurn = Number(statusSettlement?.stacks?.burn) > 0 &&
-      !statusSettlement?.lethal && !statusSettlement?.skipped;
     const negativeStatusNotice = negativeStatusUseCount === 1
       ? `${skill.name}：本回合`
-      : negativeStatusUseCount === 2
-        ? canPreviewBurn
-          ? `${skill.name}：下回合灼烧续用预估；再点取消`
-          : `${skill.name}：仍按本回合结算；再点取消`
-        : null;
+      : null;
     const choiceTrait =
       context.choiceTraitTriggered === true &&
       supportsChoiceTrait(detectedChoiceTrait)
@@ -1370,6 +1385,67 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     ].join("；"));
   }
 
+  function canActivateSkill(side, index, mode = "four") {
+    const direction = side === "attacker" ? "forward" : "reverse";
+    const entry = mode === "single" ? state.sides[side].skills.single : state.sides[side].skills.four[index];
+    const skill = getSkill(snapshot, entry);
+    if (!skill) return false;
+    const context = mode === "single" ? state.directions[direction].context : entry?.context;
+    return Boolean(state.directions[direction].overrides?.activeDefenseStatus ||
+      Number(state.directions[direction === "forward" ? "reverse" : "forward"].reduction ?? 1) !== 1 ||
+      canApplyBattleActivation(skill, linkedNegativeStatusContext(state, side, context), {
+        negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
+        negativeStatusCanApply: viewModel.skillResultsByDirection[direction]?.[index]?.negativeStatusCanApply,
+        postAttackEffects: calculation?.[direction]?.results?.[index]?.postAttackEffects,
+      }));
+  }
+
+  function skillActivationLabel(side, index, mode = "four") {
+    const direction = side === "attacker" ? "forward" : "reverse";
+    const entry = mode === "single" ? state.sides[side].skills.single : state.sides[side].skills.four[index];
+    const skill = getSkill(snapshot, entry);
+    if (!["status", "defense"].includes(skill?.category)) return "应用后续变化";
+    const context = mode === "single" ? state.directions[direction].context : entry?.context;
+    if (canToggleNegativeStatusActivation(skill, linkedNegativeStatusContext(state, side, context), {
+      negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
+      negativeStatusCanApply: viewModel.skillResultsByDirection[direction]?.[index]?.negativeStatusCanApply,
+      postAttackEffects: calculation?.[direction]?.results?.[index]?.postAttackEffects,
+    })) {
+      const key = mode === "single" ? "single" : String(index + 1);
+      return Number(state.directions[direction].context?.negativeStatusUseCountsBySlot?.[key]) > 0
+        ? "取消使用" : "使用状态";
+    }
+    return "使用技能";
+  }
+
+  function activateSingleSkill() {
+    const actionLabel = skillActivationLabel(activeAttackSideKey, 0, "single");
+    const applied = applyBattleActivation({ calculation, side: activeAttackSideKey,
+      skillIndex: 0, skillMode: "single", snapshot, state: stateRef.current });
+    if (applied.applied || applied.stateChanged) {
+      commitSession({ state: applied.state, persistence: { rememberSide: activeAttackSideKey } });
+    }
+    setToast(applied.applied
+      ? actionLabel === "取消使用" ? `${selectedSingleSkill.name}的使用已取消`
+        : `${selectedSingleSkill.name}${actionLabel === "应用后续变化" ? "的后续变化已应用" : "：本回合"}`
+      : applied.reason);
+  }
+
+  function updateNegativeStatusRepeatNextTurn(checked) {
+    const latest = stateRef.current;
+    const direction = activeDirection;
+    const index = latest.directions[direction].selectedSkillIndex ?? 0;
+    const entry = latest.mode === "single" ? latest.sides[activeAttackSideKey].skills.single
+      : latest.sides[activeAttackSideKey].skills.four[index];
+    const skill = getSkill(snapshot, entry);
+    if (!skill) return;
+    const key = latest.mode === "single" ? "single" : String(index + 1);
+    const repeats = { ...(latest.directions[direction].context?.negativeStatusRepeatSkillsBySlot ?? {}) };
+    if (checked) repeats[key] = skill.id;
+    else delete repeats[key];
+    updateDirection({ context: { negativeStatusRepeatSkillsBySlot: repeats } });
+  }
+
   function updateRememberedSingleDirection(value) {
     updateDirection(value);
     rememberSingleSkill();
@@ -1510,6 +1586,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         })
       }
       onSkillSelect={selectSingleSkill}
+      canActivateSkill={canActivateSkill(activeAttackSideKey, 0, "single")}
+      skillActivationLabel={skillActivationLabel(activeAttackSideKey, 0, "single")}
+      onSkillActivate={activateSingleSkill}
       onTraitContextChange={(key, value) => {
         if (updateLinkedNegativeStatus(activeAttackSideKey, selectedSingleSkill, key, value)) return;
         if (
@@ -1649,15 +1728,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         });
       }}
       onSkillActivate={activateFourSkill}
-      onSkillFocus={(side, index) => {
-        const direction = side === "attacker" ? "forward" : "reverse";
-        setActiveDirection(direction);
-        dispatch({
-          direction,
-          type: "direction/update",
-          value: { selectedDamageSource: "skill", selectedSkillIndex: index },
-        });
-      }}
+      canSkillActivate={canActivateSkill}
+      skillActivationLabel={skillActivationLabel}
+      onSkillFocus={focusSkillResult}
       onTraitDamageFocus={(side) => {
         const direction = side === "attacker" ? "forward" : "reverse";
         setActiveDirection(direction);
@@ -1724,6 +1797,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       attackName={activeAttackSpirit.fullName}
       defenseName={activeDefenseSpirit.fullName}
       onSkillSelect={selectSingleSkill}
+      canActivateSkill={canActivateSkill(activeAttackSideKey, 0, "single")}
+      skillActivationLabel={skillActivationLabel(activeAttackSideKey, 0, "single")}
+      onSkillActivate={activateSingleSkill}
       result={resultModel.selectedResult}
       selectedSkill={selectedSingleSkill}
       skills={activeAttackSkills}
@@ -1760,16 +1836,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
           : 0
       }
       defenderTraitDamage={defenderTraitDamage}
-      onSkillFocus={(side, index) => {
-        const direction = side === "attacker" ? "forward" : "reverse";
-        setActiveDirection(direction);
-        dispatch({
-          direction,
-          type: "direction/update",
-          value: { selectedDamageSource: "skill", selectedSkillIndex: index },
-        });
-      }}
+      onSkillFocus={focusSkillResult}
       onSkillActivate={activateFourSkill}
+      canSkillActivate={canActivateSkill}
+      skillActivationLabel={skillActivationLabel}
       onTraitDamageFocus={(side) => {
         const direction = side === "attacker" ? "forward" : "reverse";
         setActiveDirection(direction);
@@ -1875,6 +1945,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         onAdvancedOptionsOpen: () =>
           openAdvancedOptionsAtTop({ closeMobileResult: true }),
         onSkillResultSelect: selectSkillResult,
+        onNegativeStatusRepeatChange: updateNegativeStatusRepeatNextTurn,
         onOpenComparison: damageComparisonEnabled ? openDamageComparison : undefined,
       },
     },
@@ -2351,6 +2422,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
                 setActiveDirection(toggleDirection)
               }
               onSkillResultSelect={selectSkillResult}
+              onNegativeStatusRepeatChange={updateNegativeStatusRepeatNextTurn}
               result={resultModel}
               showTypeCoverage={typeCoverageEnabled}
             />
