@@ -7,6 +7,7 @@ import {
   WarningCircle,
 } from "@phosphor-icons/react";
 import { damageTone } from "./damageTone.js";
+import { damagePresentation, DamageSegments } from "./damagePresentation.jsx";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
 import { describeResolution } from "./SingleSkillEditor.jsx";
@@ -18,12 +19,13 @@ function CompactDamage({
   result,
   selected,
 }) {
-  const hasDamage = Number.isFinite(result?.totalDamage);
-  const hasPercent = Number.isFinite(result?.hpPercent);
-  const percent = hasPercent ? result.hpPercent.toFixed(1) : null;
+  const presentation = damagePresentation(result);
+  const hasDamage = Number.isFinite(presentation.damage);
+  const hasPercent = Number.isFinite(presentation.percent);
+  const percent = hasPercent ? presentation.percent.toFixed(1) : null;
   const ariaLabel = selected
-    ? hasDamage
-      ? `${label}${selected.name}攻击${opponentName}：${result.totalDamage}伤害，${percent}% HP`
+    ? hasPercent
+      ? `${label}${selected.name}攻击${opponentName}：${hasDamage ? `${presentation.damage}伤害` : "不直接造成伤害"}，${percent}%${presentation.freezePercent > 0 ? "覆盖" : " HP"}`
       : `${label}${selected.name}攻击${opponentName}：${result?.reason ?? "伤害待计算"}`
     : `${label}技能未选择`;
 
@@ -31,20 +33,16 @@ function CompactDamage({
     <output
       aria-label={ariaLabel}
       className="compact-skill__result"
-      data-status={hasDamage ? "ready" : "pending"}
-      data-tone={damageTone(result?.hpPercent)}
-      title={result?.reason}
+      data-status={hasPercent ? "ready" : "pending"}
+      data-tone={damageTone(presentation.percent)}
+      title={presentation.detail ?? result?.reason}
     >
-      {hasDamage ? (
+      {hasPercent ? (
         <>
-          <span className="compact-skill__damage">{result.totalDamage}</span>
+          <span className="compact-skill__damage">{presentation.damage ?? "—"}</span>
           <strong>{percent}%</strong>
           <span aria-hidden="true" className="compact-skill__bar">
-            <span
-              style={{
-                width: `${Math.min(100, Math.max(0, result.hpPercent))}%`,
-              }}
-            />
+            <DamageSegments presentation={presentation} />
           </span>
         </>
       ) : (

@@ -260,39 +260,53 @@ describe("buildCalculatorViewModel", () => {
     expect(input).toEqual(state());
   });
 
-  test("maps standalone bloodline damage without leaving a skill row selected", () => {
+  test.each([
+    ["bloodline", "clown-trick", "戏耍", "戏耍·光合治愈"],
+    ["trait", "trait_skin_spikes", "刺肤", "刺肤"],
+  ])("maps standalone %s damage with the main result's existing-status settlement", (source, traitId, traitName, damageName) => {
     const input = state();
     input.mode = "four";
-    input.directions.forward.selectedDamageSource = "bloodline";
+    input.calculationOptions = { includeNegativeStatusSettlement: true };
+    input.negativeStatuses = { defender: { freeze: 3 } };
+    input.directions.forward.selectedDamageSource = source;
     input.directions.forward.context = {
       bloodlineMagicId: "photosynthetic-healing",
       bloodlineMagicTriggered: true,
     };
     input.directions.reverse.currentHp = 300;
-    const clownSnapshot = {
+    const sourceSnapshot = {
       ...snapshot,
       spirits: snapshot.spirits.map((spirit) =>
         spirit.id === "fire"
-          ? { ...spirit, traitIds: ["clown-trick"] }
+          ? { ...spirit, traitIds: [traitId] }
           : spirit,
       ),
       traits: [
         ...snapshot.traits,
-        { id: "clown-trick", name: "戏耍", description: "实际回复转为真伤。" },
+        { id: traitId, name: traitName },
       ],
     };
 
     const view = buildCalculatorViewModel({
       activeDirection: "forward",
-      snapshot: clownSnapshot,
+      snapshot: sourceSnapshot,
       state: input,
     });
 
-    expect(view.result.bloodlineResult).toMatchObject({
-      name: "戏耍·光合治愈",
+    const row = view.result[`${source}Result`];
+    expect(row).toMatchObject({
+      name: damageName,
       selected: true,
+      negativeStatusSettlement: {
+        actualStatusDamage: 0,
+        freeze: { stacks: 3, thresholdPercent: 15 },
+      },
     });
-    expect(view.result.selectedSkillName).toBe("戏耍·光合治愈");
+    expect(row.damage).toBe(view.result.selectedResult.totalDamage);
+    expect(row.hpPercent).toBe(view.result.selectedResult.hpPercent);
+    expect(row.negativeStatusSettlement.freeze)
+      .toEqual(view.result.selectedResult.negativeStatusSettlement.freeze);
+    expect(view.result.selectedSkillName).toBe(damageName);
     expect(view.result.skillResults.every((entry) => !entry.selected)).toBe(true);
   });
 
@@ -350,6 +364,62 @@ describe("buildCalculatorViewModel", () => {
         repeated: true,
       },
     });
+  });
+
+  test("仅灼烧生成下回合预估，冻结等异常保留本次结果", () => {
+    for (const id of ["freeze", "poison", "parasitism", "electrified", "burn"]) {
+      const input = state();
+      input.calculationOptions = { includeNegativeStatusSettlement: true };
+      input.negativeStatuses = { defender: { [id]: 1 } };
+      const view = buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: input });
+      const settlement = view.result.selectedResult.negativeStatusSettlement;
+      expect(settlement.lethal).toBe(false);
+      if (id === "burn") {
+        expect(settlement.turnPreview.focusStatusIds).toEqual(["burn"]);
+      } else {
+        expect(settlement.turnPreview).toBeUndefined();
+      }
+    }
+  });
+
+  test.each([true, false])("双向技能完整结果与选中结果共享异常结算口径（开关%s）", (enabled) => {
+    const fixture = {
+      ...snapshot,
+      skills: snapshot.skills.map((skill) => ({ ...skill, basePower: 1 })),
+    };
+    const input = state();
+    input.mode = "four";
+    input.calculationOptions = { includeNegativeStatusSettlement: enabled };
+    input.negativeStatuses = {
+      attacker: { freeze: 3 },
+      defender: { freeze: 3 },
+    };
+    input.directions.forward.currentHp = 30;
+    input.directions.reverse.currentHp = 30;
+
+    for (const direction of ["forward", "reverse"]) {
+      const view = buildCalculatorViewModel({
+        activeDirection: direction,
+        snapshot: fixture,
+        state: input,
+      });
+      const rows = view.skillResultsByDirection?.[direction];
+      expect(rows).toHaveLength(4);
+      const selected = view.result.selectedResult;
+      const row = rows[0];
+      expect(row.totalDamage).toBe(selected.totalDamage);
+      expect(row.negativeStatusSettlement).toEqual(selected.negativeStatusSettlement);
+      expect(view.calculation[direction].results[0].negativeStatusSettlement)
+        .toBeUndefined();
+      if (enabled) {
+        expect(row.negativeStatusSettlement).toMatchObject({
+          lethal: true,
+          freeze: { lethal: true, stacks: 3, thresholdPercent: 15 },
+        });
+      } else {
+        expect(row.negativeStatusSettlement).toBeNull();
+      }
+    }
   });
 
   test("毒腺按超导本次结算能耗决定是否施加中毒", () => {

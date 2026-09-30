@@ -15,6 +15,7 @@ import {
 import { SkillPicker } from "./SkillPicker.jsx";
 import { useEffect, useState } from "react";
 import { damageTone } from "./damageTone.js";
+import { damagePresentation, DamageSegments } from "./damagePresentation.jsx";
 import { HealthInput } from "./HealthInput.jsx";
 import { PowerDraftInput } from "./PowerDraftInput.jsx";
 import {
@@ -69,13 +70,14 @@ function SkillDamagePreview({
   result,
   selected,
 }) {
-  const hasDamage = Number.isFinite(result?.totalDamage);
-  const hasPercent = Number.isFinite(result?.hpPercent);
-  const percent = hasPercent ? result.hpPercent.toFixed(1) : null;
+  const presentation = damagePresentation(result);
+  const hasDamage = Number.isFinite(presentation.damage);
+  const hasPercent = Number.isFinite(presentation.percent);
+  const percent = hasPercent ? presentation.percent.toFixed(1) : null;
   const ariaLabel = selected
-    ? hasDamage
-      ? `${label}${selected.name}攻击${opponentName}：${result.totalDamage}伤害${
-          percent ? `，${percent}% HP` : ""
+    ? hasPercent
+      ? `${label}${selected.name}攻击${opponentName}：${hasDamage ? `${presentation.damage}伤害` : "不直接造成伤害"}${
+          percent ? `，${percent}%${presentation.freezePercent > 0 ? "覆盖" : " HP"}` : ""
         }`
       : `${label}${selected.name}攻击${opponentName}：${result?.reason ?? "伤害待计算"}`
     : `${label}技能${index + 1}未选择`;
@@ -84,20 +86,16 @@ function SkillDamagePreview({
     <output
       aria-label={ariaLabel}
       className="skill-slot__damage"
-      data-status={hasDamage ? "ready" : "pending"}
-      data-tone={damageTone(result?.hpPercent)}
-      title={result?.reason}
+      data-status={hasPercent ? "ready" : "pending"}
+      data-tone={damageTone(presentation.percent)}
+      title={presentation.detail ?? result?.reason}
     >
       <span className="skill-slot__damage-values">
         <strong>{percent ? `${percent}%` : "—"}</strong>
-        <span>{hasDamage ? `${result.totalDamage}伤害` : ""}</span>
+        <span>{hasDamage ? `${presentation.damage}伤害` : ""}</span>
       </span>
       <span aria-hidden="true" className="skill-slot__damage-bar">
-        <span
-          style={{
-            width: `${Math.min(100, Math.max(0, result?.hpPercent ?? 0))}%`,
-          }}
-        />
+        <DamageSegments presentation={presentation} />
       </span>
     </output>
   );
@@ -286,7 +284,10 @@ function SkillSide({
             {powerDisplayMode === "panel" ? "显示威力" : "静态威力"}
           </span>
           <span className="skill-slot__head-hits">连击</span>
-          <span className="skill-slot__head-result">伤害占比</span>
+          <span className="skill-slot__head-result">
+            {results?.some((result) => damagePresentation(result).freezePercent > 0) ||
+            damagePresentation(traitDamage?.result).freezePercent > 0 ? "覆盖" : "伤害占比"}
+          </span>
         </div>
         {traitDamage ? (
           <div

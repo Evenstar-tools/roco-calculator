@@ -262,7 +262,7 @@ export function getTraitView(snapshot, spirit, role = "attacker", skills = []) {
   };
 }
 
-function asResultRailModel({ calculation, direction, snapshot, state }) {
+function asResultRailModel({ calculation, direction, snapshot, state, includeTurnPreview = true }) {
   const isForward = direction === "forward";
   const attackSide = isForward ? state.sides.attacker : state.sides.defender;
   const defenseSide = isForward ? state.sides.defender : state.sides.attacker;
@@ -419,7 +419,8 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
     if (
       includeTurnPreview &&
       negativeStatusSettlement &&
-      negativeStatusSettlement.skipped !== "direct-ko"
+      Number(negativeStatusSettlement.stacks?.burn) > 0 &&
+      !negativeStatusSettlement.lethal
     ) {
       let repeatDirectDamage = resultForSettlement.totalDamage;
       try {
@@ -468,11 +469,7 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
     }
     if (negativeStatusSettlement && turnProjection) {
       negativeStatusSettlement.turnPreview = {
-        focusStatusIds: Object.keys(negativeStatusSettlement.stacks ?? {}).filter(
-          (id) =>
-            Number(negativeStatusSettlement.stacks?.[id]) > 0 ||
-            Number(negativeStatusSettlement.added?.[id]) > 0,
-        ),
+        focusStatusIds: ["burn"],
         next: statusUseCount > 1
           ? turnProjection.nextWithRepeat
           : turnProjection.nextWithoutRepeat,
@@ -505,7 +502,13 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
     selectedSkillIndex,
     selectedEntry,
     !["bloodline", "trait"].includes(directionState.selectedDamageSource),
-    true,
+    includeTurnPreview,
+  );
+  const enrichedBloodline = settleResult(
+    directionResult.bloodlineResult, selectedSkillIndex, selectedEntry, false,
+  );
+  const enrichedTrait = settleResult(
+    directionResult.traitResult, selectedSkillIndex, selectedEntry, false,
   );
   const effectiveSkills = skillEntries
     .map((entry) => getSkill(snapshot, entry))
@@ -521,24 +524,28 @@ function asResultRailModel({ calculation, direction, snapshot, state }) {
     defenderMaxHp: defenderPanels.hp,
     defenderName: defender.fullName,
     mode: state.mode,
+    results: enrichedRows,
+    traitDamageResult: enrichedTrait,
     selectedResult: enrichedSelected,
     selectedSkillName: selected.skillName ?? "未选择技能",
-    bloodlineResult: directionResult.bloodlineResult
+    bloodlineResult: enrichedBloodline
       ? {
-          damage: directionResult.bloodlineResult.totalDamage,
-          hpPercent: directionResult.bloodlineResult.hpPercent,
-          id: directionResult.bloodlineResult.skillId,
-          name: directionResult.bloodlineResult.skillName,
+          damage: enrichedBloodline.totalDamage,
+          hpPercent: enrichedBloodline.hpPercent,
+          id: enrichedBloodline.skillId,
+          name: enrichedBloodline.skillName,
+          negativeStatusSettlement: enrichedBloodline.negativeStatusSettlement,
           selected:
             state.directions[direction].selectedDamageSource === "bloodline",
         }
       : null,
-    traitResult: directionResult.traitResult
+    traitResult: enrichedTrait
       ? {
-          damage: directionResult.traitResult.totalDamage,
-          hpPercent: directionResult.traitResult.hpPercent,
-          id: directionResult.traitResult.skillId,
-          name: directionResult.traitResult.skillName,
+          damage: enrichedTrait.totalDamage,
+          hpPercent: enrichedTrait.hpPercent,
+          id: enrichedTrait.skillId,
+          name: enrichedTrait.skillName,
+          negativeStatusSettlement: enrichedTrait.negativeStatusSettlement,
           selected:
             state.directions[direction].selectedDamageSource === "trait",
         }
@@ -682,6 +689,24 @@ export function buildCalculatorViewModel({
   const result = configurationReady
     ? asResultRailModel({ calculation, direction: activeDirection, snapshot, state })
     : null;
+  const skillResultsByDirection = {
+    forward: calculation.forward.results,
+    reverse: calculation.reverse.results,
+    [activeDirection]: result?.results ?? calculation[activeDirection].results,
+  };
+  const traitResultsByDirection = {
+    forward: calculation.forward.traitResult,
+    reverse: calculation.reverse.traitResult,
+    [activeDirection]: result?.traitDamageResult ?? calculation[activeDirection].traitResult,
+  };
+  if (configurationReady && state.calculationOptions?.includeNegativeStatusSettlement) {
+    const otherDirection = activeDirection === "forward" ? "reverse" : "forward";
+    const otherResult = asResultRailModel({
+      calculation, direction: otherDirection, snapshot, state, includeTurnPreview: false,
+    });
+    skillResultsByDirection[otherDirection] = otherResult.results;
+    traitResultsByDirection[otherDirection] = otherResult.traitDamageResult;
+  }
   const attackerFinalPanelStats = configurationReady
     ? finalPanelStatsForSide(calculation, "attacker")
     : null;
@@ -722,6 +747,8 @@ export function buildCalculatorViewModel({
       weatherRainTurns,
     },
     result,
+    skillResultsByDirection,
+    traitResultsByDirection,
     selectableSpirits,
     sides: {
       attacker: {

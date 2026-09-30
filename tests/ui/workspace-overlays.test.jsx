@@ -123,6 +123,25 @@ test.each([true, false])("底栏共用容器且两个入口独立，承伤对比
 });
 
 test.each([
+  [372, false, "372", "102.5%覆盖"],
+  [0, true, "—", "15.0%覆盖"],
+])("手机底栏冻结覆盖与实际伤害分开：%d伤害，纯状态=%s", (damage, statusOnly, damageText, percentText) => {
+  renderOverlays({ menu: { open: false }, mobileResult: {
+    configurationReady: true, open: false, viewMode: "compact",
+    result: { attackerName: "圣代甜甜", defenderName: "寂灭骨龙", selectedResult: {
+      totalDamage: damage, hpPercent: damage / 425 * 100, statusOnly,
+      negativeStatusSettlement: {
+        actualStatusDamage: 0, maxHp: 425,
+        freeze: { stacks: 3, thresholdPercent: 15, immune: false },
+      },
+    } },
+  } });
+  const bar = screen.getByRole("button", { name: "展开伤害结果" });
+  expect(bar.querySelector(".mobile-result-bar__damage")).toHaveTextContent(damageText);
+  expect(bar.querySelector(".mobile-result-bar__percent")).toHaveTextContent(percentText);
+});
+
+test.each([
   ["非伤害技能不计算伤害", "非伤害"],
   ["需要更多输入", "待输入"],
   ["该规则暂未验证", "待输入"],

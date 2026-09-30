@@ -29,6 +29,7 @@ import {
 } from "../../src/components/SingleSkillEditor.jsx";
 import snapshot from "../../data/snapshots/current.json";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
+import { calculateNegativeStatusSettlement } from "../../src/domain/negative-status.js";
 
 test.each(["鸩毒", "以毒攻毒", "腐化", "不可接触"])("%s 的中毒条件可手动输入且支持 99 层", (name) => {
   const skill = snapshot.skills.find((entry) => entry.name === name);
@@ -2415,6 +2416,43 @@ test("four-skill editor previews each side's damage and target HP share", () => 
     screen.getByLabelText("防御方水之波纹攻击音速犬：90伤害，28.6% HP"),
   ).toHaveAttribute("data-tone", "warning");
   expect(screen.getAllByText("伤害占比")).toHaveLength(2);
+});
+
+test.each([
+  [372, [], true, "102.5"],
+  [360, [], true, "99.7"],
+  [372, ["冰"], true, "87.5"],
+  [372, [], false, "87.5"],
+].flatMap((scenario) => [
+  [...scenario, "具体版", FourSkillEditor],
+  [...scenario, "精简版", CompactFourSkillEditor],
+]))("寒潮%d伤害、属性%j、异常结算%s：覆盖%s%%，%s保留直伤", (damage, types, enabled, percent, _variant, Editor) => {
+  const chill = { ...skills[1], id: "cold-wave", name: "寒潮", type: "冰" };
+  const settlement = calculateNegativeStatusSettlement({
+    enabled,
+    defender: { maxHp: 425, currentHp: 425, types },
+    directDamage: damage,
+    applications: { freeze: 3 },
+  });
+  const { container } = render(<Editor
+    attackerName="圣代甜甜（樱桃巧克力口味）"
+    attackerResults={[{
+      hpPercent: damage / 425 * 100,
+      status: "exact",
+      totalDamage: damage,
+      negativeStatusSettlement: settlement,
+    }]}
+    attackerSkills={[chill, null, null, null]}
+    attackerSkillChoices={[chill]}
+    defenderName="寂灭骨龙"
+    defenderSkills={[null, null, null, null]}
+    defenderSkillChoices={[chill]}
+    onSkillSelect={vi.fn()}
+    skills={[chill]}
+  />);
+  const preview = container.querySelector(".skill-slot__damage, .compact-skill__result");
+  expect(preview).toHaveTextContent(`${percent}%`);
+  expect(preview).toHaveTextContent(String(damage));
 });
 
 test("mobile four-skill editor switches between four attack and defense slots", async () => {

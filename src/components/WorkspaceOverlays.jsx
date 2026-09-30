@@ -1,6 +1,7 @@
 import { X } from "@phosphor-icons/react";
 import { useEffect, useRef } from "react";
 import { ResultRail } from "./ResultRail.jsx";
+import { damagePresentation } from "./damagePresentation.jsx";
 import { TeamDrawer } from "./TeamDrawer.jsx";
 import { ConfigLibraryDialog } from "./ConfigLibraryDialog.jsx";
 import { DataSourceDialog } from "./DataSourceDialog.jsx";
@@ -50,6 +51,7 @@ export function WorkspaceOverlays({
   const shareActions = share.actions ?? {};
   const shareRefs = share.refs ?? {};
   const displaySettingsRef = useRef(null);
+  const mobilePresentation = damagePresentation(mobileResult.result?.selectedResult);
 
   useEffect(() => {
     if (!mobileResult.open) return undefined;
@@ -275,11 +277,11 @@ export function WorkspaceOverlays({
             {mobileResult.result.attackerName} → {mobileResult.result.defenderName}
           </span>
           <strong className="mobile-result-bar__damage">
-            {mobileResult.result.selectedResult.totalDamage ?? "—"}
+            {mobilePresentation.damage ?? "—"}
           </strong>
           <span className="mobile-result-bar__percent">
-            {Number.isFinite(mobileResult.result.selectedResult.hpPercent)
-              ? `${mobileResult.result.selectedResult.hpPercent.toFixed(1)}%`
+            {Number.isFinite(mobilePresentation.percent)
+              ? `${mobilePresentation.percent.toFixed(1)}%${mobilePresentation.freezePercent > 0 ? "覆盖" : ""}`
               : mobileResult.result.selectedResult.reason === "非伤害技能不计算伤害" ? "非伤害" : "待输入"}
           </span>
         </button>

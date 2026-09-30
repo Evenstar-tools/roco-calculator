@@ -1,9 +1,11 @@
 import { createNegativeStatusSide } from "./negative-status.js";
+import { getSkillEffectInputs } from "./skill-effects.js";
+import { getSkillStatusEffectInputs } from "./skill-status-effects.js";
+import { normalizeTriggerControls, projectTriggerContext } from "./trigger-controls.js";
 
 const booleanInput = (contextKey, label) => ({
   contextKey,
   defaultValue: false,
-  id: contextKey,
   key: contextKey,
   label,
   type: "boolean",
@@ -12,7 +14,6 @@ const booleanInput = (contextKey, label) => ({
 const numberInput = (contextKey, label, max = 99) => ({
   contextKey,
   defaultValue: 0,
-  id: contextKey,
   key: contextKey,
   label,
   max,
@@ -185,7 +186,7 @@ function addStacks(target, addition = {}) {
 }
 
 export function getNegativeStatusInputs(skill) {
-  return SKILL_RULES[skill?.name]?.inputs ?? [];
+  return normalizeTriggerControls(SKILL_RULES[skill?.name]?.inputs ?? [], { source: "skill" });
 }
 
 export function hasNegativeStatusSkillApplication(skill) {
@@ -208,6 +209,11 @@ export function resolveNegativeStatusApplications({
   skillIndex = 0,
   traits = [],
 } = {}) {
+  context = projectTriggerContext(context, [
+    ...getSkillEffectInputs(skill),
+    ...getSkillStatusEffectInputs(skill),
+    ...getNegativeStatusInputs(skill),
+  ]);
   const stacks = createNegativeStatusSide();
   const sources = [];
   const rule = SKILL_RULES[skill?.name];

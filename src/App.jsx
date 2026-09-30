@@ -1541,7 +1541,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         basePower: calculation.forward.traitResult.skillPower,
         hitCount: state.directions.forward.traitDamageHitCount ?? 1,
         name: calculation.forward.traitResult.skillName,
-        result: calculation.forward.traitResult,
+        result: viewModel.traitResultsByDirection.forward,
         typeLabel: calculation.forward.traitResult.typeLabel,
       }
     : null;
@@ -1550,7 +1550,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         basePower: calculation.reverse.traitResult.skillPower,
         hitCount: state.directions.reverse.traitDamageHitCount ?? 1,
         name: calculation.reverse.traitResult.skillName,
-        result: calculation.reverse.traitResult,
+        result: viewModel.traitResultsByDirection.reverse,
         typeLabel: calculation.reverse.traitResult.typeLabel,
       }
     : null;
@@ -1575,7 +1575,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         state.directions.forward.overrides?.lifestealPercent ?? 0
       }
       attackerName={attacker.fullName}
-      attackerResults={calculation.forward.results}
+      attackerResults={viewModel.skillResultsByDirection.forward}
       attackerSkillChoices={attackerSkillChoices}
       attackerSkills={state.sides.attacker.skills.four.map((entry) =>
         linkedSkillSlotView("attacker", entry),
@@ -1600,7 +1600,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       }
       defenderHealth={defenderHealth}
       defenderName={defender.fullName}
-      defenderResults={calculation.reverse.results}
+      defenderResults={viewModel.skillResultsByDirection.reverse}
       defenderSkillChoices={defenderSkillChoices}
       defenderSkills={state.sides.defender.skills.four.map((entry) =>
         linkedSkillSlotView("defender", entry),
@@ -1732,7 +1732,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       activeSide={activeAttackSideKey}
       activeSkillIndex={currentDirection.selectedSkillIndex}
       attackerName={attacker.fullName}
-      attackerResults={calculation.forward.results}
+      attackerResults={viewModel.skillResultsByDirection.forward}
       attackerSkillChoices={attackerSkillChoices}
       attackerSkills={state.sides.attacker.skills.four.map((entry) =>
         getSkillSlotView(snapshot, entry),
@@ -1744,7 +1744,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       }
       attackerTraitDamage={attackerTraitDamage}
       defenderName={defender.fullName}
-      defenderResults={calculation.reverse.results}
+      defenderResults={viewModel.skillResultsByDirection.reverse}
       defenderSkillChoices={defenderSkillChoices}
       defenderSkills={state.sides.defender.skills.four.map((entry) =>
         getSkillSlotView(snapshot, entry),

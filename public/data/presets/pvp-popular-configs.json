@@ -6,8 +6,8 @@
     "data": "s4-2026-09-10",
     "rules": "s4-2026-09-10"
   },
-  "exportedAt": "2026-09-29T08:52:20.361Z",
-  "entryCount": 230,
+  "exportedAt": "2026-09-30T04:18:42.401Z",
+  "entryCount": 231,
   "entries": [
     {
       "spiritId": "spirit_56b76e5cddf39081",
@@ -4462,6 +4462,25 @@
         "skill_803bb4da56d33ce1",
         "skill_d2858245ecbdd89d",
         "skill_b67699fa9b91b710"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_41869713b59c286d",
+      "natureId": "smart",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 0,
+        "magicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalDefense": 0
+      },
+      "skills": [
+        "skill_c70fa0fa086c89dc",
+        "skill_87c9f33eaa047cf1",
+        "skill_8e8ae207e4488c78",
+        "skill_dfb8d477f5610076"
       ],
       "traitValues": {}
     }

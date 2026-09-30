@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import runtimeSnapshot from "../../public/data/runtime.json";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 import { getSkillStatusEffectInputs } from "../../src/domain/skill-status-effects.js";
+import { getNegativeStatusInputs, resolveNegativeStatusApplications } from "../../src/domain/negative-status-rules.js";
 import { getTraitEffectInputs } from "../../src/domain/trait-effects.js";
 import { canonicalTraitControlKey } from "../../src/state/trait-values.js";
 import {
@@ -19,6 +20,63 @@ import {
   shareHashFromInput,
   updateMirroredTraitContext,
 } from "../../src/state/calculator-session.js";
+
+test("所有技能复选框和异常输入都能通过真实保存链路开启、关闭", () => {
+  const initial = createProductInitialState(runtimeSnapshot);
+  const failures = [];
+  for (const skill of runtimeSnapshot.skills) {
+    const controls = [
+      ...getSkillEffectInputs(skill),
+      ...getSkillStatusEffectInputs(skill),
+      ...getNegativeStatusInputs(skill),
+    ].filter((input) => input.scope !== "battle" &&
+      (input.type === "boolean" || getNegativeStatusInputs(skill).some((entry) => entry.id === input.id)));
+    for (const input of new Map(controls.map((entry) => [entry.id, entry])).values()) {
+      let state = { ...initial, sides: { ...initial.sides, attacker: {
+        ...initial.sides.attacker, skills: { ...initial.sides.attacker.skills, four: [skill.id, null, null, null] },
+      } } };
+      for (const value of input.type === "boolean" ? [true, false] : [2, 0]) {
+        const dependency = input.visibleWhen;
+        state = patchFourSkill(state, { side: "attacker", index: 0,
+          patch: { context: { ...(dependency ? { [dependency.id]: dependency.equals } : {}),
+            [input.id]: value } }, snapshot: runtimeSnapshot }).state;
+        const actual = state.sides.attacker.skills.four[0].context[input.id];
+        if (actual !== value) failures.push({ skill: skill.name, input: input.label, value, actual });
+      }
+    }
+  }
+  expect(failures).toEqual([]);
+});
+
+test("寒潮应对勾选保存后参与冻结结算，取消后恢复普通层数", () => {
+  const skill = runtimeSnapshot.skills.find(({ name }) => name === "寒潮");
+  const input = getNegativeStatusInputs(skill)[0];
+  let state = createProductInitialState(runtimeSnapshot);
+  state.sides.attacker.skills.four[0] = skill.id;
+  for (const [checked, freeze] of [[true, 5], [false, 1]]) {
+    state = patchFourSkill(state, { side: "attacker", index: 0,
+      patch: { context: { [input.id]: checked } }, snapshot: runtimeSnapshot }).state;
+    expect(resolveNegativeStatusApplications({ skill,
+      context: state.sides.attacker.skills.four[0].context }).stacks.freeze).toBe(freeze);
+  }
+});
+
+test("异常复选框兼容旧配置，单技能切走再切回仍保留", () => {
+  const skill = runtimeSnapshot.skills.find(({ name }) => name === "寒潮");
+  const other = runtimeSnapshot.skills.find(({ name }) => name === "暴风雪");
+  const input = getNegativeStatusInputs(skill)[0];
+  let state = createProductInitialState(runtimeSnapshot);
+  state.mode = "single";
+  state.sides.attacker.skills.single = { skillId: skill.id };
+  state.directions.forward.context = { [input.contextKey]: true };
+  state = migrateSharedConfiguration(state, state.versions, runtimeSnapshot);
+  expect(state.directions.forward.context[input.id]).toBe(true);
+  for (const skillId of [other.id, skill.id]) {
+    state = selectSingleSkill(state, { direction: "forward", side: "attacker", skillId,
+      snapshot: runtimeSnapshot }).state;
+  }
+  expect(state.directions.forward.context[input.id]).toBe(true);
+});
 
 test("传感器显式连击随技能记忆保存，不串到别的单技能", () => {
   const sensor = runtimeSnapshot.skills.find(({ name }) => name === "传感器");

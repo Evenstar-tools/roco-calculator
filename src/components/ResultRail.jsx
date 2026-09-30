@@ -2,10 +2,7 @@ import { ArrowsLeftRight } from "@phosphor-icons/react";
 import { damageTone } from "./damageTone.js";
 import { HealthInput } from "./HealthInput.jsx";
 import { TypeCoveragePanel } from "./TypeCoveragePanel.jsx";
-
-function clampPercent(value) {
-  return Math.min(100, Math.max(0, Number(value) || 0));
-}
+import { damagePresentation, DamageSegments } from "./damagePresentation.jsx";
 
 const STATUS_LABELS = {
   burn: "灼烧",
@@ -23,53 +20,38 @@ function compactStatusSummary(settlement) {
   const parts = breakdown.length > 0
     ? breakdown
     : Object.entries(settlement.added ?? {})
-        .filter(([, stacks]) => Number(stacks) > 0)
+        .filter(([id, stacks]) => id !== "freeze" && Number(stacks) > 0)
         .map(([id, stacks]) => `${STATUS_LABELS[id]}×${stacks}`);
   const freezeThreshold = Number(settlement.freeze?.thresholdPercent) || 0;
   if (freezeThreshold > 0) {
-    parts.push(settlement.freeze?.lethal ? "冻结击倒" : `冻结覆盖${freezeThreshold}%`);
+    parts.push(settlement.freeze?.lethal ? "冻结击倒" : `冻结${freezeThreshold}%`);
   }
   return parts.join(" · ") || null;
 }
 
-function turnStatusText(phase, statusIds) {
-  return statusIds
-    .map((id) => {
-      const stacks = Math.max(0, Number(phase?.stacks?.[id]) || 0);
-      if (stacks <= 0) return null;
-      return `${STATUS_LABELS[id]} ×${stacks}`;
-    })
-    .filter(Boolean)
-    .join(" · ");
+function burnLossText(phase) {
+  const burn = phase?.breakdown?.find((entry) => entry.id === "burn");
+  if (burn?.immune) return "免疫";
+  const damage = Math.max(0, Number(burn?.damage) || 0);
+  const maxHp = Math.max(1, Number(phase?.maxHp) || 1);
+  return damage > 0 ? `${(damage / maxHp * 100).toFixed(1)}% · ${damage} HP` : "不扣血";
 }
 
-function turnLossText(phase) {
-  const actualStatusDamage = Math.max(
-    0,
-    Number(phase?.actualStatusDamage) || 0,
-  );
-  const maxHp = Math.max(1, Number(phase?.maxHp) || 1);
-  if (actualStatusDamage > 0) {
-    return `${(actualStatusDamage / maxHp * 100).toFixed(1)}% · ${actualStatusDamage} HP`;
-  }
-  const threshold = Math.max(0, Number(phase?.freeze?.thresholdPercent) || 0);
-  return threshold > 0 ? `冻结线 ${threshold}%` : "不扣血";
+function hasBurnPreview(settlement) {
+  return !settlement.lethal && Number(settlement.stacks?.burn) > 0 &&
+    Boolean(settlement.turnPreview?.next);
 }
 
 function TurnStatusPreview({ current, preview }) {
-  if (!preview?.next) return null;
-  const statusIds = (preview.focusStatusIds ?? []).filter(
-    (id) => STATUS_LABELS[id],
-  );
-  if (statusIds.length === 0) return null;
+  if (!hasBurnPreview(current)) return null;
   const rows = [
     {
-      amount: turnLossText(current),
+      amount: burnLossText(current),
       label: "本回合",
       phase: current,
     },
     {
-      amount: turnLossText(preview.next),
+      amount: burnLossText(preview.next),
       label: "下回合",
       phase: preview.next,
     },
@@ -78,7 +60,7 @@ function TurnStatusPreview({ current, preview }) {
     <section
       aria-label="回合状态预估"
       className="result-rail__turn-preview"
-      data-status={statusIds[0]}
+      data-status="burn"
     >
       {rows.map((row) => (
         <div className="result-rail__turn-row" key={row.label}>
@@ -88,7 +70,7 @@ function TurnStatusPreview({ current, preview }) {
               <em>续用</em>
             ) : null}
           </span>
-          <b>{turnStatusText(row.phase, statusIds)}</b>
+          <b>灼烧 ×{Math.max(0, Number(row.phase.stacks?.burn) || 0)}</b>
           <strong>{row.amount}</strong>
         </div>
       ))}
@@ -103,10 +85,6 @@ function NegativeStatusSettlement({ settlement }) {
     0,
     Number(settlement.actualStatusDamage) || 0,
   );
-  const meterEntries = (settlement.breakdown ?? []).filter(
-    (entry) => entry.stacks > 0 && entry.damage > 0,
-  );
-  const statusDamage = Math.max(0, Number(settlement.statusDamage) || 0);
   const freezeThreshold = Math.max(
     0,
     Number(settlement.freeze?.thresholdPercent) || 0,
@@ -114,13 +92,6 @@ function NegativeStatusSettlement({ settlement }) {
   const freezeThresholdHp = Number.isFinite(Number(settlement.freeze?.thresholdHp))
     ? Math.max(0, Math.floor(Number(settlement.freeze.thresholdHp)))
     : Math.floor(maxHp * freezeThreshold / 100);
-  const hasFreeze = Number(settlement.freeze?.stacks) > 0;
-  const meterLabel = [
-    actualStatusDamage > 0 ? `状态实际追加 ${actualStatusDamage} HP` : null,
-    freezeThreshold > 0
-      ? `冻结斩杀阈值 ${freezeThreshold}%，等效不高于 ${freezeThresholdHp} HP，不额外扣血`
-      : null,
-  ].filter(Boolean).join("；");
   return (
     <section
       aria-label="负面状态结算"
@@ -129,42 +100,8 @@ function NegativeStatusSettlement({ settlement }) {
       <header>
         <strong>状态结算</strong>
       </header>
-      {meterEntries.length > 0 || hasFreeze ? (
-        <div
-          aria-label={meterLabel || "负面状态生命影响"}
-          className="result-rail__status-meter"
-          role="img"
-        >
-          {freezeThreshold > 0 ? (
-            <span
-              className="result-rail__status-threshold"
-              data-status="freeze"
-              style={{ width: `${Math.min(100, freezeThreshold)}%` }}
-            />
-          ) : null}
-          {meterEntries.map((entry) => (
-            <span
-              data-status={entry.id}
-              key={entry.id}
-              style={{
-                width: `${Math.min(
-                  100,
-                  (entry.damage * (statusDamage > 0 ? actualStatusDamage / statusDamage : 0)) /
-                    maxHp * 100,
-                )}%`,
-              }}
-            />
-          ))}
-          {freezeThreshold > 0 && meterEntries.length > 0 ? (
-            <i
-              data-status="freeze"
-              style={{ left: `${freezeThreshold}%` }}
-            />
-          ) : null}
-        </div>
-      ) : null}
-      {!settlement.turnPreview ? settlement.breakdown?.map((entry) =>
-        entry.stacks > 0 ? (
+      {settlement.breakdown?.map((entry) =>
+        entry.stacks > 0 && !(entry.id === "burn" && hasBurnPreview(settlement)) ? (
           <div className="result-rail__status-row" data-status={entry.id} key={entry.id}>
             <span className="result-rail__status-name">
               {STATUS_LABELS[entry.id]} ×{entry.stacks}
@@ -180,7 +117,7 @@ function NegativeStatusSettlement({ settlement }) {
             ) : null}
           </div>
         ) : null,
-      ) : null}
+      )}
       {settlement.freeze?.stacks > 0 ? (
         <div className="result-rail__status-row" data-status="freeze">
           <span className="result-rail__status-name">
@@ -214,10 +151,6 @@ function NegativeStatusSettlement({ settlement }) {
           </strong>
           <span>{settlement.outcome}</span>
         </footer>
-      ) : settlement.freeze?.lethal === true ? (
-        <footer>
-          <strong>触发冻结斩杀</strong>
-        </footer>
       ) : null}
       <TurnStatusPreview
         current={settlement}
@@ -232,22 +165,9 @@ function SkillResultRow({ index, item, onClick }) {
   const isBloodline = item.kind === "bloodline";
   const Tag = onClick ? "button" : "div";
   const statusSummary = compactStatusSummary(item.negativeStatusSettlement);
-  const statusDamage = Number(
-    item.negativeStatusSettlement?.actualStatusDamage,
-  );
-  const statusPercent = item.statusOnly && statusDamage > 0
-    ? statusDamage /
-      Math.max(1, Number(item.negativeStatusSettlement.maxHp) || 1) * 100
-    : item.statusOnly ? Number.NaN : null;
-  const displayPercent = item.statusOnly
-    ? statusPercent
-    : Number.isFinite(statusPercent) ? statusPercent : item.hpPercent;
-  const statusDamageValue = item.negativeStatusSettlement?.actualStatusDamage;
-  const displayDamage = item.statusOnly
-    ? Number.isFinite(statusDamageValue) && statusDamageValue > 0
-      ? statusDamageValue
-      : null
-    : Number.isFinite(item.damage) ? item.damage : null;
+  const presentation = damagePresentation(item);
+  const displayPercent = presentation.percent;
+  const displayDamage = presentation.damage;
   return (
     <Tag
       {...(onClick
@@ -277,8 +197,8 @@ function SkillResultRow({ index, item, onClick }) {
           </small>
         ) : null}
       </span>
-      <span className="skill-result-row__bar" aria-hidden="true">
-        <span style={{ width: `${clampPercent(displayPercent)}%` }} />
+      <span className="skill-result-row__bar" aria-hidden="true" title={presentation.detail ?? undefined}>
+        <DamageSegments presentation={presentation} />
       </span>
       <span
         aria-label={`${item.name}实际伤害`}
@@ -286,7 +206,7 @@ function SkillResultRow({ index, item, onClick }) {
       >
         {displayDamage ?? "—"}
       </span>
-      <strong aria-label={`${item.name}生命百分比`}>
+      <strong aria-label={`${item.name}生命百分比`} title={presentation.detail ?? undefined}>
         {Number.isFinite(displayPercent)
           ? `${displayPercent.toFixed(1)}%`
             : "—"}
@@ -313,15 +233,15 @@ export function ResultRail({
     Number.isFinite(primary.totalDamage) &&
     Number.isFinite(primary.hpPercent);
   const isStatusOnly = isExact && primary.statusOnly === true;
-  const barWidth = isExact ? clampPercent(primary.hpPercent) : 0;
-  const percentText = isExact ? `${primary.hpPercent.toFixed(1)}% HP` : primary.reason === "非伤害技能不计算伤害" ? "非伤害技能" : "待补充条件";
+  const presentation = damagePresentation(primary);
+  const percentText = isExact ? `${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}` : primary.reason === "非伤害技能不计算伤害" ? "非伤害技能" : "待补充条件";
   const outcomeText = isExact
-    ? primary.lethal
-      ? "可击倒"
-      : `剩余 ${Math.max(0, result.defenderHp - primary.totalDamage)} HP`
+    ? presentation.lethal
+      ? primary.negativeStatusSettlement?.freeze?.lethal ? "本次可击倒 · 冻结斩杀" : "可击倒"
+      : `剩余 ${presentation.remainingHp ?? Math.max(0, result.defenderHp - primary.totalDamage)} HP`
     : primary.reason ?? (primary.status === "unsupported" ? "该规则暂未验证" : "需要更多输入");
   const koHits =
-    isExact && !primary.lethal && primary.totalDamage > 0
+    isExact && !presentation.lethal && !presentation.hasStatusImpact && primary.totalDamage > 0
       ? Math.ceil(result.defenderHp / primary.totalDamage)
       : null;
   return (
@@ -364,17 +284,24 @@ export function ResultRail({
             </p>
           </div>
 
-          <div
-            aria-label={isExact ? `伤害占最大生命 ${primary.hpPercent.toFixed(1)}%` : "伤害待计算"}
-            className="damage-bar"
-            role="img"
-          >
-            <span className="damage-bar__fill" style={{ width: `${barWidth}%` }} />
-            <span className="damage-bar__label">
-              {isExact ? `${primary.hpPercent.toFixed(1)}%` : "—"}
-            </span>
-          </div>
         </>
+      ) : null}
+
+      <div
+        aria-label={isExact ? presentation.detail ?? `伤害占最大生命 ${primary.hpPercent.toFixed(1)}%` : "伤害待计算"}
+        className="damage-bar"
+        role="img"
+      >
+        <DamageSegments className="damage-bar__fill" presentation={presentation} />
+        <span className="damage-bar__label">
+          {isExact ? `${presentation.percent.toFixed(1)}%` : "—"}
+        </span>
+      </div>
+      {isExact && presentation.detail ? (
+        <p className="result-rail__coverage-detail">{presentation.detail}</p>
+      ) : null}
+      {isStatusOnly && presentation.lethal ? (
+        <p className="result-rail__lethal">本次可击倒 · {primary.negativeStatusSettlement.outcome}</p>
       ) : null}
 
       {isExact && primary.warnings?.length > 0 ? (
@@ -457,7 +384,7 @@ export function ResultRail({
           <h2>技能结果</h2>
           <div aria-hidden="true" className="skill-result-list__columns">
             <span>伤害</span>
-            <span>HP</span>
+            <span>{result.skillResults.some((skill) => damagePresentation(skill).freezePercent > 0) ? "覆盖" : "HP"}</span>
           </div>
           {result.bloodlineResult ? (
             <SkillResultRow

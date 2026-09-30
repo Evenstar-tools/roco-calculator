@@ -1,5 +1,7 @@
 import { describe, expect, test } from "vitest";
 import snapshot from "../../data/snapshots/current.json";
+import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
+import { getSkillStatusEffectInputs } from "../../src/domain/skill-status-effects.js";
 import {
   NEGATIVE_STATUS_RULE_AUDIT,
   getNegativeStatusInputs,
@@ -10,6 +12,26 @@ const skill = (name) => snapshot.skills.find((candidate) => candidate.name === n
 const trait = (name) => snapshot.traits.find((candidate) => candidate.name === name);
 
 describe("negative status source rules", () => {
+  test.each([
+    ["寒潮", "negativeStatusCounterState", true, { freeze: 5 }],
+    ["天火", "negativeStatusCounterDefense", true, { burn: 30 }],
+    ["毒囊", "negativeStatusCounterState", true, { poison: 6 }],
+    ["星火", "previousTurnBothUsedLightSkill", true, { burn: 20 }],
+    ["焚烧烙印", "dispelledMarkStacks", 2, { burn: 10 }],
+    ["毒雾", "convertedBuffStacks", 2, { poison: 2 }],
+    ["炙热波动", "counterTriggered", true, { burn: 8 }],
+    ["滚雪球", "counterTriggered", true, { freeze: 4 }],
+    ["野火", "applyDefenseReduction", true, { burn: 0 }],
+  ])("%s reads saved control ids as well as legacy context", (name, key, value, expected) => {
+    const entry = skill(name);
+    const control = [...getSkillEffectInputs(entry), ...getSkillStatusEffectInputs(entry),
+      ...getNegativeStatusInputs(entry)].find((input) => input.contextKey === key);
+    expect(control).toBeDefined();
+    for (const context of [{ [control.id]: value }, { [key]: value }]) {
+      expect(resolveNegativeStatusApplications({ skill: entry, context }).stacks).toMatchObject(expected);
+    }
+  });
+
   test.each([
     ["暴风雪", {}, { freeze: 1 }],
     ["易燃物质", {}, { burn: 4 }],

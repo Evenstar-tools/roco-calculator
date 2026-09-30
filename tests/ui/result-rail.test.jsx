@@ -32,10 +32,62 @@ const result = {
 };
 
 test.each([
-  [44, 2, [], true, "冻结覆盖10%"],
-  [400, 2, [], true, "冻结覆盖10%"],
+  [372, [], true, true, 0],
+  [360, [], true, false, 65],
+  [372, ["冰"], true, false, 53],
+  [372, [], false, false, 53],
+])("寒潮%d伤害、属性%j、异常结算%s：主结论采用冻结击倒结果", (damage, types, enabled, lethal, remainingHp) => {
+  const settlement = calculateNegativeStatusSettlement({
+    enabled,
+    defender: { maxHp: 425, currentHp: 425, types },
+    directDamage: damage,
+    applications: { freeze: 3 },
+  });
+  const { container } = render(<ResultRail result={{
+    ...result,
+    attackerName: "圣代甜甜（樱桃巧克力口味）",
+    defenderName: "寂灭骨龙",
+    defenderHp: 425,
+    defenderMaxHp: 425,
+    selectedSkillName: "寒潮",
+    selectedResult: {
+      status: "exact",
+      totalDamage: damage,
+      hpPercent: damage / 425 * 100,
+      lethal: false,
+      negativeStatusSettlement: settlement,
+    },
+  }} />);
+
+  // 冻结提供斩杀条件，不能伪装为技能直接伤害。
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent(String(damage));
+  const outcome = container.querySelector(".result-rail__lethal");
+  if (lethal) {
+    expect(outcome).toHaveTextContent("可击倒");
+    expect(outcome).not.toHaveTextContent(/剩余|2 次可击倒/);
+  } else {
+    expect(outcome).toHaveTextContent(`剩余 ${remainingHp} HP`);
+    if (enabled && types.length === 0) {
+      expect(outcome).not.toHaveTextContent(/\d+ 次可击倒/);
+    } else {
+      expect(outcome).toHaveTextContent("2 次可击倒");
+    }
+  }
+  const coverage = enabled && types.length === 0 ? 15 : 0;
+  const expectedPercent = (damage / 425 * 100 + coverage).toFixed(1);
+  expect(container.querySelector(".result-rail__percent"))
+    .toHaveTextContent(`${expectedPercent}%`);
+  if (coverage > 0) {
+    expect(container.querySelector(".result-rail__percent"))
+      .toHaveTextContent("覆盖");
+  }
+});
+
+test.each([
+  [44, 2, [], true, "冻结10%"],
+  [400, 2, [], true, "冻结10%"],
   [401, 2, [], true, "冻结击倒"],
-  [44, 4, [], true, "冻结覆盖20%"],
+  [44, 4, [], true, "冻结20%"],
   [445, 2, [], true, null],
   [44, 0, [], true, null],
   [44, 2, ["冰"], true, null],
@@ -51,6 +103,9 @@ test.each([
   }] }} />);
   const row = within(screen.getByRole("region", { name: "技能结果" })).getByText("跺地").closest(".skill-result-row");
   expect(within(row).getByLabelText("跺地实际伤害")).toHaveTextContent(String(damage));
+  const coverage = Number(settlement?.freeze?.thresholdPercent) || 0;
+  expect(within(row).getByLabelText("跺地生命百分比"))
+    .toHaveTextContent(`${(damage / 445 * 100 + coverage).toFixed(1)}%`);
   expect(row).not.toHaveTextContent(/斩杀≤|斩杀线/);
   if (label) expect(row.querySelector(".skill-result-row__status")).toHaveTextContent(label);
   else expect(row.querySelector(".skill-result-row__status")).toBeNull();
@@ -185,10 +240,26 @@ test("explains freeze-only settlement as a threshold instead of extra damage", (
   expect(within(settlement).getByText("5% 斩杀线")).toBeVisible();
   expect(within(settlement).getByText("≤18 HP · 不额外扣血")).toBeVisible();
   expect(within(settlement).queryByText(/追加|总伤害|合计损失|合计/)).not.toBeInTheDocument();
-  expect(within(settlement).getByRole("img", { name: "冻结斩杀阈值 5%，等效不高于 18 HP，不额外扣血" })).toBeVisible();
+  expect(within(settlement).queryByRole("img")).not.toBeInTheDocument();
+  expect(screen.getByRole("img", { name: "伤害 50.8% ＋ 冻结 5%" })).toBeVisible();
 });
 
-test("shows a compact current and next-turn preview for layered statuses", () => {
+test.each([["freeze", "冻结"], ["poison", "中毒"], ["parasitism", "寄生"], ["electrified", "引电"]])(
+  "%s只显示本次结算，不显示下回合预估", (id, label) => {
+    const input = { enabled: true, defender: { maxHp: 1000, currentHp: 1000, types: [] },
+      directDamage: 100, statuses: { [id]: 3 } };
+    const current = calculateNegativeStatusSettlement(input);
+    current.turnPreview = { focusStatusIds: [id], repeated: true,
+      next: calculateNegativeStatusSettlement({ ...input, directDamage: 0, statuses: { [id]: 6 } }) };
+    render(<ResultRail result={{ ...result, selectedResult: { ...result.selectedResult,
+      totalDamage: 100, hpPercent: 10, negativeStatusSettlement: current } }} />);
+    const settlement = screen.getByRole("region", { name: "负面状态结算" });
+    expect(within(settlement).getByText(new RegExp(`${label} ×${current.stacks[id]}`))).toBeVisible();
+    expect(screen.queryByRole("region", { name: "回合状态预估" })).not.toBeInTheDocument();
+  },
+);
+
+test("shows a compact current and next-turn preview only for burn, keeping other current statuses", () => {
   const phase = ({ added, damage, next, remaining, stacks }) => ({
     actualStatusDamage: damage,
     added: { burn: added, electrified: 0, freeze: 0, parasitism: 0, poison: 0 },
@@ -204,10 +275,17 @@ test("shows a compact current and next-turn preview for layered statuses", () =>
   });
   const current = phase({ added: 10, damage: 200, next: 5, remaining: 800, stacks: { burn: 10 } });
   current.turnPreview = {
-    focusStatusIds: ["burn"],
+    focusStatusIds: ["burn", "poison", "freeze"],
     next: phase({ added: 10, damage: 300, next: 7, remaining: 500, stacks: { burn: 15 } }),
     repeated: true,
   };
+  current.freeze = { stacks: 3, thresholdPercent: 15, thresholdHp: 150 };
+  current.stacks.poison = 2;
+  current.breakdown.push({ damage: 40, id: "poison", stacks: 2 });
+  current.actualStatusDamage += 40;
+  current.turnPreview.next.stacks.poison = 4;
+  current.turnPreview.next.breakdown.push({ damage: 80, id: "poison", stacks: 4 });
+  current.turnPreview.next.actualStatusDamage += 80;
 
   render(
     <ResultRail
@@ -234,6 +312,9 @@ test("shows a compact current and next-turn preview for layered statuses", () =>
   expect(within(preview).getByText("灼烧 ×15")).toBeVisible();
   expect(within(preview).getByText("30.0% · 300 HP")).toBeVisible();
   expect(within(preview).queryByText(/不续|再用引燃/)).not.toBeInTheDocument();
+  expect(preview).not.toHaveTextContent(/冻结|中毒/);
+  expect(screen.getByText("中毒 ×2")).toBeVisible();
+  expect(screen.getByText("冻结 ×3")).toBeVisible();
 });
 
 test("keeps a status-only result readable when negative settlement is enabled", () => {
@@ -301,7 +382,7 @@ test("keeps a status-only result readable when negative settlement is enabled", 
   expect(within(row).getByLabelText("打喷嚏实际伤害"))
     .toHaveTextContent("—");
   expect(within(row).getByLabelText("打喷嚏生命百分比"))
-    .toHaveTextContent("—");
+    .toHaveTextContent("15.0%");
   expect(within(row).queryByText("0.0%")).not.toBeInTheDocument();
 });
 

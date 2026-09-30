@@ -291,7 +291,7 @@ export function projectNegativeStatusTurns({
     directDamage,
     statuses,
   });
-  if (!current || current.skipped === "direct-ko") {
+  if (!current || current.lethal) {
     return current ? { current, nextWithRepeat: null, nextWithoutRepeat: null } : null;
   }
   const nextDefender = {

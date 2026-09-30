@@ -3,6 +3,7 @@ import {
   getSkillEffectInputs,
 } from "../domain/skill-effects.js";
 import { getSkillStatusEffectInputs } from "../domain/skill-status-effects.js";
+import { getNegativeStatusInputs } from "../domain/negative-status-rules.js";
 import { normalizeTriggerControls } from "../domain/trigger-controls.js";
 import {
   chooseDefaultSkillIds,
@@ -304,6 +305,7 @@ function skillTriggerControls(skill) {
   return normalizeTriggerControls([
     ...getSkillEffectInputs(skill),
     ...getSkillStatusEffectInputs(skill),
+    ...getNegativeStatusInputs(skill),
     ...(choiceTraitInput ? [choiceTraitInput] : []),
     ...(galeTurbineInput ? [galeTurbineInput] : []),
   ], { source: "skill" }).filter((control) => control.scope !== "battle");

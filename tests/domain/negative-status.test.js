@@ -219,6 +219,30 @@ describe("negative status settlement", () => {
     });
   });
 
+  test.each([
+    ["冻结斩杀", 425, 425, 372, { freeze: 3 }, 53, 0],
+    ["负面状态击倒", 1000, 100, 50, { poison: 2 }, 0, 50],
+    ["技能直接击倒", 1000, 100, 100, { poison: 2 }, 0, 0],
+  ])("本回合%s后不再推演目标的下回合", (
+    outcome, maxHp, currentHp, directDamage, applications, remainingHp, statusDamage,
+  ) => {
+    const preview = projectNegativeStatusTurns({
+      applications,
+      defender: { currentHp, maxHp, types: ["普通"] },
+      directDamage,
+      enabled: true,
+    });
+
+    expect(preview.current).toMatchObject({
+      actualStatusDamage: statusDamage,
+      lethal: true,
+      outcome,
+      remainingHp,
+    });
+    expect(preview.nextWithoutRepeat).toBeNull();
+    expect(preview.nextWithRepeat).toBeNull();
+  });
+
   test("projects the 煤渣草 burn growth before the next action", () => {
     const preview = projectNegativeStatusTurns({
       applications: { burn: 10 },
