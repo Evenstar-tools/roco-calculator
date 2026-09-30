@@ -484,7 +484,7 @@ describe("createCalculationView", () => {
     expect(view.selectedResult.warnings).toEqual(expect.any(Array));
   });
 
-  test("enriches the real selected result with negative-status settlement and turn preview", () => {
+  test("keeps all current status settlements but previews only burn next turn", () => {
     const snapshot = createSnapshot();
     const state = createState(snapshot);
     state.calculationOptions.includeNegativeStatusSettlement = true;
@@ -507,16 +507,15 @@ describe("createCalculationView", () => {
       ]),
       freeze: expect.objectContaining({ stacks: 1, thresholdPercent: 5 }),
       turnPreview: expect.objectContaining({
-        focusStatusIds: expect.arrayContaining([
-          "burn",
-          "electrified",
-          "freeze",
-          "parasitism",
-          "poison",
-        ]),
+        focusStatusIds: ["burn"],
         next: expect.any(Object),
       }),
     });
+
+    state.negativeStatuses.defender.burn = 0;
+    const withoutBurn = createCalculationView(snapshot, state, "forward");
+    expect(withoutBurn.selectedResult.negativeStatusSettlement.freeze.stacks).toBe(1);
+    expect(withoutBurn.selectedResult.negativeStatusSettlement.turnPreview).toBeUndefined();
   });
 
   test("formats the real enemy-skill-power multiplier step", () => {
