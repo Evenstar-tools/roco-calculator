@@ -3,6 +3,7 @@ import { damageTone } from "./damageTone.js";
 import { HealthInput } from "./HealthInput.jsx";
 import { TypeCoveragePanel } from "./TypeCoveragePanel.jsx";
 import { damagePresentation, DamageSegments } from "./damagePresentation.jsx";
+import { hasBurnPreview, statusLossText } from "../domain/result-presentation.js";
 
 const STATUS_LABELS = {
   burn: "灼烧",
@@ -23,23 +24,15 @@ function compactStatusSummary(settlement) {
         .filter(([id, stacks]) => id !== "freeze" && Number(stacks) > 0)
         .map(([id, stacks]) => `${STATUS_LABELS[id]}×${stacks}`);
   const freezeThreshold = Number(settlement.freeze?.thresholdPercent) || 0;
-  if (freezeThreshold > 0) {
-    parts.push(settlement.freeze?.lethal ? "冻结击倒" : `冻结${freezeThreshold}%`);
+  if (freezeThreshold > 0 && !settlement.freeze?.immune && !settlement.skipped) {
+    parts.push(settlement.freeze?.lethal && settlement.remainingHp > 0 ? "冻结击倒" : `冻结${freezeThreshold}%`);
   }
   return parts.join(" · ") || null;
 }
 
 function burnLossText(phase) {
   const burn = phase?.breakdown?.find((entry) => entry.id === "burn");
-  if (burn?.immune) return "免疫";
-  const damage = Math.max(0, Number(burn?.damage) || 0);
-  const maxHp = Math.max(1, Number(phase?.maxHp) || 1);
-  return damage > 0 ? `${(damage / maxHp * 100).toFixed(1)}% · ${damage} HP` : "不扣血";
-}
-
-function hasBurnPreview(settlement) {
-  return !settlement.lethal && Number(settlement.stacks?.burn) > 0 &&
-    Boolean(settlement.turnPreview?.next);
+  return statusLossText(phase, burn);
 }
 
 function TurnStatusPreview({ current, preview }) {
@@ -108,13 +101,8 @@ function NegativeStatusSettlement({ settlement }) {
               {entry.id === "electrified" && entry.triggered ? " · 已触发" : ""}
             </span>
             <strong>
-              {entry.immune
-                ? "免疫"
-                : `${(entry.damage / maxHp * 100).toFixed(1)}% · ${entry.damage} HP`}
+              {statusLossText(settlement, entry)}
             </strong>
-            {entry.id === "parasitism" && entry.healing > 0 ? (
-              <small className="result-rail__status-note">回复 +{entry.healing}</small>
-            ) : null}
           </div>
         ) : null,
       )}
@@ -142,14 +130,17 @@ function NegativeStatusSettlement({ settlement }) {
         </div>
       ) : null}
       {actualStatusDamage > 0 &&
-      (Number(settlement.directDamage) > 0 ||
+      (Number(settlement.directDamage) === 0 ||
         actualStatusDamage !== Number(settlement.statusDamage)) ? (
         <footer>
           <strong>
-            {Number(settlement.directDamage) > 0 ? "合计" : "实际扣血"}{" "}
-            {settlement.combinedHpLoss} HP
+            {actualStatusDamage < Number(settlement.statusDamage)
+              ? `异常合计 ${settlement.statusDamage} HP`
+              : `实际扣血 ${actualStatusDamage} HP`}
           </strong>
-          <span>{settlement.outcome}</span>
+          <span>{settlement.actualStatusDamage < settlement.statusDamage
+            ? `仅剩 ${settlement.actualStatusDamage} HP 可扣`
+            : settlement.remainingHp === 0 ? "负面状态击倒" : settlement.outcome}</span>
         </footer>
       ) : null}
       <TurnStatusPreview
@@ -237,7 +228,7 @@ export function ResultRail({
   const percentText = isExact ? `${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}` : primary.reason === "非伤害技能不计算伤害" ? "非伤害技能" : "待补充条件";
   const outcomeText = isExact
     ? presentation.lethal
-      ? primary.negativeStatusSettlement?.freeze?.lethal ? "本次可击倒 · 冻结斩杀" : "可击倒"
+      ? presentation.outcome
       : `剩余 ${presentation.remainingHp ?? Math.max(0, result.defenderHp - primary.totalDamage)} HP`
     : primary.reason ?? (primary.status === "unsupported" ? "该规则暂未验证" : "需要更多输入");
   const koHits =
@@ -271,9 +262,9 @@ export function ResultRail({
       {!isStatusOnly ? (
         <>
           <div className="result-rail__primary">
-            <p className="result-rail__damage-label">单次伤害</p>
+            <p className="result-rail__damage-label">{presentation.statusDamage > 0 ? "本次合计伤害" : "单次伤害"}</p>
             <output className="result-rail__damage" data-testid="primary-damage">
-              {isExact ? primary.totalDamage : "—"}
+              {isExact ? presentation.damage : "—"}
             </output>
             <p className="result-rail__percent" data-status={primary.reason}>{percentText}</p>
             <p className="result-rail__lethal">
@@ -301,7 +292,7 @@ export function ResultRail({
         <p className="result-rail__coverage-detail">{presentation.detail}</p>
       ) : null}
       {isStatusOnly && presentation.lethal ? (
-        <p className="result-rail__lethal">本次可击倒 · {primary.negativeStatusSettlement.outcome}</p>
+        <p className="result-rail__lethal">{presentation.outcome}</p>
       ) : null}
 
       {isExact && primary.warnings?.length > 0 ? (

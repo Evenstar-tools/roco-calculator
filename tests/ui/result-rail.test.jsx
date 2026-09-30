@@ -32,6 +32,26 @@ const result = {
 };
 
 test.each([
+  ["burn", 240, "灼烧"], ["poison", 260, "中毒"],
+  ["parasitism", 240, "寄生"], ["electrified", 450, "引电"],
+])("%s 追加扣血与主数字、技能列表保持一致", (id, damage, label) => {
+  const settlement = calculateNegativeStatusSettlement({
+    enabled: true, defender: { maxHp: 1000, currentHp: 1000, types: [] },
+    directDamage: 200, statuses: { [id]: 2 },
+  });
+  const primary = { status: "exact", totalDamage: 200, hpPercent: 20,
+    negativeStatusSettlement: settlement };
+  const { container } = render(<ResultRail result={{ ...result,
+    defenderHp: 1000, defenderMaxHp: 1000, mode: "four", selectedResult: primary,
+    skillResults: [{ ...primary, id: "skill", name: "测试技能" }],
+  }} />);
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent(String(damage));
+  expect(screen.getByLabelText("测试技能实际伤害")).toHaveTextContent(String(damage));
+  expect(container.querySelector(".result-rail__percent")).toHaveTextContent(`${(damage / 10).toFixed(1)}%`);
+  expect(container.querySelector(".result-rail__coverage-detail")).toHaveTextContent(label);
+});
+
+test.each([
   [372, [], true, true, 0],
   [360, [], true, false, 65],
   [372, ["冰"], true, false, 53],
@@ -185,7 +205,7 @@ test("separates actual status damage from freeze threshold without ambiguous los
     />,
   );
 
-  expect(screen.getByTestId("primary-damage")).toHaveTextContent("399");
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent("434");
   const settlement = screen.getByRole("region", { name: "负面状态结算" });
   expect(within(settlement).getByText("状态结算")).toBeVisible();
   expect(within(settlement).queryByText("实际追加 35 HP")).not.toBeInTheDocument();
@@ -194,8 +214,8 @@ test("separates actual status damage from freeze threshold without ambiguous los
   expect(within(settlement).getByText("冻结 ×1")).toBeVisible();
   expect(within(settlement).getByText("5% 斩杀线")).toBeVisible();
   expect(within(settlement).getByText("≤21 HP · 不额外扣血")).toBeVisible();
-  expect(within(settlement).getByText("合计 434 HP")).toBeVisible();
-  expect(within(settlement).getByText("负面状态击倒")).toBeVisible();
+  expect(within(settlement).getByText("异常合计 40 HP")).toBeVisible();
+  expect(within(settlement).getByText("仅剩 35 HP 可扣")).toBeVisible();
   expect(within(settlement).queryByText("回合结束")).not.toBeInTheDocument();
 });
 
@@ -437,6 +457,7 @@ test("uses distinct visual identities for all five negative states", () => {
             freeze: { immune: false, stacks: 1, thresholdPercent: 5 },
             outcome: "负面状态击倒",
             statusDamage: 134,
+            totalHealing: 6,
           },
         },
       }}
@@ -447,7 +468,8 @@ test("uses distinct visual identities for all five negative states", () => {
   for (const id of ["burn", "poison", "parasitism", "freeze", "electrified"]) {
     expect(settlement.querySelector(`[data-status="${id}"]`)).toBeTruthy();
   }
-  expect(within(settlement).getByText("回复 +6")).toBeVisible();
+  expect(within(settlement).getByText("来源回复")).toBeVisible();
+  expect(within(settlement).getByText("+6 HP")).toBeVisible();
   expect(within(settlement).getByText("引电 ×2 · 已触发")).toBeVisible();
 });
 
