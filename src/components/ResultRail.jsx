@@ -13,23 +13,6 @@ const STATUS_LABELS = {
   electrified: "引电",
 };
 
-function compactStatusSummary(settlement) {
-  if (!settlement) return null;
-  const breakdown = (settlement.breakdown ?? [])
-    .filter((entry) => Number(entry.stacks) > 0 && Number(entry.damage) > 0)
-    .map((entry) => `${STATUS_LABELS[entry.id]}×${entry.stacks}`);
-  const parts = breakdown.length > 0
-    ? breakdown
-    : Object.entries(settlement.added ?? {})
-        .filter(([id, stacks]) => id !== "freeze" && Number(stacks) > 0)
-        .map(([id, stacks]) => `${STATUS_LABELS[id]}×${stacks}`);
-  const freezeThreshold = Number(settlement.freeze?.thresholdPercent) || 0;
-  if (freezeThreshold > 0 && !settlement.freeze?.immune && !settlement.skipped) {
-    parts.push(settlement.freeze?.lethal && settlement.remainingHp > 0 ? "冻结击倒" : `冻结${freezeThreshold}%`);
-  }
-  return parts.join(" · ") || null;
-}
-
 function burnLossText(phase) {
   const burn = phase?.breakdown?.find((entry) => entry.id === "burn");
   return statusLossText(phase, burn);
@@ -155,7 +138,6 @@ function SkillResultRow({ index, item, onClick }) {
   const isTrait = item.kind === "trait";
   const isBloodline = item.kind === "bloodline";
   const Tag = onClick ? "button" : "div";
-  const statusSummary = compactStatusSummary(item.negativeStatusSettlement);
   const presentation = damagePresentation(item);
   const displayPercent = presentation.percent;
   const displayDamage = presentation.damage;
@@ -168,7 +150,7 @@ function SkillResultRow({ index, item, onClick }) {
             type: "button",
           }
         : {})}
-      className={`skill-result-row${isTrait || isBloodline ? " skill-result-row--trait" : ""}${Number(item.negativeStatusSettlement?.freeze?.thresholdPercent) > 0 ? " skill-result-row--freeze" : ""}${onClick ? " skill-result-row--action" : ""}${item.selected ? " is-selected" : ""}`}
+      className={`skill-result-row${isTrait || isBloodline ? " skill-result-row--trait" : ""}${onClick ? " skill-result-row--action" : ""}${item.selected ? " is-selected" : ""}`}
       data-tone={damageTone(displayPercent)}
     >
       <span className={`skill-result-row__index${isTrait || isBloodline ? " skill-result-row__index--trait" : ""}`}>
@@ -182,10 +164,6 @@ function SkillResultRow({ index, item, onClick }) {
             <small aria-hidden="true">特性</small>
             <span className="sr-only">特性造成伤害</span>
           </>
-        ) : statusSummary ? (
-          <small className="skill-result-row__status" title={statusSummary}>
-            {statusSummary}
-          </small>
         ) : null}
       </span>
       <span className="skill-result-row__bar" aria-hidden="true" title={presentation.detail ?? undefined}>

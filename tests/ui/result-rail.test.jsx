@@ -104,15 +104,15 @@ test.each([
 });
 
 test.each([
-  [44, 2, [], true, "冻结10%"],
-  [400, 2, [], true, "冻结10%"],
-  [401, 2, [], true, "冻结击倒"],
-  [44, 4, [], true, "冻结20%"],
-  [445, 2, [], true, null],
-  [44, 0, [], true, null],
-  [44, 2, ["冰"], true, null],
-  [44, 2, [], false, null],
-])("伤害%d、冻结%d层：结果行区分覆盖与实际击倒", (damage, freeze, types, enabled, label) => {
+  [44, 2, [], true],
+  [400, 2, [], true],
+  [401, 2, [], true],
+  [44, 4, [], true],
+  [445, 2, [], true],
+  [44, 0, [], true],
+  [44, 2, ["冰"], true],
+  [44, 2, [], false],
+])("伤害%d、冻结%d层：结果行保留覆盖但不重复状态摘要", (damage, freeze, types, enabled) => {
   const settlement = calculateNegativeStatusSettlement({
     enabled, defender: { maxHp: 445, currentHp: 445, types },
     directDamage: damage, statuses: { freeze },
@@ -127,9 +127,8 @@ test.each([
   expect(within(row).getByLabelText("跺地生命百分比"))
     .toHaveTextContent(`${(damage / 445 * 100 + coverage).toFixed(1)}%`);
   expect(row).not.toHaveTextContent(/斩杀≤|斩杀线/);
-  if (label) expect(row.querySelector(".skill-result-row__status")).toHaveTextContent(label);
-  else expect(row.querySelector(".skill-result-row__status")).toBeNull();
-  if (label !== "冻结击倒") expect(row).not.toHaveTextContent("冻结击倒");
+  expect(row.querySelector(".skill-result-row__name")).toHaveTextContent(/^跺地$/);
+  expect(row).not.toHaveTextContent("冻结击倒");
 });
 
 test("keeps the exact damage and percent prominent", () => {
@@ -406,7 +405,7 @@ test("keeps a status-only result readable when negative settlement is enabled", 
   expect(within(row).queryByText("0.0%")).not.toBeInTheDocument();
 });
 
-test("shows a compact status summary for each four-skill row", () => {
+test("keeps status summaries out of skill names while preserving settled results", () => {
   render(
     <ResultRail
       result={{
@@ -434,7 +433,9 @@ test("shows a compact status summary for each four-skill row", () => {
   );
 
   const row = screen.getByText("易燃物质").closest(".skill-result-row");
-  expect(within(row).getByText("灼烧×4")).toBeVisible();
+  expect(row.querySelector(".skill-result-row__name")).toHaveTextContent(/^易燃物质$/);
+  expect(within(row).queryByText("灼烧×4")).not.toBeInTheDocument();
+  expect(within(row).getByLabelText("易燃物质实际伤害")).toHaveTextContent("130");
 });
 
 test("uses distinct visual identities for all five negative states", () => {

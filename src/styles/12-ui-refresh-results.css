@@ -230,18 +230,6 @@
   white-space: nowrap;
 }
 
-.skill-result-row__status {
-  display: block;
-  max-width: 100%;
-  overflow: hidden;
-  color: #9a6700;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 html[data-theme="dark"] .result-rail__status-settlement {
   border-color: var(--border);
   background: var(--surface-soft);
@@ -275,7 +263,6 @@ html[data-theme="dark"] .result-rail__status-row[data-status="electrified"] stro
   color: var(--damage-warning);
 }
 
-html[data-theme="dark"] .skill-result-row__status,
 html[data-theme="dark"] .result-rail__warning {
   color: var(--damage-warning);
 }
@@ -459,10 +446,6 @@ html[data-theme="dark"] .health-input__modes .health-input__mode[aria-pressed="t
   font-size: 12px;
   gap: 5px;
   grid-template-columns: 15px minmax(58px, 0.8fr) minmax(56px, 1fr) 48px 44px;
-}
-
-.skill-result-row--freeze {
-  grid-template-columns: 15px minmax(78px, 0.8fr) minmax(32px, 1fr) 48px 44px;
 }
 
 .skill-result-list__columns {
