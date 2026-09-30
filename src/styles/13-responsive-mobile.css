@@ -911,8 +911,27 @@
     padding: 5px;
   }
 
+  .calculator-layout--detailed .calculator-step--skills {
+    padding: 8px;
+  }
+
+  .four-skill-side > header {
+    align-items: flex-start;
+    padding-block: 9px;
+    line-height: 1.4;
+  }
+
+  .four-skill-side > header > span {
+    flex-shrink: 0;
+  }
+
+  .four-skill-side > header > strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
   .skill-slot-group {
-    padding-inline: 3px;
+    padding: 6px 4px;
     margin-inline: 0;
   }
 
@@ -921,11 +940,12 @@
   }
 
   .skill-slot:not(.skill-slot--head) {
-    min-height: 86px;
+    min-height: 90px;
     align-items: center;
-    gap: 5px 3px;
-    grid-template-columns: 14px 34px minmax(0, 1fr) 56px 70px;
-    grid-template-rows: 40px 36px;
+    gap: 4px;
+    grid-template-columns: 14px 40px minmax(0, 1fr) 56px 70px;
+    /* 触控框实际为44px；参数两行可随威力错误提示扩展，不再顶出选中框。 */
+    grid-template-rows: 44px minmax(17px, auto) minmax(17px, auto);
   }
 
   .skill-slot:not(.skill-slot--head) > .skill-slot__number {
@@ -936,30 +956,37 @@
   .skill-slot:not(.skill-slot--head) > .skill-picker,
   .skill-slot:not(.skill-slot--head) > .skill-slot__trait-skill {
     min-width: 0;
-    height: 40px;
+    height: 44px;
     grid-column: 2 / 5;
     grid-row: 1;
   }
 
   .skill-slot:not(.skill-slot--head) > .skill-slot__kind {
-    display: none;
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
+    align-self: end;
+    font-size: 10px;
+    text-align: left;
   }
 
   .skill-slot:not(.skill-slot--head) > .skill-slot__cost,
   .skill-slot--trait > :nth-child(4) {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 2px;
     grid-column: 2;
-    grid-row: 2;
+    grid-row: 3;
+    align-self: start;
+    font-size: 10px;
   }
 
   .skill-slot:not(.skill-slot--head) > .skill-slot__cost::before,
   .skill-slot--trait > :nth-child(4)::before {
     color: var(--text-faint);
     content: "耗";
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .skill-slot:not(.skill-slot--head) > .skill-slot__power-input,
@@ -969,15 +996,15 @@
     align-items: center;
     gap: 3px;
     grid-column: 3 / 5;
-    grid-row: 2;
-    grid-template-columns: auto minmax(48px, 1fr);
+    grid-row: 2 / 4;
+    grid-template-columns: auto minmax(40px, 1fr);
   }
 
   .skill-slot:not(.skill-slot--head) > .skill-slot__power-input::before,
   .skill-slot:not(.skill-slot--head) > .skill-slot__trait-power::before {
     color: var(--text-faint);
     content: "威力";
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 500;
   }
 
@@ -987,14 +1014,14 @@
     align-items: center;
     gap: 3px;
     grid-column: 5;
-    grid-row: 2;
+    grid-row: 2 / 4;
     grid-template-columns: auto 32px;
   }
 
   .skill-slot:not(.skill-slot--head) > .skill-slot__hits::before {
     color: var(--text-faint);
     content: "连击";
-    font-size: 9px;
+    font-size: 11px;
   }
 
   .skill-slot:not(.skill-slot--head) > .skill-slot__power-input input,
@@ -1002,7 +1029,13 @@
   .skill-slot:not(.skill-slot--head) > .skill-slot__power-input .power-draft__control {
     width: 100%;
     min-width: 0;
-    height: 34px;
+    height: 38px;
+  }
+
+  .skill-slot__power-input .power-draft__error {
+    grid-column: 1 / -1;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .skill-slot:not(.skill-slot--head) > .skill-slot__damage {
@@ -1013,7 +1046,41 @@
   }
 
   .skill-slot__context {
-    padding-left: 18px;
+    padding: 3px 0 0 18px;
+  }
+
+  .calculator-layout--detailed .skill-slot__description {
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    line-height: 1.45;
+  }
+
+  .calculator-layout--detailed .spirit-card__title > strong {
+    overflow: visible;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    line-height: 1.4;
+  }
+
+  .calculator-layout--detailed .stat-tile__label-text {
+    display: inline;
+  }
+
+  .calculator-layout--detailed .advanced-options__toggle {
+    padding-block: 10px;
+  }
+
+  .calculator-layout--detailed .advanced-options__toggle > span {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .calculator-layout--detailed .advanced-options__summary {
+    flex-basis: 100%;
+    margin-left: 26px;
+    overflow: visible;
+    line-height: 1.4;
   }
 
   html[data-theme="dark"] .four-skill-side--attacker .skill-slot-group {
@@ -1026,9 +1093,7 @@
 
   html[data-theme="dark"] .four-skill-side--attacker .skill-slot-group.is-selected {
     background: color-mix(in srgb, var(--attack) 8%, #171b2b);
-    box-shadow:
-      inset 3px 0 0 var(--attack),
-      inset 0 0 0 1px var(--attack);
+    box-shadow: inset 3px 0 0 var(--attack);
   }
 }
 

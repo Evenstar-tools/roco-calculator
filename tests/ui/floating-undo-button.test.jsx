@@ -78,20 +78,22 @@ function resize(width, height) {
   fireEvent(window, new Event("resize"));
 }
 
-test("默认位置随手机及桌面视口恢复右下角，点击与缩放不保存成拖拽位置", () => {
+test("手机默认停靠底栏不遮配置，点击与缩放不保存成拖拽位置，桌面保持浮动", () => {
   const onUndo = vi.fn();
   render(<FloatingUndoButton count={2} onUndo={onUndo} />);
   const button = screen.getByRole("button");
   resize(320, 720);
-  expect(button).toHaveStyle({ left: "218px", top: "556px" });
+  expect(button).toHaveStyle({ left: "228px", top: "670px" });
+  expect(button).toHaveAttribute("data-docked", "true");
   fireEvent.pointerDown(button, { clientX: 240, clientY: 610, pointerId: 1 });
   fireEvent.pointerUp(button, { clientX: 240, clientY: 610, pointerId: 1 });
   fireEvent.click(button);
   expect(onUndo).toHaveBeenCalledOnce();
   resize(390, 844);
-  expect(button).toHaveStyle({ left: "288px", top: "680px" });
+  expect(button).toHaveStyle({ left: "298px", top: "794px" });
   resize(1280, 900);
   expect(button).toHaveStyle({ left: "1178px", top: "838px" });
+  expect(button).not.toHaveAttribute("data-docked");
   resize(1920, 1080);
   expect(button).toHaveStyle({ left: "1818px", top: "1018px" });
   expect(localStorage.getItem(UNDO_POSITION_STORAGE_KEY)).toBeNull();

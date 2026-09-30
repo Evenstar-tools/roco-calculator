@@ -70,7 +70,7 @@ export function PowerDraftInput({
           min="0"
           onBlur={() => {
             setEditing(false);
-            submit();
+            if (editing) submit();
           }}
           onChange={(event) => {
             setEditing(true);

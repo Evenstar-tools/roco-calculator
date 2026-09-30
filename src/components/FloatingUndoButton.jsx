@@ -51,7 +51,10 @@ function writePosition(position) {
 export function FloatingUndoButton({ count = 0, onUndo }) {
   const [preferredPosition, setPreferredPosition] = useState(readPosition);
   const [viewport, setViewport] = useState(readViewport);
-  const position = clampPosition(preferredPosition ?? defaultPosition(viewport), viewport);
+  const docked = viewport.width <= 620 && !preferredPosition;
+  const position = docked
+    ? { x: viewport.width - BUTTON_WIDTH - 8, y: viewport.height - BUTTON_HEIGHT - 6 }
+    : clampPosition(preferredPosition ?? defaultPosition(viewport), viewport);
   const dragRef = useRef(null);
   const suppressClickRef = useRef(false);
   const available = count > 0;
@@ -110,6 +113,7 @@ export function FloatingUndoButton({ count = 0, onUndo }) {
       aria-disabled={!available}
       aria-label={label}
       className={`floating-undo${available ? " floating-undo--available" : ""}`}
+      data-docked={docked ? "true" : undefined}
       onClick={handleClick}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

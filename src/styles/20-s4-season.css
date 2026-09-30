@@ -315,6 +315,14 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
 }
 
 @media (max-width: 620px) {
+  /* 竖屏吸顶栏用实底，滚动中的能力/技能文字不再透进导航。 */
+  html[data-theme="dark"] .app-header {
+    background: #101b35;
+    border-bottom-color: #37485f;
+  }
+  html[data-theme="dark"] .app-header::before {
+    display: none;
+  }
   .calculator-step--skills .skill-step-toolbar .mode-tabs {
     flex: 1 1 auto;
     min-width: 0;

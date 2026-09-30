@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
 import { PowerDraftInput } from "../../src/components/PowerDraftInput.jsx";
 
@@ -124,5 +125,56 @@ describe("PowerDraftInput", () => {
     await user.click(screen.getByRole("button", { name: "恢复自动威力" }));
     expect(onClear).toHaveBeenCalledTimes(1);
     expect(screen.queryByText("自动")).not.toBeInTheDocument();
+  });
+
+  test("恢复自动威力后点击邻近条件，不会再次保存自动值为手动威力", async () => {
+    const user = userEvent.setup();
+    const onCommit = vi.fn();
+
+    function SkillControls() {
+      const [manualPower, setManualPower] = useState(null);
+      const [counterState, setCounterState] = useState(false);
+      return (
+        <>
+          <PowerDraftInput
+            ariaLabel="静态威力"
+            isManual={manualPower !== null}
+            mode="static"
+            onClear={() => setManualPower(null)}
+            onCommit={(value) => {
+              onCommit(value);
+              setManualPower(value);
+            }}
+            value={manualPower ?? 95}
+          />
+          <label>
+            <input
+              checked={counterState}
+              onChange={(event) => setCounterState(event.target.checked)}
+              type="checkbox"
+            />
+            应对状态
+          </label>
+        </>
+      );
+    }
+
+    render(<SkillControls />);
+    const powerInput = screen.getByRole("spinbutton", { name: "静态威力" });
+    await user.clear(powerInput);
+    await user.type(powerInput, "100");
+    await user.keyboard("{Enter}");
+    expect(onCommit).toHaveBeenLastCalledWith(100);
+
+    await user.click(screen.getByRole("button", { name: "恢复自动威力" }));
+    expect(powerInput).toHaveValue(95);
+    expect(screen.queryByRole("button", { name: "恢复自动威力" })).not.toBeInTheDocument();
+    onCommit.mockClear();
+
+    await user.click(screen.getByRole("checkbox", { name: "应对状态" }));
+    expect(screen.getByRole("checkbox", { name: "应对状态" })).toBeChecked();
+    expect(onCommit).not.toHaveBeenCalled();
+    expect(powerInput).toHaveValue(95);
+    expect(screen.queryByRole("button", { name: "恢复自动威力" })).not.toBeInTheDocument();
   });
 });
