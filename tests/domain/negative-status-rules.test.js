@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import snapshot from "../../data/snapshots/current.json";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 import { getSkillStatusEffectInputs } from "../../src/domain/skill-status-effects.js";
+import { getEffectiveTraits } from "../../src/domain/effective-traits.js";
 import {
   NEGATIVE_STATUS_RULE_AUDIT,
   getNegativeStatusInputs,
@@ -69,14 +70,36 @@ describe("negative status source rules", () => {
     ["易燃物质", "burn", 2],
     ["连续毒针", "poison", 1],
     ["打喷嚏", "freeze", 1],
-  ])("%s applies each-hit stacks from effective hit count, without multiplying traits", (name, status, perHit) => {
-    for (const effectiveHitCount of [1, 2, 5]) {
+  ])("%s applies each-hit stacks and confirmed freeze-triggered traits from effective hit count", (name, status, perHit) => {
+    for (const effectiveHitCount of [1, 2, 3, 5]) {
       const application = resolveNegativeStatusApplications({
         effectiveHitCount, skill: skill(name),
         traits: name === "打喷嚏" ? [trait("加个雪球")] : [],
       });
-      expect(application.stacks[status]).toBe(effectiveHitCount * perHit + (name === "打喷嚏" ? 2 : 0));
+      expect(application.stacks[status]).toBe(effectiveHitCount * (perHit + (name === "打喷嚏" ? 2 : 0)));
+      if (name === "打喷嚏") {
+        expect(application.sources).toEqual([
+          { kind: "skill", name, stacks: { freeze: effectiveHitCount } },
+          { kind: "trait", name: "加个雪球", stacks: { freeze: effectiveHitCount * 2 } },
+        ]);
+      }
     }
+  });
+
+  test("snowball follows freeze applications, not freeze layers or unrelated multi-hit uses", () => {
+    expect(resolveNegativeStatusApplications({ skill: skill("打喷嚏"), traits: [trait("加个雪球")] })
+      .stacks.freeze).toBe(9);
+    expect(resolveNegativeStatusApplications({ skill: skill("打喷嚏") }).stacks.freeze).toBe(3);
+    for (const name of ["寒潮", "暴风雪", "霜降"]) {
+      const application = resolveNegativeStatusApplications({
+        effectiveHitCount: 3, skill: skill(name), traits: [trait("加个雪球")],
+      });
+      expect(application.sources.find((source) => source.kind === "trait").stacks.freeze).toBe(2);
+    }
+    const application = resolveNegativeStatusApplications({
+      effectiveHitCount: 3, skill: skill("打喷嚏"), traits: [trait("灵魂灼伤")],
+    });
+    expect(application.stacks).toMatchObject({ freeze: 3, burn: 4 });
   });
 
   test("虫群只按捆缚奉献次数追加每次1层中毒", () => {
@@ -209,6 +232,20 @@ describe("negative status source rules", () => {
         traits: [trait("加个雪球")],
       }).stacks,
     ).toMatchObject({ freeze: 3 });
+  });
+
+  test("acquired freeze-source traits trigger snowball independently of acquisition order, without recursion", () => {
+    const memory = trait("铭记于月亮");
+    for (const names of [["加个雪球", "灵魂灼伤"], ["灵魂灼伤", "加个雪球"]]) {
+      const traits = getEffectiveTraits(snapshot, {
+        spirit: { id: "memory-freeze-probe", traitIds: [memory.id] },
+        acquiredTraitIds: names.map((name) => trait(name).id),
+      });
+      const application = resolveNegativeStatusApplications({ skill: skill("花火"), traits });
+      expect(application.stacks.freeze).toBe(4);
+      expect(application.sources.filter((source) => source.name === "加个雪球"))
+        .toEqual([{ kind: "trait", name: "加个雪球", stacks: { freeze: 2 } }]);
+    }
   });
 
   test("高浓生物碱只在使用草系技能时追加3层中毒", () => {

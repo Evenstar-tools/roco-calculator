@@ -3,6 +3,7 @@ import { calculateMatchup } from "../src/shared/domain/calculate.js";
 import { getTraitView } from "../src/shared/domain/calculator-view-model.js";
 import { buildCombatState } from "../src/shared/build-combat-state.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
+import { selectFourSkill, selectSingleSkill } from "../src/shared/state/calculator-session.js";
 import { canonicalTraitControlKey } from "../src/shared/state/trait-values.js";
 import {
   createCalculationView,
@@ -530,6 +531,60 @@ describe("createCalculationView", () => {
     expect(view.selectedResult).toMatchObject({ status: "exact", statusOnly: true, totalDamage: 0, hpPercent: 0 });
     expect(view.rows[0]).toMatchObject({ status: "exact", statusOnly: true, totalDamage: 0, hpPercent: 0 });
     expect(view.selectedResult.negativeStatusSettlement.actualStatusDamage).toBeGreaterThan(0);
+  });
+
+  test.each([
+    ["single", undefined, 3],
+    ["single", 1, 1],
+    ["single", 3, 3],
+    ["four", undefined, 3],
+    ["four", 1, 1],
+    ["four", 3, 3],
+  ])("%s 打喷嚏连击配置%j逐击触发加个雪球且保持纯状态边界", (mode, manualHitCount, expectedHitCount) => {
+    const snapshot = createSnapshot();
+    snapshot.skills[0] = {
+      ...snapshot.skills[0], basePower: 0, category: "status", cost: 1,
+      name: "打喷嚏", type: "冰", description: "3连击，每次连击敌方获得1层冻结。",
+    };
+    snapshot.traits.push({ id: "trait-snowball", name: "加个雪球" });
+    snapshot.spirits[0].traitIds = ["trait-snowball"];
+    const previousState = createState(snapshot);
+    previousState.mode = mode;
+    previousState.sides.attacker.skills.single = "skill-b";
+    previousState.sides.attacker.skills.four[0] = "skill-b";
+    const state = mode === "single"
+      ? selectSingleSkill(previousState, { direction: "forward", side: "attacker", skillId: "skill-a", snapshot }).state
+      : selectFourSkill(previousState, { index: 0, side: "attacker", skillId: "skill-a", snapshot }).state;
+    state.calculationOptions.includeNegativeStatusSettlement = true;
+    const slotKey = mode === "single" ? "single" : "1";
+    state.directions.forward.context.negativeStatusUseCountsBySlot = { [slotKey]: 1 };
+    if (manualHitCount !== undefined) {
+      if (mode === "single") {
+        state.directions.forward.hitCount = manualHitCount;
+        state.sides.attacker.skills.single = { ...state.sides.attacker.skills.single, hitCount: manualHitCount };
+      } else {
+        state.sides.attacker.skills.four[0] = { skillId: "skill-a", hitCount: manualHitCount };
+      }
+    }
+
+    const view = createCalculationView(snapshot, state, "forward");
+    expect(view.selectedResult).toMatchObject({ status: "exact", statusOnly: true, totalDamage: 0, hitCount: expectedHitCount });
+    expect(view.rows[0]).toMatchObject({ totalDamage: 0, statusOnly: true });
+    expect(view.selectedResult.negativeStatusSettlement.freeze).toMatchObject({
+      stacks: expectedHitCount * 3, thresholdPercent: expectedHitCount * 15,
+    });
+    expect(state.negativeStatuses.defender.freeze).toBe(0);
+
+    state.directions.forward.context.negativeStatusUseCountsBySlot[slotKey] = 0;
+    const unused = createCalculationView(snapshot, state, "forward");
+    expect(unused.rows[0].negativeStatusApplications?.stacks?.freeze ?? 0).toBe(0);
+    expect(unused.rows[0].negativeStatusSettlement).toBeFalsy();
+
+    state.directions.forward.context.negativeStatusUseCountsBySlot[slotKey] = 1;
+    state.calculationOptions.includeNegativeStatusSettlement = false;
+    const disabled = createCalculationView(snapshot, state, "forward");
+    expect(disabled.rows[0].negativeStatusSettlement).toBeFalsy();
+    expect(state.negativeStatuses.defender.freeze).toBe(0);
   });
 
   test("formats the real enemy-skill-power multiplier step", () => {

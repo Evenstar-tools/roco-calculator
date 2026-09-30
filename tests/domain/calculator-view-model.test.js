@@ -138,7 +138,11 @@ function state() {
 }
 
 describe("buildCalculatorViewModel", () => {
-  test("settles a negative-status trait acquired through Moon Memory", () => {
+  test.each([
+    [["soul-burn"], 2],
+    [["soul-burn", "snowball"], 4],
+    [["snowball", "soul-burn"], 4],
+  ])("settles Moon Memory negative-status traits without acquisition-order differences (%j)", (acquiredTraitIds, expectedFreeze) => {
     const fixture = {
       ...snapshot,
       spirits: snapshot.spirits.map((spirit) =>
@@ -149,6 +153,7 @@ describe("buildCalculatorViewModel", () => {
       traits: [
         { id: "moon-memory", name: "铭记于月亮" },
         { id: "soul-burn", name: "灵魂灼伤" },
+        { id: "snowball", name: "加个雪球" },
       ],
     };
     const input = state();
@@ -158,7 +163,7 @@ describe("buildCalculatorViewModel", () => {
       attacker: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
       defender: { burn: 0, freeze: 0, parasitism: 0, poison: 0 },
     };
-    input.sides.attacker.acquiredTraitIds = ["soul-burn"];
+    input.sides.attacker.acquiredTraitIds = acquiredTraitIds;
     input.sides.attacker.acquiredTraitValues = {};
     input.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
 
@@ -169,8 +174,12 @@ describe("buildCalculatorViewModel", () => {
     });
 
     expect(view.result.selectedResult.negativeStatusApplications).toMatchObject({
-      stacks: { freeze: 2 },
+      stacks: { freeze: expectedFreeze },
     });
+    expect(view.result.selectedResult.negativeStatusSettlement.freeze).toMatchObject({
+      stacks: expectedFreeze, thresholdPercent: expectedFreeze * 5,
+    });
+    expect(input.negativeStatuses.defender.freeze).toBe(0);
   });
 
   test("keeps a selected preview placeholder visible but blocks calculation", () => {
@@ -724,7 +733,7 @@ describe("buildCalculatorViewModel", () => {
     expect(view.result.selectedResult.negativeStatusSettlement).toBeNull();
   });
 
-  test("settles 打喷嚏 only when negative-status settlement is enabled", () => {
+  test.each(["single", "four"])("%s settles 打喷嚏 and per-hit snowball only when enabled and used", (mode) => {
     const fixture = {
       ...snapshot,
       learnsets: snapshot.learnsets.map((entry) =>
@@ -746,6 +755,7 @@ describe("buildCalculatorViewModel", () => {
       ],
     };
     const disabled = state();
+    disabled.mode = mode;
     disabled.sides.attacker.skills.single = "sneeze";
     disabled.sides.attacker.skills.four = ["sneeze", null, null, null];
     const disabledView = buildCalculatorViewModel({
@@ -761,12 +771,16 @@ describe("buildCalculatorViewModel", () => {
 
     const enabled = structuredClone(disabled);
     enabled.calculationOptions = { includeNegativeStatusSettlement: true };
-    // 旧四技能槽1不能假定为单技能已使用。
-    enabled.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
-    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: enabled })
-      .result.selectedResult.negativeStatusSettlement).toBeNull();
-    enabled.directions.forward.context.negativeStatusUseCountsBySlot = { single: 1 };
+    if (mode === "single") {
+      // 旧四技能槽1不能假定为单技能已使用。
+      enabled.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+      expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: enabled })
+        .result.selectedResult.negativeStatusSettlement).toBeNull();
+    }
+    const useKey = mode === "single" ? "single" : "1";
+    enabled.directions.forward.context.negativeStatusUseCountsBySlot = { [useKey]: 1 };
     enabled.directions.forward.hitCount = 3;
+    enabled.sides.attacker.skills.four[0] = { skillId: "sneeze", hitCount: 3 };
     const enabledView = buildCalculatorViewModel({
       activeDirection: "forward",
       snapshot: fixture,
@@ -786,7 +800,38 @@ describe("buildCalculatorViewModel", () => {
       hpPercent: 0,
       statusOnly: true,
     });
-    enabled.directions.forward.context.negativeStatusUseCountsBySlot.single = 0;
+    const snowballFixture = {
+      ...fixture,
+      spirits: fixture.spirits.map((entry) => entry.id === "fire"
+        ? { ...entry, traitIds: ["snowball"] } : entry),
+      traits: [{ id: "snowball", name: "加个雪球" }],
+    };
+    for (const hits of [1, 3, 5]) {
+      enabled.directions.forward.hitCount = hits;
+      enabled.sides.attacker.skills.four[0].hitCount = hits;
+      expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: snowballFixture, state: enabled })
+        .result.selectedResult).toMatchObject({
+          totalDamage: 0, statusOnly: true,
+          negativeStatusSettlement: {
+            added: { freeze: hits * 3 },
+            freeze: { stacks: hits * 3, thresholdPercent: hits * 15 },
+          },
+        });
+    }
+    enabled.directions.forward.hitCount = 3;
+    enabled.sides.attacker.skills.four[0].hitCount = 3;
+    enabled.negativeStatuses = { attacker: {}, defender: { freeze: 2 } };
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: snowballFixture, state: enabled })
+      .result.selectedResult.negativeStatusSettlement).toMatchObject({
+        added: { freeze: 9 }, freeze: { stacks: 11, thresholdPercent: 55 },
+      });
+    const snowballDisabled = structuredClone(enabled);
+    snowballDisabled.calculationOptions.includeNegativeStatusSettlement = false;
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: snowballFixture, state: snowballDisabled })
+      .result.selectedResult.negativeStatusSettlement).toBeNull();
+    enabled.directions.forward.context.negativeStatusUseCountsBySlot[useKey] = 0;
+    expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: snowballFixture, state: enabled })
+      .result.selectedResult.negativeStatusSettlement).toBeNull();
     expect(buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: enabled })
       .result.selectedResult.negativeStatusSettlement).toBeNull();
   });

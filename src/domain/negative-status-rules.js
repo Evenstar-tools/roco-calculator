@@ -78,7 +78,10 @@ const SKILL_RULES = {
     inputs: [booleanInput("negativeStatusCounterState", "应对状态")],
     resolve: (context) => ({ freeze: context.negativeStatusCounterState ? 5 : 1 }),
   },
-  打喷嚏: { resolve: (_context, { effectiveHitCount }) => ({ freeze: effectiveHitCount }) },
+  打喷嚏: {
+    freezeApplicationPerHit: true,
+    resolve: (_context, { effectiveHitCount }) => ({ freeze: effectiveHitCount }),
+  },
   毒针: { stacks: { poison: 1 } },
   腐蚀酸液: { stacks: { poison: 2 } },
   连续毒针: { resolve: (_context, { effectiveHitCount }) => ({ poison: effectiveHitCount }) },
@@ -121,7 +124,8 @@ const TRAIT_APPLICATIONS = {
   灵魂灼伤: ({ skill }) =>
     skill?.type === "冰" ? { burn: 4 } : skill?.type === "火" ? { freeze: 2 } : {},
   毒腺: ({ skill }) => (Number(skill?.cost) <= 1 ? { poison: 4 } : {}),
-  加个雪球: ({ stacks }) => (stacks.freeze > 0 ? { freeze: 2 } : {}),
+  加个雪球: ({ freezeApplicationCount }) =>
+    (freezeApplicationCount > 0 ? { freeze: freezeApplicationCount * 2 } : {}),
   贪心算法: ({ skillIndex }) => (skillIndex === 0 ? { burn: 6 } : {}),
   爆裂玉米: ({ skill }) =>
     skill?.type === "草" ? { burn: 4 } : skill?.type === "火" ? { parasitism: 1 } : {},
@@ -243,18 +247,29 @@ export function resolveNegativeStatusApplications({
   if (Object.values(skillStacks).some(Boolean)) {
     sources.push({ kind: "skill", name: skill.name, stacks: { ...skillStacks } });
   }
-  for (const trait of traits) {
+  // 冻结层数不等于施加事件：打喷嚏逐击施加，其余多层冻结只算一次。
+  let freezeApplicationCount = Number(skillStacks.freeze) > 0
+    ? rule?.freezeApplicationPerHit ? hits : 1
+    : 0;
+  // 只延后依赖冻结来源的特性，保留其他特性的原有顺序。
+  const applicationTraits = [
+    ...traits.filter((trait) => trait?.name !== "加个雪球"),
+    ...traits.filter((trait) => trait?.name === "加个雪球"),
+  ];
+  for (const trait of applicationTraits) {
     const resolver = TRAIT_APPLICATIONS[trait?.name];
     if (!resolver) continue;
     const addition = resolver({
       baselineStatuses,
       context,
+      freezeApplicationCount,
       selectedSkills,
       skill,
       skillIndex,
       stacks,
     });
     if (!Object.values(addition).some(Boolean)) continue;
+    if (trait.name !== "加个雪球" && Number(addition.freeze) > 0) freezeApplicationCount += 1;
     addStacks(stacks, addition);
     sources.push({ kind: "trait", name: trait.name, stacks: { ...addition } });
   }
