@@ -776,6 +776,70 @@ describe("mini program share payload", () => {
     expect(JSON.parse(Buffer.from(shared.encoded, "base64url").toString()).v).toBe(2);
   });
 
+  test.each([undefined, { 1: 0 }])("开启异常结算的攻击零次使用分享也采用 v4，旧端不能静默按未使用少算 (%j)", (useCounts) => {
+    const snapshot = createSnapshot();
+    snapshot.skills.push({ id: "coldwave", name: "寒潮", category: "magical", type: "冰", basePower: 95 });
+    snapshot.learnsets[0].skillIds.push("coldwave");
+    const state = createInitialState(snapshot);
+    state.calculationOptions = { includeNegativeStatusSettlement: true };
+    state.sides.attacker.skills.single = "coldwave";
+    if (useCounts) state.directions.forward.context = { negativeStatusUseCountsBySlot: useCounts };
+    const shared = encodeSharePayloadWithMeta(state);
+    expect(shared.requiresLatestClient).toBe(true);
+    expect(JSON.parse(Buffer.from(shared.encoded, "base64url").toString()).v).toBe(4);
+    expect(decodeSharePayload(shared.encoded, snapshot)).toMatchObject({
+      calculationOptions: { includeNegativeStatusSettlement: true },
+      sides: { attacker: { skills: { single: "coldwave" } } },
+    });
+  });
+
+  test.each([{ 1: "skill-a", single: "skill-b", 7: "skill-c" }, {}])("灼烧续用身份和显式取消采用 v4，完整往返 (%j)", (repeatSkills) => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.directions.forward.context = {
+      negativeStatusUseCountsBySlot: { 1: 2 },
+      negativeStatusRepeatSkillsBySlot: repeatSkills,
+    };
+    const shared = encodeSharePayloadWithMeta(state);
+    expect(shared.requiresLatestClient).toBe(true);
+    expect(JSON.parse(Buffer.from(shared.encoded, "base64url").toString()).v).toBe(4);
+    expect(decodeSharePayload(shared.encoded, snapshot).directions.forward.context)
+      .toEqual(state.directions.forward.context);
+  });
+
+  test.each([
+    { negativeStatusUseCountsBySlot: { single: 1, 7: 2 } },
+    { negativeStatusUseCountsBySlot: { 7: 1 } },
+    { negativeStatusCounterState: true, negativeStatusCounterAttack: true, negativeStatusCounterDefense: true },
+    { previousTurnBothUsedLightSkill: true, convertedBuffStacks: 3 },
+  ])("单技能负面使用与新异常条件用 v4 防止旧端丢失 (%j)", (context) => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    state.directions.forward.context = context;
+    const shared = encodeSharePayloadWithMeta(state);
+    expect(shared.requiresLatestClient).toBe(true);
+    expect(JSON.parse(Buffer.from(shared.encoded, "base64url").toString()).v).toBe(4);
+    expect(decodeSharePayload(shared.encoded, snapshot).directions.forward.context).toEqual(context);
+  });
+
+  test("缩减分享也保留续用取消，避免旧2次复活", () => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.directions.forward.context = {
+      negativeStatusUseCountsBySlot: { 1: 2 },
+      negativeStatusRepeatSkillsBySlot: {},
+    };
+    state.sides.attacker.skills.four = Array.from({ length: 7 }, (_, index) => ({
+      skillId: index % 2 ? "skill-b" : "skill-a", hitCount: 99,
+      context: { attackerHpPercent: index, flightMode: "hits", energy: 99 },
+      overrides: { basePower: 9999 },
+    }));
+    const shared = encodeSharePayloadWithMeta(state);
+    expect(shared.encoded.length).toBeLessThan(900);
+    expect(decodeSharePayload(shared.encoded, snapshot).directions.forward.context)
+      .toEqual(state.directions.forward.context);
+  });
+
   test("returns structured valid, repaired, and invalid decode results", () => {
     const snapshot = createSnapshot();
     const valid = decodeSharePayloadResult(

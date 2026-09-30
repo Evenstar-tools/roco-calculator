@@ -18,6 +18,8 @@ import {
 import {
   resolveNegativeStatusApplications,
   resolveNegativeStatusModifiers,
+  resolveNegativeStatusRepeatNextTurn,
+  shouldPreviewNegativeStatusApplications,
 } from "./negative-status-rules.js";
 import {
   getInheritedDamageTraits,
@@ -349,6 +351,7 @@ function asResultRailModel({ calculation, direction, snapshot, state, includeTur
       ? resolveNegativeStatusApplications({
           baselineStatuses,
           context,
+          effectiveHitCount: rawResult.hitCount,
           selectedSkills: selectedStatusSkills,
           skill: settlementSkill,
           skillIndex: index,
@@ -361,14 +364,20 @@ function asResultRailModel({ calculation, direction, snapshot, state, includeTur
         0,
         Math.floor(
           Number(
-            directionState.context?.negativeStatusUseCountsBySlot?.[index + 1],
+            directionState.context?.negativeStatusUseCountsBySlot?.[state.mode === "four" ? index + 1 : "single"],
           ) || 0,
         ),
       ),
     );
-    const application = statusUseCount > 0
+    const application = allowApplications && shouldPreviewNegativeStatusApplications({
+      enabled: statusEnabled, result: rawResult, skill: selectedSkill, useCount: statusUseCount,
+    })
       ? potentialApplication
       : { sources: [], special: null, stacks: {} };
+    const repeatNextTurn = allowApplications && statusEnabled && resolveNegativeStatusRepeatNextTurn({
+      context: directionState.context, mode: state.mode, skill: selectedSkill,
+      skillIndex: index, useCount: statusUseCount,
+    });
     const hasStatusApplication =
       Object.values(application.stacks ?? {}).some(
         (stacks) => Number(stacks) > 0,
@@ -423,6 +432,8 @@ function asResultRailModel({ calculation, direction, snapshot, state, includeTur
       !negativeStatusSettlement.lethal
     ) {
       let repeatDirectDamage = resultForSettlement.totalDamage;
+      let repeatSkill = settlementSkill;
+      let repeatHitCount = rawResult.hitCount;
       try {
         const projectedState = structuredClone(state);
         projectedState.negativeStatuses = {
@@ -448,15 +459,20 @@ function asResultRailModel({ calculation, direction, snapshot, state, includeTur
         if (Number.isFinite(Number(projectedResult?.totalDamage))) {
           repeatDirectDamage = Number(projectedResult.totalDamage);
         }
+        if (projectedResult?.skillCost != null && Number.isFinite(Number(projectedResult.skillCost))) {
+          repeatSkill = { ...settlementSkill, cost: Number(projectedResult.skillCost) };
+        }
+        if (Number.isFinite(Number(projectedResult?.hitCount))) repeatHitCount = Number(projectedResult.hitCount);
       } catch {
         repeatDirectDamage = resultForSettlement.totalDamage;
       }
-      const repeatApplication = allowApplications && statusUseCount > 1
+      const repeatApplication = repeatNextTurn
         ? resolveNegativeStatusApplications({
             baselineStatuses: negativeStatusSettlement.nextStacks,
             context,
+            effectiveHitCount: repeatHitCount,
             selectedSkills: selectedStatusSkills,
-            skill: settlementSkill,
+            skill: repeatSkill,
             skillIndex: index,
             traits,
           })
@@ -470,10 +486,10 @@ function asResultRailModel({ calculation, direction, snapshot, state, includeTur
     if (negativeStatusSettlement && turnProjection) {
       negativeStatusSettlement.turnPreview = {
         focusStatusIds: ["burn"],
-        next: statusUseCount > 1
+        next: repeatNextTurn
           ? turnProjection.nextWithRepeat
           : turnProjection.nextWithoutRepeat,
-        repeated: statusUseCount > 1,
+        repeated: repeatNextTurn,
       };
     }
     return {
@@ -483,12 +499,15 @@ function asResultRailModel({ calculation, direction, snapshot, state, includeTur
         potentialApplication.sources.length > 0 ||
         Boolean(potentialApplication.special),
       negativeStatusSettlement,
+      negativeStatusCanRepeatNextTurn: Boolean(allowApplications && negativeStatusSettlement &&
+        Number(negativeStatusSettlement.stacks?.burn) > 0 && !negativeStatusSettlement.lethal),
+      negativeStatusRepeatNextTurn: Boolean(repeatNextTurn),
       negativeStatusUseCount: statusUseCount,
     };
   };
   const rawRows = [...directionResult.results];
   const enrichedRows = rawRows.map((row, index) =>
-    settleResult(row, index, skillEntries[index]),
+    settleResult(row, index, state.mode === "four" ? skillEntries[index] : attackSide.skills.single),
   );
   while (enrichedRows.length < 4) enrichedRows.push(null);
   const selectedSkillIndex = state.mode === "four"

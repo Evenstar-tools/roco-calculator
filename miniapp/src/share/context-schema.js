@@ -31,6 +31,10 @@ const BOOLEAN_FIELDS = [
   "enemySwitchedThisTurn",
   "enemySwitched",
   "enemyUsedStatusSkill",
+  "negativeStatusCounterAttack",
+  "negativeStatusCounterDefense",
+  "negativeStatusCounterState",
+  "previousTurnBothUsedLightSkill",
   "energyDepletedAfterUse",
   "previousCounterSucceeded",
   "previousSkillWasStatus",
@@ -52,6 +56,7 @@ const NUMBER_FIELDS = {
   attackerTraitStacks: [0, 100],
   conditionValue: [-10000, 10000],
   counterSuccessCount: [0, 20],
+  convertedBuffStacks: [0, 99],
   currentHpPercent: [0, 100],
   defeatedEnemyCount: [0, 6],
   defenderHpPercent: [0, 100],
@@ -159,9 +164,20 @@ export function sanitizePublicContext(value) {
   const statusUses = value.negativeStatusUseCountsBySlot;
   if (statusUses && typeof statusUses === "object" && !Array.isArray(statusUses)) {
     const counts = Object.fromEntries(Object.entries(statusUses).filter(
-      ([slot, count]) => /^[1-4]$/u.test(slot) && Number.isInteger(count) && count >= 0 && count <= 2,
+      ([slot, count]) => /^(?:[1-7]|single)$/u.test(slot) && Number.isInteger(count) && count >= 0 && count <= 2,
     ));
     if (Object.keys(counts).length) sanitized.negativeStatusUseCountsBySlot = counts;
+  }
+
+  const repeatSkills = value.negativeStatusRepeatSkillsBySlot;
+  if (repeatSkills && typeof repeatSkills === "object" && !Array.isArray(repeatSkills)) {
+    // An empty map explicitly cancels legacy count=2, so its presence is meaningful.
+    sanitized.negativeStatusRepeatSkillsBySlot = Object.fromEntries(
+      Object.entries(repeatSkills).filter(([slot, skillId]) =>
+        /^(?:[1-7]|single)$/u.test(slot) && typeof skillId === "string" &&
+        /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/u.test(skillId)
+      ),
+    );
   }
 
   return Object.keys(sanitized).length ? sanitized : undefined;

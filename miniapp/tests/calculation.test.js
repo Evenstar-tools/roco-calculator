@@ -524,7 +524,7 @@ describe("createCalculationView", () => {
     const state = createState(snapshot);
     state.calculationOptions.includeNegativeStatusSettlement = true;
     state.negativeStatuses.defender.poison = 2;
-    state.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+    state.directions.forward.context.negativeStatusUseCountsBySlot = { single: 1 };
 
     const view = createCalculationView(snapshot, state, "forward");
     expect(view.selectedResult).toMatchObject({ status: "exact", statusOnly: true, totalDamage: 0, hpPercent: 0 });

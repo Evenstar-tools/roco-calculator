@@ -1,4 +1,4 @@
-import { canApplyBattleActivation } from "../shared/state/battle-activation.js";
+import { canApplyBattleActivation, canToggleNegativeStatusActivation } from "../shared/state/battle-activation.js";
 import {
   getStatusSkillTriggerPreview,
   hasStatusHitCountCoefficient,
@@ -6,6 +6,9 @@ import {
   resolveSkillStatusActivation,
 } from "../shared/domain/skill-status-effects.js";
 import { getDefaultHitCount } from "../shared/domain/skill-effects.js";
+import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
+import { getEffectiveTraits } from "../shared/domain/effective-traits.js";
+import { linkedNegativeStatusContext } from "../shared/domain/negative-status-context.js";
 import { getSkill, getVisibleSkillInputs } from "./skills.js";
 import { createSkillPresentation } from "./skill-presentation.js";
 
@@ -88,24 +91,45 @@ function skillAction(snapshot, state, side, candidate, calculation, traitViews) 
     : candidate.entry && typeof candidate.entry === "object"
       ? candidate.entry.context ?? {}
       : {};
-  if (!canApplyBattleActivation(skill, context)) return null;
+  const result = calculation?.rows?.[candidate.slotIndex];
   const configuredSkills = (state.sides[side]?.skills?.four ?? [])
     .map((entry) => getSkill(snapshot, entry));
   const carriedSkills = candidate.mode === "single"
     ? [skill, ...configuredSkills]
     : configuredSkills;
-  const result = calculation?.rows?.[candidate.slotIndex];
   const positiveMark = state.marks?.[side]?.positive;
+  const targetNegativeMark = state.marks?.[side === "attacker" ? "defender" : "attacker"]?.negative;
+  const applicationContext = linkedNegativeStatusContext(state, side, {
+    targetPoisonMarkStacks: targetNegativeMark?.id === "poison" ? targetNegativeMark.stacks : 0,
+    ...state.directions[direction]?.context,
+    ...context,
+  });
   const presentation = createSkillPresentation({
+    baselineStatuses: state.negativeStatuses?.[side === "attacker" ? "defender" : "attacker"],
     carriedSkills,
     context,
     currentIndex: candidate.slotIndex,
     includeGaleTurbineCompanion: candidate.mode === "four",
+    negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
+    negativeStatusContext: applicationContext,
     result,
     skill,
     sproutStacks: positiveMark?.id === "sprout" ? positiveMark.stacks : 0,
     traitName: traitViews?.attacker?.name,
+    traits: getEffectiveTraits(snapshot, {
+      ...state.sides[side],
+      spirit: resolveBattleSpirit(snapshot, state.sides[side]),
+    }),
   });
+  const activationOptions = {
+    negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
+    negativeStatusCanApply: result?.negativeStatusCanApply === true || presentation.negativeStatusApplication,
+    postAttackEffects: result?.postAttackEffects,
+  };
+  const targetDirection = direction === "forward" ? "reverse" : "forward";
+  const hasTransientDefense = Boolean(state.directions[direction]?.overrides?.activeDefenseStatus ||
+    Number(state.directions[targetDirection]?.reduction ?? 1) !== 1);
+  if (!hasTransientDefense && !canApplyBattleActivation(skill, applicationContext, activationOptions)) return null;
   const configuredHitCount = candidate.mode === "single"
     ? state.directions[direction]?.hitCount ?? 1
     : candidate.entry?.hitCount ?? 1;
@@ -121,16 +145,24 @@ function skillAction(snapshot, state, side, candidate, calculation, traitViews) 
     triggerCount: configuredStatusTriggerCount ?? legacyStatusTriggerCount,
   });
   const controls = presentation.inputs ?? getVisibleSkillInputs(skill, context);
+  const statusEffectHint = [
+    statusPreview?.cumulativeEffect === "待满足触发条件" ? null : statusPreview?.cumulativeEffect,
+    presentation.negativeStatusEffectHint,
+  ].filter(Boolean).join(" · ") || statusPreview?.cumulativeEffect;
   return {
     category: skillCategory(skill, context),
     context,
     controls,
     description: skill.description ?? "应用该技能产生的战斗状态",
-    effectHint: statusPreview?.cumulativeEffect || presentation.effectHint,
+    effectHint: isPureStatusSkill(skill)
+      ? statusEffectHint || presentation.effectHint
+      : presentation.effectHint,
     ...(presentation.usageSummary ? { usageSummary: presentation.usageSummary, usage: presentation.usage, usageDetails: presentation.usageDetails } : {}),
     key: `skill:${side}:${candidate.mode}:${candidate.slotIndex}`,
     kind: "skill",
     mode: candidate.mode,
+    negativeStatusApplication: presentation.negativeStatusApplication,
+    negativeStatusToggle: canToggleNegativeStatusActivation(skill, applicationContext, activationOptions),
     name: skill.name,
     side,
     slotIndex: candidate.slotIndex,

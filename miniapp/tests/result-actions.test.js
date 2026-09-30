@@ -58,6 +58,35 @@ function snapshotFixture() {
 }
 
 describe("result action view model", () => {
+  test("攻击附异常无需触发，纯负面技能与攻击战后变化保留明确入口", () => {
+    const snapshot = snapshotFixture();
+    snapshot.skills = [
+      { id: "cold", name: "寒潮", category: "magical", basePower: 95, type: "冰" },
+      { id: "frost", name: "霜降", category: "status", basePower: 0, type: "冰" },
+    ];
+    const state = createInitialState(snapshot);
+    state.mode = "four";
+    state.calculationOptions.includeNegativeStatusSettlement = true;
+    state.sides.attacker.skills.four = ["cold", "frost"];
+    const create = (rows = []) => createResultActions({ snapshot, state, direction: "forward", calculation: { rows } });
+    expect(create().modifiers.map(action => action.name)).toEqual(["霜降"]);
+    expect(create([{ postAttackEffects: { attackLevelStageAdd: 1 } }]).modifiers.map(action => action.name))
+      .toEqual(["寒潮", "霜降"]);
+    state.calculationOptions.includeNegativeStatusSettlement = false;
+    expect(create().modifiers).toEqual([]);
+  });
+
+  test.each(["reduction", "activeDefenseStatus"])("普通攻击只在需要真实结束暂态防御 %s 时保留提交入口", (kind) => {
+    const snapshot = snapshotFixture();
+    snapshot.skills = [{ id: "scratch", name: "抓挠", category: "physical", basePower: 35, type: "普通" }];
+    const state = createInitialState(snapshot);
+    state.sides.attacker.skills.single = "scratch";
+    if (kind === "reduction") state.directions.reverse.reduction = 0.5;
+    else state.directions.forward.overrides.activeDefenseStatus = { skillId: "shelter", slotIndex: 0 };
+    const actions = createResultActions({ snapshot, state, direction: "forward", calculation: { rows: [] } });
+    expect(actions.modifiers).toHaveLength(1);
+    expect(actions.modifiers[0]).toMatchObject({ name: "抓挠", negativeStatusApplication: false, negativeStatusToggle: false });
+  });
   test.each([["有求必应", "己方双攻 +9层 · 己方速度 +60"], ["一意孤行", "己方双攻 +18层"]])("状态动作的预览包含 %s 实际增益", (name, expected) => {
     const snapshot = snapshotFixture();
     snapshot.skills[0].description = "选择：自己获得速度+60或物攻+90%。";

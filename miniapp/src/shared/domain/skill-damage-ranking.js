@@ -2,7 +2,7 @@ import { calculateMatchup } from "./calculate.js";
 import { getNature, getNatureMultipliers, STAT_LABELS } from "./natures.js";
 import { normalizeMarksState, starfallStacksFromMarkSlot } from "./marks.js";
 import { calculateFreezeThreshold, normalizeNegativeStatusSide } from "./negative-status.js";
-import { resolveNegativeStatusApplications } from "./negative-status-rules.js";
+import { resolveNegativeStatusApplications, shouldPreviewNegativeStatusApplications } from "./negative-status-rules.js";
 import { getEffectiveTraits } from "./effective-traits.js";
 import { calculateAllPanelStats, hasCompleteRaceStats } from "./stat.js";
 import { getSnapshotIndexes } from "./snapshot-indexes.js";
@@ -174,15 +174,16 @@ function comparisonFreeze(snapshot, input, direction, selection, result, include
   const source = input.sides[selection.sourceSide];
   const target = input.sides[targetSide];
   const baseline = normalizeNegativeStatusSide(input.negativeStatuses[targetSide]);
-  const statusUseCount = Number(input.directions[direction].context?.negativeStatusUseCountsBySlot?.[selection.index + 1]) || 0;
+  const statusUseCount = Number(input.directions[direction].context?.negativeStatusUseCountsBySlot?.[input.mode === "four" ? selection.index + 1 : "single"]) || 0;
   let added = 0;
-  if (includeApplications && statusUseCount > 0) {
+  if (shouldPreviewNegativeStatusApplications({ enabled: includeApplications, result, skill: selection.selected.skill, useCount: statusUseCount })) {
     const indexes = getSnapshotIndexes(snapshot);
     const entry = skillEntriesForMode(source, input.mode)[selection.index];
     const settledCost = result.skillCost == null ? NaN : Number(result.skillCost);
     const skill = Number.isFinite(settledCost) ? { ...selection.selected.skill, cost: settledCost } : selection.selected.skill;
     const applications = resolveNegativeStatusApplications({
       baselineStatuses: baseline,
+      effectiveHitCount: result.hitCount,
       context: { ...input.directions[direction].context, ...(entry && typeof entry === "object" ? entry.context ?? {} : {}) },
       selectedSkills: (source.skills.four ?? []).map((item) => resolveSkillEntity(item, indexes.skills)).filter(Boolean),
       skill, skillIndex: selection.index,

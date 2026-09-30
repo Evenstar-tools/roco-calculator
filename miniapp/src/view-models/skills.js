@@ -1,5 +1,6 @@
 import { getSkillEffectInputs } from "../shared/domain/skill-effects.js";
 import { getSkillStatusEffectInputs } from "../shared/domain/skill-status-effects.js";
+import { getNegativeStatusInputs } from "../shared/domain/negative-status-rules.js";
 
 const choiceCache = new WeakMap();
 
@@ -57,6 +58,7 @@ export function getSkillInputs(skill, extraInputs = []) {
     ...(skill?.inputs ?? []),
     ...getSkillEffectInputs(skill),
     ...getSkillStatusEffectInputs(skill),
+    ...getNegativeStatusInputs(skill),
     ...extraInputs,
   ];
   const seen = new Set();

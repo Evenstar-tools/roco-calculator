@@ -11,10 +11,17 @@ import { sanitizePublicContext } from "./context-schema.js";
 
 const SHARE_VERSION = 2;
 const PARAMETER_SHARE_VERSION = 3;
+const STATUS_PREVIEW_SHARE_VERSION = 4;
+const STATUS_PREVIEW_CONTEXT_KEYS = [
+  "negativeStatusRepeatSkillsBySlot", "negativeStatusCounterAttack",
+  "negativeStatusCounterDefense", "negativeStatusCounterState",
+  "previousTurnBothUsedLightSkill", "convertedBuffStacks",
+];
 const REQUIRED_CONTEXT_KEYS = [
   "negativeStatusUseCountsBySlot", "weatherRainTurns", "weatherTurns",
   "weatherThunder", "weatherSandstorm", "weatherBlizzard",
   "bloodlineMagicId", "bloodlineMagicTriggered",
+  ...STATUS_PREVIEW_CONTEXT_KEYS,
 ];
 const GLOBAL_WEATHER_CONTEXT_KEYS = [
   "weatherRainTurns", "weatherTurns", "weatherThunder", "weatherSandstorm",
@@ -40,6 +47,12 @@ const CONTEXT_KEY_ALIASES = Object.freeze({
   teamDonationCount: "wd",
   weightDifferenceTier: "ww",
   negativeStatusUseCountsBySlot: "nu",
+  negativeStatusRepeatSkillsBySlot: "nr",
+  negativeStatusCounterAttack: "na",
+  negativeStatusCounterDefense: "nd",
+  negativeStatusCounterState: "ns",
+  previousTurnBothUsedLightSkill: "pl",
+  convertedBuffStacks: "cv",
   weatherRainTurns: "wr",
   weatherTurns: "wn",
   weatherThunder: "wT",
@@ -604,7 +617,14 @@ export function encodeSharePayloadWithMeta(state, { direction } = {}) {
   const contexts = [state?.directions?.forward, state?.directions?.reverse,
     ...Object.values(state?.sides ?? {}).flatMap(side =>
       [side?.skills?.single, ...(side?.skills?.four ?? [])])];
-  const requiresLatestClient = contexts
+  const requiresStatusPreviewClient = state?.calculationOptions?.includeNegativeStatusSettlement === true || contexts.some(value => {
+    const context = sanitizePublicContext(value?.context) ?? {};
+    return STATUS_PREVIEW_CONTEXT_KEYS.some(key => key === "negativeStatusRepeatSkillsBySlot"
+      ? Object.hasOwn(context, key)
+      : context[key] === true || Number(context[key]) > 0) ||
+      Object.keys(context.negativeStatusUseCountsBySlot ?? {}).some(slot => /^(?:[5-7]|single)$/u.test(slot));
+  });
+  const requiresLatestClient = requiresStatusPreviewClient || contexts
     .some(value => {
       const context = sanitizePublicContext(value?.context) ?? {};
       return REQUIRED_CONTEXT_KEYS.some(key => key === "negativeStatusUseCountsBySlot"
@@ -613,7 +633,8 @@ export function encodeSharePayloadWithMeta(state, { direction } = {}) {
           : typeof context[key] === "number" ? context[key] > 0 : context[key] === true);
     });
   const payload = {
-    v: requiresLatestClient ? PARAMETER_SHARE_VERSION : SHARE_VERSION,
+    v: requiresStatusPreviewClient ? STATUS_PREVIEW_SHARE_VERSION
+      : requiresLatestClient ? PARAMETER_SHARE_VERSION : SHARE_VERSION,
     m: state?.mode === "four" ? "four" : "single",
     ...(direction === "reverse" ? { y: "r" } : {}),
     a: compactSide(state?.sides?.attacker, state?.directions?.forward?.context),
@@ -911,7 +932,7 @@ export function decodeSharePayloadResult(encoded, snapshot) {
       !payload ||
       typeof payload !== "object" ||
       Array.isArray(payload) ||
-      ![1, SHARE_VERSION, PARAMETER_SHARE_VERSION].includes(payload.v)
+      ![1, SHARE_VERSION, PARAMETER_SHARE_VERSION, STATUS_PREVIEW_SHARE_VERSION].includes(payload.v)
     ) {
       return invalidDecodeResult();
     }

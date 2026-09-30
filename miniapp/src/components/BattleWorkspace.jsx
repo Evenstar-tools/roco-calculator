@@ -22,6 +22,8 @@ import {
   updateGlobalWeather,
 } from "../shared/state/calculator-session.js";
 import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
+import { getEffectiveTraits } from "../shared/domain/effective-traits.js";
+import { linkedNegativeStatusContext } from "../shared/domain/negative-status-context.js";
 import {
   createResultActionRecord,
   hasPersistedStatusAction,
@@ -144,15 +146,27 @@ function presentationForSide({
     ? [selectedSkill, ...configuredSkills]
     : configuredSkills;
   const positiveMark = state.marks?.[side]?.positive;
+  const targetNegativeMark = state.marks?.[side === "attacker" ? "defender" : "attacker"]?.negative;
   return createSkillPresentation({
+    baselineStatuses: state.negativeStatuses?.[side === "attacker" ? "defender" : "attacker"],
     carriedSkills,
     context: mode === "four" ? details.context ?? {} : directionState.context,
     currentIndex,
     includeGaleTurbineCompanion: mode === "four",
+    negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
+    negativeStatusContext: linkedNegativeStatusContext(state, side, {
+      targetPoisonMarkStacks: targetNegativeMark?.id === "poison" ? targetNegativeMark.stacks : 0,
+      ...directionState.context,
+      ...(mode === "four" ? details.context ?? {} : {}),
+    }),
     result: calculation?.rows?.[currentIndex],
     skill: selectedSkill,
     sproutStacks: positiveMark?.id === "sprout" ? positiveMark.stacks : 0,
     traitName: traitViews?.attacker?.name,
+    traits: getEffectiveTraits(snapshot, {
+      ...configuration,
+      spirit: resolveBattleSpirit(snapshot, configuration),
+    }),
   });
 }
 
@@ -280,6 +294,15 @@ export default function BattleWorkspace({
     ? hasPersistedStatusAction(state, selectedStatusAction)
     : false;
   const activeActionKeys = [...resultActionHistoryRef.current.keys()];
+  if (state.calculationOptions?.includeNegativeStatusSettlement === true) {
+    for (const action of [...resultActions.defense, ...resultActions.modifiers]) {
+      if (!action.negativeStatusToggle || action.kind !== "skill") continue;
+      const actionDirection = SIDE_DIRECTIONS[action.side];
+      const key = action.mode === "single" ? "single" : String(action.slotIndex + 1);
+      if (Number(state.directions[actionDirection].context?.negativeStatusUseCountsBySlot?.[key]) > 0 &&
+          !activeActionKeys.includes(action.key)) activeActionKeys.push(action.key);
+    }
+  }
   if (
     selectedStatusAction &&
     (restoredStatusAction || persistedStatusAction) &&
@@ -491,6 +514,15 @@ export default function BattleWorkspace({
     });
   }
 
+  function updateNegativeStatusRepeat(value) {
+    if (!selectedSkill?.id) return;
+    const key = state.mode === "single" ? "single" : String(activeDirectionState.selectedSkillIndex + 1);
+    const repeatSkills = { ...(activeDirectionState.context?.negativeStatusRepeatSkillsBySlot ?? {}) };
+    if (value) repeatSkills[key] = selectedSkill.id;
+    else delete repeatSkills[key];
+    updateDirection(direction, { context: { negativeStatusRepeatSkillsBySlot: repeatSkills } });
+  }
+
   function setSingleSkill(side, value) {
     dispatchWithUndo({ side, type: "side/set-single-skill", value });
   }
@@ -675,8 +707,9 @@ export default function BattleWorkspace({
 
   function applyResultAction(action, { automatic = false } = {}) {
     const history = resultActionHistoryRef.current;
+    const repeatableUse = action.negativeStatusApplication && !action.negativeStatusToggle;
     let previousRecord = history.get(action.key);
-    if (!previousRecord && action.kind === "skill") {
+    if (!repeatableUse && !previousRecord && action.kind === "skill") {
       previousRecord = restorePersistedStatusAction(store.getState(), action);
       if (previousRecord) {
         history.set(action.key, previousRecord);
@@ -688,7 +721,7 @@ export default function BattleWorkspace({
         return;
       }
     }
-    if (previousRecord) {
+    if (previousRecord && !repeatableUse) {
       const restored = restoreResultAction(store.getState(), previousRecord);
       if (restored.restored) {
         dispatchWithUndo({ type: "state/replace", value: restored.state });
@@ -756,6 +789,16 @@ export default function BattleWorkspace({
       state: beforeState,
     });
     if (result.applied) {
+      const actionDirection = SIDE_DIRECTIONS[action.side];
+      const slotKey = action.mode === "single" ? "single" : String(action.slotIndex + 1);
+      if (action.negativeStatusToggle &&
+          beforeState.calculationOptions?.includeNegativeStatusSettlement === true &&
+          !(Number(result.state.directions[actionDirection].context?.negativeStatusUseCountsBySlot?.[slotKey]) > 0)) {
+        dispatchWithUndo({ type: "state/replace", value: result.state });
+        history.delete(action.key);
+        setActionFeedback({ actionKey: action.key, message: `${action.name}触发已取消` });
+        return;
+      }
       const activatedState = isPureStatusSkill(
         skillForResultAction(snapshot, beforeState, action),
       )
@@ -880,6 +923,7 @@ export default function BattleWorkspace({
     if (
       activeLayer !== "result" ||
       !selectedStatusAction ||
+      selectedStatusAction.negativeStatusApplication ||
       selectedStatusActionActive ||
       statusAutoTriggerOptOutRef.current.has(selectedStatusAction.key)
     ) return;
@@ -1345,6 +1389,7 @@ export default function BattleWorkspace({
         onActionControlChange={updateResultActionControl}
         onApplyAction={applyResultAction}
         onClose={closeResults}
+        onNegativeStatusRepeatChange={updateNegativeStatusRepeat}
         onSkillConditionContextChange={updateSkillContext}
         onSkillConditionDirectionChange={updateSkillDirection}
         onSelectSkill={(selectedSkillIndex) => updateDirection(direction, {
@@ -1374,6 +1419,8 @@ export default function BattleWorkspace({
         skillConditionStatusActivation={selectedStatusAction ? {
           active: selectedStatusActionActive,
           available: true,
+          negativeStatus: selectedStatusAction.negativeStatusToggle,
+          repeatableUse: selectedStatusAction.negativeStatusApplication && !selectedStatusAction.negativeStatusToggle,
           onToggle: () => applyResultAction(selectedStatusAction),
           onTriggerCountChange: (count) => updateStatusTriggerCount(
             selectedStatusAction,

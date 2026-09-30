@@ -81,6 +81,120 @@ function snapshotFixture() {
 }
 
 describe("mini-program desktop feature parity", () => {
+  test("纯负面状态打开结果不自动使用，单技能显式触发与撤销不反写异常基线", () => {
+    const snapshot = snapshotFixture();
+    snapshot.skills.push({ id: "frost", name: "霜降", category: "status", type: "冰", basePower: 0, description: "敌方获得4层冻结。" });
+    snapshot.learnsets[0].skillIds.push("frost");
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({ type: "calculation-option/set-negative-status", value: true });
+    store.dispatch({ type: "side/set-single-skill", side: "attacker", value: "frost" });
+    render(<BattleWorkspace negativeStatusEnabled snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot).toBeUndefined();
+    expect(screen.getByRole("button", { name: "使用状态技能" })).toBeInTheDocument();
+    expect(within(screen.getByRole("dialog", { name: "伤害结果" })).getByText("敌方冻结 +4层")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "使用状态技能" }));
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ single: 1 });
+    expect(store.getState().negativeStatuses.defender.freeze).toBe(0);
+    fireEvent.click(screen.getByRole("button", { name: "取消使用状态技能" }));
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot?.single ?? 0).toBe(0);
+  });
+
+  test("导入已使用的纯负面技能可明确取消，不伪造新的已触发记录", () => {
+    const snapshot = snapshotFixture();
+    snapshot.skills.push({ id: "frost", name: "霜降", category: "status", type: "冰", basePower: 0 });
+    snapshot.learnsets[0].skillIds.push("frost");
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({ type: "calculation-option/set-negative-status", value: true });
+    store.dispatch({ type: "side/set-single-skill", side: "attacker", value: "frost" });
+    store.dispatch({ type: "direction/update", direction: "forward", value: { context: { negativeStatusUseCountsBySlot: { single: 1 } } } });
+    render(<BattleWorkspace negativeStatusEnabled snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    fireEvent.click(screen.getByRole("button", { name: "取消使用状态技能" }));
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot.single).toBe(0);
+    expect(screen.getByRole("button", { name: "使用状态技能" })).toBeInTheDocument();
+  });
+
+  test("纯正面技能附带特性异常时不自动使用，效果提示保留正面与负面", () => {
+    const snapshot = snapshotFixture();
+    snapshot.skills.find(skill => skill.id === "feather").cost = 1;
+    snapshot.spirits[0].traitIds = ["gland"];
+    snapshot.traits.push({ id: "gland", name: "毒腺", description: "使用1耗及以下技能时敌方获得4层中毒。" });
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({ type: "calculation-option/set-negative-status", value: true });
+    store.dispatch({ type: "side/set-single-skill", side: "attacker", value: "feather" });
+    render(<BattleWorkspace negativeStatusEnabled quickUndoEnabled snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot).toBeUndefined();
+    expect(store.getState().directions.forward.overrides.fixedPowerAdd ?? 0).toBe(0);
+    const dialog = screen.getByRole("dialog", { name: "伤害结果" });
+    expect(within(dialog).getByText("全技能威力 +20 · 敌方中毒 +4层")).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole("button", { name: "使用技能" }));
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ single: 1 });
+    expect(store.getState().directions.forward.overrides.fixedPowerAdd).toBe(20);
+    expect(store.getState().negativeStatuses.defender.poison).toBe(0);
+    fireEvent.click(screen.getByRole("button", { name: "使用技能" }));
+    expect(store.getState().directions.forward.overrides.fixedPowerAdd).toBe(40);
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ single: 1 });
+    fireEvent.click(screen.getByRole("button", { name: "撤回上一步" }));
+    expect(store.getState().directions.forward.overrides.fixedPowerAdd).toBe(20);
+    fireEvent.click(screen.getByRole("button", { name: "撤回上一步" }));
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot?.single ?? 0).toBe(0);
+    expect(store.getState().directions.forward.overrides.fixedPowerAdd ?? 0).toBe(0);
+  });
+
+  test("灼烧续用通过实际结果页写技能身份，不借四技能槽1且不更改本次异常", () => {
+    const snapshot = snapshotFixture();
+    snapshot.skills.push({ id: "flame", name: "花火", category: "physical", type: "普通", basePower: 70 });
+    snapshot.learnsets[0].skillIds.push("flame");
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({ type: "calculation-option/set-negative-status", value: true });
+    store.dispatch({ type: "side/set-single-skill", side: "attacker", value: "flame" });
+    store.dispatch({ type: "direction/update", direction: "forward", value: { context: { negativeStatusUseCountsBySlot: { 1: 2 } } } });
+    render(<BattleWorkspace negativeStatusEnabled snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    expect(screen.getByRole("checkbox", { name: "下回合继续此技能" })).toHaveAttribute("aria-checked", "false");
+    const initial = createCalculationView(snapshot, store.getState(), "forward").selectedResult.negativeStatusSettlement;
+    fireEvent.click(screen.getByRole("checkbox", { name: "下回合继续此技能" }));
+    expect(store.getState().directions.forward.context.negativeStatusRepeatSkillsBySlot).toEqual({ single: "flame" });
+    expect(createCalculationView(snapshot, store.getState(), "forward").selectedResult.negativeStatusSettlement.stacks).toEqual(initial.stacks);
+    expect(store.getState().negativeStatuses.defender.burn).toBe(0);
+    fireEvent.click(screen.getByRole("checkbox", { name: "下回合继续此技能" }));
+    expect(store.getState().directions.forward.context.negativeStatusRepeatSkillsBySlot).toEqual({});
+  });
+
+  test("仅特性附加负面的纯状态技能也有显式使用入口", () => {
+    const snapshot = snapshotFixture();
+    snapshot.skills.push({ id: "prepare", name: "测试准备", category: "status", type: "普通", basePower: 0, cost: 1 });
+    snapshot.learnsets[0].skillIds.push("prepare");
+    snapshot.spirits[0].traitIds = ["gland"];
+    snapshot.traits.push({ id: "gland", name: "毒腺" });
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({ type: "calculation-option/set-negative-status", value: true });
+    store.dispatch({ type: "side/set-single-skill", side: "attacker", value: "prepare" });
+    render(<BattleWorkspace negativeStatusEnabled snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot).toBeUndefined();
+    const dialog = screen.getByRole("dialog", { name: "伤害结果" });
+    expect(within(dialog).getByText("敌方中毒 +4层")).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole("button", { name: "使用状态技能" }));
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ single: 1 });
+  });
+
+  test("关闭异常结算后混合纯状态技能沿用已有正面自动触发", () => {
+    const snapshot = snapshotFixture();
+    snapshot.skills.find(skill => skill.id === "feather").cost = 1;
+    snapshot.spirits[0].traitIds = ["gland"];
+    snapshot.traits.push({ id: "gland", name: "毒腺" });
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({ type: "side/set-single-skill", side: "attacker", value: "feather" });
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+    expect(store.getState().directions.forward.overrides.fixedPowerAdd).toBe(20);
+    expect(store.getState().directions.forward.context.negativeStatusUseCountsBySlot).toBeUndefined();
+    expect(screen.getByRole("button", { name: "取消状态触发" })).toBeInTheDocument();
+    expect(screen.queryByText(/敌方中毒/u)).not.toBeInTheDocument();
+  });
   test("shows optional negative status controls only when enabled", () => {
     const snapshot = snapshotFixture();
     const store = createCalculatorStore(snapshot);

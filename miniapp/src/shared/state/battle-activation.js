@@ -19,6 +19,8 @@ import { expireTransientGainSources, recordGainChanges } from "../domain/gain-pr
 import { recordSkillActivation } from "../domain/skill-gain-summary.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import { normalizeNegativeStatusSide } from "../domain/negative-status.js";
+import { hasNegativeStatusSkillApplication, resolveNegativeStatusApplications } from "../domain/negative-status-rules.js";
+import { linkedNegativeStatusContext } from "../domain/negative-status-context.js";
 import { advancePressureValveContext, resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
 import { getEffectiveTraits } from "../domain/effective-traits.js";
@@ -192,12 +194,26 @@ function applyMark(state, side, application) {
   };
 }
 
-export function canApplyBattleActivation(skill, context = {}) {
+export function canApplyBattleActivation(skill, context = {}, options = {}) {
+  const effects = options.postAttackEffects;
+  const currentHp = effects?.selfCurrentHpAfterSettlement;
   return Boolean(
     resolveSkillStatusActivation(skill, context) ||
       isChoiceSkill(skill) ||
-      hasPersistentSkillProgression(skill),
+      hasPersistentSkillProgression(skill) ||
+      Number(effects?.attackLevelStageAdd) > 0 ||
+      (currentHp !== undefined && currentHp !== null && Number.isFinite(Number(currentHp))) ||
+      (options.negativeStatusEnabled === true &&
+        ["status", "defense"].includes(skill?.category) &&
+        (hasNegativeStatusSkillApplication(skill) || options.negativeStatusCanApply === true)),
   );
+}
+
+export function canToggleNegativeStatusActivation(skill, context = {}, options = {}) {
+  return options.negativeStatusEnabled === true &&
+    ["status", "defense"].includes(skill?.category) &&
+    (hasNegativeStatusSkillApplication(skill) || options.negativeStatusCanApply === true) &&
+    !canApplyBattleActivation(skill, context, { postAttackEffects: options.postAttackEffects });
 }
 
 export function applyBalanceTraitTrigger({ side, state }) {
@@ -227,6 +243,42 @@ export function applyBattleActivation({
   if (!skill) {
     return { applied: false, reason: "请先选择技能", state };
   }
+  let negativeStatusApplied = false;
+  let negativeStatusCancelled = false;
+  const spirit = getSpirit(snapshot, next.sides[side]);
+  const effectiveTraits = getEffectiveTraits(snapshot, { ...next.sides[side], spirit });
+  const skillResult = calculation?.[selfDirection]?.results?.[skillIndex];
+  const applicationContext = linkedNegativeStatusContext(next, side, {
+    ...next.directions[selfDirection].context,
+    ...(skillMode === "four" ? skillContext(entry) : {}),
+  });
+  const negativeStatusApplication = resolveNegativeStatusApplications({
+    baselineStatuses: normalizeNegativeStatusSide(next.negativeStatuses?.[targetSide]),
+    context: applicationContext,
+    effectiveHitCount: skillResult?.hitCount,
+    selectedSkills: carriedSkills(next, snapshot, side),
+    skill: { ...skill, cost: skillResult?.skillCost ?? skill.cost },
+    skillIndex,
+    traits: effectiveTraits.map((trait) => ({ ...trait, name: trait.displayName ?? trait.name })),
+  });
+  if (next.calculationOptions?.includeNegativeStatusSettlement === true &&
+      ["status", "defense"].includes(skill.category) &&
+      (hasNegativeStatusSkillApplication(skill) || negativeStatusApplication.sources.length > 0 || negativeStatusApplication.special)) {
+    const counts = next.directions[selfDirection].context?.negativeStatusUseCountsBySlot ?? {};
+    const key = skillMode === "single" ? "single" : String(skillIndex + 1);
+    const useCount = canToggleNegativeStatusActivation(skill, applicationContext, {
+      negativeStatusEnabled: true,
+      negativeStatusCanApply: negativeStatusApplication.sources.length > 0 || Boolean(negativeStatusApplication.special),
+      postAttackEffects: skillResult?.postAttackEffects,
+    }) && Number(counts[key]) > 0 ? 0 : 1;
+    updateDirection(next, selfDirection, { context: {
+      negativeStatusUseCountsBySlot: { ...counts, [key]: useCount },
+      negativeStatusRepeatSkillsBySlot: next.directions[selfDirection].context
+        ?.negativeStatusRepeatSkillsBySlot ?? {},
+    } });
+    negativeStatusCancelled = useCount === 0;
+    negativeStatusApplied = useCount === 1;
+  }
   const previousReduction = Number(
     next.directions[targetDirection]?.reduction ?? 1,
   );
@@ -251,20 +303,23 @@ export function applyBattleActivation({
     stateChanged = true;
     if (activeStatus.skillId === skill.id && activeStatus.slotIndex === skillIndex &&
       activeStatus.contextSignature === JSON.stringify(context)) {
+      if (negativeStatusApplied) {
+        const counts = next.directions[selfDirection].context?.negativeStatusUseCountsBySlot ?? {};
+        updateDirection(next, selfDirection, { context: { negativeStatusUseCountsBySlot: {
+          ...counts, [skillMode === "single" ? "single" : String(skillIndex + 1)]: 0,
+        } } });
+      }
       return { applied: true, reason: null, state: next };
     }
   }
+  if (negativeStatusCancelled) return { applied: true, reason: null, state: next };
   const statusTriggerCount = skillMode === "single"
     ? next.directions[selfDirection].statusTriggerCount
     : entry && typeof entry === "object"
       ? entry.statusTriggerCount
       : undefined;
   const gainBaseline = clone(next);
-  const spirit = getSpirit(snapshot, next.sides[side]);
-  const traitName = getEffectiveTraits(snapshot, {
-    ...next.sides[side],
-    spirit,
-  })
+  const traitName = effectiveTraits
     .map((trait) => trait?.displayName ?? trait?.name)
     .find(supportsChoiceTrait) ?? null;
   const choiceTrait = context.choiceTraitTriggered === true &&
@@ -336,6 +391,10 @@ export function applyBattleActivation({
       return { applied: true, reason: null, state: next };
     }
     if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
+      if (negativeStatusApplied) {
+        recordSkillActivation(next, side, skill, context);
+        return { applied: true, reason: null, state: next };
+      }
       return {
         applied: false,
         reason: "该技能没有可应用的状态",

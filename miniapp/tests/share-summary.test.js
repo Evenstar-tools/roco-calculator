@@ -25,15 +25,39 @@ const snapshot = {
 };
 
 describe("share summary", () => {
-  test("异常状态、应用次数和血脉列入分享条件且支持反向目标", () => {
+  test("异常状态、显式应用和血脉列入分享条件且支持反向目标", () => {
     const state = createInitialState(snapshot);
+    state.mode = "four";
+    const fixture = { ...snapshot, skills: [...snapshot.skills, { id: "frost", name: "霜降", category: "status" }] };
+    state.sides.defender.skills.four[2] = "frost";
     state.calculationOptions.includeNegativeStatusSettlement = true;
     state.negativeStatuses.attacker.poison = 2;
     state.directions.reverse.context = { negativeStatusUseCountsBySlot: { 3: 1 }, bloodlineMagicId: "photosynthetic-healing", bloodlineMagicTriggered: true };
-    const summary = createShareSummary({ direction: "reverse", snapshot, state });
+    const summary = createShareSummary({ direction: "reverse", snapshot: fixture, state });
     expect(summary.conditions).toContain("目标中毒 ×2");
-    expect(summary.conditions).toContain("第3槽已应用 1 次");
+    expect(summary.conditions).toContain("第3槽负面状态已应用");
     expect(summary.conditions).toContain("血脉光合治愈 · 已使用");
+  });
+
+  test("续用摘要匹配技能身份，旧2不是本回合使用两次，单技能不借槽1", () => {
+    const state = createInitialState(snapshot);
+    state.mode = "four";
+    state.calculationOptions.includeNegativeStatusSettlement = true;
+    state.sides.attacker.skills.four[0] = "s1";
+    state.directions.forward.context = { negativeStatusUseCountsBySlot: { 1: 2 } };
+    const summary = () => createShareSummary({ snapshot, state }).conditions;
+    expect(summary()).toContain("第1槽下回合继续此技能");
+    expect(summary().join(" ")).not.toContain("2 次");
+    state.directions.forward.context.negativeStatusRepeatSkillsBySlot = {};
+    expect(summary()).not.toContain("第1槽下回合继续此技能");
+    state.directions.forward.context.negativeStatusRepeatSkillsBySlot = { 1: "s2" };
+    expect(summary()).not.toContain("第1槽下回合继续此技能");
+    state.mode = "single";
+    state.sides.attacker.skills.single = "s1";
+    delete state.directions.forward.context.negativeStatusRepeatSkillsBySlot;
+    expect(summary()).not.toContain("当前技能下回合继续此技能");
+    state.directions.forward.context.negativeStatusRepeatSkillsBySlot = { single: "s1" };
+    expect(summary()).toContain("当前技能下回合继续此技能");
   });
   test("summarizes the active direction, ability stages and non-default conditions", () => {
     const state = createInitialState(snapshot);

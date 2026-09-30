@@ -1899,6 +1899,43 @@
   white-space: nowrap;
 }
 
+.result-sheet__repeat-toggle {
+  display: flex;
+  width: 100%;
+  min-height: 42px;
+  margin: 0;
+  padding: 8px 10px;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-top: 1px solid var(--border-color, #dde3e7);
+  border-radius: 0;
+  color: var(--text-primary);
+  background: transparent;
+  font-size: 12px;
+  text-align: left;
+}
+
+.result-sheet__repeat-toggle::after { border: 0; }
+
+.result-sheet__repeat-box {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--text-secondary);
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.result-sheet__repeat-box--checked {
+  border-color: var(--accent, #5545df);
+  color: #fff;
+  background: var(--accent, #5545df);
+}
+
 .result-sheet__turn-loss {
   color: var(--text-primary);
   font-weight: 750;

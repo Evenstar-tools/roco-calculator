@@ -147,6 +147,25 @@ function renderWorkspace() {
 }
 
 describe("result bar and sheet", () => {
+  test("灼烧续用独立勾选，取消不改变本回合结算", () => {
+    const onRepeat = vi.fn();
+    const settlement = { actualStatusDamage: 8, statusDamage: 8, breakdown: [{ damage: 8, id: "burn", label: "灼烧", stacks: 1 }],
+      maxHp: 400, remainingHp: 300, stacks: { burn: 1 },
+      turnPreview: { next: { breakdown: [{ damage: 4, id: "burn", stacks: 1 }], maxHp: 400, stacks: { burn: 1 } } } };
+    const result = { status: "exact", skillName: "花火", totalDamage: 92, hpPercent: 23,
+      negativeStatusCanRepeatNextTurn: true, negativeStatusRepeatNextTurn: false, negativeStatusSettlement: settlement };
+    const { rerender } = render(<ResultSheet open onNegativeStatusRepeatChange={onRepeat}
+      view={{ status: "exact", selectedResult: result, rows: [] }} />);
+    const toggle = screen.getByRole("checkbox", { name: "下回合继续此技能" });
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+    fireEvent.click(toggle);
+    expect(onRepeat).toHaveBeenLastCalledWith(true);
+    rerender(<ResultSheet open onNegativeStatusRepeatChange={onRepeat}
+      view={{ status: "exact", selectedResult: { ...result, negativeStatusRepeatNextTurn: true }, rows: [] }} />);
+    fireEvent.click(screen.getByRole("checkbox", { name: "下回合继续此技能" }));
+    expect(onRepeat).toHaveBeenLastCalledWith(false);
+    expect(settlement.stacks).toEqual({ burn: 1 });
+  });
   test("shows negative status settlement when the calculation returns it", () => {
     render(
       <ResultSheet

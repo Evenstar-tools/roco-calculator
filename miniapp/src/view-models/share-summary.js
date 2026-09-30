@@ -3,6 +3,7 @@ import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
 import { createConditionSummary } from "./condition-summary.js";
 import { createDirectionTraitViews } from "./traits.js";
 import { getBloodlineMagicOption } from "../shared/domain/bloodline-magic.js";
+import { getSkill } from "./skills.js";
 
 const STATUS_NAMES = { burn: "灼烧", freeze: "冻结", parasitism: "寄生", poison: "中毒", electrified: "引电" };
 
@@ -128,9 +129,26 @@ export function createShareSummary({
         return stacks > 0 ? [`${label}${name} ×${stacks}`] : [];
       }))
     : [];
-  const statusUses = Object.entries(context.negativeStatusUseCountsBySlot ?? {})
-    .filter(([slot, count]) => /^[1-4]$/u.test(slot) && Number(count) > 0)
-    .map(([slot, count]) => `第${slot}槽已应用 ${count} 次`);
+  const entries = state.mode === "single"
+    ? [["single", attackerSide.skills.single]]
+    : (attackerSide.skills.four ?? []).slice(0, 7).map((entry, index) => [String(index + 1), entry]);
+  const hasRepeatMap = Object.hasOwn(context, "negativeStatusRepeatSkillsBySlot");
+  const statusUses = state.calculationOptions?.includeNegativeStatusSettlement === true
+    ? entries.flatMap(([slot, entry]) => {
+        const skill = getSkill(snapshot, entry);
+        if (!skill) return [];
+        const label = slot === "single" ? "当前技能" : `第${slot}槽`;
+        const count = Number(context.negativeStatusUseCountsBySlot?.[slot]) || 0;
+        const statusSkill = ["status", "defense"].includes(skill.category);
+        const repeat = hasRepeatMap
+          ? context.negativeStatusRepeatSkillsBySlot?.[slot] === skill.id
+          : state.mode === "four" && count === 2;
+        return [
+          ...(statusSkill && count > 0 ? [`${label}负面状态已应用`] : []),
+          ...(repeat ? [`${label}下回合继续此技能`] : []),
+        ];
+      })
+    : [];
   const bloodline = getBloodlineMagicOption(context.bloodlineMagicId);
 
   return {

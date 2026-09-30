@@ -94,6 +94,7 @@ export default function ResultActionPanel({
         <View className="result-actions__list">
         {visibleActions.length ? visibleActions.map((action) => {
           const active = actionIsActive(action, activeActionKeys);
+          const repeatableUse = action.negativeStatusApplication && !action.negativeStatusToggle;
           const editableControls = action.kind === "trait" &&
               action.control?.type === "boolean"
             ? []
@@ -136,16 +137,16 @@ export default function ResultActionPanel({
                 </View>
                 {showsActionButton ? (
                   <Button
-                    aria-label={`${active ? "撤销" : "触发"}${action.name}`}
-                    aria-pressed={active}
+                    aria-label={`${repeatableUse ? "使用" : action.negativeStatusToggle ? active ? "取消使用" : "使用" : active ? "撤销" : "触发"}${action.name}`}
+                    aria-pressed={!repeatableUse && active}
                     className={[
                       "result-actions__apply",
-                      active ? "result-actions__apply--active" : "",
+                      active && !repeatableUse ? "result-actions__apply--active" : "",
                     ].filter(Boolean).join(" ")}
                     hoverClass="button-hover"
                     onClick={() => onApplyAction(action)}
                   >
-                    {active ? "取消" : "触发"}
+                    {repeatableUse ? "使用技能" : active ? "取消" : action.negativeStatusToggle ? "使用" : "触发"}
                   </Button>
                 ) : null}
               </View>

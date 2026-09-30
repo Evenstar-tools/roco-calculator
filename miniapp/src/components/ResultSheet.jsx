@@ -43,7 +43,7 @@ function turnLossText(phase) {
   return statusLossText(phase, phase?.breakdown?.find(entry => entry.id === "burn"));
 }
 
-function TurnStatusPreview({ current, preview }) {
+function TurnStatusPreview({ current, onRepeatChange, preview, repeated }) {
   if (!hasBurnPreview(current)) return null;
   const statusIds = ["burn"];
   return (
@@ -55,7 +55,7 @@ function TurnStatusPreview({ current, preview }) {
         <View className="result-sheet__turn-row" key={label}>
           <View className="result-sheet__turn-label">
             <Text>{label}</Text>
-            {label === "下回合" && preview.repeated ? <Text>续用</Text> : null}
+            {label === "下回合" && repeated ? <Text>续用</Text> : null}
           </View>
           <Text className="result-sheet__turn-status">
             {turnStatusText(phase, statusIds)}
@@ -63,6 +63,20 @@ function TurnStatusPreview({ current, preview }) {
           <Text className="result-sheet__turn-loss">{turnLossText(phase)}</Text>
         </View>
       ))}
+      {onRepeatChange ? (
+        <Button
+          aria-label="下回合继续此技能"
+          aria-checked={repeated}
+          className="result-sheet__repeat-toggle"
+          onClick={() => onRepeatChange(!repeated)}
+          role="checkbox"
+        >
+          <Text aria-hidden="true" className={repeated
+            ? "result-sheet__repeat-box result-sheet__repeat-box--checked"
+            : "result-sheet__repeat-box"}>{repeated ? "✓" : ""}</Text>
+          <Text>下回合继续此技能</Text>
+        </Button>
+      ) : null}
     </View>
   );
 }
@@ -115,12 +129,14 @@ function DetailSection({
   );
 }
 
-function NegativeStatusSettlement({ settlement }) {
+function NegativeStatusSettlement({ canRepeat, onRepeatChange, repeated, settlement }) {
   if (!settlement || settlement.skipped) return null;
   const entries = (settlement.breakdown ?? []).filter(
     (entry) => Number(entry?.stacks) > 0 && !(entry.id === "burn" && hasBurnPreview(settlement)),
   );
   const freeze = settlement.freeze;
+  if (!entries.length && !(Number(freeze?.stacks) > 0) &&
+      !(settlement.totalHealing > 0) && !hasBurnPreview(settlement)) return null;
   return (
     <View aria-label="负面状态结算" className="result-sheet__status-settlement">
       <View className="result-sheet__status-heading">
@@ -148,7 +164,9 @@ function NegativeStatusSettlement({ settlement }) {
       {settlement.actualStatusDamage < settlement.statusDamage ? <Text className="result-sheet__status-note">
         异常合计 {settlement.statusDamage} HP，仅剩 {settlement.actualStatusDamage} HP 可扣
       </Text> : null}
-      <TurnStatusPreview current={settlement} preview={settlement.turnPreview} />
+      <TurnStatusPreview current={settlement} preview={settlement.turnPreview}
+        onRepeatChange={canRepeat ? onRepeatChange : null}
+        repeated={repeated ?? settlement.turnPreview?.repeated ?? false} />
     </View>
   );
 }
@@ -205,6 +223,7 @@ export default function ResultSheet({
   actionFeedback,
   hiddenActionKeys,
   onClose,
+  onNegativeStatusRepeatChange,
   onApplyAction,
   onActionControlChange,
   onSkillConditionContextChange,
@@ -293,6 +312,9 @@ export default function ResultSheet({
           ) : null}
           {exact ? (
             <NegativeStatusSettlement
+              canRepeat={result?.negativeStatusCanRepeatNextTurn}
+              onRepeatChange={onNegativeStatusRepeatChange}
+              repeated={result?.negativeStatusRepeatNextTurn}
               settlement={result?.negativeStatusSettlement}
             />
           ) : null}

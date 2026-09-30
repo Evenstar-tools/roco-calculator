@@ -51,9 +51,31 @@ test("保留异常技能应用次数，过滤越界槽位与损坏次数", () =>
   const snapshot = createSnapshot();
   const state = createInitialState(snapshot);
   const persistence = createPersistence({ storage: createMemoryStorage(undefined, true) });
-  state.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 1, extra: 1 };
+  state.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 0, 2: 1, 3: 2, 4: 3, 8: 1, extra: 1 };
   persistence.save(state);
   expect(persistence.load(snapshot).directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ 1: 0, 2: 1, 3: 2 });
+});
+
+test.each([{}, { 1: "skill-a", single: "skill-b", 7: "skill-c", 8: "skill-a", extra: "skill-a", 2: true, 3: "bad id" }])(
+  "持久化保留续用身份和空映射，过滤非法值 (%j)", (repeatSkills) => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    const persistence = createPersistence({ storage: createMemoryStorage(undefined, true) });
+    state.directions.forward.context.negativeStatusRepeatSkillsBySlot = repeatSkills;
+    persistence.save(state);
+    expect(persistence.load(snapshot).directions.forward.context.negativeStatusRepeatSkillsBySlot)
+      .toEqual(Object.keys(repeatSkills).length ? { 1: "skill-a", single: "skill-b", 7: "skill-c" } : {});
+  },
+);
+
+test("持久化单技能负面使用与既有7槽互不串用", () => {
+  const snapshot = createSnapshot();
+  const state = createInitialState(snapshot);
+  const persistence = createPersistence({ storage: createMemoryStorage(undefined, true) });
+  state.directions.forward.context.negativeStatusUseCountsBySlot = { single: 1, 1: 2, 7: 1 };
+  persistence.save(state);
+  expect(persistence.load(snapshot).directions.forward.context.negativeStatusUseCountsBySlot)
+    .toEqual({ single: 1, 1: 2, 7: 1 });
 });
 
 test("天气与血脉通过实际状态入口保存、重开和分享后仍生效", () => {

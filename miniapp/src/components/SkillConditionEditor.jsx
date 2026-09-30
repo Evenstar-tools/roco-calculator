@@ -245,6 +245,10 @@ export default function SkillConditionEditor({
         triggerCount: statusTriggerCount,
       })
     : null;
+  const statusEffectHint = [
+    statusPreview?.cumulativeEffect === "待满足触发条件" ? null : statusPreview?.cumulativeEffect,
+    presentation?.negativeStatusEffectHint,
+  ].filter(Boolean).join(" · ") || statusPreview?.cumulativeEffect || "当前规则暂未收录可结算效果";
   const updateStatusTriggerCount = (count) => {
     if (statusActivation?.onTriggerCountChange) {
       statusActivation.onTriggerCountChange(count);
@@ -336,14 +340,18 @@ export default function SkillConditionEditor({
             </View>
             {statusActivation?.available ? (
               <Button
-                aria-label={statusActivation.active ? "取消状态触发" : "触发状态技能"}
-                aria-pressed={statusActivation.active === true}
-                className={statusActivation.active
+                aria-label={statusActivation.repeatableUse ? "使用技能" : statusActivation.negativeStatus
+                  ? statusActivation.active ? "取消使用状态技能" : "使用状态技能"
+                  : statusActivation.active ? "取消状态触发" : "触发状态技能"}
+                aria-pressed={!statusActivation.repeatableUse && statusActivation.active === true}
+                className={statusActivation.active && !statusActivation.repeatableUse
                   ? "condition-editor__status-toggle condition-editor__status-toggle--active"
                   : "condition-editor__status-toggle"}
                 onClick={statusActivation.onToggle}
               >
-                {statusActivation.active ? "已触发" : "触发"}
+                {statusActivation.repeatableUse ? "使用技能" : statusActivation.negativeStatus
+                  ? statusActivation.active ? "已使用" : "使用"
+                  : statusActivation.active ? "已触发" : "触发"}
               </Button>
             ) : null}
           </View>
@@ -374,7 +382,7 @@ export default function SkillConditionEditor({
                 : "condition-editor__field condition-editor__field--preview"}
               >
                 <View className="condition-editor__field-heading">
-                  <Text className="condition-editor__label">{(statusActivation?.active ?? result?.usageSummary?.count > 0) ? "累计效果" : "触发后预览"}</Text>
+                  <Text className="condition-editor__label">{statusActivation?.repeatableUse ? "本次效果" : (statusActivation?.active ?? result?.usageSummary?.count > 0) ? "累计效果" : "触发后预览"}</Text>
                   <Text className="condition-editor__power-status">
                     {statusPreview.hitCountConfigurable
                       ? `${statusTriggerCount} 次 × ${hitCount} 连击`
@@ -382,14 +390,14 @@ export default function SkillConditionEditor({
                   </Text>
                 </View>
                 <View className="condition-editor__status-preview">
-                  <Text>{statusPreview.cumulativeEffect}</Text>
+                  <Text>{statusEffectHint}</Text>
                 </View>
               </View>
             </View>
           ) : (
             <View className="condition-editor__status-preview condition-editor__status-preview--single">
               <Text className="condition-editor__label">触发效果</Text>
-              <Text>{statusPreview?.cumulativeEffect ?? "当前规则暂未收录可结算效果"}</Text>
+              <Text>{statusEffectHint}</Text>
             </View>
           )}
           {statusPreview?.repeatable ? (

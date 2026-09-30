@@ -161,6 +161,8 @@ function withNegativeStatusResult(result, sharedResult) {
     } : {}),
     negativeStatusApplications: sharedResult.negativeStatusApplications,
     negativeStatusCanApply: sharedResult.negativeStatusCanApply,
+    negativeStatusCanRepeatNextTurn: sharedResult.negativeStatusCanRepeatNextTurn,
+    negativeStatusRepeatNextTurn: sharedResult.negativeStatusRepeatNextTurn,
     negativeStatusSettlement: sharedResult.negativeStatusSettlement,
     negativeStatusUseCount: sharedResult.negativeStatusUseCount,
     statusOnly: sharedResult.statusOnly === true,

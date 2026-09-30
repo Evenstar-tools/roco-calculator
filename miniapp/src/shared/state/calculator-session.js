@@ -750,13 +750,20 @@ export function selectFourSkill(
       ?.negativeStatusUseCountsBySlot ?? {}),
   };
   delete counts[index + 1];
+  const repeats = {
+    ...(selected.state.directions[direction].context?.negativeStatusRepeatSkillsBySlot ?? {}),
+  };
+  delete repeats[index + 1];
   return {
     ...selected,
     state: calculatorReducer(selected.state, {
       direction,
       type: "direction/update",
       value: {
-        context: { negativeStatusUseCountsBySlot: counts },
+        context: { negativeStatusUseCountsBySlot: counts,
+          ...(selected.state.directions[direction].context?.negativeStatusRepeatSkillsBySlot
+            ? { negativeStatusRepeatSkillsBySlot: repeats } : {}),
+        },
       },
     }),
   };
@@ -942,6 +949,16 @@ export function selectSingleSkill(
     [...currentControls, ...nextControls],
     nextSlotContext,
   );
+  if (nextContext.negativeStatusRepeatSkillsBySlot) {
+    const repeats = { ...nextContext.negativeStatusRepeatSkillsBySlot };
+    delete repeats.single;
+    nextContext.negativeStatusRepeatSkillsBySlot = repeats;
+  }
+  if (nextContext.negativeStatusUseCountsBySlot) {
+    const counts = { ...nextContext.negativeStatusUseCountsBySlot };
+    delete counts.single;
+    nextContext.negativeStatusUseCountsBySlot = counts;
+  }
   const nextOverrides = remembered
     ? {
         ...singlePowerOverrides(remembered.overrides, {
