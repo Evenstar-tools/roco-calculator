@@ -37,7 +37,7 @@ function ivSummary(side) {
 function damagePercent(result) {
   const presentation = damagePresentation(result);
   return Number.isFinite(presentation.percent)
-    ? `${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}`
+    ? `${presentation.percent.toFixed(1)}%${presentation.freezePercent > 0 ? "" : " HP"}`
     : "暂不可计算";
 }
 
@@ -130,7 +130,7 @@ export default function SharedResultPage({
       </View>
       {completeness !== "full" ? (
         <Text className="shared-result__incomplete-warning">
-          吞噬特性/参数可能未完整携带
+          配置未完整携带，请核对配点、技能及条件
         </Text>
       ) : null}
 

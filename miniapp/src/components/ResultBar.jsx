@@ -22,7 +22,7 @@ const ResultBar = forwardRef(function ResultBar(
   const presentation = damagePresentation(result);
   const damagePercent =
     exact && Number.isFinite(result?.hpPercent)
-      ? `${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}`
+      ? `${presentation.percent.toFixed(1)}%${presentation.freezePercent > 0 ? "" : " HP"}`
       : "--";
   const damageTone = resultTone(exact ? presentation.percent : null);
   const remainingHp =

@@ -1,5 +1,23 @@
 const STATUS_LABELS = { burn: "灼烧", poison: "中毒", parasitism: "寄生", electrified: "引电" };
 
+export function compactStatusSummary(settlement) {
+  if (!settlement || settlement.skipped) return null;
+  const breakdown = (settlement.breakdown ?? [])
+    .filter((entry) => Number(entry.stacks) > 0 && Number(entry.damage) > 0)
+    .map((entry) => `${STATUS_LABELS[entry.id]}×${entry.stacks}`);
+  const parts = breakdown.length > 0
+    ? breakdown
+    : Object.entries(settlement.added ?? {})
+        .filter(([id, stacks]) => id !== "freeze" && Number(stacks) > 0)
+        .map(([id, stacks]) => `${STATUS_LABELS[id]}×${stacks}`);
+  const freezeThreshold = Number(settlement.freeze?.thresholdPercent) || 0;
+  if (freezeThreshold > 0 && !settlement.freeze?.immune) {
+    parts.push(settlement.freeze?.lethal && settlement.remainingHp > 0
+      ? "冻结击倒" : `冻结斩杀线${freezeThreshold}%`);
+  }
+  return parts.length > 0 ? parts : null;
+}
+
 // Read settled HP loss without treating healing or a freeze threshold as damage.
 export function damagePresentation(result) {
   const directDamage = result?.totalDamage ?? result?.damage;
@@ -20,7 +38,7 @@ export function damagePresentation(result) {
   const detail = hasStatusImpact ? [
     directPercent > 0 ? `伤害 ${directPercent.toFixed(1)}%` : null,
     statusPercent > 0 ? `${statusLabel} ${statusPercent.toFixed(1)}%` : null,
-    freezePercent > 0 ? `冻结 ${freezePercent}%` : null,
+    freezePercent > 0 ? `冻结斩杀线 ${freezePercent}%` : null,
   ].filter(Boolean).join(" ＋ ") : null;
   return {
     damage: result?.statusOnly

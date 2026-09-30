@@ -23,6 +23,24 @@ test.each([["burn", 240], ["poison", 260], ["parasitism", 240], ["electrified", 
   },
 );
 
+test("冻结百分比不用含义不明的覆盖标签，混合异常摘要保留完整词条", () => {
+  const settlement = calculateNegativeStatusSettlement({ enabled: true,
+    defender: { maxHp: 1000, currentHp: 1000, types: [] }, directDamage: 200,
+    statuses: { burn: 2, poison: 2, parasitism: 2, electrified: 2, freeze: 3 } });
+  const result = { status: "exact", skillName: "测试技能", totalDamage: 200,
+    hpPercent: 20, remainingHp: 800, negativeStatusSettlement: settlement };
+  const view = { status: "exact", selectedResult: result, rows: [result, {
+    ...result, skillName: "无异常技能", negativeStatusSettlement: null,
+  }], defenderHp: 1000, defenderMaxHp: 1000 };
+  const { container } = render(<><ResultBar view={view} /><ResultSheet view={view} open /></>);
+  expect(container.querySelector(".result-sheet__damage-percent").textContent).toBe("74.0%");
+  const summary = container.querySelector(".result-row__status");
+  expect([...summary.children].map((entry) => entry.textContent)).toEqual([
+    "灼烧×2", "中毒×2", "寄生×2", "引电×2", "冻结斩杀线15%",
+  ]);
+  expect(summary.textContent).not.toContain("…");
+});
+
 function createSnapshot() {
   return {
     meta: { id: "data-v1", rulesVersion: "rules-v1" },

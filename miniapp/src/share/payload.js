@@ -10,6 +10,16 @@ import { extractTraitValues } from "../shared/state/trait-values.js";
 import { sanitizePublicContext } from "./context-schema.js";
 
 const SHARE_VERSION = 2;
+const PARAMETER_SHARE_VERSION = 3;
+const REQUIRED_CONTEXT_KEYS = [
+  "negativeStatusUseCountsBySlot", "weatherRainTurns", "weatherTurns",
+  "weatherThunder", "weatherSandstorm", "weatherBlizzard",
+  "bloodlineMagicId", "bloodlineMagicTriggered",
+];
+const GLOBAL_WEATHER_CONTEXT_KEYS = [
+  "weatherRainTurns", "weatherTurns", "weatherThunder", "weatherSandstorm",
+  "weatherBlizzard", "blizzardWeather",
+];
 const MAX_ENCODED_LENGTH = 899;
 const BASE64_ALPHABET =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -29,6 +39,14 @@ const CONTEXT_KEY_ALIASES = Object.freeze({
   targetWeightTier: "wt",
   teamDonationCount: "wd",
   weightDifferenceTier: "ww",
+  negativeStatusUseCountsBySlot: "nu",
+  weatherRainTurns: "wr",
+  weatherTurns: "wn",
+  weatherThunder: "wT",
+  weatherSandstorm: "ws",
+  weatherBlizzard: "wb",
+  bloodlineMagicId: "bm",
+  bloodlineMagicTriggered: "bt",
 });
 const CONTEXT_KEY_NAMES = Object.freeze(
   Object.fromEntries(
@@ -55,15 +73,16 @@ function safeAcquiredTraitId(value) {
     : null;
 }
 
-function compactPublicContext(value) {
+function compactPublicContext(value, omittedKeys = []) {
   const sanitized = sanitizePublicContext(value);
   if (!sanitized) return undefined;
-  return Object.fromEntries(
-    Object.entries(sanitized).map(([key, candidate]) => [
+  const compact = Object.fromEntries(
+    Object.entries(sanitized).filter(([key]) => !omittedKeys.includes(key)).map(([key, candidate]) => [
       CONTEXT_KEY_ALIASES[key] ?? key,
       candidate,
     ]),
   );
+  return Object.keys(compact).length ? compact : undefined;
 }
 
 function expandPublicContext(value) {
@@ -167,7 +186,7 @@ function compactOverrides(value) {
   return Object.keys(compact).length ? compact : undefined;
 }
 
-function compactSkill(entry) {
+function compactSkill(entry, globalWeatherContext = {}) {
   const skillId = safeIdentifier(
     typeof entry === "string"
       ? entry
@@ -189,7 +208,10 @@ function compactSkill(entry) {
     99,
     undefined,
   );
-  const context = compactPublicContext(entry.context);
+  const omittedKeys = GLOBAL_WEATHER_CONTEXT_KEYS.filter(key =>
+    Object.hasOwn(globalWeatherContext, key) &&
+    entry.context?.[key] === globalWeatherContext[key]);
+  const context = compactPublicContext(entry.context, omittedKeys);
   const overrides = compactOverrides(entry.overrides);
   if (hitCount !== undefined && hitCount !== 1) compact.h = hitCount;
   if (statusTriggerCount !== undefined && statusTriggerCount !== 1) {
@@ -257,7 +279,7 @@ function compactAcquiredTraitValues(value, traitIds) {
   return Object.keys(compact).length ? compact : undefined;
 }
 
-function compactSide(side) {
+function compactSide(side, globalWeatherContext) {
   const ivs = STAT_KEYS.map((key) =>
     integerInRange(side?.displayIvs?.[key], 0, 60, 60),
   );
@@ -269,9 +291,9 @@ function compactSide(side) {
     s: safeIdentifier(side?.spiritId),
     n: safeIdentifier(side?.nature) ?? "neutral",
     i: ivs,
-    u: compactSkill(side?.skills?.single),
+    u: compactSkill(side?.skills?.single, globalWeatherContext),
     k: Array.from({ length: capacity }, (_, index) =>
-      compactSkill(side?.skills?.four?.[index]),
+      compactSkill(side?.skills?.four?.[index], globalWeatherContext),
     ),
   };
   const traitValues = compactTraitValues(side?.traitValues);
@@ -348,7 +370,19 @@ function compactDirection(direction) {
     direction?.currentHp === undefined
       ? null
       : finiteInRange(direction.currentHp, 0, 99999, null);
-  const context = compactPublicContext(direction?.context);
+  const sourceContext = direction?.context ?? {};
+  const omittedKeys = [];
+  if (["weatherRainTurns", "weatherThunder", "weatherSandstorm", "weatherBlizzard"]
+    .some(key => Object.hasOwn(sourceContext, key))) {
+    if (Object.hasOwn(sourceContext, "weatherBlizzard") &&
+      sourceContext.blizzardWeather === sourceContext.weatherBlizzard) {
+      omittedKeys.push("blizzardWeather");
+    }
+    if (sourceContext.weatherTurns === sourceContext.weatherRainTurns) {
+      omittedKeys.push("weatherTurns");
+    }
+  }
+  const context = compactPublicContext(sourceContext, omittedKeys);
   const overrides = compactOverrides(direction?.overrides);
 
   if (selectedSkillIndex !== 0) compact.x = selectedSkillIndex;
@@ -436,7 +470,12 @@ function stripOptionalInputs(payload) {
     );
   }
   for (const direction of [payload.f, payload.r]) {
-    delete direction.c;
+    const context = expandPublicContext(direction.c);
+    direction.c = compactPublicContext(Object.fromEntries(
+      REQUIRED_CONTEXT_KEYS.filter(key => Object.hasOwn(context ?? {}, key))
+        .map(key => [key, context[key]]),
+    ));
+    if (!direction.c) delete direction.c;
     delete direction.o;
   }
 }
@@ -517,11 +556,8 @@ function fitPayloadWithMeta(payload) {
     }
   }
 
-  return {
-    completeness: "minimal",
-    encoded: toBase64Url(
-      JSON.stringify({
-      v: SHARE_VERSION,
+  const minimal = {
+      v: payload.v,
       g: 2,
       m: payload.m,
       ...(payload.y ? { y: payload.y } : {}),
@@ -542,19 +578,46 @@ function fitPayloadWithMeta(payload) {
         ...(payload.d.v ? { v: payload.d.v } : {}),
       },
       z: payload.z,
+      f: payload.f,
+      r: payload.r,
       ...(payload.e ? { e: 1, w: payload.w } : {}),
-      }),
-    ),
   };
+  encoded = toBase64Url(JSON.stringify(minimal));
+  if (encoded.length > MAX_ENCODED_LENGTH) {
+    // 极端输入先舍弃配点；关键新参数及目标当前 HP 始终保留。
+    for (const side of [minimal.a, minimal.d]) {
+      delete side.n;
+      delete side.i;
+    }
+    encoded = toBase64Url(JSON.stringify(minimal));
+  }
+  if (encoded.length > MAX_ENCODED_LENGTH) {
+    for (const direction of [minimal.f, minimal.r]) {
+      for (const key of ["q", "h", "t", "s", "m"]) delete direction[key];
+    }
+    encoded = toBase64Url(JSON.stringify(minimal));
+  }
+  return { completeness: "minimal", encoded };
 }
 
 export function encodeSharePayloadWithMeta(state, { direction } = {}) {
+  const contexts = [state?.directions?.forward, state?.directions?.reverse,
+    ...Object.values(state?.sides ?? {}).flatMap(side =>
+      [side?.skills?.single, ...(side?.skills?.four ?? [])])];
+  const requiresLatestClient = contexts
+    .some(value => {
+      const context = sanitizePublicContext(value?.context) ?? {};
+      return REQUIRED_CONTEXT_KEYS.some(key => key === "negativeStatusUseCountsBySlot"
+        ? Object.values(context[key] ?? {}).some(count => count > 0)
+        : key === "bloodlineMagicId" ? context[key] && context[key] !== "none"
+          : typeof context[key] === "number" ? context[key] > 0 : context[key] === true);
+    });
   const payload = {
-    v: SHARE_VERSION,
+    v: requiresLatestClient ? PARAMETER_SHARE_VERSION : SHARE_VERSION,
     m: state?.mode === "four" ? "four" : "single",
     ...(direction === "reverse" ? { y: "r" } : {}),
-    a: compactSide(state?.sides?.attacker),
-    d: compactSide(state?.sides?.defender),
+    a: compactSide(state?.sides?.attacker, state?.directions?.forward?.context),
+    d: compactSide(state?.sides?.defender, state?.directions?.reverse?.context),
     f: compactDirection(state?.directions?.forward),
     r: compactDirection(state?.directions?.reverse),
     z: compactMarks(state?.marks, state?.directions),
@@ -565,7 +628,7 @@ export function encodeSharePayloadWithMeta(state, { direction } = {}) {
         }
       : {}),
   };
-  return fitPayloadWithMeta(payload);
+  return { ...fitPayloadWithMeta(payload), requiresLatestClient };
 }
 
 export function encodeSharePayload(state, options) {
@@ -772,6 +835,11 @@ function expandDirection(raw, fallback) {
     raw?.p === null || raw?.p === undefined
       ? null
       : finiteInRange(raw.p, 0, 99999, null);
+  const context = expandPublicContext(raw?.c) ?? {};
+  if (typeof context.weatherRainTurns === "number" &&
+    context.weatherTurns === undefined) {
+    context.weatherTurns = context.weatherRainTurns;
+  }
   return {
     ...fallback,
     selectedSkillIndex: integerInRange(raw?.x, 0, 6, 0),
@@ -783,7 +851,7 @@ function expandDirection(raw, fallback) {
     starfallStacks: integerInRange(raw?.s, 0, 100, 0),
     finalDamageMultiplier: finiteInRange(raw?.m, 0, 100, 1),
     currentHp,
-    context: expandPublicContext(raw?.c) ?? {},
+    context,
     overrides: expandOverrides(raw?.o) ?? {},
   };
 }
@@ -843,7 +911,7 @@ export function decodeSharePayloadResult(encoded, snapshot) {
       !payload ||
       typeof payload !== "object" ||
       Array.isArray(payload) ||
-      (payload.v !== 1 && payload.v !== SHARE_VERSION)
+      ![1, SHARE_VERSION, PARAMETER_SHARE_VERSION].includes(payload.v)
     ) {
       return invalidDecodeResult();
     }
@@ -865,7 +933,7 @@ export function decodeSharePayloadResult(encoded, snapshot) {
     const state = {
       ...fallback,
       mode: payload.m === "four" ? "four" : "single",
-      marks: expandMarks(payload.v === 2 ? payload.z : undefined, directions),
+      marks: expandMarks(payload.v >= 2 ? payload.z : undefined, directions),
       calculationOptions: {
         includeNegativeStatusSettlement: payload.e === 1,
       },
@@ -878,7 +946,7 @@ export function decodeSharePayloadResult(encoded, snapshot) {
           spiritIds,
           skillIds,
           traitIds,
-          payload.v === SHARE_VERSION,
+          payload.v >= 2,
         ),
         defender: expandSide(
           payload.d,
@@ -887,7 +955,7 @@ export function decodeSharePayloadResult(encoded, snapshot) {
           spiritIds,
           skillIds,
           traitIds,
-          payload.v === SHARE_VERSION,
+          payload.v >= 2,
         ),
       },
       directions,
@@ -900,7 +968,7 @@ export function decodeSharePayloadResult(encoded, snapshot) {
           : "full",
       direction: payload.y === "r" ? "reverse" : "forward",
       state,
-      status: payload.v === SHARE_VERSION ? "valid" : "repaired",
+      status: payload.v >= 2 ? "valid" : "repaired",
     };
   } catch {
     return invalidDecodeResult();
@@ -925,12 +993,15 @@ export function createShareMessage(view, state, direction = "forward") {
   const defender = titleText(view?.defenderName, "防守方");
   const result = view?.selectedResult;
   const presentation = damagePresentation(result);
+  const damageLabel = result?.statusOnly && presentation.damage === null
+    ? presentation.freezePercent > 0 ? presentation.freezeLethal ? "冻结击倒" : "冻结斩杀线" : "无扣血"
+    : `${presentation.damage ?? 0}伤害`;
   const detail =
     view?.status === "exact" &&
     Number.isFinite(result?.totalDamage)
-      ? `${titleText(result.skillName, "当前技能")} ${presentation.damage ?? 0}伤害${
+      ? `${titleText(result.skillName, "当前技能")} ${damageLabel}${
           Number.isFinite(result?.hpPercent)
-            ? `（${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}）`
+            ? `（${presentation.percent.toFixed(1)}%${presentation.freezePercent > 0 ? "" : " HP"}）`
             : ""
         }`
       : "计算配置";

@@ -26,9 +26,15 @@ function snapshotFixture() {
   };
 }
 
-const WARNING = "吞噬特性/参数可能未完整携带";
+const WARNING = "配置未完整携带，请核对配点、技能及条件";
 
 describe("share completeness warning", () => {
+  test("仅新参数分享提示好友使用最新版", () => {
+    const { rerender } = render(<SharePreviewSheet open requiresLatestClient summary={{ conditions: [] }} view={{}} />);
+    expect(screen.getByText("含新参数，好友需使用最新版。")).toBeInTheDocument();
+    rerender(<SharePreviewSheet open requiresLatestClient={false} summary={{ conditions: [] }} view={{}} />);
+    expect(screen.queryByText("含新参数，好友需使用最新版。")).not.toBeInTheDocument();
+  });
   test.each(["reduced", "minimal"])(
     "warns before sending a %s payload without claiming a complete readback",
     (completeness) => {

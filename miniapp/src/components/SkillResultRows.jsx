@@ -1,5 +1,6 @@
 import { Button, Text, View } from "@tarojs/components";
 import {
+  compactStatusSummary,
   damagePresentation,
   resultTone,
 } from "../view-models/result-presentation.js";
@@ -16,6 +17,7 @@ export default function SkillResultRows({
         const exact =
           row?.status === "exact" && Number.isFinite(row?.hpPercent);
         const presentation = damagePresentation(row);
+        const statusSummary = compactStatusSummary(row.negativeStatusSettlement);
         const tone = resultTone(exact ? presentation.percent : null);
         return (
           <Button
@@ -43,11 +45,16 @@ export default function SkillResultRows({
               className={`result-row__damage result-row__damage--${tone}`}
             >
               {exact
-                ? `${presentation.percent.toFixed(1)}%${presentation.freezePercent > 0 ? " 覆盖" : ""}`
+                ? `${presentation.percent.toFixed(1)}%`
                 : row.status === "exact"
                   ? `${row.totalDamage} 伤害`
                   : row.message}
             </Text>
+            {statusSummary ? (
+              <View className="result-row__status">
+                {statusSummary.map((part) => <Text key={part}>{part}</Text>)}
+              </View>
+            ) : null}
           </Button>
         );
       })}

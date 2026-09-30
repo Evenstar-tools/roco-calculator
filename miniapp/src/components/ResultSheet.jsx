@@ -216,6 +216,7 @@ export default function ResultSheet({
   open,
   selectedIndex,
   shareCompleteness = "full",
+  shareRequiresLatestClient = false,
   shareSummary,
   showSkillConditions = false,
   showTypeAnalysis = false,
@@ -236,7 +237,7 @@ export default function ResultSheet({
   const presentation = damagePresentation(result);
   const damagePercent = presentation.percent;
   const damagePercentText = Number.isFinite(damagePercent)
-    ? `${damagePercent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}`
+    ? `${damagePercent.toFixed(1)}%${presentation.freezePercent > 0 ? "" : " HP"}`
     : "--% HP";
   const damageTone = resultTone(damagePercent);
   const remainingHp = Number.isFinite(presentation.remainingHp)
@@ -458,6 +459,7 @@ export default function ResultSheet({
         </Button>
         <SharePreviewSheet
           completeness={shareCompleteness}
+          requiresLatestClient={shareRequiresLatestClient}
           onClose={() => setSharePreviewOpen(false)}
           open={sharePreviewOpen}
           skillContext={skillConditionContext}

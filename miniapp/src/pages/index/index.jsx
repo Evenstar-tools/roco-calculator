@@ -217,6 +217,7 @@ export default function IndexPage({ services }) {
               completeness: shareResult.completeness,
               decodeStatus: shareResult.status,
               direction: shareResult.direction,
+              localNegativeStatusEnabled: negativeStatusEnabled,
               localState,
               sharedState: shareResult.state,
               status: "preview",
@@ -238,9 +239,12 @@ export default function IndexPage({ services }) {
         snapshot,
         hasSharedState ? shareResult.state : localState,
       );
+      const effectiveNegativeStatusEnabled = hasSharedState
+        ? shareResult.state.calculationOptions?.includeNegativeStatusSettlement === true
+        : negativeStatusEnabled;
       calculatorStore.dispatch({
         type: "calculation-option/set-negative-status",
-        value: negativeStatusEnabled,
+        value: effectiveNegativeStatusEnabled,
       });
       setPageState({
         status: "ready",
@@ -250,7 +254,7 @@ export default function IndexPage({ services }) {
         favoriteIds,
         configLibrary,
         memoryEnabled,
-        negativeStatusEnabled,
+        negativeStatusEnabled: effectiveNegativeStatusEnabled,
         quickUndoEnabled,
         quickUndoPosition,
         teamAnalysisEnabled,
@@ -345,44 +349,64 @@ export default function IndexPage({ services }) {
 
   const returnToLocalCalculation = useCallback(() => {
     autosave.current?.cancel();
+    if (pageState.shareSession?.status === "active") {
+      pageState.services?.persistence?.setNegativeStatusEnabled?.(
+        pageState.shareSession.localNegativeStatusEnabled,
+      );
+    }
     setPageState((current) => {
       if (!current.snapshot || !current.shareSession) return current;
+      const enabled = current.shareSession.localNegativeStatusEnabled
+        ?? current.negativeStatusEnabled;
+      const store = createCalculatorStore(current.snapshot, current.shareSession.localState);
+      store.dispatch({ type: "calculation-option/set-negative-status", value: enabled });
       return {
         ...current,
         shareSession: null,
-        store: createCalculatorStore(
-          current.snapshot,
-          current.shareSession.localState,
-        ),
+        negativeStatusEnabled: enabled,
+        store,
       };
     });
-  }, []);
+  }, [pageState]);
 
   const continueSharedCalculation = useCallback(() => {
+    if (pageState.shareSession?.status !== "preview") return;
+    pageState.services?.persistence?.setNegativeStatusEnabled?.(
+      pageState.negativeStatusEnabled,
+    );
     setPageState((current) => current.shareSession?.status === "preview"
       ? {
           ...current,
           shareSession: { ...current.shareSession, status: "active" },
         }
       : current);
-  }, []);
+  }, [pageState]);
 
   const restoreSharedSnapshot = useCallback(() => {
-    setPageState((current) => {
-      if (
-        current.shareSession?.status !== "active" ||
-        !current.store ||
-        !current.shareSession.sharedState
-      ) {
-        return current;
-      }
-      current.store.dispatch({
+    if (
+      pageState.shareSession?.status !== "active" ||
+      !pageState.store ||
+      !pageState.shareSession.sharedState
+    ) return;
+    const enabled = pageState.shareSession.sharedState.calculationOptions
+      ?.includeNegativeStatusSettlement === true;
+    try {
+      pageState.services?.persistence?.setNegativeStatusEnabled?.(enabled);
+      pageState.store.dispatch({
         type: "state/replace",
-        value: current.shareSession.sharedState,
+        value: pageState.shareSession.sharedState,
       });
-      return current;
-    });
-  }, []);
+      setPageState((current) => current.store === pageState.store
+        ? { ...current, negativeStatusEnabled: enabled }
+        : current);
+    } catch {
+      Promise.resolve(Taro.showToast({
+        duration: 2400,
+        icon: "none",
+        title: "分享配置恢复失败，请重试",
+      })).catch(() => {});
+    }
+  }, [pageState]);
 
   const toggleFavorite = useCallback((spiritId, configuration) => {
     setPageState((current) => {

@@ -21,6 +21,8 @@ import { encodeSharePayload } from "../src/share/payload.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
 import { createRuntimeConfig } from "../src/config/runtime.js";
 import { publicSpiritImageUrl } from "../src/data/public-asset-urls.js";
+import { createCalculationView } from "../src/view-models/calculation.js";
+import { damagePresentation } from "../src/view-models/result-presentation.js";
 
 function createSnapshot() {
   return {
@@ -80,10 +82,13 @@ function createUserSettingServices({
   persistedState,
   favoriteIds = [],
   memoryEnabled = true,
+  negativeStatusEnabled = false,
 } = {}) {
   const persistence = {
     clear: vi.fn(),
     getMemoryEnabled: vi.fn(() => memoryEnabled),
+    getNegativeStatusEnabled: vi.fn(() => negativeStatusEnabled),
+    setNegativeStatusEnabled: vi.fn((value) => { negativeStatusEnabled = value; return value; }),
     load: vi.fn(() => persistedState),
     save: vi.fn(),
     setMemoryEnabled: vi.fn((value) => {
@@ -257,6 +262,41 @@ describe("IndexPage", () => {
       /^\/pages\/index\/index\?share=[A-Za-z0-9_-]+$/u,
     );
     expect(message.path.length).toBeLessThan(940);
+  });
+
+  test.each([true, false])("分享异常开关 %s 在好友只读、载入和返回本机时保持各自配置", async (sharedEnabled) => {
+    const snapshot = createSnapshot();
+    snapshot.skills[0] = { ...snapshot.skills[0], type: "火", category: "physical", basePower: 40, cost: 2 };
+    const sharedState = createInitialState(snapshot);
+    sharedState.calculationOptions.includeNegativeStatusSettlement = sharedEnabled;
+    sharedState.negativeStatuses.defender.poison = 2;
+    const localEnabled = !sharedEnabled;
+    const services = createUserSettingServices({
+      load: async () => ({ snapshot }),
+      persistedState: createInitialState(snapshot),
+      negativeStatusEnabled: localEnabled,
+    });
+    const expected = damagePresentation(createCalculationView(snapshot, sharedState, "forward").selectedResult);
+    expect(expected.damage).toBeGreaterThan(0);
+    __setRouterParams({ share: encodeSharePayload(sharedState) });
+    const { container } = render(<IndexPage services={services} />);
+    await screen.findByText("好友分享快照 · 已载入");
+    expect(container.querySelector(".shared-result__damage")).toHaveTextContent(String(expected.damage));
+    expect(services.persistence.setNegativeStatusEnabled).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "用此配置继续计算" }));
+    expect(container.querySelector(".result-bar__damage")).toHaveTextContent(String(expected.damage));
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    expect(screen.getByRole("switch", { name: "负面状态结算" })).toHaveAttribute("aria-checked", String(sharedEnabled));
+    fireEvent.click(screen.getByRole("switch", { name: "负面状态结算" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
+    fireEvent.click(screen.getByRole("button", { name: "恢复分享原样" }));
+    expect(container.querySelector(".result-bar__damage")).toHaveTextContent(String(expected.damage));
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    expect(screen.getByRole("switch", { name: "负面状态结算" })).toHaveAttribute("aria-checked", String(sharedEnabled));
+    fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
+    expect(services.persistence.getNegativeStatusEnabled()).toBe(sharedEnabled);
+    fireEvent.click(screen.getByRole("button", { name: "返回我的配置" }));
+    expect(services.persistence.getNegativeStatusEnabled()).toBe(localEnabled);
   });
 
   test("keeps a shared snapshot isolated until the receiver continues", async () => {

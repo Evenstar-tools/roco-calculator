@@ -13,6 +13,8 @@ import {
 } from "../src/state/persistence.js";
 import { getSkillEffectInputs } from "../src/shared/domain/skill-effects.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
+import { createCalculatorStore } from "../src/state/calculator-store.js";
+import { encodeSharePayloadWithMeta, decodeSharePayload } from "../src/share/payload.js";
 
 const COMPLETE_RACE_STATS = {
   hp: 100,
@@ -52,6 +54,22 @@ test("保留异常技能应用次数，过滤越界槽位与损坏次数", () =>
   state.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 1, extra: 1 };
   persistence.save(state);
   expect(persistence.load(snapshot).directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ 1: 0, 2: 1, 3: 2 });
+});
+
+test("天气与血脉通过实际状态入口保存、重开和分享后仍生效", () => {
+  const snapshot = createSnapshot();
+  const store = createCalculatorStore(snapshot);
+  store.dispatch({ type: "battle/set-rain", value: 4 });
+  store.dispatch({ type: "direction/update", direction: "forward", value: {
+    context: { bloodlineMagicId: "photosynthetic-healing", bloodlineMagicTriggered: true },
+  } });
+  const persistence = createPersistence({ storage: createMemoryStorage(undefined, true) });
+  persistence.save(store.getState());
+  const restored = persistence.load(snapshot);
+  const expected = { weatherRainTurns: 4, weatherTurns: 4, bloodlineMagicId: "photosynthetic-healing", bloodlineMagicTriggered: true };
+  expect(restored.directions.forward.context).toMatchObject(expected);
+  const shared = encodeSharePayloadWithMeta(store.getState());
+  expect(decodeSharePayload(shared.encoded, snapshot).directions.forward.context).toMatchObject(expected);
 });
 
 test("保存并读回生效来源，不接受对不上合计的来源", () => {

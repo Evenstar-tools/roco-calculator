@@ -27,6 +27,7 @@ export default function DamageComparisonSheet({ snapshot, source, petImages = {}
   const model = useDamageComparison(snapshot, source, preferences, onPreferencesChange);
   const reopenTarget = useRef(model.expanded);
   const sourcePortrait = petImages[model.selection.spirit?.id] ?? model.selection.spirit?.imageUrl;
+  const alternativeSkill = model.selection.options.find(({ index, skill }) => index !== model.selectedSkillIndex && ["physical", "magical", "dual"].includes(skill.category));
   return <View className="dc-sheet" role="dialog" aria-modal="true" aria-label="承伤对比">
     <View className="dc-heading"><Text>承伤对比</Text><Button className="dc-button" onClick={onClose}>关闭</Button></View>
     <View className="dc-source">
@@ -46,7 +47,10 @@ export default function DamageComparisonSheet({ snapshot, source, petImages = {}
     <DamageRange value={model.filter} onChange={model.setFilter} />
     <View className="dc-summary"><Text>{model.loading ? `正在计算 ${model.progress?.completed ?? 0}/${snapshot.spirits.length}` : `${model.rows.length} 只 · ${model.template.label}`}</Text></View>
     <ScrollView className="dc-scroll" scrollY scrollIntoView={!model.loading && reopenTarget.current ? `dc-row-${reopenTarget.current}` : undefined} lowerThreshold={160} onScrollToLower={() => { if (!model.loading && model.rows.length > model.limit) model.showMore(); }}>
-      {model.error || model.ranking?.issue ? <View className="dc-empty" role="status">{model.error || model.ranking.issue}</View> : null}
+      {model.error || model.ranking?.issue ? <View className="dc-empty"><View role="status">{model.error || model.ranking.issue}</View>{model.ranking?.issueKind === "no-direct-damage" ? alternativeSkill
+        ? <Button className="dc-button" onClick={() => model.setSelectedSkillIndex(alternativeSkill.index)}>切换到{alternativeSkill.skill.name}</Button>
+        : <Button className="dc-button" onClick={onClose}>返回计算器选技能</Button>
+        : null}</View> : null}
       {model.showExcluded ? <View className="dc-excluded">{model.ranking?.excluded.map(({ spirit, reason }) => <View key={spirit.id}><Text>{spirit.fullName}</Text><Text className="dc-note">{reason}</Text></View>)}</View> : null}
       {!model.loading && !model.error && !model.ranking?.issue && !model.rows.length ? <View className="dc-empty">没有符合当前筛选的结果<Button className="dc-button" onClick={() => { model.setQuery(""); model.setFilter("all"); }}>清除搜索与筛选</Button></View> : null}
       {model.rows.slice(0, model.limit).map((row) => {
@@ -64,7 +68,7 @@ export default function DamageComparisonSheet({ snapshot, source, petImages = {}
           </Button>
           {expanded ? <View className="dc-detail">
             <Text>生命 {row.panelStats.hp} · 物防 {row.panelStats.physicalDefense} · 魔防 {row.panelStats.magicalDefense}</Text>
-            {freezePercent > 0 ? <Text className="dc-note">冻结斩杀≤{row.freezeThresholdHp} HP · 伤害后{row.remainingAfterDirect} HP · 冻结不额外扣血</Text> : row.freezeImmune && model.inheritTargetStatuses ? <Text className="dc-note">冰系免疫冻结</Text> : null}
+            {freezePercent > 0 ? <Text className="dc-note">冻结斩杀≤{row.freezeThresholdHp} HP · 伤害后{row.remainingAfterDirect} HP · 冻结不额外扣血</Text> : row.freezeImmune && row.freezeStacks > 0 ? <Text className="dc-note">冰系免疫冻结</Text> : null}
             <Text className="dc-note">{model.templateDescription(row)}</Text>
             <Text className="dc-note">{model.loadoutDescription(row)}</Text>
             <Text className="dc-note">本榜不计防守方特性，代入后恢复特性及预设参数。</Text>

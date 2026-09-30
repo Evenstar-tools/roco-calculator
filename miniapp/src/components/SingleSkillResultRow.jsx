@@ -18,7 +18,7 @@ export default function SingleSkillResultRow({
   const exact = row?.status === "exact" && Number.isFinite(row?.hpPercent);
   const presentation = damagePresentation(row);
   const damageLabel = exact ? presentation.damage ?? "—" : "--";
-  const percentLabel = exact ? `${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}` : "--% HP";
+  const percentLabel = exact ? `${presentation.percent.toFixed(1)}%${presentation.freezePercent > 0 ? "" : " HP"}` : "--% HP";
   const skillName = row?.skillName ?? fallbackSkill?.name ?? "当前技能";
   const displaySkill = row
     ? {

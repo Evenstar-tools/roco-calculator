@@ -25,6 +25,16 @@ const snapshot = {
 };
 
 describe("share summary", () => {
+  test("异常状态、应用次数和血脉列入分享条件且支持反向目标", () => {
+    const state = createInitialState(snapshot);
+    state.calculationOptions.includeNegativeStatusSettlement = true;
+    state.negativeStatuses.attacker.poison = 2;
+    state.directions.reverse.context = { negativeStatusUseCountsBySlot: { 3: 1 }, bloodlineMagicId: "photosynthetic-healing", bloodlineMagicTriggered: true };
+    const summary = createShareSummary({ direction: "reverse", snapshot, state });
+    expect(summary.conditions).toContain("目标中毒 ×2");
+    expect(summary.conditions).toContain("第3槽已应用 1 次");
+    expect(summary.conditions).toContain("血脉光合治愈 · 已使用");
+  });
   test("summarizes the active direction, ability stages and non-default conditions", () => {
     const state = createInitialState(snapshot);
     state.mode = "four";

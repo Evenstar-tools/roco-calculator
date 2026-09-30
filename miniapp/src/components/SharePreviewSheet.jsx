@@ -58,6 +58,7 @@ function ConfigurationRow({ label, primary, secondary }) {
 
 export default function SharePreviewSheet({
   completeness = "full",
+  requiresLatestClient = false,
   onClose,
   open,
   skillContext,
@@ -122,7 +123,7 @@ export default function SharePreviewSheet({
               {presentation.damage ?? "—"}
             </Text>
             <Text className={`share-preview__percent share-preview__percent--${tone}`}>
-              {Number.isFinite(percent) ? `${percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}` : "暂不可计算"}
+              {Number.isFinite(percent) ? `${percent.toFixed(1)}%${presentation.freezePercent > 0 ? "" : " HP"}` : "暂不可计算"}
             </Text>
           </View>
           <View className="share-preview__health">
@@ -145,9 +146,12 @@ export default function SharePreviewSheet({
           </View>
           {completeness !== "full" ? (
             <Text className="share-preview__incomplete-warning">
-              吞噬特性/参数可能未完整携带
+              配置未完整携带，请核对配点、技能及条件
             </Text>
           ) : null}
+          {requiresLatestClient ? <Text className="share-preview__incomplete-warning">
+            含新参数，好友需使用最新版。
+          </Text> : null}
           <View className="share-preview__configuration-list">
             <ConfigurationRow
               label="攻击方配置"

@@ -201,9 +201,9 @@ export default function BattleWorkspace({
     reverse: createCalculationView(snapshot, state, "reverse"),
   };
   const calculation = calculations[direction];
-  const shareCompleteness = encodeSharePayloadWithMeta(state, {
+  const sharePayloadMeta = encodeSharePayloadWithMeta(state, {
     direction,
-  }).completeness;
+  });
   const activeSide = direction === "forward" ? "attacker" : "defender";
   const activeConfiguration = state.sides[activeSide];
   const activeDirectionState = state.directions[direction];
@@ -1362,7 +1362,8 @@ export default function BattleWorkspace({
         }
         open={resultOpen}
         selectedIndex={activeDirectionState.selectedSkillIndex}
-        shareCompleteness={shareCompleteness}
+        shareCompleteness={sharePayloadMeta.completeness}
+        shareRequiresLatestClient={sharePayloadMeta.requiresLatestClient}
         shareSummary={shareSummary}
         showSkillConditions={Boolean(selectedSkill)}
         showTypeAnalysis={showTypeAnalysis}

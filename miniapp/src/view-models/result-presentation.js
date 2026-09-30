@@ -1,4 +1,4 @@
-export { damagePresentation, damageSegments, hasBurnPreview, statusLossText } from "../shared/domain/result-presentation.js";
+export { compactStatusSummary, damagePresentation, damageSegments, hasBurnPreview, statusLossText } from "../shared/domain/result-presentation.js";
 
 export function clampResultPercent(value) {
   return Math.min(100, Math.max(0, Number(value) || 0));

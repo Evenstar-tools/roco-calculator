@@ -2,6 +2,9 @@ import { getNature, STAT_LABELS } from "../shared/domain/natures.js";
 import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
 import { createConditionSummary } from "./condition-summary.js";
 import { createDirectionTraitViews } from "./traits.js";
+import { getBloodlineMagicOption } from "../shared/domain/bloodline-magic.js";
+
+const STATUS_NAMES = { burn: "灼烧", freeze: "冻结", parasitism: "寄生", poison: "中毒", electrified: "引电" };
 
 const STAT_KEYS = [
   "hp",
@@ -116,6 +119,19 @@ export function createShareSummary({
     ),
   });
   const traitConditions = traitConditionLabels(actions);
+  const context = directionState.context ?? {};
+  const statusConditions = state.calculationOptions?.includeNegativeStatusSettlement === true
+    ? [[normalizedDirection === "reverse" ? "defender" : "attacker", "己方"],
+      [normalizedDirection === "reverse" ? "attacker" : "defender", "目标"]]
+      .flatMap(([side, label]) => Object.entries(STATUS_NAMES).flatMap(([key, name]) => {
+        const stacks = Number(state.negativeStatuses?.[side]?.[key]) || 0;
+        return stacks > 0 ? [`${label}${name} ×${stacks}`] : [];
+      }))
+    : [];
+  const statusUses = Object.entries(context.negativeStatusUseCountsBySlot ?? {})
+    .filter(([slot, count]) => /^[1-4]$/u.test(slot) && Number(count) > 0)
+    .map(([slot, count]) => `第${slot}槽已应用 ${count} 次`);
+  const bloodline = getBloodlineMagicOption(context.bloodlineMagicId);
 
   return {
     appliedSkillEffects: appliedSkillEffectLabels(actions, activeActionKeys),
@@ -130,6 +146,9 @@ export function createShareSummary({
         (label) => !/^特性 \d+$/u.test(label),
       ),
       ...traitConditions,
+      ...statusConditions,
+      ...statusUses,
+      ...(bloodline.id !== "none" ? [`血脉${bloodline.name} · ${context.bloodlineMagicTriggered === true ? "已使用" : "未使用"}`] : []),
     ]),
     defenderIvs: ivLabel(defenderSide),
     defenderName: spiritName(snapshot, defenderSide),

@@ -581,6 +581,78 @@ describe("mini program share payload", () => {
     expect(encodeSharePayload(state).length).toBeLessThan(900);
   });
 
+  test("最小分享仍受路由预算约束，并保留关键新参数", () => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    const context = {
+      negativeStatusUseCountsBySlot: { 1: 2, 2: 2, 3: 2, 4: 2 },
+      weatherRainTurns: 8, weatherTurns: 8, weatherThunder: true,
+      weatherSandstorm: true, weatherBlizzard: true,
+      bloodlineMagicId: "photosynthetic-healing", bloodlineMagicTriggered: true,
+    };
+    for (const direction of Object.values(state.directions)) {
+      Object.assign(direction, {
+        context, selectedSkillIndex: 6, reduction: 0.12345678901234566,
+        hitCount: 100, statusTriggerCount: 99, starfallStacks: 100,
+        finalDamageMultiplier: 99.99999999999999, currentHp: 99999,
+      });
+    }
+    for (const [index, side] of Object.values(state.sides).entries()) {
+      side.spiritId = (index ? "d" : "a").repeat(64);
+      side.nature = "enthusiastic";
+      side.skills.four = Array(7).fill("skill-a");
+      delete side.traitValues;
+      snapshot.spirits[index].id = side.spiritId;
+      snapshot.learnsets[index].spiritId = side.spiritId;
+      snapshot.learnsets[index].skillIds = ["skill-a"];
+    }
+    state.calculationOptions = { includeNegativeStatusSettlement: true };
+    const shared = encodeSharePayloadWithMeta(state);
+    expect(shared.completeness).toBe("minimal");
+    expect(shared.encoded.length).toBeLessThan(900);
+    const decoded = decodeSharePayload(shared.encoded, snapshot);
+    expect(decoded.directions.forward.context).toEqual(context);
+    expect(decoded.directions.reverse.context).toEqual(context);
+    expect(decoded.directions.forward.currentHp).toBe(99999);
+  });
+
+  test("技能槽单独带新天气参数也使用 v3 防止旧客户端静默丢失", () => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    const context = { weatherRainTurns: 4, weatherTurns: 4 };
+    state.sides.attacker.skills.four[0] = { skillId: "skill-a", context };
+    const shared = encodeSharePayloadWithMeta(state);
+    expect(shared.requiresLatestClient).toBe(true);
+    expect(JSON.parse(Buffer.from(shared.encoded, "base64url").toString()).v).toBe(3);
+    expect(decodeSharePayload(shared.encoded, snapshot).sides.attacker.skills.four[0].context)
+      .toEqual(context);
+  });
+
+  test("天气去重不删除与对应方向全局值不同的槽条件", () => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    state.directions.forward.context = {
+      weatherRainTurns: 0, weatherTurns: 0, weatherThunder: false,
+      weatherSandstorm: false, weatherBlizzard: false, blizzardWeather: false,
+    };
+    state.directions.reverse.context = { weatherRainTurns: 3, weatherTurns: 3 };
+    const context = { weatherRainTurns: 4, weatherTurns: 4, blizzardWeather: true };
+    state.sides.attacker.skills.four[0] = { skillId: "skill-a", context };
+    state.sides.defender.skills.four[0] = { skillId: "skill-c", context };
+    const decoded = decodeSharePayload(encodeSharePayload(state), snapshot);
+    expect(decoded.sides.attacker.skills.four[0].context).toEqual(context);
+    expect(decoded.sides.defender.skills.four[0].context).toEqual(context);
+  });
+
+  test("相同天气字段去重后不留下空槽 context 增大链接", () => {
+    const state = createInitialState(createSnapshot());
+    state.directions.forward.context = { weatherRainTurns: 4, weatherTurns: 4, blizzardWeather: false };
+    state.sides.attacker.skills.four[0] = { skillId: "skill-a", context: { blizzardWeather: false } };
+    const shared = encodeSharePayloadWithMeta(state);
+    expect(JSON.parse(Buffer.from(shared.encoded, "base64url").toString()).a.k[0])
+      .toBe("skill-a");
+  });
+
   test("keeps at most five acquired traits even when the complete payload fits", () => {
     const snapshot = createSnapshot();
     const traitIds = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg".split("");
@@ -637,6 +709,15 @@ describe("mini program share payload", () => {
     expect(full.completeness).toBe("full");
 
     const oversized = createState(snapshot);
+    const criticalContext = {
+      negativeStatusUseCountsBySlot: { 3: 1 },
+      weatherRainTurns: 4,
+      weatherTurns: 4,
+      bloodlineMagicId: "photosynthetic-healing",
+      bloodlineMagicTriggered: true,
+    };
+    oversized.directions.forward.context = criticalContext;
+    oversized.directions.forward.selectedSkillIndex = 2;
     oversized.sides.attacker.skills.four = Array.from(
       { length: 7 },
       (_, index) => ({
@@ -659,6 +740,40 @@ describe("mini program share payload", () => {
     expect(
       decodeSharePayloadResult(reduced.encoded, snapshot).completeness,
     ).toBe(reduced.completeness);
+    expect(decodeSharePayload(reduced.encoded, snapshot).directions.forward)
+      .toMatchObject({ context: criticalContext, selectedSkillIndex: 2 });
+    expect(JSON.parse(Buffer.from(reduced.encoded, "base64url").toString()).v).toBe(3);
+  });
+
+  test.each([
+    { negativeStatusUseCountsBySlot: { 3: 1 } },
+    { weatherRainTurns: 4, weatherTurns: 4 },
+    { weatherThunder: true },
+    { weatherSandstorm: true },
+    { weatherBlizzard: true },
+    { bloodlineMagicId: "photosynthetic-healing", bloodlineMagicTriggered: true },
+  ])("关键新参数采用 v3，当前接收端保持完整参数 (%j)", (context) => {
+    const snapshot = createSnapshot();
+    const state = createInitialState(snapshot);
+    state.directions.forward.context = context;
+    const shared = encodeSharePayloadWithMeta(state);
+    expect(shared.requiresLatestClient).toBe(true);
+    expect(JSON.parse(Buffer.from(shared.encoded, "base64url").toString()).v).toBe(3);
+    expect(decodeSharePayloadResult(shared.encoded, snapshot)).toMatchObject({
+      status: "valid", state: { directions: { forward: { context } } },
+    });
+  });
+
+  test("默认空参数继续使用 v2，不要求好友升级", () => {
+    const state = createInitialState(createSnapshot());
+    state.directions.forward.context = {
+      negativeStatusUseCountsBySlot: { 3: 0 }, weatherRainTurns: 0, weatherTurns: 0,
+      weatherThunder: false, weatherSandstorm: false, weatherBlizzard: false,
+      bloodlineMagicId: "none", bloodlineMagicTriggered: false,
+    };
+    const shared = encodeSharePayloadWithMeta(state);
+    expect(shared.requiresLatestClient).toBe(false);
+    expect(JSON.parse(Buffer.from(shared.encoded, "base64url").toString()).v).toBe(2);
   });
 
   test("returns structured valid, repaired, and invalid decode results", () => {
@@ -737,8 +852,19 @@ describe("mini program share payload", () => {
         negativeStatusSettlement: { maxHp: 1000, actualStatusDamage: 40, totalHealing: 10, freeze: { thresholdPercent: 5 } },
       },
     }, state);
-    expect(message.title).toBe("烈焰兽 → 潮汐兽｜连环火花 240伤害（29.0% 覆盖）");
+    expect(message.title).toBe("烈焰兽 → 潮汐兽｜连环火花 240伤害（29.0%）");
     expect(decodeSharePayload(message.path.split("?share=")[1], snapshot).directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ 3: 1 });
+  });
+
+  test.each([true, false])("纯冻结分享标题表达击倒或斩杀线，而非零伤害 (%s)", (lethal) => {
+    const state = createInitialState(createSnapshot());
+    const message = createShareMessage({ status: "exact", selectedResult: {
+      skillName: "打喷嚏", statusOnly: true, totalDamage: 0, hpPercent: 0,
+      negativeStatusSettlement: { maxHp: 1000, actualStatusDamage: 0, remainingHp: lethal ? 20 : 500, lethal, freeze: { thresholdPercent: 25, lethal } },
+    } }, state);
+    expect(message.title).toContain(lethal ? "冻结击倒" : "冻结斩杀线");
+    expect(message.title).not.toContain("0伤害");
+    expect(message.title).not.toContain("覆盖");
   });
 
   test("keeps the actively shared calculation direction", () => {

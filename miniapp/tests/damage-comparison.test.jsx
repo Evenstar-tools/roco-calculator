@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, within, waitFor } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
@@ -32,6 +32,44 @@ test("冻结蓝条同步实伤拆分、满条筛选与免疫", async () => {
   expect(screen.queryByRole("button", { name: "查看ice承伤详情" })).not.toBeInTheDocument();
   fireEvent.click(row);
   expect(screen.getByText(/冻结斩杀≤89 HP/)).toBeInTheDocument();
+});
+
+test("本次自动冻结的冰系候选仍显示免疫详情，不依赖沿用开关", async () => {
+  const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
+  const snapshot = { meta: { id: "automatic-freeze-mini" }, traits: [],
+    spirits: [["source", "普通"], ["ice", "冰"]].map(([id, type]) => ({ id, fullName: id, types: [type], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })),
+    skills: [{ id: "cold", name: "寒潮", type: "冰", category: "magical", basePower: 95 }],
+  };
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  state.calculationOptions.includeNegativeStatusSettlement = true;
+  state.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+  render(<DamageComparisonSheet snapshot={snapshot} source={{ state, direction: "forward" }} />);
+  fireEvent.click(await screen.findByRole("button", { name: "查看ice承伤详情" }));
+  expect(screen.getByText("冰系免疫冻结")).toBeInTheDocument();
+});
+
+test.each([true, false])("纯状态空榜有明确动作，有备选=%s", async (hasAlternative) => {
+  const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
+  const snapshot = { meta: { id: "status-action-mini" }, traits: [],
+    spirits: ["source", "target"].map((id) => ({ id, fullName: id, types: ["草"], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })),
+    skills: [{ id: "status", name: "打喷嚏", type: "冰", category: "status", basePower: 0 }, { id: "cold", name: "寒潮", type: "冰", category: "magical", basePower: 95 }],
+  };
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  state.sides.attacker.skills.four = ["status", hasAlternative ? "cold" : null, null, null];
+  const onClose = vi.fn();
+  render(<DamageComparisonSheet snapshot={snapshot} source={{ state, direction: "forward" }} onClose={onClose} />);
+  expect(await screen.findByText("当前技能无直接伤害，本榜不计回合末异常。请选择伤害技能。")).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "清除搜索与筛选" })).not.toBeInTheDocument();
+  if (hasAlternative) {
+    fireEvent.click(screen.getByRole("button", { name: "切换到寒潮" }));
+    expect(await screen.findByRole("button", { name: "查看target承伤详情" })).toBeInTheDocument();
+    expect(screen.getByLabelText("技能")).toHaveValue("1");
+  } else {
+    fireEvent.click(screen.getByRole("button", { name: "返回计算器选技能" }));
+    expect(onClose).toHaveBeenCalledOnce();
+  }
 });
 
 test("范围可选75%以上，触底自动追加目标且没有手动加载入口", async () => {

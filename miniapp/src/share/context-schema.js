@@ -12,6 +12,7 @@ const BOOLEAN_FIELDS = [
   "attackerHpAbove80",
   "attackerMoeActive",
   "blizzardWeather",
+  "bloodlineMagicTriggered",
   "bugChirpSkill",
   "burstTriggered",
   "conditionTriggered",
@@ -36,6 +37,9 @@ const BOOLEAN_FIELDS = [
   "receivedSuperEffectiveDamage",
   "teamDonationActive",
   "traitActivated",
+  "weatherThunder",
+  "weatherSandstorm",
+  "weatherBlizzard",
 ];
 
 const NUMBER_FIELDS = {
@@ -90,10 +94,13 @@ const NUMBER_FIELDS = {
   teamDonationCount: [0, 20],
   totalMoeStacks: [0, 20],
   zeroCostSkillCount: [0, 4],
+  weatherRainTurns: [0, 8],
+  weatherTurns: [0, 8],
 };
 
 const CHOICE_FIELDS = {
   betMode: ["fixed", "lowHp"],
+  bloodlineMagicId: ["none", "photosynthetic-healing"],
   driveOutMode: ["steady", "counter"],
   flightMode: ["power", "hits"],
   flowerMode: ["power", "heal"],

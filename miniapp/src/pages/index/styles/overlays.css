@@ -2199,6 +2199,22 @@
   display: grid;
 }
 
+.result-row__status {
+  display: flex;
+  min-width: 0;
+  grid-column: 2 / -1;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  color: var(--warning);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.result-row__status > text {
+  white-space: nowrap;
+}
+
 .result-row__name {
   overflow: hidden;
   font-size: 12px;
