@@ -1,4 +1,5 @@
 import { normalizeNatureId } from "../shared/domain/natures.js";
+import { damagePresentation } from "../shared/domain/result-presentation.js";
 import { isValidBattleForm } from "../shared/domain/battle-form.js";
 import { normalizeMarksState } from "../shared/domain/marks.js";
 import { MOON_MEMORY_TRAIT_LIMIT } from "../shared/domain/moon-memory.js";
@@ -923,12 +924,13 @@ export function createShareMessage(view, state, direction = "forward") {
   const attacker = titleText(view?.attackerName, "攻击方");
   const defender = titleText(view?.defenderName, "防守方");
   const result = view?.selectedResult;
+  const presentation = damagePresentation(result);
   const detail =
     view?.status === "exact" &&
     Number.isFinite(result?.totalDamage)
-      ? `${titleText(result.skillName, "当前技能")} ${result.totalDamage}伤害${
+      ? `${titleText(result.skillName, "当前技能")} ${presentation.damage ?? 0}伤害${
           Number.isFinite(result?.hpPercent)
-            ? `（${Number(result.hpPercent).toFixed(1)}% HP）`
+            ? `（${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}）`
             : ""
         }`
       : "计算配置";

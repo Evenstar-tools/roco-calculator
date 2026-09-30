@@ -727,6 +727,20 @@ describe("mini program share payload", () => {
     ).toMatchObject({ mode: "four" });
   });
 
+  test("shares settled damage without counting freeze or healing as damage", () => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.directions.forward.context.negativeStatusUseCountsBySlot = { 3: 1 };
+    const message = createShareMessage({
+      attackerName: "烈焰兽", defenderName: "潮汐兽", status: "exact",
+      selectedResult: { totalDamage: 200, hpPercent: 20, skillName: "连环火花",
+        negativeStatusSettlement: { maxHp: 1000, actualStatusDamage: 40, totalHealing: 10, freeze: { thresholdPercent: 5 } },
+      },
+    }, state);
+    expect(message.title).toBe("烈焰兽 → 潮汐兽｜连环火花 240伤害（29.0% 覆盖）");
+    expect(decodeSharePayload(message.path.split("?share=")[1], snapshot).directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ 3: 1 });
+  });
+
   test("keeps the actively shared calculation direction", () => {
     const snapshot = createSnapshot();
     const message = createShareMessage(

@@ -149,5 +149,13 @@ export function sanitizePublicContext(value) {
     if (allowed.includes(value[key])) sanitized[key] = value[key];
   }
 
+  const statusUses = value.negativeStatusUseCountsBySlot;
+  if (statusUses && typeof statusUses === "object" && !Array.isArray(statusUses)) {
+    const counts = Object.fromEntries(Object.entries(statusUses).filter(
+      ([slot, count]) => /^[1-4]$/u.test(slot) && Number.isInteger(count) && count >= 0 && count <= 2,
+    ));
+    if (Object.keys(counts).length) sanitized.negativeStatusUseCountsBySlot = counts;
+  }
+
   return Object.keys(sanitized).length ? sanitized : undefined;
 }

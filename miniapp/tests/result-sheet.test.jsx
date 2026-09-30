@@ -5,6 +5,23 @@ import BattleConditionStrip from "../src/components/BattleConditionStrip.jsx";
 import ResultBar from "../src/components/ResultBar.jsx";
 import ResultSheet from "../src/components/ResultSheet.jsx";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
+import { calculateNegativeStatusSettlement } from "../src/shared/domain/negative-status.js";
+
+test.each([["burn", 240], ["poison", 260], ["parasitism", 240], ["electrified", 450]])(
+  "%s 原生底栏与详情显示包含异常的伤害及余血", (id, damage) => {
+    const settlement = calculateNegativeStatusSettlement({ enabled: true,
+      defender: { maxHp: 1000, currentHp: 1000, types: [] },
+      directDamage: 200, statuses: { [id]: 2 } });
+    const result = { status: "exact", skillName: "测试技能", totalDamage: 200,
+      hpPercent: 20, remainingHp: 800, negativeStatusSettlement: settlement };
+    const view = { status: "exact", selectedResult: result, rows: [result], defenderHp: 1000, defenderMaxHp: 1000 };
+    const { container } = render(<><ResultBar view={view} /><ResultSheet view={view} open /></>);
+    expect(container.querySelector(".result-bar__damage")).toHaveTextContent(String(damage));
+    expect(container.querySelector(".result-sheet__damage")).toHaveTextContent(String(damage));
+    expect(container.querySelector(".result-sheet__remaining")).toHaveTextContent(`剩余 ${1000 - damage} HP`);
+    expect(container.querySelector(".result-sheet__damage-percent")).toHaveTextContent(`${(damage / 10).toFixed(1)}%`);
+  },
+);
 
 function createSnapshot() {
   return {
@@ -141,7 +158,7 @@ describe("result bar and sheet", () => {
     );
 
     const settlement = screen.getByLabelText("负面状态结算");
-    expect(settlement).toHaveTextContent("状态追加 42 HP");
+    expect(settlement).toHaveTextContent("42 HP");
     expect(settlement).toHaveTextContent("灼烧 ×3");
   });
 
@@ -178,6 +195,7 @@ describe("result bar and sheet", () => {
                 focusStatusIds: ["burn", "freeze"],
                 next: {
                   actualStatusDamage: 24,
+                  breakdown: [{ id: "burn", stacks: 2, damage: 16 }, { id: "poison", stacks: 1, damage: 8 }],
                   freeze: { stacks: 2, thresholdPercent: 10 },
                   maxHp: 400,
                   stacks: { burn: 2, freeze: 2 },
@@ -203,8 +221,9 @@ describe("result bar and sheet", () => {
     expect(preview).toHaveTextContent("下回合");
     expect(preview).toHaveTextContent("续用");
     expect(preview).toHaveTextContent("灼烧 ×2");
-    expect(preview).toHaveTextContent("冻结 ×2");
-    expect(preview).toHaveTextContent("6.0% · 24 HP");
+    expect(preview).not.toHaveTextContent("冻结");
+    expect(preview).toHaveTextContent("2.0% · 8 HP");
+    expect(preview).toHaveTextContent("4.0% · 16 HP");
   });
 
   test("shows defensive matchups and four-skill coverage when enabled", () => {

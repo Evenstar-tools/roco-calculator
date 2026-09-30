@@ -45,6 +45,15 @@ test("承伤对比手动开启和关闭均保留至下次启动", () => {
   expect(createPersistence({ storage }).getDamageComparisonEnabled()).toBe(false);
 });
 
+test("保留异常技能应用次数，过滤越界槽位与损坏次数", () => {
+  const snapshot = createSnapshot();
+  const state = createInitialState(snapshot);
+  const persistence = createPersistence({ storage: createMemoryStorage(undefined, true) });
+  state.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 1, extra: 1 };
+  persistence.save(state);
+  expect(persistence.load(snapshot).directions.forward.context.negativeStatusUseCountsBySlot).toEqual({ 1: 0, 2: 1, 3: 2 });
+});
+
 test("保存并读回生效来源，不接受对不上合计的来源", () => {
   const snapshot = createSnapshot();
   const state = createInitialState(snapshot);

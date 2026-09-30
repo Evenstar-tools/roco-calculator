@@ -2,7 +2,8 @@ import { forwardRef } from "react";
 import { Button, Image, Input, Text, View } from "@tarojs/components";
 import caretRightIcon from "../assets/icons/caret-right.png";
 import { RESULT_TRIGGER_ID } from "../platform/result-interaction.js";
-import { resultTone } from "../view-models/result-presentation.js";
+import { damagePresentation, resultTone } from "../view-models/result-presentation.js";
+import DamageSegments from "./DamageSegments.jsx";
 
 const ResultBar = forwardRef(function ResultBar(
   {
@@ -18,17 +19,15 @@ const ResultBar = forwardRef(function ResultBar(
 ) {
   const exact = view?.status === "exact";
   const result = view?.selectedResult;
+  const presentation = damagePresentation(result);
   const damagePercent =
     exact && Number.isFinite(result?.hpPercent)
-      ? `${result.hpPercent.toFixed(1)}% HP`
+      ? `${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}`
       : "--";
-  const damageProgress = exact && Number.isFinite(result?.hpPercent)
-    ? `${Math.min(100, Math.max(0, result.hpPercent))}%`
-    : "0%";
-  const damageTone = resultTone(exact ? result?.hpPercent : null);
+  const damageTone = resultTone(exact ? presentation.percent : null);
   const remainingHp =
-    exact && Number.isFinite(result?.remainingHp)
-      ? result.remainingHp
+    exact && Number.isFinite(presentation.remainingHp)
+      ? presentation.remainingHp
       : "--";
   const targetHp = Number.isFinite(view?.defenderHp)
     ? view.defenderHp
@@ -75,10 +74,10 @@ const ResultBar = forwardRef(function ResultBar(
       <View className="result-bar__metrics">
         <View className="result-bar__primary-value">
           <Text aria-label="确定性伤害" className="result-bar__damage">
-            {exact ? result.totalDamage : "--"}
+            {exact ? presentation.damage ?? "—" : "--"}
           </Text>
           <View className="result-bar__metric-copy">
-            <Text className="result-bar__metric-label">伤害</Text>
+            <Text className="result-bar__metric-label">{presentation.statusDamage > 0 ? "合计伤害" : "伤害"}</Text>
             <Text
               className={`result-bar__percent result-bar__percent--${damageTone}`}
             >
@@ -87,20 +86,17 @@ const ResultBar = forwardRef(function ResultBar(
           </View>
         </View>
         <Text className="result-bar__remaining result-bar__mobile-remaining">
-          剩余 {remainingHp} HP
+          {presentation.outcome ?? `剩余 ${remainingHp} HP`}
         </Text>
       </View>
       <View className="result-bar__health">
         <View aria-label="伤害占目标生命比例" className="result-bar__track">
           <View className="result-bar__track-line">
-            <View
-              className={`result-bar__track-fill result-bar__track-fill--${damageTone}`}
-              style={{ width: damageProgress }}
-            />
+            <DamageSegments presentation={presentation} className={`result-bar__track-fill result-bar__track-fill--${damageTone}`} />
           </View>
           <Text className="result-bar__track-value">
             {exact && Number.isFinite(result?.hpPercent)
-              ? `${result.hpPercent.toFixed(1)}%`
+              ? `${presentation.percent.toFixed(1)}%`
               : "--"}
           </Text>
         </View>
@@ -127,7 +123,8 @@ const ResultBar = forwardRef(function ResultBar(
             const rowExact =
               row?.status === "exact" &&
               Number.isFinite(row?.hpPercent);
-            const rowTone = resultTone(rowExact ? row.hpPercent : null);
+            const rowPresentation = damagePresentation(row);
+            const rowTone = resultTone(rowExact ? rowPresentation.percent : null);
             return (
               <View
                 className="result-bar__row"
@@ -138,22 +135,15 @@ const ResultBar = forwardRef(function ResultBar(
                   {row?.skillName ?? `技能 ${index + 1}`}
                 </Text>
                 <View className="result-bar__row-track">
-                  <View
-                    className={`result-bar__row-track-fill result-bar__row-track-fill--${rowTone}`}
-                    style={{
-                      width: rowExact
-                        ? `${Math.min(100, Math.max(0, row.hpPercent))}%`
-                        : "0%",
-                    }}
-                  />
+                  <DamageSegments presentation={rowPresentation} className={`result-bar__row-track-fill--${rowTone}`} />
                 </View>
                 <Text className="result-bar__row-damage">
-                  {rowExact ? row.totalDamage : "--"}
+                  {rowExact ? rowPresentation.damage ?? "—" : "--"}
                 </Text>
                 <Text
                   className={`result-bar__row-percent result-bar__row-percent--${rowTone}`}
                 >
-                  {rowExact ? `${row.hpPercent.toFixed(1)}%` : "--"}
+                  {rowExact ? `${rowPresentation.percent.toFixed(1)}%` : "--"}
                 </Text>
               </View>
             );

@@ -7,7 +7,9 @@ import {
 } from "@tarojs/components";
 import { useState } from "react";
 import {
-  clampResultPercent,
+  damagePresentation,
+  hasBurnPreview,
+  statusLossText,
   resultTone,
 } from "../view-models/result-presentation.js";
 import ResultFormulaAudit from "./ResultFormulaAudit.jsx";
@@ -17,6 +19,7 @@ import SkillConditionEditor from "./SkillConditionEditor.jsx";
 import SkillResultRows from "./SkillResultRows.jsx";
 import SharePreviewSheet from "./SharePreviewSheet.jsx";
 import TypeAnalysisPanel from "./TypeAnalysisPanel.jsx";
+import DamageSegments from "./DamageSegments.jsx";
 
 const STATUS_LABELS = Object.freeze({
   burn: "灼烧",
@@ -37,21 +40,14 @@ function turnStatusText(phase, statusIds) {
 }
 
 function turnLossText(phase) {
-  const damage = Math.max(0, Number(phase?.actualStatusDamage) || 0);
-  const maxHp = Math.max(1, Number(phase?.maxHp) || 1);
-  if (damage > 0) return `${(damage / maxHp * 100).toFixed(1)}% · ${damage} HP`;
-  const threshold = Math.max(0, Number(phase?.freeze?.thresholdPercent) || 0);
-  return threshold > 0 ? `冻结线 ${threshold}%` : "不扣血";
+  return statusLossText(phase, phase?.breakdown?.find(entry => entry.id === "burn"));
 }
 
 function TurnStatusPreview({ current, preview }) {
-  if (!preview?.next) return null;
-  const statusIds = (preview.focusStatusIds ?? []).filter(
-    (id) => STATUS_LABELS[id],
-  );
-  if (statusIds.length === 0) return null;
+  if (!hasBurnPreview(current)) return null;
+  const statusIds = ["burn"];
   return (
-    <View aria-label="回合状态预估" className="result-sheet__turn-preview">
+    <View aria-label="回合状态预估" className="result-sheet__turn-preview" data-status="burn">
       {[
         ["本回合", current],
         ["下回合", preview.next],
@@ -120,18 +116,15 @@ function DetailSection({
 }
 
 function NegativeStatusSettlement({ settlement }) {
-  if (!settlement) return null;
+  if (!settlement || settlement.skipped) return null;
   const entries = (settlement.breakdown ?? []).filter(
-    (entry) => Number(entry?.stacks) > 0,
+    (entry) => Number(entry?.stacks) > 0 && !(entry.id === "burn" && hasBurnPreview(settlement)),
   );
   const freeze = settlement.freeze;
   return (
     <View aria-label="负面状态结算" className="result-sheet__status-settlement">
       <View className="result-sheet__status-heading">
         <Text className="result-sheet__section-title">状态结算</Text>
-        <Text className="result-sheet__status-total">
-          状态追加 {Math.max(0, Number(settlement.actualStatusDamage) || 0)} HP
-        </Text>
       </View>
       {entries.map((entry) => (
         <View
@@ -139,16 +132,22 @@ function NegativeStatusSettlement({ settlement }) {
           data-status={entry.id}
           key={entry.id}
         >
-          <Text>{entry.label} ×{entry.stacks}</Text>
-          <Text>{entry.immune ? "免疫" : `${Math.max(0, Number(entry.damage) || 0)} HP`}</Text>
+          <Text>{entry.label} ×{entry.stacks}{entry.id === "electrified" && entry.triggered ? " · 已触发" : ""}</Text>
+          <Text>{statusLossText(settlement, entry)}</Text>
         </View>
       ))}
       {Number(freeze?.stacks) > 0 ? (
         <View className="result-sheet__status-row" data-status="freeze">
           <Text>冻结 ×{freeze.stacks}</Text>
-          <Text>斩杀线 {Math.max(0, Number(freeze.thresholdPercent) || 0)}%</Text>
+          <Text>{freeze.immune ? "免疫" : `${Math.max(0, Number(freeze.thresholdPercent) || 0)}% 斩杀线`}</Text>
         </View>
       ) : null}
+      {settlement.totalHealing > 0 ? <View className="result-sheet__status-row" data-status="parasitism">
+        <Text>来源回复</Text><Text>+{settlement.totalHealing} HP</Text>
+      </View> : null}
+      {settlement.actualStatusDamage < settlement.statusDamage ? <Text className="result-sheet__status-note">
+        异常合计 {settlement.statusDamage} HP，仅剩 {settlement.actualStatusDamage} HP 可扣
+      </Text> : null}
       <TurnStatusPreview current={settlement} preview={settlement.turnPreview} />
     </View>
   );
@@ -157,7 +156,7 @@ function NegativeStatusSettlement({ settlement }) {
 function ResultSummary({
   damagePercent,
   damagePercentText,
-  damageProgress,
+  presentation,
   damageTone,
   remainingHp,
   result,
@@ -171,13 +170,13 @@ function ResultSummary({
         </Text>
       ) : null}
       <View className="result-sheet__primary">
-        <Text className="result-sheet__damage">{result.totalDamage}</Text>
+        <Text className="result-sheet__damage">{presentation.damage ?? "—"}</Text>
         <Text
           className={`result-sheet__damage-percent result-sheet__damage-percent--${damageTone}`}
         >
           {damagePercentText}
         </Text>
-        <Text className="result-sheet__remaining">剩余 {remainingHp} HP</Text>
+        <Text className="result-sheet__remaining">{presentation.outcome ?? `剩余 ${remainingHp} HP`}</Text>
       </View>
       <View
         aria-label={Number.isFinite(damagePercent)
@@ -187,10 +186,7 @@ function ResultSummary({
         role="img"
       >
         <View className="result-sheet__health-track">
-          <View
-            className={`result-sheet__health-fill result-sheet__health-fill--${damageTone}`}
-            style={{ width: damageProgress }}
-          />
+          <DamageSegments presentation={presentation} className={`result-sheet__health-fill--${damageTone}`} />
         </View>
         <Text className="result-sheet__health-value">
           {Number.isFinite(damagePercent)
@@ -198,6 +194,7 @@ function ResultSummary({
             : "--"}
         </Text>
       </View>
+      {presentation.detail ? <Text className="result-sheet__coverage-detail">{presentation.detail}</Text> : null}
     </View>
   );
 }
@@ -236,18 +233,14 @@ export default function ResultSheet({
 
   const exact = view?.status === "exact";
   const result = view?.selectedResult;
-  const damagePercent = Number.isFinite(result?.hpPercent)
-    ? result.hpPercent
-    : null;
+  const presentation = damagePresentation(result);
+  const damagePercent = presentation.percent;
   const damagePercentText = Number.isFinite(damagePercent)
-    ? `${damagePercent.toFixed(1)}% HP`
+    ? `${damagePercent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}`
     : "--% HP";
-  const damageProgress = Number.isFinite(damagePercent)
-    ? `${clampResultPercent(damagePercent)}%`
-    : "0%";
   const damageTone = resultTone(damagePercent);
-  const remainingHp = Number.isFinite(result?.remainingHp)
-    ? result.remainingHp
+  const remainingHp = Number.isFinite(presentation.remainingHp)
+    ? presentation.remainingHp
     : "--";
   return (
     <View className="result-sheet__overlay" onClick={onClose}>
@@ -291,7 +284,7 @@ export default function ResultSheet({
             <ResultSummary
               damagePercent={damagePercent}
               damagePercentText={damagePercentText}
-              damageProgress={damageProgress}
+              presentation={presentation}
               damageTone={damageTone}
               remainingHp={remainingHp}
               result={result}

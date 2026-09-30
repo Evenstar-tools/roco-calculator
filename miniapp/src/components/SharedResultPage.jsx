@@ -1,6 +1,8 @@
 import { Button, Image, Text, View } from "@tarojs/components";
 import { getNature, STAT_LABELS } from "../shared/domain/natures.js";
 import { createShareSummary } from "../view-models/share-summary.js";
+import { damagePresentation } from "../view-models/result-presentation.js";
+import DamageSegments from "./DamageSegments.jsx";
 
 const STAT_KEYS = [
   "hp",
@@ -33,8 +35,9 @@ function ivSummary(side) {
 }
 
 function damagePercent(result) {
-  return Number.isFinite(result?.hpPercent)
-    ? `${Number(result.hpPercent).toFixed(1)}% HP`
+  const presentation = damagePresentation(result);
+  return Number.isFinite(presentation.percent)
+    ? `${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}`
     : "暂不可计算";
 }
 
@@ -112,9 +115,7 @@ export default function SharedResultPage({
     snapshot,
     state,
   });
-  const healthPercent = Number.isFinite(selected?.hpPercent)
-    ? Math.max(0, Math.min(100, selected.hpPercent))
-    : 0;
+  const presentation = damagePresentation(selected);
 
   return (
     <View className="shared-result-page">
@@ -142,21 +143,17 @@ export default function SharedResultPage({
         </Text>
         <View className="shared-result__damage-row">
           <Text className="shared-result__damage">
-            {Number.isFinite(selected?.totalDamage) ? selected.totalDamage : "—"}
+            {presentation.damage ?? "—"}
           </Text>
           <Text className="shared-result__percent">{damagePercent(selected)}</Text>
         </View>
         <View className="shared-result__health-row">
           <View className="shared-result__health-track">
-            <View
-              className="shared-result__health-fill"
-              style={{ width: `${healthPercent}%` }}
-            />
+            <DamageSegments presentation={presentation} />
           </View>
           <Text className="shared-result__remaining">
-            {Number.isFinite(selected?.remainingHp)
-              ? `剩余 ${selected.remainingHp} HP`
-              : "等待补充条件"}
+            {presentation.outcome ?? (Number.isFinite(presentation.remainingHp)
+              ? `剩余 ${presentation.remainingHp} HP` : "等待补充条件")}
           </Text>
         </View>
       </View>
@@ -209,7 +206,7 @@ export default function SharedResultPage({
             <Text className="shared-result__skill-index">{index + 1}</Text>
             <Text className="shared-result__skill-name">{row?.skillName ?? row?.message ?? "未配置"}</Text>
             <Text className="shared-result__skill-damage">
-              {Number.isFinite(row?.totalDamage) ? row.totalDamage : "—"}
+              {damagePresentation(row).damage ?? "—"}
             </Text>
             <Text className="shared-result__skill-percent">{damagePercent(row)}</Text>
           </View>

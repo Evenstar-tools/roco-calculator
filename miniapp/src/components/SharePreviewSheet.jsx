@@ -1,5 +1,6 @@
 import { Button, Text, View } from "@tarojs/components";
-import { clampResultPercent, resultTone } from "../view-models/result-presentation.js";
+import { damagePresentation, resultTone } from "../view-models/result-presentation.js";
+import DamageSegments from "./DamageSegments.jsx";
 
 function completenessLabel(value) {
   if (value === "full") return "将发送完整配置";
@@ -68,9 +69,8 @@ export default function SharePreviewSheet({
   if (!open) return null;
 
   const selected = view?.selectedResult;
-  const percent = Number.isFinite(selected?.hpPercent)
-    ? selected.hpPercent
-    : null;
+  const presentation = damagePresentation(selected);
+  const percent = presentation.percent;
   const tone = resultTone(percent);
   const parameterLabels = [
     ...skillParameterLabels({
@@ -119,29 +119,19 @@ export default function SharePreviewSheet({
           </Text>
           <View className="share-preview__damage-row">
             <Text className="share-preview__damage">
-              {Number.isFinite(selected?.totalDamage)
-                ? selected.totalDamage
-                : "—"}
+              {presentation.damage ?? "—"}
             </Text>
             <Text className={`share-preview__percent share-preview__percent--${tone}`}>
-              {Number.isFinite(percent) ? `${percent.toFixed(1)}% HP` : "暂不可计算"}
+              {Number.isFinite(percent) ? `${percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}` : "暂不可计算"}
             </Text>
           </View>
           <View className="share-preview__health">
             <View className="share-preview__health-track">
-              <View
-                className={`share-preview__health-fill share-preview__health-fill--${tone}`}
-                style={{
-                  width: Number.isFinite(percent)
-                    ? `${clampResultPercent(percent)}%`
-                    : "0%",
-                }}
-              />
+              <DamageSegments presentation={presentation} className={`share-preview__health-fill--${tone}`} />
             </View>
             <Text className="share-preview__remaining">
-              {Number.isFinite(selected?.remainingHp)
-                ? `剩余 ${selected.remainingHp} HP`
-                : "等待补充条件"}
+              {presentation.outcome ?? (Number.isFinite(presentation.remainingHp)
+                ? `剩余 ${presentation.remainingHp} HP` : "等待补充条件")}
             </Text>
           </View>
         </View>

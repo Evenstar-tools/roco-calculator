@@ -518,6 +518,20 @@ describe("createCalculationView", () => {
     expect(withoutBurn.selectedResult.negativeStatusSettlement.turnPreview).toBeUndefined();
   });
 
+  test("keeps a non-damaging skill exact when enabled status settlement causes damage", () => {
+    const snapshot = createSnapshot();
+    snapshot.skills[0] = { ...snapshot.skills[0], basePower: 0, category: "status", name: "打喷嚏", type: "冰" };
+    const state = createState(snapshot);
+    state.calculationOptions.includeNegativeStatusSettlement = true;
+    state.negativeStatuses.defender.poison = 2;
+    state.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+
+    const view = createCalculationView(snapshot, state, "forward");
+    expect(view.selectedResult).toMatchObject({ status: "exact", statusOnly: true, totalDamage: 0, hpPercent: 0 });
+    expect(view.rows[0]).toMatchObject({ status: "exact", statusOnly: true, totalDamage: 0, hpPercent: 0 });
+    expect(view.selectedResult.negativeStatusSettlement.actualStatusDamage).toBeGreaterThan(0);
+  });
+
   test("formats the real enemy-skill-power multiplier step", () => {
     const snapshot = createSnapshot();
     const state = createState(snapshot);

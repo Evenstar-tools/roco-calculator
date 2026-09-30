@@ -43,6 +43,7 @@ const MANIFEST_SOURCE = `/* SHARED_SOURCE_MANIFEST_START
     "src/domain/negative-status.js",
     "src/domain/power-override.js",
     "src/domain/refraction.js",
+    "src/domain/result-presentation.js",
     "src/domain/skill-effects.js",
     "src/domain/skill-loadout.js",
     "src/domain/skill-presentation.js",

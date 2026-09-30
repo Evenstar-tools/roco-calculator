@@ -1,5 +1,6 @@
 import { Button, Text, View } from "@tarojs/components";
 import SkillPicker from "./SkillPicker.jsx";
+import { damagePresentation } from "../view-models/result-presentation.js";
 
 export default function SingleSkillResultRow({
   choices,
@@ -15,8 +16,9 @@ export default function SingleSkillResultRow({
   value,
 }) {
   const exact = row?.status === "exact" && Number.isFinite(row?.hpPercent);
-  const damageLabel = exact ? row.totalDamage : "--";
-  const percentLabel = exact ? `${row.hpPercent.toFixed(1)}% HP` : "--% HP";
+  const presentation = damagePresentation(row);
+  const damageLabel = exact ? presentation.damage ?? "—" : "--";
+  const percentLabel = exact ? `${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}` : "--% HP";
   const skillName = row?.skillName ?? fallbackSkill?.name ?? "当前技能";
   const displaySkill = row
     ? {

@@ -156,6 +156,9 @@ function withNegativeStatusResult(result, sharedResult) {
   if (!result || !sharedResult) return result;
   return {
     ...result,
+    ...(sharedResult.statusOnly ? {
+      status: "exact", totalDamage: 0, hpPercent: 0,
+    } : {}),
     negativeStatusApplications: sharedResult.negativeStatusApplications,
     negativeStatusCanApply: sharedResult.negativeStatusCanApply,
     negativeStatusSettlement: sharedResult.negativeStatusSettlement,

@@ -1,8 +1,9 @@
 import { Button, Text, View } from "@tarojs/components";
 import {
-  clampResultPercent,
+  damagePresentation,
   resultTone,
 } from "../view-models/result-presentation.js";
+import DamageSegments from "./DamageSegments.jsx";
 
 export default function SkillResultRows({
   onSelect,
@@ -14,7 +15,8 @@ export default function SkillResultRows({
       {(rows ?? []).map((row, index) => {
         const exact =
           row?.status === "exact" && Number.isFinite(row?.hpPercent);
-        const tone = resultTone(exact ? row.hpPercent : null);
+        const presentation = damagePresentation(row);
+        const tone = resultTone(exact ? presentation.percent : null);
         return (
           <Button
             aria-label={`查看${row.skillName ?? `技能 ${index + 1}`}结果`}
@@ -35,20 +37,13 @@ export default function SkillResultRows({
               </Text>
             </View>
             <View className="result-row__track" aria-hidden="true">
-              <View
-                className={`result-row__track-fill result-row__track-fill--${tone}`}
-                style={{
-                  width: exact
-                    ? `${clampResultPercent(row.hpPercent)}%`
-                    : "0%",
-                }}
-              />
+              <DamageSegments presentation={presentation} className={`result-row__track-fill--${tone}`} />
             </View>
             <Text
               className={`result-row__damage result-row__damage--${tone}`}
             >
               {exact
-                ? `${row.hpPercent.toFixed(1)}%`
+                ? `${presentation.percent.toFixed(1)}%${presentation.freezePercent > 0 ? " 覆盖" : ""}`
                 : row.status === "exact"
                   ? `${row.totalDamage} 伤害`
                   : row.message}
