@@ -6,7 +6,7 @@ import { projectTriggerContext } from "../../domain/trigger-controls.js";
 import { getSkillEffectInputs } from "../../domain/skill-effects.js";
 import { currentWeather } from "../../state/weather.js";
 
-const headers = ["排名", "精灵／形态", "属性", "满血 HP", "伤害 HP", "承伤比例", "剩余 HP", "结论", "耐久配点", "克制倍率", "冻结覆盖"];
+const headers = ["排名", "精灵／形态", "属性", "满血 HP", "伤害 HP", "承伤比例", "剩余 HP", "结论", "耐久配点", "克制倍率", "冻结斩杀线"];
 const cleanText = (value) => String(value ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/gu, "");
 const markdown = (value) => cleanText(value).replace(/&/gu, "&amp;").replace(/</gu, "&lt;").replace(/>/gu, "&gt;").replace(/([\\`*_[\]{}|])/gu, "\\$1").replace(/\r?\n/gu, "<br>");
 
@@ -34,6 +34,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
   const allocation = Object.entries(STAT_LABELS).map(([key, label]) => `${label}${side.displayIvs[key] ?? 0}`).join("／");
   const filter = Array.isArray(model.filter) ? model.filter[1] === null ? `≥${model.filter[0]}%` : `${model.filter[0]}%–${model.filter[1]}%` : DAMAGE_COMPARISON_FILTERS.find(([key]) => key === model.filter)?.[1] ?? "全部";
   const title = `${selection.spirit.fullName} · ${selection.selected.skill.name} · 承伤结论`;
+  const scopeDescription = model.scopeDescription.replace(/ · 冻结 /u, " · 已有冻结 ");
   const resultRange = (key) => {
     const values = model.rows.map((row) => row.result?.[key]).filter(Number.isFinite);
     if (!values.length) return "未知";
@@ -46,7 +47,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
     ["特性／条件", `${trait?.name ?? "无"}${conditions.length ? `；${conditions.join("；")}` : ""}`],
     ["增益来源", model.gainSummary || "无额外增益"],
     ["耐久模板", describeDamageComparisonTemplate(model.template)],
-    ["计算口径", `目标满血；${model.scopeDescription}${model.inheritTargetStatuses ? "" : "；未沿用星陨／冻结（按0层）"}；承伤比例＝伤害／最大生命＋有效冻结层数×5%；冻结不额外扣血；不含回合末结算`],
+    ["计算口径", `目标满血；${scopeDescription}${model.inheritTargetStatuses ? "" : "；未沿用星陨／已有冻结（按0层）"}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算`],
     ["天气", ({ none: "无天气", rain: "雨天", thunder: "雷暴", sandstorm: "沙暴", blizzard: "暴风雪" })[currentWeather(context)]],
     ["筛选", `${filter}；${model.scope === "all" ? "全部完整种族值形态" : "最终形态＋首领"}；${model.descending ? "承伤从高到低" : "承伤从低到高"}${model.query ? `；搜索：${model.query}` : ""}`],
     ["结果", `${model.rows.length} 个形态（当前筛选完整名单）；未纳入 ${model.ranking.excluded.length} 个`],
@@ -58,7 +59,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
   const pad = (value) => String(value).padStart(2, "0");
   const stamp = `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
   const statuses = getDamageComparisonTargetStatuses(input, direction);
-  const filename = cleanText(`${selection.spirit.fullName}-${selection.selected.skill.name}-星陨${statuses.starfall}-冻结${statuses.freeze}-${model.template.label}-${filter}-${stamp}`).replace(/[<>:"/\\|?*]/gu, "_");
+  const filename = cleanText(`${selection.spirit.fullName}-${selection.selected.skill.name}-星陨${statuses.starfall}-已有冻结${statuses.freeze}-${model.template.label}-${filter}-${stamp}`).replace(/[<>:"/\\|?*]/gu, "_");
   return { title, metadata, headers, rows, filename };
 }
 

@@ -30,6 +30,29 @@ test("承伤列表接近底部自动追加，搜索后可继续滚动且不需�
   expect(screen.queryByRole("button", { name: /继续显示/ })).not.toBeInTheDocument();
 });
 
+test("纯状态技能解释直伤榜口径，并可切换到已有伤害技能", async () => {
+  const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
+  const snapshot = { meta: { id: "status-only-comparison" }, traits: [],
+    spirits: ["甲", "乙"].map((name) => ({ id: name, fullName: name, types: ["草"], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })),
+    skills: [{ id: "status", name: "打喷嚏", type: "冰", category: "status", basePower: 0 }, { id: "hit", name: "寒潮", type: "冰", category: "magical", basePower: 95 }],
+  };
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  state.sides.attacker.skills.four = ["status", "hit", null, null];
+  state.calculationOptions.includeNegativeStatusSettlement = true;
+  state.negativeStatuses.defender.poison = 2;
+  state.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+  render(<DamageComparisonDialog snapshot={snapshot} source={{ state, direction: "forward" }} onClose={vi.fn()} />);
+  expect(await screen.findByText("当前技能无直接伤害，本榜不计回合末异常。请选择伤害技能。")).toBeInTheDocument();
+  expect(screen.queryByText("没有符合当前筛选的结果")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "清除搜索与筛选" })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "切换到寒潮" }));
+  expect(await screen.findByRole("button", { name: "查看乙承伤详情" })).toBeInTheDocument();
+  expect(screen.getByLabelText("比较技能")).toHaveValue("1");
+  expect(screen.getByText(/目标满血/)).toBeInTheDocument();
+  expect(screen.getByText(/不含回合末扣血/)).toBeInTheDocument();
+});
+
 test.each(["forward", "reverse"])("%s 首次关联目标星陨冻结，显式取消跨重开保留", async (direction) => {
   const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
   const snapshot = { meta: { id: "status-default" }, traits: [], spirits: ["甲", "乙"].map((name) => ({ id: name, fullName: name, types: ["火"], raceStats: stats, stage: "首领" })), skills: [{ id: "fire", name: "火焰", basePower: 80, type: "火", category: "magical" }] };

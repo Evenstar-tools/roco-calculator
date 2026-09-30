@@ -3,7 +3,7 @@ import { damageTone } from "./damageTone.js";
 import { HealthInput } from "./HealthInput.jsx";
 import { TypeCoveragePanel } from "./TypeCoveragePanel.jsx";
 import { damagePresentation, DamageSegments } from "./damagePresentation.jsx";
-import { hasBurnPreview, statusLossText } from "../domain/result-presentation.js";
+import { compactStatusSummary, hasBurnPreview, statusLossText } from "../domain/result-presentation.js";
 
 const STATUS_LABELS = {
   burn: "灼烧",
@@ -138,6 +138,7 @@ function SkillResultRow({ index, item, onClick }) {
   const isTrait = item.kind === "trait";
   const isBloodline = item.kind === "bloodline";
   const Tag = onClick ? "button" : "div";
+  const statusSummary = compactStatusSummary(item.negativeStatusSettlement);
   const presentation = damagePresentation(item);
   const displayPercent = presentation.percent;
   const displayDamage = presentation.damage;
@@ -180,6 +181,11 @@ function SkillResultRow({ index, item, onClick }) {
           ? `${displayPercent.toFixed(1)}%`
             : "—"}
       </strong>
+      {statusSummary ? (
+        <small className="skill-result-row__status">
+          {statusSummary.map((part) => <span key={part}>{part}</span>)}
+        </small>
+      ) : null}
     </Tag>
   );
 }
@@ -203,7 +209,8 @@ export function ResultRail({
     Number.isFinite(primary.hpPercent);
   const isStatusOnly = isExact && primary.statusOnly === true;
   const presentation = damagePresentation(primary);
-  const percentText = isExact ? `${presentation.percent.toFixed(1)}% ${presentation.freezePercent > 0 ? "覆盖" : "HP"}` : primary.reason === "非伤害技能不计算伤害" ? "非伤害技能" : "待补充条件";
+  const showPrimaryResult = !isStatusOnly || presentation.statusDamage > 0;
+  const percentText = isExact ? `${presentation.percent.toFixed(1)}%${presentation.freezePercent > 0 ? "" : " HP"}` : primary.reason === "非伤害技能不计算伤害" ? "非伤害技能" : "待补充条件";
   const outcomeText = isExact
     ? presentation.lethal
       ? presentation.outcome
@@ -237,7 +244,7 @@ export function ResultRail({
         ) : null}
       </div>
 
-      {!isStatusOnly ? (
+      {showPrimaryResult ? (
         <>
           <div className="result-rail__primary">
             <p className="result-rail__damage-label">{presentation.statusDamage > 0 ? "本次合计伤害" : "单次伤害"}</p>
@@ -269,7 +276,7 @@ export function ResultRail({
       {isExact && presentation.detail ? (
         <p className="result-rail__coverage-detail">{presentation.detail}</p>
       ) : null}
-      {isStatusOnly && presentation.lethal ? (
+      {!showPrimaryResult && presentation.lethal ? (
         <p className="result-rail__lethal">{presentation.outcome}</p>
       ) : null}
 
@@ -353,7 +360,7 @@ export function ResultRail({
           <h2>技能结果</h2>
           <div aria-hidden="true" className="skill-result-list__columns">
             <span>伤害</span>
-            <span>{result.skillResults.some((skill) => damagePresentation(skill).freezePercent > 0) ? "覆盖" : "HP"}</span>
+            <span>占比</span>
           </div>
           {result.bloodlineResult ? (
             <SkillResultRow

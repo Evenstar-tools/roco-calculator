@@ -2,6 +2,8 @@ import { calculateMatchup } from "./calculate.js";
 import { getNature, getNatureMultipliers, STAT_LABELS } from "./natures.js";
 import { normalizeMarksState, starfallStacksFromMarkSlot } from "./marks.js";
 import { calculateFreezeThreshold, normalizeNegativeStatusSide } from "./negative-status.js";
+import { resolveNegativeStatusApplications } from "./negative-status-rules.js";
+import { getEffectiveTraits } from "./effective-traits.js";
 import { calculateAllPanelStats, hasCompleteRaceStats } from "./stat.js";
 import { getSnapshotIndexes } from "./snapshot-indexes.js";
 import { resolvePowerOverride } from "./power-override.js";
@@ -21,7 +23,7 @@ export const DAMAGE_COMPARISON_TEMPLATES = Object.freeze({
   "current-defense": Object.freeze({ id: "current-defense", label: "当前防守方配点", level: 60 }),
   "user-presets": Object.freeze({ id: "user-presets", label: "用户预设", level: 60 }),
 });
-export const DAMAGE_COMPARISON_SCOPE = "统一模板 · 不计防守特性 · 仅本次直接伤害";
+export const DAMAGE_COMPARISON_SCOPE = "统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血";
 export const DAMAGE_COMPARISON_IMPORT_NOTICE = "已启用该精灵特性，结果可能与榜单不同";
 export const DAMAGE_COMPARISON_FILTERS = [["all", "全部"], ["half", "低于50%"], ["survive", "未击倒"], ["ko", "可击倒"]];
 
@@ -136,6 +138,10 @@ export function buildDamageComparisonInput({ snapshot, state, spirit, direction 
     ...materializeTraitContext(source.traitValues, snapshot, source.spiritId, "attacker"),
     ...attackDirection.context,
   });
+  // 使用次数描述本次出招，不是旧目标的属性；保留后由每个候选各自解析。
+  if (state.calculationOptions?.includeNegativeStatusSettlement === true && attackDirection.context?.negativeStatusUseCountsBySlot) {
+    context.negativeStatusUseCountsBySlot = { ...attackDirection.context.negativeStatusUseCountsBySlot };
+  }
   const weather = Object.fromEntries(Object.entries(context).filter(([key]) => key.startsWith("weather")));
   // 共享核心直接读取技能条件；仅复制状态对象不会让冻结联动生效。
   if (inheritTargetStatuses) {
@@ -161,6 +167,31 @@ export function buildDamageComparisonInput({ snapshot, state, spirit, direction 
       [other]: { ...initial.directions[other], currentHp: state.directions[other].currentHp, context: { ...weather, currentHpPercent: state.directions[other].context?.currentHpPercent } },
     },
   };
+}
+
+function comparisonFreeze(snapshot, input, direction, selection, result, includeApplications) {
+  const targetSide = direction === "reverse" ? "attacker" : "defender";
+  const source = input.sides[selection.sourceSide];
+  const target = input.sides[targetSide];
+  const baseline = normalizeNegativeStatusSide(input.negativeStatuses[targetSide]);
+  const statusUseCount = Number(input.directions[direction].context?.negativeStatusUseCountsBySlot?.[selection.index + 1]) || 0;
+  let added = 0;
+  if (includeApplications && statusUseCount > 0) {
+    const indexes = getSnapshotIndexes(snapshot);
+    const entry = skillEntriesForMode(source, input.mode)[selection.index];
+    const settledCost = result.skillCost == null ? NaN : Number(result.skillCost);
+    const skill = Number.isFinite(settledCost) ? { ...selection.selected.skill, cost: settledCost } : selection.selected.skill;
+    const applications = resolveNegativeStatusApplications({
+      baselineStatuses: baseline,
+      context: { ...input.directions[direction].context, ...(entry && typeof entry === "object" ? entry.context ?? {} : {}) },
+      selectedSkills: (source.skills.four ?? []).map((item) => resolveSkillEntity(item, indexes.skills)).filter(Boolean),
+      skill, skillIndex: selection.index,
+      traits: getEffectiveTraits(snapshot, { ...source, spirit: indexes.spirits[source.spiritId] }),
+    });
+    added = Number(applications.stacks.freeze) || 0;
+  }
+  const stacks = normalizeNegativeStatusSide({ freeze: baseline.freeze + added }).freeze;
+  return { ...calculateFreezeThreshold({ maxHp: target.panelStats.hp, stacks, types: getSnapshotIndexes(snapshot).spirits[target.spiritId]?.types }), stacks };
 }
 
 function compareIdentity(a, b) {
@@ -201,13 +232,13 @@ export async function createSkillDamageRanking({ snapshot, state, direction = "f
         else if (["status", "defense"].includes(selection.selected.skill.category) && result.totalDamage === 0) reason = "该技能无直接伤害";
         else {
           const panelStats = input.sides[targetSide].panelStats;
-          const freeze = calculateFreezeThreshold({ maxHp: panelStats.hp, stacks: input.negativeStatuses[targetSide].freeze, types: spirit.types });
+          const freeze = comparisonFreeze(snapshot, input, direction, selection, result, state.calculationOptions?.includeNegativeStatusSettlement === true);
           const damagePercent = result.totalDamage / panelStats.hp * 100;
           const remainingAfterDirect = Math.max(0, panelStats.hp - result.totalDamage);
           const freezeLethal = remainingAfterDirect > 0 && freeze.thresholdHp > 0 && remainingAfterDirect <= freeze.thresholdHp;
           const lethal = remainingAfterDirect === 0 || freezeLethal;
           rows.push({ spirit, panelStats, template: getDamageComparisonTemplate(state, direction, templateId, presetsBySpirit, spirit.id), damage: result.totalDamage, damagePercent, percent: damagePercent + freeze.thresholdPercent,
-            freezePercent: freeze.thresholdPercent, freezeThresholdHp: freeze.thresholdHp, freezeImmune: freeze.immune, freezeLethal,
+            freezePercent: freeze.thresholdPercent, freezeThresholdHp: freeze.thresholdHp, freezeStacks: freeze.stacks, freezeImmune: freeze.immune, freezeLethal,
             remainingAfterDirect, remainingHp: lethal ? 0 : remainingAfterDirect, lethal,
             formRole: form.formRole, result });
         }
@@ -220,5 +251,9 @@ export async function createSkillDamageRanking({ snapshot, state, direction = "f
     }
   }
   if (signal?.aborted) return null;
+  const eligible = excluded.filter(({ reason }) => !["种族值不完整", "不在当前形态范围"].includes(reason));
+  if (rows.length === 0 && eligible.length > 0 && eligible.every(({ reason }) => ["该技能无直接伤害", "非伤害技能不计算伤害"].includes(reason))) {
+    return { rows, excluded, template, issue: "当前技能无直接伤害，本榜不计回合末异常。请选择伤害技能。", issueKind: "no-direct-damage" };
+  }
   return { rows: filterSkillDamageRanking(rows), excluded, template, issue: null };
 }

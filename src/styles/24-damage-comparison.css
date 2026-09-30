@@ -95,3 +95,35 @@ html[data-theme="dark"] .damage-comparison button[aria-pressed="true"],html[data
   .dc-web-score strong { font-size: 17px; }.dc-web-detail { padding: 0 12px 14px; display: block; font-size: 13px; }.dc-web-primary { margin-top: 10px; width: 100%; }
   .damage-comparison footer { font-size: 11px; padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* 结果与双方名称分行，避免长精灵名被数值和承伤入口挤成省略号。 */
+@media (max-width: 620px) {
+  .mobile-result-dock > button.mobile-result-bar {
+    min-height: 88px;
+    max-height: none;
+    gap: 2px 8px;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .mobile-result-bar .mobile-result-bar__matchup {
+    grid-column: 1 / -1;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    text-align: left;
+    line-height: 1.4;
+  }
+
+  .mobile-result-bar__damage {
+    justify-self: start;
+  }
+
+  .mobile-result-bar__percent {
+    justify-self: end;
+  }
+
+  .calculator-layout,
+  .calculator-layout.calculator-layout--compact {
+    padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+  }
+}

@@ -25,7 +25,7 @@ function CompactDamage({
   const percent = hasPercent ? presentation.percent.toFixed(1) : null;
   const ariaLabel = selected
     ? hasPercent
-      ? `${label}${selected.name}攻击${opponentName}：${hasDamage ? `${presentation.damage}伤害` : "不直接造成伤害"}，${percent}%${presentation.freezePercent > 0 ? "覆盖" : " HP"}`
+      ? `${label}${selected.name}攻击${opponentName}：${hasDamage ? `${presentation.damage}伤害` : "不直接造成伤害"}，${percent}%${presentation.freezePercent > 0 ? "（含冻结斩杀线）" : " HP"}`
       : `${label}${selected.name}攻击${opponentName}：${result?.reason ?? "伤害待计算"}`
     : `${label}技能未选择`;
 

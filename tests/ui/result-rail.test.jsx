@@ -99,20 +99,22 @@ test.each([
     .toHaveTextContent(`${expectedPercent}%`);
   if (coverage > 0) {
     expect(container.querySelector(".result-rail__percent"))
-      .toHaveTextContent("覆盖");
+      .not.toHaveTextContent(/覆盖|HP/);
+    expect(container.querySelector(".result-rail__coverage-detail"))
+      .toHaveTextContent("冻结斩杀线 15%");
   }
 });
 
 test.each([
-  [44, 2, [], true],
-  [400, 2, [], true],
-  [401, 2, [], true],
-  [44, 4, [], true],
-  [445, 2, [], true],
-  [44, 0, [], true],
-  [44, 2, ["冰"], true],
-  [44, 2, [], false],
-])("伤害%d、冻结%d层：结果行保留覆盖但不重复状态摘要", (damage, freeze, types, enabled) => {
+  [44, 2, [], true, "冻结斩杀线10%"],
+  [400, 2, [], true, "冻结斩杀线10%"],
+  [401, 2, [], true, "冻结击倒"],
+  [44, 4, [], true, "冻结斩杀线20%"],
+  [445, 2, [], true, null],
+  [44, 0, [], true, null],
+  [44, 2, ["冰"], true, null],
+  [44, 2, [], false, null],
+])("伤害%d、冻结%d层：结果行保留完整异常摘要及正确占比", (damage, freeze, types, enabled, label) => {
   const settlement = calculateNegativeStatusSettlement({
     enabled, defender: { maxHp: 445, currentHp: 445, types },
     directDamage: damage, statuses: { freeze },
@@ -126,9 +128,10 @@ test.each([
   const coverage = Number(settlement?.freeze?.thresholdPercent) || 0;
   expect(within(row).getByLabelText("跺地生命百分比"))
     .toHaveTextContent(`${(damage / 445 * 100 + coverage).toFixed(1)}%`);
-  expect(row).not.toHaveTextContent(/斩杀≤|斩杀线/);
   expect(row.querySelector(".skill-result-row__name")).toHaveTextContent(/^跺地$/);
-  expect(row).not.toHaveTextContent("冻结击倒");
+  if (label) expect(row.querySelector(".skill-result-row__status")).toHaveTextContent(label);
+  else expect(row.querySelector(".skill-result-row__status")).toBeNull();
+  if (label !== "冻结击倒") expect(row).not.toHaveTextContent("冻结击倒");
 });
 
 test("keeps the exact damage and percent prominent", () => {
@@ -260,7 +263,7 @@ test("explains freeze-only settlement as a threshold instead of extra damage", (
   expect(within(settlement).getByText("≤18 HP · 不额外扣血")).toBeVisible();
   expect(within(settlement).queryByText(/追加|总伤害|合计损失|合计/)).not.toBeInTheDocument();
   expect(within(settlement).queryByRole("img")).not.toBeInTheDocument();
-  expect(screen.getByRole("img", { name: "伤害 50.8% ＋ 冻结 5%" })).toBeVisible();
+  expect(screen.getByRole("img", { name: "伤害 50.8% ＋ 冻结斩杀线 5%" })).toBeVisible();
 });
 
 test.each([["freeze", "冻结"], ["poison", "中毒"], ["parasitism", "寄生"], ["electrified", "引电"]])(
@@ -336,6 +339,31 @@ test("shows a compact current and next-turn preview only for burn, keeping other
   expect(screen.getByText("冻结 ×3")).toBeVisible();
 });
 
+test.each([
+  [12, 413, false],
+  [3, 0, true],
+])("纯异常实扣%d HP时保留主数字与剩余HP／击倒结论", (damage, remainingHp, lethal) => {
+  const { container } = render(<ResultRail result={{
+    ...result,
+    selectedSkillName: "打喷嚏",
+    selectedResult: {
+      status: "exact", statusOnly: true, totalDamage: 0, hpPercent: 0,
+      negativeStatusSettlement: {
+        actualStatusDamage: damage, statusDamage: 12, directDamage: 0,
+        breakdown: [{ id: "poison", stacks: 2, damage: 12 }],
+        maxHp: 425, remainingHp, lethal,
+        freeze: { stacks: 5, thresholdPercent: 25, lethal },
+      },
+    },
+  }} />);
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent(String(damage));
+  expect(container.querySelector(".result-rail__primary")).toHaveTextContent("本次合计伤害");
+  const outcomes = container.querySelectorAll(".result-rail__lethal");
+  expect(outcomes).toHaveLength(1);
+  expect(outcomes[0]).toHaveTextContent(lethal ? "本次可击倒 · 异常结算" : `剩余 ${remainingHp} HP`);
+  expect(container.querySelector(".result-rail__ko-hint")).toBeNull();
+});
+
 test("keeps a status-only result readable when negative settlement is enabled", () => {
   render(
     <ResultRail
@@ -405,7 +433,7 @@ test("keeps a status-only result readable when negative settlement is enabled", 
   expect(within(row).queryByText("0.0%")).not.toBeInTheDocument();
 });
 
-test("keeps status summaries out of skill names while preserving settled results", () => {
+test("restores complete status summaries below skill names while preserving settled results", () => {
   render(
     <ResultRail
       result={{
@@ -434,7 +462,7 @@ test("keeps status summaries out of skill names while preserving settled results
 
   const row = screen.getByText("易燃物质").closest(".skill-result-row");
   expect(row.querySelector(".skill-result-row__name")).toHaveTextContent(/^易燃物质$/);
-  expect(within(row).queryByText("灼烧×4")).not.toBeInTheDocument();
+  expect(within(row).getByText("灼烧×4")).toBeVisible();
   expect(within(row).getByLabelText("易燃物质实际伤害")).toHaveTextContent("130");
 });
 
@@ -716,7 +744,7 @@ test("shows actual damage and HP columns without inventing unavailable values", 
 
   const list = screen.getByRole("region", { name: "技能结果" });
   expect(within(list).getByText("伤害")).toBeVisible();
-  expect(within(list).getByText("HP")).toBeVisible();
+  expect(within(list).getByText("占比")).toBeVisible();
   expect(within(list).getByLabelText("精准打击实际伤害")).toHaveTextContent("1234");
   expect(within(list).getByLabelText("精准打击生命百分比")).toHaveTextContent("87.6%");
   expect(within(list).getByLabelText("参数待补实际伤害")).toHaveTextContent("—");

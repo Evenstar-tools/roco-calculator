@@ -17,7 +17,7 @@ function readViewport() {
 }
 
 function clampPosition(position, { width, height }) {
-  const bottomGap = width <= 1080 ? 82 : VIEWPORT_GAP;
+  const bottomGap = width <= 620 ? 120 : width <= 1080 ? 82 : VIEWPORT_GAP;
   return {
     x: clamp(Number(position?.x) || 0, VIEWPORT_GAP, width - BUTTON_WIDTH - VIEWPORT_GAP),
     y: clamp(Number(position?.y) || 0, VIEWPORT_GAP, height - BUTTON_HEIGHT - bottomGap),

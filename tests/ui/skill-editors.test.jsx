@@ -3057,7 +3057,7 @@ test("advanced settings edit both sides' negative-status stacks only when enable
 
   await user.click(screen.getByRole("button", { name: "高级选项" }));
   const region = screen.getByRole("region", { name: "负面状态层数" });
-  expect(within(region).getByText("这里填行动前已有层数；点异常技能 1 次算本回合，2 次续到下回合"))
+  expect(within(region).getByText("这里填行动前已有层数；点异常技能：1次应用，2次本回合不叠加（仅灼烧预估续用），3次取消"))
     .toBeVisible();
   expect(within(region).getByRole("spinbutton", { name: "防御方中毒层数" }))
     .toHaveValue(3);

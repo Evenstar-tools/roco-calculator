@@ -281,7 +281,7 @@ export function WorkspaceOverlays({
           </strong>
           <span className="mobile-result-bar__percent">
             {Number.isFinite(mobilePresentation.percent)
-              ? `${mobilePresentation.percent.toFixed(1)}%${mobilePresentation.freezePercent > 0 ? "覆盖" : ""}`
+              ? `${mobilePresentation.percent.toFixed(1)}%`
               : mobileResult.result.selectedResult.reason === "非伤害技能不计算伤害" ? "非伤害" : "待输入"}
           </span>
         </button>

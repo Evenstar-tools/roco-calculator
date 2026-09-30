@@ -25,7 +25,7 @@ test("导出当前筛选全量而非60条可见行，保留排序和搜索，空
   const [report, format] = download.mock.calls[0];
   expect(format).toBe("md");
   expect(report.rows).toHaveLength(72);
-  expect(report.metadata.find(([key]) => key === "计算口径")[1]).toContain("未沿用星陨／冻结（按0层）");
+  expect(report.metadata.find(([key]) => key === "计算口径")[1]).toContain("未沿用星陨／已有冻结（按0层）");
   expect(report.metadata.find(([key]) => key === "版本／时间")[1]).toContain("export-rules");
   fireEvent.change(screen.getByLabelText("承伤排序"), { target: { value: "desc" } });
   fireEvent.change(screen.getByLabelText("搜索承伤精灵"), { target: { value: "精灵71" } });
@@ -128,8 +128,33 @@ test.each(["forward", "reverse"])("%s导出跟随实际攻击方及状态，并�
   await waitFor(() => expect(download).toHaveBeenCalledOnce());
   const report = download.mock.calls[0][0];
   expect(report.title).toContain(direction === "forward" ? "精灵0" : "精灵1");
-  expect(report.filename).toContain("星陨6-冻结2");
-  expect(report.metadata.find(([key]) => key === "计算口径")[1]).toContain("星陨 6 层 · 冻结 2 层");
+  expect(report.filename).toContain("星陨6-已有冻结2");
+  expect(report.metadata.find(([key]) => key === "计算口径")[1]).toContain("星陨 6 层 · 已有冻结 2 层");
   expect(report.metadata.find(([key]) => key === "版本／时间")[1]).toContain("数据 export-data；规则 export-rules");
   expect(JSON.stringify(state)).toBe(before);
+});
+
+test("自动冻结导出区分已有层数与逐只斩杀线，保留冰系免疫结果", async () => {
+  const download = vi.spyOn(exporter, "downloadDamageComparison").mockResolvedValue();
+  const data = { ...snapshot,
+    spirits: snapshot.spirits.slice(0, 3).map((spirit, index) => ({ ...spirit, types: [index === 2 ? "冰" : "草"], traitIds: index === 0 ? ["snow"] : [] })),
+    traits: [{ id: "snow", name: "加个雪球" }],
+    skills: [{ id: "cold", name: "寒潮", type: "冰", category: "magical", basePower: 95 }],
+  };
+  const state = createInitialState(data);
+  state.mode = "four";
+  state.calculationOptions.includeNegativeStatusSettlement = true;
+  state.directions.forward.context.negativeStatusUseCountsBySlot = { 1: 1 };
+  render(<DamageComparisonDialog snapshot={data} source={{ state, direction: "forward" }} onClose={vi.fn()} />);
+  await waitFor(() => expect(screen.getByRole("button", { name: "导出", exact: true })).toBeEnabled());
+  fireEvent.click(screen.getByRole("button", { name: "导出", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Markdown（.md）" }));
+  await waitFor(() => expect(download).toHaveBeenCalledOnce());
+  const report = download.mock.lastCall[0];
+  expect(report.headers[10]).toBe("冻结斩杀线");
+  expect(report.filename).toContain("已有冻结0");
+  expect(report.rows.find((row) => row[1] === "精灵1")[10]).toBe(.15);
+  expect(report.rows.find((row) => row[1] === "精灵2")[10]).toBe(0);
+  expect(report.metadata.find(([key]) => key === "计算口径")[1]).toContain("冻结斩杀线按已有层数与本次新增逐只计算");
+  expect(exporter.damageComparisonMarkdown(report)).not.toContain("覆盖");
 });

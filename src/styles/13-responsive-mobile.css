@@ -896,7 +896,7 @@
 }
 
 /* 窄屏技能分行与输入标签：第一行看技能结果，第二行调整威力和连击。 */
-@media (max-width: 420px) {
+@media (max-width: 620px) {
   .calculator-step--skills,
   .four-skill-editor,
   .four-skill-side-switch,
@@ -924,7 +924,7 @@
     min-height: 86px;
     align-items: center;
     gap: 5px 3px;
-    grid-template-columns: 14px 34px minmax(70px, 1fr) 56px 70px;
+    grid-template-columns: 14px 34px minmax(0, 1fr) 56px 70px;
     grid-template-rows: 40px 36px;
   }
 

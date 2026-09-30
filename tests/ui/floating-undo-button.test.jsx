@@ -66,7 +66,7 @@ test("keeps the full strip inside narrow screens and clear of the mobile bottom 
   render(<FloatingUndoButton count={1} />);
   const button = screen.getByRole("button");
   expect(button.style.left).toBe("218px");
-  expect(button.style.top).toBe("514px");
+  expect(button.style.top).toBe("476px");
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 300 });
   fireEvent(window, new Event("resize"));
   expect(button.style.left).toBe("198px");
@@ -83,13 +83,13 @@ test("默认位置随手机及桌面视口恢复右下角，点击与缩放不�
   render(<FloatingUndoButton count={2} onUndo={onUndo} />);
   const button = screen.getByRole("button");
   resize(320, 720);
-  expect(button).toHaveStyle({ left: "218px", top: "594px" });
+  expect(button).toHaveStyle({ left: "218px", top: "556px" });
   fireEvent.pointerDown(button, { clientX: 240, clientY: 610, pointerId: 1 });
   fireEvent.pointerUp(button, { clientX: 240, clientY: 610, pointerId: 1 });
   fireEvent.click(button);
   expect(onUndo).toHaveBeenCalledOnce();
   resize(390, 844);
-  expect(button).toHaveStyle({ left: "288px", top: "718px" });
+  expect(button).toHaveStyle({ left: "288px", top: "680px" });
   resize(1280, 900);
   expect(button).toHaveStyle({ left: "1178px", top: "838px" });
   resize(1920, 1080);
@@ -101,7 +101,7 @@ test("手动保存位置在缩小时临时限界，放大和重新挂载后仍�
   localStorage.setItem(UNDO_POSITION_STORAGE_KEY, JSON.stringify({ x: 700, y: 500 }));
   const view = render(<FloatingUndoButton count={1} />);
   resize(320, 640);
-  expect(screen.getByRole("button")).toHaveStyle({ left: "218px", top: "500px" });
+  expect(screen.getByRole("button")).toHaveStyle({ left: "218px", top: "476px" });
   expect(JSON.parse(localStorage.getItem(UNDO_POSITION_STORAGE_KEY))).toEqual({ x: 700, y: 500 });
   resize(1280, 900);
   expect(screen.getByRole("button")).toHaveStyle({ left: "700px", top: "500px" });

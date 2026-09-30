@@ -123,8 +123,8 @@ test.each([true, false])("底栏共用容器且两个入口独立，承伤对比
 });
 
 test.each([
-  [372, false, "372", "102.5%覆盖"],
-  [0, true, "—", "15.0%覆盖"],
+  [372, false, "372", "102.5%"],
+  [0, true, "—", "15.0%"],
 ])("手机底栏冻结覆盖与实际伤害分开：%d伤害，纯状态=%s", (damage, statusOnly, damageText, percentText) => {
   renderOverlays({ menu: { open: false }, mobileResult: {
     configurationReady: true, open: false, viewMode: "compact",

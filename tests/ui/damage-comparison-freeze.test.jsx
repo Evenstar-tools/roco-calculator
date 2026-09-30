@@ -33,7 +33,8 @@ test("冻结蓝段与实伤分开显示，满条筛选包含冻结击倒，导�
     expect(exported[10]).toBe(0.2);
     const xml = strFromU8(unzipSync(damageComparisonXlsx(report))["xl/worksheets/sheet1.xml"]);
     expect(xml).toMatch(/<c r="K\d+" s="3"><v>0.2<\/v>/u);
-    expect(exporter.damageComparisonMarkdown(report)).toContain("冻结覆盖");
+    expect(exporter.damageComparisonMarkdown(report)).toContain("冻结斩杀线");
+    expect(exporter.damageComparisonMarkdown(report)).not.toContain("覆盖");
     fireEvent.click(screen.getByRole("checkbox", { name: "沿用星陨／冻结" }));
     await waitFor(() => expect(screen.queryByRole("button", { name: "查看target承伤详情" })).not.toBeInTheDocument());
   } finally { download.mockRestore(); }

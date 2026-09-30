@@ -3774,6 +3774,38 @@ test("enables negative-status settlement, edits stacks, and remembers the switch
   expect(screen.getByRole("region", { name: "负面状态层数" })).toBeVisible();
 });
 
+test.each([
+  ["寒潮", "magical", "冰", 60, false],
+  ["引燃", "status", "火", 0, true],
+])("异常应用循环：%s第二次不叠加本回合，仅有灼烧才提示续用预估", async (name, category, type, basePower, hasPreview) => {
+  localStorage.setItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY, "1");
+  const user = userEvent.setup();
+  const skill = { id: "status-use-cycle", name, category, type, basePower, cost: 3, description: `${name}应用循环测试` };
+  const fixture = { ...snapshot, skills: [...snapshot.skills, skill], learnsets: snapshot.learnsets.map(entry =>
+    ({ ...entry, skillIds: [...entry.skillIds, skill.id] })) };
+  render(<App initialSnapshot={fixture} />);
+  await selectDefaultSpirits(user);
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  const picker = screen.getByRole("combobox", { name: "攻击方技能1", exact: true });
+  await user.clear(picker);
+  await user.type(picker, name);
+  await user.click(screen.getByRole("option", { name: new RegExp(name) }));
+  const slot = () => screen.getByRole("group", { name: /^攻击方技能1/u });
+  await user.click(within(slot()).getByText(skill.description));
+  expect(screen.getByText(`${name}：本回合`)).toBeVisible();
+  const firstResult = within(slot()).getByRole("status").textContent;
+  await user.click(within(slot()).getByText(skill.description));
+  expect(within(slot()).getByRole("status").textContent).toBe(firstResult);
+  expect(screen.getByText(hasPreview
+    ? `${name}：下回合灼烧续用预估；再点取消`
+    : `${name}：仍按本回合结算；再点取消`)).toBeVisible();
+  expect(screen.queryByText(`${name}：本回合 + 下回合`)).not.toBeInTheDocument();
+  expect(screen.queryByRole("region", { name: "回合状态预估" }) !== null).toBe(hasPreview);
+  await user.click(within(slot()).getByText(skill.description));
+  expect(screen.getByText(`${name}的负面状态已取消`)).toBeVisible();
+  localStorage.removeItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY);
+});
+
 test("四技能模式下点击技能结果行可切换当前技能", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);

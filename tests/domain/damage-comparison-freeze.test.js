@@ -73,3 +73,40 @@ test.each(["forward", "reverse"])("%s 彩虹独角兽折射两次的冻结自动
   }
   expect(JSON.stringify(state)).toBe(before);
 });
+
+test.each(["forward", "reverse"])("%s 寒潮本次自动冻结按每个候选解析，免疫与代入不重复叠加", async (direction) => {
+  const data = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+  const fixture = { ...data, spirits: ["圣代甜甜（樱桃巧克力口味）", "寂灭骨龙", "冰钻布鲁斯"].map((name) => data.spirits.find((spirit) => spirit.fullName === name)) };
+  const side = direction === "forward" ? "attacker" : "defender";
+  const target = side === "attacker" ? "defender" : "attacker";
+  const state = createInitialState(fixture);
+  state.mode = "four";
+  state.calculationOptions.includeNegativeStatusSettlement = true;
+  state.sides[side].spiritId = fixture.spirits[0].id;
+  state.sides[target].spiritId = fixture.spirits[1].id;
+  const coldId = data.skills.find((skill) => skill.name === "寒潮").id;
+  state.sides[side].skills.four = [coldId, null, null, null];
+  state.directions[direction].context.negativeStatusUseCountsBySlot = { 1: 1 };
+  const options = { snapshot: fixture, state, direction, selectedSkillIndex: 0, templateId: "current-defense", scope: "all" };
+  const before = JSON.stringify(state);
+  for (const [inheritTargetStatuses, counter, expectedStacks] of [[false, false, 3], [true, false, 5], [false, true, 7]]) {
+    state.negativeStatuses[target].freeze = inheritTargetStatuses ? 2 : 0;
+    state.sides[side].skills.four[0] = counter ? { skillId: coldId, context: { negativeStatusCounterState: true } } : coldId;
+    const ranking = await createSkillDamageRanking({ ...options, inheritTargetStatuses });
+    const row = ranking.rows.find((entry) => entry.spirit.id === fixture.spirits[1].id);
+    expect(row.freezePercent).toBe(expectedStacks * 5);
+    expect(ranking.rows.find((entry) => entry.spirit.id === fixture.spirits[2].id).freezePercent).toBe(0);
+    const imported = importDamageComparisonCandidate({ ...options, spirit: row.spirit, inheritTargetStatuses });
+    const settlement = buildCalculatorViewModel({ snapshot: fixture, state: imported, activeDirection: direction }).result.selectedResult.negativeStatusSettlement;
+    expect(settlement.freeze.thresholdPercent).toBe(row.freezePercent);
+    expect(settlement.stacks.freeze).toBe(expectedStacks);
+    expect((await createSkillDamageRanking({ ...options, inheritTargetStatuses })).rows.find((entry) => entry.spirit.id === row.spirit.id).freezePercent).toBe(row.freezePercent);
+  }
+  state.negativeStatuses[target].freeze = 0;
+  state.sides[side].skills.four[0] = coldId;
+  state.calculationOptions.includeNegativeStatusSettlement = false;
+  const disabled = await createSkillDamageRanking(options);
+  expect(disabled.rows.find((entry) => entry.spirit.id === fixture.spirits[1].id).freezePercent).toBe(0);
+  state.calculationOptions.includeNegativeStatusSettlement = true;
+  expect(JSON.stringify(state)).toBe(before);
+});

@@ -77,7 +77,7 @@ function SkillDamagePreview({
   const ariaLabel = selected
     ? hasPercent
       ? `${label}${selected.name}攻击${opponentName}：${hasDamage ? `${presentation.damage}伤害` : "不直接造成伤害"}${
-          percent ? `，${percent}%${presentation.freezePercent > 0 ? "覆盖" : " HP"}` : ""
+          percent ? `，${percent}%${presentation.freezePercent > 0 ? "（含冻结斩杀线）" : " HP"}` : ""
         }`
       : `${label}${selected.name}攻击${opponentName}：${result?.reason ?? "伤害待计算"}`
     : `${label}技能${index + 1}未选择`;
@@ -284,10 +284,7 @@ function SkillSide({
             {powerDisplayMode === "panel" ? "显示威力" : "静态威力"}
           </span>
           <span className="skill-slot__head-hits">连击</span>
-          <span className="skill-slot__head-result">
-            {results?.some((result) => damagePresentation(result).freezePercent > 0) ||
-            damagePresentation(traitDamage?.result).freezePercent > 0 ? "覆盖" : "伤害占比"}
-          </span>
+          <span className="skill-slot__head-result">伤害占比</span>
         </div>
         {traitDamage ? (
           <div

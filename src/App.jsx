@@ -952,6 +952,17 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         return;
       }
     }
+    const statusSettlement = viewModel.skillResultsByDirection[selfDirection]?.[index]
+      ?.negativeStatusSettlement;
+    const canPreviewBurn = Number(statusSettlement?.stacks?.burn) > 0 &&
+      !statusSettlement?.lethal && !statusSettlement?.skipped;
+    const negativeStatusNotice = negativeStatusUseCount === 1
+      ? `${skill.name}：本回合`
+      : negativeStatusUseCount === 2
+        ? canPreviewBurn
+          ? `${skill.name}：下回合灼烧续用预估；再点取消`
+          : `${skill.name}：仍按本回合结算；再点取消`
+        : null;
     const choiceTrait =
       context.choiceTraitTriggered === true &&
       supportsChoiceTrait(detectedChoiceTrait)
@@ -1050,11 +1061,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
                 ? `${skill.name}：吸血后结算自身掉血`
                 : null,
               ...postAttackNotices,
-              negativeStatusUseCount === 1
-                ? `${skill.name}：本回合`
-                : negativeStatusUseCount === 2
-                  ? `${skill.name}：本回合 + 下回合`
-                  : null,
+              negativeStatusNotice,
             ].filter(Boolean).join("；"),
           );
         }
@@ -1358,9 +1365,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     if (operations.weather) updateWeather(operations.weather);
     recordAppliedSkill(side, skill, context, operations, resolution.triggerCount);
     setToast([
-      negativeStatusUseCount === 2
-        ? `${skill.name}：本回合 + 下回合`
-        : `${skill.name}的状态已应用`,
+      negativeStatusNotice ?? `${skill.name}的状态已应用`,
       ...postAttackNotices,
     ].join("；"));
   }
