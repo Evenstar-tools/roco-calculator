@@ -21,7 +21,9 @@ function roundScaledStat(value, normalizedIv) {
       Number.EPSILON * Math.max(100, Math.abs(value));
 
   if (!isZeroIvHalfTie) return statRound(value);
-  return floor % 2 === 0 ? floor + 1 : floor;
+  // Stabilize floating-point half ties, but keep ordinary half-up rounding.
+  // Rounding to odd undercounts zero-IV Didi defense (131 instead of 132).
+  return floor + 1;
 }
 
 export function hasCompleteRaceStats(raceStats) {

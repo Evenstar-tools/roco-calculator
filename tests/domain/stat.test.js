@@ -28,6 +28,14 @@ describe("statRound", () => {
 });
 
 describe("calculatePanelStat", () => {
+  test("zero-IV Didi physical defense is 132 at the half-point boundary", () => {
+    expect(calculatePanelStat({
+      kind: "physicalDefense",
+      race: 65,
+      displayIv: 0,
+      natureMultiplier: 1,
+    })).toBe(132);
+  });
   test("calculates Sonic Dog physical attack as 271", () => {
     expect(
       calculatePanelStat({
@@ -50,7 +58,7 @@ describe("calculatePanelStat", () => {
     ).toBe(434);
   });
 
-  test("matches the reference zero-IV half tie for Water Spirit speed", () => {
+  test("rounds the zero-IV Water Spirit speed half tie up", () => {
     expect(
       calculatePanelStat({
         kind: "speed",
@@ -58,14 +66,14 @@ describe("calculatePanelStat", () => {
         displayIv: 0,
         natureMultiplier: 1,
       }),
-    ).toBe(153);
+    ).toBe(154);
   });
 
   test.each([
-    ["non-HP race 105", "magicalDefense", 105, 175],
-    ["non-HP race 125", "physicalDefense", 125, 197],
-    ["HP race 95", "hp", 95, 331],
-  ])("matches the original-site zero-IV half tie for %s", (_label, kind, race, expected) => {
+    ["non-HP race 105", "magicalDefense", 105, 176],
+    ["non-HP race 125", "physicalDefense", 125, 198],
+    ["HP race 95", "hp", 95, 332],
+  ])("uses ordinary half-up rounding for the zero-IV half tie of %s", (_label, kind, race, expected) => {
     expect(
       calculatePanelStat({
         kind,

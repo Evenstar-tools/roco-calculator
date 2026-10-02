@@ -115,6 +115,47 @@ const referenceListenBridgeCase = {
 
 describe("rock-calculator CLI", () => {
   test.each([
+    ["先发制人", 4, null, 99, 99, 159],
+    ["力量增效后的先发制人", 4, 10, 198, 99, 318],
+    ["火焰冲锋", 3, null, 108, 108, 173],
+    ["暴风雪", 1, null, 191, 191.25, 307],
+  ])("布鲁斯冰钻总能耗8对零物防个体迪迪的%s匹配实战", (_label, skill, attackLevelStage, displayPower, calculationPower, damage) => {
+    const result = runCli(["explain", "--input", "-", "--direction", "forward"], {
+      schemaVersion: 1,
+      mode: "four",
+      level: 60,
+      attacker: {
+        spirit: "冰钻布鲁斯",
+        nature: "固执",
+        ivs: { physicalAttack: 60, magicalAttack: 0, speed: 60, hp: 60, physicalDefense: 0, magicalDefense: 0 },
+        skills: ["暴风雪", "力量增效", "火焰冲锋", "先发制人"],
+      },
+      defender: {
+        spirit: "霹雳迪迪",
+        nature: "胆小",
+        ivs: { physicalAttack: 0, magicalAttack: 60, speed: 60, hp: 60, physicalDefense: 0, magicalDefense: 0 },
+        skills: ["落雷", "色散", "镜像反射", "放晴"],
+      },
+      forward: {
+        skill,
+        ...(attackLevelStage === null ? {} : { overrides: { attackLevelStage } }),
+      },
+    });
+
+    expect(result.status).toBe(0);
+    expect(result.json.result).toMatchObject({
+      displayPower,
+      totalDamage: damage,
+      combatPanel: {
+        attacker: { physicalAttack: attackLevelStage === null ? 235 : 470 },
+        defender: { physicalDefense: 132 },
+      },
+    });
+    const formula = result.json.result.formulaSteps.find((step) => step.label === "等级系数与攻防比");
+    expect(formula.input).toMatchObject({ calculationPower, defenderDefense: 132 });
+    expect(formula.input.coefficient).toBeCloseTo(37 / 41, 12);
+  });
+  test.each([
     ["火神", 0, 163, 438],
     ["音速犬", 0, 171, 418],
     ["音速犬", 60, 204, 350],

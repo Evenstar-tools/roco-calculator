@@ -231,7 +231,7 @@ export const S4_FEATURE_INTRO = Object.freeze({
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v2.2.4",
-    date: "2026.09.30",
+    date: "2026.10.03",
     title: "S4异常结算与窄屏修复",
     whatsNew: S4_FEATURE_INTRO,
     summaryHighlights: ["攻击附带异常直接预览，无需额外点击使用。", "灼烧下回合续用单独勾选，逐击异常随连击数计算。", "异常摘要完整显示，保留冻结斩杀与窄屏修复。"],
@@ -244,6 +244,7 @@ export const USER_RELEASE_NOTES = Object.freeze([
       "新队伍导出默认愿力强化；含首领形态或首领血脉时自动选进化之力，保留手动选择和导入阵容原设置。",
     ],
     fixes: [
+      "修正零个体能力值的半点取整偏差；布鲁斯对迪迪的先发制人、火焰冲锋和暴风雪伤害与本次实战反馈一致。",
       "打喷嚏每一连击都触发加个雪球，默认3连击正确显示9层冻结／45%斩杀线；冻结不作为额外扣血。",
       "修复铭记于月亮获得灵魂灼伤与加个雪球后，冻结结果受特性添加顺序影响的问题。",
       "开启负面状态结算后，寒潮、暴风雪等攻击及特性附带异常直接进入本次结果；反复查看不会追加或取消，关闭开关仍只看直接伤害。",
