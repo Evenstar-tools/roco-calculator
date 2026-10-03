@@ -15,6 +15,16 @@ import {
 import miniappPackage from "../package.json";
 
 describe("miniapp shell", () => {
+  test("registers native sharing for the page hook", async () => {
+    vi.stubGlobal("definePageConfig", (config) => config);
+    try {
+      const { default: config } = await import("../src/pages/index/index.config.js");
+      expect(config.enableShareAppMessage).toBe(true);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   test("ranking entrances use the menu row anatomy and close settings before navigation", () => {
     const onOpenRanking = vi.fn();
     render(<AppHeader onOpenRanking={onOpenRanking} />);

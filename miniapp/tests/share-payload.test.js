@@ -175,11 +175,12 @@ describe("mini program share payload", () => {
     expect(decoded.directions.forward.overrides.hitCount).toBe(6);
     expect(decoded.sides.attacker.skills.four[1].overrides.hitCount).toBe(2);
   });
-  test("round-trips status trigger count separately from skill hit count", () => {
+  test.each([1, 3, 5])("round-trips status trigger count separately from skill hit count %i", (hitCount) => {
     const snapshot = createSnapshot();
     const state = createState(snapshot);
+    state.sides.attacker.skills.four[0] = { skillId: "skill-a", hitCount };
     state.sides.attacker.skills.four[1] = {
-      hitCount: 3,
+      hitCount,
       skillId: "skill-b",
       statusTriggerCount: 2,
     };
@@ -187,8 +188,9 @@ describe("mini program share payload", () => {
 
     const decoded = decodeSharePayload(encodeSharePayload(state), snapshot);
     expect(decoded.directions.forward.statusTriggerCount).toBe(4);
+    expect(decoded.sides.attacker.skills.four[0]).toEqual({ skillId: "skill-a", hitCount });
     expect(decoded.sides.attacker.skills.four[1]).toEqual({
-      hitCount: 3,
+      hitCount,
       skillId: "skill-b",
       statusTriggerCount: 2,
     });

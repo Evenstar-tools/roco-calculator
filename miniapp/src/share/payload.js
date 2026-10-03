@@ -226,7 +226,7 @@ function compactSkill(entry, globalWeatherContext = {}) {
     entry.context?.[key] === globalWeatherContext[key]);
   const context = compactPublicContext(entry.context, omittedKeys);
   const overrides = compactOverrides(entry.overrides);
-  if (hitCount !== undefined && hitCount !== 1) compact.h = hitCount;
+  if (hitCount !== undefined) compact.h = hitCount;
   if (statusTriggerCount !== undefined && statusTriggerCount !== 1) {
     compact.t = statusTriggerCount;
   }
