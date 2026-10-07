@@ -500,6 +500,7 @@ function SkillSide({
                   {result?.skillCost ?? selected?.cost ?? "—"}
                 </span>
                 <PowerDraftInput
+                  key={`${selected?.id}-${powerDisplayMode}`}
                   ariaLabel={`${label}技能${index + 1}${
                     powerDisplayMode === "panel" ? "显示威力" : "静态威力"
                   }`}

@@ -436,6 +436,107 @@ function transmissionSide(skillIds) {
 }
 
 describe("calculateMatchup", () => {
+
+  test.each([
+    ["single", "forward"],
+    ["four", "forward"],
+    ["single", "reverse"],
+    ["four", "reverse"],
+  ])("%s %s 手动最终显示威力不重复计入正负能力等级", (mode, direction) => {
+    for (const [attackLevelStage, defenseLevelStage] of [
+      [0, 0], [10, -12], [-4, 6], [5, -3], [-3, -4], [8, 5],
+    ]) {
+      const input = battleInput({
+        mode,
+        directions: {
+          [direction]: {
+            context: { weatherRainTurns: 8 },
+            overrides: {
+              attackerStat: 270,
+              defenderDefense: 163,
+              attackLevelStage,
+              defenseLevelStage,
+              stabMultiplier: 1.25,
+              typeMultiplier: 2,
+              otherPowerMultipliers: [1.5],
+              powerOverride: { mode: "panel", value: 260 },
+            },
+          },
+        },
+      });
+      if (mode === "four") {
+        const source = input.sides[direction === "forward" ? "attacker" : "defender"];
+        source.skills.four[0] = {
+          skillId: source.skills.four[0],
+          powerOverride: { mode: "panel", value: 260 },
+        };
+      }
+      const result = calculateMatchup(snapshot, input)[direction].selectedResult;
+
+      expect(result).toMatchObject({
+        displayPower: 260,
+        powerSource: "manual-panel",
+        totalDamage: 388,
+      });
+      expect(result.formulaSteps.find((step) => step.label === "等级系数与攻防比").input).toMatchObject({
+        attackerStat: 270,
+        calculationPower: 260,
+        defenderDefense: 163,
+      });
+    }
+  });
+
+  test("手动显示威力不取消星陨追加伤害的实际能力等级", () => {
+    const input = battleInput({ directions: { forward: { overrides: {
+      attackerStat: 270,
+      defenderDefense: 163,
+      attackLevelStage: 10,
+      defenseLevelStage: -12,
+      powerOverride: { mode: "panel", value: 260 },
+    } } } });
+    input.marks.defender.negative = { id: "starfall", stacks: 1 };
+    const result = calculateMatchup(snapshot, input).forward.selectedResult;
+    expect(result).toMatchObject({ mainDamage: 388, additionalDamage: 6, totalDamage: 394 });
+  });
+
+  test.each([
+    [undefined, "skill_wind", 271, 163, [150, 195, 240]],
+    [0, "skill_wind", 100, 100, [90, 99, 117]],
+    [10, "skill_wind", 100, 100, [90, 94, 103]],
+    [-4, "skill_wind", 100, 100, [90, 97, 115]],
+    [99, "skill_wind", 100, 100, [90, 90, 90]],
+    [10, "skill_water", 100, 100, [90, 90, 90]],
+    [0, "skill_wind", 0, 100, [0, 0, 0]],
+  ])("手动显示威力保留男爵逐击新增强化：初始层数%s、%s", (stage, skill, attack, defense, expected) => {
+    const fixture = {
+      ...snapshot,
+      traits: [{ id: "trait_baron", name: "贪得无厌" }],
+      spirits: snapshot.spirits.map((spirit, index) => index === 0
+        ? { ...spirit, traitIds: ["trait_baron"] }
+        : spirit),
+    };
+    const panelStats = { hp: 500, physicalAttack: 100, magicalAttack: 100, physicalDefense: 100, magicalDefense: 100, speed: 100 };
+    const result = calculateMatchup(fixture, battleInput({
+      sides: {
+        attacker: { ...side("spirit_sonic_dog", skill, []), panelStats },
+        defender: { ...side("spirit_water", "skill_water", []), panelStats: { ...panelStats, hp: 2000 } },
+      },
+      directions: {
+        forward: {
+          hitCount: 3,
+          currentHp: 2000,
+          overrides: {
+            attackerStat: attack,
+            defenderDefense: defense,
+            ...(stage === undefined ? {} : { attackLevelStage: stage }),
+            powerOverride: { mode: "panel", value: 100 },
+          },
+        },
+        reverse: { currentHp: 500 },
+      },
+    })).forward.selectedResult;
+    expect(result.hitDamages).toEqual(expected);
+  });
   test.each(["single", "four"])("龙噬触发次数在%s中等效双攻等级，双向生效且不修改手动配置", (mode) => {
     const input = battleInput({ mode });
     input.marks.attacker.positive = { id: "dragon-bite", stacks: 1, triggerCount: 2 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function validationMessage(mode, draft) {
   if (draft === "") return "";
@@ -25,18 +25,30 @@ export function PowerDraftInput({
   const [draft, setDraft] = useState(String(value ?? ""));
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
+  const changed = useRef(false);
+  const draftMode = useRef(mode);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- 非编辑态跟外部威力，渲染期写入会冲掉正在输入的草稿
-    if (!editing) setDraft(String(value ?? ""));
-  }, [editing, value]);
+    // 非编辑态跟外部威力；切换口径时旧草稿不能沿用。
+    const modeChanged = draftMode.current !== mode;
+    if (modeChanged) {
+      draftMode.current = mode;
+      changed.current = false;
+      setEditing(false);
+      setError("");
+    }
+    if (modeChanged || !editing) setDraft(String(value ?? ""));
+  }, [editing, mode, value]);
 
   function restoreCurrent() {
+    changed.current = false;
     setDraft(String(value ?? ""));
     setError("");
   }
 
   function submit() {
+    if (!changed.current) return true;
+    changed.current = false;
     if (draft === "") {
       setError("");
       onClear?.();
@@ -53,6 +65,7 @@ export function PowerDraftInput({
     const current = Number(draft === "" ? value : draft);
     const next = Math.min(9999, Math.max(0, (Number.isFinite(current) ? current : 0) + direction));
     const normalized = Math.round(next);
+    changed.current = false;
     setDraft(String(normalized));
     setError("");
     onCommit?.(normalized);
@@ -70,9 +83,10 @@ export function PowerDraftInput({
           min="0"
           onBlur={() => {
             setEditing(false);
-            if (editing) submit();
+            submit();
           }}
           onChange={(event) => {
+            changed.current = true;
             setEditing(true);
             setDraft(event.target.value);
             if (error) setError("");
@@ -101,6 +115,7 @@ export function PowerDraftInput({
             className="power-draft__reset"
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => {
+              changed.current = false;
               setEditing(false);
               setError("");
               onClear?.();

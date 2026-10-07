@@ -114,6 +114,37 @@ const referenceListenBridgeCase = {
 };
 
 describe("rock-calculator CLI", () => {
+
+  test("龙息帕尔的手动显示威力使用原始攻防，自动与静态计算不变", () => {
+    const overrides = {
+      attackerStat: 270,
+      defenderDefense: 163,
+      attackLevelStage: 10,
+      defenseLevelStage: -12,
+      stabMultiplier: 1.25,
+      typeMultiplier: 1,
+    };
+    for (const [powerOverride, damage, attack, defense, power] of [
+      [{ mode: "panel", value: 260 }, 388, 270, 163, 260],
+      [undefined, 534, 540, 163 / 2.2, 81.25],
+      [{ mode: "static", value: 65 }, 534, 540, 163 / 2.2, 81.25],
+    ]) {
+      const result = runCli(["explain", "--input", "-", "--direction", "forward"], {
+        schemaVersion: 1,
+        mode: "single",
+        level: 60,
+        attacker: { spirit: "龙息帕尔", skill: "蝙蝠" },
+        defender: { spirit: "水灵", skill: "水炮" },
+        forward: { overrides: { ...overrides, powerOverride } },
+      });
+      expect(result.status).toBe(0);
+      expect(result.json.result).toMatchObject({ displayPower: 260, totalDamage: damage });
+      const formula = result.json.result.formulaSteps.find((step) => step.label === "等级系数与攻防比");
+      expect(formula.input.attackerStat).toBe(attack);
+      expect(formula.input.defenderDefense).toBeCloseTo(defense, 10);
+      expect(formula.input.calculationPower).toBe(power);
+    }
+  });
   test.each([
     ["先发制人", 4, null, 99, 99, 159],
     ["力量增效后的先发制人", 4, 10, 198, 99, 318],

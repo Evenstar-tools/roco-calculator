@@ -35,7 +35,7 @@ export default defineConfig({
           include: [
             "tests/smoke/*.test.jsx",
             "tests/analytics/*.test.{js,jsx}",
-            "tests/ui/{battle-form-picker,header-portrait,floating-undo-button,calculator-shortcuts,nature-select,stat-tile,team-exchange,team-member-types,team-lineup-flow,toolbox,type-query-panel,transmission-panel,deer-critical,deer-entry,ability-speed-layout,skill-picker-scrollbar,skill-picker-placement,picker-menu-layout,moon-memory-trait-editor,calculator-sections,status-reference,modal-focus}.test.jsx",
+            "tests/ui/{battle-form-picker,header-portrait,floating-undo-button,calculator-shortcuts,nature-select,stat-tile,team-exchange,team-member-types,team-lineup-flow,toolbox,type-query-panel,transmission-panel,deer-critical,deer-entry,ability-speed-layout,skill-picker-scrollbar,skill-picker-placement,picker-menu-layout,moon-memory-trait-editor,calculator-sections,status-reference,modal-focus,panel-power-input-regression}.test.jsx",
           ],
         },
       },

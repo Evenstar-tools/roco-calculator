@@ -114,7 +114,9 @@ export function buildFormulaAudit(result) {
     defenseLabel:
       attackPanel?.input === "magicalAttack" ? "魔防" : "物防",
     power: {
-      manual: manualPower?.label,
+      manual: stepByLabel(result, "手动静态威力")?.label,
+      manualPanel: stepByLabel(result, "手动显示威力")?.label,
+      staticIsSummary: Boolean(stepByLabel(result, "手动显示威力") && !basePower),
       base: basePower?.before ?? basePower?.input,
       conditional: basePower?.after,
       fixed: Number(fixedPower?.input) || 0,
@@ -301,7 +303,7 @@ export function FormulaAudit({ result }) {
             <AuditChip label={gainTermLabel("条件后", gains.condition)} tone="power" value={displayNumber(power.conditional)} />
           </>
         ) : null}
-        {[
+        {!power.staticIsSummary && [
           ...(gains.fixed?.length ? gains.fixed.map((source) => [sourceLabel(source), source.amount]) : [["技能固定", power.fixed]]),
           ["继承迸发", power.inheritedBurstFixed],
           ["蓄电", power.markFixed],
@@ -313,7 +315,7 @@ export function FormulaAudit({ result }) {
             </span>
           ) : null,
         )}
-        {power.percentAdds !== 0 ? (
+        {!power.staticIsSummary && power.percentAdds !== 0 ? (
           <>
             <Operator>×</Operator>
             <AuditChip
@@ -328,7 +330,7 @@ export function FormulaAudit({ result }) {
       </FormulaRow>
 
       <FormulaRow title="显示威力" tone="display">
-        <AuditChip label={gainTermLabel(gainTermLabel("结算前威力", gains.traitFixed), (gains.powerPercent ?? []).map((source) => ({ ...source, amount: source.amount * 100 })), "%")} tone="display" value={displayNumber(power.effective)} />
+        <AuditChip label={power.manualPanel || gainTermLabel(gainTermLabel("结算前威力", gains.traitFixed), (gains.powerPercent ?? []).map((source) => ({ ...source, amount: source.amount * 100 })), "%")} tone="display" value={displayNumber(power.effective)} />
         {audit.formulaPower.factors
           .filter((factor) => Math.abs(Number(factor.value) - 1) > 1e-10)
           .map((factor) => (

@@ -824,15 +824,17 @@ export function calculateSkillResult({
   const powerAfterWeather = powerAfterType * weatherMultiplier;
   const powerAfterLevels = powerAfterWeather * attackDefenseLevelMultiplier;
   const automaticPanelPower = powerAfterLevels * otherPowerMultiplier;
-  const panelPower = powerOverride.mode === "panel"
+  const panelPowerOverride = powerOverride.mode === "panel";
+  const panelPower = panelPowerOverride
     ? powerOverride.value
     : roundDisplayedPower(automaticPanelPower);
-  const calculationPower = usesActualCombatPanelForDamage
-    ? powerOverride.mode === "panel"
-      ? panelPower / attackDefenseLevelMultiplier
-      : powerAfterWeather * otherPowerMultiplier
-    : powerOverride.mode === "panel"
-      ? panelPower
+  // 手动显示威力已包含初始能力等级，只替换主技能，追加伤害仍用实际攻防。
+  const mainAttackerStat = panelPowerOverride ? baseAttackerStat : attackerStat;
+  const mainDefenderDefense = panelPowerOverride ? baseDefenderDefense : defenderDefense;
+  const calculationPower = panelPowerOverride
+    ? panelPower
+    : usesActualCombatPanelForDamage
+      ? powerAfterWeather * otherPowerMultiplier
       : automaticPanelPower;
   const displayedPower = panelPower;
   const damageReductionMultiplier =
@@ -886,9 +888,9 @@ export function calculateSkillResult({
       finiteNumber(powerResolution.finalDamageMultiplier) ?? 1,
     );
   const baseMainDamage = calculateDamage({
-    attackerStat,
+    attackerStat: mainAttackerStat,
     displayedPower: calculationPower,
-    defenderDefense,
+    defenderDefense: mainDefenderDefense,
     damageReductionMultiplier,
     hitCount,
     finalDamageMultiplier,
@@ -902,7 +904,9 @@ export function calculateSkillResult({
         attackerTraits: attacker.traits,
         calculateHit: ({ attackLevelStageAdd }) => {
           const sequentialAttackerStat =
-            usesActualCombatPanelForDamage &&
+            panelPowerOverride
+              ? mainAttackerStat
+              : usesActualCombatPanelForDamage &&
             resolvedSkillCategory === "physical"
               ? Math.round(
                   abilityAdjustedStat(
@@ -920,15 +924,28 @@ export function calculateSkillResult({
               : attackDefenseLevelMultiplier *
                 abilityLevelMultiplier(attackLevelStageAdd, 0)
             : attackDefenseLevelMultiplier;
-          const sequentialPower = usesActualCombatPanelForDamage
-            ? calculationPower
-            : calculationPower *
-              sequentialLevelMultiplier /
-              Math.max(Number.EPSILON, attackDefenseLevelMultiplier);
+          let manualPanelHitMultiplier = 1;
+          if (panelPowerOverride && resolvedSkillCategory === "physical" && attackLevelStageAdd !== 0) {
+            // 初始等级已包含在手动威力中，后续段只补本次溢出新增的相对强化。
+            if (usesActualCombatPanelForDamage) {
+              if (attackerStat > 0) {
+                manualPanelHitMultiplier = Math.round(abilityAdjustedStat(baseAttackerStat, totalAttackLevelStage + attackLevelStageAdd)) / attackerStat;
+              }
+            } else {
+              manualPanelHitMultiplier = abilityLevelMultiplier(attackLevelStageAdd, 0);
+            }
+          }
+          const sequentialPower = panelPowerOverride
+            ? calculationPower * manualPanelHitMultiplier
+            : usesActualCombatPanelForDamage
+              ? calculationPower
+              : calculationPower *
+                sequentialLevelMultiplier /
+                Math.max(Number.EPSILON, attackDefenseLevelMultiplier);
           const arithmetic = calculateDamage({
             attackerStat: sequentialAttackerStat,
             displayedPower: sequentialPower,
-            defenderDefense,
+            defenderDefense: mainDefenderDefense,
             damageReductionMultiplier,
             hitCount: 1,
             finalDamageMultiplier,
@@ -1075,7 +1092,6 @@ export function calculateSkillResult({
   );
   const maximumHp = Math.max(0, Number(defender.panelStats.hp) || 0);
   const hpPercent = maximumHp > 0 ? totalDamage / maximumHp * 100 : 0;
-  const panelPowerOverride = powerOverride.mode === "panel";
   const powerFormulaSteps = panelPowerOverride
     ? [
         formulaStep(
@@ -1305,7 +1321,7 @@ export function calculateSkillResult({
       "攻击面板",
       statKeys.attack,
       attacker.panelStats[statKeys.attack],
-      attackerStat,
+      mainAttackerStat,
       "panel-stat",
     ),
     ...powerFormulaSteps,
@@ -1319,10 +1335,10 @@ export function calculateSkillResult({
       {
         level,
         coefficient: mainDamage.coefficient,
-        attackerStat,
+        attackerStat: mainAttackerStat,
         calculationPower,
         damageReductionMultiplier,
-        defenderDefense,
+        defenderDefense: mainDefenderDefense,
         displayedPower,
         roundedNumerator: mainDamage.numerator,
         unroundedNumerator: mainDamage.unroundedNumerator,
