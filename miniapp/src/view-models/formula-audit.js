@@ -101,9 +101,10 @@ export function buildResultFormulaAudit(result) {
   const basePower = stepByLabel(result, "基础威力");
   const manualStatic = stepByLabel(result, "手动静态威力");
   const externalFixed = stepByLabel(result, "外部固定威力")?.input ?? {};
+  const manualPanel =
+    stepByLabel(result, "手动显示威力") ?? stepByLabel(result, "手动面板威力");
   const displayedBasePower =
-    stepByLabel(result, "手动显示威力") ??
-    stepByLabel(result, "手动面板威力") ??
+    manualPanel ??
     stepByLabel(result, "面板威力") ??
     stepByLabel(result, "游戏内显示威力");
   const fixedPower = stepByLabel(result, "固定威力增加");
@@ -125,6 +126,7 @@ export function buildResultFormulaAudit(result) {
   const damageInput = damage?.input ?? {};
   const settlementInput = settlement?.input ?? {};
   const primaryPower = basePower ?? manualStatic ?? displayedBasePower;
+  const staticIsSummary = Boolean(manualPanel && !basePower && Number.isFinite(Number(result.staticPower)));
 
   const powerFactors = [
     { label: "本系", value: sameType?.input },
@@ -186,9 +188,12 @@ export function buildResultFormulaAudit(result) {
       reduction: damageInput.damageReductionMultiplier ?? 1,
     },
     power: {
-      manual: Boolean(manualStatic || displayedBasePower),
-      base: primaryPower?.before ?? primaryPower?.input,
-      conditional: primaryPower?.after,
+      manual: Boolean(manualStatic || (displayedBasePower && !staticIsSummary)),
+      manualPanel: manualPanel?.label,
+      staticIsSummary,
+      static: staticIsSummary ? result.staticPower : undefined,
+      base: staticIsSummary ? result.staticPower : primaryPower?.before ?? primaryPower?.input,
+      conditional: staticIsSummary ? undefined : primaryPower?.after,
       effective:
         sameType?.before ??
         displayPower?.before ??

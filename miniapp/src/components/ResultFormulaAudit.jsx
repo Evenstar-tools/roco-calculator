@@ -110,9 +110,9 @@ export default function ResultFormulaAudit({ result }) {
         <Text className="result-formula__skill">{audit.skillName}</Text>
       </View>
 
-      <FormulaRow title="技能威力" tone="power">
+      <FormulaRow title={power.staticIsSummary ? "静态威力" : "技能威力"} tone="power">
         <FormulaChip
-          label={power.manual ? "手动" : Number.isFinite(Number(power.base)) ? "基础" : "规则值"}
+          label={power.staticIsSummary ? "规则值" : power.manual ? "手动" : Number.isFinite(Number(power.base)) ? "基础" : "规则值"}
           tone="power"
           value={displayFormulaNumber(
             Number.isFinite(Number(power.base)) ? power.base : power.effective,
@@ -129,7 +129,7 @@ export default function ResultFormulaAudit({ result }) {
             />
           </>
         ) : null}
-        {[
+        {!power.staticIsSummary && [
           ...(gains.fixed?.length ? gains.fixed.map((source) => [sourceLabel(source), source.amount]) : [["技能固定", power.fixed]]),
           ["印记固定", power.markFixed],
           [gainLabels(gains.traitFixed) || "特性固定", power.traitFixed],
@@ -145,7 +145,7 @@ export default function ResultFormulaAudit({ result }) {
             </View>
           ) : null,
         )}
-        {power.percentAdds !== 0 ? (
+        {!power.staticIsSummary && power.percentAdds !== 0 ? (
           <>
             <FormulaOperator>×</FormulaOperator>
             <FormulaChip
@@ -159,13 +159,13 @@ export default function ResultFormulaAudit({ result }) {
         <FormulaChip
           label="结果"
           tone="result"
-          value={displayFormulaNumber(power.effective)}
+          value={displayFormulaNumber(power.staticIsSummary ? power.static : power.effective)}
         />
       </FormulaRow>
 
       <FormulaRow title="显示威力" tone="display">
         <FormulaChip
-          label="技能"
+          label={power.manualPanel || "技能"}
           tone="display"
           value={displayFormulaNumber(power.effective)}
         />

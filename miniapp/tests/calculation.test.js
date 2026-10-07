@@ -1,4 +1,9 @@
 import { describe, expect, test } from "vitest";
+import { createElement } from "react";
+import { render } from "@testing-library/react";
+import { calculateMatchup as calculateWebMatchup } from "../../src/domain/calculate.js";
+import { buildResultFormulaAudit } from "../src/view-models/formula-audit.js";
+import ResultFormulaAudit from "../src/components/ResultFormulaAudit.jsx";
 import { calculateMatchup } from "../src/shared/domain/calculate.js";
 import { getTraitView } from "../src/shared/domain/calculator-view-model.js";
 import { buildCombatState } from "../src/shared/build-combat-state.js";
@@ -402,6 +407,42 @@ test.each([
 );
 
 describe("createCalculationView", () => {
+
+  test.each(["single", "four"])("%s 小程序镜像的手动最终威力不重复计入能力等级", (mode) => {
+    const snapshot = createSnapshot();
+    const state = createState(snapshot);
+    state.mode = mode;
+    state.directions.forward.overrides = {
+      attackerStat: 270,
+      defenderDefense: 163,
+      attackLevelStage: 10,
+      defenseLevelStage: -12,
+      ...(mode === "single" ? { powerOverride: { mode: "panel", value: 260 } } : {}),
+    };
+    if (mode === "four") {
+      state.sides.attacker.skills.four[0] = { skillId: "skill-a", powerOverride: { mode: "panel", value: 260 } };
+    }
+    const input = buildCombatState(state, snapshot);
+    const web = calculateWebMatchup(snapshot, input).forward.selectedResult;
+    const mirrored = calculateMatchup(snapshot, input).forward.selectedResult;
+    expect(mirrored).toMatchObject({ displayPower: 260, mainDamage: 388 });
+    expect(mirrored).toEqual(web);
+    const audit = buildResultFormulaAudit(mirrored);
+    expect(audit.power).toMatchObject({
+      manual: false,
+      manualPanel: "手动显示威力",
+      staticIsSummary: true,
+      base: 80,
+      static: 80,
+      effective: 260,
+    });
+    expect(audit.numerator).toMatchObject({ attack: 270, power: 260 });
+    expect(audit.oneHit).toMatchObject({ defense: 163, afterFloor: 388 });
+    const { container } = render(createElement(ResultFormulaAudit, { result: mirrored }));
+    const rows = container.querySelectorAll(".result-formula__row");
+    expect(rows[0]).toHaveTextContent(/^静态威力规则值80=结果80$/);
+    expect(rows[1]).toHaveTextContent("手动显示威力260");
+  });
   test("returns a clear unresolved result for a preview placeholder", () => {
     const snapshot = createSnapshot();
     snapshot.spirits[0] = {
