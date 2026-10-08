@@ -282,11 +282,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     currentDirection.context?.bloodlineMagicId,
   );
   const activeAdvancedConditions = [
-    activeWeather === "rain"
-      ? "雨天"
-      : activeWeather === "thunder"
-        ? "雷鸣"
-        : null,
+    { rain: "雨天", thunder: "雷鸣", sandstorm: "沙暴", blizzard: "暴风雪" }[activeWeather] ?? null,
     activeReductionPercent > 0 ? `减伤 ${activeReductionPercent}%` : null,
     activeFinalMultiplier !== 1
       ? `最终倍率 ×${Number(activeFinalMultiplier.toFixed(4))}`

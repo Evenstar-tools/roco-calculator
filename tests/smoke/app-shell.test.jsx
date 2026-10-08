@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { App } from "../../src/App.jsx";
@@ -10,6 +10,22 @@ import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
 
 // 应用入口和显示设置回归不执行二维码解码，独立解码专项仍使用真实实现。
 vi.mock("../../src/state/lineup-image.js", () => ({ decodeLineupImage: vi.fn() }));
+
+function createInteractiveSnapshot() {
+  const spirit = {
+    asset: { localUrl: "/assets/spirits/sonic-dog.png" },
+    dexNo: "048", fullName: "音速犬", id: "sonic-dog", stage: "二阶",
+    raceStats: { hp: 85, magicalAttack: 46, magicalDefense: 82, physicalAttack: 128, physicalDefense: 101, speed: 120 },
+    traitIds: [], types: ["火"],
+  };
+  return {
+    learnsets: [{ spiritId: "sonic-dog", skillIds: ["tackle"] }, { spiritId: "water-spirit", skillIds: ["tackle"] }],
+    meta: { id: "compact-option-labels-ui", rulesVersion: "1.0.0" },
+    skills: [{ id: "tackle", name: "拍击", type: "普通", category: "physical", basePower: 70, cost: 2, description: "造成物理伤害。" }],
+    spirits: [spirit, { ...spirit, id: "water-spirit", fullName: "水灵", types: ["水"] }],
+    traits: [], typeChart: { "普通": { "火": 1, "水": 1 } },
+  };
+}
 
 test("renders the calculator title", () => {
   render(<App />);
@@ -128,19 +144,7 @@ test("uses avatar data embedded in the runtime snapshot without a second request
 });
 
 test("显示选项名称开关接通真实精简版，改变标签不改变伤害、选中状态或技能配置", async () => {
-  const spirit = {
-    asset: { localUrl: "/assets/spirits/sonic-dog.png" },
-    dexNo: "048", fullName: "音速犬", id: "sonic-dog", stage: "二阶",
-    raceStats: { hp: 85, magicalAttack: 46, magicalDefense: 82, physicalAttack: 128, physicalDefense: 101, speed: 120 },
-    traitIds: [], types: ["火"],
-  };
-  const snapshot = {
-    learnsets: [{ spiritId: "sonic-dog", skillIds: ["tackle"] }, { spiritId: "water-spirit", skillIds: ["tackle"] }],
-    meta: { id: "compact-option-labels-ui", rulesVersion: "1.0.0" },
-    skills: [{ id: "tackle", name: "拍击", type: "普通", category: "physical", basePower: 70, cost: 2, description: "造成物理伤害。" }],
-    spirits: [spirit, { ...spirit, id: "water-spirit", fullName: "水灵", types: ["水"] }],
-    traits: [], typeChart: { "普通": { "火": 1, "水": 1 } },
-  };
+  const snapshot = createInteractiveSnapshot();
   const state = createInitialState(snapshot);
   state.mode = "four";
   state.sides.attacker.nature = "smart";
@@ -180,6 +184,47 @@ test("显示选项名称开关接通真实精简版，改变标签不改变伤�
       expect(localStorage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).toBe(configBytes);
       expect(screen.queryByRole("button", { name: /撤回上一步/ })).not.toBeInTheDocument();
     }
+  } finally {
+    app.unmount();
+    for (const [key, value] of stored) {
+      if (value === null) localStorage.removeItem(key);
+      else localStorage.setItem(key, value);
+    }
+  }
+});
+
+test.each([
+  ["沙暴", "sandstorm"],
+  ["暴风雪", "blizzard"],
+])("精简版保留%s天气摘要和可达的调整入口，清除天气不留空条件", async (label, weather) => {
+  const snapshot = createInteractiveSnapshot();
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  const keys = [FIRST_RUN_GUIDE_STORAGE_KEY, VIEW_MODE_STORAGE_KEY, SPIRIT_CONFIG_STORAGE_KEY];
+  const stored = keys.map((key) => [key, localStorage.getItem(key)]);
+  localStorage.setItem(FIRST_RUN_GUIDE_STORAGE_KEY, "1");
+  const app = render(<App initialSnapshot={snapshot} initialWorkspace={{ state, viewMode: "detailed" }} />);
+  const user = userEvent.setup();
+  try {
+    expect(screen.queryByRole("region", { name: "当前非默认高级条件" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "高级选项", exact: true }));
+    await user.selectOptions(screen.getByRole("combobox", { name: "天气", exact: true }), weather);
+    await user.click(screen.getByRole("button", { name: "高级选项", exact: true }));
+    await user.click(screen.getByRole("button", { name: "精简版", exact: true }));
+
+    const conditions = screen.getByRole("region", { name: "当前非默认高级条件" });
+    expect(conditions).toHaveTextContent(label);
+    const damage = screen.getByTestId("primary-damage").textContent;
+    await user.click(within(conditions).getByRole("button", { name: "调整", exact: true }));
+    expect(screen.getByRole("button", { name: "具体版", exact: true })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "高级选项", exact: true })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("combobox", { name: "天气", exact: true })).toHaveValue(weather);
+    expect(screen.getByTestId("primary-damage")).toHaveTextContent(damage);
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "天气", exact: true }), "none");
+    await user.click(screen.getByRole("button", { name: "高级选项", exact: true }));
+    await user.click(screen.getByRole("button", { name: "精简版", exact: true }));
+    expect(screen.queryByRole("region", { name: "当前非默认高级条件" })).not.toBeInTheDocument();
   } finally {
     app.unmount();
     for (const [key, value] of stored) {

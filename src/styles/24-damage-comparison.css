@@ -33,6 +33,11 @@ html[data-theme="dark"] .damage-comparison button[aria-pressed="true"],html[data
 .dc-web-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 20px; }
 .dc-web-columns,.damage-comparison .dc-web-row { display: grid; grid-template-columns: 35px minmax(180px, 1fr) 64px 90px minmax(240px, 1fr); align-items: center; gap: 12px; }
 .dc-web-effectiveness { text-align: center; font-variant-numeric: tabular-nums; }
+.dc-web-multiplier { display: inline-flex; align-items: center; justify-content: center; justify-self: center; padding: 1px 4px; border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); background: var(--surface-soft); font-size: 12px; line-height: 1.4; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dc-web-multiplier[data-tone="weakness"],.dc-web-multiplier[data-tone="resistance"] { border-color: color-mix(in srgb, currentColor 35%, var(--border)); background: color-mix(in srgb, currentColor 8%, var(--surface)); }
+.dc-web-multiplier[data-tone="weakness"] { color: var(--damage-danger); }
+.dc-web-multiplier[data-tone="resistance"] { color: var(--damage-safe); }
+.dc-web-mobile-effectiveness { display: none; }
 .dc-range { flex: 1; max-width: 640px; min-width: 0; }
 .dc-range-heading { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-muted); }
 .dc-range-heading strong { margin-left: 8px; color: var(--text); font-variant-numeric: tabular-nums; }
@@ -60,6 +65,7 @@ html[data-theme="dark"] .damage-comparison button[aria-pressed="true"],html[data
 .dc-web-track { flex: 1; display: flex; height: 8px; background: var(--surface-muted); border-radius: 4px; overflow: hidden; }.dc-web-track>span { display: block; flex-shrink: 0; height: 100%; background: currentColor; }
 .dc-web-track>span.dc-web-freeze { background: #38bdf8; }
 .dc-web-score .dc-web-freeze-breakdown { font-size: 11px; }
+.dc-web-freeze-breakdown>span { display: inline-block; white-space: nowrap; }
 .dc-web-freeze-detail { color: var(--text-muted); font-size: 12px; }
 .dc-web-score.is-low { color: var(--damage-safe); }.dc-web-score.is-mid { color: var(--damage-warning); }.dc-web-score.is-ko { color: var(--damage-danger); }
 .dc-web-detail { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 16px 18px 47px; }
@@ -98,9 +104,10 @@ html[data-theme="dark"] .damage-comparison button[aria-pressed="true"],html[data
   .dc-web-inherit { flex-basis: 100%; margin-left: 0; }
   .dc-range { flex-basis: 100%; }.dc-range-controls { gap: 10px; }.damage-comparison .dc-range-heading button { flex: none; }
   .dc-web-summary { padding: 0 14px; }.dc-web-scroll { padding: 0 14px; }
-  .dc-web-columns { display: none; }.damage-comparison .dc-web-row { grid-template-columns: 20px minmax(0, 1fr) 32px auto; gap: 6px; }
+  .dc-web-columns { display: none; }.damage-comparison .dc-web-row { grid-template-columns: 20px minmax(0, 1fr) 92px; gap: 6px; }
+  .dc-web-row>.dc-web-effectiveness { display: none; }.dc-web-mobile-effectiveness { display: inline-flex; margin-left: 6px; }
   .dc-web-identity { gap: 6px; }.dc-web-identity img { width: 32px; height: 32px; }.dc-web-identity strong { font-size: 14px; }
-  .dc-web-damage { display: none; }.dc-web-mobile-damage { display: inline; }.dc-web-score { gap: 3px; padding: 0; flex-direction: column-reverse; align-items: stretch; }.dc-web-score>span:has(strong) { min-width: 90px; }.dc-web-score>svg { display: none; }
+  .dc-web-damage { display: none; }.dc-web-mobile-damage { display: block; white-space: nowrap; }.dc-web-score { gap: 3px; padding: 0; flex-direction: column-reverse; align-items: stretch; }.dc-web-score>span:has(strong) { min-width: 90px; }.dc-web-score>svg { display: none; }
   .dc-web-track { flex: none; height: 6px; }.dc-web-score .dc-web-freeze-breakdown { font-size: 10px; }
   .dc-web-score strong { font-size: 17px; }.dc-web-detail { padding: 0 12px 14px; display: block; font-size: 13px; }.dc-web-primary { margin-top: 10px; width: 100%; }
   .damage-comparison footer { font-size: 11px; padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)); }

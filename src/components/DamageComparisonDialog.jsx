@@ -7,6 +7,18 @@ import { buildDamageComparisonReport, downloadDamageComparison } from "../featur
 const portrait = (spirit) => spirit?.asset?.localUrl ?? spirit?.imageUrl;
 const focusable = 'button:not([disabled]), input:not([disabled]), select:not([disabled]), [href]';
 
+function TypeMultiplier({ value, mobile = false }) {
+  const known = Number.isFinite(value);
+  const tone = !known ? "unknown" : value === 0 ? "immune" : value > 1 ? "weakness" : value < 1 ? "resistance" : "neutral";
+  const meaning = { unknown: "不适用", immune: "免疫", weakness: "弱点", resistance: "抵抗", neutral: "正常" }[tone];
+  return <span
+    className={`dc-web-multiplier ${mobile ? "dc-web-mobile-effectiveness" : "dc-web-effectiveness"}`}
+    data-tone={tone}
+    title={`当前技能的属性克制倍率：${meaning}${known ? ` ×${value}` : ""}`}
+    aria-label={`${mobile ? "属性倍率" : "克制倍率"} ${known ? value : "不适用"}`}
+  >{known ? `${value === 0 ? "免疫 " : ""}×${value}` : "—"}</span>;
+}
+
 export default function DamageComparisonDialog({ snapshot, source, preferences, onPreferencesChange, onClose, onImport }) {
   const model = useDamageComparison(snapshot, source, preferences, onPreferencesChange);
   const dialog = useRef(null);
@@ -105,10 +117,10 @@ export default function DamageComparisonDialog({ snapshot, source, preferences, 
           return <div key={row.spirit.id} className={`dc-web-item${expanded ? " is-expanded" : ""}`}>
             <button type="button" className="dc-web-row" aria-label={`查看${row.spirit.fullName}承伤详情`} aria-expanded={expanded} aria-controls={`damage-detail-${row.spirit.id}`} onClick={() => model.setExpanded(expanded ? null : row.spirit.id)}>
               <span className="dc-web-rank">{row.rank}</span>
-              <span className="dc-web-identity">{portrait(row.spirit) ? <img alt="" src={portrait(row.spirit)} loading="lazy" /> : null}<span><strong>{row.spirit.fullName}{row.template.presetFallback ? <span className="dc-web-no-preset">无预设</span> : null}</strong><small>{row.spirit.types?.join(" · ")}<span className="dc-web-mobile-damage"> · 伤害 {row.damage} HP</span></small></span></span>
-              <span className="dc-web-effectiveness" title="当前技能的属性克制倍率" aria-label={`克制倍率 ${Number.isFinite(row.result?.typeMultiplier) ? row.result.typeMultiplier : "不适用"}`}>{Number.isFinite(row.result?.typeMultiplier) ? row.result.typeMultiplier : "—"}</span>
+              <span className="dc-web-identity">{portrait(row.spirit) ? <img alt="" src={portrait(row.spirit)} loading="lazy" /> : null}<span><strong>{row.spirit.fullName}{row.template.presetFallback ? <span className="dc-web-no-preset">无预设</span> : null}</strong><small>{row.spirit.types?.join(" · ")}<TypeMultiplier value={row.result?.typeMultiplier} mobile /><span className="dc-web-mobile-damage">伤害 {row.damage} HP</span></small></span></span>
+              <TypeMultiplier value={row.result?.typeMultiplier} />
               <span className="dc-web-damage">{row.damage}</span>
-              <span className={`dc-web-score${row.lethal ? " is-ko" : row.percent < 50 ? " is-low" : " is-mid"}`}><span className="dc-web-track" role="img" aria-label={breakdown} title={breakdown}>{freezePercent > 0 ? <span className="dc-web-freeze" style={{ width: `${freezePercent}%` }} /> : null}<span style={{ width: `${Math.min(100 - freezePercent, damagePercent)}%` }} /></span><span><strong>{row.percent.toFixed(1)}%</strong>{freezePercent > 0 ? <small className="dc-web-freeze-breakdown">{breakdown}</small> : null}<small>{row.freezeLethal ? "冻结击倒" : row.lethal ? "本次可击倒" : `剩余 ${row.remainingHp} HP`}</small></span>{expanded ? <CaretUp size={16} /> : <CaretDown size={16} />}</span>
+              <span className={`dc-web-score${row.lethal ? " is-ko" : row.percent < 50 ? " is-low" : " is-mid"}`}><span className="dc-web-track" role="img" aria-label={breakdown} title={breakdown}>{freezePercent > 0 ? <span className="dc-web-freeze" style={{ width: `${freezePercent}%` }} /> : null}<span style={{ width: `${Math.min(100 - freezePercent, damagePercent)}%` }} /></span><span><strong>{row.percent.toFixed(1)}%</strong>{freezePercent > 0 ? <small className="dc-web-freeze-breakdown"><span>伤害{damagePercent.toFixed(1)}%</span><span>＋冻结{freezePercent}%</span></small> : null}<small>{row.freezeLethal ? "冻结击倒" : row.lethal ? "本次可击倒" : `剩余 ${row.remainingHp} HP`}</small></span>{expanded ? <CaretUp size={16} /> : <CaretDown size={16} />}</span>
             </button>
             {expanded ? <div className="dc-web-detail" id={`damage-detail-${row.spirit.id}`}>
               <div><strong>{row.spirit.fullName}</strong><p>生命 {row.panelStats.hp} · 物防 {row.panelStats.physicalDefense} · 魔防 {row.panelStats.magicalDefense}</p><p>本次伤害 {row.damage} · 剩余 {row.remainingHp} HP</p>{freezePercent > 0 ? <p className="dc-web-freeze-detail">冻结斩杀≤{row.freezeThresholdHp} HP · 伤害后{row.remainingAfterDirect} HP · 冻结不额外扣血</p> : row.freezeImmune && row.freezeStacks > 0 ? <p className="dc-web-freeze-detail">冰系免疫冻结</p> : null}<small>{model.templateDescription(row)}<br />{model.loadoutDescription(row)}<br />本榜不计防守方特性，代入后恢复特性及预设参数。</small></div>
