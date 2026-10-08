@@ -29,7 +29,7 @@ export function PowerDraftInput({
   const draftMode = useRef(mode);
 
   useEffect(() => {
-    // 非编辑态跟外部威力；切换口径时旧草稿不能沿用。
+    // 无错误的非编辑态跟外部威力；非法草稿保留供修正，切换口径仍丢弃。
     const modeChanged = draftMode.current !== mode;
     if (modeChanged) {
       draftMode.current = mode;
@@ -37,8 +37,8 @@ export function PowerDraftInput({
       setEditing(false);
       setError("");
     }
-    if (modeChanged || !editing) setDraft(String(value ?? ""));
-  }, [editing, mode, value]);
+    if (modeChanged || (!editing && !error)) setDraft(String(value ?? ""));
+  }, [editing, error, mode, value]);
 
   function restoreCurrent() {
     changed.current = false;

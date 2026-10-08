@@ -99,10 +99,58 @@ test("普通自动结果更新不冲掉正在编辑的草稿，非法值不能�
   fireEvent.blur(input);
   expect(onCommit).toHaveBeenCalledOnce();
   expect(screen.getByRole("alert")).toHaveTextContent("显示威力只能填整数");
+  expect(input).toHaveValue(1.5);
+  expect(input).toHaveAttribute("aria-invalid", "true");
   fireEvent.focus(input);
   fireEvent.keyDown(input, { key: "Enter" });
   fireEvent.blur(input);
   expect(onCommit).toHaveBeenCalledOnce();
+  expect(input).toHaveValue(1.5);
+});
+
+test.each(["static", "panel"])("%s 非法草稿失焦后保留，修正、取消与切换口径清除对应错误", (mode) => {
+  const onCommit = vi.fn();
+  const view = render(<PowerDraftInput ariaLabel="威力" mode={mode} value={65} onCommit={onCommit} />);
+  const input = screen.getByRole("spinbutton", { name: "威力" });
+  fireEvent.focus(input);
+  fireEvent.change(input, { target: { value: "10000" } });
+  fireEvent.blur(input);
+  expect(input).toHaveValue(10000);
+  expect(input).toHaveAttribute("aria-invalid", "true");
+  expect(screen.getByRole("alert")).toHaveTextContent("0–9999");
+  expect(onCommit).not.toHaveBeenCalled();
+
+  view.rerender(<PowerDraftInput ariaLabel="威力" mode={mode} value={75} onCommit={onCommit} />);
+  expect(input).toHaveValue(10000);
+  fireEvent.focus(input);
+  fireEvent.keyDown(input, { key: "Escape" });
+  fireEvent.blur(input);
+  expect(input).toHaveValue(75);
+  expect(input).toHaveAttribute("aria-invalid", "false");
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(onCommit).not.toHaveBeenCalled();
+
+  fireEvent.focus(input);
+  fireEvent.change(input, { target: { value: "-1" } });
+  fireEvent.keyDown(input, { key: "Enter" });
+  fireEvent.blur(input);
+  expect(input).toHaveValue(-1);
+  fireEvent.focus(input);
+  fireEvent.change(input, { target: { value: "80" } });
+  fireEvent.keyDown(input, { key: "Enter" });
+  fireEvent.blur(input);
+  expect(onCommit.mock.calls).toEqual([[80]]);
+  expect(input).toHaveAttribute("aria-invalid", "false");
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+
+  fireEvent.focus(input);
+  fireEvent.change(input, { target: { value: "1.5" } });
+  fireEvent.blur(input);
+  view.rerender(<PowerDraftInput ariaLabel="威力" mode={mode === "panel" ? "static" : "panel"} value={260} onCommit={onCommit} />);
+  expect(input).toHaveValue(260);
+  expect(input).toHaveAttribute("aria-invalid", "false");
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(onCommit.mock.calls).toEqual([[80]]);
 });
 
 test("恢复自动取消未提交草稿，不在失焦时重新生成手动覆盖", () => {
