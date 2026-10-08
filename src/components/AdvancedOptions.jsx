@@ -318,8 +318,10 @@ export function FormulaAudit({ result }) {
   ));
   const simpleDisplay = power.manualPanel || (!expandPower && factors.length === 0 &&
     Number(power.effective) === Number(audit.formulaPower.displayed));
-  const simpleTotal = Number(total.finalMultiplier) === 1 && total.hitCount === 1 &&
-    total.additionalDamage === 0 && total.reassemblyDamage === 0 && total.traitDamage === 0;
+  const redundantTotal = Number(total.finalMultiplier) === 1 && total.hitCount === 1 &&
+    total.additionalDamage === 0 && total.reassemblyDamage === 0 && total.traitDamage === 0 &&
+    total.value != null && oneHit.afterFloor != null && Number.isFinite(Number(total.value)) &&
+    Number.isFinite(Number(oneHit.afterFloor)) && Number(total.value) === Number(oneHit.afterFloor);
   const recordedPower = Number(power.conditional ?? power.base ?? power.percentBefore) +
     power.fixedSteps.reduce((sum, step) => sum + step.amount, 0);
   const powerChainMatches = Math.abs(recordedPower - Number(power.hasPercentStep ? power.percentBefore : power.effective)) < 1e-8;
@@ -421,8 +423,7 @@ export function FormulaAudit({ result }) {
         <AuditChip label="结果" tone="result" value={displayNumber(oneHit.afterFloor)} />
       </FormulaRow>
 
-      <FormulaRow title="总伤害" tone="total">
-        {simpleTotal ? <AuditChip label="1段" tone="result" value={displayNumber(total.value)} /> : <>
+      {!redundantTotal && <FormulaRow title="总伤害" tone="total">
         <AuditChip label="每段" tone="total" value={displayNumber(oneHit.afterFloor)} />
         {Number(total.finalMultiplier) !== 1 ? (
           <>
@@ -467,8 +468,7 @@ export function FormulaAudit({ result }) {
         ) : null}
         <Operator>=</Operator>
         <AuditChip label="结果" tone="result" value={displayNumber(total.value)} />
-        </>}
-      </FormulaRow>
+      </FormulaRow>}
     </section>
   );
 }

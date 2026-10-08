@@ -193,13 +193,14 @@ test("formula audit expands shared power gains before flooring without duplicate
   };
   const { container, rerender } = render(<FormulaAudit result={result} />);
   const rows = container.querySelectorAll(".formula-audit__row");
-  expect(rows).toHaveLength(4);
+  expect(rows).toHaveLength(3);
   expect(rows[0].textContent).toBe("静态威力技能115");
   expect(rows[1]).toHaveTextContent("（1 + 50%（顺风） + 75%（雨天））");
   expect(rows[1]).toHaveTextContent("258.75→向下取整加成后威力258×克制倍率0.5=显示威力129");
   expect(rows[1]).not.toHaveTextContent("公式值");
   expect(rows[2]).toHaveTextContent("四舍五入伤害分子31548÷物防149→向下取整结果211");
-  expect(rows[3].textContent).toBe("总伤害1段211");
+  expect(screen.queryByText("总伤害")).not.toBeInTheDocument();
+  expect(screen.queryByText("1段")).not.toBeInTheDocument();
   rerender(<FormulaAudit result={{ ...result, effectivePower: 258, formulaSteps: result.formulaSteps.map((step) =>
     step.label === "属性克制" ? { ...step, after: 258 }
       : step.label === "显示威力" ? { ...step, before: 258, after: 258 }
@@ -215,6 +216,24 @@ test("formula audit expands shared power gains before flooring without duplicate
   ] }} />);
   expect(container.querySelectorAll(".formula-audit__row")[1].textContent).toBe("显示威力手动99");
   expect(container.querySelectorAll(".formula-audit__row")[1]).not.toHaveTextContent("雨天");
+  for (const extra of [
+    { hitCount: 2, totalDamage: 422 },
+    { finalDamageMultiplier: 2, totalDamage: 422 },
+    { additionalDamage: 25, totalDamage: 236 },
+    { reassemblyDamage: 25, totalDamage: 236 },
+    { traitDamage: 25, totalDamage: 236 },
+    { totalDamage: 212 },
+  ]) {
+    rerender(<FormulaAudit result={{ ...result, ...extra, formulaSteps: result.formulaSteps.map((step) =>
+      step.label === "减伤、连击与最终倍率" ? { ...step, input: {
+        ...step.input, hitCount: extra.hitCount ?? 1,
+        finalDamageMultiplier: extra.finalDamageMultiplier ?? 1,
+      } } : step
+    ) }} />);
+    const totalRow = container.querySelector('[data-tone="total"].formula-audit__row');
+    expect(totalRow).toHaveTextContent("总伤害");
+    expect(totalRow).toHaveTextContent(`结果${extra.totalDamage}`);
+  }
 });
 
 test("雷暴来源显示悬停效果，并与星光狮特性迸发保持独立", async () => {
