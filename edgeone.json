@@ -1,0 +1,19 @@
+{
+  "redirects": [
+    {
+      "source": "/dianlu",
+      "destination": "/dianlu/",
+      "statusCode": 301
+    },
+    {
+      "source": "/guide",
+      "destination": "/guide/",
+      "statusCode": 301
+    },
+    {
+      "source": "/en",
+      "destination": "/en/",
+      "statusCode": 301
+    }
+  ]
+}

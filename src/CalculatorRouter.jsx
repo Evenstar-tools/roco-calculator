@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { metrics } from "./analytics/metrics.js";
 import { App } from "./App.jsx";
+import { applyPageMetadata, DEER_PAGE_METADATA, HOME_PAGE_METADATA } from "./seo/page-metadata.js";
 
 const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
 const isDeerPath = () => /^\/dianlu\/?$/.test(window.location.pathname);
@@ -20,13 +21,16 @@ export function CalculatorRouter({ initialSnapshot = null }) {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
   useEffect(() => {
+    applyPageMetadata(route.deer ? DEER_PAGE_METADATA : HOME_PAGE_METADATA);
+  }, [route.deer]);
+  useEffect(() => {
     window.scrollTo(0, route.deer ? 0 : homeScroll.current);
     metrics.route(route.deer ? "deer" : "calculator");
   }, [route.deer]);
   function openDeer(input) {
     homeScroll.current = window.scrollY;
     const copy = structuredClone(input);
-    window.history.pushState({ deerInput: copy }, "", "/dianlu");
+    window.history.pushState({ deerInput: copy }, "", "/dianlu/");
     setRoute({ deer: true, input: copy });
   }
   function returnHome(event) {

@@ -6,6 +6,7 @@ import { withCalculatorExtras } from "../../data/snapshot-extras.js";
 import { SpiritPicker } from "../../components/SpiritPicker.jsx";
 import { AppHeader } from "../../components/AppHeader.jsx";
 import { readThemeSetting, writeThemeSetting } from "../../state/display-settings.js";
+import { isWebDocument } from "../../seo/page-metadata.js";
 import { QuickNaturePicker } from "../../components/QuickNaturePicker.jsx";
 import { QuickIvPicker } from "../../components/QuickIvPicker.jsx";
 import { NatureSelect } from "../../components/NatureSelect.jsx";
@@ -321,8 +322,8 @@ export default function DeerPage({ initialState = null, onReturn }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   useEffect(() => {
-    const previousTitle = document.title;
-    document.title = "电鹿斩杀线 · 洛克计算器";
+    const previousTitle = isWebDocument() ? null : document.title;
+    if (previousTitle !== null) document.title = "电鹿斩杀线 · 洛克计算器";
     const controller = new AbortController();
     async function load() {
       try {
@@ -339,7 +340,7 @@ export default function DeerPage({ initialState = null, onReturn }) {
       } catch (failure) { if (!controller.signal.aborted) setError(failure.message); }
     }
     load();
-    return () => { controller.abort(); document.title = previousTitle; };
+    return () => { controller.abort(); if (previousTitle !== null) document.title = previousTitle; };
   }, []);
   if (!data) return <><DeerHeader onReturn={onReturn} /><main className="deer-page"><p role="status">{error || "正在加载电鹿斩杀线…"}</p>{error && <button type="button" onClick={() => window.location.reload()}>重新加载</button>}</main></>;
   return <DeerWorkspace {...data} initialState={initialState} onReturn={onReturn} />;
