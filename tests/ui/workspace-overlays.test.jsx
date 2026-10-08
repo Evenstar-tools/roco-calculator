@@ -4,12 +4,16 @@ import { WorkspaceOverlays } from "../../src/components/WorkspaceOverlays.jsx";
 import { DisplaySettingsDialog } from "../../src/components/DisplaySettingsDialog.jsx";
 import { useWorkspaceOverlays } from "../../src/hooks/useWorkspaceOverlays.js";
 import { FORM_CONFIG_MEMORY_STORAGE_KEY, readFormConfigMemoryEnabled } from "../../src/state/form-config-preferences.js";
+import { COMPACT_OPTION_LABELS_STORAGE_KEY, readCompactOptionLabelsSetting } from "../../src/state/display-settings.js";
 import { USER_MANUAL_URL } from "../../src/data/product-links.js";
 import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 import {
   FEATURED_USER_RELEASE,
   USER_RELEASE_NOTES,
 } from "../../src/data/user-release-notes.js";
+
+// 弹层/底栏回归不执行图片解码，避免 jsdom 解析工作区联接外的 WASM 资源。
+vi.mock("../../src/state/lineup-image.js", () => ({ decodeLineupImage: vi.fn() }));
 
 function renderOverlays(overrides = {}) {
   const onMenuClose = vi.fn();
@@ -100,6 +104,7 @@ test.each([true, false])("底栏共用容器且两个入口独立，承伤对比
       result: {
         attackerName: "武斗酷猫",
         defenderName: "迪莫",
+        selectedSkillName: "破魔圣光",
         selectedResult: { totalDamage: 47, hpPercent: 11.1 },
       },
     },
@@ -107,6 +112,7 @@ test.each([true, false])("底栏共用容器且两个入口独立，承伤对比
   const result = screen.getByRole("button", { name: "展开伤害结果" });
   expect(result.parentElement).toHaveClass("mobile-result-dock");
   expect(result).toHaveTextContent("武斗酷猫 → 迪莫");
+  expect(result.querySelector(".mobile-result-bar__skill")).toHaveTextContent("破魔圣光");
   expect(result).toHaveTextContent("47");
   expect(result).toHaveTextContent("11.1%");
   fireEvent.click(result);
@@ -122,13 +128,39 @@ test.each([true, false])("底栏共用容器且两个入口独立，承伤对比
   }
 });
 
+test.each(["compact", "detailed"])("手机底栏技能名随当前结果更新，模式=%s", (viewMode) => {
+  const cases = [
+    { attackerName: "圣代甜甜", defenderName: "寂灭骨龙", selectedSkillName: "风吹雪", selectedResult: { totalDamage: 83, hpPercent: 19.5 } },
+    { attackerName: "圣代甜甜", defenderName: "寂灭骨龙", selectedSkillName: "冰晶坠", selectedResult: { totalDamage: 211, hpPercent: 49.6 } },
+    { attackerName: "寂灭骨龙", defenderName: "圣代甜甜", selectedSkillName: "诡刺", selectedResult: { totalDamage: 64, hpPercent: 15.1 } },
+    { attackerName: "寂灭骨龙", defenderName: "圣代甜甜", selectedSkillName: "力量增效", selectedResult: { totalDamage: null, hpPercent: null, reason: "非伤害技能不计算伤害" } },
+  ];
+  const props = (result) => ({
+    menu: { open: false },
+    mobileResult: { configurationReady: true, open: false, viewMode, result },
+    share: {}, team: {}, toast: {},
+  });
+  const { rerender } = renderOverlays(props(cases[0]));
+  for (const result of cases) {
+    rerender(<WorkspaceOverlays {...props(result)} />);
+    const bar = screen.getByRole("button", { name: "展开伤害结果" });
+    const skill = bar.querySelector(".mobile-result-bar__skill");
+    expect(skill).toHaveTextContent(result.selectedSkillName);
+    expect(bar.querySelector(".mobile-result-bar__matchup")).toHaveTextContent(`${result.attackerName} → ${result.defenderName}`);
+    expect(bar.querySelector(".mobile-result-bar__matchup").nextElementSibling).toBe(skill);
+    expect(skill.nextElementSibling).toHaveClass("mobile-result-bar__damage");
+    expect(skill.nextElementSibling).toHaveTextContent(String(result.selectedResult.totalDamage ?? "—"));
+    expect(bar.querySelector(".mobile-result-bar__percent")).toHaveTextContent(result.selectedResult.hpPercent === null ? "非伤害" : `${result.selectedResult.hpPercent.toFixed(1)}%`);
+  }
+});
+
 test.each([
   [372, false, "372", "102.5%"],
   [0, true, "—", "15.0%"],
 ])("手机底栏冻结覆盖与实际伤害分开：%d伤害，纯状态=%s", (damage, statusOnly, damageText, percentText) => {
   renderOverlays({ menu: { open: false }, mobileResult: {
     configurationReady: true, open: false, viewMode: "compact",
-    result: { attackerName: "圣代甜甜", defenderName: "寂灭骨龙", selectedResult: {
+    result: { attackerName: "圣代甜甜", defenderName: "寂灭骨龙", selectedSkillName: statusOnly ? "霜降" : "寒潮", selectedResult: {
       totalDamage: damage, hpPercent: damage / 425 * 100, statusOnly,
       negativeStatusSettlement: {
         actualStatusDamage: 0, maxHp: 425,
@@ -137,6 +169,7 @@ test.each([
     } },
   } });
   const bar = screen.getByRole("button", { name: "展开伤害结果" });
+  expect(bar.querySelector(".mobile-result-bar__skill")).toHaveTextContent(statusOnly ? "霜降" : "寒潮");
   expect(bar.querySelector(".mobile-result-bar__damage")).toHaveTextContent(damageText);
   expect(bar.querySelector(".mobile-result-bar__percent")).toHaveTextContent(percentText);
 });
@@ -148,10 +181,11 @@ test.each([
 ])("底栏区分非伤害与待输入：%s", (reason, text) => {
   renderOverlays({ menu: { open: false }, mobileResult: {
     configurationReady: true, open: false, viewMode: "compact",
-    result: { attackerName: "银月狼王", defenderName: "布灵布灵",
+    result: { attackerName: "银月狼王", defenderName: "布灵布灵", selectedSkillName: "力量增效",
       selectedResult: { totalDamage: null, hpPercent: null, reason } },
   } });
   const bar = screen.getByRole("button", { name: "展开伤害结果" });
+  expect(bar.querySelector(".mobile-result-bar__skill")).toHaveTextContent("力量增效");
   expect(bar.querySelector(".mobile-result-bar__percent")).toHaveTextContent(text);
   expect(bar.querySelector(".mobile-result-bar__damage")).toHaveTextContent("—");
 });
@@ -580,4 +614,32 @@ test("opens display settings from the menu and exposes the type analysis switch"
   );
   fireEvent.click(screen.getByRole("button", { name: "显示威力" }));
   expect(onPowerDisplayModeChange).toHaveBeenCalledWith("panel");
+});
+
+test("显示选项名称默认关闭，勾选即时保存且重新打开仍恢复，不提交计算变更", () => {
+  localStorage.removeItem(COMPACT_OPTION_LABELS_STORAGE_KEY);
+  const dispatch = vi.fn();
+  function Settings() {
+    const overlays = useWorkspaceOverlays({ dispatch });
+    return <DisplaySettingsDialog {...overlays.displaySettingsProps} open />;
+  }
+  const first = render(<Settings />);
+  try {
+    const toggle = screen.getByRole("checkbox", { name: "显示选项名称" });
+    expect(toggle).not.toBeChecked();
+    expect(screen.getByText("在精简版显示属性和技能模式名称")).toBeVisible();
+    fireEvent.click(toggle);
+    expect(toggle).toBeChecked();
+    expect(readCompactOptionLabelsSetting()).toBe(true);
+    first.unmount();
+    render(<Settings />);
+    const restored = screen.getByRole("checkbox", { name: "显示选项名称" });
+    expect(restored).toBeChecked();
+    fireEvent.click(restored);
+    expect(restored).not.toBeChecked();
+    expect(readCompactOptionLabelsSetting()).toBe(false);
+    expect(dispatch).not.toHaveBeenCalled();
+  } finally {
+    localStorage.removeItem(COMPACT_OPTION_LABELS_STORAGE_KEY);
+  }
 });

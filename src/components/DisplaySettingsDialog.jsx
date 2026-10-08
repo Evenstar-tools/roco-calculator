@@ -1,12 +1,14 @@
 import { X } from "@phosphor-icons/react";
 
 export function DisplaySettingsDialog({
+  compactOptionLabelsEnabled = false,
   dialogRef,
   damageComparisonEnabled = false,
   durabilityOverviewEnabled = false,
   formConfigMemoryEnabled = false,
   negativeStatusSettlementEnabled = false,
   onClose,
+  onCompactOptionLabelsChange,
   onDamageComparisonChange,
   onDurabilityOverviewChange,
   onFormConfigMemoryChange,
@@ -80,6 +82,18 @@ export function DisplaySettingsDialog({
             </div>
           </details>
         </div>
+        <label className="display-settings-option">
+          <span>
+            <strong>显示选项名称</strong>
+            <small>在精简版显示属性和技能模式名称</small>
+          </span>
+          <input
+            aria-label="显示选项名称"
+            checked={compactOptionLabelsEnabled}
+            onChange={(event) => onCompactOptionLabelsChange?.(event.target.checked)}
+            type="checkbox"
+          />
+        </label>
         <label className="display-settings-option">
           <span>
             <strong>属性克制与打击面</strong>

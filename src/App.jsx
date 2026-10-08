@@ -476,6 +476,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     overlays.productAccessProps.open && "desktop",
   ]);
   const {
+    compactOptionLabelsEnabled,
     damageComparisonEnabled,
     durabilityOverviewEnabled,
     powerDisplayMode,
@@ -2152,6 +2153,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
                             value,
                           })
                         }
+                        showOptionLabels={compactOptionLabelsEnabled}
                         side={side}
                         value={state.sides[side].nature}
                       />
@@ -2165,6 +2167,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
                             value,
                           })
                         }
+                        showOptionLabels={compactOptionLabelsEnabled}
                         side={side}
                         values={state.sides[side].displayIvs}
                       />
@@ -2177,6 +2180,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
                 compact
                 fourSkillContent={compactFourEditor}
                 onModeChange={setSkillMode}
+                showOptionLabels={compactOptionLabelsEnabled}
                 singleSkillContent={compactSingleEditor}
                 singleTraitContent={singleTraitContent}
               />

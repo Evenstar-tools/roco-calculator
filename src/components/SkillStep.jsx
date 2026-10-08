@@ -8,6 +8,7 @@ export function SkillStep({
   onModeChange,
   onPowerDisplayModeChange,
   powerDisplayMode = "static",
+  showOptionLabels = false,
   singleSkillContent,
   singleTraitContent,
 }) {
@@ -31,7 +32,7 @@ export function SkillStep({
       <div className="skill-step-toolbar">
         <div
           aria-label="技能模式"
-          className="mode-tabs"
+          className={`mode-tabs${compact && showOptionLabels ? " mode-tabs--labeled" : ""}`}
           data-guide-target="skills"
           role="tablist"
         >
@@ -47,7 +48,10 @@ export function SkillStep({
             type="button"
           >
             {compact ? (
-              <Crosshair aria-hidden="true" size={18} weight="bold" />
+              <>
+                <Crosshair aria-hidden="true" size={18} weight="bold" />
+                {showOptionLabels ? <span className="mode-tabs__label">单技能</span> : null}
+              </>
             ) : (
               "单技能"
             )}
@@ -64,7 +68,10 @@ export function SkillStep({
             type="button"
           >
             {compact ? (
-              <SquaresFour aria-hidden="true" size={18} weight="fill" />
+              <>
+                <SquaresFour aria-hidden="true" size={18} weight="fill" />
+                {showOptionLabels ? <span className="mode-tabs__label">四技能</span> : null}
+              </>
             ) : (
               "四技能"
             )}

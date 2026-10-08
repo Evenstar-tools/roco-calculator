@@ -1,15 +1,18 @@
 import { describe, expect, test } from "vitest";
 import {
+  COMPACT_OPTION_LABELS_STORAGE_KEY,
   DURABILITY_OVERVIEW_STORAGE_KEY,
   POWER_DISPLAY_STORAGE_KEY,
   THEME_STORAGE_KEY,
   readPowerDisplayMode,
+  readCompactOptionLabelsSetting,
   readDurabilityOverviewSetting,
   readNegativeStatusSettlementSetting,
   readThemeSetting,
   readTypeCoverageSetting,
   readDamageComparisonSetting,
   writeDamageComparisonSetting,
+  writeCompactOptionLabelsSetting,
   writePowerDisplayMode,
   writeDurabilityOverviewSetting,
   writeThemeSetting,
@@ -31,6 +34,33 @@ test("type coverage and damage comparison default on while other defaults stay u
   expect(readDamageComparisonSetting(storage)).toBe(true);
   expect(readDurabilityOverviewSetting(storage)).toBe(false);
   expect(readNegativeStatusSettlementSetting(storage)).toBe(false);
+  expect(readCompactOptionLabelsSetting(storage)).toBe(false);
+});
+
+describe("compact option labels display setting", () => {
+  test("defaults to off and remembers both explicit choices", () => {
+    const storage = createStorage();
+    expect(readCompactOptionLabelsSetting(storage)).toBe(false);
+    expect(writeCompactOptionLabelsSetting(storage, true)).toBe(true);
+    expect(storage.getItem(COMPACT_OPTION_LABELS_STORAGE_KEY)).toBe("1");
+    expect(readCompactOptionLabelsSetting(storage)).toBe(true);
+    expect(writeCompactOptionLabelsSetting(storage, false)).toBe(false);
+    expect(storage.getItem(COMPACT_OPTION_LABELS_STORAGE_KEY)).toBe("0");
+    expect(readCompactOptionLabelsSetting(storage)).toBe(false);
+    expect(readPowerDisplayMode(storage)).toBe("static");
+    expect(readNegativeStatusSettlementSetting(storage)).toBe(false);
+  });
+
+  test("unexpected values and unavailable storage keep the default off", () => {
+    expect(readCompactOptionLabelsSetting({ getItem: () => "true" })).toBe(false);
+    expect(readCompactOptionLabelsSetting(null)).toBe(false);
+    const denied = {
+      getItem: () => { throw new Error("denied"); },
+      setItem: () => { throw new Error("denied"); },
+    };
+    expect(readCompactOptionLabelsSetting(denied)).toBe(false);
+    expect(writeCompactOptionLabelsSetting(denied, true)).toBe(true);
+  });
 });
 
 describe("type coverage display setting", () => {

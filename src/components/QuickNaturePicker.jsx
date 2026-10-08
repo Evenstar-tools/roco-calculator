@@ -16,6 +16,7 @@ export function QuickNaturePicker({
   displayIvs,
   label,
   onChange,
+  showOptionLabels = false,
   side,
   value,
 }) {
@@ -25,7 +26,7 @@ export function QuickNaturePicker({
   return (
     <div
       aria-label={`${label}快捷性格`}
-      className={`quick-nature quick-nature--${side}`}
+      className={`quick-nature quick-nature--${side}${showOptionLabels ? " quick-nature--labeled" : ""}`}
       role="group"
     >
       <span className="quick-nature__side" title={label}>
@@ -41,7 +42,7 @@ export function QuickNaturePicker({
         type="button"
       >
         <Equals aria-hidden="true" size={16} weight="bold" />
-        <span>性格</span>
+        <span>{showOptionLabels ? "普通" : "性格"}</span>
       </button>
       {QUICK_STATS.map((stat) => (
         <button
@@ -54,6 +55,7 @@ export function QuickNaturePicker({
           type="button"
         >
           <StatIcon size={19} stat={stat} />
+          {showOptionLabels ? <span className="quick-nature__name">{STAT_LABELS[stat]}</span> : null}
           <ArrowUp
             aria-hidden="true"
             className="quick-nature__up"

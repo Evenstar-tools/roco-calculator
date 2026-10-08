@@ -8,6 +8,8 @@ export const DURABILITY_OVERVIEW_STORAGE_KEY =
   "rock-calculator.settings.durability-overview.v1";
 export const DAMAGE_COMPARISON_STORAGE_KEY =
   "rock-calculator.settings.damage-comparison.v1";
+export const COMPACT_OPTION_LABELS_STORAGE_KEY =
+  "rock-calculator.settings.compact-option-labels.v1";
 export const THEME_STORAGE_KEY = "rock-calculator.settings.theme.v1";
 export const VIEW_MODE_STORAGE_KEY = "rock-calculator.settings.view-mode.v1";
 
@@ -152,6 +154,27 @@ export function readNegativeStatusSettlementSetting(
   } catch {
     return false;
   }
+}
+
+export function readCompactOptionLabelsSetting(storage = globalThis.localStorage) {
+  try {
+    return storage?.getItem(COMPACT_OPTION_LABELS_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function writeCompactOptionLabelsSetting(
+  storage = globalThis.localStorage,
+  enabled,
+) {
+  const normalized = Boolean(enabled);
+  try {
+    storage?.setItem(COMPACT_OPTION_LABELS_STORAGE_KEY, normalized ? "1" : "0");
+  } catch {
+    return normalized;
+  }
+  return normalized;
 }
 
 export function writeNegativeStatusSettlementSetting(

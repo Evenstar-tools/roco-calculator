@@ -276,6 +276,9 @@ export function WorkspaceOverlays({
           <span className="mobile-result-bar__matchup">
             {mobileResult.result.attackerName} → {mobileResult.result.defenderName}
           </span>
+          <span className="mobile-result-bar__skill">
+            {mobileResult.result.selectedSkillName}
+          </span>
           <strong className="mobile-result-bar__damage">
             {mobilePresentation.damage ?? "—"}
           </strong>

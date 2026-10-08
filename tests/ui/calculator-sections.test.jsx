@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { AppHeader } from "../../src/components/AppHeader.jsx";
 import { NatureStatsStep } from "../../src/components/NatureStatsStep.jsx";
+import { QuickNaturePicker } from "../../src/components/QuickNaturePicker.jsx";
+import { QuickIvPicker } from "../../src/components/QuickIvPicker.jsx";
 import { SkillStep } from "../../src/components/SkillStep.jsx";
 import { SpiritPicker } from "../../src/components/SpiritPicker.jsx";
 import { SpiritStep } from "../../src/components/SpiritStep.jsx";
@@ -1038,4 +1040,65 @@ test("详细版技能页签右侧切换威力口径，不增加说明行", async
 
   rerender(<SkillStep {...props} compact />);
   expect(screen.queryByRole("group", { name: "技能威力口径" })).not.toBeInTheDocument();
+});
+
+test("精简选项名称按开关显示，普通选项与高亮、个体和技能切换行为保持一致", () => {
+  const onNatureChange = vi.fn();
+  const onIvChange = vi.fn();
+  const onModeChange = vi.fn();
+  const displayIvs = { hp: 60, magicalAttack: 60, speed: 60 };
+  function controls(showOptionLabels = false) {
+    return <>
+      <QuickNaturePicker displayIvs={displayIvs} label="攻击方" onChange={onNatureChange}
+        showOptionLabels={showOptionLabels} side="attacker" value="smart" />
+      <QuickIvPicker label="攻击方" onChange={onIvChange} showOptionLabels={showOptionLabels}
+        side="attacker" values={displayIvs} />
+      <SkillStep activeMode="four" compact fourSkillContent={<div>四技能配置</div>}
+        onModeChange={onModeChange} showOptionLabels={showOptionLabels} singleSkillContent={<div>单技能配置</div>} />
+    </>;
+  }
+  const { container, rerender } = render(controls());
+  const neutral = screen.getByRole("button", { name: "攻击方普通性格" });
+  const magical = screen.getByRole("button", { name: "攻击方魔攻增益" });
+  expect(neutral).toHaveTextContent("性格");
+  expect(neutral).toHaveAttribute("aria-pressed", "false");
+  expect(magical).toHaveAttribute("aria-pressed", "true");
+  expect(container.querySelector(".quick-nature__name")).toBeNull();
+  expect(container.querySelector(".quick-iv__name")).toBeNull();
+  expect(screen.getByRole("tab", { name: "四技能" }).textContent).toBe("");
+
+  rerender(controls(true));
+  const labels = ["生命", "物攻", "魔攻", "速度", "物防", "魔防"];
+  expect([...container.querySelectorAll(".quick-nature__name")].map((node) => node.textContent)).toEqual(labels);
+  expect([...container.querySelectorAll(".quick-iv__name")].map((node) => node.textContent)).toEqual(labels);
+  expect(neutral).toHaveTextContent("普通");
+  expect(neutral).toHaveAttribute("aria-pressed", "false");
+  expect(magical).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("checkbox", { name: "攻击方生命个体加点" })).toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "攻击方物攻个体加点" })).not.toBeChecked();
+  expect(screen.getByRole("tablist", { name: "技能模式" })).toHaveClass("mode-tabs--labeled");
+  for (const name of ["单技能", "四技能"]) {
+    const tab = screen.getByRole("tab", { name });
+    expect(tab).toHaveTextContent(name);
+    expect(tab.querySelector("svg")).not.toBeNull();
+  }
+  expect(onNatureChange).not.toHaveBeenCalled();
+  expect(onIvChange).not.toHaveBeenCalled();
+  expect(onModeChange).not.toHaveBeenCalled();
+
+  fireEvent.click(magical);
+  expect(onNatureChange).toHaveBeenLastCalledWith("smart");
+  fireEvent.click(neutral);
+  expect(onNatureChange).toHaveBeenLastCalledWith("neutral");
+  fireEvent.click(screen.getByRole("checkbox", { name: "攻击方物攻个体加点" }));
+  fireEvent.click(screen.getByRole("checkbox", { name: "攻击方生命个体加点" }));
+  expect(onIvChange.mock.calls).toEqual([["physicalAttack", 60], ["hp", 0]]);
+  fireEvent.click(screen.getByRole("tab", { name: "单技能" }));
+  expect(onModeChange).toHaveBeenCalledWith("single");
+
+  rerender(controls());
+  expect(neutral).toHaveTextContent("性格");
+  expect(container.querySelector(".quick-nature__name")).toBeNull();
+  expect(container.querySelector(".quick-iv__name")).toBeNull();
+  expect(container.querySelector(".mode-tabs__label")).toBeNull();
 });

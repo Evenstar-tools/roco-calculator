@@ -5,13 +5,14 @@ import { StatIcon } from "./StatIcon.jsx";
 export function QuickIvPicker({
   label,
   onChange,
+  showOptionLabels = false,
   side,
   values,
 }) {
   return (
     <div
       aria-label={`${label}快捷个体`}
-      className={`quick-iv quick-iv--${side}`}
+      className={`quick-iv quick-iv--${side}${showOptionLabels ? " quick-iv--labeled" : ""}`}
       role="group"
     >
       <span className="quick-iv__label" title="个体加点">
@@ -29,6 +30,7 @@ export function QuickIvPicker({
             title={`${STAT_LABELS[stat]}个体 ${checked ? 60 : 0}`}
           >
             <StatIcon size={19} stat={stat} />
+            {showOptionLabels ? <span className="quick-iv__name">{STAT_LABELS[stat]}</span> : null}
             <input
               aria-label={`${label}${STAT_LABELS[stat]}个体加点`}
               checked={checked}

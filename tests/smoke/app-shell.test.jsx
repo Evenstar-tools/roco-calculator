@@ -3,6 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { App } from "../../src/App.jsx";
 import { AppHeader } from "../../src/components/AppHeader.jsx";
+import { createInitialState } from "../../src/state/defaults.js";
+import { COMPACT_OPTION_LABELS_STORAGE_KEY, VIEW_MODE_STORAGE_KEY } from "../../src/state/display-settings.js";
+import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js";
+import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
+
+// 应用入口和显示设置回归不执行二维码解码，独立解码专项仍使用真实实现。
+vi.mock("../../src/state/lineup-image.js", () => ({ decodeLineupImage: vi.fn() }));
 
 test("renders the calculator title", () => {
   render(<App />);
@@ -118,4 +125,66 @@ test("uses avatar data embedded in the runtime snapshot without a second request
   );
   expect(fetchMock).toHaveBeenCalledTimes(1);
   vi.unstubAllGlobals();
+});
+
+test("显示选项名称开关接通真实精简版，改变标签不改变伤害、选中状态或技能配置", async () => {
+  const spirit = {
+    asset: { localUrl: "/assets/spirits/sonic-dog.png" },
+    dexNo: "048", fullName: "音速犬", id: "sonic-dog", stage: "二阶",
+    raceStats: { hp: 85, magicalAttack: 46, magicalDefense: 82, physicalAttack: 128, physicalDefense: 101, speed: 120 },
+    traitIds: [], types: ["火"],
+  };
+  const snapshot = {
+    learnsets: [{ spiritId: "sonic-dog", skillIds: ["tackle"] }, { spiritId: "water-spirit", skillIds: ["tackle"] }],
+    meta: { id: "compact-option-labels-ui", rulesVersion: "1.0.0" },
+    skills: [{ id: "tackle", name: "拍击", type: "普通", category: "physical", basePower: 70, cost: 2, description: "造成物理伤害。" }],
+    spirits: [spirit, { ...spirit, id: "water-spirit", fullName: "水灵", types: ["水"] }],
+    traits: [], typeChart: { "普通": { "火": 1, "水": 1 } },
+  };
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  state.sides.attacker.nature = "smart";
+  state.sides.attacker.displayIvs = { hp: 60, magicalAttack: 60, speed: 60, physicalAttack: 0, physicalDefense: 0, magicalDefense: 0 };
+  const keys = [COMPACT_OPTION_LABELS_STORAGE_KEY, FIRST_RUN_GUIDE_STORAGE_KEY, VIEW_MODE_STORAGE_KEY, SPIRIT_CONFIG_STORAGE_KEY];
+  const stored = keys.map((key) => [key, localStorage.getItem(key)]);
+  localStorage.removeItem(COMPACT_OPTION_LABELS_STORAGE_KEY);
+  localStorage.setItem(FIRST_RUN_GUIDE_STORAGE_KEY, "1");
+  const app = render(<App initialSnapshot={snapshot} initialWorkspace={{ state, viewMode: "compact" }} />);
+  const user = userEvent.setup();
+  try {
+    const damage = screen.getByTestId("primary-damage").textContent;
+    const percent = app.container.querySelector(".result-rail__percent").textContent;
+    const skills = [...screen.getAllByRole("combobox", { name: /^攻击方技能\d$/ })].map((input) => input.value);
+    const configBytes = localStorage.getItem(SPIRIT_CONFIG_STORAGE_KEY);
+    expect(Number(damage)).toBeGreaterThan(0);
+    expect(app.container.querySelector(".quick-nature__name")).toBeNull();
+    expect(screen.getByRole("tab", { name: "四技能" }).textContent).toBe("");
+
+    for (const enabled of [true, false]) {
+      await user.click(screen.getByRole("button", { name: "打开菜单" }));
+      await user.click(screen.getByRole("button", { name: "显示设置" }));
+      await user.click(screen.getByRole("checkbox", { name: "显示选项名称" }));
+      await user.click(screen.getByRole("button", { name: "完成" }));
+      expect(localStorage.getItem(COMPACT_OPTION_LABELS_STORAGE_KEY)).toBe(enabled ? "1" : "0");
+      expect(app.container.querySelectorAll(".quick-nature__name")).toHaveLength(enabled ? 12 : 0);
+      expect(app.container.querySelectorAll(".quick-iv__name")).toHaveLength(enabled ? 12 : 0);
+      expect(screen.getByRole("tab", { name: "四技能" }).textContent).toBe(enabled ? "四技能" : "");
+      expect(screen.getByRole("button", { name: "攻击方普通性格" })).toHaveTextContent(enabled ? "普通" : "性格");
+      expect(screen.getByRole("button", { name: "攻击方普通性格" })).toHaveAttribute("aria-pressed", "false");
+      expect(screen.getByRole("button", { name: "攻击方魔攻增益" })).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByRole("checkbox", { name: "攻击方魔攻个体加点" })).toBeChecked();
+      expect(screen.getByRole("checkbox", { name: "攻击方物攻个体加点" })).not.toBeChecked();
+      expect(screen.getByTestId("primary-damage")).toHaveTextContent(damage);
+      expect(app.container.querySelector(".result-rail__percent").textContent).toBe(percent);
+      expect(screen.getAllByRole("combobox", { name: /^攻击方技能\d$/ }).map((input) => input.value)).toEqual(skills);
+      expect(localStorage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).toBe(configBytes);
+      expect(screen.queryByRole("button", { name: /撤回上一步/ })).not.toBeInTheDocument();
+    }
+  } finally {
+    app.unmount();
+    for (const [key, value] of stored) {
+      if (value === null) localStorage.removeItem(key);
+      else localStorage.setItem(key, value);
+    }
+  }
 });

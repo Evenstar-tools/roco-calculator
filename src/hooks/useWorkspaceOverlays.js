@@ -3,11 +3,13 @@ import { readFormConfigMemoryEnabled, subscribeFormConfigPreferences, writeFormC
 import { FEEDBACK_QQ } from "../components/DataSourceDialog.jsx";
 import { FEATURED_USER_RELEASE } from "../data/user-release-notes.js";
 import {
+  readCompactOptionLabelsSetting,
   readDamageComparisonSetting,
   readDurabilityOverviewSetting,
   readPowerDisplayMode,
   readTypeCoverageSetting,
   writeDamageComparisonSetting,
+  writeCompactOptionLabelsSetting,
   writeDurabilityOverviewSetting,
   writeNegativeStatusSettlementSetting,
   writePowerDisplayMode,
@@ -28,6 +30,9 @@ export function useWorkspaceOverlays({
   const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
   const [dataSourceOpen, setDataSourceOpen] = useState(false);
   const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
+  const [compactOptionLabelsEnabled, setCompactOptionLabelsEnabled] = useState(
+    () => readCompactOptionLabelsSetting(),
+  );
   const formConfigMemoryEnabled = useSyncExternalStore(
     subscribeFormConfigPreferences, readFormConfigMemoryEnabled, () => false,
   );
@@ -91,12 +96,16 @@ export function useWorkspaceOverlays({
   };
 
   const displaySettingsProps = {
+    compactOptionLabelsEnabled,
     formConfigMemoryEnabled,
     onFormConfigMemoryChange: writeFormConfigMemoryEnabled,
     damageComparisonEnabled,
     durabilityOverviewEnabled,
     negativeStatusSettlementEnabled: negativeStatusEnabled,
     onClose: () => setDisplaySettingsOpen(false),
+    onCompactOptionLabelsChange: (enabled) => {
+      setCompactOptionLabelsEnabled(writeCompactOptionLabelsSetting(undefined, enabled));
+    },
     onDamageComparisonChange: (enabled) => {
       setDamageComparisonEnabled(writeDamageComparisonSetting(undefined, enabled));
     },
@@ -153,6 +162,7 @@ export function useWorkspaceOverlays({
 
   return {
     cleanupConfigsProps,
+    compactOptionLabelsEnabled,
     damageComparisonEnabled,
     dataSourceProps,
     displaySettingsProps,
