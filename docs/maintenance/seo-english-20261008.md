@@ -38,4 +38,12 @@
 - 未宣称完成国际版官方词库或逐句深度 LQA；当前基础校对对应本次网页范围。
 - 本地验证：SEO/发布说明专项回归通过，完整 `npm run build` 门禁通过，中文说明的 320px 深浅色无 JavaScript 阅读/FAQ/返回入口与抓取文件回归通过。英文生产页桌面、实际 760px/320px 宽度无横向溢出，FAQ 可正常展开；桌面实页截图保留在 `artifacts/seo-20261008/english-desktop.png`。
 - `npm test` 中四个既有套件因 node_modules 指向本机共享依赖目录，被 Vite 文件访问边界拒绝加载；其余套件通过。仅用忽略目录 `.tmp/seo-local-validation.config.mjs` 明确允许本机测试依赖路径后，这四个套件全部通过；未改产品或提交测试环境配置。
-- 公网部署、语言切换和 Google 提交状态将在实际验收后追加，不以准备文件代替上线成功。
+- `npm run lint` 通过；源码 `b50923a` 的 [GitHub CI](https://github.com/Evenstar-tools/roco-calculator/actions/runs/37745321862) validate、miniapp、e2e 全部成功。自动 CI 的小程序构建是回归，不代表微信上传或正式发布。
+
+## 已上线与搜索交付
+
+- 2026-10-08 公网 `/en/` HTTP 200，读回标题、最终英文正文和 canonical 正确；`/en` 301 至 `/en/`。中英文说明互设语言版本，首页与电鹿页底部英文链接已存在。`sitemap.xml` 是合法 XML，完整收录四个预期 URL。
+- Chrome 实页中英文说明双向切换通过；英文 320px 实际页面没有横向溢出，保存位置 FAQ 展开正常。公网画面与源响应在 `artifacts/seo-20261008/english-live.png`、`english-live-faq-320.png`、`english-live.html`、`english-live-status.json`。
+- Google Search Console 对 `/en/` 初始返回“无法识别此网址”；本次一次索引请求已接受，确认加入优先抓取队列。**尚未编入索引，不代表已获得搜索排名或流量收益。**回执在 `english-google-index-request.txt/.png`。
+- 站点地图新增英语页面后，本次提交一次更新，Google 回执“已成功提交站点地图”；列表仍显示“无法抓取”、类型未知及已发现 0，尚未确认处理成功。公网 XML 已核验；此前同日 Google 实际抓取测试成功是历史证据，不冒充本次新版地图测试。不进一步重复提交或推断拦截原因。回执在 `english-google-sitemap-submission.txt/.png`。
+- 后续以 Search Console 实际索引、英语查询的展示/点击和落地页表现评估效果；整站英文 UI、官方精灵词表与国际版计算校准仍按上文下一轮范围执行。本次不新建无限跟进任务。
