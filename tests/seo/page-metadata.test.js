@@ -3,7 +3,7 @@ import { JSDOM } from "jsdom";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { CalculatorRouter } from "../../src/CalculatorRouter.jsx";
-import { applyPageMetadata, DEER_PAGE_METADATA, HOME_PAGE_METADATA, PAGE_SCHEMA_ID, SITE_IMAGE } from "../../src/seo/page-metadata.js";
+import { applyPageMetadata, DEER_PAGE_METADATA, GITHUB_REPOSITORY_URL, HOME_PAGE_METADATA, PAGE_SCHEMA_ID, SITE_ID, SITE_IMAGE, SITE_NAME, SITE_SCHEMA_ID, SITE_URL } from "../../src/seo/page-metadata.js";
 
 vi.mock("../../src/App.jsx", () => ({
   App: ({ onOpenDeer }) => createElement("button", { onClick: () => onOpenDeer({ state: {} }) }, "打开电鹿"),
@@ -17,7 +17,9 @@ beforeEach(() => {
     <meta name="description" content="旧描述"><meta name="description" content="重复描述">
     <link rel="canonical" href="https://rococalc.top/?source=pwa"><link rel="canonical" href="https://rococalc.top/old">
     <meta property="og:title" content="旧分享标题"><meta property="og:title" content="重复分享标题">
-    <script id="${PAGE_SCHEMA_ID}" type="application/ld+json">{"name":"旧主页"}</script>`;
+    <script id="${PAGE_SCHEMA_ID}" type="application/ld+json">{"name":"旧主页"}</script>
+    <script id="${SITE_SCHEMA_ID}" type="application/ld+json">{"name":"旧网站"}</script>
+    <script id="${SITE_SCHEMA_ID}" type="application/ld+json">{"name":"重复网站"}</script>`;
   window.history.replaceState(null, "", "/?source=pwa");
   vi.stubGlobal("scrollTo", vi.fn());
   // Keep the real lazy DeerPage in its loading state so its title effect runs without data fixtures.
@@ -36,6 +38,7 @@ function expectPageMetadata(metadata) {
     ['meta[name="description"]', "content", metadata.description],
     ['link[rel="canonical"]', "href", metadata.canonical],
     ['meta[property="og:title"]', "content", metadata.title],
+    ['meta[property="og:site_name"]', "content", SITE_NAME],
     ['meta[property="og:description"]', "content", metadata.description],
     ['meta[property="og:url"]', "content", metadata.canonical],
     ['meta[property="og:image"]', "content", SITE_IMAGE],
@@ -52,6 +55,13 @@ function expectPageMetadata(metadata) {
   expect(schema).toMatchObject({
     "@context": "https://schema.org", "@type": "WebApplication",
     name: metadata.name, url: metadata.canonical, description: metadata.description,
+    inLanguage: "zh-CN", isPartOf: { "@id": SITE_ID },
+  });
+  const siteSchemas = document.head.querySelectorAll(`#${SITE_SCHEMA_ID}`);
+  expect(siteSchemas).toHaveLength(1);
+  expect(JSON.parse(siteSchemas[0].textContent)).toMatchObject({
+    "@type": "WebSite", "@id": SITE_ID, name: "RocoCalc", url: SITE_URL,
+    alternateName: ["洛克计算器", "Roco Calculator"], sameAs: GITHUB_REPOSITORY_URL,
   });
   expect(schema).not.toHaveProperty("aggregateRating");
   expect(schema).not.toHaveProperty("review");

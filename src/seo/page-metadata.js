@@ -1,31 +1,52 @@
 export const PAGE_SCHEMA_ID = "rococalc-page-schema";
-export const SITE_NAME = "洛克计算器";
+export const SITE_SCHEMA_ID = "rococalc-site-schema";
+export const SITE_NAME = "RocoCalc";
+export const SITE_URL = "https://rococalc.top/";
+export const SITE_ID = `${SITE_URL}#website`;
+export const GITHUB_REPOSITORY_URL = "https://github.com/Evenstar-tools/roco-calculator";
 export const SITE_IMAGE = "https://rococalc.top/app-icon-512.png";
 
 export const HOME_PAGE_METADATA = Object.freeze({
-  name: SITE_NAME,
-  title: "洛克王国：世界伤害计算器 | 洛克计算器",
-  description: "免费的洛克王国：世界 PVP 伤害计算器，支持 S4 月涌狂想数据、伤害计算、电鹿斩杀线、队伍搭配、技能检索、属性查询与速度耐久排行。可在浏览器使用，也提供 Windows 桌面版。",
+  name: "洛克计算器",
+  alternateName: ["RocoCalc", "Roco Calculator"],
+  title: "洛克王国世界伤害计算器 | 洛克计算器 RocoCalc",
+  description: "洛克计算器 RocoCalc（Roco Calculator）是免费的洛克王国：世界 PVP 伤害计算工具，采用国服 S4 数据，支持队伍搭配、技能检索、属性查询、速度耐久排行与电鹿斩杀线。提供网页版和 Windows 版。",
   canonical: "https://rococalc.top/",
 });
 
 export const DEER_PAGE_METADATA = Object.freeze({
   name: "电鹿斩杀线计算器",
-  title: "电鹿斩杀线计算器 | 洛克王国：世界",
-  description: "洛克王国：世界电鹿斩杀线工具，支持 S4 月涌狂想数据，按特性层数、防御配置和战斗条件查看技能伤害、击倒所需层数与先发补刀结果，辅助 PVP 对局配置。",
+  title: "电鹿斩杀线计算器 | 洛克计算器 RocoCalc",
+  description: "洛克计算器 RocoCalc 的电鹿斩杀线工具，采用洛克王国：世界国服 S4 数据，按特性层数、防御配置和战斗条件比较技能伤害、击倒所需层数与先发补刀结果。",
   canonical: "https://rococalc.top/dianlu/",
 });
+
+export function createSiteStructuredData() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": SITE_ID,
+    name: SITE_NAME,
+    alternateName: ["洛克计算器", "Roco Calculator"],
+    url: SITE_URL,
+    inLanguage: ["zh-CN", "en"],
+    sameAs: GITHUB_REPOSITORY_URL,
+  };
+}
 
 export function createPageStructuredData(metadata) {
   return {
     "@context": "https://schema.org",
     "@type": "WebApplication",
+    "@id": `${metadata.canonical}#app`,
     name: metadata.name,
+    ...(metadata.alternateName ? { alternateName: metadata.alternateName } : {}),
     url: metadata.canonical,
     description: metadata.description,
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Web",
     inLanguage: "zh-CN",
+    isPartOf: { "@id": SITE_ID },
   };
 }
 
@@ -75,4 +96,8 @@ export function applyPageMetadata(metadata, targetDocument = globalThis.document
   schema.id = PAGE_SCHEMA_ID;
   schema.type = "application/ld+json";
   schema.textContent = JSON.stringify(createPageStructuredData(metadata));
+  const siteSchema = uniqueHeadElement(targetDocument, `script[id="${SITE_SCHEMA_ID}"]`, "script");
+  siteSchema.id = SITE_SCHEMA_ID;
+  siteSchema.type = "application/ld+json";
+  siteSchema.textContent = JSON.stringify(createSiteStructuredData());
 }

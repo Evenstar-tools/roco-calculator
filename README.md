@@ -2,28 +2,36 @@
   <img src="docs/images/project-cover.png" alt="洛克计算器项目封面" width="100%">
 </p>
 
-<h1 align="center">洛克计算器</h1>
+<h1 align="center">洛克计算器 · RocoCalc</h1>
 
 <p align="center">
-  《洛克王国：世界》PVP 伤害计算工具<br>
+  <strong>简体中文</strong> · <a href="README.en.md">English</a>
+</p>
+
+<p align="center">
+  《洛克王国：世界》PVP 伤害计算与队伍工具<br>
+  Roco Calculator — a Roco Kingdom damage calculator for China-server S4.<br>
   选好双方精灵和技能，即可快速查看伤害结果。
 </p>
 
 <p align="center">
   <a href="https://rococalc.top/"><img src="https://img.shields.io/badge/在线使用-rococalc.top-2563eb?style=for-the-badge" alt="在线使用"></a>
   <a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest"><img src="https://img.shields.io/badge/下载-Windows%20安装包-4c55d9?style=for-the-badge" alt="下载 Windows 安装包"></a>
-  <a href="https://github.com/Evenstar-tools/roco-calculator/releases"><img src="https://img.shields.io/badge/查看-版本更新-64748b?style=for-the-badge" alt="查看版本更新"></a>
-  <a href="https://github.com/Evenstar-tools/roco-calculator/issues/new/choose"><img src="https://img.shields.io/badge/反馈-问题或建议-16a34a?style=for-the-badge" alt="反馈问题或建议"></a>
 </p>
 
 <p align="center">
-  <a href="https://rococalc.top/"><strong>打开官方在线版</strong></a>
-  · <a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest"><strong>下载最新 Windows 版</strong></a>
+  <a href="https://rococalc.top/"><strong>在线计算器：rococalc.top</strong></a><br>
+  <a href="https://rococalc.top/guide/">中文使用说明</a>
+  · <a href="https://rococalc.top/en/">English guide</a>
+  · <a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">Windows 电脑版</a>
+  · <a href="https://github.com/Evenstar-tools/roco-calculator/issues/new/choose">问题与建议</a>
 </p>
 
 <p align="center">
-  <sub>当前赛季：S4「月涌狂想」　｜　源码版本：v2.0.2　｜　<a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">下载最新 Windows 安装包</a></sub>
+  <sub>当前赛季：国服 S4「月涌狂想」　｜　<a href="docs/releases/README.md">源码与可下载版本</a></sub>
 </p>
+
+RocoCalc 是非官方玩家工具。当前计算器界面和精灵资料为中文，使用《洛克王国：世界》国服 S4 数据。[英文指南](https://rococalc.top/en/) 提供操作说明，并非计算器的完整英语版；国际服数值和规则尚未核实，不能据此声称已适配国际服。
 
 ![洛克计算器界面](docs/images/app-overview.png)
 
@@ -45,9 +53,11 @@
 - **公式核对**：高级选项用四行中文算式展示技能威力、显示威力、单段取整与总伤害。
 - **配置记忆**：精灵配置自动保存在本机，切换后按精灵恢复。
 - **队伍预设**：支持多支六人队伍、四技能配置及攻防方快捷载入。
+- **资料查询**：技能检索、属性查询、速度线与耐久排行，帮助核对学习关系、属性克制与配置差异。
+- **专项工具**：电鹿斩杀线与传动技能顺序模拟；适用条件和未支持效果以页面提示为准。
 - **离线可用**：内置当前赛季快照和本地素材，可作为网页、PWA 或 Windows 桌面应用运行。
 
-当前数据快照包含 **619 个精灵形态**与 **579 个技能**。种族值未确认的形态仍保留占位说明。
+当前 S4 数据快照包含 **622 个精灵形态**与 **581 个技能**。种族值未确认的形态仍保留占位说明。
 
 ## 操作流程
 
@@ -57,9 +67,16 @@
 
 ## 使用入口
 
-- [官方在线版：rococalc.top](https://rococalc.top/)
-- [Windows 安装包与历史版本](https://github.com/Evenstar-tools/roco-calculator/releases)
-- [提交问题或建议](https://github.com/Evenstar-tools/roco-calculator/issues/new/choose)
+| 你想做什么 | 入口 |
+| --- | --- |
+| 计算伤害、配置队伍与使用工具箱 | [在线计算器：rococalc.top](https://rococalc.top/) |
+| 查看三步入门、工具用途与常见问题 | [中文指南](https://rococalc.top/guide/) · [English guide](https://rococalc.top/en/) |
+| 计算电鹿斩杀线 | [电鹿斩杀线工具](https://rococalc.top/dianlu/) |
+| 下载 Windows 安装包 | [最新 Release](https://github.com/Evenstar-tools/roco-calculator/releases/latest) |
+| 查看历史版本 | [全部 Releases](https://github.com/Evenstar-tools/roco-calculator/releases) |
+| 反馈资料或计算问题 | [GitHub Issues](https://github.com/Evenstar-tools/roco-calculator/issues/new/choose) |
+
+反馈计算问题时，请附上双方精灵、技能、配置、启用条件与预期结果；这样更容易复现同一组输入。
 
 ## 版本管理
 
@@ -71,6 +88,18 @@
 
 伤害结果会按双方精灵、技能、性格、个体、威力和战斗条件逐项计算；相同配置会得到相同结果。
 需要核对公式、取整和特殊条件时，可查看 [计算规则说明](docs/damage-calculation-human-readable.md)。
+
+## AI 与命令行调用
+
+项目提供复用同一计算核心的纯 JSON CLI，使用本地数据快照，无需启动网页或调用网络服务。Node.js 22 或更高版本下，在仓库根目录安装依赖并查看数据与输入契约：
+
+```powershell
+npm ci
+npm run -s cli -- meta
+npm run -s cli -- schema
+```
+
+计算与解释的输入方式见 [AI CLI 交接说明](docs/maintenance/ai-cli-handoff.md)；项目代理使用规则见 [rock-calculator-cli Skill](.agents/skills/rock-calculator-cli/SKILL.md)。CLI 可以复算并解释同一核心的结果，不能代替对核心公式的独立验证。
 
 ## 鸣谢与参考
 
