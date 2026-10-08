@@ -6,9 +6,9 @@ import { createPageStructuredData, createSiteStructuredData, DEER_PAGE_METADATA,
 const source = (path) => readFileSync(path, "utf8");
 
 test.each([
-  ["index.html", HOME_PAGE_METADATA, "洛克王国：世界伤害计算器"],
+  ["index.html", HOME_PAGE_METADATA, null],
   ["dianlu/index.html", DEER_PAGE_METADATA, "电鹿斩杀线计算器"],
-])("%s在执行JavaScript前已有正文、入口链接和与路由一致的元信息", (path, metadata, heading) => {
+])("%s保留入口链接和与路由一致的元信息，首页不展示过渡介绍", (path, metadata, heading) => {
   const page = new JSDOM(source(path), { url: "http://127.0.0.1:5173/" });
   try {
     const doc = page.window.document;
@@ -39,9 +39,16 @@ test.each([
     expect(JSON.parse(siteSchema[0].textContent)).toEqual(createSiteStructuredData());
     expect(doc.querySelector("footer").textContent).toContain("RocoCalc / Roco Calculator");
     expect(doc.querySelector(`footer a[href="${GITHUB_REPOSITORY_URL}"]`).textContent).toContain("Evenstar-tools/roco-calculator");
-    expect(doc.querySelector("main h1").textContent).toBe(heading);
-    expect(doc.querySelector("main p").textContent).toContain("S4");
-    expect(doc.querySelector('main a[href="https://rococalc.top/guide/"]')?.href).toBe("https://rococalc.top/guide/");
+    if (heading) {
+      expect(doc.querySelector("main h1").textContent).toBe(heading);
+      expect(doc.querySelector("main p").textContent).toContain("S4");
+      expect(doc.querySelector('main a[href="https://rococalc.top/guide/"]')?.href).toBe("https://rococalc.top/guide/");
+    } else {
+      expect(doc.querySelector("#root").childNodes).toHaveLength(0);
+      expect(doc.querySelector(".site-intro")).toBeNull();
+      expect(doc.querySelector("#rococalc-boot-style").textContent).toContain("#root:empty ~ .site-links");
+      expect(doc.querySelector('noscript a[href="https://rococalc.top/guide/"]')).not.toBeNull();
+    }
     for (const href of ["/", "/dianlu/", "https://rococalc.top/guide/", "https://rococalc.top/en/"]) {
       const link = doc.querySelector(`footer a[href="${href}"]`);
       expect(link).not.toBeNull();
