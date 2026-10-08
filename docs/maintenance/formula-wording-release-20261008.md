@@ -23,4 +23,6 @@
 
 微信官方CLI已上传同版本1.1.19开发包，使用当前网页核心2.2.5；本轮成功回执artifacts/formula-wording-20261008/miniapp-upload-result.json已读回。未提审或正式发布。
 
-Web自动部署与Windows公开安装包仍须在推送／替换后分别回查；本地构建不作为上线证明。旧同版本Windows安装包保留在installers/v2.2.5/previous/洛克计算器-2.2.5-a117bae.exe，最终包归档到installers/v2.2.5/洛克计算器-2.2.5.exe。不主动生成额外交付校验清单；仅向Release上传版本化EXE。
+源码9babaaf已推送main；[发布检查](https://github.com/Evenstar-tools/roco-calculator/actions/runs/37796117980)的validate、miniapp与e2e全部通过。[Web](https://rococalc.top/)自动部署后，由独立浏览器在1920与390视口回查真实公式、伤害和换行；线上入口main-BhHlyj25.js、样式main-BKFk2-W6.css，核心仍为calculator-core-BlG6b2YZ.js。线上截图为output/playwright/formula-wording-20261008/online-1920-light-verified.png与online-390-light.png。
+
+[v2.2.5 Release](https://github.com/Evenstar-tools/roco-calculator/releases/tag/v2.2.5)已替换同版本Windows安装包；仅保留本轮版本化附件RoCo-Calculator-2.2.5.exe，asset ID 622125886，138903618字节，发布页与展开附件入口均已读回。按正式附件名重新下载后，与本地最终包逐字节一致；未移动v2.2.5历史标签。旧同版本安装包保留在installers/v2.2.5/previous/洛克计算器-2.2.5-a117bae.exe，最终包归档到installers/v2.2.5/洛克计算器-2.2.5.exe。安装包内资源核对及独立离线启动通过；安装包未签名，未执行完整安装流程。不主动生成额外交付校验清单。
