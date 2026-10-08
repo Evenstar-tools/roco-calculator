@@ -735,8 +735,8 @@ describe("result bar and sheet", () => {
     expect(selectedSkill.querySelector(".result-row__track")).not.toBeNull();
 
     const process = screen.getByLabelText("伤害计算过程");
-    expect(within(process).getByText("技能威力")).toBeInTheDocument();
-    expect(within(process).getByText("显示威力")).toBeInTheDocument();
+    expect(within(process).getByText("静态威力")).toBeInTheDocument();
+    expect(process.querySelector(".result-formula__row--display .result-formula__row-title")).toHaveTextContent("显示威力");
     expect(within(process).getByText("每段伤害")).toBeInTheDocument();
     expect(within(process).getByText("总伤害")).toBeInTheDocument();
     expect(within(process).getByText("37/41")).toBeInTheDocument();

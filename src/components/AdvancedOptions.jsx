@@ -71,6 +71,7 @@ export function buildFormulaAudit(result) {
   const manualPower = stepByLabel(result, "手动显示威力") ?? stepByLabel(result, "手动静态威力");
   const fixedPower = stepByLabel(result, "固定威力增加");
   const traitFixedPower = stepByLabel(result, "特性固定威力");
+  const percentPower = stepByLabel(result, "技能威力百分比") ?? stepByLabel(result, "外部威力加成");
   const sameType = stepByLabel(result, "本系");
   const type = stepByLabel(result, "属性克制");
   const levels = stepByLabel(result, "攻防等级");
@@ -84,17 +85,32 @@ export function buildFormulaAudit(result) {
 
   const powerFactors = [
     { label: "本系", value: sameType?.input },
-    { label: "克制", value: type ? type.after / type.before : 1 },
+    { label: "克制倍率", value: type?.before ? type.after / type.before : 1 },
     { label: "能力等级", value: levels?.input },
     { label: "其他", value: other?.input },
   ].filter((item) => Number.isFinite(Number(item.value)));
 
-  const percentAdds = Array.isArray(result.staticPowerPercentAdds)
-    ? result.staticPowerPercentAdds.reduce(
-        (sum, value) => sum + (Number(value) || 0),
-        0,
-      )
+  const primaryPower = basePower ?? manualPower ?? stepByLabel(result, "继承显示威力");
+  const primaryIndex = result.formulaSteps?.indexOf(primaryPower) ?? -1;
+  const percentIndex = result.formulaSteps?.indexOf(percentPower) ?? -1;
+  const fixedSteps = (primaryIndex < 0 ? [] : result.formulaSteps ?? [])
+    .slice(primaryIndex + 1, percentIndex < 0 ? undefined : percentIndex)
+    .filter((step) => /固定威力|血脉/u.test(step.label) || (
+      percentIndex >= 0 && Number.isFinite(Number(step.before)) && Number.isFinite(Number(step.after))
+    ))
+    .map((step) => ({
+      label: step.label,
+      amount: Number.isFinite(Number(step.before)) && Number.isFinite(Number(step.after))
+        ? Number(step.after) - Number(step.before)
+        : Number(step.input) || 0,
+    }))
+    .filter(({ amount }) => amount !== 0);
+  const hasPercentStep = Number.isFinite(Number(percentPower?.before)) &&
+    Number.isFinite(Number(percentPower?.after)) && Array.isArray(percentPower?.input);
+  const effectivePercentAdds = hasPercentStep
+    ? percentPower.input.reduce((sum, value) => sum + (Number(value) || 0), 0)
     : 0;
+  const percentRaw = hasPercentStep ? percentPower.before * (1 + effectivePercentAdds) : null;
   const hitCount = Math.max(
     1,
     Math.floor(Number(settlementInput.hitCount ?? result.hitCount) || 1),
@@ -112,21 +128,28 @@ export function buildFormulaAudit(result) {
       manual: stepByLabel(result, "手动静态威力")?.label,
       manualPanel: stepByLabel(result, "手动显示威力")?.label,
       staticIsSummary: Boolean(stepByLabel(result, "手动显示威力") && !basePower),
-      base: basePower?.before ?? basePower?.input,
-      conditional: basePower?.after,
+      base: primaryPower?.before ?? primaryPower?.input,
+      conditional: primaryPower?.after,
       fixed: Number(fixedPower?.input) || 0,
       inheritedBurstFixed:
         Number(result.staticPowerSourceAdds?.inheritedBurst) || 0,
       markFixed: Number(result.staticPowerSourceAdds?.mark) || 0,
       traitFixed: Number(traitFixedPower?.input) || 0,
-      percentAdds,
       static: result.staticPower ?? sameType?.before ?? displayPower?.before ?? manualPower?.after,
       effective: sameType?.before ?? displayPower?.before ?? manualPower?.after,
+      fixedSteps: stepByLabel(result, "手动显示威力") ? [] : fixedSteps,
+      percentBefore: percentPower?.before,
+      percentAfter: percentPower?.after,
+      percentInputs: percentPower?.input ?? [],
+      percentAdds: effectivePercentAdds,
+      percentRaw: hasPercentStep && Math.floor(percentRaw) === Number(percentPower.after) ? percentRaw : null,
+      hasPercentStep,
+      hasPrimary: primaryIndex >= 0,
     },
     formulaPower: {
       factors: powerFactors,
       internal: displayPower?.before ?? manualPower?.after ?? damageInput.calculationPower,
-      displayed: damageInput.displayedPower ?? result.effectivePower,
+      displayed: damageInput.displayedPower ?? displayPower?.after ?? result.displayPower ?? result.effectivePower,
     },
     numerator: {
       attack: damageInput.attackerStat,
@@ -182,6 +205,25 @@ function FormulaRow({ children, title, tone }) {
 
 function Operator({ children }) {
   return <span className="formula-audit__operator">{children}</span>;
+}
+
+function powerPercentExpression(power, sources = []) {
+  const namedTotal = sources.reduce((sum, source) => sum + Number(source.amount), 0);
+  const terms = Math.abs(namedTotal - power.percentAdds) < 1e-8
+    ? sources
+    : power.percentInputs.map((amount) => ({ amount: Number(amount), name: "" }));
+  return `（1${terms.filter((source) => source.amount !== 0).map((source) =>
+    ` ${source.amount < 0 ? "−" : "+"} ${displayNumber(Math.abs(source.amount) * 100)}%${source.name ? `（${sourceLabel(source)}）` : ""}`
+  ).join("")}）`;
+}
+
+function fixedPowerLabel(step, gains) {
+  const sources = step.label === "固定威力增加" ? gains.fixed
+    : step.label === "特性固定威力" ? gains.traitFixed : null;
+  if (sources?.length && Math.abs(sources.reduce((sum, source) => sum + source.amount, 0) - step.amount) < 1e-8) {
+    return gainLabels(sources);
+  }
+  return step.label;
 }
 
 export function FormulaAudit({ result }) {
@@ -269,6 +311,21 @@ export function FormulaAudit({ result }) {
   const oneHit = audit.oneHit;
   const total = audit.total;
   const gains = result.gainSources ?? {};
+  const percentSources = [...(power.manual ? [] : gains.staticPercent ?? []), ...(gains.powerPercent ?? [])];
+  const factors = audit.formulaPower.factors.filter((factor) => Math.abs(Number(factor.value) - 1) > 1e-10);
+  const expandPower = !power.manualPanel && (Number.isFinite(Number(power.conditional)) && Number(power.conditional) !== Number(power.base) || power.fixedSteps.length > 0 || (
+    power.hasPercentStep && (power.percentAdds !== 0 || Number(power.percentBefore) !== Number(power.percentAfter))
+  ));
+  const simpleDisplay = power.manualPanel || (!expandPower && factors.length === 0 &&
+    Number(power.effective) === Number(audit.formulaPower.displayed));
+  const simpleTotal = Number(total.finalMultiplier) === 1 && total.hitCount === 1 &&
+    total.additionalDamage === 0 && total.reassemblyDamage === 0 && total.traitDamage === 0;
+  const recordedPower = Number(power.conditional ?? power.base ?? power.percentBefore) +
+    power.fixedSteps.reduce((sum, step) => sum + step.amount, 0);
+  const powerChainMatches = Math.abs(recordedPower - Number(power.hasPercentStep ? power.percentBefore : power.effective)) < 1e-8;
+  const expandedPowerIsFinal = expandPower && factors.length === 0 &&
+    Number(power.hasPercentStep ? power.percentAfter : power.effective) === Number(audit.formulaPower.displayed) &&
+    Number(audit.formulaPower.internal) === Number(audit.formulaPower.displayed);
 
   return (
     <section className="formula-audit">
@@ -278,49 +335,45 @@ export function FormulaAudit({ result }) {
       </header>
 
       <FormulaRow title="静态威力" tone="power">
-        {Number.isFinite(Number(power.base)) ? (
-          <AuditChip label="基础" tone="power" value={displayNumber(power.base)} />
-        ) : (
-          <AuditChip label={power.manual || "规则值"} tone="power" value={displayNumber(power.static)} />
-        )}
-        {Number.isFinite(Number(power.conditional)) &&
-        Number(power.conditional) !== Number(power.base) ? (
-          <>
-            <Operator>→</Operator>
-            <AuditChip label={gainTermLabel("条件后", gains.condition)} tone="power" value={displayNumber(power.conditional)} />
-          </>
-        ) : null}
-        {!power.staticIsSummary && [
-          ...(gains.fixed?.length ? gains.fixed.map((source) => [sourceLabel(source), source.amount]) : [["技能固定", power.fixed]]),
-          ["继承迸发", power.inheritedBurstFixed],
-          ["蓄电", power.markFixed],
-        ].map(([label, value], index) =>
-          Number(value) !== 0 ? (
-            <span className="formula-audit__term" key={`${label}-${index}`}>
-              <Operator>{Number(value) > 0 ? "+" : "−"}</Operator>
-              <AuditChip label={label} tone="power" value={displayNumber(Math.abs(value))} />
-            </span>
-          ) : null,
-        )}
-        {!power.staticIsSummary && power.percentAdds !== 0 ? (
-          <>
-            <Operator>×</Operator>
-            <AuditChip
-              label={gainTermLabel("威力加成", (gains.staticPercent ?? []).map((source) => ({ ...source, amount: source.amount * 100 })), "%")}
-              tone="power"
-              value={displayNumber(1 + power.percentAdds)}
-            />
-          </>
-        ) : null}
-        <Operator>=</Operator>
-        <AuditChip label="结果" tone="result" value={displayNumber(power.static)} />
+        <AuditChip label={power.manual ? "手动" : "技能"} tone="power" value={displayNumber(power.static)} />
       </FormulaRow>
 
       <FormulaRow title="显示威力" tone="display">
-        <AuditChip label={power.manualPanel || gainTermLabel(gainTermLabel("结算前威力", gains.traitFixed), (gains.powerPercent ?? []).map((source) => ({ ...source, amount: source.amount * 100 })), "%")} tone="display" value={displayNumber(power.effective)} />
-        {audit.formulaPower.factors
-          .filter((factor) => Math.abs(Number(factor.value) - 1) > 1e-10)
-          .map((factor) => (
+        {simpleDisplay ? (
+          <AuditChip label={power.manualPanel ? "手动" : "自动"} tone="result" value={displayNumber(audit.formulaPower.displayed)} />
+        ) : <>
+        {expandPower ? <>
+          <AuditChip label={power.manual ? "手动静态" : power.hasPrimary ? "基础" : "加成基数"} tone="display" value={displayNumber(power.base ?? power.percentBefore)} />
+          {Number.isFinite(Number(power.conditional)) && Number(power.conditional) !== Number(power.base) ? <>
+            <Operator>→</Operator>
+            <AuditChip label={gainTermLabel("条件后", gains.condition)} tone="display" value={displayNumber(power.conditional)} />
+          </> : null}
+          {power.fixedSteps.map((step, index) => <span className="formula-audit__term" key={`${step.label}-${index}`}>
+            <Operator>{step.amount < 0 ? "−" : "+"}</Operator>
+            <AuditChip label={fixedPowerLabel(step, gains)} tone="display" value={displayNumber(Math.abs(step.amount))} />
+          </span>)}
+          {power.hasPercentStep && power.percentAdds !== 0 ? <>
+            {power.fixedSteps.length || !powerChainMatches ? <>
+              <Operator>{powerChainMatches ? "=" : "→"}</Operator>
+              <AuditChip label="加成基数" tone="display" value={displayNumber(power.percentBefore)} />
+            </> : null}
+            <Operator>×</Operator>
+            <AuditChip label="同区加成" tone="display" value={powerPercentExpression(power, percentSources)} />
+          </> : null}
+          {power.percentRaw !== null && Number(power.percentRaw) !== Number(power.percentAfter) ? <>
+            <Operator>=</Operator>
+            <AuditChip label="未取整" tone="display" value={displayNumber(power.percentRaw)} />
+          </> : null}
+          {power.hasPercentStep ? <>
+            <Operator>→</Operator>
+            <span className="formula-audit__rounding">向下取整</span>
+            <AuditChip label={expandedPowerIsFinal ? "显示威力" : "加成后威力"} tone={expandedPowerIsFinal ? "result" : "display"} value={displayNumber(power.percentAfter)} />
+          </> : <>
+            <Operator>{powerChainMatches ? "=" : "→"}</Operator>
+            <AuditChip label={expandedPowerIsFinal ? "显示威力" : "加成后威力"} tone={expandedPowerIsFinal ? "result" : "display"} value={displayNumber(power.effective)} />
+          </>}
+        </> : <AuditChip label="加成后威力" tone="display" value={displayNumber(power.effective)} />}
+        {factors.map((factor) => (
             <span className="formula-audit__term" key={factor.label}>
               <Operator>×</Operator>
             <AuditChip
@@ -330,11 +383,16 @@ export function FormulaAudit({ result }) {
             />
             </span>
           ))}
-        <Operator>=</Operator>
-        <AuditChip label="公式值" tone="display" value={displayNumber(audit.formulaPower.internal)} />
-        <Operator>→</Operator>
-        <span className="formula-audit__rounding">取整</span>
+        {!expandedPowerIsFinal && <>
+        {Number(audit.formulaPower.internal) !== Number(audit.formulaPower.displayed) ? <>
+          <Operator>=</Operator>
+          <AuditChip label="未取整" tone="display" value={displayNumber(audit.formulaPower.internal)} />
+          <Operator>→</Operator>
+          <span className="formula-audit__rounding">向下取整</span>
+        </> : <Operator>=</Operator>}
         <AuditChip label="显示威力" tone="result" value={displayNumber(audit.formulaPower.displayed)} />
+        </>}
+        </>}
       </FormulaRow>
 
       <FormulaRow title="每段伤害" tone="one-hit">
@@ -364,6 +422,7 @@ export function FormulaAudit({ result }) {
       </FormulaRow>
 
       <FormulaRow title="总伤害" tone="total">
+        {simpleTotal ? <AuditChip label="1段" tone="result" value={displayNumber(total.value)} /> : <>
         <AuditChip label="每段" tone="total" value={displayNumber(oneHit.afterFloor)} />
         {Number(total.finalMultiplier) !== 1 ? (
           <>
@@ -408,6 +467,7 @@ export function FormulaAudit({ result }) {
         ) : null}
         <Operator>=</Operator>
         <AuditChip label="结果" tone="result" value={displayNumber(total.value)} />
+        </>}
       </FormulaRow>
     </section>
   );

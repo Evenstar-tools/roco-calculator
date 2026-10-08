@@ -2547,6 +2547,8 @@
 
 .result-formula__chip {
   display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
   min-height: 30px;
   align-items: center;
   gap: 5px;
@@ -2584,7 +2586,9 @@
 }
 
 .result-formula__chip-value {
+  min-width: 0;
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
 
 .result-formula__operator {

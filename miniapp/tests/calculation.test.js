@@ -163,8 +163,9 @@ test("rain shares the power-addition zone in mirrored core and miniapp formula",
   expect(audit.power.percentAdds).toBe(1.25);
   expect(audit.formulaPower.factors.some(({ label }) => label === "雨天")).toBe(false);
   const { container } = render(createElement(ResultFormulaAudit, { result }));
-  expect(container.textContent).toContain("+75%（雨天）");
-  expect(container.querySelector(".result-formula__row--display").textContent).not.toContain("雨天");
+  expect(container.querySelector(".result-formula__row--display").textContent).toContain("雨天75%");
+  expect(container.querySelector(".result-formula__row--display").textContent).toContain("向下取整");
+  expect(container.querySelector(".result-formula__row--power").textContent).not.toContain("雨天");
 });
 
 test.each([
@@ -458,7 +459,7 @@ describe("createCalculationView", () => {
     expect(audit.oneHit).toMatchObject({ defense: 163, afterFloor: 388 });
     const { container } = render(createElement(ResultFormulaAudit, { result: mirrored }));
     const rows = container.querySelectorAll(".result-formula__row");
-    expect(rows[0]).toHaveTextContent(/^静态威力规则值80=结果80$/);
+    expect(rows[0]).toHaveTextContent(/^静态威力规则值80$/);
     expect(rows[1]).toHaveTextContent("手动显示威力260");
   });
   test("returns a clear unresolved result for a preview placeholder", () => {

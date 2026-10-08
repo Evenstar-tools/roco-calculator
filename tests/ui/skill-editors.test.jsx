@@ -9,6 +9,7 @@ import { expect, test, vi } from "vitest";
 import {
   AdvancedOptions,
   buildFormulaAudit,
+  FormulaAudit,
 } from "../../src/components/AdvancedOptions.jsx";
 import {
   CompactFourSkillEditor,
@@ -168,6 +169,52 @@ test("formula audit keeps 重组追加伤害 separate from 星陨", () => {
     reassemblyDamage: 27,
     value: 117,
   });
+});
+
+test("formula audit expands shared power gains before flooring without duplicate integer results", () => {
+  const result = {
+    status: "exact", skillName: "水刃", staticPower: 115, effectivePower: 129,
+    totalDamage: 211, hitCount: 1,
+    gainSources: { powerPercent: [
+      { name: "顺风", amount: 0.5 }, { name: "雨天", amount: 0.75 },
+    ] },
+    formulaSteps: [
+      { label: "基础威力", before: 115, after: 115, input: 115 },
+      { label: "技能威力百分比", before: 115, after: 258, input: [0.5, 0.75] },
+      { label: "本系", before: 258, after: 258, input: 1 },
+      { label: "属性克制", before: 258, after: 129 },
+      { label: "显示威力", before: 129, after: 129, input: { method: "floor" } },
+      { label: "等级系数与攻防比", after: 211, input: {
+        attackerStat: 271, calculationPower: 129, displayedPower: 129,
+        coefficient: 37 / 41, defenderDefense: 149, roundedNumerator: 31548,
+      } },
+      { label: "减伤、连击与最终倍率", before: 211, after: 211, input: { hitCount: 1, finalDamageMultiplier: 1 } },
+    ],
+  };
+  const { container, rerender } = render(<FormulaAudit result={result} />);
+  const rows = container.querySelectorAll(".formula-audit__row");
+  expect(rows).toHaveLength(4);
+  expect(rows[0].textContent).toBe("静态威力技能115");
+  expect(rows[1]).toHaveTextContent("（1 + 50%（顺风） + 75%（雨天））");
+  expect(rows[1]).toHaveTextContent("258.75→向下取整加成后威力258×克制倍率0.5=显示威力129");
+  expect(rows[1]).not.toHaveTextContent("公式值");
+  expect(rows[2]).toHaveTextContent("四舍五入伤害分子31548÷物防149→向下取整结果211");
+  expect(rows[3].textContent).toBe("总伤害1段211");
+  rerender(<FormulaAudit result={{ ...result, effectivePower: 258, formulaSteps: result.formulaSteps.map((step) =>
+    step.label === "属性克制" ? { ...step, after: 258 }
+      : step.label === "显示威力" ? { ...step, before: 258, after: 258 }
+      : step.label === "等级系数与攻防比" ? { ...step, input: { ...step.input, displayedPower: 258 } }
+      : step
+  ) }} />);
+  const noFactors = container.querySelectorAll(".formula-audit__row")[1];
+  expect(noFactors).toHaveTextContent("258.75→向下取整显示威力258");
+  expect(noFactors).not.toHaveTextContent("加成后威力258=显示威力258");
+  rerender(<FormulaAudit result={{ ...result, effectivePower: 99, formulaSteps: [
+    { label: "手动显示威力", before: 99, after: 99 },
+    { label: "等级系数与攻防比", after: 211, input: { displayedPower: 99, calculationPower: 99 } },
+  ] }} />);
+  expect(container.querySelectorAll(".formula-audit__row")[1].textContent).toBe("显示威力手动99");
+  expect(container.querySelectorAll(".formula-audit__row")[1]).not.toHaveTextContent("雨天");
 });
 
 test("雷暴来源显示悬停效果，并与星光狮特性迸发保持独立", async () => {
@@ -2905,8 +2952,8 @@ test("advanced settings stay collapsed until requested", async () => {
   expect(screen.getByText("总伤害")).toBeVisible();
   expect(screen.getByText("37/41")).toBeVisible();
   expect(screen.getAllByText("四舍五入")).toHaveLength(1);
-  expect(screen.getByText("取整")).toBeVisible();
-  expect(screen.getByText("向下取整")).toBeVisible();
+  expect(screen.queryByText("取整")).not.toBeInTheDocument();
+  expect(screen.getAllByText("向下取整")).toHaveLength(2);
   expect(screen.getByText("8265")).toBeVisible();
   expect(screen.getByText("37/41")).toBeVisible();
   expect(screen.queryByText("0.902439")).not.toBeInTheDocument();

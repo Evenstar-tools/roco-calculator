@@ -25,8 +25,9 @@ test("手动显示威力的过程把输入260放在显示行，不误标静态�
   }} />);
   const rows = container.querySelectorAll(".formula-audit__row");
   expect(rows[0]).not.toHaveTextContent("手动显示威力");
-  expect(rows[0]).toHaveTextContent(/^静态威力规则值65=结果65$/);
-  expect(rows[1]).toHaveTextContent("手动显示威力260");
+  expect(rows[0]).toHaveTextContent(/^静态威力技能65$/);
+  expect(rows[1]).toHaveTextContent(/^显示威力手动260$/);
+  expect(rows[1]).not.toHaveTextContent("技能固定");
   expect(rows[2]).toHaveTextContent("物攻270");
   expect(rows[2]).toHaveTextContent("威力260");
   expect(rows[2]).toHaveTextContent("物防163");

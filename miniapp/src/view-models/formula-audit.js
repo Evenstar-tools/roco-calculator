@@ -107,6 +107,7 @@ export function buildResultFormulaAudit(result) {
     manualPanel ??
     stepByLabel(result, "面板威力") ??
     stepByLabel(result, "游戏内显示威力");
+  const inheritedPower = stepByLabel(result, "继承显示威力");
   const fixedPower = stepByLabel(result, "固定威力增加");
   const markFixedPower = stepByLabel(result, "印记固定威力");
   const traitFixedPower = stepByLabel(result, "特性固定威力");
@@ -124,8 +125,22 @@ export function buildResultFormulaAudit(result) {
     stepByLabel(result, "连击总伤害");
   const damageInput = damage?.input ?? {};
   const settlementInput = settlement?.input ?? {};
-  const primaryPower = basePower ?? manualStatic ?? displayedBasePower;
+  const primaryPower = basePower ?? manualStatic ?? displayedBasePower ?? inheritedPower;
   const staticIsSummary = Boolean(manualPanel && !basePower && Number.isFinite(Number(result.staticPower)));
+  const primaryIndex = result.formulaSteps.indexOf(primaryPower);
+  const percentIndex = result.formulaSteps.indexOf(percentPower);
+  const fixedSteps = primaryIndex < 0 ? [] : result.formulaSteps
+    .slice(primaryIndex + 1, percentIndex < 0 ? undefined : percentIndex)
+    .filter((step) => /固定威力|血脉/u.test(step.label) || (
+      percentIndex >= 0 && numericValue(step.before) !== null && numericValue(step.after) !== null
+    ))
+    .map((step) => ({
+      label: step.label,
+      amount: numericValue(step.before) !== null && numericValue(step.after) !== null
+        ? Number(step.after) - Number(step.before)
+        : numericValue(step.input, 0),
+    }))
+    .filter(({ amount }) => amount !== 0);
 
   const powerFactors = [
     { label: "本系", value: sameType?.input },
@@ -146,6 +161,10 @@ export function buildResultFormulaAudit(result) {
         0,
       )
     : 0;
+  const percentBefore = numericValue(percentPower?.before);
+  const percentAfter = numericValue(percentPower?.after);
+  const percentRaw = percentBefore === null ? null : percentBefore * (1 + percentAdds);
+  const hasPercentStep = percentBefore !== null && percentAfter !== null && Array.isArray(percentPower?.input);
   const hitCount = Math.max(
     1,
     Math.floor(Number(settlementInput.hitCount ?? result.hitCount) || 1),
@@ -187,6 +206,8 @@ export function buildResultFormulaAudit(result) {
       manualPanel: manualPanel?.label,
       staticIsSummary,
       static: staticIsSummary ? result.staticPower : undefined,
+      staticValue: numericValue(result.staticPower, numericValue(primaryPower?.after)),
+      hasPrimary: primaryIndex >= 0,
       base: staticIsSummary ? result.staticPower : primaryPower?.before ?? primaryPower?.input,
       conditional: staticIsSummary ? undefined : primaryPower?.after,
       effective:
@@ -196,12 +217,19 @@ export function buildResultFormulaAudit(result) {
       fixed: Number(fixedPower?.input) || 0,
       markFixed: Number(markFixedPower?.input ?? externalFixed.mark) || 0,
       percentAdds,
+      percentValues: Array.isArray(percentPower?.input) ? percentPower.input : [],
+      percentBefore,
+      percentAfter,
+      percentRaw: hasPercentStep && Math.floor(percentRaw) === percentAfter ? percentRaw : null,
+      hasPercentStep,
+      fixedSteps: manualPanel ? [] : fixedSteps,
       traitFixed: (Number(traitFixedPower?.input ?? externalFixed.trait) || 0) + (Number(externalFixed.bloodline) || 0) + (Number(externalFixed.contract) || 0),
     },
     skillName: result.skillName,
     total: {
       additionalDamage: Number(result.additionalDamage) || 0,
       reassemblyDamage: Number(result.reassemblyDamage) || 0,
+      traitDamage: Number(result.traitDamage) || 0,
       finalMultiplier: settlementInput.finalDamageMultiplier ?? 1,
       hitCount,
       oneHitAfterFinal:

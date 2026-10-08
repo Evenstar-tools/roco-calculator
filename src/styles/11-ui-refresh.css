@@ -1198,6 +1198,8 @@ body {
 
 .formula-audit__chip {
   display: inline-flex;
+  max-width: 100%;
+  flex-wrap: wrap;
   min-height: 30px;
   align-items: center;
   gap: 6px;

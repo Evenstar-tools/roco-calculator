@@ -1168,7 +1168,8 @@ test("rainy weather boosts water damage and stays global across directions", asy
     dryDamage,
   );
   const formulaAudit = document.querySelector(".formula-audit");
-  expect(within(formulaAudit).getByText("结算前威力 · +75%（雨天）")).toBeVisible();
+  expect(within(formulaAudit).getByText(/1 \+ 75%（雨天）/)).toBeVisible();
+  expect(within(formulaAudit).getByText("加成后威力")).toBeVisible();
   expect(within(formulaAudit).queryByText("1.75")).not.toBeInTheDocument();
   expect(screen.getByRole("option", { name: "雨天 · 水系威力 +75%", exact: true })).toBeInTheDocument();
 
@@ -3928,8 +3929,9 @@ test("高级条件摘要跟随有效方向并从调整入口定位常用条件",
       name: "当前非默认高级条件",
     });
     expect(summary).toHaveTextContent(
-      "雨天 · 减伤 20% · 最终倍率 ×1.25 · 血脉 光合治愈",
+      "减伤 20% · 最终倍率 ×1.25 · 血脉 光合治愈",
     );
+    expect(summary).not.toHaveTextContent("雨天");
     expect(summary).not.toHaveTextContent("印记");
 
     await user.click(screen.getByRole("button", { name: "精简版" }));
