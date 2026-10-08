@@ -37,7 +37,7 @@ test.each([
     expect(doc.querySelector("main h1").textContent).toBe(heading);
     expect(doc.querySelector("main p").textContent).toContain("S4");
     expect(doc.querySelector('main a[href="/guide/"]')).not.toBeNull();
-    for (const href of ["/", "/dianlu/", "/guide/"]) {
+    for (const href of ["/", "/dianlu/", "/guide/", "/en/"]) {
       const link = doc.querySelector(`footer a[href="${href}"]`);
       expect(link).not.toBeNull();
       expect(link.closest("#root")).toBeNull();
@@ -59,6 +59,43 @@ test("使用说明是具有正文与真实工具链接的独立HTML页面", () =
   } finally { page.window.close(); }
 });
 
+test("中英文说明互指对应语言版本，英文静态入口不冒充已翻译计算器", () => {
+  const alternateUrls = {
+    en: "https://rococalc.top/en/",
+    "zh-Hans": "https://rococalc.top/guide/",
+    "x-default": "https://rococalc.top/guide/",
+  };
+  for (const [path, language, canonical] of [
+    ["guide/index.html", "zh-CN", alternateUrls["zh-Hans"]],
+    ["en/index.html", "en", alternateUrls.en],
+  ]) {
+    const page = new JSDOM(source(path));
+    try {
+      const doc = page.window.document;
+      expect(doc.documentElement.lang).toBe(language);
+      expect(doc.querySelector('link[rel="canonical"]').getAttribute("href")).toBe(canonical);
+      expect(Object.fromEntries([...doc.querySelectorAll('link[rel="alternate"][hreflang]')]
+        .map((link) => [link.hreflang, link.getAttribute("href")]))).toEqual(alternateUrls);
+      expect(doc.querySelector('nav a[href="/en/"]')).not.toBeNull();
+      expect(doc.querySelector('nav a[href="/guide/"]')).not.toBeNull();
+      expect(doc.querySelectorAll('script:not([type="application/ld+json"])')).toHaveLength(0);
+      if (language === "en") {
+        expect(doc.title).toContain("Roco Kingdom Damage Calculator");
+        expect(doc.querySelectorAll(".steps li")).toHaveLength(3);
+        expect(doc.querySelectorAll(".tools article")).toHaveLength(6);
+        expect(doc.querySelectorAll(".faq details")).toHaveLength(5);
+        expect(doc.querySelector("main").textContent).toContain("China-server S4 data");
+        expect(doc.querySelector("main").textContent).toContain("International-server stats and rules have not been verified");
+        const schema = JSON.parse(doc.querySelector('script[type="application/ld+json"]').textContent);
+        expect(schema).toMatchObject({ "@type": "WebPage", inLanguage: "en", url: canonical });
+        const translatedContent = doc.body.cloneNode(true);
+        translatedContent.querySelectorAll('[lang="zh-CN"]').forEach((label) => label.remove());
+        expect(translatedContent.textContent).not.toMatch(/[\u3400-\u9fff]/);
+      }
+    } finally { page.window.close(); }
+  }
+});
+
 test("robots和sitemap是可随构建复制的真实文件，未缺失或写成SPA首页HTML", () => {
   const robots = source("public/robots.txt");
   expect(robots).toMatch(/^User-agent:\s*\*\s*$/m);
@@ -72,7 +109,7 @@ test("robots和sitemap是可随构建复制的真实文件，未缺失或写成S
     expect(doc.documentElement.localName).toBe("urlset");
     expect(doc.documentElement.namespaceURI).toBe("http://www.sitemaps.org/schemas/sitemap/0.9");
     expect([...doc.querySelectorAll("loc")].map((loc) => loc.textContent)).toEqual([
-      HOME_PAGE_METADATA.canonical, DEER_PAGE_METADATA.canonical, "https://rococalc.top/guide/",
+      HOME_PAGE_METADATA.canonical, DEER_PAGE_METADATA.canonical, "https://rococalc.top/guide/", "https://rococalc.top/en/",
     ]);
   } finally { sitemap.window.close(); }
 });
