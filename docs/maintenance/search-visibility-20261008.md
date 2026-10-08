@@ -30,7 +30,15 @@
 - 数据校验、生产构建（包含验收矩阵、当前共享核心、运行数据、资料绑定及体积门禁）通过。
 - 定向 SEO 测试与本机当前关键单元/集成门禁通过；本机使用既有 `.tmp/seo-local-validation.config.mjs` 扩展依赖 junction 的文件读取范围，不修改正式门禁。
 - 使用本次唯一构建运行当前发布 E2E：包含抓取文件、双语指南无 JavaScript / 明暗主题 / 320px阅读与跳转、离线、计算与查询关键链路，全部通过。
-- `git diff --check` 通过；源码、README 和用户日志写后已读回。公开部署、CI 与 Google 新内容验证另记以下。
+- `git diff --check` 通过；源码、README 和用户日志写后已读回。
+- 功能源码提交 `9cc0acb` 已推送 `origin/main` 并回读引用；[本次 CI](https://github.com/Evenstar-tools/roco-calculator/actions/runs/37762237009) validate、miniapp、e2e 均成功。小程序 CI 通过不代表微信上传。
+- 2026-10-08 18:17 公开回读四页新标题、自然品牌词、规范网址、结构化信息与仓库关联全部一致；新首页主 JS `/assets/main-AHj9ByZr.js` 返回200，含新站点实体与运行时品牌；原 Google 验证标记保留。robots 和 XML站点地图仍正常，完整证据 `http-after.json` 与各页正文。
+- GitHub 公开页面、README中文/英文和元数据均回读本次内容；不是只保存在本地。
+- 18:17 Google `/en/` 实际网址测试成功，可编入索引；“查看被测试的网页”直接读到新 `Roco Kingdom Calculator Guide | RocoCalc` 标题、Roco Calculator 与国服范围摘要，记录 `google-en-live-new-html.txt`。
+- 英文新内容请求显示“已请求编入索引”，已进入优先抓取队列；回执 `google-en-index-request.txt/.png`。此前已收录版本和本次待重抓更新分开记录，不能声称搜索结果已切换新标题。
+- 首页新内容请求也已受理，显示“已请求编入索引”；回执 `google-home-index-request.txt/.png`。
+- 发布后站点地图报告再次读取仍为未知类型、无法抓取、发现0（`google-sitemap-after.txt`）；未宣称修复。当前XML文件有效且页面已被Google成功抓取/索引，尚无更具体错误依据，保留此处为后续报告更新后的检查入口，不新建重复站点地图或关闭安全设置。
+
 
 ## 来源和证据
 
