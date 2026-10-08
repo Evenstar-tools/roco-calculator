@@ -113,7 +113,6 @@ export function buildResultFormulaAudit(result) {
   const percentPower = stepByLabel(result, "技能威力百分比") ?? stepByLabel(result, "外部威力加成");
   const sameType = stepByLabel(result, "本系");
   const type = stepByLabel(result, "属性克制");
-  const weather = stepByLabel(result, "天气");
   const levels = stepByLabel(result, "攻防等级");
   const other = stepByLabel(result, "其他威力乘区");
   const displayPower = stepByLabel(result, "显示威力");
@@ -136,10 +135,6 @@ export function buildResultFormulaAudit(result) {
         Number(type?.before) === 0
           ? 1
           : numericValue(Number(type?.after) / Number(type?.before), 1),
-    },
-    {
-      label: weather?.input?.weather ?? "天气",
-      value: weather?.input?.multiplier,
     },
     { label: "能力等级", value: levels?.input },
     { label: "其他", value: other?.input },

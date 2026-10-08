@@ -37,6 +37,23 @@ const STAT_VIEW = [
   { key: "magicalDefense", label: "魔防" },
 ];
 
+export function getAppliedWeatherLabel(weather, result) {
+  if (result?.status !== "exact") return null;
+  const hasGain = (group, name) => result.gainSources?.[group]?.some(
+    (source) => source.name === name && Number.isFinite(source.amount) && source.amount !== 0,
+  );
+  if (weather === "rain") return hasGain("powerPercent", "雨天") || hasGain("attack", "得寸进尺") ? "雨天" : null;
+  if (weather === "blizzard") return hasGain("powerPercent", "冰雪魂魄") || hasGain("condition", "雪原狩猎") ? "暴风雪" : null;
+  if (weather === "sandstorm") return result.traitContributions?.some(
+    ({ source, values }) => source.name === "流沙统治者" &&
+      [values.attackerSpeedFlatBonus, values.defenderSpeedFlatBonus].some((value) => Number.isFinite(value) && value !== 0),
+  ) ? "沙暴" : null;
+  const settlement = result.negativeStatusSettlement;
+  return weather === "thunder" && settlement && !settlement.skipped && settlement.breakdown?.some(
+    (entry) => entry.id === "electrified" && !entry.immune && entry.stacks > 0,
+  ) ? "雷鸣" : null;
+}
+
 export function clampStage(value) {
   return Math.min(99, Math.max(-99, Math.floor(Number(value) || 0)));
 }

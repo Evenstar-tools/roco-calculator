@@ -35,6 +35,7 @@ import {
   buildCalculatorViewModel,
   clampStage,
   getPanelView,
+  getAppliedWeatherLabel,
   getSkill,
   getSkillSlotView,
   getSpirit,
@@ -282,7 +283,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     currentDirection.context?.bloodlineMagicId,
   );
   const activeAdvancedConditions = [
-    { rain: "雨天", thunder: "雷鸣", sandstorm: "沙暴", blizzard: "暴风雪" }[activeWeather] ?? null,
+    getAppliedWeatherLabel(activeWeather, resultModel?.selectedResult),
     activeReductionPercent > 0 ? `减伤 ${activeReductionPercent}%` : null,
     activeFinalMultiplier !== 1
       ? `最终倍率 ×${Number(activeFinalMultiplier.toFixed(4))}`

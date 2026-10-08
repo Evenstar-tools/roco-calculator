@@ -1168,8 +1168,9 @@ test("rainy weather boosts water damage and stays global across directions", asy
     dryDamage,
   );
   const formulaAudit = document.querySelector(".formula-audit");
-  expect(within(formulaAudit).getByText("雨天")).toBeVisible();
-  expect(within(formulaAudit).getByText("1.75")).toBeVisible();
+  expect(within(formulaAudit).getByText("结算前威力 · +75%（雨天）")).toBeVisible();
+  expect(within(formulaAudit).queryByText("1.75")).not.toBeInTheDocument();
+  expect(screen.getByRole("option", { name: "雨天 · 水系威力 +75%", exact: true })).toBeInTheDocument();
 
   await user.click(screen.getByRole("button", { name: "切换计算方向" }));
   expect(screen.getByRole("combobox", { name: "天气" })).toHaveValue("rain");

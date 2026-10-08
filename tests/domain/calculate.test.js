@@ -4253,29 +4253,71 @@ describe("calculateMatchup", () => {
     });
   });
 
-  test("applies rainy weather as an independent 1.75 multiplier to water skills", () => {
-    const dry = calculateMatchup(snapshot, battleInput()).reverse.selectedResult;
+  test.each(["single", "four"])("rain adds in the shared power zone without a separate multiplier (%s)", (mode) => {
     const rainy = calculateMatchup(
       snapshot,
       battleInput({
+        mode,
         directions: {
           reverse: {
             context: { weatherRainTurns: 8 },
+            skillPowerPercentAdds: [0.5],
+            overrides: { attackerStat: 100, defenderDefense: 100, stabMultiplier: 1, typeMultiplier: 1 },
           },
         },
       }),
     ).reverse.selectedResult;
-    const weather = rainy.formulaSteps.find((step) => step.label === "天气");
+    expect(rainy).toMatchObject({ staticPower: 105, actualPower: 157, effectivePower: 157, totalDamage: 141 });
+    expect(rainy.gainSources.powerPercent).toContainEqual(expect.objectContaining({ name: "雨天", amount: 0.75 }));
+    expect(rainy.gainSources.weather).toEqual([]);
+    expect(rainy.formulaSteps.find((step) => step.label === "天气")).toBeUndefined();
+    expect(rainy.formulaSteps.find((step) => step.label === "技能威力百分比").input).toEqual([0.5, 0.75]);
+  });
 
-    expect(weather).toMatchObject({
-      input: {
-        multiplier: 1.75,
-        remainingTurns: 8,
-        weather: "雨天",
+  test.each([
+    ["auto", undefined, 10, 180, 120, 162],
+    ["static", 80, 0, 140, 80, 126],
+    ["panel", 99, 0, 157, 105, 89],
+  ])("rain follows fixed power and static override but never reapplies to panel power (%s)", (mode, value, fixedPowerAdd, actualPower, staticPower, totalDamage) => {
+    const rainy = calculateMatchup(snapshot, battleInput({
+      directions: { reverse: {
+        context: { weatherRainTurns: 8 },
+        fixedPowerAdd,
+        skillPowerPercentAdds: [0.5],
+        overrides: {
+          attackerStat: 100, defenderDefense: 100, stabMultiplier: 1, typeMultiplier: 1,
+          ...(mode === "auto" ? {} : { powerOverride: { mode, value } }),
+        },
+      } },
+    })).reverse.selectedResult;
+    expect(rainy).toMatchObject({ actualPower, staticPower, totalDamage });
+    if (mode === "panel") {
+      expect(rainy.effectivePower).toBe(99);
+      expect(rainy.gainSources.powerPercent).toEqual([]);
+    } else {
+      expect(rainy.gainSources.powerPercent).toContainEqual(expect.objectContaining({ name: "雨天", amount: 0.75 }));
+    }
+  });
+
+  test("rain only boosts water power, not independent reassembly or starfall damage", () => {
+    const input = battleInput({
+      marks: {
+        attacker: { negative: { id: "starfall", stacks: 2 }, positive: { id: null, stacks: 0 } },
+        defender: { negative: { id: null, stacks: 0 }, positive: { id: "reassembly", stacks: 1 } },
       },
+      directions: { reverse: {
+        skillPowerPercentAdds: [0.5],
+        overrides: { attackerStat: 100, defenderDefense: 100, stabMultiplier: 1, typeMultiplier: 1 },
+      } },
     });
-    expect(weather.after).toBeCloseTo(weather.before * 1.75, 8);
-    expect(rainy.totalDamage).toBeGreaterThan(dry.totalDamage);
+    const dry = calculateMatchup(snapshot, input).reverse.selectedResult;
+    input.directions.reverse.context = { weatherRainTurns: 8 };
+    const rainy = calculateMatchup(snapshot, input).reverse.selectedResult;
+    expect(rainy.mainDamage).toBe(141);
+    expect(dry.reassemblyDamage).toBeGreaterThan(0);
+    expect(dry.additionalDamage).toBeGreaterThan(0);
+    expect(rainy.reassemblyDamage).toBe(dry.reassemblyDamage);
+    expect(rainy.additionalDamage).toBe(dry.additionalDamage);
   });
 
   test("records formula power and every damage rounding boundary", () => {

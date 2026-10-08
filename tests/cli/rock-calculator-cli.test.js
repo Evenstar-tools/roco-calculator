@@ -115,6 +115,21 @@ const referenceListenBridgeCase = {
 
 describe("rock-calculator CLI", () => {
 
+  test("explain names rain in the shared power-addition zone, without a weather multiplier", () => {
+    const result = runCli(["explain", "--input", "-", "--direction", "forward"], {
+      schemaVersion: 1,
+      mode: "single",
+      attacker: { spirit: "水灵", skill: "甩水" },
+      defender: { spirit: "音速犬", skill: "拍击" },
+      forward: { context: { weatherRainTurns: 8 }, overrides: { skillPowerPercentAdds: [0.5] } },
+    });
+    expect(result.status).toBe(0);
+    expect(result.json.result).toMatchObject({ displayPower: 167, totalDamage: 192 });
+    expect(result.json.result.gainSources.powerPercent).toContainEqual(expect.objectContaining({ name: "雨天", amount: 0.75 }));
+    expect(result.json.result.formulaSteps.find(({ label }) => label === "天气")).toBeUndefined();
+    expect(result.json.result.formulaSteps.find(({ label }) => label === "技能威力百分比").input).toEqual([0.5, 0.75]);
+  });
+
   test("龙息帕尔的手动显示威力使用原始攻防，自动与静态计算不变", () => {
     const overrides = {
       attackerStat: 270,

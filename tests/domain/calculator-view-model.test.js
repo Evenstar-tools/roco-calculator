@@ -4,9 +4,11 @@ import {
   buildCalculatorViewModel,
   clampStage,
   getPanelView,
+  getAppliedWeatherLabel,
   getTraitView,
   stageMultiplier,
 } from "../../src/domain/calculator-view-model.js";
+import { updateGlobalWeather } from "../../src/state/calculator-session.js";
 
 test("面板能力等级按正负九十九层封顶", () => {
   expect(clampStage(100)).toBe(99);
@@ -136,6 +138,66 @@ function state() {
     versions: { data: "s3-view", rules: "rules-v1" },
   };
 }
+
+test.each([
+  ["rain", null, "water-hit", "auto", "雨天"],
+  ["rain", null, "fire-hit", "auto", null],
+  ["rain", "得寸进尺", "fire-hit", "auto", "雨天"],
+  ["rain", null, "water-hit", "panel", null],
+  ["sandstorm", null, "fire-hit", "auto", null],
+  ["sandstorm", "流沙统治者", "fire-hit", "auto", "沙暴"],
+  ["sandstorm", "流沙统治者", "fire-hit", "static", "沙暴"],
+  ["sandstorm", "流沙统治者", "fire-hit", "panel", "沙暴"],
+  ["blizzard", null, "fire-hit", "auto", null],
+  ["blizzard", "冰雪魂魄", "ice-hit", "auto", "暴风雪"],
+  ["blizzard", "冰雪魂魄", "fire-hit", "auto", null],
+  ["blizzard", null, "hunt", "auto", "暴风雪"],
+  ["blizzard", null, "hunt", "static", null],
+])("天气摘要仅展示实际生效来源：%s / %s / %s / %s", (weather, traitName, skillId, mode, label) => {
+  const fixture = {
+    ...snapshot,
+    skills: [...snapshot.skills,
+      { ...snapshot.skills[0], id: "ice-hit", name: "冰击", type: "冰" },
+      { ...snapshot.skills[0], id: "hunt", name: "雪原狩猎", type: "冰" },
+    ],
+    spirits: snapshot.spirits.map((spirit) => spirit.id === "fire" ? { ...spirit, traitIds: traitName ? ["weather-trait"] : [] } : spirit),
+    traits: traitName ? [{ id: "weather-trait", name: traitName }] : [],
+  };
+  const input = state();
+  input.sides.attacker.skills.single = skillId;
+  if (mode !== "auto") input.directions.forward.overrides.powerOverride = { mode, value: 80 };
+  const view = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: updateGlobalWeather(input, weather).state });
+  const result = view.result.selectedResult;
+  expect(result.status).toBe("exact");
+  expect(getAppliedWeatherLabel(weather, result)).toBe(label);
+  if (traitName === "流沙统治者") {
+    expect(result.traitContributions).toEqual(expect.arrayContaining([
+      expect.objectContaining({ source: expect.objectContaining({ name: traitName }), values: expect.objectContaining({ attackerSpeedFlatBonus: 50 }) }),
+    ]));
+    expect(result.combatPanel.attacker.speed).toBe(view.sides.attacker.panelStats.speed + 50);
+  }
+});
+
+test.each([
+  [false, false, false, null],
+  [true, false, false, "雷鸣"],
+  [true, true, false, null],
+  [true, false, true, null],
+])("雷鸣仅显示真实结算，首层未触发也保留；关闭/免疫/直伤击倒隐藏 (%s %s %s)", (enabled, immune, directKo, label) => {
+  const fixture = { ...snapshot, spirits: snapshot.spirits.map((spirit) => spirit.id === "water" && immune ? { ...spirit, types: ["电"] } : spirit) };
+  const input = state();
+  input.calculationOptions = { includeNegativeStatusSettlement: enabled };
+  if (directKo) input.directions.forward.currentHp = 1;
+  const view = buildCalculatorViewModel({ activeDirection: "forward", snapshot: fixture, state: updateGlobalWeather(input, "thunder").state });
+  expect(getAppliedWeatherLabel("thunder", view.result.selectedResult)).toBe(label);
+});
+
+test("天气摘要不把零贡献、其他来源或未解析结果当作实际生效", () => {
+  for (const result of [null, { status: "needs_input" }, { status: "exact", traitContributions: [{ source: { name: "流沙统治者" }, values: { attackerSpeedFlatBonus: 0, defenderSpeedFlatBonus: 0 } }] }]) {
+    expect(getAppliedWeatherLabel("sandstorm", result)).toBeNull();
+  }
+  expect(getAppliedWeatherLabel("rain", { status: "exact", gainSources: { powerPercent: [{ name: "雨天", amount: 0 }] } })).toBeNull();
+});
 
 describe("buildCalculatorViewModel", () => {
   test.each([

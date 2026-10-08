@@ -73,7 +73,6 @@ export function buildFormulaAudit(result) {
   const traitFixedPower = stepByLabel(result, "特性固定威力");
   const sameType = stepByLabel(result, "本系");
   const type = stepByLabel(result, "属性克制");
-  const weather = stepByLabel(result, "天气");
   const levels = stepByLabel(result, "攻防等级");
   const other = stepByLabel(result, "其他威力乘区");
   const displayPower = stepByLabel(result, "显示威力");
@@ -86,10 +85,6 @@ export function buildFormulaAudit(result) {
   const powerFactors = [
     { label: "本系", value: sameType?.input },
     { label: "克制", value: type ? type.after / type.before : 1 },
-    {
-      label: weather?.input?.weather ?? "天气",
-      value: weather?.input?.multiplier,
-    },
     { label: "能力等级", value: levels?.input },
     { label: "其他", value: other?.input },
   ].filter((item) => Number.isFinite(Number(item.value)));
@@ -159,14 +154,6 @@ export function buildFormulaAudit(result) {
       traitDamage,
       value: result.totalDamage,
     },
-    weather:
-      weather?.input?.remainingTurns > 0 &&
-      Number(weather?.input?.multiplier) !== 1
-        ? {
-            multiplier: weather.input.multiplier,
-            remainingTurns: weather.input.remainingTurns,
-          }
-        : null,
     additional,
   };
 }
@@ -682,7 +669,7 @@ export function AdvancedOptions({
                 value={weather}
               >
                 <option value="none">无天气</option>
-                <option value="rain">雨天 · 水系 ×1.75</option>
+                <option value="rain">雨天 · 水系威力 +75%</option>
                 <option value="thunder">雷鸣 · 回合末引电 +1</option>
                 <option value="sandstorm">沙暴 · 联动相关特性</option>
                 <option value="blizzard">暴风雪 · 联动技能与特性</option>

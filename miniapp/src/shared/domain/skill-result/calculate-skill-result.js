@@ -592,6 +592,12 @@ export function calculateSkillResult({
     traitResolution.powerPercentAdd === 0
       ? []
       : [traitResolution.powerPercentAdd];
+  const weatherRainTurns = Math.min(
+    8,
+    Math.max(0, Math.floor(finiteNumber(context.weatherRainTurns) ?? 0)),
+  );
+  const rainPowerPercentAdd = weatherRainTurns > 0 && skill.type === "水" ? 0.75 : 0;
+  const weatherPercentageAdds = rainPowerPercentAdd === 0 ? [] : [rainPowerPercentAdd];
   const nonMarkPercentageAdds = [
     ...skillPercentageAdds,
     ...statusPercentageAdds,
@@ -605,12 +611,13 @@ export function calculateSkillResult({
     ...nonMarkPercentageAdds,
     ...(visibleMarkPowerPercentAdd === 0 ? [] : [visibleMarkPowerPercentAdd]),
   ];
-  const percentageAdds = [
+  const percentageAddsWithoutWeather = [
     ...visiblePercentageAdds,
     ...(hiddenPanelPowerPercentAdd === 0
       ? []
       : [hiddenPanelPowerPercentAdd]),
   ];
+  const percentageAdds = [...percentageAddsWithoutWeather, ...weatherPercentageAdds];
   const powerAfterFixed = powerResolution.value + fixedPowerAdd;
   const powerAfterInheritedBurstFixed =
     powerAfterFixed + inheritedBurstFixedPowerAdd;
@@ -650,12 +657,13 @@ export function calculateSkillResult({
     ...traitPercentageAdds,
     ...(visibleMarkPowerPercentAdd === 0 ? [] : [visibleMarkPowerPercentAdd]),
   ];
-  const manualPercentageAdds = [
+  const manualPercentageAddsWithoutWeather = [
     ...manualVisiblePercentageAdds,
     ...(hiddenPanelPowerPercentAdd === 0
       ? []
       : [hiddenPanelPowerPercentAdd]),
   ];
+  const manualPercentageAdds = [...manualPercentageAddsWithoutWeather, ...weatherPercentageAdds];
   const manualActualPower =
     manualPowerAfterContractFixed *
     (1 + manualPercentageAdds.reduce(
@@ -813,16 +821,9 @@ export function calculateSkillResult({
       ...asMultiplierList(details.otherPowerMultipliers),
       ...asMultiplierList(slotOverrides.otherPowerMultipliers),
     ]);
-  const weatherRainTurns = Math.min(
-    8,
-    Math.max(0, Math.floor(finiteNumber(context.weatherRainTurns) ?? 0)),
-  );
-  const weatherMultiplier =
-    weatherRainTurns > 0 && skill.type === "水" ? 1.75 : 1;
   const powerAfterStab = traitAdjustedPower * stabMultiplier;
   const powerAfterType = powerAfterStab * typeMultiplier;
-  const powerAfterWeather = powerAfterType * weatherMultiplier;
-  const powerAfterLevels = powerAfterWeather * attackDefenseLevelMultiplier;
+  const powerAfterLevels = powerAfterType * attackDefenseLevelMultiplier;
   const automaticPanelPower = powerAfterLevels * otherPowerMultiplier;
   const panelPowerOverride = powerOverride.mode === "panel";
   const panelPower = panelPowerOverride
@@ -834,7 +835,7 @@ export function calculateSkillResult({
   const calculationPower = panelPowerOverride
     ? panelPower
     : usesActualCombatPanelForDamage
-      ? powerAfterWeather * otherPowerMultiplier
+      ? powerAfterType * otherPowerMultiplier
       : automaticPanelPower;
   const displayedPower = panelPower;
   const damageReductionMultiplier =
@@ -1010,11 +1011,17 @@ export function calculateSkillResult({
     stacks: starfallStacks,
   });
   const reassemblyMultiplier = sourceMarkEffects.reassemblyMultiplier;
+  // 雨天仅增强水系主技能，不转移到独立的幻系重组追加段。
+  const reassemblyPower = rainPowerPercentAdd === 0 ? actualPower : floorEffectiveSkillPower(
+    (staticPowerOverride ? manualPowerAfterContractFixed : powerAfterContractFixed) *
+      (1 + (staticPowerOverride ? manualPercentageAddsWithoutWeather : percentageAddsWithoutWeather)
+        .reduce((sum, value) => sum + (Number(value) || 0), 0)),
+  );
   const reassembly = starfallDamage({
     ...additionalDamageInput,
     stacks: reassemblyMultiplier,
     powerOverride:
-      actualPower * reassemblyMultiplier * (attacker.types.includes("幻") ? 1.25 : 1),
+      reassemblyPower * reassemblyMultiplier * (attacker.types.includes("幻") ? 1.25 : 1),
   });
   const clownTrick = clownTrickFor(mainDamage.total);
   const baronGreed = hasSequentialBaronSettlement
@@ -1145,20 +1152,9 @@ export function calculateSkillResult({
           snapshot.typeChart?.source ?? "builtin-type-chart-v1",
         ),
         formulaStep(
-          "天气",
-          {
-            multiplier: weatherMultiplier,
-            remainingTurns: weatherRainTurns,
-            weather: weatherRainTurns > 0 ? "雨天" : "无天气",
-          },
-          powerAfterType,
-          powerAfterWeather,
-          weatherRainTurns > 0 ? "battle-weather:rain-v1" : "default",
-        ),
-        formulaStep(
           "攻防等级",
           attackDefenseLevelMultiplier,
-          powerAfterWeather,
+          powerAfterType,
           powerAfterLevels,
           "direction-state",
         ),
@@ -1276,22 +1272,9 @@ export function calculateSkillResult({
           snapshot.typeChart?.source ?? "builtin-type-chart-v1",
         ),
         formulaStep(
-          "天气",
-          {
-            multiplier: weatherMultiplier,
-            remainingTurns: weatherRainTurns,
-            weather: weatherRainTurns > 0 ? "雨天" : "无天气",
-          },
-          powerAfterType,
-          powerAfterWeather,
-          weatherRainTurns > 0
-            ? "battle-weather:rain-v1"
-            : "default",
-        ),
-        formulaStep(
           "攻防等级",
           attackDefenseLevelMultiplier,
-          powerAfterWeather,
+          powerAfterType,
           powerAfterLevels,
           "direction-state",
         ),
@@ -1538,7 +1521,7 @@ export function calculateSkillResult({
       add("附加威力", actualPower - staticPower);
       add(resolvedSkillCategory === "magical" ? "魔攻" : "物攻", clampAbilityStage(totalAttackLevelStage), " 层");
       add(resolvedSkillCategory === "magical" ? "敌方魔防" : "敌方物防", clampAbilityStage(totalDefenseLevelStage), " 层");
-      if (weatherMultiplier !== 1) currentEffects.push(`雨天 ×${weatherMultiplier}`);
+      if (rainPowerPercentAdd !== 0) currentEffects.push("雨天 威力 +75%");
     }
     add("速度", context.attackerSpeed - Number(attacker.panelStats.speed));
     if (refractionEnergyReduction(directionOverrides) > 0) currentEffects.push(`全技能能耗 -${refractionEnergyReduction(directionOverrides)}`);
@@ -1575,7 +1558,10 @@ export function calculateSkillResult({
       ...stateGains(`fixedPowerAddsBySlot.${skillPosition}`, scopedFixedPowerAdd),
     ],
     staticPercent: panelPowerOverride || staticPowerOverride ? [] : staticPercentSources,
-    powerPercent: panelPowerOverride ? [] : traitGains("powerPercentAdd"),
+    powerPercent: panelPowerOverride ? [] : [
+      ...traitGains("powerPercentAdd"),
+      ...namedGain("雨天", rainPowerPercentAdd, "weather"),
+    ],
     traitFixed: panelPowerOverride ? [] : [
       ...traitGains("fixedPowerAdd"),
       ...namedGain(attackerBloodline.label, bloodlineFixedPowerAdd),
@@ -1606,11 +1592,12 @@ export function calculateSkillResult({
     final: traitGains("finalDamageMultiplier", 1),
     condition: !panelPowerOverride && !staticPowerOverride && !usesLockedPower
       ? namedGain(skill.name, powerResolution.value - Number(skill.basePower || 0), "skill", usageSummary?.scope === "skill" ? usageSummary.count : 0) : [],
-    weather: panelPowerOverride ? [] : namedGain("雨天", weatherMultiplier - 1),
+    weather: [],
     manual: panelPowerOverride || staticPowerOverride ? namedGain("手动", 1, "manual") : [],
   };
   return {
     gainSources,
+    traitContributions: traitResolution.contributions ?? [],
     automaticHitCount: fixedHitCount?.hitCount ?? resolveHitCount(powerResolution.hitCount ?? getDefaultHitCount(skill), automaticHitCountAdd),
     ...(positionInputs.length > 0 ? { inputs: positionInputs } : {}),
     gainSummary: summarizeGains(gainSources),

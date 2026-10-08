@@ -676,6 +676,7 @@ function explainResult(result) {
   return {
     ...compactResult(result),
     combatPanel: result?.combatPanel ?? null,
+    gainSources: result?.gainSources ?? {},
     formulaSteps: (result?.formulaSteps ?? []).map((step) => ({
       ...step,
       source: compactSource(step.source),

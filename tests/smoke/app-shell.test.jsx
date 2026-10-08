@@ -194,9 +194,11 @@ test("显示选项名称开关接通真实精简版，改变标签不改变伤�
 });
 
 test.each([
+  ["雨天", "rain"],
+  ["雷鸣", "thunder"],
   ["沙暴", "sandstorm"],
   ["暴风雪", "blizzard"],
-])("精简版保留%s天气摘要和可达的调整入口，清除天气不留空条件", async (label, weather) => {
+])("%s未参与当前拍击计算时不显示天气摘要，也不留下空调整入口", async (_label, weather) => {
   const snapshot = createInteractiveSnapshot();
   const state = createInitialState(snapshot);
   state.mode = "four";
@@ -212,15 +214,10 @@ test.each([
     await user.click(screen.getByRole("button", { name: "高级选项", exact: true }));
     await user.click(screen.getByRole("button", { name: "精简版", exact: true }));
 
-    const conditions = screen.getByRole("region", { name: "当前非默认高级条件" });
-    expect(conditions).toHaveTextContent(label);
-    const damage = screen.getByTestId("primary-damage").textContent;
-    await user.click(within(conditions).getByRole("button", { name: "调整", exact: true }));
-    expect(screen.getByRole("button", { name: "具体版", exact: true })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByRole("button", { name: "高级选项", exact: true })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.queryByRole("region", { name: "当前非默认高级条件" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "具体版", exact: true }));
+    await user.click(screen.getByRole("button", { name: "高级选项", exact: true }));
     expect(screen.getByRole("combobox", { name: "天气", exact: true })).toHaveValue(weather);
-    expect(screen.getByTestId("primary-damage")).toHaveTextContent(damage);
-
     await user.selectOptions(screen.getByRole("combobox", { name: "天气", exact: true }), "none");
     await user.click(screen.getByRole("button", { name: "高级选项", exact: true }));
     await user.click(screen.getByRole("button", { name: "精简版", exact: true }));
@@ -231,5 +228,39 @@ test.each([
       if (value === null) localStorage.removeItem(key);
       else localStorage.setItem(key, value);
     }
+  }
+});
+
+test("天气摘要跟随当前技能实际生效，调整保留天气；无效天气不隐藏其他减伤条件", async () => {
+  const snapshot = createInteractiveSnapshot();
+  snapshot.skills.push({ id: "water-hit", name: "水弹", type: "水", category: "magical", basePower: 70, cost: 2 });
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  state.sides.attacker.skills.four = ["water-hit", null, null, null];
+  state.directions.forward.context.weatherRainTurns = 8;
+  state.directions.reverse.context.weatherRainTurns = 8;
+  const app = render(<App initialSnapshot={snapshot} initialWorkspace={{ state, viewMode: "compact" }} />);
+  const user = userEvent.setup();
+  try {
+    const conditions = screen.getByRole("region", { name: "当前非默认高级条件" });
+    expect(conditions).toHaveTextContent("雨天");
+    await user.click(screen.getByRole("button", { name: "切换计算方向", exact: true }));
+    expect(screen.queryByRole("region", { name: "当前非默认高级条件" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "切换计算方向", exact: true }));
+    const damage = screen.getByTestId("primary-damage").textContent;
+    await user.click(within(screen.getByRole("region", { name: "当前非默认高级条件" })).getByRole("button", { name: "调整", exact: true }));
+    expect(screen.getByRole("combobox", { name: "天气", exact: true })).toHaveValue("rain");
+    expect(screen.getByTestId("primary-damage")).toHaveTextContent(damage);
+    await user.selectOptions(screen.getByRole("combobox", { name: "天气", exact: true }), "sandstorm");
+    await user.clear(screen.getByLabelText("防御技能减伤"));
+    await user.type(screen.getByLabelText("防御技能减伤"), "20");
+    await user.click(screen.getByRole("button", { name: "高级选项", exact: true }));
+    await user.click(screen.getByRole("button", { name: "精简版", exact: true }));
+    const remaining = screen.getByRole("region", { name: "当前非默认高级条件" });
+    expect(remaining).toHaveTextContent("减伤 20%");
+    expect(remaining).not.toHaveTextContent("沙暴");
+    expect(within(remaining).getByRole("button", { name: "调整", exact: true })).toBeEnabled();
+  } finally {
+    app.unmount();
   }
 });

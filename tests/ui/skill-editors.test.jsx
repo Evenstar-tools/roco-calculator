@@ -2839,16 +2839,6 @@ test("advanced settings stay collapsed until requested", async () => {
             label: "本系",
           },
           {
-            after: 65.625,
-            before: 37.5,
-            input: {
-              multiplier: 1.75,
-              remainingTurns: 8,
-              weather: "雨天",
-            },
-            label: "天气",
-          },
-          {
             after: 37,
             before: 37.5,
             input: { method: "floor" },

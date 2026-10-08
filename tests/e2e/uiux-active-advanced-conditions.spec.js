@@ -29,7 +29,8 @@ test("shows only active conditions and keeps adjust separate from formula focus"
 
   await configureConditions(page);
   const summary = page.getByRole("region", { name: "当前非默认高级条件" });
-  await expect(summary).toContainText("雨天 · 减伤 20% · 最终倍率 ×1.25");
+  await expect(summary).toContainText("减伤 20% · 最终倍率 ×1.25");
+  await expect(summary).not.toContainText("雨天");
   await expect(summary).not.toContainText("印记");
   const layout = await page.locator(".result-rail").evaluate((rail) => {
     const list = rail.querySelector(".skill-result-list");
@@ -53,7 +54,13 @@ test("shows only active conditions and keeps adjust separate from formula focus"
   await expect(page.locator(".formula-audit")).not.toBeFocused();
 
   await page.getByRole("button", { name: "切换计算方向" }).click();
-  await expect(summary).toHaveText("计算条件调整雨天");
+  await expect(summary).toHaveCount(0);
+  const waterSkill = page.getByRole("combobox", { name: "防御方技能2", exact: true });
+  await waterSkill.focus();
+  await waterSkill.press("Escape");
+  await expect(summary).toContainText("雨天");
+  await expect(summary).not.toContainText("减伤");
+  await expect(summary.getByRole("button", { name: "调整", exact: true })).toBeVisible();
 });
 
 test("mobile result drawer closes before adjust and stays within 320 and 390", async ({ page }) => {

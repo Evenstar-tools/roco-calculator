@@ -149,6 +149,24 @@ function dynamicResult(skillName, source, label, input, before, after) {
   };
 }
 
+test("rain shares the power-addition zone in mirrored core and miniapp formula", () => {
+  const snapshot = createSnapshot();
+  const state = createState(snapshot);
+  state.mode = "single";
+  state.directions.reverse.context.weatherRainTurns = 8;
+  state.directions.reverse.overrides.skillPowerPercentAdds = [0.5];
+  const input = buildCombatState(state);
+  const result = calculateMatchup(snapshot, input).reverse.selectedResult;
+  expect(result.actualPower).toBe(157);
+  expect(result.totalDamage).toBe(calculateWebMatchup(snapshot, input).reverse.selectedResult.totalDamage);
+  const audit = buildResultFormulaAudit(result);
+  expect(audit.power.percentAdds).toBe(1.25);
+  expect(audit.formulaPower.factors.some(({ label }) => label === "雨天")).toBe(false);
+  const { container } = render(createElement(ResultFormulaAudit, { result }));
+  expect(container.textContent).toContain("+75%（雨天）");
+  expect(container.querySelector(".result-formula__row--display").textContent).not.toContain("雨天");
+});
+
 test.each([
   [
     "闪击",
