@@ -49,8 +49,7 @@ for (const theme of ["light", "dark"]) {
         await expect(page.locator("details[open]")).toContainText(guide.answer);
         await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
         await page.screenshot({ path: `${evidence}/${guide.path.split("/")[1]}-faq-320-${theme}.png` });
-        await page.getByRole("link", { name: guide.language, exact: true }).click();
-        await expect(page).toHaveURL(new RegExp(`${guide.alternate}$`));
+        await expect(page.getByRole("link", { name: guide.language, exact: true })).toHaveAttribute("href", `https://rococalc.top${guide.alternate}`);
         await expect(page.locator(".intro .primary-link")).toHaveAttribute("href", "/");
       });
     }

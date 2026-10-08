@@ -9,7 +9,7 @@ test.each([
   ["index.html", HOME_PAGE_METADATA, "洛克王国：世界伤害计算器"],
   ["dianlu/index.html", DEER_PAGE_METADATA, "电鹿斩杀线计算器"],
 ])("%s在执行JavaScript前已有正文、入口链接和与路由一致的元信息", (path, metadata, heading) => {
-  const page = new JSDOM(source(path));
+  const page = new JSDOM(source(path), { url: "http://127.0.0.1:5173/" });
   try {
     const doc = page.window.document;
     expect(doc.title).toBe(metadata.title);
@@ -36,11 +36,12 @@ test.each([
     expect(JSON.parse(schema[0].textContent)).toEqual(createPageStructuredData(metadata));
     expect(doc.querySelector("main h1").textContent).toBe(heading);
     expect(doc.querySelector("main p").textContent).toContain("S4");
-    expect(doc.querySelector('main a[href="/guide/"]')).not.toBeNull();
-    for (const href of ["/", "/dianlu/", "/guide/", "/en/"]) {
+    expect(doc.querySelector('main a[href="https://rococalc.top/guide/"]')?.href).toBe("https://rococalc.top/guide/");
+    for (const href of ["/", "/dianlu/", "https://rococalc.top/guide/", "https://rococalc.top/en/"]) {
       const link = doc.querySelector(`footer a[href="${href}"]`);
       expect(link).not.toBeNull();
       expect(link.closest("#root")).toBeNull();
+      if (href.startsWith("https://")) expect(link.href).toBe(href);
     }
     expect(doc.querySelector('script[type="module"]').getAttribute("src")).toBe("/src/main.jsx");
     expect([...doc.querySelectorAll('meta[name="robots"]')].some((tag) => /noindex/i.test(tag.content))).toBe(false);
@@ -69,15 +70,15 @@ test("中英文说明互指对应语言版本，英文静态入口不冒充已�
     ["guide/index.html", "zh-CN", alternateUrls["zh-Hans"]],
     ["en/index.html", "en", alternateUrls.en],
   ]) {
-    const page = new JSDOM(source(path));
+    const page = new JSDOM(source(path), { url: "http://127.0.0.1:5173/" });
     try {
       const doc = page.window.document;
       expect(doc.documentElement.lang).toBe(language);
       expect(doc.querySelector('link[rel="canonical"]').getAttribute("href")).toBe(canonical);
       expect(Object.fromEntries([...doc.querySelectorAll('link[rel="alternate"][hreflang]')]
         .map((link) => [link.hreflang, link.getAttribute("href")]))).toEqual(alternateUrls);
-      expect(doc.querySelector('nav a[href="/en/"]')).not.toBeNull();
-      expect(doc.querySelector('nav a[href="/guide/"]')).not.toBeNull();
+      expect(doc.querySelector(`nav a[href="${alternateUrls.en}"]`)?.href).toBe(alternateUrls.en);
+      expect(doc.querySelector(`nav a[href="${alternateUrls["zh-Hans"]}"]`)?.href).toBe(alternateUrls["zh-Hans"]);
       expect(doc.querySelectorAll('script:not([type="application/ld+json"])')).toHaveLength(0);
       if (language === "en") {
         expect(doc.title).toContain("Roco Kingdom Damage Calculator");
