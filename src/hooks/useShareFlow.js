@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { WEBSITE_URL } from "../data/product-links.js";
 import {
   assertSnapshotReferences,
   migrateSharedConfiguration,
@@ -86,7 +87,7 @@ export function useShareFlow({
     }
     const hash = await encodeShareState(state);
     globalThis.history?.replaceState?.(null, "", hash);
-    const nextShareLink = globalThis.location.href;
+    const nextShareLink = `${WEBSITE_URL}${hash}`;
     setShareLink(nextShareLink);
     return nextShareLink;
   }
