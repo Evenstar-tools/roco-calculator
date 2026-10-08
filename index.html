@@ -2,14 +2,22 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
-    <meta
-      name="description"
-      content="基于可追溯 S4「月涌狂想」数据的洛克王国：世界 PVP 确定性伤害计算器"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>洛克王国：世界伤害计算器 | 洛克计算器</title>
+    <meta name="description" content="免费的洛克王国：世界 PVP 伤害计算器，支持 S4 月涌狂想数据、伤害计算、电鹿斩杀线、队伍搭配、技能检索、属性查询与速度耐久排行。可在浏览器使用，也提供 Windows 桌面版。" />
+    <link rel="canonical" href="https://rococalc.top/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content="洛克计算器" />
+    <meta property="og:title" content="洛克王国：世界伤害计算器 | 洛克计算器" />
+    <meta property="og:description" content="免费的洛克王国：世界 PVP 伤害计算器，支持 S4 月涌狂想数据、伤害计算、电鹿斩杀线、队伍搭配、技能检索、属性查询与速度耐久排行。可在浏览器使用，也提供 Windows 桌面版。" />
+    <meta property="og:url" content="https://rococalc.top/" />
+    <meta property="og:image" content="https://rococalc.top/app-icon-512.png" />
+    <meta property="og:image:alt" content="洛克计算器应用图标" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="洛克王国：世界伤害计算器 | 洛克计算器" />
+    <meta name="twitter:description" content="免费的洛克王国：世界 PVP 伤害计算器，支持 S4 月涌狂想数据、伤害计算、电鹿斩杀线、队伍搭配、技能检索、属性查询与速度耐久排行。可在浏览器使用，也提供 Windows 桌面版。" />
+    <meta name="twitter:image" content="https://rococalc.top/app-icon-512.png" />
     <meta name="theme-color" content="#5946e8" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
     <meta name="color-scheme" content="light dark" />
@@ -19,15 +27,27 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/app-icon-192.png" />
-    <link
-      rel="icon"
-      type="image/png"
-      href="/app-icon-192.png"
-    />
-    <title>洛克计算器 · S4「月涌狂想」</title>
+    <link rel="icon" type="image/png" href="/app-icon-192.png" />
+    <link rel="stylesheet" href="/seo-entry.css" />
+    <script id="rococalc-page-schema" type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"洛克计算器","url":"https://rococalc.top/","description":"免费的洛克王国：世界 PVP 伤害计算器，支持 S4 月涌狂想数据、伤害计算、电鹿斩杀线、队伍搭配、技能检索、属性查询与速度耐久排行。可在浏览器使用，也提供 Windows 桌面版。","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"zh-CN"}</script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="site-intro">
+        <img src="/app-icon-192.png" width="64" height="64" alt="洛克计算器应用图标" />
+        <h1>洛克王国：世界伤害计算器</h1>
+        <p>免费的 PVP 对战工具，支持 S4「月涌狂想」数据。选择攻击方、防御方与技能，调整性格、个体和战斗条件，比较技能伤害、HP 占比与剩余生命。</p>
+        <h2>按对局问题选择工具</h2>
+        <p>主计算器提供队伍管理、技能检索、属性查询、传动计算器与速度、耐久排行。<a href="/dianlu/">电鹿斩杀线</a>可比较技能伤害和击倒目标所需的特性层数。</p>
+        <p><a href="/guide/">阅读使用说明与常见问题</a>，或<a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">下载 Windows 版</a>。</p>
+        <p class="site-intro__loading" role="status">正在准备计算器…</p>
+        <noscript><p>计算与配置功能需要启用 JavaScript。使用说明页可以直接阅读。</p></noscript>
+      </main>
+    </div>
+    <footer class="site-links">
+      <nav aria-label="使用与下载"><a href="/">伤害计算器</a><a href="/dianlu/">电鹿斩杀线</a><a href="/guide/">使用说明与常见问题</a><a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">Windows 下载</a></nav>
+      <p>非官方玩家工具，帮助比较《洛克王国：世界》对战配置。</p>
+    </footer>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -11,6 +11,11 @@ export default defineConfig({
     terserOptions: { ecma: 2020, compress: { passes: 3 } },
     outDir: "dist/client",
     rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL("../index.html", import.meta.url)),
+        deer: fileURLToPath(new URL("../dianlu/index.html", import.meta.url)),
+        guide: fileURLToPath(new URL("../guide/index.html", import.meta.url)),
+      },
       output: {
         manualChunks,
       },

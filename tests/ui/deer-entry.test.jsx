@@ -136,7 +136,7 @@ test("卡片入口带入当前对局，专页手调后返回保持主页现场",
   const homeDefense = screen.getByLabelText("防御方精灵").value;
   const beforeStorage = JSON.stringify(localStorage);
   fireEvent.click(screen.getByRole("button", { name: "电鹿斩杀线 →" }));
-  expect(window.location.pathname).toBe("/dianlu");
+  expect(window.location.pathname).toBe("/dianlu/");
   await screen.findByRole("region", { name: "技能斩杀线" });
   expect(screen.getByText(/当前配置 · 沉默 · 生命42/)).toBeInTheDocument();
   expect(screen.getByLabelText("防守特性")).not.toBeChecked();
