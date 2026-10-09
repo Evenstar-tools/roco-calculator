@@ -69,6 +69,7 @@
         <nav aria-label="本页目录">
           <p class="guide-sidebar__title">本页目录</p>
           <a href="#start-heading">伤害计算</a>
+          <a href="#example-heading">伤害示例</a>
           <a href="#tools-heading">工具选择</a>
           <a href="#faq">常见问题</a>
         </nav>
@@ -92,6 +93,42 @@
             <li><span class="step-index" aria-hidden="true">03</span><h3>读取并比较结果</h3><p>查看伤害、HP 占比与剩余生命。改变配置会立即重算；需要核对细节时，展开高级选项查看算式与条件。</p></li>
           </ol>
           <p class="section-note">结果对应当前输入条件。遇到种族值待确认、未支持效果或条件待确认提示时，先核对提示，不把理论结果当作确定的实战结论。</p>
+        </section>
+
+        <section class="section damage-example" id="damage-example" aria-labelledby="example-heading">
+          <h2 id="example-heading">伤害示例：同一配置，只换技能</h2>
+          <p class="section-lead">用迪莫攻击水蓝蓝，先复现一次伤害，再比较另一个技能。</p>
+          <ul class="example-setup">
+            <li><strong>攻守双方：</strong>迪莫（特性「最好的伙伴」，满 HP 425）→ 水蓝蓝（特性「浸润」，满 HP 349）。</li>
+            <li><strong>基础配置：</strong>单技能模式；双方 60 级、普通性格，六项个体值全 60。水蓝蓝选择「水炮」，本例只比较迪莫的正向攻击。</li>
+            <li><strong>战斗条件：</strong>天气无、威力自动；不叠加能力等级、印记、减伤或其他战斗效果，连击和最终倍率保持 1。</li>
+          </ul>
+          <div class="example-results">
+            <article class="example-skill" aria-labelledby="flash-heading">
+              <h3 id="flash-heading">闪光 <span>光系魔法技能</span></h3>
+              <dl class="example-metrics">
+                <div><dt>基础威力 / 能耗</dt><dd>60 / 1</dd></div>
+                <div><dt>本系后的显示威力</dt><dd>75</dd></div>
+                <div><dt>造成伤害</dt><dd><strong>68</strong> · 约 19.5% HP</dd></div>
+                <div><dt>目标剩余 HP</dt><dd>281 / 349</dd></div>
+              </dl>
+            </article>
+            <article class="example-skill" aria-labelledby="light-ball-heading">
+              <h3 id="light-ball-heading">光球 <span>光系魔法技能</span></h3>
+              <dl class="example-metrics">
+                <div><dt>基础威力 / 能耗</dt><dd>80 / 2</dd></div>
+                <div><dt>本系后的显示威力</dt><dd>100</dd></div>
+                <div><dt>造成伤害</dt><dd><strong>90</strong> · 约 25.8% HP</dd></div>
+                <div><dt>目标剩余 HP</dt><dd>259 / 349</dd></div>
+              </dl>
+            </article>
+          </div>
+          <p class="example-conclusion">保持其他配置不变，只把「闪光」换为「光球」，伤害增加 22，技能能耗从 1 变为 2；两招都无法直接击倒满 HP 的目标。比较时同时看伤害和能耗，不把这个例子当作所有对局的最优选择。</p>
+          <figure class="example-figure">
+            <a href="/images/guide-damage-example.jpg"><img src="/images/guide-damage-example.jpg" width="1265" height="712" loading="lazy" alt="洛克计算器示例：迪莫攻击水蓝蓝的技能、伤害与剩余 HP 结果" /></a>
+            <figcaption>四技能模式也能并列比较这两招；图中选中「闪光」。可点图查看原尺寸。</figcaption>
+          </figure>
+          <p class="section-note">先核对本机保存的性格、个体和已开启条件，再复现本例。结果按产品 2.2.5、国服 S4 数据与规则版本 s4-2026-09-10 核对，后续快照更新可能改变数值；它不是胜负结论，也不代表国际服已校准。</p>
         </section>
 
         <section class="section" aria-labelledby="tools-heading">

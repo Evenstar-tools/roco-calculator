@@ -100,7 +100,7 @@ test("中英文说明互指对应语言版本，英文静态入口不冒充已�
       });
       expect(doc.querySelector(`footer a[href="${GITHUB_REPOSITORY_URL}"]`).textContent).toContain("Evenstar-tools/roco-calculator");
       if (language === "en") {
-        expect(doc.title).toContain("Roco Kingdom Calculator");
+        expect(doc.title).toBe("Roco Calculator — Roco Kingdom PvP Guide");
         expect(doc.querySelector(".intro-text").textContent).toContain("RocoCalc (Roco Calculator)");
         expect(doc.querySelector(".intro-text").textContent).toContain("PvP damage");
         expect(doc.querySelectorAll(".steps li")).toHaveLength(3);

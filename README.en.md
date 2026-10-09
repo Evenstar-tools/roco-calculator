@@ -1,4 +1,4 @@
-# RocoCalc — Roco Kingdom Damage Calculator
+# Roco Calculator — Roco Kingdom PvP Damage Calculator
 
 [简体中文](README.md) · **English**
 
@@ -19,6 +19,19 @@ RocoCalc (Roco Calculator) is an unofficial PvP damage calculator and team-plann
 3. Read the damage, HP percentage and remaining HP. Use advanced options (高级选项) to inspect the formulas and conditions.
 
 The same inputs produce the same result. Check the page's warnings about unconfirmed base stats, unsupported effects and unresolved conditions before treating a theoretical result as a confirmed battle outcome.
+
+## Worked example: compare two skills
+
+Open [Roco Calculator](https://rococalc.top/) and select **迪莫** as the attacker and **水蓝蓝** as the defender. Set both to level 60, neutral nature (普通), all six individual values to 60 and full HP. Keep their default traits (最好的伙伴 / 浸润), with no extra battle effects enabled. Change only the attacking skill:
+
+| Chinese skill name | Base power / energy cost | Damage | Share of the defender's 349 HP | HP left |
+| --- | --- | ---: | ---: | ---: |
+| 闪光 | 60 / 1 | 68 | 19.5% | 281 |
+| 光球 | 80 / 2 | 90 | 25.8% | 259 |
+
+The second skill deals 22 more damage and costs one more energy. Neither knocks out the full-HP defender: compare damage and energy together. The [English worked example](https://rococalc.top/en/#example-heading) gives the setup and explains the result. Chinese names are retained so you can find them in the calculator; no official English names are implied.
+
+These reproducible outputs use version 2.2.5 and China-server S4 data, not verified international-server rules or a prediction of the battle's winner. Check your saved settings before comparing results.
 
 ## Tools for PvP preparation
 

@@ -76,6 +76,21 @@ section[id], h2[id] { scroll-margin-top: 24px; }
 .steps p, .tools p { margin: 0; color: var(--guide-muted); }
 .section-note { margin: 20px 0 0; padding: 12px 16px; border-left: 3px solid var(--guide-accent); border-radius: 0 6px 6px 0; background: var(--guide-accent-soft); color: var(--guide-muted); font-size: 14px; }
 .section-lead { margin: -8px 0 24px; color: var(--guide-muted); }
+.example-setup { margin: 0 0 24px; padding-left: 22px; color: var(--guide-muted); }
+.example-setup li + li { margin-top: 8px; }
+.example-setup strong { color: var(--guide-text); }
+.example-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.example-skill { min-width: 0; padding: 16px 0; border-top: 1px solid var(--guide-border); border-bottom: 1px solid var(--guide-border); }
+.example-skill h3 { margin: 0 0 12px; font-size: 18px; }
+.example-skill h3 > span:not([lang]) { display: block; margin-top: 4px; color: var(--guide-muted); font-size: 14px; font-weight: 500; }
+.example-metrics { margin: 0; font-size: 14px; }
+.example-metrics div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: baseline; gap: 12px; padding: 8px 0; }
+.example-metrics dt { color: var(--guide-muted); }
+.example-metrics dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.example-conclusion { margin: 24px 0 0; color: var(--guide-muted); }
+.example-figure { margin: 24px 0 0; }
+.example-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--guide-border); border-radius: 8px; }
+.example-figure figcaption { margin-top: 8px; color: var(--guide-muted); font-size: 13px; }
 .tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
 .tools article { padding: 20px 0; border-top: 1px solid var(--guide-border); }
 .tools h3 { margin: 0 0 10px; font-size: 18px; }
@@ -115,7 +130,7 @@ section[id], h2[id] { scroll-margin-top: 24px; }
   .intro { padding-bottom: 24px; }
   .section { padding: 24px 0; }
   .section h2 { font-size: 20px; margin-bottom: 16px; }
-  .steps, .tools { grid-template-columns: minmax(0, 1fr); }
+  .steps, .tools, .example-results { grid-template-columns: minmax(0, 1fr); }
   .steps { gap: 12px; }
   .step-index { margin-bottom: 6px; font-size: 18px; }
   .tools article { padding: 18px 0; }

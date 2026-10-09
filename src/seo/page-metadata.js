@@ -9,7 +9,7 @@ export const SITE_IMAGE = "https://rococalc.top/app-icon-512.png";
 export const HOME_PAGE_METADATA = Object.freeze({
   name: "洛克计算器",
   alternateName: ["RocoCalc", "Roco Calculator"],
-  title: "洛克王国世界伤害计算器 | 洛克计算器 RocoCalc",
+  title: "洛克计算器｜洛克王国：世界 PVP 伤害计算与配队",
   description: "洛克计算器 RocoCalc（Roco Calculator）是免费的洛克王国：世界 PVP 伤害计算工具，采用国服 S4 数据，支持队伍搭配、技能检索、属性查询、速度耐久排行与电鹿斩杀线。提供网页版和 Windows 版。",
   canonical: "https://rococalc.top/",
 });

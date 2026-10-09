@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Roco Kingdom Calculator Guide | RocoCalc</title>
+    <title>Roco Calculator — Roco Kingdom PvP Guide</title>
     <meta name="description" content="RocoCalc (Roco Calculator) helps compare Roco Kingdom PvP damage, plan teams and check type matchups. English guide for Chinese UI and China-server S4 data." />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#5546dc" />
@@ -16,20 +16,20 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="RocoCalc" />
-    <meta property="og:title" content="Roco Kingdom Calculator Guide | RocoCalc" />
+    <meta property="og:title" content="Roco Calculator — Roco Kingdom PvP Guide" />
     <meta property="og:description" content="RocoCalc (Roco Calculator) helps compare Roco Kingdom PvP damage, plan teams and check type matchups. English guide for Chinese UI and China-server S4 data." />
     <meta property="og:url" content="https://rococalc.top/en/" />
     <meta property="og:image" content="https://rococalc.top/app-icon-192.png" />
     <meta property="og:image:alt" content="RocoCalc app icon" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Roco Kingdom Calculator Guide | RocoCalc" />
+    <meta name="twitter:title" content="Roco Calculator — Roco Kingdom PvP Guide" />
     <meta name="twitter:description" content="English instructions for the Chinese PvP calculator: damage, team planning and type matchups. International-server stats and rules have not been verified." />
     <meta name="twitter:image" content="https://rococalc.top/app-icon-192.png" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "Roco Kingdom Calculator Guide | RocoCalc",
+        "name": "Roco Calculator — Roco Kingdom PvP Guide",
         "description": "RocoCalc (Roco Calculator) helps compare Roco Kingdom PvP damage, plan teams and check type matchups. English guide for Chinese UI and China-server S4 data.",
         "url": "https://rococalc.top/en/",
         "inLanguage": "en",
@@ -56,7 +56,7 @@
     <header class="site-header">
       <a class="brand" href="/"><img src="/app-icon-192.png" width="32" height="32" alt="" />RocoCalc</a>
       <nav aria-label="Site navigation">
-        <a href="/">Calculator (Chinese)</a>
+        <a href="/">Roco Calculator (Chinese)</a>
         <a href="/dianlu/">KO tool (Chinese)</a>
         <span class="language-links">
           <a href="https://rococalc.top/en/" aria-current="page">English guide</a>
@@ -69,6 +69,7 @@
         <nav aria-label="On this page">
           <p class="guide-sidebar__title">On this page</p>
           <a href="#start-heading">Calculate damage</a>
+          <a href="#example-heading">Damage example</a>
           <a href="#tools-heading">Choose a tool</a>
           <a href="#faq">FAQ</a>
         </nav>
@@ -76,11 +77,11 @@
       <main id="main" class="guide-content">
         <div class="intro">
           <p class="eyebrow">English guide · Chinese calculator</p>
-          <h1>Roco Kingdom calculator guide</h1>
+          <h1>Roco Calculator guide</h1>
           <p class="intro-text">RocoCalc (Roco Calculator) is a Roco Kingdom calculator for comparing PvP damage, planning teams and checking type matchups.</p>
           <p class="section-note">The calculator UI and Jini data are Chinese (China-server S4 data). International-server stats and rules have not been verified.</p>
           <div class="entry-links">
-            <a class="primary-link" href="/">Open calculator (Chinese) <span aria-hidden="true">→</span></a>
+            <a class="primary-link" href="/">Open Roco Calculator (Chinese) <span aria-hidden="true">→</span></a>
             <a class="secondary-link" href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">Download for Windows</a>
           </div>
         </div>
@@ -93,6 +94,42 @@
             <li><span class="step-index" aria-hidden="true">03</span><h3>Read and compare results</h3><p>Check damage, its share of HP and remaining HP. Changing the setup recalculates the result. Expand advanced options, <span lang="zh-CN">高级选项</span>, to review the formulas and conditions.</p></li>
           </ol>
           <p class="section-note">Results apply to the inputs you selected. Check any warnings about unconfirmed base stats, unsupported effects or unresolved conditions before treating a theoretical result as a confirmed battle outcome.</p>
+        </section>
+
+        <section class="section damage-example" id="damage-example" aria-labelledby="example-heading">
+          <h2 id="example-heading">Damage example: change only the skill</h2>
+          <p class="section-lead">Use <span lang="zh-CN">迪莫</span> as the attacker and <span lang="zh-CN">水蓝蓝</span> as the defender. Reproduce one result, then compare a second skill.</p>
+          <ul class="example-setup">
+            <li><strong>Both sides:</strong> <span lang="zh-CN">迪莫</span>, trait <span lang="zh-CN">最好的伙伴</span>, at full 425 HP → <span lang="zh-CN">水蓝蓝</span>, trait <span lang="zh-CN">浸润</span>, at full 349 HP.</li>
+            <li><strong>Base setup:</strong> single-skill mode; both level 60, neutral nature (<span lang="zh-CN">普通</span>), all six individual values 60. Defender skill: <span lang="zh-CN">水炮</span>. Compare only the attacker's damage.</li>
+            <li><strong>Battle conditions:</strong> Weather: none; power: automatic. No stat stages, marks, damage reduction or other battle effects. Hit count and final multiplier: 1.</li>
+          </ul>
+          <div class="example-results">
+            <article class="example-skill" aria-labelledby="flash-heading">
+              <h3 id="flash-heading"><span lang="zh-CN">闪光</span> <span class="example-skill-type">Light-type magical skill</span></h3>
+              <dl class="example-metrics">
+                <div><dt>Base power / energy cost</dt><dd>60 / 1</dd></div>
+                <div><dt>Displayed power after the same-type bonus</dt><dd>75</dd></div>
+                <div><dt>Damage dealt</dt><dd><strong>68</strong> · about 19.5% HP</dd></div>
+                <div><dt>Defender's remaining HP</dt><dd>281 / 349</dd></div>
+              </dl>
+            </article>
+            <article class="example-skill" aria-labelledby="light-ball-heading">
+              <h3 id="light-ball-heading"><span lang="zh-CN">光球</span> <span class="example-skill-type">Light-type magical skill</span></h3>
+              <dl class="example-metrics">
+                <div><dt>Base power / energy cost</dt><dd>80 / 2</dd></div>
+                <div><dt>Displayed power after the same-type bonus</dt><dd>100</dd></div>
+                <div><dt>Damage dealt</dt><dd><strong>90</strong> · about 25.8% HP</dd></div>
+                <div><dt>Defender's remaining HP</dt><dd>259 / 349</dd></div>
+              </dl>
+            </article>
+          </div>
+          <p class="example-conclusion">Keep every other setting unchanged and switch from <span lang="zh-CN">闪光</span> to <span lang="zh-CN">光球</span>: damage rises by 22, while the base energy cost rises from 1 to 2. Neither skill knocks out the full-HP defender. Compare damage and energy cost together; this example does not identify the best skill for every matchup.</p>
+          <figure class="example-figure">
+            <a href="/images/guide-damage-example.jpg"><img src="/images/guide-damage-example.jpg" width="1265" height="712" loading="lazy" alt="Roco Calculator example with 迪莫 attacking 水蓝蓝, showing skill damage and remaining HP" /></a>
+            <figcaption>Four-skill mode also lets you compare both skills together; <span lang="zh-CN">闪光</span> is selected here. Open the image at full size for a closer look.</figcaption>
+          </figure>
+          <p class="section-note">Check locally saved nature, individual stat values and enabled conditions before reproducing the result. Verified with product 2.2.5 and China-server S4 data and rules version s4-2026-09-10; later snapshots may change the numbers. The Chinese labels above are the calculator's actual names, not asserted official English names. This example does not predict a battle's winner or verify international-server rules.</p>
         </section>
 
         <section class="section" aria-labelledby="tools-heading">
@@ -116,7 +153,7 @@
           <details><summary>Can I use it on a phone or computer?</summary><p>You can use the web calculator on either. Windows users can also download the latest installer from the project's GitHub Releases. Use the links at the top of this page and check the version actually offered on the release page. This English guide does not translate the calculator's Chinese interface or data.</p></details>
           <details><summary>How do I report a data or calculation issue?</summary><p>Include the Jinies, skills, both configurations, enabled conditions and the result you expected in a <a href="https://github.com/Evenstar-tools/roco-calculator/issues/new/choose">GitHub issue</a>. For the calculation assumptions, see the project's <a href="https://github.com/Evenstar-tools/roco-calculator/blob/main/docs/damage-calculation-human-readable.md">calculation rules (Chinese)</a>.</p></details>
         </section>
-        <div class="bottom-entry"><p>Ready to compare a matchup?</p><a class="primary-link" href="/">Open calculator (Chinese) <span aria-hidden="true">→</span></a></div>
+        <div class="bottom-entry"><p>Ready to compare a matchup?</p><a class="primary-link" href="/">Open Roco Calculator (Chinese) <span aria-hidden="true">→</span></a></div>
       </main>
     </div>
     <footer class="site-footer"><p>RocoCalc is an unofficial player tool. It is not affiliated with or endorsed by the game developers.</p><a href="https://github.com/Evenstar-tools/roco-calculator">RocoCalc source: Evenstar-tools/roco-calculator</a> · <a href="https://rocokingdom.com/">Official Roco Kingdom website</a></footer>

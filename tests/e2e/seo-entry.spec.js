@@ -10,6 +10,9 @@ test("SEO serves crawler files and a separate deer document", async ({ request }
   expect(sitemap.status()).toBe(200);
   expect(sitemap.headers()["content-type"]).toContain("xml");
   expect(await sitemap.text()).toContain("https://rococalc.top/guide/");
+  const exampleImage = await request.get("/images/guide-damage-example.jpg");
+  expect(exampleImage.status()).toBe(200);
+  expect(exampleImage.headers()["content-type"]).toContain("image/jpeg");
   const deer = await request.get("/dianlu/");
   expect(deer.status()).toBe(200);
   expect(await deer.text()).toContain("<h1>电鹿斩杀线计算器</h1>");
@@ -18,7 +21,7 @@ test("SEO serves crawler files and a separate deer document", async ({ request }
 
 const guidePages = [
   { path: "/guide/", heading: "洛克计算器使用说明", entry: "开始伤害计算", toc: "本页目录", tools: "工具选择", faq: "常见问题", question: "配置会保存到哪里？", answer: "它不是账号云同步", language: "English guide", alternate: "/en/" },
-  { path: "/en/", heading: "Roco Kingdom calculator guide", entry: "Open calculator (Chinese)", toc: "On this page", tools: "Choose a tool", faq: "FAQ", question: "Where are my configurations saved?", answer: "They are not synced through an account", language: "Chinese guide", alternate: "/guide/" },
+  { path: "/en/", heading: "Roco Calculator guide", entry: "Open Roco Calculator (Chinese)", toc: "On this page", tools: "Choose a tool", faq: "FAQ", question: "Where are my configurations saved?", answer: "They are not synced through an account", language: "Chinese guide", alternate: "/guide/" },
 ];
 
 for (const theme of ["light", "dark"]) {
@@ -30,7 +33,7 @@ for (const theme of ["light", "dark"]) {
         expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe("auto");
         await expect(page.getByRole("heading", { name: guide.heading, exact: true })).toBeVisible();
         await expect(page.locator(".intro").getByRole("link", { name: guide.entry, exact: true })).toHaveAttribute("href", "/");
-        const evidence = "artifacts/guide-ui-20261008";
+        const evidence = "artifacts/seo-targeted-20261009/guide-qa";
         mkdirSync(evidence, { recursive: true });
         await page.setViewportSize({ width: 1920, height: 1080 });
         await expect(page.locator(".intro .primary-link")).toBeInViewport();
@@ -39,6 +42,15 @@ for (const theme of ["light", "dark"]) {
         await expect(page.locator(".intro .primary-link")).toBeInViewport();
         await page.screenshot({ path: `${evidence}/${guide.path.split("/")[1]}-320-${theme}.png` });
         const toc = page.getByRole("navigation", { name: guide.toc, exact: true });
+        await toc.getByRole("link", { name: guide.path === "/guide/" ? "伤害示例" : "Damage example", exact: true }).click();
+        await expect(page).toHaveURL(/#example-heading$/);
+        await expect(page.locator("#example-heading")).toBeInViewport();
+        await expect(page.locator("#damage-example")).toContainText("19.5% HP");
+        await expect(page.locator("#damage-example")).toContainText("25.8% HP");
+        await expect(page.locator("#damage-example img")).toHaveAttribute("src", "/images/guide-damage-example.jpg");
+        await page.screenshot({ path: `${evidence}/${guide.path.split("/")[1]}-example-320-${theme}.png` });
+        await page.keyboard.press("Control+Home");
+        await expect(toc).toBeInViewport();
         await toc.getByRole("link", { name: guide.tools, exact: true }).click();
         await expect(page).toHaveURL(/#tools-heading$/);
         await expect(page.locator("#tools-heading")).toBeInViewport();
