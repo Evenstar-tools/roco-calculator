@@ -21,7 +21,7 @@ test("SEO serves crawler files and a separate deer document", async ({ request }
 
 const guidePages = [
   { path: "/guide/", heading: "洛克计算器使用说明", entry: "开始伤害计算", toc: "本页目录", tools: "工具选择", faq: "常见问题", question: "配置会保存到哪里？", answer: "它不是账号云同步", language: "English guide", alternate: "/en/" },
-  { path: "/en/", heading: "Roco Calculator guide", entry: "Open Roco Calculator (Chinese)", toc: "On this page", tools: "Choose a tool", faq: "FAQ", question: "Where are my configurations saved?", answer: "They are not synced through an account", language: "Chinese guide", alternate: "/guide/" },
+  { path: "/en/", heading: "Roco Calculator guide", entry: "Open Roco Calculator", toc: "On this page", tools: "Choose a tool", faq: "FAQ", question: "Where are my configurations saved?", answer: "They are not synced through an account", language: "Chinese guide", alternate: "/guide/" },
 ];
 
 for (const theme of ["light", "dark"]) {
