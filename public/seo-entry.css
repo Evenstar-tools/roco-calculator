@@ -1,4 +1,3 @@
-.site-intro,
 .site-links {
   box-sizing: border-box;
   width: min(960px, calc(100% - 32px));
@@ -7,25 +6,15 @@
   font-family: "Microsoft YaHei", system-ui, sans-serif;
   line-height: 1.75;
 }
-.site-intro { padding-block: 40px; }
-.site-intro h1 { font-size: clamp(25px, 4vw, 36px); line-height: 1.4; }
-.site-intro h2 { margin-top: 28px; font-size: 20px; }
-.site-intro p { max-width: 760px; }
-.site-intro a,
 .site-links a { color: var(--accent-strong, #4434c6); text-underline-offset: .2em; }
-.site-intro__loading { color: var(--text-muted, #596177); }
 .site-links { padding: 16px 0 max(28px, env(safe-area-inset-bottom)); font-size: 13px; }
 .site-links nav { display: flex; flex-wrap: wrap; gap: 4px 20px; }
 .site-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .site-links p { margin: 4px 0 0; color: var(--text-muted, #596177); }
-.site-links a:focus-visible,
-.site-intro a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.site-links a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 @media (prefers-color-scheme: dark) {
-  .site-intro,
   .site-links { color: var(--text, #e7edf5); }
-  .site-intro a,
   .site-links a { color: var(--accent-strong, #ebd697); }
-  .site-intro__loading,
   .site-links p { color: var(--text-muted, #bac7d8); }
 }
 @media (max-width: 620px) {
