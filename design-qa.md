@@ -628,3 +628,10 @@ final result: minimal implementation locally verified on Web and native phone; i
 - 原生微信 iPhone 12/13 Pro 模拟器 390×844、基础库3.17.2：生产构建启动，星陨6／冻结2自动关联、手动取消记忆、筛选开关通过；异常0，测试配置已恢复。未额外声称原生 iPad／真机验收。
 - 截图：output/playwright/comparison-hotfix-desktop-open.png、comparison-hotfix-desktop-closed.png、comparison-hotfix-mobile-open.png、comparison-hotfix-native/auto-linked.png、comparison-hotfix-native/manual-opt-out.png；已读回检查。
 - 防回归：tests/ui/damage-comparison.test.jsx 验证真实 CSS 显隐与 aria-expanded 一致，不再只测状态或元素存在；小程序补同一路径交互回归。
+
+## 精简版伤害条修复 · 2026-10-09
+
+- 用户授权修复伤害条并检查相邻问题。删除旧父容器着色规则，按实际伤害比例显示彩色填充和灰色剩余；正常非伤害技能不再显示警告，待计算的“—”使用中性色，真实缺条件或未验证的警告及原因保留。
+- 本地源码页面 1430×862、390×844、320×844 实测，亮暗主题、单技能／四技能及具体版兼容检查通过；绿色低占比、橙色 34.5%、100.9% 封顶、直伤＋冻结分段正常，未改计算核心。变化技能的使用与撤回操作可用，控制台无错误。独立读图未发现本轮血条与提示的识读或操作问题。
+- 相关 UI 定向测试、新增警告分流回归、原寒潮夹具补充分段宽度断言、ESLint 和 diff 检查通过。截图：`output/playwright/skill-bar-final-desktop-light-20261009.png`、`skill-bar-final-desktop-dark-20261009.png`、`skill-bar-final-390-dark-20261009.png`、`skill-bar-final-320-light-20261009.png`、`skill-bar-freeze-final-20261009.png`。
+- 本轮仅本地修复与验收，未提交、推送、部署、打包或上传；小程序及既有其他任务改动未纳入本轮。

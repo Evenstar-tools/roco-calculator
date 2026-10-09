@@ -2443,6 +2443,29 @@ test("four-skill editor exposes four independent slots on both sides", async () 
   expect(onSkillFocus).toHaveBeenCalledWith("attacker", 0);
 });
 
+test.each([
+  ["非伤害技能不计算伤害", false],
+  ["需要更多输入", true],
+  ["特性伤害规则尚未验证", true],
+])("精简技能的%s只在需要处理时显示警告", (reason, needsWarning) => {
+  const statusSkill = { ...skills[0], category: "status", basePower: 0 };
+  const { container } = render(<CompactFourSkillEditor
+    attackerName="音速犬"
+    attackerResults={[{ status: "unsupported", reason, totalDamage: null, hpPercent: null }]}
+    attackerSkills={[statusSkill, null, null, null]}
+    attackerSkillChoices={[statusSkill]}
+    defenderName="水灵"
+    defenderSkills={[null, null, null, null]}
+    defenderSkillChoices={[statusSkill]}
+    onSkillFocus={vi.fn()}
+    onSkillSelect={vi.fn()}
+  />);
+  const preview = container.querySelector(".compact-skill__result");
+  expect(preview).toHaveTextContent("—");
+  expect(preview).toHaveAttribute("title", reason);
+  expect(Boolean(preview.querySelector("svg"))).toBe(needsWarning);
+});
+
 test("four-skill editor previews each side's damage and target HP share", () => {
   render(
     <FourSkillEditor
@@ -2519,6 +2542,15 @@ test.each([
   const preview = container.querySelector(".skill-slot__damage, .compact-skill__result");
   expect(preview).toHaveTextContent(`${percent}%`);
   expect(preview).toHaveTextContent(String(damage));
+  const directWidth = Math.min(100, damage / 425 * 100);
+  expect(Number.parseFloat(preview.querySelector(".damage-coverage__direct").style.width))
+    .toBeCloseTo(directWidth, 5);
+  const freeze = preview.querySelector(".damage-coverage__freeze");
+  if (enabled && !types.includes("冰")) {
+    expect(Number.parseFloat(freeze.style.width)).toBeCloseTo(Math.min(15, 100 - directWidth), 5);
+  } else {
+    expect(freeze).toBeNull();
+  }
 });
 
 test("mobile four-skill editor switches between four attack and defense slots", async () => {

@@ -47,7 +47,7 @@ function CompactDamage({
         </>
       ) : (
         <>
-          {selected ? (
+          {selected && result?.reason !== "非伤害技能不计算伤害" ? (
             <WarningCircle aria-hidden="true" size={16} weight="fill" />
           ) : null}
           <strong>—</strong>

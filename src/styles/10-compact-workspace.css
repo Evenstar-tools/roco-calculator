@@ -500,6 +500,10 @@
   font-variant-numeric: tabular-nums;
 }
 
+.compact-skill__result[data-status="pending"] strong {
+  color: inherit;
+}
+
 .compact-skill__result[data-tone="safe"] strong {
   color: var(--damage-safe);
 }
@@ -515,21 +519,6 @@
   border-radius: 999px;
   background: var(--border);
   grid-column: 1 / -1;
-}
-
-.compact-skill__bar > span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--damage-danger);
-}
-
-.compact-skill__result[data-tone="safe"] .compact-skill__bar > span {
-  background: var(--damage-safe);
-}
-
-.compact-skill__result[data-tone="warning"] .compact-skill__bar > span {
-  background: var(--damage-warning);
 }
 
 .compact-single-skill {

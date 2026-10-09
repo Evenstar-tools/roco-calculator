@@ -231,7 +231,7 @@ export const S4_FEATURE_INTRO = Object.freeze({
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v2.2.5",
-    date: "2026.10.08",
+    date: "2026.10.09",
     title: "S4雨天计算与手机体验优化",
     whatsNew: S4_FEATURE_INTRO,
     summaryHighlights: [
@@ -243,6 +243,7 @@ export const USER_RELEASE_NOTES = Object.freeze([
       "显示设置新增“显示选项名称”，默认关闭；开启后在精简版显示性格、个体与技能模式名称。",
     ],
     fixes: [
+      "修复精简版低伤害条显示成整条的问题，按真实占比保留灰色剩余；正常变化技能不再误报警告，缺少条件时仍保留提示。",
       "伤害计算过程展开同区威力加成并标明取整；纯单段省去重复总伤害行，多段、最终倍率与追加伤害保留完整结算，计算规则不变。",
       "首页直接加载计算器，不再先展示工具介绍页；使用说明和正常页脚入口保留。",
       "官网与说明页突出中英文工具名称，加入可复现的技能伤害对比例子，方便核对输入、伤害和能耗。",

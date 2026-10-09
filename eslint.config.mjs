@@ -26,6 +26,7 @@ export default [
       "artifacts/**",
       "output/**",
       "tmp/**",
+      ".tmp/**",
       "data/**",
     ],
   },
