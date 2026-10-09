@@ -635,3 +635,10 @@ final result: minimal implementation locally verified on Web and native phone; i
 - 本地源码页面 1430×862、390×844、320×844 实测，亮暗主题、单技能／四技能及具体版兼容检查通过；绿色低占比、橙色 34.5%、100.9% 封顶、直伤＋冻结分段正常，未改计算核心。变化技能的使用与撤回操作可用，控制台无错误。独立读图未发现本轮血条与提示的识读或操作问题。
 - 相关 UI 定向测试、新增警告分流回归、原寒潮夹具补充分段宽度断言、ESLint 和 diff 检查通过。截图：`output/playwright/skill-bar-final-desktop-light-20261009.png`、`skill-bar-final-desktop-dark-20261009.png`、`skill-bar-final-390-dark-20261009.png`、`skill-bar-final-320-light-20261009.png`、`skill-bar-freeze-final-20261009.png`。
 - 本轮仅本地修复与验收，未提交、推送、部署、打包或上传；小程序及既有其他任务改动未纳入本轮。
+
+### 同版本发布回查 · 2026-10-09
+
+- 用户随后授权推送线上、回查 Web 和更新 Release。修复源码 `b421c5a` 已推送公开仓库 main，[源码 CI](https://github.com/Evenstar-tools/roco-calculator/actions/runs/37882955688) 全部通过；版本仍为 2.2.5，不移动历史标签。
+- 线上实际资源为 `main-DnqWPAdb.js`／`main-D0Ht6wwm.css`，旧整条着色规则不存在。1430px 桌面亮暗及 390px 手机暗色实图读回通过：34.5% 与 16.3% 的填充比例、灰色剩余、100.9% 条长封顶及原数值均正常，手机没有横向溢出。
+- 普通变化技能没有误警告；真实锥尾羊「坟场搏击」缺敌方能量时仍显示警告和准确原因，空结果保持中性色。线上截图：`output/playwright/online-skill-bars-desktop-light-20261009.png`、`online-skill-bars-desktop-dark-20261009.png`、`online-skill-bars-390-dark-detail-20261009.png`、`online-skill-bars-missing-condition-20261009.png`。
+- [v2.2.5 Release](https://github.com/Evenstar-tools/roco-calculator/releases/tag/v2.2.5) 已替换唯一版本化 Windows EXE，正式附件下载与本地最终包逐字节一致。安装包内资源及隔离离线启动通过；旧包留本地回退，未执行完整安装流程，未上传小程序。完整发布交接：`docs/maintenance/compact-skill-bars-release-20261009.md`。
