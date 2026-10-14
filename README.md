@@ -1,118 +1,36 @@
-<p align="center">
-  <img src="docs/images/project-cover.png" alt="洛克计算器项目封面" width="100%">
-</p>
+# 洛克计算器
 
-<h1 align="center">洛克计算器 · RocoCalc</h1>
+[English](README.en.md)
 
-<p align="center">
-  <strong>简体中文</strong> · <a href="README.en.md">English</a>
-</p>
+《洛克王国：世界》的非官方 PVP 伤害计算与队伍工具。选择双方精灵和技能，查看伤害、HP 占比与剩余生命。界面和资料为中文，使用国服 S4 数据；国际服数值和规则尚未核实。
 
-<p align="center">
-  《洛克王国：世界》PVP 伤害计算与队伍工具<br>
-  Roco Calculator — a Roco Kingdom damage calculator for China-server S4.<br>
-  选好双方精灵和技能，即可快速查看伤害结果。
-</p>
+[在线使用](https://rococalc.top/) · [Windows 安装包](https://github.com/Evenstar-tools/roco-calculator/releases/latest) · [英文使用说明](https://rococalc.top/en/)
 
-<p align="center">
-  <a href="https://rococalc.top/"><img src="https://img.shields.io/badge/在线使用-rococalc.top-2563eb?style=for-the-badge" alt="在线使用"></a>
-  <a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest"><img src="https://img.shields.io/badge/下载-Windows%20安装包-4c55d9?style=for-the-badge" alt="下载 Windows 安装包"></a>
-</p>
+## 本地运行
 
-<p align="center">
-  <a href="https://rococalc.top/"><strong>在线计算器：rococalc.top</strong></a><br>
-  <a href="https://rococalc.top/guide/">中文使用说明</a>
-  · <a href="https://rococalc.top/en/">English guide</a>
-  · <a href="https://github.com/Evenstar-tools/roco-calculator/releases/latest">Windows 电脑版</a>
-  · <a href="https://github.com/Evenstar-tools/roco-calculator/issues/new/choose">问题与建议</a>
-</p>
-
-<p align="center">
-  <sub>当前赛季：国服 S4「月涌狂想」　｜　<a href="docs/releases/README.md">源码与可下载版本</a></sub>
-</p>
-
-RocoCalc 是非官方玩家工具。当前计算器界面和精灵资料为中文，使用《洛克王国：世界》国服 S4 数据。[英文指南](https://rococalc.top/en/) 提供操作说明，并非计算器的完整英语版；国际服数值和规则尚未核实，不能据此声称已适配国际服。
-
-![洛克计算器界面](docs/images/app-overview.png)
-
-## 微信小程序
-
-使用微信扫码打开：
-
-<p align="center">
-  <img src="docs/images/miniapp-qr.jpg" alt="洛克计算器微信小程序码" width="260">
-</p>
-
-## 主要能力
-
-- **即时双选**：左右选择攻防精灵，四个技能伤害同步显示。
-- **确定性计算**：不显示随机区间，配置变化后立即重算。
-- **双向对比**：攻击方与防御方技能均可快捷查看对方伤害。
-- **完整配置**：提供精简版与具体版，支持性格、六维个体、威力、连击和触发条件。
-- **技能规则**：覆盖动态威力、条件触发、层数特性和手动覆盖。
-- **公式核对**：高级选项用四行中文算式展示技能威力、显示威力、单段取整与总伤害。
-- **配置记忆**：精灵配置自动保存在本机，切换后按精灵恢复。
-- **队伍预设**：支持多支六人队伍、四技能配置及攻防方快捷载入。
-- **资料查询**：技能检索、属性查询、速度线与耐久排行，帮助核对学习关系、属性克制与配置差异。
-- **专项工具**：电鹿斩杀线与传动技能顺序模拟；适用条件和未支持效果以页面提示为准。
-- **离线可用**：内置当前赛季快照和本地素材，可作为网页、PWA 或 Windows 桌面应用运行。
-
-当前 S4 数据快照包含 **622 个精灵形态**与 **581 个技能**。种族值未确认的形态仍保留占位说明。
-
-## 操作流程
-
-1. 选择攻击方和防御方精灵。
-2. 在精简版中选择增益方向与个体加点；需要精确配置时切换具体版。
-3. 选择单技能或四技能，直接读取伤害、HP 占比与剩余生命。
-
-## 试算：迪莫攻击水蓝蓝
-
-在[洛克计算器](https://rococalc.top/)将双方设为 **60 级、普通性格、六项个体值全 60、满 HP**；迪莫保留「最好的伙伴」、水蓝蓝保留「浸润」，不开启额外战斗效果。保持配置不变，只切换迪莫的技能：
-
-| 技能 | 基础威力／能耗 | 对水蓝蓝伤害 | 占其 349 HP | 剩余 HP |
-| --- | --- | ---: | ---: | ---: |
-| 闪光 | 60／1 | 68 | 19.5% | 281 |
-| 光球 | 80／2 | 90 | 25.8% | 259 |
-
-光球多造成 22 点伤害，但多消耗 1 点能量，两招均不能直接击倒满 HP 目标。先用这一例核对输入，再比较自己的配置。[完整步骤与结果解读](https://rococalc.top/guide/#example-heading) · [English worked example](https://rococalc.top/en/#example-heading)。
-
-本例由 2.2.5 的国服 S4 数据复算，不代表实战胜负或国际服校准；本机保存的配置可能影响结果，需逐项核对。
-
-## 使用入口
-
-| 你想做什么 | 入口 |
-| --- | --- |
-| 计算伤害、配置队伍与使用工具箱 | [在线计算器：rococalc.top](https://rococalc.top/) |
-| 查看三步入门、工具用途与常见问题 | [中文指南](https://rococalc.top/guide/) · [English guide](https://rococalc.top/en/) |
-| 计算电鹿斩杀线 | [电鹿斩杀线工具](https://rococalc.top/dianlu/) |
-| 下载 Windows 安装包 | [最新 Release](https://github.com/Evenstar-tools/roco-calculator/releases/latest) |
-| 查看历史版本 | [全部 Releases](https://github.com/Evenstar-tools/roco-calculator/releases) |
-| 反馈资料或计算问题 | [GitHub Issues](https://github.com/Evenstar-tools/roco-calculator/issues/new/choose) |
-
-反馈计算问题时，请附上双方精灵、技能、配置、启用条件与预期结果；这样更容易复现同一组输入。
-
-## 版本管理
-
-- [最新 Release](https://github.com/Evenstar-tools/roco-calculator/releases/latest) 是 Windows 安装包的下载入口。
-- [版本记录与下载](docs/releases/README.md) 说明当前可下载版本、源码版本与历史入口。
-- [更新记录](CHANGELOG.md) 说明每个版本带来的变化。
-
-## 规则说明
-
-伤害结果会按双方精灵、技能、性格、个体、威力和战斗条件逐项计算；相同配置会得到相同结果。
-需要核对公式、取整和特殊条件时，可查看 [计算规则说明](docs/damage-calculation-human-readable.md)。
-
-## AI 与命令行调用
-
-项目提供复用同一计算核心的纯 JSON CLI，使用本地数据快照，无需启动网页或调用网络服务。Node.js 22 或更高版本下，在仓库根目录安装依赖并查看数据与输入契约：
+需要 Node.js 22 或更高版本，在仓库根目录执行：
 
 ```powershell
 npm ci
+npm run dev
+```
+
+`npm run build` 构建网页版。可下载版本与源码版本见[版本记录](docs/releases/README.md)，改动见[更新记录](CHANGELOG.md)。
+
+## AI 与命令行
+
+纯 JSON CLI 复用同一计算核心和本地数据，无需启动网页。安装依赖后查看数据与输入契约：
+
+```powershell
 npm run -s cli -- meta
 npm run -s cli -- schema
 ```
 
-计算与解释的输入方式见 [AI CLI 交接说明](docs/maintenance/ai-cli-handoff.md)；项目代理使用规则见 [rock-calculator-cli Skill](.agents/skills/rock-calculator-cli/SKILL.md)。CLI 可以复算并解释同一核心的结果，不能代替对核心公式的独立验证。
+输入方式见 [CLI 交接说明](docs/maintenance/ai-cli-handoff.md)，代理使用规则见[项目 Skill](.agents/skills/rock-calculator-cli/SKILL.md)。CLI 复算不能代替对核心公式的独立验证。
+
+## 计算与反馈
+
+公式和取整口径见[计算规则说明](docs/damage-calculation-human-readable.md)。[反馈计算问题](https://github.com/Evenstar-tools/roco-calculator/issues/new/choose)时，请附双方精灵、技能、配置、启用条件与预期结果。
 
 ## 鸣谢与参考
 

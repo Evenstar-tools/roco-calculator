@@ -9,10 +9,9 @@ test("SEO serves crawler files and a direct deer entry without an introduction",
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.status()).toBe(200);
   expect(sitemap.headers()["content-type"]).toContain("xml");
-  expect(await sitemap.text()).toContain("https://rococalc.top/guide/");
-  const exampleImage = await request.get("/images/guide-damage-example.jpg");
-  expect(exampleImage.status()).toBe(200);
-  expect(exampleImage.headers()["content-type"]).toContain("image/jpeg");
+  const sitemapText = await sitemap.text();
+  expect(sitemapText).toContain("https://rococalc.top/en/");
+  expect(sitemapText).not.toContain("https://rococalc.top/guide/");
   const deer = await request.get("/dianlu/");
   expect(deer.status()).toBe(200);
   const deerDocument = await deer.text();
@@ -34,7 +33,7 @@ test("SEO serves crawler files and a direct deer entry without an introduction",
   const before = Number(await stacks.inputValue());
   await page.getByRole("button", { name: "特性层数加一", exact: true }).click();
   await expect(stacks).toHaveValue(String(before + 1));
-  const evidence = "artifacts/deer-direct-entry-20261009";
+  const evidence = "artifacts/seo-simplify-20261014/e2e";
   mkdirSync(evidence, { recursive: true });
   await page.screenshot({ path: `${evidence}/deer-ready.png` });
   await page.getByRole("link", { name: "返回主站", exact: true }).click();
@@ -43,51 +42,29 @@ test("SEO serves crawler files and a direct deer entry without an introduction",
   expect(await deer.text()).toContain('href="https://rococalc.top/dianlu/"');
 });
 
-const guidePages = [
-  { path: "/guide/", heading: "洛克计算器使用说明", entry: "开始伤害计算", toc: "本页目录", tools: "工具选择", faq: "常见问题", question: "配置会保存到哪里？", answer: "它不是账号云同步", language: "English guide", alternate: "/en/" },
-  { path: "/en/", heading: "Roco Calculator guide", entry: "Open Roco Calculator", toc: "On this page", tools: "Choose a tool", faq: "FAQ", question: "Where are my configurations saved?", answer: "They are not synced through an account", language: "Chinese guide", alternate: "/guide/" },
-];
-
 for (const theme of ["light", "dark"]) {
-  test.describe(`SEO guide without JavaScript ${theme}`, () => {
+  test.describe(`SEO English guide without JavaScript ${theme}`, () => {
     test.use({ javaScriptEnabled: false, viewport: { width: 320, height: 820 }, colorScheme: theme, contextOptions: { reducedMotion: "reduce" } });
-    for (const guide of guidePages) {
-      test(`supports ${guide.path} reading, native FAQ and navigation at 320px`, async ({ page }) => {
-        await page.goto(guide.path);
-        expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe("auto");
-        await expect(page.getByRole("heading", { name: guide.heading, exact: true })).toBeVisible();
-        await expect(page.locator(".intro").getByRole("link", { name: guide.entry, exact: true })).toHaveAttribute("href", "/");
-        const evidence = "artifacts/seo-targeted-20261009/guide-qa";
-        mkdirSync(evidence, { recursive: true });
-        await page.setViewportSize({ width: 1920, height: 1080 });
-        await expect(page.locator(".intro .primary-link")).toBeInViewport();
-        await page.screenshot({ path: `${evidence}/${guide.path.split("/")[1]}-desktop-${theme}.png` });
-        await page.setViewportSize({ width: 320, height: 820 });
-        await expect(page.locator(".intro .primary-link")).toBeInViewport();
-        await page.screenshot({ path: `${evidence}/${guide.path.split("/")[1]}-320-${theme}.png` });
-        const toc = page.getByRole("navigation", { name: guide.toc, exact: true });
-        await toc.getByRole("link", { name: guide.path === "/guide/" ? "伤害示例" : "Damage example", exact: true }).click();
-        await expect(page).toHaveURL(/#example-heading$/);
-        await expect(page.locator("#example-heading")).toBeInViewport();
-        await expect(page.locator("#damage-example")).toContainText("19.5% HP");
-        await expect(page.locator("#damage-example")).toContainText("25.8% HP");
-        await expect(page.locator("#damage-example img")).toHaveAttribute("src", "/images/guide-damage-example.jpg");
-        await page.screenshot({ path: `${evidence}/${guide.path.split("/")[1]}-example-320-${theme}.png` });
-        await page.keyboard.press("Control+Home");
-        await expect(toc).toBeInViewport();
-        await toc.getByRole("link", { name: guide.tools, exact: true }).click();
-        await expect(page).toHaveURL(/#tools-heading$/);
-        await expect(page.locator("#tools-heading")).toBeInViewport();
-        await page.keyboard.press("Control+Home");
-        await expect(toc).toBeInViewport();
-        await toc.getByRole("link", { name: guide.faq, exact: true }).click();
-        await page.getByText(guide.question, { exact: true }).click();
-        await expect(page.locator("details[open]")).toContainText(guide.answer);
-        await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-        await page.screenshot({ path: `${evidence}/${guide.path.split("/")[1]}-faq-320-${theme}.png` });
-        await expect(page.getByRole("link", { name: guide.language, exact: true })).toHaveAttribute("href", `https://rococalc.top${guide.alternate}`);
-        await expect(page.locator(".intro .primary-link")).toHaveAttribute("href", "/");
-      });
-    }
+    test("keeps a short readable guide and calculator entry", async ({ page }) => {
+      await page.goto("/en/");
+      await expect(page.getByRole("heading", { name: "Roco Calculator guide", exact: true })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Calculate damage in three steps", exact: true })).toBeVisible();
+      await expect(page.locator(".steps > li")).toHaveCount(3);
+      await expect(page.locator(".section-note")).toContainText("International-server stats and rules have not been verified");
+      await expect(page.locator("nav, .faq, #damage-example, .tools")).toHaveCount(0);
+      await expect(page.locator("a")).toHaveCount(1);
+      const entry = page.getByRole("link", { name: "Open Roco Calculator", exact: true });
+      await expect(entry).toHaveAttribute("href", "/");
+      const evidence = "artifacts/seo-simplify-20261014/e2e";
+      mkdirSync(evidence, { recursive: true });
+      for (const width of [320, 1920]) {
+        await page.setViewportSize({ width, height: width === 320 ? 820 : 1080 });
+        await expect(entry).toBeInViewport();
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        await page.screenshot({ path: `${evidence}/en-${width}-${theme}.png`, fullPage: true });
+      }
+      await entry.click();
+      await expect(page).toHaveURL(/\/$/);
+    });
   });
 }

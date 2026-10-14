@@ -7,7 +7,12 @@
     },
     {
       "source": "/guide",
-      "destination": "/guide/",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/guide/",
+      "destination": "/",
       "statusCode": 301
     },
     {
