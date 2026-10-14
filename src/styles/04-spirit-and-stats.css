@@ -686,8 +686,16 @@ html[data-theme="dark"] .nature-menu button:focus-visible { outline-color: #e0c5
   mask: var(--stat-icon-url) center / contain no-repeat;
 }
 
+.stat-icon--nature-gain + .stat-tile__label-text {
+  color: #16a34a;
+}
+
 html[data-theme="dark"] .stat-icon--nature-gain {
   background-color: #6ee7a0;
+}
+
+html[data-theme="dark"] .stat-icon--nature-gain + .stat-tile__label-text {
+  color: #6ee7a0;
 }
 
 .stat-icon {

@@ -650,3 +650,9 @@ final result: minimal implementation locally verified on Web and native phone; i
 - Web 1280×900 与 390×844 实图中的五项完整可读，弹层和标题无横向溢出，实际参数区读取新资质。截图：`output/playwright/s4-midseason-20261014-bell.png`、`s4-midseason-20261014-wind.png`、`s4-midseason-20261014-390.png`；主代理已读回。样式、图标与层级沿用既有 EntityChangeHint，没有新增提示系统。
 - 实际操作发现 Portal 点击冒泡会误选候选、输入框持焦时会拦截已选卡片悬浮详情的 Escape；在正确组件调用路径补回归，先失败再修复。改动详情阻止点击冒泡，Escape 以捕获阶段关闭；保留选择器自身键盘行为。
 - 数据校验、运行时生成、受影响 Web／桌面及小程序标题回归通过；小程序内置运行时已继承新资质和改动详情，但未进行本轮微信原生／真机验收、打包或上传。本地预览为 `http://127.0.0.1:4206/`，本轮未推送线上或更新 Release。
+
+### 性格加成属性名同色 · 2026-10-14
+
+- 按用户截图，仅让正向性格加成的属性名跟随现有绿色图标；亮色 `#16a34a`、暗色 `#6ee7a0`。复用相邻元素样式，不改布局、图标、数值、计算或减成配色；Web／Windows 共用样式，小程序不变。
+- 真实页面双方胆小性格的速度图标与文字同色；单侧切普通性格后恢复原色，另一侧不受影响。桌面和 390×844 暗色实图清晰、无横向溢出，主代理已读回：`output/playwright/nature-label-20261014-desktop.png`、`nature-label-20261014-mobile-dark.png`。
+- 仅执行受影响页面操作及 diff 检查，未重复全量测试或构建，未推送线上或更新 Release。
