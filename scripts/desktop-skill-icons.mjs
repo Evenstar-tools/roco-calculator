@@ -19,6 +19,12 @@ export function prepareDesktopClient(projectRoot) {
   // 独立暂存桌面资源，不改动用于网页发布的 dist/client。
   const clientRoot = mkdtempSync(path.join(output, "desktop-client-"));
   cpSync(path.join(projectRoot, "dist/client"), clientRoot, { recursive: true });
+  // 网页底部导航只用于网站发现；桌面副本从加载前移除，避免闪现。
+  for (const relativePath of ["index.html", "dianlu/index.html"]) {
+    const pagePath = path.join(clientRoot, relativePath);
+    const html = readFileSync(pagePath, "utf8");
+    writeFileSync(pagePath, html.replace(/<footer class="site-links">[\s\S]*?<\/footer>/u, ""), "utf8");
+  }
   const runtimePath = path.join(clientRoot, "data/runtime.json");
   const runtime = JSON.parse(readFileSync(runtimePath, "utf8"));
   mkdirSync(path.join(clientRoot, "assets/skills"), { recursive: true });

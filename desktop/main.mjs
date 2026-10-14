@@ -175,6 +175,7 @@ async function collectOfflineSmokeResult(window) {
           document.querySelector('[aria-label="防御方精灵"]')
         ),
         loading: document.body.textContent.includes("正在加载 S4「月涌狂想」数据"),
+        siteFooterCount: document.querySelectorAll("footer.site-links").length,
       }))()
     `);
     if (shell.attackerPicker && shell.defenderPicker && !shell.loading) break;
@@ -238,6 +239,7 @@ async function collectOfflineSmokeResult(window) {
     heading: shell?.heading ?? "",
     attackerPicker: shell?.attackerPicker ?? false,
     defenderPicker: shell?.defenderPicker ?? false,
+    siteFooterCount: shell?.siteFooterCount ?? null,
     dataVersion: data.dataVersion,
     learnsets: data.learnsets,
     portraits: data.portraits,

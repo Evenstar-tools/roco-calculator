@@ -15,12 +15,17 @@ test("每个当前技能都有可内置的 PNG 图标", () => {
   expect(missing, "技能图标不可依赖桌面 CSP 禁止的外链").toEqual([]);
 });
 
-test("桌面暂存将外链替换为本地文件，同时保留网页产物及已有本地图标", () => {
+test("桌面暂存移除网页页脚并内置图标，同时保留网页产物", () => {
   const root = mkdtempSync(path.join(tmpdir(), "desktop-skill-icons-"));
   const web = path.join(root, "dist/client");
   mkdirSync(path.join(web, "data"), { recursive: true });
   mkdirSync(path.join(web, "assets/skills"), { recursive: true });
   mkdirSync(path.join(root, "data/desktop-skill-icons"), { recursive: true });
+  const pages = ["index.html", "dianlu/index.html"];
+  for (const page of pages) {
+    mkdirSync(path.dirname(path.join(web, page)), { recursive: true });
+    writeFileSync(path.join(web, page), readFileSync(page, "utf8"));
+  }
   const png = Buffer.from("89504e470d0a1a0a", "hex");
   const remoteId = "skill_0000000000000001";
   const localId = "skill_0000000000000002";
@@ -35,6 +40,15 @@ test("桌面暂存将外链替换为本地文件，同时保留网页产物及�
   writeFileSync(path.join(root, `data/desktop-skill-icons/${remoteId}.png`), png);
   const staged = prepareDesktopClient(root);
   expect(verifyDesktopSkillIcons(staged)).toBe(2);
+  for (const page of pages) {
+    const webHtml = readFileSync(path.join(web, page), "utf8");
+    const desktopHtml = readFileSync(path.join(staged, page), "utf8");
+    expect(webHtml).toBe(readFileSync(page, "utf8"));
+    expect(webHtml).toContain('<footer class="site-links">');
+    expect(desktopHtml).not.toContain('<footer class="site-links">');
+    expect(desktopHtml).not.toContain('aria-label="使用与下载"');
+    expect(desktopHtml).toContain('<div id="root"></div>');
+  }
   expect(readFileSync(path.join(web, "data/runtime.json"), "utf8")).toBe(runtime);
   writeFileSync(path.join(staged, `assets/skills/${remoteId}.png`), "broken");
   expect(() => verifyDesktopSkillIcons(staged)).toThrow("损坏");
