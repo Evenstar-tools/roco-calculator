@@ -15,7 +15,7 @@ test("每个当前技能都有可内置的 PNG 图标", () => {
   expect(missing, "技能图标不可依赖桌面 CSP 禁止的外链").toEqual([]);
 });
 
-test("桌面暂存移除网页页脚并内置图标，同时保留网页产物", () => {
+test("桌面暂存内置图标并保留网页产物，两端均无额外页脚", () => {
   const root = mkdtempSync(path.join(tmpdir(), "desktop-skill-icons-"));
   const web = path.join(root, "dist/client");
   mkdirSync(path.join(web, "data"), { recursive: true });
@@ -44,7 +44,7 @@ test("桌面暂存移除网页页脚并内置图标，同时保留网页产物",
     const webHtml = readFileSync(path.join(web, page), "utf8");
     const desktopHtml = readFileSync(path.join(staged, page), "utf8");
     expect(webHtml).toBe(readFileSync(page, "utf8"));
-    expect(webHtml).toContain('<footer class="site-links">');
+    expect(webHtml).not.toContain('<footer class="site-links">');
     expect(desktopHtml).not.toContain('<footer class="site-links">');
     expect(desktopHtml).not.toContain('aria-label="使用与下载"');
     expect(desktopHtml).toContain('<div id="root"></div>');

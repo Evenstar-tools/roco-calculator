@@ -18,6 +18,7 @@ test("SEO serves crawler files and a direct deer entry without an introduction",
   const deerDocument = await deer.text();
   expect(deerDocument).toContain("<title>电鹿斩杀线计算器 | 洛克计算器 RocoCalc</title>");
   expect(deerDocument).not.toContain('class="site-intro"');
+  expect(deerDocument).not.toContain('class="site-links"');
   let startApp;
   const bootGate = new Promise((resolve) => { startApp = resolve; });
   await page.route("**/assets/main-*.js", async (route) => { await bootGate; await route.continue(); });
@@ -25,10 +26,11 @@ test("SEO serves crawler files and a direct deer entry without an introduction",
     await page.goto("/dianlu/", { waitUntil: "commit" });
     await expect(page.locator("#root")).toBeEmpty();
     await expect(page.locator(".site-intro")).toHaveCount(0);
-    await expect(page.locator(".site-links")).toBeHidden();
+    await expect(page.locator(".site-links")).toHaveCount(0);
   } finally { startApp(); }
   const stacks = page.getByRole("spinbutton", { name: "特性层数", exact: true });
   await expect(stacks).toBeVisible();
+  await expect(page.locator(".site-links")).toHaveCount(0);
   const before = Number(await stacks.inputValue());
   await page.getByRole("button", { name: "特性层数加一", exact: true }).click();
   await expect(stacks).toHaveValue(String(before + 1));
@@ -37,6 +39,7 @@ test("SEO serves crawler files and a direct deer entry without an introduction",
   await page.screenshot({ path: `${evidence}/deer-ready.png` });
   await page.getByRole("link", { name: "返回主站", exact: true }).click();
   await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator(".site-links")).toHaveCount(0);
   expect(await deer.text()).toContain('href="https://rococalc.top/dianlu/"');
 });
 

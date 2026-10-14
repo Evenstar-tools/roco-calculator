@@ -8,7 +8,7 @@ const source = (path) => readFileSync(path, "utf8");
 test.each([
   ["index.html", HOME_PAGE_METADATA],
   ["dianlu/index.html", DEER_PAGE_METADATA],
-])("%s保留入口链接和与路由一致的元信息，不展示过渡介绍", (path, metadata) => {
+])("%s保留路由元信息，不展示过渡介绍或额外页脚", (path, metadata) => {
   const page = new JSDOM(source(path), { url: "http://127.0.0.1:5173/" });
   try {
     const doc = page.window.document;
@@ -37,18 +37,13 @@ test.each([
     const siteSchema = doc.head.querySelectorAll(`#${SITE_SCHEMA_ID}`);
     expect(siteSchema).toHaveLength(1);
     expect(JSON.parse(siteSchema[0].textContent)).toEqual(createSiteStructuredData());
-    expect(doc.querySelector("footer").textContent).toContain("RocoCalc / Roco Calculator");
-    expect(doc.querySelector(`footer a[href="${GITHUB_REPOSITORY_URL}"]`)).toBeNull();
+    expect(doc.querySelector("footer.site-links")).toBeNull();
+    expect(doc.querySelector('nav[aria-label="使用与下载"]')).toBeNull();
     expect(doc.querySelector("#root").childNodes).toHaveLength(0);
     expect(doc.querySelector(".site-intro")).toBeNull();
-    expect(doc.querySelector("#rococalc-boot-style").textContent).toContain("#root:empty ~ .site-links");
+    expect(doc.querySelector("#rococalc-boot-style")).toBeNull();
+    expect(doc.querySelector('link[href="/seo-entry.css"]')).toBeNull();
     expect(doc.querySelector('noscript a[href="https://rococalc.top/guide/"]')).not.toBeNull();
-    for (const href of ["/", "/dianlu/", "https://rococalc.top/guide/", "https://rococalc.top/en/"]) {
-      const link = doc.querySelector(`footer a[href="${href}"]`);
-      expect(link).not.toBeNull();
-      expect(link.closest("#root")).toBeNull();
-      if (href.startsWith("https://")) expect(link.href).toBe(href);
-    }
     expect(doc.querySelector('script[type="module"]').getAttribute("src")).toBe("/src/main.jsx");
     expect([...doc.querySelectorAll('meta[name="robots"]')].some((tag) => /noindex/i.test(tag.content))).toBe(false);
   } finally { page.window.close(); }
