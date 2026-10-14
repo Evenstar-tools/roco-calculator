@@ -38,7 +38,7 @@ test.each([
     expect(siteSchema).toHaveLength(1);
     expect(JSON.parse(siteSchema[0].textContent)).toEqual(createSiteStructuredData());
     expect(doc.querySelector("footer").textContent).toContain("RocoCalc / Roco Calculator");
-    expect(doc.querySelector(`footer a[href="${GITHUB_REPOSITORY_URL}"]`).textContent).toContain("Evenstar-tools/roco-calculator");
+    expect(doc.querySelector(`footer a[href="${GITHUB_REPOSITORY_URL}"]`)).toBeNull();
     expect(doc.querySelector("#root").childNodes).toHaveLength(0);
     expect(doc.querySelector(".site-intro")).toBeNull();
     expect(doc.querySelector("#rococalc-boot-style").textContent).toContain("#root:empty ~ .site-links");
@@ -92,7 +92,7 @@ test("中英文说明互指对应语言版本，英文静态入口不冒充已�
         "@type": "WebSite", "@id": SITE_ID, name: SITE_NAME, url: SITE_URL,
         alternateName: ["洛克计算器", "Roco Calculator"], sameAs: GITHUB_REPOSITORY_URL,
       });
-      expect(doc.querySelector(`footer a[href="${GITHUB_REPOSITORY_URL}"]`).textContent).toContain("Evenstar-tools/roco-calculator");
+      expect(doc.querySelector(`footer a[href="${GITHUB_REPOSITORY_URL}"]`)).toBeNull();
       if (language === "en") {
         expect(doc.title).toBe("Roco Calculator — Roco Kingdom PvP Guide");
         expect(doc.querySelector(".intro-text").textContent).toContain("RocoCalc (Roco Calculator)");
