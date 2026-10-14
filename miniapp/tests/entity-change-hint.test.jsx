@@ -75,6 +75,95 @@ describe("移动端实体改动提示", () => {
     expect(screen.queryByRole("dialog", { name: "攻击方技能 1选项" })).not.toBeInTheDocument();
   });
 
+  test.each(["精灵卡片", "精灵列表"])("%s中实际改动优先于旧 NEW 标记", (entry) => {
+    const onActivate = vi.fn();
+    const onChange = vi.fn();
+    const spirit = {
+      id: "bell-puppet",
+      fullName: "摇铃魔偶",
+      types: ["幽"],
+      changeInfo: {
+        patch,
+        entityName: "摇铃魔偶",
+        isNew: true,
+        items: [
+          { kind: "new", label: "新增精灵", after: "特性·盗魂铃" },
+          { kind: "stat", label: "生命", before: 123, after: 141 },
+        ],
+      },
+    };
+    if (entry === "精灵卡片") {
+      render(
+        <CombatantCard
+          identityOnly
+          onActivate={onActivate}
+          onChange={onChange}
+          side="attacker"
+          spirit={spirit}
+          spirits={[spirit]}
+        />,
+      );
+    } else {
+      render(
+        <SpiritPicker
+          onChange={onChange}
+          side="attacker"
+          spirits={[spirit]}
+          value={null}
+        />,
+      );
+      fireEvent.input(screen.getByLabelText("搜索攻击方宠物"), {
+        target: { value: "摇铃" },
+      });
+    }
+    expect(screen.queryByText("NEW")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "查看摇铃魔偶本期改动" }));
+    expect(screen.getByRole("dialog", { name: "摇铃魔偶本期改动" })).toBeVisible();
+    expect(screen.getByText("123 → 141")).toBeVisible();
+    expect(onActivate).not.toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  test("新增技能的实际数值改动在已选项和列表中显示叹号", () => {
+    const onChange = vi.fn();
+    const skill = {
+      id: "new-adjusted-skill",
+      name: "调整后的新技能",
+      type: "机械",
+      category: "status",
+      basePower: 0,
+      cost: 1,
+      changeInfo: {
+        patch,
+        entityName: "调整后的新技能",
+        isNew: true,
+        items: [
+          { kind: "new", label: "新增技能", after: "S4 新增" },
+          { kind: "stat", label: "能耗", before: 2, after: 1 },
+        ],
+      },
+    };
+    render(
+      <SkillPicker
+        choices={[skill]}
+        label="攻击方技能 1"
+        onChange={onChange}
+        value={skill.id}
+      />,
+    );
+    expect(screen.queryByText("NEW")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "查看调整后的新技能本期改动" }));
+    expect(screen.getByText("2 → 1")).toBeVisible();
+    fireEvent.click(within(screen.getByRole("dialog", { name: "调整后的新技能本期改动" }))
+      .getByRole("button", { name: "关闭改动详情" }));
+    fireEvent.click(screen.getByRole("button", { name: "选择攻击方技能 1" }));
+    const options = screen.getByRole("dialog", { name: "攻击方技能 1选项" });
+    fireEvent.click(within(options).getByRole("button", { name: "查看调整后的新技能本期改动" }));
+    expect(screen.getByRole("dialog", { name: "调整后的新技能本期改动" })).toBeVisible();
+    expect(screen.getByText("2 → 1")).toBeVisible();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   test("S4 全新精灵与首领显示 NEW 标识，技能仍不显示改动叹号", () => {
     const newSpirit = {
       id: "silver-moon-wolf-king",

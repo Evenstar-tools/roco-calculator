@@ -2,7 +2,7 @@ import { CaretDown, MagnifyingGlass, Star } from "@phosphor-icons/react";
 import { useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
 import { TraitHint } from "./TraitHint.jsx";
-import { EntityChangeHint } from "./EntityChangeHint.jsx";
+import { EntityChangeHint, hasEntityChanges } from "./EntityChangeHint.jsx";
 import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 import { getBattleFormChoices } from "../domain/battle-form.js";
 import { ElementIcon } from "./ElementIcon.jsx";
@@ -48,6 +48,7 @@ function isS4PreviewFinalSpirit(spirit) {
 function shouldShowNewBadge(spirit) {
   return Boolean(
     spirit?.changeInfo?.isNew &&
+      !hasEntityChanges(spirit.changeInfo) &&
       (spirit.previewDefaults || spirit.changeInfo.isFinal || spirit.stage === "首领"),
   );
 }

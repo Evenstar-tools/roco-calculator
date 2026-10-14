@@ -123,14 +123,58 @@ test("选择器保留输入焦点时 Escape 也关闭已选精灵的悬浮改动
   expect(screen.queryByRole("tooltip", { name: "加油蟹本期改动" })).not.toBeInTheDocument();
 });
 
-test("技能选择器在已选技能和候选项旁显示叹号，不常驻改动正文", async () => {
+test("新增精灵有实际改动时，已选卡片和候选列表均优先叹号而非 NEW", async () => {
   const user = userEvent.setup();
+  const updatedSpirit = {
+    ...spirit,
+    previewDefaults: { natureId: "neutral" },
+    changeInfo: {
+      ...spirit.changeInfo,
+      isNew: true,
+      items: [
+        { kind: "new", label: "新增精灵", after: "S4 新增" },
+        ...spirit.changeInfo.items,
+      ],
+    },
+  };
+  render(
+    <SpiritPicker
+      label="攻击方"
+      onSelect={vi.fn()}
+      selected={updatedSpirit}
+      side="attack"
+      spirits={[updatedSpirit]}
+    />,
+  );
+  const title = screen.getByText("加油蟹", { selector: ".spirit-card__title strong" });
+  expect(title).not.toHaveAttribute("data-new");
+  expect(screen.getByRole("button", { name: "查看加油蟹本期改动" })).toBeVisible();
+  await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  const option = screen.getByRole("option", { name: /加油蟹/u });
+  expect(option.querySelector("strong")).not.toHaveAttribute("data-new");
+  await user.click(within(option).getByRole("button", { name: "查看加油蟹本期改动" }));
+  expect(screen.getByText("108 → 92")).toBeVisible();
+});
+
+test("新增技能有实际改动时仍优先叹号，不常驻改动正文", async () => {
+  const user = userEvent.setup();
+  const updatedSkill = {
+    ...skill,
+    changeInfo: {
+      ...skill.changeInfo,
+      isNew: true,
+      items: [
+        { kind: "new", label: "新增技能", after: "S4 新增" },
+        ...skill.changeInfo.items,
+      ],
+    },
+  };
   render(
     <SkillPicker
       ariaLabel="攻击方技能1"
       onSelect={vi.fn()}
-      selected={skill}
-      skills={[skill]}
+      selected={updatedSkill}
+      skills={[updatedSkill]}
     />,
   );
 

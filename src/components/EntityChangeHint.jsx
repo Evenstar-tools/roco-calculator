@@ -12,6 +12,11 @@ function isCompactChange(item) {
   return item.kind === "stat" && typeof item.before !== "string";
 }
 
+export function hasEntityChanges(changeInfo) {
+  return Array.isArray(changeInfo?.items) &&
+    changeInfo.items.some((item) => item?.kind && item.kind !== "new");
+}
+
 function ChangeItem({ item }) {
   if (isCompactChange(item)) {
     const delta = Number(item.after) - Number(item.before);
@@ -102,7 +107,7 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
 
   useEffect(() => () => cancelClose(), []);
 
-  if (!changeInfo?.items?.length || changeInfo.isNew) return null;
+  if (!hasEntityChanges(changeInfo)) return null;
   const entityName = changeInfo.entityName ?? "当前项目";
 
   return (

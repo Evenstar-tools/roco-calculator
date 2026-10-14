@@ -5,6 +5,11 @@ function isCompactChange(item) {
   return item.kind === "stat" && typeof item.before !== "string";
 }
 
+function hasEntityChanges(changeInfo) {
+  return Array.isArray(changeInfo?.items) &&
+    changeInfo.items.some((item) => item?.kind && item.kind !== "new");
+}
+
 function ChangeItem({ item }) {
   if (isCompactChange(item)) {
     const delta = Number(item.after) - Number(item.before);
@@ -46,7 +51,8 @@ function ChangeItem({ item }) {
 export default function EntityChangeHint({ changeInfo, className = "" }) {
   const [open, setOpen] = useState(false);
   const entityName = changeInfo?.entityName ?? "当前项目";
-  if (changeInfo?.isNew) {
+  const hasChanges = hasEntityChanges(changeInfo);
+  if (changeInfo?.isNew && !hasChanges) {
     const newEntityKind = changeInfo.items?.[0]?.label === "新增精灵"
       ? "精灵"
       : changeInfo.items?.[0]?.label === "新增首领占位"
@@ -61,7 +67,7 @@ export default function EntityChangeHint({ changeInfo, className = "" }) {
       </Text>
     ) : null;
   }
-  if (!changeInfo?.items?.length) return null;
+  if (!hasChanges) return null;
 
   function stopAndClose(event) {
     event?.stopPropagation?.();
