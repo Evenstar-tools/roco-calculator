@@ -656,3 +656,12 @@ final result: minimal implementation locally verified on Web and native phone; i
 - 按用户截图，仅让正向性格加成的属性名跟随现有绿色图标；亮色 `#16a34a`、暗色 `#6ee7a0`。复用相邻元素样式，不改布局、图标、数值、计算或减成配色；Web／Windows 共用样式，小程序不变。
 - 真实页面双方胆小性格的速度图标与文字同色；单侧切普通性格后恢复原色，另一侧不受影响。桌面和 390×844 暗色实图清晰、无横向溢出，主代理已读回：`output/playwright/nature-label-20261014-desktop.png`、`nature-label-20261014-mobile-dark.png`。
 - 仅执行受影响页面操作及 diff 检查，未重复全量测试或构建，未推送线上或更新 Release。
+
+### 同版本三端发布与回查 · 2026-10-14
+
+- 用户随后授权更新 Web、Release、小程序并回查。产品源码 `40ec2b7` 已推送 `origin/main`，本地发布门禁与对应远端 CI 通过；沿用 Web／Windows 2.2.5、小程序 1.1.19，不移动历史标签。
+- Web 线上 1280×900 和 390×844 的真实参数、两只五项季中更新详情、正向属性名同色及普通恢复、弹层点击／关闭／输入框焦点下 Escape 均通过，无横向溢出或应用报错。主代理已读回桌面和手机深色实图；证据在 `output/playwright/midseason-release-20261014/web/readback.json`。
+- 跨部署保留旧 Service Worker 的会话首次刷新短暂读到旧运行数据，后续普通刷新按现有 stale-while-revalidate 更新；未清缓存掩盖问题。不把分析 SDK 请求被拦截当作计算器错误，也不声称线上 JS 文件名与不同构建环境的本地包完全相同。
+- 小程序补齐正向性格属性名的同语义高亮。正式生产包通过官方 SDK 原生 390px 验收：两只资质／速度、更新详情、正向颜色与普通恢复、实际计算和重启配置恢复正常；测试后用户存储全部恢复。官方 CLI 已上传 1.1.19 开发版，上传后设置显示 2026-10-14；未提审、未正式发布。回执及原生报告在 `artifacts/midseason-release-20261014/`。
+- Windows 2.2.5 新安装包提取内容与打包资源逐字节一致，包含本轮资质和标题，隔离离线启动通过。Release 唯一正式 EXE 下载与本地归档一致；旧远端附件已替换，旧包保留本地回退。未执行完整安装／卸载流程，安装包未签名。
+- 仅记录已完成的平台结果与边界，未扩改 UI 或计算。完整发布交接：`docs/maintenance/midseason-release-20261014.md`。
