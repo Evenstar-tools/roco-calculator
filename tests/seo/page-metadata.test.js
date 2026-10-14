@@ -3,7 +3,7 @@ import { JSDOM } from "jsdom";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { CalculatorRouter } from "../../src/CalculatorRouter.jsx";
-import { applyPageMetadata, DEER_PAGE_METADATA, GITHUB_REPOSITORY_URL, HOME_PAGE_METADATA, PAGE_SCHEMA_ID, SITE_ID, SITE_IMAGE, SITE_NAME, SITE_SCHEMA_ID, SITE_URL } from "../../src/seo/page-metadata.js";
+import { applyPageMetadata, DEER_PAGE_METADATA, HOME_PAGE_METADATA, PAGE_SCHEMA_ID, SITE_ID, SITE_IMAGE, SITE_NAME, SITE_SCHEMA_ID, SITE_URL } from "../../src/seo/page-metadata.js";
 
 vi.mock("../../src/App.jsx", () => ({
   App: ({ onOpenDeer }) => createElement("button", { onClick: () => onOpenDeer({ state: {} }) }, "打开电鹿"),
@@ -61,8 +61,9 @@ function expectPageMetadata(metadata) {
   expect(siteSchemas).toHaveLength(1);
   expect(JSON.parse(siteSchemas[0].textContent)).toMatchObject({
     "@type": "WebSite", "@id": SITE_ID, name: "RocoCalc", url: SITE_URL,
-    alternateName: ["洛克计算器", "Roco Calculator"], sameAs: GITHUB_REPOSITORY_URL,
+    alternateName: ["洛克计算器", "Roco Calculator"],
   });
+  expect(siteSchemas[0].textContent).not.toContain("github.com");
   expect(schema).not.toHaveProperty("aggregateRating");
   expect(schema).not.toHaveProperty("review");
 }

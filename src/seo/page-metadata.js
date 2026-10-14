@@ -3,7 +3,6 @@ export const SITE_SCHEMA_ID = "rococalc-site-schema";
 export const SITE_NAME = "RocoCalc";
 export const SITE_URL = "https://rococalc.top/";
 export const SITE_ID = `${SITE_URL}#website`;
-export const GITHUB_REPOSITORY_URL = "https://github.com/Evenstar-tools/roco-calculator";
 export const SITE_IMAGE = "https://rococalc.top/app-icon-512.png";
 
 export const HOME_PAGE_METADATA = Object.freeze({
@@ -30,7 +29,6 @@ export function createSiteStructuredData() {
     alternateName: ["洛克计算器", "Roco Calculator"],
     url: SITE_URL,
     inLanguage: ["zh-CN", "en"],
-    sameAs: GITHUB_REPOSITORY_URL,
   };
 }
 

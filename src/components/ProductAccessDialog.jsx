@@ -2,8 +2,6 @@ import { X } from "@phosphor-icons/react";
 import { useRef } from "react";
 import { useModalFocus } from "../hooks/useModalFocus.js";
 
-const GITHUB_REPOSITORY_URL =
-  "https://github.com/Evenstar-tools/roco-calculator";
 const DESKTOP_RELEASES_URL =
   "https://github.com/Evenstar-tools/roco-calculator/releases/latest";
 const MINIAPP_CODE_URL = "/assets/downloads/wechat-miniapp-code.jpg";
@@ -44,15 +42,6 @@ export function ProductAccessDialog({ onClose, open }) {
               target="_blank"
             >
               <strong>获取 Windows 电脑版</strong>
-            </a>
-            <a
-              aria-label="GitHub 项目主页"
-              className="product-access-desktop-link"
-              href={GITHUB_REPOSITORY_URL}
-              rel="noreferrer"
-              target="_blank"
-            >
-              <strong>GitHub 项目主页</strong>
             </a>
           </article>
           <article className="product-access-card product-access-card--miniapp">

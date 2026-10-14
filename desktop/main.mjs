@@ -217,6 +217,32 @@ async function collectOfflineSmokeResult(window) {
     })()
   `);
 
+  const productAccess = await window.webContents.executeJavaScript(`
+    (async () => {
+      const waitFor = async (read) => {
+        const deadline = Date.now() + 3000;
+        while (Date.now() < deadline) {
+          const element = read();
+          if (element) return element;
+          await new Promise((resolve) => setTimeout(resolve, 30));
+        }
+        throw new Error("application access unavailable");
+      };
+      const buttons = () => [...document.querySelectorAll("button")];
+      buttons().find((button) => button.textContent.trim() === "跳过引导")?.click();
+      (await waitFor(() => document.querySelector('[aria-label="打开菜单"]'))).click();
+      (await waitFor(() => buttons().find((button) => button.textContent.trim() === "获取应用"))).click();
+      const dialog = await waitFor(() => document.querySelector('[role="dialog"][aria-label="获取应用"]'));
+      const urls = [...dialog.querySelectorAll("a")].map((link) => link.href);
+      return {
+        projectHomeLinkCount: dialog.querySelectorAll('[aria-label="GitHub 项目主页"]').length,
+        repositoryLinkCount: urls.filter((url) => url.startsWith("https://github.com/") && !url.includes("/releases/")).length,
+        windowsDownloadCount: urls.filter((url) => url === "https://github.com/Evenstar-tools/roco-calculator/releases/latest").length,
+        miniappCode: Boolean(dialog.querySelector('img[alt="洛克计算器微信小程序码"]')),
+      };
+    })()
+  `);
+
   // 数量期望来自打包内 runtime.json 自身声明的 meta.counts：
   // 只校验内部一致性，赛季增删精灵不需要改桌面代码。
   const ok =
@@ -230,7 +256,11 @@ async function collectOfflineSmokeResult(window) {
     data.learnsets === data.spirits &&
     data.portraits === data.spirits &&
     skillIcons.total === data.skills &&
-    skillIcons.failed.length === 0;
+    skillIcons.failed.length === 0 &&
+    productAccess.projectHomeLinkCount === 0 &&
+    productAccess.repositoryLinkCount === 0 &&
+    productAccess.windowsDownloadCount === 1 &&
+    productAccess.miniappCode === true;
 
   return {
     ok,
@@ -240,6 +270,7 @@ async function collectOfflineSmokeResult(window) {
     attackerPicker: shell?.attackerPicker ?? false,
     defenderPicker: shell?.defenderPicker ?? false,
     siteFooterCount: shell?.siteFooterCount ?? null,
+    productAccess,
     dataVersion: data.dataVersion,
     learnsets: data.learnsets,
     portraits: data.portraits,

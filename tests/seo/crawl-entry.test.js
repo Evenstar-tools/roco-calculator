@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 import { expect, test } from "vitest";
-import { createPageStructuredData, createSiteStructuredData, DEER_PAGE_METADATA, GITHUB_REPOSITORY_URL, HOME_PAGE_METADATA, PAGE_SCHEMA_ID, SITE_ID, SITE_IMAGE, SITE_NAME, SITE_SCHEMA_ID, SITE_URL } from "../../src/seo/page-metadata.js";
+import { createPageStructuredData, createSiteStructuredData, DEER_PAGE_METADATA, HOME_PAGE_METADATA, PAGE_SCHEMA_ID, SITE_ID, SITE_IMAGE, SITE_NAME, SITE_SCHEMA_ID, SITE_URL } from "../../src/seo/page-metadata.js";
 
 const source = (path) => readFileSync(path, "utf8");
 
@@ -37,6 +37,7 @@ test.each([
     const siteSchema = doc.head.querySelectorAll(`#${SITE_SCHEMA_ID}`);
     expect(siteSchema).toHaveLength(1);
     expect(JSON.parse(siteSchema[0].textContent)).toEqual(createSiteStructuredData());
+    expect(siteSchema[0].textContent).not.toContain("github.com");
     expect(doc.querySelector("footer.site-links")).toBeNull();
     expect(doc.querySelector('nav[aria-label="使用与下载"]')).toBeNull();
     expect(doc.querySelector("#root").childNodes).toHaveLength(0);
@@ -85,16 +86,19 @@ test("中英文说明互指对应语言版本，英文静态入口不冒充已�
       expect(pageSchema).toMatchObject({ "@type": "WebPage", name: doc.title, url: canonical, inLanguage: language });
       expect(pageSchema.isPartOf).toMatchObject({
         "@type": "WebSite", "@id": SITE_ID, name: SITE_NAME, url: SITE_URL,
-        alternateName: ["洛克计算器", "Roco Calculator"], sameAs: GITHUB_REPOSITORY_URL,
+        alternateName: ["洛克计算器", "Roco Calculator"],
       });
-      expect(doc.querySelector(`footer a[href="${GITHUB_REPOSITORY_URL}"]`)).toBeNull();
+      expect(JSON.stringify(pageSchema)).not.toContain("github.com");
+      for (const link of doc.querySelectorAll('a[href^="https://github.com/"]')) {
+        expect(link.getAttribute("href")).toBe("https://github.com/Evenstar-tools/roco-calculator/releases/latest");
+      }
       if (language === "en") {
         expect(doc.title).toBe("Roco Calculator — Roco Kingdom PvP Guide");
         expect(doc.querySelector(".intro-text").textContent).toContain("RocoCalc (Roco Calculator)");
         expect(doc.querySelector(".intro-text").textContent).toContain("PvP damage");
         expect(doc.querySelectorAll(".steps li")).toHaveLength(3);
         expect(doc.querySelectorAll(".tools article")).toHaveLength(6);
-        expect(doc.querySelectorAll(".faq details")).toHaveLength(5);
+        expect(doc.querySelectorAll(".faq details")).toHaveLength(4);
         expect(doc.querySelector("main").textContent).toContain("China-server S4 data");
         expect(doc.querySelector("main").textContent).toContain("International-server stats and rules have not been verified");
         const schema = JSON.parse(doc.querySelector('script[type="application/ld+json"]').textContent);

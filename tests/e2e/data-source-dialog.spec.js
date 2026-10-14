@@ -133,11 +133,7 @@ test("keeps application access and about dialogs inside a mobile viewport", asyn
   await openMenuItem(page, "获取应用");
   const accessDialog = page.getByRole("dialog", { name: "获取应用" });
   await expect(accessDialog).toBeVisible();
-  await expect(accessDialog.getByRole("link", { name: "GitHub 项目主页" }))
-    .toHaveAttribute(
-      "href",
-      "https://github.com/Evenstar-tools/roco-calculator",
-    );
+  await expect(accessDialog.getByRole("link", { name: "GitHub 项目主页" })).toHaveCount(0);
   await expect(accessDialog.getByRole("link", { name: "获取 Windows 电脑版" }))
     .toHaveAttribute(
       "href",
