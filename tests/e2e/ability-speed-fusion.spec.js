@@ -29,7 +29,7 @@ for (const width of [320, 390, 1440, 3840]) for (const theme of ["light", "dark"
     if (await page.locator("html").getAttribute("data-theme") !== theme) await page.getByRole("button", { name: "切换主题", exact: true }).click();
     if (width < 760) {
       const title = page.locator(".app-header__title-short");
-      await expect(title).toHaveText("S4「月涌狂想」");
+      await expect(title).toHaveText("S4「季中」");
       expect(await title.evaluate(node => {
         const text = node.getBoundingClientRect(), host = node.closest("h1").getBoundingClientRect();
         return text.left >= host.left - 1 && text.right <= host.right + 1;

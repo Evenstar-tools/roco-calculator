@@ -21,7 +21,7 @@ import {
 const APP_SCHEME = "app";
 const APP_ORIGIN = "app://calculator/";
 const APP_NAME = "洛克计算器";
-const APP_TITLE = "洛克计算器 · S4「月涌狂想」";
+const APP_TITLE = "洛克计算器 · S4「季中」";
 const APP_USER_MODEL_ID = "cn.rock.calculator";
 
 protocol.registerSchemesAsPrivileged([
@@ -174,7 +174,7 @@ async function collectOfflineSmokeResult(window) {
         defenderPicker: Boolean(
           document.querySelector('[aria-label="防御方精灵"]')
         ),
-        loading: document.body.textContent.includes("正在加载 S4「月涌狂想」数据"),
+        loading: document.body.textContent.includes("正在加载 S4「季中」数据"),
         siteFooterCount: document.querySelectorAll("footer.site-links").length,
       }))()
     `);

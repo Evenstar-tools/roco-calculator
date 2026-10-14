@@ -50,7 +50,7 @@ describe("miniapp shell", () => {
       expect(image.getAttribute("src")).toMatch(/assets\/season\/s4-.+\.webp/u);
     }
     expect(screen.queryAllByRole("img")).toHaveLength(0);
-    expect(container.querySelector(".app-header__title")).toHaveTextContent("洛克计算器 · S4「月涌狂想」");
+    expect(container.querySelector(".app-header__title")).toHaveTextContent("洛克计算器 · S4「季中」");
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     expect(screen.getByRole("dialog", { name: "设置" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
@@ -81,7 +81,7 @@ describe("miniapp shell", () => {
 
   test("renders the calculator title without requesting identity", () => {
     render(<IndexPage />);
-    expect(screen.getByText("洛克计算器 · S4「月涌狂想」")).toBeInTheDocument();
+    expect(screen.getByText("洛克计算器 · S4「季中」")).toBeInTheDocument();
     expect(screen.queryByText("微信登录")).not.toBeInTheDocument();
   });
 

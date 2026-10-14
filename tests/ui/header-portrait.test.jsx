@@ -10,7 +10,7 @@ test("仅窄屏竖向合并模式按钮，点击双向切换，尺寸变化恢�
   vi.stubGlobal("matchMedia", () => media);
   function Harness() { const [mode, setMode] = useState("compact"); return <AppHeader viewMode={mode} onViewModeChange={setMode} />; }
   render(<Harness />);
-  expect(document.querySelector(".app-header__title-short")).toHaveTextContent("S4「月涌狂想」");
+  expect(document.querySelector(".app-header__title-short")).toHaveTextContent("S4「季中」");
   const group = within(screen.getByRole("group", { name: "界面模式" }));
   expect(group.getAllByRole("button")).toHaveLength(1);
   expect(screen.getByRole("group", { name: "界面模式" })).toHaveAttribute("data-portrait", "true");

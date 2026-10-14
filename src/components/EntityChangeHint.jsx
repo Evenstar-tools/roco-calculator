@@ -93,10 +93,10 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
       }
     }
     document.addEventListener("pointerdown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown, true);
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [open, tooltipId]);
 
@@ -130,7 +130,7 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
         <WarningCircle aria-hidden="true" size={16} weight="fill" />
       </button>
       {open ? createPortal(
-        <div className="entity-change-layer">
+        <div className="entity-change-layer" onClick={(event) => event.stopPropagation()}>
           <button
             aria-label="关闭改动详情"
             className="entity-change-layer__backdrop"

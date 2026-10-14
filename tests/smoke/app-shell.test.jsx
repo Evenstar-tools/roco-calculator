@@ -32,10 +32,10 @@ test("renders the calculator title", () => {
 
   expect(
     screen.getByRole("heading", {
-      name: "洛克计算器 · S4「月涌狂想」",
+      name: "洛克计算器 · S4「季中」",
     }),
   ).toBeVisible();
-  expect(screen.getByText("正在加载 S4「月涌狂想」数据…")).toBeVisible();
+  expect(screen.getByText("正在加载 S4「季中」数据…")).toBeVisible();
 });
 
 test("season decoration stays local and decorative without changing header actions", async () => {
@@ -58,7 +58,7 @@ test("season decoration stays local and decorative without changing header actio
     "src", "/assets/season/s4-silver-wolf.webp",
   );
   expect(screen.queryByRole("img")).not.toBeInTheDocument();
-  expect(screen.getByRole("heading", { name: "洛克计算器 · S4「月涌狂想」" })).toBeVisible();
+  expect(screen.getByRole("heading", { name: "洛克计算器 · S4「季中」" })).toBeVisible();
 
   const user = userEvent.setup();
   await user.click(screen.getByRole("button", { name: "切换主题" }));

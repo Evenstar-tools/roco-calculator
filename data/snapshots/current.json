@@ -63137,13 +63137,13 @@
         "机械"
       ],
       "raceStats": {
-        "hp": 98,
-        "physicalAttack": 98,
-        "magicalAttack": 97,
-        "physicalDefense": 116,
-        "magicalDefense": 84,
+        "hp": 107,
+        "physicalAttack": 105,
+        "magicalAttack": 103,
+        "physicalDefense": 123,
+        "magicalDefense": 90,
         "speed": 120,
-        "total": 613
+        "total": 648
       },
       "previewDefaults": {
         "natureId": "silent",
@@ -63201,11 +63201,24 @@
           "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
         },
         "raceStats": {
-          "title": "模块:Pets/data/Catalog",
-          "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
-          "revision": 7265,
-          "fetchedAt": "2026-09-09T16:57:54.897Z",
-          "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
+          "title": "用户提供的 S4 季中战斗平衡性调整公告截图",
+          "url": "urn:rock-calculator:source:s4-midseason-2026-10-14:image:1",
+          "revision": "user-confirmed-2026-10-14",
+          "sourceFile": "codex-clipboard-7f396b95-01a2-4a63-b790-39f3331ded53.jpg",
+          "fields": [
+            "hp",
+            "physicalAttack",
+            "magicalAttack",
+            "physicalDefense",
+            "magicalDefense"
+          ],
+          "previousSource": {
+            "title": "模块:Pets/data/Catalog",
+            "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+            "revision": 7265,
+            "fetchedAt": "2026-09-09T16:57:54.897Z",
+            "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
+          }
         },
         "traitIds": {
           "title": "模块:Pets/data/Catalog",
@@ -63868,13 +63881,13 @@
         "幽"
       ],
       "raceStats": {
-        "hp": 123,
-        "physicalAttack": 46,
-        "magicalAttack": 117,
-        "physicalDefense": 99,
-        "magicalDefense": 131,
+        "hp": 141,
+        "physicalAttack": 55,
+        "magicalAttack": 131,
+        "physicalDefense": 110,
+        "magicalDefense": 144,
         "speed": 95,
-        "total": 611
+        "total": 676
       },
       "previewDefaults": {
         "natureId": "silent",
@@ -63932,11 +63945,24 @@
           "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
         },
         "raceStats": {
-          "title": "模块:Pets/data/Catalog",
-          "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
-          "revision": 7265,
-          "fetchedAt": "2026-09-09T16:57:54.897Z",
-          "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
+          "title": "用户提供的 S4 季中战斗平衡性调整公告截图",
+          "url": "urn:rock-calculator:source:s4-midseason-2026-10-14:image:1",
+          "revision": "user-confirmed-2026-10-14",
+          "sourceFile": "codex-clipboard-7f396b95-01a2-4a63-b790-39f3331ded53.jpg",
+          "fields": [
+            "hp",
+            "physicalAttack",
+            "magicalAttack",
+            "physicalDefense",
+            "magicalDefense"
+          ],
+          "previousSource": {
+            "title": "模块:Pets/data/Catalog",
+            "url": "https://wiki.biligame.com/nrc/index.php?oldid=7265",
+            "revision": 7265,
+            "fetchedAt": "2026-09-09T16:57:54.897Z",
+            "sha256": "537fba5e8cb779c1ef3e231342c2a196e85d0ecb2ee072186adb6e9f727a83d7"
+          }
         },
         "traitIds": {
           "title": "模块:Pets/data/Catalog",
@@ -260767,12 +260793,48 @@
       {
         "entityId": "spirit_8735efa1d0793f6a",
         "entityName": "测风蝉",
-        "isNew": true,
+        "patch": {
+          "id": "s4-midseason-2026-10-14",
+          "label": "S4 季中平衡调整",
+          "date": "2026.10.14",
+          "status": "current",
+          "sourceUrl": "urn:rock-calculator:source:s4-midseason-2026-10-14:image:1"
+        },
         "items": [
           {
-            "kind": "new",
-            "label": "新增精灵",
-            "after": "特性·风速仪"
+            "kind": "stat",
+            "field": "hp",
+            "label": "生命",
+            "before": 98,
+            "after": 107
+          },
+          {
+            "kind": "stat",
+            "field": "physicalAttack",
+            "label": "物攻",
+            "before": 98,
+            "after": 105
+          },
+          {
+            "kind": "stat",
+            "field": "magicalAttack",
+            "label": "魔攻",
+            "before": 97,
+            "after": 103
+          },
+          {
+            "kind": "stat",
+            "field": "physicalDefense",
+            "label": "物防",
+            "before": 116,
+            "after": 123
+          },
+          {
+            "kind": "stat",
+            "field": "magicalDefense",
+            "label": "魔防",
+            "before": 84,
+            "after": 90
           }
         ]
       },
@@ -260803,12 +260865,48 @@
       {
         "entityId": "spirit_d8e175477972f74d",
         "entityName": "摇铃魔偶",
-        "isNew": true,
+        "patch": {
+          "id": "s4-midseason-2026-10-14",
+          "label": "S4 季中平衡调整",
+          "date": "2026.10.14",
+          "status": "current",
+          "sourceUrl": "urn:rock-calculator:source:s4-midseason-2026-10-14:image:1"
+        },
         "items": [
           {
-            "kind": "new",
-            "label": "新增精灵",
-            "after": "特性·盗魂铃"
+            "kind": "stat",
+            "field": "hp",
+            "label": "生命",
+            "before": 123,
+            "after": 141
+          },
+          {
+            "kind": "stat",
+            "field": "physicalAttack",
+            "label": "物攻",
+            "before": 46,
+            "after": 55
+          },
+          {
+            "kind": "stat",
+            "field": "magicalAttack",
+            "label": "魔攻",
+            "before": 117,
+            "after": 131
+          },
+          {
+            "kind": "stat",
+            "field": "physicalDefense",
+            "label": "物防",
+            "before": 99,
+            "after": 110
+          },
+          {
+            "kind": "stat",
+            "field": "magicalDefense",
+            "label": "魔防",
+            "before": 131,
+            "after": 144
           }
         ]
       },

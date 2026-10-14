@@ -96,4 +96,74 @@ describe("当前赛季实体改动记录", () => {
       items: [expect.objectContaining({ kind: "new", label: "新增精灵" })],
     });
   });
+
+  test("季中两只精灵使用五项资质调整，不把旧正式资料改成季中或保留 NEW", () => {
+    const current = JSON.parse(readFileSync("data/snapshots/current.json", "utf8"));
+    const runtime = buildRuntimeSnapshot(current);
+    const cases = [
+      {
+        id: "spirit_d8e175477972f74d",
+        name: "摇铃魔偶",
+        speed: 95,
+        total: 676,
+        changes: [
+          ["hp", "生命", 123, 141],
+          ["physicalAttack", "物攻", 46, 55],
+          ["magicalAttack", "魔攻", 117, 131],
+          ["physicalDefense", "物防", 99, 110],
+          ["magicalDefense", "魔防", 131, 144],
+        ],
+      },
+      {
+        id: "spirit_8735efa1d0793f6a",
+        name: "测风蝉",
+        speed: 120,
+        total: 648,
+        changes: [
+          ["hp", "生命", 98, 107],
+          ["physicalAttack", "物攻", 98, 105],
+          ["magicalAttack", "魔攻", 97, 103],
+          ["physicalDefense", "物防", 116, 123],
+          ["magicalDefense", "魔防", 84, 90],
+        ],
+      },
+    ];
+
+    expect(current.currentPatchChanges.patch).toMatchObject({
+      id: "s4-2026-09-10",
+      date: "2026.09.10",
+    });
+    for (const { id, name, speed, total, changes } of cases) {
+      const spirit = runtime.spirits.find(({ fullName }) => fullName === name);
+      expect(spirit.id).toBe(id);
+      expect(spirit.raceStats).toEqual({
+        ...Object.fromEntries(changes.map(([field, , , after]) => [field, after])),
+        speed,
+        total,
+      });
+      expect(spirit.changeInfo.patch).toMatchObject({
+        id: "s4-midseason-2026-10-14",
+        label: "S4 季中平衡调整",
+        date: "2026.10.14",
+        status: "current",
+      });
+      expect(spirit.changeInfo.isNew).not.toBe(true);
+      expect(spirit.changeInfo.items).toEqual(
+        changes.map(([field, label, before, after]) => ({
+          kind: "stat", field, label, before, after,
+        })),
+      );
+      const source = current.spirits.find((entity) => entity.id === id)
+        .provenance.raceStats;
+      expect(source).toMatchObject({
+        url: "urn:rock-calculator:source:s4-midseason-2026-10-14:image:1",
+        previousSource: { revision: 7265 },
+      });
+    }
+    const previousNewSpirit = runtime.spirits.find(({ fullName }) => fullName === "智辉章脑");
+    expect(previousNewSpirit.changeInfo).toMatchObject({
+      patch: { id: "s4-2026-09-10", date: "2026.09.10" },
+      isNew: true,
+    });
+  });
 });

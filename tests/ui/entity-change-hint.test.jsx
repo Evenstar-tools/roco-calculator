@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { SkillPicker } from "../../src/components/SkillPicker.jsx";
@@ -67,6 +67,59 @@ test("精灵改动只在叹号交互后展示，点击后可固定", async () =>
   await user.unhover(trigger);
   expect(screen.getByRole("tooltip", { name: "加油蟹本期改动" })).toBeVisible();
   await user.keyboard("{Escape}");
+  expect(screen.queryByRole("tooltip", { name: "加油蟹本期改动" })).not.toBeInTheDocument();
+});
+
+test.each(["关闭按钮", "遮罩", "详情内容"])("列表改动详情%s不误选精灵", async (action) => {
+  const user = userEvent.setup();
+  const onSelect = vi.fn();
+  render(
+    <SpiritPicker
+      label="攻击方"
+      onSelect={onSelect}
+      selected={null}
+      side="attack"
+      spirits={[spirit]}
+    />,
+  );
+  await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  await user.click(screen.getByRole("button", { name: "查看加油蟹本期改动" }));
+  const tooltip = screen.getByRole("tooltip", { name: "加油蟹本期改动" });
+  if (action === "详情内容") {
+    await user.click(within(tooltip).getByText("108 → 92"));
+  } else if (action === "关闭按钮") {
+    await user.click(within(tooltip).getByRole("button", { name: "关闭改动详情" }));
+  } else {
+    await user.click(screen.getAllByRole("button", { name: "关闭改动详情" })
+      .find((button) => !tooltip.contains(button)));
+  }
+  expect(onSelect).not.toHaveBeenCalled();
+  if (action !== "详情内容") {
+    expect(screen.queryByRole("tooltip", { name: "加油蟹本期改动" })).not.toBeInTheDocument();
+  }
+});
+
+test("选择器保留输入焦点时 Escape 也关闭已选精灵的悬浮改动详情", async () => {
+  const user = userEvent.setup();
+  const onSelect = vi.fn();
+  render(
+    <SpiritPicker
+      label="攻击方"
+      onSelect={onSelect}
+      selected={spirit}
+      side="attack"
+      spirits={[spirit]}
+    />,
+  );
+  const input = screen.getByRole("combobox", { name: "攻击方精灵" });
+  await user.click(input);
+  const trigger = screen.getAllByRole("button", { name: "查看加油蟹本期改动" })
+    .find((button) => button.closest(".spirit-card"));
+  await user.hover(trigger);
+  expect(input).toHaveFocus();
+  expect(screen.getByRole("tooltip", { name: "加油蟹本期改动" })).toBeVisible();
+  await user.keyboard("{Escape}");
+  expect(onSelect).not.toHaveBeenCalled();
   expect(screen.queryByRole("tooltip", { name: "加油蟹本期改动" })).not.toBeInTheDocument();
 });
 

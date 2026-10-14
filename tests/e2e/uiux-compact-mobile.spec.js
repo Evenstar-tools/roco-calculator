@@ -16,7 +16,7 @@ test("keeps narrow header labels and long spirit identity controls readable at 3
   await page.setViewportSize({ height: 720, width: 320 });
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "洛克计算器 · S4「月涌狂想」" }),
+    page.getByRole("heading", { name: "洛克计算器 · S4「季中」" }),
   ).toBeVisible();
   expect(await page.locator(".app-header").evaluate(
     (header) => header.scrollWidth <= header.clientWidth,
@@ -27,7 +27,7 @@ test("keeps narrow header labels and long spirit identity controls readable at 3
   await expect(page.locator(".view-mode-switch button span").first()).toBeVisible();
   await expect(page.getByRole("button", { name: "打开队伍", exact: true })).toBeVisible();
   await expect(page.locator(".team-action:not(.toolbox-trigger) span")).toBeHidden();
-  await expect(page.locator(".app-header__title-short")).toHaveText("S4「月涌狂想」");
+  await expect(page.locator(".app-header__title-short")).toHaveText("S4「季中」");
   const pickerTopDelta = await page.locator(".versus-grid").evaluate((grid) => {
     const attack = grid.querySelector(".spirit-picker--attack .spirit-picker__eyebrow").getBoundingClientRect();
     const defense = grid.querySelector(".spirit-picker--defense .spirit-picker__eyebrow").getBoundingClientRect();

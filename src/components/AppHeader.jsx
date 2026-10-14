@@ -61,12 +61,12 @@ export function AppHeader({
         <span className="app-header__season-star" />
       </div>}
       <div className="app-header__brand">
-        {pageTitle ? <h1>洛克计算器 · <span className="app-header__season-title">{pageTitle}</span></h1> : <h1 aria-label="洛克计算器 · S4「月涌狂想」">
+        {pageTitle ? <h1>洛克计算器 · <span className="app-header__season-title">{pageTitle}</span></h1> : <h1 aria-label="洛克计算器 · S4「季中」">
           <span aria-hidden="true" className="app-header__title-long">
-            洛克计算器 · <span className="app-header__season-title">S4「月涌狂想」</span>
+            洛克计算器 · <span className="app-header__season-title">S4「季中」</span>
           </span>
           <span aria-hidden="true" className="app-header__title-short">
-            <span className="app-header__season-title">S4「月涌狂想」</span>
+            <span className="app-header__season-title">S4「季中」</span>
           </span>
         </h1>}
       </div>

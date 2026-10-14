@@ -1931,7 +1931,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     configLibrary: configLibraryFlow.overlayProps,
     dataSource: {
       ...overlays.dataSourceProps,
-      dataVersion: `S4「月涌狂想」 · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
+      dataVersion: `S4「季中」 · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
     },
     productAccess: overlays.productAccessProps,
     displaySettings: overlays.displaySettingsProps,
@@ -2494,7 +2494,7 @@ export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDee
       <div className="app">
         <AppHeader viewMode={initialWorkspace?.viewMode ?? readViewModeSetting()} />
         <main className="loading-state">
-          <p>{error || "正在加载 S4「月涌狂想」数据…"}</p>
+          <p>{error || "正在加载 S4「季中」数据…"}</p>
         </main>
       </div>
     );

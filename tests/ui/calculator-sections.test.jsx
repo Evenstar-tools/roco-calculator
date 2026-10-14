@@ -38,11 +38,11 @@ const stats = [
   { key: "magicDefense", label: "魔防", panel: 150, race: 82, displayIv: 60 },
 ];
 
-test("header uses the S4 月涌狂想 title and exposes compact controls", () => {
+test("header uses the S4 季中 title and exposes compact controls", () => {
   render(<AppHeader onTeamsOpen={vi.fn()} />);
 
   expect(
-    screen.getByRole("heading", { name: "洛克计算器 · S4「月涌狂想」" }),
+    screen.getByRole("heading", { name: "洛克计算器 · S4「季中」" }),
   ).toBeVisible();
   expect(screen.queryByText(/41360/u)).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "打开队伍" })).toHaveAttribute(

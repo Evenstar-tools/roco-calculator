@@ -642,3 +642,11 @@ final result: minimal implementation locally verified on Web and native phone; i
 - 线上实际资源为 `main-DnqWPAdb.js`／`main-D0Ht6wwm.css`，旧整条着色规则不存在。1430px 桌面亮暗及 390px 手机暗色实图读回通过：34.5% 与 16.3% 的填充比例、灰色剩余、100.9% 条长封顶及原数值均正常，手机没有横向溢出。
 - 普通变化技能没有误警告；真实锥尾羊「坟场搏击」缺敌方能量时仍显示警告和准确原因，空结果保持中性色。线上截图：`output/playwright/online-skill-bars-desktop-light-20261009.png`、`online-skill-bars-desktop-dark-20261009.png`、`online-skill-bars-390-dark-detail-20261009.png`、`online-skill-bars-missing-condition-20261009.png`。
 - [v2.2.5 Release](https://github.com/Evenstar-tools/roco-calculator/releases/tag/v2.2.5) 已替换唯一版本化 Windows EXE，正式附件下载与本地最终包逐字节一致。安装包内资源及隔离离线启动通过；旧包留本地回退，未执行完整安装流程，未上传小程序。完整发布交接：`docs/maintenance/compact-skill-bars-release-20261009.md`。
+
+## S4 季中资质与标题 · 2026-10-14
+
+- 用户明确授权按公告更新摇铃魔偶、测风蝉，并复用截图中的既有更新弹层；标题的「月涌狂想」改为「季中」。从最新主线 `0bf9bf7` 在 `D:/codex/worktrees/roco-s4-midseason-20261014` 隔离实施，未覆盖其他工作树的在途修改。
+- 仅更新两只的五项资质及各自 changeInfo：显示「S4 季中平衡调整 · 2026.10.14」、旧值→新值与绿色增量，速度分别保持 95、120；其他精灵仍保留原日期与 NEW。未改计算核心、特性、学习池和全局旧批次元数据。
+- Web 1280×900 与 390×844 实图中的五项完整可读，弹层和标题无横向溢出，实际参数区读取新资质。截图：`output/playwright/s4-midseason-20261014-bell.png`、`s4-midseason-20261014-wind.png`、`s4-midseason-20261014-390.png`；主代理已读回。样式、图标与层级沿用既有 EntityChangeHint，没有新增提示系统。
+- 实际操作发现 Portal 点击冒泡会误选候选、输入框持焦时会拦截已选卡片悬浮详情的 Escape；在正确组件调用路径补回归，先失败再修复。改动详情阻止点击冒泡，Escape 以捕获阶段关闭；保留选择器自身键盘行为。
+- 数据校验、运行时生成、受影响 Web／桌面及小程序标题回归通过；小程序内置运行时已继承新资质和改动详情，但未进行本轮微信原生／真机验收、打包或上传。本地预览为 `http://127.0.0.1:4206/`，本轮未推送线上或更新 Release。

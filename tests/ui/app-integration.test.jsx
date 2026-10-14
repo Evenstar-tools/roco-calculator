@@ -662,7 +662,7 @@ test("labels the current dataset with the S4 season name", async () => {
   expect(screen.queryByText(/S3季中 · 41360/u)).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "打开菜单" }));
   await user.click(screen.getByRole("button", { name: "关于与来源" }));
-  expect(screen.getByText("数据快照：S4「月涌狂想」 · 41360")).toBeVisible();
+  expect(screen.getByText("数据快照：S4「季中」 · 41360")).toBeVisible();
 });
 
 test("starts with both spirit selectors empty and hides incomplete configuration", () => {

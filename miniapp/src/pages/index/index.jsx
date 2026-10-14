@@ -132,7 +132,7 @@ export default function IndexPage({ services }) {
   const skillIconsEnabled = router?.params?.skillIcons !== "0";
   const sharePayload = router?.params?.share;
   const shareMessage = useRef({
-    title: "洛克计算器 · S4「月涌狂想」",
+    title: "洛克计算器 · S4「季中」",
     path: "/pages/index/index",
   });
   const [pageState, setPageState] = useState({
@@ -718,7 +718,7 @@ export default function IndexPage({ services }) {
               : "available"
         }
         dataVersion={[
-          "S4「月涌狂想」",
+          "S4「季中」",
           pageState.snapshot.meta?.bwikiRevision
             ?? pageState.snapshot.meta?.snapshotVersion,
         ].filter(Boolean).join(" · ") || pageState.snapshot.meta?.id}
