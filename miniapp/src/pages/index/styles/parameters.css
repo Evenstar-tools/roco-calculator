@@ -332,6 +332,10 @@
   font-weight: 700;
 }
 
+.iv-editor__stat-name--raised {
+  color: var(--success);
+}
+
 .iv-editor__panel {
   font-size: 17px;
   font-variant-numeric: tabular-nums;

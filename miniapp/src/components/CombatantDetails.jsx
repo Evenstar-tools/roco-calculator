@@ -20,7 +20,12 @@ export default function CombatantDetails({
         side={side}
         value={view.nature.id}
       />
-      <IvEditor onChange={onIvChange} side={side} stats={view.stats} />
+      <IvEditor
+        onChange={onIvChange}
+        raisedStat={view.nature.upStat}
+        side={side}
+        stats={view.stats}
+      />
     </View>
   );
 }

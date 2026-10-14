@@ -5,7 +5,10 @@ import { createInitialState } from "../../src/state/defaults.js";
 import { applyBattleActivation } from "../../src/state/battle-activation.js";
 import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
 
-const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+const recordedSnapshot = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+// 此处验证已复现对局的来源记录，固定季中调整前的魔攻，不随实时资质变化。
+recordedSnapshot.spirits.find(s => s.fullName === "摇铃魔偶").raceStats.magicalAttack = 117;
+const snapshot = withCalculatorExtras(recordedSnapshot);
 const skill = name => snapshot.skills.find(entry => entry.name === name).id;
 function setup() {
   const state = createInitialState(snapshot);

@@ -222,10 +222,17 @@ describe("combatant details", () => {
     fireEvent.click(speedNature);
     expect(store.getState().sides.attacker.nature).toBe("rash");
     expect(speedNature).toHaveAttribute("aria-pressed", "true");
+    expect(within(attacker).getByLabelText("攻击方速度能力")
+      .querySelector(".iv-editor__stat-name"))
+      .toHaveClass("iv-editor__stat-name--raised");
+    expect(attacker.querySelectorAll(".iv-editor__stat-name--raised"))
+      .toHaveLength(1);
 
     fireEvent.click(speedNature);
     expect(store.getState().sides.attacker.nature).toBe("neutral");
     expect(speedNature).toHaveAttribute("aria-pressed", "false");
+    expect(attacker.querySelectorAll(".iv-editor__stat-name--raised"))
+      .toHaveLength(0);
     expect(within(natureRow).getByText("性格")).toBeInTheDocument();
     expect(within(attacker).queryByRole("button", {
       name: "攻击方普通性格",

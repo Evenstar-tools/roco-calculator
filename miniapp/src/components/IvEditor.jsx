@@ -11,7 +11,7 @@ function getInputValue(event) {
   return event?.detail?.value ?? event?.target?.value ?? "";
 }
 
-function StatEditor({ onChange, sideLabel, stat }) {
+function StatEditor({ onChange, raised, sideLabel, stat }) {
   const [draft, setDraft] = useState(String(stat.displayIv));
 
   useEffect(() => {
@@ -30,7 +30,9 @@ function StatEditor({ onChange, sideLabel, stat }) {
       className={`iv-editor__stat${stat.displayIv === 60 ? " iv-editor__stat--max" : ""}`}
     >
       <View className="iv-editor__stat-heading">
-        <Text className="iv-editor__stat-name">{stat.label}</Text>
+        <Text className={`iv-editor__stat-name${raised ? " iv-editor__stat-name--raised" : ""}`}>
+          {stat.label}
+        </Text>
         <Text className="iv-editor__panel">面板 {stat.panel}</Text>
       </View>
       <Text className="iv-editor__race">种族 {stat.race}</Text>
@@ -52,7 +54,7 @@ function StatEditor({ onChange, sideLabel, stat }) {
   );
 }
 
-export default function IvEditor({ onChange, side, stats }) {
+export default function IvEditor({ onChange, raisedStat, side, stats }) {
   const sideLabel = SIDE_LABELS[side] ?? "当前";
 
   return (
@@ -61,6 +63,7 @@ export default function IvEditor({ onChange, side, stats }) {
         <StatEditor
           key={stat.key}
           onChange={(value) => onChange(stat.key, value)}
+          raised={raisedStat === stat.key}
           sideLabel={sideLabel}
           stat={stat}
         />
