@@ -44,16 +44,16 @@ export function abilityLevelMultiplier(attackStage, defenseStage) {
 
 export function abilityAdjustedStat(value, stage) {
   const percent = clampAbilityStage(stage) * 10;
-  const numerator = 1 + Math.max(percent, 0) / 100;
-  const denominator = 1 + Math.max(-percent, 0) / 100;
+  const numerator = 100 + Math.max(percent, 0);
+  const denominator = 100 + Math.max(-percent, 0);
   return Number(value) * numerator / denominator;
 }
 
 export function defenseStatForDamage(value, stage) {
   const adjusted = abilityAdjustedStat(value, stage);
   // 减防除法的小数参与伤害结算；整数面板仅用于展示。
-  // 非负层数沿用已验证的取整规则，不扩大本次修正范围。
-  return clampAbilityStage(stage) < 0 ? adjusted : Math.round(adjusted);
+  // 非负层数只向下取整；不把减防小数提前取整后再用于除法。
+  return clampAbilityStage(stage) < 0 ? adjusted : Math.floor(adjusted);
 }
 
 export function traitAdjustedSpeed(value, stage, flatBonus = 0) {

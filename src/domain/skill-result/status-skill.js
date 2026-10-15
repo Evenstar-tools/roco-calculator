@@ -87,13 +87,13 @@ export function statusOrDefenseSkillResult({
       attackerContract.targetDefenseLevelBonusByCategory[category];
     const combatPanel = {
       attacker: {
-        magicalAttack: Math.round(
+        magicalAttack: Math.floor(
           abilityAdjustedStat(
             attacker.panelStats.magicalAttack,
             statusAttackStageFor("magical"),
           ),
         ),
-        physicalAttack: Math.round(
+        physicalAttack: Math.floor(
           abilityAdjustedStat(
             attacker.panelStats.physicalAttack,
             statusAttackStageFor("physical"),
@@ -106,13 +106,13 @@ export function statusOrDefenseSkillResult({
         ),
       },
       defender: {
-        magicalDefense: Math.round(
+        magicalDefense: Math.floor(
           abilityAdjustedStat(
             defender.panelStats.magicalDefense,
             statusDefenseStageFor("magical"),
           ),
         ),
-        physicalDefense: Math.round(
+        physicalDefense: Math.floor(
           abilityAdjustedStat(
             defender.panelStats.physicalDefense,
             statusDefenseStageFor("physical"),

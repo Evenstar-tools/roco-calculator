@@ -456,6 +456,59 @@ describe("bundled popular config library", () => {
 });
 
 describe("parseFavoriteConfigLibrary", () => {
+  test("silently drops retired duck trait controls when importing old presets", () => {
+    const data = snapshot();
+    data.traits[0].name = "得寸进尺";
+    const entry = {
+      spiritId: "spirit-a",
+      natureId: "adamant",
+      displayIvs: IVS,
+      skills: ["skill-a", "skill-b", null, null],
+      traitValues: {
+        "trait.traitActivated.8c9e2197": true,
+        "trait.traitEffect.ebdeb9d1": 100,
+      },
+    };
+    const parsed = parseFavoriteConfigLibrary(JSON.stringify(library([entry])), {
+      snapshot: data,
+      currentVersions: {},
+    });
+
+    expect(parsed.entries[0]).toEqual({ ...entry, traitValues: {} });
+    expect(parsed.preview.unknownTraitFields).toBe(0);
+    expect(parsed.issueDetails).toEqual([]);
+    expect(parsed.warnings).toEqual([]);
+    expect(entry.traitValues).toHaveProperty("trait.traitActivated.8c9e2197", true);
+  });
+
+  test.each([
+    ["得寸进尺", { "trait.unknown.deadbeef": true }, ["trait.unknown.deadbeef"]],
+    ["点燃", {}, ["trait.traitActivated.8c9e2197", "trait.traitEffect.ebdeb9d1"]],
+  ])("retired duck field compatibility still reports unknown fields for %s", (traitName, extraValues, expectedUnknownKeys) => {
+    const data = snapshot();
+    data.traits[0].name = traitName;
+    const parsed = parseFavoriteConfigLibrary(JSON.stringify(library([{
+      spiritId: "spirit-a",
+      natureId: "adamant",
+      displayIvs: IVS,
+      skills: ["skill-a", "skill-b", null, null],
+      traitValues: {
+        "trait.traitActivated.8c9e2197": true,
+        "trait.traitEffect.ebdeb9d1": 100,
+        ...extraValues,
+      },
+    }])), { snapshot: data, currentVersions: {} });
+
+    expect(parsed.entries[0].traitValues).toEqual({});
+    expect(parsed.preview.unknownTraitFields).toBe(expectedUnknownKeys.length);
+    expect(parsed.issueDetails).toEqual([
+      expect.objectContaining({
+        type: "unknownTraitFields",
+        reason: `无法识别特性字段：${expectedUnknownKeys.join("、")}`,
+      }),
+    ]);
+  });
+
   test("previews additions, overwrites, duplicate entries, missing skills and missing spirits", () => {
     const first = {
       spiritId: "spirit-a",

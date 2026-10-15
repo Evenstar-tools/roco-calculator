@@ -1,3 +1,4 @@
+import { abilityAdjustedStat } from "./skill-result/numeric.js";
 import { calculateMatchup } from "./calculate.js";
 import { linkedNegativeStatusContext } from "./negative-status-context.js";
 import { resolveBattleSpirit } from "./battle-form.js";
@@ -42,7 +43,7 @@ export function getAppliedWeatherLabel(weather, result) {
   const hasGain = (group, name) => result.gainSources?.[group]?.some(
     (source) => source.name === name && Number.isFinite(source.amount) && source.amount !== 0,
   );
-  if (weather === "rain") return hasGain("powerPercent", "雨天") || hasGain("attack", "得寸进尺") ? "雨天" : null;
+  if (weather === "rain") return hasGain("powerPercent", "雨天") || hasGain("powerPercent", "得寸进尺") ? "雨天" : null;
   if (weather === "blizzard") return hasGain("powerPercent", "冰雪魂魄") || hasGain("condition", "雪原狩猎") ? "暴风雪" : null;
   if (weather === "sandstorm") return result.traitContributions?.some(
     ({ source, values }) => source.name === "流沙统治者" &&
@@ -199,23 +200,26 @@ export function getPanelView(spirit, side, stages = {}) {
     displayIvs: side.displayIvs,
     natureMultipliers: getNatureMultipliers(side.nature),
   });
-  const attackMultiplier = stageMultiplier(stages.attack ?? 0);
-  const defenseMultiplier = stageMultiplier(stages.defense ?? 0);
+
   return STAT_VIEW.map(({ key, label }) => {
-    const multiplier =
+    const stage =
       key === "physicalAttack" || key === "magicalAttack"
-        ? attackMultiplier
+        ? stages.attack ?? 0
         : key === "physicalDefense" || key === "magicalDefense"
-          ? defenseMultiplier
-          : 1;
+          ? stages.defense ?? 0
+          : 0;
     const basePanel = panel[key];
-    const fallbackPanel = Math.round(
-      (basePanel + (key === "speed" ? Number(stages.speedFlat ?? 0) : 0)) *
-        multiplier,
+    const roundPanel = key === "physicalAttack" || key === "magicalAttack" ||
+      key === "physicalDefense" || key === "magicalDefense" ? Math.floor : Math.round;
+    const fallbackPanel = roundPanel(
+      abilityAdjustedStat(
+        basePanel + (key === "speed" ? Number(stages.speedFlat ?? 0) : 0),
+        stage,
+      ),
     );
     const projectedPanel = Number(stages.finalStats?.[key]);
     const finalPanel = Number.isFinite(projectedPanel)
-      ? Math.round(projectedPanel)
+      ? roundPanel(projectedPanel)
       : fallbackPanel;
     const delta = finalPanel - basePanel;
     return {

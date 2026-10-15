@@ -25,6 +25,34 @@ describe("trait effect coverage", () => {
     );
   }
 
+  test.each(["physical", "magical", "dual"])("得寸进尺的%s伤害在威力区触发一次，不写入双攻等级", (category) => {
+    const trait = snapshot.traits.find(({ name }) => name === "得寸进尺");
+    const input = { attacker: { panelStats: { physicalAttack: 201, magicalAttack: 88 } }, defender: {}, skill: { category, type: "水" } };
+    for (const conditions of [{ rainWeather: true }]) {
+      expect(resolveTraitEffectRule(trait, "attacker", {
+        ...input, context: contextFor(trait, "attacker", conditions),
+      })).toMatchObject({ powerPercentAdd: 1, attackLevelBonus: 0, attackMultiplier: 1 });
+    }
+    expect(resolveTraitEffectRule(trait, "attacker", {
+      ...input, context: contextFor(trait, "attacker", {}),
+    })).toMatchObject({ powerPercentAdd: 0, attackLevelBonus: 0 });
+    expect(getTraitEffectInputs(trait, "attacker")).toEqual([
+      expect.objectContaining({ contextKey: "rainWeather", label: "雨天", type: "boolean", scope: "battle" }),
+    ]);
+  });
+
+  test("得寸进尺旧预设中的水环境和百分比不能变成隐藏的开关", () => {
+    const trait = { ...snapshot.traits.find(({ name }) => name === "得寸进尺"), runtimeInputValues: {
+      "trait.traitActivated.8c9e2197": true,
+      "trait.traitEffect.ebdeb9d1": 300,
+    } };
+    const input = { attacker: {}, defender: {}, skill: { category: "physical", type: "水" } };
+    expect(resolveTraitEffectRule(trait, "attacker", { ...input, context: contextFor(trait, "attacker", {}) }))
+      .toMatchObject({ powerPercentAdd: 0, attackLevelBonus: 0 });
+    expect(resolveTraitEffectRule(trait, "attacker", { ...input, context: contextFor(trait, "attacker", { rainWeather: true }) }))
+      .toMatchObject({ powerPercentAdd: 1, attackLevelBonus: 0 });
+  });
+
   test("电流刺激的迸发默认开启并可手动关闭", () => {
     const trait = snapshot.traits.find(
       (candidate) => candidate.name === "电流刺激",

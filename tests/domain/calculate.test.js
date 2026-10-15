@@ -503,7 +503,7 @@ describe("calculateMatchup", () => {
     [undefined, "skill_wind", 271, 163, [150, 195, 240]],
     [0, "skill_wind", 100, 100, [90, 99, 117]],
     [10, "skill_wind", 100, 100, [90, 94, 103]],
-    [-4, "skill_wind", 100, 100, [90, 97, 115]],
+    [-4, "skill_wind", 100, 100, [90, 96, 114]],
     [99, "skill_wind", 100, 100, [90, 90, 90]],
     [10, "skill_water", 100, 100, [90, 90, 90]],
     [0, "skill_wind", 0, 100, [0, 0, 0]],
@@ -1801,12 +1801,12 @@ describe("calculateMatchup", () => {
     expect(threeHits.traitResult.totalDamage).toBe(
       oneHit.traitResult.totalDamage * 3,
     );
-    expect(staged.traitResult.totalDamage).toBe(80);
+    expect(staged.traitResult.totalDamage).toBe(82);
     expect(
       staged.traitResult.formulaSteps.find(
         (step) => step.label === "每段伤害",
       ),
-    ).toMatchObject({ input: { attackerStat: 84, defenderDefense: 47 } });
+    ).toMatchObject({ input: { attackerStat: 84, defenderDefense: 46 } });
   });
 
   test("calculates direct trait damage in both battle directions", () => {
@@ -4456,7 +4456,7 @@ describe("calculateMatchup", () => {
 
     expect(result).toMatchObject({
       displayPower: 149,
-      totalDamage: 121,
+      totalDamage: 123,
     });
     expect(
       result.formulaSteps.find((step) => step.label === "等级系数与攻防比"),
@@ -4464,7 +4464,7 @@ describe("calculateMatchup", () => {
       input: {
         attackerStat: 140,
         calculationPower: 80,
-        defenderDefense: 83,
+        defenderDefense: 82,
         roundedNumerator: 10107,
       },
     });
@@ -6337,4 +6337,25 @@ describe("inherited penetration stacks", () => {
       expect.objectContaining({ markId: "charge", status: "applied" }),
     );
   });
+});
+
+
+test.each(["skill_wind", "skill_water"])("攻防进位边界在物理和魔法路径均只向下取整：%s", (skillId) => {
+  const input = battleInput({
+    sides: { attacker: side("spirit_sonic_dog", skillId, []) },
+    directions: { forward: { overrides: {
+      attackerStat: 133,
+      defenderDefense: 127,
+      attackLevelStage: 1,
+      defenseLevelStage: 3,
+      stabMultiplier: 1,
+      typeMultiplier: 1,
+    } } },
+  });
+  const result = calculateMatchup(snapshot, input).forward.selectedResult;
+  const formula = result.formulaSteps.find(({ label }) => label === "等级系数与攻防比");
+  expect(formula.input).toMatchObject({ attackerStat: 146, defenderDefense: 165 });
+  // 独立列出当前规则的中间值，避免把上调一位的面板再次传入伤害。
+  const power = snapshot.skills.find(({ id }) => id === skillId).basePower;
+  expect(result.totalDamage).toBe(Math.floor(Math.round(146 * power * 37 / 41) / 165));
 });

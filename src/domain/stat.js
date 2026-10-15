@@ -9,21 +9,17 @@ export function normalizeDisplayIv(displayIv) {
   return clamp(Number.isFinite(numeric) ? numeric : 0, 0, 100) / 6;
 }
 
+// 基础能力是游戏面板生成规则；战斗强化和伤害截断另行处理。
 export function statRound(value) {
   return Math.round(value);
 }
 
-function roundScaledStat(value, normalizedIv) {
+// HP/速度沿用既有规则，不凭双防的新证据扩改未确认的半点边界。
+function roundLegacyScaledStat(value, normalizedIv) {
   const floor = Math.floor(value);
-  const isZeroIvHalfTie =
-    normalizedIv === 0 &&
-    Math.abs(value - floor - 0.5) <
-      Number.EPSILON * Math.max(100, Math.abs(value));
-
-  if (!isZeroIvHalfTie) return statRound(value);
-  // Stabilize floating-point half ties, but keep ordinary half-up rounding.
-  // Rounding to odd undercounts zero-IV Didi defense (131 instead of 132).
-  return floor + 1;
+  const isZeroIvHalfTie = normalizedIv === 0 &&
+    Math.abs(value - floor - 0.5) < Number.EPSILON * Math.max(100, Math.abs(value));
+  return isZeroIvHalfTie ? floor + 1 : statRound(value);
 }
 
 export function hasCompleteRaceStats(raceStats) {
@@ -43,14 +39,21 @@ export function calculatePanelStat({
 }) {
   const normalizedIv = normalizeDisplayIv(displayIv);
   const isHp = kind === "hp";
-  const coefficient = isHp ? 1.7 : 1.1;
-  const raceValue = Number(race);
-  const natureValue = Number(natureMultiplier);
-  const scaledValue = coefficient * (raceValue + 3 * normalizedIv);
-  const scaled = roundScaledStat(scaledValue, normalizedIv);
-  const base = scaled + (isHp ? 70 : 10);
-
-  return Math.round(base * natureValue) + (isHp ? 100 : 50);
+  if (isHp || kind === "speed") {
+    const scaled = roundLegacyScaledStat(
+      (isHp ? 1.7 : 1.1) * (Number(race) + 3 * normalizedIv),
+      normalizedIv,
+    );
+    return statRound((scaled + (isHp ? 70 : 10)) * Number(natureMultiplier)) +
+      (isHp ? 100 : 50);
+  }
+  // 双攻双防的单精度百分比缩放不能折叠成双精度 ×1.1：半点边界会改变。
+  const qualifiedRace = Math.fround(Number(race) + 3 * normalizedIv);
+  const racePercent = Math.fround(qualifiedRace / 100);
+  const scaled = Math.fround(racePercent * 110);
+  const base = statRound(scaled) + 10;
+  const natureAdjusted = Math.fround(base * Math.fround(Number(natureMultiplier)));
+  return statRound(natureAdjusted) + 50;
 }
 
 export function calculateAllPanelStats({

@@ -143,6 +143,7 @@ test.each([
   ["rain", null, "water-hit", "auto", "雨天"],
   ["rain", null, "fire-hit", "auto", null],
   ["rain", "得寸进尺", "fire-hit", "auto", "雨天"],
+  ["rain", "得寸进尺", "fire-hit", "panel", null],
   ["rain", null, "water-hit", "panel", null],
   ["sandstorm", null, "fire-hit", "auto", null],
   ["sandstorm", "流沙统治者", "fire-hit", "auto", "沙暴"],
@@ -1128,4 +1129,18 @@ describe("getPanelView", () => {
       panel: 408,
     });
   });
+});
+
+
+test("攻防面板展示与底层同向下取整，整数强化边界不丢一位", () => {
+  const spirit = { ...snapshot.spirits[0], raceStats: Object.fromEntries(
+    Object.keys(ivs).map((key) => [key, 65]),
+  ) };
+  const side = { ...state().sides.attacker, nature: "neutral", displayIvs: Object.fromEntries(Object.keys(ivs).map((key) => [key, 0])) };
+  const fallback = getPanelView(spirit, side, { attack: 1, defense: 3 });
+  expect(fallback.find(({ key }) => key === "physicalAttack")).toMatchObject({ basePanel: 132, panel: 145 });
+  expect(fallback.find(({ key }) => key === "magicalDefense")).toMatchObject({ basePanel: 132, panel: 171 });
+  const projected = getPanelView(spirit, side, { finalStats: { physicalAttack: 144.9, magicalDefense: 170.9 } });
+  expect(projected.find(({ key }) => key === "physicalAttack").panel).toBe(144);
+  expect(projected.find(({ key }) => key === "magicalDefense").panel).toBe(170);
 });

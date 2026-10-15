@@ -449,10 +449,10 @@ const RULES = Object.freeze({
     },
   ),
   得寸进尺: trigger(
-    "attack_percent",
+    "power_percent",
     100,
     "雨天或水系环境",
-    "双攻加成",
+    "威力加成",
   ),
   最好的伙伴: stack(
     "attack_defense_percent",
@@ -1074,13 +1074,13 @@ export function getTraitEffectInputs(trait, role = "attacker") {
     inputs.push({ key: "enemyTotalSkillCostAuto", label: "自动能耗", type: "boolean", defaultValue: true, scope: "direction" });
   }
   if (trait?.name === "得寸进尺") {
-    inputs.push({ key: "rainWeather", label: "雨天天气", type: "boolean",
-      defaultValue: false, scope: "battle" });
+    return normalizeTriggerControls([
+      { key: "rainWeather", label: "雨天", type: "boolean", defaultValue: false, scope: "battle" },
+    ], { source: role === "defender" ? "defenderTrait" : "attackerTrait" });
   }
   if (rule.condition) {
     inputs.push({
       ...rule.condition,
-      ...(trait?.name === "得寸进尺" ? { label: "水系环境（非天气）" } : {}),
       type: "boolean",
     });
   }

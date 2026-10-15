@@ -532,13 +532,13 @@ export function calculateSkillResult({
     traitResolution.defenderSpeedFlatBonus,
   );
 
-  context.attackerPhysicalDefense = Math.round(
+  context.attackerPhysicalDefense = Math.floor(
     abilityAdjustedStat(
       attacker.panelStats.physicalDefense,
       traitResolution.attackerDefenseLevelBonus,
     ),
   );
-  context.defenderPhysicalDefense = Math.round(
+  context.defenderPhysicalDefense = Math.floor(
     abilityAdjustedStat(
       defender.panelStats.physicalDefense,
       traitResolution.defenderDefenseLevelBonus,
@@ -677,13 +677,13 @@ export function calculateSkillResult({
 
   const baseCombatPanel = {
     attacker: {
-      magicalAttack: Math.round(
+      magicalAttack: Math.floor(
         abilityAdjustedStat(
           attacker.panelStats.magicalAttack,
           attackStageForCategory("magical"),
         ),
       ),
-      physicalAttack: Math.round(
+      physicalAttack: Math.floor(
         abilityAdjustedStat(
           attacker.panelStats.physicalAttack,
           attackStageForCategory("physical"),
@@ -692,13 +692,13 @@ export function calculateSkillResult({
       speed: context.attackerSpeed,
     },
     defender: {
-      magicalDefense: Math.round(
+      magicalDefense: Math.floor(
         abilityAdjustedStat(
           defender.panelStats.magicalDefense,
           (defenseLevelStage ?? 0) + traitResolution.defenseLevelBonus + magicalDefenseLevelStageAdd,
         ),
       ),
-      physicalDefense: Math.round(
+      physicalDefense: Math.floor(
         abilityAdjustedStat(
           defender.panelStats.physicalDefense,
           (defenseLevelStage ?? 0) + traitResolution.defenseLevelBonus,
@@ -809,7 +809,7 @@ export function calculateSkillResult({
       ]);
   const usesActualCombatPanelForDamage = hasStageInput;
   const attackerStat = usesActualCombatPanelForDamage
-    ? Math.round(abilityAdjustedStat(baseAttackerStat, totalAttackLevelStage))
+    ? Math.floor(abilityAdjustedStat(baseAttackerStat, totalAttackLevelStage))
     : baseAttackerStat;
   const defenderDefense = usesActualCombatPanelForDamage
     ? defenseStatForDamage(baseDefenderDefense, totalDefenseLevelStage)
@@ -909,7 +909,7 @@ export function calculateSkillResult({
               ? mainAttackerStat
               : usesActualCombatPanelForDamage &&
             resolvedSkillCategory === "physical"
-              ? Math.round(
+              ? Math.floor(
                   abilityAdjustedStat(
                     baseAttackerStat,
                     totalAttackLevelStage + attackLevelStageAdd,
@@ -930,7 +930,7 @@ export function calculateSkillResult({
             // 初始等级已包含在手动威力中，后续段只补本次溢出新增的相对强化。
             if (usesActualCombatPanelForDamage) {
               if (attackerStat > 0) {
-                manualPanelHitMultiplier = Math.round(abilityAdjustedStat(baseAttackerStat, totalAttackLevelStage + attackLevelStageAdd)) / attackerStat;
+                manualPanelHitMultiplier = Math.floor(abilityAdjustedStat(baseAttackerStat, totalAttackLevelStage + attackLevelStageAdd)) / attackerStat;
               }
             } else {
               manualPanelHitMultiplier = abilityLevelMultiplier(attackLevelStageAdd, 0);
@@ -1434,13 +1434,13 @@ export function calculateSkillResult({
   const combatPanel = {
     attacker: {
       ...baseCombatPanel.attacker,
-      magicalAttack: Math.round(
+      magicalAttack: Math.floor(
         abilityAdjustedStat(
           attacker.panelStats.magicalAttack,
           attackStageFor("magical"),
         ),
       ),
-      physicalAttack: Math.round(
+      physicalAttack: Math.floor(
         abilityAdjustedStat(
           attacker.panelStats.physicalAttack,
           attackStageFor("physical"),
@@ -1450,13 +1450,13 @@ export function calculateSkillResult({
     },
     defender: {
       ...baseCombatPanel.defender,
-      magicalDefense: Math.round(
+      magicalDefense: Math.floor(
         abilityAdjustedStat(
           defender.panelStats.magicalDefense,
           defenseStageFor("magical"),
         ),
       ),
-      physicalDefense: Math.round(
+      physicalDefense: Math.floor(
         abilityAdjustedStat(
           defender.panelStats.physicalDefense,
           defenseStageFor("physical"),

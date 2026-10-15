@@ -86,20 +86,22 @@ test("换技能或恢复旧槽位记忆不能改变当前天气", () => {
   expectBlizzard(back, true);
 });
 
-test("雨天触发得寸进尺，非天气水系环境独立保留，不制造第二种天气", () => {
+test("得寸进尺只保留雨天勾选，开关和切换天气同步取消特性", () => {
   const trait = snapshot.traits.find((value) => value.name === "得寸进尺");
   const controls = getTraitEffectInputs(trait);
   const rainControl = controls.find((value) => value.contextKey === "rainWeather");
-  const waterControl = controls.find((value) => value.contextKey === "traitActivated");
+  expect(controls).toHaveLength(1);
+  expect(rainControl.label).toBe("雨天");
   const rain = updateMirroredTraitContext(initial(), { direction: "forward", key: rainControl.id, value: true }).state;
   expect(rain.directions.reverse.context.weatherRainTurns).toBe(8);
   const input = { attacker: {}, defender: {}, skill: { category: "physical", type: "普通" } };
-  expect(resolveTraitEffectRule(trait, "attacker", { ...input, context: rain.directions.forward.context }).attackMultiplier).toBe(2);
-  const water = updateMirroredTraitContext(rain, { direction: "forward", key: waterControl.id, value: true }).state;
-  const snow = updateGlobalWeather(water, "blizzard").state;
+  expect(resolveTraitEffectRule(trait, "attacker", { ...input, context: rain.directions.forward.context })).toMatchObject({ powerPercentAdd: 1, attackLevelBonus: 0 });
+  const cleared = updateMirroredTraitContext(rain, { direction: "forward", key: rainControl.id, value: false }).state;
+  expect(cleared.directions.reverse.context.weatherRainTurns).toBe(0);
+  expect(resolveTraitEffectRule(trait, "attacker", { ...input, context: cleared.directions.forward.context })).toMatchObject({ powerPercentAdd: 0, attackLevelBonus: 0 });
+  const snow = updateGlobalWeather(rain, "blizzard").state;
   expect(snow.directions.forward.context[rainControl.id]).toBe(false);
-  expect(snow.directions.forward.context[waterControl.id]).toBe(true);
-  expect(resolveTraitEffectRule(trait, "attacker", { ...input, context: snow.directions.forward.context }).attackMultiplier).toBe(2);
+  expect(resolveTraitEffectRule(trait, "attacker", { ...input, context: snow.directions.forward.context })).toMatchObject({ powerPercentAdd: 0, attackLevelBonus: 0 });
 });
 
 test("撤销恢复整场天气，不丢失其他条件；单独开启雷鸣也会取消雨天", () => {

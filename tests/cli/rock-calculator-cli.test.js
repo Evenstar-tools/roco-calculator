@@ -113,7 +113,82 @@ const referenceListenBridgeCase = {
   },
 };
 
+const duckPowerZoneCase = {
+  schemaVersion: 1,
+  mode: "single",
+  level: 60,
+  attacker: {
+    spirit: "卷毛鸭",
+    nature: "开朗",
+    ivs: { hp: 60, physicalAttack: 60, magicalAttack: 0, speed: 60, physicalDefense: 0, magicalDefense: 0 },
+  },
+  defender: {
+    spirit: "彩蝶鲨",
+    skill: "甩水",
+    nature: "胆小",
+    ivs: { hp: 60, physicalAttack: 0, magicalAttack: 60, speed: 60, physicalDefense: 0, magicalDefense: 0 },
+  },
+};
+
+const duckRainContext = { rainWeather: true, weatherRainTurns: 8 };
+const duckWaterContext = { traitActivated: true };
+
 describe("rock-calculator CLI", () => {
+
+  test.each([
+    ["未触发物理", "藤绞", {}, {}, 82, 80, 201, 80],
+    ["水系环境物理", "藤绞", duckWaterContext, {}, 165, 160, 201, 160],
+    ["水系环境魔法", "贯手", duckWaterContext, {}, 72, 160, 88, 160],
+    ["雨天水系物理", "水刃", duckRainContext, {}, 327, 316, 201, 316],
+    ["雨天水系魔法", "水弹枪", duckRainContext, {}, 99, 220, 88, 220],
+    ["雨天与水环境只触发一次", "水刃", { ...duckRainContext, ...duckWaterContext }, {}, 327, 316, 201, 316],
+    ["保留已有物攻十层", "藤绞", duckWaterContext, { attackLevelStage: 10 }, 331, 320, 402, 160],
+    ["保留已有减攻四层", "藤绞", duckWaterContext, { attackLevelStage: -4 }, 117, 114, 143, 160],
+    ["与其他威力五成相加", "藤绞", duckWaterContext, { skillPowerPercentAdds: [0.5] }, 207, 200, 201, 200],
+    ["与雨天七成五及其他威力五成相加", "水刃", duckRainContext, { skillPowerPercentAdds: [0.5] }, 386, 373, 201, 373],
+    ["低威力半点沿用有效威力向下取整", "疾风刺", duckWaterContext, { skillPowerPercentAdds: [0.5] }, 64, 62, 201, 62],
+    ["手动静态威力仍叠加特性和雨天", "水刃", duckRainContext, { powerOverride: { mode: "static", value: 25 } }, 70, 68, 201, 68],
+    ["手动显示威力不重复套自动增益", "水刃", duckRainContext, { attackLevelStage: 10, powerOverride: { mode: "panel", value: 160 } }, 165, 160, 201, 160],
+  ])("得寸进尺CLI实链：%s进入威力加成区而非双攻层数", (_label, skill, context, overrides, totalDamage, displayPower, attackerStat, calculationPower) => {
+    const result = runCli(["explain", "--input", "-", "--direction", "forward"], {
+      ...duckPowerZoneCase,
+      attacker: { ...duckPowerZoneCase.attacker, skill },
+      forward: {
+        context,
+        // 隔离乘区，避免本系或属性克制掩盖攻防层数与威力加成的差异。
+        overrides: { stabMultiplier: 1, typeMultiplier: 1, ...overrides },
+      },
+    });
+
+    expect(result.status).toBe(0);
+    expect(result.json.inputDigest).toMatch(/^sha256:[a-f0-9]{64}$/);
+    expect(result.json.engine).toMatchObject({
+      productVersion: packageJson.version,
+      dataVersion: snapshot.meta.id,
+      rulesVersion: snapshot.meta.rulesVersion,
+    });
+    expect(result.json.result).toMatchObject({ totalDamage, displayPower });
+    const formula = result.json.result.formulaSteps.find((step) => step.label === "等级系数与攻防比");
+    // 防御采用用户补充的实机彩蝶鲨 175；不再沿用旧面板推导出的 176。
+    expect(formula.input).toMatchObject({ attackerStat, calculationPower, defenderDefense: 175 });
+    expect(result.json.result.gainSources.attack.some(({ name }) => name === "得寸进尺")).toBe(false);
+
+    const panelOverride = overrides.powerOverride?.mode === "panel";
+    const triggered = context.rainWeather === true || context.traitActivated === true;
+    const traitPowerSources = result.json.result.gainSources.powerPercent.filter(({ name }) => name === "得寸进尺");
+    if (triggered && !panelOverride) {
+      expect(traitPowerSources).toEqual([expect.objectContaining({ kind: "trait", amount: 1 })]);
+    } else {
+      expect(traitPowerSources).toEqual([]);
+    }
+    if (context.weatherRainTurns > 0 && !panelOverride) {
+      expect(result.json.result.gainSources.powerPercent).toContainEqual(expect.objectContaining({ name: "雨天", amount: 0.75 }));
+    }
+    if (panelOverride) {
+      expect(result.json.result.gainSources.powerPercent).toEqual([]);
+      expect(result.json.result.combatPanel.attacker.physicalAttack).toBe(402);
+    }
+  });
 
   test("explain names rain in the shared power-addition zone, without a weather multiplier", () => {
     const result = runCli(["explain", "--input", "-", "--direction", "forward"], {
@@ -222,7 +297,7 @@ describe("rock-calculator CLI", () => {
 
     expect(result.status).toBe(0);
     expect(result.json.result.totalDamage).toBe(damage);
-    expect(result.json.result.combatPanel.defender.physicalDefense).toBe(Math.round(baseDefense / 1.4));
+    expect(result.json.result.combatPanel.defender.physicalDefense).toBe(Math.floor(baseDefense / 1.4));
     const formula = result.json.result.formulaSteps.find((step) => step.label === "等级系数与攻防比");
     expect(formula.input.defenderDefense).toBeCloseTo(baseDefense / 1.4, 10);
   });
@@ -713,7 +788,7 @@ describe("rock-calculator CLI", () => {
     );
   });
 
-  test("女王蜂虫群与恶魔狼王听桥配置沿用取整显示威力", () => {
+  test("女王蜂虫群与恶魔狼王听桥保留显示威力并按战斗面板向下取整", () => {
     const result = runCli(
       ["calculate", "--input", "-"],
       referenceListenBridgeCase,
@@ -736,11 +811,31 @@ describe("rock-calculator CLI", () => {
             displayPower: 244,
             hitCount: 1,
             skillName: "听桥",
-            totalDamage: 542,
+            // 旧参考站 542 使用强化面板四舍五入；新规则为 floor(730.8)/floor(185.5)。
+            totalDamage: 544,
           },
         },
       },
     });
+    const reverse = runCli(
+      ["explain", "--input", "-", "--direction", "reverse"],
+      referenceListenBridgeCase,
+    );
+    expect(reverse.status).toBe(0);
+    expect(reverse.json.result.combatPanel).toMatchObject({
+      attacker: { physicalAttack: 730 },
+      defender: { physicalDefense: 185 },
+    });
+    expect(reverse.json.result.formulaSteps).toContainEqual(expect.objectContaining({
+      label: "等级系数与攻防比",
+      input: expect.objectContaining({
+        attackerStat: 730,
+        defenderDefense: 185,
+        calculationPower: 153,
+        roundedNumerator: 100793,
+      }),
+      after: Math.floor(100793 / 185),
+    }));
   });
 
   test("参考站女王蜂五层虫群突袭的速度加成向下取整为115", () => {

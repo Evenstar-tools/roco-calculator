@@ -31,6 +31,10 @@ const STAT_LABELS = {
   magicalDefense: "魔防",
 };
 const NATURE_IDS = new Set(NATURES.map((nature) => nature.id));
+const RETIRED_DUCK_TRAIT_KEYS = new Set([
+  "trait.traitActivated.8c9e2197",
+  "trait.traitEffect.ebdeb9d1",
+]);
 
 function cloneJson(value) {
   return value == null ? value : JSON.parse(JSON.stringify(value));
@@ -201,11 +205,16 @@ function validateAndRepairEntry(raw, snapshot) {
     traitValues: raw.traitValues,
     skills: { four: [], single: null },
   }, snapshot);
+  const spirit = snapshot?.spirits?.find((entry) => entry.id === raw.spiritId);
+  const dropsLegacyDuckControls = spirit &&
+    getTraitView(snapshot, spirit)?.name === "得寸进尺";
   let unknownTraitFields = 0;
   const unknownTraitKeys = [];
   for (const [key, rawValue] of Object.entries(raw.traitValues)) {
     // 旧版把天气保存在精灵预设中；现在随整场对战，不再导入该条件。
     if (key === "trait.blizzardWeather.844e52ec") continue;
+    // 得寸进尺改为随本场雨天判定，旧触发值和加成值不再属于精灵预设。
+    if (dropsLegacyDuckControls && RETIRED_DUCK_TRAIT_KEYS.has(key)) continue;
     if (!Object.hasOwn(traitValues, key) || !Object.is(traitValues[key], rawValue)) {
       delete traitValues[key];
       unknownTraitFields += 1;

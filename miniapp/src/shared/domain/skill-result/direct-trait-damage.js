@@ -64,7 +64,7 @@ export function calculateDirectTraitDamageResult({
     totalAttackLevelStage,
     totalDefenseLevelStage,
   );
-  const attackerStat = Math.round(
+  const attackerStat = Math.floor(
     abilityAdjustedStat(baseAttackerStat, totalAttackLevelStage),
   );
   const defenderDefense = defenseStatForDamage(baseDefenderDefense, totalDefenseLevelStage);
