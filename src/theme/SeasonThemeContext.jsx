@@ -1,12 +1,17 @@
 import { createContext, useContext, useLayoutEffect, useState } from "react";
 import { readSeasonThemePreference, writeSeasonThemePreference } from "../state/season-theme.js";
-import { getSeasonTheme, getSeasonThemeVariables } from "./season-themes.js";
+import { getSeasonTheme, getSeasonThemeVariables, pickRandomSeasonThemeId } from "./season-themes.js";
 
 const SeasonThemeContext = createContext({ preference: "default", season: getSeasonTheme("s4") });
 
+function createSelection(preference) {
+  return { preference, themeId: preference === "random" ? pickRandomSeasonThemeId() : getSeasonTheme(preference).id };
+}
+
 export function SeasonThemeProvider({ children }) {
-  const [preference, setPreference] = useState(readSeasonThemePreference);
-  const season = getSeasonTheme(preference);
+  const [selection, setSelection] = useState(() => createSelection(readSeasonThemePreference()));
+  const { preference, themeId } = selection;
+  const season = getSeasonTheme(themeId);
 
   useLayoutEffect(() => {
     document.documentElement.dataset.season = season.id;
@@ -16,7 +21,7 @@ export function SeasonThemeProvider({ children }) {
   }, [season]);
 
   function changeSeasonTheme(value) {
-    setPreference(writeSeasonThemePreference(value));
+    setSelection(createSelection(writeSeasonThemePreference(value)));
   }
 
   return <SeasonThemeContext.Provider value={{ preference, season, onSeasonThemeChange: changeSeasonTheme }}>

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, expect, test } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 import { useState } from "react";
 import { AppHeader } from "../../src/components/AppHeader.jsx";
 import { DisplaySettingsDialog } from "../../src/components/DisplaySettingsDialog.jsx";
@@ -8,6 +8,7 @@ import { SEASON_THEME_STORAGE_KEY } from "../../src/state/season-theme.js";
 import { getSeasonTheme } from "../../src/theme/season-themes.js";
 
 afterEach(() => {
+  vi.restoreAllMocks();
   localStorage.removeItem(SEASON_THEME_STORAGE_KEY);
   delete document.documentElement.dataset.season;
   delete document.documentElement.dataset.theme;
@@ -53,4 +54,33 @@ test("显示设置切换四季原图，保留季中标题、亮暗状态和已�
   expect(document.documentElement).toHaveAttribute("data-season", "s2");
   fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "s4" } });
   expect(document.documentElement).toHaveAttribute("data-season", "s4");
+});
+
+test("随机模式仅在进入或点击时抽取，保存模式而非本次主题，手动固定当前主题即可退出", () => {
+  const random = vi.spyOn(Math, "random").mockReturnValueOnce(0).mockReturnValueOnce(0.25).mockReturnValueOnce(0.999);
+  const view = render(<ThemeSettings />);
+  const shuffle = screen.getByRole("button", { name: "每次进入随机主题" });
+  expect(shuffle).toHaveAttribute("aria-pressed", "false");
+  fireEvent.click(shuffle);
+  expect(shuffle).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("combobox", { name: "赛季主题" })).toHaveValue("random");
+  expect(localStorage.getItem(SEASON_THEME_STORAGE_KEY)).toBe("random");
+  expect(document.documentElement).toHaveAttribute("data-season", "s1");
+  fireEvent.change(screen.getByRole("textbox", { name: "当前技能威力" }), { target: { value: "112" } });
+  expect(document.documentElement).toHaveAttribute("data-season", "s1");
+  expect(random).toHaveBeenCalledTimes(1);
+  fireEvent.click(shuffle);
+  expect(document.documentElement).toHaveAttribute("data-season", "s2");
+  view.unmount();
+  const nextEntry = render(<ThemeSettings />);
+  expect(document.documentElement).toHaveAttribute("data-season", "s4");
+  expect(screen.getByRole("button", { name: "每次进入随机主题" })).toHaveAttribute("aria-pressed", "true");
+  expect(random).toHaveBeenCalledTimes(3);
+  fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "s4" } });
+  expect(screen.getByRole("button", { name: "每次进入随机主题" })).toHaveAttribute("aria-pressed", "false");
+  expect(localStorage.getItem(SEASON_THEME_STORAGE_KEY)).toBe("s4");
+  nextEntry.unmount();
+  render(<ThemeSettings />);
+  expect(document.documentElement).toHaveAttribute("data-season", "s4");
+  expect(random).toHaveBeenCalledTimes(3);
 });

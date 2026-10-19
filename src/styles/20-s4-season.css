@@ -91,8 +91,10 @@ html[data-season="s1"] {
   --season-focus: #cad9f7;
   --season-result-text: #d2dff7;
   --season-secondary-accent: #7586b8;
-  --season-character-top: -55px;
-  --season-character-width: 150px;
+  --season-character-top: -108px;
+  --season-character-width: 230px;
+  --season-character-left: 48%;
+  --season-character-bg-left: calc(48% + var(--season-character-width) * .48);
   --season-page-wash: linear-gradient(180deg, #171a3c33 0, #23294b66 64px, #171f32e6 150px, #101722 240px);
   --season-page-wash-mobile: linear-gradient(180deg, #171a3c33, #171f32e6 150px, #101722 240px);
   --season-header-wash: linear-gradient(180deg, #141a36eb, #23294b99 55%, transparent);
@@ -119,8 +121,10 @@ html[data-season="s2"] {
   --season-focus: #f0d49a;
   --season-result-text: #f0d49a;
   --season-secondary-accent: #b68a51;
-  --season-character-top: -40px;
-  --season-character-width: 140px;
+  --season-character-top: -92px;
+  --season-character-width: 220px;
+  --season-character-left: 48%;
+  --season-character-bg-left: calc(48% + var(--season-character-width) * .48);
   --season-page-wash: linear-gradient(180deg, #3a183333 0, #42243b66 64px, #271e2ee6 150px, #101722 240px);
   --season-page-wash-mobile: linear-gradient(180deg, #3a183333, #271e2ee6 150px, #101722 240px);
   --season-header-wash: linear-gradient(180deg, #30172ceb, #42243b99 55%, transparent);
@@ -440,13 +444,27 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
     --season-character-left: calc(100% - 560px);
     --season-character-bg-left: calc(100% - 560px + var(--season-character-width));
   }
-  html[data-season="s1"] { --season-character-top: -44px; --season-character-width: 120px; }
-  html[data-season="s2"] { --season-character-top: -34px; --season-character-width: 120px; }
+  html:is([data-season="s1"], [data-season="s2"]) {
+    --season-character-left: calc(100% - 610px);
+    --season-character-bg-left: calc(100% - 610px + var(--season-character-width));
+  }
+  html[data-season="s1"] { --season-character-top: -78px; --season-character-width: 180px; }
+  html[data-season="s2"] { --season-character-top: -64px; --season-character-width: 170px; }
   html[data-season="s3"] { --season-character-top: -16px; --season-character-width: 104px; }
 
   .app-header__season-star {
     left: calc(100% - 358px);
   }
+}
+
+/* Keep the enlarged faces clear of the title and controls at the desktop edge. */
+@media (min-width: 801px) and (max-width: 880px) {
+  html:is([data-season="s1"], [data-season="s2"]) {
+    --season-character-left: calc(100% - 575px);
+    --season-character-bg-left: calc(100% - 575px + var(--season-character-width));
+  }
+  html[data-season="s1"] { --season-character-top: -55px; --season-character-width: 140px; }
+  html[data-season="s2"] { --season-character-top: -44px; --season-character-width: 140px; }
 }
 
 @media (max-width: 800px) {

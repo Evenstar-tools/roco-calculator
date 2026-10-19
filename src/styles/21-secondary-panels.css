@@ -75,8 +75,13 @@ html[data-theme="dark"] .team-drawer .team-drawer__zero-cta { color: #1b2636; }
 .display-settings-dialog label.display-settings-option input { width: 22px; height: 22px; justify-self: center; margin: 0; }
 .display-settings-dialog label.display-settings-option:last-of-type { border-bottom: 0; }
 .display-settings-dialog .display-settings-option small { line-height: 1.6; }
-.display-settings-dialog label.display-settings-option--season { grid-template-columns: auto minmax(0, 1fr); }
+.display-settings-dialog .display-settings-option--season { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; }
 .display-settings-option--season select { width: 100%; max-width: 280px; min-width: 0; min-height: 42px; justify-self: end; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; font-size: 14px; }
+.display-settings-season-control { display: flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; }
+.display-settings-season-control select { flex: 1 1 0; }
+.display-settings-season-shuffle { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; padding: 0; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-muted); cursor: pointer; }
+.display-settings-season-shuffle:hover, .display-settings-season-shuffle[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.display-settings-season-shuffle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .display-settings-power-details > summary { cursor: pointer; color: var(--text-muted); font-size: 12px; }
 
 .config-library-dialog .config-library-primary-preview { background: transparent; padding: 0; gap: 6px; }

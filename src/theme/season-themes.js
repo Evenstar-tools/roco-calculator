@@ -26,8 +26,12 @@ export const SEASON_THEMES = Object.freeze({
 
 export const SELECTABLE_SEASON_THEMES = Object.freeze(Object.values(SEASON_THEMES));
 
+export function pickRandomSeasonThemeId(random = Math.random) {
+  return SELECTABLE_SEASON_THEMES[Math.floor(random() * SELECTABLE_SEASON_THEMES.length)].id;
+}
+
 export function normalizeSeasonThemePreference(value) {
-  return Object.hasOwn(SEASON_THEMES, value) ? value : "default";
+  return value === "random" || Object.hasOwn(SEASON_THEMES, value) ? value : "default";
 }
 
 export function getSeasonTheme(id) {
