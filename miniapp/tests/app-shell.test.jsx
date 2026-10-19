@@ -13,8 +13,62 @@ import {
   WEB_CORE_VERSION,
 } from "../src/version.js";
 import miniappPackage from "../package.json";
+import { readSeasonTheme, SEASON_THEME_STORAGE_KEY, writeSeasonTheme } from "../src/state/season-theme.js";
 
 describe("miniapp shell", () => {
+  test.each([[0, "s1"], [0.25, "s2"], [0.5, "s3"], [0.99999, "s4"]])("random theme draw %s persists the mode, not %s", (random, id) => {
+    const values = new Map();
+    const storage = { get: (key) => values.get(key), set: (key, value) => values.set(key, value) };
+    expect(readSeasonTheme(storage)).toEqual({ preference: "s4", id: "s4" });
+    expect(writeSeasonTheme("random", storage, () => random)).toEqual({ preference: "random", id });
+    expect(values.get(SEASON_THEME_STORAGE_KEY)).toBe("random");
+    expect(readSeasonTheme(storage, () => random)).toEqual({ preference: "random", id });
+    expect(writeSeasonTheme(id, storage)).toEqual({ preference: id, id });
+    expect(readSeasonTheme(storage)).toEqual({ preference: id, id });
+  });
+
+  test("invalid or blocked theme storage restores S4 without blocking the current page", () => {
+    expect(readSeasonTheme({ get: () => "s5" })).toEqual({ preference: "s4", id: "s4" });
+    const blocked = { get: () => { throw new Error("blocked"); }, set: () => { throw new Error("blocked"); } };
+    expect(readSeasonTheme(blocked)).toEqual({ preference: "s4", id: "s4" });
+    expect(writeSeasonTheme("s2", blocked)).toEqual({ preference: "s2", id: "s2" });
+    expect(writeSeasonTheme("random", blocked, () => 0)).toEqual({ preference: "random", id: "s1" });
+  });
+
+  test.each(["s1", "s2", "s3"])("%s backdrop uses only its local decorative scene and never changes the data title", (seasonId) => {
+    const { container } = render(<><SeasonBackdrop seasonId={seasonId} /><AppHeader /></>);
+    const background = container.querySelector(`.season-sky--${seasonId}`);
+    expect(background).toHaveAttribute("aria-hidden", "true");
+    expect(background.querySelectorAll("img")).toHaveLength(1);
+    expect(background.querySelector("img").getAttribute("src")).toContain(`/assets/season/${seasonId}-`);
+    expect(background.querySelector(".season-sky__wolf")).toBeNull();
+    expect(container.querySelector(".app-header__title")).toHaveTextContent("洛克计算器 · S4「季中」");
+  });
+
+  test("native theme picker can fix the same drawn season and the shuffle control remains a separate button", () => {
+    const change = vi.fn();
+    const ui = (preference = "s4", id = "s4") => <AppHeader seasonTheme={{ preference, id }} onSeasonThemeChange={change} />;
+    const view = render(ui());
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    const picker = screen.getByRole("combobox", { name: "赛季主题" });
+    expect(picker).toHaveValue("3");
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["S1 暗夜拾光", "S2 狂欢怪谈", "S3 铅字幻梦", "S4 月涌狂想"]);
+    const shuffle = screen.getByRole("button", { name: "每次进入随机主题" });
+    expect(shuffle).toHaveAttribute("aria-pressed", "false");
+    expect(shuffle.querySelector("img")).toHaveAttribute("src", expect.stringContaining("shuffle.png"));
+    fireEvent.click(shuffle);
+    expect(change).toHaveBeenLastCalledWith("random");
+    view.rerender(ui("random", "s3"));
+    expect(picker).toHaveValue("0");
+    expect(picker.options[0]).toHaveTextContent("随机 · S3");
+    expect(shuffle).toHaveAttribute("aria-pressed", "true");
+    fireEvent.change(picker, { target: { value: "3" } });
+    expect(change).toHaveBeenLastCalledWith("s3");
+    view.rerender(ui("s3", "s3"));
+    expect(picker).toHaveValue("2");
+    expect(shuffle).toHaveAttribute("aria-pressed", "false");
+  });
+
   test("registers native sharing for the page hook", async () => {
     vi.stubGlobal("definePageConfig", (config) => config);
     try {

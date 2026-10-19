@@ -23,6 +23,7 @@ import { PREVIEW_PET_IMAGES } from "../../data/preview-pet-images.js";
 import { createCloudAdapter } from "../../services/cloud-adapter.js";
 import { createDataService } from "../../services/data-service.js";
 import { createStorageAdapter } from "../../services/storage-adapter.js";
+import { readSeasonTheme, writeSeasonTheme } from "../../state/season-theme.js";
 import {
   createShareMessage,
   decodeSharePayloadResult,
@@ -123,6 +124,7 @@ export function createDefaultServices({
 }
 
 export default function IndexPage({ services }) {
+  const [seasonTheme, setSeasonTheme] = useState(() => readSeasonTheme(createStorageAdapter(Taro)));
   const autosave = useRef(null);
   const [rankingKind, setRankingKind] = useState(null);
   const [visitedRankings, setVisitedRankings] = useState([]);
@@ -703,9 +705,11 @@ export default function IndexPage({ services }) {
   }
 
   return (
-    <View className={compactDemo ? "page page--compact-demo" : "page"}>
-      <SeasonBackdrop />
+    <View className={`page page--season-${seasonTheme.id}${compactDemo ? " page--compact-demo" : ""}`}>
+      <SeasonBackdrop seasonId={seasonTheme.id} />
       <AppHeader
+        seasonTheme={seasonTheme}
+        onSeasonThemeChange={(value) => setSeasonTheme(writeSeasonTheme(value, createStorageAdapter(Taro)))}
         damageComparisonEnabled={pageState.damageComparisonEnabled === true}
         onDamageComparisonChange={changeDamageComparisonEnabled}
         commonConfigCount={pageState.configLibrary.entries.length}

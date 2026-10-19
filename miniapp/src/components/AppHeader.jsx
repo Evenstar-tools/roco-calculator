@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Button, Image, ScrollView, Text, View } from "@tarojs/components";
+import { Button, Image, Picker, ScrollView, Text, View } from "@tarojs/components";
 import caretRightIcon from "../assets/icons/caret-right.png";
+import caretDownIcon from "../assets/icons/caret-down.png";
+import shuffleIcon from "../assets/icons/shuffle.png";
+import { SEASON_THEMES } from "../state/season-theme.js";
 import {
   MINIAPP_RELEASE_LABEL,
   MINIAPP_UPDATE_DATE,
@@ -23,6 +26,8 @@ export default function AppHeader({
   onTeamAnalysisChange,
   onTypeAnalysisChange,
   quickUndoEnabled = true,
+  seasonTheme = { preference: "s4", id: "s4" },
+  onSeasonThemeChange,
   teamAnalysisEnabled = false,
   typeAnalysisEnabled = false,
 }) {
@@ -30,6 +35,11 @@ export default function AppHeader({
   const resolvedCommonConfigStatus = commonConfigStatus
     ?? (commonConfigCount > 0 ? "update" : "available");
   const commonConfigCurrent = resolvedCommonConfigStatus === "current";
+  const randomTheme = seasonTheme.preference === "random";
+  const seasonOptions = randomTheme
+    ? [{ id: null, label: `随机 · ${seasonTheme.id.toUpperCase()}` }, ...SEASON_THEMES]
+    : SEASON_THEMES;
+  const seasonIndex = randomTheme ? 0 : Math.max(0, seasonOptions.findIndex(({ id }) => id === seasonTheme.id));
 
   async function resetCurrentPage() {
     const completed = await onReset?.();
@@ -177,6 +187,28 @@ export default function AppHeader({
                 >
                   <View className="settings-sheet__switch-thumb" />
                 </Button>
+              </View>
+              <View className="settings-sheet__divider" />
+              <View className="settings-sheet__row settings-sheet__row--season">
+                <Text className="settings-sheet__label">赛季主题</Text>
+                <View className="settings-season__controls">
+                  <Picker aria-label="赛季主题" className="settings-season__picker" mode="selector"
+                    range={seasonOptions.map(({ label }) => label)} value={seasonIndex}
+                    onChange={(event) => {
+                      const selected = seasonOptions[Number(event.detail.value)];
+                      if (selected?.id) onSeasonThemeChange?.(selected.id);
+                    }}>
+                    <View className="settings-season__value">
+                      <Text>{seasonOptions[seasonIndex].label}</Text>
+                      <Image alt="" aria-hidden="true" className="settings-season__caret" mode="aspectFit" src={caretDownIcon} />
+                    </View>
+                  </Picker>
+                  <Button aria-label="每次进入随机主题" aria-pressed={randomTheme}
+                    className={randomTheme ? "settings-season__random settings-season__random--active" : "settings-season__random"}
+                    hoverClass="button-hover" onClick={() => onSeasonThemeChange?.("random")}>
+                    <Image alt="" aria-hidden="true" className="settings-season__shuffle" mode="aspectFit" src={shuffleIcon} />
+                  </Button>
+                </View>
               </View>
               <View className="settings-sheet__divider" />
               <View className="settings-sheet__row">

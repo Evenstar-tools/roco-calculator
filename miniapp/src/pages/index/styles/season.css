@@ -1,6 +1,6 @@
 /*postcss-pxtransform disable*/
 
-/* S4 满幅月夜只作背景，不改变顶栏和计算区域的排版。 */
+/* 赛季仅装饰，不改变当前数据、顶栏标题或计算区域。 */
 .page {
   position: relative;
   isolation: isolate;
@@ -95,7 +95,7 @@
 }
 
 .app-header__season-title {
-  color: #ecd78c;
+  color: var(--season-title, #ecd78c);
 }
 
 .app-header__action {
@@ -112,6 +112,53 @@
 
 .app-header__action::after {
   border: 0;
+}
+
+.page--season-s1 {
+  --season-title: #c8d9ff;
+  --season-accent: #617cae;
+  --season-accent-soft: #eaf0fc;
+}
+
+.page--season-s2 {
+  --season-title: #f2d99d;
+  --season-accent: #9f6649;
+  --season-accent-soft: #fbede6;
+}
+
+.page--season-s3 {
+  --season-title: #d7e8c4;
+  --season-accent: #638365;
+  --season-accent-soft: #edf5e8;
+}
+
+.season-sky--s1 {
+  background: linear-gradient(180deg, #17213e, #596d92 65px, #c5ccd6 120px, #f4f2ed 176px);
+}
+
+.season-sky--s2 {
+  background: linear-gradient(180deg, #331b32, #8b6268 65px, #d7c9c5 120px, #f4f2ed 176px);
+}
+
+.season-sky--s3 {
+  background: linear-gradient(180deg, #21382f, #6e8773 65px, #cbd2c7 120px, #f4f2ed 176px);
+}
+
+.season-sky--s1 .season-sky__panorama,
+.season-sky--s2 .season-sky__panorama,
+.season-sky--s3 .season-sky__panorama {
+  top: -28px;
+  left: 0;
+  width: 100%;
+  height: 220px;
+}
+
+.season-sky--s2 .season-sky__quiet {
+  background: linear-gradient(90deg, #32162be8, #331b3280 65%, transparent);
+}
+
+.season-sky--s3 .season-sky__quiet {
+  background: linear-gradient(90deg, #1c3026ed, #21382f80 65%, transparent);
 }
 
 @media (max-width: 350px) {
@@ -187,6 +234,14 @@
     background: linear-gradient(180deg, #0d1730 0px, #182a46 62px, #19293d 117px, #142030 172px, #101722 229px);
   }
 
+  .page--season-s1 { --season-accent: #adc5f0; --season-accent-soft: #283951; }
+  .page--season-s2 { --season-accent: #e4bb94; --season-accent-soft: #493340; }
+  .page--season-s3 { --season-accent: #b3cda5; --season-accent-soft: #2b4037; }
+
+  .season-sky--s1 { background: linear-gradient(180deg, #10152f, #273653 80px, #101722 229px); }
+  .season-sky--s2 { background: linear-gradient(180deg, #2e152b, #40283d 80px, #101722 229px); }
+  .season-sky--s3 { background: linear-gradient(180deg, #142b22, #304436 80px, #101722 229px); }
+
   .season-sky__scene {
     opacity: 0.8;
     -webkit-mask-image: linear-gradient(180deg, #000 25px, #000b 80px, transparent 200px);
@@ -225,6 +280,8 @@
 
   .direction-switch__icon,
   .settings-sheet__entry-icon,
+  .settings-season__caret,
+  .settings-season__shuffle,
   .result-bar__action-icon {
     filter: brightness(0) invert(0.85);
   }

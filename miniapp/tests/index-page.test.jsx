@@ -23,6 +23,7 @@ import { createRuntimeConfig } from "../src/config/runtime.js";
 import { publicSpiritImageUrl } from "../src/data/public-asset-urls.js";
 import { createCalculationView } from "../src/view-models/calculation.js";
 import { damagePresentation } from "../src/view-models/result-presentation.js";
+import { SEASON_THEME_STORAGE_KEY } from "../src/state/season-theme.js";
 
 function createSnapshot() {
   return {
@@ -127,6 +128,40 @@ function createStorageTaro(overrides = {}) {
 }
 
 describe("IndexPage", () => {
+  test("random season redraws on page entry or shuffle only and never resets calculator configuration", async () => {
+    Taro.setStorageSync(SEASON_THEME_STORAGE_KEY, "random");
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const services = createUserSettingServices();
+    const first = render(<IndexPage services={services} />);
+    await screen.findByLabelText("攻击方配置");
+    expect(first.container.querySelector(".page")).toHaveClass("page--season-s3");
+    random.mockReturnValue(0);
+    first.rerender(<IndexPage services={services} />);
+    expect(first.container.querySelector(".page")).toHaveClass("page--season-s3");
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    expect(first.container.querySelector(".page")).toHaveClass("page--season-s3");
+    fireEvent.click(screen.getByRole("button", { name: "每次进入随机主题" }));
+    expect(first.container.querySelector(".page")).toHaveClass("page--season-s1");
+    expect(Taro.getStorageSync(SEASON_THEME_STORAGE_KEY)).toBe("random");
+    fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "1" } });
+    expect(Taro.getStorageSync(SEASON_THEME_STORAGE_KEY)).toBe("s1");
+    expect(first.container.querySelector(".page")).toHaveClass("page--season-s1");
+    expect(screen.getByRole("button", { name: "每次进入随机主题" })).toHaveAttribute("aria-pressed", "false");
+    random.mockReturnValue(0.25);
+    fireEvent.click(screen.getByRole("button", { name: "每次进入随机主题" }));
+    expect(first.container.querySelector(".page")).toHaveClass("page--season-s2");
+    fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
+    expect(screen.getByRole("button", { name: "四技能模式" })).toHaveAttribute("aria-pressed", "true");
+    expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S4「季中」");
+    first.unmount();
+    random.mockReturnValue(0.75);
+    const second = render(<IndexPage services={services} />);
+    await screen.findByLabelText("攻击方配置");
+    expect(second.container.querySelector(".page")).toHaveClass("page--season-s4");
+    expect(Taro.getStorageSync(SEASON_THEME_STORAGE_KEY)).toBe("random");
+  });
+
   test("已收藏配点修改同步预设，重新打开仍可使用用户预设", async () => {
     const snapshot = createSnapshot();
     const services = createDefaultServices({ bundledData: snapshot, taro: createStorageTaro() });
@@ -174,6 +209,7 @@ describe("IndexPage", () => {
     expect(screen.queryByRole("button", { name: "承伤对比" })).not.toBeInTheDocument();
   });
   afterEach(() => {
+    Taro.removeStorageSync(SEASON_THEME_STORAGE_KEY);
     __setRouterParams();
     vi.useRealTimers();
     vi.restoreAllMocks();

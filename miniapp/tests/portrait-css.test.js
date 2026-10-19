@@ -38,6 +38,18 @@ const quickControlsSource = readSource("src/components/QuickCombatantControls.js
 const resultSheetSource = readSource("src/components/ResultSheet.jsx");
 
 describe("reference-first responsive CSS", () => {
+  test("keeps native theme selection and shuffle in one bounded touchable row", () => {
+    expect(styles["overlays.css"]).toMatch(/\.settings-season__controls\s*\{[^}]*min-width:\s*0;/u);
+    expect(styles["overlays.css"]).toMatch(/\.settings-season__random\s*\{[^}]*width:\s*44px;[^}]*height:\s*44px;[^}]*flex:\s*0 0 44px;/u);
+    expect(appHeaderSource).toContain('mode="selector"');
+    expect(appHeaderSource).toContain('aria-label="每次进入随机主题"');
+    expect(existsSync(resolve(process.cwd(), "src/assets/icons/shuffle.png"))).toBe(true);
+    for (const id of ["s1", "s2", "s3"]) {
+      expect(styles["season.css"]).toContain(`.page--season-${id}`);
+      expect(styles["season.css"]).toContain(`.season-sky--${id}`);
+    }
+  });
+
   test("keeps result names and ranking visibility icons readable in dark mode", () => {
     expect(styles["overlays.css"]).toMatch(/\.result-row\s*\{[^}]*color:\s*var\(--text-primary\);/u);
     expect(styles["rankings.css"]).toMatch(/@media\s*\(prefers-color-scheme:\s*dark\)\s*\{\s*\.ranking-eye image,\.ranking-eye taro-image-core\s*\{\s*filter:\s*brightness\(0\) invert\(\.88\);/u);
