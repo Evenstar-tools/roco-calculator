@@ -2,6 +2,7 @@ import React from "react";
 import { metrics } from "./analytics/metrics.js";
 import { createRoot } from "react-dom/client";
 import { CalculatorRouter } from "./CalculatorRouter.jsx";
+import { SeasonThemeProvider } from "./theme/SeasonThemeContext.jsx";
 import { installInputSelection } from "./input-selection.js";
 import "./styles.css";
 
@@ -23,7 +24,7 @@ if (import.meta.hot) import.meta.hot.dispose(removeInputSelection);
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <CalculatorRouter />
+    <SeasonThemeProvider><CalculatorRouter /></SeasonThemeProvider>
   </React.StrictMode>,
 );
 

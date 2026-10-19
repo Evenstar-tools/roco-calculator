@@ -1,4 +1,6 @@
 import { X } from "@phosphor-icons/react";
+import { useSeasonTheme } from "../theme/SeasonThemeContext.jsx";
+import { SELECTABLE_SEASON_THEMES } from "../theme/season-themes.js";
 
 export function DisplaySettingsDialog({
   compactOptionLabelsEnabled = false,
@@ -19,6 +21,7 @@ export function DisplaySettingsDialog({
   powerDisplayMode = "static",
   typeCoverageEnabled = false,
 }) {
+  const { preference, onSeasonThemeChange } = useSeasonTheme();
   if (!open) return null;
   return (
     <div
@@ -40,6 +43,13 @@ export function DisplaySettingsDialog({
             <X aria-hidden="true" size={18} />
           </button>
         </h2>
+        <label className="display-settings-option display-settings-option--season">
+          <span><strong>赛季主题</strong></span>
+          <select aria-label="赛季主题" value={preference === "default" ? "s4" : preference}
+            onChange={(event) => onSeasonThemeChange?.(event.target.value)}>
+            {SELECTABLE_SEASON_THEMES.map(({ id, sourceName }) => <option key={id} value={id}>{id.toUpperCase()} {sourceName}</option>)}
+          </select>
+        </label>
         <div className="display-settings-option display-settings-option--power">
           <span>
             <strong>技能威力口径</strong>

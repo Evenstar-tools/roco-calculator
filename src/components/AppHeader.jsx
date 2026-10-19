@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from "react";
 import { readThemeSetting } from "../state/display-settings.js";
 import { Toolbox } from "./Toolbox.jsx";
+import { useSeasonTheme } from "../theme/SeasonThemeContext.jsx";
 
 export function AppHeader({
   menuButtonRef,
@@ -23,6 +24,7 @@ export function AppHeader({
   toolAction,
   toolbox,
 }) {
+  const { season } = useSeasonTheme();
   const [dark, setDark] = useState(() => readThemeSetting() === "dark");
   const [portrait, setPortrait] = useState(() => window.matchMedia("(max-width: 620px) and (orientation: portrait)").matches);
   useEffect(() => {
@@ -48,17 +50,17 @@ export function AppHeader({
     <header className={`app-header app-header--${viewMode}${pageTitle ? " app-header--tool" : ""}`}>
       {!pageTitle && <div aria-hidden="true" className="app-header__season">
         <span className="app-header__season-scene" />
-        <span className="app-header__season-orbit" />
+        {season.ornaments === "orbit-star" && <span className="app-header__season-orbit" />}
         <img
           alt=""
-          className="app-header__season-wolf"
+          className={`app-header__season-character${season.id === "s4" ? " app-header__season-wolf" : ""}`}
           decoding="async"
           draggable="false"
-          height="406"
-          src="/assets/season/s4-silver-wolf.webp"
-          width="486"
+          height={season.character.height}
+          src={season.character.src}
+          width={season.character.width}
         />
-        <span className="app-header__season-star" />
+        {season.ornaments === "orbit-star" && <span className="app-header__season-star" />}
       </div>}
       <div className="app-header__brand">
         {pageTitle ? <h1>洛克计算器 · <span className="app-header__season-title">{pageTitle}</span></h1> : <h1 aria-label="洛克计算器 · S4「季中」">

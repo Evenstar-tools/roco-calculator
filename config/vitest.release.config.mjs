@@ -36,6 +36,7 @@ export default defineConfig({
             "tests/smoke/*.test.jsx",
             "tests/analytics/*.test.{js,jsx}",
             "tests/ui/workspace-overlays.test.jsx",
+            "tests/ui/season-theme.test.jsx",
             "tests/ui/entity-change-hint.test.jsx",
             "tests/ui/damage-comparison-effectiveness.test.jsx",
             "tests/seo/*.test.js",

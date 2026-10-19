@@ -10,7 +10,7 @@
 }
 
 :is(.team-drawer__header, .skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header)::before {
-  content: "";
+  content: var(--season-layer-content);
   position: absolute;
   z-index: -1;
   inset: auto 0 auto auto;
@@ -19,7 +19,7 @@
   width: min(38%, 220px);
   height: 64px;
   pointer-events: none;
-  background: url("/assets/season/s4-moon-night.webp") no-repeat right center / 340px auto;
+  background: var(--season-scene-image) no-repeat right center / 340px auto;
   opacity: .14;
   mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 5%, transparent 100%);
 }
@@ -36,7 +36,7 @@ html[data-theme="dark"] :is(.team-drawer__header, .skill-query__header, .display
 
 .team-drawer__zero::before,
 .sq-results:has(> .sq-empty:only-child)::before {
-  content: "";
+  content: var(--season-layer-content);
   position: absolute;
   z-index: -1;
   inset: 0 0 auto auto;
@@ -44,7 +44,7 @@ html[data-theme="dark"] :is(.team-drawer__header, .skill-query__header, .display
   height: min(100%, 180px);
   pointer-events: none;
   border-radius: inherit;
-  background: url("/assets/season/s4-moon-night.webp") no-repeat right center / cover;
+  background: var(--season-scene-image) no-repeat right center / cover;
   opacity: .09;
   mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 5%, transparent 100%);
 }
@@ -55,7 +55,7 @@ html[data-theme="dark"] :is(.team-drawer__zero, .sq-results:has(> .sq-empty:only
 
 .skill-query__tabs [aria-selected="true"],
 .team-drawer__pane-tabs [aria-pressed="true"] {
-  border-bottom-color: #b89743;
+  border-bottom-color: var(--season-secondary-accent);
 }
 
 .data-source-dialog__license {
