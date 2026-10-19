@@ -1,3 +1,5 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { CaretDown, MagnifyingGlass, Star } from "@phosphor-icons/react";
 import { useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
@@ -8,7 +10,7 @@ import { getBattleFormChoices } from "../domain/battle-form.js";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { usePickerMenuLayout } from "./picker-menu-layout.js";
 import { buildSpiritFamilyIndex } from "./spirit-family.js";
-import { canPreserveBattleFormConfig, readFormConfigPreferences, subscribeFormConfigPreferences, writeFormConfigPreference } from "../state/form-config-preferences.js";
+import { canPreserveBattleFormConfig, getFormConfigPreferences } from "../state/form-config-preferences.js";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -128,6 +130,9 @@ export function SpiritPicker({
   side,
   spirits,
 }) {
+  const { t } = useLocale();
+  const { serverId } = useRuntime();
+  const formPreferences = getFormConfigPreferences(serverId);
   const listboxId = useId();
   const inputRef = useRef(null);
   const optionsRef = useRef(null);
@@ -136,8 +141,8 @@ export function SpiritPicker({
   const [open, setOpen] = useState(false);
   const [searching, setSearching] = useState(false);
   const formConfigPreference = useSyncExternalStore(
-    subscribeFormConfigPreferences,
-    () => readFormConfigPreferences(side),
+    formPreferences.subscribe,
+    () => formPreferences.readPreferences(side),
     () => undefined,
   );
   const selectedName = selected?.fullName ?? "";
@@ -361,7 +366,7 @@ export function SpiritPicker({
           aria-autocomplete="list"
           aria-controls={listboxId}
           aria-expanded={open}
-          aria-label={`${label}精灵`}
+          aria-label={t("{side}精灵", { side: label })}
           onChange={(event) => {
             setQuery(event.target.value);
             setSearching(true);
@@ -378,7 +383,7 @@ export function SpiritPicker({
             if (selectedName && event.currentTarget.value === selectedName) event.currentTarget.select();
           }}
           onKeyDown={handleKeyDown}
-          placeholder="选精灵"
+          placeholder={t("选精灵")}
           ref={inputRef}
           role="combobox"
           value={open ? query : selectedName}
@@ -387,7 +392,7 @@ export function SpiritPicker({
           <span aria-hidden="true" className="spirit-picker__selected-name">{selectedName}</span>
         ) : null}
         <button
-          aria-label={`展开${label}精灵列表`}
+          aria-label={t("展开{side}精灵列表", { side: label })}
           className="spirit-picker__caret"
           onMouseDown={(event) => event.preventDefault()}
           onClick={() => {
@@ -397,7 +402,7 @@ export function SpiritPicker({
               openOptions();
             }
           }}
-          title={`展开${label}精灵列表`}
+          title={t("展开{side}精灵列表", { side: label })}
           type="button"
         >
           <CaretDown aria-hidden="true" size={14} weight="bold" />
@@ -415,12 +420,12 @@ export function SpiritPicker({
           >
             {browsingFamily ? (
               <li className="spirit-picker__form-heading" role="presentation">
-                <span>同族形态</span>
-                {choosingForm ? <label className="spirit-picker__form-toggle" title="攻防方开关分别记忆；跨页面保留可在显示设置中开启。先选高阶再萌化可保留配置；直接选低阶后升阶、同阶换形态或选关联分支时载入目标预设。">
-                  <span>萌化 · 配置保留</span>
-                  <input type="checkbox" role="switch" aria-label={`${label}同族切换保留本场配置`}
+                <span>{t("同族形态")}</span>
+                {choosingForm ? <label className="spirit-picker__form-toggle" title={t("攻防方开关分别记忆；跨页面保留可在显示设置中开启。先选高阶再萌化可保留配置；直接选低阶后升阶、同阶换形态或选关联分支时载入目标预设。")}>
+                  <span>{t("萌化 · 配置保留")}</span>
+                  <input type="checkbox" role="switch" aria-label={t("{side}同族切换保留本场配置", { side: label })}
                     checked={preserveFormConfig} onChange={event => {
-                      writeFormConfigPreference(side, event.target.checked);
+                      formPreferences.writePreference(side, event.target.checked);
                     }}
                     onKeyDown={event => { if (event.key === "Escape") { inputRef.current?.focus(); handleKeyDown(event); } }} />
                 </label> : null}
@@ -453,12 +458,12 @@ export function SpiritPicker({
                         spirit.dexNo,
                         spirit.stage,
                         spirit.calculationStatus === "pending-race-stats"
-                          ? "种族值待确认"
+                          ? t("种族值待确认")
                           : null,
-                        browsingFamily && spirit.id === selected?.id ? "当前形态"
-                          : browsingFamily && choosingForm && !family.some(entry => entry.id === spirit.id) ? "关联形态 · 载入预设"
-                          : browsingFamily && choosingForm && !canPreserveBattleFormConfig(sourceForm, spirit) ? "独立形态 · 载入预设"
-                          : related || browsingFamily && !choosingForm ? (selected?.evolutionChainIds?.includes(spirit.id) ? "进化链" : "关联形态") : null,
+                        browsingFamily && spirit.id === selected?.id ? t("当前形态")
+                          : browsingFamily && choosingForm && !family.some(entry => entry.id === spirit.id) ? t("关联形态 · 载入预设")
+                          : browsingFamily && choosingForm && !canPreserveBattleFormConfig(sourceForm, spirit) ? t("独立形态 · 载入预设")
+                          : related || browsingFamily && !choosingForm ? t(selected?.evolutionChainIds?.includes(spirit.id) ? "进化链" : "关联形态") : null,
                       ]
                         .filter(Boolean)
                         .join(" · ")}
@@ -469,26 +474,24 @@ export function SpiritPicker({
             ) : (
               <li className="spirit-picker__empty">
                 {browsingPresets
-                  ? presetBrowse.error || (presetBrowse.loading ? "正在读取预设…" : "暂无预设精灵，请输入搜索")
+                  ? presetBrowse.error || t(presetBrowse.loading ? "正在读取预设…" : "暂无预设精灵，请输入搜索")
                   : preview.isUnfiltered
-                  ? "暂无收藏精灵，请输入搜索"
-                  : "没有匹配精灵"}
+                  ? t("暂无收藏精灵，请输入搜索")
+                  : t("没有匹配精灵")}
               </li>
             )}
             {preview.isUnfiltered && preview.allFavoritesVisible ? (
               <li
                 className="spirit-picker__preview-complete"
                 role="presentation"
-              >
-                已预览所有已收藏精灵
-              </li>
+              >{t("已预览所有已收藏精灵")}</li>
             ) : null}
             {choosingForm ? (
               <li className="spirit-picker__form-footer" role="presentation">
                 <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => {
                   setOpen(false);
                   onSelect(selected.id);
-                }}>重新载入当前形态预设</button>
+                }}>{t("重新载入当前形态预设")}</button>
               </li>
             ) : null}
           </ul>
@@ -526,35 +529,32 @@ export function SpiritPicker({
               <span>{selected.stage}</span>
             </div>
             {selected.calculationStatus === "pending-race-stats" ? (
-              <p className="spirit-card__pending">
-                种族值待确认
-              </p>
+              <p className="spirit-card__pending">{t("种族值待确认")}</p>
             ) : (
               <p>
-                {selected.battleFormTraitRetained ? "特性沿用：" : "特性："}
+                {t(selected.battleFormTraitRetained ? "特性沿用：" : "特性：")}
                 <TraitHint
-                  description={selected.traitDescription}
-                  name={selected.traitName}
+                  description={selected.reference?.traitDescription ?? selected.traitDescription}
+                  name={selected.reference?.traitName ?? selected.traitName}
                 />
-                {onOpenDeer && <button className="spirit-card__deer-entry" type="button" onClick={onOpenDeer}>电鹿斩杀线 →</button>}
+                {onOpenDeer && <button className="spirit-card__deer-entry" type="button" onClick={onOpenDeer}>{t("电鹿斩杀线 →")}</button>}
               </p>
             )}
             {formSide?.battleForm ? <small className="spirit-card__form-note">
-              <span className="spirit-card__moe-count" role="img" aria-label={`萌化 ${moeLayers} 层`} title={`萌化 ${moeLayers} 层：相对初始形态的降阶数`}>
+              <span className="spirit-card__moe-count" role="img" aria-label={t("萌化 {count} 层", { count: moeLayers })} title={t("萌化 {count} 层：相对初始形态的降阶数", { count: moeLayers })}>
                 <ElementIcon type="萌" size={16} /><span>{moeLayers}</span>
               </span>
-              <span> · 配置已保留</span>
+              <span>{t(" · 配置已保留")}</span>
             </small> : null}
           </div>
           {showFavorite ? (
             <button
-              aria-label={`${
+              aria-label={t(
                 resolvedFavoriteState === "manual"
-                  ? "取消收藏"
+                  ? "取消收藏{name}"
                   : resolvedFavoriteState === "complete"
-                    ? "手动收藏"
-                    : "收藏"
-              }${selected.fullName}`}
+                    ? "手动收藏{name}"
+                    : "收藏{name}", { name: selected.fullName })}
               className={`favorite-action${
                 resolvedFavoriteState
                   ? ` is-favorite is-favorite--${resolvedFavoriteState}`
@@ -563,10 +563,10 @@ export function SpiritPicker({
               onClick={onFavoriteToggle}
               title={
                 resolvedFavoriteState === "manual"
-                  ? "取消手动收藏"
+                  ? t("取消手动收藏")
                   : resolvedFavoriteState === "complete"
-                    ? "配置完整，点击设为手动收藏"
-                    : `收藏${selected.fullName}`
+                    ? t("配置完整，点击设为手动收藏")
+                    : t("收藏{name}", { name: selected.fullName })
               }
               type="button"
             >

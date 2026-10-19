@@ -1,4 +1,6 @@
 import { NATURES, getNature, normalizeNatureId } from "../domain/natures.js";
+import { assertRepositoryEnvironment, storageError } from "./server-storage.js";
+import { assertWorkspaceJson } from "../runtime/workspace-store.js";
 import { presetConfigKey } from "./preset-baseline.js";
 import { getTraitView } from "../domain/calculator-view-model.js";
 import { isCompleteSpiritConfig } from "./spirit-configs.js";
@@ -67,6 +69,56 @@ function exportEntry(config, snapshot) {
   };
 }
 
+function unverifiedEntry(config) {
+  return { spiritId: config.spiritId, natureId: config.natureId ?? config.nature ?? null,
+    skills: (Array.isArray(config.skills) ? config.skills : config.skills?.four ?? []).map(skillId), rawConfig: cloneJson(config) };
+}
+
+function compareUnverifiedEntries(entries, existing) {
+  const counts = { added: 0, same: 0, different: 0, overwritten: 0, updated: 0, preserved: 0 };
+  const changes = entries.map((entry) => {
+    const local = existing?.configs?.[entry.spiritId];
+    const same = local && JSON.stringify(local) === JSON.stringify(entry.rawConfig);
+    if (!local) counts.added += 1;
+    else if (same) counts.same += 1;
+    else { counts.different += 1; counts.preserved += 1; }
+    return { spiritId: entry.spiritId, spiritName: entry.spiritId, status: !local ? "added" : same ? "same" : "different", differences: [], canUpdate: !local };
+  });
+  return { counts, changes };
+}
+
+function parseUnverifiedLibrary(source, existing, existingFavorites) {
+  assertWorkspaceJson(source);
+  if (source.format !== FAVORITE_CONFIG_LIBRARY_FORMAT || source.schemaVersion !== 1 ||
+      source.versions?.data !== null || source.versions?.rules !== null ||
+      !Array.isArray(source.entries) || source.entries.length > FAVORITE_CONFIG_LIBRARY_MAX_ENTRIES) {
+    throw storageError("INVALID_WORKSPACE", "国际服配置库结构或版本无效");
+  }
+  const seen = new Set();
+  const entries = source.entries.map((entry) => {
+    const config = entry?.rawConfig ?? entry;
+    if (typeof config?.spiritId !== "string" || !config.spiritId || config.spiritId.length > 256 ||
+        ["__proto__", "constructor", "prototype"].includes(config.spiritId) || seen.has(config.spiritId)) {
+      throw storageError("INVALID_WORKSPACE", "国际服存档 ID 无效或重复；未丢弃原始内容");
+    }
+    seen.add(config.spiritId);
+    return unverifiedEntry(config);
+  });
+  const favoriteRecords = source.favorites ?? [];
+  if (!Array.isArray(favoriteRecords) || favoriteRecords.some((record) => typeof record?.id !== "string" || typeof record?.spiritId !== "string")) {
+    throw storageError("INVALID_WORKSPACE", "国际服收藏结构无效");
+  }
+  const favoriteIds = [...new Set(favoriteRecords.map((record) => record.spiritId))];
+  const comparison = compareUnverifiedEntries(entries, existing);
+  const existingIds = new Set(favoriteSpiritIds(existingFavorites));
+  return { serverId: "global", entries, changes: comparison.changes, historicalEntries: [], favoriteRecords: cloneJson(favoriteRecords),
+    favoriteSpiritIds: favoriteIds, format: source.format, issueDetails: [],
+    preview: { ...comparison.counts, favoritesAdded: favoriteIds.filter((id) => !existingIds.has(id)).length,
+      missingSpirits: 0, missingSkills: 0, unknownTraitFields: 0, invalidEntries: 0, duplicateEntries: 0, repairedEntries: 0 },
+    warnings: ["国际服资料待核验；原始引用和参数仅归档保留，不用于计算"],
+  };
+}
+
 export function buildFavoriteConfigLibrary({
   appVersion,
   favorites,
@@ -74,7 +126,17 @@ export function buildFavoriteConfigLibrary({
   snapshot,
   spiritConfigs,
   versions,
+  serverId = snapshot?.meta?.serverId ?? "cn",
 }) {
+  assertRepositoryEnvironment(serverId, snapshot);
+  if (serverId === "global") {
+    const entries = Object.values(spiritConfigs?.configs ?? {}).map(unverifiedEntry);
+    return {
+      autoIncludedCount: 0, exportedCount: entries.length, manualConfiguredCount: entries.length, skippedUnconfiguredCount: 0,
+      library: { format: FAVORITE_CONFIG_LIBRARY_FORMAT, schemaVersion: 1, serverId, appVersion,
+        versions: { data: null, rules: null }, exportedAt: now(), entryCount: entries.length, entries, favorites: cloneJson(favorites ?? []) },
+    };
+  }
   const manualSpiritIds = [...new Set(favoriteSpiritIds(favorites))];
   const manualSpiritIdSet = new Set(manualSpiritIds);
   const knownSpiritIds = new Set(
@@ -111,6 +173,7 @@ export function buildFavoriteConfigLibrary({
     library: {
       format: FAVORITE_CONFIG_LIBRARY_FORMAT,
       schemaVersion: FAVORITE_CONFIG_LIBRARY_SCHEMA_VERSION,
+      serverId,
       appVersion,
       versions: cloneJson(versions ?? {}),
       exportedAt: now(),
@@ -348,8 +411,13 @@ export function parseFavoriteConfigLibrary(json, {
   existingSpiritConfigs = { configs: {} },
   historicalEntries = [],
   snapshot,
+  serverId = snapshot?.meta?.serverId ?? "cn",
 } = {}) {
-  const decoded = decodeInput(parseJson(json), snapshot);
+  assertRepositoryEnvironment(serverId, snapshot);
+  const source = parseJson(json);
+  if ((source?.serverId ?? "cn") !== serverId) throw storageError("SERVER_MISMATCH", "配置库服务器不匹配；未导入任何内容");
+  if (serverId === "global") return parseUnverifiedLibrary(source, existingSpiritConfigs, existingFavorites);
+  const decoded = decodeInput(source, snapshot);
   if (decoded.entries.length > FAVORITE_CONFIG_LIBRARY_MAX_ENTRIES) {
     throw new TypeError("配置库最多包含 2000 条配置");
   }
@@ -502,6 +570,7 @@ export function parseFavoriteConfigLibrary(json, {
     }
   }
   return {
+    serverId,
     entries,
     changes: comparison.changes,
     historicalEntries,
@@ -528,15 +597,19 @@ export function applyFavoriteConfigLibraryImport({
   parsed,
   snapshot,
   spiritConfigsRepository,
+  serverId = snapshot?.meta?.serverId ?? "cn",
 }) {
+  assertRepositoryEnvironment(serverId, snapshot);
+  if ((parsed.serverId ?? "cn") !== serverId) throw storageError("SERVER_MISMATCH", "配置库服务器不匹配；未导入任何内容");
   const beforeFavorites = favoritesRepository.list();
   const beforeConfigs = spiritConfigsRepository.load(snapshot);
   // 确认时重新比较，保护预览后发生的手动修改。
-  const comparison = compareLibraryEntries(parsed.entries, beforeConfigs, snapshot, parsed.historicalEntries);
+  const comparison = serverId === "global" ? compareUnverifiedEntries(parsed.entries, beforeConfigs)
+    : compareLibraryEntries(parsed.entries, beforeConfigs, snapshot, parsed.historicalEntries);
   const preview = { ...parsed.preview, ...comparison.counts, favoritesAdded: 0 };
   const byFavoriteId = new Map(beforeFavorites.map((favorite) => [favorite.id, favorite]));
   for (const spiritId of parsed.favoriteSpiritIds) {
-    const record = favoriteRecord(spiritId, snapshot);
+    const record = parsed.favoriteRecords?.find((favorite) => favorite.spiritId === spiritId) ?? favoriteRecord(spiritId, snapshot);
     if (!byFavoriteId.has(record.id)) {
       byFavoriteId.set(record.id, record);
       preview.favoritesAdded += 1;
@@ -547,7 +620,7 @@ export function applyFavoriteConfigLibraryImport({
   for (const entry of parsed.entries) {
     const local = beforeConfigs.configs[entry.spiritId];
     if (local && !updates.has(entry.spiritId)) continue;
-    nextConfigs.configs[entry.spiritId] = {
+    nextConfigs.configs[entry.spiritId] = serverId === "global" ? cloneJson(entry.rawConfig) : {
       displayIvs: cloneJson(entry.displayIvs),
       natureId: entry.natureId,
       skills: { four: cloneJson(entry.skills), single: cloneJson(local?.skills?.single ?? null) },

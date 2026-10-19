@@ -9,13 +9,28 @@ import { isSlotUsable, resolveAction, roundDriveTotal, slotDriveLayers, startRou
 import TransmissionMotion from "./TransmissionMotion.jsx";
 import TransmissionTraitPicker from "./TransmissionTraitPicker.jsx";
 import "./transmission.css";
+import { useRuntime } from "../../runtime/RuntimeContext.jsx";
+import { useLocale } from "../../i18n/LocaleContext.jsx";
+import { useModalFocus } from "../../hooks/useModalFocus.js";
 
 const SELECTABLE_TRAITS = ["向心力", "翼轴", "贪心算法", "盲拧", "机械变式", "风速仪", "正位宝剑", "宝剑王牌", "有求必应", "一意孤行"];
 const STAGE_ORDER = { "一阶": 1, "二阶": 2, "三阶": 3, "首领": 4 };
 
 const names = (slots) => slots.map((skill, i) => `${i + 1}. ${skill?.name ?? "未配置"}`).join(" → ");
 
-export default function TransmissionPanel({ snapshot, sides, getSpiritConfiguration, onClose }) {
+export default function TransmissionPanel(props) {
+  const { release } = useRuntime();
+  const { t } = useLocale();
+  const root = useRef(null);
+  useModalFocus(!release.capabilities.calculate, root, props.onClose);
+  if (release.capabilities.calculate) return <VerifiedTransmissionPanel {...props} />;
+  return <div className="transmission-overlay"><section className="transmission-panel" role="dialog" aria-modal="true" aria-label={t("传动计算器")} ref={root} tabIndex={-1}>
+    <header><h2>{t("传动计算器")}</h2><button type="button" aria-label={t("关闭传动计算器")} onClick={props.onClose}>{t("关闭")}</button></header>
+    <div className="transmission-body" data-layout="grid"><p className="transmission-muted" role="status">{t("国际服传动规则待核验，暂不可计算。")}</p></div>
+  </section></div>;
+}
+
+function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, onClose }) {
   const spirits = useMemo(() => snapshot.spirits.map(prepareSpiritForView), [snapshot.spirits]);
   const [initial, setInitial] = useState([null, null, null, null]);
   const [slots, setSlots] = useState(initial);

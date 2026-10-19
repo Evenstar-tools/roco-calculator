@@ -30,25 +30,34 @@ test.each([
   } finally { page.window.close(); }
 });
 
-test("英文说明保留三步与适用范围，不恢复导航、FAQ、案例和关联信息", () => {
-  const page = new JSDOM(source("en/index.html"));
+test.each([
+  ["cn/index.html", "zh-CN", "洛克计算器 · 国服", "/cn/"],
+  ["en/index.html", "en", "Roco Calculator · Global", "/en/"],
+  ["global/zh-CN/index.html", "zh-CN", "洛克计算器 · 国际服", "/global/zh-CN/"],
+  ["global/ja/index.html", "ja", "Roco Calculator · グローバル版", "/global/ja/"],
+])("%s直接挂载对应语言工具，不恢复静态介绍或SEO内容", (path, locale, title, canonicalPath) => {
+  const page = new JSDOM(source(path));
   try {
     const doc = page.window.document;
-    expect(doc.documentElement.lang).toBe("en");
-    expect(doc.title).toBe("Roco Calculator — Roco Kingdom PvP Guide");
-    expect(doc.querySelector('link[rel="canonical"]').getAttribute("href")).toBe("https://rococalc.top/en/");
-    expect(doc.querySelector("main h1").textContent).toBe("Roco Calculator guide");
-    expect(doc.querySelector(".intro-text").textContent).toContain("PvP damage");
-    expect(doc.querySelectorAll(".steps > li")).toHaveLength(3);
-    expect(doc.querySelectorAll("a")).toHaveLength(1);
-    expect(doc.querySelector("a").getAttribute("href")).toBe("/");
-    expect(doc.querySelector(".section-note").textContent).toContain("International-server stats and rules have not been verified");
-    expect(doc.querySelector(".section-note").textContent).toContain("China-server S4");
-    expect(doc.querySelector(".site-footer").textContent).toContain("unofficial player tool");
-    expect(doc.querySelector('nav, .faq, #damage-example, .tools, script, link[hreflang], meta[property^="og:"], meta[name^="twitter:"]')).toBeNull();
-    const englishText = doc.body.cloneNode(true);
-    englishText.querySelectorAll('[lang="zh-CN"]').forEach((label) => label.remove());
-    expect(englishText.textContent).not.toMatch(/[\u3400-\u9fff]/);
+    expect(doc.documentElement.lang).toBe(locale);
+    expect(doc.title).toBe(title);
+    expect(doc.querySelector('link[rel="canonical"]').getAttribute("href")).toBe(`https://rococalc.top${canonicalPath}`);
+    expect(doc.querySelector("#root").childNodes).toHaveLength(0);
+    expect(doc.querySelector('script[type="module"]').getAttribute("src")).toBe("/src/main.jsx");
+    const manifestPath = canonicalPath === "/cn/" ? "/manifest.webmanifest" : `/manifest-global-${locale}.webmanifest`;
+    expect(doc.querySelector('link[rel="manifest"]').getAttribute("href")).toBe(manifestPath);
+    const manifest = JSON.parse(source(`public${manifestPath}`));
+    expect(manifest.lang).toBe(locale);
+    if (canonicalPath !== "/cn/") {
+      expect(manifest.id).toBe("/");
+      expect(manifest.start_url).toBe(`${canonicalPath}?source=pwa`);
+      expect(manifest.name).not.toContain("S4");
+    }
+    expect(doc.querySelector('nav, footer, .intro, .steps, .faq, .tools, meta[property^="og:"], meta[name^="twitter:"], script[type="application/ld+json"]')).toBeNull();
+    expect(source("config/vite.config.mjs")).toContain(`../${path}`);
+    const { redirects } = JSON.parse(source("edgeone.json"));
+    expect(redirects.find((rule) => rule.source === canonicalPath.slice(0, -1)))
+      .toEqual({ source: canonicalPath.slice(0, -1), destination: canonicalPath, statusCode: 301 });
   } finally { page.window.close(); }
 });
 

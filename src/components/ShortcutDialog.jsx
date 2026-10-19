@@ -1,3 +1,4 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useEffect, useRef } from "react";
 import { SHORTCUT_LABELS } from "../state/shortcut-settings.js";
 
@@ -11,6 +12,7 @@ const SHORTCUT_ROWS = [
 ];
 
 export function ShortcutDialog({ settings, onChange, onClose }) {
+  const { t } = useLocale();
   const ref = useRef(null);
 
   useEffect(() => {
@@ -45,47 +47,47 @@ export function ShortcutDialog({ settings, onChange, onClose }) {
 
   return (
     <div className="dialog-backdrop" onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
-      <section className="shortcut-dialog" role="dialog" aria-modal="true" aria-label="快捷键一览" ref={ref} onKeyDown={keyDown}>
+      <section className="shortcut-dialog" role="dialog" aria-modal="true" aria-label={t("快捷键一览")} ref={ref} onKeyDown={keyDown}>
         <header className="shortcut-dialog__header">
           <div>
-            <span className="shortcut-dialog__eyebrow">帮助 · 操作说明</span>
-            <h2>快捷键一览</h2>
+            <span className="shortcut-dialog__eyebrow">{t("帮助 · 操作说明")}</span>
+            <h2>{t("快捷键一览")}</h2>
           </div>
-          <button className="shortcut-dialog__close" type="button" onClick={onClose}>关闭</button>
+          <button className="shortcut-dialog__close" type="button" onClick={onClose}>{t("关闭")}</button>
         </header>
 
         <div className="shortcut-dialog__content">
           <label className="shortcut-dialog__toggle">
             <span>
-              <strong>启用计算器快捷键</strong>
-              <small>输入框保留原生操作，萌化组合键除外；弹窗内不触发。</small>
+              <strong>{t("启用计算器快捷键")}</strong>
+              <small>{t("输入框保留原生操作，萌化组合键除外；弹窗内不触发。")}</small>
             </span>
             <input type="checkbox" checked={settings.enabled} onChange={event => onChange({ ...settings, enabled: event.target.checked })} />
           </label>
 
           <section className="shortcut-dialog__section" aria-labelledby="shortcut-dialog-basic">
-            <div className="shortcut-dialog__section-title" id="shortcut-dialog-basic">基础操作</div>
+            <div className="shortcut-dialog__section-title" id="shortcut-dialog-basic">{t("基础操作")}</div>
             <dl className="shortcut-dialog__table">
               {SHORTCUT_ROWS.map(([key, title, description]) => (
                 <div key={key}>
-                  <dt><kbd>{key}</kbd><span>{title}</span></dt>
-                  <dd>{description}</dd>
+                  <dt><kbd>{key}</kbd><span>{t(title)}</span></dt>
+                  <dd>{t(description)}</dd>
                 </div>
               ))}
             </dl>
           </section>
 
           <section className="shortcut-dialog__section" aria-labelledby="shortcut-dialog-entry">
-            <div className="shortcut-dialog__section-title" id="shortcut-dialog-entry">页面入口</div>
+            <div className="shortcut-dialog__section-title" id="shortcut-dialog-entry">{t("页面入口")}</div>
             <div className="shortcut-dialog__bindings">
               {Object.entries(SHORTCUT_LABELS).map(([key, label]) => (
                 <div className="shortcut-dialog__binding" key={key}>
-                  <span>{label}</span>
+                  <span>{t(label)}</span>
                   <kbd>{settings.bindings[key]}</kbd>
                 </div>
               ))}
             </div>
-            <p className="shortcut-dialog__note">页面入口使用当前快捷键；按键显示为只读，避免误以为可以在这里改键。</p>
+            <p className="shortcut-dialog__note">{t("页面入口使用当前快捷键；按键显示为只读，避免误以为可以在这里改键。")}</p>
           </section>
         </div>
       </section>

@@ -9,9 +9,13 @@ import {
   createNegativeStatusState,
   normalizeNegativeStatusState,
 } from "../domain/negative-status.js";
+export { shareHashFromInput } from "./share-input.js";
 
 const SHARE_FORMAT_VERSION = "v1";
 const SHARE_PATTERN = /^#v1\.([A-Za-z0-9_-]+)\.([a-f0-9]{12})$/;
+const ENVELOPE_PATTERN = /^#v2\.(cn|global)\.(zh-CN|en|ja|-)\.([A-Za-z0-9_-]+)\.([a-f0-9]{12})$/;
+export const MAX_SHARE_JSON_BYTES = 128 * 1024;
+export const MAX_SHARE_HASH_LENGTH = Math.ceil(MAX_SHARE_JSON_BYTES / 3) * 4 + 128;
 const STAT_KEYS = [
   "hp",
   "speed",
@@ -209,7 +213,7 @@ function assertJsonValue(value, path, ancestors = new Set()) {
   ancestors.delete(value);
 }
 
-function assertPowerOverride(overrides, path) {
+function assertPowerOverride(overrides, path, allowUnverified = false) {
   if (!Object.hasOwn(overrides, "powerOverride")) return;
   const powerOverride = overrides.powerOverride;
   if (powerOverride === null) return;
@@ -225,12 +229,12 @@ function assertPowerOverride(overrides, path) {
     typeof powerOverride.value !== "number" ||
     !Number.isFinite(powerOverride.value) ||
     powerOverride.value < 0 ||
-    powerOverride.value > 9999
+    (!allowUnverified && powerOverride.value > 9999)
   ) {
     throw new TypeError(`${path}.powerOverride 威力必须在 0–9999`);
   }
   if (
-    powerOverride.mode === "actual" &&
+    !allowUnverified && powerOverride.mode === "actual" &&
     Math.round(powerOverride.value * 1_000_000) / 1_000_000 !==
       powerOverride.value
   ) {
@@ -246,7 +250,7 @@ function assertPowerOverride(overrides, path) {
   }
 }
 
-function assertCostOverride(overrides, path) {
+function assertCostOverride(overrides, path, allowUnverified = false) {
   if (!Object.hasOwn(overrides, "costOverride")) return;
   const costOverride = overrides.costOverride;
   if (costOverride === null) return;
@@ -254,7 +258,7 @@ function assertCostOverride(overrides, path) {
     typeof costOverride !== "number" ||
     !Number.isInteger(costOverride) ||
     costOverride < 0 ||
-    costOverride > 99
+    (!allowUnverified && costOverride > 99)
   ) {
     throw new TypeError(`${path}.costOverride 能耗必须为 0–99 的整数`);
   }
@@ -270,7 +274,7 @@ function isFiniteNumberOrArray(value) {
   );
 }
 
-function assertSkillInput(skill, path) {
+function assertSkillInput(skill, path, allowUnverified = false) {
   if (isNullableId(skill)) {
     return;
   }
@@ -291,7 +295,7 @@ function assertSkillInput(skill, path) {
     Object.hasOwn(skill, "statusTriggerCount") &&
     (!Number.isInteger(skill.statusTriggerCount) ||
       skill.statusTriggerCount < 1 ||
-      skill.statusTriggerCount > 99)
+      (!allowUnverified && skill.statusTriggerCount > 99))
   ) {
     throw new TypeError(`${path}.statusTriggerCount 无效`);
   }
@@ -315,8 +319,8 @@ function assertSkillInput(skill, path) {
       }
       assertJsonValue(skill[key], `${path}.${key}`);
       if (key === "overrides") {
-        assertPowerOverride(skill[key], `${path}.${key}`);
-        assertCostOverride(skill[key], `${path}.${key}`);
+        assertPowerOverride(skill[key], `${path}.${key}`, allowUnverified);
+        assertCostOverride(skill[key], `${path}.${key}`, allowUnverified);
       }
     }
   }
@@ -342,7 +346,7 @@ function assertSkillInput(skill, path) {
         Object.hasOwn(memory, "statusTriggerCount") &&
         (!Number.isInteger(memory.statusTriggerCount) ||
           memory.statusTriggerCount < 1 ||
-          memory.statusTriggerCount > 99)
+          (!allowUnverified && memory.statusTriggerCount > 99))
       ) {
         throw new TypeError(
           `${path}.memoryBySkill.${skillId}.statusTriggerCount 无效`,
@@ -358,6 +362,7 @@ function assertSkillInput(skill, path) {
             assertPowerOverride(
               memory[key],
               `${path}.memoryBySkill.${skillId}.${key}`,
+              allowUnverified,
             );
           }
         }
@@ -366,7 +371,7 @@ function assertSkillInput(skill, path) {
   }
 }
 
-function assertSide(side, path) {
+function assertSide(side, path, allowUnverified = false) {
   if (
     !isPlainObject(side) ||
     !SIDE_KEYS.every((key) => Object.hasOwn(side, key)) ||
@@ -382,7 +387,7 @@ function assertSide(side, path) {
       !isNonEmptyString(side.battleForm.spiritId) || !isNonEmptyString(side.battleForm.branchId))) {
     throw new TypeError(`${path}.battleForm 无效`);
   }
-  if (!isNonEmptyString(side.nature)) {
+  if (!isNonEmptyString(side.nature) && !(allowUnverified && side.nature === null)) {
     throw new TypeError(`${path}.nature 无效`);
   }
   if (!hasExactKeys(side.displayIvs, STAT_KEYS)) {
@@ -390,55 +395,72 @@ function assertSide(side, path) {
   }
   for (const stat of STAT_KEYS) {
     const value = side.displayIvs[stat];
-    if (!Number.isInteger(value) || value < 0 || value > 60) {
+    if (allowUnverified && value === null) continue;
+    if (!Number.isSafeInteger(value) || value < 0 || (!allowUnverified && value > 60)) {
       throw new TypeError(`${path}.displayIvs.${stat} 无效`);
     }
   }
   if (!hasExactKeys(side.skills, ["single", "four"])) {
     throw new TypeError(`${path}.skills 结构无效`);
   }
-  assertSkillInput(side.skills.single, `${path}.skills.single`);
+  assertSkillInput(side.skills.single, `${path}.skills.single`, allowUnverified);
   if (
     !Array.isArray(side.skills.four) ||
-    (side.skills.four.length !== 4 && side.skills.four.length !== 7)
+    // 未核验草稿的 32 项是协议容量限制，不代表游戏技能槽上限。
+    (allowUnverified ? side.skills.four.length < 1 || side.skills.four.length > 32
+      : side.skills.four.length !== 4 && side.skills.four.length !== 7)
   ) {
     throw new TypeError(`${path}.skills.four 无效`);
   }
   side.skills.four.forEach((skill, index) => {
-    assertSkillInput(skill, `${path}.skills.four[${index}]`);
+    assertSkillInput(skill, `${path}.skills.four[${index}]`, allowUnverified);
   });
   if (Object.hasOwn(side, "traitValues")) {
     if (!isPlainObject(side.traitValues)) {
       throw new TypeError(`${path}.traitValues 无效`);
     }
     for (const [key, value] of Object.entries(side.traitValues)) {
+      if (allowUnverified) { assertJsonValue(value, `${path}.traitValues.${key}`); continue; }
       if (!TRAIT_VALUE_KEY_PATTERN.test(key) || !isTraitValue(value)) {
         throw new TypeError(`${path}.traitValues.${key} 无效`);
       }
     }
   }
   if (Object.hasOwn(side, "acquiredTraitIds")) {
-    const sanitizedIds = sanitizeAcquiredTraitIds(side.acquiredTraitIds);
-    if (
-      !Array.isArray(side.acquiredTraitIds) ||
-      sanitizedIds.length !== side.acquiredTraitIds.length ||
-      sanitizedIds.some((traitId, index) => traitId !== side.acquiredTraitIds[index])
-    ) {
-      throw new TypeError(`${path}.acquiredTraitIds 无效`);
+    if (allowUnverified) {
+      if (!Array.isArray(side.acquiredTraitIds) || !side.acquiredTraitIds.every(isNonEmptyString)) {
+        throw new TypeError(`${path}.acquiredTraitIds 无效`);
+      }
+    } else {
+      const sanitizedIds = sanitizeAcquiredTraitIds(side.acquiredTraitIds);
+      if (
+        !Array.isArray(side.acquiredTraitIds) ||
+        sanitizedIds.length !== side.acquiredTraitIds.length ||
+        sanitizedIds.some((traitId, index) => traitId !== side.acquiredTraitIds[index])
+      ) {
+        throw new TypeError(`${path}.acquiredTraitIds 无效`);
+      }
     }
   }
   if (Object.hasOwn(side, "acquiredTraitValues")) {
-    const sanitizedValues = sanitizeAcquiredTraitValues(
-      side.acquiredTraitValues,
-      side.acquiredTraitIds ?? [],
-    );
-    if (stableStringify(sanitizedValues) !== stableStringify(side.acquiredTraitValues)) {
-      throw new TypeError(`${path}.acquiredTraitValues 无效`);
+    if (allowUnverified) {
+      if (!isPlainObject(side.acquiredTraitValues) || !Object.values(side.acquiredTraitValues).every(isPlainObject)) {
+        throw new TypeError(`${path}.acquiredTraitValues 无效`);
+      }
+      assertJsonValue(side.acquiredTraitValues, `${path}.acquiredTraitValues`);
+    } else {
+      const sanitizedValues = sanitizeAcquiredTraitValues(
+        side.acquiredTraitValues,
+        side.acquiredTraitIds ?? [],
+      );
+      if (stableStringify(sanitizedValues) !== stableStringify(side.acquiredTraitValues)) {
+        throw new TypeError(`${path}.acquiredTraitValues 无效`);
+      }
     }
   }
 }
 
-function assertMarks(marks) {
+function assertMarks(marks, allowUnverified = false) {
   if (!hasExactKeys(marks, ["attacker", "defender"])) {
     throw new TypeError("分享配置印记结构无效");
   }
@@ -448,7 +470,7 @@ function assertMarks(marks) {
     }
     for (const polarity of ["positive", "negative"]) {
       const slot = marks[side][polarity];
-      const slotKeys = slot?.id === "dragon-bite" && Object.hasOwn(slot, "triggerCount")
+      const slotKeys = (allowUnverified || slot?.id === "dragon-bite") && Object.hasOwn(slot ?? {}, "triggerCount")
         ? [...MARK_SLOT_KEYS, "triggerCount"] : MARK_SLOT_KEYS;
       if (!hasExactKeys(slot, slotKeys)) {
         throw new TypeError(`marks.${side}.${polarity} 结构无效`);
@@ -456,17 +478,17 @@ function assertMarks(marks) {
       const allowed = new Set(
         MARK_DEFINITIONS[polarity].map((mark) => mark.id),
       );
-      if (slot.id !== null && !allowed.has(slot.id)) {
+      if (allowUnverified ? !isNullableId(slot.id) : slot.id !== null && !allowed.has(slot.id)) {
         throw new TypeError(`marks.${side}.${polarity}.id 无效`);
       }
       if (Object.hasOwn(slot, "triggerCount") &&
-        (!Number.isInteger(slot.triggerCount) || slot.triggerCount < 0 || slot.triggerCount > 99)) {
+        (!Number.isSafeInteger(slot.triggerCount) || slot.triggerCount < 0 || (!allowUnverified && slot.triggerCount > 99))) {
         throw new TypeError(`marks.${side}.${polarity}.triggerCount 无效`);
       }
       if (
-        !Number.isInteger(slot.stacks) ||
+        !Number.isSafeInteger(slot.stacks) ||
         slot.stacks < 0 ||
-        slot.stacks > 99 ||
+        (!allowUnverified && slot.stacks > 99) ||
         (slot.id === null && slot.stacks !== 0)
       ) {
         throw new TypeError(`marks.${side}.${polarity}.stacks 无效`);
@@ -475,7 +497,7 @@ function assertMarks(marks) {
   }
 }
 
-function assertDirection(direction, path, skillSlotCount) {
+function assertDirection(direction, path, skillSlotCount, allowUnverified = false) {
   if (
     !LEGACY_DIRECTION_KEYS.every((key) => Object.hasOwn(direction, key)) ||
     !Object.keys(direction).every((key) => DIRECTION_KEYS.includes(key))
@@ -507,7 +529,7 @@ function assertDirection(direction, path, skillSlotCount) {
     Object.hasOwn(direction, "statusTriggerCount") &&
     (!Number.isInteger(direction.statusTriggerCount) ||
       direction.statusTriggerCount < 1 ||
-      direction.statusTriggerCount > 99)
+      (!allowUnverified && direction.statusTriggerCount > 99))
   ) {
     throw new TypeError(`${path}.statusTriggerCount 无效`);
   }
@@ -515,7 +537,7 @@ function assertDirection(direction, path, skillSlotCount) {
     Object.hasOwn(direction, "traitDamageHitCount") &&
     (!Number.isInteger(direction.traitDamageHitCount) ||
       direction.traitDamageHitCount < 1 ||
-      direction.traitDamageHitCount > 99)
+      (!allowUnverified && direction.traitDamageHitCount > 99))
   ) {
     throw new TypeError(`${path}.traitDamageHitCount 无效`);
   }
@@ -542,11 +564,12 @@ function assertDirection(direction, path, skillSlotCount) {
   }
   assertJsonValue(direction.context, `${path}.context`);
   assertJsonValue(direction.overrides, `${path}.overrides`);
-  assertPowerOverride(direction.overrides, `${path}.overrides`);
-  assertCostOverride(direction.overrides, `${path}.overrides`);
+  assertPowerOverride(direction.overrides, `${path}.overrides`, allowUnverified);
+  assertCostOverride(direction.overrides, `${path}.overrides`, allowUnverified);
 }
 
-function assertShareState(state) {
+export function assertShareState(state, { allowUnverifiedVersions = false } = {}) {
+  if (allowUnverifiedVersions) assertSafeShareJson(state);
   if (
     !hasExactKeys(state, TOP_LEVEL_KEYS) &&
     !hasExactKeys(state, EXTENDED_TOP_LEVEL_KEYS)
@@ -559,16 +582,16 @@ function assertShareState(state) {
   if (!hasExactKeys(state.versions, ["data", "rules"])) {
     throw new TypeError("分享配置版本结构无效");
   }
-  if (!isNonEmptyString(state.versions.data)) {
+  if (allowUnverifiedVersions ? state.versions.data !== null : !isNonEmptyString(state.versions.data)) {
     throw new TypeError("分享配置数据版本无效");
   }
-  if (!isNonEmptyString(state.versions.rules)) {
+  if (allowUnverifiedVersions ? state.versions.rules !== null : !isNonEmptyString(state.versions.rules)) {
     throw new TypeError("分享配置规则版本无效");
   }
   if (state.mode !== "single" && state.mode !== "four") {
     throw new TypeError("分享配置技能模式无效");
   }
-  assertMarks(state.marks);
+  assertMarks(state.marks, allowUnverifiedVersions);
   if (Object.hasOwn(state, "calculationOptions")) {
     if (
       !hasExactKeys(state.calculationOptions, [
@@ -583,14 +606,15 @@ function assertShareState(state) {
     if (!hasExactKeys(state.negativeStatuses, ["attacker", "defender"])) {
       throw new TypeError("分享配置负面状态结构无效");
     }
-    const normalized = normalizeNegativeStatusState(state.negativeStatuses);
+    const normalized = allowUnverifiedVersions ? null : normalizeNegativeStatusState(state.negativeStatuses);
     for (const side of ["attacker", "defender"]) {
       const input = state.negativeStatuses[side];
-      if (!input || typeof input !== "object" || Array.isArray(input)) {
+      if (!isPlainObject(input)) {
         throw new TypeError("分享配置负面状态层数无效");
       }
       for (const [key, value] of Object.entries(input)) {
-        if (!Object.hasOwn(normalized[side], key) || normalized[side][key] !== value) {
+        if (allowUnverifiedVersions ? !Number.isSafeInteger(value) || value < 0
+          : !Object.hasOwn(normalized[side], key) || normalized[side][key] !== value) {
           throw new TypeError("分享配置负面状态层数无效");
         }
       }
@@ -599,8 +623,8 @@ function assertShareState(state) {
   if (!hasExactKeys(state.sides, ["attacker", "defender"])) {
     throw new TypeError("分享配置双方结构无效");
   }
-  assertSide(state.sides.attacker, "sides.attacker");
-  assertSide(state.sides.defender, "sides.defender");
+  assertSide(state.sides.attacker, "sides.attacker", allowUnverifiedVersions);
+  assertSide(state.sides.defender, "sides.defender", allowUnverifiedVersions);
   if (!hasExactKeys(state.directions, ["forward", "reverse"])) {
     throw new TypeError("分享配置方向结构无效");
   }
@@ -608,11 +632,13 @@ function assertShareState(state) {
     state.directions.forward,
     "directions.forward",
     state.sides.attacker.skills.four.length,
+    allowUnverifiedVersions,
   );
   assertDirection(
     state.directions.reverse,
     "directions.reverse",
     state.sides.defender.skills.four.length,
+    allowUnverifiedVersions,
   );
 }
 
@@ -762,6 +788,14 @@ export function selectShareableInputs(state) {
   return selected;
 }
 
+// 未核验配置只摘取原界面的持久字段，不套用国服印记、状态或特性规则。
+export function selectConfigurationDraftInputs(state) {
+  const selected = Object.fromEntries(EXTENDED_TOP_LEVEL_KEYS
+    .filter((key) => Object.hasOwn(state, key)).map((key) => [key, state[key]]));
+  assertShareState(selected, { allowUnverifiedVersions: true });
+  return selected;
+}
+
 export function stableStringify(value, ancestors = new Set()) {
   if (value === null || typeof value !== "object") {
     const serialized = JSON.stringify(value);
@@ -890,6 +924,10 @@ export async function decodeShareState(hash, expectedVersions) {
     throw new TypeError("分享配置 JSON 无效");
   }
 
+  return normalizeSharedState(state, expectedVersions);
+}
+
+function normalizeSharedState(state, expectedVersions, options) {
   if (
     !hasExactKeys(state, TOP_LEVEL_KEYS) &&
     !hasExactKeys(state, LEGACY_TOP_LEVEL_KEYS) &&
@@ -903,7 +941,7 @@ export async function decodeShareState(hash, expectedVersions) {
     marks: normalizeMarksState(state.marks, state.directions),
     sides: migrateSides(state.sides),
   };
-  assertShareState(migratedState);
+  assertShareState(migratedState, options);
   const normalizedState = {
     ...migratedState,
     calculationOptions: {
@@ -935,4 +973,157 @@ export async function decodeShareState(hash, expectedVersions) {
   };
   assertExpectedVersions(normalizedState, expectedVersions);
   return normalizedState;
+}
+
+function shareError(code, message) {
+  const error = new TypeError(message);
+  error.code = code;
+  return error;
+}
+
+function assertShareSize(hash) {
+  if (typeof hash !== "string") throw shareError("SHARE_INVALID_FORMAT", "分享链接格式无效");
+  if (hash.length > MAX_SHARE_HASH_LENGTH) throw shareError("SHARE_TOO_LARGE", "分享内容超过大小限制");
+}
+
+// 只供入口选择使用，不能据此导入正文或认定分享已经通过校验。
+export function shareMetadataFromHash(hash) {
+  if (typeof hash !== "string" || hash.length > MAX_SHARE_HASH_LENGTH) return null;
+  if (hash.startsWith("#v1.")) {
+    return { protocolVersion: 1, serverId: "cn", locale: "zh-CN", verified: false };
+  }
+  const match = /^#v2\.(cn|global)\.(zh-CN|en|ja|-)\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.exec(hash);
+  if (!match) return null;
+  return { protocolVersion: 2, serverId: match[1],
+    ...(match[2] === "-" ? {} : { locale: match[2] }), verified: false };
+}
+
+function assertSafeShareJson(value, depth = 0, ancestors = new Set()) {
+  if (depth > 32) throw shareError("SHARE_SCHEMA", "分享内容嵌套过深");
+  if (typeof value === "string" && value.length > MAX_SHARE_JSON_BYTES) {
+    throw shareError("SHARE_TOO_LARGE", "分享内容超过大小限制");
+  }
+  if (value === null || typeof value !== "object") {
+    assertJsonValue(value, "分享内容");
+    return;
+  }
+  if (ancestors.has(value)) throw shareError("SHARE_SCHEMA", "分享内容包含循环引用");
+  if (!Array.isArray(value) && !isPlainObject(value)) throw shareError("SHARE_SCHEMA", "分享内容必须是普通 JSON 对象");
+  if (Object.getOwnPropertySymbols(value).length || (Array.isArray(value) &&
+    (value.length > MAX_SHARE_JSON_BYTES || Object.keys(value).length !== value.length ||
+      Object.keys(value).some((key, index) => key !== String(index))))) {
+    throw shareError("SHARE_SCHEMA", "分享内容包含非 JSON 数组或字段");
+  }
+  ancestors.add(value);
+  for (const [key, item] of Object.entries(value)) {
+    if (["__proto__", "prototype", "constructor"].includes(key)) throw shareError("SHARE_SCHEMA", "分享内容包含不允许的字段");
+    assertSafeShareJson(item, depth + 1, ancestors);
+  }
+  ancestors.delete(value);
+}
+
+function assertEnvelope(envelope) {
+  const keys = ["protocolVersion", "serverId", "gameVersion", "dataVersion", "rulesVersion", "kind", "payload"];
+  if (!hasExactKeys(envelope, keys) && !hasExactKeys(envelope, [...keys, "locale"])) {
+    throw shareError("SHARE_SCHEMA", "分享信封结构无效");
+  }
+  if (envelope.protocolVersion !== 2) throw shareError("SHARE_UNSUPPORTED_VERSION", "分享协议版本不受支持");
+  if (!["cn", "global"].includes(envelope.serverId)) throw shareError("SHARE_SCHEMA", "分享服务器无效");
+  if (Object.hasOwn(envelope, "locale") &&
+    (!["zh-CN", "en", "ja"].includes(envelope.locale) || (envelope.serverId === "cn" && envelope.locale !== "zh-CN"))) {
+    throw shareError("SHARE_SCHEMA", "分享语言无效");
+  }
+  for (const key of ["gameVersion", "dataVersion", "rulesVersion"]) {
+    const version = envelope[key];
+    if (version !== null && (typeof version !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._:+-]{0,127}$/.test(version))) {
+      throw shareError("SHARE_SCHEMA", "分享版本标识无效");
+    }
+  }
+  if (!["configuration", "configuration-draft"].includes(envelope.kind)) throw shareError("SHARE_UNSUPPORTED_KIND", "分享内容类型不受支持");
+  if (envelope.kind === "configuration") {
+    if (envelope.serverId !== "cn") throw shareError("SHARE_SERVER_DATA_UNVERIFIED", "国际服数据与规则尚未核验，不能导入计算配置");
+    assertShareState(envelope.payload);
+    if (envelope.dataVersion === null || envelope.rulesVersion === null ||
+      envelope.dataVersion !== envelope.payload.versions.data || envelope.rulesVersion !== envelope.payload.versions.rules) {
+      throw shareError("SHARE_VERSION_MISMATCH", "分享元数据与计算配置版本不匹配");
+    }
+  } else {
+    if (envelope.serverId !== "global") throw shareError("SHARE_UNSUPPORTED_KIND", "国服分享必须使用计算配置类型");
+    if ([envelope.gameVersion, envelope.dataVersion, envelope.rulesVersion].some((version) => version !== null)) {
+      throw shareError("SHARE_VERSION_MISMATCH", "国际服配置草稿不能声明未经核验的游戏、数据或规则版本");
+    }
+    assertShareState(envelope.payload, { allowUnverifiedVersions: true });
+  }
+}
+
+function assertExpectedMetadata(envelope, expected) {
+  if (!expected) return;
+  if (expected.serverId !== undefined && expected.serverId !== envelope.serverId) {
+    throw shareError("SHARE_SERVER_MISMATCH", "分享服务器与当前工作区不匹配");
+  }
+  if (expected.kind !== undefined && expected.kind !== envelope.kind) {
+    throw shareError("SHARE_UNSUPPORTED_KIND", "当前工作区不支持此分享类型");
+  }
+  for (const field of ["gameVersion", "dataVersion", "rulesVersion"]) {
+    if (Object.hasOwn(expected, field) && expected[field] !== envelope[field]) {
+      throw shareError("SHARE_VERSION_MISMATCH", "分享版本与当前工作区不匹配");
+    }
+  }
+}
+
+function normalizeShareError(error) {
+  if (error?.code?.startsWith("SHARE_")) return error;
+  const message = error instanceof Error ? error.message : "分享内容无效";
+  const code = message.includes("校验") ? "SHARE_INTEGRITY"
+    : message.includes("编码") ? "SHARE_ENCODING"
+      : message.includes("JSON") ? "SHARE_JSON"
+        : message.includes("格式") ? "SHARE_INVALID_FORMAT" : "SHARE_SCHEMA";
+  return shareError(code, message);
+}
+
+export async function encodeShareEnvelope(input) {
+  try {
+    const envelope = { protocolVersion: 2, ...input };
+    assertSafeShareJson(envelope);
+    const serialized = stableStringify(envelope);
+    if (new TextEncoder().encode(serialized).length > MAX_SHARE_JSON_BYTES) throw shareError("SHARE_TOO_LARGE", "分享内容超过大小限制");
+    assertEnvelope(envelope);
+    const checksum = (await sha256Hex(serialized)).slice(0, 12);
+    return `#v2.${envelope.serverId}.${envelope.locale ?? "-"}.${toBase64Url(serialized)}.${checksum}`;
+  } catch (error) {
+    throw normalizeShareError(error);
+  }
+}
+
+export async function decodeShareEnvelope(hash, expectedMetadata) {
+  try {
+    assertShareSize(hash);
+    if (hash.startsWith("#v1.")) {
+      const payload = await decodeShareState(hash);
+      const envelope = { protocolVersion: 1, serverId: "cn", gameVersion: null,
+        dataVersion: payload.versions.data, rulesVersion: payload.versions.rules,
+        locale: "zh-CN", kind: "configuration", payload };
+      assertExpectedMetadata(envelope, expectedMetadata);
+      return envelope;
+    }
+    if (/^#v\d+\./.test(hash) && !hash.startsWith("#v2.")) throw shareError("SHARE_UNSUPPORTED_VERSION", "分享协议版本不受支持");
+    const match = ENVELOPE_PATTERN.exec(hash);
+    if (!match) throw shareError("SHARE_INVALID_FORMAT", "分享链接格式无效");
+    let serialized;
+    try { serialized = fromBase64Url(match[3]); } catch { throw shareError("SHARE_ENCODING", "分享配置编码无效"); }
+    if (toBase64Url(serialized) !== match[3]) throw shareError("SHARE_ENCODING", "分享配置编码无效");
+    if (new TextEncoder().encode(serialized).length > MAX_SHARE_JSON_BYTES) throw shareError("SHARE_TOO_LARGE", "分享内容超过大小限制");
+    if ((await sha256Hex(serialized)).slice(0, 12) !== match[4]) throw shareError("SHARE_INTEGRITY", "分享配置校验失败");
+    let envelope;
+    try { envelope = JSON.parse(serialized); } catch { throw shareError("SHARE_JSON", "分享配置 JSON 无效"); }
+    assertSafeShareJson(envelope);
+    assertEnvelope(envelope);
+    if (envelope.serverId !== match[1] || (envelope.locale ?? "-") !== match[2]) {
+      throw shareError("SHARE_INTEGRITY", "分享入口与正文元数据不一致");
+    }
+    assertExpectedMetadata(envelope, expectedMetadata);
+    return envelope.kind === "configuration" ? { ...envelope, payload: normalizeSharedState(envelope.payload) } : envelope;
+  } catch (error) {
+    throw normalizeShareError(error);
+  }
 }

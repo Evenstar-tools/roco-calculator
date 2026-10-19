@@ -350,28 +350,26 @@ describe("spiritConfigsRepository", () => {
 
     const restored = repository.load(snapshot());
 
-    expect(restored.configs["missing-spirit"]).toBeUndefined();
+    expect(restored.configs["missing-spirit"]).toMatchObject({ spiritId: "missing-spirit", needsRepair: true });
     expect(restored.configs["spirit-a"]).toMatchObject({
       natureId: "adamant",
       skills: {
-        four: ["skill-a", null, "skill-b", null],
-        single: null,
+        four: ["skill-a", "missing-skill", "skill-b", null],
+        single: "missing-skill",
       },
+      needsRepair: true,
     });
   });
 
-  test("falls back to an empty state for corrupt JSON and clear removes all memory", () => {
+  test("reports corrupt JSON and blocks saving until explicitly cleared", () => {
     const storage = memoryStorage({
       [SPIRIT_CONFIG_STORAGE_KEY]: "{not-json",
     });
     const repository = spiritConfigsRepository({ storage });
 
-    expect(repository.load(snapshot())).toEqual({
-      configs: {},
-      schemaVersion: 2,
-    });
-    repository.save(repository.load(snapshot()), configuredSide());
-    expect(storage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).not.toBeNull();
+    expect(() => repository.load(snapshot())).toThrow(expect.objectContaining({ code: "STORAGE_CORRUPT" }));
+    expect(() => repository.save({ configs: {}, schemaVersion: 2 }, configuredSide())).toThrow(expect.objectContaining({ code: "STORAGE_CORRUPT" }));
+    expect(storage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).toBe("{not-json");
 
     expect(repository.clear()).toEqual({
       configs: {},

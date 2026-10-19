@@ -1,6 +1,53 @@
 import { act, renderHook } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { useStoredCalculatorData } from "../../src/hooks/useStoredCalculatorData.js";
+import { globalPlaceholderCatalog } from "../fixtures/global-placeholder-catalog.js";
+import { UNVERIFIED_GLOBAL_SNAPSHOT } from "../../src/runtime/unverified-snapshot.js";
+import { createProductInitialState } from "../../src/state/calculator-session.js";
+import { spiritConfigsRepository } from "../../src/state/spirit-configs.js";
+import { teamPresetsRepository } from "../../src/state/team-presets.js";
+
+test("Global references restore after catalog loading and capture unset input into their own team store", () => {
+  localStorage.clear();
+  const catalog = globalPlaceholderCatalog();
+  const side = { ...createProductInitialState(catalog).sides.attacker, spiritId: catalog.spirits[0].id };
+  side.skills.four[0] = { skillId: catalog.skills[0].id, context: { rainWeather: false, custom: 42 } };
+  const repo = spiritConfigsRepository({ serverId: "global" });
+  repo.save(repo.load(UNVERIFIED_GLOBAL_SNAPSHOT), side, UNVERIFIED_GLOBAL_SNAPSHOT);
+  const { result, rerender, unmount } = renderHook(({ current }) => useStoredCalculatorData(current, { serverId: "global" }), {
+    initialProps: { current: UNVERIFIED_GLOBAL_SNAPSHOT },
+  });
+  expect(result.current.getSpiritConfiguration(side.spiritId)).toBeUndefined();
+  rerender({ current: catalog });
+  expect(result.current.getSpiritConfiguration(side.spiritId)).toMatchObject(side);
+  expect(result.current.completeSpiritIds.size).toBe(0);
+  act(() => result.current.teams.create("Global草稿"));
+  const teamId = result.current.teamsState.activeTeamId;
+  act(() => expect(result.current.teams.captureSide("attacker", teamId, 0, side)).toBe(true));
+  const member = teamPresetsRepository({ serverId: "global" }).load(catalog).teams[0].members[0];
+  expect(member).toMatchObject({ spiritId: side.spiritId, natureId: null, displayIvs: side.displayIvs, skills: side.skills });
+  expect(teamPresetsRepository().load({ spirits: [], skills: [] }).teams).toEqual([]);
+  unmount();
+  localStorage.clear();
+});
+
+test("Global archived battleForm fields can be saved personally and captured without applying CN form rules", () => {
+  localStorage.clear();
+  const catalog = globalPlaceholderCatalog();
+  const side = { ...createProductInitialState(catalog).sides.attacker, spiritId: catalog.spirits[0].id,
+    battleForm: { spiritId: "unknown-form", branchId: "unknown-branch" } };
+  const { result, unmount } = renderHook(() => useStoredCalculatorData(catalog, { serverId: "global" }));
+  act(() => result.current.rememberSide(side));
+  expect(result.current.getSpiritConfiguration(side.spiritId)).toMatchObject(side);
+  expect(spiritConfigsRepository({ serverId: "global" }).load(catalog).configs[side.spiritId].battleForm).toEqual(side.battleForm);
+  act(() => result.current.teams.create("含形态草稿"));
+  const teamId = result.current.teamsState.activeTeamId;
+  act(() => expect(result.current.teams.captureSide("attacker", teamId, 0, side)).toBe(true));
+  expect(teamPresetsRepository({ serverId: "global" }).load(catalog).teams[0].members[0])
+    .toMatchObject({ battleForm: side.battleForm, displayIvs: side.displayIvs, natureId: null });
+  unmount();
+  localStorage.clear();
+});
 
 const snapshot = {
   meta: { id: "s3-storage" },

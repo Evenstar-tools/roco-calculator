@@ -1,8 +1,11 @@
+import { createServerStorage, serverStorageKey } from "../state/server-storage.js";
 import { ArrowCounterClockwise } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
+import { useLocale } from "../i18n/LocaleContext.jsx";
 
 export const UNDO_POSITION_STORAGE_KEY =
-  "rock-calculator.floating-undo-position.v1";
+  serverStorageKey("cn", "rock-calculator.floating-undo-position.v1");
 
 const BUTTON_WIDTH = 84;
 const BUTTON_HEIGHT = 44;
@@ -28,9 +31,9 @@ function defaultPosition({ width, height }) {
   return { x: width - BUTTON_WIDTH - VIEWPORT_GAP, y: height - BUTTON_HEIGHT - VIEWPORT_GAP };
 }
 
-function readPosition() {
+function readPosition(serverId) {
   try {
-    const stored = JSON.parse(localStorage.getItem(UNDO_POSITION_STORAGE_KEY));
+    const stored = JSON.parse(createServerStorage(serverId).getItem("rock-calculator.floating-undo-position.v1"));
     if (Number.isFinite(stored?.x) && Number.isFinite(stored?.y)) {
       return stored;
     }
@@ -40,16 +43,18 @@ function readPosition() {
   return null;
 }
 
-function writePosition(position) {
+function writePosition(position, serverId) {
   try {
-    localStorage.setItem(UNDO_POSITION_STORAGE_KEY, JSON.stringify(position));
+    createServerStorage(serverId).setItem("rock-calculator.floating-undo-position.v1", JSON.stringify(position));
   } catch {
     // 无本地存储权限时仅在本次运行中保留位置。
   }
 }
 
 export function FloatingUndoButton({ count = 0, onUndo }) {
-  const [preferredPosition, setPreferredPosition] = useState(readPosition);
+  const { serverId } = useRuntime();
+  const { t } = useLocale();
+  const [preferredPosition, setPreferredPosition] = useState(() => readPosition(serverId));
   const [viewport, setViewport] = useState(readViewport);
   const docked = viewport.width <= 620 && !preferredPosition;
   const position = docked
@@ -58,7 +63,7 @@ export function FloatingUndoButton({ count = 0, onUndo }) {
   const dragRef = useRef(null);
   const suppressClickRef = useRef(false);
   const available = count > 0;
-  const label = available ? `撤回上一步（${count}）` : "暂无可撤回操作";
+  const label = available ? t("撤回上一步（{count}）", { count }) : t("暂无可撤回操作");
 
   useEffect(() => {
     function handleResize() {
@@ -96,7 +101,7 @@ export function FloatingUndoButton({ count = 0, onUndo }) {
 
   function handlePointerUp(event) {
     if (!dragRef.current || dragRef.current.pointerId !== event.pointerId) return;
-    if (dragRef.current.position) writePosition(dragRef.current.position);
+    if (dragRef.current.position) writePosition(dragRef.current.position, serverId);
     dragRef.current = null;
   }
 
@@ -120,7 +125,7 @@ export function FloatingUndoButton({ count = 0, onUndo }) {
       onPointerCancel={handlePointerUp}
       onPointerUp={handlePointerUp}
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
-      title={`${label} · Ctrl+Z，按住连续撤回`}
+      title={t("{label} · Ctrl+Z，按住连续撤回", { label })}
       type="button"
     >
       <ArrowCounterClockwise aria-hidden="true" size={23} weight="bold" />

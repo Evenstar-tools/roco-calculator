@@ -1,3 +1,5 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import {
   ArrowLeft,
   ArrowRight,
@@ -43,13 +45,23 @@ const GUIDE_STEPS = [
   },
 ];
 
+const GLOBAL_GUIDE_STEPS = [
+  { ...GUIDE_STEPS[0], body: "从国服中文占位资料中选择攻击方精灵。" },
+  { ...GUIDE_STEPS[1], body: "选择防御方；占位名称不代表国际服已确认译名。" },
+  { ...GUIDE_STEPS[2], body: "选择性格并填写个体；未设置项会保持为空。" },
+  { ...GUIDE_STEPS[3], title: "选择技能配置", body: "选择或清空单技能、四技能槽；此处只编辑配置，不计算伤害。", missingBody: "选择双方精灵后即可配置技能。" },
+  { title: "保存配置", body: "编辑会保存在当前服；可通过队伍和导入导出管理配置。", target: null },
+  { title: "分享配置", body: "打开菜单中的“分享当前配置”生成链接，也可粘贴同服分享链接载入。国际服计算仍未开放。", target: null },
+];
+
 function clamp(value, minimum, maximum) {
   return Math.min(Math.max(value, minimum), Math.max(minimum, maximum));
 }
 
 function targetElement(targetName) {
   if (!targetName) return null;
-  const element = document.querySelector(`[data-guide-target="${targetName}"]`);
+  const element = [...document.querySelectorAll(`[data-guide-target="${targetName}"]`)]
+    .find((candidate) => !candidate.closest("[hidden], [inert]"));
   return element instanceof Element ? element : null;
 }
 
@@ -169,10 +181,14 @@ export function FirstRunGuide({
   ready = true,
   step = 0,
 }) {
-  const safeStep = clamp(step, 0, GUIDE_STEPS.length - 1);
-  const content = GUIDE_STEPS[safeStep];
-  const importStep = safeStep === GUIDE_STEPS.length - 1;
-  const detailedStep = safeStep === GUIDE_STEPS.length - 2;
+  const { t } = useLocale();
+  const { serverId } = useRuntime();
+  const global = serverId === "global";
+  const steps = global ? GLOBAL_GUIDE_STEPS : GUIDE_STEPS;
+  const safeStep = clamp(step, 0, steps.length - 1);
+  const content = steps[safeStep];
+  const importStep = safeStep === steps.length - 1;
+  const detailedStep = !global && safeStep === steps.length - 2;
   const cardRef = useRef(null);
   const frameRef = useRef(null);
   const alignedStepRef = useRef(null);
@@ -281,7 +297,7 @@ export function FirstRunGuide({
         <div aria-hidden="true" className="first-run-guide__veil" />
       )}
       <section
-        aria-label={`新手引导 ${safeStep + 1}/${GUIDE_STEPS.length}`}
+        aria-label={t("新手引导 {step}/{total}", { step: safeStep + 1, total: steps.length })}
         aria-live="polite"
         className={`first-run-guide__card${importStep ? " first-run-guide__card--import" : ""}`}
         ref={cardRef}
@@ -289,45 +305,43 @@ export function FirstRunGuide({
         style={layout.card}
       >
         <header className="first-run-guide__progress">
-          <span>{safeStep + 1} / {GUIDE_STEPS.length}</span>
+          <span>{`${safeStep + 1} / ${steps.length}`}</span>
           <span aria-hidden="true" className="first-run-guide__dots">
-            {GUIDE_STEPS.map((_, index) => (
+            {steps.map((_, index) => (
               <i className={index === safeStep ? "is-active" : ""} key={index} />
             ))}
           </span>
         </header>
-        <h2>{content.title}</h2>
-        {importStep ? (
+        <h2>{t(content.title)}</h2>
+        {importStep && serverId === "cn" ? (
           <div className="first-run-guide__library">
             <DownloadSimple aria-hidden="true" size={22} weight="bold" />
-            <span>{importCount} 只 PVP 精灵配置，安装后离线可用</span>
+            <span>{importCount}{t(" 只 PVP 精灵配置，安装后离线可用")}</span>
           </div>
         ) : null}
-        <p>{body}</p>
+        <p>{t(body)}</p>
         {error && !/permission denied/i.test(error) ? (
           <p className="first-run-guide__error" role="alert">{error}</p>
         ) : null}
         <footer className="first-run-guide__actions">
-          <button className="first-run-guide__skip" onClick={onSkip} type="button">
-            跳过引导
-          </button>
+          <button className="first-run-guide__skip" onClick={onSkip} type="button">{t("跳过引导")}</button>
           <span />
           {safeStep > 0 ? (
             <button className="secondary-action" onClick={onBack} type="button">
-              <ArrowLeft aria-hidden="true" size={15} />
-              上一步
-            </button>
+              <ArrowLeft aria-hidden="true" size={15} />{t("上一步")}</button>
           ) : null}
-          {importStep ? (
+          {global && importStep ? (
+            <button className="primary-action" onClick={onSkip} type="button">{t("完成引导")}</button>
+          ) : importStep ? (
             <button
-              aria-label={importing ? "正在导入" : "导入并完成"}
+              aria-label={t(importing ? "正在导入" : "导入并完成")}
               className="primary-action"
               disabled={importing}
               onClick={onImport}
               type="button"
             >
               <DownloadSimple aria-hidden="true" size={16} weight="bold" />
-              {importing ? "正在导入" : "导入并完成"}
+              {t(importing ? "正在导入" : "导入并完成")}
             </button>
           ) : detailedStep ? (
             <button
@@ -338,19 +352,15 @@ export function FirstRunGuide({
               }}
               type="button"
             >
-              <SlidersHorizontal aria-hidden="true" size={15} weight="bold" />
-              前往具体版
-            </button>
+              <SlidersHorizontal aria-hidden="true" size={15} weight="bold" />{t("前往具体版")}</button>
           ) : (
             <button
               className="primary-action"
               disabled={!ready}
               onClick={onNext}
-              title={ready ? undefined : "请先完成当前步骤"}
+              title={ready ? undefined : t("请先完成当前步骤")}
               type="button"
-            >
-              下一步
-              <ArrowRight aria-hidden="true" size={15} />
+            >{t("下一步")}<ArrowRight aria-hidden="true" size={15} />
             </button>
           )}
         </footer>

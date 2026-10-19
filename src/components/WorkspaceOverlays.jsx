@@ -1,3 +1,5 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { X } from "@phosphor-icons/react";
 import { useEffect, useRef } from "react";
 import { ResultRail } from "./ResultRail.jsx";
@@ -45,6 +47,8 @@ export function WorkspaceOverlays({
   toast,
   whatsNew = {},
 }) {
+  const { t } = useLocale();
+  const runtime = useRuntime();
   const menuActions = menu.actions ?? {};
   const mobileActions = mobileResult.actions ?? {};
   const mobileRefs = mobileResult.refs ?? {};
@@ -105,7 +109,8 @@ export function WorkspaceOverlays({
       if (trigger instanceof HTMLElement && trigger !== document.body && trigger.isConnected) {
         trigger.focus();
       } else {
-        document.querySelector('[aria-label="打开菜单"]')?.focus();
+        [...document.querySelectorAll('[aria-controls="app-menu"]')]
+          .find((button) => !button.closest("[hidden], [inert]"))?.focus();
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- actions/refs 每轮都是新对象
@@ -149,25 +154,21 @@ export function WorkspaceOverlays({
     <>
       {menu.open ? (
         <nav
-          aria-label="应用菜单"
+          aria-label={t("应用菜单")}
           className="app-menu"
           id="app-menu"
           ref={menu.ref}
         >
-          <div aria-hidden="true" className="app-menu__group-label">
-            配置
-          </div>
+          <div aria-hidden="true" className="app-menu__group-label">{t("配置")}</div>
           <button
             onClick={() => {
               menuActions.onClearCurrent?.();
               menuActions.onClose?.();
             }}
             type="button"
-          >
-            清除当前页配置
-          </button>
+          >{t("清除当前页配置")}</button>
           <button
-            aria-label="常用精灵配置"
+            aria-label={t("常用精灵配置")}
             className="app-menu__primary"
             onClick={() => {
               menuActions.onPopularConfigLibrary?.();
@@ -175,34 +176,29 @@ export function WorkspaceOverlays({
             }}
             type="button"
           >
-            <span>常用精灵配置</span>
-            <span className="app-menu__badge">{POPULAR_CONFIG_COUNT}</span>
+            <span>{t("常用精灵配置")}</span>
+            {runtime.serverId === "cn" && <span className="app-menu__badge">{POPULAR_CONFIG_COUNT}</span>}
           </button>
-          <button type="button" onClick={() => { menuActions.onConfigLibraryExport?.(); menuActions.onClose?.(); }}>导入导出</button>
+          <button type="button" onClick={() => { menuActions.onConfigLibraryExport?.(); menuActions.onClose?.(); }}>{t("导入导出")}</button>
+          {runtime.serverId === "global" && <button type="button" onClick={() => { menuActions.onShare?.(); menuActions.onClose?.(); }}>{t("分享当前配置")}</button>}
           <div aria-hidden="true" className="app-menu__separator" />
-          <div aria-hidden="true" className="app-menu__group-label">
-            帮助
-          </div>
+          <div aria-hidden="true" className="app-menu__group-label">{t("帮助")}</div>
           <button
             onClick={() => {
               menuActions.onShowShortcuts?.();
               menuActions.onClose?.();
             }}
             type="button"
-          >
-            快捷键一览
-          </button>
+          >{t("快捷键一览")}</button>
           <button
             onClick={() => {
               menuActions.onFirstRunGuide?.();
               menuActions.onClose?.();
             }}
             type="button"
-          >
-            新手引导
-          </button>
+          >{t("新手引导")}</button>
           <button
-            aria-label={`新功能 ${whatsNew.version ?? ""}`.trim()}
+            aria-label={t("新功能 {version}", { version: whatsNew.version ?? "" }).trim()}
             className="app-menu__primary"
             onClick={() => {
               menuActions.onShowWhatsNew?.();
@@ -210,7 +206,7 @@ export function WorkspaceOverlays({
             }}
             type="button"
           >
-            <span>新功能</span>
+            <span>{t("新功能")}</span>
             {whatsNew.version ? (
               <span className="app-menu__badge">{whatsNew.version}</span>
             ) : null}
@@ -221,40 +217,40 @@ export function WorkspaceOverlays({
               menuActions.onClose?.();
             }}
             type="button"
-          >
-            显示设置
-          </button>
+          >{t("显示设置")}</button>
           <div aria-hidden="true" className="app-menu__separator" />
-          <div aria-hidden="true" className="app-menu__group-label">
-            关于
-          </div>
+          {(runtime.onServerChange || menuActions.onOpenGlobal) && <>
+            <div aria-hidden="true" className="app-menu__group-label">{t("服务器")} · {t(runtime.serverId === "global" ? "国际服" : "国服")}</div>
+            <button type="button" onClick={() => { menuActions.onClose?.(); if (runtime.onServerChange) runtime.onServerChange(runtime.serverId === "global" ? "cn" : "global"); else menuActions.onOpenGlobal(); }}>{t(runtime.serverId === "global" ? "国服" : "国际服 · Global CBT")}</button>
+            {runtime.serverId === "global" && runtime.onLocaleChange && <label className="app-menu__group-label" style={{ display: "block", minWidth: 0 }}>{t("语言")}
+              <select aria-label={t("语言")} value={runtime.locale} onChange={(event) => runtime.onLocaleChange(event.target.value)} style={{ width: "100%", minHeight: 36, marginTop: 6, fontSize: 13, letterSpacing: "normal" }}>
+                <option value="en">English</option><option value="zh-CN">简体中文</option><option value="ja">日本語</option>
+              </select>
+            </label>}
+            <div aria-hidden="true" className="app-menu__separator" />
+          </>}
+          <div aria-hidden="true" className="app-menu__group-label">{t("关于")}</div>
           <a
-            aria-label="查看使用说明书（飞书文档，新窗口打开）"
+            aria-label={t("查看使用说明书（飞书文档，新窗口打开）")}
             href={USER_MANUAL_URL}
             onClick={() => menuActions.onClose?.()}
             rel="noopener noreferrer"
             target="_blank"
-          >
-            使用说明书
-          </a>
+          >{t("使用说明书")}</a>
           <button
             onClick={() => {
               menuActions.onShowProductAccess?.();
               menuActions.onClose?.();
             }}
             type="button"
-          >
-            获取应用
-          </button>
+          >{t("获取应用")}</button>
           <button
             onClick={() => {
               menuActions.onShowDataSource?.();
               menuActions.onClose?.();
             }}
             type="button"
-          >
-            关于与来源
-          </button>
+          >{t("关于与来源")}</button>
         </nav>
       ) : null}
 
@@ -267,7 +263,7 @@ export function WorkspaceOverlays({
       {mobileResult.configurationReady ? (
         <div className="mobile-result-dock">
         <button
-          aria-label="展开伤害结果"
+          aria-label={t("展开伤害结果")}
           className={`mobile-result-bar mobile-result-bar--${mobileResult.viewMode}${mobileActions.onOpenComparison ? " mobile-result-bar--with-comparison" : ""}`}
           onClick={mobileActions.onOpen}
           ref={mobileRefs.trigger}
@@ -285,16 +281,16 @@ export function WorkspaceOverlays({
           <span className="mobile-result-bar__percent">
             {Number.isFinite(mobilePresentation.percent)
               ? `${mobilePresentation.percent.toFixed(1)}%`
-              : mobileResult.result.selectedResult.reason === "非伤害技能不计算伤害" ? "非伤害" : "待输入"}
+              : t(mobileResult.result.selectedResult.reason === "非伤害技能不计算伤害" ? "非伤害" : "待输入")}
           </span>
         </button>
-        {mobileActions.onOpenComparison ? <button type="button" className="mobile-comparison-entry damage-comparison-entry" onClick={mobileActions.onOpenComparison}>承伤对比</button> : null}
+        {mobileActions.onOpenComparison ? <button type="button" className="mobile-comparison-entry damage-comparison-entry" onClick={mobileActions.onOpenComparison}>{t("承伤对比")}</button> : null}
         </div>
       ) : null}
 
       {mobileResult.configurationReady && mobileResult.open ? (
         <div
-          aria-label="完整伤害结果"
+          aria-label={t("完整伤害结果")}
           aria-modal="true"
           className="result-drawer"
           onMouseDown={(event) => {
@@ -305,12 +301,12 @@ export function WorkspaceOverlays({
           role="dialog"
         >
           <button
-            aria-label="关闭伤害结果"
+            aria-label={t("关闭伤害结果")}
             className="result-drawer__close"
             onClick={mobileActions.onClose}
             // eslint-disable-next-line react-hooks/refs -- 把关闭按钮 ref 交给焦点管理
             ref={mobileRefs.close}
-            title="关闭结果"
+            title={t("关闭结果")}
             type="button"
           >
             <X aria-hidden="true" size={22} weight="bold" />
@@ -352,28 +348,24 @@ export function WorkspaceOverlays({
           }}
         >
           <section
-            aria-label="清理未完成配置"
+            aria-label={t("清理未完成配置")}
             aria-modal="true"
             className="share-dialog"
             role="dialog"
           >
-            <h2>清理未完成配置</h2>
-            <p>仅清理未完成的精灵配置，收藏、完整配置和队伍不会删除。</p>
+            <h2>{t("清理未完成配置")}</h2>
+            <p>{t("仅清理未完成的精灵配置，收藏、完整配置和队伍不会删除。")}</p>
             <div className="dialog-actions">
               <button
                 className="secondary-action"
                 onClick={cleanupConfigs.onConfirm}
                 type="button"
-              >
-                确认清理
-              </button>
+              >{t("确认清理")}</button>
               <button
                 className="secondary-action"
                 onClick={cleanupConfigs.onCancel}
                 type="button"
-              >
-                取消
-              </button>
+              >{t("取消")}</button>
             </div>
           </section>
         </div>
@@ -387,26 +379,24 @@ export function WorkspaceOverlays({
           }}
         >
           <form
-            aria-label="分享当前配置"
+            aria-label={t("分享当前配置")}
             aria-modal="true"
             className="share-dialog share-config-dialog"
             onSubmit={shareActions.onImportSubmit}
             ref={shareRefs.dialog}
             role="dialog"
           >
-            <h2>分享当前配置</h2>
-            <p className="share-config-dialog__intro">
-              链接包含双方精灵、性格、个体、技能、特性和当前战斗条件，不会包含配置库和队伍。
-            </p>
+            <h2>{t("分享当前配置")}</h2>
+            <p className="share-config-dialog__intro">{t(runtime.serverId === "global" ? "链接保留当前配置草稿中的输入，不包含配置库和队伍；国际服数据核验前不计算结果。" : "链接包含双方精灵、性格、个体、技能、特性和当前战斗条件，不会包含配置库和队伍。")}</p>
             <section className="share-config-section">
-              <h3>发送当前配置</h3>
+              <h3>{t("发送当前配置")}</h3>
               <label>
-                <span>当前配置链接</span>
+                <span>{t("当前配置链接")}</span>
                 <input
-                  aria-label="当前配置链接"
+                  aria-label={t("当前配置链接")}
                   disabled={!share.shareLink}
                   onFocus={(event) => event.currentTarget.select()}
-                  placeholder="选择双方精灵后生成"
+                  placeholder={t(runtime.serverId === "global" ? "正在生成配置链接" : "选择双方精灵后生成")}
                   readOnly
                   value={share.shareLink}
                 />
@@ -416,21 +406,19 @@ export function WorkspaceOverlays({
                 disabled={!share.shareLink}
                 onClick={shareActions.onCopy}
                 type="button"
-              >
-                复制当前配置链接
-              </button>
+              >{t("复制当前配置链接")}</button>
             </section>
             <section className="share-config-section">
-              <h3>载入别人分享的配置</h3>
+              <h3>{t("载入别人分享的配置")}</h3>
               <label>
-                <span>粘贴完整链接或以 #v1 开头的内容</span>
+                <span>{t("粘贴完整分享链接或分享码")}</span>
                 <input
-                  aria-label="粘贴分享链接"
+                  aria-label={t("粘贴分享链接")}
                   autoFocus={!share.shareLink}
                   onChange={(event) =>
                     shareActions.onImportDraftChange?.(event.target.value)
                   }
-                  placeholder="粘贴分享链接"
+                  placeholder={t("粘贴分享链接")}
                   value={share.importDraft}
                 />
               </label>
@@ -438,18 +426,14 @@ export function WorkspaceOverlays({
                 className="secondary-action"
                 disabled={!share.importDraft.trim()}
                 type="submit"
-              >
-                载入分享配置
-              </button>
+              >{t("载入分享配置")}</button>
             </section>
             <div className="dialog-actions">
               <button
                 className="secondary-action"
                 onClick={shareActions.onClose}
                 type="button"
-              >
-                关闭
-              </button>
+              >{t("关闭")}</button>
             </div>
           </form>
         </div>
@@ -465,39 +449,31 @@ export function WorkspaceOverlays({
           }}
         >
           <section
-            aria-label="分享版本不一致"
+            aria-label={t("分享版本不一致")}
             aria-modal="true"
             className="share-dialog"
             // eslint-disable-next-line react-hooks/refs -- 把版本冲突对话框 ref 交给焦点管理
             ref={shareRefs.version}
             role="dialog"
           >
-            <h2>分享版本不一致</h2>
-            <p>
-              原数据 {share.pendingState.versions.data} · 规则{" "}
+            <h2>{t("分享版本不一致")}</h2>
+            <p>{t("原数据 ")}{share.pendingState.versions.data}{t(" · 规则")}{" "}
               {share.pendingState.versions.rules}
             </p>
-            <p>
-              当前数据 {share.versions.data} · 规则 {share.versions.rules}
+            <p>{t("当前数据 ")}{share.versions.data}{t(" · 规则 ")}{share.versions.rules}
             </p>
-            <small>
-              旧快照未内置。可保留全部输入并按当前版本重算，结果会在右侧即时更新。
-            </small>
+            <small>{t("旧快照未内置。可保留全部输入并按当前版本重算，结果会在右侧即时更新。")}</small>
             <div className="dialog-actions">
               <button
                 className="secondary-action"
                 onClick={shareActions.onPendingConfirm}
                 type="button"
-              >
-                按当前版本重算
-              </button>
+              >{t("按当前版本重算")}</button>
               <button
                 className="secondary-action"
                 onClick={shareActions.onPendingClose}
                 type="button"
-              >
-                取消
-              </button>
+              >{t("取消")}</button>
             </div>
           </section>
         </div>

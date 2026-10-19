@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { calculateMatchup } from "../domain/calculate.js";
+import { assertCalculationEnvironment, getServerRelease } from "../domain/server-environment.js";
 import { MOON_MEMORY_TRAIT_LIMIT } from "../domain/moon-memory.js";
 import { hasCompleteRaceStats } from "../domain/stat.js";
 import {
@@ -71,11 +72,53 @@ function loadJson(filePath, label) {
   }
 }
 
-function loadContext(projectRoot) {
-  const snapshotPath = path.join(projectRoot, "data", "snapshots", "current.json");
-  const packagePath = path.join(projectRoot, "package.json");
+function serverRelease(serverId) {
+  try {
+    return getServerRelease(serverId);
+  } catch (error) {
+    throw new CliError(error.code, error.message, error.details);
+  }
+}
+
+function assertCliEnvironment(snapshot, input) {
+  try {
+    return assertCalculationEnvironment(snapshot, input);
+  } catch (error) {
+    throw new CliError(error.code, error.message, error.details);
+  }
+}
+
+function parseServerOption(argv) {
+  const args = [];
+  let serverId;
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg !== "--server" && !arg.startsWith("--server=")) {
+      args.push(arg);
+      continue;
+    }
+    if (serverId !== undefined) throw new CliError("INVALID_ARGUMENT", "--server 只能指定一次");
+    serverId = arg === "--server" ? optionValue(argv.slice(index), "--server") : arg.slice("--server=".length);
+    serverRelease(serverId);
+    if (arg === "--server") index += 1;
+  }
+  return { args, serverId };
+}
+
+function assertServerCommand(release, command) {
+  if (["search", "calculate", "explain"].includes(command) && !release.capabilities[command]) {
+    throw new CliError("SERVER_DATA_UNVERIFIED", "国际服数据与规则尚未核验，当前不能计算或检索", {
+      serverId: release.serverId, availability: release.status,
+    });
+  }
+}
+
+function loadContext(projectRoot, release) {
+  const packageJson = loadJson(path.join(projectRoot, "package.json"), "package.json");
+  if (!release.snapshotPath) return { packageJson, release, snapshot: null };
+  const snapshotPath = path.join(projectRoot, release.snapshotPath);
   const snapshot = withCalculatorExtras(loadJson(snapshotPath, "数据快照"));
-  const packageJson = loadJson(packagePath, "package.json");
+  assertCliEnvironment(snapshot, { serverId: release.serverId });
   const indexes = {
     spirits: new Map(snapshot.spirits.map((entry) => [entry.id, entry])),
     skills: new Map(snapshot.skills.map((entry) => [entry.id, entry])),
@@ -84,13 +127,15 @@ function loadContext(projectRoot) {
       snapshot.learnsets.map((entry) => [entry.spiritId, entry]),
     ),
   };
-  return { indexes, packageJson, snapshot, snapshotPath };
+  return { indexes, packageJson, release, snapshot, snapshotPath };
 }
 
 function engineMetadata(context) {
-  const meta = context.snapshot.meta ?? {};
+  const meta = context.snapshot?.meta ?? {};
   return {
     productVersion: context.packageJson.version,
+    serverId: context.release.serverId,
+    availability: context.release.status,
     dataVersion: meta.id ?? meta.dataVersion ?? meta.version ?? null,
     rulesVersion: meta.rulesVersion ?? meta.ruleVersion ?? null,
     snapshotVersion: meta.snapshotVersion ?? null,
@@ -565,11 +610,13 @@ function compileInput(context, input) {
       received: input.schemaVersion,
     });
   }
+  assertCliEnvironment(context.snapshot, { ...input, serverId: context.release.serverId });
   const mode = input.mode === "four" ? "four" : "single";
   const attacker = compileSide(context, input.attacker, "attacker", mode);
   const defender = compileSide(context, input.defender, "defender", mode);
   const battle = {
     schemaVersion: INPUT_SCHEMA_VERSION,
+    ...(input.serverId === undefined ? {} : { serverId: input.serverId }),
     mode,
     level: Number.isFinite(Number(input.level)) ? Number(input.level) : 60,
     marks: input.marks ?? null,
@@ -695,6 +742,8 @@ function schemaResponse() {
     ok: true,
     command: "schema",
     inputSchemaVersion: INPUT_SCHEMA_VERSION,
+    globalOptions: ["--server <cn|global>"],
+    servers: { cn: "已核验的国服数据", global: "国际服数据尚未核验，仅支持 meta/schema" },
     commands: {
       meta: { args: [] },
       schema: { args: [] },
@@ -715,6 +764,7 @@ function schemaResponse() {
       required: ["attacker", "defender"],
       defaults: {
         schemaVersion: 1,
+        serverId: "cn",
         mode: "single",
         level: 60,
         nature: "普通",
@@ -722,6 +772,9 @@ function schemaResponse() {
         currentHp: "满生命",
       },
       fields: {
+        serverId: "cn 或 global；省略时沿用 --server，均省略时为 cn；冲突时拒绝",
+        dataVersion: "可选；必须匹配所选服务器快照",
+        rulesVersion: "可选；必须匹配所选服务器规则",
         side: {
           spirit: "精灵全名或稳定 ID",
           skill: "单技能名称、稳定 ID，或 {name,type,category}",
@@ -757,14 +810,26 @@ function schemaResponse() {
 }
 
 export function executeCli(argv, { cwd, projectRoot }) {
+  const serverOption = parseServerOption(argv);
+  argv = serverOption.args;
   const command = argv[0];
-  const context = loadContext(projectRoot);
+  if (serverOption.serverId !== undefined) assertServerCommand(serverRelease(serverOption.serverId), command);
+  const input = command === "calculate" || command === "explain" ? readInput(argv, cwd) : null;
+  if (input?.serverId !== undefined) serverRelease(input.serverId);
+  if (serverOption.serverId !== undefined && input?.serverId !== undefined && serverOption.serverId !== input.serverId) {
+    throw new CliError("SERVER_MISMATCH", "CLI 参数与 JSON 输入的服务器不匹配", {
+      argumentServerId: serverOption.serverId, inputServerId: input.serverId,
+    });
+  }
+  const release = serverRelease(serverOption.serverId ?? input?.serverId ?? "cn");
+  const context = loadContext(projectRoot, release);
   if (command === "meta") {
     return {
       ok: true,
       command,
       engine: engineMetadata(context),
-      counts: context.snapshot.meta?.counts ?? {
+      availability: { status: release.status, capabilities: release.capabilities },
+      counts: !context.snapshot ? null : context.snapshot.meta?.counts ?? {
         spirits: context.snapshot.spirits.length,
         skills: context.snapshot.skills.length,
         learnsets: context.snapshot.learnsets.length,
@@ -773,6 +838,7 @@ export function executeCli(argv, { cwd, projectRoot }) {
     };
   }
   if (command === "schema") return schemaResponse();
+  assertServerCommand(release, command);
   if (command === "search") {
     const kind = argv[1];
     const query = argv[2] ?? "";
@@ -800,7 +866,6 @@ export function executeCli(argv, { cwd, projectRoot }) {
     };
   }
   if (command === "calculate" || command === "explain") {
-    const input = readInput(argv, cwd);
     const compiled = compileInput(context, input);
     let calculation;
     try {

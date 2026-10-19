@@ -7,6 +7,9 @@ import { createSpeedTargetCatalog, selectSpeedRanking, DEFAULT_RANKING_PROFILES,
 import SpeedDetail from "./SpeedDetail.jsx";
 import BaseSpeedOverview from "./BaseSpeedOverview.jsx";
 import "../styles/23-rankings.css";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useModalFocus } from "../hooks/useModalFocus.js";
 
 const portrait = (spirit) => spirit?.asset?.localUrl ?? spirit?.imageUrl;
 const number = (value) => value == null ? "—" : value.toLocaleString("zh-CN");
@@ -126,7 +129,23 @@ const StandaloneSpeed = memo(function StandaloneSpeed({ snapshot, onClose }) {
   </section>;
 });
 
-export default function RankingsPanel({ kind, snapshot, onClose }) {
+export default function RankingsPanel(props) {
+  const { release } = useRuntime();
+  const { t } = useLocale();
+  const root = useRef(null);
+  useModalFocus(Boolean(props.kind) && !release.capabilities.calculate, root, props.onClose);
+  if (release.capabilities.calculate) return <VerifiedRankingsPanel {...props} />;
+  if (!props.kind) return null;
+  const title = props.kind === "speed" ? "速度线排行" : "耐久排行";
+  return <div className="rank-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) props.onClose(); }}>
+    <div className="rank-dialog" role="dialog" aria-modal="true" aria-label={t(title)} ref={root} tabIndex={-1}>
+      <header className="rank-dialog__heading"><h2>{t(title)}</h2><button aria-label={t("关闭排行榜")} onClick={props.onClose} type="button"><X size={20} /></button></header>
+      <div className="rank-tool-host"><p className="rank-empty" role="status">{t("国际服数值与规则待核验，暂不可排行。")}</p></div>
+    </div>
+  </div>;
+}
+
+function VerifiedRankingsPanel({ kind, snapshot, onClose }) {
   const root = useRef(null);
   const [visited, setVisited] = useState(() => ({ [kind]: true }));
   if (kind && !visited[kind]) setVisited({ ...visited, [kind]: true });

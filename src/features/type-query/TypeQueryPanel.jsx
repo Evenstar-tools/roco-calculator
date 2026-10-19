@@ -4,6 +4,9 @@ import { ElementIcon } from "../../components/ElementIcon.jsx";
 import { ELEMENT_TYPES } from "../../domain/type-chart.js";
 import { buildTypeQuery, findFinalDualTypeSpirits, toggleQueryType } from "./model.js";
 import "./type-query.css";
+import { useRuntime } from "../../runtime/RuntimeContext.jsx";
+import { useLocale } from "../../i18n/LocaleContext.jsx";
+import { useModalFocus } from "../../hooks/useModalFocus.js";
 
 const DEFENSE_GROUPS = [[3, "双重弱点"], [2, "弱点"], [0.5, "抗性"], [0.25, "双重抗性"]];
 const OFFENSE_GROUPS = [[2, "有效打击"], [1, "常规打击"], [0.5, "打击盲点"]];
@@ -46,7 +49,19 @@ function SpiritResults({ spirits, types, spiritFilterRevision }) {
   </section>;
 }
 
-export default function TypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision, selectedTypes, onTypesChange, onClose }) {
+export default function TypeQueryPanel(props) {
+  const { release } = useRuntime();
+  const { t } = useLocale();
+  const root = useRef(null);
+  useModalFocus(!release.capabilities.search, root, props.onClose);
+  if (release.capabilities.search) return <VerifiedTypeQueryPanel {...props} />;
+  return <div className="type-query-backdrop"><section className="type-query" role="dialog" aria-modal="true" aria-label={t("属性查询")} ref={root} tabIndex={-1}>
+    <header className="type-query__heading"><h2>{t("属性查询")}</h2><button type="button" className="type-query__quiet" aria-label={t("关闭属性查询")} onClick={props.onClose}>{t("关闭")} <X size={16} /></button></header>
+    <div className="type-query__body"><p className="type-query__empty" role="status">{t("国际服属性关系待核验，暂不可查询。")}</p></div>
+  </section></div>;
+}
+
+function VerifiedTypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision, selectedTypes, onTypesChange, onClose }) {
   const root = useRef(null);
   const [inspected, setInspected] = useState(null);
   const query = useMemo(() => buildTypeQuery(selectedTypes, typeChart), [selectedTypes, typeChart]);

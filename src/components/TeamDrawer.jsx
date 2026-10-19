@@ -1,3 +1,5 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import {
   ArrowsLeftRight,
   DownloadSimple,
@@ -65,6 +67,9 @@ export function TeamDrawer({
   teamsState,
   shortcutSettings = { enabled: true, bindings: { team: "t" } },
 }) {
+  const { t } = useLocale();
+  const { serverId } = useRuntime();
+  const analysisAvailable = serverId === "cn";
   const closeRef = useRef(null);
   const closeActionRef = useRef(null);
   const drawerRef = useRef(null);
@@ -100,8 +105,8 @@ export function TeamDrawer({
   const canDiscardDraft = useCallback(() => {
     if (!analysisDirty) return true;
     if (typeof globalThis.confirm !== "function") return true;
-    return globalThis.confirm("能力分析草稿尚未应用，确定丢弃吗？") === true;
-  }, [analysisDirty]);
+    return globalThis.confirm(t("能力分析草稿尚未应用，确定丢弃吗？")) === true;
+  }, [analysisDirty, t]);
 
   const close = useCallback(() => {
     if (!canDiscardDraft()) return;
@@ -160,11 +165,11 @@ export function TeamDrawer({
     /* eslint-disable react-hooks/set-state-in-effect -- 外部入口和队伍切换都需要同步重置工作台导航，不应在渲染期改状态 */
     if (analysisEntry) {
       setPaneMode("member");
-      setMemberPage("ability");
+      setMemberPage(analysisAvailable ? "ability" : "configure");
       setAnalysisDirty(false);
     }
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [analysisEntry]);
+  }, [analysisEntry, analysisAvailable]);
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect -- 换队伍时重置删除确认和选中位，渲染期写入会冲掉当前交互 */
@@ -191,9 +196,9 @@ export function TeamDrawer({
   const hasWorkspaceContent = Boolean(activeTeam || analysisEntry);
   const sourceLabel = analysisEntry
     ? analysisEntry.side === "attacker"
-      ? "临时攻击方"
-      : "临时防御方"
-    : `${selectedIndex + 1}号位`;
+      ? t("临时攻击方")
+      : t("临时防御方")
+    : t("{index}号位", { index: selectedIndex + 1 });
 
   return (
     <div
@@ -203,7 +208,7 @@ export function TeamDrawer({
       }}
     >
       <aside
-        aria-label="队伍"
+        aria-label={t("队伍")}
         aria-modal="true"
         className="team-drawer team-workbench"
         data-empty={!activeTeam}
@@ -213,15 +218,15 @@ export function TeamDrawer({
         <header className="team-drawer__header">
           <div>
             <UsersThree aria-hidden="true" size={22} weight="fill" />
-            <h2>队伍</h2>
+            <h2>{t("队伍")}</h2>
             <span>{teamsState.teams.length}</span>
           </div>
           <button
-            aria-label="关闭队伍"
+            aria-label={t("关闭队伍")}
             className="icon-action"
             onClick={close}
             ref={closeRef}
-            title="关闭"
+            title={t("关闭")}
             type="button"
           >
             <X aria-hidden="true" size={20} weight="bold" />
@@ -231,7 +236,7 @@ export function TeamDrawer({
         <div className="team-drawer__toolbar">
           {teamsState.teams.length ? (
             <select
-              aria-label="选择队伍"
+              aria-label={t("选择队伍")}
               onChange={(event) =>
                 navigate(() => {
                   onAnalysisEntryClear?.();
@@ -248,54 +253,54 @@ export function TeamDrawer({
             </select>
           ) : (
             <span className="team-drawer__empty-label">
-              {analysisEntry ? "临时分析 · 不占队伍位置" : "还没有队伍"}
+              {analysisEntry ? t("临时分析 · 不占队伍位置") : t("还没有队伍")}
             </span>
           )}
           <button
-            aria-label="新建队伍"
+            aria-label={t("新建队伍")}
             onClick={() =>
               navigate(() =>
-                onCreateTeam(`队伍 ${teamsState.teams.length + 1}`),
+                onCreateTeam(t("队伍 {count}", { count: teamsState.teams.length + 1 })),
               )
             }
             type="button"
           >
             <Plus aria-hidden="true" size={17} weight="bold" />
-            <span className="team-drawer__toolbar-label">新建</span>
+            <span className="team-drawer__toolbar-label">{t("新建")}</span>
           </button>
           <button
-            aria-label="复制队伍"
+            aria-label={t("复制队伍")}
             disabled={!activeTeam}
             onClick={() => navigate(() => onDuplicateTeam(activeTeam.id))}
-            title="复制队伍"
+            title={t("复制队伍")}
             type="button"
           >
             <Copy aria-hidden="true" size={17} />
-            <span className="team-drawer__toolbar-label">复制</span>
+            <span className="team-drawer__toolbar-label">{t("复制")}</span>
           </button>
           <button
-            aria-label="删除队伍"
+            aria-label={t("删除队伍")}
             disabled={!activeTeam}
             onClick={() => setDeletePending(true)}
-            title="删除队伍"
+            title={t("删除队伍")}
             type="button"
           >
             <Trash aria-hidden="true" size={17} />
-            <span className="team-drawer__toolbar-label">删除</span>
+            <span className="team-drawer__toolbar-label">{t("删除")}</span>
           </button>
-          <button aria-label="导入阵容" title="导入阵容" type="button"
+          <button aria-label={t("导入阵容")} title={t("导入阵容")} type="button"
             onClick={() => navigate(() => setExchangeMode("import"))}>
             <DownloadSimple aria-hidden="true" size={17} />
-            <span className="team-drawer__toolbar-label">导入</span>
+            <span className="team-drawer__toolbar-label">{t("导入")}</span>
           </button>
-          <button aria-label="导出阵容" title="导出阵容" type="button" disabled={!activeTeam}
+          <button aria-label={t("导出阵容")} title={t("导出阵容")} type="button" disabled={!activeTeam}
             onClick={() => navigate(() => setExchangeMode("export"))}>
             <UploadSimple aria-hidden="true" size={17} />
-            <span className="team-drawer__toolbar-label">导出</span>
+            <span className="team-drawer__toolbar-label">{t("导出")}</span>
           </button>
         </div>
 
-        <nav aria-label="队伍面板" className="team-drawer__pane-tabs">
+        <nav aria-label={t("队伍面板")} className="team-drawer__pane-tabs">
           <button
             aria-pressed={paneMode === "member"}
             onClick={() =>
@@ -308,11 +313,12 @@ export function TeamDrawer({
             type="button"
           >
             <UsersThree aria-hidden="true" size={17} weight="fill" />
-            成员
+            {t("成员")}
           </button>
           <button
             aria-pressed={paneMode === "analysis"}
-            disabled={!activeTeam}
+            disabled={!activeTeam || !analysisAvailable}
+            title={!analysisAvailable ? t("国际服规则尚未核验，分析暂不可用") : undefined}
             onClick={() =>
               navigate(() => {
                 setExchangeMode(null);
@@ -323,11 +329,12 @@ export function TeamDrawer({
             type="button"
           >
             <Shield aria-hidden="true" size={17} weight="fill" />
-            队伍分析
+            {t("队伍分析")}
           </button>
           <button
             aria-pressed={paneMode === "matchup"}
-            disabled={!activeTeam}
+            disabled={!activeTeam || !analysisAvailable}
+            title={!analysisAvailable ? t("国际服规则尚未核验，分析暂不可用") : undefined}
             onClick={() =>
               navigate(() => {
                 setExchangeMode(null);
@@ -338,13 +345,13 @@ export function TeamDrawer({
             type="button"
           >
             <ArrowsLeftRight aria-hidden="true" size={17} />
-            对位
+            {t("对位")}
           </button>
         </nav>
 
         {deletePending && activeTeam ? (
           <div className="team-drawer__confirm" role="alert">
-            <span>删除当前队伍？</span>
+            <span>{t("删除当前队伍？")}</span>
             <button
               onClick={() =>
                 navigate(() => {
@@ -356,10 +363,10 @@ export function TeamDrawer({
               }
               type="button"
             >
-              确认删除
+              {t("确认删除")}
             </button>
             <button onClick={() => setDeletePending(false)} type="button">
-              取消
+              {t("取消")}
             </button>
           </div>
         ) : null}
@@ -388,9 +395,9 @@ export function TeamDrawer({
               {activeTeam ? (
                 <>
                   <label className="team-drawer__name">
-                    <span>名称</span>
+                    <span>{t("名称")}</span>
                     <input
-                      aria-label="队伍名称"
+                      aria-label={t("队伍名称")}
                       onBlur={() => {
                         if (nameDraft !== activeTeam.name) {
                           onRenameTeam(activeTeam.id, nameDraft);
@@ -416,14 +423,14 @@ export function TeamDrawer({
                 </>
               ) : (
                 <div className="team-workbench__transient-source">
-                  <strong>临时配置</strong>
-                  <span>从主计算器进入，不会创建队伍或占用槽位。</span>
+                  <strong>{t("临时配置")}</strong>
+                  <span>{t("从主计算器进入，不会创建队伍或占用槽位。")}</span>
                 </div>
               )}
             </div>
 
             <main className="team-drawer__editor-pane">
-              {paneMode === "member" ? (
+              {paneMode === "member" || !analysisAvailable ? (
                 <>
                   <header className="team-workbench__member-header">
                     <div className="team-workbench__identity">
@@ -432,9 +439,9 @@ export function TeamDrawer({
                       ) : null}
                       <div>
                         <h3>
-                          {sourceLabel} · {activeSpirit?.fullName ?? "待选择精灵"}
+                          {sourceLabel} · {activeSpirit?.fullName ?? t("待选择精灵")}
                         </h3>
-                        {analysisEntry ? <span>临时配置</span> : (
+                        {analysisEntry ? <span>{t("临时配置")}</span> : (
                           <button type="button" onClick={() => navigate(() => {
                             setMemberPage("configure");
                             requestAnimationFrame(() => {
@@ -444,13 +451,13 @@ export function TeamDrawer({
                             });
                             return true;
                           })}>
-                            <PencilSimple aria-hidden="true" size={13} />更换精灵
+                            <PencilSimple aria-hidden="true" size={13} />{t("更换精灵")}
                           </button>
                         )}
                         {!analysisEntry ? (
                           <small>
                             <CheckCircle aria-hidden="true" size={14} weight="fill" />
-                            更改自动保存
+                            {t("更改自动保存")}
                           </small>
                         ) : null}
                       </div>
@@ -458,18 +465,18 @@ export function TeamDrawer({
                     {activeTeam && !analysisEntry && memberPage === "configure" ? (
                       <div className="team-drawer__capture-actions">
                         {[true, false].flatMap((apply) => ["attacker", "defender"].map((side) => {
-                          const name = side === "attacker" ? "攻击方" : "防御方";
-                          const label = apply ? `设为${name}` : `从${side === "attacker" ? "攻" : "防"}方复制`;
+                          const name = side === "attacker" ? t("攻击方") : t("防御方");
+                          const label = apply ? t("设为{side}", { side: name }) : t("从{side}复制", { side: name });
                           return (
                             <button
-                              aria-label={apply ? label : `用当前${name}填入${selectedIndex + 1}号位`}
+                              aria-label={apply ? label : t("用当前{side}填入{index}号位", { side: name, index: selectedIndex + 1 })}
                               data-side={side}
                               disabled={apply && (!selectedMember || selectedMember.needsRepair)}
                               key={`${side}-${apply}`}
                               onClick={() => navigate(() => apply
                                 ? onApply(side, selectedMember)
                                 : onCaptureSide(side, activeTeam.id, selectedIndex))}
-                              title={apply ? `将${selectedIndex + 1}号位设为${name}` : label}
+                              title={apply ? t("将{index}号位设为{side}", { index: selectedIndex + 1, side: name }) : label}
                               type="button"
                             >
                               <svg aria-hidden="true" className={apply ? undefined : "team-capture-icon"} width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
@@ -483,7 +490,7 @@ export function TeamDrawer({
                     ) : null}
                   </header>
 
-                  <div aria-label="成员页面" className="team-workbench__member-tabs">
+                  <div aria-label={t("成员页面")} className="team-workbench__member-tabs">
                     <button
                       aria-pressed={memberPage === "configure"}
                       disabled={!activeTeam}
@@ -495,10 +502,12 @@ export function TeamDrawer({
                       }
                       type="button"
                     >
-                      成员配置
+                      {t("成员配置")}
                     </button>
                     <button
                       aria-pressed={memberPage === "ability"}
+                      disabled={!analysisAvailable}
+                      title={!analysisAvailable ? t("国际服规则尚未核验，分析暂不可用") : undefined}
                       onClick={() =>
                         navigate(() => {
                           setMemberPage("ability");
@@ -507,11 +516,11 @@ export function TeamDrawer({
                       }
                       type="button"
                     >
-                      能力分析
+                      {t("能力分析")}
                     </button>
                   </div>
 
-                  {memberPage === "configure" && activeTeam ? (
+                  {(memberPage === "configure" || !analysisAvailable) && activeTeam ? (
                     <TeamMemberEditor
                       getSpiritConfiguration={getSpiritConfiguration}
                       index={selectedIndex}
@@ -524,7 +533,7 @@ export function TeamDrawer({
                       snapshot={snapshot}
                       spiritChoices={spiritChoices}
                     />
-                  ) : (
+                  ) : !analysisAvailable ? <p role="status">{t("国际服规则尚未核验，分析暂不可用")}</p> : (
                     <AbilityWorkbench
                       configuration={activeConfiguration}
                       onApplyMember={
@@ -574,28 +583,28 @@ export function TeamDrawer({
         ) : (
           <div className="team-drawer__zero">
             <UsersThree aria-hidden="true" size={38} />
-            <p>还没有队伍</p>
+            <p>{t("还没有队伍")}</p>
             <div className="team-drawer__zero-actions">
               <button
                 className="team-drawer__zero-cta"
-                onClick={() => onCreateTeam(`队伍 ${teamsState.teams.length + 1}`)}
+                onClick={() => onCreateTeam(t("队伍 {count}", { count: teamsState.teams.length + 1 }))}
                 type="button"
               >
                 <Plus aria-hidden="true" size={16} weight="bold" />
-                新建六人队伍
+                {t(analysisAvailable ? "新建六人队伍" : "新建空队伍")}
               </button>
               <button
-                aria-label="导入已有阵容"
+                aria-label={t("导入已有阵容")}
                 className="team-drawer__zero-import"
                 onClick={() => navigate(() => setExchangeMode("import"))}
                 type="button"
               >
                 <DownloadSimple aria-hidden="true" size={17} />
-                导入
+                {t("导入")}
               </button>
             </div>
             <p className="team-drawer__zero-hint">
-              保存常用阵容，进行属性弱点、能力与对位分析
+              {t(analysisAvailable ? "保存常用阵容，进行属性弱点、能力与对位分析" : "保存队伍草稿，配置成员与技能")}
             </p>
           </div>
         )}

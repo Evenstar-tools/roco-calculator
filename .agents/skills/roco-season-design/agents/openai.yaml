@@ -1,0 +1,4 @@
+interface:
+  display_name: "洛克赛季主题设计"
+  short_description: "沿用计算器原界面，完成赛季选图、配色、精灵摆放和真实页面验收"
+  default_prompt: "使用 $roco-season-design，按项目 design.md 为新赛季制作主题；继承原 UI，先本地验证。"

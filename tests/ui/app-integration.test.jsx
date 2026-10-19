@@ -497,6 +497,8 @@ const snapshot = {
 };
 
 beforeEach(() => {
+  // Each case starts independently; the application now persists complete sessions.
+  localStorage.clear();
   localStorage.removeItem("rock-calculator.settings.view-mode.v1");
   workspaceOverlayCapture.onShare = null;
   localStorage.removeItem(DURABILITY_OVERVIEW_STORAGE_KEY);

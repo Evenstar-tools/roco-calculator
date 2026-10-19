@@ -1,3 +1,5 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useModalFocus } from "../hooks/useModalFocus.js";
 import { getNature } from "../domain/natures.js";
@@ -20,6 +22,8 @@ const ISSUE_PREVIEW_ROWS = [
 const ISSUE_LABELS = Object.fromEntries(ISSUE_PREVIEW_ROWS);
 
 function ConfigEntryList({ entries, emptyMessage, skillById, spiritById, stableHeight = false }) {
+  const { t } = useLocale();
+  const { serverId } = useRuntime();
   return (
     <ul
       className={`config-library-entry-list${stableHeight ? " config-library-entry-list--searchable" : ""}${entries.length === 0 ? " is-empty" : ""}`}
@@ -31,7 +35,7 @@ function ConfigEntryList({ entries, emptyMessage, skillById, spiritById, stableH
       {entries.map((entry) => {
         const spirit = spiritById.get(entry.spiritId);
         const spiritName = spirit?.fullName ?? entry.spiritId;
-        const natureName = getNature(entry.natureId)?.name ?? entry.natureId;
+        const natureName = serverId === "cn" ? t(getNature(entry.natureId)?.name ?? entry.natureId) : entry.natureId ?? t("待核验");
         return (
           <li className="config-library-entry" key={entry.spiritId}>
             {spirit?.asset?.localUrl ? (
@@ -44,13 +48,13 @@ function ConfigEntryList({ entries, emptyMessage, skillById, spiritById, stableH
             <div className="config-library-entry-main">
               <div className="config-library-entry-heading">
                 <strong>{spiritName}</strong>
-                <span>性格 {natureName}</span>
+                <span>{t("性格 {nature}", { nature: natureName })}</span>
               </div>
               <ol className="config-library-entry-skills">
                 {entry.skills.map((skillId, index) => (
                   <li key={`${entry.spiritId}:skill:${index}`}>
                     <span>{index + 1}</span>
-                    <strong>{skillById.get(skillId)?.name ?? skillId ?? "空"}</strong>
+                    <strong>{skillById.get(skillId)?.name ?? skillId ?? t("空")}</strong>
                   </li>
                 ))}
               </ol>
@@ -74,6 +78,8 @@ export function ConfigLibraryDialog({
   parsed,
   snapshot,
 }) {
+  const { t, locale } = useLocale();
+  const { serverId } = useRuntime();
   const dialogRef = useRef(null);
   const presetBrowse = usePresetBrowseMode();
   const entrySearchRef = useRef(null);
@@ -107,10 +113,10 @@ export function ConfigLibraryDialog({
   const isExport = mode === "export";
   const isPopular = mode === "popular";
   const dialogTitle = isExport
-    ? "配置库导入导出"
+    ? t("配置库导入导出")
     : isPopular
-      ? "常用精灵配置"
-      : "配置库导入";
+      ? t("常用精灵配置")
+      : t("配置库导入");
   const sourceEntries = isExport
     ? exportSummary?.library?.entries ?? []
     : isPopular
@@ -129,12 +135,12 @@ export function ConfigLibraryDialog({
   const listedEntries = isPopular
     ? [...sourceEntries].sort((left, right) => entryDexNo(left) - entryDexNo(right))
     : sourceEntries;
-  const normalizedEntryQuery = entryQuery.trim().toLocaleLowerCase("zh-CN");
+  const normalizedEntryQuery = entryQuery.trim().toLocaleLowerCase(locale);
   const visibleEntries = isPopular && normalizedEntryQuery
     ? listedEntries.filter((entry) => {
       const spirit = spiritById.get(entry.spiritId);
       return [spirit?.fullName ?? entry.spiritId, ...(spirit?.aliases ?? [])]
-        .some((name) => name.toLocaleLowerCase("zh-CN").includes(normalizedEntryQuery));
+        .some((name) => name.toLocaleLowerCase(locale).includes(normalizedEntryQuery));
     })
     : listedEntries;
   const importIssues = parsed
@@ -146,6 +152,8 @@ export function ConfigLibraryDialog({
   );
   const importIssueDetails = parsed?.issueDetails ?? [];
   const updateCount = (parsed?.preview.added ?? 0) + (parsed?.preview.updated ?? 0);
+  const exportedFavoriteCount = serverId === "global" ? (exportSummary?.library?.favorites?.length ?? 0) : 0;
+  const canExport = (exportSummary?.exportedCount ?? 0) > 0 || exportedFavoriteCount > 0;
   const canImport = Boolean(parsed) && (updateCount > 0 || parsed.preview.favoritesAdded > 0);
   const importChanges = [...(parsed?.changes ?? [])].sort((left, right) => entryDexNo(left) - entryDexNo(right));
 
@@ -167,31 +175,33 @@ export function ConfigLibraryDialog({
         {isExport ? (
           <>
             <div className="config-library-summary">
-              <strong>可导出 {exportSummary?.exportedCount ?? 0} 只精灵</strong>
+              <strong>{t(serverId === "global" ? "可导出 {count} 份配置 · {favorites} 项收藏" : "可导出 {count} 只精灵", { count: exportSummary?.exportedCount ?? 0, favorites: exportedFavoriteCount })}</strong>
               <dl className="config-library-summary-details">
+                {serverId === "global" ? <><div><dt>{t("配置")}</dt><dd>{exportSummary?.exportedCount ?? 0}</dd></div><div><dt>{t("手动收藏")}</dt><dd>{exportedFavoriteCount}</dd></div></> : <>
                 <div>
-                  <dt>手动收藏</dt>
+                  <dt>{t("手动收藏")}</dt>
                   <dd>{exportSummary?.manualConfiguredCount ?? 0}</dd>
                 </div>
                 <div>
-                  <dt>自动识别</dt>
+                  <dt>{t("自动识别")}</dt>
                   <dd>{exportSummary?.autoIncludedCount ?? 0}</dd>
                 </div>
                 <div>
-                  <dt>跳过</dt>
+                  <dt>{t("跳过")}</dt>
                   <dd>{exportSummary?.skippedUnconfiguredCount ?? 0}</dd>
                 </div>
+                </>}
               </dl>
               {listedEntries.length > 0 ? (
                 <button
                   aria-controls="config-library-entries"
                   aria-expanded={entriesExpanded}
-                  aria-label={entriesExpanded ? "收起精灵和技能" : "查看精灵和技能"}
+                  aria-label={entriesExpanded ? t("收起精灵和技能") : t("查看精灵和技能")}
                   className="config-library-summary-toggle"
                   onClick={() => setEntriesExpanded((expanded) => !expanded)}
                   type="button"
                 >
-                  {entriesExpanded ? "收起清单" : "查看精灵和技能"}
+                  {entriesExpanded ? t("收起清单") : t("查看精灵和技能")}
                 </button>
               ) : null}
             </div>
@@ -202,35 +212,35 @@ export function ConfigLibraryDialog({
                 spiritById={spiritById}
               />
             ) : null}
-            <p>包含手动收藏和绿色完整配置的性格、个体、四技能与特性。</p>
+            <p>{t(serverId === "cn" ? "包含手动收藏和绿色完整配置的性格、个体、四技能与特性。" : "国际服配置保留原始引用和参数；已知占位资料可编辑，未知引用待核验。")}</p>
           </>
         ) : (
           <>
             {isPopular ? (
               <div className="popular-config-summary">
                 <div>
-                  <strong>PVP 热门配置 · {POPULAR_CONFIG_COUNT} 只</strong>
-                  <span>安装后可离线导入</span>
+                  <strong>{t("PVP 热门配置 · {count} 只", { count: POPULAR_CONFIG_COUNT })}</strong>
+                  <span>{t("安装后可离线导入")}</span>
                 </div>
                 {listedEntries.length > 0 ? (
                   <button
                     aria-controls="config-library-entries"
                     aria-expanded={entriesExpanded}
-                    aria-label={entriesExpanded ? "收起精灵和技能" : "查看精灵和技能"}
+                    aria-label={entriesExpanded ? t("收起精灵和技能") : t("查看精灵和技能")}
                     className="config-library-summary-toggle"
                     onClick={() => setEntriesExpanded((expanded) => !expanded)}
                     type="button"
                   >
-                    {entriesExpanded ? "收起清单" : "查看精灵和技能"}
+                    {entriesExpanded ? t("收起清单") : t("查看精灵和技能")}
                   </button>
                 ) : null}
               </div>
             ) : (
               <label>
-                <span>选择配置库 JSON（最大 5 MB）</span>
+                <span>{t("选择配置库 JSON（最大 5 MB）")}</span>
                 <input
                   accept="application/json,.json"
-                  aria-label="选择配置库文件"
+                  aria-label={t("选择配置库文件")}
                   onChange={(event) => onFile?.(event.target.files?.[0] ?? null)}
                   type="file"
                 />
@@ -239,11 +249,11 @@ export function ConfigLibraryDialog({
             {isPopular && entriesExpanded ? (
               <div className="config-library-search">
                 <label className="config-library-search-field">
-                  <span>精灵名</span>
+                  <span>{t("精灵名")}</span>
                   <input
-                    aria-label="搜索精灵名"
+                    aria-label={t("搜索精灵名")}
                     onChange={(event) => setEntryQuery(event.target.value)}
-                    placeholder="输入精灵名查找"
+                    placeholder={t("输入精灵名查找")}
                     ref={entrySearchRef}
                     type="search"
                     value={entryQuery}
@@ -261,13 +271,13 @@ export function ConfigLibraryDialog({
                   }}
                   type="button"
                 >
-                  清除
+                  {t("清除")}
                 </button>
               </div>
             ) : null}
             {entriesExpanded ? (
               <ConfigEntryList
-                emptyMessage={isPopular ? "没有匹配的精灵" : undefined}
+                emptyMessage={isPopular ? t("没有匹配的精灵") : undefined}
                 entries={isPopular ? visibleEntries : listedEntries}
                 skillById={skillById}
                 spiritById={spiritById}
@@ -279,22 +289,22 @@ export function ConfigLibraryDialog({
                 <dl className="config-library-preview config-library-primary-preview">
                   {PRIMARY_PREVIEW_ROWS.map(([key, label]) => (
                     <div key={key}>
-                      <dt>{label}</dt>
+                      <dt>{t(label)}</dt>
                       <dd>{parsed.preview[key] ?? 0}</dd>
                     </div>
                   ))}
                 </dl>
-                {parsed.preview.favoritesAdded > 0 ? <p className="config-library-note">新增收藏 {parsed.preview.favoritesAdded} 只</p> : null}
+                {parsed.preview.favoritesAdded > 0 ? <p className="config-library-note">{t("新增收藏 {count} 只", { count: parsed.preview.favoritesAdded })}</p> : null}
                 {importChanges.length > 0 ? (
-                  <ul className="config-library-issue-details config-library-changes" aria-label="配置变动项目">
+                  <ul className="config-library-issue-details config-library-changes" aria-label={t("配置变动项目")}>
                     {importChanges.map((change) => (
                       <li key={change.spiritId}>
                         <div className="config-library-issue-heading">
                           <strong>{change.spiritName}</strong>
-                          <span>{change.status === "added" ? "新增 · 将导入" : change.canUpdate ? "不同 · 将更新" : "不同 · 保留手改"}</span>
+                          <span>{change.status === "added" ? t("新增 · 将导入") : change.canUpdate ? t("不同 · 将更新") : t("不同 · 保留手改")}</span>
                         </div>
                         {change.differences.map((difference) => (
-                          <p key={difference.field}>{difference.field}：本地 {difference.local}；导入 {difference.incoming}</p>
+                          <p key={difference.field}>{t("{field}：本地 {local}；导入 {incoming}", { field: t(difference.field), local: difference.local, incoming: difference.incoming })}</p>
                         ))}
                       </li>
                     ))}
@@ -302,7 +312,7 @@ export function ConfigLibraryDialog({
                 ) : null}
                 {importIssueCount === 0 ? (
                   <p className="config-library-check-ok">
-                    检查通过，未发现兼容问题
+                    {t("检查通过，未发现兼容问题")}
                   </p>
                 ) : (
                   <div className="config-library-issues">
@@ -313,14 +323,14 @@ export function ConfigLibraryDialog({
                       onClick={() => setImportIssuesExpanded((expanded) => !expanded)}
                       type="button"
                     >
-                      检查详情（{importIssueCount} 项）
+                      {t("检查详情（{count} 项）", { count: importIssueCount })}
                     </button>
                     {importIssuesExpanded ? (
                       <div id="config-library-import-issues">
                         <dl className="config-library-preview config-library-issue-preview">
                           {importIssues.map(([key, label]) => (
                             <div key={key}>
-                              <dt>{label}</dt>
+                              <dt>{t(label)}</dt>
                               <dd>{parsed.preview[key]}</dd>
                             </div>
                           ))}
@@ -332,7 +342,7 @@ export function ConfigLibraryDialog({
                                 <div className="config-library-issue-heading">
                                   <strong>{detail.spiritName}</strong>
                                   <span>
-                                    文件第 {detail.entryIndex} 条 · {ISSUE_LABELS[detail.type] ?? "检查项"}
+                                    {t("文件第 {index} 条 · {type}", { index: detail.entryIndex, type: t(ISSUE_LABELS[detail.type] ?? "检查项") })}
                                   </span>
                                 </div>
                                 <p>{detail.reason}</p>
@@ -343,7 +353,7 @@ export function ConfigLibraryDialog({
                         ) : null}
                         {parsed.preview.duplicateEntries > 0 ? (
                           <p className="config-library-note">
-                            同一精灵在文件内出现多次，采用最后一条有效配置。
+                            {t("同一精灵在文件内出现多次，采用最后一条有效配置。")}
                           </p>
                         ) : null}
                       </div>
@@ -352,13 +362,13 @@ export function ConfigLibraryDialog({
                 )}
                 <p className="config-library-note">
                   {parsed.preview.same > 0 && !parsed.preview.different && !parsed.preview.added
-                    ? "全部配置与本地一致，无需更新。"
-                    : "旧预设更新，手改配置保留，相同跳过。"}
-                  队伍与当前页面不会改变。
+                    ? t("全部配置与本地一致，无需更新。")
+                    : t("旧预设更新，手改配置保留，相同跳过。")}
+                  {t("队伍与当前页面不会改变。")}
                 </p>
               </>
             ) : (
-              <p>{isPopular ? "正在检查内置配置…" : "选择文件后先校验，不会立即写入。"}</p>
+              <p>{isPopular ? t("正在检查内置配置…") : t("选择文件后先校验，不会立即写入。")}</p>
             )}
           </>
         )}
@@ -367,29 +377,29 @@ export function ConfigLibraryDialog({
         ) : null}
         <div className="dialog-actions">
           {isPopular ? (
-            <label className="config-library-preset-toggle" title="展开精灵列表时浏览预设与手动收藏；输入文字仍搜索全部精灵">
+            <label className="config-library-preset-toggle" title={t("展开精灵列表时浏览预设与手动收藏；输入文字仍搜索全部精灵")}>
               <input
                 type="checkbox"
                 role="switch"
                 checked={presetBrowse.enabled}
                 onChange={(event) => presetBrowse.setEnabled(event.target.checked)}
               />
-              <span>仅预览配置项</span>
+              <span>{t("仅预览配置项")}</span>
             </label>
           ) : null}
-          {isExport && <button className={`secondary-action${(exportSummary?.exportedCount ?? 0) === 0 ? " secondary-panel-primary" : ""}`} onClick={onStartImport} type="button">导入</button>}
+          {isExport && <button className={`secondary-action${!canExport ? " secondary-panel-primary" : ""}`} onClick={onStartImport} type="button">{t("导入")}</button>}
           <button
             className="secondary-action secondary-panel-primary"
             disabled={isExport
-              ? (exportSummary?.exportedCount ?? 0) === 0
+              ? !canExport
               : !canImport}
             onClick={isExport ? onExport : onConfirmImport}
             type="button"
           >
-            {isExport ? "导出" : updateCount > 0 ? `更新配置（${updateCount}）` : parsed?.preview.favoritesAdded > 0 ? `添加收藏（${parsed.preview.favoritesAdded}）` : parsed?.preview.different > 0 ? "手改配置已保留" : "已是最新"}
+            {isExport ? t("导出") : updateCount > 0 ? t("更新配置（{count}）", { count: updateCount }) : parsed?.preview.favoritesAdded > 0 ? t("添加收藏（{count}）", { count: parsed.preview.favoritesAdded }) : parsed?.preview.different > 0 ? t("手改配置已保留") : t("已是最新")}
           </button>
           <button className="secondary-action" onClick={onClose} type="button">
-            取消
+            {t("取消")}
           </button>
         </div>
       </section>

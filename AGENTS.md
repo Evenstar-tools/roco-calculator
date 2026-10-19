@@ -23,6 +23,11 @@
 - 依既有明确授权执行每轮命中结果的一次进入验证，单独记录监控/验收访问；不为累计点击重复操作，不把自身点击或无法分离的 RUM 变化当自然获客证据，不估算扣减汇总。
 - 每轮给实际值、可比变化、证据边界及最多一个有新证据的下一步验收；无证据支持改动时保持产品和标题稳定，明确未改善或尚未核验，不用静默成功、重复建议或新增内容制造进展。
 
+## 赛季主题设计
+
+- 为洛克计算器新增、调整或审阅赛季背景、招牌精灵、配色及主题切换时，使用项目 Skill [roco-season-design](.agents/skills/roco-season-design/SKILL.md)，执行根目录 [design.md](design.md)。用户说“按 design.md 做 S5 主题”也进入同一流程。
+- `design.md` 是唯一流程正文；[赛季素材来源与历史验收](docs/design/season-themes.md)和[背景提示词记录](docs/design/season-imagegen-prompts.md)保留实例证据，避免复制出多套规则。普通功能修复不因此重做主题，也不新增发布授权。
+
 ## AI 计算与验算
 
 - 当用户要求计算、复算、验算、解释或比较《洛克王国：世界》PVP 伤害时，必须先读取并使用项目 Skill：`.agents/skills/rock-calculator-cli/SKILL.md`。

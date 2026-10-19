@@ -230,6 +230,22 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.2.6",
+    date: "2026.10.19",
+    title: "S4季中与历季外观切换",
+    whatsNew: S4_FEATURE_INTRO,
+    summaryHighlights: [
+      "显示设置可切换S1–S4赛季外观，随时恢复默认主题。",
+      "赛季场景、招牌精灵与弹窗配色同步适配手机和桌面。",
+    ],
+    features: [
+      "新增暗夜拾光、狂欢怪谈、铅字幻梦与月涌狂想四套赛季外观，记住上次选择。",
+    ],
+    fixes: [
+      "统一各主题的页头、深色背景和二级弹窗，窄窗口保留完整操作区；切换外观不改变配置、亮暗模式或计算。",
+    ],
+  }),
+  createRelease({
     version: "v2.2.5",
     date: "2026.10.15",
     title: "S4季中资质与实战计算修复",

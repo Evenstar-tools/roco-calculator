@@ -6,9 +6,38 @@ import { categoryNames, seasonChanges } from "./catalog.js";
 import { getCachedCatalog, loadSkillCatalog } from "./load-catalog.js";
 import "./skill-query.css";
 import BidirectionalQuery from "./BidirectionalQuery.jsx";
+import { useRuntime } from "../../runtime/RuntimeContext.jsx";
+import { useLocale } from "../../i18n/LocaleContext.jsx";
+import { useModalFocus } from "../../hooks/useModalFocus.js";
+import { createPlaceholderQueryCatalog } from "./placeholder-catalog.js";
 
-export default function SkillQueryPanel({ onClose, skills = [], spirits = [] }) {
-  const [data, setData] = useState(getCachedCatalog);
+export default function SkillQueryPanel(props) {
+  const { release, serverId } = useRuntime();
+  const { t } = useLocale();
+  const root = useRef(null);
+  const referenceCatalog = useMemo(() => {
+    if (serverId !== "global") return null;
+    try { return createPlaceholderQueryCatalog(props.snapshot); }
+    catch { return null; }
+  }, [serverId, props.snapshot]);
+  useModalFocus(!release.capabilities.search, root, props.onClose);
+  if (release.capabilities.search) return <VerifiedSkillQueryPanel {...props} />;
+  return <div className="skill-query-backdrop"><section aria-label={t("技能查询")} aria-modal="true" role="dialog" tabIndex={-1} ref={root} className="skill-query">
+    <header className="skill-query__header"><h2>{t("技能检索")}</h2><button onClick={props.onClose} aria-label={t("关闭技能查询")}>{t("关闭")} ×</button></header>
+    {referenceCatalog ? <>
+      <div className="skill-query__tabs" role="tablist" aria-label={t("技能查询视图")}><button role="tab" aria-selected="true">{t("查询")}</button></div>
+
+      <BidirectionalQuery placeholder season={referenceCatalog} skills={referenceCatalog.skills} spirits={referenceCatalog.spirits} />
+    </> : <>
+      <div className="skill-query__tabs" role="tablist" aria-label={t("技能查询视图")}>{["查询", "赛季新技能", "赛季学习更新"].map((label, index) => <button key={label} role="tab" aria-selected={index === 0} disabled>{t(label)}</button>)}</div>
+      <p className="skill-query__empty" role="status">{t("国际服技能资料待核验，暂不可查询。")}</p>
+    </>}
+  </section></div>;
+}
+
+function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [] }) {
+  const { serverId } = useRuntime();
+  const [data, setData] = useState(() => getCachedCatalog(serverId));
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
   const [seasonId, setSeasonId] = useState("");
@@ -23,11 +52,11 @@ export default function SkillQueryPanel({ onClose, skills = [], spirits = [] }) 
   useEffect(() => { close.current = onClose; }, [onClose]);
   useEffect(() => {
     let active = true;
-    loadSkillCatalog()
+    loadSkillCatalog(serverId)
       .then((value) => { if (active) { setData(value); setError(""); } })
       .catch(() => { if (active) setError("技能资料暂时无法加载，请重试。"); });
     return () => { active = false; };
-  }, [attempt]);
+  }, [attempt, serverId]);
   useEffect(() => {
     const trigger = document.activeElement;
     const previous = document.body.style.overflow;

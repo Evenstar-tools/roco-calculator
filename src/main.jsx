@@ -1,11 +1,10 @@
 import React from "react";
 import { metrics } from "./analytics/metrics.js";
 import { createRoot } from "react-dom/client";
-import { CalculatorRouter } from "./CalculatorRouter.jsx";
+import { WebEntry } from "./runtime/WebEntry.jsx";
 import { installInputSelection } from "./input-selection.js";
 import "./styles.css";
 
-void metrics.start();
 let lastMetricsActivity = 0;
 const noteActivity = () => {
   const now = Date.now();
@@ -23,15 +22,26 @@ if (import.meta.hot) import.meta.hot.dispose(removeInputSelection);
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <CalculatorRouter />
+    <WebEntry />
   </React.StrictMode>,
 );
 
 const isDesktopApp = window.location.protocol === "app:";
 
 if ("serviceWorker" in navigator && import.meta.env.PROD && !isDesktopApp) {
+  const cacheVisitedAssets = () => {
+    const urls = performance.getEntriesByType("resource").map(({ name }) => name)
+      .filter((name) => { const url = new URL(name); return url.origin === location.origin && url.pathname.startsWith("/assets/"); });
+    navigator.serviceWorker.controller?.postMessage({ type: "CACHE_VISITED_ASSETS", urls });
+  };
+  navigator.serviceWorker.addEventListener("controllerchange", cacheVisitedAssets);
+  // 动态模块可能在接管瞬间仍在下载；补缓存这批完成较晚的已访问资源。
+  if ("PerformanceObserver" in window) {
+    const observer = new PerformanceObserver(() => cacheVisitedAssets());
+    observer.observe({ type: "resource", buffered: true });
+  }
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {
+    navigator.serviceWorker.register("/sw.js").then(() => navigator.serviceWorker.ready).then(cacheVisitedAssets).catch(() => {
       // 离线缓存失败不阻断计算器主流程。
     });
   });

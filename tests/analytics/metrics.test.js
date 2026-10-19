@@ -99,3 +99,30 @@ test("only controlled event metadata can leave the browser", async () => {
   expect(h.send.mock.calls[1][0]).toMatchObject({ action: "apply_member", side: "defender" });
   expect(JSON.stringify(h.send.mock.calls)).not.toContain("private");
 });
+
+
+test("leaving CN before SDK resolves destroys it without flushing queued events", async () => {
+  let resolveTransport;
+  const send = vi.fn();
+  const destroy = vi.fn();
+  const h = harness({ loadTransport: () => new Promise((resolve) => { resolveTransport = resolve; }) });
+  const starting = h.metrics.start();
+  await Promise.resolve();
+  h.metrics.destroy();
+  resolveTransport({ send, destroy });
+  await starting;
+  h.metrics.activity();
+  h.metrics.track("calculation_ready");
+  expect(send).not.toHaveBeenCalled();
+  expect(destroy).toHaveBeenCalledOnce();
+});
+
+test("Global routes reject optional RUM traffic including late CN requests", () => {
+  const original = location.href;
+  try {
+    for (const path of ["/en/", "/global/zh-CN/", "/global/ja/"]) {
+      history.replaceState(null, "", path);
+      expect(filterRumRequest({ url: "https://rumt-zh.com/collect/pv" })).toBe(false);
+    }
+  } finally { history.replaceState(null, "", original); }
+});

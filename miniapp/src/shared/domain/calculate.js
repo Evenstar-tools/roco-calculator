@@ -8,8 +8,10 @@ import {
 import { resolveCombatant } from "./skill-result/loadout.js";
 import { finiteNumber } from "./skill-result/numeric.js";
 import { attachSkillGainSummaries } from "./skill-gain-summary.js";
+import { assertCalculationEnvironment } from "./server-environment.js";
 
 export function calculateMatchup(snapshot, battleInput) {
+  assertCalculationEnvironment(snapshot, battleInput);
   const mode = battleInput.mode === "four" ? "four" : "single";
   const sides = battleInput.sides ?? {
     attacker: battleInput.attacker,

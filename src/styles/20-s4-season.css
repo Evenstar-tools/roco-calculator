@@ -1,10 +1,188 @@
-/* S4 月面星轨：只改变装饰和配色，不占用顶栏排版空间。 */
+/* Presentation-only season tokens. Images come from season-themes.js; no game rules change. */
+:root {
+  --season-scene-image: none;
+  --season-character-image: none;
+  --season-layer-content: none;
+  --season-header-bg: var(--surface);
+  --season-header-border-top: var(--accent);
+  --season-header-border-bottom: var(--border);
+  --season-header-text: var(--text);
+  --season-title: var(--accent-strong);
+  --season-control-border: var(--border);
+  --season-control-bg: var(--surface-soft);
+  --season-control-text: var(--text);
+  --season-control-muted: var(--text-muted);
+  --season-control-selected-bg: var(--accent);
+  --season-control-selected-text: #fff;
+  --season-control-hover-border: var(--border-strong);
+  --season-control-hover-bg: var(--accent-soft);
+  --season-control-hover-text: var(--accent-strong);
+  --season-icon: var(--text-muted);
+  --season-focus: var(--accent);
+  --season-page-focus: var(--accent);
+  --season-tool-hover-bg: var(--season-control-hover-bg);
+  --season-result-text: var(--text);
+  --season-secondary-accent: var(--accent);
+  --season-scene-opacity: .84;
+  --season-character-top: -29px;
+  --season-character-left: 56%;
+  --season-character-width: 162px;
+  --season-character-bg-left: calc(56% + var(--season-character-width) * .56);
+  --season-page-wash: linear-gradient(180deg, #0d173033 0, #15243a66 64px, #142030e6 150px, #101722 240px);
+  --season-page-wash-mobile: linear-gradient(180deg, #0d173033, #142030e6 150px, #101722 240px);
+  --season-header-wash: linear-gradient(180deg, #0d1730eb, #12213a99 55%, transparent);
+}
+
+html[data-theme="dark"] {
+  --season-control-selected-text: var(--bg);
+}
+
+/* An unconfirmed Global season keeps the general UI, without CN art or gold accents. */
+html[data-season="neutral"][data-theme="dark"] {
+  --accent: #abc4ed;
+  --accent-strong: #d3e2fa;
+  --accent-soft: #2a3c55;
+  --selection-bg: #273b55;
+  --selection-border: #80a6da;
+  --selection-hover: #30445f;
+}
+
+html:is([data-season="s1"], [data-season="s2"], [data-season="s3"], [data-season="s4"]) {
+  --season-layer-content: "";
+  --season-header-text: #f4f2e5;
+  --season-control-text: #e2e8ee;
+  --season-control-selected-text: #26384a;
+  --season-control-hover-text: #f4f2e5;
+  --season-icon: #e2e6db;
+}
+
+html:is([data-season="s1"], [data-season="s2"], [data-season="s3"]) {
+  --season-character-left: 52%;
+  --season-character-bg-left: calc(52% + var(--season-character-width) * .52);
+}
+
+/* S4 values retain the existing artwork, crop, colors and responsive geometry. */
+html[data-season="s4"] {
+  --season-header-bg: #101b35;
+  --season-header-border-top: #c7b66f;
+  --season-header-border-bottom: #37485f;
+  --season-title: #ecd78c;
+  --season-control-border: #4e627a;
+  --season-control-bg: #1b2943;
+  --season-control-muted: #c8d5e1;
+  --season-control-selected-bg: #e0ce95;
+  --season-control-hover-border: #9aa9bb;
+  --season-control-hover-bg: #30415a;
+  --season-focus: #ecd78c;
+  --season-page-focus: #88badb;
+  --season-tool-hover-bg: #383c40;
+  --season-result-text: #eed89e;
+  --season-secondary-accent: #b89743;
+}
+
+html[data-season="s1"] {
+  --accent: #4e5a9c;
+  --accent-strong: #344579;
+  --accent-soft: #eef0fb;
+  --selection-bg: #eef0fb;
+  --selection-border: #6978b8;
+  --selection-hover: #f4f5fc;
+  --season-header-bg: #171d3d;
+  --season-header-border-top: #a9bce2;
+  --season-header-border-bottom: #425174;
+  --season-title: #d3dcf3;
+  --season-control-border: #59668f;
+  --season-control-bg: #293151;
+  --season-control-muted: #d0d8f0;
+  --season-control-selected-bg: #c6d3ed;
+  --season-control-selected-text: #25334d;
+  --season-control-hover-border: #a5b7dc;
+  --season-control-hover-bg: #39466d;
+  --season-focus: #cad9f7;
+  --season-result-text: #d2dff7;
+  --season-secondary-accent: #7586b8;
+  --season-character-top: -55px;
+  --season-character-width: 150px;
+  --season-page-wash: linear-gradient(180deg, #171a3c33 0, #23294b66 64px, #171f32e6 150px, #101722 240px);
+  --season-page-wash-mobile: linear-gradient(180deg, #171a3c33, #171f32e6 150px, #101722 240px);
+  --season-header-wash: linear-gradient(180deg, #141a36eb, #23294b99 55%, transparent);
+}
+
+html[data-season="s2"] {
+  --accent: #9a3957;
+  --accent-strong: #7a2744;
+  --accent-soft: #fbf0f4;
+  --selection-bg: #fcf1f4;
+  --selection-border: #b85f7b;
+  --selection-hover: #fff6f8;
+  --season-header-bg: #321b30;
+  --season-header-border-top: #d2ad6c;
+  --season-header-border-bottom: #62415d;
+  --season-title: #f0d49a;
+  --season-control-border: #7a536f;
+  --season-control-bg: #43253d;
+  --season-control-muted: #ead1e0;
+  --season-control-selected-bg: #e8c98f;
+  --season-control-selected-text: #492738;
+  --season-control-hover-border: #bd91ab;
+  --season-control-hover-bg: #60394f;
+  --season-focus: #f0d49a;
+  --season-result-text: #f0d49a;
+  --season-secondary-accent: #b68a51;
+  --season-character-top: -40px;
+  --season-character-width: 140px;
+  --season-page-wash: linear-gradient(180deg, #3a183333 0, #42243b66 64px, #271e2ee6 150px, #101722 240px);
+  --season-page-wash-mobile: linear-gradient(180deg, #3a183333, #271e2ee6 150px, #101722 240px);
+  --season-header-wash: linear-gradient(180deg, #30172ceb, #42243b99 55%, transparent);
+}
+
+html[data-season="s3"] {
+  --accent: #8a465e;
+  --accent-strong: #6c3045;
+  --accent-soft: #f8eff2;
+  --selection-bg: #f7edf1;
+  --selection-border: #ab6f82;
+  --selection-hover: #fcf5f7;
+  --season-header-bg: #1c302c;
+  --season-header-border-top: #c5ae7d;
+  --season-header-border-bottom: #4a6259;
+  --season-title: #e7d4a5;
+  --season-control-border: #60766b;
+  --season-control-bg: #293e36;
+  --season-control-muted: #d9e1d6;
+  --season-control-selected-bg: #e2c995;
+  --season-control-selected-text: #344038;
+  --season-control-hover-border: #a5b2a0;
+  --season-control-hover-bg: #415447;
+  --season-focus: #eddbaf;
+  --season-result-text: #e7d4a5;
+  --season-secondary-accent: #aa8c53;
+  --season-character-top: -35px;
+  --season-character-width: 155px;
+  --season-page-wash: linear-gradient(180deg, #173b3033 0, #29463b66 64px, #1c292be6 150px, #101722 240px);
+  --season-page-wash-mobile: linear-gradient(180deg, #173b3033, #1c292be6 150px, #101722 240px);
+  --season-header-wash: linear-gradient(180deg, #182f28eb, #29463b99 55%, transparent);
+}
+
+html[data-season="s1"][data-theme="dark"] {
+  --accent: #b7c8ec; --accent-strong: #d8e3fa; --accent-soft: #313b59;
+  --selection-bg: #313b50; --selection-border: #8a9fc9; --selection-hover: #3a4863;
+}
+html[data-season="s2"][data-theme="dark"] {
+  --accent: #e1bd87; --accent-strong: #f2d6a6; --accent-soft: #49343e;
+  --selection-bg: #44333f; --selection-border: #b78b9f; --selection-hover: #503d4c;
+}
+html[data-season="s3"][data-theme="dark"] {
+  --accent: #dbbf8c; --accent-strong: #f0dab1; --accent-soft: #3a4039;
+  --selection-bg: #334039; --selection-border: #a5ab88; --selection-hover: #405047;
+}
+
 .app-header,
 html[data-theme="dark"] .app-header {
   isolation: isolate;
-  border-top-color: #c7b66f;
-  border-bottom-color: #37485f;
-  background: #101b35;
+  border-top-color: var(--season-header-border-top);
+  border-bottom-color: var(--season-header-border-bottom);
+  background: var(--season-header-bg);
   box-shadow: none;
 }
 
@@ -20,16 +198,16 @@ html[data-theme="dark"] .app-header {
 .app-header__season-scene {
   position: absolute;
   inset: 0;
-  background: url("/assets/season/s4-moon-night.webp") no-repeat 20% 54% / 1000px auto;
-  opacity: 0.84;
+  background: var(--season-scene-image) no-repeat 20% 54% / 1000px auto;
+  opacity: var(--season-scene-opacity);
   mask-image: linear-gradient(90deg, transparent 22%, #000 53%, #000 72%, transparent 92%);
 }
 
-.app-header__season-wolf {
+.app-header__season-character {
   position: absolute;
-  top: -29px;
-  left: 56%;
-  width: 162px;
+  top: var(--season-character-top);
+  left: var(--season-character-left);
+  width: var(--season-character-width);
   height: auto;
   opacity: 0.93;
 }
@@ -57,27 +235,27 @@ html[data-theme="dark"] .app-header {
 
 .app-header h1,
 html[data-theme="dark"] .app-header h1 {
-  color: #f4f2e5;
+  color: var(--season-header-text);
 }
 
 .app-header__season-title {
-  color: #ecd78c;
+  color: var(--season-title);
 }
 
 .app-header .view-mode-switch,
 .app-header .team-action,
 html[data-theme="dark"] .app-header .view-mode-switch,
 html[data-theme="dark"] .app-header .team-action {
-  border-color: #4e627a;
-  background: #1b2943;
-  color: #e2e8ee;
+  border-color: var(--season-control-border);
+  background: var(--season-control-bg);
+  color: var(--season-control-text);
   box-shadow: none;
 }
 
 .app-header .view-mode-switch button,
 html[data-theme="dark"] .app-header .view-mode-switch button {
   background: transparent;
-  color: #c8d5e1;
+  color: var(--season-control-muted);
 }
 
 .app-header .view-mode-switch[data-portrait] { padding: 2px; border-radius: 9px; }
@@ -87,8 +265,8 @@ html[data-theme="dark"] .app-header .view-mode-switch[data-portrait] button,
 .app-header .view-mode-switch button[aria-pressed="true"],
 html[data-theme="dark"] .app-header .view-mode-switch button[aria-pressed="true"] {
   border-color: transparent;
-  background: #e0ce95;
-  color: #26384a;
+  background: var(--season-control-selected-bg);
+  color: var(--season-control-selected-text);
   box-shadow: none;
 }
 
@@ -135,28 +313,28 @@ html[data-theme="dark"] .app-header .view-mode-switch button[aria-pressed="true"
 }
 
 html[data-theme="dark"] .power-basis-switch {
-  border-color: #4e627a;
-  background: #1b2943;
+  border-color: var(--season-control-border);
+  background: var(--season-control-bg);
 }
 
 html[data-theme="dark"] .power-basis-switch button {
-  color: #c8d5e1;
+  color: var(--season-control-muted);
 }
 
 html[data-theme="dark"] .power-basis-switch button[aria-pressed="true"] {
-  background: #e0ce95;
-  color: #26384a;
+  background: var(--season-control-selected-bg);
+  color: var(--season-control-selected-text);
 }
 
 html[data-theme="dark"] .power-basis-switch button:not([aria-pressed="true"]):hover {
-  background: #30415a;
-  color: #f4f2e5;
+  background: var(--season-control-hover-bg);
+  color: var(--season-control-hover-text);
 }
 
 .app-header .icon-action,
 html[data-theme="dark"] .app-header .icon-action {
   background: transparent;
-  color: #e2e6db;
+  color: var(--season-icon);
 }
 
 .app-header .team-action:hover,
@@ -167,14 +345,14 @@ html[data-theme="dark"] .app-header .team-action:hover,
 html[data-theme="dark"] .app-header .icon-action:hover,
 html[data-theme="dark"] .app-header .icon-action[aria-expanded="true"],
 html[data-theme="dark"] .app-header .view-mode-switch:not([data-portrait]) button:not([aria-pressed="true"]):hover {
-  border-color: #9aa9bb;
-  background: #30415a;
-  color: #f4f2e5;
+  border-color: var(--season-control-hover-border);
+  background: var(--season-control-hover-bg);
+  color: var(--season-control-hover-text);
 }
 
 .app-header button:focus-visible,
 html[data-theme="dark"] .app-header button:focus-visible {
-  outline: 2px solid #ecd78c;
+  outline: 2px solid var(--season-focus);
   outline-offset: 2px;
 }
 
@@ -184,32 +362,35 @@ html[data-theme="dark"] body {
   background-color: var(--bg);
 }
 
-/* 月夜从页面顶端铺开，向内容区淡出，不再形成独立的深色横条。 */
+/* The same scene/character crop continues from the header into the dark page wash. */
 html[data-theme="dark"] body::before {
   position: absolute;
   z-index: -1;
   inset: 0 0 auto;
   height: 240px;
   background:
-    linear-gradient(180deg, #0d173033 0, #15243a66 64px, #142030e6 150px, #101722 240px),
-    url("/assets/season/s4-silver-wolf.webp") no-repeat calc(56% + 162px * 0.56) -26px / 162px auto,
-    url("/assets/season/s4-moon-night.webp") no-repeat center 44% / cover;
-  content: "";
+    var(--season-page-wash),
+    var(--season-character-image) no-repeat var(--season-character-bg-left) calc(var(--season-character-top) + 3px) / var(--season-character-width) auto,
+    var(--season-scene-image) no-repeat center 44% / cover;
+  content: var(--season-layer-content);
   pointer-events: none;
 }
 
 html[data-theme="dark"] .app-header {
+  backdrop-filter: none;
+}
+
+html[data-theme="dark"]:is([data-season="s1"], [data-season="s2"], [data-season="s3"], [data-season="s4"]) .app-header {
   border-color: transparent;
   background: transparent;
-  backdrop-filter: none;
 }
 
 html[data-theme="dark"] .app-header::before {
   position: absolute;
   z-index: -1;
   inset: -3px 0 -16px;
-  background: linear-gradient(180deg, #0d1730eb, #12213a99 55%, transparent);
-  content: "";
+  background: var(--season-header-wash);
+  content: var(--season-layer-content);
   pointer-events: none;
 }
 
@@ -218,11 +399,11 @@ html[data-theme="dark"] .app-header__season {
 }
 
 html[data-theme="dark"] .result-rail {
-  border-top-color: #c7b66f;
+  border-top-color: var(--season-header-border-top);
 }
 
 html[data-theme="dark"] .result-rail__damage {
-  color: #eed89e;
+  color: var(--season-result-text);
 }
 
 html[data-theme="dark"] .quick-nature__option .stat-icon,
@@ -231,9 +412,9 @@ html[data-theme="dark"] .quick-iv__option .stat-icon {
 }
 
 html[data-theme="dark"] .quick-nature__option[aria-pressed="true"] {
-  border-color: #b6a476;
-  background: #343a42;
-  color: #ebd697;
+  border-color: var(--selection-border);
+  background: var(--selection-bg);
+  color: var(--accent-strong);
 }
 
 html[data-theme="dark"] .floating-undo:not(.floating-undo--available) {
@@ -247,22 +428,33 @@ html[data-theme="dark"] .type-tag--幻 {
 }
 
 html[data-theme="dark"] :is(button, input, select):focus-visible {
-  outline-color: #88badb;
+  outline-color: var(--season-page-focus);
 }
 
-/* 桌面最小窗口保留角色；更窄的网页只保留低对比月夜纹理。 */
+/* Desktop keeps the character; narrow screens keep only the low-contrast scene. */
 @media (min-width: 801px) and (max-width: 1100px) {
   html[data-theme="dark"] body::before {
     /* 补回背景图宽度与顶栏 3px 上边框，和亮色图片的实际坐标一致。 */
-    background-position: 0 0, calc(100% - 490px + 140px) -19px, center 44%;
-    background-size: auto, 140px auto, cover;
+    background-position: 0 0, var(--season-character-bg-left) calc(var(--season-character-top) + 3px), center 44%;
+    background-size: auto, var(--season-character-width) auto, cover;
   }
 
-  .app-header__season-wolf {
-    top: -22px;
-    left: calc(100% - 490px);
-    width: 140px;
+  :root {
+    --season-character-left: calc(100% - 490px);
+    --season-character-bg-left: calc(100% - 490px + var(--season-character-width));
   }
+  html[data-season="s4"] { --season-character-top: -22px; --season-character-width: 140px; }
+
+  /* Keep each mascot's face in the gap between the title and controls. */
+  html:is([data-season="s1"], [data-season="s2"], [data-season="s3"]) {
+    --season-character-left: calc(100% - 560px);
+    --season-character-bg-left: calc(100% - 560px + var(--season-character-width));
+  }
+  html[data-season="s1"] { --season-character-top: -44px; --season-character-width: 120px; }
+  html[data-season="s2"] { --season-character-top: -34px; --season-character-width: 120px; }
+  html[data-season="s3"] { --season-character-top: -16px; --season-character-width: 104px; }
+  .app-header--season-preview .app-header__title-long { display: none; }
+  .app-header--season-preview .app-header__title-short { display: inline; }
 
   .app-header__season-star {
     left: calc(100% - 358px);
@@ -272,13 +464,13 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
 @media (max-width: 800px) {
   html[data-theme="dark"] body::before {
     background-image:
-      linear-gradient(180deg, #0d173033, #142030e6 150px, #101722 240px),
-      url("/assets/season/s4-moon-night.webp");
+      var(--season-page-wash-mobile),
+      var(--season-scene-image);
     background-position: 0 0, center 44%;
     background-size: auto, auto 320px;
   }
 
-  .app-header__season-wolf,
+  .app-header__season-character,
   .app-header__season-orbit,
   .app-header__season-star {
     display: none;
@@ -298,6 +490,7 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
   }
   .app-header:not(.app-header--tool) .app-header__actions { flex: none; gap: 2px; }
   .app-header:not(.app-header--tool) h1 { font-size: 14px; }
+  .app-header.app-header--season-preview h1 { max-width: none; }
   .app-header:not(.app-header--tool) .team-action {
     width: 36px;
     min-width: 36px;
@@ -316,9 +509,10 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
 
 @media (max-width: 620px) {
   /* 竖屏吸顶栏用实底，滚动中的能力/技能文字不再透进导航。 */
-  html[data-theme="dark"] .app-header {
-    background: #101b35;
-    border-bottom-color: #37485f;
+  html[data-theme="dark"] .app-header,
+  html[data-theme="dark"]:is([data-season="s1"], [data-season="s2"], [data-season="s3"], [data-season="s4"]) .app-header {
+    background: var(--season-header-bg);
+    border-bottom-color: var(--season-header-border-bottom);
   }
   html[data-theme="dark"] .app-header::before {
     display: none;

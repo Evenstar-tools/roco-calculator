@@ -1,3 +1,4 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
 import {
   ArrowUp,
   Equals,
@@ -16,16 +17,18 @@ export function QuickNaturePicker({
   displayIvs,
   label,
   onChange,
+  placeholder = false,
   showOptionLabels = false,
   side,
   value,
 }) {
+  const { t } = useLocale();
   const selectedStat = getNature(value).upStat;
   const SideIcon = side === "attacker" ? Sword : Shield;
 
   return (
     <div
-      aria-label={`${label}快捷性格`}
+      aria-label={t("{label}快捷性格", { label })}
       className={`quick-nature quick-nature--${side}${showOptionLabels ? " quick-nature--labeled" : ""}`}
       role="group"
     >
@@ -34,28 +37,28 @@ export function QuickNaturePicker({
         <span className="sr-only">{label}</span>
       </span>
       <button
-        aria-label={`${label}普通性格`}
-        aria-pressed={!selectedStat}
+        aria-label={t("{label}普通性格", { label })}
+        aria-pressed={placeholder ? value === "neutral" : !selectedStat}
         className="quick-nature__option quick-nature__option--neutral"
         onClick={() => onChange("neutral")}
-        title="普通（无修正）"
+        title={t(placeholder ? value == null ? "未设置" : "普通（国服参考）" : "普通（无修正）")}
         type="button"
       >
         <Equals aria-hidden="true" size={16} weight="bold" />
-        <span>{showOptionLabels ? "普通" : "性格"}</span>
+        <span>{placeholder && value == null ? "—" : t(showOptionLabels ? "普通" : "性格")}</span>
       </button>
       {QUICK_STATS.map((stat) => (
         <button
-          aria-label={`${label}${STAT_LABELS[stat]}增益`}
+          aria-label={t("{label}{stat}增益", { label, stat: t(STAT_LABELS[stat]) })}
           aria-pressed={selectedStat === stat}
           className="quick-nature__option"
           key={stat}
           onClick={() => onChange(resolveCompactNaturePreset(stat, displayIvs))}
-          title={`${STAT_LABELS[stat]} +20%`}
+          title={placeholder ? t("{stat}增益（国服参考）", { stat: t(STAT_LABELS[stat]) }) : `${t(STAT_LABELS[stat])} +20%`}
           type="button"
         >
           <StatIcon size={19} stat={stat} />
-          {showOptionLabels ? <span className="quick-nature__name">{STAT_LABELS[stat]}</span> : null}
+          {showOptionLabels ? <span className="quick-nature__name">{t(STAT_LABELS[stat])}</span> : null}
           <ArrowUp
             aria-hidden="true"
             className="quick-nature__up"

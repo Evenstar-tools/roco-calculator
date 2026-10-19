@@ -44,3 +44,5 @@
   .sq-library-heading{display:none}.sq-library{padding-top:8px}.sq-mobile-nav{padding-block:6px}
   .skill-query:has(.sq-workspace){height:100dvh}.sq-suggestions,.sq-skill-table{grid-template-columns:minmax(0,1fr)}.sq-query select,.sq-query input,.sq-learner-filters input,.sq-learner-filters select{min-height:44px}.sq-filter-fields{gap:6px}.sq-filter-fields select{font-size:14px;padding-inline:6px}.sq-selected{grid-template-columns:minmax(0,1fr)}.sq-selected-heading{font-size:14px}.sq-selected-heading button{min-height:44px}.sq-card-heading strong,.sq-skill-name strong{font-size:15px}.sq-spirit-heading h3{font-size:20px}.sq-spirit-heading select{width:100%}.sq-sources{gap:5px}.sq-sources button{padding:8px 7px;min-height:44px}.sq-detail-filters{gap:6px}.sq-detail-filters>select{min-width:0;font-size:14px}.sq-workspace--spirit:not(.sq-workspace--detail) .sq-families{grid-template-columns:minmax(0,1fr)}
 }
+
+@media(min-width:901px){.sq-workspace--reference .sq-filter-fields select{width:140px}.sq-workspace--reference .sq-detail-filters>select{flex-basis:140px;min-width:140px}}

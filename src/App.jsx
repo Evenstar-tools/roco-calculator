@@ -1,3 +1,9 @@
+import { loadGlobalPlaceholderCatalog, loadServerSnapshot } from "./runtime/load-snapshot.js";
+import { useRuntime } from "./runtime/RuntimeContext.jsx";
+import { UNVERIFIED_GLOBAL_SNAPSHOT } from "./runtime/unverified-snapshot.js";
+import { useLocale } from "./i18n/LocaleContext.jsx";
+import { createCalculatorSessionStore } from "./runtime/workspace-store.js";
+import { storageError } from "./state/server-storage.js";
 import { useFeatureMetrics } from "./analytics/use-feature-metrics.js";
 import { calculatorResultKind, useCalculationMetrics, useLineupMetrics } from "./analytics/use-completion-metrics.js";
 import { recordRefractionUsage } from "./domain/refraction.js";
@@ -78,7 +84,7 @@ import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
 import { useCalculatorSession } from "./hooks/useCalculatorSession.js";
 import { useCalculatorShortcuts } from "./hooks/useCalculatorShortcuts.js";
 import { readShortcutSettings, writeShortcutSettings } from "./state/shortcut-settings.js";
-import { readFormConfigMemoryEnabled, readFormConfigPreferences, writeFormConfigPreference } from "./state/form-config-preferences.js";
+import { getFormConfigPreferences } from "./state/form-config-preferences.js";
 import { ShortcutDialog } from "./components/ShortcutDialog.jsx";
 import {
   POPULAR_CONFIG_COUNT,
@@ -89,6 +95,7 @@ import { useShareFlow } from "./hooks/useShareFlow.js";
 import { useWorkspaceOverlays } from "./hooks/useWorkspaceOverlays.js";
 import {
   applyConfiguration as applySessionConfiguration,
+  assertSnapshotReferences,
   abilityLevelMultiplier,
   createProductInitialState,
   patchFourSkill,
@@ -113,15 +120,20 @@ const TransmissionPanel = lazy(() => import("./features/transmission/Transmissio
 const TypeQueryPanel = lazy(() => import("./features/type-query/TypeQueryPanel.jsx"));
 const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
 const DamageComparisonDialog = lazy(() => import("./components/DamageComparisonDialog.jsx"));
+const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
 const preloadSkillQuery = () => {
   void loadSkillQueryPanel().catch(() => {});
   void import("./features/skill-query/load-catalog.js").then(({ loadSkillCatalog }) => loadSkillCatalog()).catch(() => {});
 };
 
-function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active }) {
-  const [shortcutSettings, setShortcutSettings] = useState(readShortcutSettings);
+function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlobal, active }) {
+  const { serverId, release } = useRuntime();
+  const { t } = useLocale();
+  const formPreferences = getFormConfigPreferences(serverId);
+  const [shortcutSettings, setShortcutSettings] = useState(() => readShortcutSettings(serverId));
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
-  useEffect(() => { writeShortcutSettings(shortcutSettings); }, [shortcutSettings]);
+  useEffect(() => { writeShortcutSettings(shortcutSettings, serverId); }, [shortcutSettings, serverId]);
+  const [deerOpen, setDeerOpen] = useState(false);
   const [skillQueryOpen, setSkillQueryOpen] = useState(false);
   const [transmissionOpen, setTransmissionOpen] = useState(false);
   const [typeQueryOpen, setTypeQueryOpen] = useState(false);
@@ -133,25 +145,56 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
   const initialState = useMemo(() => {
     if (initialWorkspace?.state) return structuredClone(initialWorkspace.state);
     const next = createProductInitialState(snapshot);
+    if (serverId === "global") {
+      // 原界面结构照常保留；未核验的性格和个体留空，不继承国服默认值。
+      for (const side of Object.values(next.sides)) {
+        side.nature = null;
+        side.displayIvs = Object.fromEntries(Object.keys(side.displayIvs).map((stat) => [stat, null]));
+      }
+    }
     return {
       ...next,
       calculationOptions: {
         ...next.calculationOptions,
         includeNegativeStatusSettlement:
-          readNegativeStatusSettlementSetting(),
+          readNegativeStatusSettlementSetting(undefined, serverId),
       },
     };
-  }, [snapshot, initialWorkspace]);
+  }, [snapshot, initialWorkspace, serverId]);
   const [toast, setToast] = useState("");
   const [activeDirection, setActiveDirection] = useState(initialWorkspace?.activeDirection ?? "forward");
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(initialWorkspace?.advancedOptionsOpen ?? false);
   const [advancedOptionsTopRequest, setAdvancedOptionsTopRequest] = useState(null);
   const nextAdvancedOptionsTopRequestRef = useRef(0);
-  const [savedViewMode, setViewMode] = useState(() => initialWorkspace?.viewMode ?? readViewModeSetting());
+  const [savedViewMode, setViewMode] = useState(() => initialWorkspace?.viewMode ?? readViewModeSetting(serverId));
   const [previewViewMode, setPreviewViewMode] = useState(null);
   const viewMode = previewViewMode ?? savedViewMode;
-  useEffect(() => { writeViewModeSetting(savedViewMode); }, [savedViewMode]);
-  const storedData = useStoredCalculatorData(snapshot, { onToast: setToast });
+  useEffect(() => { writeViewModeSetting(savedViewMode, serverId); }, [savedViewMode, serverId]);
+  const storedData = useStoredCalculatorData(snapshot, { onToast: setToast, serverId });
+  const sessionStore = useMemo(() => {
+    try {
+      return createCalculatorSessionStore({ serverId, validateState: (value) => {
+        if (value.schemaVersion !== initialState.schemaVersion ||
+            value.versions?.data !== initialState.versions.data || value.versions?.rules !== initialState.versions.rules ||
+            !["single", "four"].includes(value.mode) ||
+            !value.sides?.attacker || !value.sides?.defender || !value.directions?.forward || !value.directions?.reverse) {
+          throw storageError("INCOMPATIBLE_SERVER_VERSION", "工作会话与当前数据版本不兼容；原记录已保留");
+        }
+        for (const side of Object.values(value.sides)) {
+          if (!side.skills || !Array.isArray(side.skills.four) || (typeof side.nature !== "string" && !(serverId === "global" && side.nature === null)) ||
+              !side.displayIvs || typeof side.displayIvs !== "object") throw new TypeError("工作会话技能结构无效");
+          if (serverId === "cn" && side.spiritId !== null) assertSnapshotReferences({ sides: { side } }, snapshot);
+        }
+      } });
+    } catch (error) {
+      return { loadSession: () => { throw error; }, saveSession: () => { throw error; } };
+    }
+  }, [initialState, snapshot, serverId]);
+  useEffect(() => {
+    const warn = (event) => { if (active && event.detail?.serverId === serverId) setToast(t("设置未能保存；当前标签的修改仍保留")); };
+    window.addEventListener("roco-storage-error", warn);
+    return () => window.removeEventListener("roco-storage-error", warn);
+  }, [active, serverId, t]);
   const {
     completeSpiritIds,
     favoriteSpiritIds,
@@ -165,11 +208,15 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     state,
     stateRef,
     undoCount,
+    hasRestoredSession,
     undoLastChange,
     redoCount,
     redoLastChange,
   } = useCalculatorSession({
+    serverId,
     initialState,
+    sessionStore,
+    restoreSession: !initialWorkspace?.state,
     onRememberSide: storedData.rememberSide,
     onToast: setToast,
     onCommit: (next, previous, userInitiated) => recordCalculationInput(next, previous, userInitiated),
@@ -177,7 +224,6 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
 
   useEffect(() => {
     // 存储告警由初始化读取产生，只能在挂载后转成界面提示。
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (teamsState.warning) setToast(teamsState.warning);
   }, [teamsState.warning]);
 
@@ -194,6 +240,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     () =>
       buildCalculatorViewModel({
         activeDirection,
+        serverId,
         completeSpiritIds,
         favoriteSpiritIds,
         snapshot,
@@ -202,6 +249,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       }),
     [
       activeDirection,
+      serverId,
       completeSpiritIds,
       favoriteSpiritIds,
       snapshot,
@@ -209,15 +257,16 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       state,
     ],
   );
-  const { calculation, configurationReady, currentDirection } = viewModel;
+  const { calculation, configurationReady, configurationEditable, currentDirection } = viewModel;
+  const placeholder = serverId === "global" && Boolean(snapshot.meta?.placeholderSource);
   const { attacker: attackerView, defender: defenderView } = viewModel.sides;
   const attacker = attackerView.spirit;
   const defender = defenderView.spirit;
-  const attackerTraits = getEffectiveTraits(snapshot, {
+  const attackerTraits = !release.capabilities.calculate ? [] : getEffectiveTraits(snapshot, {
     ...state.sides.attacker,
     spirit: attacker,
   });
-  const defenderTraits = getEffectiveTraits(snapshot, {
+  const defenderTraits = !release.capabilities.calculate ? [] : getEffectiveTraits(snapshot, {
     ...state.sides.defender,
     spirit: defender,
   });
@@ -441,6 +490,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     onToast: setToast,
   });
   const shareFlow = useShareFlow({
+    initialImportHasPreviousSession: hasRestoredSession,
+    serverId,
+    active,
     commitSession,
     configurationReady,
     initialState,
@@ -456,7 +508,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       state.calculationOptions?.includeNegativeStatusSettlement === true,
     onCleanupConfirm: () => {
       const next = storedData.clearIncompleteSpiritConfigs();
-      return `已清理未完成配置，保留 ${Object.keys(next.configs).length} 只完整配置`;
+      return t("已清理未完成配置，保留 {count} 只完整配置", { count: Object.keys(next.configs).length });
     },
     onDirectionToggle: () => setActiveDirection(toggleDirection),
     onToast: setToast,
@@ -512,7 +564,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
   );
   const firstRunGuideVisible = firstRunGuide.open && !overlayCoveringGuide;
   useCalculatorShortcuts({
-    enabled: shortcutSettings.enabled && !overlayCoveringGuide && !firstRunGuideVisible && !skillQueryOpen && !transmissionOpen && !typeQueryOpen && !rankingKind,
+    enabled: active && shortcutSettings.enabled && !overlayCoveringGuide && !firstRunGuideVisible && !skillQueryOpen && !transmissionOpen && !typeQueryOpen && !rankingKind,
     viewMode: savedViewMode,
     onPreview: setPreviewViewMode,
     onModeChange: setViewMode,
@@ -522,7 +574,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     onRedo: redoLastChange,
     bindings: shortcutSettings.bindings,
     onSearch: (side) => {
-      const input = document.querySelector(`[aria-label="${side === "attacker" ? "攻击方" : "防御方"}精灵"]`);
+      const input = document.querySelector(`[data-guide-target="${side}"] input`);
       input?.focus(); input?.select();
     },
     onSwap: () => { dispatch({ type: "sides/swap" }); setActiveDirection("forward"); },
@@ -531,10 +583,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     onToggleFormConfig: (side) => {
       const battleSide = side === "attack" ? "attacker" : "defender";
       const family = getBattleFormChoices(snapshot.spirits, stateRef.current.sides[battleSide]);
-      const current = readFormConfigPreferences(side)
+      const current = formPreferences.readPreferences(side)
         ?? family.some((spirit) => spirit.fullName === "梦想三三");
-      const enabled = writeFormConfigPreference(side, !current);
-      setToast(`${side === "attack" ? "攻击方" : "防御方"}萌化配置保留已${enabled ? "开启" : "关闭"}（${readFormConfigMemoryEnabled() ? "跨页面记忆" : "本标签页"}）`);
+      const enabled = formPreferences.writePreference(side, !current);
+      setToast(t("{side}萌化配置保留已{status}（{scope}）", { side: t(side === "attack" ? "攻击方" : "防御方"), status: t(enabled ? "开启" : "关闭"), scope: t(formPreferences.readMemoryEnabled() ? "跨页面记忆" : "本标签页") }));
     },
   });
 
@@ -580,7 +632,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     const current = latest.directions[direction];
     if (current.selectedDamageSource === "skill" && current.selectedSkillIndex === index) return;
     commitSession(reduceSessionAction(latest, { direction, type: "direction/update",
-      value: { selectedDamageSource: "skill", selectedSkillIndex: index } }), { recordHistory: false });
+      value: { selectedDamageSource: "skill", selectedSkillIndex: index } }, { serverId }), { recordHistory: false });
   }
 
   function updatePowerLevel(role, nextStage) {
@@ -1384,6 +1436,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
   }
 
   function canActivateSkill(side, index, mode = "four") {
+    if (!release.capabilities.calculate) return false;
     const direction = side === "attacker" ? "forward" : "reverse";
     const entry = mode === "single" ? state.sides[side].skills.single : state.sides[side].skills.four[index];
     const skill = getSkill(snapshot, entry);
@@ -1790,22 +1843,24 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     />
   ) : null;
 
-  const compactSingleEditor = configurationReady ? (
+  const compactSingleEditor = configurationEditable ? (
     <CompactSingleSkillEditor
+      placeholder={placeholder}
       attackName={activeAttackSpirit.fullName}
       defenseName={activeDefenseSpirit.fullName}
       onSkillSelect={selectSingleSkill}
       canActivateSkill={canActivateSkill(activeAttackSideKey, 0, "single")}
       skillActivationLabel={skillActivationLabel(activeAttackSideKey, 0, "single")}
       onSkillActivate={activateSingleSkill}
-      result={resultModel.selectedResult}
+      result={resultModel?.selectedResult}
       selectedSkill={selectedSingleSkill}
       skills={activeAttackSkills}
     />
   ) : null;
 
-  const compactFourEditor = configurationReady ? (
+  const compactFourEditor = configurationEditable ? (
     <CompactFourSkillEditor
+      placeholder={placeholder}
       traitEditors={state.mode === "four" ? moonMemoryEditors : {}}
       activeDamageSource={activeDamageSource}
       activeSide={activeAttackSideKey}
@@ -1872,6 +1927,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     menu: {
       actions: {
         onClose: () => overlays.menu.setOpen(false),
+        onOpenGlobal,
         onConfigLibraryExport: configLibraryFlow.openConfigLibraryExport,
         onConfigLibraryImport: configLibraryFlow.openConfigLibraryImport,
         onPopularConfigLibrary: configLibraryFlow.openPopularConfigLibrary,
@@ -1911,7 +1967,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       error: firstRunGuide.error,
       importCount: POPULAR_CONFIG_COUNT,
       importing: firstRunGuide.importing,
-      layoutKey: `${configurationReady}:${viewMode}:${state.mode}`,
+      layoutKey: `${configurationEditable}:${viewMode}:${state.mode}`,
       onBack: () => firstRunGuide.setStep((current) => Math.max(0, current - 1)),
       onImport: firstRunGuide.importPopularConfig,
       onNext: () => firstRunGuide.setStep((current) => Math.min(5, current + 1)),
@@ -1921,8 +1977,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       ready: [
         Boolean(attacker),
         Boolean(defender),
-        configurationReady,
-        configurationReady,
+        configurationEditable,
+        configurationEditable,
         true,
         true,
       ][firstRunGuide.step],
@@ -1931,7 +1987,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     configLibrary: configLibraryFlow.overlayProps,
     dataSource: {
       ...overlays.dataSourceProps,
-      dataVersion: `S4「季中」 · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
+      dataVersion: release.capabilities.calculate ? `S4「季中」 · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}` : t("国际服数据尚待核验"),
     },
     productAccess: overlays.productAccessProps,
     displaySettings: overlays.displaySettingsProps,
@@ -1964,6 +2020,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         else if (id === "types") setTypeQueryOpen(true);
         else if (id === "transmission") setTransmissionOpen(true);
         else if (id === "deer") {
+          if (!release.capabilities.calculate) { setDeerOpen(true); return; }
           if (!onOpenDeer) { window.location.href = "/dianlu"; return; }
           let next = stateRef.current;
           for (const [side, name] of [["attacker", "波普鹿"], ["defender", "银月狼王"]]) {
@@ -2006,9 +2063,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
             (candidate) => candidate.id === member.spiritId,
           );
           setToast(
-            `已载入${side === "attacker" ? "攻击方" : "防御方"} ${
-              spirit?.fullName ?? "队伍成员"
-            }`,
+            t("已载入{side} {name}", { side: t(side === "attacker" ? "攻击方" : "防御方"), name: spirit?.fullName ?? t("队伍成员") }),
           );
         },
         onAnalysisEntryClear: () => overlays.team.setAnalysisEntry(null),
@@ -2021,9 +2076,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
             (candidate) => candidate.id === member.spiritId,
           );
           setToast(
-            `能力方案已应用到${side === "attacker" ? "攻击方" : "防御方"} ${
-              spirit?.fullName ?? "当前精灵"
-            }`,
+            t("能力方案已应用到{side} {name}", { side: t(side === "attacker" ? "攻击方" : "防御方"), name: spirit?.fullName ?? t("当前精灵") }),
           );
         },
         onCaptureSide: (side, teamId, index) =>
@@ -2046,6 +2099,11 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
     toast: { message: toast, onExpire: () => setToast("") },
   };
 
+  if (!active) return null;
+  if (deerOpen) return <Suspense fallback={<p role="status">{t("正在打开电鹿工具…")}</p>}>
+    <DeerPage onReturn={(event) => { event?.preventDefault(); setDeerOpen(false); }} />
+  </Suspense>;
+
   return (
     <>
       <AppHeader
@@ -2053,7 +2111,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
         menuOpen={overlays.menu.open}
         onMenuOpen={() => overlays.menu.setOpen((open) => !open)}
         toolbox={{
-          onOpen: () => { overlays.menu.setOpen(false); preloadSkillQuery(); },
+          onOpen: () => { overlays.menu.setOpen(false); if (release.capabilities.search) preloadSkillQuery(); },
           activeTool: typeQueryOpen ? "types" : skillQueryOpen ? "skills" : transmissionOpen ? "transmission" : rankingKind,
           actions: {
             types: () => setTypeQueryOpen(true),
@@ -2062,6 +2120,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
             speed: () => { setRankingsVisited(true); setRankingKind("speed"); },
             durability: () => { setRankingsVisited(true); setRankingKind("durability"); },
             deer: () => {
+              if (!release.capabilities.calculate) { setDeerOpen(true); return; }
               if (!onOpenDeer) { window.location.href = "/dianlu"; return; }
               let next = stateRef.current;
               for (const [side, name] of [["attacker", "波普鹿"], ["defender", "银月狼王"]]) {
@@ -2114,7 +2173,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
             onAttackerFavoriteToggle={() => toggleSpiritFavorite(attacker, state.sides.attacker)}
             onAttackerSelect={(value) => changeSpirit("attacker", value)}
             formSides={state.sides}
-            onFormSelect={changeForm}
+            onFormSelect={release.capabilities.calculate ? changeForm : undefined}
             onOpenDeer={onOpenDeer ? () => onOpenDeer({ state: stateRef.current, viewMode, activeDirection, advancedOptionsOpen }) : undefined}
             onDefenderFavoriteToggle={() => toggleSpiritFavorite(defender, state.sides.defender)}
             onDefenderSelect={(value) => changeSpirit("defender", value)}
@@ -2124,12 +2183,14 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
             }}
             spirits={selectableSpirits}
           />
-          {!configurationReady && !firstRunGuideVisible
-            ? <EmptyStateGuide message={viewModel.configurationIssue} />
+
+          {!configurationReady && !placeholder && !firstRunGuideVisible
+            ? <EmptyStateGuide title={!release.capabilities.calculate ? t("国际服数据尚待核验") : undefined}
+              message={!release.capabilities.calculate ? t("国际服数值与规则核验前，暂不提供计算；存档、分享和界面设置可正常使用。") : viewModel.configurationIssue} />
             : null}
-          {configurationReady && viewMode === "compact" ? (
+          {configurationEditable && (viewMode === "compact" || placeholder) ? (
             <section
-              aria-label="即时配置"
+              aria-label={t("即时配置")}
               className="compact-workspace calculator-step"
             >
               <div
@@ -2137,10 +2198,11 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
                 data-guide-target="quick-settings"
               >
                 {["attacker", "defender"].map((side) => {
-                  const label = side === "attacker" ? "攻击方" : "防御方";
+                  const label = t(side === "attacker" ? "攻击方" : "防御方");
                   return (
                     <div className="compact-adjustment-side" key={side}>
                       <QuickNaturePicker
+                        placeholder={placeholder}
                         displayIvs={state.sides[side].displayIvs}
                         label={label}
                         onChange={(value) =>
@@ -2155,6 +2217,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
                         value={state.sides[side].nature}
                       />
                       <QuickIvPicker
+                        placeholder={placeholder}
                         label={label}
                         onChange={(stat, value) =>
                           dispatch({
@@ -2177,7 +2240,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
                 compact
                 fourSkillContent={compactFourEditor}
                 onModeChange={setSkillMode}
-                showOptionLabels={compactOptionLabelsEnabled}
+                showOptionLabels={placeholder || compactOptionLabelsEnabled}
                 singleSkillContent={compactSingleEditor}
                 singleTraitContent={singleTraitContent}
               />
@@ -2432,12 +2495,12 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
       </div>
 
       </WorkspaceOverlays>
-      {damageComparisonEnabled && comparisonSource ? <Suspense fallback={<div role="status">正在打开承伤对比…</div>}><DamageComparisonDialog
+      {damageComparisonEnabled && comparisonSource ? <Suspense fallback={<div role="status">{t("正在打开承伤对比…")}</div>}><DamageComparisonDialog
         key={damageComparisonSourceKey(comparisonSource)} preferences={comparisonPreferences} onPreferencesChange={setComparisonPreferences}
         snapshot={snapshot} source={comparisonSource} onClose={() => setComparisonSource(null)}
         onImport={(spirit, templateId, selectedSkillIndex, inheritTargetStatuses) => {
           if (JSON.stringify(stateRef.current) !== JSON.stringify(comparisonSource.state)) {
-            setToast("主配置已变化，请重新打开承伤对比");
+            setToast(t("主配置已变化，请重新打开承伤对比"));
             return;
           }
           dispatch({ type: "state/replace", value: importDamageComparisonCandidate({ snapshot, ...comparisonSource, spirit, templateId, selectedSkillIndex, inheritTargetStatuses }) });
@@ -2446,34 +2509,37 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, active })
           setToast(DAMAGE_COMPARISON_IMPORT_NOTICE);
         }}
       /></Suspense> : null}
-      {rankingsVisited ? <Suspense fallback={<div role="status">正在打开排行榜…</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}
-      {transmissionOpen && <Suspense fallback={<div role="status">正在打开传动计算器…</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} getSpiritConfiguration={storedData.getSpiritConfiguration} onClose={() => setTransmissionOpen(false)} /></Suspense>}
-      {typeQueryOpen && <Suspense fallback={<div role="status">正在打开属性查询…</div>}><TypeQueryPanel typeChart={snapshot.typeChart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={queryTypes} onTypesChange={setQueryTypes} onClose={() => setTypeQueryOpen(false)} /></Suspense>}
-      {skillQueryOpen && <Suspense fallback={<div role="status">正在打开技能查询…</div>}><SkillQueryPanel skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
+      {rankingsVisited ? <Suspense fallback={<div role="status">{t("正在打开排行榜…")}</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}
+      {transmissionOpen && <Suspense fallback={<div role="status">{t("正在打开传动计算器…")}</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} getSpiritConfiguration={storedData.getSpiritConfiguration} onClose={() => setTransmissionOpen(false)} /></Suspense>}
+      {typeQueryOpen && <Suspense fallback={<div role="status">{t("正在打开属性查询…")}</div>}><TypeQueryPanel typeChart={snapshot.typeChart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={queryTypes} onTypesChange={setQueryTypes} onClose={() => setTypeQueryOpen(false)} /></Suspense>}
+      {skillQueryOpen && <Suspense fallback={<div role="status">{t("正在打开技能查询…")}</div>}><SkillQueryPanel snapshot={snapshot} skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>
   );
 }
 
-export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDeer, active = true }) {
+export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDeer, onOpenGlobal, active = true }) {
+  const { serverId } = useRuntime();
+  const { t } = useLocale();
   const [snapshot, setSnapshot] = useState(() =>
-    initialSnapshot ? withCalculatorExtras(initialSnapshot) : null,
+    initialSnapshot
+      ? serverId === "global"
+        ? initialSnapshot.meta?.serverId === "global" ? initialSnapshot : UNVERIFIED_GLOBAL_SNAPSHOT
+        : withCalculatorExtras(initialSnapshot)
+      : null,
   );
   const [error, setError] = useState("");
+  const [loadAttempt, setLoadAttempt] = useState(0);
 
   useEffect(() => {
     if (initialSnapshot) return undefined;
     const controller = new AbortController();
     let active = true;
 
-    fetch("/data/runtime.json", { signal: controller.signal })
-      .then(async (snapshotResponse) => {
-        if (!snapshotResponse.ok) {
-          throw new Error(`数据加载失败：${snapshotResponse.status}`);
-        }
-        const loadedSnapshot = await snapshotResponse.json();
-        return withCalculatorExtras(loadedSnapshot);
-      })
+    const loading = serverId === "global"
+      ? loadGlobalPlaceholderCatalog({ signal: controller.signal })
+      : loadServerSnapshot(serverId, { signal: controller.signal }).then(withCalculatorExtras);
+    loading
       .then((loadedSnapshot) => {
         if (active) setSnapshot(loadedSnapshot);
       })
@@ -2487,14 +2553,15 @@ export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDee
       active = false;
       controller.abort();
     };
-  }, [initialSnapshot]);
+  }, [initialSnapshot, serverId, loadAttempt]);
 
   if (!snapshot) {
     return (
       <div className="app">
-        <AppHeader viewMode={initialWorkspace?.viewMode ?? readViewModeSetting()} />
+        <AppHeader viewMode={initialWorkspace?.viewMode ?? readViewModeSetting(serverId)} />
         <main className="loading-state">
-          <p>{error || "正在加载 S4「季中」数据…"}</p>
+          <p>{t(error ? "资料加载失败，请重试。" : serverId === "global" ? "正在加载中文占位资料…" : "正在加载 S4「季中」数据…")}</p>
+          {error ? <button type="button" onClick={() => { setError(""); setLoadAttempt(value => value + 1); }}>{t("重试")}</button> : null}
         </main>
       </div>
     );
@@ -2502,7 +2569,7 @@ export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDee
 
   return (
     <div className="app">
-      <PresetBrowseProvider><CalculatorWorkspace key={snapshot.meta.id} snapshot={snapshot} initialWorkspace={initialWorkspace} onOpenDeer={onOpenDeer} active={active} /></PresetBrowseProvider>
+      <PresetBrowseProvider serverId={serverId}><CalculatorWorkspace key={`${serverId}:${snapshot.meta.id}`} snapshot={snapshot} initialWorkspace={initialWorkspace} onOpenDeer={onOpenDeer} onOpenGlobal={onOpenGlobal} active={active} /></PresetBrowseProvider>
     </div>
   );
 }

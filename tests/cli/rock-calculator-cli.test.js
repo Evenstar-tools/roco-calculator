@@ -939,3 +939,65 @@ describe("rock-calculator CLI", () => {
     });
   });
 });
+
+
+describe("CLI 服务器隔离", () => {
+  test("Global meta 如实返回不可用，不把国服版本和数量冒充国际数据", () => {
+    const result = runCli(["--server", "global", "meta"]);
+    expect(result.status).toBe(0);
+    expect(result.json).toMatchObject({
+      engine: { serverId: "global", availability: "unverified", dataVersion: null, rulesVersion: null, snapshotVersion: null },
+      counts: null,
+      availability: { status: "unverified", capabilities: { calculate: false, search: false, explain: false } },
+    });
+  });
+
+  test.each(["search", "calculate", "explain"])("--server=global 阻断 %s，不先读取国服或等待输入", (command) => {
+    const result = runCli([command, "--server=global"]);
+    expect(result.status).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.errorJson.error).toMatchObject({ code: "SERVER_DATA_UNVERIFIED", serverId: "global" });
+  });
+
+  test.each(["calculate", "explain"])("JSON 的国际服声明不能在 %s 编译时被丢掉", (command) => {
+    const result = runCli([command, "--input", "-"], { ...simpleCase, serverId: "global" });
+    expect(result.status).toBe(2);
+    expect(result.errorJson.error.code).toBe("SERVER_DATA_UNVERIFIED");
+  });
+
+  test("明确CN参数不能覆盖JSON里的Global声明", () => {
+    const result = runCli(["calculate", "--server", "cn", "--input", "-"], { ...simpleCase, serverId: "global" });
+    expect(result.status).toBe(2);
+    expect(result.errorJson.error.code).toBe("SERVER_MISMATCH");
+  });
+
+  test.each([
+    { serverId: "unknown" },
+    { serverId: null },
+    { dataVersion: "other-data" },
+    { rulesVersion: "other-rules" },
+    { versions: { data: "other-data", rules: "s4-2026-09-10" } },
+  ])("JSON里不兼容环境明确报错：%j", (environment) => {
+    const result = runCli(["calculate", "--input", "-"], { ...simpleCase, ...environment });
+    expect(result.status).toBe(2);
+    expect(result.errorJson.error.code).toBe(Object.hasOwn(environment, "serverId") ? "UNKNOWN_SERVER" : "INCOMPATIBLE_SERVER_VERSION");
+  });
+
+  test("省略服务器保持旧国服结果与复现摘要，显式CN同样可计算", () => {
+    const legacy = runCli(["calculate", "--input", "-"], simpleCase);
+    const explicit = runCli(["calculate", "--server", "cn", "--input", "-"], simpleCase);
+    expect(legacy.status).toBe(0);
+    expect(explicit.status).toBe(0);
+    expect(explicit.json.results).toEqual(legacy.json.results);
+    expect(explicit.json.inputDigest).toBe(legacy.json.inputDigest);
+    expect(explicit.json.engine).toMatchObject({ serverId: "cn", availability: "verified", dataVersion: snapshot.meta.id });
+  });
+
+  test("未知或重复服务器选项不静默退回国服", () => {
+    for (const args of [["meta", "--server", "other"], ["meta", "--server=global", "--server=cn"]]) {
+      const result = runCli(args);
+      expect(result.status).toBe(2);
+      expect(result.errorJson.error.code).toMatch(/UNKNOWN_SERVER|INVALID_ARGUMENT/);
+    }
+  });
+});

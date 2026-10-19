@@ -1,0 +1,193 @@
+import { lazy, Suspense, useEffect, useState } from "react";
+import { metrics } from "../analytics/metrics.js";
+import { readThemeSetting } from "../state/display-settings.js";
+import { applyPageMetadata } from "../seo/page-metadata.js";
+import { readGlobalLocale, readManualPreference, resolveEntry, routeFor, writeManualPreference } from "./routes.js";
+import { decodeShareEnvelope } from "../state/share.js";
+import { IncomingShareNotice } from "./IncomingShareNotice.jsx";
+import { RuntimeProvider } from "./RuntimeContext.jsx";
+import { LocaleProvider } from "../i18n/LocaleContext.jsx";
+import { getSeasonThemeVariables, resolveSeasonPreviewId, resolveSeasonThemeId } from "../theme/season-themes.js";
+import { readSeasonThemePreference, writeSeasonThemePreference } from "../state/season-theme.js";
+
+const CalculatorRouter = lazy(() => import("../CalculatorRouter.jsx").then((module) => ({ default: module.CalculatorRouter })));
+const CalculatorApp = lazy(() => import("../App.jsx").then((module) => ({ default: module.App })));
+const pageText = {
+  en: { title: "Roco Calculator · Global CBT", description: "Global CBT calculator. Game data and rules are awaiting verification.", loading: "Loading calculator…" },
+  "zh-CN": { title: "洛克计算器 · 国际服 CBT", description: "国际服 CBT 计算器，游戏数据与规则待核验。", loading: "正在加载计算器…" },
+  ja: { title: "ロコ計算機 · グローバル CBT", description: "グローバル CBT 計算機。ゲームデータとルールは検証待ちです。", loading: "計算機を読み込み中…" },
+};
+
+export function browserEntry() {
+  let preference = null;
+  let hasLegacyCnData = false;
+  try {
+    preference = readManualPreference(localStorage);
+    // 返回历史根入口时恢复当时的服，不被后来手动选择覆盖。
+    if (location.pathname === "/" && !location.hash && history.state?.rocoEntry) {
+      preference = history.state.rocoEntry;
+    }
+    hasLegacyCnData = ["teams.v1", "spirit-configs.v2", "spirit-configs.v1", "favorites.v1"]
+      .some((suffix) => localStorage.getItem(`rock-calculator.${suffix}`) !== null ||
+        localStorage.getItem(`rock-calculator.servers.cn.${suffix}`) !== null);
+  } catch { /* 禁用存储仍可使用明确入口。 */ }
+  return resolveEntry({
+    pathname: location.pathname, hash: location.hash, preference,
+    languages: navigator.languages, hasLegacyCnData,
+    // 国际版本尚无已核验的数据包，先关闭自动分流；明确入口照常可访问。
+    globalReady: false,
+  });
+}
+
+export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
+  const [entry, setEntry] = useState(() => initialEntry ?? browserEntry());
+  const [cnVisited, setCnVisited] = useState(entry.serverId === "cn");
+  const [globalVisited, setGlobalVisited] = useState(entry.serverId === "global");
+  const [globalLocale, setGlobalLocale] = useState(() => entry.serverId === "global" ? entry.locale : readGlobalLocale());
+  const [theme, setTheme] = useState(readThemeSetting);
+  const [seasonPreferences, setSeasonPreferences] = useState(() => ({
+    cn: readSeasonThemePreference("cn"), global: readSeasonThemePreference("global"),
+  }));
+  const [urlHash, setUrlHash] = useState(() => location.hash);
+  const [urlShare, setUrlShare] = useState(null);
+  const [manualShare, setManualShare] = useState(null);
+  const [shareRequests, setShareRequests] = useState({ cn: 0, global: 0 });
+  const isDesktop = location.protocol === "app:";
+  const global = !isDesktop && entry.serverId === "global";
+  const copy = pageText[entry.locale] ?? pageText.en;
+  const cnSeasonThemeId = resolveSeasonThemeId({ serverId: "cn", preference: seasonPreferences.cn, search: location.search, hostname: location.hostname });
+  const globalSeasonThemeId = resolveSeasonThemeId({ serverId: "global", preference: seasonPreferences.global, search: location.search, hostname: location.hostname });
+  const seasonThemeId = global ? globalSeasonThemeId : cnSeasonThemeId;
+  const previewId = resolveSeasonPreviewId({ search: location.search, hostname: location.hostname });
+  const isSeasonPreview = (id) => id !== "neutral" && previewId === id;
+  const checkUrlShare = !isDesktop && Boolean(entry.conflict);
+  const checkedUrlShare = urlShare?.hash === urlHash ? urlShare : null;
+  const incoming = manualShare ?? checkedUrlShare;
+  const conflictServer = incoming?.envelope?.serverId !== entry.serverId ? incoming?.envelope?.serverId : null;
+
+  useEffect(() => {
+    if (!urlHash || !checkUrlShare) return undefined;
+    let cancelled = false;
+    decodeShareEnvelope(urlHash).then(
+      (envelope) => { if (!cancelled) setUrlShare({ hash: urlHash, envelope }); },
+      (error) => { if (!cancelled) setUrlShare({ hash: urlHash, error }); },
+    );
+    return () => { cancelled = true; };
+  }, [urlHash, checkUrlShare]);
+
+  useEffect(() => {
+    const update = () => {
+      const next = browserEntry();
+      if (next.serverId === "cn") setCnVisited(true);
+      else { setGlobalVisited(true); setGlobalLocale(next.locale); }
+      setTheme(readThemeSetting());
+      setEntry(next);
+      setUrlHash(location.hash);
+      setManualShare(null);
+    };
+    window.addEventListener("popstate", update);
+    window.addEventListener("hashchange", update);
+    return () => {
+      window.removeEventListener("popstate", update);
+      window.removeEventListener("hashchange", update);
+    };
+  }, []);
+
+  useEffect(() => {
+    history.replaceState({ ...history.state, rocoEntry: { serverId: global ? "global" : "cn", locale: global ? entry.locale : "zh-CN" } }, "");
+    document.documentElement.lang = global ? entry.locale : "zh-CN";
+    document.documentElement.dataset.server = global ? "global" : "cn";
+    if (!isDesktop) {
+      document.querySelector('link[rel="manifest"]')?.setAttribute("href", global ? `/manifest-global-${entry.locale}.webmanifest` : "/manifest.webmanifest");
+      document.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute("content", global ? copy.title : "洛克计算器");
+    }
+    metrics.setServer(global ? "global" : "cn");
+    if (global) applyPageMetadata({ ...copy, canonical: `https://rococalc.top${routeFor("global", entry.locale)}` });
+    else void metrics.start();
+  }, [global, entry.locale, copy, isDesktop]);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.dataset.season = seasonThemeId;
+    for (const [key, value] of Object.entries(getSeasonThemeVariables(seasonThemeId))) {
+      document.documentElement.style.setProperty(key, value);
+    }
+  }, [seasonThemeId]);
+
+  function changeSeasonTheme(serverId, value) {
+    const preference = writeSeasonThemePreference(value, serverId);
+    const url = new URL(location.href);
+    url.searchParams.delete("seasonPreview");
+    history.replaceState(history.state, "", `${url.pathname}${url.search}${url.hash}`);
+    setSeasonPreferences((current) => ({ ...current, [serverId]: preference }));
+  }
+
+  function navigate(serverId, locale, { remember = true, hash = "", replace = false } = {}) {
+    const next = { serverId, locale: serverId === "cn" ? "zh-CN" : locale };
+    if (serverId === "global") setTheme(readThemeSetting());
+    if (remember) writeManualPreference(next);
+    const url = `${routeFor(next.serverId, next.locale)}${location.search}${hash}`;
+    window.history.replaceState({ ...history.state, rocoEntry: { serverId: entry.serverId, locale: entry.locale } }, "");
+    window.history[replace ? "replaceState" : "pushState"]({ rocoEntry: next }, "", url);
+    if (serverId === "cn") setCnVisited(true);
+    else { setGlobalVisited(true); setGlobalLocale(next.locale); }
+    setEntry(resolveEntry({ pathname: routeFor(next.serverId, next.locale), hash }));
+    setUrlHash(hash);
+    if (serverId !== entry.serverId) setManualShare(null);
+    // 同页切服立即停用采集；旧异步 SDK 请求也由传输出口再次检查。
+    document.documentElement.dataset.server = serverId;
+    metrics.setServer(serverId);
+    window.scrollTo(0, 0);
+  }
+
+  function clearUrlShare() {
+    history.replaceState(history.state, "", `${location.pathname}${location.search}`);
+    setUrlHash("");
+    setUrlShare(null);
+    setEntry((current) => ({ ...current, conflict: null }));
+  }
+
+  function dismissShare() {
+    if (manualShare) setManualShare(null);
+    else clearUrlShare();
+  }
+
+  function openMatchingServer() {
+    if (!incoming?.envelope || !conflictServer) return;
+    const locale = incoming.envelope.locale ?? (conflictServer === "cn" ? "zh-CN" : "en");
+    // 目标服由原分享校验链消费。原页保留在内存中，存储不可用时也不丢现场。
+    setShareRequests((current) => ({ ...current, [conflictServer]: current[conflictServer] + 1 }));
+    navigate(conflictServer, locale, { remember: false, hash: incoming.hash });
+  }
+
+  const entryNotice = <IncomingShareNotice locale={global ? entry.locale : "zh-CN"}
+    loading={!manualShare && Boolean(urlHash) && checkUrlShare && !checkedUrlShare}
+    error={incoming?.error} targetServer={conflictServer}
+    onOpen={openMatchingServer} onCancel={dismissShare} />;
+
+  return <>
+    {(entry.conflict || manualShare) && <div className="entry-share-notice__cn">{entryNotice}</div>}
+    {(cnVisited || isDesktop) && <div hidden={global} inert={global || undefined}>
+      <Suspense fallback={<p role="status">正在加载计算器…</p>}>
+        <RuntimeProvider serverId="cn" locale="zh-CN" seasonThemeId={cnSeasonThemeId} seasonPreview={isSeasonPreview(cnSeasonThemeId)} seasonThemePreference={seasonPreferences.cn} onSeasonThemeChange={(value) => changeSeasonTheme("cn", value)} shareRequestId={shareRequests.cn} onServerChange={isDesktop ? undefined : () => navigate("global", globalLocale)}
+          onShareConflict={(envelope, hash) => setManualShare({ envelope, hash })}><LocaleProvider locale="zh-CN">
+        <CalculatorRouter initialSnapshot={initialSnapshot} active={!global && !entry.conflict && !conflictServer}
+          onOpenGlobal={isDesktop ? undefined : () => navigate("global", globalLocale)} />
+        </LocaleProvider></RuntimeProvider>
+      </Suspense>
+    </div>}
+    {globalVisited && !isDesktop && <div hidden={!global} inert={!global || undefined}><Suspense fallback={<p role="status">{copy.loading}</p>}>
+      <RuntimeProvider serverId="global" locale={globalLocale} seasonThemeId={globalSeasonThemeId} seasonPreview={isSeasonPreview(globalSeasonThemeId)} seasonThemePreference={seasonPreferences.global} onSeasonThemeChange={(value) => changeSeasonTheme("global", value)} shareRequestId={shareRequests.global}
+        onLocaleChange={(locale) => navigate("global", locale, { hash: location.hash })}
+        onServerChange={() => navigate("cn", "zh-CN")}
+        onShareConflict={(envelope, hash) => setManualShare({ envelope, hash })}>
+        <LocaleProvider locale={globalLocale}>
+          <CalculatorApp active={global && !entry.conflict && !conflictServer} />
+        </LocaleProvider>
+      </RuntimeProvider>
+    </Suspense></div>}
+  </>;
+}
