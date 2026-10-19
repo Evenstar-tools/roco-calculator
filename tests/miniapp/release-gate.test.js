@@ -144,6 +144,20 @@ describe("miniapp production release gate", () => {
     })).toThrow(/包体/u);
   });
 
+  test("reserves space for WeChat upload preprocessing below the raw 2 MiB limit", () => {
+    // This raw dist size passed locally but the actual upload became 2057 KB.
+    expect(() => verifyRelease({
+      ...validRelease,
+      artifactEvidence: undefined,
+      mainPackageBytes: 2015482,
+    })).toThrow(/打包余量/u);
+    expect(verifyRelease({
+      ...validRelease,
+      artifactEvidence: undefined,
+      mainPackageBytes: 2 * 1024 * 1024 - 192 * 1024,
+    })).toBe(true);
+  });
+
   test("rejects artifact evidence that cannot reproduce the package totals", () => {
     expect(() => verifyRelease({
       ...validRelease,

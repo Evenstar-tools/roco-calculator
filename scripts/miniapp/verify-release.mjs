@@ -25,6 +25,9 @@ export const EXPECTED_VERSIONS = Object.freeze({
 });
 
 const MAX_MAIN_PACKAGE_BYTES = 2 * 1024 * 1024;
+// DevTools preprocessing can grow a valid raw dist beyond the upload limit.
+// A 2,015,482-byte dist was rejected as 2057 KB; keep a 192 KiB safety margin.
+const MAX_LOCAL_PACKAGE_BYTES = MAX_MAIN_PACKAGE_BYTES - 192 * 1024;
 const REQUIRED_DIST_FILES = [
   "app.json",
   "pages/index/index.js",
@@ -156,6 +159,10 @@ function validateArtifacts(release, errors) {
   ) {
     errors.push(
       `主包包体必须不超过 2 MiB，当前 ${String(release.mainPackageBytes)} 字节`,
+    );
+  } else if (release.mainPackageBytes > MAX_LOCAL_PACKAGE_BYTES) {
+    errors.push(
+      `主包需为微信预处理保留打包余量，原始产物不得超过 ${MAX_LOCAL_PACKAGE_BYTES} 字节，当前 ${release.mainPackageBytes} 字节；最终仍以官方上传结果为准`,
     );
   }
 
