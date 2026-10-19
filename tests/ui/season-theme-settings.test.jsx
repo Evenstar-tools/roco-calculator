@@ -38,5 +38,25 @@ test.each([
   }
   view.rerender(ui(false, "default"));
   expect(selector).toHaveValue(serverId === "cn" ? "s4" : "default");
+  const randomLabel = { "zh-CN": "每次进入随机主题", en: "Random theme on each visit", ja: "開くたびにテーマをランダムに選ぶ" }[locale];
+  const random = screen.getByRole("button", { name: randomLabel });
+  expect(random).toHaveAttribute("aria-pressed", "false");
+  expect(random).toHaveAttribute("title", randomLabel);
+  fireEvent.click(random);
+  expect(change).toHaveBeenLastCalledWith("random");
+  view.rerender(ui(false, "random"));
+  expect(random).toHaveAttribute("aria-pressed", "true");
+  expect(selector).toHaveValue("random");
+  expect(selector.selectedOptions[0]).toBeDisabled();
+  expect(selector.selectedOptions[0]).toHaveTextContent({ "zh-CN": "随机 · S1", en: "Random · S1", ja: "ランダム · S1" }[locale]);
+  // The transient S1 draw must remain selectable as a fixed theme.
+  fireEvent.change(selector, { target: { value: "s1" } });
+  expect(change).toHaveBeenLastCalledWith("s1");
+  view.rerender(ui(false, "s1"));
+  expect(random).toHaveAttribute("aria-pressed", "false");
+  view.rerender(ui(true, "random"));
+  expect(selector).toHaveValue("preview");
+  fireEvent.click(random);
+  expect(change).toHaveBeenLastCalledWith("random");
   expect(getMissingUiMessages()).toEqual([]);
 });

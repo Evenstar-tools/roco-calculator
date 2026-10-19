@@ -7,7 +7,7 @@ import { decodeShareEnvelope } from "../state/share.js";
 import { IncomingShareNotice } from "./IncomingShareNotice.jsx";
 import { RuntimeProvider } from "./RuntimeContext.jsx";
 import { LocaleProvider } from "../i18n/LocaleContext.jsx";
-import { getSeasonThemeVariables, resolveSeasonPreviewId, resolveSeasonThemeId } from "../theme/season-themes.js";
+import { getSeasonThemeVariables, pickRandomSeasonThemeId, resolveSeasonPreviewId, resolveSeasonThemeId } from "../theme/season-themes.js";
 import { readSeasonThemePreference, writeSeasonThemePreference } from "../state/season-theme.js";
 
 const CalculatorRouter = lazy(() => import("../CalculatorRouter.jsx").then((module) => ({ default: module.CalculatorRouter })));
@@ -48,6 +48,10 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
   const [seasonPreferences, setSeasonPreferences] = useState(() => ({
     cn: readSeasonThemePreference("cn"), global: readSeasonThemePreference("global"),
   }));
+  const [randomSeasonThemes, setRandomSeasonThemes] = useState(() => ({
+    cn: seasonPreferences.cn === "random" ? pickRandomSeasonThemeId() : null,
+    global: seasonPreferences.global === "random" ? pickRandomSeasonThemeId() : null,
+  }));
   const [urlHash, setUrlHash] = useState(() => location.hash);
   const [urlShare, setUrlShare] = useState(null);
   const [manualShare, setManualShare] = useState(null);
@@ -55,8 +59,8 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
   const isDesktop = location.protocol === "app:";
   const global = !isDesktop && entry.serverId === "global";
   const copy = pageText[entry.locale] ?? pageText.en;
-  const cnSeasonThemeId = resolveSeasonThemeId({ serverId: "cn", preference: seasonPreferences.cn, search: location.search, hostname: location.hostname });
-  const globalSeasonThemeId = resolveSeasonThemeId({ serverId: "global", preference: seasonPreferences.global, search: location.search, hostname: location.hostname });
+  const cnSeasonThemeId = resolveSeasonThemeId({ serverId: "cn", preference: seasonPreferences.cn, randomThemeId: randomSeasonThemes.cn, search: location.search, hostname: location.hostname });
+  const globalSeasonThemeId = resolveSeasonThemeId({ serverId: "global", preference: seasonPreferences.global, randomThemeId: randomSeasonThemes.global, search: location.search, hostname: location.hostname });
   const seasonThemeId = global ? globalSeasonThemeId : cnSeasonThemeId;
   const previewId = resolveSeasonPreviewId({ search: location.search, hostname: location.hostname });
   const isSeasonPreview = (id) => id !== "neutral" && previewId === id;
@@ -119,6 +123,10 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
 
   function changeSeasonTheme(serverId, value) {
     const preference = writeSeasonThemePreference(value, serverId);
+    if (preference === "random") {
+      const randomThemeId = pickRandomSeasonThemeId();
+      setRandomSeasonThemes((current) => ({ ...current, [serverId]: randomThemeId }));
+    }
     const url = new URL(location.href);
     url.searchParams.delete("seasonPreview");
     history.replaceState(history.state, "", `${url.pathname}${url.search}${url.hash}`);

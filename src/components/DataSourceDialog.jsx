@@ -361,14 +361,14 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open, i
               type="button"
             >
               <strong>{t("问题反馈")}</strong>
-              <span>QQ {FEEDBACK_QQ}</span>
+              {serverId === "cn" && <span>QQ {FEEDBACK_QQ}</span>}
             </button>
-            <button
+            {serverId === "cn" && <button
               aria-label={t("复制反馈 QQ")}
               className="secondary-action"
               onClick={onCopyFeedback}
               type="button"
-            >{t("复制")}</button>
+            >{t("复制")}</button>}
           </div>
           <div className="dialog-actions">
             <button

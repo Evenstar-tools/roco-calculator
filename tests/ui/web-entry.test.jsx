@@ -14,8 +14,9 @@ vi.mock("../../src/CalculatorRouter.jsx", () => ({
     const runtime = useRuntime();
     return active && <><input aria-label="CN draft" value={draft} onChange={(event) => setDraft(event.target.value)} />
       <select aria-label="CN theme" value={runtime.seasonThemePreference} onChange={(event) => runtime.onSeasonThemeChange(event.target.value)}>
-        {["default", "s1", "s2", "s3", "s4"].map((id) => <option key={id}>{id}</option>)}
+        {["default", "random", "s1", "s2", "s3", "s4"].map((id) => <option key={id}>{id}</option>)}
       </select>
+      <button onClick={() => runtime.onSeasonThemeChange("random")}>Random CN theme</button>
       <button onClick={onOpenGlobal}>Global</button></>;
   },
 }));
@@ -28,8 +29,9 @@ vi.mock("../../src/App.jsx", () => ({
         {["en", "zh-CN", "ja"].map((locale) => <option key={locale}>{locale}</option>)}
       </select>
       <select aria-label="Global theme" value={runtime.seasonThemePreference} onChange={(event) => runtime.onSeasonThemeChange(event.target.value)}>
-        {["default", "s1", "s2", "s3", "s4"].map((id) => <option key={id}>{id}</option>)}
+        {["default", "random", "s1", "s2", "s3", "s4"].map((id) => <option key={id}>{id}</option>)}
       </select>
+      <button onClick={() => runtime.onSeasonThemeChange("random")}>Random Global theme</button>
       <button onClick={runtime.onServerChange}>Switch to the CN server</button>
       <span data-testid="server-snapshot" data-share-request={runtime.shareRequestId}>{runtime.serverId}</span>
     </>;
@@ -46,6 +48,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
   history.replaceState(null, "", "/");
   delete document.documentElement.dataset.server;
   delete document.documentElement.dataset.season;
@@ -222,4 +225,65 @@ test("manual theme exits a preview without dropping query/share data and survive
   fireEvent.change(await screen.findByRole("combobox", { name: "CN theme" }), { target: { value: "default" } });
   expect(document.documentElement.dataset.season).toBe("s4");
   expect(fetch).not.toHaveBeenCalled();
+});
+
+test("random themes redraw only on entry or explicit shuffle, retain each server's choice and allow fixing the drawn theme", async () => {
+  localStorage.setItem("rock-calculator.servers.cn.settings.season-theme.v1", "random");
+  localStorage.setItem("rock-calculator.servers.global.settings.season-theme.v1", "random");
+  const random = vi.spyOn(Math, "random").mockReturnValue(0);
+  const view = render(<WebEntry />);
+  expect(await screen.findByRole("combobox", { name: "Global theme" })).toHaveValue("random");
+  expect(document.documentElement.dataset.season).toBe("s1");
+  random.mockReturnValue(0.5);
+  fireEvent.click(screen.getByRole("button", { name: "Random Global theme" }));
+  expect(document.documentElement.dataset.season).toBe("s3");
+  localStorage.setItem("rock-calculator.settings.theme.v1", "dark");
+  document.documentElement.dataset.theme = "dark";
+  random.mockReturnValue(0.75);
+  for (const locale of ["zh-CN", "ja"]) {
+    fireEvent.change(screen.getByRole("combobox", { name: "Language" }), { target: { value: locale } });
+    expect(document.documentElement.dataset.season).toBe("s3");
+  }
+  fireEvent.click(screen.getByRole("button", { name: "Switch to the CN server" }));
+  expect(await screen.findByRole("combobox", { name: "CN theme" })).toHaveValue("random");
+  expect(document.documentElement.dataset.season).toBe("s1");
+  fireEvent.change(screen.getByLabelText("CN draft"), { target: { value: "unsaved CN draft" } });
+  fireEvent.click(screen.getByRole("button", { name: "Random CN theme" }));
+  expect(document.documentElement.dataset.season).toBe("s4");
+  expect(screen.getByLabelText("CN draft")).toHaveValue("unsaved CN draft");
+  fireEvent.click(screen.getByRole("button", { name: "Global", exact: true }));
+  expect(await screen.findByRole("combobox", { name: "Global theme" })).toHaveValue("random");
+  expect(document.documentElement.dataset.season).toBe("s3");
+  expect(document.documentElement.dataset.theme).toBe("dark");
+  fireEvent.change(screen.getByRole("combobox", { name: "Global theme" }), { target: { value: "s3" } });
+  expect(localStorage.getItem("rock-calculator.servers.global.settings.season-theme.v1")).toBe("s3");
+  expect(document.documentElement.dataset.season).toBe("s3");
+  fireEvent.click(screen.getByRole("button", { name: "Random Global theme" }));
+  expect(document.documentElement.dataset.season).toBe("s4");
+  view.unmount();
+  random.mockReturnValue(0.25);
+  render(<WebEntry />);
+  expect(await screen.findByRole("combobox", { name: "Global theme" })).toHaveValue("random");
+  expect(document.documentElement.dataset.season).toBe("s2");
+  expect(localStorage.getItem("rock-calculator.servers.global.settings.season-theme.v1")).toBe("random");
+  expect(localStorage.getItem("rock-calculator.servers.cn.settings.season-theme.v1")).toBe("random");
+  expect(fetch).not.toHaveBeenCalled();
+});
+
+test("shuffle exits a local preview without losing unrelated URL state or persisting preview artwork", async () => {
+  const hash = await encodeShareEnvelope({ serverId: "global", gameVersion: null, dataVersion: null,
+    rulesVersion: null, locale: "en", kind: "configuration-draft", payload: createInitialState(UNVERIFIED_GLOBAL_SNAPSHOT) });
+  history.replaceState({ retained: true }, "", `/en/?seasonPreview=s1&keep=1${hash}`);
+  localStorage.setItem("rock-calculator.servers.global.settings.season-theme.v1", "random");
+  vi.spyOn(Math, "random").mockReturnValue(0.5);
+  render(<WebEntry />);
+  await screen.findByRole("combobox", { name: "Global theme" });
+  expect(document.documentElement.dataset.season).toBe("s1");
+  fireEvent.click(screen.getByRole("button", { name: "Random Global theme" }));
+  expect(document.documentElement.dataset.season).toBe("s3");
+  expect(location.search).toBe("?keep=1");
+  expect(location.hash).toBe(hash);
+  expect(history.state.retained).toBe(true);
+  expect(localStorage.getItem("rock-calculator.servers.global.settings.season-theme.v1")).toBe("random");
+  expect(localStorage.getItem(MANUAL_PREFERENCE_KEY)).toBeNull();
 });

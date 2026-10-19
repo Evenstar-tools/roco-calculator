@@ -219,7 +219,7 @@ export function WorkspaceOverlays({
             type="button"
           >{t("显示设置")}</button>
           <div aria-hidden="true" className="app-menu__separator" />
-          {(runtime.onServerChange || menuActions.onOpenGlobal) && <>
+          {runtime.serverId === "global" && (runtime.onServerChange || menuActions.onOpenGlobal) && <>
             <div aria-hidden="true" className="app-menu__group-label">{t("服务器")} · {t(runtime.serverId === "global" ? "国际服" : "国服")}</div>
             <button type="button" onClick={() => { menuActions.onClose?.(); if (runtime.onServerChange) runtime.onServerChange(runtime.serverId === "global" ? "cn" : "global"); else menuActions.onOpenGlobal(); }}>{t(runtime.serverId === "global" ? "国服" : "国际服 · Global CBT")}</button>
             {runtime.serverId === "global" && runtime.onLocaleChange && <label className="app-menu__group-label" style={{ display: "block", minWidth: 0 }}>{t("语言")}

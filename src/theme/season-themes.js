@@ -31,7 +31,11 @@ const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
 export const SELECTABLE_SEASON_THEMES = Object.freeze([...PREVIEW_IDS].map((id) => SEASON_THEMES[id]));
 
 export function normalizeSeasonThemePreference(value) {
-  return PREVIEW_IDS.has(value) ? value : "default";
+  return value === "random" || PREVIEW_IDS.has(value) ? value : "default";
+}
+
+export function pickRandomSeasonThemeId(random = Math.random) {
+  return SELECTABLE_SEASON_THEMES[Math.floor(random() * SELECTABLE_SEASON_THEMES.length)].id;
 }
 
 export function resolveSeasonPreviewId({ search = "", hostname = "" } = {}) {
@@ -39,10 +43,11 @@ export function resolveSeasonPreviewId({ search = "", hostname = "" } = {}) {
   return LOOPBACK_HOSTS.has(hostname.toLowerCase()) && PREVIEW_IDS.has(requested) ? requested : null;
 }
 
-export function resolveSeasonThemeId({ serverId = "cn", preference = "default", search = "", hostname = "" } = {}) {
+export function resolveSeasonThemeId({ serverId = "cn", preference = "default", randomThemeId, search = "", hostname = "" } = {}) {
   const preview = resolveSeasonPreviewId({ search, hostname });
   if (preview) return preview;
-  if (normalizeSeasonThemePreference(preference) !== "default") return preference;
+  if (preference === "random" && PREVIEW_IDS.has(randomThemeId)) return randomThemeId;
+  if (PREVIEW_IDS.has(preference)) return preference;
   return serverId === "cn" ? "s4" : "neutral";
 }
 

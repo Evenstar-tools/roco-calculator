@@ -43,6 +43,8 @@ export const commonMessages = Object.fromEntries([
   ["属性查询", "Type matchups", "タイプ相性"], ["技能检索", "Skill search", "スキル検索"], ["电鹿斩杀线", "KO threshold", "撃破ライン"], ["传动计算器", "Transmission calculator", "伝動計算機"], ["速度线排行", "Speed rankings", "素早さランキング"], ["耐久排行", "Durability rankings", "耐久ランキング"],
   ["显示设置", "Display settings", "表示設定"], ["关闭显示设置", "Close display settings", "表示設定を閉じる"],
   ["赛季主题", "Theme", "テーマ"],
+  ["每次进入随机主题", "Random theme on each visit", "開くたびにテーマをランダムに選ぶ"],
+  ["随机 · {season}", "Random · {season}", "ランダム · {season}"],
   ["{theme}（预览）", "{theme} (preview)", "{theme}（プレビュー）"],
   ["默认（S4 月涌狂想）", "Default (S4 月涌狂想)", "標準（S4 月涌狂想）"],
   ["默认（无赛季装饰）", "Default (no season artwork)", "標準（シーズン装飾なし）"],

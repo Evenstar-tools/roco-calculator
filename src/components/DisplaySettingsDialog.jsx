@@ -1,7 +1,7 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { getSeasonTheme, SELECTABLE_SEASON_THEMES } from "../theme/season-themes.js";
-import { X } from "@phosphor-icons/react";
+import { Shuffle, X } from "@phosphor-icons/react";
 
 export function DisplaySettingsDialog({
   compactOptionLabelsEnabled = false,
@@ -43,18 +43,24 @@ export function DisplaySettingsDialog({
             <X aria-hidden="true" size={18} />
           </button>
         </h2>
-        <label className="display-settings-option display-settings-option--season">
-          <span><strong>{t("赛季主题")}</strong></span>
-          <select aria-label={t("赛季主题")}
-            value={seasonPreview ? "preview" : serverId === "cn" && seasonThemePreference === "default" ? "s4" : seasonThemePreference}
-            onChange={(event) => onSeasonThemeChange?.(event.target.value)}>
-            {seasonPreview && <option disabled value="preview">{t("{theme}（预览）", {
-              theme: `${seasonThemeId.toUpperCase()} ${getSeasonTheme(seasonThemeId).sourceName}`,
-            })}</option>}
-            {serverId !== "cn" && <option value="default">{t("默认（无赛季装饰）")}</option>}
-            {SELECTABLE_SEASON_THEMES.map(({ id, sourceName }) => <option key={id} value={id}>{id.toUpperCase()} {sourceName}</option>)}
-          </select>
-        </label>
+        <div className="display-settings-option display-settings-option--season">
+          <label htmlFor={`display-settings-season-${serverId}`}><strong>{t("赛季主题")}</strong></label>
+          <div className="display-settings-season-control">
+            <select aria-label={t("赛季主题")} id={`display-settings-season-${serverId}`}
+              value={seasonPreview ? "preview" : serverId === "cn" && seasonThemePreference === "default" ? "s4" : seasonThemePreference}
+              onChange={(event) => onSeasonThemeChange?.(event.target.value)}>
+              {seasonPreview && <option disabled value="preview">{t("{theme}（预览）", {
+                theme: `${seasonThemeId.toUpperCase()} ${getSeasonTheme(seasonThemeId).sourceName}`,
+              })}</option>}
+              {!seasonPreview && seasonThemePreference === "random" && <option disabled hidden value="random">{t("随机 · {season}", { season: seasonThemeId.toUpperCase() })}</option>}
+              {serverId !== "cn" && <option value="default">{t("默认（无赛季装饰）")}</option>}
+              {SELECTABLE_SEASON_THEMES.map(({ id, sourceName }) => <option key={id} value={id}>{id.toUpperCase()} {sourceName}</option>)}
+            </select>
+            <button aria-label={t("每次进入随机主题")} aria-pressed={seasonThemePreference === "random"}
+              className="display-settings-season-random" onClick={() => onSeasonThemeChange?.("random")}
+              title={t("每次进入随机主题")} type="button"><Shuffle aria-hidden="true" size={20} /></button>
+          </div>
+        </div>
         <div className="display-settings-option display-settings-option--power">
           <span>
             <strong>{t("技能威力口径")}</strong>

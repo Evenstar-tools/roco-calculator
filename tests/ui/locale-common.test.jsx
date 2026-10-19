@@ -83,6 +83,26 @@ test.each(["en", "ja"])("%s 原设置/快捷键/菜单/关于与分享弹层文�
   expect(getMissingUiMessages()).toEqual([]);
 });
 
+test.each(["zh-CN", "en", "ja"])("%s 国际服不显示QQ号码或复制入口，保留其他反馈渠道", (locale) => {
+  const t = (source) => translateUi(locale, source);
+  const onCopyFeedback = vi.fn();
+  const onClose = vi.fn();
+  render(wrap(locale, <DataSourceDialog open onClose={onClose} onCopyFeedback={onCopyFeedback} />));
+  expect(screen.queryByText("QQ 1215583051")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: t("复制反馈 QQ") })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: t("查看问题反馈") }));
+  expect(screen.getByRole("dialog", { name: t("问题反馈") })).toBeVisible();
+  expect(screen.getByRole("link", { name: "1215583051@qq.com" })).toHaveAttribute("href", "mailto:1215583051@qq.com");
+  expect(screen.getByRole("link", { name: t("诛仙剑下伤心花") })).toHaveAttribute("href", expect.stringContaining("space.bilibili.com"));
+  fireEvent.click(screen.getByRole("button", { name: t("返回关于与来源") }));
+  expect(screen.queryByText("QQ 1215583051")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: t("复制反馈 QQ") })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: t("关闭关于与来源") }));
+  expect(onClose).toHaveBeenCalledOnce();
+  expect(onCopyFeedback).not.toHaveBeenCalled();
+  expect(getMissingUiMessages()).toEqual([]);
+});
+
 test.each(["en", "ja"])("%s 从菜单关闭弹窗后焦点回到当前服菜单，不落在隐藏国服", (locale) => {
   function MenuHarness() {
     const [menuOpen, setMenuOpen] = useState(false);

@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { readSeasonThemePreference, writeSeasonThemePreference } from "../../src/state/season-theme.js";
-import { resolveSeasonPreviewId, resolveSeasonThemeId } from "../../src/theme/season-themes.js";
+import { pickRandomSeasonThemeId, resolveSeasonPreviewId, resolveSeasonThemeId } from "../../src/theme/season-themes.js";
 
 const memoryStorage = () => {
   const values = new Map();
@@ -33,4 +33,23 @@ test("unavailable storage keeps a normalized in-memory choice without throwing",
   const storage = { getItem: () => { throw new Error("blocked"); } };
   expect(readSeasonThemePreference("global", storage)).toBe("default");
   expect(writeSeasonThemePreference("s2", "global", storage)).toBe("s2");
+  expect(writeSeasonThemePreference("random", "global", storage)).toBe("random");
+});
+
+test.each([[0, "s1"], [0.25, "s2"], [0.5, "s3"], [0.99999, "s4"]])("random draw %s selects %s from the four artwork themes", (random, id) => {
+  expect(pickRandomSeasonThemeId(() => random)).toBe(id);
+});
+
+test("random mode persists independently without saving its transient draw or bypassing local preview", () => {
+  const storage = memoryStorage();
+  writeSeasonThemePreference("s2", "cn", storage);
+  writeSeasonThemePreference("random", "global", storage);
+  expect(readSeasonThemePreference("cn", storage)).toBe("s2");
+  expect(readSeasonThemePreference("global", storage)).toBe("random");
+  expect(resolveSeasonThemeId({ serverId: "global", preference: "random", randomThemeId: "s3" })).toBe("s3");
+  expect(resolveSeasonThemeId({ serverId: "global", preference: "random", randomThemeId: "s3", hostname: "localhost", search: "?seasonPreview=s1" })).toBe("s1");
+  expect(resolveSeasonThemeId({ serverId: "global", preference: "random", randomThemeId: "s3", hostname: "rococalc.top", search: "?seasonPreview=s1" })).toBe("s3");
+  writeSeasonThemePreference("s3", "global", storage);
+  expect(readSeasonThemePreference("global", storage)).toBe("s3");
+  expect(readSeasonThemePreference("cn", storage)).toBe("s2");
 });
