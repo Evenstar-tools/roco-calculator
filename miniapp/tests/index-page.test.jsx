@@ -7,10 +7,12 @@ import {
   within,
 } from "@testing-library/react";
 import { createHash } from "node:crypto";
+import { StrictMode } from "react";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import {
   __getShareMessage,
   __setRouterParams,
+  __showPage,
 } from "@tarojs/taro";
 import Taro from "@tarojs/taro";
 import IndexPage, {
@@ -23,7 +25,7 @@ import { createRuntimeConfig } from "../src/config/runtime.js";
 import { publicSpiritImageUrl } from "../src/data/public-asset-urls.js";
 import { createCalculationView } from "../src/view-models/calculation.js";
 import { damagePresentation } from "../src/view-models/result-presentation.js";
-import { SEASON_THEME_STORAGE_KEY } from "../src/state/season-theme.js";
+import { CLASSIC_CALCULATOR_COLORS_STORAGE_KEY, SEASON_THEME_LAST_RANDOM_STORAGE_KEY, SEASON_THEME_STORAGE_KEY } from "../src/state/season-theme.js";
 
 function createSnapshot() {
   return {
@@ -128,7 +130,37 @@ function createStorageTaro(overrides = {}) {
 }
 
 describe("IndexPage", () => {
-  test("random season redraws on page entry or shuffle only and never resets calculator configuration", async () => {
+  test("经典配色默认关闭且独立记忆，切换赛季不改变背景、页头和计算配置", async () => {
+    const services = createUserSettingServices();
+    const first = render(<IndexPage services={services} />);
+    await screen.findByLabelText("攻击方配置");
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    const toggle = screen.getByRole("switch", { name: "计算界面保持经典配色" });
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+    expect(first.container.querySelector(".page")).not.toHaveClass("page--classic-calculator-colors");
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-checked", "true");
+    expect(first.container.querySelector(".page")).toHaveClass("page--classic-calculator-colors");
+    fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "2" } });
+    expect(first.container.querySelector(".page")).toHaveClass("page--season-s3", "page--classic-calculator-colors");
+    expect(first.container.querySelector(".season-sky")).toHaveClass("season-sky--s3");
+    expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S4「季中」");
+    fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
+    expect(screen.getByRole("button", { name: "四技能模式" })).toHaveAttribute("aria-pressed", "true");
+    first.unmount();
+    const second = render(<IndexPage services={services} />);
+    await screen.findByLabelText("攻击方配置");
+    expect(second.container.querySelector(".page")).toHaveClass("page--season-s3", "page--classic-calculator-colors");
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    const restored = screen.getByRole("switch", { name: "计算界面保持经典配色" });
+    expect(restored).toHaveAttribute("aria-checked", "true");
+    fireEvent.click(restored);
+    expect(second.container.querySelector(".page")).toHaveClass("page--season-s3");
+    expect(second.container.querySelector(".page")).not.toHaveClass("page--classic-calculator-colors");
+  });
+
+  test("random switch fixes the current season when disabled and never repeats the previous entry", async () => {
     Taro.setStorageSync(SEASON_THEME_STORAGE_KEY, "random");
     const random = vi.spyOn(Math, "random").mockReturnValue(0.5);
     const services = createUserSettingServices();
@@ -141,6 +173,10 @@ describe("IndexPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     expect(first.container.querySelector(".page")).toHaveClass("page--season-s3");
+    fireEvent.click(screen.getByRole("button", { name: "每次进入随机主题" }));
+    expect(first.container.querySelector(".page")).toHaveClass("page--season-s3");
+    expect(Taro.getStorageSync(SEASON_THEME_STORAGE_KEY)).toBe("s3");
+    expect(screen.getByRole("button", { name: "每次进入随机主题" })).toHaveAttribute("aria-pressed", "false");
     fireEvent.click(screen.getByRole("button", { name: "每次进入随机主题" }));
     expect(first.container.querySelector(".page")).toHaveClass("page--season-s1");
     expect(Taro.getStorageSync(SEASON_THEME_STORAGE_KEY)).toBe("random");
@@ -155,11 +191,56 @@ describe("IndexPage", () => {
     expect(screen.getByRole("button", { name: "四技能模式" })).toHaveAttribute("aria-pressed", "true");
     expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S4「季中」");
     first.unmount();
-    random.mockReturnValue(0.75);
+    random.mockReturnValue(0);
     const second = render(<IndexPage services={services} />);
     await screen.findByLabelText("攻击方配置");
-    expect(second.container.querySelector(".page")).toHaveClass("page--season-s4");
+    expect(second.container.querySelector(".page")).toHaveClass("page--season-s1");
     expect(Taro.getStorageSync(SEASON_THEME_STORAGE_KEY)).toBe("random");
+    second.unmount();
+    const third = render(<IndexPage services={services} />);
+    await screen.findByLabelText("攻击方配置");
+    expect(third.container.querySelector(".page")).toHaveClass("page--season-s2");
+  });
+
+  test("StrictMode commits the actual random theme after initialization without advancing history early", async () => {
+    Taro.setStorageSync(SEASON_THEME_STORAGE_KEY, "random");
+    Taro.setStorageSync(SEASON_THEME_LAST_RANDOM_STORAGE_KEY, "s1");
+    const observedHistory = [];
+    vi.spyOn(Math, "random").mockImplementation(() => {
+      observedHistory.push(Taro.getStorageSync(SEASON_THEME_LAST_RANDOM_STORAGE_KEY));
+      return 0;
+    });
+    const writes = vi.spyOn(Taro, "setStorageSync");
+    const view = render(<StrictMode><IndexPage services={createUserSettingServices()} /></StrictMode>);
+    await screen.findByLabelText("攻击方配置");
+    expect(observedHistory.length).toBeGreaterThan(0);
+    expect(observedHistory.slice(0, 2).every((id) => id === "s1")).toBe(true);
+    expect(view.container.querySelector(".page")).toHaveClass("page--season-s2");
+    expect(Taro.getStorageSync(SEASON_THEME_LAST_RANDOM_STORAGE_KEY)).toBe("s2");
+    expect(writes.mock.calls.filter(([key]) => key === SEASON_THEME_LAST_RANDOM_STORAGE_KEY)
+      .every(([, id]) => id === "s2")).toBe(true);
+  });
+
+  test("first native page show does not draw twice, foreground visits avoid repeats and a fixed theme stays fixed", async () => {
+    Taro.setStorageSync(SEASON_THEME_STORAGE_KEY, "random");
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const view = render(<IndexPage services={createUserSettingServices()} />);
+    await screen.findByLabelText("攻击方配置");
+    expect(view.container.querySelector(".page")).toHaveClass("page--season-s3");
+    random.mockReturnValue(0);
+    act(() => __showPage());
+    expect(view.container.querySelector(".page")).toHaveClass("page--season-s3");
+    act(() => __showPage());
+    expect(view.container.querySelector(".page")).toHaveClass("page--season-s1");
+    expect(Taro.getStorageSync(SEASON_THEME_LAST_RANDOM_STORAGE_KEY)).toBe("s1");
+    act(() => __showPage());
+    expect(view.container.querySelector(".page")).toHaveClass("page--season-s2");
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    fireEvent.click(screen.getByRole("button", { name: "每次进入随机主题" }));
+    act(() => __showPage());
+    expect(view.container.querySelector(".page")).toHaveClass("page--season-s2");
+    expect(Taro.getStorageSync(SEASON_THEME_STORAGE_KEY)).toBe("s2");
+    expect(screen.getByRole("button", { name: "每次进入随机主题" })).toHaveAttribute("aria-pressed", "false");
   });
 
   test("已收藏配点修改同步预设，重新打开仍可使用用户预设", async () => {
@@ -210,6 +291,8 @@ describe("IndexPage", () => {
   });
   afterEach(() => {
     Taro.removeStorageSync(SEASON_THEME_STORAGE_KEY);
+    Taro.removeStorageSync(SEASON_THEME_LAST_RANDOM_STORAGE_KEY);
+    Taro.removeStorageSync(CLASSIC_CALCULATOR_COLORS_STORAGE_KEY);
     __setRouterParams();
     vi.useRealTimers();
     vi.restoreAllMocks();

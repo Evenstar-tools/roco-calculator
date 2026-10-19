@@ -13,9 +13,34 @@ import {
   WEB_CORE_VERSION,
 } from "../src/version.js";
 import miniappPackage from "../package.json";
-import { readSeasonTheme, SEASON_THEME_STORAGE_KEY, writeSeasonTheme } from "../src/state/season-theme.js";
+import {
+  CLASSIC_CALCULATOR_COLORS_STORAGE_KEY,
+  readClassicCalculatorColors,
+  readSeasonTheme,
+  SEASON_THEME_LAST_RANDOM_STORAGE_KEY,
+  SEASON_THEME_STORAGE_KEY,
+  SEASON_THEMES,
+  writeClassicCalculatorColors,
+  writeLastRandomSeasonTheme,
+  writeSeasonTheme,
+} from "../src/state/season-theme.js";
 
 describe("miniapp shell", () => {
+  test("classic calculator colors default off and persist independently of the season preference", () => {
+    const values = new Map([[SEASON_THEME_STORAGE_KEY, "s2"]]);
+    const storage = { get: (key) => values.get(key), set: (key, value) => values.set(key, value) };
+    expect(readClassicCalculatorColors(storage)).toBe(false);
+    expect(writeClassicCalculatorColors(true, storage)).toBe(true);
+    expect(values.get(CLASSIC_CALCULATOR_COLORS_STORAGE_KEY)).toBe(true);
+    expect(readClassicCalculatorColors(storage)).toBe(true);
+    expect(values.get(SEASON_THEME_STORAGE_KEY)).toBe("s2");
+    expect(writeClassicCalculatorColors(false, storage)).toBe(false);
+    expect(readClassicCalculatorColors(storage)).toBe(false);
+    const blocked = { get() { throw new Error("blocked"); }, set() { throw new Error("blocked"); } };
+    expect(readClassicCalculatorColors(blocked)).toBe(false);
+    expect(writeClassicCalculatorColors(true, blocked)).toBe(true);
+  });
+
   test.each([[0, "s1"], [0.25, "s2"], [0.5, "s3"], [0.99999, "s4"]])("random theme draw %s persists the mode, not %s", (random, id) => {
     const values = new Map();
     const storage = { get: (key) => values.get(key), set: (key, value) => values.set(key, value) };
@@ -33,6 +58,20 @@ describe("miniapp shell", () => {
     expect(readSeasonTheme(blocked)).toEqual({ preference: "s4", id: "s4" });
     expect(writeSeasonTheme("s2", blocked)).toEqual({ preference: "s2", id: "s2" });
     expect(writeSeasonTheme("random", blocked, () => 0)).toEqual({ preference: "random", id: "s1" });
+    expect(writeSeasonTheme("random", blocked, () => 0, "s1")).toEqual({ preference: "random", id: "s2" });
+  });
+
+  test.each(["s1", "s2", "s3", "s4"])("random entry excludes previous %s without writing history during initialization", (previous) => {
+    const values = new Map([[SEASON_THEME_STORAGE_KEY, "random"], [SEASON_THEME_LAST_RANDOM_STORAGE_KEY, previous]]);
+    const storage = { get: (key) => values.get(key), set: vi.fn((key, value) => values.set(key, value)) };
+    const alternatives = [0, 0.5, 0.999].map((random) => readSeasonTheme(storage, () => random).id);
+    expect(alternatives).toEqual(SEASON_THEMES.filter(({ id }) => id !== previous).map(({ id }) => id));
+    expect(storage.set).not.toHaveBeenCalled();
+    const entered = readSeasonTheme(storage, () => 0);
+    writeLastRandomSeasonTheme(entered.id, storage);
+    expect(values.get(SEASON_THEME_LAST_RANDOM_STORAGE_KEY)).toBe(entered.id);
+    expect(values.get(SEASON_THEME_STORAGE_KEY)).toBe("random");
+    expect(readSeasonTheme(storage, () => 0).id).not.toBe(entered.id);
   });
 
   test.each(["s1", "s2", "s3"])("%s backdrop uses only its local decorative scene and never changes the data title", (seasonId) => {
@@ -62,6 +101,8 @@ describe("miniapp shell", () => {
     expect(picker).toHaveValue("0");
     expect(picker.options[0]).toHaveTextContent("随机 · S3");
     expect(shuffle).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(shuffle);
+    expect(change).toHaveBeenLastCalledWith("s3");
     fireEvent.change(picker, { target: { value: "3" } });
     expect(change).toHaveBeenLastCalledWith("s3");
     view.rerender(ui("s3", "s3"));

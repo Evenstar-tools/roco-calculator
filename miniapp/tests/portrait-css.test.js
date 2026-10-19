@@ -50,6 +50,18 @@ describe("reference-first responsive CSS", () => {
     }
   });
 
+  test("classic calculation colors do not clear the selected scene or header palette", () => {
+    const season = styles["season.css"];
+    expect(appHeaderSource).toContain('aria-label="计算界面保持经典配色"');
+    for (const id of ["s1", "s2", "s3"]) {
+      expect(season).toContain(`.page--season-${id}:not(.page--classic-calculator-colors)`);
+    }
+    expect(season).toContain("color: var(--season-title, #ecd78c)");
+    expect(season).toContain("background: var(--result)");
+    expect(season).toContain("color: var(--season-result-ink, #efdda8)");
+    expect(season).not.toMatch(/classic-calculator-colors[^}]+(?:season-sky|app-header)/u);
+  });
+
   test("keeps result names and ranking visibility icons readable in dark mode", () => {
     expect(styles["overlays.css"]).toMatch(/\.result-row\s*\{[^}]*color:\s*var\(--text-primary\);/u);
     expect(styles["rankings.css"]).toMatch(/@media\s*\(prefers-color-scheme:\s*dark\)\s*\{\s*\.ranking-eye image,\.ranking-eye taro-image-core\s*\{\s*filter:\s*brightness\(0\) invert\(\.88\);/u);

@@ -1,6 +1,7 @@
 import "../../platform/runtime-compat.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Taro, {
+  useDidShow,
   useRouter,
   useShareAppMessage,
 } from "@tarojs/taro";
@@ -23,7 +24,13 @@ import { PREVIEW_PET_IMAGES } from "../../data/preview-pet-images.js";
 import { createCloudAdapter } from "../../services/cloud-adapter.js";
 import { createDataService } from "../../services/data-service.js";
 import { createStorageAdapter } from "../../services/storage-adapter.js";
-import { readSeasonTheme, writeSeasonTheme } from "../../state/season-theme.js";
+import {
+  readClassicCalculatorColors,
+  readSeasonTheme,
+  writeClassicCalculatorColors,
+  writeLastRandomSeasonTheme,
+  writeSeasonTheme,
+} from "../../state/season-theme.js";
 import {
   createShareMessage,
   decodeSharePayloadResult,
@@ -125,6 +132,20 @@ export function createDefaultServices({
 
 export default function IndexPage({ services }) {
   const [seasonTheme, setSeasonTheme] = useState(() => readSeasonTheme(createStorageAdapter(Taro)));
+  const [classicCalculatorColorsEnabled, setClassicCalculatorColorsEnabled] = useState(() => readClassicCalculatorColors(createStorageAdapter(Taro)));
+  useEffect(() => {
+    if (seasonTheme.preference === "random") writeLastRandomSeasonTheme(seasonTheme.id, createStorageAdapter(Taro));
+  }, [seasonTheme.id, seasonTheme.preference]);
+  const initialSeasonShow = useRef(true);
+  useDidShow(() => {
+    if (initialSeasonShow.current) {
+      initialSeasonShow.current = false;
+      return;
+    }
+    if (seasonTheme.preference === "random") {
+      setSeasonTheme(writeSeasonTheme("random", createStorageAdapter(Taro), Math.random, seasonTheme.id));
+    }
+  });
   const autosave = useRef(null);
   const [rankingKind, setRankingKind] = useState(null);
   const [visitedRankings, setVisitedRankings] = useState([]);
@@ -705,11 +726,13 @@ export default function IndexPage({ services }) {
   }
 
   return (
-    <View className={`page page--season-${seasonTheme.id}${compactDemo ? " page--compact-demo" : ""}`}>
+    <View className={`page page--season-${seasonTheme.id}${classicCalculatorColorsEnabled ? " page--classic-calculator-colors" : ""}${compactDemo ? " page--compact-demo" : ""}`}>
       <SeasonBackdrop seasonId={seasonTheme.id} />
       <AppHeader
+        classicCalculatorColorsEnabled={classicCalculatorColorsEnabled}
+        onClassicCalculatorColorsChange={(value) => setClassicCalculatorColorsEnabled(writeClassicCalculatorColors(value, createStorageAdapter(Taro)))}
         seasonTheme={seasonTheme}
-        onSeasonThemeChange={(value) => setSeasonTheme(writeSeasonTheme(value, createStorageAdapter(Taro)))}
+        onSeasonThemeChange={(value) => setSeasonTheme(writeSeasonTheme(value, createStorageAdapter(Taro), Math.random, seasonTheme.id))}
         damageComparisonEnabled={pageState.damageComparisonEnabled === true}
         onDamageComparisonChange={changeDamageComparisonEnabled}
         commonConfigCount={pageState.configLibrary.entries.length}

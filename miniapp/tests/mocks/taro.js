@@ -1,6 +1,7 @@
 const values = new Map();
 let routerParams = {};
 let shareMessageFactory = null;
+let didShowCallback = null;
 
 const Taro = {
   getStorageSync(key) {
@@ -24,6 +25,14 @@ export function useRouter() {
 
 export function useShareAppMessage(factory) {
   shareMessageFactory = factory;
+}
+
+export function useDidShow(callback) {
+  didShowCallback = callback;
+}
+
+export function __showPage() {
+  didShowCallback?.();
 }
 
 export function __getShareMessage() {

@@ -132,6 +132,22 @@
   --season-accent-soft: #edf5e8;
 }
 
+/* Classic mode leaves the scene/header intact and uses the existing S4 calculation tokens. */
+.page--season-s1:not(.page--classic-calculator-colors) {
+  --result: #405c83;
+  --result-soft: #edf2fa;
+}
+
+.page--season-s2:not(.page--classic-calculator-colors) {
+  --result: #925c42;
+  --result-soft: #f6ece8;
+}
+
+.page--season-s3:not(.page--classic-calculator-colors) {
+  --result: #526d58;
+  --result-soft: #edf3e9;
+}
+
 .season-sky--s1 {
   background: linear-gradient(180deg, #17213e, #596d92 65px, #c5ccd6 120px, #f4f2ed 176px);
 }
@@ -238,6 +254,25 @@
   .page--season-s2 { --season-accent: #e4bb94; --season-accent-soft: #493340; }
   .page--season-s3 { --season-accent: #b3cda5; --season-accent-soft: #2b4037; }
 
+  .page--season-s1:not(.page--classic-calculator-colors) {
+    --result: #adc5f0;
+    --result-soft: #283951;
+    --season-result-ink: #c8d9f4;
+    --season-selected-ink: #172233;
+  }
+  .page--season-s2:not(.page--classic-calculator-colors) {
+    --result: #e4bb94;
+    --result-soft: #493340;
+    --season-result-ink: #edd3b7;
+    --season-selected-ink: #172233;
+  }
+  .page--season-s3:not(.page--classic-calculator-colors) {
+    --result: #b3cda5;
+    --result-soft: #2b4037;
+    --season-result-ink: #d1e3c7;
+    --season-selected-ink: #172233;
+  }
+
   .season-sky--s1 { background: linear-gradient(180deg, #10152f, #273653 80px, #101722 229px); }
   .season-sky--s2 { background: linear-gradient(180deg, #2e152b, #40283d 80px, #101722 229px); }
   .season-sky--s3 { background: linear-gradient(180deg, #142b22, #304436 80px, #101722 229px); }
@@ -261,7 +296,7 @@
   }
 
   .mode-switch__button--active {
-    background: #dcc68d;
+    background: var(--result);
     color: #142030;
     box-shadow: none;
   }
@@ -299,7 +334,7 @@
   }
 
   .result-bar__damage {
-    color: #efdda8;
+    color: var(--season-result-ink, #efdda8);
   }
 
   .result-bar__track-line,
@@ -331,6 +366,13 @@
 
   .skill-picker__category--active {
     color: #172233;
+  }
+
+  .team-analysis__tab--active,
+  .condition-editor__burst-tab--active,
+  .result-actions__category--active,
+  .result-sheet__share {
+    color: var(--season-selected-ink, #fff);
   }
 
   .skill-picker__search-icon {

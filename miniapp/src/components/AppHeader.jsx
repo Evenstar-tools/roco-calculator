@@ -26,6 +26,8 @@ export default function AppHeader({
   onTeamAnalysisChange,
   onTypeAnalysisChange,
   quickUndoEnabled = true,
+  classicCalculatorColorsEnabled = false,
+  onClassicCalculatorColorsChange,
   seasonTheme = { preference: "s4", id: "s4" },
   onSeasonThemeChange,
   teamAnalysisEnabled = false,
@@ -205,10 +207,25 @@ export default function AppHeader({
                   </Picker>
                   <Button aria-label="每次进入随机主题" aria-pressed={randomTheme}
                     className={randomTheme ? "settings-season__random settings-season__random--active" : "settings-season__random"}
-                    hoverClass="button-hover" onClick={() => onSeasonThemeChange?.("random")}>
+                    hoverClass="button-hover" onClick={() => onSeasonThemeChange?.(randomTheme ? seasonTheme.id : "random")}>
                     <Image alt="" aria-hidden="true" className="settings-season__shuffle" mode="aspectFit" src={shuffleIcon} />
                   </Button>
                 </View>
+              </View>
+              <View className="settings-sheet__divider" />
+              <View className="settings-sheet__row">
+                <View className="settings-sheet__copy">
+                  <Text className="settings-sheet__label">计算界面保持经典配色</Text>
+                  <Text className="settings-sheet__description">只恢复计算区配色，保留赛季背景与页头</Text>
+                </View>
+                <Button aria-checked={classicCalculatorColorsEnabled} aria-label="计算界面保持经典配色"
+                  className={classicCalculatorColorsEnabled
+                    ? "settings-sheet__switch settings-sheet__switch--on settings-season__classic-toggle"
+                    : "settings-sheet__switch settings-season__classic-toggle"}
+                  hoverClass="settings-sheet__switch--pressed"
+                  onClick={() => onClassicCalculatorColorsChange?.(!classicCalculatorColorsEnabled)} role="switch">
+                  <View className="settings-sheet__switch-thumb" />
+                </Button>
               </View>
               <View className="settings-sheet__divider" />
               <View className="settings-sheet__row">
