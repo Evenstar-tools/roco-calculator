@@ -26,8 +26,9 @@ export const SEASON_THEMES = Object.freeze({
 
 export const SELECTABLE_SEASON_THEMES = Object.freeze(Object.values(SEASON_THEMES));
 
-export function pickRandomSeasonThemeId(random = Math.random) {
-  return SELECTABLE_SEASON_THEMES[Math.floor(random() * SELECTABLE_SEASON_THEMES.length)].id;
+export function pickRandomSeasonThemeId(random = Math.random, excludeId) {
+  const candidates = SELECTABLE_SEASON_THEMES.filter(({ id }) => id !== excludeId);
+  return candidates[Math.floor(random() * candidates.length)].id;
 }
 
 export function normalizeSeasonThemePreference(value) {

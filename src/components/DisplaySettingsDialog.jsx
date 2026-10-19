@@ -21,7 +21,7 @@ export function DisplaySettingsDialog({
   powerDisplayMode = "static",
   typeCoverageEnabled = false,
 }) {
-  const { preference, season, onSeasonThemeChange } = useSeasonTheme();
+  const { preference, season, onSeasonThemeChange, classicCalculatorColorsEnabled, onClassicCalculatorColorsChange } = useSeasonTheme();
   if (!open) return null;
   return (
     <div
@@ -52,12 +52,24 @@ export function DisplaySettingsDialog({
               {SELECTABLE_SEASON_THEMES.map(({ id, sourceName }) => <option key={id} value={id}>{id.toUpperCase()} {sourceName}</option>)}
             </select>
             <button aria-label="每次进入随机主题" aria-pressed={preference === "random"}
-              className="display-settings-season-shuffle" onClick={() => onSeasonThemeChange?.("random")}
+              className="display-settings-season-shuffle" onClick={() => onSeasonThemeChange?.(preference === "random" ? season.id : "random")}
               title="每次进入随机主题" type="button">
               <Shuffle aria-hidden="true" size={20} />
             </button>
           </div>
         </div>
+        <label className="display-settings-option">
+          <span>
+            <strong>计算界面保持经典配色</strong>
+            <small>使用 S4 基础配色，保留所选赛季背景</small>
+          </span>
+          <input
+            aria-label="计算界面保持经典配色"
+            checked={classicCalculatorColorsEnabled}
+            onChange={(event) => onClassicCalculatorColorsChange?.(event.target.checked)}
+            type="checkbox"
+          />
+        </label>
         <div className="display-settings-option display-settings-option--power">
           <span>
             <strong>技能威力口径</strong>

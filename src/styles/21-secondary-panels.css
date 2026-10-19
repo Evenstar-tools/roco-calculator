@@ -80,7 +80,8 @@ html[data-theme="dark"] .team-drawer .team-drawer__zero-cta { color: #1b2636; }
 .display-settings-season-control { display: flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; }
 .display-settings-season-control select { flex: 1 1 0; }
 .display-settings-season-shuffle { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; padding: 0; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-muted); cursor: pointer; }
-.display-settings-season-shuffle:hover, .display-settings-season-shuffle[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.display-settings-season-shuffle:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.display-settings-season-shuffle[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--surface); }
 .display-settings-season-shuffle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .display-settings-power-details > summary { cursor: pointer; color: var(--text-muted); font-size: 12px; }
 
@@ -111,6 +112,7 @@ html[data-theme="dark"] .team-drawer .team-drawer__zero-cta { color: #1b2636; }
 
 @media (max-width: 650px) {
   :is(.config-library-dialog, .display-settings-dialog, .data-source-dialog, .release-notes-dialog, .whats-new-dialog, .product-access-dialog) { padding: 18px; }
+  .display-settings-season-shuffle { flex-basis: 44px; width: 44px; height: 44px; }
   .team-drawer.team-workbench .team-drawer__zero { margin-top: 32px; padding: 24px 16px; }
   .display-settings-dialog .dialog-actions { margin-top: 6px; }
   .skill-query .skill-query__tabs { gap: 10px; }

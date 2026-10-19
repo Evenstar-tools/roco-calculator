@@ -1,15 +1,18 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
-import { useState } from "react";
+import { StrictMode, useState } from "react";
 import { AppHeader } from "../../src/components/AppHeader.jsx";
 import { DisplaySettingsDialog } from "../../src/components/DisplaySettingsDialog.jsx";
 import { SeasonThemeProvider } from "../../src/theme/SeasonThemeContext.jsx";
-import { SEASON_THEME_STORAGE_KEY } from "../../src/state/season-theme.js";
+import { CLASSIC_CALCULATOR_COLORS_STORAGE_KEY, SEASON_THEME_LAST_RANDOM_STORAGE_KEY, SEASON_THEME_STORAGE_KEY } from "../../src/state/season-theme.js";
 import { getSeasonTheme } from "../../src/theme/season-themes.js";
 
 afterEach(() => {
   vi.restoreAllMocks();
   localStorage.removeItem(SEASON_THEME_STORAGE_KEY);
+  localStorage.removeItem(SEASON_THEME_LAST_RANDOM_STORAGE_KEY);
+  localStorage.removeItem(CLASSIC_CALCULATOR_COLORS_STORAGE_KEY);
+  delete document.documentElement.dataset.classicCalculatorColors;
   delete document.documentElement.dataset.season;
   delete document.documentElement.dataset.theme;
   document.documentElement.style.removeProperty("--season-scene-image");
@@ -56,8 +59,8 @@ test("显示设置切换四季原图，保留季中标题、亮暗状态和已�
   expect(document.documentElement).toHaveAttribute("data-season", "s4");
 });
 
-test("随机模式仅在进入或点击时抽取，保存模式而非本次主题，手动固定当前主题即可退出", () => {
-  const random = vi.spyOn(Math, "random").mockReturnValueOnce(0).mockReturnValueOnce(0.25).mockReturnValueOnce(0.999);
+test("随机按钮再次点击关闭并固定当前主题，重新进入保持固定", () => {
+  const random = vi.spyOn(Math, "random").mockReturnValue(0);
   const view = render(<ThemeSettings />);
   const shuffle = screen.getByRole("button", { name: "每次进入随机主题" });
   expect(shuffle).toHaveAttribute("aria-pressed", "false");
@@ -70,17 +73,122 @@ test("随机模式仅在进入或点击时抽取，保存模式而非本次主�
   expect(document.documentElement).toHaveAttribute("data-season", "s1");
   expect(random).toHaveBeenCalledTimes(1);
   fireEvent.click(shuffle);
-  expect(document.documentElement).toHaveAttribute("data-season", "s2");
+  expect(shuffle).toHaveAttribute("aria-pressed", "false");
+  expect(document.documentElement).toHaveAttribute("data-season", "s1");
+  expect(localStorage.getItem(SEASON_THEME_STORAGE_KEY)).toBe("s1");
   view.unmount();
-  const nextEntry = render(<ThemeSettings />);
-  expect(document.documentElement).toHaveAttribute("data-season", "s4");
-  expect(screen.getByRole("button", { name: "每次进入随机主题" })).toHaveAttribute("aria-pressed", "true");
-  expect(random).toHaveBeenCalledTimes(3);
-  fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "s4" } });
-  expect(screen.getByRole("button", { name: "每次进入随机主题" })).toHaveAttribute("aria-pressed", "false");
-  expect(localStorage.getItem(SEASON_THEME_STORAGE_KEY)).toBe("s4");
-  nextEntry.unmount();
   render(<ThemeSettings />);
-  expect(document.documentElement).toHaveAttribute("data-season", "s4");
-  expect(random).toHaveBeenCalledTimes(3);
+  expect(document.documentElement).toHaveAttribute("data-season", "s1");
+  expect(screen.getByRole("button", { name: "每次进入随机主题" })).toHaveAttribute("aria-pressed", "false");
+  expect(random).toHaveBeenCalledTimes(1);
+});
+
+test("从固定主题开启随机时必定切到其他主题，仍可手动固定本次抽中的同季", () => {
+  localStorage.setItem(SEASON_THEME_STORAGE_KEY, "s1");
+  vi.spyOn(Math, "random").mockReturnValue(0);
+  render(<ThemeSettings />);
+  const shuffle = screen.getByRole("button", { name: "每次进入随机主题" });
+  fireEvent.click(shuffle);
+  expect(document.documentElement.dataset.season).not.toBe("s1");
+  const drawn = document.documentElement.dataset.season;
+  fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: drawn } });
+  expect(shuffle).toHaveAttribute("aria-pressed", "false");
+  expect(document.documentElement.dataset.season).toBe(drawn);
+  expect(localStorage.getItem(SEASON_THEME_STORAGE_KEY)).toBe(drawn);
+});
+
+test("随机模式重新进入时避开上一页的主题，重绘和亮暗切换保持本页抽取", () => {
+  localStorage.setItem(SEASON_THEME_STORAGE_KEY, "random");
+  vi.spyOn(Math, "random").mockReturnValue(0);
+  let view = render(<ThemeSettings />);
+  let previous = document.documentElement.dataset.season;
+  for (let visit = 0; visit < 5; visit += 1) {
+    document.documentElement.dataset.theme = visit % 2 ? "dark" : "light";
+    view.rerender(<ThemeSettings />);
+    expect(document.documentElement.dataset.season).toBe(previous);
+    fireEvent.change(screen.getByRole("textbox", { name: "当前技能威力" }), { target: { value: String(100 + visit) } });
+    expect(document.documentElement.dataset.season).toBe(previous);
+    view.unmount();
+    view = render(<ThemeSettings />);
+    expect(document.documentElement.dataset.season).not.toBe(previous);
+    expect(localStorage.getItem(SEASON_THEME_STORAGE_KEY)).toBe("random");
+    previous = document.documentElement.dataset.season;
+  }
+});
+
+test("StrictMode 初始化不提前写随机记录，提交后保存显示主题且开关不会被重复执行", () => {
+  localStorage.setItem(SEASON_THEME_STORAGE_KEY, "random");
+  localStorage.setItem(SEASON_THEME_LAST_RANDOM_STORAGE_KEY, "s1");
+  const observedPreviousThemes = [];
+  vi.spyOn(Math, "random").mockImplementation(() => {
+    observedPreviousThemes.push(localStorage.getItem(SEASON_THEME_LAST_RANDOM_STORAGE_KEY));
+    return 0;
+  });
+  const writes = vi.spyOn(Storage.prototype, "setItem");
+  render(<StrictMode><ThemeSettings /></StrictMode>);
+  expect(observedPreviousThemes.length).toBeGreaterThan(0);
+  expect(observedPreviousThemes.every((id) => id === "s1")).toBe(true);
+  expect(document.documentElement.dataset.season).toBe("s2");
+  expect(localStorage.getItem(SEASON_THEME_LAST_RANDOM_STORAGE_KEY)).toBe("s2");
+  expect(writes.mock.calls.filter(([key]) => key === SEASON_THEME_LAST_RANDOM_STORAGE_KEY)
+    .every(([, id]) => id === "s2")).toBe(true);
+  const shuffle = screen.getByRole("button", { name: "每次进入随机主题" });
+  fireEvent.click(shuffle);
+  expect(shuffle).toHaveAttribute("aria-pressed", "false");
+  expect(document.documentElement.dataset.season).toBe("s2");
+  fireEvent.click(shuffle);
+  expect(shuffle).toHaveAttribute("aria-pressed", "true");
+  expect(document.documentElement.dataset.season).toBe("s1");
+  expect(localStorage.getItem(SEASON_THEME_LAST_RANDOM_STORAGE_KEY)).toBe("s1");
+});
+
+test("存储读写均失败时按钮仍能开启、关闭和手动固定主题", () => {
+  vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("blocked"); });
+  vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("blocked"); });
+  vi.spyOn(Math, "random").mockReturnValue(0.999);
+  render(<ThemeSettings />);
+  expect(document.documentElement.dataset.season).toBe("s4");
+  const shuffle = screen.getByRole("button", { name: "每次进入随机主题" });
+  fireEvent.click(shuffle);
+  expect(document.documentElement.dataset.season).toBe("s3");
+  fireEvent.click(shuffle);
+  expect(shuffle).toHaveAttribute("aria-pressed", "false");
+  expect(document.documentElement.dataset.season).toBe("s3");
+  fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "s2" } });
+  expect(document.documentElement.dataset.season).toBe("s2");
+  fireEvent.click(screen.getByRole("checkbox", { name: "计算界面保持经典配色" }));
+  expect(document.documentElement).toHaveAttribute("data-classic-calculator-colors", "true");
+});
+
+test("经典配色可独立记忆，保留赛季背景、随机模式、亮暗和输入", () => {
+  localStorage.setItem(SEASON_THEME_STORAGE_KEY, "s3");
+  document.documentElement.dataset.theme = "dark";
+  const random = vi.spyOn(Math, "random").mockReturnValue(0);
+  const view = render(<ThemeSettings />);
+  const checkbox = screen.getByRole("checkbox", { name: "计算界面保持经典配色" });
+  expect(checkbox).not.toBeChecked();
+  fireEvent.click(checkbox);
+  expect(checkbox).toBeChecked();
+  expect(document.documentElement).toHaveAttribute("data-classic-calculator-colors", "true");
+  expect(document.documentElement).toHaveAttribute("data-season", "s3");
+  expect(localStorage.getItem(CLASSIC_CALCULATOR_COLORS_STORAGE_KEY)).toBe("1");
+  fireEvent.change(screen.getByRole("textbox", { name: "当前技能威力" }), { target: { value: "112" } });
+  fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "s2" } });
+  expect(checkbox).toBeChecked();
+  expect(document.documentElement).toHaveAttribute("data-season", "s2");
+  fireEvent.click(screen.getByRole("button", { name: "每次进入随机主题" }));
+  const drawn = document.documentElement.dataset.season;
+  fireEvent.click(checkbox);
+  expect(localStorage.getItem(CLASSIC_CALCULATOR_COLORS_STORAGE_KEY)).toBe("0");
+  expect(document.documentElement).toHaveAttribute("data-classic-calculator-colors", "false");
+  fireEvent.click(checkbox);
+  expect(document.documentElement.dataset.season).toBe(drawn);
+  expect(localStorage.getItem(SEASON_THEME_STORAGE_KEY)).toBe("random");
+  expect(random).toHaveBeenCalledTimes(1);
+  expect(document.documentElement).toHaveAttribute("data-theme", "dark");
+  expect(screen.getByRole("textbox", { name: "当前技能威力" })).toHaveValue("112");
+  view.unmount();
+  render(<ThemeSettings />);
+  expect(screen.getByRole("checkbox", { name: "计算界面保持经典配色" })).toBeChecked();
+  expect(document.documentElement).toHaveAttribute("data-classic-calculator-colors", "true");
 });

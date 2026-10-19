@@ -171,6 +171,38 @@ html[data-season="s3"][data-theme="dark"] {
   --selection-bg: #334039; --selection-border: #a5ab88; --selection-hover: #405047;
 }
 
+/* Keep calculation colors independent from the selected scene and header palette. */
+html[data-classic-calculator-colors="true"],
+html[data-theme="dark"][data-classic-calculator-colors="true"] {
+  --accent: var(--classic-accent);
+  --accent-strong: var(--classic-accent-strong);
+  --accent-soft: var(--classic-accent-soft);
+  --selection-bg: var(--classic-selection-bg);
+  --selection-border: var(--classic-selection-border);
+  --selection-hover: var(--classic-selection-hover);
+  --season-secondary-accent: #b89743;
+}
+
+html[data-theme="dark"][data-classic-calculator-colors="true"] {
+  --season-page-focus: #88badb;
+  --season-result-text: #eed89e;
+}
+
+/* These controls share header tokens normally; restore only their calculation UI. */
+html[data-theme="dark"][data-classic-calculator-colors="true"] .power-basis-switch {
+  --season-control-border: #4e627a;
+  --season-control-bg: #1b2943;
+  --season-control-muted: #c8d5e1;
+  --season-control-selected-bg: #e0ce95;
+  --season-control-selected-text: #26384a;
+  --season-control-hover-bg: #30415a;
+  --season-control-hover-text: #f4f2e5;
+}
+
+html[data-theme="dark"][data-classic-calculator-colors="true"] .result-rail {
+  border-top-color: #c7b66f;
+}
+
 .app-header,
 html[data-theme="dark"] .app-header {
   isolation: isolate;
@@ -195,6 +227,13 @@ html[data-theme="dark"] .app-header {
   background: var(--season-scene-image) no-repeat 20% 54% / 1000px auto;
   opacity: var(--season-scene-opacity);
   mask-image: linear-gradient(90deg, transparent 22%, #000 53%, #000 72%, transparent 92%);
+}
+
+/* Fade at the scene's own edges, not the full header's edges on wide screens. */
+html:is([data-season="s1"], [data-season="s2"], [data-season="s3"]) .app-header__season-scene {
+  mask-size: 1000px 100%;
+  mask-position: 20% 0;
+  mask-repeat: no-repeat;
 }
 
 .app-header__season-character {
