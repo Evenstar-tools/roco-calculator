@@ -1,3 +1,4 @@
+import { getServerRelease } from "./server-environment.js";
 import { abilityAdjustedStat } from "./skill-result/numeric.js";
 import { calculateMatchup } from "./calculate.js";
 import { linkedNegativeStatusContext } from "./negative-status-context.js";
@@ -164,6 +165,7 @@ function buildCombatState(state) {
 }
 
 export function getSpirit(snapshot, side) {
+  if (snapshot?.meta?.serverId === "global") return getSnapshotIndexes(snapshot).spirits[side?.spiritId] ?? null;
   return resolveBattleSpirit(snapshot, side);
 }
 
@@ -253,6 +255,7 @@ function finalPanelStatsForSide(calculation, sideKey) {
 }
 
 export function getTraitView(snapshot, spirit, role = "attacker", skills = []) {
+  if (snapshot?.meta?.serverId === "global") return null;
   const traitsById = getSnapshotIndexes(snapshot).traits;
   const primaryTrait =
     spirit.traitIds?.map((traitId) => traitsById[traitId]).find(Boolean) ?? null;
@@ -650,6 +653,7 @@ export function buildCalculatorViewModel({
   snapshot,
   spiritIndex,
   state,
+  serverId = snapshot?.meta?.serverId ?? snapshot?.serverId ?? "cn",
 }) {
   const spirits = spiritIndex?.values?.() ?? snapshot.spirits;
   const selectableSpirits = spirits.map((spirit) => ({
@@ -674,8 +678,13 @@ export function buildCalculatorViewModel({
   const pendingRaceStatSpirits = [attacker, defender].filter(
     (spirit) => spirit && !hasCompleteRaceStats(spirit.raceStats),
   );
+  // Catalog editing is independent of calculation availability. Reference data
+  // must never enter panel or damage computation, even if it contains numbers.
+  const canCalculate = getServerRelease(serverId).capabilities.calculate;
   const configurationReady =
-    selectionsReady && pendingRaceStatSpirits.length === 0;
+    canCalculate && selectionsReady && pendingRaceStatSpirits.length === 0;
+  const configurationEditable = configurationReady ||
+    (serverId === "global" && Boolean(snapshot.meta?.placeholderSource) && selectionsReady);
   const configurationIssue = selectionsReady && pendingRaceStatSpirits.length > 0
     ? "种族值待确认"
     : null;
@@ -713,11 +722,11 @@ export function buildCalculatorViewModel({
   const activeChoices =
     attackSideKey === "attacker" ? attackerChoices : defenderChoices;
   const selectedSingle =
-    getSkill(snapshot, attackSide.skills.single) ?? activeChoices[0] ?? snapshot.skills[0];
+    getSkill(snapshot, attackSide.skills.single) ?? (canCalculate ? activeChoices[0] ?? snapshot.skills[0] : null);
   let calculation;
   if (!configurationReady) {
     calculation = unresolvedCalculation(
-      new Error(configurationIssue ?? "请选择双方精灵"),
+      new Error(!canCalculate ? "国际服数据尚待核验" : configurationIssue ?? "请选择双方精灵"),
     );
   } else {
     try {
@@ -780,6 +789,7 @@ export function buildCalculatorViewModel({
     calculation,
     configurationIssue,
     configurationReady,
+    configurationEditable,
     currentDirection,
     environment: {
       attackLevelStage: currentDirection.overrides.attackLevelStage ?? 0,

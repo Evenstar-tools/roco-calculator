@@ -12,13 +12,16 @@ import { ElementIcon } from "./ElementIcon.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
 import { describeResolution } from "./SingleSkillEditor.jsx";
 import { buildRefractionHint } from "../domain/refraction.js";
+import { useLocale } from "../i18n/LocaleContext.jsx";
 
 function CompactDamage({
   label,
   opponentName,
+  placeholder = false,
   result,
   selected,
 }) {
+  if (placeholder) return null;
   const presentation = damagePresentation(result);
   const hasDamage = Number.isFinite(presentation.damage);
   const hasPercent = Number.isFinite(presentation.percent);
@@ -71,14 +74,16 @@ function CompactSkillSide({
   onTraitDamageFocus,
   onTraitDamageHitCountChange,
   opponentName,
+  placeholder,
   results,
-  selectedSkills,
+  selectedSkills = [],
   side,
   skills,
   sproutStacks,
   traitDamage,
   traitEditor,
 }) {
+  const { t } = useLocale();
   const SideIcon = side === "attacker" ? Sword : Shield;
 
   return (
@@ -87,9 +92,9 @@ function CompactSkillSide({
         <SideIcon aria-hidden="true" size={18} weight="fill" />
         <strong>{name}</strong>
       </header>
-      {traitEditor}
+      {!placeholder && traitEditor}
       <div className="compact-skill__list">
-        {traitDamage ? (
+        {!placeholder && traitDamage ? (
           <div
             aria-label={`${label}特性伤害${traitDamage.name}${
               active && activeDamageSource === "trait" ? "，当前选中" : ""
@@ -147,23 +152,23 @@ function CompactSkillSide({
           const effectiveType = result?.typeLabel ?? selected?.type;
           const isSelected =
             active && activeDamageSource !== "trait" && index === activeSkillIndex;
-          const refractionHint = buildRefractionHint({
+          const refractionHint = placeholder ? null : buildRefractionHint({
             carriedSkills: selectedSkills,
             selectedSkill: selected,
             sproutStacks,
           });
-          const powerResolutionHint = selected
+          const powerResolutionHint = !placeholder && selected
             ? describeResolution(result)
             : null;
           return (
             <div
-              aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
+              aria-label={t(isSelected ? "{label}技能{index}，当前选中" : "{label}技能{index}", { label, index: index + 1 })}
               className={`compact-skill__row${isSelected ? " is-selected" : ""}`}
               key={`${side}-${index}`}
               onClick={(event) => {
                 onSkillFocus?.(side, index);
                 if (
-                  ["status", "defense"].includes(selected?.category) &&
+                  !placeholder && ["status", "defense"].includes(selected?.category) &&
                   event.target instanceof Element &&
                   !event.target.closest("button, input, [role='combobox'], [role='option']")
                 ) {
@@ -184,17 +189,18 @@ function CompactSkillSide({
             >
               <span className="compact-skill__number">{index + 1}</span>
               <SkillPicker
-                ariaLabel={`${label}技能${index + 1}`}
+                ariaLabel={t("{label}技能{index}", { label, index: index + 1 })}
                 className="skill-picker--compact"
-                onFocus={() => onSkillFocus(side, index)}
+                onFocus={() => onSkillFocus?.(side, index)}
                 onSelect={(skillId) => {
-                  onSkillFocus(side, index);
+                  onSkillFocus?.(side, index);
                   onSkillSelect(side, index, skillId);
                 }}
                 selected={selected}
                 skills={skills}
+                placeholder={placeholder}
               />
-              <span
+              {!placeholder && <><span
                 className="compact-skill__element"
                 title={effectiveType ?? "未选择属性"}
               >
@@ -206,15 +212,16 @@ function CompactSkillSide({
               >
                 <Lightning aria-hidden="true" size={14} weight="fill" />
                 {effectiveCost ?? "—"}
-              </span>
+              </span></>}
               <CompactDamage
                 label={label}
                 opponentName={opponentName}
+                placeholder={placeholder}
                 result={result}
                 selected={selected}
               />
-              <SkillUsageSummary result={result} nextHint={refractionHint} />
-              {canSkillActivate?.(side, index) ? <button type="button" className="skill-follow-up"
+              {!placeholder && <SkillUsageSummary result={result} nextHint={refractionHint} />}
+              {!placeholder && canSkillActivate?.(side, index) ? <button type="button" className="skill-follow-up"
                 aria-label={`${label}技能${index + 1}${skillActivationLabel?.(side, index) ?? "使用技能"}`}
                 onClick={() => onSkillActivate?.(side, index)}>
                 {skillActivationLabel?.(side, index) ?? "使用技能"}
@@ -236,6 +243,7 @@ function CompactSkillSide({
 }
 
 export function CompactFourSkillEditor({
+  placeholder = false,
   canSkillActivate,
   skillActivationLabel,
   traitEditors = {},
@@ -260,13 +268,14 @@ export function CompactFourSkillEditor({
   onTraitDamageFocus,
   onTraitDamageHitCountChange,
 }) {
+  const { t } = useLocale();
   return (
     <div className="compact-four-skill">
       <CompactSkillSide
         active={activeSide === "attacker"}
         activeDamageSource={activeDamageSource}
         activeSkillIndex={activeSkillIndex}
-        label="攻击方"
+        label={t("攻击方")}
         name={attackerName}
         onSkillFocus={onSkillFocus}
         onSkillActivate={onSkillActivate}
@@ -276,6 +285,7 @@ export function CompactFourSkillEditor({
         onTraitDamageFocus={onTraitDamageFocus}
         onTraitDamageHitCountChange={onTraitDamageHitCountChange}
         opponentName={defenderName}
+        placeholder={placeholder}
         results={attackerResults}
         selectedSkills={attackerSkills}
         side="attacker"
@@ -288,7 +298,7 @@ export function CompactFourSkillEditor({
         active={activeSide === "defender"}
         activeDamageSource={activeDamageSource}
         activeSkillIndex={activeSkillIndex}
-        label="防御方"
+        label={t("防御方")}
         name={defenderName}
         onSkillFocus={onSkillFocus}
         onSkillActivate={onSkillActivate}
@@ -298,6 +308,7 @@ export function CompactFourSkillEditor({
         onTraitDamageFocus={onTraitDamageFocus}
         onTraitDamageHitCountChange={onTraitDamageHitCountChange}
         opponentName={attackerName}
+        placeholder={placeholder}
         results={defenderResults}
         selectedSkills={defenderSkills}
         side="defender"
@@ -311,6 +322,7 @@ export function CompactFourSkillEditor({
 }
 
 export function CompactSingleSkillEditor({
+  placeholder = false,
   canActivateSkill = false,
   skillActivationLabel = "使用技能",
   onSkillActivate,
@@ -321,21 +333,23 @@ export function CompactSingleSkillEditor({
   selectedSkill,
   skills,
 }) {
+  const { t } = useLocale();
   const effectiveCost = result?.skillCost ?? selectedSkill?.cost;
   const effectiveType = result?.typeLabel ?? selectedSkill?.type;
-  const powerResolutionHint = selectedSkill
+  const powerResolutionHint = !placeholder && selectedSkill
     ? describeResolution(result)
     : null;
   return (
     <div className="compact-single-skill">
       <SkillPicker
-        ariaLabel={`${attackName}当前技能`}
+        ariaLabel={t("{name}当前技能", { name: attackName })}
         onSelect={onSkillSelect}
         selected={selectedSkill}
         skills={skills}
+        placeholder={placeholder}
       />
       <div className="compact-single-skill__meta">
-        <span title={effectiveType ?? "未选择属性"}>
+        {!placeholder && <><span title={effectiveType ?? "未选择属性"}>
           <ElementIcon size={20} type={effectiveType} />
         </span>
         <span title={selectedSkill?.category ?? "技能类型"}>
@@ -348,10 +362,11 @@ export function CompactSingleSkillEditor({
         <span title={`能耗 ${effectiveCost ?? "—"}`}>
           <Lightning aria-hidden="true" size={16} weight="fill" />
           {effectiveCost ?? "—"}
-        </span>
+        </span></>}
         <CompactDamage
           label=""
           opponentName={defenseName}
+          placeholder={placeholder}
           result={result}
           selected={selectedSkill}
         />
@@ -361,8 +376,8 @@ export function CompactSingleSkillEditor({
           {selectedSkill.description}
         </p>
       ) : null}
-      <SkillUsageSummary result={result} />
-      {canActivateSkill ? <button type="button" className="skill-follow-up" onClick={onSkillActivate}>
+      {!placeholder && <SkillUsageSummary result={result} />}
+      {!placeholder && canActivateSkill ? <button type="button" className="skill-follow-up" onClick={onSkillActivate}>
         {skillActivationLabel}
       </button> : null}
       {powerResolutionHint ? (

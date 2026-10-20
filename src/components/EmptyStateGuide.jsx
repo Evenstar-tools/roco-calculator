@@ -1,3 +1,4 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
 const STEPS = [
   {
     detail: "支持名称模糊搜索",
@@ -13,11 +14,12 @@ const STEPS = [
   },
 ];
 
-export function EmptyStateGuide({ message = null }) {
+export function EmptyStateGuide({ message = null, title = null }) {
+  const { t } = useLocale();
   return (
-    <section aria-label="使用引导" className="empty-guide">
+    <section aria-label={t("使用引导")} className="empty-guide">
       <h2 className="empty-guide__title">
-        {message ? "种族值待确认" : "三步完成一次伤害计算"}
+        {title ?? t(message ? "种族值待确认" : "三步完成一次伤害计算")}
       </h2>
       {message ? (
         <p className="empty-guide__footnote">{message}</p>
@@ -28,16 +30,14 @@ export function EmptyStateGuide({ message = null }) {
               <span aria-hidden="true" className="empty-guide__step-index">
                 {index + 1}
               </span>
-              <span className="empty-guide__step-title">{step.title}</span>
-              <span className="empty-guide__step-detail">{step.detail}</span>
+              <span className="empty-guide__step-title">{t(step.title)}</span>
+              <span className="empty-guide__step-detail">{t(step.detail)}</span>
             </li>
           ))}
         </ol>
       )}
       {!message ? (
-      <p className="empty-guide__footnote">
-        顶部「队伍」可管理六人配置 · 菜单内可一键导入常用精灵配置
-      </p>
+      <p className="empty-guide__footnote">{t("顶部「队伍」可管理六人配置 · 菜单内可一键导入常用精灵配置")}</p>
       ) : null}
     </section>
   );

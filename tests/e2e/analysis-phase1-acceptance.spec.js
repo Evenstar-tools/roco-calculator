@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { calculateAllPanelStats } from "../../src/domain/stat.js";
 import { getNatureMultipliers } from "../../src/domain/natures.js";
+import { serverStorageKey } from "../../src/state/server-storage.js";
 
 test.use({ serviceWorkers: "block" });
 const runtime = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
@@ -67,12 +68,14 @@ for (const [width, theme] of [[1424, "light"], [390, "light"], [390, "dark"]]) {
     await ability.getByLabel("推荐速度约束").selectOption("at-least");
     await expect(builds.getByRole("button", { name: "应用到成员" })).toHaveCount(3);
     for (const card of await builds.getByRole("article").all()) await expect(card.locator("dd").first()).toHaveText("203");
-    const readMember = () => page.evaluate(() => JSON.parse(localStorage.getItem("rock-calculator.teams.v1")).teams[0].members[0]);
+    const readMember = () => page.evaluate(key => JSON.parse(localStorage.getItem(key)).teams[0].members[0], serverStorageKey("cn", "rock-calculator.teams.v1"));
     expect((await readMember()).natureId).toBe("timid");
     await builds.getByRole("button", { name: "应用到成员" }).first().click();
     await expect(ability.getByRole("status")).toContainText("方案已应用到成员");
     const saved = await readMember();
     expect(saved.natureId).toBe("silent");
+    // The unscoped seed remains a recovery source; current edits live in the CN namespace.
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem("rock-calculator.teams.v1")).teams[0].members[0].natureId)).toBe("timid");
     expect(saved.displayIvs.speed).toBe(60);
     expect(Object.values(saved.displayIvs).filter(Boolean)).toHaveLength(3);
     const actual = calculateAllPanelStats({ raceStats, displayIvs: saved.displayIvs, natureMultipliers: getNatureMultipliers(saved.natureId) });

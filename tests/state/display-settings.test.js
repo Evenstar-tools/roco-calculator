@@ -97,7 +97,7 @@ test.each([
 describe("durability overview display setting", () => {
   test("defaults to off", () => {
     expect(DURABILITY_OVERVIEW_STORAGE_KEY).toBe(
-      "rock-calculator.settings.durability-overview.v1",
+      "rock-calculator.servers.cn.settings.durability-overview.v1",
     );
     expect(readDurabilityOverviewSetting(createStorage())).toBe(false);
   });

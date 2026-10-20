@@ -1,3 +1,4 @@
+import { loadServerSnapshot } from "../../runtime/load-snapshot.js";
 import { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { deerResultKind, useCalculationMetrics } from "../../analytics/use-completion-metrics.js";
 import { ArrowLeft, CaretDown, CaretRight, Minus, Plus, SlidersHorizontal } from "@phosphor-icons/react";
@@ -25,10 +26,15 @@ import { isCompleteSpiritConfig, spiritConfigsRepository } from "../../state/spi
 import { canonicalTraitControlKey, materializeTraitContext } from "../../state/trait-values.js";
 import { DEER_NAMES, DEFENSE_TEMPLATES, applyDeerPreset, calculateDeerRow, calculateDeerSummaryRows, createDeerSetup, evaluateDeerAttack, getDeerDefenseLimitations, hasDeerDefenseTrait, panelFor } from "./deer-model.js";
 import "./deer.css";
+import { useRuntime } from "../../runtime/RuntimeContext.jsx";
+import { useLocale } from "../../i18n/LocaleContext.jsx";
+import { routeFor } from "../../runtime/routes.js";
 
 function DeerHeader({ onReturn }) {
+  const { serverId, locale } = useRuntime();
+  const { t } = useLocale();
   useEffect(() => { document.documentElement.dataset.theme = readThemeSetting(); }, []);
-  return <AppHeader pageTitle="电鹿斩杀线" toolAction={<a className="deer-back" href="/" onClick={onReturn}><ArrowLeft aria-hidden="true" size={15} weight="bold" />返回主站</a>} onThemeChange={(theme) => {
+  return <AppHeader pageTitle={t("电鹿斩杀线")} toolAction={<a className="deer-back" href={serverId === "cn" ? "/" : routeFor(serverId, locale)} onClick={onReturn}><ArrowLeft aria-hidden="true" size={15} weight="bold" />{t("返回主站")}</a>} onThemeChange={(theme) => {
     document.documentElement.dataset.theme = writeThemeSetting(undefined, theme);
   }} />;
 }
@@ -318,7 +324,14 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
   </main></>;
 }
 
-export default function DeerPage({ initialState = null, onReturn }) {
+export default function DeerPage(props) {
+  const { release } = useRuntime();
+  const { t } = useLocale();
+  if (release.capabilities.calculate) return <VerifiedDeerPage {...props} />;
+  return <><DeerHeader onReturn={props.onReturn} /><main className="deer-page"><p role="status">{t("国际服数值与规则待核验，暂不可计算斩杀线。")}</p></main></>;
+}
+
+function VerifiedDeerPage({ initialState = null, onReturn }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   useEffect(() => {
@@ -327,9 +340,7 @@ export default function DeerPage({ initialState = null, onReturn }) {
     const controller = new AbortController();
     async function load() {
       try {
-        const response = await fetch("/data/runtime.json", { signal: controller.signal });
-        if (!response.ok) throw new Error(`精灵数据加载失败（${response.status}）`);
-        const snapshot = withCalculatorExtras(await response.json());
+        const snapshot = withCalculatorExtras(await loadServerSnapshot("cn", { signal: controller.signal }));
         let presets = {};
         try {
           const response = await fetch("/data/presets/pvp-popular-configs.json", { signal: controller.signal });

@@ -156,3 +156,13 @@ test("卡片入口带入当前对局，专页手调后返回保持主页现场",
   const defense = await screen.findByRole("region", { name: "防御方配置" });
   expect(within(defense).getByText(/当前配置 · 沉默 · 生命42/)).toBeInTheDocument();
 });
+
+
+test("reactivating a CN session at /cn/ does not retain its old deer route", async () => {
+  history.replaceState(null, "", "/dianlu/");
+  const view = render(<CalculatorRouter initialSnapshot={snapshot} active={false} />);
+  history.pushState(null, "", "/cn/");
+  view.rerender(<CalculatorRouter initialSnapshot={snapshot} active />);
+  expect(await screen.findByRole("combobox", { name: "攻击方精灵" })).toBeVisible();
+  expect(screen.queryByRole("region", { name: "技能斩杀线" })).not.toBeInTheDocument();
+});

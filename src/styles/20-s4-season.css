@@ -37,6 +37,16 @@ html[data-theme="dark"] {
   --season-control-selected-text: var(--bg);
 }
 
+/* An unconfirmed Global season keeps the general UI, without CN art or gold accents. */
+html[data-season="neutral"][data-theme="dark"] {
+  --accent: #abc4ed;
+  --accent-strong: #d3e2fa;
+  --accent-soft: #2a3c55;
+  --selection-bg: #273b55;
+  --selection-border: #80a6da;
+  --selection-hover: #30445f;
+}
+
 html:is([data-season="s1"], [data-season="s2"], [data-season="s3"], [data-season="s4"]) {
   --season-layer-content: "";
   --season-header-text: #f4f2e5;
@@ -490,6 +500,8 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
   html[data-season="s1"] { --season-character-top: -78px; --season-character-width: 180px; }
   html[data-season="s2"] { --season-character-top: -64px; --season-character-width: 170px; }
   html[data-season="s3"] { --season-character-top: -16px; --season-character-width: 104px; }
+  .app-header--season-preview .app-header__title-long { display: none; }
+  .app-header--season-preview .app-header__title-short { display: inline; }
 
   .app-header__season-star {
     left: calc(100% - 358px);
@@ -535,6 +547,7 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
   }
   .app-header:not(.app-header--tool) .app-header__actions { flex: none; gap: 2px; }
   .app-header:not(.app-header--tool) h1 { font-size: 14px; }
+  .app-header.app-header--season-preview h1 { max-width: none; }
   .app-header:not(.app-header--tool) .team-action {
     width: 36px;
     min-width: 36px;

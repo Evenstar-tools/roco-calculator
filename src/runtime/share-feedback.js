@@ -1,0 +1,66 @@
+const copy = {
+  en: {
+    checking: "Checking shared setup…",
+    conflictCn: "This shared setup belongs to the CN server",
+    conflictGlobal: "This shared draft belongs to Global",
+    conflictBody: "Open it on the matching server. Your current workspace stays on this server.",
+    openCn: "Open on CN server", openGlobal: "Open on Global", cancel: "Keep current workspace",
+    invalid: "This shared setup could not be opened.",
+    dismiss: "Dismiss",
+    SHARE_INVALID_FORMAT: "Enter a complete calculator share link or code.",
+    SHARE_ENCODING: "The share code cannot be decoded. Copy the complete original link again.",
+    SHARE_INTEGRITY: "The share code is incomplete or has changed. Copy the original link again.",
+    SHARE_JSON: "The share code contains invalid data.",
+    SHARE_SCHEMA: "The shared setup has an unsupported structure.",
+    SHARE_TOO_LARGE: "This shared setup exceeds the supported size.",
+    SHARE_SERVER_MISMATCH: "This share belongs to a different server.",
+    SHARE_VERSION_MISMATCH: "The shared setup does not match the declared game, data and rules versions.",
+    SHARE_UNSUPPORTED_VERSION: "This share format is not supported by this version of the calculator.",
+    SHARE_UNSUPPORTED_KIND: "This type of shared content cannot be opened here.",
+    SHARE_SERVER_DATA_UNVERIFIED: "Global calculation data is unverified. Only drafts can be shared here.",
+    unexpected: "The shared setup could not be opened. Your current draft has not changed.",
+  },
+  "zh-CN": {
+    checking: "正在校验分享配置…",
+    conflictCn: "这份分享配置属于国服", conflictGlobal: "这份分享草稿属于国际服",
+    conflictBody: "请在对应服务器打开，当前工作区仍保留在原服务器。",
+    openCn: "在国服打开", openGlobal: "在国际服打开", cancel: "保留当前工作区",
+    invalid: "无法打开这份分享配置。", dismiss: "关闭提示",
+    SHARE_INVALID_FORMAT: "请输入完整的计算器分享链接或分享码。",
+    SHARE_ENCODING: "分享码无法解码，请重新复制完整原始链接。",
+    SHARE_INTEGRITY: "分享码不完整或已被修改，请重新复制原始链接。",
+    SHARE_JSON: "分享码包含无效数据。", SHARE_SCHEMA: "分享配置的结构不受支持。",
+    SHARE_TOO_LARGE: "分享配置超出支持的大小。", SHARE_SERVER_MISMATCH: "这份分享属于另一服务器。",
+    SHARE_VERSION_MISMATCH: "分享配置与声明的游戏、数据或规则版本不一致。",
+    SHARE_UNSUPPORTED_VERSION: "当前计算器不支持此分享协议版本。",
+    SHARE_UNSUPPORTED_KIND: "此处无法打开这类分享内容。",
+    SHARE_SERVER_DATA_UNVERIFIED: "国际服计算数据尚未核验，目前只能分享草稿。",
+    unexpected: "分享配置打开失败，当前草稿未被更改。",
+  },
+  ja: {
+    checking: "共有設定を確認中…",
+    conflictCn: "この共有設定は中国版用です", conflictGlobal: "この共有下書きはグローバル版用です",
+    conflictBody: "対応するサーバーで開いてください。現在の作業内容は元のサーバーに保持されます。",
+    openCn: "中国版で開く", openGlobal: "グローバル版で開く", cancel: "現在の作業を続ける",
+    invalid: "この共有設定を開けませんでした。", dismiss: "閉じる",
+    SHARE_INVALID_FORMAT: "計算機の共有リンクまたはコードを省略せずに入力してください。",
+    SHARE_ENCODING: "共有コードを読み取れません。元のリンク全体をコピーし直してください。",
+    SHARE_INTEGRITY: "共有コードが不完全か変更されています。元のリンクをコピーし直してください。",
+    SHARE_JSON: "共有コードに無効なデータが含まれています。",
+    SHARE_SCHEMA: "この共有設定のデータ構造には対応していません。",
+    SHARE_TOO_LARGE: "共有設定のサイズが上限を超えています。",
+    SHARE_SERVER_MISMATCH: "この共有データは別のサーバー用です。",
+    SHARE_VERSION_MISMATCH: "共有設定が指定されたゲーム・データ・ルールのバージョンと一致しません。",
+    SHARE_UNSUPPORTED_VERSION: "この計算機は、この共有形式のバージョンに対応していません。",
+    SHARE_UNSUPPORTED_KIND: "この種類の共有データはここでは開けません。",
+    SHARE_SERVER_DATA_UNVERIFIED: "グローバル版の計算データは未検証のため、共有できるのは下書きのみです。",
+    unexpected: "共有設定を開けませんでした。現在の下書きは変更されていません。",
+  },
+};
+
+export function getShareFeedback(locale) { return copy[locale] ?? copy.en; }
+
+export function formatShareError(error, locale = "en") {
+  const messages = getShareFeedback(locale);
+  return messages[error?.code] ?? messages.unexpected;
+}

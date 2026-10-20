@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { App } from "../../src/App.jsx";
 import { AppHeader } from "../../src/components/AppHeader.jsx";
+import { getServerRelease } from "../../src/domain/server-environment.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { COMPACT_OPTION_LABELS_STORAGE_KEY, VIEW_MODE_STORAGE_KEY } from "../../src/state/display-settings.js";
 import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js";
@@ -86,12 +87,13 @@ test("loads the compact runtime snapshot instead of the audit snapshot", () => {
 });
 
 test("uses avatar data embedded in the runtime snapshot without a second request", async () => {
+  const { dataVersion, rulesVersion } = getServerRelease("cn");
   const runtime = {
     learnsets: [],
     meta: {
       bwikiRevision: 41360,
-      id: "s3-fast-start",
-      rulesVersion: "1.0.0",
+      id: dataVersion,
+      rulesVersion,
     },
     skills: [],
     spirits: [

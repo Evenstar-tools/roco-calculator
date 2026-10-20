@@ -40,7 +40,8 @@ export function useModalFocus(open, dialogRef, onClose) {
       if (trigger instanceof HTMLElement && trigger !== document.body && trigger.isConnected) {
         trigger.focus();
       } else {
-        document.querySelector('[aria-label="打开菜单"]')?.focus();
+        [...document.querySelectorAll('[aria-controls="app-menu"]')]
+          .find((button) => !button.closest("[hidden], [inert]"))?.focus();
       }
     };
   }, [open, dialogRef]);

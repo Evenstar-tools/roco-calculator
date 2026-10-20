@@ -20,6 +20,7 @@ import { getBattleFormChoices, isValidBattleForm } from "../domain/battle-form.j
 import { calculateAllPanelStats } from "../domain/stat.js";
 import { createInitialState } from "./defaults.js";
 import { calculatorReducer } from "./reducer.js";
+import { getServerRelease } from "../domain/server-environment.js";
 import { materializeTraitContext } from "./trait-values.js";
 import {
   removeTriggerControlValues,
@@ -57,17 +58,7 @@ export function sameConfigurationVersions(left, right) {
   return left.data === right.data && left.rules === right.rules;
 }
 
-export function shareHashFromInput(value) {
-  const text = String(value ?? "").trim();
-  if (text.startsWith("#v1.")) return text;
-  try {
-    const hash = new URL(text, globalThis.location?.href).hash;
-    if (hash.startsWith("#v1.")) return hash;
-  } catch {
-    // 统一在下面给出用户可理解的错误。
-  }
-  throw new TypeError("分享链接格式无效");
-}
+export { shareHashFromInput } from "./share-input.js";
 
 export function migrateSharedConfiguration(sharedState, versions, snapshot) {
   const migrated = {
@@ -188,6 +179,7 @@ export function assertSnapshotReferences(sharedState, snapshot) {
 
 export function createProductInitialState(snapshot) {
   const state = createInitialState(snapshot);
+  const unverified = snapshot?.meta?.serverId === "global";
   const emptySkills = {
     single: null,
     four: [null, null, null, null],
@@ -200,28 +192,28 @@ export function createProductInitialState(snapshot) {
       attacker: {
         ...state.sides.attacker,
         spiritId: null,
-        nature: "neutral",
+        nature: unverified ? null : "neutral",
         displayIvs: {
-          hp: 60,
-          speed: 60,
-          physicalAttack: 60,
-          magicalAttack: 60,
-          physicalDefense: 60,
-          magicalDefense: 60,
+          hp: unverified ? null : 60,
+          speed: unverified ? null : 60,
+          physicalAttack: unverified ? null : 60,
+          magicalAttack: unverified ? null : 60,
+          physicalDefense: unverified ? null : 60,
+          magicalDefense: unverified ? null : 60,
         },
         skills: { ...emptySkills, four: [...emptySkills.four] },
       },
       defender: {
         ...state.sides.defender,
         spiritId: null,
-        nature: "neutral",
+        nature: unverified ? null : "neutral",
         displayIvs: {
-          hp: 60,
-          speed: 60,
-          physicalAttack: 60,
-          magicalAttack: 60,
-          physicalDefense: 60,
-          magicalDefense: 60,
+          hp: unverified ? null : 60,
+          speed: unverified ? null : 60,
+          physicalAttack: unverified ? null : 60,
+          magicalAttack: unverified ? null : 60,
+          physicalDefense: unverified ? null : 60,
+          magicalDefense: unverified ? null : 60,
         },
         skills: { ...emptySkills, four: [...emptySkills.four] },
       },
@@ -256,6 +248,15 @@ function cloneMarks(marks) {
 }
 
 function createDefaultSpiritSide(initialSide, snapshot, spiritId) {
+  if (snapshot?.meta?.serverId === "global") {
+    return {
+      ...cloneDraft(initialSide),
+      spiritId,
+      nature: null,
+      displayIvs: Object.fromEntries(Object.keys(initialSide.displayIvs).map((key) => [key, null])),
+      skills: { single: null, four: [null, null, null, null] },
+    };
+  }
   const four = chooseDefaultSkillIds(snapshot, spiritId);
   const previewDefaults = (snapshot.spirits ?? []).find(
     (spirit) => spirit.id === spiritId,
@@ -519,12 +520,99 @@ function persistence(rememberSide = null) {
   return { rememberSide };
 }
 
-export function reduceSessionAction(state, action) {
-  const nextState = calculatorReducer(state, action);
+function cloneDraft(value) {
+  return typeof globalThis.structuredClone === "function"
+    ? globalThis.structuredClone(value) : JSON.parse(JSON.stringify(value));
+}
+
+function draftConfigurationSide(configuration) {
+  // Repository metadata stays in the repository, while draft parameters are copied verbatim.
+  const side = cloneDraft(configuration);
+  side.nature = Object.hasOwn(side, "natureId") ? side.natureId : side.nature ?? null;
+  for (const key of ["natureId", "updatedAt", "presetBaseline", "needsRepair", "repairReason", "ivsPending", "lineupSource", "bloodlineType"]) delete side[key];
+  return side;
+}
+
+function draftSkillReference(current, skillId) {
+  if (skillId == null) return null;
+  return current && typeof current === "object" ? { ...cloneDraft(current), skillId } : skillId;
+}
+
+function reduceSessionState(state, action, serverId) {
+  getServerRelease(serverId);
+  if (serverId === "cn") return calculatorReducer(state, action);
+  // Global drafts preserve user data. No CN weather, stat or trigger rules run here.
+  switch (action.type) {
+    case "state/replace":
+      if (!action.value || typeof action.value !== "object" || Array.isArray(action.value)) {
+        throw new TypeError("替换状态必须是已校验的配置对象");
+      }
+      return action.value;
+    case "sides/swap": {
+      const swap = (pair) => ({ ...pair, attacker: pair.defender, defender: pair.attacker });
+      return {
+        ...state,
+        sides: swap(state.sides),
+        ...(state.negativeStatuses ? { negativeStatuses: swap(state.negativeStatuses) } : {}),
+        ...(state.marks ? { marks: swap(state.marks) } : {}),
+      };
+    }
+    case "mode/set":
+      if (!["single", "four"].includes(action.value)) throw new TypeError("技能模式必须是 single 或 four");
+      return { ...state, mode: action.value };
+    case "calculation-option/set-negative-status":
+      return { ...state, calculationOptions: { ...state.calculationOptions, includeNegativeStatusSettlement: Boolean(action.value) } };
+    case "direction/update": {
+      const value = action.value;
+      const keys = value && typeof value === "object" && !Array.isArray(value) ? Object.keys(value) : [];
+      const side = action.direction === "forward" ? "attacker" : "defender";
+      if (!["forward", "reverse"].includes(action.direction) || keys.length === 0 ||
+        keys.some((key) => key !== "selectedSkillIndex" && key !== "selectedDamageSource") ||
+        (Object.hasOwn(value, "selectedDamageSource") && value.selectedDamageSource !== "skill") ||
+        (Object.hasOwn(value, "selectedSkillIndex") && (!Number.isInteger(value.selectedSkillIndex) ||
+          value.selectedSkillIndex < 0 || value.selectedSkillIndex >= state.sides[side].skills.four.length))) {
+        throw Object.assign(new TypeError("国际服规则尚未核验，不能应用此计算动作"), { code: "SERVER_DATA_UNVERIFIED" });
+      }
+      return { ...state, directions: { ...state.directions, [action.direction]: { ...state.directions[action.direction], ...value } } };
+    }
+    case "side/apply-preset":
+    case "side/set-nature":
+    case "side/set-iv":
+    case "side/set-single-skill":
+    case "side/set-four-skill": {
+      if (!["attacker", "defender"].includes(action.side)) throw new TypeError("无效阵营");
+      const current = state.sides[action.side];
+      let side;
+      if (action.type === "side/apply-preset") {
+        side = draftConfigurationSide(action.value);
+      } else if (action.type === "side/set-nature") {
+        if (action.value !== null && typeof action.value !== "string") throw new TypeError("性格输入无效");
+        side = { ...current, nature: action.value };
+      } else if (action.type === "side/set-iv") {
+        if (!Object.hasOwn(current.displayIvs, action.stat) ||
+          (action.value !== null && (!Number.isSafeInteger(action.value) || action.value < 0))) throw new TypeError("个体输入无效");
+        side = { ...current, displayIvs: { ...current.displayIvs, [action.stat]: action.value } };
+      } else if (action.type === "side/set-single-skill") {
+        side = { ...current, skills: { ...current.skills, single: cloneDraft(action.value) } };
+      } else {
+        if (!Number.isInteger(action.index) || action.index < 0 || action.index >= current.skills.four.length) throw new RangeError("技能槽位索引无效");
+        const four = [...current.skills.four];
+        four[action.index] = cloneDraft(action.value);
+        side = { ...current, skills: { ...current.skills, four } };
+      }
+      return { ...state, sides: { ...state.sides, [action.side]: side } };
+    }
+    default:
+      throw Object.assign(new TypeError("国际服规则尚未核验，不能应用此计算动作"), { code: "SERVER_DATA_UNVERIFIED" });
+  }
+}
+
+export function reduceSessionAction(state, action, { serverId = "cn" } = {}) {
+  const nextState = reduceSessionState(state, action, serverId);
   const rememberSide =
     action.remember !== false &&
     action.side &&
-    !nextState.sides[action.side]?.battleForm &&
+    (serverId === "global" || !nextState.sides[action.side]?.battleForm) &&
     REMEMBERED_SIDE_ACTIONS.has(action.type)
       ? action.side
       : null;
@@ -547,6 +635,14 @@ export function applyConfiguration(
   }
   if (!initialState?.directions) {
     throw new TypeError("configuration initialState 无效");
+  }
+  if (snapshot?.meta?.serverId === "global") {
+    return {
+      activeDirection: "forward",
+      persistence: persistence(remember ? side : null),
+      source,
+      state: reduceSessionState(state, { type: "side/apply-preset", side, value: configuration }, "global"),
+    };
   }
 
   let nextState = {
@@ -661,7 +757,7 @@ export function switchBattleForm(state, { side, snapshot, spiritId }) {
   };
 }
 
-export function replaceConfiguration(state, configuration, { remember, source } = {}) {
+export function replaceConfiguration(state, configuration, { remember, source, serverId = "cn" } = {}) {
   if (source !== "share") {
     throw new TypeError("完整 configuration source 必须是 share");
   }
@@ -671,10 +767,10 @@ export function replaceConfiguration(state, configuration, { remember, source } 
   return {
     persistence: persistence(),
     source,
-    state: calculatorReducer(state, {
+    state: reduceSessionState(state, {
       type: "state/replace",
       value: configuration,
-    }),
+    }, serverId),
   };
 }
 
@@ -690,6 +786,9 @@ export function patchFourSkill(state, { index, patch, side, snapshot }) {
     context: { ...(details.context ?? {}), ...(patch.context ?? {}) },
     overrides: { ...(details.overrides ?? {}), ...(patch.overrides ?? {}) },
   };
+  if (snapshot?.meta?.serverId === "global") {
+    return reduceSessionAction(state, { index, side, type: "side/set-four-skill", value }, { serverId: "global" });
+  }
   if (snapshot && patch.context) {
     const skill = getSkill(snapshot, entrySkillId(value));
     const controls = skillTriggerControls(skill);
@@ -715,6 +814,11 @@ export function selectFourSkill(
   { index, side, skillId, snapshot },
 ) {
   const current = state.sides[side].skills.four[index];
+  if (snapshot?.meta?.serverId === "global") {
+    return reduceSessionAction(state, {
+      index, side, type: "side/set-four-skill", value: draftSkillReference(current, skillId),
+    }, { serverId: "global" });
+  }
   const currentSkillId = entrySkillId(current);
   if (currentSkillId === skillId) {
     return { persistence: persistence(side), state };
@@ -854,6 +958,7 @@ export function rememberSingleSkill(
   state,
   { direction, side, skillId = null, snapshot },
 ) {
+  if (snapshot?.meta?.serverId === "global") return { persistence: persistence(side), state };
   const latestDirection = state.directions[direction];
   const currentEntry = state.sides[side].skills.single;
   const currentSkillId =
@@ -910,6 +1015,11 @@ export function selectSingleSkill(
   { direction, side, skillId, snapshot },
 ) {
   const currentEntry = state.sides[side].skills.single;
+  if (snapshot?.meta?.serverId === "global") {
+    return reduceSessionAction(state, {
+      side, type: "side/set-single-skill", value: draftSkillReference(currentEntry, skillId),
+    }, { serverId: "global" });
+  }
   const currentSkill =
     getSkill(snapshot, currentEntry) ??
     (state.sides[side].spiritId

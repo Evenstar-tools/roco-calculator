@@ -14,7 +14,10 @@ export default defineConfig({
       input: {
         main: fileURLToPath(new URL("../index.html", import.meta.url)),
         deer: fileURLToPath(new URL("../dianlu/index.html", import.meta.url)),
-        englishGuide: fileURLToPath(new URL("../en/index.html", import.meta.url)),
+        china: fileURLToPath(new URL("../cn/index.html", import.meta.url)),
+        globalEnglish: fileURLToPath(new URL("../en/index.html", import.meta.url)),
+        globalChinese: fileURLToPath(new URL("../global/zh-CN/index.html", import.meta.url)),
+        globalJapanese: fileURLToPath(new URL("../global/ja/index.html", import.meta.url)),
       },
       output: {
         manualChunks,

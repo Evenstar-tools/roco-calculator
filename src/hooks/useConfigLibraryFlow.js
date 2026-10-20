@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { configLibraryImportMessage, storageIssueSource } from "../i18n/storage-errors.js";
+import { storageError } from "../state/server-storage.js";
 import { version as appVersion } from "../../package.json";
-import { formatConfigLibraryImportResult } from "../state/favorite-config-library.js";
 
 export { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
 
@@ -10,20 +13,21 @@ async function loadPresetHistory() {
   return Array.isArray(history?.entries) ? history.entries : [];
 }
 
-function configLibraryFileName(date = new Date()) {
+function configLibraryFileName(serverId, locale, date = new Date()) {
   const pad = (value) => String(value).padStart(2, "0");
-  return `洛克计算器-收藏配置-${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}.json`;
+  const name = locale === "zh-CN" ? "洛克计算器-收藏配置" : locale === "ja" ? "ロコ計算機-お気に入り設定" : "roco-calculator-setups";
+  return `${name}-${serverId}-${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}.json`;
 }
 
-async function saveConfigLibraryFile(library) {
+async function saveConfigLibraryFile(library, { serverId, locale, t }) {
   const content = `${JSON.stringify(library, null, 2)}\n`;
-  const filename = configLibraryFileName();
+  const filename = configLibraryFileName(serverId, locale);
   const file = new File([content], filename, { type: "application/json" });
   if (
     globalThis.navigator?.share &&
     globalThis.navigator?.canShare?.({ files: [file] })
   ) {
-    await globalThis.navigator.share({ files: [file], title: "洛克计算器配置库" });
+    await globalThis.navigator.share({ files: [file], title: t("洛克计算器配置库") });
     return;
   }
   const url = URL.createObjectURL(file);
@@ -40,10 +44,17 @@ export function useConfigLibraryFlow({
   snapshot,
   storedData,
 }) {
+  const { serverId } = useRuntime();
+  const { t, locale } = useLocale();
   const [configLibraryError, setConfigLibraryError] = useState("");
   const [configLibraryMode, setConfigLibraryMode] = useState(null);
   const [configLibraryParsed, setConfigLibraryParsed] = useState(null);
   const [configLibrarySummary, setConfigLibrarySummary] = useState(null);
+
+  function describeError(error, fallback) {
+    const knownSources = ["配置库文件不能超过 5 MB", "配置库 JSON 无法解析", "不是洛克计算器配置库文件", "不支持此配置库结构版本", "配置库最多包含 2000 条配置"];
+    return t(storageIssueSource(error, knownSources.includes(error?.message) ? error.message : fallback));
+  }
 
   function closeConfigLibrary() {
     setConfigLibraryError("");
@@ -70,6 +81,7 @@ export function useConfigLibraryFlow({
   }
 
   async function loadPopularConfigLibrary() {
+    if (serverId !== "cn") throw storageError("SERVER_DATA_UNVERIFIED", "国际服预设资料待核验");
     const response = await fetch("/data/presets/pvp-popular-configs.json");
     if (!response.ok) {
       throw new Error(`内置配置读取失败：${response.status}`);
@@ -91,7 +103,7 @@ export function useConfigLibraryFlow({
       setConfigLibraryParsed(await loadPopularConfigLibrary());
     } catch (error) {
       setConfigLibraryError(
-        error instanceof Error ? error.message : "内置配置无法读取",
+        describeError(error, "内置配置无法读取"),
       );
     }
   }
@@ -107,12 +119,12 @@ export function useConfigLibraryFlow({
       const parsed = storedData.previewFavoriteConfigLibrary(
         await file.text(),
         initialState.versions,
-        await loadPresetHistory(),
+        serverId === "cn" ? await loadPresetHistory() : [],
       );
       setConfigLibraryParsed(parsed);
     } catch (error) {
       setConfigLibraryError(
-        error instanceof Error ? error.message : "配置库文件无法读取",
+        describeError(error, "配置库文件无法读取"),
       );
     }
   }
@@ -128,21 +140,21 @@ export function useConfigLibraryFlow({
           configLibraryParsed,
         );
         closeConfigLibrary();
-        onToast(formatConfigLibraryImportResult(result.preview));
+        onToast(configLibraryImportMessage(t, result.preview));
       } catch (error) {
         setConfigLibraryError(
-          error instanceof Error ? error.message : "配置库导入失败",
+          describeError(error, "配置库导入失败"),
         );
       }
     },
     onExport: () => {
-      saveConfigLibraryFile(configLibrarySummary.library)
+      saveConfigLibraryFile(configLibrarySummary.library, { serverId, locale, t })
         .then(() => {
           closeConfigLibrary();
-          onToast(`已导出 ${configLibrarySummary.exportedCount} 只精灵`);
+          onToast(t(serverId === "global" ? "已导出 {count} 份配置和 {favorites} 项收藏" : "已导出 {count} 只精灵", { count: configLibrarySummary.exportedCount, favorites: configLibrarySummary.library.favorites?.length ?? 0 }));
         })
         .catch((error) => setConfigLibraryError(
-          error instanceof Error ? error.message : "配置库导出失败",
+          describeError(error, "配置库导出失败"),
         ));
     },
     onFile: previewConfigLibraryFile,

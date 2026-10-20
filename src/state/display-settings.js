@@ -1,29 +1,38 @@
-export const TYPE_COVERAGE_STORAGE_KEY =
-  "rock-calculator.settings.type-coverage.v1";
-export const POWER_DISPLAY_STORAGE_KEY =
-  "rock-calculator.settings.power-display.v1";
-export const NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY =
-  "rock-calculator.settings.negative-status-settlement.v1";
-export const DURABILITY_OVERVIEW_STORAGE_KEY =
-  "rock-calculator.settings.durability-overview.v1";
-export const DAMAGE_COMPARISON_STORAGE_KEY =
-  "rock-calculator.settings.damage-comparison.v1";
-export const COMPACT_OPTION_LABELS_STORAGE_KEY =
-  "rock-calculator.settings.compact-option-labels.v1";
-export const THEME_STORAGE_KEY = "rock-calculator.settings.theme.v1";
-export const VIEW_MODE_STORAGE_KEY = "rock-calculator.settings.view-mode.v1";
+import { createServerStorage, serverStorageKey } from "./server-storage.js";
 
-export function readViewModeSetting() {
+export const TYPE_COVERAGE_STORAGE_KEY =
+  serverStorageKey("cn", "rock-calculator.settings.type-coverage.v1");
+export const POWER_DISPLAY_STORAGE_KEY =
+  serverStorageKey("cn", "rock-calculator.settings.power-display.v1");
+export const NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY =
+  serverStorageKey("cn", "rock-calculator.settings.negative-status-settlement.v1");
+export const DURABILITY_OVERVIEW_STORAGE_KEY =
+  serverStorageKey("cn", "rock-calculator.settings.durability-overview.v1");
+export const DAMAGE_COMPARISON_STORAGE_KEY =
+  serverStorageKey("cn", "rock-calculator.settings.damage-comparison.v1");
+export const COMPACT_OPTION_LABELS_STORAGE_KEY =
+  serverStorageKey("cn", "rock-calculator.settings.compact-option-labels.v1");
+export const THEME_STORAGE_KEY = "rock-calculator.settings.theme.v1";
+export const VIEW_MODE_STORAGE_KEY = serverStorageKey("cn", "rock-calculator.settings.view-mode.v1");
+
+
+function settingsStorage(storage, serverId = storage?.serverId ?? "cn") {
+  const target = createServerStorage(serverId, storage);
+  const logical = (key) => key.replace("rock-calculator.servers.cn.", "rock-calculator.");
+  return { getItem: (key) => target.getItem(logical(key)), setItem: (key, value) => target.setItem(logical(key), value) };
+}
+
+export function readViewModeSetting(serverId = "cn", storage = globalThis.localStorage) {
   try {
-    return globalThis.localStorage?.getItem(VIEW_MODE_STORAGE_KEY) === "detailed" ? "detailed" : "compact";
+    return settingsStorage(storage, serverId).getItem(VIEW_MODE_STORAGE_KEY) === "detailed" ? "detailed" : "compact";
   } catch {
     return "compact";
   }
 }
 
-export function writeViewModeSetting(mode) {
+export function writeViewModeSetting(mode, serverId = "cn", storage = globalThis.localStorage) {
   try {
-    globalThis.localStorage?.setItem(VIEW_MODE_STORAGE_KEY, mode === "detailed" ? "detailed" : "compact");
+    settingsStorage(storage, serverId).setItem(VIEW_MODE_STORAGE_KEY, mode === "detailed" ? "detailed" : "compact");
   } catch {
     // 存储不可用时仍允许本次会话切换界面。
   }
@@ -55,9 +64,9 @@ function normalizePowerDisplayMode(value) {
   return value === "panel" ? "panel" : "static";
 }
 
-export function readPowerDisplayMode(storage = globalThis.localStorage) {
+export function readPowerDisplayMode(storage = globalThis.localStorage, serverId = storage?.serverId ?? "cn") {
   try {
-    return normalizePowerDisplayMode(storage?.getItem(POWER_DISPLAY_STORAGE_KEY));
+    return normalizePowerDisplayMode(settingsStorage(storage, serverId).getItem(POWER_DISPLAY_STORAGE_KEY));
   } catch {
     return "static";
   }
@@ -65,20 +74,19 @@ export function readPowerDisplayMode(storage = globalThis.localStorage) {
 
 export function writePowerDisplayMode(
   storage = globalThis.localStorage,
-  mode,
-) {
+  mode, serverId = storage?.serverId ?? "cn") {
   const normalized = normalizePowerDisplayMode(mode);
   try {
-    storage?.setItem(POWER_DISPLAY_STORAGE_KEY, normalized);
+    settingsStorage(storage, serverId).setItem(POWER_DISPLAY_STORAGE_KEY, normalized);
   } catch {
     return normalized;
   }
   return normalized;
 }
 
-export function readTypeCoverageSetting(storage = globalThis.localStorage) {
+export function readTypeCoverageSetting(storage = globalThis.localStorage, serverId = storage?.serverId ?? "cn") {
   try {
-    const value = storage?.getItem(TYPE_COVERAGE_STORAGE_KEY);
+    const value = settingsStorage(storage, serverId).getItem(TYPE_COVERAGE_STORAGE_KEY);
     return value == null || value === "1";
   } catch {
     return true;
@@ -87,11 +95,10 @@ export function readTypeCoverageSetting(storage = globalThis.localStorage) {
 
 export function writeTypeCoverageSetting(
   storage = globalThis.localStorage,
-  enabled,
-) {
+  enabled, serverId = storage?.serverId ?? "cn") {
   const normalized = Boolean(enabled);
   try {
-    storage?.setItem(TYPE_COVERAGE_STORAGE_KEY, normalized ? "1" : "0");
+    settingsStorage(storage, serverId).setItem(TYPE_COVERAGE_STORAGE_KEY, normalized ? "1" : "0");
   } catch {
     return normalized;
   }
@@ -99,10 +106,9 @@ export function writeTypeCoverageSetting(
 }
 
 export function readDurabilityOverviewSetting(
-  storage = globalThis.localStorage,
-) {
+  storage = globalThis.localStorage, serverId = storage?.serverId ?? "cn") {
   try {
-    return storage?.getItem(DURABILITY_OVERVIEW_STORAGE_KEY) === "1";
+    return settingsStorage(storage, serverId).getItem(DURABILITY_OVERVIEW_STORAGE_KEY) === "1";
   } catch {
     return false;
   }
@@ -110,11 +116,10 @@ export function readDurabilityOverviewSetting(
 
 export function writeDurabilityOverviewSetting(
   storage = globalThis.localStorage,
-  enabled,
-) {
+  enabled, serverId = storage?.serverId ?? "cn") {
   const normalized = Boolean(enabled);
   try {
-    storage?.setItem(
+    settingsStorage(storage, serverId).setItem(
       DURABILITY_OVERVIEW_STORAGE_KEY,
       normalized ? "1" : "0",
     );
@@ -124,9 +129,9 @@ export function writeDurabilityOverviewSetting(
   return normalized;
 }
 
-export function readDamageComparisonSetting(storage = globalThis.localStorage) {
+export function readDamageComparisonSetting(storage = globalThis.localStorage, serverId = storage?.serverId ?? "cn") {
   try {
-    const value = storage?.getItem(DAMAGE_COMPARISON_STORAGE_KEY);
+    const value = settingsStorage(storage, serverId).getItem(DAMAGE_COMPARISON_STORAGE_KEY);
     return value == null || value === "1";
   } catch {
     return true;
@@ -135,11 +140,10 @@ export function readDamageComparisonSetting(storage = globalThis.localStorage) {
 
 export function writeDamageComparisonSetting(
   storage = globalThis.localStorage,
-  enabled,
-) {
+  enabled, serverId = storage?.serverId ?? "cn") {
   const normalized = Boolean(enabled);
   try {
-    storage?.setItem(DAMAGE_COMPARISON_STORAGE_KEY, normalized ? "1" : "0");
+    settingsStorage(storage, serverId).setItem(DAMAGE_COMPARISON_STORAGE_KEY, normalized ? "1" : "0");
   } catch {
     return normalized;
   }
@@ -147,18 +151,17 @@ export function writeDamageComparisonSetting(
 }
 
 export function readNegativeStatusSettlementSetting(
-  storage = globalThis.localStorage,
-) {
+  storage = globalThis.localStorage, serverId = storage?.serverId ?? "cn") {
   try {
-    return storage?.getItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY) === "1";
+    return settingsStorage(storage, serverId).getItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY) === "1";
   } catch {
     return false;
   }
 }
 
-export function readCompactOptionLabelsSetting(storage = globalThis.localStorage) {
+export function readCompactOptionLabelsSetting(storage = globalThis.localStorage, serverId = storage?.serverId ?? "cn") {
   try {
-    return storage?.getItem(COMPACT_OPTION_LABELS_STORAGE_KEY) === "1";
+    return settingsStorage(storage, serverId).getItem(COMPACT_OPTION_LABELS_STORAGE_KEY) === "1";
   } catch {
     return false;
   }
@@ -166,11 +169,10 @@ export function readCompactOptionLabelsSetting(storage = globalThis.localStorage
 
 export function writeCompactOptionLabelsSetting(
   storage = globalThis.localStorage,
-  enabled,
-) {
+  enabled, serverId = storage?.serverId ?? "cn") {
   const normalized = Boolean(enabled);
   try {
-    storage?.setItem(COMPACT_OPTION_LABELS_STORAGE_KEY, normalized ? "1" : "0");
+    settingsStorage(storage, serverId).setItem(COMPACT_OPTION_LABELS_STORAGE_KEY, normalized ? "1" : "0");
   } catch {
     return normalized;
   }
@@ -179,11 +181,10 @@ export function writeCompactOptionLabelsSetting(
 
 export function writeNegativeStatusSettlementSetting(
   storage = globalThis.localStorage,
-  enabled,
-) {
+  enabled, serverId = storage?.serverId ?? "cn") {
   const normalized = Boolean(enabled);
   try {
-    storage?.setItem(
+    settingsStorage(storage, serverId).setItem(
       NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY,
       normalized ? "1" : "0",
     );

@@ -2,32 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Roco Calculator — Roco Kingdom PvP Guide</title>
-    <meta name="description" content="RocoCalc (Roco Calculator) helps compare Roco Kingdom PvP damage, plan teams and check type matchups. English guide for Chinese UI and China-server S4 data." />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#5546dc" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Roco Calculator · Global</title>
     <link rel="canonical" href="https://rococalc.top/en/" />
+    <meta name="theme-color" content="#5946e8" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Roco Calculator · Global" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="/manifest-global-en.webmanifest" />
+    <link rel="apple-touch-icon" href="/app-icon-192.png" />
     <link rel="icon" type="image/png" href="/app-icon-192.png" />
-    <link rel="stylesheet" href="/seo-guide.css" />
   </head>
   <body>
-    <main id="main" class="guide-content">
-      <div class="intro">
-        <h1>Roco Calculator guide</h1>
-        <p class="intro-text">RocoCalc (Roco Calculator) compares Roco Kingdom PvP damage, teams and type matchups.</p>
-        <p class="section-note">Chinese UI and Jini data; China-server S4. International-server stats and rules have not been verified.</p>
-        <a class="primary-link" href="/">Open Roco Calculator <span aria-hidden="true">→</span></a>
-      </div>
-      <section class="section" aria-labelledby="start-heading">
-        <h2 id="start-heading">Calculate damage in three steps</h2>
-        <ol class="steps">
-          <li><span class="step-index" aria-hidden="true">01</span><h3>Select both sides</h3><p>Choose the attacking and defending Jinies in the main calculator. Search uses the Chinese names and supports partial matches. Selecting a Jini brings in its skills, traits and base stats.</p></li>
-          <li><span class="step-index" aria-hidden="true">02</span><h3>Adjust skills and conditions</h3><p>Use compact mode, <span lang="zh-CN">精简版</span>, for a quick setup. Detailed mode, <span lang="zh-CN">具体版</span>, lets you adjust personality, individual stat values, skill power, hit count and battle conditions. Choose a single skill or a four-skill setup.</p></li>
-          <li><span class="step-index" aria-hidden="true">03</span><h3>Read and compare results</h3><p>Check damage, its share of HP and remaining HP. Changing the setup recalculates the result. Expand advanced options, <span lang="zh-CN">高级选项</span>, to review the formulas and conditions.</p></li>
-        </ol>
-      </section>
-      <footer class="site-footer"><p>RocoCalc is an unofficial player tool. It is not affiliated with or endorsed by the game developers.</p></footer>
-    </main>
+    <div id="root"></div>
+    <noscript><p>Enable JavaScript to use the calculator.</p></noscript>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

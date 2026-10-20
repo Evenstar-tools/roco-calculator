@@ -6,10 +6,11 @@ import {
   readStorageWithLegacy,
   trySetItem,
 } from "./storage-namespace.js";
+import { assertRepositoryEnvironment, createServerStorage, serverStorageKey, storageError } from "./server-storage.js";
 
 const FAVORITES_STORAGE_SUFFIX = "favorites.v1";
 export const FAVORITES_STORAGE_KEY =
-  `${STORAGE_NAMESPACE}.${FAVORITES_STORAGE_SUFFIX}`;
+  serverStorageKey("cn", `${STORAGE_NAMESPACE}.${FAVORITES_STORAGE_SUFFIX}`);
 
 function isPlainObject(value) {
   if (value === null || typeof value !== "object") {
@@ -78,9 +79,10 @@ function defaultNow() {
 }
 
 function readFavorites(storage, now) {
+  const currentKey = serverStorageKey(storage.serverId ?? "cn", `rock-calculator.${FAVORITES_STORAGE_SUFFIX}`);
   const { key, raw } = readStorageWithLegacy(
     storage,
-    FAVORITES_STORAGE_KEY,
+    currentKey,
     FAVORITES_STORAGE_SUFFIX,
   );
   if (raw === null) {
@@ -90,11 +92,11 @@ function readFavorites(storage, now) {
   try {
     const parsed = JSON.parse(raw);
     const favorites = validateFavorites(parsed);
-    finishStorageMigration(storage, FAVORITES_STORAGE_KEY, key, raw);
+    finishStorageMigration(storage, currentKey, key, raw);
     return favorites;
   } catch {
     backupCorruptValue(storage, key, raw, now());
-    return [];
+    throw storageError("STORAGE_CORRUPT", "收藏数据损坏；原始内容已保留，请先导出恢复或明确清空");
   }
 }
 
@@ -103,7 +105,7 @@ function writeFavorites(storage, favorites) {
   if (
     !trySetItem(
       storage,
-      FAVORITES_STORAGE_KEY,
+      serverStorageKey(storage.serverId ?? "cn", `rock-calculator.${FAVORITES_STORAGE_SUFFIX}`),
       JSON.stringify(validFavorites),
     )
   ) {
@@ -114,7 +116,7 @@ function writeFavorites(storage, favorites) {
 
 export function favoritesRepository(
   storage = globalThis.localStorage,
-  { now = defaultNow } = {},
+  { now = defaultNow, serverId = "cn" } = {},
 ) {
   if (
     !storage ||
@@ -123,6 +125,8 @@ export function favoritesRepository(
   ) {
     throw new TypeError("收藏仓库需要兼容 localStorage 的存储对象");
   }
+  assertRepositoryEnvironment(serverId);
+  storage = createServerStorage(serverId, storage);
 
   return {
     list() {
@@ -165,7 +169,7 @@ export function favoritesRepository(
       return writeFavorites(storage, favorites);
     },
     clear() {
-      storage.removeItem(FAVORITES_STORAGE_KEY);
+      storage.removeItem(serverStorageKey(serverId, `rock-calculator.${FAVORITES_STORAGE_SUFFIX}`));
       storage.removeItem(legacyStorageKey(FAVORITES_STORAGE_SUFFIX));
       return [];
     },

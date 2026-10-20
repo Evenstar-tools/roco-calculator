@@ -1,3 +1,5 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useEffect, useRef, useState } from "react";
 import {
   FEATURED_USER_RELEASE,
@@ -30,6 +32,9 @@ const FEATURED_RELEASE_SUMMARY = {
 };
 
 function ReleaseItem({ release, current = false }) {
+  const { t } = useLocale();
+  const { serverId } = useRuntime();
+  if (serverId === "global") return <article className="data-source-release"><h3>{t("国际服版本记录待补充")}</h3></article>;
   return (
     <article
       className={current
@@ -71,16 +76,18 @@ function ReleaseItem({ release, current = false }) {
 }
 
 function ReleaseNotesView({ onBack, onClose }) {
+  const { t } = useLocale();
+  const { serverId } = useRuntime();
   return (
     <section
-      aria-label="完整版本记录"
+      aria-label={t("完整版本记录")}
       aria-modal="true"
       className="share-dialog release-notes-dialog"
       role="dialog"
     >
       <header className="release-notes-dialog__header">
         <button
-          aria-label="返回关于与来源"
+          aria-label={t("返回关于与来源")}
           className="release-notes-dialog__back"
           onClick={onBack}
           type="button"
@@ -88,12 +95,12 @@ function ReleaseNotesView({ onBack, onClose }) {
           ←
         </button>
         <div>
-          <h2>完整版本记录</h2>
-          <span>v1.0.0 — {FEATURED_USER_RELEASE.version}</span>
+          <h2>{t("完整版本记录")}</h2>
+          {serverId === "cn" && <span>v1.0.0 — {FEATURED_USER_RELEASE.version}</span>}
         </div>
       </header>
       <div className="release-notes-dialog__list">
-        {USER_RELEASE_NOTES.map((release, index) => (
+        {serverId === "global" ? <p>{t("国际服版本记录待补充")}</p> : USER_RELEASE_NOTES.map((release, index) => (
           <ReleaseItem
             current={index === 0}
             key={release.version}
@@ -103,20 +110,19 @@ function ReleaseNotesView({ onBack, onClose }) {
       </div>
       <div className="dialog-actions">
         <button
-          aria-label="关闭完整版本记录"
+          aria-label={t("关闭完整版本记录")}
           className="secondary-action"
           onClick={onClose}
           type="button"
-        >
-          关闭
-        </button>
+        >{t("关闭")}</button>
       </div>
     </section>
   );
 }
 
 function DetailView({ feedback, license, onBack, onClose }) {
-  const title = license ? "署名与许可" : feedback ? "问题反馈" : "免责声明";
+  const { t } = useLocale();
+  const title = t(license ? "署名与许可" : feedback ? "问题反馈" : "免责声明");
   return (
     <section
       aria-label={title}
@@ -126,7 +132,7 @@ function DetailView({ feedback, license, onBack, onClose }) {
     >
       <header className="release-notes-dialog__header">
         <button
-          aria-label="返回关于与来源"
+          aria-label={t("返回关于与来源")}
           className="release-notes-dialog__back"
           onClick={onBack}
           type="button"
@@ -137,81 +143,67 @@ function DetailView({ feedback, license, onBack, onClose }) {
       </header>
       {license ? (
         <div className="legal-notice-dialog__content">
-          <a href={BWIKI_URL} rel="noreferrer" target="_blank">
-            洛克王国：世界 BWIKI
-          </a>
-          <p><strong>BWIKI 署名与许可</strong></p>
-          <p>
-            BWIKI 来源数据经结构化、校验及补充；其中受许可覆盖的数据与改编按
-            <a href={BWIKI_LICENSE_URL} rel="noreferrer" target="_blank">
+          <a href={BWIKI_URL} rel="noreferrer" target="_blank">{t("洛克王国：世界 BWIKI")}</a>
+          <p><strong>{t("BWIKI 署名与许可")}</strong></p>
+          <p>{t("BWIKI 来源数据经结构化、校验及补充；其中受许可覆盖的数据与改编按")}<a href={BWIKI_LICENSE_URL} rel="noreferrer" target="_blank">
               CC BY-NC-SA 4.0
-            </a>
-            共享。
-          </p>
-          <p>
-            代码适用 MIT；游戏素材与商标权利归原权利人。本项目非官方、非商业，不代表相关方背书。
-          </p>
+            </a>{t("共享。")}</p>
+          <p>{t("代码适用 MIT；游戏素材与商标权利归原权利人。本项目非官方、非商业，不代表相关方背书。")}</p>
         </div>
       ) : feedback ? (
         <div className="feedback-detail-list">
           <div>
-            <strong>B站私信</strong>
-            <a href={FEEDBACK_BILIBILI_URL} rel="noreferrer" target="_blank">
-              诛仙剑下伤心花
-            </a>
+            <strong>{t("B站私信")}</strong>
+            <a href={FEEDBACK_BILIBILI_URL} rel="noreferrer" target="_blank">{t("诛仙剑下伤心花")}</a>
           </div>
           <div>
-            <strong>邮箱</strong>
+            <strong>{t("邮箱")}</strong>
             <a href={`mailto:${FEEDBACK_EMAIL}`}>{FEEDBACK_EMAIL}</a>
           </div>
         </div>
       ) : (
         <div className="legal-notice-dialog__content">
-          <p>本项目是玩家自建工具，非官方产品。</p>
-          <p>数据和计算仅供参考，请以游戏内结果为准。</p>
-          <p>游戏名称、角色与素材权利归原权利人所有。</p>
+          <p>{t("本项目是玩家自建工具，非官方产品。")}</p>
+          <p>{t("数据和计算仅供参考，请以游戏内结果为准。")}</p>
+          <p>{t("游戏名称、角色与素材权利归原权利人所有。")}</p>
         </div>
       )}
       <div className="dialog-actions">
         <button
-          aria-label={`关闭${title}`}
+          aria-label={t("关闭{title}", { title })}
           className="secondary-action"
           onClick={onClose}
           type="button"
-        >
-          关闭
-        </button>
+        >{t("关闭")}</button>
       </div>
     </section>
   );
 }
 
 function AcknowledgementsView({ onBack, onClose }) {
+  const { t } = useLocale();
   return (
     <section
-      aria-label="鸣谢"
+      aria-label={t("鸣谢")}
       aria-modal="true"
       className="share-dialog release-notes-dialog acknowledgements-dialog"
       role="dialog"
     >
       <header className="release-notes-dialog__header">
         <button
-          aria-label="返回关于与来源"
+          aria-label={t("返回关于与来源")}
           className="release-notes-dialog__back"
           onClick={onBack}
           type="button"
         >
           ←
         </button>
-        <h2>鸣谢</h2>
+        <h2>{t("鸣谢")}</h2>
       </header>
       <div className="acknowledgements-dialog__content">
-        <p>
-          感谢以下四位 UP 主在本站开发期间给予的支持与友情推荐。点击名字可前往其
-          B 站主页，也欢迎关注。
-        </p>
+        <p>{t("感谢以下四位 UP 主在本站开发期间给予的支持与友情推荐。点击名字可前往其 B 站主页，也欢迎关注。")}</p>
         <div
-          aria-label="鸣谢名单"
+          aria-label={t("鸣谢名单")}
           className="acknowledgements-dialog__links"
           role="group"
         >
@@ -227,10 +219,10 @@ function AcknowledgementsView({ onBack, onClose }) {
           ))}
         </div>
         <section className="acknowledgements-dialog__references">
-          <h3>数据参考</h3>
-          <p>部分精灵、技能及对战数据整理时参考了以下网站：</p>
+          <h3>{t("数据参考")}</h3>
+          <p>{t("部分精灵、技能及对战数据整理时参考了以下网站：")}</p>
           <div
-            aria-label="数据参考网站"
+            aria-label={t("数据参考网站")}
             className="acknowledgements-dialog__links acknowledgements-dialog__links--references"
             role="group"
           >
@@ -249,19 +241,19 @@ function AcknowledgementsView({ onBack, onClose }) {
       </div>
       <div className="dialog-actions">
         <button
-          aria-label="关闭鸣谢"
+          aria-label={t("关闭鸣谢")}
           className="secondary-action"
           onClick={onClose}
           type="button"
-        >
-          关闭
-        </button>
+        >{t("关闭")}</button>
       </div>
     </section>
   );
 }
 
 export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open, initialView = "" }) {
+  const { t } = useLocale();
+  const { serverId } = useRuntime();
   const dialogRef = useRef(null);
   const [view, setView] = useState(initialView);
 
@@ -314,104 +306,89 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open, i
         />
       ) : (
         <section
-          aria-label="关于与来源"
+          aria-label={t("关于与来源")}
           aria-modal="true"
           className="share-dialog data-source-dialog"
           role="dialog"
         >
-          <h2>关于与来源</h2>
-          <p className="data-source-dialog__summary">
-            非官方工具。资料来自公开页面和实机校验。
-          </p>
-          {dataVersion ? (
+          <h2>{t("关于与来源")}</h2>
+          <p className="data-source-dialog__summary">{t(serverId === "global" ? "国际服数据来源将在核验后补充。" : "非官方工具。资料来自公开页面和实机校验。")}</p>
+          {dataVersion && serverId === "cn" ? (
             <p
               className="data-source-dialog__data-version"
-              title="数字为 BWIKI 页面修订号"
-            >
-              数据快照：{dataVersion}
+              title={t("数字为 BWIKI 页面修订号")}
+            >{t("数据快照：")}{dataVersion}
             </p>
           ) : null}
-          <section aria-label="版本记录" className="data-source-history">
+          <section aria-label={t("版本记录")} className="data-source-history">
             <div className="data-source-history__header">
-              <strong>版本记录</strong>
+              <strong>{t("版本记录")}</strong>
               <button
-                aria-label="查看完整版本记录"
+                aria-label={t("查看完整版本记录")}
                 className="data-source-history__toggle"
                 onClick={() => setView("release")}
                 type="button"
-              >
-                完整记录
-              </button>
+              >{t("完整记录")}</button>
             </div>
             <ReleaseItem current release={FEATURED_RELEASE_SUMMARY} />
           </section>
           <a href={BWIKI_URL} rel="noreferrer" target="_blank">
-            <strong>洛克王国：世界 BWIKI</strong>
-            <span>精灵、技能、属性与美术资料</span>
+            <strong>{t("洛克王国：世界 BWIKI")}</strong>
+            <span>{t("精灵、技能、属性与美术资料")}</span>
           </a>
           <section
-            aria-label="BWIKI 署名与许可"
+            aria-label={t("BWIKI 署名与许可")}
             className="data-source-dialog__license"
           >
             <div>
-              <strong>资料授权</strong>
+              <strong>{t("资料授权")}</strong>
               <a href={BWIKI_LICENSE_URL} rel="noreferrer" target="_blank">
                 CC BY-NC-SA 4.0
               </a>
             </div>
             <button
-              aria-label="查看完整许可"
+              aria-label={t("查看完整许可")}
               className="secondary-action"
               onClick={() => setView("license")}
               type="button"
-            >
-              查看许可
-            </button>
+            >{t("查看许可")}</button>
           </section>
           <div className="data-source-dialog__feedback">
             <button
-              aria-label="查看问题反馈"
+              aria-label={t("查看问题反馈")}
               className="data-source-dialog__feedback-open"
               onClick={() => setView("feedback")}
               type="button"
             >
-              <strong>问题反馈</strong>
-              <span>QQ {FEEDBACK_QQ}</span>
+              <strong>{t("问题反馈")}</strong>
+              {serverId === "cn" && <span>QQ {FEEDBACK_QQ}</span>}
             </button>
-            <button
-              aria-label="复制反馈 QQ"
+            {serverId === "cn" && <button
+              aria-label={t("复制反馈 QQ")}
               className="secondary-action"
               onClick={onCopyFeedback}
               type="button"
-            >
-              复制
-            </button>
+            >{t("复制")}</button>}
           </div>
           <div className="dialog-actions">
             <button
-              aria-label="查看鸣谢"
+              aria-label={t("查看鸣谢")}
               className="secondary-action data-source-dialog__acknowledgements-action"
               onClick={() => setView("acknowledgements")}
               type="button"
-            >
-              鸣谢
-            </button>
+            >{t("鸣谢")}</button>
             <button
-              aria-label="查看免责声明"
+              aria-label={t("查看免责声明")}
               className="secondary-action"
               onClick={() => setView("disclaimer")}
               type="button"
-            >
-              免责声明
-            </button>
+            >{t("免责声明")}</button>
             <button
-              aria-label="关闭关于与来源"
+              aria-label={t("关闭关于与来源")}
               className="secondary-action"
               onClick={onClose}
               type="button"
-            >
-              关闭
-            </button>
+            >{t("关闭")}</button>
           </div>
         </section>
       )}

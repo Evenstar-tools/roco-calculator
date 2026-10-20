@@ -1,5 +1,8 @@
-import { useRef, useState, useSyncExternalStore } from "react";
-import { readFormConfigMemoryEnabled, subscribeFormConfigPreferences, writeFormConfigMemoryEnabled } from "../state/form-config-preferences.js";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { createServerStorage } from "../state/server-storage.js";
+import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { getFormConfigPreferences } from "../state/form-config-preferences.js";
 import { FEEDBACK_QQ } from "../components/DataSourceDialog.jsx";
 import { FEATURED_USER_RELEASE } from "../data/user-release-notes.js";
 import {
@@ -27,20 +30,24 @@ export function useWorkspaceOverlays({
   updateDirection,
   viewMode,
 }) {
+  const { serverId } = useRuntime();
+  const { t } = useLocale();
+  const storage = useMemo(() => { try { return createServerStorage(serverId); } catch { return null; } }, [serverId]);
+  const formPrefs = getFormConfigPreferences(serverId);
   const [cleanupConfigsOpen, setCleanupConfigsOpen] = useState(false);
   const [dataSourceOpen, setDataSourceOpen] = useState(false);
   const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
   const [compactOptionLabelsEnabled, setCompactOptionLabelsEnabled] = useState(
-    () => readCompactOptionLabelsSetting(),
+    () => readCompactOptionLabelsSetting(storage),
   );
   const formConfigMemoryEnabled = useSyncExternalStore(
-    subscribeFormConfigPreferences, readFormConfigMemoryEnabled, () => false,
+    formPrefs.subscribe, formPrefs.readMemoryEnabled, () => false,
   );
   const [damageComparisonEnabled, setDamageComparisonEnabled] = useState(
-    () => readDamageComparisonSetting(),
+    () => readDamageComparisonSetting(storage),
   );
   const [durabilityOverviewEnabled, setDurabilityOverviewEnabled] = useState(
-    () => readDurabilityOverviewSetting(),
+    () => readDurabilityOverviewSetting(storage),
   );
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileResultOpen, setMobileResultOpen] = useState(false);
@@ -49,10 +56,10 @@ export function useWorkspaceOverlays({
   const [teamOpen, setTeamOpen] = useState(false);
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [powerDisplayMode, setPowerDisplayMode] = useState(() =>
-    readPowerDisplayMode(),
+    readPowerDisplayMode(storage),
   );
   const [typeCoverageEnabled, setTypeCoverageEnabled] = useState(() =>
-    readTypeCoverageSetting(),
+    readTypeCoverageSetting(storage),
   );
   const drawerCloseRef = useRef(null);
   const menuButtonRef = useRef(null);
@@ -77,14 +84,14 @@ export function useWorkspaceOverlays({
     onClose: () => setDataSourceOpen(false),
     onCopyFeedback: async () => {
       if (!globalThis.navigator?.clipboard?.writeText) {
-        onToast(`反馈 QQ：${FEEDBACK_QQ}`);
+        onToast(t("反馈 QQ：{number}", { number: FEEDBACK_QQ }));
         return;
       }
       try {
         await globalThis.navigator.clipboard.writeText(FEEDBACK_QQ);
-        onToast("反馈 QQ 已复制");
+        onToast(t("反馈 QQ 已复制"));
       } catch {
-        onToast(`反馈 QQ：${FEEDBACK_QQ}`);
+        onToast(t("反馈 QQ：{number}", { number: FEEDBACK_QQ }));
       }
     },
     open: dataSourceOpen,
@@ -98,19 +105,19 @@ export function useWorkspaceOverlays({
   const displaySettingsProps = {
     compactOptionLabelsEnabled,
     formConfigMemoryEnabled,
-    onFormConfigMemoryChange: writeFormConfigMemoryEnabled,
+    onFormConfigMemoryChange: formPrefs.writeMemoryEnabled,
     damageComparisonEnabled,
     durabilityOverviewEnabled,
     negativeStatusSettlementEnabled: negativeStatusEnabled,
     onClose: () => setDisplaySettingsOpen(false),
     onCompactOptionLabelsChange: (enabled) => {
-      setCompactOptionLabelsEnabled(writeCompactOptionLabelsSetting(undefined, enabled));
+      setCompactOptionLabelsEnabled(writeCompactOptionLabelsSetting(storage, enabled));
     },
     onDamageComparisonChange: (enabled) => {
-      setDamageComparisonEnabled(writeDamageComparisonSetting(undefined, enabled));
+      setDamageComparisonEnabled(writeDamageComparisonSetting(storage, enabled));
     },
     onNegativeStatusSettlementChange: (enabled) => {
-      const value = writeNegativeStatusSettlementSetting(undefined, enabled);
+      const value = writeNegativeStatusSettlementSetting(storage, enabled);
       dispatch({
         type: "calculation-option/set-negative-status",
         value,
@@ -118,14 +125,14 @@ export function useWorkspaceOverlays({
     },
     onDurabilityOverviewChange: (enabled) => {
       setDurabilityOverviewEnabled(
-        writeDurabilityOverviewSetting(undefined, enabled),
+        writeDurabilityOverviewSetting(storage, enabled),
       );
     },
     onPowerDisplayModeChange: (mode) => {
-      setPowerDisplayMode(writePowerDisplayMode(undefined, mode));
+      setPowerDisplayMode(writePowerDisplayMode(storage, mode));
     },
     onTypeCoverageChange: (enabled) => {
-      setTypeCoverageEnabled(writeTypeCoverageSetting(undefined, enabled));
+      setTypeCoverageEnabled(writeTypeCoverageSetting(storage, enabled));
     },
     open: displaySettingsOpen,
     powerDisplayMode,

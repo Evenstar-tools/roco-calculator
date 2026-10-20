@@ -3,11 +3,13 @@ import path from 'node:path';
 import { expect, test } from '@playwright/test';
 import { resetUiuxStorage } from './helpers/uiux-helpers.js';
 import { importLineupCode } from '../../src/state/lineup-code.js';
+import { serverStorageKey } from '../../src/state/server-storage.js';
 const fixture=JSON.parse(readFileSync('tests/fixtures/lineup-iv-user-20260918.json','utf8'));
 const snapshot=JSON.parse(readFileSync('public/data/runtime.json','utf8'));
 const mapping=JSON.parse(readFileSync('public/data/lineup-code-map.json','utf8'));
 const expected=importLineupCode(fixture.url,snapshot,mapping);
-const key='rock-calculator.teams.v1';
+const legacyKey='rock-calculator.teams.v1';
+const key=serverStorageKey('cn',legacyKey);
 const out=process.env.IV_FIX_EVIDENCE_DIR??'artifacts/lineup-iv-fix-20260918/local';mkdirSync(out,{recursive:true});
 test.use({serviceWorkers:'block'});
 async function open(page,width){
@@ -55,10 +57,11 @@ for(const width of [1440,390]){
  test(`old pending roster recovers and replace clears only search, including cancel ${width}`,async({page})=>{
   await resetUiuxStorage(page);
   const stale={schemaVersion:1,activeTeamId:'old',teams:[{...expected,id:'old',createdAt:'2026-09-18',updatedAt:'2026-09-18',members:expected.members.map(m=>({...m,ivsPending:true,displayIvs:Object.fromEntries(Object.keys(m.displayIvs).map(k=>[k,0]))}))}]};
-  await page.addInitScript(({key,stale})=>{if(!sessionStorage.getItem('iv-fixture')){localStorage.setItem(key,JSON.stringify(stale));sessionStorage.setItem('iv-fixture','1');}},{key,stale});
+  await page.addInitScript(({legacyKey,stale})=>{if(!sessionStorage.getItem('iv-fixture')){localStorage.setItem(legacyKey,JSON.stringify(stale));sessionStorage.setItem('iv-fixture','1');}},{legacyKey,stale});
   const drawer=await open(page,width);
   await expect(drawer.locator('.team-slot__identity .team-iv-pending')).toHaveCount(0);
   const unchanged=await page.evaluate(k=>localStorage.getItem(k),key);
+  expect(unchanged).not.toBeNull();
   for(const fromAnalysis of [false,true]){
     if(fromAnalysis)await drawer.getByRole('button',{name:'能力分析',exact:true}).click();
     await drawer.getByRole('button',{name:'更换精灵',exact:true}).click();

@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { formatConfigLibraryImportResult } from "../state/favorite-config-library.js";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { configLibraryImportMessage, storageIssueSource } from "../i18n/storage-errors.js";
+import { createServerStorage } from "../state/server-storage.js";
+import { useMemo, useState } from "react";
 import {
   completeFirstRunGuide,
   isFirstRunGuideCompleted,
@@ -10,15 +13,18 @@ export function useFirstRunGuide({
   loadPopularConfigLibrary,
   onToast,
 }) {
+  const { serverId } = useRuntime();
+  const { t } = useLocale();
+  const storage = useMemo(() => { try { return createServerStorage(serverId); } catch { return null; } }, [serverId]);
   const [error, setError] = useState("");
   const [importing, setImporting] = useState(false);
   const [open, setOpen] = useState(
-    () => !isFirstRunGuideCompleted() && globalThis.innerWidth > 640,
+    () => serverId === "cn" && !isFirstRunGuideCompleted(storage) && globalThis.innerWidth > 640,
   );
   const [step, setStep] = useState(0);
 
   function finish() {
-    completeFirstRunGuide();
+    completeFirstRunGuide(storage);
     setError("");
     setOpen(false);
     setStep(0);
@@ -37,10 +43,10 @@ export function useFirstRunGuide({
       const parsed = await loadPopularConfigLibrary();
       const result = importFavoriteConfigLibrary(parsed);
       finish();
-      onToast(formatConfigLibraryImportResult(result.preview));
+      onToast(configLibraryImportMessage(t, result.preview));
     } catch (importError) {
       setError(
-        importError instanceof Error ? importError.message : "常用配置导入失败",
+        t(storageIssueSource(importError, "常用配置导入失败")),
       );
     } finally {
       setImporting(false);

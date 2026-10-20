@@ -79,7 +79,7 @@ describe("teamPresetsRepository", () => {
 
     expect(repository(storage).load(snapshot())).toEqual(legacyState);
     expect(JSON.parse(storage.getItem(TEAM_STORAGE_KEY))).toEqual(legacyState);
-    expect(storage.getItem(legacyKey)).toBeNull();
+    expect(storage.getItem(legacyKey)).toBe(JSON.stringify(legacyState));
   });
 
   test("creates a persisted team with exactly six slots", () => {

@@ -1,3 +1,4 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
 import { CheckSquareOffset } from "@phosphor-icons/react";
 import { QUICK_STATS, STAT_LABELS } from "../domain/natures.js";
 import { StatIcon } from "./StatIcon.jsx";
@@ -5,21 +6,23 @@ import { StatIcon } from "./StatIcon.jsx";
 export function QuickIvPicker({
   label,
   onChange,
+  placeholder = false,
   showOptionLabels = false,
   side,
   values,
 }) {
+  const { t } = useLocale();
   return (
     <div
-      aria-label={`${label}快捷个体`}
+      aria-label={t("{label}快捷个体", { label })}
       className={`quick-iv quick-iv--${side}${showOptionLabels ? " quick-iv--labeled" : ""}`}
       role="group"
     >
-      <span className="quick-iv__label" title="个体加点">
+      <span className="quick-iv__label" title={t("个体加点")}>
         <CheckSquareOffset aria-hidden="true" size={18} weight="bold" />
-        <span className="sr-only">个体加点</span>
+        <span className="sr-only">{t("个体加点")}</span>
       </span>
-      <span className="quick-iv__caption">个体</span>
+      <span className="quick-iv__caption">{t("个体")}</span>
       {QUICK_STATS.map((stat) => {
         const checked = Number(values?.[stat]) === 60;
         return (
@@ -27,12 +30,12 @@ export function QuickIvPicker({
             className="quick-iv__option"
             data-checked={checked}
             key={stat}
-            title={`${STAT_LABELS[stat]}个体 ${checked ? 60 : 0}`}
+            title={t("{stat}个体 {value}", { stat: t(STAT_LABELS[stat]), value: placeholder ? values?.[stat] ?? "—" : checked ? 60 : 0 })}
           >
             <StatIcon size={19} stat={stat} />
-            {showOptionLabels ? <span className="quick-iv__name">{STAT_LABELS[stat]}</span> : null}
+            {showOptionLabels ? <span className="quick-iv__name">{t(STAT_LABELS[stat])}</span> : null}
             <input
-              aria-label={`${label}${STAT_LABELS[stat]}个体加点`}
+              aria-label={t("{label}{stat}个体加点", { label, stat: t(STAT_LABELS[stat]) })}
               checked={checked}
               onChange={(event) =>
                 onChange(stat, event.currentTarget.checked ? 60 : 0)

@@ -1,4 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { storageIssueSource } from "../i18n/storage-errors.js";
+import { assertRepositoryEnvironment } from "../state/server-storage.js";
 import { favoritesRepository } from "../state/favorites.js";
 import {
   applyFavoriteConfigLibraryImport as applyLibraryImport,
@@ -15,7 +18,7 @@ import {
 } from "../state/team-presets.js";
 
 const DEFAULT_FACTORIES = {
-  favorites: favoritesRepository,
+  favorites: (options) => favoritesRepository(undefined, options),
   spiritConfigs: spiritConfigsRepository,
   teams: teamPresetsRepository,
 };
@@ -28,77 +31,101 @@ const EMPTY_TEAMS = {
   warning: "当前环境无法保存队伍",
 };
 
-function createStore(factory) {
+function createStore(factory, options, report) {
   try {
-    return factory();
-  } catch {
+    return factory(options);
+  } catch (error) {
+    report(error);
     return null;
   }
 }
 
-function loadFavorites(store) {
+function loadFavorites(store, report) {
   try {
     return new Set(
       (store?.list() ?? [])
         .filter((favorite) => favorite.kind === "spirit")
         .map((favorite) => favorite.spiritId),
     );
-  } catch {
+  } catch (error) {
+    report(error);
     return new Set();
   }
 }
 
-function loadSpiritConfigs(store, snapshot) {
+function loadSpiritConfigs(store, snapshot, report) {
   try {
-    return store?.load(snapshot) ?? EMPTY_SPIRIT_CONFIGS;
-  } catch {
+    const state = store?.load(snapshot) ?? EMPTY_SPIRIT_CONFIGS;
+    if (state.warning) report({ message: state.warning });
+    return state;
+  } catch (error) {
+    report(error);
     return EMPTY_SPIRIT_CONFIGS;
   }
 }
 
-function loadTeams(store, snapshot) {
+function loadTeams(store, snapshot, report) {
   try {
-    return store?.load(snapshot) ?? EMPTY_TEAMS;
-  } catch {
+    const state = store?.load(snapshot) ?? EMPTY_TEAMS;
+    if (state.warning) report({ message: state.warning });
+    return state;
+  } catch (error) {
+    report(error);
     return EMPTY_TEAMS;
   }
 }
 
+function initializeStoredData(factories, serverId, snapshot) {
+  const warnings = [];
+  const report = (error) => warnings.push(storageIssueSource(error));
+  const stores = {
+    favorites: createStore(factories.favorites, { serverId }, report),
+    spiritConfigs: createStore(factories.spiritConfigs, { serverId }, report),
+    teams: createStore(factories.teams, { serverId }, report),
+  };
+  const favorites = loadFavorites(stores.favorites, report);
+  const configs = loadSpiritConfigs(stores.spiritConfigs, snapshot, report);
+  const teams = loadTeams(stores.teams, snapshot, report);
+  return { stores, favorites, configs, teams, warning: warnings[0] ?? "" };
+}
+
 export function useStoredCalculatorData(
   snapshot,
-  { factories = DEFAULT_FACTORIES, onToast = () => {} } = {},
+  { factories = DEFAULT_FACTORIES, onToast = () => {}, serverId = "cn" } = {},
 ) {
-  const stores = useMemo(
-    () => ({
-      favorites: createStore(factories.favorites),
-      spiritConfigs: createStore(factories.spiritConfigs),
-      teams: createStore(factories.teams),
-    }),
-    [factories],
-  );
-  const [favoriteSpiritIds, setFavoriteSpiritIds] = useState(() =>
-    loadFavorites(stores.favorites),
-  );
-  const [spiritConfigsState, setSpiritConfigsState] = useState(() =>
-    loadSpiritConfigs(stores.spiritConfigs, snapshot),
-  );
+  assertRepositoryEnvironment(serverId, snapshot);
+  const { t } = useLocale();
+  const startup = useMemo(() => initializeStoredData(factories, serverId, snapshot), [factories, serverId, snapshot]);
+  const { stores } = startup;
+  const [favoriteSpiritIds, setFavoriteSpiritIds] = useState(startup.favorites);
+  const [spiritConfigsState, setSpiritConfigsState] = useState(startup.configs);
   const spiritConfigsRef = useRef(spiritConfigsState);
-  const [teamsState, setTeamsState] = useState(() =>
-    loadTeams(stores.teams, snapshot),
-  );
+  const [teamsState, setTeamsState] = useState(startup.teams);
+  useEffect(() => { if (startup.warning) onToast(t(startup.warning)); }, [startup.warning, onToast, t]);
   const teamsStateRef = useRef(teamsState);
+  useEffect(() => {
+    // Hydrate mutable external stores at a server/catalog boundary, not derived UI state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFavoriteSpiritIds(startup.favorites);
+    spiritConfigsRef.current = startup.configs;
+    setSpiritConfigsState(startup.configs);
+    teamsStateRef.current = startup.teams;
+    setTeamsState(startup.teams);
+    // Reload only when the server/catalog changes, not for an inline factory object.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverId, snapshot]);
   const completeSpiritIds = useMemo(
     () =>
       new Set(
-        Object.values(spiritConfigsState.configs)
+        (serverId === "global" ? [] : Object.values(spiritConfigsState.configs))
           .filter(isCompleteSpiritConfig)
           .map((config) => config.spiritId),
       ),
-    [spiritConfigsState],
+    [spiritConfigsState, serverId],
   );
 
   function rememberSide(side) {
-    if (!stores.spiritConfigs || !side?.spiritId || side.battleForm) return;
+    if (!stores.spiritConfigs || !side?.spiritId || (serverId === "cn" && side.battleForm)) return;
     try {
       const nextConfigs = stores.spiritConfigs.save(
         spiritConfigsRef.current,
@@ -106,26 +133,27 @@ export function useStoredCalculatorData(
         snapshot,
       );
       if (!nextConfigs) {
-        onToast("配置保存失败");
+        onToast(t("配置保存失败"));
         return;
       }
       spiritConfigsRef.current = nextConfigs;
       setSpiritConfigsState(nextConfigs);
-    } catch {
-      onToast("配置保存失败");
+    } catch (error) {
+      onToast(t(storageIssueSource(error, "配置保存失败")));
     }
   }
 
   function getSpiritConfiguration(spiritId) {
-    return spiritConfigsRef.current.configs[spiritId];
+    const config = spiritConfigsRef.current.configs[spiritId];
+    return config?.needsRepair ? undefined : config;
   }
 
   function clearSpiritConfigs() {
     let nextConfigs = EMPTY_SPIRIT_CONFIGS;
     try {
       nextConfigs = stores.spiritConfigs?.clear() ?? EMPTY_SPIRIT_CONFIGS;
-    } catch {
-      onToast("配置保存失败");
+    } catch (error) {
+      onToast(t(storageIssueSource(error, "配置保存失败")));
     }
     spiritConfigsRef.current = nextConfigs;
     setSpiritConfigsState(nextConfigs);
@@ -139,8 +167,8 @@ export function useStoredCalculatorData(
         spiritConfigsRef.current,
         snapshot,
       ) ?? spiritConfigsRef.current;
-    } catch {
-      onToast("配置保存失败");
+    } catch (error) {
+      onToast(t(storageIssueSource(error, "配置保存失败")));
     }
     spiritConfigsRef.current = nextConfigs;
     setSpiritConfigsState(nextConfigs);
@@ -149,7 +177,7 @@ export function useStoredCalculatorData(
 
   function toggleSpiritFavorite(spirit, configuration) {
     if (!stores.favorites) {
-      onToast("当前环境无法保存收藏");
+      onToast(t("当前环境无法保存收藏"));
       return;
     }
     try {
@@ -157,11 +185,11 @@ export function useStoredCalculatorData(
       if (next.has(spirit.id)) {
         const remaining = stores.favorites.remove(`spirit:${spirit.id}`);
         if (remaining === null) {
-          onToast("收藏保存失败");
+          onToast(t("收藏保存失败"));
           return;
         }
         next.delete(spirit.id);
-        onToast(`已取消收藏 ${spirit.fullName}`);
+        onToast(t("已取消收藏 {name}", { name: spirit.fullName }));
       } else {
         const saved = stores.favorites.save({
           fullName: spirit.fullName,
@@ -170,16 +198,16 @@ export function useStoredCalculatorData(
           spiritId: spirit.id,
         });
         if (!saved) {
-          onToast("收藏保存失败");
+          onToast(t("收藏保存失败"));
           return;
         }
         next.add(spirit.id);
         if (configuration?.spiritId === spirit.id) rememberSide(configuration);
-        onToast(`已收藏 ${spirit.fullName}`);
+        onToast(t("已收藏 {name}", { name: spirit.fullName }));
       }
       setFavoriteSpiritIds(next);
-    } catch {
-      onToast("收藏保存失败");
+    } catch (error) {
+      onToast(t(storageIssueSource(error, "收藏保存失败")));
     }
   }
 
@@ -188,6 +216,7 @@ export function useStoredCalculatorData(
       ...options,
       favorites: stores.favorites?.list() ?? [],
       snapshot,
+      serverId,
       spiritConfigs: spiritConfigsRef.current,
     });
   }
@@ -199,6 +228,7 @@ export function useStoredCalculatorData(
       existingFavorites: stores.favorites?.list() ?? [],
       existingSpiritConfigs: spiritConfigsRef.current,
       snapshot,
+      serverId,
     });
   }
 
@@ -210,6 +240,7 @@ export function useStoredCalculatorData(
       favoritesRepository: stores.favorites,
       parsed,
       snapshot,
+      serverId,
       spiritConfigsRepository: stores.spiritConfigs,
     });
     const nextFavoriteIds = new Set(
@@ -228,15 +259,15 @@ export function useStoredCalculatorData(
     try {
       const next = mutation(teamsStateRef.current);
       if (next?.writeFailed) {
-        onToast("队伍保存失败");
+        onToast(t("队伍保存失败"));
         return false;
       }
       teamsStateRef.current = next;
       setTeamsState(next);
       onSuccess?.();
       return true;
-    } catch {
-      onToast("队伍保存失败");
+    } catch (error) {
+      onToast(t(storageIssueSource(error, "队伍保存失败")));
       return false;
     }
   }
@@ -246,19 +277,20 @@ export function useStoredCalculatorData(
   }
 
   function captureSide(side, teamId, index, calculatorSide) {
-    if (calculatorSide?.battleForm) {
-      onToast("当前为本场形态，请重新载入预设后再存入队伍");
+    if (serverId === "cn" && calculatorSide?.battleForm) {
+      onToast(t("当前为本场形态，请重新载入预设后再存入队伍"));
       return false;
     }
     if (!stores.teams) {
-      onToast("当前环境无法保存队伍");
+      onToast(t("当前环境无法保存队伍"));
       return false;
     }
     let member;
     try {
-      member = createTeamMemberFromSide(calculatorSide);
+      member = createTeamMemberFromSide(calculatorSide, { serverId });
+      if (!member?.spiritId) throw new TypeError("当前计算方没有可保存的精灵");
     } catch (error) {
-      onToast(error instanceof Error ? error.message : "队伍保存失败");
+      onToast(t(storageIssueSource(error, "当前计算方没有可保存的精灵")));
       return false;
     }
     return mutateTeams(
@@ -268,9 +300,7 @@ export function useStoredCalculatorData(
           (candidate) => candidate.id === member.spiritId,
         );
         onToast(
-          `已把${side === "attacker" ? "攻击方" : "防御方"} ${
-            spirit?.fullName ?? "当前精灵"
-          } 存入${index + 1}号位`,
+          t("已把{side} {name} 存入{index}号位", { side: t(side === "attacker" ? "攻击方" : "防御方"), name: spirit?.fullName ?? t("当前精灵"), index: index + 1 }),
         );
       },
     );
@@ -280,7 +310,7 @@ export function useStoredCalculatorData(
     if (stores.teams) {
       return mutateTeams((current) => stores.teams.create(current, name));
     }
-    onToast("当前环境无法保存队伍");
+    onToast(t("当前环境无法保存队伍"));
     return false;
   }
 
@@ -289,7 +319,7 @@ export function useStoredCalculatorData(
   }
 
   function duplicateTeam(id) {
-    return mutateTeams((current) => stores.teams.duplicate(current, id));
+    return mutateTeams((current) => stores.teams.duplicate(current, id, t("{name} 副本", { name: current.teams.find((team) => team.id === id)?.name ?? "" })));
   }
 
   function updateTeamMember(teamId, index, member) {
@@ -304,7 +334,7 @@ export function useStoredCalculatorData(
 
   return {
     comparisonPresets: Object.fromEntries(Object.entries(spiritConfigsState.configs).filter(([id, config]) =>
-      favoriteSpiritIds.has(id) || config.presetBaseline || isCompleteSpiritConfig(config))),
+      !config.needsRepair && (favoriteSpiritIds.has(id) || config.presetBaseline || (serverId === "cn" && isCompleteSpiritConfig(config))))),
     buildFavoriteConfigLibrary,
     clearIncompleteSpiritConfigs,
     clearSpiritConfigs,

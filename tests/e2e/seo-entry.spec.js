@@ -43,28 +43,22 @@ test("SEO serves crawler files and a direct deer entry without an introduction",
 });
 
 for (const theme of ["light", "dark"]) {
-  test.describe(`SEO English guide without JavaScript ${theme}`, () => {
-    test.use({ javaScriptEnabled: false, viewport: { width: 320, height: 820 }, colorScheme: theme, contextOptions: { reducedMotion: "reduce" } });
-    test("keeps a short readable guide and calculator entry", async ({ page }) => {
+  test.describe(`SEO Global direct tool entry ${theme}`, () => {
+    test.use({ viewport: { width: 390, height: 844 }, colorScheme: theme, contextOptions: { reducedMotion: "reduce" } });
+    test("opens the overseas workspace and restores its setup at the existing URL", async ({ page }) => {
       await page.goto("/en/");
-      await expect(page.getByRole("heading", { name: "Roco Calculator guide", exact: true })).toBeVisible();
-      await expect(page.getByRole("heading", { name: "Calculate damage in three steps", exact: true })).toBeVisible();
-      await expect(page.locator(".steps > li")).toHaveCount(3);
-      await expect(page.locator(".section-note")).toContainText("International-server stats and rules have not been verified");
-      await expect(page.locator("nav, .faq, #damage-example, .tools")).toHaveCount(0);
-      await expect(page.locator("a")).toHaveCount(1);
-      const entry = page.getByRole("link", { name: "Open Roco Calculator", exact: true });
-      await expect(entry).toHaveAttribute("href", "/");
-      const evidence = "artifacts/seo-simplify-20261014/e2e";
-      mkdirSync(evidence, { recursive: true });
-      for (const width of [320, 1920]) {
-        await page.setViewportSize({ width, height: width === 320 ? 820 : 1080 });
-        await expect(entry).toBeInViewport();
-        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-        await page.screenshot({ path: `${evidence}/en-${width}-${theme}.png`, fullPage: true });
-      }
-      await entry.click();
-      await expect(page).toHaveURL(/\/$/);
+      const attacker = page.getByRole("combobox", { name: "Attacker Jini", exact: true });
+      await expect(attacker).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Roco Calculator guide", exact: true })).toHaveCount(0);
+      await expect(page.locator(".result-column")).toHaveCount(0);
+      await attacker.fill("迪莫");
+      await page.getByRole("option", { name: /迪莫/ }).first().click();
+      await page.reload();
+      await expect(attacker).toHaveValue("迪莫");
+      await expect(page.locator("html")).toHaveAttribute("data-server", "global");
+      await expect(page.locator("html")).toHaveAttribute("lang", "en");
+      expect(new URL(page.url()).pathname).toBe("/en/");
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
   });
 }

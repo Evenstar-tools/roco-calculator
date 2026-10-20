@@ -2,7 +2,7 @@ import { act, cleanup, renderHook } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { useShareFlow } from "../../src/hooks/useShareFlow.js";
 import { createInitialState } from "../../src/state/defaults.js";
-import { decodeShareState, encodeShareState } from "../../src/state/share.js";
+import { decodeShareEnvelope, encodeShareEnvelope, selectShareableInputs } from "../../src/state/share.js";
 
 const raceStats = {
   hp: 100, speed: 100, physicalAttack: 100, magicalAttack: 100,
@@ -35,9 +35,10 @@ test.each([
     origin: location.origin, pathname: location.pathname, search: location.search,
   };
   const replaceState = vi.fn((_state, _title, hash) => { location.hash = hash; });
+  const navigationState = { rocoEntry: { serverId: "cn", locale: "zh-CN" }, deerInput: { stacks: 3 } };
   const writeText = vi.fn().mockResolvedValue(undefined);
   vi.stubGlobal("location", location);
-  vi.stubGlobal("history", { replaceState });
+  vi.stubGlobal("history", { replaceState, state: navigationState });
   vi.stubGlobal("navigator", { clipboard: { writeText } });
 
   const state = createInitialState(snapshot);
@@ -46,8 +47,10 @@ test.each([
   state.sides.defender.nature = "calm";
   state.sides.defender.displayIvs.hp = 48;
   state.sides.defender.skills.four.reverse();
-  const hash = await encodeShareState(state);
-  const expectedLink = `https://rococalc.top/${hash}`;
+  const hash = await encodeShareEnvelope({ serverId: "cn", gameVersion: null,
+    dataVersion: state.versions.data, rulesVersion: state.versions.rules,
+    locale: "zh-CN", kind: "configuration", payload: selectShareableInputs(state) });
+  const expectedLink = `https://rococalc.top/cn/${hash}`;
   const onToast = vi.fn();
   const { result } = renderHook(() => useShareFlow({
     commitSession: vi.fn(),
@@ -63,13 +66,13 @@ test.each([
   await act(() => result.current.overlayProps.actions.onCopy());
 
   expect(result.current.overlayProps.open).toBe(true);
-  expect(hash).toMatch(/^#v1\./u);
-  expect(replaceState).toHaveBeenCalledExactlyOnceWith(null, "", hash);
+  expect(hash).toMatch(/^#v2\.cn\.zh-CN\./u);
+  expect(replaceState).toHaveBeenCalledExactlyOnceWith(navigationState, "", hash);
   expect(location).toMatchObject(originalAddress);
   expect(location.hash).toBe(hash);
   expect.soft(result.current.overlayProps.shareLink).toBe(expectedLink);
   expect.soft(writeText).toHaveBeenCalledExactlyOnceWith(expectedLink);
-  const decoded = await decodeShareState(new URL(result.current.overlayProps.shareLink).hash);
+  const { payload: decoded } = await decodeShareEnvelope(new URL(result.current.overlayProps.shareLink).hash);
   expect(decoded.mode).toBe(state.mode);
   expect(decoded.sides).toEqual(state.sides);
   expect(onToast).toHaveBeenLastCalledWith("分享链接已复制");

@@ -1,0 +1,37 @@
+{
+  "id": "/",
+  "name": "ロコ計算機 · グローバル版",
+  "short_name": "ロコ計算機",
+  "description": "グローバル版の計算機。ゲームデータとルールは検証待ちです。",
+  "lang": "ja",
+  "dir": "ltr",
+  "start_url": "/global/ja/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "orientation": "portrait-primary",
+  "background_color": "#f4f6fb",
+  "theme_color": "#5946e8",
+  "categories": [
+    "games",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 import { normalizeNatureId } from "../domain/natures.js";
+import { assertRepositoryEnvironment, createServerStorage, serverStorageKey, storageError } from "./server-storage.js";
 import { recoverPendingLineupIvs } from "./lineup-ivs.js";
 import { chooseDefaultSkillIds } from "../domain/skill-loadout.js";
+import { isUsableDraftConfiguration } from "./spirit-configs.js";
 import {
   STORAGE_NAMESPACE,
   backupCorruptValue,
@@ -10,7 +12,7 @@ import {
 } from "./storage-namespace.js";
 
 const TEAM_STORAGE_SUFFIX = "teams.v1";
-export const TEAM_STORAGE_KEY = `${STORAGE_NAMESPACE}.${TEAM_STORAGE_SUFFIX}`;
+export const TEAM_STORAGE_KEY = serverStorageKey("cn", `${STORAGE_NAMESPACE}.${TEAM_STORAGE_SUFFIX}`);
 export const TEAM_SCHEMA_VERSION = 1;
 
 export const TEAM_BLOODLINE_OPTIONS = Object.freeze([
@@ -109,6 +111,7 @@ function validateStoredState(value) {
 
 function sanitizeMember(member) {
   if (!member) return null;
+  if (member.needsRepair) return cloneJson(member);
   const capacity = member.skills?.four?.length === 7 ? 7 : 4;
   return {
     ...(TEAM_BLOODLINE_VALUES.has(member.bloodlineType)
@@ -149,7 +152,7 @@ function sanitizeState(state) {
   };
 }
 
-function markRepairs(state, snapshot) {
+function markRepairs(state, snapshot, serverId) {
   if (!snapshot) return state;
   const spiritIds = new Set(
     (snapshot.spirits ?? []).map((spirit) => spirit.id),
@@ -162,17 +165,25 @@ function markRepairs(state, snapshot) {
       members: team.members.map((member) => {
         if (!member) return null;
         const reasons = [];
+        if (serverId === "global" && !isUsableDraftConfiguration(member)) reasons.push("配置结构不完整");
         if (!spiritIds.has(member.spiritId)) {
           reasons.push("精灵数据不存在");
         }
-        const missingSkills = [
+        const entries = [
           member.skills?.single,
           ...(member.skills?.four ?? []),
-        ]
-          .map(skillId)
+        ];
+        const missingSkills = entries
+          .flatMap((entry) => [skillId(entry), ...(serverId === "global" ? Object.keys(entry?.memoryBySkill ?? {}) : [])])
           .filter((id) => id && !skillIds.has(id));
         if (missingSkills.length > 0) {
           reasons.push("技能数据不存在");
+        }
+        if (serverId === "global" && reasons.length === 0) {
+          const preserved = cloneJson(member);
+          delete preserved.needsRepair;
+          delete preserved.repairReason;
+          return preserved;
         }
         return reasons.length
           ? {
@@ -204,6 +215,14 @@ export function createTeamMember(snapshot, spiritId) {
   if (!(snapshot.spirits ?? []).some((spirit) => spirit.id === spiritId)) {
     throw new TypeError("无法为不存在的精灵创建队伍成员");
   }
+  if (snapshot?.meta?.serverId === "global") {
+    return {
+      displayIvs: Object.fromEntries(STAT_KEYS.map((stat) => [stat, null])),
+      natureId: null,
+      skills: { four: [null, null, null, null], single: null },
+      spiritId,
+    };
+  }
   const four = chooseDefaultSkillIds(snapshot, spiritId);
   return {
     displayIvs: Object.fromEntries(STAT_KEYS.map((stat) => [stat, 0])),
@@ -216,17 +235,24 @@ export function createTeamMember(snapshot, spiritId) {
   };
 }
 
-export function createTeamMemberFromSpiritConfig(config) {
+export function createTeamMemberFromSpiritConfig(config, { serverId = "cn" } = {}) {
   if (!config?.spiritId) {
     throw new TypeError("个人精灵配置必须包含 spiritId");
+  }
+  if (serverId === "global") {
+    const member = cloneJson(config);
+    member.natureId = Object.hasOwn(member, "natureId") ? member.natureId : member.nature ?? null;
+    delete member.nature;
+    return member;
   }
   return sanitizeMember(config);
 }
 
-export function createTeamMemberFromSide(side) {
+export function createTeamMemberFromSide(side, { serverId = "cn" } = {}) {
   if (!side?.spiritId) {
     throw new TypeError("当前计算方没有可保存的精灵");
   }
+  if (serverId === "global") return createTeamMemberFromSpiritConfig(side, { serverId });
   return sanitizeMember({
     displayIvs: side.displayIvs,
     natureId: side.natureId ?? side.nature,
@@ -239,38 +265,53 @@ export function teamPresetsRepository({
   idFactory = defaultIdFactory,
   now = defaultNow,
   storage = globalThis.localStorage,
+  serverId = "cn",
 } = {}) {
   if (!storage?.getItem || !storage?.setItem) {
     throw new TypeError("当前环境无法保存队伍");
   }
+  assertRepositoryEnvironment(serverId);
+  storage = createServerStorage(serverId, storage);
+  const teamKey = serverStorageKey(serverId, `rock-calculator.${TEAM_STORAGE_SUFFIX}`);
+  let observedRaw;
 
   function save(state) {
-    const stored = sanitizeState(state);
+    const previous = storage.getItem(teamKey);
+    if (observedRaw !== undefined && previous !== observedRaw) throw storageError("STORAGE_CONFLICT", "另一标签页已更新队伍；本标签内容已保留，未覆盖存档");
+    if (previous) {
+      try { validateStoredState(JSON.parse(previous)); }
+      catch { throw storageError("STORAGE_CORRUPT", "原队伍数据损坏；保存已停止，原始内容未覆盖"); }
+    }
+    const stored = serverId === "global" ? cloneJson(state) : sanitizeState(state);
     validateStoredState(stored);
-    if (!trySetItem(storage, TEAM_STORAGE_KEY, JSON.stringify(stored))) {
+    const raw = JSON.stringify(stored);
+    if (!trySetItem(storage, teamKey, raw)) {
       return {
         ...stored,
         warning: "队伍保存失败：存储空间不足",
         writeFailed: true,
       };
     }
+    observedRaw = raw;
     return stored;
   }
 
   function load(snapshot) {
+    assertRepositoryEnvironment(serverId, snapshot);
     const { key, raw } = readStorageWithLegacy(
       storage,
-      TEAM_STORAGE_KEY,
+      teamKey,
       TEAM_STORAGE_SUFFIX,
     );
+    observedRaw = storage.getItem(teamKey);
     if (!raw) return emptyState();
     try {
       const parsed = JSON.parse(raw);
       validateStoredState(parsed);
-      finishStorageMigration(storage, TEAM_STORAGE_KEY, key, raw);
-      return markRepairs(parsed, snapshot);
+      finishStorageMigration(storage, teamKey, key, raw);
+      return markRepairs(parsed, snapshot, serverId);
     } catch (error) {
-      backupCorruptValue(storage, TEAM_STORAGE_KEY, raw, now());
+      backupCorruptValue(storage, teamKey, raw, now());
       return emptyState(
         error instanceof SyntaxError
           ? "队伍数据损坏，已保留备份"
@@ -291,7 +332,10 @@ export function teamPresetsRepository({
       if (!Array.isArray(imported.members) || imported.members.length !== 6) {
         throw new TypeError("导入队伍必须包含六个位置");
       }
-      const team = { ...createEmptyTeam(imported.name, { idFactory, now }), members: imported.members, lineup: imported.lineup };
+      const created = createEmptyTeam(imported.name, { idFactory, now });
+      const team = serverId === "global"
+        ? { ...cloneJson(imported), id: created.id, createdAt: created.createdAt, updatedAt: created.updatedAt }
+        : { ...created, members: imported.members, lineup: imported.lineup };
       return persist({ ...state, activeTeamId: team.id, teams: [...state.teams, team] });
     },
     updateLineup(state, teamId, lineup) {
@@ -306,7 +350,7 @@ export function teamPresetsRepository({
         teams: [...state.teams, team],
       });
     },
-    duplicate(state, teamId) {
+    duplicate(state, teamId, name) {
       const source = state.teams.find((team) => team.id === teamId);
       if (!source) throw new TypeError("要复制的队伍不存在");
       const timestamp = now();
@@ -314,7 +358,7 @@ export function teamPresetsRepository({
         ...cloneJson(source),
         createdAt: timestamp,
         id: idFactory(),
-        name: `${source.name} 副本`,
+        name: name ?? `${source.name} 副本`,
         updatedAt: timestamp,
       };
       return persist({
@@ -360,7 +404,7 @@ export function teamPresetsRepository({
           if (team.id !== teamId) return team;
           const members = [...team.members];
           const previous = members[index];
-          members[index] = sanitizeMember(member && { ...member,
+          members[index] = serverId === "global" ? cloneJson(member) : sanitizeMember(member && { ...member,
             ivsPending: previous?.ivsPending === true && previous.spiritId === member.spiritId &&
               STAT_KEYS.every((stat) => Number(previous.displayIvs[stat]) === Number(member.displayIvs?.[stat] ?? 0)),
             ...(previous?.spiritId === member.spiritId && previous.lineupSource

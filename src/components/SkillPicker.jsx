@@ -10,6 +10,8 @@ import {
 import { EntityChangeHint } from "./EntityChangeHint.jsx";
 import { SkillIcon } from "./SkillIcon.jsx";
 import { fitPickerMenu, getPickerBounds } from "./picker-menu-layout.js";
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -77,9 +79,12 @@ export function SkillPicker({
   readable = false,
   onFocus,
   onSelect,
+  placeholder = false,
   selected,
-  skills,
+  skills = [],
 }) {
+  const { t } = useLocale();
+  const { serverId } = useRuntime();
   const optionHeight = readable ? 72 : OPTION_HEIGHT;
   const listboxId = useId();
   const inputRef = useRef(null);
@@ -311,12 +316,12 @@ export function SkillPicker({
           onFocus?.();
         }}
         onKeyDown={handleKeyDown}
-        placeholder="输入技能名或拼音"
+        placeholder={t(serverId === "global" ? "输入技能名" : "输入技能名或拼音")}
         ref={inputRef}
         role="combobox"
         value={query}
       />
-      {selected?.changeInfo ? (
+      {!placeholder && selected?.changeInfo ? (
         <EntityChangeHint
           changeInfo={selected.changeInfo}
           className="skill-picker__change-hint"
@@ -324,13 +329,13 @@ export function SkillPicker({
       ) : null}
       {selected ? (
         <button
-          aria-label={`清空${ariaLabel}`}
+          aria-label={t("清空{label}", { label: ariaLabel })}
           className="skill-picker__clear"
           onClick={() => {
             commit(null);
             inputRef.current?.focus();
           }}
-          title={`清空${ariaLabel}`}
+          title={t("清空{label}", { label: ariaLabel })}
           type="button"
         >
           <X aria-hidden="true" size={12} weight="bold" />
@@ -393,25 +398,23 @@ export function SkillPicker({
                     <span className="skill-picker__option-name">
                       <SkillIcon
                         className="skill-picker__option-icon"
-                        label
+                        label={!placeholder}
                         skill={skill}
                         size={30}
                       />
                       <strong>{skill.name}</strong>
-                      <EntityChangeHint changeInfo={skill.changeInfo} />
-                      <small>
-                        {isPendingPreview
-                          ? "参数待确认"
-                          : CATEGORY_LABELS[skill.category] ?? skill.category}
-                      </small>
+                      {!placeholder && <EntityChangeHint changeInfo={skill.changeInfo} />}
+                      {!placeholder && <small>
+                        {isPendingPreview ? t("参数待确认") : t(CATEGORY_LABELS[skill.category] ?? skill.category)}
+                      </small>}
                     </span>
-                    <span className="skill-picker__option-meta">
+                    {!placeholder && <span className="skill-picker__option-meta">
                       {isPendingPreview ? (
-                        <small>威力/能耗待确认</small>
+                        <small>{t("威力/能耗待确认")}</small>
                       ) : (
                         <>
-                          <small>威 {skill.basePower ?? "动态"}</small>
-                          <small>耗 {skill.cost ?? "—"}</small>
+                          <small>{t("威 {value}", { value: skill.basePower ?? t("动态") })}</small>
+                          <small>{t("耗 {value}", { value: skill.cost ?? "—" })}</small>
                         </>
                       )}
                       <small
@@ -421,9 +424,9 @@ export function SkillPicker({
                             : skill.bloodlineSkill ? "is-bloodline" : "is-learnable"
                         }
                       >
-                        {skill.learnable === false ? "不可学习" : skill.bloodlineSkill ? "血脉技能" : "可学习"}
+                        {t(skill.learnable === false ? "不可学习" : skill.bloodlineSkill ? "血脉技能" : "可学习")}
                       </small>
-                    </span>
+                    </span>}
                   </li>
                 );
               })}
@@ -439,7 +442,7 @@ export function SkillPicker({
               ) : null}
             </>
           ) : (
-            <li className="skill-picker__empty">没有匹配技能</li>
+            <li className="skill-picker__empty">{t("没有匹配技能")}</li>
           )}
         </ul>
       ) : null}

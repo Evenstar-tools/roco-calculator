@@ -12,6 +12,7 @@ export function eventMetadata(name, metadata = {}) {
 }
 
 export function createMetrics({ enabled, storage, initialFeature = "calculator", now = Date.now, uuid = () => crypto.randomUUID(), loadTransport }) {
+  let stopped = false;
   let transport;
   let starting;
   let visitorId;
@@ -26,6 +27,7 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
     try { storage()?.setItem(key, JSON.stringify(value)); } catch { /* 禁用存储时仅在当前页面计数。 */ }
   };
   const emit = (name, feature, at, metadata) => {
+    if (stopped) return;
     const event = { id: uuid(), name, feature, at, sessionId: session.id, ...eventMetadata(name, metadata) };
     if (transport) {
       try { transport.send(event); } catch { /* 统计不能中断功能。 */ }
@@ -43,10 +45,16 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
     return at;
   };
   return {
+    destroy() {
+      stopped = true;
+      pending.length = 0;
+      transport?.destroy?.();
+    },
     start() {
-      if (!enabled || starting) return starting;
+      if (stopped || !enabled || starting) return starting;
       starting = Promise.resolve().then(async () => {
         try {
+          if (stopped) return;
           visitorId = read(VISITOR_KEY);
           if (typeof visitorId !== "string" || !/^[a-zA-Z0-9_-]{4,36}$/.test(visitorId)) {
             visitorId = uuid();
@@ -56,6 +64,7 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
           emit("page_view", currentFeature, at);
           emit("feature_view", currentFeature, at, { entry_source: "initial" });
           transport = await loadTransport({ visitorId });
+          if (stopped) { transport?.destroy?.(); return; }
           for (const event of pending.splice(0)) {
             try { transport.send(event); } catch { /* 不重试，避免阻塞或重复计数。 */ }
           }
@@ -64,7 +73,7 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
       return starting;
     },
     route(feature) {
-      if (!enabled || !starting || !["calculator", "deer"].includes(feature) || feature === currentFeature) return;
+      if (stopped || !enabled || !starting || !["calculator", "deer"].includes(feature) || feature === currentFeature) return;
       currentFeature = feature;
       try {
         const at = touch();
@@ -74,11 +83,11 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
       } catch { /* 路由统计不影响导航。 */ }
     },
     activity() {
-      if (!enabled || !starting) return;
+      if (stopped || !enabled || !starting) return;
       try { touch(); } catch { /* 统计故障不影响交互。 */ }
     },
     track(name, feature = "calculator", metadata) {
-      if (!enabled || !starting || !EVENTS.has(name) || !FEATURES.has(feature)) return;
+      if (stopped || !enabled || !starting || !EVENTS.has(name) || !FEATURES.has(feature)) return;
       try { emit(name, feature, touch(), metadata); } catch { /* 不读取或上报业务参数。 */ }
     },
   };

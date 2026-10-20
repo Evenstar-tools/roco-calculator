@@ -1,10 +1,11 @@
 const freezeTheme = (theme) => Object.freeze({
   ...theme,
-  character: Object.freeze(theme.character),
+  character: theme.character ? Object.freeze(theme.character) : null,
 });
 
-// Presentation only: selecting a theme never changes the current season's data or rules.
+// Presentation assets only. A theme never selects a catalog, ruleset or server.
 export const SEASON_THEMES = Object.freeze({
+  neutral: freezeTheme({ id: "neutral", scene: null, character: null }),
   s1: freezeTheme({
     id: "s1", sourceName: "暗夜拾光", scene: "/assets/season/s1-night-discovery.webp",
     character: { src: "/assets/season/s1-longxipaer.webp", width: 512, height: 512 },
@@ -24,25 +25,41 @@ export const SEASON_THEMES = Object.freeze({
   }),
 });
 
-export const SELECTABLE_SEASON_THEMES = Object.freeze(Object.values(SEASON_THEMES));
+const PREVIEW_IDS = new Set(["s1", "s2", "s3", "s4"]);
+const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
+
+export const SELECTABLE_SEASON_THEMES = Object.freeze([...PREVIEW_IDS].map((id) => SEASON_THEMES[id]));
+
+export function normalizeSeasonThemePreference(value) {
+  return value === "random" || PREVIEW_IDS.has(value) ? value : "default";
+}
 
 export function pickRandomSeasonThemeId(random = Math.random, excludeId) {
   const candidates = SELECTABLE_SEASON_THEMES.filter(({ id }) => id !== excludeId);
   return candidates[Math.floor(random() * candidates.length)].id;
 }
 
-export function normalizeSeasonThemePreference(value) {
-  return value === "random" || Object.hasOwn(SEASON_THEMES, value) ? value : "default";
+export function resolveSeasonPreviewId({ search = "", hostname = "" } = {}) {
+  const requested = new URLSearchParams(search).get("seasonPreview");
+  return LOOPBACK_HOSTS.has(hostname.toLowerCase()) && PREVIEW_IDS.has(requested) ? requested : null;
+}
+
+export function resolveSeasonThemeId({ serverId = "cn", preference = "default", randomThemeId, search = "", hostname = "" } = {}) {
+  const preview = resolveSeasonPreviewId({ search, hostname });
+  if (preview) return preview;
+  if (preference === "random" && PREVIEW_IDS.has(randomThemeId)) return randomThemeId;
+  if (PREVIEW_IDS.has(preference)) return preference;
+  return serverId === "cn" ? "s4" : "neutral";
 }
 
 export function getSeasonTheme(id) {
-  return Object.hasOwn(SEASON_THEMES, id) ? SEASON_THEMES[id] : SEASON_THEMES.s4;
+  return Object.hasOwn(SEASON_THEMES, id) ? SEASON_THEMES[id] : SEASON_THEMES.neutral;
 }
 
 export function getSeasonThemeVariables(id) {
   const theme = getSeasonTheme(id);
   return {
-    "--season-scene-image": `url("${theme.scene}")`,
-    "--season-character-image": `url("${theme.character.src}")`,
+    "--season-scene-image": theme.scene ? `url("${theme.scene}")` : "none",
+    "--season-character-image": theme.character ? `url("${theme.character.src}")` : "none",
   };
 }

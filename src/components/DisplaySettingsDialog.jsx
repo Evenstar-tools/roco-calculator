@@ -1,6 +1,8 @@
 import { Shuffle, X } from "@phosphor-icons/react";
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useSeasonTheme } from "../theme/SeasonThemeContext.jsx";
-import { SELECTABLE_SEASON_THEMES } from "../theme/season-themes.js";
+import { getSeasonTheme, SELECTABLE_SEASON_THEMES } from "../theme/season-themes.js";
 
 export function DisplaySettingsDialog({
   compactOptionLabelsEnabled = false,
@@ -21,7 +23,13 @@ export function DisplaySettingsDialog({
   powerDisplayMode = "static",
   typeCoverageEnabled = false,
 }) {
-  const { preference, season, onSeasonThemeChange, classicCalculatorColorsEnabled, onClassicCalculatorColorsChange } = useSeasonTheme();
+  const { t } = useLocale();
+  const { serverId, seasonThemeId, seasonPreview, seasonThemePreference, onSeasonThemeChange: onRuntimeSeasonThemeChange } = useRuntime();
+  const { preference: storedPreference, season: storedSeason, onSeasonThemeChange: onStoredSeasonThemeChange,
+    classicCalculatorColorsEnabled, onClassicCalculatorColorsChange } = useSeasonTheme();
+  const season = seasonThemeId ? getSeasonTheme(seasonThemeId) : storedSeason;
+  const preference = seasonThemeId ? seasonThemePreference : storedPreference;
+  const onSeasonThemeChange = seasonThemeId ? onRuntimeSeasonThemeChange : onStoredSeasonThemeChange;
   if (!open) return null;
   return (
     <div
@@ -31,40 +39,43 @@ export function DisplaySettingsDialog({
       }}
     >
       <section
-        aria-label="显示设置"
+        aria-label={t("显示设置")}
         aria-modal="true"
         className="share-dialog display-settings-dialog"
         role="dialog"
         ref={dialogRef}
       >
-        <h2>
-          显示设置
-          <button aria-label="关闭显示设置" className="display-settings-close" onClick={onClose} type="button">
+        <h2>{t("显示设置")}<button aria-label={t("关闭显示设置")} className="display-settings-close" onClick={onClose} type="button">
             <X aria-hidden="true" size={18} />
           </button>
         </h2>
         <div className="display-settings-option display-settings-option--season">
-          <label htmlFor="season-theme-select"><strong>赛季主题</strong></label>
+          <label htmlFor={`display-settings-season-${serverId}`}><strong>{t("赛季主题")}</strong></label>
           <div className="display-settings-season-control">
-            <select aria-label="赛季主题" id="season-theme-select" value={preference === "default" ? "s4" : preference}
+            <select aria-label={t("赛季主题")} id={`display-settings-season-${serverId}`}
+              value={seasonPreview ? "preview" : serverId === "cn" && preference === "default" ? "s4" : preference}
               onChange={(event) => onSeasonThemeChange?.(event.target.value)}>
-              {preference === "random" && <option disabled hidden value="random">随机 · {season.id.toUpperCase()}</option>}
+              {seasonPreview && <option disabled value="preview">{t("{theme}（预览）", {
+                theme: `${season.id.toUpperCase()} ${season.sourceName}`,
+              })}</option>}
+              {!seasonPreview && preference === "random" && <option disabled hidden value="random">{t("随机 · {season}", { season: season.id.toUpperCase() })}</option>}
+              {serverId !== "cn" && <option value="default">{t("默认（无赛季装饰）")}</option>}
               {SELECTABLE_SEASON_THEMES.map(({ id, sourceName }) => <option key={id} value={id}>{id.toUpperCase()} {sourceName}</option>)}
             </select>
-            <button aria-label="每次进入随机主题" aria-pressed={preference === "random"}
-              className="display-settings-season-shuffle" onClick={() => onSeasonThemeChange?.(preference === "random" ? season.id : "random")}
-              title="每次进入随机主题" type="button">
+            <button aria-label={t("每次进入随机主题")} aria-pressed={preference === "random"}
+              className="display-settings-season-shuffle" onClick={() => onSeasonThemeChange?.(preference === "random" && !seasonPreview ? season.id : "random")}
+              title={t("每次进入随机主题")} type="button">
               <Shuffle aria-hidden="true" size={20} />
             </button>
           </div>
         </div>
         <label className="display-settings-option">
           <span>
-            <strong>计算界面保持经典配色</strong>
-            <small>使用 S4 基础配色，保留所选赛季背景</small>
+            <strong>{t("计算界面保持经典配色")}</strong>
+            <small>{t("使用 S4 基础配色，保留所选赛季背景")}</small>
           </span>
           <input
-            aria-label="计算界面保持经典配色"
+            aria-label={t("计算界面保持经典配色")}
             checked={classicCalculatorColorsEnabled}
             onChange={(event) => onClassicCalculatorColorsChange?.(event.target.checked)}
             type="checkbox"
@@ -72,11 +83,11 @@ export function DisplaySettingsDialog({
         </label>
         <div className="display-settings-option display-settings-option--power">
           <span>
-            <strong>技能威力口径</strong>
-            <small>决定技能栏显示和手动输入代表的数值；切换本身不改变伤害。</small>
+            <strong>{t("技能威力口径")}</strong>
+            <small>{t("决定技能栏显示和手动输入代表的数值；切换本身不改变伤害。")}</small>
           </span>
           <div
-            aria-label="技能威力口径"
+            aria-label={t("技能威力口径")}
             className="display-settings-segment"
             role="group"
           >
@@ -84,41 +95,35 @@ export function DisplaySettingsDialog({
               aria-pressed={powerDisplayMode !== "panel"}
               onClick={() => onPowerDisplayModeChange?.("static")}
               type="button"
-            >
-              静态威力
-            </button>
+            >{t("静态威力")}</button>
             <button
               aria-pressed={powerDisplayMode === "panel"}
               onClick={() => onPowerDisplayModeChange?.("panel")}
               type="button"
-            >
-              显示威力
-            </button>
+            >{t("显示威力")}</button>
           </div>
-          <small>
-            {powerDisplayMode === "panel"
+          {serverId === "cn" && <small>
+            {t(powerDisplayMode === "panel"
               ? "结算本次增益并取整；手填值直接参与伤害计算。"
-              : "技能自身规则调整后的威力，额外增益另算。"}
-          </small>
+              : "技能自身规则调整后的威力，额外增益另算。")}
+          </small>}
           <details className="display-settings-power-details">
-            <summary>口径说明</summary>
+            <summary>{t("口径说明")}</summary>
             <div className="display-settings-power-help">
+              {serverId === "global" ? <small>{t("显示偏好可先保存，实际口径待国际服规则核验后启用。")}</small> : <><small>
+                <strong>{t("静态威力：")}</strong>{t("技能自身规则、固定威力和继承迸发调整后的结果；不含本次额外触发的特性、本系和克制。")}</small>
               <small>
-                <strong>静态威力：</strong>技能自身规则、固定威力和继承迸发调整后的结果；不含本次额外触发的特性、本系和克制。
-              </small>
-              <small>
-                <strong>显示威力：</strong>有效威力结算本系、克制、能力等级与其他威力乘区后取整（非负威力向下取整）；雨天计入威力加成区。手动填写后直接用于伤害计算。
-              </small>
+                <strong>{t("显示威力：")}</strong>{t("有效威力结算本系、克制、能力等级与其他威力乘区后取整（非负威力向下取整）；雨天计入威力加成区。手动填写后直接用于伤害计算。")}</small></>}
             </div>
           </details>
         </div>
         <label className="display-settings-option">
           <span>
-            <strong>显示选项名称</strong>
-            <small>在精简版显示属性和技能模式名称</small>
+            <strong>{t("显示选项名称")}</strong>
+            <small>{t("在精简版显示属性和技能模式名称")}</small>
           </span>
           <input
-            aria-label="显示选项名称"
+            aria-label={t("显示选项名称")}
             checked={compactOptionLabelsEnabled}
             onChange={(event) => onCompactOptionLabelsChange?.(event.target.checked)}
             type="checkbox"
@@ -126,11 +131,11 @@ export function DisplaySettingsDialog({
         </label>
         <label className="display-settings-option">
           <span>
-            <strong>属性克制与打击面</strong>
-            <small>在结果栏显示弱点、抗性和技能覆盖</small>
+            <strong>{t("属性克制与打击面")}</strong>
+            <small>{t("在结果栏显示弱点、抗性和技能覆盖")}</small>
           </span>
           <input
-            aria-label="属性克制与打击面"
+            aria-label={t("属性克制与打击面")}
             checked={typeCoverageEnabled}
             onChange={(event) => onTypeCoverageChange?.(event.target.checked)}
             type="checkbox"
@@ -138,11 +143,11 @@ export function DisplaySettingsDialog({
         </label>
         <label className="display-settings-option">
           <span>
-            <strong>显示面板耐久</strong>
-            <small>在具体版六维下方显示物理、魔法与综合耐久</small>
+            <strong>{t("显示面板耐久")}</strong>
+            <small>{t("在具体版六维下方显示物理、魔法与综合耐久")}</small>
           </span>
           <input
-            aria-label="显示面板耐久"
+            aria-label={t("显示面板耐久")}
             checked={durabilityOverviewEnabled}
             onChange={(event) =>
               onDurabilityOverviewChange?.(event.target.checked)
@@ -152,11 +157,11 @@ export function DisplaySettingsDialog({
         </label>
         <label className="display-settings-option">
           <span>
-            <strong>负面状态结算</strong>
-            <small>显示本回合新增状态与追加伤害</small>
+            <strong>{t("负面状态结算")}</strong>
+            <small>{t("显示本回合新增状态与追加伤害")}</small>
           </span>
           <input
-            aria-label="负面状态结算"
+            aria-label={t("负面状态结算")}
             checked={negativeStatusSettlementEnabled}
             onChange={(event) =>
               onNegativeStatusSettlementChange?.(event.target.checked)
@@ -166,11 +171,11 @@ export function DisplaySettingsDialog({
         </label>
         <label className="display-settings-option">
           <span>
-            <strong>显示全精灵承伤入口</strong>
-            <small>关闭后隐藏结果栏和手机底栏的承伤对比按钮，不影响伤害计算</small>
+            <strong>{t("显示全精灵承伤入口")}</strong>
+            <small>{t("关闭后隐藏结果栏和手机底栏的承伤对比按钮，不影响伤害计算")}</small>
           </span>
           <input
-            aria-label="显示全精灵承伤入口"
+            aria-label={t("显示全精灵承伤入口")}
             checked={damageComparisonEnabled}
             onChange={(event) => onDamageComparisonChange?.(event.target.checked)}
             type="checkbox"
@@ -178,20 +183,18 @@ export function DisplaySettingsDialog({
         </label>
         <label className="display-settings-option">
           <span>
-            <strong>记忆萌化状态</strong>
-            <small>跨页面记住双方萌化开关，可能影响低阶精灵预设的加载。</small>
+            <strong>{t("记忆萌化状态")}</strong>
+            <small>{t("跨页面记住双方萌化开关，可能影响低阶精灵预设的加载。")}</small>
           </span>
           <input
-            aria-label="记忆萌化状态"
+            aria-label={t("记忆萌化状态")}
             checked={formConfigMemoryEnabled}
             onChange={(event) => onFormConfigMemoryChange?.(event.target.checked)}
             type="checkbox"
           />
         </label>
         <div className="dialog-actions">
-          <button className="secondary-action secondary-panel-primary" onClick={onClose} type="button">
-            完成
-          </button>
+          <button className="secondary-action secondary-panel-primary" onClick={onClose} type="button">{t("完成")}</button>
         </div>
       </section>
     </div>

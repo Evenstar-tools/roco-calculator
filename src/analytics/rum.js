@@ -5,6 +5,8 @@ const PAGE_URL = "https://rococalc.top/";
 
 // 所有上报均经过同一出口；不发送 URL 参数、来源页、接口明细或错误正文。
 export function filterRumRequest(request) {
+  if (globalThis.document?.documentElement?.dataset.server === "global" ||
+    /^\/(?:en(?:\/|$)|global(?:\/|$))/.test(globalThis.location?.pathname ?? "")) return false;
   const url = new URL(request.url, PAGE_URL);
   if (url.origin !== "https://rumt-zh.com"
     || !["/collect/pv", "/collect/events", "/rateConfig"].includes(url.pathname)) return false;

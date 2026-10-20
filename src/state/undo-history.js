@@ -55,6 +55,16 @@ export function createUndoHistory({ limit = 50, coalesceMs = 400 } = {}) {
   }
 
   return {
+    snapshot() {
+      const serialize = (entry) => ({ state: entry.state, rememberSides: [...entry.rememberSides] });
+      return { past: entries.map(serialize), future: future.map(serialize) };
+    },
+    restore(history) {
+      const hydrate = (entry) => ({ state: entry.state, rememberSides: new Set(entry.rememberSides), batchToken: null, groupKey: null, timestamp: 0 });
+      entries = history.past.slice(-limit).map(hydrate);
+      future = history.future.slice(-limit).map(hydrate);
+      restored = true;
+    },
     clear() {
       entries = [];
       future = [];

@@ -19,6 +19,21 @@
       "source": "/en",
       "destination": "/en/",
       "statusCode": 301
+    },
+    {
+      "source": "/cn",
+      "destination": "/cn/",
+      "statusCode": 301
+    },
+    {
+      "source": "/global/zh-CN",
+      "destination": "/global/zh-CN/",
+      "statusCode": 301
+    },
+    {
+      "source": "/global/ja",
+      "destination": "/global/ja/",
+      "statusCode": 301
     }
   ]
 }

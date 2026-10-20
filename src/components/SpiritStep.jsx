@@ -1,3 +1,4 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
 import { ArrowsLeftRight } from "@phosphor-icons/react";
 import { SpiritPicker } from "./SpiritPicker.jsx";
 
@@ -16,13 +17,14 @@ export function SpiritStep({
   onOpenDeer,
   spirits,
 }) {
+  const { t } = useLocale();
   return (
-    <section aria-label="精灵配置" className="calculator-step calculator-step--spirits">
+    <section aria-label={t("精灵配置")} className="calculator-step calculator-step--spirits">
       <div className="versus-grid">
         <SpiritPicker
           favoriteState={attackerFavoriteState}
           guideTarget="attacker"
-          label="攻击方"
+          label={t("攻击方")}
           onFavoriteToggle={onAttackerFavoriteToggle}
           onSelect={onAttackerSelect}
           formSide={formSides?.attacker}
@@ -33,10 +35,10 @@ export function SpiritStep({
           spirits={spirits}
         />
         <button
-          aria-label="交换双方完整配置"
+          aria-label={t("交换双方完整配置")}
           className="swap-action"
           onClick={onSwap}
-          title="交换双方"
+          title={t("交换双方")}
           type="button"
         >
           <ArrowsLeftRight aria-hidden="true" size={23} weight="bold" />
@@ -44,7 +46,7 @@ export function SpiritStep({
         <SpiritPicker
           favoriteState={defenderFavoriteState}
           guideTarget="defender"
-          label="防御方"
+          label={t("防御方")}
           onFavoriteToggle={onDefenderFavoriteToggle}
           onSelect={onDefenderSelect}
           formSide={formSides?.defender}

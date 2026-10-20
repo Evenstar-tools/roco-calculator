@@ -5,6 +5,8 @@ import { ElementIcon } from "../../components/ElementIcon.jsx";
 import { categoryNames } from "./catalog.js";
 import { acquisitionSummary, matchesSource, querySpiritFamilies, spiritSkills } from "./query-model.js";
 import SkillQueryEffect from "./SkillQueryEffect.jsx";
+import { useLocale } from "../../i18n/LocaleContext.jsx";
+import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import "./bidirectional-query.css";
 
 const SOURCES = [["", "全部来源"], ["default", "自学"], ["血脉", "血脉"], ["技能石", "技能石"]];
@@ -18,11 +20,16 @@ function subscribePhone(callback) {
 }
 
 function Portrait({ spirit }) {
+  const { t } = useLocale();
   const [failed, setFailed] = useState(false);
-  return failed ? <span className="sq-portrait sq-portrait--empty">暂无图片</span> : <img className="sq-portrait" src={`${import.meta.env.BASE_URL}assets/spirits/${spirit.id}.png`} alt="" loading="lazy" onError={() => setFailed(true)} />;
+  const sourceId = spirit.reference?.sourceId ?? (spirit.id?.startsWith("cn-placeholder:") ? null : spirit.id);
+  const url = spirit.asset?.localUrl ?? (sourceId ? `${import.meta.env.BASE_URL}assets/spirits/${sourceId}.png` : null);
+  return failed || !url ? <span className="sq-portrait sq-portrait--empty">{t("暂无图片")}</span> : <img className="sq-portrait" src={url} alt="" loading="lazy" onError={() => setFailed(true)} />;
 }
 
-export default function BidirectionalQuery({ season, skills, spirits, initialSpiritId, initialSkillId, gains = [], hideEffects: sharedHideEffects, onHideEffectsChange }) {
+export default function BidirectionalQuery({ season, skills = [], spirits = [], initialSpiritId, initialSkillId, gains = [], hideEffects: sharedHideEffects, onHideEffectsChange, placeholder = false }) {
+  const { t } = useLocale();
+  const { serverId } = useRuntime();
   const phone = useSyncExternalStore(subscribePhone, isPhone, () => false);
   const [direction, setDirection] = useState(initialSpiritId ? "spirit" : "skill");
   const [query, setQuery] = useState(() => season.skills.find(skill => skill.id === initialSkillId)?.name ?? "");
@@ -153,61 +160,61 @@ export default function BidirectionalQuery({ season, skills, spirits, initialSpi
   const clearDetailFilters = () => { setSource(""); setDetailQuery(""); setDetailType(""); setDetailCategory(""); };
   const hasQueryFilters = Boolean(query || type || category || introduced);
   const hasDetailFilters = Boolean(source || detailQuery || detailType || detailCategory);
-  const types = [...new Set(season.skills.map((skill) => skill.type))];
-  const typeSelect = (value, update, label, options = types) => <select aria-label={label} value={value} onChange={(event) => update(event.target.value)}><option value="">全部属性</option>{options.map((item) => <option key={item}>{item}</option>)}</select>;
-  const categorySelect = (value, update, label) => <select aria-label={label} value={value} onChange={(event) => update(event.target.value)}><option value="">全部种类</option>{Object.entries(categoryNames).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select>;
-  const effectToggle = <button className="sq-effect-toggle" aria-label={hideEffects ? "显示效果说明" : "隐藏效果说明"} title={hideEffects ? "显示效果说明" : "隐藏效果说明"} aria-pressed={hideEffects} onClick={toggleEffects}>{hideEffects ? <Eye size={20} /> : <EyeSlash size={20} />}</button>;
+  const types = [...new Set(season.skills.map((skill) => skill.type))].filter(Boolean);
+  const typeSelect = (value, update, label, options = types) => <select aria-label={t(label)} value={value} onChange={(event) => update(event.target.value)}><option value="">{t("全部属性")}</option>{options.filter(Boolean).map((item) => <option key={item}>{item}</option>)}</select>;
+  const categorySelect = (value, update, label) => <select aria-label={t(label)} value={value} onChange={(event) => update(event.target.value)}><option value="">{t("全部种类")}</option>{Object.entries(categoryNames).map(([id, name]) => <option key={id} value={id}>{t(name)}</option>)}</select>;
+  const effectToggle = <button className="sq-effect-toggle" aria-label={t(hideEffects ? "显示效果说明" : "隐藏效果说明")} title={t(hideEffects ? "显示效果说明" : "隐藏效果说明")} aria-pressed={hideEffects} onClick={toggleEffects}>{hideEffects ? <Eye size={20} /> : <EyeSlash size={20} />}</button>;
 
-  return <><div ref={workspace} className={`sq-workspace${spirit ? " sq-workspace--detail" : ""}${direction === "spirit" ? " sq-workspace--spirit" : ""}${hideEffects ? " sq-workspace--compact" : ""}`}>
+  return <><div ref={workspace} data-placeholder={placeholder || undefined} className={`sq-workspace${placeholder ? " sq-workspace--reference" : ""}${spirit ? " sq-workspace--detail" : ""}${direction === "spirit" ? " sq-workspace--spirit" : ""}${hideEffects ? " sq-workspace--compact" : ""}`}>
     <aside className="sq-query">
-      <div className="sq-directions" aria-label="查询方向">{[["skill", "找可学精灵"], ["spirit", "查精灵技能"]].map(([id, name]) => <button key={id} aria-pressed={direction === id} onClick={() => changeDirection(id)}>{name}</button>)}</div>
+      <div className="sq-directions" aria-label={t("查询方向")}>{[["skill", "找可学精灵"], ["spirit", "查精灵技能"]].map(([id, name]) => <button key={id} aria-pressed={direction === id} onClick={() => changeDirection(id)}>{t(name)}</button>)}</div>
       <div className="sq-query-editor">
-        <label className="sq-search-label" htmlFor="sq-search">{direction === "skill" ? "搜索并添加技能" : "搜索精灵"}</label>
-        <div className="sq-search"><MagnifyingGlass size={18} /><input id="sq-search" aria-label="搜索技能或精灵" placeholder={direction === "skill" ? "搜索技能名称或效果" : "名称、图鉴号、拼音或别名"} value={query} onChange={(event) => { setQuery(event.target.value); resetLibraryBatch(); }} />{phone && direction === "skill" && !spirit && effectToggle}</div>
+        <label className="sq-search-label" htmlFor="sq-search">{t(direction === "skill" ? "搜索并添加技能" : "搜索精灵")}</label>
+        <div className="sq-search"><MagnifyingGlass size={18} /><input id="sq-search" aria-label={t("搜索技能或精灵")} placeholder={t(direction === "skill" ? "搜索技能名称或效果" : serverId === "global" ? "名称、图鉴号或别名" : "名称、图鉴号、拼音或别名")} value={query} onChange={(event) => { setQuery(event.target.value); resetLibraryBatch(); }} />{phone && direction === "skill" && !spirit && effectToggle}</div>
         {direction === "skill" && <>
-          <div className="sq-filter-fields" aria-label="技能筛选">{typeSelect(type, (value) => { setType(value); resetLibraryBatch(); }, "技能属性")}{categorySelect(category, (value) => { setCategory(value); resetLibraryBatch(); }, "技能种类")}<select aria-label="技能所属赛季" value={introduced} onChange={(event) => { setIntroduced(event.target.value); resetLibraryBatch(); }}><option value="">全部赛季</option>{[...new Set(season.skills.map((skill) => skill.introducedSeason))].filter(Boolean).sort().map((id) => <option key={id} value={id}>{id} 技能</option>)}</select></div>
-          {hasQueryFilters && <button className="sq-clear-filters" aria-label="清除技能筛选" onClick={clearQueryFilters}>清除筛选</button>}
+          <div className="sq-filter-fields" aria-label={t("技能筛选")}>{typeSelect(type, (value) => { setType(value); resetLibraryBatch(); }, "技能属性")}{categorySelect(category, (value) => { setCategory(value); resetLibraryBatch(); }, "技能种类")}{!placeholder && <select aria-label={t("技能所属赛季")} value={introduced} onChange={(event) => { setIntroduced(event.target.value); resetLibraryBatch(); }}><option value="">{t("全部赛季")}</option>{[...new Set(season.skills.map((skill) => skill.introducedSeason))].filter(Boolean).sort().map((id) => <option key={id} value={id}>{t("{id} 技能", { id })}</option>)}</select>}</div>
+          {hasQueryFilters && <button className="sq-clear-filters" aria-label={t("清除技能筛选")} onClick={clearQueryFilters}>{t("清除筛选")}</button>}
         </>}
       </div>
     </aside>
     <div className="sq-body">
-    {direction === "skill" && !spirit && <section className="sq-library" ref={library} aria-label="技能库">
-      <div className="sq-library-heading"><h3>技能库 <small>{filtered.length}</small></h3><span>点击添加或取消</span>{!phone && effectToggle}</div>
-      {returnState && <button className="sq-back" onClick={returnToSpirit}><ArrowLeft size={18} />返回{season.spirits.find((item) => item.id === returnState.spiritId)?.fullName}技能</button>}
-      <div className="sq-suggestions" aria-label="技能列表">{visibleSkills.map(skill => <button key={skill.id} data-skill-id={skill.id} aria-label={`${selected.includes(skill.id) ? "取消" : "添加"}${skill.name}`} aria-pressed={selected.includes(skill.id)} aria-disabled={!selected.includes(skill.id) && selected.length === 4} onClick={() => add(skill.id)}>
-        <span className="sq-card-heading"><SkillIcon skill={iconSkill(skill)} size={48} /><span><strong>{skill.name}</strong><small><ElementIcon type={skill.type} size={16} />{skill.type} · {categoryNames[skill.category]}</small></span>{selected.includes(skill.id) && <CheckCircle className="sq-card-check" size={18} weight="fill" />}</span>
-        <span className="sq-card-values"><span>威力 <b>{skill.basePower ?? "—"}</b></span><span>能耗 <b>{skill.cost ?? "—"}</b></span></span>
-        {!hideEffects && <span className="sq-card-description">{skill.description || "技能效果待补充"}</span>}
-      </button>)}</div>{visibleCount < filtered.length && <button ref={loadMore} className="sq-load-more" onClick={showMoreSkills}>显示更多技能 · {Math.min(visibleCount, filtered.length)} / {filtered.length}</button>}{!filtered.length && <p className="sq-empty">没有找到符合条件的技能。</p>}
+    {direction === "skill" && !spirit && <section className="sq-library" ref={library} aria-label={t("技能库")}>
+      <div className="sq-library-heading"><h3>{t("技能库")} <small>{filtered.length}</small></h3><span>{t("点击添加或取消")}</span>{!phone && effectToggle}</div>
+      {returnState && <button className="sq-back" onClick={returnToSpirit}><ArrowLeft size={18} />{t("返回{name}技能", { name: season.spirits.find((item) => item.id === returnState.spiritId)?.fullName })}</button>}
+      <div className="sq-suggestions" aria-label={t("技能列表")}>{visibleSkills.map(skill => <button key={skill.id} data-skill-id={skill.id} aria-label={t(selected.includes(skill.id) ? "取消{name}" : "添加{name}", { name: skill.name })} aria-pressed={selected.includes(skill.id)} aria-disabled={!selected.includes(skill.id) && selected.length === 4} onClick={() => add(skill.id)}>
+        <span className="sq-card-heading"><SkillIcon skill={iconSkill(skill)} size={48} /><span><strong>{skill.name}</strong><small><ElementIcon type={skill.type} size={16} />{skill.type} · {t(categoryNames[skill.category] ?? skill.category)}</small></span>{selected.includes(skill.id) && <CheckCircle className="sq-card-check" size={18} weight="fill" />}</span>
+        {!placeholder && <span className="sq-card-values"><span>{t("威力")} <b>{skill.basePower ?? "—"}</b></span><span>{t("能耗")} <b>{skill.cost ?? "—"}</b></span></span>}
+        {!hideEffects && <span className="sq-card-description">{skill.description || t("技能效果待补充")}</span>}
+      </button>)}</div>{visibleCount < filtered.length && <button ref={loadMore} className="sq-load-more" onClick={showMoreSkills}>{t("显示更多技能 · {count} / {total}", { count: Math.min(visibleCount, filtered.length), total: filtered.length })}</button>}{!filtered.length && <p className="sq-empty">{t("没有找到符合条件的技能。")}</p>}
     </section>}
     <div className="sq-rail" ref={rail}>
-    <aside className={`sq-selection${selected.length === 0 ? " sq-selection--empty" : ""}`} hidden={direction !== "skill" || Boolean(spirit)} aria-label="已选技能">
-      <div className="sq-selected-heading"><strong>已选 {selected.length} / 4</strong>{selected.length > 0 && <button onClick={() => setSelected([])}>清空</button>}</div>
-      <div className="sq-selected">{chosen.map(skill => <div key={skill.id}><SkillIcon skill={iconSkill(skill)} size={32} /><span><strong title={skill.name}>{skill.name}</strong><small>威力 {skill.basePower ?? "—"} · 能耗 {skill.cost ?? "—"}</small></span><button aria-label={`移除${skill.name}`} onClick={() => setSelected(selected.filter(id => id !== skill.id))}><X size={18} /></button></div>)}</div>
-      {selected.length === 4 && <p className="sq-limit" role="status">已选满 4 个技能，请先移除一个。</p>}
-      {!phone && selected.length > 0 && <button className="sq-show-results" onClick={showResults}>查看匹配家族（{families.length}）</button>}
+    <aside className={`sq-selection${selected.length === 0 ? " sq-selection--empty" : ""}`} hidden={direction !== "skill" || Boolean(spirit)} aria-label={t("已选技能")}>
+      <div className="sq-selected-heading"><strong>{t("已选 {count} / 4", { count: selected.length })}</strong>{selected.length > 0 && <button onClick={() => setSelected([])}>{t("清空")}</button>}</div>
+      <div className="sq-selected">{chosen.map(skill => <div key={skill.id}><SkillIcon skill={iconSkill(skill)} size={32} /><span><strong title={skill.name}>{skill.name}</strong>{!placeholder && <small>{t("威力 {power} · 能耗 {cost}", { power: skill.basePower ?? "—", cost: skill.cost ?? "—" })}</small>}</span><button aria-label={t("移除{name}", { name: skill.name })} onClick={() => setSelected(selected.filter(id => id !== skill.id))}><X size={18} /></button></div>)}</div>
+      {selected.length === 4 && <p className="sq-limit" role="status">{t("已选满 4 个技能，请先移除一个。")}</p>}
+      {!phone && selected.length > 0 && <button className="sq-show-results" onClick={showResults}>{t("查看匹配家族（{count}）", { count: families.length })}</button>}
     </aside>
     <main className="sq-results" ref={results}>
       {spirit ? <>
-        <button className="sq-back" onClick={back}><ArrowLeft size={18} />返回匹配结果</button>
-        <div className="sq-spirit-heading"><Portrait key={spirit.id} spirit={spirit} /><div><h3 ref={detailTitle} tabIndex={-1}>{spirit.fullName}</h3><p>{spirit.types?.map((type) => <span key={type}><ElementIcon type={type} size={20} />{type}</span>)}<span>{spirit.stage}</span></p>{related.length > 1 && <select aria-label="精灵形态" value={spirit.id} onChange={(event) => openSpirit(event.target.value)}>{related.map((item) => <option key={item.id} value={item.id}>{item.fullName}</option>)}</select>}</div></div>
-        <div className="sq-detail-filters"><div className="sq-sources" aria-label="技能学习来源">{SOURCES.map(([id, label]) => <button key={id} aria-label={label} aria-pressed={source === id} onClick={() => setSource(id)}>{label}<small>{learnset.filter(skill => !id || skill.methods.some(method => matchesSource(method, id))).length}</small></button>)}</div><input aria-label="筛选精灵技能" placeholder="技能名称或效果" value={detailQuery} onChange={(event) => setDetailQuery(event.target.value)} />{typeSelect(detailType, setDetailType, "精灵技能属性", [...new Set(learnset.map(skill => skill.type))])}{categorySelect(detailCategory, setDetailCategory, "精灵技能种类")}{effectToggle}</div>
-        <div className="sq-count-line"><p className="sq-count" role="status">{rows.length} / {learnset.length} 个技能</p>{hasDetailFilters && <button className="sq-clear-filters" aria-label="清除精灵技能筛选" onClick={clearDetailFilters}>清除筛选</button>}</div>
+        <button className="sq-back" onClick={back}><ArrowLeft size={18} />{t("返回匹配结果")}</button>
+        <div className="sq-spirit-heading"><Portrait key={spirit.id} spirit={spirit} /><div><h3 ref={detailTitle} tabIndex={-1}>{spirit.fullName}</h3><p>{spirit.types?.map((type) => <span key={type}><ElementIcon type={type} size={20} />{type}</span>)}<span>{spirit.stage}</span></p>{related.length > 1 && <select aria-label={t("精灵形态")} value={spirit.id} onChange={(event) => openSpirit(event.target.value)}>{related.map((item) => <option key={item.id} value={item.id}>{item.fullName}</option>)}</select>}</div></div>
+        <div className="sq-detail-filters">{!placeholder && <div className="sq-sources" aria-label={t("技能学习来源")}>{SOURCES.map(([id, label]) => <button key={id} aria-label={t(label)} aria-pressed={source === id} onClick={() => setSource(id)}>{t(label)}<small>{learnset.filter(skill => !id || skill.methods.some(method => matchesSource(method, id))).length}</small></button>)}</div>}<input aria-label={t("筛选精灵技能")} placeholder={t("技能名称或效果")} value={detailQuery} onChange={(event) => setDetailQuery(event.target.value)} />{typeSelect(detailType, setDetailType, "精灵技能属性", [...new Set(learnset.map(skill => skill.type))])}{categorySelect(detailCategory, setDetailCategory, "精灵技能种类")}{effectToggle}</div>
+        <div className="sq-count-line"><p className="sq-count" role="status">{t("{count} / {total} 个技能", { count: rows.length, total: learnset.length })}</p>{hasDetailFilters && <button className="sq-clear-filters" aria-label={t("清除精灵技能筛选")} onClick={clearDetailFilters}>{t("清除筛选")}</button>}</div>
         <div className="sq-skill-table">{rows.map((skill) => <article data-skill-id={skill.id} className={expanded === skill.id ? "is-expanded" : ""} key={skill.id}>
-          <div className="sq-skill-row"><span className="sq-skill-name"><SkillIcon skill={iconSkill(skill)} size={44} /><strong>{skill.name}{gains.some((gain) => gain.spiritId === spiritId && gain.skillIds.includes(skill.id)) && <em>新学</em>}</strong></span><span className="sq-skill-type"><ElementIcon type={skill.type} size={18} />{skill.type} · {categoryNames[skill.category]}</span><span className="sq-values"><span className="sq-cost"><small>能耗 </small>{skill.cost ?? "—"}</span><span className="sq-power"><small>威力 </small>{skill.basePower ?? "—"}</span></span></div>
-          {!hideEffects && <SkillQueryEffect skill={skill} expanded={expanded === skill.id} onToggle={() => setExpanded(expanded === skill.id ? null : skill.id)} />}
-          <div className="sq-card-footer"><span className="sq-method">{expanded !== skill.id && acquisitionSummary(skill.methods)}</span><button className="sq-reverse" aria-label={`查${skill.name}的可学精灵`} onClick={() => reverse(skill.id)}>可学精灵<CaretRight size={14} /></button></div>
-        </article>)}</div>{!rows.length && <p className="sq-empty">没有符合筛选条件的技能；可切回全部来源或清除筛选。</p>}
+          <div className="sq-skill-row"><span className="sq-skill-name"><SkillIcon skill={iconSkill(skill)} size={44} /><strong>{skill.name}{!placeholder && gains.some((gain) => gain.spiritId === spiritId && gain.skillIds.includes(skill.id)) && <em>{t("新学")}</em>}</strong></span><span className="sq-skill-type"><ElementIcon type={skill.type} size={18} />{skill.type} · {t(categoryNames[skill.category] ?? skill.category)}</span>{!placeholder && <span className="sq-values"><span className="sq-cost"><small>{t("能耗")} </small>{skill.cost ?? "—"}</span><span className="sq-power"><small>{t("威力")} </small>{skill.basePower ?? "—"}</span></span>}</div>
+          {!hideEffects && <SkillQueryEffect placeholder={placeholder} skill={skill} expanded={expanded === skill.id} onToggle={() => setExpanded(expanded === skill.id ? null : skill.id)} />}
+          <div className="sq-card-footer">{!placeholder && <span className="sq-method">{expanded !== skill.id && acquisitionSummary(skill.methods)}</span>}<button className="sq-reverse" aria-label={t("查{name}的可学精灵", { name: skill.name })} onClick={() => reverse(skill.id)}>{t("可学精灵")}<CaretRight size={14} /></button></div>
+        </article>)}</div>{!rows.length && <p className="sq-empty">{t(placeholder ? "没有符合筛选条件的技能，可清除筛选。" : "没有符合筛选条件的技能；可切回全部来源或清除筛选。")}</p>}
       </> : <>
-        {direction === "skill" && selected.length === 0 ? <p className="sq-empty">添加技能，查找全部可学的精灵。</p> : direction === "spirit" && !query.trim() ? <p className="sq-empty">搜索精灵，查看当前形态的完整技能表。</p> : <>
-          <h3 className="sq-result-title" aria-live="polite">{families.length} 个匹配家族{pools.length > families.length && ` · ${pools.length} 个技能池`}</h3>
-          {direction === "skill" && <div className="sq-learner-filters"><input aria-label="筛选学习精灵" placeholder="搜索家族" value={learnerQuery} onChange={(event) => setLearnerQuery(event.target.value)} /><select aria-label="学习途径" value={learnerSource} onChange={(event) => setLearnerSource(event.target.value)}>{SOURCES.map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select>{(learnerQuery || learnerSource) && <button className="sq-clear-filters" aria-label="清除学习精灵筛选" onClick={() => { setLearnerQuery(""); setLearnerSource(""); }}>清除筛选</button>}</div>}
-          <div className="sq-families">{pools.map(({ representative }) => <article key={representative.id}><button className="sq-family-main" aria-label={`${representative.fullName} 查看技能`} data-spirit-id={representative.id} onClick={() => openSpirit(representative.id)}><Portrait key={representative.id} spirit={representative} /><strong>{representative.fullName}</strong><CaretRight size={16} /></button></article>)}</div>{!families.length && <p className="sq-empty">没有符合条件的精灵，可减少技能条件或清除筛选。</p>}
-          {direction === "skill" && <button className="sq-show-results" onClick={returnToLibrary}>返回技能库</button>}
+        {direction === "skill" && selected.length === 0 ? <p className="sq-empty">{t("添加技能，查找全部可学的精灵。")}</p> : direction === "spirit" && !query.trim() ? <p className="sq-empty">{t("搜索精灵，查看当前形态的完整技能表。")}</p> : <>
+          <h3 className="sq-result-title" aria-live="polite">{t("{count} 个匹配家族", { count: families.length })}{pools.length > families.length && t(" · {count} 个技能池", { count: pools.length })}</h3>
+          {direction === "skill" && <div className="sq-learner-filters"><input aria-label={t("筛选学习精灵")} placeholder={t("搜索家族")} value={learnerQuery} onChange={(event) => setLearnerQuery(event.target.value)} />{!placeholder && <select aria-label={t("学习途径")} value={learnerSource} onChange={(event) => setLearnerSource(event.target.value)}>{SOURCES.map(([id, label]) => <option key={id} value={id}>{t(label)}</option>)}</select>}{(learnerQuery || learnerSource) && <button className="sq-clear-filters" aria-label={t("清除学习精灵筛选")} onClick={() => { setLearnerQuery(""); setLearnerSource(""); }}>{t("清除筛选")}</button>}</div>}
+          <div className="sq-families">{pools.map(({ representative }) => <article key={representative.id}><button className="sq-family-main" aria-label={t("{name} 查看技能", { name: representative.fullName })} data-spirit-id={representative.id} onClick={() => openSpirit(representative.id)}><Portrait key={representative.id} spirit={representative} /><strong>{representative.fullName}</strong><CaretRight size={16} /></button></article>)}</div>{!families.length && <p className="sq-empty">{t("没有符合条件的精灵，可减少技能条件或清除筛选。")}</p>}
+          {direction === "skill" && <button className="sq-show-results" onClick={returnToLibrary}>{t("返回技能库")}</button>}
         </>}
       </>}
     </main>
     </div>
     </div>
-  </div>{direction === "skill" && !spirit && selected.length > 0 && <nav className="sq-mobile-nav" aria-label="查询快捷导航"><button onClick={returnToLibrary}>返回选技能 · {selected.length}/4</button><button onClick={showResults}>匹配家族 {families.length}</button></nav>}</>;
+  </div>{direction === "skill" && !spirit && selected.length > 0 && <nav className="sq-mobile-nav" aria-label={t("查询快捷导航")}><button onClick={returnToLibrary}>{t("返回选技能 · {count}/4", { count: selected.length })}</button><button onClick={showResults}>{t("匹配家族 {count}", { count: families.length })}</button></nav>}</>;
 }

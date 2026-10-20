@@ -1,16 +1,19 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { createServerStorage, serverStorageKey } from "../state/server-storage.js";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
 
-export const PRESET_BROWSE_STORAGE_KEY = "rock-calculator.settings.preset-browse.v1";
+export const PRESET_BROWSE_STORAGE_KEY = serverStorageKey("cn", "rock-calculator.settings.preset-browse.v1");
 const PresetBrowseContext = createContext({ enabled: false, spiritIds: new Set(), loading: false, error: "", setEnabled: () => {} });
 
 export function PresetBrowseProvider({ children }) {
+  const { serverId } = useRuntime();
   const [enabled, updateEnabled] = useState(() => {
-    try { return localStorage.getItem(PRESET_BROWSE_STORAGE_KEY) === "1"; } catch { return false; }
+    try { return createServerStorage(serverId).getItem("rock-calculator.settings.preset-browse.v1") === "1"; } catch { return false; }
   });
   const [catalog, setCatalog] = useState({ spiritIds: new Set(), loading: true, error: "" });
 
   useEffect(() => {
-    if (!enabled) return undefined;
+    if (!enabled || serverId !== "cn") return undefined;
     const controller = new AbortController();
     let active = true;
     fetch("/data/presets/pvp-popular-configs.json", { signal: controller.signal })
@@ -25,15 +28,16 @@ export function PresetBrowseProvider({ children }) {
         if (active) setCatalog({ spiritIds: new Set(), loading: false, error: error.message });
       });
     return () => { active = false; controller.abort(); };
-  }, [enabled]);
+  }, [enabled, serverId]);
 
   function setEnabled(next) {
     updateEnabled(next);
     if (next) setCatalog({ spiritIds: new Set(), loading: true, error: "" });
-    try { localStorage.setItem(PRESET_BROWSE_STORAGE_KEY, next ? "1" : "0"); } catch { /* 当前会话仍可使用开关。 */ }
+    try { createServerStorage(serverId).setItem("rock-calculator.settings.preset-browse.v1", next ? "1" : "0"); }
+    catch { setCatalog((current) => ({ ...current, error: "预设浏览设置未能保存；当前标签仍可使用" })); }
   }
 
-  return <PresetBrowseContext.Provider value={{ ...catalog, enabled, setEnabled }}>{children}</PresetBrowseContext.Provider>;
+  return <PresetBrowseContext.Provider value={{ ...catalog, loading: serverId === "cn" && catalog.loading, enabled: serverId === "cn" && enabled, setEnabled }}>{children}</PresetBrowseContext.Provider>;
 }
 
 export function usePresetBrowseMode() {

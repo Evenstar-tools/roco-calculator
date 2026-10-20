@@ -1,3 +1,4 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
 import { Toolbox as ToolboxIcon, Shapes, MagnifyingGlass, Lightning, Gear, Speedometer, Shield } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -9,6 +10,7 @@ const groups = [
 ];
 
 export function Toolbox({ actions, onOpen, activeTool }) {
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [top, setTop] = useState(60);
   const [narrow, setNarrow] = useState(() => window.innerWidth <= 760);
@@ -40,19 +42,19 @@ export function Toolbox({ actions, onOpen, activeTool }) {
     return () => { document.removeEventListener("pointerdown", close); document.removeEventListener("keydown", key); window.removeEventListener("resize", resize); };
   }, [open]);
   return <>
-    <button type="button" disabled={!actions} className="team-action toolbox-trigger" aria-label="工具箱" title="工具箱" aria-expanded={open} aria-controls="toolbox-panel" ref={trigger}
+    <button type="button" disabled={!actions} className="team-action toolbox-trigger" aria-label={t("工具箱")} title={t("工具箱")} aria-expanded={open} aria-controls="toolbox-panel" ref={trigger}
       onClick={() => { if (!open) { onOpen?.(); setTop(trigger.current.getBoundingClientRect().bottom + 6); } setOpen(!open); }}>
-      <ToolboxIcon size={19} aria-hidden="true" /><span style={{ display: narrow ? "none" : undefined }}>工具箱</span>
+      <ToolboxIcon size={19} aria-hidden="true" /><span style={{ display: narrow ? "none" : undefined }}>{t("工具箱")}</span>
     </button>
-    {open && createPortal(<nav id="toolbox-panel" aria-label="工具箱" className="app-menu" ref={panel}
+    {open && createPortal(<nav id="toolbox-panel" aria-label={t("工具箱")} className="app-menu" ref={panel}
       style={{ top, right: 8, width: 320, maxWidth: "calc(100vw - 16px)", maxHeight: `calc(100dvh - ${top + 8}px)` }}>
-      {groups.map(([label, entries]) => <section key={label} aria-label={label}>
-        <div className="app-menu__group-label">{label}</div>
+      {groups.map(([label, entries]) => <section key={label} aria-label={t(label)}>
+        <div className="app-menu__group-label">{t(label)}</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 4 }}>
           {entries.map(([id, title, Icon]) => <button key={id} type="button" aria-current={activeTool === id ? "true" : undefined} disabled={!actions?.[id]}
             className={activeTool === id ? "app-menu__primary" : undefined}
             style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
-            onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}><Icon size={18} aria-hidden="true" />{title}</button>)}
+            onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}><Icon size={18} aria-hidden="true" />{t(title)}</button>)}
         </div>
       </section>)}
     </nav>, document.body)}

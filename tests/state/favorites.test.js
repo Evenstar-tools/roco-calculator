@@ -19,7 +19,7 @@ function memoryStorage(seed = {}) {
 }
 
 describe("favoritesRepository", () => {
-  test("backs up corrupt JSON and returns an empty collection without overwriting it", () => {
+  test("backs up corrupt JSON and reports it without overwriting it", () => {
     const storage = memoryStorage({
       [FAVORITES_STORAGE_KEY]: "{unreadable",
     });
@@ -27,7 +27,8 @@ describe("favoritesRepository", () => {
       now: () => "2026-09-01T00:00:00.000Z",
     });
 
-    expect(repository.list()).toEqual([]);
+    expect(() => repository.list()).toThrow(expect.objectContaining({ code: "STORAGE_CORRUPT" }));
+    expect(() => repository.save({ id: "new" })).toThrow(expect.objectContaining({ code: "STORAGE_CORRUPT" }));
     expect(storage.raw()).toBe("{unreadable");
     expect(
       storage.raw(`${FAVORITES_STORAGE_KEY}.corrupt.2026-09-01T00:00:00.000Z`),
@@ -61,7 +62,7 @@ describe("favoritesRepository", () => {
 
     expect(favoritesRepository(storage).list()).toEqual(favorites);
     expect(JSON.parse(storage.raw())).toEqual(favorites);
-    expect(storage.raw(legacyKey)).toBeNull();
+    expect(storage.raw(legacyKey)).toBe(JSON.stringify(favorites));
   });
 
   test("exports and imports favorite configurations as JSON", () => {

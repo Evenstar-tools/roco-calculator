@@ -7,6 +7,7 @@ import { FORM_CONFIG_MEMORY_STORAGE_KEY, readFormConfigMemoryEnabled } from "../
 import { COMPACT_OPTION_LABELS_STORAGE_KEY, readCompactOptionLabelsSetting } from "../../src/state/display-settings.js";
 import { USER_MANUAL_URL } from "../../src/data/product-links.js";
 import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
+import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 import {
   FEATURED_USER_RELEASE,
   USER_RELEASE_NOTES,
@@ -314,6 +315,25 @@ test("introduces the current release and opens the team workspace", () => {
   }
   fireEvent.click(within(dialog).getByRole("button", { name: "打开队伍" }));
   expect(onOpenTeam).toHaveBeenCalledOnce();
+});
+
+test.each([true, false])("国服菜单不显示切服和语言控件，即使存在切服回调：%s", (hasServerChange) => {
+  const onOpenGlobal = vi.fn();
+  const onShowDisplaySettings = vi.fn();
+  render(
+    <RuntimeProvider serverId="cn" onServerChange={hasServerChange ? vi.fn() : undefined} onLocaleChange={vi.fn()}>
+      <WorkspaceOverlays
+        menu={{ open: true, actions: { onOpenGlobal, onShowDisplaySettings } }}
+        mobileResult={{}} share={{}} team={{}} toast={{}}
+      />
+    </RuntimeProvider>,
+  );
+  const menu = screen.getByRole("navigation", { name: "应用菜单" });
+  expect(within(menu).queryByText(/服务器|国际服|语言/)).not.toBeInTheDocument();
+  expect(within(menu).queryByRole("combobox")).not.toBeInTheDocument();
+  fireEvent.click(within(menu).getByRole("button", { name: "显示设置", exact: true }));
+  expect(onShowDisplaySettings).toHaveBeenCalledOnce();
+  expect(onOpenGlobal).not.toHaveBeenCalled();
 });
 
 test("puts clear first and hides cleanup and sharing from the web menu", () => {
