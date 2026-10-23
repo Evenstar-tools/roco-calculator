@@ -1,4 +1,5 @@
 export const teamMessages = Object.fromEntries([
+  ["按住拖动排序", "Hold and drag to reorder", "長押ししてドラッグで並べ替え"],
   ["队伍草稿导入导出", "Team draft import and export", "チーム下書きのインポートとエクスポート"],
   ["导入队伍草稿", "Import team draft", "チーム下書きをインポート"], ["导出队伍草稿", "Export team draft", "チーム下書きをエクスポート"],
   ["工具队伍草稿 JSON，与游戏原生阵容码不同。", "Tool team-draft JSON, separate from in-game lineup codes.", "このツール専用のチーム下書きJSONです。ゲーム内の編成コードとは異なります。"],

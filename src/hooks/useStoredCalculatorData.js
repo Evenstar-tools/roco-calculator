@@ -328,6 +328,12 @@ export function useStoredCalculatorData(
     );
   }
 
+  function moveTeamMember(teamId, from, to) {
+    return mutateTeams((current) =>
+      stores.teams.moveMember(current, teamId, from, to),
+    );
+  }
+
   function renameTeam(id, name) {
     return mutateTeams((current) => stores.teams.rename(current, id, name));
   }
@@ -350,6 +356,7 @@ export function useStoredCalculatorData(
       importTeam: (team) => mutateTeams((current) => stores.teams.importTeam(current, team)),
       updateLineup: (id, lineup) => mutateTeams((current) => stores.teams.updateLineup(current, id, lineup)),
       duplicate: duplicateTeam,
+      moveMember: moveTeamMember,
       remove: deleteTeam,
       rename: renameTeam,
       setActive: setActiveTeam,

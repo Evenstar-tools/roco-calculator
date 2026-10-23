@@ -174,6 +174,73 @@
   padding: 5px;
 }
 
+/* Sorting is transient: the resting roster keeps its existing layout. */
+.team-roster.is-reorderable .team-slot__select {
+  cursor: grab;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.team-roster.is-dragging .team-slot {
+  transition: border-color 120ms ease, opacity 120ms ease;
+}
+
+.team-roster.is-dragging,
+.team-roster.is-dragging .team-slot__select {
+  cursor: grabbing;
+}
+
+.team-roster .team-slot.is-drag-source {
+  background: var(--surface-soft);
+}
+
+.team-roster .team-slot.is-drag-source > * {
+  opacity: 0.2;
+}
+
+.team-roster .team-slot.is-drop-target {
+  border: 2px dashed var(--accent);
+  background: var(--surface-soft);
+}
+
+.team-roster-drag-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  pointer-events: none;
+}
+
+.team-roster-drag-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(7 12 24 / 45%);
+}
+
+.team-roster-drag-preview {
+  position: absolute;
+  pointer-events: none;
+  cursor: grabbing;
+  filter: drop-shadow(0 10px 16px rgb(0 0 0 / 28%));
+}
+
+.team-workbench.team-roster-drag-preview .team-roster {
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.team-roster-drag-preview .team-slot {
+  width: 100%;
+  margin: 0;
+  background: var(--surface);
+  border-color: var(--accent);
+}
+
+.team-roster-drag-preview .team-slot__select {
+  cursor: grabbing;
+}
+
 .team-workbench .team-slot__actions button {
   min-height: 34px;
   border-radius: 6px;

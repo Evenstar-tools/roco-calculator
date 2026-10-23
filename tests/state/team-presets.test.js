@@ -176,6 +176,97 @@ describe("teamPresetsRepository", () => {
     });
   });
 
+  test("moves complete members by insertion across empty slots and restores their configuration", () => {
+    const storage = memoryStorage();
+    let timestamp = 0;
+    const store = teamPresetsRepository({
+      idFactory: () => "main-team",
+      now: () => `2026-10-22T00:00:0${timestamp++}.000Z`,
+      storage,
+    });
+    let state = store.create(store.load(snapshot()), "主队");
+    const teamId = state.activeTeamId;
+    const configured = {
+      ...createTeamMember(snapshot(), "spirit-a"),
+      bloodlineType: "fire",
+      natureId: "adamant",
+      displayIvs: { hp: 60, speed: 12, physicalAttack: 60, magicalAttack: 24, physicalDefense: 36, magicalDefense: 48 },
+      lineupSource: { source: "saved-preset", slot: 2, metadata: { note: "保留来源" } },
+      skills: {
+        four: [
+          {
+            skillId: "skill-a",
+            hitCount: 3,
+            context: { nested: { stacks: 2 } },
+            overrides: { basePower: 120 },
+            memoryBySkill: { "skill-b": { context: { energy: 4 }, overrides: { basePower: 90 } } },
+          },
+          "skill-b", "skill-c", "skill-d", "skill-e", null, "skill-a",
+        ],
+        single: { skillId: "skill-b", hitCount: 2, context: { targetSwitched: true } },
+      },
+    };
+    const second = createTeamMember(snapshot(), "spirit-b");
+    state = store.updateMember(state, teamId, 0, configured);
+    state = store.updateMember(state, teamId, 1, second);
+    const previous = state;
+    const originalMembers = [...state.teams[0].members];
+    let writes = 0;
+    const setItem = storage.setItem;
+    storage.setItem = (...args) => { writes += 1; setItem(...args); };
+
+    state = store.moveMember(state, teamId, 0, 3);
+
+    expect(writes).toBe(1);
+    expect(state.activeTeamId).toBe(teamId);
+    expect(state.teams[0].members).toEqual([second, null, null, configured, null, null]);
+    expect(previous.teams[0].members).toEqual(originalMembers);
+    expect(state.teams[0].updatedAt).not.toBe(previous.teams[0].updatedAt);
+    expect(repository(storage).load(snapshot())).toEqual(state);
+    expect(state.teams[0].members[3].skills.four).toHaveLength(7);
+
+    state = store.moveMember(state, teamId, 3, 1);
+
+    expect(state.teams[0].members).toEqual([second, configured, null, null, null, null]);
+    expect(repository(storage).load(snapshot())).toEqual(state);
+  });
+
+  test("does not write or change timestamps for same-slot and empty-source moves", () => {
+    const storage = memoryStorage();
+    let timestampCalls = 0;
+    const store = teamPresetsRepository({
+      idFactory: () => "main-team",
+      now: () => `timestamp-${timestampCalls++}`,
+      storage,
+    });
+    let state = store.create(store.load(snapshot()), "主队");
+    state = store.updateMember(state, state.activeTeamId, 0, createTeamMember(snapshot(), "spirit-a"));
+    const originalRaw = storage.getItem(TEAM_STORAGE_KEY);
+    const originalCalls = timestampCalls;
+    let writes = 0;
+    const setItem = storage.setItem;
+    storage.setItem = (...args) => { writes += 1; setItem(...args); };
+
+    expect(store.moveMember(state, state.activeTeamId, 0, 0)).toBe(state);
+    expect(store.moveMember(state, state.activeTeamId, 5, 0)).toBe(state);
+    expect(writes).toBe(0);
+    expect(timestampCalls).toBe(originalCalls);
+    expect(storage.getItem(TEAM_STORAGE_KEY)).toBe(originalRaw);
+  });
+
+  test("rejects missing teams and invalid member move positions without writing", () => {
+    const storage = memoryStorage();
+    const store = repository(storage);
+    const state = store.create(store.load(snapshot()), "主队");
+    const originalRaw = storage.getItem(TEAM_STORAGE_KEY);
+
+    expect(() => store.moveMember(state, "missing", 0, 1)).toThrow(TypeError);
+    for (const [from, to] of [[-1, 0], [0, 6], [1.5, 0], [0, NaN], ["0", 1]]) {
+      expect(() => store.moveMember(state, state.activeTeamId, from, to)).toThrow(RangeError);
+    }
+    expect(storage.getItem(TEAM_STORAGE_KEY)).toBe(originalRaw);
+  });
+
   test("captures a calculator side without sharing nested references", () => {
     const side = {
       displayIvs: {

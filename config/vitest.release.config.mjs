@@ -39,6 +39,7 @@ export default defineConfig({
             "tests/hooks/calculator-session-storage.test.jsx",
             "tests/ui/{global-workspace,web-entry,share-server-boundary,global-tool-boundary,locale-common,team-server-locale,season-theme,season-theme-settings,global-placeholder-workflow,global-placeholder-configuration,skill-query-placeholder}.test.jsx",
             "tests/ui/entity-change-hint.test.jsx",
+            "tests/ui/team-roster-drag.test.jsx",
             "tests/ui/damage-comparison-effectiveness.test.jsx",
             "tests/seo/*.test.js",
             "tests/ui/{battle-form-picker,header-portrait,floating-undo-button,calculator-shortcuts,nature-select,stat-tile,team-exchange,team-member-types,team-lineup-flow,toolbox,type-query-panel,transmission-panel,deer-critical,deer-entry,ability-speed-layout,skill-picker-scrollbar,skill-picker-placement,picker-menu-layout,moon-memory-trait-editor,calculator-sections,status-reference,modal-focus,panel-power-input-regression}.test.jsx",

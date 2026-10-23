@@ -2088,6 +2088,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         onDeleteTeam: teamActions.remove,
         onDuplicateTeam: teamActions.duplicate,
         onMemberChange: teamActions.updateMember,
+        onMemberMove: teamActions.moveMember,
         onRenameTeam: teamActions.rename,
         returnFocusRef: overlays.team.buttonRef,
         snapshot,

@@ -1,5 +1,17 @@
 # 洛克计算器维护交接
 
+## 2026-10-23：队伍卡片拖动排序（2.2.7）
+
+- 用户授权：卡片按住拖动调整顺序，拖动期间其他区域变暗；保留现有静止布局。
+- 独立工作树：`D:/codex/worktrees/roco-team-drag-20261022`，分支 `codex/team-roster-drag-20261022`，基于 `4630a88`。主工作树已有其他任务的未提交内容，本轮未改动它。用户于 2026-10-23 授权提交上线 Web、更新 Windows 与 Release；版本 2.2.7，小程序不发布。
+- 交互参考：[Atlassian 拖拽设计规范](https://atlassian.design/components/pragmatic-drag-and-drop/design-guidelines/)的浮卡与落点反馈、[SortableJS](https://github.com/SortableJS/Sortable)的长按延迟与移动阈值。不新增运行时依赖。
+- 实现：`useRosterDrag` 处理鼠标拖动、手机长按、遮罩和取消；`TeamRoster` 展示浮卡及落点；队伍仓库 `moveMember` 按插入顺序整体移动成员，仅松手时保存，保留空位、技能和全部成员配置。当前编辑成员跟随新位置；普通点击与攻防按钮保持原行为。另支持 Alt＋方向键相邻移动。
+- 已验：相关状态和交互用例、定向 ESLint、`git diff --check`、正式 Web 构建通过；正式产物实页验证鼠标排序、刷新保留、完整配置保留、Esc／拖出取消、手机长按排序／短滑不排序／触摸取消。1440×960 桌面、390×844 手机亮暗截图读回和独立视觉复核通过。手机使用 Chromium 原生触摸事件模拟，未做微信原生或桌面安装包验收。
+- 验收发现并修复：手机媒体样式把浮卡压窄；拖动后的误点抑制误吞队伍列表之外的关闭点击。后者已并入维护用例。
+- 本地预览：`http://127.0.0.1:4230/`（正式构建产物）。实页截图与复现脚本在该工作树 `artifacts/team-drag/`；`dragging-desktop.png`、`dragging-mobile.png`、`dragging-mobile-dark.png` 分别为桌面、手机亮色、手机暗色拖动态。
+- 2.2.7 发布验收：数据、共享核心、预设镜像、用户日志和关键浏览器门禁通过。单元门禁在共享 node_modules 的本机路径限制下使用临时 fs.allow 配置，已通过项保留，仅补验工作进程启动超时文件；未修改产品构建配置。Windows 安装包解包资源与最终 Web 构建逐字节一致，原生离线启动及实际桌面拖动、取消、刷新保留通过；使用隔离用户目录，没有改动用户桌面存档。未执行安装／卸载或真机触摸验收。
+- 发布证据入口：本工作树 `artifacts/team-drag/release-227/` 保存打包核对、离线自检、桌面实页截图及后续公网／Release 回读。源码以 `v2.2.7` 标签、远端 `main` 和对应 Release 的实际状态为准；GitHub 只保留版本化 Windows EXE，不额外生成校验清单。
+
 ## 当前 `main` 产品基线
 
 - Web / 桌面端版本：根 `package.json` 的 `version`，这是网页与桌面版本号的唯一事实来源。

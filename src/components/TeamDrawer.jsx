@@ -59,6 +59,7 @@ export function TeamDrawer({
   onDeleteTeam,
   onDuplicateTeam,
   onMemberChange,
+  onMemberMove,
   onRenameTeam,
   open,
   returnFocusRef,
@@ -408,8 +409,16 @@ export function TeamDrawer({
                     />
                   </label>
                   <TeamRoster
+                    key={activeTeam.id}
                     members={activeTeam.members}
                     onApply={onApply}
+                    onReorder={onMemberMove ? (from, to) => navigate(() => {
+                      if (onMemberMove(activeTeam.id, from, to) === false) return false;
+                      setSelectedIndex((current) => current === from ? to
+                        : from < to && current > from && current <= to ? current - 1
+                        : to < from && current >= to && current < from ? current + 1 : current);
+                      return true;
+                    }) : undefined}
                     onSelect={(index) =>
                       navigate(() => {
                         onAnalysisEntryClear?.();

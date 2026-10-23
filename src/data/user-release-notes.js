@@ -230,6 +230,22 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.2.7",
+    date: "2026.10.23",
+    title: "S4队伍拖动排序",
+    whatsNew: S4_FEATURE_INTRO,
+    summaryHighlights: [
+      "队伍卡片支持按住拖动排序，手机长按后即可移动。",
+      "拖动时卡片浮起、周围变暗，松手保存顺序与完整配置。",
+    ],
+    features: [
+      "队伍成员支持鼠标拖动与手机长按排序，拖动时浮卡高亮并显示落点，松手自动保存；也可用Alt＋方向键相邻移动。",
+    ],
+    fixes: [
+      "排序保留技能、个体和完整成员配置，当前编辑精灵跟随新位置；按Esc或拖出列表可取消，普通滑动、点击和攻防按钮保持原有操作。",
+    ],
+  }),
+  createRelease({
     version: "v2.2.6",
     date: "2026.10.20",
     title: "S4季中与历季外观切换",

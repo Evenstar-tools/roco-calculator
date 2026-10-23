@@ -394,6 +394,23 @@ export function teamPresetsRepository({
       }
       return persist({ ...state, activeTeamId: teamId });
     },
+    moveMember(state, teamId, from, to) {
+      if (![from, to].every((index) => Number.isInteger(index) && index >= 0 && index <= 5)) {
+        throw new RangeError("队伍成员位置必须是 0 到 5");
+      }
+      const source = state.teams.find((team) => team.id === teamId);
+      if (!source) throw new TypeError("要调整的队伍不存在");
+      if (from === to || !source.members[from]) return state;
+      const members = [...source.members];
+      const [member] = members.splice(from, 1);
+      members.splice(to, 0, member);
+      return persist({
+        ...state,
+        teams: state.teams.map((team) => team.id === teamId
+          ? { ...team, members, updatedAt: now() }
+          : team),
+      });
+    },
     updateMember(state, teamId, index, member) {
       if (!Number.isInteger(index) || index < 0 || index > 5) {
         throw new RangeError("队伍成员位置必须是 0 到 5");

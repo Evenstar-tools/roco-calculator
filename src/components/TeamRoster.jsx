@@ -1,5 +1,7 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
+import { createPortal } from "react-dom";
+import { useRosterDrag } from "../hooks/useRosterDrag.js";
 import { Shield, Sword, WarningCircle, Wrench } from "@phosphor-icons/react";
 import { getNature, NATURES, STAT_LABELS } from "../domain/natures.js";
 import { getBossBloodlineConflicts } from "../domain/skill-loadout.js";
@@ -33,12 +35,14 @@ function MemberActions({ member, name, onApply }) {
 export function TeamRoster({
   members,
   onApply,
+  onReorder,
   onSelect,
   selectedIndex,
   snapshot,
 }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
+  const { drag, listRef, order, onPointerDown, onTouchStart } = useRosterDrag({ members, onReorder });
   const global = serverId === "global" || snapshot.meta?.serverId === "global";
   const placeholder = global && Boolean(snapshot.meta?.placeholderSource);
   const spirits = new Map(
@@ -48,10 +52,7 @@ export function TeamRoster({
     (snapshot.skills ?? []).map((skill) => [skill.id, skill]),
   );
 
-  return (
-    <>
-    <ol aria-label={t("队伍成员")} className="team-roster">
-      {Array.from({ length: 6 }, (_, index) => {
+  function renderSlot(index, position, preview = false) {
         const member = members[index] ?? null;
         const spirit = member ? spirits.get(member.spiritId) : null;
         const name = spirit?.fullName ?? (member ? member.spiritId ?? t("需修复") : t("空位 {index}", { index: index + 1 }));
@@ -67,24 +68,37 @@ export function TeamRoster({
           : t(getNature(member?.natureId).name);
         return (
           <li
-            className={`team-slot${selectedIndex === index ? " is-selected" : ""}${member?.needsRepair ? " needs-repair" : ""}${conflicts.length ? " has-bloodline-conflict" : ""}`}
+            className={`team-slot${selectedIndex === index ? " is-selected" : ""}${member?.needsRepair ? " needs-repair" : ""}${conflicts.length ? " has-bloodline-conflict" : ""}${!preview && drag?.from === index ? " is-drag-source" : ""}${!preview && drag?.over === position ? " is-drop-target" : ""}`}
+            data-slot-index={index}
+            data-slot-position={preview ? undefined : position}
             key={index}
           >
             <button
               aria-label={t("编辑{name}", { name })}
               aria-pressed={selectedIndex === index}
-              title={t("{index}号位 · {name}", { index: index + 1, name })}
+              title={`${t("{index}号位 · {name}", { index: position + 1, name })}${member && onReorder ? ` · ${t("按住拖动排序")}` : ""}`}
               className="team-slot__select"
               onClick={() => onSelect(index)}
+              onPointerDown={(event) => onPointerDown(index, event)}
+              onTouchStart={(event) => onTouchStart(index, event)}
+              onDragStart={(event) => event.preventDefault()}
+              onKeyDown={(event) => {
+                const offset = { ArrowUp: -1, ArrowLeft: -1, ArrowDown: 1, ArrowRight: 1 }[event.key];
+                if (!event.altKey || !offset || !member || !onReorder) return;
+                event.preventDefault(); event.stopPropagation();
+                const to = index + offset;
+                if (to >= 0 && to < 6) onReorder(index, to);
+              }}
               type="button"
             >
-              <span aria-hidden="true" className="team-slot__number">{index + 1}</span>
+              <span aria-hidden="true" className="team-slot__number">{position + 1}</span>
               {conflicts.length ? <span className="team-slot__bloodline-flag" role="img" aria-label={t("血脉技能与首领冲突")} title={t("首领与血脉技能冲突：{skills}", { skills: conflicts.map(skill => skill.name).join("、") })}><WarningCircle aria-hidden="true" size={16} weight="fill" /></span> : null}
               {spirit?.asset?.localUrl ? (
                 <img
                   alt=""
                   height="48"
                   src={spirit.asset.localUrl}
+                  draggable={false}
                   width="48"
                 />
               ) : (
@@ -126,8 +140,21 @@ export function TeamRoster({
             <MemberActions member={member} name={name} onApply={onApply} />
           </li>
         );
-      })}
+  }
+
+  return (
+    <>
+    <ol aria-label={t("队伍成员")} className={`team-roster${onReorder ? " is-reorderable" : ""}${drag ? " is-dragging" : ""}`} ref={listRef}>
+      {order.map((index, position) => renderSlot(index, position))}
     </ol>
+    {drag ? createPortal(
+      <div aria-hidden="true" className="team-roster-drag-layer" inert>
+        <div className="team-roster-drag-backdrop" />
+        <div className="team-roster-drag-preview team-workbench" style={{ left: drag.x, top: drag.y, width: drag.width }}>
+          <ol className="team-roster">{renderSlot(drag.from, drag.over ?? drag.from, true)}</ol>
+        </div>
+      </div>, document.body,
+    ) : null}
     {selectedIndex >= 0 ? (
       <details className="team-roster__current-actions" key={selectedIndex}>
         <summary>{t("当前成员操作")}</summary>
