@@ -22,7 +22,7 @@
     "cli": "node scripts/cli/rock-calculator.mjs",
     "cli:test": "vitest run tests/cli/rock-calculator-cli.test.js",
     "dev": "npm run data:runtime && vite --config config/vite.config.mjs",
-    "build": "npm run acceptance:verify && npm run test:core-current && npm run data:runtime && npm run data:verify-bindings && vite build --config config/vite.config.mjs && node scripts/minify-service-worker.mjs && npm run performance:verify",
+    "build": "npm run acceptance:verify && npm run test:core-current && npm run data:runtime && npm run data:verify-bindings && vite build --config config/vite.config.mjs && node scripts/minify-service-worker.mjs && npm run performance:verify && node scripts/build-preview-release.mjs",
     "desktop": "npm run build && electron .",
     "desktop:pack": "npm run build && node scripts/build-desktop.mjs",
     "desktop:release-assets": "node scripts/create-desktop-release-artifacts.mjs",

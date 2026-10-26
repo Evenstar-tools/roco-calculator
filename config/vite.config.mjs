@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { manualChunks } from "./chunk-groups.mjs";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
+import { realpathSync } from "node:fs";
 
 import { buildAttributionPlugin } from "../scripts/build-attribution.mjs";
 
@@ -28,6 +29,7 @@ export default defineConfig({
     include: ["react", "react-dom/client"],
   },
   server: {
+    fs: { allow: [fileURLToPath(new URL("../", import.meta.url)), realpathSync(fileURLToPath(new URL("../node_modules", import.meta.url)))] },
     host: "0.0.0.0",
     allowedHosts: ["terminal.local"],
     warmup: {

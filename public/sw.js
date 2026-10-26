@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.2.7-team-drag";
+const CACHE_NAME = "rock-calculator-webapp-v2.2.7-team-drag-pre-entry";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 const APP_SHELL = [
   "/manifest.webmanifest",
@@ -174,6 +174,8 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
+  // 抢先版自行加载独立资源，不进入正式版的离线缓存。
+  if (url.pathname === "/pre" || url.pathname.startsWith("/pre/")) return;
 
   if (url.pathname.startsWith("/api/")) {
     event.respondWith(fetch(event.request, { cache: "no-store" }));

@@ -86,6 +86,25 @@ function dispatchFetch(listener, path, { mode = "cors", headers = {} } = {}) {
 }
 
 describe("service worker cache policy", () => {
+  test.each(["/pre", "/pre/", "/pre/?theme=s5", "/pre/assets/main-Ab12_cd9.js", "/pre/data/runtime.json"])("preview request %s bypasses the stable worker entirely", (path) => {
+    const fetchImpl = vi.fn();
+    const harness = createHarness({ fetchImpl });
+    const event = dispatchFetch(harness.listeners.fetch, path, { mode: "navigate" });
+    expect(event.responsePromise).toBeUndefined();
+    expect(event.background).toEqual([]);
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(harness.caches.open).not.toHaveBeenCalled();
+  });
+
+  test("similarly named stable paths retain the existing worker policy", async () => {
+    const response = new Response("stable path");
+    const fetchImpl = vi.fn(async () => response);
+    const harness = createHarness({ fetchImpl });
+    const event = dispatchFetch(harness.listeners.fetch, "/prefix/");
+    await expect(event.responsePromise).resolves.toBe(response);
+    expect(fetchImpl).toHaveBeenCalledOnce();
+    expect(harness.cacheApi.put).toHaveBeenCalledOnce();
+  });
   test("visited asset messages cache lazy resources once and reject external/API/data URLs", async () => {
     const existing = "https://calculator.test/assets/main-Ab12_cd9.js";
     const lazy = "https://calculator.test/assets/GlobalWorkspace-NewBuild.js";

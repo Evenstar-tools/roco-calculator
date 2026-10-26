@@ -1,4 +1,5 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { Toolbox as ToolboxIcon, Shapes, MagnifyingGlass, Lightning, Gear, Speedometer, Shield } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -11,6 +12,8 @@ const groups = [
 
 export function Toolbox({ actions, onOpen, activeTool }) {
   const { t } = useLocale();
+  const { serverId } = useRuntime();
+  const showPreviewEntry = serverId === "cn" && window.location.protocol !== "app:";
   const [open, setOpen] = useState(false);
   const [top, setTop] = useState(60);
   const [narrow, setNarrow] = useState(() => window.innerWidth <= 760);
@@ -23,16 +26,16 @@ export function Toolbox({ actions, onOpen, activeTool }) {
   const panel = useRef(null);
   useEffect(() => {
     if (!open) return;
-    panel.current?.querySelector("button")?.focus();
+    panel.current?.querySelector("button:not(:disabled), a[href]")?.focus();
     const close = (event) => {
       if (!panel.current?.contains(event.target) && !trigger.current?.contains(event.target)) setOpen(false);
     };
     const key = (event) => {
       if (event.key === "Escape") { event.preventDefault(); setOpen(false); trigger.current?.focus(); }
       if (event.key === "Tab") {
-        const buttons = [...panel.current.querySelectorAll("button:not(:disabled)")];
-        if (event.shiftKey && document.activeElement === buttons[0]) { event.preventDefault(); buttons.at(-1)?.focus(); }
-        else if (!event.shiftKey && document.activeElement === buttons.at(-1)) { event.preventDefault(); buttons[0]?.focus(); }
+        const controls = [...panel.current.querySelectorAll("button:not(:disabled), a[href]")];
+        if (event.shiftKey && document.activeElement === controls[0]) { event.preventDefault(); controls.at(-1)?.focus(); }
+        else if (!event.shiftKey && document.activeElement === controls.at(-1)) { event.preventDefault(); controls[0]?.focus(); }
       }
     };
     const resize = () => setTop(trigger.current?.getBoundingClientRect().bottom + 6);
@@ -57,6 +60,8 @@ export function Toolbox({ actions, onOpen, activeTool }) {
             onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}><Icon size={18} aria-hidden="true" />{t(title)}</button>)}
         </div>
       </section>)}
+      {showPreviewEntry && <a href="/pre/" style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
+        onClick={() => setOpen(false)}><Lightning size={18} aria-hidden="true" />S5 抢先体验</a>}
     </nav>, document.body)}
   </>;
 }

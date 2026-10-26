@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { Toolbox } from "../../src/components/Toolbox.jsx";
+import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 
 test("加载阶段不开放会在就绪时消失的工具菜单", () => {
   const { rerender } = render(<Toolbox />);
@@ -25,15 +26,23 @@ test("六项工具按分组打开，先收起并还原焦点再执行入口", ()
   }
 });
 
-test("重复点击、外部点击、Esc 关闭，键盘循环焦点", () => {
+test("Global 工具箱不新增国服抢先入口", () => {
+  render(<RuntimeProvider serverId="global"><Toolbox actions={{ types: vi.fn() }} /></RuntimeProvider>);
+  fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
+  expect(screen.queryByRole("link", { name: "S5 抢先体验" })).toBeNull();
+});
+
+test("重复点击、外部点击、Esc 关闭，键盘循环焦点包含抢先入口", () => {
   const actions=Object.fromEntries(["types","skills","deer","transmission","speed","durability"].map(id=>[id,vi.fn()]));
   render(<Toolbox actions={actions} />);
   const trigger=screen.getByRole("button",{name:"工具箱"});
   fireEvent.click(trigger);
   const buttons=within(screen.getByRole("navigation")).getAllByRole("button");
+  const preview = screen.getByRole("link", { name: "S5 抢先体验" });
+  expect(preview).toHaveAttribute("href", "/pre/");
   expect(buttons[0]).toHaveFocus();
   fireEvent.keyDown(document,{key:"Tab",shiftKey:true});
-  expect(buttons[5]).toHaveFocus();
+  expect(preview).toHaveFocus();
   fireEvent.keyDown(document,{key:"Tab"});
   expect(buttons[0]).toHaveFocus();
   fireEvent.keyDown(document,{key:"Escape"});
