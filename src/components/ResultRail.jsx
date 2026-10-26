@@ -1,4 +1,5 @@
 import { ArrowsLeftRight } from "@phosphor-icons/react";
+import { ComparisonSummary, ComparisonDamage } from "../features/balance-comparison/ComparisonResults.jsx";
 import { damageTone } from "./damageTone.js";
 import { HealthInput } from "./HealthInput.jsx";
 import { TypeCoveragePanel } from "./TypeCoveragePanel.jsx";
@@ -143,7 +144,7 @@ function NegativeStatusSettlement({ settlement, onRepeatChange, repeated }) {
   );
 }
 
-function SkillResultRow({ index, item, onClick }) {
+function SkillResultRow({ index, item, onClick, before, comparison }) {
   const isTrait = item.kind === "trait";
   const isBloodline = item.kind === "bloodline";
   const Tag = onClick ? "button" : "div";
@@ -195,16 +196,20 @@ function SkillResultRow({ index, item, onClick }) {
           {statusSummary.map((part) => <span key={part}>{part}</span>)}
         </small>
       ) : null}
+      {comparison?.active ? <span className="skill-result-row__comparison"><ComparisonDamage
+        before={before} after={item} issue={comparison.issue} /></span> : null}
     </Tag>
   );
 }
 
 export function ResultRail({
+  balanceComparison,
   activeAdvancedConditions = [],
   onBloodlineResultFocus,
   onAdvancedOptionsOpen,
   onCurrentHpChange,
   onCurrentHpPercentChange,
+  onHpInputModeChange,
   onDirectionToggle,
   onSkillResultSelect,
   onNegativeStatusRepeatChange,
@@ -254,7 +259,8 @@ export function ResultRail({
         ) : null}
       </div>
 
-      {showPrimaryResult ? (
+      <ComparisonSummary comparison={balanceComparison} />
+      {showPrimaryResult && !(balanceComparison?.active && !balanceComparison.issue && balanceComparison.beforeView?.result) ? (
         <>
           <div className="result-rail__primary">
             <p className="result-rail__damage-label">{presentation.statusDamage > 0 ? "本次合计伤害" : "单次伤害"}</p>
@@ -297,7 +303,7 @@ export function ResultRail({
       <NegativeStatusSettlement settlement={primary.negativeStatusSettlement}
         onRepeatChange={primary.negativeStatusCanRepeatNextTurn ? onNegativeStatusRepeatChange : undefined}
         repeated={primary.negativeStatusRepeatNextTurn} />
-      {onOpenComparison ? <button type="button" className="damage-comparison-entry" onClick={onOpenComparison}>查看全精灵承伤</button> : null}
+      {onOpenComparison ? <button type="button" className="damage-comparison-entry" onClick={onOpenComparison}>{balanceComparison?.hasCustom ? "查看全精灵承伤（官方值）" : "查看全精灵承伤"}</button> : null}
 
       {primary.markSettlements?.length > 0 ? (
         <section aria-label="印记结算" className="result-rail__marks">
@@ -351,11 +357,13 @@ export function ResultRail({
             maxHp={result.defenderMaxHp}
             onCurrentHpChange={onCurrentHpChange}
             onPercentChange={onCurrentHpPercentChange}
+            onInputModeChange={onHpInputModeChange}
             percentValue={result.defenderHpPercent}
           />
           <button
             aria-label="恢复满血"
             onClick={() => {
+              onHpInputModeChange?.("percent");
               onCurrentHpChange(result.defenderMaxHp);
               onCurrentHpPercentChange?.(100);
             }}
@@ -391,6 +399,8 @@ export function ResultRail({
             <SkillResultRow
               index={index}
               item={skill}
+              before={balanceComparison?.beforeView?.result?.skillResults?.[index]}
+              comparison={balanceComparison}
               key={`${skill.id}-${index}`}
               onClick={onSkillResultSelect
                 ? () => onSkillResultSelect(index)

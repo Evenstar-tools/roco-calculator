@@ -1,4 +1,5 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { publicResourceUrl } from "../runtime/public-resource-url.js";
 import { useEffect, useRef, useState } from "react";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { GlobalTeamDraftExchange } from "./GlobalTeamDraftExchange.jsx";
@@ -11,7 +12,7 @@ import "../styles/team-exchange.css";
 
 let mappingRequest;
 function loadMapping() {
-  mappingRequest ??= fetch("/data/lineup-code-map.json").then((response) => {
+  mappingRequest ??= fetch(publicResourceUrl("/data/lineup-code-map.json")).then((response) => {
     if (!response.ok) throw new Error("读取阵容数据失败");
     return response.json();
   }).then((data) => {
@@ -97,7 +98,7 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
         let entries = presets;
         if (!entries) {
           try {
-            const response = await fetch("/data/presets/pvp-popular-configs.json");
+            const response = await fetch(publicResourceUrl("/data/presets/pvp-popular-configs.json"));
             if (!response.ok) throw new Error("presets unavailable");
             entries = (await response.json()).entries;
           } catch { entries = []; }

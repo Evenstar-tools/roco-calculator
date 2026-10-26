@@ -11,9 +11,18 @@ export function TraitHint({ description, name }) {
       aria-describedby={open ? tooltipId : undefined}
       className="trait-hint"
       onBlur={() => setOpen(false)}
+      onClick={(event) => {
+        event.currentTarget.focus();
+        setOpen(true);
+      }}
       onFocus={() => setOpen(true)}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") setOpen(false);
+      }}
       onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseLeave={(event) => {
+        if (!event.currentTarget.contains(document.activeElement)) setOpen(false);
+      }}
       tabIndex={0}
     >
       {name}

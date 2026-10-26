@@ -1,10 +1,11 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { metrics } from "./analytics/metrics.js";
+import { previewRoute, unprefixedRoute } from "./runtime/preview-channel.js";
 import { App } from "./App.jsx";
 import { applyPageMetadata, DEER_PAGE_METADATA, HOME_PAGE_METADATA } from "./seo/page-metadata.js";
 
 const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
-const isDeerPath = () => /^\/dianlu\/?$/.test(window.location.pathname);
+const isDeerPath = () => /^\/dianlu\/?$/.test(unprefixedRoute(window.location.pathname));
 
 export function CalculatorRouter({ initialSnapshot = null, active = true, onOpenGlobal }) {
   const [route, setRoute] = useState(() => ({ deer: isDeerPath(), input: window.history.state?.deerInput ?? null }));
@@ -33,7 +34,7 @@ export function CalculatorRouter({ initialSnapshot = null, active = true, onOpen
   function openDeer(input) {
     homeScroll.current = window.scrollY;
     const copy = structuredClone(input);
-    window.history.pushState({ deerInput: copy }, "", "/dianlu/");
+    window.history.pushState({ deerInput: copy }, "", previewRoute("/dianlu/"));
     setRoute({ deer: true, input: copy });
   }
   function returnHome(event) {
@@ -41,7 +42,7 @@ export function CalculatorRouter({ initialSnapshot = null, active = true, onOpen
     if (route.input && window.history.length > 1) {
       window.history.back();
     } else {
-      window.history.pushState(null, "", "/");
+      window.history.pushState(null, "", previewRoute("/"));
       setHomeVisited(true);
       setRoute({ deer: false, input: null });
     }

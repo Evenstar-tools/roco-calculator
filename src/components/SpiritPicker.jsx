@@ -11,6 +11,7 @@ import { ElementIcon } from "./ElementIcon.jsx";
 import { usePickerMenuLayout } from "./picker-menu-layout.js";
 import { buildSpiritFamilyIndex } from "./spirit-family.js";
 import { canPreserveBattleFormConfig, getFormConfigPreferences } from "../state/form-config-preferences.js";
+import { hasCompleteRaceStats } from "../domain/stat.js";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -125,6 +126,9 @@ export function SpiritPicker({
   onFormSelect,
   formSide,
   onOpenDeer,
+  comparisonControls,
+  comparisonSummary,
+  comparisonActive = false,
   selected,
   showFavorite = true,
   side,
@@ -146,6 +150,10 @@ export function SpiritPicker({
     () => undefined,
   );
   const selectedName = selected?.fullName ?? "";
+  const pendingRaceStats = selected?.calculationStatus === "pending-race-stats";
+  const comparisonReady = !pendingRaceStats && hasCompleteRaceStats(selected?.raceStats);
+  const selectedTraitName = selected?.reference?.traitName ?? selected?.traitName;
+  const selectedTraitDescription = selected?.reference?.traitDescription ?? selected?.traitDescription ?? selected?.traitSummary;
   const [query, setQuery] = useState(selectedName);
   const [activeIndex, setActiveIndex] = useState(0);
   const [previewLimit, setPreviewLimit] = useState(INITIAL_PREVIEW_COUNT);
@@ -208,6 +216,7 @@ export function SpiritPicker({
             [
               spirit.fullName,
               spirit.variantName,
+              spirit.sourceCategory,
               spirit.pinyin,
               spirit.initials,
               spirit.dexNo,
@@ -514,7 +523,9 @@ export function SpiritPicker({
               <strong data-new={shouldShowNewBadge(selected) || undefined}>
                 {selected.fullName}
               </strong>
-              <EntityChangeHint changeInfo={selected.changeInfo} />
+              <EntityChangeHint changeInfo={selected.changeInfo} entityName={selected.fullName} active={comparisonReady && comparisonActive}>
+                {comparisonReady ? comparisonControls : null}
+              </EntityChangeHint>
             </span>
             <div className="spirit-card__tags">
               {selected.types.map((type) => (
@@ -528,18 +539,20 @@ export function SpiritPicker({
               ))}
               <span>{selected.stage}</span>
             </div>
-            {selected.calculationStatus === "pending-race-stats" ? (
+            {comparisonReady ? comparisonSummary : null}
+            {pendingRaceStats ? (
               <p className="spirit-card__pending">{t("种族值待确认")}</p>
-            ) : (
+            ) : null}
+            {!pendingRaceStats || selectedTraitName ? (
               <p>
                 {t(selected.battleFormTraitRetained ? "特性沿用：" : "特性：")}
                 <TraitHint
-                  description={selected.reference?.traitDescription ?? selected.traitDescription}
-                  name={selected.reference?.traitName ?? selected.traitName}
+                  description={selectedTraitDescription}
+                  name={selectedTraitName}
                 />
                 {onOpenDeer && <button className="spirit-card__deer-entry" type="button" onClick={onOpenDeer}>{t("电鹿斩杀线 →")}</button>}
               </p>
-            )}
+            ) : null}
             {formSide?.battleForm ? <small className="spirit-card__form-note">
               <span className="spirit-card__moe-count" role="img" aria-label={t("萌化 {count} 层", { count: moeLayers })} title={t("萌化 {count} 层：相对初始形态的降阶数", { count: moeLayers })}>
                 <ElementIcon type="萌" size={16} /><span>{moeLayers}</span>

@@ -1,3 +1,4 @@
+import { IS_PREVIEW_BUILD, previewRoute, unprefixedRoute } from "./preview-channel.js";
 import { shareMetadataFromHash } from "../state/share.js";
 
 export const MANUAL_PREFERENCE_KEY = "rock-calculator.runtime.manual-preference.v1";
@@ -7,7 +8,8 @@ const CN_ROUTE = Object.freeze({ serverId: "cn", locale: "zh-CN" });
 const GLOBAL_PATHS = Object.freeze({ "zh-CN": "/global/zh-CN/", en: "/en/", ja: "/global/ja/" });
 
 export function parseRoute(pathname = "/") {
-  const path = pathname.replace(/\/$/, "") || "/";
+  const path = unprefixedRoute(pathname).replace(/\/$/, "") || "/";
+  if (IS_PREVIEW_BUILD && path === "/") return { ...CN_ROUTE, explicit: true };
   if (path === "/cn" || path === "/dianlu") return { ...CN_ROUTE, explicit: true };
   const locale = Object.keys(GLOBAL_PATHS).find((key) => GLOBAL_PATHS[key].slice(0, -1) === path);
   return locale
@@ -16,7 +18,7 @@ export function parseRoute(pathname = "/") {
 }
 
 export function routeFor(serverId, locale = "en") {
-  return serverId === "global" ? GLOBAL_PATHS[locale] ?? GLOBAL_PATHS.en : "/cn/";
+  return serverId === "global" ? GLOBAL_PATHS[locale] ?? GLOBAL_PATHS.en : previewRoute(IS_PREVIEW_BUILD ? "/" : "/cn/");
 }
 
 function normalizePreference(value) {

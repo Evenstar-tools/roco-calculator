@@ -3,6 +3,7 @@ import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { X } from "@phosphor-icons/react";
 import { useEffect, useRef } from "react";
 import { ResultRail } from "./ResultRail.jsx";
+import { ComparisonDamage } from "../features/balance-comparison/ComparisonResults.jsx";
 import { damagePresentation } from "./damagePresentation.jsx";
 import { TeamDrawer } from "./TeamDrawer.jsx";
 import { ConfigLibraryDialog } from "./ConfigLibraryDialog.jsx";
@@ -276,7 +277,10 @@ export function WorkspaceOverlays({
             {mobileResult.result.selectedSkillName}
           </span>
           <strong className="mobile-result-bar__damage">
-            {mobilePresentation.damage ?? "—"}
+            {mobileResult.balanceComparison?.active ? <ComparisonDamage
+              before={mobileResult.balanceComparison.beforeView?.result?.selectedResult}
+              after={mobileResult.result.selectedResult}
+              issue={mobileResult.balanceComparison.issue} /> : mobilePresentation.damage ?? "—"}
           </strong>
           <span className="mobile-result-bar__percent">
             {Number.isFinite(mobilePresentation.percent)
@@ -284,7 +288,7 @@ export function WorkspaceOverlays({
               : t(mobileResult.result.selectedResult.reason === "非伤害技能不计算伤害" ? "非伤害" : "待输入")}
           </span>
         </button>
-        {mobileActions.onOpenComparison ? <button type="button" className="mobile-comparison-entry damage-comparison-entry" onClick={mobileActions.onOpenComparison}>{t("承伤对比")}</button> : null}
+        {mobileActions.onOpenComparison ? <button type="button" className="mobile-comparison-entry damage-comparison-entry" onClick={mobileActions.onOpenComparison}>{t(mobileResult.balanceComparison?.hasCustom ? "承伤对比（官方）" : "承伤对比")}</button> : null}
         </div>
       ) : null}
 
@@ -312,10 +316,12 @@ export function WorkspaceOverlays({
             <X aria-hidden="true" size={22} weight="bold" />
           </button>
           <ResultRail
+            balanceComparison={mobileResult.balanceComparison}
             activeAdvancedConditions={mobileResult.activeAdvancedConditions}
             onAdvancedOptionsOpen={mobileActions.onAdvancedOptionsOpen}
             onCurrentHpChange={mobileActions.onCurrentHpChange}
             onCurrentHpPercentChange={mobileActions.onCurrentHpPercentChange}
+            onHpInputModeChange={mobileActions.onHpInputModeChange}
             onDirectionToggle={mobileActions.onDirectionToggle}
             onSkillResultSelect={mobileActions.onSkillResultSelect}
             onNegativeStatusRepeatChange={mobileActions.onNegativeStatusRepeatChange}

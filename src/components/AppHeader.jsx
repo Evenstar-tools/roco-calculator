@@ -1,4 +1,5 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { IS_PREVIEW_BUILD } from "../runtime/preview-channel.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import {
   Lightning,
@@ -29,9 +30,9 @@ export function AppHeader({
 }) {
   const { t } = useLocale();
   const { season: storedSeason } = useSeasonTheme();
-  const { serverId, seasonThemeId, seasonPreview } = useRuntime();
+  const { serverId, release, seasonThemeId, seasonPreview } = useRuntime();
   const season = seasonThemeId ? getSeasonTheme(seasonThemeId) : storedSeason;
-  const previewTitle = seasonPreview && season.id !== "neutral" && !(serverId === "cn" && season.id === "s4")
+  const previewTitle = IS_PREVIEW_BUILD ? "S5 · 抢先体验" : seasonPreview && season.id !== "neutral" && !(serverId === "cn" && season.id === release.seasonId?.toLowerCase())
     ? t("{season} · 装饰预览", { season: season.id.toUpperCase() }) : null;
   const showCnSeasonTitle = serverId === "cn";
   const [dark, setDark] = useState(() => readThemeSetting() === "dark");
@@ -78,11 +79,11 @@ export function AppHeader({
         </h1> : !showCnSeasonTitle ? <h1 aria-label={t("洛克计算器") + " · " + t("国际服")}>
           <span aria-hidden="true" className="app-header__title-long">{t("洛克计算器")} · <span className="app-header__season-title">{t("国际服")}</span></span>
           <span aria-hidden="true" className="app-header__title-short"><span className="app-header__season-title">{t("国际服")}</span></span>
-        </h1> : <h1 aria-label={t("洛克计算器 · S4「季中」")}>
-          <span aria-hidden="true" className="app-header__title-long">{t("洛克计算器 · ")}<span className="app-header__season-title">{t("S4「季中」")}</span>
+        </h1> : <h1 aria-label={t("洛克计算器 · ") + t(release.seasonLabel)}>
+          <span aria-hidden="true" className="app-header__title-long">{t("洛克计算器 · ")}<span className="app-header__season-title">{t(release.seasonLabel)}</span>
           </span>
           <span aria-hidden="true" className="app-header__title-short">
-            <span className="app-header__season-title">{t("S4「季中」")}</span>
+            <span className="app-header__season-title">{t(release.seasonLabel)}</span>
           </span>
         </h1>}
       </div>

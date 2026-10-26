@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { getWishPowerIconUrl } from "../data/wish-power-icons.js";
+import { publicResourceUrl } from "../runtime/public-resource-url.js";
 
 function secureIconUrl(value) {
-  return typeof value === "string" &&
-    (/^https:\/\//u.test(value) ||
-      /^\/assets\/skills\/skill_[a-f0-9]{16}\.png$/u.test(value))
-    ? value
-    : null;
+  if (typeof value !== "string") return null;
+  if (/^https:\/\//u.test(value)) return value;
+  const url = publicResourceUrl(value);
+  const root = publicResourceUrl("/assets/skills/");
+  return url.startsWith(root) && /^skill_[a-f0-9]{16}\.png$/u.test(url.slice(root.length)) ? url : null;
 }
 
 export function SkillIcon({ className = "", label = false, skill, size = 28 }) {

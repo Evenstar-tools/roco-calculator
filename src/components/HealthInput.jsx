@@ -16,6 +16,7 @@ export function HealthInput({
   maxHp,
   onCurrentHpChange,
   onPercentChange,
+  onInputModeChange,
   percentValue,
 }) {
   const [mode, setMode] = useState(defaultMode);
@@ -41,6 +42,7 @@ export function HealthInput({
 
   function commit(value) {
     if (value === "") return;
+    onInputModeChange?.(mode);
     if (mode === "percent") {
       const normalized = clamp(value, 0, 100);
       onCurrentHpChange?.(Math.round((maxHp * normalized) / 100));

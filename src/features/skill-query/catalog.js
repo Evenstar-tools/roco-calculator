@@ -1,3 +1,16 @@
+// 查询目录与计算包一起换季，拒绝缓存中的旧季目录或跨服资料。
+export function assertCatalogRelease(catalog, release) {
+  const valid = ["serverId", "dataVersion", "rulesVersion"].every((key) => catalog[key] === release[key]) &&
+    catalog.currentSeason === release.seasonId &&
+    catalog.seasons.filter(({ id }) => id === catalog.currentSeason).length === 1;
+  if (!valid) {
+    const error = new Error("技能资料与当前赛季版本不匹配，请重新加载");
+    error.code = "INCOMPATIBLE_CATALOG_VERSION";
+    throw error;
+  }
+  return catalog;
+}
+
 export function unpackCatalog(data) {
   if (data.schemaVersion !== 1) throw new Error("技能资料版本暂不支持");
   if (data.sharedSkills) data = { ...data, seasons: data.seasons.map((season) => ({ ...season,

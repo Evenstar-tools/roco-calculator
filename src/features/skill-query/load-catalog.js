@@ -1,5 +1,6 @@
-import { unpackCatalog } from "./catalog.js";
+import { assertCatalogRelease, unpackCatalog } from "./catalog.js";
 import { getServerRelease } from "../../domain/server-environment.js";
+import { publicResourceUrl, withPublicResourceUrls } from "../../runtime/public-resource-url.js";
 
 const pending = new Map();
 const cached = new Map();
@@ -19,12 +20,12 @@ export function loadSkillCatalog(serverId = "cn") {
     return Promise.reject(error);
   }
   const key = cacheKey(release);
-  if (!pending.has(key)) pending.set(key, fetch(release.catalogURL)
+  if (!pending.has(key)) pending.set(key, fetch(publicResourceUrl(release.catalogURL))
     .then((response) => {
       if (!response.ok) throw new Error("技能资料加载失败");
       return response.json();
     })
-    .then((value) => { const catalog = unpackCatalog(value); cached.set(key, catalog); return catalog; })
+    .then((value) => { const catalog = withPublicResourceUrls(assertCatalogRelease(unpackCatalog(value), release)); cached.set(key, catalog); return catalog; })
     .catch((error) => { pending.delete(key); throw error; }));
   return pending.get(key);
 }

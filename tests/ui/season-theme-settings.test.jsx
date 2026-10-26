@@ -22,10 +22,12 @@ test.each([
   const selector = screen.getByRole("combobox", { name: label });
   expect(selector).toHaveValue("s3");
   expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
-    ...(fallback ? [fallback] : []), "S1 暗夜拾光", "S2 狂欢怪谈", "S3 铅字幻梦", "S4 月涌狂想",
+    ...(fallback ? [fallback] : []), "S1 暗夜拾光", "S2 狂欢怪谈", "S3 铅字幻梦", "S4 月涌狂想", "S5 圣龙宝藏",
   ]);
   fireEvent.change(selector, { target: { value: "s2" } });
   expect(change).toHaveBeenLastCalledWith("s2");
+  fireEvent.change(selector, { target: { value: "s5" } });
+  expect(change).toHaveBeenLastCalledWith("s5");
   view.rerender(ui(true));
   expect(selector).toHaveValue("preview");
   const preview = screen.getByRole("option", { name: /S1 暗夜拾光.*(?:预览|preview|プレビュー)/u });

@@ -2,8 +2,20 @@ import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { useState } from "react";
 import { AppHeader } from "../../src/components/AppHeader.jsx";
+import * as runtime from "../../src/runtime/RuntimeContext.jsx";
+import { getServerRelease } from "../../src/domain/server-environment.js";
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
+
+test("页头读正式发布赛季，装饰选择不冒充数据版本，切季无需改组件", () => {
+  vi.spyOn(runtime, "useRuntime").mockReturnValue({
+    serverId: "cn", release: { ...getServerRelease("cn"), seasonId: "S5", seasonLabel: "S5「测试赛季」" },
+    seasonThemeId: "s1", seasonPreview: false,
+  });
+  render(<AppHeader />);
+  expect(screen.getByRole("heading", { name: "洛克计算器 · S5「测试赛季」" })).toBeVisible();
+  expect(document.querySelector(".app-header__title-short")).toHaveTextContent("S5「测试赛季」");
+});
 test("仅窄屏竖向合并模式按钮，点击双向切换，尺寸变化恢复双按钮", () => {
   let change;
   const media = { matches: true, addEventListener: (_, fn) => { change = fn; }, removeEventListener: vi.fn() };

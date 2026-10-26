@@ -1,4 +1,4 @@
-import { WarningCircle, X } from "@phosphor-icons/react";
+import { SlidersHorizontal, WarningCircle, X } from "@phosphor-icons/react";
 import {
   useEffect,
   useId,
@@ -41,7 +41,7 @@ function ChangeItem({ item }) {
   );
 }
 
-export function EntityChangeHint({ changeInfo, className = "" }) {
+export function EntityChangeHint({ changeInfo, className = "", children, entityName: fallbackName, active = false }) {
   const tooltipId = useId();
   const anchorRef = useRef(null);
   const panelRef = useRef(null);
@@ -107,16 +107,21 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
 
   useEffect(() => () => cancelClose(), []);
 
-  if (!hasEntityChanges(changeInfo)) return null;
-  const entityName = changeInfo.entityName ?? "当前项目";
+  const hasChanges = hasEntityChanges(changeInfo);
+  if (!hasChanges && !children) return null;
+  const entityName = changeInfo?.entityName ?? fallbackName ?? "当前项目";
+  const actionLabel = hasChanges ? `查看${entityName}本期改动` : `编辑${entityName}试算种族值`;
+  const HintIcon = hasChanges ? WarningCircle : SlidersHorizontal;
 
   return (
     <>
       <button
         aria-expanded={open}
-        aria-label={`查看${entityName}本期改动`}
+        aria-label={actionLabel}
+        data-active={active || undefined}
         className={`entity-change-hint ${className}`.trim()}
-        onBlur={() => {
+        onBlur={(event) => {
+          if (panelRef.current?.contains(event.relatedTarget)) return;
           if (!pinned) setHovered(false);
         }}
         onClick={(event) => {
@@ -129,10 +134,10 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
         onMouseEnter={openOnHover}
         onMouseLeave={closeAfterPointerLeaves}
         ref={anchorRef}
-        title={`查看${entityName}本期改动`}
+        title={actionLabel}
         type="button"
       >
-        <WarningCircle aria-hidden="true" size={16} weight="fill" />
+        <HintIcon aria-hidden="true" size={16} weight="fill" />
       </button>
       {open ? createPortal(
         <div className="entity-change-layer" onClick={(event) => event.stopPropagation()}>
@@ -146,20 +151,21 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
             type="button"
           />
           <section
-            aria-label={`${entityName}本期改动`}
+            aria-label={hasChanges ? `${entityName}本期改动` : `${entityName}种族值试算`}
             className="entity-change-card"
             id={tooltipId}
             onMouseEnter={openOnHover}
             onMouseLeave={closeAfterPointerLeaves}
+            onFocus={() => { if (children) setPinned(true); }}
             ref={panelRef}
-            role="tooltip"
+            role={children ? "dialog" : "tooltip"}
             style={position}
           >
             <header>
               <span>
-                <small>更新</small>
-                <strong>{changeInfo.patch?.label?.replace(/前瞻/g, "").replace(/S3[\s-]*季中/g, "赛季平衡") ?? "本期改动"}</strong>
-                <time>{changeInfo.patch?.date}</time>
+                <small>{hasChanges ? "更新" : "试算"}</small>
+                <strong>{changeInfo?.patch?.label?.replace(/前瞻/g, "").replace(/S3[\s-]*季中/g, "赛季平衡") ?? "种族值编辑"}</strong>
+                <time>{changeInfo?.patch?.date}</time>
               </span>
               <button
                 aria-label="关闭改动详情"
@@ -173,9 +179,10 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
               </button>
             </header>
             <h3>{entityName}</h3>
-            <ul>{changeInfo.items.map((item, index) => (
+            <ul>{(changeInfo?.items ?? []).map((item, index) => (
               <ChangeItem item={item} key={`${item.kind}-${item.label}-${index}`} />
             ))}</ul>
+            {children}
           </section>
         </div>,
         document.body,

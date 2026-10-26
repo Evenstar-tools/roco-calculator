@@ -7,6 +7,7 @@ import { acquisitionSummary, matchesSource, querySpiritFamilies, spiritSkills } 
 import SkillQueryEffect from "./SkillQueryEffect.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
+import { publicResourceUrl } from "../../runtime/public-resource-url.js";
 import "./bidirectional-query.css";
 
 const SOURCES = [["", "全部来源"], ["default", "自学"], ["血脉", "血脉"], ["技能石", "技能石"]];
@@ -23,7 +24,7 @@ function Portrait({ spirit }) {
   const { t } = useLocale();
   const [failed, setFailed] = useState(false);
   const sourceId = spirit.reference?.sourceId ?? (spirit.id?.startsWith("cn-placeholder:") ? null : spirit.id);
-  const url = spirit.asset?.localUrl ?? (sourceId ? `${import.meta.env.BASE_URL}assets/spirits/${sourceId}.png` : null);
+  const url = publicResourceUrl(spirit.asset?.localUrl ?? (sourceId ? `/assets/spirits/${sourceId}.png` : null));
   return failed || !url ? <span className="sq-portrait sq-portrait--empty">{t("暂无图片")}</span> : <img className="sq-portrait" src={url} alt="" loading="lazy" onError={() => setFailed(true)} />;
 }
 

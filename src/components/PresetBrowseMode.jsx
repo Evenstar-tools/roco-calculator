@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { createServerStorage, serverStorageKey } from "../state/server-storage.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
+import { publicResourceUrl } from "../runtime/public-resource-url.js";
 
 export const PRESET_BROWSE_STORAGE_KEY = serverStorageKey("cn", "rock-calculator.settings.preset-browse.v1");
 const PresetBrowseContext = createContext({ enabled: false, spiritIds: new Set(), loading: false, error: "", setEnabled: () => {} });
@@ -16,7 +17,7 @@ export function PresetBrowseProvider({ children }) {
     if (!enabled || serverId !== "cn") return undefined;
     const controller = new AbortController();
     let active = true;
-    fetch("/data/presets/pvp-popular-configs.json", { signal: controller.signal })
+    fetch(publicResourceUrl("/data/presets/pvp-popular-configs.json"), { signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error("预设读取失败，请关闭后重试");
         const library = await response.json();

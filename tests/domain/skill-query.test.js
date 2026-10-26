@@ -1,9 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { seasonChanges, skillLearners, unpackCatalog, familyIds, learnerFamilies } from "../../src/features/skill-query/catalog.js";
+import { assertCatalogRelease, seasonChanges, skillLearners, unpackCatalog, familyIds, learnerFamilies } from "../../src/features/skill-query/catalog.js";
+import { getServerRelease } from "../../src/domain/server-environment.js";
 import { parseSkillSeasons } from "../../scripts/import-skill-query-seasons.mjs";
 
 describe("技能查询赛季对比", () => {
+  it("正式目录匹配发布环境，未来赛季按显式发布配置校验而不写死S4", () => {
+    const current = unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
+    expect(assertCatalogRelease(current, getServerRelease("cn"))).toBe(current);
+    // 仅用于验证换季契约的合成发布配置，不代表已核验的 S5 数据。
+    const future = { serverId: "cn", seasonId: "S5", dataVersion: "fixture-s5", rulesVersion: "fixture-rules" };
+    const next = { ...current, ...future, currentSeason: "S5", seasons: [...current.seasons, { id: "S5" }] };
+    expect(assertCatalogRelease(next, future)).toBe(next);
+    expect(() => assertCatalogRelease(current, future)).toThrow();
+    expect(() => assertCatalogRelease({ ...next, currentSeason: "S4" }, future)).toThrow();
+  });
   it("基础身份相同的形态分支合并，不重复展示地鼠家族", () => {
     const ids = familyIds([
       { id: "dry", baseName: "地鼠", variantName: "枯水", fullName: "地鼠（枯水）", evolutionChainNames: ["遁地鼠（枯水）"] },

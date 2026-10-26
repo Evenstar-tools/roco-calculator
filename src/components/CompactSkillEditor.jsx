@@ -1,4 +1,5 @@
 import { SkillUsageSummary } from "./SkillUsageSummary.jsx";
+import { InlineComparison } from "../features/balance-comparison/BalanceComparisonContext.jsx";
 import {
   Lightning,
   MagicWand,
@@ -20,6 +21,9 @@ function CompactDamage({
   placeholder = false,
   result,
   selected,
+  side,
+  index,
+  kind,
 }) {
   if (placeholder) return null;
   const presentation = damagePresentation(result);
@@ -56,6 +60,7 @@ function CompactDamage({
           <strong>—</strong>
         </>
       )}
+      <InlineComparison result={result} side={side} index={index} kind={kind} />
     </output>
   );
 }
@@ -141,6 +146,7 @@ function CompactSkillSide({
               label={label}
               opponentName={opponentName}
               result={traitDamage.result}
+              side={side} kind="trait"
               selected={{ name: traitDamage.name }}
             />
           </div>
@@ -218,6 +224,7 @@ function CompactSkillSide({
                 opponentName={opponentName}
                 placeholder={placeholder}
                 result={result}
+                side={side} index={index}
                 selected={selected}
               />
               {!placeholder && <SkillUsageSummary result={result} nextHint={refractionHint} />}

@@ -1,3 +1,5 @@
+import { IS_PREVIEW_BUILD } from "../runtime/preview-channel.js";
+
 export const HOME_PAGE_METADATA = Object.freeze({
   title: "洛克计算器｜洛克王国：世界 PVP 伤害计算与配队",
   description: "洛克计算器 RocoCalc（Roco Calculator）是免费的洛克王国：世界 PVP 伤害计算工具，采用国服 S4 数据，支持队伍搭配、技能检索、属性查询、速度耐久排行与电鹿斩杀线。提供网页版和 Windows 版。",
@@ -32,6 +34,9 @@ function setMeta(targetDocument, attribute, name, content) {
 export function applyPageMetadata(metadata, targetDocument = globalThis.document) {
   // Desktop app: URLs retain the desktop title behavior and never gain web canonicals.
   if (!isWebDocument(targetDocument)) return;
+  if (IS_PREVIEW_BUILD) {
+    metadata = { ...metadata, title: "洛克计算器 · S5 抢先体验", canonical: "https://rococalc.top/pre/" };
+  }
   uniqueHeadElement(targetDocument, "title", "title").textContent = metadata.title;
   setMeta(targetDocument, "name", "description", metadata.description);
   const canonical = uniqueHeadElement(targetDocument, 'link[rel="canonical"]', "link");

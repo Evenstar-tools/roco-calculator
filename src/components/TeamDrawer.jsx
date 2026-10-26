@@ -1,4 +1,5 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { publicResourceUrl } from "../runtime/public-resource-url.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import {
   ArrowsLeftRight,
@@ -489,7 +490,7 @@ export function TeamDrawer({
                               type="button"
                             >
                               <svg aria-hidden="true" className={apply ? undefined : "team-capture-icon"} width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
-                                <use href={`/assets/ui/team-actions.svg#${apply ? "set" : "copy"}`} />
+                                <use href={publicResourceUrl(`/assets/ui/team-actions.svg#${apply ? "set" : "copy"}`)} />
                               </svg>
                               {label}
                             </button>

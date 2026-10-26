@@ -1,4 +1,4 @@
-const enabled = import.meta.env.PROD && import.meta.env.VITE_RUM_ENABLED === "true"
+const enabled = import.meta.env.MODE !== "pre" && import.meta.env.PROD && import.meta.env.VITE_RUM_ENABLED === "true"
   && Boolean(import.meta.env.VITE_RUM_ID) && globalThis.location?.origin === "https://rococalc.top";
 const initialFeature = /^\/dianlu\/?$/.test(globalThis.location?.pathname ?? "") ? "deer" : "calculator";
 let serverId = /^\/(?:en(?:\/|$)|global(?:\/|$))/.test(globalThis.location?.pathname ?? "") ? "global" : "cn";

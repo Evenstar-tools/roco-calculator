@@ -1,4 +1,5 @@
 import { SkillUsageSummary, UsageCountActions } from "./SkillUsageSummary.jsx";
+import { InlineComparison } from "../features/balance-comparison/BalanceComparisonContext.jsx";
 import { describeSkillUsage } from "../domain/skill-presentation.js";
 import {
   BurstSourceControls,
@@ -65,6 +66,8 @@ function isInteractiveSkillTarget(target) {
 
 function SkillDamagePreview({
   index,
+  side,
+  kind,
   label,
   opponentName,
   result,
@@ -97,6 +100,7 @@ function SkillDamagePreview({
       <span aria-hidden="true" className="skill-slot__damage-bar">
         <DamageSegments presentation={presentation} />
       </span>
+      <InlineComparison result={result} side={side} index={index} kind={kind} />
     </output>
   );
 }
@@ -127,6 +131,7 @@ function SkillSide({
   onSkillSelect,
   onHealthChange,
   onHealthPercentChange,
+  onHealthInputModeChange,
   onTraitContextChange,
   onTraitDamageFocus,
   onTraitDamageHitCountChange,
@@ -250,6 +255,7 @@ function SkillSide({
               label={label}
               maxHp={health.maxHp}
               onCurrentHpChange={(value) => onHealthChange?.(side, value)}
+              onInputModeChange={(mode) => onHealthInputModeChange?.(side, mode)}
               onPercentChange={(value) =>
                 onHealthPercentChange?.(side, value)
               }
@@ -262,6 +268,7 @@ function SkillSide({
             <span>对方生命</span>
             <HealthInput
               currentHp={opponentHealth.currentHp}
+              onInputModeChange={(mode) => onHealthInputModeChange?.(opponentSide, mode)}
               defaultMode="percent"
               label={opponentLabel}
               maxHp={opponentHealth.maxHp}
@@ -339,6 +346,7 @@ function SkillSide({
                 opponentName={opponentName}
                 result={traitDamage.result}
                 selected={{ name: traitDamage.name }}
+                side={side} kind="trait"
               />
             </div>
           </div>
@@ -555,6 +563,7 @@ function SkillSide({
                   opponentName={opponentName}
                   result={result}
                   selected={selected}
+                  side={side}
                 />
               </div>
               {selected?.description ||
@@ -769,6 +778,7 @@ export function FourSkillEditor({
   defenderLifestealPercent = 0,
   onHealthChange,
   onHealthPercentChange,
+  onHealthInputModeChange,
   onSkillActivate,
   onSkillContextChange,
   onSkillFocus,
@@ -845,6 +855,7 @@ export function FourSkillEditor({
         onSkillContextChange={onSkillContextChange}
         onHealthChange={onHealthChange}
         onHealthPercentChange={onHealthPercentChange}
+        onHealthInputModeChange={onHealthInputModeChange}
         onSkillFocus={onSkillFocus}
         onSkillHitCountChange={onSkillHitCountChange}
         onSkillPowerClear={onSkillPowerClear}

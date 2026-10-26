@@ -33,23 +33,28 @@ function ThemeSettings() {
   </SeasonThemeProvider>;
 }
 
-test("显示设置切换四季原图，保留季中标题、亮暗状态和已编辑的配置", () => {
+test("显示设置切换五季装饰，保留季中标题、亮暗状态和已编辑的配置", () => {
   localStorage.removeItem(serverStorageKey("cn", SEASON_THEME_STORAGE_KEY));
   document.documentElement.dataset.theme = "dark";
   const view = render(<ThemeSettings />);
   const selector = screen.getByRole("combobox", { name: "赛季主题" });
   expect(selector).toHaveValue("s4");
   expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
-    "S1 暗夜拾光", "S2 狂欢怪谈", "S3 铅字幻梦", "S4 月涌狂想",
+    "S1 暗夜拾光", "S2 狂欢怪谈", "S3 铅字幻梦", "S4 月涌狂想", "S5 圣龙宝藏",
   ]);
   fireEvent.change(screen.getByRole("textbox", { name: "当前技能威力" }), { target: { value: "112" } });
-  for (const id of ["s1", "s2", "s3", "s4"]) {
+  for (const id of ["s1", "s2", "s3", "s4", "s5"]) {
     fireEvent.change(selector, { target: { value: id } });
     const theme = getSeasonTheme(id);
     expect(document.documentElement).toHaveAttribute("data-season", id);
     expect(document.documentElement).toHaveAttribute("data-theme", "dark");
     expect(document.documentElement.style.getPropertyValue("--season-scene-image")).toBe(`url("${theme.scene}")`);
-    expect(view.container.querySelector(".app-header__season-character")).toHaveAttribute("src", theme.character.src);
+    if (theme.character) {
+      expect(view.container.querySelector(".app-header__season-character")).toHaveAttribute("src", theme.character.src);
+    } else {
+      expect(view.container.querySelector(".app-header__season-character")).not.toBeInTheDocument();
+      expect(document.documentElement.style.getPropertyValue("--season-character-image")).toBe("none");
+    }
     expect(screen.getByRole("heading", { name: "洛克计算器 · S4「季中」" })).toBeVisible();
     expect(screen.getByRole("textbox", { name: "当前技能威力" })).toHaveValue("112");
     expect(Boolean(view.container.querySelector(".app-header__season-orbit"))).toBe(id === "s4");
@@ -155,10 +160,10 @@ test("存储读写均失败时按钮仍能开启、关闭和手动固定主题",
   expect(document.documentElement.dataset.season).toBe("s4");
   const shuffle = screen.getByRole("button", { name: "每次进入随机主题" });
   fireEvent.click(shuffle);
-  expect(document.documentElement.dataset.season).toBe("s3");
+  expect(document.documentElement.dataset.season).toBe("s5");
   fireEvent.click(shuffle);
   expect(shuffle).toHaveAttribute("aria-pressed", "false");
-  expect(document.documentElement.dataset.season).toBe("s3");
+  expect(document.documentElement.dataset.season).toBe("s5");
   fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "s2" } });
   expect(document.documentElement.dataset.season).toBe("s2");
   fireEvent.click(screen.getByRole("checkbox", { name: "计算界面保持经典配色" }));
@@ -166,7 +171,7 @@ test("存储读写均失败时按钮仍能开启、关闭和手动固定主题",
 });
 
 test("经典配色可独立记忆，保留赛季背景、随机模式、亮暗和输入", () => {
-  localStorage.setItem(serverStorageKey("cn", SEASON_THEME_STORAGE_KEY), "s3");
+  localStorage.setItem(serverStorageKey("cn", SEASON_THEME_STORAGE_KEY), "s5");
   document.documentElement.dataset.theme = "dark";
   const random = vi.spyOn(Math, "random").mockReturnValue(0);
   const view = render(<ThemeSettings />);
@@ -175,7 +180,7 @@ test("经典配色可独立记忆，保留赛季背景、随机模式、亮暗�
   fireEvent.click(checkbox);
   expect(checkbox).toBeChecked();
   expect(document.documentElement).toHaveAttribute("data-classic-calculator-colors", "true");
-  expect(document.documentElement).toHaveAttribute("data-season", "s3");
+  expect(document.documentElement).toHaveAttribute("data-season", "s5");
   expect(localStorage.getItem(serverStorageKey("cn", CLASSIC_CALCULATOR_COLORS_STORAGE_KEY))).toBe("1");
   fireEvent.change(screen.getByRole("textbox", { name: "当前技能威力" }), { target: { value: "112" } });
   fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "s2" } });
@@ -210,12 +215,16 @@ test("unconfirmed Global has no season art; CN retains S4", () => {
     "--season-scene-image": 'url("/assets/season/s4-moon-night.webp")',
     "--season-character-image": 'url("/assets/season/s4-silver-wolf.webp")',
   });
+  expect(getSeasonThemeVariables("s5")).toEqual({
+    "--season-scene-image": 'url("/assets/season/s5-dragon-treasure.webp")',
+    "--season-character-image": "none",
+  });
   expect(getSeasonTheme("toString")).toBe(getSeasonTheme("neutral"));
 });
 
 test("seasonPreview is accepted only on exact loopback hosts and known themes", () => {
   for (const hostname of ["localhost", "127.0.0.1", "[::1]"]) {
-    for (const id of ["s1", "s2", "s3", "s4"]) {
+    for (const id of ["s1", "s2", "s3", "s4", "s5"]) {
       expect(resolveSeasonThemeId({ serverId: "global", hostname, search: `?seasonPreview=${id}` })).toBe(id);
     }
   }
@@ -223,7 +232,7 @@ test("seasonPreview is accepted only on exact loopback hosts and known themes", 
     expect(resolveSeasonThemeId({ serverId: "global", hostname, search: "?seasonPreview=s1" })).toBe("neutral");
     expect(resolveSeasonThemeId({ serverId: "cn", hostname, search: "?seasonPreview=s1" })).toBe("s4");
   }
-  for (const id of ["neutral", "s5", "toString", "S1", ""]) {
+  for (const id of ["neutral", "unknown-season", "toString", "S1", ""]) {
     expect(resolveSeasonThemeId({ serverId: "global", hostname: "localhost", search: `?seasonPreview=${id}` })).toBe("neutral");
   }
 });
@@ -236,12 +245,14 @@ const header = ({ locale = "en", id = "neutral", preview = false, serverId = "gl
 
 test.each([
   ["zh-CN", "装饰预览"], ["en", "Theme preview"], ["ja", "装飾プレビュー"],
-])("%s labels local S1–S3 previews without inventing official translated season names", (locale, label) => {
+])("%s labels local season previews without inventing official translated season names", (locale, label) => {
   const view = render(header({ locale }));
-  for (const id of ["s1", "s2", "s3"]) {
+  for (const id of ["s1", "s2", "s3", "s5"]) {
     view.rerender(header({ locale, id, preview: true }));
     expect(screen.getByRole("heading", { name: new RegExp(`${id.toUpperCase()} · ${label}`) })).toBeVisible();
-    expect(view.container.querySelector(".app-header__season-character")).toHaveAttribute("src", getSeasonTheme(id).character.src);
+    const character = getSeasonTheme(id).character;
+    if (character) expect(view.container.querySelector(".app-header__season-character")).toHaveAttribute("src", character.src);
+    else expect(view.container.querySelector(".app-header__season-character")).not.toBeInTheDocument();
     expect(view.container.querySelector(".app-header__season-orbit")).not.toBeInTheDocument();
     expect(view.container.querySelector(".app-header__season-star")).not.toBeInTheDocument();
     expect(view.container.querySelector(".app-header__season-wolf")).not.toBeInTheDocument();

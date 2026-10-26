@@ -8,7 +8,7 @@ test("赛季外观独立记忆，不覆盖亮暗或计算设置，无效值恢�
   const storage = { getItem: (key) => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
   expect(readSeasonThemePreference(storage)).toBe("default");
   expect(getSeasonTheme(resolveSeasonThemeId({ preference: readSeasonThemePreference(storage) })).id).toBe("s4");
-  for (const id of ["s1", "s2", "s3", "s4", "random"]) {
+  for (const id of ["s1", "s2", "s3", "s4", "s5", "random"]) {
     expect(writeSeasonThemePreference(id, storage)).toBe(id);
     expect(readSeasonThemePreference(storage)).toBe(id);
   }
@@ -27,14 +27,14 @@ test("存储被禁用时仍允许本次选择外观", () => {
   expect(writeSeasonThemePreference("random", storage)).toBe("random");
 });
 
-test("随机只从四季主题选择，不抽到默认或无效主题", () => {
-  expect([0, 0.25, 0.5, 0.999].map((value) => pickRandomSeasonThemeId(() => value)))
-    .toEqual(["s1", "s2", "s3", "s4"]);
+test("随机只从已登记的五季主题选择，不抽到默认或无效主题", () => {
+  expect([0, 0.2, 0.4, 0.6, 0.999].map((value) => pickRandomSeasonThemeId(() => value)))
+    .toEqual(["s1", "s2", "s3", "s4", "s5"]);
 });
 
-test.each(["s1", "s2", "s3", "s4"])("排除上次的 %s 后仍可均匀选择另外三季", (previous) => {
-  const candidates = [0, 0.5, 0.999].map((value) => pickRandomSeasonThemeId(() => value, previous));
-  expect(candidates).toEqual(["s1", "s2", "s3", "s4"].filter((id) => id !== previous));
+test.each(["s1", "s2", "s3", "s4", "s5"])("排除上次的 %s 后仍可均匀选择另外四季", (previous) => {
+  const candidates = [0, 0.25, 0.5, 0.999].map((value) => pickRandomSeasonThemeId(() => value, previous));
+  expect(candidates).toEqual(["s1", "s2", "s3", "s4", "s5"].filter((id) => id !== previous));
 });
 
 test("随机记录独立保存且拒绝未知主题，旧字符串偏好保持兼容", () => {
@@ -76,13 +76,13 @@ test("season preferences are isolated by server and invalid values restore that 
   expect(readSeasonThemePreference("cn", storage)).toBe("default");
   expect(readSeasonThemePreference("global", storage)).toBe("default");
   writeSeasonThemePreference("s1", "cn", storage);
-  writeSeasonThemePreference("s3", "global", storage);
+  writeSeasonThemePreference("s5", "global", storage);
   expect(readSeasonThemePreference("cn", storage)).toBe("s1");
-  expect(readSeasonThemePreference("global", storage)).toBe("s3");
+  expect(readSeasonThemePreference("global", storage)).toBe("s5");
   expect(resolveSeasonThemeId({ serverId: "cn", preference: "s1" })).toBe("s1");
-  expect(resolveSeasonThemeId({ serverId: "global", preference: "s3" })).toBe("s3");
+  expect(resolveSeasonThemeId({ serverId: "global", preference: "s5" })).toBe("s5");
   expect(resolveSeasonThemeId({ serverId: "global", preference: "toString" })).toBe("neutral");
-  writeSeasonThemePreference("s5", "cn", storage);
+  writeSeasonThemePreference("unknown-season", "cn", storage);
   expect(resolveSeasonThemeId({ serverId: "cn", preference: readSeasonThemePreference("cn", storage) })).toBe("s4");
   expect(storage.getItem("rock-calculator.settings.theme.v1")).toBeNull();
 });
@@ -100,7 +100,7 @@ test("unavailable storage keeps a normalized in-memory choice without throwing",
   expect(writeSeasonThemePreference("random", "global", storage)).toBe("random");
 });
 
-test.each([[0, "s1"], [0.25, "s2"], [0.5, "s3"], [0.99999, "s4"]])("random draw %s selects %s from the four artwork themes", (random, id) => {
+test.each([[0, "s1"], [0.2, "s2"], [0.4, "s3"], [0.6, "s4"], [0.99999, "s5"]])("random draw %s selects %s from the five artwork themes", (random, id) => {
   expect(pickRandomSeasonThemeId(() => random)).toBe(id);
 });
 

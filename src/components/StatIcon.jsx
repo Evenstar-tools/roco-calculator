@@ -1,4 +1,5 @@
 import { STAT_LABELS } from "../domain/natures.js";
+import { publicResourceUrl } from "../runtime/public-resource-url.js";
 
 const STAT_ASSETS = Object.freeze({
   hp: "hp",
@@ -17,14 +18,14 @@ export function StatIcon({ gain = false, label = false, size = 18, stat }) {
     className="stat-icon stat-icon--nature-gain"
     role="img"
     title={`${STAT_LABELS[stat]}性格增益 +20%`}
-    style={{ width: size, height: size, "--stat-icon-url": `url(/assets/stats/${asset}.png)` }}
+    style={{ width: size, height: size, "--stat-icon-url": `url(${publicResourceUrl(`/assets/stats/${asset}.png`)})` }}
   />;
   return (
     <img
       alt={label ? STAT_LABELS[stat] : ""}
       className="stat-icon"
       height={size}
-      src={`/assets/stats/${asset}.png`}
+      src={publicResourceUrl(`/assets/stats/${asset}.png`)}
       width={size}
     />
   );

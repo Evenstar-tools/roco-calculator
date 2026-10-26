@@ -1,4 +1,5 @@
 import { loadServerSnapshot } from "../../runtime/load-snapshot.js";
+import { publicResourceUrl } from "../../runtime/public-resource-url.js";
 import { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { deerResultKind, useCalculationMetrics } from "../../analytics/use-completion-metrics.js";
 import { ArrowLeft, CaretDown, CaretRight, Minus, Plus, SlidersHorizontal } from "@phosphor-icons/react";
@@ -28,13 +29,14 @@ import { DEER_NAMES, DEFENSE_TEMPLATES, applyDeerPreset, calculateDeerRow, calcu
 import "./deer.css";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
+import { previewRoute } from "../../runtime/preview-channel.js";
 import { routeFor } from "../../runtime/routes.js";
 
 function DeerHeader({ onReturn }) {
   const { serverId, locale } = useRuntime();
   const { t } = useLocale();
   useEffect(() => { document.documentElement.dataset.theme = readThemeSetting(); }, []);
-  return <AppHeader pageTitle={t("电鹿斩杀线")} toolAction={<a className="deer-back" href={serverId === "cn" ? "/" : routeFor(serverId, locale)} onClick={onReturn}><ArrowLeft aria-hidden="true" size={15} weight="bold" />{t("返回主站")}</a>} onThemeChange={(theme) => {
+  return <AppHeader pageTitle={t("电鹿斩杀线")} toolAction={<a className="deer-back" href={serverId === "cn" ? previewRoute("/") : routeFor(serverId, locale)} onClick={onReturn}><ArrowLeft aria-hidden="true" size={15} weight="bold" />{t("返回主站")}</a>} onThemeChange={(theme) => {
     document.documentElement.dataset.theme = writeThemeSetting(undefined, theme);
   }} />;
 }
@@ -280,7 +282,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     } }));
   }
   return <><DeerHeader onReturn={onReturn} /><main className="deer-page">
-    <div className="deer-scenery" aria-hidden="true"><div className="deer-scenery-shards" /><img className="deer-scenery-portrait" src="/assets/deer/bopulu-background-v2.webp" alt="" width="1024" height="1536" decoding="async" draggable={false} /><div className="deer-scenery-spark deer-scenery-spark--right" /><div className="deer-scenery-spark deer-scenery-spark--left" /></div>
+    <div className="deer-scenery" aria-hidden="true"><div className="deer-scenery-shards" /><img className="deer-scenery-portrait" src={publicResourceUrl("/assets/deer/bopulu-background-v2.webp")} alt="" width="1024" height="1536" decoding="async" draggable={false} /><div className="deer-scenery-spark deer-scenery-spark--right" /><div className="deer-scenery-spark deer-scenery-spark--left" /></div>
     <div className="deer-header"><span>共享计算内核 · 60级</span></div>
     <div className="deer-configs">{["attacker", "defender"].map((sideKey) => <div className="deer-config-column" key={sideKey}><SideConfiguration snapshot={snapshot} setup={setup} sideKey={sideKey} presets={presets} onSide={(patch, manual) => setSide(sideKey, patch, manual)} onSetup={setOptions} onSelect={(id) => selectSpirit(sideKey, id)} onDefenseLevel={(value) => setOverride("defenseLevelStage", value)}>
       {sideKey === "defender" && hasDeerDefenseTrait(snapshot, setup.state.sides.defender) && <DefenderTraitConfiguration snapshot={snapshot} spirit={defender} side={setup.state.sides.defender} trait={defenseTrait} context={defenseContext} onTrait={setTrait} onSide={(patch) => setSide("defender", patch, false)} />}
@@ -343,7 +345,7 @@ function VerifiedDeerPage({ initialState = null, onReturn }) {
         const snapshot = withCalculatorExtras(await loadServerSnapshot("cn", { signal: controller.signal }));
         let presets = {};
         try {
-          const response = await fetch("/data/presets/pvp-popular-configs.json", { signal: controller.signal });
+          const response = await fetch(publicResourceUrl("/data/presets/pvp-popular-configs.json"), { signal: controller.signal });
           if (response.ok) presets = Object.fromEntries((await response.json()).entries.map((preset) => [preset.spiritId, preset]));
         } catch { /* 无网络时仍可使用四种模板。 */ }
         try { presets = { ...presets, ...spiritConfigsRepository().load(snapshot).configs }; } catch { /* 不可用的本地存储不阻断计算。 */ }

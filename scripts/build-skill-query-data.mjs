@@ -1,5 +1,6 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { familyIds } from "../src/features/skill-query/catalog.js";
+import { assertCatalogRelease, familyIds } from "../src/features/skill-query/catalog.js";
+import { getServerRelease } from "../src/domain/server-environment.js";
 
 const read = async (path) => JSON.parse(await readFile(path, "utf8"));
 const source = await read("data/skill-query/s3-source.json");
@@ -44,6 +45,9 @@ const mergedLearnsets = (snapshot) => snapshot.learnsets.map((entry) => {
   ])) };
 });
 const compact = (snapshot, season) => {
+  if (snapshot.meta.seasonId?.match(/^S\d+/)?.[0] !== season) {
+    throw new Error(`${season} 的快照不属于该赛季；换季前须将旧季 current.json 归档`);
+  }
   const families = familyIds(snapshot.spirits);
   return {
   id: season,
@@ -72,7 +76,11 @@ for (const season of seasons) {
     skill.introducedSeason = firstSeen.get(skill.id);
   }
 }
-const data = { schemaVersion: 1, currentSeason: manifest.currentSeason, source: source.source, seasons };
+const currentSnapshot = await read(manifest.seasons.find(({ id }) => id === manifest.currentSeason).snapshot);
+const data = { schemaVersion: 1, currentSeason: manifest.currentSeason,
+  serverId: currentSnapshot.meta.serverId ?? "cn", dataVersion: currentSnapshot.meta.id,
+  rulesVersion: currentSnapshot.meta.rulesVersion, source: source.source, seasons };
+assertCatalogRelease(data, getServerRelease("cn"));
 // 传输只保存整数索引，途径文本共用词表；打开面板后还原，避免重复 ID 和文本占体积。
 const methodTexts = [];
 const methodIndex = new Map();

@@ -16,13 +16,14 @@ const STEPS = [
 
 export function EmptyStateGuide({ message = null, title = null }) {
   const { t } = useLocale();
+  const heading = title ?? t(message ? "种族值待确认" : "三步完成一次伤害计算");
   return (
     <section aria-label={t("使用引导")} className="empty-guide">
       <h2 className="empty-guide__title">
-        {title ?? t(message ? "种族值待确认" : "三步完成一次伤害计算")}
+        {heading}
       </h2>
       {message ? (
-        <p className="empty-guide__footnote">{message}</p>
+        message !== heading ? <p className="empty-guide__footnote">{message}</p> : null
       ) : (
         <ol className="empty-guide__steps">
           {STEPS.map((step, index) => (

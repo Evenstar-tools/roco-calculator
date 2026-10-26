@@ -1,3 +1,5 @@
+import { publicResourceUrl } from "../runtime/public-resource-url.js";
+
 // 按原图符号逐一核对：旧资源编号 6 空缺，机械使用 18，不沿用列表序号。
 export const WISH_POWER_ICON_NUMBERS = Object.freeze({
   normal: 7700001, grass: 7700002, fire: 7700003, water: 7700004,
@@ -11,5 +13,5 @@ export function getWishPowerIconUrl(skillId) {
   if (typeof skillId !== "string" || !skillId.startsWith("calculator_wish_power_")) return null;
   const suffix = skillId.slice("calculator_wish_power_".length);
   const number = Object.hasOwn(WISH_POWER_ICON_NUMBERS, suffix) ? WISH_POWER_ICON_NUMBERS[suffix] : null;
-  return number ? `/assets/skills/wish-power/${number}.png` : null;
+  return number ? publicResourceUrl(`/assets/skills/wish-power/${number}.png`) : null;
 }

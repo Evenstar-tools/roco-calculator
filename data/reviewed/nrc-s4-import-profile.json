@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "status": "reviewed",
+  "version": "s4-2026-09-10",
+  "seasonId": "S4",
+  "date": "2026-09-10",
+  "evidencePath": "data/reviewed/nrc-2026-09-10.json",
+  "counts": {
+    "spirits": 622,
+    "skills": 579,
+    "traits": 242,
+    "traitRecords": 245,
+    "relations": 30740
+  },
+  "sourceRevisions": {
+    "Catalog": 7265,
+    "Skills": 7273,
+    "Learnsets": 7271,
+    "Evolutions": 7267,
+    "Config": 7266,
+    "Index": 7270
+  }
+}

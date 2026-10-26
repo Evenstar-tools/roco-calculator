@@ -1,3 +1,5 @@
+import { publicResourceUrl } from "../runtime/public-resource-url.js";
+
 const ELEMENT_ASSETS = Object.freeze({
   光: "light",
   冰: "ice",
@@ -27,7 +29,7 @@ export function ElementIcon({ label = false, size = 18, type }) {
       alt={label ? type : ""}
       className="element-icon"
       height={size}
-      src={`/assets/elements/${asset}.png`}
+      src={publicResourceUrl(`/assets/elements/${asset}.png`)}
       width={size}
     />
   );

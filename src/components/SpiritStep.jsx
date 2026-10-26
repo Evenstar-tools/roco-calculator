@@ -15,6 +15,9 @@ export function SpiritStep({
   onDefenderSelect,
   onSwap,
   onOpenDeer,
+  comparisonControls,
+  comparisonSummaries,
+  comparisonActive,
   spirits,
 }) {
   const { t } = useLocale();
@@ -31,6 +34,9 @@ export function SpiritStep({
           onFormSelect={onFormSelect?.bind(null, "attacker")}
           onOpenDeer={["波普鹿", "爵士鹿"].includes(attacker?.fullName) ? onOpenDeer : undefined}
           selected={attacker}
+          comparisonControls={comparisonControls?.attacker}
+          comparisonSummary={comparisonSummaries?.attacker}
+          comparisonActive={comparisonActive?.attacker}
           side="attack"
           spirits={spirits}
         />
@@ -52,6 +58,9 @@ export function SpiritStep({
           formSide={formSides?.defender}
           onFormSelect={onFormSelect?.bind(null, "defender")}
           selected={defender}
+          comparisonControls={comparisonControls?.defender}
+          comparisonSummary={comparisonSummaries?.defender}
+          comparisonActive={comparisonActive?.defender}
           side="defense"
           spirits={spirits}
         />

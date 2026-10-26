@@ -1,4 +1,5 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { publicResourceUrl } from "../runtime/public-resource-url.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { X } from "@phosphor-icons/react";
 import { useRef } from "react";
@@ -6,7 +7,7 @@ import { useModalFocus } from "../hooks/useModalFocus.js";
 
 const DESKTOP_RELEASES_URL =
   "https://github.com/Evenstar-tools/roco-calculator/releases/latest";
-const MINIAPP_CODE_URL = "/assets/downloads/wechat-miniapp-code.jpg";
+const MINIAPP_CODE_URL = publicResourceUrl("/assets/downloads/wechat-miniapp-code.jpg");
 
 export function ProductAccessDialog({ onClose, open }) {
   const { t } = useLocale();

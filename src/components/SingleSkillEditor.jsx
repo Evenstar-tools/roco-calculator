@@ -386,8 +386,10 @@ export function SingleSkillEditor({
   manualPower,
   onHitCountChange,
   onAttackerHealthChange,
+  onAttackerHealthInputModeChange,
   onAttackerHealthPercentChange,
   onDefenderHealthChange,
+  onDefenderHealthInputModeChange,
   onDefenderHealthPercentChange,
   onManualPowerChange,
   onPowerOverrideChange,
@@ -542,6 +544,7 @@ export function SingleSkillEditor({
                 label="攻击方"
                 maxHp={attackerHealth.maxHp}
                 onCurrentHpChange={onAttackerHealthChange}
+                onInputModeChange={onAttackerHealthInputModeChange}
                 onPercentChange={onAttackerHealthPercentChange}
                 percentValue={attackerHealth.percent}
               />
@@ -553,6 +556,7 @@ export function SingleSkillEditor({
                 label="防御方"
                 maxHp={defenderHealth.maxHp}
                 onCurrentHpChange={onDefenderHealthChange}
+                onInputModeChange={onDefenderHealthInputModeChange}
                 onPercentChange={onDefenderHealthPercentChange}
                 percentValue={defenderHealth.percent}
               />

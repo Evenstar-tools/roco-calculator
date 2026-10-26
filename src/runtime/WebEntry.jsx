@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
+import { IS_PREVIEW_BUILD } from "./preview-channel.js";
 import { metrics } from "../analytics/metrics.js";
 import { readThemeSetting } from "../state/display-settings.js";
 import { applyPageMetadata } from "../seo/page-metadata.js";
@@ -101,7 +102,7 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
     history.replaceState({ ...history.state, rocoEntry: { serverId: global ? "global" : "cn", locale: global ? entry.locale : "zh-CN" } }, "");
     document.documentElement.lang = global ? entry.locale : "zh-CN";
     document.documentElement.dataset.server = global ? "global" : "cn";
-    if (!isDesktop) {
+    if (!isDesktop && !IS_PREVIEW_BUILD) {
       document.querySelector('link[rel="manifest"]')?.setAttribute("href", global ? `/manifest-global-${entry.locale}.webmanifest` : "/manifest.webmanifest");
       document.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute("content", global ? copy.title : "洛克计算器");
     }
@@ -133,6 +134,10 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
   }
 
   function navigate(serverId, locale, { remember = true, hash = "", replace = false } = {}) {
+    if (IS_PREVIEW_BUILD && serverId === "global") {
+      window.location.assign(`${routeFor(serverId, locale)}${hash}`);
+      return;
+    }
     const next = { serverId, locale: serverId === "cn" ? "zh-CN" : locale };
     if (serverId === "global") setTheme(readThemeSetting());
     if (remember) writeManualPreference(next);

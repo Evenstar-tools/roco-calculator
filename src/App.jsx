@@ -1,4 +1,5 @@
 import { loadGlobalPlaceholderCatalog, loadServerSnapshot } from "./runtime/load-snapshot.js";
+import { previewRoute } from "./runtime/preview-channel.js";
 import { useRuntime } from "./runtime/RuntimeContext.jsx";
 import { UNVERIFIED_GLOBAL_SNAPSHOT } from "./runtime/unverified-snapshot.js";
 import { useLocale } from "./i18n/LocaleContext.jsx";
@@ -30,6 +31,10 @@ import { SkillStep } from "./components/SkillStep.jsx";
 import { SpiritStep } from "./components/SpiritStep.jsx";
 import { PresetBrowseProvider } from "./components/PresetBrowseMode.jsx";
 import { WorkspaceOverlays } from "./components/WorkspaceOverlays.jsx";
+import { useBalanceComparison } from "./features/balance-comparison/useBalanceComparison.js";
+import { SpiritComparisonControls, SpiritTrialChanges } from "./features/balance-comparison/SpiritComparisonControls.jsx";
+import { ComparisonStatus } from "./features/balance-comparison/ComparisonResults.jsx";
+import { BalanceComparisonContext } from "./features/balance-comparison/BalanceComparisonContext.jsx";
 import {
   readNegativeStatusSettlementSetting,
   readThemeSetting,
@@ -38,7 +43,6 @@ import {
   writeViewModeSetting,
 } from "./state/display-settings.js";
 import {
-  buildCalculatorViewModel,
   clampStage,
   getPanelView,
   getAppliedWeatherLabel,
@@ -79,7 +83,7 @@ import { calculateAllPanelStats } from "./domain/stat.js";
 import { getEffectiveTraits } from "./domain/effective-traits.js";
 import { getBattleFormChoices } from "./domain/battle-form.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
-import { withCalculatorExtras } from "./data/snapshot-extras.js";
+import { withWebPreview } from "./features/s5-preview/with-web-preview.js";
 import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
 import { useCalculatorSession } from "./hooks/useCalculatorSession.js";
 import { useCalculatorShortcuts } from "./hooks/useCalculatorShortcuts.js";
@@ -236,27 +240,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     () => createSpiritSearchIndex(snapshot.spirits),
     [snapshot.spirits],
   );
-  const viewModel = useMemo(
-    () =>
-      buildCalculatorViewModel({
-        activeDirection,
-        serverId,
-        completeSpiritIds,
-        favoriteSpiritIds,
-        snapshot,
-        spiritIndex,
-        state,
-      }),
-    [
-      activeDirection,
-      serverId,
-      completeSpiritIds,
-      favoriteSpiritIds,
-      snapshot,
-      spiritIndex,
-      state,
-    ],
-  );
+  const balance = useBalanceComparison({ activeDirection, serverId, completeSpiritIds,
+    favoriteSpiritIds, snapshot, spiritIndex, state });
+  const viewModel = balance.afterView;
   const { calculation, configurationReady, configurationEditable, currentDirection } = viewModel;
   const placeholder = serverId === "global" && Boolean(snapshot.meta?.placeholderSource);
   const { attacker: attackerView, defender: defenderView } = viewModel.sides;
@@ -774,18 +760,31 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   }
 
   function updateSideHealth(side, currentHp) {
+    const direction = side === "attacker" ? "reverse" : "forward";
+    // The following percent callback commits the official-scale HP atomically.
+    if (balance.getHpInputMode(direction) === "percent") return;
     dispatch({
-      direction: side === "attacker" ? "reverse" : "forward",
+      direction,
       type: "direction/update",
       value: { currentHp },
     });
   }
 
   function updateSideHealthPercent(side, currentHpPercent) {
+    const direction = side === "attacker" ? "reverse" : "forward";
+    const source = stateRef.current.sides[side];
+    const official = getSpirit(snapshot, source);
+    const officialHp = official ? calculateAllPanelStats({ raceStats: official.raceStats,
+      displayIvs: source.displayIvs, natureMultipliers: getNatureMultipliers(source.nature) }).hp : null;
+    const hp = balance.getHpInputMode(direction) === "percent" && officialHp !== null
+      ? Math.round(officialHp * currentHpPercent / 100) : stateRef.current.directions[direction].currentHp;
+    balance.rememberHpBasis(direction, hp, currentHpPercent, source);
     dispatch({
-      direction: side === "attacker" ? "reverse" : "forward",
+      direction,
       type: "direction/update",
-      value: { context: { currentHpPercent } },
+      value: { context: { currentHpPercent },
+        ...(balance.getHpInputMode(direction) === "percent" && officialHp !== null
+          ? { currentHp: hp } : {}) },
     });
   }
 
@@ -1613,6 +1612,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           currentHp,
         )
       }
+      onAttackerHealthInputModeChange={(mode) => balance.setHpInputMode(activeDirection === "forward" ? "reverse" : "forward", mode)}
       onAttackerHealthPercentChange={(currentHpPercent) =>
         updateSideHealthPercent(
           activeDirection === "forward" ? "attacker" : "defender",
@@ -1625,6 +1625,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           currentHp,
         )
       }
+      onDefenderHealthInputModeChange={(mode) => balance.setHpInputMode(activeDirection, mode)}
       onDefenderHealthPercentChange={(currentHpPercent) =>
         updateSideHealthPercent(
           activeDirection === "forward" ? "defender" : "attacker",
@@ -1756,6 +1757,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       }
       onHealthChange={updateSideHealth}
       onHealthPercentChange={updateSideHealthPercent}
+      onHealthInputModeChange={(side, mode) => balance.setHpInputMode(side === "attacker" ? "reverse" : "forward", mode)}
       onTraitContextChange={(side, key, value) => {
         const direction = side === "attacker" ? "forward" : "reverse";
         updateTraitContext(direction, key, value);
@@ -1936,6 +1938,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           setViewMode("compact");
         },
         onClearCurrent: () => {
+          balance.reset();
           dispatch({
             type: "state/replace",
             value: {
@@ -1993,12 +1996,16 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     displaySettings: overlays.displaySettingsProps,
     mobileResult: {
       ...overlays.mobileResultProps,
+      balanceComparison: balance,
       activeAdvancedConditions,
       actions: {
         ...overlays.mobileResultProps.actions,
         onAdvancedOptionsOpen: () =>
           openAdvancedOptionsAtTop({ closeMobileResult: true }),
         onSkillResultSelect: selectSkillResult,
+        onHpInputModeChange: (mode) => balance.setHpInputMode(activeDirection, mode),
+        onCurrentHpChange: (value) => updateSideHealth(viewModel.active.defenseSideKey, value),
+        onCurrentHpPercentChange: (value) => updateSideHealthPercent(viewModel.active.defenseSideKey, value),
         onNegativeStatusRepeatChange: updateNegativeStatusRepeatNextTurn,
         onOpenComparison: damageComparisonEnabled ? openDamageComparison : undefined,
       },
@@ -2021,7 +2028,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         else if (id === "transmission") setTransmissionOpen(true);
         else if (id === "deer") {
           if (!release.capabilities.calculate) { setDeerOpen(true); return; }
-          if (!onOpenDeer) { window.location.href = "/dianlu"; return; }
+          if (!onOpenDeer) { window.location.href = previewRoute("/dianlu/"); return; }
           let next = stateRef.current;
           for (const [side, name] of [["attacker", "波普鹿"], ["defender", "银月狼王"]]) {
             const current = snapshot.spirits.find((spirit) => spirit.id === next.sides[side].spiritId);
@@ -2122,7 +2129,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             durability: () => { setRankingsVisited(true); setRankingKind("durability"); },
             deer: () => {
               if (!release.capabilities.calculate) { setDeerOpen(true); return; }
-              if (!onOpenDeer) { window.location.href = "/dianlu"; return; }
+              if (!onOpenDeer) { window.location.href = previewRoute("/dianlu/"); return; }
               let next = stateRef.current;
               for (const [side, name] of [["attacker", "波普鹿"], ["defender", "银月狼王"]]) {
                 const current = snapshot.spirits.find((spirit) => spirit.id === next.sides[side].spiritId);
@@ -2150,11 +2157,25 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         viewMode={viewMode}
         onViewModeChange={setViewMode}
       />
+      <BalanceComparisonContext value={balance}>
       <WorkspaceOverlays {...overlayProps}>
       {shortcutsOpen && <ShortcutDialog settings={shortcutSettings} onChange={setShortcutSettings} onClose={() => setShortcutsOpen(false)} />}
       <div className={`calculator-layout calculator-layout--${viewMode}`}>
         <main className="calculator-main">
           <SpiritStep
+            comparisonControls={release.capabilities.calculate ? Object.fromEntries(["attacker", "defender"].map((side) => {
+              const spirit = getSpirit(snapshot, state.sides[side]);
+              return [side, spirit ? <SpiritComparisonControls balance={balance} spirit={spirit} side={side} /> : null];
+            })) : undefined}
+            comparisonSummaries={release.capabilities.calculate ? Object.fromEntries(["attacker", "defender"].map((side) => {
+              const spirit = getSpirit(snapshot, state.sides[side]);
+              return [side, spirit ? <SpiritTrialChanges balance={balance} spirit={spirit} side={side} /> : null];
+            })) : undefined}
+            comparisonActive={Object.fromEntries(["attacker", "defender"].map((side) => {
+              const spirit = getSpirit(snapshot, state.sides[side]);
+              return [side, Boolean(balance.customEnabled[side]?.[spirit?.id] ||
+                balance.enabled && balance.patchId === spirit?.changeInfo?.patch?.id)];
+            }))}
             attacker={attacker}
             attackerFavoriteState={
               favoriteSpiritIds.has(attacker?.id)
@@ -2179,11 +2200,16 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             onDefenderFavoriteToggle={() => toggleSpiritFavorite(defender, state.sides.defender)}
             onDefenderSelect={(value) => changeSpirit("defender", value)}
             onSwap={() => {
+              balance.swap();
               dispatch({ type: "sides/swap" });
               setActiveDirection("forward");
             }}
             spirits={selectableSpirits}
           />
+          {balance.active && <div className="balance-active-bar">
+            <ComparisonStatus comparison={balance} />
+            <button type="button" onClick={balance.stop}>关闭对比与试算</button>
+          </div>}
 
           {!configurationReady && !placeholder && !firstRunGuideVisible
             ? <EmptyStateGuide title={!release.capabilities.calculate ? t("国际服数据尚待核验") : undefined}
@@ -2473,15 +2499,17 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         {configurationReady ? (
           <div className="result-column">
             <ResultRail
+              balanceComparison={balance}
               onOpenComparison={damageComparisonEnabled ? openDamageComparison : undefined}
               activeAdvancedConditions={activeAdvancedConditions}
               onBloodlineResultFocus={() =>
                 updateDirection({ selectedDamageSource: "bloodline" })
               }
               onAdvancedOptionsOpen={openAdvancedOptionsAtTop}
-              onCurrentHpChange={(currentHp) => updateDirection({ currentHp })}
+              onCurrentHpChange={(currentHp) => updateSideHealth(viewModel.active.defenseSideKey, currentHp)}
+              onHpInputModeChange={(mode) => balance.setHpInputMode(activeDirection, mode)}
               onCurrentHpPercentChange={(currentHpPercent) =>
-                updateDirection({ context: { currentHpPercent } })
+                updateSideHealthPercent(viewModel.active.defenseSideKey, currentHpPercent)
               }
               onDirectionToggle={() =>
                 setActiveDirection(toggleDirection)
@@ -2496,6 +2524,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       </div>
 
       </WorkspaceOverlays>
+      </BalanceComparisonContext>
       {damageComparisonEnabled && comparisonSource ? <Suspense fallback={<div role="status">{t("正在打开承伤对比…")}</div>}><DamageComparisonDialog
         key={damageComparisonSourceKey(comparisonSource)} preferences={comparisonPreferences} onPreferencesChange={setComparisonPreferences}
         snapshot={snapshot} source={comparisonSource} onClose={() => setComparisonSource(null)}
@@ -2526,7 +2555,7 @@ export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDee
     initialSnapshot
       ? serverId === "global"
         ? initialSnapshot.meta?.serverId === "global" ? initialSnapshot : UNVERIFIED_GLOBAL_SNAPSHOT
-        : withCalculatorExtras(initialSnapshot)
+        : withWebPreview(initialSnapshot)
       : null,
   );
   const [error, setError] = useState("");
@@ -2539,7 +2568,7 @@ export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDee
 
     const loading = serverId === "global"
       ? loadGlobalPlaceholderCatalog({ signal: controller.signal })
-      : loadServerSnapshot(serverId, { signal: controller.signal }).then(withCalculatorExtras);
+      : loadServerSnapshot(serverId, { signal: controller.signal }).then(withWebPreview);
     loading
       .then((loadedSnapshot) => {
         if (active) setSnapshot(loadedSnapshot);

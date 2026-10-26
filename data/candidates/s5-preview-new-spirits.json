@@ -1,0 +1,185 @@
+{
+  "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+  "schemaVersion": 1,
+  "status": "community-preview",
+  "source": {
+    "url": "https://www.bilibili.com/video/BV1qqnS6XETF/",
+    "bvid": "BV1qqnS6XETF",
+    "title": "和榜一锐评S5新精灵特性【省流版】",
+    "creator": "Dr_卡特拉",
+    "durationSeconds": 257,
+    "authority": "community-video",
+    "reviewedCaptionLines": [1, 114],
+    "reviewedSlides": 15,
+    "note": "已逐卡核对名称和效果；视频为社区前瞻整理，不作为正式数值源。未命名进化阶段、完整属性、正式特性名、六维和学习面不补猜。"
+  },
+  "entries": [
+    {
+      "key": "minggulong",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/minggulong.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/862665625271534048","sourceFrame":"official-encounters/official-news-1.jpg"},
+      "name": "冥古龙",
+      "kind": "family",
+      "traitSummary": "开局99级（等级上限99级）；每回合结束降低10级；低于80级时受到伤害增加40%。",
+      "mechanicKey": "minggulong",
+      "evidence": { "seconds": 1.8, "frame": "visual_frames/t-000001.800.jpg", "captionLines": [1, 11] },
+      "unknowns": ["完整进化链和六维", "最低等级", "等级对面板及伤害公式的正式影响", "专属技能参数及击败后升级结算细则"]
+    },
+    {
+      "key": "abu",
+      "name": "阿布",
+      "kind": "family",
+      "traitSummary": "使用3能耗技能后提升2级（等级上限99级）；低于80级时受到伤害增加40%。",
+      "mechanicKey": "abu",
+      "evidence": { "seconds": 23.8, "frame": "visual_frames/t-000023.800.jpg", "captionLines": [12, 20] },
+      "unknowns": ["完整进化链和六维", "初始等级", "能耗判定取基础值还是实际消耗", "后台触发条件", "等级公式"]
+    },
+    {
+      "key": "underground-silver-dragon",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/underground-silver-dragon.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/862665625271534048","sourceFrame":"official-encounters/official-news-2.jpg"},
+      "name": "地绡银龙",
+      "kind": "family",
+      "traitSummary": "每消耗1点能量，魔攻增加10%；视频说明当次出招可以获得加成。",
+      "mechanicKey": "underground-silver-dragon",
+      "evidence": { "seconds": 45.8, "frame": "visual_frames/t-000045.800.jpg", "captionLines": [21, 31] },
+      "unknowns": ["完整进化链和六维", "累计叠加方式和上限", "持续时间及离场保留", "正式攻击强度字段定义"]
+    },
+    {
+      "key": "gold-vein-dragon",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/gold-vein-dragon.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/862665625271534048","sourceFrame":"official-encounters/official-news-2.jpg"},
+      "name": "龙嵴金脉",
+      "kind": "family",
+      "traitSummary": "聚能后攻击增加50%。",
+      "mechanicKey": "gold-vein-dragon",
+      "evidence": { "seconds": 69.8, "frame": "visual_frames/t-000069.800.jpg", "captionLines": [32, 36] },
+      "unknowns": ["完整进化链和六维", "聚能判定时点", "攻击的正式作用范围", "持续时间及叠加方式"]
+    },
+    {
+      "key": "boss-ice-bruce",
+      "name": "冰钻布鲁斯（首领化）",
+      "baseName": "冰钻布鲁斯",
+      "kind": "boss",
+      "traitSummary": "对手每1点能耗，技能威力增加10%；对方总能耗达到20点时，额外获得50速度。",
+      "mechanicKey": "boss-ice-bruce",
+      "evidence": { "seconds": 81.8, "frame": "visual_frames/t-000081.800.jpg", "captionLines": [37, 49] },
+      "unknowns": ["首领六维与学习面", "总能耗取携带技能还是实际消耗", "威力增益叠加方式和上限", "首领血脉附带规则"]
+    },
+    {
+      "key": "boss-glass-jellyfish",
+      "name": "琉璃水母（首领化）",
+      "baseName": "琉璃水母",
+      "kind": "boss",
+      "traitSummary": "使用技能后，赋予对手等于中毒印记层数两倍的中毒层数。",
+      "mechanicKey": "boss-glass-jellyfish",
+      "evidence": { "seconds": 103.8, "frame": "visual_frames/t-000103.800.jpg", "captionLines": [50, 55] },
+      "unknowns": ["首领六维与学习面", "中毒印记所属方及读取时点", "中毒与印记上限", "首领血脉附带规则"]
+    },
+    {
+      "key": "jingyu",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/jingyu.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-002.jpg"},
+      "name": "鲸羽",
+      "kind": "family",
+      "traitSummary": "雪天下，敌方不再获得冻结，而是获得3层星陨。",
+      "mechanicKey": "jingyu",
+      "evidence": { "seconds": 116.8, "frame": "visual_frames/t-000116.800.jpg", "captionLines": [56, 61] },
+      "unknowns": ["完整进化链和六维", "替换适用的冻结来源与结算时点", "每回合触发次数及星陨上限"]
+    },
+    {
+      "key": "doulie",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/doulie.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-021.jpg"},
+      "name": "豆粒鹅",
+      "kind": "family",
+      "traitSummary": "使对方获得10层冻结后，开启5回合雪天；每局对局仅触发一次。",
+      "mechanicKey": "doulie",
+      "evidence": { "seconds": 129.8, "frame": "visual_frames/t-000129.800.jpg", "captionLines": [62, 66] },
+      "unknowns": ["完整进化链和六维", "10层取当前层数还是累计施加层数", "触发回合是否计入5回合", "同时发生的天气覆盖顺序"]
+    },
+    {
+      "key": "watermelon-bug",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/watermelon-bug.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-011.jpg"},
+      "name": "西瓜虫",
+      "kind": "family",
+      "traitSummary": "使用草系技能时获得1层随机奉献；使用虫系技能时给对手1层寄生。",
+      "mechanicKey": "watermelon-bug",
+      "evidence": { "seconds": 142.8, "frame": "visual_frames/t-000142.800.jpg", "captionLines": [67, 72] },
+      "unknowns": ["完整进化链和六维", "随机奉献结果分布及作用对象细则", "多属性技能判定", "寄生上限与结算细则"]
+    },
+    {
+      "key": "diliutun",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/diliutun.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-005.jpg"},
+      "name": "滴溜豚",
+      "kind": "family",
+      "traitSummary": "掷出一枚20面骰子（点数1至20），双方根据点数获得增益或减益。",
+      "mechanicKey": "diliutun",
+      "evidence": { "seconds": 157.8, "frame": "visual_frames/t-000157.800.jpg", "captionLines": [73, 76] },
+      "unknowns": ["完整进化链和六维", "投掷触发条件", "各点数对应的效果、对象、持续时间与概率", "叠加与离场规则"]
+    },
+    {
+      "key": "lele-shark",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/lele-shark.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-008.jpg"},
+      "name": "乐乐鲨",
+      "kind": "family",
+      "traitSummary": "清除减益后永久获得50%攻击力；每局对局仅触发一次。",
+      "mechanicKey": "lele-shark",
+      "evidence": { "seconds": 170.8, "frame": "visual_frames/t-000170.800.jpg", "captionLines": [77, 85] },
+      "unknowns": ["完整进化链和六维", "清除减益的正式判定", "攻击的正式作用范围", "力竭与复活后的保留规则"]
+    },
+    {
+      "key": "egg-wrap",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/egg-wrap.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-016.jpg"},
+      "name": "蛋包蛋",
+      "kind": "family",
+      "traitSummary": "登场时，若己方存在被萌化的精灵，获得50%双防。视频另提及其可开启新天气“梦境”：双方交换速度，不影响先制度。",
+      "mechanicKey": "egg-wrap",
+      "evidence": { "seconds": 190.8, "frame": "visual_frames/t-000190.800.jpg", "captionLines": [86, 95] },
+      "unknowns": ["完整进化链和六维", "双防持续时间与再次入场是否叠加", "开启梦境的技能及参数", "交换速度取值时点和增益顺序"]
+    },
+    {
+      "key": "crab-coconut",
+      "name": "蟹蟹椰",
+      "kind": "family",
+      "traitSummary": "使用水系技能后，下一个草系技能能耗减少3。",
+      "mechanicKey": "crab-coconut",
+      "evidence": { "seconds": 213.8, "frame": "visual_frames/t-000213.800.jpg", "captionLines": [96, 101] },
+      "unknowns": ["完整进化链和六维", "重复水技是否叠加减费", "最低能耗", "非草技和离场是否清除待生效减费"]
+    },
+    {
+      "key": "little-scissor",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/little-scissor.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-019.jpg"},
+      "name": "小剪影",
+      "kind": "family",
+      "traitSummary": "对方更换精灵时，攻击增加50%。",
+      "mechanicKey": "little-scissor",
+      "evidence": { "seconds": 232.8, "frame": "visual_frames/t-000232.800.jpg", "captionLines": [102, 105] },
+      "unknowns": ["完整进化链和六维", "攻击的正式作用范围", "持续时间与累计叠加方式", "被动换人与离场触发细则"]
+    },
+    {
+      "key": "lily-of-valley",
+      "name": "铃兰",
+      "kind": "family",
+      "traitSummary": "处于梦境下，回合结束时对方获得3层寄生。",
+      "mechanicKey": "lily-of-valley",
+      "evidence": { "seconds": 240.8, "frame": "visual_frames/t-000240.800.jpg", "captionLines": [106, 114] },
+      "unknowns": ["完整进化链和六维", "正式属性（视频作者仅推测草萌）", "手切当回合的实际触发顺序", "寄生上限与结算细则"]
+    },
+    {
+      "key": "boss-abu",
+      "name": "阿布（首领化）",
+      "baseName": "阿布",
+      "kind": "boss",
+      "traitSummary": "视频提到首领化后等级提升会触发额外效果，未公布具体效果；不套用普通阿布的全部规则。",
+      "mechanicKey": "boss-abu",
+      "evidence": { "seconds": 23.8, "frame": "visual_frames/t-000023.800.jpg", "captionLines": [16, 17] },
+      "unknowns": ["首领六维与学习面", "完整首领特性原文", "等级提升的额外效果", "首领血脉附带规则"]
+    },
+    {
+      "key": "boss-thousand-spikes",
+      "name": "千棘盔（首领化）",
+      "baseName": "千棘盔",
+      "kind": "boss",
+      "traitSummary": "视频仅将千棘盔首领化作为收益对照，未说明具体首领特性；是否属于S5新增仍待核实。",
+      "mechanicKey": "boss-thousand-spikes",
+      "evidence": { "seconds": 103.8, "frame": "visual_frames/t-000103.800.jpg", "captionLines": [55, 55] },
+      "unknowns": ["S5新增归属", "首领六维与学习面", "完整首领特性原文", "首领血脉附带规则"]
+    }
+  ]
+}

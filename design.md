@@ -2,7 +2,7 @@
 
 调用链：[项目 AGENTS.md](AGENTS.md) → [roco-season-design Skill](.agents/skills/roco-season-design/SKILL.md) → 本文。也可直接调用 `$roco-season-design`。
 
-本文件是洛克计算器 Web 赛季装饰的可复用执行入口。新增 S5 或调整现有主题时，先读取本文，再核对当前代码和用户本轮要求；它不授权改数据、改正式默认主题、提交、推送或发布。
+本文件是洛克计算器赛季装饰的可复用执行入口。新增后续赛季或调整现有主题时，先读取本文，再核对当前代码和用户本轮要求；它不授权改数据、改正式默认主题、提交、推送或发布。S5 本地准备及素材缺项见 [来源记录](docs/design/season-themes.md#7-s5圣龙宝藏本地准备--2026-10-23)。
 
 赛季资料、原图 URL、已有素材来历见 [season-themes.md](docs/design/season-themes.md)；S1–S3 完整生成提示词见 [season-imagegen-prompts.md](docs/design/season-imagegen-prompts.md)。这些文档中的历史验收记录只证明当时结果，不替代本轮验证。尤其不能沿用早期“801–1100px 隐藏 S1–S3 角色”的旧方案。
 
@@ -78,7 +78,7 @@ flowchart LR
 | 基础与断点 | `src/styles/03-base-shell.css`、`src/styles/10-compact-workspace.css`、`src/styles/13-responsive-mobile.css`、`src/styles.css` | 复用原布局；检查样式导入顺序与优先级，避免后写规则覆盖新主题或恢复固定 S4。 |
 | 电鹿例外 | `src/features/deer/deer.css`、`AppHeader` 的 `pageTitle` 分支 | 顶栏不显示赛季场景/角色；保留实底、文字和工具操作，仅继承相关颜色。电鹿自身鹿影独立。 |
 | 桌面 | `desktop/main.mjs`、`package.json` | 共享 Web 组件和 CSS；Web 验证不等于桌面安装包已重打或安装。 |
-| 小程序独立链 | `miniapp/src/assets/season/`、`miniapp/src/components/SeasonBackdrop.jsx`、`miniapp/src/components/AppHeader.jsx`、`miniapp/src/pages/index/styles/season.css`、`miniapp/src/app.config.js`、`miniapp/src/theme.json` | 独立本地资产、样式及系统主题配置，当前保留 S4。Web 加主题不会自动同步小程序；仅在用户包含该平台时改动，并做微信原生验收。 |
+| 小程序独立链 | `miniapp/src/assets/season/`、`miniapp/src/state/season-theme.js`、`miniapp/src/components/SeasonBackdrop.jsx`、`miniapp/src/components/AppHeader.jsx`、`miniapp/src/pages/index/styles/season.css`、`miniapp/src/app.config.js`、`miniapp/src/theme.json` | 独立本地资产、样式及系统主题配置；本分支已有 S1–S5 选项，默认仍为 S4。Web 加主题不会自动同步小程序；仅在用户包含该平台时改动，并做微信原生验收。 |
 
 ### 两条绘制链必须一起调
 
@@ -122,7 +122,7 @@ flowchart LR
 5. **验证与修正。** 运行受影响的已有状态/设置测试，用真实页面完成下节的最小验证；只对失败、有改动或新疑点重跑。新增测试覆盖具体漏掉的行为，不为颜色数值写穷举锁定测试。
 6. **交付。** 展示参考原图、自制原稿、真实界面和预览链接；说明改动文件、已验证范围与剩余证据缺口。更新来源和提示词文档；不把网页通过写成桌面/微信已验，不默认发布。
 
-新增 S5 时要同时更新现有测试中“s5 为非法值”的夹具，改用仍未登记的 ID；保留非法输入回退断言，不能仅删掉失败用例。当前 `PREVIEW_IDS` 与 `SELECTABLE_SEASON_THEMES` 有直接关系，扩展前先看实际代码，不假定有独立的自动注册流程。
+新增主题时若现有测试把该 ID 当作非法值，改用仍未登记的 ID，保留非法输入回退断言，不能仅删掉失败用例。S5 接入已完成这一步。当前 `PREVIEW_IDS` 与 `SELECTABLE_SEASON_THEMES` 有直接关系，扩展前先看实际代码，不假定有独立的自动注册流程。透明角色素材未齐时允许 `character:null`，清除上一主题角色变量；不得用头像放大或重绘补位，来源记录中保留待补项。
 
 可复制调用句：
 

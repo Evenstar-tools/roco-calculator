@@ -2,6 +2,8 @@ export const SERVER_RELEASES = Object.freeze({
   cn: Object.freeze({
     serverId: "cn",
     status: "verified",
+    seasonId: "S4",
+    seasonLabel: "S4「季中」",
     dataVersion: "s4-2026-09-10",
     rulesVersion: "s4-2026-09-10",
     dataURL: "/data/runtime.json",

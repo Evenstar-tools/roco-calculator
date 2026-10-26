@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { publicResourceUrl } from "../runtime/public-resource-url.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { configLibraryImportMessage, storageIssueSource } from "../i18n/storage-errors.js";
@@ -8,7 +9,7 @@ import { version as appVersion } from "../../package.json";
 export { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
 
 async function loadPresetHistory() {
-  const history = await fetch("/data/presets/pvp-preset-history.json")
+  const history = await fetch(publicResourceUrl("/data/presets/pvp-preset-history.json"))
     .then((result) => result.ok ? result.json() : null).catch(() => null);
   return Array.isArray(history?.entries) ? history.entries : [];
 }
@@ -82,7 +83,7 @@ export function useConfigLibraryFlow({
 
   async function loadPopularConfigLibrary() {
     if (serverId !== "cn") throw storageError("SERVER_DATA_UNVERIFIED", "国际服预设资料待核验");
-    const response = await fetch("/data/presets/pvp-popular-configs.json");
+    const response = await fetch(publicResourceUrl("/data/presets/pvp-popular-configs.json"));
     if (!response.ok) {
       throw new Error(`内置配置读取失败：${response.status}`);
     }
