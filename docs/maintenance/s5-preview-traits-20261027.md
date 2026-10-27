@@ -146,3 +146,13 @@
 本轮可收口文件：`src/domain/s5-preview-traits.js`与`trait-effects.js`、`calculator-view-model.js`；`src/features/s5-preview/catalog.js`、`mechanics.js`、`calculation-guard.js`、`settlement.js`；`src/features/balance-comparison/model.js`；`src/App.jsx`、`SingleSkillEditor.jsx`、`FourSkillEditor.jsx`、新增`S5PreviewTraitSummary.jsx`；`src/styles.css`、新增`src/styles/27-s5-preview-trait-summary.css`；候选JSON阿布家族同特性；相关domain/features/ui测试和release配置的S5交互收集。以上文件有历史未提交部分，统一提交时保留整个现有工作树的已授权内容，不用本段替代Git实际差异核对。
 
 仍待正式规则：非60级的面板生成与逐方等级贯通、骰子点数映射、随机奉献结果、事件累计叠法/持续/上限、雪天自动覆盖顺序与剩余回合推进、梦境交换速度时点、草系减费下限。这些只保留明确输入/状态摘要或具体阻断，不宣称完整战斗模拟完成。此处没有执行提交、推送、pin或公网操作。
+
+
+## 本地接续：用户清单属性录入 · 2026-10-27
+
+按当前用户明确清单，将16项单/双属性写入候选JSON `entries[].types`；原字与顺序保留，冰钻/琉璃准确作用于首领占位，普通形态不覆盖。圣龙阿布本轮未列，保持空属性，不将同特性等同于同属性。`typesProvenance`单独标明`user-provided`及本次日期，属性仍待后续正式资料校对，不归因于原视频或头像官图。
+
+目录覆盖同时支持新建与既有占位升级，正式同名资料优先。属性通过原卡片图标、搜索索引、克制、本系加成和状态免疫链路生效；保留六维100试算、未知学习面与原特性支持范围。待校对事项只留在本交接和聊天提醒，页面不增加说明或警示。
+
+
+本轮目录/幂等升级/正式优先、真实16项清单及已有特性页面回归通过，定向ESLint、Vite pre构建通过。Chromium逐一选择16项核对卡片属性与顺序，刷新保留；390×844无横向溢出。证据`output/playwright/s5-types-20261027/types-desktop.png`、`types-mobile.png`，脚本`verify-types.mjs`。本次属性录入改动留在工作树，未操作Git index、提交或推送；统一发布线程此前冻结的快照独立处理。

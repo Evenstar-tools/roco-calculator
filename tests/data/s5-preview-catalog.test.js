@@ -29,6 +29,32 @@ function fixture() {
 }
 
 describe("S5 Web/Windows 展示候选覆盖", () => {
+  test("用户录入属性接入新旧占位且幂等，正式同名资料不被覆盖", () => {
+    const { snapshot, catalog } = fixture();
+    const old = withS5PreviewCatalog(snapshot, catalog, { useTestRaceStats: true });
+    catalog.entries[0].types = ["幽", "龙"];
+    catalog.entries[1].types = ["水"];
+    catalog.typesProvenance = { authority: "user-provided", providedAt: "2026-10-27", reviewStatus: "pending" };
+    const fresh = withS5PreviewCatalog(snapshot, catalog, { useTestRaceStats: true });
+    const upgraded = withS5PreviewCatalog(old, catalog, { useTestRaceStats: true });
+    expect(upgraded.spirits.slice(1).map(spirit => spirit.types)).toEqual([["幽", "龙"], ["水"]]);
+    expect(upgraded.spirits[1].types).toEqual(fresh.spirits[1].types);
+    expect(upgraded.spirits[1].types).not.toBe(catalog.entries[0].types);
+    expect(upgraded.spirits[1].previewIdentity.typesProvenance).toEqual(catalog.typesProvenance);
+    expect(old.spirits[1].types).toEqual([]);
+    expect(withS5PreviewCatalog(upgraded, catalog, { useTestRaceStats: true })).toBe(upgraded);
+    const formal = { ...snapshot.spirits[0], id: "formal", fullName: catalog.entries[0].name, types: ["光"] };
+    const next = withS5PreviewCatalog({ ...snapshot, spirits: [...snapshot.spirits, formal] }, catalog);
+    expect(next.spirits.find(spirit => spirit.id === formal.id)).toBe(formal);
+    expect(formal.types).toEqual(["光"]);
+  });
+
+  test.each([["幽灵"], ["水", "水"], ["水", "毒", "龙"], "水", null].map(types => ({ types })))("属性 $types 不能静默变成中性或重复属性", ({ types }) => {
+    const { catalog } = fixture();
+    catalog.entries[0].types = types;
+    expect(() => validateS5PreviewCatalog(catalog)).toThrow("属性无效");
+  });
+
   test("用户验收六维100只在显式测试覆盖中使用，正式资料与未知关系保留", () => {
     const { snapshot, catalog } = fixture();
     const original = structuredClone({ snapshot, catalog });

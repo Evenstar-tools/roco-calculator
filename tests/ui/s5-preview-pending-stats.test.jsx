@@ -147,7 +147,7 @@ function expectS5Pinned() {
   }
 }
 
-test("真实App中S5六维100可编辑、恢复占位及上次手调，S4不再NEW且未知特性不放行伤害", async () => {
+test("真实App中S5六维100可编辑、恢复占位及上次手调，S4不再NEW且等级特性可计算", async () => {
   const user = userEvent.setup();
   const current = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
   const snapshot = withWebPreview(current);
@@ -174,7 +174,7 @@ test("真实App中S5六维100可编辑、恢复占位及上次手调，S4不再N
   await user.click(within(editor).getByRole("button", { name: "恢复上次手调值" }));
   expect(within(editor).getByRole("spinbutton", { name: "试算物攻种族值" })).toHaveValue(250);
   await user.keyboard("{Escape}");
-  expect(screen.getAllByText(/等级99的等级面板与伤害公式尚未核验/u).length).toBeGreaterThan(0);
+  expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).toHaveAttribute("data-status", "ready");
   const damage = screen.queryByTestId("primary-damage");
   if (damage) expect(damage.textContent).not.toMatch(/^\d+$/u);
   expect(current.spirits.some(spirit => spirit.id === candidate.id)).toBe(false);
@@ -214,6 +214,26 @@ test("无搜索的收藏与热门预设模式都保留17项S5置顶", async () =
   expectS5Pinned();
   expect(screen.getAllByRole("option")[0]).toHaveClass("is-active");
   expect(screen.getAllByRole("option").slice(17).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
+});
+
+test.each([false, true])("已选同族精灵时S5仍置顶，常用配置模式=%s，原同族切换保留", async (presetMode) => {
+  const user = userEvent.setup();
+  const snapshot = withWebPreview(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+  const selected = snapshot.spirits.find(spirit => spirit.fullName === "冰钻布鲁斯");
+  localStorage.setItem(PRESET_BROWSE_STORAGE_KEY, presetMode ? "1" : "0");
+  vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ entries: [{ spiritId: selected.id }] }) })));
+  const onFormSelect = vi.fn();
+  render(<PresetBrowseProvider><SpiritPicker {...pickerProps(snapshot.spirits, selected)}
+    formSide={{ spiritId: selected.id }} onFormSelect={onFormSelect} /></PresetBrowseProvider>);
+  await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  expectS5Pinned();
+  expect(screen.getAllByRole("option")[0]).toHaveClass("is-active");
+  expect(new Set(screen.getAllByRole("option").map(option => option.dataset.spiritId)).size).toBe(screen.getAllByRole("option").length);
+  const keepConfig = screen.getByRole("switch", { name: "攻击方同族切换保留本场配置" });
+  if (!keepConfig.checked) await user.click(keepConfig);
+  const base = snapshot.spirits.find(spirit => spirit.fullName === "布鲁斯");
+  await user.click(screen.getByRole("option", { name: /^布鲁斯 /u }));
+  expect(onFormSelect).toHaveBeenCalledWith(base.id);
 });
 
 test("名称搜索优先准确命中，S5首领或收藏标记不抢普通形态，也不追加无关S5项", () => {

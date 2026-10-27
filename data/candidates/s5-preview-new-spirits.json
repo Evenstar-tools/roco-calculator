@@ -1,6 +1,7 @@
 {
   "catalogId": "s5-video-BV1qqnS6XETF-20261027",
   "schemaVersion": 1,
+  "typesProvenance": {"authority":"user-provided","providedAt":"2026-10-27","reviewStatus":"pending"},
   "status": "community-preview",
   "source": {
     "url": "https://www.bilibili.com/video/BV1qqnS6XETF/",
@@ -18,6 +19,7 @@
       "key": "minggulong",
       "asset": {"localUrl":"/assets/spirits/s5-preview/minggulong.png","kind":"official-portrait","sourceUrl":"https://www.taptap.cn/moment/862665625271534048","sourceFrame":"official-encounters/official-news-1.jpg"},
       "name": "冥古龙",
+      "types": ["幽", "龙"],
       "kind": "family",
       "traitSummary": "开局99级（等级上限99级）；每回合结束降低10级；低于80级时受到伤害增加40%。",
       "mechanicKey": "minggulong",
@@ -28,6 +30,7 @@
       "key": "abu",
       "asset": {"localUrl":"/assets/spirits/s5-preview/abu.png","kind":"official-portrait","sourceUrl":"https://www.taptap.cn/moment/662643409994908648","sourceFrame":"abu-official-intro-1.png"},
       "name": "阿布",
+      "types": ["龙"],
       "kind": "family",
       "traitSummary": "使用3能耗技能后提升2级（等级上限99级）；低于80级时受到伤害增加40%。",
       "mechanicKey": "abu",
@@ -38,6 +41,7 @@
       "key": "underground-silver-dragon",
       "asset": {"localUrl":"/assets/spirits/s5-preview/underground-silver-dragon.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/862665625271534048","sourceFrame":"official-encounters/official-news-2.jpg"},
       "name": "地绡银龙",
+      "types": ["地"],
       "kind": "family",
       "traitSummary": "每消耗1点能量，魔攻增加10%；视频说明当次出招可以获得加成。",
       "mechanicKey": "underground-silver-dragon",
@@ -48,6 +52,7 @@
       "key": "gold-vein-dragon",
       "asset": {"localUrl":"/assets/spirits/s5-preview/gold-vein-dragon.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/862665625271534048","sourceFrame":"official-encounters/official-news-2.jpg"},
       "name": "龙嵴金脉",
+      "types": ["电"],
       "kind": "family",
       "traitSummary": "聚能后攻击增加50%。",
       "mechanicKey": "gold-vein-dragon",
@@ -57,6 +62,7 @@
     {
       "key": "boss-ice-bruce",
       "name": "冰钻布鲁斯（首领化）",
+      "types": ["冰"],
       "baseName": "冰钻布鲁斯",
       "kind": "boss",
       "traitSummary": "对手每1点能耗，技能威力增加10%；对方总能耗达到20点时，额外获得50速度。",
@@ -67,6 +73,7 @@
     {
       "key": "boss-glass-jellyfish",
       "name": "琉璃水母（首领化）",
+      "types": ["水", "毒"],
       "baseName": "琉璃水母",
       "kind": "boss",
       "traitSummary": "使用技能后，赋予对手等于中毒印记层数两倍的中毒层数。",
@@ -78,6 +85,7 @@
       "key": "jingyu",
       "asset": {"localUrl":"/assets/spirits/s5-preview/jingyu.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-002.jpg"},
       "name": "鲸羽",
+      "types": ["幻", "冰"],
       "kind": "family",
       "traitSummary": "雪天下，敌方不再获得冻结，而是获得3层星陨。",
       "mechanicKey": "jingyu",
@@ -88,6 +96,7 @@
       "key": "doulie",
       "asset": {"localUrl":"/assets/spirits/s5-preview/doulie.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-021.jpg"},
       "name": "豆粒鹅",
+      "types": ["冰"],
       "kind": "family",
       "traitSummary": "使对方获得10层冻结后，开启5回合雪天；每局对局仅触发一次。",
       "mechanicKey": "doulie",
@@ -98,6 +107,7 @@
       "key": "watermelon-bug",
       "asset": {"localUrl":"/assets/spirits/s5-preview/watermelon-bug.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-011.jpg"},
       "name": "西瓜虫",
+      "types": ["草", "虫"],
       "kind": "family",
       "traitSummary": "使用草系技能时获得1层随机奉献；使用虫系技能时给对手1层寄生。",
       "mechanicKey": "watermelon-bug",
@@ -108,6 +118,7 @@
       "key": "diliutun",
       "asset": {"localUrl":"/assets/spirits/s5-preview/diliutun.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-005.jpg"},
       "name": "滴溜豚",
+      "types": ["水"],
       "kind": "family",
       "traitSummary": "掷出一枚20面骰子（点数1至20），双方根据点数获得增益或减益。",
       "mechanicKey": "diliutun",
@@ -118,6 +129,7 @@
       "key": "lele-shark",
       "asset": {"localUrl":"/assets/spirits/s5-preview/lele-shark.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-008.jpg"},
       "name": "乐乐鲨",
+      "types": ["水"],
       "kind": "family",
       "traitSummary": "清除减益后永久获得50%攻击力；每局对局仅触发一次。",
       "mechanicKey": "lele-shark",
@@ -128,6 +140,7 @@
       "key": "egg-wrap",
       "asset": {"localUrl":"/assets/spirits/s5-preview/egg-wrap.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-016.jpg"},
       "name": "蛋包蛋",
+      "types": ["萌"],
       "kind": "family",
       "traitSummary": "登场时，若己方存在被萌化的精灵，获得50%双防。视频另提及其可开启新天气“梦境”：双方交换速度，不影响先制度。",
       "mechanicKey": "egg-wrap",
@@ -137,6 +150,7 @@
     {
       "key": "crab-coconut",
       "name": "蟹蟹椰",
+      "types": ["水", "草"],
       "kind": "family",
       "traitSummary": "使用水系技能后，下一个草系技能能耗减少3。",
       "mechanicKey": "crab-coconut",
@@ -147,6 +161,7 @@
       "key": "little-scissor",
       "asset": {"localUrl":"/assets/spirits/s5-preview/little-scissor.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/863056931193880737","sourceFrame":"official-encounters/frames/frame-019.jpg"},
       "name": "小剪影",
+      "types": ["幽"],
       "kind": "family",
       "traitSummary": "对方更换精灵时，攻击增加50%。",
       "mechanicKey": "little-scissor",
@@ -156,11 +171,12 @@
     {
       "key": "lily-of-valley",
       "name": "铃兰",
+      "types": ["草", "萌"],
       "kind": "family",
       "traitSummary": "处于梦境下，回合结束时对方获得3层寄生。",
       "mechanicKey": "lily-of-valley",
       "evidence": { "seconds": 240.8, "frame": "visual_frames/t-000240.800.jpg", "captionLines": [106, 114] },
-      "unknowns": ["完整进化链和六维", "正式属性（视频作者仅推测草萌）", "手切当回合的实际触发顺序", "寄生上限与结算细则"]
+      "unknowns": ["完整进化链和六维", "正式属性待官方资料复核", "手切当回合的实际触发顺序", "寄生上限与结算细则"]
     },
     {
       "key": "boss-abu",
@@ -175,6 +191,7 @@
     {
       "key": "super-abu",
       "name": "超能阿布",
+      "types": ["龙"],
       "baseName": "阿布",
       "kind": "family",
       "traitSummary": "使用3能耗技能后提升2级（等级上限99级）；低于80级时受到伤害增加40%。",
@@ -184,7 +201,7 @@
         "url": "https://www.taptap.cn/moment/662643409994908648",
         "frame": "abu-official-intro-3.jpg"
       },
-      "unknowns": ["正式六维", "完整属性与学习面", "初始等级", "能耗判定取基础值还是实际消耗", "等级公式", "正式图鉴身份与完整形态关系"]
+      "unknowns": ["正式六维", "正式学习面", "初始等级", "能耗判定取基础值还是实际消耗", "等级公式", "正式图鉴身份与完整形态关系"]
     }
   ]
 }

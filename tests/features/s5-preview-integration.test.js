@@ -26,7 +26,7 @@ test("真实来源目录逐项进入原搜索，机制与图片都有接续入�
     const spirit = index.search(entry.name).find(({ fullName }) => fullName === entry.name);
     expect(spirit).toMatchObject({
       fullName: entry.name, raceStats: S5_PREVIEW_TEST_STATS, calculationStatus: "pending-s5-mechanics",
-      types: [], dexNo: null,
+      types: entry.types ?? [], dexNo: null,
       previewIdentity: { key: entry.key, mechanicKey: entry.mechanicKey, formalIdPending: true, raceStatsPlaceholder: true },
     });
     expect(result.learnsets.find(({ spiritId }) => spiritId === spirit.id)?.skillIds).toEqual([]);
@@ -140,4 +140,25 @@ test("阿布三形态保留稳定身份与图片证据，共用已核验S5机制
   expect(abuEntry.asset.kind).toBe("official-portrait");
   expect(abuEntry.asset.localUrl).toBe("/assets/spirits/s5-preview/abu.png");
   expect(result.spirits.find(({ id }) => id === s5PreviewIds("abu").spiritId).previewIdentity.asset.kind).toBe("official-portrait");
+});
+
+
+test("本轮用户指定16项属性按原顺序录入，未列圣龙阿布不从同族猜测", () => {
+  const expected = {
+    冥古龙: ["幽", "龙"], 阿布: ["龙"], 超能阿布: ["龙"], 地绡银龙: ["地"], 龙嵴金脉: ["电"],
+    "冰钻布鲁斯（首领化）": ["冰"], "琉璃水母（首领化）": ["水", "毒"],
+    鲸羽: ["幻", "冰"], 豆粒鹅: ["冰"], 西瓜虫: ["草", "虫"], 滴溜豚: ["水"], 乐乐鲨: ["水"],
+    蛋包蛋: ["萌"], 蟹蟹椰: ["水", "草"], 小剪影: ["幽"], 铃兰: ["草", "萌"],
+  };
+  const current = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+  const result = withWebPreview(current);
+  const typed = result.spirits.filter(spirit => spirit.previewIdentity && spirit.types.length);
+  expect(typed).toHaveLength(16);
+  for (const [name, types] of Object.entries(expected)) {
+    const spirit = result.spirits.find(entry => entry.fullName === name);
+    expect(spirit.types, name).toEqual(types);
+    expect(spirit.previewIdentity.typesProvenance).toMatchObject({ authority: "user-provided", reviewStatus: "pending" });
+  }
+  expect(result.spirits.find(spirit => spirit.fullName === "圣龙阿布").types).toEqual([]);
+  expect(current.spirits.some(spirit => spirit.previewIdentity)).toBe(false);
 });
