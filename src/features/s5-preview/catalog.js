@@ -1,6 +1,10 @@
 import { hasCompleteRaceStats } from "../../domain/stat.js";
 
 export const S5_PREVIEW_ASSET_URL = "/assets/spirits/s5-preview-silhouette.svg";
+export const S5_PREVIEW_TEST_STATS = Object.freeze({
+  hp: 100, physicalAttack: 100, magicalAttack: 100,
+  physicalDefense: 100, magicalDefense: 100, speed: 100, total: 600,
+});
 
 const KEY_PATTERN = /^[a-z0-9][a-z0-9_-]*$/u;
 const text = (value) => typeof value === "string" && value.trim().length > 0;
@@ -49,13 +53,17 @@ export function validateS5PreviewCatalog(catalog) {
     require(entry.baseName === undefined || text(entry.baseName), `${entry.key} 的 baseName 无效`);
     require(text(entry.traitSummary), `${entry.key} 缺少已核实特性摘要`);
     require(text(entry.mechanicKey), `${entry.key} 缺少 mechanicKey`);
-    require(typeof entry.evidence?.seconds === "number" && Number.isFinite(entry.evidence.seconds) &&
-      entry.evidence.seconds >= 0 && text(entry.evidence.frame), `${entry.key} 缺少视频时间及证据帧`);
+    if (entry.evidence?.kind === "official-image") {
+      require(httpsUrl(entry.evidence.url) && text(entry.evidence.frame), `${entry.key} 缺少官方图片来源及证据图`);
+    } else {
+      require(typeof entry.evidence?.seconds === "number" && Number.isFinite(entry.evidence.seconds) &&
+        entry.evidence.seconds >= 0 && text(entry.evidence.frame), `${entry.key} 缺少视频时间及证据帧`);
+    }
     require(Array.isArray(entry.unknowns) && entry.unknowns.every(text), `${entry.key} 的 unknowns 无效`);
     if (entry.asset !== undefined) {
-      require(localAssetPath(entry.asset?.localUrl), `${entry.key} 的剪影必须使用项目内 assets 路径`);
-      require(entry.asset.kind === "reference-silhouette" && httpsUrl(entry.asset.sourceUrl) &&
-        text(entry.asset.sourceFrame), `${entry.key} 的参考剪影缺少 HTTPS 来源及证据帧`);
+      require(localAssetPath(entry.asset?.localUrl), `${entry.key} 的素材必须使用项目内 assets 路径`);
+      require(["reference-silhouette", "official-silhouette", "official-portrait"].includes(entry.asset.kind) && httpsUrl(entry.asset.sourceUrl) &&
+        text(entry.asset.sourceFrame), `${entry.key} 的素材缺少 HTTPS 来源及证据帧`);
     }
   }
   return catalog;
@@ -66,7 +74,7 @@ function ownsPreview(entity, catalogId, key) {
 }
 
 /** Web/Windows display overlay. It does not publish a data/rule version or infer combat data. */
-export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_ASSET_URL } = {}) {
+export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_ASSET_URL, useTestRaceStats = false } = {}) {
   validateS5PreviewCatalog(catalog);
   require((snapshot?.meta?.serverId ?? snapshot?.serverId ?? "cn") === "cn", "仅适用于国服参考快照");
   require(["spirits", "traits", "skills", "learnsets"].every((key) => Array.isArray(snapshot?.[key])), "快照集合不完整");
@@ -94,15 +102,33 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
     require(!existingTrait || ownsPreview(existingTrait, catalog.catalogId, entry.key), `特性 ID 冲突：${traitId}`);
     require(!named[0] || named[0] === existing, `同名精灵尚未正式确认：${entry.name}`);
     if (existing) {
-      require(existing.fullName === entry.name && existing.raceStats === null &&
-        existing.calculationStatus === "pending-race-stats" && existingTrait &&
+      const pendingStats = existing.raceStats === null && existing.calculationStatus === "pending-race-stats";
+      const testStats = existing.previewIdentity.raceStatsPlaceholder === true &&
+        existing.calculationStatus === "pending-s5-mechanics" && Object.entries(S5_PREVIEW_TEST_STATS)
+          .every(([key, value]) => existing.raceStats?.[key] === value);
+      require(existing.fullName === entry.name && (pendingStats || testStats) && existingTrait &&
         existingLearnset?.skillIds?.length === 0, `候选记录已漂移：${entry.key}`);
-      if (entry.asset && (existing.asset?.localUrl !== entry.asset.localUrl ||
+      if (existing.previewIdentity.mechanicKey !== entry.mechanicKey ||
+        existing.traitDescription !== entry.traitSummary || Boolean(existing.previewIdentity.raceStatsPlaceholder) !== useTestRaceStats || entry.asset && (existing.asset?.localUrl !== entry.asset.localUrl ||
         ["localUrl", "kind", "sourceUrl", "sourceFrame"].some((key) =>
           existing.previewIdentity.asset?.[key] !== entry.asset[key]))) {
         spirits[spirits.indexOf(existing)] = {
-          ...existing, asset: { ...existing.asset, localUrl: entry.asset.localUrl },
-          previewIdentity: { ...existing.previewIdentity, asset: { ...entry.asset } },
+          ...existing, traitDescription: entry.traitSummary,
+          raceStats: useTestRaceStats ? { ...S5_PREVIEW_TEST_STATS } : null,
+          calculationStatus: useTestRaceStats ? "pending-s5-mechanics" : "pending-race-stats",
+          ...(entry.asset ? { asset: { ...existing.asset, localUrl: entry.asset.localUrl } } : {}),
+          previewIdentity: { ...existing.previewIdentity, mechanicKey: entry.mechanicKey, raceStatsPlaceholder: useTestRaceStats,
+            ...(entry.asset ? { asset: { ...entry.asset } } : {}) },
+        };
+        changed = true;
+      }
+      // Existing local overlays may predate the interactive trait adapter.
+      // Upgrade its metadata without changing the stable spirit/trait IDs.
+      if (existingTrait.previewIdentity?.mechanicKey !== entry.mechanicKey ||
+        existingTrait.description !== entry.traitSummary) {
+        traits[traits.indexOf(existingTrait)] = {
+          ...existingTrait, description: entry.traitSummary,
+          previewIdentity: { ...existingTrait.previewIdentity, mechanicKey: entry.mechanicKey },
         };
         changed = true;
       }
@@ -112,21 +138,27 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
     const previewIdentity = {
       catalogId: catalog.catalogId, key: entry.key, kind: entry.kind,
       formalIdPending: true, mechanicKey: entry.mechanicKey,
-      source: { ...catalog.source }, evidence: { ...entry.evidence },
+      source: entry.evidence.kind === "official-image"
+        ? { url: entry.evidence.url, authority: "official-image" } : { ...catalog.source },
+      evidence: { ...entry.evidence },
       unknowns: [...entry.unknowns],
+      raceStatsPlaceholder: useTestRaceStats,
       ...(entry.asset ? { asset: { ...entry.asset } } : {}),
     };
     spirits.push({
       id: spiritId, fullName: entry.name, baseName: entry.baseName ?? entry.name,
       variantName: null, dexNo: null, types: [],
       stage: entry.kind === "boss" ? "首领" : "前瞻", sourceCategory: "S5前瞻",
-      raceStats: null, calculationStatus: "pending-race-stats",
+      raceStats: useTestRaceStats ? { ...S5_PREVIEW_TEST_STATS } : null,
+      calculationStatus: useTestRaceStats ? "pending-s5-mechanics" : "pending-race-stats",
       traitIds: [traitId], traitName: "前瞻特性", traitDescription: entry.traitSummary,
       asset: { localUrl: entry.asset?.localUrl ?? assetUrl }, previewIdentity,
     });
     traits.push({
       id: traitId, name: "前瞻特性", description: entry.traitSummary,
-      previewIdentity: { catalogId: catalog.catalogId, key: entry.key, formalIdPending: true },
+      provenance: { previewStatus: { adaptationStatus: "description-only" } },
+      previewIdentity: { catalogId: catalog.catalogId, key: entry.key, formalIdPending: true,
+        mechanicKey: entry.mechanicKey },
     });
     learnsets.push({ spiritId, skillIds: [], defaultSkillIds: [] });
     changed = true;

@@ -1,0 +1,107 @@
+{
+  "patch": {
+    "id": "s5-season-announcement-2026-11-05",
+    "seasonId": "S5",
+    "label": "S5 赛季调整",
+    "date": "预计 2026.11.05",
+    "receivedAt": "2026.10.27",
+    "dateBasis": "按同图11月5日更新节点暂列；平衡调整部分未独立列出生效时间。",
+    "status": "preview"
+  },
+  "source": {
+    "title": "S5赛季更新小报：精灵特性、种族资质与技能调整",
+    "attachment": "codex-clipboard-ff9bc0af-b47e-43e9-8d49-08ad82df7e23.png",
+    "scope": "仅公告下半段；不含时光回溯规则。"
+  },
+  "raceStats": [
+    { "name": "冰钻布鲁斯", "fields": { "physicalAttack": [101, 90], "magicalAttack": [27, 21] } },
+    { "name": "烈焰狂战士", "fields": { "physicalAttack": [79, 92], "magicalAttack": [13, 21] } },
+    { "name": "朔夜伊芙", "fields": { "physicalAttack": [115, 124], "magicalAttack": [105, 113] } },
+    { "name": "雷神之子", "fields": { "hp": [90, 114], "physicalAttack": [110, 92], "magicalAttack": [110, 92] } },
+    { "name": "蝎子王", "fields": { "hp": [108, 93], "physicalAttack": [126, 146], "magicalAttack": [117, 139], "physicalDefense": [119, 109] } },
+    { "name": "秩序鱿墨", "fields": { "hp": [78, 96], "magicalAttack": [39, 40], "physicalDefense": [124, 117], "magicalDefense": [113, 106] } },
+    { "name": "芋香巨角蛛", "fields": { "hp": [92, 100], "physicalDefense": [91, 98], "magicalDefense": [91, 98] } },
+    { "name": "嗜波螺", "fields": { "hp": [112, 123] } },
+    { "name": "嗜波螺（被污染的样子）", "fields": { "hp": [107, 117], "physicalAttack": [95, 106], "magicalAttack": [95, 106] } },
+    { "name": "幽影树", "fields": { "physicalAttack": [96, 112], "magicalAttack": [96, 111] } },
+    { "name": "幻影荆棘", "fields": { "hp": [113, 117], "physicalAttack": [96, 117], "magicalAttack": [96, 116], "physicalDefense": [66, 68], "magicalDefense": [125, 128] } },
+    { "name": "溯源钟", "fields": { "hp": [85, 100], "physicalAttack": [84, 99], "magicalAttack": [86, 101] } },
+    { "name": "飞飞钥", "fields": { "physicalDefense": [94, 79] } },
+    { "name": "夜游魔", "fields": { "physicalDefense": [100, 86], "magicalDefense": [127, 111] } },
+    { "name": "障眼魔", "fields": { "hp": [134, 120], "physicalDefense": [96, 88], "magicalDefense": [110, 102] } },
+    { "name": "珀尔鼬", "fields": { "hp": [117, 131], "physicalAttack": [51, 65], "magicalAttack": [105, 124] } },
+    { "name": "森巨人", "fields": { "hp": [144, 164], "physicalAttack": [155, 160], "physicalDefense": [132, 142], "magicalDefense": [88, 98] } }
+  ],
+  "traits": [
+    {
+      "name": "异类",
+      "before": "携带的翼系攻击技能获得选择：能耗+1，攻击时吸血50%。",
+      "after": "携带的翼系攻击技能获得选择：能耗+1，攻击时吸血100%。"
+    },
+    {
+      "name": "滴眼液",
+      "before": "天气为雨天时，使用水系攻击技能时吸血50%。",
+      "after": "天气为雨天时，使用水系攻击技能时吸血100%。"
+    },
+    {
+      "name": "换碟",
+      "before": "自己携带的音波弹/音爆/金属噪音/午夜噪音威力提升，且获得巧变：同系别技能。",
+      "after": "自己携带的音波弹/音爆/金属噪音/午夜噪音/广播威力提升，且获得巧变：同系别技能。",
+      "pending": "广播的具体威力加成数值尚未公布，不按其它技能的加成猜值。"
+    }
+  ],
+  "skills": [
+    { "name": "蹦跶", "fields": { "basePower": [110, 95] } },
+    { "name": "过敏原", "fields": { "basePower": [35, 40] } },
+    { "name": "甜蜜陷阱", "fields": { "basePower": [50, 60] } },
+    {
+      "name": "焚毁",
+      "fields": { "description": ["造成魔伤，驱散敌方所有印记，每驱散1层，获得物攻+20%。", "造成魔伤，驱散敌方所有印记，每驱散1层，获得魔攻+20%。"] },
+      "pending": "S5驱散印记后的魔攻增益尚待接入；不应用旧版物攻增益。"
+    },
+    { "name": "微型斥候", "fields": { "basePower": [75, 85] } },
+    { "name": "通电", "fields": { "basePower": [75, 85] } },
+    {
+      "name": "破防",
+      "fields": {
+        "cost": [2, 1],
+        "description": ["敌方获得双防-70%，应对防御：额外使被应对技能冷却2回合。", "敌方获得双防-80%，应对防御：额外使被应对技能冷却2回合。"]
+      },
+      "pending": "S5双防-80%尚待接入；不应用旧版-70%效果。"
+    },
+    { "name": "暖气", "fields": { "description": ["减伤70%，应对攻击：下一次攻击时，技能威力+50。", "减伤80%，应对攻击：下一次攻击时，技能威力+50。"] } },
+    { "name": "透镜实验", "fields": { "basePower": [115, 100] } },
+    {
+      "name": "暖阳",
+      "fields": {
+        "basePower": [70, 65],
+        "description": ["造成物伤，每使用1次其他火系技能，威力永久+40，使用本技能后重置。", "造成物伤，每使用1次其他火系技能，威力永久+60，使用本技能后重置。"]
+      },
+      "ruleId": "stack_scaled",
+      "ruleParams": { "contextKey": "otherFireSkillUseCount", "defaultValue": 0, "label": "其他火系技能使用次数", "perStack": 60 }
+    }
+  ],
+  "learnsets": [
+    { "spirit": "波多西", "skill": "拖拉机" },
+    { "spirit": "深渊蛙", "skill": "气沉丹田" },
+    { "spirit": "绅士鸡", "skill": "持续高温" },
+    { "spirit": "咕德帽帽", "skill": "离魂术" },
+    { "spirit": "半朽蜜果灵", "skill": "背袭" },
+    { "spirit": "卷毛鸭", "skill": "回旋踢", "method": "默认学习 Lv.48" },
+    { "spirit": "雷神之子", "skill": "双联脉冲" },
+    { "spirit": "叮叮恶魔", "skill": "极限撕裂" },
+    { "spirit": "卡瓦重（沙地附近的样子）", "skill": "沙涌" },
+    { "spirit": "利灯鱼", "skill": "气泡" },
+    { "spirit": "獠牙猪", "skill": "泥浆铠甲" }
+  ],
+  "bloodlines": [
+    { "type": "武", "before": "贯手", "after": "反击拳", "spirits": ["森巨人"] },
+    { "type": "冰", "before": "冷风", "after": "冰爪", "spirits": ["深渊蛙"] },
+    { "type": "地", "before": "淤泥表皮", "after": "跺地", "spirits": ["胡桃王子"] },
+    { "type": "武", "before": "缠丝劲", "after": "贯手", "spirits": ["雅丹鬃", "夜枭"] },
+    { "type": "地", "before": "跺地", "after": "扬沙", "spirits": ["卡瓦重（雪山附近的样子）", "冰钻布鲁斯", "岚鸟", "岚鸟（春天的样子）", "岚鸟（夏天的样子）"] },
+    { "type": "冰", "before": "冰爪", "after": "冰锥", "spirits": ["巨噬针鼹"] },
+    { "type": "机械", "before": "离子震荡", "after": "锁芯", "spirits": ["海枝枝（碧蓝珊瑚）", "海枝枝（杏黄百合）", "海枝枝（洋红沙丁）", "海枝枝（翠绿纶布）"] }
+  ],
+  "learnsetNote": "本清单不包括S5新增技能。受调整精灵若已通过奇异血脉获得下述技能，游戏更新后将重新随机；计算器不擅自随机改写用户存档。"
+}

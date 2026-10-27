@@ -1,3 +1,5 @@
+import { correctS5PreviewStoredJson } from "../features/s5-preview/reference-corrections.js";
+
 const PREFIX = "rock-calculator.preview.s5.";
 
 // Bootstrap the whole preview before importing the app, including legacy readers.
@@ -8,7 +10,7 @@ export function createPreviewStorage(storage) {
   return Object.freeze({
     get length() { return keys().length; },
     key(index) { return keys()[index]?.slice(PREFIX.length) ?? null; },
-    getItem(key) { return storage.getItem(PREFIX + String(key)); },
+    getItem(key) { return correctS5PreviewStoredJson(storage.getItem(PREFIX + String(key))); },
     setItem(key, value) { storage.setItem(PREFIX + String(key), String(value)); },
     removeItem(key) { storage.removeItem(PREFIX + String(key)); },
     clear() { keys().forEach((key) => storage.removeItem(key)); },
@@ -50,7 +52,7 @@ export function installPreviewStorage(target = window) {
     const copy = new target.Event("storage");
     Object.defineProperties(copy, Object.fromEntries(Object.entries({
       key: event.key === null ? null : event.key.slice(PREFIX.length),
-      oldValue: event.oldValue, newValue: event.newValue,
+      oldValue: correctS5PreviewStoredJson(event.oldValue), newValue: correctS5PreviewStoredJson(event.newValue),
       url: event.url, storageArea: stores.get(event.storageArea),
     }).map(([key, value]) => [key, { value }])));
     forwarded.add(copy);

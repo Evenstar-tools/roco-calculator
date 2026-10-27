@@ -76,3 +76,38 @@ test("restoring inherited storage properties removes only the bootstrap override
   expect(Object.hasOwn(target, "sessionStorage")).toBe(false);
   expect(target.localStorage).toBe(nativeLocal);
 });
+
+test("preview reads correct old duplicate references without rewriting raw or formal storage", () => {
+  const native = localStorage;
+  const oldId = "spirit_preview_s5_boss-thousand-spikes";
+  const actualId = "spirit_786924cd03526ca4";
+  const key = "rock-calculator.servers.cn.calculator.session.v1";
+  const prefix = "rock-calculator.preview.s5.";
+  const raw = JSON.stringify({ present: { spiritId: oldId }, past: [{ state: { spiritId: oldId } }], future: [] });
+  native.setItem(prefix + key, raw);
+  native.setItem(key, raw);
+  const preview = createPreviewStorage(native);
+  expect(JSON.parse(preview.getItem(key))).toEqual({
+    present: { spiritId: actualId }, past: [{ state: { spiritId: actualId } }], future: [],
+  });
+  expect(native.getItem(prefix + key)).toBe(raw);
+  expect(native.getItem(key)).toBe(raw);
+});
+
+test("forwarded preview storage events correct both values with the same read-only policy", () => {
+  const native = localStorage;
+  const raw = JSON.stringify({ spiritId: "spirit_preview_s5_boss-thousand-spikes" });
+  const corrected = JSON.stringify({ spiritId: "spirit_786924cd03526ca4" });
+  restore = installPreviewStorage(window);
+  const received = [];
+  const listener = (event) => received.push([event.oldValue, event.newValue]);
+  window.addEventListener("storage", listener);
+  try {
+    window.dispatchEvent(new StorageEvent("storage", {
+      key: "rock-calculator.preview.s5.rock-calculator.teams.v1",
+      oldValue: raw, newValue: raw, storageArea: native,
+    }));
+    expect(received).toEqual([[corrected, corrected]]);
+    expect(native.length).toBe(0);
+  } finally { window.removeEventListener("storage", listener); }
+});

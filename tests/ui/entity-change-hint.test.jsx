@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import { SkillPicker } from "../../src/components/SkillPicker.jsx";
 import { SpiritPicker } from "../../src/components/SpiritPicker.jsx";
+import { EntityChangeHint } from "../../src/components/EntityChangeHint.jsx";
 
 const patch = {
   id: "s4-preview-2026-09-10",
@@ -42,6 +43,24 @@ const skill = {
     items: [{ kind: "stat", field: "cost", label: "能耗", before: 2, after: 1 }],
   },
 };
+
+test("同一实体新旧补丁按各自日期显示，旧记录不改成新补丁", async () => {
+  const user = userEvent.setup();
+  render(<EntityChangeHint changeInfo={{ ...spirit.changeInfo,
+    patch: { id: "s5", label: "S5 赛季调整", date: "预计 2026.11.05" },
+    items: [{ kind: "stat", field: "physicalAttack", label: "物攻", before: 92, after: 100 }],
+    history: [spirit.changeInfo],
+  }} />);
+  await user.click(screen.getByRole("button", { name: "查看加油蟹本期改动" }));
+  const panel = screen.getByRole("tooltip", { name: "加油蟹本期改动" });
+  const currentGroup = within(panel).getByText("预计 2026.11.05").closest("section");
+  const oldGroup = within(panel).getByText("2026.09.10").closest("section");
+  expect(within(currentGroup).getByText("92 → 100")).toBeVisible();
+  expect(within(oldGroup).getByText("108 → 92")).toBeVisible();
+  expect(within(oldGroup).getByText("旧效果")).toBeVisible();
+  await user.keyboard("{Escape}");
+  expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+});
 
 test("精灵改动只在叹号交互后展示，点击后可固定", async () => {
   const user = userEvent.setup();

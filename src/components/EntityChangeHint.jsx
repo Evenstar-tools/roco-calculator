@@ -13,9 +13,11 @@ function isCompactChange(item) {
 }
 
 export function hasEntityChanges(changeInfo) {
-  return Array.isArray(changeInfo?.items) &&
-    changeInfo.items.some((item) => item?.kind && item.kind !== "new");
+  return [changeInfo, ...(changeInfo?.history ?? [])].some(record =>
+    record?.items?.some(item => item?.kind && item.kind !== "new"));
 }
+
+const patchLabel = patch => patch?.label?.replace(/前瞻/g, "").replace(/S3[\s-]*季中/g, "赛季平衡");
 
 function ChangeItem({ item }) {
   if (isCompactChange(item)) {
@@ -108,6 +110,8 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
   useEffect(() => () => cancelClose(), []);
 
   const hasChanges = hasEntityChanges(changeInfo);
+  const changeGroups = [changeInfo, ...(changeInfo?.history ?? [])].filter(record => record?.items?.length);
+  const multiplePatches = changeGroups.length > 1;
   if (!hasChanges && !children) return null;
   const entityName = changeInfo?.entityName ?? fallbackName ?? "当前项目";
   const actionLabel = hasChanges ? `查看${entityName}本期改动` : `编辑${entityName}试算种族值`;
@@ -164,8 +168,8 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
             <header>
               <span>
                 <small>{hasChanges ? "更新" : "试算"}</small>
-                <strong>{changeInfo?.patch?.label?.replace(/前瞻/g, "").replace(/S3[\s-]*季中/g, "赛季平衡") ?? "种族值编辑"}</strong>
-                <time>{changeInfo?.patch?.date}</time>
+                <strong>{multiplePatches ? "改动记录" : patchLabel(changeInfo?.patch) ?? "种族值编辑"}</strong>
+                {!multiplePatches && <time>{changeInfo?.patch?.date}</time>}
               </span>
               <button
                 aria-label="关闭改动详情"
@@ -179,9 +183,12 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
               </button>
             </header>
             <h3>{entityName}</h3>
-            <ul>{(changeInfo?.items ?? []).map((item, index) => (
-              <ChangeItem item={item} key={`${item.kind}-${item.label}-${index}`} />
-            ))}</ul>
+            {changeGroups.map((record, groupIndex) => <section className="entity-change-card__patch" key={record.patch?.id ?? groupIndex}>
+              {multiplePatches && <h4><strong>{patchLabel(record.patch)}</strong><time>{record.patch?.date}</time></h4>}
+              <ul>{record.items.map((item, index) => (
+                <ChangeItem item={item} key={`${item.kind}-${item.label}-${index}`} />
+              ))}</ul>
+            </section>)}
             {children}
           </section>
         </div>,

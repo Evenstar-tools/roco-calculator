@@ -2,9 +2,11 @@ import { readFile, writeFile, mkdir, copyFile, stat, realpath } from "node:fs/pr
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { isDeepStrictEqual } from "node:util";
 import { parseLuaData } from "./parse-lua-data.mjs";
 import { stableId, splitFullName, sha256Hex } from "./normalize.mjs";
 import { validateSnapshot } from "./validate.mjs";
+import { mergeEntityChangeInfo } from "../../src/data/entity-change-history.js";
 
 const ROOT = new URL("../../", import.meta.url);
 export const DEFAULT_NRC_IMPORT_PROFILE = JSON.parse(readFileSync(new URL("data/reviewed/nrc-s4-import-profile.json", ROOT), "utf8"));
@@ -16,7 +18,100 @@ const RENAMES = {
   "满月砣（下弦的样子）": "满月砣",
 };
 const STATS = { hp: "hp", atk: "physicalAttack", spa: "magicalAttack", def: "physicalDefense", spd: "magicalDefense", spe: "speed" };
+const STAT_LABELS = { hp: "生命", physicalAttack: "物攻", magicalAttack: "魔攻", physicalDefense: "物防", magicalDefense: "魔防", speed: "速度" };
 const required = (value, message) => { if (!value) throw new Error(message); return value; };
+
+function formalChangeItems(previous, entity, key, before, after) {
+  if (!previous) return [];
+  const items = [];
+  const add = (kind, field, label, oldValue, newValue) => {
+    // Missing preview fields are unknown, not historical zeroes or empty values.
+    if (oldValue == null || newValue == null || isDeepStrictEqual(oldValue, newValue)) return;
+    items.push({ kind, field, label, before: oldValue, after: newValue });
+  };
+  if (key === "skills") {
+    for (const [field, label] of [["basePower", "威力"], ["cost", "能耗"], ["type", "属性"], ["category", "类别"]]) {
+      add(["basePower", "cost"].includes(field) ? "stat" : "mechanic", field, label, previous[field], entity[field]);
+    }
+    add("mechanic", "description", "机制", previous.description, entity.description);
+  } else {
+    for (const [field, label] of Object.entries(STAT_LABELS)) {
+      add("stat", field, label, previous.raceStats?.[field], entity.raceStats?.[field]);
+    }
+    add("mechanic", "types", "属性", previous.types?.join("、"), entity.types?.join("、"));
+    const traitText = (snapshot, spirit) => {
+      const traits = (spirit.traitIds ?? []).map(id => snapshot.traits.find(trait => trait.id === id));
+      return traits.length && traits.every(trait => typeof trait?.description === "string")
+        ? traits.map(trait => `${trait.name}：${trait.description}`).join("\n") : null;
+    };
+    add("trait", "traitIds", "特性", traitText(before, previous), traitText(after, entity));
+    const oldPool = before.learnsets.find(pool => pool.spiritId === entity.id);
+    const newPool = after.learnsets.find(pool => pool.spiritId === entity.id);
+    if (oldPool && newPool && !isDeepStrictEqual([...oldPool.skillIds].sort(), [...newPool.skillIds].sort())) {
+      const names = (snapshot, ids) => ids.map(id => snapshot.skills.find(skill => skill.id === id)?.name ?? id).join("、");
+      add("learnset", "skillIds", "可学习技能", names(before, oldPool.skillIds), names(after, newPool.skillIds));
+    }
+  }
+  return items;
+}
+
+function preserveChangeHistory(snapshot, next, patch) {
+  const previousChanges = next.currentPatchChanges;
+  const changesVersion = snapshot.meta.id !== patch.id;
+  const changesSeason = snapshot.meta.seasonId !== patch.seasonId;
+  const recordSeason = (info, fallbackPatch = previousChanges?.patch) => {
+    const recordPatch = info?.patch ?? fallbackPatch;
+    return recordPatch?.seasonId ?? recordPatch?.id?.match(/^s\d+(?=[-_]|$)/i)?.[0]?.toUpperCase() ?? snapshot.meta.seasonId;
+  };
+  const retireOldNew = (info, fallbackPatch) => changesSeason && info?.isNew && recordSeason(info, fallbackPatch) !== patch.seasonId
+    ? { ...info, isNew: false } : info;
+  let hasFormalChanges = false;
+  const collections = {};
+  for (const key of ["spirits", "skills"]) {
+    const entries = new Map((previousChanges?.[key] ?? []).map(entry => [entry.entityId, entry]));
+    const previousById = new Map(snapshot[key].map(entity => [entity.id, entity]));
+    for (const entity of next[key]) {
+      const previous = previousById.get(entity.id);
+      const entry = entries.get(entity.id);
+      const previousInfo = entry ? { patch: previousChanges.patch, ...entry } : previous ? entity.changeInfo : undefined;
+      const info = previous?.changeInfo?.patch
+        ? !entry || isDeepStrictEqual(previousInfo, entity.changeInfo)
+          ? entity.changeInfo : mergeEntityChangeInfo(previousInfo, entity.changeInfo)
+        : previousInfo;
+      const items = formalChangeItems(previous, entity, key, snapshot, next);
+      const isNew = !previous && (key === "skills" || entity.changeInfo?.isNew);
+      if (items.length || isNew) {
+        hasFormalChanges = true;
+        const historical = info && !info.patch ? {
+          entityId: entity.id, entityName: previous?.fullName ?? previous?.name,
+          patch: previousChanges?.patch ?? { id: snapshot.meta.id, seasonId: snapshot.meta.seasonId }, ...info,
+        } : info;
+        const changeInfo = mergeEntityChangeInfo(historical, {
+          patch, entityId: entity.id, entityName: entity.fullName ?? entity.name,
+          isNew: Boolean(isNew || (info?.isNew && recordSeason(info) === patch.seasonId)),
+          ...(isNew ? { isFinal: entity.stage !== "首领" } : {}),
+          items: isNew ? [{ kind: "new", label: key === "spirits" ? "新增精灵" : "新增技能", after: entity.traitName ?? entity.description }] : items,
+        });
+        entity.changeInfo = changeInfo;
+        entries.set(entity.id, changeInfo);
+      } else if (previous?.changeInfo?.patch) {
+        // Projected announcement records may live on the entity, the ledger, or both.
+        // Preserve their own date and before/after even when formal values agree.
+        entity.changeInfo = info;
+        entries.set(entity.id, info);
+      }
+      if (entity.changeInfo) entity.changeInfo = retireOldNew(entity.changeInfo, entry?.patch ?? previousChanges?.patch);
+    }
+    collections[key] = [...entries.values()].map(entry => retireOldNew(entry));
+  }
+  if (!previousChanges && !hasFormalChanges && !Object.values(collections).some(entries => entries.length)) return;
+  const changesPatch = changesVersion || hasFormalChanges ? patch : previousChanges?.patch ?? patch;
+  next.currentPatchChanges = { ...previousChanges, patch: changesPatch };
+  for (const key of ["spirits", "skills"]) {
+    next.currentPatchChanges[key] = collections[key].map(entry => changesPatch !== previousChanges?.patch && !entry.patch
+      ? { patch: previousChanges?.patch, ...entry } : entry);
+  }
+}
 
 export function validateNrcImportProfile(profile) {
   required(profile?.schemaVersion === 1 && profile.status === "reviewed", "导入配置尚未审核");
@@ -118,15 +213,6 @@ export function applyNrcCurrent(snapshot, evidence, profile = DEFAULT_NRC_IMPORT
   validateEvidence(evidence, profile);
   const next = structuredClone(snapshot), skillIds = new Map(), petIds = new Map();
   const source = evidence.sources;
-  const changesVersion = snapshot.meta.id !== profile.version;
-  if (changesVersion) {
-    // 旧赛季的变更明细不能换个标题继续冒充本次差异；本次差异另由审核台账生成。
-    for (const entity of [...next.spirits, ...next.skills]) delete entity.changeInfo;
-    if (next.currentPatchChanges) {
-      next.currentPatchChanges.spirits = [];
-      next.currentPatchChanges.skills = [];
-    }
-  }
   const equivalentTraits = new Map(evidence.skills.filter(({ category }) => category === "特性").map((raw) => [raw.id, raw]));
   const mark = (entity, fields, ref, rawId) => {
     entity.provenance ??= {};
@@ -191,27 +277,6 @@ export function applyNrcCurrent(snapshot, evidence, profile = DEFAULT_NRC_IMPORT
     entity.evolutionChainNames = [...chains.get(entity.id)];
     entity.provenance.evolutionChainNames = source.Evolutions;
   }
-  if (next.currentPatchChanges) {
-    next.currentPatchChanges.patch = { id: evidence.version, label: `${profile.seasonId} 新站正式资料`, date: profile.date.replaceAll("-", "."), status: "current", sourceUrl: source.Catalog.url };
-    for (const key of ["spirits", "skills"]) {
-      for (const change of next.currentPatchChanges[key]) {
-        const entity = next[key].find(({ id }) => id === change.entityId);
-        if (!entity) continue;
-        change.entityName = entity.fullName ?? entity.name;
-        for (const item of change.items) {
-          const value = item.kind === "stat" && key === "spirits" ? entity.raceStats?.[item.field] : entity[item.field];
-          if (value !== undefined) item.after = value;
-          if (item.kind === "new" && key === "spirits") item.after = `特性·${entity.traitName}`;
-        }
-      }
-      for (const entity of next[key].filter(({ changeInfo }) => changeInfo?.isNew)) {
-        if (!next.currentPatchChanges[key].some(({ entityId }) => entityId === entity.id)) next.currentPatchChanges[key].push({
-          entityId: entity.id, entityName: entity.fullName ?? entity.name, isNew: true, isFinal: entity.stage !== "首领",
-          items: [{ kind: "new", label: key === "spirits" ? "新增精灵" : "新增技能", after: entity.traitName ?? entity.description }],
-        });
-      }
-    }
-  }
   next.learnsets = evidence.spirits.map((raw) => {
     const pool = required(evidence.learnsets[raw.learnset_id], `学习表缺失：${raw.title}`), acquisitions = {};
     const add = (rawId, method) => {
@@ -229,6 +294,8 @@ export function applyNrcCurrent(snapshot, evidence, profile = DEFAULT_NRC_IMPORT
       sources: [source.Learnsets], provenance: { skillIds: source.Learnsets } };
   });
   required(next.learnsets.reduce((sum, { skillIds }) => sum + skillIds.length, 0) === profile.counts.relations, "学习关系数量异常");
+  preserveChangeHistory(snapshot, next, { id: evidence.version, seasonId: profile.seasonId,
+    label: `${profile.seasonId} 新站正式资料`, date: profile.date.replaceAll("-", "."), status: "current", sourceUrl: source.Catalog.url });
   Object.assign(next.meta, { id: evidence.version, rulesVersion: evidence.version, seasonId: profile.seasonId, bwikiRevision: String(source.Catalog.revision),
     revisions: { ...next.meta.revisions, nrcCatalog: source.Catalog.revision, nrcSkills: source.Skills.revision, nrcLearnsets: source.Learnsets.revision },
     nrcSync: { version: evidence.version, authoritativeLearnsets: true, counts: { spirits: profile.counts.spirits, skills: profile.counts.skills, traits: profile.counts.traits, traitRecords: profile.counts.traitRecords },

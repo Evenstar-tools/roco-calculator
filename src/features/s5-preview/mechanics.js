@@ -3,8 +3,8 @@
 export const S5_PREVIEW_MECHANICS = Object.freeze({
   minggulong: { name: "冥古龙", events: ["battle-start", "turn-end"], unknowns: ["等级降低的下限未公开", "当前伤害核心固定60级，尚不支持逐方等级"] },
   abu: { name: "阿布", events: ["skill-used"], unknowns: ["3能耗的基础/实际能耗口径待核验", "开局等级须由已核验状态提供", "当前伤害核心固定60级，尚不支持逐方等级"] },
-  "boss-abu": { name: "首领阿布", events: [], unknowns: ["首领升级额外效果未公开"] },
-  "boss-thousand-spikes": { name: "首领千棘盔", events: [], unknowns: ["视频仅作比较提及，S5新增归属和首领特性未核实"] },
+  "boss-abu": { name: "圣龙阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "当前伤害核心固定60级，尚不支持逐方等级"] },
+  "super-abu": { name: "超能阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "当前伤害核心固定60级，尚不支持逐方等级"] },
   "underground-silver-dragon": { name: "地绡银龙", events: ["energy-spent"], unknowns: ["魔攻增益叠法与上限未公开"] },
   "gold-vein-dragon": { name: "龙嵴金脉", events: ["charge-complete"], unknowns: ["攻击增益持续时间与叠法未公开"] },
   "boss-ice-bruce": { name: "首领冰钻布鲁斯", events: ["opponent-total-cost"], unknowns: ["对手总能耗的统计口径待核验", "威力增益叠法与上限待核验"] },
@@ -80,7 +80,9 @@ export function reduceS5Preview(mechanicKey, previous, event, confirmed = {}) {
       if (next < 1) return blocked(state, event, "等级降低的下限未公开，不继续推定等级");
       return completed(state, event, { level: next }, [effect("level-set", { level: next, maxLevel: 99 }), ...levelEffects(next)], [CORE_LEVEL_GAP]);
     }
-    case "abu": {
+    case "abu":
+    case "boss-abu":
+    case "super-abu": {
       if (event.type !== "skill-used") return ignored(state, event);
       if (!identifiedBasis(confirmed.costBasis)) return blocked(state, event, "3能耗的取值口径尚未核验，不默认采用基础或实际能耗");
       if (!whole(event.cost)) return blocked(state, event, "已核验口径下的本次技能能耗尚未确认");
@@ -91,10 +93,6 @@ export function reduceS5Preview(mechanicKey, previous, event, confirmed = {}) {
         ...levelEffects(next),
       ], [CORE_LEVEL_GAP]);
     }
-    case "boss-abu":
-      return blocked(state, event, "首领阿布升级额外效果未公开，不能套用普通阿布规则");
-    case "boss-thousand-spikes":
-      return blocked(state, event, "视频仅作比较提及千棘盔首领化，S5新增归属和首领特性未核实");
     case "underground-silver-dragon": {
       if (event.type !== "energy-spent") return ignored(state, event);
       if (!whole(event.amount)) return blocked(state, event, "本次实际消耗能量须为非负整数");

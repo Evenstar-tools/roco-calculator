@@ -284,6 +284,7 @@ export function getTraitView(snapshot, spirit, role = "attacker", skills = []) {
     ),
     inputs,
     name: traitEntity.displayName ?? traitEntity.name,
+    previewTraitEntity: traitEntity,
     skillPowerBonuses,
   };
 }

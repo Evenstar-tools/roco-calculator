@@ -1,0 +1,19 @@
+.s5-preview-trait-summary {
+  min-width: 0;
+  flex: 1 0 100%;
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.s5-preview-trait-summary > span {
+  font-weight: 600;
+}
+
+.s5-preview-trait-summary > small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: inherit;
+}

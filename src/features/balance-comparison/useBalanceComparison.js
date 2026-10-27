@@ -4,8 +4,6 @@ import { buildBalanceComparison } from "./model.js";
 // Trial values deliberately stay outside the saved/shared calculator session.
 export function useBalanceComparison({ snapshot, state, activeDirection, serverId,
   spiritIndex, completeSpiritIds, favoriteSpiritIds }) {
-  const [enabled, setEnabled] = useState(false);
-  const [patchId, setPatchId] = useState(null);
   const [customStats, setCustomStats] = useState({});
   const [customEnabled, setCustomEnabled] = useState({});
   const [hpInputModes, setHpInputModes] = useState({});
@@ -13,7 +11,7 @@ export function useBalanceComparison({ snapshot, state, activeDirection, serverI
   const hpModeRef = useRef({});
   const comparison = useMemo(() => buildBalanceComparison({
     snapshot, state, activeDirection, serverId, spiritIndex, completeSpiritIds,
-    favoriteSpiritIds, enabled, patchId, customStats, customEnabled,
+    favoriteSpiritIds, customStats, customEnabled,
     hpInputModes: Object.fromEntries(["forward", "reverse"].map((direction) => {
       const side = state.sides[direction === "forward" ? "defender" : "attacker"];
       const input = state.directions[direction];
@@ -26,7 +24,7 @@ export function useBalanceComparison({ snapshot, state, activeDirection, serverI
     })),
   }), [snapshot, state, activeDirection, serverId,
     spiritIndex, completeSpiritIds, favoriteSpiritIds,
-    enabled, patchId, customStats, customEnabled, hpInputModes, hpBasis]);
+    customStats, customEnabled, hpInputModes, hpBasis]);
 
   function setCustom(side, spiritId, checked) {
     setCustomEnabled((previous) => ({
@@ -35,7 +33,7 @@ export function useBalanceComparison({ snapshot, state, activeDirection, serverI
   }
 
   return {
-    ...comparison, enabled, patchId, customStats, customEnabled,
+    ...comparison, customStats, customEnabled,
     setHpInputMode(direction, mode) {
       hpModeRef.current = { ...hpModeRef.current, [direction]: mode };
       setHpInputModes((previous) => ({ ...previous, [direction]: mode }));
@@ -46,10 +44,6 @@ export function useBalanceComparison({ snapshot, state, activeDirection, serverI
         hp, percent, spiritId: side.spiritId, formId: side.battleForm?.spiritId,
         snapshot, hpIv: side.displayIvs?.hp, nature: JSON.stringify(side.nature),
       } }));
-    },
-    setComparison(patch, checked) {
-      setPatchId(patch?.id ?? null);
-      setEnabled(checked);
     },
     setCustom,
     setStat(side, spiritId, key, value) {
@@ -62,16 +56,12 @@ export function useBalanceComparison({ snapshot, state, activeDirection, serverI
     },
     restore(side, spiritId) {
       setCustom(side, spiritId, false);
-      setCustomStats((previous) => ({ ...previous, [side]: {
-        ...previous[side], [spiritId]: {},
-      } }));
     },
     stop() {
-      setEnabled(false); setCustomEnabled({});
+      setCustomEnabled({});
       setHpInputModes({}); setHpBasis({}); hpModeRef.current = {};
     },
     reset() {
-      setEnabled(false); setPatchId(null);
       setCustomStats({}); setCustomEnabled({});
       setHpInputModes({});
       setHpBasis({});

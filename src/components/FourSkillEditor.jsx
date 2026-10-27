@@ -1,5 +1,4 @@
 import { SkillUsageSummary, UsageCountActions } from "./SkillUsageSummary.jsx";
-import { InlineComparison } from "../features/balance-comparison/BalanceComparisonContext.jsx";
 import { describeSkillUsage } from "../domain/skill-presentation.js";
 import {
   BurstSourceControls,
@@ -30,6 +29,7 @@ import {
 import { buildRefractionHint } from "../domain/refraction.js";
 import { getGaleTurbineCompanionInput } from "../domain/wing-extension.js";
 import { resolveLifestealCapability } from "../domain/baron-greed.js";
+import { S5PreviewTraitSummary } from "./S5PreviewTraitSummary.jsx";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -66,8 +66,6 @@ function isInteractiveSkillTarget(target) {
 
 function SkillDamagePreview({
   index,
-  side,
-  kind,
   label,
   opponentName,
   result,
@@ -100,7 +98,6 @@ function SkillDamagePreview({
       <span aria-hidden="true" className="skill-slot__damage-bar">
         <DamageSegments presentation={presentation} />
       </span>
-      <InlineComparison result={result} side={side} index={index} kind={kind} />
     </output>
   );
 }
@@ -205,6 +202,7 @@ function SkillSide({
       <div className="four-skill-side__conditions">
         {traitEditor}
         {offensiveTraitInputs.length > 0 ||
+        trait?.previewTraitEntity?.previewIdentity ||
         trait?.skillPowerBonuses?.length > 0 ||
         showsLifestealCapability ? (
           <div className="four-skill-trait-controls">
@@ -229,9 +227,10 @@ function SkillSide({
                 onTraitContextChange?.(side, key, value)
               }
             />
+            <S5PreviewTraitSummary trait={trait} role="attacker" context={traitContext} />
           </div>
         ) : null}
-        {defensiveTraitInputs.length > 0 ? (
+        {defensiveTraitInputs.length > 0 || defenseTrait?.previewTraitEntity?.previewIdentity ? (
           <div className="four-skill-trait-controls four-skill-trait-controls--defense">
             <TraitHint
               description={defenseTrait.description}
@@ -244,6 +243,7 @@ function SkillSide({
                 onTraitContextChange?.(side, key, value)
               }
             />
+            <S5PreviewTraitSummary trait={defenseTrait} role="defender" context={traitContext} />
           </div>
         ) : null}
         {hasSelfHpRule && health ? (
@@ -346,7 +346,6 @@ function SkillSide({
                 opponentName={opponentName}
                 result={traitDamage.result}
                 selected={{ name: traitDamage.name }}
-                side={side} kind="trait"
               />
             </div>
           </div>
@@ -563,7 +562,6 @@ function SkillSide({
                   opponentName={opponentName}
                   result={result}
                   selected={selected}
-                  side={side}
                 />
               </div>
               {selected?.description ||

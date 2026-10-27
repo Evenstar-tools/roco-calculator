@@ -69,5 +69,7 @@ test("new Web preview overlay also projects its newly attached portrait paths", 
   const spirit = result.spirits.find(entry => entry.previewIdentity?.formalIdPending);
   expect(spirit.asset.localUrl).toMatch(/^\/pre\/assets\//u);
   expect(spirit.previewIdentity.asset?.localUrl ?? "/assets/").toMatch(/^\/assets\//u);
-  expect(spirit.raceStats).toBeNull();
+  const { S5_PREVIEW_TEST_STATS } = await import("../../src/features/s5-preview/catalog.js");
+  expect(spirit.raceStats).toEqual(S5_PREVIEW_TEST_STATS);
+  expect(spirit.calculationStatus).toBe("pending-s5-mechanics");
 });

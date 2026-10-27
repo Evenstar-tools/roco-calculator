@@ -17,7 +17,7 @@
 
 正式数据仍为 S4，现有改动记录包含 9/10 正式调整和 10/14 季中调整。每次只回放所选提示栏对应 `patch.id` 的记录，其余沿用当前值；界面显示实际补丁日期和来源。这不是完整的 S5 历史数据包，也不把 S3 快照当作 S5 更新前数据。
 
-可核验的六维、技能基础威力和能耗先校验 `after` 与当前值一致，再使用记录中的 `before`。未审阅的特性/技能机制、连击规则、新实体、学习面或记录冲突显示“不可对比”，当前侧普通计算保持可用。没有通过替换描述、伪造版本或放宽国际服限制来制造历史结果。
+可核验的六维、技能基础威力和能耗先校验 `after` 与当前值一致，再使用记录中的 `before`。未审阅的特性/技能机制、连击规则或记录冲突显示“不可对比”，当前侧普通计算保持可用。没有通过替换描述、伪造版本或放宽国际服限制来制造历史结果。
 
 后续导入已核验 S5 数据时沿用实体改动记录链路；真正涉及旧规则的条目仍需对应规则适配与回归，不能仅凭新旧文案启用比较。
 
@@ -54,3 +54,9 @@
 - `src/styles.css`、`src/styles/26-balance-comparison.css`。
 - `tests/features/balance-comparison.test.js`、`tests/hooks/balance-comparison.test.jsx`、`tests/ui/balance-comparison-flow.test.jsx`、`tests/ui/balance-comparison-results.test.jsx`、`config/vitest.release.config.mjs`。
 - 本记录与 `docs/maintenance/web-ux-backlog.md` 的 UX36 状态；其他 S5 改动维持原状。
+
+## 最终用户变更 · 2026-10-27
+
+本文前述双列和历史比较为先前实现记录。用户随后明确要求“全部去掉，只留种族值编辑”，最终已移除比较入口、历史回放、双列与逐技能差值，手调直接显示当前单个结果。保留恢复官方，并增加恢复上次手调值；只有原有改动说明与种族值编辑保留。存档、分享及其他工具不采纳手调草稿，小程序不在本次范围。
+
+最终回归与公开 `/pre/` 发布验收见 `docs/maintenance/s5-pre-web-release-20261027.md`；不将中途本地比较修复当作已上线功能。

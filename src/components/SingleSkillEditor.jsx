@@ -10,6 +10,7 @@ import { resolveLifestealCapability } from "../domain/baron-greed.js";
 import { HealthInput } from "./HealthInput.jsx";
 import { PowerDraftInput } from "./PowerDraftInput.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
+import { S5PreviewTraitSummary } from "./S5PreviewTraitSummary.jsx";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -743,6 +744,7 @@ export function SingleSkillEditor({
                   )}
                   onChange={onTraitContextChange}
                 />
+                <S5PreviewTraitSummary trait={attackerTrait} role="attacker" context={traitContext} />
               </div>
             </article>
           ) : null}
@@ -764,6 +766,7 @@ export function SingleSkillEditor({
                   )}
                   onChange={onTraitContextChange}
                 />
+                <S5PreviewTraitSummary trait={defenderTrait} role="defender" context={traitContext} />
               </div>
             </article>
           ) : null}

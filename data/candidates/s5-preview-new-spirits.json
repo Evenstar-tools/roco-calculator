@@ -16,7 +16,7 @@
   "entries": [
     {
       "key": "minggulong",
-      "asset": {"localUrl":"/assets/spirits/s5-preview/minggulong.png","kind":"reference-silhouette","sourceUrl":"https://www.taptap.cn/moment/862665625271534048","sourceFrame":"official-encounters/official-news-1.jpg"},
+      "asset": {"localUrl":"/assets/spirits/s5-preview/minggulong.png","kind":"official-portrait","sourceUrl":"https://www.taptap.cn/moment/862665625271534048","sourceFrame":"official-encounters/official-news-1.jpg"},
       "name": "冥古龙",
       "kind": "family",
       "traitSummary": "开局99级（等级上限99级）；每回合结束降低10级；低于80级时受到伤害增加40%。",
@@ -26,6 +26,7 @@
     },
     {
       "key": "abu",
+      "asset": {"localUrl":"/assets/spirits/s5-preview/abu.png","kind":"official-portrait","sourceUrl":"https://www.taptap.cn/moment/662643409994908648","sourceFrame":"abu-official-intro-1.png"},
       "name": "阿布",
       "kind": "family",
       "traitSummary": "使用3能耗技能后提升2级（等级上限99级）；低于80级时受到伤害增加40%。",
@@ -163,23 +164,27 @@
     },
     {
       "key": "boss-abu",
-      "name": "阿布（首领化）",
+      "name": "圣龙阿布",
       "baseName": "阿布",
       "kind": "boss",
-      "traitSummary": "视频提到首领化后等级提升会触发额外效果，未公布具体效果；不套用普通阿布的全部规则。",
-      "mechanicKey": "boss-abu",
+      "traitSummary": "使用3能耗技能后提升2级（等级上限99级）；低于80级时受到伤害增加40%。",
+      "mechanicKey": "abu",
       "evidence": { "seconds": 23.8, "frame": "visual_frames/t-000023.800.jpg", "captionLines": [16, 17] },
-      "unknowns": ["首领六维与学习面", "完整首领特性原文", "等级提升的额外效果", "首领血脉附带规则"]
+      "unknowns": ["正式六维与学习面", "初始等级", "能耗判定取基础值还是实际消耗", "后台触发条件", "等级公式"]
     },
     {
-      "key": "boss-thousand-spikes",
-      "name": "千棘盔（首领化）",
-      "baseName": "千棘盔",
-      "kind": "boss",
-      "traitSummary": "视频仅将千棘盔首领化作为收益对照，未说明具体首领特性；是否属于S5新增仍待核实。",
-      "mechanicKey": "boss-thousand-spikes",
-      "evidence": { "seconds": 103.8, "frame": "visual_frames/t-000103.800.jpg", "captionLines": [55, 55] },
-      "unknowns": ["S5新增归属", "首领六维与学习面", "完整首领特性原文", "首领血脉附带规则"]
+      "key": "super-abu",
+      "name": "超能阿布",
+      "baseName": "阿布",
+      "kind": "family",
+      "traitSummary": "使用3能耗技能后提升2级（等级上限99级）；低于80级时受到伤害增加40%。",
+      "mechanicKey": "abu",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.taptap.cn/moment/662643409994908648",
+        "frame": "abu-official-intro-3.jpg"
+      },
+      "unknowns": ["正式六维", "完整属性与学习面", "初始等级", "能耗判定取基础值还是实际消耗", "等级公式", "正式图鉴身份与完整形态关系"]
     }
   ]
 }

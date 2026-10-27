@@ -29,6 +29,30 @@ function fixture() {
 }
 
 describe("S5 Web/Windows 展示候选覆盖", () => {
+  test("用户验收六维100只在显式测试覆盖中使用，正式资料与未知关系保留", () => {
+    const { snapshot, catalog } = fixture();
+    const original = structuredClone({ snapshot, catalog });
+    const pending = withS5PreviewCatalog(snapshot, catalog);
+    const options = { useTestRaceStats: true };
+    const result = withS5PreviewCatalog(pending, catalog, options);
+    for (const candidate of result.spirits.slice(1)) {
+      expect(candidate.raceStats).toEqual(stats);
+      expect(candidate.calculationStatus).toBe("pending-s5-mechanics");
+      expect(candidate.previewIdentity).toMatchObject({ formalIdPending: true, raceStatsPlaceholder: true });
+      expect(candidate.types).toEqual([]);
+      expect(result.learnsets.find(({ spiritId }) => spiritId === candidate.id)?.skillIds).toEqual([]);
+    }
+    expect(result.spirits[0]).toBe(snapshot.spirits[0]);
+    expect(withS5PreviewCatalog(result, catalog, options)).toBe(result);
+    expect({ snapshot, catalog }).toEqual(original);
+    expect(pending.spirits[1].raceStats).toBeNull();
+    const formal = { ...snapshot.spirits[0], id: "formal", fullName: catalog.entries[0].name,
+      raceStats: { ...stats, physicalAttack: 143 } };
+    const next = withS5PreviewCatalog({ ...snapshot, spirits: [...snapshot.spirits, formal] }, catalog, options);
+    expect(next.spirits.find(({ id }) => id === formal.id)).toBe(formal);
+    expect(next.spirits.find(({ id }) => id === formal.id).raceStats.physicalAttack).toBe(143);
+  });
+
   test("保留正式身份和现有实体，候选不继承首领基底数值或学习面", () => {
     const { snapshot, catalog } = fixture();
     const saved = structuredClone({ snapshot, catalog });
@@ -59,11 +83,11 @@ describe("S5 Web/Windows 展示候选覆盖", () => {
     expect(result.traits[1]).toMatchObject({ name: "前瞻特性", description: catalog.entries[0].traitSummary });
   });
 
-  test("条目参考剪影优先于通用图并保留来源；缺图条目仍用默认占位", () => {
+  test.each(["reference-silhouette", "official-silhouette", "official-portrait"])("条目%s优先于通用图并保留来源；缺图条目仍用默认占位", (kind) => {
     const { snapshot, catalog } = fixture();
     const generic = withS5PreviewCatalog(snapshot, catalog);
     catalog.entries[0].asset = {
-      localUrl: "/assets/spirits/s5-preview/family-a.png", kind: "reference-silhouette",
+      localUrl: "/assets/spirits/s5-preview/family-a.png", kind,
       sourceUrl: "https://example.com/official-video", sourceFrame: "official/frames/frame-002.jpg",
     };
     const result = withS5PreviewCatalog(snapshot, catalog);
@@ -92,7 +116,7 @@ describe("S5 Web/Windows 展示候选覆盖", () => {
       catalog.entries[0].asset = { ...valid, localUrl };
       expect(() => withS5PreviewCatalog(snapshot, catalog)).toThrow("项目内 assets 路径");
     }
-    for (const asset of [{ ...valid, sourceUrl: "http://example.com/video" },
+    for (const asset of [{ ...valid, kind: "unknown" }, { ...valid, sourceUrl: "http://example.com/video" },
       { ...valid, sourceUrl: "https://" }, { ...valid, sourceFrame: " " }]) {
       const { catalog } = fixture(); catalog.entries[0].asset = asset;
       expect(() => validateS5PreviewCatalog(catalog)).toThrow("HTTPS 来源及证据帧");
@@ -180,4 +204,25 @@ describe("S5 Web/Windows 展示候选覆盖", () => {
     expect(() => createReviewedS5PreviewIdMap(catalog, snapshot, { ...review,
       mappings: [...review.mappings, { key: "boss-a", spiritId: "existing" }] })).toThrow("同一精灵");
   });
+});
+
+test("具名官方图片占位使用图片证据，无需伪造视频时间或战斗参数", () => {
+  const { snapshot, catalog } = fixture();
+  catalog.entries[0].evidence = { kind: "official-image", url: "https://example.com/official-intro", frame: "named-official.jpg" };
+  catalog.entries[0].asset = { localUrl: "/assets/spirits/named.png", kind: "official-portrait",
+    sourceUrl: "https://example.com/official-intro", sourceFrame: "named-official.jpg" };
+  const result = withS5PreviewCatalog(snapshot, catalog);
+  expect(result.spirits[1].previewIdentity.evidence).toEqual(catalog.entries[0].evidence);
+  expect(result.spirits[1].previewIdentity.evidence).not.toHaveProperty("seconds");
+  expect(result.spirits[1].previewIdentity.source).toEqual({ url: catalog.entries[0].evidence.url, authority: "official-image" });
+  expect(result.spirits[1].previewIdentity.asset.kind).toBe("official-portrait");
+  expect(result.spirits[1].raceStats).toBeNull();
+  expect(result.learnsets.find(entry => entry.spiritId === result.spirits[1].id)?.skillIds).toEqual([]);
+  for (const evidence of [
+    { kind: "official-image", url: "http://example.com/intro", frame: "named.jpg" },
+    { kind: "official-image", url: "https://example.com/intro", frame: " " },
+  ]) {
+    catalog.entries[0].evidence = evidence;
+    expect(() => validateS5PreviewCatalog(catalog)).toThrow("官方图片来源及证据图");
+  }
 });

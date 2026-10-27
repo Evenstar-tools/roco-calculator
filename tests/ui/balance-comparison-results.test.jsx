@@ -1,98 +1,51 @@
-import { render, screen } from "@testing-library/react";
-import { expect, test } from "vitest";
-import { ComparisonDamage, ComparisonStatus, ComparisonSummary } from "../../src/features/balance-comparison/ComparisonResults.jsx";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { expect, test, vi } from "vitest";
+import { ResultRail } from "../../src/components/ResultRail.jsx";
+import { WorkspaceOverlays } from "../../src/components/WorkspaceOverlays.jsx";
 
-const result = (damage, extra = {}) => ({ status: "exact", totalDamage: damage,
-  hpPercent: damage / 4, remainingHp: 400 - damage, lethal: damage >= 400, ...extra });
-const comparison = (before, after, extra = {}) => ({ active: true,
-  beforeLabel: "S4 正式数据", afterLabel: "自定义试算",
-  beforeView: { result: { defenderHp: 400, selectedResult: before } },
-  afterView: { result: { defenderHp: 400, selectedResult: after } }, ...extra });
+// These presentation tests never decode imported lineup images.
+vi.mock("../../src/state/lineup-image.js", () => ({ decodeLineupImage: vi.fn() }));
 
-test("main comparison distinguishes relative damage change, HP percentage points and custom source", () => {
-  render(<ComparisonSummary comparison={comparison(result(50), result(68), {
-    changes: [{ entityId: "dimo", entityName: "迪莫", label: "物攻种族值", before: 80, after: 100 }],
-  })} />);
-  expect(screen.getByText("S4 正式数据")).toBeVisible();
-  expect(screen.getByText("自定义试算")).toBeVisible();
-  expect(screen.getByText("伤害增加 18 HP")).toBeVisible();
-  expect(screen.getByText("+36.0%")).toBeVisible();
-  expect(screen.getByText("生命占比 +4.5 个百分点")).toBeVisible();
-  expect(screen.getByText("剩余 350 HP")).toBeVisible();
+const result = {
+  attackerName: "烈火守护", defenderName: "银月狼王", selectedSkillName: "撕咬",
+  defenderHp: 400, defenderMaxHp: 400, mode: "four",
+  selectedResult: { status: "exact", totalDamage: 68, hpPercent: 17, remainingHp: 332, lethal: false },
+  skillResults: [{ id: "bite", name: "撕咬", damage: 68, hpPercent: 17, selected: true }],
+};
+
+const staleComparison = { active: true, hasCustom: true, issue: "旧比较提示不应显示",
+  beforeView: { result: { ...result, selectedResult: { status: "exact", totalDamage: 50, hpPercent: 12.5 } } },
+  afterView: { result }, beforeLabel: "记录调整前", afterLabel: "自定义试算" };
+
+function expectNoHistoricalComparison(container) {
+  expect(container.querySelector(".balance-summary, .balance-inline, .balance-damage, .skill-result-row__comparison")).toBeNull();
+  expect(container).not.toHaveTextContent(/记录调整前|更新前后对比|不可对比|旧比较提示|百分点|伤害增加|伤害减少/u);
+}
+
+test.each([false, true])("种族值编辑状态%s仍显示一个主伤害数及原技能结果，不渲染遗留比较输入", (hasCustomRaceStats) => {
+  const onOpenComparison = vi.fn();
+  const { container } = render(<ResultRail result={result} hasCustomRaceStats={hasCustomRaceStats}
+    balanceComparison={staleComparison} onOpenComparison={onOpenComparison} />);
+  expect(screen.getAllByTestId("primary-damage")).toHaveLength(1);
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent(/^68$/u);
+  expect(screen.getByLabelText("撕咬实际伤害")).toHaveTextContent(/^68$/u);
   expect(screen.getByText("剩余 332 HP")).toBeVisible();
-  expect(screen.getByText("迪莫 · 物攻种族值：80 → 100")).toBeInTheDocument();
+  expectNoHistoricalComparison(container);
+  fireEvent.click(screen.getByRole("button", { name: hasCustomRaceStats ? "查看全精灵承伤（官方值）" : "查看全精灵承伤" }));
+  expect(onOpenComparison).toHaveBeenCalledOnce();
 });
 
-test.each([[0, 50, "新增伤害"], [0, 0, "无变化"], [50, 50, "无变化"], [100, 75, "-25.0%"]])(
-  "row %d → %d displays %s without division by zero", (before, after, label) => {
-    const { container } = render(<ComparisonDamage before={result(before)} after={result(after)} />);
-    expect(container).toHaveTextContent(`${before} → ${after}`);
-    expect(container).toHaveTextContent(label);
-    expect(container).not.toHaveTextContent(/Infinity|NaN/);
-  },
-);
-
-test("settled status HP loss is included but freeze threshold remains separate", () => {
-  const before = result(200);
-  const after = result(200, { negativeStatusSettlement: {
-    maxHp: 400, actualStatusDamage: 40, remainingHp: 160, lethal: false,
-    freeze: { thresholdPercent: 15, lethal: false },
-    breakdown: [{ id: "burn", damage: 40, stacks: 2 }],
-  } });
-  render(<ComparisonSummary comparison={comparison(before, after)} />);
-  expect(screen.getByText("伤害增加 40 HP")).toBeVisible();
-  expect(screen.getByText("+20.0%")).toBeVisible();
-  expect(screen.getByText("占最大生命 60.0%")).toBeVisible();
-  expect(screen.getByText("生命占比 +10.0 个百分点")).toBeVisible();
-  expect(screen.getByText("冻结斩杀线 15% · 不额外扣血")).toBeVisible();
-  expect(screen.getByText("剩余 160 HP")).toBeVisible();
-});
-
-test("freeze-only KO changes the outcome without presenting threshold as new damage", () => {
-  const after = result(340, { negativeStatusSettlement: {
-    maxHp: 400, actualStatusDamage: 0, remainingHp: 60, lethal: true,
-    freeze: { thresholdPercent: 15, lethal: true },
-  } });
-  render(<ComparisonSummary comparison={comparison(result(340), after)} />);
-  expect(screen.getByText("伤害无变化")).toBeVisible();
-  expect(screen.getByText("生命占比 0.0 个百分点")).toBeVisible();
-  expect(screen.getByText("本次可击倒 · 冻结斩杀")).toBeVisible();
-  expect(screen.getByText("剩余 60 HP")).toBeVisible();
-});
-
-test("pure status skill compares settled damage and preserves freeze-only zero", () => {
-  const before = result(0, { statusOnly: true, negativeStatusSettlement: {
-    maxHp: 400, actualStatusDamage: 0, remainingHp: 400, lethal: false,
-    freeze: { thresholdPercent: 10 },
-  } });
-  const after = result(0, { statusOnly: true, negativeStatusSettlement: {
-    maxHp: 400, actualStatusDamage: 20, remainingHp: 380, lethal: false,
-    freeze: { thresholdPercent: 10 },
-  } });
-  const { container } = render(<ComparisonDamage before={before} after={after} />);
-  expect(container).toHaveTextContent("0 → 20");
-  expect(container).toHaveTextContent("新增伤害");
-});
-
-test("unverified rule is an unavailable result rather than an unchanged pair", () => {
-  render(<ComparisonSummary comparison={comparison(result(50), {
-    status: "unsupported", reason: "新特性规则待核验", totalDamage: 50,
-  })} />);
-  expect(screen.getByText("当前不可对比")).toBeVisible();
-  expect(screen.getByText("新特性规则待核验")).toBeVisible();
-  expect(screen.queryByText("伤害无变化")).not.toBeInTheDocument();
-});
-
-test("explicit blocker wins over numeric results for summary and rows", () => {
-  const state = comparison(result(50), result(50), { issue: { reason: "旧版技能不存在" } });
-  const { container } = render(<><ComparisonSummary comparison={state} />
-    <ComparisonDamage before={result(50)} after={result(50)} issue={state.issue} /></>);
-  expect(container).toHaveTextContent("旧版技能不存在");
-  expect(container).not.toHaveTextContent("50 → 50");
-});
-
-test("comparison does not show when switched off", () => {
-  const { container } = render(<><ComparisonSummary comparison={{ active: false }} />
-    <ComparisonStatus comparison={{ active: false }} /></>);
-  expect(container).toBeEmptyDOMElement();
+test("手机底栏和展开结果都使用当前自定义伤害，原官方承伤工具保留", () => {
+  const onOpenComparison = vi.fn();
+  const { container } = render(<WorkspaceOverlays
+    menu={{ open: false }} share={{}} team={{}} toast={{}}
+    mobileResult={{ configurationReady: true, open: true, viewMode: "compact", result,
+      hasCustomRaceStats: true, balanceComparison: staleComparison,
+      actions: { onOpenComparison } }} />);
+  expect(container.querySelector(".mobile-result-bar__damage")).toHaveTextContent(/^68$/u);
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent(/^68$/u);
+  expectNoHistoricalComparison(container);
+  fireEvent.click(screen.getByRole("button", { name: "承伤对比（官方）" }));
+  expect(onOpenComparison).toHaveBeenCalledOnce();
+  expect(screen.getByRole("button", { name: "查看全精灵承伤（官方值）" })).toBeVisible();
 });

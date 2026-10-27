@@ -9,7 +9,9 @@ import { createCalculatorSessionStore } from "../../src/runtime/workspace-store.
 
 const snapshot = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
 const fire = snapshot.spirits.find(({ fullName }) => fullName === "烈火守护");
+const wolf = snapshot.spirits.find(({ fullName }) => fullName === "银月狼王");
 const bite = snapshot.skills.find(({ name }) => name === "撕咬");
+const wolfHit = snapshot.skills.find(({ name }) => name === "见招拆招");
 
 beforeEach(() => {
   localStorage.clear();
@@ -26,42 +28,65 @@ function workspace() {
   return { state, viewMode: "compact", activeDirection: "forward" };
 }
 
+function selectSide(initial, side, spirit, skill) {
+  initial.state.sides[side].spiritId = spirit.id;
+  initial.state.sides[side].skills = { single: skill.id, four: [skill.id, null, null, null] };
+}
+
 async function openAttackChanges(user) {
   await user.click(screen.getAllByRole("button", { name: "查看烈火守护本期改动" })[0]);
   return screen.getByRole("dialog", { name: "烈火守护本期改动" });
 }
 
-test("改动栏串联本期对比与独立种族值编辑，关闭恢复真实结果且不污染存档", async () => {
+test("只保留种族值编辑，结果一个数；恢复官方后可找回上次手调", async () => {
   const user = userEvent.setup();
   const initial = workspace();
+  selectSide(initial, "defender", wolf, wolfHit);
   const official = structuredClone(snapshot.spirits.find(({ id }) => id === fire.id).raceStats);
   render(<App initialSnapshot={snapshot} initialWorkspace={initial} />);
   const initialDamage = screen.getByTestId("primary-damage").textContent;
   const panel = await openAttackChanges(user);
-  const compare = within(panel).getByRole("checkbox", { name: "对比本期改动" });
+  expect(within(panel).queryByRole("checkbox", { name: /对比/u })).not.toBeInTheDocument();
+  expect(within(panel).queryByRole("combobox", { name: "对比调整记录" })).not.toBeInTheDocument();
   const custom = within(panel).getByRole("checkbox", { name: "自定义种族值" });
-  expect(compare).not.toBeChecked();
-  expect(custom).not.toBeChecked();
-  await user.click(compare);
-  expect(screen.getByRole("region", { name: "更新前后对比" })).toHaveTextContent("记录调整前");
-  expect(document.querySelector(".compact-skill__row .balance-damage")).toHaveTextContent("→");
   await user.click(custom);
+  expect(screen.queryByRole("region", { name: "更新前后对比" })).not.toBeInTheDocument();
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent(initialDamage);
   const attack = within(panel).getByRole("spinbutton", { name: "试算物攻种族值" });
   fireEvent.change(attack, { target: { value: "200" } });
   expect(attack).toHaveValue(200);
-  expect(screen.getByRole("region", { name: "更新前后对比" })).toHaveTextContent("自定义试算");
-  expect(screen.getAllByLabelText("自定义种族值摘要")).toHaveLength(1);
+  const customDamage = screen.getByTestId("primary-damage").textContent;
+  expect(customDamage).not.toBe(initialDamage);
+  expect(customDamage).toMatch(/^\d+$/u);
+  expect(document.querySelector(".balance-damage, .balance-summary, .balance-inline")).toBeNull();
   expect(screen.getByLabelText("自定义种族值摘要")).toHaveTextContent("79 → 200");
   expect(screen.getByRole("button", { name: "查看全精灵承伤（官方值）" })).toBeInTheDocument();
   expect(snapshot.spirits.find(({ id }) => id === fire.id).raceStats).toEqual(official);
-  expect(initial.state.sides.attacker).not.toHaveProperty("spirit");
   await user.click(within(panel).getByRole("button", { name: "恢复官方种族值" }));
-  expect(within(panel).getByRole("checkbox", { name: "自定义种族值" })).not.toBeChecked();
-  expect(compare).toBeChecked();
-  await user.click(compare);
-  expect(screen.queryByRole("region", { name: "更新前后对比" })).not.toBeInTheDocument();
+  expect(custom).not.toBeChecked();
   expect(screen.getByTestId("primary-damage")).toHaveTextContent(initialDamage);
+  await user.click(within(panel).getByRole("button", { name: "恢复上次手调值" }));
+  expect(custom).toBeChecked();
+  expect(within(panel).getByRole("spinbutton", { name: "试算物攻种族值" })).toHaveValue(200);
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent(customDamage);
   expect(Object.values(localStorage).join(" ")).not.toContain("balance-custom:");
+  await user.keyboard("{Escape}");
+  await user.click(screen.getByRole("button", { name: "关闭种族值试算" }));
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent(initialDamage);
+});
+
+test("纯新增精灵也只提供种族值编辑，不生成缺少调整前资料提示", async () => {
+  const user = userEvent.setup();
+  const initial = workspace();
+  selectSide(initial, "attacker", wolf, wolfHit);
+  selectSide(initial, "defender", wolf, wolfHit);
+  render(<App initialSnapshot={snapshot} initialWorkspace={initial} />);
+  await user.click(screen.getAllByRole("button", { name: "编辑银月狼王试算种族值" })[0]);
+  const panel = screen.getByRole("dialog", { name: "银月狼王种族值试算" });
+  await user.click(within(panel).getByRole("checkbox", { name: "自定义种族值" }));
+  expect(within(panel).getByRole("spinbutton", { name: "试算物攻种族值" })).toBeVisible();
+  expect(screen.queryByText("当前不可对比")).not.toBeInTheDocument();
+  expect(screen.queryByRole("region", { name: "更新前后对比" })).not.toBeInTheDocument();
 });
 
 test("试算输入保持焦点，拒绝无效草稿，清除当前配置同时清除试算", async () => {
@@ -100,7 +125,7 @@ test("自定义生命下百分比输入按官方尺度存档，关闭或重新�
   expect(saved.directions.forward.currentHp).toBe(Math.round(officialMax / 2));
   expect(saved.directions.forward.context.currentHpPercent).toBe(50);
   expect(JSON.stringify(saved)).not.toContain("balance-custom:");
-  await user.click(screen.getByRole("button", { name: "关闭对比与试算" }));
+  await user.click(screen.getByRole("button", { name: "关闭种族值试算" }));
   expect(screen.queryByRole("region", { name: "更新前后对比" })).not.toBeInTheDocument();
   app.unmount();
   render(<App initialSnapshot={snapshot} />);

@@ -96,13 +96,107 @@ describe("审核后 NRC 导入", () => {
     expect(applyNrcCurrent(next, evidence, profile)).toEqual(next);
     expect(snapshot.meta.id).toBe("fixture-before");
   });
-  test("跨版本不把上一赛季变更记录或 NEW 标记重新命名为新季差异", () => {
+  test("正式切季保留旧记录自己的日期和前后值，不把旧 NEW 改名为新季新增", () => {
     const { profile, evidence, snapshot } = fixture();
     snapshot.spirits[0].changeInfo = { isNew: true };
-    snapshot.currentPatchChanges = { patch: { id: "fixture-before" }, spirits: [{ entityId: "saved-pet", isNew: true, items: [] }], skills: [] };
+    const oldPatch = { id: "fixture-before", seasonId: "S98", date: "2098.09.10" };
+    const spiritRecord = { entityId: "saved-pet", entityName: "测试精灵旧名", isNew: true,
+      items: [{ kind: "new", label: "新增精灵", after: "旧新增说明" }] };
+    const skillRecord = { entityId: "saved-skill", entityName: "测试技能",
+      items: [{ kind: "stat", field: "basePower", label: "威力", before: 5, after: 10 }] };
+    snapshot.currentPatchChanges = { patch: oldPatch, spirits: [spiritRecord], skills: [skillRecord] };
     const next = applyNrcCurrent(snapshot, evidence, profile);
-    expect(next.spirits[0].changeInfo).toBeUndefined();
-    expect(next.currentPatchChanges).toMatchObject({ patch: { id: profile.version, label: "S99 新站正式资料", date: "2099.01.02" }, spirits: [], skills: [] });
+    expect(next.spirits[0].changeInfo).toEqual({ isNew: false });
+    expect(next.currentPatchChanges).toEqual({
+      patch: expect.objectContaining({ id: profile.version, seasonId: "S99", label: "S99 新站正式资料", date: "2099.01.02" }),
+      spirits: [{ patch: oldPatch, ...spiritRecord, isNew: false }], skills: [{ patch: oldPatch, ...skillRecord }],
+    });
+    expect(applyNrcCurrent(next, evidence, profile)).toEqual(next);
+    expect(snapshot.currentPatchChanges.spirits[0]).toEqual(spiritRecord);
+  });
+  test.each(["S98", "S99"])("%s 的 NEW 只在正式跨季时退出，新增说明及 history 原样保留", (seasonId) => {
+    const { profile, evidence, snapshot } = fixture();
+    snapshot.meta.seasonId = seasonId;
+    const history = { patch: { id: "older", seasonId: "S97", date: "2097.01.01" }, isNew: true,
+      items: [{ kind: "new", label: "新增精灵", after: "最早新增说明" }] };
+    const record = { entityId: "saved-pet", entityName: "测试精灵", isNew: true,
+      patch: { id: "fixture-preview", seasonId, date: "2098.09.10" },
+      items: [{ kind: "new", label: "新增精灵", after: "当季新增说明" }], history: [history] };
+    snapshot.spirits[0].changeInfo = structuredClone(record);
+    snapshot.currentPatchChanges = { patch: record.patch, spirits: [structuredClone(record)], skills: [] };
+    const next = applyNrcCurrent(snapshot, evidence, profile);
+    const expected = { ...record, isNew: seasonId === profile.seasonId };
+    expect(next.spirits[0].changeInfo).toEqual(expected);
+    expect(next.currentPatchChanges.spirits[0]).toEqual(expected);
+    expect(next.spirits[0].changeInfo.history).toEqual([history]);
+    expect(applyNrcCurrent(next, evidence, profile)).toEqual(next);
+    expect(snapshot.spirits[0].changeInfo).toEqual(record);
+  });
+  test("同赛季正式补丁调整已有 NEW 时仍保留本季新增身份", () => {
+    const { profile, evidence, snapshot } = fixture();
+    snapshot.meta.seasonId = profile.seasonId;
+    snapshot.spirits[0].raceStats = { physicalAttack: 18 };
+    const record = { entityId: "saved-pet", entityName: "测试精灵", isNew: true,
+      patch: { id: "fixture-preview", seasonId: profile.seasonId, date: "2099.01.01" },
+      items: [{ kind: "new", label: "新增精灵", after: "当季新增说明" }] };
+    snapshot.spirits[0].changeInfo = record;
+    const next = applyNrcCurrent(snapshot, evidence, profile);
+    expect(next.spirits[0].changeInfo).toMatchObject({ isNew: true, items: [{ kind: "stat", before: 18, after: 20 }], history: [record] });
+    expect(applyNrcCurrent(next, evidence, profile)).toEqual(next);
+  });
+  test("正式属性及类别变化使用文本明细，只有数值参数进入 stat 卡", () => {
+    const { profile, evidence, snapshot } = fixture();
+    snapshot.spirits[0].types = ["草", "火"];
+    snapshot.skills[0].type = "草";
+    snapshot.skills[0].category = "status";
+    const next = applyNrcCurrent(snapshot, evidence, profile);
+    expect(next.spirits[0].changeInfo.items).toContainEqual({ kind: "mechanic", field: "types", label: "属性", before: "草、火", after: "普通" });
+    expect(next.skills[0].changeInfo.items).toEqual([
+      { kind: "mechanic", field: "type", label: "属性", before: "草", after: "普通" },
+      { kind: "mechanic", field: "category", label: "类别", before: "status", after: "physical" },
+    ]);
+  });
+  test.each(["ledger", "entity", "both"])("正式值已与公告一致，%s中的公告和旧季 history 完整接续且不换日期", (location) => {
+    const { profile, evidence, snapshot } = fixture();
+    const oldRecord = { patch: { id: "fixture-before", seasonId: "S98", date: "2098.09.10" },
+      entityId: "saved-pet", entityName: "测试精灵", isNew: false,
+      items: [{ kind: "stat", field: "physicalAttack", label: "物攻", before: 10, after: 15 }] };
+    const announcement = { patch: { id: "fixture-preview", seasonId: "S99", date: "预计 2099.01.02" },
+      entityId: "saved-pet", entityName: "测试精灵", isNew: false,
+      items: [{ kind: "stat", field: "physicalAttack", label: "物攻", before: 15, after: 20 }], history: [oldRecord] };
+    snapshot.spirits[0].raceStats = { physicalAttack: 20 };
+    if (location !== "ledger") snapshot.spirits[0].changeInfo = structuredClone(announcement);
+    if (location !== "entity") snapshot.currentPatchChanges = { patch: announcement.patch, spirits: [structuredClone(announcement)], skills: [] };
+    const before = structuredClone(snapshot);
+    const next = applyNrcCurrent(snapshot, evidence, profile);
+    expect(next.spirits[0].changeInfo).toEqual(location === "ledger" ? undefined : announcement);
+    expect(next.currentPatchChanges.spirits).toEqual([announcement]);
+    expect(next.currentPatchChanges.patch.id).toBe(profile.version);
+    expect(applyNrcCurrent(next, evidence, profile)).toEqual(next);
+    expect(snapshot).toEqual(before);
+  });
+  test("正式新值单建补丁组，保留公告及旧季每次原始前后值并保持扁平幂等", () => {
+    const { profile, evidence, snapshot } = fixture();
+    const oldRecord = { patch: { id: "fixture-before", seasonId: "S98", date: "2098.09.10" },
+      entityId: "saved-pet", entityName: "测试精灵", items: [{ kind: "stat", field: "physicalAttack", before: 10, after: 15 }] };
+    const announcement = { patch: { id: "fixture-preview", seasonId: "S99", date: "预计 2099.01.02" },
+      entityId: "saved-pet", entityName: "测试精灵", items: [{ kind: "stat", field: "physicalAttack", before: 15, after: 20 }], history: [oldRecord] };
+    snapshot.spirits[0].raceStats = { physicalAttack: 20 };
+    snapshot.spirits[0].changeInfo = structuredClone(announcement);
+    snapshot.skills[0].basePower = 10;
+    const oldSkill = { entityId: "saved-skill", entityName: "测试技能", patch: oldRecord.patch,
+      items: [{ kind: "stat", field: "basePower", before: 5, after: 10 }] };
+    snapshot.currentPatchChanges = { patch: announcement.patch, spirits: [announcement], skills: [oldSkill] };
+    evidence.spirits[0].stats.atk = 22;
+    const before = structuredClone(snapshot);
+    const next = applyNrcCurrent(snapshot, evidence, profile);
+    expect(next.spirits[0].changeInfo).toMatchObject({ patch: { id: profile.version, date: "2099.01.02" }, isNew: false,
+      items: [{ kind: "stat", field: "physicalAttack", before: 20, after: 22 }], history: [expect.objectContaining({ patch: announcement.patch, items: announcement.items }), oldRecord] });
+    expect(next.spirits[0].changeInfo.history.every(record => !record.history)).toBe(true);
+    expect(next.skills[0].changeInfo).toMatchObject({ patch: { id: profile.version },
+      items: [{ kind: "stat", field: "basePower", before: 10, after: 20 }], history: [oldSkill] });
+    expect(applyNrcCurrent(next, evidence, profile)).toEqual(next);
+    expect(snapshot).toEqual(before);
   });
   test("S5 未审核、未显式指定配置或未经审核的来源修订均拒绝", () => {
     const { profile, evidence, snapshot } = fixture();

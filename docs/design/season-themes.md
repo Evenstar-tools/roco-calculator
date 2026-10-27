@@ -173,10 +173,24 @@ Web 的 `src/styles.css` 在基础、深色及响应式样式后导入 `20-s4-se
 | 环境参考 1 | 官方 PV 00:09.8 原帧，晴天、机械龙首乐园入口、青绿植被。建筑位置来自宣传画面，不称为大厅实景复刻。 | `output/research/s5-20261023/pv-BV1C8nH69Ekq/visual_frames/t-000009.800.jpg`，852×480，有原视频水印/角注。 |
 | 环境参考 2 | 同一 PV 00:49.8，暖橙建筑、机械玩具与积木，作为暖色和材质参考。 | 同目录 `t-000049.800.jpg`，852×480。 |
 | 自制装饰背景 | 内置 imagegen 参考两张已读原帧生成；蓝青海水/天空、暖金橙、机械龙首建筑，左侧和最右保留低对比空间。没有精灵、文字或 Logo。是工具自制装饰，不是官方原画。 | 原稿 `output/season-s5/s5-dragon-treasure-original.png`，2172×724、无 alpha；运行时 `public/assets/season/s5-dragon-treasure.webp`，2000×667、无 alpha。使用 FFmpeg 等比缩放并居中裁去不足一个像素比例差，WebP quality 84；已读取实际导出图。 |
-| 招牌精灵 | PV 01:44.8 卡面确认「冥古龙」，封面与卡面均带背景。未取得可靠透明全身原图，不用旧页游或泄露图代替。 | 当前 `character:null`；获得可核验透明图后按 design.md 补原色立绘及桌面两条定位链。 |
+| 招牌精灵 | PV 01:44.8 卡面确认「冥古龙」。10/23 当时封面与卡面均带背景，未取得可靠透明全身原图；10/27 原图抠取和接入见第 8 节。 | 10/23 暂留 `character:null`；10/27 接入 `s5-minggulong.webp`，保持原色与 alpha。 |
 
 完整生成提示词见 [season-imagegen-prompts.md](season-imagegen-prompts.md) 的 S5 条目；本机素材覆盖记录为 `output/research/s5-20261023/pv-BV1C8nH69Ekq/content-review.json`。参考源页面与帧时间保留在本文，即使忽略目录不随 Git 提交也能追溯来源。
 
 接入沿用 `season-themes.js`、`20-s4-season.css` 和统一二级面板变量。S5 采用深青页头、暖金选中态；角色留空自动清理上一主题角色，不增加占位假图。设置、随机、本地预览、中英日操作和按服存档复用原路径。CN 默认仍为 S4，Global 默认 neutral，经典配色沿用 S4。所选装饰不切换数据、计算规则、服务器或当前配置；普通页头仍显示正式数据阶段 S4「季中」。
 
 本轮实现与本地验收明细统一记于 [S5 开发计划第 8 节](../maintenance/s5-development-plan-20261022.md#8-2026-10-23-本地准备实施记录)，不把 Web 截图写成 Windows/微信原生验收。
+
+## 8. S5 冥古龙招牌精灵接入 · 2026-10-27
+
+用户要求把冥古龙加到赛季装饰，做法与其它赛季一致。本轮只补 S5 透明角色和相应坐标，不重做已确认环境背景，不改配色、默认主题、游戏数据或计算。
+
+- 原图：[官方 S5 魔法快报](https://www.taptap.cn/moment/862665625271534048)，2026-10-23；[原海报图片](https://img2-tc.tapimg.com/moment/etag/ln-64JpXbShT6K7j9gHxsm6wuBYV_20261023120458.jpg)，2160×3721。本地源图 `output/s5-video-20261027/official-encounters/official-news-1.jpg`。
+- 采用具名完整小立绘，源坐标 `(641,1517,1113,1902)`；已完成的原像素抠图为 `artifacts/s5-official-portraits-20261027/mingu/mingu-original-rgba.png`，472×385 RGBA。分割说明、坐标及浅深底检查见该目录 README。不是 128px 头像放大，也不是历史生成参考剪影；没有补画或重绘角色。
+- 运行资产 `public/assets/season/s5-minggulong.webp`，原生 472×385，FFmpeg libwebp lossless 等尺寸转换，alpha 与原稿一致。保留独立角色层，图片空 alt、装饰父层 aria-hidden、禁止指针交互，沿用原 `AppHeader`。
+- S5 浅色 DOM 与暗色页顶背景使用同一素材；同步设置两种坐标语义，检查 1280/929/801px 的脸部及完整操作区。<=800px 沿用原规则隐藏大角色，390px 明暗布局保留场景及按钮。
+- 继续复用原主题选择、随机、按服保存、经典计算色及中性清除逻辑；本轮未新增文案或设置，没有改 S1–S4。
+
+本轮验收：主题、页头及主题状态定向回归通过；真实浏览器检查 1280/929/801/390px 明暗页面，独立看图复核通过。显示设置中切回 S5 后刷新，仍为 S5，角色资源完整加载且不拦截点击；定向 ESLint 与差异空白检查通过。
+
+仅 s5pre 本地接续，未提交、推送、部署、制作 Windows 安装包或同步小程序。真实页面截图在 `output/playwright/s5-minggulong-theme-20261027/`，本地预览 `http://127.0.0.1:4234/pre/`。

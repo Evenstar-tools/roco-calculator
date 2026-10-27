@@ -8,13 +8,28 @@ const event = (type, values = {}, id = "event-1") => ({ id, type, ...values });
 const run = (key, type, values = {}, state, confirmed) => reduceS5Preview(key, state, event(type, values), confirmed);
 
 describe("S5视频机制候选合同", () => {
-  test("未公开首领效果保持阻断，不套用普通形态或比较对象的规则", () => {
+  test("未核验成本口径保持阻断，比较对象不进入S5候选", () => {
     expect(S5_PREVIEW_MECHANICS["lily-of-valley"].name).toBe("铃兰");
+    expect(S5_PREVIEW_MECHANICS["boss-abu"].name).toBe("圣龙阿布");
     expect(run("boss-abu", "skill-used", { cost: 3 }).status).toBe("blocked");
+    expect(S5_PREVIEW_MECHANICS).not.toHaveProperty("boss-thousand-spikes");
     const compared = run("boss-thousand-spikes", "skill-used");
     expect(compared.status).toBe("blocked");
     expect(compared.effects).toEqual([]);
     expect(compared.calculationEnabled).toBe(false);
+  });
+
+  test("阿布三形态共用已核验升级机制，不套历史版本规则", () => {
+    expect(S5_PREVIEW_MECHANICS["super-abu"]).toMatchObject({ name: "超能阿布", events: ["skill-used"] });
+    for (const key of ["abu", "boss-abu", "super-abu"]) {
+      const initial = createS5PreviewState({ level: 77 });
+      const result = run(key, "skill-used", { cost: 3 }, initial, { costBasis: "reviewed-eligible-cost" });
+      expect(result.state.level).toBe(79);
+      expect(result.effects).toContainEqual({ kind: "incoming-damage-percent", amount: 40, condition: "level-below-80" });
+      expect(result.calculationEnabled).toBe(false);
+      expect(adaptS5PreviewEffects(result).modifiers).toEqual([]);
+      expect(initial.level).toBe(77);
+    }
   });
 
   test("冥古龙99开局，回合结束-10，79触发承伤，固定60级核心保持阻断", () => {

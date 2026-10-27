@@ -301,6 +301,10 @@
   object-position: center;
 }
 
+html[data-theme="dark"] .spirit-card__image[data-preview-silhouette="true"] {
+  filter: brightness(1.7);
+}
+
 .spirit-card__identity {
   min-width: 0;
 }

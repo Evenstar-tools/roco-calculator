@@ -26,15 +26,15 @@ import { hasNativeMoonMemoryTrait } from "./domain/moon-memory-trait-options.js"
 import { QuickNaturePicker } from "./components/QuickNaturePicker.jsx";
 import { QuickIvPicker } from "./components/QuickIvPicker.jsx";
 import { ResultRail } from "./components/ResultRail.jsx";
-import { SingleSkillEditor } from "./components/SingleSkillEditor.jsx";
+import { SingleSkillEditor, TraitInputs } from "./components/SingleSkillEditor.jsx";
+import { TraitHint } from "./components/TraitHint.jsx";
+import { S5PreviewTraitSummary } from "./components/S5PreviewTraitSummary.jsx";
 import { SkillStep } from "./components/SkillStep.jsx";
 import { SpiritStep } from "./components/SpiritStep.jsx";
 import { PresetBrowseProvider } from "./components/PresetBrowseMode.jsx";
 import { WorkspaceOverlays } from "./components/WorkspaceOverlays.jsx";
 import { useBalanceComparison } from "./features/balance-comparison/useBalanceComparison.js";
 import { SpiritComparisonControls, SpiritTrialChanges } from "./features/balance-comparison/SpiritComparisonControls.jsx";
-import { ComparisonStatus } from "./features/balance-comparison/ComparisonResults.jsx";
-import { BalanceComparisonContext } from "./features/balance-comparison/BalanceComparisonContext.jsx";
 import {
   readNegativeStatusSettlementSetting,
   readThemeSetting,
@@ -84,6 +84,7 @@ import { getEffectiveTraits } from "./domain/effective-traits.js";
 import { getBattleFormChoices } from "./domain/battle-form.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
 import { withWebPreview } from "./features/s5-preview/with-web-preview.js";
+import { synchronizeS5PreviewSkillUse, synchronizeS5PreviewConfirmationFromUse } from "./features/s5-preview/settlement.js";
 import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
 import { useCalculatorSession } from "./hooks/useCalculatorSession.js";
 import { useCalculatorShortcuts } from "./hooks/useCalculatorShortcuts.js";
@@ -730,9 +731,11 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       return;
     }
     const previousValue = stateRef.current.directions[direction].context?.[key];
-    commitSession(
-      updateMirroredTraitContext(stateRef.current, { direction, key, value }),
-    );
+    const traitUpdate = updateMirroredTraitContext(stateRef.current, { direction, key, value });
+    traitUpdate.state = synchronizeS5PreviewSkillUse(traitUpdate.state, {
+      side: traitOwnerSide, control, value, snapshot,
+    });
+    commitSession(traitUpdate);
     const attackingSide = direction === "forward" ? "attacker" : "defender";
     const defendingSide = attackingSide === "attacker" ? "defender" : "attacker";
     const ownerSide = key.startsWith("defenderTrait.")
@@ -926,6 +929,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     let latest = stateRef.current;
     const entry = latest.sides[side].skills.four[index];
     const skill = getSkill(snapshot, entry);
+    if (skill?.s5StatusEffectPending) { setToast(skill.s5StatusEffectPending); return; }
     const context = linkedNegativeStatusContext(latest, side,
       entry && typeof entry === "object" ? entry.context ?? {} : {});
     const activationContextSignature = JSON.stringify(context);
@@ -971,6 +975,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             negativeStatusRepeatSkillsBySlot: latest.directions[selfDirection].context?.negativeStatusRepeatSkillsBySlot ?? {},
           } } });
         }
+        const s5State = synchronizeS5PreviewConfirmationFromUse(stateRef.current, {
+          side, snapshot, skillIndex: index, used: false,
+        });
+        if (s5State !== stateRef.current) commitSession({ state: s5State, persistence: {} });
         setActiveDirection(selfDirection);
         setToast(`${skill.name}的状态已解除`);
         return;
@@ -1018,6 +1026,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           },
         },
       });
+      const s5State = synchronizeS5PreviewConfirmationFromUse(stateRef.current, {
+        side, snapshot, skillIndex: index, used: negativeStatusUseCount > 0,
+      });
+      if (s5State !== stateRef.current) commitSession({ state: s5State, persistence: {} });
       if (negativeStatusUseCount === 0) {
         setActiveDirection(selfDirection);
         setToast(`${skill.name}的负面状态已取消`);
@@ -1439,7 +1451,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const direction = side === "attacker" ? "forward" : "reverse";
     const entry = mode === "single" ? state.sides[side].skills.single : state.sides[side].skills.four[index];
     const skill = getSkill(snapshot, entry);
-    if (!skill) return false;
+    if (!skill || skill.s5StatusEffectPending) return false;
     const context = mode === "single" ? state.directions[direction].context : entry?.context;
     return Boolean(state.directions[direction].overrides?.activeDefenseStatus ||
       Number(state.directions[direction === "forward" ? "reverse" : "forward"].reduction ?? 1) !== 1 ||
@@ -1469,11 +1481,16 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   }
 
   function activateSingleSkill() {
+    if (selectedSingleSkill?.s5StatusEffectPending) { setToast(selectedSingleSkill.s5StatusEffectPending); return; }
     const actionLabel = skillActivationLabel(activeAttackSideKey, 0, "single");
     const applied = applyBattleActivation({ calculation, side: activeAttackSideKey,
       skillIndex: 0, skillMode: "single", snapshot, state: stateRef.current });
     if (applied.applied || applied.stateChanged) {
-      commitSession({ state: applied.state, persistence: { rememberSide: activeAttackSideKey } });
+      const currentUseCount = applied.state.directions[activeDirection].context?.negativeStatusUseCountsBySlot?.single;
+      const nextState = currentUseCount === undefined ? applied.state : synchronizeS5PreviewConfirmationFromUse(applied.state, {
+        side: activeAttackSideKey, snapshot, used: Number(currentUseCount) > 0,
+      });
+      commitSession({ state: nextState, persistence: { rememberSide: activeAttackSideKey } });
     }
     setToast(applied.applied
       ? actionLabel === "取消使用" ? `${selectedSingleSkill.name}的使用已取消`
@@ -1565,12 +1582,28 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       ) : null,
     ]),
   );
-  const singleTraitContent = Object.values(moonMemoryEditors).some(Boolean) ? (
+  const compactTraitEditors = Object.fromEntries(["attacker", "defender"].map((side) => {
+    const spirit = side === "attacker" ? attacker : defender;
+    const trait = spirit?.previewIdentity ? getTraitView(snapshot, spirit, "attacker") : null;
+    const direction = side === "attacker" ? "forward" : "reverse";
+    const context = state.directions[direction].context;
+    const previewEditor = trait?.previewTraitEntity ? (
+      <div className="four-skill-trait-controls s5-preview-trait-editor">
+        <TraitHint name={trait.name} description={trait.description} />
+        <TraitInputs inputs={trait.inputs} context={context}
+          onChange={(key, value) => updateTraitContext(direction, key, value)} />
+        <S5PreviewTraitSummary trait={trait} role="attacker" context={context} />
+      </div>
+    ) : null;
+    return [side, moonMemoryEditors[side] || previewEditor ? <>{moonMemoryEditors[side]}{previewEditor}</> : null];
+  }));
+  const singleTraitEditors = viewMode === "compact" ? compactTraitEditors : moonMemoryEditors;
+  const singleTraitContent = Object.values(singleTraitEditors).some(Boolean) ? (
     <div className="moon-memory-single">
-      {[["attacker", attacker, "攻击方"], ["defender", defender, "防御方"]].map(([side, spirit, label]) => moonMemoryEditors[side] ? (
+      {[["attacker", attacker, "攻击方"], ["defender", defender, "防御方"]].map(([side, spirit, label]) => singleTraitEditors[side] ? (
         <div className={`moon-memory-single__side moon-memory-single__side--${side}`} key={side}>
           <small>{label} · {spirit.fullName}</small>
-          {moonMemoryEditors[side]}
+          {singleTraitEditors[side]}
         </div>
       ) : null)}
     </div>
@@ -1863,7 +1896,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   const compactFourEditor = configurationEditable ? (
     <CompactFourSkillEditor
       placeholder={placeholder}
-      traitEditors={state.mode === "four" ? moonMemoryEditors : {}}
+      traitEditors={state.mode === "four" ? compactTraitEditors : {}}
       activeDamageSource={activeDamageSource}
       activeSide={activeAttackSideKey}
       activeSkillIndex={currentDirection.selectedSkillIndex}
@@ -1996,7 +2029,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     displaySettings: overlays.displaySettingsProps,
     mobileResult: {
       ...overlays.mobileResultProps,
-      balanceComparison: balance,
+      hasCustomRaceStats: balance.hasCustom,
       activeAdvancedConditions,
       actions: {
         ...overlays.mobileResultProps.actions,
@@ -2157,7 +2190,6 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         viewMode={viewMode}
         onViewModeChange={setViewMode}
       />
-      <BalanceComparisonContext value={balance}>
       <WorkspaceOverlays {...overlayProps}>
       {shortcutsOpen && <ShortcutDialog settings={shortcutSettings} onChange={setShortcutSettings} onClose={() => setShortcutsOpen(false)} />}
       <div className={`calculator-layout calculator-layout--${viewMode}`}>
@@ -2173,8 +2205,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             })) : undefined}
             comparisonActive={Object.fromEntries(["attacker", "defender"].map((side) => {
               const spirit = getSpirit(snapshot, state.sides[side]);
-              return [side, Boolean(balance.customEnabled[side]?.[spirit?.id] ||
-                balance.enabled && balance.patchId === spirit?.changeInfo?.patch?.id)];
+              return [side, balance.customEnabled[side]?.[spirit?.id] === true];
             }))}
             attacker={attacker}
             attackerFavoriteState={
@@ -2207,8 +2238,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             spirits={selectableSpirits}
           />
           {balance.active && <div className="balance-active-bar">
-            <ComparisonStatus comparison={balance} />
-            <button type="button" onClick={balance.stop}>关闭对比与试算</button>
+            <strong>种族值试算</strong>
+            {balance.issue ? <span role="status">{balance.issue}</span> : null}
+            <button type="button" onClick={balance.stop}>关闭种族值试算</button>
           </div>}
 
           {!configurationReady && !placeholder && !firstRunGuideVisible
@@ -2499,7 +2531,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         {configurationReady ? (
           <div className="result-column">
             <ResultRail
-              balanceComparison={balance}
+              hasCustomRaceStats={balance.hasCustom}
               onOpenComparison={damageComparisonEnabled ? openDamageComparison : undefined}
               activeAdvancedConditions={activeAdvancedConditions}
               onBloodlineResultFocus={() =>
@@ -2524,7 +2556,6 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       </div>
 
       </WorkspaceOverlays>
-      </BalanceComparisonContext>
       {damageComparisonEnabled && comparisonSource ? <Suspense fallback={<div role="status">{t("正在打开承伤对比…")}</div>}><DamageComparisonDialog
         key={damageComparisonSourceKey(comparisonSource)} preferences={comparisonPreferences} onPreferencesChange={setComparisonPreferences}
         snapshot={snapshot} source={comparisonSource} onClose={() => setComparisonSource(null)}
