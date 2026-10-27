@@ -14,7 +14,7 @@ const groups = [
 export function Toolbox({ actions, onOpen, activeTool }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
-  const showPreviewEntry = serverId === "cn" && window.location.protocol !== "app:";
+  const showPreviewEntry = serverId === "cn";
   const [open, setOpen] = useState(false);
   const [top, setTop] = useState(60);
   const [narrow, setNarrow] = useState(() => window.innerWidth <= 760);
@@ -61,7 +61,7 @@ export function Toolbox({ actions, onOpen, activeTool }) {
             onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}><Icon size={18} aria-hidden="true" />{t(title)}</button>)}
         </div>
       </section>)}
-      {showPreviewEntry && <a href={IS_PREVIEW_BUILD ? "/cn/" : "/pre/"} style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
+      {showPreviewEntry && <a href={IS_PREVIEW_BUILD ? (window.location.protocol === "app:" ? "/" : "/cn/") : "/pre/"} style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
         onClick={() => setOpen(false)}><Lightning size={18} aria-hidden="true" />{IS_PREVIEW_BUILD ? "返回正式版" : "S5 抢先体验"}</a>}
     </nav>, document.body)}
   </>;

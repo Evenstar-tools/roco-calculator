@@ -14,7 +14,7 @@ export default function TypeCandidates({ type, snapshot, onClose, onApply }) {
   const [multiplier, setMultiplier] = useState("all");
   const [selectedId, setSelectedId] = useState(null);
   const bins = useMemo(() => getDurabilityMultipliers(snapshot.typeChart).filter(value => value < 1), [snapshot.typeChart]);
-  const ranking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, typeChart: snapshot.typeChart, attackType: type, multipliers: multiplier === "all" ? bins : [Number(multiplier)], sortBy: metric, templateId, query }), [snapshot, type, multiplier, bins, metric, templateId, query]);
+  const ranking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, typeChart: snapshot.typeChart, attackType: type, multipliers: multiplier === "all" ? bins : [Number(multiplier)], sortBy: metric, templateId, query, includeLevelVariants: false }), [snapshot, type, multiplier, bins, metric, templateId, query]);
   const rows = [...ranking.immuneRows, ...ranking.rows];
   const selected = rows.find(row => row.spiritId === selectedId);
   return <section ref={root} className="type-candidates" aria-label={`${type}属性抗性候选`} onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); onClose(); } }}>

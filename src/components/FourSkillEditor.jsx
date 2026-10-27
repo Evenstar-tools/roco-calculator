@@ -214,6 +214,7 @@ function SkillSide({
         showsLifestealCapability ? (
           <div className="four-skill-trait-controls">
             <TraitHint description={trait.description} name={trait.name} />
+            <S5PreviewTraitSummary trait={trait} role="attacker" context={traitContext} />
             <TraitSkillPowerBonuses
               ariaLabel={`${trait.name}技能加成`}
               bonuses={trait.skillPowerBonuses}
@@ -234,7 +235,6 @@ function SkillSide({
                 onTraitContextChange?.(side, key, value)
               }
             />
-            <S5PreviewTraitSummary trait={trait} role="attacker" context={traitContext} />
           </div>
         ) : null}
         {defensiveTraitInputs.length > 0 || defensePresentation?.visible ? (
@@ -243,6 +243,7 @@ function SkillSide({
               description={defenseTrait.description}
               name={`${opponentName} · ${defenseTrait.name}`}
             />
+            <S5PreviewTraitSummary trait={defenseTrait} role="defender" context={traitContext} />
             <TraitInputs
               context={traitContext}
               inputs={defensiveTraitInputs}
@@ -250,7 +251,6 @@ function SkillSide({
                 onTraitContextChange?.(side, key, value)
               }
             />
-            <S5PreviewTraitSummary trait={defenseTrait} role="defender" context={traitContext} />
           </div>
         ) : null}
         {hasSelfHpRule && health ? (

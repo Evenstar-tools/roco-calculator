@@ -5,6 +5,7 @@ import {
 } from "../../../domain/beast-flower-bloodline.js";
 import { createSpeedModifiers } from "./speed-modifiers.js";
 import { resolveSpiritFormRole } from "./spirit-form-role.js";
+import { createRankingLevelVariants, resolveRankingFormRole } from "./ranking-levels.js";
 
 export const SPEED_TARGET_PROFILES = Object.freeze({
   "positive-max": Object.freeze({
@@ -111,23 +112,22 @@ export function createSpeedTargets({
   return spirits
     .flatMap((spirit) => {
       if (!hasCompleteRaceStats(spirit?.raceStats)) return [];
-      const form = resolveSpiritFormRole(spirit, { spiritFilterRevision });
+      const form = resolveRankingFormRole(spirit, { spiritFilterRevision });
       if (form.formRole !== "final" && form.formRole !== "boss") return [];
-      const speed = calculatePanelStat({
-        kind: "speed", race: spirit.raceStats.speed,
-        displayIv: profile.displayIv, natureMultiplier: profile.natureMultiplier,
-      });
-      return [{
+      return createRankingLevelVariants(spirit).map(variant => ({
+        ...variant,
         formRole: form.formRole,
-        id: spirit.id,
-        name: spirit.fullName,
         profileId: profile.id,
         profileLabel: profile.label,
-        qualifier: `${spirit.raceStats.speed}种族·${profile.label}`,
-        speed,
+        qualifier: `${variant.level !== 60 ? `${variant.level}级·` : ""}${spirit.raceStats.speed}种族·${profile.label}`,
+        speed: calculatePanelStat({
+          kind: "speed", race: spirit.raceStats.speed,
+          displayIv: profile.displayIv, natureMultiplier: profile.natureMultiplier,
+          level: variant.level,
+        }),
         spirit,
         spiritId: spirit.id,
-      }];
+      }));
     })
     .sort(compareSpeedTargets);
 }

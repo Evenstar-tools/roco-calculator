@@ -18,7 +18,7 @@ export function speedReference(groups, value) {
 }
 
 export function speedBadge(target) {
-  return `${({ "positive-max": "极", "neutral-max": "满", "positive-zero": "性", "neutral-zero": "无", "negative-zero": "减" })[target.profileId] ?? ""}${target.specialLabel ? "·特" : ""}`;
+  return `${({ "positive-max": "极", "neutral-max": "满", "positive-zero": "性", "neutral-zero": "无", "negative-zero": "减" })[target.profileId] ?? ""}${target.specialLabel ? "·特" : ""}${target.level && target.level !== 60 ? `·${target.level}级` : ""}`;
 }
 
 export function speedMatchReasons(target, search) {
@@ -77,8 +77,8 @@ export function createBaseSpeedGroups({ snapshot, query = "" }) {
   const bySpirit = new Map();
   for (const profileId of BASE_SPEED_PROFILES) {
     for (const target of createSpeedTargets({ profileId, spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter })) {
-      if (!bySpirit.has(target.spiritId)) bySpirit.set(target.spiritId, { spirit: target.spirit, targets: {} });
-      bySpirit.get(target.spiritId).targets[profileId] = target;
+      if (!bySpirit.has(target.id)) bySpirit.set(target.id, { id: target.id, name: target.name, level: target.level, spirit: target.spirit, targets: {} });
+      bySpirit.get(target.id).targets[profileId] = target;
     }
   }
   const groups = new Map();
@@ -99,8 +99,8 @@ export function selectBaseSpeedGroups(groups, query = "") {
   const numeric = /^\d+$/.test(search) ? Number(search) : null;
   return groups.flatMap(group => {
     if (numeric !== null && (group.base === numeric || group.values.includes(numeric))) return [group];
-    const members = group.members.filter(({ spirit }) =>
-      [spirit.fullName, spirit.dexNo, spirit.searchText, ...(spirit.aliases ?? [])]
+    const members = group.members.filter(({ spirit, name }) =>
+      [name, spirit.fullName, spirit.dexNo, spirit.searchText, ...(spirit.aliases ?? [])]
         .some(value => String(value ?? "").normalize("NFKC").toLowerCase().includes(search)));
     return members.length ? [{ ...group, members }] : [];
   });

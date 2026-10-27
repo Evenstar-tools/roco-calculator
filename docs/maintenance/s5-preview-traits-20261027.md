@@ -404,3 +404,19 @@
 - 使用、归属与展示：src/state/battle-activation.js、src/state/reducer.js、src/state/calculator-session.js、src/App.jsx、src/components/NatureStatsStep.jsx。
 - 回归：tests/domain/status-skill-panel-traits.test.js、tests/domain/physical-defense-difference-stages.test.js、tests/features/s5-preview-cost-discount.test.js、tests/features/s5-preview-lifecycle-audit.test.js，以及现有S5能力、天气、使用、结算与UI测试中的对应案例。
 - 记录：本文件、CHANGELOG.md、src/data/user-release-notes.js。其它现有脏文件保留，未以本次工作覆盖或提交。
+
+## 2026-10-27 冥古龙四档速度与耐久
+
+- 按用户要求，在速度线与标准耐久榜加入冥古龙 99／89／79／69 级；复用当前等级面板公式，保留正式 S4 与其他精灵口径。
+- 满速依次 209／199／189／179，极速 241／229／217／205；种族速查、搜索、详情和定位均保留各档身份及等级。
+- 耐久沿用既有生命／双防个体60及四种性格模板，按各等级面板计算；不混入低于80级承伤+40%等特性。生命性格综合耐久依次 70,859／62,526／54,953／47,756。
+- 属性抗性候选的代入操作、技能承伤榜继续使用原模板与资格，不因只读排行扩档改变队伍或对战状态。
+- 已通过真实前瞻数据定向回归、原榜单/能力分析相关测试及 ESLint；1366桌面、390手机实页检查和详情定位通过，无横向溢出或页面错误。手机种族速查等级标签已修正为单行。
+- 本轮截图与脚本：`output/playwright/minggulong-*.png`、`output/playwright/minggulong-rankings-check.js`。验收浏览器已关闭；本轮仅更新本地 S5 工作区，未提交或发布。
+
+## 2026-10-27 特性栏恢复原版密度
+
+- 用户对照 S4 原版要求恢复特性栏样式：去掉 S5 效果汇总强制整行，四技能沿用“名称与汇总在左、控件在右”的紧凑排列；回合结束按钮与原输入框同高28px，保留两侧技能行对齐。
+- 仅调整 FourSkillEditor 的汇总顺序与 `27-s5-preview-trait-summary.css`，不改变特性内容、输入归属或计算。桌面标准控件行41px，手机空间不足时自然换行。
+- 原摘要/角色展示测试、ESLint通过；1920／1366桌面和390手机单/四技能、攻防侧实页均已检查。等级99→89、银龙累计消耗3后回合结束生效魔攻+30%正常；无横向溢出，原版并排对照及独立读图复核通过。
+- 截图：`output/playwright/trait-original-vs-s5.png`、`s5-trait-compact-*.png`；脚本 `output/playwright/s5-trait-compact-check.js`。本轮本地完成，未提交或上线，验收浏览器已清理。

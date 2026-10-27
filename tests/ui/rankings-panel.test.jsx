@@ -80,3 +80,49 @@ test("仅命中种族速度时定位完整种族表，不创建空实速档", ()
   expect(table.querySelector('tr[aria-current="true"]')).toHaveTextContent("100");
   expect(within(table).getAllByRole("button", { name: /标准速度详情/ })).toHaveLength(3);
 });
+
+const levelSnapshot = { ...snapshot, spirits: [{
+  ...snapshot.spirits[2], id: "ming", fullName: "冥古龙",
+  previewIdentity: { catalogId: "s5-ranking-test", key: "minggulong", mechanicKey: "minggulong" },
+  raceStats: { hp: 118, physicalAttack: 128, magicalAttack: 42, physicalDefense: 81, magicalDefense: 63, speed: 70 },
+}] };
+
+test("冥古龙四档速度各自展示、查看详情和定位，种族视图不合并等级", () => {
+  render(<RankingsPanel kind="speed" snapshot={levelSnapshot} onClose={vi.fn()} />);
+  fireEvent.change(screen.getByLabelText("搜索速度榜精灵"), { target: { value: "冥古龙" } });
+  for (const [level, max, positive] of [[99, 209, 241], [89, 199, 229], [79, 189, 217], [69, 179, 205]]) {
+    expect(screen.getByRole("button", { name: `定位 冥古龙 · ${level}级` })).toBeInTheDocument();
+    expect(screen.getByText(`满·${level}级`)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: `在速度表选择冥古龙 · ${level}级，速度${max}` }));
+    const detail = screen.getByRole("region", { name: "速度配置详情" });
+    expect(detail).toHaveTextContent(`冥古龙 · ${level}级`);
+    expect(within(detail).getByRole("button", { name: `极速 ${positive}，定位实速` })).toBeInTheDocument();
+  }
+  fireEvent.click(screen.getByRole("button", { name: "极速 205，定位实速" }));
+  expect(screen.getByRole("button", { name: "在速度表选择冥古龙 · 69级，速度205" })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "按种族速查" }));
+  const table = screen.getByRole("table", { name: "种族速度档位表" });
+  expect(within(table).getAllByRole("button", { name: /查看冥古龙.*标准速度详情/ })).toHaveLength(4);
+  for (const level of [99, 89, 79, 69]) {
+    fireEvent.click(within(table).getByRole("button", { name: `查看冥古龙 · ${level}级标准速度详情` }));
+    expect(screen.getAllByRole("region", { name: "速度配置详情" })).toHaveLength(1);
+    expect(screen.getByRole("region", { name: "速度配置详情" })).toHaveTextContent(`冥古龙 · ${level}级`);
+  }
+});
+
+test("冥古龙四档耐久保留独立行及正确等级详情，切模板与搜索不串行", () => {
+  render(<RankingsPanel kind="durability" snapshot={levelSnapshot} onClose={vi.fn()} />);
+  for (const [level, hp] of [[99, 671], [89, 623], [79, 576], [69, 528]]) {
+    fireEvent.click(screen.getByRole("button", { name: new RegExp(`冥古龙 · ${level}级`) }));
+    const detail = screen.getByRole("region", { name: "榜单配置详情" });
+    expect(detail).toHaveTextContent(`${level}级统一模板`);
+    expect(detail).toHaveTextContent(`HP ${hp}`);
+    fireEvent.click(within(detail).getByRole("button", { name: "返回榜单" }));
+  }
+  fireEvent.click(screen.getByRole("button", { name: "筛选" }));
+  fireEvent.change(screen.getByLabelText("耐久榜模板"), { target: { value: "standard-neutral-v1" } });
+  fireEvent.change(screen.getByLabelText("搜索耐久榜精灵"), { target: { value: "69级" } });
+  expect(within(screen.getByRole("table", { name: "标准耐久完整榜" })).getAllByRole("row")).toHaveLength(2);
+  fireEvent.click(screen.getByRole("button", { name: /冥古龙 · 69级/ }));
+  expect(screen.getByRole("region", { name: "榜单配置详情" })).toHaveTextContent("HP 457");
+});

@@ -230,6 +230,24 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.2.8",
+    date: "2026.10.27",
+    title: "S4正式版与S5离线抢先体验",
+    whatsNew: S4_FEATURE_INTRO,
+    summaryHighlights: [
+      "桌面版内置S5抢先体验，可从工具箱切换，断网也能使用。",
+      "S5速度线与耐久排行增加冥古龙99、89、79、69级。",
+      "S5特性栏恢复原版紧凑样式。",
+    ],
+    features: [
+      "桌面工具箱可在正式版与S5抢先体验之间切换，两套配置分开保存；S5精灵、技能图标随安装包提供。",
+      "S5冥古龙在速度线、基础速度总览和耐久排行中分四个等级展示，可独立查看详情与定位。",
+    ],
+    fixes: [
+      "S5特性摘要与输入控件恢复紧凑同行布局，窄屏按实际内容换行，保持等级、能量和回合结算操作。",
+    ],
+  }),
+  createRelease({
     version: "v2.2.7",
     date: "2026.10.23",
     title: "S4队伍拖动排序",

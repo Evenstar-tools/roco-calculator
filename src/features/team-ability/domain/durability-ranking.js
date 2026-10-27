@@ -1,7 +1,7 @@
 import { FORM_ROLE_MANIFEST_VERSION } from "../../../data/form-role-manifest-v1.js";
 import { calculateDurability } from "./durability.js";
 import { getNatureMultipliers } from "../../../domain/natures.js";
-import { resolveSpiritFormRole } from "./spirit-form-role.js";
+import { createRankingLevelVariants, resolveRankingFormRole } from "./ranking-levels.js";
 import { ELEMENT_TYPES, getTypeMultiplier } from "../../../domain/type-chart.js";
 import {
   calculateAllPanelStats,
@@ -82,7 +82,7 @@ function compareIdentity(left, right) {
     right.spirit.fullName ?? right.spirit.baseName ?? "",
   );
   if (nameDifference !== 0) return nameDifference;
-  return String(left.spiritId).localeCompare(String(right.spiritId));
+  return String(left.id).localeCompare(String(right.id));
 }
 
 function compareByMetric(metric) {
@@ -115,6 +115,7 @@ function matchesQuery(entry, query) {
   const normalizedQuery = normalizeSearchText(query).trim();
   if (!normalizedQuery) return true;
   return [
+    entry.name,
     entry.spirit.fullName,
     entry.spirit.baseName,
     entry.spirit.variantName,
@@ -125,14 +126,16 @@ function matchesQuery(entry, query) {
   ].some((value) => normalizeSearchText(value).includes(normalizedQuery));
 }
 
-function calculateRankingEntry(spirit, template) {
-  const form = resolveSpiritFormRole(spirit);
+function calculateRankingEntry(spirit, template, variant) {
+  const form = resolveRankingFormRole(spirit);
   const panelStats = calculateAllPanelStats({
     raceStats: spirit.raceStats,
     displayIvs: template.displayIvs,
     natureMultipliers: getNatureMultipliers(template.natureId),
+    level: variant.level,
   });
   return {
+    ...variant,
     durability: calculateDurability({
       maxHp: panelStats.hp,
       physicalDefense: panelStats.physicalDefense,
@@ -168,6 +171,7 @@ export function createDurabilityRanking({
   spiritFilterRevision,
   sortBy = "combined",
   templateId = "standard-hp-v1",
+  includeLevelVariants = true,
 } = {}) {
   const knownTypes = typeChart?.types ?? ELEMENT_TYPES;
   if (attackType && !knownTypes.includes(attackType)) {
@@ -187,7 +191,7 @@ export function createDurabilityRanking({
   const eligible = [];
   const excluded = [];
   for (const spirit of spirits) {
-    const form = resolveSpiritFormRole(spirit, { spiritFilterRevision });
+    const form = resolveRankingFormRole(spirit, { spiritFilterRevision, includeLevelVariants });
     if (["final", "boss"].includes(form.formRole)) {
       if (attackType && (!spirit.types?.length || spirit.types.some((type) => !knownTypes.includes(type)))) {
         excluded.push(exclusionFor(spirit, form, "UNKNOWN_DEFENSIVE_TYPE"));
@@ -208,8 +212,8 @@ export function createDurabilityRanking({
       );
     }
   }
-  const entries = eligible.map((spirit) => {
-    const entry = calculateRankingEntry(spirit, template);
+  const entries = eligible.flatMap((spirit) => createRankingLevelVariants(spirit, { includeLevelVariants }).map(variant => {
+    const entry = calculateRankingEntry(spirit, template, variant);
     if (!attackType) return entry;
     const multiplier = getTypeMultiplier(attackType, spirit.types, typeChart);
     const raw = Object.fromEntries(RANKING_METRICS.map((key) => [key, multiplier === 0 ? null : entry.durability.raw[key] / multiplier]));
@@ -217,7 +221,7 @@ export function createDurabilityRanking({
       ...entry.durability, raw,
       display: Object.fromEntries(RANKING_METRICS.map((key) => [key, raw[key] === null ? null : Math.round(raw[key])])),
     } };
-  });
+  }));
   const selected = multipliers ?? getDurabilityMultipliers(typeChart);
   const immuneRows = entries.filter((entry) => entry.multiplier === 0
     && selected.includes(0) && (!filter || filter(entry))).sort(compareIdentity);
