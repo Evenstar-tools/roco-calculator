@@ -2054,7 +2054,7 @@
         {
           "id": "skill_preview_s5_summer-pad",
           "iconUrl": "/assets/skills/skill_preview_s5_summer-pad.png",
-          "name": "夏垫",
+          "name": "夏蛰",
           "type": null,
           "category": null,
           "cost": null,
@@ -2105,7 +2105,7 @@
           }
         },
         {
-          "name": "夏垫",
+          "name": "夏蛰",
           "description": "己方队伍获得2次随机奉献，应对防御：获得所有种类的奉献各1次。",
           "evidence": {
             "kind": "official-image",
@@ -3437,7 +3437,7 @@
         {
           "id": "skill_preview_s5_summer-pad",
           "iconUrl": "/assets/skills/skill_preview_s5_summer-pad.png",
-          "name": "夏垫",
+          "name": "夏蛰",
           "type": null,
           "category": null,
           "cost": null,
@@ -3488,7 +3488,7 @@
           }
         },
         {
-          "name": "夏垫",
+          "name": "夏蛰",
           "description": "己方队伍获得2次随机奉献，应对防御：获得所有种类的奉献各1次。",
           "evidence": {
             "kind": "official-image",

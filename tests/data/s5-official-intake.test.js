@@ -108,6 +108,6 @@ test("家族图四技能按图序进入每只默认槽；共享新技能单例�
     }
   }
   expect(result.skills.filter(skill => skill.name === "续杯")).toHaveLength(1);
-  expect(result.skills.find(skill => skill.name === "夏垫").description).toContain("2次随机奉献");
+  expect(result.skills.find(skill => skill.name === "夏蛰").description).toContain("2次随机奉献");
   expect(withS5PreviewCatalog(result, catalog, { useTestRaceStats: true })).toBe(result);
 });
