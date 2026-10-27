@@ -37,7 +37,7 @@ describe("S5 explicit trait controls and evaluation", () => {
       expect(getS5PreviewTraitInputs(trait(key), "attacker")).toEqual(ordinary);
       expect(evaluate(trait(key))).toMatchObject({ mechanicKey: "abu", currentLevel: 60, calcStatus: "ready" });
       expect(evaluate(trait(key), { CurrentLevel: 62, LevelEventCount: 1 })).toMatchObject({
-        currentLevel: 64, calcStatus: "pending", blockingReason: expect.stringContaining("固定60级"),
+        currentLevel: 64, calcStatus: "ready",
       });
       expect(evaluate(trait(key), { CurrentLevel: 60, LevelEventCount: 90 }).currentLevel).toBe(99);
       expect(evaluate(trait(key), { CurrentLevel: 58, LevelEventCount: 1 })).toMatchObject({
@@ -97,12 +97,12 @@ describe("S5 explicit trait controls and evaluation", () => {
     });
   });
 
-  test("level99/80/79 block every partial modifier; explicit level60 trial alone can receive incoming +40%", () => {
+  test("valid levels enable calculation; only levels below80 receive incoming +40%", () => {
     const entity = trait("minggulong");
-    expect(evaluate(entity)).toMatchObject({ currentLevel: 99, calcStatus: "pending" });
+    expect(evaluate(entity)).toMatchObject({ currentLevel: 99, calcStatus: "ready" });
     for (const CurrentLevel of [99, 80, 79]) {
-      expect(evaluate(entity, { CurrentLevel })).toHaveProperty("blockingReason");
-      expect(resolve(entity, "defender", { CurrentLevel })).toMatchObject({ finalDamageMultiplier: 1, step: null });
+      expect(evaluate(entity, { CurrentLevel })).not.toHaveProperty("blockingReason");
+      expect(resolve(entity, "defender", { CurrentLevel }).finalDamageMultiplier).toBe(CurrentLevel < 80 ? 1.4 : 1);
     }
     expect(resolve(entity, "defender", { CurrentLevel: 60 })).toMatchObject({ finalDamageMultiplier: 1.4 });
     expect(resolve(entity, "attacker", { CurrentLevel: 60 })).toMatchObject({ finalDamageMultiplier: 1, step: null });
@@ -112,7 +112,7 @@ describe("S5 explicit trait controls and evaluation", () => {
   test("level counts perform only known arithmetic, preserve threshold boundaries and block unknown minimum", () => {
     const ming = trait("minggulong");
     expect(evaluate(ming, { LevelEventCount: 1 })).toMatchObject({ currentLevel: 89, summary: expect.stringContaining("99 − 10×1") });
-    expect(evaluate(ming, { LevelEventCount: 2 })).toMatchObject({ currentLevel: 79, calcStatus: "pending" });
+    expect(evaluate(ming, { LevelEventCount: 2 })).toMatchObject({ currentLevel: 79, calcStatus: "ready" });
     expect(evaluate(ming, { CurrentLevel: 90, LevelEventCount: 1 }).currentLevel).toBe(80);
     expect(evaluate(ming, { CurrentLevel: 70, LevelEventCount: 1 })).toMatchObject({ currentLevel: 60, calcStatus: "ready" });
     expect(resolve(ming, "defender", { CurrentLevel: 70, LevelEventCount: 1 }).finalDamageMultiplier).toBe(1.4);
@@ -120,8 +120,8 @@ describe("S5 explicit trait controls and evaluation", () => {
       currentLevel: -1, calcStatus: "pending", blockingReason: expect.stringContaining("下降下限"),
     });
     expect(resolve(ming, "defender", { LevelEventCount: 10 })).toMatchObject({ finalDamageMultiplier: 1, step: null });
-    expect(evaluate(trait("abu"), { CurrentLevel: 78, LevelEventCount: 1 })).toMatchObject({ currentLevel: 80, calcStatus: "pending" });
-    expect(evaluate(trait("abu"), { CurrentLevel: 77, LevelEventCount: 1 })).toMatchObject({ currentLevel: 79, calcStatus: "pending" });
+    expect(evaluate(trait("abu"), { CurrentLevel: 78, LevelEventCount: 1 })).toMatchObject({ currentLevel: 80, calcStatus: "ready" });
+    expect(evaluate(trait("abu"), { CurrentLevel: 77, LevelEventCount: 1 })).toMatchObject({ currentLevel: 79, calcStatus: "ready" });
   });
 
   test("status mechanisms report current confirmed effects without silently generating future buffs or damage blockers", () => {

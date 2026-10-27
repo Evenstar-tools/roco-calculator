@@ -116,12 +116,17 @@ export function resolveCombatant(
     throw new Error(`Unknown spirit: ${side.spiritId ?? "missing"}`);
   }
 
+  const level = Number(side.level ?? 60);
+  if (!Number.isSafeInteger(level) || level < 1) {
+    throw new RangeError("level must be a positive integer");
+  }
   const panelStats =
     side.panelStats ??
     calculateAllPanelStats({
       raceStats: spirit.raceStats,
       displayIvs: side.displayIvs,
       natureMultipliers: resolveNatureMultipliers(side, snapshot),
+      level,
     });
   const traits = getEffectiveTraits(snapshot, { ...side, spirit });
   const carriedSkills = collectCarriedSkills(side, mode, indexes.skills);
@@ -129,6 +134,7 @@ export function resolveCombatant(
   return {
     ...side,
     spirit,
+    level,
     types: side.types ?? spirit.types ?? [],
     panelStats,
     traits,

@@ -58,7 +58,7 @@ test("银龙手动当前魔攻增益只增加魔攻，不按能量次数猜累�
   expect(after.sides.attacker.finalPanelStats.magicalAttack).toBeGreaterThan(before.sides.attacker.finalPanelStats.magicalAttack);
 });
 
-test("阿布三形态同规则，60级试算承伤生效，未知等级公式两方向拦截", () => {
+test("阿布三形态同规则，等级进入面板和伤害，80级移除额外承伤", () => {
   const damages = [];
   for (const key of ["abu", "boss-abu", "super-abu"]) {
     let state = fixture(key);
@@ -69,11 +69,15 @@ test("阿布三形态同规则，60级试算承伤生效，未知等级公式两
     expect(at60.calculation.reverse.selectedResult.totalDamage).toBeGreaterThan(view(ignored).calculation.reverse.selectedResult.totalDamage);
     damages.push([at60.calculation.forward.selectedResult.totalDamage, at60.calculation.reverse.selectedResult.totalDamage]);
     state = set(state, "attacker", "CurrentLevel", 80);
-    const unknown = view(state);
+    const at80 = view(state);
     for (const direction of ["forward", "reverse"]) {
-      expect(unknown.calculation[direction].selectedResult).toMatchObject({ status: "unsupported", totalDamage: null });
-      expect(unknown.calculation[direction].selectedResult.reason).toContain("等级");
+      expect(at80.calculation[direction].selectedResult.status).toBe("exact");
     }
+    expect(at80.sides.attacker.combatLevel).toBe(80);
+    expect(at80.sides.attacker.panelStats.physicalAttack).toBeGreaterThan(at60.sides.attacker.panelStats.physicalAttack);
+    expect(at80.sides.attacker.panelStats.hp).toBeGreaterThan(at60.sides.attacker.panelStats.hp);
+    expect(at80.calculation.forward.selectedResult.totalDamage).toBeGreaterThan(at60.calculation.forward.selectedResult.totalDamage);
+    expect(at80.calculation.reverse.selectedResult.totalDamage).toBeLessThan(at60.calculation.reverse.selectedResult.totalDamage);
   }
   expect(damages[1]).toEqual(damages[0]);
   expect(damages[2]).toEqual(damages[0]);
@@ -121,4 +125,26 @@ test("既有占位覆盖能升级特性接线元数据，保持稳定ID和幂等
   expect(updated.traits.find(entry => entry.id === oldTrait.id).previewIdentity.mechanicKey).toBe("abu");
   expect(withS5PreviewCatalog(updated, catalog, { useTestRaceStats: true })).toBe(updated);
   expect(oldTrait.description).toBe("旧的未知摘要");
+});
+
+
+test("不同等级通过原特性context分享恢复，派生等级不写入协议", () => {
+  let state = fixture("super-abu");
+  state.sides.defender.spiritId = "spirit_preview_s5_minggulong";
+  state = set(state, "attacker", "LevelEventCount", 1);
+  state = set(state, "defender", "LevelEventCount", 2);
+  const before = view(state);
+  const shared = selectShareableInputs(state);
+  const restored = migrateSharedConfiguration(shared, state.versions, snapshot);
+  const after = view(restored);
+  for (const side of ["attacker", "defender"]) {
+    expect(shared.sides[side]).not.toHaveProperty("level");
+    expect(after.sides[side].combatLevel).toBe(before.sides[side].combatLevel);
+    expect(after.sides[side].panelStats).toEqual(before.sides[side].panelStats);
+  }
+  expect(after.sides.attacker.combatLevel).toBe(62);
+  expect(after.sides.defender.combatLevel).toBe(79);
+  for (const direction of ["forward", "reverse"]) {
+    expect(after.calculation[direction].selectedResult.totalDamage).toBe(before.calculation[direction].selectedResult.totalDamage);
+  }
 });

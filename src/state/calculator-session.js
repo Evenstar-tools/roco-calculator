@@ -17,7 +17,8 @@ import {
 import { normalizeNatureId } from "../domain/natures.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import { getBattleFormChoices, isValidBattleForm } from "../domain/battle-form.js";
-import { calculateAllPanelStats } from "../domain/stat.js";
+import { calculateAllPanelStats, hasCompleteRaceStats } from "../domain/stat.js";
+import { resolveS5PreviewBattleLevel, supportsS5PreviewBattleLevel } from "../domain/battle-level.js";
 import { createInitialState } from "./defaults.js";
 import { calculatorReducer } from "./reducer.js";
 import { getServerRelease } from "../domain/server-environment.js";
@@ -52,6 +53,36 @@ export function abilityLevelMultiplier(attackStage, defenseStage) {
     Math.floor(Number(attackStage) || 0),
     Math.floor(Number(defenseStage) || 0),
   );
+}
+
+// Project HP on the supplied snapshot only. App calls this with official stats;
+// the trial model may call it on its transient custom snapshot without saving it.
+export function projectBattleLevelHealth(state, { snapshot, side, hpInputMode, force = false }) {
+  const configuration = state.sides[side];
+  const variableLevel = supportsS5PreviewBattleLevel(snapshot, configuration);
+  if (!force && !variableLevel) return state;
+  const spirit = getSpirit(snapshot, configuration);
+  if (!hasCompleteRaceStats(spirit?.raceStats)) return state;
+  const panel = calculateAllPanelStats({ raceStats: spirit.raceStats,
+    displayIvs: configuration.displayIvs, natureMultipliers: getNatureMultipliers(configuration.nature),
+    level: resolveS5PreviewBattleLevel(snapshot, state, side) });
+  const direction = side === "attacker" ? "reverse" : "forward";
+  const current = state.directions[direction];
+  const percent = current.context?.currentHpPercent;
+  const hasPercent = typeof percent === "number" && Number.isFinite(percent);
+  const hasHp = typeof current.currentHp === "number" && Number.isFinite(current.currentHp);
+  const implicitFull = current.currentHp == null && (!hasPercent || percent === 100);
+  const hp = implicitFull ? current.currentHp : hpInputMode === "percent" && hasPercent
+    ? Math.round(panel.hp * Math.min(100, Math.max(0, percent)) / 100)
+    : hasHp ? Math.min(panel.hp, Math.max(0, current.currentHp)) : current.currentHp;
+  // Keep the legacy non-S5 custom ratio semantics. Level-changing owners use the
+  // actual integer HP ratio so HP conditions also survive a refresh unchanged.
+  const hpPercent = variableLevel ? (hp == null ? 100 : hp / panel.hp * 100) : percent;
+  if (hp === current.currentHp && hpPercent === percent) return state;
+  return { ...state, directions: { ...state.directions, [direction]: {
+    ...current, currentHp: hp,
+    context: hpPercent === percent ? current.context : { ...current.context, currentHpPercent: hpPercent },
+  } } };
 }
 
 export function sameConfigurationVersions(left, right) {
@@ -745,14 +776,19 @@ export function switchBattleForm(state, { side, snapshot, spiritId }) {
   };
   const healthDirection = side === "attacker" ? "reverse" : "forward";
   const health = state.directions[healthDirection];
-  const maxHp = calculateAllPanelStats({ raceStats: target.raceStats, displayIvs: current.displayIvs, natureMultipliers: getNatureMultipliers(current.nature) }).hp;
+  const nextSides = { ...state.sides, [side]: nextSide };
+  const maxHp = calculateAllPanelStats({ raceStats: target.raceStats, displayIvs: current.displayIvs,
+    natureMultipliers: getNatureMultipliers(current.nature),
+    level: resolveS5PreviewBattleLevel(snapshot, { ...state, sides: nextSides }, side) }).hp;
   const clampHp = Number.isFinite(health.currentHp) && health.currentHp > maxHp;
   return {
     persistence: persistence(),
     state: {
       ...state,
-      sides: { ...state.sides, [side]: nextSide },
-      directions: clampHp ? { ...state.directions, [healthDirection]: { ...health, currentHp: maxHp } } : state.directions,
+      sides: nextSides,
+      directions: clampHp ? { ...state.directions, [healthDirection]: {
+        ...health, currentHp: maxHp, context: { ...health.context, currentHpPercent: 100 },
+      } } : state.directions,
     },
   };
 }

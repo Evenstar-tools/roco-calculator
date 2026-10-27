@@ -23,8 +23,9 @@ import { hasNegativeStatusSkillApplication, resolveNegativeStatusApplications } 
 import { linkedNegativeStatusContext } from "../domain/negative-status-context.js";
 import { advancePressureValveContext, resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
+import { resolveS5PreviewBattleLevel } from "../domain/battle-level.js";
 import { getEffectiveTraits } from "../domain/effective-traits.js";
-import { updateGlobalWeather } from "./calculator-session.js";
+import { projectBattleLevelHealth, updateGlobalWeather } from "./calculator-session.js";
 
 function clone(value) {
   if (typeof globalThis.structuredClone === "function") {
@@ -163,6 +164,7 @@ function panelStatsForSide(state, snapshot, side) {
     raceStats: spirit.raceStats,
     displayIvs: configuration.displayIvs,
     natureMultipliers: getNatureMultipliers(configuration.nature),
+    level: resolveS5PreviewBattleLevel(snapshot, state, side),
   });
 }
 
@@ -234,7 +236,7 @@ export function applyBattleActivation({
   snapshot,
   state,
 }) {
-  const next = clone(state);
+  const next = clone(projectBattleLevelHealth(state, { snapshot, side }));
   const selfDirection = sideDirection(side);
   const targetDirection = oppositeDirection(selfDirection);
   const targetSide = oppositeSide(side);

@@ -28,7 +28,132 @@ function fixture() {
   };
 }
 
+const knownSkill = () => ({ id: "skill_preview_s5_barren-devour", name: "荒芜之噬", type: "龙",
+  category: "physical", cost: 5, basePower: 130, description: "造成物伤，若击败敌方，自己等级+20。",
+  evidence: { kind: "user-image", frame: "user-skill-card.png" }, acquisition: "专属技能" });
+
 describe("S5 Web/Windows 展示候选覆盖", () => {
+  test("正式特性名与已知专属技能可升级旧空池，稳定ID且不自动配置技能", () => {
+    const { snapshot, catalog } = fixture();
+    const options = { useTestRaceStats: true };
+    const old = withS5PreviewCatalog(snapshot, catalog, options);
+    const definition = knownSkill();
+    Object.assign(catalog.entries[0], { traitName: "恶龙的奢望", traitSummary: "用户新核对的特性说明。", skills: [definition] });
+    const original = structuredClone({ snapshot, catalog, old });
+    const fresh = withS5PreviewCatalog(snapshot, catalog, options);
+    const upgraded = withS5PreviewCatalog(old, catalog, options);
+    const { spiritId, traitId } = s5PreviewIds("family-a");
+    for (const result of [fresh, upgraded]) {
+      expect(result.spirits.find(spirit => spirit.id === spiritId)).toMatchObject({
+        traitName: "恶龙的奢望", traitDescription: catalog.entries[0].traitSummary, traitIds: [traitId],
+      });
+      expect(result.traits.find(trait => trait.id === traitId)).toMatchObject({ name: "恶龙的奢望", description: catalog.entries[0].traitSummary });
+      const skill = result.skills.find(skill => skill.id === definition.id);
+      expect(skill).toMatchObject({ id: definition.id, name: definition.name, cost: 5, basePower: 130,
+        type: "龙", category: "physical", description: definition.description,
+        previewIdentity: { catalogId: catalog.catalogId, key: "family-a", formalIdPending: true, evidence: definition.evidence } });
+      expect(skill.previewIdentity.evidence).not.toBe(definition.evidence);
+      expect(skill).not.toHaveProperty("calculationStatus");
+      expect(skill).not.toHaveProperty("ruleId");
+      expect(result.learnsets.find(learnset => learnset.spiritId === spiritId)).toEqual({
+        spiritId, skillIds: [definition.id], defaultSkillIds: [], acquisitions: { [definition.id]: ["专属技能"] },
+      });
+      expect(result.learnsets.find(learnset => learnset.spiritId === s5PreviewIds("boss-a").spiritId).skillIds).toEqual([]);
+      expect(withS5PreviewCatalog(result, catalog, options)).toBe(result);
+      expect(result.meta).toBe(snapshot.meta);
+    }
+    expect(upgraded.skills).not.toBe(old.skills);
+    expect({ snapshot, catalog, old }).toEqual(original);
+  });
+
+  test("技能资料有变化才复制技能集合；学习途径仅在本精灵池中按证据更新", () => {
+    const { snapshot, catalog } = fixture();
+    const definition = knownSkill(); delete definition.acquisition;
+    catalog.entries[0].skills = [definition];
+    const initial = withS5PreviewCatalog(snapshot, catalog);
+    const spiritId = s5PreviewIds("family-a").spiritId;
+    expect(initial.learnsets.find(entry => entry.spiritId === spiritId)).not.toHaveProperty("acquisitions");
+    definition.acquisition = "专属技能";
+    const learned = withS5PreviewCatalog(initial, catalog);
+    expect(learned.skills).toBe(initial.skills);
+    expect(learned.learnsets.find(entry => entry.spiritId === spiritId).acquisitions).toEqual({ [definition.id]: ["专属技能"] });
+    definition.basePower = 140;
+    const updated = withS5PreviewCatalog(learned, catalog);
+    expect(updated.skills).not.toBe(learned.skills);
+    expect(updated.skills.find(skill => skill.id === definition.id).basePower).toBe(140);
+    expect(learned.skills.find(skill => skill.id === definition.id).basePower).toBe(130);
+    expect(withS5PreviewCatalog(updated, catalog)).toBe(updated);
+    catalog.entries[0].skills = [];
+    const cleared = withS5PreviewCatalog(updated, catalog);
+    expect(cleared.skills).toBe(updated.skills);
+    expect(cleared.learnsets.find(entry => entry.spiritId === spiritId)).toEqual({ spiritId, skillIds: [], defaultSkillIds: [] });
+  });
+
+  test("完整正式同名技能复用正式ID，不覆盖数值；正式同名精灵不额外注入候选技能", () => {
+    const { snapshot, catalog } = fixture();
+    const definition = knownSkill();
+    catalog.entries[0].skills = [definition];
+    catalog.entries[0].traitName = "恶龙的奢望";
+    const officialSkill = { ...definition, id: "official-barren-devour", cost: 4, basePower: 150,
+      description: "正式资料优先", provenance: { authority: "official" } };
+    snapshot.skills.push(officialSkill);
+    const result = withS5PreviewCatalog(snapshot, catalog);
+    expect(result.skills).toBe(snapshot.skills);
+    expect(result.skills[0]).toBe(officialSkill);
+    expect(result.skills.some(skill => skill.id === definition.id)).toBe(false);
+    expect(result.learnsets.find(entry => entry.spiritId === s5PreviewIds("family-a").spiritId)).toMatchObject({
+      skillIds: [officialSkill.id], acquisitions: { [officialSkill.id]: ["专属技能"] }, defaultSkillIds: [],
+    });
+    expect(withS5PreviewCatalog(result, catalog)).toBe(result);
+    snapshot.skills = [];
+    const formal = { ...snapshot.spirits[0], id: "formal-family", fullName: catalog.entries[0].name };
+    snapshot.spirits.push(formal);
+    const formalResult = withS5PreviewCatalog(snapshot, catalog);
+    expect(formalResult.spirits.find(spirit => spirit.id === formal.id)).toBe(formal);
+    expect(formalResult.skills).toBe(snapshot.skills);
+    expect(formalResult.skills).toEqual([]);
+    expect(formalResult.traits.some(trait => trait.id === s5PreviewIds("family-a").traitId)).toBe(false);
+  });
+
+  test("已知技能拒绝不完整数值/用户证据，候选特性名与学习途径不得为空", () => {
+    for (const fields of [{ id: "foreign-id" }, { type: "龙系" }, { category: "unknown" }, { cost: -1 },
+      { cost: 5.5 }, { basePower: Number.NaN }, { description: " " }, { evidence: null },
+      { evidence: { kind: "user-image", frame: "" } }, { acquisition: " " }]) {
+      const { catalog } = fixture();
+      catalog.entries[0].skills = [{ ...knownSkill(), ...fields }];
+      expect(() => validateS5PreviewCatalog(catalog)).toThrow("S5 前瞻目录");
+    }
+    for (const traitName of ["", null, 1]) {
+      const { catalog } = fixture(); catalog.entries[0].traitName = traitName;
+      expect(() => validateS5PreviewCatalog(catalog)).toThrow("特性名无效");
+    }
+    const { catalog } = fixture(); catalog.entries[0].skills = {};
+    expect(() => validateS5PreviewCatalog(catalog)).toThrow("已知技能池无效");
+  });
+
+  test("技能ID、同名及旧占位学习池冲突显式拒绝，不覆盖其他资料", () => {
+    for (const duplicate of [knownSkill(), { ...knownSkill(), id: "skill_preview_s5_other" },
+      { ...knownSkill(), name: "另一技能" }]) {
+      const { catalog } = fixture();
+      catalog.entries[0].skills = [knownSkill()]; catalog.entries[1].skills = [duplicate];
+      expect(() => validateS5PreviewCatalog(catalog)).toThrow("ID 或名称重复");
+    }
+    for (const foreign of [
+      { ...knownSkill(), name: "其他实体", previewIdentity: { catalogId: "other", key: "family-a", formalIdPending: true } },
+      { ...knownSkill(), id: "unreviewed", calculationStatus: "pending-skill-data", previewIdentity: { formalIdPending: true } },
+    ]) {
+      const { snapshot, catalog } = fixture();
+      catalog.entries[0].skills = [knownSkill()]; snapshot.skills.push(foreign);
+      const before = structuredClone(snapshot);
+      expect(() => withS5PreviewCatalog(snapshot, catalog)).toThrow(/技能 ID 冲突|同名技能/u);
+      expect(snapshot).toEqual(before);
+    }
+    const { snapshot, catalog } = fixture(); catalog.entries[0].skills = [knownSkill()];
+    const old = withS5PreviewCatalog(snapshot, catalog);
+    old.learnsets.find(entry => entry.spiritId === s5PreviewIds("family-a").spiritId).skillIds.push("foreign-skill");
+    expect(() => withS5PreviewCatalog(old, catalog)).toThrow("候选记录已漂移");
+  });
+
   test("用户录入属性接入新旧占位且幂等，正式同名资料不被覆盖", () => {
     const { snapshot, catalog } = fixture();
     const old = withS5PreviewCatalog(snapshot, catalog, { useTestRaceStats: true });

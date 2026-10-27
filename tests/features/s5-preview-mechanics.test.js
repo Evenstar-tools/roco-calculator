@@ -32,7 +32,7 @@ describe("S5视频机制候选合同", () => {
     }
   });
 
-  test("冥古龙99开局，回合结束-10，79触发承伤，固定60级核心保持阻断", () => {
+  test("冥古龙99开局，回合结束-10，79触发承伤，隔离适配器不单独输出等级面板", () => {
     const start = run("minggulong", "battle-start");
     expect(start.state).toMatchObject({ level: 99, maxLevel: 99 });
     const first = reduceS5Preview("minggulong", start.state, event("turn-end", {}, "end-1"));
@@ -44,7 +44,7 @@ describe("S5视频机制候选合同", () => {
     const adapted = adaptS5PreviewEffects(second);
     expect(adapted.status).toBe("blocked");
     expect(adapted.calculationEnabled).toBe(false);
-    expect(adapted.unknowns.join("；")).toContain("固定60级");
+    expect(adapted.unknowns.join("；")).toContain("等级由主界面");
     expect(adapted.modifiers).toEqual([]);
   });
 

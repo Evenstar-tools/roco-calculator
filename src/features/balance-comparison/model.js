@@ -1,10 +1,10 @@
 import { buildCalculatorViewModel, getSpirit } from "../../domain/calculator-view-model.js";
-import { calculateAllPanelStats, hasCompleteRaceStats } from "../../domain/stat.js";
-import { getNatureMultipliers } from "../../domain/natures.js";
+import { hasCompleteRaceStats } from "../../domain/stat.js";
 import { getServerRelease } from "../../domain/server-environment.js";
 import { createSpiritSearchIndex } from "../../data/search-index.js";
 import { withS5PreviewCalculationGuard } from "../s5-preview/calculation-guard.js";
 import { withS5PreviewSettlements } from "../s5-preview/settlement.js";
+import { projectBattleLevelHealth } from "../../state/calculator-session.js";
 
 export const BALANCE_STATS = Object.freeze([
   { key: "hp", label: "生命" },
@@ -15,32 +15,17 @@ export const BALANCE_STATS = Object.freeze([
   { key: "speed", label: "速度" },
 ]);
 const SIDE_KEYS = ["attacker", "defender"];
-const finite = (value) => typeof value === "number" && Number.isFinite(value);
 
-function buildView(args, hpInputModes = {}) {
+function buildView(args, hpInputModes = {}, force = false) {
   const { snapshot, state } = args;
   const serverId = args.serverId ?? snapshot.meta?.serverId ?? snapshot.serverId ?? "cn";
   if (!getServerRelease(serverId).capabilities.calculate) return buildCalculatorViewModel(args);
-  let directions = state.directions;
-  for (const [direction, targetSide] of [["forward", "defender"], ["reverse", "attacker"]]) {
-    const current = state.directions[direction];
-    const percent = current.context?.currentHpPercent;
-    // Existing saves hold both HP and % without recording the input unit.
-    // Rescale only with an explicit Web-only unit selection; old saves keep HP.
-    if (hpInputModes[direction] !== "percent" || !finite(percent)) continue;
-    const side = state.sides[targetSide];
-    const spirit = getSpirit(snapshot, side);
-    if (!hasCompleteRaceStats(spirit?.raceStats)) continue;
-    const panel = calculateAllPanelStats({
-      raceStats: spirit.raceStats, displayIvs: side.displayIvs,
-      natureMultipliers: getNatureMultipliers(side.nature),
-    });
-    if (directions === state.directions) directions = { ...directions };
-    directions[direction] = { ...current, currentHp: Math.round(panel.hp * Math.min(100, Math.max(0, percent)) / 100) };
+  let projected = state;
+  for (const [direction, side] of [["forward", "defender"], ["reverse", "attacker"]]) {
+    projected = projectBattleLevelHealth(projected, { snapshot, side,
+      hpInputMode: hpInputModes[direction], force });
   }
-  return buildCalculatorViewModel({
-    ...args, state: directions === state.directions ? state : { ...state, directions },
-  });
+  return buildCalculatorViewModel({ ...args, state: projected });
 }
 
 function customForSide(snapshot, state, customStats, customEnabled, sideKey) {
@@ -111,7 +96,7 @@ function customView(args, customStats, customEnabled, officialView, hpInputModes
   const view = buildView({
     ...args, snapshot: internalSnapshot, state: internalState,
     spiritIndex: createSpiritSearchIndex(internalSnapshot.spirits),
-  }, hpInputModes);
+  }, hpInputModes, true);
   return { view: restoreViewIdentity(view, idMap, officialView.selectableSpirits), issue };
 }
 
@@ -124,7 +109,7 @@ export function buildBalanceComparison({
     const spirit = getSpirit(snapshot, state.sides[sideKey]);
     return spirit && customEnabled?.[sideKey]?.[spirit.id] === true;
   });
-  const officialView = hasCustom ? buildView(args, hpInputModes) : buildCalculatorViewModel(args);
+  const officialView = buildView(args, hpInputModes, hasCustom);
   const custom = hasCustom ? customView(args, customStats, customEnabled, officialView, hpInputModes)
     : { view: officialView, issue: null };
   return { afterView: withS5PreviewCalculationGuard(withS5PreviewSettlements(custom.view, snapshot, state), snapshot, state),

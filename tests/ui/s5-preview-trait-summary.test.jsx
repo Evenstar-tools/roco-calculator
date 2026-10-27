@@ -30,13 +30,13 @@ test("正式特性不额外显示S5摘要", () => {
   expect(container).toBeEmptyDOMElement();
 });
 
-test("等级未核验显示具体原因，改为可支持等级后摘要同步且原因消失", () => {
+test("等级调整后摘要同步，99级可算且低于80才增加承伤", () => {
   const trait = traitView("minggulong");
   const { rerender } = render(<S5PreviewTraitSummary trait={trait} />);
   const summary = screen.getByRole("status", { name: "攻击特性当前效果" });
-  expect(summary).toHaveAttribute("data-status", "pending");
+  expect(summary).toHaveAttribute("data-status", "ready");
   expect(summary).toHaveTextContent("99");
-  expect(summary).toHaveTextContent("不能套用固定60级核心");
+  expect(summary).not.toHaveTextContent("承伤 +40%");
   rerender(<S5PreviewTraitSummary trait={trait} context={withValues(trait, {
     attackerTraitS5CurrentLevel: 60,
   })} />);

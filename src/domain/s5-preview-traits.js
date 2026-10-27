@@ -29,7 +29,7 @@ export function getS5PreviewTraitInputs(trait, role = "attacker") {
     case "minggulong":
     case "abu":
       controls = [
-        number("CurrentLevel", key === "minggulong" ? "本次起始试算等级（开局99级）" : "起始试算等级（默认60）", key === "minggulong" ? 99 : 60, { min: 1, max: 99 }),
+        number("CurrentLevel", key === "minggulong" ? "起始等级（默认99）" : "起始等级", key === "minggulong" ? 99 : 60, { min: 1, max: 99 }),
         number("LevelEventCount", key === "minggulong" ? "已结束回合数" : "已确认符合3能耗条件的使用次数"),
       ];
       break;
@@ -139,9 +139,8 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
         : "等级 " + startingLevel + " + 2×" + count + " 次 = " + level + "（上限99）";
       result.note = key === "abu"
         ? "次数由玩家确认符合3能耗条件，不推定基础或实际能耗口径；默认60级为试算输入，不是初始等级证据。"
-        : "默认按已观察的99级开局与每回合减10级求当前等级；不推定下降下限或其它等级的面板公式。";
+        : "默认起始99为常规60级+初始等级39的试算值；按已结束回合数减10级，不推定下降下限。";
       if (level < 1) block("当前计数推得等级" + level + "，等级下降下限尚未公开，不能猜测截断值");
-      else if (level !== 60) block("当前等级" + level + "的等级面板与伤害公式尚未核验，不能套用固定60级核心");
       if (level >= 1 && level < 80) {
         result.summary += "；承伤 +40%";
         result.effects.push({ kind: "incoming-damage-percent", amount: 40 });

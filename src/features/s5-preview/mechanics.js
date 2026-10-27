@@ -1,10 +1,10 @@
 // Community-video observations are candidate contracts, not official rules.
 // Technical keys are identifiers only; they do not provide translated names.
 export const S5_PREVIEW_MECHANICS = Object.freeze({
-  minggulong: { name: "冥古龙", events: ["battle-start", "turn-end"], unknowns: ["等级降低的下限未公开", "当前伤害核心固定60级，尚不支持逐方等级"] },
-  abu: { name: "阿布", events: ["skill-used"], unknowns: ["3能耗的基础/实际能耗口径待核验", "开局等级须由已核验状态提供", "当前伤害核心固定60级，尚不支持逐方等级"] },
-  "boss-abu": { name: "圣龙阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "当前伤害核心固定60级，尚不支持逐方等级"] },
-  "super-abu": { name: "超能阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "当前伤害核心固定60级，尚不支持逐方等级"] },
+  minggulong: { name: "冥古龙", events: ["battle-start", "turn-end"], unknowns: ["等级降低的下限未公开", "非60级能力值采用初版外推模型，待游戏面板校对"] },
+  abu: { name: "阿布", events: ["skill-used"], unknowns: ["3能耗的基础/实际能耗口径待核验", "开局等级须由已核验状态提供", "非60级能力值采用初版外推模型，待游戏面板校对"] },
+  "boss-abu": { name: "圣龙阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "非60级能力值采用初版外推模型，待游戏面板校对"] },
+  "super-abu": { name: "超能阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "非60级能力值采用初版外推模型，待游戏面板校对"] },
   "underground-silver-dragon": { name: "地绡银龙", events: ["energy-spent"], unknowns: ["魔攻增益叠法与上限未公开"] },
   "gold-vein-dragon": { name: "龙嵴金脉", events: ["charge-complete"], unknowns: ["攻击增益持续时间与叠法未公开"] },
   "boss-ice-bruce": { name: "首领冰钻布鲁斯", events: ["opponent-total-cost"], unknowns: ["对手总能耗的统计口径待核验", "威力增益叠法与上限待核验"] },
@@ -24,7 +24,7 @@ const whole = (value) => Number.isSafeInteger(value) && value >= 0;
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
 const identifiedBasis = (value) => typeof value === "string" && value.trim().length > 0;
 const effect = (kind, fields = {}) => ({ kind, ...fields });
-const CORE_LEVEL_GAP = "当前伤害核心固定60级，不能把该等级状态当作已支持的伤害计算";
+const CORE_LEVEL_GAP = "隔离事件适配器不生成等级面板，等级由主界面当前特性状态统一投影";
 
 export function createS5PreviewState(confirmed = {}) {
   return {
@@ -235,8 +235,8 @@ export function adaptS5PreviewEffects(result) {
   const adapterBlocked = hasLevel || unresolvedDuration;
   return {
     status: adapterBlocked ? "blocked" : result.status,
-    // Applying only the incoming amplifier while silently retaining level60
-    // would misrepresent the level-changing trait, so no partial core adapter.
+    // This isolated event adapter does not build panel stats. The live Web
+    // calculator applies level and incoming amplification together upstream.
     modifiers: adapterBlocked ? [] : modifiers, effects: result.effects, calculationEnabled: false,
     unknowns: [...(result.unknowns ?? []), ...(hasLevel ? [CORE_LEVEL_GAP] : [])],
   };

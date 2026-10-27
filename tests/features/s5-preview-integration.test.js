@@ -29,7 +29,7 @@ test("真实来源目录逐项进入原搜索，机制与图片都有接续入�
       types: entry.types ?? [], dexNo: null,
       previewIdentity: { key: entry.key, mechanicKey: entry.mechanicKey, formalIdPending: true, raceStatsPlaceholder: true },
     });
-    expect(result.learnsets.find(({ spiritId }) => spiritId === spirit.id)?.skillIds).toEqual([]);
+    expect(result.learnsets.find(({ spiritId }) => spiritId === spirit.id)?.skillIds).toEqual((entry.skills ?? []).map(skill => skill.id));
     expect(result.traits.find(({ id }) => spirit.traitIds.includes(id))?.description).toBe(entry.traitSummary);
     expect(result.traits.find(({ id }) => spirit.traitIds.includes(id))?.provenance.previewStatus.adaptationStatus).toBe("description-only");
     const asset = readFileSync(`public${spirit.assetUrl}`);

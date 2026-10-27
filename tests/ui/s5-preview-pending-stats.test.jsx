@@ -176,7 +176,7 @@ test("真实App中S5六维100可编辑、恢复占位及上次手调，S4不再N
   await user.keyboard("{Escape}");
   expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).toHaveAttribute("data-status", "ready");
   const damage = screen.queryByTestId("primary-damage");
-  if (damage) expect(damage.textContent).not.toMatch(/^\d+$/u);
+  if (damage) expect(Number(damage.textContent)).toBeGreaterThan(0);
   expect(current.spirits.some(spirit => spirit.id === candidate.id)).toBe(false);
 });
 

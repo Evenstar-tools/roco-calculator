@@ -21,10 +21,25 @@
       "name": "冥古龙",
       "types": ["幽", "龙"],
       "kind": "family",
-      "traitSummary": "开局99级（等级上限99级）；每回合结束降低10级；低于80级时受到伤害增加40%。",
+      "traitName": "恶龙的奢望",
+      "traitSummary": "初始等级+39，回合结束时等级-10，低于80级时受到伤害+40%。",
+      "traitEvidence": { "kind": "user-image", "frame": "codex-clipboard-68833128-1fef-4ec3-938c-f4a169ff44b9.png" },
+      "skills": [
+        {
+          "id": "skill_preview_s5_barren-devour",
+          "name": "荒芜之噬",
+          "type": "龙",
+          "category": "physical",
+          "cost": 5,
+          "basePower": 130,
+          "description": "造成物伤，若击败敌方，自己等级+20。",
+          "acquisition": "专属技能",
+          "evidence": { "kind": "user-image", "frame": "codex-clipboard-68833128-1fef-4ec3-938c-f4a169ff44b9.png" }
+        }
+      ],
       "mechanicKey": "minggulong",
       "evidence": { "seconds": 1.8, "frame": "visual_frames/t-000001.800.jpg", "captionLines": [1, 11] },
-      "unknowns": ["完整进化链和六维", "最低等级", "等级对面板及伤害公式的正式影响", "专属技能参数及击败后升级结算细则"]
+      "unknowns": ["完整进化链和六维", "最低等级", "等级对面板及伤害公式的正式影响", "击败后+20的等级上限及同回合结算先后"]
     },
     {
       "key": "abu",

@@ -1,4 +1,5 @@
 import { getServerRelease } from "./server-environment.js";
+import { withS5PreviewBattleLevels } from "./battle-level.js";
 import { abilityAdjustedStat } from "./skill-result/numeric.js";
 import { calculateMatchup } from "./calculate.js";
 import { linkedNegativeStatusContext } from "./negative-status-context.js";
@@ -201,6 +202,8 @@ export function getPanelView(spirit, side, stages = {}) {
     raceStats: spirit.raceStats,
     displayIvs: side.displayIvs,
     natureMultipliers: getNatureMultipliers(side.nature),
+    level: typeof side.combatLevel === "number" ? side.combatLevel
+      : typeof side.level === "number" ? side.level : 60,
   });
 
   return STAT_VIEW.map(({ key, label }) => {
@@ -301,11 +304,13 @@ function asResultRailModel({ calculation, direction, snapshot, state, includeTur
     raceStats: defender.raceStats,
     displayIvs: defenseSide.displayIvs,
     natureMultipliers: getNatureMultipliers(defenseSide.nature),
+    level: defenseSide.level,
   });
   const attackerPanels = calculateAllPanelStats({
     raceStats: attacker.raceStats,
     displayIvs: attackSide.displayIvs,
     natureMultipliers: getNatureMultipliers(attackSide.nature),
+    level: attackSide.level,
   });
   const defenderHp = Math.min(
     defenderPanels.hp,
@@ -562,9 +567,8 @@ function asResultRailModel({ calculation, direction, snapshot, state, includeTur
   return {
     attackerName: attacker.fullName,
     defenderHp,
-    defenderHpPercent:
-      state.directions[direction].context?.currentHpPercent ??
-      Number(((defenderHp / defenderPanels.hp) * 100).toFixed(1)),
+    defenderHpPercent: Number(Number(state.directions[direction].context?.currentHpPercent ??
+      (defenderHp / defenderPanels.hp) * 100).toFixed(1)),
     defenderMaxHp: defenderPanels.hp,
     defenderName: defender.fullName,
     mode: state.mode,
@@ -637,13 +641,8 @@ function healthView(direction, panelStats) {
   return {
     currentHp: direction.currentHp ?? panelStats.hp,
     maxHp: panelStats.hp,
-    percent:
-      direction.context?.currentHpPercent ??
-      Number(
-        (((direction.currentHp ?? panelStats.hp) / panelStats.hp) * 100).toFixed(
-          1,
-        ),
-      ),
+    percent: Number(Number(direction.context?.currentHpPercent ??
+      ((direction.currentHp ?? panelStats.hp) / panelStats.hp) * 100).toFixed(1)),
   };
 }
 
@@ -656,6 +655,8 @@ export function buildCalculatorViewModel({
   state,
   serverId = snapshot?.meta?.serverId ?? snapshot?.serverId ?? "cn",
 }) {
+  // Owner levels are derived for this evaluation only; the saved session stays unchanged.
+  state = withS5PreviewBattleLevels(snapshot, state);
   const spirits = spiritIndex?.values?.() ?? snapshot.spirits;
   const selectableSpirits = spirits.map((spirit) => ({
     ...getSpiritCardView(snapshot, spirit),
@@ -694,6 +695,7 @@ export function buildCalculatorViewModel({
         raceStats: attacker.raceStats,
         displayIvs: state.sides.attacker.displayIvs,
         natureMultipliers: getNatureMultipliers(state.sides.attacker.nature),
+        level: state.sides.attacker.level,
       })
     : null;
   const defenderPanelStats = configurationReady
@@ -701,6 +703,7 @@ export function buildCalculatorViewModel({
         raceStats: defender.raceStats,
         displayIvs: state.sides.defender.displayIvs,
         natureMultipliers: getNatureMultipliers(state.sides.defender.nature),
+        level: state.sides.defender.level,
       })
     : null;
   const attackerHealth = configurationReady
@@ -803,12 +806,14 @@ export function buildCalculatorViewModel({
     selectableSpirits,
     sides: {
       attacker: {
+        combatLevel: state.sides.attacker.level,
         finalPanelStats: attackerFinalPanelStats,
         health: attackerHealth,
         panelStats: attackerPanelStats,
         spirit: attacker,
       },
       defender: {
+        combatLevel: state.sides.defender.level,
         finalPanelStats: defenderFinalPanelStats,
         health: defenderHealth,
         panelStats: defenderPanelStats,

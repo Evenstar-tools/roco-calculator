@@ -80,6 +80,7 @@ import { isEnemyStarfallTraitControl, linkStarfallTraitControls, linkEnemyCostTr
 import { carriedSkillTotalCost } from "./domain/skill-result/loadout.js";
 import { getSnapshotIndexes } from "./domain/snapshot-indexes.js";
 import { calculateAllPanelStats } from "./domain/stat.js";
+import { resolveS5PreviewBattleLevel } from "./domain/battle-level.js";
 import { getEffectiveTraits } from "./domain/effective-traits.js";
 import { getBattleFormChoices } from "./domain/battle-form.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
@@ -104,6 +105,7 @@ import {
   abilityLevelMultiplier,
   createProductInitialState,
   patchFourSkill,
+  projectBattleLevelHealth,
   reduceSessionAction,
   rememberSingleSkill as rememberSessionSingleSkill,
   selectFourSkill as selectSessionFourSkill,
@@ -730,11 +732,21 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       updateTargetStarfallStacks(traitOwnerSide, value);
       return;
     }
-    const previousValue = stateRef.current.directions[direction].context?.[key];
-    const traitUpdate = updateMirroredTraitContext(stateRef.current, { direction, key, value });
+    const previousState = stateRef.current;
+    const previousValue = previousState.directions[direction].context?.[key];
+    const traitUpdate = updateMirroredTraitContext(previousState, { direction, key, value });
     traitUpdate.state = synchronizeS5PreviewSkillUse(traitUpdate.state, {
       side: traitOwnerSide, control, value, snapshot,
     });
+    if (resolveS5PreviewBattleLevel(snapshot, previousState, traitOwnerSide) !==
+        resolveS5PreviewBattleLevel(snapshot, traitUpdate.state, traitOwnerSide)) {
+      const hpDirection = traitOwnerSide === "attacker" ? "reverse" : "forward";
+      traitUpdate.state = projectBattleLevelHealth(traitUpdate.state, { snapshot,
+        side: traitOwnerSide, hpInputMode: balance.getHpInputMode(hpDirection) });
+      const health = traitUpdate.state.directions[hpDirection];
+      balance.rememberHpBasis(hpDirection, health.currentHp, health.context?.currentHpPercent,
+        traitUpdate.state.sides[traitOwnerSide]);
+    }
     commitSession(traitUpdate);
     const attackingSide = direction === "forward" ? "attacker" : "defender";
     const defendingSide = attackingSide === "attacker" ? "defender" : "attacker";
@@ -778,7 +790,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const source = stateRef.current.sides[side];
     const official = getSpirit(snapshot, source);
     const officialHp = official ? calculateAllPanelStats({ raceStats: official.raceStats,
-      displayIvs: source.displayIvs, natureMultipliers: getNatureMultipliers(source.nature) }).hp : null;
+      displayIvs: source.displayIvs, natureMultipliers: getNatureMultipliers(source.nature),
+      level: resolveS5PreviewBattleLevel(snapshot, stateRef.current, side) }).hp : null;
     const hp = balance.getHpInputMode(direction) === "percent" && officialHp !== null
       ? Math.round(officialHp * currentHpPercent / 100) : stateRef.current.directions[direction].currentHp;
     balance.rememberHpBasis(direction, hp, currentHpPercent, source);
@@ -1044,12 +1057,15 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       supportsChoiceTrait(detectedChoiceTrait)
         ? detectedChoiceTrait
         : null;
+    latest = projectBattleLevelHealth(latest, { snapshot, side,
+      hpInputMode: balance.getHpInputMode(oppositeDirection) });
     const healthDirection =
       side === "attacker" ? latest.directions.reverse : latest.directions.forward;
     const panelStats = calculateAllPanelStats({
       raceStats: spirit.raceStats,
       displayIvs: latest.sides[side].displayIvs,
       natureMultipliers: getNatureMultipliers(latest.sides[side].nature),
+      level: resolveS5PreviewBattleLevel(snapshot, latest, side),
     });
     const storedHpPercent = Number(healthDirection.context?.currentHpPercent);
     const attackerHpPercent = Number.isFinite(storedHpPercent)
@@ -2348,7 +2364,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                       stage: defenseLevelStage,
                     },
               nature: state.sides.attacker.nature,
-              stats: getPanelView(attacker, state.sides.attacker, {
+              stats: getPanelView(attacker, { ...state.sides.attacker, combatLevel: viewModel.sides.attacker.combatLevel }, {
                 attack:
                   state.directions.forward.overrides.attackLevelStage ?? 0,
                 defense:
@@ -2399,7 +2415,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                       stage: attackLevelStage,
                     },
               nature: state.sides.defender.nature,
-              stats: getPanelView(defender, state.sides.defender, {
+              stats: getPanelView(defender, { ...state.sides.defender, combatLevel: viewModel.sides.defender.combatLevel }, {
                 attack:
                   state.directions.reverse.overrides.attackLevelStage ?? 0,
                 defense:

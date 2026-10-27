@@ -37,11 +37,12 @@ test.each(["single", "four"])("精简%s主界面特性控件直接影响实际�
 test("精简主界面超能阿布沿用家族特性，次数真的进入等级结果", () => {
   setup("super-abu");
   const count = screen.getByRole("spinbutton", { name: /已确认.*3能耗.*次数/ });
-  expect(primary()).toBeGreaterThan(0);
+  const at60 = primary();
+  expect(at60).toBeGreaterThan(0);
   fireEvent.change(count, { target: { value: "1" } });
   expect(screen.getAllByText(/62/u).length).toBeGreaterThan(0);
-  expect(screen.getByTestId("primary-damage")).toHaveTextContent("—");
-  expect(screen.getAllByText(/等级62.*尚未核验/u).length).toBeGreaterThan(0);
+  expect(primary()).toBeGreaterThan(at60);
+  expect(screen.queryByText(/等级62.*尚未核验/u)).not.toBeInTheDocument();
   fireEvent.change(count, { target: { value: "0" } });
   expect(primary()).toBeGreaterThan(0);
 });
