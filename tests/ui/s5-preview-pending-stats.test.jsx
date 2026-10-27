@@ -147,7 +147,7 @@ function expectS5Pinned() {
   }
 }
 
-test("真实App中S5六维100可编辑、恢复占位及上次手调，S4不再NEW且等级特性可计算", async () => {
+test("真实App中S5六维100可编辑、恢复占位及上次手调，S4不再NEW且非60级公式保持待确认", async () => {
   const user = userEvent.setup();
   const current = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
   const snapshot = withWebPreview(current);
@@ -174,7 +174,9 @@ test("真实App中S5六维100可编辑、恢复占位及上次手调，S4不再N
   await user.click(within(editor).getByRole("button", { name: "恢复上次手调值" }));
   expect(within(editor).getByRole("spinbutton", { name: "试算物攻种族值" })).toHaveValue(250);
   await user.keyboard("{Escape}");
-  expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).toHaveAttribute("data-status", "ready");
+  const traitStatus = screen.getAllByRole("status", { name: "攻击特性当前效果" })[0];
+  expect(traitStatus).toHaveAttribute("data-status", "pending");
+  expect(traitStatus).toHaveTextContent("当前等级99的等级面板与伤害公式尚未核验");
   const damage = screen.queryByTestId("primary-damage");
   if (damage) expect(damage.textContent).not.toMatch(/^\d+$/u);
   expect(current.spirits.some(spirit => spirit.id === candidate.id)).toBe(false);
