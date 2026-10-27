@@ -53,3 +53,34 @@ test("桌面暂存内置图标并保留网页产物，两端均无额外页脚",
   writeFileSync(path.join(staged, `assets/skills/${remoteId}.png`), "broken");
   expect(() => verifyDesktopSkillIcons(staged)).toThrow("损坏");
 });
+
+test("双构建的预览技能图标也离线内置，保留两套网页运行数据", () => {
+  const root = mkdtempSync(path.join(tmpdir(), "desktop-preview-icons-"));
+  const web = path.join(root, "dist/client");
+  const skillId = "skill_0000000000000003";
+  const runtime = JSON.stringify({ skills: [{ id: skillId, name: "预览旧技能", iconUrl: "https://example.com/icon.png" }] });
+  const png = Buffer.from("89504e470d0a1a0a", "hex");
+  mkdirSync(path.join(root, "data/desktop-skill-icons"), { recursive: true });
+  writeFileSync(path.join(root, `data/desktop-skill-icons/${skillId}.png`), png);
+  for (const prefix of ["", "pre"]) {
+    const channel = path.join(web, prefix);
+    for (const page of ["index.html", "dianlu/index.html"]) {
+      mkdirSync(path.dirname(path.join(channel, page)), { recursive: true });
+      writeFileSync(path.join(channel, page), '<div id="root"></div>', "utf8");
+    }
+    mkdirSync(path.join(channel, "data"), { recursive: true });
+    writeFileSync(path.join(channel, "data/runtime.json"), runtime, "utf8");
+  }
+
+  const staged = prepareDesktopClient(root);
+  for (const prefix of ["", "pre"]) {
+    const channel = path.join(staged, prefix);
+    const bundled = JSON.parse(readFileSync(path.join(channel, "data/runtime.json"), "utf8"));
+    expect(bundled.skills[0].iconUrl).toBe(`/assets/skills/${skillId}.png`);
+    expect(readFileSync(path.join(channel, `assets/skills/${skillId}.png`))).toEqual(png);
+    expect(readFileSync(path.join(web, prefix, "data/runtime.json"), "utf8")).toBe(runtime);
+  }
+  expect(verifyDesktopSkillIcons(staged)).toBe(2);
+  writeFileSync(path.join(staged, `pre/assets/skills/${skillId}.png`), "broken", "utf8");
+  expect(() => verifyDesktopSkillIcons(staged)).toThrow("损坏：预览旧技能");
+});

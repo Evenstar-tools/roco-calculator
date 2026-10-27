@@ -1,3 +1,5 @@
+param([switch]$Prebuilt)
+
 $ErrorActionPreference = "Stop"
 
 $productName = -join @(
@@ -52,7 +54,11 @@ $env:WIN_CSC_LINK = $temporaryPfx
 $env:WIN_CSC_KEY_PASSWORD = $password
 
 try {
-  npm run desktop:pack
+  if ($Prebuilt) {
+    node scripts/build-desktop.mjs
+  } else {
+    npm run desktop:pack
+  }
   if ($LASTEXITCODE -ne 0) {
     throw "desktop:pack failed with exit code $LASTEXITCODE"
   }

@@ -24,6 +24,18 @@ describe("offline desktop asset routing", () => {
     ).toBe(path.join(clientRoot, "data", "runtime.json"));
   });
 
+  test("preview smoke is opt-in and uses its own bundled resources and window title", () => {
+    expect(resolveOfflineAssetPath("app://calculator/pre/data/runtime.json", clientRoot))
+      .toBe(path.join(clientRoot, "pre", "data", "runtime.json"));
+    const desktopMain = readFileSync("desktop/main.mjs", "utf8");
+    expect(desktopMain).toContain('entryPath = "/"');
+    expect(desktopMain).toContain('process.argv.includes("--offline-smoke-entry=/pre/")');
+    expect(desktopMain).toContain('const runtimeUrl = `${entryPath}data/runtime.json`;');
+    expect(desktopMain).toContain('shell?.heading.includes("S5")');
+    expect(desktopMain).toContain('const PREVIEW_TITLE = "洛克计算器 · S5 抢先体验";');
+    expect(desktopMain).toContain('window.webContents.on("did-navigate", updateWindowTitle)');
+  });
+
   test("rejects traversal outside the bundled client directory", () => {
     expect(
       resolveOfflineAssetPath(

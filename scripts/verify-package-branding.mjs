@@ -1,5 +1,6 @@
 import { extractAll } from "@electron/asar";
 import {
+  existsSync,
   mkdtempSync,
   readFileSync,
   readdirSync,
@@ -69,6 +70,10 @@ export function verifySourceBundle(projectRoot) {
 
 export function verifyPackagedBundle(projectRoot) {
   const resources = path.join(projectRoot, "release", "win-unpacked", "resources");
+  if (existsSync(path.join(projectRoot, "dist/client/pre/index.html")) &&
+      !existsSync(path.join(resources, "client/pre/index.html"))) {
+    throw new Error("桌面包缺少预览入口：pre/index.html");
+  }
   verifyDesktopSkillIcons(path.join(resources, "client"));
   const asarPath = path.join(resources, "app.asar");
   const extracted = mkdtempSync(path.join(tmpdir(), "rock-calculator-asar-"));

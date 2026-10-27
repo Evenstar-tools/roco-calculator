@@ -22,6 +22,7 @@ const APP_SCHEME = "app";
 const APP_ORIGIN = "app://calculator/";
 const APP_NAME = "洛克计算器";
 const APP_TITLE = "洛克计算器 · S4「季中」";
+const PREVIEW_TITLE = "洛克计算器 · S5 抢先体验";
 const APP_USER_MODEL_ID = "cn.rock.calculator";
 
 protocol.registerSchemesAsPrivileged([
@@ -113,14 +114,14 @@ async function readBundledAsset(requestUrl) {
   }
 }
 
-function createMainWindow({ visible = true } = {}) {
+function createMainWindow({ visible = true, entryPath = "/" } = {}) {
   const window = new BrowserWindow({
     width: 1440,
     height: 900,
     minWidth: 900,
     minHeight: 640,
     show: false,
-    title: APP_TITLE,
+    title: entryPath === "/pre/" ? PREVIEW_TITLE : APP_TITLE,
     icon: getAppIconPath(),
     backgroundColor: "#f4f6fb",
     webPreferences: {
@@ -132,10 +133,15 @@ function createMainWindow({ visible = true } = {}) {
   });
 
   window.setMenuBarVisibility(false);
+  const updateWindowTitle = () => {
+    const isPreview = window.webContents.getURL().startsWith(`${APP_ORIGIN}pre/`);
+    window.setTitle(isPreview ? PREVIEW_TITLE : APP_TITLE);
+  };
   window.webContents.on("page-title-updated", (event) => {
     event.preventDefault();
-    window.setTitle(APP_TITLE);
+    updateWindowTitle();
   });
+  window.webContents.on("did-navigate", updateWindowTitle);
   const openExternal = (url) => shell.openExternal(url);
   window.webContents.setWindowOpenHandler(
     createWindowOpenHandler(openExternal),
@@ -148,7 +154,7 @@ function createMainWindow({ visible = true } = {}) {
       window.show();
     });
   }
-  window.loadURL(APP_ORIGIN);
+  window.loadURL(new URL(entryPath, APP_ORIGIN).href);
   return window;
 }
 
@@ -158,7 +164,8 @@ function getSmokeReportPath() {
   return argument ? path.resolve(argument.slice(prefix.length)) : null;
 }
 
-async function collectOfflineSmokeResult(window) {
+async function collectOfflineSmokeResult(window, entryPath = "/") {
+  const runtimeUrl = `${entryPath}data/runtime.json`;
   const deadline = Date.now() + 15_000;
   let shell = null;
   while (Date.now() < deadline) {
@@ -174,7 +181,8 @@ async function collectOfflineSmokeResult(window) {
         defenderPicker: Boolean(
           document.querySelector('[aria-label="防御方精灵"]')
         ),
-        loading: document.body.textContent.includes("正在加载 S4「季中」数据"),
+        loading: document.body.textContent.includes("正在加载 S4「季中」数据") ||
+          document.body.textContent.includes("正在加载 S5"),
         siteFooterCount: document.querySelectorAll("footer.site-links").length,
       }))()
     `);
@@ -183,7 +191,7 @@ async function collectOfflineSmokeResult(window) {
   }
 
   const data = await window.webContents.executeJavaScript(`
-    fetch("/data/runtime.json")
+    fetch(${JSON.stringify(runtimeUrl)})
       .then((response) => {
         if (!response.ok) throw new Error("runtime data unavailable");
         return response.json();
@@ -203,13 +211,14 @@ async function collectOfflineSmokeResult(window) {
 
   const skillIcons = await window.webContents.executeJavaScript(`
     (async () => {
-      const { skills } = await fetch("/data/runtime.json").then((response) => response.json());
+      const { skills } = await fetch(${JSON.stringify(runtimeUrl)}).then((response) => response.json());
+      const resourceBase = ${JSON.stringify(entryPath)};
       const failed = [];
       for (let start = 0; start < skills.length; start += 16) {
         await Promise.all(skills.slice(start, start + 16).map(async (skill) => {
           if (!skill.iconUrl?.startsWith("/assets/skills/")) { failed.push(skill.name); return; }
           const image = new Image();
-          image.src = skill.iconUrl;
+          image.src = resourceBase + skill.iconUrl.slice(1);
           try { await image.decode(); } catch { failed.push(skill.name); }
         }));
       }
@@ -246,6 +255,7 @@ async function collectOfflineSmokeResult(window) {
   // 数量期望来自打包内 runtime.json 自身声明的 meta.counts：
   // 只校验内部一致性，赛季增删精灵不需要改桌面代码。
   const ok =
+    (entryPath !== "/pre/" || shell?.heading.includes("S5")) &&
     shell?.attackerPicker === true &&
     shell?.defenderPicker === true &&
     shell?.loading === false &&
@@ -265,7 +275,7 @@ async function collectOfflineSmokeResult(window) {
   return {
     ok,
     mode: "offline",
-    origin: APP_ORIGIN,
+    origin: new URL(entryPath, APP_ORIGIN).href,
     heading: shell?.heading ?? "",
     attackerPicker: shell?.attackerPicker ?? false,
     defenderPicker: shell?.defenderPicker ?? false,
@@ -307,11 +317,12 @@ app.whenReady().then(async () => {
   });
 
   const smokeReportPath = getSmokeReportPath();
-  const window = createMainWindow({ visible: !smokeReportPath });
+  const smokeEntry = smokeReportPath && process.argv.includes("--offline-smoke-entry=/pre/") ? "/pre/" : "/";
+  const window = createMainWindow({ visible: !smokeReportPath, entryPath: smokeEntry });
   if (!smokeReportPath) return;
 
   try {
-    const result = await collectOfflineSmokeResult(window);
+    const result = await collectOfflineSmokeResult(window, smokeEntry);
     await mkdir(path.dirname(smokeReportPath), { recursive: true });
     await writeFile(
       smokeReportPath,

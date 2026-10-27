@@ -13,7 +13,7 @@ const groups = [
 export function Toolbox({ actions, onOpen, activeTool }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
-  const showPreviewEntry = serverId === "cn" && window.location.protocol !== "app:";
+  const showPreviewEntry = serverId === "cn";
   const [open, setOpen] = useState(false);
   const [top, setTop] = useState(60);
   const [narrow, setNarrow] = useState(() => window.innerWidth <= 760);

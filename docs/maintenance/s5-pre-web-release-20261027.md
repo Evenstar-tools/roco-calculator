@@ -113,3 +113,11 @@
 - 最终Git归档双构建与正式E2E通过，独立 `/pre` 资源预算硬门禁通过；JS原始体积与gzip保留预警，不调大阈值。
 - 实际组合产物验证12只终阶头像解码、四技能配招、夏蛰及刷新保留；390px历史弹层无多余滚动条，无横向溢出和页面异常。正式 `/cn/ → /pre/ → /cn/` 的S4候选隔离、伤害60及存档原文保持。
 - 本批截图 `output/local-s5-unified-desktop.png`、`output/local-s5-unified-mobile.png`；脚本 `output/s5-unified-browser-check.mjs`。公网回查在推送后继续，未回查前不称线上完成。
+
+### 本批公网回查结果
+
+- 17:58前已提交并推送正式发布提交 `f691a679ccb0228ca29a89f10effcfe71c7f38b1`；源码分支回读为 `2df9b392c8bc1a0b9c6335bec691723f1888b551`。18:00后确认公网更新为 `/pre/assets/main-BnUOLVrd.js`，普通无参数地址也已返回新版；没有把提交时间称作部署完成时间。
+- 公网实际操作已核：12只终阶彩图均128px长边解码、四技能正确，冬虫夏瓜第二技为“夏蛰”，刷新保留；虎纹阿瓦鲨种族物攻146（中性个体60面板254）。森巨人S4/S5历史可切，390px弹层clientHeight与scrollHeight同为497，无多余滚动条和横向溢出，无页面脚本错误。
+- 正式页往返后仍S4、无S5候选，原60伤害与正式存档原文不变；正式统计SDK有既有请求阻止警告，不影响页面。公网截图 `output/online-s5-unified-desktop.png`、`output/online-s5-unified-mobile.png`、`output/online-s5-tiger-146.png`。
+- GitHub CI run 40484788414 的 validate、miniapp、e2e 全部成功：https://github.com/Evenstar-tools/roco-calculator/actions/runs/40484788414 。小程序任务只是远端既有校验，未同步或发布本批小程序。
+- 本线程验收浏览器已关闭并回读列表为空，4240临时验证服务已停止。4234开发预览及其他工作区保留。本节为发布后本地证据，不为追加记录重复触发部署。
