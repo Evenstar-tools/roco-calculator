@@ -8,7 +8,7 @@ function secureIconUrl(value) {
   if (/^https:\/\//u.test(value)) return value;
   const url = publicResourceUrl(value);
   const root = publicResourceUrl("/assets/skills/");
-  return url.startsWith(root) && /^skill_[a-f0-9]{16}\.png$/u.test(url.slice(root.length)) ? url : null;
+  return url.startsWith(root) && /^skill_(?:[a-f0-9]{16}|preview_s5_[a-z0-9][a-z0-9_-]*)\.png$/u.test(url.slice(root.length)) ? url : null;
 }
 
 export function SkillIcon({ className = "", label = false, skill, size = 28 }) {

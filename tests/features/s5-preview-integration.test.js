@@ -19,17 +19,18 @@ test("真实来源目录逐项进入原搜索，机制与图片都有接续入�
   expect(current).toEqual(original);
   expect(result.meta).toBe(current.meta);
   const index = createSpiritSearchIndex(result.spirits);
-  expect(catalog.entries.filter(({ kind }) => kind === "family")).toHaveLength(14);
+  expect(catalog.entries.filter(({ kind }) => kind === "family")).toHaveLength(28);
   expect(catalog.entries.filter(({ kind }) => kind === "boss")).toHaveLength(3);
   for (const entry of catalog.entries) {
     expect(S5_PREVIEW_MECHANICS).toHaveProperty(entry.mechanicKey);
     const spirit = index.search(entry.name).find(({ fullName }) => fullName === entry.name);
     expect(spirit).toMatchObject({
-      fullName: entry.name, raceStats: S5_PREVIEW_TEST_STATS, calculationStatus: "pending-s5-mechanics",
+      fullName: entry.name, raceStats: entry.raceStats === undefined ? S5_PREVIEW_TEST_STATS : entry.raceStats,
+      calculationStatus: entry.raceStats === null ? "pending-race-stats" : "pending-s5-mechanics",
       types: entry.types ?? [], dexNo: null,
-      previewIdentity: { key: entry.key, mechanicKey: entry.mechanicKey, formalIdPending: true, raceStatsPlaceholder: true },
+      previewIdentity: { key: entry.key, mechanicKey: entry.mechanicKey, formalIdPending: true, raceStatsPlaceholder: entry.raceStats === undefined },
     });
-    expect(result.learnsets.find(({ spiritId }) => spiritId === spirit.id)?.skillIds).toEqual((entry.skills ?? []).map(skill => skill.id));
+    expect(result.learnsets.find(({ spiritId }) => spiritId === spirit.id)?.skillIds).toEqual([...(entry.skills ?? []), ...(entry.officialSkillRefs ?? [])].map(skill => skill.id));
     expect(result.traits.find(({ id }) => spirit.traitIds.includes(id))?.description).toBe(entry.traitSummary);
     expect(result.traits.find(({ id }) => spirit.traitIds.includes(id))?.provenance.previewStatus.adaptationStatus).toBe("description-only");
     const asset = readFileSync(`public${spirit.assetUrl}`);
@@ -46,7 +47,7 @@ test("真实来源目录逐项进入原搜索，机制与图片都有接续入�
     expect(result.spirits.find(({ fullName }) => fullName === base)).toEqual(originalBase);
   }
   expect(withWebPreview(result)).toBe(result);
-  expect(result.spirits.filter(({ previewIdentity }) => previewIdentity?.raceStatsPlaceholder)).toHaveLength(17);
+  expect(result.spirits.filter(({ previewIdentity }) => previewIdentity?.raceStatsPlaceholder)).toHaveLength(14);
   for (const spirit of current.spirits.filter(({ changeInfo }) => changeInfo?.isNew && changeInfo.patch?.id?.startsWith("s4-"))) {
     const currentSpirit = result.spirits.find(({ id }) => id === spirit.id);
     expect(currentSpirit.changeInfo?.isNew).not.toBe(true);
@@ -75,8 +76,9 @@ test("/pre/生产模式保留每个已绑定剪影及其来源，不回退通用
       expect(png.subarray(1, 4).toString()).toBe("PNG");
       expect(Math.max(png.readUInt32BE(16), png.readUInt32BE(20))).toBe(128);
     }
-    expect(spirit.raceStats).toEqual(S5_PREVIEW_TEST_STATS);
-    expect(spirit.calculationStatus).toBe("pending-s5-mechanics");
+    if (entry.raceStats === null) expect(spirit.raceStats).toBeNull();
+    else expect(spirit.raceStats).toMatchObject(entry.raceStats ?? S5_PREVIEW_TEST_STATS);
+    expect(spirit.calculationStatus).toBe(entry.raceStats === null ? "pending-race-stats" : "pending-s5-mechanics");
   }
 });
 
@@ -143,21 +145,27 @@ test("阿布三形态保留稳定身份与图片证据，共用已核验S5机制
 });
 
 
-test("本轮用户指定16项属性按原顺序录入，未列圣龙阿布不从同族猜测", () => {
+test("原占位属性按官方图纠正并分开来源，未列圣龙阿布不从同族猜测", () => {
   const expected = {
     冥古龙: ["幽", "龙"], 阿布: ["龙"], 超能阿布: ["龙"], 地绡银龙: ["地"], 龙嵴金脉: ["电"],
     "冰钻布鲁斯（首领化）": ["冰"], "琉璃水母（首领化）": ["水", "毒"],
-    鲸羽: ["幻", "冰"], 豆粒鹅: ["冰"], 西瓜虫: ["草", "虫"], 滴溜豚: ["水"], 乐乐鲨: ["水"],
-    蛋包蛋: ["萌"], 蟹蟹椰: ["水", "草"], 小剪影: ["幽"], 铃兰: ["草", "萌"],
+    鲸羽: ["幻", "冰"], 豆粒鹅: ["冰"], 西瓜虫: ["虫", "草"], 滴溜豚: ["毒", "幻"], 乐乐鲨: ["水"],
+    蛋包蛋: ["普通", "萌"], 蟹蟹椰: ["水", "草"], 小剪影: ["幽"], 铃兰: ["草", "萌"],
   };
   const current = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
   const result = withWebPreview(current);
   const typed = result.spirits.filter(spirit => spirit.previewIdentity && spirit.types.length);
-  expect(typed).toHaveLength(16);
+  expect(typed).toHaveLength(30);
   for (const [name, types] of Object.entries(expected)) {
     const spirit = result.spirits.find(entry => entry.fullName === name);
     expect(spirit.types, name).toEqual(types);
-    expect(spirit.previewIdentity.typesProvenance).toMatchObject({ authority: "user-provided", reviewStatus: "pending" });
+    const official = catalog.entries.find(entry => entry.name === name)?.typesProvenance?.authority === "official-image";
+    if (official) {
+      expect(spirit.previewIdentity.typesProvenance.authority).toBe("official-image");
+      expect(["verified", "reviewed"]).toContain(spirit.previewIdentity.typesProvenance.reviewStatus);
+    } else {
+      expect(spirit.previewIdentity.typesProvenance).toMatchObject({ authority: "user-provided", reviewStatus: "pending" });
+    }
   }
   expect(result.spirits.find(spirit => spirit.fullName === "圣龙阿布").types).toEqual([]);
   expect(current.spirits.some(spirit => spirit.previewIdentity)).toBe(false);

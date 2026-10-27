@@ -44,22 +44,52 @@ const skill = {
   },
 };
 
-test("同一实体新旧补丁按各自日期显示，旧记录不改成新补丁", async () => {
+test("新旧补丁逐条保留日期，支持键盘切换且更换实体默认查看最新记录", async () => {
   const user = userEvent.setup();
-  render(<EntityChangeHint changeInfo={{ ...spirit.changeInfo,
+  const changeInfo = { ...spirit.changeInfo,
     patch: { id: "s5", label: "S5 赛季调整", date: "预计 2026.11.05" },
     items: [{ kind: "stat", field: "physicalAttack", label: "物攻", before: 92, after: 100 }],
     history: [spirit.changeInfo],
-  }} />);
+  };
+  const { rerender } = render(<EntityChangeHint changeInfo={changeInfo} />);
   await user.click(screen.getByRole("button", { name: "查看加油蟹本期改动" }));
-  const panel = screen.getByRole("tooltip", { name: "加油蟹本期改动" });
-  const currentGroup = within(panel).getByText("预计 2026.11.05").closest("section");
-  const oldGroup = within(panel).getByText("2026.09.10").closest("section");
-  expect(within(currentGroup).getByText("92 → 100")).toBeVisible();
-  expect(within(oldGroup).getByText("108 → 92")).toBeVisible();
-  expect(within(oldGroup).getByText("旧效果")).toBeVisible();
+  const panel = screen.getByRole("dialog", { name: "加油蟹本期改动" });
+  const tabs = within(panel).getByRole("tablist", { name: "改动记录" });
+  const currentTab = within(tabs).getByRole("tab", { name: "S5 赛季调整" });
+  const oldTab = within(tabs).getByRole("tab", { name: "S4 调整" });
+  expect(currentTab).toHaveAttribute("aria-selected", "true");
+  expect(within(panel).getAllByRole("tabpanel")).toHaveLength(1);
+  expect(within(panel).getByRole("tabpanel")).toHaveTextContent("预计 2026.11.05");
+  expect(within(panel).getByText("92 → 100")).toBeVisible();
+  expect(within(panel).queryByText("108 → 92")).not.toBeInTheDocument();
+
+  await user.click(oldTab);
+  expect(oldTab).toHaveAttribute("aria-selected", "true");
+  expect(within(panel).getByRole("tabpanel")).toHaveTextContent("2026.09.10");
+  expect(within(panel).getByText("108 → 92")).toBeVisible();
+  expect(within(panel).getByText("旧效果")).toBeVisible();
+  expect(within(panel).queryByText("92 → 100")).not.toBeInTheDocument();
+
+  await user.keyboard("{ArrowLeft}");
+  expect(currentTab).toHaveFocus();
+  expect(currentTab).toHaveAttribute("aria-selected", "true");
+  await user.keyboard("{End}");
+  expect(oldTab).toHaveFocus();
+  expect(oldTab).toHaveAttribute("aria-selected", "true");
+  await user.keyboard("{Home}");
+  expect(currentTab).toHaveFocus();
+  expect(currentTab).toHaveAttribute("aria-selected", "true");
+  await user.keyboard("{ArrowRight}");
+  expect(oldTab).toHaveFocus();
+  expect(oldTab).toHaveAttribute("aria-selected", "true");
+
+  rerender(<EntityChangeHint changeInfo={{ ...changeInfo, entityId: "forest-giant", entityName: "森巨人" }} />);
+  const nextPanel = screen.getByRole("dialog", { name: "森巨人本期改动" });
+  expect(within(nextPanel).getByRole("tab", { name: "S5 赛季调整" })).toHaveAttribute("aria-selected", "true");
+  expect(within(nextPanel).getByText("92 → 100")).toBeVisible();
+  expect(within(nextPanel).queryByText("108 → 92")).not.toBeInTheDocument();
   await user.keyboard("{Escape}");
-  expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 });
 
 test("精灵改动只在叹号交互后展示，点击后可固定", async () => {

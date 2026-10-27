@@ -34,6 +34,10 @@ export function normalizeDamageHitCount(value) {
   return Math.max(1, Math.floor(finiteNumber(value, 1)));
 }
 
+export function damageLevelCoefficient(level = 60) {
+  return (finiteNumber(level, 60) * 45 / 100 + 10) / 41;
+}
+
 export function calculateDamage(input) {
   const attackerStat = finiteNumber(input.attackerStat, 0);
   const displayedPower = finiteNumber(input.displayedPower, 0);
@@ -53,7 +57,7 @@ export function calculateDamage(input) {
     throw new RangeError("defenderDefense must be greater than zero");
   }
 
-  const coefficient = (level * 45 / 100 + 10) / 41;
+  const coefficient = damageLevelCoefficient(level);
   const unroundedNumerator = attackerStat * displayedPower * coefficient;
   const numerator = roundDamageNumerator(unroundedNumerator);
   const unroundedOneHit = numerator / defenderDefense * reduction;

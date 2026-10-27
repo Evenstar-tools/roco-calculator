@@ -108,7 +108,7 @@ test("秩序鱿墨保留防御开关和减伤参数，电系不变、非电系�
   expect(skillRow("下注 · 明")).toHaveTextContent(bet);
 });
 
-test.each([["rain", "雨天"], ["thunder", "雷暴"], ["sandstorm", "沙尘暴"], ["blizzard", "暴风雪"]])("%s天气摘要注明不计天气伤害，展开说明保留联动边界", (value, label) => {
+test.each([["rain", "雨天"], ["thunder", "雷暴"], ["sandstorm", "沙尘暴"], ["blizzard", "暴风雪"], ["dream", "萌系天气（占位）"]])("%s天气摘要注明不计天气伤害，展开说明保留联动边界", (value, label) => {
   render(<DeerWorkspace snapshot={snapshot} />);
   const conditions = screen.getByRole("button", { name: /战斗条件/ });
   fireEvent.click(conditions);
@@ -231,6 +231,19 @@ test("速度提示随个体调整切换先手、拼速和无法先手，不混�
   expect(speed).toHaveTextContent("无法先手");
   fireEvent.click(screen.getByLabelText("显示先发补刀"));
   expect(speed).toHaveTextContent("无法先手");
+  const values = within(speed).getByText(/我方 \d+ \/ 对方 \d+/).textContent;
+  fireEvent.click(screen.getByRole("button", { name: /战斗条件/ }));
+  fireEvent.change(screen.getByLabelText("天气"), { target: { value: "dream" } });
+  expect(speed).toHaveTextContent("可以先手");
+  expect(speed).toHaveTextContent("同先制度，萌系天气下速度较慢者先行动");
+  expect(speed).toHaveTextContent(values);
+  fireEvent.change(within(defense).getByLabelText("速度个体"), { target: { value: "30" } });
+  expect(speed).toHaveTextContent("需要拼速");
+  fireEvent.change(within(defense).getByLabelText("速度个体"), { target: { value: "0" } });
+  expect(speed).toHaveTextContent("无法先手");
+  fireEvent.change(screen.getByLabelText("天气"), { target: { value: "none" } });
+  expect(speed).toHaveTextContent("可以先手");
+  expect(speed).toHaveTextContent("同先制度，仅比较当前速度");
 });
 
 test("银月狼王可直接配置吞噬特性，关闭防守特性也禁用吞噬参数", () => {

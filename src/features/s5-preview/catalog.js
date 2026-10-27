@@ -9,7 +9,8 @@ export const S5_PREVIEW_TEST_STATS = Object.freeze({
 
 const KEY_PATTERN = /^[a-z0-9][a-z0-9_-]*$/u;
 const SKILL_ID_PATTERN = /^skill_preview_s5_[a-z0-9][a-z0-9_-]*$/u;
-const SKILL_FIELDS = ["id", "name", "type", "category", "cost", "basePower", "description"];
+const SKILL_FIELDS = ["id", "name", "type", "category", "cost", "basePower", "description", "iconUrl"];
+const RACE_STAT_KEYS = ["hp", "physicalAttack", "magicalAttack", "physicalDefense", "magicalDefense", "speed"];
 const text = (value) => typeof value === "string" && value.trim().length > 0;
 const require = (condition, message) => {
   if (!condition) throw new TypeError(`S5 前瞻目录：${message}`);
@@ -38,6 +39,25 @@ function completeSkill(skill) {
     Number.isSafeInteger(skill.basePower) && skill.basePower >= 0 && text(skill.description);
 }
 
+function declaredSkill(skill) {
+  return text(skill?.id) && text(skill.name) && text(skill.description) &&
+    (skill.type === null || ELEMENT_TYPES.includes(skill.type)) &&
+    (skill.category === null || ["physical", "magical", "status", "defense"].includes(skill.category)) &&
+    ["cost", "basePower"].every(key => skill[key] === null || Number.isSafeInteger(skill[key]) && skill[key] >= 0);
+}
+
+function officialImageEvidence(evidence) {
+  return evidence?.kind === "official-image" && httpsUrl(evidence.url) && text(evidence.frame);
+}
+
+function projectedRaceStats(entry, useTestRaceStats) {
+  if (entry.raceStats === null) return null;
+  if (entry.raceStats !== undefined) {
+    return { ...entry.raceStats, total: RACE_STAT_KEYS.reduce((total, key) => total + entry.raceStats[key], 0) };
+  }
+  return useTestRaceStats ? { ...S5_PREVIEW_TEST_STATS } : null;
+}
+
 export function s5PreviewIds(key) {
   require(typeof key === "string" && KEY_PATTERN.test(key), "候选 key 无效");
   return {
@@ -53,8 +73,8 @@ export function validateS5PreviewCatalog(catalog) {
   require(Array.isArray(catalog?.entries), "缺少 entries");
   const keys = new Set();
   const names = new Set();
-  const skillIds = new Set();
-  const skillNames = new Set();
+  const skillIds = new Map();
+  const skillNames = new Map();
   for (const entry of catalog.entries) {
     s5PreviewIds(entry?.key);
     require(!keys.has(entry.key), `候选 key 重复：${entry.key}`);
@@ -63,12 +83,28 @@ export function validateS5PreviewCatalog(catalog) {
     names.add(entry.name);
     require(["family", "boss"].includes(entry.kind), `${entry.key} 的 kind 无效`);
     require(entry.baseName === undefined || text(entry.baseName), `${entry.key} 的 baseName 无效`);
+    require(entry.description === undefined || text(entry.description), `${entry.key} 的图鉴正文无效`);
+    require(entry.variantName == null || text(entry.variantName), `${entry.key} 的变种名称无效`);
+    require(entry.stage === undefined || ["一阶", "二阶", "三阶", "首领"].includes(entry.stage), `${entry.key} 的阶段无效`);
     require(text(entry.traitSummary), `${entry.key} 缺少已核实特性摘要`);
     require(entry.traitName === undefined || text(entry.traitName), `${entry.key} 的特性名无效`);
     require(text(entry.mechanicKey), `${entry.key} 缺少 mechanicKey`);
     require(entry.types === undefined || Array.isArray(entry.types) && entry.types.length <= 2 &&
       new Set(entry.types).size === entry.types.length && entry.types.every((type) => ELEMENT_TYPES.includes(type)),
     `${entry.key} 的属性无效`);
+    if (entry.raceStats !== undefined && entry.raceStats !== null) {
+      require(RACE_STAT_KEYS.every(key => Number.isSafeInteger(entry.raceStats[key]) && entry.raceStats[key] > 0),
+        `${entry.key} 的官方六维必须完整且为正整数`);
+      const total = RACE_STAT_KEYS.reduce((sum, key) => sum + entry.raceStats[key], 0);
+      require(entry.raceStats.total === undefined || entry.raceStats.total === total, `${entry.key} 的官方六维总和不一致`);
+      require(officialImageEvidence(entry.raceStatsEvidence ?? entry.evidence), `${entry.key} 的官方六维缺少图片来源`);
+    }
+    if (entry.evolutionChainKeys !== undefined) {
+      require(Array.isArray(entry.evolutionChainKeys) && entry.evolutionChainKeys.length <= 3 && entry.evolutionChainKeys.includes(entry.key) &&
+        new Set(entry.evolutionChainKeys).size === entry.evolutionChainKeys.length &&
+        entry.evolutionChainKeys.every(key => catalog.entries.some(member => member.key === key && member.kind === entry.kind)) &&
+        officialImageEvidence(entry.evolutionEvidence ?? entry.evidence), `${entry.key} 的进化关系或来源无效`);
+    }
     if (entry.evidence?.kind === "official-image") {
       require(httpsUrl(entry.evidence.url) && text(entry.evidence.frame), `${entry.key} 缺少官方图片来源及证据图`);
     } else {
@@ -77,17 +113,49 @@ export function validateS5PreviewCatalog(catalog) {
     }
     require(Array.isArray(entry.unknowns) && entry.unknowns.every(text), `${entry.key} 的 unknowns 无效`);
     require(entry.skills === undefined || Array.isArray(entry.skills), `${entry.key} 的已知技能池无效`);
+    if (entry.announcedSkills !== undefined) {
+      require(Array.isArray(entry.announcedSkills) && new Set(entry.announcedSkills.map(skill => skill?.name)).size === entry.announcedSkills.length &&
+        entry.announcedSkills.every(skill => text(skill?.name) && text(skill.description) && officialImageEvidence(skill.evidence)),
+      `${entry.key} 的已公布技能说明或来源无效`);
+    }
+    if (entry.officialSkillRefs !== undefined) {
+      require(Array.isArray(entry.officialSkillRefs) && new Set(entry.officialSkillRefs.map(skill => skill?.id)).size === entry.officialSkillRefs.length &&
+        entry.officialSkillRefs.every(skill => text(skill?.id) && text(skill.name) && officialImageEvidence(skill.evidence) &&
+          (skill.iconUrl === undefined || skill.iconUrl === `/assets/skills/${skill.id}.png`)),
+      `${entry.key} 的正式技能引用或来源无效`);
+    }
+    const entrySkillIds = new Set();
     for (const skill of entry.skills ?? []) {
-      require(completeSkill(skill) && SKILL_ID_PATTERN.test(skill.id), `${entry.key} 的已知技能资料不完整`);
-      require(!skillIds.has(skill.id) && !skillNames.has(skill.name), `${entry.key} 的已知技能 ID 或名称重复`);
-      skillIds.add(skill.id); skillNames.add(skill.name);
-      require(skill.evidence?.kind === "user-image" && text(skill.evidence.frame), `${skill.name} 缺少用户图片证据`);
+      require(declaredSkill(skill) && SKILL_ID_PATTERN.test(skill.id), `${entry.key} 的已知技能资料不完整`);
+      const previous = skillIds.get(skill.id);
+      require(!entrySkillIds.has(skill.id) && (!previous || SKILL_FIELDS.every(key => previous[key] === skill[key])) &&
+        (!skillNames.has(skill.name) || skillNames.get(skill.name) === skill.id), `${entry.key} 的已知技能 ID 或名称重复冲突`);
+      entrySkillIds.add(skill.id);
+      skillIds.set(skill.id, skill); skillNames.set(skill.name, skill.id);
+      require(officialImageEvidence(skill.evidence) || skill.evidence?.kind === "user-image" && text(skill.evidence.frame),
+        `${skill.name} 缺少图片证据`);
       require(skill.acquisition === undefined || text(skill.acquisition), `${skill.name} 的学习途径无效`);
+      require(skill.iconUrl === undefined || skill.iconUrl === `/assets/skills/${skill.id}.png`,
+        `${skill.name} 的图标必须使用本技能对应的本地 PNG`);
+    }
+    if (entry.defaultSkillIds !== undefined) {
+      const declaredIds = new Set([...(entry.skills ?? []), ...(entry.officialSkillRefs ?? [])].map(skill => skill.id));
+      require(Array.isArray(entry.defaultSkillIds) && entry.defaultSkillIds.length <= 4 &&
+        entry.defaultSkillIds.every(id => id === null || declaredIds.has(id)) &&
+        new Set(entry.defaultSkillIds.filter(Boolean)).size === entry.defaultSkillIds.filter(Boolean).length,
+      `${entry.key} 的默认技能必须引用已声明技能且保留最多四个槽位`);
     }
     if (entry.asset !== undefined) {
       require(localAssetPath(entry.asset?.localUrl), `${entry.key} 的素材必须使用项目内 assets 路径`);
       require(["reference-silhouette", "official-silhouette", "official-portrait"].includes(entry.asset.kind) && httpsUrl(entry.asset.sourceUrl) &&
         text(entry.asset.sourceFrame), `${entry.key} 的素材缺少 HTTPS 来源及证据帧`);
+    }
+  }
+  for (const entry of catalog.entries) {
+    for (const key of entry.evolutionChainKeys ?? []) {
+      const member = catalog.entries.find(candidate => candidate.key === key);
+      // Runtime paths allow one base to expose several branches; siblings need not share a path.
+      require(member.evolutionChainKeys?.includes(entry.key), `${entry.key} 的进化关系必须双向一致`);
     }
   }
   return catalog;
@@ -108,6 +176,18 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
   const learnsets = [...snapshot.learnsets];
   let skills = snapshot.skills;
   let changed = false;
+  // Shared skill definitions keep one entity and one stable provenance owner.
+  const canonicalSkills = new Map();
+  for (const entry of catalog.entries) {
+    for (const definition of entry.skills ?? []) {
+      if (!canonicalSkills.has(definition.id)) canonicalSkills.set(definition.id, { definition, key: entry.key });
+    }
+  }
+  const resolvedSpiritIds = new Map(catalog.entries.map(entry => {
+    const formal = snapshot.spirits.find(spirit => spirit.fullName === entry.name && hasCompleteRaceStats(spirit.raceStats) &&
+      spirit.calculationStatus !== "pending-race-stats" && !spirit.previewIdentity?.formalIdPending);
+    return [entry.key, formal?.id ?? s5PreviewIds(entry.key).spiritId];
+  }));
   for (const entry of catalog.entries) {
     const { spiritId, traitId } = s5PreviewIds(entry.key);
     const existing = spirits.find(({ id }) => id === spiritId);
@@ -128,7 +208,9 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
     require(!named[0] || named[0] === existing, `同名精灵尚未正式确认：${entry.name}`);
     const knownSkillIds = [];
     const acquisitions = {};
-    for (const definition of entry.skills ?? []) {
+    const resolvedSkillIds = new Map();
+    for (const entryDefinition of entry.skills ?? []) {
+      const { definition, key: skillOwnerKey } = canonicalSkills.get(entryDefinition.id);
       const byId = skills.filter(skill => skill.id === definition.id);
       const byName = skills.filter(skill => skill.name === definition.name);
       require(byId.length <= 1, `技能 ID 不唯一：${definition.id}`);
@@ -137,58 +219,105 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
       require(formalSkills.length <= 1, `同名正式技能不唯一：${definition.name}`);
       const formalSkill = formalSkills[0];
       const previous = byId[0];
-      require(!previous || previous === formalSkill || ownsPreview(previous, catalog.catalogId, entry.key) &&
+      require(!previous || previous === formalSkill || previous.previewIdentity?.catalogId === catalog.catalogId &&
         previous.name === definition.name, `技能 ID 冲突：${definition.id}`);
-      require(byName.every(skill => skill === formalSkill || skill === previous && ownsPreview(skill, catalog.catalogId, entry.key)),
+      require(byName.every(skill => skill === formalSkill || skill === previous && skill.previewIdentity?.catalogId === catalog.catalogId),
         `同名技能尚未正式确认或存在冲突：${definition.name}`);
       let resolvedId = formalSkill?.id;
       if (!formalSkill) {
         const projected = {
           ...Object.fromEntries(SKILL_FIELDS.map(key => [key, definition[key]])),
-          previewIdentity: { catalogId: catalog.catalogId, key: entry.key, formalIdPending: true,
+          ...(!completeSkill(definition) ? { calculationStatus: "pending-skill-data" } : {}),
+          previewIdentity: { catalogId: catalog.catalogId, key: skillOwnerKey, formalIdPending: true,
             evidence: { ...definition.evidence } },
         };
         if (!previous || SKILL_FIELDS.some(key => previous[key] !== projected[key]) ||
+            previous.calculationStatus !== projected.calculationStatus ||
             JSON.stringify(previous.previewIdentity) !== JSON.stringify(projected.previewIdentity)) {
           if (skills === snapshot.skills) skills = [...skills];
-          if (previous) skills[skills.indexOf(previous)] = { ...previous, ...projected };
+          if (previous) {
+            const { calculationStatus: _previousStatus, ...previousFields } = previous;
+            skills[skills.indexOf(previous)] = { ...previousFields, ...projected };
+          }
           else skills.push(projected);
           changed = true;
         }
         resolvedId = definition.id;
       }
-      knownSkillIds.push(resolvedId);
-      if (definition.acquisition) acquisitions[resolvedId] = [definition.acquisition];
+      if (!knownSkillIds.includes(resolvedId)) knownSkillIds.push(resolvedId);
+      resolvedSkillIds.set(definition.id, resolvedId);
+      if (entryDefinition.acquisition) acquisitions[resolvedId] = [entryDefinition.acquisition];
     }
-    const expectedLearnset = { spiritId, skillIds: knownSkillIds, defaultSkillIds: [],
+    for (const reference of entry.officialSkillRefs ?? []) {
+      const formalSkill = skills.find(skill => skill.id === reference.id);
+      if (!formalSkill) continue;
+      require(formalSkill.name === reference.name && completeSkill(formalSkill) &&
+        formalSkill.calculationStatus !== "pending-skill-data" && !formalSkill.previewIdentity?.formalIdPending,
+      `${entry.key} 的正式技能引用冲突：${reference.id}`);
+      if (reference.iconUrl && formalSkill.iconUrl !== reference.iconUrl) {
+        if (skills === snapshot.skills) skills = [...skills];
+        skills[skills.indexOf(formalSkill)] = { ...formalSkill, iconUrl: reference.iconUrl };
+        changed = true;
+      }
+      if (!knownSkillIds.includes(formalSkill.id)) knownSkillIds.push(formalSkill.id);
+      resolvedSkillIds.set(reference.id, formalSkill.id);
+    }
+    const defaultSkillIds = (entry.defaultSkillIds ?? []).map(id => id === null ? null : resolvedSkillIds.get(id) ?? null);
+    const expectedLearnset = { spiritId, skillIds: knownSkillIds, defaultSkillIds,
       ...(Object.keys(acquisitions).length ? { acquisitions } : {}) };
     const traitName = entry.traitName ?? "前瞻特性";
+    const raceStats = projectedRaceStats(entry, useTestRaceStats);
+    const raceStatsPlaceholder = entry.raceStats === undefined && useTestRaceStats;
+    const calculationStatus = raceStats ? "pending-s5-mechanics" : "pending-race-stats";
+    const stage = entry.stage ?? (entry.evolutionChainKeys
+      ? ["一阶", "二阶", "三阶"][entry.evolutionChainKeys.indexOf(entry.key)]
+      : entry.kind === "boss" ? "首领" : "前瞻");
+    const evolutionChainIds = entry.evolutionChainKeys?.map(key => resolvedSpiritIds.get(key));
+    const typesProvenance = entry.types?.length ? entry.typesProvenance ?? catalog.typesProvenance : undefined;
+    const identityFields = {
+      mechanicKey: entry.mechanicKey, raceStatsPlaceholder,
+      source: entry.evidence.kind === "official-image"
+        ? { url: entry.evidence.url, authority: "official-image" } : { ...catalog.source },
+      evidence: { ...entry.evidence }, unknowns: [...entry.unknowns],
+      ...(typesProvenance ? { typesProvenance: { ...typesProvenance } } : {}),
+      ...(entry.raceStats ? { raceStatsEvidence: { ...(entry.raceStatsEvidence ?? entry.evidence) } } : {}),
+      ...(entry.evolutionChainKeys ? { evolutionChainKeys: [...entry.evolutionChainKeys],
+        evolutionEvidence: { ...(entry.evolutionEvidence ?? entry.evidence) } } : {}),
+      ...(entry.announcedSkills ? { announcedSkills: entry.announcedSkills.map(skill => ({ ...skill, evidence: { ...skill.evidence } })) } : {}),
+      ...(entry.officialSkillRefs ? { officialSkillRefs: entry.officialSkillRefs.map(skill => ({ ...skill, evidence: { ...skill.evidence } })) } : {}),
+      ...(entry.asset ? { asset: { ...entry.asset } } : {}),
+    };
     if (existing) {
       const pendingStats = existing.raceStats === null && existing.calculationStatus === "pending-race-stats";
       const testStats = existing.previewIdentity.raceStatsPlaceholder === true &&
         existing.calculationStatus === "pending-s5-mechanics" && Object.entries(S5_PREVIEW_TEST_STATS)
           .every(([key, value]) => existing.raceStats?.[key] === value);
+      const officialStats = hasCompleteRaceStats(existing.raceStats) &&
+        existing.calculationStatus === "pending-s5-mechanics" && officialImageEvidence(existing.previewIdentity.raceStatsEvidence);
       const previousPool = existingLearnset?.skillIds;
       const knownPool = Array.isArray(previousPool) && new Set(previousPool).size === previousPool.length && (previousPool.length === 0 ||
         JSON.stringify(previousPool) === JSON.stringify(knownSkillIds) ||
-        previousPool.every(id => skills.some(skill => skill.id === id && ownsPreview(skill, catalog.catalogId, entry.key))));
-      require(existing.fullName === entry.name && (pendingStats || testStats) && existingTrait && knownPool &&
-        existingLearnset.defaultSkillIds?.length === 0, `候选记录已漂移：${entry.key}`);
+        previousPool.every(id => skills.some(skill => skill.id === id && skill.previewIdentity?.catalogId === catalog.catalogId) ||
+          existing.previewIdentity.officialSkillRefs?.some(reference => reference.id === id)));
+      const previousDefaults = existingLearnset?.defaultSkillIds;
+      require(existing.fullName === entry.name && (pendingStats || testStats || officialStats) && existingTrait && knownPool &&
+        Array.isArray(previousDefaults) && previousDefaults.every(id => id === null || previousPool.includes(id)),
+      `候选记录已漂移：${entry.key}`);
       const typesChanged = JSON.stringify(existing.types) !== JSON.stringify(entry.types ?? []);
-      const typesProvenance = entry.types?.length ? catalog.typesProvenance : undefined;
-      if (typesChanged || JSON.stringify(existing.previewIdentity.typesProvenance) !== JSON.stringify(typesProvenance) ||
-        existing.previewIdentity.mechanicKey !== entry.mechanicKey ||
-        existing.traitName !== traitName || existing.traitDescription !== entry.traitSummary || Boolean(existing.previewIdentity.raceStatsPlaceholder) !== useTestRaceStats || entry.asset && (existing.asset?.localUrl !== entry.asset.localUrl ||
-        ["localUrl", "kind", "sourceUrl", "sourceFrame"].some((key) =>
-          existing.previewIdentity.asset?.[key] !== entry.asset[key]))) {
+      const previewIdentity = { ...existing.previewIdentity, ...identityFields };
+      if (typesChanged || JSON.stringify(existing.previewIdentity) !== JSON.stringify(previewIdentity) ||
+        JSON.stringify(existing.raceStats) !== JSON.stringify(raceStats) || existing.calculationStatus !== calculationStatus ||
+        existing.stage !== stage || existing.variantName !== (entry.variantName ?? null) || JSON.stringify(existing.evolutionChainIds) !== JSON.stringify(evolutionChainIds) ||
+        existing.traitName !== traitName || existing.traitDescription !== entry.traitSummary ||
+        entry.description !== undefined && existing.description !== entry.description ||
+        entry.asset && existing.asset?.localUrl !== entry.asset.localUrl) {
         spirits[spirits.indexOf(existing)] = {
           ...existing, types: [...(entry.types ?? [])], traitName, traitDescription: entry.traitSummary,
-          raceStats: useTestRaceStats ? { ...S5_PREVIEW_TEST_STATS } : null,
-          calculationStatus: useTestRaceStats ? "pending-s5-mechanics" : "pending-race-stats",
+          raceStats, calculationStatus, stage, variantName: entry.variantName ?? null,
+          ...(entry.description !== undefined ? { description: entry.description } : {}),
+          ...(evolutionChainIds ? { evolutionChainIds } : {}),
           ...(entry.asset ? { asset: { ...existing.asset, localUrl: entry.asset.localUrl } } : {}),
-          previewIdentity: { ...existing.previewIdentity, mechanicKey: entry.mechanicKey, raceStatsPlaceholder: useTestRaceStats,
-            typesProvenance: typesProvenance ? { ...typesProvenance } : undefined,
-            ...(entry.asset ? { asset: { ...entry.asset } } : {}) },
+          previewIdentity,
         };
         changed = true;
       }
@@ -203,6 +332,7 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
         changed = true;
       }
       if (JSON.stringify(previousPool) !== JSON.stringify(knownSkillIds) ||
+          JSON.stringify(previousDefaults) !== JSON.stringify(defaultSkillIds) ||
           JSON.stringify(existingLearnset.acquisitions ?? {}) !== JSON.stringify(acquisitions)) {
         const { acquisitions: _previousAcquisitions, ...previousLearnset } = existingLearnset;
         learnsets[learnsets.indexOf(existingLearnset)] = { ...previousLearnset, ...expectedLearnset };
@@ -213,21 +343,14 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
     require(!existingTrait && !existingLearnset, `候选 ID 存在孤立记录：${entry.key}`);
     const previewIdentity = {
       catalogId: catalog.catalogId, key: entry.key, kind: entry.kind,
-      formalIdPending: true, mechanicKey: entry.mechanicKey,
-      source: entry.evidence.kind === "official-image"
-        ? { url: entry.evidence.url, authority: "official-image" } : { ...catalog.source },
-      evidence: { ...entry.evidence },
-      unknowns: [...entry.unknowns],
-      raceStatsPlaceholder: useTestRaceStats,
-      ...(entry.types?.length && catalog.typesProvenance ? { typesProvenance: { ...catalog.typesProvenance } } : {}),
-      ...(entry.asset ? { asset: { ...entry.asset } } : {}),
+      formalIdPending: true, ...identityFields,
     };
     spirits.push({
       id: spiritId, fullName: entry.name, baseName: entry.baseName ?? entry.name,
-      variantName: null, dexNo: null, types: [...(entry.types ?? [])],
-      stage: entry.kind === "boss" ? "首领" : "前瞻", sourceCategory: "S5前瞻",
-      raceStats: useTestRaceStats ? { ...S5_PREVIEW_TEST_STATS } : null,
-      calculationStatus: useTestRaceStats ? "pending-s5-mechanics" : "pending-race-stats",
+      variantName: entry.variantName ?? null, dexNo: null, types: [...(entry.types ?? [])],
+      stage, sourceCategory: "S5前瞻", ...(evolutionChainIds ? { evolutionChainIds } : {}),
+      raceStats, calculationStatus,
+      ...(entry.description !== undefined ? { description: entry.description } : {}),
       traitIds: [traitId], traitName, traitDescription: entry.traitSummary,
       asset: { localUrl: entry.asset?.localUrl ?? assetUrl }, previewIdentity,
     });

@@ -143,6 +143,7 @@ export function SpiritPicker({
   comparisonControls,
   comparisonSummary,
   comparisonActive = false,
+  renderComparisonAction,
   selected,
   showFavorite = true,
   side,
@@ -547,7 +548,8 @@ export function SpiritPicker({
               <strong data-new={shouldShowNewBadge(selected) || undefined}>
                 {selected.fullName}
               </strong>
-              <EntityChangeHint changeInfo={selected.changeInfo} entityName={selected.fullName} active={comparisonReady && comparisonActive}>
+              <EntityChangeHint changeInfo={selected.changeInfo} entityName={selected.fullName} active={comparisonReady && comparisonActive}
+                renderPatchAction={comparisonReady ? renderComparisonAction : undefined}>
                 {comparisonReady ? comparisonControls : null}
               </EntityChangeHint>
             </span>
@@ -564,8 +566,8 @@ export function SpiritPicker({
               <span>{selected.stage}</span>
             </div>
             {comparisonReady ? comparisonSummary : null}
-            {placeholderRaceStats || pendingRaceStats ? (
-              <p className="spirit-card__pending">{t(placeholderRaceStats ? "六维100测试占位" : "种族值待确认")}</p>
+            {(placeholderRaceStats && !comparisonActive) || pendingRaceStats ? (
+              <p className="spirit-card__pending">{t(placeholderRaceStats ? "暂定六维100" : "种族值待确认")}</p>
             ) : null}
             {!pendingRaceStats || selectedTraitName ? (
               <p>

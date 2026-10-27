@@ -50,3 +50,17 @@ test("preset browsing fetch stays under the preview mount", async () => {
   fireEvent.click(screen.getByRole("button", { name: "启用预设浏览" }));
   await waitFor(() => expect(fetcher).toHaveBeenCalledWith("/pre/data/presets/pvp-popular-configs.json", expect.objectContaining({ signal: expect.any(AbortSignal) })));
 });
+
+
+test("S5具名技能原图在pre挂载下可显示，加载失败仍回退属性图标", () => {
+  vi.stubEnv("BASE_URL", "/pre/");
+  const { rerender } = render(<SkillIcon label skill={{ id: "skill_preview_s5_barren-devour", name: "荒芜之噬", type: "龙",
+    iconUrl: "/assets/skills/skill_preview_s5_barren-devour.png" }} />);
+  const icon = screen.getByAltText("荒芜之噬图标");
+  expect(icon).toHaveAttribute("src", "/pre/assets/skills/skill_preview_s5_barren-devour.png");
+  fireEvent.error(icon);
+  expect(screen.getByAltText("龙")).toBeVisible();
+  rerender(<SkillIcon label skill={{ name: "测试", type: "龙", iconUrl: "/assets/skills/../skill_preview_s5_bad.png" }} />);
+  expect(screen.queryByAltText("测试图标")).not.toBeInTheDocument();
+  expect(screen.getByAltText("龙")).toBeVisible();
+});

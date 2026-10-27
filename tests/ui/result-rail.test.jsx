@@ -31,6 +31,32 @@ const result = {
   ],
 };
 
+test("等级对比按当前技能展示双60基准，可展开且支持负变化", () => {
+  const { rerender } = render(<ResultRail result={{ ...result, levelComparison: {
+    status: "ready", attackerLevel: 80, defenderLevel: 99,
+    baselineDamage: 420, currentDamage: 399, percent: -5,
+  } }} />);
+  const comparison = screen.getByLabelText("等级伤害对比");
+  expect(comparison.querySelector("summary")).toHaveTextContent("80级 → 99级");
+  expect(comparison.querySelector("summary")).toHaveTextContent("较双60级 -5%");
+  fireEvent.click(comparison.querySelector("summary"));
+  expect(comparison).toHaveTextContent("伤害：双60级 420 → 当前 399");
+  expect(comparison).toHaveTextContent("非60级面板按预览规则试算");
+  rerender(<ResultRail result={result} />);
+  expect(screen.queryByLabelText("等级伤害对比")).not.toBeInTheDocument();
+});
+
+test("零伤害基准只展示前后伤害，不产生无限增伤", () => {
+  render(<ResultRail result={{ ...result, levelComparison: {
+    status: "zero-baseline", attackerLevel: 99, defenderLevel: 60,
+    baselineDamage: 0, currentDamage: 399, percent: null,
+  } }} />);
+  const comparison = screen.getByLabelText("等级伤害对比");
+  expect(comparison.querySelector("summary")).toHaveTextContent("较双60级 —");
+  expect(comparison).toHaveTextContent("基准伤害为0，不计算百分比");
+  expect(comparison).not.toHaveTextContent(/Infinity|NaN/);
+});
+
 test.each([
   ["burn", 240, "灼烧"], ["poison", 260, "中毒"],
   ["parasitism", 240, "寄生"], ["electrified", 450, "引电"],

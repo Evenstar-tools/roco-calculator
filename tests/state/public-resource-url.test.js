@@ -66,7 +66,7 @@ test("new Web preview overlay also projects its newly attached portrait paths", 
   vi.stubEnv("BASE_URL", "/pre/");
   const { withWebPreview } = await import("../../src/features/s5-preview/with-web-preview.js");
   const result = withWebPreview({ meta: { id: "fixture" }, spirits: [], skills: [], traits: [], learnsets: [] });
-  const spirit = result.spirits.find(entry => entry.previewIdentity?.formalIdPending);
+  const spirit = result.spirits.find(entry => entry.previewIdentity?.key === "abu");
   expect(spirit.asset.localUrl).toMatch(/^\/pre\/assets\//u);
   expect(spirit.previewIdentity.asset?.localUrl ?? "/assets/").toMatch(/^\/assets\//u);
   const { S5_PREVIEW_TEST_STATS } = await import("../../src/features/s5-preview/catalog.js");

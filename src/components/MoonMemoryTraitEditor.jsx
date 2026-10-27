@@ -56,7 +56,7 @@ function TraitControls({
 }) {
   const controls = getMoonMemoryTraitControls(trait);
   const visibleControls = controls.filter((control) =>
-    isControlVisible(control, controls, values),
+    !control.hidden && isControlVisible(control, controls, values),
   );
   if (visibleControls.length === 0) return null;
 
@@ -71,6 +71,10 @@ function TraitControls({
         );
         const label = `${trait.displayName ?? trait.name} · ${control.label}`;
         const value = controlValue(values, control);
+        if (control.action === "s5-stat-turn-end") return (
+          <button className="trait-turn-end" key={`${trait.id}:${control.canonicalKey}`} type="button"
+            onClick={() => onValueChange?.(trait.id, control.canonicalKey, true)}>{control.label}</button>
+        );
         if (control.type === "choice") {
           return (
             <label key={`${trait.id}:${control.canonicalKey}`} htmlFor={inputId}>
@@ -194,10 +198,11 @@ export function MoonMemoryTraitEditor({
 
   const isAtTraitLimit = selectedTraits.length >= MOON_MEMORY_TRAIT_LIMIT;
   const expanded = selectedTraits.find(({ trait }) => trait.id === expandedTraitId);
+  const containsOption = (ids, option) => (option.equivalentTraitIds ?? [option.traitId]).some(id => ids.has(id));
   const isOptionDisabled = (option) =>
     isAtTraitLimit ||
-    acquiredTraitIds.has(option.traitId) ||
-    nativeTraitIds.has(option.traitId);
+    containsOption(acquiredTraitIds, option) ||
+    containsOption(nativeTraitIds, option);
   const addOption = (option) => {
     if (!option || isOptionDisabled(option)) return;
     onAdd?.(option.traitId);
@@ -274,8 +279,8 @@ export function MoonMemoryTraitEditor({
           <ul id={listboxId} role="listbox" ref={optionsRef} tabIndex={-1}
             onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); pickerRef.current?.querySelector("input")?.focus(); setOpen(false); } }}>
             {options.map((option, index) => {
-              const alreadyAdded = acquiredTraitIds.has(option.traitId);
-              const alreadyOwned = nativeTraitIds.has(option.traitId);
+              const alreadyAdded = containsOption(acquiredTraitIds, option);
+              const alreadyOwned = containsOption(nativeTraitIds, option);
               const disabled = alreadyAdded || alreadyOwned || isAtTraitLimit;
               return (
                 <li

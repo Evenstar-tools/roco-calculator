@@ -6,6 +6,7 @@ import { getS5PreviewTraitInputs } from "../../src/domain/s5-preview-traits.js";
 import { calculateAllPanelStats } from "../../src/domain/stat.js";
 import { getNatureMultipliers } from "../../src/domain/natures.js";
 import { buildDamageComparisonInput, createSkillDamageRanking, damageComparisonIssue } from "../../src/domain/skill-damage-ranking.js";
+import { getLegacyMinggulongLevelInputs } from "../../src/features/s5-preview/level-input-migration.js";
 
 const raceStats = { hp: 100, physicalAttack: 100, magicalAttack: 100,
   physicalDefense: 100, magicalDefense: 100, speed: 100 };
@@ -27,7 +28,7 @@ function fixture(key, direction) {
   const targetSide = sourceSide === "attacker" ? "defender" : "attacker";
   state.sides[sourceSide].spiritId = "source";
   state.sides[targetSide].spiritId = "target";
-  const levelInput = getS5PreviewTraitInputs(trait).find(control => control.contextKey.endsWith("CurrentLevel"));
+  const levelInput = getS5PreviewTraitInputs(trait).find(control => control.contextKey.endsWith("BattleLevel"));
   state.directions[direction].context[levelInput.id] = 99;
   return { snapshot, state, direction, sourceSide, targetSide, templateId: "standard-hp-v1" };
 }
@@ -77,7 +78,7 @@ test("ordinary source stays60 despite forged S5 context, with its explicit manua
 test.each(["forward", "reverse"])("%s invalid Minggulong level blocks ranking instead of falling back to60", async direction => {
   const options = fixture("minggulong", direction);
   const { snapshot, state } = options;
-  const count = getS5PreviewTraitInputs(snapshot.traits[0]).find(control => control.contextKey.endsWith("LevelEventCount"));
+  const count = getLegacyMinggulongLevelInputs().find(control => control.contextKey.endsWith("LevelEventCount"));
   state.directions[direction].context[count.id] = 10;
   const original = structuredClone(state);
   expect(damageComparisonIssue(snapshot, state, direction)).toContain("下降下限");

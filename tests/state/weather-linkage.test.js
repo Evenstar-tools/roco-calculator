@@ -1,11 +1,92 @@
 import { expect, test } from "vitest";
 import snapshot from "../../public/data/runtime.json";
 import { createInitialState } from "../../src/state/defaults.js";
-import { patchFourSkill, selectSingleSkill, updateGlobalRain, updateGlobalWeather, updateMirroredTraitContext } from "../../src/state/calculator-session.js";
+import { applyConfiguration, migrateSharedConfiguration, patchFourSkill, replaceConfiguration, selectSingleSkill, updateGlobalRain, updateGlobalWeather, updateMirroredTraitContext } from "../../src/state/calculator-session.js";
 import { calculatorReducer } from "../../src/state/reducer.js";
 import { getTraitEffectInputs, resolveTraitEffectRule } from "../../src/domain/trait-effects.js";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
-import { projectTriggerContext } from "../../src/domain/trigger-controls.js";
+import { normalizeTriggerControls, projectTriggerContext } from "../../src/domain/trigger-controls.js";
+import { currentWeather } from "../../src/state/weather.js";
+import { decodeShareState, encodeShareState } from "../../src/state/share.js";
+import { canonicalTraitControlKey, extractTraitValues } from "../../src/state/trait-values.js";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
+import { getS5PreviewTraitEvaluation } from "../../src/domain/s5-preview-traits.js";
+
+const dreamTrait = { previewIdentity: { catalogId: "s5-weather-test", mechanicKey: "lily-of-valley" } };
+const dreamControls = ["attacker", "defender"].map((role) =>
+  getTraitEffectInputs(dreamTrait, role).find((input) => input.contextKey.endsWith("DreamActive")),
+);
+
+const whaleTrait = { previewIdentity: { catalogId: "s5-weather-test", mechanicKey: "jingyu" } };
+const gooseTrait = { previewIdentity: { catalogId: "s5-weather-test", mechanicKey: "doulie" } };
+const whaleSnow = getTraitEffectInputs(whaleTrait).find(input => input.contextKey.endsWith("SnowActive"));
+const gooseTriggered = getTraitEffectInputs(gooseTrait).find(input => input.contextKey.endsWith("SnowTriggered"));
+const gooseTurns = getTraitEffectInputs(gooseTrait).find(input => input.contextKey.endsWith("SnowTurnsRemaining"));
+
+test("鲸羽只读真实全场暴风雪，特性天气与全局互斥且双向同步", () => {
+  const evaluate = state => getS5PreviewTraitEvaluation(whaleTrait, "attacker", state.directions.forward.context);
+  const snow = updateGlobalWeather(initial(), "blizzard").state;
+  expect(evaluate(snow)).toMatchObject({ effects: [], summary: expect.stringContaining("回合末待适配") });
+  expect(projectTriggerContext(snow.directions.forward.context, [whaleSnow])[whaleSnow.contextKey]).toBe(true);
+  expect(whaleSnow.scope).toBe("battle");
+  const rain = updateGlobalWeather(snow, "rain").state;
+  expect(evaluate(rain).effects).toEqual([]);
+  const fromTrait = updateMirroredTraitContext(rain, { direction: "forward", key: whaleSnow.id, value: true }).state;
+  expectBlizzard(fromTrait, true);
+  expect(fromTrait.directions.reverse.context.weatherRainTurns).toBe(0);
+  const dream = updateGlobalWeather(fromTrait, "dream").state;
+  expect(evaluate(dream).effects).toEqual([]);
+  expect(evaluate({ directions: { forward: { context: { [whaleSnow.id]: true, attackerTraitS5FreezeApplicationConfirmed: true } } } }).effects).toEqual([]);
+  expect(getS5PreviewTraitEvaluation(whaleTrait, "attacker", { weatherBlizzard: true, weatherRainTurns: 3 }).effects).toEqual([]);
+  expect(getTraitEffectInputs(whaleTrait)).toHaveLength(1);
+});
+
+test("豆粒鹅确认触发同步5回合全场雪天，手调剩余生效且0回合不回弹", async () => {
+  const rain = updateGlobalWeather(initial(), "rain").state;
+  const snow = updateMirroredTraitContext(rain, { direction: "forward", key: gooseTriggered.id, value: true }).state;
+  expectBlizzard(snow, true);
+  for (const direction of Object.values(snow.directions)) {
+    expect(direction.context.weatherTurns).toBe(5);
+    expect(direction.context.weatherRainTurns).toBe(0);
+  }
+  expect(getS5PreviewTraitEvaluation(gooseTrait, "attacker", snow.directions.forward.context).summary).toContain("剩余 5 回合");
+  const three = updateMirroredTraitContext(snow, { direction: "forward", key: gooseTurns.id, value: 3 }).state;
+  expect(three.directions.reverse.context.weatherTurns).toBe(3);
+  const afterRefresh = migrateSharedConfiguration(await decodeShareState(await encodeShareState(three), three.versions), three.versions, snapshot);
+  expect(afterRefresh.directions.forward.context.weatherTurns).toBe(3);
+  const clear = updateMirroredTraitContext(three, { direction: "forward", key: gooseTurns.id, value: 0 }).state;
+  expectBlizzard(clear, false);
+  expect(currentWeather(clear.directions.reverse.context)).toBe("none");
+  expect(clear.directions.forward.context.weatherTurns).toBe(0);
+  const resumed = updateMirroredTraitContext(clear, { direction: "forward", key: gooseTurns.id, value: 3 }).state;
+  expectBlizzard(resumed, true);
+  expect(resumed.directions.forward.context.weatherTurns).toBe(3);
+  expect(resumed.directions.reverse.context.weatherTurns).toBe(3);
+  expect(getS5PreviewTraitEvaluation(gooseTrait, "attacker", resumed.directions.forward.context).summary).toContain("剩余 3 回合");
+});
+
+test.each(["rain", "dream"])("豆粒鹅本局已触发历史保留，改%s天气不被0到正数的旧历史抢回", weather => {
+  const snow = updateMirroredTraitContext(initial(), { direction: "forward", key: gooseTriggered.id, value: true }).state;
+  const cleared = updateMirroredTraitContext(snow, { direction: "forward", key: gooseTurns.id, value: 0 }).state;
+  const other = updateGlobalWeather(cleared, weather).state;
+  const evaluation = getS5PreviewTraitEvaluation(gooseTrait, "attacker", other.directions.forward.context);
+  expect(evaluation.summary).toContain("本局雪天已触发；当前未处于雪天");
+  expect(evaluation.effects).toEqual([]);
+  const editHistory = updateMirroredTraitContext(other, { direction: "forward", key: gooseTurns.id, value: 3 }).state;
+  expect(currentWeather(editHistory.directions.forward.context)).toBe(weather);
+  expect(currentWeather(editHistory.directions.reverse.context)).toBe(weather);
+});
+
+test("双方都有豆粒鹅时，确认触发读取实际持有方的回合输入", () => {
+  const reverseInputs = getTraitEffectInputs(gooseTrait, "defender");
+  const reverseTurns = reverseInputs.find(input => input.contextKey.endsWith("SnowTurnsRemaining"));
+  const reverseTrigger = reverseInputs.find(input => input.contextKey.endsWith("SnowTriggered"));
+  let state = updateMirroredTraitContext(initial(), { direction: "forward", key: gooseTurns.id, value: 2 }).state;
+  state = updateMirroredTraitContext(state, { direction: "forward", key: reverseTurns.id, value: 4 }).state;
+  const snow = updateMirroredTraitContext(state, { direction: "forward", key: reverseTrigger.id, value: true }).state;
+  expect(snow.directions.forward.context.weatherTurns).toBe(4);
+  expect(snow.directions.reverse.context.weatherTurns).toBe(4);
+});
 
 const hunt = snapshot.skills.find((skill) => skill.name === "雪原狩猎");
 const soul = snapshot.traits.find((trait) => trait.name === "冰雪魂魄");
@@ -115,4 +196,129 @@ test("撤销恢复整场天气，不丢失其他条件；单独开启雷鸣也�
   const thunder = calculatorReducer(restored, { direction: "reverse", type: "direction/update",
     value: { context: { weatherThunder: true } } });
   expect(thunder.directions.forward.context).toMatchObject({ weatherThunder: true, weatherRainTurns: 0 });
+});
+
+
+function expectDream(state, enabled) {
+  for (const direction of Object.values(state.directions)) {
+    expect(direction.context.weatherDream).toBe(enabled);
+    for (const control of dreamControls) {
+      expect(projectTriggerContext(direction.context, [control])[control.contextKey]).toBe(enabled);
+    }
+  }
+  for (const side of Object.values(state.sides)) {
+    for (const entry of [side.skills.single, side.skills.four[0]]) {
+      for (const control of dreamControls) {
+        expect(entry.context[control.id]).toBe(enabled);
+      }
+    }
+  }
+}
+
+test("萌系占位天气同步铃兰双方控件，与正式天气互斥且不虚构持续回合", () => {
+  const dream = updateGlobalWeather(updateGlobalRain(initial(), 3).state, "dream").state;
+  expectDream(dream, true);
+  expectBlizzard(dream, false);
+  for (const direction of Object.values(dream.directions)) {
+    expect(currentWeather(direction.context)).toBe("dream");
+    expect(direction.context).toMatchObject({ weatherRainTurns: 0, weatherThunder: false,
+      weatherSandstorm: false, weatherBlizzard: false, weatherTurns: 0 });
+  }
+  for (const weather of ["rain", "thunder", "sandstorm", "blizzard", "none"]) {
+    const changed = updateGlobalWeather(dream, weather).state;
+    expectDream(changed, false);
+    expect(currentWeather(changed.directions.reverse.context)).toBe(weather);
+  }
+});
+
+test("铃兰规范控件、旧上下文字段与天气双向联动，取消后同步清除全场", () => {
+  for (const control of dreamControls) {
+    for (const key of [control.id, control.contextKey]) {
+      const dream = updateMirroredTraitContext(updateGlobalWeather(initial(), "thunder").state,
+        { direction: "reverse", key, value: true }).state;
+      expectDream(dream, true);
+      expect(dream.directions.forward.context.weatherThunder).toBe(false);
+      const cleared = updateMirroredTraitContext(dream, { direction: "forward", key, value: false }).state;
+      expectDream(cleared, false);
+      expect(currentWeather(cleared.directions.reverse.context)).toBe("none");
+    }
+  }
+  const raw = calculatorReducer(initial(), { type: "battle/set-trait-control",
+    direction: "reverse", key: dreamControls[1].id, value: true });
+  expectDream(raw, true);
+});
+
+test("切雨与清空动作取消萌系天气，旧技能槽、旧记忆和无关修改不能复活", () => {
+  const dream = updateGlobalWeather(initial(), "dream").state;
+  const staleEntry = { ...dream.sides.attacker.skills.single,
+    context: { ...dream.sides.attacker.skills.single.context, weatherDream: true },
+    memoryBySkill: { [hunt.id]: { context: { weatherDream: true, [dreamControls[0].id]: true } } } };
+  const other = snapshot.skills.find((skill) => skill.id !== hunt.id);
+  dream.sides.attacker.skills.single = { ...staleEntry, skillId: other.id };
+  dream.sides.attacker.skills.four[0] = { ...staleEntry, skillId: other.id };
+  const rain = calculatorReducer(dream, { type: "battle/set-rain", value: 3 });
+  expectDream(rain, false);
+  expect(rain.sides.attacker.skills.single.memoryBySkill[hunt.id].context).toMatchObject({
+    weatherDream: false, [dreamControls[0].id]: false,
+  });
+  const oldSlot = calculatorReducer(rain, { type: "side/set-four-skill", side: "attacker", index: 0, value: staleEntry });
+  expectDream(oldSlot, false);
+  const selected = selectSingleSkill(oldSlot, { direction: "forward", side: "attacker", skillId: hunt.id, snapshot }).state;
+  expectDream(selected, false);
+  expect(currentWeather(selected.directions.forward.context)).toBe("rain");
+  const cleared = updateGlobalRain(dream, 0).state;
+  expectDream(cleared, false);
+  expect(currentWeather(cleared.directions.forward.context)).toBe("none");
+});
+
+test("萌系天气经真实分享协议与配置迁移往返保留，恢复时重归一化旧槽位", async () => {
+  const dream = updateGlobalWeather(initial(), "dream").state;
+  const hash = await encodeShareState(dream);
+  const decoded = await decodeShareState(hash, dream.versions);
+  const migrated = migrateSharedConfiguration(decoded, dream.versions, snapshot);
+  const restored = replaceConfiguration(initial(), migrated, { remember: false, source: "share" }).state;
+  expectDream(restored, true);
+  expect(restored.directions.forward.context.weatherTurns).toBe(0);
+  // 刷新/导入的全场天气为准，历史技能里的相反条件不能覆盖它。
+  const refreshed = JSON.parse(JSON.stringify(restored));
+  refreshed.sides.attacker.skills.single.context[dreamControls[0].id] = false;
+  const normalized = migrateSharedConfiguration(refreshed, dream.versions, snapshot);
+  expectDream(normalized, true);
+});
+
+
+test("萌系天气属于本场，个人配置提取及新旧铃兰配置应用不能重新带回天气", () => {
+  const preview = withWebPreview(snapshot);
+  const base = createInitialState(preview);
+  base.sides.attacker.spiritId = "spirit_preview_s5_lily-of-valley";
+  const dream = updateGlobalWeather(base, "dream").state;
+  const configuration = structuredClone(dream.sides.attacker);
+  configuration.traitValues = extractTraitValues(configuration, preview);
+  expect(dreamControls.every((control) => control.scope === "battle")).toBe(true);
+  expect(Object.keys(configuration.traitValues).some((key) => key.includes("DreamActive"))).toBe(false);
+  const [legacyControl] = normalizeTriggerControls([{ contextKey: "attackerTraitS5DreamActive",
+    label: "当前处于梦境", type: "boolean", defaultValue: false, scope: "direction" }], { source: "attackerTrait" });
+  const legacy = structuredClone(configuration);
+  legacy.traitValues[canonicalTraitControlKey(legacyControl)] = true;
+  legacy.skills.single.context[legacyControl.id] = true;
+  legacy.skills.single.context[legacyControl.contextKey] = true;
+  legacy.skills.single.memoryBySkill = { [legacy.skills.single.skillId]: {
+    context: { [legacyControl.id]: true },
+  } };
+  expect(Object.keys(extractTraitValues(legacy, preview)).some((key) => key.includes("DreamActive"))).toBe(false);
+  const rain = updateGlobalWeather(dream, "rain").state;
+  // 旧会话/分享中的规范字段仍可识别，只有个人配置不得携带天气。
+  const legacySession = updateMirroredTraitContext(rain, {
+    direction: "forward", key: legacyControl.id, value: true,
+  }).state;
+  expectDream(legacySession, true);
+  for (const personal of [configuration, legacy]) {
+    const applied = applyConfiguration(rain, personal, {
+      initialState: createInitialState(preview), remember: false, side: "attacker", snapshot: preview, source: "personal",
+    }).state;
+    for (const direction of Object.values(applied.directions)) {
+      expect(currentWeather(direction.context)).not.toBe("dream");
+      expect(direction.context.weatherDream).not.toBe(true);
+    }
+  }
 });

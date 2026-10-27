@@ -4,12 +4,17 @@ import { DurabilityOverview } from "./DurabilityOverview.jsx";
 import { NatureEffect } from "./NatureEffect.jsx";
 import { NatureSelect } from "./NatureSelect.jsx";
 import { StatTile } from "./StatTile.jsx";
+import { abilityAdjustedStat, clampAbilityStage } from "../domain/skill-result/numeric.js";
 
 const HOLD_DELAY_MS = 350;
 const HOLD_INTERVAL_MS = 80;
 
 export function abilityLevelHint(multiplier) {
   return `原值的 ${Math.round(multiplier * 1000) / 10}%`;
+}
+
+function abilityStageLabel(stage) {
+  return `${stage}层 · ${stage > 0 ? "+" : ""}${stage * 10}%`;
 }
 
 export function RepeatLevelButton({
@@ -163,7 +168,16 @@ function SideStats({
       ) : null}
 
       {levels.map((level) => {
-        const levelPercent = level.stage * 10;
+        const bonusStage = Number(level.bonusStages?.physical ?? level.bonusStage) || 0;
+        const magicalBonusStage = Number(level.bonusStages?.magical ?? bonusStage) || 0;
+        const displayedStage = clampAbilityStage((Number(level.stage) || 0) + bonusStage);
+        const magicalStage = clampAbilityStage((Number(level.stage) || 0) + magicalBonusStage);
+        const splitAttackStages = displayedStage !== magicalStage;
+        const levelHint = bonusStage !== magicalBonusStage
+          ? `手调 ${level.stage}层（双攻） · 特性：物攻 ${bonusStage > 0 ? "+" : ""}${bonusStage}层、魔攻 ${magicalBonusStage > 0 ? "+" : ""}${magicalBonusStage}层`
+          : bonusStage
+            ? `手调 ${level.stage}层 · 特性 ${bonusStage > 0 ? "+" : ""}${bonusStage}层；${abilityLevelHint(abilityAdjustedStat(1, displayedStage))}`
+            : abilityLevelHint(level.multiplier);
         const changeLevel = (nextStage) =>
           multipleLevels
             ? onLevelChange(level.role, nextStage)
@@ -184,9 +198,14 @@ function SideStats({
               >
                 <Minus aria-hidden="true" size={14} />
               </RepeatLevelButton>
-              <output title={abilityLevelHint(level.multiplier)}>
-                {level.stage}层 · {levelPercent > 0 ? "+" : ""}
-                {levelPercent}%
+              <output title={levelHint}>
+                {splitAttackStages ? (
+                  <>
+                    <span>物攻 {abilityStageLabel(displayedStage)}</span>
+                    <br />
+                    <span>魔攻 {abilityStageLabel(magicalStage)}</span>
+                  </>
+                ) : abilityStageLabel(displayedStage)}
               </output>
               <RepeatLevelButton
                 ariaLabel={`${controlLabel}加一`}

@@ -217,7 +217,7 @@ test("unconfirmed Global has no season art; CN retains S4", () => {
   });
   expect(getSeasonThemeVariables("s5")).toEqual({
     "--season-scene-image": 'url("/assets/season/s5-dragon-treasure.webp")',
-    "--season-character-image": 'url("/assets/season/s5-minggulong.webp")',
+    "--season-character-image": 'url("/assets/season/s5-abu-mascot.webp")',
   });
   expect(getSeasonTheme("toString")).toBe(getSeasonTheme("neutral"));
 });

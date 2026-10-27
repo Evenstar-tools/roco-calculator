@@ -18,6 +18,7 @@ import {
   targetNegativeMarkSettlement,
 } from "../marks.js";
 import { buildRefractionHint, reducedSkillCost, refractionEnergyReduction } from "../refraction.js";
+import { getS5PreviewSkillCostReduction } from "../s5-preview-traits.js";
 import { gainSourcesFor, limitGainSources, summarizeGains } from "../gain-provenance.js";
 import { resolvePowerOverride } from "../power-override.js";
 import {
@@ -84,6 +85,7 @@ export function calculateSkillResult({
   entry,
   direction,
   attacker,
+  attackerDefenseLevelStage,
   attackerCurrentHp,
   attackerHpPercent,
   defender,
@@ -115,7 +117,12 @@ export function calculateSkillResult({
       finiteNumber(pendingPowerOverride.value) !== undefined);
   if (
     skill.calculationStatus === "pending-skill-data" &&
-    (!pendingCategoryReady || !pendingAttackPowerReady)
+    (!pendingCategoryReady || !pendingAttackPowerReady ||
+      // S5 official cards leave absent parameters blank; unknown cost is not zero.
+      (skill.id?.startsWith("skill_preview_s5_") &&
+        (finiteNumber(skill.cost) === undefined ||
+          (finiteNumber(skill.basePower) === undefined &&
+            !(pendingPowerOverride?.mode === "static" && finiteNumber(pendingPowerOverride.value) !== undefined)))))
   ) {
     return unresolvedResult(skill, {
       status: "unsupported",
@@ -369,8 +376,14 @@ export function calculateSkillResult({
         ),
       ),
     );
+  const traitCostReduction = getS5PreviewSkillCostReduction(attacker.traits, context, skill);
+  const totalCostReduction = refractionEnergyReduction(directionOverrides) + traitCostReduction;
+  const reducedCost = (cost) => {
+    const reduced = reducedSkillCost(cost, directionOverrides);
+    return reduced === undefined ? undefined : Math.max(0, reduced - traitCostReduction);
+  };
   if (skill.category === "status" || skill.category === "defense") {
-    const skillCost = reducedSkillCost(skill.cost, directionOverrides);
+    const skillCost = reducedCost(skill.cost);
     const result = statusOrDefenseSkillResult({
       attacker,
       attackerBloodline,
@@ -399,6 +412,7 @@ export function calculateSkillResult({
   }
   const sourceMarkEffects = resolveSourceMarkEffects({
     actedBeforeEnemy: context.actedBeforeEnemy,
+    weatherDream: context.weatherDream === true,
     attackerSpeed,
     burstTriggered: resolvesBurstTrigger({
       context: rawContext,
@@ -446,17 +460,17 @@ export function calculateSkillResult({
   const costInput = getSkillEffectInputs(skill).find((input) => input.contextKey === "actualSkillCost");
   const manualCostInput = costInput ? finiteNumber(rawContext[costInput.id], rawContext.actualSkillCost) : undefined;
   let effectiveCostInput;
-  if (costInput && refractionEnergyReduction(directionOverrides) > 0) {
-    effectiveCostInput = manualCostInput === undefined ? reducedSkillCost(skill.cost, directionOverrides)
+  if (costInput && totalCostReduction > 0) {
+    effectiveCostInput = manualCostInput === undefined ? reducedCost(skill.cost)
       : Math.min(costInput.max ?? Infinity, Math.max(0, manualCostInput));
     context.actualSkillCost = effectiveCostInput;
     context[costInput.id] = effectiveCostInput;
   }
   const costResolution = resolveSkillPower(skill, context);
-  const resolvedSkillCost = effectiveCostInput ?? reducedSkillCost(finiteNumber(
+  const resolvedSkillCost = effectiveCostInput ?? reducedCost(finiteNumber(
     costResolution.resolvedCost,
     skill.cost,
-  ), directionOverrides);
+  ));
   const skillForCostConditions = Object.is(resolvedSkillCost, skill.cost)
     ? skill
     : { ...skill, cost: resolvedSkillCost };
@@ -535,13 +549,13 @@ export function calculateSkillResult({
   context.attackerPhysicalDefense = Math.floor(
     abilityAdjustedStat(
       attacker.panelStats.physicalDefense,
-      traitResolution.attackerDefenseLevelBonus,
+      (finiteNumber(attackerDefenseLevelStage) ?? 0) + traitResolution.attackerDefenseLevelBonus,
     ),
   );
   context.defenderPhysicalDefense = Math.floor(
     abilityAdjustedStat(
       defender.panelStats.physicalDefense,
-      traitResolution.defenderDefenseLevelBonus,
+      (defenseLevelStage ?? 0) + traitResolution.defenderDefenseLevelBonus,
     ),
   );
 
@@ -1295,10 +1309,13 @@ export function calculateSkillResult({
         ),
       ];
   const formulaSteps = [
-    ...(refractionEnergyReduction(directionOverrides) > 0 && resolvedSkillCost !== undefined ? [
-      formulaStep(manualCostInput === undefined ? "能耗减免（折射·水）" : "实际能耗（手动）",
-        { reduction: manualCostInput === undefined ? refractionEnergyReduction(directionOverrides) : 0 },
-        finiteNumber(costResolution.resolvedCost, skill.cost), resolvedSkillCost, manualCostInput === undefined ? "refraction-energy" : "manual-cost"),
+    ...(totalCostReduction > 0 && resolvedSkillCost !== undefined ? [
+      formulaStep(manualCostInput === undefined
+        ? `能耗减免（${[refractionEnergyReduction(directionOverrides) > 0 ? "折射·水" : null,
+            traitCostReduction > 0 ? "蟹蟹椰" : null].filter(Boolean).join("、")}）` : "实际能耗（手动）",
+        { reduction: manualCostInput === undefined ? totalCostReduction : 0 },
+        finiteNumber(costResolution.resolvedCost, skill.cost), resolvedSkillCost,
+        manualCostInput === undefined ? traitCostReduction > 0 ? "s5-trait-cost" : "refraction-energy" : "manual-cost"),
     ] : []),
     formulaStep(
       "攻击面板",
@@ -1621,11 +1638,11 @@ export function calculateSkillResult({
     powerSource: powerOverride.source,
     donationPoisonStacks: powerResolution.donationPoisonStacks,
     ...(effectiveCostInput !== undefined ? { effectiveCostInput, manualCostOverride: manualCostInput !== undefined } : {}),
-    skillCost: effectiveCostInput ?? reducedSkillCost(finiteNumber(
+    skillCost: effectiveCostInput ?? reducedCost(finiteNumber(
       powerResolution.resolvedCost,
       costResolution.resolvedCost,
       skill.cost,
-    ), directionOverrides),
+    )),
     skillPower: actualPower,
     effectivePower: panelPower,
     automaticHitCountAdd,

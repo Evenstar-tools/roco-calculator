@@ -1,4 +1,4 @@
-// Community-video observations are candidate contracts, not official rules.
+// Isolated event contracts follow the reviewed source; the live UI owns timing.
 // Technical keys are identifiers only; they do not provide translated names.
 export const S5_PREVIEW_MECHANICS = Object.freeze({
   minggulong: { name: "冥古龙", events: ["battle-start", "turn-end"], unknowns: ["等级降低的下限未公开", "非60级能力值采用初版外推模型，待游戏面板校对"] },
@@ -6,17 +6,17 @@ export const S5_PREVIEW_MECHANICS = Object.freeze({
   "boss-abu": { name: "圣龙阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "非60级能力值采用初版外推模型，待游戏面板校对"] },
   "super-abu": { name: "超能阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "非60级能力值采用初版外推模型，待游戏面板校对"] },
   "underground-silver-dragon": { name: "地绡银龙", events: ["energy-spent"], unknowns: ["魔攻增益叠法与上限未公开"] },
-  "gold-vein-dragon": { name: "龙嵴金脉", events: ["charge-complete"], unknowns: ["攻击增益持续时间与叠法未公开"] },
+  "gold-vein-dragon": { name: "龙嵴金脉", events: ["charge-complete"], unknowns: ["攻击增益持续时间及离场保留未公开"] },
   "boss-ice-bruce": { name: "首领冰钻布鲁斯", events: ["opponent-total-cost"], unknowns: ["对手总能耗的统计口径待核验", "威力增益叠法与上限待核验"] },
   "boss-glass-jellyfish": { name: "首领琉璃水母", events: ["skill-used"], unknowns: ["中毒印记的所属方与取值口径待核验"] },
-  jingyu: { name: "鲸羽", events: ["opponent-freeze-application"], unknowns: [] },
+  jingyu: { name: "鲸羽", events: ["turn-end"], unknowns: ["主界面尚未接入暴风雪回合末星陨动作"] },
   doulie: { name: "豆粒鹅", events: ["opponent-freeze-gained"], unknowns: ["10层冻结是当前层数还是累计量待核验", "雪天首回合扣减的结算时点未公开"] },
   "watermelon-bug": { name: "西瓜虫", events: ["skill-used"], unknowns: ["草系技能随机奉献的目标与分配须由实际随机结果提供"] },
-  diliutun: { name: "滴溜豚", events: ["dice-rolled"], unknowns: ["20面骰子各点数对应的双方增减益未公开"] },
+  diliutun: { name: "滴溜豚", events: ["dice-rolled"], unknowns: ["各点数对应的双方增减益未公开"] },
   "lele-shark": { name: "乐乐鲨", events: ["self-negative-cleared"], unknowns: [] },
-  "egg-wrap": { name: "蛋包蛋", events: ["entry"], unknowns: ["入场增益的持续时间与累计规则未公开"] },
-  "crab-coconut": { name: "蟹蟹椰", events: ["skill-used"], unknowns: ["连续水系技能是否叠加及非草系技能是否保留减费待核验", "减费后的最低能耗规则未在本段视频说明"] },
-  "little-scissor": { name: "小剪影", events: ["opponent-switch"], unknowns: ["攻击增益持续时间与叠法未公开"] },
+  "egg-wrap": { name: "蛋包蛋", events: ["team-state"], unknowns: [] },
+  "crab-coconut": { name: "蟹蟹椰", events: ["skill-used"], unknowns: [] },
+  "little-scissor": { name: "小剪影", events: ["opponent-exit"], unknowns: [] },
   "lily-of-valley": { name: "铃兰", events: ["turn-end"], unknowns: [] },
 });
 
@@ -97,24 +97,30 @@ export function reduceS5Preview(mechanicKey, previous, event, confirmed = {}) {
       if (event.type !== "energy-spent") return ignored(state, event);
       if (!whole(event.amount)) return blocked(state, event, "本次实际消耗能量须为非负整数");
       if (event.amount === 0) return ignored(state, event);
-      const fact = effect("per-energy-magic-attack", { perEnergyPercent: 10, energyUnits: event.amount, appliesToCurrentSkill: true });
+      const fact = effect("per-energy-magic-attack", { perEnergyPercent: 10, energyUnits: event.amount, appliesToCurrentSkill: false, timing: "turn-end" });
       // An observed aggregate bonus may be supplied by a future verified rule
       // adapter; the count itself cannot establish additive/multiplicative math.
       if (!finite(confirmed.currentMagicalAttackBonusPercent) || confirmed.currentMagicalAttackBonusPercent < 0) {
-        return blocked(state, event, "每点能量魔攻+10%且当次生效已确认；累计叠法与上限未公开", [fact]);
+        return blocked(state, event, "每点能量在回合结束时魔攻+10%已确认；当前已生效总增益须独立确认", [fact]);
       }
       return completed(state, event, {}, [fact, effect("confirmed-stat-percent", {
         stat: "magicalAttack", amount: confirmed.currentMagicalAttackBonusPercent,
         evidence: "caller-confirmed-current-state",
       })]);
     }
-    case "gold-vein-dragon":
-    case "little-scissor": {
-      const expected = mechanicKey === "gold-vein-dragon" ? "charge-complete" : "opponent-switch";
-      if (event.type !== expected) return ignored(state, event);
-      return blocked(state, event, "本次攻击+50%已确认；持续时间与累计叠法未公开", [
-        effect("attack-gain-observed", { amount: 50, trigger: expected }),
+    case "gold-vein-dragon": {
+      if (event.type !== "charge-complete") return ignored(state, event);
+      const count = state.chargeCount ?? 0;
+      if (!whole(count)) return blocked(state, event, "聚能次数须为非负整数");
+      return completed(state, event, { chargeCount: count + 1 }, [
+        effect("pending-stat-stage-add", { stat: "physicalAttack", amount: 5, timing: "turn-end" }),
       ]);
+    }
+    case "little-scissor": {
+      if (event.type !== "opponent-exit") return ignored(state, event);
+      const count = state.opponentExitCount ?? 0;
+      if (!whole(count)) return blocked(state, event, "敌方离场次数须为非负整数");
+      return completed(state, event, { opponentExitCount: count + 1 }, [effect("skill-power-flat", { amount: 20 })]);
     }
     case "boss-ice-bruce": {
       if (event.type !== "opponent-total-cost") return ignored(state, event);
@@ -135,13 +141,11 @@ export function reduceS5Preview(mechanicKey, previous, event, confirmed = {}) {
       return completed(state, event, {}, stacks ? [effect("status-add", { target: "opponent", status: "poison", stacks, timing: "after-skill" })] : []);
     }
     case "jingyu": {
-      if (event.type !== "opponent-freeze-application") return ignored(state, event);
-      if (event.weather === undefined) return blocked(state, event, "冻结发生时的天气尚未确认");
-      if (event.weather !== "snow") return ignored(state, event);
-      if (!whole(event.stacks)) return blocked(state, event, "本次冻结施加量尚未确认");
-      if (event.stacks === 0) return ignored(state, event);
-      return completed(state, event, {}, [effect("status-replace", {
-        target: "opponent", from: "freeze", to: "starfall", stacks: 3,
+      if (event.type !== "turn-end") return ignored(state, event);
+      if (event.weather === undefined || typeof event.holderOnField !== "boolean") return blocked(state, event, "回合结束时的天气与特性持有者在场状态须确认");
+      if (!["snow", "blizzard"].includes(event.weather) || !event.holderOnField) return ignored(state, event);
+      return completed(state, event, {}, [effect("mark-add", {
+        target: "opponent", mark: "starfall", stacks: 3, timing: "turn-end", replacesWeatherFreeze: true,
       })]);
     }
     case "doulie": {
@@ -172,36 +176,29 @@ export function reduceS5Preview(mechanicKey, previous, event, confirmed = {}) {
       if (!whole(event.count)) return blocked(state, event, "实际清除的自身减益数量尚未确认");
       if (event.count === 0 || state.permanentAttackTriggered) return ignored(state, event);
       return completed(state, event, { permanentAttackTriggered: true }, [
-        effect("attack-percent", { amount: 50, duration: "permanent", oncePerBattle: true }),
+        effect("physical-attack-percent", { amount: 50, oncePerBattle: true, duration: "permanent" }),
       ]);
     }
     case "egg-wrap": {
-      if (event.type !== "entry") return ignored(state, event);
-      if (typeof event.teamHasMoenhuaSpirit !== "boolean") return blocked(state, event, "入场时己方是否有萌化精灵尚未确认");
+      if (event.type !== "team-state") return ignored(state, event);
+      if (typeof event.teamHasMoenhuaSpirit !== "boolean") return blocked(state, event, "队伍中是否存在萌化精灵尚未确认");
       if (!event.teamHasMoenhuaSpirit) return ignored(state, event);
-      if (state.entryDefenseTriggered) return blocked(state, event, "重复入场时双防增益的累计规则未公开");
-      return completed(state, event, { entryDefenseTriggered: true }, [
-        effect("defense-percent", { stats: ["physicalDefense", "magicalDefense"], amount: 50, duration: "unknown" }),
-      ], ["入场双防+50%为观察事实；持续时间与累计规则未公开，不能直接接入伤害倍率"]);
+      return completed(state, event, {}, [
+        effect("defense-percent", { stats: ["physicalDefense", "magicalDefense"], amount: 50 }),
+      ]);
     }
     case "crab-coconut": {
       if (event.type !== "skill-used") return ignored(state, event);
       if (typeof event.skillType !== "string" || !event.skillType) return blocked(state, event, "本次技能系别尚未确认");
-      if (event.skillType === "water" && state.nextGrassDiscount) {
-        return blocked(state, event, "连续水系技能能否叠加减费未公开，不重复累加");
-      }
       if (event.skillType === "water") return completed(state, event, { nextGrassDiscount: true }, [
         effect("next-grass-cost-discount-armed", { amount: 3 }),
       ]);
-      if (event.skillType !== "grass" && state.nextGrassDiscount) {
-        if (typeof confirmed.nonGrassPreservesDiscount !== "boolean") return blocked(state, event, "非草系技能是否保留待用减费尚未核验");
-        return completed(state, event, { nextGrassDiscount: confirmed.nonGrassPreservesDiscount });
-      }
+      if (event.skillType !== "grass" && state.nextGrassDiscount) return completed(state, event, { nextGrassDiscount: false });
       if (!state.nextGrassDiscount) return ignored(state, event);
-      // Consume this allowance once; the unknown cost floor is not invented.
+      // One action consumes the allowance; the live calculator owns the cost floor.
       return completed(state, event, { nextGrassDiscount: false }, [
         effect("skill-cost-discount", { amount: 3, appliesToCurrentSkill: true }),
-      ], ["最终能耗下限需沿用后续核验的正式规则；此处不计算最终能耗"]);
+      ]);
     }
     case "lily-of-valley":
       if (event.type !== "turn-end") return ignored(state, event);
@@ -224,10 +221,12 @@ export function adaptS5PreviewEffects(result) {
   const modifiers = [];
   for (const entry of result.effects ?? []) {
     if (entry.kind === "skill-power-percent") modifiers.push({ direction: "outgoing", field: "powerPercentAdd", value: entry.amount });
+    if (entry.kind === "skill-power-flat") modifiers.push({ direction: "outgoing", field: "fixedPowerAdd", value: entry.amount });
+    if (entry.kind === "attack-stage-add") modifiers.push({ target: "self", field: "attackLevelBonus", value: entry.amount });
     if (entry.kind === "speed-flat") modifiers.push({ target: "self", field: "attackerSpeedFlatBonus", value: entry.amount });
     if (entry.kind === "incoming-damage-percent") modifiers.push({ direction: "incoming", field: "finalDamageMultiplier", value: 1 + entry.amount / 100 });
-    if (entry.kind === "attack-percent" || entry.kind === "defense-percent" || entry.kind === "confirmed-stat-percent") {
-      modifiers.push({ target: "self", field: "confirmedStatPercentAdd", stats: entry.stats ?? [entry.stat ?? "attack"], value: entry.amount });
+    if (entry.kind === "attack-percent" || entry.kind === "physical-attack-percent" || entry.kind === "defense-percent" || entry.kind === "confirmed-stat-percent") {
+      modifiers.push({ target: "self", field: "confirmedStatPercentAdd", stats: entry.stats ?? [entry.stat ?? (entry.kind === "physical-attack-percent" ? "physicalAttack" : "attack")], value: entry.amount });
     }
   }
   const hasLevel = (result.effects ?? []).some(({ kind }) => kind === "level-set");
@@ -242,22 +241,25 @@ export function adaptS5PreviewEffects(result) {
   };
 }
 
-/** Dream exchanges only confirmed speed values, never skill priority. */
-export function evaluateS5DreamSpeedExchange({
+/** Reverse the speed tiebreaker only; never exchange speed capabilities. */
+export function evaluateS5DreamActionOrder({
   weather, selfSpeed, opponentSpeed, selfPriority, opponentPriority,
   atConfirmedEvaluation = false,
 }) {
   const original = { selfSpeed, opponentSpeed, selfPriority, opponentPriority };
   if (weather !== "dream") return { status: "unchanged", ...original, calculationEnabled: false };
-  if (!atConfirmedEvaluation) return {
+  if (!atConfirmedEvaluation || ![selfPriority, opponentPriority].every(finite)) return {
     status: "blocked", ...original, calculationEnabled: false,
-    unknowns: ["梦境交换速度的具体结算时点未公开"],
+    unknowns: ["本次行动的双方先制度须明确确认"],
   };
   if (![selfSpeed, opponentSpeed].every((value) => finite(value) && value >= 0)) return {
     status: "blocked", ...original, calculationEnabled: false, unknowns: ["双方当前速度尚未确认"],
   };
+  const difference = selfPriority !== opponentPriority
+    ? selfPriority - opponentPriority : opponentSpeed - selfSpeed;
   return {
-    status: "applied", selfSpeed: opponentSpeed, opponentSpeed: selfSpeed,
-    selfPriority, opponentPriority, calculationEnabled: false,
+    status: "applied", ...original,
+    first: difference > 0 ? "self" : difference < 0 ? "opponent" : "tie",
+    calculationEnabled: false,
   };
 }

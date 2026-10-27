@@ -6,6 +6,7 @@ import { canonicalTraitControlKey } from "../../src/domain/trait-runtime.js";
 import { getTraitEffectInputs, getTraitEffectRule, resolveTraitEffectRule } from "../../src/domain/trait-effects.js";
 import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
 import { createInitialState } from "../../src/state/defaults.js";
+import { getLegacyMinggulongLevelInputs } from "../../src/features/s5-preview/level-input-migration.js";
 
 const trait = (mechanicKey, extra = {}) => ({
   id: "preview-" + mechanicKey, name: "前瞻特性", description: "未知文本：威力+999%。",
@@ -33,16 +34,21 @@ describe("S5 explicit trait controls and evaluation", () => {
 
   test("all three Abu aliases share identical owner-safe controls and evaluation", () => {
     const ordinary = getS5PreviewTraitInputs(trait("abu"), "attacker");
+    expect(ordinary).toHaveLength(1);
+    expect(ordinary).toMatchObject([
+      { contextKey: "attackerTraitS5BattleLevel", label: "当前等级", defaultValue: 60, min: 1, max: 99, step: 2 },
+    ]);
     for (const key of ["abu", "boss-abu", "super-abu"]) {
       expect(getS5PreviewTraitInputs(trait(key), "attacker")).toEqual(ordinary);
       expect(evaluate(trait(key))).toMatchObject({ mechanicKey: "abu", currentLevel: 60, calcStatus: "ready" });
-      expect(evaluate(trait(key), { CurrentLevel: 62, LevelEventCount: 1 })).toMatchObject({
-        currentLevel: 64, calcStatus: "ready",
-      });
-      expect(evaluate(trait(key), { CurrentLevel: 60, LevelEventCount: 90 }).currentLevel).toBe(99);
-      expect(evaluate(trait(key), { CurrentLevel: 58, LevelEventCount: 1 })).toMatchObject({
-        currentLevel: 60, calcStatus: "ready", summary: expect.stringContaining("58 + 2×1"),
-      });
+      for (const BattleLevel of [1, 60, 62, 79, 80, 99]) {
+        expect(evaluate(trait(key), { BattleLevel })).toMatchObject({
+          currentLevel: BattleLevel, calcStatus: "ready",
+          summary: `当前等级 ${BattleLevel}${BattleLevel < 80 ? "；承伤 +40%" : ""}`,
+        });
+        expect(resolve(trait(key), "defender", { BattleLevel }).finalDamageMultiplier).toBe(BattleLevel < 80 ? 1.4 : 1);
+        expect(resolve(trait(key), "attacker", { BattleLevel }).finalDamageMultiplier).toBe(1);
+      }
     }
   });
 
@@ -51,40 +57,87 @@ describe("S5 explicit trait controls and evaluation", () => {
     const offense = getS5PreviewTraitInputs(entity, "attacker");
     const defense = getS5PreviewTraitInputs(entity, "defender");
     expect(offense.map(canonicalTraitControlKey)).toEqual(defense.map(canonicalTraitControlKey));
-    expect(offense.map(({ source, scope }) => [source, scope])).toEqual([["attackerTrait", "direction"], ["attackerTrait", "direction"]]);
-    const values = context(entity, "attacker", { AttackBuffActive: true, CurrentAttackBonus: 80 });
-    expect(evaluate(entity, { AttackBuffActive: true, CurrentAttackBonus: 80 }).summary).toContain("+80%");
-    expect(getS5PreviewTraitEvaluation(entity, "defender", values).summary).toBe("双攻增益未生效");
+    expect(offense.map(({ source, scope }) => [source, scope])).toEqual(Array.from({ length: 3 }, () => ["attackerTrait", "direction"]));
+    const values = context(entity, "attacker", { ChargeCount: 2 });
+    expect(evaluate(entity, { ChargeCount: 2 }).summary).toContain("物攻能力等级 +10");
+    expect(getS5PreviewTraitEvaluation(entity, "defender", values).summary).toBe("未聚能 · 无增益");
     const acquired = { ...entity, runtimeInputValues: Object.fromEntries(offense.map(control => [
       canonicalTraitControlKey(control), values[control.id],
     ])) };
-    expect(getS5PreviewTraitEvaluation(acquired, "defender", {}).summary).toContain("+80%");
+    expect(getS5PreviewTraitEvaluation(acquired, "defender", {}).summary).toContain("物攻能力等级 +10");
   });
 
-  test.each(["gold-vein-dragon", "little-scissor"])("%s uses the explicit current total only when enabled, with no count multiplication", (key) => {
+  test.each(["little-scissor"])("%s counts actual enemy exits as flat skill power without reading old attack percentages", (key) => {
     const entity = trait(key);
     expect(resolve(entity)).toMatchObject({ attackLevelBonus: 0, attackMultiplier: 1, step: null });
-    expect(resolve(entity, "attacker", { AttackBuffActive: true })).toMatchObject({ attackLevelBonus: 5, attackMultiplier: 1.5 });
-    expect(resolve(entity, "attacker", { AttackBuffActive: true, CurrentAttackBonus: 90 })).toMatchObject({ attackLevelBonus: 9, attackMultiplier: 1.9 });
-    expect(resolve(entity, "defender", { AttackBuffActive: true, CurrentAttackBonus: 90 })).toMatchObject({ attackLevelBonus: 0, powerPercentAdd: 0, step: null });
+    expect(resolve(entity, "attacker", { OpponentExitCount: 1 })).toMatchObject({ attackLevelBonus: 0, fixedPowerAdd: 20, attackMultiplier: 1 });
+    expect(resolve(entity, "attacker", { OpponentExitCount: 3 }, "magical")).toMatchObject({ attackLevelBonus: 0, fixedPowerAdd: 60 });
+    expect(resolve(entity, "defender", { OpponentExitCount: 3 })).toMatchObject({ attackLevelBonus: 0, fixedPowerAdd: 0, step: null });
+    expect(getS5PreviewTraitEvaluation(entity, "attacker", { attackerTraitS5AttackBuffActive: true, attackerTraitS5CurrentAttackBonus: 90 }).effects).toEqual([]);
+  });
+
+  test.each([0, 1, 2, 19, 20, 21])("gold dragon count %s adds5 stages each, leaving total-stage clamping to the shared calculator", ChargeCount => {
+    const entity = trait("gold-vein-dragon");
+    expect(resolve(entity, "attacker", { ChargeCount })).toMatchObject({
+      attackLevelBonus: ChargeCount * 5, attackMultiplier: 1 + ChargeCount * 0.5,
+    });
+    expect(resolve(entity, "defender", { ChargeCount })).toMatchObject({ attackLevelBonus: 0, step: null });
+  });
+
+  test("gold dragon sanitizes count and rejects nonconvertible old percentages until explicitly replaced", () => {
+    const entity = trait("gold-vein-dragon");
+    expect(resolve(entity, "attacker", { ChargeCount: -1 }).attackLevelBonus).toBe(0);
+    expect(resolve(entity, "attacker", { ChargeCount: 2.9 }).attackLevelBonus).toBe(10);
+    const legacy = { attackerTraitS5AttackBuffActive: true, attackerTraitS5CurrentAttackBonus: 70 };
+    expect(getS5PreviewTraitEvaluation(entity, "attacker", legacy)).toMatchObject({ calcStatus: "pending" });
+    expect(getS5PreviewTraitEvaluation(entity, "attacker", { ...legacy, ...context(entity, "attacker", { ChargeCount: 0 }) }))
+      .toMatchObject({ calcStatus: "ready", summary: "未聚能 · 无增益" });
+    expect(getS5PreviewTraitEvaluation(entity, "attacker", { ...legacy, attackerTraitS5CurrentAttackBonus: 100 }).summary)
+      .toBe("聚能 2 次 · 物攻能力等级 +10");
+  });
+
+  test("new counters wait for turn end; settled values clamp to the current count", () => {
+    const gold = trait("gold-vein-dragon");
+    expect(resolve(gold, "attacker", { ChargeCount: 2, SettledChargeCount: 0 }).attackLevelBonus).toBe(0);
+    expect(evaluate(gold, { ChargeCount: 2, SettledChargeCount: 1 })).toMatchObject({ totalCount: 2, settledCount: 1, pendingCount: 1 });
+    expect(resolve(gold, "attacker", { ChargeCount: 2, SettledChargeCount: 1 }, "magical").attackLevelBonus).toBe(0);
+    expect(resolve(gold, "attacker", { ChargeCount: 1, SettledChargeCount: 9 }).attackLevelBonus).toBe(5);
+    const silver = trait("underground-silver-dragon");
+    expect(resolve(silver, "attacker", { EnergySpent: 7, SettledEnergySpent: 0 }, "magical").attackLevelBonus).toBe(0);
+    expect(resolve(silver, "attacker", { EnergySpent: 7, SettledEnergySpent: 3 }, "magical").attackLevelBonus).toBe(3);
+    expect(evaluate(silver, { EnergySpent: 7, SettledEnergySpent: 3 }).summary).toContain("待回合结束 4 点");
   });
 
   test("silver dragon changes magical attack only, leaving physical/power and inactive totals untouched", () => {
     const entity = trait("underground-silver-dragon");
-    expect(resolve(entity, "attacker", { CurrentMagicalAttackBonus: 70 }, "magical")).toMatchObject({ attackLevelBonus: 7, attackMultiplier: 1.7, powerPercentAdd: 0 });
-    expect(resolve(entity, "attacker", { CurrentMagicalAttackBonus: 70 }, "physical")).toMatchObject({ attackLevelBonus: 0, attackMultiplier: 1, step: null });
+    expect(resolve(entity, "attacker", { EnergySpent: 7 }, "magical")).toMatchObject({ attackLevelBonus: 7, attackMultiplier: 1.7, powerPercentAdd: 0 });
+    expect(resolve(entity, "attacker", { EnergySpent: 7 }, "physical")).toMatchObject({ attackLevelBonus: 0, attackMultiplier: 1, step: null });
     expect(resolve(entity)).toMatchObject({ attackLevelBonus: 0, step: null });
   });
 
-  test("shark applies one fixed 50% current buff; egg requires both entry conditions and buffs owning defense in either role", () => {
+  test("shark applies one fixed 50% current buff; egg uses one trigger and buffs owning defense in either role", () => {
     const shark = trait("lele-shark");
     expect(resolve(shark)).toMatchObject({ attackLevelBonus: 0 });
     expect(resolve(shark, "attacker", { NegativeCleared: true })).toMatchObject({ attackLevelBonus: 5 });
+    expect(resolve(shark, "attacker", { NegativeCleared: true }, "magical")).toMatchObject({ attackLevelBonus: 0, attackMultiplier: 1, step: null });
     const egg = trait("egg-wrap");
+    expect(getS5PreviewTraitInputs(egg)).toHaveLength(1);
+    expect(getS5PreviewTraitInputs(egg)[0]).toMatchObject({ label: "特性触发", type: "boolean" });
     expect(resolve(egg, "defender", { TeamMoenhua: true })).toMatchObject({ defenseLevelBonus: 0 });
-    expect(resolve(egg, "defender", { TeamMoenhua: true, EntryDefenseActive: true })).toMatchObject({ defenseLevelBonus: 5, defenderDefenseLevelBonus: 5 });
-    expect(resolve(egg, "attacker", { TeamMoenhua: true, EntryDefenseActive: true })).toMatchObject({ attackerDefenseLevelBonus: 5, defenseLevelBonus: 0 });
-    expect(evaluate(egg, { TeamMoenhua: true, EntryDefenseActive: true }).note).toContain("不默认永久");
+    expect(resolve(egg, "defender", { EggTriggered: true })).toMatchObject({ defenseLevelBonus: 5, defenderDefenseLevelBonus: 5 });
+    expect(resolve(egg, "attacker", { EggTriggered: true })).toMatchObject({ attackerDefenseLevelBonus: 5, defenseLevelBonus: 0 });
+    expect(evaluate(egg, { EggTriggered: true }).note).toContain("当前条件");
+  });
+
+  test("official dice ranges distinguish one-to-six and one-to-twenty without guessing face effects", () => {
+    for (const [key, description, maximum] of [
+      ["diliutun", "入场时随机获得1~6点，在场时双方根据点数获得不同效果。", 6],
+      ["diniantun", "入场时随机获得1~20点，在场时双方根据点数获得不同效果。", 20],
+    ]) {
+      const entity = trait("diliutun", { description, previewIdentity: { catalogId: "s5-official-test", key, mechanicKey: "diliutun" } });
+      expect(getS5PreviewTraitInputs(entity).find(input => input.contextKey.endsWith("DiceFace"))).toMatchObject({ min: 1, max: maximum });
+      expect(evaluate(entity, { DiceRolled: true, DiceFace: 20 })).toMatchObject({ calcStatus: "pending", summary: expect.stringContaining(`骰点 ${maximum}`) });
+    }
   });
 
   test.each([[19, 0], [20, 50], [21, 50]])("boss Bruce total cost %s gives fixed speed %s while power is a manual fraction", (OpponentTotalCost, speed) => {
@@ -99,43 +152,53 @@ describe("S5 explicit trait controls and evaluation", () => {
 
   test("valid levels enable calculation; only levels below80 receive incoming +40%", () => {
     const entity = trait("minggulong");
+    expect(getS5PreviewTraitInputs(entity)).toMatchObject([
+      { contextKey: "attackerTraitS5BattleLevel", label: "当前等级", defaultValue: 99, min: 1, max: 99, step: 10 },
+    ]);
+    expect(getS5PreviewTraitInputs(entity)).toHaveLength(1);
     expect(evaluate(entity)).toMatchObject({ currentLevel: 99, calcStatus: "ready" });
-    for (const CurrentLevel of [99, 80, 79]) {
-      expect(evaluate(entity, { CurrentLevel })).not.toHaveProperty("blockingReason");
-      expect(resolve(entity, "defender", { CurrentLevel }).finalDamageMultiplier).toBe(CurrentLevel < 80 ? 1.4 : 1);
+    for (const BattleLevel of [99, 89, 80, 79]) {
+      expect(evaluate(entity, { BattleLevel })).not.toHaveProperty("blockingReason");
+      expect(resolve(entity, "defender", { BattleLevel }).finalDamageMultiplier).toBe(BattleLevel < 80 ? 1.4 : 1);
     }
-    expect(resolve(entity, "defender", { CurrentLevel: 60 })).toMatchObject({ finalDamageMultiplier: 1.4 });
-    expect(resolve(entity, "attacker", { CurrentLevel: 60 })).toMatchObject({ finalDamageMultiplier: 1, step: null });
-    expect(evaluate(entity, { CurrentLevel: 60 })).not.toHaveProperty("blockingReason");
+    expect(resolve(entity, "defender", { BattleLevel: 60 })).toMatchObject({ finalDamageMultiplier: 1.4 });
+    expect(resolve(entity, "attacker", { BattleLevel: 60 })).toMatchObject({ finalDamageMultiplier: 1, step: null });
+    expect(evaluate(entity, { BattleLevel: 60 })).not.toHaveProperty("blockingReason");
   });
 
-  test("level counts perform only known arithmetic, preserve threshold boundaries and block unknown minimum", () => {
+  test("Minggulong reads one current level without hidden decrements; invalid old counts stay guarded", () => {
     const ming = trait("minggulong");
-    expect(evaluate(ming, { LevelEventCount: 1 })).toMatchObject({ currentLevel: 89, summary: expect.stringContaining("99 − 10×1") });
-    expect(evaluate(ming, { LevelEventCount: 2 })).toMatchObject({ currentLevel: 79, calcStatus: "ready" });
-    expect(evaluate(ming, { CurrentLevel: 90, LevelEventCount: 1 }).currentLevel).toBe(80);
-    expect(evaluate(ming, { CurrentLevel: 70, LevelEventCount: 1 })).toMatchObject({ currentLevel: 60, calcStatus: "ready" });
-    expect(resolve(ming, "defender", { CurrentLevel: 70, LevelEventCount: 1 }).finalDamageMultiplier).toBe(1.4);
-    expect(evaluate(ming, { LevelEventCount: 10 })).toMatchObject({
+    expect(evaluate(ming, { BattleLevel: 89 })).toMatchObject({ currentLevel: 89, summary: "当前等级 89" });
+    expect(evaluate(ming, { BattleLevel: 79 })).toMatchObject({ currentLevel: 79, summary: "当前等级 79；承伤 +40%", calcStatus: "ready" });
+    const legacy = getLegacyMinggulongLevelInputs();
+    const oldCount = legacy.find(control => control.contextKey.endsWith("LevelEventCount"));
+    const current = context(ming, "attacker", { BattleLevel: 80 });
+    expect(getS5PreviewTraitEvaluation(ming, "attacker", { ...current, [oldCount.id]: 3 }).currentLevel).toBe(80);
+    expect(getS5PreviewTraitEvaluation(ming, "attacker", { [oldCount.id]: 10 })).toMatchObject({
       currentLevel: -1, calcStatus: "pending", blockingReason: expect.stringContaining("下降下限"),
     });
-    expect(resolve(ming, "defender", { LevelEventCount: 10 })).toMatchObject({ finalDamageMultiplier: 1, step: null });
-    expect(evaluate(trait("abu"), { CurrentLevel: 78, LevelEventCount: 1 })).toMatchObject({ currentLevel: 80, calcStatus: "ready" });
-    expect(evaluate(trait("abu"), { CurrentLevel: 77, LevelEventCount: 1 })).toMatchObject({ currentLevel: 79, calcStatus: "ready" });
+    const defenseCount = getLegacyMinggulongLevelInputs("defender").find(control => control.contextKey.endsWith("LevelEventCount"));
+    expect(resolveS5PreviewTraitEffect(ming, "defender", { context: { [defenseCount.id]: 10 } })).toMatchObject({ finalDamageMultiplier: 1, step: null });
   });
 
   test("status mechanisms report current confirmed effects without silently generating future buffs or damage blockers", () => {
     expect(evaluate(trait("boss-glass-jellyfish"), { SkillUsed: true, PoisonMarkStacks: 3 }).effects).toContainEqual({
       kind: "status-add", target: "opponent", status: "poison", stacks: 6, timing: "after-skill", confirmedSource: "manual-effective-poison-mark-stacks",
     });
-    expect(evaluate(trait("jingyu"), { SnowActive: true, FreezeApplicationConfirmed: true }).effects[0]).toMatchObject({ kind: "status-replace", from: "freeze", to: "starfall", stacks: 3 });
-    expect(evaluate(trait("doulie"), { SnowTriggered: true, SnowTurnsRemaining: 3 }).effects[0]).toMatchObject({ kind: "weather-state", remainingTurns: 3 });
+    expect(getS5PreviewTraitEvaluation(trait("jingyu"), "attacker", { weatherBlizzard: true })).toMatchObject({ effects: [], summary: expect.stringContaining("回合末待适配") });
+    expect(evaluate(trait("jingyu"), { SnowActive: true, FreezeApplicationConfirmed: true }).effects).toEqual([]);
+    const goose = trait("doulie");
+    expect(getS5PreviewTraitEvaluation(goose, "attacker", { ...context(goose, "attacker", { SnowTriggered: true }), weatherBlizzard: true, weatherTurns: 3 }).effects[0]).toMatchObject({ kind: "weather-state", remainingTurns: 3 });
     expect(evaluate(trait("watermelon-bug"), { UsedSkillType: "bug" }, "attacker", { skill: { type: "火" } }).effects).toEqual([]);
     expect(evaluate(trait("watermelon-bug"), { UsedSkillType: "bug" }, "attacker", { skill: { type: "虫" } }).effects[0]).toMatchObject({ status: "parasitism", stacks: 1 });
     expect(evaluate(trait("watermelon-bug"), { UsedSkillType: "grass" })).not.toHaveProperty("blockingReason");
     expect(evaluate(trait("crab-coconut"), { GrassDiscountReady: true }).effects[0]).toMatchObject({ kind: "next-grass-cost-discount", amount: 3 });
     expect(resolve(trait("crab-coconut"), "attacker", { GrassDiscountReady: true })).toMatchObject({ powerPercentAdd: 0, step: null });
-    expect(evaluate(trait("lily-of-valley"), { DreamActive: true, TurnEndConfirmed: true }).effects[0]).toMatchObject({ status: "parasitism", stacks: 3, timing: "turn-end" });
+    // Old stored booleans cannot apply another turn or override the global weather.
+    const lily = trait("lily-of-valley");
+    expect(evaluate(lily, { DreamActive: true, TurnEndConfirmed: true })).toMatchObject({ effects: [], summary: "萌系天气未生效，无寄生施加" });
+    expect(getS5PreviewTraitEvaluation(lily, "attacker", { weatherDream: true })).toMatchObject({ effects: [], summary: "萌系天气生效：回合结束可给对手3层寄生" });
+    expect(getS5PreviewTraitInputs(lily).find(input => input.contextKey.endsWith("TurnEndConfirmed")).action).toBe("s5-dream-turn-end");
     expect(evaluate(trait("diliutun"))).toMatchObject({ calcStatus: "ready", effects: [] });
     expect(evaluate(trait("diliutun"), { DiceRolled: true, DiceFace: 20 })).toMatchObject({ calcStatus: "pending", blockingReason: expect.stringContaining("映射") });
   });
@@ -159,7 +222,7 @@ describe("S5 explicit trait controls and evaluation", () => {
     const original = structuredClone({ snapshot, state });
     const before = buildCalculatorViewModel({ snapshot, state, activeDirection: "forward" });
     const boosted = { ...state, directions: { ...state.directions, forward: {
-      ...state.directions.forward, context: context(entity, "attacker", { CurrentMagicalAttackBonus: 100 }),
+      ...state.directions.forward, context: context(entity, "attacker", { EnergySpent: 10 }),
     } } };
     const after = buildCalculatorViewModel({ snapshot, state: boosted, activeDirection: "forward" });
     expect(after.calculation.forward.results[0].totalDamage).toBe(before.calculation.forward.results[0].totalDamage);

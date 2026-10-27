@@ -945,6 +945,79 @@ test("nature step can reveal both attack and defense levels for each side", asyn
   expect(onDefenderLevelChange).toHaveBeenCalledWith("attack", 4);
 });
 
+test("ability level displays trait stages while buttons edit only the manual value", async () => {
+  const user = userEvent.setup();
+  const onAttackerLevelChange = vi.fn();
+  const common = {
+    defender: { nature: "neutral", stats },
+    onAttackerIvChange: vi.fn(), onAttackerNatureChange: vi.fn(), onAttackerLevelChange,
+    onDefenderIvChange: vi.fn(), onDefenderNatureChange: vi.fn(),
+  };
+  const side = bonusStage => ({ nature: "neutral", stats,
+    level: { label: "攻击能力等级", multiplier: 1, stage: 0, bonusStage },
+  });
+  const { rerender } = render(<NatureStatsStep {...common} attacker={side(10)} />);
+  const attackerSide = screen.getByRole("group", { name: "攻击方能力" });
+  expect(within(attackerSide).getByText("10层 · +100%")).toHaveAttribute("title", "手调 0层 · 特性 +10层；原值的 200%");
+  await user.click(within(attackerSide).getByRole("button", { name: "攻击方等级加一" }));
+  expect(onAttackerLevelChange).toHaveBeenLastCalledWith(1);
+  await user.click(within(attackerSide).getByRole("button", { name: "攻击方等级减一" }));
+  expect(onAttackerLevelChange).toHaveBeenLastCalledWith(-1);
+  rerender(<NatureStatsStep {...common} attacker={side(0)} />);
+  expect(within(attackerSide).getByText("0层 · 0%")).toBeVisible();
+  expect(onAttackerLevelChange).toHaveBeenCalledTimes(2);
+});
+
+test("ability level clamps only the displayed total after manual and trait stages combine", () => {
+  const common = {
+    defender: { nature: "neutral", stats },
+    onAttackerIvChange: vi.fn(), onAttackerNatureChange: vi.fn(),
+    onDefenderIvChange: vi.fn(), onDefenderNatureChange: vi.fn(),
+  };
+  const side = stage => ({ nature: "neutral", stats,
+    level: { label: "攻击能力等级", multiplier: 1, stage, bonusStage: 100 },
+  });
+  const { rerender } = render(<NatureStatsStep {...common} attacker={side(0)} />);
+  const attackerSide = screen.getByRole("group", { name: "攻击方能力" });
+  expect(within(attackerSide).getByText("99层 · +990%")).toBeVisible();
+  rerender(<NatureStatsStep {...common} attacker={side(-10)} />);
+  expect(within(attackerSide).getByText("90层 · +900%")).toBeVisible();
+});
+
+test("separate attack bonuses share one manual control and return to one line when equal", async () => {
+  const user = userEvent.setup();
+  const onAttackerLevelChange = vi.fn();
+  const common = {
+    defender: { nature: "neutral", stats },
+    onAttackerIvChange: vi.fn(), onAttackerNatureChange: vi.fn(), onAttackerLevelChange,
+    onDefenderIvChange: vi.fn(), onDefenderNatureChange: vi.fn(),
+  };
+  const side = (stage, physical = 0, magical = 4) => ({ nature: "neutral", stats,
+    level: { label: "攻击能力等级", multiplier: 1, stage,
+      bonusStages: { physical, magical } },
+  });
+  const { rerender } = render(<NatureStatsStep {...common} attacker={side(0)} />);
+  const attackerSide = screen.getByRole("group", { name: "攻击方能力" });
+  expect(within(attackerSide).getByText("物攻 0层 · 0%")).toBeVisible();
+  expect(within(attackerSide).getByText("魔攻 4层 · +40%")).toBeVisible();
+  expect(within(attackerSide).getAllByRole("button", { name: /等级[加减]一/ })).toHaveLength(2);
+  await user.click(within(attackerSide).getByRole("button", { name: "攻击方等级加一" }));
+  expect(onAttackerLevelChange).toHaveBeenLastCalledWith(1);
+  // Rerender the unchanged manual value, as a second independent edit.
+  rerender(<NatureStatsStep {...common} attacker={side(0)} />);
+  await user.click(within(attackerSide).getByRole("button", { name: "攻击方等级减一" }));
+  expect(onAttackerLevelChange).toHaveBeenLastCalledWith(-1);
+  rerender(<NatureStatsStep {...common} attacker={side(1)} />);
+  expect(within(attackerSide).getByText("物攻 1层 · +10%")).toBeVisible();
+  expect(within(attackerSide).getByText("魔攻 5层 · +50%")).toBeVisible();
+  rerender(<NatureStatsStep {...common} attacker={side(0, 0, 0)} />);
+  expect(within(attackerSide).getByText("0层 · 0%")).toBeVisible();
+  expect(within(attackerSide).queryByText(/魔攻 .*层/)).not.toBeInTheDocument();
+  rerender(<NatureStatsStep {...common} attacker={side(98, 1, 4)} />);
+  expect(within(attackerSide).getByText("99层 · +990%")).toBeVisible();
+  expect(onAttackerLevelChange).toHaveBeenCalledTimes(2);
+});
+
 test("holding a level button repeats changes and stops on release", () => {
   vi.useFakeTimers();
   try {

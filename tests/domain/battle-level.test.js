@@ -4,6 +4,7 @@ import { resolveS5PreviewBattleLevel, withS5PreviewBattleLevels } from "../../sr
 import { getS5PreviewTraitEvaluation, getS5PreviewTraitInputs } from "../../src/domain/s5-preview-traits.js";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import { createInitialState } from "../../src/state/defaults.js";
+import { getLegacyMinggulongLevelInputs } from "../../src/features/s5-preview/level-input-migration.js";
 
 const snapshot = withWebPreview(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
 const levelKeys = ["minggulong", "abu", "super-abu", "boss-abu"];
@@ -38,12 +39,12 @@ describe("trusted S5 owner battle levels", () => {
     expect(state.sides.defender).not.toHaveProperty("level");
   });
 
-  test("each owner reads its outgoing level and count, without borrowing mirrored/opposite values", () => {
+  test("each owner reads its outgoing current level, without borrowing mirrored/opposite values", () => {
     const state = fixture("minggulong", "super-abu");
-    setLevel(state, "attacker", "minggulong", { CurrentLevel: 99, LevelEventCount: 2 });
-    setLevel(state, "defender", "super-abu", { CurrentLevel: 64, LevelEventCount: 3 });
-    setLevel(state, "attacker", "minggulong", { CurrentLevel: 40, LevelEventCount: 0 }, "defender");
-    setLevel(state, "defender", "super-abu", { CurrentLevel: 90, LevelEventCount: 0 }, "defender");
+    setLevel(state, "attacker", "minggulong", { BattleLevel: 79 });
+    setLevel(state, "defender", "super-abu", { BattleLevel: 70 });
+    setLevel(state, "attacker", "minggulong", { BattleLevel: 40 }, "defender");
+    setLevel(state, "defender", "super-abu", { BattleLevel: 90 }, "defender");
     expect(resolveS5PreviewBattleLevel(snapshot, state, "attacker")).toBe(79);
     expect(resolveS5PreviewBattleLevel(snapshot, state, "defender")).toBe(70);
     const projected = withS5PreviewBattleLevels(snapshot, state);
@@ -51,26 +52,26 @@ describe("trusted S5 owner battle levels", () => {
     expect(projected.sides.defender.level).toBe(70);
   });
 
-  test("the three Abu identities apply confirmed increments with the known level99 cap", () => {
+  test("the three Abu identities use direct current levels through99 without hidden increments", () => {
     for (const key of levelKeys.filter(key => key !== "minggulong")) {
       const state = fixture(key);
-      setLevel(state, "attacker", key, { CurrentLevel: 98, LevelEventCount: 2 });
-      expect(resolveS5PreviewBattleLevel(snapshot, state, "attacker")).toBe(99);
-      setLevel(state, "attacker", key, { CurrentLevel: 58, LevelEventCount: 1 });
-      expect(resolveS5PreviewBattleLevel(snapshot, state, "attacker")).toBe(60);
+      for (const BattleLevel of [99, 80, 79, 62, 60, 58]) {
+        setLevel(state, "attacker", key, { BattleLevel });
+        expect(resolveS5PreviewBattleLevel(snapshot, state, "attacker")).toBe(BattleLevel);
+      }
     }
   });
 
   test("Minggulong never invents a minimum level; the safe resolver fallback retains evaluation blocking", () => {
     const state = fixture();
-    setLevel(state, "attacker", "minggulong", { LevelEventCount: 10 });
+    const oldCount = getLegacyMinggulongLevelInputs().find(control => control.contextKey.endsWith("LevelEventCount"));
+    state.directions.forward.context[oldCount.id] = 10;
     const evaluation = getS5PreviewTraitEvaluation(traitFor("minggulong"), "attacker", state.directions.forward.context);
     expect(evaluation).toMatchObject({ currentLevel: -1, calcStatus: "pending", blockingReason: expect.stringContaining("下降下限") });
     expect(resolveS5PreviewBattleLevel(snapshot, state, "attacker")).toBe(60);
     expect(withS5PreviewBattleLevels(snapshot, state).sides.attacker.level).toBe(60);
     expect(state.directions.forward.context).toEqual(expect.objectContaining(
-      Object.fromEntries(getS5PreviewTraitInputs(traitFor("minggulong"))
-        .filter(control => control.contextKey.endsWith("LevelEventCount")).map(control => [control.id, 10])),
+      { [oldCount.id]: 10 },
     ));
   });
 
@@ -80,7 +81,7 @@ describe("trusted S5 owner battle levels", () => {
       traits: [traitFor("abu")], traitIds: [traitFor("abu").id], acquiredTraitIds: [traitFor("abu").id] };
     state.directions.forward.context.level = 99;
     state.directions.forward.context.attackerLevel = 99;
-    setLevel(state, "attacker", "abu", { CurrentLevel: 90, LevelEventCount: 1 });
+    setLevel(state, "attacker", "abu", { BattleLevel: 92 });
     expect(resolveS5PreviewBattleLevel(snapshot, state, "attacker")).toBe(60);
     expect(withS5PreviewBattleLevels(snapshot, state).sides.attacker.level).toBe(60);
     state.sides.attacker.spiritId = spiritFor("gold-vein-dragon").id;
@@ -95,7 +96,7 @@ describe("trusted S5 owner battle levels", () => {
   test("ignoring an authorized level trait restores60 and cannot reuse its old dynamic panel cache", () => {
     for (const key of levelKeys) {
       const state = fixture(key);
-      setLevel(state, "attacker", key, { CurrentLevel: 90, LevelEventCount: 0 });
+      setLevel(state, "attacker", key, { BattleLevel: 90 });
       state.sides.attacker.ignoreTraits = true;
       state.sides.attacker.panelStats = cachedPanel;
       expect(resolveS5PreviewBattleLevel(snapshot, state, "attacker")).toBe(60);
@@ -114,8 +115,8 @@ describe("trusted S5 owner battle levels", () => {
       const state = fixture(key);
       state.sides.attacker.spiritId = custom.id;
       state.sides.attacker.panelStats = cachedPanel;
-      setLevel(state, "attacker", key, { CurrentLevel: key === "minggulong" ? 99 : 70, LevelEventCount: 1 });
       const expected = key === "minggulong" ? 89 : 72;
+      setLevel(state, "attacker", key, { BattleLevel: expected });
       expect(resolveS5PreviewBattleLevel(customSnapshot, state, "attacker")).toBe(expected);
       const projected = withS5PreviewBattleLevels(customSnapshot, state);
       expect(projected.sides.attacker).toMatchObject({ spiritId: custom.id, level: expected });

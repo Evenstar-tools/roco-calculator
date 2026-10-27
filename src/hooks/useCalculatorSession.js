@@ -31,6 +31,7 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast, on
   const lastStorageIssue = useRef("");
   const undoBatchRef = useRef(null);
   const undoBatchSequenceRef = useRef(0);
+  const discreteUndoBatchRef = useRef(null);
   const [undoCount, setUndoCount] = useState(() => startup.history.size());
   const [redoCount, setRedoCount] = useState(() => startup.history.redoSize());
   useEffect(() => { if (startup.warning) onToast(t(startup.warning)); }, [startup, onToast, t]);
@@ -56,15 +57,22 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast, on
     return undoBatchRef.current;
   }
 
+  // Explicit uses are separate actions, even within the rapid-input window.
+  function beginDiscreteAction() {
+    undoBatchRef.current = null;
+    discreteUndoBatchRef.current = startUndoBatch();
+  }
+
   function commitState(nextState, rememberSide = null, {
     groupKey = null,
     recordHistory = true,
   } = {}) {
     if (nextState === stateRef.current) return nextState;
     if (recordHistory) {
+      const batchToken = startUndoBatch();
       undoHistoryRef.current.record(stateRef.current, {
-        batchToken: startUndoBatch(),
-        groupKey,
+        batchToken,
+        groupKey: discreteUndoBatchRef.current === batchToken ? null : groupKey,
         rememberSide,
       });
       setUndoCount(undoHistoryRef.current.size());
@@ -130,6 +138,7 @@ export function useCalculatorSession({ initialState, onRememberSide, onToast, on
   }
 
   return {
+    beginDiscreteAction,
     commitSession,
     hasRestoredSession: startup.restored === true,
     dispatch,

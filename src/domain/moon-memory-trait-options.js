@@ -1,3 +1,5 @@
+import { getS5PreviewTraitInputs } from "./s5-preview-traits.js";
+import { preferredS5FamilyTraitId, s5FamilyTraitIdentity } from "../features/s5-preview/family-trait-identity.js";
 import { supportsChoiceTrait } from "./choice-skill-sequence.js";
 import { hasNegativeStatusTraitApplication } from "./negative-status-rules.js";
 import { getDirectTraitDamageRule } from "./trait-damage.js";
@@ -58,6 +60,7 @@ function normalizeSearch(value) {
 export function getMoonMemoryTraitSupport(trait) {
   const traitName = trait?.displayName ?? trait?.name;
   const supported =
+    getS5PreviewTraitInputs(trait)?.some(control => control.action === "s5-stat-turn-end") ||
     ["attacker", "defender"].some((role) =>
       hasNamedTraitEffectRule(trait, role),
     ) ||
@@ -97,7 +100,7 @@ export function createMoonMemoryTraitSearchIndex(snapshot) {
   const traitsById = new Map(
     (snapshot?.traits ?? []).map((trait) => [trait.id, trait]),
   );
-  return (snapshot?.spirits ?? []).flatMap((spirit) =>
+  const options = (snapshot?.spirits ?? []).flatMap((spirit) =>
     (spirit.traitIds ?? []).flatMap((traitId) => {
       const trait = traitsById.get(traitId);
       if (!trait) return [];
@@ -125,6 +128,22 @@ export function createMoonMemoryTraitSearchIndex(snapshot) {
       }];
     }),
   );
+  const families = new Map();
+  for (const option of options) {
+    const key = s5FamilyTraitIdentity(option.trait);
+    if (!key) continue;
+    const family = families.get(key) ?? { first: option, preferred: option, searchFields: new Set(), ids: new Set() };
+    if (option.traitId === preferredS5FamilyTraitId(option.trait)) family.preferred = option;
+    for (const field of option.searchFields) family.searchFields.add(field);
+    family.ids.add(option.traitId);
+    families.set(key, family);
+  }
+  return options.flatMap(option => {
+    const family = families.get(s5FamilyTraitIdentity(option.trait));
+    if (!family) return [option];
+    return option === family.first ? [{ ...family.preferred,
+      searchFields: [...family.searchFields], equivalentTraitIds: [...family.ids] }] : [];
+  });
 }
 
 export function hasNativeMoonMemoryTrait(snapshot, spirit) {

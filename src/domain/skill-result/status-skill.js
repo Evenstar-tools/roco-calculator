@@ -38,17 +38,17 @@ export function statusOrDefenseSkillResult({
         mode === "single" ? direction.hitCount : undefined,
         getDefaultHitCount(skill),
       ) ?? 1;
-    const panelTraitResolution = resolveTraitMultipliers({
-      attackerTraits: attacker.traits,
-      defenderTraits: defender.traits,
-      skill: { ...skill, category: "physical" },
-      attacker,
-      defender,
-      context,
-    });
-    const panelTrait =
-      panelTraitResolution.status === "exact"
-        ? panelTraitResolution
+    const panelTraitForCategory = (category) => {
+      const resolution = resolveTraitMultipliers({
+        attackerTraits: attacker.traits,
+        defenderTraits: defender.traits,
+        skill: { ...skill, category },
+        attacker,
+        defender,
+        context,
+      });
+      return resolution.status === "exact"
+        ? resolution
         : {
             attackLevelBonus: 0,
             attackerSpeedFlatBonus: 0,
@@ -57,6 +57,12 @@ export function statusOrDefenseSkillResult({
             defenderSpeedFlatBonus: 0,
             defenderSpeedLevelBonus: 0,
           };
+    };
+    const panelTraits = {
+      physical: panelTraitForCategory("physical"),
+      magical: panelTraitForCategory("magical"),
+    };
+    const panelTrait = panelTraits.physical;
     const attackLevelStage =
       finiteNumber(
         slotOverrides.attackLevelStage,
@@ -72,7 +78,7 @@ export function statusOrDefenseSkillResult({
     const statusAttackStageFor = (category) =>
       attackLevelStage +
       markAttackLevelBonus +
-      panelTrait.attackLevelBonus +
+      panelTraits[category].attackLevelBonus +
       attackerBloodline.attackLevelBonusByCategory[category] +
       defenderBloodline.targetAttackLevelBonusByCategory[category] +
       attackerContract.attackLevelBonusByCategory[category] +
@@ -80,7 +86,7 @@ export function statusOrDefenseSkillResult({
     const statusDefenseStageFor = (category) =>
       defenseLevelStage +
       (category === "magical" ? finiteNumber(directionOverrides.magicalDefenseLevelStageAdd) ?? 0 : 0) +
-      panelTrait.defenseLevelBonus +
+      panelTraits[category].defenseLevelBonus +
       defenderBloodline.defenseLevelBonusByCategory[category] +
       attackerBloodline.targetDefenseLevelBonusByCategory[category] +
       defenderContract.defenseLevelBonusByCategory[category] +

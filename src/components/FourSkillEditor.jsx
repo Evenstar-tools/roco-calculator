@@ -28,8 +28,10 @@ import {
 } from "../domain/choice-skill-sequence.js";
 import { buildRefractionHint } from "../domain/refraction.js";
 import { getGaleTurbineCompanionInput } from "../domain/wing-extension.js";
+import { getDefaultHitCount } from "../domain/skill-effects.js";
 import { resolveLifestealCapability } from "../domain/baron-greed.js";
 import { S5PreviewTraitSummary } from "./S5PreviewTraitSummary.jsx";
+import { getS5PreviewTraitPresentation } from "../features/s5-preview/trait-presentation.js";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -103,6 +105,7 @@ function SkillDamagePreview({
 }
 
 function SkillSide({
+  headerAction,
   active,
   activeDamageSource,
   activeSkillIndex,
@@ -164,14 +167,17 @@ function SkillSide({
       (input) => (input.contextKey ?? input.key) === "defenderHpPercent",
     ),
   );
+  const offensePresentation = getS5PreviewTraitPresentation(trait, "attacker");
+  const defensePresentation = getS5PreviewTraitPresentation(defenseTrait, "defender");
   const offensiveTraitInputs =
-    trait?.inputs?.filter(
+    (offensePresentation?.inputs ?? trait?.inputs)?.filter(
       (input) =>
         input.scope !== "slot" &&
         ((input.contextKey ?? input.key) !== "attackerHpPercent" || !health),
     ) ?? [];
   const defensiveTraitInputs =
-    defenseTrait?.inputs?.filter((input) => input.scope !== "slot") ?? [];
+    (defensePresentation?.inputs ?? defenseTrait?.inputs)?.filter((input) => input.scope !== "slot" &&
+      input.contextKey !== "defenderTraitS5BattleLevel") ?? [];
   const effectiveTraits = traits.length > 0
     ? traits
     : trait
@@ -198,11 +204,12 @@ function SkillSide({
       <header>
         <span>{label}</span>
         <strong>{name}</strong>
+        {headerAction}
       </header>
       <div className="four-skill-side__conditions">
         {traitEditor}
         {offensiveTraitInputs.length > 0 ||
-        trait?.previewTraitEntity?.previewIdentity ||
+        offensePresentation?.visible ||
         trait?.skillPowerBonuses?.length > 0 ||
         showsLifestealCapability ? (
           <div className="four-skill-trait-controls">
@@ -230,7 +237,7 @@ function SkillSide({
             <S5PreviewTraitSummary trait={trait} role="attacker" context={traitContext} />
           </div>
         ) : null}
-        {defensiveTraitInputs.length > 0 || defenseTrait?.previewTraitEntity?.previewIdentity ? (
+        {defensiveTraitInputs.length > 0 || defensePresentation?.visible ? (
           <div className="four-skill-trait-controls four-skill-trait-controls--defense">
             <TraitHint
               description={defenseTrait.description}
@@ -500,7 +507,7 @@ function SkillSide({
                 />
                 <span className="skill-slot__kind">
                   {selected
-                    ? `${result?.typeLabel ?? selected.type}·${CATEGORY_LABELS[selected.category]?.slice(0, 1) ?? "—"}`
+                    ? `${result?.typeLabel ?? selected.type ?? "—"}·${CATEGORY_LABELS[selected.category]?.slice(0, 1) ?? "—"}`
                     : "—"}
                 </span>
                 <span className="skill-slot__cost">
@@ -552,7 +559,8 @@ function SkillSide({
                     onFocus={() => onSkillFocus?.(side, index)}
                     type="number"
                     value={
-                      result?.hitCount ?? selected?.slotHitCount ?? hitCount
+                      result?.hitCount ?? selected?.slotHitCount ??
+                      (selected?.calculationStatus === "pending-skill-data" ? getDefaultHitCount(selected) : hitCount)
                     }
                   />
                 </label>
@@ -742,6 +750,7 @@ function SkillSide({
 }
 
 export function FourSkillEditor({
+  headerActions = {},
   canSkillActivate,
   skillActivationLabel,
   traitEditors = {},
@@ -842,6 +851,7 @@ export function FourSkillEditor({
     return (
       <SkillSide
         {...sideProps[side]}
+        headerAction={headerActions[side]}
         traitEditor={traitEditors[side]}
         active={activeSide === side}
         activeDamageSource={activeDamageSource}

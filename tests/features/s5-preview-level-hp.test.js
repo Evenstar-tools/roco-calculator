@@ -9,7 +9,7 @@ import { applyBattleActivation } from "../../src/state/battle-activation.js";
 import { resolveSkillStatusActivation } from "../../src/domain/skill-status-effects.js";
 
 const stats = { hp: 100, physicalAttack: 100, magicalAttack: 100, physicalDefense: 100, magicalDefense: 100, speed: 100 };
-function fixture({ key = "minggulong", level = 99, count = 0, mode = "four" } = {}) {
+function fixture({ key = "minggulong", level = 99, mode = "four" } = {}) {
   const identity = { catalogId: "s5-level-hp-fixture", key, mechanicKey: key === "minggulong" ? key : "abu" };
   const trait = { id: "level-trait", name: "前瞻特性", description: "等级机制", previewIdentity: identity };
   const snapshot = { meta: { id: "s5-level-hp", rulesVersion: "fixture" },
@@ -22,10 +22,8 @@ function fixture({ key = "minggulong", level = 99, count = 0, mode = "four" } = 
   };
   const state = createInitialState(snapshot);
   state.mode = mode;
-  const inputs = getS5PreviewTraitInputs(trait);
-  for (const [suffix, value] of [["CurrentLevel", level], ["LevelEventCount", count]]) {
-    state.directions.forward.context[inputs.find(input => input.contextKey.endsWith(suffix)).id] = value;
-  }
+  const input = getS5PreviewTraitInputs(trait).find(input => input.contextKey.endsWith("BattleLevel"));
+  state.directions.forward.context[input.id] = level;
   return { snapshot, state, activeDirection: "reverse" };
 }
 
@@ -34,7 +32,7 @@ function expectedPanel(args, level, raceStats = stats) {
 }
 
 test.each(["single", "four"])("%s模式等级面板、双方HP与结算使用同一临时等级，原会话不写level", mode => {
-  const args = fixture({ mode, count: 2 });
+  const args = fixture({ mode, level: 79 });
   const before = structuredClone(args);
   const view = buildCalculatorViewModel(args);
   const panel = expectedPanel(args, 79);
@@ -138,17 +136,19 @@ test("同族形态HP截断也使用实际等级，并同步满血百分比", () 
   expect(next.sides.attacker).not.toHaveProperty("level");
 });
 
-test("默认满血null在连续等级变化中保持满血，不变成旧上限绝对值", () => {
-  const args = fixture({ key: "abu", level: 60 });
+test.each(["abu", "boss-abu", "super-abu"])("%s默认满血null随直接等级连续变化保持满血，不变成旧上限绝对值", key => {
+  const args = fixture({ key, level: 60 });
   let state = args.state;
-  const countInput = getS5PreviewTraitInputs(args.snapshot.traits[0]).find(input => input.contextKey.endsWith("LevelEventCount"));
-  for (const count of [0, 1, 2]) {
+  const levelInput = getS5PreviewTraitInputs(args.snapshot.traits[0]).find(input => input.contextKey.endsWith("BattleLevel"));
+  for (const level of [60, 62, 64, 79, 80]) {
     state = { ...state, directions: { ...state.directions, forward: { ...state.directions.forward,
-      context: { ...state.directions.forward.context, [countInput.id]: count } } } };
+      context: { ...state.directions.forward.context, [levelInput.id]: level } } } };
     state = projectBattleLevelHealth(state, { snapshot: args.snapshot, side: "attacker", hpInputMode: "percent" });
     expect(state.directions.reverse.currentHp).toBeNull();
     const view = buildBalanceComparison({ ...args, state }).afterView;
-    expect(view.sides.attacker.combatLevel).toBe(60 + 2 * count);
+    expect(view.sides.attacker.combatLevel).toBe(level);
+    expect(view.sides.attacker.panelStats).toEqual(expectedPanel(args, level));
+    expect(view.sides.attacker.health.maxHp).toBe(expectedPanel(args, level).hp);
     expect(view.sides.attacker.health.currentHp).toBe(view.sides.attacker.health.maxHp);
   }
 });

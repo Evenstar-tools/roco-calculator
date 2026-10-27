@@ -30,61 +30,81 @@ test("正式特性不额外显示S5摘要", () => {
   expect(container).toBeEmptyDOMElement();
 });
 
-test("等级调整后摘要同步，99级可算且低于80才增加承伤", () => {
+test("等级调整后攻击摘要只显示等级，承伤摘要保留在防守方向", () => {
   const trait = traitView("minggulong");
   const { rerender } = render(<S5PreviewTraitSummary trait={trait} />);
   const summary = screen.getByRole("status", { name: "攻击特性当前效果" });
   expect(summary).toHaveAttribute("data-status", "ready");
   expect(summary).toHaveTextContent("99");
+  expect(summary).not.toHaveTextContent("等级系数");
   expect(summary).not.toHaveTextContent("承伤 +40%");
   rerender(<S5PreviewTraitSummary trait={trait} context={withValues(trait, {
-    attackerTraitS5CurrentLevel: 60,
+    attackerTraitS5BattleLevel: 60,
   })} />);
   expect(summary).toHaveAttribute("data-status", "ready");
   expect(summary).toHaveTextContent("60");
-  expect(summary).toHaveTextContent("承伤 +40%");
+  expect(summary).not.toHaveTextContent("承伤 +40%");
   expect(summary).not.toHaveTextContent("不能套用固定60级核心");
+  rerender(<S5PreviewTraitSummary trait={trait} context={withValues(trait, {
+    attackerTraitS5BattleLevel: 40,
+  })} />);
+  expect(summary).toHaveTextContent("当前等级 40");
+  expect(summary).not.toHaveTextContent("承伤 +40%");
 });
 
-test("单技能复用现有控件，攻防摘要分别读取各自当前生效值", () => {
+test("阿布按方向显示等级与承伤，不给所有技能标通用增伤", () => {
+  const trait = traitView("abu");
+  const { rerender } = render(<S5PreviewTraitSummary trait={trait} context={withValues(trait, {
+    attackerTraitS5BattleLevel: 79,
+  })} />);
+  const summary = screen.getByRole("status", { name: "攻击特性当前效果" });
+  expect(summary).toHaveTextContent("当前等级 79");
+  expect(summary).not.toHaveTextContent("等级系数");
+  expect(summary).not.toHaveTextContent("承伤 +40%");
+  const defense = traitView("abu", "defender");
+  rerender(<S5PreviewTraitSummary trait={defense} role="defender" context={withValues(defense, {
+    defenderTraitS5BattleLevel: 79,
+  })} />);
+  expect(screen.getByRole("status", { name: "防御特性当前效果" })).not.toHaveTextContent("等级系数");
+  expect(screen.getByRole("status", { name: "防御特性当前效果" })).toHaveTextContent("承伤 +40%");
+});
+
+test("单技能攻击类特性不出现在对方防御卡，切换方向才编辑该方增益", () => {
   const attack = traitView("gold-vein-dragon");
   const defense = traitView("underground-silver-dragon", "defender");
-  function Editor() {
+  function Editor({ reverse = false }) {
     const [context, setContext] = useState({});
     return <SingleSkillEditor hitCount={1} selectedSkill={skill} skills={[skill]}
-      attackerTrait={attack} defenderTrait={defense} traitContext={context}
+      attackerTrait={reverse ? traitView("underground-silver-dragon") : attack}
+      defenderTrait={reverse ? traitView("gold-vein-dragon", "defender") : defense} traitContext={context}
       onHitCountChange={vi.fn()} onSkillSelect={vi.fn()}
       onTraitContextChange={(key, value) => setContext(previous => ({ ...previous, [key]: value }))} />;
   }
-  render(<Editor />);
+  const { rerender } = render(<Editor />);
   const attackSummary = screen.getByRole("status", { name: "攻击特性当前效果" });
-  const defenseSummary = screen.getByRole("status", { name: "防御特性当前效果" });
-  expect(attackSummary).toHaveTextContent("双攻增益未生效");
-  expect(defenseSummary).toHaveTextContent("魔攻 +0%");
-  fireEvent.click(screen.getByRole("checkbox", { name: "聚能后双攻增益当前生效" }));
-  fireEvent.change(screen.getByRole("spinbutton", { name: "当前已生效双攻增益" }), { target: { value: "75" } });
-  expect(attackSummary).toHaveTextContent("当前已生效双攻 +75%");
-  expect(defenseSummary).toHaveTextContent("魔攻 +0%");
-  fireEvent.change(screen.getByRole("spinbutton", { name: "当前累计已生效魔攻增益" }), { target: { value: "90" } });
-  expect(defenseSummary).toHaveTextContent("魔攻 +90%");
-  expect(attackSummary).toHaveTextContent("双攻 +75%");
-  fireEvent.click(screen.getByRole("checkbox", { name: "聚能后双攻增益当前生效" }));
-  expect(attackSummary).toHaveTextContent("双攻增益未生效");
-  expect(defenseSummary).toHaveTextContent("魔攻 +90%");
+  expect(screen.queryByRole("status", { name: "防御特性当前效果" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("spinbutton", { name: "累计消耗能量" })).not.toBeInTheDocument();
+  fireEvent.change(screen.getByRole("spinbutton", { name: "聚能次数" }), { target: { value: "2" } });
+  expect(attackSummary).toHaveTextContent("聚能 2 次 · 物攻能力等级 +10");
+  rerender(<Editor reverse />);
+  expect(screen.queryByRole("spinbutton", { name: "聚能次数" })).not.toBeInTheDocument();
+  fireEvent.change(screen.getByRole("spinbutton", { name: "累计消耗能量" }), { target: { value: "9" } });
+  expect(screen.getByRole("status", { name: "攻击特性当前效果" })).toHaveTextContent("魔攻 +90%");
+  expect(screen.queryByRole("status", { name: "防御特性当前效果" })).not.toBeInTheDocument();
 });
 
-test("四技能两个方向的防守摘要读取对方owner，角色参数不串", () => {
+test("四技能纯攻击增益仅在精灵自身列，两个方向不重复显示对方魔攻或聚能", () => {
   const goldAttack = traitView("gold-vein-dragon");
   const goldDefense = traitView("gold-vein-dragon", "defender");
   const silverAttack = traitView("underground-silver-dragon");
   const silverDefense = traitView("underground-silver-dragon", "defender");
   const forward = {
-    ...withValues(goldAttack, { attackerTraitS5AttackBuffActive: true, attackerTraitS5CurrentAttackBonus: 25 }),
-    ...withValues(silverDefense, { defenderTraitS5CurrentMagicalAttackBonus: 75 }),
+    ...withValues(goldAttack, { attackerTraitS5ChargeCount: 2 }),
+    ...withValues(silverDefense, { defenderTraitS5EnergySpent: 8 }),
   };
   const reverse = {
-    ...withValues(silverAttack, { attackerTraitS5CurrentMagicalAttackBonus: 75 }),
-    ...withValues(goldDefense, { defenderTraitS5AttackBuffActive: true, defenderTraitS5CurrentAttackBonus: 25 }),
+    ...withValues(silverAttack, { attackerTraitS5EnergySpent: 8 }),
+    ...withValues(goldDefense, { defenderTraitS5ChargeCount: 2 }),
   };
   const { container } = render(<FourSkillEditor attackerName="金脉" defenderName="银龙"
     attackerSkills={[skill]} defenderSkills={[skill]} skills={[skill]}
@@ -92,10 +112,33 @@ test("四技能两个方向的防守摘要读取对方owner，角色参数不串
     defenderTrait={silverAttack} defenderDefenseTrait={goldDefense} defenderTraitContext={reverse} />);
   const attackSide = within(container.querySelector(".four-skill-side--attacker"));
   const defenseSide = within(container.querySelector(".four-skill-side--defender"));
-  expect(attackSide.getByRole("status", { name: "攻击特性当前效果" })).toHaveTextContent("双攻 +25%");
-  expect(attackSide.getByRole("status", { name: "防御特性当前效果" })).toHaveTextContent("魔攻 +75%");
-  expect(defenseSide.getByRole("status", { name: "攻击特性当前效果" })).toHaveTextContent("魔攻 +75%");
-  expect(defenseSide.getByRole("status", { name: "防御特性当前效果" })).toHaveTextContent("双攻 +25%");
+  expect(attackSide.getByRole("status", { name: "攻击特性当前效果" })).toHaveTextContent("物攻能力等级 +10");
+  expect(defenseSide.getByRole("status", { name: "攻击特性当前效果" })).toHaveTextContent("魔攻 +80%");
+  expect(attackSide.queryByRole("spinbutton", { name: "累计消耗能量" })).not.toBeInTheDocument();
+  expect(defenseSide.queryByRole("spinbutton", { name: "聚能次数" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("status", { name: "防御特性当前效果" })).not.toBeInTheDocument();
+  expect(screen.getAllByRole("spinbutton", { name: "累计消耗能量" })).toHaveLength(1);
+  expect(screen.getAllByRole("spinbutton", { name: "聚能次数" })).toHaveLength(1);
+});
+
+test("冰钻首领防御栏只保留速度条件和速度摘要，威力仍在自身攻击栏", () => {
+  const attack = traitView("boss-ice-bruce");
+  const defense = traitView("boss-ice-bruce", "defender");
+  render(<SingleSkillEditor hitCount={1} selectedSkill={skill} skills={[skill]}
+    attackerTrait={attack} defenderTrait={defense}
+    traitContext={{ ...withValues(attack, { attackerTraitS5CurrentPowerBonus: 30 }),
+      ...withValues(defense, { defenderTraitS5CurrentPowerBonus: 80, defenderTraitS5OpponentTotalCost: 20 }) }} />);
+  expect(screen.getAllByRole("spinbutton", { name: "当前累计已生效威力增益（手动）" })).toHaveLength(1);
+  expect(screen.getByRole("status", { name: "攻击特性当前效果" })).toHaveTextContent("威力 +30%");
+  expect(screen.getByRole("status", { name: "防御特性当前效果" })).toHaveTextContent(/^速度 \+50$/);
+});
+
+test.each(["egg-wrap", "minggulong", "abu"])("%s保留真正影响防御的输入与摘要", key => {
+  render(<SingleSkillEditor hitCount={1} selectedSkill={skill} skills={[skill]}
+    defenderTrait={traitView(key, "defender")} />);
+  expect(screen.getByRole("status", { name: "防御特性当前效果" })).toBeInTheDocument();
+  expect(key === "egg-wrap" ? screen.getByRole("checkbox", { name: "特性触发" })
+    : screen.getByRole("spinbutton", { name: "当前等级" })).toBeInTheDocument();
 });
 
 test("没有控件的候选仍显示摘要，未知机制原因不重复堆叠", () => {

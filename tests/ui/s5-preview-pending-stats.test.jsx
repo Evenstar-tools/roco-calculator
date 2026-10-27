@@ -141,37 +141,44 @@ function pickerProps(spirits, selected = null) {
 function expectS5Pinned() {
   const first = screen.getAllByRole("option").slice(0, s5Catalog.entries.length);
   expect(first.map(option => option.dataset.spiritId)).toEqual(s5Catalog.entries.map(entry => s5PreviewIds(entry.key).spiritId));
-  for (const option of first) {
+  for (const [index, option] of first.entries()) {
     expect(option.querySelector("strong")).toHaveAttribute("data-new", "true");
-    expect(option).toHaveTextContent("六维100测试占位");
+    if (s5Catalog.entries[index].raceStats === undefined) expect(option).toHaveTextContent("六维100测试占位");
+    else if (s5Catalog.entries[index].raceStats === null) expect(option).toHaveTextContent("种族值待确认");
+    else expect(option).not.toHaveTextContent("六维100测试占位");
   }
 }
 
-test("真实App中S5六维100可编辑、恢复占位及上次手调，S4不再NEW且等级特性可计算", async () => {
+test("真实App中S5六维100可编辑、恢复当前及上次修改，未改值不提示自定义", async () => {
   const user = userEvent.setup();
   const current = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
   const snapshot = withWebPreview(current);
-  const candidate = snapshot.spirits.find(spirit => spirit.previewIdentity?.key === "minggulong");
+  const candidate = snapshot.spirits.find(spirit => spirit.previewIdentity?.key === "abu");
   const wolf = snapshot.spirits.find(spirit => spirit.fullName === "银月狼王");
   const state = createInitialState(snapshot);
   state.sides.attacker.spiritId = candidate.id;
   state.sides.defender.spiritId = wolf.id;
   render(<App initialSnapshot={snapshot} initialWorkspace={{ state, activeDirection: "forward", viewMode: "compact" }} />);
-  expect(screen.getByText("冥古龙", { selector: ".spirit-card__title strong" })).toHaveAttribute("data-new", "true");
+  expect(screen.getByText("阿布", { selector: ".spirit-card__title strong" })).toHaveAttribute("data-new", "true");
+  expect(screen.getByText("暂定六维100", { selector: ".spirit-card__pending" })).toBeVisible();
   expect(screen.getByText("银月狼王", { selector: ".spirit-card__title strong" })).not.toHaveAttribute("data-new");
-  await user.click(screen.getByRole("button", { name: "编辑冥古龙试算种族值" }));
-  const editor = screen.getByRole("dialog", { name: "冥古龙种族值试算" });
+  await user.click(screen.getByRole("button", { name: "编辑阿布试算种族值" }));
+  const editor = screen.getByRole("dialog", { name: "阿布种族值试算" });
   await user.click(within(editor).getByRole("checkbox", { name: "自定义种族值" }));
   for (const input of within(editor).getAllByRole("spinbutton")) expect(input).toHaveValue(100);
-  expect(screen.getByLabelText("自定义种族值摘要")).toHaveTextContent("沿用占位值");
+  expect(screen.queryByLabelText("自定义种族值摘要")).not.toBeInTheDocument();
+  expect(screen.getByText("暂定六维100", { selector: ".spirit-card__pending" })).toBeVisible();
   expect(within(editor).getAllByText("占位 100")).toHaveLength(6);
   expect(within(editor).queryByText("官方 100")).not.toBeInTheDocument();
   const attack = within(editor).getByRole("spinbutton", { name: "试算物攻种族值" });
   fireEvent.change(attack, { target: { value: "250" } });
   expect(attack).toHaveValue(250);
   expect(screen.getByLabelText("自定义种族值摘要")).toHaveTextContent("100 → 250");
-  await user.click(within(editor).getByRole("button", { name: "恢复占位种族值" }));
-  await user.click(within(editor).getByRole("button", { name: "恢复上次手调值" }));
+  expect(screen.queryByText("暂定六维100", { selector: ".spirit-card__pending" })).not.toBeInTheDocument();
+  await user.click(within(editor).getByRole("button", { name: "恢复当前" }));
+  expect(screen.queryByLabelText("自定义种族值摘要")).not.toBeInTheDocument();
+  expect(screen.getByText("暂定六维100", { selector: ".spirit-card__pending" })).toBeVisible();
+  await user.click(within(editor).getByRole("button", { name: "恢复上次修改" }));
   expect(within(editor).getByRole("spinbutton", { name: "试算物攻种族值" })).toHaveValue(250);
   await user.keyboard("{Escape}");
   expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).toHaveAttribute("data-status", "ready");
@@ -180,31 +187,33 @@ test("真实App中S5六维100可编辑、恢复占位及上次手调，S4不再N
   expect(current.spirits.some(spirit => spirit.id === candidate.id)).toBe(false);
 });
 
-test("实际S5目录17项均进入首批并排在迪莫前，全部候选卡片显示NEW", async () => {
+test("实际S5目录含官方进化形态均进入首批并排在迪莫前，全部候选卡片显示NEW", async () => {
   const user = userEvent.setup();
   const spirits = s5Roster();
   const props = pickerProps(spirits, spirits.find(spirit => spirit.id === "dimo"));
   const { rerender } = render(<SpiritPicker {...props} />);
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
-  expect(s5Catalog.entries).toHaveLength(17);
+  expect(s5Catalog.entries.some(entry => entry.raceStats)).toBe(true);
   expectS5Pinned();
-  expect(screen.getAllByRole("option")[17]).toHaveAttribute("data-spirit-id", "dimo");
+  expect(screen.getAllByRole("option")[s5Catalog.entries.length]).toHaveAttribute("data-spirit-id", "dimo");
   await user.keyboard("{Escape}");
   for (const entry of s5Catalog.entries) {
     const selected = spirits.find(spirit => spirit.id === s5PreviewIds(entry.key).spiritId);
     rerender(<SpiritPicker {...props} selected={selected} />);
     expect(screen.getByText(selected.fullName, { selector: ".spirit-card__title strong" })).toHaveAttribute("data-new", "true");
-    expect(screen.getByText("六维100测试占位", { selector: ".spirit-card__pending" })).toBeVisible();
+    if (entry.raceStats === undefined) expect(screen.getByText("暂定六维100", { selector: ".spirit-card__pending" })).toBeVisible();
+    else if (entry.raceStats === null) expect(screen.getByText("种族值待确认", { selector: ".spirit-card__pending" })).toBeVisible();
+    else expect(screen.queryByText("暂定六维100", { selector: ".spirit-card__pending" })).not.toBeInTheDocument();
   }
 });
 
-test("无搜索的收藏与热门预设模式都保留17项S5置顶", async () => {
+test("无搜索的收藏与热门预设模式都保留全部S5置顶", async () => {
   const user = userEvent.setup();
   const spirits = s5Roster({ saved: true });
   const first = render(<SpiritPicker {...pickerProps(spirits)} />);
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
   expectS5Pinned();
-  expect(screen.getAllByRole("option")[17]).toHaveAttribute("data-spirit-id", "saved");
+  expect(screen.getAllByRole("option")[s5Catalog.entries.length]).toHaveAttribute("data-spirit-id", "saved");
   first.unmount();
   localStorage.setItem(PRESET_BROWSE_STORAGE_KEY, "1");
   vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ entries: [{ spiritId: "popular" }] }) })));
@@ -213,7 +222,7 @@ test("无搜索的收藏与热门预设模式都保留17项S5置顶", async () =
   await waitFor(() => expect(screen.getByRole("option", { name: /热门配置/u })).toBeVisible());
   expectS5Pinned();
   expect(screen.getAllByRole("option")[0]).toHaveClass("is-active");
-  expect(screen.getAllByRole("option").slice(17).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
+  expect(screen.getAllByRole("option").slice(s5Catalog.entries.length).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
 });
 
 test.each([false, true])("已选同族精灵时S5仍置顶，常用配置模式=%s，原同族切换保留", async (presetMode) => {
@@ -256,7 +265,7 @@ test("已有千棘海针显示正式头像与首领身份，不再出现千棘�
   render(<SpiritPicker {...pickerProps(spirits, selected)} />);
   expect(screen.getByText("千棘海针", { selector: ".spirit-card__title strong" })).not.toHaveAttribute("data-new");
   expect(screen.getByText("溶解腐蚀")).toBeVisible();
-  expect(screen.queryByText("六维100测试占位")).not.toBeInTheDocument();
+  expect(screen.queryByText("暂定六维100")).not.toBeInTheDocument();
   const input = screen.getByRole("combobox", { name: "攻击方精灵" });
   fireEvent.change(input, { target: { value: "千棘" } });
   const options = screen.getAllByRole("option");

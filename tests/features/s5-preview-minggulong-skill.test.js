@@ -22,14 +22,17 @@ test("用户图示特性名与原文同时接到冥古龙卡片和原生特性",
   expect(original.spirits.some(entry => entry.id === mingId)).toBe(false);
 });
 
-test("荒芜之噬仅补冥古龙已确认专属学习关系，其余占位不继承", () => {
+test("荒芜之噬接入冥古龙家族图示配招，其余家族不继承", () => {
   const skill = snapshot.skills.find(entry => entry.id === skillId);
   expect(skill).toMatchObject({ name: "荒芜之噬", type: "龙", category: "physical", cost: 5, basePower: 130,
-    description: "造成物伤，若击败敌方，自己等级+20。" });
+    description: "造成物伤，若击败敌方，自己等级+20。",
+    iconUrl: "/assets/skills/skill_preview_s5_barren-devour.png" });
+  expect(readFileSync(`public${skill.iconUrl}`).subarray(1, 4).toString("ascii")).toBe("PNG");
   expect(getLegalSkillIds(snapshot, mingId)).toContain(skillId);
   expect(getSkillChoices(snapshot, mingId).find(entry => entry.id === skillId).learnable).toBe(true);
   expect(snapshot.learnsets.find(entry => entry.spiritId === mingId))
-    .toMatchObject({ defaultSkillIds: [], acquisitions: { [skillId]: ["专属技能"] } });
+    .toMatchObject({ defaultSkillIds: expect.arrayContaining([skillId]), acquisitions: { [skillId]: ["专属技能"] } });
+  expect(getLegalSkillIds(snapshot, "spirit_preview_s5_little-ming-dragon")).toContain(skillId);
   for (const key of ["abu", "boss-abu", "super-abu", "gold-vein-dragon"]) {
     expect(getLegalSkillIds(snapshot, `spirit_preview_s5_${key}`)).not.toContain(skillId);
   }

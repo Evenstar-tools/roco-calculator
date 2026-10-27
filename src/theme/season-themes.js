@@ -30,7 +30,7 @@ export const SEASON_THEMES = Object.freeze({
   }),
   s5: freezeTheme({
     id: "s5", sourceName: "圣龙宝藏", scene: "/assets/season/s5-dragon-treasure.webp",
-    character: { src: "/assets/season/s5-minggulong.webp", width: 472, height: 385 },
+    character: { src: "/assets/season/s5-abu-mascot.webp", width: 1024, height: 1024 },
   }),
 });
 

@@ -1,3 +1,8 @@
+import { applyS5PreviewStatTurnEnd, updateS5PreviewTurnEndCounter } from "./features/s5-preview/turn-end.js";
+import { getS5PreviewTraitInputs } from "./domain/s5-preview-traits.js";
+import { canonicalTraitControlKey } from "./domain/trait-runtime.js";
+import { applyS5EnergyUse, prepareS5EnergyUse } from "./features/s5-preview/energy-use.js";
+import { applyS5DiscountUse, prepareS5DiscountUse } from "./features/s5-preview/cost-discount-use.js";
 import { loadGlobalPlaceholderCatalog, loadServerSnapshot } from "./runtime/load-snapshot.js";
 import { previewRoute } from "./runtime/preview-channel.js";
 import { useRuntime } from "./runtime/RuntimeContext.jsx";
@@ -34,7 +39,7 @@ import { SpiritStep } from "./components/SpiritStep.jsx";
 import { PresetBrowseProvider } from "./components/PresetBrowseMode.jsx";
 import { WorkspaceOverlays } from "./components/WorkspaceOverlays.jsx";
 import { useBalanceComparison } from "./features/balance-comparison/useBalanceComparison.js";
-import { SpiritComparisonControls, SpiritTrialChanges } from "./features/balance-comparison/SpiritComparisonControls.jsx";
+import { SpiritComparisonControls, SpiritPreviousStatsAction, SpiritTrialChanges } from "./features/balance-comparison/SpiritComparisonControls.jsx";
 import {
   readNegativeStatusSettlementSetting,
   readThemeSetting,
@@ -64,7 +69,7 @@ import { linkedNegativeStatusContext, negativeStatusInputUpdate } from "./domain
 import {
   hasNegativeStatusSkillApplication,
 } from "./domain/negative-status-rules.js";
-import { applyBattleActivation, canApplyBattleActivation, canToggleNegativeStatusActivation } from "./state/battle-activation.js";
+import { applyBattleActivation, canApplyBattleActivation, canToggleNegativeStatusActivation, getSkillActivationContextSignature, matchesSkillActivationContext } from "./state/battle-activation.js";
 import {
   getEditableHitCountInput,
   getSkillEffectInputs,
@@ -85,7 +90,8 @@ import { getEffectiveTraits } from "./domain/effective-traits.js";
 import { getBattleFormChoices } from "./domain/battle-form.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
 import { withWebPreview } from "./features/s5-preview/with-web-preview.js";
-import { synchronizeS5PreviewSkillUse, synchronizeS5PreviewConfirmationFromUse } from "./features/s5-preview/settlement.js";
+import { applyS5PreviewDreamTurnEnd, synchronizeS5PreviewSkillUse, synchronizeS5PreviewConfirmationFromUse } from "./features/s5-preview/settlement.js";
+import { currentWeather } from "./state/weather.js";
 import { useStoredCalculatorData } from "./hooks/useStoredCalculatorData.js";
 import { useCalculatorSession } from "./hooks/useCalculatorSession.js";
 import { useCalculatorShortcuts } from "./hooks/useCalculatorShortcuts.js";
@@ -104,6 +110,8 @@ import {
   assertSnapshotReferences,
   abilityLevelMultiplier,
   createProductInitialState,
+  getRestorableDefaultSkills,
+  restoreDefaultSkills,
   patchFourSkill,
   projectBattleLevelHealth,
   reduceSessionAction,
@@ -210,6 +218,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     toggleSpiritFavorite,
   } = storedData;
   const {
+    beginDiscreteAction,
     commitSession,
     dispatch,
     state,
@@ -271,7 +280,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   const defenderSkillChoices = viewModel.skills.defenderChoices;
   const selectedSingleSkill = viewModel.skills.selectedSingle;
   const selectableSpirits = viewModel.selectableSpirits;
-  const resultModel = viewModel.result;
+  const resultModel = useMemo(() => ({ ...viewModel.result, levelComparison: balance.levelComparison }),
+    [viewModel.result, balance.levelComparison]);
   const recordCalculationInput = useCalculationMetrics({ feature: "calculator", input: state, active,
     resultKind: calculatorResultKind(configurationReady, resultModel?.selectedResult) });
   const recordLineupApply = useLineupMetrics(state, active);
@@ -302,13 +312,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       Math.floor(Number(currentDirection.context?.weatherRainTurns) || 0),
     ),
   );
-  const activeWeather = currentDirection.context?.weatherThunder === true
-    ? "thunder"
-    : activeWeatherRainTurns > 0
-      ? "rain"
-      : currentDirection.context?.weatherSandstorm === true
-        ? "sandstorm"
-        : currentDirection.context?.weatherBlizzard === true ? "blizzard" : "none";
+  const activeWeather = currentWeather(currentDirection.context);
   const activeReductionPercent = Math.round(
     (1 - reductionDirection.reduction) * 100,
   );
@@ -724,6 +728,19 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const traitOwner = traitOwnerSide === "attacker" ? attacker : defender;
     const role = key.startsWith("defenderTrait.") ? "defender" : "attacker";
     const control = traitOwner && getTraitView(snapshot, traitOwner, role)?.inputs.find((input) => input.id === key);
+    if (control?.action === "s5-stat-turn-end") {
+      const applied = applyS5PreviewStatTurnEnd(stateRef.current, { side: traitOwnerSide, snapshot });
+      if (applied.applied) commitSession({ state: applied.state, persistence: { rememberSide: traitOwnerSide } });
+      return;
+    }
+    if (control?.action === "s5-dream-turn-end") {
+      const applied = applyS5PreviewDreamTurnEnd(stateRef.current, { side: traitOwnerSide, snapshot });
+      if (applied.applied) {
+        commitSession({ state: applied.state, persistence: { rememberSide: null } });
+        setToast(`回合结束：对手寄生 +${applied.added}层（共${applied.total}层）${stateRef.current.calculationOptions?.includeNegativeStatusSettlement ? "" : "；异常结算未开启"}`);
+      } else if (applied.reason) setToast(applied.reason);
+      return;
+    }
     if (control?.contextKey === "enemyTotalSkillCost") {
       const autoControl = getTraitView(snapshot, traitOwner, role).inputs.find((input) => input.contextKey === "enemyTotalSkillCostAuto");
       if (autoControl) commitSession(updateMirroredTraitContext(stateRef.current, { direction, key: autoControl.id, value: false }));
@@ -735,6 +752,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const previousState = stateRef.current;
     const previousValue = previousState.directions[direction].context?.[key];
     const traitUpdate = updateMirroredTraitContext(previousState, { direction, key, value });
+    traitUpdate.state = updateS5PreviewTurnEndCounter(previousState, { side: traitOwnerSide, snapshot, control, value }) ?? traitUpdate.state;
     traitUpdate.state = synchronizeS5PreviewSkillUse(traitUpdate.state, {
       side: traitOwnerSide, control, value, snapshot,
     });
@@ -942,10 +960,20 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     let latest = stateRef.current;
     const entry = latest.sides[side].skills.four[index];
     const skill = getSkill(snapshot, entry);
+    const energyUse = prepareS5EnergyUse(latest, { snapshot, side,
+      result: calculation?.[side === "attacker" ? "forward" : "reverse"]?.results?.[index] });
+    const discountUse = prepareS5DiscountUse(latest, { snapshot, side, skill,
+      result: calculation?.[side === "attacker" ? "forward" : "reverse"]?.results?.[index] });
+    const trackedUse = Boolean(energyUse || discountUse);
+    if (trackedUse) beginDiscreteAction();
+    const recordS5SkillUse = () => {
+      const next = applyS5DiscountUse(applyS5EnergyUse(stateRef.current, energyUse), discountUse);
+      if (next !== stateRef.current) commitSession({ state: next, persistence: { rememberSide: side } });
+    };
     if (skill?.s5StatusEffectPending) { setToast(skill.s5StatusEffectPending); return; }
     const context = linkedNegativeStatusContext(latest, side,
       entry && typeof entry === "object" ? entry.context ?? {} : {});
-    const activationContextSignature = JSON.stringify(context);
+    const activationContextSignature = getSkillActivationContextSignature(skill, context);
     const selfDirection = side === "attacker" ? "forward" : "reverse";
     const oppositeDirection =
       selfDirection === "forward" ? "reverse" : "forward";
@@ -954,7 +982,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const isSameActiveStatus =
       activeDefenseStatus?.skillId === skill?.id &&
       activeDefenseStatus?.slotIndex === index &&
-      activeDefenseStatus?.contextSignature === activationContextSignature;
+      matchesSkillActivationContext(skill, activeDefenseStatus?.contextSignature, context);
     if (activeDefenseStatus) {
       const currentOverrides =
         latest.directions[selfDirection].overrides ?? {};
@@ -1145,7 +1173,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         recordAppliedSkill(side, skill, context);
       }
       if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
-        if (hasPostAttackSettlement || negativeStatusUseCount !== null) {
+        if (hasPostAttackSettlement || negativeStatusUseCount !== null || trackedUse) {
+          if (trackedUse && !hasPostAttackSettlement) recordAppliedSkill(side, skill, context);
+          recordS5SkillUse();
           setActiveDirection(selfDirection);
           setToast(
             [
@@ -1154,6 +1184,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                 : null,
               ...postAttackNotices,
               negativeStatusNotice,
+              trackedUse ? `${skill.name}已使用${energyUse ? ` · 消耗${energyUse.cost}点能量` : ""}` : null,
             ].filter(Boolean).join("；"),
           );
         }
@@ -1167,6 +1198,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       });
       updateFourSkillEntry(side, index, { context: sequence.nextContext });
       if (!hasPostAttackSettlement) recordAppliedSkill(side, skill, context);
+      recordS5SkillUse();
       setActiveDirection(
         side === "attacker" ? "forward" : "reverse",
       );
@@ -1268,7 +1300,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     );
     const hasTransientDefenseStatus =
       Number.isFinite(defenseReductionPercent) ||
-      Object.keys(transientPowerPercentAddsBySlot).length > 0;
+      (Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0);
 
     dispatch({
       direction: selfDirection,
@@ -1456,6 +1488,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     setActiveDirection(selfDirection);
     if (operations.weather) updateWeather(operations.weather);
     recordAppliedSkill(side, skill, context, operations, resolution.triggerCount);
+    recordS5SkillUse();
     setToast([
       negativeStatusNotice ?? `${skill.name}的状态已应用`,
       ...postAttackNotices,
@@ -1469,7 +1502,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const skill = getSkill(snapshot, entry);
     if (!skill || skill.s5StatusEffectPending) return false;
     const context = mode === "single" ? state.directions[direction].context : entry?.context;
-    return Boolean(state.directions[direction].overrides?.activeDefenseStatus ||
+    return Boolean(prepareS5EnergyUse(state, { snapshot, side, result: calculation?.[direction]?.results?.[index] }) ||
+      prepareS5DiscountUse(state, { snapshot, side, skill, result: calculation?.[direction]?.results?.[index] }) ||
+      state.directions[direction].overrides?.activeDefenseStatus ||
       Number(state.directions[direction === "forward" ? "reverse" : "forward"].reduction ?? 1) !== 1 ||
       canApplyBattleActivation(skill, linkedNegativeStatusContext(state, side, context), {
         negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
@@ -1482,7 +1517,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const direction = side === "attacker" ? "forward" : "reverse";
     const entry = mode === "single" ? state.sides[side].skills.single : state.sides[side].skills.four[index];
     const skill = getSkill(snapshot, entry);
-    if (!["status", "defense"].includes(skill?.category)) return "应用后续变化";
+    if (!["status", "defense"].includes(skill?.category)) {
+      const args = { snapshot, side, skill, result: calculation?.[direction]?.results?.[index] };
+      return prepareS5EnergyUse(state, args) || prepareS5DiscountUse(state, args) ? "使用技能" : "应用后续变化";
+    }
     const context = mode === "single" ? state.directions[direction].context : entry?.context;
     if (canToggleNegativeStatusActivation(skill, linkedNegativeStatusContext(state, side, context), {
       negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
@@ -1499,13 +1537,20 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   function activateSingleSkill() {
     if (selectedSingleSkill?.s5StatusEffectPending) { setToast(selectedSingleSkill.s5StatusEffectPending); return; }
     const actionLabel = skillActivationLabel(activeAttackSideKey, 0, "single");
-    const applied = applyBattleActivation({ calculation, side: activeAttackSideKey,
+    const energyUse = prepareS5EnergyUse(stateRef.current, { snapshot, side: activeAttackSideKey,
+      result: calculation?.[activeDirection]?.results?.[0] });
+    const discountUse = prepareS5DiscountUse(stateRef.current, { snapshot, side: activeAttackSideKey,
+      skill: selectedSingleSkill, result: calculation?.[activeDirection]?.results?.[0] });
+    const trackedUse = Boolean(energyUse || discountUse);
+    if (trackedUse) beginDiscreteAction();
+    const applied = applyBattleActivation({ calculation, allowNoEffectUse: trackedUse, side: activeAttackSideKey,
       skillIndex: 0, skillMode: "single", snapshot, state: stateRef.current });
     if (applied.applied || applied.stateChanged) {
       const currentUseCount = applied.state.directions[activeDirection].context?.negativeStatusUseCountsBySlot?.single;
-      const nextState = currentUseCount === undefined ? applied.state : synchronizeS5PreviewConfirmationFromUse(applied.state, {
+      let nextState = currentUseCount === undefined ? applied.state : synchronizeS5PreviewConfirmationFromUse(applied.state, {
         side: activeAttackSideKey, snapshot, used: Number(currentUseCount) > 0,
       });
+      if (applied.skillUsed) nextState = applyS5DiscountUse(applyS5EnergyUse(nextState, energyUse), discountUse);
       commitSession({ state: nextState, persistence: { rememberSide: activeAttackSideKey } });
     }
     setToast(applied.applied
@@ -1589,7 +1634,18 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           key={spirit.id}
           onAdd={(traitId) => dispatch({ side, traitId, type: "side/add-acquired-trait" })}
           onRemove={(traitId) => dispatch({ side, traitId, type: "side/remove-acquired-trait" })}
-          onValueChange={(traitId, key, value) => dispatch({ side, traitId, key, value, type: "side/set-acquired-trait-value" })}
+          onValueChange={(traitId, key, value) => {
+            const trait = snapshot.traits.find(item => item.id === traitId);
+            const control = getS5PreviewTraitInputs(trait)?.find(item => canonicalTraitControlKey(item) === key);
+            if (control?.action === "s5-stat-turn-end") {
+              const applied = applyS5PreviewStatTurnEnd(stateRef.current, { side, snapshot });
+              if (applied.applied) commitSession({ state: applied.state, persistence: { rememberSide: side } });
+              return;
+            }
+            const next = updateS5PreviewTurnEndCounter(stateRef.current, { side, snapshot, control, value, traitId });
+            if (next) commitSession({ state: next, persistence: { rememberSide: side } });
+            else dispatch({ side, traitId, key, value, type: "side/set-acquired-trait-value" });
+          }}
           side={state.sides[side]}
           sideKey={side}
           snapshot={snapshot}
@@ -1608,7 +1664,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         <TraitHint name={trait.name} description={trait.description} />
         <TraitInputs inputs={trait.inputs} context={context}
           onChange={(key, value) => updateTraitContext(direction, key, value)} />
-        <S5PreviewTraitSummary trait={trait} role="attacker" context={context} />
+        <S5PreviewTraitSummary trait={trait} role="attacker" context={context} owner />
       </div>
     ) : null;
     return [side, moonMemoryEditors[side] || previewEditor ? <>{moonMemoryEditors[side]}{previewEditor}</> : null];
@@ -1748,8 +1804,19 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         ? "bloodline"
         : "skill";
 
+  const defaultSkillActions = Object.fromEntries(["attacker", "defender"].map((side) => [side,
+    getRestorableDefaultSkills(state, { side, snapshot }) ? (
+      <button type="button" className="skill-default-restore"
+        aria-label={t("{side}载入默认配招", { side: t(side === "attacker" ? "攻击方" : "防御方") })}
+        onClick={() => commitSession(restoreDefaultSkills(stateRef.current, { side, snapshot }))}>
+        {t("载入默认配招")}
+      </button>
+    ) : null,
+  ]));
+
   const fourEditor = configurationReady ? (
     <FourSkillEditor
+      headerActions={defaultSkillActions}
       traitEditors={state.mode === "four" ? moonMemoryEditors : {}}
       activeDamageSource={activeDamageSource}
       activeSide={activeAttackSideKey}
@@ -1911,6 +1978,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
 
   const compactFourEditor = configurationEditable ? (
     <CompactFourSkillEditor
+      headerActions={defaultSkillActions}
       placeholder={placeholder}
       traitEditors={state.mode === "four" ? compactTraitEditors : {}}
       activeDamageSource={activeDamageSource}
@@ -2211,6 +2279,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       <div className={`calculator-layout calculator-layout--${viewMode}`}>
         <main className="calculator-main">
           <SpiritStep
+            comparisonActions={release.capabilities.calculate ? Object.fromEntries(["attacker", "defender"].map(side => {
+              const spirit = getSpirit(snapshot, state.sides[side]);
+              return [side, record => spirit && record ? <SpiritPreviousStatsAction balance={balance} spirit={spirit} side={side} record={record} /> : null];
+            })) : undefined}
             comparisonControls={release.capabilities.calculate ? Object.fromEntries(["attacker", "defender"].map((side) => {
               const spirit = getSpirit(snapshot, state.sides[side]);
               return [side, spirit ? <SpiritComparisonControls balance={balance} spirit={spirit} side={side} /> : null];
@@ -2221,7 +2293,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             })) : undefined}
             comparisonActive={Object.fromEntries(["attacker", "defender"].map((side) => {
               const spirit = getSpirit(snapshot, state.sides[side]);
-              return [side, balance.customEnabled[side]?.[spirit?.id] === true];
+              const draft = balance.customStats[side]?.[spirit?.id] ?? {};
+              return [side, balance.customEnabled[side]?.[spirit?.id] === true && Object.entries(draft).some(([key, value]) => key !== "total" && value !== spirit.raceStats?.[key])];
             }))}
             attacker={attacker}
             attackerFavoriteState={
@@ -2253,11 +2326,6 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             }}
             spirits={selectableSpirits}
           />
-          {balance.active && <div className="balance-active-bar">
-            <strong>种族值试算</strong>
-            {balance.issue ? <span role="status">{balance.issue}</span> : null}
-            <button type="button" onClick={balance.stop}>关闭种族值试算</button>
-          </div>}
 
           {!configurationReady && !placeholder && !firstRunGuideVisible
             ? <EmptyStateGuide title={!release.capabilities.calculate ? t("国际服数据尚待核验") : undefined}
@@ -2331,6 +2399,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                 ? [
                     {
                       label: "攻击能力等级",
+                      bonusStage: attackerView.abilityStageBonuses?.attack ?? 0,
+                      bonusStages: attackerView.abilityStageBonuses?.attackByCategory,
                       multiplier: stageMultiplier(
                         state.directions.forward.overrides.attackLevelStage ?? 0,
                       ),
@@ -2340,6 +2410,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                     },
                     {
                       label: "防御能力等级",
+                      bonusStage: attackerView.abilityStageBonuses?.defense ?? 0,
                       multiplier: stageMultiplier(
                         state.directions.reverse.overrides.defenseLevelStage ?? 0,
                       ),
@@ -2353,12 +2424,15 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                 activeDirection === "forward"
                   ? {
                       label: "攻击能力等级",
+                      bonusStage: attackerView.abilityStageBonuses?.attack ?? 0,
+                      bonusStages: attackerView.abilityStageBonuses?.attackByCategory,
                       multiplier: stageMultiplier(attackLevelStage),
                       role: "attack",
                       stage: attackLevelStage,
                     }
                   : {
                       label: "防御能力等级",
+                      bonusStage: attackerView.abilityStageBonuses?.defense ?? 0,
                       multiplier: stageMultiplier(defenseLevelStage),
                       role: "defense",
                       stage: defenseLevelStage,
@@ -2382,6 +2456,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                 ? [
                     {
                       label: "攻击能力等级",
+                      bonusStage: defenderView.abilityStageBonuses?.attack ?? 0,
+                      bonusStages: defenderView.abilityStageBonuses?.attackByCategory,
                       multiplier: stageMultiplier(
                         state.directions.reverse.overrides.attackLevelStage ?? 0,
                       ),
@@ -2391,6 +2467,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                     },
                     {
                       label: "防御能力等级",
+                      bonusStage: defenderView.abilityStageBonuses?.defense ?? 0,
                       multiplier: stageMultiplier(
                         state.directions.forward.overrides.defenseLevelStage ?? 0,
                       ),
@@ -2404,12 +2481,15 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                 activeDirection === "forward"
                   ? {
                       label: "防御能力等级",
+                      bonusStage: defenderView.abilityStageBonuses?.defense ?? 0,
                       multiplier: stageMultiplier(defenseLevelStage),
                       role: "defense",
                       stage: defenseLevelStage,
                     }
                   : {
                       label: "攻击能力等级",
+                      bonusStage: defenderView.abilityStageBonuses?.attack ?? 0,
+                      bonusStages: defenderView.abilityStageBonuses?.attackByCategory,
                       multiplier: stageMultiplier(attackLevelStage),
                       role: "attack",
                       stage: attackLevelStage,

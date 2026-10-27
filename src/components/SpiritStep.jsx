@@ -18,6 +18,7 @@ export function SpiritStep({
   comparisonControls,
   comparisonSummaries,
   comparisonActive,
+  comparisonActions,
   spirits,
 }) {
   const { t } = useLocale();
@@ -37,6 +38,7 @@ export function SpiritStep({
           comparisonControls={comparisonControls?.attacker}
           comparisonSummary={comparisonSummaries?.attacker}
           comparisonActive={comparisonActive?.attacker}
+          renderComparisonAction={comparisonActions?.attacker}
           side="attack"
           spirits={spirits}
         />
@@ -61,6 +63,7 @@ export function SpiritStep({
           comparisonControls={comparisonControls?.defender}
           comparisonSummary={comparisonSummaries?.defender}
           comparisonActive={comparisonActive?.defender}
+          renderComparisonAction={comparisonActions?.defender}
           side="defense"
           spirits={spirits}
         />

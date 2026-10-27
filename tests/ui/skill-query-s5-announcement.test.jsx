@@ -127,8 +127,10 @@ test("同技能的 S5 与历史补丁在普通查询可读，S5 调整汇总只�
   fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "蹦跶" } });
   fireEvent.click(screen.getByRole("button", { name: "添加蹦跶" }));
   fireEvent.click(screen.getByRole("button", { name: "查看蹦跶本期改动" }));
-  const all = within(screen.getByRole("tooltip", { name: "蹦跶本期改动" }));
+  const all = within(screen.getByRole("dialog", { name: "蹦跶本期改动" }));
   expect(all.getByText("110 → 95")).toBeVisible();
+  expect(all.queryByText("120 → 110")).not.toBeInTheDocument();
+  fireEvent.click(all.getByRole("tab", { name: "S4 测试补丁" }));
   expect(all.getByText("120 → 110")).toBeVisible();
   expect(all.getByText("2026.09.10")).toBeVisible();
   fireEvent.click(screen.getAllByRole("button", { name: "关闭改动详情" }).at(-1));

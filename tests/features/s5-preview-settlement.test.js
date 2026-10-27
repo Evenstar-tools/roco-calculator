@@ -4,8 +4,9 @@ import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model
 import { damagePresentation } from "../../src/domain/result-presentation.js";
 import { getS5PreviewTraitInputs } from "../../src/domain/s5-preview-traits.js";
 import { createInitialState } from "../../src/state/defaults.js";
+import { updateMirroredTraitContext } from "../../src/state/calculator-session.js";
 import { applyBattleActivation, canApplyBattleActivation, canToggleNegativeStatusActivation } from "../../src/state/battle-activation.js";
-import { synchronizeS5PreviewConfirmationFromUse, synchronizeS5PreviewSkillUse, withS5PreviewSettlements } from "../../src/features/s5-preview/settlement.js";
+import { applyS5PreviewDreamTurnEnd, synchronizeS5PreviewConfirmationFromUse, synchronizeS5PreviewSkillUse, withS5PreviewSettlements } from "../../src/features/s5-preview/settlement.js";
 
 const current = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
 const stats = { hp: 100, physicalAttack: 100, magicalAttack: 100, physicalDefense: 100, magicalDefense: 100, speed: 100, total: 600 };
@@ -34,7 +35,9 @@ function fixture(key, names = ["撕咬"], { sourceSide = "attacker", mode = "fou
   function set(suffix, value) {
     const input = getS5PreviewTraitInputs(trait).find(control => control.contextKey === `attackerTraitS5${suffix}`);
     if (!input) throw new Error(`Missing fixture control: ${suffix}`);
-    state.directions[direction].context[input.id] = value;
+    if (["SnowActive", "SnowTriggered", "SnowTurnsRemaining"].includes(suffix)) {
+      Object.assign(state, updateMirroredTraitContext(state, { direction, key: input.id, value }).state);
+    } else state.directions[direction].context[input.id] = value;
     return input;
   }
   const raw = () => buildCalculatorViewModel({ snapshot, state, activeDirection: direction });
@@ -227,27 +230,27 @@ describe("Web S5 current-use applications and independent status settlement", ()
       .toMatchObject({ immune: true, damage: 0 });
   });
 
-  test("鲸羽只转换本次实际技能冻结，已有冻结和本次伤害不变，新星陨留到技能后", () => {
+  test("鲸羽回合末尚待适配，当前技能冻结/已有冻结/本次伤害均保持原生结果", () => {
     const f = fixture("jingyu", ["滚雪球"]);
-    f.set("SnowActive", true); f.set("FreezeApplicationConfirmed", true);
+    f.set("SnowActive", true);
     f.state.negativeStatuses[f.targetSide] = { freeze: 4 };
     f.state.marks[f.targetSide].negative = { id: "starfall", stacks: 2 };
     const original = structuredClone(f.state);
     const raw = f.raw();
     expect(raw.result.selectedResult.negativeStatusApplications.stacks.freeze).toBe(2);
     const result = withS5PreviewSettlements(raw, f.snapshot, f.state).result.selectedResult;
-    expect(result.negativeStatusApplications.stacks.freeze).toBe(0);
-    expect(result.negativeStatusSettlement.freeze.stacks).toBe(4);
+    expect(result.negativeStatusApplications.stacks.freeze).toBe(2);
+    expect(result.negativeStatusSettlement.freeze.stacks).toBe(6);
     expect(result.totalDamage).toBe(raw.result.selectedResult.totalDamage);
     expect(result.additionalDamage).toBe(raw.result.selectedResult.additionalDamage);
-    expect(result.s5Effects).toContainEqual(expect.objectContaining({ to: "starfall", stacks: 3, timing: "after-skill" }));
-    expect(result.traitSettlements.some(entry => entry.text.includes("未计入本次伤害"))).toBe(true);
+    expect(result.s5Effects ?? []).toEqual([]);
+    expect(result).toBe(raw.result.selectedResult);
     expect(f.state).toEqual(original);
   });
 
   test("鲸羽不把既有冻结或其他特性来源冒充本次技能冻结", () => {
     const f = fixture("jingyu", ["撕咬"]);
-    f.set("SnowActive", true); f.set("FreezeApplicationConfirmed", true);
+    f.set("SnowActive", true);
     f.state.negativeStatuses[f.targetSide] = { freeze: 9 };
     const raw = f.raw();
     expect(withS5PreviewSettlements(raw, f.snapshot, f.state)).toBe(raw);
@@ -258,6 +261,32 @@ describe("Web S5 current-use applications and independent status settlement", ()
     const inherited = f.raw();
     expect(inherited.result.selectedResult.negativeStatusApplications.sources).toContainEqual(expect.objectContaining({ kind: "trait", stacks: { freeze: 2 } }));
     expect(withS5PreviewSettlements(inherited, f.snapshot, f.state)).toBe(inherited);
+  });
+
+  test.each(["attacker", "defender"].flatMap(sourceSide => ["four", "single"].map(mode => ({ sourceSide, mode }))))
+  ("鲸羽$sourceSide/$mode状态技能使用与取消保持冻结，不用旧确认提前触发回合末", ({ sourceSide, mode }) => {
+    const f = fixture("jingyu", ["霜降"], { sourceSide, mode });
+    f.set("SnowActive", true);
+    const context = f.state.directions[f.direction].context;
+    context.negativeStatusUseCountsBySlot = { [mode === "four" ? "1" : "single"]: 0 };
+    context.attackerTraitS5FreezeApplicationConfirmed = true;
+    let view = withS5PreviewSettlements(f.raw(), f.snapshot, f.state);
+    expect(view.result.selectedResult.s5Effects ?? []).toEqual([]);
+    const use = () => applyBattleActivation({ calculation: view.calculation, side: sourceSide,
+      skillIndex: 0, skillMode: mode, snapshot: f.snapshot, state: f.state });
+    const applied = use();
+    expect(applied.applied).toBe(true);
+    Object.assign(f.state, applied.state);
+    f.state.directions[f.direction].context.attackerTraitS5FreezeApplicationConfirmed = false;
+    view = withS5PreviewSettlements(f.raw(), f.snapshot, f.state);
+    expect(view.result.selectedResult.negativeStatusApplications.stacks.freeze).toBe(4);
+    expect(view.result.selectedResult.s5Effects ?? []).toEqual([]);
+    const cancelled = use();
+    expect(cancelled.applied).toBe(true);
+    Object.assign(f.state, cancelled.state);
+    view = withS5PreviewSettlements(f.raw(), f.snapshot, f.state);
+    expect(view.result.selectedResult.s5Effects ?? []).toEqual([]);
+    expect(view.result.selectedResult.negativeStatusApplications.stacks.freeze ?? 0).toBe(0);
   });
 
   test("西瓜虫依实际本槽系别施加1层寄生，不把四槽累计到同一次计算", () => {
@@ -274,10 +303,9 @@ describe("Web S5 current-use applications and independent status settlement", ()
   });
 
   test.each([
-    ["lily-of-valley", [["DreamActive", true], ["TurnEndConfirmed", true]], "梦境·回合结束：寄生+3（未计入本次技能）"],
     ["doulie", [["SnowTriggered", true], ["SnowTurnsRemaining", 3]], "剩余3回合"],
-    ["crab-coconut", [["GrassDiscountReady", true]], "最终能耗及下限待核验"],
-  ])("%s只呈现明确后续阶段，不重复扣血或更改场景/能耗", (key, controls, text) => {
+    ["crab-coconut", [["GrassDiscountReady", true]], "下次行动草系技能能耗-3待生效"],
+  ])("%s结算注记不重复扣血或再次减费", (key, controls, text) => {
     const f = fixture(key);
     for (const [suffix, value] of controls) f.set(suffix, value);
     const original = structuredClone(f.state);
@@ -316,6 +344,89 @@ describe("Web S5 current-use applications and independent status settlement", ()
     f.snapshot.spirits.find(spirit => spirit.id === sourceId).traitIds = [];
     const ordinary = f.raw();
     expect(withS5PreviewSettlements(ordinary, f.snapshot, f.state)).toBe(ordinary);
+  });
+});
+
+describe("S5萌系天气的明确回合末寄生动作", () => {
+  function dream(f) {
+    for (const direction of Object.values(f.state.directions)) direction.context.weatherDream = true;
+  }
+
+  test.each(["attacker", "defender"].flatMap(sourceSide => ["铃兰", "铃兰夫人"].map(name => ({ sourceSide, name }))))
+  ("$name/$sourceSide按有效特性施加3层，不依赖名称、技能或异常结算开关", ({ sourceSide, name }) => {
+    const f = fixture("lily-of-valley", ["撕咬"], { sourceSide });
+    f.snapshot.spirits.find(spirit => spirit.id === sourceId).fullName = name;
+    f.state.sides[sourceSide].skills = { single: null, four: [null, null, null, null] };
+    f.state.calculationOptions.includeNegativeStatusSettlement = false;
+    f.state.negativeStatuses[f.targetSide] = { poison: 4, parasitism: 2 };
+    dream(f);
+    const before = structuredClone(f.state);
+    const result = applyS5PreviewDreamTurnEnd(f.state, { side: sourceSide, snapshot: f.snapshot });
+    expect(result).toMatchObject({ applied: true, added: 3, total: 5 });
+    expect(result.state.negativeStatuses[f.targetSide]).toMatchObject({ parasitism: 5, poison: 4 });
+    expect(result.state.negativeStatuses[sourceSide]).toBe(f.state.negativeStatuses[sourceSide]);
+    expect(result.state.sides).toBe(f.state.sides);
+    expect(result.state.directions).toBe(f.state.directions);
+    expect(result.state.calculationOptions).toBe(f.state.calculationOptions);
+    expect(f.state).toEqual(before);
+    const nextTurn = applyS5PreviewDreamTurnEnd(result.state, { side: sourceSide, snapshot: f.snapshot });
+    expect(nextTurn).toMatchObject({ applied: true, added: 3, total: 8 });
+    expect(result.state.negativeStatuses[f.targetSide].parasitism).toBe(5);
+  });
+
+  test("没有萌系天气时拒绝；旧独立梦境与回合末确认不能绕过全场天气", () => {
+    const f = fixture("lily-of-valley");
+    f.state.directions.forward.context = { attackerTraitS5DreamActive: true, attackerTraitS5TurnEndConfirmed: true };
+    const result = applyS5PreviewDreamTurnEnd(f.state, { side: "attacker", snapshot: f.snapshot });
+    expect(result).toMatchObject({ applied: false, added: 0, total: 0, reason: expect.stringContaining("天气") });
+    expect(result.state).toBe(f.state);
+  });
+
+  test("禁用特性、普通特性和仅同名精灵不能施加", () => {
+    const f = fixture("lily-of-valley");
+    dream(f);
+    f.state.sides.attacker.ignoreTraits = true;
+    expect(applyS5PreviewDreamTurnEnd(f.state, { side: "attacker", snapshot: f.snapshot }))
+      .toMatchObject({ state: f.state, applied: false, added: 0 });
+    f.state.sides.attacker.ignoreTraits = false;
+    const holder = f.snapshot.spirits.find(spirit => spirit.id === sourceId);
+    holder.fullName = "铃兰夫人";
+    holder.traitIds = [];
+    expect(applyS5PreviewDreamTurnEnd(f.state, { side: "attacker", snapshot: f.snapshot }).state).toBe(f.state);
+    holder.traitIds = [f.trait.id];
+    f.trait.previewIdentity.mechanicKey = "watermelon-bug";
+    expect(applyS5PreviewDreamTurnEnd(f.state, { side: "attacker", snapshot: f.snapshot }).applied).toBe(false);
+  });
+
+  test("沿用99层上限，记录实际新增；满层时保持原状态且给出原因", () => {
+    const f = fixture("lily-of-valley");
+    dream(f);
+    f.state.negativeStatuses.defender.parasitism = 98.9;
+    const capped = applyS5PreviewDreamTurnEnd(f.state, { side: "attacker", snapshot: f.snapshot });
+    expect(capped).toMatchObject({ applied: true, added: 1, total: 99 });
+    const full = applyS5PreviewDreamTurnEnd(capped.state, { side: "attacker", snapshot: f.snapshot });
+    expect(full).toMatchObject({ applied: false, added: 0, total: 99, reason: expect.stringContaining("99层") });
+    expect(full.state).toBe(capped.state);
+    expect(f.state.negativeStatuses.defender.parasitism).toBe(98.9);
+  });
+
+  test("旧确认和重渲染不再自动追加或制造寄生说明，只有明确动作更改状态", () => {
+    const f = fixture("lily-of-valley");
+    dream(f);
+    f.state.directions.forward.context.attackerTraitS5DreamActive = true;
+    f.state.directions.forward.context.attackerTraitS5TurnEndConfirmed = true;
+    const before = structuredClone(f.state);
+    const raw = f.raw();
+    expect(withS5PreviewSettlements(raw, f.snapshot, f.state)).toBe(raw);
+    expect(withS5PreviewSettlements(raw, f.snapshot, f.state)).toBe(raw);
+    expect(raw.result.selectedResult.traitSettlements ?? []).not.toContainEqual(expect.objectContaining({ timing: "turn-end" }));
+    expect(f.state).toEqual(before);
+    const applied = applyS5PreviewDreamTurnEnd(f.state, { side: "attacker", snapshot: f.snapshot });
+    const afterState = structuredClone(applied.state);
+    const afterView = buildCalculatorViewModel({ snapshot: f.snapshot, state: applied.state, activeDirection: f.direction });
+    expect(withS5PreviewSettlements(afterView, f.snapshot, applied.state)).toBe(afterView);
+    expect(applied.state).toEqual(afterState);
+    expect(applied.state.negativeStatuses.defender.parasitism).toBe(3);
   });
 });
 

@@ -246,10 +246,13 @@ describe("电鹿斩杀线", () => {
       reverse: { results: [{ combatPanel: { attacker: { speed: defender } } }] },
     };
     expect(getDeerSpeedComparison(calculation)).toMatchObject({ attacker, defender, label });
+    const dreamLabel = attacker < defender ? "可以先手" : attacker === defender ? "需要拼速" : "无法先手";
+    expect(getDeerSpeedComparison(calculation, "dream")).toMatchObject({ attacker, defender, label: dreamLabel });
   });
 
   test("缺少速度数据不能误判为同速", () => {
     expect(getDeerSpeedComparison({}).label).toBe("速度待确认");
+    expect(getDeerSpeedComparison({}, "dream").label).toBe("速度待确认");
   });
 
   test("速度复用双方内核战斗面板，包含特性、开关和减速印记", () => {
@@ -266,6 +269,26 @@ describe("电鹿斩杀线", () => {
     expect(evaluate(setup, "arc").speed.defender).toBe(plain.defender - 30);
     setup.state.directions.reverse.overrides.attackerSpeedFlat = 15;
     expect(evaluate(setup, "arc").speed.defender).toBe(plain.defender - 15);
+  });
+
+  test("主页萌系天气带入电鹿页并反转先手提示，保持实际速度与直伤", () => {
+    const normal = createDeerSetup(snapshot);
+    const baseline = evaluate(normal, "arc");
+    const source = structuredClone(normal.state);
+    source.directions.forward.context.weatherDream = true;
+    source.directions.forward.context.weatherTurns = 0;
+    const before = JSON.stringify(source);
+    const dream = createDeerSetup(snapshot, source);
+    expect(dream.weather).toBe("dream");
+    const result = evaluate(dream, "arc");
+    expect(result.speed.attacker).toBe(baseline.speed.attacker);
+    expect(result.speed.defender).toBe(baseline.speed.defender);
+    expect(result.speed.state).toBe({ faster: "slower", slower: "faster", tie: "tie" }[baseline.speed.state]);
+    expect(result.damage).toBe(baseline.damage);
+    const input = buildDeerInput(snapshot, dream, variant("arc"), 1);
+    expect(input.directions.forward.context.weatherDream).toBe(true);
+    expect(input.directions.reverse.context.weatherDream).toBe(true);
+    expect(JSON.stringify(source)).toBe(before);
   });
 
   test("主页当前配置带入电鹿页，不套模板或修改来源", () => {

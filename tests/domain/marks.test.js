@@ -112,6 +112,16 @@ describe("mark rules", () => {
     expect(effects("momentum", 1).hiddenPanelPowerPercentAdd).toBe(0);
   });
 
+  test("萌系天气只反转自动行动顺序，显式先手确认优先，同速不自动判先手", () => {
+    expect(effects("tailwind", 2, { weatherDream: true }).powerPercentAdd).toBe(0);
+    expect(effects("tailwind", 2, { attackerSpeed: 100, weatherDream: true }).powerPercentAdd).toBe(0.4);
+    expect(effects("tailwind", 2, { attackerSpeed: 150, weatherDream: true }).powerPercentAdd).toBe(0);
+    expect(effects("tailwind", 2, { weatherDream: true, actedBeforeEnemy: true }).powerPercentAdd).toBe(0.4);
+    expect(effects("tailwind", 2, { attackerSpeed: 100, weatherDream: true, actedBeforeEnemy: false }).powerPercentAdd).toBe(0);
+    const slow = { negative: { id: "slow", stacks: 6 }, positive: { id: "tailwind", stacks: 1 } };
+    expect(effects("tailwind", 1, { weatherDream: true, marks: slow }).powerPercentAdd).toBe(0.2);
+  });
+
   test("applies slow per stack and records non-damage marks without inventing damage", () => {
     const slow = resolveSourceMarkEffects({
       attackerSpeed: 200,

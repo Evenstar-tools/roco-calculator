@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
-import { buildBalanceComparison } from "../../src/features/balance-comparison/model.js";
+import { buildBalanceComparison, raceStatsBeforePatch } from "../../src/features/balance-comparison/model.js";
 import { createSpiritSearchIndex } from "../../src/data/search-index.js";
 
 const patch = { id: "reviewed-patch", label: "已核验调整", date: "2026.10.14", status: "current" };
@@ -30,6 +30,72 @@ function fixture() {
   };
   return { snapshot, state, activeDirection: "forward", patchId: patch.id, enabled: true };
 }
+
+describe("按补丁恢复改动前种族值", () => {
+  test("单次改动仅回退已记录六维，补齐总和且不改写输入", () => {
+    const spirit = fixture().snapshot.spirits[0];
+    spirit.changeInfo.items.push(stat("basePower", 40, 80), { kind: "trait", before: "旧", after: "新" });
+    const saved = structuredClone(spirit);
+    expect(raceStatsBeforePatch(spirit, spirit.changeInfo)).toEqual({ ...stats, physicalAttack: 80, total: 560 });
+    expect(spirit).toEqual(saved);
+  });
+
+  test("选择历史补丁时逐层回退同一字段及不同字段，不混入更旧改动", () => {
+    const older = info([stat("magicalAttack", 60, 70)], { patch: { ...patch, id: "oldest" } });
+    const previous = info([stat("physicalAttack", 80, 100), stat("magicalAttack", 70, 80)], { patch: { ...patch, id: "previous" } });
+    const spirit = { raceStats: { ...stats }, changeInfo: info([stat("physicalAttack", 100, 120)], { history: [previous, older] }) };
+    const saved = structuredClone(spirit);
+    expect(raceStatsBeforePatch(spirit, spirit.changeInfo)).toEqual({ ...stats, physicalAttack: 100, total: 580 });
+    expect(raceStatsBeforePatch(spirit, previous)).toEqual({ ...stats, physicalAttack: 80, magicalAttack: 70, total: 550 });
+    expect(raceStatsBeforePatch(spirit, older)).toEqual({ ...stats, physicalAttack: 80, magicalAttack: 60, total: 540 });
+    expect(spirit).toEqual(saved);
+  });
+
+  test("按唯一补丁ID识别VM深拷贝记录，拒绝未知及重复ID；无ID仅接受原记录", () => {
+    const previous = info([stat("magicalAttack", 70, 80)], { patch: { ...patch, id: "previous" } });
+    const spirit = { raceStats: { ...stats }, changeInfo: info([stat("physicalAttack", 80, 120)], { history: [previous] }) };
+    expect(raceStatsBeforePatch(spirit, structuredClone(spirit.changeInfo))).toEqual({ ...stats, physicalAttack: 80, total: 560 });
+    expect(raceStatsBeforePatch(spirit, structuredClone(previous))).toEqual({ ...stats, physicalAttack: 80, magicalAttack: 70, total: 550 });
+    expect(raceStatsBeforePatch(spirit, { ...previous, patch: { id: "unknown" } })).toBeNull();
+    spirit.changeInfo.history.push(structuredClone(previous));
+    expect(raceStatsBeforePatch(spirit, previous)).toBeNull();
+    expect(raceStatsBeforePatch(spirit, structuredClone(previous))).toBeNull();
+    spirit.changeInfo = { items: [stat("physicalAttack", 80, 120)] };
+    expect(raceStatsBeforePatch(spirit, spirit.changeInfo)).toEqual({ ...stats, physicalAttack: 80, total: 560 });
+    expect(raceStatsBeforePatch(spirit, structuredClone(spirit.changeInfo))).toBeNull();
+  });
+
+  test.each([
+    [{ kind: "new" }],
+    [{ kind: "skill", before: "旧", after: "新" }],
+    [{ kind: "trait", before: "旧", after: "新" }],
+    [stat("basePower", 60, 80)],
+    [stat("physicalAttack", 120, 120)],
+    [],
+  ].map(items => [items]))("无实际种族值变更不提供恢复结果：%j", items => {
+    const spirit = { raceStats: { ...stats }, changeInfo: info(items) };
+    expect(raceStatsBeforePatch(spirit, spirit.changeInfo)).toBeNull();
+  });
+
+  test.each([null, undefined, 0, -1, 1.5, Infinity, NaN, "80", Number.MAX_SAFE_INTEGER + 1])("拒绝非法历史种族值：%s", before => {
+    const spirit = { raceStats: { ...stats }, changeInfo: info([stat("physicalAttack", before, 120)]) };
+    expect(raceStatsBeforePatch(spirit, spirit.changeInfo)).toBeNull();
+  });
+
+  test("拒绝不属于本精灵的记录、缺失六维和有断点的回退路径", () => {
+    const spirit = fixture().snapshot.spirits[0];
+    expect(raceStatsBeforePatch(spirit, info([stat("physicalAttack", 80, 120)], { patch: { id: "unknown" } }))).toBeNull();
+    expect(raceStatsBeforePatch(spirit, null)).toBeNull();
+    expect(raceStatsBeforePatch(null, spirit.changeInfo)).toBeNull();
+    expect(raceStatsBeforePatch({ ...spirit, raceStats: { physicalAttack: 120 } }, spirit.changeInfo)).toBeNull();
+    expect(raceStatsBeforePatch({ ...spirit, calculationStatus: "pending-race-stats" }, spirit.changeInfo)).toBeNull();
+    const older = info([stat("physicalAttack", 80, 100)], { patch: { id: "older" } });
+    spirit.changeInfo = info([stat("magicalAttack", null, 80)], { history: [older] });
+    expect(raceStatsBeforePatch(spirit, older)).toBeNull();
+    spirit.changeInfo = info([stat("physicalAttack", 80, undefined)]);
+    expect(raceStatsBeforePatch(spirit, spirit.changeInfo)).toBeNull();
+  });
+});
 
 describe("独立种族值试算", () => {
   test("两侧同种精灵手调互不串值，直接产生当前结果且不生成历史比较", () => {

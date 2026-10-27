@@ -11,9 +11,31 @@
   font-weight: 600;
 }
 
+.s5-preview-trait-summary[data-level="true"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 12px;
+}
+
 .s5-preview-trait-summary > small {
   display: block;
   margin-top: 2px;
   color: var(--text-muted);
   font-size: inherit;
+}
+
+.trait-turn-end {
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.trait-turn-end:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
 }

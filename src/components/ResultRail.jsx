@@ -272,6 +272,19 @@ export function ResultRail({
             </p>
           </div>
 
+          {result.levelComparison ? <details className="result-level-comparison" aria-label="等级伤害对比">
+            <summary>
+              <span>{result.levelComparison.attackerLevel}级 → {result.levelComparison.defenderLevel}级</span>
+              <span>较双60级 <strong>{Number.isFinite(result.levelComparison.percent)
+                ? `${result.levelComparison.percent > 0 ? "+" : ""}${result.levelComparison.percent}%`
+                : "—"}</strong></span>
+            </summary>
+            <p>伤害：双60级 <b>{result.levelComparison.baselineDamage}</b> → 当前 <b>{result.levelComparison.currentDamage}</b></p>
+            <p>含等级系数、面板与等级触发效果；双方血量比例不变。</p>
+            {result.levelComparison.status === "zero-baseline" ? <p>基准伤害为0，不计算百分比。</p> : null}
+            <p>非60级面板按预览规则试算。</p>
+          </details> : null}
+
         </>
       ) : null}
 

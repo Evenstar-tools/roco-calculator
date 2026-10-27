@@ -7,6 +7,7 @@ import {
   shouldPreviewNegativeStatusApplications,
 } from "../../domain/negative-status-rules.js";
 import { getS5PreviewTraitEvaluation, getS5PreviewTraitInputs } from "../../domain/s5-preview-traits.js";
+import { currentWeather } from "../../state/weather.js";
 
 // Keep the original result outside serialized display data. Re-projecting a view
 // must derive the same one-use application, never append the previous preview.
@@ -14,6 +15,31 @@ const ORIGINAL_RESULT = Symbol("s5-preview-settlement-original-result");
 const opposite = (side) => side === "attacker" ? "defender" : "attacker";
 const whole = (value) => Math.max(0, Math.floor(Number(value) || 0));
 const skillId = (entry) => typeof entry === "string" ? entry : entry?.skillId ?? entry?.id;
+
+/** An explicit turn-end action adds layers only; rendering never replays it. */
+export function applyS5PreviewDreamTurnEnd(state, { side, snapshot } = {}) {
+  const targetSide = ["attacker", "defender"].includes(side) ? opposite(side) : null;
+  const statuses = normalizeNegativeStatusSide(state?.negativeStatuses?.[targetSide]);
+  const total = statuses.parasitism;
+  const unchanged = (reason) => ({ state, applied: false, added: 0, total, reason });
+  if (!targetSide || !snapshot || !state?.sides?.[side]) return unchanged("未选择特性持有方");
+  if (currentWeather(state.directions?.forward?.context) !== "dream") return unchanged("当前未处于萌系天气");
+  const configured = state.sides[side];
+  const spirit = resolveBattleSpirit(snapshot, configured);
+  const traits = getEffectiveTraits(snapshot, { ...configured, spirit });
+  if (!traits.some((trait) => getS5PreviewTraitEvaluation(trait)?.mechanicKey === "lily-of-valley")) {
+    return unchanged("当前特性不能施加回合末寄生");
+  }
+  const nextTotal = Math.min(99, total + 3);
+  const added = nextTotal - total;
+  if (!added) return unchanged("目标寄生已达99层");
+  return {
+    state: { ...state, negativeStatuses: { ...state.negativeStatuses,
+      [targetSide]: { ...statuses, parasitism: nextTotal },
+    } },
+    applied: true, added, total: nextTotal,
+  };
+}
 
 function hasNativeStatusUse(skill, application) {
   return ["status", "defense"].includes(skill?.category) &&
@@ -162,17 +188,7 @@ export function withS5PreviewSettlements(view, snapshot, state) {
       };
       for (const effect of evaluation.effects) {
         if (effect.target && effect.target !== "opponent") continue;
-        if (effect.kind === "status-replace" && effect.from === "freeze" && effect.to === "starfall") {
-          // Only the actual current skill source is known here. Baseline freeze,
-          // weather and other trait sources are never inferred to be eligible.
-          const eligible = canApplyNative ? application.sources.filter((source) => source.kind === "skill" && source.name === skill.name && whole(source.stacks?.freeze) > 0) : [];
-          const replaced = Math.min(whole(application.stacks.freeze), eligible.reduce((sum, source) => sum + whole(source.stacks.freeze), 0));
-          if (!replaced) continue;
-          application.stacks.freeze -= replaced;
-          for (const source of eligible) source.stacks.freeze = 0;
-          applicationsChanged = true;
-          note({ ...effect, replacedStacks: replaced, timing: "after-skill" }, "雪天·本次新增冻结改为星陨+3（技能后，未计入本次伤害）");
-        } else if (effect.kind === "status-add" && effect.timing === "after-skill") {
+        if (effect.kind === "status-add" && effect.timing === "after-skill") {
           if (effect.requiredSkillType && effect.requiredSkillType !== skill.type) continue;
           // Native state skills share the existing use/cancel counter. A stale
           // manual confirmation must never revive a cancelled application.
@@ -188,12 +204,10 @@ export function withS5PreviewSettlements(view, snapshot, state) {
             timing: "after-skill", stacks: { [effect.status]: whole(effect.stacks) } });
           applicationsChanged = true;
           effects.push({ ...effect, traitId: trait.id });
-        } else if (effect.kind === "status-add" && effect.timing === "turn-end") {
-          note(effect, "梦境·回合结束：寄生+3（未计入本次技能）");
         } else if (effect.kind === "weather-state") {
-          note(effect, `雪天已确认触发，剩余${whole(effect.remainingTurns)}回合（未自动切换天气）`);
+          note(effect, `雪天已确认触发，剩余${whole(effect.remainingTurns)}回合（已同步全场暴风雪）`);
         } else if (effect.kind === "next-grass-cost-discount") {
-          note(effect, "下一草系技能减费3待生效（最终能耗及下限待核验，未修改本次能耗）");
+          note(effect, skill.type === "草" ? "本次草系技能能耗-3（已计入实际能耗）" : "下次行动草系技能能耗-3待生效；非草行动也消耗机会");
         } else if (effect.kind === "random-donation-pending" && (!effect.requiredSkillType || effect.requiredSkillType === skill.type)) {
           note(effect, "草系随机奉献1层：实际结果待确认，未计入增益");
         }

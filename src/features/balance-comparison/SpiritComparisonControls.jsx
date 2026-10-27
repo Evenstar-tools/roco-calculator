@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BALANCE_STATS } from "./model.js";
+import { BALANCE_STATS, raceStatsBeforePatch } from "./model.js";
 import { hasCompleteRaceStats } from "../../domain/stat.js";
 
 function canTrial(spirit) {
@@ -28,7 +28,8 @@ function RaceInput({ label, value, official, referenceLabel = "官方", onChange
 
 export function SpiritComparisonControls({ balance, spirit, side }) {
   if (!canTrial(spirit)) return null;
-  const custom = balance.customEnabled[side]?.[spirit.id] === true;
+  const appliedPatch = balance.appliedPatches?.[side]?.[spirit.id];
+  const custom = balance.customEnabled[side]?.[spirit.id] === true && !appliedPatch;
   const draft = balance.customStats[side]?.[spirit.id] ?? {};
   const placeholderStats = spirit.previewIdentity?.raceStatsPlaceholder === true;
   const hasDraft = BALANCE_STATS.some(({ key }) => draft[key] !== undefined && draft[key] !== spirit.raceStats?.[key]);
@@ -38,8 +39,8 @@ export function SpiritComparisonControls({ balance, spirit, side }) {
         onChange={(event) => balance.setCustom(side, spirit.id, event.target.checked)} />
       <span>自定义种族值</span>
     </label>
-    {!custom && hasDraft ? <button className="balance-restore" type="button"
-      onClick={() => balance.setCustom(side, spirit.id, true)}>恢复上次手调值</button> : null}
+    {!custom && !appliedPatch && hasDraft ? <button className="balance-restore" type="button"
+      onClick={() => balance.setCustom(side, spirit.id, true)}>恢复上次修改</button> : null}
     {custom && <>
       <div className="balance-stat-editor">
         {BALANCE_STATS.map(({ key, label }) => <RaceInput key={`${spirit.id}-${key}`}
@@ -48,9 +49,9 @@ export function SpiritComparisonControls({ balance, spirit, side }) {
           referenceLabel={placeholderStats ? "占位" : "官方"}
           onChange={(value) => balance.setStat(side, spirit.id, key, value)} />)}
       </div>
-      <button className="balance-restore" type="button" onClick={() => balance.restore(side, spirit.id)}>{placeholderStats ? "恢复占位种族值" : "恢复官方种族值"}</button>
-      <small className="balance-controls__note">{placeholderStats ? "六维100为测试占位；手调仅本页，不写入存档或分享。" : "仅本页伤害试算；存档、分享及其他工具使用官方种族值。"}</small>
+      <button className="balance-restore" type="button" onClick={() => balance.restore(side, spirit.id)}>恢复当前</button>
     </>}
+    {(custom || appliedPatch) && <small className="balance-controls__note">仅本页试算，不保存或分享。</small>}
   </div>;
 }
 
@@ -58,8 +59,23 @@ export function SpiritTrialChanges({ balance, spirit, side }) {
   if (!canTrial(spirit) || !balance.customEnabled[side]?.[spirit?.id]) return null;
   const draft = balance.customStats[side]?.[spirit.id] ?? {};
   const changed = BALANCE_STATS.filter(({ key }) => draft[key] !== undefined && draft[key] !== spirit.raceStats?.[key]);
-  return <p className="balance-stat-changes" aria-label="自定义种族值摘要">
-    <b>自定义</b>{changed.length ? changed.map(({ key, label }) =>
-      <span key={key}>{label} {spirit.raceStats?.[key]} → {draft[key]}</span>) : <span>{spirit.previewIdentity?.raceStatsPlaceholder ? "沿用占位值" : "沿用官方值"}</span>}
+  if (!changed.length) return null;
+  return <p className="balance-stat-changes" aria-label="自定义种族值摘要"
+    title={changed.map(({ key, label }) => `${label} ${spirit.raceStats?.[key]} → ${draft[key]}`).join(" · ")}>
+    <b>{balance.appliedPatches?.[side]?.[spirit.id] ? "改动前" : "已修改"}</b>{changed.map(({ key, label }) =>
+      <span key={key}>{label} {spirit.raceStats?.[key]} → {draft[key]}</span>)}
+    <button className="balance-card-restore" type="button" onClick={() => balance.restore(side, spirit.id)}>恢复当前</button>
   </p>;
+}
+
+export function SpiritPreviousStatsAction({ balance, spirit, side, record }) {
+  if (!canTrial(spirit)) return null;
+  const before = raceStatsBeforePatch(spirit, record);
+  if (!before) return null;
+  const applied = balance.customEnabled[side]?.[spirit.id] &&
+    balance.appliedPatches?.[side]?.[spirit.id] === (record.patch?.id ?? record);
+  return <button className="balance-restore" type="button"
+    onClick={() => applied ? balance.restore(side, spirit.id) : balance.applyBefore(side, spirit.id, record, before)}>
+    {applied ? "恢复当前" : "应用改动前"}
+  </button>;
 }

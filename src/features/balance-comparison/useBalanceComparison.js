@@ -1,11 +1,12 @@
 import { useMemo, useRef, useState } from "react";
-import { buildBalanceComparison } from "./model.js";
+import { buildBalanceComparison, buildBattleLevelComparison } from "./model.js";
 
 // Trial values deliberately stay outside the saved/shared calculator session.
 export function useBalanceComparison({ snapshot, state, activeDirection, serverId,
   spiritIndex, completeSpiritIds, favoriteSpiritIds }) {
   const [customStats, setCustomStats] = useState({});
   const [customEnabled, setCustomEnabled] = useState({});
+  const [appliedPatches, setAppliedPatches] = useState({});
   const [hpInputModes, setHpInputModes] = useState({});
   const [hpBasis, setHpBasis] = useState({});
   const hpModeRef = useRef({});
@@ -25,15 +26,26 @@ export function useBalanceComparison({ snapshot, state, activeDirection, serverI
   }), [snapshot, state, activeDirection, serverId,
     spiritIndex, completeSpiritIds, favoriteSpiritIds,
     customStats, customEnabled, hpInputModes, hpBasis]);
+  const levelComparison = useMemo(() => buildBattleLevelComparison({
+    afterView: comparison.afterView, snapshot, state, activeDirection, serverId,
+    spiritIndex, completeSpiritIds, favoriteSpiritIds, customStats, customEnabled,
+  }), [comparison.afterView, snapshot, state, activeDirection, serverId,
+    spiritIndex, completeSpiritIds, favoriteSpiritIds, customStats, customEnabled]);
 
   function setCustom(side, spiritId, checked) {
+    setAppliedPatches(previous => ({ ...previous, [side]: { ...previous[side], [spiritId]: null } }));
     setCustomEnabled((previous) => ({
       ...previous, [side]: { ...previous[side], [spiritId]: checked },
     }));
   }
 
   return {
-    ...comparison, customStats, customEnabled,
+    ...comparison, levelComparison, customStats, customEnabled, appliedPatches,
+    applyBefore(side, spiritId, record, raceStats) {
+      setCustomStats(previous => ({ ...previous, [side]: { ...previous[side], [spiritId]: raceStats } }));
+      setCustom(side, spiritId, true);
+      setAppliedPatches(previous => ({ ...previous, [side]: { ...previous[side], [spiritId]: record.patch?.id ?? record } }));
+    },
     setHpInputMode(direction, mode) {
       hpModeRef.current = { ...hpModeRef.current, [direction]: mode };
       setHpInputModes((previous) => ({ ...previous, [direction]: mode }));
@@ -47,6 +59,7 @@ export function useBalanceComparison({ snapshot, state, activeDirection, serverI
     },
     setCustom,
     setStat(side, spiritId, key, value) {
+      setAppliedPatches(previous => ({ ...previous, [side]: { ...previous[side], [spiritId]: null } }));
       setCustomStats((previous) => ({
         ...previous,
         [side]: { ...previous[side], [spiritId]: {
@@ -59,15 +72,18 @@ export function useBalanceComparison({ snapshot, state, activeDirection, serverI
     },
     stop() {
       setCustomEnabled({});
+      setAppliedPatches({});
       setHpInputModes({}); setHpBasis({}); hpModeRef.current = {};
     },
     reset() {
       setCustomStats({}); setCustomEnabled({});
+      setAppliedPatches({});
       setHpInputModes({});
       setHpBasis({});
       hpModeRef.current = {};
     },
     swap() {
+      setAppliedPatches(previous => ({ attacker: previous.defender, defender: previous.attacker }));
       setCustomStats((previous) => ({ attacker: previous.defender, defender: previous.attacker }));
       setCustomEnabled((previous) => ({ attacker: previous.defender, defender: previous.attacker }));
       setHpInputModes((previous) => ({ forward: previous.reverse, reverse: previous.forward }));

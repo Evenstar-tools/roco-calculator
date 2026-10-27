@@ -748,6 +748,7 @@ html[data-theme="dark"] .stat-icon--nature-gain + .stat-tile__label-text {
 
 .stat-tile__panel-row {
   display: flex;
+  flex-wrap: wrap;
   min-width: 0;
   align-items: baseline;
   gap: 4px;

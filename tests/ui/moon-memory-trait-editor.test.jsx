@@ -1,3 +1,5 @@
+import { canonicalTraitControlKey } from "../../src/domain/trait-runtime.js";
+import { getS5PreviewTraitInputs } from "../../src/domain/s5-preview-traits.js";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
@@ -372,4 +374,41 @@ test("does not invent controls for display-only traits", () => {
   const item = screen.getByRole("listitem", { name: /待验证特性/ });
   expect(item).toHaveTextContent("仅展示");
   expect(item.querySelector("input, select")).toBeNull();
+});
+
+test("borrowed S5 stat traits hide settled storage and expose a turn-end action button", () => {
+  const trait = { id: "s5-gold", name: "储备金", previewIdentity: { catalogId: "s5-test", mechanicKey: "gold-vein-dragon" } };
+  const local = { ...snapshot, traits: [...snapshot.traits, trait] };
+  render(<MoonMemoryTraitEditor {...callbacks} side={{ acquiredTraitIds: [trait.id] }}
+    sideKey="attacker" snapshot={local} spirit={snapshot.spirits[0]} />);
+  fireEvent.click(screen.getByRole("button", { name: "查看储备金条件与效果" }));
+  expect(screen.getAllByRole("spinbutton")).toHaveLength(1);
+  expect(screen.getByRole("spinbutton", { name: "储备金 · 聚能次数" })).toHaveValue(0);
+  expect(screen.queryByRole("spinbutton", { name: /已结算/u })).not.toBeInTheDocument();
+  expect(screen.queryByRole("checkbox", { name: /回合结束/u })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "回合结束", exact: true }));
+  expect(callbacks.onValueChange).toHaveBeenCalledWith(trait.id,
+    canonicalTraitControlKey(getS5PreviewTraitInputs(trait).find(control => control.action)), true);
+});
+
+test.each(["acquired", "native"])("an existing %s juvenile family trait disables the adult borrowing option", (owner) => {
+  const traits = ["silver-chain", "underground-silver-dragon"].map(key => ({
+    id: `trait_preview_s5_${key}`, name: "银头寸",
+    previewIdentity: { catalogId: "s5-official-fixture", mechanicKey: "underground-silver-dragon" },
+  }));
+  const juvenileId = traits[0].id;
+  const local = { ...snapshot, traits: [...snapshot.traits, ...traits],
+    spirits: [...snapshot.spirits, ...traits.map((trait, index) => ({
+      id: `silver-${index}`, fullName: index ? "地绡银龙" : "地银链", traitIds: [trait.id],
+    }))] };
+  const spirit = owner === "native" ? { ...snapshot.spirits[0], traitIds: ["moon-memory", juvenileId] } : snapshot.spirits[0];
+  render(<MoonMemoryTraitEditor {...callbacks} side={{ acquiredTraitIds: owner === "acquired" ? [juvenileId] : [] }}
+    sideKey="attacker" snapshot={local} spirit={spirit} />);
+  fireEvent.change(screen.getByRole("combobox", { name: "搜索已吞噬特性" }), { target: { value: "地银链" } });
+  const options = screen.getAllByRole("option");
+  expect(options).toHaveLength(1);
+  expect(options[0]).toHaveTextContent("地绡银龙");
+  expect(options[0]).toHaveAttribute("aria-disabled", "true");
+  fireEvent.click(options[0]);
+  expect(callbacks.onAdd).not.toHaveBeenCalled();
 });

@@ -1,5 +1,6 @@
 import { getServerRelease } from "./server-environment.js";
 import { withS5PreviewBattleLevels } from "./battle-level.js";
+import { resolveS5PreviewTraitEffect } from "./s5-preview-traits.js";
 import { abilityAdjustedStat } from "./skill-result/numeric.js";
 import { calculateMatchup } from "./calculate.js";
 import { linkedNegativeStatusContext } from "./negative-status-context.js";
@@ -41,6 +42,7 @@ const STAT_VIEW = [
 ];
 
 export function getAppliedWeatherLabel(weather, result) {
+  if (weather === "dream") return "萌系天气（占位）";
   if (result?.status !== "exact") return null;
   const hasGain = (group, name) => result.gainSources?.[group]?.some(
     (source) => source.name === name && Number.isFinite(source.amount) && source.amount !== 0,
@@ -240,20 +242,64 @@ export function getPanelView(spirit, side, stages = {}) {
   });
 }
 
-function finalPanelStatsForSide(calculation, sideKey) {
+// S5's explicitly confirmed stat gains exist before a skill is selected. Reuse
+// their resolver; selected-skill projections remain authoritative when present.
+function previewPanelForSide(snapshot, state, sideKey, panelStats) {
+  const side = state.sides[sideKey];
+  const outgoing = state.directions[sideKey === "attacker" ? "forward" : "reverse"];
+  const incoming = state.directions[sideKey === "attacker" ? "reverse" : "forward"];
+  let physical = 0, magical = 0, defense = 0, speedFlat = 0, speedStage = 0;
+  let hasPreviewTrait = false;
+  for (const trait of getEffectiveTraits(snapshot, { ...side, spirit: getSpirit(snapshot, side) })) {
+    const resolve = (role, category, direction) => resolveS5PreviewTraitEffect(trait, role, {
+      context: { ...direction.context, ...direction.overrides?.context }, skill: { category },
+    });
+    const physicalEffect = resolve("attacker", "physical", outgoing);
+    if (!physicalEffect) continue;
+    hasPreviewTrait = true;
+    physical += physicalEffect.attackLevelBonus;
+    magical += resolve("attacker", "magical", outgoing).attackLevelBonus;
+    defense += resolve("defender", "physical", incoming).defenseLevelBonus;
+    speedFlat += physicalEffect.attackerSpeedFlatBonus;
+    speedStage += physicalEffect.attackerSpeedLevelBonus;
+  }
+  const abilityStageBonuses = {
+    attack: physical === magical ? physical : 0,
+    attackByCategory: { physical, magical },
+    defense,
+  };
+  if (!hasPreviewTrait || !panelStats) return { finalStats: null, abilityStageBonuses };
+  const attackStage = Number(outgoing.overrides.attackLevelStage ?? 0);
+  const defenseStage = Number(incoming.overrides.defenseLevelStage ?? 0);
+  return {
+    abilityStageBonuses,
+    finalStats: {
+      ...panelStats,
+      physicalAttack: Math.floor(abilityAdjustedStat(panelStats.physicalAttack, attackStage + physical)),
+      magicalAttack: Math.floor(abilityAdjustedStat(panelStats.magicalAttack, attackStage + magical)),
+      physicalDefense: Math.floor(abilityAdjustedStat(panelStats.physicalDefense, defenseStage + defense)),
+      magicalDefense: Math.floor(abilityAdjustedStat(panelStats.magicalDefense,
+        defenseStage + defense + Number(incoming.overrides.magicalDefenseLevelStageAdd ?? 0))),
+      speed: Math.round(abilityAdjustedStat(panelStats.speed + speedFlat + Number(outgoing.overrides.attackerSpeedFlat ?? 0), speedStage)),
+    },
+  };
+}
+
+function finalPanelStatsForSide(calculation, sideKey, fallback = null) {
   const attackDirection = sideKey === "attacker" ? "forward" : "reverse";
   const defenseDirection = sideKey === "attacker" ? "reverse" : "forward";
   const attackProjection =
     calculation[attackDirection]?.selectedResult?.combatPanel?.attacker;
   const defenseProjection =
     calculation[defenseDirection]?.selectedResult?.combatPanel?.defender;
-  if (!attackProjection && !defenseProjection) return null;
+  if (!attackProjection && !defenseProjection) return fallback;
   return {
+    ...(fallback ?? {}),
     ...(defenseProjection ?? {}),
     ...(attackProjection ?? {}),
     speed:
       attackProjection?.speed ??
-      defenseProjection?.speed,
+      defenseProjection?.speed ?? fallback?.speed,
   };
 }
 
@@ -760,11 +806,13 @@ export function buildCalculatorViewModel({
     skillResultsByDirection[otherDirection] = otherResult.results;
     traitResultsByDirection[otherDirection] = otherResult.traitDamageResult;
   }
+  const attackerPreviewPanel = previewPanelForSide(snapshot, state, "attacker", attackerPanelStats);
+  const defenderPreviewPanel = previewPanelForSide(snapshot, state, "defender", defenderPanelStats);
   const attackerFinalPanelStats = configurationReady
-    ? finalPanelStatsForSide(calculation, "attacker")
+    ? finalPanelStatsForSide(calculation, "attacker", attackerPreviewPanel.finalStats)
     : null;
   const defenderFinalPanelStats = configurationReady
-    ? finalPanelStatsForSide(calculation, "defender")
+    ? finalPanelStatsForSide(calculation, "defender", defenderPreviewPanel.finalStats)
     : null;
   const currentDirection = state.directions[activeDirection];
   const weatherRainTurns = Math.min(
@@ -808,6 +856,7 @@ export function buildCalculatorViewModel({
       attacker: {
         combatLevel: state.sides.attacker.level,
         finalPanelStats: attackerFinalPanelStats,
+        abilityStageBonuses: attackerPreviewPanel.abilityStageBonuses,
         health: attackerHealth,
         panelStats: attackerPanelStats,
         spirit: attacker,
@@ -815,6 +864,7 @@ export function buildCalculatorViewModel({
       defender: {
         combatLevel: state.sides.defender.level,
         finalPanelStats: defenderFinalPanelStats,
+        abilityStageBonuses: defenderPreviewPanel.abilityStageBonuses,
         health: defenderHealth,
         panelStats: defenderPanelStats,
         spirit: defender,

@@ -37,7 +37,7 @@ describe("S5 Web/Windows 展示候选覆盖", () => {
     const { snapshot, catalog } = fixture();
     const options = { useTestRaceStats: true };
     const old = withS5PreviewCatalog(snapshot, catalog, options);
-    const definition = knownSkill();
+    const definition = { ...knownSkill(), iconUrl: "/assets/skills/skill_preview_s5_barren-devour.png" };
     Object.assign(catalog.entries[0], { traitName: "恶龙的奢望", traitSummary: "用户新核对的特性说明。", skills: [definition] });
     const original = structuredClone({ snapshot, catalog, old });
     const fresh = withS5PreviewCatalog(snapshot, catalog, options);
@@ -50,7 +50,7 @@ describe("S5 Web/Windows 展示候选覆盖", () => {
       expect(result.traits.find(trait => trait.id === traitId)).toMatchObject({ name: "恶龙的奢望", description: catalog.entries[0].traitSummary });
       const skill = result.skills.find(skill => skill.id === definition.id);
       expect(skill).toMatchObject({ id: definition.id, name: definition.name, cost: 5, basePower: 130,
-        type: "龙", category: "physical", description: definition.description,
+        type: "龙", category: "physical", description: definition.description, iconUrl: definition.iconUrl,
         previewIdentity: { catalogId: catalog.catalogId, key: "family-a", formalIdPending: true, evidence: definition.evidence } });
       expect(skill.previewIdentity.evidence).not.toBe(definition.evidence);
       expect(skill).not.toHaveProperty("calculationStatus");
@@ -83,6 +83,13 @@ describe("S5 Web/Windows 展示候选覆盖", () => {
     expect(updated.skills.find(skill => skill.id === definition.id).basePower).toBe(140);
     expect(learned.skills.find(skill => skill.id === definition.id).basePower).toBe(130);
     expect(withS5PreviewCatalog(updated, catalog)).toBe(updated);
+    definition.iconUrl = "/assets/skills/skill_preview_s5_barren-devour.png";
+    const withIcon = withS5PreviewCatalog(updated, catalog);
+    expect(withIcon.skills.find(skill => skill.id === definition.id).iconUrl).toBe(definition.iconUrl);
+    expect(withS5PreviewCatalog(withIcon, catalog)).toBe(withIcon);
+    definition.iconUrl = "/assets/skills/../unrelated.png";
+    expect(() => withS5PreviewCatalog(withIcon, catalog)).toThrow("图标必须使用本技能对应的本地 PNG");
+    delete definition.iconUrl;
     catalog.entries[0].skills = [];
     const cleared = withS5PreviewCatalog(updated, catalog);
     expect(cleared.skills).toBe(updated.skills);
@@ -132,7 +139,7 @@ describe("S5 Web/Windows 展示候选覆盖", () => {
   });
 
   test("技能ID、同名及旧占位学习池冲突显式拒绝，不覆盖其他资料", () => {
-    for (const duplicate of [knownSkill(), { ...knownSkill(), id: "skill_preview_s5_other" },
+    for (const duplicate of [{ ...knownSkill(), basePower: 131 }, { ...knownSkill(), id: "skill_preview_s5_other" },
       { ...knownSkill(), name: "另一技能" }]) {
       const { catalog } = fixture();
       catalog.entries[0].skills = [knownSkill()]; catalog.entries[1].skills = [duplicate];

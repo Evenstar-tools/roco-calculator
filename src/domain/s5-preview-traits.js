@@ -1,5 +1,11 @@
+import { getS5PreviewTurnEndInputs } from "../features/s5-preview/turn-end-inputs.js";
 import { normalizeTriggerControls } from "./trigger-controls.js";
 import { projectTraitRuntimeContext } from "./trait-runtime.js";
+import { currentWeather } from "../state/weather.js";
+import { getLegacyMinggulongLevelInputs } from "../features/s5-preview/level-input-migration.js";
+import { getGoldChargeCountInput, getLegacyGoldChargeInputs } from "../features/s5-preview/charge-input-migration.js";
+import { getSilverEnergySpentInput, readSilverEnergySpent } from "../features/s5-preview/energy-input-migration.js";
+import { readS5SixFaceDiceInput } from "../features/s5-preview/dice-input-migration.js";
 
 const ABU_KEYS = new Set(["abu", "boss-abu", "super-abu"]);
 const KNOWN_KEYS = new Set([
@@ -21,36 +27,35 @@ function mechanicFor(trait) {
   return ABU_KEYS.has(identity.mechanicKey) ? "abu" : identity.mechanicKey ?? "unknown";
 }
 
+function diceMaximum(trait) {
+  const range = /1\s*[~～—–\-至]\s*(6|20)\s*点/u.exec(trait?.description ?? "");
+  if (range) return Number(range[1]);
+  return trait?.previewIdentity?.key === "diliutun" ? 6 : 20;
+}
+
 export function getS5PreviewTraitInputs(trait, role = "attacker") {
   const key = mechanicFor(trait);
   if (key === null) return null;
   let controls = [];
   switch (key) {
     case "minggulong":
+      controls = [number("BattleLevel", "当前等级", 99, { min: 1, max: 99, step: 10 })];
+      break;
     case "abu":
-      controls = [
-        number("CurrentLevel", key === "minggulong" ? "起始等级（默认99）" : "起始等级", key === "minggulong" ? 99 : 60, { min: 1, max: 99 }),
-        number("LevelEventCount", key === "minggulong" ? "已结束回合数" : "已确认符合3能耗条件的使用次数"),
-      ];
+      controls = [number("BattleLevel", "当前等级", 60, { min: 1, max: 99, step: 2 })];
       break;
     case "gold-vein-dragon":
+      return [getGoldChargeCountInput(role), ...getS5PreviewTurnEndInputs(key, role)];
     case "little-scissor":
-      controls = [
-        boolean("AttackBuffActive", key === "gold-vein-dragon" ? "聚能后双攻增益当前生效" : "对方换人后双攻增益当前生效"),
-        number("CurrentAttackBonus", "当前已生效双攻增益", 50, { unit: "%" }),
-      ];
+      controls = [number("OpponentExitCount", "敌方精灵已离场次数")];
       break;
     case "underground-silver-dragon":
-      controls = [number("CurrentMagicalAttackBonus", "当前累计已生效魔攻增益", 0, { unit: "%" })];
-      break;
+      return [getSilverEnergySpentInput(role), ...getS5PreviewTurnEndInputs(key, role)];
     case "lele-shark":
-      controls = [boolean("NegativeCleared", "清除自身减益后永久双攻增益已触发（本局一次）")];
+      controls = [boolean("NegativeCleared", "清除自身减益后永久物攻增益已触发（本局一次）")];
       break;
     case "egg-wrap":
-      controls = [
-        boolean("TeamMoenhua", "入场时己方有萌化精灵"),
-        boolean("EntryDefenseActive", "本次入场双防增益当前生效"),
-      ];
+      controls = [boolean("EggTriggered", "特性触发")];
       break;
     case "boss-ice-bruce":
       controls = [
@@ -66,14 +71,13 @@ export function getS5PreviewTraitInputs(trait, role = "attacker") {
       break;
     case "jingyu":
       controls = [
-        boolean("SnowActive", "当前处于雪天"),
-        boolean("FreezeApplicationConfirmed", "已确认本次有符合条件的敌方新增冻结"),
+        { ...boolean("SnowActive", "暴风雪天气"), scope: "battle" },
       ];
       break;
     case "doulie":
       controls = [
         boolean("SnowTriggered", "本局5回合雪天已触发"),
-        number("SnowTurnsRemaining", "当前雪天剩余回合（手动）", 5, { max: 5 }),
+        number("SnowTurnsRemaining", "触发雪天回合（手动确认）", 5, { max: 5 }),
       ];
       break;
     case "watermelon-bug":
@@ -85,21 +89,21 @@ export function getS5PreviewTraitInputs(trait, role = "attacker") {
     case "diliutun":
       controls = [
         boolean("DiceRolled", "已掷骰并需要结算点数效果"),
-        number("DiceFace", "本次实际骰点", 1, { min: 1, max: 20 }),
+        number("DiceFace", "本次实际骰点", 1, { min: 1, max: diceMaximum(trait) }),
       ];
       break;
     case "crab-coconut":
-      controls = [boolean("GrassDiscountReady", "水系技能后下一草系减费待生效")];
+      controls = [boolean("GrassDiscountReady", "水系技能后下次行动草系减费待生效")];
       break;
     case "lily-of-valley":
       controls = [
-        boolean("DreamActive", "当前处于梦境"),
-        boolean("TurnEndConfirmed", "已确认本次回合结束结算"),
+        { ...boolean("DreamActive", "萌系天气（占位）"), scope: "battle" },
+        { ...boolean("TurnEndConfirmed", "回合结束 · 对手寄生+3"), action: "s5-dream-turn-end" },
       ];
       break;
   }
   return normalizeTriggerControls(controls.map(({ suffix, unit, ...control }) => ({
-    ...control, contextKey: field(role, suffix), scope: "direction",
+    scope: "direction", ...control, contextKey: field(role, suffix),
     ...(unit ? { suffix: unit } : {}),
   })), { source: rolePrefix(role) });
 }
@@ -127,49 +131,93 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
     return result;
   }
   switch (key) {
-    case "minggulong":
-    case "abu": {
-      const startingLevel = amount("CurrentLevel");
-      const count = amount("LevelEventCount");
-      const level = key === "minggulong" ? startingLevel - 10 * count : Math.min(99, startingLevel + 2 * count);
-      result.startingLevel = startingLevel;
+    case "minggulong": {
+      const legacy = projectTraitRuntimeContext(context, trait, getLegacyMinggulongLevelInputs(role));
+      const legacyLevel = legacy[field(role, "CurrentLevel")] - 10 * legacy[field(role, "LevelEventCount")];
+      if (legacyLevel < 1) {
+        result.currentLevel = legacyLevel;
+        result.summary = "旧回合记录等级无效，请填写当前等级";
+        block("当前计数推得等级" + legacyLevel + "，等级下降下限尚未公开，请填写当前等级");
+        break;
+      }
+      const level = amount("BattleLevel");
       result.currentLevel = level;
-      result.summary = key === "minggulong"
-        ? "等级 " + startingLevel + " − 10×" + count + " 回合 = " + level
-        : "等级 " + startingLevel + " + 2×" + count + " 次 = " + level + "（上限99）";
-      result.note = key === "abu"
-        ? "次数由玩家确认符合3能耗条件，不推定基础或实际能耗口径；默认60级为试算输入，不是初始等级证据。"
-        : "默认起始99为常规60级+初始等级39的试算值；按已结束回合数减10级，不推定下降下限。";
-      if (level < 1) block("当前计数推得等级" + level + "，等级下降下限尚未公开，不能猜测截断值");
-      if (level >= 1 && level < 80) {
+      result.summary = "当前等级 " + level;
+      if (level < 80) {
         result.summary += "；承伤 +40%";
         result.effects.push({ kind: "incoming-damage-percent", amount: 40 });
       }
       break;
     }
-    case "gold-vein-dragon":
+    case "abu": {
+      const level = amount("BattleLevel");
+      result.currentLevel = level;
+      result.summary = "当前等级 " + level;
+      result.note = "默认60级为试算输入；按实战当前等级填写，上限99级。";
+      if (level < 80) {
+        result.summary += "；承伤 +40%";
+        result.effects.push({ kind: "incoming-damage-percent", amount: 40 });
+      }
+      break;
+    }
+    case "gold-vein-dragon": {
+      const control = getGoldChargeCountInput(role);
+      const explicit = projectTraitRuntimeContext(context, trait, [{ ...control, defaultValue: undefined }]);
+      const legacy = projectTraitRuntimeContext(context, trait, getLegacyGoldChargeInputs(role));
+      const legacyBonus = legacy[field(role, "AttackBuffActive")] ? legacy[field(role, "CurrentAttackBonus")] : 0;
+      const count = explicit[control.contextKey] ?? legacyBonus / 50;
+      if (!Number.isSafeInteger(count)) {
+        result.summary = "旧手调增益无法换算整次聚能，请填写聚能次数";
+        block(result.summary);
+        break;
+      }
+      const settled = Math.min(count, read("SettledChargeCount") ?? count);
+      result.totalCount = count;
+      result.settledCount = settled;
+      result.pendingCount = count - settled;
+      const stages = settled * 5;
+      result.summary = count ? "聚能 " + count + " 次 · 物攻能力等级 +" + stages : "未聚能 · 无增益";
+      if (result.pendingCount) result.summary += "；待回合结束 " + result.pendingCount + " 次";
+      result.note = "每次聚能在回合结束时物攻+50%；与其它能力等级一起按现有上限结算。";
+      if (settled) result.effects.push({ kind: "physical-attack-percent", amount: stages * 10 });
+      break;
+    }
     case "little-scissor": {
-      const bonus = enabled("AttackBuffActive") ? amount("CurrentAttackBonus") : 0;
-      result.summary = bonus ? "当前已生效双攻 +" + bonus + "%" : "双攻增益未生效";
-      result.note = "直接填写当前生效总增益，不按触发次数推定叠法、持续时间或上限。";
-      if (bonus) result.effects.push({ kind: "attack-percent", amount: bonus });
+      const count = amount("OpponentExitCount");
+      const bonus = count * 20;
+      result.summary = count ? "敌方已离场 " + count + " 次 · 技能威力 +" + bonus : "敌方尚未离场 · 无威力增益";
+      result.note = "按敌方实际离场次数累计；旧版双攻增益字段不转换为离场次数。";
+      if (bonus) result.effects.push({ kind: "skill-power-flat", amount: bonus });
       break;
     }
     case "underground-silver-dragon": {
-      const bonus = amount("CurrentMagicalAttackBonus");
-      result.summary = "当前累计已生效魔攻 +" + bonus + "%";
-      result.note = "填写已生效总值，不由能量消耗次数推算累计叠法或上限；当次可生效。";
+      const energy = readSilverEnergySpent(context, role, trait);
+      if (energy === null) {
+        result.summary = "旧手调增益无法换算整点能量，请填写累计消耗能量";
+        block(result.summary);
+        break;
+      }
+      const spent = energy ?? 0;
+      result.energySpent = spent;
+      const settled = Math.min(spent, read("SettledEnergySpent") ?? spent);
+      result.totalCount = spent;
+      result.settledCount = settled;
+      result.pendingCount = spent - settled;
+      const bonus = settled * 10;
+      result.summary = "累计消耗 " + spent + " 点能量 · 魔攻 +" + bonus + "%";
+      if (result.pendingCount) result.summary += "；待回合结束 " + result.pendingCount + " 点";
+      result.note = "每消耗1点能量在回合结束时魔攻+10%；当次技能不提前获得，累计后按现有能力等级上限结算。";
       if (bonus) result.effects.push({ kind: "magical-attack-percent", amount: bonus });
       break;
     }
     case "lele-shark":
-      result.summary = enabled("NegativeCleared") ? "本局已触发一次：永久双攻 +50%" : "尚未确认清除自身减益，无双攻增益";
-      if (enabled("NegativeCleared")) result.effects.push({ kind: "attack-percent", amount: 50, oncePerBattle: true, duration: "permanent" });
+      result.summary = enabled("NegativeCleared") ? "本局已触发一次：永久物攻 +50%" : "尚未确认清除自身减益，无物攻增益";
+      if (enabled("NegativeCleared")) result.effects.push({ kind: "physical-attack-percent", amount: 50, oncePerBattle: true, duration: "permanent" });
       break;
     case "egg-wrap": {
-      const active = enabled("TeamMoenhua") && enabled("EntryDefenseActive");
-      result.summary = active ? "入场条件已确认，当前双防 +50%" : "入场双防增益未生效";
-      result.note = "只按当前明确生效状态结算，不默认永久，也不自动叠加入场次数。";
+      const active = enabled("EggTriggered");
+      result.summary = active ? "双防 +50%" : "特性未触发";
+      result.note = "按队伍中是否存在萌化精灵的当前条件结算，不按入场次数叠加。";
       if (active) result.effects.push({ kind: "defense-percent", amount: 50 });
       break;
     }
@@ -190,17 +238,15 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
       break;
     }
     case "jingyu":
-      result.summary = enabled("SnowActive") && enabled("FreezeApplicationConfirmed") ? "本次符合条件的敌方新增冻结改为3层星陨" : "尚无已确认的雪天冻结转换";
-      result.note = "只转换本次实际新增且符合条件的冻结；已有冻结不变，不推断其它来源。";
-      if (enabled("SnowActive") && enabled("FreezeApplicationConfirmed")) result.effects.push({
-        kind: "status-replace", target: "opponent", from: "freeze", to: "starfall",
-        stacks: 3, timing: "current-skill", confirmedSource: "manual-eligible-freeze-application",
-      });
+      result.summary = currentWeather(context) === "blizzard" ? "暴风雪生效：回合结束敌方获得3层星陨印记（回合末待适配）" : "当前未处于暴风雪，无回合末星陨施加";
+      result.note = "仅在场且暴风雪回合结束生效；当前技能施加的冻结保持不变，不把回合末效果提前计入伤害。";
       break;
     case "doulie":
-      result.summary = enabled("SnowTriggered") ? "本局雪天已触发；当前剩余 " + amount("SnowTurnsRemaining") + " 回合" : "本局雪天未确认触发";
-      result.note = "按手动确认状态展示，不推定10层冻结的累计口径或触发当回合扣减。";
-      if (enabled("SnowTriggered")) result.effects.push({ kind: "weather-state", weather: "snow", remainingTurns: amount("SnowTurnsRemaining"), oncePerBattle: true });
+      result.summary = enabled("SnowTriggered")
+        ? currentWeather(context) === "blizzard" ? "本局雪天已触发；当前剩余 " + Math.max(0, Number(context.weatherTurns) || 0) + " 回合" : "本局雪天已触发；当前未处于雪天"
+        : "本局雪天未确认触发";
+      result.note = "确认触发后同步全场暴风雪；不自动累计10层冻结或推进回合。切换其它天气不会清除本局已触发记录。";
+      if (enabled("SnowTriggered") && currentWeather(context) === "blizzard") result.effects.push({ kind: "weather-state", weather: "snow", remainingTurns: Math.max(0, Number(context.weatherTurns) || 0), oncePerBattle: true });
       break;
     case "watermelon-bug": {
       const type = read("UsedSkillType");
@@ -211,22 +257,41 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
       result.note = "只对应本次实际系别匹配的技能；随机奉献不生成未确认增益，不自动应用于后续伤害。";
       break;
     }
-    case "diliutun":
-      result.summary = enabled("DiceRolled") ? "本次实际骰点 " + amount("DiceFace") + "；点数效果尚未公开" : "尚未确认掷骰，无骰子增减益";
+    case "diliutun": {
+      const face = diceMaximum(trait) === 6 ? readS5SixFaceDiceInput(context, role, trait) : undefined;
+      if (face === null) {
+        result.summary = "旧骰点不在1~6范围，请重新选择实际骰点";
+        block(result.summary);
+        break;
+      }
+      result.summary = enabled("DiceRolled") ? "本次实际骰点 " + (face ?? amount("DiceFace")) + "；点数效果尚未公开" : "尚未确认掷骰，无骰子增减益";
       if (enabled("DiceRolled")) block("骰子点数与双方增减益映射尚未公开，不能生成本次实数增减益");
       break;
+    }
     case "crab-coconut":
-      result.summary = enabled("GrassDiscountReady") ? "水系技能后：下一草系技能能耗 -3（待生效）" : "无已确认的下一草系减费";
-      result.note = "仅展示待生效减费，不推定最低能耗、连续水技能叠加或非草技能是否保留，不改本次最终能耗。";
+      result.summary = enabled("GrassDiscountReady") ? "水系技能后：下次行动草系技能能耗 -3（待生效）" : "无已确认的下次行动草系减费";
+      result.note = "下次行动仅草系享受减3，非草行动也消耗机会；再次使用水系技能可重新触发，不累计多份减费。";
       if (enabled("GrassDiscountReady")) result.effects.push({ kind: "next-grass-cost-discount", amount: 3, currentPending: true });
       break;
     case "lily-of-valley":
-      result.summary = enabled("DreamActive") && enabled("TurnEndConfirmed") ? "本次梦境回合结束：对手寄生 +3层" : "未确认梦境回合结束，不追加寄生";
-      result.note = "回合末效果独立结算，不自动模拟后续回合。";
-      if (enabled("DreamActive") && enabled("TurnEndConfirmed")) result.effects.push({ kind: "status-add", target: "opponent", status: "parasitism", stacks: 3, timing: "turn-end", confirmedSource: "manual-confirmed-dream-turn-end" });
+      // Weather is global. Old per-trait confirmations must never replay a turn.
+      result.summary = context.weatherDream === true
+        ? "萌系天气生效：回合结束可给对手3层寄生"
+        : "萌系天气未生效，无寄生施加";
+      result.note = "点击回合结束挂寄生；不自动推进回合或扣血。";
       break;
   }
   return result;
+}
+
+export function getS5PreviewSkillCostReduction(traits, context, skill) {
+  if (skill?.type !== "草") return 0;
+  return (traits ?? []).reduce((total, trait) => {
+    const evaluation = getS5PreviewTraitEvaluation(trait, "attacker", context, { skill });
+    if (evaluation?.calcStatus !== "ready") return total;
+    return total + evaluation.effects.filter(effect => effect.kind === "next-grass-cost-discount")
+      .reduce((amount, effect) => amount + effect.amount, 0);
+  }, 0);
 }
 
 function neutral() {
@@ -246,6 +311,7 @@ export function resolveS5PreviewTraitEffect(trait, role = "attacker", input = {}
   if (evaluation.blockingReason) return result;
   for (const entry of evaluation.effects) {
     if (entry.kind === "attack-percent" && role === "attacker" ||
+        entry.kind === "physical-attack-percent" && role === "attacker" && input.skill?.category === "physical" ||
         entry.kind === "magical-attack-percent" && role === "attacker" && input.skill?.category === "magical") {
       result.attackLevelBonus += entry.amount / 10;
       result.attackMultiplier += entry.amount / 100;
@@ -261,6 +327,7 @@ export function resolveS5PreviewTraitEffect(trait, role = "attacker", input = {}
       result.powerPercentAdd += entry.amount / 100;
       result.powerMultiplier += entry.amount / 100;
     }
+    if (entry.kind === "skill-power-flat" && role === "attacker") result.fixedPowerAdd += entry.amount;
     if (entry.kind === "speed-flat") result[role === "attacker" ? "attackerSpeedFlatBonus" : "defenderSpeedFlatBonus"] += entry.amount;
     if (entry.kind === "incoming-damage-percent" && role === "defender") result.finalDamageMultiplier *= 1 + entry.amount / 100;
   }
@@ -275,7 +342,7 @@ export function resolveS5PreviewTraitEffect(trait, role = "attacker", input = {}
     result.step = {
       label: (trait.displayName ?? trait.name ?? "S5前瞻特性") + " · " + evaluation.summary,
       input: { summary: evaluation.summary, effects: evaluation.effects },
-      before: factor === null ? 0 : 1, after: factor ?? flatSpeed,
+      before: factor === null ? 0 : 1, after: factor ?? (result.fixedPowerAdd || flatSpeed),
       source: "manual-s5-preview-state",
     };
   }

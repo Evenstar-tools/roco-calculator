@@ -168,7 +168,7 @@ html[data-season="s3"] {
   --season-header-wash: linear-gradient(180deg, #182f28eb, #29463b99 55%, transparent);
 }
 
-/* S5 pairs the existing PV-inspired scene with the official Minggulong cutout. */
+/* S5 keeps the existing scene and uses the user-selected transparent mascot. */
 html[data-season="s5"] {
   --accent: #8b641d;
   --accent-strong: #6e4a13;
@@ -192,10 +192,10 @@ html[data-season="s5"] {
   --season-tool-hover-bg: #365c62;
   --season-result-text: #f0cf98;
   --season-secondary-accent: #ad7e34;
-  --season-character-top: -16px;
-  --season-character-width: 236px;
-  --season-character-left: 52%;
-  --season-character-bg-left: calc(52% + var(--season-character-width) * .52);
+  --season-character-top: -130px;
+  --season-character-width: 280px;
+  --season-character-left: calc(100% - 680px);
+  --season-character-bg-left: calc(100% - 680px + var(--season-character-width));
   --season-page-wash: linear-gradient(180deg, #12475333 0, #18445066 64px, #17303be6 150px, #101722 240px);
   --season-page-wash-mobile: linear-gradient(180deg, #12475333, #17303be6 150px, #101722 240px);
   --season-header-wash: linear-gradient(180deg, #143a40eb, #22494d99 55%, transparent);
@@ -539,10 +539,10 @@ html[data-theme="dark"] :is(button, input, select):focus-visible {
   html[data-season="s2"] { --season-character-top: -64px; --season-character-width: 170px; }
   html[data-season="s3"] { --season-character-top: -16px; --season-character-width: 104px; }
   html[data-season="s5"] {
-    --season-character-top: -12px;
-    --season-character-width: 200px;
-    --season-character-left: calc(100% - 600px);
-    --season-character-bg-left: calc(100% - 600px + var(--season-character-width));
+    --season-character-top: -106px;
+    --season-character-width: 236px;
+    --season-character-left: calc(100% - 645px);
+    --season-character-bg-left: calc(100% - 645px + var(--season-character-width));
   }
   .app-header--season-preview .app-header__title-long { display: none; }
   .app-header--season-preview .app-header__title-short { display: inline; }

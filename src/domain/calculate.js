@@ -48,6 +48,10 @@ export function calculateMatchup(snapshot, battleInput) {
     direction: directions.forward ?? {},
     attackerSide: sides.attacker,
     attacker,
+    attackerDefenseLevelStage: finiteNumber(
+      directions.reverse?.overrides?.defenseLevelStage,
+      directions.reverse?.defenseLevelStage,
+    ),
     attackerCurrentHp: directions.reverse?.currentHp,
     attackerHpPercent: directions.reverse?.context?.currentHpPercent,
     defender,
@@ -66,6 +70,10 @@ export function calculateMatchup(snapshot, battleInput) {
     direction: directions.reverse ?? {},
     attackerSide: sides.defender,
     attacker: defender,
+    attackerDefenseLevelStage: finiteNumber(
+      directions.forward?.overrides?.defenseLevelStage,
+      directions.forward?.defenseLevelStage,
+    ),
     attackerCurrentHp: directions.forward?.currentHp,
     attackerHpPercent: directions.forward?.context?.currentHpPercent,
     defender: attacker,
