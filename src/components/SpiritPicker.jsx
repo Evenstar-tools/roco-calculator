@@ -132,6 +132,7 @@ function uniqueSpirits(spirits) {
 
 export function SpiritPicker({
   clearOnOpen = false,
+  conditionControl,
   favorite = false,
   favoriteState,
   guideTarget,
@@ -584,6 +585,7 @@ export function SpiritPicker({
                   description={selectedTraitDescription}
                   name={selectedTraitName}
                 />
+                {conditionControl}
                 {onOpenDeer && <button className="spirit-card__deer-entry" type="button" onClick={onOpenDeer}>{t("电鹿斩杀线 →")}</button>}
               </p>
             ) : null}

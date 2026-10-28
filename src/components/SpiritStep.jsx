@@ -8,6 +8,7 @@ export function SpiritStep({
   defender,
   defenderFavoriteState,
   formSides,
+  conditionControls,
   onFormSelect,
   onAttackerFavoriteToggle,
   onAttackerSelect,
@@ -26,6 +27,7 @@ export function SpiritStep({
     <section aria-label={t("精灵配置")} className="calculator-step calculator-step--spirits">
       <div className="versus-grid">
         <SpiritPicker
+          conditionControl={conditionControls?.attacker}
           favoriteState={attackerFavoriteState}
           guideTarget="attacker"
           label={t("攻击方")}
@@ -52,6 +54,7 @@ export function SpiritStep({
           <ArrowsLeftRight aria-hidden="true" size={23} weight="bold" />
         </button>
         <SpiritPicker
+          conditionControl={conditionControls?.defender}
           favoriteState={defenderFavoriteState}
           guideTarget="defender"
           label={t("防御方")}
