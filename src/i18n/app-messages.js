@@ -1,4 +1,9 @@
 export const appMessages = Object.fromEntries([
+  ["导出失败，请重试", "Export failed. Please try again.", "エクスポートに失敗しました。もう一度お試しください。"],
+  ["页面无法显示，请重新加载。", "This page could not be displayed. Please reload.", "ページを表示できませんでした。再読み込みしてください。"],
+  ["计算失败，请重新打开", "Calculation failed. Close and reopen this panel to retry.", "計算に失敗しました。このパネルを閉じて、開き直してください。"],
+  ["无法导入配置，请检查分享链接或分享码后重试。", "Could not import this setup. Check the share link or code and try again.", "設定をインポートできませんでした。共有リンクまたはコードを確認して、もう一度お試しください。"],
+  ["无法生成分享链接，请重试。", "Could not create the share link. Please try again.", "共有リンクを作成できませんでした。もう一度お試しください。"],
   [
     "国际服数据尚待核验",
     "Global data needs verification",

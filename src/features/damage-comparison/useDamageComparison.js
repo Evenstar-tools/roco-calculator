@@ -48,7 +48,7 @@ export function useDamageComparison(snapshot, source, preferences, onPreferences
       if (!signal.aborted) setProgress({ request, value });
     } })
       .then((value) => { if (!signal.aborted) setResult({ request, value }); })
-      .catch((cause) => { if (!signal.aborted) setFailure({ request, message: cause.message || "计算失败，请重新打开" }); });
+      .catch(() => { if (!signal.aborted) setFailure({ request, message: "计算失败，请重新打开" }); });
     return () => { signal.aborted = true; };
   }, [request]);
   const ranking = result?.request === request ? result.value : null;

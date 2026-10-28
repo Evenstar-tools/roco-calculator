@@ -179,8 +179,8 @@ html[data-theme="dark"] .app-header--tool::before { content: none; }
   .deer-table tbody > tr > td { border: 0; padding: 0; width: auto; }
   .deer-table tbody > tr:not(.deer-detail) > td:first-child { grid-column: 1 / -1; padding-right: 26px; }
   .deer-table tbody > tr:not(.deer-detail) > td:nth-child(2) { display: none; }
-  .deer-table tbody > tr:not(.deer-detail) > td:nth-child(3)::before { content: "单招最低"; display: block; font-size: 10px; color: var(--text-muted); font-weight: 400; margin: 5px 0; }
-  .deer-table tbody > tr:not(.deer-detail) > td:nth-child(4):not(:nth-last-child(2))::before { content: "接先发最低"; display: block; font-size: 10px; color: var(--text-muted); font-weight: 400; margin: 5px 0; }
+  .deer-table tbody > tr:not(.deer-detail) > td:nth-child(3)::before { content: attr(data-label); display: block; font-size: 10px; color: var(--text-muted); font-weight: 400; margin: 5px 0; }
+  .deer-table tbody > tr:not(.deer-detail) > td:nth-child(4):not(:nth-last-child(2))::before { content: attr(data-label); display: block; font-size: 10px; color: var(--text-muted); font-weight: 400; margin: 5px 0; }
   .deer-table tbody > tr:not(.deer-detail) > td:nth-last-child(2) { grid-column: 3; align-self: end; }
   .deer-table tbody > tr:not(.deer-detail) > td:last-child { position: absolute; right: 8px; top: 8px; }
   .deer-damage { display: block; }

@@ -5,6 +5,9 @@ import DamageComparisonDialog from "../../src/components/DamageComparisonDialog.
 import { createInitialState } from "../../src/state/defaults.js";
 import * as exporter from "../../src/features/damage-comparison/export.js";
 import { damageComparisonXlsx } from "../../src/features/damage-comparison/export-xlsx.js";
+import * as ranking from "../../src/domain/skill-damage-ranking.js";
+import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
+import { translateUi } from "../../src/i18n/messages.js";
 
 afterEach(() => vi.restoreAllMocks());
 const stats = { hp: 100, physicalAttack: 100, physicalDefense: 100, magicalAttack: 100, magicalDefense: 100, speed: 100 };
@@ -12,6 +15,42 @@ const snapshot = { meta: { id: "export-data", rulesVersion: "export-rules" }, tr
   spirits: Array.from({ length: 72 }, (_, index) => ({ id: String(index), fullName: `精灵${index}`, types: ["草"], raceStats: stats, stage: "首领", sourceCategory: "首领形态" })),
   skills: [{ id: "skill", name: "火焰", basePower: 80, type: "火", category: "magical" }],
 };
+
+test("comparison failure uses an actionable localized message and follows language changes", async () => {
+  const calculate = vi.spyOn(ranking, "createSkillDamageRanking").mockRejectedValueOnce(new Error("面板属性 physicalDefense 必须是有限正数"));
+  const data = { ...snapshot, spirits: snapshot.spirits.slice(0, 2) };
+  const source = { state: createInitialState(data), direction: "forward" };
+  const content = <DamageComparisonDialog snapshot={data} source={source} onClose={vi.fn()} />;
+  const { rerender, unmount } = render(<LocaleProvider locale="en">{content}</LocaleProvider>);
+  expect(await screen.findByText(translateUi("en", "计算失败，请重新打开"))).toBeVisible();
+  expect(screen.queryByText(/必须是有限正数/)).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: translateUi("en", "导出"), exact: true })).toBeDisabled();
+  rerender(<LocaleProvider locale="ja">{content}</LocaleProvider>);
+  expect(screen.getByText(translateUi("ja", "计算失败，请重新打开"))).toBeVisible();
+  expect(calculate).toHaveBeenCalledTimes(1);
+  unmount();
+  render(<LocaleProvider locale="ja">{content}</LocaleProvider>);
+  await waitFor(() => expect(screen.getByRole("button", { name: translateUi("ja", "导出"), exact: true })).toBeEnabled());
+  expect(screen.queryByText(translateUi("ja", "计算失败，请重新打开"))).not.toBeInTheDocument();
+});
+
+test("export failure stays localized across a language switch and a retry clears it", async () => {
+  const download = vi.spyOn(exporter, "downloadDamageComparison").mockRejectedValueOnce(new Error("磁盘访问被拒绝")).mockResolvedValue();
+  const data = { ...snapshot, spirits: snapshot.spirits.slice(0, 2) };
+  const source = { state: createInitialState(data), direction: "forward" };
+  const content = <DamageComparisonDialog snapshot={data} source={source} onClose={vi.fn()} />;
+  const { rerender } = render(<LocaleProvider locale="en">{content}</LocaleProvider>);
+  await waitFor(() => expect(screen.getByRole("button", { name: translateUi("en", "导出"), exact: true })).toBeEnabled());
+  fireEvent.click(screen.getByRole("button", { name: translateUi("en", "导出"), exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Excel（.xlsx）" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent(translateUi("en", "导出失败，请重试"));
+  rerender(<LocaleProvider locale="ja">{content}</LocaleProvider>);
+  expect(screen.getByRole("alert")).toHaveTextContent(translateUi("ja", "导出失败，请重试"));
+  expect(screen.getByRole("alert")).not.toHaveTextContent("磁盘访问被拒绝");
+  fireEvent.click(screen.getByRole("button", { name: "Excel（.xlsx）" }));
+  await waitFor(() => expect(download).toHaveBeenCalledTimes(2));
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+});
 
 test("导出当前筛选全量而非60条可见行，保留排序和搜索，空结果禁用", async () => {
   const download = vi.spyOn(exporter, "downloadDamageComparison").mockResolvedValue();

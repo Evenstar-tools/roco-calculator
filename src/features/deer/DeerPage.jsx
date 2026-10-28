@@ -315,8 +315,8 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
         {visibleRows.map((row) => <Fragment key={row.id}><tr className={`${expandedRow === row.id ? "is-selected" : ""}${activeMinimum?.id === row.id ? " is-recommended" : ""}`} aria-selected={activeMinimum?.id === row.id || undefined}>
           <td><div className="deer-skill"><SkillIcon skill={row.skill} size={28} /><div><button type="button" className="deer-skill-name" aria-expanded={expandedRow === row.id} onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}>{t(row.label)}</button>{row.condition && <small className="deer-condition-tag">{t(row.condition)}</small>}{row.id === "bet-dark" && <label className="deer-check deer-electric" title={t("勾选将自身HP设为49%，取消恢复100%；手动修改血量时同步状态")}><input type="checkbox" checked={darkBetActive} onChange={(event) => setOptions({ attackerHp: event.target.checked ? 49 : 100 })} />{t("触发暗特效")}</label>}{row.id === "discharge" && <label className="deer-check deer-electric"><input type="checkbox" checked={setup.dischargeElectrified === true} onChange={(event) => setOptions({ dischargeElectrified: event.target.checked })} />{t("触发2层引电")}</label>}{row.id === "wish-power" && <label className="deer-check deer-electric" title={t("目标本回合使用状态技能时，愿力冲击威力×2.5")}><input type="checkbox" aria-label={t("愿力冲击触发应对")} checked={setup.wishPowerResponse === true} onChange={(event) => setOptions({ wishPowerResponse: event.target.checked })} />{t("触发应对")}</label>}{row.id === "arc" && <label className="deer-electric"><span className="sr-only">{t("普通电系技能")}</span><select aria-label={t("普通电系技能")} value={setup.normalElectric} onChange={(event) => setOptions({ normalElectric: event.target.value })}><option value="电弧">{t("电弧")}</option><option value="离子火花">{t("离子火花")}</option></select><small>{t("同威力 · 不同能耗")}</small></label>}</div></div></td>
           <td><span className="deer-element"><ElementIcon type={row.skill.type} size={17} />{typeName(row.skill.type)}</span></td>
-          <td className="deer-threshold">{t(minimumText(row.minimum, row.current.lethalKnown))}</td>
-          {setup.showFollowup && <td className="deer-threshold">{t(row.id === "first" ? "—" : minimumText(row.comboMinimum, row.current.lethalKnown))}</td>}
+          <td className="deer-threshold" data-label={t("单招最低")}>{t(minimumText(row.minimum, row.current.lethalKnown))}</td>
+          {setup.showFollowup && <td className="deer-threshold" data-label={t("接先发最低")}>{t(row.id === "first" ? "—" : minimumText(row.comboMinimum, row.current.lethalKnown))}</td>}
           <td><span className="deer-mobile-damage-label">{t("当前")}{" "}{deferredSetup.stacks}{" "}{t("层伤害")}</span><div className={`deer-damage ${row.current.lethal ? "is-lethal" : ""}`}><div><strong>{row.current.percent === null ? t("待确认") : `${row.current.percent.toFixed(1)}%`}</strong><small>{t(row.current.damage === null ? row.current.first.reason : `${row.current.damage} ${row.current.defenseLimitations.length ? "理论伤害" : "伤害"}${row.current.lethal ? " · 可击倒" : ""}`)}</small></div><div className="deer-bar"><i style={{ width: `${Math.min(100, row.current.percent ?? 0)}%` }} /><b title={t("冻结占{v0}%", { v0: row.current.freeze.thresholdPercent })} style={{ width: `${Math.min(100 - Math.min(100, row.current.percent ?? 0), row.current.freeze.thresholdPercent)}%` }} /></div></div>{row.current.electrified && <small className="deer-freeze-label">{t("通电")}{" "}{row.current.first.totalDamage ?? "—"}{" "}{t("＋ 引电")}{" "}{row.current.electrified.damage}{row.current.electrified.immune ? t("（免疫）") : ""}</small>}{setup.freeze > 0 && <small className="deer-freeze-label">{t("蓝色：冻结")}{" "}{row.current.freeze.thresholdPercent}%</small>}</td>
           <td><button type="button" className="deer-expand" aria-label={t("查看{v0}详情", { v0: row.label })} aria-expanded={expandedRow === row.id} onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}>{expandedRow === row.id ? <CaretDown size={14} /> : <CaretRight size={14} />}</button></td>
         </tr>{expandedRow === row.id && <tr className="deer-detail"><td colSpan={setup.showFollowup ? 6 : 5}><p><strong>{t(row.label)}</strong> · {t(row.skill.description)}</p>{row.note && <p>{t(row.note)}</p>}{row.current.electrified && <p>{t("合计：通电")}{" "}{row.current.first.totalDamage ?? "—"}{" "}{t("＋ 引电")}{" "}{row.current.electrified.damage} ＝ {row.current.damage ?? "—"}{" "}{t("HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。")}</p>}<p>{t("实际威力")}{" "}{row.current.first.staticPower ?? "—"}{" "}{t("· 克制 ×")}{row.current.first.typeMultiplier ?? "—"}{" "}{t("· 目标剩余")}{" "}{row.current.remainingHp ?? "—"} HP{setup.freeze > 0 ? t(" · 冻结占 {v0}%（{v1} HP）", { v0: row.current.freeze.thresholdPercent, v1: row.current.freeze.thresholdHp }) : ""}</p>{row.current.followup && <p>{t("本次")}{" "}{row.current.damage}{" "}{t("＋ 先发")}{" "}{row.current.followup.totalDamage} ＝ {row.current.comboDamage}{" "}{t("伤害 ·")}{" "}{row.current.comboLethal ? t("可击倒") : t("未击倒")}</p>}{row.current.followupReason && <p>{t(row.current.followupReason)}</p>}
@@ -342,7 +342,7 @@ function VerifiedDeerPage({ initialState = null, onReturn }) {
   const { serverId } = useRuntime();
   const { t } = useLocale();
   const [data, setData] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
   useEffect(() => {
     const previousTitle = isWebDocument() ? null : document.title;
     if (previousTitle !== null) document.title = "电鹿斩杀线 · 洛克计算器";
@@ -358,11 +358,11 @@ function VerifiedDeerPage({ initialState = null, onReturn }) {
         } catch { /* 无网络时仍可使用四种模板。 */ }
         try { presets = { ...presets, ...spiritConfigsRepository({ serverId }).load(snapshot).configs }; } catch { /* 不可用的本地存储不阻断计算。 */ }
         if (!controller.signal.aborted) setData({ snapshot, presets });
-      } catch (failure) { if (!controller.signal.aborted) setError(failure.message); }
+      } catch { if (!controller.signal.aborted) setError(true); }
     }
     load();
     return () => { controller.abort(); if (previousTitle !== null) document.title = previousTitle; };
   }, [serverId]);
-  if (!data) return <><DeerHeader onReturn={onReturn} /><main className="deer-page"><p role="status">{t(error || t("正在加载电鹿斩杀线…"))}</p>{error && <button type="button" onClick={() => window.location.reload()}>{t("重新加载")}</button>}</main></>;
+  if (!data) return <><DeerHeader onReturn={onReturn} /><main className="deer-page"><p role={error ? "alert" : "status"}>{t(error ? "资料加载失败，请重试。" : "正在加载电鹿斩杀线…")}</p>{error && <button className="secondary-action" type="button" onClick={() => window.location.reload()}>{t("重新加载")}</button>}</main></>;
   return <DeerWorkspace {...data} initialState={initialState} onReturn={onReturn} />;
 }

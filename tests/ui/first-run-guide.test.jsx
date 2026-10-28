@@ -1,6 +1,35 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import { FirstRunGuide } from "../../src/components/FirstRunGuide.jsx";
+import { useFirstRunGuide } from "../../src/hooks/useFirstRunGuide.js";
+import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
+import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
+import { translateUi } from "../../src/i18n/messages.js";
+
+test("Global guide import errors follow language changes and allow retry without losing the step", async () => {
+  const loadPopularConfigLibrary = vi.fn().mockRejectedValueOnce(new Error("读取失败：权限不足")).mockResolvedValue({ entries: [] });
+  const importFavoriteConfigLibrary = vi.fn(() => ({ preview: { added: 1 } }));
+  const onToast = vi.fn();
+  let locale = "en";
+  const { result, rerender } = renderHook(() => useFirstRunGuide({ loadPopularConfigLibrary, importFavoriteConfigLibrary, onToast }), {
+    wrapper: ({ children }) => <RuntimeProvider serverId="global" locale={locale}><LocaleProvider locale={locale}>{children}</LocaleProvider></RuntimeProvider>,
+  });
+  act(() => { result.current.restart(); result.current.setStep(5); });
+  await act(async () => result.current.importPopularConfig());
+  expect(result.current.error).toBe(translateUi("en", "常用配置导入失败"));
+  expect(result.current.open).toBe(true);
+  expect(result.current.importing).toBe(false);
+  expect(importFavoriteConfigLibrary).not.toHaveBeenCalled();
+  locale = "ja";
+  rerender();
+  expect(result.current.error).toBe(translateUi("ja", "常用配置导入失败"));
+  expect(result.current.step).toBe(5);
+  await act(async () => result.current.importPopularConfig());
+  expect(importFavoriteConfigLibrary).toHaveBeenCalledTimes(1);
+  expect(result.current.error).toBe("");
+  expect(result.current.open).toBe(false);
+  expect(onToast).toHaveBeenLastCalledWith(translateUi("ja", "已新增 {count} 只配置", { count: 1 }));
+});
 
 function renderGuide(props = {}) {
   const actions = {

@@ -11,6 +11,7 @@ import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { routeFor } from "../runtime/routes.js";
 import { migrateGlobalDraftState } from "../runtime/global-session-migration.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { UI_MESSAGES } from "../i18n/messages.js";
 import { formatShareError } from "../runtime/share-feedback.js";
 import { IS_PREVIEW_BUILD } from "../runtime/preview-channel.js";
 import { correctS5PreviewReferences } from "../features/s5-preview/reference-corrections.js";
@@ -157,8 +158,12 @@ export function useShareFlow({
   }, [initialState, active, serverId, shareRequestId]);
 
   function shareFailure(error, fallback) {
-    return serverId === "global" && error?.code?.startsWith("SHARE_")
-      ? formatShareError(error, locale) : t(error instanceof Error ? error.message : fallback);
+    if (serverId === "global" && error?.code?.startsWith("SHARE_")) return formatShareError(error, locale);
+    const source = error instanceof Error && (locale === "zh-CN" || UI_MESSAGES[error.message]?.[locale])
+      ? error.message : fallback === "导入失败"
+        ? "无法导入配置，请检查分享链接或分享码后重试。"
+        : "无法生成分享链接，请重试。";
+    return t(source);
   }
 
   async function generateShareLink() {

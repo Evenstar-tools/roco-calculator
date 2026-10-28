@@ -6,7 +6,10 @@ import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
 import { translateCalculatorText, useCalculatorLocale } from "../../src/i18n/calculator-text.js";
 import { translateUi } from "../../src/i18n/messages.js";
 import { getGlobalEntityText, localizeGlobalSpirit } from "../../src/runtime/global-entity-localization.js";
-import { getTraitView } from "../../src/domain/calculator-view-model.js";
+import { buildCalculatorViewModel, getTraitView } from "../../src/domain/calculator-view-model.js";
+import { createInitialState } from "../../src/state/defaults.js";
+import { selectSingleSkill } from "../../src/state/calculator-session.js";
+import { ResultRail } from "../../src/components/ResultRail.jsx";
 import { createTeamMember } from "../../src/state/team-presets.js";
 import { TraitHint } from "../../src/components/TraitHint.jsx";
 import DamageRangeFilter from "../../src/components/DamageRangeFilter.jsx";
@@ -108,4 +111,37 @@ test("core stat and battle labels retain the official English and Japanese termi
   for (const [zh, [en, ja]] of Object.entries(terms)) {
     expect(translateUi("en", zh)).toBe(en); expect(translateUi("ja", zh)).toBe(ja);
   }
+});
+
+// These messages come from real supported skills with their required conditions unset.
+// Keep the engine result in Chinese; only the displayed diagnostic follows the locale.
+test.each([
+  ["穿膛", "需要条件数值才能确定技能威力"],
+  ["械斗", "需要技能位置才能确定技能威力"],
+  ["六自由度", "需要两侧相邻技能的当前显示威力"],
+  ["传感器", "向心力需要技能位置才能确定威力加成"],
+  ["怨力打击", "需要敌方技能威力"],
+  ["鸩毒", "需要层数上下文"],
+  ["坟场搏击", "需要敌方能量"],
+  ["灾厄", "默认对自身造成伤害，开启应对后计算对敌伤害"],
+])("%s keeps its real missing-condition diagnostic localized after switching languages", (skillName, reason) => {
+  const skill = snapshot.skills.find(entry => entry.name === skillName);
+  const learnset = snapshot.learnsets.find(entry => entry.skillIds.includes(skill.id));
+  let state = createInitialState(snapshot);
+  state.sides.attacker.spiritId = learnset.spiritId;
+  state = selectSingleSkill(state, { direction: "forward", side: "attacker", skillId: skill.id, snapshot }).state;
+  const result = buildCalculatorViewModel({ activeDirection: "forward", snapshot, state, serverId: "global" }).result;
+  expect(result.selectedResult).toMatchObject({ status: "needs_input", reason, totalDamage: null });
+  const before = JSON.stringify(result);
+  const child = <ResultRail result={result} />;
+  const { container, rerender } = render(wrap("en", child));
+  for (const locale of ["en", "ja"]) {
+    if (locale !== "en") rerender(wrap(locale, child));
+    const expected = translateUi(locale, reason);
+    expect(expected).not.toBe(reason);
+    expect(expected).not.toMatch(/Translation unavailable|翻訳未対応/u);
+    expect(container.querySelector(".result-rail__lethal")).toHaveTextContent(expected);
+    expect(container.querySelector(".result-rail__lethal")).not.toHaveTextContent(reason);
+  }
+  expect(JSON.stringify(result)).toBe(before);
 });

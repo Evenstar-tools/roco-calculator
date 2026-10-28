@@ -63,6 +63,9 @@ test("Global deer workspace calculates and renders English with the S3 snapshot"
  const {container,rerender}=render(wrap("en",<DeerWorkspace snapshot={snapshot} presets={presets}/>));
  expect(screen.getByRole("button",{name:"Jini preset",exact:true})).toHaveAttribute("aria-pressed","true");
  expect(container.querySelectorAll('.deer-table tbody tr').length).toBeGreaterThan(0);
+ const followup = screen.getByRole("checkbox", { name: translateUi("en", "显示先发补刀") });
+ if (!followup.checked) fireEvent.click(followup);
+ expect([...new Set([...container.querySelectorAll(".deer-threshold")].map(cell => cell.dataset.label))]).toEqual([translateUi("en", "单招最低"), translateUi("en", "接先发最低")]);
  fireEvent.click(screen.getByRole("button", { name: /Battle conditions/ }));
  expect([...screen.getByLabelText("Weather").options].map(option => option.value)).not.toContain("dream");
  const untranslated=[];
@@ -74,6 +77,7 @@ test("Global deer workspace calculates and renders English with the S3 snapshot"
  expect(chinese(container).join(" | "), [...container.querySelectorAll("*")].filter(n=>n.children.length===0 && /[\u3400-\u9fff]/.test(n.textContent)).map(n=>n.outerHTML).join("\n")).toBe("");
  rerender(wrap("ja",<DeerWorkspace snapshot={snapshot} presets={presets}/>));
  expect(screen.getByRole("button",{name:"ジニのプリセット",exact:true})).toHaveAttribute("aria-pressed","true");
+ expect([...new Set([...container.querySelectorAll(".deer-threshold")].map(cell => cell.dataset.label))]).toEqual([translateUi("ja", "单招最低"), translateUi("ja", "接先发最低")]);
 });
 
 

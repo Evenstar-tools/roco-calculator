@@ -46,7 +46,7 @@ export function useFirstRunGuide({
       onToast(configLibraryImportMessage(t, result.preview));
     } catch (importError) {
       setError(
-        t(storageIssueSource(importError, "常用配置导入失败")),
+        storageIssueSource(importError, "常用配置导入失败"),
       );
     } finally {
       setImporting(false);
@@ -54,7 +54,7 @@ export function useFirstRunGuide({
   }
 
   return {
-    error,
+    error: error ? t(error) : "",
     finish,
     importPopularConfig,
     importing,

@@ -1458,12 +1458,6 @@ html:lang(en) .skill-slot__kind > span {
   overflow-wrap: normal;
 }
 
-@media (min-width: 621px) and (max-width: 1080px), (min-width: 1341px) {
-  html:lang(en) .skill-slot {
-    grid-template-columns: 15px minmax(88px, 1fr) 48px 21px 27px 30px 35px;
-  }
-}
-
 @media (min-width: 1203px) and (max-width: 1340px) {
   html:lang(en) .calculator-layout--detailed .skill-slot {
     grid-template-columns: 14px minmax(100px, 1fr) 48px 22px 84px 38px 68px;

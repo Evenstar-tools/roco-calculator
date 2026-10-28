@@ -122997,6 +122997,227 @@
       "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/默认",
       "notes": "2026-10-28：按真实 S3 队伍导入、配置库差异与分享错误界面复核；沿用项目 Personality、individual aptitude 与日文角色术语，保留引用 ID 和插值。"
+    },
+    {
+      "key": "ui:无法导入配置，请检查分享链接或分享码后重试。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "无法导入配置，请检查分享链接或分享码后重试。",
+      "zh_project": "无法导入配置，请检查分享链接或分享码后重试。",
+      "en": "Could not import this setup. Check the share link or code and try again.",
+      "ja": "設定をインポートできませんでした。共有リンクまたはコードを確認して、もう一度お試しください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/无法导入配置，请检查分享链接或分享码后重试。",
+      "notes": "UX39 2026-10-28：网页加载、分享及计算意外失败；按操作语境人工复核英日恢复提示。"
+    },
+    {
+      "key": "ui:无法生成分享链接，请重试。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "无法生成分享链接，请重试。",
+      "zh_project": "无法生成分享链接，请重试。",
+      "en": "Could not create the share link. Please try again.",
+      "ja": "共有リンクを作成できませんでした。もう一度お試しください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/无法生成分享链接，请重试。",
+      "notes": "UX39 2026-10-28：网页加载、分享及计算意外失败；按操作语境人工复核英日恢复提示。"
+    },
+    {
+      "key": "ui:计算失败，请重新打开",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "计算失败，请重新打开",
+      "zh_project": "计算失败，请重新打开",
+      "en": "Calculation failed. Close and reopen this panel to retry.",
+      "ja": "計算に失敗しました。このパネルを閉じて、開き直してください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/计算失败，请重新打开",
+      "notes": "UX39 2026-10-28：网页加载、分享及计算意外失败；按操作语境人工复核英日恢复提示。"
+    },
+    {
+      "key": "ui:页面无法显示，请重新加载。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "页面无法显示，请重新加载。",
+      "zh_project": "页面无法显示，请重新加载。",
+      "en": "This page could not be displayed. Please reload.",
+      "ja": "ページを表示できませんでした。再読み込みしてください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/页面无法显示，请重新加载。",
+      "notes": "UX39 2026-10-28：网页加载、分享及计算意外失败；按操作语境人工复核英日恢复提示。"
+    },
+    {
+      "key": "ui:向心力需要技能位置才能确定威力加成",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "向心力需要技能位置才能确定威力加成",
+      "zh_project": "向心力需要技能位置才能确定威力加成",
+      "en": "Centripetal Force requires the skill position to determine its power bonus.",
+      "ja": "求心力の威力補正を算出するにはスキル位置が必要です。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/向心力需要技能位置才能确定威力加成",
+      "notes": "UX39 2026-10-28：真实S3技能缺少计算条件与导出错误；沿用官方术语，按实际提示语境人工复核英日。"
+    },
+    {
+      "key": "ui:导出失败，请重试",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "导出失败，请重试",
+      "zh_project": "导出失败，请重试",
+      "en": "Export failed. Please try again.",
+      "ja": "エクスポートに失敗しました。もう一度お試しください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/导出失败，请重试",
+      "notes": "UX39 2026-10-28：真实S3技能缺少计算条件与导出错误；沿用官方术语，按实际提示语境人工复核英日。"
+    },
+    {
+      "key": "ui:需要两侧相邻技能的当前显示威力",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "需要两侧相邻技能的当前显示威力",
+      "zh_project": "需要两侧相邻技能的当前显示威力",
+      "en": "The current displayed power of both adjacent skills is required.",
+      "ja": "両隣のスキルの現在の表示威力が必要です。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/需要两侧相邻技能的当前显示威力",
+      "notes": "UX39 2026-10-28：真实S3技能缺少计算条件与导出错误；沿用官方术语，按实际提示语境人工复核英日。"
+    },
+    {
+      "key": "ui:需要层数上下文",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "需要层数上下文",
+      "zh_project": "需要层数上下文",
+      "en": "Set the stack count to calculate this skill.",
+      "ja": "計算するにはスタック数を指定してください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/需要层数上下文",
+      "notes": "UX39 2026-10-28：真实S3技能缺少计算条件与导出错误；沿用官方术语，按实际提示语境人工复核英日。"
+    },
+    {
+      "key": "ui:需要技能位置才能确定技能威力",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "需要技能位置才能确定技能威力",
+      "zh_project": "需要技能位置才能确定技能威力",
+      "en": "Set the skill position to determine skill power.",
+      "ja": "スキル威力を算出するにはスキル位置を指定してください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/需要技能位置才能确定技能威力",
+      "notes": "UX39 2026-10-28：真实S3技能缺少计算条件与导出错误；沿用官方术语，按实际提示语境人工复核英日。"
+    },
+    {
+      "key": "ui:需要敌方技能威力",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "需要敌方技能威力",
+      "zh_project": "需要敌方技能威力",
+      "en": "Enter the opposing skill’s power.",
+      "ja": "相手のスキル威力を入力してください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/需要敌方技能威力",
+      "notes": "UX39 2026-10-28：真实S3技能缺少计算条件与导出错误；沿用官方术语，按实际提示语境人工复核英日。"
+    },
+    {
+      "key": "ui:需要敌方能量",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "需要敌方能量",
+      "zh_project": "需要敌方能量",
+      "en": "Enter the opponent’s Energy.",
+      "ja": "相手のエネルギーを入力してください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/需要敌方能量",
+      "notes": "UX39 2026-10-28：真实S3技能缺少计算条件与导出错误；沿用官方术语，按实际提示语境人工复核英日。"
+    },
+    {
+      "key": "ui:需要条件数值才能确定技能威力",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "需要条件数值才能确定技能威力",
+      "zh_project": "需要条件数值才能确定技能威力",
+      "en": "Enter the condition values to determine skill power.",
+      "ja": "スキル威力を算出するには条件の数値を入力してください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/需要条件数值才能确定技能威力",
+      "notes": "UX39 2026-10-28：真实S3技能缺少计算条件与导出错误；沿用官方术语，按实际提示语境人工复核英日。"
+    },
+    {
+      "key": "ui:默认对自身造成伤害，开启应对后计算对敌伤害",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "默认对自身造成伤害，开启应对后计算对敌伤害",
+      "zh_project": "默认对自身造成伤害，开启应对后计算对敌伤害",
+      "en": "This skill damages the user by default. Enable its counter to calculate damage to the opponent.",
+      "ja": "通常は自分にダメージを与えます。相手へのダメージを計算するにはカウンターを有効にしてください。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/默认对自身造成伤害，开启应对后计算对敌伤害",
+      "notes": "UX39 2026-10-28：真实S3技能缺少计算条件与导出错误；沿用官方术语，按实际提示语境人工复核英日。"
     }
   ],
   "plainByKey": {
@@ -159174,6 +159395,71 @@
       "zh": "默认",
       "en": "Default",
       "ja": "初期値"
+    },
+    "ui:无法导入配置，请检查分享链接或分享码后重试。": {
+      "zh": "无法导入配置，请检查分享链接或分享码后重试。",
+      "en": "Could not import this setup. Check the share link or code and try again.",
+      "ja": "設定をインポートできませんでした。共有リンクまたはコードを確認して、もう一度お試しください。"
+    },
+    "ui:无法生成分享链接，请重试。": {
+      "zh": "无法生成分享链接，请重试。",
+      "en": "Could not create the share link. Please try again.",
+      "ja": "共有リンクを作成できませんでした。もう一度お試しください。"
+    },
+    "ui:计算失败，请重新打开": {
+      "zh": "计算失败，请重新打开",
+      "en": "Calculation failed. Close and reopen this panel to retry.",
+      "ja": "計算に失敗しました。このパネルを閉じて、開き直してください。"
+    },
+    "ui:页面无法显示，请重新加载。": {
+      "zh": "页面无法显示，请重新加载。",
+      "en": "This page could not be displayed. Please reload.",
+      "ja": "ページを表示できませんでした。再読み込みしてください。"
+    },
+    "ui:向心力需要技能位置才能确定威力加成": {
+      "zh": "向心力需要技能位置才能确定威力加成",
+      "en": "Centripetal Force requires the skill position to determine its power bonus.",
+      "ja": "求心力の威力補正を算出するにはスキル位置が必要です。"
+    },
+    "ui:导出失败，请重试": {
+      "zh": "导出失败，请重试",
+      "en": "Export failed. Please try again.",
+      "ja": "エクスポートに失敗しました。もう一度お試しください。"
+    },
+    "ui:需要两侧相邻技能的当前显示威力": {
+      "zh": "需要两侧相邻技能的当前显示威力",
+      "en": "The current displayed power of both adjacent skills is required.",
+      "ja": "両隣のスキルの現在の表示威力が必要です。"
+    },
+    "ui:需要层数上下文": {
+      "zh": "需要层数上下文",
+      "en": "Set the stack count to calculate this skill.",
+      "ja": "計算するにはスタック数を指定してください。"
+    },
+    "ui:需要技能位置才能确定技能威力": {
+      "zh": "需要技能位置才能确定技能威力",
+      "en": "Set the skill position to determine skill power.",
+      "ja": "スキル威力を算出するにはスキル位置を指定してください。"
+    },
+    "ui:需要敌方技能威力": {
+      "zh": "需要敌方技能威力",
+      "en": "Enter the opposing skill’s power.",
+      "ja": "相手のスキル威力を入力してください。"
+    },
+    "ui:需要敌方能量": {
+      "zh": "需要敌方能量",
+      "en": "Enter the opponent’s Energy.",
+      "ja": "相手のエネルギーを入力してください。"
+    },
+    "ui:需要条件数值才能确定技能威力": {
+      "zh": "需要条件数值才能确定技能威力",
+      "en": "Enter the condition values to determine skill power.",
+      "ja": "スキル威力を算出するには条件の数値を入力してください。"
+    },
+    "ui:默认对自身造成伤害，开启应对后计算对敌伤害": {
+      "zh": "默认对自身造成伤害，开启应对后计算对敌伤害",
+      "en": "This skill damages the user by default. Enable its counter to calculate damage to the opponent.",
+      "ja": "通常は自分にダメージを与えます。相手へのダメージを計算するにはカウンターを有効にしてください。"
     }
   }
 }

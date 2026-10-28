@@ -1,5 +1,13 @@
 // Calculator UI copy; entity names are resolved from the verified client table.
 export const calculatorMessages = Object.fromEntries([
+  ["需要条件数值才能确定技能威力", "Enter the condition values to determine skill power.", "スキル威力を算出するには条件の数値を入力してください。"],
+  ["需要技能位置才能确定技能威力", "Set the skill position to determine skill power.", "スキル威力を算出するにはスキル位置を指定してください。"],
+  ["需要两侧相邻技能的当前显示威力", "The current displayed power of both adjacent skills is required.", "両隣のスキルの現在の表示威力が必要です。"],
+  ["向心力需要技能位置才能确定威力加成", "Centripetal Force requires the skill position to determine its power bonus.", "求心力の威力補正を算出するにはスキル位置が必要です。"],
+  ["需要敌方技能威力", "Enter the opposing skill’s power.", "相手のスキル威力を入力してください。"],
+  ["需要层数上下文", "Set the stack count to calculate this skill.", "計算するにはスタック数を指定してください。"],
+  ["需要敌方能量", "Enter the opponent’s Energy.", "相手のエネルギーを入力してください。"],
+  ["默认对自身造成伤害，开启应对后计算对敌伤害", "This skill damages the user by default. Enable its counter to calculate damage to the opponent.", "通常は自分にダメージを与えます。相手へのダメージを計算するにはカウンターを有効にしてください。"],
   ["{v0}选择迸发来源", "{v0}: choose surge sources", "{v0}のはじける力発生源を選択"],
   ["迸发来源", "Surge sources", "はじける力発生源"],
   ["已选 {v0}", "Selected: {v0}", "{v0}件選択中"],

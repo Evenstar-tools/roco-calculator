@@ -10,7 +10,7 @@ import globalSnapshot from "../../data/snapshots/global/s3-midseason.json";
 
 vi.mock("../../src/state/share.js", async (importOriginal) => {
   const original = await importOriginal();
-  return { ...original, decodeShareEnvelope: vi.fn(original.decodeShareEnvelope) };
+  return { ...original, decodeShareEnvelope: vi.fn(original.decodeShareEnvelope), encodeShareEnvelope: vi.fn(original.encodeShareEnvelope) };
 });
 vi.mock("../../src/state/calculator-session.js", () => ({
   assertSnapshotReferences: vi.fn(),
@@ -181,6 +181,25 @@ test("an unknown protocol on a Global URL reports an error instead of being igno
   const { options } = setupGlobal();
   await waitFor(() => expect(options.onToast).toHaveBeenCalledWith("This share format is not supported by this version of the calculator."));
   expect(options.commitSession).not.toHaveBeenCalled();
+});
+
+test.each(["en", "ja"])("%s share operations explain unexpected failures without exposing raw system text", async (locale) => {
+  history.replaceState(null, "", locale === "ja" ? "/jp/" : "/en/");
+  const { result, options } = setupGlobal({ locale });
+  for (const message of ["系统权限不足，操作失败", "Failed to fetch"]) {
+    decodeShareEnvelope.mockRejectedValueOnce(new Error(message));
+    submit(result, "#v2.global.en.keep-original-input.signature");
+    await waitFor(() => expect(options.onToast).toHaveBeenLastCalledWith(translateUi(locale, "无法导入配置，请检查分享链接或分享码后重试。")));
+    expect(options.onToast.mock.lastCall[0]).not.toMatch(/Translation unavailable|翻訳未対応|系统权限不足|Failed to fetch/);
+    expect(result.current.overlayProps.importDraft).toBe("#v2.global.en.keep-original-input.signature");
+    expect(options.commitSession).not.toHaveBeenCalled();
+    options.onToast.mockClear();
+  }
+  encodeShareEnvelope.mockRejectedValueOnce(new Error("浏览器分享权限失败"));
+  await act(async () => result.current.openShareConfiguration());
+  expect(options.onToast).toHaveBeenLastCalledWith(translateUi(locale, "无法生成分享链接，请重试。"));
+  expect(options.onToast.mock.lastCall[0]).not.toMatch(/Translation unavailable|翻訳未対応|浏览器分享权限失败/);
+  expect(result.current.overlayProps.shareLink).toBe("");
 });
 
 test("returning to a session does not replay its previously consumed URL and overwrite later edits", async () => {
