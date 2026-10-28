@@ -41,7 +41,7 @@ export function QuickNaturePicker({
         aria-pressed={placeholder ? value === "neutral" : !selectedStat}
         className="quick-nature__option quick-nature__option--neutral"
         onClick={() => onChange("neutral")}
-        title={t(placeholder ? value == null ? "未设置" : "普通（国服参考）" : "普通（无修正）")}
+        title={t(placeholder && value == null ? "未设置" : "普通（无修正）")}
         type="button"
       >
         <Equals aria-hidden="true" size={16} weight="bold" />
@@ -54,7 +54,7 @@ export function QuickNaturePicker({
           className="quick-nature__option"
           key={stat}
           onClick={() => onChange(resolveCompactNaturePreset(stat, displayIvs))}
-          title={placeholder ? t("{stat}增益（国服参考）", { stat: t(STAT_LABELS[stat]) }) : `${t(STAT_LABELS[stat])} +20%`}
+          title={placeholder ? t("{stat}增益", { stat: t(STAT_LABELS[stat]) }) : `${t(STAT_LABELS[stat])} +20%`}
           type="button"
         >
           <StatIcon size={19} stat={stat} />

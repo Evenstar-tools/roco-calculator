@@ -22,7 +22,7 @@ describe("international entry routes", () => {
     expect(routeFor("cn", "en")).toBe("/cn/");
     expect(routeFor("global", "en")).toBe("/en/");
     expect(routeFor("global", "zh-CN")).toBe("/global/zh-CN/");
-    expect(routeFor("global", "ja")).toBe("/global/ja/");
+    expect(routeFor("global", "ja")).toBe("/jp/");
     expect(routeFor("global", "fr")).toBe("/en/");
   });
 

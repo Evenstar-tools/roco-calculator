@@ -13,11 +13,10 @@ import { readLastRandomSeasonTheme, readSeasonThemePreference, writeLastRandomSe
 import { SeasonThemeProvider } from "../theme/SeasonThemeContext.jsx";
 
 const CalculatorRouter = lazy(() => import("../CalculatorRouter.jsx").then((module) => ({ default: module.CalculatorRouter })));
-const CalculatorApp = lazy(() => import("../App.jsx").then((module) => ({ default: module.App })));
 const pageText = {
-  en: { title: "Roco Calculator · Global CBT", description: "Global CBT calculator. Game data and rules are awaiting verification.", loading: "Loading calculator…" },
-  "zh-CN": { title: "洛克计算器 · 国际服 CBT", description: "国际服 CBT 计算器，游戏数据与规则待核验。", loading: "正在加载计算器…" },
-  ja: { title: "ロコ計算機 · グローバル CBT", description: "グローバル CBT 計算機。ゲームデータとルールは検証待ちです。", loading: "計算機を読み込み中…" },
+  en: { title: "Roco Calculator · Global", description: "Roco Kingdom damage calculator using S3 midseason stats and rules.", loading: "Loading calculator…" },
+  "zh-CN": { title: "洛克计算器 · 国际服", description: "洛克王国国际服计算器，采用 S3 季中数值与规则。", loading: "正在加载计算器…" },
+  ja: { title: "ロコ計算機 · グローバル", description: "S3 シーズン中盤の能力値とルールに基づくダメージ計算機。", loading: "計算機を読み込み中…" },
 };
 
 export function browserEntry() {
@@ -36,7 +35,7 @@ export function browserEntry() {
   return resolveEntry({
     pathname: location.pathname, hash: location.hash, preference,
     languages: navigator.languages, hasLegacyCnData,
-    // 国际版本尚无已核验的数据包，先关闭自动分流；明确入口照常可访问。
+    // 只启用用户明确访问的国际服入口，沿用现有自动分流设置。
     globalReady: false,
   });
 }
@@ -134,7 +133,8 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
   }
 
   function navigate(serverId, locale, { remember = true, hash = "", replace = false } = {}) {
-    if (IS_PREVIEW_BUILD && serverId === "global") {
+    if ((IS_PREVIEW_BUILD && serverId === "global") || (import.meta.env.MODE === "global" && serverId === "cn")) {
+      if (remember) writeManualPreference({ serverId, locale: serverId === "cn" ? "zh-CN" : locale });
       window.location.assign(`${routeFor(serverId, locale)}${hash}`);
       return;
     }
@@ -201,7 +201,7 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
         onServerChange={() => navigate("cn", "zh-CN")}
         onShareConflict={(envelope, hash) => setManualShare({ envelope, hash })}>
         <LocaleProvider locale={globalLocale}>
-          <CalculatorApp active={global && !entry.conflict && !conflictServer} />
+          <CalculatorRouter active={global && !entry.conflict && !conflictServer} />
         </LocaleProvider>
       </RuntimeProvider>
     </Suspense></div></SeasonThemeProvider>}

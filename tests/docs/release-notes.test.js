@@ -55,7 +55,9 @@ describe("版本记录", () => {
     expect(featuredRelease.title.trim().length).toBeGreaterThan(0);
     expect(featuredRelease.title).toContain("S4");
     expect(featuredRelease.highlights.join("\n")).not.toContain("9月10日");
-    expect(JSON.stringify(USER_RELEASE_NOTES)).not.toMatch(/前瞻|S3[\s-]*季中/u);
+    expect(JSON.stringify(USER_RELEASE_NOTES)).not.toMatch(/前瞻/u);
+    expect(featuredRelease.title).not.toMatch(/S3[\s-]*季中/u);
+    expect(featuredRelease.highlights.find(text => text.includes("国际服"))).toContain("S3季中");
   });
 
   test("新功能弹窗只展示用户可直接使用的功能", () => {

@@ -1,8 +1,10 @@
+import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { useLayoutEffect, useRef } from "react";
 import { SkillIcon } from "../../components/SkillIcon.jsx";
 
 // Presentation only: play the engine's trace, never advance or settle a round here.
 export default function TransmissionMotion({ playback, boardRef, onComplete }) {
+  const { t } = useLocale();
   const cards = useRef([]);
   const progress = useRef(null);
   useLayoutEffect(() => {
@@ -34,7 +36,7 @@ export default function TransmissionMotion({ playback, boardRef, onComplete }) {
         for (const [frame, step] of playback.steps.entries()) {
           if (cancelled) return;
           const nextPositions = positions.map((_, key) => step.keys.indexOf(key));
-          progress.current.textContent = `${step.label ?? playback.label} · ${frame + 1}/${playback.steps.length}`;
+          progress.current.textContent = `${t(step.label ?? playback.label)} · ${frame + 1}/${playback.steps.length}`;
           animations = cards.current.flatMap((card, key) => {
             const from = positions[key], to = nextPositions[key];
             card.dataset.moving = String(from !== to);
@@ -48,7 +50,7 @@ export default function TransmissionMotion({ playback, boardRef, onComplete }) {
           if (cancelled) return;
           cards.current.forEach((card, key) => {
             card.style.transform = transform(nextPositions[key]);
-            card.querySelector(".transmission-slot-number").textContent = `${nextPositions[key] + 1} 号位`;
+            card.querySelector(".transmission-slot-number").textContent = `${nextPositions[key] + 1} ${t("号位")}`;
           });
           animations.forEach((animation) => animation.cancel());
           positions = nextPositions;
@@ -67,13 +69,13 @@ export default function TransmissionMotion({ playback, boardRef, onComplete }) {
       media?.removeEventListener?.("change", stop);
       window.removeEventListener("resize", stop);
     };
-  }, [playback, boardRef, onComplete]);
+  }, [playback, boardRef, onComplete, t]);
 
   return <>
     <ol className="transmission-motion-layer" aria-hidden="true">
       {playback.before.map((skill, key) => <li key={key} ref={(node) => { cards.current[key] = node; }} data-instance={key}>
         <SkillIcon skill={skill} size={32} />
-        <div><span className="transmission-slot-number">{key + 1} 号位</span><strong>{skill.name}</strong></div>
+        <div><span className="transmission-slot-number">{key + 1}{" "}{t("号位")}</span><strong>{t(skill.name)}</strong></div>
       </li>)}
     </ol>
     <span className="transmission-motion-progress" ref={progress} aria-hidden="true" />

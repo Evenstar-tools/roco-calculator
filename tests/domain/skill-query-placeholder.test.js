@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { createPlaceholderQueryCatalog } from "../../src/features/skill-query/placeholder-catalog.js";
-import { querySpiritFamilies, spiritSkills } from "../../src/features/skill-query/query-model.js";
+import { querySpiritFamilies, skillMatchesQuery, spiritSkills } from "../../src/features/skill-query/query-model.js";
 import { globalPlaceholderCatalog } from "../fixtures/global-placeholder-catalog.js";
 
 test("reference query preserves namespaced IDs and explicit relationships without numerical or acquisition rules", () => {
@@ -43,4 +43,21 @@ test.each([
   const snapshot = globalPlaceholderCatalog();
   mutate(snapshot);
   expect(() => createPlaceholderQueryCatalog(snapshot)).toThrow();
+});
+
+test("localized reference query keeps multilingual names searchable without exposing unavailable catalog entries", () => {
+  const snapshot = globalPlaceholderCatalog();
+  snapshot.skills[0].name = "Scratch";
+  snapshot.skills[0].aliases = ["抓挠", "スクラッチ"];
+  snapshot.skills[0].searchText = "Scratch 抓挠 スクラッチ";
+  snapshot.skills[1].catalogAvailable = false;
+  snapshot.spirits[1].catalogAvailable = false;
+  const before = structuredClone(snapshot);
+  const catalog = createPlaceholderQueryCatalog(snapshot);
+  expect(catalog.skills.map(({ id }) => id)).toEqual([snapshot.skills[0].id]);
+  expect(catalog.spirits.map(({ id }) => id)).toEqual([snapshot.spirits[0].id]);
+  expect(catalog.learnsets).toEqual([{ spiritId: snapshot.spirits[0].id, skillIds: [snapshot.skills[0].id] }]);
+  for (const query of ["scratch", "抓挠", "スクラッチ"]) expect(skillMatchesQuery(catalog.skills[0], query)).toBe(true);
+  expect(skillMatchesQuery(catalog.skills[0], "no match")).toBe(false);
+  expect(snapshot).toEqual(before);
 });

@@ -22,13 +22,14 @@ function optionLabel(nature, t, placeholder) {
   if (!nature) return t("未设置");
   if (placeholder) {
     return nature.upStat && nature.downStat
-      ? `${t(STAT_LABELS[nature.upStat])}↑ ${t(STAT_LABELS[nature.downStat])}↓`
+      ? t("{nature}（{up}↑ {down}↓）", { nature: t(nature.name), up: t(STAT_LABELS[nature.upStat]), down: t(STAT_LABELS[nature.downStat]) })
       : nature.id === "neutral" ? t("普通") : nature.name;
   }
   if (!nature.upStat || !nature.downStat) {
-    return `${nature.name}（无修正）`;
+    const name = t(nature.name);
+    return name === t("无修正") ? name : t("{nature}（无修正）", { nature: name });
   }
-  return `${nature.name}（+${STAT_LABELS[nature.upStat]} -${STAT_LABELS[nature.downStat]}）`;
+  return t("{nature}（+{up} -{down}）", { nature: t(nature.name), up: t(STAT_LABELS[nature.upStat]), down: t(STAT_LABELS[nature.downStat]) });
 }
 
 export function NatureSelect({ allowUnset = false, ariaLabel, onChange, placeholder = false, value }) {
@@ -175,10 +176,10 @@ export function NatureSelect({ allowUnset = false, ariaLabel, onChange, placehol
       <CaretDown aria-hidden="true" size={14} weight="bold" />
       {open && <div className="nature-menu" id={menuId} ref={menu} popover="manual" role="tree" aria-label={t("{label}选择", { label: ariaLabel })} onKeyDown={navigate}>
         {allowUnset && <button className="nature-menu__neutral" type="button" role="treeitem" aria-selected={selected === null} tabIndex={-1} onPointerEnter={clearHover} onClick={() => choose(null)}>{t("未设置")}</button>}
-        <button className="nature-menu__neutral" type="button" role="treeitem" aria-selected={selected?.id === "neutral"} tabIndex={-1} onPointerEnter={clearHover} onClick={() => choose("neutral")}>{t(placeholder ? "普通（国服参考）" : "普通（无修正）")}</button>
+        <button className="nature-menu__neutral" type="button" role="treeitem" aria-selected={selected?.id === "neutral"} tabIndex={-1} onPointerEnter={clearHover} onClick={() => choose("neutral")}>{t("普通（无修正）")}</button>
         {GROUP_ORDER.map(upStat => <div role="none" key={upStat}>
           <button className="nature-menu__group" type="button" role="treeitem" tabIndex={-1}
-            aria-label={t(placeholder ? "{stat}增益（国服参考）" : "{stat}增益 +20%", { stat: t(STAT_LABELS[upStat]) })}
+            aria-label={t(placeholder ? "{stat}增益" : "{stat}增益 +20%", { stat: t(STAT_LABELS[upStat]) })}
             data-group={upStat} aria-expanded={expanded === upStat} aria-owns={expanded === upStat ? `${menuId}-${upStat}` : undefined}
             onPointerEnter={event => {
               if (event.pointerType === "touch") return;
@@ -191,7 +192,7 @@ export function NatureSelect({ allowUnset = false, ariaLabel, onChange, placehol
             {NATURES.filter(nature => nature.upStat === upStat).map(nature => <button
               key={nature.id} type="button" role="treeitem" tabIndex={-1} aria-selected={selected?.id === nature.id}
               aria-label={optionLabel(nature, t, placeholder)} data-parent={upStat} onClick={() => choose(nature.id)}>
-              <span>{placeholder ? t(STAT_LABELS[nature.downStat]) : nature.name}</span><span className="nature-menu__loss">{placeholder ? "↓" : `-${t(STAT_LABELS[nature.downStat])} 10%`}</span>
+              <span>{t(nature.name)}</span><span className="nature-menu__loss">{placeholder ? `${t(STAT_LABELS[nature.downStat])} ↓` : `-${t(STAT_LABELS[nature.downStat])} 10%`}</span>
               {selected?.id === nature.id && <span className="nature-menu__selected">{t("已选")}</span>}
             </button>)}
           </div>}

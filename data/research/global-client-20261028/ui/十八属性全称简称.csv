@@ -1,0 +1,19 @@
+﻿属性ID,中文简称,英文简称,日文简称,中文全称,英文全称,日文全称,来源
+2,普通,Common,ノーマル,普通系,Common Class,ノーマル属性,TYPE_DICTIONARY.2
+3,草,Flora,草,草系,Flora Class,草属性,TYPE_DICTIONARY.3
+4,火,Fire,炎,火系,Fire Class,炎属性,TYPE_DICTIONARY.4
+5,水,Water,水,水系,Water Class,水属性,TYPE_DICTIONARY.5
+6,光,Light,光,光系,Light Class,光属性,TYPE_DICTIONARY.6
+8,地,Earth,地,地系,Earth Class,地属性,TYPE_DICTIONARY.8
+9,冰,Ice,氷,冰系,Ice Class,氷属性,TYPE_DICTIONARY.9
+10,龙,Dragon,竜,龙系,Dragon Class,竜属性,TYPE_DICTIONARY.10
+11,电,Electro,雷,电系,Electro Class,雷属性,TYPE_DICTIONARY.11
+12,毒,Poison,毒,毒系,Poison Class,毒属性,TYPE_DICTIONARY.12
+13,虫,Bug,虫,虫系,Bug Class,虫属性,TYPE_DICTIONARY.13
+14,武,Fighting,武,武系,Fighting Class,武属性,TYPE_DICTIONARY.14
+15,翼,Wing,翼,翼系,Wing Class,翼属性,TYPE_DICTIONARY.15
+16,萌,Charm,萌,萌系,Charm Class,萌属性,TYPE_DICTIONARY.16
+17,幽,Shadow,幽霊,幽系,Shadow Class,幽霊属性,TYPE_DICTIONARY.17
+18,恶,Havoc,悪,恶系,Havoc Class,悪属性,TYPE_DICTIONARY.18
+19,机械,Mech,機械,机械系,Mech Class,機械属性,TYPE_DICTIONARY.19
+20,幻,Stellar,幻,幻系,Stellar Class,幻属性,TYPE_DICTIONARY.20

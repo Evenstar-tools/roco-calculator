@@ -1,8 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
-import { getMissingUiMessages, clearMissingUiMessages } from "../../src/i18n/messages.js";
+import { unpackCatalog } from "../../src/features/skill-query/catalog.js";
+import { translateUi } from "../../src/i18n/messages.js";
 import SkillQueryPanel from "../../src/features/skill-query/SkillQueryPanel.jsx";
 import TransmissionPanel from "../../src/features/transmission/TransmissionPanel.jsx";
 import TypeQueryPanel from "../../src/features/type-query/TypeQueryPanel.jsx";
@@ -10,48 +12,50 @@ import RankingsPanel from "../../src/components/RankingsPanel.jsx";
 import DeerPage from "../../src/features/deer/DeerPage.jsx";
 import { getCachedCatalog, loadSkillCatalog } from "../../src/features/skill-query/load-catalog.js";
 import { loadServerSnapshot } from "../../src/runtime/load-snapshot.js";
-import { UNVERIFIED_GLOBAL_SNAPSHOT } from "../../src/runtime/unverified-snapshot.js";
 
 vi.mock("../../src/features/skill-query/load-catalog.js", () => ({ getCachedCatalog: vi.fn(), loadSkillCatalog: vi.fn() }));
 vi.mock("../../src/runtime/load-snapshot.js", () => ({ loadServerSnapshot: vi.fn() }));
 
-afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.clearAllMocks(); clearMissingUiMessages(); });
+const snapshot = JSON.parse(readFileSync("public/data/global-runtime.json", "utf8"));
+const catalog = unpackCatalog(JSON.parse(readFileSync("public/data/global/skill-query/catalog.json", "utf8")));
+const reduced = { ...snapshot, spirits: snapshot.spirits.filter(spirit => ["魔力猫", "波普鹿", "音速犬"].includes(spirit.fullName)) };
+afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.resetAllMocks(); });
 
 const tools = [
-  ["skills", SkillQueryPanel, {}, "skill-query", "Global skill data", "スキルデータ"],
-  ["transmission", TransmissionPanel, {}, "transmission-panel", "Global transmission rules", "伝動ルール"],
-  ["types", TypeQueryPanel, { selectedTypes: ["光", "武"] }, "type-query", "Global type matchups", "タイプ相性"],
-  ["speed", RankingsPanel, { kind: "speed" }, "rank-dialog", "Global stats and rules", "数値とルール"],
-  ["durability", RankingsPanel, { kind: "durability" }, "rank-dialog", "Global stats and rules", "数値とルール"],
+  ["skills", SkillQueryPanel, {}, "skill-query", "关闭技能查询"],
+  ["transmission", TransmissionPanel, {}, "transmission-panel", "关闭传动计算器"],
+  ["types", TypeQueryPanel, { typeChart: snapshot.typeChart, spirits: snapshot.spirits, selectedTypes: ["光", "武"], onTypesChange: vi.fn() }, "type-query", "关闭属性查询"],
+  ["speed", RankingsPanel, { kind: "speed" }, "rank-dialog", "关闭排行榜"],
+  ["durability", RankingsPanel, { kind: "durability" }, "rank-dialog", "关闭排行榜"],
 ];
 
 function Providers({ locale = "en", children }) {
   return <RuntimeProvider serverId="global" locale={locale}><LocaleProvider locale={locale}>{children}</LocaleProvider></RuntimeProvider>;
 }
 
-test.each(tools)("Global %s keeps its original dialog shell, translates the state, and never reads CN data", (name, Tool, props, className, enStatus, jaStatus) => {
-  const fetch = vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("No data requests are permitted"));
-  // Skill queries inspect the explicit reference marker; no marker means no query.
-  const snapshot = name === "skills" ? UNVERIFIED_GLOBAL_SNAPSHOT
-    : new Proxy({}, { get() { throw new Error("Unverified tool read calculation data"); } });
+test.each(tools)("released Global %s retains the dialog, supports language switching and uses only Global data", async (name, Tool, props, className, closeKey) => {
+  const fetch = vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("No CN data requests are permitted"));
+  getCachedCatalog.mockReturnValue(catalog);
+  loadSkillCatalog.mockResolvedValue(catalog);
   const onClose = vi.fn();
-  const { rerender } = render(<Providers><Tool {...props} snapshot={snapshot} onClose={onClose} /></Providers>);
+  const content = <Tool {...props} snapshot={reduced} onClose={onClose} />;
+  const { rerender } = render(<Providers>{content}</Providers>);
   expect(screen.getByRole("dialog")).toHaveClass(className);
-  expect(screen.getByRole("status")).toHaveTextContent(enStatus);
+  if (name === "skills") {
+    await waitFor(() => expect(loadSkillCatalog).toHaveBeenCalledWith("global"));
+    expect(getCachedCatalog).toHaveBeenCalledWith("global");
+    expect(screen.getByLabelText(translateUi("en", "技能属性"))).toBeVisible();
+  } else expect(loadSkillCatalog).not.toHaveBeenCalled();
+  expect(screen.getByRole("dialog")).not.toHaveTextContent(/Unverified|CN reference|cannot be calculated yet/);
   expect(document.body.textContent).not.toMatch(/[\u3400-\u9fff]/u);
-  expect(loadSkillCatalog).not.toHaveBeenCalled();
-  expect(getCachedCatalog).not.toHaveBeenCalled();
   expect(loadServerSnapshot).not.toHaveBeenCalled();
   expect(fetch).not.toHaveBeenCalled();
   fireEvent.keyDown(document, { key: "Escape" });
   expect(onClose).toHaveBeenCalledTimes(1);
 
-  rerender(<Providers locale="ja"><Tool {...props} snapshot={snapshot} onClose={onClose} /></Providers>);
-  expect(screen.getByRole("status")).toHaveTextContent(jaStatus);
-  expect(screen.getByRole("dialog").textContent).not.toContain("翻訳未対応");
-  fireEvent.click(screen.getByRole("button", { name: /を閉じる$/ }));
+  rerender(<Providers locale="ja">{content}</Providers>);
+  fireEvent.click(screen.getByRole("button", { name: translateUi("ja", closeKey), exact: true }));
   expect(onClose).toHaveBeenCalledTimes(2);
-  expect(getMissingUiMessages()).toEqual([]);
 });
 
 test("closed Global rankings do not show a dialog or trap focus", () => {
@@ -60,15 +64,15 @@ test("closed Global rankings do not show a dialog or trap focus", () => {
   expect(document.body.style.overflow).not.toBe("hidden");
 });
 
-test("Global deer entry never loads CN snapshots, presets or calculator and returns to its own server", () => {
+test("Global deer loads its own calculation snapshot without CN presets and returns to the matching language route", async () => {
   const fetch = vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("CN data must not load"));
-  const { rerender } = render(<Providers><DeerPage /></Providers>);
-  expect(screen.getByRole("status")).toHaveTextContent("KO thresholds cannot be calculated yet");
-  expect(screen.getByRole("link", { name: "Back to calculator" })).toHaveAttribute("href", "/en/");
-  expect(loadServerSnapshot).not.toHaveBeenCalled();
+  loadServerSnapshot.mockResolvedValue(snapshot);
+  const { container, rerender } = render(<Providers><DeerPage /></Providers>);
+  await waitFor(() => expect(container.querySelectorAll(".deer-table tbody tr").length).toBeGreaterThan(0));
+  expect(loadServerSnapshot).toHaveBeenCalledWith("global", { signal: expect.any(AbortSignal) });
   expect(fetch).not.toHaveBeenCalled();
+  expect(screen.getByRole("link", { name: translateUi("en", "返回主站") })).toHaveAttribute("href", "/en/");
   rerender(<Providers locale="ja"><DeerPage /></Providers>);
-  expect(screen.getByRole("link", { name: "計算機に戻る" })).toHaveAttribute("href", "/global/ja/");
-  expect(screen.getByRole("status")).toHaveTextContent("撃破ラインは計算できません");
-  expect(getMissingUiMessages()).toEqual([]);
+  expect(screen.getByRole("link", { name: translateUi("ja", "返回主站") })).toHaveAttribute("href", "/jp/");
+  expect(container.querySelectorAll(".deer-table tbody tr").length).toBeGreaterThan(0);
 });

@@ -1,3 +1,4 @@
+import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import {
   ArrowLeft,
   Crosshair,
@@ -221,15 +222,16 @@ function isCurrentBuild(result, configuration) {
 }
 
 function CurrentSummary({ durability, panel, label }) {
+  const { t } = useLocale();
   return (
-    <section aria-label={`${label}摘要`} className="ability-current-summary">
-      <strong>{label}</strong>
+    <section aria-label={t("{v0}摘要", { v0: label })} className="ability-current-summary">
+      <strong>{t(label)}</strong>
       {[
         ["速度", panel?.speed], ["综合耐久", durability?.display.combined],
         ["物理耐久", durability?.display.physical], ["魔法耐久", durability?.display.magical],
       ].map(([label, value]) => (
         <span key={label}>
-          <small>{label}</small><b>{formatNumber(value)}</b>
+          <small>{t(label)}</small><b>{formatNumber(value)}</b>
         </span>
       ))}
     </section>
@@ -237,6 +239,7 @@ function CurrentSummary({ durability, panel, label }) {
 }
 
 function InvestmentPicker({ natureId, onChange, onReplace, panel, validation, values }) {
+  const { t } = useLocale();
   const [replacementStat, setReplacementStat] = useState(null);
   const replacementLabel = INVESTMENT_STATS.find(
     ({ key }) => key === replacementStat,
@@ -255,19 +258,18 @@ function InvestmentPicker({ natureId, onChange, onReplace, panel, validation, va
     <section className="ability-investment-panel">
       <header>
         <div>
-          <strong>个体值分配</strong>
-          <small>0 / 60 · 最多三项</small>
+          <strong>{t("个体值分配")}</strong>
+          <small>{t("0 / 60 · 最多三项")}</small>
         </div>
-        <span>
-          已用 {validation.activeCount} / {validation.maxActiveStats}
+        <span>{t("已用")}{" "}{validation.activeCount} / {validation.maxActiveStats}
         </span>
       </header>
-      <div aria-label="个体值分配" className="ability-investments" role="group">
+      <div aria-label={t("个体值分配")} className="ability-investments" role="group">
         {INVESTMENT_STATS.map(({ key, label }) => {
           const selected = Number(values[key]) > 0;
           return (
             <button
-              aria-label={`${selected ? "取消" : "选择"}${label}个体值，当前${values[key]}`}
+              aria-label={t("{v0}{v1}个体值，当前{v2}", { v0: selected ? "取消" : "选择", v1: label, v2: values[key] })}
               aria-pressed={selected}
               key={key}
               onClick={() => selectStat(key, !selected)}
@@ -275,13 +277,13 @@ function InvestmentPicker({ natureId, onChange, onReplace, panel, validation, va
             >
               <span className="ability-investments__label">
                 <StatIcon gain={getNature(natureId).upStat === key} size={17} stat={key} />
-                <span>{label}</span>
+                <span>{t(label)}</span>
               </span>
-              <span aria-label={`${label}实际值`} className="ability-investments__value">
+              <span aria-label={t("{v0}实际值", { v0: label })} className="ability-investments__value">
                 {formatNumber(panel?.[key])}
               </span>
               <span className="ability-investments__iv">
-                <small>个体</small>
+                <small>{t("个体")}</small>
                 <strong>{values[key]}</strong>
               </span>
             </button>
@@ -289,8 +291,8 @@ function InvestmentPicker({ natureId, onChange, onReplace, panel, validation, va
         })}
       </div>
       {replacementStat ? (
-        <div aria-label="替换个体值" className="ability-investment-replace" role="dialog">
-          <span>要将{replacementLabel}设为 60，请选择替换一项：</span>
+        <div aria-label={t("替换个体值")} className="ability-investment-replace" role="dialog">
+          <span>{t("要将")}{replacementLabel}{t("设为 60，请选择替换一项：")}</span>
           <div>
             {INVESTMENT_STATS.filter(({ key }) => Number(values[key]) > 0).map(({ key, label }) => (
               <button
@@ -300,11 +302,10 @@ function InvestmentPicker({ natureId, onChange, onReplace, panel, validation, va
                   setReplacementStat(null);
                 }}
                 type="button"
-              >
-                替换{label}
+              >{t("替换")}{t(label)}
               </button>
             ))}
-            <button onClick={() => setReplacementStat(null)} type="button">取消</button>
+            <button onClick={() => setReplacementStat(null)} type="button">{t("取消")}</button>
           </div>
         </div>
       ) : null}
@@ -313,18 +314,19 @@ function InvestmentPicker({ natureId, onChange, onReplace, panel, validation, va
 }
 
 function SpeedProfilePicker({ onProfilesChange, profileIds }) {
+  const { t } = useLocale();
   return (
     <div className="ability-speed__profile-picker">
-      <span>口径</span>
+      <span>{t("口径")}</span>
       <details>
-        <summary aria-label="速度目标口径">
-          {profileIds
+        <summary aria-label={t("速度目标口径")}>
+          {t(profileIds
             .map((id) => SPEED_PROFILE_OPTIONS.find((entry) => entry.id === id)?.label)
             .filter(Boolean)
-            .join("、")}
+            .join("、"))}
         </summary>
         <fieldset>
-          <legend>速度口径</legend>
+          <legend>{t("速度口径")}</legend>
           {SPEED_PROFILE_OPTIONS.map((entry) => (
             <label key={entry.id}>
               <input
@@ -338,7 +340,7 @@ function SpeedProfilePicker({ onProfilesChange, profileIds }) {
                 }}
                 type="checkbox"
               />
-              {entry.label}
+              {t(entry.label)}
             </label>
           ))}
         </fieldset>
@@ -348,6 +350,7 @@ function SpeedProfilePicker({ onProfilesChange, profileIds }) {
 }
 
 function SpeedTargetPicker({ onTargetChange, selected, targets }) {
+  const { t } = useLocale();
   const [targetInput, setTargetInput] = useState(null);
   const targetOptions = targetInput === null
     ? []
@@ -369,11 +372,11 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
         if (!event.currentTarget.contains(event.relatedTarget)) setTargetInput(null);
       }}
     >
-      <span>目标精灵</span>
+      <span>{t("目标精灵")}</span>
       <div className="ability-speed__target-input">
         <MagnifyingGlass aria-hidden="true" size={15} />
         <input
-          aria-label="速度目标精灵"
+          aria-label={t("速度目标精灵")}
           title={speedTargetLabel(selected)}
           onChange={(event) => setTargetInput(event.target.value)}
           onFocus={() => setTargetInput("")}
@@ -389,20 +392,20 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
               lockTarget(targetOptions[0]);
             }
           }}
-          placeholder="搜索"
+          placeholder={t("搜索")}
           role="combobox"
           type="search"
           value={targetInput ?? speedTargetLabel(selected)}
         />
         {targetInput !== null ? (
           <div
-            aria-label="速度目标候选"
+            aria-label={t("速度目标候选")}
             className="ability-speed__target-options"
             role="listbox"
           >
             {targetOptions.map((target) => (
               <button
-                aria-label={`选择${target.name} ${target.speed} ${target.profileLabel}${target.specialLabel ? ` ${target.specialLabel}` : ""}`}
+                aria-label={t("选择{v0} {v1} {v2}{v3}", { v0: target.name, v1: target.speed, v2: target.profileLabel, v3: target.specialLabel ? ` ${target.specialLabel}` : "" })}
                 aria-selected={target.id === selected?.id}
                 data-target-id={target.id}
                 key={target.id}
@@ -413,13 +416,13 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
               >
                 {assetUrl(target.spirit) ? <img alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
                 <span>
-                  <strong>{target.name}</strong>
+                  <strong>{t(target.name)}</strong>
                   <small>{speedTargetMeta(target)}</small>
                 </span>
                 <b>{target.speed}</b>
               </button>
             ))}
-            {targetOptions.length === 0 ? <p>无匹配精灵</p> : null}
+            {targetOptions.length === 0 ? <p>{t("无匹配精灵")}</p> : null}
           </div>
         ) : null}
       </div>
@@ -446,6 +449,7 @@ function SpeedRail({
   targets,
   targetId,
 }) {
+  const { t } = useLocale();
   const railRef = useRef(null);
   const selectedTargetRef = useRef(null);
   const currentMarkerRef = useRef(null);
@@ -534,16 +538,16 @@ function SpeedRail({
   }
 
   return (
-    <section className="ability-section ability-speed" aria-label="速度目标">
+    <section className="ability-section ability-speed" aria-label={t("速度目标")}>
       <header className="ability-section__title">
         <span>1</span>
         <div>
-          <h4>速度目标</h4>
+          <h4>{t("速度目标")}</h4>
           <small className="ability-speed__comparison" data-relation={relation}>
-            {selected ? `${isDraft ? "试算" : "当前"} ${formatNumber(currentSpeed)} / 目标 ${formatNumber(selected.speed)} · ${comparisonLabel}` : "选择目标后分析"}
+            {selected ? t("{v0} {v1} / 目标 {v2} · {v3}", { v0: isDraft ? "试算" : "当前", v1: formatNumber(currentSpeed), v2: formatNumber(selected.speed), v3: comparisonLabel }) : t("选择目标后分析")}
           </small>
           {speedAnalysis && speedAnalysis.status !== "CURRENTLY_REACHED" ? (
-            <small>{SPEED_STATUS_LABELS[speedAnalysis.status]}</small>
+            <small>{t(SPEED_STATUS_LABELS[speedAnalysis.status])}</small>
           ) : null}
         </div>
         <div className="ability-speed__controls">
@@ -560,7 +564,7 @@ function SpeedRail({
       </header>
       {modifiers.length > 0 ? (
         <div className="ability-speed__modifiers">
-          <span>本体额外速度</span>
+          <span>{t("本体额外速度")}</span>
           <div>
             {modifierGroups.map((group) => {
               const stacked = group.every(({ stack }) => Number.isInteger(stack));
@@ -569,9 +573,9 @@ function SpeedRail({
                 const name = group[0].label.replace(/（\d+层）$/, "");
                 return (
                   <label className="ability-speed__stack" key={group[0].groupId}>
-                    <span>{name}</span>
+                    <span>{t(name)}</span>
                     <select
-                      aria-label={`${name}层数`}
+                      aria-label={t("{v0}层数", { v0: name })}
                       onChange={(event) => {
                         if (!event.target.value) {
                           if (active) onToggleModifier(active, false);
@@ -581,10 +585,10 @@ function SpeedRail({
                       }}
                       value={active?.id ?? ""}
                     >
-                      <option value="">未触发</option>
+                      <option value="">{t("未触发")}</option>
                       {group.map((modifier) => (
                         <option key={modifier.id} value={modifier.id}>
-                          {modifier.stack}层 +{modifier.amount}
+                          {modifier.stack}{t("层 +")}{modifier.amount}
                         </option>
                       ))}
                     </select>
@@ -598,18 +602,18 @@ function SpeedRail({
                     onChange={(event) => onToggleModifier(modifier, event.target.checked)}
                     type="checkbox"
                   />
-                  <span>{modifier.label} +{modifier.amount}</span>
+                  <span>{t(modifier.label)} +{modifier.amount}</span>
                 </label>
               ));
             })}
           </div>
           <strong>
-            {isDraft ? "试算" : "当前"} {formatNumber(currentSpeed)}
+            {isDraft ? t("试算") : t("当前")} {formatNumber(currentSpeed)}
           </strong>
         </div>
       ) : null}
       <div
-        aria-label="速度排行榜横轴"
+        aria-label={t("速度排行榜横轴")}
         className="ability-speed__viewport"
         onKeyDown={(event) => {
           if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
@@ -627,18 +631,18 @@ function SpeedRail({
         role="region"
         tabIndex="0"
       >
-        <div className="ability-speed__rail" role="list" aria-label="速度排行断点">
+        <div className="ability-speed__rail" role="list" aria-label={t("速度排行断点")}>
           <span aria-hidden="true" className="ability-speed__line" />
           {railItems.map((item) => item.kind === "current" ? (
             <div className="ability-speed__marker is-current" key={item.id} ref={currentMarkerRef} role="listitem">
               {assetUrl(currentSpirit) ? <img alt="" src={assetUrl(currentSpirit)} /> : null}
               <b>{formatNumber(item.speed)}</b>
-              <span>{isDraft ? "试算配置" : "当前配置"}</span>
+              <span>{isDraft ? t("试算配置") : t("当前配置")}</span>
             </div>
           ) : (
             <button
               aria-current={item.target.id === selected?.id ? "true" : undefined}
-              aria-label={`选择速度目标${item.target.name}，速度${item.target.speed}${item.target.specialLabel ? `，${item.target.specialLabel}` : ""}`}
+              aria-label={t("选择速度目标{v0}，速度{v1}{v2}", { v0: item.target.name, v1: item.target.speed, v2: item.target.specialLabel ? `，${item.target.specialLabel}` : "" })}
               className={`ability-speed__marker${item.target.id === selected?.id ? " is-target" : ""}`}
               key={item.id}
               onClick={(event) => selectTarget(item.target.id, event)}
@@ -648,7 +652,7 @@ function SpeedRail({
             >
               {assetUrl(item.target.spirit) ? <img alt="" src={assetUrl(item.target.spirit)} /> : null}
               <b>{item.target.speed}</b>
-              <span>{item.target.name}</span>
+              <span>{t(item.target.name)}</span>
               <small>
                 {speedTargetMeta(item.target, { compact: true })}
               </small>
@@ -662,8 +666,8 @@ function SpeedRail({
         ref={openOverviewButtonRef}
         type="button"
       >
-        <span>速度一览</span>
-        <small>{targetGroups.length}档 · 同优先度，仅比较速度</small>
+        <span>{t("速度一览")}</span>
+        <small>{targetGroups.length}{t("档 · 同优先度，仅比较速度")}</small>
       </button>
     </section>
   );
@@ -691,6 +695,7 @@ export function SpeedOverview({
   queryMode = "auto",
   onQueryModeChange,
 }) {
+  const { t } = useLocale();
   const locateTargetRef = useRef(null);
   const referenceRef = useRef(null);
   const scrollRef = useRef(null);
@@ -703,7 +708,7 @@ export function SpeedOverview({
   const referenceValue = reference?.value;
   const matchSummary = standalone && query && reference ? speedMatchSummary(targets, reference.value) : "";
   const namedTargets = standalone && query ? [...new Map(targets.filter(target => search.kind === "text" || target.matchReasons?.some(reason => reason === "图鉴号" || reason === "名称 / 别名")).map(target => [`${target.spiritId}:${target.level ?? 60}`, target])).values()] : [];
-  const namedLocations = namedTargets.map(target => <button type="button" key={target.id} onClick={() => onLocateResult?.(target.speed, target.id)}>定位 {target.name}</button>);
+  const namedLocations = namedTargets.map(target => <button type="button" key={target.id} onClick={() => onLocateResult?.(target.speed, target.id)}>{t("定位")}{" "}{t(target.name)}</button>);
   const hasBaseMatch = standalone && query && targets.some(target => target.matchReasons?.includes("种族速度"));
   const hasActualMatch = targets.some(target => target.matchReasons?.includes("实际速度"));
   const baseOnlyMatch = hasBaseMatch && !hasActualMatch;
@@ -732,7 +737,7 @@ export function SpeedOverview({
 
   return (
     <section
-      aria-label="速度一览"
+      aria-label={t("速度一览")}
       className={`ability-full-ranking ability-speed-overview${standalone ? " rank-speed-standalone" : ""}${iconOnly ? " is-icon-only" : ""}`}
       onKeyDown={(event) => {
         if (event.key === "Tab" && !standalone) {
@@ -751,24 +756,21 @@ export function SpeedOverview({
     >
       {!standalone ? <header>
         <button onClick={onBack} ref={backButtonRef} type="button">
-          <ArrowLeft aria-hidden="true" size={17} />
-          返回能力分析
-        </button>
+          <ArrowLeft aria-hidden="true" size={17} />{t("返回能力分析")}</button>
         <div>
-          <h4>速度一览</h4>
+          <h4>{t("速度一览")}</h4>
           <small>
-            {isDraft ? "试算配置" : "当前配置"} {formatNumber(currentSpeed)} · {targetGroups.length}档
-          </small>
+            {isDraft ? t("试算配置") : t("当前配置")} {formatNumber(currentSpeed)} · {targetGroups.length}{t("档")}</small>
         </div>
       </header> : null}
 
       <div className="ability-speed-overview__controls">
-        <button type="button" className="speed-portrait-toggle" aria-label={iconOnly ? "显示精灵文字" : "隐藏精灵文字"} aria-pressed={iconOnly} title={iconOnly ? "显示精灵文字" : "隐藏精灵文字"} onClick={() => setIconOnly(!iconOnly)}>{iconOnly ? <Eye size={19} /> : <EyeSlash size={19} />}</button>
+        <button type="button" className="speed-portrait-toggle" aria-label={iconOnly ? t("显示精灵文字") : t("隐藏精灵文字")} aria-pressed={iconOnly} title={iconOnly ? t("显示精灵文字") : t("隐藏精灵文字")} onClick={() => setIconOnly(!iconOnly)}>{iconOnly ? <Eye size={19} /> : <EyeSlash size={19} />}</button>
         <SpeedProfilePicker
           onProfilesChange={onProfilesChange}
           profileIds={profileIds}
         />
-        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input aria-label="搜索速度榜精灵" placeholder="搜索名称、别名、图鉴号或速度" value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
+        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input aria-label={t("搜索速度榜精灵")} placeholder={t("搜索名称、别名、图鉴号或速度")} value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
           onTargetChange={onTargetChange}
           selected={selected}
           targets={targets}
@@ -777,26 +779,26 @@ export function SpeedOverview({
 
       {standalone ? <div className="speed-query-guide">
 
-        <div className="speed-reference-summary" role="status">{search.invalid ? <span>请输入非负整数速度值</span> : reference ? <><span>{matchSummary ? <span className="speed-match-summary">{matchSummary.split("；").map(item => { const [label, ...value] = item.split("："); return <span key={label}>{label}：<strong>{value.join("：")}</strong></span>; })}</span> : null}当前结果比 <b>{reference.value}</b> 快 <b>{reference.faster}</b> · 同速 <b>{reference.equal}</b> · 慢 <b>{reference.slower}</b> 个配置</span><span className="speed-locate-actions">{namedLocations}{hasBaseMatch ? <button type="button" onClick={() => onLocateBase?.(reference.value)}>定位种族 {reference.value}</button> : null}{!baseOnlyMatch ? <button type="button" onClick={() => { if (onLocateResult) onLocateResult(reference.value); setJump(jump + 1); }}>定位 {reference.value}</button> : null}</span></> : <><span>{search.kind === "base" && search.value !== null ? `种族速度 ${search.value} · 按实际速度排列` : "输入名称找精灵，输入速度看快慢"}</span><span className="speed-locate-actions">{namedLocations}</span>{!query ? <button type="button" onClick={() => { onQueryModeChange("auto"); onQueryChange("267"); }}>试查 267</button> : null}</>}</div>
+        <div className="speed-reference-summary" role="status">{search.invalid ? <span>{t("请输入非负整数速度值")}</span> : reference ? <><span>{matchSummary ? <span className="speed-match-summary">{matchSummary.split("；").map(item => { const [label, ...value] = item.split("："); return <span key={label}>{t(label)}：<strong>{t(value.join("："))}</strong></span>; })}</span> : null}{t("当前结果比")}{" "}<b>{reference.value}</b>{" "}{t("快")}{" "}<b>{reference.faster}</b>{" "}{t("· 同速")}{" "}<b>{reference.equal}</b>{" "}{t("· 慢")}{" "}<b>{reference.slower}</b>{" "}{t("个配置")}</span><span className="speed-locate-actions">{namedLocations}{hasBaseMatch ? <button type="button" onClick={() => onLocateBase?.(reference.value)}>{t("定位种族")}{" "}{reference.value}</button> : null}{!baseOnlyMatch ? <button type="button" onClick={() => { if (onLocateResult) onLocateResult(reference.value); setJump(jump + 1); }}>{t("定位")}{" "}{reference.value}</button> : null}</span></> : <><span>{search.kind === "base" && search.value !== null ? t("种族速度 {v0} · 按实际速度排列", { v0: search.value }) : t("输入名称找精灵，输入速度看快慢")}</span><span className="speed-locate-actions">{namedLocations}</span>{!query ? <button type="button" onClick={() => { onQueryModeChange("auto"); onQueryChange("267"); }}>{t("试查 267")}</button> : null}</>}</div>
       </div> : null}
 
-      {standalone ? <div className="rank-summary"><span>共 {targetGroups.length} 档 · 同速聚合</span><button type="button" onClick={() => {onQueryChange(""); onQueryModeChange("auto"); onProfilesChange(["positive-max", "neutral-max"]);}}>重置</button></div> : <div className="ability-speed-overview__selection" role="status">
-        <span>{isDraft ? "试算配置" : "当前配置"} <b>{formatNumber(currentSpeed)}</b></span>
+      {standalone ? <div className="rank-summary"><span>{t("共")}{" "}{targetGroups.length}{" "}{t("档 · 同速聚合")}</span><button type="button" onClick={() => {onQueryChange(""); onQueryModeChange("auto"); onProfilesChange(["positive-max", "neutral-max"]);}}>{t("重置")}</button></div> : <div className="ability-speed-overview__selection" role="status">
+        <span>{isDraft ? t("试算配置") : t("当前配置")} <b>{formatNumber(currentSpeed)}</b></span>
         {selected ? (
-          <span>已选目标 <b>{selected.name} · {formatNumber(selected.speed)}</b></span>
+          <span>{t("已选目标")}{" "}<b>{t(selected.name)} · {formatNumber(selected.speed)}</b></span>
         ) : null}
       </div>}
 
       <div ref={scrollRef} className="ability-speed__table-wrap ability-speed-overview__table-wrap">
-        <table aria-label="速度档位表" className="ability-speed__table">
+        <table aria-label={t("速度档位表")} className="ability-speed__table">
           <colgroup>
             <col className="ability-speed__table-value" />
             <col />
           </colgroup>
           <thead>
             <tr>
-              <th>速度</th>
-              <th>精灵 · 最终形态与首领</th>
+              <th>{t("速度")}</th>
+              <th>{t("精灵 · 最终形态与首领")}</th>
             </tr>
           </thead>
           <tbody>
@@ -807,14 +809,14 @@ export function SpeedOverview({
                 key={group.speed}
               >
                 <th scope="row">
-                  <span className="ability-speed-overview__tier-value">{group.speed}{reference ? <small>{group.speed === reference.value ? "基准" : `${group.speed > reference.value ? "+" : ""}${group.speed - reference.value}`}</small> : null}</span>
+                  <span className="ability-speed-overview__tier-value">{group.speed}{reference ? <small>{group.speed === reference.value ? t("基准") : `${group.speed > reference.value ? "+" : ""}${group.speed - reference.value}`}</small> : null}</span>
                 </th>
                 <td>
                   <div className="ability-speed__tier-spirits">
-                    {!group.targets.length ? <span className="rank-note">基准位置 · 没有同速配置</span> : null}
+                    {!group.targets.length ? <span className="rank-note">{t("基准位置 · 没有同速配置")}</span> : null}
                     {group.targets.map((target) => (
                       <button
-                        aria-label={`在速度表选择${target.name}，速度${target.speed}${target.specialLabel ? `，${target.specialLabel}` : ""}`}
+                        aria-label={t("在速度表选择{v0}，速度{v1}{v2}", { v0: target.name, v1: target.speed, v2: target.specialLabel ? `，${target.specialLabel}` : "" })}
                         aria-pressed={target.id === selected?.id || target.id === location?.targetId}
                         key={target.id}
                         onClick={() => onTargetChange(target.id)}
@@ -823,8 +825,8 @@ export function SpeedOverview({
                         type="button"
                       >
                         {assetUrl(target.spirit) ? <img alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
-                        {iconOnly ? <small className="speed-profile-badge">{speedBadge(target)}</small> : <span>
-                          <strong>{target.name}</strong>
+                        {iconOnly ? <small className="speed-profile-badge">{t(speedBadge(target))}</small> : <span>
+                          <strong>{t(target.name)}</strong>
                           <small>{speedTargetMeta(target)}</small>
                         </span>}
                       </button>
@@ -842,11 +844,12 @@ export function SpeedOverview({
 }
 
 function BuildCard({ current, currentDurability, objective, onApply, result, source }) {
+  const { t } = useLocale();
   if (!result) {
     return (
       <article className="ability-build-card is-empty">
-        <h5>{objective.label}</h5>
-        <p>当前锁定条件下没有合法方案。</p>
+        <h5>{t(objective.label)}</h5>
+        <p>{t("当前锁定条件下没有合法方案。")}</p>
       </article>
     );
   }
@@ -859,19 +862,19 @@ function BuildCard({ current, currentDurability, objective, onApply, result, sou
     <article className={`ability-build-card${objective?.recommended ? " is-recommended" : ""}`}>
       <header>
         <div>
-          <h5>{objective.label}</h5>
-          <span>性格：{natureLabel}</span>
+          <h5>{t(objective.label)}</h5>
+          <span>{t("性格：")}{natureLabel}</span>
         </div>
-        {objective.recommended ? <b>推荐</b> : null}
+        {objective.recommended ? <b>{t("推荐")}</b> : null}
       </header>
       <div className="ability-build-card__allocation">
         {INVESTMENT_STATS.filter(({ key }) => result.values[key] === 60).map(({ key, label }) => (
-          <span key={key}>{label} 60</span>
+          <span key={key}>{t(label)} 60</span>
         ))}
       </div>
       <dl>
         <div>
-          <dt>速度</dt>
+          <dt>{t("速度")}</dt>
           <dd>{formatNumber(result.effectiveSpeed ?? result.panel.speed)}</dd>
         </div>
         {METRIC_ENTRIES.map(([metric, label]) => {
@@ -880,7 +883,7 @@ function BuildCard({ current, currentDurability, objective, onApply, result, sou
           const delta = Number.isFinite(current) ? next - current : null;
           return (
             <div key={metric}>
-              <dt>{label}</dt>
+              <dt>{t(label)}</dt>
               <dd>
                 {formatNumber(next)}
                 {Number.isFinite(delta) ? (
@@ -894,7 +897,7 @@ function BuildCard({ current, currentDurability, objective, onApply, result, sou
         })}
       </dl>
       <button disabled={applied} onClick={() => onApply(result)} type="button">
-        {applied ? "当前方案" : getSourceActionLabel(source)}
+        {applied ? t("当前方案") : getSourceActionLabel(source)}
       </button>
     </article>
   );
@@ -911,11 +914,12 @@ function nearbyRankingRows(rows, currentSpiritId, limit = 4) {
 }
 
 function RankingPodium({ active, currentSpiritId, metric, rows }) {
+  const { t } = useLocale();
   const visibleRows = nearbyRankingRows(rows, currentSpiritId);
   const currentEntryId = rows.find(entry => entry.spiritId === currentSpiritId)?.id;
   return (
     <section
-      aria-label={`${METRIC_LABELS[metric]}当前附近排名`}
+      aria-label={t("{v0}当前附近排名", { v0: METRIC_LABELS[metric] })}
       className={`ability-ranking-podium${active ? " is-active" : ""}`}
     >
       <h5>{METRIC_LABELS[metric]}</h5>
@@ -928,7 +932,7 @@ function RankingPodium({ active, currentSpiritId, metric, rows }) {
           >
             <span>{entry.globalRank[metric]}</span>
             {assetUrl(entry.spirit) ? <img alt="" src={assetUrl(entry.spirit)} /> : null}
-            <strong>{entry.name}</strong>
+            <strong>{t(entry.name)}</strong>
             <b>{formatNumber(entry.durability.display[metric])}</b>
           </li>
         ))}
@@ -938,7 +942,8 @@ function RankingPodium({ active, currentSpiritId, metric, rows }) {
 }
 
 function FullRanking(props) {
-  return <Suspense fallback={<div role="status">正在打开耐久榜…</div>}><DurabilityRankingView {...props} /></Suspense>;
+  const { t } = useLocale();
+  return <Suspense fallback={<div role="status">{t("正在打开耐久榜…")}</div>}><DurabilityRankingView {...props} /></Suspense>;
 }
 
 export function AbilityWorkbench({
@@ -949,6 +954,7 @@ export function AbilityWorkbench({
   snapshot,
   source,
 }) {
+  const { t } = useLocale();
   const backButtonRef = useRef(null);
   const currentRankingRowRef = useRef(null);
   const openRankingButtonRef = useRef(null);
@@ -1156,20 +1162,20 @@ export function AbilityWorkbench({
 
   if (!configuration || !spirit) {
     return (
-      <section aria-label="能力分析" className="ability-workbench ability-workbench--empty">
+      <section aria-label={t("能力分析")} className="ability-workbench ability-workbench--empty">
         <Crosshair aria-hidden="true" size={34} />
-        <h4>先选择一只精灵</h4>
-        <p>能力分析每次只处理当前成员或临时攻防方配置。</p>
+        <h4>{t("先选择一只精灵")}</h4>
+        <p>{t("能力分析每次只处理当前成员或临时攻防方配置。")}</p>
       </section>
     );
   }
 
   if (!ready) {
     return (
-      <section aria-label="能力分析" className="ability-workbench ability-workbench--empty">
+      <section aria-label={t("能力分析")} className="ability-workbench ability-workbench--empty">
         <Info aria-hidden="true" size={34} />
-        <h4>种族值待确认</h4>
-        <p>当前精灵缺少完整六维，暂时无法进行能力分析。</p>
+        <h4>{t("种族值待确认")}</h4>
+        <p>{t("当前精灵缺少完整六维，暂时无法进行能力分析。")}</p>
       </section>
     );
   }
@@ -1348,11 +1354,11 @@ export function AbilityWorkbench({
   const manualControls = (
     <details className="ability-manual" open={!validation.valid || undefined}>
       <summary>
-        <strong>手动微调</strong>
-        <span>{getNature(draft.natureId).name} · {INVESTMENT_STATS
+        <strong>{t("手动微调")}</strong>
+        <span>{t(getNature(draft.natureId).name)} · {t(INVESTMENT_STATS
           .filter(({ key }) => Number(draft.displayIvs[key]) > 0)
           .map(({ key, label }) => `${label} ${draft.displayIvs[key]}`)
-          .join(" / ") || "无个体投入"}</span>
+          .join(" / ") || t("无个体投入"))}</span>
       </summary>
       <div className="ability-draft-controls">
         <InvestmentPicker
@@ -1364,9 +1370,9 @@ export function AbilityWorkbench({
           values={draft.displayIvs}
         />
         <label className="ability-draft-nature">
-          <span>性格</span>
+          <span>{t("性格")}</span>
           <NatureSelect
-            ariaLabel="能力分析性格"
+            ariaLabel={t("能力分析性格")}
             onChange={(natureId) => updateDraft({ ...draft, natureId })}
             value={draft.natureId}
           />
@@ -1377,15 +1383,14 @@ export function AbilityWorkbench({
 
   return (
     <div
-      aria-label="能力分析"
+      aria-label={t("能力分析")}
       className="ability-workbench"
       ref={scrollRef}
       role="region"
     >
-      <CurrentSummary durability={baselineDurability} panel={baselinePanel} label={source?.kind === "side" ? "当前配置" : "已保存配置"} />
+      <CurrentSummary durability={baselineDurability} panel={baselinePanel} label={source?.kind === "side" ? t("当前配置") : t("已保存配置")} />
       {dirty ? (
-        <p className="ability-draft-status" role="status">
-          试算草稿 · 尚未{source?.kind === "side" ? "应用回计算器" : "应用到成员"}
+        <p className="ability-draft-status" role="status">{t("试算草稿 · 尚未")}{source?.kind === "side" ? t("应用回计算器") : t("应用到成员")}
         </p>
       ) : null}
 
@@ -1394,8 +1399,8 @@ export function AbilityWorkbench({
           <div className="ability-rule-warning" role="alert">
             <Info aria-hidden="true" size={19} weight="fill" />
             <div>
-              <strong>历史配置不符合个体值分配规则</strong>
-              <span>原值已保留，计算暂停。请在草稿中明确改为最多三项 60。</span>
+              <strong>{t("历史配置不符合个体值分配规则")}</strong>
+              <span>{t("原值已保留，计算暂停。请在草稿中明确改为最多三项 60。")}</span>
             </div>
             <button
               onClick={() =>
@@ -1405,9 +1410,7 @@ export function AbilityWorkbench({
                 })
               }
               type="button"
-            >
-              清空个体值并重选
-            </button>
+            >{t("清空个体值并重选")}</button>
           </div>
           {manualControls}
         </>
@@ -1448,25 +1451,25 @@ export function AbilityWorkbench({
           />
 
           {manualControls}
-          <section aria-label="耐久方案对比" className="ability-section ability-builds">
+          <section aria-label={t("耐久方案对比")} className="ability-section ability-builds">
             <header className="ability-section__title">
               <span>2</span>
               <div>
-                <h4>耐久方案对比</h4>
+                <h4>{t("耐久方案对比")}</h4>
               </div>
               <div className="ability-build-constraints">
                 <label>
-                  <span>速度</span>
+                  <span>{t("速度")}</span>
                   <select
-                    aria-label="推荐速度约束"
+                    aria-label={t("推荐速度约束")}
                     onChange={(event) => {
                       setSpeedMode(event.target.value);
                     }}
                     value={speedMode}
                   >
-                    <option value="keep">保留当前速度</option>
-                    <option value="at-least">达到目标速度</option>
-                    <option value="unlocked">只看耐久</option>
+                    <option value="keep">{t("保留当前速度")}</option>
+                    <option value="at-least">{t("达到目标速度")}</option>
+                    <option value="unlocked">{t("只看耐久")}</option>
                   </select>
                 </label>
                 {["physicalAttack", "magicalAttack"].map((stat) => {
@@ -1486,15 +1489,14 @@ export function AbilityWorkbench({
                       type="button"
                     >
                       {locked ? <LockSimple aria-hidden="true" size={14} /> : <LockSimpleOpen aria-hidden="true" size={14} />}
-                      {label}{locked ? "已锁" : "未锁"}
+                      {t(label)}{locked ? t("已锁") : t("未锁")}
                     </button>
                   );
                 })}
               </div>
             </header>
             {recommendations?.status === "no-solution" ? (
-              <p className="ability-builds__conflict">
-                当前锁定和速度目标冲突，未生成非法方案。{recommendations.conflicts[0]?.code === "SPEED_TARGET_UNREACHABLE" ? "即使速度60也无法达到。" : "请解除锁定或调整速度约束。"}
+              <p className="ability-builds__conflict">{t("当前锁定和速度目标冲突，未生成非法方案。")}{recommendations.conflicts[0]?.code === "SPEED_TARGET_UNREACHABLE" ? t("即使速度60也无法达到。") : t("请解除锁定或调整速度约束。")}
               </p>
             ) : null}
             <div className="ability-build-grid">
@@ -1514,39 +1516,39 @@ export function AbilityWorkbench({
               <p className="ability-apply-status" role="status">{applyStatus}</p>
             ) : null}
             <button className="ability-calculation-toggle" onClick={() => setShowCalculation((current) => !current)} type="button">
-              {showCalculation ? "收起计算依据" : "查看计算依据"}
+              {showCalculation ? t("收起计算依据") : t("查看计算依据")}
             </button>
             {showCalculation ? (
               <div className="ability-calculation-note">
-                <code>物理 = 最大生命 × 物防</code>
-                <code>魔法 = 最大生命 × 魔防</code>
-                <code>综合 = 最大生命 × 物防 × 魔防 ÷ (物防 + 魔防)</code>
-                <span>展示值统一 Math.round；推荐仅枚举 0/60 且不超过三项的合法组合。</span>
+                <code>{t("物理 = 最大生命 × 物防")}</code>
+                <code>{t("魔法 = 最大生命 × 魔防")}</code>
+                <code>{t("综合 = 最大生命 × 物防 × 魔防 ÷ (物防 + 魔防)")}</code>
+                <span>{t("展示值统一 Math.round；推荐仅枚举 0/60 且不超过三项的合法组合。")}</span>
               </div>
             ) : null}
           </section>
 
-          <section aria-label="标准耐久榜定位" className="ability-section ability-ranking-preview">
+          <section aria-label={t("标准耐久榜定位")} className="ability-section ability-ranking-preview">
             <header className="ability-section__title">
               <span>3</span>
               <div>
-                <h4>标准耐久榜定位</h4>
+                <h4>{t("标准耐久榜定位")}</h4>
               </div>
-              <span className="ability-ranking-template">仅最终形态 + 首领</span>
+              <span className="ability-ranking-template">{t("仅最终形态 + 首领")}</span>
             </header>
             {currentRankingEntry ? (
               <div className="ability-ranking-current">
                 <span aria-hidden="true">✓</span>
-                {currentRankingEntry.name}：物理第 {currentRankingEntry.globalRank.physical}、魔法第 {currentRankingEntry.globalRank.magical}、综合第 {currentRankingEntry.globalRank.combined}
+                {t(currentRankingEntry.name)}{t("：物理第")}{" "}{currentRankingEntry.globalRank.physical}{t("、魔法第")}{" "}{currentRankingEntry.globalRank.magical}{t("、综合第")}{" "}{currentRankingEntry.globalRank.combined}
               </div>
             ) : (
               <div className="ability-ranking-current is-excluded">
                 <Info aria-hidden="true" size={17} weight="fill" />
-                {spirit.fullName}未入榜：{exclusionLabel(currentExclusion?.reason)}
+                {t(spirit.fullName)}{t("未入榜：")}{exclusionLabel(currentExclusion?.reason)}
               </div>
             )}
             <div
-              aria-label="榜单预览指标"
+              aria-label={t("榜单预览指标")}
               className="ability-ranking-preview-metrics"
               role="group"
             >
@@ -1557,7 +1559,7 @@ export function AbilityWorkbench({
                   onClick={() => setMetric(key)}
                   type="button"
                 >
-                  {label}
+                  {t(label)}
                 </button>
               ))}
             </div>
@@ -1567,9 +1569,7 @@ export function AbilityWorkbench({
               <RankingPodium active={metric === "combined"} currentSpiritId={spirit.id} metric="combined" rows={previewRankings.combined} />
             </div>
             <footer>
-              <button onClick={openFullRanking} ref={openRankingButtonRef} type="button">
-                查看完整耐久榜
-              </button>
+              <button onClick={openFullRanking} ref={openRankingButtonRef} type="button">{t("查看完整耐久榜")}</button>
             </footer>
           </section>
         </>

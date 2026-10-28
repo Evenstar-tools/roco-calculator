@@ -24,9 +24,9 @@ function workspace(locale = "en", props = {}) {
 }
 
 test.each([
-  ["en", "Global data needs verification", "Open menu", "Display settings", "Done", "Open teams"],
-  ["zh-CN", "国际服数据尚待核验", "打开菜单", "显示设置", "完成", "打开队伍"],
-  ["ja", "グローバル版のデータは未検証です", "メニューを開く", "表示設定", "完了", "チームを開く"],
+  ["en", "Calculate damage in three steps", "Open menu", "Display settings", "Done", "Open teams"],
+  ["zh-CN", "三步完成一次伤害计算", "打开菜单", "显示设置", "完成", "打开队伍"],
+  ["ja", "3ステップでダメージ計算", "メニューを開く", "表示設定", "完了", "チームを開く"],
 ])("%s inherits the original calculator, menus and settings without loading CN data", (locale, title, menu, settings, done, teams) => {
   localStorage.setItem("rock-calculator.teams.v1", "CN sentinel");
   const { container } = render(workspace(locale));
@@ -48,7 +48,7 @@ test.each([
 
 test("Global ignores an accidentally supplied CN snapshot and remains an empty unverified original workspace", () => {
   render(workspace("en", { initialSnapshot: { meta: { id: "cn-test", rulesVersion: "rules" }, spirits: [{ id: "cn-only", fullName: "CN only" }], skills: [] } }));
-  expect(screen.getByRole("heading", { name: "Global data needs verification" })).toBeVisible();
+  expect(screen.getByRole("heading", { name: "Calculate damage in three steps" })).toBeVisible();
   expect(screen.queryByText("CN only")).toBeNull();
   expect(fetch).not.toHaveBeenCalled();
 });
@@ -91,7 +91,7 @@ test("the original Global App persists unknown shared references and restores th
   expect(store.loadSession().present.sides.defender).toEqual(payload.sides.attacker);
   expect(store.loadSession().present.directions.reverse).toEqual(payload.directions.reverse);
   expect(store.loadSession().present.directions.forward).toEqual(payload.directions.forward);
-  expect(screen.getByRole("heading", { name: "Global data needs verification" })).toBeVisible();
+  expect(screen.getByRole("heading", { name: "Calculate damage in three steps" })).toBeVisible();
   expect(fetch).not.toHaveBeenCalled();
   expect(getMissingUiMessages()).toEqual([]);
 });

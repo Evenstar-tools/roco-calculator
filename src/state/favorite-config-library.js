@@ -111,7 +111,7 @@ function parseUnverifiedLibrary(source, existing, existingFavorites) {
   const favoriteIds = [...new Set(favoriteRecords.map((record) => record.spiritId))];
   const comparison = compareUnverifiedEntries(entries, existing);
   const existingIds = new Set(favoriteSpiritIds(existingFavorites));
-  return { serverId: "global", entries, changes: comparison.changes, historicalEntries: [], favoriteRecords: cloneJson(favoriteRecords),
+  return { serverId: "global", draftOnly: true, entries, changes: comparison.changes, historicalEntries: [], favoriteRecords: cloneJson(favoriteRecords),
     favoriteSpiritIds: favoriteIds, format: source.format, issueDetails: [],
     preview: { ...comparison.counts, favoritesAdded: favoriteIds.filter((id) => !existingIds.has(id)).length,
       missingSpirits: 0, missingSkills: 0, unknownTraitFields: 0, invalidEntries: 0, duplicateEntries: 0, repairedEntries: 0 },
@@ -129,7 +129,7 @@ export function buildFavoriteConfigLibrary({
   serverId = snapshot?.meta?.serverId ?? "cn",
 }) {
   assertRepositoryEnvironment(serverId, snapshot);
-  if (serverId === "global") {
+  if (serverId === "global" && !snapshot?.meta?.id) {
     const entries = Object.values(spiritConfigs?.configs ?? {}).map(unverifiedEntry);
     return {
       autoIncludedCount: 0, exportedCount: entries.length, manualConfiguredCount: entries.length, skippedUnconfiguredCount: 0,
@@ -416,7 +416,7 @@ export function parseFavoriteConfigLibrary(json, {
   assertRepositoryEnvironment(serverId, snapshot);
   const source = parseJson(json);
   if ((source?.serverId ?? "cn") !== serverId) throw storageError("SERVER_MISMATCH", "配置库服务器不匹配；未导入任何内容");
-  if (serverId === "global") return parseUnverifiedLibrary(source, existingSpiritConfigs, existingFavorites);
+  if (serverId === "global" && source.versions?.data === null && source.versions?.rules === null) return parseUnverifiedLibrary(source, existingSpiritConfigs, existingFavorites);
   const decoded = decodeInput(source, snapshot);
   if (decoded.entries.length > FAVORITE_CONFIG_LIBRARY_MAX_ENTRIES) {
     throw new TypeError("配置库最多包含 2000 条配置");
@@ -604,7 +604,7 @@ export function applyFavoriteConfigLibraryImport({
   const beforeFavorites = favoritesRepository.list();
   const beforeConfigs = spiritConfigsRepository.load(snapshot);
   // 确认时重新比较，保护预览后发生的手动修改。
-  const comparison = serverId === "global" ? compareUnverifiedEntries(parsed.entries, beforeConfigs)
+  const comparison = parsed.draftOnly ? compareUnverifiedEntries(parsed.entries, beforeConfigs)
     : compareLibraryEntries(parsed.entries, beforeConfigs, snapshot, parsed.historicalEntries);
   const preview = { ...parsed.preview, ...comparison.counts, favoritesAdded: 0 };
   const byFavoriteId = new Map(beforeFavorites.map((favorite) => [favorite.id, favorite]));
@@ -620,7 +620,7 @@ export function applyFavoriteConfigLibraryImport({
   for (const entry of parsed.entries) {
     const local = beforeConfigs.configs[entry.spiritId];
     if (local && !updates.has(entry.spiritId)) continue;
-    nextConfigs.configs[entry.spiritId] = serverId === "global" ? cloneJson(entry.rawConfig) : {
+    nextConfigs.configs[entry.spiritId] = parsed.draftOnly ? cloneJson(entry.rawConfig) : {
       displayIvs: cloneJson(entry.displayIvs),
       natureId: entry.natureId,
       skills: { four: cloneJson(entry.skills), single: cloneJson(local?.skills?.single ?? null) },

@@ -1,0 +1,279 @@
+{
+  "directionalMatchups": {
+    "status": "英日已提取，尚未恢复中文源文的项保持null",
+    "sources": [
+      {
+        "sourceId": "locres::0F6B63334B6399B7814514A6CBE86462",
+        "kind": "client-umg-ftext-locres",
+        "raw": {
+          "zh": null,
+          "dev_CN": null,
+          "en": "Disadvantaged Against",
+          "ja": "不利"
+        },
+        "reference": {
+          "namespace": "",
+          "key": "0F6B63334B6399B7814514A6CBE86462",
+          "sources": {
+            "en": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/en/Game.locres",
+              "sourceTextHash": 3607780005,
+              "stringIndex": 201
+            },
+            "ja": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/ja/Game.locres",
+              "sourceTextHash": 3607780005,
+              "stringIndex": 216
+            }
+          },
+          "zhSourceStatus": "source-not-found"
+        }
+      },
+      {
+        "sourceId": "locres::37390DAA47BA3130D9E30FB6159C3C00",
+        "kind": "client-umg-ftext-locres",
+        "raw": {
+          "zh": null,
+          "dev_CN": null,
+          "en": "Disadvantaged Against",
+          "ja": "不利"
+        },
+        "reference": {
+          "namespace": "",
+          "key": "37390DAA47BA3130D9E30FB6159C3C00",
+          "sources": {
+            "en": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/en/Game.locres",
+              "sourceTextHash": 3607780005,
+              "stringIndex": 201
+            },
+            "ja": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/ja/Game.locres",
+              "sourceTextHash": 3607780005,
+              "stringIndex": 216
+            }
+          },
+          "zhSourceStatus": "source-not-found"
+        }
+      },
+      {
+        "sourceId": "locres::6C5905A24556CF8E8FD900B3F6AF8EE3",
+        "kind": "client-umg-ftext-locres",
+        "raw": {
+          "zh": null,
+          "dev_CN": null,
+          "en": "Advantaged Against",
+          "ja": "有利"
+        },
+        "reference": {
+          "namespace": "",
+          "key": "6C5905A24556CF8E8FD900B3F6AF8EE3",
+          "sources": {
+            "en": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/en/Game.locres",
+              "sourceTextHash": 2952603934,
+              "stringIndex": 1119
+            },
+            "ja": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/ja/Game.locres",
+              "sourceTextHash": 2952603934,
+              "stringIndex": 1182
+            }
+          },
+          "zhSourceStatus": "source-not-found"
+        }
+      },
+      {
+        "sourceId": "locres::7ACF80E0493E202E9C3863BD84F809A3",
+        "kind": "client-umg-ftext-locres",
+        "raw": {
+          "zh": null,
+          "dev_CN": null,
+          "en": "I Resist",
+          "ja": "耐性"
+        },
+        "reference": {
+          "namespace": "",
+          "key": "7ACF80E0493E202E9C3863BD84F809A3",
+          "sources": {
+            "en": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/en/Game.locres",
+              "sourceTextHash": 220924761,
+              "stringIndex": 1242
+            },
+            "ja": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/ja/Game.locres",
+              "sourceTextHash": 220924761,
+              "stringIndex": 1309
+            }
+          },
+          "zhSourceStatus": "source-not-found"
+        }
+      },
+      {
+        "sourceId": "locres::A5D5FB4D4750325A3A7F75A96D6D04A0",
+        "kind": "client-umg-ftext-locres",
+        "raw": {
+          "zh": null,
+          "dev_CN": null,
+          "en": "I Resist",
+          "ja": "耐性"
+        },
+        "reference": {
+          "namespace": "",
+          "key": "A5D5FB4D4750325A3A7F75A96D6D04A0",
+          "sources": {
+            "en": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/en/Game.locres",
+              "sourceTextHash": 220924761,
+              "stringIndex": 1242
+            },
+            "ja": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/ja/Game.locres",
+              "sourceTextHash": 220924761,
+              "stringIndex": 1309
+            }
+          },
+          "zhSourceStatus": "source-not-found"
+        }
+      },
+      {
+        "sourceId": "locres::BB90AEAF413A924BFAC4AC92C0BAA0C1",
+        "kind": "client-umg-ftext-locres",
+        "raw": {
+          "zh": null,
+          "dev_CN": null,
+          "en": "Advantaged Against",
+          "ja": "有利"
+        },
+        "reference": {
+          "namespace": "",
+          "key": "BB90AEAF413A924BFAC4AC92C0BAA0C1",
+          "sources": {
+            "en": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/en/Game.locres",
+              "sourceTextHash": 2952603934,
+              "stringIndex": 1119
+            },
+            "ja": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/ja/Game.locres",
+              "sourceTextHash": 2952603934,
+              "stringIndex": 1182
+            }
+          },
+          "zhSourceStatus": "source-not-found"
+        }
+      },
+      {
+        "sourceId": "locres::FB9D9A094C13057CABFBB6A5D5A80F1D",
+        "kind": "client-umg-ftext-locres",
+        "raw": {
+          "zh": null,
+          "dev_CN": null,
+          "en": "Resists Me",
+          "ja": "相手耐性"
+        },
+        "reference": {
+          "namespace": "",
+          "key": "FB9D9A094C13057CABFBB6A5D5A80F1D",
+          "sources": {
+            "en": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/en/Game.locres",
+              "sourceTextHash": 96078066,
+              "stringIndex": 2061
+            },
+            "ja": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/ja/Game.locres",
+              "sourceTextHash": 96078066,
+              "stringIndex": 2179
+            }
+          },
+          "zhSourceStatus": "source-not-found"
+        }
+      },
+      {
+        "sourceId": "locres::FF13A5894458450120E1A3A23C6C6BBD",
+        "kind": "client-umg-ftext-locres",
+        "raw": {
+          "zh": null,
+          "dev_CN": null,
+          "en": "Resists Me",
+          "ja": "相手耐性"
+        },
+        "reference": {
+          "namespace": "",
+          "key": "FF13A5894458450120E1A3A23C6C6BBD",
+          "sources": {
+            "en": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/en/Game.locres",
+              "sourceTextHash": 96078066,
+              "stringIndex": 2061
+            },
+            "ja": {
+              "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+              "path": "Localization/Game/ja/Game.locres",
+              "sourceTextHash": 96078066,
+              "stringIndex": 2179
+            }
+          },
+          "zhSourceStatus": "source-not-found"
+        }
+      }
+    ],
+    "note": "四方向文本需结合进攻/防御视角使用；不以Resistant或Weak替换全部弱点与抗性。"
+  },
+  "sourceAnomalies": [
+    {
+      "sourceId": "table:WEATHER_CONF:9:name",
+      "raw": {
+        "zh": "小雪",
+        "dev_CN": "小雪",
+        "en": "Sean",
+        "ja": "小雪"
+      },
+      "note": "世界天气小雪的英文为Sean，保留原始错误，未推荐给界面。战斗天气另有name_for_battle=Blizzard。"
+    },
+    {
+      "sourceId": "table:ATTRIBUTE_CONF:17:attribute_name",
+      "raw": {
+        "zh": "物理攻击加成",
+        "dev_CN": "物理攻击加成",
+        "en": "Physical Damage Bonus",
+        "ja": "物理攻撃力UP"
+      },
+      "note": "中日攻击加成与英文Damage Bonus语义不同；不自动纠正。"
+    },
+    {
+      "sourceId": "table:ATTRIBUTE_CONF:18:attribute_name",
+      "raw": {
+        "zh": "魔法攻击加成",
+        "dev_CN": "魔法攻击加成",
+        "en": "Magic Damage Bonus",
+        "ja": "魔法攻撃力UP"
+      },
+      "note": "中日攻击加成与英文Damage Bonus语义不同；不自动纠正。"
+    }
+  ],
+  "usageNotes": [
+    "普通属性Common与无修正性格不是同一概念。",
+    "同词恢复可能指HP回復或恢复设置；关闭Close和开关Off也需分别处理。",
+    "生命HP/Health、速度SPD/Speed、个体资质Individual Aptitude/Ind. Apt.均存在正式上下文变体。",
+    "种族值/个体是项目概念；当前客户端对应原文为种族资质/个体资质。",
+    "各游戏说明中的数值仅保留原文，未据此更新国际服战斗规则。"
+  ]
+}

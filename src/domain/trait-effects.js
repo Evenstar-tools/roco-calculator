@@ -1,3 +1,4 @@
+import { usesS3MidseasonRules } from "./season-rules.js";
 import { getS5PreviewTraitInputs, resolveS5PreviewTraitEffect } from "./s5-preview-traits.js";
 
 const ATTACK_EFFECT_KEY = "attackerTraitEffect";
@@ -894,6 +895,7 @@ function inferredRule(trait, role) {
 }
 
 export function getTraitEffectRule(trait, role = "attacker") {
+  if (usesS3MidseasonRules(trait) && trait.name === "威慑") return null;
   if (getS5PreviewTraitInputs(trait, role) !== null) return null;
   const named = RULES[trait?.name] ?? LEGACY_EDITABLE_RULES[trait?.name];
   if (
@@ -934,6 +936,7 @@ export function getTraitAutomaticStack(trait, role = "attacker", skills = []) {
 }
 
 export function hasNamedTraitEffectRule(trait, role = "attacker") {
+  if (usesS3MidseasonRules(trait) && trait.name === "威慑") return false;
   const named = RULES[trait?.name];
   return Boolean(
     named &&

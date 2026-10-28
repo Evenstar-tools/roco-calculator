@@ -2,12 +2,17 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { metrics } from "./analytics/metrics.js";
 import { previewRoute, unprefixedRoute } from "./runtime/preview-channel.js";
 import { App } from "./App.jsx";
+import { useRuntime } from "./runtime/RuntimeContext.jsx";
+import { useLocale } from "./i18n/LocaleContext.jsx";
+import { routeFor } from "./runtime/routes.js";
 import { applyPageMetadata, DEER_PAGE_METADATA, HOME_PAGE_METADATA } from "./seo/page-metadata.js";
 
 const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
-const isDeerPath = () => /^\/dianlu\/?$/.test(unprefixedRoute(window.location.pathname));
+const isDeerPath = () => /^\/dianlu\/?$/.test(unprefixedRoute(window.location.pathname)) || new URLSearchParams(window.location.search).get("tool") === "deer";
 
 export function CalculatorRouter({ initialSnapshot = null, active = true, onOpenGlobal }) {
+  const { serverId, locale } = useRuntime();
+  const { t } = useLocale();
   const [route, setRoute] = useState(() => ({ deer: isDeerPath(), input: window.history.state?.deerInput ?? null }));
   const [homeVisited, setHomeVisited] = useState(() => !isDeerPath() || !!window.history.state?.deerInput);
   const [initialWorkspace] = useState(() => window.history.state?.deerInput ?? null);
@@ -24,8 +29,8 @@ export function CalculatorRouter({ initialSnapshot = null, active = true, onOpen
     return () => window.removeEventListener("popstate", onPopState);
   }, [active]);
   useEffect(() => {
-    if (active) applyPageMetadata(route.deer ? DEER_PAGE_METADATA : HOME_PAGE_METADATA);
-  }, [route.deer, active]);
+    if (active && serverId === "cn") applyPageMetadata(route.deer ? DEER_PAGE_METADATA : HOME_PAGE_METADATA);
+  }, [route.deer, active, serverId]);
   useEffect(() => {
     if (!active) return;
     window.scrollTo(0, route.deer ? 0 : homeScroll.current);
@@ -34,7 +39,7 @@ export function CalculatorRouter({ initialSnapshot = null, active = true, onOpen
   function openDeer(input) {
     homeScroll.current = window.scrollY;
     const copy = structuredClone(input);
-    window.history.pushState({ deerInput: copy }, "", previewRoute("/dianlu/"));
+    window.history.pushState({ deerInput: copy }, "", serverId === "global" ? `${routeFor(serverId, locale)}?tool=deer` : previewRoute("/dianlu/"));
     setRoute({ deer: true, input: copy });
   }
   function returnHome(event) {
@@ -42,13 +47,13 @@ export function CalculatorRouter({ initialSnapshot = null, active = true, onOpen
     if (route.input && window.history.length > 1) {
       window.history.back();
     } else {
-      window.history.pushState(null, "", previewRoute("/"));
+      window.history.pushState(null, "", serverId === "global" ? routeFor(serverId, locale) : previewRoute("/"));
       setHomeVisited(true);
       setRoute({ deer: false, input: null });
     }
   }
   return <>
     {homeVisited && <div hidden={route.deer} inert={route.deer || undefined}><App initialSnapshot={initialSnapshot} initialWorkspace={initialWorkspace} onOpenDeer={openDeer} active={active && !route.deer} onOpenGlobal={onOpenGlobal} /></div>}
-    {active && route.deer && <Suspense fallback={<p role="status">正在加载电鹿斩杀线…</p>}><DeerPage initialState={route.input?.state} onReturn={returnHome} /></Suspense>}
+    {active && route.deer && <Suspense fallback={<p role="status">{t("正在加载电鹿斩杀线…")}</p>}><DeerPage initialState={route.input?.state} onReturn={returnHome} /></Suspense>}
   </>;
 }

@@ -59,15 +59,15 @@ test("reference data carries no executable CN mechanics and never enables Global
   expect(catalog.traits).toEqual([]);
   expect(catalog.rules).toEqual([]);
   expect(catalog.typeChart).toEqual({ types: [], matrix: [] });
-  expect(() => calculateMatchup(catalog, { serverId: "global" })).toThrow(expect.objectContaining({ code: "SERVER_DATA_UNVERIFIED" }));
+  expect(() => calculateMatchup(catalog, { serverId: "global" })).toThrow(expect.objectContaining({ code: "INCOMPATIBLE_SERVER_VERSION" }));
   expect(() => calculateMatchup(catalog, { serverId: "cn" })).toThrow(expect.objectContaining({ code: "SERVER_MISMATCH" }));
-  expect(getServerRelease("global")).toMatchObject({ dataURL: null, capabilities: { calculate: false } });
+  expect(getServerRelease("global")).toMatchObject({ dataURL: "/data/global-runtime.json", capabilities: { calculate: true } });
 });
 
 test("the verified Global loader still rejects without an implicit CN fallback", async () => {
-  const fetcher = vi.fn();
-  await expect(loadServerSnapshot("global", { fetcher })).rejects.toMatchObject({ code: "SERVER_DATA_UNVERIFIED" });
-  expect(fetcher).not.toHaveBeenCalled();
+  const fetcher = vi.fn(async () => ({ ok: true, json: async () => sourceCatalog() }));
+  await expect(loadServerSnapshot("global", { fetcher })).rejects.toMatchObject({ code: "SERVER_MISMATCH" });
+  expect(fetcher).toHaveBeenCalledWith("/data/global-runtime.json", { signal: undefined });
 });
 
 test("reference loading rejects an aborted request before fetch or after a delayed JSON response", async () => {

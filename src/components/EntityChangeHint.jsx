@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { useCalculatorLocale } from "../i18n/calculator-text.js";
 
 function isCompactChange(item) {
   return item.kind === "stat" && typeof item.before !== "string";
@@ -20,11 +21,12 @@ export function hasEntityChanges(changeInfo) {
 const patchLabel = patch => patch?.label?.replace(/前瞻/g, "").replace(/S3[\s-]*季中/g, "赛季平衡");
 
 function ChangeItem({ item }) {
+  const { tc } = useCalculatorLocale();
   if (isCompactChange(item)) {
     const delta = Number(item.after) - Number(item.before);
     return (
       <li className="entity-change-card__metric">
-        <span>{item.label}</span>
+        <span>{tc(item.label)}</span>
         <strong>{item.before} → {item.after}</strong>
         <em className={delta > 0 ? "is-up" : delta < 0 ? "is-down" : ""}>
           {delta > 0 ? `+${delta}` : delta || "—"}
@@ -35,15 +37,16 @@ function ChangeItem({ item }) {
 
   return (
     <li className="entity-change-card__detail">
-      <strong>{item.label}</strong>
-      {item.before ? <span><small>调整前</small>{item.before}</span> : null}
-      {item.after ? <span><small>{item.before ? "调整后" : "内容"}</small>{item.after}</span> : null}
-      {item.note ? <em>{item.note}</em> : null}
+      <strong>{tc(item.label)}</strong>
+      {item.before ? <span><small>{tc("调整前")}</small>{tc(item.before)}</span> : null}
+      {item.after ? <span><small>{tc(item.before ? "调整后" : "内容")}</small>{tc(item.after)}</span> : null}
+      {item.note ? <em>{tc(item.note)}</em> : null}
     </li>
   );
 }
 
 export function EntityChangeHint({ changeInfo, className = "", children, entityName: fallbackName, active = false, renderPatchAction }) {
+  const { tc } = useCalculatorLocale();
   const tooltipId = useId();
   const anchorRef = useRef(null);
   const panelRef = useRef(null);
@@ -123,14 +126,14 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
   const changeGroups = [changeInfo, ...(changeInfo?.history ?? [])].filter(record => record?.items?.length);
   const multiplePatches = changeGroups.length > 1;
   if (!hasChanges && !children) return null;
-  const entityName = changeInfo?.entityName ?? fallbackName ?? "当前项目";
+  const entityName = tc(fallbackName ?? changeInfo?.entityName ?? "当前项目");
   const selectedIndex = selectedPatch?.entityName === entityName
     ? Math.max(0, changeGroups.findIndex((record, index) => (record.patch?.id ?? index) === selectedPatch.id)) : 0;
   const visibleGroups = multiplePatches ? [changeGroups[selectedIndex]] : changeGroups;
   function selectPatch(index) {
     setSelectedPatch({ entityName, id: changeGroups[index].patch?.id ?? index });
   }
-  const actionLabel = hasChanges ? `查看${entityName}本期改动` : `编辑${entityName}试算种族值`;
+  const actionLabel = tc(hasChanges ? "查看{name}本期改动" : "编辑{name}试算种族值", { name: entityName });
   const HintIcon = hasChanges ? WarningCircle : SlidersHorizontal;
 
   return (
@@ -162,7 +165,7 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
       {open ? createPortal(
         <div className="entity-change-layer" onClick={(event) => event.stopPropagation()}>
           <button
-            aria-label="关闭改动详情"
+            aria-label={tc("关闭改动详情")}
             className="entity-change-layer__backdrop"
             onClick={() => {
               setPinned(false);
@@ -171,7 +174,7 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
             type="button"
           />
           <section
-            aria-label={hasChanges ? `${entityName}本期改动` : `${entityName}种族值试算`}
+            aria-label={tc(hasChanges ? "{name}本期改动" : "{name}种族值试算", { name: entityName })}
             className="entity-change-card"
             id={tooltipId}
             onMouseEnter={openOnHover}
@@ -183,12 +186,12 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
           >
             <header>
               <span>
-                <small>{hasChanges ? "更新" : "试算"}</small>
-                <strong>{multiplePatches ? "改动记录" : patchLabel(changeInfo?.patch) ?? "种族值编辑"}</strong>
+                <small>{tc(hasChanges ? "更新" : "试算")}</small>
+                <strong>{tc(multiplePatches ? "改动记录" : patchLabel(changeInfo?.patch) ?? "种族值编辑")}</strong>
                 {!multiplePatches && <time>{changeInfo?.patch?.date}</time>}
               </span>
               <button
-                aria-label="关闭改动详情"
+                aria-label={tc("关闭改动详情")}
                 onClick={() => {
                   setPinned(false);
                   setHovered(false);
@@ -199,7 +202,7 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
               </button>
             </header>
             <div className="entity-change-card__title"><h3>{entityName}</h3>{!multiplePatches && renderPatchAction?.(changeGroups[0])}</div>
-            {multiplePatches && <div className="entity-change-card__tabs" role="tablist" aria-label="改动记录">
+            {multiplePatches && <div className="entity-change-card__tabs" role="tablist" aria-label={tc("改动记录")}>
               {changeGroups.map((record, index) => <button key={record.patch?.id ?? index}
                 id={`${tooltipId}-tab-${index}`} role="tab" type="button"
                 aria-selected={selectedIndex === index} aria-controls={`${tooltipId}-patch`}
@@ -213,14 +216,14 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
                   event.preventDefault();
                   selectPatch(next);
                   document.getElementById(`${tooltipId}-tab-${next}`)?.focus();
-                }}>{patchLabel(record.patch) ?? `记录 ${index + 1}`}</button>)}
+                }}>{patchLabel(record.patch) ? tc(patchLabel(record.patch)) : tc("记录 {index}", { index: index + 1 })}</button>)}
             </div>}
             {visibleGroups.map((record, groupIndex) => <section className="entity-change-card__patch" key={record.patch?.id ?? groupIndex}
               id={multiplePatches ? `${tooltipId}-patch` : undefined} role={multiplePatches ? "tabpanel" : undefined}
               aria-labelledby={multiplePatches ? `${tooltipId}-tab-${selectedIndex}` : undefined}>
               {multiplePatches && <div className="entity-change-card__patch-heading"><time>{record.patch?.date}</time>{renderPatchAction?.(record)}</div>}
               <ul>{record.items.map((item, index) => (
-                <ChangeItem item={item} key={`${item.kind}-${item.label}-${index}`} />
+                <ChangeItem item={item} key={`${item.kind}-${tc(item.label)}-${index}`} />
               ))}</ul>
             </section>)}
             {children}

@@ -1,0 +1,8373 @@
+{
+  "meta": {
+    "schemaVersion": 1,
+    "scope": "六维种族值复原，仅用于数据版本比较；不代表国际客户端技能、特性、完整规则或实装可用状态等同国服S3季中。",
+    "baseline": {
+      "path": "data/snapshots/seasons/s3-2026-07-15.json",
+      "id": "s3-2026-07-15",
+      "seasonId": "S3·铅字幻梦",
+      "rulesVersion": "2026-07-23"
+    },
+    "patchScript": "scripts/bwiki/apply-s3-midseason-balance.mjs",
+    "effectiveDate": "2026-08-13",
+    "sources": {
+      "officialMidseason": {
+        "title": "8月13日季中战斗平衡性调整",
+        "url": "urn:rock-calculator:official-balance:2026-08-13",
+        "effectiveDate": "2026-08-13",
+        "revision": "2026-08-13",
+        "patchConstant": "RACE_STAT_PATCHES"
+      },
+      "bwikiStatSync": {
+        "title": "精灵筛选",
+        "url": "https://wiki.biligame.com/rocom/精灵筛选",
+        "revision": 41360,
+        "fetchedAt": "2026-08-17T01:31:17.162Z",
+        "effectiveDate": "2026-08-13",
+        "patchConstant": "BWIKI_RACE_STAT_PATCHES",
+        "effectiveDateNote": "脚本按8月13日季中版本归档；此批数值来源于8月17日BWIKI同步，不单独证明七项各自生效日。"
+      }
+    },
+    "statFieldOrder": [
+      "hp",
+      "physicalAttack",
+      "magicalAttack",
+      "physicalDefense",
+      "magicalDefense",
+      "speed"
+    ],
+    "clientComparison": {
+      "path": "_work/global-client-20261028/decoded/zh_Hans/PETBASE_CONF.json",
+      "idBridge": "data/research/global-client-20261028/cn-game-id-bridge.json",
+      "records": 592,
+      "exactMatches": 592,
+      "missing": 0,
+      "different": 0,
+      "fields": {
+        "hp": "hp_max_race",
+        "physicalAttack": "phy_attack_race",
+        "magicalAttack": "spe_attack_race",
+        "physicalDefense": "phy_defence_race",
+        "magicalDefense": "spe_defence_race",
+        "speed": "speed_race"
+      },
+      "excludedFields": [
+        "SUM_race"
+      ]
+    }
+  },
+  "spirits": [
+    {
+      "id": "spirit_db5a2cb398dc0385",
+      "fullName": "迪莫",
+      "gameId": 3004,
+      "raceStats": {
+        "hp": 120,
+        "physicalAttack": 80,
+        "magicalAttack": 80,
+        "physicalDefense": 105,
+        "magicalDefense": 105,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f60e2755ae42cf41",
+      "fullName": "圣光迪莫",
+      "gameId": 5025,
+      "raceStats": {
+        "hp": 122,
+        "physicalAttack": 84,
+        "magicalAttack": 84,
+        "physicalDefense": 107,
+        "magicalDefense": 107,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ec2230c14154bb52",
+      "fullName": "圣草迪莫",
+      "gameId": 5026,
+      "raceStats": {
+        "hp": 132,
+        "physicalAttack": 80,
+        "magicalAttack": 80,
+        "physicalDefense": 105,
+        "magicalDefense": 105,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dd14e867313fad1d",
+      "fullName": "圣火迪莫",
+      "gameId": 5027,
+      "raceStats": {
+        "hp": 120,
+        "physicalAttack": 88,
+        "magicalAttack": 88,
+        "physicalDefense": 105,
+        "magicalDefense": 105,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_32aed655cbbf0db6",
+      "fullName": "圣水迪莫",
+      "gameId": 5028,
+      "raceStats": {
+        "hp": 120,
+        "physicalAttack": 80,
+        "magicalAttack": 80,
+        "physicalDefense": 113,
+        "magicalDefense": 113,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d345729d1593bff7",
+      "fullName": "喵喵",
+      "gameId": 3001,
+      "raceStats": {
+        "hp": 65,
+        "physicalAttack": 66,
+        "magicalAttack": 66,
+        "physicalDefense": 49,
+        "magicalDefense": 91,
+        "speed": 33
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cb8c0ff92ae64653",
+      "fullName": "喵呜",
+      "gameId": 3025,
+      "raceStats": {
+        "hp": 86,
+        "physicalAttack": 87,
+        "magicalAttack": 87,
+        "physicalDefense": 65,
+        "magicalDefense": 121,
+        "speed": 44
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d7a201531161488e",
+      "fullName": "魔力猫",
+      "gameId": 3007,
+      "raceStats": {
+        "hp": 108,
+        "physicalAttack": 109,
+        "magicalAttack": 109,
+        "physicalDefense": 81,
+        "magicalDefense": 151,
+        "speed": 55
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dc6dbc4055d0d9dd",
+      "fullName": "叶冕魔力猫",
+      "gameId": 5003,
+      "raceStats": {
+        "hp": 108,
+        "physicalAttack": 127,
+        "magicalAttack": 127,
+        "physicalDefense": 81,
+        "magicalDefense": 151,
+        "speed": 55
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a62b9a9c4ae00665",
+      "fullName": "武斗酷猫",
+      "gameId": 5061,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 134,
+        "magicalAttack": 57,
+        "physicalDefense": 110,
+        "magicalDefense": 80,
+        "speed": 135
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8b8175b97cd7e6a7",
+      "fullName": "火花",
+      "gameId": 3003,
+      "raceStats": {
+        "hp": 70,
+        "physicalAttack": 84,
+        "magicalAttack": 37,
+        "physicalDefense": 56,
+        "magicalDefense": 43,
+        "speed": 78
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e128d935f4ac4fb5",
+      "fullName": "焰火",
+      "gameId": 3032,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 111,
+        "magicalAttack": 49,
+        "physicalDefense": 75,
+        "magicalDefense": 58,
+        "speed": 104
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_537679016e3ec4bb",
+      "fullName": "火神",
+      "gameId": 3006,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 139,
+        "magicalAttack": 61,
+        "physicalDefense": 94,
+        "magicalDefense": 72,
+        "speed": 130
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4c280ecf82adb90e",
+      "fullName": "烈火战神",
+      "gameId": 5017,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 175,
+        "magicalAttack": 84,
+        "physicalDefense": 94,
+        "magicalDefense": 72,
+        "speed": 130
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_77c2085d2f6e8e87",
+      "fullName": "水蓝蓝",
+      "gameId": 3002,
+      "raceStats": {
+        "hp": 75,
+        "physicalAttack": 35,
+        "magicalAttack": 76,
+        "physicalDefense": 56,
+        "magicalDefense": 79,
+        "speed": 51
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cb69e7131cce6f17",
+      "fullName": "波波拉",
+      "gameId": 3033,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 46,
+        "magicalAttack": 102,
+        "physicalDefense": 75,
+        "magicalDefense": 106,
+        "speed": 68
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4ec76429db5748d4",
+      "fullName": "水灵",
+      "gameId": 3005,
+      "raceStats": {
+        "hp": 125,
+        "physicalAttack": 58,
+        "magicalAttack": 127,
+        "physicalDefense": 94,
+        "magicalDefense": 132,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_30c62645090ee8af",
+      "fullName": "圣水守护",
+      "gameId": 5010,
+      "raceStats": {
+        "hp": 125,
+        "physicalAttack": 67,
+        "magicalAttack": 141,
+        "physicalDefense": 104,
+        "magicalDefense": 145,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6d78e04a6736155b",
+      "fullName": "鸭吉吉（蓬松的样子）",
+      "gameId": 3012,
+      "raceStats": {
+        "hp": 136,
+        "physicalAttack": 95,
+        "magicalAttack": 35,
+        "physicalDefense": 55,
+        "magicalDefense": 45,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_39d8b867216c267d",
+      "fullName": "鸭吉吉（紧实的样子）",
+      "gameId": 3036,
+      "raceStats": {
+        "hp": 136,
+        "physicalAttack": 35,
+        "magicalAttack": 95,
+        "physicalDefense": 45,
+        "magicalDefense": 55,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_35643e306cb87bad",
+      "fullName": "鸭吉吉（急急急鸭）",
+      "gameId": 3452,
+      "raceStats": {
+        "hp": 130,
+        "physicalAttack": 95,
+        "magicalAttack": 35,
+        "physicalDefense": 55,
+        "magicalDefense": 45,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cf730244912ada6a",
+      "fullName": "鸭吉吉（等一等鸭）",
+      "gameId": 3453,
+      "raceStats": {
+        "hp": 137,
+        "physicalAttack": 35,
+        "magicalAttack": 94,
+        "physicalDefense": 46,
+        "magicalDefense": 57,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4b1d7354d6b9e310",
+      "fullName": "鸭吉吉（燃了鸭）",
+      "gameId": 3495,
+      "raceStats": {
+        "hp": 108,
+        "physicalAttack": 89,
+        "magicalAttack": 41,
+        "physicalDefense": 74,
+        "magicalDefense": 48,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_946f5527d5bee7f4",
+      "fullName": "鸭吉吉（起来鸭）",
+      "gameId": 3742,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 53,
+        "magicalAttack": 125,
+        "physicalDefense": 80,
+        "magicalDefense": 113,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_94bd47e9b24b4bac",
+      "fullName": "鸭吉吉国王（蓬松的样子）",
+      "gameId": 5006,
+      "raceStats": {
+        "hp": 136,
+        "physicalAttack": 159,
+        "magicalAttack": 64,
+        "physicalDefense": 79,
+        "magicalDefense": 64,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d307ebe71125e46b",
+      "fullName": "鸭吉吉国王（紧实的样子）",
+      "gameId": 5036,
+      "raceStats": {
+        "hp": 136,
+        "physicalAttack": 64,
+        "magicalAttack": 159,
+        "physicalDefense": 64,
+        "magicalDefense": 79,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6a800b542b03bd39",
+      "fullName": "鸭吉吉国王（急急急鸭）",
+      "gameId": 5037,
+      "raceStats": {
+        "hp": 130,
+        "physicalAttack": 160,
+        "magicalAttack": 64,
+        "physicalDefense": 79,
+        "magicalDefense": 64,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_270232652eb15184",
+      "fullName": "鸭吉吉国王（等一等鸭）",
+      "gameId": 5038,
+      "raceStats": {
+        "hp": 137,
+        "physicalAttack": 64,
+        "magicalAttack": 157,
+        "physicalDefense": 66,
+        "magicalDefense": 82,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_99c5805b2d1cedb3",
+      "fullName": "鸭吉吉国王（燃了鸭）",
+      "gameId": 5039,
+      "raceStats": {
+        "hp": 108,
+        "physicalAttack": 150,
+        "magicalAttack": 73,
+        "physicalDefense": 105,
+        "magicalDefense": 69,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_14603e412a770707",
+      "fullName": "鸭吉吉国王（起来鸭）",
+      "gameId": 5052,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 77,
+        "magicalAttack": 163,
+        "physicalDefense": 80,
+        "magicalDefense": 113,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4a0e048421bc230a",
+      "fullName": "板板壳",
+      "gameId": 3055,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 28,
+        "magicalAttack": 72,
+        "physicalDefense": 64,
+        "magicalDefense": 81,
+        "speed": 45
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_050d153e443fca0f",
+      "fullName": "板板壳（蜕皮时的样子）",
+      "gameId": 3516,
+      "raceStats": {
+        "hp": 88,
+        "physicalAttack": 24,
+        "magicalAttack": 72,
+        "physicalDefense": 56,
+        "magicalDefense": 59,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ccfd03dcf48a75c3",
+      "fullName": "咔咔壳",
+      "gameId": 3056,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 37,
+        "magicalAttack": 96,
+        "physicalDefense": 85,
+        "magicalDefense": 107,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_185f4b5d56551d14",
+      "fullName": "咔咔壳（蜕皮时的样子）",
+      "gameId": 3517,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 31,
+        "magicalAttack": 96,
+        "physicalDefense": 75,
+        "magicalDefense": 79,
+        "speed": 64
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2d9ea3b47bd52a54",
+      "fullName": "水泡壳",
+      "gameId": 3057,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 46,
+        "magicalAttack": 120,
+        "physicalDefense": 107,
+        "magicalDefense": 134,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_fd0cadca98778205",
+      "fullName": "水泡壳（蜕皮时的样子）",
+      "gameId": 3518,
+      "raceStats": {
+        "hp": 146,
+        "physicalAttack": 39,
+        "magicalAttack": 121,
+        "physicalDefense": 93,
+        "magicalDefense": 98,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e2a270484d0b90ea",
+      "fullName": "锥尾羊",
+      "gameId": 3045,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 66,
+        "magicalAttack": 29,
+        "physicalDefense": 72,
+        "magicalDefense": 49,
+        "speed": 66
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_65f19c00f2d4117f",
+      "fullName": "铃兰羊",
+      "gameId": 3046,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 89,
+        "magicalAttack": 39,
+        "physicalDefense": 96,
+        "magicalDefense": 65,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5147f20d585e4b28",
+      "fullName": "花影羚羊",
+      "gameId": 3047,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 111,
+        "magicalAttack": 48,
+        "physicalDefense": 120,
+        "magicalDefense": 81,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7641c889b2ba4895",
+      "fullName": "雪绒鸟（春天的样子）",
+      "gameId": 3279,
+      "raceStats": {
+        "hp": 56,
+        "physicalAttack": 77,
+        "magicalAttack": 26,
+        "physicalDefense": 58,
+        "magicalDefense": 49,
+        "speed": 69
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_717a4c48527bea4f",
+      "fullName": "雪绒鸟（夏天的样子）",
+      "gameId": 3280,
+      "raceStats": {
+        "hp": 59,
+        "physicalAttack": 80,
+        "magicalAttack": 32,
+        "physicalDefense": 58,
+        "magicalDefense": 41,
+        "speed": 69
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d6a714a1fc23b030",
+      "fullName": "雪绒鸟（秋天的样子）",
+      "gameId": 3281,
+      "raceStats": {
+        "hp": 54,
+        "physicalAttack": 76,
+        "magicalAttack": 25,
+        "physicalDefense": 59,
+        "magicalDefense": 51,
+        "speed": 69
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7215049b23b5cdaf",
+      "fullName": "雪绒鸟",
+      "gameId": 3533,
+      "raceStats": {
+        "hp": 54,
+        "physicalAttack": 77,
+        "magicalAttack": 33,
+        "physicalDefense": 65,
+        "magicalDefense": 44,
+        "speed": 69
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2d02e8b66152b89b",
+      "fullName": "冬羽雀",
+      "gameId": 3028,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 103,
+        "magicalAttack": 44,
+        "physicalDefense": 86,
+        "magicalDefense": 59,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ced3e29f598387b0",
+      "fullName": "冬羽雀（春天的样子）",
+      "gameId": 3282,
+      "raceStats": {
+        "hp": 75,
+        "physicalAttack": 103,
+        "magicalAttack": 35,
+        "physicalDefense": 78,
+        "magicalDefense": 65,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_bf1d9907aaa7f83b",
+      "fullName": "冬羽雀（夏天的样子）",
+      "gameId": 3283,
+      "raceStats": {
+        "hp": 79,
+        "physicalAttack": 107,
+        "magicalAttack": 43,
+        "physicalDefense": 77,
+        "magicalDefense": 55,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_02ebf2dda5ea12ab",
+      "fullName": "冬羽雀（秋天的样子）",
+      "gameId": 3284,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 102,
+        "magicalAttack": 34,
+        "physicalDefense": 78,
+        "magicalDefense": 68,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4bd15e249d6653b9",
+      "fullName": "岚鸟",
+      "gameId": 3037,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 128,
+        "magicalAttack": 55,
+        "physicalDefense": 108,
+        "magicalDefense": 74,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_82158f2918351dd1",
+      "fullName": "岚鸟（春天的样子）",
+      "gameId": 3285,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 128,
+        "magicalAttack": 44,
+        "physicalDefense": 97,
+        "magicalDefense": 81,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c0d3e1738a6ed392",
+      "fullName": "岚鸟（夏天的样子）",
+      "gameId": 3286,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 133,
+        "magicalAttack": 54,
+        "physicalDefense": 96,
+        "magicalDefense": 69,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ba1773a7b0d7f2cc",
+      "fullName": "岚鸟（秋天的样子）",
+      "gameId": 3287,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 127,
+        "magicalAttack": 42,
+        "physicalDefense": 98,
+        "magicalDefense": 85,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7eb586d6475d99d4",
+      "fullName": "霜翼领主",
+      "gameId": 5014,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 142,
+        "magicalAttack": 63,
+        "physicalDefense": 108,
+        "magicalDefense": 74,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dcd9dd30a0ad5c7f",
+      "fullName": "霜翼领主（春天的样子）",
+      "gameId": 5030,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 142,
+        "magicalAttack": 52,
+        "physicalDefense": 97,
+        "magicalDefense": 81,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9f8c8d8139b244ab",
+      "fullName": "霜翼领主（夏天的样子）",
+      "gameId": 5031,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 147,
+        "magicalAttack": 62,
+        "physicalDefense": 96,
+        "magicalDefense": 69,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4509a6b87740551b",
+      "fullName": "霜翼领主（秋天的样子）",
+      "gameId": 5032,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 141,
+        "magicalAttack": 50,
+        "physicalDefense": 98,
+        "magicalDefense": 85,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5b7a55721521545f",
+      "fullName": "小灵菇",
+      "gameId": 3145,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 59,
+        "magicalAttack": 59,
+        "physicalDefense": 62,
+        "magicalDefense": 82,
+        "speed": 45
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6a82dae2525231bb",
+      "fullName": "幻灵菇",
+      "gameId": 3146,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 79,
+        "magicalAttack": 79,
+        "physicalDefense": 83,
+        "magicalDefense": 109,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_da28fd0a0beef1a6",
+      "fullName": "幻影灵菇",
+      "gameId": 3147,
+      "raceStats": {
+        "hp": 111,
+        "physicalAttack": 98,
+        "magicalAttack": 98,
+        "physicalDefense": 103,
+        "magicalDefense": 136,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_77fd5fcc0d4d85f0",
+      "fullName": "石肤蜥",
+      "gameId": 3106,
+      "raceStats": {
+        "hp": 69,
+        "physicalAttack": 61,
+        "magicalAttack": 60,
+        "physicalDefense": 72,
+        "magicalDefense": 50,
+        "speed": 57
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_1d98beac89d9de18",
+      "fullName": "石肤蜥（球球尾巴的样子）",
+      "gameId": 3500,
+      "raceStats": {
+        "hp": 68,
+        "physicalAttack": 61,
+        "magicalAttack": 60,
+        "physicalDefense": 70,
+        "magicalDefense": 50,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0f268324272b589e",
+      "fullName": "石刺蜥",
+      "gameId": 3107,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 81,
+        "magicalAttack": 80,
+        "physicalDefense": 96,
+        "magicalDefense": 67,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_125322df9fdba77e",
+      "fullName": "石刺蜥（球球尾巴的样子）",
+      "gameId": 3501,
+      "raceStats": {
+        "hp": 91,
+        "physicalAttack": 82,
+        "magicalAttack": 80,
+        "physicalDefense": 94,
+        "magicalDefense": 66,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_10fa789e8a2d1a1d",
+      "fullName": "石冠王蜥",
+      "gameId": 3108,
+      "raceStats": {
+        "hp": 115,
+        "physicalAttack": 101,
+        "magicalAttack": 100,
+        "physicalDefense": 120,
+        "magicalDefense": 84,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4757c9c4bcaee886",
+      "fullName": "石冠王蜥（球球尾巴的样子）",
+      "gameId": 3502,
+      "raceStats": {
+        "hp": 113,
+        "physicalAttack": 102,
+        "magicalAttack": 100,
+        "physicalDefense": 117,
+        "magicalDefense": 83,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d52594cbbf48906b",
+      "fullName": "布是石",
+      "gameId": 3103,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 81,
+        "magicalAttack": 29,
+        "physicalDefense": 95,
+        "magicalDefense": 90,
+        "speed": 42
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_07aa4349f64588ad",
+      "fullName": "布是岩",
+      "gameId": 3104,
+      "raceStats": {
+        "hp": 96,
+        "physicalAttack": 108,
+        "magicalAttack": 39,
+        "physicalDefense": 127,
+        "magicalDefense": 120,
+        "speed": 56
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0573dd499a17d300",
+      "fullName": "布克棱岩",
+      "gameId": 3105,
+      "raceStats": {
+        "hp": 120,
+        "physicalAttack": 135,
+        "magicalAttack": 49,
+        "physicalDefense": 159,
+        "magicalDefense": 150,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3fb98e0a461b35c8",
+      "fullName": "迷嶂布莱克",
+      "gameId": 5008,
+      "raceStats": {
+        "hp": 125,
+        "physicalAttack": 139,
+        "magicalAttack": 52,
+        "physicalDefense": 164,
+        "magicalDefense": 154,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2a9b7b8d99dba59e",
+      "fullName": "恶魔叮",
+      "gameId": 3010,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 100,
+        "magicalAttack": 42,
+        "physicalDefense": 80,
+        "magicalDefense": 56,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_db847c8849145a7c",
+      "fullName": "叮叮恶魔",
+      "gameId": 3039,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 125,
+        "magicalAttack": 53,
+        "physicalDefense": 103,
+        "magicalDefense": 73,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_67dcbe51f817669a",
+      "fullName": "恶魔男爵",
+      "gameId": 5055,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 128,
+        "magicalAttack": 55,
+        "physicalDefense": 103,
+        "magicalDefense": 73,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0aa69ad38f66402d",
+      "fullName": "毛毛",
+      "gameId": 3136,
+      "raceStats": {
+        "hp": 32,
+        "physicalAttack": 28,
+        "magicalAttack": 28,
+        "physicalDefense": 40,
+        "magicalDefense": 40,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_552a95c89d0867e1",
+      "fullName": "爬爬",
+      "gameId": 3137,
+      "raceStats": {
+        "hp": 42,
+        "physicalAttack": 37,
+        "magicalAttack": 37,
+        "physicalDefense": 53,
+        "magicalDefense": 53,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9dd866cafbbf24f3",
+      "fullName": "化蝶（平常的样子）",
+      "gameId": 3138,
+      "raceStats": {
+        "hp": 53,
+        "physicalAttack": 46,
+        "magicalAttack": 46,
+        "physicalDefense": 66,
+        "magicalDefense": 66,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_30c4c0a5620c04b2",
+      "fullName": "化蝶（幽冥眼的样子）",
+      "gameId": 3470,
+      "raceStats": {
+        "hp": 43,
+        "physicalAttack": 42,
+        "magicalAttack": 42,
+        "physicalDefense": 67,
+        "magicalDefense": 70,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_aab4cd6a788bef56",
+      "fullName": "化蝶（喵喵的样子）",
+      "gameId": 3471,
+      "raceStats": {
+        "hp": 49,
+        "physicalAttack": 47,
+        "magicalAttack": 41,
+        "physicalDefense": 67,
+        "magicalDefense": 67,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7ec0b892b12a44fc",
+      "fullName": "化蝶（奇丽花的样子）",
+      "gameId": 3472,
+      "raceStats": {
+        "hp": 55,
+        "physicalAttack": 46,
+        "magicalAttack": 44,
+        "physicalDefense": 62,
+        "magicalDefense": 65,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7c92f75ee0e707ea",
+      "fullName": "幽影树",
+      "gameId": 3064,
+      "raceStats": {
+        "hp": 111,
+        "physicalAttack": 96,
+        "magicalAttack": 96,
+        "physicalDefense": 65,
+        "magicalDefense": 123,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_95c8a0f91aec8a68",
+      "fullName": "幻影荆棘",
+      "gameId": 5019,
+      "raceStats": {
+        "hp": 113,
+        "physicalAttack": 96,
+        "magicalAttack": 96,
+        "physicalDefense": 66,
+        "magicalDefense": 125,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4dbadf64799c9e23",
+      "fullName": "小鼠獭",
+      "gameId": 3315,
+      "raceStats": {
+        "hp": 73,
+        "physicalAttack": 57,
+        "magicalAttack": 57,
+        "physicalDefense": 60,
+        "magicalDefense": 60,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_750fb3fba9325823",
+      "fullName": "燕尾獭",
+      "gameId": 3316,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 77,
+        "magicalAttack": 77,
+        "physicalDefense": 81,
+        "magicalDefense": 81,
+        "speed": 64
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e3c66cd78f05665a",
+      "fullName": "卷胡巨獭",
+      "gameId": 3317,
+      "raceStats": {
+        "hp": 121,
+        "physicalAttack": 96,
+        "magicalAttack": 96,
+        "physicalDefense": 101,
+        "magicalDefense": 101,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_671f6866e48a615e",
+      "fullName": "矿晶虫",
+      "gameId": 3307,
+      "raceStats": {
+        "hp": 79,
+        "physicalAttack": 77,
+        "magicalAttack": 81,
+        "physicalDefense": 102,
+        "magicalDefense": 75,
+        "speed": 52
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8daefb99ffb3a3b8",
+      "fullName": "晶石蜗（西瓜碧玺的样子）",
+      "gameId": 3308,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 96,
+        "magicalAttack": 101,
+        "physicalDefense": 128,
+        "magicalDefense": 94,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c3d7e5b349b3d691",
+      "fullName": "晶石蜗（莲花刚玉的样子）",
+      "gameId": 3448,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 97,
+        "magicalAttack": 101,
+        "physicalDefense": 137,
+        "magicalDefense": 91,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f23b2e2f30fda5ef",
+      "fullName": "晶石蜗（星彩榴石的样子）",
+      "gameId": 3449,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 101,
+        "magicalAttack": 101,
+        "physicalDefense": 128,
+        "magicalDefense": 91,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_39a66778bae3c0d2",
+      "fullName": "晶石蜗（火山琉璃的样子）",
+      "gameId": 3450,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 97,
+        "magicalAttack": 101,
+        "physicalDefense": 132,
+        "magicalDefense": 91,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f79e08f3515b255d",
+      "fullName": "晶石蜗（蓝锥矿的样子）",
+      "gameId": 3451,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 97,
+        "magicalAttack": 107,
+        "physicalDefense": 124,
+        "magicalDefense": 91,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_14755429d3be9ca8",
+      "fullName": "晶石蜗（烧蓝黄金的样子）",
+      "gameId": 3486,
+      "raceStats": {
+        "hp": 95,
+        "physicalAttack": 97,
+        "magicalAttack": 102,
+        "physicalDefense": 130,
+        "magicalDefense": 91,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4c5b5c6c97c28e2e",
+      "fullName": "钻石蜗（西瓜碧玺的样子）",
+      "gameId": 5001,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 96,
+        "magicalAttack": 101,
+        "physicalDefense": 124,
+        "magicalDefense": 91,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ee3cfe5d3b6216b0",
+      "fullName": "钻石蜗（莲花刚玉的样子）",
+      "gameId": 5047,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 97,
+        "magicalAttack": 101,
+        "physicalDefense": 133,
+        "magicalDefense": 88,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_47ffaf8c6ef0b369",
+      "fullName": "钻石蜗（星彩榴石的样子）",
+      "gameId": 5048,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 101,
+        "magicalAttack": 101,
+        "physicalDefense": 124,
+        "magicalDefense": 88,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f5b53954bf0bee7d",
+      "fullName": "钻石蜗（火山琉璃的样子）",
+      "gameId": 5049,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 97,
+        "magicalAttack": 101,
+        "physicalDefense": 128,
+        "magicalDefense": 88,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4e4f2c59a5d34b72",
+      "fullName": "钻石蜗（蓝锥矿的样子）",
+      "gameId": 5050,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 97,
+        "magicalAttack": 107,
+        "physicalDefense": 121,
+        "magicalDefense": 88,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e1a54a70644c23a8",
+      "fullName": "钻石蜗（烧蓝黄金的样子）",
+      "gameId": 5051,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 97,
+        "magicalAttack": 102,
+        "physicalDefense": 126,
+        "magicalDefense": 88,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_170ef71f536a3f8e",
+      "fullName": "奇丽草",
+      "gameId": 3029,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 69,
+        "magicalAttack": 69,
+        "physicalDefense": 73,
+        "magicalDefense": 57,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4843bd1e3723d3f2",
+      "fullName": "奇丽叶",
+      "gameId": 3030,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 92,
+        "magicalAttack": 92,
+        "physicalDefense": 97,
+        "magicalDefense": 76,
+        "speed": 64
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dcaca25adb2a9978",
+      "fullName": "奇丽花",
+      "gameId": 3031,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 115,
+        "magicalAttack": 115,
+        "physicalDefense": 121,
+        "magicalDefense": 95,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6ca793b3a062580e",
+      "fullName": "奇丽果",
+      "gameId": 5005,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 128,
+        "magicalAttack": 128,
+        "physicalDefense": 133,
+        "magicalDefense": 105,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e4ee051aa2a60ad3",
+      "fullName": "丢丢（草地附近的样子）",
+      "gameId": 3040,
+      "raceStats": {
+        "hp": 44,
+        "physicalAttack": 45,
+        "magicalAttack": 12,
+        "physicalDefense": 49,
+        "magicalDefense": 40,
+        "speed": 78
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6a6a9e45ba10677d",
+      "fullName": "丢丢（火山附近的样子）",
+      "gameId": 3288,
+      "raceStats": {
+        "hp": 47,
+        "physicalAttack": 52,
+        "magicalAttack": 11,
+        "physicalDefense": 38,
+        "magicalDefense": 37,
+        "speed": 78
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_805d4adf8c5e0765",
+      "fullName": "丢丢（沙地附近的样子）",
+      "gameId": 3289,
+      "raceStats": {
+        "hp": 44,
+        "physicalAttack": 42,
+        "magicalAttack": 12,
+        "physicalDefense": 55,
+        "magicalDefense": 43,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_abb342c097633cd1",
+      "fullName": "丢丢（雪山附近的样子）",
+      "gameId": 3290,
+      "raceStats": {
+        "hp": 46,
+        "physicalAttack": 41,
+        "magicalAttack": 8,
+        "physicalDefense": 48,
+        "magicalDefense": 44,
+        "speed": 81
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5e815e3cf519c95a",
+      "fullName": "卡卡虫（草地附近的样子）",
+      "gameId": 3041,
+      "raceStats": {
+        "hp": 59,
+        "physicalAttack": 60,
+        "magicalAttack": 16,
+        "physicalDefense": 65,
+        "magicalDefense": 53,
+        "speed": 104
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4f29eeb58d7ac639",
+      "fullName": "卡卡虫（火山附近的样子）",
+      "gameId": 3291,
+      "raceStats": {
+        "hp": 62,
+        "physicalAttack": 69,
+        "magicalAttack": 15,
+        "physicalDefense": 51,
+        "magicalDefense": 49,
+        "speed": 104
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5290b35904ac4423",
+      "fullName": "卡卡虫（沙地附近的样子）",
+      "gameId": 3292,
+      "raceStats": {
+        "hp": 58,
+        "physicalAttack": 56,
+        "magicalAttack": 16,
+        "physicalDefense": 74,
+        "magicalDefense": 57,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6b8c8facedcb5b11",
+      "fullName": "卡卡虫（雪山附近的样子）",
+      "gameId": 3293,
+      "raceStats": {
+        "hp": 62,
+        "physicalAttack": 54,
+        "magicalAttack": 11,
+        "physicalDefense": 64,
+        "magicalDefense": 58,
+        "speed": 108
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6ae23f7dd507f7a2",
+      "fullName": "卡瓦重（草地附近的样子）",
+      "gameId": 3042,
+      "raceStats": {
+        "hp": 74,
+        "physicalAttack": 75,
+        "magicalAttack": 20,
+        "physicalDefense": 81,
+        "magicalDefense": 67,
+        "speed": 130
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_22727fe2d2d93a69",
+      "fullName": "卡瓦重（火山附近的样子）",
+      "gameId": 3294,
+      "raceStats": {
+        "hp": 78,
+        "physicalAttack": 86,
+        "magicalAttack": 19,
+        "physicalDefense": 64,
+        "magicalDefense": 62,
+        "speed": 130
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a5b9ac10091ca495",
+      "fullName": "卡瓦重（沙地附近的样子）",
+      "gameId": 3295,
+      "raceStats": {
+        "hp": 73,
+        "physicalAttack": 70,
+        "magicalAttack": 20,
+        "physicalDefense": 92,
+        "magicalDefense": 71,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0486d96ed0ca509b",
+      "fullName": "卡瓦重（雪山附近的样子）",
+      "gameId": 3296,
+      "raceStats": {
+        "hp": 77,
+        "physicalAttack": 68,
+        "magicalAttack": 14,
+        "physicalDefense": 79,
+        "magicalDefense": 73,
+        "speed": 135
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_1b795d4da2571041",
+      "fullName": "护主犬",
+      "gameId": 3070,
+      "raceStats": {
+        "hp": 68,
+        "physicalAttack": 103,
+        "magicalAttack": 37,
+        "physicalDefense": 81,
+        "magicalDefense": 66,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3a0b383ca1a11675",
+      "fullName": "音速犬",
+      "gameId": 3071,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 128,
+        "magicalAttack": 46,
+        "physicalDefense": 101,
+        "magicalDefense": 82,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_41a9a2fb4a1d89c0",
+      "fullName": "风暴战犬",
+      "gameId": 5018,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 128,
+        "magicalAttack": 46,
+        "physicalDefense": 101,
+        "magicalDefense": 82,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_356f9596b83c83c0",
+      "fullName": "绿耳松鼠",
+      "gameId": 3098,
+      "raceStats": {
+        "hp": 69,
+        "physicalAttack": 50,
+        "magicalAttack": 47,
+        "physicalDefense": 67,
+        "magicalDefense": 52,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a9403546de6b0a52",
+      "fullName": "抱枕松鼠",
+      "gameId": 3099,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 67,
+        "magicalAttack": 63,
+        "physicalDefense": 89,
+        "magicalDefense": 70,
+        "speed": 64
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f8063bcf10b237fc",
+      "fullName": "蹦床松鼠",
+      "gameId": 3100,
+      "raceStats": {
+        "hp": 114,
+        "physicalAttack": 84,
+        "magicalAttack": 79,
+        "physicalDefense": 111,
+        "magicalDefense": 87,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a23862842c04d6d4",
+      "fullName": "嘟嘟煲",
+      "gameId": 3367,
+      "raceStats": {
+        "hp": 110,
+        "physicalAttack": 29,
+        "magicalAttack": 82,
+        "physicalDefense": 71,
+        "magicalDefense": 83,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_20c4fe45219cff2b",
+      "fullName": "嘟嘟锅",
+      "gameId": 3368,
+      "raceStats": {
+        "hp": 137,
+        "physicalAttack": 36,
+        "magicalAttack": 102,
+        "physicalDefense": 89,
+        "magicalDefense": 104,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a4a37b0f3ab65804",
+      "fullName": "小灵面",
+      "gameId": 3060,
+      "raceStats": {
+        "hp": 55,
+        "physicalAttack": 30,
+        "magicalAttack": 72,
+        "physicalDefense": 59,
+        "magicalDefense": 81,
+        "speed": 69
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_95b3e83d81371f98",
+      "fullName": "暗影灵面（睁眼的样子）",
+      "gameId": 3061,
+      "raceStats": {
+        "hp": 74,
+        "physicalAttack": 40,
+        "magicalAttack": 96,
+        "physicalDefense": 78,
+        "magicalDefense": 108,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6130490ca58b2fea",
+      "fullName": "暗影灵面（闭眼的样子）",
+      "gameId": 3481,
+      "raceStats": {
+        "hp": 84,
+        "physicalAttack": 30,
+        "magicalAttack": 96,
+        "physicalDefense": 83,
+        "magicalDefense": 88,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_354b3e674bd83fd2",
+      "fullName": "幽冥眼（睁眼的样子）",
+      "gameId": 3405,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 50,
+        "magicalAttack": 120,
+        "physicalDefense": 98,
+        "magicalDefense": 135,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_87cdf35a2f438123",
+      "fullName": "幽冥眼（闭眼的样子）",
+      "gameId": 3482,
+      "raceStats": {
+        "hp": 105,
+        "physicalAttack": 38,
+        "magicalAttack": 120,
+        "physicalDefense": 104,
+        "magicalDefense": 110,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6f4e18332831b7a3",
+      "fullName": "梦游（穿旧睡衣的样子）",
+      "gameId": 3438,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 52,
+        "magicalAttack": 125,
+        "physicalDefense": 60,
+        "magicalDefense": 74,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ca0283d98055f876",
+      "fullName": "梦游（穿星星睡衣的样子）",
+      "gameId": 3440,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 62,
+        "magicalAttack": 120,
+        "physicalDefense": 56,
+        "magicalDefense": 90,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7d94980b59e9598d",
+      "fullName": "梦悠悠（穿旧睡衣的样子）",
+      "gameId": 3439,
+      "raceStats": {
+        "hp": 113,
+        "physicalAttack": 65,
+        "magicalAttack": 157,
+        "physicalDefense": 75,
+        "magicalDefense": 93,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7650ed24af7eea6e",
+      "fullName": "梦悠悠（穿星星睡衣的样子）",
+      "gameId": 3441,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 78,
+        "magicalAttack": 150,
+        "physicalDefense": 70,
+        "magicalDefense": 112,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_646ad89ac7e8a7e9",
+      "fullName": "兽花蕾",
+      "gameId": 3492,
+      "raceStats": {
+        "hp": 70,
+        "physicalAttack": 79,
+        "magicalAttack": 82,
+        "physicalDefense": 70,
+        "magicalDefense": 97,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0c057dc540477080",
+      "fullName": "伏地兽",
+      "gameId": 3165,
+      "raceStats": {
+        "hp": 95,
+        "physicalAttack": 56,
+        "magicalAttack": 25,
+        "physicalDefense": 70,
+        "magicalDefense": 41,
+        "speed": 51
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_615e3788c66e51a7",
+      "fullName": "贪食鼹",
+      "gameId": 3166,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 74,
+        "magicalAttack": 33,
+        "physicalDefense": 94,
+        "magicalDefense": 54,
+        "speed": 68
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_14a25ce7b8d65623",
+      "fullName": "巨噬针鼹",
+      "gameId": 3167,
+      "raceStats": {
+        "hp": 158,
+        "physicalAttack": 93,
+        "magicalAttack": 41,
+        "physicalDefense": 117,
+        "magicalDefense": 68,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_69c93794ef06164c",
+      "fullName": "蹦蹦种子（海神球形态）",
+      "gameId": 3017,
+      "raceStats": {
+        "hp": 60,
+        "physicalAttack": 64,
+        "magicalAttack": 66,
+        "physicalDefense": 44,
+        "magicalDefense": 63,
+        "speed": 51
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_03d529d7deb1ee47",
+      "fullName": "蹦蹦种子（彩玉球形态）",
+      "gameId": 3297,
+      "raceStats": {
+        "hp": 62,
+        "physicalAttack": 61,
+        "magicalAttack": 66,
+        "physicalDefense": 44,
+        "magicalDefense": 63,
+        "speed": 51
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0d0e95efbe74ee35",
+      "fullName": "蹦蹦种子（短毛球形态）",
+      "gameId": 3298,
+      "raceStats": {
+        "hp": 57,
+        "physicalAttack": 62,
+        "magicalAttack": 66,
+        "physicalDefense": 48,
+        "magicalDefense": 67,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4cf8140b1acc6f10",
+      "fullName": "蹦蹦种子（象牙球形态）",
+      "gameId": 3299,
+      "raceStats": {
+        "hp": 59,
+        "physicalAttack": 60,
+        "magicalAttack": 66,
+        "physicalDefense": 44,
+        "magicalDefense": 63,
+        "speed": 54
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_57ffece4f3d6fca2",
+      "fullName": "蹦蹦草（海神球形态）",
+      "gameId": 3018,
+      "raceStats": {
+        "hp": 80,
+        "physicalAttack": 85,
+        "magicalAttack": 88,
+        "physicalDefense": 59,
+        "magicalDefense": 84,
+        "speed": 68
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_994843fd5002d6fc",
+      "fullName": "蹦蹦草（彩玉球形态）",
+      "gameId": 3300,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 81,
+        "magicalAttack": 87,
+        "physicalDefense": 59,
+        "magicalDefense": 84,
+        "speed": 68
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d79de088f4eeeb6a",
+      "fullName": "蹦蹦草（短毛球形态）",
+      "gameId": 3301,
+      "raceStats": {
+        "hp": 76,
+        "physicalAttack": 82,
+        "magicalAttack": 87,
+        "physicalDefense": 64,
+        "magicalDefense": 90,
+        "speed": 64
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_164ed0d2dce866ce",
+      "fullName": "蹦蹦草（象牙球形态）",
+      "gameId": 3302,
+      "raceStats": {
+        "hp": 79,
+        "physicalAttack": 80,
+        "magicalAttack": 88,
+        "physicalDefense": 59,
+        "magicalDefense": 84,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cc0a5cd3b0df0a05",
+      "fullName": "蹦蹦花（海神球形态）",
+      "gameId": 3019,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 107,
+        "magicalAttack": 110,
+        "physicalDefense": 73,
+        "magicalDefense": 105,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_50f1e9142e01d262",
+      "fullName": "蹦蹦花（彩玉球形态）",
+      "gameId": 3303,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 101,
+        "magicalAttack": 109,
+        "physicalDefense": 73,
+        "magicalDefense": 105,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0706209a91c4d2dd",
+      "fullName": "蹦蹦花（短毛球形态）",
+      "gameId": 3304,
+      "raceStats": {
+        "hp": 95,
+        "physicalAttack": 103,
+        "magicalAttack": 109,
+        "physicalDefense": 80,
+        "magicalDefense": 112,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_60c806c518c42d77",
+      "fullName": "蹦蹦花（象牙球形态）",
+      "gameId": 3305,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 100,
+        "magicalAttack": 110,
+        "physicalDefense": 73,
+        "magicalDefense": 106,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2e19e8edb2a60bc2",
+      "fullName": "蹦蹦果（海神球形态）",
+      "gameId": 5004,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 107,
+        "magicalAttack": 110,
+        "physicalDefense": 73,
+        "magicalDefense": 105,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f52c89e7811d8af3",
+      "fullName": "蹦蹦果（彩玉球形态）",
+      "gameId": 5033,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 101,
+        "magicalAttack": 109,
+        "physicalDefense": 73,
+        "magicalDefense": 105,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ad6e62ee903dc2fe",
+      "fullName": "蹦蹦果（短毛球形态）",
+      "gameId": 5034,
+      "raceStats": {
+        "hp": 95,
+        "physicalAttack": 103,
+        "magicalAttack": 109,
+        "physicalDefense": 80,
+        "magicalDefense": 112,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_49cd0386a45b533d",
+      "fullName": "蹦蹦果（象牙球形态）",
+      "gameId": 5035,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 100,
+        "magicalAttack": 110,
+        "physicalDefense": 73,
+        "magicalDefense": 106,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4318b532ca40c05f",
+      "fullName": "电咩咩",
+      "gameId": 3190,
+      "raceStats": {
+        "hp": 47,
+        "physicalAttack": 49,
+        "magicalAttack": 49,
+        "physicalDefense": 55,
+        "magicalDefense": 57,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_152583e8aed619c0",
+      "fullName": "粉咩咩",
+      "gameId": 3191,
+      "raceStats": {
+        "hp": 62,
+        "physicalAttack": 66,
+        "magicalAttack": 66,
+        "physicalDefense": 73,
+        "magicalDefense": 76,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_17446a2b41bf4052",
+      "fullName": "电球咩咩",
+      "gameId": 3192,
+      "raceStats": {
+        "hp": 78,
+        "physicalAttack": 82,
+        "magicalAttack": 82,
+        "physicalDefense": 91,
+        "magicalDefense": 95,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b36b110dabf9563f",
+      "fullName": "蒲公英",
+      "gameId": 3034,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 99,
+        "magicalAttack": 94,
+        "physicalDefense": 103,
+        "magicalDefense": 78,
+        "speed": 52
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_28ae7d1286fad58b",
+      "fullName": "蒲公英娃娃",
+      "gameId": 3027,
+      "raceStats": {
+        "hp": 111,
+        "physicalAttack": 123,
+        "magicalAttack": 117,
+        "physicalDefense": 129,
+        "magicalDefense": 97,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cbe29ac35310c7c6",
+      "fullName": "伊贝儿",
+      "gameId": 3043,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 73,
+        "magicalAttack": 72,
+        "physicalDefense": 88,
+        "magicalDefense": 88,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_744bd48ae8d9568d",
+      "fullName": "伊贝粉粉",
+      "gameId": 3044,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 91,
+        "magicalAttack": 89,
+        "physicalDefense": 110,
+        "magicalDefense": 110,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f777820010f77600",
+      "fullName": "白发懒人",
+      "gameId": 3049,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 100,
+        "magicalAttack": 42,
+        "physicalDefense": 86,
+        "magicalDefense": 70,
+        "speed": 45
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a727717ad00e7342",
+      "fullName": "动力猿",
+      "gameId": 3101,
+      "raceStats": {
+        "hp": 125,
+        "physicalAttack": 134,
+        "magicalAttack": 56,
+        "physicalDefense": 114,
+        "magicalDefense": 94,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c43a0b85bf30c248",
+      "fullName": "瞌睡王",
+      "gameId": 3102,
+      "raceStats": {
+        "hp": 156,
+        "physicalAttack": 167,
+        "magicalAttack": 70,
+        "physicalDefense": 143,
+        "magicalDefense": 117,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_46b0f0d4bc8a27ce",
+      "fullName": "海盔虫",
+      "gameId": 3330,
+      "raceStats": {
+        "hp": 71,
+        "physicalAttack": 25,
+        "magicalAttack": 59,
+        "physicalDefense": 46,
+        "magicalDefense": 66,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_04123d2d926753e5",
+      "fullName": "海盔虫（磨损的样子）",
+      "gameId": 3475,
+      "raceStats": {
+        "hp": 70,
+        "physicalAttack": 25,
+        "magicalAttack": 60,
+        "physicalDefense": 44,
+        "magicalDefense": 64,
+        "speed": 63
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ac567756b7a95b52",
+      "fullName": "刺盔虫",
+      "gameId": 3331,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 33,
+        "magicalAttack": 79,
+        "physicalDefense": 61,
+        "magicalDefense": 88,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d6b4788977838c16",
+      "fullName": "刺盔虫（磨损的样子）",
+      "gameId": 3476,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 33,
+        "magicalAttack": 80,
+        "physicalDefense": 59,
+        "magicalDefense": 85,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_afdd04c5a8919716",
+      "fullName": "千棘盔",
+      "gameId": 3332,
+      "raceStats": {
+        "hp": 118,
+        "physicalAttack": 41,
+        "magicalAttack": 99,
+        "physicalDefense": 76,
+        "magicalDefense": 111,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3b32f292af96feec",
+      "fullName": "千棘盔（磨损的样子）",
+      "gameId": 3477,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 41,
+        "magicalAttack": 100,
+        "physicalDefense": 74,
+        "magicalDefense": 107,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_786924cd03526ca4",
+      "fullName": "千棘海针",
+      "gameId": 5012,
+      "raceStats": {
+        "hp": 118,
+        "physicalAttack": 32,
+        "magicalAttack": 85,
+        "physicalDefense": 94,
+        "magicalDefense": 133,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dbf6e5118a0b051e",
+      "fullName": "千棘海针（磨损的样子）",
+      "gameId": 5029,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 32,
+        "magicalAttack": 86,
+        "physicalDefense": 91,
+        "magicalDefense": 129,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_70a40653ea0eee33",
+      "fullName": "菊花梨",
+      "gameId": 3227,
+      "raceStats": {
+        "hp": 120,
+        "physicalAttack": 56,
+        "magicalAttack": 127,
+        "physicalDefense": 84,
+        "magicalDefense": 125,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8e42310d48bd7fc7",
+      "fullName": "小星光（星光能量的样子）",
+      "gameId": 3193,
+      "raceStats": {
+        "hp": 60,
+        "physicalAttack": 81,
+        "magicalAttack": 85,
+        "physicalDefense": 72,
+        "magicalDefense": 88,
+        "speed": 108
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_64a897c6b698c2a9",
+      "fullName": "小星光（月光能量的样子）",
+      "gameId": 3442,
+      "raceStats": {
+        "hp": 64,
+        "physicalAttack": 76,
+        "magicalAttack": 85,
+        "physicalDefense": 72,
+        "magicalDefense": 96,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_56f8f0077302b8b4",
+      "fullName": "星光狮（星光能量的样子）",
+      "gameId": 3194,
+      "raceStats": {
+        "hp": 75,
+        "physicalAttack": 101,
+        "magicalAttack": 106,
+        "physicalDefense": 90,
+        "magicalDefense": 110,
+        "speed": 135
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e0fd67c2b0e5c25a",
+      "fullName": "星光狮（月光能量的样子）",
+      "gameId": 3443,
+      "raceStats": {
+        "hp": 80,
+        "physicalAttack": 95,
+        "magicalAttack": 107,
+        "physicalDefense": 90,
+        "magicalDefense": 120,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_56a89afc73148f54",
+      "fullName": "一窝蜂",
+      "gameId": 3058,
+      "raceStats": {
+        "hp": 87,
+        "physicalAttack": 32,
+        "magicalAttack": 29,
+        "physicalDefense": 27,
+        "magicalDefense": 27,
+        "speed": 26
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b6d5d374fe7a4115",
+      "fullName": "黄蜂后",
+      "gameId": 3059,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 43,
+        "magicalAttack": 39,
+        "physicalDefense": 36,
+        "magicalDefense": 36,
+        "speed": 35
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d8b0958a9710ee37",
+      "fullName": "花魁蜂后",
+      "gameId": 3157,
+      "raceStats": {
+        "hp": 145,
+        "physicalAttack": 54,
+        "magicalAttack": 49,
+        "physicalDefense": 45,
+        "magicalDefense": 45,
+        "speed": 44
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7ae10f79a1849af1",
+      "fullName": "女王蜂",
+      "gameId": 5015,
+      "raceStats": {
+        "hp": 145,
+        "physicalAttack": 50,
+        "magicalAttack": 45,
+        "physicalDefense": 42,
+        "magicalDefense": 42,
+        "speed": 40
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_bfe02d4281b32ae4",
+      "fullName": "小夜",
+      "gameId": 3142,
+      "raceStats": {
+        "hp": 60,
+        "physicalAttack": 69,
+        "magicalAttack": 63,
+        "physicalDefense": 62,
+        "magicalDefense": 51,
+        "speed": 69
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e9b50c26f5156efb",
+      "fullName": "紫夜",
+      "gameId": 3143,
+      "raceStats": {
+        "hp": 80,
+        "physicalAttack": 92,
+        "magicalAttack": 84,
+        "physicalDefense": 83,
+        "magicalDefense": 68,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_49ad5c69be90b5bf",
+      "fullName": "朔夜伊芙",
+      "gameId": 3144,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 115,
+        "magicalAttack": 105,
+        "physicalDefense": 104,
+        "magicalDefense": 85,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cf5102684c14c331",
+      "fullName": "乖乖鹄",
+      "gameId": 3344,
+      "raceStats": {
+        "hp": 75,
+        "physicalAttack": 57,
+        "magicalAttack": 52,
+        "physicalDefense": 83,
+        "magicalDefense": 58,
+        "speed": 69
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e62f0702d019bbff",
+      "fullName": "蓝珠天鹅",
+      "gameId": 3345,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 76,
+        "magicalAttack": 69,
+        "physicalDefense": 110,
+        "magicalDefense": 78,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b40543f05ede5824",
+      "fullName": "翠顶夫人",
+      "gameId": 3346,
+      "raceStats": {
+        "hp": 125,
+        "physicalAttack": 95,
+        "magicalAttack": 86,
+        "physicalDefense": 138,
+        "magicalDefense": 97,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d68adbb57965af94",
+      "fullName": "黑羽夫人",
+      "gameId": 3571,
+      "raceStats": {
+        "hp": 132,
+        "physicalAttack": 93,
+        "magicalAttack": 87,
+        "physicalDefense": 130,
+        "magicalDefense": 90,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_96afa437f590cc96",
+      "fullName": "锤头鹳",
+      "gameId": 3069,
+      "raceStats": {
+        "hp": 128,
+        "physicalAttack": 77,
+        "magicalAttack": 75,
+        "physicalDefense": 101,
+        "magicalDefense": 81,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_1b3ea496d11a0eab",
+      "fullName": "绿草精灵",
+      "gameId": 3026,
+      "raceStats": {
+        "hp": 87,
+        "physicalAttack": 39,
+        "magicalAttack": 96,
+        "physicalDefense": 92,
+        "magicalDefense": 118,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_1336bf0fd9adf6ef",
+      "fullName": "魔草巫灵",
+      "gameId": 3035,
+      "raceStats": {
+        "hp": 109,
+        "physicalAttack": 48,
+        "magicalAttack": 120,
+        "physicalDefense": 115,
+        "magicalDefense": 147,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_06c4fba64eb40bd2",
+      "fullName": "记忆石",
+      "gameId": 3050,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 108,
+        "magicalAttack": 97,
+        "physicalDefense": 141,
+        "magicalDefense": 79,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_54ab5d440e31b493",
+      "fullName": "咔咔羽毛",
+      "gameId": 3175,
+      "raceStats": {
+        "hp": 58,
+        "physicalAttack": 68,
+        "magicalAttack": 66,
+        "physicalDefense": 61,
+        "magicalDefense": 53,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_fc1fa6ffcb752915",
+      "fullName": "咔咔雀",
+      "gameId": 3176,
+      "raceStats": {
+        "hp": 78,
+        "physicalAttack": 91,
+        "magicalAttack": 88,
+        "physicalDefense": 81,
+        "magicalDefense": 71,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8c4b702650e31f66",
+      "fullName": "咔咔鸟",
+      "gameId": 3177,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 114,
+        "magicalAttack": 110,
+        "physicalDefense": 101,
+        "magicalDefense": 89,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_838a843160d26986",
+      "fullName": "小草虫",
+      "gameId": 3139,
+      "raceStats": {
+        "hp": 73,
+        "physicalAttack": 40,
+        "magicalAttack": 43,
+        "physicalDefense": 50,
+        "magicalDefense": 57,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_bd8da42d42852406",
+      "fullName": "草衣虫",
+      "gameId": 3140,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 53,
+        "magicalAttack": 57,
+        "physicalDefense": 67,
+        "magicalDefense": 75,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_765165af4a4e54de",
+      "fullName": "花衣蝶",
+      "gameId": 3141,
+      "raceStats": {
+        "hp": 122,
+        "physicalAttack": 67,
+        "magicalAttack": 72,
+        "physicalDefense": 84,
+        "magicalDefense": 94,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3ec8454e3503abf9",
+      "fullName": "绿翼鸟",
+      "gameId": 3276,
+      "raceStats": {
+        "hp": 52,
+        "physicalAttack": 63,
+        "magicalAttack": 18,
+        "physicalDefense": 56,
+        "magicalDefense": 53,
+        "speed": 81
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2009a4d521042694",
+      "fullName": "魔翼鸟",
+      "gameId": 3277,
+      "raceStats": {
+        "hp": 70,
+        "physicalAttack": 85,
+        "magicalAttack": 23,
+        "physicalDefense": 75,
+        "magicalDefense": 70,
+        "speed": 108
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_23d8e46ab3759344",
+      "fullName": "魔眷鸟",
+      "gameId": 3278,
+      "raceStats": {
+        "hp": 87,
+        "physicalAttack": 106,
+        "magicalAttack": 29,
+        "physicalDefense": 94,
+        "magicalDefense": 88,
+        "speed": 135
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f0eb58fb18c9dca0",
+      "fullName": "阿米亚特",
+      "gameId": 3014,
+      "raceStats": {
+        "hp": 64,
+        "physicalAttack": 95,
+        "magicalAttack": 47,
+        "physicalDefense": 67,
+        "magicalDefense": 42,
+        "speed": 45
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_608568e7fb1fc470",
+      "fullName": "阿米樱",
+      "gameId": 3015,
+      "raceStats": {
+        "hp": 86,
+        "physicalAttack": 127,
+        "magicalAttack": 62,
+        "physicalDefense": 89,
+        "magicalDefense": 56,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4e7acb9d14c8f373",
+      "fullName": "罗隐",
+      "gameId": 3016,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 159,
+        "magicalAttack": 78,
+        "physicalDefense": 112,
+        "magicalDefense": 70,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_897ad3f9223a851a",
+      "fullName": "深渊罗隐",
+      "gameId": 5053,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 159,
+        "magicalAttack": 78,
+        "physicalDefense": 167,
+        "magicalDefense": 32,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_37e1d041ca12cf68",
+      "fullName": "风铃鲨",
+      "gameId": 3115,
+      "raceStats": {
+        "hp": 54,
+        "physicalAttack": 59,
+        "magicalAttack": 59,
+        "physicalDefense": 63,
+        "magicalDefense": 63,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8dbef89746bfb3af",
+      "fullName": "蓝蝶鲨",
+      "gameId": 3116,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 78,
+        "magicalAttack": 78,
+        "physicalDefense": 84,
+        "magicalDefense": 84,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_563a4e078a1d8cba",
+      "fullName": "彩蝶鲨",
+      "gameId": 3117,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 98,
+        "magicalAttack": 98,
+        "physicalDefense": 105,
+        "magicalDefense": 105,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ebb2563e2410bd6a",
+      "fullName": "神谕鲨",
+      "gameId": 5011,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 98,
+        "magicalAttack": 98,
+        "physicalDefense": 105,
+        "magicalDefense": 105,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6559cb4bdc43fc21",
+      "fullName": "石石",
+      "gameId": 3170,
+      "raceStats": {
+        "hp": 76,
+        "physicalAttack": 79,
+        "magicalAttack": 79,
+        "physicalDefense": 101,
+        "magicalDefense": 56,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6c627aa77d71cf89",
+      "fullName": "巨灵石",
+      "gameId": 3171,
+      "raceStats": {
+        "hp": 95,
+        "physicalAttack": 99,
+        "magicalAttack": 99,
+        "physicalDefense": 126,
+        "magicalDefense": 70,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ba59dde12b0c0431",
+      "fullName": "仪使者",
+      "gameId": 3109,
+      "raceStats": {
+        "hp": 64,
+        "physicalAttack": 50,
+        "magicalAttack": 54,
+        "physicalDefense": 69,
+        "magicalDefense": 71,
+        "speed": 51
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ccd65f12c28c6c89",
+      "fullName": "仪式之星",
+      "gameId": 3110,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 67,
+        "magicalAttack": 71,
+        "physicalDefense": 92,
+        "magicalDefense": 95,
+        "speed": 68
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8f210e2e5fe10327",
+      "fullName": "仪式巨像",
+      "gameId": 3111,
+      "raceStats": {
+        "hp": 106,
+        "physicalAttack": 84,
+        "magicalAttack": 89,
+        "physicalDefense": 115,
+        "magicalDefense": 119,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c8484f0c0681b6ae",
+      "fullName": "祭礼巨像",
+      "gameId": 5009,
+      "raceStats": {
+        "hp": 106,
+        "physicalAttack": 96,
+        "magicalAttack": 101,
+        "physicalDefense": 115,
+        "magicalDefense": 119,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_efecf4d2f811fc11",
+      "fullName": "小独角兽",
+      "gameId": 3062,
+      "raceStats": {
+        "hp": 79,
+        "physicalAttack": 48,
+        "magicalAttack": 129,
+        "physicalDefense": 62,
+        "magicalDefense": 74,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_07cdb4d4a94ac1bd",
+      "fullName": "白金独角兽",
+      "gameId": 3063,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 61,
+        "magicalAttack": 161,
+        "physicalDefense": 77,
+        "magicalDefense": 92,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6a95a48463d87bef",
+      "fullName": "彩虹独角兽",
+      "gameId": 5002,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 78,
+        "magicalAttack": 192,
+        "physicalDefense": 77,
+        "magicalDefense": 92,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8a056366b4548195",
+      "fullName": "旋叶虫（金黄的样子）",
+      "gameId": 3376,
+      "raceStats": {
+        "hp": 56,
+        "physicalAttack": 15,
+        "magicalAttack": 65,
+        "physicalDefense": 63,
+        "magicalDefense": 55,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_bec6a078b9380d64",
+      "fullName": "旋叶虫（枯叶的样子）",
+      "gameId": 3496,
+      "raceStats": {
+        "hp": 57,
+        "physicalAttack": 15,
+        "magicalAttack": 67,
+        "physicalDefense": 61,
+        "magicalDefense": 52,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_eaaf0316345348d1",
+      "fullName": "蓬叶虫（金黄的样子）",
+      "gameId": 3483,
+      "raceStats": {
+        "hp": 74,
+        "physicalAttack": 19,
+        "magicalAttack": 87,
+        "physicalDefense": 84,
+        "magicalDefense": 73,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f56a143b151ab432",
+      "fullName": "蓬叶虫（枯叶的样子）",
+      "gameId": 3497,
+      "raceStats": {
+        "hp": 76,
+        "physicalAttack": 20,
+        "magicalAttack": 89,
+        "physicalDefense": 82,
+        "magicalDefense": 70,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_47eda2b0ce0bbe10",
+      "fullName": "风滚暮虫（金黄的样子）",
+      "gameId": 3377,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 24,
+        "magicalAttack": 109,
+        "physicalDefense": 105,
+        "magicalDefense": 91,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_520c19c877338dd4",
+      "fullName": "风滚暮虫（枯叶的样子）",
+      "gameId": 3498,
+      "raceStats": {
+        "hp": 95,
+        "physicalAttack": 25,
+        "magicalAttack": 111,
+        "physicalDefense": 102,
+        "magicalDefense": 87,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7ddca2b7aaaf24c4",
+      "fullName": "暮风隐者（金黄的样子）",
+      "gameId": 5056,
+      "raceStats": {
+        "hp": 105,
+        "physicalAttack": 30,
+        "magicalAttack": 119,
+        "physicalDefense": 105,
+        "magicalDefense": 91,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_75f54f47b35b9e9c",
+      "fullName": "暮风隐者（枯叶的样子）",
+      "gameId": 5062,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 31,
+        "magicalAttack": 122,
+        "physicalDefense": 102,
+        "magicalDefense": 87,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_16c94e4954935fac",
+      "fullName": "小黑猫",
+      "gameId": 3568,
+      "raceStats": {
+        "hp": 119,
+        "physicalAttack": 42,
+        "magicalAttack": 99,
+        "physicalDefense": 72,
+        "magicalDefense": 103,
+        "speed": 56
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b0e254d60233952f",
+      "fullName": "黑猫巫师",
+      "gameId": 3569,
+      "raceStats": {
+        "hp": 149,
+        "physicalAttack": 53,
+        "magicalAttack": 124,
+        "physicalDefense": 90,
+        "magicalDefense": 129,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7f2a9d80e7cec56e",
+      "fullName": "黑猫密探",
+      "gameId": 5007,
+      "raceStats": {
+        "hp": 149,
+        "physicalAttack": 65,
+        "magicalAttack": 143,
+        "physicalDefense": 90,
+        "magicalDefense": 129,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4e0dc7dc0b877594",
+      "fullName": "忽幽狸",
+      "gameId": 3065,
+      "raceStats": {
+        "hp": 78,
+        "physicalAttack": 87,
+        "magicalAttack": 84,
+        "physicalDefense": 84,
+        "magicalDefense": 56,
+        "speed": 104
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2d79fe35a27f9483",
+      "fullName": "影狸",
+      "gameId": 3066,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 109,
+        "magicalAttack": 105,
+        "physicalDefense": 105,
+        "magicalDefense": 70,
+        "speed": 130
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_be9941285a953245",
+      "fullName": "多多",
+      "gameId": 3151,
+      "raceStats": {
+        "hp": 51,
+        "physicalAttack": 53,
+        "magicalAttack": 53,
+        "physicalDefense": 80,
+        "magicalDefense": 44,
+        "speed": 54
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5a759518affc4d97",
+      "fullName": "多啦多",
+      "gameId": 3152,
+      "raceStats": {
+        "hp": 68,
+        "physicalAttack": 70,
+        "magicalAttack": 70,
+        "physicalDefense": 107,
+        "magicalDefense": 59,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_704f8b90c87b1bf6",
+      "fullName": "古啦多",
+      "gameId": 3153,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 88,
+        "magicalAttack": 88,
+        "physicalDefense": 134,
+        "magicalDefense": 74,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9a811efcecccda12",
+      "fullName": "哭哭菇",
+      "gameId": 3239,
+      "raceStats": {
+        "hp": 74,
+        "physicalAttack": 38,
+        "magicalAttack": 41,
+        "physicalDefense": 30,
+        "magicalDefense": 60,
+        "speed": 36
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c55865acda344897",
+      "fullName": "怖须菇",
+      "gameId": 3240,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 50,
+        "magicalAttack": 55,
+        "physicalDefense": 40,
+        "magicalDefense": 80,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d65c8e62b7f93bd8",
+      "fullName": "怖哭菇",
+      "gameId": 3241,
+      "raceStats": {
+        "hp": 124,
+        "physicalAttack": 63,
+        "magicalAttack": 69,
+        "physicalDefense": 50,
+        "magicalDefense": 100,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5e186c811af5ce3b",
+      "fullName": "恶魔狼",
+      "gameId": 3011,
+      "raceStats": {
+        "hp": 115,
+        "physicalAttack": 114,
+        "magicalAttack": 45,
+        "physicalDefense": 91,
+        "magicalDefense": 63,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f7e8528a743eaaf0",
+      "fullName": "恶魔狼王",
+      "gameId": 5016,
+      "raceStats": {
+        "hp": 115,
+        "physicalAttack": 121,
+        "magicalAttack": 50,
+        "physicalDefense": 91,
+        "magicalDefense": 63,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_49699925c6ec1c8f",
+      "fullName": "小电企鹅",
+      "gameId": 3434,
+      "raceStats": {
+        "hp": 75,
+        "physicalAttack": 45,
+        "magicalAttack": 101,
+        "physicalDefense": 59,
+        "magicalDefense": 87,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d1c13ba13b0d76ff",
+      "fullName": "电企鹅",
+      "gameId": 3435,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 56,
+        "magicalAttack": 126,
+        "physicalDefense": 73,
+        "magicalDefense": 109,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_57cf990eab0a0502",
+      "fullName": "雪豆丁",
+      "gameId": 3172,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 104,
+        "magicalAttack": 47,
+        "physicalDefense": 83,
+        "magicalDefense": 62,
+        "speed": 36
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_37822bc1062c0c8e",
+      "fullName": "雪蛮人",
+      "gameId": 3173,
+      "raceStats": {
+        "hp": 130,
+        "physicalAttack": 139,
+        "magicalAttack": 63,
+        "physicalDefense": 111,
+        "magicalDefense": 83,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_510544553c4a7cbc",
+      "fullName": "雪巨人",
+      "gameId": 3174,
+      "raceStats": {
+        "hp": 162,
+        "physicalAttack": 174,
+        "magicalAttack": 79,
+        "physicalDefense": 139,
+        "magicalDefense": 104,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_485ee637489f9ad5",
+      "fullName": "呼呼猪",
+      "gameId": 3262,
+      "raceStats": {
+        "hp": 98,
+        "physicalAttack": 95,
+        "magicalAttack": 33,
+        "physicalDefense": 88,
+        "magicalDefense": 81,
+        "speed": 68
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_73f8f0f7a5af80e8",
+      "fullName": "獠牙猪",
+      "gameId": 3263,
+      "raceStats": {
+        "hp": 123,
+        "physicalAttack": 119,
+        "magicalAttack": 41,
+        "physicalDefense": 110,
+        "magicalDefense": 101,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_990cb4aa69aae116",
+      "fullName": "雪娃娃",
+      "gameId": 3333,
+      "raceStats": {
+        "hp": 56,
+        "physicalAttack": 67,
+        "magicalAttack": 67,
+        "physicalDefense": 63,
+        "magicalDefense": 63,
+        "speed": 69
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8ad67cef500f03bb",
+      "fullName": "冰封怨灵",
+      "gameId": 3334,
+      "raceStats": {
+        "hp": 75,
+        "physicalAttack": 90,
+        "magicalAttack": 90,
+        "physicalDefense": 84,
+        "magicalDefense": 84,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7abd8c5d14815f03",
+      "fullName": "雪灵",
+      "gameId": 3335,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 112,
+        "magicalAttack": 112,
+        "physicalDefense": 105,
+        "magicalDefense": 105,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dcb0504a22dc89a2",
+      "fullName": "大耳帽兜",
+      "gameId": 3121,
+      "raceStats": {
+        "hp": 78,
+        "physicalAttack": 62,
+        "magicalAttack": 59,
+        "physicalDefense": 39,
+        "magicalDefense": 78,
+        "speed": 54
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5a5fe946ec981a55",
+      "fullName": "帽兜娃娃",
+      "gameId": 3122,
+      "raceStats": {
+        "hp": 104,
+        "physicalAttack": 83,
+        "magicalAttack": 78,
+        "physicalDefense": 52,
+        "magicalDefense": 104,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b5f7f523f4cb4178",
+      "fullName": "雪影娃娃",
+      "gameId": 3123,
+      "raceStats": {
+        "hp": 130,
+        "physicalAttack": 103,
+        "magicalAttack": 98,
+        "physicalDefense": 66,
+        "magicalDefense": 130,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_504ad8ae5cd9a417",
+      "fullName": "雪影冰灵",
+      "gameId": 5013,
+      "raceStats": {
+        "hp": 130,
+        "physicalAttack": 120,
+        "magicalAttack": 114,
+        "physicalDefense": 66,
+        "magicalDefense": 130,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b7594c978ae26ecc",
+      "fullName": "权杖-Ⅱ",
+      "gameId": 3410,
+      "raceStats": {
+        "hp": 82,
+        "physicalAttack": 84,
+        "magicalAttack": 78,
+        "physicalDefense": 109,
+        "magicalDefense": 109,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_befdd756d3d8b3dd",
+      "fullName": "权杖-V",
+      "gameId": 3411,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 105,
+        "magicalAttack": 97,
+        "physicalDefense": 136,
+        "magicalDefense": 136,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_500f4922dfc1cb1e",
+      "fullName": "灵狐",
+      "gameId": 3075,
+      "raceStats": {
+        "hp": 69,
+        "physicalAttack": 52,
+        "magicalAttack": 52,
+        "physicalDefense": 50,
+        "magicalDefense": 64,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0ff44d4938dbfb6d",
+      "fullName": "九尾狐",
+      "gameId": 3076,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 70,
+        "magicalAttack": 70,
+        "physicalDefense": 67,
+        "magicalDefense": 86,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2f24d4018a1545f7",
+      "fullName": "尖嘴狐仙",
+      "gameId": 3077,
+      "raceStats": {
+        "hp": 115,
+        "physicalAttack": 87,
+        "magicalAttack": 87,
+        "physicalDefense": 84,
+        "magicalDefense": 107,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a9dbb2fc3935e468",
+      "fullName": "里奥",
+      "gameId": 3395,
+      "raceStats": {
+        "hp": 79,
+        "physicalAttack": 65,
+        "magicalAttack": 65,
+        "physicalDefense": 77,
+        "magicalDefense": 50,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9d2e8eeb9a1fe818",
+      "fullName": "灵羽勇士",
+      "gameId": 3396,
+      "raceStats": {
+        "hp": 105,
+        "physicalAttack": 87,
+        "magicalAttack": 87,
+        "physicalDefense": 102,
+        "magicalDefense": 66,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5ee78de2be28a163",
+      "fullName": "圣羽翼王",
+      "gameId": 3397,
+      "raceStats": {
+        "hp": 132,
+        "physicalAttack": 109,
+        "magicalAttack": 109,
+        "physicalDefense": 128,
+        "magicalDefense": 83,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a95bdb5c1c49960e",
+      "fullName": "松仔",
+      "gameId": 3594,
+      "raceStats": {
+        "hp": 63,
+        "physicalAttack": 83,
+        "magicalAttack": 34,
+        "physicalDefense": 77,
+        "magicalDefense": 60,
+        "speed": 63
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8dbc85f59622c36a",
+      "fullName": "松叶羊",
+      "gameId": 3595,
+      "raceStats": {
+        "hp": 84,
+        "physicalAttack": 111,
+        "magicalAttack": 46,
+        "physicalDefense": 102,
+        "magicalDefense": 80,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_de22accf29301363",
+      "fullName": "针叶巡林",
+      "gameId": 3596,
+      "raceStats": {
+        "hp": 105,
+        "physicalAttack": 139,
+        "magicalAttack": 57,
+        "physicalDefense": 128,
+        "magicalDefense": 100,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d5db756766ab21aa",
+      "fullName": "小勇狮",
+      "gameId": 3600,
+      "raceStats": {
+        "hp": 82,
+        "physicalAttack": 31,
+        "magicalAttack": 66,
+        "physicalDefense": 53,
+        "magicalDefense": 78,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e44802e1537dc447",
+      "fullName": "炽焰狮",
+      "gameId": 3601,
+      "raceStats": {
+        "hp": 110,
+        "physicalAttack": 41,
+        "magicalAttack": 89,
+        "physicalDefense": 70,
+        "magicalDefense": 104,
+        "speed": 64
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a339a9ece5b78fc4",
+      "fullName": "炽心勇狮",
+      "gameId": 3602,
+      "raceStats": {
+        "hp": 137,
+        "physicalAttack": 51,
+        "magicalAttack": 111,
+        "physicalDefense": 88,
+        "magicalDefense": 130,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_23bd8615aa9c02c8",
+      "fullName": "水滴蛇",
+      "gameId": 3597,
+      "raceStats": {
+        "hp": 63,
+        "physicalAttack": 66,
+        "magicalAttack": 62,
+        "physicalDefense": 62,
+        "magicalDefense": 62,
+        "speed": 63
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ac20eee6a2856869",
+      "fullName": "水蛇锁",
+      "gameId": 3598,
+      "raceStats": {
+        "hp": 84,
+        "physicalAttack": 88,
+        "magicalAttack": 83,
+        "physicalDefense": 83,
+        "magicalDefense": 83,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_40bee517b3857b1d",
+      "fullName": "游蛇魔使",
+      "gameId": 3599,
+      "raceStats": {
+        "hp": 105,
+        "physicalAttack": 110,
+        "magicalAttack": 104,
+        "physicalDefense": 103,
+        "magicalDefense": 103,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4009f06481c98efb",
+      "fullName": "公平鸽",
+      "gameId": 3499,
+      "raceStats": {
+        "hp": 113,
+        "physicalAttack": 93,
+        "magicalAttack": 93,
+        "physicalDefense": 125,
+        "magicalDefense": 125,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c1a3ba0f110ff76b",
+      "fullName": "小怂猫",
+      "gameId": 3237,
+      "raceStats": {
+        "hp": 74,
+        "physicalAttack": 106,
+        "magicalAttack": 101,
+        "physicalDefense": 89,
+        "magicalDefense": 76,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8e0dba092c6f9912",
+      "fullName": "怒目怂猫",
+      "gameId": 3238,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 132,
+        "magicalAttack": 126,
+        "physicalDefense": 111,
+        "magicalDefense": 95,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7ec62cbf0327ea5a",
+      "fullName": "小狮鹫（崖间地的样子）",
+      "gameId": 3127,
+      "raceStats": {
+        "hp": 64,
+        "physicalAttack": 70,
+        "magicalAttack": 41,
+        "physicalDefense": 76,
+        "magicalDefense": 39,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7b6d1cc11f6fe4f4",
+      "fullName": "小狮鹫（高山地的样子）",
+      "gameId": 3467,
+      "raceStats": {
+        "hp": 65,
+        "physicalAttack": 66,
+        "magicalAttack": 35,
+        "physicalDefense": 74,
+        "magicalDefense": 42,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0a51522c0bea266e",
+      "fullName": "神圣狮鹫（崖间地的样子）",
+      "gameId": 3128,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 93,
+        "magicalAttack": 55,
+        "physicalDefense": 102,
+        "magicalDefense": 52,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f7f1fe9be39a310e",
+      "fullName": "神圣狮鹫（高山地的样子）",
+      "gameId": 3468,
+      "raceStats": {
+        "hp": 87,
+        "physicalAttack": 88,
+        "magicalAttack": 47,
+        "physicalDefense": 98,
+        "magicalDefense": 56,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_95ff64ade5643af6",
+      "fullName": "皇家狮鹫（崖间地的样子）",
+      "gameId": 3129,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 116,
+        "magicalAttack": 69,
+        "physicalDefense": 127,
+        "magicalDefense": 65,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_97a0af606aaed34c",
+      "fullName": "皇家狮鹫（高山地的样子）",
+      "gameId": 3469,
+      "raceStats": {
+        "hp": 109,
+        "physicalAttack": 110,
+        "magicalAttack": 59,
+        "physicalDefense": 123,
+        "magicalDefense": 70,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_70cdb58d677fc0c1",
+      "fullName": "圆眼蜘蛛",
+      "gameId": 3130,
+      "raceStats": {
+        "hp": 55,
+        "physicalAttack": 53,
+        "magicalAttack": 53,
+        "physicalDefense": 55,
+        "magicalDefense": 55,
+        "speed": 66
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_68de87232e8ef07e",
+      "fullName": "尖角蜘蛛",
+      "gameId": 3131,
+      "raceStats": {
+        "hp": 74,
+        "physicalAttack": 70,
+        "magicalAttack": 70,
+        "physicalDefense": 73,
+        "magicalDefense": 73,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_42ec7e9a6bdfd9fc",
+      "fullName": "芋香巨角蛛",
+      "gameId": 3132,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 88,
+        "magicalAttack": 88,
+        "physicalDefense": 91,
+        "magicalDefense": 91,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_820232ca518d0543",
+      "fullName": "波波螺",
+      "gameId": 3508,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 59,
+        "magicalAttack": 59,
+        "physicalDefense": 87,
+        "magicalDefense": 66,
+        "speed": 42
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ee846adcf271635a",
+      "fullName": "波波螺（被污染的样子）",
+      "gameId": 3511,
+      "raceStats": {
+        "hp": 64,
+        "physicalAttack": 57,
+        "magicalAttack": 57,
+        "physicalDefense": 64,
+        "magicalDefense": 86,
+        "speed": 42
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6c137a25617820e8",
+      "fullName": "消波螺",
+      "gameId": 3509,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 78,
+        "magicalAttack": 78,
+        "physicalDefense": 116,
+        "magicalDefense": 88,
+        "speed": 56
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4d5d8c026429b806",
+      "fullName": "消波螺（被污染的样子）",
+      "gameId": 3512,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 76,
+        "magicalAttack": 76,
+        "physicalDefense": 85,
+        "magicalDefense": 115,
+        "speed": 56
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4bc9a982e5888257",
+      "fullName": "嗜波螺",
+      "gameId": 3510,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 98,
+        "magicalAttack": 98,
+        "physicalDefense": 146,
+        "magicalDefense": 110,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_fae287769f80486c",
+      "fullName": "嗜波螺（被污染的样子）",
+      "gameId": 3513,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 95,
+        "magicalAttack": 95,
+        "physicalDefense": 106,
+        "magicalDefense": 144,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_83db81196f100ca8",
+      "fullName": "菇菇丁",
+      "gameId": 3378,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 66,
+        "magicalAttack": 62,
+        "physicalDefense": 75,
+        "magicalDefense": 62,
+        "speed": 42
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d197cd68d0703776",
+      "fullName": "多菇丁",
+      "gameId": 3379,
+      "raceStats": {
+        "hp": 119,
+        "physicalAttack": 88,
+        "magicalAttack": 83,
+        "physicalDefense": 100,
+        "magicalDefense": 82,
+        "speed": 56
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_fc159a604efaf226",
+      "fullName": "九幽菇",
+      "gameId": 3380,
+      "raceStats": {
+        "hp": 149,
+        "physicalAttack": 110,
+        "magicalAttack": 103,
+        "physicalDefense": 125,
+        "magicalDefense": 103,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3e425282b9a8c9ab",
+      "fullName": "斑斑",
+      "gameId": 3534,
+      "raceStats": {
+        "hp": 87,
+        "physicalAttack": 90,
+        "magicalAttack": 90,
+        "physicalDefense": 82,
+        "magicalDefense": 91,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3f90a2afd5df255c",
+      "fullName": "斑枭",
+      "gameId": 3535,
+      "raceStats": {
+        "hp": 109,
+        "physicalAttack": 112,
+        "magicalAttack": 112,
+        "physicalDefense": 102,
+        "magicalDefense": 114,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a1120fe1443fe89f",
+      "fullName": "草头鸭",
+      "gameId": 3008,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 79,
+        "magicalAttack": 24,
+        "physicalDefense": 66,
+        "magicalDefense": 50,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5f176b5856c40b8f",
+      "fullName": "卷毛鸭",
+      "gameId": 3067,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 98,
+        "magicalAttack": 29,
+        "physicalDefense": 83,
+        "magicalDefense": 63,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_46522758f37081eb",
+      "fullName": "海豹战士",
+      "gameId": 3215,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 91,
+        "magicalAttack": 87,
+        "physicalDefense": 89,
+        "magicalDefense": 62,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a09a0cefefa72268",
+      "fullName": "海豹船长",
+      "gameId": 3216,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 113,
+        "magicalAttack": 109,
+        "physicalDefense": 111,
+        "magicalDefense": 77,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2ae6b5c4d6db7310",
+      "fullName": "号儿鱼",
+      "gameId": 3529,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 24,
+        "magicalAttack": 76,
+        "physicalDefense": 76,
+        "magicalDefense": 88,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_83e3e8efde0199bf",
+      "fullName": "圆号鱼",
+      "gameId": 3530,
+      "raceStats": {
+        "hp": 113,
+        "physicalAttack": 31,
+        "magicalAttack": 95,
+        "physicalDefense": 95,
+        "magicalDefense": 110,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f675aae70d91a6ee",
+      "fullName": "甜田螺",
+      "gameId": 3112,
+      "raceStats": {
+        "hp": 68,
+        "physicalAttack": 67,
+        "magicalAttack": 70,
+        "physicalDefense": 54,
+        "magicalDefense": 80,
+        "speed": 54
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e74caae57d4461fd",
+      "fullName": "壳乙螺",
+      "gameId": 3113,
+      "raceStats": {
+        "hp": 91,
+        "physicalAttack": 89,
+        "magicalAttack": 94,
+        "physicalDefense": 72,
+        "magicalDefense": 107,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_95db5c2218b2ed8f",
+      "fullName": "卡洛儿",
+      "gameId": 3114,
+      "raceStats": {
+        "hp": 114,
+        "physicalAttack": 112,
+        "magicalAttack": 117,
+        "physicalDefense": 90,
+        "magicalDefense": 134,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4e1344e0cfd82bf9",
+      "fullName": "棋棋（白子）",
+      "gameId": 3550,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 100,
+        "magicalAttack": 36,
+        "physicalDefense": 70,
+        "magicalDefense": 56,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_28e59ee92341bf43",
+      "fullName": "棋棋（黑子）",
+      "gameId": 3555,
+      "raceStats": {
+        "hp": 66,
+        "physicalAttack": 97,
+        "magicalAttack": 35,
+        "physicalDefense": 67,
+        "magicalDefense": 53,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_de999044bdf8e8c1",
+      "fullName": "棋骑士（白子）",
+      "gameId": 3551,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 126,
+        "magicalAttack": 45,
+        "physicalDefense": 88,
+        "magicalDefense": 69,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dcd2e90fe8de4c65",
+      "fullName": "棋骑士（黑子）",
+      "gameId": 3556,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 121,
+        "magicalAttack": 43,
+        "physicalDefense": 84,
+        "magicalDefense": 66,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_065c69728f30ce93",
+      "fullName": "棋契陛下（白棋棋骑士分支）",
+      "gameId": 5023,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 200,
+        "magicalAttack": 91,
+        "physicalDefense": 140,
+        "magicalDefense": 115,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_839cd7d34d2dd422",
+      "fullName": "棋契陛下（黑棋棋骑士分支）",
+      "gameId": 5043,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 194,
+        "magicalAttack": 88,
+        "physicalDefense": 135,
+        "magicalDefense": 111,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8748c0a6f05afc2d",
+      "fullName": "棋齐垒（白子）",
+      "gameId": 3553,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 94,
+        "magicalAttack": 38,
+        "physicalDefense": 116,
+        "magicalDefense": 77,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_218281240634725e",
+      "fullName": "棋齐垒（黑子）",
+      "gameId": 3558,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 94,
+        "magicalAttack": 38,
+        "physicalDefense": 116,
+        "magicalDefense": 77,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d4a7177497e7250e",
+      "fullName": "棋契陛下（白棋棋绮后分支）",
+      "gameId": 5040,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 143,
+        "magicalAttack": 143,
+        "physicalDefense": 133,
+        "magicalDefense": 123,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3b52748976f979f2",
+      "fullName": "棋契陛下（黑棋棋绮后分支）",
+      "gameId": 5044,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 143,
+        "magicalAttack": 143,
+        "physicalDefense": 133,
+        "magicalDefense": 123,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e900600e3605dec4",
+      "fullName": "棋祈督（白子）",
+      "gameId": 3554,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 87,
+        "magicalAttack": 87,
+        "physicalDefense": 90,
+        "magicalDefense": 72,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_213dd929c2abecd3",
+      "fullName": "棋祈督（黑子）",
+      "gameId": 3559,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 87,
+        "magicalAttack": 87,
+        "physicalDefense": 90,
+        "magicalDefense": 72,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b9046792466d9675",
+      "fullName": "棋契陛下（白棋棋齐垒分支）",
+      "gameId": 5041,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 157,
+        "magicalAttack": 80,
+        "physicalDefense": 179,
+        "magicalDefense": 125,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2e04c8791a9f2542",
+      "fullName": "棋契陛下（黑棋棋齐垒分支）",
+      "gameId": 5045,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 157,
+        "magicalAttack": 80,
+        "physicalDefense": 179,
+        "magicalDefense": 125,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b8395532616fe541",
+      "fullName": "棋绮后（白子）",
+      "gameId": 3552,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 84,
+        "magicalAttack": 84,
+        "physicalDefense": 82,
+        "magicalDefense": 75,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_03d719be9841704e",
+      "fullName": "棋绮后（黑子）",
+      "gameId": 3557,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 84,
+        "magicalAttack": 84,
+        "physicalDefense": 82,
+        "magicalDefense": 75,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7f340121dd6e8ed4",
+      "fullName": "棋契陛下（白棋棋祈督分支）",
+      "gameId": 5042,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 147,
+        "magicalAttack": 147,
+        "physicalDefense": 143,
+        "magicalDefense": 118,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dca5b460922a95f9",
+      "fullName": "棋契陛下（黑棋棋祈督分支）",
+      "gameId": 5046,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 147,
+        "magicalAttack": 147,
+        "physicalDefense": 143,
+        "magicalDefense": 118,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e28371ed91d50b85",
+      "fullName": "奔波鼠",
+      "gameId": 3255,
+      "raceStats": {
+        "hp": 82,
+        "physicalAttack": 37,
+        "magicalAttack": 93,
+        "physicalDefense": 74,
+        "magicalDefense": 98,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_892bc1a170d3f187",
+      "fullName": "流浪鼠",
+      "gameId": 3256,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 46,
+        "magicalAttack": 116,
+        "physicalDefense": 92,
+        "magicalDefense": 122,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f19630c316a3bfd7",
+      "fullName": "呆小路",
+      "gameId": 3093,
+      "raceStats": {
+        "hp": 52,
+        "physicalAttack": 60,
+        "magicalAttack": 64,
+        "physicalDefense": 68,
+        "magicalDefense": 79,
+        "speed": 57
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_539c71eb7ab51df2",
+      "fullName": "舞动路路",
+      "gameId": 3094,
+      "raceStats": {
+        "hp": 69,
+        "physicalAttack": 80,
+        "magicalAttack": 86,
+        "physicalDefense": 91,
+        "magicalDefense": 105,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_55072e5b883cb75c",
+      "fullName": "白发路路",
+      "gameId": 3095,
+      "raceStats": {
+        "hp": 86,
+        "physicalAttack": 100,
+        "magicalAttack": 107,
+        "physicalDefense": 113,
+        "magicalDefense": 132,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dd9f6c54fe833615",
+      "fullName": "逗逗",
+      "gameId": 3373,
+      "raceStats": {
+        "hp": 48,
+        "physicalAttack": 70,
+        "magicalAttack": 64,
+        "physicalDefense": 68,
+        "magicalDefense": 68,
+        "speed": 66
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f544e238b20d1b57",
+      "fullName": "气球猫",
+      "gameId": 3374,
+      "raceStats": {
+        "hp": 64,
+        "physicalAttack": 93,
+        "magicalAttack": 86,
+        "physicalDefense": 90,
+        "magicalDefense": 90,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6d33a16d98f35c14",
+      "fullName": "梦想三三",
+      "gameId": 3375,
+      "raceStats": {
+        "hp": 81,
+        "physicalAttack": 117,
+        "magicalAttack": 107,
+        "physicalDefense": 113,
+        "magicalDefense": 113,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a9c19df7ed7f11ce",
+      "fullName": "奇梦咪",
+      "gameId": 5024,
+      "raceStats": {
+        "hp": 81,
+        "physicalAttack": 128,
+        "magicalAttack": 119,
+        "physicalDefense": 123,
+        "magicalDefense": 123,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a6c418b0b991f459",
+      "fullName": "花怨鳗",
+      "gameId": 3506,
+      "raceStats": {
+        "hp": 232,
+        "physicalAttack": 73,
+        "magicalAttack": 73,
+        "physicalDefense": 110,
+        "magicalDefense": 90,
+        "speed": 52
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_181a3dd66ff76d4a",
+      "fullName": "鳗尾兽",
+      "gameId": 3507,
+      "raceStats": {
+        "hp": 290,
+        "physicalAttack": 91,
+        "magicalAttack": 91,
+        "physicalDefense": 138,
+        "magicalDefense": 113,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_50b77eaae7361af5",
+      "fullName": "伊雷龙",
+      "gameId": 3211,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 73,
+        "magicalAttack": 152,
+        "physicalDefense": 55,
+        "magicalDefense": 79,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b2f1251352d5f670",
+      "fullName": "伊兰亚龙",
+      "gameId": 3412,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 91,
+        "magicalAttack": 190,
+        "physicalDefense": 69,
+        "magicalDefense": 99,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cc4129b5ab2b9c0c",
+      "fullName": "伊兰龙",
+      "gameId": 5022,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 91,
+        "magicalAttack": 190,
+        "physicalDefense": 69,
+        "magicalDefense": 99,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cb0f3e33d8b40885",
+      "fullName": "拉特",
+      "gameId": 3188,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 80,
+        "magicalAttack": 80,
+        "physicalDefense": 62,
+        "magicalDefense": 78,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f26505a4b7777206",
+      "fullName": "酷拉",
+      "gameId": 3189,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 100,
+        "magicalAttack": 100,
+        "physicalDefense": 78,
+        "magicalDefense": 97,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e0332c3637a510c6",
+      "fullName": "风暴酷拉",
+      "gameId": 5060,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 100,
+        "magicalAttack": 100,
+        "physicalDefense": 78,
+        "magicalDefense": 97,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6fc567ff2b56be9e",
+      "fullName": "闪电环",
+      "gameId": 3195,
+      "raceStats": {
+        "hp": 64,
+        "physicalAttack": 49,
+        "magicalAttack": 49,
+        "physicalDefense": 51,
+        "magicalDefense": 50,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e3880bbd97706d06",
+      "fullName": "刺电环",
+      "gameId": 3196,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 65,
+        "magicalAttack": 65,
+        "physicalDefense": 68,
+        "magicalDefense": 67,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_57fff877bf40ffd4",
+      "fullName": "荆棘电环",
+      "gameId": 3197,
+      "raceStats": {
+        "hp": 106,
+        "physicalAttack": 81,
+        "magicalAttack": 81,
+        "physicalDefense": 85,
+        "magicalDefense": 84,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_15d9cb4663223f27",
+      "fullName": "小箱怪",
+      "gameId": 3618,
+      "raceStats": {
+        "hp": 111,
+        "physicalAttack": 103,
+        "magicalAttack": 103,
+        "physicalDefense": 122,
+        "magicalDefense": 122,
+        "speed": 64
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_85bda8a55f4058a5",
+      "fullName": "迷迷箱怪",
+      "gameId": 3619,
+      "raceStats": {
+        "hp": 138,
+        "physicalAttack": 129,
+        "magicalAttack": 129,
+        "physicalDefense": 153,
+        "magicalDefense": 153,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5310c12954fea6be",
+      "fullName": "古钟蛇",
+      "gameId": 3225,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 69,
+        "magicalAttack": 69,
+        "physicalDefense": 64,
+        "magicalDefense": 91,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9b74b8247cee82c7",
+      "fullName": "寒音蛇",
+      "gameId": 3226,
+      "raceStats": {
+        "hp": 106,
+        "physicalAttack": 87,
+        "magicalAttack": 87,
+        "physicalDefense": 80,
+        "magicalDefense": 114,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c169e905c91eeb74",
+      "fullName": "矮脚爬爬",
+      "gameId": 3178,
+      "raceStats": {
+        "hp": 80,
+        "physicalAttack": 118,
+        "magicalAttack": 109,
+        "physicalDefense": 86,
+        "magicalDefense": 71,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7c31fbd89f093c5d",
+      "fullName": "恶魔红钻",
+      "gameId": 3179,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 147,
+        "magicalAttack": 137,
+        "physicalDefense": 108,
+        "magicalDefense": 89,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5246e75d4b8d7592",
+      "fullName": "火尾瓦特",
+      "gameId": 3090,
+      "raceStats": {
+        "hp": 63,
+        "physicalAttack": 70,
+        "magicalAttack": 29,
+        "physicalDefense": 81,
+        "magicalDefense": 56,
+        "speed": 39
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_308f9aec3f5f045d",
+      "fullName": "火尾战士",
+      "gameId": 3091,
+      "raceStats": {
+        "hp": 84,
+        "physicalAttack": 94,
+        "magicalAttack": 39,
+        "physicalDefense": 108,
+        "magicalDefense": 74,
+        "speed": 52
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8e02f5b94a74428b",
+      "fullName": "烈火守护",
+      "gameId": 3092,
+      "raceStats": {
+        "hp": 105,
+        "physicalAttack": 117,
+        "magicalAttack": 49,
+        "physicalDefense": 135,
+        "magicalDefense": 93,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_741c2be5526d185a",
+      "fullName": "里拉鳐",
+      "gameId": 3521,
+      "raceStats": {
+        "hp": 118,
+        "physicalAttack": 82,
+        "magicalAttack": 89,
+        "physicalDefense": 103,
+        "magicalDefense": 147,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9d8badfc01f62f16",
+      "fullName": "海枝枝（碧蓝珊瑚）",
+      "gameId": 3430,
+      "raceStats": {
+        "hp": 78,
+        "physicalAttack": 58,
+        "magicalAttack": 148,
+        "physicalDefense": 96,
+        "magicalDefense": 120,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_1ae8bf8691ced64f",
+      "fullName": "海枝枝（杏黄百合）",
+      "gameId": 3431,
+      "raceStats": {
+        "hp": 91,
+        "physicalAttack": 48,
+        "magicalAttack": 125,
+        "physicalDefense": 104,
+        "magicalDefense": 129,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dcad4af678b05dcc",
+      "fullName": "海枝枝（洋红沙丁）",
+      "gameId": 3432,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 62,
+        "magicalAttack": 136,
+        "physicalDefense": 84,
+        "magicalDefense": 121,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e6f44a2b7c94c74f",
+      "fullName": "海枝枝（翠绿纶布）",
+      "gameId": 3433,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 53,
+        "magicalAttack": 135,
+        "physicalDefense": 92,
+        "magicalDefense": 113,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_decbdcb651f9d96c",
+      "fullName": "多西",
+      "gameId": 3206,
+      "raceStats": {
+        "hp": 64,
+        "physicalAttack": 73,
+        "magicalAttack": 26,
+        "physicalDefense": 82,
+        "magicalDefense": 70,
+        "speed": 30
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_57b9e1b098db23f2",
+      "fullName": "库多西",
+      "gameId": 3207,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 98,
+        "magicalAttack": 34,
+        "physicalDefense": 109,
+        "magicalDefense": 93,
+        "speed": 40
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5441c31fc38c5015",
+      "fullName": "波多西",
+      "gameId": 3208,
+      "raceStats": {
+        "hp": 106,
+        "physicalAttack": 122,
+        "magicalAttack": 43,
+        "physicalDefense": 136,
+        "magicalDefense": 116,
+        "speed": 50
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4901e4794bd32f40",
+      "fullName": "小翼龙",
+      "gameId": 3209,
+      "raceStats": {
+        "hp": 66,
+        "physicalAttack": 91,
+        "magicalAttack": 24,
+        "physicalDefense": 73,
+        "magicalDefense": 63,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_800a0042f52851cf",
+      "fullName": "翼龙",
+      "gameId": 3210,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 114,
+        "magicalAttack": 31,
+        "physicalDefense": 91,
+        "magicalDefense": 79,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_fb284359b27daddf",
+      "fullName": "电动长颈鹿",
+      "gameId": 3357,
+      "raceStats": {
+        "hp": 55,
+        "physicalAttack": 46,
+        "magicalAttack": 12,
+        "physicalDefense": 65,
+        "magicalDefense": 47,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5b7800d23a14248c",
+      "fullName": "奔乐鹿",
+      "gameId": 3358,
+      "raceStats": {
+        "hp": 73,
+        "physicalAttack": 61,
+        "magicalAttack": 16,
+        "physicalDefense": 86,
+        "magicalDefense": 63,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_906f78a278f66fb9",
+      "fullName": "爵士鹿",
+      "gameId": 3359,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 77,
+        "magicalAttack": 20,
+        "physicalDefense": 108,
+        "magicalDefense": 79,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7d22156a66708de3",
+      "fullName": "波普鹿",
+      "gameId": 5020,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 79,
+        "magicalAttack": 21,
+        "physicalDefense": 108,
+        "magicalDefense": 79,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2663ae54113f96f0",
+      "fullName": "缇塔",
+      "gameId": 3406,
+      "raceStats": {
+        "hp": 73,
+        "physicalAttack": 99,
+        "magicalAttack": 38,
+        "physicalDefense": 98,
+        "magicalDefense": 74,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_24ff0f0e3504e1ca",
+      "fullName": "声波缇塔",
+      "gameId": 3407,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 124,
+        "magicalAttack": 48,
+        "physicalDefense": 122,
+        "magicalDefense": 92,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8929e2beb3386bf2",
+      "fullName": "小鹬",
+      "gameId": 3250,
+      "raceStats": {
+        "hp": 58,
+        "physicalAttack": 59,
+        "magicalAttack": 59,
+        "physicalDefense": 67,
+        "magicalDefense": 52,
+        "speed": 69
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_641ef743b4f44873",
+      "fullName": "鄙目鹬",
+      "gameId": 3251,
+      "raceStats": {
+        "hp": 77,
+        "physicalAttack": 79,
+        "magicalAttack": 79,
+        "physicalDefense": 90,
+        "magicalDefense": 70,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_485289864e937335",
+      "fullName": "高脚鹬",
+      "gameId": 3252,
+      "raceStats": {
+        "hp": 96,
+        "physicalAttack": 98,
+        "magicalAttack": 98,
+        "physicalDefense": 112,
+        "magicalDefense": 87,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9dff1b22873c62a9",
+      "fullName": "高帽鹬者",
+      "gameId": 5054,
+      "raceStats": {
+        "hp": 96,
+        "physicalAttack": 106,
+        "magicalAttack": 106,
+        "physicalDefense": 119,
+        "magicalDefense": 93,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3f805b382fb6670a",
+      "fullName": "脆筒甜甜",
+      "gameId": 3124,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 67,
+        "magicalAttack": 72,
+        "physicalDefense": 42,
+        "magicalDefense": 55,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_219690deb9569dc6",
+      "fullName": "香草甜甜",
+      "gameId": 3125,
+      "raceStats": {
+        "hp": 96,
+        "physicalAttack": 90,
+        "magicalAttack": 95,
+        "physicalDefense": 56,
+        "magicalDefense": 74,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f034858d5c81a2ae",
+      "fullName": "香草甜甜（杨桃饰品）",
+      "gameId": 3478,
+      "raceStats": {
+        "hp": 88,
+        "physicalAttack": 92,
+        "magicalAttack": 96,
+        "physicalDefense": 58,
+        "magicalDefense": 77,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_29b708f908c0d8a9",
+      "fullName": "香草甜甜（蓝莓饰品）",
+      "gameId": 3479,
+      "raceStats": {
+        "hp": 91,
+        "physicalAttack": 94,
+        "magicalAttack": 88,
+        "physicalDefense": 63,
+        "magicalDefense": 74,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_41869713b59c286d",
+      "fullName": "圣代甜甜",
+      "gameId": 3126,
+      "raceStats": {
+        "hp": 119,
+        "physicalAttack": 112,
+        "magicalAttack": 119,
+        "physicalDefense": 70,
+        "magicalDefense": 92,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_837b4392da6139fa",
+      "fullName": "圣代甜甜（樱桃草莓口味）",
+      "gameId": 3458,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 120,
+        "magicalAttack": 110,
+        "physicalDefense": 81,
+        "magicalDefense": 96,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_eeb5cb4fca4e17dd",
+      "fullName": "圣代甜甜（樱桃抹茶口味）",
+      "gameId": 3459,
+      "raceStats": {
+        "hp": 113,
+        "physicalAttack": 112,
+        "magicalAttack": 110,
+        "physicalDefense": 79,
+        "magicalDefense": 92,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7e8447269b167ed9",
+      "fullName": "圣代甜甜（蓝莓巧克力口味）",
+      "gameId": 3460,
+      "raceStats": {
+        "hp": 114,
+        "physicalAttack": 117,
+        "magicalAttack": 110,
+        "physicalDefense": 79,
+        "magicalDefense": 92,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_839523317c1f9cac",
+      "fullName": "圣代甜甜（蓝莓草莓口味）",
+      "gameId": 3461,
+      "raceStats": {
+        "hp": 113,
+        "physicalAttack": 109,
+        "magicalAttack": 100,
+        "physicalDefense": 90,
+        "magicalDefense": 96,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f6d8309391798193",
+      "fullName": "圣代甜甜（蓝莓抹茶口味）",
+      "gameId": 3462,
+      "raceStats": {
+        "hp": 121,
+        "physicalAttack": 100,
+        "magicalAttack": 101,
+        "physicalDefense": 86,
+        "magicalDefense": 92,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_82c2311d4036c4ee",
+      "fullName": "圣代甜甜（杨桃巧克力口味）",
+      "gameId": 3463,
+      "raceStats": {
+        "hp": 110,
+        "physicalAttack": 116,
+        "magicalAttack": 120,
+        "physicalDefense": 73,
+        "magicalDefense": 96,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5f38897fa15dae2c",
+      "fullName": "圣代甜甜（杨桃草莓口味）",
+      "gameId": 3464,
+      "raceStats": {
+        "hp": 108,
+        "physicalAttack": 110,
+        "magicalAttack": 110,
+        "physicalDefense": 84,
+        "magicalDefense": 99,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_659ec5a995873fbe",
+      "fullName": "圣代甜甜（杨桃抹茶口味）",
+      "gameId": 3465,
+      "raceStats": {
+        "hp": 110,
+        "physicalAttack": 107,
+        "magicalAttack": 110,
+        "physicalDefense": 82,
+        "magicalDefense": 96,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_09a6740ea932b071",
+      "fullName": "刺轮砣（上弦的样子）",
+      "gameId": 3582,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 80,
+        "magicalAttack": 78,
+        "physicalDefense": 80,
+        "magicalDefense": 65,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c3623ba0caf45206",
+      "fullName": "刺轮砣（下弦的样子）",
+      "gameId": 3584,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 78,
+        "magicalAttack": 80,
+        "physicalDefense": 65,
+        "magicalDefense": 80,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_190ce77fc690d90a",
+      "fullName": "月亮砣（上弦的样子）",
+      "gameId": 3583,
+      "raceStats": {
+        "hp": 125,
+        "physicalAttack": 100,
+        "magicalAttack": 98,
+        "physicalDefense": 100,
+        "magicalDefense": 81,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d9990ad61778d9ec",
+      "fullName": "月亮砣（下弦的样子）",
+      "gameId": 3585,
+      "raceStats": {
+        "hp": 125,
+        "physicalAttack": 98,
+        "magicalAttack": 100,
+        "physicalDefense": 81,
+        "magicalDefense": 100,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_eef6c46566381bb0",
+      "fullName": "豆丁鱼",
+      "gameId": 3384,
+      "raceStats": {
+        "hp": 53,
+        "physicalAttack": 62,
+        "magicalAttack": 65,
+        "physicalDefense": 60,
+        "magicalDefense": 62,
+        "speed": 81
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e0314e9c0f0f09fc",
+      "fullName": "快鳍鱼",
+      "gameId": 3385,
+      "raceStats": {
+        "hp": 71,
+        "physicalAttack": 82,
+        "magicalAttack": 87,
+        "physicalDefense": 80,
+        "magicalDefense": 83,
+        "speed": 108
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_97b704a0026aab99",
+      "fullName": "龙鱼",
+      "gameId": 3386,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 103,
+        "magicalAttack": 109,
+        "physicalDefense": 100,
+        "magicalDefense": 104,
+        "speed": 135
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2f1f048f002870ce",
+      "fullName": "胆小鳗鱼",
+      "gameId": 3266,
+      "raceStats": {
+        "hp": 68,
+        "physicalAttack": 92,
+        "magicalAttack": 92,
+        "physicalDefense": 83,
+        "magicalDefense": 90,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6aff1bd1d0653c7f",
+      "fullName": "闪电鳗鱼",
+      "gameId": 3267,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 115,
+        "magicalAttack": 115,
+        "physicalDefense": 104,
+        "magicalDefense": 112,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_42d4dc4ef033e5b5",
+      "fullName": "翡翠水母",
+      "gameId": 3119,
+      "raceStats": {
+        "hp": 108,
+        "physicalAttack": 30,
+        "magicalAttack": 68,
+        "physicalDefense": 75,
+        "magicalDefense": 109,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_bdc5a04507024396",
+      "fullName": "琉璃水母",
+      "gameId": 3120,
+      "raceStats": {
+        "hp": 134,
+        "physicalAttack": 37,
+        "magicalAttack": 85,
+        "physicalDefense": 93,
+        "magicalDefense": 136,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7122d669521799ee",
+      "fullName": "裘洛",
+      "gameId": 3154,
+      "raceStats": {
+        "hp": 44,
+        "physicalAttack": 56,
+        "magicalAttack": 50,
+        "physicalDefense": 39,
+        "magicalDefense": 48,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a652927efc54219c",
+      "fullName": "裘力",
+      "gameId": 3155,
+      "raceStats": {
+        "hp": 59,
+        "physicalAttack": 74,
+        "magicalAttack": 67,
+        "physicalDefense": 52,
+        "magicalDefense": 64,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_586560ce9f28bbbc",
+      "fullName": "裘卡",
+      "gameId": 3156,
+      "raceStats": {
+        "hp": 73,
+        "physicalAttack": 93,
+        "magicalAttack": 83,
+        "physicalDefense": 65,
+        "magicalDefense": 81,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d6bf08644fc68f43",
+      "fullName": "可爱猿",
+      "gameId": 3083,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 97,
+        "magicalAttack": 43,
+        "physicalDefense": 86,
+        "magicalDefense": 67,
+        "speed": 36
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d45d38fdc672b014",
+      "fullName": "炽热猿",
+      "gameId": 3084,
+      "raceStats": {
+        "hp": 133,
+        "physicalAttack": 130,
+        "magicalAttack": 57,
+        "physicalDefense": 115,
+        "magicalDefense": 89,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b7b7a4110258de78",
+      "fullName": "火焰猿",
+      "gameId": 3085,
+      "raceStats": {
+        "hp": 167,
+        "physicalAttack": 162,
+        "magicalAttack": 72,
+        "physicalDefense": 143,
+        "magicalDefense": 111,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f7bb3405a8942817",
+      "fullName": "布鲁斯",
+      "gameId": 3257,
+      "raceStats": {
+        "hp": 44,
+        "physicalAttack": 60,
+        "magicalAttack": 16,
+        "physicalDefense": 68,
+        "magicalDefense": 53,
+        "speed": 54
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_54215b23a210c8df",
+      "fullName": "雪顶布鲁斯",
+      "gameId": 3258,
+      "raceStats": {
+        "hp": 58,
+        "physicalAttack": 81,
+        "magicalAttack": 22,
+        "physicalDefense": 91,
+        "magicalDefense": 70,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e926effbf164759a",
+      "fullName": "冰钻布鲁斯",
+      "gameId": 3259,
+      "raceStats": {
+        "hp": 73,
+        "physicalAttack": 101,
+        "magicalAttack": 27,
+        "physicalDefense": 114,
+        "magicalDefense": 88,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_df98091d3189ef45",
+      "fullName": "治愈兔",
+      "gameId": 3081,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 28,
+        "magicalAttack": 73,
+        "physicalDefense": 60,
+        "magicalDefense": 76,
+        "speed": 54
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_bbf5618c2d1a0750",
+      "fullName": "红丝绒",
+      "gameId": 3082,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 38,
+        "magicalAttack": 98,
+        "physicalDefense": 80,
+        "magicalDefense": 101,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2e7dd5cabd9695cb",
+      "fullName": "红绒十字",
+      "gameId": 3350,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 47,
+        "magicalAttack": 122,
+        "physicalDefense": 100,
+        "magicalDefense": 127,
+        "speed": 90
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_28139e09cc2e10ba",
+      "fullName": "乌达（极昼的样子）",
+      "gameId": 3536,
+      "raceStats": {
+        "hp": 80,
+        "physicalAttack": 95,
+        "magicalAttack": 49,
+        "physicalDefense": 70,
+        "magicalDefense": 42,
+        "speed": 33
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f3e25ac6f073239d",
+      "fullName": "乌达（极夜的样子）",
+      "gameId": 3539,
+      "raceStats": {
+        "hp": 96,
+        "physicalAttack": 95,
+        "magicalAttack": 55,
+        "physicalDefense": 64,
+        "magicalDefense": 34,
+        "speed": 30
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_be13027b1b8e6693",
+      "fullName": "迷你乌（极昼的样子）",
+      "gameId": 3537,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 126,
+        "magicalAttack": 66,
+        "physicalDefense": 93,
+        "magicalDefense": 56,
+        "speed": 44
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d6fe54ebe357b3ff",
+      "fullName": "迷你乌（极夜的样子）",
+      "gameId": 3540,
+      "raceStats": {
+        "hp": 128,
+        "physicalAttack": 126,
+        "magicalAttack": 73,
+        "physicalDefense": 85,
+        "magicalDefense": 46,
+        "speed": 40
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b83bc4598f48c604",
+      "fullName": "乌拉塔（极昼的样子）",
+      "gameId": 3538,
+      "raceStats": {
+        "hp": 134,
+        "physicalAttack": 158,
+        "magicalAttack": 82,
+        "physicalDefense": 116,
+        "magicalDefense": 70,
+        "speed": 55
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_25e1d71de867c7dc",
+      "fullName": "乌拉塔（极夜的样子）",
+      "gameId": 3541,
+      "raceStats": {
+        "hp": 160,
+        "physicalAttack": 158,
+        "magicalAttack": 91,
+        "physicalDefense": 106,
+        "magicalDefense": 57,
+        "speed": 50
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e2ca38af6ca8a535",
+      "fullName": "螺旋帕帕",
+      "gameId": 3484,
+      "raceStats": {
+        "hp": 88,
+        "physicalAttack": 55,
+        "magicalAttack": 8,
+        "physicalDefense": 79,
+        "magicalDefense": 67,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_01295eab9380e02c",
+      "fullName": "帕帕斯卡",
+      "gameId": 3547,
+      "raceStats": {
+        "hp": 110,
+        "physicalAttack": 68,
+        "magicalAttack": 10,
+        "physicalDefense": 99,
+        "magicalDefense": 84,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8f600a85a8feb5d8",
+      "fullName": "机械方方",
+      "gameId": 3200,
+      "raceStats": {
+        "hp": 62,
+        "physicalAttack": 81,
+        "magicalAttack": 32,
+        "physicalDefense": 76,
+        "magicalDefense": 60,
+        "speed": 51
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9270c733ca1d4bd8",
+      "fullName": "多彩方方",
+      "gameId": 3201,
+      "raceStats": {
+        "hp": 82,
+        "physicalAttack": 108,
+        "magicalAttack": 43,
+        "physicalDefense": 101,
+        "magicalDefense": 80,
+        "speed": 68
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_53a5e4ccea57fdd0",
+      "fullName": "立方人",
+      "gameId": 3202,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 135,
+        "magicalAttack": 54,
+        "physicalDefense": 127,
+        "magicalDefense": 101,
+        "speed": 85
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_73e11369a58445a9",
+      "fullName": "可立鸡",
+      "gameId": 3086,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 72,
+        "magicalAttack": 72,
+        "physicalDefense": 61,
+        "magicalDefense": 52,
+        "speed": 66
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_aab6e4b6314a2035",
+      "fullName": "晕晕鸡",
+      "gameId": 3087,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 96,
+        "magicalAttack": 96,
+        "physicalDefense": 82,
+        "magicalDefense": 70,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_38995924fb931da3",
+      "fullName": "绅士鸡",
+      "gameId": 3088,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 120,
+        "magicalAttack": 120,
+        "physicalDefense": 102,
+        "magicalDefense": 87,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_197cf12461c4fb80",
+      "fullName": "武者鸡",
+      "gameId": 3089,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 137,
+        "magicalAttack": 66,
+        "physicalDefense": 111,
+        "magicalDefense": 70,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_87025d8e98fabe3c",
+      "fullName": "优优",
+      "gameId": 3704,
+      "raceStats": {
+        "hp": 81,
+        "physicalAttack": 35,
+        "magicalAttack": 89,
+        "physicalDefense": 84,
+        "magicalDefense": 104,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_56b76e5cddf39081",
+      "fullName": "绒光优优",
+      "gameId": 3705,
+      "raceStats": {
+        "hp": 101,
+        "physicalAttack": 43,
+        "magicalAttack": 111,
+        "physicalDefense": 105,
+        "magicalDefense": 130,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_99f5d4bc7811d4a1",
+      "fullName": "噼啪鸟",
+      "gameId": 3444,
+      "raceStats": {
+        "hp": 78,
+        "physicalAttack": 116,
+        "magicalAttack": 109,
+        "physicalDefense": 85,
+        "magicalDefense": 85,
+        "speed": 145
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_37ea034163f3e376",
+      "fullName": "深蓝鲸",
+      "gameId": 3381,
+      "raceStats": {
+        "hp": 137,
+        "physicalAttack": 44,
+        "magicalAttack": 121,
+        "physicalDefense": 125,
+        "magicalDefense": 141,
+        "speed": 50
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_fdbf0fe966093747",
+      "fullName": "格兰种子",
+      "gameId": 3072,
+      "raceStats": {
+        "hp": 65,
+        "physicalAttack": 31,
+        "magicalAttack": 74,
+        "physicalDefense": 48,
+        "magicalDefense": 67,
+        "speed": 36
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8c860bf0e5cbdc0b",
+      "fullName": "格兰花",
+      "gameId": 3073,
+      "raceStats": {
+        "hp": 86,
+        "physicalAttack": 42,
+        "magicalAttack": 99,
+        "physicalDefense": 64,
+        "magicalDefense": 90,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8de88e249e9a78f0",
+      "fullName": "格兰球",
+      "gameId": 3074,
+      "raceStats": {
+        "hp": 108,
+        "physicalAttack": 52,
+        "magicalAttack": 124,
+        "physicalDefense": 80,
+        "magicalDefense": 112,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_87724eed654b46e2",
+      "fullName": "地鼠（枯水期的样子）",
+      "gameId": 3020,
+      "raceStats": {
+        "hp": 66,
+        "physicalAttack": 71,
+        "magicalAttack": 31,
+        "physicalDefense": 72,
+        "magicalDefense": 51,
+        "speed": 66
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_59ccfafcc79c03f0",
+      "fullName": "地鼠（储水时的样子）",
+      "gameId": 3454,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 71,
+        "magicalAttack": 14,
+        "physicalDefense": 51,
+        "magicalDefense": 79,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c2b48c73837fbed5",
+      "fullName": "遁鼠（枯水期的样子）",
+      "gameId": 3021,
+      "raceStats": {
+        "hp": 88,
+        "physicalAttack": 95,
+        "magicalAttack": 41,
+        "physicalDefense": 97,
+        "magicalDefense": 68,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e561ad5d9f280b7f",
+      "fullName": "遁鼠（储水时的样子）",
+      "gameId": 3455,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 94,
+        "magicalAttack": 18,
+        "physicalDefense": 68,
+        "magicalDefense": 105,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5e1e865bae83bc25",
+      "fullName": "遁地鼠（枯水期的样子）",
+      "gameId": 3022,
+      "raceStats": {
+        "hp": 110,
+        "physicalAttack": 119,
+        "magicalAttack": 51,
+        "physicalDefense": 121,
+        "magicalDefense": 85,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7da7428d895df131",
+      "fullName": "遁地鼠（储水时的样子）",
+      "gameId": 3456,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 118,
+        "magicalAttack": 23,
+        "physicalDefense": 85,
+        "magicalDefense": 131,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d218885988b9c5a0",
+      "fullName": "墨鱿士",
+      "gameId": 3577,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 97,
+        "magicalAttack": 42,
+        "physicalDefense": 105,
+        "magicalDefense": 79,
+        "speed": 56
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3247e9dd6602e72c",
+      "fullName": "混乱鱿彩",
+      "gameId": 3578,
+      "raceStats": {
+        "hp": 129,
+        "physicalAttack": 122,
+        "magicalAttack": 53,
+        "physicalDefense": 131,
+        "magicalDefense": 99,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d4f6e1e80d4f396e",
+      "fullName": "秩序鱿墨",
+      "gameId": 3579,
+      "raceStats": {
+        "hp": 78,
+        "physicalAttack": 120,
+        "magicalAttack": 39,
+        "physicalDefense": 124,
+        "magicalDefense": 113,
+        "speed": 130
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_aa014ec2634077c5",
+      "fullName": "小甲虫",
+      "gameId": 3038,
+      "raceStats": {
+        "hp": 98,
+        "physicalAttack": 71,
+        "magicalAttack": 31,
+        "physicalDefense": 97,
+        "magicalDefense": 61,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_16b76c39e12ca79d",
+      "fullName": "铠甲虫",
+      "gameId": 3013,
+      "raceStats": {
+        "hp": 122,
+        "physicalAttack": 88,
+        "magicalAttack": 39,
+        "physicalDefense": 121,
+        "magicalDefense": 77,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_311edd9f5c6873f8",
+      "fullName": "圣剑侍从",
+      "gameId": 3545,
+      "raceStats": {
+        "hp": 139,
+        "physicalAttack": 116,
+        "magicalAttack": 111,
+        "physicalDefense": 139,
+        "magicalDefense": 139,
+        "speed": 52
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9c0a363768b55616",
+      "fullName": "圣剑-X",
+      "gameId": 3546,
+      "raceStats": {
+        "hp": 174,
+        "physicalAttack": 144,
+        "magicalAttack": 139,
+        "physicalDefense": 173,
+        "magicalDefense": 173,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_79830b56df1224ea",
+      "fullName": "圣剑骑士",
+      "gameId": 5021,
+      "raceStats": {
+        "hp": 187,
+        "physicalAttack": 154,
+        "magicalAttack": 148,
+        "physicalDefense": 183,
+        "magicalDefense": 183,
+        "speed": 65
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_05f3242dd3ab1ac6",
+      "fullName": "吸泥鸥",
+      "gameId": 3490,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 89,
+        "magicalAttack": 33,
+        "physicalDefense": 87,
+        "magicalDefense": 71,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3049dc50139f821a",
+      "fullName": "泥吼牙",
+      "gameId": 3491,
+      "raceStats": {
+        "hp": 124,
+        "physicalAttack": 112,
+        "magicalAttack": 41,
+        "physicalDefense": 109,
+        "magicalDefense": 88,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_77851a382e3aad75",
+      "fullName": "淤泥乌泽",
+      "gameId": 5057,
+      "raceStats": {
+        "hp": 124,
+        "physicalAttack": 138,
+        "magicalAttack": 58,
+        "physicalDefense": 132,
+        "magicalDefense": 108,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c62e3343e392241f",
+      "fullName": "大头骨龙",
+      "gameId": 3268,
+      "raceStats": {
+        "hp": 96,
+        "physicalAttack": 109,
+        "magicalAttack": 40,
+        "physicalDefense": 84,
+        "magicalDefense": 65,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2c2d72d3c0bbe704",
+      "fullName": "寂灭骨龙",
+      "gameId": 3269,
+      "raceStats": {
+        "hp": 120,
+        "physicalAttack": 137,
+        "magicalAttack": 50,
+        "physicalDefense": 104,
+        "magicalDefense": 81,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9551dc47632fbe3e",
+      "fullName": "厉毒小萝",
+      "gameId": 3419,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 64,
+        "magicalAttack": 17,
+        "physicalDefense": 81,
+        "magicalDefense": 59,
+        "speed": 108
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ed7ba8bc769c7d50",
+      "fullName": "厉毒修萝",
+      "gameId": 3420,
+      "raceStats": {
+        "hp": 84,
+        "physicalAttack": 80,
+        "magicalAttack": 21,
+        "physicalDefense": 101,
+        "magicalDefense": 74,
+        "speed": 135
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5aa0cc9f4b2133c8",
+      "fullName": "小帕尔",
+      "gameId": 3180,
+      "raceStats": {
+        "hp": 78,
+        "physicalAttack": 76,
+        "magicalAttack": 34,
+        "physicalDefense": 79,
+        "magicalDefense": 52,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_178e6939722a30b8",
+      "fullName": "帕尔萨斯",
+      "gameId": 3181,
+      "raceStats": {
+        "hp": 104,
+        "physicalAttack": 102,
+        "magicalAttack": 46,
+        "physicalDefense": 105,
+        "magicalDefense": 70,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_684f5cd1fec1df27",
+      "fullName": "龙息帕尔",
+      "gameId": 3182,
+      "raceStats": {
+        "hp": 130,
+        "physicalAttack": 127,
+        "magicalAttack": 57,
+        "physicalDefense": 131,
+        "magicalDefense": 87,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cd5a04a9d9f170f9",
+      "fullName": "毛头小蛛",
+      "gameId": 3603,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 80,
+        "magicalAttack": 27,
+        "physicalDefense": 93,
+        "magicalDefense": 79,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7c5218a85eac0018",
+      "fullName": "捕尘长绒",
+      "gameId": 3604,
+      "raceStats": {
+        "hp": 106,
+        "physicalAttack": 100,
+        "magicalAttack": 34,
+        "physicalDefense": 116,
+        "magicalDefense": 99,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cd669a9720f51fe4",
+      "fullName": "食尘短绒",
+      "gameId": 3605,
+      "raceStats": {
+        "hp": 109,
+        "physicalAttack": 105,
+        "magicalAttack": 37,
+        "physicalDefense": 113,
+        "magicalDefense": 97,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_50b9ea1cf5a9f06c",
+      "fullName": "画精灵",
+      "gameId": 3606,
+      "raceStats": {
+        "hp": 61,
+        "physicalAttack": 32,
+        "magicalAttack": 78,
+        "physicalDefense": 56,
+        "magicalDefense": 72,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6eefcea5a4902052",
+      "fullName": "画像守护",
+      "gameId": 3607,
+      "raceStats": {
+        "hp": 81,
+        "physicalAttack": 42,
+        "magicalAttack": 104,
+        "physicalDefense": 75,
+        "magicalDefense": 96,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5d306a78398c4bcd",
+      "fullName": "画间法师手",
+      "gameId": 3608,
+      "raceStats": {
+        "hp": 101,
+        "physicalAttack": 53,
+        "magicalAttack": 131,
+        "physicalDefense": 94,
+        "magicalDefense": 120,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4a91bd3db13b8a07",
+      "fullName": "画间沉铁兽",
+      "gameId": 3609,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 147,
+        "magicalAttack": 63,
+        "physicalDefense": 100,
+        "magicalDefense": 76,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_595b959db1b3bdec",
+      "fullName": "书魔虫",
+      "gameId": 3610,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 69,
+        "magicalAttack": 69,
+        "physicalDefense": 48,
+        "magicalDefense": 73,
+        "speed": 57
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_35c4507102bacd52",
+      "fullName": "书卷守护",
+      "gameId": 3611,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 92,
+        "magicalAttack": 92,
+        "physicalDefense": 64,
+        "magicalDefense": 98,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b75ef6a541e92530",
+      "fullName": "古卷执政官",
+      "gameId": 3612,
+      "raceStats": {
+        "hp": 111,
+        "physicalAttack": 115,
+        "magicalAttack": 115,
+        "physicalDefense": 80,
+        "magicalDefense": 122,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_fef49211939cd9fc",
+      "fullName": "古卷匣魔像",
+      "gameId": 3613,
+      "raceStats": {
+        "hp": 109,
+        "physicalAttack": 109,
+        "magicalAttack": 109,
+        "physicalDefense": 130,
+        "magicalDefense": 86,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c48b78143a3d44b3",
+      "fullName": "绒绒",
+      "gameId": 3244,
+      "raceStats": {
+        "hp": 58,
+        "physicalAttack": 61,
+        "magicalAttack": 62,
+        "physicalDefense": 49,
+        "magicalDefense": 80,
+        "speed": 69
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e63ebdf7c40606e6",
+      "fullName": "小绒茧",
+      "gameId": 3245,
+      "raceStats": {
+        "hp": 77,
+        "physicalAttack": 81,
+        "magicalAttack": 83,
+        "physicalDefense": 65,
+        "magicalDefense": 106,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a6a97c769f74a474",
+      "fullName": "绒仙子",
+      "gameId": 3246,
+      "raceStats": {
+        "hp": 96,
+        "physicalAttack": 101,
+        "magicalAttack": 104,
+        "physicalDefense": 81,
+        "magicalDefense": 133,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_dffa44a6fdca4257",
+      "fullName": "犀角鸟",
+      "gameId": 3309,
+      "raceStats": {
+        "hp": 63,
+        "physicalAttack": 88,
+        "magicalAttack": 40,
+        "physicalDefense": 67,
+        "magicalDefense": 44,
+        "speed": 66
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_1ab64fdcf97bc5b4",
+      "fullName": "光纤兽",
+      "gameId": 3310,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 117,
+        "magicalAttack": 54,
+        "physicalDefense": 90,
+        "magicalDefense": 58,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7212501b0d3c243e",
+      "fullName": "疾光千兽",
+      "gameId": 3311,
+      "raceStats": {
+        "hp": 104,
+        "physicalAttack": 146,
+        "magicalAttack": 67,
+        "physicalDefense": 112,
+        "magicalDefense": 73,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5c4297c8c8eab600",
+      "fullName": "果冻",
+      "gameId": 3118,
+      "raceStats": {
+        "hp": 81,
+        "physicalAttack": 26,
+        "magicalAttack": 81,
+        "physicalDefense": 75,
+        "magicalDefense": 78,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6aa27664c730f95a",
+      "fullName": "抹茶布丁",
+      "gameId": 3526,
+      "raceStats": {
+        "hp": 101,
+        "physicalAttack": 32,
+        "magicalAttack": 101,
+        "physicalDefense": 94,
+        "magicalDefense": 98,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_80fbf0bae1147e9c",
+      "fullName": "椰浆布丁",
+      "gameId": 3527,
+      "raceStats": {
+        "hp": 133,
+        "physicalAttack": 34,
+        "magicalAttack": 89,
+        "physicalDefense": 81,
+        "magicalDefense": 105,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f99f67a3721ea123",
+      "fullName": "熔岩布丁",
+      "gameId": 3528,
+      "raceStats": {
+        "hp": 128,
+        "physicalAttack": 87,
+        "magicalAttack": 33,
+        "physicalDefense": 112,
+        "magicalDefense": 84,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3e8be135916b7e76",
+      "fullName": "星尘虫",
+      "gameId": 3398,
+      "raceStats": {
+        "hp": 49,
+        "physicalAttack": 47,
+        "magicalAttack": 47,
+        "physicalDefense": 46,
+        "magicalDefense": 58,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_278f29da0bd4f52b",
+      "fullName": "落星虫",
+      "gameId": 3399,
+      "raceStats": {
+        "hp": 65,
+        "physicalAttack": 62,
+        "magicalAttack": 62,
+        "physicalDefense": 61,
+        "magicalDefense": 77,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6ba7b3af27da2625",
+      "fullName": "陨星虫",
+      "gameId": 3400,
+      "raceStats": {
+        "hp": 81,
+        "physicalAttack": 78,
+        "magicalAttack": 78,
+        "physicalDefense": 76,
+        "magicalDefense": 96,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9ca96ae79c231b4b",
+      "fullName": "双灯鱼",
+      "gameId": 3382,
+      "raceStats": {
+        "hp": 102,
+        "physicalAttack": 55,
+        "magicalAttack": 111,
+        "physicalDefense": 57,
+        "magicalDefense": 93,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_fa1c63ad49fa3ffa",
+      "fullName": "利灯鱼",
+      "gameId": 3383,
+      "raceStats": {
+        "hp": 128,
+        "physicalAttack": 68,
+        "magicalAttack": 138,
+        "physicalDefense": 71,
+        "magicalDefense": 116,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ee30eb99632df5ce",
+      "fullName": "月牙雪熊",
+      "gameId": 3457,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 97,
+        "magicalAttack": 39,
+        "physicalDefense": 141,
+        "magicalDefense": 103,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5f0f752695a65545",
+      "fullName": "嗜光嗡嗡",
+      "gameId": 3614,
+      "raceStats": {
+        "hp": 74,
+        "physicalAttack": 91,
+        "magicalAttack": 91,
+        "physicalDefense": 57,
+        "magicalDefense": 100,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7709f87e848d6006",
+      "fullName": "窃光蚊",
+      "gameId": 3615,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 113,
+        "magicalAttack": 113,
+        "physicalDefense": 71,
+        "magicalDefense": 125,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_534e8dc232e788d6",
+      "fullName": "柴渣虫",
+      "gameId": 3436,
+      "raceStats": {
+        "hp": 108,
+        "physicalAttack": 96,
+        "magicalAttack": 38,
+        "physicalDefense": 82,
+        "magicalDefense": 58,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6cf962ececae443b",
+      "fullName": "燃薪虫",
+      "gameId": 3437,
+      "raceStats": {
+        "hp": 135,
+        "physicalAttack": 120,
+        "magicalAttack": 48,
+        "physicalDefense": 103,
+        "magicalDefense": 73,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_afcb0198e268f000",
+      "fullName": "空空颅",
+      "gameId": 3148,
+      "raceStats": {
+        "hp": 70,
+        "physicalAttack": 7,
+        "magicalAttack": 37,
+        "physicalDefense": 54,
+        "magicalDefense": 64,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_80151523a1bdecb1",
+      "fullName": "夜宿颅",
+      "gameId": 3149,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 9,
+        "magicalAttack": 49,
+        "physicalDefense": 72,
+        "magicalDefense": 85,
+        "speed": 64
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b0b427cf3d5241fa",
+      "fullName": "夜枭",
+      "gameId": 3150,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 10,
+        "magicalAttack": 61,
+        "physicalDefense": 90,
+        "magicalDefense": 106,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2d04c5a107c33674",
+      "fullName": "暗夜颅主",
+      "gameId": 5059,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 5,
+        "magicalAttack": 66,
+        "physicalDefense": 95,
+        "magicalDefense": 112,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e5e8224c029e15ec",
+      "fullName": "粉粉星",
+      "gameId": 3198,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 54,
+        "magicalAttack": 102,
+        "physicalDefense": 57,
+        "magicalDefense": 101,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_307957883064ab4d",
+      "fullName": "小皮球",
+      "gameId": 3199,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 68,
+        "magicalAttack": 127,
+        "physicalDefense": 71,
+        "magicalDefense": 126,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cc6013b1574cc28b",
+      "fullName": "贝瑟",
+      "gameId": 3203,
+      "raceStats": {
+        "hp": 79,
+        "physicalAttack": 46,
+        "magicalAttack": 78,
+        "physicalDefense": 51,
+        "magicalDefense": 98,
+        "speed": 33
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_aacf610856d05cc9",
+      "fullName": "贝加尔",
+      "gameId": 3204,
+      "raceStats": {
+        "hp": 105,
+        "physicalAttack": 61,
+        "magicalAttack": 104,
+        "physicalDefense": 68,
+        "magicalDefense": 130,
+        "speed": 44
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e7f61f6680a77cd5",
+      "fullName": "贝古斯",
+      "gameId": 3205,
+      "raceStats": {
+        "hp": 132,
+        "physicalAttack": 76,
+        "magicalAttack": 130,
+        "physicalDefense": 85,
+        "magicalDefense": 163,
+        "speed": 55
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3e28ee2df02a761f",
+      "fullName": "粉星仔",
+      "gameId": 3319,
+      "raceStats": {
+        "hp": 80,
+        "physicalAttack": 63,
+        "magicalAttack": 119,
+        "physicalDefense": 58,
+        "magicalDefense": 102,
+        "speed": 92
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8508bbff0538ba3e",
+      "fullName": "粉耳星兔",
+      "gameId": 3320,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 79,
+        "magicalAttack": 148,
+        "physicalDefense": 73,
+        "magicalDefense": 127,
+        "speed": 115
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_802fd62adaba698b",
+      "fullName": "落陨星兔",
+      "gameId": 3485,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 61,
+        "magicalAttack": 125,
+        "physicalDefense": 87,
+        "magicalDefense": 141,
+        "speed": 130
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e56cfb17e927501f",
+      "fullName": "布瓜蝌",
+      "gameId": 3473,
+      "raceStats": {
+        "hp": 91,
+        "physicalAttack": 84,
+        "magicalAttack": 35,
+        "physicalDefense": 81,
+        "magicalDefense": 55,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_895ceb36f1099b3b",
+      "fullName": "上岸蛙",
+      "gameId": 3474,
+      "raceStats": {
+        "hp": 114,
+        "physicalAttack": 106,
+        "magicalAttack": 44,
+        "physicalDefense": 101,
+        "magicalDefense": 69,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e68a6ec53f0dafff",
+      "fullName": "火红尾",
+      "gameId": 3744,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 56,
+        "magicalAttack": 129,
+        "physicalDefense": 70,
+        "magicalDefense": 89,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e268b7cfd84f0a1f",
+      "fullName": "雅丹鬃",
+      "gameId": 3745,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 70,
+        "magicalAttack": 162,
+        "physicalDefense": 88,
+        "magicalDefense": 111,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5861aaece6abbc5f",
+      "fullName": "春团",
+      "gameId": 3161,
+      "raceStats": {
+        "hp": 48,
+        "physicalAttack": 51,
+        "magicalAttack": 57,
+        "physicalDefense": 65,
+        "magicalDefense": 57,
+        "speed": 63
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b4e949b761334e12",
+      "fullName": "春兔",
+      "gameId": 3162,
+      "raceStats": {
+        "hp": 63,
+        "physicalAttack": 68,
+        "magicalAttack": 76,
+        "physicalDefense": 87,
+        "magicalDefense": 77,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_698ad3439af7d73a",
+      "fullName": "春花兔",
+      "gameId": 3372,
+      "raceStats": {
+        "hp": 79,
+        "physicalAttack": 85,
+        "magicalAttack": 95,
+        "physicalDefense": 103,
+        "magicalDefense": 90,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9e9fbd0d21db6a27",
+      "fullName": "幽星光",
+      "gameId": 3369,
+      "raceStats": {
+        "hp": 49,
+        "physicalAttack": 21,
+        "magicalAttack": 63,
+        "physicalDefense": 48,
+        "magicalDefense": 63,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_868fe3816f18b653",
+      "fullName": "曜星光",
+      "gameId": 3370,
+      "raceStats": {
+        "hp": 65,
+        "physicalAttack": 28,
+        "magicalAttack": 84,
+        "physicalDefense": 64,
+        "magicalDefense": 84,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_11c4e6d87a317e03",
+      "fullName": "暮星辰",
+      "gameId": 3371,
+      "raceStats": {
+        "hp": 81,
+        "physicalAttack": 35,
+        "magicalAttack": 106,
+        "physicalDefense": 80,
+        "magicalDefense": 105,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_853e9c4372c22fd7",
+      "fullName": "钨丝贝贝",
+      "gameId": 3733,
+      "raceStats": {
+        "hp": 62,
+        "physicalAttack": 68,
+        "magicalAttack": 63,
+        "physicalDefense": 78,
+        "magicalDefense": 54,
+        "speed": 33
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_fadb3978eea5093f",
+      "fullName": "辉光幕机",
+      "gameId": 3734,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 91,
+        "magicalAttack": 84,
+        "physicalDefense": 104,
+        "magicalDefense": 72,
+        "speed": 44
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_37e0a0d6a0d4b993",
+      "fullName": "机幕方舟",
+      "gameId": 3735,
+      "raceStats": {
+        "hp": 104,
+        "physicalAttack": 113,
+        "magicalAttack": 105,
+        "physicalDefense": 130,
+        "magicalDefense": 90,
+        "speed": 55
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_944959c9abc3c627",
+      "fullName": "凡雀",
+      "gameId": 3392,
+      "raceStats": {
+        "hp": 71,
+        "physicalAttack": 55,
+        "magicalAttack": 53,
+        "physicalDefense": 52,
+        "magicalDefense": 66,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_bcb2369c1b3bf65e",
+      "fullName": "紫翎鹰",
+      "gameId": 3393,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 74,
+        "magicalAttack": 71,
+        "physicalDefense": 69,
+        "magicalDefense": 88,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_c245104fe73fad25",
+      "fullName": "凡鹰",
+      "gameId": 3394,
+      "raceStats": {
+        "hp": 118,
+        "physicalAttack": 92,
+        "magicalAttack": 89,
+        "physicalDefense": 86,
+        "magicalDefense": 110,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cd1a308eb48c6ee7",
+      "fullName": "小雪人",
+      "gameId": 3531,
+      "raceStats": {
+        "hp": 101,
+        "physicalAttack": 85,
+        "magicalAttack": 80,
+        "physicalDefense": 78,
+        "magicalDefense": 105,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d7890eda12ee6281",
+      "fullName": "雪怪",
+      "gameId": 3532,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 107,
+        "magicalAttack": 99,
+        "physicalDefense": 98,
+        "magicalDefense": 131,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_91b6b1d0ba27d34f",
+      "fullName": "爆焰仔",
+      "gameId": 3572,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 101,
+        "magicalAttack": 50,
+        "physicalDefense": 105,
+        "magicalDefense": 65,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_08f17ac819b76607",
+      "fullName": "爆焰喷喷",
+      "gameId": 3573,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 127,
+        "magicalAttack": 63,
+        "physicalDefense": 131,
+        "magicalDefense": 81,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_38ee49982b9585c9",
+      "fullName": "猴麦仔",
+      "gameId": 3729,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 75,
+        "magicalAttack": 121,
+        "physicalDefense": 50,
+        "magicalDefense": 102,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_1e6e7946ef781309",
+      "fullName": "音碟吼",
+      "gameId": 3730,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 94,
+        "magicalAttack": 151,
+        "physicalDefense": 63,
+        "magicalDefense": 127,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ea44560ba353ca44",
+      "fullName": "加油海葵",
+      "gameId": 3659,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 87,
+        "magicalAttack": 87,
+        "physicalDefense": 102,
+        "magicalDefense": 102,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_07b444210032f19b",
+      "fullName": "加油蟹",
+      "gameId": 3660,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 108,
+        "magicalAttack": 108,
+        "physicalDefense": 128,
+        "magicalDefense": 128,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_190dc8281c5049b1",
+      "fullName": "加油蟹（单只海葵的样子）",
+      "gameId": 3743,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 155,
+        "magicalAttack": 61,
+        "physicalDefense": 128,
+        "magicalDefense": 128,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_531f78b52160b070",
+      "fullName": "小丑豆豆",
+      "gameId": 3487,
+      "raceStats": {
+        "hp": 66,
+        "physicalAttack": 87,
+        "magicalAttack": 88,
+        "physicalDefense": 49,
+        "magicalDefense": 74,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_78f96b030afc52ad",
+      "fullName": "小丑兔",
+      "gameId": 3488,
+      "raceStats": {
+        "hp": 88,
+        "physicalAttack": 116,
+        "magicalAttack": 118,
+        "physicalDefense": 66,
+        "magicalDefense": 99,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a0dd7aaab165d94a",
+      "fullName": "小丑公爵",
+      "gameId": 3489,
+      "raceStats": {
+        "hp": 111,
+        "physicalAttack": 145,
+        "magicalAttack": 147,
+        "physicalDefense": 82,
+        "magicalDefense": 124,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9ea91035b620d764",
+      "fullName": "烟花团",
+      "gameId": 3677,
+      "raceStats": {
+        "hp": 61,
+        "physicalAttack": 35,
+        "magicalAttack": 89,
+        "physicalDefense": 50,
+        "magicalDefense": 78,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_765e2b577e6118df",
+      "fullName": "烟花伯爵",
+      "gameId": 3678,
+      "raceStats": {
+        "hp": 76,
+        "physicalAttack": 44,
+        "magicalAttack": 111,
+        "physicalDefense": 62,
+        "magicalDefense": 97,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_72d2072cd2a176d0",
+      "fullName": "咕咕帽",
+      "gameId": 3683,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 74,
+        "magicalAttack": 72,
+        "physicalDefense": 110,
+        "magicalDefense": 76,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a35d11156a88dcac",
+      "fullName": "咕德帽帽",
+      "gameId": 3684,
+      "raceStats": {
+        "hp": 128,
+        "physicalAttack": 92,
+        "magicalAttack": 90,
+        "physicalDefense": 137,
+        "magicalDefense": 95,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_86bbcbdab1a84627",
+      "fullName": "炫光迪迪",
+      "gameId": 3736,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 95,
+        "magicalAttack": 111,
+        "physicalDefense": 52,
+        "magicalDefense": 106,
+        "speed": 104
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_60f921afbc37ef1d",
+      "fullName": "霹雳迪迪",
+      "gameId": 3737,
+      "raceStats": {
+        "hp": 104,
+        "physicalAttack": 119,
+        "magicalAttack": 139,
+        "physicalDefense": 65,
+        "magicalDefense": 133,
+        "speed": 130
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_063422817e8deefc",
+      "fullName": "小鼓象",
+      "gameId": 3708,
+      "raceStats": {
+        "hp": 104,
+        "physicalAttack": 86,
+        "magicalAttack": 56,
+        "physicalDefense": 139,
+        "magicalDefense": 64,
+        "speed": 64
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_faed11065c114c00",
+      "fullName": "巨鼓象",
+      "gameId": 3709,
+      "raceStats": {
+        "hp": 130,
+        "physicalAttack": 107,
+        "magicalAttack": 70,
+        "physicalDefense": 173,
+        "magicalDefense": 80,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_6aa9095643b483ba",
+      "fullName": "牵线木偶",
+      "gameId": 3234,
+      "raceStats": {
+        "hp": 77,
+        "physicalAttack": 83,
+        "magicalAttack": 89,
+        "physicalDefense": 69,
+        "magicalDefense": 107,
+        "speed": 84
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9915319f405cd921",
+      "fullName": "帅帅魔偶",
+      "gameId": 3235,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 104,
+        "magicalAttack": 111,
+        "physicalDefense": 86,
+        "magicalDefense": 133,
+        "speed": 105
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_bda93c9052c59fb1",
+      "fullName": "学院呱呱",
+      "gameId": 3620,
+      "raceStats": {
+        "hp": 132,
+        "physicalAttack": 99,
+        "magicalAttack": 99,
+        "physicalDefense": 92,
+        "magicalDefense": 92,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ccf6a088d572393c",
+      "fullName": "烈钻鸟",
+      "gameId": 3078,
+      "raceStats": {
+        "hp": 56,
+        "physicalAttack": 49,
+        "magicalAttack": 60,
+        "physicalDefense": 43,
+        "magicalDefense": 73,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_a540cc055e4fa502",
+      "fullName": "长尾火鸟",
+      "gameId": 3079,
+      "raceStats": {
+        "hp": 75,
+        "physicalAttack": 65,
+        "magicalAttack": 80,
+        "physicalDefense": 58,
+        "magicalDefense": 97,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_fbd420db80dc3a39",
+      "fullName": "火羽",
+      "gameId": 3080,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 82,
+        "magicalAttack": 100,
+        "physicalDefense": 72,
+        "magicalDefense": 121,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b4aa42d433371d0c",
+      "fullName": "叮叮卯",
+      "gameId": 3752,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 45,
+        "magicalAttack": 81,
+        "physicalDefense": 75,
+        "magicalDefense": 136,
+        "speed": 48
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_03d19450769b55c0",
+      "fullName": "飞飞钥",
+      "gameId": 3753,
+      "raceStats": {
+        "hp": 146,
+        "physicalAttack": 57,
+        "magicalAttack": 101,
+        "physicalDefense": 94,
+        "magicalDefense": 170,
+        "speed": 60
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_462cd79c7165004e",
+      "fullName": "碎晶蝎",
+      "gameId": 3402,
+      "raceStats": {
+        "hp": 65,
+        "physicalAttack": 76,
+        "magicalAttack": 70,
+        "physicalDefense": 71,
+        "magicalDefense": 47,
+        "speed": 57
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_25d82643f5f69e28",
+      "fullName": "晶尾蝎",
+      "gameId": 3403,
+      "raceStats": {
+        "hp": 86,
+        "physicalAttack": 101,
+        "magicalAttack": 94,
+        "physicalDefense": 95,
+        "magicalDefense": 63,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3ba0ecc3da584c40",
+      "fullName": "蝎子王",
+      "gameId": 3404,
+      "raceStats": {
+        "hp": 108,
+        "physicalAttack": 126,
+        "magicalAttack": 117,
+        "physicalDefense": 119,
+        "magicalDefense": 79,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0dc6996242a7fc7f",
+      "fullName": "森豆丁",
+      "gameId": 3749,
+      "raceStats": {
+        "hp": 87,
+        "physicalAttack": 93,
+        "magicalAttack": 42,
+        "physicalDefense": 79,
+        "magicalDefense": 53,
+        "speed": 42
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_862ab314c1bbe236",
+      "fullName": "森蛮人",
+      "gameId": 3750,
+      "raceStats": {
+        "hp": 115,
+        "physicalAttack": 124,
+        "magicalAttack": 56,
+        "physicalDefense": 106,
+        "magicalDefense": 70,
+        "speed": 56
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_59367d8effdf8a49",
+      "fullName": "森巨人",
+      "gameId": 3751,
+      "raceStats": {
+        "hp": 144,
+        "physicalAttack": 155,
+        "magicalAttack": 70,
+        "physicalDefense": 132,
+        "magicalDefense": 88,
+        "speed": 70
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b361152983cb5fcf",
+      "fullName": "霹雳宝宝",
+      "gameId": 3351,
+      "raceStats": {
+        "hp": 54,
+        "physicalAttack": 66,
+        "magicalAttack": 66,
+        "physicalDefense": 67,
+        "magicalDefense": 56,
+        "speed": 72
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8372a9cff5cfd614",
+      "fullName": "雷鸣小子",
+      "gameId": 3352,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 88,
+        "magicalAttack": 88,
+        "physicalDefense": 90,
+        "magicalDefense": 74,
+        "speed": 96
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_09c86b84dc2e2fe2",
+      "fullName": "雷神之子",
+      "gameId": 3353,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 110,
+        "magicalAttack": 110,
+        "physicalDefense": 112,
+        "magicalDefense": 93,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_754a6d48ff3008ca",
+      "fullName": "雪灵兽",
+      "gameId": 3341,
+      "raceStats": {
+        "hp": 62,
+        "physicalAttack": 51,
+        "magicalAttack": 14,
+        "physicalDefense": 67,
+        "magicalDefense": 62,
+        "speed": 75
+      },
+      "patchSources": [
+        "bwikiStatSync"
+      ]
+    },
+    {
+      "id": "spirit_eea3305074d126d7",
+      "fullName": "幻雪兽",
+      "gameId": 3342,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 68,
+        "magicalAttack": 19,
+        "physicalDefense": 89,
+        "magicalDefense": 82,
+        "speed": 100
+      },
+      "patchSources": [
+        "bwikiStatSync"
+      ]
+    },
+    {
+      "id": "spirit_c0b03ac594c86309",
+      "fullName": "饮雪狂兽",
+      "gameId": 3343,
+      "raceStats": {
+        "hp": 104,
+        "physicalAttack": 85,
+        "magicalAttack": 24,
+        "physicalDefense": 111,
+        "magicalDefense": 103,
+        "speed": 125
+      },
+      "patchSources": [
+        "officialMidseason"
+      ]
+    },
+    {
+      "id": "spirit_5f3409c518edcf84",
+      "fullName": "火豆丁",
+      "gameId": 3754,
+      "raceStats": {
+        "hp": 45,
+        "physicalAttack": 46,
+        "magicalAttack": 15,
+        "physicalDefense": 49,
+        "magicalDefense": 30,
+        "speed": 29
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_f02313f5c7b8270f",
+      "fullName": "火蛮人",
+      "gameId": 3755,
+      "raceStats": {
+        "hp": 60,
+        "physicalAttack": 62,
+        "magicalAttack": 20,
+        "physicalDefense": 65,
+        "magicalDefense": 41,
+        "speed": 39
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_0955dfad72f8debd",
+      "fullName": "火巨人",
+      "gameId": 3756,
+      "raceStats": {
+        "hp": 75,
+        "physicalAttack": 77,
+        "magicalAttack": 26,
+        "physicalDefense": 81,
+        "magicalDefense": 51,
+        "speed": 49
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_d09c113d91ed876b",
+      "fullName": "友爱天天",
+      "gameId": 3228,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 30,
+        "magicalAttack": 93,
+        "physicalDefense": 70,
+        "magicalDefense": 80,
+        "speed": 76
+      },
+      "patchSources": [
+        "bwikiStatSync"
+      ]
+    },
+    {
+      "id": "spirit_b9382967288bd429",
+      "fullName": "友爱星飞",
+      "gameId": 3229,
+      "raceStats": {
+        "hp": 122,
+        "physicalAttack": 37,
+        "magicalAttack": 116,
+        "physicalDefense": 88,
+        "magicalDefense": 100,
+        "speed": 95
+      },
+      "patchSources": [
+        "officialMidseason"
+      ]
+    },
+    {
+      "id": "spirit_e00d520c0883489b",
+      "fullName": "莫比乌乌",
+      "gameId": 3747,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 36,
+        "magicalAttack": 98,
+        "physicalDefense": 66,
+        "magicalDefense": 84,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_77a7d75ef5d795a1",
+      "fullName": "克莱因龙",
+      "gameId": 3748,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 45,
+        "magicalAttack": 122,
+        "physicalDefense": 83,
+        "magicalDefense": 105,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_beeaa0eedf384647",
+      "fullName": "瑰眼仔",
+      "gameId": 3183,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 59,
+        "magicalAttack": 60,
+        "physicalDefense": 59,
+        "magicalDefense": 71,
+        "speed": 57
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_1e1a54ce9df3fa73",
+      "fullName": "耳翎瑰魅",
+      "gameId": 3184,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 78,
+        "magicalAttack": 80,
+        "physicalDefense": 79,
+        "magicalDefense": 95,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_697c9e478c126d8b",
+      "fullName": "邪眼巨魔",
+      "gameId": 3185,
+      "raceStats": {
+        "hp": 111,
+        "physicalAttack": 98,
+        "magicalAttack": 99,
+        "physicalDefense": 99,
+        "magicalDefense": 119,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5a7139c375f14f75",
+      "fullName": "觅觅蝠",
+      "gameId": 3321,
+      "raceStats": {
+        "hp": 76,
+        "physicalAttack": 60,
+        "magicalAttack": 59,
+        "physicalDefense": 58,
+        "magicalDefense": 74,
+        "speed": 33
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4621dc00a0a34768",
+      "fullName": "翻翻蝠",
+      "gameId": 3322,
+      "raceStats": {
+        "hp": 101,
+        "physicalAttack": 79,
+        "magicalAttack": 78,
+        "physicalDefense": 78,
+        "magicalDefense": 98,
+        "speed": 44
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_9113b86360b2a162",
+      "fullName": "夜游魔",
+      "gameId": 3323,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 99,
+        "magicalAttack": 98,
+        "physicalDefense": 97,
+        "magicalDefense": 123,
+        "speed": 55
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_633f294762a4edb7",
+      "fullName": "芽眼魔",
+      "gameId": 3347,
+      "raceStats": {
+        "hp": 80,
+        "physicalAttack": 62,
+        "magicalAttack": 59,
+        "physicalDefense": 58,
+        "magicalDefense": 66,
+        "speed": 45
+      },
+      "patchSources": [
+        "bwikiStatSync"
+      ]
+    },
+    {
+      "id": "spirit_7b9235bec269eae3",
+      "fullName": "叶眼魔",
+      "gameId": 3348,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 82,
+        "magicalAttack": 78,
+        "physicalDefense": 77,
+        "magicalDefense": 88,
+        "speed": 60
+      },
+      "patchSources": [
+        "bwikiStatSync"
+      ]
+    },
+    {
+      "id": "spirit_569cad56dd846019",
+      "fullName": "障眼魔",
+      "gameId": 3349,
+      "raceStats": {
+        "hp": 134,
+        "physicalAttack": 103,
+        "magicalAttack": 98,
+        "physicalDefense": 96,
+        "magicalDefense": 110,
+        "speed": 75
+      },
+      "patchSources": [
+        "officialMidseason"
+      ]
+    },
+    {
+      "id": "spirit_c81d428eaaa8e87b",
+      "fullName": "星云旅者",
+      "gameId": 3466,
+      "raceStats": {
+        "hp": 104,
+        "physicalAttack": 32,
+        "magicalAttack": 129,
+        "physicalDefense": 104,
+        "magicalDefense": 83,
+        "speed": 120
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_bad7d47694c21629",
+      "fullName": "点点",
+      "gameId": 3757,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 41,
+        "magicalAttack": 84,
+        "physicalDefense": 56,
+        "magicalDefense": 94,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_ec7062cf16b55b35",
+      "fullName": "珀尔鼬",
+      "gameId": 3758,
+      "raceStats": {
+        "hp": 117,
+        "physicalAttack": 51,
+        "magicalAttack": 105,
+        "physicalDefense": 69,
+        "magicalDefense": 117,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_530c8af0ca46270f",
+      "fullName": "不咕钟",
+      "gameId": 3616,
+      "raceStats": {
+        "hp": 68,
+        "physicalAttack": 67,
+        "magicalAttack": 68,
+        "physicalDefense": 58,
+        "magicalDefense": 93,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_847ceda3de74ce90",
+      "fullName": "溯源钟",
+      "gameId": 3617,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 84,
+        "magicalAttack": 86,
+        "physicalDefense": 72,
+        "magicalDefense": 116,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_58d9e599a25aa153",
+      "fullName": "加灵",
+      "gameId": 3230,
+      "raceStats": {
+        "hp": 39,
+        "physicalAttack": 22,
+        "magicalAttack": 57,
+        "physicalDefense": 50,
+        "magicalDefense": 74,
+        "speed": 66
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e1507f26b7fe0fd7",
+      "fullName": "加益",
+      "gameId": 3231,
+      "raceStats": {
+        "hp": 52,
+        "physicalAttack": 29,
+        "magicalAttack": 75,
+        "physicalDefense": 67,
+        "magicalDefense": 99,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_837f83264c04abe9",
+      "fullName": "加尔",
+      "gameId": 3232,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 36,
+        "magicalAttack": 94,
+        "physicalDefense": 84,
+        "magicalDefense": 124,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_20d0512761016266",
+      "fullName": "黑化加尔",
+      "gameId": 3233,
+      "raceStats": {
+        "hp": 84,
+        "physicalAttack": 35,
+        "magicalAttack": 104,
+        "physicalDefense": 94,
+        "magicalDefense": 124,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_7852c4374166c897",
+      "fullName": "咬咬小子",
+      "gameId": 3710,
+      "raceStats": {
+        "hp": 102,
+        "physicalAttack": 102,
+        "magicalAttack": 17,
+        "physicalDefense": 48,
+        "magicalDefense": 92,
+        "speed": 76
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_972e038b6e427f6b",
+      "fullName": "胡桃王子",
+      "gameId": 3711,
+      "raceStats": {
+        "hp": 128,
+        "physicalAttack": 127,
+        "magicalAttack": 21,
+        "physicalDefense": 60,
+        "magicalDefense": 115,
+        "speed": 95
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_87ae52b86587400d",
+      "fullName": "足尖元件",
+      "gameId": 3718,
+      "raceStats": {
+        "hp": 91,
+        "physicalAttack": 40,
+        "magicalAttack": 88,
+        "physicalDefense": 62,
+        "magicalDefense": 96,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_99a8fba5f269c210",
+      "fullName": "离心舞者",
+      "gameId": 3719,
+      "raceStats": {
+        "hp": 114,
+        "physicalAttack": 50,
+        "magicalAttack": 110,
+        "physicalDefense": 77,
+        "magicalDefense": 120,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_4572605541ea5410",
+      "fullName": "蝴蝶陶陶",
+      "gameId": 3360,
+      "raceStats": {
+        "hp": 57,
+        "physicalAttack": 47,
+        "magicalAttack": 8,
+        "physicalDefense": 65,
+        "magicalDefense": 57,
+        "speed": 75
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_cde6b16e331c998f",
+      "fullName": "铆钉毛毛",
+      "gameId": 3361,
+      "raceStats": {
+        "hp": 76,
+        "physicalAttack": 62,
+        "magicalAttack": 11,
+        "physicalDefense": 87,
+        "magicalDefense": 76,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_2b2a9041fef7f98b",
+      "fullName": "徘徊爪爪",
+      "gameId": 3362,
+      "raceStats": {
+        "hp": 95,
+        "physicalAttack": 78,
+        "magicalAttack": 14,
+        "physicalDefense": 109,
+        "magicalDefense": 95,
+        "speed": 125
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e5d60f63ebdd049f",
+      "fullName": "苞米仔",
+      "gameId": 3759,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 79,
+        "magicalAttack": 80,
+        "physicalDefense": 88,
+        "magicalDefense": 88,
+        "speed": 60
+      },
+      "patchSources": [
+        "bwikiStatSync"
+      ]
+    },
+    {
+      "id": "spirit_d6dda154d3258734",
+      "fullName": "炮米花",
+      "gameId": 3760,
+      "raceStats": {
+        "hp": 115,
+        "physicalAttack": 99,
+        "magicalAttack": 100,
+        "physicalDefense": 110,
+        "magicalDefense": 110,
+        "speed": 75
+      },
+      "patchSources": [
+        "officialMidseason"
+      ]
+    },
+    {
+      "id": "spirit_3184ea3b2586daef",
+      "fullName": "十字蝌蚪",
+      "gameId": 3591,
+      "raceStats": {
+        "hp": 68,
+        "physicalAttack": 78,
+        "magicalAttack": 31,
+        "physicalDefense": 63,
+        "magicalDefense": 47,
+        "speed": 66
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_8792e27bbf3c11a4",
+      "fullName": "十字蛙",
+      "gameId": 3592,
+      "raceStats": {
+        "hp": 91,
+        "physicalAttack": 104,
+        "magicalAttack": 41,
+        "physicalDefense": 85,
+        "magicalDefense": 63,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_93e6120c353ab24b",
+      "fullName": "深渊蛙",
+      "gameId": 3593,
+      "raceStats": {
+        "hp": 113,
+        "physicalAttack": 130,
+        "magicalAttack": 51,
+        "physicalDefense": 106,
+        "magicalDefense": 78,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_5469448171f0ed00",
+      "fullName": "卡波",
+      "gameId": 3264,
+      "raceStats": {
+        "hp": 82,
+        "physicalAttack": 86,
+        "magicalAttack": 27,
+        "physicalDefense": 52,
+        "magicalDefense": 41,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_275dd104cb33f7c4",
+      "fullName": "卡拉波斯",
+      "gameId": 3265,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 107,
+        "magicalAttack": 34,
+        "physicalDefense": 65,
+        "magicalDefense": 51,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_e421bd362627ef57",
+      "fullName": "守夜烛",
+      "gameId": 3675,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 76,
+        "magicalAttack": 83,
+        "physicalDefense": 86,
+        "magicalDefense": 98,
+        "speed": 84
+      },
+      "patchSources": [
+        "bwikiStatSync"
+      ]
+    },
+    {
+      "id": "spirit_94a85e8f16adabcf",
+      "fullName": "流明坎德拉",
+      "gameId": 3676,
+      "raceStats": {
+        "hp": 121,
+        "physicalAttack": 96,
+        "magicalAttack": 104,
+        "physicalDefense": 108,
+        "magicalDefense": 123,
+        "speed": 105
+      },
+      "patchSources": [
+        "officialMidseason"
+      ]
+    },
+    {
+      "id": "spirit_55b0f9a33ceb0415",
+      "fullName": "蜜果骸",
+      "gameId": 3706,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 34,
+        "magicalAttack": 96,
+        "physicalDefense": 68,
+        "magicalDefense": 85,
+        "speed": 88
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_3c13248ddfa2a129",
+      "fullName": "半朽蜜果灵",
+      "gameId": 3707,
+      "raceStats": {
+        "hp": 115,
+        "physicalAttack": 43,
+        "magicalAttack": 120,
+        "physicalDefense": 84,
+        "magicalDefense": 106,
+        "speed": 110
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_318f0eeb215e3f31",
+      "fullName": "稻草人",
+      "gameId": 3697,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 70,
+        "magicalAttack": 70,
+        "physicalDefense": 90,
+        "magicalDefense": 90,
+        "speed": 44
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_db6b6d95ebcaa2e3",
+      "fullName": "稻草守护者",
+      "gameId": 3698,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 88,
+        "magicalAttack": 88,
+        "physicalDefense": 112,
+        "magicalDefense": 112,
+        "speed": 55
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_740d8925b0f9e3f9",
+      "fullName": "栗鼠",
+      "gameId": 3565,
+      "raceStats": {
+        "hp": 91,
+        "physicalAttack": 61,
+        "magicalAttack": 63,
+        "physicalDefense": 62,
+        "magicalDefense": 89,
+        "speed": 80
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_90fe6de063fbcbcd",
+      "fullName": "壳栗丝鼠",
+      "gameId": 3566,
+      "raceStats": {
+        "hp": 114,
+        "physicalAttack": 77,
+        "magicalAttack": 79,
+        "physicalDefense": 77,
+        "magicalDefense": 111,
+        "speed": 100
+      },
+      "patchSources": []
+    },
+    {
+      "id": "spirit_b7e38cd586b1d05c",
+      "fullName": "睡铃雪影娃娃",
+      "gameId": 3746,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 42,
+        "magicalAttack": 104,
+        "physicalDefense": 85,
+        "magicalDefense": 116,
+        "speed": 100
+      },
+      "patchSources": []
+    }
+  ]
+}

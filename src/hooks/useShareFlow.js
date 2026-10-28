@@ -9,6 +9,7 @@ import {
 import { decodeShareEnvelope, encodeShareEnvelope, selectConfigurationDraftInputs, selectShareableInputs, shareHashFromInput } from "../state/share.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { routeFor } from "../runtime/routes.js";
+import { migrateGlobalDraftState } from "../runtime/global-session-migration.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { formatShareError } from "../runtime/share-feedback.js";
 import { IS_PREVIEW_BUILD } from "../runtime/preview-channel.js";
@@ -35,7 +36,8 @@ export function useShareFlow({
   const locale = localeOverride ?? runtime.locale;
   const shareRequestId = shareRequestOverride ?? runtime.shareRequestId ?? 0;
   const offerCrossServerShare = onCrossServerShare ?? runtime.onShareConflict;
-  const shareKind = serverId === "global" ? "configuration-draft" : "configuration";
+  const draftOnly = serverId === "global" && !snapshot?.meta?.id;
+  const shareKind = draftOnly ? "configuration-draft" : "configuration";
   const [importDraft, setImportDraft] = useState("");
   const [pendingSharedState, setPendingSharedState] = useState(null);
   const [shareLink, setShareLink] = useState("");
@@ -65,7 +67,7 @@ export function useShareFlow({
   function canApply(scope, request = importRef.current) {
     const path = globalThis.location?.pathname ?? "";
     const wrongPath = serverId === "global" ? /^\/(?:cn|dianlu)(?:\/|$)/.test(path)
-      : /^\/(?:en(?:\/|$)|global(?:\/|$))/.test(path);
+      : /^\/(?:en(?:\/|$)|jp(?:\/|$)|global(?:\/|$))/.test(path);
     return active && scope === scopeRef.current && request === importRef.current && !wrongPath;
   }
 
@@ -93,14 +95,16 @@ export function useShareFlow({
       if (offerCrossServerShare) { offerCrossServerShare(envelope, hash); return true; }
       throw Object.assign(new TypeError("分享服务器与当前工作区不匹配"), { code: "SHARE_SERVER_MISMATCH" });
     }
-    if (envelope.kind !== shareKind) {
+    if (envelope.kind !== shareKind && !(serverId === "global" && envelope.kind === "configuration-draft")) {
       throw Object.assign(new TypeError("当前工作区不支持此分享类型"), { code: "SHARE_UNSUPPORTED_KIND" });
     }
-    if (serverId === "global") {
-      applySharedConfiguration(envelope.payload, { recordHistory: !initial || initialImportHasPreviousSession });
+    if (envelope.kind === "configuration-draft") {
+      const payload = draftOnly ? envelope.payload : migrateGlobalDraftState(envelope.payload, initialState);
+      if (!draftOnly) assertSnapshotReferences(payload, snapshot);
+      applySharedConfiguration(payload, { recordHistory: !initial || initialImportHasPreviousSession });
       consumedHashRef.current = hash;
       globalThis.history?.replaceState?.(globalThis.history?.state ?? null, "", `${globalThis.location.pathname}${globalThis.location.search}`);
-      if (notify) onToast(t("草稿已载入；占位资料可继续编辑，国际服计算尚未开放"));
+      if (notify) onToast(t("配置已载入"));
       return true;
     }
     if (envelope.protocolVersion === 2 && envelope.gameVersion !== (snapshot.meta?.gameVersion ?? null)) {
@@ -159,15 +163,15 @@ export function useShareFlow({
 
   async function generateShareLink() {
     const scope = scopeRef.current;
-    if (!canApply(scope) || (serverId === "cn" && !configurationReady)) {
+    if (!canApply(scope) || (!draftOnly && !configurationReady)) {
       setShareLink("");
       return "";
     }
     const hash = await encodeShareEnvelope({
-      serverId, gameVersion: serverId === "global" ? null : snapshot.meta?.gameVersion ?? null,
-      dataVersion: serverId === "global" ? null : state.versions.data,
-      rulesVersion: serverId === "global" ? null : state.versions.rules,
-      locale, kind: shareKind, payload: serverId === "global" ? selectConfigurationDraftInputs(state) : selectShareableInputs(state),
+      serverId, gameVersion: draftOnly ? null : snapshot.meta?.gameVersion ?? null,
+      dataVersion: draftOnly ? null : state.versions.data,
+      rulesVersion: draftOnly ? null : state.versions.rules,
+      locale, kind: shareKind, payload: draftOnly ? selectConfigurationDraftInputs(state) : selectShareableInputs(state),
     });
     if (!canApply(scope)) return "";
     consumedHashRef.current = hash;

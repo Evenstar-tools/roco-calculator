@@ -1,0 +1,71 @@
+{
+  "status": "passed",
+  "scope": "Independent source-to-delivery review; no product or delivery data rewritten by this reviewer.",
+  "clientVersion": "1.61.0.91",
+  "sourceVerification": {
+    "configLocalizedFieldsCheckedAgainstCurrentBinaryTableAndLocaleIndexes": 12695,
+    "localizedTables": 20,
+    "configTablesInExtraction": 26,
+    "locresEnJaNamespaceKeysCheckedAgainstBinary": 6490,
+    "umgSourceOccurrencesCheckedAtAssetFStringOffsets": 2164,
+    "umgSourceNamespaceKeys": 2104,
+    "allCoreRawAndPlainFieldsMatchSource": true,
+    "allProjectSelectedSourcesMatchExactTableOrNamespaceKey": true,
+    "sixDistinctStatsAndHPAliasChecked": true,
+    "eighteenTypeFullAndShortNamesChecked": true,
+    "thirtyNatureNamesAndIsPlayerPetNatureFlagsChecked": true,
+    "nonplayerNature31Excluded": true,
+    "deprecatedType7Excluded": true
+  },
+  "deliveryVerification": {
+    "csvAllColumnsReadback": {
+      "界面核心术语中英日.csv": 399,
+      "十八属性全称简称.csv": 18,
+      "当前项目文案对照.csv": 229,
+      "未对应及多义词.csv": 110,
+      "原生界面完整中英日.csv": 2104,
+      "机制和天气说明中英日.csv": 215,
+      "抗性与弱点方向_待补中文源.csv": 8
+    },
+    "projectMappingStatus": {
+      "已按上下文对应": 119,
+      "多义需选择": 18,
+      "未找到": 92
+    },
+    "all727UiExactCandidateRowsUnselected": true,
+    "directionalRelations": {
+      "distinctEnglishRelations": 4,
+      "namespaceKeys": 8,
+      "allMissingChineseRetainedNull": true,
+      "csvMissingChineseRetainedBlank": true
+    },
+    "readmeMainTerminologyAndCountsChecked": true
+  },
+  "contextChecks": {
+    "normalElementVersusNeutralNatureSeparated": true,
+    "elementClassVersusStatAttributesUnselectedUntilContextChosen": true,
+    "healVersusRestoreConfigurationNotConflated": true,
+    "closeInterfaceVersusOffSeparated": true,
+    "skillPriorityVersusActualActionOrderSeparated": true
+  },
+  "resolvedFindings": [
+    {
+      "concept": "关闭",
+      "affectedProjectRows": 2,
+      "before": "Close selected despite mixed interface-close and feature-Off references",
+      "after": "selectedSource null; contextual Close and Off source candidates retained"
+    },
+    {
+      "concept": "先手",
+      "affectedProjectRows": 1,
+      "before": "Priority selected for actual action order and Speed comparison contexts",
+      "after": "selectedSource null; Priority retained only as skill-priority contextual candidate"
+    }
+  ],
+  "openIssues": [],
+  "boundaries": [
+    "Missing Chinese directional labels were not reverse-translated.",
+    "Official source wording and numerical text differences are preserved; no game rules were activated or changed.",
+    "Package text presence does not establish feature availability in the test build."
+  ]
+}

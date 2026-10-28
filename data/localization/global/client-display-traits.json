@@ -1,0 +1,52 @@
+{
+  "clientVersion": "1.61.0.91",
+  "source": "Local client extraction 2026-10-28; decoded SKILL_CONF; display only; no computation rules",
+  "records": [
+    {
+      "gameId": 200190,
+      "table": "SKILL_CONF",
+      "clientSkillType": 2,
+      "textRefs": {
+        "name": 383,
+        "desc": 384
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "绝对客观",
+          "description": "获得的增益和减益效果会让所有精灵获得。"
+        },
+        "en": {
+          "name": "Absolute Objectivity",
+          "description": "All buffs and debuffs gained are also applied to all Jinies."
+        },
+        "ja": {
+          "name": "絶対公平",
+          "description": "獲得したバフ・デバフがジニ全体に共有される。"
+        }
+      }
+    },
+    {
+      "gameId": 200284,
+      "table": "SKILL_CONF",
+      "clientSkillType": 2,
+      "textRefs": {
+        "name": 567,
+        "desc": 568
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "玳龟",
+          "description": "每受到1次攻击伤害，敌方获得2层<desc_id=1035>星陨</>。"
+        },
+        "en": {
+          "name": "Tortia",
+          "description": "Each time it takes damage, the enemy receives 2 stacks of <desc_id=1035>Starfall</>."
+        },
+        "ja": {
+          "name": "タートー",
+          "description": "攻撃ダメージを1回受けるたびに、相手に<desc_id=1035>隕石</>を2スタック付与する。"
+        }
+      }
+    }
+  ]
+}

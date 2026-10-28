@@ -1,4 +1,4 @@
-import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import { publicResourceUrl } from "../runtime/public-resource-url.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import {
@@ -70,8 +70,8 @@ export function TeamDrawer({
   shortcutSettings = { enabled: true, bindings: { team: "t" } },
 }) {
   const { t } = useLocale();
-  const { serverId } = useRuntime();
-  const analysisAvailable = serverId === "cn";
+  const { serverId, release } = useRuntime();
+  const analysisAvailable = release.capabilities.calculate && (serverId !== "global" || Boolean(snapshot.meta?.id));
   const closeRef = useRef(null);
   const closeActionRef = useRef(null);
   const drawerRef = useRef(null);
@@ -249,7 +249,7 @@ export function TeamDrawer({
             >
               {teamsState.teams.map((team) => (
                 <option key={team.id} value={team.id}>
-                  {team.name}
+                  {t(team.name)}
                 </option>
               ))}
             </select>
@@ -320,7 +320,7 @@ export function TeamDrawer({
           <button
             aria-pressed={paneMode === "analysis"}
             disabled={!activeTeam || !analysisAvailable}
-            title={!analysisAvailable ? t("国际服规则尚未核验，分析暂不可用") : undefined}
+            title={!analysisAvailable ? t("当前服务器暂不支持此分析") : undefined}
             onClick={() =>
               navigate(() => {
                 setExchangeMode(null);
@@ -336,7 +336,7 @@ export function TeamDrawer({
           <button
             aria-pressed={paneMode === "matchup"}
             disabled={!activeTeam || !analysisAvailable}
-            title={!analysisAvailable ? t("国际服规则尚未核验，分析暂不可用") : undefined}
+            title={!analysisAvailable ? t("当前服务器暂不支持此分析") : undefined}
             onClick={() =>
               navigate(() => {
                 setExchangeMode(null);
@@ -449,7 +449,7 @@ export function TeamDrawer({
                       ) : null}
                       <div>
                         <h3>
-                          {sourceLabel} · {activeSpirit?.fullName ?? t("待选择精灵")}
+                          {t(sourceLabel)} · {t(activeSpirit?.fullName ?? t("待选择精灵"))}
                         </h3>
                         {analysisEntry ? <span>{t("临时配置")}</span> : (
                           <button type="button" onClick={() => navigate(() => {
@@ -479,20 +479,20 @@ export function TeamDrawer({
                           const label = apply ? t("设为{side}", { side: name }) : t("从{side}复制", { side: name });
                           return (
                             <button
-                              aria-label={apply ? label : t("用当前{side}填入{index}号位", { side: name, index: selectedIndex + 1 })}
+                              aria-label={t(apply ? label : t("用当前{side}填入{index}号位", { side: name, index: selectedIndex + 1 }))}
                               data-side={side}
                               disabled={apply && (!selectedMember || selectedMember.needsRepair)}
                               key={`${side}-${apply}`}
                               onClick={() => navigate(() => apply
                                 ? onApply(side, selectedMember)
                                 : onCaptureSide(side, activeTeam.id, selectedIndex))}
-                              title={apply ? t("将{index}号位设为{side}", { index: selectedIndex + 1, side: name }) : label}
+                              title={t(apply ? t("将{index}号位设为{side}", { index: selectedIndex + 1, side: name }) : label)}
                               type="button"
                             >
                               <svg aria-hidden="true" className={apply ? undefined : "team-capture-icon"} width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
                                 <use href={publicResourceUrl(`/assets/ui/team-actions.svg#${apply ? "set" : "copy"}`)} />
                               </svg>
-                              {label}
+                              {t(label)}
                             </button>
                           );
                         }))}
@@ -517,7 +517,7 @@ export function TeamDrawer({
                     <button
                       aria-pressed={memberPage === "ability"}
                       disabled={!analysisAvailable}
-                      title={!analysisAvailable ? t("国际服规则尚未核验，分析暂不可用") : undefined}
+                      title={!analysisAvailable ? t("当前服务器暂不支持此分析") : undefined}
                       onClick={() =>
                         navigate(() => {
                           setMemberPage("ability");
@@ -543,7 +543,7 @@ export function TeamDrawer({
                       snapshot={snapshot}
                       spiritChoices={spiritChoices}
                     />
-                  ) : !analysisAvailable ? <p role="status">{t("国际服规则尚未核验，分析暂不可用")}</p> : (
+                  ) : !analysisAvailable ? <p role="status">{t("当前服务器暂不支持此分析")}</p> : (
                     <AbilityWorkbench
                       configuration={activeConfiguration}
                       onApplyMember={

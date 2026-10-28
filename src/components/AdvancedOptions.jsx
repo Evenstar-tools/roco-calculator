@@ -1,3 +1,4 @@
+import { useCalculatorLocale } from "../i18n/calculator-text.js";
 import { gainLabels, gainTermLabel, sourceLabel } from "../domain/gain-provenance.js";
 import { CaretDown, SlidersHorizontal } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
@@ -182,29 +183,32 @@ export function buildFormulaAudit(result) {
 }
 
 function AuditChip({ label, muted = false, tone = "neutral", value }) {
+  const { tc } = useCalculatorLocale();
   return (
     <span
       className="formula-audit__chip"
       data-muted={muted ? "true" : undefined}
       data-tone={tone}
     >
-      <small>{label}</small>
-      {value}
+      <small>{tc(label)}</small>
+      {tc(value)}
     </span>
   );
 }
 
 function FormulaRow({ children, title, tone }) {
+  const { tc } = useCalculatorLocale();
   return (
     <div className="formula-audit__row" data-tone={tone}>
-      <strong>{title}</strong>
-      <div className="formula-audit__expression">{children}</div>
+      <strong>{tc(title)}</strong>
+      <div className="formula-audit__expression">{tc(children)}</div>
     </div>
   );
 }
 
 function Operator({ children }) {
-  return <span className="formula-audit__operator">{children}</span>;
+  const { tc } = useCalculatorLocale();
+  return <span className="formula-audit__operator">{tc(children)}</span>;
 }
 
 function powerPercentExpression(power, sources = []) {
@@ -227,6 +231,7 @@ function fixedPowerLabel(step, gains) {
 }
 
 export function FormulaAudit({ result }) {
+  const { tc, entityName } = useCalculatorLocale();
   if (result?.sourceKind === "bloodline") {
     const healingStep = result.formulaSteps?.find(
       (step) => step.label === "血脉魔法回复",
@@ -248,10 +253,10 @@ export function FormulaAudit({ result }) {
     return (
       <section className="formula-audit">
         <header>
-          <strong>伤害计算过程</strong>
-          <span>{result.skillName}</span>
+          <strong>{tc("伤害计算过程")}</strong>
+          <span>{tc(result.skillName)}</span>
         </header>
-        <FormulaRow title="光合治愈" tone="power">
+        <FormulaRow title={tc("光合治愈")} tone="power">
           <AuditChip
             label="最大生命 × 15%（立即）"
             tone="power"
@@ -265,7 +270,7 @@ export function FormulaAudit({ result }) {
           />
         </FormulaRow>
         {endTurnStep ? (
-          <FormulaRow title="后续回复" tone="power">
+          <FormulaRow title={tc("后续回复")} tone="power">
             <AuditChip
               label="每回合结束回复"
               tone="power"
@@ -285,7 +290,7 @@ export function FormulaAudit({ result }) {
             />
           </FormulaRow>
         ) : null}
-        <FormulaRow title="戏耍真伤" tone="total">
+        <FormulaRow title={tc("戏耍真伤")} tone="total">
           <AuditChip label="实际回复" tone="total" value={displayNumber(actualHealing)} />
           <Operator>=</Operator>
           <AuditChip label="结果" tone="result" value={displayNumber(result.totalDamage)} />
@@ -299,8 +304,8 @@ export function FormulaAudit({ result }) {
     return (
       <section className="formula-audit">
         <header>
-          <strong>伤害计算过程</strong>
-          <span>{result?.reason ?? "选择技能后显示"}</span>
+          <strong>{tc("伤害计算过程")}</strong>
+          <span>{tc(result?.reason ?? "选择技能后显示")}</span>
         </header>
       </section>
     );
@@ -332,15 +337,15 @@ export function FormulaAudit({ result }) {
   return (
     <section className="formula-audit">
       <header>
-        <strong>伤害计算过程</strong>
-        <span>{audit.skillName}</span>
+        <strong>{tc("伤害计算过程")}</strong>
+        <span>{entityName("skill", { name: audit.skillName })}</span>
       </header>
 
-      <FormulaRow title="静态威力" tone="power">
+      <FormulaRow title={tc("静态威力")} tone="power">
         <AuditChip label={power.manual ? "手动" : "技能"} tone="power" value={displayNumber(power.static)} />
       </FormulaRow>
 
-      <FormulaRow title="显示威力" tone="display">
+      <FormulaRow title={tc("显示威力")} tone="display">
         {simpleDisplay ? (
           <AuditChip label={power.manualPanel ? "手动" : "自动"} tone="result" value={displayNumber(audit.formulaPower.displayed)} />
         ) : <>
@@ -351,12 +356,12 @@ export function FormulaAudit({ result }) {
             <AuditChip label={gainTermLabel("条件后", gains.condition)} tone="display" value={displayNumber(power.conditional)} />
           </> : null}
           {power.fixedSteps.map((step, index) => <span className="formula-audit__term" key={`${step.label}-${index}`}>
-            <Operator>{step.amount < 0 ? "−" : "+"}</Operator>
+            <Operator>{step.amount < 0 ? tc("−") : tc("+")}</Operator>
             <AuditChip label={fixedPowerLabel(step, gains)} tone="display" value={displayNumber(Math.abs(step.amount))} />
           </span>)}
           {power.hasPercentStep && power.percentAdds !== 0 ? <>
             {power.fixedSteps.length || !powerChainMatches ? <>
-              <Operator>{powerChainMatches ? "=" : "→"}</Operator>
+              <Operator>{powerChainMatches ? tc("=") : tc("→")}</Operator>
               <AuditChip label="加成基数" tone="display" value={displayNumber(power.percentBefore)} />
             </> : null}
             <Operator>×</Operator>
@@ -368,10 +373,10 @@ export function FormulaAudit({ result }) {
           </> : null}
           {power.hasPercentStep ? <>
             <Operator>→</Operator>
-            <span className="formula-audit__rounding">向下取整</span>
+            <span className="formula-audit__rounding">{tc("向下取整")}</span>
             <AuditChip label={expandedPowerIsFinal ? "显示威力" : "加成后威力"} tone={expandedPowerIsFinal ? "result" : "display"} value={displayNumber(power.percentAfter)} />
           </> : <>
-            <Operator>{powerChainMatches ? "=" : "→"}</Operator>
+            <Operator>{powerChainMatches ? tc("=") : tc("→")}</Operator>
             <AuditChip label={expandedPowerIsFinal ? "显示威力" : "加成后威力"} tone={expandedPowerIsFinal ? "result" : "display"} value={displayNumber(power.effective)} />
           </>}
         </> : <AuditChip label="加成后威力" tone="display" value={displayNumber(power.effective)} />}
@@ -390,14 +395,14 @@ export function FormulaAudit({ result }) {
           <Operator>=</Operator>
           <AuditChip label="未取整" tone="display" value={displayNumber(audit.formulaPower.internal)} />
           <Operator>→</Operator>
-          <span className="formula-audit__rounding">向下取整</span>
+          <span className="formula-audit__rounding">{tc("向下取整")}</span>
         </> : <Operator>=</Operator>}
         <AuditChip label="显示威力" tone="result" value={displayNumber(audit.formulaPower.displayed)} />
         </>}
         </>}
       </FormulaRow>
 
-      <FormulaRow title="每段伤害" tone="one-hit">
+      <FormulaRow title={tc("每段伤害")} tone="one-hit">
         <AuditChip label={gainTermLabel(audit.attackLabel, gains.attack, "层")} tone="one-hit" value={displayNumber(numerator.attack)} />
         <Operator>×</Operator>
         <AuditChip label="威力" tone="one-hit" value={displayNumber(numerator.power)} />
@@ -408,7 +413,7 @@ export function FormulaAudit({ result }) {
           value={displayLevelCoefficient(numerator.coefficient, numerator.level)}
         />
         <Operator>→</Operator>
-        <span className="formula-audit__rounding">四舍五入</span>
+        <span className="formula-audit__rounding">{tc("四舍五入")}</span>
         <AuditChip label="伤害分子" tone="one-hit" value={displayNumber(numerator.afterRound)} />
         <Operator>÷</Operator>
         <AuditChip label={gainTermLabel(audit.defenseLabel, gains.defense, "层")} tone="one-hit" value={displayNumber(oneHit.defense)} />
@@ -419,18 +424,18 @@ export function FormulaAudit({ result }) {
           </>
         ) : null}
         <Operator>→</Operator>
-        <span className="formula-audit__rounding">向下取整</span>
+        <span className="formula-audit__rounding">{tc("向下取整")}</span>
         <AuditChip label="结果" tone="result" value={displayNumber(oneHit.afterFloor)} />
       </FormulaRow>
 
-      {!redundantTotal && <FormulaRow title="总伤害" tone="total">
+      {!redundantTotal && <FormulaRow title={tc("总伤害")} tone="total">
         <AuditChip label="每段" tone="total" value={displayNumber(oneHit.afterFloor)} />
         {Number(total.finalMultiplier) !== 1 ? (
           <>
             <Operator>×</Operator>
             <AuditChip label={gainLabels(gains.final) || "最终倍率"} tone="total" value={displayNumber(total.finalMultiplier)} />
             <Operator>→</Operator>
-            <span className="formula-audit__rounding">向下取整</span>
+            <span className="formula-audit__rounding">{tc("向下取整")}</span>
             <AuditChip label="结算后每段" tone="total" value={displayNumber(total.oneHitAfterFinal)} />
           </>
         ) : null}
@@ -480,6 +485,7 @@ function MarkSlot({
   sideLabel,
   value,
 }) {
+  const { tc, markLabel } = useCalculatorLocale();
   const selected = markDefinition(value?.id);
   const stacks = selected ? Math.max(0, Number(value?.stacks) || 0) : 0;
   const dragonBite = selected?.id === "dragon-bite";
@@ -495,9 +501,9 @@ function MarkSlot({
   return (
     <div className="mark-slot">
       <label>
-        <span>{label}</span>
+        <span>{tc(label)}</span>
         <select
-          aria-label={`${sideLabel}${label}印记`}
+          aria-label={tc("{v0}{v1}印记", { v0: sideLabel, v1: label })}
           onChange={(event) =>
             onChange({
               id: event.target.value || null,
@@ -506,18 +512,18 @@ function MarkSlot({
           }
           value={value?.id ?? ""}
         >
-          <option value="">无</option>
+          <option value="">{tc("无")}</option>
           {MARK_DEFINITIONS[polarity].map((mark) => (
             <option key={mark.id} value={mark.id}>
-              {mark.name}
+              {markLabel(mark.name)}
             </option>
           ))}
         </select>
       </label>
       <label className="mark-slot__stacks">
-        <span>层</span>
+        <span>{tc("层")}</span>
         <input
-          aria-label={stackLabel}
+          aria-label={tc(stackLabel)}
           disabled={!selected}
           max="99"
           min="0"
@@ -538,32 +544,33 @@ function MarkSlot({
       </label>
       {dragonBite ? (
         <div className="mark-slot__triggers">
-          <label htmlFor={`${sideLabel}-dragon-bite-triggers`}>已触发次数</label>
+          <label htmlFor={`${sideLabel}-dragon-bite-triggers`}>{tc("已触发次数")}</label>
           <div className="mark-trigger-stepper">
-            <button type="button" aria-label={`${sideLabel}减少龙噬触发次数`}
+            <button type="button" aria-label={tc("{v0}减少龙噬触发次数", { v0: sideLabel })}
               disabled={stacks === 0 || triggerCount === 0} onClick={() => changeTriggers(triggerCount - 1)}>−</button>
-            <input id={`${sideLabel}-dragon-bite-triggers`} aria-label={`${sideLabel}龙噬触发次数`}
+            <input id={`${sideLabel}-dragon-bite-triggers`} aria-label={tc("{v0}龙噬触发次数", { v0: sideLabel })}
               type="number" min="0" max="99" step="1" value={triggerCount} disabled={stacks === 0}
               onChange={(event) => changeTriggers(event.target.value)} />
-            <button type="button" aria-label={`${sideLabel}增加龙噬触发次数`}
+            <button type="button" aria-label={tc("{v0}增加龙噬触发次数", { v0: sideLabel })}
               disabled={stacks === 0 || triggerCount === 99} onClick={() => changeTriggers(triggerCount + 1)}>+</button>
           </div>
-          <span>双攻 +{stacks > 0 ? triggerCount * 40 : 0}%</span>
+          <span>{tc("双攻 +")}{stacks > 0 ? tc(triggerCount * 40) : tc(0)}%</span>
         </div>
       ) : null}
-      <small>{selected?.summary ?? "未设置"}</small>
+      <small>{tc(selected?.summary ?? "未设置")}</small>
     </div>
   );
 }
 
 function SideMarks({ label, marks, onChange, onHelp, side, tone }) {
+  const { tc } = useCalculatorLocale();
   return (
     <fieldset
-      aria-label={`${label}印记`}
+      aria-label={tc("{v0}印记", { v0: label })}
       className="mark-side"
       data-tone={tone}
     >
-      <legend>{label}印记<StatusHelpButton label={`查看${label}印记说明`} onClick={onHelp} /></legend>
+      <legend>{tc(label)}{tc("印记")}<StatusHelpButton label={`查看${label}印记说明`} onClick={onHelp} /></legend>
       <div className="mark-side__fields">
         <MarkSlot
           label="正面"
@@ -585,17 +592,18 @@ function SideMarks({ label, marks, onChange, onHelp, side, tone }) {
 }
 
 function NegativeStatusSide({ label, onChange, side, value }) {
+  const { tc } = useCalculatorLocale();
   const normalized = normalizeNegativeStatusSide(value);
   return (
     <fieldset className="negative-status-side">
-      <legend>{label}</legend>
+      <legend>{tc(label)}</legend>
       <div className="negative-status-side__grid">
         {NEGATIVE_STATUS_KEYS.map((key) => (
           <label key={key}>
-            <span>{NEGATIVE_STATUS_DEFINITIONS[key].label}</span>
+            <span>{tc(NEGATIVE_STATUS_DEFINITIONS[key].label)}</span>
             <span className="negative-status-stepper">
               <button
-                aria-label={`${label}${NEGATIVE_STATUS_DEFINITIONS[key].label}减一层`}
+                aria-label={tc("{v0}{v1}减一层", { v0: label, v1: NEGATIVE_STATUS_DEFINITIONS[key].label })}
                 disabled={normalized[key] <= 0}
                 onClick={() => onChange(side, key, normalized[key] - 1)}
                 type="button"
@@ -603,7 +611,7 @@ function NegativeStatusSide({ label, onChange, side, value }) {
                 −
               </button>
               <input
-                aria-label={`${label}${NEGATIVE_STATUS_DEFINITIONS[key].label}层数`}
+                aria-label={tc("{v0}{v1}层数", { v0: label, v1: NEGATIVE_STATUS_DEFINITIONS[key].label })}
                 max={key === "electrified" ? "2" : "99"}
                 min="0"
                 onChange={(event) => onChange(side, key, event.target.value)}
@@ -611,7 +619,7 @@ function NegativeStatusSide({ label, onChange, side, value }) {
                 value={normalized[key]}
               />
               <button
-                aria-label={`${label}${NEGATIVE_STATUS_DEFINITIONS[key].label}加一层`}
+                aria-label={tc("{v0}{v1}加一层", { v0: label, v1: NEGATIVE_STATUS_DEFINITIONS[key].label })}
                 disabled={normalized[key] >= (key === "electrified" ? 2 : 99)}
                 onClick={() => onChange(side, key, normalized[key] + 1)}
                 type="button"
@@ -648,6 +656,7 @@ export function AdvancedOptions({
   weather = rainTurns > 0 ? "rain" : "none",
   open: controlledOpen,
 }) {
+  const { tc } = useCalculatorLocale();
   const [internalOpen, setInternalOpen] = useState(false);
   const [referenceGroup, setReferenceGroup] = useState(null);
   const advancedOptionsRef = useRef(null);
@@ -699,19 +708,17 @@ export function AdvancedOptions({
     >
       <button
         aria-expanded={open}
-        aria-label="高级选项"
-        aria-description={!open && conditions.length ? `已配置：${conditions.join("、")}；是否生效以计算结果为准` : undefined}
+        aria-label={tc("高级选项")}
+        aria-description={!open && conditions.length ? tc("已配置：{v0}；是否生效以计算结果为准", { v0: conditions.join("、") }) : tc(undefined)}
         className="advanced-options__toggle"
         onClick={() => setOpen(!open)}
         ref={advancedToggleRef}
         type="button"
       >
         <span>
-          <SlidersHorizontal aria-hidden="true" size={19} />
-          高级选项
-          {!open && conditionSummary ? (
-            <small className="advanced-options__summary" title={`已配置：${conditions.join("、")}；是否生效以计算结果为准`}>
-              {conditionSummary}
+          <SlidersHorizontal aria-hidden="true" size={19} />{tc("高级选项 ")}{!open && conditionSummary ? (
+            <small className="advanced-options__summary" title={tc("已配置：{v0}；是否生效以计算结果为准", { v0: conditions.join("、") })}>
+              {tc(conditionSummary)}
             </small>
           ) : null}
         </span>
@@ -722,26 +729,26 @@ export function AdvancedOptions({
         <div className="advanced-options__content">
           <div className="advanced-options__common">
             <label className="field-group">
-              <span>天气</span>
+              <span>{tc("天气")}</span>
               <select
-                aria-label="天气"
+                aria-label={tc("天气")}
                 onChange={(event) => onWeatherChange(event.target.value)}
                 value={weather}
               >
-                <option value="none">无天气</option>
-                <option value="rain">雨天 · 水系威力 +75%</option>
-                <option value="thunder">雷鸣 · 回合末引电 +1</option>
-                <option value="sandstorm">沙暴 · 联动相关特性</option>
-                <option value="blizzard">暴风雪 · 联动技能与特性</option>
-                <option value="dream">萌系天气（占位）· 速度较慢者先行动</option>
+                <option value="none">{tc("无天气")}</option>
+                <option value="rain">{tc("雨天 · 水系威力 +75%")}</option>
+                <option value="thunder">{tc("雷鸣 · 回合末引电 +1")}</option>
+                <option value="sandstorm">{tc("沙暴 · 联动相关特性")}</option>
+                <option value="blizzard">{tc("暴风雪 · 联动技能与特性")}</option>
+                <option value="dream">{tc("萌系天气（占位）· 速度较慢者先行动")}</option>
               </select>
-              {weather === "dream" ? <small>同先制度下速度较慢者先行动；同速仍需判定。</small> : null}
+              {weather === "dream" ? <small>{tc("同先制度下速度较慢者先行动；同速仍需判定。")}</small> : null}
             </label>
             <label className="field-group">
-              <span>防御技能减伤</span>
+              <span>{tc("防御技能减伤")}</span>
               <span className="input-with-unit">
                 <input
-                  aria-label="防御技能减伤"
+                  aria-label={tc("防御技能减伤")}
                   max="100"
                   min="0"
                   onChange={(event) => onReductionChange(numericValue(event.target.value))}
@@ -752,9 +759,9 @@ export function AdvancedOptions({
               </span>
             </label>
             <label className="field-group">
-              <span>最终伤害倍率</span>
+              <span>{tc("最终伤害倍率")}</span>
               <input
-                aria-label="最终伤害倍率"
+                aria-label={tc("最终伤害倍率")}
                 min="0"
                 onChange={(event) => onFinalMultiplierChange(numericValue(event.target.value, 1))}
                 step="0.05"
@@ -763,12 +770,11 @@ export function AdvancedOptions({
               />
             </label>
             <fieldset className="bloodline-magic-field">
-              <legend>
-                血脉魔法 <small>给进攻方使用</small>
+              <legend>{tc("血脉魔法 ")}<small>{tc("给进攻方使用")}</small>
               </legend>
               <div className="bloodline-magic-field__controls">
                 <select
-                  aria-label="血脉魔法"
+                  aria-label={tc("血脉魔法")}
                   onChange={(event) =>
                     onBloodlineMagicChange(event.target.value, false)
                   }
@@ -776,13 +782,13 @@ export function AdvancedOptions({
                 >
                   {BLOODLINE_MAGIC_OPTIONS.map((option) => (
                     <option key={option.id} value={option.id}>
-                      {option.name}
+                      {tc(option.name)}
                     </option>
                   ))}
                 </select>
                 <label className="bloodline-magic-field__trigger">
                   <input
-                    aria-label={`使用${bloodlineMagic.name}`}
+                    aria-label={tc("使用{v0}", { v0: bloodlineMagic.name })}
                     checked={bloodlineMagicTriggered && bloodlineMagic.id !== "none"}
                     disabled={bloodlineMagic.id === "none"}
                     onChange={(event) =>
@@ -792,16 +798,10 @@ export function AdvancedOptions({
                       )
                     }
                     type="checkbox"
-                  />
-                  使用
-                </label>
+                  />{tc("使用 ")}</label>
               </div>
               <small>
-                {bloodlineMagic.implemented
-                  ? bloodlineMagic.note
-                  : bloodlineMagic.id === "none"
-                    ? "未使用血脉魔法"
-                    : "暂不参与伤害计算"}
+                {bloodlineMagic.implemented ? tc(bloodlineMagic.note) : bloodlineMagic.id === "none" ? tc("未使用血脉魔法") : tc("暂不参与伤害计算")}
               </small>
             </fieldset>
           </div>
@@ -824,10 +824,10 @@ export function AdvancedOptions({
             />
           </div>
           {negativeStatusEnabled ? (
-            <section aria-label="负面状态层数" className="negative-status-config">
+            <section aria-label={tc("负面状态层数")} className="negative-status-config">
               <header>
-                <strong>负面状态<StatusHelpButton label="查看负面状态说明" onClick={() => setReferenceGroup("status")} /></strong>
-                <small>行动前已有层数；攻击自动预览，状态技能需使用。</small>
+                <strong>{tc("负面状态")}<StatusHelpButton label="查看负面状态说明" onClick={() => setReferenceGroup("status")} /></strong>
+                <small>{tc("行动前已有层数；攻击自动预览，状态技能需使用。")}</small>
               </header>
               <div>
                 <NegativeStatusSide

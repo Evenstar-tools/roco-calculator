@@ -1,3 +1,4 @@
+import { useCalculatorLocale } from "../i18n/calculator-text.js";
 import { CaretDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { useId, useMemo, useRef, useState } from "react";
 import { usePickerMenuLayout } from "./picker-menu-layout.js";
@@ -54,6 +55,7 @@ function TraitControls({
   trait,
   values,
 }) {
+  const { tc } = useCalculatorLocale();
   const controls = getMoonMemoryTraitControls(trait);
   const visibleControls = controls.filter((control) =>
     !control.hidden && isControlVisible(control, controls, values),
@@ -73,14 +75,14 @@ function TraitControls({
         const value = controlValue(values, control);
         if (control.action === "s5-stat-turn-end") return (
           <button className="trait-turn-end" key={`${trait.id}:${control.canonicalKey}`} type="button"
-            onClick={() => onValueChange?.(trait.id, control.canonicalKey, true)}>{control.label}</button>
+            onClick={() => onValueChange?.(trait.id, control.canonicalKey, true)}>{tc(control.label)}</button>
         );
         if (control.type === "choice") {
           return (
             <label key={`${trait.id}:${control.canonicalKey}`} htmlFor={inputId}>
-              <span>{control.label}</span>
+              <span>{tc(control.label)}</span>
               <select
-                aria-label={label}
+                aria-label={tc(label)}
                 id={inputId}
                 onChange={(event) =>
                   onValueChange?.(
@@ -93,7 +95,7 @@ function TraitControls({
               >
                 {(control.options ?? []).map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                    {tc(option.label)}
                   </option>
                 ))}
               </select>
@@ -108,7 +110,7 @@ function TraitControls({
               key={`${trait.id}:${control.canonicalKey}`}
             >
               <input
-                aria-label={label}
+                aria-label={tc(label)}
                 checked={Boolean(value)}
                 id={inputId}
                 onChange={(event) =>
@@ -120,16 +122,16 @@ function TraitControls({
                 }
                 type="checkbox"
               />
-              <span>{control.label}</span>
+              <span>{tc(control.label)}</span>
             </label>
           );
         }
         return (
           <label key={`${trait.id}:${control.canonicalKey}`} htmlFor={inputId}>
-            <span>{control.label}</span>
+            <span>{tc(control.label)}</span>
             <span className="moon-memory-trait-editor__number">
               <input
-                aria-label={label}
+                aria-label={tc(label)}
                 id={inputId}
                 inputMode="numeric"
                 max={control.max}
@@ -146,7 +148,7 @@ function TraitControls({
                 type="number"
                 value={value ?? ""}
               />
-              {control.suffix ? <small>{control.suffix}</small> : null}
+              {control.suffix ? <small>{tc(control.suffix)}</small> : null}
             </span>
           </label>
         );
@@ -164,6 +166,7 @@ export function MoonMemoryTraitEditor({
   snapshot,
   spirit,
 }) {
+  const { tc, entityName, entityDescription } = useCalculatorLocale();
   const listboxId = useId();
   const controlIdPrefix = useId();
   const detailId = useId();
@@ -174,8 +177,12 @@ export function MoonMemoryTraitEditor({
   const pickerRef = useRef(null);
   const optionsRef = useRef(null);
   const searchIndex = useMemo(
-    () => createMoonMemoryTraitSearchIndex(snapshot),
-    [snapshot],
+    () => createMoonMemoryTraitSearchIndex(snapshot).map((option) => {
+      const localizedLabel = `${tc(option.spiritName)} · ${entityName("trait", option.trait)}`;
+      return { ...option, label: localizedLabel,
+        searchFields: [...option.searchFields, localizedLabel.normalize("NFKC").toLowerCase().replace(/\s+/g, "")] };
+    }),
+    [snapshot, tc, entityName],
   );
   const options = useMemo(
     () => searchMoonMemoryTraitOptions(searchIndex, query),
@@ -214,15 +221,14 @@ export function MoonMemoryTraitEditor({
   return (
     <section className="moon-memory-trait-editor">
       <header>
-        <strong>铭记于月亮</strong>
-        <span>
-          已吞噬 {selectedTraits.length}/{MOON_MEMORY_TRAIT_LIMIT}
+        <strong>{tc("铭记于月亮")}</strong>
+        <span>{tc("已吞噬 ")}{tc(selectedTraits.length)}/{tc(MOON_MEMORY_TRAIT_LIMIT)}
         </span>
       </header>
       {!isAtTraitLimit ? <div className="moon-memory-trait-editor__picker" ref={pickerRef}
         onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false); }}>
         <label>
-          <span className="sr-only">搜索精灵或特性</span>
+          <span className="sr-only">{tc("搜索精灵或特性")}</span>
           <span className="moon-memory-trait-editor__search">
             <MagnifyingGlass aria-hidden="true" size={17} />
             <input
@@ -234,7 +240,7 @@ export function MoonMemoryTraitEditor({
               }
               aria-controls={listboxId}
               aria-expanded={open && options.length > 0}
-              aria-label="搜索已吞噬特性"
+              aria-label={tc("搜索已吞噬特性")}
               onChange={(event) => {
                 setQuery(event.target.value);
                 setActiveIndex(-1);
@@ -268,7 +274,7 @@ export function MoonMemoryTraitEditor({
                   setOpen(false);
                 }
               }}
-              placeholder="搜索精灵或特性"
+              placeholder={tc("搜索精灵或特性")}
               role="combobox"
               type="search"
               value={query}
@@ -292,15 +298,9 @@ export function MoonMemoryTraitEditor({
                   onMouseDown={(event) => event.preventDefault()}
                   role="option"
                 >
-                  <strong>{option.label}</strong>
+                  <strong>{tc(option.label)}</strong>
                   <small>
-                    {alreadyAdded
-                      ? "已添加"
-                      : alreadyOwned
-                        ? "已拥有"
-                        : isAtTraitLimit
-                          ? "已达上限"
-                          : option.support.label}
+                    {alreadyAdded ? tc("已添加") : alreadyOwned ? tc("已拥有") : isAtTraitLimit ? tc("已达上限") : tc(option.support.label)}
                   </small>
                 </li>
               );
@@ -309,33 +309,33 @@ export function MoonMemoryTraitEditor({
         ) : null}
       </div> : null}
       {selectedTraits.length > 0 ? (
-        <ul aria-label="已吞噬特性" className="moon-memory-trait-editor__selected">
+        <ul aria-label={tc("已吞噬特性")} className="moon-memory-trait-editor__selected">
           {selectedTraits.map(({ support, trait }) => {
             const name = trait.displayName ?? trait.name;
             return (
-              <li aria-label={`${name}，${support.label}`} data-expanded={expanded?.trait.id === trait.id} key={trait.id}>
+              <li aria-label={tc(`${name}，${support.label}`)} data-expanded={expanded?.trait.id === trait.id} key={trait.id}>
                 <button
                   aria-controls={detailId}
                   aria-expanded={expanded?.trait.id === trait.id}
-                  aria-label={`查看${name}条件与效果`}
+                  aria-label={tc("查看{v0}条件与效果", { v0: name })}
                   className="moon-memory-trait-editor__chip"
                   onClick={() => setExpandedTraitId(expanded?.trait.id === trait.id ? null : trait.id)}
-                  title={`${name} · ${support.label}`}
+                  title={tc(`${name} · ${support.label}`)}
                   type="button"
                 >
-                  <strong>{name}</strong>
+                  <strong>{tc(name)}</strong>
                   {support.id !== "supported" ? (
-                    <small className="moon-memory-trait-editor__support" data-status={support.id}>{support.label}</small>
+                    <small className="moon-memory-trait-editor__support" data-status={support.id}>{tc(support.label)}</small>
                   ) : null}
                 </button>
                 <button
-                  aria-label={`删除已吞噬特性${name}`}
+                  aria-label={tc("删除已吞噬特性{v0}", { v0: name })}
                   className="moon-memory-trait-editor__remove"
                   onClick={() => {
                     if (expandedTraitId === trait.id) setExpandedTraitId(null);
                     onRemove?.(trait.id);
                   }}
-                  title={`删除${name}`}
+                  title={tc("删除{v0}", { v0: name })}
                   type="button"
                 >
                   <X aria-hidden="true" size={15} weight="bold" />
@@ -346,12 +346,12 @@ export function MoonMemoryTraitEditor({
         </ul>
       ) : null}
       {expanded ? (
-        <div aria-label="特性条件与效果" className="moon-memory-trait-editor__detail" id={detailId} role="region">
+        <div aria-label={tc("特性条件与效果")} className="moon-memory-trait-editor__detail" id={detailId} role="region">
           <div className="moon-memory-trait-editor__detail-heading">
-            <strong>{expanded.trait.displayName ?? expanded.trait.name}</strong>
-            <small className="moon-memory-trait-editor__support" data-status={expanded.support.id}>{expanded.support.label}</small>
+            <strong>{entityName("trait", expanded.trait)}</strong>
+            <small className="moon-memory-trait-editor__support" data-status={expanded.support.id}>{tc(expanded.support.label)}</small>
           </div>
-          <p>{expanded.trait.description}</p>
+          <p>{entityDescription("trait", expanded.trait)}</p>
           <TraitControls
             idPrefix={controlIdPrefix}
             onValueChange={onValueChange}
@@ -368,9 +368,8 @@ export function MoonMemoryTraitEditor({
           className="moon-memory-trait-editor__details-toggle"
           onClick={() => setExpandedTraitId(expanded ? null : selectedTraits[0].trait.id)}
           type="button"
-        >
-          条件与效果 <CaretDown aria-hidden="true" size={12} />
-          <small>收起不影响计算</small>
+        >{tc("条件与效果 ")}<CaretDown aria-hidden="true" size={12} />
+          <small>{tc("收起不影响计算")}</small>
         </button>
       ) : null}
     </section>

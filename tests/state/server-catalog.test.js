@@ -15,6 +15,7 @@ test("failed CN catalogue can retry; a warm CN cache is never returned for Globa
   expect(fetcher).toHaveBeenLastCalledWith("/data/skill-query/catalog.json");
   expect(getCachedCatalog()).toBe(first);
   expect(getCachedCatalog("global")).toBeNull();
-  await expect(loadSkillCatalog("global")).rejects.toMatchObject({ code: "SERVER_DATA_UNVERIFIED" });
-  expect(fetcher).toHaveBeenCalledTimes(2);
+  await expect(loadSkillCatalog("global")).rejects.toMatchObject({ code: "INCOMPATIBLE_CATALOG_VERSION" });
+  expect(fetcher).toHaveBeenCalledTimes(3);
+  expect(fetcher).toHaveBeenLastCalledWith("/data/global/skill-query/catalog.json");
 });

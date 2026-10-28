@@ -32,7 +32,7 @@ const isDesktopApp = window.location.protocol === "app:";
 if ("serviceWorker" in navigator && import.meta.env.PROD && !isDesktopApp && !IS_PREVIEW_BUILD) {
   const cacheVisitedAssets = () => {
     const urls = performance.getEntriesByType("resource").map(({ name }) => name)
-      .filter((name) => { const url = new URL(name); return url.origin === location.origin && url.pathname.startsWith("/assets/"); });
+      .filter((name) => { const url = new URL(name); return url.origin === location.origin && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/global-assets/assets/")); });
     navigator.serviceWorker.controller?.postMessage({ type: "CACHE_VISITED_ASSETS", urls });
   };
   navigator.serviceWorker.addEventListener("controllerchange", cacheVisitedAssets);

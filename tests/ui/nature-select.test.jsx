@@ -2,6 +2,8 @@ import { useState } from "react";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
+import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
+import { clearMissingUiMessages, getMissingUiMessages, translateUi } from "../../src/i18n/messages.js";
 import { NatureSelect } from "../../src/components/NatureSelect.jsx";
 import { NATURES, STAT_LABELS } from "../../src/domain/natures.js";
 
@@ -150,4 +152,23 @@ test("方向键展开与选择，Escape 取消不向外穿透，外部点击关�
   window.removeEventListener("keydown", bubble);
   expect(bubble).not.toHaveBeenCalled();
   expect(screen.queryByRole("tree")).not.toBeInTheDocument();
+});
+
+test.each(["en", "ja"])("%s displays official personalities in Global configuration without reference notices", (locale) => {
+  clearMissingUiMessages();
+  const change = vi.fn();
+  const t = (key, values) => translateUi(locale, key, values);
+  const { rerender, container } = render(<LocaleProvider locale={locale}>
+    <NatureSelect ariaLabel="personality" placeholder allowUnset value="adamant" onChange={change} />
+  </LocaleProvider>);
+  const name = locale === "en" ? "Stubborn" : "頑固";
+  expect(screen.getByRole("combobox")).toHaveTextContent(name);
+  fireEvent.click(screen.getByRole("combobox"));
+  expect(screen.getByRole("treeitem", { name: t("{nature}（{up}↑ {down}↓）", { nature: name, up: t("物攻"), down: t("魔攻") }) })).toHaveAttribute("aria-selected", "true");
+  fireEvent.click(screen.getByRole("treeitem", { name: t("普通（无修正）") }));
+  expect(change).toHaveBeenLastCalledWith("neutral");
+  rerender(<LocaleProvider locale={locale}><NatureSelect ariaLabel="personality" placeholder allowUnset value={null} onChange={change} /></LocaleProvider>);
+  expect(screen.getByRole("combobox")).toHaveTextContent(t("未设置"));
+  expect(container).not.toHaveTextContent(/CN reference|unverified|中国版参考|国服参考/i);
+  expect(getMissingUiMessages()).toEqual([]);
 });

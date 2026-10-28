@@ -1,0 +1,6240 @@
+{
+  "status": "passed",
+  "rowCount": 1136,
+  "uniqueGameIds": 1136,
+  "idSchema": {
+    "propertyIndex": 0,
+    "Name": "id",
+    "Type": "EUint32",
+    "Offset": 0,
+    "Size": 4
+  },
+  "sixFields": [
+    {
+      "normalizedName": "hp",
+      "chineseMeaning": "生命",
+      "propertyIndex": 58,
+      "Name": "hp_max_race",
+      "Type": "EUint32",
+      "Offset": 232,
+      "Size": 4
+    },
+    {
+      "normalizedName": "physicalAttack",
+      "chineseMeaning": "物攻",
+      "propertyIndex": 59,
+      "Name": "phy_attack_race",
+      "Type": "EUint32",
+      "Offset": 236,
+      "Size": 4
+    },
+    {
+      "normalizedName": "magicalAttack",
+      "chineseMeaning": "魔攻",
+      "propertyIndex": 60,
+      "Name": "spe_attack_race",
+      "Type": "EUint32",
+      "Offset": 240,
+      "Size": 4
+    },
+    {
+      "normalizedName": "physicalDefense",
+      "chineseMeaning": "物防",
+      "propertyIndex": 61,
+      "Name": "phy_defence_race",
+      "Type": "EUint32",
+      "Offset": 244,
+      "Size": 4
+    },
+    {
+      "normalizedName": "magicalDefense",
+      "chineseMeaning": "魔防",
+      "propertyIndex": 62,
+      "Name": "spe_defence_race",
+      "Type": "EUint32",
+      "Offset": 248,
+      "Size": 4
+    },
+    {
+      "normalizedName": "speed",
+      "chineseMeaning": "速度",
+      "propertyIndex": 63,
+      "Name": "speed_race",
+      "Type": "EUint32",
+      "Offset": 252,
+      "Size": 4
+    }
+  ],
+  "schemaOffsetCaution": "Schema Offset is the logical struct offset, not a direct compressed-row byte offset. Each row includes presence flags; rawFieldByteOffsets record the actual serialized locations.",
+  "allRowsFullyConsumed": true,
+  "rowVariantByteIdentical": true,
+  "allFourLocalesDecodedIdenticallyToPrevious": true,
+  "everyPresentStatIndependentlyReadAsLittleEndianUint32": true,
+  "missingSixFields": [
+    {
+      "gameId": 4005,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4006,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4007,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4011,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4012,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4019,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4020,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4021,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4022,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4050,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4064,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4069,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4070,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4071,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4072,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4073,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4074,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4075,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4076,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4077,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4078,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4079,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4080,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4081,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4082,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4083,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4084,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4085,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4086,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4087,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4088,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4089,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4090,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4091,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4092,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4093,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4094,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4095,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4096,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4097,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4098,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4099,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4100,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4101,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4102,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4103,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4104,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4105,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 4106,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6001,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6002,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6003,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6004,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6005,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6006,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6007,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6008,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6009,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6010,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6011,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6012,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6013,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6014,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6015,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6016,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6017,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6018,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6019,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6020,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6021,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6022,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6023,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6024,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6025,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6026,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6027,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 6028,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 7001,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 7002,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 7003,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 7004,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 7005,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 7006,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 7007,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 7008,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8101,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8102,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8103,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8104,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8105,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8106,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8107,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8108,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8109,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8110,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8111,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8112,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8113,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8114,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8115,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8116,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8117,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8118,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8119,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8120,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8121,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 8122,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 13000166,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 13000167,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    },
+    {
+      "gameId": 17000004,
+      "fields": [
+        "hp_max_race",
+        "phy_attack_race",
+        "spe_attack_race",
+        "phy_defence_race",
+        "spe_defence_race",
+        "speed_race"
+      ]
+    }
+  ],
+  "sourceSUM_raceMismatchCount": 825,
+  "sourceSUM_raceMismatches": [
+    {
+      "gameId": 3001,
+      "zh": "喵喵",
+      "sixFieldSum": 370,
+      "sourceSUM_race": 346
+    },
+    {
+      "gameId": 3002,
+      "zh": "水蓝蓝",
+      "sixFieldSum": 372,
+      "sourceSUM_race": 361
+    },
+    {
+      "gameId": 3003,
+      "zh": "火花",
+      "sixFieldSum": 368,
+      "sourceSUM_race": 382
+    },
+    {
+      "gameId": 3004,
+      "zh": "迪莫",
+      "sixFieldSum": 582,
+      "sourceSUM_race": 410
+    },
+    {
+      "gameId": 3005,
+      "zh": "水灵",
+      "sixFieldSum": 621,
+      "sourceSUM_race": 600
+    },
+    {
+      "gameId": 3006,
+      "zh": "火神",
+      "sixFieldSum": 613,
+      "sourceSUM_race": 636
+    },
+    {
+      "gameId": 3007,
+      "zh": "魔力猫",
+      "sixFieldSum": 613,
+      "sourceSUM_race": 577
+    },
+    {
+      "gameId": 3008,
+      "zh": "草头鸭",
+      "sixFieldSum": 403,
+      "sourceSUM_race": 458
+    },
+    {
+      "gameId": 3009,
+      "zh": "赤毛鸡仔",
+      "sixFieldSum": 507,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3010,
+      "zh": "恶魔叮",
+      "sixFieldSum": 452,
+      "sourceSUM_race": 436
+    },
+    {
+      "gameId": 3011,
+      "zh": "恶魔狼",
+      "sixFieldSum": 548,
+      "sourceSUM_race": 547
+    },
+    {
+      "gameId": 3012,
+      "zh": "鸭吉吉",
+      "sixFieldSum": 471,
+      "sourceSUM_race": 485
+    },
+    {
+      "gameId": 3014,
+      "zh": "阿米亚特",
+      "sixFieldSum": 360,
+      "sourceSUM_race": 382
+    },
+    {
+      "gameId": 3015,
+      "zh": "阿米樱",
+      "sixFieldSum": 480,
+      "sourceSUM_race": 508
+    },
+    {
+      "gameId": 3016,
+      "zh": "罗隐",
+      "sixFieldSum": 601,
+      "sourceSUM_race": 635
+    },
+    {
+      "gameId": 3017,
+      "zh": "蹦蹦种子",
+      "sixFieldSum": 348,
+      "sourceSUM_race": 337
+    },
+    {
+      "gameId": 3018,
+      "zh": "蹦蹦草",
+      "sixFieldSum": 464,
+      "sourceSUM_race": 449
+    },
+    {
+      "gameId": 3019,
+      "zh": "蹦蹦花",
+      "sixFieldSum": 580,
+      "sourceSUM_race": 563
+    },
+    {
+      "gameId": 3020,
+      "zh": "地鼠",
+      "sixFieldSum": 357,
+      "sourceSUM_race": 353
+    },
+    {
+      "gameId": 3021,
+      "zh": "遁鼠",
+      "sixFieldSum": 477,
+      "sourceSUM_race": 470
+    },
+    {
+      "gameId": 3022,
+      "zh": "遁地鼠",
+      "sixFieldSum": 596,
+      "sourceSUM_race": 588
+    },
+    {
+      "gameId": 3023,
+      "zh": "火云斗鸡",
+      "sixFieldSum": 634,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3024,
+      "zh": "伊丽莎白",
+      "sixFieldSum": 761,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3025,
+      "zh": "喵呜",
+      "sixFieldSum": 490,
+      "sourceSUM_race": 463
+    },
+    {
+      "gameId": 3026,
+      "zh": "绿草精灵",
+      "sixFieldSum": 504,
+      "sourceSUM_race": 72
+    },
+    {
+      "gameId": 3027,
+      "zh": "蒲公英娃娃",
+      "sixFieldSum": 642,
+      "sourceSUM_race": 582
+    },
+    {
+      "gameId": 3028,
+      "zh": "冬羽雀",
+      "sixFieldSum": 456,
+      "sourceSUM_race": 453
+    },
+    {
+      "gameId": 3029,
+      "zh": "奇丽草",
+      "sixFieldSum": 383,
+      "sourceSUM_race": 334
+    },
+    {
+      "gameId": 3030,
+      "zh": "奇丽叶",
+      "sixFieldSum": 511,
+      "sourceSUM_race": 443
+    },
+    {
+      "gameId": 3031,
+      "zh": "奇丽花",
+      "sixFieldSum": 638,
+      "sourceSUM_race": 554
+    },
+    {
+      "gameId": 3032,
+      "zh": "焰火",
+      "sixFieldSum": 490,
+      "sourceSUM_race": 510
+    },
+    {
+      "gameId": 3033,
+      "zh": "波波拉",
+      "sixFieldSum": 497,
+      "sourceSUM_race": 480
+    },
+    {
+      "gameId": 3034,
+      "zh": "蒲公英",
+      "sixFieldSum": 515,
+      "sourceSUM_race": 466
+    },
+    {
+      "gameId": 3035,
+      "zh": "魔草巫灵",
+      "sixFieldSum": 629,
+      "sourceSUM_race": 591
+    },
+    {
+      "gameId": 3036,
+      "zh": "鸭吉吉",
+      "sixFieldSum": 471,
+      "sourceSUM_race": 485
+    },
+    {
+      "gameId": 3037,
+      "zh": "岚鸟",
+      "sixFieldSum": 570,
+      "sourceSUM_race": 565
+    },
+    {
+      "gameId": 3038,
+      "zh": "小甲虫",
+      "sixFieldSum": 418,
+      "sourceSUM_race": 417
+    },
+    {
+      "gameId": 3039,
+      "zh": "叮叮恶魔",
+      "sixFieldSum": 576,
+      "sourceSUM_race": 544
+    },
+    {
+      "gameId": 3040,
+      "zh": "丢丢",
+      "sixFieldSum": 268,
+      "sourceSUM_race": 319
+    },
+    {
+      "gameId": 3041,
+      "zh": "卡卡虫",
+      "sixFieldSum": 357,
+      "sourceSUM_race": 426
+    },
+    {
+      "gameId": 3042,
+      "zh": "卡瓦重",
+      "sixFieldSum": 447,
+      "sourceSUM_race": 533
+    },
+    {
+      "gameId": 3043,
+      "zh": "伊贝儿",
+      "sixFieldSum": 487,
+      "sourceSUM_race": 446
+    },
+    {
+      "gameId": 3044,
+      "zh": "伊贝粉粉",
+      "sixFieldSum": 607,
+      "sourceSUM_race": 557
+    },
+    {
+      "gameId": 3045,
+      "zh": "锥尾羊",
+      "sixFieldSum": 349,
+      "sourceSUM_race": 331
+    },
+    {
+      "gameId": 3046,
+      "zh": "铃兰羊",
+      "sixFieldSum": 466,
+      "sourceSUM_race": 442
+    },
+    {
+      "gameId": 3047,
+      "zh": "花影羚羊",
+      "sixFieldSum": 582,
+      "sourceSUM_race": 552
+    },
+    {
+      "gameId": 3048,
+      "zh": "圣光迪莫",
+      "sixFieldSum": 582,
+      "sourceSUM_race": 410
+    },
+    {
+      "gameId": 3049,
+      "zh": "白发懒人",
+      "sixFieldSum": 437,
+      "sourceSUM_race": 430
+    },
+    {
+      "gameId": 3050,
+      "zh": "记忆石",
+      "sixFieldSum": 607,
+      "sourceSUM_race": 509
+    },
+    {
+      "gameId": 3051,
+      "zh": "圣草迪莫",
+      "sixFieldSum": 582,
+      "sourceSUM_race": 410
+    },
+    {
+      "gameId": 3052,
+      "zh": "煤球憨憨",
+      "sixFieldSum": 489,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3053,
+      "zh": "害羞球球",
+      "sixFieldSum": 652,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3054,
+      "zh": "蓝衣夜灵",
+      "sixFieldSum": 815,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3055,
+      "zh": "板板壳",
+      "sixFieldSum": 357,
+      "sourceSUM_race": 354
+    },
+    {
+      "gameId": 3056,
+      "zh": "咔咔壳",
+      "sixFieldSum": 475,
+      "sourceSUM_race": 472
+    },
+    {
+      "gameId": 3057,
+      "zh": "水泡壳",
+      "sixFieldSum": 594,
+      "sourceSUM_race": 591
+    },
+    {
+      "gameId": 3058,
+      "zh": "一窝蜂",
+      "sixFieldSum": 228,
+      "sourceSUM_race": 197
+    },
+    {
+      "gameId": 3059,
+      "zh": "黄蜂后",
+      "sixFieldSum": 305,
+      "sourceSUM_race": 263
+    },
+    {
+      "gameId": 3060,
+      "zh": "小灵面",
+      "sixFieldSum": 366,
+      "sourceSUM_race": 379
+    },
+    {
+      "gameId": 3061,
+      "zh": "暗影灵面",
+      "sixFieldSum": 488,
+      "sourceSUM_race": 506
+    },
+    {
+      "gameId": 3062,
+      "zh": "小独角兽",
+      "sixFieldSum": 476,
+      "sourceSUM_race": 483
+    },
+    {
+      "gameId": 3063,
+      "zh": "白金独角兽",
+      "sixFieldSum": 595,
+      "sourceSUM_race": 604
+    },
+    {
+      "gameId": 3064,
+      "zh": "幽影树",
+      "sixFieldSum": 571,
+      "sourceSUM_race": 568
+    },
+    {
+      "gameId": 3065,
+      "zh": "忽幽狸",
+      "sixFieldSum": 493,
+      "sourceSUM_race": 488
+    },
+    {
+      "gameId": 3066,
+      "zh": "影狸",
+      "sixFieldSum": 616,
+      "sourceSUM_race": 612
+    },
+    {
+      "gameId": 3067,
+      "zh": "卷毛鸭",
+      "sixFieldSum": 504,
+      "sourceSUM_race": 573
+    },
+    {
+      "gameId": 3069,
+      "zh": "锤头鹳",
+      "sixFieldSum": 567,
+      "sourceSUM_race": 535
+    },
+    {
+      "gameId": 3070,
+      "zh": "护主犬",
+      "sixFieldSum": 451,
+      "sourceSUM_race": 473
+    },
+    {
+      "gameId": 3071,
+      "zh": "音速犬",
+      "sixFieldSum": 562,
+      "sourceSUM_race": 589
+    },
+    {
+      "gameId": 3072,
+      "zh": "格兰种子",
+      "sixFieldSum": 321,
+      "sourceSUM_race": 348
+    },
+    {
+      "gameId": 3073,
+      "zh": "格兰花",
+      "sixFieldSum": 429,
+      "sourceSUM_race": 464
+    },
+    {
+      "gameId": 3074,
+      "zh": "格兰球",
+      "sixFieldSum": 536,
+      "sourceSUM_race": 582
+    },
+    {
+      "gameId": 3075,
+      "zh": "灵狐",
+      "sixFieldSum": 347,
+      "sourceSUM_race": 357
+    },
+    {
+      "gameId": 3076,
+      "zh": "九尾狐",
+      "sixFieldSum": 465,
+      "sourceSUM_race": 475
+    },
+    {
+      "gameId": 3077,
+      "zh": "尖嘴狐仙",
+      "sixFieldSum": 580,
+      "sourceSUM_race": 594
+    },
+    {
+      "gameId": 3078,
+      "zh": "烈钻鸟",
+      "sixFieldSum": 353,
+      "sourceSUM_race": 369
+    },
+    {
+      "gameId": 3079,
+      "zh": "长尾火鸟",
+      "sixFieldSum": 471,
+      "sourceSUM_race": 492
+    },
+    {
+      "gameId": 3080,
+      "zh": "火羽",
+      "sixFieldSum": 589,
+      "sourceSUM_race": 614
+    },
+    {
+      "gameId": 3081,
+      "zh": "治愈兔",
+      "sixFieldSum": 358,
+      "sourceSUM_race": 330
+    },
+    {
+      "gameId": 3082,
+      "zh": "红丝绒",
+      "sixFieldSum": 479,
+      "sourceSUM_race": 439
+    },
+    {
+      "gameId": 3083,
+      "zh": "可爱猿",
+      "sixFieldSum": 429,
+      "sourceSUM_race": 410
+    },
+    {
+      "gameId": 3084,
+      "zh": "炽热猿",
+      "sixFieldSum": 572,
+      "sourceSUM_race": 547
+    },
+    {
+      "gameId": 3085,
+      "zh": "火焰猿",
+      "sixFieldSum": 715,
+      "sourceSUM_race": 683
+    },
+    {
+      "gameId": 3086,
+      "zh": "可立鸡",
+      "sixFieldSum": 390,
+      "sourceSUM_race": 374
+    },
+    {
+      "gameId": 3087,
+      "zh": "晕晕鸡",
+      "sixFieldSum": 521,
+      "sourceSUM_race": 500
+    },
+    {
+      "gameId": 3088,
+      "zh": "绅士鸡",
+      "sixFieldSum": 651,
+      "sourceSUM_race": 624
+    },
+    {
+      "gameId": 3089,
+      "zh": "武者鸡",
+      "sixFieldSum": 595,
+      "sourceSUM_race": 609
+    },
+    {
+      "gameId": 3090,
+      "zh": "火尾瓦特",
+      "sixFieldSum": 338,
+      "sourceSUM_race": 337
+    },
+    {
+      "gameId": 3091,
+      "zh": "火尾战士",
+      "sixFieldSum": 451,
+      "sourceSUM_race": 450
+    },
+    {
+      "gameId": 3092,
+      "zh": "烈火守护",
+      "sixFieldSum": 564,
+      "sourceSUM_race": 561
+    },
+    {
+      "gameId": 3093,
+      "zh": "呆小路",
+      "sixFieldSum": 380,
+      "sourceSUM_race": 332
+    },
+    {
+      "gameId": 3094,
+      "zh": "舞动路路",
+      "sixFieldSum": 507,
+      "sourceSUM_race": 443
+    },
+    {
+      "gameId": 3095,
+      "zh": "白发路路",
+      "sixFieldSum": 633,
+      "sourceSUM_race": 554
+    },
+    {
+      "gameId": 3097,
+      "zh": "灵蔓草王",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3098,
+      "zh": "绿耳松鼠",
+      "sixFieldSum": 333,
+      "sourceSUM_race": 346
+    },
+    {
+      "gameId": 3099,
+      "zh": "抱枕松鼠",
+      "sixFieldSum": 445,
+      "sourceSUM_race": 461
+    },
+    {
+      "gameId": 3100,
+      "zh": "蹦床松鼠",
+      "sixFieldSum": 555,
+      "sourceSUM_race": 576
+    },
+    {
+      "gameId": 3101,
+      "zh": "动力猿",
+      "sixFieldSum": 583,
+      "sourceSUM_race": 573
+    },
+    {
+      "gameId": 3102,
+      "zh": "瞌睡王",
+      "sixFieldSum": 728,
+      "sourceSUM_race": 718
+    },
+    {
+      "gameId": 3103,
+      "zh": "布是石",
+      "sixFieldSum": 409,
+      "sourceSUM_race": 448
+    },
+    {
+      "gameId": 3104,
+      "zh": "布是岩",
+      "sixFieldSum": 546,
+      "sourceSUM_race": 598
+    },
+    {
+      "gameId": 3105,
+      "zh": "布克棱岩",
+      "sixFieldSum": 683,
+      "sourceSUM_race": 747
+    },
+    {
+      "gameId": 3106,
+      "zh": "石肤蜥",
+      "sixFieldSum": 369,
+      "sourceSUM_race": 320
+    },
+    {
+      "gameId": 3107,
+      "zh": "石刺蜥",
+      "sixFieldSum": 492,
+      "sourceSUM_race": 427
+    },
+    {
+      "gameId": 3108,
+      "zh": "石冠王蜥",
+      "sixFieldSum": 615,
+      "sourceSUM_race": 532
+    },
+    {
+      "gameId": 3109,
+      "zh": "仪使者",
+      "sixFieldSum": 359,
+      "sourceSUM_race": 350
+    },
+    {
+      "gameId": 3110,
+      "zh": "仪式之星",
+      "sixFieldSum": 478,
+      "sourceSUM_race": 466
+    },
+    {
+      "gameId": 3111,
+      "zh": "仪式巨像",
+      "sixFieldSum": 598,
+      "sourceSUM_race": 581
+    },
+    {
+      "gameId": 3112,
+      "zh": "甜田螺",
+      "sixFieldSum": 393,
+      "sourceSUM_race": 308
+    },
+    {
+      "gameId": 3113,
+      "zh": "壳乙螺",
+      "sixFieldSum": 525,
+      "sourceSUM_race": 411
+    },
+    {
+      "gameId": 3114,
+      "zh": "卡洛儿",
+      "sixFieldSum": 657,
+      "sourceSUM_race": 515
+    },
+    {
+      "gameId": 3115,
+      "zh": "风铃鲨",
+      "sixFieldSum": 373,
+      "sourceSUM_race": 278
+    },
+    {
+      "gameId": 3116,
+      "zh": "蓝蝶鲨",
+      "sixFieldSum": 496,
+      "sourceSUM_race": 370
+    },
+    {
+      "gameId": 3117,
+      "zh": "彩蝶鲨",
+      "sixFieldSum": 621,
+      "sourceSUM_race": 462
+    },
+    {
+      "gameId": 3118,
+      "zh": "果冻",
+      "sixFieldSum": 437,
+      "sourceSUM_race": 507
+    },
+    {
+      "gameId": 3119,
+      "zh": "翡翠水母",
+      "sixFieldSum": 466,
+      "sourceSUM_race": 501
+    },
+    {
+      "gameId": 3120,
+      "zh": "琉璃水母",
+      "sixFieldSum": 580,
+      "sourceSUM_race": 624
+    },
+    {
+      "gameId": 3121,
+      "zh": "大耳帽兜",
+      "sixFieldSum": 370,
+      "sourceSUM_race": 358
+    },
+    {
+      "gameId": 3122,
+      "zh": "帽兜娃娃",
+      "sixFieldSum": 493,
+      "sourceSUM_race": 476
+    },
+    {
+      "gameId": 3123,
+      "zh": "雪影娃娃",
+      "sixFieldSum": 617,
+      "sourceSUM_race": 595
+    },
+    {
+      "gameId": 3124,
+      "zh": "脆筒甜甜",
+      "sixFieldSum": 368,
+      "sourceSUM_race": 361
+    },
+    {
+      "gameId": 3125,
+      "zh": "香草甜甜",
+      "sixFieldSum": 491,
+      "sourceSUM_race": 482
+    },
+    {
+      "gameId": 3126,
+      "zh": "圣代甜甜",
+      "sixFieldSum": 612,
+      "sourceSUM_race": 602
+    },
+    {
+      "gameId": 3127,
+      "zh": "小狮鹫",
+      "sixFieldSum": 362,
+      "sourceSUM_race": 360
+    },
+    {
+      "gameId": 3128,
+      "zh": "神圣狮鹫",
+      "sixFieldSum": 483,
+      "sourceSUM_race": 481
+    },
+    {
+      "gameId": 3129,
+      "zh": "皇家狮鹫",
+      "sixFieldSum": 604,
+      "sourceSUM_race": 601
+    },
+    {
+      "gameId": 3130,
+      "zh": "圆眼蜘蛛",
+      "sixFieldSum": 337,
+      "sourceSUM_race": 361
+    },
+    {
+      "gameId": 3131,
+      "zh": "尖角蜘蛛",
+      "sixFieldSum": 448,
+      "sourceSUM_race": 481
+    },
+    {
+      "gameId": 3132,
+      "zh": "芋香巨角蛛",
+      "sixFieldSum": 560,
+      "sourceSUM_race": 601
+    },
+    {
+      "gameId": 3133,
+      "zh": "小螂",
+      "sixFieldSum": 384,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3134,
+      "zh": "兵螂",
+      "sixFieldSum": 510,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3135,
+      "zh": "飞天刀螂",
+      "sixFieldSum": 637,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3136,
+      "zh": "毛毛",
+      "sixFieldSum": 228,
+      "sourceSUM_race": 271
+    },
+    {
+      "gameId": 3137,
+      "zh": "爬爬",
+      "sixFieldSum": 302,
+      "sourceSUM_race": 360
+    },
+    {
+      "gameId": 3138,
+      "zh": "化蝶",
+      "sixFieldSum": 377,
+      "sourceSUM_race": 450
+    },
+    {
+      "gameId": 3139,
+      "zh": "小草虫",
+      "sixFieldSum": 323,
+      "sourceSUM_race": 331
+    },
+    {
+      "gameId": 3140,
+      "zh": "草衣虫",
+      "sixFieldSum": 429,
+      "sourceSUM_race": 442
+    },
+    {
+      "gameId": 3141,
+      "zh": "花衣蝶",
+      "sixFieldSum": 539,
+      "sourceSUM_race": 553
+    },
+    {
+      "gameId": 3142,
+      "zh": "小夜",
+      "sixFieldSum": 374,
+      "sourceSUM_race": 322
+    },
+    {
+      "gameId": 3143,
+      "zh": "紫夜",
+      "sixFieldSum": 499,
+      "sourceSUM_race": 429
+    },
+    {
+      "gameId": 3144,
+      "zh": "朔夜伊芙",
+      "sixFieldSum": 624,
+      "sourceSUM_race": 537
+    },
+    {
+      "gameId": 3145,
+      "zh": "小灵菇",
+      "sixFieldSum": 374,
+      "sourceSUM_race": 343
+    },
+    {
+      "gameId": 3146,
+      "zh": "幻灵菇",
+      "sixFieldSum": 499,
+      "sourceSUM_race": 458
+    },
+    {
+      "gameId": 3147,
+      "zh": "幻影灵菇",
+      "sixFieldSum": 621,
+      "sourceSUM_race": 570
+    },
+    {
+      "gameId": 3148,
+      "zh": "空空颅",
+      "sixFieldSum": 280,
+      "sourceSUM_race": 316
+    },
+    {
+      "gameId": 3149,
+      "zh": "夜宿颅",
+      "sixFieldSum": 373,
+      "sourceSUM_race": 422
+    },
+    {
+      "gameId": 3150,
+      "zh": "夜枭",
+      "sixFieldSum": 464,
+      "sourceSUM_race": 529
+    },
+    {
+      "gameId": 3151,
+      "zh": "多多",
+      "sixFieldSum": 335,
+      "sourceSUM_race": 331
+    },
+    {
+      "gameId": 3152,
+      "zh": "多啦多",
+      "sixFieldSum": 446,
+      "sourceSUM_race": 441
+    },
+    {
+      "gameId": 3153,
+      "zh": "古啦多",
+      "sixFieldSum": 559,
+      "sourceSUM_race": 553
+    },
+    {
+      "gameId": 3154,
+      "zh": "裘洛",
+      "sixFieldSum": 312,
+      "sourceSUM_race": 367
+    },
+    {
+      "gameId": 3155,
+      "zh": "裘力",
+      "sixFieldSum": 416,
+      "sourceSUM_race": 488
+    },
+    {
+      "gameId": 3156,
+      "zh": "裘卡",
+      "sixFieldSum": 520,
+      "sourceSUM_race": 612
+    },
+    {
+      "gameId": 3157,
+      "zh": "花魁蜂后",
+      "sixFieldSum": 382,
+      "sourceSUM_race": 328
+    },
+    {
+      "gameId": 3158,
+      "zh": "武斗酷猫",
+      "sixFieldSum": 655,
+      "sourceSUM_race": 693
+    },
+    {
+      "gameId": 3159,
+      "zh": "紫蔓宝宝",
+      "sixFieldSum": 300,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3160,
+      "zh": "紫蔓祭祀",
+      "sixFieldSum": 300,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3161,
+      "zh": "春团",
+      "sixFieldSum": 341,
+      "sourceSUM_race": 369
+    },
+    {
+      "gameId": 3162,
+      "zh": "春兔",
+      "sixFieldSum": 455,
+      "sourceSUM_race": 493
+    },
+    {
+      "gameId": 3165,
+      "zh": "伏地兽",
+      "sixFieldSum": 338,
+      "sourceSUM_race": 335
+    },
+    {
+      "gameId": 3166,
+      "zh": "贪食鼹",
+      "sixFieldSum": 449,
+      "sourceSUM_race": 447
+    },
+    {
+      "gameId": 3167,
+      "zh": "巨噬针鼹",
+      "sixFieldSum": 562,
+      "sourceSUM_race": 558
+    },
+    {
+      "gameId": 3168,
+      "zh": "阿布",
+      "sixFieldSum": 520,
+      "sourceSUM_race": 461
+    },
+    {
+      "gameId": 3169,
+      "zh": "超能阿布",
+      "sixFieldSum": 648,
+      "sourceSUM_race": 577
+    },
+    {
+      "gameId": 3170,
+      "zh": "石石",
+      "sixFieldSum": 467,
+      "sourceSUM_race": 433
+    },
+    {
+      "gameId": 3171,
+      "zh": "巨灵石",
+      "sixFieldSum": 584,
+      "sourceSUM_race": 543
+    },
+    {
+      "gameId": 3172,
+      "zh": "雪豆丁",
+      "sixFieldSum": 429,
+      "sourceSUM_race": 406
+    },
+    {
+      "gameId": 3173,
+      "zh": "雪蛮人",
+      "sixFieldSum": 574,
+      "sourceSUM_race": 541
+    },
+    {
+      "gameId": 3174,
+      "zh": "雪巨人",
+      "sixFieldSum": 718,
+      "sourceSUM_race": 677
+    },
+    {
+      "gameId": 3175,
+      "zh": "咔咔羽毛",
+      "sixFieldSum": 378,
+      "sourceSUM_race": 345
+    },
+    {
+      "gameId": 3176,
+      "zh": "咔咔雀",
+      "sixFieldSum": 505,
+      "sourceSUM_race": 461
+    },
+    {
+      "gameId": 3177,
+      "zh": "咔咔鸟",
+      "sixFieldSum": 631,
+      "sourceSUM_race": 574
+    },
+    {
+      "gameId": 3178,
+      "zh": "矮脚爬爬",
+      "sixFieldSum": 556,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3179,
+      "zh": "恶魔红钻",
+      "sixFieldSum": 696,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3180,
+      "zh": "小帕尔",
+      "sixFieldSum": 379,
+      "sourceSUM_race": 300
+    },
+    {
+      "gameId": 3181,
+      "zh": "帕尔萨斯",
+      "sixFieldSum": 507,
+      "sourceSUM_race": 400
+    },
+    {
+      "gameId": 3182,
+      "zh": "龙息帕尔",
+      "sixFieldSum": 632,
+      "sourceSUM_race": 501
+    },
+    {
+      "gameId": 3183,
+      "zh": "瑰眼仔",
+      "sixFieldSum": 373,
+      "sourceSUM_race": 352
+    },
+    {
+      "gameId": 3184,
+      "zh": "耳翎瑰魅",
+      "sixFieldSum": 497,
+      "sourceSUM_race": 470
+    },
+    {
+      "gameId": 3185,
+      "zh": "邪眼巨魔",
+      "sixFieldSum": 621,
+      "sourceSUM_race": 586
+    },
+    {
+      "gameId": 3186,
+      "zh": "小光",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3187,
+      "zh": "迷迷眼",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3188,
+      "zh": "拉特",
+      "sixFieldSum": 467,
+      "sourceSUM_race": 466
+    },
+    {
+      "gameId": 3189,
+      "zh": "酷拉",
+      "sixFieldSum": 583,
+      "sourceSUM_race": 584
+    },
+    {
+      "gameId": 3190,
+      "zh": "电咩咩",
+      "sixFieldSum": 332,
+      "sourceSUM_race": 298
+    },
+    {
+      "gameId": 3191,
+      "zh": "粉咩咩",
+      "sixFieldSum": 443,
+      "sourceSUM_race": 398
+    },
+    {
+      "gameId": 3192,
+      "zh": "电球咩咩",
+      "sixFieldSum": 553,
+      "sourceSUM_race": 498
+    },
+    {
+      "gameId": 3193,
+      "zh": "小星光",
+      "sixFieldSum": 494,
+      "sourceSUM_race": 520
+    },
+    {
+      "gameId": 3194,
+      "zh": "星光狮",
+      "sixFieldSum": 617,
+      "sourceSUM_race": 648
+    },
+    {
+      "gameId": 3195,
+      "zh": "闪电环",
+      "sixFieldSum": 335,
+      "sourceSUM_race": 326
+    },
+    {
+      "gameId": 3196,
+      "zh": "刺电环",
+      "sixFieldSum": 446,
+      "sourceSUM_race": 434
+    },
+    {
+      "gameId": 3197,
+      "zh": "荆棘电环",
+      "sixFieldSum": 557,
+      "sourceSUM_race": 544
+    },
+    {
+      "gameId": 3198,
+      "zh": "粉粉星",
+      "sixFieldSum": 495,
+      "sourceSUM_race": 502
+    },
+    {
+      "gameId": 3199,
+      "zh": "小皮球",
+      "sixFieldSum": 618,
+      "sourceSUM_race": 628
+    },
+    {
+      "gameId": 3200,
+      "zh": "机械方方",
+      "sixFieldSum": 362,
+      "sourceSUM_race": 303
+    },
+    {
+      "gameId": 3201,
+      "zh": "多彩方方",
+      "sixFieldSum": 482,
+      "sourceSUM_race": 405
+    },
+    {
+      "gameId": 3202,
+      "zh": "立方人",
+      "sixFieldSum": 605,
+      "sourceSUM_race": 505
+    },
+    {
+      "gameId": 3203,
+      "zh": "贝瑟",
+      "sixFieldSum": 385,
+      "sourceSUM_race": 330
+    },
+    {
+      "gameId": 3204,
+      "zh": "贝加尔",
+      "sixFieldSum": 512,
+      "sourceSUM_race": 442
+    },
+    {
+      "gameId": 3205,
+      "zh": "贝古斯",
+      "sixFieldSum": 641,
+      "sourceSUM_race": 551
+    },
+    {
+      "gameId": 3206,
+      "zh": "多西",
+      "sixFieldSum": 345,
+      "sourceSUM_race": 321
+    },
+    {
+      "gameId": 3207,
+      "zh": "库多西",
+      "sixFieldSum": 459,
+      "sourceSUM_race": 427
+    },
+    {
+      "gameId": 3208,
+      "zh": "波多西",
+      "sixFieldSum": 573,
+      "sourceSUM_race": 533
+    },
+    {
+      "gameId": 3209,
+      "zh": "小翼龙",
+      "sixFieldSum": 409,
+      "sourceSUM_race": 378
+    },
+    {
+      "gameId": 3210,
+      "zh": "翼龙",
+      "sixFieldSum": 513,
+      "sourceSUM_race": 471
+    },
+    {
+      "gameId": 3211,
+      "zh": "伊雷龙",
+      "sixFieldSum": 521,
+      "sourceSUM_race": 514
+    },
+    {
+      "gameId": 3213,
+      "zh": "黑炎宝宝",
+      "sixFieldSum": 505,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3214,
+      "zh": "黑炎",
+      "sixFieldSum": 632,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3215,
+      "zh": "海豹战士",
+      "sixFieldSum": 481,
+      "sourceSUM_race": 440
+    },
+    {
+      "gameId": 3216,
+      "zh": "海豹船长",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 550
+    },
+    {
+      "gameId": 3217,
+      "zh": "呼拉猫",
+      "sixFieldSum": 373,
+      "sourceSUM_race": 345
+    },
+    {
+      "gameId": 3218,
+      "zh": "增肌猫",
+      "sixFieldSum": 497,
+      "sourceSUM_race": 459
+    },
+    {
+      "gameId": 3219,
+      "zh": "健猫教练",
+      "sixFieldSum": 621,
+      "sourceSUM_race": 574
+    },
+    {
+      "gameId": 3225,
+      "zh": "古钟蛇",
+      "sixFieldSum": 458,
+      "sourceSUM_race": 430
+    },
+    {
+      "gameId": 3226,
+      "zh": "寒音蛇",
+      "sixFieldSum": 574,
+      "sourceSUM_race": 537
+    },
+    {
+      "gameId": 3227,
+      "zh": "菊花梨",
+      "sixFieldSum": 572,
+      "sourceSUM_race": 574
+    },
+    {
+      "gameId": 3228,
+      "zh": "友爱天天",
+      "sixFieldSum": 446,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3229,
+      "zh": "友爱星飞",
+      "sixFieldSum": 558,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3230,
+      "zh": "加灵",
+      "sixFieldSum": 308,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3231,
+      "zh": "加益",
+      "sixFieldSum": 410,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3232,
+      "zh": "加尔",
+      "sixFieldSum": 551,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3233,
+      "zh": "黑化加尔",
+      "sixFieldSum": 551,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3234,
+      "zh": "牵线木偶",
+      "sixFieldSum": 509,
+      "sourceSUM_race": 470
+    },
+    {
+      "gameId": 3235,
+      "zh": "帅帅魔偶",
+      "sixFieldSum": 636,
+      "sourceSUM_race": 587
+    },
+    {
+      "gameId": 3236,
+      "zh": "星星眼",
+      "sixFieldSum": 547,
+      "sourceSUM_race": 520
+    },
+    {
+      "gameId": 3237,
+      "zh": "小怂猫",
+      "sixFieldSum": 522,
+      "sourceSUM_race": 546
+    },
+    {
+      "gameId": 3238,
+      "zh": "怒目怂猫",
+      "sixFieldSum": 651,
+      "sourceSUM_race": 684
+    },
+    {
+      "gameId": 3239,
+      "zh": "哭哭菇",
+      "sixFieldSum": 279,
+      "sourceSUM_race": 349
+    },
+    {
+      "gameId": 3240,
+      "zh": "怖须菇",
+      "sixFieldSum": 372,
+      "sourceSUM_race": 464
+    },
+    {
+      "gameId": 3241,
+      "zh": "怖哭菇",
+      "sixFieldSum": 466,
+      "sourceSUM_race": 580
+    },
+    {
+      "gameId": 3242,
+      "zh": "呆火鸟",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3243,
+      "zh": "喷火鸟",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3244,
+      "zh": "绒绒",
+      "sixFieldSum": 379,
+      "sourceSUM_race": 343
+    },
+    {
+      "gameId": 3245,
+      "zh": "小绒茧",
+      "sixFieldSum": 504,
+      "sourceSUM_race": 458
+    },
+    {
+      "gameId": 3246,
+      "zh": "绒仙子",
+      "sixFieldSum": 630,
+      "sourceSUM_race": 572
+    },
+    {
+      "gameId": 3248,
+      "zh": "绿洲象",
+      "sixFieldSum": 467,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3249,
+      "zh": "流星猛犸",
+      "sixFieldSum": 583,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3250,
+      "zh": "小鹬",
+      "sixFieldSum": 364,
+      "sourceSUM_race": 301
+    },
+    {
+      "gameId": 3251,
+      "zh": "鄙目鹬",
+      "sixFieldSum": 487,
+      "sourceSUM_race": 400
+    },
+    {
+      "gameId": 3252,
+      "zh": "高脚鹬",
+      "sixFieldSum": 606,
+      "sourceSUM_race": 501
+    },
+    {
+      "gameId": 3253,
+      "zh": "速粒小子",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3254,
+      "zh": "速粒冲锋",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3255,
+      "zh": "奔波鼠",
+      "sixFieldSum": 476,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3256,
+      "zh": "流浪鼠",
+      "sixFieldSum": 594,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3257,
+      "zh": "布鲁斯",
+      "sixFieldSum": 295,
+      "sourceSUM_race": 354
+    },
+    {
+      "gameId": 3258,
+      "zh": "雪顶布鲁斯",
+      "sixFieldSum": 394,
+      "sourceSUM_race": 473
+    },
+    {
+      "gameId": 3259,
+      "zh": "冰钻布鲁斯",
+      "sixFieldSum": 493,
+      "sourceSUM_race": 590
+    },
+    {
+      "gameId": 3260,
+      "zh": "古拉海象",
+      "sixFieldSum": 512,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3261,
+      "zh": "大古拉海象",
+      "sixFieldSum": 641,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3262,
+      "zh": "呼呼猪",
+      "sixFieldSum": 463,
+      "sourceSUM_race": 478
+    },
+    {
+      "gameId": 3263,
+      "zh": "獠牙猪",
+      "sixFieldSum": 579,
+      "sourceSUM_race": 597
+    },
+    {
+      "gameId": 3264,
+      "zh": "卡波",
+      "sixFieldSum": 368,
+      "sourceSUM_race": 460
+    },
+    {
+      "gameId": 3265,
+      "zh": "卡拉波斯",
+      "sixFieldSum": 460,
+      "sourceSUM_race": 576
+    },
+    {
+      "gameId": 3266,
+      "zh": "胆小鳗鱼",
+      "sixFieldSum": 517,
+      "sourceSUM_race": 494
+    },
+    {
+      "gameId": 3267,
+      "zh": "闪电鳗鱼",
+      "sixFieldSum": 646,
+      "sourceSUM_race": 619
+    },
+    {
+      "gameId": 3268,
+      "zh": "大头骨龙",
+      "sixFieldSum": 442,
+      "sourceSUM_race": 469
+    },
+    {
+      "gameId": 3269,
+      "zh": "寂灭骨龙",
+      "sixFieldSum": 552,
+      "sourceSUM_race": 587
+    },
+    {
+      "gameId": 3276,
+      "zh": "绿翼鸟",
+      "sixFieldSum": 323,
+      "sourceSUM_race": 364
+    },
+    {
+      "gameId": 3277,
+      "zh": "魔翼鸟",
+      "sixFieldSum": 431,
+      "sourceSUM_race": 486
+    },
+    {
+      "gameId": 3278,
+      "zh": "魔眷鸟",
+      "sixFieldSum": 539,
+      "sourceSUM_race": 607
+    },
+    {
+      "gameId": 3279,
+      "zh": "雪绒鸟",
+      "sixFieldSum": 335,
+      "sourceSUM_race": 339
+    },
+    {
+      "gameId": 3280,
+      "zh": "雪绒鸟",
+      "sixFieldSum": 339,
+      "sourceSUM_race": 335
+    },
+    {
+      "gameId": 3281,
+      "zh": "雪绒鸟",
+      "sixFieldSum": 334,
+      "sourceSUM_race": 339
+    },
+    {
+      "gameId": 3282,
+      "zh": "冬羽雀",
+      "sixFieldSum": 448,
+      "sourceSUM_race": 453
+    },
+    {
+      "gameId": 3283,
+      "zh": "冬羽雀",
+      "sixFieldSum": 453,
+      "sourceSUM_race": 449
+    },
+    {
+      "gameId": 3284,
+      "zh": "冬羽雀",
+      "sixFieldSum": 446,
+      "sourceSUM_race": 452
+    },
+    {
+      "gameId": 3285,
+      "zh": "岚鸟",
+      "sixFieldSum": 558,
+      "sourceSUM_race": 565
+    },
+    {
+      "gameId": 3286,
+      "zh": "岚鸟",
+      "sixFieldSum": 566,
+      "sourceSUM_race": 561
+    },
+    {
+      "gameId": 3287,
+      "zh": "岚鸟",
+      "sixFieldSum": 557,
+      "sourceSUM_race": 564
+    },
+    {
+      "gameId": 3288,
+      "zh": "丢丢",
+      "sixFieldSum": 263,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3289,
+      "zh": "丢丢",
+      "sixFieldSum": 271,
+      "sourceSUM_race": 317
+    },
+    {
+      "gameId": 3290,
+      "zh": "丢丢",
+      "sixFieldSum": 268,
+      "sourceSUM_race": 321
+    },
+    {
+      "gameId": 3291,
+      "zh": "卡卡虫",
+      "sixFieldSum": 350,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3292,
+      "zh": "卡卡虫",
+      "sixFieldSum": 361,
+      "sourceSUM_race": 423
+    },
+    {
+      "gameId": 3293,
+      "zh": "卡卡虫",
+      "sixFieldSum": 357,
+      "sourceSUM_race": 427
+    },
+    {
+      "gameId": 3294,
+      "zh": "卡瓦重",
+      "sixFieldSum": 439,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3295,
+      "zh": "卡瓦重",
+      "sixFieldSum": 451,
+      "sourceSUM_race": 528
+    },
+    {
+      "gameId": 3296,
+      "zh": "卡瓦重",
+      "sixFieldSum": 446,
+      "sourceSUM_race": 535
+    },
+    {
+      "gameId": 3297,
+      "zh": "蹦蹦种子",
+      "sixFieldSum": 347,
+      "sourceSUM_race": 337
+    },
+    {
+      "gameId": 3298,
+      "zh": "蹦蹦种子",
+      "sixFieldSum": 348,
+      "sourceSUM_race": 336
+    },
+    {
+      "gameId": 3299,
+      "zh": "蹦蹦种子",
+      "sixFieldSum": 346,
+      "sourceSUM_race": 339
+    },
+    {
+      "gameId": 3300,
+      "zh": "蹦蹦草",
+      "sixFieldSum": 462,
+      "sourceSUM_race": 449
+    },
+    {
+      "gameId": 3301,
+      "zh": "蹦蹦草",
+      "sixFieldSum": 463,
+      "sourceSUM_race": 447
+    },
+    {
+      "gameId": 3302,
+      "zh": "蹦蹦草",
+      "sixFieldSum": 462,
+      "sourceSUM_race": 452
+    },
+    {
+      "gameId": 3303,
+      "zh": "蹦蹦花",
+      "sixFieldSum": 576,
+      "sourceSUM_race": 563
+    },
+    {
+      "gameId": 3304,
+      "zh": "蹦蹦花",
+      "sixFieldSum": 579,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3305,
+      "zh": "蹦蹦花",
+      "sixFieldSum": 578,
+      "sourceSUM_race": 566
+    },
+    {
+      "gameId": 3307,
+      "zh": "矿晶虫",
+      "sixFieldSum": 466,
+      "sourceSUM_race": 459
+    },
+    {
+      "gameId": 3308,
+      "zh": "晶石蜗",
+      "sixFieldSum": 583,
+      "sourceSUM_race": 575
+    },
+    {
+      "gameId": 3309,
+      "zh": "犀角鸟",
+      "sixFieldSum": 368,
+      "sourceSUM_race": 331
+    },
+    {
+      "gameId": 3310,
+      "zh": "光纤兽",
+      "sixFieldSum": 490,
+      "sourceSUM_race": 441
+    },
+    {
+      "gameId": 3311,
+      "zh": "疾光千兽",
+      "sixFieldSum": 612,
+      "sourceSUM_race": 551
+    },
+    {
+      "gameId": 3312,
+      "zh": "若叶蜥",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3313,
+      "zh": "立叶蜥",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3314,
+      "zh": "蝶叶巨蜥",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3315,
+      "zh": "小鼠獭",
+      "sixFieldSum": 355,
+      "sourceSUM_race": 345
+    },
+    {
+      "gameId": 3316,
+      "zh": "燕尾獭",
+      "sixFieldSum": 477,
+      "sourceSUM_race": 459
+    },
+    {
+      "gameId": 3317,
+      "zh": "卷胡巨獭",
+      "sixFieldSum": 595,
+      "sourceSUM_race": 573
+    },
+    {
+      "gameId": 3319,
+      "zh": "粉星仔",
+      "sixFieldSum": 514,
+      "sourceSUM_race": 489
+    },
+    {
+      "gameId": 3320,
+      "zh": "粉耳星兔",
+      "sixFieldSum": 642,
+      "sourceSUM_race": 612
+    },
+    {
+      "gameId": 3321,
+      "zh": "觅觅蝠",
+      "sixFieldSum": 360,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3322,
+      "zh": "翻翻蝠",
+      "sixFieldSum": 478,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3323,
+      "zh": "夜游魔",
+      "sixFieldSum": 598,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3327,
+      "zh": "独角龙",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3328,
+      "zh": "坚角龙",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3329,
+      "zh": "爆角龙",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3330,
+      "zh": "海盔虫",
+      "sixFieldSum": 327,
+      "sourceSUM_race": 337
+    },
+    {
+      "gameId": 3331,
+      "zh": "刺盔虫",
+      "sixFieldSum": 435,
+      "sourceSUM_race": 448
+    },
+    {
+      "gameId": 3332,
+      "zh": "千棘盔",
+      "sixFieldSum": 545,
+      "sourceSUM_race": 562
+    },
+    {
+      "gameId": 3333,
+      "zh": "雪娃娃",
+      "sixFieldSum": 385,
+      "sourceSUM_race": 322
+    },
+    {
+      "gameId": 3334,
+      "zh": "冰封怨灵",
+      "sixFieldSum": 515,
+      "sourceSUM_race": 430
+    },
+    {
+      "gameId": 3335,
+      "zh": "雪灵",
+      "sixFieldSum": 643,
+      "sourceSUM_race": 540
+    },
+    {
+      "gameId": 3336,
+      "zh": "格格布",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3337,
+      "zh": "格布布",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3338,
+      "zh": "冰虎宝",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3339,
+      "zh": "冰晶虎",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3340,
+      "zh": "冰晶古齿虎",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3341,
+      "zh": "雪灵兽",
+      "sixFieldSum": 331,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3342,
+      "zh": "幻雪兽",
+      "sixFieldSum": 441,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3343,
+      "zh": "饮雪狂兽",
+      "sixFieldSum": 552,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3344,
+      "zh": "乖乖鹄",
+      "sixFieldSum": 394,
+      "sourceSUM_race": 298
+    },
+    {
+      "gameId": 3345,
+      "zh": "蓝珠天鹅",
+      "sixFieldSum": 525,
+      "sourceSUM_race": 396
+    },
+    {
+      "gameId": 3346,
+      "zh": "翠顶夫人",
+      "sixFieldSum": 656,
+      "sourceSUM_race": 496
+    },
+    {
+      "gameId": 3347,
+      "zh": "芽眼魔",
+      "sixFieldSum": 370,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3348,
+      "zh": "叶眼魔",
+      "sixFieldSum": 492,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3349,
+      "zh": "障眼魔",
+      "sixFieldSum": 616,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3350,
+      "zh": "红绒十字",
+      "sixFieldSum": 598,
+      "sourceSUM_race": 551
+    },
+    {
+      "gameId": 3351,
+      "zh": "霹雳宝宝",
+      "sixFieldSum": 381,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3352,
+      "zh": "雷鸣小子",
+      "sixFieldSum": 508,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3353,
+      "zh": "雷神之子",
+      "sixFieldSum": 635,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3354,
+      "zh": "钻地小子",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3355,
+      "zh": "闪电小子",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3356,
+      "zh": "魔能陀螺",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3357,
+      "zh": "电动长颈鹿",
+      "sixFieldSum": 297,
+      "sourceSUM_race": 315
+    },
+    {
+      "gameId": 3358,
+      "zh": "奔乐鹿",
+      "sixFieldSum": 395,
+      "sourceSUM_race": 418
+    },
+    {
+      "gameId": 3359,
+      "zh": "爵士鹿",
+      "sixFieldSum": 496,
+      "sourceSUM_race": 524
+    },
+    {
+      "gameId": 3360,
+      "zh": "蝴蝶陶陶",
+      "sixFieldSum": 309,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3361,
+      "zh": "铆钉毛毛",
+      "sixFieldSum": 412,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3362,
+      "zh": "徘徊爪爪",
+      "sixFieldSum": 516,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3363,
+      "zh": "路路",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 658
+    },
+    {
+      "gameId": 3364,
+      "zh": "路路尼",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 658
+    },
+    {
+      "gameId": 3365,
+      "zh": "古路尼",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 658
+    },
+    {
+      "gameId": 3367,
+      "zh": "嘟嘟煲",
+      "sixFieldSum": 459,
+      "sourceSUM_race": 487
+    },
+    {
+      "gameId": 3368,
+      "zh": "嘟嘟锅",
+      "sixFieldSum": 573,
+      "sourceSUM_race": 610
+    },
+    {
+      "gameId": 3369,
+      "zh": "幽星光",
+      "sixFieldSum": 319,
+      "sourceSUM_race": 317
+    },
+    {
+      "gameId": 3370,
+      "zh": "曜星光",
+      "sixFieldSum": 425,
+      "sourceSUM_race": 422
+    },
+    {
+      "gameId": 3371,
+      "zh": "暮星辰",
+      "sixFieldSum": 532,
+      "sourceSUM_race": 528
+    },
+    {
+      "gameId": 3372,
+      "zh": "春花兔",
+      "sixFieldSum": 557,
+      "sourceSUM_race": 615
+    },
+    {
+      "gameId": 3373,
+      "zh": "逗逗",
+      "sixFieldSum": 384,
+      "sourceSUM_race": 353
+    },
+    {
+      "gameId": 3374,
+      "zh": "气球猫",
+      "sixFieldSum": 511,
+      "sourceSUM_race": 471
+    },
+    {
+      "gameId": 3375,
+      "zh": "梦想三三",
+      "sixFieldSum": 641,
+      "sourceSUM_race": 589
+    },
+    {
+      "gameId": 3376,
+      "zh": "旋叶虫",
+      "sixFieldSum": 326,
+      "sourceSUM_race": 374
+    },
+    {
+      "gameId": 3377,
+      "zh": "风滚暮虫",
+      "sixFieldSum": 542,
+      "sourceSUM_race": 622
+    },
+    {
+      "gameId": 3378,
+      "zh": "菇菇丁",
+      "sixFieldSum": 396,
+      "sourceSUM_race": 356
+    },
+    {
+      "gameId": 3379,
+      "zh": "多菇丁",
+      "sixFieldSum": 528,
+      "sourceSUM_race": 474
+    },
+    {
+      "gameId": 3380,
+      "zh": "九幽菇",
+      "sixFieldSum": 660,
+      "sourceSUM_race": 594
+    },
+    {
+      "gameId": 3381,
+      "zh": "深蓝鲸",
+      "sixFieldSum": 618,
+      "sourceSUM_race": 576
+    },
+    {
+      "gameId": 3382,
+      "zh": "双灯鱼",
+      "sixFieldSum": 502,
+      "sourceSUM_race": 486
+    },
+    {
+      "gameId": 3383,
+      "zh": "利灯鱼",
+      "sixFieldSum": 626,
+      "sourceSUM_race": 607
+    },
+    {
+      "gameId": 3384,
+      "zh": "豆丁鱼",
+      "sixFieldSum": 383,
+      "sourceSUM_race": 373
+    },
+    {
+      "gameId": 3385,
+      "zh": "快鳍鱼",
+      "sixFieldSum": 511,
+      "sourceSUM_race": 497
+    },
+    {
+      "gameId": 3386,
+      "zh": "龙鱼",
+      "sixFieldSum": 640,
+      "sourceSUM_race": 619
+    },
+    {
+      "gameId": 3387,
+      "zh": "科多多",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3388,
+      "zh": "科多索",
+      "sixFieldSum": 255,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3392,
+      "zh": "凡雀",
+      "sixFieldSum": 372,
+      "sourceSUM_race": 369
+    },
+    {
+      "gameId": 3393,
+      "zh": "紫翎鹰",
+      "sixFieldSum": 496,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 3394,
+      "zh": "凡鹰",
+      "sixFieldSum": 620,
+      "sourceSUM_race": 615
+    },
+    {
+      "gameId": 3395,
+      "zh": "里奥",
+      "sixFieldSum": 411,
+      "sourceSUM_race": 310
+    },
+    {
+      "gameId": 3396,
+      "zh": "灵羽勇士",
+      "sixFieldSum": 547,
+      "sourceSUM_race": 412
+    },
+    {
+      "gameId": 3397,
+      "zh": "圣羽翼王",
+      "sixFieldSum": 686,
+      "sourceSUM_race": 514
+    },
+    {
+      "gameId": 3398,
+      "zh": "星尘虫",
+      "sixFieldSum": 307,
+      "sourceSUM_race": 355
+    },
+    {
+      "gameId": 3399,
+      "zh": "落星虫",
+      "sixFieldSum": 407,
+      "sourceSUM_race": 473
+    },
+    {
+      "gameId": 3400,
+      "zh": "陨星虫",
+      "sixFieldSum": 509,
+      "sourceSUM_race": 592
+    },
+    {
+      "gameId": 3401,
+      "zh": "伊里斯",
+      "sixFieldSum": 595,
+      "sourceSUM_race": 604
+    },
+    {
+      "gameId": 3402,
+      "zh": "碎晶蝎",
+      "sixFieldSum": 386,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3403,
+      "zh": "晶尾蝎",
+      "sixFieldSum": 515,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3404,
+      "zh": "蝎子王",
+      "sixFieldSum": 644,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3405,
+      "zh": "幽冥眼",
+      "sixFieldSum": 610,
+      "sourceSUM_race": 632
+    },
+    {
+      "gameId": 3406,
+      "zh": "缇塔",
+      "sixFieldSum": 454,
+      "sourceSUM_race": 470
+    },
+    {
+      "gameId": 3407,
+      "zh": "声波缇塔",
+      "sixFieldSum": 568,
+      "sourceSUM_race": 589
+    },
+    {
+      "gameId": 3408,
+      "zh": "齿轮小子",
+      "sixFieldSum": 473,
+      "sourceSUM_race": 381
+    },
+    {
+      "gameId": 3409,
+      "zh": "机甲小子",
+      "sixFieldSum": 592,
+      "sourceSUM_race": 475
+    },
+    {
+      "gameId": 3410,
+      "zh": "权杖-Ⅱ",
+      "sixFieldSum": 522,
+      "sourceSUM_race": 390
+    },
+    {
+      "gameId": 3411,
+      "zh": "权杖-V",
+      "sixFieldSum": 652,
+      "sourceSUM_race": 487
+    },
+    {
+      "gameId": 3412,
+      "zh": "伊兰亚龙",
+      "sixFieldSum": 651,
+      "sourceSUM_race": 642
+    },
+    {
+      "gameId": 3416,
+      "zh": "格斗小五",
+      "sixFieldSum": 650,
+      "sourceSUM_race": 602
+    },
+    {
+      "gameId": 3417,
+      "zh": "格斗小六",
+      "sixFieldSum": 639,
+      "sourceSUM_race": 646
+    },
+    {
+      "gameId": 3419,
+      "zh": "厉毒小萝",
+      "sixFieldSum": 396,
+      "sourceSUM_race": 432
+    },
+    {
+      "gameId": 3420,
+      "zh": "厉毒修萝",
+      "sixFieldSum": 495,
+      "sourceSUM_race": 540
+    },
+    {
+      "gameId": 3421,
+      "zh": "破梦者",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3422,
+      "zh": "食梦者",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3423,
+      "zh": "空灵兽",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3424,
+      "zh": "空灵斗士",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3425,
+      "zh": "三叶草龙",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3426,
+      "zh": "花叶龙",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3427,
+      "zh": "麦香驼",
+      "sixFieldSum": 692,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3428,
+      "zh": "臭臭锥",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3429,
+      "zh": "埃欧熔锥",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3430,
+      "zh": "海枝枝",
+      "sixFieldSum": 610,
+      "sourceSUM_race": 522
+    },
+    {
+      "gameId": 3431,
+      "zh": "海枝枝",
+      "sixFieldSum": 607,
+      "sourceSUM_race": 545
+    },
+    {
+      "gameId": 3432,
+      "zh": "海枝枝",
+      "sixFieldSum": 610,
+      "sourceSUM_race": 534
+    },
+    {
+      "gameId": 3433,
+      "zh": "海枝枝",
+      "sixFieldSum": 603,
+      "sourceSUM_race": 552
+    },
+    {
+      "gameId": 3434,
+      "zh": "小电企鹅",
+      "sixFieldSum": 467,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3435,
+      "zh": "电企鹅",
+      "sixFieldSum": 583,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3436,
+      "zh": "柴渣虫",
+      "sixFieldSum": 462,
+      "sourceSUM_race": 477
+    },
+    {
+      "gameId": 3437,
+      "zh": "燃薪虫",
+      "sixFieldSum": 579,
+      "sourceSUM_race": 598
+    },
+    {
+      "gameId": 3438,
+      "zh": "梦游",
+      "sixFieldSum": 493,
+      "sourceSUM_race": 464
+    },
+    {
+      "gameId": 3439,
+      "zh": "梦悠悠",
+      "sixFieldSum": 618,
+      "sourceSUM_race": 580
+    },
+    {
+      "gameId": 3440,
+      "zh": "梦游",
+      "sixFieldSum": 506,
+      "sourceSUM_race": 457
+    },
+    {
+      "gameId": 3441,
+      "zh": "梦悠悠",
+      "sixFieldSum": 632,
+      "sourceSUM_race": 570
+    },
+    {
+      "gameId": 3442,
+      "zh": "小星光",
+      "sixFieldSum": 493,
+      "sourceSUM_race": 519
+    },
+    {
+      "gameId": 3443,
+      "zh": "星光狮",
+      "sixFieldSum": 617,
+      "sourceSUM_race": 647
+    },
+    {
+      "gameId": 3444,
+      "zh": "噼啪鸟",
+      "sixFieldSum": 618,
+      "sourceSUM_race": 649
+    },
+    {
+      "gameId": 3445,
+      "zh": "雪毛角羚牛",
+      "sixFieldSum": 523,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3446,
+      "zh": "雪毛角羚牛",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3447,
+      "zh": "雪毛角羚牛",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3448,
+      "zh": "晶石蜗",
+      "sixFieldSum": 585,
+      "sourceSUM_race": 574
+    },
+    {
+      "gameId": 3449,
+      "zh": "晶石蜗",
+      "sixFieldSum": 583,
+      "sourceSUM_race": 580
+    },
+    {
+      "gameId": 3450,
+      "zh": "晶石蜗",
+      "sixFieldSum": 583,
+      "sourceSUM_race": 575
+    },
+    {
+      "gameId": 3451,
+      "zh": "晶石蜗",
+      "sixFieldSum": 583,
+      "sourceSUM_race": 572
+    },
+    {
+      "gameId": 3452,
+      "zh": "鸭吉吉",
+      "sixFieldSum": 470,
+      "sourceSUM_race": 487
+    },
+    {
+      "gameId": 3453,
+      "zh": "鸭吉吉",
+      "sixFieldSum": 469,
+      "sourceSUM_race": 481
+    },
+    {
+      "gameId": 3454,
+      "zh": "地鼠",
+      "sixFieldSum": 342,
+      "sourceSUM_race": 352
+    },
+    {
+      "gameId": 3455,
+      "zh": "遁鼠",
+      "sixFieldSum": 454,
+      "sourceSUM_race": 469
+    },
+    {
+      "gameId": 3456,
+      "zh": "遁地鼠",
+      "sixFieldSum": 569,
+      "sourceSUM_race": 586
+    },
+    {
+      "gameId": 3457,
+      "zh": "月牙雪熊",
+      "sixFieldSum": 586,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3458,
+      "zh": "圣代甜甜",
+      "sixFieldSum": 614,
+      "sourceSUM_race": 616
+    },
+    {
+      "gameId": 3459,
+      "zh": "圣代甜甜",
+      "sixFieldSum": 611,
+      "sourceSUM_race": 617
+    },
+    {
+      "gameId": 3460,
+      "zh": "圣代甜甜",
+      "sixFieldSum": 612,
+      "sourceSUM_race": 615
+    },
+    {
+      "gameId": 3461,
+      "zh": "圣代甜甜",
+      "sixFieldSum": 608,
+      "sourceSUM_race": 631
+    },
+    {
+      "gameId": 3462,
+      "zh": "圣代甜甜",
+      "sixFieldSum": 605,
+      "sourceSUM_race": 633
+    },
+    {
+      "gameId": 3463,
+      "zh": "圣代甜甜",
+      "sixFieldSum": 615,
+      "sourceSUM_race": 603
+    },
+    {
+      "gameId": 3464,
+      "zh": "圣代甜甜",
+      "sixFieldSum": 611,
+      "sourceSUM_race": 616
+    },
+    {
+      "gameId": 3465,
+      "zh": "圣代甜甜",
+      "sixFieldSum": 610,
+      "sourceSUM_race": 619
+    },
+    {
+      "gameId": 3466,
+      "zh": "星云旅者",
+      "sixFieldSum": 572,
+      "sourceSUM_race": 528
+    },
+    {
+      "gameId": 3467,
+      "zh": "小狮鹫",
+      "sixFieldSum": 357,
+      "sourceSUM_race": 365
+    },
+    {
+      "gameId": 3468,
+      "zh": "神圣狮鹫",
+      "sixFieldSum": 476,
+      "sourceSUM_race": 487
+    },
+    {
+      "gameId": 3469,
+      "zh": "皇家狮鹫",
+      "sixFieldSum": 596,
+      "sourceSUM_race": 610
+    },
+    {
+      "gameId": 3470,
+      "zh": "化蝶",
+      "sixFieldSum": 369,
+      "sourceSUM_race": 450
+    },
+    {
+      "gameId": 3471,
+      "zh": "化蝶",
+      "sixFieldSum": 366,
+      "sourceSUM_race": 449
+    },
+    {
+      "gameId": 3472,
+      "zh": "化蝶",
+      "sixFieldSum": 362,
+      "sourceSUM_race": 450
+    },
+    {
+      "gameId": 3473,
+      "zh": "布瓜蝌",
+      "sixFieldSum": 442,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3474,
+      "zh": "上岸蛙",
+      "sixFieldSum": 554,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3475,
+      "zh": "海盔虫",
+      "sixFieldSum": 326,
+      "sourceSUM_race": 338
+    },
+    {
+      "gameId": 3476,
+      "zh": "刺盔虫",
+      "sixFieldSum": 435,
+      "sourceSUM_race": 450
+    },
+    {
+      "gameId": 3477,
+      "zh": "千棘盔",
+      "sixFieldSum": 544,
+      "sourceSUM_race": 564
+    },
+    {
+      "gameId": 3478,
+      "zh": "香草甜甜",
+      "sixFieldSum": 491,
+      "sourceSUM_race": 482
+    },
+    {
+      "gameId": 3479,
+      "zh": "香草甜甜",
+      "sixFieldSum": 490,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 3480,
+      "zh": "圣羽翼王",
+      "sixFieldSum": 588,
+      "sourceSUM_race": 514
+    },
+    {
+      "gameId": 3481,
+      "zh": "暗影灵面",
+      "sixFieldSum": 473,
+      "sourceSUM_race": 508
+    },
+    {
+      "gameId": 3482,
+      "zh": "幽冥眼",
+      "sixFieldSum": 592,
+      "sourceSUM_race": 635
+    },
+    {
+      "gameId": 3483,
+      "zh": "蓬叶虫",
+      "sixFieldSum": 433,
+      "sourceSUM_race": 498
+    },
+    {
+      "gameId": 3484,
+      "zh": "螺旋帕帕",
+      "sixFieldSum": 377,
+      "sourceSUM_race": 378
+    },
+    {
+      "gameId": 3485,
+      "zh": "落陨星兔",
+      "sixFieldSum": 637,
+      "sourceSUM_race": 619
+    },
+    {
+      "gameId": 3486,
+      "zh": "晶石蜗",
+      "sixFieldSum": 585,
+      "sourceSUM_race": 578
+    },
+    {
+      "gameId": 3487,
+      "zh": "小丑豆豆",
+      "sixFieldSum": 436,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3488,
+      "zh": "小丑兔",
+      "sixFieldSum": 583,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3489,
+      "zh": "小丑公爵",
+      "sixFieldSum": 729,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3490,
+      "zh": "吸泥鸥",
+      "sixFieldSum": 455,
+      "sourceSUM_race": 443
+    },
+    {
+      "gameId": 3491,
+      "zh": "泥吼牙",
+      "sixFieldSum": 569,
+      "sourceSUM_race": 554
+    },
+    {
+      "gameId": 3492,
+      "zh": "兽花蕾",
+      "sixFieldSum": 513,
+      "sourceSUM_race": 482
+    },
+    {
+      "gameId": 3493,
+      "zh": "肥草球",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3494,
+      "zh": "赫拉",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3495,
+      "zh": "鸭吉吉",
+      "sixFieldSum": 475,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3496,
+      "zh": "旋叶虫",
+      "sixFieldSum": 324,
+      "sourceSUM_race": 373
+    },
+    {
+      "gameId": 3497,
+      "zh": "蓬叶虫",
+      "sixFieldSum": 433,
+      "sourceSUM_race": 498
+    },
+    {
+      "gameId": 3498,
+      "zh": "风滚暮虫",
+      "sixFieldSum": 540,
+      "sourceSUM_race": 623
+    },
+    {
+      "gameId": 3499,
+      "zh": "公平鸽",
+      "sixFieldSum": 649,
+      "sourceSUM_race": 486
+    },
+    {
+      "gameId": 3500,
+      "zh": "石肤蜥",
+      "sixFieldSum": 369,
+      "sourceSUM_race": 320
+    },
+    {
+      "gameId": 3501,
+      "zh": "石刺蜥",
+      "sixFieldSum": 493,
+      "sourceSUM_race": 428
+    },
+    {
+      "gameId": 3502,
+      "zh": "石冠王蜥",
+      "sixFieldSum": 615,
+      "sourceSUM_race": 534
+    },
+    {
+      "gameId": 3503,
+      "zh": "线球鼠",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3504,
+      "zh": "慈母鼠",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3505,
+      "zh": "夜回犀牛",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3506,
+      "zh": "花怨鳗",
+      "sixFieldSum": 630,
+      "sourceSUM_race": 617
+    },
+    {
+      "gameId": 3507,
+      "zh": "鳗尾兽",
+      "sixFieldSum": 788,
+      "sourceSUM_race": 774
+    },
+    {
+      "gameId": 3508,
+      "zh": "波波螺",
+      "sixFieldSum": 380,
+      "sourceSUM_race": 288
+    },
+    {
+      "gameId": 3509,
+      "zh": "消波螺",
+      "sixFieldSum": 505,
+      "sourceSUM_race": 384
+    },
+    {
+      "gameId": 3510,
+      "zh": "嗜波螺",
+      "sixFieldSum": 634,
+      "sourceSUM_race": 481
+    },
+    {
+      "gameId": 3511,
+      "zh": "波波螺",
+      "sixFieldSum": 370,
+      "sourceSUM_race": 288
+    },
+    {
+      "gameId": 3512,
+      "zh": "消波螺",
+      "sixFieldSum": 493,
+      "sourceSUM_race": 384
+    },
+    {
+      "gameId": 3513,
+      "zh": "嗜波螺",
+      "sixFieldSum": 617,
+      "sourceSUM_race": 481
+    },
+    {
+      "gameId": 3514,
+      "zh": "圣水迪莫",
+      "sixFieldSum": 582,
+      "sourceSUM_race": 410
+    },
+    {
+      "gameId": 3515,
+      "zh": "圣火迪莫",
+      "sixFieldSum": 582,
+      "sourceSUM_race": 410
+    },
+    {
+      "gameId": 3516,
+      "zh": "板板壳",
+      "sixFieldSum": 347,
+      "sourceSUM_race": 355
+    },
+    {
+      "gameId": 3517,
+      "zh": "咔咔壳",
+      "sixFieldSum": 462,
+      "sourceSUM_race": 474
+    },
+    {
+      "gameId": 3518,
+      "zh": "水泡壳",
+      "sixFieldSum": 577,
+      "sourceSUM_race": 593
+    },
+    {
+      "gameId": 3519,
+      "zh": "海闪星",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3520,
+      "zh": "海魔星",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3521,
+      "zh": "里拉鳐",
+      "sixFieldSum": 644,
+      "sourceSUM_race": 490
+    },
+    {
+      "gameId": 3522,
+      "zh": "水星尾",
+      "sixFieldSum": 553,
+      "sourceSUM_race": 451
+    },
+    {
+      "gameId": 3523,
+      "zh": "水星龙弦",
+      "sixFieldSum": 690,
+      "sourceSUM_race": 567
+    },
+    {
+      "gameId": 3524,
+      "zh": "阿瓦鲨",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3525,
+      "zh": "阿瓦鲨",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3526,
+      "zh": "抹茶布丁",
+      "sixFieldSum": 546,
+      "sourceSUM_race": 633
+    },
+    {
+      "gameId": 3527,
+      "zh": "椰浆布丁",
+      "sixFieldSum": 562,
+      "sourceSUM_race": 630
+    },
+    {
+      "gameId": 3528,
+      "zh": "熔岩布丁",
+      "sixFieldSum": 564,
+      "sourceSUM_race": 650
+    },
+    {
+      "gameId": 3529,
+      "zh": "号儿鱼",
+      "sixFieldSum": 438,
+      "sourceSUM_race": 377
+    },
+    {
+      "gameId": 3530,
+      "zh": "圆号鱼",
+      "sixFieldSum": 549,
+      "sourceSUM_race": 470
+    },
+    {
+      "gameId": 3531,
+      "zh": "小雪人",
+      "sixFieldSum": 509,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3532,
+      "zh": "雪怪",
+      "sixFieldSum": 636,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3533,
+      "zh": "雪绒鸟",
+      "sixFieldSum": 342,
+      "sourceSUM_race": 340
+    },
+    {
+      "gameId": 3534,
+      "zh": "斑斑",
+      "sixFieldSum": 532,
+      "sourceSUM_race": 449
+    },
+    {
+      "gameId": 3535,
+      "zh": "斑枭",
+      "sixFieldSum": 664,
+      "sourceSUM_race": 559
+    },
+    {
+      "gameId": 3536,
+      "zh": "乌达",
+      "sixFieldSum": 369,
+      "sourceSUM_race": 366
+    },
+    {
+      "gameId": 3537,
+      "zh": "迷你乌",
+      "sixFieldSum": 492,
+      "sourceSUM_race": 488
+    },
+    {
+      "gameId": 3538,
+      "zh": "乌拉塔",
+      "sixFieldSum": 615,
+      "sourceSUM_race": 609
+    },
+    {
+      "gameId": 3539,
+      "zh": "乌达",
+      "sixFieldSum": 374,
+      "sourceSUM_race": 367
+    },
+    {
+      "gameId": 3540,
+      "zh": "迷你乌",
+      "sixFieldSum": 498,
+      "sourceSUM_race": 489
+    },
+    {
+      "gameId": 3541,
+      "zh": "乌拉塔",
+      "sixFieldSum": 622,
+      "sourceSUM_race": 610
+    },
+    {
+      "gameId": 3542,
+      "zh": "未完虫",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3543,
+      "zh": "多灵",
+      "sixFieldSum": 105,
+      "sourceSUM_race": 210
+    },
+    {
+      "gameId": 3544,
+      "zh": "多灵主",
+      "sixFieldSum": 140,
+      "sourceSUM_race": 262
+    },
+    {
+      "gameId": 3545,
+      "zh": "圣剑侍从",
+      "sixFieldSum": 696,
+      "sourceSUM_race": 584
+    },
+    {
+      "gameId": 3546,
+      "zh": "圣剑-X",
+      "sixFieldSum": 868,
+      "sourceSUM_race": 729
+    },
+    {
+      "gameId": 3547,
+      "zh": "帕帕斯卡",
+      "sixFieldSum": 471,
+      "sourceSUM_race": 473
+    },
+    {
+      "gameId": 3548,
+      "zh": "小银翼龙",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3549,
+      "zh": "银翼龙",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3550,
+      "zh": "棋棋",
+      "sixFieldSum": 434,
+      "sourceSUM_race": 440
+    },
+    {
+      "gameId": 3551,
+      "zh": "棋骑士",
+      "sixFieldSum": 543,
+      "sourceSUM_race": 550
+    },
+    {
+      "gameId": 3552,
+      "zh": "棋绮后",
+      "sixFieldSum": 508,
+      "sourceSUM_race": 510
+    },
+    {
+      "gameId": 3553,
+      "zh": "棋齐垒",
+      "sixFieldSum": 489,
+      "sourceSUM_race": 583
+    },
+    {
+      "gameId": 3554,
+      "zh": "棋祈督",
+      "sixFieldSum": 547,
+      "sourceSUM_race": 540
+    },
+    {
+      "gameId": 3555,
+      "zh": "棋棋",
+      "sixFieldSum": 418,
+      "sourceSUM_race": 440
+    },
+    {
+      "gameId": 3556,
+      "zh": "棋骑士",
+      "sixFieldSum": 522,
+      "sourceSUM_race": 550
+    },
+    {
+      "gameId": 3557,
+      "zh": "棋绮后",
+      "sixFieldSum": 508,
+      "sourceSUM_race": 510
+    },
+    {
+      "gameId": 3558,
+      "zh": "棋齐垒",
+      "sixFieldSum": 489,
+      "sourceSUM_race": 583
+    },
+    {
+      "gameId": 3559,
+      "zh": "棋祈督",
+      "sixFieldSum": 547,
+      "sourceSUM_race": 540
+    },
+    {
+      "gameId": 3560,
+      "zh": "乌咩",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 688
+    },
+    {
+      "gameId": 3561,
+      "zh": "乌角驮驮",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 688
+    },
+    {
+      "gameId": 3562,
+      "zh": "堇楹苞",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3563,
+      "zh": "蔓羽兽",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3564,
+      "zh": "厉毒鸩兽",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3565,
+      "zh": "栗鼠",
+      "sixFieldSum": 446,
+      "sourceSUM_race": 401
+    },
+    {
+      "gameId": 3566,
+      "zh": "壳栗丝鼠",
+      "sixFieldSum": 558,
+      "sourceSUM_race": 503
+    },
+    {
+      "gameId": 3567,
+      "zh": "落陨星兔",
+      "sixFieldSum": 637,
+      "sourceSUM_race": 619
+    },
+    {
+      "gameId": 3568,
+      "zh": "小黑猫",
+      "sixFieldSum": 491,
+      "sourceSUM_race": 486
+    },
+    {
+      "gameId": 3569,
+      "zh": "黑猫巫师",
+      "sixFieldSum": 615,
+      "sourceSUM_race": 608
+    },
+    {
+      "gameId": 3570,
+      "zh": "河马巴斯",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3571,
+      "zh": "黑羽夫人",
+      "sixFieldSum": 652,
+      "sourceSUM_race": 492
+    },
+    {
+      "gameId": 3572,
+      "zh": "爆焰仔",
+      "sixFieldSum": 498,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3573,
+      "zh": "爆焰喷喷",
+      "sixFieldSum": 624,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3574,
+      "zh": "热团团",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3575,
+      "zh": "焰米龙",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3576,
+      "zh": "圣凯布米龙",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3577,
+      "zh": "墨鱿士",
+      "sixFieldSum": 482,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3578,
+      "zh": "混乱鱿彩",
+      "sixFieldSum": 604,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3579,
+      "zh": "秩序鱿墨",
+      "sixFieldSum": 604,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3580,
+      "zh": "利刺毒蝎",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3581,
+      "zh": "剧毒魔蝎",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3582,
+      "zh": "刺轮砣",
+      "sixFieldSum": 487,
+      "sourceSUM_race": 476
+    },
+    {
+      "gameId": 3583,
+      "zh": "月亮砣",
+      "sixFieldSum": 609,
+      "sourceSUM_race": 594
+    },
+    {
+      "gameId": 3584,
+      "zh": "刺轮砣",
+      "sixFieldSum": 487,
+      "sourceSUM_race": 476
+    },
+    {
+      "gameId": 3585,
+      "zh": "月亮砣",
+      "sixFieldSum": 609,
+      "sourceSUM_race": 594
+    },
+    {
+      "gameId": 3586,
+      "zh": "梦残卷",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3587,
+      "zh": "曲率龙卷",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3588,
+      "zh": "曲率飞鱼",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3589,
+      "zh": "玳龟",
+      "sixFieldSum": 481,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3590,
+      "zh": "玳塔",
+      "sixFieldSum": 481,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3591,
+      "zh": "十字蝌蚪",
+      "sixFieldSum": 353,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3592,
+      "zh": "十字蛙",
+      "sixFieldSum": 472,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3593,
+      "zh": "深渊蛙",
+      "sixFieldSum": 588,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3594,
+      "zh": "松仔",
+      "sixFieldSum": 380,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3595,
+      "zh": "松叶羊",
+      "sixFieldSum": 507,
+      "sourceSUM_race": 455
+    },
+    {
+      "gameId": 3596,
+      "zh": "针叶巡林",
+      "sixFieldSum": 634,
+      "sourceSUM_race": 568
+    },
+    {
+      "gameId": 3597,
+      "zh": "水滴蛇",
+      "sixFieldSum": 378,
+      "sourceSUM_race": 365
+    },
+    {
+      "gameId": 3598,
+      "zh": "水蛇锁",
+      "sixFieldSum": 505,
+      "sourceSUM_race": 487
+    },
+    {
+      "gameId": 3599,
+      "zh": "游蛇魔使",
+      "sixFieldSum": 630,
+      "sourceSUM_race": 609
+    },
+    {
+      "gameId": 3600,
+      "zh": "小勇狮",
+      "sixFieldSum": 358,
+      "sourceSUM_race": 336
+    },
+    {
+      "gameId": 3601,
+      "zh": "炽焰狮",
+      "sixFieldSum": 478,
+      "sourceSUM_race": 447
+    },
+    {
+      "gameId": 3602,
+      "zh": "炽心勇狮",
+      "sixFieldSum": 597,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3603,
+      "zh": "毛头小蛛",
+      "sixFieldSum": 452,
+      "sourceSUM_race": 438
+    },
+    {
+      "gameId": 3604,
+      "zh": "捕尘长绒",
+      "sixFieldSum": 565,
+      "sourceSUM_race": 548
+    },
+    {
+      "gameId": 3605,
+      "zh": "食尘短绒",
+      "sixFieldSum": 576,
+      "sourceSUM_race": 580
+    },
+    {
+      "gameId": 3606,
+      "zh": "画精灵",
+      "sixFieldSum": 371,
+      "sourceSUM_race": 384
+    },
+    {
+      "gameId": 3607,
+      "zh": "画像守护",
+      "sixFieldSum": 494,
+      "sourceSUM_race": 513
+    },
+    {
+      "gameId": 3608,
+      "zh": "画间法师手",
+      "sixFieldSum": 619,
+      "sourceSUM_race": 641
+    },
+    {
+      "gameId": 3609,
+      "zh": "画间沉铁兽",
+      "sixFieldSum": 604,
+      "sourceSUM_race": 625
+    },
+    {
+      "gameId": 3610,
+      "zh": "书魔虫",
+      "sixFieldSum": 383,
+      "sourceSUM_race": 358
+    },
+    {
+      "gameId": 3611,
+      "zh": "书卷守护",
+      "sixFieldSum": 511,
+      "sourceSUM_race": 480
+    },
+    {
+      "gameId": 3612,
+      "zh": "古卷执政官",
+      "sixFieldSum": 638,
+      "sourceSUM_race": 600
+    },
+    {
+      "gameId": 3613,
+      "zh": "古卷匣魔像",
+      "sixFieldSum": 638,
+      "sourceSUM_race": 552
+    },
+    {
+      "gameId": 3614,
+      "zh": "嗜光嗡嗡",
+      "sixFieldSum": 505,
+      "sourceSUM_race": 485
+    },
+    {
+      "gameId": 3615,
+      "zh": "窃光蚊",
+      "sixFieldSum": 630,
+      "sourceSUM_race": 605
+    },
+    {
+      "gameId": 3616,
+      "zh": "不咕钟",
+      "sixFieldSum": 430,
+      "sourceSUM_race": 494
+    },
+    {
+      "gameId": 3617,
+      "zh": "溯源钟",
+      "sixFieldSum": 538,
+      "sourceSUM_race": 618
+    },
+    {
+      "gameId": 3618,
+      "zh": "小箱怪",
+      "sixFieldSum": 625,
+      "sourceSUM_race": 584
+    },
+    {
+      "gameId": 3619,
+      "zh": "迷迷箱怪",
+      "sixFieldSum": 782,
+      "sourceSUM_race": 731
+    },
+    {
+      "gameId": 3620,
+      "zh": "学院呱呱",
+      "sixFieldSum": 614,
+      "sourceSUM_race": 684
+    },
+    {
+      "gameId": 3621,
+      "zh": "古钟蛇",
+      "sixFieldSum": 460,
+      "sourceSUM_race": 434
+    },
+    {
+      "gameId": 3622,
+      "zh": "寒音蛇",
+      "sixFieldSum": 577,
+      "sourceSUM_race": 542
+    },
+    {
+      "gameId": 3623,
+      "zh": "噬影蚕",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3624,
+      "zh": "吞噬",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3625,
+      "zh": "小冥龙",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 3626,
+      "zh": "冥古龙",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 3627,
+      "zh": "矮核球",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 3628,
+      "zh": "星脉兽",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 3629,
+      "zh": "巡天幻星",
+      "sixFieldSum": 4400,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 3659,
+      "zh": "加油海葵",
+      "sixFieldSum": 547,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3660,
+      "zh": "加油蟹",
+      "sixFieldSum": 683,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3675,
+      "zh": "守夜烛",
+      "sixFieldSum": 524,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3676,
+      "zh": "流明坎德拉",
+      "sixFieldSum": 657,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3677,
+      "zh": "烟花团",
+      "sixFieldSum": 389,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3678,
+      "zh": "烟花伯爵",
+      "sixFieldSum": 485,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3683,
+      "zh": "咕咕帽",
+      "sixFieldSum": 515,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3684,
+      "zh": "咕德帽帽",
+      "sixFieldSum": 642,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3697,
+      "zh": "稻草人",
+      "sixFieldSum": 457,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3698,
+      "zh": "稻草守护者",
+      "sixFieldSum": 571,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3704,
+      "zh": "优优",
+      "sixFieldSum": 485,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3705,
+      "zh": "绒光优优",
+      "sixFieldSum": 605,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3706,
+      "zh": "蜜果骸",
+      "sixFieldSum": 463,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3707,
+      "zh": "半朽蜜果灵",
+      "sixFieldSum": 578,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3708,
+      "zh": "小鼓象",
+      "sixFieldSum": 513,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3709,
+      "zh": "巨鼓象",
+      "sixFieldSum": 640,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3710,
+      "zh": "咬咬小子",
+      "sixFieldSum": 437,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3711,
+      "zh": "胡桃王子",
+      "sixFieldSum": 546,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3718,
+      "zh": "足尖元件",
+      "sixFieldSum": 477,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3719,
+      "zh": "离心舞者",
+      "sixFieldSum": 596,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3729,
+      "zh": "猴麦仔",
+      "sixFieldSum": 529,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3730,
+      "zh": "音碟吼",
+      "sixFieldSum": 661,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3733,
+      "zh": "钨丝贝贝",
+      "sixFieldSum": 358,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3734,
+      "zh": "辉光幕机",
+      "sixFieldSum": 478,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3735,
+      "zh": "机幕方舟",
+      "sixFieldSum": 597,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3736,
+      "zh": "炫光迪迪",
+      "sixFieldSum": 551,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3737,
+      "zh": "霹雳迪迪",
+      "sixFieldSum": 690,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3738,
+      "zh": "小怂猫",
+      "sixFieldSum": 519,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3739,
+      "zh": "怒目怂猫",
+      "sixFieldSum": 647,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3740,
+      "zh": "宝藏小狐",
+      "sixFieldSum": 443,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3741,
+      "zh": "宝藏沙狐",
+      "sixFieldSum": 553,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 3742,
+      "zh": "鸭吉吉",
+      "sixFieldSum": 578,
+      "sourceSUM_race": 481
+    },
+    {
+      "gameId": 3743,
+      "zh": "加油蟹",
+      "sixFieldSum": 683,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3744,
+      "zh": "火红尾",
+      "sixFieldSum": 511,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3745,
+      "zh": "雅丹鬃",
+      "sixFieldSum": 639,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3746,
+      "zh": "睡铃雪影娃娃",
+      "sixFieldSum": 563,
+      "sourceSUM_race": 595
+    },
+    {
+      "gameId": 3747,
+      "zh": "莫比乌乌",
+      "sixFieldSum": 436,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3748,
+      "zh": "克莱因龙",
+      "sixFieldSum": 545,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3749,
+      "zh": "森豆丁",
+      "sixFieldSum": 396,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3750,
+      "zh": "森蛮人",
+      "sixFieldSum": 527,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3751,
+      "zh": "森巨人",
+      "sixFieldSum": 659,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3752,
+      "zh": "叮叮卯",
+      "sixFieldSum": 502,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3753,
+      "zh": "飞飞钥",
+      "sixFieldSum": 628,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3754,
+      "zh": "火豆丁",
+      "sixFieldSum": 214,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3755,
+      "zh": "火蛮人",
+      "sixFieldSum": 287,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3756,
+      "zh": "火巨人",
+      "sixFieldSum": 359,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3757,
+      "zh": "点点",
+      "sixFieldSum": 449,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3758,
+      "zh": "珀尔鼬",
+      "sixFieldSum": 559,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3759,
+      "zh": "苞米仔",
+      "sixFieldSum": 487,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3760,
+      "zh": "炮米花",
+      "sixFieldSum": 609,
+      "sourceSUM_race": 341
+    },
+    {
+      "gameId": 3777,
+      "zh": "幽影树",
+      "sixFieldSum": 571,
+      "sourceSUM_race": 568
+    },
+    {
+      "gameId": 5001,
+      "zh": "钻石蜗",
+      "sixFieldSum": 570,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5002,
+      "zh": "彩虹独角兽",
+      "sixFieldSum": 643,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5003,
+      "zh": "叶冕魔力猫",
+      "sixFieldSum": 649,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5004,
+      "zh": "蹦蹦果",
+      "sixFieldSum": 580,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 5005,
+      "zh": "奇丽果",
+      "sixFieldSum": 686,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5006,
+      "zh": "鸭吉吉国王",
+      "sixFieldSum": 607,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5007,
+      "zh": "黑猫密探",
+      "sixFieldSum": 646,
+      "sourceSUM_race": 600
+    },
+    {
+      "gameId": 5008,
+      "zh": "迷嶂布莱克",
+      "sixFieldSum": 704,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5009,
+      "zh": "祭礼巨像",
+      "sixFieldSum": 622,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5010,
+      "zh": "圣水守护",
+      "sixFieldSum": 667,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5011,
+      "zh": "神谕鲨",
+      "sixFieldSum": 621,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5012,
+      "zh": "千棘海针",
+      "sixFieldSum": 562,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5013,
+      "zh": "雪影冰灵",
+      "sixFieldSum": 650,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5014,
+      "zh": "霜翼领主",
+      "sixFieldSum": 592,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5015,
+      "zh": "女王蜂",
+      "sixFieldSum": 364,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5016,
+      "zh": "恶魔狼王",
+      "sixFieldSum": 560,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5017,
+      "zh": "烈火战神",
+      "sixFieldSum": 672,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5018,
+      "zh": "风暴战犬",
+      "sixFieldSum": 562,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5019,
+      "zh": "幻影荆棘",
+      "sixFieldSum": 576,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5020,
+      "zh": "波普鹿",
+      "sixFieldSum": 499,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5021,
+      "zh": "圣剑骑士",
+      "sixFieldSum": 920,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5022,
+      "zh": "伊兰龙",
+      "sixFieldSum": 651,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5023,
+      "zh": "棋契陛下",
+      "sixFieldSum": 761,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5024,
+      "zh": "奇梦咪",
+      "sixFieldSum": 684,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5025,
+      "zh": "圣光迪莫",
+      "sixFieldSum": 596,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5026,
+      "zh": "圣草迪莫",
+      "sixFieldSum": 594,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5027,
+      "zh": "圣火迪莫",
+      "sixFieldSum": 598,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5028,
+      "zh": "圣水迪莫",
+      "sixFieldSum": 598,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5029,
+      "zh": "千棘海针",
+      "sixFieldSum": 560,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5030,
+      "zh": "霜翼领主",
+      "sixFieldSum": 580,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5031,
+      "zh": "霜翼领主",
+      "sixFieldSum": 588,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5032,
+      "zh": "霜翼领主",
+      "sixFieldSum": 579,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5033,
+      "zh": "蹦蹦果",
+      "sixFieldSum": 576,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 5034,
+      "zh": "蹦蹦果",
+      "sixFieldSum": 579,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 5035,
+      "zh": "蹦蹦果",
+      "sixFieldSum": 578,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 5036,
+      "zh": "鸭吉吉国王",
+      "sixFieldSum": 607,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5037,
+      "zh": "鸭吉吉国王",
+      "sixFieldSum": 607,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5038,
+      "zh": "鸭吉吉国王",
+      "sixFieldSum": 606,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5039,
+      "zh": "鸭吉吉国王",
+      "sixFieldSum": 620,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5040,
+      "zh": "棋契陛下",
+      "sixFieldSum": 725,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5041,
+      "zh": "棋契陛下",
+      "sixFieldSum": 705,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5042,
+      "zh": "棋契陛下",
+      "sixFieldSum": 766,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5043,
+      "zh": "棋契陛下",
+      "sixFieldSum": 736,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5044,
+      "zh": "棋契陛下",
+      "sixFieldSum": 725,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5045,
+      "zh": "棋契陛下",
+      "sixFieldSum": 705,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5046,
+      "zh": "棋契陛下",
+      "sixFieldSum": 766,
+      "sourceSUM_race": 667
+    },
+    {
+      "gameId": 5047,
+      "zh": "钻石蜗",
+      "sixFieldSum": 573,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5048,
+      "zh": "钻石蜗",
+      "sixFieldSum": 571,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5049,
+      "zh": "钻石蜗",
+      "sixFieldSum": 571,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5050,
+      "zh": "钻石蜗",
+      "sixFieldSum": 572,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5051,
+      "zh": "钻石蜗",
+      "sixFieldSum": 572,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 5053,
+      "zh": "深渊罗隐",
+      "sixFieldSum": 618,
+      "sourceSUM_race": 635
+    },
+    {
+      "gameId": 5054,
+      "zh": "高帽鹬者",
+      "sixFieldSum": 635,
+      "sourceSUM_race": 501
+    },
+    {
+      "gameId": 5055,
+      "zh": "恶魔男爵",
+      "sixFieldSum": 596,
+      "sourceSUM_race": 544
+    },
+    {
+      "gameId": 5061,
+      "zh": "武斗酷猫",
+      "sixFieldSum": 642,
+      "sourceSUM_race": 693
+    },
+    {
+      "gameId": 8002,
+      "zh": "道馆绿草精灵",
+      "sixFieldSum": 342,
+      "sourceSUM_race": 360
+    },
+    {
+      "gameId": 8003,
+      "zh": "道馆魔草巫灵",
+      "sixFieldSum": 451,
+      "sourceSUM_race": 509
+    },
+    {
+      "gameId": 8004,
+      "zh": "道馆丢丢",
+      "sixFieldSum": 296,
+      "sourceSUM_race": 283
+    },
+    {
+      "gameId": 8007,
+      "zh": "迪莫",
+      "sixFieldSum": 515,
+      "sourceSUM_race": 441
+    },
+    {
+      "gameId": 8008,
+      "zh": "珂赛特老师",
+      "sixFieldSum": 725,
+      "sourceSUM_race": 557
+    },
+    {
+      "gameId": 8009,
+      "zh": "药炉",
+      "sixFieldSum": 919,
+      "sourceSUM_race": 615
+    },
+    {
+      "gameId": 8010,
+      "zh": "希露德老师",
+      "sixFieldSum": 842,
+      "sourceSUM_race": 520
+    },
+    {
+      "gameId": 8013,
+      "zh": "冥古龙",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 8014,
+      "zh": "矮核球",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 8015,
+      "zh": "星脉兽",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 8016,
+      "zh": "巡天幻星",
+      "sixFieldSum": 3888,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 8017,
+      "zh": "冥古龙",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 8018,
+      "zh": "裘卡老师",
+      "sixFieldSum": 568,
+      "sourceSUM_race": 612
+    },
+    {
+      "gameId": 8019,
+      "zh": "珂赛特老师",
+      "sixFieldSum": 530,
+      "sourceSUM_race": 540
+    },
+    {
+      "gameId": 8020,
+      "zh": "希露德老师",
+      "sixFieldSum": 685,
+      "sourceSUM_race": 486
+    },
+    {
+      "gameId": 8021,
+      "zh": "迷失的雪巨人",
+      "sixFieldSum": 718,
+      "sourceSUM_race": 677
+    },
+    {
+      "gameId": 8022,
+      "zh": "斯维托维德",
+      "sixFieldSum": 722,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 8023,
+      "zh": "特塞克",
+      "sixFieldSum": 612,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 8024,
+      "zh": "古路尼",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 658
+    },
+    {
+      "gameId": 8025,
+      "zh": "神秘的阿瓦鲨",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 100
+    },
+    {
+      "gameId": 8026,
+      "zh": "终极贝古斯",
+      "sixFieldSum": 641,
+      "sourceSUM_race": 551
+    },
+    {
+      "gameId": 8027,
+      "zh": "疯狂的黑羽夫人",
+      "sixFieldSum": 656,
+      "sourceSUM_race": 496
+    },
+    {
+      "gameId": 8028,
+      "zh": "厉毒鸩兽",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 100
+    },
+    {
+      "gameId": 8200,
+      "zh": "赫拉",
+      "sixFieldSum": 970,
+      "sourceSUM_race": 640
+    },
+    {
+      "gameId": 8201,
+      "zh": "武斗酷猫",
+      "sixFieldSum": 642,
+      "sourceSUM_race": 693
+    },
+    {
+      "gameId": 8202,
+      "zh": "画间沉铁兽",
+      "sixFieldSum": 604,
+      "sourceSUM_race": 625
+    },
+    {
+      "gameId": 8203,
+      "zh": "卷毛鸭",
+      "sixFieldSum": 504,
+      "sourceSUM_race": 573
+    },
+    {
+      "gameId": 8204,
+      "zh": "泥吼牙",
+      "sixFieldSum": 569,
+      "sourceSUM_race": 554
+    },
+    {
+      "gameId": 8205,
+      "zh": "蒲公英娃娃",
+      "sixFieldSum": 642,
+      "sourceSUM_race": 582
+    },
+    {
+      "gameId": 8206,
+      "zh": "格兰球",
+      "sixFieldSum": 536,
+      "sourceSUM_race": 582
+    },
+    {
+      "gameId": 8207,
+      "zh": "伊贝粉粉",
+      "sixFieldSum": 607,
+      "sourceSUM_race": 557
+    },
+    {
+      "gameId": 8208,
+      "zh": "奇丽花",
+      "sixFieldSum": 638,
+      "sourceSUM_race": 554
+    },
+    {
+      "gameId": 8701,
+      "zh": "火羽",
+      "sixFieldSum": 620,
+      "sourceSUM_race": 614
+    },
+    {
+      "gameId": 9001,
+      "zh": "幸运惊喜盒",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 9002,
+      "zh": "幸运惊喜盒",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 9003,
+      "zh": "幸运惊喜盒",
+      "sixFieldSum": 600,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 9801,
+      "zh": "鸭吉吉_普通",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9802,
+      "zh": "鸭吉吉_草",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9803,
+      "zh": "鸭吉吉_火",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9804,
+      "zh": "鸭吉吉_水",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9805,
+      "zh": "鸭吉吉_光",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9806,
+      "zh": "鸭吉吉_地",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9807,
+      "zh": "鸭吉吉_冰",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9808,
+      "zh": "鸭吉吉_龙",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9809,
+      "zh": "鸭吉吉_电",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9810,
+      "zh": "鸭吉吉_毒",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9811,
+      "zh": "鸭吉吉_虫",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9812,
+      "zh": "鸭吉吉_武",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9813,
+      "zh": "鸭吉吉_翼",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9814,
+      "zh": "鸭吉吉_萌",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9815,
+      "zh": "鸭吉吉_幽",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9816,
+      "zh": "鸭吉吉_恶魔",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9817,
+      "zh": "鸭吉吉_机械",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9818,
+      "zh": "鸭吉吉_幻",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9901,
+      "zh": "测试喵喵1",
+      "sixFieldSum": 445,
+      "sourceSUM_race": 295
+    },
+    {
+      "gameId": 9902,
+      "zh": "测试水蓝蓝1",
+      "sixFieldSum": 445,
+      "sourceSUM_race": 295
+    },
+    {
+      "gameId": 9903,
+      "zh": "测试火花1",
+      "sixFieldSum": 445,
+      "sourceSUM_race": 295
+    },
+    {
+      "gameId": 9912,
+      "zh": "大世界BUFF喵喵",
+      "sixFieldSum": 303,
+      "sourceSUM_race": 270
+    },
+    {
+      "gameId": 9913,
+      "zh": "大世界BUFF水蓝蓝",
+      "sixFieldSum": 300,
+      "sourceSUM_race": 199
+    },
+    {
+      "gameId": 9940,
+      "zh": "测试AI鸭吉吉1",
+      "sixFieldSum": 550,
+      "sourceSUM_race": 295
+    },
+    {
+      "gameId": 9941,
+      "zh": "搭配的鸭吉吉",
+      "sixFieldSum": 550,
+      "sourceSUM_race": 295
+    },
+    {
+      "gameId": 9992,
+      "zh": "不死鸭吉吉",
+      "sixFieldSum": 8161,
+      "sourceSUM_race": 8353
+    },
+    {
+      "gameId": 9995,
+      "zh": "技能鸭吉吉2",
+      "sixFieldSum": 1603,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 9996,
+      "zh": "木桩鸭吉吉",
+      "sixFieldSum": 8161,
+      "sourceSUM_race": 8353
+    },
+    {
+      "gameId": 9998,
+      "zh": "击退鸭吉吉",
+      "sixFieldSum": 10198,
+      "sourceSUM_race": 1153
+    },
+    {
+      "gameId": 103005,
+      "zh": "圣光迪莫",
+      "sixFieldSum": 465,
+      "sourceSUM_race": 422
+    },
+    {
+      "gameId": 103061,
+      "zh": "小灵面",
+      "sixFieldSum": 211,
+      "sourceSUM_race": 210
+    },
+    {
+      "gameId": 103149,
+      "zh": "空空颅",
+      "sixFieldSum": 303,
+      "sourceSUM_race": 297
+    },
+    {
+      "gameId": 140002,
+      "zh": "25级水桶模板",
+      "sixFieldSum": 673,
+      "sourceSUM_race": 669
+    },
+    {
+      "gameId": 140004,
+      "zh": "40级水桶模板",
+      "sixFieldSum": 948,
+      "sourceSUM_race": 960
+    },
+    {
+      "gameId": 140005,
+      "zh": "45级水桶模板",
+      "sixFieldSum": 1013,
+      "sourceSUM_race": 1019
+    },
+    {
+      "gameId": 140006,
+      "zh": "50级水桶模板",
+      "sixFieldSum": 1114,
+      "sourceSUM_race": 1126
+    },
+    {
+      "gameId": 140007,
+      "zh": "55级水桶模板",
+      "sixFieldSum": 1213,
+      "sourceSUM_race": 1233
+    },
+    {
+      "gameId": 140008,
+      "zh": "60级水桶模板",
+      "sixFieldSum": 1196,
+      "sourceSUM_race": 1228
+    },
+    {
+      "gameId": 440305,
+      "zh": "A1最终战-吞噬",
+      "sixFieldSum": 679,
+      "sourceSUM_race": 600
+    },
+    {
+      "gameId": 440306,
+      "zh": "A1最终战-吞噬2",
+      "sixFieldSum": 176,
+      "sourceSUM_race": 600
+    },
+    {
+      "gameId": 440307,
+      "zh": "麦克达克",
+      "sixFieldSum": 728,
+      "sourceSUM_race": 641
+    },
+    {
+      "gameId": 440308,
+      "zh": "伊里斯",
+      "sixFieldSum": 829,
+      "sourceSUM_race": 620
+    },
+    {
+      "gameId": 440309,
+      "zh": "法瑞莎莎",
+      "sixFieldSum": 789,
+      "sourceSUM_race": 724
+    },
+    {
+      "gameId": 440310,
+      "zh": "蛰蛰",
+      "sixFieldSum": 753,
+      "sourceSUM_race": 85
+    },
+    {
+      "gameId": 440311,
+      "zh": "锅盔",
+      "sixFieldSum": 658,
+      "sourceSUM_race": 624
+    },
+    {
+      "gameId": 440314,
+      "zh": "微风",
+      "sixFieldSum": 756,
+      "sourceSUM_race": 620
+    },
+    {
+      "gameId": 440315,
+      "zh": "龙卷风",
+      "sixFieldSum": 754,
+      "sourceSUM_race": 650
+    },
+    {
+      "gameId": 440317,
+      "zh": "葛朗台",
+      "sixFieldSum": 370,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 13000160,
+      "zh": "首领-音速犬",
+      "sixFieldSum": 780,
+      "sourceSUM_race": 690
+    },
+    {
+      "gameId": 13000161,
+      "zh": "首领-蹦蹦花",
+      "sixFieldSum": 746,
+      "sourceSUM_race": 624
+    },
+    {
+      "gameId": 13000162,
+      "zh": "首领-晶石蜗",
+      "sixFieldSum": 710,
+      "sourceSUM_race": 620
+    },
+    {
+      "gameId": 13000163,
+      "zh": "首领-瞌睡王",
+      "sixFieldSum": 710,
+      "sourceSUM_race": 620
+    },
+    {
+      "gameId": 13000164,
+      "zh": "首领-獠牙猪",
+      "sixFieldSum": 715,
+      "sourceSUM_race": 635
+    },
+    {
+      "gameId": 13000165,
+      "zh": "首领-魔眷鸟",
+      "sixFieldSum": 688,
+      "sourceSUM_race": 650
+    },
+    {
+      "gameId": 13000168,
+      "zh": "麦克达克",
+      "sixFieldSum": 728,
+      "sourceSUM_race": 641
+    },
+    {
+      "gameId": 13000169,
+      "zh": "深渊罗隐",
+      "sixFieldSum": 618,
+      "sourceSUM_race": 635
+    },
+    {
+      "gameId": 13000170,
+      "zh": "高帽鹬者",
+      "sixFieldSum": 559,
+      "sourceSUM_race": 501
+    },
+    {
+      "gameId": 13000172,
+      "zh": "恶魔男爵",
+      "sixFieldSum": 599,
+      "sourceSUM_race": 544
+    },
+    {
+      "gameId": 14000002,
+      "zh": "自动变形测试-斑斑",
+      "sixFieldSum": 541,
+      "sourceSUM_race": 449
+    },
+    {
+      "gameId": 14000003,
+      "zh": "芽眼魔-守护地特殊3C专用",
+      "sixFieldSum": 621,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 14000004,
+      "zh": "巨人-下砸技能测试",
+      "sixFieldSum": 718,
+      "sourceSUM_race": 677
+    },
+    {
+      "gameId": 14000007,
+      "zh": "雪巨人",
+      "sixFieldSum": 718,
+      "sourceSUM_race": 677
+    },
+    {
+      "gameId": 16000003,
+      "zh": "地鼠-A2拾遗变形任务用",
+      "sixFieldSum": 369,
+      "sourceSUM_race": 353
+    },
+    {
+      "gameId": 16000004,
+      "zh": "V110-C1迪莫",
+      "sixFieldSum": 485,
+      "sourceSUM_race": 410
+    },
+    {
+      "gameId": 16000007,
+      "zh": "迪莫",
+      "sixFieldSum": 485,
+      "sourceSUM_race": 410
+    },
+    {
+      "gameId": 16000009,
+      "zh": "V110-D2阿瓦鲨（虎纹鲨的样子）-变形用",
+      "sixFieldSum": 30,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 17000001,
+      "zh": "小帕尔-变形测试用",
+      "sixFieldSum": 362,
+      "sourceSUM_race": 300
+    },
+    {
+      "gameId": 17000002,
+      "zh": "帕尔萨斯-变形测试用",
+      "sixFieldSum": 483,
+      "sourceSUM_race": 400
+    },
+    {
+      "gameId": 17000003,
+      "zh": "龙息帕尔-变形测试用",
+      "sixFieldSum": 604,
+      "sourceSUM_race": 501
+    },
+    {
+      "gameId": 18000001,
+      "zh": "化蝶",
+      "sixFieldSum": 513,
+      "sourceSUM_race": 449
+    },
+    {
+      "gameId": 18000002,
+      "zh": "寒音蛇",
+      "sixFieldSum": 621,
+      "sourceSUM_race": 537
+    },
+    {
+      "gameId": 18000003,
+      "zh": "武者鸡",
+      "sixFieldSum": 643,
+      "sourceSUM_race": 609
+    },
+    {
+      "gameId": 18000004,
+      "zh": "嘟嘟煲",
+      "sixFieldSum": 457,
+      "sourceSUM_race": 487
+    },
+    {
+      "gameId": 19000001,
+      "zh": "可立鸡-变形测试用",
+      "sixFieldSum": 394,
+      "sourceSUM_race": 374
+    },
+    {
+      "gameId": 19000002,
+      "zh": "紫翎鹰-变形测试用",
+      "sixFieldSum": 500,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 19000003,
+      "zh": "果冻-变形测试用",
+      "sixFieldSum": 434,
+      "sourceSUM_race": 507
+    },
+    {
+      "gameId": 19000004,
+      "zh": "紫翎鹰",
+      "sixFieldSum": 503,
+      "sourceSUM_race": 491
+    },
+    {
+      "gameId": 19000005,
+      "zh": "可立鸡",
+      "sixFieldSum": 396,
+      "sourceSUM_race": 374
+    },
+    {
+      "gameId": 19000006,
+      "zh": "果冻",
+      "sixFieldSum": 437,
+      "sourceSUM_race": 507
+    },
+    {
+      "gameId": 19000008,
+      "zh": "钨丝贝贝（S2剧情骑乘专用）",
+      "sixFieldSum": 367,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 19000009,
+      "zh": "机幕方舟（S2剧情战斗专用）",
+      "sixFieldSum": 612,
+      "sourceSUM_race": 560
+    },
+    {
+      "gameId": 19000010,
+      "zh": "黑化加尔",
+      "sixFieldSum": 567,
+      "sourceSUM_race": 5
+    },
+    {
+      "gameId": 32000001,
+      "zh": "喵喵",
+      "sixFieldSum": 370,
+      "sourceSUM_race": 346
+    },
+    {
+      "gameId": 32000002,
+      "zh": "火花",
+      "sixFieldSum": 368,
+      "sourceSUM_race": 382
+    },
+    {
+      "gameId": 32000003,
+      "zh": "水蓝蓝",
+      "sixFieldSum": 372,
+      "sourceSUM_race": 361
+    }
+  ],
+  "sumPolicy": "Compare six *_race fields; calculate their sum. SUM_race is retained only as source evidence and not substituted for those fields.",
+  "runtimeOrServerOverridesVerified": false
+}

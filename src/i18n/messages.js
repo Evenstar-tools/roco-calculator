@@ -5,7 +5,12 @@ import { appMessages } from "./app-messages.js";
 import { configurationMessages } from "./configuration-messages.js";
 import { skillQueryMessages } from "./skill-query-messages.js";
 
-export const UI_MESSAGES = { ...commonMessages, ...teamMessages, ...toolsMessages, ...appMessages, ...configurationMessages, ...skillQueryMessages };
+import { globalUiMessages } from "./global-ui-messages.js";
+import { globalComponentsMessages } from "./global-components-messages.js";
+import { globalFeaturesMessages } from "./global-features-messages.js";
+import { calculatorMessages } from "./calculator-messages.js";
+
+export const UI_MESSAGES = { ...commonMessages, ...teamMessages, ...toolsMessages, ...appMessages, ...configurationMessages, ...skillQueryMessages, ...globalUiMessages, ...globalComponentsMessages, ...globalFeaturesMessages, ...calculatorMessages };
 const missing = new Set();
 
 export function normalizeLocale(locale) { return ["zh-CN", "en", "ja"].includes(locale) ? locale : "zh-CN"; }

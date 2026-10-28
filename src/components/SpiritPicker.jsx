@@ -1,5 +1,6 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
+import { localizeGlobalSpirit } from "../runtime/global-entity-localization.js";
 import { CaretDown, MagnifyingGlass, Star } from "@phosphor-icons/react";
 import { Fragment, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
@@ -144,13 +145,15 @@ export function SpiritPicker({
   comparisonSummary,
   comparisonActive = false,
   renderComparisonAction,
-  selected,
+  selected: sourceSelected,
   showFavorite = true,
   side,
-  spirits,
+  spirits: sourceSpirits,
 }) {
-  const { t } = useLocale();
+  const { t, typeName, locale } = useLocale();
   const { serverId } = useRuntime();
+  const spirits = useMemo(() => sourceSpirits.map(spirit => serverId === "global" ? localizeGlobalSpirit(spirit, locale) : spirit).filter(spirit => spirit.catalogAvailable !== false), [sourceSpirits, serverId, locale]);
+  const selected = useMemo(() => sourceSelected && serverId === "global" ? localizeGlobalSpirit(sourceSelected, locale) : sourceSelected, [sourceSelected, serverId, locale]);
   const formPreferences = getFormConfigPreferences(serverId);
   const listboxId = useId();
   const inputRef = useRef(null);
@@ -171,7 +174,7 @@ export function SpiritPicker({
   const selectedTraitName = selected?.reference?.traitName ?? selected?.traitName;
   const selectedTraitDescription = selected?.reference?.traitDescription ?? selected?.traitDescription ?? selected?.traitSummary;
   const [query, setQuery] = useState(selectedName);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeSpiritId, setActiveSpiritId] = useState(null);
   const [previewLimit, setPreviewLimit] = useState(INITIAL_PREVIEW_COUNT);
   const resolvedFavoriteState =
     favoriteState ?? (favorite ? "manual" : null);
@@ -190,7 +193,7 @@ export function SpiritPicker({
       return compareDexOrder(left, right);
     });
   }, [familyIndex, family, selected]);
-  const preserveFormConfig = formConfigPreference ?? family.some((spirit) => spirit.fullName === "梦想三三");
+  const preserveFormConfig = formConfigPreference ?? sourceSpirits.some((spirit) => family.some(entry => entry.id === spirit.id) && (spirit.fullName === "梦想三三" || spirit.aliases?.includes("梦想三三")));
   const sourceForm = family.find((spirit) => spirit.id === formSide?.spiritId);
   const formStages = ["一阶", "二阶", "三阶", "首领"].filter((stage) => family.some((spirit) => spirit.stage === stage));
   const sourceStage = family.find((spirit) => spirit.id === formSide?.spiritId)?.stage;
@@ -198,27 +201,22 @@ export function SpiritPicker({
   const browsingFamily = !searching && relatedFamily.length > 1 && (Boolean(onFormSelect) || !presetBrowse.enabled);
   const choosingForm = Boolean(onFormSelect && browsingFamily && family.length > 1);
   const browsingPresets = presetBrowse.enabled && (!searching || !query.trim()) && !browsingFamily;
+  // New arrivals are recommendations only before a spirit has been selected.
+  const pinNewSpirits = !selected?.id;
   const s5PreviewSpirits = useMemo(() => spirits.filter(isS5PreviewSpirit), [spirits]);
   const presetSpirits = useMemo(() => spirits
     .filter((spirit) => isS5PreviewSpirit(spirit) || presetBrowse.spiritIds.has(spirit.id) || spirit.favoriteState === "manual")
-    .sort((left, right) => Number(isS5PreviewSpirit(right)) - Number(isS5PreviewSpirit(left)) ||
-      (isS5PreviewSpirit(left) ? 0 : compareDexOrder(left, right))), [spirits, presetBrowse.spiritIds]);
-
-  useLayoutEffect(() => {
-    if (!open || !browsingPresets) return;
-    const options = optionsRef.current;
-    const selectedOption = [...(options?.children ?? [])].find((option) => option.dataset.spiritId === selected?.id);
-    if (options) options.scrollTop = s5PreviewSpirits.length ? 0 : selectedOption
-      ? Math.max(0, selectedOption.offsetTop - options.offsetTop - (options.clientHeight - selectedOption.offsetHeight) / 2)
-      : 0;
-  }, [open, browsingPresets, selected?.id, presetSpirits, s5PreviewSpirits.length]);
+    .sort((left, right) => pinNewSpirits
+      ? Number(isS5PreviewSpirit(right)) - Number(isS5PreviewSpirit(left)) ||
+        (isS5PreviewSpirit(left) ? 0 : compareDexOrder(left, right))
+      : compareDexOrder(left, right)), [spirits, presetBrowse.spiritIds, pinNewSpirits]);
 
   const preview = useMemo(() => {
     if (browsingFamily) return {
       allFavoritesVisible: false,
       allPreviewItemsVisible: true,
       isUnfiltered: false,
-      items: uniqueSpirits([...s5PreviewSpirits, ...relatedFamily]).map((spirit) => ({ related: false, spirit })),
+      items: relatedFamily.map((spirit) => ({ related: false, spirit })),
     };
     if (browsingPresets) return {
       allFavoritesVisible: false,
@@ -227,7 +225,7 @@ export function SpiritPicker({
       items: presetSpirits.map((spirit) => ({ related: false, spirit })),
       totalCount: presetSpirits.length,
     };
-    const needle = normalizeSearch(s5PreviewSpirits.length && !searching ? "" : query);
+    const needle = normalizeSearch(query);
     const direct = needle
       ? spirits
           .filter((spirit) =>
@@ -264,10 +262,10 @@ export function SpiritPicker({
       const favoriteCount = favorites.length;
       const previewFinals = direct.filter(isS4PreviewFinalSpirit);
       const previewBosses = direct.filter(isS4PreviewBossSpirit);
-      const orderedRoster = [...direct].sort(compareDefaultPreviewOrder);
+      const orderedRoster = [...direct].sort(pinNewSpirits ? compareDefaultPreviewOrder : compareDexOrder);
       const previewItems = favoriteCount
         ? uniqueSpirits([...s5PreviewSpirits, ...previewFinals, ...previewBosses, ...favorites])
-            .sort(compareSavedPreviewOrder)
+            .sort(pinNewSpirits ? compareSavedPreviewOrder : compareDexOrder)
         : orderedRoster;
       const visibleCount = Math.min(previewItems.length, s5PreviewSpirits.length + previewLimit);
       return {
@@ -308,25 +306,35 @@ export function SpiritPicker({
       isUnfiltered: false,
       items: markedFirst(expanded.map(({ spirit }) => spirit))
         .sort((left, right) => Number(directIds.has(right.id)) - Number(directIds.has(left.id)) ||
-          (s5PreviewSpirits.length ? searchMatchRank(left, needle) - searchMatchRank(right, needle) : 0))
+          searchMatchRank(left, needle) - searchMatchRank(right, needle))
         .slice(0, 20)
         .map((spirit) => ({
           related: !directIds.has(spirit.id),
           spirit,
         })),
     };
-  }, [browsingFamily, relatedFamily, familyIndex, browsingPresets, presetSpirits, previewLimit, query, searching, spirits, s5PreviewSpirits]);
+  }, [browsingFamily, relatedFamily, familyIndex, browsingPresets, presetSpirits, previewLimit, query, spirits, s5PreviewSpirits, pinNewSpirits]);
   const matches = preview.items;
+  // Keep identity rather than a stale index when presets load or pages expand.
+  const activeIndex = Math.max(0, matches.findIndex(({ spirit }) => spirit.id === activeSpiritId));
+  const activeOptionId = matches[activeIndex]?.spirit.id;
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    const options = optionsRef.current;
+    const active = options?.querySelector('[role="option"].is-active');
+    if (!active || !options.clientHeight) return;
+    const top = active.getBoundingClientRect().top - options.getBoundingClientRect().top + options.scrollTop - options.clientTop;
+    const bottom = top + active.offsetHeight;
+    if (top < options.scrollTop) options.scrollTop = top;
+    else if (bottom > options.scrollTop + options.clientHeight) options.scrollTop = bottom - options.clientHeight;
+  }, [open, activeIndex, activeOptionId, query]);
 
   function openOptions() {
     setQuery(clearOnOpen ? "" : selectedName);
     setSearching(clearOnOpen);
     setPreviewLimit(INITIAL_PREVIEW_COUNT);
-    setActiveIndex(s5PreviewSpirits.length ? 0 : !clearOnOpen && relatedFamily.length > 1 && (onFormSelect || !presetBrowse.enabled)
-      ? Math.max(0, relatedFamily.findIndex((spirit) => spirit.id === selected?.id))
-      : presetBrowse.enabled && !clearOnOpen
-      ? s5PreviewSpirits.length ? 0 : Math.max(0, presetSpirits.findIndex((spirit) => spirit.id === selected?.id))
-      : 0);
+    setActiveSpiritId(clearOnOpen ? null : selected?.id ?? null);
     setOpen(true);
   }
 
@@ -343,10 +351,11 @@ export function SpiritPicker({
       event.preventDefault();
       if (!open) { openOptions(); return; }
       setOpen(true);
-      setActiveIndex((index) => Math.min(index + 1, matches.length - 1));
+      setActiveSpiritId(matches[Math.min(activeIndex + 1, matches.length - 1)]?.spirit.id ?? null);
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveIndex((index) => Math.max(0, index - 1));
+      if (!open) { openOptions(); return; }
+      setActiveSpiritId(matches[Math.max(0, activeIndex - 1)]?.spirit.id ?? null);
     } else if (event.key === "Enter" && open && matches[activeIndex]) {
       event.preventDefault();
       commit(matches[activeIndex].spirit);
@@ -410,7 +419,7 @@ export function SpiritPicker({
           onChange={(event) => {
             setQuery(event.target.value);
             setSearching(true);
-            setActiveIndex(0);
+            setActiveSpiritId(null);
             setPreviewLimit(INITIAL_PREVIEW_COUNT);
             setOpen(true);
           }}
@@ -458,18 +467,17 @@ export function SpiritPicker({
             tabIndex={-1}
             onKeyDown={handleKeyDown}
           >
-            {browsingFamily && !s5PreviewSpirits.length ? familyHeading : null}
+            {browsingFamily ? familyHeading : null}
             {matches.length ? (
               matches.map(({ related, spirit }, index) => {
                 const familyOption = browsingFamily && relatedFamily.some(entry => entry.id === spirit.id);
                 return <Fragment key={spirit.id}>
-                {browsingFamily && s5PreviewSpirits.length > 0 && index === s5PreviewSpirits.length ? familyHeading : null}
                 <li
                   aria-selected={spirit.id === selected?.id}
                   className={index === activeIndex ? "is-active" : ""}
                   data-spirit-id={spirit.id}
                   onMouseDown={(event) => event.preventDefault()}
-                  onMouseEnter={() => setActiveIndex(index)}
+                  onMouseEnter={() => setActiveSpiritId(spirit.id)}
                   onClick={() => commit(spirit)}
                   role="option"
                 >
@@ -486,7 +494,7 @@ export function SpiritPicker({
                     <small>
                       {[
                         spirit.dexNo,
-                        spirit.stage,
+                        t(spirit.stage),
                         spirit.previewIdentity?.raceStatsPlaceholder === true
                           ? t("六维100测试占位")
                           : spirit.calculationStatus === "pending-race-stats"
@@ -560,10 +568,10 @@ export function SpiritPicker({
                   key={type}
                   style={getElementToneStyle(type)}
                 >
-                  {type}
+                  {typeName(type)}
                 </span>
               ))}
-              <span>{selected.stage}</span>
+              <span>{t(selected.stage)}</span>
             </div>
             {comparisonReady ? comparisonSummary : null}
             {(placeholderRaceStats && !comparisonActive) || pendingRaceStats ? (

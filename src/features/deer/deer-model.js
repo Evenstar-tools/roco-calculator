@@ -3,7 +3,7 @@ import { getTraitView } from "../../domain/calculator-view-model.js";
 import { getEffectiveTraits } from "../../domain/effective-traits.js";
 import { getTraitEffectRule } from "../../domain/trait-effects.js";
 import { getNatureMultipliers } from "../../domain/natures.js";
-import { calculateAllPanelStats } from "../../domain/stat.js";
+import { calculateAllPanelStats, hasCompleteRaceStats } from "../../domain/stat.js";
 import { calculateFreezeThreshold, calculateNegativeStatusSettlement } from "../../domain/negative-status.js";
 import { chooseDefaultSkillIds } from "../../domain/skill-loadout.js";
 import { createInitialState } from "../../state/defaults.js";
@@ -121,7 +121,7 @@ export function createDeerSetup(snapshot, currentState = null) {
   }
   const state = createInitialState(snapshot);
   const attacker = snapshot.spirits.find((spirit) => spirit.fullName === "波普鹿");
-  const defender = snapshot.spirits.find((spirit) => spirit.fullName === "银月狼王") ?? snapshot.spirits[0];
+  const defender = snapshot.spirits.find((spirit) => spirit.fullName === "银月狼王") ?? snapshot.spirits.find((spirit) => spirit.fullName === "魔力猫") ?? snapshot.spirits.find((spirit) => hasCompleteRaceStats(spirit.raceStats));
   for (const [key, spirit] of [["attacker", attacker], ["defender", defender]]) {
     if (!spirit) throw new Error("当前数据缺少电鹿，请更新数据后重试");
     state.sides[key].spiritId = spirit.id;
@@ -146,6 +146,7 @@ export function applyDeerPreset(side, preset) {
 // 只编排共享内核的输入和两次出招，伤害公式与取整仍由 calculateMatchup 决定。
 export function buildDeerInput(snapshot, setup, variant, stacks) {
   const state = structuredClone(setup.state);
+  if (snapshot.meta?.serverId === "global") state.serverId = "global";
   state.mode = "single";
   const skill = skillForVariant(snapshot, setup, variant);
   if (!skill) throw new Error(`缺少技能数据：${variant.type ?? ""}${variant.name}`);

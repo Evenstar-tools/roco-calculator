@@ -215,7 +215,7 @@ export function createTeamMember(snapshot, spiritId) {
   if (!(snapshot.spirits ?? []).some((spirit) => spirit.id === spiritId)) {
     throw new TypeError("无法为不存在的精灵创建队伍成员");
   }
-  if (snapshot?.meta?.serverId === "global") {
+  if (snapshot?.meta?.serverId === "global" && !snapshot.meta.id) {
     return {
       displayIvs: Object.fromEntries(STAT_KEYS.map((stat) => [stat, null])),
       natureId: null,

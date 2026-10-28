@@ -13,13 +13,15 @@ export const SERVER_RELEASES = Object.freeze({
   }),
   global: Object.freeze({
     serverId: "global",
-    status: "unverified",
-    dataVersion: null,
-    rulesVersion: null,
-    dataURL: null,
-    catalogURL: null,
-    snapshotPath: null,
-    capabilities: Object.freeze({ calculate: false, search: false, explain: false }),
+    status: "verified",
+    seasonId: "S3",
+    seasonLabel: "S3「季中」",
+    dataVersion: "global-s3-midseason-2026-08-13",
+    rulesVersion: "global-s3-midseason-2026-08-13",
+    dataURL: "/data/global-runtime.json",
+    catalogURL: "/data/global/skill-query/catalog.json",
+    snapshotPath: "data/snapshots/global/s3-midseason.json",
+    capabilities: Object.freeze({ calculate: true, search: true, explain: true }),
   }),
 });
 

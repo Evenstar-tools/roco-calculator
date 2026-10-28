@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, expect, test, vi } from "vitest";
 import { DisplaySettingsDialog } from "../../src/components/DisplaySettingsDialog.jsx";
 import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
-import { clearMissingUiMessages, getMissingUiMessages } from "../../src/i18n/messages.js";
+import { clearMissingUiMessages, getMissingUiMessages, translateUi } from "../../src/i18n/messages.js";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 
 beforeEach(() => clearMissingUiMessages());
@@ -12,7 +12,7 @@ test.each([
   ["global", "zh-CN", "赛季主题", "默认（无赛季装饰）"],
   ["global", "en", "Theme", "Default (no season artwork)"],
   ["global", "ja", "テーマ", "標準（シーズン装飾なし）"],
-])("%s %s reuses display settings with original season names and localized controls", (serverId, locale, label, fallback) => {
+])("%s %s reuses display settings with localized season names and controls", (serverId, locale, label, fallback) => {
   const change = vi.fn();
   const ui = (preview = false, preference = "s3") => <RuntimeProvider serverId={serverId} locale={locale}
     seasonThemeId="s1" seasonThemePreference={preference} seasonPreview={preview} onSeasonThemeChange={change}>
@@ -22,7 +22,7 @@ test.each([
   const selector = screen.getByRole("combobox", { name: label });
   expect(selector).toHaveValue("s3");
   expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
-    ...(fallback ? [fallback] : []), "S1 暗夜拾光", "S2 狂欢怪谈", "S3 铅字幻梦", "S4 月涌狂想", "S5 圣龙宝藏",
+    ...(fallback ? [fallback] : []), ...["暗夜拾光", "狂欢怪谈", "铅字幻梦", "月涌狂想", "圣龙宝藏"].map((name, index) => `S${index + 1} ${translateUi(locale, name)}`),
   ]);
   fireEvent.change(selector, { target: { value: "s2" } });
   expect(change).toHaveBeenLastCalledWith("s2");
@@ -30,7 +30,7 @@ test.each([
   expect(change).toHaveBeenLastCalledWith("s5");
   view.rerender(ui(true));
   expect(selector).toHaveValue("preview");
-  const preview = screen.getByRole("option", { name: /S1 暗夜拾光.*(?:预览|preview|プレビュー)/u });
+  const preview = screen.getByRole("option", { name: translateUi(locale, "{theme}（预览）", { theme: `S1 ${translateUi(locale, "暗夜拾光")}` }) });
   expect(preview).toBeDisabled();
   fireEvent.change(selector, { target: { value: "s1" } });
   expect(change).toHaveBeenLastCalledWith("s1");

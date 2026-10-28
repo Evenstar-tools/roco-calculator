@@ -1,0 +1,947 @@
+[
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3778,
+    "clientSkillType": null,
+    "names": {
+      "en": "红萝卜兔-占位",
+      "ja": "红萝卜兔-占位",
+      "zh_Hans": "红萝卜兔-占位",
+      "dev_CN": "红萝卜兔-占位"
+    },
+    "nameTextRef": 3858,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3779,
+    "clientSkillType": null,
+    "names": {
+      "en": "艾米-占位",
+      "ja": "艾米-占位",
+      "zh_Hans": "艾米-占位",
+      "dev_CN": "艾米-占位"
+    },
+    "nameTextRef": 3862,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3780,
+    "clientSkillType": null,
+    "names": {
+      "en": "星光艾米-占位",
+      "ja": "星光艾米-占位",
+      "zh_Hans": "星光艾米-占位",
+      "dev_CN": "星光艾米-占位"
+    },
+    "nameTextRef": 3866,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3781,
+    "clientSkillType": null,
+    "names": {
+      "en": "小钻鼠-占位",
+      "ja": "小钻鼠-占位",
+      "zh_Hans": "小钻鼠-占位",
+      "dev_CN": "小钻鼠-占位"
+    },
+    "nameTextRef": 3870,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3782,
+    "clientSkillType": null,
+    "names": {
+      "en": "钻钻鼠-占位",
+      "ja": "钻钻鼠-占位",
+      "zh_Hans": "钻钻鼠-占位",
+      "dev_CN": "钻钻鼠-占位"
+    },
+    "nameTextRef": 3874,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3783,
+    "clientSkillType": null,
+    "names": {
+      "en": "霹雳旋风鼠-占位",
+      "ja": "霹雳旋风鼠-占位",
+      "zh_Hans": "霹雳旋风鼠-占位",
+      "dev_CN": "霹雳旋风鼠-占位"
+    },
+    "nameTextRef": 3878,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3784,
+    "clientSkillType": null,
+    "names": {
+      "en": "云梦豚-占位",
+      "ja": "云梦豚-占位",
+      "zh_Hans": "云梦豚-占位",
+      "dev_CN": "云梦豚-占位"
+    },
+    "nameTextRef": 3882,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3785,
+    "clientSkillType": null,
+    "names": {
+      "en": "长江豚-占位",
+      "ja": "长江豚-占位",
+      "zh_Hans": "长江豚-占位",
+      "dev_CN": "长江豚-占位"
+    },
+    "nameTextRef": 3886,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3786,
+    "clientSkillType": null,
+    "names": {
+      "en": "魔盒猫-占位",
+      "ja": "魔盒猫-占位",
+      "zh_Hans": "魔盒猫-占位",
+      "dev_CN": "魔盒猫-占位"
+    },
+    "nameTextRef": 3890,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3787,
+    "clientSkillType": null,
+    "names": {
+      "en": "魔盒猫（异地）-占位",
+      "ja": "魔盒猫（异地）-占位",
+      "zh_Hans": "魔盒猫（异地）-占位",
+      "dev_CN": "魔盒猫（异地）-占位"
+    },
+    "nameTextRef": 3894,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3788,
+    "clientSkillType": null,
+    "names": {
+      "en": "白萝卜兔-占位",
+      "ja": "白萝卜兔-占位",
+      "zh_Hans": "白萝卜兔-占位",
+      "dev_CN": "白萝卜兔-占位"
+    },
+    "nameTextRef": 3898,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3789,
+    "clientSkillType": null,
+    "names": {
+      "en": "嘟嘟-占位",
+      "ja": "嘟嘟-占位",
+      "zh_Hans": "嘟嘟-占位",
+      "dev_CN": "嘟嘟-占位"
+    },
+    "nameTextRef": 3902,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3790,
+    "clientSkillType": null,
+    "names": {
+      "en": "嘟魔蛇-占位",
+      "ja": "嘟魔蛇-占位",
+      "zh_Hans": "嘟魔蛇-占位",
+      "dev_CN": "嘟魔蛇-占位"
+    },
+    "nameTextRef": 3906,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3791,
+    "clientSkillType": null,
+    "names": {
+      "en": "梦游（旱魃的样子）-占位",
+      "ja": "梦游（旱魃的样子）-占位",
+      "zh_Hans": "梦游（旱魃的样子）-占位",
+      "dev_CN": "梦游（旱魃的样子）-占位"
+    },
+    "nameTextRef": 3910,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 3792,
+    "clientSkillType": null,
+    "names": {
+      "en": "梦悠悠（旱魃的样子）-占位",
+      "ja": "梦悠悠（旱魃的样子）-占位",
+      "zh_Hans": "梦悠悠（旱魃的样子）-占位",
+      "dev_CN": "梦悠悠（旱魃的样子）-占位"
+    },
+    "nameTextRef": 3914,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9901,
+    "clientSkillType": null,
+    "names": {
+      "en": "测试喵喵1",
+      "ja": "测试喵喵1",
+      "zh_Hans": "测试喵喵1",
+      "dev_CN": "测试喵喵1"
+    },
+    "nameTextRef": 5108,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9902,
+    "clientSkillType": null,
+    "names": {
+      "en": "测试水蓝蓝1",
+      "ja": "测试水蓝蓝1",
+      "zh_Hans": "测试水蓝蓝1",
+      "dev_CN": "测试水蓝蓝1"
+    },
+    "nameTextRef": 5113,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9903,
+    "clientSkillType": null,
+    "names": {
+      "en": "测试火花1",
+      "ja": "测试火花1",
+      "zh_Hans": "测试火花1",
+      "dev_CN": "测试火花1"
+    },
+    "nameTextRef": 5118,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9904,
+    "clientSkillType": null,
+    "names": {
+      "en": "测试喵喵2",
+      "ja": "测试喵喵2",
+      "zh_Hans": "测试喵喵2",
+      "dev_CN": "测试喵喵2"
+    },
+    "nameTextRef": 5123,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9905,
+    "clientSkillType": null,
+    "names": {
+      "en": "测试水蓝蓝2",
+      "ja": "测试水蓝蓝2",
+      "zh_Hans": "测试水蓝蓝2",
+      "dev_CN": "测试水蓝蓝2"
+    },
+    "nameTextRef": 5128,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9906,
+    "clientSkillType": null,
+    "names": {
+      "en": "测试火花2（百分百闪避）",
+      "ja": "测试火花2（百分百闪避）",
+      "zh_Hans": "测试火花2（百分百闪避）",
+      "dev_CN": "测试火花2（百分百闪避）"
+    },
+    "nameTextRef": 5133,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9910,
+    "clientSkillType": null,
+    "names": {
+      "en": "被克制测试喵喵",
+      "ja": "被克制测试喵喵",
+      "zh_Hans": "被克制测试喵喵",
+      "dev_CN": "被克制测试喵喵"
+    },
+    "nameTextRef": 5153,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9911,
+    "clientSkillType": null,
+    "names": {
+      "en": "抵抗测试喵喵",
+      "ja": "抵抗测试喵喵",
+      "zh_Hans": "抵抗测试喵喵",
+      "dev_CN": "抵抗测试喵喵"
+    },
+    "nameTextRef": 5158,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9919,
+    "clientSkillType": null,
+    "names": {
+      "en": "幻化蓝掌测试",
+      "ja": "幻化蓝掌测试",
+      "zh_Hans": "幻化蓝掌测试",
+      "dev_CN": "幻化蓝掌测试"
+    },
+    "nameTextRef": 5177,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9940,
+    "clientSkillType": null,
+    "names": {
+      "en": "测试AI鸭吉吉1",
+      "ja": "测试AI鸭吉吉1",
+      "zh_Hans": "测试AI鸭吉吉1",
+      "dev_CN": "测试AI鸭吉吉1"
+    },
+    "nameTextRef": 5187,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 9999,
+    "clientSkillType": null,
+    "names": {
+      "en": "无敌鸭吉吉(测试用)",
+      "ja": "无敌鸭吉吉(测试用)",
+      "zh_Hans": "无敌鸭吉吉(测试用)",
+      "dev_CN": "无敌鸭吉吉(测试用)"
+    },
+    "nameTextRef": 5257,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 14000002,
+    "clientSkillType": null,
+    "names": {
+      "en": "自动变形测试-斑斑",
+      "ja": "自动变形测试-斑斑",
+      "zh_Hans": "自动变形测试-斑斑",
+      "dev_CN": "自动变形测试-斑斑"
+    },
+    "nameTextRef": 5611,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 14000004,
+    "clientSkillType": null,
+    "names": {
+      "en": "巨人-下砸技能测试",
+      "ja": "巨人-下砸技能测试",
+      "zh_Hans": "巨人-下砸技能测试",
+      "dev_CN": "巨人-下砸技能测试"
+    },
+    "nameTextRef": 5618,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 16000004,
+    "clientSkillType": null,
+    "names": {
+      "en": "V110-C1迪莫",
+      "ja": "V110-C1迪莫",
+      "zh_Hans": "V110-C1迪莫",
+      "dev_CN": "V110-C1迪莫"
+    },
+    "nameTextRef": 5654,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 16000009,
+    "clientSkillType": null,
+    "names": {
+      "en": "V110-D2阿瓦鲨（虎纹鲨的样子）-变形用",
+      "ja": "V110-D2阿瓦鲨（虎纹鲨的样子）-变形用",
+      "zh_Hans": "V110-D2阿瓦鲨（虎纹鲨的样子）-变形用",
+      "dev_CN": "V110-D2阿瓦鲨（虎纹鲨的样子）-变形用"
+    },
+    "nameTextRef": 5666,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 17000001,
+    "clientSkillType": null,
+    "names": {
+      "en": "小帕尔-变形测试用",
+      "ja": "小帕尔-变形测试用",
+      "zh_Hans": "小帕尔-变形测试用",
+      "dev_CN": "小帕尔-变形测试用"
+    },
+    "nameTextRef": 5669,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 17000002,
+    "clientSkillType": null,
+    "names": {
+      "en": "帕尔萨斯-变形测试用",
+      "ja": "帕尔萨斯-变形测试用",
+      "zh_Hans": "帕尔萨斯-变形测试用",
+      "dev_CN": "帕尔萨斯-变形测试用"
+    },
+    "nameTextRef": 5673,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 17000003,
+    "clientSkillType": null,
+    "names": {
+      "en": "龙息帕尔-变形测试用",
+      "ja": "龙息帕尔-变形测试用",
+      "zh_Hans": "龙息帕尔-变形测试用",
+      "dev_CN": "龙息帕尔-变形测试用"
+    },
+    "nameTextRef": 5677,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 17000004,
+    "clientSkillType": null,
+    "names": {
+      "en": "石肤蜥-极化钝化测试用",
+      "ja": "石肤蜥-极化钝化测试用",
+      "zh_Hans": "石肤蜥-极化钝化测试用",
+      "dev_CN": "石肤蜥-极化钝化测试用"
+    },
+    "nameTextRef": 5681,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 19000001,
+    "clientSkillType": null,
+    "names": {
+      "en": "可立鸡-变形测试用",
+      "ja": "可立鸡-变形测试用",
+      "zh_Hans": "可立鸡-变形测试用",
+      "dev_CN": "可立鸡-变形测试用"
+    },
+    "nameTextRef": 5703,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 19000002,
+    "clientSkillType": null,
+    "names": {
+      "en": "紫翎鹰-变形测试用",
+      "ja": "紫翎鹰-变形测试用",
+      "zh_Hans": "紫翎鹰-变形测试用",
+      "dev_CN": "紫翎鹰-变形测试用"
+    },
+    "nameTextRef": 5709,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "PETBASE_CONF",
+    "gameId": 19000003,
+    "clientSkillType": null,
+    "names": {
+      "en": "果冻-变形测试用",
+      "ja": "果冻-变形测试用",
+      "zh_Hans": "果冻-变形测试用",
+      "dev_CN": "果冻-变形测试用"
+    },
+    "nameTextRef": 5712,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7010014,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试-治愈",
+      "ja": "测试-治愈",
+      "zh_Hans": "测试-治愈",
+      "dev_CN": "测试-治愈"
+    },
+    "nameTextRef": 1568,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300001,
+    "clientSkillType": 1,
+    "names": {
+      "en": "测试buff40",
+      "ja": "测试buff40",
+      "zh_Hans": "测试buff40",
+      "dev_CN": "测试buff40"
+    },
+    "nameTextRef": 3457,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300002,
+    "clientSkillType": 1,
+    "names": {
+      "en": "测试buff151",
+      "ja": "测试buff151",
+      "zh_Hans": "测试buff151",
+      "dev_CN": "测试buff151"
+    },
+    "nameTextRef": 3459,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300003,
+    "clientSkillType": 1,
+    "names": {
+      "en": "测试buff153",
+      "ja": "测试buff153",
+      "zh_Hans": "测试buff153",
+      "dev_CN": "测试buff153"
+    },
+    "nameTextRef": 3461,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300004,
+    "clientSkillType": 1,
+    "names": {
+      "en": "测试buff4",
+      "ja": "测试buff4",
+      "zh_Hans": "测试buff4",
+      "dev_CN": "测试buff4"
+    },
+    "nameTextRef": 3463,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300005,
+    "clientSkillType": 1,
+    "names": {
+      "en": "测试icon",
+      "ja": "测试icon",
+      "zh_Hans": "测试icon",
+      "dev_CN": "测试icon"
+    },
+    "nameTextRef": 3465,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300006,
+    "clientSkillType": 1,
+    "names": {
+      "en": "测试用空技能",
+      "ja": "测试用空技能",
+      "zh_Hans": "测试用空技能",
+      "dev_CN": "测试用空技能"
+    },
+    "nameTextRef": 3467,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300007,
+    "clientSkillType": 1,
+    "names": {
+      "en": "测试icon",
+      "ja": "测试icon",
+      "zh_Hans": "测试icon",
+      "dev_CN": "测试icon"
+    },
+    "nameTextRef": 3469,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300008,
+    "clientSkillType": 1,
+    "names": {
+      "en": "测试icon",
+      "ja": "测试icon",
+      "zh_Hans": "测试icon",
+      "dev_CN": "测试icon"
+    },
+    "nameTextRef": 3471,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300009,
+    "clientSkillType": 1,
+    "names": {
+      "en": "测试icon",
+      "ja": "测试icon",
+      "zh_Hans": "测试icon",
+      "dev_CN": "测试icon"
+    },
+    "nameTextRef": 3473,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300012,
+    "clientSkillType": 1,
+    "names": {
+      "en": "废弃",
+      "ja": "废弃",
+      "zh_Hans": "废弃",
+      "dev_CN": "废弃"
+    },
+    "nameTextRef": 3479,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7300013,
+    "clientSkillType": 1,
+    "names": {
+      "en": "废弃",
+      "ja": "废弃",
+      "zh_Hans": "废弃",
+      "dev_CN": "废弃"
+    },
+    "nameTextRef": 3481,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7700006,
+    "clientSkillType": 1,
+    "names": {
+      "en": "愿力冲击（废弃）",
+      "ja": "愿力冲击（废弃）",
+      "zh_Hans": "愿力冲击（废弃）",
+      "dev_CN": "愿力冲击（废弃）"
+    },
+    "nameTextRef": 3505,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990080,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法1",
+      "ja": "测试共鸣魔法1",
+      "zh_Hans": "测试共鸣魔法1",
+      "dev_CN": "测试共鸣魔法1"
+    },
+    "nameTextRef": 4081,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990090,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法2",
+      "ja": "测试共鸣魔法2",
+      "zh_Hans": "测试共鸣魔法2",
+      "dev_CN": "测试共鸣魔法2"
+    },
+    "nameTextRef": 4083,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990100,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法3",
+      "ja": "测试共鸣魔法3",
+      "zh_Hans": "测试共鸣魔法3",
+      "dev_CN": "测试共鸣魔法3"
+    },
+    "nameTextRef": 4085,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990110,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法4",
+      "ja": "测试共鸣魔法4",
+      "zh_Hans": "测试共鸣魔法4",
+      "dev_CN": "测试共鸣魔法4"
+    },
+    "nameTextRef": 4087,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990111,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法5",
+      "ja": "测试共鸣魔法5",
+      "zh_Hans": "测试共鸣魔法5",
+      "dev_CN": "测试共鸣魔法5"
+    },
+    "nameTextRef": 4089,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990120,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法npc",
+      "ja": "测试共鸣魔法npc",
+      "zh_Hans": "测试共鸣魔法npc",
+      "dev_CN": "测试共鸣魔法npc"
+    },
+    "nameTextRef": 4091,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990121,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法npc",
+      "ja": "测试共鸣魔法npc",
+      "zh_Hans": "测试共鸣魔法npc",
+      "dev_CN": "测试共鸣魔法npc"
+    },
+    "nameTextRef": 4093,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990122,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法npc",
+      "ja": "测试共鸣魔法npc",
+      "zh_Hans": "测试共鸣魔法npc",
+      "dev_CN": "测试共鸣魔法npc"
+    },
+    "nameTextRef": 4095,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990123,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法npc",
+      "ja": "测试共鸣魔法npc",
+      "zh_Hans": "测试共鸣魔法npc",
+      "dev_CN": "测试共鸣魔法npc"
+    },
+    "nameTextRef": 4097,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990124,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法npc",
+      "ja": "测试共鸣魔法npc",
+      "zh_Hans": "测试共鸣魔法npc",
+      "dev_CN": "测试共鸣魔法npc"
+    },
+    "nameTextRef": 4099,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990125,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法npc",
+      "ja": "测试共鸣魔法npc",
+      "zh_Hans": "测试共鸣魔法npc",
+      "dev_CN": "测试共鸣魔法npc"
+    },
+    "nameTextRef": 4101,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990126,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法npc",
+      "ja": "测试共鸣魔法npc",
+      "zh_Hans": "测试共鸣魔法npc",
+      "dev_CN": "测试共鸣魔法npc"
+    },
+    "nameTextRef": 4103,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  },
+  {
+    "table": "SKILL_CONF",
+    "gameId": 7990127,
+    "clientSkillType": 9,
+    "names": {
+      "en": "测试共鸣魔法npc",
+      "ja": "测试共鸣魔法npc",
+      "zh_Hans": "测试共鸣魔法npc",
+      "dev_CN": "测试共鸣魔法npc"
+    },
+    "nameTextRef": 4105,
+    "status": "not-joined-to-existing-cn-catalog",
+    "availability": "not-verified",
+    "translationIssue": "client-en-name-contains-chinese-or-placeholder"
+  }
+]

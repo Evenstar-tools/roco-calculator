@@ -1,0 +1,428 @@
+{
+  "clientRoot": "C:\\RoCoKingdom",
+  "readOnlyClient": true,
+  "checkedAtUtc": "2026-10-28T07:38:53.764Z",
+  "parser": "Umodel-MCP 0.3.0, existing reviewed src/pak.ts",
+  "scope": "All installed NRC Content/Paks indexes, PETBASE_CONF schema/base/ROW/four locale payloads",
+  "inventory": [
+    {
+      "pak": "pakchunk0-WindowsNoEditor.pak",
+      "mountPoint": "../../../",
+      "version": 11,
+      "entries": 8901,
+      "size": 648226783,
+      "modifiedUtc": "2026-10-28T03:53:08.395Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk0-WindowsNoEditor_0_P.pak",
+      "mountPoint": "../../../NRC/",
+      "version": 11,
+      "entries": 5,
+      "size": 469855,
+      "modifiedUtc": "2026-10-28T03:53:08.456Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk0-WindowsNoEditor_1_P.pak",
+      "mountPoint": "../../../NRC/Content/NewRoco/DataConfig/",
+      "version": 11,
+      "entries": 1,
+      "size": 758,
+      "modifiedUtc": "2026-10-28T03:53:08.456Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk1-WindowsNoEditor.pak",
+      "mountPoint": "../../../",
+      "version": 11,
+      "entries": 2443,
+      "size": 279621423,
+      "modifiedUtc": "2026-10-28T03:53:55.337Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk10-WindowsNoEditor.pak",
+      "mountPoint": "../../../",
+      "version": 11,
+      "entries": 71948,
+      "size": 1965254863,
+      "modifiedUtc": "2026-10-28T03:56:11.574Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk100-WindowsNoEditor.pak",
+      "mountPoint": "../../../",
+      "version": 11,
+      "entries": 9366,
+      "size": 1054632143,
+      "modifiedUtc": "2026-10-28T03:56:26.052Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk100optional-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/Bake/Asset/Environment/",
+      "version": 11,
+      "entries": 24,
+      "size": 335583622,
+      "modifiedUtc": "2026-10-28T03:56:30.223Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk101-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/NewRoco/WwiseAudio/Windows/Chinese/",
+      "version": 11,
+      "entries": 309,
+      "size": 38004687,
+      "modifiedUtc": "2026-10-28T03:56:30.394Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk102-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/NewRoco/WwiseAudio/Windows/English/",
+      "version": 11,
+      "entries": 244,
+      "size": 15651910,
+      "modifiedUtc": "2026-10-28T03:56:30.712Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk103-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/NewRoco/WwiseAudio/Windows/Japanese/",
+      "version": 11,
+      "entries": 212,
+      "size": 16844198,
+      "modifiedUtc": "2026-10-28T03:56:30.926Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk10optional-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/Bake/Asset/Environment/",
+      "version": 11,
+      "entries": 6,
+      "size": 157787110,
+      "modifiedUtc": "2026-10-28T03:56:33.170Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk11-WindowsNoEditor.pak",
+      "mountPoint": "../../../",
+      "version": 11,
+      "entries": 146616,
+      "size": 9044714015,
+      "modifiedUtc": "2026-10-28T03:58:21.661Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk11-WindowsNoEditor_0_P.pak",
+      "mountPoint": "../../../NRC/Content/",
+      "version": 11,
+      "entries": 34,
+      "size": 1142326,
+      "modifiedUtc": "2026-10-28T03:58:23.655Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk11optional-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/Bake/Asset/Environment/",
+      "version": 11,
+      "entries": 12,
+      "size": 256210150,
+      "modifiedUtc": "2026-10-28T03:58:24.015Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk12-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/NewRoco/WwiseAudio/Windows/",
+      "version": 11,
+      "entries": 10656,
+      "size": 583566856,
+      "modifiedUtc": "2026-10-28T03:58:31.246Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk14-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/Movies/HD/",
+      "version": 11,
+      "entries": 5,
+      "size": 1055189090,
+      "modifiedUtc": "2026-10-28T03:58:43.493Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk20-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/",
+      "version": 11,
+      "entries": 59205,
+      "size": 5170388655,
+      "modifiedUtc": "2026-10-28T03:59:43.979Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk20-WindowsNoEditor_0_P.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/Level/Game/",
+      "version": 11,
+      "entries": 470,
+      "size": 3781142,
+      "modifiedUtc": "2026-10-28T03:59:44.606Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk201-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/NewRoco/WwiseAudio/Windows/Chinese/",
+      "version": 11,
+      "entries": 8543,
+      "size": 450201650,
+      "modifiedUtc": "2026-10-28T03:59:48.995Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk202-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/NewRoco/WwiseAudio/Windows/English/",
+      "version": 11,
+      "entries": 2071,
+      "size": 112207218,
+      "modifiedUtc": "2026-10-28T03:59:50.092Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk203-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/NewRoco/WwiseAudio/Windows/Japanese/",
+      "version": 11,
+      "entries": 320,
+      "size": 22876146,
+      "modifiedUtc": "2026-10-28T03:59:50.505Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk20optional-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/Level/Editor/TeamBattle/Mesh/",
+      "version": 11,
+      "entries": 2,
+      "size": 8478294,
+      "modifiedUtc": "2026-10-28T03:59:50.549Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk21-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/Asset/",
+      "version": 11,
+      "entries": 74221,
+      "size": 10002045439,
+      "modifiedUtc": "2026-10-28T04:01:52.113Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk21-WindowsNoEditor_0_P.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/Asset/PhysicsAsset/",
+      "version": 11,
+      "entries": 15,
+      "size": 127190,
+      "modifiedUtc": "2026-10-28T04:01:52.482Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk21optional-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/Asset/",
+      "version": 11,
+      "entries": 13,
+      "size": 65841366,
+      "modifiedUtc": "2026-10-28T04:01:52.574Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk22-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/AnimSequence/Human/PC/",
+      "version": 11,
+      "entries": 35106,
+      "size": 3494667151,
+      "modifiedUtc": "2026-10-28T04:02:31.112Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk23-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/",
+      "version": 11,
+      "entries": 138722,
+      "size": 3662975350,
+      "modifiedUtc": "2026-10-28T04:03:16.168Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk24-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/",
+      "version": 11,
+      "entries": 47966,
+      "size": 3528068527,
+      "modifiedUtc": "2026-10-28T04:03:57.473Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk24-WindowsNoEditor_0_P.pak",
+      "mountPoint": "../../../NRC/Content/ArtRes/AnimSequence/Sequence/Plot/",
+      "version": 11,
+      "entries": 2,
+      "size": 23878,
+      "modifiedUtc": "2026-10-28T04:03:59.906Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk26-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/NewRoco/WwiseAudio/Windows/",
+      "version": 11,
+      "entries": 73848,
+      "size": 2286774326,
+      "modifiedUtc": "2026-10-28T04:04:25.034Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk27-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/Movies/HD/",
+      "version": 11,
+      "entries": 54,
+      "size": 7609799458,
+      "modifiedUtc": "2026-10-28T04:06:01.559Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/",
+      "version": 11,
+      "entries": 26515,
+      "size": 169905634,
+      "modifiedUtc": "2026-10-28T04:06:02.964Z",
+      "petbaseEntries": [
+        "ScriptC/Data/Bin/BinConf/PETBASE_CONF.non",
+        "ScriptC/Data/Bin/BinDataCompressed/PETBASE_CONF.bytes",
+        "ScriptC/Data/Bin/BinDataCompressed/BinDataCompressed_ROW/PETBASE_CONF.bytes",
+        "ScriptC/Data/Bin/BinLocalize/dev_CN/PETBASE_CONF.bytes",
+        "ScriptC/Data/Bin/BinLocalize/en/PETBASE_CONF.bytes",
+        "ScriptC/Data/Bin/BinLocalize/ja/PETBASE_CONF.bytes",
+        "ScriptC/Data/Bin/BinLocalize/zh_Hans/PETBASE_CONF.bytes"
+      ]
+    },
+    {
+      "pak": "pakchunk4-WindowsNoEditor_0_P.pak",
+      "mountPoint": "../../../NRC/Content/ScriptC/Data/",
+      "version": 11,
+      "entries": 6,
+      "size": 541510,
+      "modifiedUtc": "2026-10-28T04:06:03.497Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk4-WindowsNoEditor_1_P.pak",
+      "mountPoint": "../../../NRC/Content/ScriptC/NewRoco/Modules/Core/NPC/",
+      "version": 11,
+      "entries": 4,
+      "size": 19937,
+      "modifiedUtc": "2026-10-28T04:06:03.500Z",
+      "petbaseEntries": []
+    },
+    {
+      "pak": "pakchunk6-WindowsNoEditor.pak",
+      "mountPoint": "../../../NRC/Content/NewRoco/Modules/AI/BehaviorTree/",
+      "version": 11,
+      "entries": 4794,
+      "size": 16974502,
+      "modifiedUtc": "2026-10-28T04:06:03.523Z",
+      "petbaseEntries": []
+    }
+  ],
+  "selected": [
+    {
+      "path": "ScriptC/Data/Bin/BinConf/PETBASE_CONF.non",
+      "selectedPak": "pakchunk4-WindowsNoEditor.pak",
+      "candidates": [
+        {
+          "pak": "pakchunk4-WindowsNoEditor.pak",
+          "size": 40835,
+          "priority": 0
+        }
+      ],
+      "size": 40835,
+      "byteIdenticalToPreviousExtraction": true
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinDataCompressed/PETBASE_CONF.bytes",
+      "selectedPak": "pakchunk4-WindowsNoEditor.pak",
+      "candidates": [
+        {
+          "pak": "pakchunk4-WindowsNoEditor.pak",
+          "size": 802245,
+          "priority": 0
+        }
+      ],
+      "size": 802245,
+      "byteIdenticalToPreviousExtraction": true
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinDataCompressed/BinDataCompressed_ROW/PETBASE_CONF.bytes",
+      "selectedPak": "pakchunk4-WindowsNoEditor.pak",
+      "candidates": [
+        {
+          "pak": "pakchunk4-WindowsNoEditor.pak",
+          "size": 802245,
+          "priority": 0
+        }
+      ],
+      "size": 802245,
+      "byteIdenticalToPreviousExtraction": true
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/dev_CN/PETBASE_CONF.bytes",
+      "selectedPak": "pakchunk4-WindowsNoEditor.pak",
+      "candidates": [
+        {
+          "pak": "pakchunk4-WindowsNoEditor.pak",
+          "size": 556262,
+          "priority": 0
+        }
+      ],
+      "size": 556262,
+      "byteIdenticalToPreviousExtraction": true
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/en/PETBASE_CONF.bytes",
+      "selectedPak": "pakchunk4-WindowsNoEditor.pak",
+      "candidates": [
+        {
+          "pak": "pakchunk4-WindowsNoEditor.pak",
+          "size": 642748,
+          "priority": 0
+        }
+      ],
+      "size": 642748,
+      "byteIdenticalToPreviousExtraction": true
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/ja/PETBASE_CONF.bytes",
+      "selectedPak": "pakchunk4-WindowsNoEditor.pak",
+      "candidates": [
+        {
+          "pak": "pakchunk4-WindowsNoEditor.pak",
+          "size": 676490,
+          "priority": 0
+        }
+      ],
+      "size": 676490,
+      "byteIdenticalToPreviousExtraction": true
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/zh_Hans/PETBASE_CONF.bytes",
+      "selectedPak": "pakchunk4-WindowsNoEditor.pak",
+      "candidates": [
+        {
+          "pak": "pakchunk4-WindowsNoEditor.pak",
+          "size": 556256,
+          "priority": 0
+        }
+      ],
+      "size": 556256,
+      "byteIdenticalToPreviousExtraction": true
+    }
+  ],
+  "patchPriorityNeeded": false,
+  "allMatchPreviousExtraction": true,
+  "runtimeOrServerOverridesVerified": false
+}

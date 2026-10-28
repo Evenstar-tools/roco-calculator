@@ -1,3 +1,4 @@
+import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
@@ -1053,4 +1054,13 @@ test("renders icon-based type analysis only when the display setting is enabled"
   expect(within(panel).getByRole("img", { name: "草" })).toBeVisible();
   expect(within(panel).getByLabelText("草 2倍")).toBeVisible();
   expect(within(panel).getByText("盲点")).toBeVisible();
+});
+
+
+test("Japanese result skill names retain skill terminology when weather uses a different translation", () => {
+  render(<LocaleProvider locale="ja"><ResultRail result={{ ...result, mode: "four", selectedSkillName: "暴风雪",
+    skillResults: [{ id: "blizzard", name: "暴风雪", damage: 399, hpPercent: 91.9, selected: true }] }} /></LocaleProvider>);
+  expect(screen.getAllByText("雪あらし")).toHaveLength(2);
+  expect(screen.queryByText("吹雪")).not.toBeInTheDocument();
+  expect(screen.getByTestId("primary-damage")).toHaveTextContent("399");
 });

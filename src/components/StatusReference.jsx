@@ -1,3 +1,4 @@
+import { useCalculatorLocale } from "../i18n/calculator-text.js";
 import { BookOpen, Question, X } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -26,12 +27,14 @@ const markScope = {
 };
 
 export function StatusHelpButton({ label, onClick }) {
-  return <button type="button" className="status-help" aria-label={label} title={label} aria-haspopup="dialog" onClick={onClick}>
+  const { tc } = useCalculatorLocale();
+  return <button type="button" className="status-help" aria-label={tc(label)} title={tc(label)} aria-haspopup="dialog" onClick={onClick}>
     <Question size={16} aria-hidden="true" />
   </button>;
 }
 
 export function StatusReference({ initialGroup, onClose }) {
+  const { tc, locale, markLabel } = useCalculatorLocale();
   const [group, setGroup] = useState(initialGroup);
   const [search, setSearch] = useState("");
   const dialogRef = useRef(null);
@@ -49,7 +52,7 @@ export function StatusReference({ initialGroup, onClose }) {
     };
   }, []);
   const rows = group === "status" ? statuses : MARK_DEFINITIONS[group];
-  return createPortal(<dialog ref={dialogRef} className="status-reference" aria-label="异常与印记" onCancel={onClose}
+  return createPortal(<dialog ref={dialogRef} className="status-reference" aria-label={tc("异常与印记")} onCancel={onClose}
     onKeyDown={event => {
       if (event.key !== "Tab") return;
       const controls = [...event.currentTarget.querySelectorAll("button, input")];
@@ -61,21 +64,21 @@ export function StatusReference({ initialGroup, onClose }) {
     }}
     onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
     <div className="status-reference__body">
-      <header><div><h2><BookOpen size={22} aria-hidden="true" />异常与印记</h2><p>查规则，不改变当前配置</p></div>
-        <button type="button" aria-label="关闭说明" onClick={onClose}><X size={20} aria-hidden="true" /></button>
+      <header><div><h2><BookOpen size={22} aria-hidden="true" />{tc("异常与印记")}</h2><p>{tc("查规则，不改变当前配置")}</p></div>
+        <button type="button" aria-label={tc("关闭说明")} onClick={onClose}><X size={20} aria-hidden="true" /></button>
       </header>
-      <nav aria-label="说明分组">{Object.entries(groups).map(([key, name]) => <button key={key} type="button" aria-pressed={group === key}
-        onClick={() => { setGroup(key); setSearch(""); if (listRef.current) listRef.current.scrollTop = 0; }}>{name}</button>)}</nav>
+      <nav aria-label={tc("说明分组")}>{Object.entries(groups).map(([key, name]) => <button key={key} type="button" aria-pressed={group === key}
+        onClick={() => { setGroup(key); setSearch(""); if (listRef.current) listRef.current.scrollTop = 0; }}>{tc(name)}</button>)}</nav>
       <div className="status-reference__list" ref={listRef}>
-        <input type="search" aria-label={`搜索${groups[group]}`} placeholder="搜索名称" value={search} onChange={event => setSearch(event.target.value)} />
-        {rows.filter(row => row.name.includes(search.trim())).map(row => {
+        <input type="search" aria-label={tc("搜索{v0}", { v0: groups[group] })} placeholder={tc("搜索名称")} value={search} onChange={event => setSearch(event.target.value)} />
+        {rows.filter(row => `${row.name} ${tc(row.name)}`.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())).map(row => {
           const [type, scope = "仅作说明", note] = group === "status" ? [row.type, "异常结算", row.note] : markScope[row.id] ?? [];
-          return <article key={row.id}><ElementIcon type={type} size={28} /><div><div className="status-reference__name"><strong>{row.name}{group === "negative" && row.id === "poison" ? "印记" : ""}</strong>
-            <span data-reference-only={scope === "仅作说明" || scope === "手动配置"}>{scope}</span></div><p>{row.summary}</p>{note && <small>{note}</small>}</div></article>;
+          return <article key={row.id}><ElementIcon type={type} size={28} /><div><div className="status-reference__name"><strong>{group === "status" ? tc(row.name) : markLabel(row.name)}{locale === "zh-CN" && group === "negative" && row.id === "poison" ? "印记" : ""}</strong>
+            <span data-reference-only={scope === "仅作说明" || scope === "手动配置"}>{tc(scope)}</span></div><p>{tc(row.summary)}</p>{note && <small>{tc(note)}</small>}</div></article>;
         })}
-        {!rows.some(row => row.name.includes(search.trim())) && <p role="status">未找到对应条目</p>}
+        {!rows.some(row => `${row.name} ${tc(row.name)}`.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())) && <p role="status">{tc("未找到对应条目")}</p>}
       </div>
-      <footer>{group === "status" ? "开启异常结算后，按所选技能与配置层数计算；不自动模拟完整对局。" : "标签说明计算范围，不代表当前已生效；未模拟入场、能量及全部回合事件。"}</footer>
+      <footer>{group === "status" ? tc("开启异常结算后，按所选技能与配置层数计算；不自动模拟完整对局。") : tc("标签说明计算范围，不代表当前已生效；未模拟入场、能量及全部回合事件。")}</footer>
     </div>
   </dialog>, document.body);
 }

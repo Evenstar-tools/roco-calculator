@@ -32,6 +32,11 @@ import {
   getTraitSkillPowerBonuses,
 } from "./trait-effects.js";
 
+function isGlobalDraft(snapshot) {
+  return snapshot?.meta?.serverId === "global" &&
+    (!snapshot.meta.id || snapshot.meta.status === "unverified" || Boolean(snapshot.meta.placeholderSource));
+}
+
 const STAT_VIEW = [
   { key: "physicalAttack", label: "物攻" },
   { key: "magicalAttack", label: "魔攻" },
@@ -117,7 +122,7 @@ function withManagedStatusContext(entry, context) {
   };
 }
 
-function buildCombatState(state) {
+function buildCombatState(state, serverId = "cn") {
   const enabled = state.calculationOptions?.includeNegativeStatusSettlement === true;
   const contexts = {
     forward: negativeStatusContext(state, "defender", enabled),
@@ -129,6 +134,7 @@ function buildCombatState(state) {
   };
   return {
     ...state,
+    ...(serverId === "global" ? { serverId } : {}),
     directions: Object.fromEntries(
       Object.entries(state.directions).map(([direction, value]) => [
         direction,
@@ -168,7 +174,7 @@ function buildCombatState(state) {
 }
 
 export function getSpirit(snapshot, side) {
-  if (snapshot?.meta?.serverId === "global") return getSnapshotIndexes(snapshot).spirits[side?.spiritId] ?? null;
+  if (isGlobalDraft(snapshot)) return getSnapshotIndexes(snapshot).spirits[side?.spiritId] ?? null;
   return resolveBattleSpirit(snapshot, side);
 }
 
@@ -304,7 +310,7 @@ function finalPanelStatsForSide(calculation, sideKey, fallback = null) {
 }
 
 export function getTraitView(snapshot, spirit, role = "attacker", skills = []) {
-  if (snapshot?.meta?.serverId === "global") return null;
+  if (isGlobalDraft(snapshot)) return null;
   const traitsById = getSnapshotIndexes(snapshot).traits;
   const primaryTrait =
     spirit.traitIds?.map((traitId) => traitsById[traitId]).find(Boolean) ?? null;
@@ -525,7 +531,7 @@ function asResultRailModel({ calculation, direction, snapshot, state, includeTur
         };
         const projectedDirection = calculateMatchup(
           snapshot,
-          buildCombatState(projectedState),
+          buildCombatState(projectedState, snapshot.meta?.serverId ?? "cn"),
         )[direction];
         const projectedResult = directionState.selectedDamageSource === "bloodline"
           ? projectedDirection.bloodlineResult
@@ -728,7 +734,7 @@ export function buildCalculatorViewModel({
   );
   // Catalog editing is independent of calculation availability. Reference data
   // must never enter panel or damage computation, even if it contains numbers.
-  const canCalculate = getServerRelease(serverId).capabilities.calculate;
+  const canCalculate = getServerRelease(serverId).capabilities.calculate && !isGlobalDraft(snapshot);
   const configurationReady =
     canCalculate && selectionsReady && pendingRaceStatSpirits.length === 0;
   const configurationEditable = configurationReady ||
@@ -780,7 +786,7 @@ export function buildCalculatorViewModel({
     );
   } else {
     try {
-      calculation = calculateMatchup(snapshot, buildCombatState(state));
+      calculation = calculateMatchup(snapshot, buildCombatState(state, serverId));
     } catch (error) {
       calculation = unresolvedCalculation(error);
     }

@@ -1,4 +1,5 @@
 import { assertCalculationEnvironment } from "../domain/server-environment.js";
+import { localizeGlobalCatalog } from "./global-entity-localization.js";
 
 export const GLOBAL_PLACEHOLDER_ID_PREFIX = "cn-placeholder:";
 
@@ -14,7 +15,7 @@ function pick(source, keys) {
 export function createGlobalPlaceholderCatalog(cnSnapshot) {
   const source = assertCalculationEnvironment(cnSnapshot, { serverId: "cn" });
   const traits = new Map((cnSnapshot.traits ?? []).map((trait) => [trait.id, trait]));
-  return {
+  const catalog = {
     meta: {
       serverId: "global", id: null, rulesVersion: null, status: "unverified",
       placeholderSource: { serverId: "cn", dataVersion: source.dataVersion, locale: "zh-CN" },
@@ -47,4 +48,5 @@ export function createGlobalPlaceholderCatalog(cnSnapshot) {
     rules: [],
     typeChart: { types: [], matrix: [] },
   };
+  return localizeGlobalCatalog(catalog, "zh-CN");
 }

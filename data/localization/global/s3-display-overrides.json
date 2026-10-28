@@ -1,0 +1,39 @@
+{
+  "baseline": "global-s3-midseason-2026-08-13",
+  "status": "project_reviewed",
+  "records": [
+    {
+      "kind": "skill",
+      "entityId": "skill_9160e6b56ed66168",
+      "field": "description",
+      "locale": "en",
+      "text": "Deals Magic Damage. For each Choice skill you have used, permanently gains 3 stacks of random buffs on itself. Resets after use.",
+      "reason": "Client English says on the enemy; both native Chinese/Japanese and adopted S3 mechanics target the user."
+    },
+    {
+      "kind": "trait",
+      "entityId": "trait_08e5bbe852abacdc",
+      "field": "description",
+      "locale": "ja",
+      "text": "装備中の炎属性スキルに<desc_id=3019>選択</>が付与される。発動後、HPを15%失い、バトル終了まで光属性スキルの威力+30。",
+      "reason": "Client Japanese says +20; native Chinese/English and adopted S3 mechanics say +30."
+    },
+    {
+      "kind": "trait",
+      "entityId": "trait_4651e3e91db71923",
+      "field": "description",
+      "locale": "zh-CN",
+      "text": "回合结束时，若本场战斗累计消耗的能量恰好为12，则回满能量和生命。",
+      "reason": "Native Chinese adds once per battle, absent in adopted S3 definition and native English/Japanese."
+    }
+  ],
+  "baselineNotes": [
+    {
+      "kind": "trait",
+      "entityId": "trait_731c315f1c469260",
+      "name": "留学生",
+      "baselineDescription": "",
+      "handling": "Display native official description; retain baseline rules and report missing baseline description separately. No engine rule added."
+    }
+  ]
+}

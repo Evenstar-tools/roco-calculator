@@ -1,0 +1,319 @@
+{
+  "status": "passed",
+  "csvReadback": {
+    "core": 399,
+    "types": 18,
+    "project": 229,
+    "gaps": 110,
+    "native_ui": 2104,
+    "descriptions": 215,
+    "directional_matchups": 8
+  },
+  "allCoreTranslationsEqualSource": true,
+  "sixStatsPresent": true,
+  "eighteenActiveClassesPresent": true,
+  "thirtyPlayerNaturesPresent": true,
+  "deprecatedClassAndNonplayerNatureExcluded": true,
+  "nullChineseNotInvented": true,
+  "projectMappingStatus": {
+    "已按上下文对应": 119,
+    "多义需选择": 18,
+    "未找到": 92
+  },
+  "tableDecoding": {
+    "ABNORMAL_STATUS_CONF": {
+      "rows": 15,
+      "fullyConsumed": true,
+      "localizedFields": 0,
+      "locales": [],
+      "referencesValid": true
+    },
+    "ATTRIBUTE_CONF": {
+      "rows": 86,
+      "fullyConsumed": true,
+      "localizedFields": 86,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "BASE_POINT_CONF": {
+      "rows": 126,
+      "fullyConsumed": true,
+      "localizedFields": 0,
+      "locales": [],
+      "referencesValid": true
+    },
+    "BATTLE_TYPE_CONF": {
+      "rows": 30,
+      "fullyConsumed": true,
+      "localizedFields": 30,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "BUFF_CONF": {
+      "rows": 3071,
+      "fullyConsumed": true,
+      "localizedFields": 2051,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "BUFF_TYPE": {
+      "rows": 5,
+      "fullyConsumed": true,
+      "localizedFields": 5,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "DESC_NOTE_CONF": {
+      "rows": 209,
+      "fullyConsumed": true,
+      "localizedFields": 418,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "EGG_TYPE_CONF": {
+      "rows": 9,
+      "fullyConsumed": true,
+      "localizedFields": 12,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "LOCALIZATION_CONF": {
+      "rows": 9070,
+      "fullyConsumed": true,
+      "localizedFields": 9061,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "NATURE_CONF": {
+      "rows": 31,
+      "fullyConsumed": true,
+      "localizedFields": 216,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "PET_BLOOD_CONF": {
+      "rows": 24,
+      "fullyConsumed": true,
+      "localizedFields": 52,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "PET_FILTER_CONF": {
+      "rows": 79,
+      "fullyConsumed": true,
+      "localizedFields": 79,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "PET_INFORMATION_CONF": {
+      "rows": 6,
+      "fullyConsumed": true,
+      "localizedFields": 18,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "PET_TALENT_CONF": {
+      "rows": 99,
+      "fullyConsumed": true,
+      "localizedFields": 192,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "SKILL_FILTER_CONF": {
+      "rows": 24,
+      "fullyConsumed": true,
+      "localizedFields": 24,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "SKILL_TAG": {
+      "rows": 14,
+      "fullyConsumed": true,
+      "localizedFields": 14,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "SKILL_UI_DES": {
+      "rows": 1,
+      "fullyConsumed": true,
+      "localizedFields": 0,
+      "locales": [],
+      "referencesValid": true
+    },
+    "SPEC_BATTLE_UI": {
+      "rows": 8,
+      "fullyConsumed": true,
+      "localizedFields": 60,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "STAGE_CONF": {
+      "rows": 65,
+      "fullyConsumed": true,
+      "localizedFields": 0,
+      "locales": [],
+      "referencesValid": true
+    },
+    "TYPE_ADVANTAGE_BATTLE_CONF": {
+      "rows": 36,
+      "fullyConsumed": true,
+      "localizedFields": 36,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "TYPE_ADVANTAGE_TEACH_CONF": {
+      "rows": 18,
+      "fullyConsumed": true,
+      "localizedFields": 90,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "TYPE_DICTIONARY": {
+      "rows": 22,
+      "fullyConsumed": true,
+      "localizedFields": 44,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "UI_CONF": {
+      "rows": 1,
+      "fullyConsumed": true,
+      "localizedFields": 0,
+      "locales": [],
+      "referencesValid": true
+    },
+    "UI_KEYNAME_CONVERT": {
+      "rows": 114,
+      "fullyConsumed": true,
+      "localizedFields": 110,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    },
+    "WEAKNESS_CONF": {
+      "rows": 71,
+      "fullyConsumed": true,
+      "localizedFields": 0,
+      "locales": [],
+      "referencesValid": true
+    },
+    "WEATHER_CONF": {
+      "rows": 15,
+      "fullyConsumed": true,
+      "localizedFields": 97,
+      "locales": [
+        "zh_Hans",
+        "dev_CN",
+        "en",
+        "ja"
+      ],
+      "referencesValid": true
+    }
+  },
+  "umgExtraction": {
+    "totalNamespaceKeys": 6490,
+    "english": 6397,
+    "japanese": 6478,
+    "uiAssetsRead": 1176,
+    "uiAssetSourceOccurrences": 2164,
+    "sourceNamespaceKeys": 2104,
+    "chineseMatched": 2104,
+    "chineseEnglishJapanese": 2095,
+    "sourceHashMismatchOccurrences": 0,
+    "sourceHashMismatchKeys": []
+  }
+}

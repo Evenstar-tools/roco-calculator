@@ -1,8 +1,10 @@
+import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { CaretDown, Check } from "@phosphor-icons/react";
 import { useEffect, useId, useRef, useState } from "react";
 import { usePickerMenuLayout } from "../../components/picker-menu-layout.js";
 
 export default function TransmissionTraitPicker({ options, value, placeholder, onChange }) {
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const root = useRef(null);
@@ -57,21 +59,21 @@ export default function TransmissionTraitPicker({ options, value, placeholder, o
 
   return <div className="transmission-trait-picker" ref={root}
     onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false); }}>
-    <button type="button" role="combobox" aria-label="传动特性" value={value}
+    <button type="button" role="combobox" aria-label={t("传动特性")} value={value}
       aria-haspopup="listbox" aria-expanded={open} aria-controls={open ? menuId : undefined}
       aria-activedescendant={open && active >= 0 ? `${menuId}-${active}` : undefined}
-      className="transmission-trait-trigger" ref={trigger} title={selected?.owner?.fullName}
+      className="transmission-trait-trigger" ref={trigger} title={t(selected?.owner?.fullName)}
       onClick={() => open ? setOpen(false) : show()} onKeyDown={navigate}>
       {selected?.owner?.assetUrl && <img src={selected.owner.assetUrl} alt="" width="24" height="24" />}
-      <span>{selected?.label ?? placeholder}</span><CaretDown size={14} aria-hidden="true" />
+      <span>{t(selected?.label ?? placeholder)}</span><CaretDown size={14} aria-hidden="true" />
     </button>
-    {open && <ul id={menuId} ref={menu} className="transmission-trait-options" role="listbox" aria-label="传动特性选项">
+    {open && <ul id={menuId} ref={menu} className="transmission-trait-options" role="listbox" aria-label={t("传动特性选项")}>
       {options.map((option, index) => <li key={option.id} id={`${menuId}-${index}`} role="option"
-        aria-label={option.label} aria-selected={option.name === value} aria-disabled={option.disabled}
-        data-active={active === index} title={option.owner?.fullName}
+        aria-label={t(option.label)} aria-selected={option.name === value} aria-disabled={option.disabled}
+        data-active={active === index} title={t(option.owner?.fullName)}
         onMouseDown={(event) => event.preventDefault()} onClick={() => choose(index)}>
         {option.owner?.assetUrl ? <img src={option.owner.assetUrl} alt={option.owner.fullName} width="28" height="28" /> : <span className="transmission-trait-portrait-placeholder" aria-hidden="true" />}
-        <span>{option.label}</span>{option.name === value && <Check size={16} aria-hidden="true" />}
+        <span>{t(option.label)}</span>{option.name === value && <Check size={16} aria-hidden="true" />}
       </li>)}
     </ul>}
   </div>;

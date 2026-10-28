@@ -1,3 +1,4 @@
+import { usesS3MidseasonRules } from "./season-rules.js";
 const booleanInput = (key, label, extra = {}) => ({
   defaultValue: false,
   ...extra,
@@ -967,8 +968,33 @@ function inputsForExplicitRule(ruleId, params = {}) {
   }
 }
 
+function s3MidseasonSkillEffect(skill) {
+  const original = REVIEWED_EFFECTS[skill.name];
+  if (!usesS3MidseasonRules(skill) || !original) return null;
+  const params = original.ruleParams ?? {};
+  const overrides = {
+    草虫冲击: { ruleParams: { ...params, add: 50 } },
+    孢子爆散: { ruleParams: { ...params, baseHitCount: 1 } },
+    流星火雨: { ruleParams: { ...params, perStack: 75 } },
+    雪原狩猎: { ruleId: "boolean_power_percent_add", ruleParams: { ...params, add: 0.5 } },
+    超导: { ruleParams: { ...params, reduction: 1 } },
+    血契: { ruleParams: { ...params, changePerInterval: 10 } },
+  };
+  if (skill.name === "雷暴") return {
+    ...original,
+    inputs: original.inputs.map((input) => input.key === "burstSourceSuperconduct"
+      ? { ...input, burstDescription: "本技能能耗 -1。" } : input),
+    ruleParams: { ...params, inheritedCostReductions: params.inheritedCostReductions.map((source) =>
+      source.contextKey === "burstSourceSuperconduct" ? { ...source, reduction: 1 } : source) },
+    source: "adopted-s3-midseason-2026-08-13",
+  };
+  return overrides[skill.name] ? { ...original, ...overrides[skill.name], source: "adopted-s3-midseason-2026-08-13" } : null;
+}
+
 export function getSkillEffectRule(skill) {
   if (!skill) return null;
+  const baselineEffect = s3MidseasonSkillEffect(skill);
+  if (baselineEffect) return baselineEffect;
   if (skill.ruleId) {
     return {
       inputs:

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
@@ -66,19 +67,21 @@ test("Chinese references support selecting, configuring, restoring and sharing w
 });
 
 
-test("Global original toolbox opens the Chinese reference query without fetching verified CN catalogs", async () => {
+test("Global original toolbox queries its own released catalog without changing calculator state", async () => {
+  const released = JSON.parse(readFileSync("public/data/global-runtime.json", "utf8"));
+  const catalog = JSON.parse(readFileSync("public/data/global/skill-query/catalog.json", "utf8"));
+  fetch.mockResolvedValue({ ok: true, json: async () => catalog });
   const user = userEvent.setup();
-  render(workspace());
+  render(<RuntimeProvider serverId="global" locale="zh-CN"><LocaleProvider locale="zh-CN"><App initialSnapshot={released} /></LocaleProvider></RuntimeProvider>);
   const before = createCalculatorSessionStore({ serverId: "global" }).loadSession();
   await user.click(screen.getByRole("button", { name: "工具箱", exact: true }));
   await user.click(screen.getByRole("button", { name: "技能检索", exact: true }));
   const search = await screen.findByRole("textbox", { name: "搜索技能或精灵" });
-  await user.type(search, "中文技能一");
-  await user.click(screen.getByRole("button", { name: "添加中文技能一", exact: true }));
-  await user.click(screen.getByRole("button", { name: "中文占位一 查看技能", exact: true }));
-  expect(screen.getByRole("heading", { name: "中文占位一", exact: true })).toBeVisible();
-  expect(screen.queryByRole("tab", { name: "赛季新技能" })).not.toBeInTheDocument();
+  await user.type(search, "地刺");
+  await user.click(screen.getByRole("button", { name: "添加地刺", exact: true }));
+  expect(document.querySelectorAll(".sq-family-main").length).toBeGreaterThan(0);
+  expect(fetch).toHaveBeenCalledWith("/data/global/skill-query/catalog.json");
+  expect(fetch.mock.calls.map(([url]) => String(url)).filter(url => url.includes("/data/skill-query/") || url.includes("popular-pvp"))).toEqual([]);
   await user.click(screen.getByRole("button", { name: "关闭技能查询", exact: true }));
   expect(createCalculatorSessionStore({ serverId: "global" }).loadSession()).toEqual(before);
-  expect(fetch).not.toHaveBeenCalled();
 });

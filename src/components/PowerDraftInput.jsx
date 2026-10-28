@@ -1,3 +1,4 @@
+import { useCalculatorLocale } from "../i18n/calculator-text.js";
 import { useEffect, useRef, useState } from "react";
 
 function validationMessage(mode, draft) {
@@ -22,6 +23,7 @@ export function PowerDraftInput({
   onCommit,
   value,
 }) {
+  const { tc } = useCalculatorLocale();
   const [draft, setDraft] = useState(String(value ?? ""));
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
@@ -77,7 +79,7 @@ export function PowerDraftInput({
         <input
           aria-describedby={error ? `${ariaLabel}-error` : undefined}
           aria-invalid={Boolean(error)}
-          aria-label={ariaLabel}
+          aria-label={tc(ariaLabel)}
           disabled={disabled}
           max="9999"
           min="0"
@@ -111,7 +113,7 @@ export function PowerDraftInput({
         />
         {isManual ? (
           <button
-            aria-label="恢复自动威力"
+            aria-label={tc("恢复自动威力")}
             className="power-draft__reset"
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => {
@@ -120,7 +122,7 @@ export function PowerDraftInput({
               setError("");
               onClear?.();
             }}
-            title="恢复自动威力"
+            title={tc("恢复自动威力")}
             type="button"
           >
             ↺
@@ -129,7 +131,7 @@ export function PowerDraftInput({
       </span>
       {error ? (
         <small className="power-draft__error" id={`${ariaLabel}-error`} role="alert">
-          {error}
+          {tc(error)}
         </small>
       ) : null}
     </span>

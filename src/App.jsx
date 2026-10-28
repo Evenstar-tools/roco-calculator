@@ -3,11 +3,14 @@ import { getS5PreviewTraitInputs } from "./domain/s5-preview-traits.js";
 import { canonicalTraitControlKey } from "./domain/trait-runtime.js";
 import { applyS5EnergyUse, prepareS5EnergyUse } from "./features/s5-preview/energy-use.js";
 import { applyS5DiscountUse, prepareS5DiscountUse } from "./features/s5-preview/cost-discount-use.js";
-import { loadGlobalPlaceholderCatalog, loadServerSnapshot } from "./runtime/load-snapshot.js";
+import { loadServerSnapshot } from "./runtime/load-snapshot.js";
 import { previewRoute } from "./runtime/preview-channel.js";
 import { useRuntime } from "./runtime/RuntimeContext.jsx";
 import { UNVERIFIED_GLOBAL_SNAPSHOT } from "./runtime/unverified-snapshot.js";
 import { useLocale } from "./i18n/LocaleContext.jsx";
+import { localizeGlobalSpirit } from "./runtime/global-entity-localization.js";
+import { useCalculatorLocale } from "./i18n/calculator-text.js";
+import { createGlobalSessionStore } from "./runtime/global-session-migration.js";
 import { createCalculatorSessionStore } from "./runtime/workspace-store.js";
 import { storageError } from "./state/server-storage.js";
 import { useFeatureMetrics } from "./analytics/use-feature-metrics.js";
@@ -136,14 +139,16 @@ const TypeQueryPanel = lazy(() => import("./features/type-query/TypeQueryPanel.j
 const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
 const DamageComparisonDialog = lazy(() => import("./components/DamageComparisonDialog.jsx"));
 const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
-const preloadSkillQuery = () => {
+const preloadSkillQuery = (serverId) => {
   void loadSkillQueryPanel().catch(() => {});
-  void import("./features/skill-query/load-catalog.js").then(({ loadSkillCatalog }) => loadSkillCatalog()).catch(() => {});
+  void import("./features/skill-query/load-catalog.js").then(({ loadSkillCatalog }) => loadSkillCatalog(serverId)).catch(() => {});
 };
 
 function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlobal, active }) {
   const { serverId, release } = useRuntime();
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
+  const { tc } = useCalculatorLocale();
+  const spiritName = spirit => spirit ? (serverId === "global" ? localizeGlobalSpirit(spirit, locale).fullName : spirit.fullName) : "";
   const formPreferences = getFormConfigPreferences(serverId);
   const [shortcutSettings, setShortcutSettings] = useState(() => readShortcutSettings(serverId));
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
@@ -160,8 +165,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   const initialState = useMemo(() => {
     if (initialWorkspace?.state) return structuredClone(initialWorkspace.state);
     const next = createProductInitialState(snapshot);
-    if (serverId === "global") {
-      // 原界面结构照常保留；未核验的性格和个体留空，不继承国服默认值。
+    if (serverId === "global" && !release.capabilities.calculate) {
+      // 尚无计算规则的目录保留空配置。
       for (const side of Object.values(next.sides)) {
         side.nature = null;
         side.displayIvs = Object.fromEntries(Object.keys(side.displayIvs).map((stat) => [stat, null]));
@@ -175,7 +180,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           readNegativeStatusSettlementSetting(undefined, serverId),
       },
     };
-  }, [snapshot, initialWorkspace, serverId]);
+  }, [snapshot, initialWorkspace, serverId, release.capabilities.calculate]);
   const [toast, setToast] = useState("");
   const [activeDirection, setActiveDirection] = useState(initialWorkspace?.activeDirection ?? "forward");
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(initialWorkspace?.advancedOptionsOpen ?? false);
@@ -188,7 +193,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   const storedData = useStoredCalculatorData(snapshot, { onToast: setToast, serverId });
   const sessionStore = useMemo(() => {
     try {
-      return createCalculatorSessionStore({ serverId, validateState: (value) => {
+      const createStore = serverId === "global" && snapshot.meta?.id ? createGlobalSessionStore : createCalculatorSessionStore;
+      return createStore({ serverId, initialState, validateState: (value) => {
         if (value.schemaVersion !== initialState.schemaVersion ||
             value.versions?.data !== initialState.versions.data || value.versions?.rules !== initialState.versions.rules ||
             !["single", "four"].includes(value.mode) ||
@@ -1674,7 +1680,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     <div className="moon-memory-single">
       {[["attacker", attacker, "攻击方"], ["defender", defender, "防御方"]].map(([side, spirit, label]) => singleTraitEditors[side] ? (
         <div className={`moon-memory-single__side moon-memory-single__side--${side}`} key={side}>
-          <small>{label} · {spirit.fullName}</small>
+          <small>{t(label)} · {spiritName(spirit)}</small>
           {singleTraitEditors[side]}
         </div>
       ) : null)}
@@ -1826,7 +1832,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       attackerLifestealPercent={
         state.directions.forward.overrides?.lifestealPercent ?? 0
       }
-      attackerName={attacker.fullName}
+      attackerName={spiritName(attacker)}
       attackerResults={viewModel.skillResultsByDirection.forward}
       attackerSkillChoices={attackerSkillChoices}
       attackerSkills={state.sides.attacker.skills.four.map((entry) =>
@@ -1851,7 +1857,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         state.directions.reverse.overrides?.lifestealPercent ?? 0
       }
       defenderHealth={defenderHealth}
-      defenderName={defender.fullName}
+      defenderName={spiritName(defender)}
       defenderResults={viewModel.skillResultsByDirection.reverse}
       defenderSkillChoices={defenderSkillChoices}
       defenderSkills={state.sides.defender.skills.four.map((entry) =>
@@ -1964,8 +1970,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   const compactSingleEditor = configurationEditable ? (
     <CompactSingleSkillEditor
       placeholder={placeholder}
-      attackName={activeAttackSpirit.fullName}
-      defenseName={activeDefenseSpirit.fullName}
+      attackName={spiritName(activeAttackSpirit)}
+      defenseName={spiritName(activeDefenseSpirit)}
       onSkillSelect={selectSingleSkill}
       canActivateSkill={canActivateSkill(activeAttackSideKey, 0, "single")}
       skillActivationLabel={skillActivationLabel(activeAttackSideKey, 0, "single")}
@@ -1984,7 +1990,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       activeDamageSource={activeDamageSource}
       activeSide={activeAttackSideKey}
       activeSkillIndex={currentDirection.selectedSkillIndex}
-      attackerName={attacker.fullName}
+      attackerName={spiritName(attacker)}
       attackerResults={viewModel.skillResultsByDirection.forward}
       attackerSkillChoices={attackerSkillChoices}
       attackerSkills={state.sides.attacker.skills.four.map((entry) =>
@@ -1996,7 +2002,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           : 0
       }
       attackerTraitDamage={attackerTraitDamage}
-      defenderName={defender.fullName}
+      defenderName={spiritName(defender)}
       defenderResults={viewModel.skillResultsByDirection.reverse}
       defenderSkillChoices={defenderSkillChoices}
       defenderSkills={state.sides.defender.skills.four.map((entry) =>
@@ -2107,7 +2113,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     configLibrary: configLibraryFlow.overlayProps,
     dataSource: {
       ...overlays.dataSourceProps,
-      dataVersion: release.capabilities.calculate ? `S4「季中」 · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}` : t("国际服数据尚待核验"),
+      dataVersion: serverId === "global" ? "S3 · 2026-08-13" : `S4「季中」 · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
     },
     productAccess: overlays.productAccessProps,
     displaySettings: overlays.displaySettingsProps,
@@ -2187,7 +2193,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             (candidate) => candidate.id === member.spiritId,
           );
           setToast(
-            t("已载入{side} {name}", { side: t(side === "attacker" ? "攻击方" : "防御方"), name: spirit?.fullName ?? t("队伍成员") }),
+            t("已载入{side} {name}", { side: t(side === "attacker" ? "攻击方" : "防御方"), name: spiritName(spirit) || t("队伍成员") }),
           );
         },
         onAnalysisEntryClear: () => overlays.team.setAnalysisEntry(null),
@@ -2200,7 +2206,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             (candidate) => candidate.id === member.spiritId,
           );
           setToast(
-            t("能力方案已应用到{side} {name}", { side: t(side === "attacker" ? "攻击方" : "防御方"), name: spirit?.fullName ?? t("当前精灵") }),
+            t("能力方案已应用到{side} {name}", { side: t(side === "attacker" ? "攻击方" : "防御方"), name: spiritName(spirit) || t("当前精灵") }),
           );
         },
         onCaptureSide: (side, teamId, index) =>
@@ -2236,7 +2242,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         menuOpen={overlays.menu.open}
         onMenuOpen={() => overlays.menu.setOpen((open) => !open)}
         toolbox={{
-          onOpen: () => { overlays.menu.setOpen(false); if (release.capabilities.search) preloadSkillQuery(); },
+          onOpen: () => { overlays.menu.setOpen(false); if (release.capabilities.search) preloadSkillQuery(serverId); },
           activeTool: typeQueryOpen ? "types" : skillQueryOpen ? "skills" : transmissionOpen ? "transmission" : rankingKind,
           actions: {
             types: () => setTypeQueryOpen(true),
@@ -2328,8 +2334,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           />
 
           {!configurationReady && !placeholder && !firstRunGuideVisible
-            ? <EmptyStateGuide title={!release.capabilities.calculate ? t("国际服数据尚待核验") : undefined}
-              message={!release.capabilities.calculate ? t("国际服数值与规则核验前，暂不提供计算；存档、分享和界面设置可正常使用。") : viewModel.configurationIssue} />
+            ? <EmptyStateGuide title={!release.capabilities.calculate ? t("选择精灵，开始配置") : undefined}
+              message={!release.capabilities.calculate ? t("配置、保存并分享你的队伍。") : tc(viewModel.configurationIssue)} />
             : null}
           {configurationEditable && (viewMode === "compact" || placeholder) ? (
             <section
@@ -2394,7 +2400,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
               <NatureStatsStep
             attacker={{
               id: attacker.id,
-              fullName: attacker.fullName,
+              fullName: spiritName(attacker),
               levels: fairPigeonPresent
                 ? [
                     {
@@ -2451,7 +2457,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             onAttackerAnalyze={() => openSideAbilityAnalysis("attacker")}
             defender={{
               id: defender.id,
-              fullName: defender.fullName,
+              fullName: spiritName(defender),
               levels: fairPigeonPresent
                 ? [
                     {
@@ -2693,9 +2699,8 @@ export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDee
     const controller = new AbortController();
     let active = true;
 
-    const loading = serverId === "global"
-      ? loadGlobalPlaceholderCatalog({ signal: controller.signal })
-      : loadServerSnapshot(serverId, { signal: controller.signal }).then(withWebPreview);
+    const loading = loadServerSnapshot(serverId, { signal: controller.signal })
+      .then((loaded) => serverId === "cn" ? withWebPreview(loaded) : loaded);
     loading
       .then((loadedSnapshot) => {
         if (active) setSnapshot(loadedSnapshot);
@@ -2717,7 +2722,7 @@ export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDee
       <div className="app">
         <AppHeader viewMode={initialWorkspace?.viewMode ?? readViewModeSetting(serverId)} />
         <main className="loading-state">
-          <p>{t(error ? "资料加载失败，请重试。" : serverId === "global" ? "正在加载中文占位资料…" : "正在加载 S4「季中」数据…")}</p>
+          <p>{t(error ? "资料加载失败，请重试。" : serverId === "global" ? "正在加载精灵资料…" : "正在加载 S4「季中」数据…")}</p>
           {error ? <button type="button" onClick={() => { setError(""); setLoadAttempt(value => value + 1); }}>{t("重试")}</button> : null}
         </main>
       </div>

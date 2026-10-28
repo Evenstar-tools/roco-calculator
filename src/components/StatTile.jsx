@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from "react";
 import { StatIcon } from "./StatIcon.jsx";
-import { getNature } from "../domain/natures.js";
+import { getNature, STAT_LABELS } from "../domain/natures.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 
 function clampIv(value, placeholder = false) {
@@ -26,7 +26,8 @@ export function StatTile({
   showFinalPanel = true,
   stat,
 }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
+  const translatedLabel = locale === "zh-CN" ? label : t(STAT_LABELS[stat] ?? label);
   const inputId = useId();
   const [draft, setDraft] = useState(String(displayIv ?? ""));
 
@@ -57,13 +58,13 @@ export function StatTile({
   const isMaxIv = !placeholder && Number.parseInt(draft, 10) === 60;
   const displayedPanel = placeholder ? "—" : showingBase ? basePanel : panel;
   const panelActionLabel = showingBase
-    ? t("{label}当前显示基础值{base}，最终值{final}，点击恢复最终六维", { label, base: basePanel, final: panel })
-    : t("{label}最终值{final}，基础值{base}，{change}{delta}，点击查看修改前的六维", { label, base: basePanel, final: panel, change: changeText, delta: Math.abs(numericDelta) });
+    ? t("{label}当前显示基础值{base}，最终值{final}，点击恢复最终六维", { label: translatedLabel, base: basePanel, final: panel })
+    : t("{label}最终值{final}，基础值{base}，{change}{delta}，点击查看修改前的六维", { label: translatedLabel, base: basePanel, final: panel, change: changeText, delta: Math.abs(numericDelta) });
   const valueContent = (
     <>
-      <span className="stat-tile__label" title={label}>
+      <span className="stat-tile__label" title={translatedLabel}>
         <StatIcon gain={!placeholder && getNature(natureId).upStat === stat} stat={stat} />
-        <span className="stat-tile__label-text">{label}</span>
+        <span className="stat-tile__label-text">{translatedLabel}</span>
       </span>
       <div className="stat-tile__panel-row">
         <output className="stat-tile__panel">{displayedPanel}</output>
@@ -107,7 +108,7 @@ export function StatTile({
           {t("个体")}
         </label>
         <input
-          aria-label={t("{label}个体", { label })}
+          aria-label={t("{label}个体", { label: translatedLabel })}
           className="stat-tile__iv-input"
           id={inputId}
           inputMode="numeric"

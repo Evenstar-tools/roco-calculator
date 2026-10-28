@@ -18,7 +18,8 @@ export default defineConfig({
         china: fileURLToPath(new URL("../cn/index.html", import.meta.url)),
         globalEnglish: fileURLToPath(new URL("../en/index.html", import.meta.url)),
         globalChinese: fileURLToPath(new URL("../global/zh-CN/index.html", import.meta.url)),
-        globalJapanese: fileURLToPath(new URL("../global/ja/index.html", import.meta.url)),
+        globalJapanese: fileURLToPath(new URL("../jp/index.html", import.meta.url)),
+        globalJapaneseLegacy: fileURLToPath(new URL("../global/ja/index.html", import.meta.url)),
       },
       output: {
         manualChunks,

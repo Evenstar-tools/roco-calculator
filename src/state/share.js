@@ -1,4 +1,5 @@
 import { STATE_SCHEMA_VERSION } from "./defaults.js";
+import { getServerRelease } from "../domain/server-environment.js";
 import { normalizeNatureId } from "../domain/natures.js";
 import { MOON_MEMORY_TRAIT_LIMIT } from "../domain/moon-memory.js";
 import {
@@ -1041,7 +1042,12 @@ function assertEnvelope(envelope) {
   }
   if (!["configuration", "configuration-draft"].includes(envelope.kind)) throw shareError("SHARE_UNSUPPORTED_KIND", "分享内容类型不受支持");
   if (envelope.kind === "configuration") {
-    if (envelope.serverId !== "cn") throw shareError("SHARE_SERVER_DATA_UNVERIFIED", "国际服数据与规则尚未核验，不能导入计算配置");
+    if (envelope.serverId === "global") {
+      const release = getServerRelease("global");
+      if (envelope.dataVersion !== release.dataVersion || envelope.rulesVersion !== release.rulesVersion) {
+        throw shareError("SHARE_VERSION_MISMATCH", "分享数据与当前国际服版本不匹配");
+      }
+    }
     assertShareState(envelope.payload);
     if (envelope.dataVersion === null || envelope.rulesVersion === null ||
       envelope.dataVersion !== envelope.payload.versions.data || envelope.rulesVersion !== envelope.payload.versions.rules) {

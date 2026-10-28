@@ -1,3 +1,4 @@
+import { useCalculatorLocale } from "../i18n/calculator-text.js";
 import { SkillUsageSummary, UsageCountActions } from "./SkillUsageSummary.jsx";
 import { describeSkillUsage } from "../domain/skill-presentation.js";
 import {
@@ -73,29 +74,31 @@ function SkillDamagePreview({
   result,
   selected,
 }) {
+  const { tc, entityName } = useCalculatorLocale();
   const presentation = damagePresentation(result);
   const hasDamage = Number.isFinite(presentation.damage);
   const hasPercent = Number.isFinite(presentation.percent);
   const percent = hasPercent ? presentation.percent.toFixed(1) : null;
   const ariaLabel = selected
-    ? hasPercent
-      ? `${label}${selected.name}攻击${opponentName}：${hasDamage ? `${presentation.damage}伤害` : "不直接造成伤害"}${
-          percent ? `，${percent}%${presentation.freezePercent > 0 ? "（含冻结斩杀线）" : " HP"}` : ""
-        }`
-      : `${label}${selected.name}攻击${opponentName}：${result?.reason ?? "伤害待计算"}`
-    : `${label}技能${index + 1}未选择`;
+    ? tc("{v0}{v1}攻击{v2}：{v3}", {
+        v0: label, v1: entityName("skill", selected), v2: tc(opponentName),
+        v3: hasPercent
+          ? tc("{v0}，{v1}%{v2}", { v0: hasDamage ? tc("{v0}伤害", { v0: presentation.damage }) : tc("不直接造成伤害"), v1: percent, v2: presentation.freezePercent > 0 ? tc("（含冻结斩杀线）") : " HP" })
+          : tc(result?.reason ?? "伤害待计算"),
+      })
+    : tc("{v0}技能{v1}未选择", { v0: label, v1: index + 1 });
 
   return (
     <output
-      aria-label={ariaLabel}
+      aria-label={tc(ariaLabel)}
       className="skill-slot__damage"
       data-status={hasPercent ? "ready" : "pending"}
       data-tone={damageTone(presentation.percent)}
-      title={presentation.detail ?? result?.reason}
+      title={tc(presentation.detail ?? result?.reason)}
     >
       <span className="skill-slot__damage-values">
-        <strong>{percent ? `${percent}%` : "—"}</strong>
-        <span>{hasDamage ? `${presentation.damage}伤害` : ""}</span>
+        <strong>{percent ? tc(`${percent}%`) : tc("—")}</strong>
+        <span>{hasDamage ? tc("{v0}伤害", { v0: presentation.damage }) : tc("")}</span>
       </span>
       <span aria-hidden="true" className="skill-slot__damage-bar">
         <DamageSegments presentation={presentation} />
@@ -147,6 +150,7 @@ function SkillSide({
   traitDamage,
   traitEditor,
 }) {
+  const { tc, locale, typeLabel, entityName, entityDescription } = useCalculatorLocale();
   const hasSelfHpRule =
     selectedSkills.some((skill) =>
       dynamicInputsForSkill(skill, {
@@ -202,21 +206,21 @@ function SkillSide({
   return (
     <section className={`four-skill-side four-skill-side--${side}`}>
       <header>
-        <span>{label}</span>
-        <strong>{name}</strong>
-        {headerAction}
+        <span>{tc(label)}</span>
+        <strong>{tc(name)}</strong>
+        {tc(headerAction)}
       </header>
       <div className="four-skill-side__conditions">
-        {traitEditor}
+        {tc(traitEditor)}
         {offensiveTraitInputs.length > 0 ||
         offensePresentation?.visible ||
         trait?.skillPowerBonuses?.length > 0 ||
         showsLifestealCapability ? (
           <div className="four-skill-trait-controls">
-            <TraitHint description={trait.description} name={trait.name} />
+            <TraitHint trait={trait} description={trait.description} name={trait.name} />
             <S5PreviewTraitSummary trait={trait} role="attacker" context={traitContext} />
             <TraitSkillPowerBonuses
-              ariaLabel={`${trait.name}技能加成`}
+              ariaLabel={tc("{v0}技能加成", { v0: trait.name })}
               bonuses={trait.skillPowerBonuses}
             />
             <TraitAutomaticStack
@@ -224,8 +228,7 @@ function SkillSide({
               skills={selectedSkills}
             />
             {showsLifestealCapability ? (
-              <small className="trait-capability-note">
-                吸血 {lifesteal.levels}层 · {lifesteal.percent}%
+              <small className="trait-capability-note">{tc("吸血 ")}{tc(lifesteal.levels)}{tc("层 · ")}{tc(lifesteal.percent)}%
               </small>
             ) : null}
             <TraitInputs
@@ -240,8 +243,8 @@ function SkillSide({
         {defensiveTraitInputs.length > 0 || defensePresentation?.visible ? (
           <div className="four-skill-trait-controls four-skill-trait-controls--defense">
             <TraitHint
-              description={defenseTrait.description}
-              name={`${opponentName} · ${defenseTrait.name}`}
+              description={entityDescription("trait", defenseTrait)}
+              name={`${tc(opponentName)} · ${entityName("trait", defenseTrait)}`}
             />
             <S5PreviewTraitSummary trait={defenseTrait} role="defender" context={traitContext} />
             <TraitInputs
@@ -255,7 +258,7 @@ function SkillSide({
         ) : null}
         {hasSelfHpRule && health ? (
           <div className="four-skill-health">
-            <span>自身生命</span>
+            <span>{tc("自身生命")}</span>
             <HealthInput
               currentHp={health.currentHp}
               defaultMode="percent"
@@ -272,7 +275,7 @@ function SkillSide({
         ) : null}
         {hasTargetHpRule && opponentHealth ? (
           <div className="four-skill-health">
-            <span>对方生命</span>
+            <span>{tc("对方生命")}</span>
             <HealthInput
               currentHp={opponentHealth.currentHp}
               onInputModeChange={(mode) => onHealthInputModeChange?.(opponentSide, mode)}
@@ -293,20 +296,18 @@ function SkillSide({
       <div className="skill-slot-list">
         <div aria-hidden="true" className="skill-slot skill-slot--head">
           <span />
-          <span className="skill-slot__head-skill">技能</span>
-          <span className="skill-slot__head-kind">属性</span>
-          <span className="skill-slot__head-cost">耗</span>
+          <span className="skill-slot__head-skill">{tc("技能")}</span>
+          <span className="skill-slot__head-kind">{tc("属性")}</span>
+          <span className="skill-slot__head-cost">{tc("耗")}</span>
           <span className="skill-slot__head-power">
-            {powerDisplayMode === "panel" ? "显示威力" : "静态威力"}
+            {powerDisplayMode === "panel" ? tc("显示威力") : tc("静态威力")}
           </span>
-          <span className="skill-slot__head-hits">连击</span>
-          <span className="skill-slot__head-result">伤害占比</span>
+          <span className="skill-slot__head-hits">{tc("连击")}</span>
+          <span className="skill-slot__head-result">{tc("伤害占比")}</span>
         </div>
         {traitDamage ? (
           <div
-            aria-label={`${label}特性伤害${traitDamage.name}${
-              active && activeDamageSource === "trait" ? "，当前选中" : ""
-            }`}
+            aria-label={tc("{v0}特性伤害{v1}{v2}", { v0: label, v1: traitDamage.name, v2: active && activeDamageSource === "trait" ? "，当前选中" : "" })}
             className={`skill-slot-group skill-slot-group--trait${
               active && activeDamageSource === "trait" ? " is-selected" : ""
             }`}
@@ -321,19 +322,19 @@ function SkillSide({
             tabIndex="0"
           >
             <div className="skill-slot skill-slot--trait">
-              <span className="skill-slot__number skill-slot__number--trait">特</span>
-              <span className="skill-slot__trait-skill" title="固定特性伤害">
-                {traitDamage.name}
+              <span className="skill-slot__number skill-slot__number--trait">{tc("特")}</span>
+              <span className="skill-slot__trait-skill" title={tc("固定特性伤害")}>
+                {tc(traitDamage.name)}
               </span>
-              <span className="skill-slot__kind">{traitDamage.typeLabel}</span>
+              <span className="skill-slot__kind">{tc(traitDamage.typeLabel)}</span>
               <span>—</span>
               <strong className="skill-slot__trait-power">
-                {traitDamage.basePower}
+                {tc(traitDamage.basePower)}
               </strong>
               <label className="skill-slot__hits">
-                <span className="sr-only">{label}{traitDamage.name}连击次数</span>
+                <span className="sr-only">{tc(label)}{tc(traitDamage.name)}{tc("连击次数")}</span>
                 <input
-                  aria-label={`${label}${traitDamage.name}连击次数`}
+                  aria-label={tc("{v0}{v1}连击次数", { v0: label, v1: traitDamage.name })}
                   max="99"
                   min="1"
                   onChange={(event) =>
@@ -471,7 +472,7 @@ function SkillSide({
           const powerSourceHint = null;
           return (
             <div
-              aria-label={`${label}技能${index + 1}${isSelected ? "，当前选中" : ""}`}
+              aria-label={tc("{v0}技能{v1}{v2}", { v0: label, v1: index + 1, v2: isSelected ? "，当前选中" : "" })}
               className={`skill-slot-group${isSelected ? " is-selected" : ""}`}
               key={`${side}-${index}`}
               onClick={(event) => {
@@ -493,9 +494,9 @@ function SkillSide({
               tabIndex="0"
             >
               <div className="skill-slot">
-                <span className="skill-slot__number">{index + 1}</span>
+                <span className="skill-slot__number">{tc(index + 1)}</span>
                 <SkillPicker
-                  ariaLabel={`${label}技能${index + 1}`}
+                  ariaLabel={tc("{v0}技能{v1}", { v0: label, v1: index + 1 })}
                   className="skill-picker--compact"
                   onFocus={() => onSkillFocus?.(side, index)}
                   onSelect={(skillId) => {
@@ -506,18 +507,17 @@ function SkillSide({
                   skills={skills}
                 />
                 <span className="skill-slot__kind">
-                  {selected
+                  {selected ? locale === "zh-CN"
                     ? `${result?.typeLabel ?? selected.type ?? "—"}·${CATEGORY_LABELS[selected.category]?.slice(0, 1) ?? "—"}`
+                    : <><span>{typeLabel(result?.typeLabel ?? selected.type ?? "—")}</span><span>{tc(CATEGORY_LABELS[selected.category] ?? "—")}</span></>
                     : "—"}
                 </span>
                 <span className="skill-slot__cost">
-                  {result?.skillCost ?? selected?.cost ?? "—"}
+                  {tc(result?.skillCost ?? selected?.cost ?? "—")}
                 </span>
                 <PowerDraftInput
                   key={`${selected?.id}-${powerDisplayMode}`}
-                  ariaLabel={`${label}技能${index + 1}${
-                    powerDisplayMode === "panel" ? "显示威力" : "静态威力"
-                  }`}
+                  ariaLabel={tc("{v0}技能{v1}{v2}", { v0: label, v1: index + 1, v2: powerDisplayMode === "panel" ? "显示威力" : "静态威力" })}
                   className="skill-slot__power-input"
                   disabled={!selected}
                   isManual={Boolean(selected?.slotPowerOverride)}
@@ -539,10 +539,9 @@ function SkillSide({
                 />
                 <label className="skill-slot__hits">
                   <span className="sr-only">
-                    {label}技能{index + 1}连击次数
-                  </span>
+                    {tc(label)}{tc("技能")}{tc(index + 1)}{tc("连击次数 ")}</span>
                   <input
-                    aria-label={`${label}技能${index + 1}连击次数`}
+                    aria-label={tc("{v0}技能{v1}连击次数", { v0: label, v1: index + 1 })}
                     disabled={!selected}
                     max={Number.isFinite(hitCountMaximum) ? hitCountMaximum : undefined}
                     min="1"
@@ -584,30 +583,30 @@ function SkillSide({
                   {selected?.description ? (
                     <p
                       className="skill-slot__description"
-                      title={selected.description}
+                      title={entityDescription("skill", selected)}
                     >
-                      {selected.description}
+                      {entityDescription("skill", selected)}
                     </p>
                   ) : null}
                   {powerResolutionHint && !result?.usageSummary ? (
                     <p
                       className="skill-slot__power-note"
-                      title={powerResolutionHint}
+                      title={tc(powerResolutionHint)}
                     >
-                      {powerResolutionHint}
+                      {tc(powerResolutionHint)}
                     </p>
                   ) : null}
                   {powerSourceHint ? (
                     <small className="skill-slot__power-source">
-                      {powerSourceHint}
+                      {tc(powerSourceHint)}
                     </small>
                   ) : null}
                   {counterReflectionHint ? (
                     <p
                       className="skill-slot__effect-hint"
-                      title={counterReflectionHint}
+                      title={tc(counterReflectionHint)}
                     >
-                      {counterReflectionHint}
+                      {tc(counterReflectionHint)}
                     </p>
                   ) : null}
                   {hasBurstSources || visibleDynamicInputs.length > 0 ? <div
@@ -635,9 +634,9 @@ function SkillSide({
                             }
                             key={input.id ?? input.key}
                           >
-                            <span className="sr-only">{input.label}</span>
+                            <span className="sr-only">{tc(input.label)}</span>
                             <select
-                              aria-label={`${label}技能${index + 1}${input.label}`}
+                              aria-label={tc("{v0}技能{v1}{v2}", { v0: label, v1: index + 1, v2: input.label })}
                               onChange={(event) =>
                                 onSkillContextChange?.(
                                   side,
@@ -654,7 +653,7 @@ function SkillSide({
                             >
                               {input.options.map((option) => (
                                 <option key={option.value} value={option.value}>
-                                  {option.label}
+                                  {tc(option.label)}
                                 </option>
                               ))}
                             </select>
@@ -669,7 +668,7 @@ function SkillSide({
                             key={input.id ?? input.key}
                           >
                             <input
-                              aria-label={`${label}技能${index + 1}${input.label}`}
+                              aria-label={tc("{v0}技能{v1}{v2}", { v0: label, v1: index + 1, v2: input.label })}
                               checked={Boolean(
                                 dynamicInputValue(
                                   input,
@@ -687,7 +686,7 @@ function SkillSide({
                               onFocus={() => onSkillFocus?.(side, index)}
                               type="checkbox"
                             />
-                            {input.label}
+                            {tc(input.label)}
                           </label>
                         ) : (
                           <label
@@ -698,9 +697,9 @@ function SkillSide({
                             }
                             key={input.id ?? input.key}
                           >
-                            <span>{input.label}</span>
+                            <span>{tc(input.label)}</span>
                             <input
-                              aria-label={`${label}技能${index + 1}${input.label}`}
+                              aria-label={tc("{v0}技能{v1}{v2}", { v0: label, v1: index + 1, v2: input.label })}
                               max={input.max}
                               min={input.min}
                               onChange={(event) =>
@@ -734,9 +733,9 @@ function SkillSide({
                   <SkillUsageSummary result={result} nextHint={refractionHint} />
                   {canSkillActivate?.(side, index) ? (
                     <button className="skill-follow-up" type="button"
-                      aria-label={`${label}技能${index + 1}${skillActivationLabel?.(side, index) ?? "使用技能"}`}
+                      aria-label={tc("{v0}技能{v1}{v2}", { v0: label, v1: index + 1, v2: skillActivationLabel?.(side, index) ?? "使用技能" })}
                       onClick={() => onSkillActivate?.(side, index)}>
-                      {skillActivationLabel?.(side, index) ?? "使用技能"}
+                      {tc(skillActivationLabel?.(side, index) ?? "使用技能")}
                     </button>
                   ) : null}
                 </div>
@@ -800,6 +799,7 @@ export function FourSkillEditor({
   powerDisplayMode = "static",
   skills,
 }) {
+  const { tc } = useCalculatorLocale();
   const isMobile = useMediaQuery("(max-width: 620px)");
   const [visibleSide, setVisibleSide] = useState("attacker");
   const sideProps = {
@@ -883,7 +883,7 @@ export function FourSkillEditor({
       {isMobile ? (
         <>
           <div
-            aria-label="四技能角色"
+            aria-label={tc("四技能角色")}
             className="four-skill-side-switch"
             role="group"
           >
@@ -894,9 +894,7 @@ export function FourSkillEditor({
                 onSkillFocus?.("attacker", 0);
               }}
               type="button"
-            >
-              攻击
-            </button>
+            >{tc("攻击 ")}</button>
             <button
               aria-pressed={visibleSide === "defender"}
               onClick={() => {
@@ -904,16 +902,14 @@ export function FourSkillEditor({
                 onSkillFocus?.("defender", 0);
               }}
               type="button"
-            >
-              防御
-            </button>
+            >{tc("防御 ")}</button>
           </div>
-          {renderSide(visibleSide)}
+          {tc(renderSide(visibleSide))}
         </>
       ) : (
         <>
-          {renderSide("attacker")}
-          {renderSide("defender")}
+          {tc(renderSide("attacker"))}
+          {tc(renderSide("defender"))}
         </>
       )}
     </div>

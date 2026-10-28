@@ -1,3 +1,4 @@
+import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import {
   ArrowsLeftRight,
   Crosshair,
@@ -43,18 +44,19 @@ function toneForMultiplier(value, mode) {
 }
 
 function MatrixTable({ analysis, mode, onCellSelect }) {
+  const { t } = useLocale();
   return (
     <>
       <div
-        aria-label="队伍属性矩阵横向滚动"
+        aria-label={t("队伍属性矩阵横向滚动")}
         className="team-analysis__matrix-scroll"
         role="region"
         tabIndex={0}
       >
-        <table aria-label="队伍防守与打击面矩阵" className="team-analysis__matrix">
+        <table aria-label={t("队伍防守与打击面矩阵")} className="team-analysis__matrix">
           <thead>
             <tr>
-              <th scope="col">成员</th>
+              <th scope="col">{t("成员")}</th>
               {analysis.types.map((type) => (
                 <th aria-label={type} key={type} scope="col" title={type}>
                   <ElementIcon size={20} type={type} />
@@ -65,15 +67,15 @@ function MatrixTable({ analysis, mode, onCellSelect }) {
           <tbody>
             {analysis.members.map((member) => (
               <tr key={member.slotIndex}>
-                <th scope="row" title={member.name}>
+                <th scope="row" title={t(member.name)}>
                   <span>{member.slotIndex + 1}</span>
                   {member.assetUrl ? <img alt="" src={member.assetUrl} /> : null}
-                  <strong className="sr-only">{member.name}</strong>
+                  <strong className="sr-only">{t(member.name)}</strong>
                 </th>
                 {member[mode].map((cell) => (
                   <td key={cell.type}>
                     <button
-                      aria-label={`${member.name} 对${cell.type}${mode === "defense" ? "承伤" : "打击"}${formatMultiplier(cell.multiplier)}`}
+                      aria-label={t("{v0} 对{v1}{v2}{v3}", { v0: member.name, v1: cell.type, v2: mode === "defense" ? "承伤" : "打击", v3: formatMultiplier(cell.multiplier) })}
                       className={`team-analysis__cell is-${toneForMultiplier(cell.multiplier, mode)}`}
                       onClick={() => onCellSelect({ ...cell, member, mode })}
                       type="button"
@@ -87,7 +89,7 @@ function MatrixTable({ analysis, mode, onCellSelect }) {
           </tbody>
         </table>
       </div>
-      <p className="team-analysis__matrix-scroll-hint">左右滑动查看全部属性</p>
+      <p className="team-analysis__matrix-scroll-hint">{t("左右滑动查看全部属性")}</p>
     </>
   );
 }
@@ -122,40 +124,39 @@ function ManualOpponentEditor({
   spiritChoices,
   teams,
 }) {
+  const { t } = useLocale();
   const [memberEditorOpen, setMemberEditorOpen] = useState(false);
   const spiritById = new Map(
     (snapshot.spirits ?? []).map((spirit) => [spirit.id, spirit]),
   );
   return (
-    <section aria-label="现场队伍编辑" className="team-analysis__manual-editor">
+    <section aria-label={t("现场队伍编辑")} className="team-analysis__manual-editor">
       <div className="team-analysis__manual-import">
         <select
-          aria-label="导入现有队伍"
+          aria-label={t("导入现有队伍")}
           onChange={(event) => onImportTeamChange(event.target.value)}
           value={importTeamId}
         >
           {teams.length ? (
             teams.map((candidate) => (
               <option key={candidate.id} value={candidate.id}>
-                {candidate.name}
+                {t(candidate.name)}
               </option>
             ))
           ) : (
-            <option value="">暂无可导入队伍</option>
+            <option value="">{t("暂无可导入队伍")}</option>
           )}
         </select>
-        <button disabled={!importTeamId} onClick={onImport} type="button">
-          导入队伍
-        </button>
-        <small>导入后仅修改现场副本</small>
+        <button disabled={!importTeamId} onClick={onImport} type="button">{t("导入队伍")}</button>
+        <small>{t("导入后仅修改现场副本")}</small>
       </div>
-      <ol aria-label="现场队伍成员" className="team-analysis__manual-roster">
+      <ol aria-label={t("现场队伍成员")} className="team-analysis__manual-roster">
         {members.map((member, index) => {
           const spirit = member ? spiritById.get(member.spiritId) : null;
           return (
             <li key={index}>
               <button
-                aria-label={`编辑现场${spirit?.fullName ?? "空位"} ${index + 1}`}
+                aria-label={t("编辑现场{v0} {v1}", { v0: spirit?.fullName ?? "空位", v1: index + 1 })}
                 aria-pressed={selectedIndex === index}
                 onClick={() => {
                   onSelect(index);
@@ -169,7 +170,7 @@ function ManualOpponentEditor({
                 ) : (
                   <Plus aria-hidden="true" size={20} />
                 )}
-                <strong>{spirit?.fullName ?? "空位"}</strong>
+                <strong>{t(spirit?.fullName ?? t("空位"))}</strong>
               </button>
             </li>
           );
@@ -178,20 +179,16 @@ function ManualOpponentEditor({
       {memberEditorOpen ? (
         <div className="team-analysis__manual-member">
           <header>
-            <strong>现场编辑 · {selectedIndex + 1}号位</strong>
+            <strong>{t("现场编辑 ·")}{" "}{selectedIndex + 1}{t("号位")}</strong>
             <div>
               {members[selectedIndex] ? (
-                <button onClick={() => onMemberChange(selectedIndex, null)} type="button">
-                  清空
-                </button>
+                <button onClick={() => onMemberChange(selectedIndex, null)} type="button">{t("清空")}</button>
               ) : null}
               <button
-                aria-label="收起现场配置"
+                aria-label={t("收起现场配置")}
                 onClick={() => setMemberEditorOpen(false)}
                 type="button"
-              >
-                收起
-              </button>
+              >{t("收起")}</button>
             </div>
           </header>
           <TeamMemberEditor
@@ -209,16 +206,17 @@ function ManualOpponentEditor({
 }
 
 function MatchupTable({ matchup, onCellSelect }) {
+  const { t } = useLocale();
   return (
     <div className="team-analysis__matchup-scroll">
-      <table aria-label="队伍六乘六对位" className="team-analysis__matchup-table">
+      <table aria-label={t("队伍六乘六对位")} className="team-analysis__matchup-table">
         <thead>
           <tr>
-            <th scope="col">攻击方 \ 防守方</th>
+            <th scope="col">{t("攻击方 \\ 防守方")}</th>
             {matchup.defenders.map((member) => (
               <th key={member.slotIndex} scope="col">
                 {member.assetUrl ? <img alt="" src={member.assetUrl} /> : null}
-                <span>{member.name}</span>
+                <span>{t(member.name)}</span>
               </th>
             ))}
           </tr>
@@ -228,12 +226,12 @@ function MatchupTable({ matchup, onCellSelect }) {
             <tr key={attacker.slotIndex}>
               <th scope="row">
                 {attacker.assetUrl ? <img alt="" src={attacker.assetUrl} /> : null}
-                <span>{attacker.name}</span>
+                <span>{t(attacker.name)}</span>
               </th>
               {matchup.cells[rowIndex].map((cell, columnIndex) => (
                 <td key={cell.defenderSlotIndex}>
                   <button
-                    aria-label={`${attacker.name} 对${matchup.defenders[columnIndex]?.name ?? "目标"}打击${formatMultiplier(cell.multiplier)}`}
+                    aria-label={t("{v0} 对{v1}打击{v2}", { v0: attacker.name, v1: matchup.defenders[columnIndex]?.name ?? "目标", v2: formatMultiplier(cell.multiplier) })}
                     className={`team-analysis__cell is-${toneForMultiplier(cell.multiplier, "offense")}`}
                     onClick={() =>
                       onCellSelect({ ...cell, member: attacker, mode: "matchup" })
@@ -261,6 +259,7 @@ export function TeamAnalysisPanel({
   team,
   teams,
 }) {
+  const { t } = useLocale();
   const [candidateType, setCandidateType] = useState(null);
   const [includeWishPower, setIncludeWishPower] = useState(false);
   const [isDirectionReversed, setIsDirectionReversed] = useState(false);
@@ -328,11 +327,11 @@ export function TeamAnalysisPanel({
   );
   if (candidateType) return <TypeCandidates key={candidateType} type={candidateType} snapshot={snapshot} onClose={() => setCandidateType(null)} onApply={onApplyCandidate} />;
   return (
-    <section aria-label="队伍分析" className={`team-analysis is-${view}${view === "analysis" && matrixMode === "defense" ? " is-defense-summary" : ""}`}>
+    <section aria-label={t("队伍分析")} className={`team-analysis is-${view}${view === "analysis" && matrixMode === "defense" ? " is-defense-summary" : ""}`}>
       {view === "analysis" ? (
         <>
           <div className="team-analysis__toolbar">
-            <div aria-label="矩阵类型" className="team-analysis__mode-tabs">
+            <div aria-label={t("矩阵类型")} className="team-analysis__mode-tabs">
               <button
                 aria-pressed={matrixMode === "defense"}
                 onClick={() => {
@@ -341,9 +340,7 @@ export function TeamAnalysisPanel({
                 }}
                 type="button"
               >
-                <Shield aria-hidden="true" size={17} weight="fill" />
-                防守承伤
-              </button>
+                <Shield aria-hidden="true" size={17} weight="fill" />{t("防守承伤")}</button>
               <button
                 aria-pressed={matrixMode === "offense"}
                 onClick={() => {
@@ -352,15 +349,11 @@ export function TeamAnalysisPanel({
                 }}
                 type="button"
               >
-                <Crosshair aria-hidden="true" size={17} />
-                技能打击面
-              </button>
+                <Crosshair aria-hidden="true" size={17} />{t("技能打击面")}</button>
             </div>
             <label className="team-analysis__wish-toggle">
-              <MagicWand aria-hidden="true" size={17} />
-              愿力冲击
-              <input
-                aria-label="计入愿力冲击"
+              <MagicWand aria-hidden="true" size={17} />{t("愿力冲击")}<input
+                aria-label={t("计入愿力冲击")}
                 checked={includeWishPower}
                 onChange={(event) => setIncludeWishPower(event.target.checked)}
                 type="checkbox"
@@ -379,7 +372,7 @@ export function TeamAnalysisPanel({
             {matrixMode === "defense" ? <TeamWeaknessSummary analysis={analysis} onCandidates={setCandidateType} /> : null}
             </>
           ) : (
-            <div className="team-analysis__empty">添加精灵后查看分析</div>
+            <div className="team-analysis__empty">{t("添加精灵后查看分析")}</div>
           )}
         </>
       ) : (
@@ -413,40 +406,40 @@ export function TeamAnalysisPanel({
           {matchupOpponent?.members?.some(Boolean) ? (
             <>
               <div className="team-analysis__matchup-controls">
-                <span>{team.name}</span>
+                <span>{t(team.name)}</span>
                 <button
-                  aria-label="切换攻击方向"
+                  aria-label={t("切换攻击方向")}
                   onClick={() => {
                     setIsDirectionReversed((current) => !current);
                     setSelectedCell(null);
                   }}
-                  title="切换攻击方向"
+                  title={t("切换攻击方向")}
                   type="button"
                 >
                   <ArrowsLeftRight aria-hidden="true" size={21} />
                 </button>
-                <span>现场队伍</span>
+                <span>{t("现场队伍")}</span>
               </div>
               <MatchupTable matchup={matchup} onCellSelect={setSelectedCell} />
             </>
           ) : (
-            <div className="team-analysis__empty">添加现场对手后查看对位</div>
+            <div className="team-analysis__empty">{t("添加现场对手后查看对位")}</div>
           )}
         </>
       )}
       {selectedCell ? (
-        <div aria-label="单元格详情" className="team-analysis__source-strip">
+        <div aria-label={t("单元格详情")} className="team-analysis__source-strip">
           {selectedCell.member.assetUrl ? (
             <img alt="" src={selectedCell.member.assetUrl} />
           ) : null}
-          <strong>{selectedCell.member.name}</strong>
+          <strong>{t(selectedCell.member.name)}</strong>
           <span>→</span>
           {selectedCell.skillType ? (
             <ElementIcon label size={24} type={selectedCell.skillType} />
           ) : null}
           <span>{selectedCell.skillName ?? selectedCell.type}</span>
           <strong>{formatMultiplier(selectedCell.multiplier)}</strong>
-          {selectedCell.type ? <button type="button" onClick={() => setCandidateType(selectedCell.type)}>查看抗性候选</button> : null}
+          {selectedCell.type ? <button type="button" onClick={() => setCandidateType(selectedCell.type)}>{t("查看抗性候选")}</button> : null}
         </div>
       ) : null}
     </section>

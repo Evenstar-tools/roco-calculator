@@ -1,3 +1,8 @@
+import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
+import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
+import { translateCalculatorText, clearMissingCalculatorTexts, getMissingCalculatorTexts } from "../../src/i18n/calculator-text.js";
+import globalSnapshot from "../../data/snapshots/global/s3-midseason.json";
+import { getGlobalEntityText } from "../../src/runtime/global-entity-localization.js";
 import {
   fireEvent,
   render,
@@ -3267,4 +3272,42 @@ test("formula audit places defense-skill reduction after defense division", asyn
   expect(row.textContent).toMatch(
     /伤害分子7941÷物防209×伤害保留0\.5→向下取整/,
   );
+});
+
+
+test.each(["en", "ja"])("%s canonical S3 trait/skill controls display translated labels without changing input keys", (locale) => {
+  clearMissingCalculatorTexts();
+  const labels = [];
+  for (const trait of globalSnapshot.traits) {
+    for (const role of ["attacker", "defender"]) {
+      for (const input of getTraitEffectInputs(trait, role)) {
+        labels.push(input.label, input.suffix, ...(input.options ?? []).map((option) => option.label));
+      }
+    }
+  }
+  for (const skill of globalSnapshot.skills) {
+    for (const input of dynamicInputsForSkill(skill, { includeStatusEffects: true, includeNegativeStatusEffects: true })) {
+      labels.push(input.label, input.suffix, ...(input.options ?? []).map((option) => option.label));
+    }
+  }
+  for (const label of labels.filter(Boolean)) translateCalculatorText(label, locale);
+  expect(getMissingCalculatorTexts(), JSON.stringify(getMissingCalculatorTexts())).toEqual([]);
+  const skill = globalSnapshot.skills.find(({ name }) => name === "闪光");
+  const trait = globalSnapshot.traits.find(({ name }) => name === "最好的伙伴");
+  const change = vi.fn();
+  const canonicalName = skill.name;
+  const { container } = render(<RuntimeProvider serverId="global" locale={locale}><LocaleProvider locale={locale}>
+    <SingleSkillEditor selectedSkill={skill} skills={[skill]} hitCount={1}
+      attackerTrait={{ ...trait, inputs: getTraitEffectInputs(trait, "attacker") }}
+      traitContext={{ attackerTraitStacks: 2 }} onTraitContextChange={change}
+      onHitCountChange={vi.fn()} onSkillSelect={vi.fn()} />
+  </LocaleProvider></RuntimeProvider>);
+  expect(container.textContent).toContain(getGlobalEntityText("trait", trait, "name", locale));
+  expect(container.textContent).toContain(getGlobalEntityText("skill", skill, "description", locale));
+  const input = getTraitEffectInputs(trait, "attacker").find((entry) => entry.type === "number");
+  fireEvent.change(screen.getByRole("spinbutton", { name: translateCalculatorText(input.label, locale) }), { target: { value: "3" } });
+  expect(change).toHaveBeenCalledWith(input.id ?? input.key, 3);
+  expect(skill.name).toBe(canonicalName);
+  expect(container.textContent).not.toContain("最好的伙伴");
+  expect(container.textContent).not.toContain("Translation unavailable");
 });

@@ -38,7 +38,7 @@ test("语言词典保留中文默认和占位符，非中文漏词明确记录�
 
 test.each(["en", "ja"])("%s 使用原版header与精灵选择布局，国际服不带CN赛季装饰", (locale) => {
   const t = (source) => translateUi(locale, source);
-  const { container } = render(wrap(locale, <><AppHeader onMenuOpen={vi.fn()} /><SpiritStep spirits={[]} /><EmptyStateGuide title={t("国际服数据待核验")} message={t("国际服的数值、技能与规则尚未核验，暂不进行伤害计算。")} /></>));
+  const { container } = render(wrap(locale, <><AppHeader onMenuOpen={vi.fn()} /><SpiritStep spirits={[]} /><EmptyStateGuide title={t("国际服计算器")} message={t("国际服的数值、技能与规则尚未核验，暂不进行伤害计算。")} /></>));
   expect(container.querySelector(".app-header")).toBeInTheDocument();
   expect(container.querySelector(".versus-grid")).toBeInTheDocument();
   expect(container.querySelector(".app-header__season")).not.toBeInTheDocument();
@@ -68,16 +68,16 @@ test.each(["en", "ja"])("%s 原设置/快捷键/菜单/关于与分享弹层文�
 
   view.rerender(wrap(locale, <DisplaySettingsDialog open powerDisplayMode="panel" />));
   expect(screen.getByRole("dialog", { name: t("显示设置") })).toBeVisible();
-  expect(screen.getByText(t("显示偏好可先保存，实际口径待国际服规则核验后启用。"))).toBeInTheDocument();
-  expect(screen.queryByText(t("有效威力结算本系、克制、能力等级与其他威力乘区后取整（非负威力向下取整）；雨天计入威力加成区。手动填写后直接用于伤害计算。"))).not.toBeInTheDocument();
+  expect(screen.queryByText(t("暂不可计算伤害；显示偏好会保留。"))).not.toBeInTheDocument();
+  expect(screen.queryByText(t("有效威力结算本系、克制、能力等级与其他威力乘区后取整（非负威力向下取整）；雨天计入威力加成区。手动填写后直接用于伤害计算。"))).toBeInTheDocument();
   view.rerender(wrap(locale, <ShortcutDialog settings={{ enabled: true, bindings: { attacker: "a", defender: "d", swap: "x", team: "t", help: "?" } }} onClose={vi.fn()} />));
   expect(screen.getByRole("dialog", { name: t("快捷键一览") })).toBeVisible();
   view.rerender(wrap(locale, <ProductAccessDialog open />));
   expect(screen.getByText(t("电脑版和小程序目前仅支持国服。"))).toBeVisible();
   view.rerender(wrap(locale, <DataSourceDialog open />));
-  expect(screen.getByText(t("国际服版本记录待补充"))).toBeVisible();
+  expect(screen.getByText(t("国际服计算器"))).toBeVisible();
   view.rerender(wrap(locale, <WhatsNewDialog open />));
-  expect(screen.getByText(t("国际服数据待核验"))).toBeVisible();
+  expect(screen.getByText(t("国际服计算器"))).toBeVisible();
   view.rerender(wrap(locale, <WorkspaceOverlays {...overlays} menu={{ open: false }} share={{ open: true, shareLink: "", importDraft: "", actions: {} }} />));
   expect(screen.getByRole("dialog", { name: t("分享当前配置") })).toBeVisible();
   expect(getMissingUiMessages()).toEqual([]);

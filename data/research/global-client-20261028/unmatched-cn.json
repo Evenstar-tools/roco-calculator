@@ -1,0 +1,398 @@
+[
+  {
+    "kind": "spirit",
+    "cnGameId": 3796,
+    "cnSourceId": "pet_000622",
+    "cnLocalId": "spirit_eb091eba9d871d80",
+    "zh": "果实立方人",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "spirit",
+    "cnGameId": 5063,
+    "cnSourceId": "pet_000625",
+    "cnLocalId": "spirit_8ac693cfd57fea1c",
+    "zh": "烈焰狂战士",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "spirit",
+    "cnGameId": 5064,
+    "cnSourceId": "pet_000626",
+    "cnLocalId": "spirit_b49b24f5ad669162",
+    "zh": "满月砣（上弦的样子）",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "spirit",
+    "cnGameId": 5065,
+    "cnSourceId": "pet_000627",
+    "cnLocalId": "spirit_59a68cf08569c4a7",
+    "zh": "满月砣（下弦的样子）",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200314,
+    "cnSourceId": "skill_000196",
+    "cnLocalId": "trait_01037a4de731139c",
+    "zh": "铭记于月亮",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200315,
+    "cnSourceId": "skill_000197",
+    "cnLocalId": "trait_41260da8ad27d64d",
+    "zh": "热成像",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200316,
+    "cnSourceId": "skill_000198",
+    "cnLocalId": "trait_5d01beeccb28c649",
+    "zh": "冷光源",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200317,
+    "cnSourceId": "skill_000199",
+    "cnLocalId": "trait_463d651f93769f8d",
+    "zh": "秋收",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200318,
+    "cnSourceId": "skill_000200",
+    "cnLocalId": "trait_9fdea85da03a48c7",
+    "zh": "基因编辑",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200319,
+    "cnSourceId": "skill_000201",
+    "cnLocalId": "trait_d862968341c319f7",
+    "zh": "风速仪",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200320,
+    "cnSourceId": "skill_000202",
+    "cnLocalId": "trait_9d7575e48d45e8b0",
+    "zh": "翻垃圾桶",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200321,
+    "cnSourceId": "skill_000203",
+    "cnLocalId": "trait_d07c936ee4450c1d",
+    "zh": "正模标本",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200322,
+    "cnSourceId": "skill_000204",
+    "cnLocalId": "trait_b88bc7ddbcb5ae1d",
+    "zh": "盗魂铃",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200323,
+    "cnSourceId": "skill_000205",
+    "cnLocalId": "trait_6ba076fbd4176fb4",
+    "zh": "宇宙之眼",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200324,
+    "cnSourceId": "skill_000206",
+    "cnLocalId": "trait_3f60f8c74595a2b1",
+    "zh": "乌龟塔理论",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 200325,
+    "cnSourceId": "skill_000207",
+    "cnLocalId": "trait_d5ded02eb4c3fd86",
+    "zh": "旧玩具",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 280037,
+    "cnSourceId": "skill_000244",
+    "cnLocalId": "trait_3df3463f49a42796",
+    "zh": "蒸汽革命",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "trait",
+    "cnGameId": 280038,
+    "cnSourceId": "skill_000245",
+    "cnLocalId": "trait_a6c9142bc1f647cd",
+    "zh": "月相",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7030620,
+    "cnSourceId": "skill_000375",
+    "cnLocalId": "skill_a439be4a746f684b",
+    "zh": "麦芒",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7040690,
+    "cnSourceId": "skill_000416",
+    "cnLocalId": "skill_e1053a860bd8180d",
+    "zh": "暖阳",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7040700,
+    "cnSourceId": "skill_000417",
+    "cnLocalId": "skill_8aa5a117d3f84667",
+    "zh": "星火",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7050530,
+    "cnSourceId": "skill_000447",
+    "cnLocalId": "skill_27f0843f62ffa7bf",
+    "zh": "汇流",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7060280,
+    "cnSourceId": "skill_000466",
+    "cnLocalId": "skill_93b5587949fcaad3",
+    "zh": "分光",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7060290,
+    "cnSourceId": "skill_000467",
+    "cnLocalId": "skill_be1a16f6da08c932",
+    "zh": "闪光弹",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7070330,
+    "cnSourceId": "skill_000495",
+    "cnLocalId": "skill_fd5185efa5184db2",
+    "zh": "广播",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7070340,
+    "cnSourceId": "skill_000496",
+    "cnLocalId": "skill_e76ee2ef859cb0dd",
+    "zh": "拖拉机",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7130360,
+    "cnSourceId": "skill_000657",
+    "cnLocalId": "skill_755cc87468b15932",
+    "zh": "信息素",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7130370,
+    "cnSourceId": "skill_000658",
+    "cnLocalId": "skill_25621ba1d6a66b50",
+    "zh": "迁飞扩散",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7150400,
+    "cnSourceId": "skill_000713",
+    "cnLocalId": "skill_7b5f9947063960e6",
+    "zh": "月影交错",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7150410,
+    "cnSourceId": "skill_000714",
+    "cnLocalId": "skill_51055a70ef615a8a",
+    "zh": "惊鸿一瞥",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7150420,
+    "cnSourceId": "skill_000715",
+    "cnLocalId": "skill_881cda84bed0f5c8",
+    "zh": "无风",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7170330,
+    "cnSourceId": "skill_000762",
+    "cnLocalId": "skill_35c3bb6b8db8b825",
+    "zh": "小型打劫",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7170340,
+    "cnSourceId": "skill_000763",
+    "cnLocalId": "skill_b53c20641170804b",
+    "zh": "回收",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7170350,
+    "cnSourceId": "skill_000764",
+    "cnLocalId": "skill_a1fec53e8fb5a90d",
+    "zh": "掠影",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7170360,
+    "cnSourceId": "skill_000765",
+    "cnLocalId": "skill_b688da558b9ff2e8",
+    "zh": "离魂术",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7180450,
+    "cnSourceId": "skill_000801",
+    "cnLocalId": "skill_61f0f26d1267ca7c",
+    "zh": "掉包",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7180460,
+    "cnSourceId": "skill_000802",
+    "cnLocalId": "skill_74c9d6ea4d158c6d",
+    "zh": "暴打",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7190460,
+    "cnSourceId": "skill_000827",
+    "cnLocalId": "skill_f5cf704678e0738c",
+    "zh": "重组",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7190470,
+    "cnSourceId": "skill_000828",
+    "cnLocalId": "skill_befd3ebf2018d7a8",
+    "zh": "月蚀",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7190480,
+    "cnSourceId": "skill_000829",
+    "cnLocalId": "skill_38827e39dbdda074",
+    "zh": "仰望夜空",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7190490,
+    "cnSourceId": "skill_000830",
+    "cnLocalId": "skill_5f29d7618631421f",
+    "zh": "观测者效应",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7190500,
+    "cnSourceId": "skill_000831",
+    "cnLocalId": "skill_382a8db9ab4e7a48",
+    "zh": "量子涨落",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7190510,
+    "cnSourceId": "skill_000832",
+    "cnLocalId": "skill_459a7fe45bb1a301",
+    "zh": "奇点",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  },
+  {
+    "kind": "skill",
+    "cnGameId": 7190520,
+    "cnSourceId": "skill_000833",
+    "cnLocalId": "skill_f7eea4de117d30ed",
+    "zh": "引力偏转",
+    "joinEvidence": "provenance.nrc.id",
+    "status": "game-id-not-in-this-client-table"
+  }
+]

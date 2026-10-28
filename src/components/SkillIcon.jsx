@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useCalculatorLocale } from "../i18n/calculator-text.js";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { getWishPowerIconUrl } from "../data/wish-power-icons.js";
 import { publicResourceUrl } from "../runtime/public-resource-url.js";
@@ -12,6 +13,7 @@ function secureIconUrl(value) {
 }
 
 export function SkillIcon({ className = "", label = false, skill, size = 28 }) {
+  const { tc, entityName } = useCalculatorLocale();
   const iconUrl = getWishPowerIconUrl(skill?.id) ?? secureIconUrl(skill?.iconUrl);
   const [failedUrl, setFailedUrl] = useState(null);
   const loadFailed = iconUrl !== null && failedUrl === iconUrl;
@@ -21,7 +23,7 @@ export function SkillIcon({ className = "", label = false, skill, size = 28 }) {
   if (iconUrl && !loadFailed) {
     return (
       <img
-        alt={label ? `${skill?.name ?? "技能"}图标` : ""}
+        alt={label ? tc("{name}图标", { name: entityName("skill", skill) || tc("技能") }) : ""}
         className={classes}
         height={size}
         loading="lazy"

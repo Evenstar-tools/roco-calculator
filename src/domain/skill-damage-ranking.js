@@ -154,6 +154,7 @@ export function buildDamageComparisonInput({ snapshot, state, spirit, direction 
   const panelStats = calculateAllPanelStats({ raceStats: spirit.raceStats, displayIvs: template.displayIvs, natureMultipliers: getNatureMultipliers(template.natureId) });
   return {
     ...state,
+    ...(snapshot.meta?.serverId === "global" ? { serverId: "global" } : {}),
     level: 60,
     calculationOptions: { ...state.calculationOptions, includeNegativeStatusSettlement: false },
     marks: { ...initial.marks, [sourceSide]: state.marks?.[sourceSide] ?? initial.marks[sourceSide],

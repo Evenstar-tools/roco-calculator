@@ -1,4 +1,4 @@
-import { getServerRelease } from "../domain/server-environment.js";
+import { assertCalculationEnvironment, getServerRelease } from "../domain/server-environment.js";
 import { legacyStorageKey } from "./storage-namespace.js";
 
 const PREFIX = "rock-calculator.servers.";
@@ -133,13 +133,19 @@ export function assertRepositoryEnvironment(serverId = "cn", snapshot) {
   if (snapshotServer !== release.serverId || (snapshot.serverId !== undefined && snapshot.serverId !== snapshotServer)) {
     throw storageError("SERVER_MISMATCH", "存档仓库与目录的服务器不匹配");
   }
-  if (serverId === "global" && release.status !== "verified") {
+  if (serverId === "global" && (!release.capabilities.calculate || snapshot.meta?.status === "unverified")) {
     const hasVersions = [snapshot.meta?.id, snapshot.meta?.dataVersion, snapshot.meta?.version,
       snapshot.meta?.rulesVersion, snapshot.meta?.ruleVersion].some((value) => value != null);
     const hasCatalog = ["spirits", "skills", "traits", "learnsets"].some((key) => hasEntries(snapshot[key]));
     if (hasVersions || hasCalculationCatalog(snapshot) || (hasCatalog && !isGlobalPlaceholderCatalog(snapshot))) {
       throw storageError("SERVER_DATA_UNVERIFIED", "国际服目录未核验，不能用国服或未核验实体修复存档");
     }
+  }
+  const emptyLegacyDirectory = snapshot.meta?.status == null && snapshot.meta?.id == null && snapshot.meta?.rulesVersion == null &&
+    !["spirits", "skills", "traits", "learnsets", "rules"].some(key => hasEntries(snapshot[key])) && !hasCalculationCatalog(snapshot);
+  if (serverId === "global" && snapshot.meta?.status !== "unverified" && !emptyLegacyDirectory) {
+    try { assertCalculationEnvironment(snapshot, { serverId }); }
+    catch (error) { throw storageError("SERVER_DATA_UNVERIFIED", "存档数据目录与国际服版本不匹配", error); }
   }
   return release;
 }

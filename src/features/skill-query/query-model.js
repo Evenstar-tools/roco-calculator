@@ -1,5 +1,10 @@
 import { createSpiritSearchIndex } from "../../data/search-index.js";
 
+export function skillMatchesQuery(skill, query) {
+  const searchable = [skill.name, skill.description, skill.searchText, ...(skill.aliases ?? [])].filter(Boolean).join(" ").toLowerCase();
+  return searchable.includes(query.trim().toLowerCase());
+}
+
 export function matchesSource(text, source) {
   if (!source) return true;
   if (source === "default") return !/血脉|技能石/.test(text) && /默认学习|Lv\.|传说技能/i.test(text);

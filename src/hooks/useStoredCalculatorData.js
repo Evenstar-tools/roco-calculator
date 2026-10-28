@@ -117,15 +117,15 @@ export function useStoredCalculatorData(
   const completeSpiritIds = useMemo(
     () =>
       new Set(
-        (serverId === "global" ? [] : Object.values(spiritConfigsState.configs))
+        Object.values(spiritConfigsState.configs)
           .filter(isCompleteSpiritConfig)
           .map((config) => config.spiritId),
       ),
-    [spiritConfigsState, serverId],
+    [spiritConfigsState],
   );
 
   function rememberSide(side) {
-    if (!stores.spiritConfigs || !side?.spiritId || (serverId === "cn" && side.battleForm)) return;
+    if (!stores.spiritConfigs || !side?.spiritId || side.battleForm) return;
     try {
       const nextConfigs = stores.spiritConfigs.save(
         spiritConfigsRef.current,
@@ -277,7 +277,7 @@ export function useStoredCalculatorData(
   }
 
   function captureSide(side, teamId, index, calculatorSide) {
-    if (serverId === "cn" && calculatorSide?.battleForm) {
+    if (calculatorSide?.battleForm) {
       onToast(t("当前为本场形态，请重新载入预设后再存入队伍"));
       return false;
     }
@@ -340,7 +340,7 @@ export function useStoredCalculatorData(
 
   return {
     comparisonPresets: Object.fromEntries(Object.entries(spiritConfigsState.configs).filter(([id, config]) =>
-      !config.needsRepair && (favoriteSpiritIds.has(id) || config.presetBaseline || (serverId === "cn" && isCompleteSpiritConfig(config))))),
+      !config.needsRepair && (favoriteSpiritIds.has(id) || config.presetBaseline || isCompleteSpiritConfig(config)))),
     buildFavoriteConfigLibrary,
     clearIncompleteSpiritConfigs,
     clearSpiritConfigs,

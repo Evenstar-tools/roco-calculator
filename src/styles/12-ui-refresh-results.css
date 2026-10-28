@@ -1331,3 +1331,17 @@ html[data-theme="dark"] .mobile-result-bar {
   background: rgba(36, 39, 54, 0.96);
   box-shadow: 0 -7px 24px rgba(0, 0, 0, 0.24);
 }
+
+/* Keep translated matchup labels separate from the element chips. */
+html:is(:lang(en), :lang(ja)) .type-analysis-row {
+  grid-template-columns: 90px minmax(0, 1fr);
+}
+html:is(:lang(en), :lang(ja)) .type-analysis-row__label {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+html:is(:lang(en), :lang(ja)) .skill-result-list__columns > span {
+  min-width: 0;
+  white-space: normal;
+}

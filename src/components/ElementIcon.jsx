@@ -1,3 +1,4 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
 import { publicResourceUrl } from "../runtime/public-resource-url.js";
 
 const ELEMENT_ASSETS = Object.freeze({
@@ -22,11 +23,12 @@ const ELEMENT_ASSETS = Object.freeze({
 });
 
 export function ElementIcon({ label = false, size = 18, type }) {
+  const { typeName } = useLocale();
   const asset = ELEMENT_ASSETS[type];
   if (!asset) return null;
   return (
     <img
-      alt={label ? type : ""}
+      alt={label ? typeName(type) : ""}
       className="element-icon"
       height={size}
       src={publicResourceUrl(`/assets/elements/${asset}.png`)}

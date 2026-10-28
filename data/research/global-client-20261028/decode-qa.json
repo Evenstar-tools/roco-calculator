@@ -1,0 +1,85 @@
+{
+  "source": "current local client extracted files",
+  "tables": {
+    "PETBASE_CONF": {
+      "rowCount": 1136,
+      "uniqueIds": 1136,
+      "allRowsFullyConsumed": true,
+      "rowVariantByteIdentical": true,
+      "localizedFields": [
+        "name",
+        "form",
+        "description",
+        "habit_1",
+        "habit_2",
+        "habit_3",
+        "pet_track_fail_desc",
+        "pet_text",
+        "pet_style"
+      ],
+      "languages": {
+        "en": {
+          "localizationStrings": 5768,
+          "missingReferences": [],
+          "emptyNames": 0,
+          "idsAndNonlocalizedFieldsMatch": true
+        },
+        "ja": {
+          "localizationStrings": 5768,
+          "missingReferences": [],
+          "emptyNames": 0,
+          "idsAndNonlocalizedFieldsMatch": true
+        },
+        "dev_CN": {
+          "localizationStrings": 5768,
+          "missingReferences": [],
+          "emptyNames": 0,
+          "idsAndNonlocalizedFieldsMatch": true
+        },
+        "zh_Hans": {
+          "localizationStrings": 5768,
+          "missingReferences": [],
+          "emptyNames": 0,
+          "idsAndNonlocalizedFieldsMatch": true
+        }
+      }
+    },
+    "SKILL_CONF": {
+      "rowCount": 1918,
+      "uniqueIds": 1918,
+      "allRowsFullyConsumed": true,
+      "rowVariantByteIdentical": true,
+      "localizedFields": [
+        "name",
+        "desc",
+        "flavor_text"
+      ],
+      "languages": {
+        "en": {
+          "localizationStrings": 4155,
+          "missingReferences": [],
+          "emptyNames": 0,
+          "idsAndNonlocalizedFieldsMatch": true
+        },
+        "ja": {
+          "localizationStrings": 4155,
+          "missingReferences": [],
+          "emptyNames": 0,
+          "idsAndNonlocalizedFieldsMatch": true
+        },
+        "dev_CN": {
+          "localizationStrings": 4155,
+          "missingReferences": [],
+          "emptyNames": 0,
+          "idsAndNonlocalizedFieldsMatch": true
+        },
+        "zh_Hans": {
+          "localizationStrings": 4155,
+          "missingReferences": [],
+          "emptyNames": 0,
+          "idsAndNonlocalizedFieldsMatch": true
+        }
+      }
+    }
+  }
+}

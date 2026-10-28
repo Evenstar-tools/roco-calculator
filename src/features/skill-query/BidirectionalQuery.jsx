@@ -4,9 +4,10 @@ import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { ElementIcon } from "../../components/ElementIcon.jsx";
 import { EntityChangeHint } from "../../components/EntityChangeHint.jsx";
 import { categoryNames } from "./catalog.js";
-import { acquisitionSummary, matchesSource, querySpiritFamilies, spiritSkills } from "./query-model.js";
+import { acquisitionSummary, matchesSource, querySpiritFamilies, skillMatchesQuery, spiritSkills } from "./query-model.js";
 import SkillQueryEffect from "./SkillQueryEffect.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
+import { localizeToolText } from "../../i18n/useToolLocale.js";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import { publicResourceUrl } from "../../runtime/public-resource-url.js";
 import "./bidirectional-query.css";
@@ -30,7 +31,7 @@ function Portrait({ spirit }) {
 }
 
 export default function BidirectionalQuery({ season, skills = [], spirits = [], initialSpiritId, initialSkillId, gains = [], hideEffects: sharedHideEffects, onHideEffectsChange, placeholder = false }) {
-  const { t } = useLocale();
+  const { t, typeName, locale } = useLocale();
   const { serverId } = useRuntime();
   const phone = useSyncExternalStore(subscribePhone, isPhone, () => false);
   const [direction, setDirection] = useState(initialSpiritId ? "spirit" : "skill");
@@ -67,7 +68,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
   const chosen = season.skills.filter(({ id }) => selected.includes(id));
   const spirit = season.spirits.find(({ id }) => id === spiritId);
   const filtered = useMemo(() => season.skills.filter((skill) =>
-    `${skill.name} ${skill.description ?? ""}`.toLowerCase().includes(query.trim().toLowerCase()) &&
+    skillMatchesQuery(skill, query) &&
     (!type || skill.type === type) && (!category || skill.category === category) && (!introduced || skill.introducedSeason === introduced)), [season, query, type, category, introduced]);
   const libraryKey = JSON.stringify([query.trim().toLowerCase(), type, category, introduced]);
   const visibleCount = libraryBatch.key === libraryKey ? libraryBatch.count : LIBRARY_BATCH_SIZE;
@@ -93,7 +94,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
   const pools = families.flatMap(family => family.pools);
   const learnset = useMemo(() => spiritSkills(season, spiritId), [season, spiritId]);
   const rows = learnset.filter((skill) => (!source || skill.methods.some((method) => matchesSource(method, source))) &&
-    `${skill.name} ${skill.description ?? ""}`.toLowerCase().includes(detailQuery.trim().toLowerCase()) &&
+    skillMatchesQuery(skill, detailQuery) &&
     (!detailType || skill.type === detailType) && (!detailCategory || skill.category === detailCategory));
   const related = spirit ? season.spirits.filter((item) => (item.familyId ?? item.id) === (spirit.familyId ?? spirit.id)) : [];
   const readScroll = () => ({ results: results.current?.scrollTop ?? 0, workspace: workspace.current?.scrollTop ?? 0, library: library.current?.scrollTop ?? 0, rail: rail.current?.scrollTop ?? 0 });
@@ -163,7 +164,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
   const hasQueryFilters = Boolean(query || type || category || introduced);
   const hasDetailFilters = Boolean(source || detailQuery || detailType || detailCategory);
   const types = [...new Set(season.skills.map((skill) => skill.type))].filter(Boolean);
-  const typeSelect = (value, update, label, options = types) => <select aria-label={t(label)} value={value} onChange={(event) => update(event.target.value)}><option value="">{t("全部属性")}</option>{options.filter(Boolean).map((item) => <option key={item}>{item}</option>)}</select>;
+  const typeSelect = (value, update, label, options = types) => <select aria-label={t(label)} value={value} onChange={(event) => update(event.target.value)}><option value="">{t("全部属性")}</option>{options.filter(Boolean).map((item) => <option key={item} value={item}>{typeName(item)}</option>)}</select>;
   const categorySelect = (value, update, label) => <select aria-label={t(label)} value={value} onChange={(event) => update(event.target.value)}><option value="">{t("全部种类")}</option>{Object.entries(categoryNames).map(([id, name]) => <option key={id} value={id}>{t(name)}</option>)}</select>;
   const effectToggle = <button className="sq-effect-toggle" aria-label={t(hideEffects ? "显示效果说明" : "隐藏效果说明")} title={t(hideEffects ? "显示效果说明" : "隐藏效果说明")} aria-pressed={hideEffects} onClick={toggleEffects}>{hideEffects ? <Eye size={20} /> : <EyeSlash size={20} />}</button>;
 
@@ -184,7 +185,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
       <div className="sq-library-heading"><h3>{t("技能库")} <small>{filtered.length}</small></h3><span>{t("点击添加或取消")}</span>{!phone && effectToggle}</div>
       {returnState && <button className="sq-back" onClick={returnToSpirit}><ArrowLeft size={18} />{t("返回{name}技能", { name: season.spirits.find((item) => item.id === returnState.spiritId)?.fullName })}</button>}
       <div className="sq-suggestions" aria-label={t("技能列表")}>{visibleSkills.map(skill => <button key={skill.id} data-skill-id={skill.id} aria-label={t(selected.includes(skill.id) ? "取消{name}" : "添加{name}", { name: skill.name })} aria-pressed={selected.includes(skill.id)} aria-disabled={!selected.includes(skill.id) && selected.length === 4} onClick={() => add(skill.id)}>
-        <span className="sq-card-heading"><SkillIcon skill={iconSkill(skill)} size={48} /><span><strong>{skill.name}</strong><small><ElementIcon type={skill.type} size={16} />{skill.type} · {t(categoryNames[skill.category] ?? skill.category)}</small></span>{selected.includes(skill.id) && <CheckCircle className="sq-card-check" size={18} weight="fill" />}</span>
+        <span className="sq-card-heading"><SkillIcon skill={iconSkill(skill)} size={48} /><span><strong>{skill.name}</strong><small><ElementIcon type={skill.type} size={16} />{typeName(skill.type)} · {t(categoryNames[skill.category] ?? skill.category)}</small></span>{selected.includes(skill.id) && <CheckCircle className="sq-card-check" size={18} weight="fill" />}</span>
         {!placeholder && <span className="sq-card-values"><span>{t("威力")} <b>{skill.basePower ?? "—"}</b></span><span>{t("能耗")} <b>{skill.cost ?? "—"}</b></span></span>}
         {!hideEffects && <span className="sq-card-description">{skill.description || t("技能效果待补充")}</span>}
       </button>)}</div>{visibleCount < filtered.length && <button ref={loadMore} className="sq-load-more" onClick={showMoreSkills}>{t("显示更多技能 · {count} / {total}", { count: Math.min(visibleCount, filtered.length), total: filtered.length })}</button>}{!filtered.length && <p className="sq-empty">{t("没有找到符合条件的技能。")}</p>}
@@ -199,13 +200,13 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
     <main className="sq-results" ref={results}>
       {spirit ? <>
         <button className="sq-back" onClick={back}><ArrowLeft size={18} />{t("返回匹配结果")}</button>
-        <div className="sq-spirit-heading"><Portrait key={spirit.id} spirit={spirit} /><div><h3 ref={detailTitle} tabIndex={-1}>{spirit.fullName}</h3>{!placeholder && <EntityChangeHint changeInfo={spirit.changeInfo} />}<p>{spirit.types?.map((type) => <span key={type}><ElementIcon type={type} size={20} />{type}</span>)}<span>{spirit.stage}</span></p>{related.length > 1 && <select aria-label={t("精灵形态")} value={spirit.id} onChange={(event) => openSpirit(event.target.value)}>{related.map((item) => <option key={item.id} value={item.id}>{item.fullName}</option>)}</select>}</div></div>
+        <div className="sq-spirit-heading"><Portrait key={spirit.id} spirit={spirit} /><div><h3 ref={detailTitle} tabIndex={-1}>{spirit.fullName}</h3>{!placeholder && <EntityChangeHint changeInfo={spirit.changeInfo} />}<p>{spirit.types?.map((type) => <span key={type}><ElementIcon type={type} size={20} />{typeName(type)}</span>)}<span>{t(spirit.stage)}</span></p>{related.length > 1 && <select aria-label={t("精灵形态")} value={spirit.id} onChange={(event) => openSpirit(event.target.value)}>{related.map((item) => <option key={item.id} value={item.id}>{item.fullName}</option>)}</select>}</div></div>
         <div className="sq-detail-filters">{!placeholder && <div className="sq-sources" aria-label={t("技能学习来源")}>{SOURCES.map(([id, label]) => <button key={id} aria-label={t(label)} aria-pressed={source === id} onClick={() => setSource(id)}>{t(label)}<small>{learnset.filter(skill => !id || skill.methods.some(method => matchesSource(method, id))).length}</small></button>)}</div>}<input aria-label={t("筛选精灵技能")} placeholder={t("技能名称或效果")} value={detailQuery} onChange={(event) => setDetailQuery(event.target.value)} />{typeSelect(detailType, setDetailType, "精灵技能属性", [...new Set(learnset.map(skill => skill.type))])}{categorySelect(detailCategory, setDetailCategory, "精灵技能种类")}{effectToggle}</div>
         <div className="sq-count-line"><p className="sq-count" role="status">{t("{count} / {total} 个技能", { count: rows.length, total: learnset.length })}</p>{hasDetailFilters && <button className="sq-clear-filters" aria-label={t("清除精灵技能筛选")} onClick={clearDetailFilters}>{t("清除筛选")}</button>}</div>
         <div className="sq-skill-table">{rows.map((skill) => <article data-skill-id={skill.id} className={expanded === skill.id ? "is-expanded" : ""} key={skill.id}>
-          <div className="sq-skill-row"><span className="sq-skill-name"><SkillIcon skill={iconSkill(skill)} size={44} /><strong>{skill.name}{!placeholder && gains.some((gain) => gain.spiritId === spiritId && gain.skillIds.includes(skill.id)) && <em>{t("新学")}</em>}</strong>{!placeholder && <EntityChangeHint changeInfo={skill.changeInfo} />}</span><span className="sq-skill-type"><ElementIcon type={skill.type} size={18} />{skill.type} · {t(categoryNames[skill.category] ?? skill.category)}</span>{!placeholder && <span className="sq-values"><span className="sq-cost"><small>{t("能耗")} </small>{skill.cost ?? "—"}</span><span className="sq-power"><small>{t("威力")} </small>{skill.basePower ?? "—"}</span></span>}</div>
+          <div className="sq-skill-row"><span className="sq-skill-name"><SkillIcon skill={iconSkill(skill)} size={44} /><strong>{skill.name}{!placeholder && gains.some((gain) => gain.spiritId === spiritId && gain.skillIds.includes(skill.id)) && <em>{t("新学")}</em>}</strong>{!placeholder && <EntityChangeHint changeInfo={skill.changeInfo} />}</span><span className="sq-skill-type"><ElementIcon type={skill.type} size={18} />{typeName(skill.type)} · {t(categoryNames[skill.category] ?? skill.category)}</span>{!placeholder && <span className="sq-values"><span className="sq-cost"><small>{t("能耗")} </small>{skill.cost ?? "—"}</span><span className="sq-power"><small>{t("威力")} </small>{skill.basePower ?? "—"}</span></span>}</div>
           {!hideEffects && <SkillQueryEffect placeholder={placeholder} skill={skill} expanded={expanded === skill.id} onToggle={() => setExpanded(expanded === skill.id ? null : skill.id)} />}
-          <div className="sq-card-footer">{!placeholder && <span className="sq-method">{expanded !== skill.id && acquisitionSummary(skill.methods)}</span>}<button className="sq-reverse" aria-label={t("查{name}的可学精灵", { name: skill.name })} onClick={() => reverse(skill.id)}>{t("可学精灵")}<CaretRight size={14} /></button></div>
+          <div className="sq-card-footer">{!placeholder && <span className="sq-method">{expanded !== skill.id && localizeToolText(acquisitionSummary(skill.methods), locale)}</span>}<button className="sq-reverse" aria-label={t("查{name}的可学精灵", { name: skill.name })} onClick={() => reverse(skill.id)}>{t("可学精灵")}<CaretRight size={14} /></button></div>
         </article>)}</div>{!rows.length && <p className="sq-empty">{t(placeholder ? "没有符合筛选条件的技能，可清除筛选。" : "没有符合筛选条件的技能；可切回全部来源或清除筛选。")}</p>}
       </> : <>
         {direction === "skill" && selected.length === 0 ? <p className="sq-empty">{t("添加技能，查找全部可学的精灵。")}</p> : direction === "spirit" && !query.trim() ? <p className="sq-empty">{t("搜索精灵，查看当前形态的完整技能表。")}</p> : <>

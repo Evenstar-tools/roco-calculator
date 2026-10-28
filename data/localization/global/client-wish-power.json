@@ -1,0 +1,439 @@
+{
+  "clientVersion": "1.61.0.91",
+  "source": "_work/global-client-20261028/decoded/{zh_Hans,en,ja}/SKILL_CONF.json",
+  "mapping": "18 calculator Wishpower variants matched by native class, cost 2, power 80, damage rule 15 and type 1; deprecated class 7 excluded",
+  "records": [
+    {
+      "entityId": "calculator_wish_power_normal",
+      "gameId": 7700001,
+      "clientSkillType": 1,
+      "clientClass": 2,
+      "textRefs": {
+        "name": 3495,
+        "desc": 3496
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_grass",
+      "gameId": 7700002,
+      "clientSkillType": 1,
+      "clientClass": 3,
+      "textRefs": {
+        "name": 3497,
+        "desc": 3498
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_fire",
+      "gameId": 7700003,
+      "clientSkillType": 1,
+      "clientClass": 4,
+      "textRefs": {
+        "name": 3499,
+        "desc": 3500
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_water",
+      "gameId": 7700004,
+      "clientSkillType": 1,
+      "clientClass": 5,
+      "textRefs": {
+        "name": 3501,
+        "desc": 3502
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_light",
+      "gameId": 7700005,
+      "clientSkillType": 1,
+      "clientClass": 6,
+      "textRefs": {
+        "name": 3503,
+        "desc": 3504
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_ground",
+      "gameId": 7700007,
+      "clientSkillType": 1,
+      "clientClass": 8,
+      "textRefs": {
+        "name": 3507,
+        "desc": 3508
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_ice",
+      "gameId": 7700008,
+      "clientSkillType": 1,
+      "clientClass": 9,
+      "textRefs": {
+        "name": 3509,
+        "desc": 3510
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_dragon",
+      "gameId": 7700009,
+      "clientSkillType": 1,
+      "clientClass": 10,
+      "textRefs": {
+        "name": 3511,
+        "desc": 3512
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_electric",
+      "gameId": 7700010,
+      "clientSkillType": 1,
+      "clientClass": 11,
+      "textRefs": {
+        "name": 3513,
+        "desc": 3514
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_poison",
+      "gameId": 7700011,
+      "clientSkillType": 1,
+      "clientClass": 12,
+      "textRefs": {
+        "name": 3515,
+        "desc": 3516
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_bug",
+      "gameId": 7700012,
+      "clientSkillType": 1,
+      "clientClass": 13,
+      "textRefs": {
+        "name": 3517,
+        "desc": 3518
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_martial",
+      "gameId": 7700013,
+      "clientSkillType": 1,
+      "clientClass": 14,
+      "textRefs": {
+        "name": 3519,
+        "desc": 3520
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_wing",
+      "gameId": 7700014,
+      "clientSkillType": 1,
+      "clientClass": 15,
+      "textRefs": {
+        "name": 3521,
+        "desc": 3522
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_moe",
+      "gameId": 7700015,
+      "clientSkillType": 1,
+      "clientClass": 16,
+      "textRefs": {
+        "name": 3523,
+        "desc": 3524
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_ghost",
+      "gameId": 7700016,
+      "clientSkillType": 1,
+      "clientClass": 17,
+      "textRefs": {
+        "name": 3525,
+        "desc": 3526
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_evil",
+      "gameId": 7700017,
+      "clientSkillType": 1,
+      "clientClass": 18,
+      "textRefs": {
+        "name": 3527,
+        "desc": 3528
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_machine",
+      "gameId": 7700018,
+      "clientSkillType": 1,
+      "clientClass": 19,
+      "textRefs": {
+        "name": 3529,
+        "desc": 3530
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    },
+    {
+      "entityId": "calculator_wish_power_phantom",
+      "gameId": 7700019,
+      "clientSkillType": 1,
+      "clientClass": 20,
+      "textRefs": {
+        "name": 3531,
+        "desc": 3532
+      },
+      "localized": {
+        "zh_Hans": {
+          "name": "愿力冲击",
+          "description": "造成伤害，伤害类型取决于精灵双攻更高的一项，<desc_id=1015>应对状态</>：本次威力+150%。"
+        },
+        "en": {
+          "name": "Wishpower Blast",
+          "description": "Deals damage. The damage type is determined by the Jini's higher Attack stat (Physical or Magic). <desc_id=1015>Counter: Status</> - Power +150%."
+        },
+        "ja": {
+          "name": "願いの波動",
+          "description": "ダメージを与える（ダメージタイプはジニの物攻・魔攻の高いほうによって決まる）。<desc_id=1015>状態カウンター</>：今回のスキル威力+150%。"
+        }
+      }
+    }
+  ]
+}

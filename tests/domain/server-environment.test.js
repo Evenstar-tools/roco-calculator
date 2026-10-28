@@ -14,14 +14,14 @@ describe("服务器计算环境", () => {
     expect(assertCalculationEnvironment(current, { serverId: "cn" }).dataURL).toBe("/data/runtime.json");
   });
 
-  test("国际服未核验时不存在可用数据包，不能靠输入或伪造快照开启计算", () => {
+  test("国际服使用独立S3季中数据包，不能把CN快照改名开启计算", () => {
     expect(getServerRelease("global")).toMatchObject({
-      status: "unverified", dataURL: null, dataVersion: null, rulesVersion: null,
-      capabilities: { calculate: false, search: false, explain: false },
+      status: "verified", dataURL: "/data/global-runtime.json", dataVersion: "global-s3-midseason-2026-08-13", rulesVersion: "global-s3-midseason-2026-08-13",
+      capabilities: { calculate: true, search: true, explain: true },
     });
     expect(() => calculateMatchup(current, { serverId: "global" })).toThrow(expect.objectContaining({ code: "SERVER_MISMATCH" }));
     expect(() => calculateMatchup({ meta: { ...current.meta, serverId: "global", capabilities: { calculate: true } } }, { serverId: "global" }))
-      .toThrow(expect.objectContaining({ code: "SERVER_DATA_UNVERIFIED" }));
+      .toThrow(expect.objectContaining({ code: "INCOMPATIBLE_SERVER_VERSION" }));
   });
 
   test.each(["unknown", "__proto__", "", null])("拒绝未知服务器 %s，不默认降级国服", (serverId) => {

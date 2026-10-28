@@ -1,8 +1,9 @@
+import { localizeGlobalSpirit, localizeGlobalSkill } from "../runtime/global-entity-localization.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useModalFocus } from "../hooks/useModalFocus.js";
-import { getNature } from "../domain/natures.js";
+import { getNature, NATURES } from "../domain/natures.js";
 import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 
 import { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
@@ -22,8 +23,8 @@ const ISSUE_PREVIEW_ROWS = [
 const ISSUE_LABELS = Object.fromEntries(ISSUE_PREVIEW_ROWS);
 
 function ConfigEntryList({ entries, emptyMessage, skillById, spiritById, stableHeight = false }) {
-  const { t } = useLocale();
   const { serverId } = useRuntime();
+  const { t } = useLocale();
   return (
     <ul
       className={`config-library-entry-list${stableHeight ? " config-library-entry-list--searchable" : ""}${entries.length === 0 ? " is-empty" : ""}`}
@@ -35,7 +36,8 @@ function ConfigEntryList({ entries, emptyMessage, skillById, spiritById, stableH
       {entries.map((entry) => {
         const spirit = spiritById.get(entry.spiritId);
         const spiritName = spirit?.fullName ?? entry.spiritId;
-        const natureName = serverId === "cn" ? t(getNature(entry.natureId)?.name ?? entry.natureId) : entry.natureId ?? t("待核验");
+        const nature = serverId === "cn" ? getNature(entry.natureId) : NATURES.find(({ id }) => id === entry.natureId);
+        const natureName = nature ? t(nature.name) : entry.natureId ?? t("未设置");
         return (
           <li className="config-library-entry" key={entry.spiritId}>
             {spirit?.asset?.localUrl ? (
@@ -123,10 +125,10 @@ export function ConfigLibraryDialog({
       ? parsed?.entries ?? []
       : [];
   const spiritById = new Map(
-    (snapshot?.spirits ?? []).map((spirit) => [spirit.id, spirit]),
+    (snapshot?.spirits ?? []).map((spirit) => [spirit.id, serverId === "global" ? localizeGlobalSpirit(spirit, locale, (snapshot?.traits ?? []).filter((trait) => spirit.traitIds?.includes(trait.id))) : spirit]),
   );
   const skillById = new Map(
-    (snapshot?.skills ?? []).map((skill) => [skill.id, skill]),
+    (snapshot?.skills ?? []).map((skill) => [skill.id, serverId === "global" ? localizeGlobalSkill(skill, locale) : skill]),
   );
   const entryDexNo = (entry) => {
     const value = Number(spiritById.get(entry.spiritId)?.dexNo);
@@ -212,14 +214,14 @@ export function ConfigLibraryDialog({
                 spiritById={spiritById}
               />
             ) : null}
-            <p>{t(serverId === "cn" ? "包含手动收藏和绿色完整配置的性格、个体、四技能与特性。" : "国际服配置保留原始引用和参数；已知占位资料可编辑，未知引用待核验。")}</p>
+            <p>{t(serverId === "cn" ? "包含手动收藏和绿色完整配置的性格、个体、四技能与特性。" : "导出包含性格、个体、技能和收藏。")}</p>
           </>
         ) : (
           <>
             {isPopular ? (
               <div className="popular-config-summary">
                 <div>
-                  <strong>{t("PVP 热门配置 · {count} 只", { count: POPULAR_CONFIG_COUNT })}</strong>
+                  <strong>{t("PVP 热门配置 · {count} 只", { count: serverId === "global" ? (parsed?.entries?.length ?? "—") : POPULAR_CONFIG_COUNT })}</strong>
                   <span>{t("安装后可离线导入")}</span>
                 </div>
                 {listedEntries.length > 0 ? (
@@ -300,7 +302,7 @@ export function ConfigLibraryDialog({
                     {importChanges.map((change) => (
                       <li key={change.spiritId}>
                         <div className="config-library-issue-heading">
-                          <strong>{change.spiritName}</strong>
+                          <strong>{spiritById.get(change.spiritId)?.fullName ?? change.spiritName}</strong>
                           <span>{change.status === "added" ? t("新增 · 将导入") : change.canUpdate ? t("不同 · 将更新") : t("不同 · 保留手改")}</span>
                         </div>
                         {change.differences.map((difference) => (

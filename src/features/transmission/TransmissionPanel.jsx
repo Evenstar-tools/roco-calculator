@@ -10,7 +10,7 @@ import TransmissionMotion from "./TransmissionMotion.jsx";
 import TransmissionTraitPicker from "./TransmissionTraitPicker.jsx";
 import "./transmission.css";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
-import { useLocale } from "../../i18n/LocaleContext.jsx";
+import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { useModalFocus } from "../../hooks/useModalFocus.js";
 
 const SELECTABLE_TRAITS = ["向心力", "翼轴", "贪心算法", "盲拧", "机械变式", "风速仪", "正位宝剑", "宝剑王牌", "有求必应", "一意孤行"];
@@ -26,11 +26,12 @@ export default function TransmissionPanel(props) {
   if (release.capabilities.calculate) return <VerifiedTransmissionPanel {...props} />;
   return <div className="transmission-overlay"><section className="transmission-panel" role="dialog" aria-modal="true" aria-label={t("传动计算器")} ref={root} tabIndex={-1}>
     <header><h2>{t("传动计算器")}</h2><button type="button" aria-label={t("关闭传动计算器")} onClick={props.onClose}>{t("关闭")}</button></header>
-    <div className="transmission-body" data-layout="grid"><p className="transmission-muted" role="status">{t("国际服传动规则待核验，暂不可计算。")}</p></div>
+    <div className="transmission-body" data-layout="grid"><p className="transmission-muted" role="status">{t("当前服务器暂不支持传动计算。")}</p></div>
   </section></div>;
 }
 
 function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, onClose }) {
+  const { t } = useLocale();
   const spirits = useMemo(() => snapshot.spirits.map(prepareSpiritForView), [snapshot.spirits]);
   const [initial, setInitial] = useState([null, null, null, null]);
   const [slots, setSlots] = useState(initial);
@@ -207,81 +208,80 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
     else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialog.current)) { event.preventDefault(); first?.focus(); }
   }
   return <div className="transmission-overlay">
-    <section className="transmission-panel" role="dialog" aria-modal="true" aria-label="传动计算器" ref={dialog} tabIndex={-1} onKeyDown={keydown}>
-      <header><h2>传动计算器</h2><button type="button" aria-label="关闭传动计算器" onClick={onClose}>关闭</button></header>
+    <section className="transmission-panel" role="dialog" aria-modal="true" aria-label={t("传动计算器")} ref={dialog} tabIndex={-1} onKeyDown={keydown}>
+      <header><h2>{t("传动计算器")}</h2><button type="button" aria-label={t("关闭传动计算器")} onClick={onClose}>{t("关闭")}</button></header>
       <div className="transmission-body" data-layout={layout} ref={body}>
         <div className="transmission-spirit">
           <div className="transmission-spirit-picker" data-has-portrait={Boolean(spirit?.assetUrl)}>
-            <SpiritPicker label="推演" side="attack" spirits={spirits} selected={spirit} onSelect={selectSpirit} showFavorite={false} />
+            <SpiritPicker label={t("推演")} side="attack" spirits={spirits} selected={spirit} onSelect={selectSpirit} showFavorite={false} />
             {spirit?.assetUrl && <img className="transmission-spirit-portrait" src={spirit.assetUrl} alt="" aria-hidden="true" width="32" height="32" />}
           </div>
-          <div className="transmission-trait"><span>特性</span><TransmissionTraitPicker options={relevantTraits} value={trait} placeholder={spirit ? "无相关特性" : "请选择特性"} onChange={selectTrait} /></div>
+          <div className="transmission-trait"><span>{t("特性")}</span><TransmissionTraitPicker options={relevantTraits} value={trait} placeholder={spirit ? t("无相关特性") : t("请选择特性")} onChange={selectTrait} /></div>
         </div>
-        {trait && <details className="transmission-trait-description"><summary>特性说明</summary><p className="transmission-muted">{snapshot.traits.find((entry) => entry.name === trait)?.description}</p></details>}
+        {trait && <details className="transmission-trait-description"><summary>{t("特性说明")}</summary><p className="transmission-muted">{t(snapshot.traits.find((entry) => entry.name === trait)?.description)}</p></details>}
         <div className="transmission-slot-heading">
-          <h3 aria-live="polite">{round ? `第 ${round} 回合 · ${playback ? "传动中" : "传动后顺序"}` : "初始配置"}</h3>
-          <div className="transmission-layout" role="group" aria-label="技能布局">
-          <button type="button" aria-pressed={layout === "vertical"} onClick={() => { setPlayback(null); setLayout("vertical"); }}>竖排</button>
+          <h3 aria-live="polite">{round ? t("第 {v0} 回合 · {v1}", { v0: round, v1: playback ? "传动中" : "传动后顺序" }) : t("初始配置")}</h3>
+          <div className="transmission-layout" role="group" aria-label={t("技能布局")}>
+          <button type="button" aria-pressed={layout === "vertical"} onClick={() => { setPlayback(null); setLayout("vertical"); }}>{t("竖排")}</button>
           <button type="button" aria-pressed={layout === "grid"} onClick={() => { setPlayback(null); setLayout("grid"); }}>2×2</button>
-          <button type="button" className="transmission-motion-toggle" aria-label="传动动效" aria-pressed={motionEnabled} title={motionEnabled ? "传动动效已开启 · 点击关闭" : "传动动效已关闭 · 点击开启"} onClick={() => { setMotionEnabled(!motionEnabled); setPlayback(null); }}>
+          <button type="button" className="transmission-motion-toggle" aria-label={t("传动动效")} aria-pressed={motionEnabled} title={motionEnabled ? t("传动动效已开启 · 点击关闭") : t("传动动效已关闭 · 点击开启")} onClick={() => { setMotionEnabled(!motionEnabled); setPlayback(null); }}>
             <span className="transmission-motion-track" aria-hidden="true"><span className="transmission-motion-thumb">{motionEnabled ? <ArrowsClockwise size={15} weight="bold" /> : <Pause size={14} weight="fill" />}</span></span>
           </button>
           </div>
           <div className="transmission-config-actions">
           <div className="transmission-initial-peek" onMouseEnter={() => setShowInitial(true)} onMouseLeave={() => setShowInitial(false)} onFocus={() => setShowInitial(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setShowInitial(false); }}>
-            <button type="button" aria-label="查看初始配置" aria-expanded={showInitial} aria-controls="transmission-initial-preview" onClick={() => setShowInitial(true)} onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); setShowInitial(false); } }}><span className="transmission-initial-label">初始配置</span><span className="transmission-initial-label-compact" aria-hidden="true">初始</span></button>
-            {showInitial && <ol id="transmission-initial-preview" className="transmission-initial-preview" aria-label="初始配置预览">{initial.map((skill, index) => <li key={index}><span>{index + 1}</span>{skill && <SkillIcon skill={skill} size={24} />}<strong>{skill?.name ?? "未配置"}</strong></li>)}</ol>}
+            <button type="button" aria-label={t("查看初始配置")} aria-expanded={showInitial} aria-controls="transmission-initial-preview" onClick={() => setShowInitial(true)} onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); setShowInitial(false); } }}><span className="transmission-initial-label">{t("初始配置")}</span><span className="transmission-initial-label-compact" aria-hidden="true">{t("初始")}</span></button>
+            {showInitial && <ol id="transmission-initial-preview" className="transmission-initial-preview" aria-label={t("初始配置预览")}>{initial.map((skill, index) => <li key={index}><span>{index + 1}</span>{skill && <SkillIcon skill={skill} size={24} />}<strong>{t(skill?.name ?? t("未配置"))}</strong></li>)}</ol>}
           </div>
-          <button type="button" aria-label="重置推演" onClick={() => reset()}>重置</button>
+          <button type="button" aria-label={t("重置推演")} onClick={() => reset()}>{t("重置")}</button>
           </div>
         </div>
         {round === 0 ? <div className="transmission-config">{initial.map((skill, index) => {
             const usable = isSlotUsable(effectiveTrait, index);
             return <div key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"}>
-              <label>{index + 1} 号位-{driveLayers[index]}{!usable ? " · 不可使用" : ""}</label>
-              <SkillPicker readable menuBoundaryRef={body} ariaLabel={`初始${index + 1}号位技能`} skills={skillChoices} selected={skill} onSelect={(next) => reset(initial.map((item, i) => i === index ? snapshot.skills.find((entry) => entry.id === next) ?? null : item))} />
+              <label>{index + 1}{" "}{t("号位-")}{driveLayers[index]}{!usable ? t(" · 不可使用") : ""}</label>
+              <SkillPicker readable menuBoundaryRef={body} ariaLabel={t("初始{v0}号位技能", { v0: index + 1 })} skills={skillChoices} selected={skill} onSelect={(next) => reset(initial.map((item, i) => i === index ? snapshot.skills.find((entry) => entry.id === next) ?? null : item))} />
             </div>;
           })}</div> :
-          <div className="transmission-board" data-playing={Boolean(playback)}><ol ref={board} className="transmission-slots" aria-label="当前技能槽位" aria-live="polite" aria-busy={Boolean(playback)}>{slots.map((skill, index) => {
+          <div className="transmission-board" data-playing={Boolean(playback)}><ol ref={board} className="transmission-slots" aria-label={t("当前技能槽位")} aria-live="polite" aria-busy={Boolean(playback)}>{slots.map((skill, index) => {
             const usable = isSlotUsable(effectiveTrait, index);
             return <li key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"}>
               {skill ? <SkillIcon skill={skill} size={32} label /> : <span className="transmission-empty-icon" aria-hidden="true">—</span>}
               <div>
-                <span className="transmission-slot-number">{index + 1} 号位-{driveLayers[index]}</span>
-                <strong>{skill?.name ?? "未配置"}</strong>
-                {!usable && skill ? <small className="transmission-slot-blocked">不可使用</small> : null}
+                <span className="transmission-slot-number">{index + 1}{" "}{t("号位-")}{driveLayers[index]}</span>
+                <strong>{t(skill?.name ?? t("未配置"))}</strong>
+                {!usable && skill ? <small className="transmission-slot-blocked">{t("不可使用")}</small> : null}
               </div>
             </li>;
           })}</ol>{playback && <TransmissionMotion playback={playback} boardRef={board} onComplete={completePlayback} />}</div>}
-        {unsupported && <p role="status" className="transmission-issue">不支持：{unsupported}</p>}
-        {trait === "机械变式" && <p className="transmission-muted">仅支持技能顺序推演；能耗递减暂不支持。</p>}
-        {trait === "风速仪" && <p className="transmission-wind" aria-live="polite">已累计传动数 {driveAccum}，风起印记 ×{windStacks}</p>}
-        <div className="transmission-round-controls" role="group" aria-label="回合控制">
-          {round > 0 && specialActions.length > 0 && <label className="transmission-action">本回合行动
-            <select aria-label="本回合行动" value={selected < 0 ? "idle" : `${selected}:${branch}`} disabled={Boolean(unsupported) || Boolean(playback)} onChange={(event) => {
+        {unsupported && <p role="status" className="transmission-issue">{t("不支持：")}{t(unsupported)}</p>}
+        {trait === "机械变式" && <p className="transmission-muted">{t("仅支持技能顺序推演；能耗递减暂不支持。")}</p>}
+        {trait === "风速仪" && <p className="transmission-wind" aria-live="polite">{t("已累计传动数")}{" "}{driveAccum}{t("，风起印记 ×")}{windStacks}</p>}
+        <div className="transmission-round-controls" role="group" aria-label={t("回合控制")}>
+          {round > 0 && specialActions.length > 0 && <label className="transmission-action">{t("本回合行动")}<select aria-label={t("本回合行动")} value={selected < 0 ? "idle" : `${selected}:${branch}`} disabled={Boolean(unsupported) || Boolean(playback)} onChange={(event) => {
               const [index, effect = "power"] = event.target.value.split(":");
               setSelected(index === "idle" ? -1 : Number(index));
               setBranch(effect);
               setIssue("");
             }}>
-              <option value="idle">待机</option>
+              <option value="idle">{t("待机")}</option>
               {specialActions.flatMap((index) => (slots[index].name === "轮班" ? ["power", "drive"] : ["power"]).map((effect) => <option key={`${index}:${effect}`} value={`${index}:${effect}`} disabled={Boolean(actionResults[index]?.issue) || isCoolingDown(index)}>
-                {specialActions.length > 1 ? `${index + 1}号位 · ` : ""}{slots[index].name}{slots[index].name === "轮班" ? effect === "drive" ? " · 额外传动" : " · 加威" : ""}{actionResults[index]?.issue ? (actionResults[index].issue.includes("当前槽位不可使用") ? "（槽位不可用）" : "（不可用）") : ""}{isCoolingDown(index) ? "（冷却）" : ""}
+                {specialActions.length > 1 ? t("{v0}号位 · ", { v0: index + 1 }) : ""}{t(slots[index].name)}{slots[index].name === "轮班" ? effect === "drive" ? t(" · 额外传动") : t(" · 加威") : ""}{actionResults[index]?.issue ? (actionResults[index].issue.includes("当前槽位不可使用") ? t("（槽位不可用）") : t("（不可用）")) : ""}{isCoolingDown(index) ? t("（冷却）") : ""}
               </option>))}
             </select>
           </label>}
-          <button className="transmission-primary" type="button" disabled={(round === 0 && slots.some((skill) => !skill)) || Boolean(unsupported) || Boolean(selectedIssue) || Boolean(playback)} onClick={calculateRound}>{round === 0 ? "开始" : "推演下一回合"}</button>
-          {playback && <button type="button" onClick={() => setPlayback(null)}>跳过动效</button>}
-          <button className="transmission-round-undo" type="button" aria-label="回到上回合" title="回到上回合" disabled={!roundUndo.length} onClick={previousRound}><ArrowCounterClockwise size={20} aria-hidden="true" /></button>
+          <button className="transmission-primary" type="button" disabled={(round === 0 && slots.some((skill) => !skill)) || Boolean(unsupported) || Boolean(selectedIssue) || Boolean(playback)} onClick={calculateRound}>{round === 0 ? t("开始") : t("推演下一回合")}</button>
+          {playback && <button type="button" onClick={() => setPlayback(null)}>{t("跳过动效")}</button>}
+          <button className="transmission-round-undo" type="button" aria-label={t("回到上回合")} title={t("回到上回合")} disabled={!roundUndo.length} onClick={previousRound}><ArrowCounterClockwise size={20} aria-hidden="true" /></button>
         </div>
-        {round > 0 && selected >= 0 && slots[selected]?.name === "轮班" && branch === "power" && <p className="transmission-muted">加威仅记录顺序，不计算伤害与能耗。</p>}
-        {issue && <p role="alert" className="transmission-issue">{issue}</p>}
-        {selectedIssue && <p role="status" className="transmission-issue">不支持：{selectedIssue}</p>}
+        {round > 0 && selected >= 0 && slots[selected]?.name === "轮班" && branch === "power" && <p className="transmission-muted">{t("加威仅记录顺序，不计算伤害与能耗。")}</p>}
+        {issue && <p role="alert" className="transmission-issue">{t(issue)}</p>}
+        {selectedIssue && <p role="status" className="transmission-issue">{t("不支持：")}{t(selectedIssue)}</p>}
 
-        <details className="transmission-records"><summary>逐步记录 · {history.length} 条</summary>
-        {!history.length && <p className="transmission-muted">开始回合后，这里会记录每层传动及行动后的顺序。</p>}
-        <ol className="transmission-history">{history.map((item, i) => <li key={i}><strong>{item.title}</strong><p>{names(item.slots)}</p>{item.details.length > 0 && <details><summary>查看变化来源</summary>{item.details.map((line, j) => <p key={j}>{line}</p>)}</details>}</li>)}</ol></details>
-        <details className="transmission-import"><summary>载入已有配置</summary><div className="transmission-toolbar"><button type="button" onClick={() => importSide("attacker")}>载入攻击方技能</button><button type="button" onClick={() => importSide("defender")}>载入防御方技能</button></div></details>
+        <details className="transmission-records"><summary>{t("逐步记录 ·")}{" "}{history.length}{" "}{t("条")}</summary>
+        {!history.length && <p className="transmission-muted">{t("开始回合后，这里会记录每层传动及行动后的顺序。")}</p>}
+        <ol className="transmission-history">{history.map((item, i) => <li key={i}><strong>{t(item.title)}</strong><p>{t(names(item.slots))}</p>{item.details.length > 0 && <details><summary>{t("查看变化来源")}</summary>{item.details.map((line, j) => <p key={j}>{t(line)}</p>)}</details>}</li>)}</ol></details>
+        <details className="transmission-import"><summary>{t("载入已有配置")}</summary><div className="transmission-toolbar"><button type="button" onClick={() => importSide("attacker")}>{t("载入攻击方技能")}</button><button type="button" onClick={() => importSide("defender")}>{t("载入防御方技能")}</button></div></details>
       </div>
     </section>
   </div>;

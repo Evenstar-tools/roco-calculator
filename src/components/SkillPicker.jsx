@@ -12,6 +12,7 @@ import { SkillIcon } from "./SkillIcon.jsx";
 import { fitPickerMenu, getPickerBounds } from "./picker-menu-layout.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
+import { localizeGlobalSkill } from "../runtime/global-entity-localization.js";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -65,9 +66,8 @@ function searchText(skill) {
   const cacheKey = `${skill.id}:${skill.name}`;
   if (searchTextCache.has(cacheKey)) return searchTextCache.get(cacheKey);
 
-  const value =
-    skill.searchText ??
-    [skill.name, skill.type, skill.category].map(compact).join("|");
+  const value = compact(skill.searchText ??
+    [skill.name, skill.type, skill.category].join("|"));
   searchTextCache.set(cacheKey, value);
   return value;
 }
@@ -80,11 +80,13 @@ export function SkillPicker({
   onFocus,
   onSelect,
   placeholder = false,
-  selected,
-  skills = [],
+  selected: sourceSelected,
+  skills: sourceSkills = [],
 }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const { serverId } = useRuntime();
+  const selected = useMemo(() => sourceSelected && serverId === "global" ? localizeGlobalSkill(sourceSelected, locale) : sourceSelected, [sourceSelected, serverId, locale]);
+  const skills = useMemo(() => serverId === "global" ? sourceSkills.map(skill => localizeGlobalSkill(skill, locale)) : sourceSkills, [sourceSkills, serverId, locale]);
   const optionHeight = readable ? 72 : OPTION_HEIGHT;
   const listboxId = useId();
   const inputRef = useRef(null);
@@ -108,8 +110,8 @@ export function SkillPicker({
       open && query === selected?.name ? "" : query,
     );
     const list = needle
-      ? skills.filter((skill) => searchText(skill).includes(needle))
-      : skills;
+      ? skills.filter((skill) => skill.catalogAvailable !== false && searchText(skill).includes(needle))
+      : skills.filter(skill => skill.catalogAvailable !== false);
     return [...list].sort(
       (first, second) =>
         Number(first.learnable === false) -

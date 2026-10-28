@@ -1,4 +1,5 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useCalculatorLocale } from "../i18n/calculator-text.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { X } from "@phosphor-icons/react";
 import { useEffect, useRef } from "react";
@@ -48,6 +49,7 @@ export function WorkspaceOverlays({
   whatsNew = {},
 }) {
   const { t } = useLocale();
+  const { tc } = useCalculatorLocale();
   const runtime = useRuntime();
   const menuActions = menu.actions ?? {};
   const mobileActions = mobileResult.actions ?? {};
@@ -221,7 +223,7 @@ export function WorkspaceOverlays({
           <div aria-hidden="true" className="app-menu__separator" />
           {runtime.serverId === "global" && (runtime.onServerChange || menuActions.onOpenGlobal) && <>
             <div aria-hidden="true" className="app-menu__group-label">{t("服务器")} · {t(runtime.serverId === "global" ? "国际服" : "国服")}</div>
-            <button type="button" onClick={() => { menuActions.onClose?.(); if (runtime.onServerChange) runtime.onServerChange(runtime.serverId === "global" ? "cn" : "global"); else menuActions.onOpenGlobal(); }}>{t(runtime.serverId === "global" ? "国服" : "国际服 · Global CBT")}</button>
+            <button type="button" onClick={() => { menuActions.onClose?.(); if (runtime.onServerChange) runtime.onServerChange(runtime.serverId === "global" ? "cn" : "global"); else menuActions.onOpenGlobal(); }}>{t(runtime.serverId === "global" ? "国服" : "国际服 · Global")}</button>
             {runtime.serverId === "global" && runtime.onLocaleChange && <label className="app-menu__group-label" style={{ display: "block", minWidth: 0 }}>{t("语言")}
               <select aria-label={t("语言")} value={runtime.locale} onChange={(event) => runtime.onLocaleChange(event.target.value)} style={{ width: "100%", minHeight: 36, marginTop: 6, fontSize: 13, letterSpacing: "normal" }}>
                 <option value="en">English</option><option value="zh-CN">简体中文</option><option value="ja">日本語</option>
@@ -270,10 +272,10 @@ export function WorkspaceOverlays({
           type="button"
         >
           <span className="mobile-result-bar__matchup">
-            {mobileResult.result.attackerName} → {mobileResult.result.defenderName}
+            {tc(mobileResult.result.attackerName)} → {tc(mobileResult.result.defenderName)}
           </span>
           <span className="mobile-result-bar__skill">
-            {mobileResult.result.selectedSkillName}
+            {tc(mobileResult.result.selectedSkillName)}
           </span>
           <strong className="mobile-result-bar__damage">
             {mobilePresentation.damage ?? "—"}
@@ -389,7 +391,7 @@ export function WorkspaceOverlays({
             role="dialog"
           >
             <h2>{t("分享当前配置")}</h2>
-            <p className="share-config-dialog__intro">{t(runtime.serverId === "global" ? "链接保留当前配置草稿中的输入，不包含配置库和队伍；国际服数据核验前不计算结果。" : "链接包含双方精灵、性格、个体、技能、特性和当前战斗条件，不会包含配置库和队伍。")}</p>
+            <p className="share-config-dialog__intro">{t("链接包含双方精灵、性格、个体、技能、特性和当前战斗条件，不会包含配置库和队伍。")}</p>
             <section className="share-config-section">
               <h3>{t("发送当前配置")}</h3>
               <label>
@@ -398,7 +400,7 @@ export function WorkspaceOverlays({
                   aria-label={t("当前配置链接")}
                   disabled={!share.shareLink}
                   onFocus={(event) => event.currentTarget.select()}
-                  placeholder={t(runtime.serverId === "global" ? "正在生成配置链接" : "选择双方精灵后生成")}
+                  placeholder={t("选择双方精灵后生成")}
                   readOnly
                   value={share.shareLink}
                 />

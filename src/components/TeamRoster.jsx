@@ -1,4 +1,4 @@
-import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { createPortal } from "react-dom";
 import { useRosterDrag } from "../hooks/useRosterDrag.js";
@@ -41,7 +41,7 @@ export function TeamRoster({
   snapshot,
 }) {
   const { t } = useLocale();
-  const { serverId } = useRuntime();
+  const { serverId, release } = useRuntime();
   const { drag, listRef, order, onPointerDown, onTouchStart } = useRosterDrag({ members, onReorder });
   const global = serverId === "global" || snapshot.meta?.serverId === "global";
   const placeholder = global && Boolean(snapshot.meta?.placeholderSource);
@@ -56,7 +56,7 @@ export function TeamRoster({
         const member = members[index] ?? null;
         const spirit = member ? spirits.get(member.spiritId) : null;
         const name = spirit?.fullName ?? (member ? member.spiritId ?? t("需修复") : t("空位 {index}", { index: index + 1 }));
-        const conflicts = global ? [] : getBossBloodlineConflicts(snapshot, member);
+        const conflicts = !release.capabilities.calculate || (global && !snapshot.meta?.id) ? [] : getBossBloodlineConflicts(snapshot, member);
         const referenceNature = placeholder && member?.natureId != null
           ? NATURES.find((nature) => nature.id === member.natureId)
           : null;
@@ -107,11 +107,11 @@ export function TeamRoster({
                 </span>
               )}
               <span className="team-slot__identity">
-                <strong>{name}</strong>
+                <strong>{t(name)}</strong>
                 <small>
                   {member
                     ? member.needsRepair
-                      ? t("引用待核验，原配置已保留")
+                      ? t("需要重新选择精灵，原配置已保留")
                       : natureLabel
                     : t("添加精灵")}
                 </small>

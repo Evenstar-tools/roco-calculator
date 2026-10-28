@@ -26,7 +26,7 @@ test("placeholder imported IV 120 survives focus/blur and explicit edits are unc
     return <TeamMemberEditor index={0} member={member} snapshot={snapshot} onChange={(next) => { onChange(next); setMember(next); }} />;
   }
   render(wrap("en", <Editor />));
-  const input = screen.getByRole("spinbutton", { name: "Atk IV" });
+  const input = screen.getByRole("spinbutton", { name: translator("en")("{label}个体", { label: translator("en")("物攻") }) });
   expect(input).toHaveValue(120);
   expect(input).not.toHaveAttribute("max");
   fireEvent.focus(input);
@@ -75,8 +75,8 @@ test.each(["zh-CN", "en", "ja"])("%s placeholder member can set and clear nature
   expect(onChange.mock.lastCall[0].displayIvs.physicalAttack).toBeNull();
 
   fireEvent.click(nature);
-  fireEvent.click(screen.getByRole("treeitem", { name: t("{stat}增益（国服参考）", { stat: t("物攻") }) }));
-  fireEvent.click(screen.getByRole("treeitem", { name: `${t("物攻")}↑ ${t("魔攻")}↓` }));
+  fireEvent.click(screen.getByRole("treeitem", { name: t("{stat}增益", { stat: t("物攻") }) }));
+  fireEvent.click(screen.getByRole("treeitem", { name: t("{nature}（{up}↑ {down}↓）", { nature: t("固执"), up: t("物攻"), down: t("魔攻") }) }));
   expect(onChange.mock.lastCall[0].natureId).toBe("adamant");
   expect(screen.queryByRole("img", { name: /20%/ })).not.toBeInTheDocument();
   expect(container.querySelector('[title*="20%"], [aria-label*="20%"], [alt*="20%"]')).not.toBeInTheDocument();
@@ -188,22 +188,22 @@ test.each(["en", "ja"])("%s quick fields and roster do not turn unset values int
   expect(getMissingUiMessages()).toEqual([]);
 });
 
-test.each(["en", "ja"])("%s Global guide preserves the six-step original flow but ends with save/share rather than CN import", (locale) => {
+test.each(["en", "ja"])("%s Global guide uses the complete calculation guide and ends with sharing", (locale) => {
   const t = translator(locale);
   const actions = { onBack: vi.fn(), onNext: vi.fn(), onSkip: vi.fn(), onImport: vi.fn(), onOpenDetailed: vi.fn() };
   const { rerender } = render(wrap(locale, <FirstRunGuide open step={0} {...actions} />));
-  expect(screen.getByRole("dialog")).toHaveTextContent(t("从国服中文占位资料中选择攻击方精灵。"));
+  expect(screen.getByRole("dialog")).toHaveTextContent(t("选择本回合出手的精灵"));
   fireEvent.click(screen.getByRole("button", { name: t("下一步") }));
   expect(actions.onNext).toHaveBeenCalledOnce();
   rerender(wrap(locale, <FirstRunGuide open step={4} {...actions} />));
-  expect(screen.getByRole("dialog")).toHaveTextContent(t("保存配置"));
-  expect(screen.queryByText(t("前往具体版"))).not.toBeInTheDocument();
+  expect(screen.getByRole("dialog")).toHaveTextContent(t("需要细调时"));
+  fireEvent.click(screen.getByRole("button", { name: t("前往具体版") }));
   rerender(wrap(locale, <FirstRunGuide open step={5} {...actions} />));
   expect(screen.getByRole("dialog")).toHaveTextContent(t("分享配置"));
   expect(screen.queryByText(t("导入热门配置"))).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: t("完成引导") }));
   expect(actions.onSkip).toHaveBeenCalledOnce();
   expect(actions.onImport).not.toHaveBeenCalled();
-  expect(actions.onOpenDetailed).not.toHaveBeenCalled();
+  expect(actions.onOpenDetailed).toHaveBeenCalledOnce();
   expect(getMissingUiMessages()).toEqual([]);
 });

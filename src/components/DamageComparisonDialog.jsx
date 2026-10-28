@@ -1,3 +1,4 @@
+import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import { useEffect, useRef, useState } from "react";
 import { CaretDown, CaretUp, DownloadSimple, MagnifyingGlass, SlidersHorizontal, X } from "@phosphor-icons/react";
 import { useDamageComparison } from "../features/damage-comparison/useDamageComparison.js";
@@ -8,18 +9,20 @@ const portrait = (spirit) => spirit?.asset?.localUrl ?? spirit?.imageUrl;
 const focusable = 'button:not([disabled]), input:not([disabled]), select:not([disabled]), [href]';
 
 function TypeMultiplier({ value, mobile = false }) {
+  const { t } = useLocale();
   const known = Number.isFinite(value);
   const tone = !known ? "unknown" : value === 0 ? "immune" : value > 1 ? "weakness" : value < 1 ? "resistance" : "neutral";
   const meaning = { unknown: "不适用", immune: "免疫", weakness: "弱点", resistance: "抵抗", neutral: "正常" }[tone];
   return <span
     className={`dc-web-multiplier ${mobile ? "dc-web-mobile-effectiveness" : "dc-web-effectiveness"}`}
     data-tone={tone}
-    title={`当前技能的属性克制倍率：${meaning}${known ? ` ×${value}` : ""}`}
-    aria-label={`${mobile ? "属性倍率" : "克制倍率"} ${known ? value : "不适用"}`}
-  >{known ? `${value === 0 ? "免疫 " : ""}×${value}` : "—"}</span>;
+    title={t("当前技能的属性克制倍率：{v0}{v1}", { v0: meaning, v1: known ? ` ×${value}` : "" })}
+    aria-label={`${t(mobile ? "属性倍率" : "克制倍率")} ${known ? value : t("不适用")}`}
+  >{known ? `${value === 0 ? `${t("免疫")} ` : ""}×${value}` : "—"}</span>;
 }
 
 export default function DamageComparisonDialog({ snapshot, source, preferences, onPreferencesChange, onClose, onImport }) {
+  const { typeName, t } = useLocale();
   const model = useDamageComparison(snapshot, source, preferences, onPreferencesChange);
   const dialog = useRef(null);
   const exportControl = useRef(null);
@@ -73,64 +76,64 @@ export default function DamageComparisonDialog({ snapshot, source, preferences, 
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
   }
   return <div className="damage-comparison-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-    <section ref={dialog} className="damage-comparison" role="dialog" aria-modal="true" aria-label="承伤对比" onKeyDown={onKeyDown}>
-      <header className="dc-web-heading"><h2>承伤对比</h2><div className="dc-web-heading-actions">
+    <section ref={dialog} className="damage-comparison" role="dialog" aria-modal="true" aria-label={t("承伤对比")} onKeyDown={onKeyDown}>
+      <header className="dc-web-heading"><h2>{t("承伤对比")}</h2><div className="dc-web-heading-actions">
         <div className="dc-web-export" ref={exportControl}>
-          <button type="button" disabled={!canExport || exportBusy} aria-expanded={exportOpen} aria-controls="dc-export-formats" onClick={() => setExportOpen(!exportOpen)}><DownloadSimple size={18} />{exportBusy ? "导出中" : "导出"}</button>
-          {exportOpen ? <div className="dc-web-export-formats" id="dc-export-formats" role="group" aria-label="导出格式">
-            <small>导出当前筛选的全部结果</small>
+          <button type="button" disabled={!canExport || exportBusy} aria-expanded={exportOpen} aria-controls="dc-export-formats" onClick={() => setExportOpen(!exportOpen)}><DownloadSimple size={18} />{exportBusy ? t("导出中") : t("导出")}</button>
+          {exportOpen ? <div className="dc-web-export-formats" id="dc-export-formats" role="group" aria-label={t("导出格式")}>
+            <small>{t("导出当前筛选的全部结果")}</small>
             <button type="button" disabled={!canExport || exportBusy} onClick={() => exportResults("xlsx")}>Excel（.xlsx）</button>
             <button type="button" disabled={!canExport || exportBusy} onClick={() => exportResults("md")}>Markdown（.md）</button>
           </div> : null}
         </div>
-        <button type="button" aria-label="关闭承伤对比" onClick={onClose}><X size={20} /></button>
+        <button type="button" aria-label={t("关闭承伤对比")} onClick={onClose}><X size={20} /></button>
       </div></header>
       <div className="dc-web-source">
         {portrait(model.selection.spirit) ? <img alt="" src={portrait(model.selection.spirit)} /> : null}
-        <strong>{model.selection.spirit?.fullName}</strong>
-        <select aria-label="比较技能" value={model.selection.index} onChange={(event) => model.setSelectedSkillIndex(Number(event.target.value))}>{model.selection.options.map(({ index, skill }) => <option key={index} value={index}>{skill.name}</option>)}</select>
-        <small>{model.scopeDescription}</small>
-        {model.gainSummary ? <small>增益来源：{model.gainSummary}</small> : null}
+        <strong>{t(model.selection.spirit?.fullName)}</strong>
+        <select aria-label={t("比较技能")} value={model.selection.index} onChange={(event) => model.setSelectedSkillIndex(Number(event.target.value))}>{model.selection.options.map(({ index, skill }) => <option key={index} value={index}>{t(skill.name)}</option>)}</select>
+        <small>{t(model.scopeDescription)}</small>
+        {model.gainSummary ? <small>{t("增益来源：")}{t(model.gainSummary)}</small> : null}
       </div>
-      <div className="dc-web-search"><label><MagnifyingGlass size={18} aria-hidden="true" /><input ref={searchInput} aria-label="搜索承伤精灵" placeholder="搜索名称、别名或图鉴号" value={model.query} onChange={(event) => model.setQuery(event.target.value)} />{model.query ? <button className="dc-web-clear" type="button" aria-label="清空搜索" onClick={() => { model.setQuery(""); searchInput.current?.focus(); }}><X size={16} aria-hidden="true" /></button> : null}</label><button type="button" aria-expanded={model.filtersOpen} aria-controls="dc-filter-options" onClick={() => model.setFiltersOpen(!model.filtersOpen)}><SlidersHorizontal size={18} />筛选</button></div>
+      <div className="dc-web-search"><label><MagnifyingGlass size={18} aria-hidden="true" /><input ref={searchInput} aria-label={t("搜索承伤精灵")} placeholder={t("搜索名称、别名或图鉴号")} value={model.query} onChange={(event) => model.setQuery(event.target.value)} />{model.query ? <button className="dc-web-clear" type="button" aria-label={t("清空搜索")} onClick={() => { model.setQuery(""); searchInput.current?.focus(); }}><X size={16} aria-hidden="true" /></button> : null}</label><button type="button" aria-expanded={model.filtersOpen} aria-controls="dc-filter-options" onClick={() => model.setFiltersOpen(!model.filtersOpen)}><SlidersHorizontal size={18} />{t("筛选")}</button></div>
       <div id="dc-filter-options" className={`dc-web-options${model.filtersOpen ? " is-open" : ""}`}>
-        <label>耐久模板<select aria-label="承伤耐久模板" value={model.templateId} onChange={(event) => model.setTemplateId(event.target.value)}>{model.templates.map((template) => <option key={template.id} value={template.id}>{template.label}</option>)}</select></label>
-        <label>形态范围<select aria-label="承伤形态范围" value={model.scope} onChange={(event) => model.setScope(event.target.value)}><option value="final">最终形态＋首领</option><option value="all">全部完整种族值形态</option></select></label>
-        <select aria-label="承伤排序" value={model.descending ? "desc" : "asc"} onChange={(event) => model.setDescending(event.target.value === "desc")}><option value="asc">承伤从低到高</option><option value="desc">承伤从高到低</option></select>
+        <label>{t("耐久模板")}<select aria-label={t("承伤耐久模板")} value={model.templateId} onChange={(event) => model.setTemplateId(event.target.value)}>{model.templates.map((template) => <option key={template.id} value={template.id}>{t(template.label)}</option>)}</select></label>
+        <label>{t("形态范围")}<select aria-label={t("承伤形态范围")} value={model.scope} onChange={(event) => model.setScope(event.target.value)}><option value="final">{t("最终形态＋首领")}</option><option value="all">{t("全部完整种族值形态")}</option></select></label>
+        <select aria-label={t("承伤排序")} value={model.descending ? "desc" : "asc"} onChange={(event) => model.setDescending(event.target.value === "desc")}><option value="asc">{t("承伤从低到高")}</option><option value="desc">{t("承伤从高到低")}</option></select>
       </div>
-      <div className="dc-web-filters" role="group" aria-label="承伤筛选"><DamageRangeFilter value={model.filter} onChange={model.setFilter} /><label className="dc-web-inherit"><input type="checkbox" checked={model.inheritTargetStatuses} onChange={(event) => model.setInheritTargetStatuses(event.target.checked)} />沿用星陨／冻结</label></div>
-      <div className="dc-web-summary"><span role="status">{model.loading ? `正在计算 ${model.progress?.completed ?? 0}/${snapshot.spirits.length}` : `${model.rows.length} 只 · ${model.template.label}`}</span>{!model.filtersOpen ? <span>{model.scope === "all" ? "全部形态" : "最终形态＋首领"} · 承伤{model.descending ? "高→低" : "低→高"}</span> : null}</div>
+      <div className="dc-web-filters" role="group" aria-label={t("承伤筛选")}><DamageRangeFilter value={model.filter} onChange={model.setFilter} /><label className="dc-web-inherit"><input type="checkbox" checked={model.inheritTargetStatuses} onChange={(event) => model.setInheritTargetStatuses(event.target.checked)} />{t("沿用星陨／冻结")}</label></div>
+      <div className="dc-web-summary"><span role="status">{model.loading ? t("正在计算 {v0}/{v1}", { v0: model.progress?.completed ?? 0, v1: snapshot.spirits.length }) : t("{v0} 只 · {v1}", { v0: model.rows.length, v1: model.template.label })}</span>{!model.filtersOpen ? <span>{model.scope === "all" ? t("全部形态") : t("最终形态＋首领")}{" "}{t("· 承伤")}{model.descending ? t("高→低") : t("低→高")}</span> : null}</div>
       <div className="dc-web-scroll" aria-busy={model.loading} onScroll={(event) => {
         const { scrollHeight, scrollTop, clientHeight } = event.currentTarget;
         if (!model.loading && model.rows.length > model.limit && scrollHeight - scrollTop - clientHeight <= 160) model.showMore();
       }}>
-        {model.error || model.ranking?.issue ? <div className="dc-web-empty"><p role="status">{model.error || model.ranking.issue}</p>{model.ranking?.issueKind === "no-direct-damage" ? alternativeSkill
-          ? <button type="button" onClick={() => model.setSelectedSkillIndex(alternativeSkill.index)}>切换到{alternativeSkill.skill.name}</button>
-          : <button type="button" onClick={onClose}>返回计算器选技能</button>
+        {model.error || model.ranking?.issue ? <div className="dc-web-empty"><p role="status">{t(model.error || model.ranking.issue)}</p>{model.ranking?.issueKind === "no-direct-damage" ? alternativeSkill
+          ? <button type="button" onClick={() => model.setSelectedSkillIndex(alternativeSkill.index)}>{t("切换到")}{t(alternativeSkill.skill.name)}</button>
+          : <button type="button" onClick={onClose}>{t("返回计算器选技能")}</button>
           : null}</div> : null}
-        {model.rows.length > 0 ? <div className="dc-web-columns" aria-hidden="true"><span>排名</span><span>精灵</span><span className="dc-web-effectiveness">克制</span><span>伤害 HP</span><span>承伤比例</span></div> : null}
+        {model.rows.length > 0 ? <div className="dc-web-columns" aria-hidden="true"><span>{t("排名")}</span><span>{t("精灵")}</span><span className="dc-web-effectiveness">{t("克制")}</span><span>{t("伤害 HP")}</span><span>{t("承伤比例")}</span></div> : null}
         {model.rows.slice(0, model.limit).map((row) => {
           const expanded = model.expanded === row.spirit.id;
           const freezePercent = row.freezePercent ?? 0;
           const damagePercent = row.damagePercent ?? row.percent;
-          const breakdown = `伤害${damagePercent.toFixed(1)}%＋冻结${freezePercent}%`;
+          const breakdown = `${t("伤害{v0}%", { v0: damagePercent.toFixed(1) })}${t("＋冻结")}${freezePercent}%`;
           return <div key={row.spirit.id} className={`dc-web-item${expanded ? " is-expanded" : ""}`}>
-            <button type="button" className="dc-web-row" aria-label={`查看${row.spirit.fullName}承伤详情`} aria-expanded={expanded} aria-controls={`damage-detail-${row.spirit.id}`} onClick={() => model.setExpanded(expanded ? null : row.spirit.id)}>
+            <button type="button" className="dc-web-row" aria-label={t("查看{v0}承伤详情", { v0: row.spirit.fullName })} aria-expanded={expanded} aria-controls={`damage-detail-${row.spirit.id}`} onClick={() => model.setExpanded(expanded ? null : row.spirit.id)}>
               <span className="dc-web-rank">{row.rank}</span>
-              <span className="dc-web-identity">{portrait(row.spirit) ? <img alt="" src={portrait(row.spirit)} loading="lazy" /> : null}<span><strong>{row.spirit.fullName}{row.template.presetFallback ? <span className="dc-web-no-preset">无预设</span> : null}</strong><small>{row.spirit.types?.join(" · ")}<TypeMultiplier value={row.result?.typeMultiplier} mobile /><span className="dc-web-mobile-damage">伤害 {row.damage} HP</span></small></span></span>
+              <span className="dc-web-identity">{portrait(row.spirit) ? <img alt="" src={portrait(row.spirit)} loading="lazy" /> : null}<span><strong>{t(row.spirit.fullName)}{row.template.presetFallback ? <span className="dc-web-no-preset">{t("无预设")}</span> : null}</strong><small>{t(row.spirit.types?.map(typeName).join(" · "))}<TypeMultiplier value={row.result?.typeMultiplier} mobile /><span className="dc-web-mobile-damage">{t("伤害")}{" "}{row.damage} HP</span></small></span></span>
               <TypeMultiplier value={row.result?.typeMultiplier} />
               <span className="dc-web-damage">{row.damage}</span>
-              <span className={`dc-web-score${row.lethal ? " is-ko" : row.percent < 50 ? " is-low" : " is-mid"}`}><span className="dc-web-track" role="img" aria-label={breakdown} title={breakdown}>{freezePercent > 0 ? <span className="dc-web-freeze" style={{ width: `${freezePercent}%` }} /> : null}<span style={{ width: `${Math.min(100 - freezePercent, damagePercent)}%` }} /></span><span><strong>{row.percent.toFixed(1)}%</strong>{freezePercent > 0 ? <small className="dc-web-freeze-breakdown"><span>伤害{damagePercent.toFixed(1)}%</span><span>＋冻结{freezePercent}%</span></small> : null}<small>{row.freezeLethal ? "冻结击倒" : row.lethal ? "本次可击倒" : `剩余 ${row.remainingHp} HP`}</small></span>{expanded ? <CaretUp size={16} /> : <CaretDown size={16} />}</span>
+              <span className={`dc-web-score${row.lethal ? " is-ko" : row.percent < 50 ? " is-low" : " is-mid"}`}><span className="dc-web-track" role="img" aria-label={breakdown} title={breakdown}>{freezePercent > 0 ? <span className="dc-web-freeze" style={{ width: `${freezePercent}%` }} /> : null}<span style={{ width: `${Math.min(100 - freezePercent, damagePercent)}%` }} /></span><span><strong>{row.percent.toFixed(1)}%</strong>{freezePercent > 0 ? <small className="dc-web-freeze-breakdown"><span>{t("伤害{v0}%", { v0: damagePercent.toFixed(1) })}</span><span>{t("＋冻结")}{freezePercent}%</span></small> : null}<small>{row.freezeLethal ? t("冻结击倒") : row.lethal ? t("本次可击倒") : t("剩余 {v0} HP", { v0: row.remainingHp })}</small></span>{expanded ? <CaretUp size={16} /> : <CaretDown size={16} />}</span>
             </button>
             {expanded ? <div className="dc-web-detail" id={`damage-detail-${row.spirit.id}`}>
-              <div><strong>{row.spirit.fullName}</strong><p>生命 {row.panelStats.hp} · 物防 {row.panelStats.physicalDefense} · 魔防 {row.panelStats.magicalDefense}</p><p>本次伤害 {row.damage} · 剩余 {row.remainingHp} HP</p>{freezePercent > 0 ? <p className="dc-web-freeze-detail">冻结斩杀≤{row.freezeThresholdHp} HP · 伤害后{row.remainingAfterDirect} HP · 冻结不额外扣血</p> : row.freezeImmune && row.freezeStacks > 0 ? <p className="dc-web-freeze-detail">冰系免疫冻结</p> : null}<small>{model.templateDescription(row)}<br />{model.loadoutDescription(row)}<br />本榜不计防守方特性，代入后恢复特性及预设参数。</small></div>
-              <button type="button" className="dc-web-primary" onClick={() => onImport(row.spirit, model.templateId, model.selectedSkillIndex, model.inheritTargetStatuses)}>代入防守方复算</button>
+              <div><strong>{t(row.spirit.fullName)}</strong><p>{t("生命")}{" "}{row.panelStats.hp}{" "}{t("· 物防")}{" "}{row.panelStats.physicalDefense}{" "}{t("· 魔防")}{" "}{row.panelStats.magicalDefense}</p><p>{t("本次伤害")}{" "}{row.damage}{" "}{t("· 剩余")}{" "}{row.remainingHp} HP</p>{freezePercent > 0 ? <p className="dc-web-freeze-detail">{t("冻结斩杀≤")}{row.freezeThresholdHp}{" "}{t("HP · 伤害后")}{row.remainingAfterDirect}{" "}{t("HP · 冻结不额外扣血")}</p> : row.freezeImmune && row.freezeStacks > 0 ? <p className="dc-web-freeze-detail">{t("冰系免疫冻结")}</p> : null}<small>{t(model.templateDescription(row))}<br />{t(model.loadoutDescription(row))}<br />{t("本榜不计防守方特性，代入后恢复特性及预设参数。")}</small></div>
+              <button type="button" className="dc-web-primary" onClick={() => onImport(row.spirit, model.templateId, model.selectedSkillIndex, model.inheritTargetStatuses)}>{t("代入防守方复算")}</button>
             </div> : null}
           </div>;
         })}
-        {!model.loading && !model.error && !model.ranking?.issue && !model.rows.length ? <div className="dc-web-empty"><p>没有符合当前筛选的结果</p><button type="button" onClick={() => { model.setQuery(""); model.setFilter("all"); }}>清除搜索与筛选</button></div> : null}
+        {!model.loading && !model.error && !model.ranking?.issue && !model.rows.length ? <div className="dc-web-empty"><p>{t("没有符合当前筛选的结果")}</p><button type="button" onClick={() => { model.setQuery(""); model.setFilter("all"); }}>{t("清除搜索与筛选")}</button></div> : null}
       </div>
-      <footer>{exportError ? <span role="alert">{exportError}</span> : "点行只看详情 · 搜索不改名次 · 实际对局请代入复算"}</footer>
+      <footer>{exportError ? <span role="alert">{t(exportError)}</span> : t("点行只看详情 · 搜索不改名次 · 实际对局请代入复算")}</footer>
     </section>
   </div>;
 }

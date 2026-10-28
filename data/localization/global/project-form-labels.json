@@ -1,0 +1,14 @@
+{
+  "status": "project_reviewed",
+  "scope": "Project-only descriptive branch labels for forms whose client form field is empty; these are not official form names.",
+  "labels": {
+    "白棋棋骑士分支": { "en": "White Knight branch", "ja": "白ナイト系統" },
+    "白棋棋绮后分支": { "en": "White Queen branch", "ja": "白クイーン系統" },
+    "白棋棋齐垒分支": { "en": "White Rook branch", "ja": "白ルーク系統" },
+    "白棋棋祈督分支": { "en": "White Bishop branch", "ja": "白ビショップ系統" },
+    "黑棋棋骑士分支": { "en": "Black Knight branch", "ja": "黒ナイト系統" },
+    "黑棋棋绮后分支": { "en": "Black Queen branch", "ja": "黒クイーン系統" },
+    "黑棋棋齐垒分支": { "en": "Black Rook branch", "ja": "黒ルーク系統" },
+    "黑棋棋祈督分支": { "en": "Black Bishop branch", "ja": "黒ビショップ系統" }
+  }
+}

@@ -1,4 +1,4 @@
-import { useLocale } from "../i18n/LocaleContext.jsx";
+import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import {
   calculateAllPanelStats,
@@ -64,10 +64,11 @@ export function TeamMemberEditor({
   snapshot,
   spiritChoices,
 }) {
-  const { t, locale } = useLocale();
-  const { serverId } = useRuntime();
+  const { t, locale, typeName } = useLocale();
+  const { serverId, release } = useRuntime();
   const global = serverId === "global" || snapshot.meta?.serverId === "global";
   const placeholder = global && Boolean(snapshot.meta?.placeholderSource);
+  const enabled = release.capabilities.calculate && (!global || Boolean(snapshot.meta?.id));
   const spirit = (snapshot.spirits ?? []).find(
     (candidate) => candidate.id === member?.spiritId,
   );
@@ -84,15 +85,15 @@ export function TeamMemberEditor({
   const skillById = new Map(
     (snapshot.skills ?? []).map((skill) => [skill.id, skill]),
   );
-  const bloodlineSkillIds = new Set(global ? [] : legalSkills.filter(skill => skill.bloodlineSkill).map(skill => skill.id));
-  const bloodlineConflicts = global ? [] : getBossBloodlineConflicts(snapshot, member);
+  const bloodlineSkillIds = new Set(!enabled ? [] : legalSkills.filter(skill => skill.bloodlineSkill).map(skill => skill.id));
+  const bloodlineConflicts = !enabled ? [] : getBossBloodlineConflicts(snapshot, member);
   const conflictIds = new Set(bloodlineConflicts.map(skill => skill.id));
-  const teamSkillTypes = !global && ["布灵", "布灵布灵"].includes(spirit?.fullName)
+  const teamSkillTypes = enabled && ["布灵", "布灵布灵"].includes(spirit?.fullName)
     ? [...new Set(members.slice(0, 6).flatMap((entry) =>
         (entry?.skills?.four ?? []).slice(0, 4).map((skill) => skillById.get(entryId(skill))?.type),
       ).filter(Boolean))]
     : null;
-  const calculationReady = !global && hasCompleteRaceStats(spirit?.raceStats);
+  const calculationReady = enabled && hasCompleteRaceStats(spirit?.raceStats);
   const panel = calculationReady
     ? calculateAllPanelStats({
         displayIvs: member.displayIvs,
@@ -107,7 +108,7 @@ export function TeamMemberEditor({
         physicalDefense: panel.physicalDefense,
       }).display
     : null;
-  const investmentValidation = !global && member
+  const investmentValidation = enabled && member
     ? validateAbilityInvestment({ values: member.displayIvs })
     : null;
 
@@ -128,7 +129,7 @@ export function TeamMemberEditor({
       skills: {
         ...member.skills,
         four,
-        single: global ? member.skills?.single ?? null : four.find(Boolean) ?? null,
+        single: !enabled ? member.skills?.single ?? null : four.find(Boolean) ?? null,
       },
     });
   }
@@ -155,7 +156,7 @@ export function TeamMemberEditor({
           <b>{t("{count} 种", { count: teamSkillTypes.length })}</b>
           <small>{t("按配招去重，非已使用次数")}</small>
           <div>{teamSkillTypes.map((type) => (
-            <span key={type}><ElementIcon size={16} type={type} />{type}</span>
+            <span key={type}><ElementIcon size={16} type={type} />{typeName(type)}</span>
           ))}</div>
         </section>
       ) : null}
@@ -171,7 +172,7 @@ export function TeamMemberEditor({
               value={member.natureId}
             />
             <NatureEffect natureId={member.natureId} placeholder={placeholder} />
-            {!global && <label className="team-member-editor__bloodline">
+            {enabled && <label className="team-member-editor__bloodline">
               <span>{t("血脉")}</span>
               <select
                 aria-label={t("血脉")}
@@ -261,7 +262,7 @@ export function TeamMemberEditor({
               ),
             )}
           </div>
-          {!global && <button
+          {enabled && <button
             className="team-member-editor__analysis-cta"
             onClick={onOpenAbilityAnalysis}
             type="button"

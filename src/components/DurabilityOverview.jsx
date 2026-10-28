@@ -1,3 +1,4 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
 import { calculateDurability } from "../features/team-ability/domain/durability.js";
 
 function readPanelStat(stats, key, showFinalPanel) {
@@ -12,6 +13,7 @@ export function DurabilityOverview({
   showFinalPanel,
   stats,
 }) {
+  const { t, locale } = useLocale();
   const durability = calculateDurability({
     maxHp: readPanelStat(stats, "hp", showFinalPanel),
     physicalDefense: readPanelStat(stats, "physicalDefense", showFinalPanel),
@@ -26,9 +28,9 @@ export function DurabilityOverview({
 
   return (
     <button
-      aria-label={`${label}耐久概览`}
+      aria-label={t("{label}耐久概览", { label: t(label) })}
       className={`durability-overview durability-overview--${accent}${onAnalyze ? " is-interactive" : ""}`}
-      data-tooltip={onAnalyze ? "点击进入能力分析" : undefined}
+      data-tooltip={onAnalyze ? t("点击进入能力分析") : undefined}
       disabled={!onAnalyze}
       onClick={onAnalyze}
       type="button"
@@ -36,8 +38,8 @@ export function DurabilityOverview({
       <span className="durability-overview__metrics">
         {metrics.map(([metricLabel, value]) => (
           <span className="durability-overview__metric" key={metricLabel}>
-            <span>{metricLabel}</span>
-            <output>{value.toLocaleString("zh-CN")}</output>
+            <span>{t(metricLabel)}</span>
+            <output>{value.toLocaleString(locale)}</output>
           </span>
         ))}
       </span>

@@ -6,12 +6,14 @@ import { MANUAL_PREFERENCE_KEY } from "../../src/runtime/routes.js";
 import { encodeShareState, encodeShareEnvelope } from "../../src/state/share.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { useRuntime } from "../../src/runtime/RuntimeContext.jsx";
+import { App as MockGlobalWorkspace } from "../../src/App.jsx";
 import { UNVERIFIED_GLOBAL_SNAPSHOT } from "../../src/runtime/unverified-snapshot.js";
 
 vi.mock("../../src/CalculatorRouter.jsx", () => ({
   CalculatorRouter: function CnWorkspace({ active, onOpenGlobal }) {
     const [draft, setDraft] = useState("");
     const runtime = useRuntime();
+    if (runtime.serverId === "global") return <MockGlobalWorkspace active={active} />;
     return active && <><input aria-label="CN draft" value={draft} onChange={(event) => setDraft(event.target.value)} />
       <select aria-label="CN theme" value={runtime.seasonThemePreference} onChange={(event) => runtime.onSeasonThemeChange(event.target.value)}>
         {["default", "random", "s1", "s2", "s3", "s4", "s5"].map((id) => <option key={id}>{id}</option>)}
@@ -24,7 +26,7 @@ vi.mock("../../src/App.jsx", () => ({
   App: function OriginalApp({ active }) {
     const runtime = useRuntime();
     return active && <>
-      <h1>{runtime.locale === "ja" ? "グローバル版のデータは未検証です" : "Global data needs verification"}</h1>
+      <h1>{runtime.locale === "ja" ? "グローバル版計算機" : "Global calculator"}</h1>
       <select aria-label="Language" value={runtime.locale} onChange={(event) => runtime.onLocaleChange(event.target.value)}>
         {["en", "zh-CN", "ja"].map((locale) => <option key={locale}>{locale}</option>)}
       </select>
@@ -59,14 +61,14 @@ afterEach(() => {
 test("Global direct entry mounts the reference-capable App without CN workspace; locale changes keep the server", async () => {
   localStorage.setItem("rock-calculator.teams.v1", "cn-team-sentinel");
   render(<WebEntry />);
-  await screen.findByRole("heading", { name: "Global data needs verification" }, { timeout: 10000 });
+  await screen.findByRole("heading", { name: "Global calculator" }, { timeout: 10000 });
   expect(screen.queryByLabelText("CN draft")).toBeNull();
   expect(fetch).not.toHaveBeenCalled();
   expect(document.documentElement.dataset.season).toBe("neutral");
   expect(document.documentElement.style.getPropertyValue("--season-scene-image")).toBe("none");
   fireEvent.change(screen.getByRole("combobox", { name: "Language" }), { target: { value: "ja" } });
-  await screen.findByRole("heading", { name: "グローバル版のデータは未検証です" });
-  expect(location.pathname).toBe("/global/ja/");
+  await screen.findByRole("heading", { name: "グローバル版計算機" });
+  expect(location.pathname).toBe("/jp/");
   expect(document.documentElement.lang).toBe("ja");
   expect(JSON.parse(localStorage.getItem(MANUAL_PREFERENCE_KEY))).toEqual({ serverId: "global", locale: "ja" });
   expect(localStorage.getItem("rock-calculator.teams.v1")).toBe("cn-team-sentinel");
@@ -77,7 +79,7 @@ test("switching servers restores the current CN draft and never copies it into G
   render(<WebEntry />);
   fireEvent.change(await screen.findByLabelText("CN draft"), { target: { value: "unsaved CN state" } });
   fireEvent.click(screen.getByRole("button", { name: "Global", exact: true }));
-  await screen.findByRole("heading", { name: "Global data needs verification" }, { timeout: 10000 });
+  await screen.findByRole("heading", { name: "Global calculator" }, { timeout: 10000 });
   expect(screen.queryByLabelText("CN draft")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Switch to the CN server" }));
   expect(await screen.findByLabelText("CN draft")).toHaveValue("unsaved CN state");
@@ -121,7 +123,7 @@ test("a verified Global share on a CN URL waits for an explicit switch without c
   expect(await screen.findByRole("alert")).toHaveTextContent("这份分享草稿属于国际服");
   expect(location.pathname).toBe("/cn/");
   fireEvent.click(screen.getByRole("button", { name: "在国际服打开" }));
-  await waitFor(() => expect(location.pathname).toBe("/global/ja/"));
+  await waitFor(() => expect(location.pathname).toBe("/jp/"));
   expect(await screen.findByTestId("server-snapshot")).toHaveTextContent("global");
   expect(screen.getByTestId("server-snapshot")).toHaveAttribute("data-share-request", "1");
   expect(location.hash).toBe(hash); // The original App share hook consumes it; routing never strips it early.
@@ -144,7 +146,7 @@ test("Back to the previous root entry restores CN despite the newly saved Global
   render(<WebEntry />);
   await screen.findByLabelText("CN draft");
   fireEvent.click(screen.getByRole("button", { name: "Global", exact: true }));
-  await screen.findByRole("heading", { name: "Global data needs verification" });
+  await screen.findByRole("heading", { name: "Global calculator" });
   history.back();
   await waitFor(() => expect(location.pathname).toBe("/"));
   expect(await screen.findByLabelText("CN draft")).toBeVisible();
@@ -169,14 +171,14 @@ test("opening a valid CN share keeps the Global workspace in the same page and d
 test("local season preview changes only presentation and stays separate from game data", async () => {
   history.replaceState(null, "", "/en/?seasonPreview=s2");
   render(<WebEntry />);
-  await screen.findByRole("heading", { name: "Global data needs verification" });
+  await screen.findByRole("heading", { name: "Global calculator" });
   expect(document.documentElement.dataset.season).toBe("s2");
   expect(document.documentElement.style.getPropertyValue("--season-scene-image")).toContain("s2-carnival.webp");
   expect(screen.getByTestId("server-snapshot")).toHaveTextContent("global");
   expect(fetch).not.toHaveBeenCalled();
   expect(localStorage.getItem(MANUAL_PREFERENCE_KEY)).toBeNull();
   fireEvent.change(screen.getByRole("combobox", { name: "Language" }), { target: { value: "ja" } });
-  await screen.findByRole("heading", { name: "グローバル版のデータは未検証です" });
+  await screen.findByRole("heading", { name: "グローバル版計算機" });
   expect(document.documentElement.dataset.season).toBe("s2");
   expect(document.documentElement.style.getPropertyValue("--season-character-image")).toContain("s2-jimufangzhou.webp");
 });

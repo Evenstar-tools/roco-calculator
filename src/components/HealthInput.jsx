@@ -1,3 +1,4 @@
+import { useCalculatorLocale } from "../i18n/calculator-text.js";
 import { useEffect, useState } from "react";
 
 function clamp(value, min, max) {
@@ -19,6 +20,7 @@ export function HealthInput({
   onInputModeChange,
   percentValue,
 }) {
+  const { tc } = useCalculatorLocale();
   const [mode, setMode] = useState(defaultMode);
   const displayedValue =
     mode === "percent"
@@ -56,27 +58,25 @@ export function HealthInput({
 
   return (
     <div className="health-input">
-      <div className="health-input__modes" role="group" aria-label={`${label}生命输入单位`}>
+      <div className="health-input__modes" role="group" aria-label={tc("{v0}生命输入单位", { v0: label })}>
         {["hp", "percent"].map((unit) => (
           <button
             key={unit}
-            aria-label={unit === "hp" ? "按当前值输入" : "按百分比输入"}
+            aria-label={unit === "hp" ? tc("按当前值输入") : tc("按百分比输入")}
             aria-pressed={mode === unit}
             className="health-input__mode"
             onClick={() => changeMode(unit)}
-            title={unit === "hp" ? "按当前生命输入" : "按百分比输入"}
+            title={unit === "hp" ? tc("按当前生命输入") : tc("按百分比输入")}
             type="button"
           >
-            {unit === "hp" ? "HP" : "%"}
+            {unit === "hp" ? tc("HP") : tc("%")}
           </button>
         ))}
       </div>
       <label className="health-input__field">
         <input
           aria-label={
-            mode === "percent"
-              ? `${label}生命百分比`
-              : `${label}当前生命`
+            mode === "percent" ? tc("{v0}生命百分比", { v0: label }) : tc("{v0}当前生命", { v0: label })
           }
           inputMode="decimal"
           max={mode === "percent" ? 100 : maxHp}
@@ -96,7 +96,7 @@ export function HealthInput({
           type="number"
           value={draft}
         />
-        {mode === "hp" && <span>{`/ ${maxHp}`}</span>}
+        {mode === "hp" && <span>{tc(`/ ${maxHp}`)}</span>}
       </label>
     </div>
   );

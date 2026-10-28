@@ -1,3 +1,5 @@
+import { useLocale } from "../i18n/LocaleContext.jsx";
+import { translateUi } from "../i18n/messages.js";
 import { Minus, Plus } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { DurabilityOverview } from "./DurabilityOverview.jsx";
@@ -9,12 +11,12 @@ import { abilityAdjustedStat, clampAbilityStage } from "../domain/skill-result/n
 const HOLD_DELAY_MS = 350;
 const HOLD_INTERVAL_MS = 80;
 
-export function abilityLevelHint(multiplier) {
-  return `原值的 ${Math.round(multiplier * 1000) / 10}%`;
+export function abilityLevelHint(multiplier, t = (source, values) => translateUi("zh-CN", source, values)) {
+  return t("原值的 {percent}%", { percent: Math.round(multiplier * 1000) / 10 });
 }
 
-function abilityStageLabel(stage) {
-  return `${stage}层 · ${stage > 0 ? "+" : ""}${stage * 10}%`;
+function abilityStageLabel(stage, t) {
+  return t("{stage}层 · {percent}%", { stage, percent: `${stage > 0 ? "+" : ""}${stage * 10}` });
 }
 
 export function RepeatLevelButton({
@@ -100,6 +102,8 @@ function SideStats({
   showDurabilityOverview,
   side,
 }) {
+  const { t } = useLocale();
+  const translatedLabel = t(label);
   const [panelView, setPanelView] = useState({
     showFinalPanel: true,
     spiritId: side.id,
@@ -115,17 +119,17 @@ function SideStats({
   const levels = side.levels?.length > 0 ? side.levels : [fallbackLevel];
   const multipleLevels = levels.length > 1;
   return (
-    <div aria-label={`${label}能力`} className="nature-side" role="group">
+    <div aria-label={t("{label}能力", { label: translatedLabel })} className="nature-side" role="group">
       {side.fullName ? (
         <div
           className={`nature-side__identity nature-side__identity--${accent}`}
-          title={`${label} · ${side.fullName}`}
+          title={`${translatedLabel} · ${side.fullName}`}
         >
-          {label} · {side.fullName}
+          {translatedLabel} · {side.fullName}
         </div>
       ) : null}
       <NatureSelect
-        ariaLabel={`${label}性格`}
+        ariaLabel={t("{label}性格", { label: translatedLabel })}
         onChange={onNatureChange}
         value={side.nature}
       />
@@ -174,23 +178,23 @@ function SideStats({
         const magicalStage = clampAbilityStage((Number(level.stage) || 0) + magicalBonusStage);
         const splitAttackStages = displayedStage !== magicalStage;
         const levelHint = bonusStage !== magicalBonusStage
-          ? `手调 ${level.stage}层（双攻） · 特性：物攻 ${bonusStage > 0 ? "+" : ""}${bonusStage}层、魔攻 ${magicalBonusStage > 0 ? "+" : ""}${magicalBonusStage}层`
+          ? t("手调 {stage}层（双攻） · 特性：物攻 {physical}层、魔攻 {magical}层", { stage: level.stage, physical: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, magical: `${magicalBonusStage > 0 ? "+" : ""}${magicalBonusStage}` })
           : bonusStage
-            ? `手调 ${level.stage}层 · 特性 ${bonusStage > 0 ? "+" : ""}${bonusStage}层；${abilityLevelHint(abilityAdjustedStat(1, displayedStage))}`
-            : abilityLevelHint(level.multiplier);
+            ? t("手调 {stage}层 · 特性 {bonus}层；{hint}", { stage: level.stage, bonus: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, hint: abilityLevelHint(abilityAdjustedStat(1, displayedStage), t) })
+            : abilityLevelHint(level.multiplier, t);
         const changeLevel = (nextStage) =>
           multipleLevels
             ? onLevelChange(level.role, nextStage)
             : onLevelChange(nextStage);
         const controlLabel = multipleLevels
-          ? `${label}${level.label}`
-          : `${label}等级`;
+          ? t("{label}{ability}", { label: translatedLabel, ability: t(level.label) })
+          : t("{label}等级", { label: translatedLabel });
         return (
           <div className="level-control" key={level.role ?? level.label}>
-            <span>{level.label}</span>
+            <span>{t(level.label)}</span>
             <div>
               <RepeatLevelButton
-                ariaLabel={`${controlLabel}减一`}
+                ariaLabel={t("{label}减一", { label: controlLabel })}
                 delta={-1}
                 disabled={level.stage <= -99}
                 onChange={changeLevel}
@@ -201,14 +205,14 @@ function SideStats({
               <output title={levelHint}>
                 {splitAttackStages ? (
                   <>
-                    <span>物攻 {abilityStageLabel(displayedStage)}</span>
+                    <span>{t("物攻")} {abilityStageLabel(displayedStage, t)}</span>
                     <br />
-                    <span>魔攻 {abilityStageLabel(magicalStage)}</span>
+                    <span>{t("魔攻")} {abilityStageLabel(magicalStage, t)}</span>
                   </>
-                ) : abilityStageLabel(displayedStage)}
+                ) : abilityStageLabel(displayedStage, t)}
               </output>
               <RepeatLevelButton
-                ariaLabel={`${controlLabel}加一`}
+                ariaLabel={t("{label}加一", { label: controlLabel })}
                 delta={1}
                 disabled={level.stage >= 99}
                 onChange={changeLevel}
@@ -237,8 +241,9 @@ export function NatureStatsStep({
   onDefenderNatureChange,
   showDurabilityOverview = false,
 }) {
+  const { t } = useLocale();
   return (
-    <section aria-label="性格配置" className="calculator-step">
+    <section aria-label={t("性格配置")} className="calculator-step">
       <div className="nature-grid">
         <SideStats
           accent="attack"

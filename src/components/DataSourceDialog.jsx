@@ -34,7 +34,7 @@ const FEATURED_RELEASE_SUMMARY = {
 function ReleaseItem({ release, current = false }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
-  if (serverId === "global") return <article className="data-source-release"><h3>{t("国际服版本记录待补充")}</h3></article>;
+  if (serverId === "global") return <article className="data-source-release"><h3>{t("国际服计算器")}</h3><span>2026-10-28</span><ul><li>{t("采用 S3 季中数值与规则。")}</li><li>{t("精灵、技能和特性使用国际客户端译名。")}</li><li>{t("配置与队伍可跨语言保存和分享。")}</li></ul></article>;
   return (
     <article
       className={current
@@ -100,7 +100,7 @@ function ReleaseNotesView({ onBack, onClose }) {
         </div>
       </header>
       <div className="release-notes-dialog__list">
-        {serverId === "global" ? <p>{t("国际服版本记录待补充")}</p> : USER_RELEASE_NOTES.map((release, index) => (
+        {serverId === "global" ? <ReleaseItem release={FEATURED_RELEASE_SUMMARY} current /> : USER_RELEASE_NOTES.map((release, index) => (
           <ReleaseItem
             current={index === 0}
             key={release.version}
@@ -312,11 +312,11 @@ export function DataSourceDialog({ dataVersion, onClose, onCopyFeedback, open, i
           role="dialog"
         >
           <h2>{t("关于与来源")}</h2>
-          <p className="data-source-dialog__summary">{t(serverId === "global" ? "国际服数据来源将在核验后补充。" : "非官方工具。资料来自公开页面和实机校验。")}</p>
-          {dataVersion && serverId === "cn" ? (
+          <p className="data-source-dialog__summary">{t(serverId === "global" ? "非官方工具。数值与规则采用 S3 季中，译名来自国际客户端。" : "非官方工具。资料来自公开页面和实机校验。")}</p>
+          {dataVersion ? (
             <p
               className="data-source-dialog__data-version"
-              title={t("数字为 BWIKI 页面修订号")}
+              title={serverId === "cn" ? t("数字为 BWIKI 页面修订号") : t("采用 S3 季中数值与规则。")}
             >{t("数据快照：")}{dataVersion}
             </p>
           ) : null}

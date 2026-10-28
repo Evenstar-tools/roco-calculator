@@ -46,12 +46,8 @@ const GUIDE_STEPS = [
 ];
 
 const GLOBAL_GUIDE_STEPS = [
-  { ...GUIDE_STEPS[0], body: "从国服中文占位资料中选择攻击方精灵。" },
-  { ...GUIDE_STEPS[1], body: "选择防御方；占位名称不代表国际服已确认译名。" },
-  { ...GUIDE_STEPS[2], body: "选择性格并填写个体；未设置项会保持为空。" },
-  { ...GUIDE_STEPS[3], title: "选择技能配置", body: "选择或清空单技能、四技能槽；此处只编辑配置，不计算伤害。", missingBody: "选择双方精灵后即可配置技能。" },
-  { title: "保存配置", body: "编辑会保存在当前服；可通过队伍和导入导出管理配置。", target: null },
-  { title: "分享配置", body: "打开菜单中的“分享当前配置”生成链接，也可粘贴同服分享链接载入。国际服计算仍未开放。", target: null },
+  ...GUIDE_STEPS.slice(0, 5),
+  { title: "分享配置", body: "打开菜单中的“分享当前配置”生成链接，也可粘贴同服分享链接载入。", target: null },
 ];
 
 function clamp(value, minimum, maximum) {
@@ -188,7 +184,7 @@ export function FirstRunGuide({
   const safeStep = clamp(step, 0, steps.length - 1);
   const content = steps[safeStep];
   const importStep = safeStep === steps.length - 1;
-  const detailedStep = !global && safeStep === steps.length - 2;
+  const detailedStep = safeStep === steps.length - 2;
   const cardRef = useRef(null);
   const frameRef = useRef(null);
   const alignedStepRef = useRef(null);

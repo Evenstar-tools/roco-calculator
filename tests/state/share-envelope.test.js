@@ -112,8 +112,8 @@ describe("validated server share envelopes", () => {
 
   test("Global cannot import a CN configuration by relabeling its server", async () => {
     const value = { protocolVersion: 2, ...cnEnvelope(), serverId: "global", locale: "en" };
-    await expect(encodeShareEnvelope(value)).rejects.toMatchObject({ code: "SHARE_SERVER_DATA_UNVERIFIED" });
-    await expect(decodeShareEnvelope(await rawEnvelope(value))).rejects.toMatchObject({ code: "SHARE_SERVER_DATA_UNVERIFIED" });
+    await expect(encodeShareEnvelope(value)).rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
+    await expect(decodeShareEnvelope(await rawEnvelope(value))).rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
     await expect(encodeShareEnvelope({ ...cnEnvelope(), dataVersion: "different" })).rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
   });
 

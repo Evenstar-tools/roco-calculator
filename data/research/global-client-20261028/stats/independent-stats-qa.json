@@ -1,0 +1,68 @@
+{
+  "status": "passed",
+  "scope": "Independent client extraction/schema and S4 comparison JSON/CSV validation; historical baseline provenance handled separately by baseline agent.",
+  "client": {
+    "fileVersion": "1.61.0.91",
+    "currentPakIndicesRead": 35,
+    "petbaseSourcePak": "pakchunk4-WindowsNoEditor.pak",
+    "petbaseTargetFiles": 7,
+    "allTargetsByteIdenticalToEarlierExtraction": true,
+    "duplicatePatchTargets": 0,
+    "rows": 1136,
+    "uniqueGameIds": 1136,
+    "completeSixStatRows": 1026,
+    "allSixFieldsAbsentRows": 110,
+    "allRowsFullyConsumed": true,
+    "presentStatsReadBackFromRawUint32": true
+  },
+  "comparison": {
+    "s4ProjectRows": 622,
+    "idMatchedCompleteRows": 618,
+    "same": 528,
+    "different": 90,
+    "missing": 4,
+    "gameIdBridgeUniqueAndOneToOne": true,
+    "all1136HelperMappingsMatchFreshExtraction": true,
+    "sameClientNameGroupsPreserved": 61,
+    "projectFormLabelsPreserved": true,
+    "sixFieldDeltaCellsVerified": 377,
+    "sourceSUM_raceUsedOnlyAsMetadata": true,
+    "totalsCalculatedFromSixFields": true,
+    "explicitSourceSUM_raceDisagreements": 825,
+    "completeRowsMissingSourceSUM_race": 6
+  },
+  "csv": {
+    "allRows": 622,
+    "differenceRows": 90,
+    "missingRows": 4,
+    "clientExtraRows": 518,
+    "valuesMatchJsonAndOriginalSource": true,
+    "absentFieldsRemainEmpty": true
+  },
+  "otherBaselineChecks": {
+    "s3OpeningValuesMatchProvidedBaseline": true,
+    "s3MidseasonValuesMatchProvidedBaseline": true,
+    "s3MidseasonSameRows": 592,
+    "baselineProvenanceAuditedByThisReport": false
+  },
+  "boundaries": [
+    "Client table data does not prove runtime/server effective stats or playable availability.",
+    "Rows with unencoded race fields stay null, not assumed zero.",
+    "Explicit SUM_race discrepancy reason was not established."
+  ],
+  "missingS4GameIds": [
+    5063,
+    5065,
+    3796,
+    5064
+  ],
+  "completeRowsMissingSourceTotalGameIds": [
+    5056,
+    5057,
+    5059,
+    5060,
+    5062,
+    13000171
+  ],
+  "openIssues": []
+}

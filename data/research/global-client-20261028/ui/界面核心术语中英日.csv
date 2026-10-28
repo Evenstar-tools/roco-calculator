@@ -1,0 +1,400 @@
+﻿分类,项目概念,客户端中文原文,英文原文,日文原文,状态,使用场景,说明,来源键
+克制与伤害,当前生命,当前血量,Current Health,残りHP,客户端三语已确认,项目现有界面概念 | 能力值标签；按具体属性ID使用,当前生命对应 ATTRIBUTE_CONF 25 当前血量 Current Health/残りHP；不以最大生命或基础生命标签替代。,table:ATTRIBUTE_CONF:25:attribute_name
+克制与伤害,魔法,魔法,Magic,魔法,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:DAMAGETYPE_MAGICAL:msg
+克制与伤害,物理,物理,Physical,物理,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:DAMAGETYPE_PHYSICAL:msg
+克制与伤害,克制,克制,Advantage,有利,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:umg_battle_popup_general_1:msg
+克制与伤害,抵抗,抵抗,Resistant,耐性,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:umg_battle_popup_general_2:msg
+克制与伤害,防御,防御,Defense,防御,客户端三语已确认,项目现有界面概念,这里限定为技能分类，选 umg_pet_skill_tips_2；不代表物防数值。,table:LOCALIZATION_CONF:umg_pet_skill_tips_2:msg
+克制与伤害,变化 / 状态,状态,Status,状態,客户端三语已确认,项目现有界面概念,项目变化为 status 技能分类，映射正式技能详情状态分类；不可用作泛指战斗状态。 | 这里限定为技能分类，选 umg_pet_skill_tips_3；战斗状态名称另行处理。,table:LOCALIZATION_CONF:umg_pet_skill_tips_3:msg
+六项能力,生命 / HP,生命,HP,HP,客户端三语已确认,项目现有界面概念 | 能力值标签；按具体属性ID使用,保留所列客户端原行，不使用项目旧译，不拼接或改写。 | 项目 HP 对应六维生命；选 ATTRIBUTE_CONF 1 的正式短标签。,table:ATTRIBUTE_CONF:1:attribute_name
+六项能力,物攻,物攻,P. ATK,物攻,客户端三语已确认,项目现有界面概念 | 能力值标签；按具体属性ID使用,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:ATTRIBUTE_CONF:2:attribute_name
+六项能力,魔攻,魔攻,M. ATK,魔攻,客户端三语已确认,项目现有界面概念 | 能力值标签；按具体属性ID使用,保留所列客户端原行，不使用项目旧译，不拼接或改写。 SKILL_TAG 5 的中文特攻 / Magic Attack / 特攻是另一标签，不能据此把六维魔攻改回特攻；六维以 ATTRIBUTE_CONF 3 为准。,table:ATTRIBUTE_CONF:3:attribute_name
+六项能力,物防,物防,P. DEF,物防,客户端三语已确认,项目现有界面概念 | 能力值标签；按具体属性ID使用,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:ATTRIBUTE_CONF:4:attribute_name
+六项能力,魔防,魔防,M. DEF,魔防,客户端三语已确认,项目现有界面概念 | 能力值标签；按具体属性ID使用,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:ATTRIBUTE_CONF:5:attribute_name
+六项能力,速度,速度,SPD,速さ,客户端三语已确认,项目现有界面概念 | 能力值标签；按具体属性ID使用,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:ATTRIBUTE_CONF:6:attribute_name
+属性与效果,,无影响系别,No Class Affinity,影響属性なし,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/UMG_BattleUIBackpackTips.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::00D89AD845E26DC53BC41EBB38A4FAD6
+属性与效果,,效果影响,Effect Impact,効果の影響,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/HUD/UMG_Battle_BuffInfo.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::05B98B044C7BAA13AE666FB7E2ACE8D8
+属性与效果,,效果不佳,Weak,イマイチ,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/UMG_Common_Skill_Tips.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::063B3E8B4B3440DE1F36BB9DE1B5A032
+属性与效果,,其他效果,Other Effects,その他の効果,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/UMG_Battle_Message_Buff.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::0AC9BA8644510F91CBC6E2890F1B9CF4
+属性与效果,,系别,Class,属性,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/Backpack/UMG_PetFilterTips.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::1B309615476725C73681DE987399501E
+属性与效果,,效果绝佳,Exceptional,効果抜群,客户端三语已确认,NewRoco/Modules/System/Common/res/UMG_Battle_ChangePet_Attr.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::1D74CA924E6CA6703B84D5B6B9C79895
+属性与效果,,属性,Attributes,ステータス,客户端三语已确认,NewRoco/Modules/System/Activity/Res/UMG_PetBaseInfo.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。 此处是能力属性Attributes/ステータス；系别用Class/属性。,locres::1D90752F4FCD0A0BB369C8A41D762DB6
+属性与效果,,系别相性,Class Matchup,属性相性,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/Backpack/UMG_PetUIBackpackTips.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::2C3550D44C34F5C1541890A39444C654
+属性与效果,,效果一般,Average,普通,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/UMG_Common_Skill_Tips.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::34AA294E4B8C46A4A11495934BB9FBDF
+属性与效果,,效果非凡,Strong,非常に有効,客户端三语已确认,NewRoco/Modules/System/Common/res/UMG_Battle_ChangePetConfirm_2.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::39C4969640E634D97738E1A78DE4F5B5
+属性与效果,,效果很好,Very Effective,バッチリ,客户端三语已确认,NewRoco/Modules/System/TeamBattle/Res/UMG_TeamBattle_PetTips.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::42C31ECF4788F6F76D388FADE4AFE62D
+属性与效果,,效果极差,Poor,ほぼ無効,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/UMG_Common_Skill_Tips.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::43617C9F460A7397E48EED9665D50CC5
+属性与效果,,暴击,Critical Hit,会心,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/BattleDebugger/UMG_Battle_RuntimeDebug_Skill_Panel.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。 此独立标签来自调试界面。,locres::6FAC1A184A7FB28A16DCA2B0C2822C61
+属性与效果,,系别属性,Class Attributes,属性ステータス,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_PetDetailedInfo.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::BBA465284F88EFA26525B08E75812F12
+属性与效果,,效果,Effect,効果,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/UMG_BattleMainWindow.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::DC8BD36048D2A411168815B37CD87EA6
+属性与效果,,效果一览,Effect Overview,効果一覧,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/Having/UMG_Having_Attribute.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::FC50BA4C4220B86C5D985AA99B3B83C3
+属性全称,,龙系,Dragon Class,竜属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:10:type_name
+属性全称,,电系,Electro Class,雷属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:11:type_name
+属性全称,,毒系,Poison Class,毒属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:12:type_name
+属性全称,,虫系,Bug Class,虫属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:13:type_name
+属性全称,,武系,Fighting Class,武属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:14:type_name
+属性全称,,翼系,Wing Class,翼属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:15:type_name
+属性全称,,萌系,Charm Class,萌属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:16:type_name
+属性全称,,幽系,Shadow Class,幽霊属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:17:type_name
+属性全称,,恶系,Havoc Class,悪属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:18:type_name
+属性全称,,机械系,Mech Class,機械属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:19:type_name
+属性全称,,无系别,No Class,属性なし,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:1:type_name
+属性全称,,幻系,Stellar Class,幻属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:20:type_name
+属性全称,,普通系,Common Class,ノーマル属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:2:type_name
+属性全称,,草系,Flora Class,草属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:3:type_name
+属性全称,,火系,Fire Class,炎属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:4:type_name
+属性全称,,水系,Water Class,水属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:5:type_name
+属性全称,,光系,Light Class,光属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:6:type_name
+属性全称,,地系,Earth Class,地属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:8:type_name
+属性全称,,冰系,Ice Class,氷属性,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:9:type_name
+属性简称,龙,龙,Dragon,竜,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:10:short_name
+属性简称,电,电,Electro,雷,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:11:short_name
+属性简称,毒,毒,Poison,毒,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:12:short_name
+属性简称,虫,虫,Bug,虫,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:13:short_name
+属性简称,武,武,Fighting,武,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:14:short_name
+属性简称,翼,翼,Wing,翼,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:15:short_name
+属性简称,萌,萌,Charm,萌,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:16:short_name
+属性简称,幽,幽,Shadow,幽霊,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:17:short_name
+属性简称,恶,恶,Havoc,悪,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:18:short_name
+属性简称,机械,机械,Mech,機械,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:19:short_name
+属性简称,,无,None,なし,客户端三语已确认,精灵和技能的系别；无系别单独保留，不计入18种属性,,table:TYPE_DICTIONARY:1:short_name
+属性简称,幻,幻,Stellar,幻,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:20:short_name
+属性简称,普通,普通,Common,ノーマル,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:2:short_name
+属性简称,草,草,Flora,草,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:3:short_name
+属性简称,火,火,Fire,炎,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:4:short_name
+属性简称,水,水,Water,水,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:5:short_name
+属性简称,光,光,Light,光,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:6:short_name
+属性简称,地,地,Earth,地,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:8:short_name
+属性简称,冰,冰,Ice,氷,客户端三语已确认,项目现有界面概念 | 精灵和技能的系别；无系别单独保留，不计入18种属性,selectedSource 为短名；relatedSources 保留同一元素完整名称。普通元素与无修正性格严格分开。,table:TYPE_DICTIONARY:9:short_name
+常用操作,,取消,Cancel,キャンセル,客户端三语已确认,NewRoco/Modules/System/TipsModule/Res/UMG_TapTap_PopUp.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::023E092340D896DB2C7A93BD1FAB240E
+常用操作,,收起,Collapse,非表示,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/Backpack/UMG_ChangePetConfirmPanel.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::026E21634339B8E0C42CF084D30D0AFC
+常用操作,详情,详情,Details,詳細,客户端三语已确认,项目现有界面概念 | NewRoco/Modules/System/PetUI/Res/UMG_UnlockSkills.uexp,保留所列客户端原行，不使用项目旧译，不拼接或改写。 | 不同英日变体按来源界面保留，勿只按中文批量替换。,locres::03DB148B4F706334731EDD9D55B8CBB1
+常用操作,,确认,OK,OK,客户端三语已确认,NewRoco/Modules/System/SystemSetting/Res/UMG_SubmitProgressPopup.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::0C68E24F4FB043193EAD02BBB1A4EDD8
+常用操作,,确认,Confirm,決定,客户端三语已确认,NewRoco/Modules/System/TipsModule/Res/UMG_DialogWithBase.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::0C8AA5FA48913472CE95CF87502AC373
+常用操作,,确定,Confirm,OK,客户端三语已确认,NewRoco/Modules/System/CommonPopUp/Res/UMG_Common_Remind.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::1C91C74D474A85E127C58A94F56B9524
+常用操作,,选择,Select,選択する,客户端三语已确认,NewRoco/Modules/System/Activity/Res/UMG_Activity_SeasonPetCertification_BlessingPetDetailPanel.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::22A08BBF453C8BE831C8438E54D8EB6B
+常用操作,,保存,Save,保存,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetTeam/UMG_ChooseAlternativePet.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::2E5C31C94838949A08EF0E8207FF05A6
+常用操作,,已选,Selected,選択済み,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetBag/UMG_PetPortableBag.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::34667E6844F1BEFC28478B96F7F2C79A
+常用操作,,导出,Export,書き出す,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_CardDebugPanel.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。 此独立标签来自调试界面。,locres::3FCDE0584D201A4E7AA7518CEB0F416C
+常用操作,展开,展开,Expand,展開,客户端三语已确认,项目现有界面概念 | NewRoco/Modules/System/PetUI/Res/UMG_Pet_Attribute.uexp,保留所列客户端原行，不使用项目旧译，不拼接或改写。 | 不同英日变体按来源界面保留，勿只按中文批量替换。,locres::4599EB6A4E1F994C2A15B7A64144A682
+常用操作,,关闭,Close,閉じる,客户端三语已确认,NewRoco/Modules/System/CommonPopUp/Res/UMG_ReceiveAward_PopUp.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。 此处Close指关闭界面，不能直接用于开关的Off状态。,locres::66782B844F4C1F77F2B1519C77C5E4EA
+常用操作,,重置,Reset,リセット,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetBag/UMG_Search.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::6A9B8BEC4F8D92DCE63993BA5FA6E2D4
+常用操作,,确认,OK,決定,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/UMG_PVP_Celeritcarnety.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::806C2CE14A10FA4E2D1F239F1536B93C
+常用操作,已选,已选,Selected,選択済み,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,locres::844061964DD84C1B22E659BED9C55A9E
+常用操作,,搜索,Search,探す,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetBag/UMG_Search.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::850AB1BC43641F1C3EBA2281C4BAF716
+常用操作,收起,收起,Collapse,非表示,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,locres::90B5633A40036992D8EF31BF30042BB6
+常用操作,,排序,Sort,並び替え,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetBag/UMG_PetWarehouseOrganization.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::9E07AE4C4F9F4E2CFC11D6A63E66C9CE
+常用操作,设置,设置,Settings,設定,客户端三语已确认,项目现有界面概念 | NewRoco/Modules/System/SystemSetting/Res/UMG_SystemSettingMain.uexp,保留所列客户端原行，不使用项目旧译，不拼接或改写。 | 不同英日变体按来源界面保留，勿只按中文批量替换。,locres::B772C777482D7DBF017755B0327286A5
+常用操作,,返回,Back,戻る,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/UMG_Battle_Bubble.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::BAD845BC4483E4F3032275B59DAD1E1E
+常用操作,,返回,Return,戻る,客户端三语已确认,NewRoco/Modules/System/SystemSetting/Res/UMG_FeedbackPopup.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::F04938CA46B8F6B4FD18E9AA014885FD
+常用操作,返回,返回,Back,戻る,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:BACK:msg
+常用操作,取消,取消,Cancel,キャンセル,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:CANCEL:msg
+常用操作,重试,重试,Retry,リトライ,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:RETRY:msg
+常用操作,搜索,搜索,Search,探す,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:bp_gift_share_button01:msg
+常用操作,分享,分享,Share,シェア,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:bp_gift_share_button02:msg
+常用操作,刷新,刷新,Refresh,更新,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:friend_recommend_friend_btn:msg
+常用操作,全部,全部,All,すべて,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:furniture_filter_all:msg
+常用操作,确定,确定,Confirm,OK,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:instancemodule_1:msg
+常用操作,保存,保存,Save,保存,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:rolecard_information_edit_btn:msg
+常用操作,确认,确认,Confirm,決定,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:tips_dialog_butten_accept:msg
+常用操作,删除,删除,Delete,削除,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:umg_markerpanel_2:msg
+常用操作,选择,选择,Select,選択する,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:umg_miracleexchange_main_1:msg
+常用操作,清空,清空,Clear,すべて削除,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:umg_npcshop_7:msg
+常用操作,完成,完成,Complete,完了,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:umg_pethatching8:msg
+性格,坦率,坦率,Candid,素直,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:10:name
+性格,聪明,聪明,Smart,かしこい,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:11:name
+性格,专注,专注,Focused,集中型,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:12:name
+性格,偏执,偏执,Headstrong,偏屈,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:13:name
+性格,冷静,冷静,Calm,冷静,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:14:name
+性格,理性,理性,Rational,理知的,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:15:name
+性格,警惕,警惕,Vigilant,警戒態勢,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:16:name
+性格,温顺,温顺,Docile,おとなしい,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:17:name
+性格,害羞,害羞,Shy,照れ屋,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:18:name
+性格,慎重,慎重,Cautious,用心深い,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:19:name
+性格,大胆,大胆,Bold,強気,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:1:name
+性格,焦虑,焦虑,Anxious,神経質,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:20:name
+性格,胆小,胆小,Skittish,小心者,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:21:name
+性格,急躁,急躁,Hasty,せっかち,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:22:name
+性格,开朗,开朗,Cheerful,陽気,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:23:name
+性格,莽撞,莽撞,Reckless,無鉄砲,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:24:name
+性格,热情,热情,Passionate,情熱的,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:25:name
+性格,沉默,沉默,Quiet,無口,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:26:name
+性格,忧郁,忧郁,Melancholy,憂うつ,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:27:name
+性格,平和,平和,Peaceful,温和,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:28:name
+性格,粗心,粗心,Careless,そそっかしい,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:29:name
+性格,固执,固执,Stubborn,頑固,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:2:name
+性格,踏实,踏实,Grounded,堅実,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:30:name
+性格,调皮,调皮,Mischievous,わんぱく,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:3:name
+性格,勇敢,勇敢,Brave,勇敢,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:4:name
+性格,逞强,逞强,Bravado,強がり,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:5:name
+性格,稳重,稳重,Steady,沈着,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:6:name
+性格,天真,天真,Naive,無邪気,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:7:name
+性格,懒散,懒散,Lazy,怠け者,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:8:name
+性格,悠闲,悠闲,Carefree,のんき,客户端三语已确认,项目现有界面概念 | 玩家精灵性格名称；排除表情和非玩家重复项,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:NATURE_CONF:9:name
+战斗,下回合,下一回合,Next Turn,次のターン,客户端三语已确认,项目现有界面概念 | NewRoco/Modules/System/BattleUI/Res/UMG_Information_Recording.uexp,项目下回合对应正式战斗记录界面 UMG_Information_Recording 的下一回合 Next Turn/次のターン，原行全文保留。 | 不同英日变体按来源界面保留，勿只按中文批量替换。,locres::1D7A5B5347664A9805664FB4BC847499
+战斗,重置,重置,Reset,リセット,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,locres::7C42A365483034F4817D0983FDEB64DA
+战斗,离场,离场,Leave the Field,退場,客户端三语已确认,项目现有界面概念 | 战斗关键词；完整说明另见机制说明对照,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:DESC_NOTE_CONF:3009:note
+战斗,无天气,无天气,No Weather,天気なし,客户端三语已确认,项目现有界面概念 | 无天气选项的客户端原词；未宣称其为战斗name字段,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:WEATHER_CONF:10:tod_param.0.des
+战斗,雷鸣,雷鸣,Thunderstorm,雷鳴,客户端三语已确认,项目现有界面概念 | 战斗用名称；与世界天气name字段分开,保留所列客户端原行，不使用项目旧译，不拼接或改写。 已核该版字段名为 name_for_battle；name 为开放世界天气名，不能替代战斗名。天气效果原文仅作来源记录，不在本任务改计算机制。,table:WEATHER_CONF:14:name_for_battle
+战斗,雨天,雨天,Rainy,雨,客户端三语已确认,项目现有界面概念 | 战斗用名称；与世界天气name字段分开,选 WEATHER_CONF name_for_battle 正式战斗天气标签 Rainy；非另一局部提示 Rain。 已核该版字段名为 name_for_battle；name 为开放世界天气名，不能替代战斗名。天气效果原文仅作来源记录，不在本任务改计算机制。,table:WEATHER_CONF:3:name_for_battle
+战斗,暴风雪,暴风雪,Blizzard,吹雪,客户端三语已确认,项目现有界面概念 | 战斗用名称；与世界天气name字段分开,保留所列客户端原行，不使用项目旧译，不拼接或改写。 已核该版字段名为 name_for_battle；name 为开放世界天气名，不能替代战斗名。天气效果原文仅作来源记录，不在本任务改计算机制。,table:WEATHER_CONF:5:name_for_battle
+战斗,沙暴,沙暴,Sandstorm,砂嵐,客户端三语已确认,项目现有界面概念 | 战斗用名称；与世界天气name字段分开,保留所列客户端原行，不使用项目旧译，不拼接或改写。 已核该版字段名为 name_for_battle；name 为开放世界天气名，不能替代战斗名。天气效果原文仅作来源记录，不在本任务改计算机制。,table:WEATHER_CONF:6:name_for_battle
+战斗天气,,雨天,Rainy,雨,客户端三语已确认,战斗用名称；与世界天气name字段分开,,table:WEATHER_CONF:4:name_for_battle
+战斗天气,,暴风雪,Blizzard,吹雪,客户端三语已确认,战斗用名称；与世界天气name字段分开,,table:WEATHER_CONF:9:name_for_battle
+战斗机制与印记,,中毒,Poison,毒,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1001:note
+战斗机制与印记,,灼烧,Burn,燃焼,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1002:note
+战斗机制与印记,,脱离,Retreat,退場,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1003:note
+战斗机制与印记,,冻结,Freeze,凍結,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1004:note
+战斗机制与印记,,迅捷,Agility,迅速,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1005:note
+战斗机制与印记,,蓄力,Charge,チャージ,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1007:note
+战斗机制与印记,,寄生,Parasite,寄生,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1008:note
+战斗机制与印记,,奉献,Offering,献身,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1009:note
+战斗机制与印记,,迸发,Surge,はじける力,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1010:note
+战斗机制与印记,,打断,Interrupt,中断,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1011:note
+战斗机制与印记,,增益,Buff,バフ,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1012:note
+战斗机制与印记,,减益,Debuff,デバフ,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1013:note
+战斗机制与印记,,中毒印记,Poison Mark,毒マーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1014:note
+战斗机制与印记,,应对状态,Counter: Status,状態カウンター,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1015:note
+战斗机制与印记,,应对攻击,Counter: Attack,攻撃カウンター,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1016:note
+战斗机制与印记,,应对防御,Counter: Defense,防御カウンター,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1017:note
+战斗机制与印记,,攻击印记,Attack Mark,攻撃マーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1018:note
+战斗机制与印记,,棘刺印记,Thorn Mark,トゲマーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1019:note
+战斗机制与印记,,先手,Priority,先手,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1020:note
+战斗机制与印记,,光合印记,Photosynthesis Mark,ソーラーマーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1021:note
+战斗机制与印记,,湿润印记,Wet Mark,うるおいマーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1022:note
+战斗机制与印记,,蓄电印记,Electrocharge Mark,蓄電マーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1023:note
+战斗机制与印记,,返场,Return to the Field,再登場,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1024:note
+战斗机制与印记,,紧急脱离,Forced Retreat,緊急離脱,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1026:note
+战斗机制与印记,,风起印记,Windrise Mark,突風マーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1027:note
+战斗机制与印记,,降灵印记,Invocation Mark,スピリットマーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1028:note
+战斗机制与印记,,吸血,Lifesteal,HP吸収,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1029:note
+战斗机制与印记,,蓄势印记,Power Charge Mark,チャージマーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1030:note
+战斗机制与印记,,龙噬印记,Dragonbite Mark,ドラゴンバイトマーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1031:note
+战斗机制与印记,,减速印记,Slow Mark,減速マーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1032:note
+战斗机制与印记,,过载,Overload,オーバーロード,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1034:note
+战斗机制与印记,,星陨印记,Starfall Mark,隕石マーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1035:note
+战斗机制与印记,,中毒效果,Poison Effect,毒効果,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:1036:note
+战斗机制与印记,,积蓄,Stored Power,ため込み,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3003:note
+战斗机制与印记,,沙暴,Sandstorm,砂嵐,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3006:note
+战斗机制与印记,,暴风雪,Blizzard,吹雪,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3007:note
+战斗机制与印记,,雨天,Rainy,雨,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3008:note
+战斗机制与印记,,印记,Mark,マーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3010:note
+战斗机制与印记,,巧变,Versatility,トリックチェンジ,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3011:note
+战斗机制与印记,,萌芽印记,Sprout Mark,萌芽マーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3012:note
+战斗机制与印记,,附加中毒,Inflict Poison,毒付与,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3013:note
+战斗机制与印记,,属性增益,Attribute Boost,ステータスバフ,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3014:note
+战斗机制与印记,,混血精灵,Hybrid Jini,混血ジニ,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3015:note
+战斗机制与印记,,与野生精灵自动战斗,Auto Battle with Wild Jini,野生ジニとのオートバトル,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3016:note
+战斗机制与印记,,与首领精灵自动战斗,Auto Battle with Alpha Jini,リーダージニとオートバトル,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3017:note
+战斗机制与印记,,属性减益,Attribute Debuff,ステータスデバフ,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3018:note
+战斗机制与印记,,选择,Select,選択する,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3019:note
+战斗机制与印记,,暗涌印记,Undercurrent Mark,暗流マーク,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3020:note
+战斗机制与印记,,雷鸣,Thunderstorm,雷鳴,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3021:note
+战斗机制与印记,,引电,Conduction,誘電,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3022:note
+战斗机制与印记,,禁足,Immobilized,足止め,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:3023:note
+战斗机制与印记,,无法叠加,Does Not Stack,スタック不可,客户端三语已确认,战斗关键词；完整说明另见机制说明对照,,table:DESC_NOTE_CONF:8001:note
+技能,能耗,耗能,Energy Cost,コスト,客户端三语已确认,项目现有界面概念 | NewRoco/Modules/System/TipsModule/Res/UMG_Common_Tips.uexp,项目能耗与客户端技能提示耗能是同一费用字段，按 UMG_Common_Tips 原词 Energy Cost/コスト 对应。 | 不同英日变体按来源界面保留，勿只按中文批量替换。,locres::A0B98147409BBA86B609CE92E02E343D
+技能,威力,威力,Power,威力,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,locres::BF2F28264C911EE97AB996AC920213F4
+技能,传动,传动,Gearshift,位置変動,客户端三语已确认,项目现有界面概念 | 战斗关键词；完整说明另见机制说明对照,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:DESC_NOTE_CONF:1033:note
+技能,技能石,技能石,Skill Tablet,スキルストーン,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:DESC_NOTE_CONF:2018:note
+技能,连击 / 连击次数,连击数,Combo Count,連撃数,客户端三语已确认,项目现有界面概念 | 战斗关键词；完整说明另见机制说明对照,项目连击列存储 hitCount，选择 DESC_NOTE_CONF 3005 的完整术语连击数 Combo Count/連撃数；BUFF 连击 Combo/連続攻撃为状态名另存。 | 选择 DESC_NOTE_CONF 3005 词条连击数 Combo Count/連撃数；该行说明是改变有连击技能的连击次数，与项目 hitCount 对应。原调试 UMG 独立标签保留作相关来源。,table:DESC_NOTE_CONF:3005:note
+技能,技能,技能,Skills,スキル,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:umg_petleftpanel_2:msg
+技能,能量,能量,Energy,エネルギー,客户端三语已确认,项目现有界面概念 | 技能筛选标签，不替代六项能力名称,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:SKILL_TAG:101:tag
+技能与战斗,,技能,Skills,スキル,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/OperationPanel/UMG_Battle_Operate.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::0874A8E84DA0BC3E98534B94E50F0417
+技能与战斗,,特性,Trait,特性,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/HUD/UMG_Battle_FeatureInfo.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::0A4ADF5E414F3A64D4D59DB73295889F
+技能与战斗,,连击次数,Combo Count,連撃数,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/BattleDebugger/UMG_Battle_RuntimeDebugPetSkills2.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。 此独立标签来自调试界面。,locres::27988B1B406B832E14A23A8D021023A5
+技能与战斗,,天气,Weather,天気,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/BattleDebugger/UMG_Battle_RuntimeDebug_Skill_Panel.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。 此独立标签来自调试界面。,locres::345AB74B4975D40EC4A855A7D8708AD3
+技能与战斗,,上一回合,Previous Turn,前のターン,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/UMG_Information_Recording.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::5A9CBF4D4CD6BF2CC18EB7A36F198AE8
+技能与战斗,,威力,Power,威力,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetTeam/UMG_ChooseAlternativeItem.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::7DB4DBC643A8B5D6CA4EC6BA9C9C4E75
+技能与战斗,,使用,Use,使用する,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetTeam/UMG_FriendTeam_AICoach1.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::8B3CB4A54A010C3A8BA604BE51D2597B
+技能与战斗,,回合数,Number of Turns,ターン数,客户端三语已确认,NewRoco/Modules/System/Common/res/UMG_AdditionalTargetBase.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::C1812320468FF14080783D956306015E
+技能与战斗,,剩余回合：,Turns Left: ,残りターン：,客户端三语已确认,NewRoco/Modules/System/BattleUI/Res/UMG_TerritoryTrialSettlement.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::DE6D7CCA4F1E3EF5EF09DCB2BC080EC2
+技能分类与学习,,攻击,Attack,攻撃,客户端三语已确认,技能分类或解锁途径,,table:SKILL_FILTER_CONF:1:filter_desc
+技能分类与学习,,精灵养成解锁,Jini Nurturing,ジニ育成,客户端三语已确认,技能分类或解锁途径,,table:SKILL_FILTER_CONF:22:filter_desc
+技能分类与学习,,使用技能石解锁,Skill Tablets,スキルストーンで解放,客户端三语已确认,技能分类或解锁途径,,table:SKILL_FILTER_CONF:23:filter_desc
+技能分类与学习,,修改血脉影响解锁,Bloodline Effects,血統変更で解放,客户端三语已确认,技能分类或解锁途径,,table:SKILL_FILTER_CONF:24:filter_desc
+技能分类与学习,,状态,Status,状態,客户端三语已确认,技能分类或解锁途径,,table:SKILL_FILTER_CONF:2:filter_desc
+技能分类与学习,,防御,Defense,防御,客户端三语已确认,技能分类或解锁途径,,table:SKILL_FILTER_CONF:3:filter_desc
+技能标签,,系别,Class,属性,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:102:tag
+技能标签,,技能目标,Skill Target,スキル目標,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:103:tag
+技能标签,,技能图标,Skill Icon,スキルアイコン,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:104:tag
+技能标签,,待机,Idle,待機,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:10:tag
+技能标签,,攻击类,Attack,攻撃,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:1:tag
+技能标签,,防御类,Defense,防御,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:2:tag
+技能标签,,效果类,Effect,効果,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:3:tag
+技能标签,,物攻,P. ATK,物攻,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:4:tag
+技能标签,,特攻,Magic Attack,特攻,客户端三语已确认,技能筛选标签，不替代六项能力名称,此标签中文为特攻、英文Magic Attack、日文特攻；六维魔攻使用ATTRIBUTE_CONF.3。,table:SKILL_TAG:5:tag
+技能标签,,恢复,Recovery,HP回復,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:6:tag
+技能标签,,回能,Energy Recovery,エネルギー回復,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:7:tag
+技能标签,,特殊,Special,特殊,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:8:tag
+技能标签,,小憩,Break,休息,客户端三语已确认,技能筛选标签，不替代六项能力名称,,table:SKILL_TAG:9:tag
+效果分类,,其他,Other,その他,客户端三语已确认,增益、减益、印记等效果类型,,table:BUFF_TYPE:3:buff_type_desc
+效果分类,,印记,Mark,マーク,客户端三语已确认,增益、减益、印记等效果类型,,table:BUFF_TYPE:4:buff_type_desc
+效果分类,,特性,Trait,特性,客户端三语已确认,增益、减益、印记等效果类型,,table:BUFF_TYPE:5:buff_type_desc
+精灵与队伍,,精灵,Jini,ジニ,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetBag/UMG_PetWarehouseScreening.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::000A5CBB442B81AFD7D7AC9BCB94556E
+精灵与队伍,,精灵筛选,Jini Filter,絞り込み検索,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetBag/UMG_PetWarehouseScreening.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::424E532648E80817377911BAAE4FF56B
+精灵与队伍,,图鉴,Codex,図鑑,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_PetRightPanel.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::8596BD6442D00EAF9F3E1E854D779B89
+精灵与队伍,,队伍系别,Lineup Class,パーティ属性,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetTeam/UMG_Pet_TeamResonance.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::AF4B6E444D209517B4962199DA43D2DF
+精灵与队伍,图鉴,图鉴,Codex,図鑑,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,locres::EEE60D57492EF6CBCFC08AA68C8F8A72
+精灵与队伍,,筛选规则,Filters,絞り込み条件,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/Backpack/UMG_PetFilterTips.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::FB573A6540628E675B3A9EA1B56573F8
+精灵与队伍,萌化,萌化,Cuteify,モエモエ,客户端三语已确认,项目现有界面概念 | 战斗关键词；完整说明另见机制说明对照,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:DESC_NOTE_CONF:1006:note
+精灵与队伍,进化,进化,Evolve,進化,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:DESC_NOTE_CONF:2011:note
+精灵与队伍,血脉,血脉,Bloodline,血統,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:pet_filter_title_blood:msg
+精灵与队伍,精灵,精灵,Jini,ジニ,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:umg_compassunlocktips_1:msg
+精灵与队伍,特性,特性,Trait,特性,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:umg_petleftpanel_11:msg
+精灵与队伍,队伍 / 阵容,队伍,Lineup ,パーティ,客户端三语已确认,项目现有界面概念,客户端队伍原文 Lineup 带尾部空格；资料保留，产品接入时才按版式决定是否trim。 | 这里指项目所管理精灵阵容，对应客户端编队/队伍栏；原文 Lineup 带尾部空格，未经修改保留。,table:LOCALIZATION_CONF:umg_petteam_1:msg
+精灵与队伍,首领,首领,Alpha,リーダー,客户端三语已确认,项目现有界面概念 | 血脉条目；包内存在不代表本次测试服已开放,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:PET_BLOOD_CONF:19:blood_name
+精灵筛选,,首领,Alpha,リーダー,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:37:filter_desc
+精灵筛选,,噩梦,Nightmare,ナイトメア,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:38:filter_desc
+精灵筛选,,奇异,Exotic,奇異,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:39:filter_desc
+精灵筛选,,了不起的天分,Amazing Talent,ずば抜けた才能,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:40:filter_desc
+精灵筛选,,相当好的天分,Great Talent,優れた才能,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:41:filter_desc
+精灵筛选,,还不错的天分,Decent Talent,なかなかの才能,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:42:filter_desc
+精灵筛选,,一般般的天分,Average Talent,普通の才能,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:43:filter_desc
+精灵筛选,,物攻增益类,P. ATK Buff,物攻バフ,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:44:filter_desc
+精灵筛选,,物防增益类,P. DEF Buff,物防バフ,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:45:filter_desc
+精灵筛选,,魔攻增益类,M. ATK Buff,魔攻バフ,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:46:filter_desc
+精灵筛选,,魔防增益类,M. DEF Buff,魔防バフ,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:47:filter_desc
+精灵筛选,,速度增益类,SPD Buff,速さバフ,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:48:filter_desc
+精灵筛选,,生命增益类,HP Buff,HPバフ,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:49:filter_desc
+精灵筛选,,时光回溯,Time Rewind,時空回帰,客户端三语已确认,精灵类型、资质评价、能力增益筛选,,table:PET_FILTER_CONF:79:filter_desc
+能力与伤害修正,,命中率,Hit Rate,命中率,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:11:attribute_name
+能力与伤害修正,,闪避率,Dodge Rate,回避率,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:12:attribute_name
+能力与伤害修正,,暴击几率,Crit Rate,会心率,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:13:attribute_name
+能力与伤害修正,,暴击抵抗,Critical Hit Resistance,会心耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:14:attribute_name
+能力与伤害修正,,暴击伤害,Crit Damage,会心ダメージ,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:15:attribute_name
+能力与伤害修正,,暴击伤害抵抗,Crit Damage Resistance,会心ダメージ耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:16:attribute_name
+能力与伤害修正,,物理攻击加成,Physical Damage Bonus,物理攻撃力UP,客户端原文存在语义差异,能力值标签；按具体属性ID使用,中日为攻击加成，英文原文为Damage Bonus；保留原文，接入前校对，勿与29/30行Attack Bonus合并。,table:ATTRIBUTE_CONF:17:attribute_name
+能力与伤害修正,,魔法攻击加成,Magic Damage Bonus,魔法攻撃力UP,客户端原文存在语义差异,能力值标签；按具体属性ID使用,中日为攻击加成，英文原文为Damage Bonus；保留原文，接入前校对，勿与29/30行Attack Bonus合并。,table:ATTRIBUTE_CONF:18:attribute_name
+能力与伤害修正,,物理伤害减免,Physical Damage Reduction,物理ダメージDOWN,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:19:attribute_name
+能力与伤害修正,,魔法伤害减免,Magic Damage Reduction,魔法ダメージDOWN,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:20:attribute_name
+能力与伤害修正,,全伤害加成,Total Damage Bonus,与ダメージUP,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:21:attribute_name
+能力与伤害修正,,全伤害减免,Total Damage Reduction,被ダメージDOWN,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:22:attribute_name
+能力与伤害修正,,伤害波动下限,Damage Variance Min,ダメージ変動下限,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:23:attribute_name
+能力与伤害修正,,伤害波动上限,Damage Variance Max,ダメージ変動上限,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:24:attribute_name
+能力与伤害修正,,物理攻击力加成,Physical Attack Bonus,物理攻撃力UP,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:29:attribute_name
+能力与伤害修正,,魔法攻击力加成,Magic Attack Bonus,魔法攻撃力UP,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:30:attribute_name
+能力与伤害修正,,物理防御力加成,Physical Defense Bonus,物理防御力UP,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:31:attribute_name
+能力与伤害修正,,魔法防御力加成,Magic Defense Bonus,魔法防御力UP,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:32:attribute_name
+能力与伤害修正,,物理攻击力削弱,Physical Attack Reduction,物理攻撃力DOWN,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:33:attribute_name
+能力与伤害修正,,魔法攻击力削弱,Magic Attack Reduction,魔法攻撃力DOWN,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:34:attribute_name
+能力与伤害修正,,物理防御力削弱,Physical Defense Reduction,物理防御力DOWN,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:35:attribute_name
+能力与伤害修正,,魔法防御力削弱,Magic Defense Reduction,魔法防御力DOWN,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:36:attribute_name
+能力与伤害修正,,克制强化,Advantage Boost,有利ダメージ強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:37:attribute_name
+能力与伤害修正,,抵抗强化,Resistance Boost,耐性強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:38:attribute_name
+能力与伤害修正,,普通技能强化,Common Skill Boost,ノーマル属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:39:attribute_name
+能力与伤害修正,,草系技能强化,Flora-class Skill Boost,草属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:40:attribute_name
+能力与伤害修正,,火系技能强化,Fire-class Skill Boost,炎属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:41:attribute_name
+能力与伤害修正,,水系技能强化,Water-class Skill Boost,水属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:42:attribute_name
+能力与伤害修正,,光系技能强化,Light-class Skill Boost,光属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:43:attribute_name
+能力与伤害修正,,地系技能强化,Earth-class Skill Boost,地属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:45:attribute_name
+能力与伤害修正,,冰系技能强化,Ice-class Skill Boost,氷属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:46:attribute_name
+能力与伤害修正,,龙系技能强化,Dragon-class Skill Boost,竜属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:47:attribute_name
+能力与伤害修正,,电系技能强化,Electro-class Skill Boost,雷属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:48:attribute_name
+能力与伤害修正,,毒系技能强化,Poison-class Skill Boost,毒属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:49:attribute_name
+能力与伤害修正,,虫系技能强化,Bug-class Skill Boost,虫属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:50:attribute_name
+能力与伤害修正,,武系技能强化,Fighting-class Skill Boost,武属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:51:attribute_name
+能力与伤害修正,,翼系技能强化,Wing-class Skill Boost,翼属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:52:attribute_name
+能力与伤害修正,,萌系技能强化,Charm-class Skill Boost,萌属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:53:attribute_name
+能力与伤害修正,,幽系技能强化,Shadow-class Skill Boost,幽霊属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:54:attribute_name
+能力与伤害修正,,恶系技能强化,Havoc-class Skill Boost,悪属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:55:attribute_name
+能力与伤害修正,,机械技能强化,Mech-class Skill Boost,機械属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:56:attribute_name
+能力与伤害修正,,幻系技能强化,Stellar-class Skill Boost,幻属性スキル強化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:57:attribute_name
+能力与伤害修正,,普通技能抗性,Common Skill Resistance,ノーマル属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:58:attribute_name
+能力与伤害修正,,草系技能抗性,Flora-class Skill Resistance,草属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:59:attribute_name
+能力与伤害修正,,火系技能抗性,Fire-class Skill Resistance,炎属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:60:attribute_name
+能力与伤害修正,,水系技能抗性,Water-class Skill Resistance,水属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:61:attribute_name
+能力与伤害修正,,光系技能抗性,Light-class Skill Resistance,光属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:62:attribute_name
+能力与伤害修正,,地系技能抗性,Earth-class Skill Resistance,地属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:64:attribute_name
+能力与伤害修正,,冰系技能抗性,Ice-class Skill Resistance,氷属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:65:attribute_name
+能力与伤害修正,,龙系技能抗性,Dragon-class Skill Resistance,竜属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:66:attribute_name
+能力与伤害修正,,电系技能抗性,Electro-class Skill Resistance,雷属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:67:attribute_name
+能力与伤害修正,,毒系技能抗性,Poison-class Skill Resistance,毒属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:68:attribute_name
+能力与伤害修正,,虫系技能抗性,Bug-class Skill Resistance,虫属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:69:attribute_name
+能力与伤害修正,,武系技能抗性,Fighting-class Skill Resistance,武属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:70:attribute_name
+能力与伤害修正,,翼系技能抗性,Wing-class Skill Resistance,翼属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:71:attribute_name
+能力与伤害修正,,萌系技能抗性,Charm-class Skill Resistance,萌属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:72:attribute_name
+能力与伤害修正,,幽系技能抗性,Shadow-class Skill Resistance,幽霊属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:73:attribute_name
+能力与伤害修正,,恶系技能抗性,Havoc-class Skill Resistance,悪属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:74:attribute_name
+能力与伤害修正,,机械技能抗性,Mech-class Skill Resistance,機械属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:75:attribute_name
+能力与伤害修正,,幻系技能抗性,Stellar-class Skill Resistance,幻属性スキル耐性,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:76:attribute_name
+能力与伤害修正,,被治疗加成,Incoming Healing Bonus,被回復UP,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:77:attribute_name
+能力与伤害修正,,护盾加成,Shield Bonus,シールドUP,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:78:attribute_name
+能力与伤害修正,,基础生命上限,Base Max Health,基本最大HP,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:85:attribute_name
+能力与伤害修正,,基础物理攻击,Base Physical Attack,基本物理攻撃力,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:86:attribute_name
+能力与伤害修正,,基础魔法攻击,Base Magic Attack,基本魔法攻撃力,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:87:attribute_name
+能力与伤害修正,,基础物理防御,Base Physical Defense,基本物理防御力,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:88:attribute_name
+能力与伤害修正,,基础魔法防御,Base Magic Defense,基本魔法防御力,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:89:attribute_name
+能力与伤害修正,,基础速度,Base Speed,基本速さ,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:90:attribute_name
+能力与伤害修正,,系别极化,Class Focus,属性極化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:93:attribute_name
+能力与伤害修正,,系别钝化,Class Neutrality,属性鈍化,客户端三语已确认,能力值标签；按具体属性ID使用,,table:ATTRIBUTE_CONF:94:attribute_name
+能力与养成,,进阶属性,Advanced,上級ステータス,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_PetDetailedInfo.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::23D83BE04C1B94514391D2916BAED6F5
+能力与养成,性格,性格,Personality,性格,客户端三语已确认,项目现有界面概念 | NewRoco/Modules/System/PetUI/Res/Hatching/UMG_EstablishmentContractNotificationPopup.uexp,保留所列客户端原行，不使用项目旧译，不拼接或改写。 | 不同英日变体按来源界面保留，勿只按中文批量替换。,locres::26472A14459FF424DB64288FE1BD0F5F
+能力与养成,,等级,Level,Lv.,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_PetHeadTemple.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::2A6E062040068283021A4A8562CE99D0
+能力与养成,,个体资质,Individual Aptitude,個体資質,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/Hatching/UMG_EstablishmentContractNotificationPopup.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::302295C34CD8447D065AF4874A335B21
+能力与养成,,基础属性,Base Attributes,基本ステータス,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_PetFightInfo.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::314E030146D261EF59DBE19C3720B8F8
+能力与养成,,生命,Health,HP,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_PetFightInfo.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::3C9473BA4C8108FA51D854B492F9AE52
+能力与养成,,个体资质,Ind. Apt.,個体資質,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/PetTeam/UMG_Lineup_ShareItem.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::43FD9B4145B3E12A916343BE0166BFBF
+能力与养成,,属性一览,Attribute Overview,ステータス一覧,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/Having/UMG_Having_Attribute.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::48A3045C4DBFC903D8230485755B6A48
+能力与养成,,速度,SPD,速さ,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_PetRaceInfo.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::4A0ABE4D4C80138BEAAEB3B2A606E23D
+能力与养成,,属性变化,Attribute Changes,ステータス変化,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_AttributeChange.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::6A98670D4540E169FA5B0DBF0193F53A
+能力与养成,,综合属性,Overall Attributes,総合ステータス,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_PetBaseInfo.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::926BC8514239C39E01CD41AE242BCA10
+能力与养成,,基础属性,Base,基本ステータス,客户端三语已确认,NewRoco/Modules/System/PetUI/Res/UMG_PetDetailedInfo.uexp,不同英日变体按来源界面保留，勿只按中文批量替换。,locres::EAFD2D474482EC945F72A08481C2EE65
+能力与养成,增益,增益,Buff,バフ,客户端三语已确认,项目现有界面概念 | 增益、减益、印记等效果类型,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:BUFF_TYPE:1:buff_type_desc
+能力与养成,减益,减益,Debuff,デバフ,客户端三语已确认,项目现有界面概念 | 增益、减益、印记等效果类型,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:BUFF_TYPE:2:buff_type_desc
+能力与养成,个体,个体资质,Individual Aptitude,個体資質,客户端三语已确认,项目现有界面概念,项目简称个体对应官方完整概念个体资质；保持原文 Individual Aptitude/個体資質，不自行截为 IV。,table:LOCALIZATION_CONF:filter_attribute_list:msg
+能力与养成,等级,等级,Level,Lv.,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:petutils_1:msg
+能力与养成,种族值,种族资质,Species Aptitude,種族資質,客户端三语已确认,项目现有界面概念,项目种族值对应客户端种族资质；保留正式完整标签，不沿用 Pokemon 式 Species Stats/種族値。,table:LOCALIZATION_CONF:race_qualify_text:msg
+能力与养成,当前等级,当前等级,Current Level,現在のレベル,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:LOCALIZATION_CONF:umg_petlevelup_19:msg
+血脉全称,,毒系血脉,Poison-class Bloodline,毒属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:10:name
+血脉全称,,虫系血脉,Bug-class Bloodline,虫属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:11:name
+血脉全称,,武系血脉,Fighting-class Bloodline,武属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:12:name
+血脉全称,,翼系血脉,Wing-class Bloodline,翼属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:13:name
+血脉全称,,萌系血脉,Charm-class Bloodline,萌属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:14:name
+血脉全称,,幽系血脉,Shadow-class Bloodline,幽霊属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:15:name
+血脉全称,,恶系血脉,Havoc-class Bloodline,悪属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:16:name
+血脉全称,,机械系血脉,Mech-class Bloodline,機械属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:17:name
+血脉全称,,幻系血脉,Stellar-class Bloodline,幻属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:18:name
+血脉全称,,首领血脉,Alpha Bloodline,リーダー血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:19:name
+血脉全称,,普通系血脉,Common-class Bloodline,ノーマル属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:1:name
+血脉全称,,巨兽血脉,Behemoth Bloodline,巨獣血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:20:name
+血脉全称,,黑魔法血脉,Dark Magic Bloodline,黒魔法血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:21:name
+血脉全称,,异核血脉,Heteronuclear Bloodline,異核血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:22:name
+血脉全称,,污染血脉,Corrupted Bloodline,汚染血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:23:name
+血脉全称,,奇异血脉,Exotic Bloodline,奇異血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:24:name
+血脉全称,,草系血脉,Flora-class Bloodline,草属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:2:name
+血脉全称,,火系血脉,Fire-class Bloodline,炎属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:3:name
+血脉全称,,水系血脉,Water-class Bloodline,水属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:4:name
+血脉全称,,光系血脉,Light-class Bloodline,光属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:5:name
+血脉全称,,地系血脉,Earth-class Bloodline,地属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:6:name
+血脉全称,,冰系血脉,Ice-class Bloodline,氷属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:7:name
+血脉全称,,龙系血脉,Dragon-class Bloodline,竜属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:8:name
+血脉全称,,电系血脉,Electro-class Bloodline,雷属性血統,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:9:name
+血脉简称,,毒,Poison,毒,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:10:blood_name
+血脉简称,,虫,Bug,虫,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:11:blood_name
+血脉简称,,武,Fighting,武,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:12:blood_name
+血脉简称,,翼,Wing,翼,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:13:blood_name
+血脉简称,,萌,Charm,萌,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:14:blood_name
+血脉简称,,幽,Shadow,幽霊,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:15:blood_name
+血脉简称,,恶,Havoc,悪,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:16:blood_name
+血脉简称,,机械,Mech,機械,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:17:blood_name
+血脉简称,,幻,Stellar,幻,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:18:blood_name
+血脉简称,,普通,Common,ノーマル,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:1:blood_name
+血脉简称,,巨兽,Behemoth,巨獣,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:20:blood_name
+血脉简称,,黑魔法,Dark Magic,黒魔法,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:21:blood_name
+血脉简称,,异核,Heteronuclear,異核,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:22:blood_name
+血脉简称,,污染,Corrupted,汚染,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:23:blood_name
+血脉简称,,奇异,Exotic,奇異,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:24:blood_name
+血脉简称,,草,Flora,草,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:2:blood_name
+血脉简称,,火,Fire,炎,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:3:blood_name
+血脉简称,,水,Water,水,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:4:blood_name
+血脉简称,,光,Light,光,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:5:blood_name
+血脉简称,,地,Earth,地,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:6:blood_name
+血脉简称,,冰,Ice,氷,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:7:blood_name
+血脉简称,,龙,Dragon,竜,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:8:blood_name
+血脉简称,,电,Electro,雷,客户端三语已确认,血脉条目；包内存在不代表本次测试服已开放,,table:PET_BLOOD_CONF:9:blood_name
+负面状态,引电,引电,Conduction,誘電,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:BUFF_CONF:20011586:name
+负面状态,寄生,寄生,Parasite,寄生,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:BUFF_CONF:20050010:name
+负面状态,中毒,中毒,Poison,毒,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:BUFF_CONF:20070010:name
+负面状态,灼烧,灼烧,Burn,燃焼,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:BUFF_CONF:20070020:name
+负面状态,冻结,冻结,Freeze,凍結,客户端三语已确认,项目现有界面概念,保留所列客户端原行，不使用项目旧译，不拼接或改写。,table:BUFF_CONF:20580010:name

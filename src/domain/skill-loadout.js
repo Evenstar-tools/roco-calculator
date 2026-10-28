@@ -12,7 +12,7 @@ function entryId(entry) {
 }
 
 function isWishPowerExtra(skill) {
-  return skill?.id?.startsWith("calculator_wish_power_") ?? false;
+  return (skill?.reference?.sourceId ?? skill?.id)?.startsWith("calculator_wish_power_") ?? false;
 }
 
 export function getLegalSkillIds(snapshot, spiritId) {

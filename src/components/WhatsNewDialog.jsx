@@ -6,7 +6,14 @@ import { USER_MANUAL_URL } from "../data/product-links.js";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
-const GLOBAL_INTRO = { eyebrow: "国际服", title: "国际服数据待核验", description: "国际服的数值、技能与规则尚未核验，暂不进行伤害计算。", items: [] };
+const GLOBAL_INTRO = {
+  eyebrow: "国际服", title: "国际服计算器", description: "采用 S3 季中数值与规则。",
+  items: [
+    { id: "team", title: "中英日语言切换", description: "精灵、技能和特性使用国际客户端译名。", action: "查看" },
+    { id: "team", title: "配置与队伍", description: "配置与队伍可跨语言保存和分享。", action: "打开队伍" },
+    { id: "types", title: "属性相性查询", description: "查看弱点、抗性和队伍覆盖。", action: "打开" },
+  ],
+};
 
 export function WhatsNewDialog({
   onClose,
@@ -80,10 +87,10 @@ export function WhatsNewDialog({
             <li key={item.title}>
               <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               <div>
-                <strong>{item.title}{item.enhanced ? <small className="whats-new-dialog__badge">{t("增强")}</small> : null}</strong>
-                {item.description ? <p>{item.description}</p> : null}
+                <strong>{serverId === "global" ? t(item.title) : item.title}{item.enhanced ? <small className="whats-new-dialog__badge">{t("增强")}</small> : null}</strong>
+                {item.description ? <p>{serverId === "global" ? t(item.description) : item.description}</p> : null}
               </div>
-              <button type="button" className="whats-new-dialog__feature" aria-label={`${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{item.action}</button>
+              <button type="button" className="whats-new-dialog__feature" aria-label={serverId === "global" ? `${t(item.action)} ${t(item.title)}` : `${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{serverId === "global" ? t(item.action) : item.action}</button>
             </li>
           ))}
         </ol>

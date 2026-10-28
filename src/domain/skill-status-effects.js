@@ -1,3 +1,4 @@
+import { usesS3MidseasonRules } from "./season-rules.js";
 import { resolveRefractionEffects } from "./refraction.js";
 import {
   normalizeTriggerControls,
@@ -691,7 +692,17 @@ function stageDeltas(effect, multiplier, context) {
 }
 
 export function getSkillStatusEffect(skill) {
-  return STATUS_EFFECTS[skill?.name] ?? null;
+  const effect = STATUS_EFFECTS[skill?.name] ?? null;
+  if (usesS3MidseasonRules(skill) && skill.name === "暗箱操作") return {
+    ...effect, resolve: (context) => context.defenseCounterSucceeded === true
+      ? { targetAttack: -10, targetDefense: -10 } : { ownAttack: -10, ownDefense: -10 },
+  };
+  if (usesS3MidseasonRules(skill) && skill.name === "超声波") return {
+    ...effect, resolve: (context) => ({
+      ownFixedPower: (context.defenseCounterSucceeded === true ? 50 : 30) + (context.choiceTrait ? 30 : 0),
+    }),
+  };
+  return effect;
 }
 
 export function pressureValveUseCount(skill, context = {}) {

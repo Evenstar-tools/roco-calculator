@@ -1,3 +1,5 @@
+import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
+import { translateCalculatorText, clearMissingCalculatorTexts, getMissingCalculatorTexts } from "../../src/i18n/calculator-text.js";
 import { useState } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
@@ -54,4 +56,19 @@ test("已有次数输入的减、加、重置共用一个值并遵守控件边�
   expect(screen.getByRole("spinbutton")).toHaveValue(1);
   fireEvent.click(screen.getByRole("button", { name: "此前使用次数重置" }));
   expect(screen.getByRole("spinbutton")).toHaveValue(0);
+});
+
+
+test.each(["en", "ja"])("%s shows translated accumulated effects and next-use preview separately", (locale) => {
+  clearMissingCalculatorTexts();
+  const result = { usageSummary: { count: 2, powerGain: 20, hitCountGain: 2,
+    hitCountCapped: true, hitCountLimit: 99, currentEffects: ["魔攻 +3 层", "速度 +20"] } };
+  const { container } = render(<LocaleProvider locale={locale}><SkillUsageSummary result={result}
+    nextHint="本次可得：普·威力+10　翼·连击+1" /></LocaleProvider>);
+  expect(container.querySelector(".skill-usage__main").textContent).toContain(translateCalculatorText("已使用×2", locale));
+  expect(container.querySelector(".skill-usage__main").textContent).toContain(translateCalculatorText("威力+20", locale));
+  expect(container.querySelector(".skill-usage__main").textContent).toContain(translateCalculatorText("连击+2", locale));
+  expect(container.querySelector(".skill-usage__next").textContent).toContain(translateCalculatorText("普·威力+10", locale));
+  expect(getMissingCalculatorTexts(), JSON.stringify(getMissingCalculatorTexts())).toEqual([]);
+  expect(result.usageSummary.powerGain).toBe(20);
 });

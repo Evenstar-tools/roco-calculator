@@ -1,0 +1,11 @@
+{
+  "clientVersion": "1.61.0.91",
+  "researchDirectory": "data/research/global-client-20261028",
+  "cnSnapshot": "data/snapshots/current.json",
+  "previewCatalog": "data/candidates/s5-preview-new-spirits.json",
+  "previewAnnouncement": "data/candidates/s5-season-announcement-20261027.json",
+  "uiMessagesModule": "src/i18n/messages.js",
+  "runtimeApplication": true,
+  "supplementalWishPower": "data/localization/global/client-wish-power.json",
+  "runtimeDisplayOverrides": "data/localization/global/s3-display-overrides.json"
+}

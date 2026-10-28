@@ -1140,3 +1140,14 @@
 .skill-picker--readable .skill-picker__option-name strong { flex: 1; min-width: 0; font-size: 14px; line-height: 17px; white-space: normal; overflow-wrap: anywhere; overflow: visible; text-overflow: clip; }
 .skill-picker--readable .skill-picker__option-name > small { flex: none; }
 .skill-picker--readable .skill-picker__option-meta { margin-left: 38px; gap: 12px; }
+
+/* Localized class/category labels share the existing column on two lines. */
+html:is(:lang(en), :lang(ja)) .skill-slot__kind {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+html:is(:lang(en), :lang(ja)) .skill-slot__kind > span {
+  display: block;
+  line-height: 1.25;
+}

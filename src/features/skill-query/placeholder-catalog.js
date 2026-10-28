@@ -34,16 +34,21 @@ export function createPlaceholderQueryCatalog(snapshot) {
   if (snapshot.learnsets.some((entry) => !spiritIds.has(entry.spiritId) || entry.skillIds.some((id) => !skillIds.has(id)))) {
     throw storageError("SERVER_DATA_UNVERIFIED", "技能参考目录包含无法对应的学习关系");
   }
-  const families = referenceFamilies(snapshot.spirits);
+  const availableSpirits = snapshot.spirits.filter((spirit) => spirit.catalogAvailable !== false);
+  const availableSkills = snapshot.skills.filter((skill) => skill.catalogAvailable !== false);
+  const availableSpiritIds = new Set(availableSpirits.map(({ id }) => id));
+  const availableSkillIds = new Set(availableSkills.map(({ id }) => id));
+  const families = referenceFamilies(availableSpirits);
   return {
     placeholderSource: structuredClone(snapshot.meta.placeholderSource),
-    spirits: snapshot.spirits.map((spirit) => ({
+    spirits: availableSpirits.map((spirit) => ({
       ...copyFields(spirit, ["id", "fullName", "baseName", "variantName", "dexNo", "pinyin", "initials", "aliases", "sourceCategory", "stage", "asset", "types", "evolutionChainIds"]),
       familyId: families.get(spirit.id),
       reference: { sourceId: spirit.reference.sourceId },
     })),
-    skills: snapshot.skills.map((skill) => copyFields(skill,
-      ["id", "name", "type", "category", "description", "iconUrl", "searchText"])),
-    learnsets: snapshot.learnsets.map((entry) => ({ spiritId: entry.spiritId, skillIds: [...entry.skillIds] })),
+    skills: availableSkills.map((skill) => copyFields(skill,
+      ["id", "name", "type", "category", "description", "iconUrl", "searchText", "aliases"])),
+    learnsets: snapshot.learnsets.filter((entry) => availableSpiritIds.has(entry.spiritId))
+      .map((entry) => ({ spiritId: entry.spiritId, skillIds: entry.skillIds.filter((id) => availableSkillIds.has(id)) })),
   };
 }

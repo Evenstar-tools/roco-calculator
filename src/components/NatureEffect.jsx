@@ -10,7 +10,7 @@ export function NatureEffect({ natureId, placeholder = false }) {
   if (placeholder && natureId == null) return <div className="nature-effect nature-effect--neutral">{t("未设置")}</div>;
   const nature = getNature(natureId);
   if (!nature.upStat || !nature.downStat) {
-    return <div className="nature-effect nature-effect--neutral">{t(placeholder ? "国服中文参考" : "无修正")}</div>;
+    return <div className="nature-effect nature-effect--neutral">{t("无修正")}</div>;
   }
 
   return (

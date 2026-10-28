@@ -1,0 +1,347 @@
+{
+  "clientRoot": "C:\\RoCoKingdom",
+  "gameExecutable": "Win64/NRC/Binaries/Win64/NRC-Win64-Shipping.exe",
+  "fileVersion": "1.61.0.91",
+  "engine": "UE 4.26.2",
+  "state": "extracted-and-cn-id-mapped",
+  "pakFiles": [
+    {
+      "name": "pakchunk0-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 647559826,
+      "indexSize": 185168
+    },
+    {
+      "name": "pakchunk0-WindowsNoEditor_0_P.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 468642,
+      "indexSize": 272
+    },
+    {
+      "name": "pakchunk0-WindowsNoEditor_1_P.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 281,
+      "indexSize": 176
+    },
+    {
+      "name": "pakchunk1-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 279400722,
+      "indexSize": 79776
+    },
+    {
+      "name": "pakchunk10-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 1959871234,
+      "indexSize": 1733936
+    },
+    {
+      "name": "pakchunk100-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 1053774402,
+      "indexSize": 388096
+    },
+    {
+      "name": "pakchunk100optional-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 335531481,
+      "indexSize": 49696
+    },
+    {
+      "name": "pakchunk101-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 37989010,
+      "indexSize": 4400
+    },
+    {
+      "name": "pakchunk102-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 15640105,
+      "indexSize": 3248
+    },
+    {
+      "name": "pakchunk103-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 16833897,
+      "indexSize": 2832
+    },
+    {
+      "name": "pakchunk10optional-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 157765577,
+      "indexSize": 20736
+    },
+    {
+      "name": "pakchunk11-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 9033120338,
+      "indexSize": 4468800
+    },
+    {
+      "name": "pakchunk11-WindowsNoEditor_0_P.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 1137001,
+      "indexSize": 1120
+    },
+    {
+      "name": "pakchunk11optional-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 256175721,
+      "indexSize": 33120
+    },
+    {
+      "name": "pakchunk12-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 583065499,
+      "indexSize": 133312
+    },
+    {
+      "name": "pakchunk14-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 1055188309,
+      "indexSize": 208
+    },
+    {
+      "name": "pakchunk20-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 5164695442,
+      "indexSize": 1936720
+    },
+    {
+      "name": "pakchunk20-WindowsNoEditor_0_P.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 3720009,
+      "indexSize": 10688
+    },
+    {
+      "name": "pakchunk201-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 449808501,
+      "indexSize": 102688
+    },
+    {
+      "name": "pakchunk202-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 112111589,
+      "indexSize": 25024
+    },
+    {
+      "name": "pakchunk203-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 22860997,
+      "indexSize": 4016
+    },
+    {
+      "name": "pakchunk20optional-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 8476745,
+      "indexSize": 1232
+    },
+    {
+      "name": "pakchunk21-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 9995142882,
+      "indexSize": 2805536
+    },
+    {
+      "name": "pakchunk21-WindowsNoEditor_0_P.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 125641,
+      "indexSize": 464
+    },
+    {
+      "name": "pakchunk21optional-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 65828601,
+      "indexSize": 11616
+    },
+    {
+      "name": "pakchunk22-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 3491671042,
+      "indexSize": 1080288
+    },
+    {
+      "name": "pakchunk23-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 3652847097,
+      "indexSize": 3276432
+    },
+    {
+      "name": "pakchunk24-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 3524720546,
+      "indexSize": 1277648
+    },
+    {
+      "name": "pakchunk24-WindowsNoEditor_0_P.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 23161,
+      "indexSize": 224
+    },
+    {
+      "name": "pakchunk26-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 2283351609,
+      "indexSize": 898624
+    },
+    {
+      "name": "pakchunk27-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 7609794789,
+      "indexSize": 880
+    },
+    {
+      "name": "pakchunk4-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 168303285,
+      "indexSize": 504336
+    },
+    {
+      "name": "pakchunk4-WindowsNoEditor_0_P.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 540505,
+      "indexSize": 384
+    },
+    {
+      "name": "pakchunk4-WindowsNoEditor_1_P.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 19268,
+      "indexSize": 208
+    },
+    {
+      "name": "pakchunk6-WindowsNoEditor.pak",
+      "pakVersion": 11,
+      "encryptedIndex": true,
+      "indexOffset": 16643481,
+      "indexSize": 99872
+    }
+  ],
+  "previousReaderFailure": {
+    "reader": "repak_cli 0.2.3",
+    "error": "trying version V11 failed: pak is encrypted but no key was provided"
+  },
+  "reader": "Umodel-MCP 0.3.0 Roco bitflip variant + schema-aware Bin decoder",
+  "clientTableRecordsDecoded": 3054,
+  "existingCnRecordsMatched": 1402,
+  "extractedFiles": [
+    {
+      "path": "ScriptC/Data/Bin/BinConf/PETBASE_CONF.non",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 40835,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinConf/SKILL_CONF.non",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 8156,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinDataCompressed/PETBASE_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 802245,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinDataCompressed/SKILL_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 464544,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinDataCompressed/BinDataCompressed_ROW/PETBASE_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 802245,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinDataCompressed/BinDataCompressed_ROW/SKILL_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 464544,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/dev_CN/PETBASE_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 556262,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/dev_CN/SKILL_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 242961,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/en/PETBASE_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 642748,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/en/SKILL_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 274876,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/ja/PETBASE_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 676490,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/ja/SKILL_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 332960,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/zh_Hans/PETBASE_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 556256,
+      "compression": "Zlib"
+    },
+    {
+      "path": "ScriptC/Data/Bin/BinLocalize/zh_Hans/SKILL_CONF.bytes",
+      "pak": "pakchunk4-WindowsNoEditor.pak",
+      "size": 239802,
+      "compression": "Zlib"
+    }
+  ]
+}

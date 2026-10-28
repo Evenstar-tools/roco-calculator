@@ -56,11 +56,11 @@ export function DisplaySettingsDialog({
               value={seasonPreview ? "preview" : serverId === "cn" && preference === "default" ? "s4" : preference}
               onChange={(event) => onSeasonThemeChange?.(event.target.value)}>
               {seasonPreview && <option disabled value="preview">{t("{theme}（预览）", {
-                theme: `${season.id.toUpperCase()} ${season.sourceName}`,
+                theme: `${season.id.toUpperCase()} ${t(season.sourceName)}`,
               })}</option>}
               {!seasonPreview && preference === "random" && <option disabled hidden value="random">{t("随机 · {season}", { season: season.id.toUpperCase() })}</option>}
               {serverId !== "cn" && <option value="default">{t("默认（无赛季装饰）")}</option>}
-              {SELECTABLE_SEASON_THEMES.map(({ id, sourceName }) => <option key={id} value={id}>{id.toUpperCase()} {sourceName}</option>)}
+              {SELECTABLE_SEASON_THEMES.map(({ id, sourceName }) => <option key={id} value={id}>{id.toUpperCase()} {t(sourceName)}</option>)}
             </select>
             <button aria-label={t("每次进入随机主题")} aria-pressed={preference === "random"}
               className="display-settings-season-shuffle" onClick={() => onSeasonThemeChange?.(preference === "random" && !seasonPreview ? season.id : "random")}
@@ -102,18 +102,18 @@ export function DisplaySettingsDialog({
               type="button"
             >{t("显示威力")}</button>
           </div>
-          {serverId === "cn" && <small>
+          <small>
             {t(powerDisplayMode === "panel"
               ? "结算本次增益并取整；手填值直接参与伤害计算。"
               : "技能自身规则调整后的威力，额外增益另算。")}
-          </small>}
+          </small>
           <details className="display-settings-power-details">
             <summary>{t("口径说明")}</summary>
             <div className="display-settings-power-help">
-              {serverId === "global" ? <small>{t("显示偏好可先保存，实际口径待国际服规则核验后启用。")}</small> : <><small>
+              <small>
                 <strong>{t("静态威力：")}</strong>{t("技能自身规则、固定威力和继承迸发调整后的结果；不含本次额外触发的特性、本系和克制。")}</small>
               <small>
-                <strong>{t("显示威力：")}</strong>{t("有效威力结算本系、克制、能力等级与其他威力乘区后取整（非负威力向下取整）；雨天计入威力加成区。手动填写后直接用于伤害计算。")}</small></>}
+                <strong>{t("显示威力：")}</strong>{t("有效威力结算本系、克制、能力等级与其他威力乘区后取整（非负威力向下取整）；雨天计入威力加成区。手动填写后直接用于伤害计算。")}</small>
             </div>
           </details>
         </div>

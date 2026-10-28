@@ -2,7 +2,7 @@
   "id": "/",
   "name": "洛克计算器 · 国际服",
   "short_name": "洛克国际服",
-  "description": "国际服计算器界面，游戏数据与规则待核验。",
+  "description": "洛克王国国际服计算器，采用 S3 季中数值与规则。",
   "lang": "zh-CN",
   "dir": "ltr",
   "start_url": "/global/zh-CN/?source=pwa",

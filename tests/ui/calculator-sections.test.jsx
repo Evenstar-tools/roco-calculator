@@ -589,8 +589,11 @@ test("spirit preview loads twenty more favorites per scroll until all are visibl
     scrollHeight: { configurable: true, value: 300 },
     scrollTop: { configurable: true, value: 200, writable: true },
   });
+  vi.spyOn(screen.getAllByRole("option")[0], "getBoundingClientRect")
+    .mockImplementation(() => ({ top: -listbox.scrollTop }));
   fireEvent.scroll(listbox);
   expect(screen.getAllByRole("option")).toHaveLength(36);
+  expect(listbox.scrollTop).toBe(200);
   expect(screen.queryByText("已预览所有已收藏精灵")).not.toBeInTheDocument();
 
   Object.defineProperties(listbox, {
@@ -599,6 +602,7 @@ test("spirit preview loads twenty more favorites per scroll until all are visibl
   });
   fireEvent.scroll(listbox);
   expect(screen.getAllByRole("option")).toHaveLength(45);
+  expect(listbox.scrollTop).toBe(400);
   expect(screen.getByText("已预览所有已收藏精灵")).toBeVisible();
   expect(screen.queryByRole("option", { name: /普通精灵/ })).not.toBeInTheDocument();
 });

@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "scope": "Independent read-only audit of mapped names, all initial fields and CSV columns; targeted recheck after form fields added.",
+  "source": "current locally extracted 1.61.0.91 tables under _work/global-client-20261028/decoded",
+  "matchedRecordsChecked": 1402,
+  "matchedByKind": {
+    "spirit": 618,
+    "skill": 553,
+    "traitGameIds": 231,
+    "traitProjectEntities": 228
+  },
+  "checks": {
+    "allFourLanguageRawFieldsMatchDecoded": true,
+    "allTextReferencesMatchDecodedReferences": true,
+    "skillTypeOneTraitTypeTwo": true,
+    "projectChineseLabelsPreserved": true,
+    "initialThreeCSVAllColumnsReadback": true,
+    "allMatchedSpeciesFormFieldsRechecked": 618,
+    "nonemptyOfficialFormsRechecked": 146,
+    "speciesCSVAllFormColumnsReadback": true,
+    "matchedAndClientOnlyExactlyPartitionCurrentTables": true,
+    "all44UnmatchedIDsAbsentFromCurrentTables": true,
+    "clientPlaceholderBreakdown": {
+      "spirit": 37,
+      "skill": 26
+    },
+    "mergedTraitGameIdPairs": [
+      [
+        200236,
+        200281
+      ],
+      [
+        200237,
+        200282
+      ],
+      [
+        200238,
+        200283
+      ]
+    ],
+    "japaneseNobrRawPreservedPlainDerived": 200191,
+    "mechanicDiscrepancyRawPreservedAndSeparatelyListed": 200312
+  },
+  "sourceScope": {
+    "noThirdPartyTranslationsUsed": true,
+    "generatorWritesOnlyResearchDirectory": true,
+    "noRuntimeRuleOrNumericWritesInGenerator": true
+  },
+  "limitations": [
+    "Package presence is not confirmation of in-game availability.",
+    "Names and source descriptions are verified against package text; numerical mechanics are not verified."
+  ],
+  "issues": []
+}

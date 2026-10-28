@@ -1,3 +1,4 @@
+import { useCalculatorLocale } from "../i18n/calculator-text.js";
 import { SkillUsageSummary, UsageCountActions } from "./SkillUsageSummary.jsx";
 import { CaretDown, CaretUp, Lightning, Shield, Sword } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
@@ -110,6 +111,7 @@ export function BurstSourceControls({
   onChange,
   onFocus,
 }) {
+  const { tc } = useCalculatorLocale();
   const sources = inputs.filter((input) => input.burstSource);
   if (sources.length === 0) return null;
   const groups = ["特性", "技能", "印记"];
@@ -121,12 +123,12 @@ export function BurstSourceControls({
       className="burst-source-controls"
       onClick={(event) => event.stopPropagation()}
     >
-      <summary aria-label={`${ariaPrefix}选择迸发来源`}>
-        <span>迸发来源</span>
-        <strong>{selectedCount > 0 ? `已选 ${selectedCount}` : "未选"}</strong>
+      <summary aria-label={tc("{v0}选择迸发来源", { v0: ariaPrefix })}>
+        <span>{tc("迸发来源")}</span>
+        <strong>{selectedCount > 0 ? tc("已选 {v0}", { v0: selectedCount }) : tc("未选")}</strong>
       </summary>
       <div
-        aria-label={`${ariaPrefix}迸发来源`}
+        aria-label={tc("{v0}迸发来源", { v0: ariaPrefix })}
         className="burst-source-controls__menu"
         role="group"
       >
@@ -137,15 +139,15 @@ export function BurstSourceControls({
           if (groupSources.length === 0) return null;
           return (
             <fieldset key={group}>
-              <legend>{group}</legend>
+              <legend>{tc(group)}</legend>
               {groupSources.map((input) => (
                 <label
-                  data-description={input.burstDescription}
+                  data-description={tc(input.burstDescription)}
                   key={dynamicInputId(input)}
-                  title={input.burstDescription}
+                  title={tc(input.burstDescription)}
                 >
                   <input
-                    aria-label={`${ariaPrefix}${input.label}（迸发来源）`}
+                    aria-label={tc("{v0}{v1}（迸发来源）", { v0: ariaPrefix, v1: input.label })}
                     checked={Boolean(dynamicInputValue(input, context))}
                     onChange={(event) =>
                       onChange?.(dynamicInputId(input), event.target.checked)
@@ -153,13 +155,13 @@ export function BurstSourceControls({
                     onFocus={onFocus}
                     type="checkbox"
                   />
-                  <span>{input.label}</span>
+                  <span>{tc(input.label)}</span>
                 </label>
               ))}
             </fieldset>
           );
         })}
-        <small>勾选此前已生效的迸发；种类数取已选项与手动值中的较大值。</small>
+        <small>{tc("勾选此前已生效的迸发；种类数取已选项与手动值中的较大值。")}</small>
       </div>
     </details>
   );
@@ -176,6 +178,7 @@ export function DraftNumberInput({
   step,
   value,
 }) {
+  const { tc } = useCalculatorLocale();
   const [draft, setDraft] = useState(String(value ?? ""));
   const [isEditing, setIsEditing] = useState(false);
   const stepSize = Number(step) > 0 ? Number(step) : 1;
@@ -196,7 +199,7 @@ export function DraftNumberInput({
 
   const input = (
     <input
-      aria-label={ariaLabel}
+      aria-label={tc(ariaLabel)}
       className={className}
       disabled={disabled}
       inputMode={inputMode}
@@ -230,12 +233,12 @@ export function DraftNumberInput({
   if (!stepped) return input;
   return (
     <span className="draft-number-stepper">
-      {input}
+      {tc(input)}
       <span className="draft-number-stepper__buttons">
         {[1, -1].map((direction) => {
           const Icon = direction === 1 ? CaretUp : CaretDown;
           return <button
-            aria-label={`${ariaLabel}${direction === 1 ? "增加" : "减少"}${stepSize}`}
+            aria-label={tc(`${ariaLabel}${direction === 1 ? "增加" : "减少"}${stepSize}`)}
             disabled={disabled || (direction < 0 ? current <= min : current >= (max ?? Number.POSITIVE_INFINITY))}
             key={direction}
             onClick={() => adjust(direction)}
@@ -254,6 +257,7 @@ export function TraitInputs({
   onChange,
   scope,
 }) {
+  const { tc } = useCalculatorLocale();
   return inputs
     .filter((input) => !input.hidden && (!scope || input.scope === scope))
     .filter((input) => isDynamicInputVisible(input, context))
@@ -266,13 +270,13 @@ export function TraitInputs({
           onClick={() => onChange?.(dynamicInputId(input), true)}
           type="button"
         >
-          {input.label}
+          {tc(input.label)}
         </button>
       ) : input.type === "choice" ? (
         <label className="trait-choice" key={dynamicInputId(input)}>
-          <span>{input.label}</span>
+          <span>{tc(input.label)}</span>
           <select
-            aria-label={input.label}
+            aria-label={tc(input.label)}
             onChange={(event) =>
               onChange?.(dynamicInputId(input), event.target.value)
             }
@@ -280,7 +284,7 @@ export function TraitInputs({
           >
             {input.options.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {tc(option.label)}
               </option>
             ))}
           </select>
@@ -294,13 +298,13 @@ export function TraitInputs({
             }
             type="checkbox"
           />
-          <span>{input.label}</span>
+          <span>{tc(input.label)}</span>
         </label>
       ) : (
         <label className="trait-number" key={dynamicInputId(input)}>
-          <span>{input.label}</span>
+          <span>{tc(input.label)}</span>
           <DraftNumberInput
-            ariaLabel={input.label}
+            ariaLabel={tc(input.label)}
             inputMode="numeric"
             max={input.max}
             min={input.min}
@@ -308,20 +312,21 @@ export function TraitInputs({
             step={input.step ?? 1}
             value={dynamicInputValue(input, context)}
           />
-          {input.suffix ? <small>{input.suffix}</small> : null}
+          {input.suffix ? <small>{tc(input.suffix)}</small> : null}
         </label>
       ),
     );
 }
 
 export function TraitAutomaticStack({ automaticStack, skills = [] }) {
+  const { tc } = useCalculatorLocale();
   if (!automaticStack) return null;
   const matchingTypes = new Set(automaticStack.skillTypes ?? []);
   const value = skills.filter((skill) => matchingTypes.has(skill?.type)).length;
   return (
     <span className="trait-number trait-number--automatic">
-      <span>{automaticStack.label}</span>
-      <output aria-label={`${automaticStack.label}（自动读取）`}>{value}</output>
+      <span>{tc(automaticStack.label)}</span>
+      <output aria-label={tc("{v0}（自动读取）", { v0: automaticStack.label })}>{tc(value)}</output>
     </span>
   );
 }
@@ -439,6 +444,7 @@ export function SingleSkillEditor({
   powerMode: _powerMode = "base",
   traitContext = {},
 }) {
+  const { tc, typeLabel, entityName, entityDescription } = useCalculatorLocale();
   const [hitDraft, setHitDraft] = useState(String(hitCount));
   const normalizedPowerDisplayMode =
     powerDisplayMode === "panel" ? "panel" : "static";
@@ -523,7 +529,7 @@ export function SingleSkillEditor({
       <div className="skill-parameter-row">
         <div className="field-group field-group--skill">
           <SkillPicker
-            ariaLabel="选择技能"
+            ariaLabel={tc("选择技能")}
             onSelect={onSkillSelect}
             selected={selectedSkill}
             skills={skills}
@@ -531,10 +537,10 @@ export function SingleSkillEditor({
         </div>
 
         <label className="skill-effect-card__power-input single-skill-power">
-          <small>{normalizedPowerDisplayMode === "panel" ? "显示威力" : "静态威力"}</small>
+          <small>{normalizedPowerDisplayMode === "panel" ? tc("显示威力") : tc("静态威力")}</small>
           <PowerDraftInput
             key={`${selectedSkill?.id}-${normalizedPowerDisplayMode}`}
-            ariaLabel={normalizedPowerDisplayMode === "panel" ? "显示威力" : "静态威力"}
+            ariaLabel={normalizedPowerDisplayMode === "panel" ? tc("显示威力") : tc("静态威力")}
             isManual={Boolean(activePowerOverride)}
             mode={normalizedPowerDisplayMode}
             onClear={() => onPowerOverrideChange?.(null)}
@@ -547,35 +553,34 @@ export function SingleSkillEditor({
               : result?.staticPower ?? displayedSkillPower(selectedSkill, result) ?? manualPower ?? selectedSkill?.basePower}
           />
         </label>
-        <div className="skill-facts" aria-label="技能属性">
+        <div className="skill-facts" aria-label={tc("技能属性")}>
           <span className="skill-fact">
             {selectedSkill.category ? <Sword aria-hidden="true" size={17} weight="fill" /> : null}
-            {CATEGORY_LABELS[selectedSkill.category] ?? selectedSkill.category ?? "—"}
+            {tc(CATEGORY_LABELS[selectedSkill.category] ?? selectedSkill.category ?? "—")}
           </span>
           <span
             className={`type-chip${effectiveType ? ` type-chip--${effectiveType}` : ""}`}
             style={getElementToneStyle(effectiveType)}
           >
-            {effectiveType ?? "—"}
+            {typeLabel(effectiveType ?? "—")}
           </span>
           <span className="skill-fact">
-            <Lightning aria-hidden="true" size={17} weight="fill" />
-            能耗 {result?.skillCost ?? selectedSkill.cost ?? "—"}
+            <Lightning aria-hidden="true" size={17} weight="fill" />{tc("能耗 ")}{tc(result?.skillCost ?? selectedSkill.cost ?? "—")}
           </span>
         </div>
       </div>
 
-      <div aria-label="技能效果与实时解算" className="skill-effect-card">
+      <div aria-label={tc("技能效果与实时解算")} className="skill-effect-card">
         <div className="skill-effect-card__copy">
           <Lightning aria-hidden="true" size={16} weight="fill" />
-          <p>{selectedSkill.description || "无额外效果。"}</p>
+          <p>{selectedSkill.description ? entityDescription("skill", selectedSkill) : tc("无额外效果。")}</p>
         </div>
         <SkillUsageSummary result={result} />
         {canActivateSkill ? <button type="button" className="skill-follow-up" onClick={onSkillActivate}>
-          {skillActivationLabel}
+          {tc(skillActivationLabel)}
         </button> : null}
         {dynamicInputs.length > 0 || hasAttackerHpRule || hasDefenderHpRule ? (
-          <div aria-label="动态技能条件" className="skill-effect-card__conditions">
+          <div aria-label={tc("动态技能条件")} className="skill-effect-card__conditions">
             {hasAttackerHpRule && attackerHealth ? (
               <HealthInput
                 currentHp={attackerHealth.currentHp}
@@ -618,7 +623,7 @@ export function SingleSkillEditor({
               .map((input) =>
               input.type === "choice" ? (
                 <div
-                  aria-label={input.label}
+                  aria-label={tc(input.label)}
                   className="skill-condition-choice"
                   key={dynamicInputId(input)}
                   role="group"
@@ -635,7 +640,7 @@ export function SingleSkillEditor({
                       }
                       type="button"
                     >
-                      {option.label}
+                      {tc(option.label)}
                     </button>
                   ))}
                 </div>
@@ -650,13 +655,13 @@ export function SingleSkillEditor({
                     }
                     type="checkbox"
                   />
-                  <span>{input.label}</span>
+                  <span>{tc(input.label)}</span>
                 </label>
               ) : (
                 <label className="skill-condition-number" key={dynamicInputId(input)}>
-                  <span>{input.label}</span>
+                  <span>{tc(input.label)}</span>
                   <input
-                    aria-label={input.label}
+                    aria-label={tc(input.label)}
                     max={input.max}
                     min={input.min}
                     onFocus={(event) => {
@@ -683,28 +688,26 @@ export function SingleSkillEditor({
             )}
           </div>
         ) : null}
-        <div className="skill-effect-card__power" aria-label="技能威力">
+        <div className="skill-effect-card__power" aria-label={tc("技能威力")}>
           {resolutionSummary ? (
             <span className="skill-effect-card__formula">
-              {resolutionSummary}
+              {tc(resolutionSummary)}
             </span>
           ) : dynamicInputs.length > 0 && result?.status === "exact" ? (
-            <span className="skill-effect-card__formula">
-              当前条件未触发加成
-            </span>
+            <span className="skill-effect-card__formula">{tc("当前条件未触发加成 ")}</span>
           ) : null}
           {activePowerOverride?.mode === "static" ||
           activePowerOverride?.mode === "actual" ? (
-            <span className="skill-effect-card__formula">静态威力已手动填写</span>
+            <span className="skill-effect-card__formula">{tc("静态威力已手动填写")}</span>
           ) : null}
         </div>
       </div>
 
       <details className="manual-skill-settings">
-        <summary>手动调整</summary>
+        <summary>{tc("手动调整")}</summary>
         <div className="manual-parameter-grid">
           <div className="field-group manual-hit-field">
-            <span>连击次数</span>
+            <span>{tc("连击次数")}</span>
             <button className="manual-hit-reset" type="button" onClick={() => {
               const value = selectedSkill?.name === "传感器" && result?.automaticHitCount !== undefined
                 ? result.automaticHitCount
@@ -712,14 +715,14 @@ export function SingleSkillEditor({
               setHitDraft(String(value));
               if (selectedSkill?.name === "传感器") onHitCountChange(value, { reset: true });
               else onHitCountChange(value);
-            }}>恢复默认</button>
+            }}>{tc("恢复默认")}</button>
             <div className="manual-hit-stepper">
-            <button type="button" aria-label="减少连击次数" disabled={Number(hitDraft) <= 1} onClick={() => {
+            <button type="button" aria-label={tc("减少连击次数")} disabled={Number(hitDraft) <= 1} onClick={() => {
               const value = Math.max(1, Math.floor(toNumber(hitDraft, hitCount)) - 1);
               setHitDraft(String(value)); onHitCountChange(value);
             }}>−</button>
             <input
-              aria-label="连击次数"
+              aria-label={tc("连击次数")}
               max={Number.isFinite(hitCountMaximum) ? hitCountMaximum : undefined}
               min="1"
               onChange={(event) => {
@@ -744,7 +747,7 @@ export function SingleSkillEditor({
               type="number"
               value={hitDraft}
             />
-            <button type="button" aria-label="增加连击次数" disabled={Number(hitDraft) >= hitCountMaximum} onClick={() => {
+            <button type="button" aria-label={tc("增加连击次数")} disabled={Number(hitDraft) >= hitCountMaximum} onClick={() => {
               const value = Math.min(hitCountMaximum, Math.max(1, Math.floor(toNumber(hitDraft, hitCount))) + 1);
               setHitDraft(String(value)); onHitCountChange(value);
             }}>+</button>
@@ -758,15 +761,12 @@ export function SingleSkillEditor({
           {showAttackerTrait ? (
             <article className="trait-card trait-card--attack">
               <header>
-                <Sword aria-hidden="true" size={17} weight="fill" />
-                攻击特性
-              </header>
-              <strong>{attackerTrait.name}</strong>
-              <p>{attackerTrait.description}</p>
+                <Sword aria-hidden="true" size={17} weight="fill" />{tc("攻击特性 ")}</header>
+              <strong>{entityName("trait", attackerTrait)}</strong>
+              <p>{entityDescription("trait", attackerTrait)}</p>
               <div className="trait-inputs">
                 {showsLifestealCapability ? (
-                  <small className="trait-capability-note">
-                    吸血 {lifesteal.levels}层 · {lifesteal.percent}%
+                  <small className="trait-capability-note">{tc("吸血 ")}{tc(lifesteal.levels)}{tc("层 · ")}{tc(lifesteal.percent)}%
                   </small>
                 ) : null}
                 <TraitAutomaticStack
@@ -789,11 +789,9 @@ export function SingleSkillEditor({
           {showDefenderTrait ? (
             <article className="trait-card trait-card--defense">
               <header>
-                <Shield aria-hidden="true" size={17} weight="fill" />
-                防御特性
-              </header>
-              <strong>{defenderTrait.name}</strong>
-              <p>{defenderTrait.description}</p>
+                <Shield aria-hidden="true" size={17} weight="fill" />{tc("防御特性 ")}</header>
+              <strong>{entityName("trait", defenderTrait)}</strong>
+              <p>{entityDescription("trait", defenderTrait)}</p>
               <div className="trait-inputs">
                 <TraitInputs
                   context={traitContext}
