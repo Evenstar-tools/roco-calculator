@@ -8,6 +8,7 @@ import { usesAbsolutePowerRule } from "../domain/skill-rules.js";
 import { getSkillStatusEffectInputs } from "../domain/skill-status-effects.js";
 import { getNegativeStatusInputs } from "../domain/negative-status-rules.js";
 import { resolveLifestealCapability } from "../domain/baron-greed.js";
+import { getChoiceTraitInput, supportsChoiceTrait } from "../domain/choice-skill-sequence.js";
 import { HealthInput } from "./HealthInput.jsx";
 import { PowerDraftInput } from "./PowerDraftInput.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
@@ -453,11 +454,15 @@ export function SingleSkillEditor({
   const activePowerOverride = hasUnifiedPowerOverride
     ? powerOverride
     : null;
+  const choiceTraitInput = (attackerTraits.length ? attackerTraits : [attackerTrait])
+    .some((trait) => supportsChoiceTrait(trait?.displayName ?? trait?.name)) ? getChoiceTraitInput(selectedSkill) : null;
   const dynamicInputs = mergeDynamicInputs(
     dynamicInputsForSkill(selectedSkill, {
       includeNegativeStatusEffects: negativeStatusEnabled,
+      includeStatusEffects: true,
     }),
     result?.inputs ?? [],
+    choiceTraitInput ? [choiceTraitInput] : [],
   );
   const editableHitCountInput = dynamicInputs.find(
     (input) => input.drivesHitCount === true,

@@ -122,6 +122,94 @@ async function configureStarfall(page, slot = 1) {
   await selectSkill(page, "多维击打", slot);
 }
 
+for (const [width, height, theme] of [[1920, 1080, "light"], [390, 844, "light"], [320, 740, "dark"]]) {
+  test(`compact conditions adapt every skill in the reported lineup ${width} ${theme}`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height });
+    await resetUiuxStorage(page);
+    await page.goto("/");
+    await selectSpirit(page, "攻击方", "烈火战神");
+    await selectSpirit(page, "防御方", "稻草守护者");
+    for (const [index, name] of ["水泡盾", "驱赶", "蹦跶", "甜心续航"].entries()) {
+      await page.getByRole("combobox", { name: `防御方技能${index + 1}`, exact: true }).fill(name);
+      await page.getByRole("option", { name: new RegExp(`^${name}`) }).click();
+    }
+    await page.evaluate((value) => { document.documentElement.dataset.theme = value; }, theme);
+    const side = page.locator(".compact-skill-side--defender");
+    await expect(side.locator(".skill-follow-up")).toHaveCount(0);
+    for (const index of [2, 3, 4]) {
+      await page.getByRole("button", { name: `防御方技能${index}条件`, exact: true }).click();
+      const dialog = page.getByRole("dialog");
+      await expect(dialog.locator("footer")).toHaveCount(0);
+      if (index === 2) {
+        await dialog.getByRole("combobox", { name: "选择效果" }).selectOption("counter");
+        await dialog.getByRole("checkbox", { name: "触发应对" }).check();
+        await expect(dialog).toContainText("70 + 140 = 210");
+      } else await expect(dialog).toContainText("状态效果未接入");
+      await page.keyboard.press("Escape");
+    }
+    await side.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath(`adapt-list-${width}-${theme}.png`) });
+    await page.getByRole("button", { name: "防御方技能1条件", exact: true }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByRole("checkbox", { name: "防御应对成功" }).check();
+    await dialog.getByRole("button", { name: "使用技能", exact: true }).click();
+    await expect(dialog).toContainText("攻击+7层");
+    await expect(dialog).toContainText("减伤80%");
+    await expect(dialog.getByRole("button", { name: "解除状态", exact: true })).toBeEnabled();
+    const layout = await dialog.evaluate((node) => {
+      const box = node.getBoundingClientRect();
+      return { fits: node.scrollWidth <= node.clientWidth, inside: box.left >= 0 && box.right <= innerWidth && box.top >= 0 && box.bottom <= innerHeight,
+        labelsFit: [...node.querySelectorAll("label")].every((label) => label.scrollWidth <= label.clientWidth),
+        documentFits: document.documentElement.scrollWidth <= innerWidth };
+    });
+    expect(layout).toEqual({ fits: true, inside: true, labelsFit: true, documentFits: true });
+    await page.screenshot({ path: testInfo.outputPath(`adapt-defense-${width}-${theme}.png`) });
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", { name: /撤回上一步/ }).click();
+    await page.getByRole("button", { name: "防御方技能1条件", exact: true }).click();
+    await expect(dialog).not.toContainText("已用 1 次");
+  });
+}
+
+test("compact conditions expose repeat counts, branch health and expandable burst sources at 320", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await configureCounter(page);
+  await selectSkill(page, "吹火");
+  const open = async () => {
+    await page.getByRole("button", { name: "攻击方技能1条件", exact: true }).click();
+    return page.getByRole("dialog");
+  };
+  let dialog = await open();
+  await dialog.getByRole("button", { name: "此前使用次数增加" }).click();
+  await expect(dialog.getByRole("spinbutton", { name: "此前使用次数" })).toHaveValue("1");
+  await dialog.getByRole("button", { name: "此前使用次数重置" }).click();
+  await expect(dialog.getByRole("spinbutton", { name: "此前使用次数" })).toHaveValue("0");
+  await page.screenshot({ path: testInfo.outputPath("adapt-count-320.png") });
+  await page.keyboard.press("Escape");
+  await selectSkill(page, "下注");
+  dialog = await open();
+  await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveCount(0);
+  await dialog.getByRole("combobox", { name: "选择效果" }).selectOption("lowHp");
+  await dialog.getByRole("spinbutton", { name: "自身生命百分比" }).fill("50");
+  await dialog.getByRole("combobox", { name: "选择效果" }).selectOption("fixed");
+  await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveCount(0);
+  await dialog.getByRole("combobox", { name: "选择效果" }).selectOption("lowHp");
+  await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveValue("50");
+  await page.screenshot({ path: testInfo.outputPath("adapt-health-320.png") });
+  await page.keyboard.press("Escape");
+  await selectSkill(page, "雷暴");
+  dialog = await open();
+  await dialog.getByLabel("攻击方技能1条件选择迸发来源", { exact: true }).click();
+  const source = dialog.getByRole("checkbox", { name: /（迸发来源）$/ }).last();
+  await source.check();
+  await expect(source).toBeChecked();
+  expect(await dialog.locator(".burst-source-controls__menu label").evaluateAll((labels) => labels.every((label) =>
+    Number.parseFloat(getComputedStyle(label).fontSize) >= 14 && label.scrollWidth <= label.clientWidth))).toBe(true);
+  await expect(dialog.getByLabel("攻击方技能1条件选择迸发来源", { exact: true })).toContainText("已选 1");
+  await page.screenshot({ path: testInfo.outputPath("adapt-burst-320.png") });
+  await page.keyboard.press("Escape");
+});
+
 async function openStarfall(page, mobile = false) {
   if (mobile) await page.getByRole("button", { name: "展开伤害结果", exact: true }).click();
   await page.getByRole("button", { name: "星陨斩杀线", exact: true }).click();

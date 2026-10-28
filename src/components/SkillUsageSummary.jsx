@@ -20,7 +20,7 @@ export function SkillUsageSummary({ result, nextHint }) {
 
 export function UsageCountActions({ input, value, onChange }) {
   const { tc } = useCalculatorLocale();
-  if ((input.contextKey ?? input.key) !== "skillUseCount") return null;
+  if (!["skillUseCount", "pressureValveUseCount"].includes(input.contextKey ?? input.key)) return null;
   const count = Number(value ?? input.defaultValue ?? 0);
   const minimum = input.min ?? 0;
   const maximum = input.max ?? Infinity;
