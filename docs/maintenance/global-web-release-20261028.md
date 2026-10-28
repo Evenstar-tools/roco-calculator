@@ -47,3 +47,22 @@
 线上实测发现响应式CSS伪元素固定中文，补齐耗能、属性、威力、连击、迸发提示与上次有效结果；源码pin更新至 `90b64bf3e25c2fbe6c19fe34d644e542093930d6`。中文→EN→JA切换保留手填威力的定向回归、既有手机/雷暴回归、ESLint和语言表检查通过。上轮跨服分享补丁的完整远端CI通过。
 
 最终组合构建通过；英日切换、刷新、离线、跨服分享定向E2E通过。新增真实浏览器伪元素检查，320px/390px均无横向溢出，Common保持完整单行。390px截图人工读回通过，路径为源码工作树 `output/playwright/global-localization-20261028/en-mobile-labels-final.png`。
+
+### 最终线上验收完成
+
+发布提交 `de6ca146b72f9a7068a7adf0a3728f46ba1f9664` 已推送并回读origin/main。2026-10-28 17:30后普通 `/en/`、`/jp/` 均引用 `/global-assets/assets/main-BCKZdSXO.js`；线上390px实测英文Cost/Power/Combo、日文コスト/威力/連撃正确，日文刷新保留ディーモ与23伤害，无横向溢出、CBT或旧核验提示。最终远端CI全部成功：https://github.com/Evenstar-tools/roco-calculator/actions/runs/40664374473 。
+
+线上数据仍为 `global-s3-midseason-2026-08-13`，国服 `s4-2026-09-10` 与原 `/pre/assets/main-BhTCj6EQ.js` 保持。最终真实手机截图在源码工作树 `output/playwright/global-localization-20261028/live-en-mobile-final.png` 和 `live-jp-mobile-final.png`；桌面截图为同目录 `live-en.png`。本线程验收浏览器已关闭并回读列表为空。该段为发布后本地证据，不为追加记录再次推送。
+
+### 多语言接续与国服赛季装扮
+
+本轮用户明确授权两者一起上线。Global源码固定至 `e1e55f89f9be3f151e585e52b2150a61160423a0`，保持S3季中数据；CN正式版、原 `/pre/` pin、小程序均不改。
+
+- 补齐攻防特性原实体引用、正式形态名、速度候选及搜索、技能习得方式、传动记录和承伤Markdown/XLSX导出的英日显示；修正Global ID导致的最终形态筛选漏项。导出数值与中文结果一致。
+- 国服S1–S5既有装饰、招牌精灵及明暗配色共享到Global，新用户默认S3；旧显式无装饰选择保留。主题、随机和经典配色按服务器独立保存，语言切换保留配置。
+- 实际检查929px五主题、1280px英文四技能、390px日文主界面与设置；随机刷新换主题，切语言保持当前主题和23伤害。英文Class宽度修正后Common不折词。截图在源码树 `output/playwright/global-themes-localization-20261028/`。
+- 全S3实体和特性显示、工具导出、形态映射、天气差异、主题存储等定向回归通过；ESLint、语言表同步与检查通过。正式客户端原文行保留，项目语境译文单独维护。
+
+组合构建、生产包E2E与线上回查在下方接续记录。
+
+生产组合构建、release单元回归和全部发布E2E通过。新增E2E在真实Global包检查默认S3、切S5后英日切换/刷新/离线保持主题与23伤害，并检查1280/390/320px英文Common不折词。生产预览速度榜恢复普通最终形态、英文Profile分隔符正确。正式推送后继续回查公网。

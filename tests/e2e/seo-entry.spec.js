@@ -72,12 +72,20 @@ test("SEO Global S3 release keeps calculation across English, Japanese, refresh 
   await page.getByRole("option", { name: "Meodow 004 · Stage 3", exact: true }).click();
   await page.getByRole("button", { name: "Detailed", exact: true }).click();
   await expect(page.getByRole("complementary", { name: "Damage result" }).getByRole("status")).toHaveText("23");
+  await expect(page.locator("html")).toHaveAttribute("data-season", "s3");
+  await page.getByRole("button", { name: "Open menu", exact: true }).click();
+  await page.getByRole("button", { name: "Display settings", exact: true }).click();
+  await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption("s5");
+  await page.getByRole("button", { name: "Done", exact: true }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-season", "s5");
+  await expect(page.locator("header img")).toHaveAttribute("src", /s5-abu-mascot/);
   await page.getByRole("button", { name: "Open menu", exact: true }).click();
   await page.getByRole("combobox", { name: "Language", exact: true }).selectOption("ja");
   await expect(page).toHaveURL(/\/jp\/$/);
   await page.reload();
   await expect(page.getByRole("combobox", { name: "攻撃側のキャラクター", exact: true })).toHaveValue("ディーモ");
   await expect(page.locator(".result-column").getByRole("status")).toHaveText("23");
+  await expect(page.locator("html")).toHaveAttribute("data-season", "s5");
   await expect(page.locator("body")).not.toContainText(/CBT|Translation unavailable|翻訳未対応|CN reference|Unverified/);
   const data = await page.request.get("/global-assets/data/global-runtime.json");
   expect((await data.json()).meta.id).toBe("global-s3-midseason-2026-08-13");
@@ -87,6 +95,7 @@ test("SEO Global S3 release keeps calculation across English, Japanese, refresh 
   await page.reload();
   await expect(page.getByRole("combobox", { name: "攻撃側のキャラクター", exact: true })).toHaveValue("ディーモ");
   await expect(page.locator(".result-column").getByRole("status")).toHaveText("23");
+  await expect(page.locator("html")).toHaveAttribute("data-season", "s5");
   await context.setOffline(false);
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileLabels = () => page.locator(".four-skill-side--attacker").evaluate(side =>
@@ -96,7 +105,8 @@ test("SEO Global S3 release keeps calculation across English, Japanese, refresh 
   await page.getByRole("combobox", { name: "言語", exact: true }).selectOption("en");
   await expect.poll(mobileLabels).toEqual(['"Cost"', '"Power"', '"Combo"']);
   await expect(page.getByRole("combobox", { name: "Attacker Jini", exact: true })).toHaveValue("Dimo");
-  for (const width of [390, 320]) {
+  await page.getByRole("button", { name: "Close menu", exact: true }).click();
+  for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const commonClass = page.locator(".four-skill-side--attacker .skill-slot__kind > span").filter({ hasText: /^Common$/ });
