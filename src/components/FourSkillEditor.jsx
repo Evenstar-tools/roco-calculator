@@ -616,11 +616,13 @@ function SkillSide({
                   </div> : null}
                   <SkillUsageSummary result={result} nextHint={refractionHint} />
                   {canSkillActivate?.(side, index) ? (
-                    <button className="skill-follow-up" type="button"
-                      aria-label={`${label}技能${index + 1}${skillActivationLabel?.(side, index) ?? "使用技能"}`}
-                      onClick={() => onSkillActivate?.(side, index)}>
-                      {skillActivationLabel?.(side, index) ?? "使用技能"}
-                    </button>
+                    <div className="skill-slot__actions">
+                      <button className="skill-follow-up" type="button"
+                        aria-label={`${label}技能${index + 1}${skillActivationLabel?.(side, index) ?? "使用技能"}`}
+                        onClick={() => onSkillActivate?.(side, index)}>
+                        {skillActivationLabel?.(side, index) ?? "使用技能"}
+                      </button>
+                    </div>
                   ) : null}
                 </div>
               ) : null}

@@ -184,6 +184,13 @@
   color: var(--text);
 }
 
+.skill-slot__actions {
+  display: flex;
+  flex: 0 0 100%;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
 .skill-follow-up {
   justify-self: end;
   margin-top: 5px;
