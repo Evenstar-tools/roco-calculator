@@ -9,9 +9,9 @@ beforeEach(() => clearMissingUiMessages());
 
 test.each([
   ["cn", "zh-CN", "赛季主题", null],
-  ["global", "zh-CN", "赛季主题", "默认（无赛季装饰）"],
-  ["global", "en", "Theme", "Default (no season artwork)"],
-  ["global", "ja", "テーマ", "標準（シーズン装飾なし）"],
+  ["global", "zh-CN", "赛季主题", "无赛季装饰"],
+  ["global", "en", "Theme", "No season artwork"],
+  ["global", "ja", "テーマ", "シーズン装飾なし"],
 ])("%s %s reuses display settings with localized season names and controls", (serverId, locale, label, fallback) => {
   const change = vi.fn();
   const ui = (preview = false, preference = "s3") => <RuntimeProvider serverId={serverId} locale={locale}
@@ -35,11 +35,11 @@ test.each([
   fireEvent.change(selector, { target: { value: "s1" } });
   expect(change).toHaveBeenLastCalledWith("s1");
   if (serverId !== "cn") {
-    fireEvent.change(selector, { target: { value: "default" } });
-    expect(change).toHaveBeenLastCalledWith("default");
+    fireEvent.change(selector, { target: { value: "neutral" } });
+    expect(change).toHaveBeenLastCalledWith("neutral");
   }
   view.rerender(ui(false, "default"));
-  expect(selector).toHaveValue(serverId === "cn" ? "s4" : "default");
+  expect(selector).toHaveValue(serverId === "cn" ? "s4" : "s3");
   const randomLabel = { "zh-CN": "每次进入随机主题", en: "Random theme on each visit", ja: "開くたびにテーマをランダムに選ぶ" }[locale];
   const random = screen.getByRole("button", { name: randomLabel });
   expect(random).toHaveAttribute("aria-pressed", "false");

@@ -1,4 +1,4 @@
-import { normalizeSeasonThemePreference } from "../theme/season-themes.js";
+import { normalizeSeasonThemePreference, resolveSeasonThemeId } from "../theme/season-themes.js";
 import { createServerStorage, serverStorageKey } from "./server-storage.js";
 
 export const SEASON_THEME_STORAGE_KEY = "rock-calculator.settings.season-theme.v1";
@@ -37,12 +37,20 @@ export function writeClassicCalculatorColorsSetting(enabled, serverId = "cn", st
 }
 
 export function readSeasonThemePreference(serverId = "cn", storage) {
-  try { return normalizeSeasonThemePreference(readSetting(SEASON_THEME_STORAGE_KEY, serverId, storage)); }
+  try {
+    const value = readSetting(SEASON_THEME_STORAGE_KEY, serverId, storage);
+    // Before Global artwork was enabled, explicitly choosing "default" meant no art.
+    if (serverId === "global" && value === "default") return "neutral";
+    return normalizeSeasonThemePreference(value);
+  }
   catch { return "default"; }
 }
 
 export function writeSeasonThemePreference(value, serverId = "cn", storage) {
-  const preference = normalizeSeasonThemePreference(value);
+  const normalized = normalizeSeasonThemePreference(value);
+  // Do not create new legacy "default" values, which preserve the old no-art choice.
+  const preference = serverId === "global" && normalized === "default"
+    ? resolveSeasonThemeId({ serverId }) : normalized;
   try { writeSetting(SEASON_THEME_STORAGE_KEY, preference, serverId, storage); }
   catch { /* A blocked store must not prevent this session's appearance from changing. */ }
   return preference;
@@ -51,13 +59,13 @@ export function writeSeasonThemePreference(value, serverId = "cn", storage) {
 export function readLastRandomSeasonTheme(serverId = "cn", storage) {
   try {
     const id = normalizeSeasonThemePreference(readSetting(SEASON_THEME_LAST_RANDOM_STORAGE_KEY, serverId, storage));
-    return id === "default" || id === "random" ? null : id;
+    return id === "default" || id === "random" || id === "neutral" ? null : id;
   } catch { return null; }
 }
 
 export function writeLastRandomSeasonTheme(value, serverId = "cn", storage) {
   const id = normalizeSeasonThemePreference(value);
-  if (id === "default" || id === "random") return null;
+  if (id === "default" || id === "random" || id === "neutral") return null;
   try { writeSetting(SEASON_THEME_LAST_RANDOM_STORAGE_KEY, id, serverId, storage); }
   catch { /* Excluding the current theme still works in memory if storage is blocked. */ }
   return id;

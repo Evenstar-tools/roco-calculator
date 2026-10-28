@@ -50,7 +50,7 @@ export default function TransmissionMotion({ playback, boardRef, onComplete }) {
           if (cancelled) return;
           cards.current.forEach((card, key) => {
             card.style.transform = transform(nextPositions[key]);
-            card.querySelector(".transmission-slot-number").textContent = `${nextPositions[key] + 1} ${t("号位")}`;
+            card.querySelector(".transmission-slot-number").textContent = t("{slot} 号位", { slot: nextPositions[key] + 1 });
           });
           animations.forEach((animation) => animation.cancel());
           positions = nextPositions;
@@ -75,7 +75,7 @@ export default function TransmissionMotion({ playback, boardRef, onComplete }) {
     <ol className="transmission-motion-layer" aria-hidden="true">
       {playback.before.map((skill, key) => <li key={key} ref={(node) => { cards.current[key] = node; }} data-instance={key}>
         <SkillIcon skill={skill} size={32} />
-        <div><span className="transmission-slot-number">{key + 1}{" "}{t("号位")}</span><strong>{t(skill.name)}</strong></div>
+        <div><span className="transmission-slot-number">{t("{slot} 号位", { slot: key + 1 })}</span><strong>{t(skill.name)}</strong></div>
       </li>)}
     </ol>
     <span className="transmission-motion-progress" ref={progress} aria-hidden="true" />

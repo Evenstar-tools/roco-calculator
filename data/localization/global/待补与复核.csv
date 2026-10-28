@@ -4153,9 +4153,11 @@ ui:（原阵容）,ui,（原阵容）,ja,project_existing,review,保留现有值
 "ui-visible:[""src/components/DamageComparisonDialog.jsx"",""jsx-text"",""＋冻结""]",ui_visible,＋冻结,,needs_context,review,静态可见文本或片段；先核完整句子与上下文，再翻译/接入t，不能逐碎片机械替换。
 "ui-visible:[""src/components/DamageComparisonDialog.jsx"",""jsx-text"",""＋冻结""]",ui_visible,＋冻结,en,missing_translation,review,译文为空。
 "ui-visible:[""src/components/DamageComparisonDialog.jsx"",""jsx-text"",""＋冻结""]",ui_visible,＋冻结,ja,missing_translation,review,译文为空。
+"ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-attribute:aria-label"",""承伤范围""]",ui_visible,承伤范围,,not_in_current_inventory,review,来源清单已无此键，保留旧行待检查；不自动删除。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-attribute:aria-label"",""承伤范围""]",ui_visible,承伤范围,,needs_context,review,静态可见文本或片段；先核完整句子与上下文，再翻译/接入t，不能逐碎片机械替换。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-attribute:aria-label"",""承伤范围""]",ui_visible,承伤范围,en,missing_translation,review,译文为空。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-attribute:aria-label"",""承伤范围""]",ui_visible,承伤范围,ja,missing_translation,review,译文为空。
+"ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-expression-text"",""以上""]",ui_visible,以上,,not_in_current_inventory,review,来源清单已无此键，保留旧行待检查；不自动删除。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-expression-text"",""以上""]",ui_visible,以上,,needs_context,review,静态可见文本或片段；先核完整句子与上下文，再翻译/接入t，不能逐碎片机械替换。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-expression-text"",""以上""]",ui_visible,以上,en,missing_translation,review,译文为空。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-expression-text"",""以上""]",ui_visible,以上,ja,missing_translation,review,译文为空。
@@ -4163,6 +4165,7 @@ ui:（原阵容）,ui,（原阵容）,ja,project_existing,review,保留现有值
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-text"",""全部""]",ui_visible,全部,,needs_context,review,静态可见文本或片段；先核完整句子与上下文，再翻译/接入t，不能逐碎片机械替换。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-text"",""全部""]",ui_visible,全部,en,missing_translation,review,译文为空。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-text"",""全部""]",ui_visible,全部,ja,missing_translation,review,译文为空。
+"ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-text"",""承伤范围""]",ui_visible,承伤范围,,not_in_current_inventory,review,来源清单已无此键，保留旧行待检查；不自动删除。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-text"",""承伤范围""]",ui_visible,承伤范围,,needs_context,review,静态可见文本或片段；先核完整句子与上下文，再翻译/接入t，不能逐碎片机械替换。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-text"",""承伤范围""]",ui_visible,承伤范围,en,missing_translation,review,译文为空。
 "ui-visible:[""src/components/DamageRangeFilter.jsx"",""jsx-text"",""承伤范围""]",ui_visible,承伤范围,ja,missing_translation,review,译文为空。
@@ -6130,9 +6133,6 @@ ui:HP · 伤害后,ui,HP · 伤害后,ja,project_existing,review,保留现有值
 ui:HP · 冻结不额外扣血,ui,HP · 冻结不额外扣血,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:HP · 冻结不额外扣血,ui,HP · 冻结不额外扣血,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:HP · 冻结不额外扣血,ui,HP · 冻结不额外扣血,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。,ui,HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。,ui,HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。,ui,HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:{label}{ability},ui,{label}{ability},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:{label}{ability},ui,{label}{ability},en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:{label}{ability},ui,{label}{ability},ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -6412,9 +6412,6 @@ ui:{v0}：威力 +{v1},ui,{v0}：威力 +{v1},ja,project_existing,review,保留�
 ui:{v0}：自身 {v1} = {v2} 层,ui,{v0}：自身 {v1} = {v2} 层,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:{v0}：自身 {v1} = {v2} 层,ui,{v0}：自身 {v1} = {v2} 层,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:{v0}：自身 {v1} = {v2} 层,ui,{v0}：自身 {v1} = {v2} 层,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。,ui,· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。,ui,· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。,ui,· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:· 仅展示已确认最终形态,ui,· 仅展示已确认最终形态,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:· 仅展示已确认最终形态,ui,· 仅展示已确认最终形态,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:· 仅展示已确认最终形态,ui,· 仅展示已确认最终形态,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -6469,9 +6466,6 @@ ui:、综合第,ui,、综合第,ja,project_existing,review,保留现有值，待
 ui:、魔法第,ui,、魔法第,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:、魔法第,ui,、魔法第,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:、魔法第,ui,、魔法第,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:。以下为当前内核条件下的估算，请核对特性。,ui,。以下为当前内核条件下的估算，请核对特性。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:。以下为当前内核条件下的估算，请核对特性。,ui,。以下为当前内核条件下的估算，请核对特性。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:。以下为当前内核条件下的估算，请核对特性。,ui,。以下为当前内核条件下的估算，请核对特性。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:一键填层数,ui,一键填层数,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:一键填层数,ui,一键填层数,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:一键填层数,ui,一键填层数,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -6595,9 +6589,6 @@ ui:仅最终形态 + 首领,ui,仅最终形态 + 首领,ja,project_existing,revi
 ui:仅本页试算，不保存或分享。,ui,仅本页试算，不保存或分享。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:仅本页试算，不保存或分享。,ui,仅本页试算，不保存或分享。,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:仅本页试算，不保存或分享。,ui,仅本页试算，不保存或分享。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。,ui,仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。,ui,仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。,ui,仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:仅记录：,ui,仅记录：,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:仅记录：,ui,仅记录：,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:仅记录：,ui,仅记录：,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -6628,12 +6619,6 @@ ui:传动动效已开启 · 点击关闭,ui,传动动效已开启 · 点击关�
 ui:传动后顺序,ui,传动后顺序,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:传动后顺序,ui,传动后顺序,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:传动后顺序,ui,传动后顺序,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:传动特性,ui,传动特性,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:传动特性,ui,传动特性,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:传动特性,ui,传动特性,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:传动特性选项,ui,传动特性选项,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:传动特性选项,ui,传动特性选项,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:传动特性选项,ui,传动特性选项,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:伤害,ui,伤害,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:伤害,ui,伤害,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:伤害,ui,伤害,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -6745,9 +6730,6 @@ ui:偏执,ui,偏执,ja,project_existing,review,保留现有值，待语境或原
 ui:先于敌方攻击,ui,先于敌方攻击,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:先于敌方攻击,ui,先于敌方攻击,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:先于敌方攻击,ui,先于敌方攻击,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害,ui,先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害,ui,先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害,ui,先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:先手时每层技能威力 +20%,ui,先手时每层技能威力 +20%,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:先手时每层技能威力 +20%,ui,先手时每层技能威力 +20%,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:先手时每层技能威力 +20%,ui,先手时每层技能威力 +20%,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -6769,9 +6751,6 @@ ui:光合球｜回复 9% · 魔攻 +40%,ui,光合球｜回复 9% · 魔攻 +40%,
 ui:克制,ui,克制,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:克制,ui,克制,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:克制,ui,克制,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:克制倍率,ui,克制倍率,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:克制倍率,ui,克制倍率,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:克制倍率,ui,克制倍率,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:免疫,ui,免疫,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:免疫,ui,免疫,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:免疫,ui,免疫,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -6802,9 +6781,6 @@ ui:全选,ui,全选,ja,project_existing,review,保留现有值，待语境或原
 ui:全部,ui,全部,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:全部,ui,全部,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:全部,ui,全部,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:全部完整种族值形态,ui,全部完整种族值形态,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:全部完整种族值形态,ui,全部完整种族值形态,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:全部完整种族值形态,ui,全部完整种族值形态,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:全部形态,ui,全部形态,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:全部形态,ui,全部形态,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:全部形态,ui,全部形态,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -6841,9 +6817,6 @@ ui:其他火系技能使用次数,ui,其他火系技能使用次数,ja,project_e
 ui:其他草系技能使用次数,ui,其他草系技能使用次数,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:其他草系技能使用次数,ui,其他草系技能使用次数,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:其他草系技能使用次数,ui,其他草系技能使用次数,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:其他虫系精灵数,ui,其他虫系精灵数,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:其他虫系精灵数,ui,其他虫系精灵数,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:其他虫系精灵数,ui,其他虫系精灵数,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:内容,ui,内容,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:内容,ui,内容,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:内容,ui,内容,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -6865,9 +6838,6 @@ ui:冻结,ui,冻结,ja,project_existing,review,保留现有值，待语境或原
 ui:冻结 ×,ui,冻结 ×,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:冻结 ×,ui,冻结 ×,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:冻结 ×,ui,冻结 ×,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:冻结击倒,ui,冻结击倒,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:冻结击倒,ui,冻结击倒,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:冻结击倒,ui,冻结击倒,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:冻结占{v0}%,ui,冻结占{v0}%,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:冻结占{v0}%,ui,冻结占{v0}%,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:冻结占{v0}%,ui,冻结占{v0}%,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -6907,9 +6877,6 @@ ui:减速印记,ui,减速印记,ja,project_existing,review,保留现有值，待
 ui:减速度,ui,减速度,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:减速度,ui,减速度,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:减速度,ui,减速度,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:击败精灵数,ui,击败精灵数,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:击败精灵数,ui,击败精灵数,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:击败精灵数,ui,击败精灵数,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:分别使用所选属性攻击，取较高倍率，不相乘。,ui,分别使用所选属性攻击，取较高倍率，不相乘。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:分别使用所选属性攻击，取较高倍率，不相乘。,ui,分别使用所选属性攻击，取较高倍率，不相乘。,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:分别使用所选属性攻击，取较高倍率，不相乘。,ui,分别使用所选属性攻击，取较高倍率，不相乘。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -7084,9 +7051,6 @@ ui:只 · 按,ui,只 · 按,ja,project_existing,review,保留现有值，待语�
 ui:只看耐久,ui,只看耐久,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:只看耐久,ui,只看耐久,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:只看耐久,ui,只看耐久,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。,ui,只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。,ui,只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。,ui,只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:可以先手,ui,可以先手,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:可以先手,ui,可以先手,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:可以先手,ui,可以先手,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -7261,9 +7225,6 @@ ui:基础耐久,ui,基础耐久,ja,project_existing,review,保留现有值，待
 ui:基础耐久 ÷ 属性倍率,ui,基础耐久 ÷ 属性倍率,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:基础耐久 ÷ 属性倍率,ui,基础耐久 ÷ 属性倍率,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:基础耐久 ÷ 属性倍率,ui,基础耐久 ÷ 属性倍率,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果,ui,基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果,ui,基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果,ui,基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启,ui,填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启,ui,填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启,ui,填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -7288,9 +7249,6 @@ ui:大胆,ui,大胆,ja,project_existing,review,保留现有值，待语境或原
 ui:天气,ui,天气,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:天气,ui,天气,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:天气,ui,天气,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。,ui,天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。,ui,天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。,ui,天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:天真,ui,天真,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:天真,ui,天真,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:天真,ui,天真,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -7726,9 +7684,6 @@ ui:当前技能槽位,ui,当前技能槽位,ja,project_existing,review,保留现
 ui:当前技能的属性克制倍率：{v0}{v1},ui,当前技能的属性克制倍率：{v0}{v1},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:当前技能的属性克制倍率：{v0}{v1},ui,当前技能的属性克制倍率：{v0}{v1},en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:当前技能的属性克制倍率：{v0}{v1},ui,当前技能的属性克制倍率：{v0}{v1},ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:当前数据未找到该特性对应的精灵。,ui,当前数据未找到该特性对应的精灵。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:当前数据未找到该特性对应的精灵。,ui,当前数据未找到该特性对应的精灵。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:当前数据未找到该特性对应的精灵。,ui,当前数据未找到该特性对应的精灵。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:当前方案,ui,当前方案,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:当前方案,ui,当前方案,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:当前方案,ui,当前方案,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -7939,12 +7894,6 @@ ui:打开,ui,打开,ja,project_existing,review,保留现有值，待语境或原
 ui:打开菜单中的“分享当前配置”生成链接，也可粘贴同服分享链接载入。,ui,打开菜单中的“分享当前配置”生成链接，也可粘贴同服分享链接载入。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:打开菜单中的“分享当前配置”生成链接，也可粘贴同服分享链接载入。,ui,打开菜单中的“分享当前配置”生成链接，也可粘贴同服分享链接载入。,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:打开菜单中的“分享当前配置”生成链接，也可粘贴同服分享链接载入。,ui,打开菜单中的“分享当前配置”生成链接，也可粘贴同服分享链接载入。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:承伤从低到高,ui,承伤从低到高,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:承伤从低到高,ui,承伤从低到高,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:承伤从低到高,ui,承伤从低到高,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:承伤从高到低,ui,承伤从高到低,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:承伤从高到低,ui,承伤从高到低,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:承伤从高到低,ui,承伤从高到低,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:承伤倍率多选,ui,承伤倍率多选,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:承伤倍率多选,ui,承伤倍率多选,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:承伤倍率多选,ui,承伤倍率多选,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -8059,9 +8008,6 @@ ui:按成员数量排序,ui,按成员数量排序,ja,project_existing,review,保
 ui:按所选属性计算,ui,按所选属性计算,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:按所选属性计算,ui,按所选属性计算,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:按所选属性计算,ui,按所选属性计算,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:按特性层数查询 · 点击技能查看逐层伤害,ui,按特性层数查询 · 点击技能查看逐层伤害,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:按特性层数查询 · 点击技能查看逐层伤害,ui,按特性层数查询 · 点击技能查看逐层伤害,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:按特性层数查询 · 点击技能查看逐层伤害,ui,按特性层数查询 · 点击技能查看逐层伤害,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:按百分比输入,ui,按百分比输入,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:按百分比输入,ui,按百分比输入,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:按百分比输入,ui,按百分比输入,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -8236,9 +8182,6 @@ ui:敌方冻结,ui,敌方冻结,ja,project_existing,review,保留现有值，待
 ui:敌方冻结层数,ui,敌方冻结层数,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:敌方冻结层数,ui,敌方冻结层数,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:敌方冻结层数,ui,敌方冻结层数,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:敌方力竭精灵数,ui,敌方力竭精灵数,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:敌方力竭精灵数,ui,敌方力竭精灵数,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:敌方力竭精灵数,ui,敌方力竭精灵数,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:敌方印记层数,ui,敌方印记层数,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:敌方印记层数,ui,敌方印记层数,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:敌方印记层数,ui,敌方印记层数,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -8263,9 +8206,6 @@ ui:敌方技能系别数,ui,敌方技能系别数,ja,project_existing,review,保
 ui:敌方技能足以击败自己,ui,敌方技能足以击败自己,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:敌方技能足以击败自己,ui,敌方技能足以击败自己,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:敌方技能足以击败自己,ui,敌方技能足以击败自己,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:敌方星陨,ui,敌方星陨,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:敌方星陨,ui,敌方星陨,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:敌方星陨,ui,敌方星陨,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:敌方星陨印记,ui,敌方星陨印记,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:敌方星陨印记,ui,敌方星陨印记,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:敌方星陨印记,ui,敌方星陨印记,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -8329,9 +8269,6 @@ ui:无法先手,ui,无法先手,ja,project_existing,review,保留现有值，待
 ui:无法打击,ui,无法打击,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:无法打击,ui,无法打击,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:无法打击,ui,无法打击,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:无相关特性,ui,无相关特性,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:无相关特性,ui,无相关特性,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:无相关特性,ui,无相关特性,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:无耐久,ui,无耐久,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:无耐久,ui,无耐久,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:无耐久,ui,无耐久,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -8386,9 +8323,6 @@ ui:暂无可导入队伍,ui,暂无可导入队伍,ja,project_existing,review,保
 ui:暂无明显弱点,ui,暂无明显弱点,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:暂无明显弱点,ui,暂无明显弱点,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:暂无明显弱点,ui,暂无明显弱点,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:暂无特性说明，请核对计算提示。,ui,暂无特性说明，请核对计算提示。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:暂无特性说明，请核对计算提示。,ui,暂无特性说明，请核对计算提示。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:暂无特性说明，请核对计算提示。,ui,暂无特性说明，请核对计算提示。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:暗夜拾光,ui,暗夜拾光,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:暗夜拾光,ui,暗夜拾光,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:暗夜拾光,ui,暗夜拾光,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -8434,9 +8368,6 @@ ui:最终形态 + 首领,ui,最终形态 + 首领,ja,project_existing,review,保
 ui:最终形态与首领 · 搜索不改变名次,ui,最终形态与首领 · 搜索不改变名次,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:最终形态与首领 · 搜索不改变名次,ui,最终形态与首领 · 搜索不改变名次,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:最终形态与首领 · 搜索不改变名次,ui,最终形态与首领 · 搜索不改变名次,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:最终形态＋首领,ui,最终形态＋首领,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:最终形态＋首领,ui,最终形态＋首领,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:最终形态＋首领,ui,最终形态＋首领,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:月涌狂想,ui,月涌狂想,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:月涌狂想,ui,月涌狂想,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:月涌狂想,ui,月涌狂想,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -8449,9 +8380,6 @@ ui:有效打击,ui,有效打击,ja,project_existing,review,保留现有值，待
 ui:有效耐久,ui,有效耐久,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:有效耐久,ui,有效耐久,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:有效耐久,ui,有效耐久,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:有效耐久降序 · 不含特性及环境效果,ui,有效耐久降序 · 不含特性及环境效果,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:有效耐久降序 · 不含特性及环境效果,ui,有效耐久降序 · 不含特性及环境效果,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:有效耐久降序 · 不含特性及环境效果,ui,有效耐久降序 · 不含特性及环境效果,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:未使用血脉魔法,ui,未使用血脉魔法,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:未使用血脉魔法,ui,未使用血脉魔法,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:未使用血脉魔法,ui,未使用血脉魔法,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -8503,9 +8431,6 @@ ui:本技能使用次数 +1。,ui,本技能使用次数 +1。,ja,project_existin
 ui:本技能能耗 -2。,ui,本技能能耗 -2。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:本技能能耗 -2。,ui,本技能能耗 -2。,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:本技能能耗 -2。,ui,本技能能耗 -2。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:本榜不计防守方特性，代入后恢复特性及预设参数。,ui,本榜不计防守方特性，代入后恢复特性及预设参数。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:本榜不计防守方特性，代入后恢复特性及预设参数。,ui,本榜不计防守方特性，代入后恢复特性及预设参数。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:本榜不计防守方特性，代入后恢复特性及预设参数。,ui,本榜不计防守方特性，代入后恢复特性及预设参数。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:本次,ui,本次,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:本次,ui,本次,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:本次,ui,本次,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -8722,9 +8647,6 @@ ui:正在加载技能资料…,ui,正在加载技能资料…,ja,project_existin
 ui:正在加载电鹿斩杀线…,ui,正在加载电鹿斩杀线…,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:正在加载电鹿斩杀线…,ui,正在加载电鹿斩杀线…,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:正在加载电鹿斩杀线…,ui,正在加载电鹿斩杀线…,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:正在加载精灵资料…,ui,正在加载精灵资料…,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:正在加载精灵资料…,ui,正在加载精灵资料…,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:正在加载精灵资料…,ui,正在加载精灵资料…,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:正在复算…,ui,正在复算…,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:正在复算…,ui,正在复算…,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:正在复算…,ui,正在复算…,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -8902,9 +8824,6 @@ ui:没有符合当前筛选的候选。,ui,没有符合当前筛选的候选。,
 ui:没有符合当前筛选的结果,ui,没有符合当前筛选的结果,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:没有符合当前筛选的结果,ui,没有符合当前筛选的结果,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:没有符合当前筛选的结果,ui,没有符合当前筛选的结果,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:沿用星陨／冻结,ui,沿用星陨／冻结,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:沿用星陨／冻结,ui,沿用星陨／冻结,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:沿用星陨／冻结,ui,沿用星陨／冻结,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:淘沙球｜对方速度 -40 · 物防 -40% · 连击 +2,ui,淘沙球｜对方速度 -40 · 物防 -40% · 连击 +2,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:淘沙球｜对方速度 -40 · 物防 -40% · 连击 +2,ui,淘沙球｜对方速度 -40 · 物防 -40% · 连击 +2,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:淘沙球｜对方速度 -40 · 物防 -40% · 连击 +2,ui,淘沙球｜对方速度 -40 · 物防 -40% · 连击 +2,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9007,27 +8926,12 @@ ui:特性,ui,特性,ja,project_existing,review,保留现有值，待语境或原
 ui:特性固定威力,ui,特性固定威力,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:特性固定威力,ui,特性固定威力,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:特性固定威力,ui,特性固定威力,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:特性层数,ui,特性层数,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:特性层数,ui,特性层数,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:特性层数,ui,特性层数,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:特性层数减一,ui,特性层数减一,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:特性层数减一,ui,特性层数减一,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:特性层数减一,ui,特性层数减一,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:特性层数加一,ui,特性层数加一,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:特性层数加一,ui,特性层数加一,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:特性层数加一,ui,特性层数加一,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:特性已关闭,ui,特性已关闭,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:特性已关闭,ui,特性已关闭,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:特性已关闭,ui,特性已关闭,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:特性条件与效果,ui,特性条件与效果,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:特性条件与效果,ui,特性条件与效果,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:特性条件与效果,ui,特性条件与效果,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:特性结算,ui,特性结算,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:特性结算,ui,特性结算,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:特性结算,ui,特性结算,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:特性说明,ui,特性说明,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:特性说明,ui,特性说明,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:特性说明,ui,特性说明,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:特性造成伤害,ui,特性造成伤害,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:特性造成伤害,ui,特性造成伤害,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:特性造成伤害,ui,特性造成伤害,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9091,9 +8995,6 @@ ui:目标 HP,ui,目标 HP,ja,project_existing,review,保留现有值，待语境
 ui:目标HP,ui,目标HP,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:目标HP,ui,目标HP,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:目标HP,ui,目标HP,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:目标为混血精灵,ui,目标为混血精灵,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:目标为混血精灵,ui,目标为混血精灵,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:目标为混血精灵,ui,目标为混血精灵,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:目标本回合使用状态技能,ui,目标本回合使用状态技能,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:目标本回合使用状态技能,ui,目标本回合使用状态技能,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:目标本回合使用状态技能,ui,目标本回合使用状态技能,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9106,12 +9007,6 @@ ui:目标生命 {v0} · 当前 {v1}%,ui,目标生命 {v0} · 当前 {v1}%,ja,pro
 ui:目标精灵,ui,目标精灵,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:目标精灵,ui,目标精灵,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:目标精灵,ui,目标精灵,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。,ui,盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。,ui,盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。,ui,盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:盲拧随机重排计算，请更换精灵或特性。,ui,盲拧随机重排计算，请更换精灵或特性。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:盲拧随机重排计算，请更换精灵或特性。,ui,盲拧随机重排计算，请更换精灵或特性。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:盲拧随机重排计算，请更换精灵或特性。,ui,盲拧随机重排计算，请更换精灵或特性。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:盲点,ui,盲点,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:盲点,ui,盲点,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:盲点,ui,盲点,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9190,9 +9085,6 @@ ui:精灵,ui,精灵,ja,project_existing,review,保留现有值，待语境或原
 ui:精灵 · 最终形态与首领,ui,精灵 · 最终形态与首领,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:精灵 · 最终形态与首领,ui,精灵 · 最终形态与首领,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:精灵 · 最终形态与首领,ui,精灵 · 最终形态与首领,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:精灵、技能和特性使用国际客户端译名。,ui,精灵、技能和特性使用国际客户端译名。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:精灵、技能和特性使用国际客户端译名。,ui,精灵、技能和特性使用国际客户端译名。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:精灵、技能和特性使用国际客户端译名。,ui,精灵、技能和特性使用国际客户端译名。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:精灵数据缺失或配置需要修复,ui,精灵数据缺失或配置需要修复,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:精灵数据缺失或配置需要修复,ui,精灵数据缺失或配置需要修复,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:精灵数据缺失或配置需要修复,ui,精灵数据缺失或配置需要修复,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9268,9 +9160,6 @@ ui:网兜球｜能耗 -1 · 连击 +1,ui,网兜球｜能耗 -1 · 连击 +1,ja,p
 ui:美妙球｜对方双攻 -30% · 威力 +20,ui,美妙球｜对方双攻 -30% · 威力 +20,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:美妙球｜对方双攻 -30% · 威力 +20,ui,美妙球｜对方双攻 -30% · 威力 +20,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:美妙球｜对方双攻 -30% · 威力 +20,ui,美妙球｜对方双攻 -30% · 威力 +20,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。,ui,翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。,ui,翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。,ui,翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:翼·连击+{v0},ui,翼·连击+{v0},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:翼·连击+{v0},ui,翼·连击+{v0},en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:翼·连击+{v0},ui,翼·连击+{v0},ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9433,9 +9322,6 @@ ui:行动前已有层数；攻击自动预览，状态技能需使用。,ui,行�
 ui:要将,ui,要将,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:要将,ui,要将,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:要将,ui,要将,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:触发2层引电,ui,触发2层引电,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:触发2层引电,ui,触发2层引电,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:触发2层引电,ui,触发2层引电,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:触发{v0},ui,触发{v0},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:触发{v0},ui,触发{v0},en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:触发{v0},ui,触发{v0},ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9502,9 +9388,6 @@ ui:该技能本回合冷却；请选择其他技能或待机。,ui,该技能本�
 ui:该档配置的显示值，不代表所有配置的速度。,ui,该档配置的显示值，不代表所有配置的速度。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:该档配置的显示值，不代表所有配置的速度。,ui,该档配置的显示值，不代表所有配置的速度。,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:该档配置的显示值，不代表所有配置的速度。,ui,该档配置的显示值，不代表所有配置的速度。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。,ui,该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。,ui,该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。,ui,该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:该规则暂未验证,ui,该规则暂未验证,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:该规则暂未验证,ui,该规则暂未验证,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:该规则暂未验证,ui,该规则暂未验证,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9538,9 +9421,6 @@ ui:请选择一种或两种属性,ui,请选择一种或两种属性,ja,project_e
 ui:请选择本回合使用的技能。,ui,请选择本回合使用的技能。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:请选择本回合使用的技能。,ui,请选择本回合使用的技能。,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:请选择本回合使用的技能。,ui,请选择本回合使用的技能。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:请选择特性,ui,请选择特性,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:请选择特性,ui,请选择特性,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:请选择特性,ui,请选择特性,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:请选择防御方后查看技能斩杀线。,ui,请选择防御方后查看技能斩杀线。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:请选择防御方后查看技能斩杀线。,ui,请选择防御方后查看技能斩杀线。,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:请选择防御方后查看技能斩杀线。,ui,请选择防御方后查看技能斩杀线。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9739,9 +9619,6 @@ ui:选择特性结算,ui,选择特性结算,ja,project_existing,review,保留现
 ui:选择目标后分析,ui,选择目标后分析,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:选择目标后分析,ui,选择目标后分析,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:选择目标后分析,ui,选择目标后分析,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:选择精灵，开始配置,ui,选择精灵，开始配置,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:选择精灵，开始配置,ui,选择精灵，开始配置,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:选择精灵，开始配置,ui,选择精灵，开始配置,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:选择血脉,ui,选择血脉,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:选择血脉,ui,选择血脉,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:选择血脉,ui,选择血脉,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9829,9 +9706,6 @@ ui:配置已载入,ui,配置已载入,ja,project_existing,review,保留现有值
 ui:采用 S3 季中数值与规则。,ui,采用 S3 季中数值与规则。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:采用 S3 季中数值与规则。,ui,采用 S3 季中数值与规则。,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:采用 S3 季中数值与规则。,ui,采用 S3 季中数值与规则。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:采用当前耐久模板；代入后按实际特性复算。,ui,采用当前耐久模板；代入后按实际特性复算。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:采用当前耐久模板；代入后按实际特性复算。,ui,采用当前耐久模板；代入后按实际特性复算。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:采用当前耐久模板；代入后按实际特性复算。,ui,采用当前耐久模板；代入后按实际特性复算。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:重新加载,ui,重新加载,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:重新加载,ui,重新加载,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:重新加载,ui,重新加载,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9865,9 +9739,6 @@ ui:闪焰爆发,ui,闪焰爆发,ja,project_existing,review,保留现有值，待
 ui:队伍六乘六对位,ui,队伍六乘六对位,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:队伍六乘六对位,ui,队伍六乘六对位,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:队伍六乘六对位,ui,队伍六乘六对位,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:队伍存在虫系精灵,ui,队伍存在虫系精灵,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:队伍存在虫系精灵,ui,队伍存在虫系精灵,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:队伍存在虫系精灵,ui,队伍存在虫系精灵,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:队伍属性矩阵横向滚动,ui,队伍属性矩阵横向滚动,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:队伍属性矩阵横向滚动,ui,队伍属性矩阵横向滚动,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:队伍属性矩阵横向滚动,ui,队伍属性矩阵横向滚动,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -9901,15 +9772,6 @@ ui:防守抗性,ui,防守抗性,ja,project_existing,review,保留现有值，待
 ui:防守模板,ui,防守模板,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:防守模板,ui,防守模板,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:防守模板,ui,防守模板,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:防守特性,ui,防守特性,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:防守特性,ui,防守特性,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:防守特性,ui,防守特性,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:防守特性参数,ui,防守特性参数,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:防守特性参数,ui,防守特性参数,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:防守特性参数,ui,防守特性参数,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:防守特性设置,ui,防守特性设置,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:防守特性设置,ui,防守特性设置,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:防守特性设置,ui,防守特性设置,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:防守面,ui,防守面,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:防守面,ui,防守面,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:防守面,ui,防守面,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -10009,9 +9871,6 @@ ui:非伤害技能不计算伤害,ui,非伤害技能不计算伤害,ja,project_e
 ui:非官方工具。数值与规则采用 S3 季中，译名来自国际客户端。,ui,非官方工具。数值与规则采用 S3 季中，译名来自国际客户端。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:非官方工具。数值与规则采用 S3 季中，译名来自国际客户端。,ui,非官方工具。数值与规则采用 S3 季中，译名来自国际客户端。,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:非官方工具。数值与规则采用 S3 季中，译名来自国际客户端。,ui,非官方工具。数值与规则采用 S3 季中，译名来自国际客户端。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:非官方工具。精灵、技能与特性译名来自国际客户端。,ui,非官方工具。精灵、技能与特性译名来自国际客户端。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:非官方工具。精灵、技能与特性译名来自国际客户端。,ui,非官方工具。精灵、技能与特性译名来自国际客户端。,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:非官方工具。精灵、技能与特性译名来自国际客户端。,ui,非官方工具。精灵、技能与特性译名来自国际客户端。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:非幻系攻击触发额外幻系伤害,ui,非幻系攻击触发额外幻系伤害,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:非幻系攻击触发额外幻系伤害,ui,非幻系攻击触发额外幻系伤害,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:非幻系攻击触发额外幻系伤害,ui,非幻系攻击触发额外幻系伤害,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -10102,9 +9961,6 @@ ui:（连击已达上限{v0}）,ui,（连击已达上限{v0}）,ja,project_exist
 ui:＋ 先发,ui,＋ 先发,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:＋ 先发,ui,＋ 先发,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:＋ 先发,ui,＋ 先发,ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:＋ 引电,ui,＋ 引电,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:＋ 引电,ui,＋ 引电,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:＋ 引电,ui,＋ 引电,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:＋冻结,ui,＋冻结,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:＋冻结,ui,＋冻结,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:＋冻结,ui,＋冻结,ja,project_existing,review,保留现有值，待语境或原文问题复核。
@@ -10171,3 +10027,264 @@ ui:上次有效结果,ui,上次有效结果,ja,project_existing,review,保留现
 ui:悬停或聚焦选项查看效果。,ui,悬停或聚焦选项查看效果。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:悬停或聚焦选项查看效果。,ui,悬停或聚焦选项查看效果。,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:悬停或聚焦选项查看效果。,ui,悬停或聚焦选项查看效果。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{base}种族·{profile},ui,{base}种族·{profile},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{base}种族·{profile},ui,{base}种族·{profile},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{base}种族·{profile},ui,{base}种族·{profile},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{base}种族·{profile}·{effect},ui,{base}种族·{profile}·{effect},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{base}种族·{profile}·{effect},ui,{base}种族·{profile}·{effect},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{base}种族·{profile}·{effect},ui,{base}种族·{profile}·{effect},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个,ui,{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个,ui,{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个,ui,{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{count} 个配置,ui,{count} 个配置,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{count} 个配置,ui,{count} 个配置,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{count} 个配置,ui,{count} 个配置,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{level}级 · {nature} · 个体：{allocation},ui,{level}级 · {nature} · 个体：{allocation},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{level}级 · {nature} · 个体：{allocation},ui,{level}级 · {nature} · 个体：{allocation},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{level}级 · {nature} · 个体：{allocation},ui,{level}级 · {nature} · 个体：{allocation},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{level}级·{rest},ui,{level}级·{rest},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{level}级·{rest},ui,{level}级·{rest},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{level}级·{rest},ui,{level}级·{rest},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{min}%至{max}%,ui,{min}%至{max}%,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{min}%至{max}%,ui,{min}%至{max}%,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{min}%至{max}%,ui,{min}%至{max}%,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{min}～{max}（因目标而异）,ui,{min}～{max}（因目标而异）,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{min}～{max}（因目标而异）,ui,{min}～{max}（因目标而异）,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{min}～{max}（因目标而异）,ui,{min}～{max}（因目标而异）,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{names}等 {count} 只,ui,{names}等 {count} 只,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{names}等 {count} 只,ui,{names}等 {count} 只,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{names}等 {count} 只,ui,{names}等 {count} 只,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name} · {level}级 · {nature} · {allocation},ui,{name} · {level}级 · {nature} · {allocation},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{name} · {level}级 · {nature} · {allocation},ui,{name} · {level}级 · {nature} · {allocation},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name} · {level}级 · {nature} · {allocation},ui,{name} · {level}级 · {nature} · {allocation},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name} · {type} · {category} · 静态威力 {power} · 连击 {hits},ui,{name} · {type} · {category} · 静态威力 {power} · 连击 {hits},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{name} · {type} · {category} · 静态威力 {power} · 连击 {hits},ui,{name} · {type} · {category} · 静态威力 {power} · 连击 {hits},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name} · {type} · {category} · 静态威力 {power} · 连击 {hits},ui,{name} · {type} · {category} · 静态威力 {power} · 连击 {hits},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。,ui,{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。,ui,{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。,ui,{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}（{count}层）,ui,{name}（{count}层）,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{name}（{count}层）,ui,{name}（{count}层）,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}（{count}层）,ui,{name}（{count}层）,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}（绝缘球）,ui,{name}（绝缘球）,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{name}（绝缘球）,ui,{name}（绝缘球）,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}（绝缘球）,ui,{name}（绝缘球）,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}：自身 {own} + {trait} {extra} = {total} 层,ui,{name}：自身 {own} + {trait} {extra} = {total} 层,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{name}：自身 {own} + {trait} {extra} = {total} 层,ui,{name}：自身 {own} + {trait} {extra} = {total} 层,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}：自身 {own} + {trait} {extra} = {total} 层,ui,{name}：自身 {own} + {trait} {extra} = {total} 层,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}：自身 {own} = {total} 层,ui,{name}：自身 {own} = {total} 层,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{name}：自身 {own} = {total} 层,ui,{name}：自身 {own} = {total} 层,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}：自身 {own} = {total} 层,ui,{name}：自身 {own} = {total} 层,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}：自身 {own}；位置固定,ui,{name}：自身 {own}；位置固定,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{name}：自身 {own}；位置固定,ui,{name}：自身 {own}；位置固定,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{name}：自身 {own}；位置固定,ui,{name}：自身 {own}；位置固定,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{slot} 号位,ui,{slot} 号位,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{slot} 号位,ui,{slot} 号位,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{slot} 号位,ui,{slot} 号位,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{slot} 号位-{layers},ui,{slot} 号位-{layers},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{slot} 号位-{layers},ui,{slot} 号位-{layers},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{slot} 号位-{layers},ui,{slot} 号位-{layers},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{type}系血脉,ui,{type}系血脉,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{type}系血脉,ui,{type}系血脉,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{type}系血脉,ui,{type}系血脉,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{value}族,ui,{value}族,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{value}族,ui,{value}族,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{value}族,ui,{value}族,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{weather}（不计天气伤害）,ui,{weather}（不计天气伤害）,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:{weather}（不计天气伤害）,ui,{weather}（不计天气伤害）,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:{weather}（不计天气伤害）,ui,{weather}（不计天气伤害）,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:·特,ui,·特,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:·特,ui,·特,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:·特,ui,·特,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:以上,ui,以上,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:以上,ui,以上,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:以上,ui,以上,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:传说合体：{name},ui,传说合体：{name},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:传说合体：{name},ui,传说合体：{name},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:传说合体：{name},ui,传说合体：{name},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:冻结 {count}层,ui,冻结 {count}层,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:冻结 {count}层,ui,冻结 {count}层,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:冻结 {count}层,ui,冻结 {count}层,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:冻结斩杀线,ui,冻结斩杀线,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:冻结斩杀线,ui,冻结斩杀线,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:冻结斩杀线,ui,冻结斩杀线,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:剩余 HP,ui,剩余 HP,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:剩余 HP,ui,剩余 HP,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:剩余 HP,ui,剩余 HP,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:各自用户预设，未配置按中立性格、生命60、双防0个体,ui,各自用户预设，未配置按中立性格、生命60、双防0个体,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:各自用户预设，未配置按中立性格、生命60、双防0个体,ui,各自用户预设，未配置按中立性格、生命60、双防0个体,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:各自用户预设，未配置按中立性格、生命60、双防0个体,ui,各自用户预设，未配置按中立性格、生命60、双防0个体,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,ui,各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,ui,各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,ui,各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:名称 / 别名,ui,名称 / 别名,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:名称 / 别名,ui,名称 / 别名,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:名称 / 别名,ui,名称 / 别名,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:含一次引电,ui,含一次引电,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:含一次引电,ui,含一次引电,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:含一次引电,ui,含一次引电,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:命中{value},ui,命中{value},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:命中{value},ui,命中{value},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:命中{value},ui,命中{value},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:啮合,ui,啮合,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:啮合,ui,啮合,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:啮合,ui,啮合,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:固定位置技能不能移动。,ui,固定位置技能不能移动。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:固定位置技能不能移动。,ui,固定位置技能不能移动。,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:固定位置技能不能移动。,ui,固定位置技能不能移动。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:图鉴号,ui,图鉴号,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:图鉴号,ui,图鉴号,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:图鉴号,ui,图鉴号,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:学习途径待补充,ui,学习途径待补充,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:学习途径待补充,ui,学习途径待补充,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:学习途径待补充,ui,学习途径待补充,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:实际速度,ui,实际速度,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:实际速度,ui,实际速度,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:实际速度,ui,实际速度,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:已有冻结 {count} 层,ui,已有冻结 {count} 层,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:已有冻结 {count} 层,ui,已有冻结 {count} 层,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:已有冻结 {count} 层,ui,已有冻结 {count} 层,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:当前数据缺少电鹿，请更新数据后重试,ui,当前数据缺少电鹿，请更新数据后重试,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:当前数据缺少电鹿，请更新数据后重试,ui,当前数据缺少电鹿，请更新数据后重试,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:当前数据缺少电鹿，请更新数据后重试,ui,当前数据缺少电鹿，请更新数据后重试,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:当前槽位不可使用,ui,当前槽位不可使用,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:当前槽位不可使用,ui,当前槽位不可使用,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:当前槽位不可使用,ui,当前槽位不可使用,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:承伤结论,ui,承伤结论,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:承伤结论,ui,承伤结论,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:承伤结论,ui,承伤结论,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:承伤范围,ui,承伤范围,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:承伤范围,ui,承伤范围,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:承伤范围,ui,承伤范围,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:承伤范围上限,ui,承伤范围上限,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:承伤范围上限,ui,承伤范围上限,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:承伤范围上限,ui,承伤范围上限,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:承伤范围下限,ui,承伤范围下限,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:承伤范围下限,ui,承伤范围下限,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:承伤范围下限,ui,承伤范围下限,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:技能石：{name},ui,技能石：{name},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:技能石：{name},ui,技能石：{name},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:技能石：{name},ui,技能石：{name},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:技能资料与当前赛季版本不匹配，请重新加载,ui,技能资料与当前赛季版本不匹配，请重新加载,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:技能资料与当前赛季版本不匹配，请重新加载,ui,技能资料与当前赛季版本不匹配，请重新加载,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:技能资料与当前赛季版本不匹配，请重新加载,ui,技能资料与当前赛季版本不匹配，请重新加载,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:技能资料加载失败,ui,技能资料加载失败,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:技能资料加载失败,ui,技能资料加载失败,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:技能资料加载失败,ui,技能资料加载失败,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:技能资料暂时无法加载，请重试。,ui,技能资料暂时无法加载，请重试。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:技能资料暂时无法加载，请重试。,ui,技能资料暂时无法加载，请重试。,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:技能资料暂时无法加载，请重试。,ui,技能资料暂时无法加载，请重试。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:技能资料版本暂不支持,ui,技能资料版本暂不支持,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:技能资料版本暂不支持,ui,技能资料版本暂不支持,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:技能资料版本暂不支持,ui,技能资料版本暂不支持,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:折射·电,ui,折射·电,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:折射·电,ui,折射·电,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:折射·电,ui,折射·电,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:折射（携带电系技能）,ui,折射（携带电系技能）,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:折射（携带电系技能）,ui,折射（携带电系技能）,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:折射（携带电系技能）,ui,折射（携带电系技能）,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:搜索：{query},ui,搜索：{query},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:搜索：{query},ui,搜索：{query},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:搜索：{query},ui,搜索：{query},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:攻击方不是支持入场层数的电鹿,ui,攻击方不是支持入场层数的电鹿,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:攻击方不是支持入场层数的电鹿,ui,攻击方不是支持入场层数的电鹿,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:攻击方不是支持入场层数的电鹿,ui,攻击方不是支持入场层数的电鹿,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:攻击等级 {stage},ui,攻击等级 {stage},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:攻击等级 {stage},ui,攻击等级 {stage},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:攻击等级 {stage},ui,攻击等级 {stage},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:无上限,ui,无上限,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:无上限,ui,无上限,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:无上限,ui,无上限,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:无赛季装饰,ui,无赛季装饰,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:无赛季装饰,ui,无赛季装饰,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:无赛季装饰,ui,无赛季装饰,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:无额外增益,ui,无额外增益,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:无额外增益,ui,无额外增益,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:无额外增益,ui,无额外增益,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:未配置预设，使用默认分配,ui,未配置预设，使用默认分配,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:未配置预设，使用默认分配,ui,未配置预设，使用默认分配,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:未配置预设，使用默认分配,ui,未配置预设，使用默认分配,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。,ui,本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。,ui,本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。,ui,本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:洛克计算器 {app}；数据 {data}；规则 {rules}；{time},ui,洛克计算器 {app}；数据 {data}；规则 {rules}；{time},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:洛克计算器 {app}；数据 {data}；规则 {rules}；{time},ui,洛克计算器 {app}；数据 {data}；规则 {rules}；{time},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:洛克计算器 {app}；数据 {data}；规则 {rules}；{time},ui,洛克计算器 {app}；数据 {data}；规则 {rules}；{time},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:满血 HP,ui,满血 HP,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:满血 HP,ui,满血 HP,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:满血 HP,ui,满血 HP,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:版本／时间,ui,版本／时间,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:版本／时间,ui,版本／时间,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:版本／时间,ui,版本／时间,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:特性／条件,ui,特性／条件,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:特性／条件,ui,特性／条件,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:特性／条件,ui,特性／条件,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:理论伤害,ui,理论伤害,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:理论伤害,ui,理论伤害,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:理论伤害,ui,理论伤害,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:电血脉,ui,电血脉,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:电血脉,ui,电血脉,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:电血脉,ui,电血脉,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算,ui,目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算,ui,目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算,ui,目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:第 {count} 次效果：{effect}（{trait}）,ui,第 {count} 次效果：{effect}（{trait}）,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:第 {count} 次效果：{effect}（{trait}）,ui,第 {count} 次效果：{effect}（{trait}）,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:第 {count} 次效果：{effect}（{trait}）,ui,第 {count} 次效果：{effect}（{trait}）,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:第 {round} 回合 · {action},ui,第 {round} 回合 · {action},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:第 {round} 回合 · {action},ui,第 {round} 回合 · {action},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:第 {round} 回合 · {action},ui,第 {round} 回合 · {action},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:第 {round} 回合 · {skill} · 使用后,ui,第 {round} 回合 · {skill} · 使用后,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:第 {round} 回合 · {skill} · 使用后,ui,第 {round} 回合 · {skill} · 使用后,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:第 {round} 回合 · {skill} · 使用后,ui,第 {round} 回合 · {skill} · 使用后,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:等级习得：Lv.{level},ui,等级习得：Lv.{level},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:等级习得：Lv.{level},ui,等级习得：Lv.{level},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:等级习得：Lv.{level},ui,等级习得：Lv.{level},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:等级待确认,ui,等级待确认,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:等级待确认,ui,等级待确认,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:等级待确认,ui,等级待确认,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:精灵／形态,ui,精灵／形态,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:精灵／形态,ui,精灵／形态,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:精灵／形态,ui,精灵／形态,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:结论,ui,结论,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:结论,ui,结论,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:结论,ui,结论,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:绝缘球,ui,绝缘球,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:绝缘球,ui,绝缘球,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:绝缘球,ui,绝缘球,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,ui,统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,ui,统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,ui,统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:继承{v0}的{v1}层数，每层双攻双防+{v2}%。,ui,继承{v0}的{v1}层数，每层双攻双防+{v2}%。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:继承{v0}的{v1}层数，每层双攻双防+{v2}%。,ui,继承{v0}的{v1}层数，每层双攻双防+{v2}%。,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:继承{v0}的{v1}层数，每层双攻双防+{v2}%。,ui,继承{v0}的{v1}层数，每层双攻双防+{v2}%。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:缺少技能数据：{name},ui,缺少技能数据：{name},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:缺少技能数据：{name},ui,缺少技能数据：{name},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:缺少技能数据：{name},ui,缺少技能数据：{name},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:耐久配点,ui,耐久配点,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:耐久配点,ui,耐久配点,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:耐久配点,ui,耐久配点,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:计算口径,ui,计算口径,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:计算口径,ui,计算口径,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:计算口径,ui,计算口径,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:说明,ui,说明,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:说明,ui,说明,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:说明,ui,说明,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:请填入 1–4 的排列，例如 2413；数字对应当前槽位。,ui,请填入 1–4 的排列，例如 2413；数字对应当前槽位。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:请填入 1–4 的排列，例如 2413；数字对应当前槽位。,ui,请填入 1–4 的排列，例如 2413；数字对应当前槽位。,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:请填入 1–4 的排列，例如 2413；数字对应当前槽位。,ui,请填入 1–4 的排列，例如 2413；数字对应当前槽位。,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:途径待补充,ui,途径待补充,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:途径待补充,ui,途径待补充,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:途径待补充,ui,途径待补充,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:防御等级 {stage},ui,防御等级 {stage},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:防御等级 {stage},ui,防御等级 {stage},en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:防御等级 {stage},ui,防御等级 {stage},ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:需要四个槽位及 0–20 的整数层数,ui,需要四个槽位及 0–20 的整数层数,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:需要四个槽位及 0–20 的整数层数,ui,需要四个槽位及 0–20 的整数层数,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:需要四个槽位及 0–20 的整数层数,ui,需要四个槽位及 0–20 的整数层数,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:需要拼速,ui,需要拼速,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:需要拼速,ui,需要拼速,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:需要拼速,ui,需要拼速,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:（冰系免疫）,ui,（冰系免疫）,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:（冰系免疫）,ui,（冰系免疫）,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:（冰系免疫）,ui,（冰系免疫）,ja,project_existing,review,保留现有值，待语境或原文问题复核。

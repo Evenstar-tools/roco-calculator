@@ -595,6 +595,7 @@ export const calculatorMessages = Object.fromEntries([
   ["继承迸发能耗降低", "Inherited Surge cost reduction", "引き継いだはじける力のコスト軽減"],
   ["触发应对", "Activate counter", "カウンターを発動"],
   ["手动覆盖基础威力", "Manually override base power", "基礎威力を手動で上書き"],
+  ["继承{v0}的{v1}层数，每层双攻双防+{v2}%。", "Inherits {v1} stacks from {v0}; each stack adds {v2}% to both ATK and DEF stats.", "{v0}の{v1}スタックを継承。1スタックごとに物攻・魔攻・物防・魔防+{v2}%。"],
   ["（进化继承）", "(inherited on evolution)", "（進化で継承）"],
   ["{v0}（进化继承）", "{v0} (inherited on evolution)", "{v0}（進化で継承）"],
   ["继承棋绮后的渗透层数，每层双攻双防+5%。", "Inherited stacks: both attacks and defenses +5% per stack.", "継承した層数。1層につき物攻・魔攻・物防・魔防+5%。"],

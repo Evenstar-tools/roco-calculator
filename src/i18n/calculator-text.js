@@ -40,7 +40,7 @@ export function translateCalculatorText(source, locale = "zh-CN", values, depth 
   const translatedType = localizeType(source, locale);
   if (translatedType !== source || localizeType(source, "en") !== source) return translatedType;
   const matches = [...new Set(["skill", "trait", "spirit"].map((kind) =>
-    entityText.getGlobalEntityTextByName?.(kind, source, "name", locale, "") ?? "").filter(Boolean))];
+    entityText.getGlobalEntityTextByName?.(kind, source, kind === "spirit" ? "fullName" : "name", locale, "") ?? "").filter(Boolean))];
   if (matches.length === 1) return matches[0];
   const trimmed = source.trim();
   if (trimmed !== source && UI_MESSAGES[trimmed]) return source.replace(trimmed, render(trimmed));
@@ -65,10 +65,21 @@ export function useCalculatorLocale() {
     tc: (source, values) => translateCalculatorText(source, locale, values),
     typeLabel: (type) => localizeType(type, locale),
     markLabel: (name) => locale === "zh-CN" ? name : translateCalculatorText(name + "印记", locale),
-    entityName: (kind, entity) => locale === "zh-CN" ? entity?.displayName ?? entity?.fullName ?? entity?.name ?? ""
-      : entityText.getGlobalEntityText(kind, entity, "name", locale,
-          entityText.getGlobalEntityTextByName(kind, entity?.fullName ?? entity?.name, "name", locale, entity?.fullName ?? entity?.name ?? "")),
-    entityDescription: (kind, entity) => locale === "zh-CN" ? entity?.description ?? ""
-      : entityText.getGlobalEntityText(kind, entity, "description", locale, entity?.description ?? ""),
+    entityName: (kind, entity) => {
+      if (locale === "zh-CN") return entity?.displayName ?? entity?.fullName ?? entity?.name ?? "";
+      const canonical = entity?.previewTraitEntity ?? entity;
+      if (canonical?.inheritedFrom) return translateCalculatorText(canonical.displayName ?? entity?.name ?? canonical.name, locale);
+      const field = kind === "spirit" ? "fullName" : "name";
+      const name = canonical?.fullName ?? canonical?.name ?? entity?.name ?? "";
+      return entityText.getGlobalEntityText(kind, canonical, field, locale,
+        entityText.getGlobalEntityTextByName(kind, name, field, locale, name));
+    },
+    entityDescription: (kind, entity) => {
+      if (locale === "zh-CN") return entity?.description ?? "";
+      const canonical = entity?.previewTraitEntity ?? entity;
+      if (canonical?.inheritedFrom) return translateCalculatorText(canonical.description, locale);
+      return entityText.getGlobalEntityText(kind, canonical, "description", locale,
+        entityText.getGlobalEntityTextByName(kind, canonical?.fullName ?? canonical?.name, "description", locale, entity?.description ?? ""));
+    },
   }), [locale]);
 }

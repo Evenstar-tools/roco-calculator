@@ -16,7 +16,7 @@ vi.mock("../../src/CalculatorRouter.jsx", () => ({
     if (runtime.serverId === "global") return <MockGlobalWorkspace active={active} />;
     return active && <><input aria-label="CN draft" value={draft} onChange={(event) => setDraft(event.target.value)} />
       <select aria-label="CN theme" value={runtime.seasonThemePreference} onChange={(event) => runtime.onSeasonThemeChange(event.target.value)}>
-        {["default", "random", "s1", "s2", "s3", "s4", "s5"].map((id) => <option key={id}>{id}</option>)}
+        {["default", "neutral", "random", "s1", "s2", "s3", "s4", "s5"].map((id) => <option key={id}>{id}</option>)}
       </select>
       <button onClick={() => runtime.onSeasonThemeChange("random")}>Random CN theme</button>
       <button onClick={onOpenGlobal}>Global</button></>;
@@ -31,7 +31,7 @@ vi.mock("../../src/App.jsx", () => ({
         {["en", "zh-CN", "ja"].map((locale) => <option key={locale}>{locale}</option>)}
       </select>
       <select aria-label="Global theme" value={runtime.seasonThemePreference} onChange={(event) => runtime.onSeasonThemeChange(event.target.value)}>
-        {["default", "random", "s1", "s2", "s3", "s4", "s5"].map((id) => <option key={id}>{id}</option>)}
+        {["default", "neutral", "random", "s1", "s2", "s3", "s4", "s5"].map((id) => <option key={id}>{id}</option>)}
       </select>
       <button onClick={() => runtime.onSeasonThemeChange("random")}>Random Global theme</button>
       <button onClick={runtime.onServerChange}>Switch to the CN server</button>
@@ -64,8 +64,8 @@ test("Global direct entry mounts the reference-capable App without CN workspace;
   await screen.findByRole("heading", { name: "Global calculator" }, { timeout: 10000 });
   expect(screen.queryByLabelText("CN draft")).toBeNull();
   expect(fetch).not.toHaveBeenCalled();
-  expect(document.documentElement.dataset.season).toBe("neutral");
-  expect(document.documentElement.style.getPropertyValue("--season-scene-image")).toBe("none");
+  expect(document.documentElement.dataset.season).toBe("s3");
+  expect(document.documentElement.style.getPropertyValue("--season-scene-image")).toContain("s3-storybook.webp");
   fireEvent.change(screen.getByRole("combobox", { name: "Language" }), { target: { value: "ja" } });
   await screen.findByRole("heading", { name: "グローバル版計算機" });
   expect(location.pathname).toBe("/jp/");
@@ -220,7 +220,7 @@ test("manual theme exits a preview without dropping query/share data and survive
   render(<WebEntry />);
   expect(await screen.findByRole("combobox", { name: "Global theme" })).toHaveValue("s5");
   expect(document.documentElement.dataset.season).toBe("s5");
-  fireEvent.change(screen.getByRole("combobox", { name: "Global theme" }), { target: { value: "default" } });
+  fireEvent.change(screen.getByRole("combobox", { name: "Global theme" }), { target: { value: "neutral" } });
   expect(document.documentElement.dataset.season).toBe("neutral");
   expect(document.documentElement.style.getPropertyValue("--season-character-image")).toBe("none");
   fireEvent.click(screen.getByRole("button", { name: "Switch to the CN server" }));

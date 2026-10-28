@@ -72,7 +72,7 @@ export default function TransmissionTraitPicker({ options, value, placeholder, o
         aria-label={t(option.label)} aria-selected={option.name === value} aria-disabled={option.disabled}
         data-active={active === index} title={t(option.owner?.fullName)}
         onMouseDown={(event) => event.preventDefault()} onClick={() => choose(index)}>
-        {option.owner?.assetUrl ? <img src={option.owner.assetUrl} alt={option.owner.fullName} width="28" height="28" /> : <span className="transmission-trait-portrait-placeholder" aria-hidden="true" />}
+        {option.owner?.assetUrl ? <img src={option.owner.assetUrl} alt={t(option.owner.fullName)} width="28" height="28" /> : <span className="transmission-trait-portrait-placeholder" aria-hidden="true" />}
         <span>{t(option.label)}</span>{option.name === value && <Check size={16} aria-hidden="true" />}
       </li>)}
     </ul>}

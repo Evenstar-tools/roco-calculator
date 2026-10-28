@@ -205,8 +205,8 @@ test("经典配色可独立记忆，保留赛季背景、随机模式、亮暗�
 
 beforeEach(() => clearMissingUiMessages());
 
-test("unconfirmed Global has no season art; CN retains S4", () => {
-  expect(resolveSeasonThemeId({ serverId: "global" })).toBe("neutral");
+test("Global defaults to S3 with optional neutral artwork; CN retains S4", () => {
+  expect(resolveSeasonThemeId({ serverId: "global" })).toBe("s3");
   expect(resolveSeasonThemeId({ serverId: "cn" })).toBe("s4");
   expect(getSeasonThemeVariables("neutral")).toEqual({
     "--season-scene-image": "none", "--season-character-image": "none",
@@ -229,11 +229,11 @@ test("seasonPreview is accepted only on exact loopback hosts and known themes", 
     }
   }
   for (const hostname of ["roco.example", "localhost.example", "127.0.0.1.example", "192.168.0.1", ""]) {
-    expect(resolveSeasonThemeId({ serverId: "global", hostname, search: "?seasonPreview=s1" })).toBe("neutral");
+    expect(resolveSeasonThemeId({ serverId: "global", hostname, search: "?seasonPreview=s1" })).toBe("s3");
     expect(resolveSeasonThemeId({ serverId: "cn", hostname, search: "?seasonPreview=s1" })).toBe("s4");
   }
   for (const id of ["neutral", "unknown-season", "toString", "S1", ""]) {
-    expect(resolveSeasonThemeId({ serverId: "global", hostname: "localhost", search: `?seasonPreview=${id}` })).toBe("neutral");
+    expect(resolveSeasonThemeId({ serverId: "global", hostname: "localhost", search: `?seasonPreview=${id}` })).toBe("s3");
   }
 });
 
@@ -310,4 +310,28 @@ test("inactive server themes cannot overwrite the active page and classic colors
   expect(document.documentElement.dataset.classicCalculatorColors).toBe("true");
   expect(localStorage.getItem(serverStorageKey("cn", CLASSIC_CALCULATOR_COLORS_STORAGE_KEY))).toBe("1");
   expect(localStorage.getItem(serverStorageKey("global", CLASSIC_CALCULATOR_COLORS_STORAGE_KEY))).toBe("0");
+});
+
+
+test("Global S3 artwork and explicit no-art preference survive remount without changing classic colors", () => {
+  const ui = () => <RuntimeProvider serverId="global" locale="en"><LocaleProvider locale="en">
+    <SeasonThemeProvider serverId="global"><AppHeader /><DisplaySettingsDialog open /></SeasonThemeProvider>
+  </LocaleProvider></RuntimeProvider>;
+  let view = render(ui());
+  expect(document.documentElement.dataset.season).toBe("s3");
+  expect(screen.getByRole("combobox", { name: "Theme" })).toHaveValue("s3");
+  expect(view.container.querySelector(".app-header__season-character")).toHaveAttribute("src", getSeasonTheme("s3").character.src);
+  view.unmount();
+  view = render(ui());
+  expect(document.documentElement.dataset.season).toBe("s3");
+  fireEvent.change(screen.getByRole("combobox", { name: "Theme" }), { target: { value: "neutral" } });
+  expect(document.documentElement.dataset.season).toBe("neutral");
+  expect(view.container.querySelector(".app-header__season")).not.toBeInTheDocument();
+  expect(document.documentElement.style.getPropertyValue("--season-scene-image")).toBe("none");
+  expect(document.documentElement.style.getPropertyValue("--season-character-image")).toBe("none");
+  view.unmount();
+  render(ui());
+  expect(screen.getByRole("combobox", { name: "Theme" })).toHaveValue("neutral");
+  expect(document.documentElement.dataset.season).toBe("neutral");
+  expect(document.documentElement.dataset.classicCalculatorColors).toBe("false");
 });

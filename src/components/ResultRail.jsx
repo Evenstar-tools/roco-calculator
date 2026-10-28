@@ -231,9 +231,9 @@ export function ResultRail({
       <div className="result-rail__heading">
         <div>
           <p className="result-rail__matchup">
-            <strong className="result-rail__attacker">{tc(result.attackerName)}</strong>
+            <strong className="result-rail__attacker">{entityName("spirit", { name: result.attackerName })}</strong>
             <span aria-hidden="true">→</span>
-            <strong className="result-rail__defender">{tc(result.defenderName)}</strong>
+            <strong className="result-rail__defender">{entityName("spirit", { name: result.defenderName })}</strong>
           </p>
           <p className="result-rail__skill">{tc(entityName(primary.sourceKind === "trait" ? "trait" : "skill", { name: result.selectedSkillName }))}</p>
         </div>

@@ -49,7 +49,7 @@ export function WorkspaceOverlays({
   whatsNew = {},
 }) {
   const { t } = useLocale();
-  const { tc } = useCalculatorLocale();
+  const { tc, entityName } = useCalculatorLocale();
   const runtime = useRuntime();
   const menuActions = menu.actions ?? {};
   const mobileActions = mobileResult.actions ?? {};
@@ -272,7 +272,7 @@ export function WorkspaceOverlays({
           type="button"
         >
           <span className="mobile-result-bar__matchup">
-            {tc(mobileResult.result.attackerName)} → {tc(mobileResult.result.defenderName)}
+            {entityName("spirit", { name: mobileResult.result.attackerName })} → {entityName("spirit", { name: mobileResult.result.defenderName })}
           </span>
           <span className="mobile-result-bar__skill">
             {tc(mobileResult.result.selectedSkillName)}
@@ -484,7 +484,7 @@ export function WorkspaceOverlays({
       ) : null}
 
       {toast.message && !/permission denied/i.test(toast.message) ? (
-        <div className="toast">{toast.message}</div>
+        <div className="toast">{tc(toast.message)}</div>
       ) : null}
     </>
   );

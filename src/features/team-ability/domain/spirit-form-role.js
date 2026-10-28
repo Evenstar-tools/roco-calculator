@@ -28,7 +28,10 @@ export function resolveSpiritFormRole(spirit, { spiritFilterRevision } = {}) {
       formRoleStatus: "verified",
     };
   }
-  const curated = FORM_ROLE_MANIFEST[spirit?.id];
+  const sourceId = spirit?.id?.startsWith("cn-placeholder:")
+    ? spirit.reference?.sourceId ?? spirit.id.slice("cn-placeholder:".length)
+    : spirit?.id;
+  const curated = FORM_ROLE_MANIFEST[sourceId];
   if (curated) {
     return {
       evolutionFamilyId: curated.evolutionFamilyId,

@@ -36,13 +36,16 @@ test("Global Drive keeps canonical mechanisms while localizing skills and saved 
  const before = skills.map(skill=>skill.name);
  const {container,rerender}=render(wrap("en",<TransmissionPanel snapshot={snapshot} sides={sides} onClose={vi.fn()}/>));
  fireEvent.click(screen.getByRole("button",{name:"Load attacker's skills"}));
+ expect(container.querySelector(".transmission-config label")).toHaveTextContent(/^Slot 1 ·/);
  fireEvent.click(screen.getByRole("button",{name:"Start",exact:true}));
  const order=[...container.querySelectorAll('.transmission-slots strong')].map(node=>node.textContent);
  expect(order).toHaveLength(4);
  expect(order).toContain(localizeGlobalSkill(skills[2],"en").name);
  expect(chinese(container).join(" | ")).toBe("");
+ fireEvent.click(screen.getByRole("button", { name: "Simulate next turn" }));
+ expect(container.querySelector(".transmission-history")).toHaveTextContent("Turn 1 · Wait");
  rerender(wrap("ja",<TransmissionPanel snapshot={snapshot} sides={sides} onClose={vi.fn()}/>));
- expect(container.querySelectorAll('.transmission-history > li')).toHaveLength(1);
+ expect(container.querySelectorAll('.transmission-history > li')).toHaveLength(3);
  expect([...container.querySelectorAll('.transmission-slots strong')].map(node=>node.textContent)).toContain(localizeGlobalSkill(skills[2],"ja").name);
  expect(skills.map(skill=>skill.name)).toEqual(before);
 });
@@ -60,6 +63,8 @@ test("Global deer workspace calculates and renders English with the S3 snapshot"
  const {container,rerender}=render(wrap("en",<DeerWorkspace snapshot={snapshot} presets={presets}/>));
  expect(screen.getByRole("button",{name:"Jini preset",exact:true})).toHaveAttribute("aria-pressed","true");
  expect(container.querySelectorAll('.deer-table tbody tr').length).toBeGreaterThan(0);
+ fireEvent.click(screen.getByRole("button", { name: /Battle conditions/ }));
+ expect([...screen.getByLabelText("Weather").options].map(option => option.value)).not.toContain("dream");
  const untranslated=[];
  for (const button of container.querySelectorAll('.deer-expand')) {
   fireEvent.click(button);

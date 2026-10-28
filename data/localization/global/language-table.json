@@ -98034,13 +98034,13 @@
       "context": "src/i18n/messages.js",
       "zh": "HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。",
       "zh_project": "HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。",
-      "en": " HP. One activation at 2 Conduct stacks: 25% max HP × Electric matchup. Electric is immune; no extra weather or status settlement.",
-      "ja": " HP。引電2スタックで1回発動：最大HP25%×電属性相性。電属性には無効。天候やほかの状態は追加計算しません。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en": " HP. One activation at 2 Conduction stacks: 25% max HP × Electro matchup. Electro is immune; no extra weather or status settlement.",
+      "ja": " HP。誘電2スタックで1回発動：最大HP25%×雷属性相性。雷属性には無効。天候やほかの状態は追加計算しません。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:{label}{ability}",
@@ -99632,13 +99632,13 @@
       "context": "src/i18n/messages.js",
       "zh": "· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。",
       "zh_project": "· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。",
-      "en": " · IV 0 / IV 60 / IV 60 with SPD nature ×1.2 · No conditional Talents. Click values to locate SPD, portraits for details.",
+      "en": " · IV 0 / IV 60 / IV 60 with SPD nature ×1.2 · No conditional Traits. Click values to locate SPD, portraits for details.",
       "ja": " · 個体値0／個体値60／個体値60＋速さ性格×1.2 · 条件付き特性なし。数値で位置、画像で詳細を表示。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:· 仅展示已确认最终形态",
@@ -99955,13 +99955,13 @@
       "context": "src/i18n/messages.js",
       "zh": "。以下为当前内核条件下的估算，请核对特性。",
       "zh_project": "。以下为当前内核条件下的估算，请核对特性。",
-      "en": ". Results use the current calculator conditions; check the Talents.",
+      "en": ". Results use the current calculator conditions; check the Traits.",
       "ja": "。現在の計算条件での推定値です。特性を確認してください。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/。以下为当前内核条件下的估算，请核对特性。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:一键填层数",
@@ -100669,13 +100669,13 @@
       "context": "src/i18n/messages.js",
       "zh": "仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。",
       "zh_project": "仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。",
-      "en": "Class matchups only, excluding skill power, same-class bonus, Talents, weather and bloodline. Coverage is against 18 single classes, not actual Jini damage.",
+      "en": "Class matchups only, excluding skill power, same-class bonus, Traits, weather and bloodline. Coverage is against 18 single classes, not actual Jini damage.",
       "ja": "属性相性のみを表示。威力、同属性補正、特性、天候、血脈は含みません。18種の単属性への攻撃範囲であり、実際のジニへのダメージではありません。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:仅记录：",
@@ -100856,13 +100856,13 @@
       "context": "src/i18n/messages.js",
       "zh": "传动特性",
       "zh_project": "传动特性",
-      "en": "Drive Talent",
+      "en": "Drive Trait",
       "ja": "伝動特性",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/传动特性",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:传动特性选项",
@@ -100873,13 +100873,13 @@
       "context": "src/i18n/messages.js",
       "zh": "传动特性选项",
       "zh_project": "传动特性选项",
-      "en": "Drive Talent options",
+      "en": "Drive Trait options",
       "ja": "伝動特性の選択肢",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/传动特性选项",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:伤害",
@@ -101519,13 +101519,13 @@
       "context": "src/i18n/messages.js",
       "zh": "先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害",
       "zh_project": "先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害",
-      "en": "Follow-up assumes consecutive attacks. Discharge can include one Conduct trigger; other opponent actions and end-of-turn damage are not simulated.",
-      "ja": "追撃は連続攻撃を仮定。通電は引電1回を選択でき、それ以外の相手の行動やターン終了時ダメージは再現しません。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en": "Assumes consecutive attacks when acting first. Electrify can include one Conduction trigger; other opponent actions and end-of-turn damage are not simulated.",
+      "ja": "先手では連続攻撃を仮定。ボルテックは誘電1回を選択でき、それ以外の相手の行動やターン終了時ダメージは再現しません。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:先手时每层技能威力 +20%",
@@ -101655,13 +101655,13 @@
       "context": "src/i18n/messages.js",
       "zh": "克制倍率",
       "zh_project": "克制倍率",
-      "en": "Matchup multiplier",
-      "ja": "相性倍率",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en": "Class multiplier",
+      "ja": "属性相性倍率",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/克制倍率",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:免疫",
@@ -101843,12 +101843,12 @@
       "zh": "全部完整种族值形态",
       "zh_project": "全部完整种族值形态",
       "en": "All forms with complete base stats",
-      "ja": "種族値が揃っている全形態",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "種族値が揃ったすべての形態",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/全部完整种族值形态",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:全部形态",
@@ -102064,12 +102064,12 @@
       "zh": "其他虫系精灵数",
       "zh_project": "其他虫系精灵数",
       "en": "Other Bug Jinies",
-      "ja": "他の虫属性の精霊数",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "他の虫属性のジニ数",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/其他虫系精灵数",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:内容",
@@ -102199,13 +102199,13 @@
       "context": "src/i18n/messages.js",
       "zh": "冻结击倒",
       "zh_project": "冻结击倒",
-      "en": "Freeze knockout",
+      "en": "KO with Freeze",
       "ja": "凍結で撃破",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/冻结击倒",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:冻结占{v0}%",
@@ -102438,12 +102438,12 @@
       "zh": "击败精灵数",
       "zh_project": "击败精灵数",
       "en": "Jinies defeated",
-      "ja": "撃破した精霊数",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "撃破したジニ数",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/击败精灵数",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:分别使用所选属性攻击，取较高倍率，不相乘。",
@@ -103440,13 +103440,13 @@
       "context": "src/i18n/messages.js",
       "zh": "只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。",
       "zh_project": "只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。",
-      "en": "Read-only; does not change either side or your team. Unlisted Talents, weather and skill effects are excluded.",
+      "en": "Read-only; does not change either side or your team. Unlisted Traits, weather and skill effects are excluded.",
       "ja": "閲覧のみで、両側やチームの設定は変更しません。記載のない特性・天候・スキル効果は含みません。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:可以先手",
@@ -104443,13 +104443,13 @@
       "context": "src/i18n/messages.js",
       "zh": "基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果",
       "zh_project": "基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果",
-      "en": "Base durability ÷ class multiplier; no Talents, weather or skill effects",
+      "en": "Base durability ÷ class multiplier; no Traits, weather or skill effects",
       "ja": "基礎耐久÷属性倍率。特性・天候・スキル効果は含みません",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启",
@@ -104596,13 +104596,13 @@
       "context": "src/i18n/messages.js",
       "zh": "天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。",
       "zh_project": "天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。",
-      "en": "Weather affects supported skills and Talents only; weather's end-of-turn damage is excluded.",
+      "en": "Weather affects supported skills and Traits only; weather's end-of-turn damage is excluded.",
       "ja": "天候は対応済みのスキル・特性にのみ作用し、天候自体のターン終了時ダメージは含みません。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:天真",
@@ -107078,13 +107078,13 @@
       "context": "src/i18n/messages.js",
       "zh": "当前数据未找到该特性对应的精灵。",
       "zh_project": "当前数据未找到该特性对应的精灵。",
-      "en": "No Jini with this Talent was found in this data.",
+      "en": "No Jini with this Trait was found in this data.",
       "ja": "この特性を持つジニが現在のデータにありません。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/当前数据未找到该特性对应的精灵。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:当前方案",
@@ -108285,13 +108285,13 @@
       "context": "src/i18n/messages.js",
       "zh": "承伤从低到高",
       "zh_project": "承伤从低到高",
-      "en": "Damage: low to high",
-      "ja": "被ダメージ：低い順",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en": "Lowest damage ratio first",
+      "ja": "被ダメージ割合の低い順",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/承伤从低到高",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:承伤从高到低",
@@ -108302,13 +108302,13 @@
       "context": "src/i18n/messages.js",
       "zh": "承伤从高到低",
       "zh_project": "承伤从高到低",
-      "en": "Damage: high to low",
-      "ja": "被ダメージ：高い順",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en": "Highest damage ratio first",
+      "ja": "被ダメージ割合の高い順",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/承伤从高到低",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:承伤倍率多选",
@@ -108965,13 +108965,13 @@
       "context": "src/i18n/messages.js",
       "zh": "按特性层数查询 · 点击技能查看逐层伤害",
       "zh_project": "按特性层数查询 · 点击技能查看逐层伤害",
-      "en": "Search by Talent stacks · Click a skill for damage at each stack",
+      "en": "Search by Trait stacks · Click a skill for damage at each stack",
       "ja": "特性スタック数で確認 · スキルを押すと各段階のダメージを表示",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/按特性层数查询 · 点击技能查看逐层伤害",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:按百分比输入",
@@ -109969,12 +109969,12 @@
       "zh": "敌方力竭精灵数",
       "zh_project": "敌方力竭精灵数",
       "en": "Opponent’s fainted Jinies",
-      "ja": "相手の戦闘不能精霊数",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "相手の戦闘不能ジニ数",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/敌方力竭精灵数",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:敌方印记层数",
@@ -110122,12 +110122,12 @@
       "zh": "敌方星陨",
       "zh_project": "敌方星陨",
       "en": "Target's Starfall",
-      "ja": "相手の星落",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "相手の隕石",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/敌方星陨",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:敌方星陨印记",
@@ -110495,13 +110495,13 @@
       "context": "src/i18n/messages.js",
       "zh": "无相关特性",
       "zh_project": "无相关特性",
-      "en": "No relevant Talent",
+      "en": "No relevant Trait",
       "ja": "該当する特性なし",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/无相关特性",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:无耐久",
@@ -110818,13 +110818,13 @@
       "context": "src/i18n/messages.js",
       "zh": "暂无特性说明，请核对计算提示。",
       "zh_project": "暂无特性说明，请核对计算提示。",
-      "en": "No Talent description. Check the calculation notes.",
+      "en": "No Trait description. Check the calculation notes.",
       "ja": "特性の説明がありません。計算上の注記を確認してください。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/暂无特性说明，请核对计算提示。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:暗夜拾光",
@@ -111090,13 +111090,13 @@
       "context": "src/i18n/messages.js",
       "zh": "最终形态＋首领",
       "zh_project": "最终形态＋首领",
-      "en": "Final forms + Alphas",
+      "en": "Final forms + Leaders",
       "ja": "最終形態＋リーダー",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/最终形态＋首领",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:月涌狂想",
@@ -111175,13 +111175,13 @@
       "context": "src/i18n/messages.js",
       "zh": "有效耐久降序 · 不含特性及环境效果",
       "zh_project": "有效耐久降序 · 不含特性及环境效果",
-      "en": " effective durability descending · No Talents or environment effects",
+      "en": " effective durability descending · No Traits or environment effects",
       "ja": "実効耐久の高い順 · 特性・環境効果なし",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/有效耐久降序 · 不含特性及环境效果",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:未使用血脉魔法",
@@ -111481,13 +111481,13 @@
       "context": "src/i18n/messages.js",
       "zh": "本榜不计防守方特性，代入后恢复特性及预设参数。",
       "zh_project": "本榜不计防守方特性，代入后恢复特性及预设参数。",
-      "en": "This ranking excludes defensive Talents; applying a target restores its Talent and preset parameters.",
+      "en": "This ranking excludes defensive Traits; applying a target restores its Trait and preset parameters.",
       "ja": "この表では防御特性を除外。対象を適用すると特性とプリセットの条件を復元します。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/本榜不计防守方特性，代入后恢复特性及预设参数。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:本次",
@@ -112723,12 +112723,12 @@
       "zh": "正在加载精灵资料…",
       "zh_project": "正在加载精灵资料…",
       "en": "Loading Jinies…",
-      "ja": "ジーニーを読み込み中…",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "ジニを読み込み中…",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/正在加载精灵资料…",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:正在复算…",
@@ -113743,12 +113743,12 @@
       "zh": "沿用星陨／冻结",
       "zh_project": "沿用星陨／冻结",
       "en": "Keep Starfall / Freeze",
-      "ja": "星落・凍結を引き継ぐ",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "隕石・凍結を引き継ぐ",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/沿用星陨／冻结",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:淘沙球｜对方速度 -40 · 物防 -40% · 连击 +2",
@@ -114337,13 +114337,13 @@
       "context": "src/i18n/messages.js",
       "zh": "特性层数",
       "zh_project": "特性层数",
-      "en": "Talent stacks",
+      "en": "Trait stacks",
       "ja": "特性のスタック数",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/特性层数",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:特性层数减一",
@@ -114354,13 +114354,13 @@
       "context": "src/i18n/messages.js",
       "zh": "特性层数减一",
       "zh_project": "特性层数减一",
-      "en": "Remove one Talent stack",
+      "en": "Remove one Trait stack",
       "ja": "特性スタックを1減らす",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/特性层数减一",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:特性层数加一",
@@ -114371,13 +114371,13 @@
       "context": "src/i18n/messages.js",
       "zh": "特性层数加一",
       "zh_project": "特性层数加一",
-      "en": "Add one Talent stack",
+      "en": "Add one Trait stack",
       "ja": "特性スタックを1増やす",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/特性层数加一",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:特性已关闭",
@@ -114388,13 +114388,13 @@
       "context": "src/i18n/messages.js",
       "zh": "特性已关闭",
       "zh_project": "特性已关闭",
-      "en": "Talent disabled",
+      "en": "Trait disabled",
       "ja": "特性無効",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/特性已关闭",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:特性条件与效果",
@@ -114439,13 +114439,13 @@
       "context": "src/i18n/messages.js",
       "zh": "特性说明",
       "zh_project": "特性说明",
-      "en": "Talent description",
+      "en": "Trait description",
       "ja": "特性の説明",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/特性说明",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:特性造成伤害",
@@ -114814,12 +114814,12 @@
       "zh": "目标为混血精灵",
       "zh_project": "目标为混血精灵",
       "en": "Target is a mixed-lineage Jini",
-      "ja": "対象が混血の精霊",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "対象が混血のジニ",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/目标为混血精灵",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:目标本回合使用状态技能",
@@ -114898,13 +114898,13 @@
       "context": "src/i18n/messages.js",
       "zh": "盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。",
       "zh_project": "盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。",
-      "en": "This Talent randomly reorders skills at turn start. Its order relative to Drive is unknown; automatic simulation is unavailable.",
+      "en": "This Trait randomly reorders skills at turn start. Its order relative to Drive is unknown; automatic simulation is unavailable.",
       "ja": "この特性はターン開始時にランダムで並べ替えます。伝動との処理順が不明なため自動再現には未対応です。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:盲拧随机重排计算，请更换精灵或特性。",
@@ -114915,13 +114915,13 @@
       "context": "src/i18n/messages.js",
       "zh": "盲拧随机重排计算，请更换精灵或特性。",
       "zh_project": "盲拧随机重排计算，请更换精灵或特性。",
-      "en": "Random reordering is not supported. Choose another Jini or Talent.",
+      "en": "Random reordering is not supported. Choose another Jini or Trait.",
       "ja": "ランダムな並べ替えには未対応です。別のジニか特性を選んでください。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/盲拧随机重排计算，请更换精灵或特性。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:盲点",
@@ -115375,12 +115375,12 @@
       "zh": "精灵、技能和特性使用国际客户端译名。",
       "zh_project": "精灵、技能和特性使用国际客户端译名。",
       "en": "Jini, skill and trait names use the Global client terminology.",
-      "ja": "ジーニー・スキル・特性名はグローバル版クライアントに準拠しています。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "ジニ・スキル・特性名はグローバル版クライアントに準拠しています。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/精灵、技能和特性使用国际客户端译名。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:精灵数据缺失或配置需要修复",
@@ -115816,13 +115816,13 @@
       "context": "src/i18n/messages.js",
       "zh": "翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。",
       "zh_project": "翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。",
-      "en": "This Talent requires the opponent's last skill and entry state. Set the four observed skills and choose a Talent without position effects.",
+      "en": "This Trait requires the opponent's last skill and entry state. Set the four observed skills and choose a Trait without position effects.",
       "ja": "相手の直前のスキルと登場時の情報が必要です。実戦の4スキルを設定し、位置効果のない特性を選択してください。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:翼·连击+{v0}",
@@ -116751,13 +116751,13 @@
       "context": "src/i18n/messages.js",
       "zh": "触发2层引电",
       "zh_project": "触发2层引电",
-      "en": "Trigger 2 Conduct stacks",
-      "ja": "引電2スタックを発動",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en": "Trigger 2 Conduction stacks",
+      "ja": "誘電2スタックを発動",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/触发2层引电",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:触发{v0}",
@@ -117142,13 +117142,13 @@
       "context": "src/i18n/messages.js",
       "zh": "该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。",
       "zh_project": "该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。",
-      "en": "This Talent replaces or adds skills. Record its triggers and resulting skills; simulation supports the four configured slots.",
+      "en": "This Trait replaces or adds skills. Record its triggers and resulting skills; simulation supports the four configured slots.",
       "ja": "この特性はスキルを追加・置換します。条件と実際のスキルを記録し、設定し直した4枠で計算してください。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:该规则暂未验证",
@@ -117346,13 +117346,13 @@
       "context": "src/i18n/messages.js",
       "zh": "请选择特性",
       "zh_project": "请选择特性",
-      "en": "Choose a Talent",
+      "en": "Choose a Trait",
       "ja": "特性を選択",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/请选择特性",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:请选择防御方后查看技能斩杀线。",
@@ -118486,12 +118486,12 @@
       "zh": "选择精灵，开始配置",
       "zh_project": "选择精灵，开始配置",
       "en": "Choose your Jinies",
-      "ja": "ジーニーを選んで設定を始めましょう",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "ジニを選んで設定を始めましょう",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/选择精灵，开始配置",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:选择血脉",
@@ -118995,13 +118995,13 @@
       "context": "src/i18n/messages.js",
       "zh": "采用当前耐久模板；代入后按实际特性复算。",
       "zh_project": "采用当前耐久模板；代入后按实际特性复算。",
-      "en": "Uses this defense build; apply a target to recalculate with its Talent.",
+      "en": "Uses this defense build; apply a target to recalculate with its Trait.",
       "ja": "現在の耐久設定を使用。適用後は実際の特性で再計算します。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/采用当前耐久模板；代入后按实际特性复算。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:重新加载",
@@ -119200,12 +119200,12 @@
       "zh": "队伍存在虫系精灵",
       "zh_project": "队伍存在虫系精灵",
       "en": "Team includes a Bug Jini",
-      "ja": "チームに虫属性の精霊がいる",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "チームに虫属性のジニがいる",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/队伍存在虫系精灵",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:队伍属性矩阵横向滚动",
@@ -119403,13 +119403,13 @@
       "context": "src/i18n/messages.js",
       "zh": "防守特性",
       "zh_project": "防守特性",
-      "en": "Defensive Talent",
+      "en": "Defensive Trait",
       "ja": "防御特性",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/防守特性",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:防守特性参数",
@@ -119420,13 +119420,13 @@
       "context": "src/i18n/messages.js",
       "zh": "防守特性参数",
       "zh_project": "防守特性参数",
-      "en": "Defensive Talent parameters",
+      "en": "Defensive Trait parameters",
       "ja": "防御特性のパラメータ",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/防守特性参数",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:防守特性设置",
@@ -119437,13 +119437,13 @@
       "context": "src/i18n/messages.js",
       "zh": "防守特性设置",
       "zh_project": "防守特性设置",
-      "en": "Defensive Talent settings",
+      "en": "Defensive Trait settings",
       "ja": "防御特性の設定",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/防守特性设置",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:防守面",
@@ -120016,12 +120016,12 @@
       "zh": "非官方工具。精灵、技能与特性译名来自国际客户端。",
       "zh_project": "非官方工具。精灵、技能与特性译名来自国际客户端。",
       "en": "Unofficial tool. Jini, skill and trait translations come from the Global client.",
-      "ja": "非公式ツールです。ジーニー・スキル・特性の訳語はグローバル版クライアントに基づいています。",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "ja": "非公式ツールです。ジニ・スキル・特性の訳語はグローバル版クライアントに基づいています。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/非官方工具。精灵、技能与特性译名来自国际客户端。",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:非幻系攻击触发额外幻系伤害",
@@ -120542,13 +120542,13 @@
       "context": "src/i18n/messages.js",
       "zh": "＋ 引电",
       "zh_project": "＋ 引电",
-      "en": " + Conduct ",
-      "ja": " ＋ 引電 ",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
+      "en": " + Conduction ",
+      "ja": " ＋ 誘電 ",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/＋ 引电",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
     },
     {
       "key": "ui:＋冻结",
@@ -120973,6 +120973,1519 @@
       "ja_status": "project_existing",
       "review_status": "needs_review",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/悬停或聚焦选项查看效果。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{base}种族·{profile}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{base}种族·{profile}",
+      "zh_project": "{base}种族·{profile}",
+      "en": "Base SPD {base} · {profile}",
+      "ja": "種族値{base}・{profile}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{base}种族·{profile}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{base}种族·{profile}·{effect}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{base}种族·{profile}·{effect}",
+      "zh_project": "{base}种族·{profile}·{effect}",
+      "en": "Base SPD {base} · {profile} · {effect}",
+      "ja": "種族値{base}・{profile}・{effect}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{base}种族·{profile}·{effect}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个",
+      "zh_project": "{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个",
+      "en": "{count} forms (all filtered results); {excluded} excluded",
+      "ja": "{count}形態（絞り込み結果全件）、対象外{excluded}件",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{count} 个配置",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{count} 个配置",
+      "zh_project": "{count} 个配置",
+      "en": "{count} builds",
+      "ja": "{count}件の設定",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{count} 个配置",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{level}级 · {nature} · 个体：{allocation}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{level}级 · {nature} · 个体：{allocation}",
+      "zh_project": "{level}级 · {nature} · 个体：{allocation}",
+      "en": "Lv. {level} · {nature} · IVs: {allocation}",
+      "ja": "Lv.{level}・{nature}・個体値：{allocation}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{level}级 · {nature} · 个体：{allocation}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{level}级·{rest}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{level}级·{rest}",
+      "zh_project": "{level}级·{rest}",
+      "en": "Lv. {level} · {rest}",
+      "ja": "Lv.{level}・{rest}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{level}级·{rest}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{min}%至{max}%",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{min}%至{max}%",
+      "zh_project": "{min}%至{max}%",
+      "en": "{min}% to {max}%",
+      "ja": "{min}%～{max}%",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{min}%至{max}%",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{min}～{max}（因目标而异）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{min}～{max}（因目标而异）",
+      "zh_project": "{min}～{max}（因目标而异）",
+      "en": "{min}–{max} (varies by target)",
+      "ja": "{min}～{max}（相手によって異なる）",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{min}～{max}（因目标而异）",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{names}等 {count} 只",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{names}等 {count} 只",
+      "zh_project": "{names}等 {count} 只",
+      "en": "{names} and others ({count} Jinies)",
+      "ja": "{names}など、計{count}体",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{names}等 {count} 只",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{name} · {level}级 · {nature} · {allocation}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{name} · {level}级 · {nature} · {allocation}",
+      "zh_project": "{name} · {level}级 · {nature} · {allocation}",
+      "en": "{name} · Lv. {level} · {nature} · {allocation}",
+      "ja": "{name}・Lv.{level}・{nature}・{allocation}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{name} · {level}级 · {nature} · {allocation}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{name} · {type} · {category} · 静态威力 {power} · 连击 {hits}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{name} · {type} · {category} · 静态威力 {power} · 连击 {hits}",
+      "zh_project": "{name} · {type} · {category} · 静态威力 {power} · 连击 {hits}",
+      "en": "{name} · {type} · {category} · Static power {power} · Hits {hits}",
+      "ja": "{name}・{type}・{category}・静的威力{power}・ヒット数{hits}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{name} · {type} · {category} · 静态威力 {power} · 连击 {hits}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。",
+      "zh_project": "{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。",
+      "en": "{name} changes skill identity or moves skills between Jinies. Reconfigure the four slots to match the battle before continuing.",
+      "ja": "{name}はスキルの変更やジニ間の移動を伴います。実際のバトルに合わせて4枠を設定し直してください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{name}（{count}层）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{name}（{count}层）",
+      "zh_project": "{name}（{count}层）",
+      "en": "{name} ({count} stacks)",
+      "ja": "{name}（{count}スタック）",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{name}（{count}层）",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{name}（绝缘球）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{name}（绝缘球）",
+      "zh_project": "{name}（绝缘球）",
+      "en": "{name} (Pod SPD effect)",
+      "ja": "{name}（オーブの素早さ効果）",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{name}（绝缘球）",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{name}：自身 {own} + {trait} {extra} = {total} 层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{name}：自身 {own} + {trait} {extra} = {total} 层",
+      "zh_project": "{name}：自身 {own} + {trait} {extra} = {total} 层",
+      "en": "{name}: base {own} + {trait} {extra} = {total} Drive",
+      "ja": "{name}：自身{own}＋{trait} {extra}＝{total}スタック",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{name}：自身 {own} + {trait} {extra} = {total} 层",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{name}：自身 {own} = {total} 层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{name}：自身 {own} = {total} 层",
+      "zh_project": "{name}：自身 {own} = {total} 层",
+      "en": "{name}: base {own} = {total} Drive",
+      "ja": "{name}：自身{own}＝{total}スタック",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{name}：自身 {own} = {total} 层",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{name}：自身 {own}；位置固定",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{name}：自身 {own}；位置固定",
+      "zh_project": "{name}：自身 {own}；位置固定",
+      "en": "{name}: base {own}; fixed position",
+      "ja": "{name}：自身{own}・位置固定",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{name}：自身 {own}；位置固定",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{slot} 号位",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{slot} 号位",
+      "zh_project": "{slot} 号位",
+      "en": "Slot {slot}",
+      "ja": "{slot}番枠",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{slot} 号位",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{slot} 号位-{layers}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{slot} 号位-{layers}",
+      "zh_project": "{slot} 号位-{layers}",
+      "en": "Slot {slot} · {layers}",
+      "ja": "{slot}番枠 · {layers}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{slot} 号位-{layers}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{type}系血脉",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{type}系血脉",
+      "zh_project": "{type}系血脉",
+      "en": "{type} Bloodline",
+      "ja": "{type}属性の血統",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{type}系血脉",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{value}族",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{value}族",
+      "zh_project": "{value}族",
+      "en": "Base {value}",
+      "ja": "種族値{value}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{value}族",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:{weather}（不计天气伤害）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{weather}（不计天气伤害）",
+      "zh_project": "{weather}（不计天气伤害）",
+      "en": "{weather} (weather damage excluded)",
+      "ja": "{weather}（天候ダメージは含まない）",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{weather}（不计天气伤害）",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:·特",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "·特",
+      "zh_project": "·特",
+      "en": " · Special",
+      "ja": "・特殊",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/·特",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:以上",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "以上",
+      "zh_project": "以上",
+      "en": "Above",
+      "ja": "以上",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/以上",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:传说合体：{name}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "传说合体：{name}",
+      "zh_project": "传说合体：{name}",
+      "en": "Legend Fusion: {name}",
+      "ja": "伝説の合体：{name}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/传说合体：{name}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:冻结 {count}层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "冻结 {count}层",
+      "zh_project": "冻结 {count}层",
+      "en": "Freeze: {count} stacks",
+      "ja": "凍結：{count}スタック",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/冻结 {count}层",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:冻结斩杀线",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "冻结斩杀线",
+      "zh_project": "冻结斩杀线",
+      "en": "Freeze KO threshold",
+      "ja": "凍結による撃破ライン",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/冻结斩杀线",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:剩余 HP",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "剩余 HP",
+      "zh_project": "剩余 HP",
+      "en": "Remaining HP",
+      "ja": "残りHP",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/剩余 HP",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:各自用户预设，未配置按中立性格、生命60、双防0个体",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "各自用户预设，未配置按中立性格、生命60、双防0个体",
+      "zh_project": "各自用户预设，未配置按中立性格、生命60、双防0个体",
+      "en": "Saved builds; otherwise neutral nature, HP IV 60, defense IVs 0",
+      "ja": "保存設定を使用。未設定は無補正性格・HP個体値60・両防御個体値0",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/各自用户预设，未配置按中立性格、生命60、双防0个体",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血",
+      "zh_project": "各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血",
+      "en": "Saved builds; otherwise neutral nature, HP IV 60, defense IVs 0 · Target at full HP · Defensive Traits excluded · Direct damage + Freeze KO · End-of-turn HP loss excluded",
+      "ja": "保存設定を使用。設定なしは無補正性格・HP個体値60・両防御個体値0。相手HP満タン・防御特性を除外・直接ダメージ＋凍結撃破・ターン終了時のHP減少を除外",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:名称 / 别名",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "名称 / 别名",
+      "zh_project": "名称 / 别名",
+      "en": "Name / alias",
+      "ja": "名前・別名",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/名称 / 别名",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:含一次引电",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "含一次引电",
+      "zh_project": "含一次引电",
+      "en": "Includes one Conduction trigger",
+      "ja": "誘電を1回含む",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/含一次引电",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:命中{value}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "命中{value}",
+      "zh_project": "命中{value}",
+      "en": "Matched: {value}",
+      "ja": "一致：{value}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/命中{value}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:啮合",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "啮合",
+      "zh_project": "啮合",
+      "en": "Gear Transfer",
+      "ja": "ギアリンク",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/啮合",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:固定位置技能不能移动。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "固定位置技能不能移动。",
+      "zh_project": "固定位置技能不能移动。",
+      "en": "Skills with fixed positions cannot move.",
+      "ja": "位置固定のスキルは移動できません。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/固定位置技能不能移动。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:图鉴号",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "图鉴号",
+      "zh_project": "图鉴号",
+      "en": "Dex No.",
+      "ja": "図鑑番号",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/图鉴号",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:学习途径待补充",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "学习途径待补充",
+      "zh_project": "学习途径待补充",
+      "en": "Acquisition method unavailable",
+      "ja": "習得方法の情報なし",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/学习途径待补充",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:实际速度",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "实际速度",
+      "zh_project": "实际速度",
+      "en": "Actual SPD",
+      "ja": "実際の素早さ",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/实际速度",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:已有冻结 {count} 层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "已有冻结 {count} 层",
+      "zh_project": "已有冻结 {count} 层",
+      "en": "Existing Freeze: {count} stacks",
+      "ja": "既存の凍結：{count}スタック",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/已有冻结 {count} 层",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:当前数据缺少电鹿，请更新数据后重试",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "当前数据缺少电鹿，请更新数据后重试",
+      "zh_project": "当前数据缺少电鹿，请更新数据后重试",
+      "en": "The selected Jini is missing. Reload the data and try again.",
+      "ja": "対象のジニが見つかりません。データを再読み込みしてください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/当前数据缺少电鹿，请更新数据后重试",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:当前槽位不可使用",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "当前槽位不可使用",
+      "zh_project": "当前槽位不可使用",
+      "en": "This slot cannot be used",
+      "ja": "このスロットは使用できません",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/当前槽位不可使用",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:承伤结论",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "承伤结论",
+      "zh_project": "承伤结论",
+      "en": "Damage results",
+      "ja": "被ダメージ結果",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/承伤结论",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:承伤范围",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "承伤范围",
+      "zh_project": "承伤范围",
+      "en": "Damage range",
+      "ja": "被ダメージ範囲",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/承伤范围",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:承伤范围上限",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "承伤范围上限",
+      "zh_project": "承伤范围上限",
+      "en": "Maximum damage percentage",
+      "ja": "被ダメージ割合の上限",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/承伤范围上限",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:承伤范围下限",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "承伤范围下限",
+      "zh_project": "承伤范围下限",
+      "en": "Minimum damage percentage",
+      "ja": "被ダメージ割合の下限",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/承伤范围下限",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:技能石：{name}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "技能石：{name}",
+      "zh_project": "技能石：{name}",
+      "en": "Skill stone: {name}",
+      "ja": "スキル石：{name}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/技能石：{name}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:技能资料与当前赛季版本不匹配，请重新加载",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "技能资料与当前赛季版本不匹配，请重新加载",
+      "zh_project": "技能资料与当前赛季版本不匹配，请重新加载",
+      "en": "Skill data does not match the selected season. Reload it.",
+      "ja": "スキルデータが選択中のシーズンと一致しません。再読み込みしてください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/技能资料与当前赛季版本不匹配，请重新加载",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:技能资料加载失败",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "技能资料加载失败",
+      "zh_project": "技能资料加载失败",
+      "en": "Could not load skill data.",
+      "ja": "スキルデータを読み込めませんでした。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/技能资料加载失败",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:技能资料暂时无法加载，请重试。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "技能资料暂时无法加载，请重试。",
+      "zh_project": "技能资料暂时无法加载，请重试。",
+      "en": "Could not load skill data. Please try again.",
+      "ja": "スキルデータを読み込めませんでした。もう一度お試しください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/技能资料暂时无法加载，请重试。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:技能资料版本暂不支持",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "技能资料版本暂不支持",
+      "zh_project": "技能资料版本暂不支持",
+      "en": "This skill data version is not supported.",
+      "ja": "このスキルデータのバージョンには対応していません。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/技能资料版本暂不支持",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:折射·电",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "折射·电",
+      "zh_project": "折射·电",
+      "en": "Refraction · Electro",
+      "ja": "リフレクトレイ・雷",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/折射·电",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:折射（携带电系技能）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "折射（携带电系技能）",
+      "zh_project": "折射（携带电系技能）",
+      "en": "Refraction (Electro skill equipped)",
+      "ja": "リフレクトレイ（雷属性スキルを装備）",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/折射（携带电系技能）",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:搜索：{query}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "搜索：{query}",
+      "zh_project": "搜索：{query}",
+      "en": "Search: {query}",
+      "ja": "検索：{query}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/搜索：{query}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:攻击方不是支持入场层数的电鹿",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "攻击方不是支持入场层数的电鹿",
+      "zh_project": "攻击方不是支持入场层数的电鹿",
+      "en": "Select a Jini with a supported entry-stack Trait.",
+      "ja": "登場回数に対応する特性を持つジニを選んでください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/攻击方不是支持入场层数的电鹿",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:攻击等级 {stage}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "攻击等级 {stage}",
+      "zh_project": "攻击等级 {stage}",
+      "en": "Attack stage {stage}",
+      "ja": "攻撃ランク {stage}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/攻击等级 {stage}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:无上限",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "无上限",
+      "zh_project": "无上限",
+      "en": "No upper limit",
+      "ja": "上限なし",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/无上限",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:无赛季装饰",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "无赛季装饰",
+      "zh_project": "无赛季装饰",
+      "en": "No season artwork",
+      "ja": "シーズン装飾なし",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/无赛季装饰",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:无额外增益",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "无额外增益",
+      "zh_project": "无额外增益",
+      "en": "No extra bonuses",
+      "ja": "追加補正なし",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/无额外增益",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:星陨 {count}层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "星陨 {count}层",
+      "zh_project": "星陨 {count}层",
+      "en": "Starfall: {count} stacks",
+      "ja": "隕石：{count}スタック",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/星陨 {count}层",
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
+    },
+    {
+      "key": "ui:未沿用星陨／已有冻结（按0层）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "未沿用星陨／已有冻结（按0层）",
+      "zh_project": "未沿用星陨／已有冻结（按0层）",
+      "en": "Starfall and existing Freeze reset to 0",
+      "ja": "隕石と既存の凍結は0スタック",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/未沿用星陨／已有冻结（按0层）",
+      "notes": "2026-10-28 按实际界面语境与客户端术语校对，和运行时词典同步。"
+    },
+    {
+      "key": "ui:未配置预设，使用默认分配",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "未配置预设，使用默认分配",
+      "zh_project": "未配置预设，使用默认分配",
+      "en": "No saved build; using defaults",
+      "ja": "保存設定なし・標準配分を使用",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/未配置预设，使用默认分配",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。",
+      "zh_project": "本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。",
+      "en": "This report records the current results and does not recalculate. Recalculate if Traits or stat builds differ in battle.",
+      "ja": "この表は今回の計算結果です。自動再計算はしません。実戦の特性や能力設定が異なる場合は計算し直してください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:洛克计算器 {app}；数据 {data}；规则 {rules}；{time}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "洛克计算器 {app}；数据 {data}；规则 {rules}；{time}",
+      "zh_project": "洛克计算器 {app}；数据 {data}；规则 {rules}；{time}",
+      "en": "Roco Calculator {app}; Data {data}; Rules {rules}; {time}",
+      "ja": "Roco Calculator {app}・データ{data}・ルール{rules}・{time}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/洛克计算器 {app}；数据 {data}；规则 {rules}；{time}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:满血 HP",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "满血 HP",
+      "zh_project": "满血 HP",
+      "en": "Max HP",
+      "ja": "最大HP",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/满血 HP",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:版本／时间",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "版本／时间",
+      "zh_project": "版本／时间",
+      "en": "Version / time",
+      "ja": "バージョン・日時",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/版本／时间",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:特性／条件",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "特性／条件",
+      "zh_project": "特性／条件",
+      "en": "Trait / conditions",
+      "ja": "特性・条件",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/特性／条件",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:理论伤害",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "理论伤害",
+      "zh_project": "理论伤害",
+      "en": "Theoretical damage",
+      "ja": "理論ダメージ",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/理论伤害",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:电血脉",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "电血脉",
+      "zh_project": "电血脉",
+      "en": "Electro Bloodline",
+      "ja": "雷属性の血統",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/电血脉",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算",
+      "zh_project": "目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算",
+      "en": "Target at full HP; {scope}; Ratio = damage / max HP + Freeze KO threshold. Freeze uses existing and newly applied stacks for each target, without extra HP loss. End-of-turn effects excluded.",
+      "ja": "相手はHP満タン。{scope}。割合＝ダメージ÷最大HP＋凍結撃破ライン。凍結は既存と今回追加のスタックを相手ごとに計算し、追加のHP減少はありません。ターン終了時の処理は含みません。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:第 {count} 次效果：{effect}（{trait}）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "第 {count} 次效果：{effect}（{trait}）",
+      "zh_project": "第 {count} 次效果：{effect}（{trait}）",
+      "en": "Effect {count}: {effect} ({trait})",
+      "ja": "第{count}回の効果：{effect}（{trait}）",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/第 {count} 次效果：{effect}（{trait}）",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:第 {round} 回合 · {action}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "第 {round} 回合 · {action}",
+      "zh_project": "第 {round} 回合 · {action}",
+      "en": "Turn {round} · {action}",
+      "ja": "ターン{round}・{action}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/第 {round} 回合 · {action}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:第 {round} 回合 · {skill} · 使用后",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "第 {round} 回合 · {skill} · 使用后",
+      "zh_project": "第 {round} 回合 · {skill} · 使用后",
+      "en": "Turn {round} · {skill} · After use",
+      "ja": "ターン{round}・{skill}・使用後",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/第 {round} 回合 · {skill} · 使用后",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:等级习得：Lv.{level}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "等级习得：Lv.{level}",
+      "zh_project": "等级习得：Lv.{level}",
+      "en": "Learned at Lv. {level}",
+      "ja": "Lv.{level}で習得",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/等级习得：Lv.{level}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:等级待确认",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "等级待确认",
+      "zh_project": "等级待确认",
+      "en": "Learning level unavailable",
+      "ja": "習得レベルの情報なし",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/等级待确认",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:精灵／形态",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "精灵／形态",
+      "zh_project": "精灵／形态",
+      "en": "Jini / form",
+      "ja": "ジニ・形態",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/精灵／形态",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:结论",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "结论",
+      "zh_project": "结论",
+      "en": "Result",
+      "ja": "結果",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/结论",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:绝缘球",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "绝缘球",
+      "zh_project": "绝缘球",
+      "en": "Pod SPD effect",
+      "ja": "オーブの素早さ効果",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/绝缘球",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血",
+      "zh_project": "统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血",
+      "en": "Uniform build · Target at full HP · Defensive Traits excluded · Direct damage + Freeze KO · End-of-turn HP loss excluded",
+      "ja": "統一設定・相手HP満タン・防御特性を除外・直接ダメージ＋凍結撃破・ターン終了時のHP減少を除外",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:继承{v0}的{v1}层数，每层双攻双防+{v2}%。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "继承{v0}的{v1}层数，每层双攻双防+{v2}%。",
+      "zh_project": "继承{v0}的{v1}层数，每层双攻双防+{v2}%。",
+      "en": "Inherits {v1} stacks from {v0}; each stack adds {v2}% to both ATK and DEF stats.",
+      "ja": "{v0}の{v1}スタックを継承。1スタックごとに物攻・魔攻・物防・魔防+{v2}%。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/继承{v0}的{v1}层数，每层双攻双防+{v2}%。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:缺少技能数据：{name}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "缺少技能数据：{name}",
+      "zh_project": "缺少技能数据：{name}",
+      "en": "Skill data missing: {name}",
+      "ja": "スキルデータがありません：{name}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/缺少技能数据：{name}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:耐久配点",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "耐久配点",
+      "zh_project": "耐久配点",
+      "en": "Defensive build",
+      "ja": "耐久設定",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/耐久配点",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:计算口径",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "计算口径",
+      "zh_project": "计算口径",
+      "en": "Calculation scope",
+      "ja": "計算条件",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/计算口径",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:说明",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "说明",
+      "zh_project": "说明",
+      "en": "Notes",
+      "ja": "注記",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/说明",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:请填入 1–4 的排列，例如 2413；数字对应当前槽位。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "请填入 1–4 的排列，例如 2413；数字对应当前槽位。",
+      "zh_project": "请填入 1–4 的排列，例如 2413；数字对应当前槽位。",
+      "en": "Enter a permutation of 1–4, such as 2413. Numbers refer to the current slots.",
+      "ja": "1～4の並びを入力してください（例：2413）。数字は現在のスロットを示します。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/请填入 1–4 的排列，例如 2413；数字对应当前槽位。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:途径待补充",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "途径待补充",
+      "zh_project": "途径待补充",
+      "en": "Acquisition method unavailable",
+      "ja": "習得方法の情報なし",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/途径待补充",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:防御等级 {stage}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "防御等级 {stage}",
+      "zh_project": "防御等级 {stage}",
+      "en": "Defense stage {stage}",
+      "ja": "防御ランク {stage}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/防御等级 {stage}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:需要四个槽位及 0–20 的整数层数",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "需要四个槽位及 0–20 的整数层数",
+      "zh_project": "需要四个槽位及 0–20 的整数层数",
+      "en": "Use four slots and integer stack counts from 0 to 20.",
+      "ja": "4つのスロットと0～20の整数のスタック数を指定してください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/需要四个槽位及 0–20 的整数层数",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:需要拼速",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "需要拼速",
+      "zh_project": "需要拼速",
+      "en": "Speed tie",
+      "ja": "同速",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/需要拼速",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:（冰系免疫）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "（冰系免疫）",
+      "zh_project": "（冰系免疫）",
+      "en": " (Ice is immune)",
+      "ja": "（氷属性は無効）",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/（冰系免疫）",
       "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
     }
   ],
@@ -149809,8 +151322,8 @@
     },
     "ui:HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。": {
       "zh": "HP。按凑齐2层引电触发一次计算，最大生命25% × 电系克制；电系免疫，不额外结算天气和其他异常状态。",
-      "en": " HP. One activation at 2 Conduct stacks: 25% max HP × Electric matchup. Electric is immune; no extra weather or status settlement.",
-      "ja": " HP。引電2スタックで1回発動：最大HP25%×電属性相性。電属性には無効。天候やほかの状態は追加計算しません。"
+      "en": " HP. One activation at 2 Conduction stacks: 25% max HP × Electro matchup. Electro is immune; no extra weather or status settlement.",
+      "ja": " HP。誘電2スタックで1回発動：最大HP25%×雷属性相性。雷属性には無効。天候やほかの状態は追加計算しません。"
     },
     "ui:{label}{ability}": {
       "zh": "{label}{ability}",
@@ -150279,7 +151792,7 @@
     },
     "ui:· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。": {
       "zh": "· 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。",
-      "en": " · IV 0 / IV 60 / IV 60 with SPD nature ×1.2 · No conditional Talents. Click values to locate SPD, portraits for details.",
+      "en": " · IV 0 / IV 60 / IV 60 with SPD nature ×1.2 · No conditional Traits. Click values to locate SPD, portraits for details.",
       "ja": " · 個体値0／個体値60／個体値60＋速さ性格×1.2 · 条件付き特性なし。数値で位置、画像で詳細を表示。"
     },
     "ui:· 仅展示已确认最终形态": {
@@ -150374,7 +151887,7 @@
     },
     "ui:。以下为当前内核条件下的估算，请核对特性。": {
       "zh": "。以下为当前内核条件下的估算，请核对特性。",
-      "en": ". Results use the current calculator conditions; check the Talents.",
+      "en": ". Results use the current calculator conditions; check the Traits.",
       "ja": "。現在の計算条件での推定値です。特性を確認してください。"
     },
     "ui:一键填层数": {
@@ -150584,7 +152097,7 @@
     },
     "ui:仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。": {
       "zh": "仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。",
-      "en": "Class matchups only, excluding skill power, same-class bonus, Talents, weather and bloodline. Coverage is against 18 single classes, not actual Jini damage.",
+      "en": "Class matchups only, excluding skill power, same-class bonus, Traits, weather and bloodline. Coverage is against 18 single classes, not actual Jini damage.",
       "ja": "属性相性のみを表示。威力、同属性補正、特性、天候、血脈は含みません。18種の単属性への攻撃範囲であり、実際のジニへのダメージではありません。"
     },
     "ui:仅记录：": {
@@ -150639,12 +152152,12 @@
     },
     "ui:传动特性": {
       "zh": "传动特性",
-      "en": "Drive Talent",
+      "en": "Drive Trait",
       "ja": "伝動特性"
     },
     "ui:传动特性选项": {
       "zh": "传动特性选项",
-      "en": "Drive Talent options",
+      "en": "Drive Trait options",
       "ja": "伝動特性の選択肢"
     },
     "ui:伤害": {
@@ -150834,8 +152347,8 @@
     },
     "ui:先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害": {
       "zh": "先发为理论连续出招；通电可选计一次引电，其余不模拟对手行动与回合末伤害",
-      "en": "Follow-up assumes consecutive attacks. Discharge can include one Conduct trigger; other opponent actions and end-of-turn damage are not simulated.",
-      "ja": "追撃は連続攻撃を仮定。通電は引電1回を選択でき、それ以外の相手の行動やターン終了時ダメージは再現しません。"
+      "en": "Assumes consecutive attacks when acting first. Electrify can include one Conduction trigger; other opponent actions and end-of-turn damage are not simulated.",
+      "ja": "先手では連続攻撃を仮定。ボルテックは誘電1回を選択でき、それ以外の相手の行動やターン終了時ダメージは再現しません。"
     },
     "ui:先手时每层技能威力 +20%": {
       "zh": "先手时每层技能威力 +20%",
@@ -150874,8 +152387,8 @@
     },
     "ui:克制倍率": {
       "zh": "克制倍率",
-      "en": "Matchup multiplier",
-      "ja": "相性倍率"
+      "en": "Class multiplier",
+      "ja": "属性相性倍率"
     },
     "ui:免疫": {
       "zh": "免疫",
@@ -150930,7 +152443,7 @@
     "ui:全部完整种族值形态": {
       "zh": "全部完整种族值形态",
       "en": "All forms with complete base stats",
-      "ja": "種族値が揃っている全形態"
+      "ja": "種族値が揃ったすべての形態"
     },
     "ui:全部形态": {
       "zh": "全部形态",
@@ -150995,7 +152508,7 @@
     "ui:其他虫系精灵数": {
       "zh": "其他虫系精灵数",
       "en": "Other Bug Jinies",
-      "ja": "他の虫属性の精霊数"
+      "ja": "他の虫属性のジニ数"
     },
     "ui:内容": {
       "zh": "内容",
@@ -151034,7 +152547,7 @@
     },
     "ui:冻结击倒": {
       "zh": "冻结击倒",
-      "en": "Freeze knockout",
+      "en": "KO with Freeze",
       "ja": "凍結で撃破"
     },
     "ui:冻结占{v0}%": {
@@ -151105,7 +152618,7 @@
     "ui:击败精灵数": {
       "zh": "击败精灵数",
       "en": "Jinies defeated",
-      "ja": "撃破した精霊数"
+      "ja": "撃破したジニ数"
     },
     "ui:分别使用所选属性攻击，取较高倍率，不相乘。": {
       "zh": "分别使用所选属性攻击，取较高倍率，不相乘。",
@@ -151399,7 +152912,7 @@
     },
     "ui:只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。": {
       "zh": "只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。",
-      "en": "Read-only; does not change either side or your team. Unlisted Talents, weather and skill effects are excluded.",
+      "en": "Read-only; does not change either side or your team. Unlisted Traits, weather and skill effects are excluded.",
       "ja": "閲覧のみで、両側やチームの設定は変更しません。記載のない特性・天候・スキル効果は含みません。"
     },
     "ui:可以先手": {
@@ -151694,7 +153207,7 @@
     },
     "ui:基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果": {
       "zh": "基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果",
-      "en": "Base durability ÷ class multiplier; no Talents, weather or skill effects",
+      "en": "Base durability ÷ class multiplier; no Traits, weather or skill effects",
       "ja": "基礎耐久÷属性倍率。特性・天候・スキル効果は含みません"
     },
     "ui:填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启": {
@@ -151739,7 +153252,7 @@
     },
     "ui:天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。": {
       "zh": "天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。",
-      "en": "Weather affects supported skills and Talents only; weather's end-of-turn damage is excluded.",
+      "en": "Weather affects supported skills and Traits only; weather's end-of-turn damage is excluded.",
       "ja": "天候は対応済みのスキル・特性にのみ作用し、天候自体のターン終了時ダメージは含みません。"
     },
     "ui:天真": {
@@ -152469,7 +153982,7 @@
     },
     "ui:当前数据未找到该特性对应的精灵。": {
       "zh": "当前数据未找到该特性对应的精灵。",
-      "en": "No Jini with this Talent was found in this data.",
+      "en": "No Jini with this Trait was found in this data.",
       "ja": "この特性を持つジニが現在のデータにありません。"
     },
     "ui:当前方案": {
@@ -152824,13 +154337,13 @@
     },
     "ui:承伤从低到高": {
       "zh": "承伤从低到高",
-      "en": "Damage: low to high",
-      "ja": "被ダメージ：低い順"
+      "en": "Lowest damage ratio first",
+      "ja": "被ダメージ割合の低い順"
     },
     "ui:承伤从高到低": {
       "zh": "承伤从高到低",
-      "en": "Damage: high to low",
-      "ja": "被ダメージ：高い順"
+      "en": "Highest damage ratio first",
+      "ja": "被ダメージ割合の高い順"
     },
     "ui:承伤倍率多选": {
       "zh": "承伤倍率多选",
@@ -153024,7 +154537,7 @@
     },
     "ui:按特性层数查询 · 点击技能查看逐层伤害": {
       "zh": "按特性层数查询 · 点击技能查看逐层伤害",
-      "en": "Search by Talent stacks · Click a skill for damage at each stack",
+      "en": "Search by Trait stacks · Click a skill for damage at each stack",
       "ja": "特性スタック数で確認 · スキルを押すと各段階のダメージを表示"
     },
     "ui:按百分比输入": {
@@ -153320,7 +154833,7 @@
     "ui:敌方力竭精灵数": {
       "zh": "敌方力竭精灵数",
       "en": "Opponent’s fainted Jinies",
-      "ja": "相手の戦闘不能精霊数"
+      "ja": "相手の戦闘不能ジニ数"
     },
     "ui:敌方印记层数": {
       "zh": "敌方印记层数",
@@ -153365,7 +154878,7 @@
     "ui:敌方星陨": {
       "zh": "敌方星陨",
       "en": "Target's Starfall",
-      "ja": "相手の星落"
+      "ja": "相手の隕石"
     },
     "ui:敌方星陨印记": {
       "zh": "敌方星陨印记",
@@ -153474,7 +154987,7 @@
     },
     "ui:无相关特性": {
       "zh": "无相关特性",
-      "en": "No relevant Talent",
+      "en": "No relevant Trait",
       "ja": "該当する特性なし"
     },
     "ui:无耐久": {
@@ -153569,7 +155082,7 @@
     },
     "ui:暂无特性说明，请核对计算提示。": {
       "zh": "暂无特性说明，请核对计算提示。",
-      "en": "No Talent description. Check the calculation notes.",
+      "en": "No Trait description. Check the calculation notes.",
       "ja": "特性の説明がありません。計算上の注記を確認してください。"
     },
     "ui:暗夜拾光": {
@@ -153649,7 +155162,7 @@
     },
     "ui:最终形态＋首领": {
       "zh": "最终形态＋首领",
-      "en": "Final forms + Alphas",
+      "en": "Final forms + Leaders",
       "ja": "最終形態＋リーダー"
     },
     "ui:月涌狂想": {
@@ -153674,7 +155187,7 @@
     },
     "ui:有效耐久降序 · 不含特性及环境效果": {
       "zh": "有效耐久降序 · 不含特性及环境效果",
-      "en": " effective durability descending · No Talents or environment effects",
+      "en": " effective durability descending · No Traits or environment effects",
       "ja": "実効耐久の高い順 · 特性・環境効果なし"
     },
     "ui:未使用血脉魔法": {
@@ -153764,7 +155277,7 @@
     },
     "ui:本榜不计防守方特性，代入后恢复特性及预设参数。": {
       "zh": "本榜不计防守方特性，代入后恢复特性及预设参数。",
-      "en": "This ranking excludes defensive Talents; applying a target restores its Talent and preset parameters.",
+      "en": "This ranking excludes defensive Traits; applying a target restores its Trait and preset parameters.",
       "ja": "この表では防御特性を除外。対象を適用すると特性とプリセットの条件を復元します。"
     },
     "ui:本次": {
@@ -154130,7 +155643,7 @@
     "ui:正在加载精灵资料…": {
       "zh": "正在加载精灵资料…",
       "en": "Loading Jinies…",
-      "ja": "ジーニーを読み込み中…"
+      "ja": "ジニを読み込み中…"
     },
     "ui:正在复算…": {
       "zh": "正在复算…",
@@ -154430,7 +155943,7 @@
     "ui:沿用星陨／冻结": {
       "zh": "沿用星陨／冻结",
       "en": "Keep Starfall / Freeze",
-      "ja": "星落・凍結を引き継ぐ"
+      "ja": "隕石・凍結を引き継ぐ"
     },
     "ui:淘沙球｜对方速度 -40 · 物防 -40% · 连击 +2": {
       "zh": "淘沙球｜对方速度 -40 · 物防 -40% · 连击 +2",
@@ -154604,22 +156117,22 @@
     },
     "ui:特性层数": {
       "zh": "特性层数",
-      "en": "Talent stacks",
+      "en": "Trait stacks",
       "ja": "特性のスタック数"
     },
     "ui:特性层数减一": {
       "zh": "特性层数减一",
-      "en": "Remove one Talent stack",
+      "en": "Remove one Trait stack",
       "ja": "特性スタックを1減らす"
     },
     "ui:特性层数加一": {
       "zh": "特性层数加一",
-      "en": "Add one Talent stack",
+      "en": "Add one Trait stack",
       "ja": "特性スタックを1増やす"
     },
     "ui:特性已关闭": {
       "zh": "特性已关闭",
-      "en": "Talent disabled",
+      "en": "Trait disabled",
       "ja": "特性無効"
     },
     "ui:特性条件与效果": {
@@ -154634,7 +156147,7 @@
     },
     "ui:特性说明": {
       "zh": "特性说明",
-      "en": "Talent description",
+      "en": "Trait description",
       "ja": "特性の説明"
     },
     "ui:特性造成伤害": {
@@ -154745,7 +156258,7 @@
     "ui:目标为混血精灵": {
       "zh": "目标为混血精灵",
       "en": "Target is a mixed-lineage Jini",
-      "ja": "対象が混血の精霊"
+      "ja": "対象が混血のジニ"
     },
     "ui:目标本回合使用状态技能": {
       "zh": "目标本回合使用状态技能",
@@ -154769,12 +156282,12 @@
     },
     "ui:盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。": {
       "zh": "盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。",
-      "en": "This Talent randomly reorders skills at turn start. Its order relative to Drive is unknown; automatic simulation is unavailable.",
+      "en": "This Trait randomly reorders skills at turn start. Its order relative to Drive is unknown; automatic simulation is unavailable.",
       "ja": "この特性はターン開始時にランダムで並べ替えます。伝動との処理順が不明なため自動再現には未対応です。"
     },
     "ui:盲拧随机重排计算，请更换精灵或特性。": {
       "zh": "盲拧随机重排计算，请更换精灵或特性。",
-      "en": "Random reordering is not supported. Choose another Jini or Talent.",
+      "en": "Random reordering is not supported. Choose another Jini or Trait.",
       "ja": "ランダムな並べ替えには未対応です。別のジニか特性を選んでください。"
     },
     "ui:盲点": {
@@ -154910,7 +156423,7 @@
     "ui:精灵、技能和特性使用国际客户端译名。": {
       "zh": "精灵、技能和特性使用国际客户端译名。",
       "en": "Jini, skill and trait names use the Global client terminology.",
-      "ja": "ジーニー・スキル・特性名はグローバル版クライアントに準拠しています。"
+      "ja": "ジニ・スキル・特性名はグローバル版クライアントに準拠しています。"
     },
     "ui:精灵数据缺失或配置需要修复": {
       "zh": "精灵数据缺失或配置需要修复",
@@ -155039,7 +156552,7 @@
     },
     "ui:翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。": {
       "zh": "翻垃圾桶需要敌方最近技能及入场信息；请先按实战配置四个技能，再选择无位置特性。",
-      "en": "This Talent requires the opponent's last skill and entry state. Set the four observed skills and choose a Talent without position effects.",
+      "en": "This Trait requires the opponent's last skill and entry state. Set the four observed skills and choose a Trait without position effects.",
       "ja": "相手の直前のスキルと登場時の情報が必要です。実戦の4スキルを設定し、位置効果のない特性を選択してください。"
     },
     "ui:翼·连击+{v0}": {
@@ -155314,8 +156827,8 @@
     },
     "ui:触发2层引电": {
       "zh": "触发2层引电",
-      "en": "Trigger 2 Conduct stacks",
-      "ja": "引電2スタックを発動"
+      "en": "Trigger 2 Conduction stacks",
+      "ja": "誘電2スタックを発動"
     },
     "ui:触发{v0}": {
       "zh": "触发{v0}",
@@ -155429,7 +156942,7 @@
     },
     "ui:该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。": {
       "zh": "该特性会替换或新增技能，需记录触发条件与实际技能身份；当前仅支持重新配置后的四槽推演。",
-      "en": "This Talent replaces or adds skills. Record its triggers and resulting skills; simulation supports the four configured slots.",
+      "en": "This Trait replaces or adds skills. Record its triggers and resulting skills; simulation supports the four configured slots.",
       "ja": "この特性はスキルを追加・置換します。条件と実際のスキルを記録し、設定し直した4枠で計算してください。"
     },
     "ui:该规则暂未验证": {
@@ -155489,7 +157002,7 @@
     },
     "ui:请选择特性": {
       "zh": "请选择特性",
-      "en": "Choose a Talent",
+      "en": "Choose a Trait",
       "ja": "特性を選択"
     },
     "ui:请选择防御方后查看技能斩杀线。": {
@@ -155825,7 +157338,7 @@
     "ui:选择精灵，开始配置": {
       "zh": "选择精灵，开始配置",
       "en": "Choose your Jinies",
-      "ja": "ジーニーを選んで設定を始めましょう"
+      "ja": "ジニを選んで設定を始めましょう"
     },
     "ui:选择血脉": {
       "zh": "选择血脉",
@@ -155974,7 +157487,7 @@
     },
     "ui:采用当前耐久模板；代入后按实际特性复算。": {
       "zh": "采用当前耐久模板；代入后按实际特性复算。",
-      "en": "Uses this defense build; apply a target to recalculate with its Talent.",
+      "en": "Uses this defense build; apply a target to recalculate with its Trait.",
       "ja": "現在の耐久設定を使用。適用後は実際の特性で再計算します。"
     },
     "ui:重新加载": {
@@ -156035,7 +157548,7 @@
     "ui:队伍存在虫系精灵": {
       "zh": "队伍存在虫系精灵",
       "en": "Team includes a Bug Jini",
-      "ja": "チームに虫属性の精霊がいる"
+      "ja": "チームに虫属性のジニがいる"
     },
     "ui:队伍属性矩阵横向滚动": {
       "zh": "队伍属性矩阵横向滚动",
@@ -156094,17 +157607,17 @@
     },
     "ui:防守特性": {
       "zh": "防守特性",
-      "en": "Defensive Talent",
+      "en": "Defensive Trait",
       "ja": "防御特性"
     },
     "ui:防守特性参数": {
       "zh": "防守特性参数",
-      "en": "Defensive Talent parameters",
+      "en": "Defensive Trait parameters",
       "ja": "防御特性のパラメータ"
     },
     "ui:防守特性设置": {
       "zh": "防守特性设置",
-      "en": "Defensive Talent settings",
+      "en": "Defensive Trait settings",
       "ja": "防御特性の設定"
     },
     "ui:防守面": {
@@ -156275,7 +157788,7 @@
     "ui:非官方工具。精灵、技能与特性译名来自国际客户端。": {
       "zh": "非官方工具。精灵、技能与特性译名来自国际客户端。",
       "en": "Unofficial tool. Jini, skill and trait translations come from the Global client.",
-      "ja": "非公式ツールです。ジーニー・スキル・特性の訳語はグローバル版クライアントに基づいています。"
+      "ja": "非公式ツールです。ジニ・スキル・特性の訳語はグローバル版クライアントに基づいています。"
     },
     "ui:非幻系攻击触发额外幻系伤害": {
       "zh": "非幻系攻击触发额外幻系伤害",
@@ -156429,8 +157942,8 @@
     },
     "ui:＋ 引电": {
       "zh": "＋ 引电",
-      "en": " + Conduct ",
-      "ja": " ＋ 引電 "
+      "en": " + Conduction ",
+      "ja": " ＋ 誘電 "
     },
     "ui:＋冻结": {
       "zh": "＋冻结",
@@ -156556,6 +158069,451 @@
       "zh": "悬停或聚焦选项查看效果。",
       "en": "Hover or focus an option to see its effect.",
       "ja": "項目にカーソルを合わせるかフォーカスして効果を確認できます。"
+    },
+    "ui:{base}种族·{profile}": {
+      "zh": "{base}种族·{profile}",
+      "en": "Base SPD {base} · {profile}",
+      "ja": "種族値{base}・{profile}"
+    },
+    "ui:{base}种族·{profile}·{effect}": {
+      "zh": "{base}种族·{profile}·{effect}",
+      "en": "Base SPD {base} · {profile} · {effect}",
+      "ja": "種族値{base}・{profile}・{effect}"
+    },
+    "ui:{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个": {
+      "zh": "{count} 个形态（当前筛选完整名单）；未纳入 {excluded} 个",
+      "en": "{count} forms (all filtered results); {excluded} excluded",
+      "ja": "{count}形態（絞り込み結果全件）、対象外{excluded}件"
+    },
+    "ui:{count} 个配置": {
+      "zh": "{count} 个配置",
+      "en": "{count} builds",
+      "ja": "{count}件の設定"
+    },
+    "ui:{level}级 · {nature} · 个体：{allocation}": {
+      "zh": "{level}级 · {nature} · 个体：{allocation}",
+      "en": "Lv. {level} · {nature} · IVs: {allocation}",
+      "ja": "Lv.{level}・{nature}・個体値：{allocation}"
+    },
+    "ui:{level}级·{rest}": {
+      "zh": "{level}级·{rest}",
+      "en": "Lv. {level} · {rest}",
+      "ja": "Lv.{level}・{rest}"
+    },
+    "ui:{min}%至{max}%": {
+      "zh": "{min}%至{max}%",
+      "en": "{min}% to {max}%",
+      "ja": "{min}%～{max}%"
+    },
+    "ui:{min}～{max}（因目标而异）": {
+      "zh": "{min}～{max}（因目标而异）",
+      "en": "{min}–{max} (varies by target)",
+      "ja": "{min}～{max}（相手によって異なる）"
+    },
+    "ui:{names}等 {count} 只": {
+      "zh": "{names}等 {count} 只",
+      "en": "{names} and others ({count} Jinies)",
+      "ja": "{names}など、計{count}体"
+    },
+    "ui:{name} · {level}级 · {nature} · {allocation}": {
+      "zh": "{name} · {level}级 · {nature} · {allocation}",
+      "en": "{name} · Lv. {level} · {nature} · {allocation}",
+      "ja": "{name}・Lv.{level}・{nature}・{allocation}"
+    },
+    "ui:{name} · {type} · {category} · 静态威力 {power} · 连击 {hits}": {
+      "zh": "{name} · {type} · {category} · 静态威力 {power} · 连击 {hits}",
+      "en": "{name} · {type} · {category} · Static power {power} · Hits {hits}",
+      "ja": "{name}・{type}・{category}・静的威力{power}・ヒット数{hits}"
+    },
+    "ui:{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。": {
+      "zh": "{name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。",
+      "en": "{name} changes skill identity or moves skills between Jinies. Reconfigure the four slots to match the battle before continuing.",
+      "ja": "{name}はスキルの変更やジニ間の移動を伴います。実際のバトルに合わせて4枠を設定し直してください。"
+    },
+    "ui:{name}（{count}层）": {
+      "zh": "{name}（{count}层）",
+      "en": "{name} ({count} stacks)",
+      "ja": "{name}（{count}スタック）"
+    },
+    "ui:{name}（绝缘球）": {
+      "zh": "{name}（绝缘球）",
+      "en": "{name} (Pod SPD effect)",
+      "ja": "{name}（オーブの素早さ効果）"
+    },
+    "ui:{name}：自身 {own} + {trait} {extra} = {total} 层": {
+      "zh": "{name}：自身 {own} + {trait} {extra} = {total} 层",
+      "en": "{name}: base {own} + {trait} {extra} = {total} Drive",
+      "ja": "{name}：自身{own}＋{trait} {extra}＝{total}スタック"
+    },
+    "ui:{name}：自身 {own} = {total} 层": {
+      "zh": "{name}：自身 {own} = {total} 层",
+      "en": "{name}: base {own} = {total} Drive",
+      "ja": "{name}：自身{own}＝{total}スタック"
+    },
+    "ui:{name}：自身 {own}；位置固定": {
+      "zh": "{name}：自身 {own}；位置固定",
+      "en": "{name}: base {own}; fixed position",
+      "ja": "{name}：自身{own}・位置固定"
+    },
+    "ui:{slot} 号位": {
+      "zh": "{slot} 号位",
+      "en": "Slot {slot}",
+      "ja": "{slot}番枠"
+    },
+    "ui:{slot} 号位-{layers}": {
+      "zh": "{slot} 号位-{layers}",
+      "en": "Slot {slot} · {layers}",
+      "ja": "{slot}番枠 · {layers}"
+    },
+    "ui:{type}系血脉": {
+      "zh": "{type}系血脉",
+      "en": "{type} Bloodline",
+      "ja": "{type}属性の血統"
+    },
+    "ui:{value}族": {
+      "zh": "{value}族",
+      "en": "Base {value}",
+      "ja": "種族値{value}"
+    },
+    "ui:{weather}（不计天气伤害）": {
+      "zh": "{weather}（不计天气伤害）",
+      "en": "{weather} (weather damage excluded)",
+      "ja": "{weather}（天候ダメージは含まない）"
+    },
+    "ui:·特": {
+      "zh": "·特",
+      "en": " · Special",
+      "ja": "・特殊"
+    },
+    "ui:以上": {
+      "zh": "以上",
+      "en": "Above",
+      "ja": "以上"
+    },
+    "ui:传说合体：{name}": {
+      "zh": "传说合体：{name}",
+      "en": "Legend Fusion: {name}",
+      "ja": "伝説の合体：{name}"
+    },
+    "ui:冻结 {count}层": {
+      "zh": "冻结 {count}层",
+      "en": "Freeze: {count} stacks",
+      "ja": "凍結：{count}スタック"
+    },
+    "ui:冻结斩杀线": {
+      "zh": "冻结斩杀线",
+      "en": "Freeze KO threshold",
+      "ja": "凍結による撃破ライン"
+    },
+    "ui:剩余 HP": {
+      "zh": "剩余 HP",
+      "en": "Remaining HP",
+      "ja": "残りHP"
+    },
+    "ui:各自用户预设，未配置按中立性格、生命60、双防0个体": {
+      "zh": "各自用户预设，未配置按中立性格、生命60、双防0个体",
+      "en": "Saved builds; otherwise neutral nature, HP IV 60, defense IVs 0",
+      "ja": "保存設定を使用。未設定は無補正性格・HP個体値60・両防御個体値0"
+    },
+    "ui:各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血": {
+      "zh": "各自预设，未配按中立性格、生命60、双防0个体 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血",
+      "en": "Saved builds; otherwise neutral nature, HP IV 60, defense IVs 0 · Target at full HP · Defensive Traits excluded · Direct damage + Freeze KO · End-of-turn HP loss excluded",
+      "ja": "保存設定を使用。設定なしは無補正性格・HP個体値60・両防御個体値0。相手HP満タン・防御特性を除外・直接ダメージ＋凍結撃破・ターン終了時のHP減少を除外"
+    },
+    "ui:名称 / 别名": {
+      "zh": "名称 / 别名",
+      "en": "Name / alias",
+      "ja": "名前・別名"
+    },
+    "ui:含一次引电": {
+      "zh": "含一次引电",
+      "en": "Includes one Conduction trigger",
+      "ja": "誘電を1回含む"
+    },
+    "ui:命中{value}": {
+      "zh": "命中{value}",
+      "en": "Matched: {value}",
+      "ja": "一致：{value}"
+    },
+    "ui:啮合": {
+      "zh": "啮合",
+      "en": "Gear Transfer",
+      "ja": "ギアリンク"
+    },
+    "ui:固定位置技能不能移动。": {
+      "zh": "固定位置技能不能移动。",
+      "en": "Skills with fixed positions cannot move.",
+      "ja": "位置固定のスキルは移動できません。"
+    },
+    "ui:图鉴号": {
+      "zh": "图鉴号",
+      "en": "Dex No.",
+      "ja": "図鑑番号"
+    },
+    "ui:学习途径待补充": {
+      "zh": "学习途径待补充",
+      "en": "Acquisition method unavailable",
+      "ja": "習得方法の情報なし"
+    },
+    "ui:实际速度": {
+      "zh": "实际速度",
+      "en": "Actual SPD",
+      "ja": "実際の素早さ"
+    },
+    "ui:已有冻结 {count} 层": {
+      "zh": "已有冻结 {count} 层",
+      "en": "Existing Freeze: {count} stacks",
+      "ja": "既存の凍結：{count}スタック"
+    },
+    "ui:当前数据缺少电鹿，请更新数据后重试": {
+      "zh": "当前数据缺少电鹿，请更新数据后重试",
+      "en": "The selected Jini is missing. Reload the data and try again.",
+      "ja": "対象のジニが見つかりません。データを再読み込みしてください。"
+    },
+    "ui:当前槽位不可使用": {
+      "zh": "当前槽位不可使用",
+      "en": "This slot cannot be used",
+      "ja": "このスロットは使用できません"
+    },
+    "ui:承伤结论": {
+      "zh": "承伤结论",
+      "en": "Damage results",
+      "ja": "被ダメージ結果"
+    },
+    "ui:承伤范围": {
+      "zh": "承伤范围",
+      "en": "Damage range",
+      "ja": "被ダメージ範囲"
+    },
+    "ui:承伤范围上限": {
+      "zh": "承伤范围上限",
+      "en": "Maximum damage percentage",
+      "ja": "被ダメージ割合の上限"
+    },
+    "ui:承伤范围下限": {
+      "zh": "承伤范围下限",
+      "en": "Minimum damage percentage",
+      "ja": "被ダメージ割合の下限"
+    },
+    "ui:技能石：{name}": {
+      "zh": "技能石：{name}",
+      "en": "Skill stone: {name}",
+      "ja": "スキル石：{name}"
+    },
+    "ui:技能资料与当前赛季版本不匹配，请重新加载": {
+      "zh": "技能资料与当前赛季版本不匹配，请重新加载",
+      "en": "Skill data does not match the selected season. Reload it.",
+      "ja": "スキルデータが選択中のシーズンと一致しません。再読み込みしてください。"
+    },
+    "ui:技能资料加载失败": {
+      "zh": "技能资料加载失败",
+      "en": "Could not load skill data.",
+      "ja": "スキルデータを読み込めませんでした。"
+    },
+    "ui:技能资料暂时无法加载，请重试。": {
+      "zh": "技能资料暂时无法加载，请重试。",
+      "en": "Could not load skill data. Please try again.",
+      "ja": "スキルデータを読み込めませんでした。もう一度お試しください。"
+    },
+    "ui:技能资料版本暂不支持": {
+      "zh": "技能资料版本暂不支持",
+      "en": "This skill data version is not supported.",
+      "ja": "このスキルデータのバージョンには対応していません。"
+    },
+    "ui:折射·电": {
+      "zh": "折射·电",
+      "en": "Refraction · Electro",
+      "ja": "リフレクトレイ・雷"
+    },
+    "ui:折射（携带电系技能）": {
+      "zh": "折射（携带电系技能）",
+      "en": "Refraction (Electro skill equipped)",
+      "ja": "リフレクトレイ（雷属性スキルを装備）"
+    },
+    "ui:搜索：{query}": {
+      "zh": "搜索：{query}",
+      "en": "Search: {query}",
+      "ja": "検索：{query}"
+    },
+    "ui:攻击方不是支持入场层数的电鹿": {
+      "zh": "攻击方不是支持入场层数的电鹿",
+      "en": "Select a Jini with a supported entry-stack Trait.",
+      "ja": "登場回数に対応する特性を持つジニを選んでください。"
+    },
+    "ui:攻击等级 {stage}": {
+      "zh": "攻击等级 {stage}",
+      "en": "Attack stage {stage}",
+      "ja": "攻撃ランク {stage}"
+    },
+    "ui:无上限": {
+      "zh": "无上限",
+      "en": "No upper limit",
+      "ja": "上限なし"
+    },
+    "ui:无赛季装饰": {
+      "zh": "无赛季装饰",
+      "en": "No season artwork",
+      "ja": "シーズン装飾なし"
+    },
+    "ui:无额外增益": {
+      "zh": "无额外增益",
+      "en": "No extra bonuses",
+      "ja": "追加補正なし"
+    },
+    "ui:星陨 {count}层": {
+      "zh": "星陨 {count}层",
+      "en": "Starfall: {count} stacks",
+      "ja": "隕石：{count}スタック"
+    },
+    "ui:未沿用星陨／已有冻结（按0层）": {
+      "zh": "未沿用星陨／已有冻结（按0层）",
+      "en": "Starfall and existing Freeze reset to 0",
+      "ja": "隕石と既存の凍結は0スタック"
+    },
+    "ui:未配置预设，使用默认分配": {
+      "zh": "未配置预设，使用默认分配",
+      "en": "No saved build; using defaults",
+      "ja": "保存設定なし・標準配分を使用"
+    },
+    "ui:本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。": {
+      "zh": "本表为本次计算结论，不随修改自动重算。实战特性、配点不同，请代入计算器复算。",
+      "en": "This report records the current results and does not recalculate. Recalculate if Traits or stat builds differ in battle.",
+      "ja": "この表は今回の計算結果です。自動再計算はしません。実戦の特性や能力設定が異なる場合は計算し直してください。"
+    },
+    "ui:洛克计算器 {app}；数据 {data}；规则 {rules}；{time}": {
+      "zh": "洛克计算器 {app}；数据 {data}；规则 {rules}；{time}",
+      "en": "Roco Calculator {app}; Data {data}; Rules {rules}; {time}",
+      "ja": "Roco Calculator {app}・データ{data}・ルール{rules}・{time}"
+    },
+    "ui:满血 HP": {
+      "zh": "满血 HP",
+      "en": "Max HP",
+      "ja": "最大HP"
+    },
+    "ui:版本／时间": {
+      "zh": "版本／时间",
+      "en": "Version / time",
+      "ja": "バージョン・日時"
+    },
+    "ui:特性／条件": {
+      "zh": "特性／条件",
+      "en": "Trait / conditions",
+      "ja": "特性・条件"
+    },
+    "ui:理论伤害": {
+      "zh": "理论伤害",
+      "en": "Theoretical damage",
+      "ja": "理論ダメージ"
+    },
+    "ui:电血脉": {
+      "zh": "电血脉",
+      "en": "Electro Bloodline",
+      "ja": "雷属性の血統"
+    },
+    "ui:目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算": {
+      "zh": "目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算",
+      "en": "Target at full HP; {scope}; Ratio = damage / max HP + Freeze KO threshold. Freeze uses existing and newly applied stacks for each target, without extra HP loss. End-of-turn effects excluded.",
+      "ja": "相手はHP満タン。{scope}。割合＝ダメージ÷最大HP＋凍結撃破ライン。凍結は既存と今回追加のスタックを相手ごとに計算し、追加のHP減少はありません。ターン終了時の処理は含みません。"
+    },
+    "ui:第 {count} 次效果：{effect}（{trait}）": {
+      "zh": "第 {count} 次效果：{effect}（{trait}）",
+      "en": "Effect {count}: {effect} ({trait})",
+      "ja": "第{count}回の効果：{effect}（{trait}）"
+    },
+    "ui:第 {round} 回合 · {action}": {
+      "zh": "第 {round} 回合 · {action}",
+      "en": "Turn {round} · {action}",
+      "ja": "ターン{round}・{action}"
+    },
+    "ui:第 {round} 回合 · {skill} · 使用后": {
+      "zh": "第 {round} 回合 · {skill} · 使用后",
+      "en": "Turn {round} · {skill} · After use",
+      "ja": "ターン{round}・{skill}・使用後"
+    },
+    "ui:等级习得：Lv.{level}": {
+      "zh": "等级习得：Lv.{level}",
+      "en": "Learned at Lv. {level}",
+      "ja": "Lv.{level}で習得"
+    },
+    "ui:等级待确认": {
+      "zh": "等级待确认",
+      "en": "Learning level unavailable",
+      "ja": "習得レベルの情報なし"
+    },
+    "ui:精灵／形态": {
+      "zh": "精灵／形态",
+      "en": "Jini / form",
+      "ja": "ジニ・形態"
+    },
+    "ui:结论": {
+      "zh": "结论",
+      "en": "Result",
+      "ja": "結果"
+    },
+    "ui:绝缘球": {
+      "zh": "绝缘球",
+      "en": "Pod SPD effect",
+      "ja": "オーブの素早さ効果"
+    },
+    "ui:统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血": {
+      "zh": "统一模板 · 目标满血 · 不计防守特性 · 直伤＋冻结斩杀 · 不含回合末扣血",
+      "en": "Uniform build · Target at full HP · Defensive Traits excluded · Direct damage + Freeze KO · End-of-turn HP loss excluded",
+      "ja": "統一設定・相手HP満タン・防御特性を除外・直接ダメージ＋凍結撃破・ターン終了時のHP減少を除外"
+    },
+    "ui:继承{v0}的{v1}层数，每层双攻双防+{v2}%。": {
+      "zh": "继承{v0}的{v1}层数，每层双攻双防+{v2}%。",
+      "en": "Inherits {v1} stacks from {v0}; each stack adds {v2}% to both ATK and DEF stats.",
+      "ja": "{v0}の{v1}スタックを継承。1スタックごとに物攻・魔攻・物防・魔防+{v2}%。"
+    },
+    "ui:缺少技能数据：{name}": {
+      "zh": "缺少技能数据：{name}",
+      "en": "Skill data missing: {name}",
+      "ja": "スキルデータがありません：{name}"
+    },
+    "ui:耐久配点": {
+      "zh": "耐久配点",
+      "en": "Defensive build",
+      "ja": "耐久設定"
+    },
+    "ui:计算口径": {
+      "zh": "计算口径",
+      "en": "Calculation scope",
+      "ja": "計算条件"
+    },
+    "ui:说明": {
+      "zh": "说明",
+      "en": "Notes",
+      "ja": "注記"
+    },
+    "ui:请填入 1–4 的排列，例如 2413；数字对应当前槽位。": {
+      "zh": "请填入 1–4 的排列，例如 2413；数字对应当前槽位。",
+      "en": "Enter a permutation of 1–4, such as 2413. Numbers refer to the current slots.",
+      "ja": "1～4の並びを入力してください（例：2413）。数字は現在のスロットを示します。"
+    },
+    "ui:途径待补充": {
+      "zh": "途径待补充",
+      "en": "Acquisition method unavailable",
+      "ja": "習得方法の情報なし"
+    },
+    "ui:防御等级 {stage}": {
+      "zh": "防御等级 {stage}",
+      "en": "Defense stage {stage}",
+      "ja": "防御ランク {stage}"
+    },
+    "ui:需要四个槽位及 0–20 的整数层数": {
+      "zh": "需要四个槽位及 0–20 的整数层数",
+      "en": "Use four slots and integer stack counts from 0 to 20.",
+      "ja": "4つのスロットと0～20の整数のスタック数を指定してください。"
+    },
+    "ui:需要拼速": {
+      "zh": "需要拼速",
+      "en": "Speed tie",
+      "ja": "同速"
+    },
+    "ui:（冰系免疫）": {
+      "zh": "（冰系免疫）",
+      "en": " (Ice is immune)",
+      "ja": "（氷属性は無効）"
     }
   }
 }

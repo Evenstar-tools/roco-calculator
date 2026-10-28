@@ -37,7 +37,7 @@ html[data-theme="dark"] {
   --season-control-selected-text: var(--bg);
 }
 
-/* An unconfirmed Global season keeps the general UI, without CN art or gold accents. */
+/* The explicit no-art choice keeps the general UI without seasonal accents. */
 html[data-season="neutral"][data-theme="dark"] {
   --accent: #abc4ed;
   --accent-strong: #d3e2fa;

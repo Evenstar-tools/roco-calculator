@@ -1,6 +1,6 @@
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
-import { localizeToolText } from "../../i18n/useToolLocale.js";
+import { localizeAcquisitionMethods } from "./acquisition-text.js";
 
 export default function SkillQueryEffect({ skill, expanded, onToggle, onReverse, placeholder = false }) {
   const { t, locale } = useLocale();
@@ -28,7 +28,7 @@ export default function SkillQueryEffect({ skill, expanded, onToggle, onReverse,
       {hasDetails && <button className="sq-effect-more" aria-label={t("查看{name}详情", { name: skill.name })} aria-expanded={expanded} aria-controls={detailsId} onClick={onToggle}>{t(expanded ? "收起" : clipped ? "全文" : "详情")}</button>}
     </div>
     {expanded && <div id={detailsId} className="sq-effect-details">
-      {hasMethods && <small>{localizeToolText(skill.methods.join(" / "), locale)}</small>}
+      {hasMethods && <small>{localizeAcquisitionMethods(skill.methods, locale)}</small>}
       {hasSource && <a href={skill.detailUrl} target="_blank" rel="noreferrer">{t("BWIKI 资料")}</a>}
     </div>}
   </div>;

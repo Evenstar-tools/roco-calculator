@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useState } from 
 import { readClassicCalculatorColorsSetting, readLastRandomSeasonTheme, readSeasonThemePreference, writeClassicCalculatorColorsSetting, writeLastRandomSeasonTheme, writeSeasonThemePreference } from "../state/season-theme.js";
 import { getSeasonTheme, getSeasonThemeVariables, normalizeSeasonThemePreference, pickRandomSeasonThemeId, resolveSeasonThemeId } from "./season-themes.js";
 
-const SeasonThemeContext = createContext({ preference: "default", season: getSeasonTheme("s4"), classicCalculatorColorsEnabled: false });
+const SeasonThemeContext = createContext({ preference: "default", season: null, classicCalculatorColorsEnabled: false });
 
 function createSelection(serverId, preference, excludeId) {
   return { preference, themeId: resolveSeasonThemeId({ serverId, preference,

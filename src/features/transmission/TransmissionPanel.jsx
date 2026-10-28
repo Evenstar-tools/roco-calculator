@@ -239,7 +239,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
         {round === 0 ? <div className="transmission-config">{initial.map((skill, index) => {
             const usable = isSlotUsable(effectiveTrait, index);
             return <div key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"}>
-              <label>{index + 1}{" "}{t("号位-")}{driveLayers[index]}{!usable ? t(" · 不可使用") : ""}</label>
+              <label>{t("{slot} 号位-{layers}", { slot: index + 1, layers: driveLayers[index] })}{!usable ? t(" · 不可使用") : ""}</label>
               <SkillPicker readable menuBoundaryRef={body} ariaLabel={t("初始{v0}号位技能", { v0: index + 1 })} skills={skillChoices} selected={skill} onSelect={(next) => reset(initial.map((item, i) => i === index ? snapshot.skills.find((entry) => entry.id === next) ?? null : item))} />
             </div>;
           })}</div> :
@@ -248,7 +248,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
             return <li key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"}>
               {skill ? <SkillIcon skill={skill} size={32} label /> : <span className="transmission-empty-icon" aria-hidden="true">—</span>}
               <div>
-                <span className="transmission-slot-number">{index + 1}{" "}{t("号位-")}{driveLayers[index]}</span>
+                <span className="transmission-slot-number">{t("{slot} 号位-{layers}", { slot: index + 1, layers: driveLayers[index] })}</span>
                 <strong>{t(skill?.name ?? t("未配置"))}</strong>
                 {!usable && skill ? <small className="transmission-slot-blocked">{t("不可使用")}</small> : null}
               </div>

@@ -82,7 +82,7 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
   if (!spirit) return <section className="deer-side deer-side--defender" aria-label={t("防御方配置")}><div className="deer-side-heading"><span>{t("防御方")}</span></div><SpiritPicker label={t(label)} side={sideKey} spirits={options} selected={null} onSelect={onSelect} showFavorite={false} /><p className="deer-muted">{t("请选择防御方，当前未代入默认对手。")}</p></section>;
   return <section className={`deer-side deer-side--${sideKey}`} aria-label={t("{v0}配置", { v0: label })}>
     <div className="deer-side-heading"><span>{t(label)}</span><button type="button" className="deer-link" onClick={() => setExpanded(!expanded)} aria-expanded={expanded}>{expanded ? t("收起配置") : t("手调配置")}<CaretDown size={12} /></button></div>
-    <div className="deer-identity"><img src={spirit.asset?.localUrl} alt={spirit.fullName} width="54" height="54" /><div className="deer-picker"><SpiritPicker label={t(label)} side={sideKey} spirits={options} selected={selected} onSelect={onSelect} showFavorite={false} /></div>
+    <div className="deer-identity"><img src={spirit.asset?.localUrl} alt={t(spirit.fullName)} width="54" height="54" /><div className="deer-picker"><SpiritPicker label={t(label)} side={sideKey} spirits={options} selected={selected} onSelect={onSelect} showFavorite={false} /></div>
       {attack && <select aria-label={t("电鹿配置预设")} value={presetId} onChange={(event) => selectPreset(event.target.value)}><option value="standard">{t("常用配置")}</option>{presets[side.spiritId] && <option value="saved">{t("已存预设")}</option>}<option value="current" disabled>{t("当前配置")}</option><option value="custom" disabled>{t("自定义")}</option></select>}
     </div>
     {attack ? <><QuickNaturePicker side={sideKey} label={t(label)} displayIvs={side.displayIvs} value={side.nature} onChange={(nature) => onSide({ nature })} /><QuickIvPicker side={sideKey} label={t(label)} values={side.displayIvs} onChange={setIv} /></> : <>
@@ -125,7 +125,8 @@ function minimumText(value, ready) { return value === null ? (ready ? "查询范
 function bestRow(rows, field) { return rows.filter((row) => row[field] !== null).sort((a, b) => a[field] - b[field])[0]; }
 
 export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onReturn }) {
-  const { typeName, t } = useLocale();
+  const { typeName, t, locale } = useLocale();
+  const { serverId } = useRuntime();
   const [setup, commitSetup] = useState(() => {
     const next = { ...createDeerSetup(snapshot, initialState), showFollowup: false };
     if (initialState) {
@@ -229,12 +230,12 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
   const defenseLimitations = defender ? getDeerDefenseLimitations(snapshot, setup.state.sides.defender) : [];
   const conditions = [
     setup.attackerHp !== 100 && `自身HP ${Number(setup.attackerHp.toFixed(2))}%`,
-    setup.weather !== "none" && `${{ rain: "雨天", thunder: "雷暴", sandstorm: "沙尘暴", blizzard: "暴风雪", dream: "萌系天气（占位）" }[setup.weather]}（不计天气伤害）`,
-    setup.state.directions.forward.overrides.attackLevelStage && `攻击等级 ${setup.state.directions.forward.overrides.attackLevelStage}`,
-    setup.state.directions.forward.overrides.defenseLevelStage && `防御等级 ${setup.state.directions.forward.overrides.defenseLevelStage}`,
+    setup.weather !== "none" && t("{weather}（不计天气伤害）", { weather: { rain: "雨天", thunder: "雷暴", sandstorm: "沙尘暴", blizzard: "暴风雪", dream: "萌系天气（占位）" }[setup.weather] }),
+    setup.state.directions.forward.overrides.attackLevelStage && t("攻击等级 {stage}", { stage: setup.state.directions.forward.overrides.attackLevelStage }),
+    setup.state.directions.forward.overrides.defenseLevelStage && t("防御等级 {stage}", { stage: setup.state.directions.forward.overrides.defenseLevelStage }),
     setup.reduction > 0 && `减伤 ${Number(setup.reduction.toFixed(2))}%`,
-    setup.starfall > 0 && `星陨 ${setup.starfall}层`,
-    setup.freeze > 0 && `冻结 ${setup.freeze}层${defender?.types.includes("冰") ? "（冰系免疫）" : ""}`,
+    setup.starfall > 0 && t("星陨 {count}层", { count: setup.starfall }),
+    setup.freeze > 0 && `${t("冻结 {count}层", { count: setup.freeze })}${defender?.types.includes("冰") ? t("（冰系免疫）") : ""}`,
   ].filter(Boolean);
   const setOptions = (patch) => setSetup((current) => ({ ...current, ...patch }));
   function fillMinimum() {
@@ -298,15 +299,15 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     {defender && <><section className="deer-conditions"><button type="button" aria-expanded={conditionsOpen} onClick={() => setConditionsOpen(!conditionsOpen)}><SlidersHorizontal size={16} /><strong>{t("战斗条件")}</strong><span data-active={conditions.length > 0}>{t(conditions.length ? conditions.join(" · ") : t("默认条件 · 天气 / 血量 / 能力 / 异常 / 减伤"))}</span><CaretDown size={14} /></button>
       {conditionsOpen && <div className="deer-conditions-body"><div className="deer-fields">
         <NumberField label={t("自身HP")} value={setup.attackerHp} min={1} suffix="%" onChange={(attackerHp) => setOptions({ attackerHp })} />
-        <label className="deer-number">{t("天气")}<select aria-label={t("天气")} value={setup.weather} onChange={(event) => setOptions({ weather: event.target.value })}><option value="none">{t("无")}</option><option value="rain">{t("雨天")}</option><option value="thunder">{t("雷暴")}</option><option value="sandstorm">{t("沙尘暴")}</option><option value="blizzard">{t("暴风雪")}</option><option value="dream">{t("萌系天气（占位）")}</option></select></label>
+        <label className="deer-number">{t("天气")}<select aria-label={t("天气")} value={setup.weather} onChange={(event) => setOptions({ weather: event.target.value })}><option value="none">{t("无")}</option><option value="rain">{t("雨天")}</option><option value="thunder">{t("雷暴")}</option><option value="sandstorm">{t("沙尘暴")}</option><option value="blizzard">{t("暴风雪")}</option>{serverId !== "global" && <option value="dream">{t("萌系天气（占位）")}</option>}</select></label>
         <NumberField label={t("攻击能力等级")} integer min={-99} max={99} value={setup.state.directions.forward.overrides.attackLevelStage ?? 0} onChange={(value) => setOverride("attackLevelStage", value)} />
         <NumberField label={t("防守技能减伤")} suffix="%" value={setup.reduction} onChange={(reduction) => setOptions({ reduction })} />
         <NumberField label={t("敌方星陨")} integer max={99} value={setup.starfall} onChange={(starfall) => setOptions({ starfall })} />
         <NumberField label={t("敌方冻结")} integer max={20} value={setup.freeze} onChange={(freeze) => setOptions({ freeze })} />
       </div><p className="deer-muted">{t("天气仅用于内核已支持的技能／特性联动，不计天气本身的回合末伤害。")}</p><p className="deer-muted">{t("能力每层10%；冻结每层占最大生命5%，冰系免疫。先发按第一击后的生命和裂石降防复算；其余防守特性触发条件沿用手调值，不推演对手行动。")}</p></div>}
     </section>
-    {defenseLimitations.length > 0 && <p className="deer-warning" role="note">{t(defenseLimitations.join("、"))}{t("的保命效果尚未纳入本页。仅展示理论伤害，不提供确定斩杀层数或先发连招结论。")}</p>}
-    {warnings.length > 0 && <p className="deer-warning" role="status">{t(warnings.join("；"))}{t("。以下为当前内核条件下的估算，请核对特性。")}</p>}
+    {defenseLimitations.length > 0 && <p className="deer-warning" role="note">{defenseLimitations.map(name => t(name)).join(locale === "en" ? ", " : "、")}{t("的保命效果尚未纳入本页。仅展示理论伤害，不提供确定斩杀层数或先发连招结论。")}</p>}
+    {warnings.length > 0 && <p className="deer-warning" role="status">{warnings.map(warning => t(warning)).join(locale === "en" ? "; " : "；")}{t("。以下为当前内核条件下的估算，请核对特性。")}</p>}
     <div className="deer-summary" aria-live="polite"><span>{t("单招最低")}{" "}<strong>{best ? t("{v0} 层", { v0: best.minimum }) : rows.some((row) => !row.current.lethalKnown) ? t("条件待确认") : t("查询范围内未达")}</strong>{t(best?.label)}{best?.condition && <small>{t(best.condition)}</small>}<button className="deer-fill-minimum" type="button" disabled={updating || !best} onClick={fillMinimum} title={t("填入单招击倒的最低层数，不含先发补刀；额外条件不会自动开启")}>{t("一键填层数")}</button></span>{setup.showFollowup && <span>{t("接先发最低")}{" "}<strong>{combo ? t("{v0} 层", { v0: combo.comboMinimum }) : rows.some((row) => !row.current.lethalKnown) ? t("条件待确认") : t("查询范围内未达")}</strong>{t(combo?.label)}{combo?.condition && <small>{t(combo.condition)}</small>}</span>}</div>
     {activeMinimum && <p className="deer-fill-notice" role="status">{t("已填入")}{" "}{setup.stacks}{" "}{t("层 ·")}{" "}{t(activeMinimum.label)}{activeMinimum.condition ? t("（{v0}；条件未自动变更）", { v0: activeMinimum.condition }) : ""}</p>}
     <section className="deer-results" aria-label={t("技能斩杀线")} aria-busy={updating}><div className="deer-results-heading"><h2>{t("技能斩杀线")}</h2><span className="deer-muted">{updating ? t("正在复算…") : t("目标生命 {v0} · 当前 {v1}%", { v0: stats.hp, v1: setup.defenderHp })}</span><label className="deer-check"><input type="checkbox" checked={setup.showFollowup} onChange={(event) => { setOptions({ showFollowup: event.target.checked }); if (!event.target.checked && expandedRow === "stone-counter") setExpandedRow("stone"); }} />{t("显示先发补刀")}</label></div>

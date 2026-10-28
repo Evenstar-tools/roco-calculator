@@ -22,7 +22,7 @@ function TypeMultiplier({ value, mobile = false }) {
 }
 
 export default function DamageComparisonDialog({ snapshot, source, preferences, onPreferencesChange, onClose, onImport }) {
-  const { typeName, t } = useLocale();
+  const { typeName, t, locale } = useLocale();
   const model = useDamageComparison(snapshot, source, preferences, onPreferencesChange);
   const dialog = useRef(null);
   const exportControl = useRef(null);
@@ -49,7 +49,7 @@ export default function DamageComparisonDialog({ snapshot, source, preferences, 
     setExportBusy(true);
     setExportError("");
     try {
-      const report = buildDamageComparisonReport(snapshot, source, model);
+      const report = buildDamageComparisonReport(snapshot, source, model, new Date(), { locale });
       await downloadDamageComparison(report, format);
       setExportOpen(false);
       requestAnimationFrame(() => exportControl.current?.querySelector("button")?.focus());

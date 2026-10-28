@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { readThemeSetting } from "../state/display-settings.js";
 import { Toolbox } from "./Toolbox.jsx";
 import { useSeasonTheme } from "../theme/SeasonThemeContext.jsx";
-import { getSeasonTheme } from "../theme/season-themes.js";
+import { getSeasonTheme, resolveSeasonThemeId } from "../theme/season-themes.js";
 
 export function AppHeader({
   menuButtonRef,
@@ -31,7 +31,7 @@ export function AppHeader({
   const { t } = useLocale();
   const { season: storedSeason } = useSeasonTheme();
   const { serverId, release, seasonThemeId, seasonPreview } = useRuntime();
-  const season = seasonThemeId ? getSeasonTheme(seasonThemeId) : storedSeason;
+  const season = seasonThemeId ? getSeasonTheme(seasonThemeId) : storedSeason ?? getSeasonTheme(resolveSeasonThemeId({ serverId }));
   const previewTitle = IS_PREVIEW_BUILD ? "S5 · 抢先体验" : seasonPreview && season.id !== "neutral" && !(serverId === "cn" && season.id === release.seasonId?.toLowerCase())
     ? t("{season} · 装饰预览", { season: season.id.toUpperCase() }) : null;
   const showCnSeasonTitle = serverId === "cn";

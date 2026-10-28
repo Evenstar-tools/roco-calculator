@@ -44,16 +44,27 @@ export function getGlobalEntityText(kind, entityOrId, field, locale, fallback = 
   const entry = entryFor(kind, entityOrId);
   if (!entry) return fallback;
   const language = displayLocale(locale);
-  if (!entry.available) return field === "name" ? unavailableNames[kind]?.[language] ?? "" : "";
-  return entry[field]?.[language] ?? "";
+  if (!entry.available) return ["name", "fullName"].includes(field) ? unavailableNames[kind]?.[language] ?? "" : "";
+  return kind === "spirit" && field === "fullName" ? fullName(entry, language) : entry[field]?.[language] ?? "";
 }
 
 /** For display fragments without an ID: return only an unambiguous translated value. */
 export function getGlobalEntityTextByName(kind, chineseName, field, locale, fallback = chineseName) {
   const language = displayLocale(locale);
-  const matches = nameIndexes.get(kind)?.get(chineseName) ?? [];
-  const texts = new Set(matches.map((entry) => entry[field]?.[language]).filter(Boolean));
-  return matches.length > 0 && texts.size === 1 && matches.every((entry) => entry[field]?.[language]) ? [...texts][0] : fallback;
+  const candidates = nameIndexes.get(kind)?.get(chineseName) ?? [];
+  const exactProjectNames = candidates.filter(entry => entry.projectName === chineseName);
+  const matches = exactProjectNames.length ? exactProjectNames : candidates;
+  const values = matches.map((entry) => kind === "spirit" && field === "fullName" ? fullName(entry, language) : entry[field]?.[language]);
+  const texts = new Set(values.filter(Boolean));
+  if (values.length > 0 && texts.size === 1 && values.every(Boolean)) return [...texts][0];
+  // A bare species name can identify several forms. Keep the shared official name,
+  // rather than choosing a form that the caller did not identify.
+  if (kind === "spirit" && field === "fullName" && !exactProjectNames.length) {
+    const baseNames = matches.map(entry => entry.name?.[language]);
+    const sharedNames = new Set(baseNames.filter(Boolean));
+    if (sharedNames.size === 1 && baseNames.every(Boolean)) return [...sharedNames][0];
+  }
+  return fallback;
 }
 
 function fullName(entry, locale) {

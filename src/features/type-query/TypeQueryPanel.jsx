@@ -27,17 +27,19 @@ function ResultGroup({ rows, multiplier, label, side, onInspect, inspected }) {
 
 function ResultChip({ row, side, onInspect, inspected }) {
   const { t, typeName } = useLocale();
-  return <button type="button" className="type-query__chip" aria-label={t("查看{v0}{v1}倍率来源", { v0: side === "defense" ? "防守" : "进攻", v1: row.type })}
+  return <button type="button" className="type-query__chip" aria-label={t("查看{v0}{v1}倍率来源", { v0: side === "defense" ? "防守" : "进攻", v1: typeName(row.type) })}
     aria-pressed={inspected?.side === side && inspected?.type === row.type}
     onClick={() => onInspect({ side, type: row.type })}>
     <ElementIcon type={row.type} size={18} />{typeName(row.type)}
   </button>;
 }
 
-function explainRow(row, side, types, t, typeName) {
-  if (side === "offense") return [t("攻击{v0}系目标：最佳打击 {v1} 倍。", { v0: typeName(row.type), v1: row.multiplier }), row.parts.map((part) => t("{v0}系攻击：{v1} 倍", { v0: typeName(part.type), v1: part.multiplier })).join("；") + "。", t("分别使用所选属性攻击，取较高倍率，不相乘。")];
+function explainRow(row, side, types, t, typeName, locale) {
+  const separator = locale === "en" ? "; " : "；";
+  const period = locale === "en" ? "." : "。";
+  if (side === "offense") return [t("攻击{v0}系目标：最佳打击 {v1} 倍。", { v0: typeName(row.type), v1: row.multiplier }), row.parts.map((part) => t("{v0}系攻击：{v1} 倍", { v0: typeName(part.type), v1: part.multiplier })).join(separator) + period, t("分别使用所选属性攻击，取较高倍率，不相乘。")];
   const raw = row.parts.reduce((value, part) => value * part.multiplier, 1);
-  return [t("{v0}系攻击{v1}系防守：承受 {v2} 倍伤害。", { v0: typeName(row.type), v1: types.map(typeName).join("＋"), v2: row.multiplier }), row.parts.map((part) => t("{v0}打{v1}：{v2} 倍", { v0: typeName(row.type), v1: typeName(part.type), v2: part.multiplier })).join("；") + "。", t(raw >= 4 ? "两项均克制，按游戏规则双重弱点为 3 倍，不是 4 倍。" : types.length === 2 ? "双属性防守按两项倍率相乘计算。" : "单属性防守，直接使用对应倍率。")];
+  return [t("{v0}系攻击{v1}系防守：承受 {v2} 倍伤害。", { v0: typeName(row.type), v1: types.map(typeName).join("＋"), v2: row.multiplier }), row.parts.map((part) => t("{v0}打{v1}：{v2} 倍", { v0: typeName(row.type), v1: typeName(part.type), v2: part.multiplier })).join(separator) + period, t(raw >= 4 ? "两项均克制，按游戏规则双重弱点为 3 倍，不是 4 倍。" : types.length === 2 ? "双属性防守按两项倍率相乘计算。" : "单属性防守，直接使用对应倍率。")];
 }
 
 function SpiritResults({ spirits, types, spiritFilterRevision }) {
@@ -65,7 +67,7 @@ export default function TypeQueryPanel(props) {
 }
 
 function VerifiedTypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision, selectedTypes, onTypesChange, onClose }) {
-  const { t, typeName } = useLocale();
+  const { t, typeName, locale } = useLocale();
   const root = useRef(null);
   const [inspected, setInspected] = useState(null);
   const query = useMemo(() => buildTypeQuery(selectedTypes, typeChart), [selectedTypes, typeChart]);
@@ -141,7 +143,7 @@ function VerifiedTypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision,
               <div className="type-query__neutral">{t("双系攻击分别计算，不把两个技能当作一招叠乘。")}</div>
             </section>
           </div>
-          {inspectedRow && <div className="type-query__explanation" role="status"><strong>{t("倍率来源")}</strong><div>{explainRow(inspectedRow, inspected.side, query.types, t, typeName).map((line) => <span key={line}>{line}</span>)}</div></div>}
+          {inspectedRow && <div className="type-query__explanation" role="status"><strong>{t("倍率来源")}</strong><div>{explainRow(inspectedRow, inspected.side, query.types, t, typeName, locale).map((line) => <span key={line}>{line}</span>)}</div></div>}
         </>}
         <footer className="type-query__note"><Info size={16} aria-hidden="true" /><span>{t("仅查属性关系，不计技能威力、本系加成、特性、天气与血脉。打击面默认针对 18 种单属性，不代表实际精灵伤害。")}</span></footer>
       </div>

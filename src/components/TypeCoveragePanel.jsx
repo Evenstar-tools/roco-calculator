@@ -35,13 +35,13 @@ function MatchupRow({ items, label, tone }) {
 }
 
 export function TypeCoveragePanel({ analysis }) {
-  const { tc } = useCalculatorLocale();
+  const { tc, entityName } = useCalculatorLocale();
   if (!analysis) return null;
   return (
     <section aria-label={tc("属性分析")} className="type-analysis-panel">
       <h2>{tc("属性分析")}</h2>
       <div className="type-analysis-group">
-        <h3>{tc(analysis.subjectName)}{tc(" · 自身防御面")}</h3>
+        <h3>{entityName("spirit", { name: analysis.subjectName })}{tc(" · 自身防御面")}</h3>
         <MatchupRow
           items={analysis.defense.weaknesses}
           label="弱点"

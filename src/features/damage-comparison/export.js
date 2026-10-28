@@ -5,13 +5,16 @@ import { getNature, STAT_LABELS } from "../../domain/natures.js";
 import { projectTriggerContext } from "../../domain/trigger-controls.js";
 import { getSkillEffectInputs } from "../../domain/skill-effects.js";
 import { currentWeather } from "../../state/weather.js";
+import { localizeToolText } from "../../i18n/useToolLocale.js";
+import { localizeType } from "../../i18n/type-labels.js";
+import { localizeGlobalSpirit, localizeGlobalSkill } from "../../runtime/global-entity-localization.js";
 
 const headers = ["排名", "精灵／形态", "属性", "满血 HP", "伤害 HP", "承伤比例", "剩余 HP", "结论", "耐久配点", "克制倍率", "冻结斩杀线"];
 const cleanText = (value) => String(value ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/gu, "");
 const markdown = (value) => cleanText(value).replace(/&/gu, "&amp;").replace(/</gu, "&lt;").replace(/>/gu, "&gt;").replace(/([\\`*_[\]{}|])/gu, "\\$1").replace(/\r?\n/gu, "<br>");
 
 // 只读取本次已完成的榜单，导出完整筛选结果，不受界面分批显示数量限制。
-export function buildDamageComparisonReport(snapshot, source, model, date = new Date()) {
+export function buildDamageComparisonReport(snapshot, source, model, date = new Date(), { locale = "zh-CN" } = {}) {
   if (model.loading || model.error || model.ranking?.issue || !model.rows.length) throw new Error("当前没有可导出的结论");
   const direction = source.direction ?? "forward";
   const input = buildDamageComparisonInput({ snapshot, ...source, spirit: model.rows[0].spirit,
@@ -60,11 +63,66 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
   const stamp = `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
   const statuses = getDamageComparisonTargetStatuses(input, direction);
   const filename = cleanText(`${selection.spirit.fullName}-${selection.selected.skill.name}-星陨${statuses.starfall}-已有冻结${statuses.freeze}-${model.template.label}-${filter}-${stamp}`).replace(/[<>:"/\\|?*]/gu, "_");
-  return { title, metadata, headers, rows, filename };
+  if (locale === "zh-CN") return { title, metadata, headers, rows, filename };
+  const t = (text, values) => localizeToolText(text, locale, values);
+  const spiritName = (spirit) => snapshot.meta?.serverId === "global" ? localizeGlobalSpirit(spirit, locale).fullName : t(spirit.fullName);
+  const skillName = snapshot.meta?.serverId === "global" ? localizeGlobalSkill(selection.selected.skill, locale).name : t(selection.selected.skill.name);
+  const templateText = (template) => {
+    if (template.id === "user-presets" && !template.displayIvs) return t("各自用户预设，未配置按中立性格、生命60、双防0个体");
+    const allocation = Object.entries(STAT_LABELS).map(([key, label]) => `${t(label)} ${template.displayIvs?.[key] ?? 0}`).join(" / ");
+    return `${template.presetFallback ? `${t("未配置预设，使用默认分配")} · ` : ""}${t("{level}级 · {nature} · 个体：{allocation}", {
+      level: template.level ?? 60, nature: getNature(template.natureId).name, allocation,
+    })}`;
+  };
+  // Export the same completed results. Only display strings cross this boundary.
+  const translatedMetadata = metadata.map(([key, value]) => [t(key), t(value)]);
+  translatedMetadata[0][1] = t("{name} · {level}级 · {nature} · {allocation}", {
+    name: spiritName(selection.spirit), level: 60, nature: getNature(side.nature).name,
+    allocation: Object.entries(STAT_LABELS).map(([key, label]) => `${t(label)} ${side.displayIvs[key] ?? 0}`).join(" / "),
+  });
+  translatedMetadata[1][1] = t("{name} · {type} · {category} · 静态威力 {power} · 连击 {hits}", {
+    name: skillName, type: localizeType(selection.selected.skill.type, locale),
+    category: { physical: "物理", magical: "魔法", dual: "双攻", status: "变化", defense: "防御" }[selection.selected.skill.category] ?? "未知",
+    power: t(resultRange("staticPower")), hits: t(resultRange("hitCount")),
+  });
+  const separator = locale === "en" ? "; " : "、";
+  const localizedConditions = controls.filter((control) => control.source !== "defenderTrait").flatMap((control) => {
+    const value = projected[control.contextKey ?? control.key];
+    if (value === undefined) return [];
+    const label = control.options?.find((option) => option.value === value)?.label;
+    return [`${t(control.label)} ${t(label ?? (typeof value === "boolean" ? value ? "开启" : "关闭" : value))}`];
+  });
+  translatedMetadata[2][1] = [t(trait?.name ?? "无"), ...new Set(localizedConditions)].join(separator);
+  translatedMetadata[4][1] = templateText(model.template);
+  const localizedScope = [
+    t(model.scopeDescription.split(" · 星陨 ")[0]),
+    model.inheritTargetStatuses
+      ? `${t("星陨 {count}层", { count: statuses.starfall })} · ${t("已有冻结 {count} 层", { count: statuses.freeze })}`
+      : t("未沿用星陨／已有冻结（按0层）"),
+  ].join("; ");
+  translatedMetadata[5][1] = t("目标满血；{scope}；承伤比例＝伤害／最大生命＋冻结斩杀线；冻结斩杀线按已有层数与本次新增逐只计算；冻结不额外扣血；不含回合末结算", { scope: localizedScope });
+  translatedMetadata[7][1] = [t(filter), t(model.scope === "all" ? "全部完整种族值形态" : "最终形态＋首领"),
+    t(model.descending ? "承伤从高到低" : "承伤从低到高"),
+    ...(model.query ? [t("搜索：{query}", { query: model.query })] : [])].join(separator);
+  translatedMetadata[9][1] = t("洛克计算器 {app}；数据 {data}；规则 {rules}；{time}", {
+    app: appVersion, data: snapshot.meta?.id ?? source.state.versions?.data ?? "未知",
+    rules: snapshot.meta?.rulesVersion ?? source.state.versions?.rules ?? "未知", time: date.toLocaleString(locale, { hour12: false }),
+  });
+  return {
+    title: `${spiritName(selection.spirit)} · ${skillName} · ${t("承伤结论")}`,
+    metadata: translatedMetadata,
+    headers: headers.map((header) => t(header)),
+    rows: rows.map((row, index) => row.map((value, column) => column === 1 ? spiritName(model.rows[index].spirit)
+      : column === 2 ? model.rows[index].spirit.types?.map((type) => localizeType(type, locale)).join(" / ") ?? ""
+        : column === 8 ? templateText(model.rows[index].template)
+        : typeof value === "string" ? t(value) : value)),
+    filename: cleanText(`${spiritName(selection.spirit)}-${skillName}-${t("星陨 {count}层", { count: statuses.starfall })}-${t("已有冻结 {count} 层", { count: statuses.freeze })}-${t(model.template.label)}-${t(filter)}-${stamp}`).replace(/[<>:"/\\|?*]/gu, "_"),
+    sheetName: t("承伤结论"), locale,
+  };
 }
 
 export function damageComparisonMarkdown(report) {
-  return `# ${markdown(report.title)}\n\n${report.metadata.map(([key, value]) => `- ${markdown(key)}：${markdown(value)}`).join("\n")}\n\n| ${report.headers.map(markdown).join(" | ")} |\n| ${report.headers.map(() => "---").join(" | ")} |\n${report.rows.map((row) => `| ${row.map((value, index) => markdown(index === 5 || index === 10 ? `${(value * 100).toFixed(1)}%` : value)).join(" | ")} |`).join("\n")}\n`;
+  return `# ${markdown(report.title)}\n\n${report.metadata.map(([key, value]) => `- ${markdown(key)}${report.locale === "en" ? ": " : "："}${markdown(value)}`).join("\n")}\n\n| ${report.headers.map(markdown).join(" | ")} |\n| ${report.headers.map(() => "---").join(" | ")} |\n${report.rows.map((row) => `| ${row.map((value, index) => markdown(index === 5 || index === 10 ? `${(value * 100).toFixed(1)}%` : value)).join(" | ")} |`).join("\n")}\n`;
 }
 
 export async function downloadDamageComparison(report, format) {

@@ -30,7 +30,7 @@ function CompactDamage({
   const percent = hasPercent ? presentation.percent.toFixed(1) : null;
   const ariaLabel = selected
     ? tc("{v0}{v1}攻击{v2}：{v3}", {
-        v0: label, v1: entityName("skill", selected), v2: tc(opponentName),
+        v0: label, v1: entityName("skill", selected), v2: entityName("spirit", { name: opponentName }),
         v3: hasPercent
           ? tc("{v0}，{v1}%{v2}", { v0: hasDamage ? tc("{v0}伤害", { v0: presentation.damage }) : tc("不直接造成伤害"), v1: percent, v2: presentation.freezePercent > 0 ? tc("（含冻结斩杀线）") : " HP" })
           : tc(result?.reason ?? "伤害待计算"),
@@ -89,7 +89,7 @@ function CompactSkillSide({
   traitDamage,
   traitEditor,
 }) {
-  const { tc, typeLabel } = useCalculatorLocale();
+  const { tc, typeLabel, entityName } = useCalculatorLocale();
   const { t } = useLocale();
   const SideIcon = side === "attacker" ? Sword : Shield;
 
@@ -97,7 +97,7 @@ function CompactSkillSide({
     <section className={`compact-skill-side compact-skill-side--${side}`}>
       <header>
         <SideIcon aria-hidden="true" size={18} weight="fill" />
-        <strong>{tc(name)}</strong>
+        <strong>{entityName("spirit", { name })}</strong>
         {tc(headerAction)}
       </header>
       {tc(!placeholder && traitEditor)}

@@ -114,18 +114,18 @@ function trapOverviewFocus(event, container) {
   }
 }
 
-function speedTargetLabel(target) {
+function speedTargetLabel(target, t) {
   return target
-    ? `${target.name} · ${target.speed}（${target.profileLabel}${target.specialLabel ? ` · ${target.specialLabel}` : ""}）`
+    ? `${t(target.name)} · ${target.speed}（${t(target.profileLabel)}${target.specialLabel ? ` · ${t(target.specialLabel)}` : ""}）`
     : "";
 }
 
-function speedTargetMeta(target, { compact = false } = {}) {
-  const role = target.formRole === "boss" ? " · 首领" : "";
+function speedTargetMeta(target, { compact = false } = {}, t) {
+  const role = target.formRole === "boss" ? ` · ${t("首领")}` : "";
   const context = target.specialLabel && compact
-    ? target.specialLabel
-    : `${target.profileLabel}${target.specialLabel ? ` · ${target.specialLabel}` : ""}`;
-  return `${target.spirit.raceStats.speed}族${role} · ${context}`;
+    ? t(target.specialLabel)
+    : `${t(target.profileLabel)}${target.specialLabel ? ` · ${t(target.specialLabel)}` : ""}`;
+  return `${t("{value}族", { value: target.spirit.raceStats.speed })}${role} · ${context}`;
 }
 
 function cloneConfiguration(configuration) {
@@ -314,16 +314,17 @@ function InvestmentPicker({ natureId, onChange, onReplace, panel, validation, va
 }
 
 function SpeedProfilePicker({ onProfilesChange, profileIds }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   return (
     <div className="ability-speed__profile-picker">
       <span>{t("口径")}</span>
       <details>
         <summary aria-label={t("速度目标口径")}>
-          {t(profileIds
+          {profileIds
             .map((id) => SPEED_PROFILE_OPTIONS.find((entry) => entry.id === id)?.label)
             .filter(Boolean)
-            .join("、"))}
+            .map(label => t(label))
+            .join(locale === "en" ? ", " : "、")}
         </summary>
         <fieldset>
           <legend>{t("速度口径")}</legend>
@@ -357,7 +358,7 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
     : targets.filter((target) => {
         const query = targetInput.trim();
         if (!query) return true;
-        return `${target.name}${target.speed}${target.qualifier}`.includes(query);
+        return [target.name, target.speed, target.qualifier, t(target.name), t(target.qualifier), ...(target.spirit?.aliases ?? [])].join(" ").toLocaleLowerCase().includes(query.toLocaleLowerCase());
       }).slice(0, 12);
 
   function lockTarget(target) {
@@ -377,7 +378,7 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
         <MagnifyingGlass aria-hidden="true" size={15} />
         <input
           aria-label={t("速度目标精灵")}
-          title={speedTargetLabel(selected)}
+          title={speedTargetLabel(selected, t)}
           onChange={(event) => setTargetInput(event.target.value)}
           onFocus={() => setTargetInput("")}
           onKeyDown={(event) => {
@@ -395,7 +396,7 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
           placeholder={t("搜索")}
           role="combobox"
           type="search"
-          value={targetInput ?? speedTargetLabel(selected)}
+          value={targetInput ?? speedTargetLabel(selected, t)}
         />
         {targetInput !== null ? (
           <div
@@ -417,7 +418,7 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
                 {assetUrl(target.spirit) ? <img alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
                 <span>
                   <strong>{t(target.name)}</strong>
-                  <small>{speedTargetMeta(target)}</small>
+                  <small>{speedTargetMeta(target, {}, t)}</small>
                 </span>
                 <b>{target.speed}</b>
               </button>
@@ -427,7 +428,7 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
         ) : null}
       </div>
       {targetInput === null && selected ? (
-        <span className="ability-speed__selected-target">{speedTargetLabel(selected)}</span>
+        <span className="ability-speed__selected-target">{speedTargetLabel(selected, t)}</span>
       ) : null}
     </div>
   );
@@ -654,7 +655,7 @@ function SpeedRail({
               <b>{item.target.speed}</b>
               <span>{t(item.target.name)}</span>
               <small>
-                {speedTargetMeta(item.target, { compact: true })}
+                {speedTargetMeta(item.target, { compact: true }, t)}
               </small>
             </button>
           ))}
@@ -821,13 +822,13 @@ export function SpeedOverview({
                         key={target.id}
                         onClick={() => onTargetChange(target.id)}
                         ref={target.id === resolvedLocateTargetId ? locateTargetRef : null}
-                        title={`${target.matchReasons?.length ? `命中${target.matchReasons.join("、")} · ` : ""}${target.name} · ${target.qualifier} · ${target.formRole === "boss" ? "首领" : "最终形态"}`}
+                        title={`${target.matchReasons?.length ? `${t("命中{value}", { value: target.matchReasons.map(reason => t(reason)).join(" · ") })} · ` : ""}${t(target.name)} · ${t(target.qualifier)} · ${t(target.formRole === "boss" ? "首领" : "最终形态")}`}
                         type="button"
                       >
                         {assetUrl(target.spirit) ? <img alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
                         {iconOnly ? <small className="speed-profile-badge">{t(speedBadge(target))}</small> : <span>
                           <strong>{t(target.name)}</strong>
-                          <small>{speedTargetMeta(target)}</small>
+                          <small>{speedTargetMeta(target, {}, t)}</small>
                         </span>}
                       </button>
                     ))}
@@ -1544,7 +1545,7 @@ export function AbilityWorkbench({
             ) : (
               <div className="ability-ranking-current is-excluded">
                 <Info aria-hidden="true" size={17} weight="fill" />
-                {t(spirit.fullName)}{t("未入榜：")}{exclusionLabel(currentExclusion?.reason)}
+                {t(spirit.fullName)}{t("未入榜：")}{t(exclusionLabel(currentExclusion?.reason))}
               </div>
             )}
             <div

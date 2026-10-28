@@ -4,10 +4,10 @@ import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { ElementIcon } from "../../components/ElementIcon.jsx";
 import { EntityChangeHint } from "../../components/EntityChangeHint.jsx";
 import { categoryNames } from "./catalog.js";
-import { acquisitionSummary, matchesSource, querySpiritFamilies, skillMatchesQuery, spiritSkills } from "./query-model.js";
+import { matchesSource, querySpiritFamilies, skillMatchesQuery, spiritSkills } from "./query-model.js";
 import SkillQueryEffect from "./SkillQueryEffect.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
-import { localizeToolText } from "../../i18n/useToolLocale.js";
+import { localizeAcquisitionMethods } from "./acquisition-text.js";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import { publicResourceUrl } from "../../runtime/public-resource-url.js";
 import "./bidirectional-query.css";
@@ -206,7 +206,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
         <div className="sq-skill-table">{rows.map((skill) => <article data-skill-id={skill.id} className={expanded === skill.id ? "is-expanded" : ""} key={skill.id}>
           <div className="sq-skill-row"><span className="sq-skill-name"><SkillIcon skill={iconSkill(skill)} size={44} /><strong>{skill.name}{!placeholder && gains.some((gain) => gain.spiritId === spiritId && gain.skillIds.includes(skill.id)) && <em>{t("新学")}</em>}</strong>{!placeholder && <EntityChangeHint changeInfo={skill.changeInfo} />}</span><span className="sq-skill-type"><ElementIcon type={skill.type} size={18} />{typeName(skill.type)} · {t(categoryNames[skill.category] ?? skill.category)}</span>{!placeholder && <span className="sq-values"><span className="sq-cost"><small>{t("能耗")} </small>{skill.cost ?? "—"}</span><span className="sq-power"><small>{t("威力")} </small>{skill.basePower ?? "—"}</span></span>}</div>
           {!hideEffects && <SkillQueryEffect placeholder={placeholder} skill={skill} expanded={expanded === skill.id} onToggle={() => setExpanded(expanded === skill.id ? null : skill.id)} />}
-          <div className="sq-card-footer">{!placeholder && <span className="sq-method">{expanded !== skill.id && localizeToolText(acquisitionSummary(skill.methods), locale)}</span>}<button className="sq-reverse" aria-label={t("查{name}的可学精灵", { name: skill.name })} onClick={() => reverse(skill.id)}>{t("可学精灵")}<CaretRight size={14} /></button></div>
+          <div className="sq-card-footer">{!placeholder && <span className="sq-method">{expanded !== skill.id && localizeAcquisitionMethods(skill.methods, locale, { summary: true })}</span>}<button className="sq-reverse" aria-label={t("查{name}的可学精灵", { name: skill.name })} onClick={() => reverse(skill.id)}>{t("可学精灵")}<CaretRight size={14} /></button></div>
         </article>)}</div>{!rows.length && <p className="sq-empty">{t(placeholder ? "没有符合筛选条件的技能，可清除筛选。" : "没有符合筛选条件的技能；可切回全部来源或清除筛选。")}</p>}
       </> : <>
         {direction === "skill" && selected.length === 0 ? <p className="sq-empty">{t("添加技能，查找全部可学的精灵。")}</p> : direction === "spirit" && !query.trim() ? <p className="sq-empty">{t("搜索精灵，查看当前形态的完整技能表。")}</p> : <>

@@ -67,7 +67,7 @@ flowchart LR
 | 层面 | 真实入口 | 接入或核对内容 |
 | --- | --- | --- |
 | 素材与来源 | `public/assets/season/`；[来源记录](docs/design/season-themes.md)；[生成记录](docs/design/season-imagegen-prompts.md) | 场景、角色分开；记录实际依据、衍生处理和原稿位置。 |
-| 主题清单与默认 | `src/theme/season-themes.js` | `SEASON_THEMES` 的 scene/character/sourceName；当前 `PREVIEW_IDS` 同时生成可选清单；本地预览白名单和默认解析。不要因为加入 S5 就改 CN 默认 S4 或 Global 默认 neutral。 |
+| 主题清单与默认 | `src/theme/season-themes.js` | `SEASON_THEMES` 的 scene/character/sourceName；当前 `PREVIEW_IDS` 同时生成可选清单；本地预览白名单和默认解析。正式 CN 默认 S4、`/pre/` 默认 S5；Global 默认 S3，独立提供 neutral 无装饰选项。新增主题不自动改变默认。 |
 | 偏好状态 | `src/state/season-theme.js`、`src/state/server-storage.js` | 按服务器读写、无效值回默认、存储不可用时当前会话可切换；不新增另一套主题存储。 |
 | 运行时 | `src/runtime/WebEntry.jsx`、`src/runtime/RuntimeContext.jsx` | `data-season`、场景/角色 CSS 变量、预览优先级、选择后移除预览参数、语言/服务器切换与当前草稿保护。 |
 | 显示设置 | `src/components/DisplaySettingsDialog.jsx` | 复用“赛季主题 / Theme / テーマ”下拉；选项由清单生成；预览单独用禁用占位项，允许选择同一赛季并保存。 |
@@ -105,13 +105,14 @@ flowchart LR
 
 优先级为 **有效本地预览 → 该服已保存选择 → 该服默认**。
 
-- 国服当前默认 S4，Global 当前默认 neutral。国服设置将默认显示为 S4，不额外列“默认”；Global 有“默认（无赛季装饰）”。新主题加入选项不等于成为默认。
+- 正式国服默认 S4，抢先服 `/pre/` 默认 S5；Global 默认 S3（2026-10-28 用户授权迁移国服装饰后启用）。设置直接选中对应赛季，不额外列“默认”；Global 独立提供“无赛季装饰”（neutral）。新主题加入选项不等于成为默认，也不表示所选装饰对应当前数据。
+- Global 旧存储中显式保存的 `default` 保留为无装饰偏好；尚无选择的用户进入 S3。新代码不再写入旧含义的 Global `default`，显式选择默认时保存当前默认赛季 ID。
 - 手动季节偏好通过现有 `createServerStorage` 按 `cn/global` 保存；Global 中英日共用同一服的主题选择。亮/暗为现有独立设置，换赛季不能改它。
 - `seasonPreview` 仅识别现有精确回环主机 `localhost`、`127.0.0.1`、`[::1]` 和已登记主题；线上同名参数无效。预览不写偏好，不进入分享协议，不切数据。
 - 从预览手动选主题时，删除 `seasonPreview`，保留其余 query、hash 和 history state。当前预览 S1 时，也必须能选正式 S1 并持久化；不能因下拉 value 相同而不触发。
 - 切语言保持当前主题，切服恢复目标服自己的偏好；刷新恢复该服已保存选择。选择 neutral 后图片变量为 `none`，不残留上一套装饰。
 - 存储禁用时允许本标签切换，不能虚称已持久化。无效或未知主题恢复该服默认，不生成坏图请求。
-- 主题变化不修改数据/规则版本、计算结果、已有输入、分享草稿或服务器路由选择；未核验 Global 计算与自动分流的开关与主题无关。
+- 主题变化不修改数据/规则版本、计算结果、已有输入、分享草稿或服务器路由选择；Global 计算能力与自动分流的开关与主题无关。
 
 ## 6. S5 等后续主题的最小执行流程
 
@@ -157,7 +158,7 @@ npx vitest run --config config/vite.config.mjs tests/state/season-theme.test.js 
 - **390、929、1280px，浅色和暗色：** 新主题完整覆盖；逐张读回截图检查脸部、标题/按钮遮挡、裁切、对比度、横向溢出。390px 的角色按现有规则隐藏是预期；929px 不应隐藏。素材 HTTP 加载成功且控制台无本轮新增错误。
 - **中英日：** 至少实际打开三语设置并选择新主题；长英文标题和日文控件不能挤压。检查手机设置、队伍/检索等二级标题和空态，不只看首页。
 - **真实操作：** 主题下拉逐个切换受影响选项、亮暗切换、精简/具体切换、打开/关闭弹窗、键盘焦点、手机滚动。确认主题层不截获点击。
-- **状态边界：** CN/Global 分别保存、切服隔离、Global 切语言保留、刷新恢复、Global 默认清除装饰；本地预览选同主题保存并移除参数，其他 query/hash 保留；配置和已确认的计算结果不变。
+- **状态边界：** CN/Global 分别保存、切服隔离、Global 切语言保留、刷新恢复、Global 默认 S3，显式 neutral 清除装饰；本地预览选同主题保存并移除参数，其他 query/hash 保留；配置和已确认的计算结果不变。
 - **对照而不重复：** 保留至少一张未改 S4 和中性主题对照；新主题之外只验证受共享样式影响的代表场景。没有新改动/失败，不重复全套截图或测试。
 
 交付保存真实截图与原图/衍生图的明确路径，说明对应视口、主题和语言。先报告用户目标是否实现，再列仍缺来源或未验平台；不以静态无告警、测试数量或构建成功代替视觉和交互通过。

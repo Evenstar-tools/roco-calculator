@@ -81,7 +81,7 @@ test("season preferences are isolated by server and invalid values restore that 
   expect(readSeasonThemePreference("global", storage)).toBe("s5");
   expect(resolveSeasonThemeId({ serverId: "cn", preference: "s1" })).toBe("s1");
   expect(resolveSeasonThemeId({ serverId: "global", preference: "s5" })).toBe("s5");
-  expect(resolveSeasonThemeId({ serverId: "global", preference: "toString" })).toBe("neutral");
+  expect(resolveSeasonThemeId({ serverId: "global", preference: "toString" })).toBe("s3");
   writeSeasonThemePreference("unknown-season", "cn", storage);
   expect(resolveSeasonThemeId({ serverId: "cn", preference: readSeasonThemePreference("cn", storage) })).toBe("s4");
   expect(storage.getItem("rock-calculator.settings.theme.v1")).toBeNull();
@@ -138,4 +138,20 @@ test("legacy CN appearance is preserved without leaking random history or classi
   expect(readLastRandomSeasonTheme("global", storage)).toBe("s4");
   expect(readSeasonThemePreference("global", storage)).toBe("s3");
   expect(values.get(SEASON_THEME_STORAGE_KEY)).toBe("random");
+});
+
+
+test("Global defaults to S3 while explicit legacy no-art choices stay neutral", () => {
+  const storage = memoryStorage();
+  expect(resolveSeasonThemeId({ serverId: "global", preference: readSeasonThemePreference("global", storage) })).toBe("s3");
+  storage.setItem(serverStorageKey("global", SEASON_THEME_STORAGE_KEY), "default");
+  expect(readSeasonThemePreference("global", storage)).toBe("neutral");
+  expect(resolveSeasonThemeId({ serverId: "global", preference: "neutral" })).toBe("neutral");
+  expect(writeSeasonThemePreference("neutral", "global", storage)).toBe("neutral");
+  expect(readSeasonThemePreference("global", storage)).toBe("neutral");
+  expect(writeLastRandomSeasonTheme("neutral", "global", storage)).toBeNull();
+  expect(writeSeasonThemePreference("default", "global", storage)).toBe("s3");
+  expect(readSeasonThemePreference("global", storage)).toBe("s3");
+  expect(readSeasonThemePreference("cn", storage)).toBe("default");
+  expect(resolveSeasonThemeId({ serverId: "cn" })).toBe("s4");
 });
