@@ -108,19 +108,22 @@ describe("service worker cache policy", () => {
   test("visited asset messages cache lazy resources once and reject external/API/data URLs", async () => {
     const existing = "https://calculator.test/assets/main-Ab12_cd9.js";
     const lazy = "https://calculator.test/assets/GlobalWorkspace-NewBuild.js";
+    const globalLazy = "https://calculator.test/global-assets/assets/GlobalWorkspace-NewBuild.js";
     const harness = createHarness({ cached: { [existing]: new Response("existing build") } });
     const reply = vi.fn();
     let caching;
     harness.listeners.message({
-      data: { type: "CACHE_VISITED_ASSETS", urls: [existing, lazy, lazy,
+      data: { type: "CACHE_VISITED_ASSETS", urls: [existing, lazy, lazy, globalLazy, globalLazy + "#visited",
         "https://external.test/assets/other.js", "https://calculator.test/api/location",
         "https://calculator.test/data/runtime.json", "https://calculator.test/assets/../api/location",
+        "https://calculator.test/global-assets/data/global-runtime.json", "https://calculator.test/global-assets/assets/../data/global-runtime.json",
+        "https://calculator.test/pre/assets/preview.js",
         "blob:https://calculator.test/assets/module", null, {}] },
       ports: [{ postMessage: reply }],
       waitUntil(value) { caching = value; },
     });
     await caching;
-    expect(harness.cacheApi.add.mock.calls).toEqual([[lazy]]);
+    expect(harness.cacheApi.add.mock.calls).toEqual([[lazy], [globalLazy]]);
     expect(reply).toHaveBeenCalledWith({ type: "VISITED_ASSETS_CACHED", failed: 0 });
   });
 
@@ -142,17 +145,19 @@ describe("service worker cache policy", () => {
     expect(waitUntil).not.toHaveBeenCalled();
   });
 
-  test("Global first visit caches its own shell and never preloads CN runtime", async () => {
-    const fetchImpl = vi.fn(async () => new Response('<script src="/assets/main-Ab12_cd9.js"></script>'));
-    const harness = createHarness({ clientPaths: ["/global/ja/"], fetchImpl });
+  test.each(["/en/", "/jp/", "/global/zh-CN/", "/global/ja/"])("Global first visit to %s caches its isolated shell/assets/runtime", async (shell) => {
+    const fetchImpl = vi.fn(async () => new Response('<script src="/global-assets/assets/main-Ab12_cd9.js"></script><link rel="stylesheet" href="/global-assets/assets/main-12345678.css">'));
+    const harness = createHarness({ clientPaths: [shell], fetchImpl });
     let install;
     harness.listeners.install({ waitUntil(value) { install = value; } });
     await install;
-    expect(fetchImpl).toHaveBeenCalledWith("/global/ja/", { cache: "reload" });
+    expect(fetchImpl).toHaveBeenCalledWith(shell, { cache: "reload" });
     expect(fetchImpl).not.toHaveBeenCalledWith("/", expect.anything());
     expect(harness.cacheApi.add).not.toHaveBeenCalledWith("/data/runtime.json");
     expect(harness.cacheApi.addAll.mock.calls.flat(2)).not.toContain("/data/runtime.json");
-    expect(harness.cacheApi.add).toHaveBeenCalledWith("/assets/main-Ab12_cd9.js");
+    expect(harness.cacheApi.add).toHaveBeenCalledWith("/global-assets/assets/main-Ab12_cd9.js");
+    expect(harness.cacheApi.add).toHaveBeenCalledWith("/global-assets/assets/main-12345678.css");
+    expect(harness.cacheApi.add).toHaveBeenCalledWith("/global-assets/data/global-runtime.json");
   });
 
   test("CN first visit still prepares its runtime for offline startup", async () => {
@@ -173,21 +178,23 @@ describe("service worker cache policy", () => {
     expect(harness.caches.delete.mock.calls).toEqual([["rock-calculator-webapp-v2.2.5"]]);
   });
 
-  test.each(["/en/", "/global/zh-CN/", "/global/ja/", "/cn/"])("offline %s returns its own shell", async (path) => {
+  test.each(["/en/", "/jp/", "/global/zh-CN/", "/global/ja/", "/cn/"])("offline %s returns its own shell", async (path) => {
     const target = new Response(path);
     const harness = createHarness({ cached: { [path]: target, "/": new Response("CN root") }, fetchImpl: vi.fn(async () => { throw new Error("offline"); }) });
     const event = dispatchFetch(harness.listeners.fetch, `${path}?source=pwa`, { mode: "navigate" });
     await expect(event.responsePromise).resolves.toBe(target);
   });
 
-  test("Global offline navigation cannot return a cached CN shell", async () => {
+  test.each(["/en/", "/jp/"])("Global offline navigation %s cannot return a cached CN shell", async (shell) => {
     const harness = createHarness({ cached: { "/": new Response("CN root") }, fetchImpl: vi.fn(async () => { throw new Error("offline"); }) });
-    const event = dispatchFetch(harness.listeners.fetch, "/en/", { mode: "navigate" });
+    const event = dispatchFetch(harness.listeners.fetch, shell, { mode: "navigate" });
     expect((await event.responsePromise).type).toBe("error");
   });
 
   test.each([
     ["/global/ja/", "/en/"],
+    ["/jp/", "/en/"],
+    ["/en/", "/jp/"],
     ["/en/", "/global/zh-CN/"],
     ["/global/zh-CN/", "/global/ja/"],
   ])("offline locale navigation %s can reuse the same-server shell %s", async (path, cachedPath) => {
@@ -218,7 +225,7 @@ describe("service worker cache policy", () => {
     expect(cacheName).toMatch(new RegExp(`^rock-calculator-webapp-v${packageVersion.replaceAll(".", "\\.")}(?:-[a-z0-9-]+)?$`));
   });
 
-  test("returns cached runtime immediately and refreshes it in the background", async () => {
+  test.each(["/data/runtime.json", "/global-assets/data/global-runtime.json"])("returns cached %s immediately and refreshes it in the background", async (runtime) => {
     let resolveNetwork;
     const cachedResponse = new Response("cached-runtime");
     const networkResponse = new Response("fresh-runtime");
@@ -229,13 +236,13 @@ describe("service worker cache policy", () => {
     );
     const harness = createHarness({
       cached: {
-        "https://calculator.test/data/runtime.json": cachedResponse,
+        [`https://calculator.test${runtime}`]: cachedResponse,
       },
       fetchImpl,
     });
     const event = dispatchFetch(
       harness.listeners.fetch,
-      "/data/runtime.json",
+      runtime,
     );
 
     await expect(event.responsePromise).resolves.toBe(cachedResponse);
@@ -244,7 +251,7 @@ describe("service worker cache policy", () => {
     await Promise.all(event.background);
     expect(harness.cacheApi.put).toHaveBeenCalledWith(
       expect.objectContaining({
-        url: "https://calculator.test/data/runtime.json",
+        url: `https://calculator.test${runtime}`,
       }),
       expect.anything(),
     );
@@ -288,7 +295,7 @@ describe("service worker cache policy", () => {
 
 
 describe("repeat requests and cache failures", () => {
-  test.each(["/assets/main-Ab12_cd9.js", "/assets/main-12345678.css"])("offline module request reuses the Origin-only precache variant for %s", async (path) => {
+  test.each(["/assets/main-Ab12_cd9.js", "/assets/main-12345678.css", "/global-assets/assets/main-Ab12_cd9.js", "/global-assets/assets/main-12345678.css"])("offline module request reuses the Origin-only precache variant for %s", async (path) => {
     const cachedResponse = new Response("precached build", { headers: { Vary: "Origin" } });
     const fetchImpl = vi.fn(async () => { throw new Error("offline"); });
     const harness = createHarness({ cached: { [`https://calculator.test${path}`]: cachedResponse }, fetchImpl });
@@ -313,7 +320,7 @@ describe("repeat requests and cache failures", () => {
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
-  test.each(["/assets/index-Ab12_cd9.js", "/assets/index-12345678.css", "/app-icon-192.png", "/app-icon-512.png"])("serves %s without a redundant network request", async (path) => {
+  test.each(["/assets/index-Ab12_cd9.js", "/assets/index-12345678.css", "/global-assets/assets/index-Ab12_cd9.js", "/global-assets/assets/index-12345678.css", "/app-icon-192.png", "/app-icon-512.png"])("serves %s without a redundant network request", async (path) => {
     const cachedResponse = new Response("cached");
     const fetchImpl = vi.fn();
     const harness = createHarness({ cached: { [`https://calculator.test${path}`]: cachedResponse }, fetchImpl });

@@ -9,6 +9,7 @@ describe("international entry routes", () => {
     ["/cn/", "cn", "zh-CN"],
     ["/dianlu/", "cn", "zh-CN"],
     ["/en/", "global", "en"],
+    ["/jp/", "global", "ja"],
     ["/global/zh-CN/", "global", "zh-CN"],
     ["/global/ja/", "global", "ja"],
   ])("explicit %s cannot be changed by geography, preference or readiness", (pathname, serverId, locale) => {
@@ -22,7 +23,7 @@ describe("international entry routes", () => {
     expect(routeFor("cn", "en")).toBe("/cn/");
     expect(routeFor("global", "en")).toBe("/en/");
     expect(routeFor("global", "zh-CN")).toBe("/global/zh-CN/");
-    expect(routeFor("global", "ja")).toBe("/global/ja/");
+    expect(routeFor("global", "ja")).toBe("/jp/");
     expect(routeFor("global", "fr")).toBe("/en/");
   });
 

@@ -68,7 +68,7 @@ test("Global deer entry never loads CN snapshots, presets or calculator and retu
   expect(loadServerSnapshot).not.toHaveBeenCalled();
   expect(fetch).not.toHaveBeenCalled();
   rerender(<Providers locale="ja"><DeerPage /></Providers>);
-  expect(screen.getByRole("link", { name: "計算機に戻る" })).toHaveAttribute("href", "/global/ja/");
+  expect(screen.getByRole("link", { name: "計算機に戻る" })).toHaveAttribute("href", "/jp/");
   expect(screen.getByRole("status")).toHaveTextContent("撃破ラインは計算できません");
   expect(getMissingUiMessages()).toEqual([]);
 });

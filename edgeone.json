@@ -36,13 +36,8 @@
       "statusCode": 301
     },
     {
-      "source": "/pre",
-      "destination": "/pre/",
-      "statusCode": 301
-    },
-    {
-      "source": "/pre/dianlu",
-      "destination": "/pre/dianlu/",
+      "source": "/jp",
+      "destination": "/jp/",
       "statusCode": 301
     }
   ]

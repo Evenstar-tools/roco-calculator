@@ -80,7 +80,7 @@ export const commonMessages = Object.fromEntries([
   ["应用菜单", "Application menu", "アプリメニュー"], ["配置", "Setup", "設定"], ["清除当前页配置", "Clear current setup", "現在の設定をクリア"],
   ["常用精灵配置", "Common Jini presets", "定番キャラクター設定"], ["导入导出", "Import / export", "インポート／エクスポート"],
   ["帮助", "Help", "ヘルプ"], ["新手引导", "Getting started", "初回ガイド"], ["新功能", "What's new", "新機能"], ["新功能 {version}", "What's new {version}", "新機能 {version}"],
-  ["服务器 · 当前国服", "Server · CN", "サーバー · 中国版"], ["国际服 · Global CBT", "Global · CBT", "グローバル版 · CBT"],
+  ["服务器 · 当前国服", "Server · CN", "サーバー · 中国版"], ["国际服 · Global", "Global", "グローバル版"],
   ["关于", "About", "このアプリについて"], ["查看使用说明书（飞书文档，新窗口打开）", "Open the manual (Feishu, new window)", "使い方を開く（Feishu、新しいウィンドウ）"],
   ["使用说明书", "User manual", "使い方"], ["获取应用", "Get the app", "アプリを入手"], ["关于与来源", "About and sources", "概要と出典"],
   ["展开伤害结果", "Expand damage results", "ダメージ結果を展開"], ["承伤对比", "Damage comparison", "被ダメージ比較"], ["完整伤害结果", "Full damage results", "ダメージ結果の詳細"],

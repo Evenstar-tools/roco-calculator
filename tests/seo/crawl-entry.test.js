@@ -34,7 +34,8 @@ test.each([
   ["cn/index.html", "zh-CN", "洛克计算器 · 国服", "/cn/"],
   ["en/index.html", "en", "Roco Calculator · Global", "/en/"],
   ["global/zh-CN/index.html", "zh-CN", "洛克计算器 · 国际服", "/global/zh-CN/"],
-  ["global/ja/index.html", "ja", "Roco Calculator · グローバル版", "/global/ja/"],
+  ["jp/index.html", "ja", "Roco Calculator · グローバル版", "/jp/"],
+  ["global/ja/index.html", "ja", "Roco Calculator · グローバル版", "/jp/"],
 ])("%s直接挂载对应语言工具，不恢复静态介绍或SEO内容", (path, locale, title, canonicalPath) => {
   const page = new JSDOM(source(path));
   try {

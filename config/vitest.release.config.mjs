@@ -21,7 +21,7 @@ export default defineConfig({
             "tests/data/{validate,runtime-snapshot,parsers,current-patch-changes}.test.js",
             "tests/service-worker/*.test.js",
             "tests/docs/release-notes.test.js",
-            "tests/build/{performance-budget,build-attribution}.test.js",
+            "tests/build/{performance-budget,build-attribution,global-release}.test.js",
             "tests/scripts/build-preview-release.test.js",
           ],
         },

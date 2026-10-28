@@ -2,7 +2,7 @@
   "id": "/",
   "name": "Roco Calculator · Global",
   "short_name": "Roco Global",
-  "description": "Global calculator interface. Game data and rules are awaiting verification.",
+  "description": "Roco Kingdom damage calculator using S3 midseason stats and rules.",
   "lang": "en",
   "dir": "ltr",
   "start_url": "/en/?source=pwa",

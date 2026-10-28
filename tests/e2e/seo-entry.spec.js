@@ -52,9 +52,9 @@ for (const theme of ["light", "dark"]) {
       await expect(page.getByRole("heading", { name: "Roco Calculator guide", exact: true })).toHaveCount(0);
       await expect(page.locator(".result-column")).toHaveCount(0);
       await attacker.fill("迪莫");
-      await page.getByRole("option", { name: /迪莫/ }).first().click();
+      await page.getByRole("option", { name: /^Dimo / }).first().click();
       await page.reload();
-      await expect(attacker).toHaveValue("迪莫");
+      await expect(attacker).toHaveValue("Dimo");
       await expect(page.locator("html")).toHaveAttribute("data-server", "global");
       await expect(page.locator("html")).toHaveAttribute("lang", "en");
       expect(new URL(page.url()).pathname).toBe("/en/");
@@ -62,3 +62,30 @@ for (const theme of ["light", "dark"]) {
     });
   });
 }
+
+
+test("SEO Global S3 release keeps calculation across English, Japanese, refresh and offline", async ({ page, context }) => {
+  await page.goto("/en/");
+  await page.getByRole("combobox", { name: "Attacker Jini", exact: true }).fill("Dimo");
+  await page.getByRole("option", { name: "Dimo 001 · Stage 1", exact: true }).click();
+  await page.getByRole("combobox", { name: "Defender Jini", exact: true }).fill("Meodow");
+  await page.getByRole("option", { name: "Meodow 004 · Stage 3", exact: true }).click();
+  await page.getByRole("button", { name: "Detailed", exact: true }).click();
+  await expect(page.getByRole("complementary", { name: "Damage result" }).getByRole("status")).toHaveText("23");
+  await page.getByRole("button", { name: "Open menu", exact: true }).click();
+  await page.getByRole("combobox", { name: "Language", exact: true }).selectOption("ja");
+  await expect(page).toHaveURL(/\/jp\/$/);
+  await page.reload();
+  await expect(page.getByRole("combobox", { name: "攻撃側のキャラクター", exact: true })).toHaveValue("ディーモ");
+  await expect(page.locator(".result-column").getByRole("status")).toHaveText("23");
+  await expect(page.locator("body")).not.toContainText(/CBT|Translation unavailable|翻訳未対応|CN reference|Unverified/);
+  const data = await page.request.get("/global-assets/data/global-runtime.json");
+  expect((await data.json()).meta.id).toBe("global-s3-midseason-2026-08-13");
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await context.setOffline(true);
+  await page.reload();
+  await expect(page.getByRole("combobox", { name: "攻撃側のキャラクター", exact: true })).toHaveValue("ディーモ");
+  await expect(page.locator(".result-column").getByRole("status")).toHaveText("23");
+  await context.setOffline(false);
+});

@@ -221,7 +221,7 @@ export function WorkspaceOverlays({
           <div aria-hidden="true" className="app-menu__separator" />
           {runtime.serverId === "global" && (runtime.onServerChange || menuActions.onOpenGlobal) && <>
             <div aria-hidden="true" className="app-menu__group-label">{t("服务器")} · {t(runtime.serverId === "global" ? "国际服" : "国服")}</div>
-            <button type="button" onClick={() => { menuActions.onClose?.(); if (runtime.onServerChange) runtime.onServerChange(runtime.serverId === "global" ? "cn" : "global"); else menuActions.onOpenGlobal(); }}>{t(runtime.serverId === "global" ? "国服" : "国际服 · Global CBT")}</button>
+            <button type="button" onClick={() => { menuActions.onClose?.(); if (runtime.onServerChange) runtime.onServerChange(runtime.serverId === "global" ? "cn" : "global"); else menuActions.onOpenGlobal(); }}>{t(runtime.serverId === "global" ? "国服" : "国际服 · Global")}</button>
             {runtime.serverId === "global" && runtime.onLocaleChange && <label className="app-menu__group-label" style={{ display: "block", minWidth: 0 }}>{t("语言")}
               <select aria-label={t("语言")} value={runtime.locale} onChange={(event) => runtime.onLocaleChange(event.target.value)} style={{ width: "100%", minHeight: 36, marginTop: 6, fontSize: 13, letterSpacing: "normal" }}>
                 <option value="en">English</option><option value="zh-CN">简体中文</option><option value="ja">日本語</option>

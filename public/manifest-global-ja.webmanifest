@@ -2,10 +2,10 @@
   "id": "/",
   "name": "ロコ計算機 · グローバル版",
   "short_name": "ロコ計算機",
-  "description": "グローバル版の計算機。ゲームデータとルールは検証待ちです。",
+  "description": "S3 シーズン中盤の能力値とルールに基づくダメージ計算機。",
   "lang": "ja",
   "dir": "ltr",
-  "start_url": "/global/ja/?source=pwa",
+  "start_url": "/jp/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "display_override": [

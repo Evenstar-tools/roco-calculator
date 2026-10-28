@@ -4,10 +4,11 @@ export const MANUAL_PREFERENCE_KEY = "rock-calculator.runtime.manual-preference.
 export const GLOBAL_LOCALE_KEY = "rock-calculator.runtime.global-locale.v1";
 
 const CN_ROUTE = Object.freeze({ serverId: "cn", locale: "zh-CN" });
-const GLOBAL_PATHS = Object.freeze({ "zh-CN": "/global/zh-CN/", en: "/en/", ja: "/global/ja/" });
+const GLOBAL_PATHS = Object.freeze({ "zh-CN": "/global/zh-CN/", en: "/en/", ja: "/jp/" });
 
 export function parseRoute(pathname = "/") {
   const path = pathname.replace(/\/$/, "") || "/";
+  if (path === "/global/ja") return { serverId: "global", locale: "ja", explicit: true };
   if (path === "/cn" || path === "/dianlu") return { ...CN_ROUTE, explicit: true };
   const locale = Object.keys(GLOBAL_PATHS).find((key) => GLOBAL_PATHS[key].slice(0, -1) === path);
   return locale

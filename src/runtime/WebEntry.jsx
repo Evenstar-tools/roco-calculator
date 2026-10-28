@@ -14,9 +14,9 @@ import { SeasonThemeProvider } from "../theme/SeasonThemeContext.jsx";
 const CalculatorRouter = lazy(() => import("../CalculatorRouter.jsx").then((module) => ({ default: module.CalculatorRouter })));
 const CalculatorApp = lazy(() => import("../App.jsx").then((module) => ({ default: module.App })));
 const pageText = {
-  en: { title: "Roco Calculator · Global CBT", description: "Global CBT calculator. Game data and rules are awaiting verification.", loading: "Loading calculator…" },
-  "zh-CN": { title: "洛克计算器 · 国际服 CBT", description: "国际服 CBT 计算器，游戏数据与规则待核验。", loading: "正在加载计算器…" },
-  ja: { title: "ロコ計算機 · グローバル CBT", description: "グローバル CBT 計算機。ゲームデータとルールは検証待ちです。", loading: "計算機を読み込み中…" },
+  en: { title: "Roco Calculator · Global", description: "Roco Kingdom calculator using S3 midseason stats and rules.", loading: "Loading calculator…" },
+  "zh-CN": { title: "洛克计算器 · 国际服", description: "国际服计算器，采用 S3 季中数值与规则。", loading: "正在加载计算器…" },
+  ja: { title: "ロコ計算機 · グローバル", description: "S3 シーズン中盤の能力値とルールに基づく計算機。", loading: "計算機を読み込み中…" },
 };
 
 export function browserEntry() {
@@ -35,13 +35,19 @@ export function browserEntry() {
   return resolveEntry({
     pathname: location.pathname, hash: location.hash, preference,
     languages: navigator.languages, hasLegacyCnData,
-    // 国际版本尚无已核验的数据包，先关闭自动分流；明确入口照常可访问。
+    // 保持现有根入口；国际服仅通过明确入口、分享或手动偏好进入。
     globalReady: false,
   });
 }
 
 export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
   const [entry, setEntry] = useState(() => initialEntry ?? browserEntry());
+  useEffect(() => {
+    if (entry.serverId === "global" && !initialEntry && location.protocol !== "app:") {
+      const target = routeFor("global", entry.locale);
+      if (location.pathname !== target) window.location.replace(`${target}${location.search}${location.hash}`);
+    }
+  }, [entry.serverId, entry.locale, initialEntry]);
   const [cnVisited, setCnVisited] = useState(entry.serverId === "cn");
   const [globalVisited, setGlobalVisited] = useState(entry.serverId === "global");
   const [globalLocale, setGlobalLocale] = useState(() => entry.serverId === "global" ? entry.locale : readGlobalLocale());
@@ -133,6 +139,11 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
   }
 
   function navigate(serverId, locale, { remember = true, hash = "", replace = false } = {}) {
+    if (serverId === "global") {
+      if (remember) writeManualPreference({ serverId, locale });
+      window.location.assign(`${routeFor(serverId, locale)}${location.search}${hash}`);
+      return;
+    }
     const next = { serverId, locale: serverId === "cn" ? "zh-CN" : locale };
     if (serverId === "global") setTheme(readThemeSetting());
     if (remember) writeManualPreference(next);

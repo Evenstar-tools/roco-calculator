@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.2.8-s5-offline-rankings";
+const CACHE_NAME = "rock-calculator-webapp-v2.2.8-global-s3-midseason";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 const APP_SHELL = [
   "/manifest.webmanifest",
@@ -14,18 +14,18 @@ const BUILD_ASSET_RE = /(?:src|href)="([^"]*\/assets\/[^"]+\.(?:js|css))"/g;
 function navigationShell(pathname) {
   const path = pathname.replace(/\/$/, "") || "/";
   if (path === "/") return path;
-  return ["/en", "/global/zh-CN", "/global/ja", "/cn", "/dianlu"].includes(path) ? `${path}/` : null;
+  return ["/en", "/jp", "/global/zh-CN", "/global/ja", "/cn", "/dianlu"].includes(path) ? `${path}/` : null;
 }
 
 function isGlobalShell(path) {
-  return path === "/en/" || path.startsWith("/global/");
+  return path === "/en/" || path === "/jp/" || path.startsWith("/global/");
 }
 
 function navigationFallbacks(pathname) {
   const shell = navigationShell(pathname);
   if (!shell) return [];
   return isGlobalShell(shell)
-    ? [...new Set([shell, "/en/", "/global/zh-CN/", "/global/ja/"])]
+    ? [...new Set([shell, "/en/", "/jp/", "/global/zh-CN/", "/global/ja/"])]
     : [shell];
 }
 
@@ -62,6 +62,9 @@ self.addEventListener("install", (event) => {
         const paths = await openedShells();
         await Promise.all(paths.map((path) => cacheBuildAssets(cache, path)));
         // 初次加载发生在 SW 接管前；仅国服窗口补缓存已有国服数据。
+        if (paths.some(isGlobalShell)) {
+          await Promise.allSettled([cache.add("/global-assets/data/global-runtime.json")]);
+        }
         if (paths.some((path) => !isGlobalShell(path))) {
           await Promise.allSettled([cache.add("/data/runtime.json")]);
         }
@@ -90,7 +93,7 @@ self.addEventListener("message", (event) => {
     try {
       const url = new URL(value, self.location.origin);
       if (!/^https?:$/.test(url.protocol) || url.origin !== self.location.origin
-        || !url.pathname.startsWith("/assets/") || url.username || url.password) return [];
+        || !(url.pathname.startsWith("/assets/") || url.pathname.startsWith("/global-assets/assets/")) || url.username || url.password) return [];
       url.hash = "";
       return [url.href];
     } catch {
@@ -115,7 +118,7 @@ self.addEventListener("message", (event) => {
 });
 
 // 构建指纹随内容变化；图标由当前发布缓存隔离，发布时更新 CACHE_NAME。
-const IMMUTABLE_ASSET_RE = /^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css)$/;
+const IMMUTABLE_ASSET_RE = /^\/(?:global-assets\/)?assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css)$/;
 const RELEASE_ASSETS = new Set(["/app-icon-192.png", "/app-icon-512.png"]);
 
 async function cacheFirst(request) {
