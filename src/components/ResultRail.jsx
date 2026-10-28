@@ -209,6 +209,7 @@ export function ResultRail({
   onSkillResultSelect,
   onNegativeStatusRepeatChange,
   onOpenComparison,
+  onOpenStarfall,
   result,
   showTypeCoverage = false,
 }) {
@@ -298,6 +299,7 @@ export function ResultRail({
         onRepeatChange={primary.negativeStatusCanRepeatNextTurn ? onNegativeStatusRepeatChange : undefined}
         repeated={primary.negativeStatusRepeatNextTurn} />
       {onOpenComparison ? <button type="button" className="damage-comparison-entry" onClick={onOpenComparison}>查看全精灵承伤</button> : null}
+      {onOpenStarfall ? <button type="button" className="damage-comparison-entry starfall-entry" onClick={onOpenStarfall}>星陨斩杀线</button> : null}
 
       {primary.markSettlements?.length > 0 ? (
         <section aria-label="印记结算" className="result-rail__marks">

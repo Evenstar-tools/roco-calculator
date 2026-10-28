@@ -1,0 +1,85 @@
+.starfall-overlay { position: fixed; inset: 0; z-index: 1960; display: flex; align-items: center; justify-content: center; padding: 24px; background: #10162770; }
+.starfall-dialog { width: min(1080px, 100%); height: min(820px, calc(100dvh - 48px)); display: flex; flex-direction: column; min-height: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); box-shadow: var(--shadow); font-size: 14px; }
+.starfall-dialog button, .starfall-dialog select, .starfall-dialog input { min-height: 40px; min-width: 0; border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; background: var(--surface); color: var(--text); font: inherit; }
+.starfall-dialog button, .starfall-dialog select { cursor: pointer; }
+.starfall-dialog button:disabled { opacity: .5; cursor: not-allowed; }
+.starfall-dialog :is(button, select, input, summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.starfall-dialog small { display: block; color: var(--text-muted); font-size: 12px; line-height: 1.6; font-weight: 400; }
+.starfall-heading { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--surface-soft); }
+.starfall-heading h2 { margin: 0; font-size: 22px; }
+.starfall-heading button { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; }
+.starfall-matchup { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; }
+.starfall-source { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+.starfall-source img { width: 36px; height: 36px; object-fit: contain; }
+.starfall-source select { max-width: 190px; }
+.starfall-stacks { display: flex; align-items: center; gap: 6px; flex-shrink: 0; color: var(--text-muted); }
+.starfall-stacks input { width: 68px; color: var(--text); }
+.starfall-current { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 20px 12px; padding: 14px 18px; border-left: 3px solid var(--accent); background: var(--selection-bg); }
+.starfall-minimum { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 3px 0; }
+.starfall-minimum strong { color: var(--accent); font-size: 30px; line-height: 1.3; }
+.starfall-minimum span { color: var(--text); font-weight: 600; }
+.starfall-current p { margin: 4px 0 0; line-height: 1.5; color: var(--text-muted); font-size: 13px; }
+.starfall-current .starfall-reason { max-width: 680px; color: var(--text); }
+.starfall-dialog .starfall-primary { flex-shrink: 0; min-height: 44px; color: var(--surface); border-color: var(--accent-strong); background: var(--accent-strong); font-weight: 600; }
+.starfall-table-tools { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 2px 20px 6px; }
+.starfall-table-tools h3 { margin: 0 0 2px; font-size: 15px; }
+.starfall-search { display: flex; align-items: center; gap: 5px; border: 1px solid var(--border); border-radius: 6px; padding-left: 9px; color: var(--text-muted); }
+.starfall-search input { border: 0; width: 250px; background: transparent; }
+.starfall-search button { min-height: 30px; padding: 5px; border: 0; background: transparent; }
+.starfall-progress { padding: 0 20px 6px; font-size: 12px; color: var(--text-muted); min-height: 24px; }
+.starfall-table-scroll { flex: 1; min-height: 80px; overflow-y: auto; overscroll-behavior: contain; padding: 0 20px; }
+.starfall-columns, .starfall-row { display: grid; grid-template-columns: minmax(180px, 1.4fr) repeat(3, minmax(100px, 1fr)) 78px; align-items: center; gap: 12px; }
+.starfall-columns { position: sticky; top: 0; z-index: 1; background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 0; color: var(--text-muted); }
+.starfall-columns > span:not(:first-child), .starfall-value { text-align: center; }
+.starfall-row { min-height: 70px; padding: 10px 0; }
+.starfall-item { border-bottom: 1px solid var(--border); }
+.starfall-item[data-current] { background: var(--selection-bg); }
+.starfall-identity { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.starfall-identity img { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
+.starfall-identity strong { overflow-wrap: anywhere; }
+.starfall-value strong { font-size: 16px; font-variant-numeric: tabular-nums; }
+.starfall-value small { display: none; }
+.starfall-value[data-status="found"] { color: var(--accent); }
+.starfall-value:not([data-status="found"]) strong { font-size: 13px; color: var(--text-muted); font-weight: 400; }
+.starfall-dialog .starfall-choose { min-height: 36px; padding: 5px 8px; color: var(--accent-strong); }
+.starfall-cultivation { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 4px 10px 14px; }
+.starfall-cultivation p { margin: 0; color: var(--text-muted); font-size: 12px; flex-basis: 100%; }
+.starfall-cultivation button { flex: 1; min-width: 130px; color: var(--accent-strong); }
+.starfall-dialog footer { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 12px 20px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 12px; line-height: 1.6; }
+.starfall-dialog footer details { max-width: 420px; text-align: right; }
+.starfall-dialog summary { color: var(--accent-strong); cursor: pointer; white-space: nowrap; }
+.starfall-dialog footer details p { text-align: left; margin: 6px 0 0; }
+.starfall-empty { text-align: center; padding: 30px 10px; color: var(--text-muted); }
+.starfall-dialog .starfall-more { display: block; margin: 10px auto; }
+.starfall-mark-entry { min-height: 32px; border: 1px solid var(--border); border-radius: 5px; color: var(--accent-strong); background: var(--surface); font: inherit; cursor: pointer; }
+@media (max-width: 760px) {
+  .starfall-overlay { padding: 0; }
+  .starfall-dialog { width: 100%; height: 100dvh; border-radius: 0; border: 0; }
+  .starfall-heading { padding: 8px 12px; }
+  .starfall-heading h2 { font-size: 19px; }
+  .starfall-matchup { padding: 10px 12px; flex-wrap: wrap; gap: 8px; }
+  .starfall-source { gap: 6px; font-size: 13px; }
+  .starfall-source img { width: 30px; height: 30px; }
+  .starfall-source select { max-width: 150px; }
+  .starfall-stacks { margin-left: auto; }
+  .starfall-dialog input, .starfall-dialog select { font-size: 16px; min-height: 44px; }
+  .starfall-current { margin: 0 12px 10px; padding: 10px 12px; flex-wrap: wrap; gap: 8px; }
+  .starfall-minimum { gap: 8px; }
+  .starfall-minimum strong { font-size: 25px; }
+  .starfall-minimum span { font-size: 13px; }
+  .starfall-dialog .starfall-primary { margin-left: auto; }
+  .starfall-table-tools { align-items: stretch; padding: 0 12px 6px; flex-direction: column; gap: 8px; }
+  .starfall-search input { width: 100%; }
+  .starfall-search { width: 100%; }
+  .starfall-progress { padding: 0 12px 6px; }
+  .starfall-table-scroll { padding: 0 12px; }
+  .starfall-columns { display: none; }
+  .starfall-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .starfall-identity { grid-column: 1 / 3; }
+  .starfall-choose { grid-column: 3; grid-row: 1; justify-self: end; }
+  .starfall-value small { display: block; }
+  .starfall-cultivation { gap: 8px; padding-inline: 0; }
+  .starfall-cultivation button { flex-basis: 100%; display: flex; justify-content: space-between; align-items: center; min-height: 44px; }
+  .starfall-dialog footer { padding: 8px 12px max(10px, env(safe-area-inset-bottom, 0px)); font-size: 11px; }
+  .starfall-dialog footer details { max-width: 190px; }
+}
