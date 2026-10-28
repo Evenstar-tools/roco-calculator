@@ -141,6 +141,7 @@ const TypeQueryPanel = lazy(() => import("./features/type-query/TypeQueryPanel.j
 const TypeChartPanel = lazy(() => import("./features/type-query/TypeChartPanel.jsx"));
 const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
 const DamageComparisonDialog = lazy(() => import("./components/DamageComparisonDialog.jsx"));
+const StarfallThresholdDialog = lazy(() => import("./components/StarfallThresholdDialog.jsx"));
 const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
 const preloadSkillQuery = (serverId) => {
   void loadSkillQueryPanel().catch(() => {});
@@ -163,6 +164,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   const [queryTypes, setQueryTypes] = useState([]);
   const [rankingKind, setRankingKind] = useState(null);
   const [comparisonSource, setComparisonSource] = useState(null);
+  const [starfallSource, setStarfallSource] = useState(null);
   const [comparisonPreferences, setComparisonPreferences] = useState(null);
   const [rankingsVisited, setRankingsVisited] = useState(false);
   const initialState = useMemo(() => {
@@ -551,9 +553,15 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     setComparisonSource(captureDamageComparison(stateRef.current, activeDirection, storedData.comparisonPresets));
   }
 
+  function openStarfallThreshold() {
+    if (!release.capabilities.calculate || !configurationReady) return;
+    overlays.mobileResultProps.actions.onClose({ restoreFocus: false });
+    setStarfallSource(captureDamageComparison(stateRef.current, activeDirection));
+  }
+
   // 任一弹层/抽屉打开时引导浮层让位,关闭后恢复。
   const overlayCoveringGuide = Boolean(
-    conditionTarget || shortcutsOpen || (damageComparisonEnabled && comparisonSource) || overlays.menu.open ||
+    conditionTarget || starfallSource || shortcutsOpen || (damageComparisonEnabled && comparisonSource) || overlays.menu.open ||
       overlays.team.open ||
       overlays.mobileResultProps.open ||
       overlays.cleanupConfigsProps.open ||
@@ -2235,6 +2243,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         onCurrentHpPercentChange: (value) => updateSideHealthPercent(viewModel.active.defenseSideKey, value),
         onNegativeStatusRepeatChange: updateNegativeStatusRepeatNextTurn,
         onOpenComparison: damageComparisonEnabled ? openDamageComparison : undefined,
+        onOpenStarfall: release.capabilities.calculate ? openStarfallThreshold : undefined,
       },
     },
     share: shareFlow.overlayProps,
@@ -2677,6 +2686,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                 }
                 finalMultiplier={currentDirection.finalDamageMultiplier}
                 marks={state.marks}
+                onOpenStarfall={release.capabilities.calculate ? openStarfallThreshold : undefined}
+                starfallTargetSide={activeDirection === "forward" ? "defender" : "attacker"}
                 negativeStatusEnabled={
                   state.calculationOptions?.includeNegativeStatusSettlement === true
                 }
@@ -2741,6 +2752,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             <ResultRail
               hasCustomRaceStats={balance.hasCustom}
               onOpenComparison={damageComparisonEnabled ? openDamageComparison : undefined}
+              onOpenStarfall={release.capabilities.calculate ? openStarfallThreshold : undefined}
               activeAdvancedConditions={activeAdvancedConditions}
               onBloodlineResultFocus={() =>
                 updateDirection({ selectedDamageSource: "bloodline" })
@@ -2764,6 +2776,19 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       </div>
 
       </WorkspaceOverlays>
+      {starfallSource ? <Suspense fallback={<div role="status">{t("正在打开星陨斩杀线…")}</div>}><StarfallThresholdDialog
+        key={JSON.stringify(starfallSource)} snapshot={snapshot} source={starfallSource} onClose={() => setStarfallSource(null)}
+        onApply={(next, { keepOpen = false, notice = "" } = {}) => {
+          if (JSON.stringify(stateRef.current) !== JSON.stringify(starfallSource.state)) {
+            setToast(t("主配置已变化，请重新打开星陨斩杀线"));
+            return;
+          }
+          commitSession({ state: next, persistence: { rememberSide: null } });
+          setActiveDirection(starfallSource.direction);
+          setStarfallSource(keepOpen ? { ...starfallSource, state: next } : null);
+          if (notice) setToast(notice);
+        }}
+      /></Suspense> : null}
       {damageComparisonEnabled && comparisonSource ? <Suspense fallback={<div role="status">{t("正在打开承伤对比…")}</div>}><DamageComparisonDialog
         key={damageComparisonSourceKey(comparisonSource)} preferences={comparisonPreferences} onPreferencesChange={setComparisonPreferences}
         snapshot={snapshot} source={comparisonSource} onClose={() => setComparisonSource(null)}

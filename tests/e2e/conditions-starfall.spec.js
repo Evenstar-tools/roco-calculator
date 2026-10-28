@@ -113,3 +113,98 @@ for (const [width, height, theme] of [[1920, 1080, "light"], [390, 844, "light"]
     await expect(trigger).toBeFocused();
   });
 }
+
+async function configureStarfall(page, slot = 1) {
+  await resetUiuxStorage(page);
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "祭礼巨像");
+  await selectSpirit(page, "防御方", "玳塔");
+  await selectSkill(page, "多维击打", slot);
+}
+
+async function openStarfall(page, mobile = false) {
+  if (mobile) await page.getByRole("button", { name: "展开伤害结果", exact: true }).click();
+  await page.getByRole("button", { name: "星陨斩杀线", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "星陨斩杀线", exact: true });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /^填入 \d+ 层$/ })).toBeEnabled();
+  return dialog;
+}
+
+test("starfall thresholds apply the real minimum to the chosen slot and undo in one step", async ({ page }) => {
+  await configureStarfall(page, 2);
+  const dialog = await openStarfall(page);
+  const apply = dialog.getByRole("button", { name: /^填入 \d+ 层$/ });
+  const minimum = Number((await apply.innerText()).match(/\d+/)[0]);
+  await dialog.getByRole("spinbutton", { name: "试算星陨层数" }).fill("99");
+  await expect(page.locator(".compact-skill-side--attacker .compact-skill__damage").first()).not.toContainText("NaN");
+  await apply.click();
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByRole("tab", { name: "四技能", exact: true })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("combobox", { name: "攻击方技能2", exact: true })).toHaveValue("多维击打");
+  await expect(page.getByRole("group", { name: "攻击方技能2，当前选中", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "攻击方技能2条件", exact: true }).click();
+  await expect(page.getByRole("spinbutton", { name: "敌方星陨印记", exact: true })).toHaveValue(String(minimum));
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: /撤回上一步/ }).click();
+  await page.getByRole("button", { name: "攻击方技能2条件", exact: true }).click();
+  await expect(page.getByRole("spinbutton", { name: "敌方星陨印记", exact: true })).toHaveValue("0");
+});
+
+test("starfall thresholds choose cultivation then restore the actual target before recalculating", async ({ page }) => {
+  await configureStarfall(page);
+  await page.getByRole("checkbox", { name: "防御方物防个体加点", exact: true }).uncheck();
+  const dialog = await openStarfall(page);
+  await dialog.getByRole("textbox", { name: "搜索星陨斩杀精灵" }).fill("玳塔");
+  await dialog.getByRole("button", { name: "选择玳塔培养", exact: true }).click({ timeout: 60_000 });
+  await dialog.getByRole("button", { name: /^代入生防/ }).click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator(".starfall-current")).toContainText("按当前血量、减伤与特性");
+  await expect(dialog.getByRole("button", { name: /^填入 \d+ 层$/ })).toBeEnabled();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("checkbox", { name: "防御方生命个体加点", exact: true })).toBeChecked();
+  await expect(page.getByRole("checkbox", { name: "防御方物防个体加点", exact: true })).toBeChecked();
+  await expect(page.getByRole("checkbox", { name: "防御方魔防个体加点", exact: true })).toBeChecked();
+  await expect(page.getByRole("button", { name: "防御方普通性格", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: /撤回上一步/ }).click();
+  await expect(page.getByRole("checkbox", { name: "防御方物防个体加点", exact: true })).not.toBeChecked();
+});
+
+test("starfall thresholds finish the full form table and keep search available", async ({ page }) => {
+  test.setTimeout(90_000);
+  await configureStarfall(page);
+  const dialog = await openStarfall(page);
+  await expect(dialog.locator(".starfall-progress")).toHaveText(/^\d+ 只精灵／形态$/, { timeout: 70_000 });
+  await dialog.getByRole("textbox", { name: "搜索星陨斩杀精灵" }).fill("水灵");
+  await expect(dialog.getByRole("button", { name: "选择水灵培养", exact: true })).toBeVisible();
+  await expect(dialog.locator(".starfall-row").first()).not.toContainText("NaN");
+  await dialog.getByRole("button", { name: "清空星陨搜索" }).click();
+  await expect(dialog.locator(".starfall-item")).toHaveCount(60);
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+});
+
+for (const [width, height, theme] of [[1920, 1080, "light"], [390, 844, "light"], [320, 740, "dark"]]) {
+  test(`starfall thresholds keep the real table and cultivation actions readable ${width} ${theme}`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height });
+    await configureStarfall(page);
+    await page.evaluate((value) => { document.documentElement.dataset.theme = value; }, theme);
+    const dialog = await openStarfall(page, width < 761);
+    await dialog.getByRole("textbox", { name: "搜索星陨斩杀精灵" }).fill("玳塔");
+    await dialog.getByRole("button", { name: "选择玳塔培养", exact: true }).click({ timeout: 60_000 });
+    await expect(dialog.getByRole("button", { name: /^代入纯肉/ })).toBeVisible();
+    const layout = await dialog.evaluate((node) => {
+      const rect = node.getBoundingClientRect();
+      return { fits: node.scrollWidth <= node.clientWidth, inViewport: rect.left >= 0 && rect.right <= innerWidth && rect.top >= 0 && rect.bottom <= innerHeight,
+        tableFits: node.querySelector(".starfall-table-scroll").scrollWidth <= node.querySelector(".starfall-table-scroll").clientWidth };
+    });
+    expect(layout).toEqual({ fits: true, inViewport: true, tableFits: true });
+    await page.screenshot({ path: testInfo.outputPath(`starfall-${width}-${theme}.png`) });
+    if (width === 320) {
+      await dialog.getByRole("button", { name: /^代入纯肉/ }).click();
+      await expect(dialog.getByRole("button", { name: /^填入 \d+ 层$/ })).toBeEnabled();
+    }
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+  });
+}

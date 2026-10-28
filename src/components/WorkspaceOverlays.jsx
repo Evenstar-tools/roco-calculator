@@ -324,6 +324,7 @@ export function WorkspaceOverlays({
             onSkillResultSelect={mobileActions.onSkillResultSelect}
             onNegativeStatusRepeatChange={mobileActions.onNegativeStatusRepeatChange}
             onOpenComparison={mobileActions.onOpenComparison}
+            onOpenStarfall={mobileActions.onOpenStarfall}
             result={mobileResult.result}
             showTypeCoverage={mobileResult.showTypeCoverage}
           />
