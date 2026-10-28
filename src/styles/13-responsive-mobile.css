@@ -948,6 +948,10 @@
     grid-template-rows: 44px minmax(17px, auto) minmax(17px, auto);
   }
 
+  html:lang(en) .skill-slot:not(.skill-slot--head) {
+    grid-template-columns: 14px 56px minmax(0, 1fr) 56px 70px;
+  }
+
   .skill-slot:not(.skill-slot--head) > .skill-slot__number {
     grid-column: 1;
     grid-row: 1;
