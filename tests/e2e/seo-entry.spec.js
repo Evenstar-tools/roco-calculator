@@ -88,6 +88,20 @@ test("SEO Global S3 release keeps calculation across English, Japanese, refresh 
   await expect(page.getByRole("combobox", { name: "攻撃側のキャラクター", exact: true })).toHaveValue("ディーモ");
   await expect(page.locator(".result-column").getByRole("status")).toHaveText("23");
   await context.setOffline(false);
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileLabels = () => page.locator(".four-skill-side--attacker").evaluate(side =>
+    ["cost", "power-input", "hits"].map(name => getComputedStyle(side.querySelector(`.skill-slot:not(.skill-slot--head) .skill-slot__${name}`), "::before").content));
+  await expect.poll(mobileLabels).toEqual(['"コスト"', '"威力"', '"連撃"']);
+  await page.getByRole("button", { name: "メニューを開く", exact: true }).click();
+  await page.getByRole("combobox", { name: "言語", exact: true }).selectOption("en");
+  await expect.poll(mobileLabels).toEqual(['"Cost"', '"Power"', '"Combo"']);
+  await expect(page.getByRole("combobox", { name: "Attacker Jini", exact: true })).toHaveValue("Dimo");
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const commonClass = page.locator(".four-skill-side--attacker .skill-slot__kind > span").filter({ hasText: /^Common$/ });
+    expect(await commonClass.evaluate(element => element.getBoundingClientRect().height <= parseFloat(getComputedStyle(element).lineHeight) + 1)).toBe(true);
+  }
 });
 
 test("SEO CN recognizes a released Global share and opens the matching /en/ workspace", async ({ page }) => {

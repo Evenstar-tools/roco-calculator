@@ -37,3 +37,13 @@
 国服运行数据仍 `s4-2026-09-10`，`/pre/` 仍为本轮发布前 `/pre/assets/main-BhTCj6EQ.js`。截图保存在源码工作树 `output/playwright/global-localization-20261028/live-en.png`、`live-jp-mobile.png`。
 
 最终接入复查发现并修复国服旧分享解析器拒绝正式Global配置：仅允许与固定Global数据、规则版本一致的分享信封用于切服提示，保留国服计算/导入边界。协议、入口、Node22直接导入及ESLint通过；生产构建和原pin组装成功；真实E2E确认Global分享→CN切服提示→/en/恢复配置，CN原配置与隔离存储保持。该补丁随本次追加发布。首轮线上提交的远端CI已通过。
+
+### 跨服分享线上回查
+
+追加发布 `94c95c75767c171a4afed18c5ccdf090ead822e0` 已回读 origin/main。2026-10-28 17:20后国服加载 `/assets/main-DTxH16pE.js`，真实Global分享在CN显示“这份分享配置属于国际服”；点击“在国际服打开”进入 `/en/`，Dimo、Meodow、Flash与23伤害恢复。
+
+### 窄屏译文收尾
+
+线上实测发现响应式CSS伪元素固定中文，补齐耗能、属性、威力、连击、迸发提示与上次有效结果；源码pin更新至 `90b64bf3e25c2fbe6c19fe34d644e542093930d6`。中文→EN→JA切换保留手填威力的定向回归、既有手机/雷暴回归、ESLint和语言表检查通过。上轮跨服分享补丁的完整远端CI通过。
+
+最终组合构建通过；英日切换、刷新、离线、跨服分享定向E2E通过。新增真实浏览器伪元素检查，320px/390px均无横向溢出，Common保持完整单行。390px截图人工读回通过，路径为源码工作树 `output/playwright/global-localization-20261028/en-mobile-labels-final.png`。
