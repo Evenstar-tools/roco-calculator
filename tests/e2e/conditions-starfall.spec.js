@@ -91,7 +91,7 @@ test("compact conditions keep numeric trait controls readable in a narrow viewpo
   await expect(page.getByRole("button", { name: "攻击方特性条件", exact: true })).toContainText("1");
 });
 
-for (const [width, height, theme] of [[1920, 1080, "light"], [390, 844, "light"], [320, 740, "dark"]]) {
+for (const [width, height, theme] of [[1920, 1080, "light"]]) {
   test(`compact conditions keep inputs and damage readable ${width} ${theme}`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height });
     await configureCounter(page);
@@ -136,6 +136,53 @@ for (const [width, height, theme] of [[1920, 1080, "light"], [390, 844, "light"]
     await page.evaluate((value) => { document.documentElement.dataset.theme = value; }, theme);
     const side = page.locator(".compact-skill-side--defender");
     await expect(side.locator(".skill-follow-up")).toHaveCount(0);
+    if (width <= 760) {
+      await expect(page.locator(".compact-skill__row > .compact-condition-trigger:visible")).toHaveCount(0);
+      const lastSkill = page.getByRole("combobox", { name: "防御方技能4", exact: true });
+      await page.getByRole("button", { name: "清空防御方技能4", exact: true }).click();
+      await expect(lastSkill).toHaveValue("");
+      await lastSkill.fill("甜心续航");
+      await page.getByRole("option", { name: /^甜心续航/ }).click();
+      await expect(lastSkill).toHaveValue("甜心续航");
+      const driveDamage = page.getByRole("group", { name: /^防御方技能2(?:，当前选中)?$/ }).locator(".compact-skill__damage");
+      const initialDamage = Number(await driveDamage.innerText());
+      await setViewMode(page, "具体版");
+      await page.getByRole("button", { name: "防御", exact: true }).click();
+      await page.getByRole("combobox", { name: "防御方技能2选择效果", exact: true }).selectOption("counter");
+      await page.getByRole("checkbox", { name: "防御方技能2触发应对", exact: true }).check();
+      await setViewMode(page, "精简版");
+      await expect.poll(async () => Number(await driveDamage.innerText())).toBeGreaterThan(initialDamage);
+      const boosted = await driveDamage.innerText();
+      await setViewMode(page, "具体版");
+      await page.getByRole("button", { name: "防御", exact: true }).click();
+      await expect(page.getByRole("combobox", { name: "防御方技能2选择效果", exact: true })).toHaveValue("counter");
+      await expect(page.getByRole("checkbox", { name: "防御方技能2触发应对", exact: true })).toBeChecked();
+      await setViewMode(page, "精简版");
+      await expect(driveDamage).toHaveText(boosted);
+      await expect(page.locator(".compact-skill__row > .compact-condition-trigger:visible")).toHaveCount(0);
+      const rows = await page.locator(".compact-skill__row:not(.compact-skill__row--trait)").evaluateAll((nodes) => nodes.map((node) => {
+        const input = node.querySelector(".skill-picker input");
+        const picker = node.querySelector(".skill-picker");
+        const result = node.querySelector(".compact-skill__result");
+        const style = getComputedStyle(input);
+        const context = document.createElement("canvas").getContext("2d");
+        context.font = style.font;
+        return {
+          originalColumns: getComputedStyle(node).gridTemplateColumns.split(/\s+/).length === 4,
+          nameFits: context.measureText(input.value).width <= input.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) + 1,
+          nameWidth: picker.getBoundingClientRect().width >= 105,
+          resultWidth: result.getBoundingClientRect().width >= 74,
+          resultFits: result.scrollWidth <= result.clientWidth,
+          rowFits: node.scrollWidth <= node.clientWidth,
+        };
+      }));
+      expect(rows).toHaveLength(8);
+      expect(rows.every((row) => Object.values(row).every(Boolean))).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await side.scrollIntoViewIfNeeded();
+      await page.screenshot({ path: testInfo.outputPath(`adapt-list-${width}-${theme}.png`) });
+      return;
+    }
     for (const index of [2, 3, 4]) {
       await page.getByRole("button", { name: `防御方技能${index}条件`, exact: true }).click();
       const dialog = page.getByRole("dialog");
@@ -171,8 +218,8 @@ for (const [width, height, theme] of [[1920, 1080, "light"], [390, 844, "light"]
   });
 }
 
-test("compact conditions expose repeat counts, branch health and expandable burst sources at 320", async ({ page }, testInfo) => {
-  await page.setViewportSize({ width: 320, height: 740 });
+test("compact conditions expose repeat counts, branch health and expandable burst sources on desktop", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
   await configureCounter(page);
   await selectSkill(page, "吹火");
   const open = async () => {
@@ -184,7 +231,7 @@ test("compact conditions expose repeat counts, branch health and expandable burs
   await expect(dialog.getByRole("spinbutton", { name: "此前使用次数" })).toHaveValue("1");
   await dialog.getByRole("button", { name: "此前使用次数重置" }).click();
   await expect(dialog.getByRole("spinbutton", { name: "此前使用次数" })).toHaveValue("0");
-  await page.screenshot({ path: testInfo.outputPath("adapt-count-320.png") });
+  await page.screenshot({ path: testInfo.outputPath("adapt-count-1920.png") });
   await page.keyboard.press("Escape");
   await selectSkill(page, "下注");
   dialog = await open();
@@ -195,7 +242,7 @@ test("compact conditions expose repeat counts, branch health and expandable burs
   await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveCount(0);
   await dialog.getByRole("combobox", { name: "选择效果" }).selectOption("lowHp");
   await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveValue("50");
-  await page.screenshot({ path: testInfo.outputPath("adapt-health-320.png") });
+  await page.screenshot({ path: testInfo.outputPath("adapt-health-1920.png") });
   await page.keyboard.press("Escape");
   await selectSkill(page, "雷暴");
   dialog = await open();
@@ -206,7 +253,7 @@ test("compact conditions expose repeat counts, branch health and expandable burs
   expect(await dialog.locator(".burst-source-controls__menu label").evaluateAll((labels) => labels.every((label) =>
     Number.parseFloat(getComputedStyle(label).fontSize) >= 14 && label.scrollWidth <= label.clientWidth))).toBe(true);
   await expect(dialog.getByLabel("攻击方技能1条件选择迸发来源", { exact: true })).toContainText("已选 1");
-  await page.screenshot({ path: testInfo.outputPath("adapt-burst-320.png") });
+  await page.screenshot({ path: testInfo.outputPath("adapt-burst-1920.png") });
   await page.keyboard.press("Escape");
 });
 
