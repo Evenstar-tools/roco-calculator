@@ -163,7 +163,7 @@ html[data-theme="dark"] .damage-comparison button[aria-pressed="true"],html[data
   body:has(.calculator-step--skills [role="tabpanel"]:not([hidden]) input[aria-invalid="true"]) .mobile-result-bar__percent::after {
     display: block;
     color: var(--text-muted);
-    content: "上次有效结果";
+    content: attr(data-last-valid);
     font-size: 10px;
     line-height: 1.4;
   }

@@ -677,7 +677,7 @@
 }
 
 .burst-source-controls__menu::after {
-  content: "悬停或聚焦选项查看效果。";
+  content: attr(data-hint);
 }
 
 .burst-source-controls__menu label::after {

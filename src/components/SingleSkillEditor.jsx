@@ -130,6 +130,7 @@ export function BurstSourceControls({
       <div
         aria-label={tc("{v0}迸发来源", { v0: ariaPrefix })}
         className="burst-source-controls__menu"
+        data-hint={tc("悬停或聚焦选项查看效果。")}
         role="group"
       >
         {groups.map((group) => {

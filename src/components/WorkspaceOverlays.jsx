@@ -280,7 +280,7 @@ export function WorkspaceOverlays({
           <strong className="mobile-result-bar__damage">
             {mobilePresentation.damage ?? "—"}
           </strong>
-          <span className="mobile-result-bar__percent">
+          <span className="mobile-result-bar__percent" data-last-valid={t("上次有效结果")}>
             {Number.isFinite(mobilePresentation.percent)
               ? `${mobilePresentation.percent.toFixed(1)}%`
               : t(mobileResult.result.selectedResult.reason === "非伤害技能不计算伤害" ? "非伤害" : "待输入")}

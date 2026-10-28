@@ -985,7 +985,7 @@
   .skill-slot:not(.skill-slot--head) > .skill-slot__cost::before,
   .skill-slot--trait > :nth-child(4)::before {
     color: var(--text-faint);
-    content: "耗";
+    content: var(--skill-row-cost-label);
     font-size: 10px;
   }
 
@@ -1003,7 +1003,7 @@
   .skill-slot:not(.skill-slot--head) > .skill-slot__power-input::before,
   .skill-slot:not(.skill-slot--head) > .skill-slot__trait-power::before {
     color: var(--text-faint);
-    content: "威力";
+    content: var(--skill-row-power-label);
     font-size: 11px;
     font-weight: 500;
   }
@@ -1020,7 +1020,7 @@
 
   .skill-slot:not(.skill-slot--head) > .skill-slot__hits::before {
     color: var(--text-faint);
-    content: "连击";
+    content: var(--skill-row-hits-label);
     font-size: 11px;
   }
 
@@ -1271,7 +1271,7 @@
 
   .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__kind::before {
     color: var(--text-faint);
-    content: "属性";
+    content: var(--skill-row-kind-label);
   }
 
   .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__cost,
@@ -1284,7 +1284,7 @@
   .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__cost::before,
   .calculator-layout--detailed .skill-slot--trait > :nth-child(4)::before {
     color: var(--text-faint);
-    content: "耗";
+    content: var(--skill-row-cost-label);
   }
 
   .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__power-input,
@@ -1298,7 +1298,7 @@
   .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__power-input::before,
   .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__trait-power::before {
     color: var(--text-faint);
-    content: "威力";
+    content: var(--skill-row-power-label);
   }
 
   .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__hits {
@@ -1310,7 +1310,7 @@
 
   .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__hits::before {
     color: var(--text-faint);
-    content: "连击";
+    content: var(--skill-row-hits-label);
   }
 
   .calculator-layout--detailed .skill-slot:not(.skill-slot--head) > .skill-slot__damage {

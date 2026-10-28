@@ -120940,6 +120940,40 @@
       "review_status": "needs_review",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/精灵预设",
       "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:上次有效结果",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "上次有效结果",
+      "zh_project": "上次有效结果",
+      "en": "Last valid result",
+      "ja": "直前の有効な結果",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/上次有效结果",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    {
+      "key": "ui:悬停或聚焦选项查看效果。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "悬停或聚焦选项查看效果。",
+      "zh_project": "悬停或聚焦选项查看效果。",
+      "en": "Hover or focus an option to see its effect.",
+      "ja": "項目にカーソルを合わせるかフォーカスして効果を確認できます。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/悬停或聚焦选项查看效果。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
     }
   ],
   "plainByKey": {
@@ -156512,6 +156546,16 @@
       "zh": "精灵预设",
       "en": "Jini preset",
       "ja": "ジニのプリセット"
+    },
+    "ui:上次有效结果": {
+      "zh": "上次有效结果",
+      "en": "Last valid result",
+      "ja": "直前の有効な結果"
+    },
+    "ui:悬停或聚焦选项查看效果。": {
+      "zh": "悬停或聚焦选项查看效果。",
+      "en": "Hover or focus an option to see its effect.",
+      "ja": "項目にカーソルを合わせるかフォーカスして効果を確認できます。"
     }
   }
 }

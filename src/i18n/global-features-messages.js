@@ -619,4 +619,6 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["固定威力加成", "Flat Power bonus", "固定威力補正"],
   ["生命低于 50%", "HP below 50%", "HPが50%未満"],
   ["应对状态不改变本击伤害；勾选显示先发补刀后，区分普通与应对降防的后续伤害。", "Countering a status move does not change this hit. Enable follow-up to compare normal damage with the defense drop from a counter.", "状態スキルへのカウンターはこの一撃のダメージを変えません。追撃を表示すると、通常時とカウンターによる防御低下後を比較できます。"],
+  ["悬停或聚焦选项查看效果。", "Hover or focus an option to see its effect.", "項目にカーソルを合わせるかフォーカスして効果を確認できます。"],
+  ["上次有效结果", "Last valid result", "直前の有効な結果"],
 ].map(([source, en, ja]) => [source, { en, ja }]));

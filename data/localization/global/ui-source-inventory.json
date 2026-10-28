@@ -5758,6 +5758,14 @@
       "en": "Countering a status move does not change this hit. Enable follow-up to compare normal damage with the defense drop from a counter.",
       "ja": "状態スキルへのカウンターはこの一撃のダメージを変えません。追撃を表示すると、通常時とカウンターによる防御低下後を比較できます。"
     },
+    "悬停或聚焦选项查看效果。": {
+      "en": "Hover or focus an option to see its effect.",
+      "ja": "項目にカーソルを合わせるかフォーカスして効果を確認できます。"
+    },
+    "上次有效结果": {
+      "en": "Last valid result",
+      "ja": "直前の有効な結果"
+    },
     "{v0}选择迸发来源": {
       "en": "{v0}: choose surge sources",
       "ja": "{v0}のはじける力発生源を選択"
@@ -29237,6 +29245,34 @@
       "overridesDefinitionId": null
     },
     {
+      "definitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"悬停或聚焦选项查看效果。\",1]",
+      "zh": "悬停或聚焦选项查看效果。",
+      "key": "悬停或聚焦选项查看效果。",
+      "en": "Hover or focus an option to see its effect.",
+      "ja": "項目にカーソルを合わせるかフォーカスして効果を確認できます。",
+      "module": "src/i18n/global-features-messages.js",
+      "exportName": "globalFeaturesMessages",
+      "line": 622,
+      "occurrence": 1,
+      "mergeIndex": 1492,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"上次有效结果\",1]",
+      "zh": "上次有效结果",
+      "key": "上次有效结果",
+      "en": "Last valid result",
+      "ja": "直前の有効な結果",
+      "module": "src/i18n/global-features-messages.js",
+      "exportName": "globalFeaturesMessages",
+      "line": 623,
+      "occurrence": 1,
+      "mergeIndex": 1493,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
       "definitionId": "[\"src/i18n/calculator-messages.js\",\"calculatorMessages\",\"{v0}选择迸发来源\",1]",
       "zh": "{v0}选择迸发来源",
       "key": "{v0}选择迸发来源",
@@ -29246,7 +29282,7 @@
       "exportName": "calculatorMessages",
       "line": 3,
       "occurrence": 1,
-      "mergeIndex": 1492,
+      "mergeIndex": 1494,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29260,7 +29296,7 @@
       "exportName": "calculatorMessages",
       "line": 4,
       "occurrence": 1,
-      "mergeIndex": 1493,
+      "mergeIndex": 1495,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29274,7 +29310,7 @@
       "exportName": "calculatorMessages",
       "line": 5,
       "occurrence": 1,
-      "mergeIndex": 1494,
+      "mergeIndex": 1496,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29288,7 +29324,7 @@
       "exportName": "calculatorMessages",
       "line": 6,
       "occurrence": 1,
-      "mergeIndex": 1495,
+      "mergeIndex": 1497,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29302,7 +29338,7 @@
       "exportName": "calculatorMessages",
       "line": 7,
       "occurrence": 1,
-      "mergeIndex": 1496,
+      "mergeIndex": 1498,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29316,7 +29352,7 @@
       "exportName": "calculatorMessages",
       "line": 8,
       "occurrence": 1,
-      "mergeIndex": 1497,
+      "mergeIndex": 1499,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29330,7 +29366,7 @@
       "exportName": "calculatorMessages",
       "line": 9,
       "occurrence": 1,
-      "mergeIndex": 1498,
+      "mergeIndex": 1500,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29344,7 +29380,7 @@
       "exportName": "calculatorMessages",
       "line": 10,
       "occurrence": 1,
-      "mergeIndex": 1499,
+      "mergeIndex": 1501,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29358,7 +29394,7 @@
       "exportName": "calculatorMessages",
       "line": 11,
       "occurrence": 1,
-      "mergeIndex": 1500,
+      "mergeIndex": 1502,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29372,7 +29408,7 @@
       "exportName": "calculatorMessages",
       "line": 12,
       "occurrence": 1,
-      "mergeIndex": 1501,
+      "mergeIndex": 1503,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/skill-query-messages.js\",\"skillQueryMessages\",\"能耗\",1]"
     },
@@ -29386,7 +29422,7 @@
       "exportName": "calculatorMessages",
       "line": 13,
       "occurrence": 1,
-      "mergeIndex": 1502,
+      "mergeIndex": 1504,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29400,7 +29436,7 @@
       "exportName": "calculatorMessages",
       "line": 14,
       "occurrence": 1,
-      "mergeIndex": 1503,
+      "mergeIndex": 1505,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29414,7 +29450,7 @@
       "exportName": "calculatorMessages",
       "line": 15,
       "occurrence": 1,
-      "mergeIndex": 1504,
+      "mergeIndex": 1506,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29428,7 +29464,7 @@
       "exportName": "calculatorMessages",
       "line": 16,
       "occurrence": 1,
-      "mergeIndex": 1505,
+      "mergeIndex": 1507,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29442,7 +29478,7 @@
       "exportName": "calculatorMessages",
       "line": 17,
       "occurrence": 1,
-      "mergeIndex": 1506,
+      "mergeIndex": 1508,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29456,7 +29492,7 @@
       "exportName": "calculatorMessages",
       "line": 18,
       "occurrence": 1,
-      "mergeIndex": 1507,
+      "mergeIndex": 1509,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29470,7 +29506,7 @@
       "exportName": "calculatorMessages",
       "line": 19,
       "occurrence": 1,
-      "mergeIndex": 1508,
+      "mergeIndex": 1510,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29484,7 +29520,7 @@
       "exportName": "calculatorMessages",
       "line": 20,
       "occurrence": 1,
-      "mergeIndex": 1509,
+      "mergeIndex": 1511,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29498,7 +29534,7 @@
       "exportName": "calculatorMessages",
       "line": 21,
       "occurrence": 1,
-      "mergeIndex": 1510,
+      "mergeIndex": 1512,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29512,7 +29548,7 @@
       "exportName": "calculatorMessages",
       "line": 22,
       "occurrence": 1,
-      "mergeIndex": 1511,
+      "mergeIndex": 1513,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29526,7 +29562,7 @@
       "exportName": "calculatorMessages",
       "line": 23,
       "occurrence": 1,
-      "mergeIndex": 1512,
+      "mergeIndex": 1514,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29540,7 +29576,7 @@
       "exportName": "calculatorMessages",
       "line": 24,
       "occurrence": 1,
-      "mergeIndex": 1513,
+      "mergeIndex": 1515,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29554,7 +29590,7 @@
       "exportName": "calculatorMessages",
       "line": 25,
       "occurrence": 1,
-      "mergeIndex": 1514,
+      "mergeIndex": 1516,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"层 ·\",1]"
     },
@@ -29568,7 +29604,7 @@
       "exportName": "calculatorMessages",
       "line": 26,
       "occurrence": 1,
-      "mergeIndex": 1515,
+      "mergeIndex": 1517,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29582,7 +29618,7 @@
       "exportName": "calculatorMessages",
       "line": 27,
       "occurrence": 1,
-      "mergeIndex": 1516,
+      "mergeIndex": 1518,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29596,7 +29632,7 @@
       "exportName": "calculatorMessages",
       "line": 28,
       "occurrence": 1,
-      "mergeIndex": 1517,
+      "mergeIndex": 1519,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29610,7 +29646,7 @@
       "exportName": "calculatorMessages",
       "line": 29,
       "occurrence": 1,
-      "mergeIndex": 1518,
+      "mergeIndex": 1520,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29624,7 +29660,7 @@
       "exportName": "calculatorMessages",
       "line": 30,
       "occurrence": 1,
-      "mergeIndex": 1519,
+      "mergeIndex": 1521,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29638,7 +29674,7 @@
       "exportName": "calculatorMessages",
       "line": 31,
       "occurrence": 1,
-      "mergeIndex": 1520,
+      "mergeIndex": 1522,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29652,7 +29688,7 @@
       "exportName": "calculatorMessages",
       "line": 32,
       "occurrence": 1,
-      "mergeIndex": 1521,
+      "mergeIndex": 1523,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"属性\",1]"
     },
@@ -29666,7 +29702,7 @@
       "exportName": "calculatorMessages",
       "line": 33,
       "occurrence": 1,
-      "mergeIndex": 1522,
+      "mergeIndex": 1524,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29680,7 +29716,7 @@
       "exportName": "calculatorMessages",
       "line": 34,
       "occurrence": 1,
-      "mergeIndex": 1523,
+      "mergeIndex": 1525,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29694,7 +29730,7 @@
       "exportName": "calculatorMessages",
       "line": 35,
       "occurrence": 1,
-      "mergeIndex": 1524,
+      "mergeIndex": 1526,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29708,7 +29744,7 @@
       "exportName": "calculatorMessages",
       "line": 36,
       "occurrence": 1,
-      "mergeIndex": 1525,
+      "mergeIndex": 1527,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29722,7 +29758,7 @@
       "exportName": "calculatorMessages",
       "line": 37,
       "occurrence": 1,
-      "mergeIndex": 1526,
+      "mergeIndex": 1528,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"特\",1]"
     },
@@ -29736,7 +29772,7 @@
       "exportName": "calculatorMessages",
       "line": 38,
       "occurrence": 1,
-      "mergeIndex": 1527,
+      "mergeIndex": 1529,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29750,7 +29786,7 @@
       "exportName": "calculatorMessages",
       "line": 39,
       "occurrence": 1,
-      "mergeIndex": 1528,
+      "mergeIndex": 1530,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29764,7 +29800,7 @@
       "exportName": "calculatorMessages",
       "line": 40,
       "occurrence": 1,
-      "mergeIndex": 1529,
+      "mergeIndex": 1531,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29778,7 +29814,7 @@
       "exportName": "calculatorMessages",
       "line": 41,
       "occurrence": 1,
-      "mergeIndex": 1530,
+      "mergeIndex": 1532,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29792,7 +29828,7 @@
       "exportName": "calculatorMessages",
       "line": 42,
       "occurrence": 1,
-      "mergeIndex": 1531,
+      "mergeIndex": 1533,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29806,7 +29842,7 @@
       "exportName": "calculatorMessages",
       "line": 43,
       "occurrence": 1,
-      "mergeIndex": 1532,
+      "mergeIndex": 1534,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29820,7 +29856,7 @@
       "exportName": "calculatorMessages",
       "line": 44,
       "occurrence": 1,
-      "mergeIndex": 1533,
+      "mergeIndex": 1535,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29834,7 +29870,7 @@
       "exportName": "calculatorMessages",
       "line": 45,
       "occurrence": 1,
-      "mergeIndex": 1534,
+      "mergeIndex": 1536,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/configuration-messages.js\",\"configurationMessages\",\"防御\",1]"
     },
@@ -29848,7 +29884,7 @@
       "exportName": "calculatorMessages",
       "line": 46,
       "occurrence": 1,
-      "mergeIndex": 1535,
+      "mergeIndex": 1537,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/skill-query-messages.js\",\"skillQueryMessages\",\"威力\",1]"
     },
@@ -29862,7 +29898,7 @@
       "exportName": "calculatorMessages",
       "line": 47,
       "occurrence": 1,
-      "mergeIndex": 1536,
+      "mergeIndex": 1538,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"无\",1]"
     },
@@ -29876,7 +29912,7 @@
       "exportName": "calculatorMessages",
       "line": 48,
       "occurrence": 1,
-      "mergeIndex": 1537,
+      "mergeIndex": 1539,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29890,7 +29926,7 @@
       "exportName": "calculatorMessages",
       "line": 49,
       "occurrence": 1,
-      "mergeIndex": 1538,
+      "mergeIndex": 1540,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29904,7 +29940,7 @@
       "exportName": "calculatorMessages",
       "line": 50,
       "occurrence": 1,
-      "mergeIndex": 1539,
+      "mergeIndex": 1541,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29918,7 +29954,7 @@
       "exportName": "calculatorMessages",
       "line": 51,
       "occurrence": 1,
-      "mergeIndex": 1540,
+      "mergeIndex": 1542,
       "effective": false,
       "overridesDefinitionId": null
     },
@@ -29932,7 +29968,7 @@
       "exportName": "calculatorMessages",
       "line": 52,
       "occurrence": 1,
-      "mergeIndex": 1541,
+      "mergeIndex": 1543,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29946,7 +29982,7 @@
       "exportName": "calculatorMessages",
       "line": 53,
       "occurrence": 1,
-      "mergeIndex": 1542,
+      "mergeIndex": 1544,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29960,7 +29996,7 @@
       "exportName": "calculatorMessages",
       "line": 54,
       "occurrence": 1,
-      "mergeIndex": 1543,
+      "mergeIndex": 1545,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -29974,7 +30010,7 @@
       "exportName": "calculatorMessages",
       "line": 55,
       "occurrence": 1,
-      "mergeIndex": 1544,
+      "mergeIndex": 1546,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"重置\",1]"
     },
@@ -29988,7 +30024,7 @@
       "exportName": "calculatorMessages",
       "line": 56,
       "occurrence": 1,
-      "mergeIndex": 1545,
+      "mergeIndex": 1547,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30002,7 +30038,7 @@
       "exportName": "calculatorMessages",
       "line": 57,
       "occurrence": 1,
-      "mergeIndex": 1546,
+      "mergeIndex": 1548,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30016,7 +30052,7 @@
       "exportName": "calculatorMessages",
       "line": 58,
       "occurrence": 1,
-      "mergeIndex": 1547,
+      "mergeIndex": 1549,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30030,7 +30066,7 @@
       "exportName": "calculatorMessages",
       "line": 59,
       "occurrence": 1,
-      "mergeIndex": 1548,
+      "mergeIndex": 1550,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30044,7 +30080,7 @@
       "exportName": "calculatorMessages",
       "line": 60,
       "occurrence": 1,
-      "mergeIndex": 1549,
+      "mergeIndex": 1551,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30058,7 +30094,7 @@
       "exportName": "calculatorMessages",
       "line": 61,
       "occurrence": 1,
-      "mergeIndex": 1550,
+      "mergeIndex": 1552,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30072,7 +30108,7 @@
       "exportName": "calculatorMessages",
       "line": 62,
       "occurrence": 1,
-      "mergeIndex": 1551,
+      "mergeIndex": 1553,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30086,7 +30122,7 @@
       "exportName": "calculatorMessages",
       "line": 63,
       "occurrence": 1,
-      "mergeIndex": 1552,
+      "mergeIndex": 1554,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30100,7 +30136,7 @@
       "exportName": "calculatorMessages",
       "line": 64,
       "occurrence": 1,
-      "mergeIndex": 1553,
+      "mergeIndex": 1555,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30114,7 +30150,7 @@
       "exportName": "calculatorMessages",
       "line": 65,
       "occurrence": 1,
-      "mergeIndex": 1554,
+      "mergeIndex": 1556,
       "effective": false,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"层\",1]"
     },
@@ -30128,7 +30164,7 @@
       "exportName": "calculatorMessages",
       "line": 66,
       "occurrence": 1,
-      "mergeIndex": 1555,
+      "mergeIndex": 1557,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30142,7 +30178,7 @@
       "exportName": "calculatorMessages",
       "line": 67,
       "occurrence": 1,
-      "mergeIndex": 1556,
+      "mergeIndex": 1558,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30156,7 +30192,7 @@
       "exportName": "calculatorMessages",
       "line": 68,
       "occurrence": 1,
-      "mergeIndex": 1557,
+      "mergeIndex": 1559,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30170,7 +30206,7 @@
       "exportName": "calculatorMessages",
       "line": 69,
       "occurrence": 1,
-      "mergeIndex": 1558,
+      "mergeIndex": 1560,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30184,7 +30220,7 @@
       "exportName": "calculatorMessages",
       "line": 70,
       "occurrence": 1,
-      "mergeIndex": 1559,
+      "mergeIndex": 1561,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30198,7 +30234,7 @@
       "exportName": "calculatorMessages",
       "line": 71,
       "occurrence": 1,
-      "mergeIndex": 1560,
+      "mergeIndex": 1562,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30212,7 +30248,7 @@
       "exportName": "calculatorMessages",
       "line": 72,
       "occurrence": 1,
-      "mergeIndex": 1561,
+      "mergeIndex": 1563,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30226,7 +30262,7 @@
       "exportName": "calculatorMessages",
       "line": 73,
       "occurrence": 1,
-      "mergeIndex": 1562,
+      "mergeIndex": 1564,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30240,7 +30276,7 @@
       "exportName": "calculatorMessages",
       "line": 74,
       "occurrence": 1,
-      "mergeIndex": 1563,
+      "mergeIndex": 1565,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30254,7 +30290,7 @@
       "exportName": "calculatorMessages",
       "line": 75,
       "occurrence": 1,
-      "mergeIndex": 1564,
+      "mergeIndex": 1566,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30268,7 +30304,7 @@
       "exportName": "calculatorMessages",
       "line": 76,
       "occurrence": 1,
-      "mergeIndex": 1565,
+      "mergeIndex": 1567,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30282,7 +30318,7 @@
       "exportName": "calculatorMessages",
       "line": 77,
       "occurrence": 1,
-      "mergeIndex": 1566,
+      "mergeIndex": 1568,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30296,7 +30332,7 @@
       "exportName": "calculatorMessages",
       "line": 78,
       "occurrence": 1,
-      "mergeIndex": 1567,
+      "mergeIndex": 1569,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"天气\",1]"
     },
@@ -30310,7 +30346,7 @@
       "exportName": "calculatorMessages",
       "line": 79,
       "occurrence": 1,
-      "mergeIndex": 1568,
+      "mergeIndex": 1570,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30324,7 +30360,7 @@
       "exportName": "calculatorMessages",
       "line": 80,
       "occurrence": 1,
-      "mergeIndex": 1569,
+      "mergeIndex": 1571,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30338,7 +30374,7 @@
       "exportName": "calculatorMessages",
       "line": 81,
       "occurrence": 1,
-      "mergeIndex": 1570,
+      "mergeIndex": 1572,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30352,7 +30388,7 @@
       "exportName": "calculatorMessages",
       "line": 82,
       "occurrence": 1,
-      "mergeIndex": 1571,
+      "mergeIndex": 1573,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30366,7 +30402,7 @@
       "exportName": "calculatorMessages",
       "line": 83,
       "occurrence": 1,
-      "mergeIndex": 1572,
+      "mergeIndex": 1574,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30380,7 +30416,7 @@
       "exportName": "calculatorMessages",
       "line": 84,
       "occurrence": 1,
-      "mergeIndex": 1573,
+      "mergeIndex": 1575,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30394,7 +30430,7 @@
       "exportName": "calculatorMessages",
       "line": 85,
       "occurrence": 1,
-      "mergeIndex": 1574,
+      "mergeIndex": 1576,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30408,7 +30444,7 @@
       "exportName": "calculatorMessages",
       "line": 86,
       "occurrence": 1,
-      "mergeIndex": 1575,
+      "mergeIndex": 1577,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30422,7 +30458,7 @@
       "exportName": "calculatorMessages",
       "line": 87,
       "occurrence": 1,
-      "mergeIndex": 1576,
+      "mergeIndex": 1578,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30436,7 +30472,7 @@
       "exportName": "calculatorMessages",
       "line": 88,
       "occurrence": 1,
-      "mergeIndex": 1577,
+      "mergeIndex": 1579,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30450,7 +30486,7 @@
       "exportName": "calculatorMessages",
       "line": 89,
       "occurrence": 1,
-      "mergeIndex": 1578,
+      "mergeIndex": 1580,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30464,7 +30500,7 @@
       "exportName": "calculatorMessages",
       "line": 90,
       "occurrence": 1,
-      "mergeIndex": 1579,
+      "mergeIndex": 1581,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30478,7 +30514,7 @@
       "exportName": "calculatorMessages",
       "line": 91,
       "occurrence": 1,
-      "mergeIndex": 1580,
+      "mergeIndex": 1582,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30492,7 +30528,7 @@
       "exportName": "calculatorMessages",
       "line": 92,
       "occurrence": 1,
-      "mergeIndex": 1581,
+      "mergeIndex": 1583,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30506,7 +30542,7 @@
       "exportName": "calculatorMessages",
       "line": 93,
       "occurrence": 1,
-      "mergeIndex": 1582,
+      "mergeIndex": 1584,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30520,7 +30556,7 @@
       "exportName": "calculatorMessages",
       "line": 94,
       "occurrence": 1,
-      "mergeIndex": 1583,
+      "mergeIndex": 1585,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30534,7 +30570,7 @@
       "exportName": "calculatorMessages",
       "line": 95,
       "occurrence": 1,
-      "mergeIndex": 1584,
+      "mergeIndex": 1586,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30548,7 +30584,7 @@
       "exportName": "calculatorMessages",
       "line": 96,
       "occurrence": 1,
-      "mergeIndex": 1585,
+      "mergeIndex": 1587,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30562,7 +30598,7 @@
       "exportName": "calculatorMessages",
       "line": 97,
       "occurrence": 1,
-      "mergeIndex": 1586,
+      "mergeIndex": 1588,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30576,7 +30612,7 @@
       "exportName": "calculatorMessages",
       "line": 98,
       "occurrence": 1,
-      "mergeIndex": 1587,
+      "mergeIndex": 1589,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30590,7 +30626,7 @@
       "exportName": "calculatorMessages",
       "line": 99,
       "occurrence": 1,
-      "mergeIndex": 1588,
+      "mergeIndex": 1590,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30604,7 +30640,7 @@
       "exportName": "calculatorMessages",
       "line": 100,
       "occurrence": 1,
-      "mergeIndex": 1589,
+      "mergeIndex": 1591,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30618,7 +30654,7 @@
       "exportName": "calculatorMessages",
       "line": 101,
       "occurrence": 1,
-      "mergeIndex": 1590,
+      "mergeIndex": 1592,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30632,7 +30668,7 @@
       "exportName": "calculatorMessages",
       "line": 102,
       "occurrence": 1,
-      "mergeIndex": 1591,
+      "mergeIndex": 1593,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30646,7 +30682,7 @@
       "exportName": "calculatorMessages",
       "line": 103,
       "occurrence": 1,
-      "mergeIndex": 1592,
+      "mergeIndex": 1594,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30660,7 +30696,7 @@
       "exportName": "calculatorMessages",
       "line": 104,
       "occurrence": 1,
-      "mergeIndex": 1593,
+      "mergeIndex": 1595,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"免疫\",1]"
     },
@@ -30674,7 +30710,7 @@
       "exportName": "calculatorMessages",
       "line": 105,
       "occurrence": 1,
-      "mergeIndex": 1594,
+      "mergeIndex": 1596,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30688,7 +30724,7 @@
       "exportName": "calculatorMessages",
       "line": 106,
       "occurrence": 1,
-      "mergeIndex": 1595,
+      "mergeIndex": 1597,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30702,7 +30738,7 @@
       "exportName": "calculatorMessages",
       "line": 107,
       "occurrence": 1,
-      "mergeIndex": 1596,
+      "mergeIndex": 1598,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30716,7 +30752,7 @@
       "exportName": "calculatorMessages",
       "line": 108,
       "occurrence": 1,
-      "mergeIndex": 1597,
+      "mergeIndex": 1599,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30730,7 +30766,7 @@
       "exportName": "calculatorMessages",
       "line": 109,
       "occurrence": 1,
-      "mergeIndex": 1598,
+      "mergeIndex": 1600,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30744,7 +30780,7 @@
       "exportName": "calculatorMessages",
       "line": 110,
       "occurrence": 1,
-      "mergeIndex": 1599,
+      "mergeIndex": 1601,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30758,7 +30794,7 @@
       "exportName": "calculatorMessages",
       "line": 111,
       "occurrence": 1,
-      "mergeIndex": 1600,
+      "mergeIndex": 1602,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30772,7 +30808,7 @@
       "exportName": "calculatorMessages",
       "line": 112,
       "occurrence": 1,
-      "mergeIndex": 1601,
+      "mergeIndex": 1603,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"特性\",1]"
     },
@@ -30786,7 +30822,7 @@
       "exportName": "calculatorMessages",
       "line": 113,
       "occurrence": 1,
-      "mergeIndex": 1602,
+      "mergeIndex": 1604,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30800,7 +30836,7 @@
       "exportName": "calculatorMessages",
       "line": 114,
       "occurrence": 1,
-      "mergeIndex": 1603,
+      "mergeIndex": 1605,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30814,7 +30850,7 @@
       "exportName": "calculatorMessages",
       "line": 115,
       "occurrence": 1,
-      "mergeIndex": 1604,
+      "mergeIndex": 1606,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30828,7 +30864,7 @@
       "exportName": "calculatorMessages",
       "line": 116,
       "occurrence": 1,
-      "mergeIndex": 1605,
+      "mergeIndex": 1607,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30842,7 +30878,7 @@
       "exportName": "calculatorMessages",
       "line": 117,
       "occurrence": 1,
-      "mergeIndex": 1606,
+      "mergeIndex": 1608,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30856,7 +30892,7 @@
       "exportName": "calculatorMessages",
       "line": 118,
       "occurrence": 1,
-      "mergeIndex": 1607,
+      "mergeIndex": 1609,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30870,7 +30906,7 @@
       "exportName": "calculatorMessages",
       "line": 119,
       "occurrence": 1,
-      "mergeIndex": 1608,
+      "mergeIndex": 1610,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30884,7 +30920,7 @@
       "exportName": "calculatorMessages",
       "line": 120,
       "occurrence": 1,
-      "mergeIndex": 1609,
+      "mergeIndex": 1611,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30898,7 +30934,7 @@
       "exportName": "calculatorMessages",
       "line": 121,
       "occurrence": 1,
-      "mergeIndex": 1610,
+      "mergeIndex": 1612,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30912,7 +30948,7 @@
       "exportName": "calculatorMessages",
       "line": 122,
       "occurrence": 1,
-      "mergeIndex": 1611,
+      "mergeIndex": 1613,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30926,7 +30962,7 @@
       "exportName": "calculatorMessages",
       "line": 123,
       "occurrence": 1,
-      "mergeIndex": 1612,
+      "mergeIndex": 1614,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"级\",1]"
     },
@@ -30940,7 +30976,7 @@
       "exportName": "calculatorMessages",
       "line": 124,
       "occurrence": 1,
-      "mergeIndex": 1613,
+      "mergeIndex": 1615,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30954,7 +30990,7 @@
       "exportName": "calculatorMessages",
       "line": 125,
       "occurrence": 1,
-      "mergeIndex": 1614,
+      "mergeIndex": 1616,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30968,7 +31004,7 @@
       "exportName": "calculatorMessages",
       "line": 126,
       "occurrence": 1,
-      "mergeIndex": 1615,
+      "mergeIndex": 1617,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30982,7 +31018,7 @@
       "exportName": "calculatorMessages",
       "line": 127,
       "occurrence": 1,
-      "mergeIndex": 1616,
+      "mergeIndex": 1618,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -30996,7 +31032,7 @@
       "exportName": "calculatorMessages",
       "line": 128,
       "occurrence": 1,
-      "mergeIndex": 1617,
+      "mergeIndex": 1619,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31010,7 +31046,7 @@
       "exportName": "calculatorMessages",
       "line": 129,
       "occurrence": 1,
-      "mergeIndex": 1618,
+      "mergeIndex": 1620,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31024,7 +31060,7 @@
       "exportName": "calculatorMessages",
       "line": 130,
       "occurrence": 1,
-      "mergeIndex": 1619,
+      "mergeIndex": 1621,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31038,7 +31074,7 @@
       "exportName": "calculatorMessages",
       "line": 131,
       "occurrence": 1,
-      "mergeIndex": 1620,
+      "mergeIndex": 1622,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31052,7 +31088,7 @@
       "exportName": "calculatorMessages",
       "line": 132,
       "occurrence": 1,
-      "mergeIndex": 1621,
+      "mergeIndex": 1623,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31066,7 +31102,7 @@
       "exportName": "calculatorMessages",
       "line": 133,
       "occurrence": 1,
-      "mergeIndex": 1622,
+      "mergeIndex": 1624,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31080,7 +31116,7 @@
       "exportName": "calculatorMessages",
       "line": 134,
       "occurrence": 1,
-      "mergeIndex": 1623,
+      "mergeIndex": 1625,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31094,7 +31130,7 @@
       "exportName": "calculatorMessages",
       "line": 135,
       "occurrence": 1,
-      "mergeIndex": 1624,
+      "mergeIndex": 1626,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"进攻\",1]"
     },
@@ -31108,7 +31144,7 @@
       "exportName": "calculatorMessages",
       "line": 136,
       "occurrence": 1,
-      "mergeIndex": 1625,
+      "mergeIndex": 1627,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31122,7 +31158,7 @@
       "exportName": "calculatorMessages",
       "line": 137,
       "occurrence": 1,
-      "mergeIndex": 1626,
+      "mergeIndex": 1628,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31136,7 +31172,7 @@
       "exportName": "calculatorMessages",
       "line": 138,
       "occurrence": 1,
-      "mergeIndex": 1627,
+      "mergeIndex": 1629,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31150,7 +31186,7 @@
       "exportName": "calculatorMessages",
       "line": 139,
       "occurrence": 1,
-      "mergeIndex": 1628,
+      "mergeIndex": 1630,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"满\",1]"
     },
@@ -31164,7 +31200,7 @@
       "exportName": "calculatorMessages",
       "line": 140,
       "occurrence": 1,
-      "mergeIndex": 1629,
+      "mergeIndex": 1631,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31178,7 +31214,7 @@
       "exportName": "calculatorMessages",
       "line": 141,
       "occurrence": 1,
-      "mergeIndex": 1630,
+      "mergeIndex": 1632,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"伤害\",1]"
     },
@@ -31192,7 +31228,7 @@
       "exportName": "calculatorMessages",
       "line": 142,
       "occurrence": 1,
-      "mergeIndex": 1631,
+      "mergeIndex": 1633,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31206,7 +31242,7 @@
       "exportName": "calculatorMessages",
       "line": 143,
       "occurrence": 1,
-      "mergeIndex": 1632,
+      "mergeIndex": 1634,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31220,7 +31256,7 @@
       "exportName": "calculatorMessages",
       "line": 144,
       "occurrence": 1,
-      "mergeIndex": 1633,
+      "mergeIndex": 1635,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31234,7 +31270,7 @@
       "exportName": "calculatorMessages",
       "line": 145,
       "occurrence": 1,
-      "mergeIndex": 1634,
+      "mergeIndex": 1636,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31248,7 +31284,7 @@
       "exportName": "calculatorMessages",
       "line": 146,
       "occurrence": 1,
-      "mergeIndex": 1635,
+      "mergeIndex": 1637,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31262,7 +31298,7 @@
       "exportName": "calculatorMessages",
       "line": 147,
       "occurrence": 1,
-      "mergeIndex": 1636,
+      "mergeIndex": 1638,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31276,7 +31312,7 @@
       "exportName": "calculatorMessages",
       "line": 148,
       "occurrence": 1,
-      "mergeIndex": 1637,
+      "mergeIndex": 1639,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31290,7 +31326,7 @@
       "exportName": "calculatorMessages",
       "line": 149,
       "occurrence": 1,
-      "mergeIndex": 1638,
+      "mergeIndex": 1640,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31304,7 +31340,7 @@
       "exportName": "calculatorMessages",
       "line": 150,
       "occurrence": 1,
-      "mergeIndex": 1639,
+      "mergeIndex": 1641,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31318,7 +31354,7 @@
       "exportName": "calculatorMessages",
       "line": 151,
       "occurrence": 1,
-      "mergeIndex": 1640,
+      "mergeIndex": 1642,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31332,7 +31368,7 @@
       "exportName": "calculatorMessages",
       "line": 152,
       "occurrence": 1,
-      "mergeIndex": 1641,
+      "mergeIndex": 1643,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31346,7 +31382,7 @@
       "exportName": "calculatorMessages",
       "line": 153,
       "occurrence": 1,
-      "mergeIndex": 1642,
+      "mergeIndex": 1644,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31360,7 +31396,7 @@
       "exportName": "calculatorMessages",
       "line": 154,
       "occurrence": 1,
-      "mergeIndex": 1643,
+      "mergeIndex": 1645,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31374,7 +31410,7 @@
       "exportName": "calculatorMessages",
       "line": 155,
       "occurrence": 1,
-      "mergeIndex": 1644,
+      "mergeIndex": 1646,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31388,7 +31424,7 @@
       "exportName": "calculatorMessages",
       "line": 156,
       "occurrence": 1,
-      "mergeIndex": 1645,
+      "mergeIndex": 1647,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31402,7 +31438,7 @@
       "exportName": "calculatorMessages",
       "line": 157,
       "occurrence": 1,
-      "mergeIndex": 1646,
+      "mergeIndex": 1648,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31416,7 +31452,7 @@
       "exportName": "calculatorMessages",
       "line": 158,
       "occurrence": 1,
-      "mergeIndex": 1647,
+      "mergeIndex": 1649,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31430,7 +31466,7 @@
       "exportName": "calculatorMessages",
       "line": 159,
       "occurrence": 1,
-      "mergeIndex": 1648,
+      "mergeIndex": 1650,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31444,7 +31480,7 @@
       "exportName": "calculatorMessages",
       "line": 160,
       "occurrence": 1,
-      "mergeIndex": 1649,
+      "mergeIndex": 1651,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31458,7 +31494,7 @@
       "exportName": "calculatorMessages",
       "line": 161,
       "occurrence": 1,
-      "mergeIndex": 1650,
+      "mergeIndex": 1652,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31472,7 +31508,7 @@
       "exportName": "calculatorMessages",
       "line": 162,
       "occurrence": 1,
-      "mergeIndex": 1651,
+      "mergeIndex": 1653,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31486,7 +31522,7 @@
       "exportName": "calculatorMessages",
       "line": 163,
       "occurrence": 1,
-      "mergeIndex": 1652,
+      "mergeIndex": 1654,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31500,7 +31536,7 @@
       "exportName": "calculatorMessages",
       "line": 164,
       "occurrence": 1,
-      "mergeIndex": 1653,
+      "mergeIndex": 1655,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31514,7 +31550,7 @@
       "exportName": "calculatorMessages",
       "line": 165,
       "occurrence": 1,
-      "mergeIndex": 1654,
+      "mergeIndex": 1656,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31528,7 +31564,7 @@
       "exportName": "calculatorMessages",
       "line": 166,
       "occurrence": 1,
-      "mergeIndex": 1655,
+      "mergeIndex": 1657,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31542,7 +31578,7 @@
       "exportName": "calculatorMessages",
       "line": 167,
       "occurrence": 1,
-      "mergeIndex": 1656,
+      "mergeIndex": 1658,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31556,7 +31592,7 @@
       "exportName": "calculatorMessages",
       "line": 168,
       "occurrence": 1,
-      "mergeIndex": 1657,
+      "mergeIndex": 1659,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31570,7 +31606,7 @@
       "exportName": "calculatorMessages",
       "line": 169,
       "occurrence": 1,
-      "mergeIndex": 1658,
+      "mergeIndex": 1660,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31584,7 +31620,7 @@
       "exportName": "calculatorMessages",
       "line": 170,
       "occurrence": 1,
-      "mergeIndex": 1659,
+      "mergeIndex": 1661,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31598,7 +31634,7 @@
       "exportName": "calculatorMessages",
       "line": 171,
       "occurrence": 1,
-      "mergeIndex": 1660,
+      "mergeIndex": 1662,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31612,7 +31648,7 @@
       "exportName": "calculatorMessages",
       "line": 172,
       "occurrence": 1,
-      "mergeIndex": 1661,
+      "mergeIndex": 1663,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31626,7 +31662,7 @@
       "exportName": "calculatorMessages",
       "line": 173,
       "occurrence": 1,
-      "mergeIndex": 1662,
+      "mergeIndex": 1664,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31640,7 +31676,7 @@
       "exportName": "calculatorMessages",
       "line": 174,
       "occurrence": 1,
-      "mergeIndex": 1663,
+      "mergeIndex": 1665,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31654,7 +31690,7 @@
       "exportName": "calculatorMessages",
       "line": 175,
       "occurrence": 1,
-      "mergeIndex": 1664,
+      "mergeIndex": 1666,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31668,7 +31704,7 @@
       "exportName": "calculatorMessages",
       "line": 176,
       "occurrence": 1,
-      "mergeIndex": 1665,
+      "mergeIndex": 1667,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31682,7 +31718,7 @@
       "exportName": "calculatorMessages",
       "line": 177,
       "occurrence": 1,
-      "mergeIndex": 1666,
+      "mergeIndex": 1668,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31696,7 +31732,7 @@
       "exportName": "calculatorMessages",
       "line": 178,
       "occurrence": 1,
-      "mergeIndex": 1667,
+      "mergeIndex": 1669,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31710,7 +31746,7 @@
       "exportName": "calculatorMessages",
       "line": 179,
       "occurrence": 1,
-      "mergeIndex": 1668,
+      "mergeIndex": 1670,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31724,7 +31760,7 @@
       "exportName": "calculatorMessages",
       "line": 180,
       "occurrence": 1,
-      "mergeIndex": 1669,
+      "mergeIndex": 1671,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31738,7 +31774,7 @@
       "exportName": "calculatorMessages",
       "line": 181,
       "occurrence": 1,
-      "mergeIndex": 1670,
+      "mergeIndex": 1672,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31752,7 +31788,7 @@
       "exportName": "calculatorMessages",
       "line": 182,
       "occurrence": 1,
-      "mergeIndex": 1671,
+      "mergeIndex": 1673,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31766,7 +31802,7 @@
       "exportName": "calculatorMessages",
       "line": 183,
       "occurrence": 1,
-      "mergeIndex": 1672,
+      "mergeIndex": 1674,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31780,7 +31816,7 @@
       "exportName": "calculatorMessages",
       "line": 184,
       "occurrence": 1,
-      "mergeIndex": 1673,
+      "mergeIndex": 1675,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31794,7 +31830,7 @@
       "exportName": "calculatorMessages",
       "line": 185,
       "occurrence": 1,
-      "mergeIndex": 1674,
+      "mergeIndex": 1676,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31808,7 +31844,7 @@
       "exportName": "calculatorMessages",
       "line": 186,
       "occurrence": 1,
-      "mergeIndex": 1675,
+      "mergeIndex": 1677,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31822,7 +31858,7 @@
       "exportName": "calculatorMessages",
       "line": 187,
       "occurrence": 1,
-      "mergeIndex": 1676,
+      "mergeIndex": 1678,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31836,7 +31872,7 @@
       "exportName": "calculatorMessages",
       "line": 188,
       "occurrence": 1,
-      "mergeIndex": 1677,
+      "mergeIndex": 1679,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31850,7 +31886,7 @@
       "exportName": "calculatorMessages",
       "line": 189,
       "occurrence": 1,
-      "mergeIndex": 1678,
+      "mergeIndex": 1680,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31864,7 +31900,7 @@
       "exportName": "calculatorMessages",
       "line": 190,
       "occurrence": 1,
-      "mergeIndex": 1679,
+      "mergeIndex": 1681,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31878,7 +31914,7 @@
       "exportName": "calculatorMessages",
       "line": 191,
       "occurrence": 1,
-      "mergeIndex": 1680,
+      "mergeIndex": 1682,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31892,7 +31928,7 @@
       "exportName": "calculatorMessages",
       "line": 192,
       "occurrence": 1,
-      "mergeIndex": 1681,
+      "mergeIndex": 1683,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31906,7 +31942,7 @@
       "exportName": "calculatorMessages",
       "line": 193,
       "occurrence": 1,
-      "mergeIndex": 1682,
+      "mergeIndex": 1684,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31920,7 +31956,7 @@
       "exportName": "calculatorMessages",
       "line": 194,
       "occurrence": 1,
-      "mergeIndex": 1683,
+      "mergeIndex": 1685,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31934,7 +31970,7 @@
       "exportName": "calculatorMessages",
       "line": 195,
       "occurrence": 1,
-      "mergeIndex": 1684,
+      "mergeIndex": 1686,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31948,7 +31984,7 @@
       "exportName": "calculatorMessages",
       "line": 196,
       "occurrence": 1,
-      "mergeIndex": 1685,
+      "mergeIndex": 1687,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31962,7 +31998,7 @@
       "exportName": "calculatorMessages",
       "line": 197,
       "occurrence": 1,
-      "mergeIndex": 1686,
+      "mergeIndex": 1688,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31976,7 +32012,7 @@
       "exportName": "calculatorMessages",
       "line": 198,
       "occurrence": 1,
-      "mergeIndex": 1687,
+      "mergeIndex": 1689,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -31990,7 +32026,7 @@
       "exportName": "calculatorMessages",
       "line": 199,
       "occurrence": 1,
-      "mergeIndex": 1688,
+      "mergeIndex": 1690,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32004,7 +32040,7 @@
       "exportName": "calculatorMessages",
       "line": 200,
       "occurrence": 1,
-      "mergeIndex": 1689,
+      "mergeIndex": 1691,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32018,7 +32054,7 @@
       "exportName": "calculatorMessages",
       "line": 201,
       "occurrence": 1,
-      "mergeIndex": 1690,
+      "mergeIndex": 1692,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32032,7 +32068,7 @@
       "exportName": "calculatorMessages",
       "line": 202,
       "occurrence": 1,
-      "mergeIndex": 1691,
+      "mergeIndex": 1693,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32046,7 +32082,7 @@
       "exportName": "calculatorMessages",
       "line": 203,
       "occurrence": 1,
-      "mergeIndex": 1692,
+      "mergeIndex": 1694,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32060,7 +32096,7 @@
       "exportName": "calculatorMessages",
       "line": 204,
       "occurrence": 1,
-      "mergeIndex": 1693,
+      "mergeIndex": 1695,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32074,7 +32110,7 @@
       "exportName": "calculatorMessages",
       "line": 205,
       "occurrence": 1,
-      "mergeIndex": 1694,
+      "mergeIndex": 1696,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32088,7 +32124,7 @@
       "exportName": "calculatorMessages",
       "line": 206,
       "occurrence": 1,
-      "mergeIndex": 1695,
+      "mergeIndex": 1697,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32102,7 +32138,7 @@
       "exportName": "calculatorMessages",
       "line": 207,
       "occurrence": 1,
-      "mergeIndex": 1696,
+      "mergeIndex": 1698,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32116,7 +32152,7 @@
       "exportName": "calculatorMessages",
       "line": 208,
       "occurrence": 1,
-      "mergeIndex": 1697,
+      "mergeIndex": 1699,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32130,7 +32166,7 @@
       "exportName": "calculatorMessages",
       "line": 209,
       "occurrence": 1,
-      "mergeIndex": 1698,
+      "mergeIndex": 1700,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/configuration-messages.js\",\"configurationMessages\",\"增加\",1]"
     },
@@ -32144,7 +32180,7 @@
       "exportName": "calculatorMessages",
       "line": 210,
       "occurrence": 1,
-      "mergeIndex": 1699,
+      "mergeIndex": 1701,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32158,7 +32194,7 @@
       "exportName": "calculatorMessages",
       "line": 211,
       "occurrence": 1,
-      "mergeIndex": 1700,
+      "mergeIndex": 1702,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32172,7 +32208,7 @@
       "exportName": "calculatorMessages",
       "line": 212,
       "occurrence": 1,
-      "mergeIndex": 1701,
+      "mergeIndex": 1703,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32186,7 +32222,7 @@
       "exportName": "calculatorMessages",
       "line": 213,
       "occurrence": 1,
-      "mergeIndex": 1702,
+      "mergeIndex": 1704,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32200,7 +32236,7 @@
       "exportName": "calculatorMessages",
       "line": 214,
       "occurrence": 1,
-      "mergeIndex": 1703,
+      "mergeIndex": 1705,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32214,7 +32250,7 @@
       "exportName": "calculatorMessages",
       "line": 215,
       "occurrence": 1,
-      "mergeIndex": 1704,
+      "mergeIndex": 1706,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32228,7 +32264,7 @@
       "exportName": "calculatorMessages",
       "line": 216,
       "occurrence": 1,
-      "mergeIndex": 1705,
+      "mergeIndex": 1707,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32242,7 +32278,7 @@
       "exportName": "calculatorMessages",
       "line": 217,
       "occurrence": 1,
-      "mergeIndex": 1706,
+      "mergeIndex": 1708,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32256,7 +32292,7 @@
       "exportName": "calculatorMessages",
       "line": 218,
       "occurrence": 1,
-      "mergeIndex": 1707,
+      "mergeIndex": 1709,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32270,7 +32306,7 @@
       "exportName": "calculatorMessages",
       "line": 219,
       "occurrence": 1,
-      "mergeIndex": 1708,
+      "mergeIndex": 1710,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32284,7 +32320,7 @@
       "exportName": "calculatorMessages",
       "line": 220,
       "occurrence": 1,
-      "mergeIndex": 1709,
+      "mergeIndex": 1711,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32298,7 +32334,7 @@
       "exportName": "calculatorMessages",
       "line": 221,
       "occurrence": 1,
-      "mergeIndex": 1710,
+      "mergeIndex": 1712,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32312,7 +32348,7 @@
       "exportName": "calculatorMessages",
       "line": 222,
       "occurrence": 1,
-      "mergeIndex": 1711,
+      "mergeIndex": 1713,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32326,7 +32362,7 @@
       "exportName": "calculatorMessages",
       "line": 223,
       "occurrence": 1,
-      "mergeIndex": 1712,
+      "mergeIndex": 1714,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32340,7 +32376,7 @@
       "exportName": "calculatorMessages",
       "line": 224,
       "occurrence": 1,
-      "mergeIndex": 1713,
+      "mergeIndex": 1715,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32354,7 +32390,7 @@
       "exportName": "calculatorMessages",
       "line": 225,
       "occurrence": 1,
-      "mergeIndex": 1714,
+      "mergeIndex": 1716,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32368,7 +32404,7 @@
       "exportName": "calculatorMessages",
       "line": 226,
       "occurrence": 1,
-      "mergeIndex": 1715,
+      "mergeIndex": 1717,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32382,7 +32418,7 @@
       "exportName": "calculatorMessages",
       "line": 227,
       "occurrence": 1,
-      "mergeIndex": 1716,
+      "mergeIndex": 1718,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32396,7 +32432,7 @@
       "exportName": "calculatorMessages",
       "line": 228,
       "occurrence": 1,
-      "mergeIndex": 1717,
+      "mergeIndex": 1719,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32410,7 +32446,7 @@
       "exportName": "calculatorMessages",
       "line": 229,
       "occurrence": 1,
-      "mergeIndex": 1718,
+      "mergeIndex": 1720,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32424,7 +32460,7 @@
       "exportName": "calculatorMessages",
       "line": 230,
       "occurrence": 1,
-      "mergeIndex": 1719,
+      "mergeIndex": 1721,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32438,7 +32474,7 @@
       "exportName": "calculatorMessages",
       "line": 231,
       "occurrence": 1,
-      "mergeIndex": 1720,
+      "mergeIndex": 1722,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32452,7 +32488,7 @@
       "exportName": "calculatorMessages",
       "line": 232,
       "occurrence": 1,
-      "mergeIndex": 1721,
+      "mergeIndex": 1723,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32466,7 +32502,7 @@
       "exportName": "calculatorMessages",
       "line": 233,
       "occurrence": 1,
-      "mergeIndex": 1722,
+      "mergeIndex": 1724,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32480,7 +32516,7 @@
       "exportName": "calculatorMessages",
       "line": 234,
       "occurrence": 1,
-      "mergeIndex": 1723,
+      "mergeIndex": 1725,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32494,7 +32530,7 @@
       "exportName": "calculatorMessages",
       "line": 235,
       "occurrence": 1,
-      "mergeIndex": 1724,
+      "mergeIndex": 1726,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32508,7 +32544,7 @@
       "exportName": "calculatorMessages",
       "line": 236,
       "occurrence": 1,
-      "mergeIndex": 1725,
+      "mergeIndex": 1727,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"固定威力增加\",1]"
     },
@@ -32522,7 +32558,7 @@
       "exportName": "calculatorMessages",
       "line": 237,
       "occurrence": 1,
-      "mergeIndex": 1726,
+      "mergeIndex": 1728,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"特性固定威力\",1]"
     },
@@ -32536,7 +32572,7 @@
       "exportName": "calculatorMessages",
       "line": 238,
       "occurrence": 1,
-      "mergeIndex": 1727,
+      "mergeIndex": 1729,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32550,7 +32586,7 @@
       "exportName": "calculatorMessages",
       "line": 239,
       "occurrence": 1,
-      "mergeIndex": 1728,
+      "mergeIndex": 1730,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32564,7 +32600,7 @@
       "exportName": "calculatorMessages",
       "line": 240,
       "occurrence": 1,
-      "mergeIndex": 1729,
+      "mergeIndex": 1731,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32578,7 +32614,7 @@
       "exportName": "calculatorMessages",
       "line": 241,
       "occurrence": 1,
-      "mergeIndex": 1730,
+      "mergeIndex": 1732,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32592,7 +32628,7 @@
       "exportName": "calculatorMessages",
       "line": 242,
       "occurrence": 1,
-      "mergeIndex": 1731,
+      "mergeIndex": 1733,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32606,7 +32642,7 @@
       "exportName": "calculatorMessages",
       "line": 243,
       "occurrence": 1,
-      "mergeIndex": 1732,
+      "mergeIndex": 1734,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32620,7 +32656,7 @@
       "exportName": "calculatorMessages",
       "line": 244,
       "occurrence": 1,
-      "mergeIndex": 1733,
+      "mergeIndex": 1735,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32634,7 +32670,7 @@
       "exportName": "calculatorMessages",
       "line": 245,
       "occurrence": 1,
-      "mergeIndex": 1734,
+      "mergeIndex": 1736,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32648,7 +32684,7 @@
       "exportName": "calculatorMessages",
       "line": 246,
       "occurrence": 1,
-      "mergeIndex": 1735,
+      "mergeIndex": 1737,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32662,7 +32698,7 @@
       "exportName": "calculatorMessages",
       "line": 247,
       "occurrence": 1,
-      "mergeIndex": 1736,
+      "mergeIndex": 1738,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32676,7 +32712,7 @@
       "exportName": "calculatorMessages",
       "line": 248,
       "occurrence": 1,
-      "mergeIndex": 1737,
+      "mergeIndex": 1739,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32690,7 +32726,7 @@
       "exportName": "calculatorMessages",
       "line": 249,
       "occurrence": 1,
-      "mergeIndex": 1738,
+      "mergeIndex": 1740,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32704,7 +32740,7 @@
       "exportName": "calculatorMessages",
       "line": 250,
       "occurrence": 1,
-      "mergeIndex": 1739,
+      "mergeIndex": 1741,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32718,7 +32754,7 @@
       "exportName": "calculatorMessages",
       "line": 251,
       "occurrence": 1,
-      "mergeIndex": 1740,
+      "mergeIndex": 1742,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32732,7 +32768,7 @@
       "exportName": "calculatorMessages",
       "line": 252,
       "occurrence": 1,
-      "mergeIndex": 1741,
+      "mergeIndex": 1743,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32746,7 +32782,7 @@
       "exportName": "calculatorMessages",
       "line": 253,
       "occurrence": 1,
-      "mergeIndex": 1742,
+      "mergeIndex": 1744,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32760,7 +32796,7 @@
       "exportName": "calculatorMessages",
       "line": 254,
       "occurrence": 1,
-      "mergeIndex": 1743,
+      "mergeIndex": 1745,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32774,7 +32810,7 @@
       "exportName": "calculatorMessages",
       "line": 255,
       "occurrence": 1,
-      "mergeIndex": 1744,
+      "mergeIndex": 1746,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32788,7 +32824,7 @@
       "exportName": "calculatorMessages",
       "line": 256,
       "occurrence": 1,
-      "mergeIndex": 1745,
+      "mergeIndex": 1747,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32802,7 +32838,7 @@
       "exportName": "calculatorMessages",
       "line": 257,
       "occurrence": 1,
-      "mergeIndex": 1746,
+      "mergeIndex": 1748,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32816,7 +32852,7 @@
       "exportName": "calculatorMessages",
       "line": 258,
       "occurrence": 1,
-      "mergeIndex": 1747,
+      "mergeIndex": 1749,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32830,7 +32866,7 @@
       "exportName": "calculatorMessages",
       "line": 259,
       "occurrence": 1,
-      "mergeIndex": 1748,
+      "mergeIndex": 1750,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32844,7 +32880,7 @@
       "exportName": "calculatorMessages",
       "line": 260,
       "occurrence": 1,
-      "mergeIndex": 1749,
+      "mergeIndex": 1751,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32858,7 +32894,7 @@
       "exportName": "calculatorMessages",
       "line": 261,
       "occurrence": 1,
-      "mergeIndex": 1750,
+      "mergeIndex": 1752,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32872,7 +32908,7 @@
       "exportName": "calculatorMessages",
       "line": 262,
       "occurrence": 1,
-      "mergeIndex": 1751,
+      "mergeIndex": 1753,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32886,7 +32922,7 @@
       "exportName": "calculatorMessages",
       "line": 263,
       "occurrence": 1,
-      "mergeIndex": 1752,
+      "mergeIndex": 1754,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32900,7 +32936,7 @@
       "exportName": "calculatorMessages",
       "line": 264,
       "occurrence": 1,
-      "mergeIndex": 1753,
+      "mergeIndex": 1755,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32914,7 +32950,7 @@
       "exportName": "calculatorMessages",
       "line": 265,
       "occurrence": 1,
-      "mergeIndex": 1754,
+      "mergeIndex": 1756,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32928,7 +32964,7 @@
       "exportName": "calculatorMessages",
       "line": 266,
       "occurrence": 1,
-      "mergeIndex": 1755,
+      "mergeIndex": 1757,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32942,7 +32978,7 @@
       "exportName": "calculatorMessages",
       "line": 267,
       "occurrence": 1,
-      "mergeIndex": 1756,
+      "mergeIndex": 1758,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32956,7 +32992,7 @@
       "exportName": "calculatorMessages",
       "line": 268,
       "occurrence": 1,
-      "mergeIndex": 1757,
+      "mergeIndex": 1759,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32970,7 +33006,7 @@
       "exportName": "calculatorMessages",
       "line": 269,
       "occurrence": 1,
-      "mergeIndex": 1758,
+      "mergeIndex": 1760,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32984,7 +33020,7 @@
       "exportName": "calculatorMessages",
       "line": 270,
       "occurrence": 1,
-      "mergeIndex": 1759,
+      "mergeIndex": 1761,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -32998,7 +33034,7 @@
       "exportName": "calculatorMessages",
       "line": 271,
       "occurrence": 1,
-      "mergeIndex": 1760,
+      "mergeIndex": 1762,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33012,7 +33048,7 @@
       "exportName": "calculatorMessages",
       "line": 272,
       "occurrence": 1,
-      "mergeIndex": 1761,
+      "mergeIndex": 1763,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33026,7 +33062,7 @@
       "exportName": "calculatorMessages",
       "line": 273,
       "occurrence": 1,
-      "mergeIndex": 1762,
+      "mergeIndex": 1764,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33040,7 +33076,7 @@
       "exportName": "calculatorMessages",
       "line": 274,
       "occurrence": 1,
-      "mergeIndex": 1763,
+      "mergeIndex": 1765,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33054,7 +33090,7 @@
       "exportName": "calculatorMessages",
       "line": 275,
       "occurrence": 1,
-      "mergeIndex": 1764,
+      "mergeIndex": 1766,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33068,7 +33104,7 @@
       "exportName": "calculatorMessages",
       "line": 276,
       "occurrence": 1,
-      "mergeIndex": 1765,
+      "mergeIndex": 1767,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33082,7 +33118,7 @@
       "exportName": "calculatorMessages",
       "line": 277,
       "occurrence": 1,
-      "mergeIndex": 1766,
+      "mergeIndex": 1768,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33096,7 +33132,7 @@
       "exportName": "calculatorMessages",
       "line": 278,
       "occurrence": 1,
-      "mergeIndex": 1767,
+      "mergeIndex": 1769,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33110,7 +33146,7 @@
       "exportName": "calculatorMessages",
       "line": 279,
       "occurrence": 1,
-      "mergeIndex": 1768,
+      "mergeIndex": 1770,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33124,7 +33160,7 @@
       "exportName": "calculatorMessages",
       "line": 280,
       "occurrence": 1,
-      "mergeIndex": 1769,
+      "mergeIndex": 1771,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33138,7 +33174,7 @@
       "exportName": "calculatorMessages",
       "line": 281,
       "occurrence": 1,
-      "mergeIndex": 1770,
+      "mergeIndex": 1772,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"雨天\",1]"
     },
@@ -33152,7 +33188,7 @@
       "exportName": "calculatorMessages",
       "line": 282,
       "occurrence": 1,
-      "mergeIndex": 1771,
+      "mergeIndex": 1773,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33166,7 +33202,7 @@
       "exportName": "calculatorMessages",
       "line": 283,
       "occurrence": 1,
-      "mergeIndex": 1772,
+      "mergeIndex": 1774,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33180,7 +33216,7 @@
       "exportName": "calculatorMessages",
       "line": 284,
       "occurrence": 1,
-      "mergeIndex": 1773,
+      "mergeIndex": 1775,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"暴风雪\",1]"
     },
@@ -33194,7 +33230,7 @@
       "exportName": "calculatorMessages",
       "line": 285,
       "occurrence": 1,
-      "mergeIndex": 1774,
+      "mergeIndex": 1776,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"萌系天气（占位）\",1]"
     },
@@ -33208,7 +33244,7 @@
       "exportName": "calculatorMessages",
       "line": 286,
       "occurrence": 1,
-      "mergeIndex": 1775,
+      "mergeIndex": 1777,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33222,7 +33258,7 @@
       "exportName": "calculatorMessages",
       "line": 287,
       "occurrence": 1,
-      "mergeIndex": 1776,
+      "mergeIndex": 1778,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33236,7 +33272,7 @@
       "exportName": "calculatorMessages",
       "line": 288,
       "occurrence": 1,
-      "mergeIndex": 1777,
+      "mergeIndex": 1779,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33250,7 +33286,7 @@
       "exportName": "calculatorMessages",
       "line": 289,
       "occurrence": 1,
-      "mergeIndex": 1778,
+      "mergeIndex": 1780,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33264,7 +33300,7 @@
       "exportName": "calculatorMessages",
       "line": 290,
       "occurrence": 1,
-      "mergeIndex": 1779,
+      "mergeIndex": 1781,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33278,7 +33314,7 @@
       "exportName": "calculatorMessages",
       "line": 291,
       "occurrence": 1,
-      "mergeIndex": 1780,
+      "mergeIndex": 1782,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33292,7 +33328,7 @@
       "exportName": "calculatorMessages",
       "line": 292,
       "occurrence": 1,
-      "mergeIndex": 1781,
+      "mergeIndex": 1783,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33306,7 +33342,7 @@
       "exportName": "calculatorMessages",
       "line": 293,
       "occurrence": 1,
-      "mergeIndex": 1782,
+      "mergeIndex": 1784,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33320,7 +33356,7 @@
       "exportName": "calculatorMessages",
       "line": 294,
       "occurrence": 1,
-      "mergeIndex": 1783,
+      "mergeIndex": 1785,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33334,7 +33370,7 @@
       "exportName": "calculatorMessages",
       "line": 295,
       "occurrence": 1,
-      "mergeIndex": 1784,
+      "mergeIndex": 1786,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33348,7 +33384,7 @@
       "exportName": "calculatorMessages",
       "line": 296,
       "occurrence": 1,
-      "mergeIndex": 1785,
+      "mergeIndex": 1787,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33362,7 +33398,7 @@
       "exportName": "calculatorMessages",
       "line": 297,
       "occurrence": 1,
-      "mergeIndex": 1786,
+      "mergeIndex": 1788,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33376,7 +33412,7 @@
       "exportName": "calculatorMessages",
       "line": 298,
       "occurrence": 1,
-      "mergeIndex": 1787,
+      "mergeIndex": 1789,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33390,7 +33426,7 @@
       "exportName": "calculatorMessages",
       "line": 299,
       "occurrence": 1,
-      "mergeIndex": 1788,
+      "mergeIndex": 1790,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33404,7 +33440,7 @@
       "exportName": "calculatorMessages",
       "line": 300,
       "occurrence": 1,
-      "mergeIndex": 1789,
+      "mergeIndex": 1791,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33418,7 +33454,7 @@
       "exportName": "calculatorMessages",
       "line": 301,
       "occurrence": 1,
-      "mergeIndex": 1790,
+      "mergeIndex": 1792,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33432,7 +33468,7 @@
       "exportName": "calculatorMessages",
       "line": 302,
       "occurrence": 1,
-      "mergeIndex": 1791,
+      "mergeIndex": 1793,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33446,7 +33482,7 @@
       "exportName": "calculatorMessages",
       "line": 303,
       "occurrence": 1,
-      "mergeIndex": 1792,
+      "mergeIndex": 1794,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"剩余 {v0} HP\",1]"
     },
@@ -33460,7 +33496,7 @@
       "exportName": "calculatorMessages",
       "line": 304,
       "occurrence": 1,
-      "mergeIndex": 1793,
+      "mergeIndex": 1795,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33474,7 +33510,7 @@
       "exportName": "calculatorMessages",
       "line": 305,
       "occurrence": 1,
-      "mergeIndex": 1794,
+      "mergeIndex": 1796,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33488,7 +33524,7 @@
       "exportName": "calculatorMessages",
       "line": 306,
       "occurrence": 1,
-      "mergeIndex": 1795,
+      "mergeIndex": 1797,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33502,7 +33538,7 @@
       "exportName": "calculatorMessages",
       "line": 307,
       "occurrence": 1,
-      "mergeIndex": 1796,
+      "mergeIndex": 1798,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33516,7 +33552,7 @@
       "exportName": "calculatorMessages",
       "line": 308,
       "occurrence": 1,
-      "mergeIndex": 1797,
+      "mergeIndex": 1799,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33530,7 +33566,7 @@
       "exportName": "calculatorMessages",
       "line": 309,
       "occurrence": 1,
-      "mergeIndex": 1798,
+      "mergeIndex": 1800,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33544,7 +33580,7 @@
       "exportName": "calculatorMessages",
       "line": 310,
       "occurrence": 1,
-      "mergeIndex": 1799,
+      "mergeIndex": 1801,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33558,7 +33594,7 @@
       "exportName": "calculatorMessages",
       "line": 311,
       "occurrence": 1,
-      "mergeIndex": 1800,
+      "mergeIndex": 1802,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"弱点\",1]"
     },
@@ -33572,7 +33608,7 @@
       "exportName": "calculatorMessages",
       "line": 312,
       "occurrence": 1,
-      "mergeIndex": 1801,
+      "mergeIndex": 1803,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"抗性\",1]"
     },
@@ -33586,7 +33622,7 @@
       "exportName": "calculatorMessages",
       "line": 313,
       "occurrence": 1,
-      "mergeIndex": 1802,
+      "mergeIndex": 1804,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"克制\",1]"
     },
@@ -33600,7 +33636,7 @@
       "exportName": "calculatorMessages",
       "line": 314,
       "occurrence": 1,
-      "mergeIndex": 1803,
+      "mergeIndex": 1805,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33614,7 +33650,7 @@
       "exportName": "calculatorMessages",
       "line": 315,
       "occurrence": 1,
-      "mergeIndex": 1804,
+      "mergeIndex": 1806,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33628,7 +33664,7 @@
       "exportName": "calculatorMessages",
       "line": 316,
       "occurrence": 1,
-      "mergeIndex": 1805,
+      "mergeIndex": 1807,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33642,7 +33678,7 @@
       "exportName": "calculatorMessages",
       "line": 317,
       "occurrence": 1,
-      "mergeIndex": 1806,
+      "mergeIndex": 1808,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33656,7 +33692,7 @@
       "exportName": "calculatorMessages",
       "line": 318,
       "occurrence": 1,
-      "mergeIndex": 1807,
+      "mergeIndex": 1809,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33670,7 +33706,7 @@
       "exportName": "calculatorMessages",
       "line": 319,
       "occurrence": 1,
-      "mergeIndex": 1808,
+      "mergeIndex": 1810,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33684,7 +33720,7 @@
       "exportName": "calculatorMessages",
       "line": 320,
       "occurrence": 1,
-      "mergeIndex": 1809,
+      "mergeIndex": 1811,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33698,7 +33734,7 @@
       "exportName": "calculatorMessages",
       "line": 321,
       "occurrence": 1,
-      "mergeIndex": 1810,
+      "mergeIndex": 1812,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33712,7 +33748,7 @@
       "exportName": "calculatorMessages",
       "line": 322,
       "occurrence": 1,
-      "mergeIndex": 1811,
+      "mergeIndex": 1813,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33726,7 +33762,7 @@
       "exportName": "calculatorMessages",
       "line": 323,
       "occurrence": 1,
-      "mergeIndex": 1812,
+      "mergeIndex": 1814,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33740,7 +33776,7 @@
       "exportName": "calculatorMessages",
       "line": 324,
       "occurrence": 1,
-      "mergeIndex": 1813,
+      "mergeIndex": 1815,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33754,7 +33790,7 @@
       "exportName": "calculatorMessages",
       "line": 325,
       "occurrence": 1,
-      "mergeIndex": 1814,
+      "mergeIndex": 1816,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33768,7 +33804,7 @@
       "exportName": "calculatorMessages",
       "line": 326,
       "occurrence": 1,
-      "mergeIndex": 1815,
+      "mergeIndex": 1817,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33782,7 +33818,7 @@
       "exportName": "calculatorMessages",
       "line": 327,
       "occurrence": 1,
-      "mergeIndex": 1816,
+      "mergeIndex": 1818,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33796,7 +33832,7 @@
       "exportName": "calculatorMessages",
       "line": 328,
       "occurrence": 1,
-      "mergeIndex": 1817,
+      "mergeIndex": 1819,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33810,7 +33846,7 @@
       "exportName": "calculatorMessages",
       "line": 329,
       "occurrence": 1,
-      "mergeIndex": 1818,
+      "mergeIndex": 1820,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33824,7 +33860,7 @@
       "exportName": "calculatorMessages",
       "line": 330,
       "occurrence": 1,
-      "mergeIndex": 1819,
+      "mergeIndex": 1821,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33838,7 +33874,7 @@
       "exportName": "calculatorMessages",
       "line": 331,
       "occurrence": 1,
-      "mergeIndex": 1820,
+      "mergeIndex": 1822,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33852,7 +33888,7 @@
       "exportName": "calculatorMessages",
       "line": 332,
       "occurrence": 1,
-      "mergeIndex": 1821,
+      "mergeIndex": 1823,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33866,7 +33902,7 @@
       "exportName": "calculatorMessages",
       "line": 333,
       "occurrence": 1,
-      "mergeIndex": 1822,
+      "mergeIndex": 1824,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33880,7 +33916,7 @@
       "exportName": "calculatorMessages",
       "line": 334,
       "occurrence": 1,
-      "mergeIndex": 1823,
+      "mergeIndex": 1825,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33894,7 +33930,7 @@
       "exportName": "calculatorMessages",
       "line": 335,
       "occurrence": 1,
-      "mergeIndex": 1824,
+      "mergeIndex": 1826,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33908,7 +33944,7 @@
       "exportName": "calculatorMessages",
       "line": 336,
       "occurrence": 1,
-      "mergeIndex": 1825,
+      "mergeIndex": 1827,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33922,7 +33958,7 @@
       "exportName": "calculatorMessages",
       "line": 337,
       "occurrence": 1,
-      "mergeIndex": 1826,
+      "mergeIndex": 1828,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33936,7 +33972,7 @@
       "exportName": "calculatorMessages",
       "line": 338,
       "occurrence": 1,
-      "mergeIndex": 1827,
+      "mergeIndex": 1829,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33950,7 +33986,7 @@
       "exportName": "calculatorMessages",
       "line": 339,
       "occurrence": 1,
-      "mergeIndex": 1828,
+      "mergeIndex": 1830,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33964,7 +34000,7 @@
       "exportName": "calculatorMessages",
       "line": 340,
       "occurrence": 1,
-      "mergeIndex": 1829,
+      "mergeIndex": 1831,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33978,7 +34014,7 @@
       "exportName": "calculatorMessages",
       "line": 341,
       "occurrence": 1,
-      "mergeIndex": 1830,
+      "mergeIndex": 1832,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -33992,7 +34028,7 @@
       "exportName": "calculatorMessages",
       "line": 342,
       "occurrence": 1,
-      "mergeIndex": 1831,
+      "mergeIndex": 1833,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34006,7 +34042,7 @@
       "exportName": "calculatorMessages",
       "line": 343,
       "occurrence": 1,
-      "mergeIndex": 1832,
+      "mergeIndex": 1834,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34020,7 +34056,7 @@
       "exportName": "calculatorMessages",
       "line": 344,
       "occurrence": 1,
-      "mergeIndex": 1833,
+      "mergeIndex": 1835,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34034,7 +34070,7 @@
       "exportName": "calculatorMessages",
       "line": 345,
       "occurrence": 1,
-      "mergeIndex": 1834,
+      "mergeIndex": 1836,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34048,7 +34084,7 @@
       "exportName": "calculatorMessages",
       "line": 346,
       "occurrence": 1,
-      "mergeIndex": 1835,
+      "mergeIndex": 1837,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34062,7 +34098,7 @@
       "exportName": "calculatorMessages",
       "line": 347,
       "occurrence": 1,
-      "mergeIndex": 1836,
+      "mergeIndex": 1838,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34076,7 +34112,7 @@
       "exportName": "calculatorMessages",
       "line": 348,
       "occurrence": 1,
-      "mergeIndex": 1837,
+      "mergeIndex": 1839,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34090,7 +34126,7 @@
       "exportName": "calculatorMessages",
       "line": 349,
       "occurrence": 1,
-      "mergeIndex": 1838,
+      "mergeIndex": 1840,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34104,7 +34140,7 @@
       "exportName": "calculatorMessages",
       "line": 350,
       "occurrence": 1,
-      "mergeIndex": 1839,
+      "mergeIndex": 1841,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34118,7 +34154,7 @@
       "exportName": "calculatorMessages",
       "line": 351,
       "occurrence": 1,
-      "mergeIndex": 1840,
+      "mergeIndex": 1842,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34132,7 +34168,7 @@
       "exportName": "calculatorMessages",
       "line": 352,
       "occurrence": 1,
-      "mergeIndex": 1841,
+      "mergeIndex": 1843,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34146,7 +34182,7 @@
       "exportName": "calculatorMessages",
       "line": 353,
       "occurrence": 1,
-      "mergeIndex": 1842,
+      "mergeIndex": 1844,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34160,7 +34196,7 @@
       "exportName": "calculatorMessages",
       "line": 354,
       "occurrence": 1,
-      "mergeIndex": 1843,
+      "mergeIndex": 1845,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34174,7 +34210,7 @@
       "exportName": "calculatorMessages",
       "line": 355,
       "occurrence": 1,
-      "mergeIndex": 1844,
+      "mergeIndex": 1846,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34188,7 +34224,7 @@
       "exportName": "calculatorMessages",
       "line": 356,
       "occurrence": 1,
-      "mergeIndex": 1845,
+      "mergeIndex": 1847,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34202,7 +34238,7 @@
       "exportName": "calculatorMessages",
       "line": 357,
       "occurrence": 1,
-      "mergeIndex": 1846,
+      "mergeIndex": 1848,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34216,7 +34252,7 @@
       "exportName": "calculatorMessages",
       "line": 358,
       "occurrence": 1,
-      "mergeIndex": 1847,
+      "mergeIndex": 1849,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34230,7 +34266,7 @@
       "exportName": "calculatorMessages",
       "line": 359,
       "occurrence": 1,
-      "mergeIndex": 1848,
+      "mergeIndex": 1850,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34244,7 +34280,7 @@
       "exportName": "calculatorMessages",
       "line": 360,
       "occurrence": 1,
-      "mergeIndex": 1849,
+      "mergeIndex": 1851,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34258,7 +34294,7 @@
       "exportName": "calculatorMessages",
       "line": 361,
       "occurrence": 1,
-      "mergeIndex": 1850,
+      "mergeIndex": 1852,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34272,7 +34308,7 @@
       "exportName": "calculatorMessages",
       "line": 362,
       "occurrence": 1,
-      "mergeIndex": 1851,
+      "mergeIndex": 1853,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34286,7 +34322,7 @@
       "exportName": "calculatorMessages",
       "line": 363,
       "occurrence": 1,
-      "mergeIndex": 1852,
+      "mergeIndex": 1854,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34300,7 +34336,7 @@
       "exportName": "calculatorMessages",
       "line": 364,
       "occurrence": 1,
-      "mergeIndex": 1853,
+      "mergeIndex": 1855,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34314,7 +34350,7 @@
       "exportName": "calculatorMessages",
       "line": 365,
       "occurrence": 1,
-      "mergeIndex": 1854,
+      "mergeIndex": 1856,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34328,7 +34364,7 @@
       "exportName": "calculatorMessages",
       "line": 366,
       "occurrence": 1,
-      "mergeIndex": 1855,
+      "mergeIndex": 1857,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34342,7 +34378,7 @@
       "exportName": "calculatorMessages",
       "line": 367,
       "occurrence": 1,
-      "mergeIndex": 1856,
+      "mergeIndex": 1858,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34356,7 +34392,7 @@
       "exportName": "calculatorMessages",
       "line": 368,
       "occurrence": 1,
-      "mergeIndex": 1857,
+      "mergeIndex": 1859,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34370,7 +34406,7 @@
       "exportName": "calculatorMessages",
       "line": 369,
       "occurrence": 1,
-      "mergeIndex": 1858,
+      "mergeIndex": 1860,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34384,7 +34420,7 @@
       "exportName": "calculatorMessages",
       "line": 370,
       "occurrence": 1,
-      "mergeIndex": 1859,
+      "mergeIndex": 1861,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34398,7 +34434,7 @@
       "exportName": "calculatorMessages",
       "line": 371,
       "occurrence": 1,
-      "mergeIndex": 1860,
+      "mergeIndex": 1862,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34412,7 +34448,7 @@
       "exportName": "calculatorMessages",
       "line": 372,
       "occurrence": 1,
-      "mergeIndex": 1861,
+      "mergeIndex": 1863,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34426,7 +34462,7 @@
       "exportName": "calculatorMessages",
       "line": 373,
       "occurrence": 1,
-      "mergeIndex": 1862,
+      "mergeIndex": 1864,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34440,7 +34476,7 @@
       "exportName": "calculatorMessages",
       "line": 374,
       "occurrence": 1,
-      "mergeIndex": 1863,
+      "mergeIndex": 1865,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34454,7 +34490,7 @@
       "exportName": "calculatorMessages",
       "line": 375,
       "occurrence": 1,
-      "mergeIndex": 1864,
+      "mergeIndex": 1866,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34468,7 +34504,7 @@
       "exportName": "calculatorMessages",
       "line": 376,
       "occurrence": 1,
-      "mergeIndex": 1865,
+      "mergeIndex": 1867,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34482,7 +34518,7 @@
       "exportName": "calculatorMessages",
       "line": 377,
       "occurrence": 1,
-      "mergeIndex": 1866,
+      "mergeIndex": 1868,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34496,7 +34532,7 @@
       "exportName": "calculatorMessages",
       "line": 378,
       "occurrence": 1,
-      "mergeIndex": 1867,
+      "mergeIndex": 1869,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34510,7 +34546,7 @@
       "exportName": "calculatorMessages",
       "line": 379,
       "occurrence": 1,
-      "mergeIndex": 1868,
+      "mergeIndex": 1870,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34524,7 +34560,7 @@
       "exportName": "calculatorMessages",
       "line": 380,
       "occurrence": 1,
-      "mergeIndex": 1869,
+      "mergeIndex": 1871,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34538,7 +34574,7 @@
       "exportName": "calculatorMessages",
       "line": 381,
       "occurrence": 1,
-      "mergeIndex": 1870,
+      "mergeIndex": 1872,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34552,7 +34588,7 @@
       "exportName": "calculatorMessages",
       "line": 382,
       "occurrence": 1,
-      "mergeIndex": 1871,
+      "mergeIndex": 1873,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34566,7 +34602,7 @@
       "exportName": "calculatorMessages",
       "line": 383,
       "occurrence": 1,
-      "mergeIndex": 1872,
+      "mergeIndex": 1874,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34580,7 +34616,7 @@
       "exportName": "calculatorMessages",
       "line": 384,
       "occurrence": 1,
-      "mergeIndex": 1873,
+      "mergeIndex": 1875,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34594,7 +34630,7 @@
       "exportName": "calculatorMessages",
       "line": 385,
       "occurrence": 1,
-      "mergeIndex": 1874,
+      "mergeIndex": 1876,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34608,7 +34644,7 @@
       "exportName": "calculatorMessages",
       "line": 386,
       "occurrence": 1,
-      "mergeIndex": 1875,
+      "mergeIndex": 1877,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34622,7 +34658,7 @@
       "exportName": "calculatorMessages",
       "line": 387,
       "occurrence": 1,
-      "mergeIndex": 1876,
+      "mergeIndex": 1878,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34636,7 +34672,7 @@
       "exportName": "calculatorMessages",
       "line": 388,
       "occurrence": 1,
-      "mergeIndex": 1877,
+      "mergeIndex": 1879,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34650,7 +34686,7 @@
       "exportName": "calculatorMessages",
       "line": 389,
       "occurrence": 1,
-      "mergeIndex": 1878,
+      "mergeIndex": 1880,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34664,7 +34700,7 @@
       "exportName": "calculatorMessages",
       "line": 390,
       "occurrence": 1,
-      "mergeIndex": 1879,
+      "mergeIndex": 1881,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34678,7 +34714,7 @@
       "exportName": "calculatorMessages",
       "line": 391,
       "occurrence": 1,
-      "mergeIndex": 1880,
+      "mergeIndex": 1882,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34692,7 +34728,7 @@
       "exportName": "calculatorMessages",
       "line": 392,
       "occurrence": 1,
-      "mergeIndex": 1881,
+      "mergeIndex": 1883,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34706,7 +34742,7 @@
       "exportName": "calculatorMessages",
       "line": 393,
       "occurrence": 1,
-      "mergeIndex": 1882,
+      "mergeIndex": 1884,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34720,7 +34756,7 @@
       "exportName": "calculatorMessages",
       "line": 394,
       "occurrence": 1,
-      "mergeIndex": 1883,
+      "mergeIndex": 1885,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34734,7 +34770,7 @@
       "exportName": "calculatorMessages",
       "line": 395,
       "occurrence": 1,
-      "mergeIndex": 1884,
+      "mergeIndex": 1886,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34748,7 +34784,7 @@
       "exportName": "calculatorMessages",
       "line": 396,
       "occurrence": 1,
-      "mergeIndex": 1885,
+      "mergeIndex": 1887,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34762,7 +34798,7 @@
       "exportName": "calculatorMessages",
       "line": 397,
       "occurrence": 1,
-      "mergeIndex": 1886,
+      "mergeIndex": 1888,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34776,7 +34812,7 @@
       "exportName": "calculatorMessages",
       "line": 398,
       "occurrence": 1,
-      "mergeIndex": 1887,
+      "mergeIndex": 1889,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34790,7 +34826,7 @@
       "exportName": "calculatorMessages",
       "line": 399,
       "occurrence": 1,
-      "mergeIndex": 1888,
+      "mergeIndex": 1890,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34804,7 +34840,7 @@
       "exportName": "calculatorMessages",
       "line": 400,
       "occurrence": 1,
-      "mergeIndex": 1889,
+      "mergeIndex": 1891,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34818,7 +34854,7 @@
       "exportName": "calculatorMessages",
       "line": 401,
       "occurrence": 1,
-      "mergeIndex": 1890,
+      "mergeIndex": 1892,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34832,7 +34868,7 @@
       "exportName": "calculatorMessages",
       "line": 402,
       "occurrence": 1,
-      "mergeIndex": 1891,
+      "mergeIndex": 1893,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34846,7 +34882,7 @@
       "exportName": "calculatorMessages",
       "line": 403,
       "occurrence": 1,
-      "mergeIndex": 1892,
+      "mergeIndex": 1894,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34860,7 +34896,7 @@
       "exportName": "calculatorMessages",
       "line": 404,
       "occurrence": 1,
-      "mergeIndex": 1893,
+      "mergeIndex": 1895,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34874,7 +34910,7 @@
       "exportName": "calculatorMessages",
       "line": 405,
       "occurrence": 1,
-      "mergeIndex": 1894,
+      "mergeIndex": 1896,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34888,7 +34924,7 @@
       "exportName": "calculatorMessages",
       "line": 406,
       "occurrence": 1,
-      "mergeIndex": 1895,
+      "mergeIndex": 1897,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34902,7 +34938,7 @@
       "exportName": "calculatorMessages",
       "line": 407,
       "occurrence": 1,
-      "mergeIndex": 1896,
+      "mergeIndex": 1898,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34916,7 +34952,7 @@
       "exportName": "calculatorMessages",
       "line": 408,
       "occurrence": 1,
-      "mergeIndex": 1897,
+      "mergeIndex": 1899,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34930,7 +34966,7 @@
       "exportName": "calculatorMessages",
       "line": 409,
       "occurrence": 1,
-      "mergeIndex": 1898,
+      "mergeIndex": 1900,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34944,7 +34980,7 @@
       "exportName": "calculatorMessages",
       "line": 410,
       "occurrence": 1,
-      "mergeIndex": 1899,
+      "mergeIndex": 1901,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34958,7 +34994,7 @@
       "exportName": "calculatorMessages",
       "line": 411,
       "occurrence": 1,
-      "mergeIndex": 1900,
+      "mergeIndex": 1902,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34972,7 +35008,7 @@
       "exportName": "calculatorMessages",
       "line": 412,
       "occurrence": 1,
-      "mergeIndex": 1901,
+      "mergeIndex": 1903,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -34986,7 +35022,7 @@
       "exportName": "calculatorMessages",
       "line": 413,
       "occurrence": 1,
-      "mergeIndex": 1902,
+      "mergeIndex": 1904,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35000,7 +35036,7 @@
       "exportName": "calculatorMessages",
       "line": 414,
       "occurrence": 1,
-      "mergeIndex": 1903,
+      "mergeIndex": 1905,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35014,7 +35050,7 @@
       "exportName": "calculatorMessages",
       "line": 415,
       "occurrence": 1,
-      "mergeIndex": 1904,
+      "mergeIndex": 1906,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35028,7 +35064,7 @@
       "exportName": "calculatorMessages",
       "line": 416,
       "occurrence": 1,
-      "mergeIndex": 1905,
+      "mergeIndex": 1907,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35042,7 +35078,7 @@
       "exportName": "calculatorMessages",
       "line": 417,
       "occurrence": 1,
-      "mergeIndex": 1906,
+      "mergeIndex": 1908,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35056,7 +35092,7 @@
       "exportName": "calculatorMessages",
       "line": 418,
       "occurrence": 1,
-      "mergeIndex": 1907,
+      "mergeIndex": 1909,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35070,7 +35106,7 @@
       "exportName": "calculatorMessages",
       "line": 419,
       "occurrence": 1,
-      "mergeIndex": 1908,
+      "mergeIndex": 1910,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35084,7 +35120,7 @@
       "exportName": "calculatorMessages",
       "line": 420,
       "occurrence": 1,
-      "mergeIndex": 1909,
+      "mergeIndex": 1911,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35098,7 +35134,7 @@
       "exportName": "calculatorMessages",
       "line": 421,
       "occurrence": 1,
-      "mergeIndex": 1910,
+      "mergeIndex": 1912,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35112,7 +35148,7 @@
       "exportName": "calculatorMessages",
       "line": 422,
       "occurrence": 1,
-      "mergeIndex": 1911,
+      "mergeIndex": 1913,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35126,7 +35162,7 @@
       "exportName": "calculatorMessages",
       "line": 423,
       "occurrence": 1,
-      "mergeIndex": 1912,
+      "mergeIndex": 1914,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35140,7 +35176,7 @@
       "exportName": "calculatorMessages",
       "line": 424,
       "occurrence": 1,
-      "mergeIndex": 1913,
+      "mergeIndex": 1915,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35154,7 +35190,7 @@
       "exportName": "calculatorMessages",
       "line": 425,
       "occurrence": 1,
-      "mergeIndex": 1914,
+      "mergeIndex": 1916,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35168,7 +35204,7 @@
       "exportName": "calculatorMessages",
       "line": 426,
       "occurrence": 1,
-      "mergeIndex": 1915,
+      "mergeIndex": 1917,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35182,7 +35218,7 @@
       "exportName": "calculatorMessages",
       "line": 427,
       "occurrence": 1,
-      "mergeIndex": 1916,
+      "mergeIndex": 1918,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35196,7 +35232,7 @@
       "exportName": "calculatorMessages",
       "line": 428,
       "occurrence": 1,
-      "mergeIndex": 1917,
+      "mergeIndex": 1919,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35210,7 +35246,7 @@
       "exportName": "calculatorMessages",
       "line": 429,
       "occurrence": 1,
-      "mergeIndex": 1918,
+      "mergeIndex": 1920,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35224,7 +35260,7 @@
       "exportName": "calculatorMessages",
       "line": 430,
       "occurrence": 1,
-      "mergeIndex": 1919,
+      "mergeIndex": 1921,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35238,7 +35274,7 @@
       "exportName": "calculatorMessages",
       "line": 431,
       "occurrence": 1,
-      "mergeIndex": 1920,
+      "mergeIndex": 1922,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35252,7 +35288,7 @@
       "exportName": "calculatorMessages",
       "line": 432,
       "occurrence": 1,
-      "mergeIndex": 1921,
+      "mergeIndex": 1923,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35266,7 +35302,7 @@
       "exportName": "calculatorMessages",
       "line": 433,
       "occurrence": 1,
-      "mergeIndex": 1922,
+      "mergeIndex": 1924,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35280,7 +35316,7 @@
       "exportName": "calculatorMessages",
       "line": 434,
       "occurrence": 1,
-      "mergeIndex": 1923,
+      "mergeIndex": 1925,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35294,7 +35330,7 @@
       "exportName": "calculatorMessages",
       "line": 435,
       "occurrence": 1,
-      "mergeIndex": 1924,
+      "mergeIndex": 1926,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35308,7 +35344,7 @@
       "exportName": "calculatorMessages",
       "line": 436,
       "occurrence": 1,
-      "mergeIndex": 1925,
+      "mergeIndex": 1927,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35322,7 +35358,7 @@
       "exportName": "calculatorMessages",
       "line": 437,
       "occurrence": 1,
-      "mergeIndex": 1926,
+      "mergeIndex": 1928,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35336,7 +35372,7 @@
       "exportName": "calculatorMessages",
       "line": 438,
       "occurrence": 1,
-      "mergeIndex": 1927,
+      "mergeIndex": 1929,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35350,7 +35386,7 @@
       "exportName": "calculatorMessages",
       "line": 439,
       "occurrence": 1,
-      "mergeIndex": 1928,
+      "mergeIndex": 1930,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35364,7 +35400,7 @@
       "exportName": "calculatorMessages",
       "line": 440,
       "occurrence": 1,
-      "mergeIndex": 1929,
+      "mergeIndex": 1931,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35378,7 +35414,7 @@
       "exportName": "calculatorMessages",
       "line": 441,
       "occurrence": 1,
-      "mergeIndex": 1930,
+      "mergeIndex": 1932,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35392,7 +35428,7 @@
       "exportName": "calculatorMessages",
       "line": 442,
       "occurrence": 1,
-      "mergeIndex": 1931,
+      "mergeIndex": 1933,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35406,7 +35442,7 @@
       "exportName": "calculatorMessages",
       "line": 443,
       "occurrence": 1,
-      "mergeIndex": 1932,
+      "mergeIndex": 1934,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35420,7 +35456,7 @@
       "exportName": "calculatorMessages",
       "line": 444,
       "occurrence": 1,
-      "mergeIndex": 1933,
+      "mergeIndex": 1935,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35434,7 +35470,7 @@
       "exportName": "calculatorMessages",
       "line": 445,
       "occurrence": 1,
-      "mergeIndex": 1934,
+      "mergeIndex": 1936,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35448,7 +35484,7 @@
       "exportName": "calculatorMessages",
       "line": 446,
       "occurrence": 1,
-      "mergeIndex": 1935,
+      "mergeIndex": 1937,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35462,7 +35498,7 @@
       "exportName": "calculatorMessages",
       "line": 447,
       "occurrence": 1,
-      "mergeIndex": 1936,
+      "mergeIndex": 1938,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35476,7 +35512,7 @@
       "exportName": "calculatorMessages",
       "line": 448,
       "occurrence": 1,
-      "mergeIndex": 1937,
+      "mergeIndex": 1939,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35490,7 +35526,7 @@
       "exportName": "calculatorMessages",
       "line": 449,
       "occurrence": 1,
-      "mergeIndex": 1938,
+      "mergeIndex": 1940,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35504,7 +35540,7 @@
       "exportName": "calculatorMessages",
       "line": 450,
       "occurrence": 1,
-      "mergeIndex": 1939,
+      "mergeIndex": 1941,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35518,7 +35554,7 @@
       "exportName": "calculatorMessages",
       "line": 451,
       "occurrence": 1,
-      "mergeIndex": 1940,
+      "mergeIndex": 1942,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35532,7 +35568,7 @@
       "exportName": "calculatorMessages",
       "line": 452,
       "occurrence": 1,
-      "mergeIndex": 1941,
+      "mergeIndex": 1943,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35546,7 +35582,7 @@
       "exportName": "calculatorMessages",
       "line": 453,
       "occurrence": 1,
-      "mergeIndex": 1942,
+      "mergeIndex": 1944,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35560,7 +35596,7 @@
       "exportName": "calculatorMessages",
       "line": 454,
       "occurrence": 1,
-      "mergeIndex": 1943,
+      "mergeIndex": 1945,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35574,7 +35610,7 @@
       "exportName": "calculatorMessages",
       "line": 455,
       "occurrence": 1,
-      "mergeIndex": 1944,
+      "mergeIndex": 1946,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35588,7 +35624,7 @@
       "exportName": "calculatorMessages",
       "line": 456,
       "occurrence": 1,
-      "mergeIndex": 1945,
+      "mergeIndex": 1947,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35602,7 +35638,7 @@
       "exportName": "calculatorMessages",
       "line": 457,
       "occurrence": 1,
-      "mergeIndex": 1946,
+      "mergeIndex": 1948,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35616,7 +35652,7 @@
       "exportName": "calculatorMessages",
       "line": 458,
       "occurrence": 1,
-      "mergeIndex": 1947,
+      "mergeIndex": 1949,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35630,7 +35666,7 @@
       "exportName": "calculatorMessages",
       "line": 459,
       "occurrence": 1,
-      "mergeIndex": 1948,
+      "mergeIndex": 1950,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35644,7 +35680,7 @@
       "exportName": "calculatorMessages",
       "line": 460,
       "occurrence": 1,
-      "mergeIndex": 1949,
+      "mergeIndex": 1951,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35658,7 +35694,7 @@
       "exportName": "calculatorMessages",
       "line": 461,
       "occurrence": 1,
-      "mergeIndex": 1950,
+      "mergeIndex": 1952,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35672,7 +35708,7 @@
       "exportName": "calculatorMessages",
       "line": 462,
       "occurrence": 1,
-      "mergeIndex": 1951,
+      "mergeIndex": 1953,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35686,7 +35722,7 @@
       "exportName": "calculatorMessages",
       "line": 463,
       "occurrence": 1,
-      "mergeIndex": 1952,
+      "mergeIndex": 1954,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35700,7 +35736,7 @@
       "exportName": "calculatorMessages",
       "line": 464,
       "occurrence": 1,
-      "mergeIndex": 1953,
+      "mergeIndex": 1955,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35714,7 +35750,7 @@
       "exportName": "calculatorMessages",
       "line": 465,
       "occurrence": 1,
-      "mergeIndex": 1954,
+      "mergeIndex": 1956,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35728,7 +35764,7 @@
       "exportName": "calculatorMessages",
       "line": 466,
       "occurrence": 1,
-      "mergeIndex": 1955,
+      "mergeIndex": 1957,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35742,7 +35778,7 @@
       "exportName": "calculatorMessages",
       "line": 467,
       "occurrence": 1,
-      "mergeIndex": 1956,
+      "mergeIndex": 1958,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35756,7 +35792,7 @@
       "exportName": "calculatorMessages",
       "line": 468,
       "occurrence": 1,
-      "mergeIndex": 1957,
+      "mergeIndex": 1959,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35770,7 +35806,7 @@
       "exportName": "calculatorMessages",
       "line": 469,
       "occurrence": 1,
-      "mergeIndex": 1958,
+      "mergeIndex": 1960,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35784,7 +35820,7 @@
       "exportName": "calculatorMessages",
       "line": 470,
       "occurrence": 1,
-      "mergeIndex": 1959,
+      "mergeIndex": 1961,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35798,7 +35834,7 @@
       "exportName": "calculatorMessages",
       "line": 471,
       "occurrence": 1,
-      "mergeIndex": 1960,
+      "mergeIndex": 1962,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35812,7 +35848,7 @@
       "exportName": "calculatorMessages",
       "line": 472,
       "occurrence": 1,
-      "mergeIndex": 1961,
+      "mergeIndex": 1963,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35826,7 +35862,7 @@
       "exportName": "calculatorMessages",
       "line": 473,
       "occurrence": 1,
-      "mergeIndex": 1962,
+      "mergeIndex": 1964,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35840,7 +35876,7 @@
       "exportName": "calculatorMessages",
       "line": 474,
       "occurrence": 1,
-      "mergeIndex": 1963,
+      "mergeIndex": 1965,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35854,7 +35890,7 @@
       "exportName": "calculatorMessages",
       "line": 475,
       "occurrence": 1,
-      "mergeIndex": 1964,
+      "mergeIndex": 1966,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35868,7 +35904,7 @@
       "exportName": "calculatorMessages",
       "line": 476,
       "occurrence": 1,
-      "mergeIndex": 1965,
+      "mergeIndex": 1967,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35882,7 +35918,7 @@
       "exportName": "calculatorMessages",
       "line": 477,
       "occurrence": 1,
-      "mergeIndex": 1966,
+      "mergeIndex": 1968,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35896,7 +35932,7 @@
       "exportName": "calculatorMessages",
       "line": 478,
       "occurrence": 1,
-      "mergeIndex": 1967,
+      "mergeIndex": 1969,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35910,7 +35946,7 @@
       "exportName": "calculatorMessages",
       "line": 479,
       "occurrence": 1,
-      "mergeIndex": 1968,
+      "mergeIndex": 1970,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35924,7 +35960,7 @@
       "exportName": "calculatorMessages",
       "line": 480,
       "occurrence": 1,
-      "mergeIndex": 1969,
+      "mergeIndex": 1971,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35938,7 +35974,7 @@
       "exportName": "calculatorMessages",
       "line": 481,
       "occurrence": 1,
-      "mergeIndex": 1970,
+      "mergeIndex": 1972,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35952,7 +35988,7 @@
       "exportName": "calculatorMessages",
       "line": 482,
       "occurrence": 1,
-      "mergeIndex": 1971,
+      "mergeIndex": 1973,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35966,7 +36002,7 @@
       "exportName": "calculatorMessages",
       "line": 483,
       "occurrence": 1,
-      "mergeIndex": 1972,
+      "mergeIndex": 1974,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35980,7 +36016,7 @@
       "exportName": "calculatorMessages",
       "line": 484,
       "occurrence": 1,
-      "mergeIndex": 1973,
+      "mergeIndex": 1975,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -35994,7 +36030,7 @@
       "exportName": "calculatorMessages",
       "line": 485,
       "occurrence": 1,
-      "mergeIndex": 1974,
+      "mergeIndex": 1976,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36008,7 +36044,7 @@
       "exportName": "calculatorMessages",
       "line": 486,
       "occurrence": 1,
-      "mergeIndex": 1975,
+      "mergeIndex": 1977,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36022,7 +36058,7 @@
       "exportName": "calculatorMessages",
       "line": 487,
       "occurrence": 1,
-      "mergeIndex": 1976,
+      "mergeIndex": 1978,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36036,7 +36072,7 @@
       "exportName": "calculatorMessages",
       "line": 488,
       "occurrence": 1,
-      "mergeIndex": 1977,
+      "mergeIndex": 1979,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36050,7 +36086,7 @@
       "exportName": "calculatorMessages",
       "line": 489,
       "occurrence": 1,
-      "mergeIndex": 1978,
+      "mergeIndex": 1980,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36064,7 +36100,7 @@
       "exportName": "calculatorMessages",
       "line": 490,
       "occurrence": 1,
-      "mergeIndex": 1979,
+      "mergeIndex": 1981,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36078,7 +36114,7 @@
       "exportName": "calculatorMessages",
       "line": 491,
       "occurrence": 1,
-      "mergeIndex": 1980,
+      "mergeIndex": 1982,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36092,7 +36128,7 @@
       "exportName": "calculatorMessages",
       "line": 492,
       "occurrence": 1,
-      "mergeIndex": 1981,
+      "mergeIndex": 1983,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36106,7 +36142,7 @@
       "exportName": "calculatorMessages",
       "line": 493,
       "occurrence": 1,
-      "mergeIndex": 1982,
+      "mergeIndex": 1984,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36120,7 +36156,7 @@
       "exportName": "calculatorMessages",
       "line": 494,
       "occurrence": 1,
-      "mergeIndex": 1983,
+      "mergeIndex": 1985,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36134,7 +36170,7 @@
       "exportName": "calculatorMessages",
       "line": 495,
       "occurrence": 1,
-      "mergeIndex": 1984,
+      "mergeIndex": 1986,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36148,7 +36184,7 @@
       "exportName": "calculatorMessages",
       "line": 496,
       "occurrence": 1,
-      "mergeIndex": 1985,
+      "mergeIndex": 1987,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36162,7 +36198,7 @@
       "exportName": "calculatorMessages",
       "line": 497,
       "occurrence": 1,
-      "mergeIndex": 1986,
+      "mergeIndex": 1988,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36176,7 +36212,7 @@
       "exportName": "calculatorMessages",
       "line": 498,
       "occurrence": 1,
-      "mergeIndex": 1987,
+      "mergeIndex": 1989,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36190,7 +36226,7 @@
       "exportName": "calculatorMessages",
       "line": 499,
       "occurrence": 1,
-      "mergeIndex": 1988,
+      "mergeIndex": 1990,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36204,7 +36240,7 @@
       "exportName": "calculatorMessages",
       "line": 500,
       "occurrence": 1,
-      "mergeIndex": 1989,
+      "mergeIndex": 1991,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36218,7 +36254,7 @@
       "exportName": "calculatorMessages",
       "line": 501,
       "occurrence": 1,
-      "mergeIndex": 1990,
+      "mergeIndex": 1992,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36232,7 +36268,7 @@
       "exportName": "calculatorMessages",
       "line": 502,
       "occurrence": 1,
-      "mergeIndex": 1991,
+      "mergeIndex": 1993,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36246,7 +36282,7 @@
       "exportName": "calculatorMessages",
       "line": 503,
       "occurrence": 1,
-      "mergeIndex": 1992,
+      "mergeIndex": 1994,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36260,7 +36296,7 @@
       "exportName": "calculatorMessages",
       "line": 504,
       "occurrence": 1,
-      "mergeIndex": 1993,
+      "mergeIndex": 1995,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36274,7 +36310,7 @@
       "exportName": "calculatorMessages",
       "line": 505,
       "occurrence": 1,
-      "mergeIndex": 1994,
+      "mergeIndex": 1996,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36288,7 +36324,7 @@
       "exportName": "calculatorMessages",
       "line": 506,
       "occurrence": 1,
-      "mergeIndex": 1995,
+      "mergeIndex": 1997,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36302,7 +36338,7 @@
       "exportName": "calculatorMessages",
       "line": 507,
       "occurrence": 1,
-      "mergeIndex": 1996,
+      "mergeIndex": 1998,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36316,7 +36352,7 @@
       "exportName": "calculatorMessages",
       "line": 508,
       "occurrence": 1,
-      "mergeIndex": 1997,
+      "mergeIndex": 1999,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36330,7 +36366,7 @@
       "exportName": "calculatorMessages",
       "line": 509,
       "occurrence": 1,
-      "mergeIndex": 1998,
+      "mergeIndex": 2000,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36344,7 +36380,7 @@
       "exportName": "calculatorMessages",
       "line": 510,
       "occurrence": 1,
-      "mergeIndex": 1999,
+      "mergeIndex": 2001,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36358,7 +36394,7 @@
       "exportName": "calculatorMessages",
       "line": 511,
       "occurrence": 1,
-      "mergeIndex": 2000,
+      "mergeIndex": 2002,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36372,7 +36408,7 @@
       "exportName": "calculatorMessages",
       "line": 512,
       "occurrence": 1,
-      "mergeIndex": 2001,
+      "mergeIndex": 2003,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36386,7 +36422,7 @@
       "exportName": "calculatorMessages",
       "line": 513,
       "occurrence": 1,
-      "mergeIndex": 2002,
+      "mergeIndex": 2004,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36400,7 +36436,7 @@
       "exportName": "calculatorMessages",
       "line": 514,
       "occurrence": 1,
-      "mergeIndex": 2003,
+      "mergeIndex": 2005,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36414,7 +36450,7 @@
       "exportName": "calculatorMessages",
       "line": 515,
       "occurrence": 1,
-      "mergeIndex": 2004,
+      "mergeIndex": 2006,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36428,7 +36464,7 @@
       "exportName": "calculatorMessages",
       "line": 516,
       "occurrence": 1,
-      "mergeIndex": 2005,
+      "mergeIndex": 2007,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36442,7 +36478,7 @@
       "exportName": "calculatorMessages",
       "line": 517,
       "occurrence": 1,
-      "mergeIndex": 2006,
+      "mergeIndex": 2008,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36456,7 +36492,7 @@
       "exportName": "calculatorMessages",
       "line": 518,
       "occurrence": 1,
-      "mergeIndex": 2007,
+      "mergeIndex": 2009,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36470,7 +36506,7 @@
       "exportName": "calculatorMessages",
       "line": 519,
       "occurrence": 1,
-      "mergeIndex": 2008,
+      "mergeIndex": 2010,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36484,7 +36520,7 @@
       "exportName": "calculatorMessages",
       "line": 520,
       "occurrence": 1,
-      "mergeIndex": 2009,
+      "mergeIndex": 2011,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36498,7 +36534,7 @@
       "exportName": "calculatorMessages",
       "line": 521,
       "occurrence": 1,
-      "mergeIndex": 2010,
+      "mergeIndex": 2012,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36512,7 +36548,7 @@
       "exportName": "calculatorMessages",
       "line": 522,
       "occurrence": 1,
-      "mergeIndex": 2011,
+      "mergeIndex": 2013,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36526,7 +36562,7 @@
       "exportName": "calculatorMessages",
       "line": 523,
       "occurrence": 1,
-      "mergeIndex": 2012,
+      "mergeIndex": 2014,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36540,7 +36576,7 @@
       "exportName": "calculatorMessages",
       "line": 524,
       "occurrence": 1,
-      "mergeIndex": 2013,
+      "mergeIndex": 2015,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36554,7 +36590,7 @@
       "exportName": "calculatorMessages",
       "line": 525,
       "occurrence": 1,
-      "mergeIndex": 2014,
+      "mergeIndex": 2016,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36568,7 +36604,7 @@
       "exportName": "calculatorMessages",
       "line": 526,
       "occurrence": 1,
-      "mergeIndex": 2015,
+      "mergeIndex": 2017,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36582,7 +36618,7 @@
       "exportName": "calculatorMessages",
       "line": 527,
       "occurrence": 1,
-      "mergeIndex": 2016,
+      "mergeIndex": 2018,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36596,7 +36632,7 @@
       "exportName": "calculatorMessages",
       "line": 528,
       "occurrence": 1,
-      "mergeIndex": 2017,
+      "mergeIndex": 2019,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36610,7 +36646,7 @@
       "exportName": "calculatorMessages",
       "line": 529,
       "occurrence": 1,
-      "mergeIndex": 2018,
+      "mergeIndex": 2020,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36624,7 +36660,7 @@
       "exportName": "calculatorMessages",
       "line": 530,
       "occurrence": 1,
-      "mergeIndex": 2019,
+      "mergeIndex": 2021,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36638,7 +36674,7 @@
       "exportName": "calculatorMessages",
       "line": 531,
       "occurrence": 1,
-      "mergeIndex": 2020,
+      "mergeIndex": 2022,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36652,7 +36688,7 @@
       "exportName": "calculatorMessages",
       "line": 532,
       "occurrence": 1,
-      "mergeIndex": 2021,
+      "mergeIndex": 2023,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36666,7 +36702,7 @@
       "exportName": "calculatorMessages",
       "line": 533,
       "occurrence": 1,
-      "mergeIndex": 2022,
+      "mergeIndex": 2024,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36680,7 +36716,7 @@
       "exportName": "calculatorMessages",
       "line": 534,
       "occurrence": 1,
-      "mergeIndex": 2023,
+      "mergeIndex": 2025,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36694,7 +36730,7 @@
       "exportName": "calculatorMessages",
       "line": 535,
       "occurrence": 1,
-      "mergeIndex": 2024,
+      "mergeIndex": 2026,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36708,7 +36744,7 @@
       "exportName": "calculatorMessages",
       "line": 536,
       "occurrence": 1,
-      "mergeIndex": 2025,
+      "mergeIndex": 2027,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36722,7 +36758,7 @@
       "exportName": "calculatorMessages",
       "line": 537,
       "occurrence": 1,
-      "mergeIndex": 2026,
+      "mergeIndex": 2028,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36736,7 +36772,7 @@
       "exportName": "calculatorMessages",
       "line": 538,
       "occurrence": 1,
-      "mergeIndex": 2027,
+      "mergeIndex": 2029,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36750,7 +36786,7 @@
       "exportName": "calculatorMessages",
       "line": 539,
       "occurrence": 1,
-      "mergeIndex": 2028,
+      "mergeIndex": 2030,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36764,7 +36800,7 @@
       "exportName": "calculatorMessages",
       "line": 540,
       "occurrence": 1,
-      "mergeIndex": 2029,
+      "mergeIndex": 2031,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36778,7 +36814,7 @@
       "exportName": "calculatorMessages",
       "line": 541,
       "occurrence": 1,
-      "mergeIndex": 2030,
+      "mergeIndex": 2032,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36792,7 +36828,7 @@
       "exportName": "calculatorMessages",
       "line": 542,
       "occurrence": 1,
-      "mergeIndex": 2031,
+      "mergeIndex": 2033,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36806,7 +36842,7 @@
       "exportName": "calculatorMessages",
       "line": 543,
       "occurrence": 1,
-      "mergeIndex": 2032,
+      "mergeIndex": 2034,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36820,7 +36856,7 @@
       "exportName": "calculatorMessages",
       "line": 544,
       "occurrence": 1,
-      "mergeIndex": 2033,
+      "mergeIndex": 2035,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36834,7 +36870,7 @@
       "exportName": "calculatorMessages",
       "line": 545,
       "occurrence": 1,
-      "mergeIndex": 2034,
+      "mergeIndex": 2036,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36848,7 +36884,7 @@
       "exportName": "calculatorMessages",
       "line": 546,
       "occurrence": 1,
-      "mergeIndex": 2035,
+      "mergeIndex": 2037,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36862,7 +36898,7 @@
       "exportName": "calculatorMessages",
       "line": 547,
       "occurrence": 1,
-      "mergeIndex": 2036,
+      "mergeIndex": 2038,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36876,7 +36912,7 @@
       "exportName": "calculatorMessages",
       "line": 548,
       "occurrence": 1,
-      "mergeIndex": 2037,
+      "mergeIndex": 2039,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36890,7 +36926,7 @@
       "exportName": "calculatorMessages",
       "line": 549,
       "occurrence": 1,
-      "mergeIndex": 2038,
+      "mergeIndex": 2040,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36904,7 +36940,7 @@
       "exportName": "calculatorMessages",
       "line": 550,
       "occurrence": 1,
-      "mergeIndex": 2039,
+      "mergeIndex": 2041,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36918,7 +36954,7 @@
       "exportName": "calculatorMessages",
       "line": 551,
       "occurrence": 1,
-      "mergeIndex": 2040,
+      "mergeIndex": 2042,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36932,7 +36968,7 @@
       "exportName": "calculatorMessages",
       "line": 552,
       "occurrence": 1,
-      "mergeIndex": 2041,
+      "mergeIndex": 2043,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36946,7 +36982,7 @@
       "exportName": "calculatorMessages",
       "line": 553,
       "occurrence": 1,
-      "mergeIndex": 2042,
+      "mergeIndex": 2044,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36960,7 +36996,7 @@
       "exportName": "calculatorMessages",
       "line": 554,
       "occurrence": 1,
-      "mergeIndex": 2043,
+      "mergeIndex": 2045,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36974,7 +37010,7 @@
       "exportName": "calculatorMessages",
       "line": 555,
       "occurrence": 1,
-      "mergeIndex": 2044,
+      "mergeIndex": 2046,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -36988,7 +37024,7 @@
       "exportName": "calculatorMessages",
       "line": 556,
       "occurrence": 1,
-      "mergeIndex": 2045,
+      "mergeIndex": 2047,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37002,7 +37038,7 @@
       "exportName": "calculatorMessages",
       "line": 557,
       "occurrence": 1,
-      "mergeIndex": 2046,
+      "mergeIndex": 2048,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37016,7 +37052,7 @@
       "exportName": "calculatorMessages",
       "line": 558,
       "occurrence": 1,
-      "mergeIndex": 2047,
+      "mergeIndex": 2049,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37030,7 +37066,7 @@
       "exportName": "calculatorMessages",
       "line": 559,
       "occurrence": 1,
-      "mergeIndex": 2048,
+      "mergeIndex": 2050,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37044,7 +37080,7 @@
       "exportName": "calculatorMessages",
       "line": 560,
       "occurrence": 1,
-      "mergeIndex": 2049,
+      "mergeIndex": 2051,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37058,7 +37094,7 @@
       "exportName": "calculatorMessages",
       "line": 561,
       "occurrence": 1,
-      "mergeIndex": 2050,
+      "mergeIndex": 2052,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37072,7 +37108,7 @@
       "exportName": "calculatorMessages",
       "line": 562,
       "occurrence": 1,
-      "mergeIndex": 2051,
+      "mergeIndex": 2053,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37086,7 +37122,7 @@
       "exportName": "calculatorMessages",
       "line": 563,
       "occurrence": 1,
-      "mergeIndex": 2052,
+      "mergeIndex": 2054,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37100,7 +37136,7 @@
       "exportName": "calculatorMessages",
       "line": 564,
       "occurrence": 1,
-      "mergeIndex": 2053,
+      "mergeIndex": 2055,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37114,7 +37150,7 @@
       "exportName": "calculatorMessages",
       "line": 565,
       "occurrence": 1,
-      "mergeIndex": 2054,
+      "mergeIndex": 2056,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37128,7 +37164,7 @@
       "exportName": "calculatorMessages",
       "line": 566,
       "occurrence": 1,
-      "mergeIndex": 2055,
+      "mergeIndex": 2057,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37142,7 +37178,7 @@
       "exportName": "calculatorMessages",
       "line": 567,
       "occurrence": 1,
-      "mergeIndex": 2056,
+      "mergeIndex": 2058,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37156,7 +37192,7 @@
       "exportName": "calculatorMessages",
       "line": 568,
       "occurrence": 1,
-      "mergeIndex": 2057,
+      "mergeIndex": 2059,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37170,7 +37206,7 @@
       "exportName": "calculatorMessages",
       "line": 569,
       "occurrence": 1,
-      "mergeIndex": 2058,
+      "mergeIndex": 2060,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37184,7 +37220,7 @@
       "exportName": "calculatorMessages",
       "line": 570,
       "occurrence": 1,
-      "mergeIndex": 2059,
+      "mergeIndex": 2061,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37198,7 +37234,7 @@
       "exportName": "calculatorMessages",
       "line": 571,
       "occurrence": 1,
-      "mergeIndex": 2060,
+      "mergeIndex": 2062,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37212,7 +37248,7 @@
       "exportName": "calculatorMessages",
       "line": 572,
       "occurrence": 1,
-      "mergeIndex": 2061,
+      "mergeIndex": 2063,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37226,7 +37262,7 @@
       "exportName": "calculatorMessages",
       "line": 573,
       "occurrence": 1,
-      "mergeIndex": 2062,
+      "mergeIndex": 2064,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37240,7 +37276,7 @@
       "exportName": "calculatorMessages",
       "line": 574,
       "occurrence": 1,
-      "mergeIndex": 2063,
+      "mergeIndex": 2065,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37254,7 +37290,7 @@
       "exportName": "calculatorMessages",
       "line": 575,
       "occurrence": 1,
-      "mergeIndex": 2064,
+      "mergeIndex": 2066,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37268,7 +37304,7 @@
       "exportName": "calculatorMessages",
       "line": 576,
       "occurrence": 1,
-      "mergeIndex": 2065,
+      "mergeIndex": 2067,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37282,7 +37318,7 @@
       "exportName": "calculatorMessages",
       "line": 577,
       "occurrence": 1,
-      "mergeIndex": 2066,
+      "mergeIndex": 2068,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37296,7 +37332,7 @@
       "exportName": "calculatorMessages",
       "line": 578,
       "occurrence": 1,
-      "mergeIndex": 2067,
+      "mergeIndex": 2069,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37310,7 +37346,7 @@
       "exportName": "calculatorMessages",
       "line": 579,
       "occurrence": 1,
-      "mergeIndex": 2068,
+      "mergeIndex": 2070,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37324,7 +37360,7 @@
       "exportName": "calculatorMessages",
       "line": 580,
       "occurrence": 1,
-      "mergeIndex": 2069,
+      "mergeIndex": 2071,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37338,7 +37374,7 @@
       "exportName": "calculatorMessages",
       "line": 581,
       "occurrence": 1,
-      "mergeIndex": 2070,
+      "mergeIndex": 2072,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37352,7 +37388,7 @@
       "exportName": "calculatorMessages",
       "line": 582,
       "occurrence": 1,
-      "mergeIndex": 2071,
+      "mergeIndex": 2073,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37366,7 +37402,7 @@
       "exportName": "calculatorMessages",
       "line": 583,
       "occurrence": 1,
-      "mergeIndex": 2072,
+      "mergeIndex": 2074,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37380,7 +37416,7 @@
       "exportName": "calculatorMessages",
       "line": 584,
       "occurrence": 1,
-      "mergeIndex": 2073,
+      "mergeIndex": 2075,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37394,7 +37430,7 @@
       "exportName": "calculatorMessages",
       "line": 585,
       "occurrence": 1,
-      "mergeIndex": 2074,
+      "mergeIndex": 2076,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37408,7 +37444,7 @@
       "exportName": "calculatorMessages",
       "line": 586,
       "occurrence": 1,
-      "mergeIndex": 2075,
+      "mergeIndex": 2077,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37422,7 +37458,7 @@
       "exportName": "calculatorMessages",
       "line": 587,
       "occurrence": 1,
-      "mergeIndex": 2076,
+      "mergeIndex": 2078,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37436,7 +37472,7 @@
       "exportName": "calculatorMessages",
       "line": 588,
       "occurrence": 1,
-      "mergeIndex": 2077,
+      "mergeIndex": 2079,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37450,7 +37486,7 @@
       "exportName": "calculatorMessages",
       "line": 589,
       "occurrence": 1,
-      "mergeIndex": 2078,
+      "mergeIndex": 2080,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37464,7 +37500,7 @@
       "exportName": "calculatorMessages",
       "line": 590,
       "occurrence": 1,
-      "mergeIndex": 2079,
+      "mergeIndex": 2081,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37478,7 +37514,7 @@
       "exportName": "calculatorMessages",
       "line": 591,
       "occurrence": 1,
-      "mergeIndex": 2080,
+      "mergeIndex": 2082,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37492,7 +37528,7 @@
       "exportName": "calculatorMessages",
       "line": 592,
       "occurrence": 1,
-      "mergeIndex": 2081,
+      "mergeIndex": 2083,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37506,7 +37542,7 @@
       "exportName": "calculatorMessages",
       "line": 593,
       "occurrence": 1,
-      "mergeIndex": 2082,
+      "mergeIndex": 2084,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37520,7 +37556,7 @@
       "exportName": "calculatorMessages",
       "line": 594,
       "occurrence": 1,
-      "mergeIndex": 2083,
+      "mergeIndex": 2085,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37534,7 +37570,7 @@
       "exportName": "calculatorMessages",
       "line": 595,
       "occurrence": 1,
-      "mergeIndex": 2084,
+      "mergeIndex": 2086,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37548,7 +37584,7 @@
       "exportName": "calculatorMessages",
       "line": 596,
       "occurrence": 1,
-      "mergeIndex": 2085,
+      "mergeIndex": 2087,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"触发应对\",1]"
     },
@@ -37562,7 +37598,7 @@
       "exportName": "calculatorMessages",
       "line": 597,
       "occurrence": 1,
-      "mergeIndex": 2086,
+      "mergeIndex": 2088,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37576,7 +37612,7 @@
       "exportName": "calculatorMessages",
       "line": 598,
       "occurrence": 1,
-      "mergeIndex": 2087,
+      "mergeIndex": 2089,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37590,7 +37626,7 @@
       "exportName": "calculatorMessages",
       "line": 599,
       "occurrence": 1,
-      "mergeIndex": 2088,
+      "mergeIndex": 2090,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37604,7 +37640,7 @@
       "exportName": "calculatorMessages",
       "line": 600,
       "occurrence": 1,
-      "mergeIndex": 2089,
+      "mergeIndex": 2091,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37618,7 +37654,7 @@
       "exportName": "calculatorMessages",
       "line": 601,
       "occurrence": 1,
-      "mergeIndex": 2090,
+      "mergeIndex": 2092,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37632,7 +37668,7 @@
       "exportName": "calculatorMessages",
       "line": 602,
       "occurrence": 1,
-      "mergeIndex": 2091,
+      "mergeIndex": 2093,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37646,7 +37682,7 @@
       "exportName": "calculatorMessages",
       "line": 603,
       "occurrence": 1,
-      "mergeIndex": 2092,
+      "mergeIndex": 2094,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37660,7 +37696,7 @@
       "exportName": "calculatorMessages",
       "line": 604,
       "occurrence": 1,
-      "mergeIndex": 2093,
+      "mergeIndex": 2095,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37674,7 +37710,7 @@
       "exportName": "calculatorMessages",
       "line": 605,
       "occurrence": 1,
-      "mergeIndex": 2094,
+      "mergeIndex": 2096,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37688,7 +37724,7 @@
       "exportName": "calculatorMessages",
       "line": 606,
       "occurrence": 1,
-      "mergeIndex": 2095,
+      "mergeIndex": 2097,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37702,7 +37738,7 @@
       "exportName": "calculatorMessages",
       "line": 607,
       "occurrence": 1,
-      "mergeIndex": 2096,
+      "mergeIndex": 2098,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37716,7 +37752,7 @@
       "exportName": "calculatorMessages",
       "line": 608,
       "occurrence": 1,
-      "mergeIndex": 2097,
+      "mergeIndex": 2099,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37730,7 +37766,7 @@
       "exportName": "calculatorMessages",
       "line": 609,
       "occurrence": 1,
-      "mergeIndex": 2098,
+      "mergeIndex": 2100,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37744,7 +37780,7 @@
       "exportName": "calculatorMessages",
       "line": 610,
       "occurrence": 1,
-      "mergeIndex": 2099,
+      "mergeIndex": 2101,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37758,7 +37794,7 @@
       "exportName": "calculatorMessages",
       "line": 611,
       "occurrence": 1,
-      "mergeIndex": 2100,
+      "mergeIndex": 2102,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37772,7 +37808,7 @@
       "exportName": "calculatorMessages",
       "line": 612,
       "occurrence": 1,
-      "mergeIndex": 2101,
+      "mergeIndex": 2103,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37786,7 +37822,7 @@
       "exportName": "calculatorMessages",
       "line": 613,
       "occurrence": 1,
-      "mergeIndex": 2102,
+      "mergeIndex": 2104,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37800,7 +37836,7 @@
       "exportName": "calculatorMessages",
       "line": 614,
       "occurrence": 1,
-      "mergeIndex": 2103,
+      "mergeIndex": 2105,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37814,7 +37850,7 @@
       "exportName": "calculatorMessages",
       "line": 615,
       "occurrence": 1,
-      "mergeIndex": 2104,
+      "mergeIndex": 2106,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-ui-messages.js\",\"globalUiMessages\",\"查看\",1]"
     },
@@ -37828,7 +37864,7 @@
       "exportName": "calculatorMessages",
       "line": 616,
       "occurrence": 1,
-      "mergeIndex": 2105,
+      "mergeIndex": 2107,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-ui-messages.js\",\"globalUiMessages\",\"打开\",1]"
     },
@@ -37842,7 +37878,7 @@
       "exportName": "calculatorMessages",
       "line": 617,
       "occurrence": 1,
-      "mergeIndex": 2106,
+      "mergeIndex": 2108,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-ui-messages.js\",\"globalUiMessages\",\"属性相性查询\",1]"
     },
@@ -37856,7 +37892,7 @@
       "exportName": "calculatorMessages",
       "line": 618,
       "occurrence": 1,
-      "mergeIndex": 2107,
+      "mergeIndex": 2109,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37870,7 +37906,7 @@
       "exportName": "calculatorMessages",
       "line": 619,
       "occurrence": 1,
-      "mergeIndex": 2108,
+      "mergeIndex": 2110,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37884,7 +37920,7 @@
       "exportName": "calculatorMessages",
       "line": 620,
       "occurrence": 1,
-      "mergeIndex": 2109,
+      "mergeIndex": 2111,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37898,7 +37934,7 @@
       "exportName": "calculatorMessages",
       "line": 621,
       "occurrence": 1,
-      "mergeIndex": 2110,
+      "mergeIndex": 2112,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37912,7 +37948,7 @@
       "exportName": "calculatorMessages",
       "line": 622,
       "occurrence": 1,
-      "mergeIndex": 2111,
+      "mergeIndex": 2113,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"本次可击倒\",1]"
     },
@@ -37926,7 +37962,7 @@
       "exportName": "calculatorMessages",
       "line": 623,
       "occurrence": 1,
-      "mergeIndex": 2112,
+      "mergeIndex": 2114,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37940,7 +37976,7 @@
       "exportName": "calculatorMessages",
       "line": 624,
       "occurrence": 1,
-      "mergeIndex": 2113,
+      "mergeIndex": 2115,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"冻结击倒\",1]"
     },
@@ -37954,7 +37990,7 @@
       "exportName": "calculatorMessages",
       "line": 625,
       "occurrence": 1,
-      "mergeIndex": 2114,
+      "mergeIndex": 2116,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/global-features-messages.js\",\"globalFeaturesMessages\",\"可击倒\",1]"
     },
@@ -37968,7 +38004,7 @@
       "exportName": "calculatorMessages",
       "line": 626,
       "occurrence": 1,
-      "mergeIndex": 2115,
+      "mergeIndex": 2117,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37982,7 +38018,7 @@
       "exportName": "calculatorMessages",
       "line": 627,
       "occurrence": 1,
-      "mergeIndex": 2116,
+      "mergeIndex": 2118,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -37996,7 +38032,7 @@
       "exportName": "calculatorMessages",
       "line": 628,
       "occurrence": 1,
-      "mergeIndex": 2117,
+      "mergeIndex": 2119,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38010,7 +38046,7 @@
       "exportName": "calculatorMessages",
       "line": 629,
       "occurrence": 1,
-      "mergeIndex": 2118,
+      "mergeIndex": 2120,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38024,7 +38060,7 @@
       "exportName": "calculatorMessages",
       "line": 630,
       "occurrence": 1,
-      "mergeIndex": 2119,
+      "mergeIndex": 2121,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38038,7 +38074,7 @@
       "exportName": "calculatorMessages",
       "line": 631,
       "occurrence": 1,
-      "mergeIndex": 2120,
+      "mergeIndex": 2122,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38052,7 +38088,7 @@
       "exportName": "calculatorMessages",
       "line": 632,
       "occurrence": 1,
-      "mergeIndex": 2121,
+      "mergeIndex": 2123,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38066,7 +38102,7 @@
       "exportName": "calculatorMessages",
       "line": 633,
       "occurrence": 1,
-      "mergeIndex": 2122,
+      "mergeIndex": 2124,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38080,7 +38116,7 @@
       "exportName": "calculatorMessages",
       "line": 634,
       "occurrence": 1,
-      "mergeIndex": 2123,
+      "mergeIndex": 2125,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38094,7 +38130,7 @@
       "exportName": "calculatorMessages",
       "line": 635,
       "occurrence": 1,
-      "mergeIndex": 2124,
+      "mergeIndex": 2126,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38108,7 +38144,7 @@
       "exportName": "calculatorMessages",
       "line": 636,
       "occurrence": 1,
-      "mergeIndex": 2125,
+      "mergeIndex": 2127,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38122,7 +38158,7 @@
       "exportName": "calculatorMessages",
       "line": 637,
       "occurrence": 1,
-      "mergeIndex": 2126,
+      "mergeIndex": 2128,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38136,7 +38172,7 @@
       "exportName": "calculatorMessages",
       "line": 638,
       "occurrence": 1,
-      "mergeIndex": 2127,
+      "mergeIndex": 2129,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38150,7 +38186,7 @@
       "exportName": "calculatorMessages",
       "line": 639,
       "occurrence": 1,
-      "mergeIndex": 2128,
+      "mergeIndex": 2130,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38164,7 +38200,7 @@
       "exportName": "calculatorMessages",
       "line": 640,
       "occurrence": 1,
-      "mergeIndex": 2129,
+      "mergeIndex": 2131,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38178,7 +38214,7 @@
       "exportName": "calculatorMessages",
       "line": 641,
       "occurrence": 1,
-      "mergeIndex": 2130,
+      "mergeIndex": 2132,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38192,7 +38228,7 @@
       "exportName": "calculatorMessages",
       "line": 642,
       "occurrence": 1,
-      "mergeIndex": 2131,
+      "mergeIndex": 2133,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38206,7 +38242,7 @@
       "exportName": "calculatorMessages",
       "line": 643,
       "occurrence": 1,
-      "mergeIndex": 2132,
+      "mergeIndex": 2134,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38220,7 +38256,7 @@
       "exportName": "calculatorMessages",
       "line": 644,
       "occurrence": 1,
-      "mergeIndex": 2133,
+      "mergeIndex": 2135,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38234,7 +38270,7 @@
       "exportName": "calculatorMessages",
       "line": 645,
       "occurrence": 1,
-      "mergeIndex": 2134,
+      "mergeIndex": 2136,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38248,7 +38284,7 @@
       "exportName": "calculatorMessages",
       "line": 646,
       "occurrence": 1,
-      "mergeIndex": 2135,
+      "mergeIndex": 2137,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38262,7 +38298,7 @@
       "exportName": "calculatorMessages",
       "line": 647,
       "occurrence": 1,
-      "mergeIndex": 2136,
+      "mergeIndex": 2138,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38276,7 +38312,7 @@
       "exportName": "calculatorMessages",
       "line": 648,
       "occurrence": 1,
-      "mergeIndex": 2137,
+      "mergeIndex": 2139,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38290,7 +38326,7 @@
       "exportName": "calculatorMessages",
       "line": 649,
       "occurrence": 1,
-      "mergeIndex": 2138,
+      "mergeIndex": 2140,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38304,7 +38340,7 @@
       "exportName": "calculatorMessages",
       "line": 650,
       "occurrence": 1,
-      "mergeIndex": 2139,
+      "mergeIndex": 2141,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38318,7 +38354,7 @@
       "exportName": "calculatorMessages",
       "line": 651,
       "occurrence": 1,
-      "mergeIndex": 2140,
+      "mergeIndex": 2142,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38332,7 +38368,7 @@
       "exportName": "calculatorMessages",
       "line": 652,
       "occurrence": 1,
-      "mergeIndex": 2141,
+      "mergeIndex": 2143,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38346,7 +38382,7 @@
       "exportName": "calculatorMessages",
       "line": 653,
       "occurrence": 1,
-      "mergeIndex": 2142,
+      "mergeIndex": 2144,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38360,7 +38396,7 @@
       "exportName": "calculatorMessages",
       "line": 654,
       "occurrence": 1,
-      "mergeIndex": 2143,
+      "mergeIndex": 2145,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38374,7 +38410,7 @@
       "exportName": "calculatorMessages",
       "line": 655,
       "occurrence": 1,
-      "mergeIndex": 2144,
+      "mergeIndex": 2146,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38388,7 +38424,7 @@
       "exportName": "calculatorMessages",
       "line": 656,
       "occurrence": 1,
-      "mergeIndex": 2145,
+      "mergeIndex": 2147,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38402,7 +38438,7 @@
       "exportName": "calculatorMessages",
       "line": 657,
       "occurrence": 1,
-      "mergeIndex": 2146,
+      "mergeIndex": 2148,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38416,7 +38452,7 @@
       "exportName": "calculatorMessages",
       "line": 658,
       "occurrence": 1,
-      "mergeIndex": 2147,
+      "mergeIndex": 2149,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38430,7 +38466,7 @@
       "exportName": "calculatorMessages",
       "line": 659,
       "occurrence": 1,
-      "mergeIndex": 2148,
+      "mergeIndex": 2150,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38444,7 +38480,7 @@
       "exportName": "calculatorMessages",
       "line": 660,
       "occurrence": 1,
-      "mergeIndex": 2149,
+      "mergeIndex": 2151,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38458,7 +38494,7 @@
       "exportName": "calculatorMessages",
       "line": 661,
       "occurrence": 1,
-      "mergeIndex": 2150,
+      "mergeIndex": 2152,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38472,7 +38508,7 @@
       "exportName": "calculatorMessages",
       "line": 662,
       "occurrence": 1,
-      "mergeIndex": 2151,
+      "mergeIndex": 2153,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/configuration-messages.js\",\"configurationMessages\",\"双攻\",1]"
     },
@@ -38486,7 +38522,7 @@
       "exportName": "calculatorMessages",
       "line": 663,
       "occurrence": 1,
-      "mergeIndex": 2152,
+      "mergeIndex": 2154,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38500,7 +38536,7 @@
       "exportName": "calculatorMessages",
       "line": 664,
       "occurrence": 1,
-      "mergeIndex": 2153,
+      "mergeIndex": 2155,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38514,7 +38550,7 @@
       "exportName": "calculatorMessages",
       "line": 665,
       "occurrence": 2,
-      "mergeIndex": 2154,
+      "mergeIndex": 2156,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/calculator-messages.js\",\"calculatorMessages\",\"层\",1]"
     },
@@ -38528,7 +38564,7 @@
       "exportName": "calculatorMessages",
       "line": 666,
       "occurrence": 1,
-      "mergeIndex": 2155,
+      "mergeIndex": 2157,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38542,7 +38578,7 @@
       "exportName": "calculatorMessages",
       "line": 667,
       "occurrence": 1,
-      "mergeIndex": 2156,
+      "mergeIndex": 2158,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38556,7 +38592,7 @@
       "exportName": "calculatorMessages",
       "line": 668,
       "occurrence": 1,
-      "mergeIndex": 2157,
+      "mergeIndex": 2159,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38570,7 +38606,7 @@
       "exportName": "calculatorMessages",
       "line": 669,
       "occurrence": 1,
-      "mergeIndex": 2158,
+      "mergeIndex": 2160,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38584,7 +38620,7 @@
       "exportName": "calculatorMessages",
       "line": 670,
       "occurrence": 1,
-      "mergeIndex": 2159,
+      "mergeIndex": 2161,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38598,7 +38634,7 @@
       "exportName": "calculatorMessages",
       "line": 671,
       "occurrence": 1,
-      "mergeIndex": 2160,
+      "mergeIndex": 2162,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38612,7 +38648,7 @@
       "exportName": "calculatorMessages",
       "line": 672,
       "occurrence": 1,
-      "mergeIndex": 2161,
+      "mergeIndex": 2163,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38626,7 +38662,7 @@
       "exportName": "calculatorMessages",
       "line": 673,
       "occurrence": 1,
-      "mergeIndex": 2162,
+      "mergeIndex": 2164,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38640,7 +38676,7 @@
       "exportName": "calculatorMessages",
       "line": 674,
       "occurrence": 1,
-      "mergeIndex": 2163,
+      "mergeIndex": 2165,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38654,7 +38690,7 @@
       "exportName": "calculatorMessages",
       "line": 675,
       "occurrence": 2,
-      "mergeIndex": 2164,
+      "mergeIndex": 2166,
       "effective": true,
       "overridesDefinitionId": "[\"src/i18n/calculator-messages.js\",\"calculatorMessages\",\"（未参与结算）\",1]"
     },
@@ -38668,7 +38704,7 @@
       "exportName": "calculatorMessages",
       "line": 676,
       "occurrence": 1,
-      "mergeIndex": 2165,
+      "mergeIndex": 2167,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38682,7 +38718,7 @@
       "exportName": "calculatorMessages",
       "line": 677,
       "occurrence": 1,
-      "mergeIndex": 2166,
+      "mergeIndex": 2168,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38696,7 +38732,7 @@
       "exportName": "calculatorMessages",
       "line": 678,
       "occurrence": 1,
-      "mergeIndex": 2167,
+      "mergeIndex": 2169,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38710,7 +38746,7 @@
       "exportName": "calculatorMessages",
       "line": 679,
       "occurrence": 1,
-      "mergeIndex": 2168,
+      "mergeIndex": 2170,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38724,7 +38760,7 @@
       "exportName": "calculatorMessages",
       "line": 680,
       "occurrence": 1,
-      "mergeIndex": 2169,
+      "mergeIndex": 2171,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38738,7 +38774,7 @@
       "exportName": "calculatorMessages",
       "line": 681,
       "occurrence": 1,
-      "mergeIndex": 2170,
+      "mergeIndex": 2172,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38752,7 +38788,7 @@
       "exportName": "calculatorMessages",
       "line": 682,
       "occurrence": 1,
-      "mergeIndex": 2171,
+      "mergeIndex": 2173,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38766,7 +38802,7 @@
       "exportName": "calculatorMessages",
       "line": 683,
       "occurrence": 1,
-      "mergeIndex": 2172,
+      "mergeIndex": 2174,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38780,7 +38816,7 @@
       "exportName": "calculatorMessages",
       "line": 684,
       "occurrence": 1,
-      "mergeIndex": 2173,
+      "mergeIndex": 2175,
       "effective": true,
       "overridesDefinitionId": null
     },
@@ -38794,7 +38830,7 @@
       "exportName": "calculatorMessages",
       "line": 685,
       "occurrence": 1,
-      "mergeIndex": 2174,
+      "mergeIndex": 2176,
       "effective": true,
       "overridesDefinitionId": null
     }
@@ -53430,6 +53466,22 @@
       "registered": true
     },
     {
+      "stableKey": "[\"src/components/WorkspaceOverlays.jsx\",\"t-call\",\"上次有效结果\"]",
+      "zh": "上次有效结果",
+      "file": "src/components/WorkspaceOverlays.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/WorkspaceOverlays.jsx",
+          "context": "t-call",
+          "line": 283,
+          "column": 74,
+          "excerpt": "<span className=\"mobile-result-bar__percent\" data-last-valid={t(\"上次有效结果\")}>"
+        }
+      ],
+      "registered": true
+    },
+    {
       "stableKey": "[\"src/components/WorkspaceOverlays.jsx\",\"t-call\",\"非伤害\"]",
       "zh": "非伤害",
       "file": "src/components/WorkspaceOverlays.jsx",
@@ -63494,8 +63546,8 @@
   ],
   "summary": {
     "sourceFiles": 243,
-    "registeredMessages": 2084,
-    "definitions": 2175,
+    "registeredMessages": 2086,
+    "definitions": 2177,
     "overrides": 91,
     "missingRegisteredCalls": 12,
     "unregisteredVisibleText": 10,

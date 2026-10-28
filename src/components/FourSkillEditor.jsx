@@ -204,7 +204,12 @@ function SkillSide({
       )
     );
   return (
-    <section className={`four-skill-side four-skill-side--${side}`}>
+    <section className={`four-skill-side four-skill-side--${side}`} style={{
+      "--skill-row-kind-label": JSON.stringify(tc("属性")),
+      "--skill-row-cost-label": JSON.stringify(tc("耗")),
+      "--skill-row-power-label": JSON.stringify(tc("威力")),
+      "--skill-row-hits-label": JSON.stringify(tc("连击")),
+    }}>
       <header>
         <span>{tc(label)}</span>
         <strong>{tc(name)}</strong>

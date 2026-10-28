@@ -10165,3 +10165,9 @@ ui:生命低于 50%,ui,生命低于 50%,ja,project_existing,review,保留现有�
 ui:精灵预设,ui,精灵预设,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:精灵预设,ui,精灵预设,en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:精灵预设,ui,精灵预设,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:上次有效结果,ui,上次有效结果,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:上次有效结果,ui,上次有效结果,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:上次有效结果,ui,上次有效结果,ja,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:悬停或聚焦选项查看效果。,ui,悬停或聚焦选项查看效果。,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
+ui:悬停或聚焦选项查看效果。,ui,悬停或聚焦选项查看效果。,en,project_existing,review,保留现有值，待语境或原文问题复核。
+ui:悬停或聚焦选项查看效果。,ui,悬停或聚焦选项查看效果。,ja,project_existing,review,保留现有值，待语境或原文问题复核。

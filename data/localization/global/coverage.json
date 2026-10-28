@@ -1,5 +1,5 @@
 {
-  "rows": 7114,
+  "rows": 7116,
   "groups": {
     "cn_preview": 182,
     "concept": 228,
@@ -10,13 +10,13 @@
     "matchup": 8,
     "project_extra": 36,
     "mechanic": 215,
-    "ui": 2085,
+    "ui": 2087,
     "ui_visible": 690,
     "ui_missing": 12,
     "display_override": 3
   },
   "errors": 0,
-  "needsReviewRows": 3178,
+  "needsReviewRows": 3180,
   "issues": {
     "cn_preview": 182,
     "missing_translation": 2166,
@@ -25,8 +25,8 @@
     "source_issue": 4,
     "missing_zh": 8,
     "client_issue": 2,
-    "needs_review": 2065,
-    "project_existing": 4118,
+    "needs_review": 2067,
+    "project_existing": 4122,
     "not_in_current_inventory": 681
   }
 }
