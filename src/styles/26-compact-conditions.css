@@ -22,7 +22,8 @@
 .compact-condition-dialog > header > button { display: grid; flex-shrink: 0; place-items: center;
   width: 32px; height: 32px; padding: 0; border: 0; border-radius: 5px; color: var(--text-muted); background: transparent; cursor: pointer; }
 .compact-condition-dialog__controls { display: grid; gap: 12px; padding: 14px; overflow-y: auto; overscroll-behavior: contain; }
-.compact-condition-dialog__controls > label { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 0; font-size: 14px; line-height: 1.5; }
+.compact-condition-field:empty { display: none; }
+.compact-condition-field > label { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 0; font-size: 14px; line-height: 1.5; }
 .compact-condition-dialog__controls .trait-condition { justify-content: flex-start; font-size: 14px; line-height: 1.5; }
 .compact-condition-dialog__controls .trait-number { display: grid; grid-template-columns: minmax(0, 1fr) 82px auto; justify-content: normal; }
 .compact-condition-dialog__controls .trait-number > input { width: 82px; min-height: 38px; }
@@ -32,7 +33,34 @@
 .compact-condition-dialog input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
 .compact-condition-health { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
 .compact-condition-dialog .burst-source-controls { min-width: 0; }
+.compact-condition-dialog .burst-source-controls summary { width: max-content; max-width: 100%; min-height: 38px; white-space: nowrap; }
+.compact-condition-dialog .burst-source-controls summary strong { font-size: inherit; }
 .compact-condition-dialog .burst-source-controls__menu { position: static; width: auto; max-height: none; border: 0; box-shadow: none; }
+.compact-condition-dialog .burst-source-controls summary,
+.compact-condition-dialog .burst-source-controls__menu label,
+.compact-condition-dialog .burst-source-controls__menu legend,
+.compact-condition-dialog .burst-source-controls__menu > small,
+.compact-condition-dialog .burst-source-controls__menu::after,
+.compact-condition-dialog .burst-source-controls__menu label::after { font-size: 14px; line-height: 1.5; }
+.compact-condition-dialog .burst-source-controls__menu { padding-bottom: 88px; }
+.compact-condition-dialog .burst-source-controls__menu label { min-height: 36px; }
+.compact-condition-dialog .usage-count-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px; }
+.compact-condition-dialog .usage-count-actions button { min-width: 38px; min-height: 34px; font-size: 14px; }
+.compact-skill-state { grid-column: 2 / -1; min-width: 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.compact-skill-state p { margin: 0; overflow-wrap: anywhere; }
+.compact-skill__row > .compact-skill-state p { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.compact-single-skill > .compact-skill-state { grid-column: 1 / -1; }
+.compact-condition-dialog .compact-skill-state { grid-column: auto; font-size: 14px; }
+.compact-condition-formula, .compact-condition-notice { margin: 0; color: var(--text-muted); line-height: 1.5; }
+.compact-condition-description { color: var(--text-muted); line-height: 1.6; }
+.compact-condition-description summary { cursor: pointer; }
+.compact-condition-description p { margin: 8px 0 0; overflow-wrap: anywhere; }
+.compact-condition-dialog > footer { display: flex; flex-shrink: 0; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 10px 12px; border-top: 1px solid var(--border); }
+.compact-condition-dialog > footer small { margin-right: auto; color: var(--text-muted); font-size: 12px; }
+.compact-condition-dialog > footer button { min-height: 36px; padding: 6px 12px; border: 1px solid var(--accent-strong); border-radius: 5px;
+  background: var(--accent-strong); color: var(--surface); font: inherit; cursor: pointer; }
+.compact-condition-dialog > footer button:disabled { opacity: .55; cursor: default; }
 @media (max-width: 760px) {
   .calculator-layout--compact .compact-skill__row.has-conditions { grid-template-columns: 11px minmax(0, 1fr) auto 19px minmax(74px, .68fr); }
   .compact-skill__row > .compact-condition-trigger { max-width: 82px; padding-inline: 4px; min-height: 34px; }
@@ -45,5 +73,14 @@
   .compact-condition-dialog > header > button { width: 40px; height: 40px; }
   .compact-condition-dialog__controls { padding: 14px 16px max(16px, env(safe-area-inset-bottom, 0px)); }
   .compact-condition-dialog input:not([type="checkbox"]), .compact-condition-dialog select { min-height: 44px; }
+  .compact-condition-dialog > footer button, .compact-condition-dialog .usage-count-actions button { min-height: 44px; }
+  .compact-condition-dialog .burst-source-controls summary,
+  .compact-condition-dialog .burst-source-controls__menu label { min-height: 44px; }
   .spirit-card .compact-condition-trigger { max-width: min(190px, 100%); margin-left: 0; margin-top: 4px; }
+}
+@media (max-width: 380px) {
+  .compact-skill__row > .compact-condition-trigger { width: 30px; min-width: 30px; padding-inline: 4px; }
+  .compact-skill__row > .compact-condition-trigger > svg { display: block; width: 16px; height: 16px; }
+  .compact-skill__row > .compact-condition-trigger > span,
+  .compact-skill__row > .compact-condition-trigger > small { display: none; }
 }
