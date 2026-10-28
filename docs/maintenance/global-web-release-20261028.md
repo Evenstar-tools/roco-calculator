@@ -66,3 +66,22 @@
 组合构建、生产包E2E与线上回查在下方接续记录。
 
 生产组合构建、release单元回归和全部发布E2E通过。新增E2E在真实Global包检查默认S3、切S5后英日切换/刷新/离线保持主题与23伤害，并检查1280/390/320px英文Common不折词。生产预览速度榜恢复普通最终形态、英文Profile分隔符正确。正式推送后继续回查公网。
+
+### 本轮线上验收完成
+
+发布提交 `99a5a032fac28ec001af2c3e3266784051e26010` 已推送并回读 origin/main。2026-10-28 18:05 后普通 `/en/` 和 `/jp/` 加载新资源 `/global-assets/assets/main-DpSdvzdD.js`。真实页面确认默认S3、设置含无装饰和S1–S5，切S5→日文→刷新保留主题与Dimo/Meodow配置，仍为23伤害；再切国际服中文也保持23。390px无横向溢出，页面未见CBT或旧核验/缺译提示；正式头像和属性图标加载完成后截图读回通过。
+
+线上数据仍为 `global-s3-midseason-2026-08-13`，国服数据 `s4-2026-09-10`、预览 `/pre/assets/main-BhTCj6EQ.js` 与原pin不变。远端CI全部成功：https://github.com/Evenstar-tools/roco-calculator/actions/runs/40668923441 。
+
+真实线上截图：源码树 `output/playwright/global-themes-localization-20261028/live-en-s3.png`、`live-jp-s5-mobile.png`；本线程浏览器已关闭，列表回读为空。本段为发布后验收证据，随后按用户“完整提交 push + GitHub 管理 + SEO 检查”的要求一并入库。
+
+### GitHub 与 SEO 收尾 · 2026-10-28
+
+- 本轮国际服源码已在 `codex/s5-plan-20261022` 的 `e1e55f8`；生产 `main` 的 `99a5a03` 固定引用该源码。已有全量发布验证和线上验收通过，本次仅补仓库说明与证据，不改运行时代码和数据。
+- 同步中英文 README、版本索引与 GitHub About：国服 S4，国际服 S3 季中三语网页与 S1–S5 装扮。GitHub 当前没有待处理 Issue 或 PR；保留空 topics、现有标签及 Windows Release 附件。当前 Latest 为 v2.2.7，网页源码版本 v2.2.8 不代表已发布新的桌面安装包。
+- HTTPS 首页、`/en/`、`/jp/`、`/global/zh-CN/`、`/pre/` 均返回 200。国际服 lang、canonical 正确；无尾斜杠的三语入口返回 301。robots 与 sitemap 返回正确类型，未发现阻止抓取的响应头。
+- SEO 待处理项仅记录：sitemap 尚缺 `/jp/` 与 `/global/zh-CN/`，`/en/` 的 lastmod 仍为 2026-10-20；HTTP 首页直接 200；`/pre` 与 `/pre/` 均 200，初始 HTML 无 canonical/noindex；日语初始标题与运行时标题不一致。
+- 国际服 description 由运行时注入，初始 HTML 无该字段；初始正文为 JavaScript 应用入口。资源可获取不等于 Google 已完成渲染或收录。
+- 按既有 SEO 边界，本轮不修改标题、正文、元数据、重定向、robots 或 sitemap，不恢复已删除的 hreflang、OG/Twitter、JSON-LD。个人化搜索和 Search Console 原始数据仅保存在本地验收目录，不进入公开仓库。
+
+技术检查参考：[Google JavaScript SEO](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics)、[站点地图](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)。检查与待处理项不代表搜索排名或自然访问已经改善。

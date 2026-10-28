@@ -9,7 +9,8 @@
 | 项目 | 版本 | 你可以做什么 |
 | --- | --- | --- |
 | 最新可下载版本 | [Latest 发布页](https://github.com/Evenstar-tools/roco-calculator/releases/latest) | 下载带版本号的 `洛克计算器-版本号.exe`；可下载版本以发布页为准。 |
-| 当前源码版本 | `v2.2.7` | 队伍卡片按住拖动排序、浮卡与落点提示，保留完整成员配置。可查看 [v2.2.7 更新内容](../../CHANGELOG.md#v227)。 |
+| 当前源码版本 | `v2.2.8` | 见 [v2.2.8 更新内容](../../CHANGELOG.md#v228)；源码版本与可下载安装包分别维护。 |
+| 当前国际服网页 | `S3 季中` | [English](https://rococalc.top/en/) · [日本語](https://rococalc.top/jp/) · [简体中文](https://rococalc.top/global/zh-CN/)，已接通三语计算与 S1–S5 装扮。此次网页更新不替换 Windows Release。 |
 | 小程序开发版本 | `v1.1.19` | 本轮同版本重新构建，使用网页核心 v2.2.5 与新的公式表述；开发版上传回执见本轮维护记录，平台审核与公开发布仍需另行完成。 |
 
 ## 这三类记录分别代表什么

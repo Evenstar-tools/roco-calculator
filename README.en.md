@@ -2,9 +2,9 @@
 
 [简体中文](README.md)
 
-An unofficial PvP damage calculator and team tool for **洛克王国：世界**. Select both Jinies and their skills to compare damage and remaining HP. The interface and data are Chinese and use China-server S4 data; international-server stats and rules have not been verified.
+An unofficial PvP damage calculator and team tool for **Roco Kingdom**. Select both Jinies and their skills to compare damage and remaining HP. The China-server calculator uses S4 data. The Global web app supports English, Japanese and Chinese, uses S3 midseason stats and rules, and includes S1–S5 season themes.
 
-[Use online](https://rococalc.top/) · [Windows installer](https://github.com/Evenstar-tools/roco-calculator/releases/latest) · [English guide](https://rococalc.top/en/)
+[Global · English](https://rococalc.top/en/) · [Global · 日本語](https://rococalc.top/jp/) · [Global · 简体中文](https://rococalc.top/global/zh-CN/) · [China server](https://rococalc.top/) · [Windows installer](https://github.com/Evenstar-tools/roco-calculator/releases/latest)
 
 ## Local use
 
