@@ -11,6 +11,7 @@ import { damagePresentation, DamageSegments } from "./damagePresentation.jsx";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
 import { describeResolution } from "./SingleSkillEditor.jsx";
+import { CompactConditionTrigger } from "./CompactConditions.jsx";
 import { buildRefractionHint } from "../domain/refraction.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 
@@ -82,6 +83,9 @@ function CompactSkillSide({
   sproutStacks,
   traitDamage,
   traitEditor,
+  conditions = [],
+  onOpenConditions,
+  openConditionKey,
 }) {
   const { t } = useLocale();
   const SideIcon = side === "attacker" ? Sword : Shield;
@@ -148,6 +152,7 @@ function CompactSkillSide({
         {Array.from({ length: Math.max(4, selectedSkills.length) }, (_, index) => {
           const selected = selectedSkills[index];
           const result = results?.[index];
+          const conditionModel = conditions[index];
           const effectiveCost = result?.skillCost ?? selected?.cost;
           const effectiveType = result?.typeLabel ?? selected?.type;
           const isSelected =
@@ -163,7 +168,7 @@ function CompactSkillSide({
           return (
             <div
               aria-label={t(isSelected ? "{label}技能{index}，当前选中" : "{label}技能{index}", { label, index: index + 1 })}
-              className={`compact-skill__row${isSelected ? " is-selected" : ""}`}
+              className={`compact-skill__row${isSelected ? " is-selected" : ""}${conditionModel ? " has-conditions" : ""}`}
               key={`${side}-${index}`}
               onClick={(event) => {
                 onSkillFocus?.(side, index);
@@ -200,6 +205,7 @@ function CompactSkillSide({
                 skills={skills}
                 placeholder={placeholder}
               />
+              {!placeholder && <CompactConditionTrigger model={conditionModel} onOpen={onOpenConditions} expanded={openConditionKey === conditionModel?.key} />}
               {!placeholder && <><span
                 className="compact-skill__element"
                 title={effectiveType ?? "未选择属性"}
@@ -247,6 +253,9 @@ export function CompactFourSkillEditor({
   canSkillActivate,
   skillActivationLabel,
   traitEditors = {},
+  conditionModels = {},
+  onOpenConditions,
+  openConditionKey,
   activeDamageSource = "skill",
   activeSide = "attacker",
   activeSkillIndex = 0,
@@ -292,6 +301,9 @@ export function CompactFourSkillEditor({
         skills={attackerSkillChoices}
         sproutStacks={attackerSproutStacks}
         traitDamage={attackerTraitDamage}
+        conditions={conditionModels.attacker}
+        onOpenConditions={onOpenConditions}
+        openConditionKey={openConditionKey}
         traitEditor={traitEditors.attacker}
       />
       <CompactSkillSide
@@ -315,6 +327,9 @@ export function CompactFourSkillEditor({
         skills={defenderSkillChoices}
         sproutStacks={defenderSproutStacks}
         traitDamage={defenderTraitDamage}
+        conditions={conditionModels.defender}
+        onOpenConditions={onOpenConditions}
+        openConditionKey={openConditionKey}
         traitEditor={traitEditors.defender}
       />
     </div>
@@ -332,6 +347,9 @@ export function CompactSingleSkillEditor({
   result,
   selectedSkill,
   skills,
+  conditionModel,
+  onOpenConditions,
+  openConditionKey,
 }) {
   const { t } = useLocale();
   const effectiveCost = result?.skillCost ?? selectedSkill?.cost;
@@ -349,6 +367,7 @@ export function CompactSingleSkillEditor({
         placeholder={placeholder}
       />
       <div className="compact-single-skill__meta">
+        {!placeholder && <CompactConditionTrigger model={conditionModel} onOpen={onOpenConditions} expanded={openConditionKey === conditionModel?.key} />}
         {!placeholder && <><span title={effectiveType ?? "未选择属性"}>
           <ElementIcon size={20} type={effectiveType} />
         </span>

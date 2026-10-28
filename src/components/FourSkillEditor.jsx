@@ -6,13 +6,12 @@ import {
   describeResolution,
   dynamicInputValue,
   dynamicInputsForSkill,
-  mergeDynamicInputs,
   displayedSkillPower,
-  isDynamicInputVisible,
   TraitAutomaticStack,
   TraitInputs,
 } from "./SingleSkillEditor.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
+import { getSkillSlotConditions } from "./skill-condition-inputs.js";
 import { useEffect, useState } from "react";
 import { damageTone } from "./damageTone.js";
 import { damagePresentation, DamageSegments } from "./damagePresentation.jsx";
@@ -22,12 +21,7 @@ import {
   TraitHint,
   TraitSkillPowerBonuses,
 } from "./TraitHint.jsx";
-import {
-  getChoiceTraitInput,
-  supportsChoiceTrait,
-} from "../domain/choice-skill-sequence.js";
 import { buildRefractionHint } from "../domain/refraction.js";
-import { getGaleTurbineCompanionInput } from "../domain/wing-extension.js";
 import { resolveLifestealCapability } from "../domain/baron-greed.js";
 
 const CATEGORY_LABELS = {
@@ -175,12 +169,6 @@ function SkillSide({
     : trait
       ? [trait]
       : [];
-  const choiceTraitName = effectiveTraits
-    .map((candidate) => candidate?.displayName ?? candidate?.name)
-    .find(supportsChoiceTrait) ?? null;
-  const wingTraitName = effectiveTraits
-    .map((candidate) => candidate?.displayName ?? candidate?.name)
-    .find((name) => name === "展翅") ?? null;
   const lifesteal = resolveLifestealCapability({
     persistentLifestealPercent: lifestealPercent,
     traits: effectiveTraits,
@@ -348,99 +336,9 @@ function SkillSide({
           const result = results?.[index];
           const isSelected =
             active && activeDamageSource !== "trait" && index === activeSkillIndex;
-          const choiceTraitInput =
-            selected && choiceTraitName
-              ? getChoiceTraitInput(selected)
-              : null;
-          const galeTurbineInput = getGaleTurbineCompanionInput({
-            currentIndex: index,
-            selectedSkills,
-            traitName: wingTraitName,
+          const { dynamicInputs, skillDynamicInputs, visibleDynamicInputs, hasBurstSources, hitCountMaximum } = getSkillSlotConditions({
+            selected, result, selectedSkills, index, trait, defenseTrait, traits, health, opponentHealth, negativeStatusEnabled,
           });
-          const skillInputs = selected
-            ? [
-                ...dynamicInputsForSkill(selected, {
-                  includeNegativeStatusEffects: negativeStatusEnabled,
-                  includeStatusEffects: true,
-                }),
-                ...(choiceTraitInput ? [choiceTraitInput] : []),
-                ...(galeTurbineInput ? [galeTurbineInput] : []),
-              ]
-            : [];
-          const traitInputs =
-            selected
-              ? [
-                  ...(trait?.inputs?.filter(
-                    (input) => input.scope === "slot",
-                  ) ??
-                    (trait?.conditionKey
-                      ? [{
-                          defaultValue: false,
-                          key: trait.conditionKey,
-                          label: trait.conditionLabel,
-                          id: trait.conditionKey,
-                          scope: "slot",
-                          type: "boolean",
-                        }]
-                      : [])),
-                  ...(defenseTrait?.inputs?.filter(
-                    (input) => input.scope === "slot",
-                  ) ?? []),
-                ]
-              : [];
-          const skillDynamicInputs = mergeDynamicInputs(
-            skillInputs,
-            result?.inputs ?? [],
-          ).map((input) =>
-            selected?.name === "雷暴" &&
-            (input.contextKey ?? input.key) === "burstTriggered"
-              ? { ...input, label: "雷暴迸发" }
-              : input,
-          );
-          const traitDynamicInputs = mergeDynamicInputs(traitInputs).map(
-            (input) =>
-              (input.contextKey ?? input.key) === "burstTriggered"
-                ? {
-                    ...input,
-                    controlGroup: "trait",
-                    label: trait?.name
-                      ? `触发${trait.name}`
-                      : "触发特性迸发",
-                  }
-                : { ...input, controlGroup: "trait" },
-          );
-          const dynamicInputs = [
-            ...skillDynamicInputs,
-            ...traitDynamicInputs,
-          ];
-          const editableHitCountInput = skillDynamicInputs.find(
-            (input) => input.drivesHitCount === true,
-          );
-          const hitCountMaximum = editableHitCountInput
-            ? editableHitCountInput.max ?? Number.POSITIVE_INFINITY
-            : 99;
-          const visibleInputs = (inputs) =>
-            inputs
-              .filter(
-                (input) =>
-                  ((input.contextKey ?? input.key) !== "attackerHpPercent" ||
-                    !health) &&
-                  ((input.contextKey ?? input.key) !== "defenderHpPercent" ||
-                    !opponentHealth),
-              )
-              .filter((input) =>
-                isDynamicInputVisible(input, selected?.slotContext),
-              )
-              .filter((input) => !input.burstSource);
-          const visibleSkillInputs = visibleInputs(skillDynamicInputs);
-          const visibleTraitInputs = visibleInputs(traitDynamicInputs);
-          const visibleDynamicInputs = [
-            ...visibleSkillInputs,
-            ...visibleTraitInputs,
-          ];
-          const hasBurstSources = skillDynamicInputs.some(
-            (input) => input.burstSource,
-          );
           const refractionHint = buildRefractionHint({
             carriedSkills: selectedSkills,
             selectedSkill: selected,
