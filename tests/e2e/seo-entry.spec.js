@@ -89,3 +89,46 @@ test("SEO Global S3 release keeps calculation across English, Japanese, refresh 
   await expect(page.locator(".result-column").getByRole("status")).toHaveText("23");
   await context.setOffline(false);
 });
+
+test("SEO CN recognizes a released Global share and opens the matching /en/ workspace", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("rock-calculator.first-run-guide.v1", "1"));
+  await page.goto("/en/");
+  await page.getByRole("combobox", { name: "Attacker Jini", exact: true }).fill("Dimo");
+  await page.getByRole("option", { name: "Dimo 001 · Stage 1", exact: true }).click();
+  await page.getByRole("combobox", { name: "Defender Jini", exact: true }).fill("Meodow");
+  await page.getByRole("option", { name: "Meodow 004 · Stage 3", exact: true }).click();
+  await page.getByRole("button", { name: "Open menu", exact: true }).click();
+  await page.getByRole("button", { name: "Share current setup", exact: true }).click();
+  const linkField = page.getByRole("textbox", { name: "Current setup link", exact: true });
+  await expect(linkField).toHaveValue(/#v2\.global\.en\./);
+  const shareHash = new URL(await linkField.inputValue()).hash;
+  const envelope = JSON.parse(Buffer.from(shareHash.split(".")[3], "base64url").toString("utf8"));
+  expect(envelope.kind).toBe("configuration");
+  expect(envelope.dataVersion).toBe("global-s3-midseason-2026-08-13");
+  expect(envelope.rulesVersion).toBe("global-s3-midseason-2026-08-13");
+
+  await page.goto("/cn/");
+  await page.getByRole("combobox", { name: "攻击方精灵", exact: true }).fill("音速犬");
+  await page.getByRole("option", { name: /^音速犬/ }).click();
+  await page.getByRole("combobox", { name: "防御方精灵", exact: true }).fill("水灵");
+  await page.getByRole("option", { name: /^水灵/ }).click();
+  const readCnStorage = () => page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([key]) => key.startsWith("rock-calculator.servers.cn."))));
+  await expect.poll(async () => Object.keys(await readCnStorage()).length).toBeGreaterThan(0);
+  const savedCn = await readCnStorage();
+
+  await page.goto(`/cn/${shareHash}`);
+  const notice = page.getByRole("alert");
+  await expect(notice).toContainText("这份分享配置属于国际服");
+  await expect(notice).not.toContainText("尚未核验");
+  expect(new URL(page.url()).pathname).toBe("/cn/");
+  expect(await readCnStorage()).toEqual(savedCn);
+  await notice.getByRole("button", { name: "在国际服打开", exact: true }).click();
+  await expect(page).toHaveURL(/\/en\/(?:#.*)?$/);
+  await expect(page.getByRole("combobox", { name: "Attacker Jini", exact: true })).toHaveValue("Dimo");
+  await expect(page.getByRole("combobox", { name: "Defender Jini", exact: true })).toHaveValue("Meodow");
+  await expect(page.locator("html")).toHaveAttribute("data-server", "global");
+  expect(await readCnStorage()).toEqual(savedCn);
+  await page.goto("/cn/");
+  await expect(page.getByRole("combobox", { name: "攻击方精灵", exact: true })).toHaveValue("音速犬");
+  await expect(page.getByRole("combobox", { name: "防御方精灵", exact: true })).toHaveValue("水灵");
+});

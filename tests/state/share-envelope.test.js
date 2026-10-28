@@ -1,3 +1,4 @@
+import globalReleasePin from "../../config/global-release.json" with { type: "json" };
 import { describe, expect, test } from "vitest";
 import { createInitialState } from "../../src/state/defaults.js";
 import {
@@ -50,6 +51,25 @@ describe("validated server share envelopes", () => {
     await expect(decodeShareEnvelope(hash, { serverId: "global" })).rejects.toMatchObject({ code: "SHARE_SERVER_MISMATCH" });
     await expect(decodeShareEnvelope(hash, { dataVersion: "another-data" })).rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
     await expect(decodeShareEnvelope(hash, { gameVersion: "known-game-build" })).rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
+  });
+
+  test("the pinned Global configuration can be decoded for routing without importing it into CN", async () => {
+    const input = { ...cnEnvelope(), serverId: "global", locale: "en",
+      dataVersion: globalReleasePin.dataVersion, rulesVersion: globalReleasePin.rulesVersion };
+    input.payload.versions = { data: input.dataVersion, rules: input.rulesVersion };
+    const hash = await encodeShareEnvelope(input);
+    expect(await decodeShareEnvelope(hash)).toMatchObject({ protocolVersion: 2, ...input });
+    await expect(decodeShareEnvelope(hash, { serverId: "cn" })).rejects.toMatchObject({ code: "SHARE_SERVER_MISMATCH" });
+    await expect(decodeShareEnvelope(hash, { serverId: "global", dataVersion: input.dataVersion, rulesVersion: input.rulesVersion }))
+      .resolves.toMatchObject({ serverId: "global", kind: "configuration" });
+    for (const key of ["dataVersion", "rulesVersion"]) {
+      const unknown = { protocolVersion: 2, ...input, [key]: "unpublished-version" };
+      await expect(decodeShareEnvelope(await rawEnvelope(unknown))).rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
+      await expect(encodeShareEnvelope(unknown)).rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
+    }
+    const relabeledPayload = { ...input, payload: cnEnvelope().payload };
+    await expect(decodeShareEnvelope(await rawEnvelope({ protocolVersion: 2, ...relabeledPayload })))
+      .rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
   });
 
   test("an unset Global original-UI draft round trips null nature and IVs without filling CN defaults", async () => {
@@ -112,8 +132,8 @@ describe("validated server share envelopes", () => {
 
   test("Global cannot import a CN configuration by relabeling its server", async () => {
     const value = { protocolVersion: 2, ...cnEnvelope(), serverId: "global", locale: "en" };
-    await expect(encodeShareEnvelope(value)).rejects.toMatchObject({ code: "SHARE_SERVER_DATA_UNVERIFIED" });
-    await expect(decodeShareEnvelope(await rawEnvelope(value))).rejects.toMatchObject({ code: "SHARE_SERVER_DATA_UNVERIFIED" });
+    await expect(encodeShareEnvelope(value)).rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
+    await expect(decodeShareEnvelope(await rawEnvelope(value))).rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
     await expect(encodeShareEnvelope({ ...cnEnvelope(), dataVersion: "different" })).rejects.toMatchObject({ code: "SHARE_VERSION_MISMATCH" });
   });
 

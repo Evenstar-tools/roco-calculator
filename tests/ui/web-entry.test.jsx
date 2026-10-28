@@ -162,7 +162,7 @@ test("validated Global share waits for a click then retains its payload during h
   localStorage.setItem(MANUAL_PREFERENCE_KEY, JSON.stringify({ serverId: "cn", locale: "zh-CN" }));
   history.replaceState(null, "", `/cn/?keep=1${hash}`);
   render(<WebEntry />);
-  expect(await screen.findByRole("alert")).toHaveTextContent("这份分享草稿属于国际服");
+  expect(await screen.findByRole("alert")).toHaveTextContent("这份分享配置属于国际服");
   expect(hardNavigation.assign).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "在国际服打开" }));
   expect(hardNavigation.assign).toHaveBeenCalledWith(`/jp/?keep=1${hash}`);

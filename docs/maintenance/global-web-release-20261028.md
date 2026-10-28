@@ -27,3 +27,13 @@
 ## 上线回查
 
 正式推送后回查 `/en/`、`/jp/` 的真实资源、版本、选择精灵及伤害；未回查前不把构建通过当作上线完成。
+
+### 首次线上回查
+
+正式入口发布提交 `00e28579e2f42c904e1becffd7e23bf6b7032eda` 已回读 origin/main。2026-10-28 17:05 后普通地址 `/en/`、`/jp/` 返回200，均引用 `/global-assets/assets/main-DVeFK8BR.js`，运行数据版本正确。
+
+线上实测：Dimo→Meodow / Flash 为23伤害；切到日文并刷新，ディーモ与ニャジカル及23伤害保留；390px页面无横向溢出；继续切到国际服中文，名称和配置保留。页面可见文本未出现 CBT、Unverified、CN reference、翻訳未対応。
+
+国服运行数据仍 `s4-2026-09-10`，`/pre/` 仍为本轮发布前 `/pre/assets/main-BhTCj6EQ.js`。截图保存在源码工作树 `output/playwright/global-localization-20261028/live-en.png`、`live-jp-mobile.png`。
+
+最终接入复查发现并修复国服旧分享解析器拒绝正式Global配置：仅允许与固定Global数据、规则版本一致的分享信封用于切服提示，保留国服计算/导入边界。协议、入口、Node22直接导入及ESLint通过；生产构建和原pin组装成功；真实E2E确认Global分享→CN切服提示→/en/恢复配置，CN原配置与隔离存储保持。该补丁随本次追加发布。首轮线上提交的远端CI已通过。
