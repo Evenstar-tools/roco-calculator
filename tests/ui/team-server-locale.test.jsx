@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
-import { getMissingUiMessages, clearMissingUiMessages } from "../../src/i18n/messages.js";
+import { getMissingUiMessages, clearMissingUiMessages, translateUi } from "../../src/i18n/messages.js";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 import { TeamDrawer } from "../../src/components/TeamDrawer.jsx";
 import { ConfigLibraryDialog } from "../../src/components/ConfigLibraryDialog.jsx";
@@ -10,6 +10,8 @@ import { FloatingUndoButton } from "../../src/components/FloatingUndoButton.jsx"
 import { useConfigLibraryFlow } from "../../src/hooks/useConfigLibraryFlow.js";
 import { parseTeamDraft, serializeTeamDraft } from "../../src/state/team-draft-exchange.js";
 import mapping from "../../public/data/lineup-code-map.json";
+import globalSnapshot from "../../data/snapshots/global/s3-midseason.json";
+import { createTeamMember } from "../../src/state/team-presets.js";
 
 const snapshot = { meta: { serverId: "global", id: null, rulesVersion: null }, spirits: [], skills: [], traits: [], learnsets: [] };
 const teamsState = { activeTeamId: "draft", teams: [{ id: "draft", name: "Local draft", members: Array(6).fill(null) }] };
@@ -31,6 +33,27 @@ test.each(["zh-CN", "en", "ja"])("original Global team UI translates and gates u
   expect(container.textContent).not.toContain("翻訳未対応");
   expect(getMissingUiMessages()).toEqual([]);
   expect(fetch).not.toHaveBeenCalled();
+});
+
+test.each(["en", "ja"])("%s preserves custom team names in selectors and matchup while localizing new team names", (locale) => {
+  const spirit = globalSnapshot.spirits.find((entry) => entry.fullName === "迪莫");
+  const team = { id: "custom", name: "My team・普通", members: [createTeamMember(globalSnapshot, spirit.id), ...Array(5).fill(null)] };
+  const state = { activeTeamId: team.id, teams: [team] };
+  const onCreateTeam = vi.fn(), onDuplicateTeam = vi.fn(), onRenameTeam = vi.fn();
+  const text = (source, values) => translateUi(locale, source, values);
+  const { container } = render(<TeamDrawer open teamsState={state} snapshot={globalSnapshot} onClose={vi.fn()} spiritChoices={[]}
+    onCreateTeam={onCreateTeam} onDuplicateTeam={onDuplicateTeam} onRenameTeam={onRenameTeam} />, { wrapper: wrapper(locale) });
+  expect(screen.getByRole("combobox", { name: text("选择队伍") }).selectedOptions[0].textContent).toBe(team.name);
+  expect(screen.getByRole("textbox", { name: text("队伍名称") })).toHaveValue(team.name);
+  fireEvent.click(screen.getByRole("button", { name: text("复制队伍") }));
+  expect(onDuplicateTeam).toHaveBeenCalledWith(team.id);
+  fireEvent.click(screen.getByRole("button", { name: text("新建队伍") }));
+  expect(onCreateTeam).toHaveBeenCalledWith(text("队伍 {count}", { count: 2 }));
+  fireEvent.click(screen.getByRole("button", { name: text("对位"), exact: true }));
+  expect(screen.getByRole("combobox", { name: text("导入现有队伍") }).selectedOptions[0].textContent).toBe(team.name);
+  fireEvent.click(screen.getByRole("button", { name: text("导入队伍"), exact: true }));
+  expect(container.querySelector(".team-analysis__matchup-controls > span").textContent).toBe(team.name);
+  expect(onRenameTeam).not.toHaveBeenCalled();
 });
 
 test.each(["en", "ja"])("Global draft import uses a translated tool format without fetching CN native mappings (%s)", (locale) => {

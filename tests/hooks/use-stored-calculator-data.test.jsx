@@ -6,6 +6,54 @@ import { UNVERIFIED_GLOBAL_SNAPSHOT } from "../../src/runtime/unverified-snapsho
 import { createProductInitialState } from "../../src/state/calculator-session.js";
 import { spiritConfigsRepository } from "../../src/state/spirit-configs.js";
 import { teamPresetsRepository } from "../../src/state/team-presets.js";
+import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
+import { getGlobalEntityText } from "../../src/runtime/global-entity-localization.js";
+import globalSnapshot from "../../data/snapshots/global/s3-midseason.json";
+
+test("Global favorite and team feedback follows the language without translating stored identity or team names", () => {
+  const spirit = globalSnapshot.spirits.find((entry) => entry.fullName === "迪莫");
+  const side = { ...createProductInitialState(globalSnapshot).sides.attacker, spiritId: spirit.id };
+  const favoriteStore = { list: () => [], save: vi.fn((value) => [value]), remove: vi.fn(() => []) };
+  const teamState = { activeTeamId: "mine", schemaVersion: 1, teams: [{ id: "mine", name: "我的 My Team", members: Array(6).fill(null) }] };
+  const teamStore = { load: () => teamState, updateMember: vi.fn((current, _id, index, member) => ({
+    ...current, teams: current.teams.map((team) => ({ ...team, members: team.members.map((previous, position) => position === index ? member : previous) })),
+  })) };
+  const factories = { favorites: () => favoriteStore, spiritConfigs: () => ({ load: () => ({ configs: {}, schemaVersion: 2 }) }), teams: () => teamStore };
+  const onToast = vi.fn();
+  let locale = "en";
+  const { result, rerender } = renderHook(() => useStoredCalculatorData(globalSnapshot, { serverId: "global", factories, onToast }), {
+    wrapper: ({ children }) => <LocaleProvider locale={locale}>{children}</LocaleProvider>,
+  });
+  act(() => result.current.toggleSpiritFavorite(spirit));
+  expect(onToast).toHaveBeenLastCalledWith("Added Dimo to favorites");
+  expect(favoriteStore.save).toHaveBeenCalledWith(expect.objectContaining({ spiritId: spirit.id, fullName: "迪莫" }));
+  locale = "ja";
+  rerender();
+  expect(result.current.favoriteSpiritIds.has(spirit.id)).toBe(true);
+  act(() => result.current.toggleSpiritFavorite(spirit));
+  expect(onToast).toHaveBeenLastCalledWith(`${getGlobalEntityText("spirit", spirit, "fullName", "ja")}をお気に入りから削除しました`);
+  act(() => expect(result.current.teams.captureSide("attacker", "mine", 0, side)).toBe(true));
+  expect(onToast).toHaveBeenLastCalledWith(`攻撃側の${getGlobalEntityText("spirit", spirit, "fullName", "ja")}を1番枠に保存しました`);
+  expect(result.current.teamsState.teams[0]).toMatchObject({ name: "我的 My Team", members: [expect.objectContaining({ spiritId: spirit.id }), null, null, null, null, null] });
+  locale = "zh-CN";
+  rerender();
+  act(() => result.current.toggleSpiritFavorite(spirit));
+  expect(onToast).toHaveBeenLastCalledWith("已收藏 迪莫");
+  expect(result.current.teamsState.teams[0].name).toBe("我的 My Team");
+});
+
+test.each([["en", "copy"], ["ja", "のコピー"]])("%s duplicates the exact custom team name with only a localized suffix", (locale, suffix) => {
+  localStorage.clear();
+  const store = teamPresetsRepository({ serverId: "global" });
+  const initial = store.create(store.load(globalSnapshot), "My team・普通");
+  const { result, unmount } = renderHook(() => useStoredCalculatorData(globalSnapshot, { serverId: "global" }), {
+    wrapper: ({ children }) => <LocaleProvider locale={locale}>{children}</LocaleProvider>,
+  });
+  act(() => result.current.teams.duplicate(initial.activeTeamId));
+  expect(result.current.teamsState.teams.map((team) => team.name)).toEqual(["My team・普通", `My team・普通 ${suffix}`]);
+  unmount();
+  localStorage.clear();
+});
 
 test("Global references restore after catalog loading and capture unset input into their own team store", () => {
   localStorage.clear();
@@ -31,20 +79,21 @@ test("Global references restore after catalog loading and capture unset input in
   localStorage.clear();
 });
 
-test("Global archived battleForm fields can be saved personally and captured without applying CN form rules", () => {
+test("Global current battle forms are not saved as personal presets or team members", () => {
   localStorage.clear();
-  const catalog = globalPlaceholderCatalog();
-  const side = { ...createProductInitialState(catalog).sides.attacker, spiritId: catalog.spirits[0].id,
-    battleForm: { spiritId: "unknown-form", branchId: "unknown-branch" } };
-  const { result, unmount } = renderHook(() => useStoredCalculatorData(catalog, { serverId: "global" }));
+  const spirit = globalSnapshot.spirits.find((entry) => entry.fullName === "迪莫");
+  const side = { ...createProductInitialState(globalSnapshot).sides.attacker, spiritId: spirit.id,
+    battleForm: { spiritId: spirit.id, branchId: spirit.id } };
+  const onToast = vi.fn();
+  const { result, unmount } = renderHook(() => useStoredCalculatorData(globalSnapshot, { serverId: "global", onToast }));
   act(() => result.current.rememberSide(side));
-  expect(result.current.getSpiritConfiguration(side.spiritId)).toMatchObject(side);
-  expect(spiritConfigsRepository({ serverId: "global" }).load(catalog).configs[side.spiritId].battleForm).toEqual(side.battleForm);
-  act(() => result.current.teams.create("含形态草稿"));
+  expect(result.current.getSpiritConfiguration(side.spiritId)).toBeUndefined();
+  expect(spiritConfigsRepository({ serverId: "global" }).load(globalSnapshot).configs[side.spiritId]).toBeUndefined();
+  act(() => result.current.teams.create("我的队伍"));
   const teamId = result.current.teamsState.activeTeamId;
-  act(() => expect(result.current.teams.captureSide("attacker", teamId, 0, side)).toBe(true));
-  expect(teamPresetsRepository({ serverId: "global" }).load(catalog).teams[0].members[0])
-    .toMatchObject({ battleForm: side.battleForm, displayIvs: side.displayIvs, natureId: null });
+  act(() => expect(result.current.teams.captureSide("attacker", teamId, 0, side)).toBe(false));
+  expect(teamPresetsRepository({ serverId: "global" }).load(globalSnapshot).teams[0].members[0]).toBeNull();
+  expect(onToast).toHaveBeenLastCalledWith("当前为本场形态，请重新载入预设后再存入队伍");
   unmount();
   localStorage.clear();
 });

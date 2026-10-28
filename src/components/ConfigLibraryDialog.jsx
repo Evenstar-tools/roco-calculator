@@ -1,5 +1,6 @@
 import { localizeGlobalSpirit, localizeGlobalSkill } from "../runtime/global-entity-localization.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { localizeToolText } from "../i18n/useToolLocale.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useModalFocus } from "../hooks/useModalFocus.js";
@@ -21,6 +22,25 @@ const ISSUE_PREVIEW_ROWS = [
   ["duplicateEntries", "文件内重复"],
 ];
 const ISSUE_LABELS = Object.fromEntries(ISSUE_PREVIEW_ROWS);
+
+// Only format parser-owned labels; imported IDs and configuration values stay intact.
+function issueText(source, t, locale) {
+  const patterns = [
+    [/^无法识别性格 (.+)$/, "无法识别性格 {value}", ([value]) => ({ value: value === "空" ? t("空") : value })],
+    [/^(.+)个体 (.+) 不在 0～60$/, "{stat}个体 {value} 不在 0～60", ([stat, value]) => ({ stat: t(stat), value: value === "空" ? t("空") : value })],
+    [/^技能槽有 (\d+) 个，当前形态需要 (\d+) 个$/, "技能槽有 {count} 个，当前形态需要 {required} 个", ([count, required]) => ({ count, required })],
+    [/^已保留原四技能，并补齐 (\d+) 个空技能槽$/, "已保留原四技能，并补齐 {count} 个空技能槽", ([count]) => ({ count })],
+    [/^第 (\d+) 槽技能 (.+) 已失效$/, "第 {index} 槽技能 {id} 已失效", ([index, id]) => ({ index, id })],
+    [/^无法识别特性字段：(.+)$/, "无法识别特性字段：{fields}", ([fields]) => ({ fields })],
+  ];
+  return String(source ?? "").split("；").map((part) => {
+    for (const [pattern, key, values] of patterns) {
+      const match = part.match(pattern);
+      if (match) return t(key, values(match.slice(1)));
+    }
+    return t(part);
+  }).join(locale === "en" ? "; " : "；");
+}
 
 function ConfigEntryList({ entries, emptyMessage, skillById, spiritById, stableHeight = false }) {
   const { serverId } = useRuntime();
@@ -80,11 +100,13 @@ export function ConfigLibraryDialog({
   parsed,
   snapshot,
 }) {
-  const { t, locale } = useLocale();
+  const { t, locale, typeName } = useLocale();
   const { serverId } = useRuntime();
   const dialogRef = useRef(null);
   const presetBrowse = usePresetBrowseMode();
   const entrySearchRef = useRef(null);
+  const fileRef = useRef(null);
+  const [fileName, setFileName] = useState("");
   const [entriesExpanded, setEntriesExpanded] = useState(false);
   const [entryQuery, setEntryQuery] = useState("");
   const [importIssuesExpanded, setImportIssuesExpanded] = useState(false);
@@ -94,6 +116,7 @@ export function ConfigLibraryDialog({
   useEffect(() => {
     // 切换导出摘要或对话框模式时收回折叠，避免沿用上一份列表的展开态。
     /* eslint-disable react-hooks/set-state-in-effect -- 重置局部 UI，改渲染期 setState 会打断当前预览 */
+    setFileName("");
     setEntriesExpanded(false);
     setEntryQuery("");
     setImportIssuesExpanded(false);
@@ -130,6 +153,23 @@ export function ConfigLibraryDialog({
   const skillById = new Map(
     (snapshot?.skills ?? []).map((skill) => [skill.id, serverId === "global" ? localizeGlobalSkill(skill, locale) : skill]),
   );
+  function differenceField(field) {
+    const skill = field.match(/^技能(\d+)$/);
+    if (skill) return t("技能{index}", { index: skill[1] });
+    const stat = field.match(/^(.+)个体$/);
+    if (stat) return t("{label}个体", { label: t(stat[1]) });
+    const trait = field.match(/^特性·(.+)$/);
+    return trait ? t("特性·{label}", { label: localizeToolText(trait[1], locale) }) : t(field);
+  }
+  function differenceValue(field, value) {
+    if (locale === "zh-CN") return value;
+    if (/^技能\d+$/.test(field)) {
+      const skill = snapshot?.skills?.find((entry) => `${entry.name}${entry.type ? `（${entry.type}）` : ""}` === value);
+      if (skill) return `${skillById.get(skill.id).name}${skill.type ? locale === "ja" ? `（${typeName(skill.type)}）` : ` (${typeName(skill.type)})` : ""}`;
+      return value === "空" ? t("空") : value;
+    }
+    return t(value);
+  }
   const entryDexNo = (entry) => {
     const value = Number(spiritById.get(entry.spiritId)?.dexNo);
     return Number.isFinite(value) && value > 0 ? value : Infinity;
@@ -238,15 +278,26 @@ export function ConfigLibraryDialog({
                 ) : null}
               </div>
             ) : (
-              <label>
-                <span>{t("选择配置库 JSON（最大 5 MB）")}</span>
+              <div>
+                <button className="secondary-action" type="button" onClick={() => fileRef.current?.click()}>
+                  {t("选择配置库 JSON（最大 5 MB）")}
+                </button>
                 <input
+                  ref={fileRef}
+                  hidden
                   accept="application/json,.json"
                   aria-label={t("选择配置库文件")}
-                  onChange={(event) => onFile?.(event.target.files?.[0] ?? null)}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = "";
+                    if (!file) return;
+                    setFileName(file.name);
+                    onFile?.(file);
+                  }}
                   type="file"
                 />
-              </label>
+                {fileName ? <p className="config-library-note" style={{ overflowWrap: "anywhere" }}>{fileName}</p> : null}
+              </div>
             )}
             {isPopular && entriesExpanded ? (
               <div className="config-library-search">
@@ -306,7 +357,7 @@ export function ConfigLibraryDialog({
                           <span>{change.status === "added" ? t("新增 · 将导入") : change.canUpdate ? t("不同 · 将更新") : t("不同 · 保留手改")}</span>
                         </div>
                         {change.differences.map((difference) => (
-                          <p key={difference.field}>{t("{field}：本地 {local}；导入 {incoming}", { field: t(difference.field), local: difference.local, incoming: difference.incoming })}</p>
+                          <p key={difference.field}>{t("{field}：本地 {local}；导入 {incoming}", { field: differenceField(difference.field), local: differenceValue(difference.field, difference.local), incoming: differenceValue(difference.field, difference.incoming) })}</p>
                         ))}
                       </li>
                     ))}
@@ -342,13 +393,13 @@ export function ConfigLibraryDialog({
                             {importIssueDetails.map((detail, index) => (
                               <li key={`${detail.type}:${detail.entryIndex}:${detail.spiritId ?? index}`}>
                                 <div className="config-library-issue-heading">
-                                  <strong>{detail.spiritName}</strong>
+                                  <strong>{spiritById.get(detail.spiritId)?.fullName ?? (detail.spiritName === "无法识别的配置" ? t(detail.spiritName) : detail.spiritName)}</strong>
                                   <span>
                                     {t("文件第 {index} 条 · {type}", { index: detail.entryIndex, type: t(ISSUE_LABELS[detail.type] ?? "检查项") })}
                                   </span>
                                 </div>
-                                <p>{detail.reason}</p>
-                                <small>{detail.action}</small>
+                                <p>{issueText(detail.reason, t, locale)}</p>
+                                <small>{issueText(detail.action, t, locale)}</small>
                               </li>
                             ))}
                           </ul>
@@ -366,7 +417,7 @@ export function ConfigLibraryDialog({
                   {parsed.preview.same > 0 && !parsed.preview.different && !parsed.preview.added
                     ? t("全部配置与本地一致，无需更新。")
                     : t("旧预设更新，手改配置保留，相同跳过。")}
-                  {t("队伍与当前页面不会改变。")}
+                  {locale === "en" ? " " : ""}{t("队伍与当前页面不会改变。")}
                 </p>
               </>
             ) : (
@@ -398,7 +449,7 @@ export function ConfigLibraryDialog({
             onClick={isExport ? onExport : onConfirmImport}
             type="button"
           >
-            {isExport ? t("导出") : updateCount > 0 ? t("更新配置（{count}）", { count: updateCount }) : parsed?.preview.favoritesAdded > 0 ? t("添加收藏（{count}）", { count: parsed.preview.favoritesAdded }) : parsed?.preview.different > 0 ? t("手改配置已保留") : t("已是最新")}
+            {isExport ? t("导出") : !parsed ? t("导入") : updateCount > 0 ? t("更新配置（{count}）", { count: updateCount }) : parsed?.preview.favoritesAdded > 0 ? t("添加收藏（{count}）", { count: parsed.preview.favoritesAdded }) : parsed?.preview.different > 0 ? t("手改配置已保留") : t("已是最新")}
           </button>
           <button className="secondary-action" onClick={onClose} type="button">
             {t("取消")}

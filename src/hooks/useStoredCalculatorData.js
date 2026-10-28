@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { getGlobalEntityText } from "../runtime/global-entity-localization.js";
 import { storageIssueSource } from "../i18n/storage-errors.js";
 import { assertRepositoryEnvironment } from "../state/server-storage.js";
 import { favoritesRepository } from "../state/favorites.js";
@@ -94,7 +95,10 @@ export function useStoredCalculatorData(
   { factories = DEFAULT_FACTORIES, onToast = () => {}, serverId = "cn" } = {},
 ) {
   assertRepositoryEnvironment(serverId, snapshot);
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
+  const spiritName = (spirit) => serverId === "global"
+    ? getGlobalEntityText("spirit", spirit, "fullName", locale, spirit?.fullName ?? "")
+    : spirit?.fullName ?? "";
   const startup = useMemo(() => initializeStoredData(factories, serverId, snapshot), [factories, serverId, snapshot]);
   const { stores } = startup;
   const [favoriteSpiritIds, setFavoriteSpiritIds] = useState(startup.favorites);
@@ -189,7 +193,7 @@ export function useStoredCalculatorData(
           return;
         }
         next.delete(spirit.id);
-        onToast(t("已取消收藏 {name}", { name: spirit.fullName }));
+        onToast(t("已取消收藏 {name}", { name: spiritName(spirit) }));
       } else {
         const saved = stores.favorites.save({
           fullName: spirit.fullName,
@@ -203,7 +207,7 @@ export function useStoredCalculatorData(
         }
         next.add(spirit.id);
         if (configuration?.spiritId === spirit.id) rememberSide(configuration);
-        onToast(t("已收藏 {name}", { name: spirit.fullName }));
+        onToast(t("已收藏 {name}", { name: spiritName(spirit) }));
       }
       setFavoriteSpiritIds(next);
     } catch (error) {
@@ -300,7 +304,7 @@ export function useStoredCalculatorData(
           (candidate) => candidate.id === member.spiritId,
         );
         onToast(
-          t("已把{side} {name} 存入{index}号位", { side: t(side === "attacker" ? "攻击方" : "防御方"), name: spirit?.fullName ?? t("当前精灵"), index: index + 1 }),
+          t("已把{side} {name} 存入{index}号位", { side: t(side === "attacker" ? "攻击方" : "防御方"), name: spirit ? spiritName(spirit) : t("当前精灵"), index: index + 1 }),
         );
       },
     );

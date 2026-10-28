@@ -1,13 +1,35 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { TeamMemberEditor } from "../../src/components/TeamMemberEditor.jsx";
 import snapshot from "../../data/snapshots/current.json";
-import { createTeamMember } from "../../src/state/team-presets.js";
+import { createTeamMember, TEAM_BLOODLINE_OPTIONS } from "../../src/state/team-presets.js";
+import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
+import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
+import { translateUi } from "../../src/i18n/messages.js";
+import { localizeType } from "../../src/i18n/type-labels.js";
+import globalSnapshot from "../../data/snapshots/global/s3-midseason.json";
 
 const spirit = (name) => snapshot.spirits.find((entry) => entry.fullName === name);
 const skill = (type, category) => snapshot.skills.find((entry) => entry.type === type && (!category || entry.category === category));
 const make = (name, four) => ({ ...createTeamMember(snapshot, spirit(name).id), skills: { four, single: skill("龙").id } });
 const region = () => screen.getByRole("region", { name: "旧玩具队伍技能系别" });
+
+test.each([["en", "Common"], ["ja", "ノーマル"]])("%s bloodline choices use type names instead of neutral-nature text", (locale, common) => {
+  const selected = globalSnapshot.spirits.find((entry) => entry.fullName === "迪莫");
+  const member = { ...createTeamMember(globalSnapshot, selected.id), bloodlineType: "normal" };
+  const onChange = vi.fn();
+  render(<RuntimeProvider serverId="global" locale={locale}><LocaleProvider locale={locale}>
+    <TeamMemberEditor index={0} member={member} snapshot={globalSnapshot} onChange={onChange} />
+  </LocaleProvider></RuntimeProvider>);
+  const bloodline = screen.getByRole("combobox", { name: translateUi(locale, "血脉") });
+  expect(bloodline.selectedOptions[0].textContent).toBe(common);
+  for (const { label, value } of TEAM_BLOODLINE_OPTIONS) {
+    expect(bloodline.querySelector(`option[value="${value}"]`).textContent)
+      .toBe(value === "boss" ? translateUi(locale, "首领") : localizeType(label, locale));
+  }
+  fireEvent.change(bloodline, { target: { value: "boss" } });
+  expect(onChange).toHaveBeenCalledWith({ ...member, bloodlineType: "boss" });
+});
 
 test.each(["布灵", "布灵布灵"])("%s includes self, defense and status skills, deduplicates types and stays read-only", (name) => {
   const member = make(name, [skill("光").id, { skillId: skill("水", "defense").id }, { id: skill("普通", "status").id }, null]);

@@ -249,7 +249,7 @@ export function TeamDrawer({
             >
               {teamsState.teams.map((team) => (
                 <option key={team.id} value={team.id}>
-                  {t(team.name)}
+                  {team.name}
                 </option>
               ))}
             </select>

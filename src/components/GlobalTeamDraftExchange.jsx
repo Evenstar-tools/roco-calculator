@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { localizeGlobalSpirit } from "../runtime/global-entity-localization.js";
 import { parseTeamDraft, serializeTeamDraft, TEAM_DRAFT_MAX_BYTES } from "../state/team-draft-exchange.js";
 
 const errorSources = {
@@ -12,12 +13,14 @@ const errorSources = {
 };
 
 export function GlobalTeamDraftExchange({ mode, team, snapshot, onImport, onCancel }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [input, setInput] = useState("");
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fileName, setFileName] = useState("");
+  const fileRef = useRef(null);
   const request = useRef(0);
   const outputRef = useRef(null);
   useEffect(() => () => { request.current++; }, []);
@@ -31,6 +34,7 @@ export function GlobalTeamDraftExchange({ mode, team, snapshot, onImport, onCanc
 
   function changed(value) {
     request.current++;
+    setFileName("");
     setInput(value); setPreview(null); setError(""); setMessage(""); setLoading(false);
   }
   function parse(value = input) {
@@ -41,6 +45,7 @@ export function GlobalTeamDraftExchange({ mode, team, snapshot, onImport, onCanc
   async function readFile(file) {
     if (!file) return;
     const current = ++request.current;
+    setFileName(file.name);
     setPreview(null); setError(""); setMessage(""); setLoading(true);
     try {
       if (file.size > TEAM_DRAFT_MAX_BYTES) throw Object.assign(new Error(), { code: "TEAM_DRAFT_TOO_LARGE" });
@@ -70,6 +75,10 @@ export function GlobalTeamDraftExchange({ mode, team, snapshot, onImport, onCanc
       URL.revokeObjectURL(url);
     } catch { setError("队伍草稿下载失败，请复制 JSON。"); }
   }
+  function memberName(member) {
+    const spirit = snapshot.spirits.find((candidate) => candidate.id === member.spiritId);
+    return spirit ? localizeGlobalSpirit(spirit, locale).fullName : member.spiritId;
+  }
   function confirm() {
     try {
       // Revalidate immediately before the only callback that can write storage.
@@ -82,11 +91,19 @@ export function GlobalTeamDraftExchange({ mode, team, snapshot, onImport, onCanc
     <p className="team-exchange__note">{t("工具队伍草稿 JSON，与游戏原生阵容码不同。")}</p>
     {isImport ? <>
       <label>{t("队伍草稿 JSON")}<textarea rows={5} value={input} onChange={(event) => changed(event.target.value)} spellCheck={false} /></label>
-      <label>{t("选择 JSON 文件")}<input type="file" accept=".json,application/json" onChange={(event) => { readFile(event.target.files?.[0]); event.target.value = ""; }} /></label>
+      <div className="team-exchange__actions">
+        <button type="button" onClick={() => fileRef.current?.click()}>{t("选择 JSON 文件")}</button>
+        <input ref={fileRef} hidden aria-label={t("选择 JSON 文件")} type="file" accept=".json,application/json" onChange={(event) => {
+          const file = event.target.files?.[0];
+          event.target.value = "";
+          if (file) readFile(file);
+        }} />
+      </div>
+      {fileName ? <p className="team-exchange__note" style={{ overflowWrap: "anywhere" }}>{fileName}</p> : null}
       <div className="team-exchange__actions"><button type="button" disabled={!input.trim() || loading} onClick={() => parse()}>{t(loading ? "正在读取草稿…" : "预览队伍草稿")}</button></div>
       {preview ? <>
         <div className="team-exchange__summary"><strong>{preview.name || t("未命名队伍")}</strong><span>{t("{count} 个已配置位置", { count: preview.members.filter(Boolean).length })}</span></div>
-        <ol className="team-exchange__members">{preview.members.map((member, index) => <li key={index}><span className="team-exchange__slot">{index + 1}</span><div>{member ? snapshot.spirits.find((spirit) => spirit.id === member.spiritId)?.fullName ?? member.spiritId : t("空位 {index}", { index: index + 1 })}</div></li>)}</ol>
+        <ol className="team-exchange__members">{preview.members.map((member, index) => <li key={index}><span className="team-exchange__slot">{index + 1}</span><div>{member ? memberName(member) : t("空位 {index}", { index: index + 1 })}</div></li>)}</ol>
         <p className="team-exchange__note">{t("导入会新增一支队伍，不覆盖已有队伍；未知引用和参数原样保留。")}</p>
         <div className="team-exchange__actions"><button type="button" onClick={confirm}>{t("确认导入为新队伍")}</button></div>
       </> : null}

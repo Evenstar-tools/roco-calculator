@@ -2,8 +2,11 @@ import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { useShareFlow } from "../../src/hooks/useShareFlow.js";
 import { decodeShareEnvelope, encodeShareEnvelope, selectShareableInputs } from "../../src/state/share.js";
-import { migrateSharedConfiguration, replaceConfiguration } from "../../src/state/calculator-session.js";
+import { assertSnapshotReferences, migrateSharedConfiguration, replaceConfiguration } from "../../src/state/calculator-session.js";
 import { createInitialState } from "../../src/state/defaults.js";
+import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
+import { translateUi } from "../../src/i18n/messages.js";
+import globalSnapshot from "../../data/snapshots/global/s3-midseason.json";
 
 vi.mock("../../src/state/share.js", async (importOriginal) => {
   const original = await importOriginal();
@@ -34,7 +37,10 @@ function setup(overrides = {}) {
     ...overrides,
   };
   return {
-    ...renderHook(({ active, shareRequestId }) => useShareFlow({ ...options, active, shareRequestId }), { initialProps: { active: true, shareRequestId: 0 } }),
+    ...renderHook(({ active, shareRequestId }) => useShareFlow({ ...options, active, shareRequestId }), {
+      initialProps: { active: true, shareRequestId: 0 },
+      wrapper: ({ children }) => <LocaleProvider locale={options.locale ?? "zh-CN"}>{children}</LocaleProvider>,
+    }),
     options,
   };
 }
@@ -135,6 +141,39 @@ test("a malformed same-server Global URL reports an error without importing", as
   await waitFor(() => expect(options.onToast).toHaveBeenCalledTimes(1));
   expect(options.onToast.mock.calls[0][0]).not.toMatch(/[\u3400-\u9fff]/u);
   expect(options.commitSession).not.toHaveBeenCalled();
+});
+
+test.each(["en", "ja", "zh-CN"])("%s explains invalid Global entity references and retains the pasted setup", async (locale) => {
+  const errors = [
+    "分享配置包含当前数据中不存在的精灵",
+    "分享配置包含无效的本场形态或分支",
+    "分享配置包含当前数据中不存在的技能",
+    "分享配置包含当前数据中不存在的特性",
+    "分享配置中的精灵不具备吞噬特性能力",
+    "分享配置包含未选中的吞噬特性参数",
+  ];
+  for (const error of errors) {
+    const message = translateUi(locale, error);
+    expect(message).not.toMatch(/Translation unavailable|翻訳未対応/);
+    if (locale !== "zh-CN") expect(message).not.toBe(error);
+  }
+  const state = createInitialState(globalSnapshot);
+  const shared = structuredClone(state);
+  shared.sides.attacker.spiritId = "missing-global-spirit";
+  const hash = await encodeShareEnvelope({ serverId: "global", locale, kind: "configuration",
+    gameVersion: globalSnapshot.meta.gameVersion ?? null, dataVersion: state.versions.data, rulesVersion: state.versions.rules,
+    payload: selectShareableInputs(shared) });
+  const realSession = await vi.importActual("../../src/state/calculator-session.js");
+  const realShare = await vi.importActual("../../src/state/share.js");
+  assertSnapshotReferences.mockImplementationOnce(realSession.assertSnapshotReferences);
+  decodeShareEnvelope.mockImplementationOnce(realShare.decodeShareEnvelope);
+  history.replaceState(null, "", locale === "ja" ? "/jp/" : locale === "en" ? "/en/" : "/global/zh-CN/");
+  const { result, options } = setupGlobal({ locale, initialState: state, state, stateRef: { current: state }, snapshot: globalSnapshot });
+  submit(result, hash);
+  await waitFor(() => expect(options.onToast).toHaveBeenCalledWith(translateUi(locale, errors[0])));
+  expect(result.current.overlayProps.importDraft).toBe(hash);
+  expect(options.commitSession).not.toHaveBeenCalled();
+  expect(options.stateRef.current).toEqual(state);
 });
 
 test("an unknown protocol on a Global URL reports an error instead of being ignored", async () => {

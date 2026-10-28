@@ -53,7 +53,7 @@ export function useConfigLibraryFlow({
 
   function describeError(error, fallback) {
     const knownSources = ["配置库文件不能超过 5 MB", "配置库 JSON 无法解析", "不是洛克计算器配置库文件", "不支持此配置库结构版本", "配置库最多包含 2000 条配置"];
-    return t(storageIssueSource(error, knownSources.includes(error?.message) ? error.message : fallback));
+    return storageIssueSource(error, knownSources.includes(error?.message) ? error.message : fallback);
   }
 
   function closeConfigLibrary() {
@@ -129,7 +129,7 @@ export function useConfigLibraryFlow({
   }
 
   const overlayProps = {
-    error: configLibraryError,
+    error: configLibraryError ? t(configLibraryError) : "",
     exportSummary: configLibrarySummary,
     mode: configLibraryMode,
     onClose: closeConfigLibrary,

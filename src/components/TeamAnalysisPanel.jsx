@@ -140,7 +140,7 @@ function ManualOpponentEditor({
           {teams.length ? (
             teams.map((candidate) => (
               <option key={candidate.id} value={candidate.id}>
-                {t(candidate.name)}
+                {candidate.name}
               </option>
             ))
           ) : (
@@ -406,7 +406,7 @@ export function TeamAnalysisPanel({
           {matchupOpponent?.members?.some(Boolean) ? (
             <>
               <div className="team-analysis__matchup-controls">
-                <span>{t(team.name)}</span>
+                <span>{team.name}</span>
                 <button
                   aria-label={t("切换攻击方向")}
                   onClick={() => {

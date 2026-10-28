@@ -1,5 +1,5 @@
 {
-  "rows": 7205,
+  "rows": 7235,
   "groups": {
     "cn_preview": 182,
     "concept": 228,
@@ -10,7 +10,7 @@
     "matchup": 8,
     "project_extra": 36,
     "mechanic": 215,
-    "ui": 2176,
+    "ui": 2206,
     "ui_visible": 690,
     "ui_missing": 12,
     "display_override": 3
