@@ -53,6 +53,11 @@ html[data-theme="dark"] :is(.team-drawer__zero, .sq-results:has(> .sq-empty:only
   opacity: .16;
 }
 
+/* 夜景图在浅底上只剩灰斑，亮色主题不显示装饰。 */
+html:not([data-theme="dark"]) :is(.team-drawer__header, .skill-query__header, .display-settings-dialog > h2, .config-library-dialog > h2, .data-source-dialog > h2, .product-access-dialog__header, .release-notes-dialog__header, .team-drawer__zero, .sq-results:has(> .sq-empty:only-child))::before {
+  content: none;
+}
+
 .skill-query__tabs [aria-selected="true"],
 .team-drawer__pane-tabs [aria-pressed="true"] {
   border-bottom-color: var(--season-secondary-accent);
