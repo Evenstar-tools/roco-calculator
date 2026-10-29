@@ -6,6 +6,7 @@ import {
 } from "../domain/calculator-view-model.js";
 import {
   buildChoiceSkillSequence,
+  getChoiceTraitInput,
   hasPersistentSkillProgression,
   isChoiceSkill,
   supportsChoiceTrait,
@@ -19,12 +20,39 @@ import { expireTransientGainSources, recordGainChanges } from "../domain/gain-pr
 import { recordSkillActivation } from "../domain/skill-gain-summary.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import { normalizeNegativeStatusSide } from "../domain/negative-status.js";
-import { hasNegativeStatusSkillApplication, resolveNegativeStatusApplications } from "../domain/negative-status-rules.js";
+import { getNegativeStatusInputs, hasNegativeStatusSkillApplication, resolveNegativeStatusApplications } from "../domain/negative-status-rules.js";
 import { linkedNegativeStatusContext } from "../domain/negative-status-context.js";
-import { advancePressureValveContext, resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
+import { advancePressureValveContext, getSkillStatusEffectInputs, resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
+import { resolveS5PreviewBattleLevel } from "../domain/battle-level.js";
 import { getEffectiveTraits } from "../domain/effective-traits.js";
-import { updateGlobalWeather } from "./calculator-session.js";
+import { projectBattleLevelHealth, updateGlobalWeather } from "./calculator-session.js";
+import { getSkillEffectInputs } from "../domain/skill-effects.js";
+import { normalizeTriggerControls, projectTriggerContext } from "../domain/trigger-controls.js";
+
+// Compare only the selected skill's conditions. A confirmed use can update
+// owner counters or weather without turning its next cancel into another use.
+export function getSkillActivationContextSignature(skill, context = {}) {
+  const choice = getChoiceTraitInput(skill);
+  const controls = normalizeTriggerControls([
+    ...getSkillEffectInputs(skill), ...getSkillStatusEffectInputs(skill),
+    ...getNegativeStatusInputs(skill), ...(choice ? [choice] : []),
+  ], { source: "skill" }).filter(control => control.scope !== "battle");
+  const projected = projectTriggerContext(context, controls);
+  return JSON.stringify(Object.fromEntries(controls.map(control => [control.contextKey, projected[control.contextKey]])));
+}
+
+export function matchesSkillActivationContext(skill, signature, context = {}) {
+  if (typeof signature !== "string") return false;
+  try {
+    const previous = JSON.parse(signature);
+    if (!previous || typeof previous !== "object" || Array.isArray(previous)) return false;
+    // Existing sessions contain full raw context JSON; normalize those too.
+    return getSkillActivationContextSignature(skill, previous) === getSkillActivationContextSignature(skill, context);
+  } catch {
+    return false;
+  }
+}
 
 function clone(value) {
   if (typeof globalThis.structuredClone === "function") {
@@ -163,6 +191,7 @@ function panelStatsForSide(state, snapshot, side) {
     raceStats: spirit.raceStats,
     displayIvs: configuration.displayIvs,
     natureMultipliers: getNatureMultipliers(configuration.nature),
+    level: resolveS5PreviewBattleLevel(snapshot, state, side),
   });
 }
 
@@ -228,13 +257,14 @@ export function applyBalanceTraitTrigger({ side, state }) {
 
 export function applyBattleActivation({
   calculation,
+  allowNoEffectUse = false,
   side,
   skillIndex,
   skillMode = "four",
   snapshot,
   state,
 }) {
-  const next = clone(state);
+  const next = clone(projectBattleLevelHealth(state, { snapshot, side }));
   const selfDirection = sideDirection(side);
   const targetDirection = oppositeDirection(selfDirection);
   const targetSide = oppositeSide(side);
@@ -302,7 +332,7 @@ export function applyBattleActivation({
     expireTransientGainSources(next.directions[selfDirection].overrides);
     stateChanged = true;
     if (activeStatus.skillId === skill.id && activeStatus.slotIndex === skillIndex &&
-      activeStatus.contextSignature === JSON.stringify(context)) {
+      matchesSkillActivationContext(skill, activeStatus.contextSignature, context)) {
       if (negativeStatusApplied) {
         const counts = next.directions[selfDirection].context?.negativeStatusUseCountsBySlot ?? {};
         updateDirection(next, selfDirection, { context: { negativeStatusUseCountsBySlot: {
@@ -388,12 +418,12 @@ export function applyBattleActivation({
       }
       recordGainChanges(gainBaseline, next, { kind: "trait", id: postAttackEffects?.source ?? skill.id, name: postAttackEffects?.source ?? skill.name });
       recordSkillActivation(next, side, skill, context);
-      return { applied: true, reason: null, state: next };
+      return { applied: true, reason: null, state: next, skillUsed: true };
     }
     if (!isChoiceSkill(skill) && !hasPersistentSkillProgression(skill)) {
-      if (negativeStatusApplied) {
+      if (negativeStatusApplied || allowNoEffectUse) {
         recordSkillActivation(next, side, skill, context);
-        return { applied: true, reason: null, state: next };
+        return { applied: true, reason: null, state: next, skillUsed: true };
       }
       return {
         applied: false,
@@ -410,7 +440,7 @@ export function applyBattleActivation({
       skillMode,
     );
     recordSkillActivation(next, side, skill, context);
-    return { applied: true, reason: null, state: next };
+    return { applied: true, reason: null, state: next, skillUsed: true };
   }
   if (!resolution.applied) {
     return {
@@ -481,7 +511,7 @@ export function applyBattleActivation({
     updateDirection(next, selfDirection, {
       overrides: {
         activeDefenseStatus: {
-          contextSignature: JSON.stringify(context),
+          contextSignature: getSkillActivationContextSignature(skill, context),
           powerPercentAddsBySlot: additions,
           skillId: skill.id,
           slotIndex: skillIndex,
@@ -645,6 +675,7 @@ export function applyBattleActivation({
   recordSkillActivation(next, side, skill, context, operations, resolution.triggerCount);
   return {
     applied: true,
+    skillUsed: true,
     reason: null,
     state: operations.weather ? updateGlobalWeather(next, operations.weather).state : next,
     stateChanged: true,

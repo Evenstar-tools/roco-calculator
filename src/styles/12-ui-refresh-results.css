@@ -35,6 +35,30 @@
   margin-top: 14px;
 }
 
+.result-level-comparison {
+  margin: 6px 0 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.result-level-comparison > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  min-height: 30px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.result-level-comparison > summary::-webkit-details-marker { display: none; }
+.result-level-comparison > summary::after { content: "⌄"; margin-left: auto; }
+.result-level-comparison[open] > summary::after { content: "⌃"; }
+.result-level-comparison > summary > span { white-space: nowrap; }
+.result-level-comparison strong { color: var(--text); font-variant-numeric: tabular-nums; }
+.result-level-comparison p { margin: 4px 0 0; overflow-wrap: anywhere; }
+
 .result-rail__status-settlement {
   display: grid;
   gap: 6px;
@@ -1098,6 +1122,52 @@ html[data-theme="dark"] .data-source-release__heading b {
   color: var(--text);
   font-weight: 700;
   text-align: center;
+}
+
+.draft-number-stepper {
+  position: relative;
+  display: inline-flex;
+}
+
+.draft-number-stepper > input {
+  padding-right: 18px;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.draft-number-stepper > input::-webkit-inner-spin-button,
+.draft-number-stepper > input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.draft-number-stepper__buttons {
+  position: absolute;
+  inset: 1px 1px 1px auto;
+  display: grid;
+  width: 17px;
+  grid-template-rows: 1fr 1fr;
+}
+
+.draft-number-stepper__buttons > button {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.draft-number-stepper__buttons > button:hover:not(:disabled) {
+  color: var(--accent);
+}
+
+.draft-number-stepper__buttons > button:disabled {
+  opacity: .35;
+  cursor: default;
 }
 
 .trait-number--automatic output {

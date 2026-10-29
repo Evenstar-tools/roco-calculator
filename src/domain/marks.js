@@ -232,6 +232,7 @@ export function resolveSourceMarkEffects({
   attackerSpeed,
   defenderSpeed,
   actedBeforeEnemy,
+  weatherDream = false,
   burstTriggered,
 }) {
   const positive = normalizeMarkSlot(marks?.positive, "positive");
@@ -252,7 +253,9 @@ export function resolveSourceMarkEffects({
       const first =
         typeof actedBeforeEnemy === "boolean"
           ? actedBeforeEnemy
-          : Number(attackerSpeed) - effects.speedPenalty > Number(defenderSpeed);
+          : weatherDream
+            ? Number(attackerSpeed) - effects.speedPenalty < Number(defenderSpeed)
+            : Number(attackerSpeed) - effects.speedPenalty > Number(defenderSpeed);
       if (first && attacking) {
         const powerPercentAdd = positive.stacks * 0.2;
         effects.powerPercentAdd += powerPercentAdd;

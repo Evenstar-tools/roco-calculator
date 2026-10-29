@@ -661,7 +661,7 @@ export function AdvancedOptions({
   const open = controlledOpen ?? internalOpen;
   const bloodlineMagic = getBloodlineMagicOption(bloodlineMagicId);
   const conditions = [];
-  const weatherLabel = { rain: "雨天", thunder: "雷鸣", sandstorm: "沙暴", blizzard: "暴风雪" }[weather];
+  const weatherLabel = { rain: "雨天", thunder: "雷鸣", sandstorm: "沙暴", blizzard: "暴风雪", dream: "萌系天气（占位）" }[weather];
   if (weatherLabel) conditions.push(weatherLabel);
   if (reductionPercent > 0) conditions.push(`减伤 ${reductionPercent}%`);
   if (finalMultiplier != null && Number(finalMultiplier) !== 1) conditions.push(`伤害 ×${finalMultiplier}`);
@@ -738,7 +738,9 @@ export function AdvancedOptions({
                 <option value="thunder">雷鸣 · 回合末引电 +1</option>
                 <option value="sandstorm">沙暴 · 联动相关特性</option>
                 <option value="blizzard">暴风雪 · 联动技能与特性</option>
+                <option value="dream">萌系天气（占位）· 速度较慢者先行动</option>
               </select>
+              {weather === "dream" ? <small>同先制度下速度较慢者先行动；同速仍需判定。</small> : null}
             </label>
             <label className="field-group">
               <span>防御技能减伤</span>

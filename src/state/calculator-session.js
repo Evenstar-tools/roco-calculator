@@ -17,9 +17,11 @@ import {
 import { normalizeNatureId } from "../domain/natures.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import { getBattleFormChoices, isValidBattleForm } from "../domain/battle-form.js";
-import { calculateAllPanelStats } from "../domain/stat.js";
+import { calculateAllPanelStats, hasCompleteRaceStats } from "../domain/stat.js";
+import { resolveS5PreviewBattleLevel, supportsS5PreviewBattleLevel } from "../domain/battle-level.js";
 import { createInitialState } from "./defaults.js";
 import { calculatorReducer } from "./reducer.js";
+import { reconcileWeatherAction } from "./weather.js";
 import { getServerRelease } from "../domain/server-environment.js";
 import { materializeTraitContext } from "./trait-values.js";
 import {
@@ -31,7 +33,13 @@ import { getChoiceTraitInput } from "../domain/choice-skill-sequence.js";
 import { getGaleTurbineCompanionControl } from "../domain/wing-extension.js";
 import { hasMoonMemoryTrait } from "../domain/moon-memory.js";
 import { abilityLevelMultiplier as domainAbilityLevelMultiplier } from "../domain/skill-result/numeric.js";
+import { getLegacyAbuLevelInputs, getLegacyMinggulongLevelInputs } from "../features/s5-preview/level-input-migration.js";
+import { getGoldChargeCountInput } from "../features/s5-preview/charge-input-migration.js";
+import { getSilverEnergySpentInput } from "../features/s5-preview/energy-input-migration.js";
+import { correctS5PreviewDiceInputs, getS5SixFaceDiceInput } from "../features/s5-preview/dice-input-migration.js";
 
+const S5_COUNTER_IDS = new Set(["attacker", "defender"].flatMap(role =>
+  [getGoldChargeCountInput(role).id, getSilverEnergySpentInput(role).id, getS5SixFaceDiceInput(role).id]));
 const CONFIGURATION_SOURCES = new Set(["personal", "team", "share"]);
 const REMEMBERED_SIDE_ACTIONS = new Set([
   "side/apply-preset",
@@ -54,6 +62,36 @@ export function abilityLevelMultiplier(attackStage, defenseStage) {
   );
 }
 
+// Project HP on the supplied snapshot only. App calls this with official stats;
+// the trial model may call it on its transient custom snapshot without saving it.
+export function projectBattleLevelHealth(state, { snapshot, side, hpInputMode, force = false }) {
+  const configuration = state.sides[side];
+  const variableLevel = supportsS5PreviewBattleLevel(snapshot, configuration);
+  if (!force && !variableLevel) return state;
+  const spirit = getSpirit(snapshot, configuration);
+  if (!hasCompleteRaceStats(spirit?.raceStats)) return state;
+  const panel = calculateAllPanelStats({ raceStats: spirit.raceStats,
+    displayIvs: configuration.displayIvs, natureMultipliers: getNatureMultipliers(configuration.nature),
+    level: resolveS5PreviewBattleLevel(snapshot, state, side) });
+  const direction = side === "attacker" ? "reverse" : "forward";
+  const current = state.directions[direction];
+  const percent = current.context?.currentHpPercent;
+  const hasPercent = typeof percent === "number" && Number.isFinite(percent);
+  const hasHp = typeof current.currentHp === "number" && Number.isFinite(current.currentHp);
+  const implicitFull = current.currentHp == null && (!hasPercent || percent === 100);
+  const hp = implicitFull ? current.currentHp : hpInputMode === "percent" && hasPercent
+    ? Math.round(panel.hp * Math.min(100, Math.max(0, percent)) / 100)
+    : hasHp ? Math.min(panel.hp, Math.max(0, current.currentHp)) : current.currentHp;
+  // Keep the legacy non-S5 custom ratio semantics. Level-changing owners use the
+  // actual integer HP ratio so HP conditions also survive a refresh unchanged.
+  const hpPercent = variableLevel ? (hp == null ? 100 : hp / panel.hp * 100) : percent;
+  if (hp === current.currentHp && hpPercent === percent) return state;
+  return { ...state, directions: { ...state.directions, [direction]: {
+    ...current, currentHp: hp,
+    context: hpPercent === percent ? current.context : { ...current.context, currentHpPercent: hpPercent },
+  } } };
+}
+
 export function sameConfigurationVersions(left, right) {
   return left.data === right.data && left.rules === right.rules;
 }
@@ -61,6 +99,7 @@ export function sameConfigurationVersions(left, right) {
 export { shareHashFromInput } from "./share-input.js";
 
 export function migrateSharedConfiguration(sharedState, versions, snapshot) {
+  sharedState = correctS5PreviewDiceInputs(sharedState);
   const migrated = {
     ...sharedState,
     versions,
@@ -116,7 +155,10 @@ export function migrateSharedConfiguration(sharedState, versions, snapshot) {
       directions[direction].context,
       getSkill(snapshot, entrySkillId(sides[side].skills.single)),
     );
-    const traitControls = directionTraitControls(snapshot, sides, direction);
+    // Absence is meaningful to the existing legacy percentage migration. Never
+    // invent a new explicit zero that would override an unresolved old total.
+    const traitControls = directionTraitControls(snapshot, sides, direction).map(control =>
+      S5_COUNTER_IDS.has(control.id) ? { ...control, defaultValue: undefined } : control);
     directions[direction] = {
       ...directions[direction],
       context: replaceSlotControls(
@@ -126,7 +168,10 @@ export function migrateSharedConfiguration(sharedState, versions, snapshot) {
       ),
     };
   }
-  return { ...migrated, directions, sides };
+  const next = { ...migrated, directions, sides };
+  // 仅归一化本轮新增天气，旧配置的正式天气迁移保持原有结构。
+  return Object.hasOwn(directions.forward.context ?? {}, "weatherDream")
+    ? reconcileWeatherAction(migrated, next, { type: "state/replace" }) : next;
 }
 
 export function assertSnapshotReferences(sharedState, snapshot) {
@@ -679,6 +724,16 @@ export function applyConfiguration(
         type: "direction/update",
         value: rememberedSingle,
       });
+    } else if (snapshot) {
+      const skill = getSkill(snapshot, entrySkillId(entry));
+      if (skill?.id?.startsWith("skill_preview_s5_") && skill.calculationStatus === "pending-skill-data") {
+        // Known description hits remain editable even while damage parameters are pending.
+        nextState = calculatorReducer(nextState, {
+          direction,
+          type: "direction/update",
+          value: { hitCount: getDefaultHitCount(skill) },
+        });
+      }
     }
   }
   if (snapshot && configuration.traitValues) {
@@ -745,14 +800,19 @@ export function switchBattleForm(state, { side, snapshot, spiritId }) {
   };
   const healthDirection = side === "attacker" ? "reverse" : "forward";
   const health = state.directions[healthDirection];
-  const maxHp = calculateAllPanelStats({ raceStats: target.raceStats, displayIvs: current.displayIvs, natureMultipliers: getNatureMultipliers(current.nature) }).hp;
+  const nextSides = { ...state.sides, [side]: nextSide };
+  const maxHp = calculateAllPanelStats({ raceStats: target.raceStats, displayIvs: current.displayIvs,
+    natureMultipliers: getNatureMultipliers(current.nature),
+    level: resolveS5PreviewBattleLevel(snapshot, { ...state, sides: nextSides }, side) }).hp;
   const clampHp = Number.isFinite(health.currentHp) && health.currentHp > maxHp;
   return {
     persistence: persistence(),
     state: {
       ...state,
-      sides: { ...state.sides, [side]: nextSide },
-      directions: clampHp ? { ...state.directions, [healthDirection]: { ...health, currentHp: maxHp } } : state.directions,
+      sides: nextSides,
+      directions: clampHp ? { ...state.directions, [healthDirection]: {
+        ...health, currentHp: maxHp, context: { ...health.context, currentHpPercent: 100 },
+      } } : state.directions,
     },
   };
 }
@@ -873,6 +933,28 @@ export function selectFourSkill(
   };
 }
 
+// Explicit defaults can be restored on request; empty legacy saves carry no
+// provenance that could distinguish a former empty pool from a deliberate clear.
+export function getRestorableDefaultSkills(state, { side, snapshot }) {
+  const configured = state.sides[side];
+  if (!configured?.spiritId || configured.battleForm) return null;
+  const learnset = snapshot.learnsets?.find(entry => entry.spiritId === configured.spiritId);
+  if (!Array.isArray(learnset?.defaultSkillIds)) return null;
+  const defaults = chooseDefaultSkillIds(snapshot, configured.spiritId);
+  return defaults.some(Boolean) && defaults.some((id, index) => id !== entrySkillId(configured.skills.four[index]))
+    ? defaults : null;
+}
+
+export function restoreDefaultSkills(state, { side, snapshot }) {
+  const defaults = getRestorableDefaultSkills(state, { side, snapshot });
+  if (!defaults) return { persistence: persistence(), state };
+  let next = state;
+  for (const [index, skillId] of defaults.entries()) {
+    next = selectFourSkill(next, { index, side, skillId, snapshot }).state;
+  }
+  return { persistence: persistence(side), state: next };
+}
+
 export function updateGlobalRain(state, value) {
   const weatherRainTurns = Math.min(
     8,
@@ -888,6 +970,7 @@ export function updateGlobalRain(state, value) {
         weatherThunder: false,
         weatherSandstorm: false,
         weatherBlizzard: false,
+        weatherDream: false,
         weatherTurns: weatherRainTurns,
       } },
     });
@@ -896,7 +979,7 @@ export function updateGlobalRain(state, value) {
 }
 
 export function updateGlobalWeather(state, weather) {
-  const nextWeather = ["rain", "thunder", "sandstorm", "blizzard"].includes(weather) ? weather : "none";
+  const nextWeather = ["rain", "thunder", "sandstorm", "blizzard", "dream"].includes(weather) ? weather : "none";
   let nextState = state;
   for (const direction of ["forward", "reverse"]) {
     nextState = calculatorReducer(nextState, {
@@ -908,7 +991,8 @@ export function updateGlobalWeather(state, weather) {
           weatherThunder: nextWeather === "thunder",
           weatherSandstorm: nextWeather === "sandstorm",
           weatherBlizzard: nextWeather === "blizzard",
-          weatherTurns: nextWeather === "none" ? 0 : 8,
+          weatherDream: nextWeather === "dream",
+          weatherTurns: nextWeather === "none" || nextWeather === "dream" ? 0 : 8,
         },
       },
     });
@@ -950,6 +1034,17 @@ export function updateMirroredTraitContext(state, { direction, key, value }) {
       type: "direction/update",
       value: { context: { [mirroredKey]: value } },
     });
+  }
+  if (stableContextKey?.startsWith(`${source}S5BattleLevel.`)) {
+    const otherDirection = direction === "forward" ? "reverse" : "forward";
+    for (const [name, role] of [[direction, source === "attackerTrait" ? "attacker" : "defender"],
+      [otherDirection, source === "attackerTrait" ? "defender" : "attacker"]]) {
+      nextState = { ...nextState, directions: { ...nextState.directions, [name]: {
+        ...nextState.directions[name],
+        context: removeTriggerControlValues(nextState.directions[name].context,
+          [...getLegacyMinggulongLevelInputs(role), ...getLegacyAbuLevelInputs(role)]),
+      } } };
+    }
   }
   return { persistence: persistence(), state: nextState };
 }

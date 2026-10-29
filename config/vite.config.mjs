@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { realpathSync } from "node:fs";
 
 import { buildAttributionPlugin } from "../scripts/build-attribution.mjs";
+import { s5PreviewPresetsPlugin } from "../scripts/s5-preview-presets.mjs";
 
 export default defineConfig({
   build: {
@@ -56,5 +57,5 @@ export default defineConfig({
       "dist/**",
     ],
   },
-  plugins: [react(), buildAttributionPlugin()],
+  plugins: [react(), buildAttributionPlugin(), s5PreviewPresetsPlugin()],
 });

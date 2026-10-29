@@ -1,8 +1,12 @@
 import { normalizeTriggerControls } from "../domain/trigger-controls.js";
 
-const CONDITIONS = { rainWeather: "rain", blizzardWeather: "blizzard", sandstormWeather: "sandstorm" };
-const GLOBAL_KEYS = ["weatherRainTurns", "weatherThunder", "weatherSandstorm", "weatherBlizzard"];
-const CONTROL_IDS = Object.keys(CONDITIONS).flatMap((key) =>
+const CONDITIONS = {
+  rainWeather: "rain", blizzardWeather: "blizzard", sandstormWeather: "sandstorm",
+  dreamWeather: "dream", attackerTraitS5DreamActive: "dream", defenderTraitS5DreamActive: "dream",
+  attackerTraitS5SnowActive: "blizzard", defenderTraitS5SnowActive: "blizzard",
+};
+const GLOBAL_KEYS = ["weatherRainTurns", "weatherThunder", "weatherSandstorm", "weatherBlizzard", "weatherDream"];
+const CONTROL_IDS = ["rainWeather", "blizzardWeather", "sandstormWeather", "dreamWeather"].flatMap((key) =>
   ["skill", "attackerTrait", "defenderTrait"].map((source) => {
     const [control] = normalizeTriggerControls([
       { key, label: key, type: "boolean", defaultValue: false,
@@ -11,9 +15,32 @@ const CONTROL_IDS = Object.keys(CONDITIONS).flatMap((key) =>
     return [control.id, CONDITIONS[key]];
   }),
 );
+for (const source of ["attackerTrait", "defenderTrait"]) {
+  const [control] = normalizeTriggerControls([{ key: `${source}S5DreamActive`,
+    label: "萌系天气（占位）", type: "boolean", defaultValue: false, scope: "battle" }], { source });
+  CONTROL_IDS.push([control.id, "dream"]);
+  const [snowControl] = normalizeTriggerControls([{ key: `${source}S5SnowActive`,
+    label: "暴风雪天气", type: "boolean", defaultValue: false, scope: "battle" }], { source });
+  CONTROL_IDS.push([snowControl.id, "blizzard"]);
+}
 
 function conditionWeather(key) {
   return CONDITIONS[key.split(".").find((part) => Object.hasOwn(CONDITIONS, part))];
+}
+
+function snowTraitField(key, suffix) {
+  return key.split(".").some(part => part === `attackerTraitS5${suffix}` || part === `defenderTraitS5${suffix}`);
+}
+
+function snowTraitRole(key) {
+  return key.split(".").find(part => /^(?:attacker|defender)TraitS5/u.test(part))?.split("S5")[0];
+}
+
+function confirmedSnowTurns(context, sourceKey, fallback = 5) {
+  const role = snowTraitRole(sourceKey);
+  const value = Object.entries(context ?? {}).find(([key]) =>
+    key.split(".").includes(`${role}S5SnowTurnsRemaining`))?.[1];
+  return value === undefined ? fallback : Math.min(5, Math.max(0, Math.floor(Number(value) || 0)));
 }
 
 export function currentWeather(context = {}) {
@@ -21,6 +48,7 @@ export function currentWeather(context = {}) {
   if (context.weatherThunder === true) return "thunder";
   if (context.weatherSandstorm === true) return "sandstorm";
   if (context.weatherBlizzard === true) return "blizzard";
+  if (context.weatherDream === true) return "dream";
   return "none";
 }
 
@@ -38,12 +66,14 @@ function linkedContext(context = {}, weather, global) {
 
 // 天气属于整场对战，不属于某只精灵或某个技能槽；旧槽位记忆也不能覆盖当前天气。
 export function synchronizeWeather(state, weather, turns = 8) {
-  const duration = weather === "none" ? 0 : Math.min(8, Math.max(1, Number(turns) || 8));
+  // 萌系占位天气的时长未知，不套用已有天气的 8 回合规则。
+  const duration = weather === "none" || weather === "dream" ? 0 : Math.min(8, Math.max(1, Number(turns) || 8));
   const global = {
     weatherRainTurns: weather === "rain" ? duration : 0,
     weatherThunder: weather === "thunder",
     weatherSandstorm: weather === "sandstorm",
     weatherBlizzard: weather === "blizzard",
+    weatherDream: weather === "dream",
     weatherTurns: duration,
   };
   const entry = (value) => {
@@ -79,8 +109,8 @@ export function reconcileWeatherAction(previous, next, action) {
   let turns = context.weatherRainTurns || context.weatherTurns || 8;
   let patch;
   let before;
-  if (action.type === "direction/update") {
-    patch = action.value.context;
+  if (action.type === "direction/update" || action.type === "direction/set-context") {
+    patch = action.type === "direction/update" ? action.value.context : action.value;
     before = previous.directions[action.direction].context;
   } else if (action.type === "battle/set-trait-control") {
     patch = { [action.key]: action.value };
@@ -103,6 +133,24 @@ export function reconcileWeatherAction(previous, next, action) {
     weather = activated ? currentWeather({ [activated]: patch[activated] }) : currentWeather(merged);
     turns = merged.weatherRainTurns || merged.weatherTurns || 8;
   } else {
+    const snowTrigger = Object.entries(patch ?? {}).find(([key, value]) =>
+      snowTraitField(key, "SnowTriggered") && typeof value === "boolean" && value !== before?.[key]);
+    const snowTurns = Object.entries(patch ?? {}).find(([key, value]) =>
+      snowTraitField(key, "SnowTurnsRemaining") && value !== before?.[key]);
+    if (snowTrigger) {
+      if (snowTrigger[1]) {
+        turns = confirmedSnowTurns({ ...before, ...patch }, snowTrigger[0]);
+        weather = turns > 0 ? "blizzard" : "none";
+      } else if (weather === "blizzard") weather = "none";
+      return synchronizeWeather(next, weather, turns);
+    }
+    const resumeSnow = snowTurns && weather === "none" && confirmedSnowTurns(before, snowTurns[0]) === 0 &&
+      confirmedSnowTurns({ ...before, ...patch }, snowTurns[0]) > 0;
+    if (snowTurns && (weather === "blizzard" || resumeSnow) && Object.entries({ ...before, ...patch }).some(([key, value]) =>
+      key.split(".").includes(`${snowTraitRole(snowTurns[0])}S5SnowTriggered`) && value === true)) {
+      turns = confirmedSnowTurns({ ...before, ...patch }, snowTurns[0]);
+      return synchronizeWeather(next, turns > 0 ? "blizzard" : "none", turns);
+    }
     const changed = Object.entries(patch ?? {}).find(([key, value]) =>
       conditionWeather(key) && typeof value === "boolean" && value !== before?.[key],
     );

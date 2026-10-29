@@ -71,13 +71,12 @@ export function chooseDefaultSkillIds(snapshot, spiritId) {
     .learnsets[spiritId]?.defaultSkillIds;
   if (Array.isArray(explicitDefaultIds)) {
     const legalSet = new Set(legalIds);
-    const explicitDefaults = [
-      ...new Set(
-        explicitDefaultIds.filter(
-          (id) => legalSet.has(id) && byId[id] && !isWishPowerExtra(byId[id]),
-        ),
-      ),
-    ].slice(0, capacity);
+    const used = new Set();
+    const explicitDefaults = explicitDefaultIds.slice(0, capacity).map(id => {
+      if (!legalSet.has(id) || !byId[id] || isWishPowerExtra(byId[id]) || used.has(id)) return null;
+      used.add(id);
+      return id;
+    });
     return normalizeSkillSlots(explicitDefaults, capacity);
   }
   const legal = legalIds.map((id) => byId[id]).filter(Boolean);

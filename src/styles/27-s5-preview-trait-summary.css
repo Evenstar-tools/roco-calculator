@@ -1,0 +1,51 @@
+.s5-preview-trait-summary {
+  min-width: 0;
+  flex: 0 1 auto;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.s5-preview-trait-summary > span {
+  font-weight: 400;
+}
+
+.four-skill-trait-controls:has(> .s5-preview-trait-summary) > .trait-hint {
+  margin-right: 0;
+}
+
+.four-skill-trait-controls > .s5-preview-trait-summary {
+  margin-right: auto;
+}
+
+.s5-preview-trait-summary[data-level="true"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 12px;
+}
+
+.s5-preview-trait-summary > small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: inherit;
+}
+
+.trait-turn-end {
+  height: 28px;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.trait-turn-end:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}

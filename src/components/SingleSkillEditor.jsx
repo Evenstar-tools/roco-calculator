@@ -1,5 +1,5 @@
 import { SkillUsageSummary, UsageCountActions } from "./SkillUsageSummary.jsx";
-import { Lightning, Shield, Sword } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, Lightning, Shield, Sword } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
 import { getDefaultHitCount, getSkillEffectInputs } from "../domain/skill-effects.js";
@@ -11,6 +11,8 @@ import { getChoiceTraitInput, supportsChoiceTrait } from "../domain/choice-skill
 import { HealthInput } from "./HealthInput.jsx";
 import { PowerDraftInput } from "./PowerDraftInput.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
+import { S5PreviewTraitSummary } from "./S5PreviewTraitSummary.jsx";
+import { getS5PreviewTraitPresentation } from "../features/s5-preview/trait-presentation.js";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -21,14 +23,14 @@ const CATEGORY_LABELS = {
 };
 
 export function displayedSkillPower(skill, result) {
-  if (Number.isFinite(Number(result?.staticPower))) {
+  if (result?.staticPower != null && result.staticPower !== "" && Number.isFinite(Number(result.staticPower))) {
     return Number(result.staticPower);
   }
-  if (Number.isFinite(Number(result?.actualPower))) {
+  if (result?.actualPower != null && result.actualPower !== "" && Number.isFinite(Number(result.actualPower))) {
     return Number(result.actualPower);
   }
   if (
-    usesAbsolutePowerRule(skill) &&
+    usesAbsolutePowerRule(skill) && result?.resolvedPower != null && result.resolvedPower !== "" &&
     Number.isFinite(Number(result?.resolvedPower))
   ) {
     return Number(result.resolvedPower);
@@ -177,13 +179,23 @@ export function DraftNumberInput({
 }) {
   const [draft, setDraft] = useState(String(value ?? ""));
   const [isEditing, setIsEditing] = useState(false);
+  const stepSize = Number(step) > 0 ? Number(step) : 1;
+  const stepped = stepSize > 1;
+  const current = stepped && draft === "" ? toNumber(value) : toNumber(draft, toNumber(value));
+
+  function adjust(direction) {
+    const next = current + direction * stepSize;
+    const normalized = Math.min(max ?? Number.POSITIVE_INFINITY, Math.max(min, next));
+    setDraft(String(normalized));
+    onCommit?.(normalized);
+  }
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- 非编辑态跟外部数值，渲染期写入会冲掉草稿
     if (!isEditing) setDraft(String(value ?? ""));
   }, [isEditing, value]);
 
-  return (
+  const input = (
     <input
       aria-label={ariaLabel}
       className={className}
@@ -208,19 +220,32 @@ export function DraftNumberInput({
       onKeyDown={(event) => {
         if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
         event.preventDefault();
-        const current = toNumber(draft, toNumber(value));
-        const normalized = Math.min(
-          max ?? Number.POSITIVE_INFINITY,
-          Math.max(min, current + (event.key === "ArrowUp" ? 1 : -1)),
-        );
-        setDraft(String(normalized));
-        onCommit?.(normalized);
+        adjust(event.key === "ArrowUp" ? 1 : -1);
       }}
       onFocus={() => setIsEditing(true)}
-      step={step}
+      step={stepped ? 1 : step}
       type="number"
       value={draft}
     />
+  );
+  if (!stepped) return input;
+  return (
+    <span className="draft-number-stepper">
+      {input}
+      <span className="draft-number-stepper__buttons">
+        {[1, -1].map((direction) => {
+          const Icon = direction === 1 ? CaretUp : CaretDown;
+          return <button
+            aria-label={`${ariaLabel}${direction === 1 ? "增加" : "减少"}${stepSize}`}
+            disabled={disabled || (direction < 0 ? current <= min : current >= (max ?? Number.POSITIVE_INFINITY))}
+            key={direction}
+            onClick={() => adjust(direction)}
+            onPointerDown={(event) => event.preventDefault()}
+            type="button"
+          ><Icon aria-hidden="true" size={10} weight="fill" /></button>;
+        })}
+      </span>
+    </span>
   );
 }
 
@@ -231,10 +256,20 @@ export function TraitInputs({
   scope,
 }) {
   return inputs
-    .filter((input) => !scope || input.scope === scope)
+    .filter((input) => !input.hidden && (!scope || input.scope === scope))
     .filter((input) => isDynamicInputVisible(input, context))
     .map((input) =>
-      input.type === "choice" ? (
+      input.action ? (
+        <button
+          className="trait-turn-end"
+          disabled={input.action === "s5-dream-turn-end" && context.weatherDream !== true}
+          key={dynamicInputId(input)}
+          onClick={() => onChange?.(dynamicInputId(input), true)}
+          type="button"
+        >
+          {input.label}
+        </button>
+      ) : input.type === "choice" ? (
         <label className="trait-choice" key={dynamicInputId(input)}>
           <span>{input.label}</span>
           <select
@@ -387,8 +422,10 @@ export function SingleSkillEditor({
   manualPower,
   onHitCountChange,
   onAttackerHealthChange,
+  onAttackerHealthInputModeChange,
   onAttackerHealthPercentChange,
   onDefenderHealthChange,
+  onDefenderHealthInputModeChange,
   onDefenderHealthPercentChange,
   onManualPowerChange,
   onPowerOverrideChange,
@@ -426,7 +463,11 @@ export function SingleSkillEditor({
   const hitCountMaximum = editableHitCountInput
     ? editableHitCountInput.max ?? Number.POSITIVE_INFINITY
     : 99;
-  const attackerTraitInputs = attackerTrait?.inputs ??
+  const attackPresentation = getS5PreviewTraitPresentation(attackerTrait, "attacker");
+  const defensePresentation = getS5PreviewTraitPresentation(defenderTrait, "defender");
+  const showAttackerTrait = attackerTrait && attackPresentation?.visible !== false;
+  const showDefenderTrait = defenderTrait && defensePresentation?.visible !== false;
+  const attackerTraitInputs = attackPresentation?.inputs ?? attackerTrait?.inputs ??
     (attackerTrait?.conditionKey
       ? [{
           defaultValue: false,
@@ -435,7 +476,7 @@ export function SingleSkillEditor({
           type: "boolean",
         }]
       : []);
-  const defenderTraitInputs = defenderTrait?.inputs ??
+  const defenderTraitInputs = defensePresentation?.inputs ?? defenderTrait?.inputs ??
     (defenderTrait?.conditionKey
       ? [{
           defaultValue: false,
@@ -513,14 +554,14 @@ export function SingleSkillEditor({
         </label>
         <div className="skill-facts" aria-label="技能属性">
           <span className="skill-fact">
-            <Sword aria-hidden="true" size={17} weight="fill" />
-            {CATEGORY_LABELS[selectedSkill.category] ?? selectedSkill.category}
+            {selectedSkill.category ? <Sword aria-hidden="true" size={17} weight="fill" /> : null}
+            {CATEGORY_LABELS[selectedSkill.category] ?? selectedSkill.category ?? "—"}
           </span>
           <span
-            className={`type-chip type-chip--${effectiveType}`}
+            className={`type-chip${effectiveType ? ` type-chip--${effectiveType}` : ""}`}
             style={getElementToneStyle(effectiveType)}
           >
-            {effectiveType}
+            {effectiveType ?? "—"}
           </span>
           <span className="skill-fact">
             <Lightning aria-hidden="true" size={17} weight="fill" />
@@ -547,6 +588,7 @@ export function SingleSkillEditor({
                 label="攻击方"
                 maxHp={attackerHealth.maxHp}
                 onCurrentHpChange={onAttackerHealthChange}
+                onInputModeChange={onAttackerHealthInputModeChange}
                 onPercentChange={onAttackerHealthPercentChange}
                 percentValue={attackerHealth.percent}
               />
@@ -558,6 +600,7 @@ export function SingleSkillEditor({
                 label="防御方"
                 maxHp={defenderHealth.maxHp}
                 onCurrentHpChange={onDefenderHealthChange}
+                onInputModeChange={onDefenderHealthInputModeChange}
                 onPercentChange={onDefenderHealthPercentChange}
                 percentValue={defenderHealth.percent}
               />
@@ -715,9 +758,9 @@ export function SingleSkillEditor({
         </div>
       </details>
 
-      {attackerTrait || defenderTrait ? (
+      {showAttackerTrait || showDefenderTrait ? (
         <div className="trait-grid">
-          {attackerTrait ? (
+          {showAttackerTrait ? (
             <article className="trait-card trait-card--attack">
               <header>
                 <Sword aria-hidden="true" size={17} weight="fill" />
@@ -744,10 +787,11 @@ export function SingleSkillEditor({
                   )}
                   onChange={onTraitContextChange}
                 />
+                <S5PreviewTraitSummary trait={attackerTrait} role="attacker" context={traitContext} />
               </div>
             </article>
           ) : null}
-          {defenderTrait ? (
+          {showDefenderTrait ? (
             <article className="trait-card trait-card--defense">
               <header>
                 <Shield aria-hidden="true" size={17} weight="fill" />
@@ -765,6 +809,7 @@ export function SingleSkillEditor({
                   )}
                   onChange={onTraitContextChange}
                 />
+                <S5PreviewTraitSummary trait={defenderTrait} role="defender" context={traitContext} />
               </div>
             </article>
           ) : null}

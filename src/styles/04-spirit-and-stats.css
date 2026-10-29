@@ -301,6 +301,10 @@
   object-position: center;
 }
 
+html[data-theme="dark"] .spirit-card__image[data-preview-silhouette="true"] {
+  filter: brightness(1.7);
+}
+
 .spirit-card__identity {
   min-width: 0;
 }
@@ -744,6 +748,7 @@ html[data-theme="dark"] .stat-icon--nature-gain + .stat-tile__label-text {
 
 .stat-tile__panel-row {
   display: flex;
+  flex-wrap: wrap;
   min-width: 0;
   align-items: baseline;
   gap: 4px;

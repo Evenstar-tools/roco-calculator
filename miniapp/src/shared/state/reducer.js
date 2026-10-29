@@ -1,4 +1,9 @@
+import { getLegacySilverEnergyInput } from "../features/s5-preview/energy-input-migration.js";
+import { getS5PreviewTraitInputs } from "../domain/s5-preview-traits.js";
+import { S5_PREVIEW_MECHANICS } from "../features/s5-preview/mechanics.js";
+import { getLegacyAbuLevelInputs, getLegacyMinggulongLevelInputs } from "../features/s5-preview/level-input-migration.js";
 import { normalizeNatureId } from "../domain/natures.js";
+import { getLegacyGoldChargeInputs } from "../features/s5-preview/charge-input-migration.js";
 import { recordManualGainChanges } from "../domain/gain-provenance.js";
 import { reconcileWeatherAction } from "./weather.js";
 import { normalizeMarkSlot } from "../domain/marks.js";
@@ -8,6 +13,36 @@ import {
   NEGATIVE_STATUS_KEYS,
   normalizeNegativeStatusSide,
 } from "../domain/negative-status.js";
+
+const PREVIEW_OWNER_CONTEXT_KEYS = [...new Set(["attacker", "defender"].flatMap(role => {
+  const controls = Object.keys(S5_PREVIEW_MECHANICS).flatMap(mechanicKey =>
+    getS5PreviewTraitInputs({ previewIdentity: { catalogId: "s5-controls", mechanicKey } }, role) ?? []);
+  const sixFaceDice = getS5PreviewTraitInputs({ previewIdentity: {
+    catalogId: "s5-controls", mechanicKey: "diliutun", key: "diliutun",
+  } }, role) ?? [];
+  return [...controls, ...sixFaceDice, ...getLegacyGoldChargeInputs(role), getLegacySilverEnergyInput(role),
+    ...getLegacyAbuLevelInputs(role), ...getLegacyMinggulongLevelInputs(role)]
+    .filter(control => control.scope !== "battle")
+    .flatMap(control => [control.id, `${control.source}.${control.contextKey}`, control.contextKey]);
+}))];
+
+function swapPreviewTraitCounters(directions) {
+  if (!directions?.forward?.context || !directions?.reverse?.context) return directions;
+  // These inputs belong to a spirit, while existing formal direction settings
+  // and battle-wide weather retain their original swap semantics.
+  const keys = PREVIEW_OWNER_CONTEXT_KEYS;
+  if (!keys.some(key => Object.hasOwn(directions.forward.context, key) || Object.hasOwn(directions.reverse.context, key))) return directions;
+  return Object.fromEntries(Object.entries(directions).map(([direction, value]) => {
+    if (!["forward", "reverse"].includes(direction)) return [direction, value];
+    const context = { ...value.context };
+    const other = directions[direction === "forward" ? "reverse" : "forward"].context;
+    for (const key of keys) {
+      delete context[key];
+      if (Object.hasOwn(other, key)) context[key] = other[key];
+    }
+    return [direction, { ...value, context }];
+  }));
+}
 
 const DIRECTIONS = new Set(["forward", "reverse"]);
 const SIDES = new Set(["attacker", "defender"]);
@@ -116,6 +151,7 @@ function reduceCalculatorAction(state, action) {
                 weatherThunder: false,
                 weatherSandstorm: false,
                 weatherBlizzard: false,
+                weatherDream: false,
                 weatherTurns: weatherRainTurns,
               },
             },
@@ -462,6 +498,7 @@ function reduceCalculatorAction(state, action) {
     case "sides/swap":
       return {
         ...state,
+        directions: swapPreviewTraitCounters(state.directions),
         negativeStatuses: state.negativeStatuses
           ? {
               attacker: state.negativeStatuses.defender,

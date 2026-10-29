@@ -100,6 +100,8 @@ html[data-theme="dark"] .rank-tone--resist { color: #70d6b5; }html[data-theme="d
 .base-speed .base-speed-column { width:58px; }
 .base-speed thead th { position:sticky; top:0; background:var(--surface); z-index:1; font-size:12px; }
 .base-speed .base-speed-value { border:0; background:transparent; box-shadow:none; padding:8px 0; min-width:0; color:var(--text); }
+.base-speed-portraits button { flex-direction:column; gap:0; }
+.base-speed-portraits small { white-space:nowrap; }
 .ability-speed-overview.is-icon-only .ability-speed__tier-spirits img { width:64px; height:64px; object-fit:contain; }
 .ability-speed-overview.is-icon-only .ability-speed__tier-spirits button { width:74px; min-width:74px; max-width:74px; }
 @media(max-width:650px) {

@@ -1,0 +1,4636 @@
+{
+  "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+  "schemaVersion": 1,
+  "typesProvenance": {
+    "authority": "user-provided",
+    "providedAt": "2026-10-27",
+    "reviewStatus": "pending"
+  },
+  "status": "community-preview",
+  "source": {
+    "url": "https://www.bilibili.com/video/BV1qqnS6XETF/",
+    "bvid": "BV1qqnS6XETF",
+    "title": "和榜一锐评S5新精灵特性【省流版】",
+    "creator": "Dr_卡特拉",
+    "durationSeconds": 257,
+    "authority": "community-video",
+    "reviewedCaptionLines": [
+      1,
+      114
+    ],
+    "reviewedSlides": 15,
+    "note": "已逐卡核对名称和效果；视频为社区前瞻整理，不作为正式数值源。未命名进化阶段、完整属性、正式特性名、六维和学习面不补猜。"
+  },
+  "officialSources": [
+    {
+      "url": "https://www.bilibili.com/opus/1263792411026391049",
+      "creator": "洛克王国世界",
+      "publishedAt": "2026-10-27T16:00:00+08:00",
+      "authority": "official-image",
+      "frames": [
+        "artifacts/s5-official-atlas-20261027/source-01.jpg",
+        "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "artifacts/s5-official-atlas-20261027/source-03.jpg"
+      ]
+    },
+    {
+      "url": "https://www.bilibili.com/opus/1263800141975912449",
+      "creator": "洛克王国世界",
+      "publishedAt": "2026-10-27 16:30",
+      "authority": "official-image",
+      "images": [
+        "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg",
+        "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg",
+        "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg",
+        "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg",
+        "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg",
+        "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg",
+        "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg",
+        "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg",
+        "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+      ],
+      "note": "逐张核对九张家族图；仅更新对应条目。基础形态未公布六维，保留全100测试占位；新技能缺项保留null。"
+    }
+  ],
+  "entries": [
+    {
+      "key": "little-ming-dragon",
+      "name": "小冥龙",
+      "kind": "family",
+      "mechanicKey": "minggulong",
+      "types": [
+        "幽",
+        "龙"
+      ],
+      "typesProvenance": {
+        "authority": "official-image",
+        "providedAt": "2026-10-27",
+        "reviewStatus": "reviewed",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg"
+      },
+      "traitName": "恶龙的奢望",
+      "traitSummary": "初始等级+39，回合结束时等级-10，低于80级时受到伤害+40%。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evolutionChainKeys": [
+        "little-ming-dragon",
+        "minggulong"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/little-ming-dragon.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263792411026391049",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/source-01.jpg"
+      },
+      "raceStats": null,
+      "unknowns": [
+        "官方六维",
+        "完整技能学习面及技能数值",
+        "进化条件"
+      ],
+      "announcedSkills": [
+        {
+          "name": "荒芜之噬",
+          "description": "造成物伤，若击败敌方，自己等级+20。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        },
+        {
+          "name": "咒火",
+          "description": "蓄力，自己获得2层龙噬印记。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_curse-flame",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png"
+        },
+        {
+          "name": "冥暗诅咒",
+          "description": "敌方失去5能量，且下回合末回复3能量，应对防御：下回合不回复能量。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_dark-curse",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png"
+        },
+        {
+          "name": "深红龙击",
+          "description": "造成物伤。自己每进入1次蓄力状态，本技能能耗永久-2。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_crimson-dragon-strike",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "physical",
+          "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png"
+        }
+      ],
+      "officialSkillRefs": [],
+      "skills": [
+        {
+          "id": "skill_preview_s5_barren-devour",
+          "name": "荒芜之噬",
+          "iconUrl": "/assets/skills/skill_preview_s5_barren-devour.png",
+          "type": "龙",
+          "category": "physical",
+          "cost": 5,
+          "basePower": 130,
+          "description": "造成物伤，若击败敌方，自己等级+20。",
+          "acquisition": "专属技能",
+          "evidence": {
+            "kind": "user-image",
+            "frame": "codex-clipboard-68833128-1fef-4ec3-938c-f4a169ff44b9.png"
+          }
+        },
+        {
+          "name": "咒火",
+          "description": "蓄力，自己获得2层龙噬印记。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_curse-flame",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png"
+        },
+        {
+          "name": "冥暗诅咒",
+          "description": "敌方失去5能量，且下回合末回复3能量，应对防御：下回合不回复能量。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_dark-curse",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png"
+        },
+        {
+          "name": "深红龙击",
+          "description": "造成物伤。自己每进入1次蓄力状态，本技能能耗永久-2。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_crimson-dragon-strike",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "physical",
+          "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png"
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_barren-devour",
+        "skill_preview_s5_curse-flame",
+        "skill_preview_s5_dark-curse",
+        "skill_preview_s5_crimson-dragon-strike"
+      ],
+      "description": "天真纯粹的恶、「圣龙博弈」头号玩家、「圣龙乐园」的常驻导游、桀桀坏笑的小混蛋，这些身份不可能同时出现在一个生物身上。\n“你说是吧，小冥龙？”\n“啊？我吗？”"
+    },
+    {
+      "key": "minggulong",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/minggulong.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263792411026391049",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/source-01.jpg"
+      },
+      "name": "冥古龙",
+      "types": [
+        "幽",
+        "龙"
+      ],
+      "kind": "family",
+      "traitName": "恶龙的奢望",
+      "traitSummary": "初始等级+39，回合结束时等级-10，低于80级时受到伤害+40%。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_barren-devour",
+          "name": "荒芜之噬",
+          "iconUrl": "/assets/skills/skill_preview_s5_barren-devour.png",
+          "type": "龙",
+          "category": "physical",
+          "cost": 5,
+          "basePower": 130,
+          "description": "造成物伤，若击败敌方，自己等级+20。",
+          "acquisition": "专属技能",
+          "evidence": {
+            "kind": "user-image",
+            "frame": "codex-clipboard-68833128-1fef-4ec3-938c-f4a169ff44b9.png"
+          }
+        },
+        {
+          "name": "咒火",
+          "description": "蓄力，自己获得2层龙噬印记。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_curse-flame",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png"
+        },
+        {
+          "name": "冥暗诅咒",
+          "description": "敌方失去5能量，且下回合末回复3能量，应对防御：下回合不回复能量。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_dark-curse",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png"
+        },
+        {
+          "name": "深红龙击",
+          "description": "造成物伤。自己每进入1次蓄力状态，本技能能耗永久-2。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_crimson-dragon-strike",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "physical",
+          "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png"
+        }
+      ],
+      "mechanicKey": "minggulong",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "unknowns": [
+        "完整技能学习面",
+        "最低等级",
+        "等级对面板及伤害公式的正式影响",
+        "击败后+20的等级上限及同回合结算先后"
+      ],
+      "typesProvenance": {
+        "authority": "official-image",
+        "providedAt": "2026-10-27",
+        "reviewStatus": "reviewed",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg"
+      },
+      "evolutionChainKeys": [
+        "little-ming-dragon",
+        "minggulong"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "raceStats": {
+        "hp": 118,
+        "physicalAttack": 128,
+        "magicalAttack": 42,
+        "physicalDefense": 81,
+        "magicalDefense": 63,
+        "speed": 70
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "announcedSkills": [
+        {
+          "name": "荒芜之噬",
+          "description": "造成物伤，若击败敌方，自己等级+20。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        },
+        {
+          "name": "咒火",
+          "description": "蓄力，自己获得2层龙噬印记。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_curse-flame",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png"
+        },
+        {
+          "name": "冥暗诅咒",
+          "description": "敌方失去5能量，且下回合末回复3能量，应对防御：下回合不回复能量。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_dark-curse",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png"
+        },
+        {
+          "name": "深红龙击",
+          "description": "造成物伤。自己每进入1次蓄力状态，本技能能耗永久-2。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_crimson-dragon-strike",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "physical",
+          "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png"
+        }
+      ],
+      "officialSkillRefs": [],
+      "defaultSkillIds": [
+        "skill_preview_s5_barren-devour",
+        "skill_preview_s5_curse-flame",
+        "skill_preview_s5_dark-curse",
+        "skill_preview_s5_crimson-dragon-strike"
+      ],
+      "description": "这个世界上从没有过两只冥古龙同时现世，传说当一只冥古龙消失，另一只冥古龙才会出现。灵魂拥有强大的力量但呈现不稳定的特质，据说曾经有一只冥古龙被分割了灵魂，光明的部分被洛克疼爱，阴暗的部分不知所踪……"
+    },
+    {
+      "key": "abu",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/abu.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.taptap.cn/moment/662643409994908648",
+        "sourceFrame": "abu-official-intro-1.png"
+      },
+      "name": "阿布",
+      "types": [
+        "龙"
+      ],
+      "kind": "family",
+      "traitSummary": "使用3能耗技能后提升2级（等级上限99级）；低于80级时受到伤害增加40%。",
+      "mechanicKey": "abu",
+      "evidence": {
+        "seconds": 23.8,
+        "frame": "visual_frames/t-000023.800.jpg",
+        "captionLines": [
+          12,
+          20
+        ]
+      },
+      "unknowns": [
+        "完整进化链和六维",
+        "初始等级",
+        "能耗判定取基础值还是实际消耗",
+        "后台触发条件",
+        "等级公式"
+      ]
+    },
+    {
+      "key": "silver-chain",
+      "name": "地银链",
+      "kind": "family",
+      "mechanicKey": "underground-silver-dragon",
+      "types": [
+        "地"
+      ],
+      "typesProvenance": {
+        "authority": "official-image",
+        "providedAt": "2026-10-27",
+        "reviewStatus": "reviewed",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg"
+      },
+      "traitName": "银头寸",
+      "traitSummary": "自己每消耗1点能量，回合结束时获得魔攻+10%。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evolutionChainKeys": [
+        "silver-chain",
+        "underground-silver-scale",
+        "underground-silver-dragon"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/silver-chain.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263792411026391049",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/source-02.jpg"
+      },
+      "raceStats": null,
+      "unknowns": [
+        "官方六维",
+        "完整技能学习面及技能数值",
+        "进化条件"
+      ],
+      "announcedSkills": [
+        {
+          "name": "矿物置换",
+          "description": "自己获得魔攻+120%和3回合禁足。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_mineral-exchange",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+        },
+        {
+          "name": "碎银",
+          "description": "造成魔伤，消耗至少10能量后，本技能能耗永久-5。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_silver-shards",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "magical",
+          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
+        },
+        {
+          "name": "扬尘",
+          "description": "造成魔伤，天气为沙暴时，先手+1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        },
+        {
+          "name": "沙涌",
+          "description": "将天气改为沙暴，持续8回合。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_086497800410e7cd",
+          "name": "扬尘",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_086497800410e7cd.png"
+        },
+        {
+          "id": "skill_de14b645b3046425",
+          "name": "沙涌",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_de14b645b3046425.png"
+        }
+      ],
+      "skills": [
+        {
+          "name": "矿物置换",
+          "description": "自己获得魔攻+120%和3回合禁足。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_mineral-exchange",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+        },
+        {
+          "name": "碎银",
+          "description": "造成魔伤，消耗至少10能量后，本技能能耗永久-5。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_silver-shards",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "magical",
+          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_mineral-exchange",
+        "skill_preview_s5_silver-shards",
+        "skill_086497800410e7cd",
+        "skill_de14b645b3046425"
+      ],
+      "description": "地银链在地下暗河里转着圈儿飘来飘去，一刻也停不下来。当它肚子咕咕叫准备回家吃饭的时候，矿工们开始跟着它走，傍晚时分准能找到银矿。如果看到它的银丝开始发黑，矿工就知道进入了有危险的矿道，该往回撤了。"
+    },
+    {
+      "key": "underground-silver-scale",
+      "name": "地底银鳞",
+      "kind": "family",
+      "mechanicKey": "underground-silver-dragon",
+      "types": [
+        "地"
+      ],
+      "typesProvenance": {
+        "authority": "official-image",
+        "providedAt": "2026-10-27",
+        "reviewStatus": "reviewed",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg"
+      },
+      "traitName": "银头寸",
+      "traitSummary": "自己每消耗1点能量，回合结束时获得魔攻+10%。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evolutionChainKeys": [
+        "silver-chain",
+        "underground-silver-scale",
+        "underground-silver-dragon"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/underground-silver-scale.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263792411026391049",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/source-02.jpg"
+      },
+      "raceStats": null,
+      "unknowns": [
+        "官方六维",
+        "完整技能学习面及技能数值",
+        "进化条件"
+      ],
+      "announcedSkills": [
+        {
+          "name": "矿物置换",
+          "description": "自己获得魔攻+120%和3回合禁足。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_mineral-exchange",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+        },
+        {
+          "name": "碎银",
+          "description": "造成魔伤，消耗至少10能量后，本技能能耗永久-5。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_silver-shards",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "magical",
+          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
+        },
+        {
+          "name": "扬尘",
+          "description": "造成魔伤，天气为沙暴时，先手+1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        },
+        {
+          "name": "沙涌",
+          "description": "将天气改为沙暴，持续8回合。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_086497800410e7cd",
+          "name": "扬尘",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_086497800410e7cd.png"
+        },
+        {
+          "id": "skill_de14b645b3046425",
+          "name": "沙涌",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_de14b645b3046425.png"
+        }
+      ],
+      "skills": [
+        {
+          "name": "矿物置换",
+          "description": "自己获得魔攻+120%和3回合禁足。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_mineral-exchange",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+        },
+        {
+          "name": "碎银",
+          "description": "造成魔伤，消耗至少10能量后，本技能能耗永久-5。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_silver-shards",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "magical",
+          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_mineral-exchange",
+        "skill_preview_s5_silver-shards",
+        "skill_086497800410e7cd",
+        "skill_de14b645b3046425"
+      ],
+      "description": "地底银鳞真的很爱遛弯，撞见了臭臭锥会变黑，路过了铜星人会泛青，它们不觉得痛反而觉得有趣。到了傍晚，咯咯笑着集体钻回暗河洗澡，把一身颜色泡回银白，第二天接着四处冒险。"
+    },
+    {
+      "key": "underground-silver-dragon",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/underground-silver-dragon.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263792411026391049",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/source-02.jpg"
+      },
+      "name": "地绡银龙",
+      "types": [
+        "地"
+      ],
+      "kind": "family",
+      "traitSummary": "自己每消耗1点能量，回合结束时获得魔攻+10%。",
+      "mechanicKey": "underground-silver-dragon",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "unknowns": [
+        "完整技能学习面及技能数值",
+        "累计叠加上限",
+        "持续时间及离场保留",
+        "碎银的10能量统计范围"
+      ],
+      "typesProvenance": {
+        "authority": "official-image",
+        "providedAt": "2026-10-27",
+        "reviewStatus": "reviewed",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg"
+      },
+      "traitName": "银头寸",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evolutionChainKeys": [
+        "silver-chain",
+        "underground-silver-scale",
+        "underground-silver-dragon"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 53,
+        "magicalAttack": 123,
+        "physicalDefense": 82,
+        "magicalDefense": 120,
+        "speed": 120
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "announcedSkills": [
+        {
+          "name": "矿物置换",
+          "description": "自己获得魔攻+120%和3回合禁足。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_mineral-exchange",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+        },
+        {
+          "name": "碎银",
+          "description": "造成魔伤，消耗至少10能量后，本技能能耗永久-5。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_silver-shards",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "magical",
+          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
+        },
+        {
+          "name": "扬尘",
+          "description": "造成魔伤，天气为沙暴时，先手+1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        },
+        {
+          "name": "沙涌",
+          "description": "将天气改为沙暴，持续8回合。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_086497800410e7cd",
+          "name": "扬尘",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_086497800410e7cd.png"
+        },
+        {
+          "id": "skill_de14b645b3046425",
+          "name": "沙涌",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_de14b645b3046425.png"
+        }
+      ],
+      "skills": [
+        {
+          "name": "矿物置换",
+          "description": "自己获得魔攻+120%和3回合禁足。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_mineral-exchange",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+        },
+        {
+          "name": "碎银",
+          "description": "造成魔伤，消耗至少10能量后，本技能能耗永久-5。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_silver-shards",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "magical",
+          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_mineral-exchange",
+        "skill_preview_s5_silver-shards",
+        "skill_086497800410e7cd",
+        "skill_de14b645b3046425"
+      ],
+      "description": "地绡银龙说，遛弯时候最常遇到的是洛克，洛克们总是灰头土脸，看灰头土脸，看起来饥肠辘辘，分给它们矿石它们也不吃，真奇怪。拉布朗矿山的老矿工们感受到善意，努力不让地绡银龙扫兴，定期组织一队人马扛着水桶爬到山谷里，帮它搓背。"
+    },
+    {
+      "key": "sinking-gold-beast",
+      "name": "沉金兽",
+      "kind": "family",
+      "mechanicKey": "gold-vein-dragon",
+      "types": [
+        "电"
+      ],
+      "typesProvenance": {
+        "authority": "official-image",
+        "providedAt": "2026-10-27",
+        "reviewStatus": "reviewed",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg"
+      },
+      "traitName": "储备金",
+      "traitSummary": "自己每使用1次聚能，回合结束时获得物攻+50%。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evolutionChainKeys": [
+        "sinking-gold-beast",
+        "dragonhead-gold",
+        "gold-vein-dragon"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/sinking-gold-beast.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263792411026391049",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/source-03.jpg"
+      },
+      "raceStats": null,
+      "unknowns": [
+        "官方六维",
+        "完整技能学习面及技能数值",
+        "进化条件"
+      ],
+      "announcedSkills": [
+        {
+          "name": "过充电",
+          "description": "造成物伤，聚能至少1次后，本技能威力永久+30。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_overcharge",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "physical",
+          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
+        },
+        {
+          "name": "重启",
+          "description": "本回合和下个回合的结束时，自己返场。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_restart",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+        },
+        {
+          "name": "惊雷",
+          "description": "将天气改为雷鸣，持续8回合。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        },
+        {
+          "name": "交叉闪电",
+          "description": "对敌方精灵造成物理伤害。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_d1c28ec80c85cf57",
+          "name": "惊雷",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_d1c28ec80c85cf57.png"
+        },
+        {
+          "id": "skill_0456e96011ecd42f",
+          "name": "交叉闪电",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_0456e96011ecd42f.png"
+        }
+      ],
+      "skills": [
+        {
+          "name": "过充电",
+          "description": "造成物伤，聚能至少1次后，本技能威力永久+30。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_overcharge",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "physical",
+          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
+        },
+        {
+          "name": "重启",
+          "description": "本回合和下个回合的结束时，自己返场。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_restart",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_overcharge",
+        "skill_preview_s5_restart",
+        "skill_d1c28ec80c85cf57",
+        "skill_0456e96011ecd42f"
+      ],
+      "description": "一天里绝大多数时候，沉金兽都在溪水里不动，就算洛克靠近也懒得动弹。水流从它们头顶的金嵴上淌过，会把杂质带走，它们长期泡过的河段，河沙会泛起一层淡淡的金光。"
+    },
+    {
+      "key": "dragonhead-gold",
+      "name": "龙头金",
+      "kind": "family",
+      "mechanicKey": "gold-vein-dragon",
+      "types": [
+        "电"
+      ],
+      "typesProvenance": {
+        "authority": "official-image",
+        "providedAt": "2026-10-27",
+        "reviewStatus": "reviewed",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg"
+      },
+      "traitName": "储备金",
+      "traitSummary": "自己每使用1次聚能，回合结束时获得物攻+50%。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evolutionChainKeys": [
+        "sinking-gold-beast",
+        "dragonhead-gold",
+        "gold-vein-dragon"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/dragonhead-gold.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263792411026391049",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/source-03.jpg"
+      },
+      "raceStats": null,
+      "unknowns": [
+        "官方六维",
+        "完整技能学习面及技能数值",
+        "进化条件"
+      ],
+      "announcedSkills": [
+        {
+          "name": "过充电",
+          "description": "造成物伤，聚能至少1次后，本技能威力永久+30。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_overcharge",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "physical",
+          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
+        },
+        {
+          "name": "重启",
+          "description": "本回合和下个回合的结束时，自己返场。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_restart",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+        },
+        {
+          "name": "惊雷",
+          "description": "将天气改为雷鸣，持续8回合。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        },
+        {
+          "name": "交叉闪电",
+          "description": "对敌方精灵造成物理伤害。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_d1c28ec80c85cf57",
+          "name": "惊雷",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_d1c28ec80c85cf57.png"
+        },
+        {
+          "id": "skill_0456e96011ecd42f",
+          "name": "交叉闪电",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_0456e96011ecd42f.png"
+        }
+      ],
+      "skills": [
+        {
+          "name": "过充电",
+          "description": "造成物伤，聚能至少1次后，本技能威力永久+30。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_overcharge",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "physical",
+          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
+        },
+        {
+          "name": "重启",
+          "description": "本回合和下个回合的结束时，自己返场。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_restart",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_overcharge",
+        "skill_preview_s5_restart",
+        "skill_d1c28ec80c85cf57",
+        "skill_0456e96011ecd42f"
+      ],
+      "description": "龙头金的金嵴在溪流的反复洗滤中，偶尔会漏下一小片金沙，下游常常守着一群洛克王国的工匠，探着头、伸着筛子，急得团团转，而龙头金站在溪水里还是那副不急不慢的样子。"
+    },
+    {
+      "key": "gold-vein-dragon",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/gold-vein-dragon.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263792411026391049",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/source-03.jpg"
+      },
+      "name": "龙嵴金脉",
+      "types": [
+        "电"
+      ],
+      "kind": "family",
+      "traitSummary": "自己每使用1次聚能，回合结束时获得物攻+50%。",
+      "mechanicKey": "gold-vein-dragon",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "unknowns": [
+        "完整技能学习面及技能数值",
+        "累计叠加上限",
+        "持续时间及离场保留",
+        "重启的返场执行约束"
+      ],
+      "typesProvenance": {
+        "authority": "official-image",
+        "providedAt": "2026-10-27",
+        "reviewStatus": "reviewed",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg"
+      },
+      "traitName": "储备金",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "evolutionChainKeys": [
+        "sinking-gold-beast",
+        "dragonhead-gold",
+        "gold-vein-dragon"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "raceStats": {
+        "hp": 145,
+        "physicalAttack": 131,
+        "magicalAttack": 58,
+        "physicalDefense": 127,
+        "magicalDefense": 88,
+        "speed": 80
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263792411026391049",
+        "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+        "creator": "洛克王国世界",
+        "publishedAt": "2026-10-27T16:00:00+08:00"
+      },
+      "announcedSkills": [
+        {
+          "name": "过充电",
+          "description": "造成物伤，聚能至少1次后，本技能威力永久+30。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_overcharge",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "physical",
+          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
+        },
+        {
+          "name": "重启",
+          "description": "本回合和下个回合的结束时，自己返场。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_restart",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+        },
+        {
+          "name": "惊雷",
+          "description": "将天气改为雷鸣，持续8回合。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        },
+        {
+          "name": "交叉闪电",
+          "description": "对敌方精灵造成物理伤害。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_d1c28ec80c85cf57",
+          "name": "惊雷",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_d1c28ec80c85cf57.png"
+        },
+        {
+          "id": "skill_0456e96011ecd42f",
+          "name": "交叉闪电",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "iconUrl": "/assets/skills/skill_0456e96011ecd42f.png"
+        }
+      ],
+      "skills": [
+        {
+          "name": "过充电",
+          "description": "造成物伤，聚能至少1次后，本技能威力永久+30。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_overcharge",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": "physical",
+          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
+        },
+        {
+          "name": "重启",
+          "description": "本回合和下个回合的结束时，自己返场。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263792411026391049",
+            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
+            "creator": "洛克王国世界",
+            "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "id": "skill_preview_s5_restart",
+          "type": null,
+          "cost": null,
+          "basePower": null,
+          "category": null,
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_overcharge",
+        "skill_preview_s5_restart",
+        "skill_d1c28ec80c85cf57",
+        "skill_0456e96011ecd42f"
+      ],
+      "description": "龙嵴金脉常年伏在地下深处，只是打个盹的功夫，一千个昼夜就过去了。它打个打喷嚏，金子四散飞溅；它伸伸懒腰，金子滑落掉到土里，被岁月埋深。卡洛西亚大陆上许多金矿的成因，是它在那里睡过午觉。"
+    },
+    {
+      "key": "boss-ice-bruce",
+      "name": "冰钻布鲁斯（首领化）",
+      "types": [
+        "冰"
+      ],
+      "baseName": "冰钻布鲁斯",
+      "kind": "boss",
+      "raceStats": {
+        "hp": 73,
+        "physicalAttack": 101,
+        "magicalAttack": 27,
+        "physicalDefense": 114,
+        "magicalDefense": 88,
+        "speed": 90
+      },
+      "raceStatsEvidence": {
+        "kind": "user-confirmed-baseline",
+        "baseSpiritId": "spirit_e926effbf164759a",
+        "baseName": "冰钻布鲁斯",
+        "confirmedAt": "2026-10-29",
+        "note": "用户确认先沿用原形态种族值；首领正式数值有更改时再更新。"
+      },
+      "traitSummary": "对手每1点能耗，技能威力增加10%；对方总能耗达到20点时，额外获得50速度。",
+      "mechanicKey": "boss-ice-bruce",
+      "evidence": {
+        "seconds": 81.8,
+        "frame": "visual_frames/t-000081.800.jpg",
+        "captionLines": [
+          37,
+          49
+        ]
+      },
+      "unknowns": [
+        "首领正式六维（暂按原形态）",
+        "首领学习面",
+        "总能耗取携带技能还是实际消耗",
+        "威力增益叠加方式和上限",
+        "首领血脉附带规则"
+      ]
+    },
+    {
+      "key": "boss-glass-jellyfish",
+      "name": "琉璃水母（首领化）",
+      "types": [
+        "水",
+        "毒"
+      ],
+      "baseName": "琉璃水母",
+      "kind": "boss",
+      "raceStats": {
+        "hp": 134,
+        "physicalAttack": 37,
+        "magicalAttack": 85,
+        "physicalDefense": 93,
+        "magicalDefense": 136,
+        "speed": 95
+      },
+      "raceStatsEvidence": {
+        "kind": "user-confirmed-baseline",
+        "baseSpiritId": "spirit_bdc5a04507024396",
+        "baseName": "琉璃水母",
+        "confirmedAt": "2026-10-29",
+        "note": "用户确认先沿用原形态种族值；首领正式数值有更改时再更新。"
+      },
+      "traitSummary": "使用技能后，赋予对手等于中毒印记层数两倍的中毒层数。",
+      "mechanicKey": "boss-glass-jellyfish",
+      "evidence": {
+        "seconds": 103.8,
+        "frame": "visual_frames/t-000103.800.jpg",
+        "captionLines": [
+          50,
+          55
+        ]
+      },
+      "unknowns": [
+        "首领正式六维（暂按原形态）",
+        "首领学习面",
+        "中毒印记所属方及读取时点",
+        "中毒与印记上限",
+        "首领血脉附带规则"
+      ]
+    },
+    {
+      "key": "jingyu",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/jingyu.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-05.jpg"
+      },
+      "name": "鲸羽",
+      "types": [
+        "幻",
+        "冰"
+      ],
+      "kind": "family",
+      "traitSummary": "在场时，若天气为暴风雪，回合结束敌方不会获得冻结，而是获得3层星陨印记。",
+      "mechanicKey": "jingyu",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-05.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+      },
+      "unknowns": [
+        "此形态六维未公布，沿用已授权的全100测试占位",
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制",
+        "暴风雪回合结束的星陨替换结算待适配"
+      ],
+      "stage": "一阶",
+      "traitName": "环天顶弧",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-05.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_severe-frost",
+          "iconUrl": "/assets/skills/skill_preview_s5_severe-frost.png",
+          "name": "严霜",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "敌方获得8层冻结。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_blue-shift",
+          "iconUrl": "/assets/skills/skill_preview_s5_blue-shift.png",
+          "name": "蓝移",
+          "type": null,
+          "category": "magical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成魔伤，使敌方获得至少4层星陨后，每次使用本技能可使敌方获得1层星陨。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_38827e39dbdda074",
+          "iconUrl": "/assets/skills/skill_38827e39dbdda074.png",
+          "name": "仰望夜空",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_05ee9bba2ec41b89",
+          "iconUrl": "/assets/skills/skill_05ee9bba2ec41b89.png",
+          "name": "寒风吹",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "严霜",
+          "description": "敌方获得8层冻结。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        },
+        {
+          "name": "蓝移",
+          "description": "造成魔伤，使敌方获得至少4层星陨后，每次使用本技能可使敌方获得1层星陨。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        },
+        {
+          "name": "仰望夜空",
+          "description": "自己获得魔攻和魔防+70%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        },
+        {
+          "name": "寒风吹",
+          "description": "造成魔伤。敌方获得魔防-50%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_severe-frost",
+        "skill_preview_s5_blue-shift",
+        "skill_38827e39dbdda074",
+        "skill_05ee9bba2ec41b89"
+      ],
+      "evolutionChainKeys": [
+        "jingyu",
+        "halo-jingyu"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-05.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+      },
+      "description": "通常生活在寒冷的水域，在冰冷的洋流中无忧无虑地摇曳，饶有兴趣地观察深蓝世界中的一切。接下来会随着洋流去向哪里呢？鲸羽飘摇着，期待着下一个惊喜。"
+    },
+    {
+      "key": "doulie",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/doulie.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-04.jpg"
+      },
+      "name": "豆粒鹅",
+      "types": [
+        "冰"
+      ],
+      "kind": "family",
+      "traitSummary": "使敌方获得10层冻结后，天气变为暴风雪，持续5回合。（最多触发1次）",
+      "mechanicKey": "doulie",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-04.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+      },
+      "unknowns": [
+        "此形态六维未公布，沿用已授权的全100测试占位",
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ],
+      "stage": "一阶",
+      "traitName": "高吹雪",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-04.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_thermal-bridge",
+          "iconUrl": "/assets/skills/skill_preview_s5_thermal-bridge.png",
+          "name": "热桥",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "减伤80%，应对攻击：敌方获得魔防-60%。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_freeze",
+          "iconUrl": "/assets/skills/skill_preview_s5_freeze.png",
+          "name": "冷冻",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，使敌方获得至少2次冻结后，每次使用本技能可使敌方能耗+1。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_d1d973cc929fbdf0",
+          "iconUrl": "/assets/skills/skill_d1d973cc929fbdf0.png",
+          "name": "暴风雪",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_8e8ae207e4488c78",
+          "iconUrl": "/assets/skills/skill_8e8ae207e4488c78.png",
+          "name": "打喷嚏",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "热桥",
+          "description": "减伤80%，应对攻击：敌方获得魔防-60%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        },
+        {
+          "name": "冷冻",
+          "description": "造成物伤，使敌方获得至少2次冻结后，每次使用本技能可使敌方能耗+1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        },
+        {
+          "name": "暴风雪",
+          "description": "造成物伤，敌方获得1层冻结。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        },
+        {
+          "name": "打喷嚏",
+          "description": "3连击，每次连击敌方获得1层冻结。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_thermal-bridge",
+        "skill_preview_s5_freeze",
+        "skill_d1d973cc929fbdf0",
+        "skill_8e8ae207e4488c78"
+      ],
+      "evolutionChainKeys": [
+        "doulie",
+        "snow-shoveling-goose"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-04.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+      },
+      "description": "小小的豆粒鹅总是充满大大的能量，似乎永远都在蹦蹦跳跳、吵吵闹闹……尽管它们尚且弱小，依旧喜欢站在亲近的洛克头上，用喋喋不休的鸣叫宣誓自己的存在。"
+    },
+    {
+      "key": "watermelon-bug",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/watermelon-bug.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-03.jpg"
+      },
+      "name": "西瓜虫",
+      "types": [
+        "虫",
+        "草"
+      ],
+      "kind": "family",
+      "traitSummary": "草系技能获得1次随机奉献，虫系技能使敌方获得1层寄生。",
+      "mechanicKey": "watermelon-bug",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-03.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+      },
+      "unknowns": [
+        "此形态六维未公布，沿用已授权的全100测试占位",
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ],
+      "stage": "一阶",
+      "traitName": "虫草多糖",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-03.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_fruit-pulp",
+          "iconUrl": "/assets/skills/skill_preview_s5_fruit-pulp.png",
+          "name": "果粒",
+          "type": null,
+          "category": "magical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成魔伤，2连击。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_summer-pad",
+          "iconUrl": "/assets/skills/skill_preview_s5_summer-pad.png",
+          "name": "夏蛰",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "己方队伍获得2次随机奉献，应对防御：获得所有种类的奉献各1次。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_acc182b1e9836043",
+          "iconUrl": "/assets/skills/skill_acc182b1e9836043.png",
+          "name": "纤维化",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_c6c54cd54376332b",
+          "iconUrl": "/assets/skills/skill_c6c54cd54376332b.png",
+          "name": "食腐",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "果粒",
+          "description": "造成魔伤，2连击。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        },
+        {
+          "name": "夏蛰",
+          "description": "己方队伍获得2次随机奉献，应对防御：获得所有种类的奉献各1次。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        },
+        {
+          "name": "纤维化",
+          "description": "减伤80%，应对攻击：自己获得物防+70%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        },
+        {
+          "name": "食腐",
+          "description": "驱散敌方印记，每层印记回复自己10%生命。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_fruit-pulp",
+        "skill_preview_s5_summer-pad",
+        "skill_acc182b1e9836043",
+        "skill_c6c54cd54376332b"
+      ],
+      "evolutionChainKeys": [
+        "watermelon-bug",
+        "winter-bug-summer-melon"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-03.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+      },
+      "description": "背上的果肉富有营养，饱含甜丝丝的果汁。西瓜虫趴在地上休息时，常常因为不起眼的体型而被忽略。洛克们不小心踩到的话很容易滑倒，千万要注意。"
+    },
+    {
+      "key": "diliutun",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/diliutun.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-02.jpg"
+      },
+      "name": "滴溜豚",
+      "types": [
+        "毒",
+        "幻"
+      ],
+      "kind": "family",
+      "traitSummary": "入场时随机获得1~6点，在场时双方根据点数获得不同效果。",
+      "mechanicKey": "diliutun",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-02.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+      },
+      "unknowns": [
+        "此形态六维未公布，沿用已授权的全100测试占位",
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制",
+        "各随机点数对应的具体效果"
+      ],
+      "stage": "一阶",
+      "traitName": "游戏的本质",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-02.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_poison-cast",
+          "iconUrl": "/assets/skills/skill_preview_s5_poison-cast.png",
+          "name": "投毒",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，使敌方获得至少2次中毒后，每次使用本技能攻击中毒目标时威力+25。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_mixed-state",
+          "iconUrl": "/assets/skills/skill_preview_s5_mixed-state.png",
+          "name": "混合态",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "敌方获得随机10层属性减益。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_6ae493344705eb76",
+          "iconUrl": "/assets/skills/skill_6ae493344705eb76.png",
+          "name": "溶解",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_38827e39dbdda074",
+          "iconUrl": "/assets/skills/skill_38827e39dbdda074.png",
+          "name": "仰望夜空",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "投毒",
+          "description": "造成物伤，使敌方获得至少2次中毒后，每次使用本技能攻击中毒目标时威力+25。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        },
+        {
+          "name": "混合态",
+          "description": "敌方获得随机10层属性减益。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        },
+        {
+          "name": "溶解",
+          "description": "减伤90%，应对攻击：驱散敌方1种增益。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        },
+        {
+          "name": "仰望夜空",
+          "description": "自己获得魔攻和魔防+70%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_poison-cast",
+        "skill_preview_s5_mixed-state",
+        "skill_6ae493344705eb76",
+        "skill_38827e39dbdda074"
+      ],
+      "evolutionChainKeys": [
+        "diliutun",
+        "diniantun"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-02.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+      },
+      "description": "魔法学院的期末到来时，有些小洛克会借助它们旋转时出现的斑点数量来做出命运的抉择——但其实滴溜豚们大多有着严重的选择困难症，连它们自己都不知道该选什么。"
+    },
+    {
+      "key": "lele-shark",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/lele-shark.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-08.jpg"
+      },
+      "name": "乐乐鲨",
+      "types": [
+        "水"
+      ],
+      "kind": "family",
+      "traitSummary": "驱散1次自己的减益后，获得物攻永久+50%。（最多触发1次）",
+      "mechanicKey": "lele-shark",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-08.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+      },
+      "unknowns": [
+        "此形态六维未公布，沿用已授权的全100测试占位",
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ],
+      "stage": "一阶",
+      "traitName": "换牙",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-08.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_refill",
+          "iconUrl": "/assets/skills/skill_preview_s5_refill.png",
+          "name": "续杯",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_rip-current",
+          "iconUrl": "/assets/skills/skill_preview_s5_rip-current.png",
+          "name": "离岸流",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_d457bb1dce36b046",
+          "iconUrl": "/assets/skills/skill_d457bb1dce36b046.png",
+          "name": "洗礼",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_e374eb2120614c3e",
+          "iconUrl": "/assets/skills/skill_e374eb2120614c3e.png",
+          "name": "叠浪",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "续杯",
+          "description": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        },
+        {
+          "name": "离岸流",
+          "description": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        },
+        {
+          "name": "洗礼",
+          "description": "驱散自己的减益，并获得全技能能耗-1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        },
+        {
+          "name": "叠浪",
+          "description": "造成物伤，3连击，本技能能耗每-1，威力+10。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_refill",
+        "skill_preview_s5_rip-current",
+        "skill_d457bb1dce36b046",
+        "skill_e374eb2120614c3e"
+      ],
+      "evolutionChainKeys": [
+        "lele-shark",
+        "awa-shark-lemon",
+        "awa-shark-tiger"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-08.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+      },
+      "description": "身上的胶质保护层富有弹性，乐乐鲨总会在磕磕碰碰中弹来弹去。喜欢和同伴们嬉戏打闹，享受互相碰撞后被弹飞的乐趣。"
+    },
+    {
+      "key": "egg-wrap",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/egg-wrap.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-07.jpg"
+      },
+      "name": "蛋包蛋",
+      "types": [
+        "普通",
+        "萌"
+      ],
+      "kind": "family",
+      "traitSummary": "队伍中存在被萌化的精灵时，自己获得双防+50%。",
+      "mechanicKey": "egg-wrap",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-07.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+      },
+      "unknowns": [
+        "此形态六维未公布，沿用已授权的全100测试占位",
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ],
+      "stage": "一阶",
+      "traitName": "护犊",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-07.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_dream-building",
+          "iconUrl": "/assets/skills/skill_preview_s5_dream-building.png",
+          "name": "筑梦",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "将天气改为霞光梦境，持续8回合。（天气为霞光梦境时，速度慢的精灵会先行动）",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_eggshell",
+          "iconUrl": "/assets/skills/skill_preview_s5_eggshell.png",
+          "name": "蛋壳",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "减伤60%，应对攻击：驱散敌方所有增益。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_f5d921b97fb279d7",
+          "iconUrl": "/assets/skills/skill_f5d921b97fb279d7.png",
+          "name": "超级糖果",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_004571bc89bd5faf",
+          "iconUrl": "/assets/skills/skill_004571bc89bd5faf.png",
+          "name": "追打",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "筑梦",
+          "description": "将天气改为霞光梦境，持续8回合。（天气为霞光梦境时，速度慢的精灵会先行动）",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        },
+        {
+          "name": "蛋壳",
+          "description": "减伤60%，应对攻击：驱散敌方所有增益。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        },
+        {
+          "name": "超级糖果",
+          "description": "造成物伤，自己获得萌化：本次技能威力+60。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        },
+        {
+          "name": "追打",
+          "description": "造成魔伤，1连击，应对状态：本技能变为3连击。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_dream-building",
+        "skill_preview_s5_eggshell",
+        "skill_f5d921b97fb279d7",
+        "skill_004571bc89bd5faf"
+      ],
+      "evolutionChainKeys": [
+        "egg-wrap",
+        "chicken-mama"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-07.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+      },
+      "description": "长长的脚丫支起小小的蛋壳，蛋包蛋高高地扬起头，梦想着自己飞翔的模样。因为破开蛋壳的鸟儿总要飞向天空，洛克们都是这么说的。在天空中究竟会看到什么呢，大地又是什么模样呢？"
+    },
+    {
+      "key": "crab-coconut",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/crab-coconut.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-06.jpg"
+      },
+      "name": "蟹蟹椰",
+      "types": [
+        "水",
+        "草"
+      ],
+      "kind": "family",
+      "traitSummary": "使用水系技能后，下次行动草系技能能耗-3。",
+      "mechanicKey": "crab-coconut",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-06.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+      },
+      "unknowns": [
+        "此形态六维未公布，沿用已授权的全100测试占位",
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ],
+      "stage": "一阶",
+      "traitName": "沙滩节拍",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-06.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_external-spread",
+          "iconUrl": "/assets/skills/skill_preview_s5_external-spread.png",
+          "name": "外附传播",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "减伤80%，应对攻击：敌方获得2层寄生。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_geyser",
+          "iconUrl": "/assets/skills/skill_preview_s5_geyser.png",
+          "name": "间歇泉",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，自己每有1层减益，本技能能耗-1。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_5deed5f114025caa",
+          "iconUrl": "/assets/skills/skill_5deed5f114025caa.png",
+          "name": "仙人掌刺击",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_d0d442331827d39c",
+          "iconUrl": "/assets/skills/skill_d0d442331827d39c.png",
+          "name": "水刃",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "外附传播",
+          "description": "减伤80%，应对攻击：敌方获得2层寄生。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        },
+        {
+          "name": "间歇泉",
+          "description": "造成物伤，自己每有1层减益，本技能能耗-1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        },
+        {
+          "name": "仙人掌刺击",
+          "description": "对敌方精灵造成物理伤害。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        },
+        {
+          "name": "水刃",
+          "description": "造成物伤，应对状态：本技能能耗永久-3。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_external-spread",
+        "skill_preview_s5_geyser",
+        "skill_5deed5f114025caa",
+        "skill_d0d442331827d39c"
+      ],
+      "evolutionChainKeys": [
+        "crab-coconut",
+        "sand-crab"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-06.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+      },
+      "description": "性格胆小警惕，总是试图躲藏起来。但听到富有节奏感的音乐时，总是会忍不住从沙堆中探头围观，悄悄记住那些音乐的节拍。"
+    },
+    {
+      "key": "little-scissor",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/little-scissor.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-01.jpg"
+      },
+      "name": "小剪影",
+      "types": [
+        "幽"
+      ],
+      "kind": "family",
+      "traitSummary": "敌方精灵离场时，自己获得技能威力+20。",
+      "mechanicKey": "little-scissor",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-01.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+      },
+      "unknowns": [
+        "此形态六维未公布，沿用已授权的全100测试占位",
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制",
+        "技能威力增益上限及离场保留规则"
+      ],
+      "stage": "一阶",
+      "traitName": "剪影",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-01.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_spirit-disturbance",
+          "iconUrl": "/assets/skills/skill_preview_s5_spirit-disturbance.png",
+          "name": "灵扰",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，3连击。偷取敌方能量至少1次后，本技能连击数永久+1。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_earthbound-spirit",
+          "iconUrl": "/assets/skills/skill_preview_s5_earthbound-spirit.png",
+          "name": "地缚灵",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "敌方获得双防-70%，若敌方本回合更换精灵，敌方额外获得速度-50。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_b688da558b9ff2e8",
+          "iconUrl": "/assets/skills/skill_b688da558b9ff2e8.png",
+          "name": "离魂术",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_4375736cdfafd6a1",
+          "iconUrl": "/assets/skills/skill_4375736cdfafd6a1.png",
+          "name": "力量增效",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "灵扰",
+          "description": "造成物伤，3连击。偷取敌方能量至少1次后，本技能连击数永久+1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        },
+        {
+          "name": "地缚灵",
+          "description": "敌方获得双防-70%，若敌方本回合更换精灵，敌方额外获得速度-50。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        },
+        {
+          "name": "离魂术",
+          "description": "偷取敌方2能量，脱离。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        },
+        {
+          "name": "力量增效",
+          "description": "自己获得物攻+100%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_spirit-disturbance",
+        "skill_preview_s5_earthbound-spirit",
+        "skill_b688da558b9ff2e8",
+        "skill_4375736cdfafd6a1"
+      ],
+      "evolutionChainKeys": [
+        "little-scissor",
+        "shadow-papercut"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-01.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+      },
+      "description": "有个好朋友，天天跟我走。\n有时走在前，有时走在后。\n我和它说话，就是不开口。"
+    },
+    {
+      "key": "lily-of-valley",
+      "name": "铃兰",
+      "types": [
+        "草",
+        "萌"
+      ],
+      "kind": "family",
+      "traitSummary": "处于萌系天气时，回合结束时对方获得3层寄生。",
+      "mechanicKey": "lily-of-valley",
+      "evidence": {
+        "seconds": 240.8,
+        "frame": "visual_frames/t-000240.800.jpg",
+        "captionLines": [
+          106,
+          114
+        ]
+      },
+      "unknowns": [
+        "完整进化链和六维",
+        "正式属性待官方资料复核",
+        "手切当回合的实际触发顺序",
+        "寄生上限与结算细则"
+      ]
+    },
+    {
+      "key": "boss-abu",
+      "name": "圣龙阿布",
+      "baseName": "阿布",
+      "kind": "boss",
+      "traitSummary": "使用3能耗技能后提升2级（等级上限99级）；低于80级时受到伤害增加40%。",
+      "mechanicKey": "abu",
+      "evidence": {
+        "seconds": 23.8,
+        "frame": "visual_frames/t-000023.800.jpg",
+        "captionLines": [
+          16,
+          17
+        ]
+      },
+      "unknowns": [
+        "正式六维与学习面",
+        "初始等级",
+        "能耗判定取基础值还是实际消耗",
+        "后台触发条件",
+        "等级公式"
+      ]
+    },
+    {
+      "key": "super-abu",
+      "name": "超能阿布",
+      "types": [
+        "龙"
+      ],
+      "baseName": "阿布",
+      "kind": "family",
+      "traitSummary": "使用3能耗技能后提升2级（等级上限99级）；低于80级时受到伤害增加40%。",
+      "mechanicKey": "abu",
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.taptap.cn/moment/662643409994908648",
+        "frame": "abu-official-intro-3.jpg"
+      },
+      "unknowns": [
+        "正式六维",
+        "正式学习面",
+        "初始等级",
+        "能耗判定取基础值还是实际消耗",
+        "等级公式",
+        "正式图鉴身份与完整形态关系"
+      ]
+    },
+    {
+      "key": "shadow-papercut",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/shadow-paper-scissors.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-01.jpg"
+      },
+      "name": "影子剪纸",
+      "kind": "family",
+      "mechanicKey": "little-scissor",
+      "types": [
+        "幽"
+      ],
+      "stage": "二阶",
+      "traitName": "剪影",
+      "traitSummary": "敌方精灵离场时，自己获得技能威力+20。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-01.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-01.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_spirit-disturbance",
+          "iconUrl": "/assets/skills/skill_preview_s5_spirit-disturbance.png",
+          "name": "灵扰",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，3连击。偷取敌方能量至少1次后，本技能连击数永久+1。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_earthbound-spirit",
+          "iconUrl": "/assets/skills/skill_preview_s5_earthbound-spirit.png",
+          "name": "地缚灵",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "敌方获得双防-70%，若敌方本回合更换精灵，敌方额外获得速度-50。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_b688da558b9ff2e8",
+          "iconUrl": "/assets/skills/skill_b688da558b9ff2e8.png",
+          "name": "离魂术",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_4375736cdfafd6a1",
+          "iconUrl": "/assets/skills/skill_4375736cdfafd6a1.png",
+          "name": "力量增效",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "灵扰",
+          "description": "造成物伤，3连击。偷取敌方能量至少1次后，本技能连击数永久+1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        },
+        {
+          "name": "地缚灵",
+          "description": "敌方获得双防-70%，若敌方本回合更换精灵，敌方额外获得速度-50。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        },
+        {
+          "name": "离魂术",
+          "description": "偷取敌方2能量，脱离。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        },
+        {
+          "name": "力量增效",
+          "description": "自己获得物攻+100%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-01.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_spirit-disturbance",
+        "skill_preview_s5_earthbound-spirit",
+        "skill_b688da558b9ff2e8",
+        "skill_4375736cdfafd6a1"
+      ],
+      "evolutionChainKeys": [
+        "little-scissor",
+        "shadow-papercut"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-01.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+      },
+      "raceStats": {
+        "hp": 123,
+        "physicalAttack": 143,
+        "magicalAttack": 56,
+        "physicalDefense": 104,
+        "magicalDefense": 83,
+        "speed": 120
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-01.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+      },
+      "unknowns": [
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制",
+        "技能威力增益上限及离场保留规则"
+      ],
+      "description": "剪影似我又似错，\n踩它不避也不躲。\n一举一动都照做，\n每时每刻永伴我。"
+    },
+    {
+      "key": "diniantun",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/twenty-die-dolphin.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-02.jpg"
+      },
+      "name": "滴廿豚",
+      "kind": "family",
+      "mechanicKey": "diliutun",
+      "types": [
+        "毒",
+        "幻"
+      ],
+      "stage": "二阶",
+      "traitName": "游戏的本质",
+      "traitSummary": "入场时随机获得1~20点，在场时双方根据点数获得不同效果。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-02.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-02.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_poison-cast",
+          "iconUrl": "/assets/skills/skill_preview_s5_poison-cast.png",
+          "name": "投毒",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，使敌方获得至少2次中毒后，每次使用本技能攻击中毒目标时威力+25。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_mixed-state",
+          "iconUrl": "/assets/skills/skill_preview_s5_mixed-state.png",
+          "name": "混合态",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "敌方获得随机10层属性减益。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_6ae493344705eb76",
+          "iconUrl": "/assets/skills/skill_6ae493344705eb76.png",
+          "name": "溶解",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_38827e39dbdda074",
+          "iconUrl": "/assets/skills/skill_38827e39dbdda074.png",
+          "name": "仰望夜空",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "投毒",
+          "description": "造成物伤，使敌方获得至少2次中毒后，每次使用本技能攻击中毒目标时威力+25。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        },
+        {
+          "name": "混合态",
+          "description": "敌方获得随机10层属性减益。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        },
+        {
+          "name": "溶解",
+          "description": "减伤90%，应对攻击：驱散敌方1种增益。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        },
+        {
+          "name": "仰望夜空",
+          "description": "自己获得魔攻和魔防+70%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-02.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_poison-cast",
+        "skill_preview_s5_mixed-state",
+        "skill_6ae493344705eb76",
+        "skill_38827e39dbdda074"
+      ],
+      "evolutionChainKeys": [
+        "diliutun",
+        "diniantun"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-02.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+      },
+      "raceStats": {
+        "hp": 114,
+        "physicalAttack": 112,
+        "magicalAttack": 112,
+        "physicalDefense": 92,
+        "magicalDefense": 122,
+        "speed": 100
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-02.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+      },
+      "unknowns": [
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制",
+        "各随机点数对应的具体效果"
+      ],
+      "description": "有些洛克认为它们身上亮起的斑点是随机的，也有洛克认为它们可以自行控制斑点的数量。两派至今依旧没有得出定论，而滴廿豚只会呆傻地看着洛克们争论。"
+    },
+    {
+      "key": "winter-bug-summer-melon",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/winter-summer-melon.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-03.jpg"
+      },
+      "name": "冬虫夏瓜",
+      "kind": "family",
+      "mechanicKey": "watermelon-bug",
+      "types": [
+        "虫",
+        "草"
+      ],
+      "stage": "二阶",
+      "traitName": "虫草多糖",
+      "traitSummary": "草系技能获得1次随机奉献，虫系技能使敌方获得1层寄生。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-03.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-03.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_fruit-pulp",
+          "iconUrl": "/assets/skills/skill_preview_s5_fruit-pulp.png",
+          "name": "果粒",
+          "type": null,
+          "category": "magical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成魔伤，2连击。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_summer-pad",
+          "iconUrl": "/assets/skills/skill_preview_s5_summer-pad.png",
+          "name": "夏蛰",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "己方队伍获得2次随机奉献，应对防御：获得所有种类的奉献各1次。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_acc182b1e9836043",
+          "iconUrl": "/assets/skills/skill_acc182b1e9836043.png",
+          "name": "纤维化",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_c6c54cd54376332b",
+          "iconUrl": "/assets/skills/skill_c6c54cd54376332b.png",
+          "name": "食腐",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "果粒",
+          "description": "造成魔伤，2连击。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        },
+        {
+          "name": "夏蛰",
+          "description": "己方队伍获得2次随机奉献，应对防御：获得所有种类的奉献各1次。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        },
+        {
+          "name": "纤维化",
+          "description": "减伤80%，应对攻击：自己获得物防+70%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        },
+        {
+          "name": "食腐",
+          "description": "驱散敌方印记，每层印记回复自己10%生命。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-03.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_fruit-pulp",
+        "skill_preview_s5_summer-pad",
+        "skill_acc182b1e9836043",
+        "skill_c6c54cd54376332b"
+      ],
+      "evolutionChainKeys": [
+        "watermelon-bug",
+        "winter-bug-summer-melon"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-03.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+      },
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 62,
+        "magicalAttack": 125,
+        "physicalDefense": 77,
+        "magicalDefense": 129,
+        "speed": 80
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-03.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+      },
+      "unknowns": [
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ],
+      "description": "利用背上甜甜的果肉，在夏天存储糖分，在冬天消耗营养，于是被洛克研究学者们称作冬虫夏瓜。感到危险时会翘起尾巴围成一个圈，利用腹部的甲壳保护背上重要的果肉。"
+    },
+    {
+      "key": "snow-shoveling-goose",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/snow-digging-goose.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-04.jpg"
+      },
+      "name": "刨雪鹅",
+      "kind": "family",
+      "mechanicKey": "doulie",
+      "types": [
+        "冰"
+      ],
+      "stage": "二阶",
+      "traitName": "高吹雪",
+      "traitSummary": "使敌方获得10层冻结后，天气变为暴风雪，持续5回合。（最多触发1次）",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-04.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-04.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_thermal-bridge",
+          "iconUrl": "/assets/skills/skill_preview_s5_thermal-bridge.png",
+          "name": "热桥",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "减伤80%，应对攻击：敌方获得魔防-60%。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_freeze",
+          "iconUrl": "/assets/skills/skill_preview_s5_freeze.png",
+          "name": "冷冻",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，使敌方获得至少2次冻结后，每次使用本技能可使敌方能耗+1。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_d1d973cc929fbdf0",
+          "iconUrl": "/assets/skills/skill_d1d973cc929fbdf0.png",
+          "name": "暴风雪",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_8e8ae207e4488c78",
+          "iconUrl": "/assets/skills/skill_8e8ae207e4488c78.png",
+          "name": "打喷嚏",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "热桥",
+          "description": "减伤80%，应对攻击：敌方获得魔防-60%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        },
+        {
+          "name": "冷冻",
+          "description": "造成物伤，使敌方获得至少2次冻结后，每次使用本技能可使敌方能耗+1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        },
+        {
+          "name": "暴风雪",
+          "description": "造成物伤，敌方获得1层冻结。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        },
+        {
+          "name": "打喷嚏",
+          "description": "3连击，每次连击敌方获得1层冻结。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-04.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_thermal-bridge",
+        "skill_preview_s5_freeze",
+        "skill_d1d973cc929fbdf0",
+        "skill_8e8ae207e4488c78"
+      ],
+      "evolutionChainKeys": [
+        "doulie",
+        "snow-shoveling-goose"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-04.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+      },
+      "raceStats": {
+        "hp": 127,
+        "physicalAttack": 96,
+        "magicalAttack": 87,
+        "physicalDefense": 134,
+        "magicalDefense": 90,
+        "speed": 95
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-04.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+      },
+      "unknowns": [
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ],
+      "description": "为了保护调皮吵闹的豆粒鹅们，仔细挑选了松软的白雪堆在身上，搭起清凉又蓬松的雪巢穴。有些洛克因此受到启发，创造出口感松软绵密的特色冰雪甜品，在炎热的季节广受好评。"
+    },
+    {
+      "key": "halo-jingyu",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/ringed-whale-feather.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-05.jpg"
+      },
+      "name": "圆环鲸羽",
+      "kind": "family",
+      "mechanicKey": "jingyu",
+      "types": [
+        "幻",
+        "冰"
+      ],
+      "stage": "二阶",
+      "traitName": "环天顶弧",
+      "traitSummary": "在场时，若天气为暴风雪，回合结束敌方不会获得冻结，而是获得3层星陨印记。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-05.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-05.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_severe-frost",
+          "iconUrl": "/assets/skills/skill_preview_s5_severe-frost.png",
+          "name": "严霜",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "敌方获得8层冻结。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_blue-shift",
+          "iconUrl": "/assets/skills/skill_preview_s5_blue-shift.png",
+          "name": "蓝移",
+          "type": null,
+          "category": "magical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成魔伤，使敌方获得至少4层星陨后，每次使用本技能可使敌方获得1层星陨。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_38827e39dbdda074",
+          "iconUrl": "/assets/skills/skill_38827e39dbdda074.png",
+          "name": "仰望夜空",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_05ee9bba2ec41b89",
+          "iconUrl": "/assets/skills/skill_05ee9bba2ec41b89.png",
+          "name": "寒风吹",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "严霜",
+          "description": "敌方获得8层冻结。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        },
+        {
+          "name": "蓝移",
+          "description": "造成魔伤，使敌方获得至少4层星陨后，每次使用本技能可使敌方获得1层星陨。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        },
+        {
+          "name": "仰望夜空",
+          "description": "自己获得魔攻和魔防+70%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        },
+        {
+          "name": "寒风吹",
+          "description": "造成魔伤。敌方获得魔防-50%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-05.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_severe-frost",
+        "skill_preview_s5_blue-shift",
+        "skill_38827e39dbdda074",
+        "skill_05ee9bba2ec41b89"
+      ],
+      "evolutionChainKeys": [
+        "jingyu",
+        "halo-jingyu"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-05.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+      },
+      "raceStats": {
+        "hp": 135,
+        "physicalAttack": 38,
+        "magicalAttack": 123,
+        "physicalDefense": 73,
+        "magicalDefense": 102,
+        "speed": 100
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-05.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+      },
+      "unknowns": [
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制",
+        "暴风雪回合结束的星陨替换结算待适配"
+      ],
+      "description": "十分聪明且友善，是相当亲近洛克的精灵。喜欢偶尔突然装作很凶的样子，变换气泡故意惊吓年幼的小洛克，完成小小的恶作剧。似乎对创造生活中的小乐趣，有很强的责任感。"
+    },
+    {
+      "key": "sand-crab",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/sand-clack-crab.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-06.jpg"
+      },
+      "name": "沙咔蟹",
+      "kind": "family",
+      "mechanicKey": "crab-coconut",
+      "types": [
+        "水",
+        "草"
+      ],
+      "stage": "二阶",
+      "traitName": "沙滩节拍",
+      "traitSummary": "使用水系技能后，下次行动草系技能能耗-3。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-06.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-06.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_external-spread",
+          "iconUrl": "/assets/skills/skill_preview_s5_external-spread.png",
+          "name": "外附传播",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "减伤80%，应对攻击：敌方获得2层寄生。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_geyser",
+          "iconUrl": "/assets/skills/skill_preview_s5_geyser.png",
+          "name": "间歇泉",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，自己每有1层减益，本技能能耗-1。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_5deed5f114025caa",
+          "iconUrl": "/assets/skills/skill_5deed5f114025caa.png",
+          "name": "仙人掌刺击",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_d0d442331827d39c",
+          "iconUrl": "/assets/skills/skill_d0d442331827d39c.png",
+          "name": "水刃",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "外附传播",
+          "description": "减伤80%，应对攻击：敌方获得2层寄生。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        },
+        {
+          "name": "间歇泉",
+          "description": "造成物伤，自己每有1层减益，本技能能耗-1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        },
+        {
+          "name": "仙人掌刺击",
+          "description": "对敌方精灵造成物理伤害。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        },
+        {
+          "name": "水刃",
+          "description": "造成物伤，应对状态：本技能能耗永久-3。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-06.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_external-spread",
+        "skill_preview_s5_geyser",
+        "skill_5deed5f114025caa",
+        "skill_d0d442331827d39c"
+      ],
+      "evolutionChainKeys": [
+        "crab-coconut",
+        "sand-crab"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-06.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+      },
+      "raceStats": {
+        "hp": 135,
+        "physicalAttack": 128,
+        "magicalAttack": 54,
+        "physicalDefense": 137,
+        "magicalDefense": 101,
+        "speed": 85
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-06.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+      },
+      "unknowns": [
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ],
+      "description": "喜欢在钳子中装满沙石，随着音乐的节奏不断摇晃，发出“沙咔沙咔”的声音。在许多洛克心中，这种声响便是海滩与假日的旋律。"
+    },
+    {
+      "key": "chicken-mama",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/chicken-mama.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-07.jpg"
+      },
+      "name": "鸡麻麻",
+      "kind": "family",
+      "mechanicKey": "egg-wrap",
+      "types": [
+        "普通",
+        "萌"
+      ],
+      "stage": "二阶",
+      "traitName": "护犊",
+      "traitSummary": "队伍中存在被萌化的精灵时，自己获得双防+50%。",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-07.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-07.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_dream-building",
+          "iconUrl": "/assets/skills/skill_preview_s5_dream-building.png",
+          "name": "筑梦",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "将天气改为霞光梦境，持续8回合。（天气为霞光梦境时，速度慢的精灵会先行动）",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_eggshell",
+          "iconUrl": "/assets/skills/skill_preview_s5_eggshell.png",
+          "name": "蛋壳",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "减伤60%，应对攻击：驱散敌方所有增益。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_f5d921b97fb279d7",
+          "iconUrl": "/assets/skills/skill_f5d921b97fb279d7.png",
+          "name": "超级糖果",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_004571bc89bd5faf",
+          "iconUrl": "/assets/skills/skill_004571bc89bd5faf.png",
+          "name": "追打",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "筑梦",
+          "description": "将天气改为霞光梦境，持续8回合。（天气为霞光梦境时，速度慢的精灵会先行动）",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        },
+        {
+          "name": "蛋壳",
+          "description": "减伤60%，应对攻击：驱散敌方所有增益。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        },
+        {
+          "name": "超级糖果",
+          "description": "造成物伤，自己获得萌化：本次技能威力+60。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        },
+        {
+          "name": "追打",
+          "description": "造成魔伤，1连击，应对状态：本技能变为3连击。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-07.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_dream-building",
+        "skill_preview_s5_eggshell",
+        "skill_f5d921b97fb279d7",
+        "skill_004571bc89bd5faf"
+      ],
+      "evolutionChainKeys": [
+        "egg-wrap",
+        "chicken-mama"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-07.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+      },
+      "description": "为什么鸡麻麻不再向往天空呢？因为啊，鸡麻麻曾经飞得很高，发现地面就像一颗巨大的精灵蛋。如果我飞走了，谁来照料这颗精灵蛋呢？所以呢，鸡麻麻就落回到地面啦。",
+      "raceStats": {
+        "hp": 120,
+        "physicalAttack": 96,
+        "magicalAttack": 95,
+        "physicalDefense": 113,
+        "magicalDefense": 86,
+        "speed": 65
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-07.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+      },
+      "unknowns": [
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ]
+    },
+    {
+      "key": "awa-shark-lemon",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/awasha-lemon-shark.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-08.jpg"
+      },
+      "name": "阿瓦鲨（柠檬鲨的样子）",
+      "kind": "family",
+      "mechanicKey": "lele-shark",
+      "types": [
+        "水"
+      ],
+      "stage": "二阶",
+      "traitName": "换牙",
+      "traitSummary": "驱散1次自己的减益后，获得物攻永久+50%。（最多触发1次）",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-08.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-08.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_refill",
+          "iconUrl": "/assets/skills/skill_preview_s5_refill.png",
+          "name": "续杯",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_rip-current",
+          "iconUrl": "/assets/skills/skill_preview_s5_rip-current.png",
+          "name": "离岸流",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_d457bb1dce36b046",
+          "iconUrl": "/assets/skills/skill_d457bb1dce36b046.png",
+          "name": "洗礼",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_e374eb2120614c3e",
+          "iconUrl": "/assets/skills/skill_e374eb2120614c3e.png",
+          "name": "叠浪",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "续杯",
+          "description": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        },
+        {
+          "name": "离岸流",
+          "description": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        },
+        {
+          "name": "洗礼",
+          "description": "驱散自己的减益，并获得全技能能耗-1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        },
+        {
+          "name": "叠浪",
+          "description": "造成物伤，3连击，本技能能耗每-1，威力+10。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-08.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_refill",
+        "skill_preview_s5_rip-current",
+        "skill_d457bb1dce36b046",
+        "skill_e374eb2120614c3e"
+      ],
+      "evolutionChainKeys": [
+        "lele-shark",
+        "awa-shark-lemon"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-08.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+      },
+      "description": "会把还没长出保护层的乐乐鲨带在身边，遇到危险时将它们含进嘴巴里，等待状况安全后再吐出来。如果判断对方不是特别危险，也会让强壮的乐乐鲨一同战斗，以此锻炼它们的能力。",
+      "baseName": "阿瓦鲨",
+      "variantName": "柠檬鲨的样子",
+      "raceStats": {
+        "hp": 123,
+        "physicalAttack": 117,
+        "magicalAttack": 46,
+        "physicalDefense": 120,
+        "magicalDefense": 88,
+        "speed": 95
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-08.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+      },
+      "unknowns": [
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ]
+    },
+    {
+      "key": "awa-shark-tiger",
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/awasha-tiger-shark.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/opus/1263800141975912449",
+        "sourceFrame": "artifacts/s5-official-atlas-20261027/opus-1263800141975912449/source-09.jpg"
+      },
+      "name": "阿瓦鲨（虎纹鲨的样子）",
+      "kind": "family",
+      "mechanicKey": "lele-shark",
+      "types": [
+        "水"
+      ],
+      "stage": "二阶",
+      "traitName": "换牙",
+      "traitSummary": "驱散1次自己的减益后，获得物攻永久+50%。（最多触发1次）",
+      "traitEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-09.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+      },
+      "evidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-09.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+      },
+      "typesProvenance": {
+        "authority": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "reviewedAt": "2026-10-27",
+        "reviewStatus": "verified"
+      },
+      "skills": [
+        {
+          "id": "skill_preview_s5_refill",
+          "iconUrl": "/assets/skills/skill_preview_s5_refill.png",
+          "name": "续杯",
+          "type": null,
+          "category": null,
+          "cost": null,
+          "basePower": null,
+          "description": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-09.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_preview_s5_rip-current",
+          "iconUrl": "/assets/skills/skill_preview_s5_rip-current.png",
+          "name": "离岸流",
+          "type": null,
+          "category": "physical",
+          "cost": null,
+          "basePower": null,
+          "description": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
+          "acquisition": "官方家族展示",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-09.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+          }
+        }
+      ],
+      "officialSkillRefs": [
+        {
+          "id": "skill_d457bb1dce36b046",
+          "iconUrl": "/assets/skills/skill_d457bb1dce36b046.png",
+          "name": "洗礼",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-09.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+          }
+        },
+        {
+          "id": "skill_e374eb2120614c3e",
+          "iconUrl": "/assets/skills/skill_e374eb2120614c3e.png",
+          "name": "叠浪",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-09.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+          }
+        }
+      ],
+      "announcedSkills": [
+        {
+          "name": "续杯",
+          "description": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-09.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+          }
+        },
+        {
+          "name": "离岸流",
+          "description": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-09.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+          }
+        },
+        {
+          "name": "洗礼",
+          "description": "驱散自己的减益，并获得全技能能耗-1。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-09.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+          }
+        },
+        {
+          "name": "叠浪",
+          "description": "造成物伤，3连击，本技能能耗每-1，威力+10。",
+          "evidence": {
+            "kind": "official-image",
+            "url": "https://www.bilibili.com/opus/1263800141975912449",
+            "frame": "official-09.jpg",
+            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_preview_s5_refill",
+        "skill_preview_s5_rip-current",
+        "skill_d457bb1dce36b046",
+        "skill_e374eb2120614c3e"
+      ],
+      "evolutionChainKeys": [
+        "lele-shark",
+        "awa-shark-tiger"
+      ],
+      "evolutionEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-09.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+      },
+      "description": "有东西在动？咬一口。有洛克经过？咬一口。有颗可可果？咬一口。牙被崩掉了？咬一口。牙被崩掉了？咬一口。无所谓，总之先咬一口。",
+      "baseName": "阿瓦鲨",
+      "variantName": "虎纹鲨的样子",
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 146,
+        "magicalAttack": 57,
+        "physicalDefense": 120,
+        "magicalDefense": 88,
+        "speed": 95
+      },
+      "raceStatsEvidence": {
+        "kind": "official-image",
+        "url": "https://www.bilibili.com/opus/1263800141975912449",
+        "frame": "official-09.jpg",
+        "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+      },
+      "unknowns": [
+        "新技能基础威力、能耗及未标明的属性和类别",
+        "完整学习面及进化阶段限制"
+      ]
+    }
+  ]
+}

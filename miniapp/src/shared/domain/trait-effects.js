@@ -1,3 +1,5 @@
+import { getS5PreviewTraitInputs, resolveS5PreviewTraitEffect } from "./s5-preview-traits.js";
+
 const ATTACK_EFFECT_KEY = "attackerTraitEffect";
 const ATTACK_STACK_KEY = "attackerTraitStacks";
 const DEFENSE_EFFECT_KEY = "defenderTraitEffect";
@@ -892,6 +894,7 @@ function inferredRule(trait, role) {
 }
 
 export function getTraitEffectRule(trait, role = "attacker") {
+  if (getS5PreviewTraitInputs(trait, role) !== null) return null;
   const named = RULES[trait?.name] ?? LEGACY_EDITABLE_RULES[trait?.name];
   if (
     named &&
@@ -955,6 +958,8 @@ function speedEffectKey(role) {
 }
 
 export function getTraitEffectInputs(trait, role = "attacker") {
+  const previewInputs = getS5PreviewTraitInputs(trait, role);
+  if (previewInputs !== null) return previewInputs;
   const hitCountInputs = getTraitHitCountInputs(trait, role);
   if (hitCountInputs.length > 0) return hitCountInputs;
   if (trait?.name === "戏耍") {
@@ -1200,6 +1205,8 @@ function typeMatches(rule, skill) {
 }
 
 export function resolveTraitEffectRule(trait, role, input) {
+  const previewEffect = resolveS5PreviewTraitEffect(trait, role, input);
+  if (previewEffect !== null) return previewEffect;
   if (
     trait?.name === BEAST_FLOWER_TRAIT_NAME ||
     trait?.name === CONTRACT_SHAPE_TRAIT_NAME

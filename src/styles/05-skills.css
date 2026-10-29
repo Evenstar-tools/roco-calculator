@@ -784,6 +784,14 @@
   border-top-right-radius: inherit;
 }
 
+.skill-default-restore {
+  margin-left: auto;
+  padding: 2px 6px;
+  min-height: 24px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
 .four-skill-side__conditions { display: contents; }
 
 @media (min-width: 1081px) {

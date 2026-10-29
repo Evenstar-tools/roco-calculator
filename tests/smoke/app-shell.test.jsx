@@ -141,7 +141,12 @@ test("uses avatar data embedded in the runtime snapshot without a second request
     "src",
     "/assets/spirits/sonic-dog.png",
   );
-  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(fetchMock.mock.calls.filter(([url]) => url === "/data/runtime.json")).toHaveLength(1);
+  expect(fetchMock.mock.calls.map(([url]) => url)).not.toContain("/assets/spirits/manifest.json");
+  expect(fetchMock).toHaveBeenCalledWith(
+    "/data/presets/pvp-popular-configs.json",
+    expect.objectContaining({ signal: expect.any(AbortSignal) }),
+  );
   vi.unstubAllGlobals();
 });
 

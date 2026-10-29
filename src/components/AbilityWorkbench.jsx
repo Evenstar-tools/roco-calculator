@@ -703,8 +703,8 @@ export function SpeedOverview({
   const reference = speedReference(targetGroups, standalone ? location?.speed ?? (search.kind === "actual" ? search.value : null) : null);
   const referenceValue = reference?.value;
   const matchSummary = standalone && query && reference ? speedMatchSummary(targets, reference.value) : "";
-  const namedTargets = standalone && query ? [...new Map(targets.filter(target => search.kind === "text" || target.matchReasons?.some(reason => reason === "图鉴号" || reason === "名称 / 别名")).map(target => [target.spiritId, target])).values()] : [];
-  const namedLocations = namedTargets.map(target => <button type="button" key={target.spiritId} onClick={() => onLocateResult?.(target.speed, target.id)}>定位 {target.name}</button>);
+  const namedTargets = standalone && query ? [...new Map(targets.filter(target => search.kind === "text" || target.matchReasons?.some(reason => reason === "图鉴号" || reason === "名称 / 别名")).map(target => [`${target.spiritId}:${target.level ?? 60}`, target])).values()] : [];
+  const namedLocations = namedTargets.map(target => <button type="button" key={target.id} onClick={() => onLocateResult?.(target.speed, target.id)}>定位 {target.name}</button>);
   const hasBaseMatch = standalone && query && targets.some(target => target.matchReasons?.includes("种族速度"));
   const hasActualMatch = targets.some(target => target.matchReasons?.includes("实际速度"));
   const baseOnlyMatch = hasBaseMatch && !hasActualMatch;
@@ -918,6 +918,7 @@ function nearbyRankingRows(rows, currentSpiritId, limit = 4) {
 
 function RankingPodium({ active, currentSpiritId, metric, rows }) {
   const visibleRows = nearbyRankingRows(rows, currentSpiritId);
+  const currentEntryId = rows.find(entry => entry.spiritId === currentSpiritId)?.id;
   return (
     <section
       aria-label={`${METRIC_LABELS[metric]}当前附近排名`}
@@ -927,13 +928,13 @@ function RankingPodium({ active, currentSpiritId, metric, rows }) {
       <ol>
         {visibleRows.map((entry) => (
           <li
-            aria-current={entry.spiritId === currentSpiritId ? "true" : undefined}
-            className={entry.spiritId === currentSpiritId ? "is-current" : ""}
-            key={entry.spiritId}
+            aria-current={entry.id === currentEntryId ? "true" : undefined}
+            className={entry.id === currentEntryId ? "is-current" : ""}
+            key={entry.id}
           >
             <span>{entry.globalRank[metric]}</span>
             {assetUrl(entry.spirit) ? <img alt="" src={assetUrl(entry.spirit)} /> : null}
-            <strong>{entry.spirit.fullName}</strong>
+            <strong>{entry.name}</strong>
             <b>{formatNumber(entry.durability.display[metric])}</b>
           </li>
         ))}
@@ -1542,7 +1543,7 @@ export function AbilityWorkbench({
             {currentRankingEntry ? (
               <div className="ability-ranking-current">
                 <span aria-hidden="true">✓</span>
-                {spirit.fullName}：物理第 {currentRankingEntry.globalRank.physical}、魔法第 {currentRankingEntry.globalRank.magical}、综合第 {currentRankingEntry.globalRank.combined}
+                {currentRankingEntry.name}：物理第 {currentRankingEntry.globalRank.physical}、魔法第 {currentRankingEntry.globalRank.magical}、综合第 {currentRankingEntry.globalRank.combined}
               </div>
             ) : (
               <div className="ability-ranking-current is-excluded">

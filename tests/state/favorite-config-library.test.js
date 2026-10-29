@@ -13,7 +13,7 @@ import {
   formatConfigLibraryImportResult,
 } from "../../src/state/favorite-config-library.js";
 import { canonicalTraitControlKey } from "../../src/state/trait-values.js";
-import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
+import { BASE_POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 
 const IVS = {
   hp: 0,
@@ -377,9 +377,9 @@ describe("bundled popular config library", () => {
     });
 
     expect(library.format).toBe(FAVORITE_CONFIG_LIBRARY_FORMAT);
-    expect(library.entryCount).toBe(POPULAR_CONFIG_COUNT);
-    expect(library.entries).toHaveLength(POPULAR_CONFIG_COUNT);
-    expect(parsed.entries).toHaveLength(POPULAR_CONFIG_COUNT);
+    expect(library.entryCount).toBe(BASE_POPULAR_CONFIG_COUNT);
+    expect(library.entries).toHaveLength(BASE_POPULAR_CONFIG_COUNT);
+    expect(parsed.entries).toHaveLength(BASE_POPULAR_CONFIG_COUNT);
     expect(parsed.preview.missingSpirits).toBe(0);
     expect(parsed.preview.unknownTraitFields).toBe(0);
     expect(parsed.preview.invalidEntries).toBe(0);

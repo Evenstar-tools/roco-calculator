@@ -36,21 +36,28 @@ export function calculatePanelStat({
   race,
   displayIv = DEFAULT_DISPLAY_IV,
   natureMultiplier = 1,
+  level = 60,
 }) {
+  const numericLevel = Number(level);
+  if (!Number.isSafeInteger(numericLevel) || numericLevel < 1) {
+    throw new RangeError("level must be a positive integer");
+  }
   const normalizedIv = normalizeDisplayIv(displayIv);
   const isHp = kind === "hp";
   if (isHp || kind === "speed") {
     const scaled = roundLegacyScaledStat(
-      (isHp ? 1.7 : 1.1) * (Number(race) + 3 * normalizedIv),
+      ((isHp ? 2 * numericLevel + 50 : numericLevel + 50) / 100) *
+        (Number(race) + 3 * normalizedIv),
       normalizedIv,
     );
-    return statRound((scaled + (isHp ? 70 : 10)) * Number(natureMultiplier)) +
+    return statRound((scaled + (isHp ? numericLevel + 10 : 10)) * Number(natureMultiplier)) +
       (isHp ? 100 : 50);
   }
-  // 双攻双防的单精度百分比缩放不能折叠成双精度 ×1.1：半点边界会改变。
+  // 显式非60级使用S5试算候选，60级保留既有单精度与逐步取整。
+  // 双攻双防的单精度百分比缩放不能折叠成双精度乘法：半点边界会改变。
   const qualifiedRace = Math.fround(Number(race) + 3 * normalizedIv);
   const racePercent = Math.fround(qualifiedRace / 100);
-  const scaled = Math.fround(racePercent * 110);
+  const scaled = Math.fround(racePercent * (numericLevel + 50));
   const base = statRound(scaled) + 10;
   const natureAdjusted = Math.fround(base * Math.fround(Number(natureMultiplier)));
   return statRound(natureAdjusted) + 50;
@@ -60,6 +67,7 @@ export function calculateAllPanelStats({
   raceStats,
   displayIvs = {},
   natureMultipliers = {},
+  level = 60,
 }) {
   if (!hasCompleteRaceStats(raceStats)) {
     throw new TypeError("种族值待确认");
@@ -72,6 +80,7 @@ export function calculateAllPanelStats({
         race: raceStats[kind],
         displayIv: displayIvs[kind] ?? DEFAULT_DISPLAY_IV,
         natureMultiplier: natureMultipliers[kind] ?? 1,
+        level,
       }),
     ]),
   );

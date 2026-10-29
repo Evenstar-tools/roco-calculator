@@ -11,6 +11,8 @@ import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { routeFor } from "../runtime/routes.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { formatShareError } from "../runtime/share-feedback.js";
+import { IS_PREVIEW_BUILD } from "../runtime/preview-channel.js";
+import { correctS5PreviewReferences } from "../features/s5-preview/reference-corrections.js";
 
 export function useShareFlow({
   active = true,
@@ -106,7 +108,7 @@ export function useShareFlow({
       error.code = "SHARE_VERSION_MISMATCH";
       throw error;
     }
-    const decodedState = envelope.payload;
+    const decodedState = IS_PREVIEW_BUILD ? correctS5PreviewReferences(envelope.payload) : envelope.payload;
     const sharedState = migrateSharedConfiguration(
       decodedState,
       decodedState.versions,

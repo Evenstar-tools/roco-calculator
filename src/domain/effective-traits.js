@@ -1,11 +1,12 @@
 import { getInheritedDamageTraits } from "./trait-effects.js";
+import { s5FamilyTraitIdentity } from "../features/s5-preview/family-trait-identity.js";
 import {
   hasMoonMemoryTrait,
   MOON_MEMORY_TRAIT_LIMIT,
 } from "./moon-memory.js";
 
 function traitKey(trait) {
-  return String(trait?.id ?? trait?.name ?? "").trim();
+  return s5FamilyTraitIdentity(trait) ?? String(trait?.id ?? trait?.name ?? "").trim();
 }
 
 function appendUnique(target, seen, trait) {

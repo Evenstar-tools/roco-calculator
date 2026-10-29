@@ -144,7 +144,7 @@ export function withCalculatorExtras(snapshot) {
   let learnsetsChanged = false;
   const learnsets = (snapshot?.learnsets ?? []).map((learnset) => {
     const spirit = spiritsById.get(learnset.spiritId);
-    if (!spirit || spirit.calculationStatus === "pending-race-stats") {
+    if (!spirit || spirit.calculationStatus === "pending-race-stats" || spirit.previewIdentity?.formalIdPending) {
       return learnset;
     }
 

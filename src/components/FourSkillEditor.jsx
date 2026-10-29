@@ -22,7 +22,10 @@ import {
   TraitSkillPowerBonuses,
 } from "./TraitHint.jsx";
 import { buildRefractionHint } from "../domain/refraction.js";
+import { getDefaultHitCount } from "../domain/skill-effects.js";
 import { resolveLifestealCapability } from "../domain/baron-greed.js";
+import { S5PreviewTraitSummary } from "./S5PreviewTraitSummary.jsx";
+import { getS5PreviewTraitPresentation } from "../features/s5-preview/trait-presentation.js";
 
 const CATEGORY_LABELS = {
   defense: "防御",
@@ -96,6 +99,7 @@ function SkillDamagePreview({
 }
 
 function SkillSide({
+  headerAction,
   active,
   activeDamageSource,
   activeSkillIndex,
@@ -121,6 +125,7 @@ function SkillSide({
   onSkillSelect,
   onHealthChange,
   onHealthPercentChange,
+  onHealthInputModeChange,
   onTraitContextChange,
   onTraitDamageFocus,
   onTraitDamageHitCountChange,
@@ -156,14 +161,17 @@ function SkillSide({
       (input) => (input.contextKey ?? input.key) === "defenderHpPercent",
     ),
   );
+  const offensePresentation = getS5PreviewTraitPresentation(trait, "attacker");
+  const defensePresentation = getS5PreviewTraitPresentation(defenseTrait, "defender");
   const offensiveTraitInputs =
-    trait?.inputs?.filter(
+    (offensePresentation?.inputs ?? trait?.inputs)?.filter(
       (input) =>
         input.scope !== "slot" &&
         ((input.contextKey ?? input.key) !== "attackerHpPercent" || !health),
     ) ?? [];
   const defensiveTraitInputs =
-    defenseTrait?.inputs?.filter((input) => input.scope !== "slot") ?? [];
+    (defensePresentation?.inputs ?? defenseTrait?.inputs)?.filter((input) => input.scope !== "slot" &&
+      input.contextKey !== "defenderTraitS5BattleLevel") ?? [];
   const effectiveTraits = traits.length > 0
     ? traits
     : trait
@@ -184,14 +192,17 @@ function SkillSide({
       <header>
         <span>{label}</span>
         <strong>{name}</strong>
+        {headerAction}
       </header>
       <div className="four-skill-side__conditions">
         {traitEditor}
         {offensiveTraitInputs.length > 0 ||
+        offensePresentation?.visible ||
         trait?.skillPowerBonuses?.length > 0 ||
         showsLifestealCapability ? (
           <div className="four-skill-trait-controls">
             <TraitHint description={trait.description} name={trait.name} />
+            <S5PreviewTraitSummary trait={trait} role="attacker" context={traitContext} />
             <TraitSkillPowerBonuses
               ariaLabel={`${trait.name}技能加成`}
               bonuses={trait.skillPowerBonuses}
@@ -214,12 +225,13 @@ function SkillSide({
             />
           </div>
         ) : null}
-        {defensiveTraitInputs.length > 0 ? (
+        {defensiveTraitInputs.length > 0 || defensePresentation?.visible ? (
           <div className="four-skill-trait-controls four-skill-trait-controls--defense">
             <TraitHint
               description={defenseTrait.description}
               name={`${opponentName} · ${defenseTrait.name}`}
             />
+            <S5PreviewTraitSummary trait={defenseTrait} role="defender" context={traitContext} />
             <TraitInputs
               context={traitContext}
               inputs={defensiveTraitInputs}
@@ -238,6 +250,7 @@ function SkillSide({
               label={label}
               maxHp={health.maxHp}
               onCurrentHpChange={(value) => onHealthChange?.(side, value)}
+              onInputModeChange={(mode) => onHealthInputModeChange?.(side, mode)}
               onPercentChange={(value) =>
                 onHealthPercentChange?.(side, value)
               }
@@ -250,6 +263,7 @@ function SkillSide({
             <span>对方生命</span>
             <HealthInput
               currentHp={opponentHealth.currentHp}
+              onInputModeChange={(mode) => onHealthInputModeChange?.(opponentSide, mode)}
               defaultMode="percent"
               label={opponentLabel}
               maxHp={opponentHealth.maxHp}
@@ -391,7 +405,7 @@ function SkillSide({
                 />
                 <span className="skill-slot__kind">
                   {selected
-                    ? `${result?.typeLabel ?? selected.type}·${CATEGORY_LABELS[selected.category]?.slice(0, 1) ?? "—"}`
+                    ? `${result?.typeLabel ?? selected.type ?? "—"}·${CATEGORY_LABELS[selected.category]?.slice(0, 1) ?? "—"}`
                     : "—"}
                 </span>
                 <span className="skill-slot__cost">
@@ -443,7 +457,8 @@ function SkillSide({
                     onFocus={() => onSkillFocus?.(side, index)}
                     type="number"
                     value={
-                      result?.hitCount ?? selected?.slotHitCount ?? hitCount
+                      result?.hitCount ?? selected?.slotHitCount ??
+                      (selected?.calculationStatus === "pending-skill-data" ? getDefaultHitCount(selected) : hitCount)
                     }
                   />
                 </label>
@@ -635,6 +650,7 @@ function SkillSide({
 }
 
 export function FourSkillEditor({
+  headerActions = {},
   canSkillActivate,
   skillActivationLabel,
   traitEditors = {},
@@ -669,6 +685,7 @@ export function FourSkillEditor({
   defenderLifestealPercent = 0,
   onHealthChange,
   onHealthPercentChange,
+  onHealthInputModeChange,
   onSkillActivate,
   onSkillContextChange,
   onSkillFocus,
@@ -734,6 +751,7 @@ export function FourSkillEditor({
     return (
       <SkillSide
         {...sideProps[side]}
+        headerAction={headerActions[side]}
         traitEditor={traitEditors[side]}
         active={activeSide === side}
         activeDamageSource={activeDamageSource}
@@ -745,6 +763,7 @@ export function FourSkillEditor({
         onSkillContextChange={onSkillContextChange}
         onHealthChange={onHealthChange}
         onHealthPercentChange={onHealthPercentChange}
+        onHealthInputModeChange={onHealthInputModeChange}
         onSkillFocus={onSkillFocus}
         onSkillHitCountChange={onSkillHitCountChange}
         onSkillPowerClear={onSkillPowerClear}

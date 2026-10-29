@@ -59,6 +59,7 @@ function CompactDamage({
 }
 
 function CompactSkillSide({
+  headerAction,
   active,
   activeDamageSource,
   activeSkillIndex,
@@ -88,6 +89,7 @@ function CompactSkillSide({
       <header>
         <SideIcon aria-hidden="true" size={18} weight="fill" />
         <strong>{name}</strong>
+        {headerAction}
       </header>
       {!placeholder && traitEditor}
       <div className="compact-skill__list">
@@ -214,6 +216,7 @@ function CompactSkillSide({
 }
 
 export function CompactFourSkillEditor({
+  headerActions = {},
   placeholder = false,
   traitEditors = {},
   conditionModels = {},
@@ -241,6 +244,7 @@ export function CompactFourSkillEditor({
   return (
     <div className="compact-four-skill">
       <CompactSkillSide
+        headerAction={headerActions.attacker}
         active={activeSide === "attacker"}
         activeDamageSource={activeDamageSource}
         activeSkillIndex={activeSkillIndex}
@@ -263,6 +267,7 @@ export function CompactFourSkillEditor({
         traitEditor={traitEditors.attacker}
       />
       <CompactSkillSide
+        headerAction={headerActions.defender}
         active={activeSide === "defender"}
         activeDamageSource={activeDamageSource}
         activeSkillIndex={activeSkillIndex}
@@ -318,7 +323,7 @@ export function CompactSingleSkillEditor({
           <ElementIcon size={20} type={effectiveType} />
         </span>
         <span title={selectedSkill?.category ?? "技能类型"}>
-          {selectedSkill?.category === "magical" ? (
+          {selectedSkill?.category == null ? "—" : selectedSkill.category === "magical" ? (
             <MagicWand aria-hidden="true" size={18} weight="fill" />
           ) : (
             <Sword aria-hidden="true" size={18} weight="fill" />

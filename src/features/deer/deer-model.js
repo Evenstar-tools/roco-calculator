@@ -10,6 +10,7 @@ import { createInitialState } from "../../state/defaults.js";
 import { canonicalTraitControlKey, materializeTraitContext } from "../../state/trait-values.js";
 import { applyBattleActivation } from "../../state/battle-activation.js";
 import { updateGlobalWeather } from "../../state/calculator-session.js";
+import { currentWeather } from "../../state/weather.js";
 
 const zeroIvs = { hp: 0, physicalAttack: 0, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0, speed: 0 };
 export const DEER_NAMES = ["波普鹿", "爵士鹿"];
@@ -53,7 +54,7 @@ export function panelFor(snapshot, side) {
   return calculateAllPanelStats({ raceStats: spirit.raceStats, displayIvs: side.displayIvs, natureMultipliers: getNatureMultipliers(side.nature) });
 }
 
-export function getDeerSpeedComparison(calculation) {
+export function getDeerSpeedComparison(calculation, weather = "none") {
   const forward = calculation.forward?.results?.[0]?.combatPanel;
   const reverse = calculation.reverse?.results?.[0]?.combatPanel;
   const attacker = forward?.attacker?.speed ?? reverse?.defender?.speed;
@@ -61,7 +62,8 @@ export function getDeerSpeedComparison(calculation) {
   if (!Number.isFinite(attacker) || !Number.isFinite(defender)) {
     return { state: "unknown", label: "速度待确认", attacker: null, defender: null };
   }
-  const state = attacker > defender ? "faster" : attacker === defender ? "tie" : "slower";
+  const first = weather === "dream" ? attacker < defender : attacker > defender;
+  const state = attacker === defender ? "tie" : first ? "faster" : "slower";
   return { state, label: { faster: "可以先手", tie: "需要拼速", slower: "无法先手" }[state], attacker, defender };
 }
 
@@ -110,7 +112,7 @@ export function createDeerSetup(snapshot, currentState = null) {
       const maxHp = panelFor(snapshot, setup.state.sides[side]).hp;
       setup[key] = Math.max(1, Math.min(100, (setup.state.directions[direction].currentHp ?? maxHp) / maxHp * 100));
     }
-    setup.weather = context.weatherBlizzard ? "blizzard" : context.weatherSandstorm ? "sandstorm" : context.weatherThunder ? "thunder" : context.weatherRainTurns > 0 ? "rain" : "none";
+    setup.weather = currentWeather(context);
     setup.freeze = setup.state.negativeStatuses.defender.freeze ?? 0;
     const mark = setup.state.marks.defender.negative;
     setup.starfall = mark.id === "starfall" ? mark.stacks : 0;
@@ -223,7 +225,7 @@ export function evaluateDeerAttack(snapshot, setup, variant, stacks) {
   }
   const comboDamage = exact && (lethal || followup?.status === "exact") ? damage + (lethal ? 0 : followup.totalDamage) : null;
   return {
-    speed: getDeerSpeedComparison(calculation),
+    speed: getDeerSpeedComparison(calculation, setup.weather),
     defenseLimitations, lethalKnown,
     stacks, damage, electrified, first, followup, nextState, followupReason, maxHp, targetHp, freeze,
     lethal, comboDamage, comboLethal: comboDamage !== null && comboDamage + freeze.thresholdHp >= targetHp,

@@ -8,6 +8,7 @@ export default function BaseSpeedOverview({ location, detail, detailPanel, snaps
   const [mobileProfile, setMobileProfile] = useState("positive-max");
   const baseGroups = useMemo(() => createBaseSpeedGroups({ snapshot }), [snapshot]);
   const groups = useMemo(() => selectBaseSpeedGroups(baseGroups, query), [baseGroups, query]);
+  const hasLevelVariants = groups.some(group => group.members.some(member => member.level !== 60));
   const locationRef = useRef(null);
   const scrollRef = useRef(null);
   const axisItems = useMemo(() => groups.map((group) => ({ key: String(group.key), value: group.base })), [groups]);
@@ -21,15 +22,15 @@ export default function BaseSpeedOverview({ location, detail, detailPanel, snaps
       <select className="base-speed-mobile-profile" aria-label="总览培养口径" value={mobileProfile} onChange={event => setMobileProfile(event.target.value)}>{BASE_SPEED_PROFILES.map((id, index) => <option key={id} value={id}>{labels[index]}</option>)}</select>
       <button type="button" onClick={() => onQueryChange("")}>重置</button>
     </div>
-    <p className="base-speed-note">60级标准值 · 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。</p>
-    <div className="rank-summary">{groups.length}档 · {groups.reduce((sum, group) => sum + group.members.length, 0)}个形态</div>
+    <p className="base-speed-note">{hasLevelVariants ? "默认60级，冥古龙按标注等级" : "60级标准值"} · 个体0 / 个体60 / 个体60且速度性格×1.2 · 不叠加条件特性。点击数值定位实速，点头像查看详情。</p>
+    <div className="rank-summary">{groups.length}档 · {groups.reduce((sum, group) => sum + group.members.length, 0)}个{hasLevelVariants ? "配置" : "形态"}</div>
     <div className="speed-navigable"><SpeedAxisNavigator scrollRef={scrollRef} items={axisItems} label="种族速度轴" />
     <div className="rank-table-scroll" ref={scrollRef}><table style={{ width: "100%", tableLayout: "fixed", borderCollapse: "collapse" }} aria-label="种族速度档位表">
       <thead><tr><th>种族速度</th>{BASE_SPEED_PROFILES.map((id, index) => <th key={id} className={`base-speed-column${mobileProfile === id ? " is-mobile-selected" : ""}`}>{labels[index]}</th>)}<th>精灵 · 最终形态与首领</th></tr></thead>
       <tbody>{groups.map(group => <tr key={group.key} data-speed-nav-key={String(group.key)} ref={group.base === location?.base ? locationRef : null} aria-current={group.base === location?.base ? "true" : undefined} style={group.base === location?.base ? { background: "var(--color-primary-soft, #f3f1ff)" } : undefined}>
         <th scope="row">{group.base}</th>
         {BASE_SPEED_PROFILES.map((id, index) => <td key={id} className={`base-speed-column${mobileProfile === id ? " is-mobile-selected" : ""}`}><button className="base-speed-value" type="button" aria-label={`${group.base}种族${labels[index]}，定位实速${group.values[index]}`} onClick={() => onLocate(id, group.values[index])}>{group.values[index]}</button></td>)}
-        <td><div className="base-speed-portraits" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{group.members.map(({ spirit, targets }) => <button style={{ width: 72, height: 72, padding: 3, border: 0, background: "transparent" }} key={spirit.id} type="button" title={spirit.fullName} aria-label={`查看${spirit.fullName}标准速度详情`} onClick={() => onDetail(targets[mobileProfile])}>{spirit.asset?.localUrl || spirit.imageUrl ? <img style={{ width: 64, height: 64, objectFit: "contain" }} alt="" src={spirit.asset?.localUrl ?? spirit.imageUrl} /> : <span>{spirit.fullName}</span>}</button>)}</div>{detail && group.members.some(member => member.spirit.id === detail.spiritId) ? detailPanel : null}</td>
+        <td><div className="base-speed-portraits" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{group.members.map(({ id, name, level, spirit, targets }) => <button style={{ width: 72, minHeight: 72, padding: 3, border: 0, background: "transparent" }} key={id} type="button" title={name} aria-label={`查看${name}标准速度详情`} onClick={() => onDetail(targets[mobileProfile])}>{spirit.asset?.localUrl || spirit.imageUrl ? <img style={{ width: 64, height: 64, objectFit: "contain" }} alt="" src={spirit.asset?.localUrl ?? spirit.imageUrl} /> : <span>{name}</span>}{level !== 60 ? <small style={{ display: "block" }}>{level}级</small> : null}</button>)}</div>{detail && group.members.some(member => member.id === detail.id) ? detailPanel : null}</td>
       </tr>)}</tbody>
     </table>{!groups.length ? <p className="rank-empty">没有匹配的精灵或种族速度。</p> : null}</div>
     </div>

@@ -1,7 +1,7 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { CaretDown, MagnifyingGlass, Star } from "@phosphor-icons/react";
-import { useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { Fragment, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { getElementToneStyle } from "../domain/element-colors.js";
 import { TraitHint } from "./TraitHint.jsx";
 import { EntityChangeHint, hasEntityChanges } from "./EntityChangeHint.jsx";
@@ -11,6 +11,7 @@ import { ElementIcon } from "./ElementIcon.jsx";
 import { usePickerMenuLayout } from "./picker-menu-layout.js";
 import { buildSpiritFamilyIndex } from "./spirit-family.js";
 import { canPreserveBattleFormConfig, getFormConfigPreferences } from "../state/form-config-preferences.js";
+import { hasCompleteRaceStats } from "../domain/stat.js";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -47,7 +48,15 @@ function isS4PreviewFinalSpirit(spirit) {
   return Boolean(spirit?.changeInfo?.isNew && (spirit.previewDefaults || spirit.changeInfo.isFinal));
 }
 
+function isS5PreviewSpirit(spirit) {
+  const identity = spirit?.previewIdentity;
+  return identity?.formalIdPending === true &&
+    typeof identity.key === "string" && identity.key.length > 0 &&
+    typeof identity.catalogId === "string" && identity.catalogId.startsWith("s5-");
+}
+
 function shouldShowNewBadge(spirit) {
+  if (isS5PreviewSpirit(spirit)) return true;
   return Boolean(
     spirit?.changeInfo?.isNew &&
       !hasEntityChanges(spirit.changeInfo) &&
@@ -82,6 +91,9 @@ function compareDexOrder(left, right) {
 }
 
 function compareSavedPreviewOrder(left, right) {
+  const s5Order = Number(isS5PreviewSpirit(right)) - Number(isS5PreviewSpirit(left));
+  if (s5Order) return s5Order;
+  if (isS5PreviewSpirit(left)) return 0;
   const leftFinal = isS4PreviewFinalSpirit(left);
   const rightFinal = isS4PreviewFinalSpirit(right);
   if (leftFinal !== rightFinal) return leftFinal ? -1 : 1;
@@ -101,6 +113,9 @@ function compareSavedPreviewOrder(left, right) {
 }
 
 function compareDefaultPreviewOrder(left, right) {
+  const s5Order = Number(isS5PreviewSpirit(right)) - Number(isS5PreviewSpirit(left));
+  if (s5Order) return s5Order;
+  if (isS5PreviewSpirit(left)) return 0;
   const leftDefault = left.fullName === "迪莫";
   const rightDefault = right.fullName === "迪莫";
   if (leftDefault !== rightDefault) return leftDefault ? -1 : 1;
@@ -126,13 +141,19 @@ export function SpiritPicker({
   onFormSelect,
   formSide,
   onOpenDeer,
-  selected,
+  comparisonControls,
+  comparisonSummary,
+  comparisonActive = false,
+  renderComparisonAction,
+  selected: sourceSelected,
   showFavorite = true,
   side,
-  spirits,
+  spirits: sourceSpirits,
 }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
+  const spirits = sourceSpirits;
+  const selected = sourceSelected;
   const formPreferences = getFormConfigPreferences(serverId);
   const listboxId = useId();
   const inputRef = useRef(null);
@@ -147,8 +168,13 @@ export function SpiritPicker({
     () => undefined,
   );
   const selectedName = selected?.fullName ?? "";
+  const pendingRaceStats = selected?.calculationStatus === "pending-race-stats";
+  const placeholderRaceStats = selected?.previewIdentity?.raceStatsPlaceholder === true;
+  const comparisonReady = !pendingRaceStats && hasCompleteRaceStats(selected?.raceStats);
+  const selectedTraitName = selected?.reference?.traitName ?? selected?.traitName;
+  const selectedTraitDescription = selected?.reference?.traitDescription ?? selected?.traitDescription ?? selected?.traitSummary;
   const [query, setQuery] = useState(selectedName);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeSpiritId, setActiveSpiritId] = useState(null);
   const [previewLimit, setPreviewLimit] = useState(INITIAL_PREVIEW_COUNT);
   const resolvedFavoriteState =
     favoriteState ?? (favorite ? "manual" : null);
@@ -167,7 +193,7 @@ export function SpiritPicker({
       return compareDexOrder(left, right);
     });
   }, [familyIndex, family, selected]);
-  const preserveFormConfig = formConfigPreference ?? family.some((spirit) => spirit.fullName === "梦想三三");
+  const preserveFormConfig = formConfigPreference ?? sourceSpirits.some((spirit) => family.some(entry => entry.id === spirit.id) && (spirit.fullName === "梦想三三" || spirit.aliases?.includes("梦想三三")));
   const sourceForm = family.find((spirit) => spirit.id === formSide?.spiritId);
   const formStages = ["一阶", "二阶", "三阶", "首领"].filter((stage) => family.some((spirit) => spirit.stage === stage));
   const sourceStage = family.find((spirit) => spirit.id === formSide?.spiritId)?.stage;
@@ -175,18 +201,15 @@ export function SpiritPicker({
   const browsingFamily = !searching && relatedFamily.length > 1 && (Boolean(onFormSelect) || !presetBrowse.enabled);
   const choosingForm = Boolean(onFormSelect && browsingFamily && family.length > 1);
   const browsingPresets = presetBrowse.enabled && (!searching || !query.trim()) && !browsingFamily;
+  // Blank input requests recommendations, even after clearing a selected spirit.
+  const pinNewSpirits = !query.trim();
+  const s5PreviewSpirits = useMemo(() => spirits.filter(isS5PreviewSpirit), [spirits]);
   const presetSpirits = useMemo(() => spirits
-    .filter((spirit) => presetBrowse.spiritIds.has(spirit.id) || spirit.favoriteState === "manual")
-    .sort(compareDexOrder), [spirits, presetBrowse.spiritIds]);
-
-  useLayoutEffect(() => {
-    if (!open || !browsingPresets) return;
-    const options = optionsRef.current;
-    const selectedOption = [...(options?.children ?? [])].find((option) => option.dataset.spiritId === selected?.id);
-    if (options) options.scrollTop = selectedOption
-      ? Math.max(0, selectedOption.offsetTop - options.offsetTop - (options.clientHeight - selectedOption.offsetHeight) / 2)
-      : 0;
-  }, [open, browsingPresets, selected?.id, presetSpirits]);
+    .filter((spirit) => isS5PreviewSpirit(spirit) || presetBrowse.spiritIds.has(spirit.id) || spirit.favoriteState === "manual")
+    .sort((left, right) => pinNewSpirits
+      ? Number(isS5PreviewSpirit(right)) - Number(isS5PreviewSpirit(left)) ||
+        (isS5PreviewSpirit(left) ? 0 : compareDexOrder(left, right))
+      : compareDexOrder(left, right)), [spirits, presetBrowse.spiritIds, pinNewSpirits]);
 
   const preview = useMemo(() => {
     if (browsingFamily) return {
@@ -209,6 +232,7 @@ export function SpiritPicker({
             [
               spirit.fullName,
               spirit.variantName,
+              spirit.sourceCategory,
               spirit.pinyin,
               spirit.initials,
               spirit.dexNo,
@@ -238,12 +262,12 @@ export function SpiritPicker({
       const favoriteCount = favorites.length;
       const previewFinals = direct.filter(isS4PreviewFinalSpirit);
       const previewBosses = direct.filter(isS4PreviewBossSpirit);
-      const orderedRoster = [...direct].sort(compareDefaultPreviewOrder);
+      const orderedRoster = [...direct].sort(pinNewSpirits ? compareDefaultPreviewOrder : compareDexOrder);
       const previewItems = favoriteCount
-        ? uniqueSpirits([...previewFinals, ...previewBosses, ...favorites])
-            .sort(compareSavedPreviewOrder)
+        ? uniqueSpirits([...s5PreviewSpirits, ...previewFinals, ...previewBosses, ...favorites])
+            .sort(pinNewSpirits ? compareSavedPreviewOrder : compareDexOrder)
         : orderedRoster;
-      const visibleCount = Math.min(previewItems.length, previewLimit);
+      const visibleCount = Math.min(previewItems.length, s5PreviewSpirits.length + previewLimit);
       return {
         allFavoritesVisible:
           favoriteCount > 0 && visibleCount >= previewItems.length,
@@ -281,25 +305,36 @@ export function SpiritPicker({
       favoriteCount: 0,
       isUnfiltered: false,
       items: markedFirst(expanded.map(({ spirit }) => spirit))
-        .sort((left, right) => Number(directIds.has(right.id)) - Number(directIds.has(left.id)))
+        .sort((left, right) => Number(directIds.has(right.id)) - Number(directIds.has(left.id)) ||
+          searchMatchRank(left, needle) - searchMatchRank(right, needle))
         .slice(0, 20)
         .map((spirit) => ({
           related: !directIds.has(spirit.id),
           spirit,
         })),
     };
-  }, [browsingFamily, relatedFamily, familyIndex, browsingPresets, presetSpirits, previewLimit, query, spirits]);
+  }, [browsingFamily, relatedFamily, familyIndex, browsingPresets, presetSpirits, previewLimit, query, spirits, s5PreviewSpirits, pinNewSpirits]);
   const matches = preview.items;
+  // Keep identity rather than a stale index when presets load or pages expand.
+  const activeIndex = Math.max(0, matches.findIndex(({ spirit }) => spirit.id === activeSpiritId));
+  const activeOptionId = matches[activeIndex]?.spirit.id;
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    const options = optionsRef.current;
+    const active = options?.querySelector('[role="option"].is-active');
+    if (!active || !options.clientHeight) return;
+    const top = active.getBoundingClientRect().top - options.getBoundingClientRect().top + options.scrollTop - options.clientTop;
+    const bottom = top + active.offsetHeight;
+    if (top < options.scrollTop) options.scrollTop = top;
+    else if (bottom > options.scrollTop + options.clientHeight) options.scrollTop = bottom - options.clientHeight;
+  }, [open, activeIndex, activeOptionId, query]);
 
   function openOptions() {
     setQuery(clearOnOpen ? "" : selectedName);
     setSearching(clearOnOpen);
     setPreviewLimit(INITIAL_PREVIEW_COUNT);
-    setActiveIndex(!clearOnOpen && relatedFamily.length > 1 && (onFormSelect || !presetBrowse.enabled)
-      ? Math.max(0, relatedFamily.findIndex((spirit) => spirit.id === selected?.id))
-      : presetBrowse.enabled && !clearOnOpen
-      ? Math.max(0, presetSpirits.findIndex((spirit) => spirit.id === selected?.id))
-      : 0);
+    setActiveSpiritId(clearOnOpen ? null : selected?.id ?? null);
     setOpen(true);
   }
 
@@ -316,10 +351,11 @@ export function SpiritPicker({
       event.preventDefault();
       if (!open) { openOptions(); return; }
       setOpen(true);
-      setActiveIndex((index) => Math.min(index + 1, matches.length - 1));
+      setActiveSpiritId(matches[Math.min(activeIndex + 1, matches.length - 1)]?.spirit.id ?? null);
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveIndex((index) => Math.max(0, index - 1));
+      if (!open) { openOptions(); return; }
+      setActiveSpiritId(matches[Math.max(0, activeIndex - 1)]?.spirit.id ?? null);
     } else if (event.key === "Enter" && open && matches[activeIndex]) {
       event.preventDefault();
       commit(matches[activeIndex].spirit);
@@ -342,6 +378,18 @@ export function SpiritPicker({
   }
 
   usePickerMenuLayout({ open, anchorRef: searchRef, menuRef: optionsRef, maxHeight: 282, minWidth: 240, contentKey: `${query}-${matches.length}-${browsingFamily}` });
+
+  const familyHeading = <li className="spirit-picker__form-heading" role="presentation">
+    <span>{t("同族形态")}</span>
+    {choosingForm ? <label className="spirit-picker__form-toggle" title={t("攻防方开关分别记忆；跨页面保留可在显示设置中开启。先选高阶再萌化可保留配置；直接选低阶后升阶、同阶换形态或选关联分支时载入目标预设。")}>
+      <span>{t("萌化 · 配置保留")}</span>
+      <input type="checkbox" role="switch" aria-label={t("{side}同族切换保留本场配置", { side: label })}
+        checked={preserveFormConfig} onChange={event => {
+          formPreferences.writePreference(side, event.target.checked);
+        }}
+        onKeyDown={event => { if (event.key === "Escape") { inputRef.current?.focus(); handleKeyDown(event); } }} />
+    </label> : null}
+  </li>;
 
   return (
     <article
@@ -371,7 +419,7 @@ export function SpiritPicker({
           onChange={(event) => {
             setQuery(event.target.value);
             setSearching(true);
-            setActiveIndex(0);
+            setActiveSpiritId(null);
             setPreviewLimit(INITIAL_PREVIEW_COUNT);
             setOpen(true);
           }}
@@ -419,28 +467,17 @@ export function SpiritPicker({
             tabIndex={-1}
             onKeyDown={handleKeyDown}
           >
-            {browsingFamily ? (
-              <li className="spirit-picker__form-heading" role="presentation">
-                <span>{t("同族形态")}</span>
-                {choosingForm ? <label className="spirit-picker__form-toggle" title={t("攻防方开关分别记忆；跨页面保留可在显示设置中开启。先选高阶再萌化可保留配置；直接选低阶后升阶、同阶换形态或选关联分支时载入目标预设。")}>
-                  <span>{t("萌化 · 配置保留")}</span>
-                  <input type="checkbox" role="switch" aria-label={t("{side}同族切换保留本场配置", { side: label })}
-                    checked={preserveFormConfig} onChange={event => {
-                      formPreferences.writePreference(side, event.target.checked);
-                    }}
-                    onKeyDown={event => { if (event.key === "Escape") { inputRef.current?.focus(); handleKeyDown(event); } }} />
-                </label> : null}
-              </li>
-            ) : null}
+            {browsingFamily ? familyHeading : null}
             {matches.length ? (
-              matches.map(({ related, spirit }, index) => (
+              matches.map(({ related, spirit }, index) => {
+                const familyOption = browsingFamily && relatedFamily.some(entry => entry.id === spirit.id);
+                return <Fragment key={spirit.id}>
                 <li
                   aria-selected={spirit.id === selected?.id}
                   className={index === activeIndex ? "is-active" : ""}
                   data-spirit-id={spirit.id}
-                  key={spirit.id}
                   onMouseDown={(event) => event.preventDefault()}
-                  onMouseEnter={() => setActiveIndex(index)}
+                  onMouseEnter={() => setActiveSpiritId(spirit.id)}
                   onClick={() => commit(spirit)}
                   role="option"
                 >
@@ -457,21 +494,24 @@ export function SpiritPicker({
                     <small>
                       {[
                         spirit.dexNo,
-                        spirit.stage,
-                        spirit.calculationStatus === "pending-race-stats"
+                        t(spirit.stage),
+                        spirit.previewIdentity?.raceStatsPlaceholder === true
+                          ? t("六维100测试占位")
+                          : spirit.calculationStatus === "pending-race-stats"
                           ? t("种族值待确认")
                           : null,
-                        browsingFamily && spirit.id === selected?.id ? t("当前形态")
-                          : browsingFamily && choosingForm && !family.some(entry => entry.id === spirit.id) ? t("关联形态 · 载入预设")
-                          : browsingFamily && choosingForm && !canPreserveBattleFormConfig(sourceForm, spirit) ? t("独立形态 · 载入预设")
-                          : related || browsingFamily && !choosingForm ? t(selected?.evolutionChainIds?.includes(spirit.id) ? "进化链" : "关联形态") : null,
+                        familyOption && spirit.id === selected?.id ? t("当前形态")
+                          : familyOption && choosingForm && !family.some(entry => entry.id === spirit.id) ? t("关联形态 · 载入预设")
+                          : familyOption && choosingForm && !canPreserveBattleFormConfig(sourceForm, spirit) ? t("独立形态 · 载入预设")
+                          : related || familyOption && !choosingForm ? t(selected?.evolutionChainIds?.includes(spirit.id) ? "进化链" : "关联形态") : null,
                       ]
                         .filter(Boolean)
                         .join(" · ")}
                     </small>
                   </span>
                 </li>
-              ))
+                </Fragment>;
+              })
             ) : (
               <li className="spirit-picker__empty">
                 {browsingPresets
@@ -505,6 +545,7 @@ export function SpiritPicker({
             <img
               alt={selected.fullName}
               className="spirit-card__image"
+              data-preview-silhouette={selected.previewIdentity?.asset?.kind?.endsWith("silhouette") || undefined}
               height="76"
               src={selected.assetUrl}
               width="76"
@@ -515,7 +556,10 @@ export function SpiritPicker({
               <strong data-new={shouldShowNewBadge(selected) || undefined}>
                 {selected.fullName}
               </strong>
-              <EntityChangeHint changeInfo={selected.changeInfo} />
+              <EntityChangeHint changeInfo={selected.changeInfo} entityName={selected.fullName} active={comparisonReady && comparisonActive}
+                renderPatchAction={comparisonReady ? renderComparisonAction : undefined}>
+                {comparisonReady ? comparisonControls : null}
+              </EntityChangeHint>
             </span>
             <div className="spirit-card__tags">
               {selected.types.map((type) => (
@@ -527,21 +571,23 @@ export function SpiritPicker({
                   {type}
                 </span>
               ))}
-              <span>{selected.stage}</span>
+              <span>{t(selected.stage)}</span>
             </div>
-            {selected.calculationStatus === "pending-race-stats" ? (
-              <p className="spirit-card__pending">{t("种族值待确认")}</p>
-            ) : (
+            {comparisonReady ? comparisonSummary : null}
+            {(placeholderRaceStats && !comparisonActive) || pendingRaceStats ? (
+              <p className="spirit-card__pending">{t(placeholderRaceStats ? "暂定六维100" : "种族值待确认")}</p>
+            ) : null}
+            {!pendingRaceStats || selectedTraitName ? (
               <p>
                 {t(selected.battleFormTraitRetained ? "特性沿用：" : "特性：")}
                 <TraitHint
-                  description={selected.reference?.traitDescription ?? selected.traitDescription}
-                  name={selected.reference?.traitName ?? selected.traitName}
+                  description={selectedTraitDescription}
+                  name={selectedTraitName}
                 />
                 {conditionControl}
                 {onOpenDeer && <button className="spirit-card__deer-entry" type="button" onClick={onOpenDeer}>{t("电鹿斩杀线 →")}</button>}
               </p>
-            )}
+            ) : null}
             {formSide?.battleForm ? <small className="spirit-card__form-note">
               <span className="spirit-card__moe-count" role="img" aria-label={t("萌化 {count} 层", { count: moeLayers })} title={t("萌化 {count} 层：相对初始形态的降阶数", { count: moeLayers })}>
                 <ElementIcon type="萌" size={16} /><span>{moeLayers}</span>

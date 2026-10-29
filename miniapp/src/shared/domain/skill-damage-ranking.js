@@ -13,6 +13,7 @@ import { createInitialState } from "../state/defaults.js";
 import { materializeTraitContext } from "../state/trait-values.js";
 import { STANDARD_DURABILITY_TEMPLATES } from "../features/team-ability/domain/durability-ranking.js";
 import { resolveSpiritFormRole } from "../features/team-ability/domain/spirit-form-role.js";
+import { getS5PreviewBattleLevelEvaluation, resolveS5PreviewBattleLevel, supportsS5PreviewBattleLevel } from "./battle-level.js";
 
 export { STANDARD_DURABILITY_TEMPLATES };
 const HP_ONLY_DISPLAY_IVS = Object.freeze({ ...STANDARD_DURABILITY_TEMPLATES["standard-hp-v1"].displayIvs, physicalDefense: 0, magicalDefense: 0 });
@@ -106,9 +107,11 @@ export function getDamageComparisonSelection(snapshot, state, direction = "forwa
 }
 
 export function damageComparisonIssue(snapshot, state, direction = "forward", selectedSkillIndex) {
-  const { spirit, selected } = getDamageComparisonSelection(snapshot, state, direction, selectedSkillIndex);
+  const { sourceSide, spirit, selected } = getDamageComparisonSelection(snapshot, state, direction, selectedSkillIndex);
   if (!spirit || !hasCompleteRaceStats(spirit.raceStats)) return "请先选择种族值完整的攻击方";
   if (!selected) return "请先选择要比较的技能";
+  const levelIssue = getS5PreviewBattleLevelEvaluation(snapshot, state, sourceSide)?.blockingReason;
+  if (levelIssue) return levelIssue;
   const { skill, entry } = selected;
   const details = typeof entry === "object" ? entry : {};
   const overrides = state.mode === "single" ? state.directions[direction].overrides ?? {} : {};
@@ -226,9 +229,19 @@ export async function createSkillDamageRanking({ snapshot, state, direction = "f
       : scope !== "all" && !["final", "boss"].includes(form.formRole) ? "不在当前形态范围" : null;
     if (!reason) {
       try {
+        const levelIssue = getS5PreviewBattleLevelEvaluation(snapshot, state, selection.sourceSide)?.blockingReason;
+        if (levelIssue) throw new Error(levelIssue);
         const input = buildDamageComparisonInput({ snapshot, state, spirit, direction, selectedSkillIndex, templateId, presetsBySpirit, inheritTargetStatuses });
         const targetSide = direction === "reverse" ? "attacker" : "defender";
-        const result = calculateMatchup(snapshot, input)[direction].selectedResult;
+        // The source inherits the current battle level, while every target
+        // remains a level60 template. Keep this projection out of saved imports.
+        const sourceSide = selection.sourceSide;
+        const source = { ...input.sides[sourceSide], level: resolveS5PreviewBattleLevel(snapshot, state, sourceSide) };
+        if (supportsS5PreviewBattleLevel(snapshot, state.sides[sourceSide])) delete source.panelStats;
+        const calculationInput = { ...input, sides: { ...input.sides,
+          [sourceSide]: source, [targetSide]: { ...input.sides[targetSide], level: 60 },
+        } };
+        const result = calculateMatchup(snapshot, calculationInput)[direction].selectedResult;
         if (result?.status !== "exact" || !Number.isFinite(result.totalDamage)) reason = result?.reason || "无直接伤害或缺少计算条件";
         else if (["status", "defense"].includes(selection.selected.skill.category) && result.totalDamage === 0) reason = "该技能无直接伤害";
         else {

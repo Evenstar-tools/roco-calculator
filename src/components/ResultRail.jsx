@@ -200,11 +200,13 @@ function SkillResultRow({ index, item, onClick }) {
 }
 
 export function ResultRail({
+  hasCustomRaceStats = false,
   activeAdvancedConditions = [],
   onBloodlineResultFocus,
   onAdvancedOptionsOpen,
   onCurrentHpChange,
   onCurrentHpPercentChange,
+  onHpInputModeChange,
   onDirectionToggle,
   onSkillResultSelect,
   onNegativeStatusRepeatChange,
@@ -271,6 +273,19 @@ export function ResultRail({
             </p>
           </div>
 
+          {result.levelComparison ? <details className="result-level-comparison" aria-label="等级伤害对比">
+            <summary>
+              <span>{result.levelComparison.attackerLevel}级 → {result.levelComparison.defenderLevel}级</span>
+              <span>较双60级 <strong>{Number.isFinite(result.levelComparison.percent)
+                ? `${result.levelComparison.percent > 0 ? "+" : ""}${result.levelComparison.percent}%`
+                : "—"}</strong></span>
+            </summary>
+            <p>伤害：双60级 <b>{result.levelComparison.baselineDamage}</b> → 当前 <b>{result.levelComparison.currentDamage}</b></p>
+            <p>含等级系数、面板与等级触发效果；双方血量比例不变。</p>
+            {result.levelComparison.status === "zero-baseline" ? <p>基准伤害为0，不计算百分比。</p> : null}
+            <p>非60级面板按预览规则试算。</p>
+          </details> : null}
+
         </>
       ) : null}
 
@@ -298,7 +313,7 @@ export function ResultRail({
       <NegativeStatusSettlement settlement={primary.negativeStatusSettlement}
         onRepeatChange={primary.negativeStatusCanRepeatNextTurn ? onNegativeStatusRepeatChange : undefined}
         repeated={primary.negativeStatusRepeatNextTurn} />
-      {onOpenComparison ? <button type="button" className="damage-comparison-entry" onClick={onOpenComparison}>查看全精灵承伤</button> : null}
+      {onOpenComparison ? <button type="button" className="damage-comparison-entry" onClick={onOpenComparison}>{hasCustomRaceStats ? "查看全精灵承伤（官方值）" : "查看全精灵承伤"}</button> : null}
       {onOpenStarfall ? <button type="button" className="damage-comparison-entry starfall-entry" onClick={onOpenStarfall}>星陨斩杀线</button> : null}
 
       {primary.markSettlements?.length > 0 ? (
@@ -353,11 +368,13 @@ export function ResultRail({
             maxHp={result.defenderMaxHp}
             onCurrentHpChange={onCurrentHpChange}
             onPercentChange={onCurrentHpPercentChange}
+            onInputModeChange={onHpInputModeChange}
             percentValue={result.defenderHpPercent}
           />
           <button
             aria-label="恢复满血"
             onClick={() => {
+              onHpInputModeChange?.("percent");
               onCurrentHpChange(result.defenderMaxHp);
               onCurrentHpPercentChange?.(100);
             }}

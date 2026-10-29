@@ -284,7 +284,7 @@ export function WorkspaceOverlays({
               : t(mobileResult.result.selectedResult.reason === "非伤害技能不计算伤害" ? "非伤害" : "待输入")}
           </span>
         </button>
-        {mobileActions.onOpenComparison ? <button type="button" className="mobile-comparison-entry damage-comparison-entry" onClick={mobileActions.onOpenComparison}>{t("承伤对比")}</button> : null}
+        {mobileActions.onOpenComparison ? <button type="button" className="mobile-comparison-entry damage-comparison-entry" onClick={mobileActions.onOpenComparison}>{t(mobileResult.hasCustomRaceStats ? "承伤对比（官方）" : "承伤对比")}</button> : null}
         </div>
       ) : null}
 
@@ -312,10 +312,12 @@ export function WorkspaceOverlays({
             <X aria-hidden="true" size={22} weight="bold" />
           </button>
           <ResultRail
+            hasCustomRaceStats={mobileResult.hasCustomRaceStats}
             activeAdvancedConditions={mobileResult.activeAdvancedConditions}
             onAdvancedOptionsOpen={mobileActions.onAdvancedOptionsOpen}
             onCurrentHpChange={mobileActions.onCurrentHpChange}
             onCurrentHpPercentChange={mobileActions.onCurrentHpPercentChange}
+            onHpInputModeChange={mobileActions.onHpInputModeChange}
             onDirectionToggle={mobileActions.onDirectionToggle}
             onSkillResultSelect={mobileActions.onSkillResultSelect}
             onNegativeStatusRepeatChange={mobileActions.onNegativeStatusRepeatChange}

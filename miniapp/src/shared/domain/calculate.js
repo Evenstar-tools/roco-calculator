@@ -36,7 +36,11 @@ export function calculateMatchup(snapshot, battleInput) {
     indexes,
     directions.reverse?.overrides,
   );
-  const level = finiteNumber(battleInput.level) ?? 60;
+  // A legacy global level changes the damage coefficient only. Explicit owner
+  // levels also generate that owner's panel in resolveCombatant.
+  const legacyLevel = finiteNumber(battleInput.level) ?? 60;
+  const forwardLevel = sides.attacker.level == null ? legacyLevel : attacker.level;
+  const reverseLevel = sides.defender.level == null ? legacyLevel : defender.level;
   const marks = battleInput.marks ?? null;
   const baseForward = calculateDirection({
     snapshot,
@@ -44,13 +48,17 @@ export function calculateMatchup(snapshot, battleInput) {
     direction: directions.forward ?? {},
     attackerSide: sides.attacker,
     attacker,
+    attackerDefenseLevelStage: finiteNumber(
+      directions.reverse?.overrides?.defenseLevelStage,
+      directions.reverse?.defenseLevelStage,
+    ),
     attackerCurrentHp: directions.reverse?.currentHp,
     attackerHpPercent: directions.reverse?.context?.currentHpPercent,
     defender,
     defenderCurrentHp: directions.forward?.currentHp,
     defenderHpPercent: directions.forward?.context?.currentHpPercent,
     skillsById: indexes.skills,
-    level,
+    level: forwardLevel,
     sourceMarks: marks?.attacker,
     sourceSide: "attacker",
     targetMarks: marks?.defender,
@@ -62,13 +70,17 @@ export function calculateMatchup(snapshot, battleInput) {
     direction: directions.reverse ?? {},
     attackerSide: sides.defender,
     attacker: defender,
+    attackerDefenseLevelStage: finiteNumber(
+      directions.forward?.overrides?.defenseLevelStage,
+      directions.forward?.defenseLevelStage,
+    ),
     attackerCurrentHp: directions.forward?.currentHp,
     attackerHpPercent: directions.forward?.context?.currentHpPercent,
     defender: attacker,
     defenderCurrentHp: directions.reverse?.currentHp,
     defenderHpPercent: directions.reverse?.context?.currentHpPercent,
     skillsById: indexes.skills,
-    level,
+    level: reverseLevel,
     sourceMarks: marks?.defender,
     sourceSide: "defender",
     targetMarks: marks?.attacker,
@@ -100,7 +112,7 @@ export function calculateMatchup(snapshot, battleInput) {
     opponentHpPercent: directions.forward?.context?.currentHpPercent,
     sourceAttack: reverseSourceAttack,
     skillsById: indexes.skills,
-    level,
+    level: forwardLevel,
     sourceMarks: marks?.attacker,
     sourceSide: "attacker",
     targetMarks: marks?.defender,
@@ -119,7 +131,7 @@ export function calculateMatchup(snapshot, battleInput) {
     opponentHpPercent: directions.reverse?.context?.currentHpPercent,
     sourceAttack: forwardSourceAttack,
     skillsById: indexes.skills,
-    level,
+    level: reverseLevel,
     sourceMarks: marks?.defender,
     sourceSide: "defender",
     targetMarks: marks?.attacker,

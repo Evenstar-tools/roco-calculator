@@ -1,4 +1,4 @@
-import { WarningCircle, X } from "@phosphor-icons/react";
+import { SlidersHorizontal, WarningCircle, X } from "@phosphor-icons/react";
 import {
   useEffect,
   useId,
@@ -13,9 +13,11 @@ function isCompactChange(item) {
 }
 
 export function hasEntityChanges(changeInfo) {
-  return Array.isArray(changeInfo?.items) &&
-    changeInfo.items.some((item) => item?.kind && item.kind !== "new");
+  return [changeInfo, ...(changeInfo?.history ?? [])].some(record =>
+    record?.items?.some(item => item?.kind && item.kind !== "new"));
 }
+
+const patchLabel = patch => patch?.label?.replace(/前瞻/g, "").replace(/S3[\s-]*季中/g, "赛季平衡");
 
 function ChangeItem({ item }) {
   if (isCompactChange(item)) {
@@ -41,13 +43,14 @@ function ChangeItem({ item }) {
   );
 }
 
-export function EntityChangeHint({ changeInfo, className = "" }) {
+export function EntityChangeHint({ changeInfo, className = "", children, entityName: fallbackName, active = false, renderPatchAction }) {
   const tooltipId = useId();
   const anchorRef = useRef(null);
   const panelRef = useRef(null);
   const closeTimerRef = useRef(null);
   const [hovered, setHovered] = useState(false);
   const [pinned, setPinned] = useState(false);
+  const [selectedPatch, setSelectedPatch] = useState(null);
   const [position, setPosition] = useState({ left: 12, top: 12 });
   const open = hovered || pinned;
 
@@ -67,18 +70,27 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
 
   useLayoutEffect(() => {
     if (!open || !anchorRef.current) return;
-    const rect = anchorRef.current.getBoundingClientRect();
-    const width = Math.min(340, window.innerWidth - 24);
-    const height = Math.min(
-      panelRef.current?.scrollHeight ?? 0,
-      window.innerHeight - 24,
-    );
-    const left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12));
-    const below = rect.bottom + 8;
-    const top = below + height <= window.innerHeight - 12
-      ? below
-      : Math.max(12, rect.top - height - 8);
-    setPosition({ left, top });
+    function reposition() {
+      const rect = anchorRef.current?.getBoundingClientRect();
+      const panel = panelRef.current;
+      if (!rect || !panel) return;
+      const width = panel.offsetWidth;
+      const height = panel.offsetHeight;
+      const left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12));
+      const below = rect.bottom + 8;
+      const above = rect.top - height - 8;
+      const top = below + height <= window.innerHeight - 12 ? below
+        : above >= 12 ? above : Math.max(12, window.innerHeight - height - 12);
+      setPosition(previous => previous.left === left && previous.top === top ? previous : { left, top });
+    }
+    reposition();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(reposition);
+    if (panelRef.current) observer?.observe(panelRef.current);
+    window.addEventListener("resize", reposition);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", reposition);
+    };
   }, [open]);
 
   useEffect(() => {
@@ -107,16 +119,29 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
 
   useEffect(() => () => cancelClose(), []);
 
-  if (!hasEntityChanges(changeInfo)) return null;
-  const entityName = changeInfo.entityName ?? "当前项目";
+  const hasChanges = hasEntityChanges(changeInfo);
+  const changeGroups = [changeInfo, ...(changeInfo?.history ?? [])].filter(record => record?.items?.length);
+  const multiplePatches = changeGroups.length > 1;
+  if (!hasChanges && !children) return null;
+  const entityName = changeInfo?.entityName ?? fallbackName ?? "当前项目";
+  const selectedIndex = selectedPatch?.entityName === entityName
+    ? Math.max(0, changeGroups.findIndex((record, index) => (record.patch?.id ?? index) === selectedPatch.id)) : 0;
+  const visibleGroups = multiplePatches ? [changeGroups[selectedIndex]] : changeGroups;
+  function selectPatch(index) {
+    setSelectedPatch({ entityName, id: changeGroups[index].patch?.id ?? index });
+  }
+  const actionLabel = hasChanges ? `查看${entityName}本期改动` : `编辑${entityName}试算种族值`;
+  const HintIcon = hasChanges ? WarningCircle : SlidersHorizontal;
 
   return (
     <>
       <button
         aria-expanded={open}
-        aria-label={`查看${entityName}本期改动`}
+        aria-label={actionLabel}
+        data-active={active || undefined}
         className={`entity-change-hint ${className}`.trim()}
-        onBlur={() => {
+        onBlur={(event) => {
+          if (panelRef.current?.contains(event.relatedTarget)) return;
           if (!pinned) setHovered(false);
         }}
         onClick={(event) => {
@@ -129,10 +154,10 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
         onMouseEnter={openOnHover}
         onMouseLeave={closeAfterPointerLeaves}
         ref={anchorRef}
-        title={`查看${entityName}本期改动`}
+        title={actionLabel}
         type="button"
       >
-        <WarningCircle aria-hidden="true" size={16} weight="fill" />
+        <HintIcon aria-hidden="true" size={16} weight="fill" />
       </button>
       {open ? createPortal(
         <div className="entity-change-layer" onClick={(event) => event.stopPropagation()}>
@@ -146,20 +171,21 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
             type="button"
           />
           <section
-            aria-label={`${entityName}本期改动`}
+            aria-label={hasChanges ? `${entityName}本期改动` : `${entityName}种族值试算`}
             className="entity-change-card"
             id={tooltipId}
             onMouseEnter={openOnHover}
             onMouseLeave={closeAfterPointerLeaves}
+            onFocus={() => { if (children || multiplePatches) setPinned(true); }}
             ref={panelRef}
-            role="tooltip"
+            role={children || multiplePatches ? "dialog" : "tooltip"}
             style={position}
           >
             <header>
               <span>
-                <small>更新</small>
-                <strong>{changeInfo.patch?.label?.replace(/前瞻/g, "").replace(/S3[\s-]*季中/g, "赛季平衡") ?? "本期改动"}</strong>
-                <time>{changeInfo.patch?.date}</time>
+                <small>{hasChanges ? "更新" : "试算"}</small>
+                <strong>{multiplePatches ? "改动记录" : patchLabel(changeInfo?.patch) ?? "种族值编辑"}</strong>
+                {!multiplePatches && <time>{changeInfo?.patch?.date}</time>}
               </span>
               <button
                 aria-label="关闭改动详情"
@@ -172,10 +198,32 @@ export function EntityChangeHint({ changeInfo, className = "" }) {
                 <X aria-hidden="true" size={15} weight="bold" />
               </button>
             </header>
-            <h3>{entityName}</h3>
-            <ul>{changeInfo.items.map((item, index) => (
-              <ChangeItem item={item} key={`${item.kind}-${item.label}-${index}`} />
-            ))}</ul>
+            <div className="entity-change-card__title"><h3>{entityName}</h3>{!multiplePatches && renderPatchAction?.(changeGroups[0])}</div>
+            {multiplePatches && <div className="entity-change-card__tabs" role="tablist" aria-label="改动记录">
+              {changeGroups.map((record, index) => <button key={record.patch?.id ?? index}
+                id={`${tooltipId}-tab-${index}`} role="tab" type="button"
+                aria-selected={selectedIndex === index} aria-controls={`${tooltipId}-patch`}
+                tabIndex={selectedIndex === index ? 0 : -1}
+                onClick={() => selectPatch(index)}
+                onKeyDown={event => {
+                  const next = event.key === "ArrowRight" ? (index + 1) % changeGroups.length
+                    : event.key === "ArrowLeft" ? (index - 1 + changeGroups.length) % changeGroups.length
+                      : event.key === "Home" ? 0 : event.key === "End" ? changeGroups.length - 1 : null;
+                  if (next === null) return;
+                  event.preventDefault();
+                  selectPatch(next);
+                  document.getElementById(`${tooltipId}-tab-${next}`)?.focus();
+                }}>{patchLabel(record.patch) ?? `记录 ${index + 1}`}</button>)}
+            </div>}
+            {visibleGroups.map((record, groupIndex) => <section className="entity-change-card__patch" key={record.patch?.id ?? groupIndex}
+              id={multiplePatches ? `${tooltipId}-patch` : undefined} role={multiplePatches ? "tabpanel" : undefined}
+              aria-labelledby={multiplePatches ? `${tooltipId}-tab-${selectedIndex}` : undefined}>
+              {multiplePatches && <div className="entity-change-card__patch-heading"><time>{record.patch?.date}</time>{renderPatchAction?.(record)}</div>}
+              <ul>{record.items.map((item, index) => (
+                <ChangeItem item={item} key={`${item.kind}-${item.label}-${index}`} />
+              ))}</ul>
+            </section>)}
+            {children}
           </section>
         </div>,
         document.body,
