@@ -120,6 +120,21 @@ async function configureStarfall(page, slot = 1) {
   await selectSpirit(page, "攻击方", "祭礼巨像");
   await selectSpirit(page, "防御方", "玳塔");
   await selectSkill(page, "多维击打", slot);
+  await expect(page.getByRole("button", { name: "星陨斩杀线", exact: true })).toHaveCount(0);
+  const trigger = page.getByRole("button", { name: `攻击方技能${slot}条件`, exact: true });
+  if (await trigger.isVisible()) {
+    await trigger.click();
+    const stacks = page.getByRole("dialog").getByRole("spinbutton", { name: "敌方星陨印记", exact: true });
+    await stacks.fill("1");
+    await stacks.press("Tab");
+    await page.keyboard.press("Escape");
+  } else {
+    await setViewMode(page, "具体版");
+    const stacks = page.getByRole("spinbutton", { name: `攻击方技能${slot}敌方星陨印记`, exact: true });
+    await stacks.fill("1");
+    await stacks.press("Tab");
+    await setViewMode(page, "精简版");
+  }
 }
 
 for (const [width, height, theme] of [[1920, 1080, "light"], [390, 844, "light"], [320, 740, "dark"]]) {
@@ -283,7 +298,12 @@ test("starfall thresholds apply the real minimum to the chosen slot and undo in 
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: /撤回上一步/ }).click();
   await page.getByRole("button", { name: "攻击方技能2条件", exact: true }).click();
-  await expect(page.getByRole("spinbutton", { name: "敌方星陨印记", exact: true })).toHaveValue("0");
+  const restoredStacks = page.getByRole("spinbutton", { name: "敌方星陨印记", exact: true });
+  await expect(restoredStacks).toHaveValue("1");
+  await restoredStacks.fill("0");
+  await restoredStacks.press("Tab");
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("button", { name: "星陨斩杀线", exact: true })).toHaveCount(0);
 });
 
 test("starfall thresholds choose cultivation then restore the actual target before recalculating", async ({ page }) => {
