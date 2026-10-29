@@ -52,6 +52,8 @@
 .rank-table th:first-child,.rank-table td:first-child { text-align: left; width: 45px; color: var(--text-muted); }.rank-table th:nth-child(2) { text-align: left; }
 .rank-table tbody tr:hover { background: var(--selection-hover); }.rank-table tr[aria-current="true"] { background: var(--selection-bg); }
 .rank-table .rank-active-value { color: var(--accent); font-weight: 700; }
+/* 宽屏耐久表限宽，避免名称与数值列被拉开过远。 */
+.rank-table:is(.rank-table--combined, .rank-table--physical, .rank-table--magical) { max-width: 960px; margin-inline: auto; }
 .rank-view .rank-spirit { display: flex; gap: 10px; padding: 0; border: 0; background: transparent; color: inherit; justify-content: flex-start; text-align: left; white-space: normal; min-height: 42px; }
 .rank-spirit img { height: 36px; width: 36px; object-fit: contain; flex-shrink: 0; }.rank-spirit span { line-height: 1.5; }.rank-spirit small { display: block; font-weight: 400; color: var(--text-muted); font-size: 11px; }
 .rank-spirit .rank-mobile-mult { display: none; }.rank-speed-targets { display: grid; grid-template-columns: repeat(auto-fill,minmax(210px,1fr)); gap: 14px; }.rank-speed-table td { white-space: normal; }
