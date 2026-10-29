@@ -241,7 +241,11 @@ export function ConfigLibraryDialog({
                 <input
                   accept="application/json,.json"
                   aria-label={t("选择配置库文件")}
-                  onChange={(event) => onFile?.(event.target.files?.[0] ?? null)}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = "";
+                    if (file) onFile?.(file);
+                  }}
                   type="file"
                 />
               </label>
@@ -396,7 +400,7 @@ export function ConfigLibraryDialog({
             onClick={isExport ? onExport : onConfirmImport}
             type="button"
           >
-            {isExport ? t("导出") : updateCount > 0 ? t("更新配置（{count}）", { count: updateCount }) : parsed?.preview.favoritesAdded > 0 ? t("添加收藏（{count}）", { count: parsed.preview.favoritesAdded }) : parsed?.preview.different > 0 ? t("手改配置已保留") : t("已是最新")}
+            {isExport ? t("导出") : !parsed || error ? t("导入") : updateCount > 0 ? t("更新配置（{count}）", { count: updateCount }) : parsed?.preview.favoritesAdded > 0 ? t("添加收藏（{count}）", { count: parsed.preview.favoritesAdded }) : parsed?.preview.different > 0 ? t("手改配置已保留") : t("已是最新")}
           </button>
           <button className="secondary-action" onClick={onClose} type="button">
             {t("取消")}

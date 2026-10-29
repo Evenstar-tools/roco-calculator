@@ -3,6 +3,20 @@ import { expect, test, vi } from "vitest";
 import { ConfigLibraryDialog } from "../../src/components/ConfigLibraryDialog.jsx";
 import { POPULAR_CONFIG_COUNT } from "../../src/data/preset-metadata.js";
 
+test("取消选文件不清除预览，未校验文件不显示已是最新", () => {
+  const onFile = vi.fn();
+  render(<ConfigLibraryDialog mode="import" onFile={onFile} />);
+  expect(screen.getByRole("button", { name: "导入", exact: true })).toBeDisabled();
+  expect(screen.queryByText("已是最新")).not.toBeInTheDocument();
+  const input = screen.getByLabelText("选择配置库文件");
+  fireEvent.change(input, { target: { files: [] } });
+  expect(onFile).not.toHaveBeenCalled();
+  const file = new File(["{}"], "configs.json", { type: "application/json" });
+  fireEvent.change(input, { target: { files: [file] } });
+  expect(onFile).toHaveBeenLastCalledWith(file);
+  expect(input.value).toBe("");
+});
+
 test("常用配置支持已有别名，搜索不扩大清单或改变导入与统计", () => {
   const onConfirmImport = vi.fn();
   const entries = [{ spiritId: "beetle", natureId: "cheerful", skills: [] },

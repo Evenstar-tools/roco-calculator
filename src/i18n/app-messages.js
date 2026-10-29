@@ -103,5 +103,6 @@ export const appMessages = Object.fromEntries([
     "主配置已变化，请重新打开承伤对比",
     "The main setup has changed. Reopen damage comparison.",
     "基本設定が変更されました。被ダメージ比較を開き直してください。"
-  ]
+  ],
+  ["页面无法显示，请重新加载。", "The page could not be displayed. Please reload.", "ページを表示できませんでした。再読み込みしてください。"]
 ].map(([key, en, ja]) => [key, { en, ja }]));

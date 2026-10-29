@@ -6,6 +6,7 @@ import { readGlobalLocale, readManualPreference, resolveEntry, routeFor, writeMa
 import { decodeShareEnvelope } from "../state/share.js";
 import { IncomingShareNotice } from "./IncomingShareNotice.jsx";
 import { RuntimeProvider } from "./RuntimeContext.jsx";
+import { RuntimeErrorBoundary } from "./RuntimeErrorBoundary.jsx";
 import { LocaleProvider } from "../i18n/LocaleContext.jsx";
 import { pickRandomSeasonThemeId, resolveSeasonPreviewId, resolveSeasonThemeId } from "../theme/season-themes.js";
 import { readLastRandomSeasonTheme, readSeasonThemePreference, writeLastRandomSeasonTheme, writeSeasonThemePreference } from "../state/season-theme.js";
@@ -191,17 +192,17 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
     {(cnVisited || isDesktop) && <SeasonThemeProvider serverId="cn" active={!global}
       seasonThemeId={cnSeasonThemeId} preference={seasonPreferences.cn} onSeasonThemeChange={(value) => changeSeasonTheme("cn", value)}>
       <div hidden={global} inert={global || undefined}>
-      <Suspense fallback={<p role="status">正在加载计算器…</p>}>
+      <RuntimeErrorBoundary locale="zh-CN"><Suspense fallback={<p role="status">正在加载计算器…</p>}>
         <RuntimeProvider serverId="cn" locale="zh-CN" seasonThemeId={cnSeasonThemeId} seasonPreview={isSeasonPreview(cnSeasonThemeId)} seasonThemePreference={seasonPreferences.cn} onSeasonThemeChange={(value) => changeSeasonTheme("cn", value)} shareRequestId={shareRequests.cn} onServerChange={isDesktop ? undefined : () => navigate("global", globalLocale)}
           onShareConflict={(envelope, hash) => setManualShare({ envelope, hash })}><LocaleProvider locale="zh-CN">
         <CalculatorRouter initialSnapshot={initialSnapshot} active={!global && !entry.conflict && !conflictServer}
           onOpenGlobal={isDesktop ? undefined : () => navigate("global", globalLocale)} />
         </LocaleProvider></RuntimeProvider>
-      </Suspense>
+      </Suspense></RuntimeErrorBoundary>
     </div></SeasonThemeProvider>}
     {globalVisited && !isDesktop && <SeasonThemeProvider serverId="global" active={global}
       seasonThemeId={globalSeasonThemeId} preference={seasonPreferences.global} onSeasonThemeChange={(value) => changeSeasonTheme("global", value)}>
-      <div hidden={!global} inert={!global || undefined}><Suspense fallback={<p role="status">{copy.loading}</p>}>
+      <div hidden={!global} inert={!global || undefined}><RuntimeErrorBoundary locale={globalLocale}><Suspense fallback={<p role="status">{copy.loading}</p>}>
       <RuntimeProvider serverId="global" locale={globalLocale} seasonThemeId={globalSeasonThemeId} seasonPreview={isSeasonPreview(globalSeasonThemeId)} seasonThemePreference={seasonPreferences.global} onSeasonThemeChange={(value) => changeSeasonTheme("global", value)} shareRequestId={shareRequests.global}
         onLocaleChange={(locale) => navigate("global", locale, { hash: location.hash })}
         onServerChange={() => navigate("cn", "zh-CN")}
@@ -210,6 +211,6 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
           <CalculatorApp active={global && !entry.conflict && !conflictServer} />
         </LocaleProvider>
       </RuntimeProvider>
-    </Suspense></div></SeasonThemeProvider>}
+    </Suspense></RuntimeErrorBoundary></div></SeasonThemeProvider>}
   </>;
 }

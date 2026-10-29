@@ -333,7 +333,7 @@ export default function DeerPage(props) {
 
 function VerifiedDeerPage({ initialState = null, onReturn }) {
   const [data, setData] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
   useEffect(() => {
     const previousTitle = isWebDocument() ? null : document.title;
     if (previousTitle !== null) document.title = "电鹿斩杀线 · 洛克计算器";
@@ -348,11 +348,11 @@ function VerifiedDeerPage({ initialState = null, onReturn }) {
         } catch { /* 无网络时仍可使用四种模板。 */ }
         try { presets = { ...presets, ...spiritConfigsRepository().load(snapshot).configs }; } catch { /* 不可用的本地存储不阻断计算。 */ }
         if (!controller.signal.aborted) setData({ snapshot, presets });
-      } catch (failure) { if (!controller.signal.aborted) setError(failure.message); }
+      } catch { if (!controller.signal.aborted) setError(true); }
     }
     load();
     return () => { controller.abort(); if (previousTitle !== null) document.title = previousTitle; };
   }, []);
-  if (!data) return <><DeerHeader onReturn={onReturn} /><main className="deer-page"><p role="status">{error || "正在加载电鹿斩杀线…"}</p>{error && <button type="button" onClick={() => window.location.reload()}>重新加载</button>}</main></>;
+  if (!data) return <><DeerHeader onReturn={onReturn} /><main className="deer-page"><p role={error ? "alert" : "status"}>{error ? "资料加载失败，请重试。" : "正在加载电鹿斩杀线…"}</p>{error && <button className="secondary-action" type="button" onClick={() => window.location.reload()}>重新加载</button>}</main></>;
   return <DeerWorkspace {...data} initialState={initialState} onReturn={onReturn} />;
 }
