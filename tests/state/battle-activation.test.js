@@ -619,6 +619,33 @@ describe("shared battle activation", () => {
     });
   });
 
+  test.each([
+    ["attacker", false], ["attacker", true], ["defender", false], ["defender", true],
+  ])("single %s defense cancels reduction without replaying permanent gains (counter %s)", (side, counter) => {
+    const snapshot = createSnapshot();
+    const skill = { id: "single-bubble-shield", name: "水泡盾", category: "defense", type: "水", basePower: 0, description: "减伤80%，应对攻击：自己获得魔攻+70%。" };
+    snapshot.skills.push(skill);
+    const state = createInitialState(snapshot);
+    const selfDirection = side === "attacker" ? "forward" : "reverse";
+    const targetDirection = side === "attacker" ? "reverse" : "forward";
+    state.mode = "single";
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides[side].skills.single = skill.id;
+    state.directions[selfDirection].context = { defenseCounterSucceeded: counter };
+    const apply = (current) => applyBattleActivation({ side, skillIndex: 0, skillMode: "single", snapshot, state: current });
+    const first = apply(state);
+    expect(first.state.directions[targetDirection].reduction).toBeCloseTo(0.2);
+    expect(first.state.directions[selfDirection].overrides.activeDefenseStatus).toMatchObject({ skillId: skill.id, slotIndex: 0 });
+    const released = apply(first.state);
+    expect(released.state.directions[targetDirection].reduction).toBe(1);
+    expect(released.state.directions[selfDirection].overrides.activeDefenseStatus).toBeNull();
+    expect(released.state.directions[selfDirection].overrides.attackLevelStage).toBe(counter ? 7 : 0);
+    const reapplied = apply(released.state);
+    expect(reapplied.state.directions[targetDirection].reduction).toBeCloseTo(0.2);
+    expect(reapplied.state.directions[selfDirection].overrides.attackLevelStage).toBe(counter ? 14 : 0);
+  });
+
   test("clears the previous defense reduction when another skill is used", () => {
     const snapshot = createSnapshot();
     const state = createInitialState(snapshot);

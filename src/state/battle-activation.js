@@ -500,14 +500,19 @@ export function applyBattleActivation({
     );
   }
   const transientPowerPercent = Number(operations.transientPowerPercentForAllAttacks);
+  const defenseReductionPercent = Number(operations.defenseReductionPercent);
+  let additions = {};
   if (Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0) {
-    const additions = addBySlot(next, snapshot, side, {}, () => true, transientPowerPercent);
+    additions = addBySlot(next, snapshot, side, {}, () => true, transientPowerPercent);
     for (const [slot, amount] of Object.entries(additions)) {
       skillPowerPercentAddsBySlot = {
         ...skillPowerPercentAddsBySlot,
         [slot]: Number(skillPowerPercentAddsBySlot[slot] ?? 0) + amount,
       };
     }
+  }
+  if ((skillMode === "single" && Number.isFinite(defenseReductionPercent)) ||
+      (Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0)) {
     updateDirection(next, selfDirection, {
       overrides: {
         activeDefenseStatus: {
@@ -649,7 +654,6 @@ export function applyBattleActivation({
       application,
     );
   }
-  const defenseReductionPercent = Number(operations.defenseReductionPercent);
   if (Number.isFinite(defenseReductionPercent)) {
     next.directions[targetDirection].reduction = Math.max(
       0,
