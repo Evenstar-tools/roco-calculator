@@ -114,7 +114,7 @@ function withManagedStatusContext(entry, context) {
   };
 }
 
-function buildCombatState(state) {
+export function buildCombatState(state) {
   const enabled = state.calculationOptions?.includeNegativeStatusSettlement === true;
   const contexts = {
     forward: negativeStatusContext(state, "defender", enabled),
@@ -288,7 +288,7 @@ export function getTraitView(snapshot, spirit, role = "attacker", skills = []) {
   };
 }
 
-function asResultRailModel({ calculation, direction, snapshot, state, includeTurnPreview = true }) {
+export function asResultRailModel({ calculation, direction, snapshot, state, includeTurnPreview = true }) {
   const isForward = direction === "forward";
   const attackSide = isForward ? state.sides.attacker : state.sides.defender;
   const defenseSide = isForward ? state.sides.defender : state.sides.attacker;

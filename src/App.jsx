@@ -6,7 +6,7 @@ import { createCalculatorSessionStore } from "./runtime/workspace-store.js";
 import { storageError } from "./state/server-storage.js";
 import { useFeatureMetrics } from "./analytics/use-feature-metrics.js";
 import { calculatorResultKind, useCalculationMetrics, useLineupMetrics } from "./analytics/use-completion-metrics.js";
-import { recordRefractionUsage } from "./domain/refraction.js";
+import { buildRefractionHint, recordRefractionUsage } from "./domain/refraction.js";
 import { expireTransientGainSources, recordGainChanges } from "./domain/gain-provenance.js";
 import { recordSkillActivation } from "./domain/skill-gain-summary.js";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -25,7 +25,9 @@ import { hasNativeMoonMemoryTrait } from "./domain/moon-memory-trait-options.js"
 import { QuickNaturePicker } from "./components/QuickNaturePicker.jsx";
 import { QuickIvPicker } from "./components/QuickIvPicker.jsx";
 import { ResultRail } from "./components/ResultRail.jsx";
-import { SingleSkillEditor } from "./components/SingleSkillEditor.jsx";
+import { CompactConditionDialog, CompactConditionTrigger } from "./components/CompactConditions.jsx";
+import { getSkillSlotConditions } from "./components/skill-condition-inputs.js";
+import { dynamicInputsForSkill, isDynamicInputVisible, mergeDynamicInputs, SingleSkillEditor } from "./components/SingleSkillEditor.jsx";
 import { SkillStep } from "./components/SkillStep.jsx";
 import { SpiritStep } from "./components/SpiritStep.jsx";
 import { PresetBrowseProvider } from "./components/PresetBrowseMode.jsx";
@@ -50,6 +52,7 @@ import {
 } from "./domain/calculator-view-model.js";
 import {
   buildChoiceSkillSequence,
+  getChoiceTraitInput,
   hasPersistentSkillProgression,
   isChoiceSkill,
   supportsChoiceTrait,
@@ -120,6 +123,7 @@ const TransmissionPanel = lazy(() => import("./features/transmission/Transmissio
 const TypeQueryPanel = lazy(() => import("./features/type-query/TypeQueryPanel.jsx"));
 const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
 const DamageComparisonDialog = lazy(() => import("./components/DamageComparisonDialog.jsx"));
+const StarfallThresholdDialog = lazy(() => import("./components/StarfallThresholdDialog.jsx"));
 const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
 const preloadSkillQuery = () => {
   void loadSkillQueryPanel().catch(() => {});
@@ -140,6 +144,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   const [queryTypes, setQueryTypes] = useState([]);
   const [rankingKind, setRankingKind] = useState(null);
   const [comparisonSource, setComparisonSource] = useState(null);
+  const [starfallSource, setStarfallSource] = useState(null);
   const [comparisonPreferences, setComparisonPreferences] = useState(null);
   const [rankingsVisited, setRankingsVisited] = useState(false);
   const initialState = useMemo(() => {
@@ -163,6 +168,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   }, [snapshot, initialWorkspace, serverId]);
   const [toast, setToast] = useState("");
   const [activeDirection, setActiveDirection] = useState(initialWorkspace?.activeDirection ?? "forward");
+  const [conditionTarget, setConditionTarget] = useState(null);
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(initialWorkspace?.advancedOptionsOpen ?? false);
   const [advancedOptionsTopRequest, setAdvancedOptionsTopRequest] = useState(null);
   const nextAdvancedOptionsTopRequestRef = useRef(0);
@@ -548,9 +554,15 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     setComparisonSource(captureDamageComparison(stateRef.current, activeDirection, storedData.comparisonPresets));
   }
 
+  function openStarfallThreshold() {
+    if (!release.capabilities.calculate || !configurationReady) return;
+    overlays.mobileResultProps.actions.onClose({ restoreFocus: false });
+    setStarfallSource(captureDamageComparison(stateRef.current, activeDirection));
+  }
+
   // 任一弹层/抽屉打开时引导浮层让位,关闭后恢复。
   const overlayCoveringGuide = Boolean(
-    shortcutsOpen || (damageComparisonEnabled && comparisonSource) || overlays.menu.open ||
+    conditionTarget || starfallSource || shortcutsOpen || (damageComparisonEnabled && comparisonSource) || overlays.menu.open ||
       overlays.team.open ||
       overlays.mobileResultProps.open ||
       overlays.cleanupConfigsProps.open ||
@@ -1576,6 +1588,41 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       ) : null)}
     </div>
   ) : null;
+  function updateSingleSkillCondition(key, value) {
+    if (updateLinkedNegativeStatus(activeAttackSideKey, selectedSingleSkill, key, value)) return;
+    if (
+      selectedSingleSkill?.name === "多维击打" &&
+      isEnemyStarfallInput(selectedSingleSkill, key)
+    ) {
+      updateTargetStarfallStacks(activeAttackSideKey, value);
+      return;
+    }
+    if (isChargeBurstSourceInput(selectedSingleSkill, key)) {
+      updateChargeBurstSource(activeAttackSideKey, value);
+      return;
+    }
+    updateTraitContext(activeDirection, key, value);
+  }
+
+  function updateFourSkillCondition(side, index, key, value) {
+    const skill = getSkill(
+      snapshot,
+      stateRef.current.sides[side].skills.four[index],
+    );
+    if (updateLinkedNegativeStatus(side, skill, key, value)) return;
+    if (skill?.name === "多维击打" && isEnemyStarfallInput(skill, key)) {
+      updateTargetStarfallStacks(side, value);
+      return;
+    }
+    if (isChargeBurstSourceInput(skill, key)) {
+      updateChargeBurstSource(side, value);
+      return;
+    }
+    updateFourSkillEntry(side, index, {
+      context: { [key]: value },
+    });
+  }
+
   const singleEditor = configurationReady ? (
     <SingleSkillEditor
       attackerHealth={
@@ -1640,21 +1687,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       canActivateSkill={canActivateSkill(activeAttackSideKey, 0, "single")}
       skillActivationLabel={skillActivationLabel(activeAttackSideKey, 0, "single")}
       onSkillActivate={activateSingleSkill}
-      onTraitContextChange={(key, value) => {
-        if (updateLinkedNegativeStatus(activeAttackSideKey, selectedSingleSkill, key, value)) return;
-        if (
-          selectedSingleSkill?.name === "多维击打" &&
-          isEnemyStarfallInput(selectedSingleSkill, key)
-        ) {
-          updateTargetStarfallStacks(activeAttackSideKey, value);
-          return;
-        }
-        if (isChargeBurstSourceInput(selectedSingleSkill, key)) {
-          updateChargeBurstSource(activeAttackSideKey, value);
-          return;
-        }
-        updateTraitContext(activeDirection, key, value);
-      }}
+      onTraitContextChange={updateSingleSkillCondition}
       result={resultModel.selectedResult}
       selectedSkill={selectedSingleSkill}
       skills={activeAttackSkills}
@@ -1760,24 +1793,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         const direction = side === "attacker" ? "forward" : "reverse";
         updateTraitContext(direction, key, value);
       }}
-      onSkillContextChange={(side, index, key, value) => {
-        const skill = getSkill(
-          snapshot,
-          stateRef.current.sides[side].skills.four[index],
-        );
-        if (updateLinkedNegativeStatus(side, skill, key, value)) return;
-        if (skill?.name === "多维击打" && isEnemyStarfallInput(skill, key)) {
-          updateTargetStarfallStacks(side, value);
-          return;
-        }
-        if (isChargeBurstSourceInput(skill, key)) {
-          updateChargeBurstSource(side, value);
-          return;
-        }
-        updateFourSkillEntry(side, index, {
-          context: { [key]: value },
-        });
-      }}
+      onSkillContextChange={updateFourSkillCondition}
       onSkillActivate={activateFourSkill}
       canSkillActivate={canActivateSkill}
       skillActivationLabel={skillActivationLabel}
@@ -1843,15 +1859,156 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     />
   ) : null;
 
+  function compactConditionModel({ key, side, title, triggerLabel, inputs, context = {}, onChange, kind, index, skill, result }) {
+    const selfHealth = side === "attacker" ? attackerHealth : defenderHealth;
+    const targetSide = side === "attacker" ? "defender" : "attacker";
+    const targetHealth = side === "attacker" ? defenderHealth : attackerHealth;
+    const healthFields = [];
+    const resolvedContext = { ...context };
+    for (const [contextKey, owner, label, health] of [
+      ["attackerHpPercent", side, "自身生命", selfHealth],
+      ["defenderHpPercent", targetSide, "对方生命", targetHealth],
+    ]) {
+      if (health && inputs.some((input) => (input.contextKey ?? input.key) === contextKey && isDynamicInputVisible(input, context))) {
+        healthFields.push({ key: contextKey, label, health,
+          onChange: (value) => updateSideHealth(owner, value),
+          onPercentChange: (value) => updateSideHealthPercent(owner, value) });
+      }
+    }
+    const controls = inputs.filter((input) => isDynamicInputVisible(input, context) && !healthFields.some((field) => field.key === (input.contextKey ?? input.key)));
+    const direction = side === "attacker" ? "forward" : "reverse";
+    const carriedSkills = state.sides[side].skills.four.map((entry) => getSkill(snapshot, entry)).filter(Boolean);
+    const sproutStacks = state.marks?.[side]?.positive?.id === "sprout" ? state.marks[side].positive.stacks : 0;
+    const traitName = (side === "attacker" ? attackerTraits : defenderTraits)
+      .map((trait) => trait?.displayName ?? trait?.name).find(supportsChoiceTrait);
+    const resolution = skill ? resolveSkillStatusActivation(skill, { ...context, carriedSkills, sproutStacks,
+      attackerHpPercent: selfHealth.percent, effectiveHitCount: result?.hitCount,
+      choiceTrait: context.choiceTraitTriggered === true ? traitName : null }) : null;
+    const sequence = skill && hasPersistentSkillProgression(skill)
+      ? buildChoiceSkillSequence({ skill, context, traitName, sproutStacks }) : null;
+    const progresses = sequence && Object.keys(sequence.nextContext).some((key) => sequence.nextContext[key] !== context[key]);
+    const postAttackEffects = calculation?.[direction]?.results?.[index ?? 0]?.postAttackEffects;
+    const postHp = postAttackEffects?.selfCurrentHpAfterSettlement;
+    const postChanges = (Number(postAttackEffects?.attackLevelStageAdd) > 0 && Number(state.directions[direction].overrides?.attackLevelStage ?? 0) < 99) ||
+      (postHp != null && Number.isFinite(Number(postHp)) && Number(postHp) !== selfHealth.currentHp);
+    const togglesStatus = skill && canToggleNegativeStatusActivation(skill, context, {
+      negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
+      negativeStatusCanApply: result?.negativeStatusCanApply, postAttackEffects,
+    });
+    const activeStatus = state.directions[direction].overrides?.activeDefenseStatus;
+    const entry = state.sides[side].skills.four[index];
+    const activeContext = state.mode === "single" ? state.directions[direction].context ?? {}
+      : linkedNegativeStatusContext(state, side, entry?.context ?? {});
+    const canRelease = activeStatus?.skillId === skill?.id &&
+      activeStatus?.slotIndex === (index ?? 0) && activeStatus?.contextSignature === JSON.stringify(activeContext);
+    const label = canRelease ? "解除状态" : skillActivationLabel(side, index ?? 0, state.mode);
+    const hasAction = skill && (resolution || progresses || postChanges || togglesStatus || canRelease);
+    const action = hasAction ? {
+      label: label === "应用后续变化" ? "应用变化" : label,
+      disabled: !release.capabilities.calculate || !(resolution?.applied || progresses || postChanges || togglesStatus || canRelease),
+      hint: resolution && !resolution.applied && !canRelease ? resolution.reason
+        : !["status", "defense"].includes(skill.category) ? "仅更新状态，不扣血" : null,
+      onApply: () => state.mode === "single" ? activateSingleSkill() : activateFourSkill(side, index),
+    } : null;
+    if (!controls.length && !healthFields.length && !skill) return null;
+    return { key, side, title, triggerLabel, inputs: controls, context: resolvedContext, onChange, healthFields, kind, index,
+      result, action, description: skill?.description,
+      nextHint: skill ? buildRefractionHint({ selectedSkill: skill, carriedSkills, sproutStacks }) : null,
+      triggerText: controls.length || healthFields.length ? "条件" : action ? "使用" : "详情",
+      notice: skill && !hasAction && (["status", "defense"].includes(skill.category) || (isChoiceSkill(skill) && !inputs.some((input) => input.type === "choice"))) ? "状态效果未接入" : null,
+    };
+  }
+
+  const compactSkillConditions = { attacker: [], defender: [] };
+  const compactTraitConditions = {};
+  let compactSingleConditions = null;
+  if (configurationReady && !placeholder) {
+    for (const side of ["attacker", "defender"]) {
+      const spirit = side === "attacker" ? attacker : defender;
+      const opponent = side === "attacker" ? defender : attacker;
+      const direction = side === "attacker" ? "forward" : "reverse";
+      const oppositeDirection = side === "attacker" ? "reverse" : "forward";
+      const label = t(side === "attacker" ? "攻击方" : "防御方");
+      const trait = getTraitView(snapshot, spirit, "attacker");
+      const ownDefenseTrait = getTraitView(snapshot, spirit, "defender");
+      const mirrorKey = (input) => String(input.id ?? input.key).replaceAll("defenderTrait", "attackerTrait");
+      const traitInputs = mergeDynamicInputs(trait?.inputs ?? [], ownDefenseTrait?.inputs ?? [])
+        .filter((input) => state.mode === "single" || input.scope !== "slot")
+        .filter((input, index, inputs) => inputs.findIndex((candidate) => mirrorKey(candidate) === mirrorKey(input)) === index);
+      const traitContext = {};
+      for (const input of traitInputs) {
+        const ownerDirection = input.id?.startsWith("defenderTrait.") ? oppositeDirection : direction;
+        const values = linkedStarfallTraitContext(side, state.directions[ownerDirection].context);
+        traitContext[input.id ?? input.key] = values[input.id ?? input.key] ?? values[input.contextKey ?? input.key];
+      }
+      compactTraitConditions[side] = compactConditionModel({
+        key: `trait:${state.mode}:${side}:${spirit.id}:${opponent.id}`,
+        side, kind: "trait", title: `${label} · ${spirit.traitName ?? trait?.name ?? "特性"}条件`, triggerLabel: `${label}特性条件`,
+        inputs: traitInputs,
+        context: traitContext,
+        onChange: (key, value) => updateTraitContext(key.startsWith("defenderTrait.") ? oppositeDirection : direction, key, value),
+      });
+      if (state.mode !== "four") continue;
+      const selectedSkills = state.sides[side].skills.four.map((entry) => linkedSkillSlotView(side, entry));
+      compactSkillConditions[side] = selectedSkills.map((selected, index) => {
+        if (!selected) return null;
+        const result = viewModel.skillResultsByDirection[direction]?.[index];
+        const { dynamicInputs } = getSkillSlotConditions({ selected, result, selectedSkills, index, trait,
+          defenseTrait: hasFairPigeonBalance(opponent) ? null : getTraitView(snapshot, opponent, "defender"),
+          traits: side === "attacker" ? attackerTraits : defenderTraits,
+          negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true });
+        const context = { ...selected.slotContext };
+        for (const input of dynamicInputs) {
+          if ((input.contextKey ?? input.key) === "actualSkillCost" && result?.effectiveCostInput != null) context[input.id ?? input.key] = result.effectiveCostInput;
+        }
+        return compactConditionModel({ key: `four:${side}:${index}:${spirit.id}:${opponent.id}:${selected.id}`,
+          side, kind: "skill", index, title: `${label} · ${selected.name}条件`, triggerLabel: `${label}技能${index + 1}条件`,
+          inputs: dynamicInputs, context, skill: selected, result, onChange: (key, value) => updateFourSkillCondition(side, index, key, value) });
+      });
+    }
+    if (state.mode === "single" && selectedSingleSkill) {
+      const label = t(activeAttackSideKey === "attacker" ? "攻击方" : "防御方");
+      const choiceTraitInput = (activeAttackSideKey === "attacker" ? attackerTraits : defenderTraits)
+        .some((trait) => supportsChoiceTrait(trait?.displayName ?? trait?.name)) ? getChoiceTraitInput(selectedSingleSkill) : null;
+      const inputs = mergeDynamicInputs(dynamicInputsForSkill(selectedSingleSkill, {
+        includeNegativeStatusEffects: state.calculationOptions?.includeNegativeStatusSettlement === true,
+        includeStatusEffects: true,
+      }), resultModel.selectedResult?.inputs ?? [], choiceTraitInput ? [choiceTraitInput] : []);
+      compactSingleConditions = compactConditionModel({
+        key: `single:${activeAttackSideKey}:${activeAttackSpirit.id}:${activeDefenseSpirit.id}:${selectedSingleSkill.id}`,
+        side: activeAttackSideKey, kind: "skill", title: `${label} · ${selectedSingleSkill.name}条件`, triggerLabel: `${label}当前技能条件`, inputs,
+        context: linkedSkillContext(activeAttackSideKey, selectedSingleSkill, linkedStarfallTraitContext(activeAttackSideKey, currentDirection.context)),
+        skill: selectedSingleSkill, result: resultModel.selectedResult,
+        onChange: updateSingleSkillCondition,
+      });
+    }
+  }
+  const openedCondition = viewMode === "compact" && active
+    ? [...Object.values(compactTraitConditions), ...compactSkillConditions.attacker, ...compactSkillConditions.defender, compactSingleConditions]
+      .find((model) => model && model.key === conditionTarget?.key) ?? null
+    : null;
+  const conditionTargetValid = Boolean(openedCondition);
+  useEffect(() => {
+    // A changed entity/mode must discard only the temporary panel, never its configuration.
+    if (conditionTarget && !conditionTargetValid) setConditionTarget(null);
+  }, [conditionTarget, conditionTargetValid]);
+  function openCompactConditions(model, anchor) {
+    if (model.kind === "skill" && state.mode === "four") focusSkillResult(model.side, model.index);
+    setConditionTarget({ key: model.key, anchor });
+  }
+  const compactConditionControls = viewMode === "compact" ? Object.fromEntries(["attacker", "defender"].map((side) => [side,
+    <CompactConditionTrigger key={side} model={compactTraitConditions[side]} onOpen={openCompactConditions} expanded={openedCondition?.key === compactTraitConditions[side]?.key} />,
+  ])) : {};
+
   const compactSingleEditor = configurationEditable ? (
     <CompactSingleSkillEditor
+      conditionModel={compactSingleConditions}
+      onOpenConditions={openCompactConditions}
+      openConditionKey={openedCondition?.key}
       placeholder={placeholder}
       attackName={activeAttackSpirit.fullName}
       defenseName={activeDefenseSpirit.fullName}
       onSkillSelect={selectSingleSkill}
-      canActivateSkill={canActivateSkill(activeAttackSideKey, 0, "single")}
-      skillActivationLabel={skillActivationLabel(activeAttackSideKey, 0, "single")}
-      onSkillActivate={activateSingleSkill}
       result={resultModel?.selectedResult}
       selectedSkill={selectedSingleSkill}
       skills={activeAttackSkills}
@@ -1860,6 +2017,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
 
   const compactFourEditor = configurationEditable ? (
     <CompactFourSkillEditor
+      conditionModels={compactSkillConditions}
+      onOpenConditions={openCompactConditions}
+      openConditionKey={openedCondition?.key}
       placeholder={placeholder}
       traitEditors={state.mode === "four" ? moonMemoryEditors : {}}
       activeDamageSource={activeDamageSource}
@@ -1869,7 +2029,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       attackerResults={viewModel.skillResultsByDirection.forward}
       attackerSkillChoices={attackerSkillChoices}
       attackerSkills={state.sides.attacker.skills.four.map((entry) =>
-        getSkillSlotView(snapshot, entry),
+        linkedSkillSlotView("attacker", entry),
       )}
       attackerSproutStacks={
         state.marks?.attacker?.positive?.id === "sprout"
@@ -1881,7 +2041,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       defenderResults={viewModel.skillResultsByDirection.reverse}
       defenderSkillChoices={defenderSkillChoices}
       defenderSkills={state.sides.defender.skills.four.map((entry) =>
-        getSkillSlotView(snapshot, entry),
+        linkedSkillSlotView("defender", entry),
       )}
       defenderSproutStacks={
         state.marks?.defender?.positive?.id === "sprout"
@@ -1890,9 +2050,6 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       }
       defenderTraitDamage={defenderTraitDamage}
       onSkillFocus={focusSkillResult}
-      onSkillActivate={activateFourSkill}
-      canSkillActivate={canActivateSkill}
-      skillActivationLabel={skillActivationLabel}
       onTraitDamageFocus={(side) => {
         const direction = side === "attacker" ? "forward" : "reverse";
         setActiveDirection(direction);
@@ -2001,6 +2158,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         onSkillResultSelect: selectSkillResult,
         onNegativeStatusRepeatChange: updateNegativeStatusRepeatNextTurn,
         onOpenComparison: damageComparisonEnabled ? openDamageComparison : undefined,
+        onOpenStarfall: release.capabilities.calculate ? openStarfallThreshold : undefined,
       },
     },
     share: shareFlow.overlayProps,
@@ -2155,6 +2313,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       <div className={`calculator-layout calculator-layout--${viewMode}`}>
         <main className="calculator-main">
           <SpiritStep
+            conditionControls={compactConditionControls}
             attacker={attacker}
             attackerFavoriteState={
               favoriteSpiritIds.has(attacker?.id)
@@ -2411,6 +2570,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                 }
                 finalMultiplier={currentDirection.finalDamageMultiplier}
                 marks={state.marks}
+                onOpenStarfall={release.capabilities.calculate ? openStarfallThreshold : undefined}
+                starfallTargetSide={activeDirection === "forward" ? "defender" : "attacker"}
                 negativeStatusEnabled={
                   state.calculationOptions?.includeNegativeStatusSettlement === true
                 }
@@ -2474,6 +2635,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           <div className="result-column">
             <ResultRail
               onOpenComparison={damageComparisonEnabled ? openDamageComparison : undefined}
+              onOpenStarfall={release.capabilities.calculate ? openStarfallThreshold : undefined}
               activeAdvancedConditions={activeAdvancedConditions}
               onBloodlineResultFocus={() =>
                 updateDirection({ selectedDamageSource: "bloodline" })
@@ -2496,6 +2658,19 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       </div>
 
       </WorkspaceOverlays>
+      {starfallSource ? <Suspense fallback={<div role="status">{t("正在打开星陨斩杀线…")}</div>}><StarfallThresholdDialog
+        key={JSON.stringify(starfallSource)} snapshot={snapshot} source={starfallSource} onClose={() => setStarfallSource(null)}
+        onApply={(next, { keepOpen = false, notice = "" } = {}) => {
+          if (JSON.stringify(stateRef.current) !== JSON.stringify(starfallSource.state)) {
+            setToast(t("主配置已变化，请重新打开星陨斩杀线"));
+            return;
+          }
+          commitSession({ state: next, persistence: { rememberSide: null } });
+          setActiveDirection(starfallSource.direction);
+          setStarfallSource(keepOpen ? { ...starfallSource, state: next } : null);
+          if (notice) setToast(notice);
+        }}
+      /></Suspense> : null}
       {damageComparisonEnabled && comparisonSource ? <Suspense fallback={<div role="status">{t("正在打开承伤对比…")}</div>}><DamageComparisonDialog
         key={damageComparisonSourceKey(comparisonSource)} preferences={comparisonPreferences} onPreferencesChange={setComparisonPreferences}
         snapshot={snapshot} source={comparisonSource} onClose={() => setComparisonSource(null)}
@@ -2513,6 +2688,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       {rankingsVisited ? <Suspense fallback={<div role="status">{t("正在打开排行榜…")}</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}
       {transmissionOpen && <Suspense fallback={<div role="status">{t("正在打开传动计算器…")}</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} getSpiritConfiguration={storedData.getSpiritConfiguration} onClose={() => setTransmissionOpen(false)} /></Suspense>}
       {typeQueryOpen && <Suspense fallback={<div role="status">{t("正在打开属性查询…")}</div>}><TypeQueryPanel typeChart={snapshot.typeChart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={queryTypes} onTypesChange={setQueryTypes} onClose={() => setTypeQueryOpen(false)} /></Suspense>}
+      {openedCondition && <CompactConditionDialog model={openedCondition} anchor={conditionTarget.anchor} onClose={() => setConditionTarget(null)} />}
       {skillQueryOpen && <Suspense fallback={<div role="status">{t("正在打开技能查询…")}</div>}><SkillQueryPanel snapshot={snapshot} skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>

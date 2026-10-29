@@ -15,7 +15,7 @@ import { FAVORITES_STORAGE_KEY } from "../../src/state/favorites.js";
 import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js";
 import { FEATURED_USER_RELEASE } from "../../src/data/user-release-notes.js";
 import {
-  decodeShareState,
+  decodeShareEnvelope,
   encodeShareState,
 } from "../../src/state/share.js";
 import { SPIRIT_CONFIG_STORAGE_KEY } from "../../src/state/spirit-configs.js";
@@ -2069,7 +2069,7 @@ test("Dazzling shows seven slots and Refraction applies unique carried types per
   });
   const shareDialog = await screen.findByRole("dialog", { name: "分享当前配置" });
   const shareLink = within(shareDialog).getByRole("textbox", { name: "当前配置链接" });
-  const sharedState = await decodeShareState(new URL(shareLink.value).hash);
+  const { payload: sharedState } = await decodeShareEnvelope(new URL(shareLink.value).hash);
   expect(sharedState.directions.forward.overrides.fixedPowerAddsBySlot).toEqual({});
   expect(sharedState.directions.forward.overrides.fixedPowerAdd).toBe(20);
   expect(sharedState.negativeStatuses.defender.freeze).toBe(2);
@@ -2360,10 +2360,10 @@ test("shows applied attack levels in both attack panel values", async () => {
 
   expect(
     Number(physicalAttackTile.querySelector(".stat-tile__panel").textContent),
-  ).toBe(Math.round(physicalBefore * 1.7));
+  ).toBe(Math.floor(physicalBefore * 1.7));
   expect(
     Number(magicalAttackTile.querySelector(".stat-tile__panel").textContent),
-  ).toBe(Math.round(magicalBefore * 1.7));
+  ).toBe(Math.floor(magicalBefore * 1.7));
 });
 
 test("applies Prepared Stance attack gain and only applies its counter debuff when checked", async () => {
@@ -2598,7 +2598,7 @@ test("doubles all existing positive own levels after Mud Armor counters", async 
   expect(within(attackSide).getByText("26层 · +260%")).toBeVisible();
   expect(
     Number(ownPhysicalDefense.querySelector(".stat-tile__panel").textContent),
-  ).toBe(Math.round(physicalDefenseBefore * 2.2));
+  ).toBe(Math.floor(physicalDefenseBefore * 2.2));
   expect(within(defenseSide).getByText("0层 · 0%")).toBeVisible();
 });
 
@@ -4250,4 +4250,210 @@ test("moves focus into the mobile result dialog and closes it with Escape", asyn
   expect(
     screen.queryByRole("dialog", { name: "完整伤害结果" }),
   ).not.toBeInTheDocument();
+});
+
+
+async function selectCompactConditionSkill(user, name, mode = "four") {
+  if (mode === "single") await user.click(screen.getByRole("tab", { name: "单技能" }));
+  const picker = screen.getByRole("combobox", { name: mode === "four" ? "攻击方技能1" : "音速犬当前技能", exact: true });
+  await user.clear(picker);
+  await user.type(picker, name);
+  await user.click(screen.getAllByRole("option").find((option) => within(option).queryByText(name, { selector: "strong", exact: true })));
+}
+
+test.each(["four", "single"])("精简条件 %s 能量即时同步具体版并恢复会话，关闭返回焦点且不穿透快捷键", async (mode) => {
+  const user = userEvent.setup();
+  let app = render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await selectCompactConditionSkill(user, "魔能爆", mode);
+  const triggerName = mode === "four" ? "攻击方技能1条件" : "攻击方当前技能条件";
+  await user.click(screen.getByRole("button", { name: triggerName }));
+  let dialog = screen.getByRole("dialog", { name: "攻击方 · 魔能爆条件" });
+  expect(within(dialog).getByRole("spinbutton", { name: "当前能量" })).toHaveValue(10);
+  const before = screen.getByTestId("primary-damage").textContent;
+  fireEvent.change(within(dialog).getByRole("spinbutton", { name: "当前能量" }), { target: { value: "4" } });
+  expect(screen.getByTestId("primary-damage").textContent).not.toBe(before);
+  await user.keyboard("{Tab}{Tab}");
+  expect(screen.getByRole("button", { name: "精简版" })).toHaveAttribute("aria-pressed", "true");
+  await user.keyboard("{Escape}");
+  expect(screen.queryByRole("dialog", { name: "攻击方 · 魔能爆条件" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: triggerName })).toHaveFocus();
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  expect(screen.getByRole("spinbutton", { name: mode === "four" ? "攻击方技能1当前能量" : "当前能量", exact: true })).toHaveValue(4);
+  await user.click(screen.getByRole("button", { name: "精简版" }));
+  app.unmount();
+  app = render(<App initialSnapshot={snapshot} />);
+  await user.click(screen.getByRole("button", { name: triggerName }));
+  dialog = screen.getByRole("dialog", { name: "攻击方 · 魔能爆条件" });
+  expect(within(dialog).getByRole("spinbutton", { name: "当前能量" })).toHaveValue(4);
+  await user.click(within(dialog).getByRole("button", { name: "关闭条件" }));
+  await user.click(screen.getByRole("button", { name: /撤回上一步/ }));
+  await user.click(screen.getByRole("button", { name: triggerName }));
+  expect(within(screen.getByRole("dialog", { name: "攻击方 · 魔能爆条件" })).getByRole("spinbutton", { name: "当前能量" })).toHaveValue(10);
+  app.unmount();
+});
+
+test("精简条件 星陨输入与原生特性、目标印记共用状态，改实体后旧面板关闭", async () => {
+  const user = userEvent.setup();
+  const fixture = { ...snapshot, traits: [...(snapshot.traits ?? []), { id: "starfall-compact-trait", name: "坠星" }],
+    spirits: snapshot.spirits.map((spirit) => spirit.fullName === "音速犬" ? { ...spirit, traitIds: ["starfall-compact-trait"], traitName: "坠星" } : spirit) };
+  render(<App initialSnapshot={fixture} />);
+  await selectDefaultSpirits(user);
+  await selectCompactConditionSkill(user, "多维击打");
+  await user.click(screen.getByRole("button", { name: "攻击方技能1条件" }));
+  const skillDialog = screen.getByRole("dialog", { name: "攻击方 · 多维击打条件" });
+  fireEvent.change(within(skillDialog).getByRole("spinbutton", { name: "敌方星陨印记" }), { target: { value: "3" } });
+  await user.click(within(skillDialog).getByRole("button", { name: "关闭条件" }));
+  expect(screen.getByRole("button", { name: "攻击方技能1条件" })).toHaveTextContent("3");
+  await user.click(screen.getByRole("button", { name: "攻击方特性条件" }));
+  const traitDialog = screen.getByRole("dialog", { name: "攻击方 · 坠星条件" });
+  expect(within(traitDialog).getByRole("spinbutton", { name: "敌方星陨层数" })).toHaveValue(3);
+  fireEvent.change(within(traitDialog).getByRole("spinbutton", { name: "敌方星陨层数" }), { target: { value: "4" } });
+  await user.click(within(traitDialog).getByRole("button", { name: "关闭条件" }));
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能1敌方星陨印记" })).toHaveValue(4);
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  expect(screen.getByRole("spinbutton", { name: "防御方星陨层数" })).toHaveValue(4);
+  await user.click(screen.getByRole("button", { name: "精简版" }));
+  await user.click(screen.getByRole("button", { name: "攻击方技能1条件" }));
+  await selectSpirit(user, "攻击方", "水灵");
+  expect(screen.queryByRole("dialog", { name: "攻击方 · 多维击打条件" })).not.toBeInTheDocument();
+});
+
+test.each(["four", "single"])("精简条件 %s 冻结字段沿用异常结算状态，编辑不串到己方", async (mode) => {
+  localStorage.setItem(NEGATIVE_STATUS_SETTLEMENT_STORAGE_KEY, "1");
+  const user = userEvent.setup();
+  const skill = { id: "compact-ice-break", name: "碎冰冰", basePower: 25, category: "magical", type: "冰", cost: 3,
+    description: "造成魔伤，敌方每有1层冻结，本次技能威力+20。" };
+  const fixture = { ...snapshot, skills: [...snapshot.skills, skill], learnsets: snapshot.learnsets.map((entry) => ({ ...entry, skillIds: [...entry.skillIds, skill.id] })) };
+  render(<App initialSnapshot={fixture} />);
+  await selectDefaultSpirits(user);
+  await selectCompactConditionSkill(user, "碎冰冰", mode);
+  await user.click(screen.getByRole("button", { name: mode === "four" ? "攻击方技能1条件" : "攻击方当前技能条件" }));
+  const dialog = screen.getByRole("dialog", { name: "攻击方 · 碎冰冰条件" });
+  fireEvent.change(within(dialog).getByRole("spinbutton", { name: "敌方冻结层数" }), { target: { value: "3" } });
+  await user.click(within(dialog).getByRole("button", { name: "关闭条件" }));
+  await user.click(screen.getByRole("button", { name: "具体版" }));
+  await user.click(screen.getByRole("button", { name: "高级选项" }));
+  expect(screen.getByRole("spinbutton", { name: "防御方冻结层数", exact: true })).toHaveValue(3);
+  expect(screen.getByRole("spinbutton", { name: "进攻方冻结层数", exact: true })).toHaveValue(0);
+});
+
+test("精简条件 打开状态技能面板与关闭操作不施放技能，不增加撤回记录", async () => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await selectCompactConditionSkill(user, "重组");
+  const undo = screen.getByRole("button", { name: /撤回上一步/ }).getAttribute("aria-label");
+  const usage = document.querySelector(".compact-skill-side--attacker .skill-usage")?.textContent;
+  await user.click(screen.getByRole("button", { name: "攻击方技能1条件" }));
+  const dialog = screen.getByRole("dialog", { name: "攻击方 · 重组条件" });
+  expect(within(dialog).getByRole("checkbox", { name: "应对防御成功" })).not.toBeChecked();
+  await user.click(within(dialog).getByRole("button", { name: "关闭条件" }));
+  expect(screen.getByRole("button", { name: /撤回上一步/ })).toHaveAttribute("aria-label", undo);
+  expect(document.querySelector(".compact-skill-side--attacker .skill-usage")?.textContent).toBe(usage);
+});
+
+test.each(["four", "single"])("精简适配 %s 水泡盾条件可用，点击列表不施放，应用后可撤回", async (mode) => {
+  const user = userEvent.setup();
+  render(<App initialSnapshot={snapshot} />);
+  await selectDefaultSpirits(user);
+  await selectCompactConditionSkill(user, "水泡盾", mode);
+  const before = screen.getByRole("button", { name: /撤回上一步/ }).getAttribute("aria-label");
+  if (mode === "four") await user.click(screen.getByRole("group", { name: "攻击方技能1，当前选中", exact: true }));
+  expect(screen.getByRole("button", { name: /撤回上一步/ })).toHaveAttribute("aria-label", before);
+  const trigger = () => screen.getByRole("button", { name: mode === "four" ? "攻击方技能1条件" : "攻击方当前技能条件", exact: true });
+  await user.click(trigger());
+  let dialog = screen.getByRole("dialog", { name: "攻击方 · 水泡盾条件" });
+  await user.click(within(dialog).getByRole("checkbox", { name: "防御应对成功", exact: true }));
+  await user.click(within(dialog).getByRole("button", { name: "使用技能", exact: true }));
+  expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("攻击+7层");
+  expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("减伤80%");
+  await user.keyboard("{Escape}");
+  await user.click(screen.getByRole("button", { name: /撤回上一步/ }));
+  await user.click(trigger());
+  dialog = screen.getByRole("dialog", { name: "攻击方 · 水泡盾条件" });
+  expect(within(dialog).queryByText(/已用 1 次/)).not.toBeInTheDocument();
+  expect(within(dialog).getByRole("checkbox", { name: "防御应对成功", exact: true })).toBeChecked();
+});
+
+test("精简适配 选择分支按实际生命条件显隐，驱赶与未接入效果不显示空应用按钮", async () => {
+  const user = userEvent.setup();
+  const skills = [
+    { id: "adapt-drive", name: "驱赶", basePower: 70, cost: 3, category: "magical", type: "武", description: "造成魔伤，选择：本次技能威力+20或应对攻击本次技能威力+40。" },
+    { id: "adapt-hop", name: "蹦跶", basePower: 110, cost: 3, category: "magical", type: "萌", description: "造成魔伤，选择：自己获得萌化或解除萌化。" },
+    { id: "adapt-sweet", name: "甜心续航", basePower: 0, cost: 3, category: "status", type: "萌", description: "自己和敌方获得萌化：回复40%生命。" },
+    { id: "adapt-bet", name: "下注", basePower: 65, cost: 3, category: "magical", type: "恶", description: "造成魔伤，选择：固定加威或低血加威。" },
+  ];
+  render(<App initialSnapshot={{ ...snapshot, skills: [...snapshot.skills, ...skills] }} />);
+  await selectDefaultSpirits(user);
+  for (const skill of skills) {
+    await selectCompactConditionSkill(user, skill.name);
+    const trigger = screen.getByRole("button", { name: "攻击方技能1条件", exact: true });
+    await user.click(trigger);
+    const dialog = screen.getByRole("dialog", { name: `攻击方 · ${skill.name}条件` });
+    expect(within(dialog).queryByRole("button", { name: /应用|使用技能/ })).not.toBeInTheDocument();
+    if (skill.name === "驱赶") {
+      expect(within(dialog).queryByRole("checkbox", { name: "触发应对" })).not.toBeInTheDocument();
+      await user.selectOptions(within(dialog).getByRole("combobox", { name: "选择效果" }), "counter");
+      await user.click(within(dialog).getByRole("checkbox", { name: "触发应对" }));
+      expect(trigger).toHaveTextContent("应对加威");
+    }
+    if (skill.name === "甜心续航") expect(within(dialog).getByText("状态效果未接入")).toBeVisible();
+    if (skill.name === "下注") {
+      expect(within(dialog).queryByRole("spinbutton", { name: "自身生命百分比" })).not.toBeInTheDocument();
+      await user.selectOptions(within(dialog).getByRole("combobox", { name: "选择效果" }), "lowHp");
+      fireEvent.change(within(dialog).getByRole("spinbutton", { name: "自身生命百分比" }), { target: { value: "50" } });
+      await user.selectOptions(within(dialog).getByRole("combobox", { name: "选择效果" }), "fixed");
+      expect(within(dialog).queryByRole("spinbutton", { name: "自身生命百分比" })).not.toBeInTheDocument();
+      await user.selectOptions(within(dialog).getByRole("combobox", { name: "选择效果" }), "lowHp");
+      expect(within(dialog).getByRole("spinbutton", { name: "自身生命百分比" })).toHaveValue(50);
+    }
+    await user.keyboard("{Escape}");
+  }
+});
+
+test("精简适配 双方相同特性只显示己方一组镜像条件", async () => {
+  const user = userEvent.setup();
+  const trait = { id: "adapt-judgement", name: "裁决" };
+  const fixture = { ...snapshot, traits: [...snapshot.traits, trait], spirits: snapshot.spirits.map((spirit) =>
+    ["音速犬", "水灵"].includes(spirit.fullName) ? { ...spirit, traitName: trait.name, traitIds: [trait.id] } : spirit) };
+  render(<App initialSnapshot={fixture} />);
+  await selectDefaultSpirits(user);
+  for (const [side, value] of [["攻击方", "2"], ["防御方", "5"]]) {
+    await user.click(screen.getByRole("button", { name: `${side}特性条件`, exact: true }));
+    const dialog = screen.getByRole("dialog", { name: `${side} · 裁决条件` });
+    expect(within(dialog).getAllByRole("spinbutton", { name: "触发层数", exact: true })).toHaveLength(1);
+    fireEvent.change(within(dialog).getByRole("spinbutton", { name: "触发层数", exact: true }), { target: { value } });
+    await user.keyboard("{Escape}");
+  }
+  await user.click(screen.getByRole("button", { name: "攻击方特性条件", exact: true }));
+  expect(within(screen.getByRole("dialog")).getByRole("spinbutton", { name: "触发层数", exact: true })).toHaveValue(2);
+});
+
+test("精简适配 单技能临时状态可解除，选择特性可推进真实次数", async () => {
+  const user = userEvent.setup();
+  const trait = { id: "adapt-choice", name: "一意孤行" };
+  const skill = { id: "adapt-friendship", name: "友谊满溢", basePower: 70, cost: 3, category: "magical", type: "萌", description: "造成魔伤，选择：本技能威力永久+20或应对状态本次威力翻倍。" };
+  const fixture = { ...snapshot, skills: [...snapshot.skills, skill], traits: [...snapshot.traits, trait],
+    spirits: snapshot.spirits.map((spirit) => spirit.fullName === "音速犬" ? { ...spirit, traitName: trait.name, traitIds: [trait.id] } : spirit) };
+  render(<App initialSnapshot={fixture} />);
+  await selectDefaultSpirits(user);
+  await selectCompactConditionSkill(user, "热身", "single");
+  const trigger = () => screen.getByRole("button", { name: "攻击方当前技能条件", exact: true });
+  await user.click(trigger());
+  let dialog = screen.getByRole("dialog", { name: "攻击方 · 热身条件" });
+  await user.click(within(dialog).getByRole("button", { name: "使用技能", exact: true }));
+  await user.click(within(dialog).getByRole("button", { name: "解除状态", exact: true }));
+  expect(within(dialog).getByRole("button", { name: "使用技能", exact: true })).toBeEnabled();
+  await user.keyboard("{Escape}");
+  await selectCompactConditionSkill(user, "友谊满溢", "single");
+  await user.click(trigger());
+  dialog = screen.getByRole("dialog", { name: "攻击方 · 友谊满溢条件" });
+  await user.click(within(dialog).getByRole("checkbox", { name: "触发特性", exact: true }));
+  await user.click(within(dialog).getByRole("button", { name: "应用变化", exact: true }));
+  expect(within(dialog).getByRole("spinbutton", { name: "此前使用次数", exact: true })).toHaveValue(2);
+  await user.keyboard("{Escape}");
+  await user.click(screen.getByRole("button", { name: "具体版", exact: true }));
+  expect(screen.getByRole("checkbox", { name: "触发特性", exact: true })).toBeChecked();
 });

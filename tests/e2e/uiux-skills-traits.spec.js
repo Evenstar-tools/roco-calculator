@@ -589,3 +589,71 @@ test("uses negative-status skills explicitly and controls next-turn reuse indepe
   await expect(page.getByRole("region", { name: "回合状态预估" }))
     .toHaveCount(0);
 });
+
+for (const [width, theme] of [[1424, "light"], [390, "dark"]]) {
+  test(`keeps detailed skill actions aligned through use and undo ${width} ${theme}`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto("/");
+    await selectDefaultSpirits(page);
+    await setViewMode(page, "具体版");
+    await page.evaluate((value) => { document.documentElement.dataset.theme = value; }, theme);
+    await page.getByRole("tab", { name: "四技能", exact: true }).click();
+    if (width < 621) {
+      await page.getByRole("group", { name: "四技能角色" })
+        .getByRole("button", { name: "防御", exact: true }).click();
+    }
+    for (const [index, name] of ["水泡盾", "润泽", "天洪", "寒风吹"].entries()) {
+      await page.getByRole("combobox", { name: `防御方技能${index + 1}`, exact: true }).fill(name);
+      await page.getByRole("option", { name: new RegExp(`^${name}`) }).click();
+    }
+
+    const side = page.locator(".four-skill-side--defender");
+    const rows = side.locator(".skill-slot-group");
+    const damage = rows.nth(2).locator(".skill-slot__damage-values > span");
+    await expect(damage).toContainText("伤害");
+    const baseline = Number.parseFloat(await damage.innerText());
+    const capture = width < 621 ? side : page.locator(".four-skill-editor");
+
+    async function expectActionsAligned(count) {
+      await expect(side.locator(".skill-follow-up")).toHaveCount(count);
+      const layout = await side.locator(".skill-follow-up").evaluateAll((buttons) => buttons.map((button) => {
+        const context = button.closest(".skill-slot__context");
+        const box = button.getBoundingClientRect();
+        const bounds = context.getBoundingClientRect();
+        const preceding = [...context.children].filter((node) => !node.contains(button))
+          .map((node) => node.getBoundingClientRect()).filter((rect) => rect.height > 0);
+        return {
+          rightAligned: Math.abs(box.right - bounds.right) <= 1,
+          belowContent: preceding.every((rect) => rect.bottom <= box.top + 1),
+          fits: context.scrollWidth <= context.clientWidth && box.bottom <= bounds.bottom + 1,
+        };
+      }));
+      expect(layout.every((item) => Object.values(item).every(Boolean)), JSON.stringify(layout)).toBe(true);
+    }
+
+    await expectActionsAligned(3);
+    if (width < 621) await capture.evaluate((node) => window.scrollBy(0, node.getBoundingClientRect().top - 72));
+    await capture.screenshot({ path: testInfo.outputPath(`detailed-actions-unused-${width}-${theme}.png`) });
+    await page.getByRole("checkbox", { name: "防御方技能1防御应对成功", exact: true }).check();
+    await rows.nth(0).getByRole("button", { name: "防御方技能1使用技能", exact: true }).click();
+    await expect(rows.nth(0).locator(".skill-usage")).toContainText("减伤80%");
+    await expect.poll(async () => Number.parseFloat(await damage.innerText())).toBeGreaterThan(baseline);
+    await expectActionsAligned(4);
+    if (width < 621) await capture.evaluate((node) => window.scrollBy(0, node.getBoundingClientRect().top - 72));
+    await capture.screenshot({ path: testInfo.outputPath(`detailed-actions-used-${width}-${theme}.png`) });
+    await page.getByRole("button", { name: /撤回上一步/ }).click();
+    await expect(rows.nth(0).locator(".skill-usage")).toHaveCount(0);
+    await expect.poll(async () => Number.parseFloat(await damage.innerText())).toBe(baseline);
+    await expectActionsAligned(3);
+
+    for (const [index, label] of [[1, "使用技能"], [3, "应用后续变化"]]) {
+      await rows.nth(index).getByRole("button", { name: `防御方技能${index + 1}${label}`, exact: true }).click();
+      await expect(rows.nth(index).locator(".skill-usage")).toContainText("已使用×1");
+      await expect.poll(async () => Number.parseFloat(await damage.innerText())).toBeGreaterThan(baseline);
+      await expectActionsAligned(3);
+      await page.getByRole("button", { name: /撤回上一步/ }).click();
+      await expect.poll(async () => Number.parseFloat(await damage.innerText())).toBe(baseline);
+      await expectActionsAligned(3);
+    }
+  });
+}

@@ -5,6 +5,7 @@ import {
   within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { expect, test, vi } from "vitest";
 import {
   AdvancedOptions,
@@ -15,6 +16,8 @@ import {
   CompactFourSkillEditor,
   CompactSingleSkillEditor,
 } from "../../src/components/CompactSkillEditor.jsx";
+import { CompactConditionDialog } from "../../src/components/CompactConditions.jsx";
+import { getSkillSlotConditions } from "../../src/components/skill-condition-inputs.js";
 import { FourSkillEditor } from "../../src/components/FourSkillEditor.jsx";
 import { SkillPicker } from "../../src/components/SkillPicker.jsx";
 import {
@@ -31,6 +34,23 @@ import {
 import snapshot from "../../data/snapshots/current.json";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 import { calculateNegativeStatusSettlement } from "../../src/domain/negative-status.js";
+import { buildRefractionHint } from "../../src/domain/refraction.js";
+
+function CompactConditionsHarness({ children }) {
+  const [opened, setOpened] = useState(null);
+  return <>
+    {children((model, anchor) => setOpened({ model, anchor }), opened?.model.key)}
+    {opened ? <CompactConditionDialog model={opened.model} anchor={opened.anchor} onClose={() => setOpened(null)} /> : null}
+  </>;
+}
+
+function compactConditionModel(skill, result, triggerLabel, selectedSkills = [skill]) {
+  return {
+    key: triggerLabel, title: `${skill.name}条件`, triggerLabel,
+    inputs: getSkillSlotConditions({ selected: skill, result, selectedSkills }).dynamicInputs,
+    context: skill.slotContext ?? {}, onChange: vi.fn(), result, description: skill.description,
+  };
+}
 
 test.each(["鸩毒", "以毒攻毒", "腐化", "不可接触"])("%s 的中毒条件可手动输入且支持 99 层", (name) => {
   const skill = snapshot.skills.find((entry) => entry.name === name);
@@ -127,10 +147,18 @@ test("传感器位置控件显示当前槽位，连击显示计算结果", () =>
   });
 });
 
-test("精简单技能保留累计摘要和下次预览", () => {
-  render(<CompactSingleSkillEditor attackName="攻击方" defenseName="防御方" skills={skills} selectedSkill={skills[0]} onSkillSelect={vi.fn()} result={{ usageSummary: { count: 2, powerGain: 20, hitCountGain: 2, currentEffects: ["威力 +20"], nextHint: "本次可得：威力+10" } }} />);
-  expect(screen.getByText(/增益：威力\+20/)).toBeVisible();
-  expect(screen.getByText("本次可得：威力+10")).toBeVisible();
+test("精简单技能保留简短累计状态，条件层可查看下次预览", () => {
+  const result = { status: "exact", totalDamage: 80, hpPercent: 20,
+    usageSummary: { count: 2, powerGain: 20, hitCountGain: 2, currentEffects: ["威力 +20"], nextHint: "本次可得：威力+10" } };
+  const model = compactConditionModel(skills[0], result, "当前技能条件");
+  render(<CompactConditionsHarness>{(onOpen, openKey) => <CompactSingleSkillEditor
+    attackName="攻击方" defenseName="防御方" skills={skills} selectedSkill={skills[0]} onSkillSelect={vi.fn()}
+    result={result} conditionModel={model} onOpenConditions={onOpen} openConditionKey={openKey} />}</CompactConditionsHarness>);
+  expect(screen.getByText(/已用 2 次.*威力\+20.*连击\+2/)).toBeVisible();
+  expect(screen.getByRole("status")).toHaveTextContent("80");
+  expect(screen.queryByText("本次可得：威力+10")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "当前技能条件" }));
+  expect(within(screen.getByRole("dialog", { name: "风力冲击条件" })).getByText("本次可得：威力+10")).toBeVisible();
 });
 
 test("手动连击加减和恢复默认沿用现有回调，默认保留自动增益", () => {
@@ -1594,8 +1622,10 @@ test("compact editors show the same dynamic power note", () => {
     totalDamage: 80,
   };
 
+  const fourModel = compactConditionModel(flashStrike, result, "攻击方技能1条件");
+  const singleModel = compactConditionModel(flashStrike, result, "当前技能条件");
   render(
-    <>
+    <CompactConditionsHarness>{(onOpen, openKey) => <>
       <CompactFourSkillEditor
         attackerName="岚鸟"
         attackerResults={[result]}
@@ -1607,6 +1637,9 @@ test("compact editors show the same dynamic power note", () => {
         defenderSkills={[skills[1], null, null, null]}
         onSkillFocus={vi.fn()}
         onSkillSelect={vi.fn()}
+        conditionModels={{ attacker: [fourModel] }}
+        onOpenConditions={onOpen}
+        openConditionKey={openKey}
       />
       <CompactSingleSkillEditor
         attackName="岚鸟"
@@ -1615,13 +1648,20 @@ test("compact editors show the same dynamic power note", () => {
         result={result}
         selectedSkill={flashStrike}
         skills={[flashStrike]}
+        conditionModel={singleModel}
+        onOpenConditions={onOpen}
+        openConditionKey={openKey}
       />
-    </>,
+    </>}</CompactConditionsHarness>,
   );
 
-  expect(
-    screen.getAllByText("速度 254 − 143 = 111 → 威力 190"),
-  ).toHaveLength(2);
+  expect(screen.queryByText("速度 254 − 143 = 111 → 威力 190")).not.toBeInTheDocument();
+  expect(within(screen.getByRole("group", { name: "攻击方技能1，当前选中" })).getByRole("status")).toHaveTextContent("80");
+  for (const label of ["攻击方技能1条件", "当前技能条件"]) {
+    fireEvent.click(screen.getByRole("button", { name: label }));
+    expect(within(screen.getByRole("dialog", { name: "闪击条件" })).getByText("速度 254 − 143 = 111 → 威力 190")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "关闭条件" }));
+  }
 });
 
 test("four-skill editor explains adjacent displayed power for transmission skills", () => {
@@ -2646,11 +2686,14 @@ test("compact dazzling loadouts keep seven rows and the Refraction preview", () 
   };
   const normal = { ...skills[0], id: "normal", name: "追打", type: "普通" };
   const seven = [refraction, normal, null, null, null, null, null];
+  const result = { status: "exact", totalDamage: 80, hpPercent: 20 };
+  const model = { ...compactConditionModel(refraction, result, "攻击方技能1条件", seven),
+    nextHint: buildRefractionHint({ carriedSkills: seven, selectedSkill: refraction }) };
 
   render(
-    <CompactFourSkillEditor
+    <CompactConditionsHarness>{(onOpen, openKey) => <CompactFourSkillEditor
       attackerName="彩虹独角兽"
-      attackerResults={[]}
+      attackerResults={[result]}
       attackerSkillChoices={[...skills, refraction, normal]}
       attackerSkills={seven}
       defenderName="水灵"
@@ -2659,12 +2702,20 @@ test("compact dazzling loadouts keep seven rows and the Refraction preview", () 
       defenderSkills={[skills[1], null, null, null]}
       onSkillFocus={vi.fn()}
       onSkillSelect={vi.fn()}
-    />,
+      conditionModels={{ attacker: [model] }}
+      onOpenConditions={onOpen}
+      openConditionKey={openKey}
+    />}</CompactConditionsHarness>,
   );
 
   expect(screen.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
-  expect(screen.getByTitle("本次可得：普·威力+10"))
-    .toHaveClass("skill-usage__next");
+  expect(screen.getAllByRole("group", { name: /^攻击方技能\d/ })).toHaveLength(7);
+  expect(within(screen.getByRole("group", { name: "攻击方技能1，当前选中" })).getByRole("status")).toHaveTextContent("80");
+  expect(screen.queryByText("本次可得：普·威力+10")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "攻击方技能1条件" }));
+  expect(within(screen.getByRole("dialog", { name: "折射条件" })).getByText("本次可得：普·威力+10")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "关闭条件" }));
+  expect(screen.getByRole("combobox", { name: "攻击方技能7" })).toBeVisible();
 });
 
 test("four-skill slots expose their own dynamic rule context", async () => {

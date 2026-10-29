@@ -476,6 +476,7 @@ export function FormulaAudit({ result }) {
 function MarkSlot({
   label,
   onChange,
+  onOpenStarfall,
   polarity,
   sideLabel,
   value,
@@ -552,11 +553,12 @@ function MarkSlot({
         </div>
       ) : null}
       <small>{selected?.summary ?? "未设置"}</small>
+      {selected?.id === "starfall" && onOpenStarfall ? <button type="button" className="starfall-mark-entry" onClick={onOpenStarfall}>星陨斩杀线</button> : null}
     </div>
   );
 }
 
-function SideMarks({ label, marks, onChange, onHelp, side, tone }) {
+function SideMarks({ label, marks, onChange, onHelp, onOpenStarfall, side, tone }) {
   return (
     <fieldset
       aria-label={`${label}印记`}
@@ -574,6 +576,7 @@ function SideMarks({ label, marks, onChange, onHelp, side, tone }) {
         />
         <MarkSlot
           label="负面"
+          onOpenStarfall={onOpenStarfall}
           onChange={(value) => onChange(side, "negative", value)}
           polarity="negative"
           sideLabel={label}
@@ -638,6 +641,8 @@ export function AdvancedOptions({
   onAdvancedTopLocated = () => {},
   onFinalMultiplierChange,
   onMarkChange,
+  onOpenStarfall,
+  starfallTargetSide,
   onNegativeStatusChange = () => {},
   onOpenChange,
   onWeatherChange = () => {},
@@ -807,6 +812,7 @@ export function AdvancedOptions({
             <SideMarks
               label="进攻方"
               marks={marks?.attacker}
+              onOpenStarfall={starfallTargetSide === "attacker" ? onOpenStarfall : undefined}
               onChange={onMarkChange}
               onHelp={() => setReferenceGroup("negative")}
               side="attacker"
@@ -815,6 +821,7 @@ export function AdvancedOptions({
             <SideMarks
               label="防御方"
               marks={marks?.defender}
+              onOpenStarfall={starfallTargetSide === "defender" ? onOpenStarfall : undefined}
               onChange={onMarkChange}
               onHelp={() => setReferenceGroup("negative")}
               side="defender"
