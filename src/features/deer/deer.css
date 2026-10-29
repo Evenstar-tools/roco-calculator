@@ -200,3 +200,11 @@ html[data-theme="dark"] .app-header--tool::before { content: none; }
   .deer-page .quick-nature__side, .deer-page .quick-iv__label { width: 20px; }
   .deer-page .quick-nature__option--neutral, .deer-page .quick-iv__caption { width: 44px; padding-inline: 0; }
 }
+
+/* The translated caption fills this narrow column without an icon spacer. */
+html:is(:lang(en), :lang(ja)) .deer-page .quick-iv__caption {
+  font-size: 11px;
+}
+html:is(:lang(en), :lang(ja)) .deer-page .quick-iv__caption::before {
+  display: none;
+}

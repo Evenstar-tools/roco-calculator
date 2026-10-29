@@ -1,5 +1,13 @@
 # Web 小优化待办池
 
+## UX41 精简版多语言快捷控件超框 · 2026-10-29
+
+用户截图指出英文快捷性格按钮文字压到相邻图标，授权合适简写及局部排版修正。基线 `e57c874`，仅本地 Web 修复；保留其它在途改动，不推送部署。
+
+- **UX41-01 / 已验收 / P2**：英文按钮复用 `Neutral`（无修正），保留完整 aria-label/title；英日按钮省去多余等号及内边距。英文选项名开启后允许两行，按钮使用48px高度；Deer复用的个体标题去除空白图标占位，统一快捷标签字号。未修改正式术语表、状态、数值或计算规则。
+- **验证**：真实网页1920/1440桌面及390/320窄屏，默认与显示名称、英日亮暗、攻守两侧和Deer复用入口；文字边界均在框内，增益选择/恢复无修正可操作。复用 `calculator-sections.test.jsx` 的精简选项开关用例及 `global-placeholder-configuration.test.jsx` 的未设值用例通过；ESLint和差异检查通过，独立读图复核通过。
+- **截图**：[英文修复前](../../output/playwright/compact-label-20261029/before-en.png)、[英文修复后](../../output/playwright/compact-label-20261029/after-en.png)、[320英文名称](../../output/playwright/compact-label-20261029/en-labeled-320.png)、[320日文暗色](../../output/playwright/compact-label-20261029/ja-labeled-dark-320.png)、[Deer个体栏](../../output/playwright/compact-label-20261029/ja-deer-iv-320.png)。专用验收浏览器收尾关闭；本地预览服务4228保留供验收。
+
 ## UX39 Web 多语言错误与显示优化 · 2026-10-28
 
 用户要求以网页为主再优化一轮，多语言不留中文报错。沿用现有 UI 与已确认方向直接修复；基线 `c54e157` / Web 2.2.8，主验 1920×1080，窄屏仅兼容复核。S3 季中数据、公式和小程序保持；本地验证后独立提交，不推送部署。

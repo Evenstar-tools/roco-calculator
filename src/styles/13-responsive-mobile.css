@@ -1463,3 +1463,19 @@ html:lang(en) .skill-slot__kind > span {
     grid-template-columns: 14px minmax(100px, 1fr) 48px 22px 84px 38px 68px;
   }
 }
+
+/* Compact labels keep the original grid; the neutral action needs no extra icon. */
+html:is(:lang(en), :lang(ja)) .quick-nature__option--neutral {
+  padding-inline: 0;
+}
+html:is(:lang(en), :lang(ja)) .quick-nature__option--neutral > svg {
+  display: none;
+}
+html:lang(en) .calculator-layout--compact .quick-nature--labeled .quick-nature__option:not(.quick-nature__option--neutral),
+html:lang(en) .calculator-layout--compact .quick-iv--labeled .quick-iv__option {
+  height: 48px;
+}
+html:lang(en) :is(.quick-nature__name, .quick-iv__name) {
+  white-space: normal;
+  text-align: center;
+}

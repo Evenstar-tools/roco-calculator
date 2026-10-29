@@ -22,7 +22,7 @@ export function QuickNaturePicker({
   side,
   value,
 }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const selectedStat = getNature(value).upStat;
   const SideIcon = side === "attacker" ? Sword : Shield;
 
@@ -45,7 +45,7 @@ export function QuickNaturePicker({
         type="button"
       >
         <Equals aria-hidden="true" size={16} weight="bold" />
-        <span>{placeholder && value == null ? "—" : t(showOptionLabels ? "普通" : "性格")}</span>
+        <span>{placeholder && value == null ? "—" : t(showOptionLabels || locale === "en" ? "普通" : "性格")}</span>
       </button>
       {QUICK_STATS.map((stat) => (
         <button
