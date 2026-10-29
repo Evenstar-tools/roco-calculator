@@ -106,7 +106,7 @@ function VerifiedTypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision,
 
   return <div className="type-query-backdrop">
     <section className="type-query" role="dialog" aria-modal="true" aria-label="属性查询" ref={root} tabIndex={-1}>
-      <header className="type-query__heading"><h2>属性查询</h2><button type="button" className="type-query__quiet" aria-label="关闭属性查询" onClick={onClose}>关闭 <X size={16} /></button></header>
+      <header className="type-query__heading"><h2>属性查询</h2><button type="button" className="type-query__close" aria-label="关闭属性查询" title="关闭" onClick={onClose}><X size={20} aria-hidden="true" /></button></header>
       <div className="type-query__body">
         <section className="type-query__selection">
           <div className="type-query__label"><strong>选择属性</strong><span id="type-query-limit">{query.types.length === 2 ? "已选 2 / 2 · 取消一项后更换" : "最多选择 2 种 · 再点一次取消"}</span></div>
