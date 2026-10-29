@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { ElementIcon } from "../../components/ElementIcon.jsx";
-import { Eye, EyeSlash } from "@phosphor-icons/react";
+import { Eye, EyeSlash, X } from "@phosphor-icons/react";
 import { categoryNames, seasonChanges } from "./catalog.js";
 import { getCachedCatalog, loadSkillCatalog } from "./load-catalog.js";
 import "./skill-query.css";
@@ -95,7 +95,7 @@ function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [] }) {
     <select aria-label="查询赛季" value={season.id} onChange={(event) => setSeasonId(event.target.value)}>{data.seasons.map(({ id }) => <option key={id}>{id}</option>)}</select>
   </div>;
   return <div className="skill-query-backdrop"><section aria-label="技能查询" aria-modal="true" role="dialog" tabIndex={-1} ref={root} className="skill-query">
-    <header className="skill-query__header"><h2>技能检索</h2><button onClick={onClose} aria-label="关闭技能查询">关闭 ×</button></header>
+    <header className="skill-query__header"><h2>技能检索</h2><button type="button" className="skill-query__close" onClick={onClose} aria-label="关闭技能查询" title="关闭"><X size={20} aria-hidden="true" /></button></header>
     <div className="skill-query__tabs" role="tablist" aria-label="技能查询视图">{[["all", "查询"], ["new", "赛季新技能"], ["gains", "赛季学习更新"]].map(([id, label]) => <button key={id} role="tab" aria-selected={view === id} onClick={() => changeView(id)}>{label}</button>)}</div>
     {error ? <div role="alert" className="skill-query__empty">{error}<button onClick={() => { setError(""); setAttempt((value) => value + 1); }}>重试</button></div> : !data ? <p role="status" className="skill-query__empty">正在加载技能资料…</p> : <>
       {view === "gains" && filters}
