@@ -2,18 +2,11 @@ import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useEffect, useRef } from "react";
 import { FEATURED_USER_RELEASE, S4_FEATURE_INTRO } from "../data/user-release-notes.js";
+import { GLOBAL_RELEASE_SUMMARY } from "../data/global-release-summary.js";
 import { USER_MANUAL_URL } from "../data/product-links.js";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
-const GLOBAL_INTRO = {
-  eyebrow: "国际服", title: "国际服计算器", description: "采用 S3 季中数值与规则。",
-  items: [
-    { id: "team", title: "中英日语言切换", description: "精灵、技能和特性使用国际客户端译名。", action: "查看" },
-    { id: "team", title: "配置与队伍", description: "配置与队伍可跨语言保存和分享。", action: "打开队伍" },
-    { id: "types", title: "属性相性查询", description: "查看弱点、抗性和队伍覆盖。", action: "打开" },
-  ],
-};
 
 export function WhatsNewDialog({
   onClose,
@@ -26,7 +19,7 @@ export function WhatsNewDialog({
   const { t } = useLocale();
   const { serverId } = useRuntime();
   const dialogRef = useRef(null);
-  const content = serverId === "global" ? GLOBAL_INTRO : S4_FEATURE_INTRO;
+  const content = serverId === "global" ? GLOBAL_RELEASE_SUMMARY : S4_FEATURE_INTRO;
 
   useEffect(() => {
     if (!open || !content) return undefined;
@@ -90,7 +83,7 @@ export function WhatsNewDialog({
                 <strong>{serverId === "global" ? t(item.title) : item.title}{item.enhanced ? <small className="whats-new-dialog__badge">{t("增强")}</small> : null}</strong>
                 {item.description ? <p>{serverId === "global" ? t(item.description) : item.description}</p> : null}
               </div>
-              <button type="button" className="whats-new-dialog__feature" aria-label={serverId === "global" ? `${t(item.action)} ${t(item.title)}` : `${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{serverId === "global" ? t(item.action) : item.action}</button>
+              {item.action ? <button type="button" className="whats-new-dialog__feature" aria-label={serverId === "global" ? `${t(item.action)} ${t(item.title)}` : `${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{serverId === "global" ? t(item.action) : item.action}</button> : null}
             </li>
           ))}
         </ol>

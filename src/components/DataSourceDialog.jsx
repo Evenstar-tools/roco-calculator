@@ -1,6 +1,7 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useEffect, useRef, useState } from "react";
+import { GLOBAL_RELEASE_SUMMARY } from "../data/global-release-summary.js";
 import {
   FEATURED_USER_RELEASE,
   USER_RELEASE_NOTES,
@@ -34,7 +35,7 @@ const FEATURED_RELEASE_SUMMARY = {
 function ReleaseItem({ release, current = false }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
-  if (serverId === "global") return <article className="data-source-release"><h3>{t("国际服计算器")}</h3><span>2026-10-28</span><ul><li>{t("采用 S3 季中数值与规则。")}</li><li>{t("精灵、技能和特性使用国际客户端译名。")}</li><li>{t("配置与队伍可跨语言保存和分享。")}</li></ul></article>;
+  if (serverId === "global") return <article className="data-source-release"><h3>{t(GLOBAL_RELEASE_SUMMARY.title)}</h3><span>{GLOBAL_RELEASE_SUMMARY.date}</span><p>{t(GLOBAL_RELEASE_SUMMARY.description)}</p><ul>{GLOBAL_RELEASE_SUMMARY.items.map((item) => <li key={item.id}><strong>{t(item.title)}</strong> · {t(item.description)}</li>)}</ul></article>;
   return (
     <article
       className={current

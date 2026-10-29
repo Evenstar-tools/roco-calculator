@@ -255853,8 +255853,22 @@
           "line": 99,
           "occurrence": 1,
           "mergeIndex": 1657,
-          "effective": true,
+          "effective": false,
           "overridesDefinitionId": null
+        },
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"使用\",1]",
+          "zh": "使用",
+          "key": "使用",
+          "en": "Use",
+          "ja": "使用",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 72,
+          "occurrence": 1,
+          "mergeIndex": 2409,
+          "effective": true,
+          "overridesDefinitionId": "[\"src/i18n/calculator-messages.js\",\"calculatorMessages\",\"使用\",1]"
         }
       ],
       "mappingSources": []
@@ -284386,6 +284400,3438 @@
       "mappingSources": []
     }
   },
+  "ui:星陨斩杀线": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/星陨斩杀线",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:星陨斩杀线",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "星陨斩杀线",
+      "zh_project": "星陨斩杀线",
+      "en": "Starfall KO Threshold",
+      "ja": "隕石の撃破ライン",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/星陨斩杀线",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Starfall KO Threshold",
+        "ja": "隕石の撃破ライン"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"星陨斩杀线\",1]",
+          "zh": "星陨斩杀线",
+          "key": "星陨斩杀线",
+          "en": "Starfall KO Threshold",
+          "ja": "隕石の撃破ライン",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 3,
+          "occurrence": 1,
+          "mergeIndex": 2340,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:关闭星陨斩杀线": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/关闭星陨斩杀线",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:关闭星陨斩杀线",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "关闭星陨斩杀线",
+      "zh_project": "关闭星陨斩杀线",
+      "en": "Close Starfall KO threshold",
+      "ja": "隕石の撃破ラインを閉じる",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/关闭星陨斩杀线",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Close Starfall KO threshold",
+        "ja": "隕石の撃破ラインを閉じる"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"关闭星陨斩杀线\",1]",
+          "zh": "关闭星陨斩杀线",
+          "key": "关闭星陨斩杀线",
+          "en": "Close Starfall KO threshold",
+          "ja": "隕石の撃破ラインを閉じる",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 4,
+          "occurrence": 1,
+          "mergeIndex": 2341,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:星陨计算技能": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/星陨计算技能",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:星陨计算技能",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "星陨计算技能",
+      "zh_project": "星陨计算技能",
+      "en": "Skill for Starfall calculation",
+      "ja": "隕石計算に使うスキル",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/星陨计算技能",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Skill for Starfall calculation",
+        "ja": "隕石計算に使うスキル"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"星陨计算技能\",1]",
+          "zh": "星陨计算技能",
+          "key": "星陨计算技能",
+          "en": "Skill for Starfall calculation",
+          "ja": "隕石計算に使うスキル",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 5,
+          "occurrence": 1,
+          "mergeIndex": 2342,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:试算星陨": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/试算星陨",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:试算星陨",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "试算星陨",
+      "zh_project": "试算星陨",
+      "en": "Test Starfall",
+      "ja": "隕石を試算",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/试算星陨",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Test Starfall",
+        "ja": "隕石を試算"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"试算星陨\",1]",
+          "zh": "试算星陨",
+          "key": "试算星陨",
+          "en": "Test Starfall",
+          "ja": "隕石を試算",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 6,
+          "occurrence": 1,
+          "mergeIndex": 2343,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:试算星陨层数": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/试算星陨层数",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:试算星陨层数",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "试算星陨层数",
+      "zh_project": "试算星陨层数",
+      "en": "Test Starfall stacks",
+      "ja": "試算する隕石スタック数",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/试算星陨层数",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Test Starfall stacks",
+        "ja": "試算する隕石スタック数"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"试算星陨层数\",1]",
+          "zh": "试算星陨层数",
+          "key": "试算星陨层数",
+          "en": "Test Starfall stacks",
+          "ja": "試算する隕石スタック数",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 7,
+          "occurrence": 1,
+          "mergeIndex": 2344,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:{count} 层": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/{count} 层",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:{count} 层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{count} 层",
+      "zh_project": "{count} 层",
+      "en": "{count} stacks",
+      "ja": "{count} スタック",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{count} 层",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "{count} stacks",
+        "ja": "{count} スタック"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{count} 层\",1]",
+          "zh": "{count} 层",
+          "key": "{count} 层",
+          "en": "{count} stacks",
+          "ja": "{count} スタック",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 8,
+          "occurrence": 1,
+          "mergeIndex": 2345,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:最低 {count} 层": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/最低 {count} 层",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:最低 {count} 层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "最低 {count} 层",
+      "zh_project": "最低 {count} 层",
+      "en": "Minimum: {count} stacks",
+      "ja": "最低 {count} スタック",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/最低 {count} 层",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Minimum: {count} stacks",
+        "ja": "最低 {count} スタック"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"最低 {count} 层\",1]",
+          "zh": "最低 {count} 层",
+          "key": "最低 {count} 层",
+          "en": "Minimum: {count} stacks",
+          "ja": "最低 {count} スタック",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 9,
+          "occurrence": 1,
+          "mergeIndex": 2346,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:还差 {count} 层": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/还差 {count} 层",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:还差 {count} 层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "还差 {count} 层",
+      "zh_project": "还差 {count} 层",
+      "en": "{count} more stacks needed",
+      "ja": "あと {count} スタック",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/还差 {count} 层",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "{count} more stacks needed",
+        "ja": "あと {count} スタック"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"还差 {count} 层\",1]",
+          "zh": "还差 {count} 层",
+          "key": "还差 {count} 层",
+          "en": "{count} more stacks needed",
+          "ja": "あと {count} スタック",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 10,
+          "occurrence": 1,
+          "mergeIndex": 2347,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:填入 {count} 层": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/填入 {count} 层",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:填入 {count} 层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "填入 {count} 层",
+      "zh_project": "填入 {count} 层",
+      "en": "Apply {count} stacks",
+      "ja": "{count} スタックを適用",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/填入 {count} 层",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Apply {count} stacks",
+        "ja": "{count} スタックを適用"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"填入 {count} 层\",1]",
+          "zh": "填入 {count} 层",
+          "key": "填入 {count} 层",
+          "en": "Apply {count} stacks",
+          "ja": "{count} スタックを適用",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 11,
+          "occurrence": 1,
+          "mergeIndex": 2348,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:填入 最低层数": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/填入 最低层数",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:填入 最低层数",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "填入 最低层数",
+      "zh_project": "填入 最低层数",
+      "en": "Apply minimum stacks",
+      "ja": "最低スタック数を適用",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/填入 最低层数",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Apply minimum stacks",
+        "ja": "最低スタック数を適用"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"填入 最低层数\",1]",
+          "zh": "填入 最低层数",
+          "key": "填入 最低层数",
+          "en": "Apply minimum stacks",
+          "ja": "最低スタック数を適用",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 12,
+          "occurrence": 1,
+          "mergeIndex": 2349,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:不可斩杀": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/不可斩杀",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:不可斩杀",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "不可斩杀",
+      "zh_project": "不可斩杀",
+      "en": "No KO",
+      "ja": "撃破不可",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/不可斩杀",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "No KO",
+        "ja": "撃破不可"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"不可斩杀\",1]",
+          "zh": "不可斩杀",
+          "key": "不可斩杀",
+          "en": "No KO",
+          "ja": "撃破不可",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 13,
+          "occurrence": 1,
+          "mergeIndex": 2350,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:当前可斩杀": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/当前可斩杀",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:当前可斩杀",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "当前可斩杀",
+      "zh_project": "当前可斩杀",
+      "en": "Current stacks secure a KO",
+      "ja": "現在のスタック数で撃破可能",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/当前可斩杀",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Current stacks secure a KO",
+        "ja": "現在のスタック数で撃破可能"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前可斩杀\",1]",
+          "zh": "当前可斩杀",
+          "key": "当前可斩杀",
+          "en": "Current stacks secure a KO",
+          "ja": "現在のスタック数で撃破可能",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 14,
+          "occurrence": 1,
+          "mergeIndex": 2351,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:当前对位斩杀线": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/当前对位斩杀线",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:当前对位斩杀线",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "当前对位斩杀线",
+      "zh_project": "当前对位斩杀线",
+      "en": "Current matchup KO threshold",
+      "ja": "現在の対面の撃破ライン",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/当前对位斩杀线",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Current matchup KO threshold",
+        "ja": "現在の対面の撃破ライン"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前对位斩杀线\",1]",
+          "zh": "当前对位斩杀线",
+          "key": "当前对位斩杀线",
+          "en": "Current matchup KO threshold",
+          "ja": "現在の対面の撃破ライン",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 15,
+          "occurrence": 1,
+          "mergeIndex": 2352,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:当前对位 · 按当前血量、减伤与特性": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/当前对位 · 按当前血量、减伤与特性",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:当前对位 · 按当前血量、减伤与特性",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "当前对位 · 按当前血量、减伤与特性",
+      "zh_project": "当前对位 · 按当前血量、减伤与特性",
+      "en": "Current matchup · current HP, damage reduction and abilities",
+      "ja": "現在の対面 · 現在HP・ダメージ軽減・特性を反映",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/当前对位 · 按当前血量、减伤与特性",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Current matchup · current HP, damage reduction and abilities",
+        "ja": "現在の対面 · 現在HP・ダメージ軽減・特性を反映"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前对位 · 按当前血量、减伤与特性\",1]",
+          "zh": "当前对位 · 按当前血量、减伤与特性",
+          "key": "当前对位 · 按当前血量、减伤与特性",
+          "en": "Current matchup · current HP, damage reduction and abilities",
+          "ja": "現在の対面 · 現在HP・ダメージ軽減・特性を反映",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 16,
+          "occurrence": 1,
+          "mergeIndex": 2353,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:按最低层数填入复算": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/按最低层数填入复算",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:按最低层数填入复算",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "按最低层数填入复算",
+      "zh_project": "按最低层数填入复算",
+      "en": "Apply the minimum and recalculate",
+      "ja": "最低スタック数を適用して再計算",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/按最低层数填入复算",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Apply the minimum and recalculate",
+        "ja": "最低スタック数を適用して再計算"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"按最低层数填入复算\",1]",
+          "zh": "按最低层数填入复算",
+          "key": "按最低层数填入复算",
+          "en": "Apply the minimum and recalculate",
+          "ja": "最低スタック数を適用して再計算",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 17,
+          "occurrence": 1,
+          "mergeIndex": 2354,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:正在查找最低层数…": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/正在查找最低层数…",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:正在查找最低层数…",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "正在查找最低层数…",
+      "zh_project": "正在查找最低层数…",
+      "en": "Finding minimum stacks…",
+      "ja": "最低スタック数を計算中…",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/正在查找最低层数…",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Finding minimum stacks…",
+        "ja": "最低スタック数を計算中…"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"正在查找最低层数…\",1]",
+          "zh": "正在查找最低层数…",
+          "key": "正在查找最低层数…",
+          "en": "Finding minimum stacks…",
+          "ja": "最低スタック数を計算中…",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 18,
+          "occurrence": 1,
+          "mergeIndex": 2355,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:本次伤害 {damage} · 目标 {hp} / {maxHp} HP": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/本次伤害 {damage} · 目标 {hp} / {maxHp} HP",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:本次伤害 {damage} · 目标 {hp} / {maxHp} HP",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "本次伤害 {damage} · 目标 {hp} / {maxHp} HP",
+      "zh_project": "本次伤害 {damage} · 目标 {hp} / {maxHp} HP",
+      "en": "Damage {damage} · Target {hp} / {maxHp} HP",
+      "ja": "ダメージ {damage} · 相手 {hp} / {maxHp} HP",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/本次伤害 {damage} · 目标 {hp} / {maxHp} HP",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Damage {damage} · Target {hp} / {maxHp} HP",
+        "ja": "ダメージ {damage} · 相手 {hp} / {maxHp} HP"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"本次伤害 {damage} · 目标 {hp} / {maxHp} HP\",1]",
+          "zh": "本次伤害 {damage} · 目标 {hp} / {maxHp} HP",
+          "key": "本次伤害 {damage} · 目标 {hp} / {maxHp} HP",
+          "en": "Damage {damage} · Target {hp} / {maxHp} HP",
+          "ja": "ダメージ {damage} · 相手 {hp} / {maxHp} HP",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 19,
+          "occurrence": 1,
+          "mergeIndex": 2356,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:冻结斩杀≤{hp} HP，冻结不额外扣血。": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/冻结斩杀≤{hp} HP，冻结不额外扣血。",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:冻结斩杀≤{hp} HP，冻结不额外扣血。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "冻结斩杀≤{hp} HP，冻结不额外扣血。",
+      "zh_project": "冻结斩杀≤{hp} HP，冻结不额外扣血。",
+      "en": "Freeze secures a KO at ≤{hp} HP; it adds no damage.",
+      "ja": "HPが{hp}以下なら凍結で撃破。凍結は追加ダメージを与えません。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/冻结斩杀≤{hp} HP，冻结不额外扣血。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Freeze secures a KO at ≤{hp} HP; it adds no damage.",
+        "ja": "HPが{hp}以下なら凍結で撃破。凍結は追加ダメージを与えません。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"冻结斩杀≤{hp} HP，冻结不额外扣血。\",1]",
+          "zh": "冻结斩杀≤{hp} HP，冻结不额外扣血。",
+          "key": "冻结斩杀≤{hp} HP，冻结不额外扣血。",
+          "en": "Freeze secures a KO at ≤{hp} HP; it adds no damage.",
+          "ja": "HPが{hp}以下なら凍結で撃破。凍結は追加ダメージを与えません。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 20,
+          "occurrence": 1,
+          "mergeIndex": 2357,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:三档培养对比": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/三档培养对比",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:三档培养对比",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "三档培养对比",
+      "zh_project": "三档培养对比",
+      "en": "Compare three builds",
+      "ja": "3つの育成パターンを比較",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/三档培养对比",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Compare three builds",
+        "ja": "3つの育成パターンを比較"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"三档培养对比\",1]",
+          "zh": "三档培养对比",
+          "key": "三档培养对比",
+          "en": "Compare three builds",
+          "ja": "3つの育成パターンを比較",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 21,
+          "occurrence": 1,
+          "mergeIndex": 2358,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:生防": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/生防",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:生防",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "生防",
+      "zh_project": "生防",
+      "en": "HP + Defenses",
+      "ja": "HP・両防御",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/生防",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "HP + Defenses",
+        "ja": "HP・両防御"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"生防\",1]",
+          "zh": "生防",
+          "key": "生防",
+          "en": "HP + Defenses",
+          "ja": "HP・両防御",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 22,
+          "occurrence": 1,
+          "mergeIndex": 2359,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:纯肉": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/纯肉",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:纯肉",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "纯肉",
+      "zh_project": "纯肉",
+      "en": "Full Bulk",
+      "ja": "耐久特化",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/纯肉",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Full Bulk",
+        "ja": "耐久特化"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"纯肉\",1]",
+          "zh": "纯肉",
+          "key": "纯肉",
+          "en": "Full Bulk",
+          "ja": "耐久特化",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 23,
+          "occurrence": 1,
+          "mergeIndex": 2360,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:中立 · 生命60": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/中立 · 生命60",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:中立 · 生命60",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "中立 · 生命60",
+      "zh_project": "中立 · 生命60",
+      "en": "Neutral · HP IV 60",
+      "ja": "無補正 · HP個体値60",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/中立 · 生命60",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Neutral · HP IV 60",
+        "ja": "無補正 · HP個体値60"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"中立 · 生命60\",1]",
+          "zh": "中立 · 生命60",
+          "key": "中立 · 生命60",
+          "en": "Neutral · HP IV 60",
+          "ja": "無補正 · HP個体値60",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 24,
+          "occurrence": 1,
+          "mergeIndex": 2361,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:中立 · 生命双防60": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/中立 · 生命双防60",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:中立 · 生命双防60",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "中立 · 生命双防60",
+      "zh_project": "中立 · 生命双防60",
+      "en": "Neutral · HP and both defense IVs 60",
+      "ja": "無補正 · HP・両防御の個体値60",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/中立 · 生命双防60",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Neutral · HP and both defense IVs 60",
+        "ja": "無補正 · HP・両防御の個体値60"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"中立 · 生命双防60\",1]",
+          "zh": "中立 · 生命双防60",
+          "key": "中立 · 生命双防60",
+          "en": "Neutral · HP and both defense IVs 60",
+          "ja": "無補正 · HP・両防御の個体値60",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 25,
+          "occurrence": 1,
+          "mergeIndex": 2362,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:生命性格 · 生命双防60": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/生命性格 · 生命双防60",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:生命性格 · 生命双防60",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "生命性格 · 生命双防60",
+      "zh_project": "生命性格 · 生命双防60",
+      "en": "HP nature · HP and both defense IVs 60",
+      "ja": "HP上昇性格 · HP・両防御の個体値60",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/生命性格 · 生命双防60",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "HP nature · HP and both defense IVs 60",
+        "ja": "HP上昇性格 · HP・両防御の個体値60"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"生命性格 · 生命双防60\",1]",
+          "zh": "生命性格 · 生命双防60",
+          "key": "生命性格 · 生命双防60",
+          "en": "HP nature · HP and both defense IVs 60",
+          "ja": "HP上昇性格 · HP・両防御の個体値60",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 26,
+          "occurrence": 1,
+          "mergeIndex": 2363,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:满血 · 无减伤/异常 · 不计防守特性": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/满血 · 无减伤/异常 · 不计防守特性",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:满血 · 无减伤/异常 · 不计防守特性",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "满血 · 无减伤/异常 · 不计防守特性",
+      "zh_project": "满血 · 无减伤/异常 · 不计防守特性",
+      "en": "Full HP · no reduction/status · defensive abilities excluded",
+      "ja": "満タンHP · 軽減・状態異常なし · 防御側の特性は除外",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/满血 · 无减伤/异常 · 不计防守特性",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Full HP · no reduction/status · defensive abilities excluded",
+        "ja": "満タンHP · 軽減・状態異常なし · 防御側の特性は除外"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"满血 · 无减伤/异常 · 不计防守特性\",1]",
+          "zh": "满血 · 无减伤/异常 · 不计防守特性",
+          "key": "满血 · 无减伤/异常 · 不计防守特性",
+          "en": "Full HP · no reduction/status · defensive abilities excluded",
+          "ja": "満タンHP · 軽減・状態異常なし · 防御側の特性は除外",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 27,
+          "occurrence": 1,
+          "mergeIndex": 2364,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:搜索星陨斩杀精灵": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/搜索星陨斩杀精灵",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:搜索星陨斩杀精灵",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "搜索星陨斩杀精灵",
+      "zh_project": "搜索星陨斩杀精灵",
+      "en": "Search Starfall targets",
+      "ja": "隕石の撃破対象を検索",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/搜索星陨斩杀精灵",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Search Starfall targets",
+        "ja": "隕石の撃破対象を検索"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"搜索星陨斩杀精灵\",1]",
+          "zh": "搜索星陨斩杀精灵",
+          "key": "搜索星陨斩杀精灵",
+          "en": "Search Starfall targets",
+          "ja": "隕石の撃破対象を検索",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 28,
+          "occurrence": 1,
+          "mergeIndex": 2365,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:清空星陨搜索": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/清空星陨搜索",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:清空星陨搜索",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "清空星陨搜索",
+      "zh_project": "清空星陨搜索",
+      "en": "Clear Starfall search",
+      "ja": "隕石の検索をクリア",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/清空星陨搜索",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Clear Starfall search",
+        "ja": "隕石の検索をクリア"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"清空星陨搜索\",1]",
+          "zh": "清空星陨搜索",
+          "key": "清空星陨搜索",
+          "en": "Clear Starfall search",
+          "ja": "隕石の検索をクリア",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 29,
+          "occurrence": 1,
+          "mergeIndex": 2366,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:正在计算 {completed}/{total}": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/正在计算 {completed}/{total}",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:正在计算 {completed}/{total}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "正在计算 {completed}/{total}",
+      "zh_project": "正在计算 {completed}/{total}",
+      "en": "Calculating {completed}/{total}",
+      "ja": "計算中 {completed}/{total}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/正在计算 {completed}/{total}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Calculating {completed}/{total}",
+        "ja": "計算中 {completed}/{total}"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"正在计算 {completed}/{total}\",1]",
+          "zh": "正在计算 {completed}/{total}",
+          "key": "正在计算 {completed}/{total}",
+          "en": "Calculating {completed}/{total}",
+          "ja": "計算中 {completed}/{total}",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 30,
+          "occurrence": 1,
+          "mergeIndex": 2367,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:{count} 只精灵／形态": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/{count} 只精灵／形态",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:{count} 只精灵／形态",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{count} 只精灵／形态",
+      "zh_project": "{count} 只精灵／形态",
+      "en": "{count} Jini/forms",
+      "ja": "{count} 体・フォーム",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{count} 只精灵／形态",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "{count} Jini/forms",
+        "ja": "{count} 体・フォーム"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{count} 只精灵／形态\",1]",
+          "zh": "{count} 只精灵／形态",
+          "key": "{count} 只精灵／形态",
+          "en": "{count} Jini/forms",
+          "ja": "{count} 体・フォーム",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 31,
+          "occurrence": 1,
+          "mergeIndex": 2368,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:当前防守方": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/当前防守方",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:当前防守方",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "当前防守方",
+      "zh_project": "当前防守方",
+      "en": "Current defender",
+      "ja": "現在の防御側",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/当前防守方",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Current defender",
+        "ja": "現在の防御側"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前防守方\",1]",
+          "zh": "当前防守方",
+          "key": "当前防守方",
+          "en": "Current defender",
+          "ja": "現在の防御側",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 32,
+          "occurrence": 1,
+          "mergeIndex": 2369,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:0–99 层内无法斩杀": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/0–99 层内无法斩杀",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:0–99 层内无法斩杀",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "0–99 层内无法斩杀",
+      "zh_project": "0–99 层内无法斩杀",
+      "en": "No KO within 0–99 stacks",
+      "ja": "0～99スタックでは撃破不可",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/0–99 层内无法斩杀",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "No KO within 0–99 stacks",
+        "ja": "0～99スタックでは撃破不可"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"0–99 层内无法斩杀\",1]",
+          "zh": "0–99 层内无法斩杀",
+          "key": "0–99 层内无法斩杀",
+          "en": "No KO within 0–99 stacks",
+          "ja": "0～99スタックでは撃破不可",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 33,
+          "occurrence": 1,
+          "mergeIndex": 2370,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:0至99层内未达击倒条件": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/0至99层内未达击倒条件",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:0至99层内未达击倒条件",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "0至99层内未达击倒条件",
+      "zh_project": "0至99层内未达击倒条件",
+      "en": "No KO within 0–99 stacks",
+      "ja": "0～99スタックでは撃破条件を満たしません",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/0至99层内未达击倒条件",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "No KO within 0–99 stacks",
+        "ja": "0～99スタックでは撃破条件を満たしません"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"0至99层内未达击倒条件\",1]",
+          "zh": "0至99层内未达击倒条件",
+          "key": "0至99层内未达击倒条件",
+          "en": "No KO within 0–99 stacks",
+          "ja": "0～99スタックでは撃破条件を満たしません",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 34,
+          "occurrence": 1,
+          "mergeIndex": 2371,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:选择{name}培养": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/选择{name}培养",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:选择{name}培养",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "选择{name}培养",
+      "zh_project": "选择{name}培养",
+      "en": "Choose a build for {name}",
+      "ja": "{name}の育成を選択",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/选择{name}培养",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Choose a build for {name}",
+        "ja": "{name}の育成を選択"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"选择{name}培养\",1]",
+          "zh": "选择{name}培养",
+          "key": "选择{name}培养",
+          "en": "Choose a build for {name}",
+          "ja": "{name}の育成を選択",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 35,
+          "occurrence": 1,
+          "mergeIndex": 2372,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:{name}培养选择": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/{name}培养选择",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:{name}培养选择",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{name}培养选择",
+      "zh_project": "{name}培养选择",
+      "en": "Build selection for {name}",
+      "ja": "{name}の育成選択",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{name}培养选择",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Build selection for {name}",
+        "ja": "{name}の育成選択"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{name}培养选择\",1]",
+          "zh": "{name}培养选择",
+          "key": "{name}培养选择",
+          "en": "Build selection for {name}",
+          "ja": "{name}の育成選択",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 36,
+          "occurrence": 1,
+          "mergeIndex": 2373,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:选培养": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/选培养",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:选培养",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "选培养",
+      "zh_project": "选培养",
+      "en": "Choose build",
+      "ja": "育成を選択",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/选培养",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Choose build",
+        "ja": "育成を選択"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"选培养\",1]",
+          "zh": "选培养",
+          "key": "选培养",
+          "en": "Choose build",
+          "ja": "育成を選択",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 37,
+          "occurrence": 1,
+          "mergeIndex": 2374,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:代入{template}": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/代入{template}",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:代入{template}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "代入{template}",
+      "zh_project": "代入{template}",
+      "en": "Use {template}",
+      "ja": "{template}を適用",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/代入{template}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Use {template}",
+        "ja": "{template}を適用"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"代入{template}\",1]",
+          "zh": "代入{template}",
+          "key": "代入{template}",
+          "en": "Use {template}",
+          "ja": "{template}を適用",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 38,
+          "occurrence": 1,
+          "mergeIndex": 2375,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:代入后按实际特性复算。": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/代入后按实际特性复算。",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:代入后按实际特性复算。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "代入后按实际特性复算。",
+      "zh_project": "代入后按实际特性复算。",
+      "en": "Recalculate with actual abilities after applying.",
+      "ja": "適用後、実際の特性を反映して再計算します。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/代入后按实际特性复算。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Recalculate with actual abilities after applying.",
+        "ja": "適用後、実際の特性を反映して再計算します。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"代入后按实际特性复算。\",1]",
+          "zh": "代入后按实际特性复算。",
+          "key": "代入后按实际特性复算。",
+          "en": "Recalculate with actual abilities after applying.",
+          "ja": "適用後、実際の特性を反映して再計算します。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 39,
+          "occurrence": 1,
+          "mergeIndex": 2376,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:已代入培养，当前对位已恢复特性复算": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/已代入培养，当前对位已恢复特性复算",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:已代入培养，当前对位已恢复特性复算",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "已代入培养，当前对位已恢复特性复算",
+      "zh_project": "已代入培养，当前对位已恢复特性复算",
+      "en": "Build applied; current matchup recalculated with abilities.",
+      "ja": "育成を適用し、現在の対面を特性込みで再計算しました。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/已代入培养，当前对位已恢复特性复算",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Build applied; current matchup recalculated with abilities.",
+        "ja": "育成を適用し、現在の対面を特性込みで再計算しました。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"已代入培养，当前对位已恢复特性复算\",1]",
+          "zh": "已代入培养，当前对位已恢复特性复算",
+          "key": "已代入培养，当前对位已恢复特性复算",
+          "en": "Build applied; current matchup recalculated with abilities.",
+          "ja": "育成を適用し、現在の対面を特性込みで再計算しました。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 40,
+          "occurrence": 1,
+          "mergeIndex": 2377,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:已填入 {count} 层星陨": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/已填入 {count} 层星陨",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:已填入 {count} 层星陨",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "已填入 {count} 层星陨",
+      "zh_project": "已填入 {count} 层星陨",
+      "en": "Applied {count} Starfall stacks",
+      "ja": "隕石を{count}スタック適用しました",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/已填入 {count} 层星陨",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Applied {count} Starfall stacks",
+        "ja": "隕石を{count}スタック適用しました"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"已填入 {count} 层星陨\",1]",
+          "zh": "已填入 {count} 层星陨",
+          "key": "已填入 {count} 层星陨",
+          "en": "Applied {count} Starfall stacks",
+          "ja": "隕石を{count}スタック適用しました",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 41,
+          "occurrence": 1,
+          "mergeIndex": 2378,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:没有匹配的精灵，试试其他名称或图鉴号。": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/没有匹配的精灵，试试其他名称或图鉴号。",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:没有匹配的精灵，试试其他名称或图鉴号。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "没有匹配的精灵，试试其他名称或图鉴号。",
+      "zh_project": "没有匹配的精灵，试试其他名称或图鉴号。",
+      "en": "No matching Jini. Try another name or index number.",
+      "ja": "一致するジニがいません。別の名前や図鑑番号で検索してください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/没有匹配的精灵，试试其他名称或图鉴号。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "No matching Jini. Try another name or index number.",
+        "ja": "一致するジニがいません。別の名前や図鑑番号で検索してください。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"没有匹配的精灵，试试其他名称或图鉴号。\",1]",
+          "zh": "没有匹配的精灵，试试其他名称或图鉴号。",
+          "key": "没有匹配的精灵，试试其他名称或图鉴号。",
+          "en": "No matching Jini. Try another name or index number.",
+          "ja": "一致するジニがいません。別の名前や図鑑番号で検索してください。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 42,
+          "occurrence": 1,
+          "mergeIndex": 2379,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:暂无可计算的精灵。": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/暂无可计算的精灵。",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:暂无可计算的精灵。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "暂无可计算的精灵。",
+      "zh_project": "暂无可计算的精灵。",
+      "en": "No calculable Jini.",
+      "ja": "計算できるジニがいません。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/暂无可计算的精灵。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "No calculable Jini.",
+        "ja": "計算できるジニがいません。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"暂无可计算的精灵。\",1]",
+          "zh": "暂无可计算的精灵。",
+          "key": "暂无可计算的精灵。",
+          "en": "No calculable Jini.",
+          "ja": "計算できるジニがいません。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 43,
+          "occurrence": 1,
+          "mergeIndex": 2380,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:显示更多": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/显示更多",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:显示更多",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "显示更多",
+      "zh_project": "显示更多",
+      "en": "Show more",
+      "ja": "さらに表示",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/显示更多",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Show more",
+        "ja": "さらに表示"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"显示更多\",1]",
+          "zh": "显示更多",
+          "key": "显示更多",
+          "en": "Show more",
+          "ja": "さらに表示",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 44,
+          "occurrence": 1,
+          "mergeIndex": 2381,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:查询 0–99 层 · 单次出招": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/查询 0–99 层 · 单次出招",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:查询 0–99 层 · 单次出招",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "查询 0–99 层 · 单次出招",
+      "zh_project": "查询 0–99 层 · 单次出招",
+      "en": "Scan 0–99 stacks · one attack",
+      "ja": "0～99スタックを検索 · 1回の攻撃",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/查询 0–99 层 · 单次出招",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Scan 0–99 stacks · one attack",
+        "ja": "0～99スタックを検索 · 1回の攻撃"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"查询 0–99 层 · 单次出招\",1]",
+          "zh": "查询 0–99 层 · 单次出招",
+          "key": "查询 0–99 层 · 单次出招",
+          "en": "Scan 0–99 stacks · one attack",
+          "ja": "0～99スタックを検索 · 1回の攻撃",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 45,
+          "occurrence": 1,
+          "mergeIndex": 2382,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:含冻结斩杀": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/含冻结斩杀",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:含冻结斩杀",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "含冻结斩杀",
+      "zh_project": "含冻结斩杀",
+      "en": " including Freeze KOs",
+      "ja": "（凍結による撃破を含む）",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/含冻结斩杀",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": " including Freeze KOs",
+        "ja": "（凍結による撃破を含む）"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"含冻结斩杀\",1]",
+          "zh": "含冻结斩杀",
+          "key": "含冻结斩杀",
+          "en": " including Freeze KOs",
+          "ja": "（凍結による撃破を含む）",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 46,
+          "occurrence": 1,
+          "mergeIndex": 2383,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui: · 不计回合末持续伤害": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/ · 不计回合末持续伤害",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui: · 不计回合末持续伤害",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": " · 不计回合末持续伤害",
+      "zh_project": " · 不计回合末持续伤害",
+      "en": " · no end-of-turn damage",
+      "ja": " · ターン終了時の継続ダメージは除外",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/ · 不计回合末持续伤害",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": " · no end-of-turn damage",
+        "ja": " · ターン終了時の継続ダメージは除外"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\" · 不计回合末持续伤害\",1]",
+          "zh": " · 不计回合末持续伤害",
+          "key": " · 不计回合末持续伤害",
+          "en": " · no end-of-turn damage",
+          "ja": " · ターン終了時の継続ダメージは除外",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 47,
+          "occurrence": 1,
+          "mergeIndex": 2384,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:计算依据": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/计算依据",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:计算依据",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "计算依据",
+      "zh_project": "计算依据",
+      "en": "Calculation details",
+      "ja": "計算条件",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/计算依据",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Calculation details",
+        "ja": "計算条件"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"计算依据\",1]",
+          "zh": "计算依据",
+          "key": "计算依据",
+          "en": "Calculation details",
+          "ja": "計算条件",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 48,
+          "occurrence": 1,
+          "mergeIndex": 2385,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。",
+      "zh_project": "使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。",
+      "en": "Checks every stack count with the selected skill and attack setup; returns 0 if no stacks are needed. Builds change only the target’s nature and IVs, with other IVs set to 0. Applying a build restores defensive abilities. No KO means no count from 0–99 is sufficient; Unverified indicates an unmodeled effect.",
+      "ja": "選択中のスキルと攻撃設定で各スタック数を計算し、0で撃破できる場合は0を返します。育成パターンは相手の性格と個体値のみを変更し、その他の個体値は0です。適用時に防御側の特性を復元します。撃破不可は0～99のいずれでも届かない場合、未検証は未対応の効果がある場合です。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Checks every stack count with the selected skill and attack setup; returns 0 if no stacks are needed. Builds change only the target’s nature and IVs, with other IVs set to 0. Applying a build restores defensive abilities. No KO means no count from 0–99 is sufficient; Unverified indicates an unmodeled effect.",
+        "ja": "選択中のスキルと攻撃設定で各スタック数を計算し、0で撃破できる場合は0を返します。育成パターンは相手の性格と個体値のみを変更し、その他の個体値は0です。適用時に防御側の特性を復元します。撃破不可は0～99のいずれでも届かない場合、未検証は未対応の効果がある場合です。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。\",1]",
+          "zh": "使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。",
+          "key": "使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。",
+          "en": "Checks every stack count with the selected skill and attack setup; returns 0 if no stacks are needed. Builds change only the target’s nature and IVs, with other IVs set to 0. Applying a build restores defensive abilities. No KO means no count from 0–99 is sufficient; Unverified indicates an unmodeled effect.",
+          "ja": "選択中のスキルと攻撃設定で各スタック数を計算し、0で撃破できる場合は0を返します。育成パターンは相手の性格と個体値のみを変更し、その他の個体値は0です。適用時に防御側の特性を復元します。撃破不可は0～99のいずれでも届かない場合、未検証は未対応の効果がある場合です。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 49,
+          "occurrence": 1,
+          "mergeIndex": 2386,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:星陨层数须为0至99的整数": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/星陨层数须为0至99的整数",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:星陨层数须为0至99的整数",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "星陨层数须为0至99的整数",
+      "zh_project": "星陨层数须为0至99的整数",
+      "en": "Starfall stacks must be an integer from 0 to 99.",
+      "ja": "隕石スタック数は0～99の整数で入力してください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/星陨层数须为0至99的整数",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Starfall stacks must be an integer from 0 to 99.",
+        "ja": "隕石スタック数は0～99の整数で入力してください。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"星陨层数须为0至99的整数\",1]",
+          "zh": "星陨层数须为0至99的整数",
+          "key": "星陨层数须为0至99的整数",
+          "en": "Starfall stacks must be an integer from 0 to 99.",
+          "ja": "隕石スタック数は0～99の整数で入力してください。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 50,
+          "occurrence": 1,
+          "mergeIndex": 2387,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:请选择双方精灵": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/请选择双方精灵",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:请选择双方精灵",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "请选择双方精灵",
+      "zh_project": "请选择双方精灵",
+      "en": "Select both Jini.",
+      "ja": "双方のジニを選択してください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/请选择双方精灵",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Select both Jini.",
+        "ja": "双方のジニを選択してください。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"请选择双方精灵\",1]",
+          "zh": "请选择双方精灵",
+          "key": "请选择双方精灵",
+          "en": "Select both Jini.",
+          "ja": "双方のジニを選択してください。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 51,
+          "occurrence": 1,
+          "mergeIndex": 2388,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:请选择要计算的技能": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/请选择要计算的技能",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:请选择要计算的技能",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "请选择要计算的技能",
+      "zh_project": "请选择要计算的技能",
+      "en": "Select a skill to calculate.",
+      "ja": "計算するスキルを選択してください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/请选择要计算的技能",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Select a skill to calculate.",
+        "ja": "計算するスキルを選択してください。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"请选择要计算的技能\",1]",
+          "zh": "请选择要计算的技能",
+          "key": "请选择要计算的技能",
+          "en": "Select a skill to calculate.",
+          "ja": "計算するスキルを選択してください。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 52,
+          "occurrence": 1,
+          "mergeIndex": 2389,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:目标已无生命": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/目标已无生命",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:目标已无生命",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "目标已无生命",
+      "zh_project": "目标已无生命",
+      "en": "The target has no HP remaining.",
+      "ja": "相手のHPが残っていません。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/目标已无生命",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "The target has no HP remaining.",
+        "ja": "相手のHPが残っていません。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"目标已无生命\",1]",
+          "zh": "目标已无生命",
+          "key": "目标已无生命",
+          "en": "The target has no HP remaining.",
+          "ja": "相手のHPが残っていません。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 53,
+          "occurrence": 1,
+          "mergeIndex": 2390,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:当前条件尚不能精确计算": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/当前条件尚不能精确计算",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:当前条件尚不能精确计算",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "当前条件尚不能精确计算",
+      "zh_project": "当前条件尚不能精确计算",
+      "en": "Cannot calculate precisely with the current conditions.",
+      "ja": "現在の条件では正確に計算できません。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/当前条件尚不能精确计算",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Cannot calculate precisely with the current conditions.",
+        "ja": "現在の条件では正確に計算できません。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前条件尚不能精确计算\",1]",
+          "zh": "当前条件尚不能精确计算",
+          "key": "当前条件尚不能精确计算",
+          "en": "Cannot calculate precisely with the current conditions.",
+          "ja": "現在の条件では正確に計算できません。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 54,
+          "occurrence": 1,
+          "mergeIndex": 2391,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:当前输入无法计算": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/当前输入无法计算",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:当前输入无法计算",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "当前输入无法计算",
+      "zh_project": "当前输入无法计算",
+      "en": "Cannot calculate with these inputs.",
+      "ja": "現在の入力では計算できません。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/当前输入无法计算",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Cannot calculate with these inputs.",
+        "ja": "現在の入力では計算できません。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前输入无法计算\",1]",
+          "zh": "当前输入无法计算",
+          "key": "当前输入无法计算",
+          "en": "Cannot calculate with these inputs.",
+          "ja": "現在の入力では計算できません。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 55,
+          "occurrence": 1,
+          "mergeIndex": 2392,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:目标或培养模板无效": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/目标或培养模板无效",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:目标或培养模板无效",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "目标或培养模板无效",
+      "zh_project": "目标或培养模板无效",
+      "en": "Invalid target or build template.",
+      "ja": "対象または育成テンプレートが無効です。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/目标或培养模板无效",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Invalid target or build template.",
+        "ja": "対象または育成テンプレートが無効です。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"目标或培养模板无效\",1]",
+          "zh": "目标或培养模板无效",
+          "key": "目标或培养模板无效",
+          "en": "Invalid target or build template.",
+          "ja": "対象または育成テンプレートが無効です。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 56,
+          "occurrence": 1,
+          "mergeIndex": 2393,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:{traits}的存活效果尚未完整计入": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/{traits}的存活效果尚未完整计入",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:{traits}的存活效果尚未完整计入",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{traits}的存活效果尚未完整计入",
+      "zh_project": "{traits}的存活效果尚未完整计入",
+      "en": "Survival effects from {traits} are not fully modeled.",
+      "ja": "{traits}の生存効果は完全には計算に含まれていません。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{traits}的存活效果尚未完整计入",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Survival effects from {traits} are not fully modeled.",
+        "ja": "{traits}の生存効果は完全には計算に含まれていません。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{traits}的存活效果尚未完整计入\",1]",
+          "zh": "{traits}的存活效果尚未完整计入",
+          "key": "{traits}的存活效果尚未完整计入",
+          "en": "Survival effects from {traits} are not fully modeled.",
+          "ja": "{traits}の生存効果は完全には計算に含まれていません。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 57,
+          "occurrence": 1,
+          "mergeIndex": 2394,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:条件": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/条件",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:条件",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "条件",
+      "zh_project": "条件",
+      "en": "Conditions",
+      "ja": "条件",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/条件",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Conditions",
+        "ja": "条件"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"条件\",1]",
+          "zh": "条件",
+          "key": "条件",
+          "en": "Conditions",
+          "ja": "条件",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 58,
+          "occurrence": 1,
+          "mergeIndex": 2395,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:关闭条件": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/关闭条件",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:关闭条件",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "关闭条件",
+      "zh_project": "关闭条件",
+      "en": "Close conditions",
+      "ja": "条件を閉じる",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/关闭条件",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Close conditions",
+        "ja": "条件を閉じる"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"关闭条件\",1]",
+          "zh": "关闭条件",
+          "key": "关闭条件",
+          "en": "Close conditions",
+          "ja": "条件を閉じる",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 59,
+          "occurrence": 1,
+          "mergeIndex": 2396,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:技能说明": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/技能说明",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:技能说明",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "技能说明",
+      "zh_project": "技能说明",
+      "en": "Skill description",
+      "ja": "スキル説明",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/技能说明",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Skill description",
+        "ja": "スキル説明"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"技能说明\",1]",
+          "zh": "技能说明",
+          "key": "技能说明",
+          "en": "Skill description",
+          "ja": "スキル説明",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 60,
+          "occurrence": 1,
+          "mergeIndex": 2397,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:已用 {count} 次": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/已用 {count} 次",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:已用 {count} 次",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "已用 {count} 次",
+      "zh_project": "已用 {count} 次",
+      "en": "Used {count} times",
+      "ja": "{count}回使用済み",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/已用 {count} 次",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Used {count} times",
+        "ja": "{count}回使用済み"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"已用 {count} 次\",1]",
+          "zh": "已用 {count} 次",
+          "key": "已用 {count} 次",
+          "en": "Used {count} times",
+          "ja": "{count}回使用済み",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 61,
+          "occurrence": 1,
+          "mergeIndex": 2398,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:已记录 {count} 次": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/已记录 {count} 次",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:已记录 {count} 次",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "已记录 {count} 次",
+      "zh_project": "已记录 {count} 次",
+      "en": "Recorded {count} uses",
+      "ja": "{count}回記録済み",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/已记录 {count} 次",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Recorded {count} uses",
+        "ja": "{count}回記録済み"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"已记录 {count} 次\",1]",
+          "zh": "已记录 {count} 次",
+          "key": "已记录 {count} 次",
+          "en": "Recorded {count} uses",
+          "ja": "{count}回記録済み",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 62,
+          "occurrence": 1,
+          "mergeIndex": 2399,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:仅记录：{items}": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/仅记录：{items}",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:仅记录：{items}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "仅记录：{items}",
+      "zh_project": "仅记录：{items}",
+      "en": "Recorded only: {items}",
+      "ja": "記録のみ：{items}",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/仅记录：{items}",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Recorded only: {items}",
+        "ja": "記録のみ：{items}"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"仅记录：{items}\",1]",
+          "zh": "仅记录：{items}",
+          "key": "仅记录：{items}",
+          "en": "Recorded only: {items}",
+          "ja": "記録のみ：{items}",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 63,
+          "occurrence": 1,
+          "mergeIndex": 2400,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:{side} · {name}条件": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/{side} · {name}条件",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:{side} · {name}条件",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{side} · {name}条件",
+      "zh_project": "{side} · {name}条件",
+      "en": "{side} · {name} conditions",
+      "ja": "{side} · {name}の条件",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{side} · {name}条件",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "{side} · {name} conditions",
+        "ja": "{side} · {name}の条件"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{side} · {name}条件\",1]",
+          "zh": "{side} · {name}条件",
+          "key": "{side} · {name}条件",
+          "en": "{side} · {name} conditions",
+          "ja": "{side} · {name}の条件",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 64,
+          "occurrence": 1,
+          "mergeIndex": 2401,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:{side}特性条件": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/{side}特性条件",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:{side}特性条件",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{side}特性条件",
+      "zh_project": "{side}特性条件",
+      "en": "{side} ability conditions",
+      "ja": "{side}の特性条件",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{side}特性条件",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "{side} ability conditions",
+        "ja": "{side}の特性条件"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{side}特性条件\",1]",
+          "zh": "{side}特性条件",
+          "key": "{side}特性条件",
+          "en": "{side} ability conditions",
+          "ja": "{side}の特性条件",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 65,
+          "occurrence": 1,
+          "mergeIndex": 2402,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:{side}技能{index}条件": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/{side}技能{index}条件",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:{side}技能{index}条件",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{side}技能{index}条件",
+      "zh_project": "{side}技能{index}条件",
+      "en": "{side} skill {index} conditions",
+      "ja": "{side}のスキル{index}の条件",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{side}技能{index}条件",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "{side} skill {index} conditions",
+        "ja": "{side}のスキル{index}の条件"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{side}技能{index}条件\",1]",
+          "zh": "{side}技能{index}条件",
+          "key": "{side}技能{index}条件",
+          "en": "{side} skill {index} conditions",
+          "ja": "{side}のスキル{index}の条件",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 66,
+          "occurrence": 1,
+          "mergeIndex": 2403,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:{side}当前技能条件": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/{side}当前技能条件",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:{side}当前技能条件",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{side}当前技能条件",
+      "zh_project": "{side}当前技能条件",
+      "en": "{side} current skill conditions",
+      "ja": "{side}の選択中スキルの条件",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{side}当前技能条件",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "{side} current skill conditions",
+        "ja": "{side}の選択中スキルの条件"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{side}当前技能条件\",1]",
+          "zh": "{side}当前技能条件",
+          "key": "{side}当前技能条件",
+          "en": "{side} current skill conditions",
+          "ja": "{side}の選択中スキルの条件",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 67,
+          "occurrence": 1,
+          "mergeIndex": 2404,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:仅更新状态，不扣血": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/仅更新状态，不扣血",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:仅更新状态，不扣血",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "仅更新状态，不扣血",
+      "zh_project": "仅更新状态，不扣血",
+      "en": "Updates effects only; does not reduce HP",
+      "ja": "効果のみ更新し、HPは減らしません",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/仅更新状态，不扣血",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Updates effects only; does not reduce HP",
+        "ja": "効果のみ更新し、HPは減らしません"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"仅更新状态，不扣血\",1]",
+          "zh": "仅更新状态，不扣血",
+          "key": "仅更新状态，不扣血",
+          "en": "Updates effects only; does not reduce HP",
+          "ja": "効果のみ更新し、HPは減らしません",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 68,
+          "occurrence": 1,
+          "mergeIndex": 2405,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:状态效果未接入": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/状态效果未接入",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:状态效果未接入",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "状态效果未接入",
+      "zh_project": "状态效果未接入",
+      "en": "Status effect not modeled",
+      "ja": "状態効果は未対応です",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/状态效果未接入",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Status effect not modeled",
+        "ja": "状態効果は未対応です"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"状态效果未接入\",1]",
+          "zh": "状态效果未接入",
+          "key": "状态效果未接入",
+          "en": "Status effect not modeled",
+          "ja": "状態効果は未対応です",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 69,
+          "occurrence": 1,
+          "mergeIndex": 2406,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:正在打开星陨斩杀线…": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/正在打开星陨斩杀线…",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:正在打开星陨斩杀线…",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "正在打开星陨斩杀线…",
+      "zh_project": "正在打开星陨斩杀线…",
+      "en": "Opening Starfall KO threshold…",
+      "ja": "隕石の撃破ラインを開いています…",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/正在打开星陨斩杀线…",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Opening Starfall KO threshold…",
+        "ja": "隕石の撃破ラインを開いています…"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"正在打开星陨斩杀线…\",1]",
+          "zh": "正在打开星陨斩杀线…",
+          "key": "正在打开星陨斩杀线…",
+          "en": "Opening Starfall KO threshold…",
+          "ja": "隕石の撃破ラインを開いています…",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 70,
+          "occurrence": 1,
+          "mergeIndex": 2407,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:主配置已变化，请重新打开星陨斩杀线": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/主配置已变化，请重新打开星陨斩杀线",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:主配置已变化，请重新打开星陨斩杀线",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "主配置已变化，请重新打开星陨斩杀线",
+      "zh_project": "主配置已变化，请重新打开星陨斩杀线",
+      "en": "The main setup changed. Reopen Starfall KO threshold.",
+      "ja": "メイン設定が変わりました。隕石の撃破ラインを開き直してください。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/主配置已变化，请重新打开星陨斩杀线",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "The main setup changed. Reopen Starfall KO threshold.",
+        "ja": "メイン設定が変わりました。隕石の撃破ラインを開き直してください。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"主配置已变化，请重新打开星陨斩杀线\",1]",
+          "zh": "主配置已变化，请重新打开星陨斩杀线",
+          "key": "主配置已变化，请重新打开星陨斩杀线",
+          "en": "The main setup changed. Reopen Starfall KO threshold.",
+          "ja": "メイン設定が変わりました。隕石の撃破ラインを開き直してください。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 71,
+          "occurrence": 1,
+          "mergeIndex": 2408,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:应用变化": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/应用变化",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:应用变化",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "应用变化",
+      "zh_project": "应用变化",
+      "en": "Apply changes",
+      "ja": "変更を適用",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/应用变化",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Apply changes",
+        "ja": "変更を適用"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"应用变化\",1]",
+          "zh": "应用变化",
+          "key": "应用变化",
+          "en": "Apply changes",
+          "ja": "変更を適用",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 73,
+          "occurrence": 1,
+          "mergeIndex": 2410,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:解除状态": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/解除状态",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:解除状态",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "解除状态",
+      "zh_project": "解除状态",
+      "en": "Remove effect",
+      "ja": "効果を解除",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/解除状态",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Remove effect",
+        "ja": "効果を解除"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"解除状态\",1]",
+          "zh": "解除状态",
+          "key": "解除状态",
+          "en": "Remove effect",
+          "ja": "効果を解除",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 74,
+          "occurrence": 1,
+          "mergeIndex": 2411,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:全屏速度线": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/全屏速度线",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:全屏速度线",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "全屏速度线",
+      "zh_project": "全屏速度线",
+      "en": "Fullscreen Speed Ranking",
+      "ja": "全画面の素早さランキング",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/全屏速度线",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Fullscreen Speed Ranking",
+        "ja": "全画面の素早さランキング"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"全屏速度线\",1]",
+          "zh": "全屏速度线",
+          "key": "全屏速度线",
+          "en": "Fullscreen Speed Ranking",
+          "ja": "全画面の素早さランキング",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 75,
+          "occurrence": 1,
+          "mergeIndex": 2412,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:条件与星陨斩杀线": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/条件与星陨斩杀线",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:条件与星陨斩杀线",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "条件与星陨斩杀线",
+      "zh_project": "条件与星陨斩杀线",
+      "en": "Conditions and Starfall KOs",
+      "ja": "条件設定と隕石の撃破ライン",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/条件与星陨斩杀线",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Conditions and Starfall KOs",
+        "ja": "条件設定と隕石の撃破ライン"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"条件与星陨斩杀线\",1]",
+          "zh": "条件与星陨斩杀线",
+          "key": "条件与星陨斩杀线",
+          "en": "Conditions and Starfall KOs",
+          "ja": "条件設定と隕石の撃破ライン",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 76,
+          "occurrence": 1,
+          "mergeIndex": 2413,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:英日界面完善": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/英日界面完善",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:英日界面完善",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "英日界面完善",
+      "zh_project": "英日界面完善",
+      "en": "English and Japanese refinements",
+      "ja": "英語・日本語表示の改善",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/英日界面完善",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "English and Japanese refinements",
+        "ja": "英語・日本語表示の改善"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"英日界面完善\",1]",
+          "zh": "英日界面完善",
+          "key": "英日界面完善",
+          "en": "English and Japanese refinements",
+          "ja": "英語・日本語表示の改善",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 77,
+          "occurrence": 1,
+          "mergeIndex": 2414,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:查看18系攻防倍率，支持键盘定位。": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/查看18系攻防倍率，支持键盘定位。",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:查看18系攻防倍率，支持键盘定位。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "查看18系攻防倍率，支持键盘定位。",
+      "zh_project": "查看18系攻防倍率，支持键盘定位。",
+      "en": "Compare attack and defense multipliers for all 18 classes, with keyboard navigation.",
+      "ja": "18属性の攻防倍率を確認でき、キーボードでも移動できます。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/查看18系攻防倍率，支持键盘定位。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Compare attack and defense multipliers for all 18 classes, with keyboard navigation.",
+        "ja": "18属性の攻防倍率を確認でき、キーボードでも移動できます。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"查看18系攻防倍率，支持键盘定位。\",1]",
+          "zh": "查看18系攻防倍率，支持键盘定位。",
+          "key": "查看18系攻防倍率，支持键盘定位。",
+          "en": "Compare attack and defense multipliers for all 18 classes, with keyboard navigation.",
+          "ja": "18属性の攻防倍率を確認でき、キーボードでも移動できます。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 78,
+          "occurrence": 1,
+          "mergeIndex": 2415,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。",
+      "zh_project": "全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。",
+      "en": "Expand the speed ranking, drag its axis to a tier and compare zero-IV speeds.",
+      "ja": "素早さランキングを全画面表示し、縦軸ドラッグで移動。個体値0の比較も追加しました。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Expand the speed ranking, drag its axis to a tier and compare zero-IV speeds.",
+        "ja": "素早さランキングを全画面表示し、縦軸ドラッグで移動。個体値0の比較も追加しました。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。\",1]",
+          "zh": "全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。",
+          "key": "全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。",
+          "en": "Expand the speed ranking, drag its axis to a tier and compare zero-IV speeds.",
+          "ja": "素早さランキングを全画面表示し、縦軸ドラッグで移動。個体値0の比較も追加しました。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 79,
+          "occurrence": 1,
+          "mergeIndex": 2416,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。",
+      "zh_project": "精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。",
+      "en": "Edit skill and ability conditions in Compact mode; find and apply the minimum Starfall stacks from the result panel.",
+      "ja": "コンパクト表示でスキル・特性の条件を編集でき、結果パネルから隕石の最低スタック数を検索・適用できます。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Edit skill and ability conditions in Compact mode; find and apply the minimum Starfall stacks from the result panel.",
+        "ja": "コンパクト表示でスキル・特性の条件を編集でき、結果パネルから隕石の最低スタック数を検索・適用できます。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。\",1]",
+          "zh": "精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。",
+          "key": "精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。",
+          "en": "Edit skill and ability conditions in Compact mode; find and apply the minimum Starfall stacks from the result panel.",
+          "ja": "コンパクト表示でスキル・特性の条件を編集でき、結果パネルから隕石の最低スタック数を検索・適用できます。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 80,
+          "occurrence": 1,
+          "mergeIndex": 2417,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
+  "ui:完善导入、分享、加载提示和窄屏控件，切换语言保留配置。": {
+    "reference": "src/i18n/messages.js#UI_MESSAGES/完善导入、分享、加载提示和窄屏控件，切换语言保留配置。",
+    "clientVersion": null,
+    "generated": {
+      "key": "ui:完善导入、分享、加载提示和窄屏控件，切换语言保留配置。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "完善导入、分享、加载提示和窄屏控件，切换语言保留配置。",
+      "zh_project": "完善导入、分享、加载提示和窄屏控件，切换语言保留配置。",
+      "en": "Improved import, share and loading feedback, plus narrow-screen controls. Language changes preserve your setup.",
+      "ja": "インポート・共有・読み込み時の案内と狭い画面の操作欄を改善。言語を切り替えても設定を保持します。",
+      "en_status": "project_existing",
+      "ja_status": "project_existing",
+      "review_status": "needs_review",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/完善导入、分享、加载提示和窄屏控件，切换语言保留配置。",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+    },
+    "evidence": {
+      "currentProjectTranslation": {
+        "en": "Improved import, share and loading feedback, plus narrow-screen controls. Language changes preserve your setup.",
+        "ja": "インポート・共有・読み込み時の案内と狭い画面の操作欄を改善。言語を切り替えても設定を保持します。"
+      },
+      "definitionSources": [
+        {
+          "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"完善导入、分享、加载提示和窄屏控件，切换语言保留配置。\",1]",
+          "zh": "完善导入、分享、加载提示和窄屏控件，切换语言保留配置。",
+          "key": "完善导入、分享、加载提示和窄屏控件，切换语言保留配置。",
+          "en": "Improved import, share and loading feedback, plus narrow-screen controls. Language changes preserve your setup.",
+          "ja": "インポート・共有・読み込み時の案内と狭い画面の操作欄を改善。言語を切り替えても設定を保持します。",
+          "module": "src/i18n/starfall-messages.js",
+          "exportName": "starfallMessages",
+          "line": 81,
+          "occurrence": 1,
+          "mergeIndex": 2418,
+          "effective": true,
+          "overridesDefinitionId": null
+        }
+      ],
+      "mappingSources": []
+    }
+  },
   "ui:六维100测试占位": {
     "reference": "src#unregistered-i18n-call/六维100测试占位",
     "clientVersion": null,
@@ -284416,7 +287862,7 @@
           {
             "file": "src/components/SpiritPicker.jsx",
             "context": "t-call",
-            "line": 499,
+            "line": 500,
             "column": 30,
             "excerpt": "? t(\"六维100测试占位\")"
           }
@@ -284455,7 +287901,7 @@
           {
             "file": "src/components/SpiritPicker.jsx",
             "context": "t-call",
-            "line": 578,
+            "line": 579,
             "column": 76,
             "excerpt": "<p className=\"spirit-card__pending\">{t(placeholderRaceStats ? \"暂定六维100\" : \"种族值待确认\")}</p>"
           }

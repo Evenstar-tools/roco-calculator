@@ -36,12 +36,12 @@ test("语言词典保留中文默认和占位符，非中文漏词明确记录�
   }
 });
 
-test.each(["en", "ja"])("%s 使用原版header与精灵选择布局，国际服不带CN赛季装饰", (locale) => {
+test.each(["en", "ja"])("%s 使用原版header与精灵选择布局，国际服默认S3装饰", (locale) => {
   const t = (source) => translateUi(locale, source);
   const { container } = render(wrap(locale, <><AppHeader onMenuOpen={vi.fn()} /><SpiritStep spirits={[]} /><EmptyStateGuide title={t("国际服计算器")} message={t("国际服的数值、技能与规则尚未核验，暂不进行伤害计算。")} /></>));
   expect(container.querySelector(".app-header")).toBeInTheDocument();
   expect(container.querySelector(".versus-grid")).toBeInTheDocument();
-  expect(container.querySelector(".app-header__season")).not.toBeInTheDocument();
+  expect(container.querySelector(".app-header__season-character")).toHaveAttribute("src", "/assets/season/s3-jiaer.webp");
   expect(screen.getByRole("heading", { name: t("洛克计算器") + " · " + t("国际服") })).toBeVisible();
   const attacker = screen.getByRole("combobox", { name: translateUi(locale, "{side}精灵", { side: t("攻击方") }) });
   fireEvent.focus(attacker);

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "projectRoot": "D:\\codex\\worktrees\\roco-s5-20261022",
+  "projectRoot": "D:\\codex\\worktrees\\roco-all-web-features-20261029",
   "scope": "Read-only static Web/desktop source inventory; excludes src/data, assets, test/mock/debug directories, comments, console/logger/debug call contexts and script/style JSX. Does not prove full runtime coverage.",
   "stableKeyPolicy": "registeredMessages retains the exact Chinese source key; occurrence records use JSON([relativeFile, contextKind, zh]). Line/column are evidence only.",
   "limitations": [
@@ -8973,6 +8973,318 @@
     "各自用户预设，未配置按中立性格、生命60、双防0个体": {
       "en": "Saved builds; otherwise neutral nature, HP IV 60, defense IVs 0",
       "ja": "保存設定を使用。未設定は無補正性格・HP個体値60・両防御個体値0"
+    },
+    "星陨斩杀线": {
+      "en": "Starfall KO Threshold",
+      "ja": "隕石の撃破ライン"
+    },
+    "关闭星陨斩杀线": {
+      "en": "Close Starfall KO threshold",
+      "ja": "隕石の撃破ラインを閉じる"
+    },
+    "星陨计算技能": {
+      "en": "Skill for Starfall calculation",
+      "ja": "隕石計算に使うスキル"
+    },
+    "试算星陨": {
+      "en": "Test Starfall",
+      "ja": "隕石を試算"
+    },
+    "试算星陨层数": {
+      "en": "Test Starfall stacks",
+      "ja": "試算する隕石スタック数"
+    },
+    "{count} 层": {
+      "en": "{count} stacks",
+      "ja": "{count} スタック"
+    },
+    "最低 {count} 层": {
+      "en": "Minimum: {count} stacks",
+      "ja": "最低 {count} スタック"
+    },
+    "还差 {count} 层": {
+      "en": "{count} more stacks needed",
+      "ja": "あと {count} スタック"
+    },
+    "填入 {count} 层": {
+      "en": "Apply {count} stacks",
+      "ja": "{count} スタックを適用"
+    },
+    "填入 最低层数": {
+      "en": "Apply minimum stacks",
+      "ja": "最低スタック数を適用"
+    },
+    "不可斩杀": {
+      "en": "No KO",
+      "ja": "撃破不可"
+    },
+    "当前可斩杀": {
+      "en": "Current stacks secure a KO",
+      "ja": "現在のスタック数で撃破可能"
+    },
+    "当前对位斩杀线": {
+      "en": "Current matchup KO threshold",
+      "ja": "現在の対面の撃破ライン"
+    },
+    "当前对位 · 按当前血量、减伤与特性": {
+      "en": "Current matchup · current HP, damage reduction and abilities",
+      "ja": "現在の対面 · 現在HP・ダメージ軽減・特性を反映"
+    },
+    "按最低层数填入复算": {
+      "en": "Apply the minimum and recalculate",
+      "ja": "最低スタック数を適用して再計算"
+    },
+    "正在查找最低层数…": {
+      "en": "Finding minimum stacks…",
+      "ja": "最低スタック数を計算中…"
+    },
+    "本次伤害 {damage} · 目标 {hp} / {maxHp} HP": {
+      "en": "Damage {damage} · Target {hp} / {maxHp} HP",
+      "ja": "ダメージ {damage} · 相手 {hp} / {maxHp} HP"
+    },
+    "冻结斩杀≤{hp} HP，冻结不额外扣血。": {
+      "en": "Freeze secures a KO at ≤{hp} HP; it adds no damage.",
+      "ja": "HPが{hp}以下なら凍結で撃破。凍結は追加ダメージを与えません。"
+    },
+    "三档培养对比": {
+      "en": "Compare three builds",
+      "ja": "3つの育成パターンを比較"
+    },
+    "生防": {
+      "en": "HP + Defenses",
+      "ja": "HP・両防御"
+    },
+    "纯肉": {
+      "en": "Full Bulk",
+      "ja": "耐久特化"
+    },
+    "中立 · 生命60": {
+      "en": "Neutral · HP IV 60",
+      "ja": "無補正 · HP個体値60"
+    },
+    "中立 · 生命双防60": {
+      "en": "Neutral · HP and both defense IVs 60",
+      "ja": "無補正 · HP・両防御の個体値60"
+    },
+    "生命性格 · 生命双防60": {
+      "en": "HP nature · HP and both defense IVs 60",
+      "ja": "HP上昇性格 · HP・両防御の個体値60"
+    },
+    "满血 · 无减伤/异常 · 不计防守特性": {
+      "en": "Full HP · no reduction/status · defensive abilities excluded",
+      "ja": "満タンHP · 軽減・状態異常なし · 防御側の特性は除外"
+    },
+    "搜索星陨斩杀精灵": {
+      "en": "Search Starfall targets",
+      "ja": "隕石の撃破対象を検索"
+    },
+    "清空星陨搜索": {
+      "en": "Clear Starfall search",
+      "ja": "隕石の検索をクリア"
+    },
+    "正在计算 {completed}/{total}": {
+      "en": "Calculating {completed}/{total}",
+      "ja": "計算中 {completed}/{total}"
+    },
+    "{count} 只精灵／形态": {
+      "en": "{count} Jini/forms",
+      "ja": "{count} 体・フォーム"
+    },
+    "当前防守方": {
+      "en": "Current defender",
+      "ja": "現在の防御側"
+    },
+    "0–99 层内无法斩杀": {
+      "en": "No KO within 0–99 stacks",
+      "ja": "0～99スタックでは撃破不可"
+    },
+    "0至99层内未达击倒条件": {
+      "en": "No KO within 0–99 stacks",
+      "ja": "0～99スタックでは撃破条件を満たしません"
+    },
+    "选择{name}培养": {
+      "en": "Choose a build for {name}",
+      "ja": "{name}の育成を選択"
+    },
+    "{name}培养选择": {
+      "en": "Build selection for {name}",
+      "ja": "{name}の育成選択"
+    },
+    "选培养": {
+      "en": "Choose build",
+      "ja": "育成を選択"
+    },
+    "代入{template}": {
+      "en": "Use {template}",
+      "ja": "{template}を適用"
+    },
+    "代入后按实际特性复算。": {
+      "en": "Recalculate with actual abilities after applying.",
+      "ja": "適用後、実際の特性を反映して再計算します。"
+    },
+    "已代入培养，当前对位已恢复特性复算": {
+      "en": "Build applied; current matchup recalculated with abilities.",
+      "ja": "育成を適用し、現在の対面を特性込みで再計算しました。"
+    },
+    "已填入 {count} 层星陨": {
+      "en": "Applied {count} Starfall stacks",
+      "ja": "隕石を{count}スタック適用しました"
+    },
+    "没有匹配的精灵，试试其他名称或图鉴号。": {
+      "en": "No matching Jini. Try another name or index number.",
+      "ja": "一致するジニがいません。別の名前や図鑑番号で検索してください。"
+    },
+    "暂无可计算的精灵。": {
+      "en": "No calculable Jini.",
+      "ja": "計算できるジニがいません。"
+    },
+    "显示更多": {
+      "en": "Show more",
+      "ja": "さらに表示"
+    },
+    "查询 0–99 层 · 单次出招": {
+      "en": "Scan 0–99 stacks · one attack",
+      "ja": "0～99スタックを検索 · 1回の攻撃"
+    },
+    "含冻结斩杀": {
+      "en": " including Freeze KOs",
+      "ja": "（凍結による撃破を含む）"
+    },
+    " · 不计回合末持续伤害": {
+      "en": " · no end-of-turn damage",
+      "ja": " · ターン終了時の継続ダメージは除外"
+    },
+    "计算依据": {
+      "en": "Calculation details",
+      "ja": "計算条件"
+    },
+    "使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。": {
+      "en": "Checks every stack count with the selected skill and attack setup; returns 0 if no stacks are needed. Builds change only the target’s nature and IVs, with other IVs set to 0. Applying a build restores defensive abilities. No KO means no count from 0–99 is sufficient; Unverified indicates an unmodeled effect.",
+      "ja": "選択中のスキルと攻撃設定で各スタック数を計算し、0で撃破できる場合は0を返します。育成パターンは相手の性格と個体値のみを変更し、その他の個体値は0です。適用時に防御側の特性を復元します。撃破不可は0～99のいずれでも届かない場合、未検証は未対応の効果がある場合です。"
+    },
+    "星陨层数须为0至99的整数": {
+      "en": "Starfall stacks must be an integer from 0 to 99.",
+      "ja": "隕石スタック数は0～99の整数で入力してください。"
+    },
+    "请选择双方精灵": {
+      "en": "Select both Jini.",
+      "ja": "双方のジニを選択してください。"
+    },
+    "请选择要计算的技能": {
+      "en": "Select a skill to calculate.",
+      "ja": "計算するスキルを選択してください。"
+    },
+    "目标已无生命": {
+      "en": "The target has no HP remaining.",
+      "ja": "相手のHPが残っていません。"
+    },
+    "当前条件尚不能精确计算": {
+      "en": "Cannot calculate precisely with the current conditions.",
+      "ja": "現在の条件では正確に計算できません。"
+    },
+    "当前输入无法计算": {
+      "en": "Cannot calculate with these inputs.",
+      "ja": "現在の入力では計算できません。"
+    },
+    "目标或培养模板无效": {
+      "en": "Invalid target or build template.",
+      "ja": "対象または育成テンプレートが無効です。"
+    },
+    "{traits}的存活效果尚未完整计入": {
+      "en": "Survival effects from {traits} are not fully modeled.",
+      "ja": "{traits}の生存効果は完全には計算に含まれていません。"
+    },
+    "条件": {
+      "en": "Conditions",
+      "ja": "条件"
+    },
+    "关闭条件": {
+      "en": "Close conditions",
+      "ja": "条件を閉じる"
+    },
+    "技能说明": {
+      "en": "Skill description",
+      "ja": "スキル説明"
+    },
+    "已用 {count} 次": {
+      "en": "Used {count} times",
+      "ja": "{count}回使用済み"
+    },
+    "已记录 {count} 次": {
+      "en": "Recorded {count} uses",
+      "ja": "{count}回記録済み"
+    },
+    "仅记录：{items}": {
+      "en": "Recorded only: {items}",
+      "ja": "記録のみ：{items}"
+    },
+    "{side} · {name}条件": {
+      "en": "{side} · {name} conditions",
+      "ja": "{side} · {name}の条件"
+    },
+    "{side}特性条件": {
+      "en": "{side} ability conditions",
+      "ja": "{side}の特性条件"
+    },
+    "{side}技能{index}条件": {
+      "en": "{side} skill {index} conditions",
+      "ja": "{side}のスキル{index}の条件"
+    },
+    "{side}当前技能条件": {
+      "en": "{side} current skill conditions",
+      "ja": "{side}の選択中スキルの条件"
+    },
+    "仅更新状态，不扣血": {
+      "en": "Updates effects only; does not reduce HP",
+      "ja": "効果のみ更新し、HPは減らしません"
+    },
+    "状态效果未接入": {
+      "en": "Status effect not modeled",
+      "ja": "状態効果は未対応です"
+    },
+    "正在打开星陨斩杀线…": {
+      "en": "Opening Starfall KO threshold…",
+      "ja": "隕石の撃破ラインを開いています…"
+    },
+    "主配置已变化，请重新打开星陨斩杀线": {
+      "en": "The main setup changed. Reopen Starfall KO threshold.",
+      "ja": "メイン設定が変わりました。隕石の撃破ラインを開き直してください。"
+    },
+    "应用变化": {
+      "en": "Apply changes",
+      "ja": "変更を適用"
+    },
+    "解除状态": {
+      "en": "Remove effect",
+      "ja": "効果を解除"
+    },
+    "全屏速度线": {
+      "en": "Fullscreen Speed Ranking",
+      "ja": "全画面の素早さランキング"
+    },
+    "条件与星陨斩杀线": {
+      "en": "Conditions and Starfall KOs",
+      "ja": "条件設定と隕石の撃破ライン"
+    },
+    "英日界面完善": {
+      "en": "English and Japanese refinements",
+      "ja": "英語・日本語表示の改善"
+    },
+    "查看18系攻防倍率，支持键盘定位。": {
+      "en": "Compare attack and defense multipliers for all 18 classes, with keyboard navigation.",
+      "ja": "18属性の攻防倍率を確認でき、キーボードでも移動できます。"
+    },
+    "全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。": {
+      "en": "Expand the speed ranking, drag its axis to a tier and compare zero-IV speeds.",
+      "ja": "素早さランキングを全画面表示し、縦軸ドラッグで移動。個体値0の比較も追加しました。"
+    },
+    "精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。": {
+      "en": "Edit skill and ability conditions in Compact mode; find and apply the minimum Starfall stacks from the result panel.",
+      "ja": "コンパクト表示でスキル・特性の条件を編集でき、結果パネルから隕石の最低スタック数を検索・適用できます。"
+    },
+    "完善导入、分享、加载提示和窄屏控件，切换语言保留配置。": {
+      "en": "Improved import, share and loading feedback, plus narrow-screen controls. Language changes preserve your setup.",
+      "ja": "インポート・共有・読み込み時の案内と狭い画面の操作欄を改善。言語を切り替えても設定を保持します。"
     }
   },
   "definitions": [
@@ -32185,7 +32497,7 @@
       "line": 99,
       "occurrence": 1,
       "mergeIndex": 1657,
-      "effective": true,
+      "effective": false,
       "overridesDefinitionId": null
     },
     {
@@ -41735,6 +42047,1112 @@
       "mergeIndex": 2339,
       "effective": true,
       "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"星陨斩杀线\",1]",
+      "zh": "星陨斩杀线",
+      "key": "星陨斩杀线",
+      "en": "Starfall KO Threshold",
+      "ja": "隕石の撃破ライン",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 3,
+      "occurrence": 1,
+      "mergeIndex": 2340,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"关闭星陨斩杀线\",1]",
+      "zh": "关闭星陨斩杀线",
+      "key": "关闭星陨斩杀线",
+      "en": "Close Starfall KO threshold",
+      "ja": "隕石の撃破ラインを閉じる",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 4,
+      "occurrence": 1,
+      "mergeIndex": 2341,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"星陨计算技能\",1]",
+      "zh": "星陨计算技能",
+      "key": "星陨计算技能",
+      "en": "Skill for Starfall calculation",
+      "ja": "隕石計算に使うスキル",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 5,
+      "occurrence": 1,
+      "mergeIndex": 2342,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"试算星陨\",1]",
+      "zh": "试算星陨",
+      "key": "试算星陨",
+      "en": "Test Starfall",
+      "ja": "隕石を試算",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 6,
+      "occurrence": 1,
+      "mergeIndex": 2343,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"试算星陨层数\",1]",
+      "zh": "试算星陨层数",
+      "key": "试算星陨层数",
+      "en": "Test Starfall stacks",
+      "ja": "試算する隕石スタック数",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 7,
+      "occurrence": 1,
+      "mergeIndex": 2344,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{count} 层\",1]",
+      "zh": "{count} 层",
+      "key": "{count} 层",
+      "en": "{count} stacks",
+      "ja": "{count} スタック",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 8,
+      "occurrence": 1,
+      "mergeIndex": 2345,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"最低 {count} 层\",1]",
+      "zh": "最低 {count} 层",
+      "key": "最低 {count} 层",
+      "en": "Minimum: {count} stacks",
+      "ja": "最低 {count} スタック",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 9,
+      "occurrence": 1,
+      "mergeIndex": 2346,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"还差 {count} 层\",1]",
+      "zh": "还差 {count} 层",
+      "key": "还差 {count} 层",
+      "en": "{count} more stacks needed",
+      "ja": "あと {count} スタック",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 10,
+      "occurrence": 1,
+      "mergeIndex": 2347,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"填入 {count} 层\",1]",
+      "zh": "填入 {count} 层",
+      "key": "填入 {count} 层",
+      "en": "Apply {count} stacks",
+      "ja": "{count} スタックを適用",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 11,
+      "occurrence": 1,
+      "mergeIndex": 2348,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"填入 最低层数\",1]",
+      "zh": "填入 最低层数",
+      "key": "填入 最低层数",
+      "en": "Apply minimum stacks",
+      "ja": "最低スタック数を適用",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 12,
+      "occurrence": 1,
+      "mergeIndex": 2349,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"不可斩杀\",1]",
+      "zh": "不可斩杀",
+      "key": "不可斩杀",
+      "en": "No KO",
+      "ja": "撃破不可",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 13,
+      "occurrence": 1,
+      "mergeIndex": 2350,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前可斩杀\",1]",
+      "zh": "当前可斩杀",
+      "key": "当前可斩杀",
+      "en": "Current stacks secure a KO",
+      "ja": "現在のスタック数で撃破可能",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 14,
+      "occurrence": 1,
+      "mergeIndex": 2351,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前对位斩杀线\",1]",
+      "zh": "当前对位斩杀线",
+      "key": "当前对位斩杀线",
+      "en": "Current matchup KO threshold",
+      "ja": "現在の対面の撃破ライン",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 15,
+      "occurrence": 1,
+      "mergeIndex": 2352,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前对位 · 按当前血量、减伤与特性\",1]",
+      "zh": "当前对位 · 按当前血量、减伤与特性",
+      "key": "当前对位 · 按当前血量、减伤与特性",
+      "en": "Current matchup · current HP, damage reduction and abilities",
+      "ja": "現在の対面 · 現在HP・ダメージ軽減・特性を反映",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 16,
+      "occurrence": 1,
+      "mergeIndex": 2353,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"按最低层数填入复算\",1]",
+      "zh": "按最低层数填入复算",
+      "key": "按最低层数填入复算",
+      "en": "Apply the minimum and recalculate",
+      "ja": "最低スタック数を適用して再計算",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 17,
+      "occurrence": 1,
+      "mergeIndex": 2354,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"正在查找最低层数…\",1]",
+      "zh": "正在查找最低层数…",
+      "key": "正在查找最低层数…",
+      "en": "Finding minimum stacks…",
+      "ja": "最低スタック数を計算中…",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 18,
+      "occurrence": 1,
+      "mergeIndex": 2355,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"本次伤害 {damage} · 目标 {hp} / {maxHp} HP\",1]",
+      "zh": "本次伤害 {damage} · 目标 {hp} / {maxHp} HP",
+      "key": "本次伤害 {damage} · 目标 {hp} / {maxHp} HP",
+      "en": "Damage {damage} · Target {hp} / {maxHp} HP",
+      "ja": "ダメージ {damage} · 相手 {hp} / {maxHp} HP",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 19,
+      "occurrence": 1,
+      "mergeIndex": 2356,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"冻结斩杀≤{hp} HP，冻结不额外扣血。\",1]",
+      "zh": "冻结斩杀≤{hp} HP，冻结不额外扣血。",
+      "key": "冻结斩杀≤{hp} HP，冻结不额外扣血。",
+      "en": "Freeze secures a KO at ≤{hp} HP; it adds no damage.",
+      "ja": "HPが{hp}以下なら凍結で撃破。凍結は追加ダメージを与えません。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 20,
+      "occurrence": 1,
+      "mergeIndex": 2357,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"三档培养对比\",1]",
+      "zh": "三档培养对比",
+      "key": "三档培养对比",
+      "en": "Compare three builds",
+      "ja": "3つの育成パターンを比較",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 21,
+      "occurrence": 1,
+      "mergeIndex": 2358,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"生防\",1]",
+      "zh": "生防",
+      "key": "生防",
+      "en": "HP + Defenses",
+      "ja": "HP・両防御",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 22,
+      "occurrence": 1,
+      "mergeIndex": 2359,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"纯肉\",1]",
+      "zh": "纯肉",
+      "key": "纯肉",
+      "en": "Full Bulk",
+      "ja": "耐久特化",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 23,
+      "occurrence": 1,
+      "mergeIndex": 2360,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"中立 · 生命60\",1]",
+      "zh": "中立 · 生命60",
+      "key": "中立 · 生命60",
+      "en": "Neutral · HP IV 60",
+      "ja": "無補正 · HP個体値60",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 24,
+      "occurrence": 1,
+      "mergeIndex": 2361,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"中立 · 生命双防60\",1]",
+      "zh": "中立 · 生命双防60",
+      "key": "中立 · 生命双防60",
+      "en": "Neutral · HP and both defense IVs 60",
+      "ja": "無補正 · HP・両防御の個体値60",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 25,
+      "occurrence": 1,
+      "mergeIndex": 2362,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"生命性格 · 生命双防60\",1]",
+      "zh": "生命性格 · 生命双防60",
+      "key": "生命性格 · 生命双防60",
+      "en": "HP nature · HP and both defense IVs 60",
+      "ja": "HP上昇性格 · HP・両防御の個体値60",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 26,
+      "occurrence": 1,
+      "mergeIndex": 2363,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"满血 · 无减伤/异常 · 不计防守特性\",1]",
+      "zh": "满血 · 无减伤/异常 · 不计防守特性",
+      "key": "满血 · 无减伤/异常 · 不计防守特性",
+      "en": "Full HP · no reduction/status · defensive abilities excluded",
+      "ja": "満タンHP · 軽減・状態異常なし · 防御側の特性は除外",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 27,
+      "occurrence": 1,
+      "mergeIndex": 2364,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"搜索星陨斩杀精灵\",1]",
+      "zh": "搜索星陨斩杀精灵",
+      "key": "搜索星陨斩杀精灵",
+      "en": "Search Starfall targets",
+      "ja": "隕石の撃破対象を検索",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 28,
+      "occurrence": 1,
+      "mergeIndex": 2365,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"清空星陨搜索\",1]",
+      "zh": "清空星陨搜索",
+      "key": "清空星陨搜索",
+      "en": "Clear Starfall search",
+      "ja": "隕石の検索をクリア",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 29,
+      "occurrence": 1,
+      "mergeIndex": 2366,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"正在计算 {completed}/{total}\",1]",
+      "zh": "正在计算 {completed}/{total}",
+      "key": "正在计算 {completed}/{total}",
+      "en": "Calculating {completed}/{total}",
+      "ja": "計算中 {completed}/{total}",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 30,
+      "occurrence": 1,
+      "mergeIndex": 2367,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{count} 只精灵／形态\",1]",
+      "zh": "{count} 只精灵／形态",
+      "key": "{count} 只精灵／形态",
+      "en": "{count} Jini/forms",
+      "ja": "{count} 体・フォーム",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 31,
+      "occurrence": 1,
+      "mergeIndex": 2368,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前防守方\",1]",
+      "zh": "当前防守方",
+      "key": "当前防守方",
+      "en": "Current defender",
+      "ja": "現在の防御側",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 32,
+      "occurrence": 1,
+      "mergeIndex": 2369,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"0–99 层内无法斩杀\",1]",
+      "zh": "0–99 层内无法斩杀",
+      "key": "0–99 层内无法斩杀",
+      "en": "No KO within 0–99 stacks",
+      "ja": "0～99スタックでは撃破不可",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 33,
+      "occurrence": 1,
+      "mergeIndex": 2370,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"0至99层内未达击倒条件\",1]",
+      "zh": "0至99层内未达击倒条件",
+      "key": "0至99层内未达击倒条件",
+      "en": "No KO within 0–99 stacks",
+      "ja": "0～99スタックでは撃破条件を満たしません",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 34,
+      "occurrence": 1,
+      "mergeIndex": 2371,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"选择{name}培养\",1]",
+      "zh": "选择{name}培养",
+      "key": "选择{name}培养",
+      "en": "Choose a build for {name}",
+      "ja": "{name}の育成を選択",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 35,
+      "occurrence": 1,
+      "mergeIndex": 2372,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{name}培养选择\",1]",
+      "zh": "{name}培养选择",
+      "key": "{name}培养选择",
+      "en": "Build selection for {name}",
+      "ja": "{name}の育成選択",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 36,
+      "occurrence": 1,
+      "mergeIndex": 2373,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"选培养\",1]",
+      "zh": "选培养",
+      "key": "选培养",
+      "en": "Choose build",
+      "ja": "育成を選択",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 37,
+      "occurrence": 1,
+      "mergeIndex": 2374,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"代入{template}\",1]",
+      "zh": "代入{template}",
+      "key": "代入{template}",
+      "en": "Use {template}",
+      "ja": "{template}を適用",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 38,
+      "occurrence": 1,
+      "mergeIndex": 2375,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"代入后按实际特性复算。\",1]",
+      "zh": "代入后按实际特性复算。",
+      "key": "代入后按实际特性复算。",
+      "en": "Recalculate with actual abilities after applying.",
+      "ja": "適用後、実際の特性を反映して再計算します。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 39,
+      "occurrence": 1,
+      "mergeIndex": 2376,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"已代入培养，当前对位已恢复特性复算\",1]",
+      "zh": "已代入培养，当前对位已恢复特性复算",
+      "key": "已代入培养，当前对位已恢复特性复算",
+      "en": "Build applied; current matchup recalculated with abilities.",
+      "ja": "育成を適用し、現在の対面を特性込みで再計算しました。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 40,
+      "occurrence": 1,
+      "mergeIndex": 2377,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"已填入 {count} 层星陨\",1]",
+      "zh": "已填入 {count} 层星陨",
+      "key": "已填入 {count} 层星陨",
+      "en": "Applied {count} Starfall stacks",
+      "ja": "隕石を{count}スタック適用しました",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 41,
+      "occurrence": 1,
+      "mergeIndex": 2378,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"没有匹配的精灵，试试其他名称或图鉴号。\",1]",
+      "zh": "没有匹配的精灵，试试其他名称或图鉴号。",
+      "key": "没有匹配的精灵，试试其他名称或图鉴号。",
+      "en": "No matching Jini. Try another name or index number.",
+      "ja": "一致するジニがいません。別の名前や図鑑番号で検索してください。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 42,
+      "occurrence": 1,
+      "mergeIndex": 2379,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"暂无可计算的精灵。\",1]",
+      "zh": "暂无可计算的精灵。",
+      "key": "暂无可计算的精灵。",
+      "en": "No calculable Jini.",
+      "ja": "計算できるジニがいません。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 43,
+      "occurrence": 1,
+      "mergeIndex": 2380,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"显示更多\",1]",
+      "zh": "显示更多",
+      "key": "显示更多",
+      "en": "Show more",
+      "ja": "さらに表示",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 44,
+      "occurrence": 1,
+      "mergeIndex": 2381,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"查询 0–99 层 · 单次出招\",1]",
+      "zh": "查询 0–99 层 · 单次出招",
+      "key": "查询 0–99 层 · 单次出招",
+      "en": "Scan 0–99 stacks · one attack",
+      "ja": "0～99スタックを検索 · 1回の攻撃",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 45,
+      "occurrence": 1,
+      "mergeIndex": 2382,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"含冻结斩杀\",1]",
+      "zh": "含冻结斩杀",
+      "key": "含冻结斩杀",
+      "en": " including Freeze KOs",
+      "ja": "（凍結による撃破を含む）",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 46,
+      "occurrence": 1,
+      "mergeIndex": 2383,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\" · 不计回合末持续伤害\",1]",
+      "zh": " · 不计回合末持续伤害",
+      "key": " · 不计回合末持续伤害",
+      "en": " · no end-of-turn damage",
+      "ja": " · ターン終了時の継続ダメージは除外",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 47,
+      "occurrence": 1,
+      "mergeIndex": 2384,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"计算依据\",1]",
+      "zh": "计算依据",
+      "key": "计算依据",
+      "en": "Calculation details",
+      "ja": "計算条件",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 48,
+      "occurrence": 1,
+      "mergeIndex": 2385,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。\",1]",
+      "zh": "使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。",
+      "key": "使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。",
+      "en": "Checks every stack count with the selected skill and attack setup; returns 0 if no stacks are needed. Builds change only the target’s nature and IVs, with other IVs set to 0. Applying a build restores defensive abilities. No KO means no count from 0–99 is sufficient; Unverified indicates an unmodeled effect.",
+      "ja": "選択中のスキルと攻撃設定で各スタック数を計算し、0で撃破できる場合は0を返します。育成パターンは相手の性格と個体値のみを変更し、その他の個体値は0です。適用時に防御側の特性を復元します。撃破不可は0～99のいずれでも届かない場合、未検証は未対応の効果がある場合です。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 49,
+      "occurrence": 1,
+      "mergeIndex": 2386,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"星陨层数须为0至99的整数\",1]",
+      "zh": "星陨层数须为0至99的整数",
+      "key": "星陨层数须为0至99的整数",
+      "en": "Starfall stacks must be an integer from 0 to 99.",
+      "ja": "隕石スタック数は0～99の整数で入力してください。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 50,
+      "occurrence": 1,
+      "mergeIndex": 2387,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"请选择双方精灵\",1]",
+      "zh": "请选择双方精灵",
+      "key": "请选择双方精灵",
+      "en": "Select both Jini.",
+      "ja": "双方のジニを選択してください。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 51,
+      "occurrence": 1,
+      "mergeIndex": 2388,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"请选择要计算的技能\",1]",
+      "zh": "请选择要计算的技能",
+      "key": "请选择要计算的技能",
+      "en": "Select a skill to calculate.",
+      "ja": "計算するスキルを選択してください。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 52,
+      "occurrence": 1,
+      "mergeIndex": 2389,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"目标已无生命\",1]",
+      "zh": "目标已无生命",
+      "key": "目标已无生命",
+      "en": "The target has no HP remaining.",
+      "ja": "相手のHPが残っていません。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 53,
+      "occurrence": 1,
+      "mergeIndex": 2390,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前条件尚不能精确计算\",1]",
+      "zh": "当前条件尚不能精确计算",
+      "key": "当前条件尚不能精确计算",
+      "en": "Cannot calculate precisely with the current conditions.",
+      "ja": "現在の条件では正確に計算できません。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 54,
+      "occurrence": 1,
+      "mergeIndex": 2391,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"当前输入无法计算\",1]",
+      "zh": "当前输入无法计算",
+      "key": "当前输入无法计算",
+      "en": "Cannot calculate with these inputs.",
+      "ja": "現在の入力では計算できません。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 55,
+      "occurrence": 1,
+      "mergeIndex": 2392,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"目标或培养模板无效\",1]",
+      "zh": "目标或培养模板无效",
+      "key": "目标或培养模板无效",
+      "en": "Invalid target or build template.",
+      "ja": "対象または育成テンプレートが無効です。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 56,
+      "occurrence": 1,
+      "mergeIndex": 2393,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{traits}的存活效果尚未完整计入\",1]",
+      "zh": "{traits}的存活效果尚未完整计入",
+      "key": "{traits}的存活效果尚未完整计入",
+      "en": "Survival effects from {traits} are not fully modeled.",
+      "ja": "{traits}の生存効果は完全には計算に含まれていません。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 57,
+      "occurrence": 1,
+      "mergeIndex": 2394,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"条件\",1]",
+      "zh": "条件",
+      "key": "条件",
+      "en": "Conditions",
+      "ja": "条件",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 58,
+      "occurrence": 1,
+      "mergeIndex": 2395,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"关闭条件\",1]",
+      "zh": "关闭条件",
+      "key": "关闭条件",
+      "en": "Close conditions",
+      "ja": "条件を閉じる",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 59,
+      "occurrence": 1,
+      "mergeIndex": 2396,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"技能说明\",1]",
+      "zh": "技能说明",
+      "key": "技能说明",
+      "en": "Skill description",
+      "ja": "スキル説明",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 60,
+      "occurrence": 1,
+      "mergeIndex": 2397,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"已用 {count} 次\",1]",
+      "zh": "已用 {count} 次",
+      "key": "已用 {count} 次",
+      "en": "Used {count} times",
+      "ja": "{count}回使用済み",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 61,
+      "occurrence": 1,
+      "mergeIndex": 2398,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"已记录 {count} 次\",1]",
+      "zh": "已记录 {count} 次",
+      "key": "已记录 {count} 次",
+      "en": "Recorded {count} uses",
+      "ja": "{count}回記録済み",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 62,
+      "occurrence": 1,
+      "mergeIndex": 2399,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"仅记录：{items}\",1]",
+      "zh": "仅记录：{items}",
+      "key": "仅记录：{items}",
+      "en": "Recorded only: {items}",
+      "ja": "記録のみ：{items}",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 63,
+      "occurrence": 1,
+      "mergeIndex": 2400,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{side} · {name}条件\",1]",
+      "zh": "{side} · {name}条件",
+      "key": "{side} · {name}条件",
+      "en": "{side} · {name} conditions",
+      "ja": "{side} · {name}の条件",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 64,
+      "occurrence": 1,
+      "mergeIndex": 2401,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{side}特性条件\",1]",
+      "zh": "{side}特性条件",
+      "key": "{side}特性条件",
+      "en": "{side} ability conditions",
+      "ja": "{side}の特性条件",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 65,
+      "occurrence": 1,
+      "mergeIndex": 2402,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{side}技能{index}条件\",1]",
+      "zh": "{side}技能{index}条件",
+      "key": "{side}技能{index}条件",
+      "en": "{side} skill {index} conditions",
+      "ja": "{side}のスキル{index}の条件",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 66,
+      "occurrence": 1,
+      "mergeIndex": 2403,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"{side}当前技能条件\",1]",
+      "zh": "{side}当前技能条件",
+      "key": "{side}当前技能条件",
+      "en": "{side} current skill conditions",
+      "ja": "{side}の選択中スキルの条件",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 67,
+      "occurrence": 1,
+      "mergeIndex": 2404,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"仅更新状态，不扣血\",1]",
+      "zh": "仅更新状态，不扣血",
+      "key": "仅更新状态，不扣血",
+      "en": "Updates effects only; does not reduce HP",
+      "ja": "効果のみ更新し、HPは減らしません",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 68,
+      "occurrence": 1,
+      "mergeIndex": 2405,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"状态效果未接入\",1]",
+      "zh": "状态效果未接入",
+      "key": "状态效果未接入",
+      "en": "Status effect not modeled",
+      "ja": "状態効果は未対応です",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 69,
+      "occurrence": 1,
+      "mergeIndex": 2406,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"正在打开星陨斩杀线…\",1]",
+      "zh": "正在打开星陨斩杀线…",
+      "key": "正在打开星陨斩杀线…",
+      "en": "Opening Starfall KO threshold…",
+      "ja": "隕石の撃破ラインを開いています…",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 70,
+      "occurrence": 1,
+      "mergeIndex": 2407,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"主配置已变化，请重新打开星陨斩杀线\",1]",
+      "zh": "主配置已变化，请重新打开星陨斩杀线",
+      "key": "主配置已变化，请重新打开星陨斩杀线",
+      "en": "The main setup changed. Reopen Starfall KO threshold.",
+      "ja": "メイン設定が変わりました。隕石の撃破ラインを開き直してください。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 71,
+      "occurrence": 1,
+      "mergeIndex": 2408,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"使用\",1]",
+      "zh": "使用",
+      "key": "使用",
+      "en": "Use",
+      "ja": "使用",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 72,
+      "occurrence": 1,
+      "mergeIndex": 2409,
+      "effective": true,
+      "overridesDefinitionId": "[\"src/i18n/calculator-messages.js\",\"calculatorMessages\",\"使用\",1]"
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"应用变化\",1]",
+      "zh": "应用变化",
+      "key": "应用变化",
+      "en": "Apply changes",
+      "ja": "変更を適用",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 73,
+      "occurrence": 1,
+      "mergeIndex": 2410,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"解除状态\",1]",
+      "zh": "解除状态",
+      "key": "解除状态",
+      "en": "Remove effect",
+      "ja": "効果を解除",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 74,
+      "occurrence": 1,
+      "mergeIndex": 2411,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"全屏速度线\",1]",
+      "zh": "全屏速度线",
+      "key": "全屏速度线",
+      "en": "Fullscreen Speed Ranking",
+      "ja": "全画面の素早さランキング",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 75,
+      "occurrence": 1,
+      "mergeIndex": 2412,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"条件与星陨斩杀线\",1]",
+      "zh": "条件与星陨斩杀线",
+      "key": "条件与星陨斩杀线",
+      "en": "Conditions and Starfall KOs",
+      "ja": "条件設定と隕石の撃破ライン",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 76,
+      "occurrence": 1,
+      "mergeIndex": 2413,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"英日界面完善\",1]",
+      "zh": "英日界面完善",
+      "key": "英日界面完善",
+      "en": "English and Japanese refinements",
+      "ja": "英語・日本語表示の改善",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 77,
+      "occurrence": 1,
+      "mergeIndex": 2414,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"查看18系攻防倍率，支持键盘定位。\",1]",
+      "zh": "查看18系攻防倍率，支持键盘定位。",
+      "key": "查看18系攻防倍率，支持键盘定位。",
+      "en": "Compare attack and defense multipliers for all 18 classes, with keyboard navigation.",
+      "ja": "18属性の攻防倍率を確認でき、キーボードでも移動できます。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 78,
+      "occurrence": 1,
+      "mergeIndex": 2415,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。\",1]",
+      "zh": "全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。",
+      "key": "全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。",
+      "en": "Expand the speed ranking, drag its axis to a tier and compare zero-IV speeds.",
+      "ja": "素早さランキングを全画面表示し、縦軸ドラッグで移動。個体値0の比較も追加しました。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 79,
+      "occurrence": 1,
+      "mergeIndex": 2416,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。\",1]",
+      "zh": "精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。",
+      "key": "精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。",
+      "en": "Edit skill and ability conditions in Compact mode; find and apply the minimum Starfall stacks from the result panel.",
+      "ja": "コンパクト表示でスキル・特性の条件を編集でき、結果パネルから隕石の最低スタック数を検索・適用できます。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 80,
+      "occurrence": 1,
+      "mergeIndex": 2417,
+      "effective": true,
+      "overridesDefinitionId": null
+    },
+    {
+      "definitionId": "[\"src/i18n/starfall-messages.js\",\"starfallMessages\",\"完善导入、分享、加载提示和窄屏控件，切换语言保留配置。\",1]",
+      "zh": "完善导入、分享、加载提示和窄屏控件，切换语言保留配置。",
+      "key": "完善导入、分享、加载提示和窄屏控件，切换语言保留配置。",
+      "en": "Improved import, share and loading feedback, plus narrow-screen controls. Language changes preserve your setup.",
+      "ja": "インポート・共有・読み込み時の案内と狭い画面の操作欄を改善。言語を切り替えても設定を保持します。",
+      "module": "src/i18n/starfall-messages.js",
+      "exportName": "starfallMessages",
+      "line": 81,
+      "occurrence": 1,
+      "mergeIndex": 2418,
+      "effective": true,
+      "overridesDefinitionId": null
     }
   ],
   "staticRegisteredCalls": [
@@ -41747,7 +43165,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 216,
+          "line": 222,
           "column": 92,
           "excerpt": "const warn = (event) => { if (active && event.detail?.serverId === serverId) setToast(t(\"设置未能保存；当前标签的修改仍保留\")); };"
         }
@@ -41763,7 +43181,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 511,
+          "line": 517,
           "column": 15,
           "excerpt": "return t(\"已清理未完成配置，保留 {count} 只完整配置\", { count: Object.keys(next.configs).length });"
         }
@@ -41779,7 +43197,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 589,
+          "line": 601,
           "column": 17,
           "excerpt": "setToast(t(\"{side}萌化配置保留已{status}（{scope}）\", { side: t(side === \"attack\" ? \"攻击方\" : \"防御方\"), status: t(enabled ? \"开启\" : \"关闭\"), scope: t(formPreferences.readMemoryEnabled() ? \"跨页面记忆\" : \"本标签页\") }));"
         }
@@ -41795,35 +43213,49 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 589,
+          "line": 601,
           "column": 81,
           "excerpt": "setToast(t(\"{side}萌化配置保留已{status}（{scope}）\", { side: t(side === \"attack\" ? \"攻击方\" : \"防御方\"), status: t(enabled ? \"开启\" : \"关闭\"), scope: t(formPreferences.readMemoryEnabled() ? \"跨页面记忆\" : \"本标签页\") }));"
         },
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 1817,
+          "line": 1850,
           "column": 70,
           "excerpt": "aria-label={t(\"{side}载入默认配招\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\") })}"
         },
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2197,
+          "line": 2060,
+          "column": 44,
+          "excerpt": "const label = t(side === \"attacker\" ? \"攻击方\" : \"防御方\");"
+        },
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2099,
+          "column": 59,
+          "excerpt": "const label = t(activeAttackSideKey === \"attacker\" ? \"攻击方\" : \"防御方\");"
+        },
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2359,
           "column": 66,
           "excerpt": "t(\"已载入{side} {name}\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\"), name: spiritName(spirit) || t(\"队伍成员\") }),"
         },
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2210,
+          "line": 2372,
           "column": 71,
           "excerpt": "t(\"能力方案已应用到{side} {name}\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\"), name: spiritName(spirit) || t(\"当前精灵\") }),"
         },
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2352,
+          "line": 2515,
           "column": 56,
           "excerpt": "const label = t(side === \"attacker\" ? \"攻击方\" : \"防御方\");"
         }
@@ -41839,35 +43271,49 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 589,
+          "line": 601,
           "column": 89,
           "excerpt": "setToast(t(\"{side}萌化配置保留已{status}（{scope}）\", { side: t(side === \"attack\" ? \"攻击方\" : \"防御方\"), status: t(enabled ? \"开启\" : \"关闭\"), scope: t(formPreferences.readMemoryEnabled() ? \"跨页面记忆\" : \"本标签页\") }));"
         },
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 1817,
+          "line": 1850,
           "column": 78,
           "excerpt": "aria-label={t(\"{side}载入默认配招\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\") })}"
         },
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2197,
+          "line": 2060,
+          "column": 52,
+          "excerpt": "const label = t(side === \"attacker\" ? \"攻击方\" : \"防御方\");"
+        },
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2099,
+          "column": 67,
+          "excerpt": "const label = t(activeAttackSideKey === \"attacker\" ? \"攻击方\" : \"防御方\");"
+        },
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2359,
           "column": 74,
           "excerpt": "t(\"已载入{side} {name}\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\"), name: spiritName(spirit) || t(\"队伍成员\") }),"
         },
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2210,
+          "line": 2372,
           "column": 79,
           "excerpt": "t(\"能力方案已应用到{side} {name}\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\"), name: spiritName(spirit) || t(\"当前精灵\") }),"
         },
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2352,
+          "line": 2515,
           "column": 64,
           "excerpt": "const label = t(side === \"attacker\" ? \"攻击方\" : \"防御方\");"
         }
@@ -41883,7 +43329,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 589,
+          "line": 601,
           "column": 117,
           "excerpt": "setToast(t(\"{side}萌化配置保留已{status}（{scope}）\", { side: t(side === \"attack\" ? \"攻击方\" : \"防御方\"), status: t(enabled ? \"开启\" : \"关闭\"), scope: t(formPreferences.readMemoryEnabled() ? \"跨页面记忆\" : \"本标签页\") }));"
         }
@@ -41899,7 +43345,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 589,
+          "line": 601,
           "column": 124,
           "excerpt": "setToast(t(\"{side}萌化配置保留已{status}（{scope}）\", { side: t(side === \"attack\" ? \"攻击方\" : \"防御方\"), status: t(enabled ? \"开启\" : \"关闭\"), scope: t(formPreferences.readMemoryEnabled() ? \"跨页面记忆\" : \"本标签页\") }));"
         }
@@ -41915,7 +43361,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 589,
+          "line": 601,
           "column": 178,
           "excerpt": "setToast(t(\"{side}萌化配置保留已{status}（{scope}）\", { side: t(side === \"attack\" ? \"攻击方\" : \"防御方\"), status: t(enabled ? \"开启\" : \"关闭\"), scope: t(formPreferences.readMemoryEnabled() ? \"跨页面记忆\" : \"本标签页\") }));"
         }
@@ -41931,7 +43377,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 589,
+          "line": 601,
           "column": 188,
           "excerpt": "setToast(t(\"{side}萌化配置保留已{status}（{scope}）\", { side: t(side === \"attack\" ? \"攻击方\" : \"防御方\"), status: t(enabled ? \"开启\" : \"关闭\"), scope: t(formPreferences.readMemoryEnabled() ? \"跨页面记忆\" : \"本标签页\") }));"
         }
@@ -41947,7 +43393,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 1817,
+          "line": 1850,
           "column": 22,
           "excerpt": "aria-label={t(\"{side}载入默认配招\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\") })}"
         }
@@ -41963,9 +43409,119 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 1819,
+          "line": 1852,
           "column": 11,
           "excerpt": "{t(\"载入默认配招\")}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/App.jsx\",\"t-call\",\"仅更新状态，不扣血\"]",
+      "zh": "仅更新状态，不扣血",
+      "file": "src/App.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2039,
+          "column": 62,
+          "excerpt": ": ![\"status\", \"defense\"].includes(skill.category) ? t(\"仅更新状态，不扣血\") : null,"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/App.jsx\",\"t-call\",\"{side} · {name}条件\"]",
+      "zh": "{side} · {name}条件",
+      "file": "src/App.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2075,
+          "column": 38,
+          "excerpt": "side, kind: \"trait\", title: t(\"{side} · {name}条件\", { side: label, name: trait ? entityName(\"trait\", trait) : t(\"特性\") }), triggerLabel: t(\"{side}特性条件\", { side: label }),"
+        },
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2094,
+          "column": 47,
+          "excerpt": "side, kind: \"skill\", index, title: t(\"{side} · {name}条件\", { side: label, name: entityName(\"skill\", selected) }), triggerLabel: t(\"{side}技能{index}条件\", { side: label, index: index + 1 }),"
+        },
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2108,
+          "column": 59,
+          "excerpt": "side: activeAttackSideKey, kind: \"skill\", title: t(\"{side} · {name}条件\", { side: label, name: entityName(\"skill\", selectedSingleSkill) }), triggerLabel: t(\"{side}当前技能条件\", { side: label }), inputs,"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/App.jsx\",\"t-call\",\"特性\"]",
+      "zh": "特性",
+      "file": "src/App.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2075,
+          "column": 119,
+          "excerpt": "side, kind: \"trait\", title: t(\"{side} · {name}条件\", { side: label, name: trait ? entityName(\"trait\", trait) : t(\"特性\") }), triggerLabel: t(\"{side}特性条件\", { side: label }),"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/App.jsx\",\"t-call\",\"{side}特性条件\"]",
+      "zh": "{side}特性条件",
+      "file": "src/App.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2075,
+          "column": 145,
+          "excerpt": "side, kind: \"trait\", title: t(\"{side} · {name}条件\", { side: label, name: trait ? entityName(\"trait\", trait) : t(\"特性\") }), triggerLabel: t(\"{side}特性条件\", { side: label }),"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/App.jsx\",\"t-call\",\"{side}技能{index}条件\"]",
+      "zh": "{side}技能{index}条件",
+      "file": "src/App.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2094,
+          "column": 139,
+          "excerpt": "side, kind: \"skill\", index, title: t(\"{side} · {name}条件\", { side: label, name: entityName(\"skill\", selected) }), triggerLabel: t(\"{side}技能{index}条件\", { side: label, index: index + 1 }),"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/App.jsx\",\"t-call\",\"{side}当前技能条件\"]",
+      "zh": "{side}当前技能条件",
+      "file": "src/App.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2108,
+          "column": 162,
+          "excerpt": "side: activeAttackSideKey, kind: \"skill\", title: t(\"{side} · {name}条件\", { side: label, name: entityName(\"skill\", selectedSingleSkill) }), triggerLabel: t(\"{side}当前技能条件\", { side: label }), inputs,"
         }
       ],
       "registered": true
@@ -41979,7 +43535,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2197,
+          "line": 2359,
           "column": 14,
           "excerpt": "t(\"已载入{side} {name}\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\"), name: spiritName(spirit) || t(\"队伍成员\") }),"
         }
@@ -41995,7 +43551,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2197,
+          "line": 2359,
           "column": 112,
           "excerpt": "t(\"已载入{side} {name}\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\"), name: spiritName(spirit) || t(\"队伍成员\") }),"
         }
@@ -42011,7 +43567,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2210,
+          "line": 2372,
           "column": 14,
           "excerpt": "t(\"能力方案已应用到{side} {name}\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\"), name: spiritName(spirit) || t(\"当前精灵\") }),"
         }
@@ -42027,7 +43583,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2210,
+          "line": 2372,
           "column": 117,
           "excerpt": "t(\"能力方案已应用到{side} {name}\", { side: t(side === \"attacker\" ? \"攻击方\" : \"防御方\"), name: spiritName(spirit) || t(\"当前精灵\") }),"
         }
@@ -42043,7 +43599,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2235,
+          "line": 2397,
           "column": 63,
           "excerpt": "if (deerOpen) return <Suspense fallback={<p role=\"status\">{t(\"正在打开电鹿工具…\")}</p>}>"
         }
@@ -42059,7 +43615,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2339,
+          "line": 2502,
           "column": 74,
           "excerpt": "? <EmptyStateGuide title={!release.capabilities.calculate ? t(\"选择精灵，开始配置\") : undefined}"
         }
@@ -42075,7 +43631,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2340,
+          "line": 2503,
           "column": 59,
           "excerpt": "message={!release.capabilities.calculate ? t(\"配置、保存并分享你的队伍。\") : tc(viewModel.configurationIssue)} />"
         }
@@ -42091,9 +43647,41 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2344,
+          "line": 2507,
           "column": 28,
           "excerpt": "aria-label={t(\"即时配置\")}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/App.jsx\",\"t-call\",\"正在打开星陨斩杀线…\"]",
+      "zh": "正在打开星陨斩杀线…",
+      "file": "src/App.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2829,
+          "column": 66,
+          "excerpt": "{starfallSource ? <Suspense fallback={<div role=\"status\">{t(\"正在打开星陨斩杀线…\")}</div>}><StarfallThresholdDialog"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/App.jsx\",\"t-call\",\"主配置已变化，请重新打开星陨斩杀线\"]",
+      "zh": "主配置已变化，请重新打开星陨斩杀线",
+      "file": "src/App.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/App.jsx",
+          "context": "t-call",
+          "line": 2833,
+          "column": 23,
+          "excerpt": "setToast(t(\"主配置已变化，请重新打开星陨斩杀线\"));"
         }
       ],
       "registered": true
@@ -42107,7 +43695,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2663,
+          "line": 2842,
           "column": 95,
           "excerpt": "{damageComparisonEnabled && comparisonSource ? <Suspense fallback={<div role=\"status\">{t(\"正在打开承伤对比…\")}</div>}><DamageComparisonDialog"
         }
@@ -42123,7 +43711,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2668,
+          "line": 2847,
           "column": 23,
           "excerpt": "setToast(t(\"主配置已变化，请重新打开承伤对比\"));"
         }
@@ -42139,7 +43727,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2677,
+          "line": 2856,
           "column": 67,
           "excerpt": "{rankingsVisited ? <Suspense fallback={<div role=\"status\">{t(\"正在打开排行榜…\")}</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}"
         }
@@ -42155,7 +43743,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2678,
+          "line": 2857,
           "column": 69,
           "excerpt": "{transmissionOpen && <Suspense fallback={<div role=\"status\">{t(\"正在打开传动计算器…\")}</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} getSpiritConfiguration={storedData.getSpiritConfiguration} onClose={() => setTransmissionOpen(false)} /></Suspense>}"
         }
@@ -42171,7 +43759,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2679,
+          "line": 2858,
           "column": 94,
           "excerpt": "{typeQueryOpen && <Suspense fallback={<div role=\"status\">{t(typeQueryOpen === \"chart\" ? \"正在打开克制图…\" : \"正在打开属性查询…\")}</div>}>"
         }
@@ -42187,7 +43775,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2679,
+          "line": 2858,
           "column": 107,
           "excerpt": "{typeQueryOpen && <Suspense fallback={<div role=\"status\">{t(typeQueryOpen === \"chart\" ? \"正在打开克制图…\" : \"正在打开属性查询…\")}</div>}>"
         }
@@ -42203,7 +43791,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2683,
+          "line": 2863,
           "column": 67,
           "excerpt": "{skillQueryOpen && <Suspense fallback={<div role=\"status\">{t(\"正在打开技能查询…\")}</div>}><SkillQueryPanel snapshot={snapshot} skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}"
         }
@@ -42219,7 +43807,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2730,
+          "line": 2910,
           "column": 24,
           "excerpt": "<p>{t(error ? \"资料加载失败，请重试。\" : serverId === \"global\" ? \"正在加载精灵资料…\" : \"正在加载 S4「季中」数据…\")}</p>"
         }
@@ -42235,7 +43823,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2730,
+          "line": 2910,
           "column": 64,
           "excerpt": "<p>{t(error ? \"资料加载失败，请重试。\" : serverId === \"global\" ? \"正在加载精灵资料…\" : \"正在加载 S4「季中」数据…\")}</p>"
         }
@@ -42251,7 +43839,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2730,
+          "line": 2910,
           "column": 78,
           "excerpt": "<p>{t(error ? \"资料加载失败，请重试。\" : serverId === \"global\" ? \"正在加载精灵资料…\" : \"正在加载 S4「季中」数据…\")}</p>"
         }
@@ -42267,7 +43855,7 @@
         {
           "file": "src/App.jsx",
           "context": "t-call",
-          "line": 2731,
+          "line": 2911,
           "column": 114,
           "excerpt": "{error ? <button type=\"button\" onClick={() => { setError(\"\"); setLoadAttempt(value => value + 1); }}>{t(\"重试\")}</button> : null}"
         }
@@ -44993,6 +46581,77 @@
       "registered": true
     },
     {
+      "stableKey": "[\"src/components/CompactConditions.jsx\",\"t-call\",\"条件\"]",
+      "zh": "条件",
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/CompactConditions.jsx",
+          "context": "t-call",
+          "line": 29,
+          "column": 93,
+          "excerpt": "aria-haspopup=\"dialog\" aria-expanded={expanded} title={summary || t(model.triggerText ?? \"条件\")}"
+        },
+        {
+          "file": "src/components/CompactConditions.jsx",
+          "context": "t-call",
+          "line": 31,
+          "column": 84,
+          "excerpt": "<SlidersHorizontal size={13} aria-hidden=\"true\" /><span>{t(model.triggerText ?? \"条件\")}</span>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/CompactConditions.jsx\",\"t-call\",\"仅记录：{items}\"]",
+      "zh": "仅记录：{items}",
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/CompactConditions.jsx",
+          "context": "t-call",
+          "line": 45,
+          "column": 48,
+          "excerpt": "{details && display.recorded.length ? <p>{t(\"仅记录：{items}\", { items: display.recorded.join(\" · \") })}</p> : null}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/CompactConditions.jsx\",\"t-call\",\"关闭条件\"]",
+      "zh": "关闭条件",
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/CompactConditions.jsx",
+          "context": "t-call",
+          "line": 95,
+          "column": 75,
+          "excerpt": "<header><h2>{t(model.title)}</h2><button type=\"button\" aria-label={t(\"关闭条件\")} onClick={onClose}><X size={17} aria-hidden=\"true\" /></button></header>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/CompactConditions.jsx\",\"t-call\",\"技能说明\"]",
+      "zh": "技能说明",
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/CompactConditions.jsx",
+          "context": "t-call",
+          "line": 110,
+          "column": 22,
+          "excerpt": "<summary>{t(\"技能说明\")}</summary><p>{t(model.description)}</p>"
+        }
+      ],
+      "registered": true
+    },
+    {
       "stableKey": "[\"src/components/CompactSkillEditor.jsx\",\"t-call\",\"{label}技能{index}，当前选中\"]",
       "zh": "{label}技能{index}，当前选中",
       "file": "src/components/CompactSkillEditor.jsx",
@@ -45001,7 +46660,7 @@
         {
           "file": "src/components/CompactSkillEditor.jsx",
           "context": "t-call",
-          "line": 169,
+          "line": 159,
           "column": 41,
           "excerpt": "aria-label={t(isSelected ? \"{label}技能{index}，当前选中\" : \"{label}技能{index}\", { label, index: index + 1 })}"
         }
@@ -45017,14 +46676,14 @@
         {
           "file": "src/components/CompactSkillEditor.jsx",
           "context": "t-call",
-          "line": 169,
+          "line": 159,
           "column": 67,
           "excerpt": "aria-label={t(isSelected ? \"{label}技能{index}，当前选中\" : \"{label}技能{index}\", { label, index: index + 1 })}"
         },
         {
           "file": "src/components/CompactSkillEditor.jsx",
           "context": "t-call",
-          "line": 196,
+          "line": 179,
           "column": 29,
           "excerpt": "ariaLabel={t(\"{label}技能{index}\", { label, index: index + 1 })}"
         }
@@ -45040,7 +46699,7 @@
         {
           "file": "src/components/CompactSkillEditor.jsx",
           "context": "t-call",
-          "line": 285,
+          "line": 254,
           "column": 17,
           "excerpt": "label={t(\"攻击方\")}"
         }
@@ -45056,7 +46715,7 @@
         {
           "file": "src/components/CompactSkillEditor.jsx",
           "context": "t-call",
-          "line": 309,
+          "line": 277,
           "column": 17,
           "excerpt": "label={t(\"防御方\")}"
         }
@@ -45072,7 +46731,7 @@
         {
           "file": "src/components/CompactSkillEditor.jsx",
           "context": "t-call",
-          "line": 354,
+          "line": 318,
           "column": 21,
           "excerpt": "ariaLabel={t(\"{name}当前技能\", { name: attackName })}"
         }
@@ -47169,77 +48828,6 @@
       "registered": true
     },
     {
-      "stableKey": "[\"src/components/DataSourceDialog.jsx\",\"t-call\",\"国际服计算器\"]",
-      "zh": "国际服计算器",
-      "file": "src/components/DataSourceDialog.jsx",
-      "context": "t-call",
-      "sourceRefs": [
-        {
-          "file": "src/components/DataSourceDialog.jsx",
-          "context": "t-call",
-          "line": 37,
-          "column": 84,
-          "excerpt": "if (serverId === \"global\") return <article className=\"data-source-release\"><h3>{t(\"国际服计算器\")}</h3><span>2026-10-28</span><ul><li>{t(\"采用 S3 季中数值与规则。\")}</li><li>{t(\"精灵、技能和特性使用国际客户端译名。\")}</li><li>{t(\"配置与队伍可跨语言保存和分享。\")}</li></ul></article>;"
-        }
-      ],
-      "registered": true
-    },
-    {
-      "stableKey": "[\"src/components/DataSourceDialog.jsx\",\"t-call\",\"采用 S3 季中数值与规则。\"]",
-      "zh": "采用 S3 季中数值与规则。",
-      "file": "src/components/DataSourceDialog.jsx",
-      "context": "t-call",
-      "sourceRefs": [
-        {
-          "file": "src/components/DataSourceDialog.jsx",
-          "context": "t-call",
-          "line": 37,
-          "column": 133,
-          "excerpt": "if (serverId === \"global\") return <article className=\"data-source-release\"><h3>{t(\"国际服计算器\")}</h3><span>2026-10-28</span><ul><li>{t(\"采用 S3 季中数值与规则。\")}</li><li>{t(\"精灵、技能和特性使用国际客户端译名。\")}</li><li>{t(\"配置与队伍可跨语言保存和分享。\")}</li></ul></article>;"
-        },
-        {
-          "file": "src/components/DataSourceDialog.jsx",
-          "context": "t-call",
-          "line": 319,
-          "column": 66,
-          "excerpt": "title={serverId === \"cn\" ? t(\"数字为 BWIKI 页面修订号\") : t(\"采用 S3 季中数值与规则。\")}"
-        }
-      ],
-      "registered": true
-    },
-    {
-      "stableKey": "[\"src/components/DataSourceDialog.jsx\",\"t-call\",\"精灵、技能和特性使用国际客户端译名。\"]",
-      "zh": "精灵、技能和特性使用国际客户端译名。",
-      "file": "src/components/DataSourceDialog.jsx",
-      "context": "t-call",
-      "sourceRefs": [
-        {
-          "file": "src/components/DataSourceDialog.jsx",
-          "context": "t-call",
-          "line": 37,
-          "column": 163,
-          "excerpt": "if (serverId === \"global\") return <article className=\"data-source-release\"><h3>{t(\"国际服计算器\")}</h3><span>2026-10-28</span><ul><li>{t(\"采用 S3 季中数值与规则。\")}</li><li>{t(\"精灵、技能和特性使用国际客户端译名。\")}</li><li>{t(\"配置与队伍可跨语言保存和分享。\")}</li></ul></article>;"
-        }
-      ],
-      "registered": true
-    },
-    {
-      "stableKey": "[\"src/components/DataSourceDialog.jsx\",\"t-call\",\"配置与队伍可跨语言保存和分享。\"]",
-      "zh": "配置与队伍可跨语言保存和分享。",
-      "file": "src/components/DataSourceDialog.jsx",
-      "context": "t-call",
-      "sourceRefs": [
-        {
-          "file": "src/components/DataSourceDialog.jsx",
-          "context": "t-call",
-          "line": 37,
-          "column": 197,
-          "excerpt": "if (serverId === \"global\") return <article className=\"data-source-release\"><h3>{t(\"国际服计算器\")}</h3><span>2026-10-28</span><ul><li>{t(\"采用 S3 季中数值与规则。\")}</li><li>{t(\"精灵、技能和特性使用国际客户端译名。\")}</li><li>{t(\"配置与队伍可跨语言保存和分享。\")}</li></ul></article>;"
-        }
-      ],
-      "registered": true
-    },
-    {
       "stableKey": "[\"src/components/DataSourceDialog.jsx\",\"t-call\",\"完整版本记录\"]",
       "zh": "完整版本记录",
       "file": "src/components/DataSourceDialog.jsx",
@@ -47248,14 +48836,14 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 83,
+          "line": 84,
           "column": 20,
           "excerpt": "aria-label={t(\"完整版本记录\")}"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 98,
+          "line": 99,
           "column": 17,
           "excerpt": "<h2>{t(\"完整版本记录\")}</h2>"
         }
@@ -47271,21 +48859,21 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 90,
+          "line": 91,
           "column": 24,
           "excerpt": "aria-label={t(\"返回关于与来源\")}"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 135,
+          "line": 136,
           "column": 24,
           "excerpt": "aria-label={t(\"返回关于与来源\")}"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 194,
+          "line": 195,
           "column": 24,
           "excerpt": "aria-label={t(\"返回关于与来源\")}"
         }
@@ -47301,7 +48889,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 113,
+          "line": 114,
           "column": 24,
           "excerpt": "aria-label={t(\"关闭完整版本记录\")}"
         }
@@ -47317,28 +48905,28 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 117,
+          "line": 118,
           "column": 12,
           "excerpt": ">{t(\"关闭\")}</button>"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 177,
+          "line": 178,
           "column": 12,
           "excerpt": ">{t(\"关闭\")}</button>"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 248,
+          "line": 249,
           "column": 12,
           "excerpt": ">{t(\"关闭\")}</button>"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 391,
+          "line": 392,
           "column": 16,
           "excerpt": ">{t(\"关闭\")}</button>"
         }
@@ -47354,7 +48942,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 125,
+          "line": 126,
           "column": 28,
           "excerpt": "const title = t(license ? \"署名与许可\" : feedback ? \"问题反馈\" : \"免责声明\");"
         }
@@ -47370,14 +48958,14 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 125,
+          "line": 126,
           "column": 49,
           "excerpt": "const title = t(license ? \"署名与许可\" : feedback ? \"问题反馈\" : \"免责声明\");"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 363,
+          "line": 364,
           "column": 25,
           "excerpt": "<strong>{t(\"问题反馈\")}</strong>"
         }
@@ -47393,14 +48981,14 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 125,
+          "line": 126,
           "column": 58,
           "excerpt": "const title = t(license ? \"署名与许可\" : feedback ? \"问题反馈\" : \"免责声明\");"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 385,
+          "line": 386,
           "column": 16,
           "excerpt": ">{t(\"免责声明\")}</button>"
         }
@@ -47416,14 +49004,14 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 146,
+          "line": 147,
           "column": 66,
           "excerpt": "<a href={BWIKI_URL} rel=\"noreferrer\" target=\"_blank\">{t(\"洛克王国：世界 BWIKI\")}</a>"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 336,
+          "line": 337,
           "column": 23,
           "excerpt": "<strong>{t(\"洛克王国：世界 BWIKI\")}</strong>"
         }
@@ -47439,14 +49027,14 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 147,
+          "line": 148,
           "column": 24,
           "excerpt": "<p><strong>{t(\"BWIKI 署名与许可\")}</strong></p>"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 340,
+          "line": 341,
           "column": 26,
           "excerpt": "aria-label={t(\"BWIKI 署名与许可\")}"
         }
@@ -47462,7 +49050,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 148,
+          "line": 149,
           "column": 16,
           "excerpt": "<p>{t(\"BWIKI 来源数据经结构化、校验及补充；其中受许可覆盖的数据与改编按\")}<a href={BWIKI_LICENSE_URL} rel=\"noreferrer\" target=\"_blank\">"
         }
@@ -47478,7 +49066,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 150,
+          "line": 151,
           "column": 19,
           "excerpt": "</a>{t(\"共享。\")}</p>"
         }
@@ -47494,7 +49082,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 151,
+          "line": 152,
           "column": 16,
           "excerpt": "<p>{t(\"代码适用 MIT；游戏素材与商标权利归原权利人。本项目非官方、非商业，不代表相关方背书。\")}</p>"
         }
@@ -47510,7 +49098,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 156,
+          "line": 157,
           "column": 23,
           "excerpt": "<strong>{t(\"B站私信\")}</strong>"
         }
@@ -47526,7 +49114,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 157,
+          "line": 158,
           "column": 80,
           "excerpt": "<a href={FEEDBACK_BILIBILI_URL} rel=\"noreferrer\" target=\"_blank\">{t(\"诛仙剑下伤心花\")}</a>"
         }
@@ -47542,7 +49130,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 160,
+          "line": 161,
           "column": 23,
           "excerpt": "<strong>{t(\"邮箱\")}</strong>"
         }
@@ -47558,7 +49146,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 166,
+          "line": 167,
           "column": 16,
           "excerpt": "<p>{t(\"本项目是玩家自建工具，非官方产品。\")}</p>"
         }
@@ -47574,7 +49162,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 167,
+          "line": 168,
           "column": 16,
           "excerpt": "<p>{t(\"数据和计算仅供参考，请以游戏内结果为准。\")}</p>"
         }
@@ -47590,7 +49178,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 168,
+          "line": 169,
           "column": 16,
           "excerpt": "<p>{t(\"游戏名称、角色与素材权利归原权利人所有。\")}</p>"
         }
@@ -47606,7 +49194,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 173,
+          "line": 174,
           "column": 24,
           "excerpt": "aria-label={t(\"关闭{title}\", { title })}"
         }
@@ -47622,21 +49210,21 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 187,
+          "line": 188,
           "column": 20,
           "excerpt": "aria-label={t(\"鸣谢\")}"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 201,
+          "line": 202,
           "column": 15,
           "excerpt": "<h2>{t(\"鸣谢\")}</h2>"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 379,
+          "line": 380,
           "column": 16,
           "excerpt": ">{t(\"鸣谢\")}</button>"
         }
@@ -47652,7 +49240,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 204,
+          "line": 205,
           "column": 14,
           "excerpt": "<p>{t(\"感谢以下四位 UP 主在本站开发期间给予的支持与友情推荐。点击名字可前往其 B 站主页，也欢迎关注。\")}</p>"
         }
@@ -47668,7 +49256,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 206,
+          "line": 207,
           "column": 24,
           "excerpt": "aria-label={t(\"鸣谢名单\")}"
         }
@@ -47684,7 +49272,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 222,
+          "line": 223,
           "column": 17,
           "excerpt": "<h3>{t(\"数据参考\")}</h3>"
         }
@@ -47700,7 +49288,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 223,
+          "line": 224,
           "column": 16,
           "excerpt": "<p>{t(\"部分精灵、技能及对战数据整理时参考了以下网站：\")}</p>"
         }
@@ -47716,7 +49304,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 225,
+          "line": 226,
           "column": 26,
           "excerpt": "aria-label={t(\"数据参考网站\")}"
         }
@@ -47732,7 +49320,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 244,
+          "line": 245,
           "column": 24,
           "excerpt": "aria-label={t(\"关闭鸣谢\")}"
         }
@@ -47748,14 +49336,14 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 309,
+          "line": 310,
           "column": 24,
           "excerpt": "aria-label={t(\"关于与来源\")}"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 314,
+          "line": 315,
           "column": 17,
           "excerpt": "<h2>{t(\"关于与来源\")}</h2>"
         }
@@ -47771,7 +49359,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 315,
+          "line": 316,
           "column": 80,
           "excerpt": "<p className=\"data-source-dialog__summary\">{t(serverId === \"global\" ? \"非官方工具。数值与规则采用 S3 季中，译名来自国际客户端。\" : \"非官方工具。资料来自公开页面和实机校验。\")}</p>"
         }
@@ -47787,7 +49375,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 315,
+          "line": 316,
           "column": 115,
           "excerpt": "<p className=\"data-source-dialog__summary\">{t(serverId === \"global\" ? \"非官方工具。数值与规则采用 S3 季中，译名来自国际客户端。\" : \"非官方工具。资料来自公开页面和实机校验。\")}</p>"
         }
@@ -47803,8 +49391,24 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 319,
+          "line": 320,
           "column": 43,
+          "excerpt": "title={serverId === \"cn\" ? t(\"数字为 BWIKI 页面修订号\") : t(\"采用 S3 季中数值与规则。\")}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/DataSourceDialog.jsx\",\"t-call\",\"采用 S3 季中数值与规则。\"]",
+      "zh": "采用 S3 季中数值与规则。",
+      "file": "src/components/DataSourceDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/DataSourceDialog.jsx",
+          "context": "t-call",
+          "line": 320,
+          "column": 66,
           "excerpt": "title={serverId === \"cn\" ? t(\"数字为 BWIKI 页面修订号\") : t(\"采用 S3 季中数值与规则。\")}"
         }
       ],
@@ -47819,7 +49423,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 320,
+          "line": 321,
           "column": 16,
           "excerpt": ">{t(\"数据快照：\")}{dataVersion}"
         }
@@ -47835,14 +49439,14 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 323,
+          "line": 324,
           "column": 33,
           "excerpt": "<section aria-label={t(\"版本记录\")} className=\"data-source-history\">"
         },
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 325,
+          "line": 326,
           "column": 25,
           "excerpt": "<strong>{t(\"版本记录\")}</strong>"
         }
@@ -47858,7 +49462,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 327,
+          "line": 328,
           "column": 30,
           "excerpt": "aria-label={t(\"查看完整版本记录\")}"
         }
@@ -47874,7 +49478,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 331,
+          "line": 332,
           "column": 18,
           "excerpt": ">{t(\"完整记录\")}</button>"
         }
@@ -47890,7 +49494,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 337,
+          "line": 338,
           "column": 21,
           "excerpt": "<span>{t(\"精灵、技能、属性与美术资料\")}</span>"
         }
@@ -47906,7 +49510,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 344,
+          "line": 345,
           "column": 25,
           "excerpt": "<strong>{t(\"资料授权\")}</strong>"
         }
@@ -47922,7 +49526,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 350,
+          "line": 351,
           "column": 28,
           "excerpt": "aria-label={t(\"查看完整许可\")}"
         }
@@ -47938,7 +49542,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 354,
+          "line": 355,
           "column": 16,
           "excerpt": ">{t(\"查看许可\")}</button>"
         }
@@ -47954,7 +49558,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 358,
+          "line": 359,
           "column": 28,
           "excerpt": "aria-label={t(\"查看问题反馈\")}"
         }
@@ -47970,7 +49574,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 367,
+          "line": 368,
           "column": 28,
           "excerpt": "aria-label={t(\"复制反馈 QQ\")}"
         }
@@ -47986,7 +49590,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 371,
+          "line": 372,
           "column": 16,
           "excerpt": ">{t(\"复制\")}</button>}"
         }
@@ -48002,7 +49606,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 375,
+          "line": 376,
           "column": 28,
           "excerpt": "aria-label={t(\"查看鸣谢\")}"
         }
@@ -48018,7 +49622,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 381,
+          "line": 382,
           "column": 28,
           "excerpt": "aria-label={t(\"查看免责声明\")}"
         }
@@ -48034,7 +49638,7 @@
         {
           "file": "src/components/DataSourceDialog.jsx",
           "context": "t-call",
-          "line": 387,
+          "line": 388,
           "column": 28,
           "excerpt": "aria-label={t(\"关闭关于与来源\")}"
         }
@@ -49935,8 +51539,8 @@
           "file": "src/components/QuickNaturePicker.jsx",
           "context": "t-call",
           "line": 48,
-          "column": 73,
-          "excerpt": "<span>{placeholder && value == null ? \"—\" : t(showOptionLabels ? \"普通\" : \"性格\")}</span>"
+          "column": 92,
+          "excerpt": "<span>{placeholder && value == null ? \"—\" : t(showOptionLabels || locale === \"en\" ? \"普通\" : \"性格\")}</span>"
         }
       ],
       "registered": true
@@ -49951,8 +51555,8 @@
           "file": "src/components/QuickNaturePicker.jsx",
           "context": "t-call",
           "line": 48,
-          "column": 80,
-          "excerpt": "<span>{placeholder && value == null ? \"—\" : t(showOptionLabels ? \"普通\" : \"性格\")}</span>"
+          "column": 99,
+          "excerpt": "<span>{placeholder && value == null ? \"—\" : t(showOptionLabels || locale === \"en\" ? \"普通\" : \"性格\")}</span>"
         }
       ],
       "registered": true
@@ -51815,7 +53419,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 383,
+          "line": 384,
           "column": 13,
           "excerpt": "<span>{t(\"同族形态\")}</span>"
         }
@@ -51831,7 +53435,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 384,
+          "line": 385,
           "column": 75,
           "excerpt": "{choosingForm ? <label className=\"spirit-picker__form-toggle\" title={t(\"攻防方开关分别记忆；跨页面保留可在显示设置中开启。先选高阶再萌化可保留配置；直接选低阶后升阶、同阶换形态或选关联分支时载入目标预设。\")}>"
         }
@@ -51847,7 +53451,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 385,
+          "line": 386,
           "column": 15,
           "excerpt": "<span>{t(\"萌化 · 配置保留\")}</span>"
         }
@@ -51863,7 +53467,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 386,
+          "line": 387,
           "column": 57,
           "excerpt": "<input type=\"checkbox\" role=\"switch\" aria-label={t(\"{side}同族切换保留本场配置\", { side: label })}"
         }
@@ -51879,7 +53483,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 418,
+          "line": 419,
           "column": 24,
           "excerpt": "aria-label={t(\"{side}精灵\", { side: label })}"
         }
@@ -51895,7 +53499,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 435,
+          "line": 436,
           "column": 25,
           "excerpt": "placeholder={t(\"选精灵\")}"
         }
@@ -51911,14 +53515,14 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 444,
+          "line": 445,
           "column": 24,
           "excerpt": "aria-label={t(\"展开{side}精灵列表\", { side: label })}"
         },
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 454,
+          "line": 455,
           "column": 19,
           "excerpt": "title={t(\"展开{side}精灵列表\", { side: label })}"
         }
@@ -51934,14 +53538,14 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 501,
+          "line": 502,
           "column": 30,
           "excerpt": "? t(\"种族值待确认\")"
         },
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 578,
+          "line": 579,
           "column": 88,
           "excerpt": "<p className=\"spirit-card__pending\">{t(placeholderRaceStats ? \"暂定六维100\" : \"种族值待确认\")}</p>"
         }
@@ -51957,7 +53561,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 503,
+          "line": 504,
           "column": 71,
           "excerpt": "familyOption && spirit.id === selected?.id ? t(\"当前形态\")"
         }
@@ -51973,7 +53577,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 504,
+          "line": 505,
           "column": 110,
           "excerpt": ": familyOption && choosingForm && !family.some(entry => entry.id === spirit.id) ? t(\"关联形态 · 载入预设\")"
         }
@@ -51989,7 +53593,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 505,
+          "line": 506,
           "column": 113,
           "excerpt": ": familyOption && choosingForm && !canPreserveBattleFormConfig(sourceForm, spirit) ? t(\"独立形态 · 载入预设\")"
         }
@@ -52005,7 +53609,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 506,
+          "line": 507,
           "column": 124,
           "excerpt": ": related || familyOption && !choosingForm ? t(selected?.evolutionChainIds?.includes(spirit.id) ? \"进化链\" : \"关联形态\") : null,"
         }
@@ -52021,7 +53625,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 506,
+          "line": 507,
           "column": 132,
           "excerpt": ": related || familyOption && !choosingForm ? t(selected?.evolutionChainIds?.includes(spirit.id) ? \"进化链\" : \"关联形态\") : null,"
         }
@@ -52037,7 +53641,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 518,
+          "line": 519,
           "column": 67,
           "excerpt": "? presetBrowse.error || t(presetBrowse.loading ? \"正在读取预设…\" : \"暂无预设精灵，请输入搜索\")"
         }
@@ -52053,7 +53657,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 518,
+          "line": 519,
           "column": 79,
           "excerpt": "? presetBrowse.error || t(presetBrowse.loading ? \"正在读取预设…\" : \"暂无预设精灵，请输入搜索\")"
         }
@@ -52069,7 +53673,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 520,
+          "line": 521,
           "column": 22,
           "excerpt": "? t(\"暂无收藏精灵，请输入搜索\")"
         }
@@ -52085,7 +53689,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 521,
+          "line": 522,
           "column": 22,
           "excerpt": ": t(\"没有匹配精灵\")}"
         }
@@ -52101,7 +53705,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 528,
+          "line": 529,
           "column": 18,
           "excerpt": ">{t(\"已预览所有已收藏精灵\")}</li>"
         }
@@ -52117,7 +53721,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 535,
+          "line": 536,
           "column": 22,
           "excerpt": "}}>{t(\"重新载入当前形态预设\")}</button>"
         }
@@ -52133,7 +53737,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 582,
+          "line": 583,
           "column": 54,
           "excerpt": "{t(selected.battleFormTraitRetained ? \"特性沿用：\" : \"特性：\")}"
         }
@@ -52149,7 +53753,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 582,
+          "line": 583,
           "column": 64,
           "excerpt": "{t(selected.battleFormTraitRetained ? \"特性沿用：\" : \"特性：\")}"
         }
@@ -52165,7 +53769,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 587,
+          "line": 589,
           "column": 113,
           "excerpt": "{onOpenDeer && <button className=\"spirit-card__deer-entry\" type=\"button\" onClick={onOpenDeer}>{t(\"电鹿斩杀线 →\")}</button>}"
         }
@@ -52181,7 +53785,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 591,
+          "line": 593,
           "column": 80,
           "excerpt": "<span className=\"spirit-card__moe-count\" role=\"img\" aria-label={t(\"萌化 {count} 层\", { count: moeLayers })} title={t(\"萌化 {count} 层：相对初始形态的降阶数\", { count: moeLayers })}>"
         }
@@ -52197,7 +53801,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 591,
+          "line": 593,
           "column": 128,
           "excerpt": "<span className=\"spirit-card__moe-count\" role=\"img\" aria-label={t(\"萌化 {count} 层\", { count: moeLayers })} title={t(\"萌化 {count} 层：相对初始形态的降阶数\", { count: moeLayers })}>"
         }
@@ -52213,7 +53817,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 594,
+          "line": 596,
           "column": 23,
           "excerpt": "<span>{t(\" · 配置已保留\")}</span>"
         }
@@ -52229,7 +53833,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 601,
+          "line": 603,
           "column": 20,
           "excerpt": "? \"取消收藏{name}\""
         }
@@ -52245,7 +53849,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 603,
+          "line": 605,
           "column": 22,
           "excerpt": "? \"手动收藏{name}\""
         }
@@ -52261,14 +53865,14 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 604,
+          "line": 606,
           "column": 22,
           "excerpt": ": \"收藏{name}\", { name: selected.fullName })}"
         },
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 616,
+          "line": 618,
           "column": 24,
           "excerpt": ": t(\"收藏{name}\", { name: selected.fullName })"
         }
@@ -52284,7 +53888,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 613,
+          "line": 615,
           "column": 22,
           "excerpt": "? t(\"取消手动收藏\")"
         }
@@ -52300,7 +53904,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 615,
+          "line": 617,
           "column": 24,
           "excerpt": "? t(\"配置完整，点击设为手动收藏\")"
         }
@@ -52316,7 +53920,7 @@
         {
           "file": "src/components/SpiritStep.jsx",
           "context": "t-call",
-          "line": 26,
+          "line": 27,
           "column": 27,
           "excerpt": "<section aria-label={t(\"精灵配置\")} className=\"calculator-step calculator-step--spirits\">"
         }
@@ -52332,7 +53936,7 @@
         {
           "file": "src/components/SpiritStep.jsx",
           "context": "t-call",
-          "line": 31,
+          "line": 33,
           "column": 19,
           "excerpt": "label={t(\"攻击方\")}"
         }
@@ -52348,7 +53952,7 @@
         {
           "file": "src/components/SpiritStep.jsx",
           "context": "t-call",
-          "line": 46,
+          "line": 48,
           "column": 24,
           "excerpt": "aria-label={t(\"交换双方完整配置\")}"
         }
@@ -52364,7 +53968,7 @@
         {
           "file": "src/components/SpiritStep.jsx",
           "context": "t-call",
-          "line": 49,
+          "line": 51,
           "column": 19,
           "excerpt": "title={t(\"交换双方\")}"
         }
@@ -52380,9 +53984,759 @@
         {
           "file": "src/components/SpiritStep.jsx",
           "context": "t-call",
-          "line": 57,
+          "line": 60,
           "column": 19,
           "excerpt": "label={t(\"防御方\")}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"{count} 层\"]",
+      "zh": "{count} 层",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 16,
+          "column": 65,
+          "excerpt": "const thresholdText = (value, t) => value.status === \"found\" ? t(\"{count} 层\", { count: value.minimum })"
+        },
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 80,
+          "column": 202,
+          "excerpt": "<label className=\"starfall-stacks\">{t(\"试算星陨\")}<input aria-label={t(\"试算星陨层数\")} type=\"number\" min=\"0\" max=\"99\" value={stacks} onChange={(event) => setStacks(clampStacks(event.target.value))} />{t(\"{count} 层\", { count: \"\" }).trim()}</label>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"不可斩杀\"]",
+      "zh": "不可斩杀",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 17,
+          "column": 39,
+          "excerpt": ": t(value.status === \"unreachable\" ? \"不可斩杀\" : value.status === \"uncertain\" ? \"待核验\" : \"不适用\");"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"待核验\"]",
+      "zh": "待核验",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 17,
+          "column": 79,
+          "excerpt": ": t(value.status === \"unreachable\" ? \"不可斩杀\" : value.status === \"uncertain\" ? \"待核验\" : \"不适用\");"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"不适用\"]",
+      "zh": "不适用",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 17,
+          "column": 87,
+          "excerpt": ": t(value.status === \"unreachable\" ? \"不可斩杀\" : value.status === \"uncertain\" ? \"待核验\" : \"不适用\");"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"已代入培养，当前对位已恢复特性复算\"]",
+      "zh": "已代入培养，当前对位已恢复特性复算",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 69,
+          "column": 57,
+          "excerpt": "onApply(next.state, { keepOpen, notice: keepOpen ? t(\"已代入培养，当前对位已恢复特性复算\") : t(\"已填入 {count} 层星陨\", { count: options.stacks }) });"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"已填入 {count} 层星陨\"]",
+      "zh": "已填入 {count} 层星陨",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 69,
+          "column": 82,
+          "excerpt": "onApply(next.state, { keepOpen, notice: keepOpen ? t(\"已代入培养，当前对位已恢复特性复算\") : t(\"已填入 {count} 层星陨\", { count: options.stacks }) });"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"星陨斩杀线\"]",
+      "zh": "星陨斩杀线",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 72,
+          "column": 103,
+          "excerpt": "<section ref={dialogRef} className=\"starfall-dialog\" role=\"dialog\" aria-modal=\"true\" aria-label={t(\"星陨斩杀线\")}>"
+        },
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 73,
+          "column": 50,
+          "excerpt": "<header className=\"starfall-heading\"><h2>{t(\"星陨斩杀线\")}</h2><button type=\"button\" aria-label={t(\"关闭星陨斩杀线\")} onClick={onClose}><X size={20} /></button></header>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"关闭星陨斩杀线\"]",
+      "zh": "关闭星陨斩杀线",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 73,
+          "column": 100,
+          "excerpt": "<header className=\"starfall-heading\"><h2>{t(\"星陨斩杀线\")}</h2><button type=\"button\" aria-label={t(\"关闭星陨斩杀线\")} onClick={onClose}><X size={20} /></button></header>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"星陨计算技能\"]",
+      "zh": "星陨计算技能",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 76,
+          "column": 32,
+          "excerpt": "<select aria-label={t(\"星陨计算技能\")} value={selectedSkillIndex} onChange={(event) => { setSelectedSkillIndex(Number(event.target.value)); setExpanded(null); }}>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"试算星陨\"]",
+      "zh": "试算星陨",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 80,
+          "column": 46,
+          "excerpt": "<label className=\"starfall-stacks\">{t(\"试算星陨\")}<input aria-label={t(\"试算星陨层数\")} type=\"number\" min=\"0\" max=\"99\" value={stacks} onChange={(event) => setStacks(clampStacks(event.target.value))} />{t(\"{count} 层\", { count: \"\" }).trim()}</label>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"试算星陨层数\"]",
+      "zh": "试算星陨层数",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 80,
+          "column": 75,
+          "excerpt": "<label className=\"starfall-stacks\">{t(\"试算星陨\")}<input aria-label={t(\"试算星陨层数\")} type=\"number\" min=\"0\" max=\"99\" value={stacks} onChange={(event) => setStacks(clampStacks(event.target.value))} />{t(\"{count} 层\", { count: \"\" }).trim()}</label>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"当前对位斩杀线\"]",
+      "zh": "当前对位斩杀线",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 82,
+          "column": 58,
+          "excerpt": "<section className=\"starfall-current\" aria-label={t(\"当前对位斩杀线\")} aria-busy={!threshold && !error}>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"当前对位 · 按当前血量、减伤与特性\"]",
+      "zh": "当前对位 · 按当前血量、减伤与特性",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 83,
+          "column": 23,
+          "excerpt": "<div><small>{t(\"当前对位 · 按当前血量、减伤与特性\")}</small>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"最低 {count} 层\"]",
+      "zh": "最低 {count} 层",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 84,
+          "column": 115,
+          "excerpt": "<div className=\"starfall-minimum\" role=\"status\">{threshold ? <><strong>{threshold.status === \"found\" ? t(\"最低 {count} 层\", { count: threshold.minimum }) : thresholdText(threshold, t)}</strong>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"当前可斩杀\"]",
+      "zh": "当前可斩杀",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 85,
+          "column": 70,
+          "excerpt": "{threshold.status === \"found\" ? <span>{current.lethal ? t(\"当前可斩杀\") : shortfall > 0 ? t(\"还差 {count} 层\", { count: shortfall }) : t(\"按最低层数填入复算\")}</span> : null}</> : t(error || \"正在查找最低层数…\")}</div>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"还差 {count} 层\"]",
+      "zh": "还差 {count} 层",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 85,
+          "column": 99,
+          "excerpt": "{threshold.status === \"found\" ? <span>{current.lethal ? t(\"当前可斩杀\") : shortfall > 0 ? t(\"还差 {count} 层\", { count: shortfall }) : t(\"按最低层数填入复算\")}</span> : null}</> : t(error || \"正在查找最低层数…\")}</div>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"按最低层数填入复算\"]",
+      "zh": "按最低层数填入复算",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 85,
+          "column": 141,
+          "excerpt": "{threshold.status === \"found\" ? <span>{current.lethal ? t(\"当前可斩杀\") : shortfall > 0 ? t(\"还差 {count} 层\", { count: shortfall }) : t(\"按最低层数填入复算\")}</span> : null}</> : t(error || \"正在查找最低层数…\")}</div>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"正在查找最低层数…\"]",
+      "zh": "正在查找最低层数…",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 85,
+          "column": 186,
+          "excerpt": "{threshold.status === \"found\" ? <span>{current.lethal ? t(\"当前可斩杀\") : shortfall > 0 ? t(\"还差 {count} 层\", { count: shortfall }) : t(\"按最低层数填入复算\")}</span> : null}</> : t(error || \"正在查找最低层数…\")}</div>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"本次伤害 {damage} · 目标 {hp} / {maxHp} HP\"]",
+      "zh": "本次伤害 {damage} · 目标 {hp} / {maxHp} HP",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 86,
+          "column": 51,
+          "excerpt": "{Number.isFinite(current.damage) ? <p>{t(\"本次伤害 {damage} · 目标 {hp} / {maxHp} HP\", { damage: current.damage, hp: current.targetHp, maxHp: current.maxHp })}{current.freezeLethal ? ` · ${t(\"冻结击倒\")}` : \"\"}</p> : null}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"冻结击倒\"]",
+      "zh": "冻结击倒",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 86,
+          "column": 195,
+          "excerpt": "{Number.isFinite(current.damage) ? <p>{t(\"本次伤害 {damage} · 目标 {hp} / {maxHp} HP\", { damage: current.damage, hp: current.targetHp, maxHp: current.maxHp })}{current.freezeLethal ? ` · ${t(\"冻结击倒\")}` : \"\"}</p> : null}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"冻结斩杀≤{hp} HP，冻结不额外扣血。\"]",
+      "zh": "冻结斩杀≤{hp} HP，冻结不额外扣血。",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 87,
+          "column": 45,
+          "excerpt": "{current.freezePercent > 0 ? <p>{t(\"冻结斩杀≤{hp} HP，冻结不额外扣血。\", { hp: current.freezeThresholdHp })}</p> : null}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"填入 {count} 层\"]",
+      "zh": "填入 {count} 层",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 91,
+          "column": 188,
+          "excerpt": "<button type=\"button\" className=\"starfall-primary\" disabled={threshold?.status !== \"found\"} onClick={() => apply({ stacks: threshold.minimum })}>{threshold?.status === \"found\" ? t(\"填入 {count} 层\", { count: threshold.minimum }) : t(\"填入 最低层数\")}</button>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"填入 最低层数\"]",
+      "zh": "填入 最低层数",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 91,
+          "column": 238,
+          "excerpt": "<button type=\"button\" className=\"starfall-primary\" disabled={threshold?.status !== \"found\"} onClick={() => apply({ stacks: threshold.minimum })}>{threshold?.status === \"found\" ? t(\"填入 {count} 层\", { count: threshold.minimum }) : t(\"填入 最低层数\")}</button>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"三档培养对比\"]",
+      "zh": "三档培养对比",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 93,
+          "column": 56,
+          "excerpt": "<div className=\"starfall-table-tools\"><div><h3>{t(\"三档培养对比\")}</h3><small>{t(\"满血 · 无减伤/异常 · 不计防守特性\")}</small></div>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"满血 · 无减伤/异常 · 不计防守特性\"]",
+      "zh": "满血 · 无减伤/异常 · 不计防守特性",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 93,
+          "column": 81,
+          "excerpt": "<div className=\"starfall-table-tools\"><div><h3>{t(\"三档培养对比\")}</h3><small>{t(\"满血 · 无减伤/异常 · 不计防守特性\")}</small></div>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"搜索星陨斩杀精灵\"]",
+      "zh": "搜索星陨斩杀精灵",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 94,
+          "column": 112,
+          "excerpt": "<label className=\"starfall-search\"><MagnifyingGlass size={18} aria-hidden=\"true\" /><input aria-label={t(\"搜索星陨斩杀精灵\")} placeholder={t(\"搜索名称、别名或图鉴号\")} value={query} onChange={(event) => setQuery(event.target.value)} />{query ? <button type=\"button\" aria-label={t(\"清空星陨搜索\")} onClick={() => setQuery(\"\")}><X size={16} /></button> : null}</label>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"搜索名称、别名或图鉴号\"]",
+      "zh": "搜索名称、别名或图鉴号",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 94,
+          "column": 140,
+          "excerpt": "<label className=\"starfall-search\"><MagnifyingGlass size={18} aria-hidden=\"true\" /><input aria-label={t(\"搜索星陨斩杀精灵\")} placeholder={t(\"搜索名称、别名或图鉴号\")} value={query} onChange={(event) => setQuery(event.target.value)} />{query ? <button type=\"button\" aria-label={t(\"清空星陨搜索\")} onClick={() => setQuery(\"\")}><X size={16} /></button> : null}</label>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"清空星陨搜索\"]",
+      "zh": "清空星陨搜索",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 94,
+          "column": 268,
+          "excerpt": "<label className=\"starfall-search\"><MagnifyingGlass size={18} aria-hidden=\"true\" /><input aria-label={t(\"搜索星陨斩杀精灵\")} placeholder={t(\"搜索名称、别名或图鉴号\")} value={query} onChange={(event) => setQuery(event.target.value)} />{query ? <button type=\"button\" aria-label={t(\"清空星陨搜索\")} onClick={() => setQuery(\"\")}><X size={16} /></button> : null}</label>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"正在计算 {completed}/{total}\"]",
+      "zh": "正在计算 {completed}/{total}",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 96,
+          "column": 87,
+          "excerpt": "<div className=\"starfall-progress\" role=\"status\">{error ? t(error) : loading ? t(\"正在计算 {completed}/{total}\", { completed: currentProgress?.completed ?? 0, total: currentProgress?.total ?? snapshot.spirits.length }) : result?.issue ? t(result.issue) : t(\"{count} 只精灵／形态\", { count: rows.length })}</div>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"{count} 只精灵／形态\"]",
+      "zh": "{count} 只精灵／形态",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 96,
+          "column": 259,
+          "excerpt": "<div className=\"starfall-progress\" role=\"status\">{error ? t(error) : loading ? t(\"正在计算 {completed}/{total}\", { completed: currentProgress?.completed ?? 0, total: currentProgress?.total ?? snapshot.spirits.length }) : result?.issue ? t(result.issue) : t(\"{count} 只精灵／形态\", { count: rows.length })}</div>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"精灵\"]",
+      "zh": "精灵",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 101,
+          "column": 70,
+          "excerpt": "<div className=\"starfall-columns\" aria-hidden=\"true\"><span>{t(\"精灵\")}</span>{STARFALL_TEMPLATES.map((template) => <span key={template.id}>{t(template.label)}<small>{t(templateDetails[template.id])}</small></span>)}<span /></div>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"当前防守方\"]",
+      "zh": "当前防守方",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 104,
+          "column": 250,
+          "excerpt": "<div className=\"starfall-identity\">{portrait(row.spirit) ? <img alt=\"\" src={portrait(row.spirit)} loading=\"lazy\" /> : null}<span><strong>{entityName(\"spirit\", row.spirit)}</strong>{row.spirit.id === selection.targetSpirit?.id ? <small>{t(\"当前防守方\")}</small> : <small>{row.spirit.types?.map(typeName).join(\" · \")}</small>}</span></div>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"0–99 层内无法斩杀\"]",
+      "zh": "0–99 层内无法斩杀",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 105,
+          "column": 183,
+          "excerpt": "{row.templates.map((value) => <div className=\"starfall-value\" key={value.templateId} data-status={value.status} title={t(value.reason || (value.status === \"unreachable\" ? \"0–99 层内无法斩杀\" : \"\"))}><small>{t(templateLabels[value.templateId])}</small><strong>{thresholdText(value, t)}</strong></div>)}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"选择{name}培养\"]",
+      "zh": "选择{name}培养",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 106,
+          "column": 76,
+          "excerpt": "<button type=\"button\" className=\"starfall-choose\" aria-label={t(\"选择{name}培养\", { name: entityName(\"spirit\", row.spirit) })} aria-expanded={expanded === row.spirit.id} onClick={() => setExpanded(expanded === row.spirit.id ? null : row.spirit.id)}>{t(\"选培养\")}</button>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"选培养\"]",
+      "zh": "选培养",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 106,
+          "column": 260,
+          "excerpt": "<button type=\"button\" className=\"starfall-choose\" aria-label={t(\"选择{name}培养\", { name: entityName(\"spirit\", row.spirit) })} aria-expanded={expanded === row.spirit.id} onClick={() => setExpanded(expanded === row.spirit.id ? null : row.spirit.id)}>{t(\"选培养\")}</button>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"{name}培养选择\"]",
+      "zh": "{name}培养选择",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 108,
+          "column": 92,
+          "excerpt": "{expanded === row.spirit.id ? <div className=\"starfall-cultivation\" aria-label={t(\"{name}培养选择\", { name: entityName(\"spirit\", row.spirit) })}>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"代入后按实际特性复算。\"]",
+      "zh": "代入后按实际特性复算。",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 109,
+          "column": 18,
+          "excerpt": "<p>{t(\"代入后按实际特性复算。\")}</p>{STARFALL_TEMPLATES.map((template) => <button type=\"button\" key={template.id} onClick={() => apply({ spiritId: row.spirit.id, templateId: template.id }, true)}>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"代入{template}\"]",
+      "zh": "代入{template}",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 110,
+          "column": 17,
+          "excerpt": "{t(\"代入{template}\", { template: t(template.label) })}<small>{t(templateDetails[template.id])}</small>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"没有匹配的精灵，试试其他名称或图鉴号。\"]",
+      "zh": "没有匹配的精灵，试试其他名称或图鉴号。",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 114,
+          "column": 77,
+          "excerpt": "{!loading && !rows.length ? <p className=\"starfall-empty\">{t(query ? \"没有匹配的精灵，试试其他名称或图鉴号。\" : result?.issue || error || \"暂无可计算的精灵。\")}</p> : null}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"暂无可计算的精灵。\"]",
+      "zh": "暂无可计算的精灵。",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 114,
+          "column": 127,
+          "excerpt": "{!loading && !rows.length ? <p className=\"starfall-empty\">{t(query ? \"没有匹配的精灵，试试其他名称或图鉴号。\" : result?.issue || error || \"暂无可计算的精灵。\")}</p> : null}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"显示更多\"]",
+      "zh": "显示更多",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 115,
+          "column": 130,
+          "excerpt": "{rows.length > limit ? <button type=\"button\" className=\"starfall-more\" onClick={() => setLimit((value) => value + 60)}>{t(\"显示更多\")}</button> : null}"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"查询 0–99 层 · 单次出招\"]",
+      "zh": "查询 0–99 层 · 单次出招",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 117,
+          "column": 17,
+          "excerpt": "<footer>{t(\"查询 0–99 层 · 单次出招\")}{source.state.calculationOptions?.includeNegativeStatusSettlement ? t(\"含冻结斩杀\") : \"\"}{t(\" · 不计回合末持续伤害\")}<details><summary>{t(\"计算依据\")}</summary><p>{t(\"使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。\")}</p></details></footer>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"含冻结斩杀\"]",
+      "zh": "含冻结斩杀",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 117,
+          "column": 107,
+          "excerpt": "<footer>{t(\"查询 0–99 层 · 单次出招\")}{source.state.calculationOptions?.includeNegativeStatusSettlement ? t(\"含冻结斩杀\") : \"\"}{t(\" · 不计回合末持续伤害\")}<details><summary>{t(\"计算依据\")}</summary><p>{t(\"使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。\")}</p></details></footer>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\" · 不计回合末持续伤害\"]",
+      "zh": " · 不计回合末持续伤害",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 117,
+          "column": 124,
+          "excerpt": "<footer>{t(\"查询 0–99 层 · 单次出招\")}{source.state.calculationOptions?.includeNegativeStatusSettlement ? t(\"含冻结斩杀\") : \"\"}{t(\" · 不计回合末持续伤害\")}<details><summary>{t(\"计算依据\")}</summary><p>{t(\"使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。\")}</p></details></footer>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"计算依据\"]",
+      "zh": "计算依据",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 117,
+          "column": 161,
+          "excerpt": "<footer>{t(\"查询 0–99 层 · 单次出招\")}{source.state.calculationOptions?.includeNegativeStatusSettlement ? t(\"含冻结斩杀\") : \"\"}{t(\" · 不计回合末持续伤害\")}<details><summary>{t(\"计算依据\")}</summary><p>{t(\"使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。\")}</p></details></footer>"
+        }
+      ],
+      "registered": true
+    },
+    {
+      "stableKey": "[\"src/components/StarfallThresholdDialog.jsx\",\"t-call\",\"使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。\"]",
+      "zh": "使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。",
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-call",
+      "sourceRefs": [
+        {
+          "file": "src/components/StarfallThresholdDialog.jsx",
+          "context": "t-call",
+          "line": 117,
+          "column": 185,
+          "excerpt": "<footer>{t(\"查询 0–99 层 · 单次出招\")}{source.state.calculationOptions?.includeNegativeStatusSettlement ? t(\"含冻结斩杀\") : \"\"}{t(\" · 不计回合末持续伤害\")}<details><summary>{t(\"计算依据\")}</summary><p>{t(\"使用当前所选技能与进攻配置逐层计算；0 层可直接斩杀时返回 0。三档培养仅改变目标性格与个体，其余个体为 0；代入恢复防守特性。不可斩杀指 0–99 层均未达标，待核验表示存在未建模效果。\")}</p></details></footer>"
         }
       ],
       "registered": true
@@ -56402,7 +58756,7 @@
         {
           "file": "src/components/WhatsNewDialog.jsx",
           "context": "t-call",
-          "line": 74,
+          "line": 67,
           "column": 22,
           "excerpt": "aria-label={t(\"新功能介绍\")}"
         }
@@ -56418,7 +58772,7 @@
         {
           "file": "src/components/WhatsNewDialog.jsx",
           "context": "t-call",
-          "line": 90,
+          "line": 83,
           "column": 139,
           "excerpt": "<strong>{serverId === \"global\" ? t(item.title) : item.title}{item.enhanced ? <small className=\"whats-new-dialog__badge\">{t(\"增强\")}</small> : null}</strong>"
         }
@@ -56434,7 +58788,7 @@
         {
           "file": "src/components/WhatsNewDialog.jsx",
           "context": "t-call",
-          "line": 98,
+          "line": 91,
           "column": 24,
           "excerpt": "aria-label={t(\"查看使用说明书（飞书文档，新窗口打开）\")}"
         }
@@ -56450,7 +58804,7 @@
         {
           "file": "src/components/WhatsNewDialog.jsx",
           "context": "t-call",
-          "line": 104,
+          "line": 97,
           "column": 19,
           "excerpt": "<span>{t(\"查看使用说明书\")}</span>"
         }
@@ -56466,7 +58820,7 @@
         {
           "file": "src/components/WhatsNewDialog.jsx",
           "context": "t-call",
-          "line": 105,
+          "line": 98,
           "column": 20,
           "excerpt": "<small>{t(\"飞书文档 · 新窗口打开\")}</small>"
         }
@@ -56482,7 +58836,7 @@
         {
           "file": "src/components/WhatsNewDialog.jsx",
           "context": "t-call",
-          "line": 107,
+          "line": 100,
           "column": 95,
           "excerpt": "<button className=\"whats-new-dialog__history\" type=\"button\" onClick={onOpenHistory}>{t(\"完整版本记录\")}</button>"
         }
@@ -56498,7 +58852,7 @@
         {
           "file": "src/components/WhatsNewDialog.jsx",
           "context": "t-call",
-          "line": 109,
+          "line": 102,
           "column": 82,
           "excerpt": "<button className=\"secondary-action\" onClick={onClose} type=\"button\">{t(\"知道了\")}</button>"
         }
@@ -56514,7 +58868,7 @@
         {
           "file": "src/components/WhatsNewDialog.jsx",
           "context": "t-call",
-          "line": 115,
+          "line": 108,
           "column": 14,
           "excerpt": ">{t(\"打开队伍\")}</button>"
         }
@@ -56624,14 +58978,14 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 386,
+          "line": 387,
           "column": 26,
           "excerpt": "aria-label={t(\"分享当前配置\")}"
         },
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 393,
+          "line": 394,
           "column": 19,
           "excerpt": "<h2>{t(\"分享当前配置\")}</h2>"
         }
@@ -57061,14 +59415,14 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 355,
+          "line": 356,
           "column": 26,
           "excerpt": "aria-label={t(\"清理未完成配置\")}"
         },
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 360,
+          "line": 361,
           "column": 19,
           "excerpt": "<h2>{t(\"清理未完成配置\")}</h2>"
         }
@@ -57084,7 +59438,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 361,
+          "line": 362,
           "column": 18,
           "excerpt": "<p>{t(\"仅清理未完成的精灵配置，收藏、完整配置和队伍不会删除。\")}</p>"
         }
@@ -57100,7 +59454,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 367,
+          "line": 368,
           "column": 18,
           "excerpt": ">{t(\"确认清理\")}</button>"
         }
@@ -57116,14 +59470,14 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 372,
+          "line": 373,
           "column": 18,
           "excerpt": ">{t(\"取消\")}</button>"
         },
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 480,
+          "line": 481,
           "column": 18,
           "excerpt": ">{t(\"取消\")}</button>"
         }
@@ -57139,7 +59493,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 394,
+          "line": 395,
           "column": 57,
           "excerpt": "<p className=\"share-config-dialog__intro\">{t(\"链接包含双方精灵、性格、个体、技能、特性和当前战斗条件，不会包含配置库和队伍。\")}</p>"
         }
@@ -57155,7 +59509,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 396,
+          "line": 397,
           "column": 21,
           "excerpt": "<h3>{t(\"发送当前配置\")}</h3>"
         }
@@ -57171,14 +59525,14 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 398,
+          "line": 399,
           "column": 25,
           "excerpt": "<span>{t(\"当前配置链接\")}</span>"
         },
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 400,
+          "line": 401,
           "column": 32,
           "excerpt": "aria-label={t(\"当前配置链接\")}"
         }
@@ -57194,7 +59548,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 403,
+          "line": 404,
           "column": 33,
           "excerpt": "placeholder={t(\"选择双方精灵后生成\")}"
         }
@@ -57210,7 +59564,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 413,
+          "line": 414,
           "column": 18,
           "excerpt": ">{t(\"复制当前配置链接\")}</button>"
         }
@@ -57226,7 +59580,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 416,
+          "line": 417,
           "column": 21,
           "excerpt": "<h3>{t(\"载入别人分享的配置\")}</h3>"
         }
@@ -57242,7 +59596,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 418,
+          "line": 419,
           "column": 25,
           "excerpt": "<span>{t(\"粘贴完整分享链接或分享码\")}</span>"
         }
@@ -57258,14 +59612,14 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 420,
+          "line": 421,
           "column": 32,
           "excerpt": "aria-label={t(\"粘贴分享链接\")}"
         },
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 425,
+          "line": 426,
           "column": 33,
           "excerpt": "placeholder={t(\"粘贴分享链接\")}"
         }
@@ -57281,7 +59635,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 433,
+          "line": 434,
           "column": 18,
           "excerpt": ">{t(\"载入分享配置\")}</button>"
         }
@@ -57297,7 +59651,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 440,
+          "line": 441,
           "column": 18,
           "excerpt": ">{t(\"关闭\")}</button>"
         }
@@ -57313,14 +59667,14 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 456,
+          "line": 457,
           "column": 26,
           "excerpt": "aria-label={t(\"分享版本不一致\")}"
         },
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 463,
+          "line": 464,
           "column": 19,
           "excerpt": "<h2>{t(\"分享版本不一致\")}</h2>"
         }
@@ -57336,7 +59690,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 464,
+          "line": 465,
           "column": 18,
           "excerpt": "<p>{t(\"原数据 \")}{share.pendingState.versions.data}{t(\" · 规则\")}{\" \"}"
         }
@@ -57352,7 +59706,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 464,
+          "line": 465,
           "column": 63,
           "excerpt": "<p>{t(\"原数据 \")}{share.pendingState.versions.data}{t(\" · 规则\")}{\" \"}"
         }
@@ -57368,7 +59722,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 467,
+          "line": 468,
           "column": 18,
           "excerpt": "<p>{t(\"当前数据 \")}{share.versions.data}{t(\" · 规则 \")}{share.versions.rules}"
         }
@@ -57384,7 +59738,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 467,
+          "line": 468,
           "column": 51,
           "excerpt": "<p>{t(\"当前数据 \")}{share.versions.data}{t(\" · 规则 \")}{share.versions.rules}"
         }
@@ -57400,7 +59754,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 469,
+          "line": 470,
           "column": 22,
           "excerpt": "<small>{t(\"旧快照未内置。可保留全部输入并按当前版本重算，结果会在右侧即时更新。\")}</small>"
         }
@@ -57416,7 +59770,7 @@
         {
           "file": "src/components/WorkspaceOverlays.jsx",
           "context": "t-call",
-          "line": 475,
+          "line": 476,
           "column": 18,
           "excerpt": ">{t(\"按当前版本重算\")}</button>"
         }
@@ -64186,7 +66540,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 499,
+          "line": 500,
           "column": 30,
           "excerpt": "? t(\"六维100测试占位\")"
         }
@@ -64202,7 +66556,7 @@
         {
           "file": "src/components/SpiritPicker.jsx",
           "context": "t-call",
-          "line": 578,
+          "line": 579,
           "column": 76,
           "excerpt": "<p className=\"spirit-card__pending\">{t(placeholderRaceStats ? \"暂定六维100\" : \"种族值待确认\")}</p>"
         }
@@ -64410,9 +66764,21 @@
     {
       "file": "src/App.jsx",
       "context": "t-dynamic-call",
-      "line": 1684,
+      "line": 1696,
       "column": 18,
       "excerpt": "<small>{t(label)} · {spiritName(spirit)}</small>",
+      "expressionType": "Identifier",
+      "unresolvedBranchTypes": [
+        "Identifier"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/App.jsx",
+      "context": "t-dynamic-call",
+      "line": 1998,
+      "column": 52,
+      "excerpt": "healthFields.push({ key: contextKey, label: t(label), health,",
       "expressionType": "Identifier",
       "unresolvedBranchTypes": [
         "Identifier"
@@ -64984,6 +67350,246 @@
       "collectedStaticAlternatives": 0
     },
     {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 17,
+      "column": 52,
+      "excerpt": "if (input.type === \"boolean\") return value ? [t(input.label)] : [];",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 18,
+      "column": 153,
+      "excerpt": "if (input.type === \"choice\") return [input.options.find((option) => String(option.value) === String(value))?.label].filter(Boolean).map((label) => t(label));",
+      "expressionType": "Identifier",
+      "unresolvedBranchTypes": [
+        "Identifier"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 20,
+      "column": 17,
+      "excerpt": "return [`${t(input.label)} ${value}${t(input.suffix ?? \"\")}`];",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 20,
+      "column": 43,
+      "excerpt": "return [`${t(input.label)} ${value}${t(input.suffix ?? \"\")}`];",
+      "expressionType": "LogicalExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 1
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 28,
+      "column": 81,
+      "excerpt": "return <button type=\"button\" className=\"compact-condition-trigger\" aria-label={t(model.triggerLabel)}",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 29,
+      "column": 70,
+      "excerpt": "aria-haspopup=\"dialog\" aria-expanded={expanded} title={summary || t(model.triggerText ?? \"条件\")}",
+      "expressionType": "LogicalExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 1
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 31,
+      "column": 61,
+      "excerpt": "<SlidersHorizontal size={13} aria-hidden=\"true\" /><span>{t(model.triggerText ?? \"条件\")}</span>",
+      "expressionType": "LogicalExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 1
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 43,
+      "column": 24,
+      "excerpt": "{status ? <p title={t(status)}>{t(status)}</p> : null}",
+      "expressionType": "Identifier",
+      "unresolvedBranchTypes": [
+        "Identifier"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 43,
+      "column": 36,
+      "excerpt": "{status ? <p title={t(status)}>{t(status)}</p> : null}",
+      "expressionType": "Identifier",
+      "unresolvedBranchTypes": [
+        "Identifier"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 44,
+      "column": 35,
+      "excerpt": "{details && display.next ? <p>{t(display.next)}</p> : null}",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 93,
+      "column": 73,
+      "excerpt": "<section ref={dialogRef} role=\"dialog\" aria-modal=\"true\" aria-label={t(model.title)}",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 95,
+      "column": 19,
+      "excerpt": "<header><h2>{t(model.title)}</h2><button type=\"button\" aria-label={t(\"关闭条件\")} onClick={onClose}><X size={17} aria-hidden=\"true\" /></button></header>",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 98,
+      "column": 17,
+      "excerpt": "<span>{t(label)}</span><HealthInput label={t(label.replace(/生命$/, \"\"))} currentHp={health.currentHp} maxHp={health.maxHp}",
+      "expressionType": "Identifier",
+      "unresolvedBranchTypes": [
+        "Identifier"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 98,
+      "column": 53,
+      "excerpt": "<span>{t(label)}</span><HealthInput label={t(label.replace(/生命$/, \"\"))} currentHp={health.currentHp} maxHp={health.maxHp}",
+      "expressionType": "CallExpression",
+      "unresolvedBranchTypes": [
+        "CallExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 106,
+      "column": 41,
+      "excerpt": "<BurstSourceControls ariaPrefix={t(model.triggerLabel)} inputs={model.inputs} context={model.context} onChange={model.onChange} />",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 108,
+      "column": 68,
+      "excerpt": "{resolutionHint ? <p className=\"compact-condition-formula\">{t(resolutionHint)}</p> : null}",
+      "expressionType": "Identifier",
+      "unresolvedBranchTypes": [
+        "Identifier"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 110,
+      "column": 44,
+      "excerpt": "<summary>{t(\"技能说明\")}</summary><p>{t(model.description)}</p>",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 112,
+      "column": 65,
+      "excerpt": "{model.notice ? <p className=\"compact-condition-notice\">{t(model.notice)}</p> : null}",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 115,
+      "column": 37,
+      "excerpt": "{model.action.hint ? <small>{t(model.action.hint)}</small> : null}",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/CompactConditions.jsx",
+      "context": "t-dynamic-call",
+      "line": 116,
+      "column": 95,
+      "excerpt": "<button type=\"button\" disabled={model.action.disabled} onClick={model.action.onApply}>{t(model.action.label)}</button>",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
       "file": "src/components/ConfigLibraryDialog.jsx",
       "context": "t-dynamic-call",
       "line": 30,
@@ -65280,6 +67886,54 @@
       "expressionType": "CallExpression",
       "unresolvedBranchTypes": [
         "CallExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/DataSourceDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 38,
+      "column": 82,
+      "excerpt": "if (serverId === \"global\") return <article className=\"data-source-release\"><h3>{t(GLOBAL_RELEASE_SUMMARY.title)}</h3><span>{GLOBAL_RELEASE_SUMMARY.date}</span><p>{t(GLOBAL_RELEASE_SUMMARY.description)}</p><ul>{GLOBAL_RELEASE_SUMMARY.items.map((item) => <li key={item.id}><strong>{t(item.title)}</strong> · {t(item.description)}</li>)}</ul></article>;",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/DataSourceDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 38,
+      "column": 165,
+      "excerpt": "if (serverId === \"global\") return <article className=\"data-source-release\"><h3>{t(GLOBAL_RELEASE_SUMMARY.title)}</h3><span>{GLOBAL_RELEASE_SUMMARY.date}</span><p>{t(GLOBAL_RELEASE_SUMMARY.description)}</p><ul>{GLOBAL_RELEASE_SUMMARY.items.map((item) => <li key={item.id}><strong>{t(item.title)}</strong> · {t(item.description)}</li>)}</ul></article>;",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/DataSourceDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 38,
+      "column": 282,
+      "excerpt": "if (serverId === \"global\") return <article className=\"data-source-release\"><h3>{t(GLOBAL_RELEASE_SUMMARY.title)}</h3><span>{GLOBAL_RELEASE_SUMMARY.date}</span><p>{t(GLOBAL_RELEASE_SUMMARY.description)}</p><ul>{GLOBAL_RELEASE_SUMMARY.items.map((item) => <li key={item.id}><strong>{t(item.title)}</strong> · {t(item.description)}</li>)}</ul></article>;",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/DataSourceDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 38,
+      "column": 309,
+      "excerpt": "if (serverId === \"global\") return <article className=\"data-source-release\"><h3>{t(GLOBAL_RELEASE_SUMMARY.title)}</h3><span>{GLOBAL_RELEASE_SUMMARY.date}</span><p>{t(GLOBAL_RELEASE_SUMMARY.description)}</p><ul>{GLOBAL_RELEASE_SUMMARY.items.map((item) => <li key={item.id}><strong>{t(item.title)}</strong> · {t(item.description)}</li>)}</ul></article>;",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
       ],
       "collectedStaticAlternatives": 0
     },
@@ -66006,7 +68660,7 @@
     {
       "file": "src/components/SpiritPicker.jsx",
       "context": "t-dynamic-call",
-      "line": 497,
+      "line": 498,
       "column": 24,
       "excerpt": "t(spirit.stage),",
       "expressionType": "MemberExpression",
@@ -66018,7 +68672,7 @@
     {
       "file": "src/components/SpiritPicker.jsx",
       "context": "t-dynamic-call",
-      "line": 574,
+      "line": 575,
       "column": 21,
       "excerpt": "<span>{t(selected.stage)}</span>",
       "expressionType": "MemberExpression",
@@ -66026,6 +68680,151 @@
         "MemberExpression"
       ],
       "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 85,
+      "column": 175,
+      "excerpt": "{threshold.status === \"found\" ? <span>{current.lethal ? t(\"当前可斩杀\") : shortfall > 0 ? t(\"还差 {count} 层\", { count: shortfall }) : t(\"按最低层数填入复算\")}</span> : null}</> : t(error || \"正在查找最低层数…\")}</div>",
+      "expressionType": "LogicalExpression",
+      "unresolvedBranchTypes": [
+        "Identifier"
+      ],
+      "collectedStaticAlternatives": 1
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 88,
+      "column": 96,
+      "excerpt": "{threshold?.status !== \"found\" && threshold?.reason ? <p className=\"starfall-reason\">{t(threshold.reason)}</p> : null}",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 89,
+      "column": 119,
+      "excerpt": "{(threshold?.limitations ?? []).length ? <p className=\"starfall-reason\">{threshold.limitations.map((item) => t(item)).join(\"; \")}</p> : null}",
+      "expressionType": "Identifier",
+      "unresolvedBranchTypes": [
+        "Identifier"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 96,
+      "column": 64,
+      "excerpt": "<div className=\"starfall-progress\" role=\"status\">{error ? t(error) : loading ? t(\"正在计算 {completed}/{total}\", { completed: currentProgress?.completed ?? 0, total: currentProgress?.total ?? snapshot.spirits.length }) : result?.issue ? t(result.issue) : t(\"{count} 只精灵／形态\", { count: rows.length })}</div>",
+      "expressionType": "Identifier",
+      "unresolvedBranchTypes": [
+        "Identifier"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 96,
+      "column": 239,
+      "excerpt": "<div className=\"starfall-progress\" role=\"status\">{error ? t(error) : loading ? t(\"正在计算 {completed}/{total}\", { completed: currentProgress?.completed ?? 0, total: currentProgress?.total ?? snapshot.spirits.length }) : result?.issue ? t(result.issue) : t(\"{count} 只精灵／形态\", { count: rows.length })}</div>",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 101,
+      "column": 146,
+      "excerpt": "<div className=\"starfall-columns\" aria-hidden=\"true\"><span>{t(\"精灵\")}</span>{STARFALL_TEMPLATES.map((template) => <span key={template.id}>{t(template.label)}<small>{t(templateDetails[template.id])}</small></span>)}<span /></div>",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 101,
+      "column": 172,
+      "excerpt": "<div className=\"starfall-columns\" aria-hidden=\"true\"><span>{t(\"精灵\")}</span>{STARFALL_TEMPLATES.map((template) => <span key={template.id}>{t(template.label)}<small>{t(templateDetails[template.id])}</small></span>)}<span /></div>",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 105,
+      "column": 131,
+      "excerpt": "{row.templates.map((value) => <div className=\"starfall-value\" key={value.templateId} data-status={value.status} title={t(value.reason || (value.status === \"unreachable\" ? \"0–99 层内无法斩杀\" : \"\"))}><small>{t(templateLabels[value.templateId])}</small><strong>{thresholdText(value, t)}</strong></div>)}",
+      "expressionType": "LogicalExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 2
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 105,
+      "column": 213,
+      "excerpt": "{row.templates.map((value) => <div className=\"starfall-value\" key={value.templateId} data-status={value.status} title={t(value.reason || (value.status === \"unreachable\" ? \"0–99 层内无法斩杀\" : \"\"))}><small>{t(templateLabels[value.templateId])}</small><strong>{thresholdText(value, t)}</strong></div>)}",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 110,
+      "column": 45,
+      "excerpt": "{t(\"代入{template}\", { template: t(template.label) })}<small>{t(templateDetails[template.id])}</small>",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 110,
+      "column": 74,
+      "excerpt": "{t(\"代入{template}\", { template: t(template.label) })}<small>{t(templateDetails[template.id])}</small>",
+      "expressionType": "MemberExpression",
+      "unresolvedBranchTypes": [
+        "MemberExpression"
+      ],
+      "collectedStaticAlternatives": 0
+    },
+    {
+      "file": "src/components/StarfallThresholdDialog.jsx",
+      "context": "t-dynamic-call",
+      "line": 114,
+      "column": 67,
+      "excerpt": "{!loading && !rows.length ? <p className=\"starfall-empty\">{t(query ? \"没有匹配的精灵，试试其他名称或图鉴号。\" : result?.issue || error || \"暂无可计算的精灵。\")}</p> : null}",
+      "expressionType": "ConditionalExpression",
+      "unresolvedBranchTypes": [
+        "OptionalMemberExpression",
+        "Identifier"
+      ],
+      "collectedStaticAlternatives": 2
     },
     {
       "file": "src/components/StatTile.jsx",
@@ -66431,7 +69230,7 @@
     {
       "file": "src/components/WhatsNewDialog.jsx",
       "context": "t-dynamic-call",
-      "line": 81,
+      "line": 74,
       "column": 41,
       "excerpt": "<span>{serverId === \"global\" ? t(content.eyebrow) : content.eyebrow ?? release.version}</span>",
       "expressionType": "MemberExpression",
@@ -66443,7 +69242,7 @@
     {
       "file": "src/components/WhatsNewDialog.jsx",
       "context": "t-dynamic-call",
-      "line": 82,
+      "line": 75,
       "column": 39,
       "excerpt": "<h2>{serverId === \"global\" ? t(content.title) : content.title}</h2>",
       "expressionType": "MemberExpression",
@@ -66455,7 +69254,7 @@
     {
       "file": "src/components/WhatsNewDialog.jsx",
       "context": "t-dynamic-call",
-      "line": 83,
+      "line": 76,
       "column": 61,
       "excerpt": "{content.description ? <p>{serverId === \"global\" ? t(content.description) : content.description}</p> : null}",
       "expressionType": "MemberExpression",
@@ -66467,7 +69266,7 @@
     {
       "file": "src/components/WhatsNewDialog.jsx",
       "context": "t-dynamic-call",
-      "line": 90,
+      "line": 83,
       "column": 49,
       "excerpt": "<strong>{serverId === \"global\" ? t(item.title) : item.title}{item.enhanced ? <small className=\"whats-new-dialog__badge\">{t(\"增强\")}</small> : null}</strong>",
       "expressionType": "MemberExpression",
@@ -66479,7 +69278,7 @@
     {
       "file": "src/components/WhatsNewDialog.jsx",
       "context": "t-dynamic-call",
-      "line": 91,
+      "line": 84,
       "column": 64,
       "excerpt": "{item.description ? <p>{serverId === \"global\" ? t(item.description) : item.description}</p> : null}",
       "expressionType": "MemberExpression",
@@ -66491,9 +69290,9 @@
     {
       "file": "src/components/WhatsNewDialog.jsx",
       "context": "t-dynamic-call",
-      "line": 93,
-      "column": 113,
-      "excerpt": "<button type=\"button\" className=\"whats-new-dialog__feature\" aria-label={serverId === \"global\" ? `${t(item.action)} ${t(item.title)}` : `${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{serverId === \"global\" ? t(item.action) : item.action}</button>",
+      "line": 86,
+      "column": 128,
+      "excerpt": "{item.action ? <button type=\"button\" className=\"whats-new-dialog__feature\" aria-label={serverId === \"global\" ? `${t(item.action)} ${t(item.title)}` : `${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{serverId === \"global\" ? t(item.action) : item.action}</button> : null}",
       "expressionType": "MemberExpression",
       "unresolvedBranchTypes": [
         "MemberExpression"
@@ -66503,9 +69302,9 @@
     {
       "file": "src/components/WhatsNewDialog.jsx",
       "context": "t-dynamic-call",
-      "line": 93,
-      "column": 131,
-      "excerpt": "<button type=\"button\" className=\"whats-new-dialog__feature\" aria-label={serverId === \"global\" ? `${t(item.action)} ${t(item.title)}` : `${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{serverId === \"global\" ? t(item.action) : item.action}</button>",
+      "line": 86,
+      "column": 146,
+      "excerpt": "{item.action ? <button type=\"button\" className=\"whats-new-dialog__feature\" aria-label={serverId === \"global\" ? `${t(item.action)} ${t(item.title)}` : `${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{serverId === \"global\" ? t(item.action) : item.action}</button> : null}",
       "expressionType": "MemberExpression",
       "unresolvedBranchTypes": [
         "MemberExpression"
@@ -66515,9 +69314,9 @@
     {
       "file": "src/components/WhatsNewDialog.jsx",
       "context": "t-dynamic-call",
-      "line": 93,
-      "column": 246,
-      "excerpt": "<button type=\"button\" className=\"whats-new-dialog__feature\" aria-label={serverId === \"global\" ? `${t(item.action)} ${t(item.title)}` : `${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{serverId === \"global\" ? t(item.action) : item.action}</button>",
+      "line": 86,
+      "column": 261,
+      "excerpt": "{item.action ? <button type=\"button\" className=\"whats-new-dialog__feature\" aria-label={serverId === \"global\" ? `${t(item.action)} ${t(item.title)}` : `${item.action}${item.title}`} onClick={() => onOpenFeature?.(item.id)}>{serverId === \"global\" ? t(item.action) : item.action}</button> : null}",
       "expressionType": "MemberExpression",
       "unresolvedBranchTypes": [
         "MemberExpression"
@@ -68024,13 +70823,13 @@
     }
   ],
   "summary": {
-    "sourceFiles": 248,
-    "registeredMessages": 2241,
-    "definitions": 2340,
-    "overrides": 99,
+    "sourceFiles": 255,
+    "registeredMessages": 2319,
+    "definitions": 2419,
+    "overrides": 100,
     "missingRegisteredCalls": 6,
     "unregisteredVisibleText": 7,
     "registeredButUnwrappedVisibleText": 1,
-    "unresolvedDynamicCalls": 300
+    "unresolvedDynamicCalls": 337
   }
 }
