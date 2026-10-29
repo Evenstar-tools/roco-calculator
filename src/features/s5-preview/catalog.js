@@ -50,6 +50,13 @@ function officialImageEvidence(evidence) {
   return evidence?.kind === "official-image" && httpsUrl(evidence.url) && text(evidence.frame);
 }
 
+function recordedRaceStatsEvidence(evidence, entry) {
+  return officialImageEvidence(evidence) || entry.kind === "boss" &&
+    evidence?.kind === "user-confirmed-baseline" && text(entry.baseName) &&
+    evidence.baseName === entry.baseName && text(evidence.baseSpiritId) &&
+    /^\d{4}-\d{2}-\d{2}$/u.test(evidence.confirmedAt ?? "") && text(evidence.note);
+}
+
 function projectedRaceStats(entry, useTestRaceStats) {
   if (entry.raceStats === null) return null;
   if (entry.raceStats !== undefined) {
@@ -94,10 +101,11 @@ export function validateS5PreviewCatalog(catalog) {
     `${entry.key} 的属性无效`);
     if (entry.raceStats !== undefined && entry.raceStats !== null) {
       require(RACE_STAT_KEYS.every(key => Number.isSafeInteger(entry.raceStats[key]) && entry.raceStats[key] > 0),
-        `${entry.key} 的官方六维必须完整且为正整数`);
+        `${entry.key} 的六维必须完整且为正整数`);
       const total = RACE_STAT_KEYS.reduce((sum, key) => sum + entry.raceStats[key], 0);
       require(entry.raceStats.total === undefined || entry.raceStats.total === total, `${entry.key} 的官方六维总和不一致`);
-      require(officialImageEvidence(entry.raceStatsEvidence ?? entry.evidence), `${entry.key} 的官方六维缺少图片来源`);
+      require(recordedRaceStatsEvidence(entry.raceStatsEvidence ?? entry.evidence, entry),
+        `${entry.key} 的六维缺少官方图片或用户确认的原形态来源`);
     }
     if (entry.evolutionChainKeys !== undefined) {
       require(Array.isArray(entry.evolutionChainKeys) && entry.evolutionChainKeys.length <= 3 && entry.evolutionChainKeys.includes(entry.key) &&
@@ -292,15 +300,17 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
       const testStats = existing.previewIdentity.raceStatsPlaceholder === true &&
         existing.calculationStatus === "pending-s5-mechanics" && Object.entries(S5_PREVIEW_TEST_STATS)
           .every(([key, value]) => existing.raceStats?.[key] === value);
-      const officialStats = hasCompleteRaceStats(existing.raceStats) &&
-        existing.calculationStatus === "pending-s5-mechanics" && officialImageEvidence(existing.previewIdentity.raceStatsEvidence);
+      const recordedStats = hasCompleteRaceStats(existing.raceStats) &&
+        existing.calculationStatus === "pending-s5-mechanics" &&
+        recordedRaceStatsEvidence(existing.previewIdentity.raceStatsEvidence,
+          { kind: existing.previewIdentity.kind, baseName: existing.baseName });
       const previousPool = existingLearnset?.skillIds;
       const knownPool = Array.isArray(previousPool) && new Set(previousPool).size === previousPool.length && (previousPool.length === 0 ||
         JSON.stringify(previousPool) === JSON.stringify(knownSkillIds) ||
         previousPool.every(id => skills.some(skill => skill.id === id && skill.previewIdentity?.catalogId === catalog.catalogId) ||
           existing.previewIdentity.officialSkillRefs?.some(reference => reference.id === id)));
       const previousDefaults = existingLearnset?.defaultSkillIds;
-      require(existing.fullName === entry.name && (pendingStats || testStats || officialStats) && existingTrait && knownPool &&
+      require(existing.fullName === entry.name && (pendingStats || testStats || recordedStats) && existingTrait && knownPool &&
         Array.isArray(previousDefaults) && previousDefaults.every(id => id === null || previousPool.includes(id)),
       `候选记录已漂移：${entry.key}`);
       const typesChanged = JSON.stringify(existing.types) !== JSON.stringify(entry.types ?? []);

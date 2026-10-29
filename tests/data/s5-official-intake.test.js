@@ -12,6 +12,18 @@ const imported = catalog.entries.filter(entry => entry.evidence?.url === source)
 const result = withS5PreviewCatalog(snapshot, catalog, { useTestRaceStats: true });
 const spirit = key => result.spirits.find(item => item.id === s5PreviewIds(key).spiritId);
 
+test.each(["boss-ice-bruce", "boss-glass-jellyfish"])("%s按用户确认保留原形态六维，不冒充官方首领数据", key => {
+  const entry = catalog.entries.find(item => item.key === key);
+  const baseline = snapshot.spirits.find(item => item.id === entry.raceStatsEvidence.baseSpiritId);
+  expect(baseline.fullName).toBe(entry.baseName);
+  expect(spirit(key).raceStats).toEqual(baseline.raceStats);
+  expect(spirit(key).previewIdentity).toMatchObject({ raceStatsPlaceholder: false,
+    raceStatsEvidence: { kind: "user-confirmed-baseline", confirmedAt: "2026-10-29" } });
+  expect(spirit(key).id).not.toBe(baseline.id);
+  expect(result.spirits.find(item => item.id === baseline.id)).toBe(baseline);
+  expect(withS5PreviewCatalog(result, catalog, { useTestRaceStats: true })).toBe(result);
+});
+
 test("首批三家族合入当前预览：官图六维与彩图保留，前置形态不回落全100", () => {
   const families = [
     ["little-ming-dragon", "minggulong"],

@@ -47,7 +47,9 @@ test("真实来源目录逐项进入原搜索，机制与图片都有接续入�
     expect(result.spirits.find(({ fullName }) => fullName === base)).toEqual(originalBase);
   }
   expect(withWebPreview(result)).toBe(result);
-  expect(result.spirits.filter(({ previewIdentity }) => previewIdentity?.raceStatsPlaceholder)).toHaveLength(14);
+  expect(result.spirits.filter(({ previewIdentity }) => previewIdentity?.raceStatsPlaceholder)
+    .map(({ previewIdentity }) => previewIdentity.key).sort())
+    .toEqual(catalog.entries.filter(entry => entry.raceStats === undefined).map(entry => entry.key).sort());
   for (const spirit of current.spirits.filter(({ changeInfo }) => changeInfo?.isNew && changeInfo.patch?.id?.startsWith("s4-"))) {
     const currentSpirit = result.spirits.find(({ id }) => id === spirit.id);
     expect(currentSpirit.changeInfo?.isNew).not.toBe(true);

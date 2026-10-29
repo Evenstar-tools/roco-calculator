@@ -32,6 +32,45 @@ const knownSkill = () => ({ id: "skill_preview_s5_barren-devour", name: "荒芜�
   category: "physical", cost: 5, basePower: 130, description: "造成物伤，若击败敌方，自己等级+20。",
   evidence: { kind: "user-image", frame: "user-skill-card.png" }, acquisition: "专属技能" });
 
+test("首领可按用户确认暂录原六维，重复投影和后续正式数值更新保留身份", () => {
+  const { snapshot, catalog } = fixture();
+  const options = { useTestRaceStats: true };
+  const old = withS5PreviewCatalog(snapshot, catalog, options);
+  const boss = catalog.entries[1];
+  boss.raceStats = { ...snapshot.spirits[0].raceStats };
+  boss.raceStatsEvidence = { kind: "user-confirmed-baseline", baseSpiritId: "existing",
+    baseName: boss.baseName, confirmedAt: "2026-10-29", note: "先按原形态六维录入，后续再更新。" };
+  const original = structuredClone(snapshot);
+  const id = s5PreviewIds(boss.key).spiritId;
+  const recorded = withS5PreviewCatalog(old, catalog, options);
+  expect(recorded.spirits.find(spirit => spirit.id === id)).toMatchObject({ raceStats: boss.raceStats,
+    previewIdentity: { raceStatsPlaceholder: false, raceStatsEvidence: boss.raceStatsEvidence } });
+  expect(withS5PreviewCatalog(recorded, catalog, options)).toBe(recorded);
+  expect(recorded.learnsets.find(learnset => learnset.spiritId === id).skillIds).toEqual([]);
+  boss.raceStats = { ...stats, hp: 120, total: 620 };
+  boss.raceStatsEvidence = { kind: "official-image", url: "https://example.com/boss", frame: "boss-official.png" };
+  const updated = withS5PreviewCatalog(recorded, catalog, options);
+  expect(updated.spirits.find(spirit => spirit.id === id).raceStats.hp).toBe(120);
+  expect(withS5PreviewCatalog(updated, catalog, options)).toBe(updated);
+  expect(snapshot).toEqual(original);
+});
+
+test("暂用原形态数值须有具名首领与明确确认来源，不替普通新精灵补未知值", () => {
+  const { catalog } = fixture();
+  const boss = catalog.entries[1];
+  boss.raceStats = { ...stats };
+  const valid = { kind: "user-confirmed-baseline", baseSpiritId: "existing", baseName: boss.baseName,
+    confirmedAt: "2026-10-29", note: "用户确认暂用原形态。" };
+  for (const invalid of [{}, { ...valid, baseName: "其他精灵" }, { ...valid, baseSpiritId: "" },
+    { ...valid, confirmedAt: "" }, { ...valid, note: "" }]) {
+    boss.raceStatsEvidence = invalid;
+    expect(() => validateS5PreviewCatalog(catalog)).toThrow("六维缺少官方图片或用户确认的原形态来源");
+  }
+  boss.raceStatsEvidence = valid;
+  boss.kind = "family";
+  expect(() => validateS5PreviewCatalog(catalog)).toThrow("六维缺少官方图片或用户确认的原形态来源");
+});
+
 describe("S5 Web/Windows 展示候选覆盖", () => {
   test("正式特性名与已知专属技能可升级旧空池，稳定ID且不自动配置技能", () => {
     const { snapshot, catalog } = fixture();

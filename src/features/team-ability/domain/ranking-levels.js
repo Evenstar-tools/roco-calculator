@@ -9,11 +9,13 @@ function isPreviewMinggulong(spirit) {
 }
 
 export function resolveRankingFormRole(spirit, options = {}) {
-  // This requested preview entry is absent from the pinned S4 form manifest.
-  if (options.includeLevelVariants !== false && isPreviewMinggulong(spirit)) {
+  const form = resolveSpiritFormRole(spirit, options);
+  // Level variants must not bypass the shared recorded-data eligibility check.
+  if (options.includeLevelVariants !== false && isPreviewMinggulong(spirit) &&
+      ["final", "boss"].includes(form.formRole)) {
     return { evolutionFamilyId: "s5-minggulong", formRole: "final", formRoleStatus: "preview" };
   }
-  return resolveSpiritFormRole(spirit, options);
+  return form;
 }
 
 /** Ranking configurations keep the catalog identity separate from the level. */

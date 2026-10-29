@@ -1627,6 +1627,21 @@
       ],
       "baseName": "冰钻布鲁斯",
       "kind": "boss",
+      "raceStats": {
+        "hp": 73,
+        "physicalAttack": 101,
+        "magicalAttack": 27,
+        "physicalDefense": 114,
+        "magicalDefense": 88,
+        "speed": 90
+      },
+      "raceStatsEvidence": {
+        "kind": "user-confirmed-baseline",
+        "baseSpiritId": "spirit_e926effbf164759a",
+        "baseName": "冰钻布鲁斯",
+        "confirmedAt": "2026-10-29",
+        "note": "用户确认先沿用原形态种族值；首领正式数值有更改时再更新。"
+      },
       "traitSummary": "对手每1点能耗，技能威力增加10%；对方总能耗达到20点时，额外获得50速度。",
       "mechanicKey": "boss-ice-bruce",
       "evidence": {
@@ -1638,7 +1653,8 @@
         ]
       },
       "unknowns": [
-        "首领六维与学习面",
+        "首领正式六维（暂按原形态）",
+        "首领学习面",
         "总能耗取携带技能还是实际消耗",
         "威力增益叠加方式和上限",
         "首领血脉附带规则"
@@ -1653,6 +1669,21 @@
       ],
       "baseName": "琉璃水母",
       "kind": "boss",
+      "raceStats": {
+        "hp": 134,
+        "physicalAttack": 37,
+        "magicalAttack": 85,
+        "physicalDefense": 93,
+        "magicalDefense": 136,
+        "speed": 95
+      },
+      "raceStatsEvidence": {
+        "kind": "user-confirmed-baseline",
+        "baseSpiritId": "spirit_bdc5a04507024396",
+        "baseName": "琉璃水母",
+        "confirmedAt": "2026-10-29",
+        "note": "用户确认先沿用原形态种族值；首领正式数值有更改时再更新。"
+      },
       "traitSummary": "使用技能后，赋予对手等于中毒印记层数两倍的中毒层数。",
       "mechanicKey": "boss-glass-jellyfish",
       "evidence": {
@@ -1664,7 +1695,8 @@
         ]
       },
       "unknowns": [
-        "首领六维与学习面",
+        "首领正式六维（暂按原形态）",
+        "首领学习面",
         "中毒印记所属方及读取时点",
         "中毒与印记上限",
         "首领血脉附带规则"

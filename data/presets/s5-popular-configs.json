@@ -1,0 +1,274 @@
+{
+  "format": "rock-calculator.favorite-config-library",
+  "schemaVersion": 1,
+  "exportedAt": "2026-10-30T00:00:00+08:00",
+  "entryCount": 14,
+  "entries": [
+    {
+      "spiritId": "spirit_preview_s5_minggulong",
+      "natureId": "adamant",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalAttack": 0,
+        "magicalDefense": 0,
+        "speed": 60
+      },
+      "skills": [
+        "skill_dfe7184d14b2edcb",
+        "skill_preview_s5_barren-devour",
+        "skill_4375736cdfafd6a1",
+        "skill_5617ecc3caef7918"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_underground-silver-dragon",
+      "natureId": "timid",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 0,
+        "physicalDefense": 0,
+        "magicalAttack": 60,
+        "magicalDefense": 0,
+        "speed": 60
+      },
+      "skills": [
+        "skill_preview_s5_mineral-exchange",
+        "skill_preview_s5_silver-shards",
+        "skill_086497800410e7cd",
+        "skill_de14b645b3046425"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_gold-vein-dragon",
+      "natureId": "adamant",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalAttack": 0,
+        "magicalDefense": 0,
+        "speed": 60
+      },
+      "skills": [
+        "skill_preview_s5_overcharge",
+        "skill_preview_s5_restart",
+        "skill_d1c28ec80c85cf57",
+        "skill_0456e96011ecd42f"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_shadow-papercut",
+      "natureId": "cheerful",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalAttack": 0,
+        "magicalDefense": 0,
+        "speed": 60
+      },
+      "skills": [
+        "skill_preview_s5_spirit-disturbance",
+        "skill_preview_s5_earthbound-spirit",
+        "skill_b688da558b9ff2e8",
+        "skill_4375736cdfafd6a1"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_diniantun",
+      "natureId": "silent",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalAttack": 0,
+        "magicalDefense": 60,
+        "speed": 0
+      },
+      "skills": [
+        "skill_preview_s5_poison-cast",
+        "skill_preview_s5_mixed-state",
+        "skill_6ae493344705eb76",
+        "skill_38827e39dbdda074"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_winter-bug-summer-melon",
+      "natureId": "silent",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalAttack": 60,
+        "magicalDefense": 0,
+        "speed": 0
+      },
+      "skills": [
+        "skill_preview_s5_fruit-pulp",
+        "skill_preview_s5_summer-pad",
+        "skill_acc182b1e9836043",
+        "skill_c6c54cd54376332b"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_snow-shoveling-goose",
+      "natureId": "silent",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalAttack": 0,
+        "magicalDefense": 60,
+        "speed": 0
+      },
+      "skills": [
+        "skill_preview_s5_thermal-bridge",
+        "skill_preview_s5_freeze",
+        "skill_d1d973cc929fbdf0",
+        "skill_8e8ae207e4488c78"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_halo-jingyu",
+      "natureId": "silent",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 0,
+        "physicalDefense": 0,
+        "magicalAttack": 60,
+        "magicalDefense": 0,
+        "speed": 60
+      },
+      "skills": [
+        "skill_preview_s5_severe-frost",
+        "skill_preview_s5_blue-shift",
+        "skill_38827e39dbdda074",
+        "skill_05ee9bba2ec41b89"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_sand-crab",
+      "natureId": "adamant",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalAttack": 0,
+        "magicalDefense": 0,
+        "speed": 60
+      },
+      "skills": [
+        "skill_preview_s5_external-spread",
+        "skill_preview_s5_geyser",
+        "skill_5deed5f114025caa",
+        "skill_d0d442331827d39c"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_chicken-mama",
+      "natureId": "peaceful",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalAttack": 0,
+        "magicalDefense": 60,
+        "speed": 0
+      },
+      "skills": [
+        "skill_preview_s5_dream-building",
+        "skill_preview_s5_eggshell",
+        "skill_f5d921b97fb279d7",
+        "skill_004571bc89bd5faf"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_awa-shark-lemon",
+      "natureId": "peaceful",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalAttack": 0,
+        "magicalDefense": 0,
+        "speed": 0
+      },
+      "skills": [
+        "skill_preview_s5_refill",
+        "skill_preview_s5_rip-current",
+        "skill_d457bb1dce36b046",
+        "skill_e374eb2120614c3e"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_awa-shark-tiger",
+      "natureId": "adamant",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalAttack": 0,
+        "magicalDefense": 0,
+        "speed": 60
+      },
+      "skills": [
+        "skill_preview_s5_refill",
+        "skill_preview_s5_rip-current",
+        "skill_d457bb1dce36b046",
+        "skill_e374eb2120614c3e"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_boss-ice-bruce",
+      "natureId": "adamant",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalAttack": 0,
+        "magicalDefense": 0,
+        "speed": 60
+      },
+      "skills": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_boss-glass-jellyfish",
+      "natureId": "silent",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 0,
+        "physicalDefense": 60,
+        "magicalAttack": 0,
+        "magicalDefense": 60,
+        "speed": 0
+      },
+      "skills": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "traitValues": {}
+    }
+  ]
+}
