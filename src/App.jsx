@@ -264,6 +264,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     ],
   );
   const { calculation, configurationReady, configurationEditable, currentDirection } = viewModel;
+  const starfallEntryEnabled = release.capabilities.calculate && configurationReady &&
+    ["attacker", "defender"].some(
+      (side) => starfallStacksFromMarkSlot(state.marks?.[side]?.negative) > 0,
+    );
   const placeholder = serverId === "global" && Boolean(snapshot.meta?.placeholderSource);
   const { attacker: attackerView, defender: defenderView } = viewModel.sides;
   const attacker = attackerView.spirit;
@@ -555,7 +559,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   }
 
   function openStarfallThreshold() {
-    if (!release.capabilities.calculate || !configurationReady) return;
+    if (!starfallEntryEnabled) return;
     overlays.mobileResultProps.actions.onClose({ restoreFocus: false });
     setStarfallSource(captureDamageComparison(stateRef.current, activeDirection));
   }
@@ -2158,7 +2162,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         onSkillResultSelect: selectSkillResult,
         onNegativeStatusRepeatChange: updateNegativeStatusRepeatNextTurn,
         onOpenComparison: damageComparisonEnabled ? openDamageComparison : undefined,
-        onOpenStarfall: release.capabilities.calculate ? openStarfallThreshold : undefined,
+        onOpenStarfall: starfallEntryEnabled ? openStarfallThreshold : undefined,
       },
     },
     share: shareFlow.overlayProps,
@@ -2570,7 +2574,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                 }
                 finalMultiplier={currentDirection.finalDamageMultiplier}
                 marks={state.marks}
-                onOpenStarfall={release.capabilities.calculate ? openStarfallThreshold : undefined}
+                onOpenStarfall={starfallEntryEnabled ? openStarfallThreshold : undefined}
                 starfallTargetSide={activeDirection === "forward" ? "defender" : "attacker"}
                 negativeStatusEnabled={
                   state.calculationOptions?.includeNegativeStatusSettlement === true
@@ -2635,7 +2639,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           <div className="result-column">
             <ResultRail
               onOpenComparison={damageComparisonEnabled ? openDamageComparison : undefined}
-              onOpenStarfall={release.capabilities.calculate ? openStarfallThreshold : undefined}
+              onOpenStarfall={starfallEntryEnabled ? openStarfallThreshold : undefined}
               activeAdvancedConditions={activeAdvancedConditions}
               onBloodlineResultFocus={() =>
                 updateDirection({ selectedDamageSource: "bloodline" })
