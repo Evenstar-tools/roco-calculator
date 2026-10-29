@@ -56,6 +56,7 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
   const baseRanking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, attackType, multipliers, typeChart: snapshot.typeChart, templateId, filter: roleFilter === "all" ? undefined : (row) => row.formRole === roleFilter }), [snapshot, attackType, multipliers, templateId, roleFilter]);
   const ranking = useMemo(() => selectDurabilityRanking(baseRanking, { query, sortBy: metric }), [baseRanking, query, metric]);
   const rows = [...ranking.immuneRows, ...ranking.rows];
+  const hasLevelVariants = [...baseRanking.immuneRows, ...baseRanking.rows].some(row => row.level !== 60);
   const currentEntryId = [...baseRanking.immuneRows, ...baseRanking.rows].find(row => row.spiritId === currentSpiritId)?.id;
   const closeDetail = () => { setDetail(null); requestAnimationFrame(() => detailTrigger.current?.focus({ preventScroll: true })); };
   const reset = () => { setQuery(""); setRoleFilter("all"); setTemplateId("standard-hp-v1"); updateResistance({ attackType: "", multipliers: bins }); };
@@ -71,7 +72,7 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
       <div className={`rank-options${more ? " is-open" : ""}`}>
         <label>耐久模板<select aria-label="耐久榜模板" onChange={(event) => setTemplateId(event.target.value)} value={templateId}>{Object.values(STANDARD_DURABILITY_TEMPLATES).map((template) => <option key={template.id} value={template.id}>{template.label}</option>)}</select></label>
         <label>形态范围<select aria-label="形态筛选" onChange={(event) => setRoleFilter(event.target.value)} value={roleFilter}><option value="all">最终形态 + 首领</option><option value="final">仅最终形态</option><option value="boss">仅首领</option></select></label>
-        <small>基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果</small>
+        <small>{hasLevelVariants ? "已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。" : "基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果"}</small>
         {more ? <button type="button" className="rank-options-done" onClick={() => setMore(false)}>完成筛选</button> : null}
       </div>
       <div aria-label="排行指标" className="rank-metrics" role="group">{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <button aria-pressed={metric === key} key={key} onClick={() => setMetric(key)} type="button">{label}</button>)}</div>
