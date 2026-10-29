@@ -8,6 +8,12 @@ import { getSilverEnergySpentInput, readSilverEnergySpent } from "../features/s5
 import { readS5SixFaceDiceInput } from "../features/s5-preview/dice-input-migration.js";
 
 const ABU_KEYS = new Set(["abu", "boss-abu", "super-abu"]);
+
+// Shared by the battle resolver and standard level-specific rankings.
+export function getS5LevelIncomingDamagePercent(level) {
+  return level < 80 ? 40 : 0;
+}
+
 const KNOWN_KEYS = new Set([
   "minggulong", "abu", "underground-silver-dragon", "gold-vein-dragon",
   "boss-ice-bruce", "boss-glass-jellyfish", "jingyu", "doulie",
@@ -143,9 +149,10 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
       const level = amount("BattleLevel");
       result.currentLevel = level;
       result.summary = "当前等级 " + level;
-      if (level < 80) {
-        result.summary += "；承伤 +40%";
-        result.effects.push({ kind: "incoming-damage-percent", amount: 40 });
+      const incomingPercent = getS5LevelIncomingDamagePercent(level);
+      if (incomingPercent) {
+        result.summary += "；承伤 +" + incomingPercent + "%";
+        result.effects.push({ kind: "incoming-damage-percent", amount: incomingPercent });
       }
       break;
     }
@@ -154,9 +161,10 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
       result.currentLevel = level;
       result.summary = "当前等级 " + level;
       result.note = "默认60级为试算输入；按实战当前等级填写，上限99级。";
-      if (level < 80) {
-        result.summary += "；承伤 +40%";
-        result.effects.push({ kind: "incoming-damage-percent", amount: 40 });
+      const incomingPercent = getS5LevelIncomingDamagePercent(level);
+      if (incomingPercent) {
+        result.summary += "；承伤 +" + incomingPercent + "%";
+        result.effects.push({ kind: "incoming-damage-percent", amount: incomingPercent });
       }
       break;
     }

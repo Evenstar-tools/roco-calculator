@@ -784,8 +784,10 @@
   border-top-right-radius: inherit;
 }
 
-.skill-default-restore {
+.skill-default-restore.skill-follow-up {
   margin-left: auto;
+  margin-top: 0;
+  flex-shrink: 0;
   padding: 2px 6px;
   min-height: 24px;
   font-size: 11px;

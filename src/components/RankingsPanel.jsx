@@ -1,4 +1,4 @@
-import { ArrowLeft, MagnifyingGlass, SlidersHorizontal, X } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowsIn, ArrowsOut, MagnifyingGlass, SlidersHorizontal, X } from "@phosphor-icons/react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ELEMENT_TYPES } from "../domain/type-chart.js";
 import { createDurabilityRanking, selectDurabilityRanking, getDurabilityMultipliers, STANDARD_DURABILITY_TEMPLATES } from "../features/team-ability/domain/durability-ranking.js";
@@ -29,6 +29,7 @@ function MultiplierControls({ bins, selected, onChange }) {
 function ReadonlyDetail({ entry, attackType, templateId, onBack }) {
   const { typeName, t } = useLocale();
   const back = useRef(null);
+  const levelVariant = entry.level !== 60;
   useEffect(() => { back.current?.focus(); }, [entry]);
   return <section className="rank-detail" aria-label={t("榜单配置详情")}>
     <button type="button" ref={back} onClick={onBack}><ArrowLeft size={16} />{t("返回榜单")}</button>
@@ -36,8 +37,10 @@ function ReadonlyDetail({ entry, attackType, templateId, onBack }) {
     {entry.speed != null ? <><h4>{t("速度")}{" "}{entry.speed}</h4><p>{t(entry.qualifier)}</p><p>{t("该档配置的显示值，不代表所有配置的速度。")}</p></> : <>
       <h4>{t(STANDARD_DURABILITY_TEMPLATES[templateId].label)} · {entry.level}{t("级统一模板")}</h4>
       <p>{t("生命／物防／魔防个体均为60 · 其他个体为0")}</p><p>HP {entry.panelStats.hp}{" "}{t("· 物防")}{" "}{entry.panelStats.physicalDefense}{" "}{t("· 魔防")}{" "}{entry.panelStats.magicalDefense}</p>
-      <table><thead><tr><th>{t("指标")}</th><th>{t("基础耐久")}</th>{attackType ? <th>{typeName(attackType)}{t("系有效耐久")}</th> : null}</tr></thead><tbody>{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <tr key={key}><th>{t(label)}</th><td>{number((entry.baseDurability ?? entry.durability).display[key])}</td>{attackType ? <td>{number(entry.durability.display[key])}</td> : null}</tr>)}</tbody></table>
-      {attackType ? <p className={`rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier} · {entry.multiplier === 0 ? t("属性免疫，独立分组，不参与数值排名") : t("基础耐久 ÷ 属性倍率")}</p> : null}
+      {levelVariant ? <p>{t("对60级攻击方 · 等级特性承伤 ×{multiplier}", { multiplier: entry.incomingDamageMultiplier })}</p> : null}
+      <table><thead><tr><th>{t("指标")}</th><th>{t(levelVariant ? "面板耐久" : "基础耐久")}</th>{attackType || levelVariant ? <th>{attackType ? <>{typeName(attackType)}{t("系有效耐久")}</> : t("有效耐久")}</th> : null}</tr></thead><tbody>{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <tr key={key}><th>{t(label)}</th><td>{number((entry.panelDurability ?? entry.baseDurability ?? entry.durability).display[key])}</td>{attackType || levelVariant ? <td>{number(entry.durability.display[key])}</td> : null}</tr>)}</tbody></table>
+      {levelVariant ? <p>{t(attackType ? "面板耐久 ÷ 等级特性承伤倍率 ÷ 属性倍率" : "面板耐久 ÷ 等级特性承伤倍率")}</p> : null}
+      {attackType ? <p className={`rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier}{entry.multiplier === 0 ? <> · {t("属性免疫，独立分组，不参与数值排名")}</> : !levelVariant ? <> · {t("基础耐久 ÷ 属性倍率")}</> : null}</p> : null}
     </>}
     <p className="rank-note">{t("只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。")}</p>
   </section>;
@@ -59,6 +62,7 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
   const baseRanking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, attackType, multipliers, typeChart: snapshot.typeChart, templateId, filter: roleFilter === "all" ? undefined : (row) => row.formRole === roleFilter }), [snapshot, attackType, multipliers, templateId, roleFilter]);
   const ranking = useMemo(() => selectDurabilityRanking(baseRanking, { query, sortBy: metric }), [baseRanking, query, metric]);
   const rows = [...ranking.immuneRows, ...ranking.rows];
+  const hasLevelVariants = [...baseRanking.immuneRows, ...baseRanking.rows].some(row => row.level !== 60);
   const currentEntryId = [...baseRanking.immuneRows, ...baseRanking.rows].find(row => row.spiritId === currentSpiritId)?.id;
   const closeDetail = () => { setDetail(null); requestAnimationFrame(() => detailTrigger.current?.focus({ preventScroll: true })); };
   const reset = () => { setQuery(""); setRoleFilter("all"); setTemplateId("standard-hp-v1"); updateResistance({ attackType: "", multipliers: bins }); };
@@ -74,7 +78,7 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
       <div className={`rank-options${more ? " is-open" : ""}`}>
         <label>{t("耐久模板")}<select aria-label={t("耐久榜模板")} onChange={(event) => setTemplateId(event.target.value)} value={templateId}>{Object.values(STANDARD_DURABILITY_TEMPLATES).map((template) => <option key={template.id} value={template.id}>{t(template.label)}</option>)}</select></label>
         <label>{t("形态范围")}<select aria-label={t("形态筛选")} onChange={(event) => setRoleFilter(event.target.value)} value={roleFilter}><option value="all">{t("最终形态 + 首领")}</option><option value="final">{t("仅最终形态")}</option><option value="boss">{t("仅首领")}</option></select></label>
-        <small>{t("基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果")}</small>
+        <small>{t(hasLevelVariants ? "已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。" : "基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果")}</small>
         {more ? <button type="button" className="rank-options-done" onClick={() => setMore(false)}>{t("完成筛选")}</button> : null}
       </div>
       <div aria-label={t("排行指标")} className="rank-metrics" role="group">{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <button aria-pressed={metric === key} key={key} onClick={() => setMetric(key)} type="button">{t(label)}</button>)}</div>
@@ -153,19 +157,33 @@ export default function RankingsPanel(props) {
 function VerifiedRankingsPanel({ kind, snapshot, onClose }) {
   const { t } = useLocale();
   const root = useRef(null);
+  const [expanded, setExpanded] = useState(false);
+  if (kind !== "speed" && expanded) setExpanded(false);
+  const expandedRef = useRef(false);
+  const resizePanel = useCallback((next) => { expandedRef.current = next; setExpanded(next); }, []);
   const [visited, setVisited] = useState(() => ({ [kind]: true }));
   if (kind && !visited[kind]) setVisited({ ...visited, [kind]: true });
   const close = useRef(onClose);
-  const closePanel = useCallback(() => close.current(), []);
+  const closePanel = useCallback(() => {
+    if (expandedRef.current) resizePanel(false);
+    else close.current();
+  }, [resizePanel]);
   useEffect(() => { close.current = onClose; }, [onClose]);
+  useEffect(() => { expandedRef.current = expanded; }, [expanded]);
+  useEffect(() => {
+    const mobile = window.matchMedia("(max-width: 600px)");
+    const restore = () => { if (mobile.matches) resizePanel(false); };
+    mobile.addEventListener?.("change", restore);
+    return () => mobile.removeEventListener?.("change", restore);
+  }, [resizePanel]);
   useEffect(() => {
     if (!kind) return undefined;
     const previousOverflow = document.body.style.overflow;
     const trigger = document.activeElement;
     document.body.style.overflow = "hidden";
-    root.current?.querySelector("button")?.focus({ preventScroll: true });
+    root.current?.querySelector(".rank-dialog__close")?.focus({ preventScroll: true });
     const keydown = (event) => {
-      if (event.key === "Escape") { event.preventDefault(); close.current(); }
+      if (event.key === "Escape") { event.preventDefault(); closePanel(); }
       if (event.key !== "Tab") return;
       const nodes = [...root.current.querySelectorAll('button, input, select, [href]')].filter((node) => !node.disabled && !node.closest('[hidden]') && node.getClientRects().length);
       if (event.shiftKey && document.activeElement === nodes[0]) {event.preventDefault(); nodes.at(-1)?.focus();}
@@ -173,10 +191,13 @@ function VerifiedRankingsPanel({ kind, snapshot, onClose }) {
     };
     document.addEventListener("keydown", keydown);
     return () => { document.body.style.overflow = previousOverflow; document.removeEventListener("keydown", keydown); if (trigger?.isConnected) trigger.focus?.({ preventScroll: true }); else document.querySelector('[aria-label="打开菜单"]')?.focus(); };
-  }, [kind]);
-  return <div className="rank-overlay" hidden={!kind} onMouseDown={(event) => {if(event.target === event.currentTarget) onClose();}}>
+  }, [kind, closePanel]);
+  return <div className={`rank-overlay${expanded && kind === "speed" ? " is-expanded" : ""}`} hidden={!kind} onMouseDown={(event) => {if(event.target === event.currentTarget) onClose();}}>
     <div className="rank-dialog" role="dialog" aria-modal="true" aria-label={kind === "speed" ? t("速度线排行") : t("耐久排行")} ref={root}>
-      <header className="rank-dialog__heading"><h2>{kind === "speed" ? t("速度线排行") : t("耐久排行")}</h2><button aria-label={t("关闭排行榜")} onClick={onClose} type="button"><X size={20} /></button></header>
+      <header className="rank-dialog__heading"><h2>{kind === "speed" ? t("速度线排行") : t("耐久排行")}</h2><div className="rank-dialog__actions">
+        {kind === "speed" ? <button className="rank-expand" type="button" aria-label={t(expanded ? "退出全屏" : "全屏展示")} title={t(expanded ? "退出全屏" : "全屏展示")} aria-pressed={expanded} onClick={() => resizePanel(!expanded)}>{expanded ? <ArrowsIn size={19} /> : <ArrowsOut size={19} />}<span>{t(expanded ? "退出全屏" : "全屏展示")}</span></button> : null}
+        <button className="rank-dialog__close" aria-label={t("关闭排行榜")} onClick={onClose} type="button"><X size={20} /></button>
+      </div></header>
       <div className="rank-tool-host" hidden={kind !== "durability"}>{visited.durability && <StandaloneDurability snapshot={snapshot} onClose={closePanel} />}</div>
       <div className="rank-tool-host" hidden={kind !== "speed"}>{visited.speed && <StandaloneSpeed snapshot={snapshot} onClose={closePanel} />}</div>
     </div>

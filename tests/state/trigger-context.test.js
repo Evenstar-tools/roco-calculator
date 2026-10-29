@@ -267,6 +267,41 @@ describe("trigger context", () => {
     ).toMatchObject({ [stacksId]: expected });
   });
 
+  test("uncaps Gear Torque without losing saved counts or changing other stack limits", () => {
+    const gearControls = getSkillEffectInputs({ name: "齿轮扭矩" });
+    const savedId = "skill.positionChangeCount.30de2dc0";
+    const gearControl = gearControls.find(
+      (control) => control.contextKey === "positionChangeCount",
+    );
+    expect(gearControl).toMatchObject({
+      defaultValue: 0,
+      id: savedId,
+      min: 0,
+    });
+    expect(gearControl).not.toHaveProperty("max");
+
+    for (const [input, expected] of [[17, 17], [100, 100], [-3, 0]]) {
+      const savedContext = { [savedId]: input };
+      const sanitized = sanitizeTriggerContext(savedContext, gearControls);
+      expect(sanitized).toMatchObject({ [savedId]: expected });
+      expect(projectTriggerContext(savedContext, gearControls)).toMatchObject({
+        positionChangeCount: expected,
+      });
+      expect(projectTriggerContext(sanitized, gearControls)).toMatchObject({
+        positionChangeCount: expected,
+      });
+    }
+
+    const fireControls = getSkillEffectInputs({ name: "吹火" });
+    const fireControl = fireControls.find(
+      (control) => control.contextKey === "skillUseCount",
+    );
+    expect(fireControl.max).toBe(20);
+    expect(
+      sanitizeTriggerContext({ [fireControl.id]: 100 }, fireControls),
+    ).toMatchObject({ [fireControl.id]: 20 });
+  });
+
   test.each([undefined, null, "", "bad", Number.POSITIVE_INFINITY])(
     "drops invalid number input %p when the schema has no default",
     (input) => {

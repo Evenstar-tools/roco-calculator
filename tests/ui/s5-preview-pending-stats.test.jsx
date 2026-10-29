@@ -190,7 +190,7 @@ test("真实App中S5六维100可编辑、恢复当前及上次修改，未改值
 test("实际S5目录含官方进化形态均进入首批并排在迪莫前，全部候选卡片显示NEW", async () => {
   const user = userEvent.setup();
   const spirits = s5Roster();
-  const props = pickerProps(spirits, spirits.find(spirit => spirit.id === "dimo"));
+  const props = pickerProps(spirits);
   const { rerender } = render(<SpiritPicker {...props} />);
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
   expect(s5Catalog.entries.some(entry => entry.raceStats)).toBe(true);
@@ -217,45 +217,142 @@ test("无搜索的收藏与热门预设模式都保留全部S5置顶", async () 
   first.unmount();
   localStorage.setItem(PRESET_BROWSE_STORAGE_KEY, "1");
   vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ entries: [{ spiritId: "popular" }] }) })));
-  render(<PresetBrowseProvider><SpiritPicker {...pickerProps(spirits, spirits.find(spirit => spirit.id === "popular"))} /></PresetBrowseProvider>);
+  const popular = spirits.find(spirit => spirit.id === "popular");
+  const { rerender } = render(<PresetBrowseProvider><SpiritPicker {...pickerProps(spirits)} /></PresetBrowseProvider>);
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
   await waitFor(() => expect(screen.getByRole("option", { name: /热门配置/u })).toBeVisible());
   expectS5Pinned();
   expect(screen.getAllByRole("option")[0]).toHaveClass("is-active");
   expect(screen.getAllByRole("option").slice(s5Catalog.entries.length).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
+  await user.keyboard("{Escape}");
+  rerender(<PresetBrowseProvider><SpiritPicker {...pickerProps(spirits, popular)} /></PresetBrowseProvider>);
+  await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  expect(screen.getAllByRole("option").slice(0, 2).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
+  expect(screen.getByRole("option", { name: /热门配置/u })).toHaveClass("is-active");
 });
 
-test.each([false, true])("已选同族精灵时S5仍置顶，常用配置模式=%s，原同族切换保留", async (presetMode) => {
+test.each([false, true])("已选同族精灵只展示相关形态，常用配置模式=%s，原同族切换保留", async (presetMode) => {
   const user = userEvent.setup();
   const snapshot = withWebPreview(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
   const selected = snapshot.spirits.find(spirit => spirit.fullName === "冰钻布鲁斯");
   localStorage.setItem(PRESET_BROWSE_STORAGE_KEY, presetMode ? "1" : "0");
   vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ entries: [{ spiritId: selected.id }] }) })));
   const onFormSelect = vi.fn();
+  const onSelect = vi.fn();
   render(<PresetBrowseProvider><SpiritPicker {...pickerProps(snapshot.spirits, selected)}
-    formSide={{ spiritId: selected.id }} onFormSelect={onFormSelect} /></PresetBrowseProvider>);
+    formSide={{ spiritId: selected.id }} onFormSelect={onFormSelect} onSelect={onSelect} /></PresetBrowseProvider>);
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
-  expectS5Pinned();
-  expect(screen.getAllByRole("option")[0]).toHaveClass("is-active");
+  expect(screen.getByText("同族形态")).toBeVisible();
+  expect(screen.getByRole("option", { name: /^冰钻布鲁斯 .*当前形态/u })).toHaveClass("is-active");
+  expect(screen.queryByRole("option", { name: /^冥古龙 /u })).not.toBeInTheDocument();
+  expect(screen.getAllByRole("option").every(option => selected.evolutionChainIds.includes(option.dataset.spiritId))).toBe(true);
   expect(new Set(screen.getAllByRole("option").map(option => option.dataset.spiritId)).size).toBe(screen.getAllByRole("option").length);
   const keepConfig = screen.getByRole("switch", { name: "攻击方同族切换保留本场配置" });
   if (!keepConfig.checked) await user.click(keepConfig);
   const base = snapshot.spirits.find(spirit => spirit.fullName === "布鲁斯");
   await user.click(screen.getByRole("option", { name: /^布鲁斯 /u }));
   expect(onFormSelect).toHaveBeenCalledWith(base.id);
+  expect(onSelect).not.toHaveBeenCalled();
+  await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  const candidate = snapshot.spirits.find(spirit => spirit.previewIdentity?.key === "gold-vein-dragon");
+  await user.clear(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  expect(screen.getAllByRole("option")[0].dataset.spiritId).not.toMatch(/^spirit_preview_s5_/u);
+  await user.type(screen.getByRole("combobox", { name: "攻击方精灵" }), candidate.fullName);
+  const match = screen.getAllByRole("option").find(option => option.dataset.spiritId === candidate.id);
+  await user.click(match);
+  expect(onSelect).toHaveBeenCalledTimes(1);
+  expect(onSelect).toHaveBeenCalledWith(candidate.id);
+  expect(onFormSelect).toHaveBeenCalledTimes(1);
 });
 
-test("名称搜索优先准确命中，S5首领或收藏标记不抢普通形态，也不追加无关S5项", () => {
-  const spirits = s5Roster().map(spirit => spirit.previewIdentity?.key === "boss-ice-bruce"
-    ? { ...spirit, favoriteState: "manual" } : spirit);
+test.each([false, true])("选中稻草守护者后重开不混入新精灵，键盘高亮与选择一致，常用模式=%s", async presetMode => {
+  const user = userEvent.setup();
+  const snapshot = withWebPreview(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+  const selected = snapshot.spirits.find(spirit => spirit.fullName === "稻草守护者");
+  const base = snapshot.spirits.find(spirit => spirit.fullName === "稻草人");
+  localStorage.setItem(PRESET_BROWSE_STORAGE_KEY, presetMode ? "1" : "0");
+  vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ entries: [{ spiritId: selected.id }] }) })));
+  const props = pickerProps(snapshot.spirits);
+  const onFormSelect = vi.fn();
+  const { rerender } = render(<PresetBrowseProvider><SpiritPicker {...props} onFormSelect={onFormSelect} /></PresetBrowseProvider>);
+  const input = screen.getByRole("combobox", { name: "攻击方精灵" });
+  await user.type(input, selected.fullName);
+  await user.click(screen.getByRole("option", { name: /^稻草守护者 /u }));
+  expect(props.onSelect).toHaveBeenCalledWith(selected.id);
+  props.onSelect.mockClear();
+  rerender(<PresetBrowseProvider><SpiritPicker {...props} selected={selected} formSide={{ spiritId: selected.id }} onFormSelect={onFormSelect} /></PresetBrowseProvider>);
+  await user.click(input);
+  expect(screen.getAllByRole("option").map(option => option.dataset.spiritId)).toEqual([base.id, selected.id]);
+  expect(screen.getByRole("option", { name: /^稻草守护者 /u })).toHaveClass("is-active");
+  expect(screen.getByRole("option", { name: /^稻草守护者 /u })).toHaveAttribute("aria-selected", "true");
+  const keepConfig = screen.getByRole("switch");
+  if (keepConfig.checked) await user.click(keepConfig);
+  await user.click(input);
+  await user.keyboard("{Enter}");
+  expect(props.onSelect).toHaveBeenCalledWith(selected.id);
+  expect(onFormSelect).not.toHaveBeenCalled();
+  props.onSelect.mockClear();
+  await user.click(input);
+  await user.keyboard("无匹配精灵{Escape}");
+  expect(input).toHaveValue(selected.fullName);
+  expect(props.onSelect).not.toHaveBeenCalled();
+});
+
+test.each([false, true])("已选无同族精灵重开及主动清空都不置顶新精灵，clearOnOpen=%s", async clearOnOpen => {
+  const user = userEvent.setup();
+  const spirits = s5Roster();
+  const selected = spirits.find(spirit => spirit.id === "popular");
+  render(<SpiritPicker {...pickerProps(spirits, selected)} clearOnOpen={clearOnOpen} />);
+  const input = screen.getByRole("combobox", { name: "攻击方精灵" });
+  await user.click(input);
+  if (!clearOnOpen) expect(screen.getAllByRole("option").map(option => option.dataset.spiritId)).toEqual([selected.id]);
+  await user.clear(input);
+  expect(screen.getAllByRole("option")[0]).toHaveAttribute("data-spirit-id", "dimo");
+});
+
+test("常用配置异步读入后高亮当前选中，不跳到新精灵或第一项", async () => {
+  const user = userEvent.setup();
+  const spirits = s5Roster({ saved: true });
+  const selected = spirits.find(spirit => spirit.id === "popular");
+  let resolve;
+  vi.stubGlobal("fetch", vi.fn(() => new Promise(done => { resolve = done; })));
+  localStorage.setItem(PRESET_BROWSE_STORAGE_KEY, "1");
+  const props = pickerProps(spirits, selected);
+  render(<PresetBrowseProvider><SpiritPicker {...props} /></PresetBrowseProvider>);
+  const input = screen.getByRole("combobox", { name: "攻击方精灵" });
+  await user.click(input);
+  resolve({ ok: true, json: async () => ({ entries: [{ spiritId: selected.id }] }) });
+  await waitFor(() => expect(screen.getByRole("option", { name: /热门配置/u })).toHaveClass("is-active"));
+  await user.keyboard("{Enter}");
+  expect(props.onSelect).toHaveBeenCalledWith(selected.id);
+});
+
+test.each([false, true])("名称搜索准确命中优先于收藏与部分匹配，不追加无关新精灵，S5目录=%s", previewEnabled => {
+  const spirits = s5Roster().filter(spirit => previewEnabled || !spirit.previewIdentity)
+    .map(spirit => spirit.previewIdentity?.key === "boss-ice-bruce" ? { ...spirit, favoriteState: "manual" } : spirit);
+  spirits.push({ id: "partial", fullName: "冰钻布鲁斯特别版", types: [], favoriteState: "manual", evolutionChainIds: ["partial"] });
   render(<SpiritPicker {...pickerProps(spirits)} />);
   const input = screen.getByRole("combobox", { name: "攻击方精灵" });
   fireEvent.change(input, { target: { value: "冰钻布鲁斯" } });
   expect(screen.getAllByRole("option")[0]).toHaveAttribute("data-spirit-id", "bruce");
-  expect(screen.getAllByRole("option")).toHaveLength(2);
+  expect(screen.getAllByRole("option")).toHaveLength(previewEnabled ? 3 : 2);
   fireEvent.change(input, { target: { value: "迪莫" } });
   expect(screen.getAllByRole("option")).toHaveLength(1);
   expect(screen.getByRole("option", { name: /迪莫/u })).toHaveAttribute("data-spirit-id", "dimo");
+});
+
+test("已选新精灵只显示自己的同族并保留NEW，不重复或混入其他新精灵", async () => {
+  const user = userEvent.setup();
+  const spirits = s5Roster();
+  const selected = spirits.find(spirit => spirit.previewIdentity?.key === "minggulong");
+  render(<SpiritPicker {...pickerProps(spirits, selected)} formSide={{ spiritId: selected.id }} onFormSelect={vi.fn()} />);
+  await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  expect(screen.getByText("同族形态")).toBeVisible();
+  expect(screen.getAllByRole("option").map(option => option.dataset.spiritId)).toEqual([
+    selected.id, s5PreviewIds("little-ming-dragon").spiritId,
+  ]);
+  expect(screen.getByRole("option", { name: /^冥古龙 /u })).toHaveClass("is-active");
+  for (const option of screen.getAllByRole("option")) expect(option.querySelector("strong")).toHaveAttribute("data-new", "true");
 });
 
 test("已有千棘海针显示正式头像与首领身份，不再出现千棘盔首领化NEW占位", () => {

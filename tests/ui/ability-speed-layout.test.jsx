@@ -60,9 +60,9 @@ test("保存摘要和试算分开标注，速度一览沿用草稿状态且本�
 });
 
 test.each([
-  ["当前精灵", 192, "无速度", "equal", "同速需拼速"],
+  ["当前精灵", 192, "无修正·0个体", "equal", "同速需拼速"],
   ["当前精灵", 260, "极速", "slower", "无法先手"],
-  ["对比精灵", 159, "无速度", "faster", "可以先手"],
+  ["对比精灵", 159, "无修正·0个体", "faster", "可以先手"],
 ])("当前速度与 %s %s 的比较语义准确", (name, speed, profile, relation, text) => {
   open();
   const input = screen.getByRole("combobox", { name: "速度目标精灵" });

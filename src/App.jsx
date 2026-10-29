@@ -136,6 +136,7 @@ const loadSkillQueryPanel = () => import("./features/skill-query/SkillQueryPanel
 const SkillQueryPanel = lazy(loadSkillQueryPanel);
 const TransmissionPanel = lazy(() => import("./features/transmission/TransmissionPanel.jsx"));
 const TypeQueryPanel = lazy(() => import("./features/type-query/TypeQueryPanel.jsx"));
+const TypeChartPanel = lazy(() => import("./features/type-query/TypeChartPanel.jsx"));
 const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
 const DamageComparisonDialog = lazy(() => import("./components/DamageComparisonDialog.jsx"));
 const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
@@ -1812,7 +1813,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
 
   const defaultSkillActions = Object.fromEntries(["attacker", "defender"].map((side) => [side,
     getRestorableDefaultSkills(state, { side, snapshot }) ? (
-      <button type="button" className="skill-default-restore"
+      <button type="button" className="skill-follow-up skill-default-restore"
         aria-label={t("{side}载入默认配招", { side: t(side === "attacker" ? "攻击方" : "防御方") })}
         onClick={() => commitSession(restoreDefaultSkills(stateRef.current, { side, snapshot }))}>
         {t("载入默认配招")}
@@ -2243,9 +2244,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         onMenuOpen={() => overlays.menu.setOpen((open) => !open)}
         toolbox={{
           onOpen: () => { overlays.menu.setOpen(false); if (release.capabilities.search) preloadSkillQuery(serverId); },
-          activeTool: typeQueryOpen ? "types" : skillQueryOpen ? "skills" : transmissionOpen ? "transmission" : rankingKind,
+          activeTool: typeQueryOpen === "chart" ? "typeChart" : typeQueryOpen ? "types" : skillQueryOpen ? "skills" : transmissionOpen ? "transmission" : rankingKind,
           actions: {
             types: () => setTypeQueryOpen(true),
+            typeChart: serverId === "global" ? () => setTypeQueryOpen("chart") : undefined,
             skills: () => setSkillQueryOpen(true),
             transmission: () => setTransmissionOpen(true),
             speed: () => { setRankingsVisited(true); setRankingKind("speed"); },
@@ -2674,7 +2676,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       /></Suspense> : null}
       {rankingsVisited ? <Suspense fallback={<div role="status">{t("正在打开排行榜…")}</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}
       {transmissionOpen && <Suspense fallback={<div role="status">{t("正在打开传动计算器…")}</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} getSpiritConfiguration={storedData.getSpiritConfiguration} onClose={() => setTransmissionOpen(false)} /></Suspense>}
-      {typeQueryOpen && <Suspense fallback={<div role="status">{t("正在打开属性查询…")}</div>}><TypeQueryPanel typeChart={snapshot.typeChart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={queryTypes} onTypesChange={setQueryTypes} onClose={() => setTypeQueryOpen(false)} /></Suspense>}
+      {typeQueryOpen && <Suspense fallback={<div role="status">{t(typeQueryOpen === "chart" ? "正在打开克制图…" : "正在打开属性查询…")}</div>}>
+        {typeQueryOpen === "chart" ? <TypeChartPanel typeChart={snapshot.typeChart} onClose={() => setTypeQueryOpen(false)} />
+          : <TypeQueryPanel typeChart={snapshot.typeChart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={queryTypes} onTypesChange={setQueryTypes} onClose={() => setTypeQueryOpen(false)} />}
+      </Suspense>}
       {skillQueryOpen && <Suspense fallback={<div role="status">{t("正在打开技能查询…")}</div>}><SkillQueryPanel snapshot={snapshot} skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>

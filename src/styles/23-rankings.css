@@ -4,6 +4,21 @@
 .rank-dialog__heading { display: flex; align-items: center; justify-content: space-between; min-height: 64px; padding: 10px 22px; border-bottom: 1px solid var(--border); background: var(--surface-soft); }
 .rank-dialog__heading h2 { margin: 0; font-size: 21px; }
 .rank-dialog__heading button { min-height: 40px; min-width: 40px; }
+.rank-dialog__actions { display: flex; align-items: center; gap: 8px; }
+.rank-overlay.is-expanded { padding: 0; }
+.rank-overlay.is-expanded .rank-dialog { width: 100%; height: 100dvh; border: 0; border-radius: 0; }
+.speed-navigable { display: flex; flex: 1; min-height: 0; min-width: 0; padding-left: 12px; }
+.speed-navigable-inline { display: contents; }
+.speed-navigable > .rank-table-scroll, .rank-speed-standalone .speed-navigable > .ability-speed__table-wrap { min-width: 0; flex: 1; margin-left: 0; }
+.speed-navigable > .rank-table-scroll { padding-left: 0; }
+.speed-navigable tr[data-speed-axis-current] > th:first-child { box-shadow: inset 3px 0 var(--accent); color: var(--accent-strong); background: var(--selection-bg); }
+.speed-navigable .ability-speed__table-value { width: 62px; }
+@media(max-width: 600px) {
+  .rank-dialog__heading .rank-expand { display: none; }
+  .speed-navigable { padding-left: 6px; }
+  .speed-navigable .ability-speed__table-value { width: 44px; }
+  .speed-navigable .ability-speed__table th, .speed-navigable .ability-speed__table td { padding-inline: 5px; }
+}
 .rank-tool-host,.rank-view,.rank-view__content { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .rank-view { color: var(--text); font-size: 13px; }
 .rank-view button,.rank-view select,.rank-dialog__heading button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 6px; padding: 8px 10px; cursor: pointer; }
@@ -44,7 +59,7 @@
 .rank-empty { padding: 50px 20px; text-align: center; color: var(--text-muted); }.rank-empty h4 { margin: 0; }
 .rank-detail { overflow: auto; padding: 24px; flex: 1; }.rank-detail__identity { display: flex; align-items: center; gap: 18px; margin-block: 24px; }.rank-detail__identity img { width: 80px; height: 80px; object-fit: contain; }.rank-detail h3 { margin: 0; }.rank-detail table { border-collapse: collapse; width: 100%; max-width: 620px; }.rank-detail th,.rank-detail td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; }.rank-detail .rank-note { margin: 24px 0; }
 .ability-workbench:has(>.rank-view) { height: 100%; min-height: 400px; }
-.rank-view .rank-speed-standalone { display: flex; flex-direction: column; flex: 1; min-height: 0; position: static; padding: 0; overflow: hidden; }
+.rank-view .rank-speed-standalone { display: flex; flex-direction: column; flex: 1; min-height: 0; position: static; padding: 0; overflow: hidden; gap: 0; }
 .rank-speed-standalone .ability-speed-overview__controls { display: flex; flex-direction: row-reverse; position: static; padding: 12px; border: 0; gap: 10px; background: var(--surface); }
 .rank-speed-standalone .ability-speed-overview__controls .ability-speed__profile-picker { width: auto; min-width: 0; }
 .rank-speed-standalone .ability-speed__table-wrap { flex: 1; overflow: auto; min-height: 0; margin: 0 12px; border: 0; }
@@ -106,8 +121,8 @@ html[data-theme="dark"] .rank-tone--resist { color: #70d6b5; }html[data-theme="d
 .speed-detail header img { width:48px; height:48px; object-fit:contain; }
 .speed-detail header span { flex:1; }
 .speed-detail small { display:block; color:var(--text-muted); font-size:12px; }
-.speed-detail-options { margin-top:10px; }
-.speed-detail-options button { flex:1; padding:8px 4px; }
+.speed-detail-options { margin-top:10px; flex-wrap:wrap; }
+.speed-detail-options button { display:flex; flex-direction:column; flex:1 1 100px; gap:3px; padding:8px 4px; }
 .speed-detail-options b { display:block; font-size:20px; }
 .speed-detail-options button[aria-pressed="true"] { border-color:var(--accent); color:var(--accent); }
 @media(max-width:650px) { .speed-detail { position:fixed; bottom:0; left:0; right:0; z-index:10; margin:0; border:1px solid var(--border); box-shadow:0 -8px 30px #0002; padding:16px; } }

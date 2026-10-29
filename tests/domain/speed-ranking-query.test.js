@@ -8,7 +8,7 @@ test("数字速度查询与名称图鉴查询明确区分", () => {
   expect(createSpeedRanking({ snapshot, query: "267", queryMode: "auto" }).flatMap(group => group.targets).every(target => target.speed === 267)).toBe(true);
   expect(createSpeedRanking({ snapshot, query: "125", queryMode: "base" }).flatMap((g) => g.targets).every((t) => t.spirit.raceStats.speed === 125)).toBe(true);
   expect(createSpeedRanking({ snapshot, query: "苹果", queryMode: "auto" })).toEqual(createSpeedRanking({ snapshot }));
-  expect(createSpeedRanking({ snapshot, query: "125", queryMode: "text" }).flatMap((g) => g.targets)).toHaveLength(2);
+  expect(createSpeedRanking({ snapshot, query: "125", queryMode: "text" }).flatMap((g) => g.targets)).toHaveLength(4);
 });
 test("无同速时只插入基准标记，计数以配置为单位且不修改原榜", () => {
   const groups = [{ speed: 280, targets: [{}, {}] }, { speed: 260, targets: [{}] }];
@@ -36,6 +36,6 @@ test("统一数字搜索合并种族、图鉴与实速命中，文字仍支持�
   const mixed = { spirits: snapshot.spirits.map((spirit, index) => ({ ...spirit, dexNo: index === 0 ? 267 : 9 })) };
   const rows = createSpeedRanking({ snapshot: mixed, query: "２６７", queryMode: "auto" }).flatMap(group => group.targets);
   expect(new Set(rows.map(target => target.spiritId))).toEqual(new Set(["100", "125"]));
-  expect(createSpeedRanking({ snapshot: mixed, query: "苹果", queryMode: "auto" }).flatMap(group => group.targets)).toHaveLength(4);
+  expect(createSpeedRanking({ snapshot: mixed, query: "苹果", queryMode: "auto" }).flatMap(group => group.targets)).toHaveLength(8);
   expect(createBaseSpeedGroups({ snapshot: mixed, query: "267" }).flatMap(group => group.members)).toHaveLength(2);
 });

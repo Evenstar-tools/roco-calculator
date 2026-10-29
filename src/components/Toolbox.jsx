@@ -1,7 +1,7 @@
 import { IS_PREVIEW_BUILD } from "../runtime/preview-channel.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
-import { Toolbox as ToolboxIcon, Shapes, MagnifyingGlass, Lightning, Gear, Speedometer, Shield } from "@phosphor-icons/react";
+import { Toolbox as ToolboxIcon, Shapes, MagnifyingGlass, Lightning, Gear, Speedometer, Shield, Table } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -15,6 +15,8 @@ export function Toolbox({ actions, onOpen, activeTool }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
   const showPreviewEntry = serverId === "cn";
+  const toolGroups = groups.map(([label, entries]) => [label, serverId === "global" && label === "查询"
+    ? [...entries, ["typeChart", "18 系克制图", Table]] : entries]);
   const [open, setOpen] = useState(false);
   const [top, setTop] = useState(60);
   const [narrow, setNarrow] = useState(() => window.innerWidth <= 760);
@@ -52,12 +54,12 @@ export function Toolbox({ actions, onOpen, activeTool }) {
     </button>
     {open && createPortal(<nav id="toolbox-panel" aria-label={t("工具箱")} className="app-menu" ref={panel}
       style={{ top, right: 8, width: 320, maxWidth: "calc(100vw - 16px)", maxHeight: `calc(100dvh - ${top + 8}px)` }}>
-      {groups.map(([label, entries]) => <section key={label} aria-label={t(label)}>
+      {toolGroups.map(([label, entries]) => <section key={label} aria-label={t(label)}>
         <div className="app-menu__group-label">{t(label)}</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 4 }}>
           {entries.map(([id, title, Icon]) => <button key={id} type="button" aria-current={activeTool === id ? "true" : undefined} disabled={!actions?.[id]}
             className={activeTool === id ? "app-menu__primary" : undefined}
-            style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
+            style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44, gridColumn: id === "typeChart" ? "1 / -1" : undefined }}
             onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}><Icon size={18} aria-hidden="true" />{t(title)}</button>)}
         </div>
       </section>)}

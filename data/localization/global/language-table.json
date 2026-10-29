@@ -123218,6 +123218,295 @@
       "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/默认对自身造成伤害，开启应对后计算对敌伤害",
       "notes": "UX39 2026-10-28：真实S3技能缺少计算条件与导出错误；沿用官方术语，按实际提示语境人工复核英日。"
+    },
+    {
+      "key": "ui:18 系克制图",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "18 系克制图",
+      "zh_project": "18 系克制图",
+      "en": "18-Type Chart",
+      "ja": "18タイプ相性表",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/18 系克制图",
+      "notes": "2026-10-28新增克制图界面文案；按工具箱、行列方向及单属性倍率语境校对中英日；属性名称复用正式词库，不作为客户端原文。"
+    },
+    {
+      "key": "ui:{attack} → {defense}：{multiplier}×",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{attack} → {defense}：{multiplier}×",
+      "zh_project": "{attack} → {defense}：{multiplier}×",
+      "en": "{attack} → {defense}: {multiplier}×",
+      "ja": "{attack} → {defense}：{multiplier}×",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{attack} → {defense}：{multiplier}×",
+      "notes": "2026-10-28新增克制图界面文案；按工具箱、行列方向及单属性倍率语境校对中英日；属性名称复用正式词库，不作为客户端原文。"
+    },
+    {
+      "key": "ui:关闭克制图",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "关闭克制图",
+      "zh_project": "关闭克制图",
+      "en": "Close type chart",
+      "ja": "相性表を閉じる",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/关闭克制图",
+      "notes": "2026-10-28新增克制图界面文案；按工具箱、行列方向及单属性倍率语境校对中英日；属性名称复用正式词库，不作为客户端原文。"
+    },
+    {
+      "key": "ui:单属性相性，不含本系、特性或天气。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "单属性相性，不含本系、特性或天气。",
+      "zh_project": "单属性相性，不含本系、特性或天气。",
+      "en": "Single-type matchups; excludes STAB, traits and weather.",
+      "ja": "単タイプの相性のみ。タイプ一致ボーナス・特性・天候は含みません。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/单属性相性，不含本系、特性或天气。",
+      "notes": "2026-10-28新增克制图界面文案；按工具箱、行列方向及单属性倍率语境校对中英日；属性名称复用正式词库，不作为客户端原文。"
+    },
+    {
+      "key": "ui:正在打开克制图…",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "正在打开克制图…",
+      "zh_project": "正在打开克制图…",
+      "en": "Opening type chart…",
+      "ja": "相性表を開いています…",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/正在打开克制图…",
+      "notes": "2026-10-28新增克制图界面文案；按工具箱、行列方向及单属性倍率语境校对中英日；属性名称复用正式词库，不作为客户端原文。"
+    },
+    {
+      "key": "ui:点选格子查看倍率",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "点选格子查看倍率",
+      "zh_project": "点选格子查看倍率",
+      "en": "Select a cell to view the matchup",
+      "ja": "マスを選択して相性を確認",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/点选格子查看倍率",
+      "notes": "2026-10-28新增克制图界面文案；按工具箱、行列方向及单属性倍率语境校对中英日；属性名称复用正式词库，不作为客户端原文。"
+    },
+    {
+      "key": "ui:行：攻击 · 列：防御",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "行：攻击 · 列：防御",
+      "zh_project": "行：攻击 · 列：防御",
+      "en": "Rows: attack · Columns: defense",
+      "ja": "行：攻撃・列：防御",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/行：攻击 · 列：防御",
+      "notes": "2026-10-28新增克制图界面文案；按工具箱、行列方向及单属性倍率语境校对中英日；属性名称复用正式词库，不作为客户端原文。"
+    },
+    {
+      "key": "ui:全屏展示",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "全屏展示",
+      "zh_project": "全屏展示",
+      "en": "Expand view",
+      "ja": "全画面表示",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/全屏展示",
+      "notes": "2026-10-28速度榜全屏与档位导航界面文案；按展开还原、速度与种族速度语境校对中英日并实测英日页面，不作为客户端原文。"
+    },
+    {
+      "key": "ui:种族速度轴",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "种族速度轴",
+      "zh_project": "种族速度轴",
+      "en": "Base speed navigator",
+      "ja": "種族値ナビ",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/种族速度轴",
+      "notes": "2026-10-28速度榜全屏与档位导航界面文案；按展开还原、速度与种族速度语境校对中英日并实测英日页面，不作为客户端原文。"
+    },
+    {
+      "key": "ui:退出全屏",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "退出全屏",
+      "zh_project": "退出全屏",
+      "en": "Restore view",
+      "ja": "元の表示に戻す",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/退出全屏",
+      "notes": "2026-10-28速度榜全屏与档位导航界面文案；按展开还原、速度与种族速度语境校对中英日并实测英日页面，不作为客户端原文。"
+    },
+    {
+      "key": "ui:速度轴",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "速度轴",
+      "zh_project": "速度轴",
+      "en": "Speed navigator",
+      "ja": "素早さナビ",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/速度轴",
+      "notes": "2026-10-28速度榜全屏与档位导航界面文案；按展开还原、速度与种族速度语境校对中英日并实测英日页面，不作为客户端原文。"
+    },
+    {
+      "key": "ui:对60级攻击方 · 等级特性承伤 ×{multiplier}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "对60级攻击方 · 等级特性承伤 ×{multiplier}",
+      "zh_project": "对60级攻击方 · 等级特性承伤 ×{multiplier}",
+      "en": "Against a Lv.60 attacker · Level-trait damage taken ×{multiplier}",
+      "ja": "Lv.60の攻撃側を想定・レベル特性による被ダメージ ×{multiplier}",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/对60级攻击方 · 等级特性承伤 ×{multiplier}",
+      "notes": "2026-10-29冥古龙等级耐久说明；按当前S5核心及榜单语境校对，未改变国际服精灵或计算规则。"
+    },
+    {
+      "key": "ui:已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。",
+      "zh_project": "已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。",
+      "en": "Includes Minggulong's level-based stats and damage taken; excludes other traits, weather and skills.",
+      "ja": "冥古龍のレベル別能力値・被ダメージを反映。その他の特性・天候・スキルは含みません。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。",
+      "notes": "2026-10-29冥古龙等级耐久说明；按当前S5核心及榜单语境校对，未改变国际服精灵或计算规则。"
+    },
+    {
+      "key": "ui:面板耐久 ÷ 等级特性承伤倍率",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "面板耐久 ÷ 等级特性承伤倍率",
+      "zh_project": "面板耐久 ÷ 等级特性承伤倍率",
+      "en": "Panel durability ÷ level-trait damage multiplier",
+      "ja": "実数値の耐久 ÷ レベル特性の被ダメージ倍率",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/面板耐久 ÷ 等级特性承伤倍率",
+      "notes": "2026-10-29冥古龙等级耐久说明；按当前S5核心及榜单语境校对，未改变国际服精灵或计算规则。"
+    },
+    {
+      "key": "ui:面板耐久 ÷ 等级特性承伤倍率 ÷ 属性倍率",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "面板耐久 ÷ 等级特性承伤倍率 ÷ 属性倍率",
+      "zh_project": "面板耐久 ÷ 等级特性承伤倍率 ÷ 属性倍率",
+      "en": "Panel durability ÷ level-trait damage multiplier ÷ type multiplier",
+      "ja": "実数値の耐久 ÷ レベル特性の被ダメージ倍率 ÷ 属性倍率",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/面板耐久 ÷ 等级特性承伤倍率 ÷ 属性倍率",
+      "notes": "2026-10-29冥古龙等级耐久说明；按当前S5核心及榜单语境校对，未改变国际服精灵或计算规则。"
+    },
+    {
+      "key": "ui:减速·0个体",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "减速·0个体",
+      "zh_project": "减速·0个体",
+      "en": "Reduced SPD · 0 IVs",
+      "ja": "速さ下降・個体値0",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/减速·0个体",
+      "notes": "2026-10-29速度口径：速度个体为0，分别为无性格修正和减速性格；中英日按现有个体与性格术语校对。"
+    },
+    {
+      "key": "ui:无修正·0个体",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "无修正·0个体",
+      "zh_project": "无修正·0个体",
+      "en": "Neutral · 0 IVs",
+      "ja": "補正なし・個体値0",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/无修正·0个体",
+      "notes": "2026-10-29速度口径：速度个体为0，分别为无性格修正和减速性格；中英日按现有个体与性格术语校对。"
     }
   ],
   "plainByKey": {
@@ -159460,6 +159749,91 @@
       "zh": "默认对自身造成伤害，开启应对后计算对敌伤害",
       "en": "This skill damages the user by default. Enable its counter to calculate damage to the opponent.",
       "ja": "通常は自分にダメージを与えます。相手へのダメージを計算するにはカウンターを有効にしてください。"
+    },
+    "ui:18 系克制图": {
+      "zh": "18 系克制图",
+      "en": "18-Type Chart",
+      "ja": "18タイプ相性表"
+    },
+    "ui:{attack} → {defense}：{multiplier}×": {
+      "zh": "{attack} → {defense}：{multiplier}×",
+      "en": "{attack} → {defense}: {multiplier}×",
+      "ja": "{attack} → {defense}：{multiplier}×"
+    },
+    "ui:关闭克制图": {
+      "zh": "关闭克制图",
+      "en": "Close type chart",
+      "ja": "相性表を閉じる"
+    },
+    "ui:单属性相性，不含本系、特性或天气。": {
+      "zh": "单属性相性，不含本系、特性或天气。",
+      "en": "Single-type matchups; excludes STAB, traits and weather.",
+      "ja": "単タイプの相性のみ。タイプ一致ボーナス・特性・天候は含みません。"
+    },
+    "ui:正在打开克制图…": {
+      "zh": "正在打开克制图…",
+      "en": "Opening type chart…",
+      "ja": "相性表を開いています…"
+    },
+    "ui:点选格子查看倍率": {
+      "zh": "点选格子查看倍率",
+      "en": "Select a cell to view the matchup",
+      "ja": "マスを選択して相性を確認"
+    },
+    "ui:行：攻击 · 列：防御": {
+      "zh": "行：攻击 · 列：防御",
+      "en": "Rows: attack · Columns: defense",
+      "ja": "行：攻撃・列：防御"
+    },
+    "ui:全屏展示": {
+      "zh": "全屏展示",
+      "en": "Expand view",
+      "ja": "全画面表示"
+    },
+    "ui:种族速度轴": {
+      "zh": "种族速度轴",
+      "en": "Base speed navigator",
+      "ja": "種族値ナビ"
+    },
+    "ui:退出全屏": {
+      "zh": "退出全屏",
+      "en": "Restore view",
+      "ja": "元の表示に戻す"
+    },
+    "ui:速度轴": {
+      "zh": "速度轴",
+      "en": "Speed navigator",
+      "ja": "素早さナビ"
+    },
+    "ui:对60级攻击方 · 等级特性承伤 ×{multiplier}": {
+      "zh": "对60级攻击方 · 等级特性承伤 ×{multiplier}",
+      "en": "Against a Lv.60 attacker · Level-trait damage taken ×{multiplier}",
+      "ja": "Lv.60の攻撃側を想定・レベル特性による被ダメージ ×{multiplier}"
+    },
+    "ui:已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。": {
+      "zh": "已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。",
+      "en": "Includes Minggulong's level-based stats and damage taken; excludes other traits, weather and skills.",
+      "ja": "冥古龍のレベル別能力値・被ダメージを反映。その他の特性・天候・スキルは含みません。"
+    },
+    "ui:面板耐久 ÷ 等级特性承伤倍率": {
+      "zh": "面板耐久 ÷ 等级特性承伤倍率",
+      "en": "Panel durability ÷ level-trait damage multiplier",
+      "ja": "実数値の耐久 ÷ レベル特性の被ダメージ倍率"
+    },
+    "ui:面板耐久 ÷ 等级特性承伤倍率 ÷ 属性倍率": {
+      "zh": "面板耐久 ÷ 等级特性承伤倍率 ÷ 属性倍率",
+      "en": "Panel durability ÷ level-trait damage multiplier ÷ type multiplier",
+      "ja": "実数値の耐久 ÷ レベル特性の被ダメージ倍率 ÷ 属性倍率"
+    },
+    "ui:减速·0个体": {
+      "zh": "减速·0个体",
+      "en": "Reduced SPD · 0 IVs",
+      "ja": "速さ下降・個体値0"
+    },
+    "ui:无修正·0个体": {
+      "zh": "无修正·0个体",
+      "en": "Neutral · 0 IVs",
+      "ja": "補正なし・個体値0"
     }
   }
 }

@@ -42,7 +42,7 @@ test("等级对比按当前技能展示双60基准，可展开且支持负变化
   expect(comparison.querySelector("summary")).toHaveTextContent("较双60级 -5%");
   fireEvent.click(comparison.querySelector("summary"));
   expect(comparison).toHaveTextContent("伤害：双60级 420 → 当前 399");
-  expect(comparison).toHaveTextContent("非60级面板按预览规则试算");
+  expect(comparison.querySelectorAll("p")).toHaveLength(1);
   rerender(<ResultRail result={result} />);
   expect(screen.queryByLabelText("等级伤害对比")).not.toBeInTheDocument();
 });

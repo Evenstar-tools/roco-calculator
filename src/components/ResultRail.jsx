@@ -272,9 +272,7 @@ export function ResultRail({
               <span>{tc("较双60级 ")}<strong>{Number.isFinite(result.levelComparison.percent) ? tc(`${result.levelComparison.percent > 0 ? "+" : ""}${result.levelComparison.percent}%`) : tc("—")}</strong></span>
             </summary>
             <p>{tc("伤害：双60级 ")}<b>{tc(result.levelComparison.baselineDamage)}</b>{tc(" → 当前 ")}<b>{tc(result.levelComparison.currentDamage)}</b></p>
-            <p>{tc("含等级系数、面板与等级触发效果；双方血量比例不变。")}</p>
             {result.levelComparison.status === "zero-baseline" ? <p>{tc("基准伤害为0，不计算百分比。")}</p> : null}
-            <p>{tc("非60级面板按预览规则试算。")}</p>
           </details> : null}
 
         </>

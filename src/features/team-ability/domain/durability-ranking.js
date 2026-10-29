@@ -1,5 +1,6 @@
 import { FORM_ROLE_MANIFEST_VERSION } from "../../../data/form-role-manifest-v1.js";
 import { calculateDurability } from "./durability.js";
+import { getS5LevelIncomingDamagePercent } from "../../../domain/s5-preview-traits.js";
 import { getNatureMultipliers } from "../../../domain/natures.js";
 import { createRankingLevelVariants, resolveRankingFormRole } from "./ranking-levels.js";
 import { ELEMENT_TYPES, getTypeMultiplier } from "../../../domain/type-chart.js";
@@ -134,13 +135,24 @@ function calculateRankingEntry(spirit, template, variant) {
     natureMultipliers: getNatureMultipliers(template.natureId),
     level: variant.level,
   });
+  const panelDurability = calculateDurability({
+    maxHp: panelStats.hp,
+    physicalDefense: panelStats.physicalDefense,
+    magicalDefense: panelStats.magicalDefense,
+  });
+  // Non-standard variants currently belong only to the verified S5 Minggulong
+  // identity. Ordinary templates stay trait-free, including opt-out variants.
+  const incomingDamageMultiplier = variant.level === 60 ? 1 :
+    1 + getS5LevelIncomingDamagePercent(variant.level) / 100;
+  const raw = Object.fromEntries(RANKING_METRICS.map(key => [key, panelDurability.raw[key] / incomingDamageMultiplier]));
   return {
     ...variant,
-    durability: calculateDurability({
-      maxHp: panelStats.hp,
-      physicalDefense: panelStats.physicalDefense,
-      magicalDefense: panelStats.magicalDefense,
-    }),
+    incomingDamageMultiplier,
+    panelDurability,
+    durability: {
+      ...panelDurability, raw,
+      display: Object.fromEntries(RANKING_METRICS.map(key => [key, Math.round(raw[key])])),
+    },
     evolutionFamilyId: form.evolutionFamilyId,
     formRole: form.formRole,
     formRoleStatus: form.formRoleStatus,

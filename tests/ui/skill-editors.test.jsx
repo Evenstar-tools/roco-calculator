@@ -101,6 +101,40 @@ test("单技能位置控件持续显示，向心力加成不会标成未触发",
   expect(screen.queryByText("当前条件未触发加成")).not.toBeInTheDocument();
 });
 
+test.each(["single", "four"])("齿轮扭矩在%s技能界面可调至20次以上，保留0下限", (mode) => {
+  const torque = snapshot.skills.find(({ name }) => name === "齿轮扭矩");
+  const id = "skill.positionChangeCount.30de2dc0";
+  const onChange = vi.fn();
+  const context = { [id]: 20 };
+  render(mode === "single" ? (
+    <SingleSkillEditor selectedSkill={torque} skills={[torque]} hitCount={1}
+      traitContext={context} onTraitContextChange={onChange} />
+  ) : (
+    <FourSkillEditor attackerName="攻击方" defenderName="防御方"
+      attackerSkills={[{ ...torque, slotContext: context }, null, null, null]}
+      defenderSkills={[null, null, null, null]} skills={[torque]}
+      onSkillContextChange={onChange} onSkillSelect={vi.fn()} />
+  ));
+  const input = screen.getByRole("spinbutton", {
+    name: mode === "single" ? "位置变化次数" : "攻击方技能1位置变化次数",
+  });
+  expect(input).not.toHaveAttribute("max");
+  expect(input).toHaveAttribute("min", "0");
+  expect(input).toHaveValue(20);
+  input.stepUp();
+  expect(input).toHaveValue(21);
+  input.stepUp();
+  expect(input).toHaveValue(22);
+  input.stepDown();
+  expect(input).toHaveValue(21);
+  for (const value of [22, 100, -1]) {
+    fireEvent.change(input, { target: { value: String(value) } });
+    expect(onChange).toHaveBeenLastCalledWith(
+      ...(mode === "four" ? ["attacker", 0] : []), id, Math.max(0, value),
+    );
+  }
+});
+
 test("传感器反复恢复默认仍显示按槽位计算的 3 连击", () => {
   const sensor = snapshot.skills.find(({ name }) => name === "传感器");
   const onHitCountChange = vi.fn();
