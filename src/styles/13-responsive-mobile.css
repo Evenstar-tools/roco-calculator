@@ -778,7 +778,7 @@
   }
 
   .calculator-layout--compact .compact-skill__row {
-    grid-template-columns: 11px minmax(105px, 1fr) 19px minmax(74px, 0.68fr);
+    grid-template-columns: 11px minmax(105px, 1fr) 19px minmax(74px, 0.55fr);
   }
 }
 
