@@ -1,4 +1,4 @@
-import { ArrowLeft, MagnifyingGlass, SlidersHorizontal, X } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowsIn, ArrowsOut, MagnifyingGlass, SlidersHorizontal, X } from "@phosphor-icons/react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ELEMENT_TYPES } from "../domain/type-chart.js";
 import { createDurabilityRanking, selectDurabilityRanking, getDurabilityMultipliers, STANDARD_DURABILITY_TEMPLATES } from "../features/team-ability/domain/durability-ranking.js";
@@ -147,19 +147,33 @@ export default function RankingsPanel(props) {
 
 function VerifiedRankingsPanel({ kind, snapshot, onClose }) {
   const root = useRef(null);
+  const [expanded, setExpanded] = useState(false);
+  if (kind !== "speed" && expanded) setExpanded(false);
+  const expandedRef = useRef(false);
+  const resizePanel = useCallback((next) => { expandedRef.current = next; setExpanded(next); }, []);
   const [visited, setVisited] = useState(() => ({ [kind]: true }));
   if (kind && !visited[kind]) setVisited({ ...visited, [kind]: true });
   const close = useRef(onClose);
-  const closePanel = useCallback(() => close.current(), []);
+  const closePanel = useCallback(() => {
+    if (expandedRef.current) resizePanel(false);
+    else close.current();
+  }, [resizePanel]);
   useEffect(() => { close.current = onClose; }, [onClose]);
+  useEffect(() => { expandedRef.current = expanded; }, [expanded]);
+  useEffect(() => {
+    const mobile = window.matchMedia("(max-width: 600px)");
+    const restore = () => { if (mobile.matches) resizePanel(false); };
+    mobile.addEventListener?.("change", restore);
+    return () => mobile.removeEventListener?.("change", restore);
+  }, [resizePanel]);
   useEffect(() => {
     if (!kind) return undefined;
     const previousOverflow = document.body.style.overflow;
     const trigger = document.activeElement;
     document.body.style.overflow = "hidden";
-    root.current?.querySelector("button")?.focus({ preventScroll: true });
+    root.current?.querySelector(".rank-dialog__close")?.focus({ preventScroll: true });
     const keydown = (event) => {
-      if (event.key === "Escape") { event.preventDefault(); close.current(); }
+      if (event.key === "Escape") { event.preventDefault(); closePanel(); }
       if (event.key !== "Tab") return;
       const nodes = [...root.current.querySelectorAll('button, input, select, [href]')].filter((node) => !node.disabled && !node.closest('[hidden]') && node.getClientRects().length);
       if (event.shiftKey && document.activeElement === nodes[0]) {event.preventDefault(); nodes.at(-1)?.focus();}
@@ -167,10 +181,13 @@ function VerifiedRankingsPanel({ kind, snapshot, onClose }) {
     };
     document.addEventListener("keydown", keydown);
     return () => { document.body.style.overflow = previousOverflow; document.removeEventListener("keydown", keydown); if (trigger?.isConnected) trigger.focus?.({ preventScroll: true }); else document.querySelector('[aria-label="打开菜单"]')?.focus(); };
-  }, [kind]);
-  return <div className="rank-overlay" hidden={!kind} onMouseDown={(event) => {if(event.target === event.currentTarget) onClose();}}>
+  }, [kind, closePanel]);
+  return <div className={`rank-overlay${expanded && kind === "speed" ? " is-expanded" : ""}`} hidden={!kind} onMouseDown={(event) => {if(event.target === event.currentTarget) onClose();}}>
     <div className="rank-dialog" role="dialog" aria-modal="true" aria-label={kind === "speed" ? "速度线排行" : "耐久排行"} ref={root}>
-      <header className="rank-dialog__heading"><h2>{kind === "speed" ? "速度线排行" : "耐久排行"}</h2><button aria-label="关闭排行榜" onClick={onClose} type="button"><X size={20} /></button></header>
+      <header className="rank-dialog__heading"><h2>{kind === "speed" ? "速度线排行" : "耐久排行"}</h2><div className="rank-dialog__actions">
+        {kind === "speed" ? <button className="rank-expand" type="button" aria-label={expanded ? "退出全屏" : "全屏展示"} title={expanded ? "退出全屏" : "全屏展示"} aria-pressed={expanded} onClick={() => resizePanel(!expanded)}>{expanded ? <ArrowsIn size={19} /> : <ArrowsOut size={19} />}<span>{expanded ? "退出全屏" : "全屏展示"}</span></button> : null}
+        <button className="rank-dialog__close" aria-label="关闭排行榜" onClick={onClose} type="button"><X size={20} /></button>
+      </div></header>
       <div className="rank-tool-host" hidden={kind !== "durability"}>{visited.durability && <StandaloneDurability snapshot={snapshot} onClose={closePanel} />}</div>
       <div className="rank-tool-host" hidden={kind !== "speed"}>{visited.speed && <StandaloneSpeed snapshot={snapshot} onClose={closePanel} />}</div>
     </div>

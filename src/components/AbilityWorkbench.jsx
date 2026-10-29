@@ -8,7 +8,7 @@ import {
   LockSimpleOpen,
   MagnifyingGlass,
 } from "@phosphor-icons/react";
-import { createSpeedTargetCatalog, speedQuery, speedReference, speedBadge, speedMatchSummary } from "../features/team-ability/domain/ranking-tools.js";
+import { createSpeedTargetCatalog, DEFAULT_RANKING_PROFILES, speedQuery, speedReference, speedBadge, speedMatchSummary } from "../features/team-ability/domain/ranking-tools.js";
 import {
   lazy,
   Suspense,
@@ -38,6 +38,7 @@ import {
   SPEED_TARGET_PROFILES,
 } from "../features/team-ability/domain/speed-targets.js";
 import { createSpeedModifiers } from "../features/team-ability/domain/speed-modifiers.js";
+import SpeedAxisNavigator from "./SpeedAxisNavigator.jsx";
 import {
   getNature,
   getNatureMultipliers,
@@ -708,6 +709,7 @@ export function SpeedOverview({
   const hasActualMatch = targets.some(target => target.matchReasons?.includes("实际速度"));
   const baseOnlyMatch = hasBaseMatch && !hasActualMatch;
   const displayGroups = baseOnlyMatch ? targetGroups : reference?.groups ?? targetGroups;
+  const axisItems = displayGroups.map((group) => ({ key: String(group.speed), value: group.speed }));
   const nearestCurrentTarget = standalone ? null : findNearestSpeedTarget(targets, currentSpeed);
   const resolvedLocateTargetId = targets.some((target) => target.id === locateTargetId)
     ? locateTargetId
@@ -780,13 +782,15 @@ export function SpeedOverview({
         <div className="speed-reference-summary" role="status">{search.invalid ? <span>请输入非负整数速度值</span> : reference ? <><span>{matchSummary ? <span className="speed-match-summary">{matchSummary.split("；").map(item => { const [label, ...value] = item.split("："); return <span key={label}>{label}：<strong>{value.join("：")}</strong></span>; })}</span> : null}当前结果比 <b>{reference.value}</b> 快 <b>{reference.faster}</b> · 同速 <b>{reference.equal}</b> · 慢 <b>{reference.slower}</b> 个配置</span><span className="speed-locate-actions">{namedLocations}{hasBaseMatch ? <button type="button" onClick={() => onLocateBase?.(reference.value)}>定位种族 {reference.value}</button> : null}{!baseOnlyMatch ? <button type="button" onClick={() => { if (onLocateResult) onLocateResult(reference.value); setJump(jump + 1); }}>定位 {reference.value}</button> : null}</span></> : <><span>{search.kind === "base" && search.value !== null ? `种族速度 ${search.value} · 按实际速度排列` : "输入名称找精灵，输入速度看快慢"}</span><span className="speed-locate-actions">{namedLocations}</span>{!query ? <button type="button" onClick={() => { onQueryModeChange("auto"); onQueryChange("267"); }}>试查 267</button> : null}</>}</div>
       </div> : null}
 
-      {standalone ? <div className="rank-summary"><span>共 {targetGroups.length} 档 · 同速聚合</span><button type="button" onClick={() => {onQueryChange(""); onQueryModeChange("auto"); onProfilesChange(["positive-max", "neutral-max"]);}}>重置</button></div> : <div className="ability-speed-overview__selection" role="status">
+      {standalone ? <div className="rank-summary"><span>共 {targetGroups.length} 档 · 同速聚合</span><button type="button" onClick={() => {onQueryChange(""); onQueryModeChange("auto"); onProfilesChange([...DEFAULT_RANKING_PROFILES]);}}>重置</button></div> : <div className="ability-speed-overview__selection" role="status">
         <span>{isDraft ? "试算配置" : "当前配置"} <b>{formatNumber(currentSpeed)}</b></span>
         {selected ? (
           <span>已选目标 <b>{selected.name} · {formatNumber(selected.speed)}</b></span>
         ) : null}
       </div>}
 
+      <div className={standalone ? "speed-navigable" : "speed-navigable-inline"}>
+      {standalone ? <SpeedAxisNavigator scrollRef={scrollRef} items={axisItems} label="速度轴" /> : null}
       <div ref={scrollRef} className="ability-speed__table-wrap ability-speed-overview__table-wrap">
         <table aria-label="速度档位表" className="ability-speed__table">
           <colgroup>
@@ -804,6 +808,7 @@ export function SpeedOverview({
               <tr
                 className={group.speed === reference?.value || group.targets.some((target) => target.id === selected?.id) ? "is-selected" : ""}
                 ref={group.speed === reference?.value ? referenceRef : null}
+                data-speed-nav-key={String(group.speed)}
                 key={group.speed}
               >
                 <th scope="row">
@@ -836,6 +841,7 @@ export function SpeedOverview({
             ))}
           </tbody>
         </table>
+      </div>
       </div>
     </section>
   );

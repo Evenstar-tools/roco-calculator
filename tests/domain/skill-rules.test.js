@@ -21,6 +21,18 @@ function skill(overrides = {}) {
 }
 
 describe("resolveSkillPower", () => {
+  test("齿轮扭矩超过20次仍按每次15威力计算，并兼容原保存键", () => {
+    const torque = snapshot.skills.find(({ name }) => name === "齿轮扭矩");
+    for (const count of [0, 20, 21, 100]) {
+      for (const key of ["positionChangeCount", "skill.positionChangeCount.30de2dc0"]) {
+        expect(resolveSkillPower(torque, { [key]: count })).toMatchObject({
+          status: "exact",
+          value: torque.basePower + count * 15,
+        });
+      }
+    }
+  });
+
   test("暖阳按其他火系技能次数每次增加40威力，清零恢复基础值", () => {
     const warmSun = snapshot.skills.find(({ name }) => name === "暖阳");
     expect(getSkillEffectInputs(warmSun)).toEqual(expect.arrayContaining([

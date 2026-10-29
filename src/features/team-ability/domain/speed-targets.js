@@ -28,13 +28,13 @@ export const SPEED_TARGET_PROFILES = Object.freeze({
   "neutral-zero": Object.freeze({
     displayIv: 0,
     id: "neutral-zero",
-    label: "无速度",
+    label: "无修正·0个体",
     natureMultiplier: 1,
   }),
   "negative-zero": Object.freeze({
     displayIv: 0,
     id: "negative-zero",
-    label: "减速度",
+    label: "减速·0个体",
     natureMultiplier: 0.9,
   }),
 });

@@ -202,17 +202,17 @@ test("速度排行榜横轴支持多选口径，默认包含常用口径和特�
   expect(screen.queryByRole("slider", { name: "速度目标轴" })).not.toBeInTheDocument();
   expect(screen.getByRole("region", { name: "速度排行榜横轴" })).toHaveAttribute("tabindex", "0");
   expect(screen.getByLabelText("速度目标口径")).toHaveTextContent(
-    "极速、满速、无速度、特殊口径",
+    "极速、满速、无修正·0个体、特殊口径",
   );
   expect(screen.getByRole("checkbox", { name: "极速" })).toBeChecked();
   expect(screen.getByRole("checkbox", { name: "满速" })).toBeChecked();
-  expect(screen.getByRole("checkbox", { name: "无速度" })).toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "无修正·0个体" })).toBeChecked();
   expect(screen.getByRole("checkbox", { name: "仅速度性格" })).not.toBeChecked();
-  expect(screen.getByRole("checkbox", { name: "减速度" })).not.toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "减速·0个体" })).not.toBeChecked();
   expect(screen.getByRole("checkbox", { name: "特殊口径" })).toBeChecked();
-  await user.click(screen.getByRole("checkbox", { name: "减速度" }));
+  await user.click(screen.getByRole("checkbox", { name: "减速·0个体" }));
   expect(screen.getByLabelText("速度目标口径")).toHaveTextContent(
-    "极速、满速、无速度、特殊口径、减速度",
+    "极速、满速、无修正·0个体、特殊口径、减速·0个体",
   );
 });
 
@@ -296,7 +296,7 @@ test("特殊口径可以单独保留且不能取消最后一个口径", async ()
 
   await user.click(screen.getByRole("checkbox", { name: "极速" }));
   await user.click(screen.getByRole("checkbox", { name: "满速" }));
-  await user.click(screen.getByRole("checkbox", { name: "无速度" }));
+  await user.click(screen.getByRole("checkbox", { name: "无修正·0个体" }));
 
   expect(screen.getByLabelText("速度目标口径")).toHaveTextContent("特殊口径");
   expect(screen.getByRole("checkbox", { name: "特殊口径" })).toBeDisabled();
@@ -305,7 +305,7 @@ test("特殊口径可以单独保留且不能取消最后一个口径", async ()
   await user.click(target);
   await user.type(target, "夜枭");
   expect(screen.getAllByRole("option", { name: /夜枭.*快速移动/ })).toHaveLength(2);
-  expect(screen.queryByRole("option", { name: /^选择夜枭 \d+ (极速|满速|无速度)$/ }))
+  expect(screen.queryByRole("option", { name: /^选择夜枭 \d+ (极速|满速|无修正·0个体)$/ }))
     .not.toBeInTheDocument();
 });
 
