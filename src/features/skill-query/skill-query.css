@@ -3,6 +3,7 @@
 .skill-query button,.skill-query select,.skill-query input{font:inherit;color:inherit;border:1px solid var(--border);border-radius:6px;background:var(--surface,#fff);padding:8px 12px;min-height:38px}
 .skill-query button{cursor:pointer}.skill-query button:focus-visible,.skill-query input:focus-visible,.skill-query select:focus-visible{outline:2px solid var(--accent,#5546dc);outline-offset:2px}
 .skill-query__header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--border)}
+.skill-query .skill-query__close{display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:40px;padding:8px 10px}
 .skill-query h2{margin:0;font-size:22px}.skill-query small,.skill-query__context,.skill-query__list p,.skill-query__empty{color:var(--text-muted,#747e96)}.skill-query a{color:var(--accent,#5546dc)}.skill-query em{color:var(--accent,#5546dc);font-style:normal;font-size:11px}
 .skill-query__tabs{display:flex;gap:18px;padding:0 24px;border-bottom:1px solid var(--border)}.skill-query__tabs button{border:0;border-bottom:3px solid transparent;border-radius:0;padding:12px 0}.skill-query__tabs button:first-child{flex-shrink:0}.skill-query__tabs [aria-selected=true]{color:var(--accent,#5546dc);border-bottom-color:currentColor;font-weight:700}
 .skill-query__filters{display:flex;gap:8px;padding:14px 24px}.skill-query__filters input{flex:1;min-width:0}.skill-query__context{margin:0;padding:0 24px 10px}.skill-query__context button{border:0;background:transparent;color:var(--accent)}
