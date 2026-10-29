@@ -104,5 +104,3 @@ test("S5和普通版均显示245份", async () => {
   vi.stubEnv("MODE", "production");
   expect((await import("../../src/data/preset-metadata.js")).POPULAR_CONFIG_COUNT).toBe(245);
 });
-
-
