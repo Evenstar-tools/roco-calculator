@@ -7,8 +7,8 @@ import { version as appVersion } from "../../package.json";
 
 export { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
 
-async function loadPresetHistory() {
-  const history = await fetch(publicResourceUrl("/data/presets/pvp-preset-history.json"))
+async function loadPresetHistory(signal) {
+  const history = await fetch(publicResourceUrl("/data/presets/pvp-preset-history.json"), { signal })
     .then((result) => result.ok ? result.json() : null).catch(() => null);
   return Array.isArray(history?.entries) ? history.entries : [];
 }
@@ -80,12 +80,12 @@ export function useConfigLibraryFlow({
     setConfigLibraryMode("import");
   }
 
-  async function loadPopularConfigLibrary() {
-    const response = await fetch(publicResourceUrl(serverId === "global" ? "/data/global/presets/pvp-popular-configs.json" : "/data/presets/pvp-popular-configs.json"));
+  async function loadPopularConfigLibrary({ signal } = {}) {
+    const response = await fetch(publicResourceUrl(serverId === "global" ? "/data/global/presets/pvp-popular-configs.json" : "/data/presets/pvp-popular-configs.json"), { signal });
     if (!response.ok) {
       throw new Error(`内置配置读取失败：${response.status}`);
     }
-    const history = serverId === "cn" ? await loadPresetHistory() : [];
+    const history = serverId === "cn" ? await loadPresetHistory(signal) : [];
     return storedData.previewFavoriteConfigLibrary(
       await response.text(),
       initialState.versions,

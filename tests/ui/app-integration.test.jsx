@@ -897,7 +897,7 @@ test("walks through compact mode, opens detailed mode, and imports the library f
     expect(screen.queryByRole("dialog", { name: /新手引导/ }))
       .not.toBeInTheDocument();
   });
-  expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json");
+  expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json", { signal: undefined });
   expect(localStorage.getItem(FIRST_RUN_GUIDE_STORAGE_KEY)).toBe("1");
   expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);
   expect(screen.getByRole("combobox", { name: "攻击方精灵" })).toHaveValue("音速犬");
@@ -4028,7 +4028,7 @@ test("切换四技能行到可编辑的显示威力并记住设置", async () =>
   expect(screen.getByRole("spinbutton", { name: "攻击方技能1显示威力" })).toBeVisible();
 });
 
-test("loads the built-in popular library only on demand and imports through the existing flow", async () => {
+test("checks built-in popular updates on entry and imports only after confirmation", async () => {
   localStorage.clear();
   const teamBytes = JSON.stringify({
     activeTeamId: null,
@@ -4081,12 +4081,15 @@ test("loads the built-in popular library only on demand and imports through the 
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
 
-  expect(fetchMock).not.toHaveBeenCalled();
-  await user.click(screen.getByRole("button", { name: "打开菜单" }));
-  await user.click(screen.getByRole("button", { name: "常用精灵配置" }));
+  const notice = await screen.findByText("常用精灵配置可更新（2）");
+  expect(screen.getByRole("dialog", { name: "新手引导 1/6" })).toBeVisible();
+  expect(localStorage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).toBeNull();
+  expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);
+  await user.click(within(notice.closest('[role="status"]')).getByRole("button", { name: "查看" }));
 
   const dialog = await screen.findByRole("dialog", { name: "常用精灵配置" });
-  expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json");
+  expect(screen.queryByRole("dialog", { name: /新手引导/ })).toBeNull();
+  expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json", { signal: undefined });
   expect(within(dialog).getByText("新增").nextElementSibling).toHaveTextContent("2");
   expect(within(dialog).getByText("不同").nextElementSibling)
     .toHaveTextContent("0");

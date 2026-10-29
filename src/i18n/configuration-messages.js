@@ -1,4 +1,5 @@
 export const configurationMessages = Object.fromEntries([
+  ["常用精灵配置可更新（{count}）", "Recommended setups: {count} updates", "おすすめ設定を更新できます（{count}件）"],
   ["即时配置", "Quick setup", "クイック設定"],
   ["正在加载中文占位资料…", "Loading Chinese placeholder data…", "中国語の仮データを読み込み中…"],
   ["资料加载失败，请重试。", "Data could not be loaded. Please retry.", "資料を読み込めませんでした。再試行してください。"],

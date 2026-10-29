@@ -202,8 +202,8 @@ export function SpiritPicker({
   const browsingFamily = !searching && relatedFamily.length > 1 && (Boolean(onFormSelect) || !presetBrowse.enabled);
   const choosingForm = Boolean(onFormSelect && browsingFamily && family.length > 1);
   const browsingPresets = presetBrowse.enabled && (!searching || !query.trim()) && !browsingFamily;
-  // New arrivals are recommendations only before a spirit has been selected.
-  const pinNewSpirits = !selected?.id;
+  // Blank input requests recommendations, even after clearing a selected spirit.
+  const pinNewSpirits = !query.trim();
   const s5PreviewSpirits = useMemo(() => spirits.filter(isS5PreviewSpirit), [spirits]);
   const presetSpirits = useMemo(() => spirits
     .filter((spirit) => isS5PreviewSpirit(spirit) || presetBrowse.spiritIds.has(spirit.id) || spirit.favoriteState === "manual")

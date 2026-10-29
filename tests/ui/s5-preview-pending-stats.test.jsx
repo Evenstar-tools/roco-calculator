@@ -229,6 +229,10 @@ test("无搜索的收藏与热门预设模式都保留全部S5置顶", async () 
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
   expect(screen.getAllByRole("option").slice(0, 2).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
   expect(screen.getByRole("option", { name: /热门配置/u })).toHaveClass("is-active");
+  await user.clear(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  expectS5Pinned();
+  expect(screen.getAllByRole("option")[0]).toHaveClass("is-active");
+  expect(screen.getAllByRole("option").slice(s5Catalog.entries.length).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
 });
 
 test.each([false, true])("已选同族精灵只展示相关形态，常用配置模式=%s，原同族切换保留", async (presetMode) => {
@@ -256,7 +260,7 @@ test.each([false, true])("已选同族精灵只展示相关形态，常用配置
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
   const candidate = snapshot.spirits.find(spirit => spirit.previewIdentity?.key === "gold-vein-dragon");
   await user.clear(screen.getByRole("combobox", { name: "攻击方精灵" }));
-  expect(screen.getAllByRole("option")[0].dataset.spiritId).not.toMatch(/^spirit_preview_s5_/u);
+  expectS5Pinned();
   await user.type(screen.getByRole("combobox", { name: "攻击方精灵" }), candidate.fullName);
   const match = screen.getAllByRole("option").find(option => option.dataset.spiritId === candidate.id);
   await user.click(match);
@@ -298,16 +302,22 @@ test.each([false, true])("选中稻草守护者后重开不混入新精灵，键
   expect(props.onSelect).not.toHaveBeenCalled();
 });
 
-test.each([false, true])("已选无同族精灵重开及主动清空都不置顶新精灵，clearOnOpen=%s", async clearOnOpen => {
+test.each([false, true])("已选无同族精灵保留名称时不置顶，空白推荐仍置顶新精灵，clearOnOpen=%s", async clearOnOpen => {
   const user = userEvent.setup();
-  const spirits = s5Roster();
+  const spirits = s5Roster({ saved: true });
   const selected = spirits.find(spirit => spirit.id === "popular");
-  render(<SpiritPicker {...pickerProps(spirits, selected)} clearOnOpen={clearOnOpen} />);
+  const props = pickerProps(spirits, selected);
+  render(<SpiritPicker {...props} clearOnOpen={clearOnOpen} />);
   const input = screen.getByRole("combobox", { name: "攻击方精灵" });
   await user.click(input);
   if (!clearOnOpen) expect(screen.getAllByRole("option").map(option => option.dataset.spiritId)).toEqual([selected.id]);
+  else expectS5Pinned();
   await user.clear(input);
-  expect(screen.getAllByRole("option")[0]).toHaveAttribute("data-spirit-id", "dimo");
+  expectS5Pinned();
+  expect(screen.getAllByRole("option")[s5Catalog.entries.length]).toHaveAttribute("data-spirit-id", "saved");
+  expect(screen.getAllByRole("option")[0]).toHaveClass("is-active");
+  await user.keyboard("{Enter}");
+  expect(props.onSelect).toHaveBeenCalledWith(s5PreviewIds(s5Catalog.entries[0].key).spiritId);
 });
 
 test("常用配置异步读入后高亮当前选中，不跳到新精灵或第一项", async () => {
