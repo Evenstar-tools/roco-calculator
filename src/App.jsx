@@ -152,7 +152,7 @@ const preloadSkillQuery = (serverId) => {
 function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlobal, active }) {
   const { serverId, release } = useRuntime();
   const { t, locale } = useLocale();
-  const { tc } = useCalculatorLocale();
+  const { tc, entityName, entityDescription } = useCalculatorLocale();
   const spiritName = spirit => spirit ? (serverId === "global" ? localizeGlobalSpirit(spirit, locale).fullName : spirit.fullName) : "";
   const formPreferences = getFormConfigPreferences(serverId);
   const [shortcutSettings, setShortcutSettings] = useState(() => readShortcutSettings(serverId));
@@ -1995,7 +1995,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       ["defenderHpPercent", targetSide, "对方生命", targetHealth],
     ]) {
       if (health && inputs.some((input) => (input.contextKey ?? input.key) === contextKey && isDynamicInputVisible(input, context))) {
-        healthFields.push({ key: contextKey, label, health,
+        healthFields.push({ key: contextKey, label: t(label), health,
           onChange: (value) => updateSideHealth(owner, value),
           onPercentChange: (value) => updateSideHealthPercent(owner, value) });
       }
@@ -2025,19 +2025,23 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const activeContext = state.mode === "single" ? state.directions[direction].context ?? {}
       : linkedNegativeStatusContext(state, side, entry?.context ?? {});
     const canRelease = activeStatus?.skillId === skill?.id &&
-      activeStatus?.slotIndex === (index ?? 0) && activeStatus?.contextSignature === JSON.stringify(activeContext);
+      activeStatus?.slotIndex === (index ?? 0) && matchesSkillActivationContext(skill, activeStatus?.contextSignature, activeContext);
+    const s5Action = skill && !skill.s5StatusEffectPending && (
+      prepareS5EnergyUse(state, { snapshot, side, result }) ||
+      prepareS5DiscountUse(state, { snapshot, side, skill, result })
+    );
     const label = canRelease ? "解除状态" : skillActivationLabel(side, index ?? 0, state.mode);
-    const hasAction = skill && (resolution || progresses || postChanges || togglesStatus || canRelease);
+    const hasAction = skill && !skill.s5StatusEffectPending && (resolution || progresses || postChanges || togglesStatus || canRelease || s5Action);
     const action = hasAction ? {
-      label: label === "应用后续变化" ? "应用变化" : label,
-      disabled: !release.capabilities.calculate || !(resolution?.applied || progresses || postChanges || togglesStatus || canRelease),
-      hint: resolution && !resolution.applied && !canRelease ? resolution.reason
-        : !["status", "defense"].includes(skill.category) ? "仅更新状态，不扣血" : null,
+      label: tc(label === "应用后续变化" ? "应用变化" : label),
+      disabled: !release.capabilities.calculate || !(resolution?.applied || progresses || postChanges || togglesStatus || canRelease || s5Action),
+      hint: resolution && !resolution.applied && !canRelease ? tc(resolution.reason)
+        : !["status", "defense"].includes(skill.category) ? t("仅更新状态，不扣血") : null,
       onApply: () => state.mode === "single" ? activateSingleSkill() : activateFourSkill(side, index),
     } : null;
     if (!controls.length && !healthFields.length && !skill) return null;
     return { key, side, title, triggerLabel, inputs: controls, context: resolvedContext, onChange, healthFields, kind, index,
-      result, action, description: skill?.description,
+      result, action, description: skill ? entityDescription("skill", skill) : undefined,
       nextHint: skill ? buildRefractionHint({ selectedSkill: skill, carriedSkills, sproutStacks }) : null,
       triggerText: controls.length || healthFields.length ? "条件" : action ? "使用" : "详情",
       notice: skill && !hasAction && (["status", "defense"].includes(skill.category) || (isChoiceSkill(skill) && !inputs.some((input) => input.type === "choice"))) ? "状态效果未接入" : null,
@@ -2068,7 +2072,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       }
       compactTraitConditions[side] = compactConditionModel({
         key: `trait:${state.mode}:${side}:${spirit.id}:${opponent.id}`,
-        side, kind: "trait", title: `${label} · ${spirit.traitName ?? trait?.name ?? "特性"}条件`, triggerLabel: `${label}特性条件`,
+        side, kind: "trait", title: t("{side} · {name}条件", { side: label, name: trait ? entityName("trait", trait) : t("特性") }), triggerLabel: t("{side}特性条件", { side: label }),
         inputs: traitInputs,
         context: traitContext,
         onChange: (key, value) => updateTraitContext(key.startsWith("defenderTrait.") ? oppositeDirection : direction, key, value),
@@ -2087,7 +2091,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           if ((input.contextKey ?? input.key) === "actualSkillCost" && result?.effectiveCostInput != null) context[input.id ?? input.key] = result.effectiveCostInput;
         }
         return compactConditionModel({ key: `four:${side}:${index}:${spirit.id}:${opponent.id}:${selected.id}`,
-          side, kind: "skill", index, title: `${label} · ${selected.name}条件`, triggerLabel: `${label}技能${index + 1}条件`,
+          side, kind: "skill", index, title: t("{side} · {name}条件", { side: label, name: entityName("skill", selected) }), triggerLabel: t("{side}技能{index}条件", { side: label, index: index + 1 }),
           inputs: dynamicInputs, context, skill: selected, result, onChange: (key, value) => updateFourSkillCondition(side, index, key, value) });
       });
     }
@@ -2101,7 +2105,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       }), resultModel.selectedResult?.inputs ?? [], choiceTraitInput ? [choiceTraitInput] : []);
       compactSingleConditions = compactConditionModel({
         key: `single:${activeAttackSideKey}:${activeAttackSpirit.id}:${activeDefenseSpirit.id}:${selectedSingleSkill.id}`,
-        side: activeAttackSideKey, kind: "skill", title: `${label} · ${selectedSingleSkill.name}条件`, triggerLabel: `${label}当前技能条件`, inputs,
+        side: activeAttackSideKey, kind: "skill", title: t("{side} · {name}条件", { side: label, name: entityName("skill", selectedSingleSkill) }), triggerLabel: t("{side}当前技能条件", { side: label }), inputs,
         context: linkedSkillContext(activeAttackSideKey, selectedSingleSkill, linkedStarfallTraitContext(activeAttackSideKey, currentDirection.context)),
         skill: selectedSingleSkill, result: resultModel.selectedResult,
         onChange: updateSingleSkillCondition,
@@ -2307,6 +2311,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         overlays.whatsNewProps.onClose();
         if (id === "skills") setSkillQueryOpen(true);
         else if (id === "types") setTypeQueryOpen(true);
+        else if (id === "typeChart" && serverId === "global") setTypeQueryOpen("chart");
         else if (id === "transmission") setTransmissionOpen(true);
         else if (id === "deer") {
           if (!release.capabilities.calculate) { setDeerOpen(true); return; }

@@ -21,6 +21,17 @@ function setup(key, mode = "four", skillName = "撕咬", negative = false, confi
 }
 const primary = () => Number(screen.getByTestId("primary-damage").textContent);
 
+function activateSkill(mode, { view = "compact", label = "使用技能" } = {}) {
+  if (view === "detailed") {
+    fireEvent.click(screen.getByRole("button", { name: mode === "single" ? label : `攻击方技能1${label}`, exact: true }));
+    return;
+  }
+  fireEvent.click(screen.getByRole("button", { name: mode === "single" ? "攻击方当前技能条件" : "攻击方技能1条件", exact: true }));
+  const dialog = screen.getByRole("dialog", { name: /攻击方 · .*条件/u });
+  fireEvent.click(within(dialog).getByRole("button", { name: label, exact: true }));
+  fireEvent.click(within(dialog).getByRole("button", { name: "关闭条件", exact: true }));
+}
+
 test.each(["single", "four"])("%s冥古龙仅有当前等级框，按钮与键盘每次10级且79/80边界即时同步", mode => {
   setup("minggulong", mode);
   if (mode === "four") fireEvent.click(screen.getByRole("button", { name: "具体版", exact: true }));
@@ -130,11 +141,11 @@ test("精简四技能本次确认与原生取消/重用共用状态，摘要和�
   expect(screen.getAllByText("本次虫系技能使用后：对手寄生 +1层").length).toBeGreaterThan(0);
   const applied = primary();
   expect(applied).toBeGreaterThan(0);
-  fireEvent.click(screen.getByRole("button", { name: "攻击方技能1取消使用" }));
+  activateSkill("four", { label: "取消使用" });
   expect(type).toHaveValue("none");
   expect(screen.getAllByText("未确认本次使用系别，无额外施加").length).toBeGreaterThan(0);
   expect(screen.getByTestId("primary-damage")).toHaveTextContent("—");
-  fireEvent.click(screen.getByRole("button", { name: "攻击方技能1使用状态" }));
+  activateSkill("four", { label: "使用状态" });
   expect(type).toHaveValue("bug");
   expect(primary()).toBe(applied);
 });
@@ -228,13 +239,13 @@ test.each([['single', 'compact'], ['four', 'compact'], ['four', 'detailed']])("%
   setup("underground-silver-dragon", mode, "光球");
   if (view === "detailed") fireEvent.click(screen.getByRole("button", { name: "具体版", exact: true }));
   const input = () => screen.getAllByRole("spinbutton", { name: "累计消耗能量", exact: true })[0];
-  const use = () => screen.getByRole("button", { name: mode === "single" ? "使用技能" : "攻击方技能1使用技能", exact: true });
+  const use = () => activateSkill(mode, { view });
   const end = () => screen.getAllByRole("button", { name: "回合结束", exact: true })[0];
   expect(input()).toHaveValue(0);
   expect(screen.queryByRole("spinbutton", { name: "已结算数量" })).not.toBeInTheDocument();
   expect(screen.queryByRole("checkbox", { name: "回合结束", exact: true })).not.toBeInTheDocument();
   const before = primary();
-  fireEvent.click(use());
+  use();
   expect(input()).toHaveValue(skill.cost);
   expect(primary()).toBe(before);
   expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).toHaveTextContent(`待回合结束 ${skill.cost} 点`);
@@ -245,7 +256,7 @@ test.each([['single', 'compact'], ['four', 'compact'], ['four', 'detailed']])("%
   fireEvent.click(end());
   expect(primary()).toBe(once);
   await Promise.resolve();
-  fireEvent.click(use());
+  use();
   expect(input()).toHaveValue(skill.cost * 2);
   expect(primary()).toBe(once);
   await Promise.resolve();
@@ -257,7 +268,7 @@ test.each([['single', 'compact'], ['four', 'compact'], ['four', 'detailed']])("%
   expect(primary()).toBe(once);
   fireEvent.change(input(), { target: { value: "10" } });
   expect(primary()).toBe(once);
-  fireEvent.click(use());
+  use();
   expect(input()).toHaveValue(10 + skill.cost);
   fireEvent.change(input(), { target: { value: "0" } });
   expect(primary()).toBe(before);
@@ -268,16 +279,16 @@ test.each(["single", "four"])("%s银龙取消状态使用不再次耗能", mode 
   const defense = snapshot.skills.find(skill => skill.name === "捆缚");
   setup("underground-silver-dragon", mode, "捆缚", true);
   const input = () => screen.getAllByRole("spinbutton", { name: "累计消耗能量", exact: true })[0];
-  fireEvent.click(screen.getByRole("button", { name: mode === "single" ? "使用状态" : "攻击方技能1使用状态", exact: true }));
+  activateSkill(mode, { label: "使用状态" });
   expect(input()).toHaveValue(defense.cost);
-  fireEvent.click(screen.getByRole("button", { name: mode === "single" ? "取消使用" : "攻击方技能1取消使用", exact: true }));
+  activateSkill(mode, { label: "取消使用" });
   expect(input()).toHaveValue(defense.cost);
 });
 
 test.each(["single", "four"])("%s银龙零费技能不增加消耗", mode => {
   setup("underground-silver-dragon", mode, "魔法增效");
   const input = () => screen.getAllByRole("spinbutton", { name: "累计消耗能量", exact: true })[0];
-  fireEvent.click(screen.getByRole("button", { name: mode === "single" ? "使用技能" : "攻击方技能1使用技能", exact: true }));
+  activateSkill(mode);
   expect(input()).toHaveValue(0);
 });
 
@@ -287,7 +298,7 @@ test.each(["single", "four"])("%s银龙使用按折射减费后的实际能耗�
     state.directions.forward.overrides.refractionStatuses = [{ type: "水", label: "全技能能耗-1" }];
   });
   const input = () => screen.getAllByRole("spinbutton", { name: "累计消耗能量", exact: true })[0];
-  fireEvent.click(screen.getByRole("button", { name: mode === "single" ? "使用技能" : "攻击方技能1使用技能", exact: true }));
+  activateSkill(mode);
   expect(input()).toHaveValue(1);
   expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).toHaveTextContent("魔攻 +0%");
   expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).toHaveTextContent("待回合结束 1 点");
@@ -296,11 +307,11 @@ test.each(["single", "four"])("%s银龙使用按折射减费后的实际能耗�
 test("四技能状态技能连续使用也逐次撤回能耗与自身增益", async () => {
   setup("underground-silver-dragon", "four", "力量增效");
   const input = () => screen.getAllByRole("spinbutton", { name: "累计消耗能量", exact: true })[0];
-  const use = () => screen.getByRole("button", { name: "攻击方技能1使用技能", exact: true });
-  fireEvent.click(use());
+  const use = () => activateSkill("four");
+  use();
   expect(input()).toHaveValue(1);
   await Promise.resolve();
-  fireEvent.click(use());
+  use();
   expect(input()).toHaveValue(2);
   await Promise.resolve();
   fireEvent.click(screen.getByRole("button", { name: /撤回上一步/u }));
@@ -312,14 +323,14 @@ test.each([["single", "compact"], ["four", "compact"], ["four", "detailed"]])("%
   setup("underground-silver-dragon", mode, "热身");
   if (view === "detailed") fireEvent.click(screen.getByRole("button", { name: "具体版", exact: true }));
   const input = () => screen.getAllByRole("spinbutton", { name: "累计消耗能量", exact: true })[0];
-  const use = () => screen.getByRole("button", { name: mode === "single" ? "使用技能" : "攻击方技能1使用技能", exact: true });
-  fireEvent.click(use());
+  const use = () => activateSkill(mode, { view });
+  use();
   expect(input()).toHaveValue(1);
   await Promise.resolve();
-  fireEvent.click(use());
+  activateSkill(mode, { view, label: view === "compact" ? "解除状态" : "使用技能" });
   expect(input()).toHaveValue(1);
   if (mode === "four") expect(screen.getByText("热身的状态已解除")).toBeInTheDocument();
   await Promise.resolve();
-  fireEvent.click(use());
+  use();
   expect(input()).toHaveValue(2);
 });

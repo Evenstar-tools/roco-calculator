@@ -1,4 +1,5 @@
 import { calculateMatchup } from "./calculate.js";
+import { withS5PreviewBattleLevels } from "./battle-level.js";
 import { asResultRailModel, buildCombatState, getSpirit } from "./calculator-view-model.js";
 import { getEffectiveTraits } from "./effective-traits.js";
 import { getNatureMultipliers } from "./natures.js";
@@ -71,7 +72,7 @@ export function evaluateStarfallAt({ snapshot, state, direction = "forward", sel
     const selection = getStarfallSelection(snapshot, state, direction, selectedSkillIndex);
     const issue = selectionIssue(selection);
     if (issue) return invalidEvaluation(Number(count), issue);
-    const input = withStarfallStacks(state, direction, count, selection.index);
+    const input = withS5PreviewBattleLevels(snapshot, withStarfallStacks(state, direction, count, selection.index));
     const calculation = calculateMatchup(snapshot, buildCombatState(input, snapshot.meta?.serverId));
     const displayed = asResultRailModel({ snapshot, state: input, calculation, direction, includeTurnPreview: false });
     const result = displayed.selectedResult;

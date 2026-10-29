@@ -1,9 +1,13 @@
 import { afterEach, expect, test, vi } from "vitest";
+import runtime from "../../public/data/runtime.json";
+import globalRuntime from "../../public/data/global-runtime.json";
 import * as core from "../../src/domain/calculate.js";
 import { asResultRailModel, buildCalculatorViewModel, buildCombatState } from "../../src/domain/calculator-view-model.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { createUndoHistory } from "../../src/state/undo-history.js";
 import { applyStarfallThreshold } from "../../src/state/starfall-thresholds.js";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
+import { getS5PreviewTraitInputs } from "../../src/domain/s5-preview-traits.js";
 import { STARFALL_TEMPLATES, buildStarfallTemplateState, createStarfallThresholdRanking,
   evaluateStarfallAt, findStarfallThreshold, getCurrentStarfallStacks, getStarfallSelection, withStarfallStacks } from "../../src/domain/starfall-thresholds.js";
 
@@ -57,6 +61,54 @@ test("当前对位从主UI同源状态计算，保留实际HP、减伤、槽位�
   expect(state).toEqual(before);
   const selection = getStarfallSelection(snapshot, state, "reverse", 1);
   expect(selection).toMatchObject({ sourceSide: "defender", targetSide: "attacker", index: 1, selected: { index: 1, skill: { name: "翼击" } } });
+});
+
+test("国际服星陨沿用S3服务器环境，与主计算双向结果一致", () => {
+  const skill = globalRuntime.skills.find((entry) => entry.name === "撕咬");
+  const state = createInitialState(globalRuntime);
+  state.mode = "four";
+  for (const side of Object.values(state.sides)) {
+    side.skills = { single: skill.id, four: [skill.id, null, null, null] };
+  }
+  for (const direction of ["forward", "reverse"]) {
+    const input = withStarfallStacks(state, direction, 7, 0);
+    const vm = buildCalculatorViewModel({ snapshot: globalRuntime, state: input, activeDirection: direction });
+    const actual = evaluateStarfallAt({ snapshot: globalRuntime, state, direction, selectedSkillIndex: 0, stacks: 7 });
+    expect(actual.status).toBe("exact");
+    expect(actual.damage).toBe(vm.result.selectedResult.totalDamage);
+    expect(actual.maxHp).toBe(vm.result.defenderMaxHp);
+  }
+});
+
+test.each([99, 79])("S5冥古龙%s级星陨复算投影当前等级面板，双向与主界面一致且不改存档", (level) => {
+  const snapshot = withWebPreview(runtime);
+  const spirit = snapshot.spirits.find((entry) => entry.previewIdentity?.key === "minggulong");
+  const target = snapshot.spirits.find((entry) => entry.fullName === "迪莫");
+  const skill = snapshot.skills.find((entry) => entry.name === "撕咬");
+  const trait = snapshot.traits.find((entry) => spirit.traitIds.includes(entry.id));
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  state.sides.attacker.spiritId = spirit.id;
+  state.sides.defender.spiritId = target.id;
+  for (const side of Object.values(state.sides)) {
+    side.skills = { single: skill.id, four: [skill.id, null, null, null] };
+  }
+  for (const [direction, role] of [["forward", "attacker"], ["reverse", "defender"]]) {
+    const control = getS5PreviewTraitInputs(trait, role).find((entry) => entry.contextKey.endsWith("BattleLevel"));
+    state.directions[direction].context[control.id] = level;
+  }
+  const before = structuredClone(state);
+  for (const direction of ["forward", "reverse"]) {
+    const input = withStarfallStacks(state, direction, 7, 0);
+    const vm = buildCalculatorViewModel({ snapshot, state: input, activeDirection: direction });
+    const actual = evaluateStarfallAt({ snapshot, state, direction, selectedSkillIndex: 0, stacks: 7 });
+    expect(vm.sides.attacker.combatLevel).toBe(level);
+    expect(actual.status).toBe("exact");
+    expect(actual.damage).toBe(vm.result.selectedResult.totalDamage);
+    expect(actual.maxHp).toBe(vm.result.defenderMaxHp);
+    expect(actual.targetHp).toBe(vm.result.defenderHp);
+  }
+  expect(state).toEqual(before);
 });
 
 test("显式0层覆盖legacy回退，0层即可击倒返回0且99层合法", () => {
