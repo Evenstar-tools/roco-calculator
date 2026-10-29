@@ -2023,7 +2023,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const activeContext = state.mode === "single" ? state.directions[direction].context ?? {}
       : linkedNegativeStatusContext(state, side, entry?.context ?? {});
     const canRelease = activeStatus?.skillId === skill?.id &&
-      activeStatus?.slotIndex === (index ?? 0) && activeStatus?.contextSignature === JSON.stringify(activeContext);
+      activeStatus?.slotIndex === (index ?? 0) && matchesSkillActivationContext(skill, activeStatus?.contextSignature, activeContext);
     const label = canRelease ? "解除状态" : skillActivationLabel(side, index ?? 0, state.mode);
     const hasAction = skill && (resolution || progresses || postChanges || togglesStatus || canRelease);
     const action = hasAction ? {

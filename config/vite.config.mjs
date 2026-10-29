@@ -6,6 +6,7 @@ import { realpathSync } from "node:fs";
 
 import { buildAttributionPlugin } from "../scripts/build-attribution.mjs";
 import { s5PreviewPresetsPlugin } from "../scripts/s5-preview-presets.mjs";
+import { cnProductionPruningPlugin } from "../scripts/cn-production-pruning.mjs";
 
 export default defineConfig({
   build: {
@@ -57,5 +58,5 @@ export default defineConfig({
       "dist/**",
     ],
   },
-  plugins: [react(), buildAttributionPlugin(), s5PreviewPresetsPlugin()],
+  plugins: [react(), buildAttributionPlugin(), s5PreviewPresetsPlugin(), cnProductionPruningPlugin()],
 });

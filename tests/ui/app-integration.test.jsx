@@ -4253,9 +4253,9 @@ test("moves focus into the mobile result dialog and closes it with Escape", asyn
 });
 
 
-async function selectCompactConditionSkill(user, name, mode = "four") {
+async function selectCompactConditionSkill(user, name, mode = "four", side = "攻击方") {
   if (mode === "single") await user.click(screen.getByRole("tab", { name: "单技能" }));
-  const picker = screen.getByRole("combobox", { name: mode === "four" ? "攻击方技能1" : "音速犬当前技能", exact: true });
+  const picker = screen.getByRole("combobox", { name: mode === "four" ? `${side}技能1` : "音速犬当前技能", exact: true });
   await user.clear(picker);
   await user.type(picker, name);
   await user.click(screen.getAllByRole("option").find((option) => within(option).queryByText(name, { selector: "strong", exact: true })));
@@ -4354,27 +4354,34 @@ test("精简条件 打开状态技能面板与关闭操作不施放技能，不�
   expect(document.querySelector(".compact-skill-side--attacker .skill-usage")?.textContent).toBe(usage);
 });
 
-test.each(["four", "single"])("精简适配 %s 水泡盾条件可用，点击列表不施放，应用后可撤回", async (mode) => {
+test.each([["four", "攻击方"], ["single", "攻击方"], ["four", "防御方"]])("精简适配 %s %s 水泡盾应用后可撤回，四技能可解除", async (mode, side) => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
-  await selectCompactConditionSkill(user, "水泡盾", mode);
+  await selectCompactConditionSkill(user, "水泡盾", mode, side);
   const before = screen.getByRole("button", { name: /撤回上一步/ }).getAttribute("aria-label");
-  if (mode === "four") await user.click(screen.getByRole("group", { name: "攻击方技能1，当前选中", exact: true }));
+  if (mode === "four") await user.click(screen.getByRole("group", { name: `${side}技能1，当前选中`, exact: true }));
   expect(screen.getByRole("button", { name: /撤回上一步/ })).toHaveAttribute("aria-label", before);
-  const trigger = () => screen.getByRole("button", { name: mode === "four" ? "攻击方技能1条件" : "攻击方当前技能条件", exact: true });
+  const trigger = () => screen.getByRole("button", { name: mode === "four" ? `${side}技能1条件` : "攻击方当前技能条件", exact: true });
   await user.click(trigger());
-  let dialog = screen.getByRole("dialog", { name: "攻击方 · 水泡盾条件" });
+  let dialog = screen.getByRole("dialog", { name: `${side} · 水泡盾条件` });
   await user.click(within(dialog).getByRole("checkbox", { name: "防御应对成功", exact: true }));
   await user.click(within(dialog).getByRole("button", { name: "使用技能", exact: true }));
   expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("攻击+7层");
   expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("减伤80%");
+  if (mode === "four") expect(within(dialog).getByRole("button", { name: "解除状态", exact: true })).toBeEnabled();
   await user.keyboard("{Escape}");
   await user.click(screen.getByRole("button", { name: /撤回上一步/ }));
   await user.click(trigger());
-  dialog = screen.getByRole("dialog", { name: "攻击方 · 水泡盾条件" });
+  dialog = screen.getByRole("dialog", { name: `${side} · 水泡盾条件` });
   expect(within(dialog).queryByText(/已用 1 次/)).not.toBeInTheDocument();
   expect(within(dialog).getByRole("checkbox", { name: "防御应对成功", exact: true })).toBeChecked();
+  if (mode === "four") {
+    await user.click(within(dialog).getByRole("button", { name: "使用技能", exact: true }));
+    await user.click(within(dialog).getByRole("button", { name: "解除状态", exact: true }));
+    expect(within(dialog).getByRole("button", { name: "使用技能", exact: true })).toBeEnabled();
+    expect(within(dialog).getByText(/已用 1 次/)).not.toHaveTextContent("减伤80%");
+  }
 });
 
 test("精简适配 选择分支按实际生命条件显隐，驱赶与未接入效果不显示空应用按钮", async () => {

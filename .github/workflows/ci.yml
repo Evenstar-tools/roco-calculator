@@ -34,6 +34,11 @@ jobs:
         run: npm run data:validate
       - name: Build static site
         run: npm run build
+        env:
+          # Include the production analytics dependency in the bundle-size gate.
+          # Runtime reporting is disabled on the local E2E origin.
+          VITE_RUM_ENABLED: "true"
+          VITE_RUM_ID: "ci-build-validation"
       - name: Run critical unit and integration tests
         # build 已校验共享核心并生成本次运行数据。
         run: npx vitest run --config config/vitest.release.config.mjs
