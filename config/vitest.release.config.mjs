@@ -42,6 +42,7 @@ export default defineConfig({
             "tests/ui/public-resource-base.test.jsx",
             "tests/analytics/*.test.{js,jsx}",
             "tests/ui/workspace-overlays.test.jsx",
+            "tests/ui/preset-update-notice.test.jsx",
             "tests/hooks/calculator-session-storage.test.jsx",
             "tests/hooks/balance-comparison.test.jsx",
             "tests/ui/{global-workspace,web-entry,share-server-boundary,global-tool-boundary,locale-common,team-server-locale,season-theme,season-theme-settings,global-placeholder-workflow,global-placeholder-configuration,skill-query-placeholder}.test.jsx",
