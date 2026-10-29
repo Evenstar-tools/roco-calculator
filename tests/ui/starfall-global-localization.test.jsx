@@ -15,6 +15,8 @@ import { findStarfallThreshold, withStarfallStacks } from "../../src/domain/star
 import { WhatsNewDialog } from "../../src/components/WhatsNewDialog.jsx";
 import { DataSourceDialog } from "../../src/components/DataSourceDialog.jsx";
 import { GLOBAL_RELEASE_SUMMARY } from "../../src/data/global-release-summary.js";
+import { App } from "../../src/App.jsx";
+import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js";
 
 const full = JSON.parse(readFileSync("public/data/global-runtime.json", "utf8"));
 const snapshot = { ...full, spirits: full.spirits.filter((spirit) => ["迪莫", "魔力猫"].includes(spirit.fullName)) };
@@ -30,6 +32,50 @@ function sourceFixture() {
   state.directions.forward.currentHp = 30;
   return { state, direction: "forward" };
 }
+
+test.each([["cn", "zh-CN"], ["global", "en"], ["global", "ja"]])("%s %s 星陨工具仅在任一方有实际印记时显示", (serverId, locale) => {
+  localStorage.clear();
+  localStorage.setItem(FIRST_RUN_GUIDE_STORAGE_KEY, "1");
+  const t = (key) => translateUi(locale, key);
+  const tc = (key, values) => translateCalculatorText(key, locale, values);
+  render(<RuntimeProvider serverId={serverId} locale={locale}><LocaleProvider locale={locale}>
+    <App initialSnapshot={{ ...snapshot, meta: { ...snapshot.meta, serverId } }} initialWorkspace={{ state: sourceFixture().state, viewMode: "detailed", advancedOptionsOpen: true }} />
+  </LocaleProvider></RuntimeProvider>);
+  const entry = { name: tc("星陨斩杀线"), exact: true };
+  const desktopResult = () => screen.getByRole("complementary", { name: tc("伤害结果") });
+  expect(screen.queryByRole("button", entry)).not.toBeInTheDocument();
+
+  for (const sideLabel of ["进攻方", "防御方"]) {
+    const mark = () => screen.getByRole("combobox", { name: tc("{v0}{v1}印记", { v0: sideLabel, v1: "负面" }) });
+    fireEvent.change(mark(), { target: { value: "poison" } });
+    expect(screen.queryByRole("button", entry)).not.toBeInTheDocument();
+    fireEvent.change(mark(), { target: { value: "starfall" } });
+    const stacks = () => screen.getByRole("spinbutton", { name: tc(`${sideLabel}星陨层数`).trim() });
+    fireEvent.change(stacks(), { target: { value: "2" } });
+    expect(within(desktopResult()).getByRole("button", entry)).toBeVisible();
+
+    fireEvent.click(within(desktopResult()).getByRole("button", { name: tc("切换计算方向") }));
+    expect(within(desktopResult()).getByRole("button", entry)).toBeVisible();
+    expect(stacks()).toHaveValue(2);
+    fireEvent.click(screen.getByRole("button", { name: t("精简版") }));
+    expect(within(desktopResult()).getByRole("button", entry)).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: t("展开伤害结果") }));
+    const mobileResult = screen.getByRole("dialog", { name: t("完整伤害结果") });
+    expect(within(mobileResult).getByRole("button", entry)).toBeVisible();
+    fireEvent.click(within(mobileResult).getByRole("button", { name: t("关闭伤害结果") }));
+
+    fireEvent.click(screen.getByRole("button", { name: t("具体版") }));
+    fireEvent.change(stacks(), { target: { value: "0" } });
+    expect(screen.queryByRole("button", entry)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: t("展开伤害结果") }));
+    expect(within(screen.getByRole("dialog", { name: t("完整伤害结果") })).queryByRole("button", entry)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: t("关闭伤害结果") }));
+    fireEvent.change(stacks(), { target: { value: "1" } });
+    expect(within(desktopResult()).getByRole("button", entry)).toBeVisible();
+    fireEvent.change(mark(), { target: { value: "" } });
+    expect(screen.queryByRole("button", entry)).not.toBeInTheDocument();
+  }
+});
 
 test.each(["en", "ja"])("Global %s starfall uses real S3 damage, translated controls and canonical state", async (locale) => {
   const source = sourceFixture(), before = structuredClone(source.state), onApply = vi.fn();
