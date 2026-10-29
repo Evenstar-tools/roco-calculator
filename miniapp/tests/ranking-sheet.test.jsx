@@ -27,14 +27,23 @@ test("倍率支持全取消、半选和任意组合；详情可返回", () => {
 
 test("无队伍也能打开速度榜，同精灵多口径保留且不虚构当前速度", () => {
   render(<RankingSheet kind="speed" snapshot={snapshot} onClose={() => {}} />);
-  expect(screen.getAllByText("水测试")).toHaveLength(2);
+  expect(screen.getAllByText("水测试")).toHaveLength(4);
   expect(screen.queryByText(/当前速度/)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "筛选" }));
+  for (const name of ["极速", "满速", "无修正·0个体", "减速·0个体"]) {
+    expect(screen.getByRole("checkbox", { name: new RegExp(`${name}$`) })).toHaveAttribute("aria-checked", "true");
+  }
+  fireEvent.click(screen.getByRole("checkbox", { name: /减速·0个体$/ }));
+  fireEvent.click(screen.getByRole("button", { name: "返回" }));
+  expect(screen.getAllByText("水测试")).toHaveLength(3);
+  fireEvent.click(screen.getByRole("button", { name: "重置" }));
+  expect(screen.getAllByText("水测试")).toHaveLength(4);
 });
 
 test("速度试查、种族筛选及去字头像详情可操作", () => {
   render(<RankingSheet kind="speed" snapshot={snapshot} onClose={() => {}} />);
   fireEvent.click(screen.getByRole("button", { name: "试查 267" }));
-  expect(screen.getByText(/比 267 快 0 · 同速 0 · 慢 4 个配置/)).toBeInTheDocument();
+  expect(screen.getByText(/比 267 快 0 · 同速 0 · 慢 8 个配置/)).toBeInTheDocument();
   expect(screen.getByText("基准位置 · 没有同速配置")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "种族速度" }));
   expect(screen.getByText("没有符合当前条件的结果")).toBeInTheDocument();
