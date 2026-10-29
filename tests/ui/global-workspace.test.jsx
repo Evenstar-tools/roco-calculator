@@ -92,7 +92,8 @@ test("the original Global App persists unknown shared references and restores th
   expect(store.loadSession().present.directions.reverse).toEqual(payload.directions.reverse);
   expect(store.loadSession().present.directions.forward).toEqual(payload.directions.forward);
   expect(screen.getByRole("heading", { name: "Calculate damage in three steps" })).toBeVisible();
-  expect(fetch).not.toHaveBeenCalled();
+  expect([...new Set(fetch.mock.calls.map(([url]) => url))])
+    .toEqual(["/data/global/presets/pvp-popular-configs.json"]);
   expect(getMissingUiMessages()).toEqual([]);
 });
 
