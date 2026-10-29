@@ -108,7 +108,7 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
     }
     metrics.setServer(global ? "global" : "cn");
     if (global) applyPageMetadata({ ...copy, canonical: `https://rococalc.top${routeFor("global", entry.locale)}` });
-    else void metrics.start();
+    void metrics.start();
   }, [global, entry.locale, copy, isDesktop]);
 
   useEffect(() => {
@@ -150,7 +150,7 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
     setEntry(resolveEntry({ pathname: routeFor(next.serverId, next.locale), hash }));
     setUrlHash(hash);
     if (serverId !== entry.serverId) setManualShare(null);
-    // 同页切服立即停用采集；旧异步 SDK 请求也由传输出口再次检查。
+    // 同页语言切换同步统计入口，异步批次保留原入口归属。
     document.documentElement.dataset.server = serverId;
     metrics.setServer(serverId);
     window.scrollTo(0, 0);

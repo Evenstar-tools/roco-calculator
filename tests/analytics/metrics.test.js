@@ -101,7 +101,7 @@ test("only controlled event metadata can leave the browser", async () => {
 });
 
 
-test("leaving CN before SDK resolves destroys it without flushing queued events", async () => {
+test("disposing metrics before SDK resolves destroys it without flushing queued events", async () => {
   let resolveTransport;
   const send = vi.fn();
   const destroy = vi.fn();
@@ -117,12 +117,36 @@ test("leaving CN before SDK resolves destroys it without flushing queued events"
   expect(destroy).toHaveBeenCalledOnce();
 });
 
-test("Global routes reject optional RUM traffic including late CN requests", () => {
-  const original = location.href;
-  try {
-    for (const path of ["/en/", "/global/zh-CN/", "/global/ja/"]) {
-      history.replaceState(null, "", path);
-      expect(filterRumRequest({ url: "https://rumt-zh.com/collect/pv" })).toBe(false);
-    }
-  } finally { history.replaceState(null, "", original); }
+test("only fixed canonical URLs are collected without query or share payloads", async () => {
+  const { metricsPageUrl } = await import("../../src/analytics/page-url.js");
+  for (const [path, canonical] of [["/en/?secret=1#team", "/en/"], ["/jp/", "/jp/"], ["/global/ja/", "/jp/"], ["/global/zh-CN/", "/global/zh-CN/"], ["/dianlu/", "/"]]) {
+    expect(metricsPageUrl(`https://rococalc.top${path}`)).toBe(`https://rococalc.top${canonical}`);
+    const result = filterRumRequest({ url: "https://rumt-zh.com/collect/events?originFrom=secret&referer=secret" }, `https://rococalc.top${canonical}`);
+    expect(new URL(result.url).searchParams.get("from")).toBe(`https://rococalc.top${canonical}`);
+    expect(result.url).not.toContain("secret");
+  }
+  for (const url of ["https://rococalc.top/unknown/", "https://other.example/en/", "http://localhost/en/"]) {
+    expect(metricsPageUrl(url)).toBe(null);
+    expect(filterRumRequest({ url: "https://rumt-zh.com/collect/events" }, url)).toBe(false);
+  }
+});
+
+test("EN to JP navigation preserves queued event URLs and one shared session", async () => {
+  let resolveTransport;
+  const send = vi.fn();
+  const h = harness({ pageUrl: "https://rococalc.top/en/", loadTransport: () => new Promise((resolve) => { resolveTransport = resolve; }) });
+  const starting = h.metrics.start();
+  await Promise.resolve();
+  h.metrics.track("feature_view", "skills");
+  h.metrics.page("https://rococalc.top/jp/");
+  h.metrics.page("https://rococalc.top/jp/");
+  h.metrics.track("calculation_ready", "calculator", { result_kind: "damage" });
+  resolveTransport({ send });
+  await starting;
+  const events = send.mock.calls.map(([event]) => event);
+  expect(events.filter(e => e.name === "session_start")).toHaveLength(1);
+  expect(events.filter(e => e.name === "page_view").map(e => e.pageUrl)).toEqual(["https://rococalc.top/en/", "https://rococalc.top/jp/"]);
+  expect(events.find(e => e.feature === "skills").pageUrl).toBe("https://rococalc.top/en/");
+  expect(events.find(e => e.name === "calculation_ready").pageUrl).toBe("https://rococalc.top/jp/");
+  expect(new Set(events.map(e => e.sessionId)).size).toBe(1);
 });
