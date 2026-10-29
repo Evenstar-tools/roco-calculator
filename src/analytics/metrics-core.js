@@ -11,8 +11,10 @@ export function eventMetadata(name, metadata = {}) {
   return Object.fromEntries(Object.entries(allowed).filter(([key, values]) => values.includes(metadata?.[key])).map(([key]) => [key, metadata[key]]));
 }
 
-export function createMetrics({ enabled, storage, initialFeature = "calculator", now = Date.now, uuid = () => crypto.randomUUID(), loadTransport }) {
+export function createMetrics({ enabled, storage, initialFeature = "calculator", pageUrl, now = Date.now, uuid = () => crypto.randomUUID(), loadTransport }) {
   let stopped = false;
+  let initialized = false;
+  let currentPageUrl = pageUrl;
   let transport;
   let starting;
   let visitorId;
@@ -28,7 +30,7 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
   };
   const emit = (name, feature, at, metadata) => {
     if (stopped) return;
-    const event = { id: uuid(), name, feature, at, sessionId: session.id, ...eventMetadata(name, metadata) };
+    const event = { id: uuid(), name, feature, at, sessionId: session.id, ...(currentPageUrl ? { pageUrl: currentPageUrl } : {}), ...eventMetadata(name, metadata) };
     if (transport) {
       try { transport.send(event); } catch { /* 统计不能中断功能。 */ }
     } else if (pending.length < 30) pending.push(event);
@@ -60,6 +62,7 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
             visitorId = uuid();
             write(VISITOR_KEY, visitorId);
           }
+          initialized = true;
           const at = touch();
           emit("page_view", currentFeature, at);
           emit("feature_view", currentFeature, at, { entry_source: "initial" });
@@ -71,6 +74,16 @@ export function createMetrics({ enabled, storage, initialFeature = "calculator",
         } catch { pending.length = 0; }
       });
       return starting;
+    },
+    page(nextPageUrl) {
+      if (stopped || !enabled || !nextPageUrl || nextPageUrl === currentPageUrl) return;
+      currentPageUrl = nextPageUrl;
+      if (!initialized) return;
+      try {
+        const at = touch();
+        emit("page_view", currentFeature, at);
+        emit("feature_view", currentFeature, at, { entry_source: "navigate" });
+      } catch { /* 入口切换统计不影响导航。 */ }
     },
     route(feature) {
       if (stopped || !enabled || !starting || !["calculator", "deer"].includes(feature) || feature === currentFeature) return;
