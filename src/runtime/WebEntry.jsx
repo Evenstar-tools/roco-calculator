@@ -2,7 +2,8 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { metrics } from "../analytics/metrics.js";
 import { readThemeSetting } from "../state/display-settings.js";
 import { applyPageMetadata } from "../seo/page-metadata.js";
-import { readGlobalLocale, readManualPreference, resolveEntry, routeFor, writeManualPreference } from "./routes.js";
+import { readGlobalLocale, resolveEntry, routeFor, writeManualPreference } from "./routes.js";
+import { browserEntry } from "./browser-entry.js";
 import { decodeShareEnvelope } from "../state/share.js";
 import { IncomingShareNotice } from "./IncomingShareNotice.jsx";
 import { RuntimeProvider } from "./RuntimeContext.jsx";
@@ -20,35 +21,16 @@ const pageText = {
   ja: { title: "ロコ計算機 · グローバル", description: "S3 シーズン中盤の能力値とルールに基づく計算機。", loading: "計算機を読み込み中…" },
 };
 
-export function browserEntry() {
-  let preference = null;
-  let hasLegacyCnData = false;
-  try {
-    preference = readManualPreference(localStorage);
-    // 返回历史根入口时恢复当时的服，不被后来手动选择覆盖。
-    if (location.pathname === "/" && !location.hash && history.state?.rocoEntry) {
-      preference = history.state.rocoEntry;
-    }
-    hasLegacyCnData = ["teams.v1", "spirit-configs.v2", "spirit-configs.v1", "favorites.v1"]
-      .some((suffix) => localStorage.getItem(`rock-calculator.${suffix}`) !== null ||
-        localStorage.getItem(`rock-calculator.servers.cn.${suffix}`) !== null);
-  } catch { /* 禁用存储仍可使用明确入口。 */ }
-  return resolveEntry({
-    pathname: location.pathname, hash: location.hash, preference,
-    languages: navigator.languages, hasLegacyCnData,
-    // 保持现有根入口；国际服仅通过明确入口、分享或手动偏好进入。
-    globalReady: false,
-  });
-}
+export { browserEntry } from "./browser-entry.js";
 
 export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
   const [entry, setEntry] = useState(() => initialEntry ?? browserEntry());
   useEffect(() => {
-    if (entry.serverId === "global" && !initialEntry && location.protocol !== "app:") {
+    if (entry.serverId === "global" && (!initialEntry || entry !== initialEntry) && location.protocol !== "app:") {
       const target = routeFor("global", entry.locale);
       if (location.pathname !== target) window.location.replace(`${target}${location.search}${location.hash}`);
     }
-  }, [entry.serverId, entry.locale, initialEntry]);
+  }, [entry, initialEntry]);
   const [cnVisited, setCnVisited] = useState(entry.serverId === "cn");
   const [globalVisited, setGlobalVisited] = useState(entry.serverId === "global");
   const [globalLocale, setGlobalLocale] = useState(() => entry.serverId === "global" ? entry.locale : readGlobalLocale());

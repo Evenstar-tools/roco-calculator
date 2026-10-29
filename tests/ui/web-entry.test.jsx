@@ -228,3 +228,16 @@ test("random theme shuffle exits preview, keeps unrelated URL state and persists
   expect(await screen.findByRole("combobox", { name: "Global theme" })).toHaveValue("s3");
   expect(document.documentElement.dataset.season).toBe("s3");
 });
+
+
+test("a later root share still loads the isolated Global bundle after startup resolution", async () => {
+  history.replaceState(null, "", "/?keep=1");
+  const view = render(<WebEntry initialEntry={browserEntry()} />);
+  await screen.findByLabelText("CN draft");
+  const hash = "#v2.global.ja.e30.000000000000";
+  history.replaceState(null, "", `/?keep=1${hash}`);
+  globalThis.dispatchEvent(new HashChangeEvent("hashchange"));
+  await waitFor(() => expect(hardNavigation.replace).toHaveBeenCalledWith(`/jp/?keep=1${hash}`));
+  expect(hardNavigation.replace).toHaveBeenCalledOnce();
+  view.unmount();
+});
