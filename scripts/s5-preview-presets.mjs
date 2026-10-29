@@ -3,8 +3,8 @@ import { readFileSync } from "node:fs";
 const presetFile = "data/presets/pvp-popular-configs.json";
 const readJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 
-// The preview serves the same endpoint as CN, with its own additions. Formal CN
-// and Global keep their public files, and every existing preset consumer agrees.
+// CN and preview serve the same merged library at their existing endpoint.
+// The base file and independently pinned Global build remain unchanged.
 export function buildS5PopularConfigLibrary() {
   const base = readJson(`../public/${presetFile}`);
   const additions = readJson("../data/presets/s5-popular-configs.json");

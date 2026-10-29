@@ -233,6 +233,36 @@ for (const [width, height, theme] of [[1920, 1080, "light"], [390, 844, "light"]
   });
 }
 
+test("compact conditions release single-skill defense without replaying permanent gains", async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await resetUiuxStorage(page);
+  await page.goto("/");
+  await selectSpirit(page, "攻击方", "稻草守护者");
+  await selectSpirit(page, "防御方", "烈火战神");
+  await page.getByRole("tab", { name: "单技能", exact: true }).click();
+  await page.getByRole("combobox", { name: "稻草守护者当前技能", exact: true }).fill("水泡盾");
+  await page.getByRole("option", { name: /^水泡盾/ }).click();
+  await page.getByRole("button", { name: "攻击方当前技能条件", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "攻击方 · 水泡盾条件" });
+  const summary = dialog.locator(".compact-skill-state");
+  await dialog.getByRole("checkbox", { name: "防御应对成功", exact: true }).check();
+  await dialog.getByRole("button", { name: "使用技能", exact: true }).click();
+  await expect(summary).toContainText("已用 1 次");
+  await expect(summary).toContainText("攻击+7层");
+  await expect(summary).toContainText("减伤80%");
+  await dialog.getByRole("button", { name: "解除状态", exact: true }).click();
+  await expect(dialog.getByRole("button", { name: "使用技能", exact: true })).toBeEnabled();
+  await expect(summary).toContainText("已用 1 次");
+  await expect(summary).toContainText("攻击+7层");
+  await expect(summary).not.toContainText("减伤80%");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: /撤回上一步/ }).click();
+  await page.getByRole("button", { name: "攻击方当前技能条件", exact: true }).click();
+  await expect(dialog.getByRole("button", { name: "解除状态", exact: true })).toBeEnabled();
+  await expect(summary).toContainText("攻击+7层");
+  await expect(summary).toContainText("减伤80%");
+});
+
 test("compact conditions expose repeat counts, branch health and expandable burst sources on desktop", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1920, height: 1080 });
   await configureCounter(page);
