@@ -661,7 +661,20 @@ const REVIEWED_EFFECTS = Object.freeze({
     "选择威力分支且敌方携带光系技能",
     50,
   ),
-  齿轮扭矩: stackAdd("positionChangeCount", "位置变化次数", 15),
+  齿轮扭矩: {
+    inputs: [{
+      ...numberInput("positionChangeCount", "位置变化次数", 0, undefined, 0),
+      // 保留原控件 ID，移除上限后仍能读取已有队伍和分享中的次数。
+      id: "skill.positionChangeCount.30de2dc0",
+    }],
+    ruleId: "stack_scaled",
+    ruleParams: {
+      contextKey: "positionChangeCount",
+      defaultValue: 0,
+      label: "位置变化次数",
+      perStack: 15,
+    },
+  },
   微型斥候: stackAdd(
     "resistedAttackCount",
     "受到抵抗攻击次数",

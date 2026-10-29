@@ -1,7 +1,7 @@
 import { createSpeedTargets, createSpeedSpecialTargets, groupSpeedTargets, SPEED_TARGET_PROFILES } from "./speed-targets.js";
 
 export const RANKING_METRIC_LABELS = Object.freeze({ combined: "综合耐久", physical: "物理耐久", magical: "魔法耐久" });
-export const DEFAULT_RANKING_PROFILES = Object.freeze(["positive-max", "neutral-max"]);
+export const DEFAULT_RANKING_PROFILES = Object.freeze(["positive-max", "neutral-max", "neutral-zero", "negative-zero"]);
 
 export function speedQuery(query, mode = "auto") {
   const text = query.normalize("NFKC").trim().toLowerCase();
