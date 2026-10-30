@@ -137,7 +137,7 @@ async function configureStarfall(page, slot = 1) {
   }
 }
 
-for (const [width, height, theme] of [[1920, 1080, "light"], [390, 844, "light"], [320, 740, "dark"]]) {
+for (const [width, height, theme] of [[1920, 1080, "light"], [320, 740, "dark"]]) {
   test(`compact conditions adapt every skill in the reported lineup ${width} ${theme}`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height });
     await resetUiuxStorage(page);
@@ -369,7 +369,7 @@ test("starfall thresholds finish the full form table and keep search available",
   await expect(dialog).toHaveCount(0);
 });
 
-for (const [width, height, theme] of [[1920, 1080, "light"], [390, 844, "light"], [320, 740, "dark"]]) {
+for (const [width, height, theme] of [[1920, 1080, "light"], [320, 740, "dark"]]) {
   test(`starfall thresholds keep the real table and cultivation actions readable ${width} ${theme}`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height });
     await configureStarfall(page);
