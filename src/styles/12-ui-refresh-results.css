@@ -382,7 +382,7 @@ html[data-theme="dark"] .result-rail__warning {
   padding: 8px 0 0;
   color: var(--text-muted);
   font-size: 12px;
-  grid-template-columns: auto minmax(0, 1fr) 34px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
 }
 
 .health-input {
@@ -484,6 +484,14 @@ html[data-theme="dark"] .health-input__modes .health-input__mode[aria-pressed="t
   color: var(--accent);
   font-size: 12px;
   font-weight: 800;
+}
+
+/* 满血按钮按文字撑宽（日文“満タン”），不折成两行；HP/% 切换不受影响。 */
+.result-rail__hp-control > button {
+  width: auto;
+  min-width: 34px;
+  padding-inline: 6px;
+  white-space: nowrap;
 }
 
 .result-rail__actions {
