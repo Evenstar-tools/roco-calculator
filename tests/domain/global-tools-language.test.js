@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 import { strFromU8, unzipSync } from "fflate";
 import { localizeToolText } from "../../src/i18n/useToolLocale.js";
+import { translateUi } from "../../src/i18n/messages.js";
 import { localizeType } from "../../src/i18n/type-labels.js";
 import { localizeGlobalSkill, localizeGlobalSpirit } from "../../src/runtime/global-entity-localization.js";
 import { buildDamageComparisonReport, damageComparisonMarkdown } from "../../src/features/damage-comparison/export.js";
@@ -16,6 +17,13 @@ import { resolveSpiritFormRole } from "../../src/features/team-ability/domain/sp
 const snapshot = JSON.parse(readFileSync("public/data/global-runtime.json", "utf8"));
 const catalog = unpackCatalog(JSON.parse(readFileSync("public/data/global/skill-query/catalog.json", "utf8")));
 const chinese = /[\u3400-\u9fff]/u;
+const officialGlossary = new Map(JSON.parse(readFileSync("data/research/global-client-20261028/ui/official-ui-glossary.json", "utf8")).rows.map(row => [row.sourceId, row.plain]));
+const officialNames = JSON.parse(readFileSync("data/research/global-client-20261028/official-name-map.json", "utf8")).records;
+function officialTerm(sourceId, locale) {
+  const text = officialGlossary.get(sourceId)?.[locale];
+  if (!text) throw new Error(`Missing native terminology source: ${sourceId}/${locale}`);
+  return text;
+}
 
 async function comparisonFixture(templateId = "standard-hp-v1", inheritTargetStatuses = false) {
   const initial = createProductInitialState(snapshot);
@@ -80,11 +88,19 @@ test("every Global skill acquisition method has a translated display without mod
   expect(unresolved).toEqual([]);
   const bubble = snapshot.skills.find(skill => skill.name === "气泡");
   for (const locale of ["en", "ja"]) {
-    expect(localizeAcquisitionMethods(["解锁：[技能石]气泡"], locale)).toContain(localizeGlobalSkill(bubble, locale).name);
+    const bubbleSource = officialNames.find(row => row.kind === "skill" && row.cnLocalId === bubble.reference.sourceId);
+    const tablet = officialTerm("table:DESC_NOTE_CONF:2018:note", locale);
+    const bubbleName = bubbleSource.localized[locale].namePlain;
+    const acquisition = localizeAcquisitionMethods(["解锁：[技能石]气泡"], locale);
+    expect(acquisition).toContain(tablet);
+    expect(acquisition).toContain(bubbleName);
+    expect(localizeToolText("技能石：气泡", locale)).toContain(tablet);
+    expect(localizeToolText("技能石：气泡", locale)).toContain(bubbleName);
     expect(localizeAcquisitionMethods(["解锁：普通系血脉"], locale)).toContain(localizeType("普通", locale));
   }
   expect(localizeAcquisitionMethods(["解锁：Lv.7"], "en")).toBe("Learned at Lv. 7");
   expect(localizeAcquisitionMethods(["解锁：Lv.7"], "zh-CN")).toBe("解锁：Lv.7");
+  expect(localizeAcquisitionMethods(["解锁：[技能石]气泡"], "zh-CN")).toBe("解锁：[技能石]气泡");
   expect(methods).toEqual(original);
 });
 
@@ -99,11 +115,53 @@ test("Global final forms remain eligible in rankings with their namespaced IDs",
   expect(new Set(targets.map(target => target.name))).toEqual(new Set(names));
 });
 
-test("real Global ranking qualifiers and Drive traces render whole English phrases", () => {
+test("real Global ranking qualifiers and Gearshift traces render whole English phrases", () => {
   const targets = createSpeedTargetCatalog({ snapshot, profiles: ["positive-max", "special"] });
   const labels = [...new Set(targets.flatMap(target => [target.qualifier, target.specialLabel, target.profileLabel]).filter(Boolean))];
   expect(labels.filter(label => chinese.test(localizeToolText(label, "en")))).toEqual([]);
   expect(localizeToolText("{slot} 号位-{layers}", "en", { slot: 1, layers: 0 })).toBe("Slot 1 · 0");
-  expect(localizeToolText("第 2 回合 · 轮班 · 额外传动 · 使用后", "en")).toBe("Turn 2 · Gear Shift · Extra Drive · After use");
-  expect(localizeToolText("啮合传递：自身 1 + 向心力 1 = 2 层", "en")).toBe("Gear Transfer: base 1 + Centripetal Force 1 = 2 Drive");
+  const gearshift = officialTerm("table:DESC_NOTE_CONF:1033:note", "en");
+  expect(localizeToolText("第 2 回合 · 轮班 · 额外传动 · 使用后", "en")).toBe(`Turn 2 · Gear Shift · Extra ${gearshift} · After use`);
+  expect(localizeToolText("啮合传递：自身 1 + 向心力 1 = 2 层", "en")).toBe(`Gear Transfer: base 1 + Centripetal Force 1 = 2 ${gearshift}`);
+  expect(localizeToolText("第 2 回合 · 轮班 · 额外传动 · 使用后", "zh-CN")).toBe("第 2 回合 · 轮班 · 额外传动 · 使用后");
+});
+
+
+test.each([
+  ["血脉", "table:LOCALIZATION_CONF:pet_filter_title_blood:msg"],
+  ["魔法", "table:LOCALIZATION_CONF:DAMAGETYPE_MAGICAL:msg"],
+  ["状态", "table:LOCALIZATION_CONF:umg_pet_skill_tips_3:msg"],
+  ["变化", "table:LOCALIZATION_CONF:umg_pet_skill_tips_3:msg"],
+  ["克制", "table:LOCALIZATION_CONF:umg_battle_popup_general_1:msg"],
+])("Global %s uses native terminology in both display paths", (source, sourceId) => {
+  for (const locale of ["en", "ja"]) {
+    const expected = officialTerm(sourceId, locale);
+    expect(translateUi(locale, source), `${locale} UI ${source}`).toBe(expected);
+    expect(localizeToolText(source, locale), `${locale} tool ${source}`).toBe(expected);
+  }
+  expect(translateUi("zh-CN", source)).toBe(source);
+  expect(localizeToolText(source, "zh-CN")).toBe(source);
+});
+
+test.each(["en", "ja"])("Global %s compound Gearshift titles and counts retain the native mechanism name", locale => {
+  const gearshift = officialTerm("table:DESC_NOTE_CONF:1033:note", locale);
+  const sources = ["传动计算器", "传动特性", "传动后顺序", "已累计传动数", "额外传动", " · 额外传动", "第 2 回合传动"];
+  for (const source of sources) {
+    expect(localizeToolText(source, locale), source).toContain(gearshift);
+    expect(localizeToolText(source, "zh-CN")).toBe(source);
+  }
+  const trace = "累计传动 +2 → 4（风起印记 ×1）";
+  expect(localizeToolText(trace, locale)).toContain(gearshift);
+  expect(localizeToolText(trace, locale)).toMatch(/[+＋]2/u);
+  expect(localizeToolText(trace, locale)).toContain("4");
+  expect(localizeToolText(trace, "zh-CN")).toBe(trace);
+});
+
+test.each(["en", "ja"])("Global %s keeps neutral personality separate from the native Common class", locale => {
+  const common = officialTerm("table:TYPE_DICTIONARY:2:short_name", locale);
+  expect(localizeType("普通", locale)).toBe(common);
+  expect(translateUi(locale, "普通")).toBe(locale === "en" ? "Neutral" : "補正なし");
+  expect(translateUi(locale, "普通")).not.toBe(common);
+  expect(localizeType("普通", "zh-CN")).toBe("普通");
+  expect(translateUi("zh-CN", "普通")).toBe("普通");
 });

@@ -10,13 +10,12 @@ import TransmissionMotion from "./TransmissionMotion.jsx";
 import TransmissionTraitPicker from "./TransmissionTraitPicker.jsx";
 import "./transmission.css";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
+import { getGlobalEntityText } from "../../runtime/global-entity-localization.js";
 import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { useModalFocus } from "../../hooks/useModalFocus.js";
 
 const SELECTABLE_TRAITS = ["向心力", "翼轴", "贪心算法", "盲拧", "机械变式", "风速仪", "正位宝剑", "宝剑王牌", "有求必应", "一意孤行"];
 const STAGE_ORDER = { "一阶": 1, "二阶": 2, "三阶": 3, "首领": 4 };
-
-const names = (slots) => slots.map((skill, i) => `${i + 1}. ${skill?.name ?? "未配置"}`).join(" → ");
 
 export default function TransmissionPanel(props) {
   const { release } = useRuntime();
@@ -31,7 +30,8 @@ export default function TransmissionPanel(props) {
 }
 
 function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, onClose }) {
-  const { t } = useLocale();
+  const { serverId } = useRuntime();
+  const { t, locale } = useLocale();
   const spirits = useMemo(() => snapshot.spirits.map(prepareSpiritForView), [snapshot.spirits]);
   const [initial, setInitial] = useState([null, null, null, null]);
   const [slots, setSlots] = useState(initial);
@@ -110,12 +110,27 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
     setHistory([]); setSelected(-1); setIssue(""); setCooldown(null); setBranch("power");
     setRoundUndo([]); setDriveAccum(0);
   }
-  function roundDetails(result) {
+  function skillName(skill) {
+    if (!skill) return t("未配置");
+    return serverId === "global" ? getGlobalEntityText("skill", skill, "name", locale, t(skill.name)) : t(skill.name);
+  }
+  function names(entries) {
+    return entries.map((skill, index) => `${index + 1}. ${skillName(skill)}`).join(" → ");
+  }
+  function roundDetails(result, inputSlots) {
     return [
-      ...result.sources.map((source) => `${source.name}：自身 ${source.own}${source.extra ? ` + ${effectiveTrait} ${source.extra}` : ""}${source.fixed ? "；位置固定" : ` = ${source.total} 层`}`),
-      ...result.steps.map((step, i) => `第 ${i + 1} 层：${names(step.slots)}`),
+      ...result.sources.map((source, index) => ({ skill: inputSlots[index], text: `${source.name}：自身 ${source.own}${source.extra ? ` + ${effectiveTrait} ${source.extra}` : ""}${source.fixed ? "；位置固定" : ` = ${source.total} 层`}` })),
+      ...result.steps.map((step, index) => ({ layer: index + 1, slots: step.slots })),
       ...(result.steps.length ? [] : ["没有传动，槽位不变。"]),
     ];
+  }
+  function detailText(detail) {
+    if (typeof detail === "string") return t(detail);
+    // Translate the trace wording first, then insert names by ID so homonymous
+    // weather or nature labels cannot replace an actual skill identity.
+    const marker = "\uFFFC";
+    if (detail.slots) return t("第 {v0} 层：{v1}", { v0: detail.layer, v1: marker }).replace(marker, names(detail.slots));
+    return t(marker + detail.text.slice(detail.skill.name.length)).replace(marker, skillName(detail.skill));
   }
   function saveRound() {
     setRoundUndo((previous) => [...previous, { slots, round, history, selected, branch, cooldown, driveAccum }]);
@@ -148,7 +163,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
     ];
     playResult({ steps }, "回合传动");
     saveRound();
-    const entries = [{ round: round + 1, title: `第 ${round + 1} 回合 · 开始`, slots: result.slots, details: roundDetails(result) }];
+    const entries = [{ round: round + 1, title: `第 ${round + 1} 回合 · 开始`, slots: result.slots, details: roundDetails(result, action?.slots ?? slots) }];
     if (action) entries.unshift({ title: `第 ${round} 回合 · ${action.label}${selected >= 0 ? " · 使用后" : ""}`, slots: action.slots,
       details: action.executions.map((execution, i) => `第 ${i + 1} 次效果：${execution.branch === "drive" ? "额外传动" : execution.branch === "power" ? "1号位加威" : "当前技能"}${i > 0 ? `（${effectiveTrait}）` : ""}`) });
     const actionDrive = action?.executions.filter((execution) => execution.branch === "drive").length ?? 0;
@@ -231,7 +246,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
           <div className="transmission-config-actions">
           <div className="transmission-initial-peek" onMouseEnter={() => setShowInitial(true)} onMouseLeave={() => setShowInitial(false)} onFocus={() => setShowInitial(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setShowInitial(false); }}>
             <button type="button" aria-label={t("查看初始配置")} aria-expanded={showInitial} aria-controls="transmission-initial-preview" onClick={() => setShowInitial(true)} onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); setShowInitial(false); } }}><span className="transmission-initial-label">{t("初始配置")}</span><span className="transmission-initial-label-compact" aria-hidden="true">{t("初始")}</span></button>
-            {showInitial && <ol id="transmission-initial-preview" className="transmission-initial-preview" aria-label={t("初始配置预览")}>{initial.map((skill, index) => <li key={index}><span>{index + 1}</span>{skill && <SkillIcon skill={skill} size={24} />}<strong>{t(skill?.name ?? t("未配置"))}</strong></li>)}</ol>}
+            {showInitial && <ol id="transmission-initial-preview" className="transmission-initial-preview" aria-label={t("初始配置预览")}>{initial.map((skill, index) => <li key={index}><span>{index + 1}</span>{skill && <SkillIcon skill={skill} size={24} />}<strong>{skillName(skill)}</strong></li>)}</ol>}
           </div>
           <button type="button" aria-label={t("重置推演")} onClick={() => reset()}>{t("重置")}</button>
           </div>
@@ -249,7 +264,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
               {skill ? <SkillIcon skill={skill} size={32} label /> : <span className="transmission-empty-icon" aria-hidden="true">—</span>}
               <div>
                 <span className="transmission-slot-number">{t("{slot} 号位-{layers}", { slot: index + 1, layers: driveLayers[index] })}</span>
-                <strong>{t(skill?.name ?? t("未配置"))}</strong>
+                <strong>{skillName(skill)}</strong>
                 {!usable && skill ? <small className="transmission-slot-blocked">{t("不可使用")}</small> : null}
               </div>
             </li>;
@@ -266,7 +281,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
             }}>
               <option value="idle">{t("待机")}</option>
               {specialActions.flatMap((index) => (slots[index].name === "轮班" ? ["power", "drive"] : ["power"]).map((effect) => <option key={`${index}:${effect}`} value={`${index}:${effect}`} disabled={Boolean(actionResults[index]?.issue) || isCoolingDown(index)}>
-                {specialActions.length > 1 ? t("{v0}号位 · ", { v0: index + 1 }) : ""}{t(slots[index].name)}{slots[index].name === "轮班" ? effect === "drive" ? t(" · 额外传动") : t(" · 加威") : ""}{actionResults[index]?.issue ? (actionResults[index].issue.includes("当前槽位不可使用") ? t("（槽位不可用）") : t("（不可用）")) : ""}{isCoolingDown(index) ? t("（冷却）") : ""}
+                {specialActions.length > 1 ? t("{v0}号位 · ", { v0: index + 1 }) : ""}{skillName(slots[index])}{slots[index].name === "轮班" ? effect === "drive" ? t(" · 额外传动") : t(" · 加威") : ""}{actionResults[index]?.issue ? (actionResults[index].issue.includes("当前槽位不可使用") ? t("（槽位不可用）") : t("（不可用）")) : ""}{isCoolingDown(index) ? t("（冷却）") : ""}
               </option>))}
             </select>
           </label>}
@@ -280,7 +295,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
 
         <details className="transmission-records"><summary>{t("逐步记录 ·")}{" "}{history.length}{" "}{t("条")}</summary>
         {!history.length && <p className="transmission-muted">{t("开始回合后，这里会记录每层传动及行动后的顺序。")}</p>}
-        <ol className="transmission-history">{history.map((item, i) => <li key={i}><strong>{t(item.title)}</strong><p>{t(names(item.slots))}</p>{item.details.length > 0 && <details><summary>{t("查看变化来源")}</summary>{item.details.map((line, j) => <p key={j}>{t(line)}</p>)}</details>}</li>)}</ol></details>
+        <ol className="transmission-history">{history.map((item, i) => <li key={i}><strong>{t(item.title)}</strong><p>{names(item.slots)}</p>{item.details.length > 0 && <details><summary>{t("查看变化来源")}</summary>{item.details.map((detail, j) => <p key={j}>{detailText(detail)}</p>)}</details>}</li>)}</ol></details>
         <details className="transmission-import"><summary>{t("载入已有配置")}</summary><div className="transmission-toolbar"><button type="button" onClick={() => importSide("attacker")}>{t("载入攻击方技能")}</button><button type="button" onClick={() => importSide("defender")}>{t("载入防御方技能")}</button></div></details>
       </div>
     </section>

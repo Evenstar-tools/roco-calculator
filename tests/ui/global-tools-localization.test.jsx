@@ -44,11 +44,32 @@ test("Global Drive keeps canonical mechanisms while localizing skills and saved 
  expect(order).toContain(localizeGlobalSkill(skills[2],"en").name);
  expect(chinese(container).join(" | ")).toBe("");
  fireEvent.click(screen.getByRole("button", { name: "Simulate next turn" }));
- expect(container.querySelector(".transmission-history")).toHaveTextContent("Turn 1 · Wait");
+ expect(container.querySelector(".transmission-history")).toHaveTextContent("Turn 1 · Idle");
  rerender(wrap("ja",<TransmissionPanel snapshot={snapshot} sides={sides} onClose={vi.fn()}/>));
  expect(container.querySelectorAll('.transmission-history > li')).toHaveLength(3);
  expect([...container.querySelectorAll('.transmission-slots strong')].map(node=>node.textContent)).toContain(localizeGlobalSkill(skills[2],"ja").name);
  expect(skills.map(skill=>skill.name)).toEqual(before);
+});
+
+test.each([
+ ["en", ["Blizzard", "Thunderstorm"], "Blizzard"],
+ ["ja", ["雪あらし", "サンダーストーム"], "吹雪"],
+])("Global %s Gearshift traces retain skill identities that share weather names", (locale, officialNames, weatherName) => {
+ const skills = ["暴风雪", "雷暴", "啮合传递", "地刺"].map(name => snapshot.skills.find(entry => entry.name === name));
+ const sides = { attacker: { skills: { four: skills.map(skill => skill.id) } } };
+ const { container } = render(wrap(locale, <TransmissionPanel snapshot={snapshot} sides={sides} onClose={vi.fn()} />));
+ fireEvent.click(screen.getByRole("button", { name: translateUi(locale, "载入攻击方技能") }));
+ fireEvent.click(screen.getByRole("button", { name: translateUi(locale, "开始"), exact: true }));
+ const order = container.querySelector(".transmission-history > li > p");
+ const details = [...container.querySelectorAll(".transmission-history > li > details > p")];
+ for (const name of officialNames) {
+  expect(order).toHaveTextContent(name);
+  expect(details.some(line => line.textContent.startsWith(`${name}：`) || line.textContent.startsWith(`${name}:`))).toBe(true);
+  expect(details.some(line => line.textContent.includes(" → ") && line.textContent.includes(name))).toBe(true);
+ }
+ expect([...container.querySelectorAll(".transmission-slots strong")].map(node => node.textContent)).toEqual(expect.arrayContaining(officialNames));
+ expect(translateUi(locale, "暴风雪")).toBe(weatherName);
+ expect(skills.map(skill => skill.name)).toEqual(["暴风雪", "雷暴", "啮合传递", "地刺"]);
 });
 
 test.each(["durability","speed"])("Global %s rankings render English with real S3 data",kind=>{

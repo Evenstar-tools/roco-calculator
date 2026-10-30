@@ -31,12 +31,12 @@ export const appMessages = Object.fromEntries([
   ],
   [
     "正在打开传动计算器…",
-    "Opening transmission calculator…",
-    "伝動計算機を開いています…"
+    "Opening Gearshift calculator…",
+    "位置変動計算機を開いています…"
   ],
   [
     "正在打开属性查询…",
-    "Opening type matchups…",
+    "Opening class matchups…",
     "タイプ相性を開いています…"
   ],
   [
@@ -57,7 +57,7 @@ export const appMessages = Object.fromEntries([
   [
     "{side}萌化配置保留已{status}（{scope}）",
     "{side} form setup memory {status} ({scope})",
-    "{side}の形態変更時の設定保持を{status}（{scope}）"
+    "{side}のモエモエ時の設定保持を{status}（{scope}）"
   ],
   [
     "开启",
@@ -102,7 +102,7 @@ export const appMessages = Object.fromEntries([
   [
     "当前精灵",
     "Current Jini",
-    "現在のキャラクター"
+    "現在のジニ"
   ],
   [
     "主配置已变化，请重新打开承伤对比",
