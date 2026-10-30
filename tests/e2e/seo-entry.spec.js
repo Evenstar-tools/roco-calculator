@@ -83,7 +83,7 @@ test("SEO Global S3 release keeps calculation across English, Japanese, refresh 
   await page.getByRole("combobox", { name: "Language", exact: true }).selectOption("ja");
   await expect(page).toHaveURL(/\/jp\/$/);
   await page.reload();
-  await expect(page.getByRole("combobox", { name: "攻撃側のキャラクター", exact: true })).toHaveValue("ディーモ");
+  await expect(page.getByRole("combobox", { name: "攻撃側のジニ", exact: true })).toHaveValue("ディーモ");
   await expect(page.locator(".result-column").getByRole("status")).toHaveText("23");
   await expect(page.locator("html")).toHaveAttribute("data-season", "s5");
   await expect(page.locator("body")).not.toContainText(/CBT|Translation unavailable|翻訳未対応|CN reference|Unverified/);
@@ -93,14 +93,14 @@ test("SEO Global S3 release keeps calculation across English, Japanese, refresh 
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByRole("combobox", { name: "攻撃側のキャラクター", exact: true })).toHaveValue("ディーモ");
+  await expect(page.getByRole("combobox", { name: "攻撃側のジニ", exact: true })).toHaveValue("ディーモ");
   await expect(page.locator(".result-column").getByRole("status")).toHaveText("23");
   await expect(page.locator("html")).toHaveAttribute("data-season", "s5");
   await context.setOffline(false);
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileLabels = () => page.locator(".four-skill-side--attacker").evaluate(side =>
     ["cost", "power-input", "hits"].map(name => getComputedStyle(side.querySelector(`.skill-slot:not(.skill-slot--head) .skill-slot__${name}`), "::before").content));
-  await expect.poll(mobileLabels).toEqual(['"コスト"', '"威力"', '"連撃"']);
+  await expect.poll(mobileLabels).toEqual(['"コスト"', '"威力"', '"連撃数"']);
   await page.getByRole("button", { name: "メニューを開く", exact: true }).click();
   await page.getByRole("combobox", { name: "言語", exact: true }).selectOption("en");
   await expect.poll(mobileLabels).toEqual(['"Cost"', '"Power"', '"Combo"']);
