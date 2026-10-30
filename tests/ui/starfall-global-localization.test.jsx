@@ -151,7 +151,7 @@ test.each(["en", "ja"])("Global %s introduction and release record show the deli
   if (locale === "en") expect(intro.textContent).not.toMatch(/[\u3400-\u9fff]/u);
   rerender(wrap(locale, <DataSourceDialog open initialView="release" onClose={vi.fn()} />));
   const record = screen.getByRole("dialog", { name: t("完整版本记录") });
-  expect(within(record).getByText("2026.10.29")).toBeVisible();
+  expect(within(record).getByText(GLOBAL_RELEASE_SUMMARY.date)).toBeVisible();
   expect(record).toHaveTextContent(t("采用 S3 季中数值与规则。"));
   for (const item of GLOBAL_RELEASE_SUMMARY.items) expect(within(record).getByText(t(item.title))).toBeVisible();
   expect(record.textContent).not.toContain("S5");

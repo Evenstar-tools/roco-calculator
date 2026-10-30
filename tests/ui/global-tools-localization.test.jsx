@@ -4,6 +4,7 @@ import { fireEvent, render, screen, within, cleanup } from "@testing-library/rea
 import { afterEach, expect, test, vi } from "vitest";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 import { translateUi } from "../../src/i18n/messages.js";
+import { localizeToolText } from "../../src/i18n/useToolLocale.js";
 import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
 import { localizeGlobalSkill } from "../../src/runtime/global-entity-localization.js";
 import TypeQueryPanel from "../../src/features/type-query/TypeQueryPanel.jsx";
@@ -55,6 +56,31 @@ test.each(["durability","speed"])("Global %s rankings render English with real S
  const {container}=render(wrap("en",<RankingsPanel kind={kind} snapshot={reduced} onClose={vi.fn()}/>));
  expect(container.querySelectorAll('tbody tr').length).toBeGreaterThan(0);
  expect(chinese(container).join(" | "), [...container.querySelectorAll("*")].filter(n=>n.children.length===0 && /[\u3400-\u9fff]/.test(n.textContent)).map(n=>n.outerHTML).join("\n")).toBe("");
+});
+
+test.each(["zh-CN", "en", "ja"])("Global %s passive builds retain base rows, localize details and support opting out", locale => {
+ const cases = [["蹦床松鼠", "10能量"], ["卷胡巨獭", "总能耗＜4"], ["古卷匣魔像", "入场敌方魔力1"], ["上岸蛙", "非周末"]];
+ const reduced = { ...snapshot, spirits: snapshot.spirits.filter(spirit => cases.some(([name]) => name === spirit.fullName)) };
+ const t = source => localizeToolText(source, locale);
+ const { container } = render(wrap(locale, <RankingsPanel kind="durability" snapshot={reduced} onClose={vi.fn()} />));
+ const table = within(screen.getByRole("table", { name: t("标准耐久完整榜") }));
+ const toggle = screen.getByRole("checkbox", { name: t("特殊配置") });
+ expect(toggle).toBeChecked();
+ expect(table.getAllByRole("row")).toHaveLength(9);
+ for (const [name, label] of cases) {
+  fireEvent.change(screen.getByLabelText(t("搜索耐久榜精灵")), { target: { value: name } });
+  expect(table.getAllByRole("row")).toHaveLength(3);
+  fireEvent.click(table.getByRole("button", { name: new RegExp(t(`${name} · ${label}`).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) }));
+  const detail = within(screen.getByRole("region", { name: t("榜单配置详情") }));
+  expect(detail.getByRole("columnheader", { name: t("特性后耐久") })).toBeVisible();
+  expect(detail.getByRole("heading", { level: 3 })).toHaveTextContent(t(`${name} · ${label}`));
+  if (locale === "en") expect(chinese(screen.getByRole("region", { name: t("榜单配置详情") }))).toEqual([]);
+  fireEvent.click(detail.getByRole("button", { name: t("返回榜单") }));
+  fireEvent.click(toggle);
+  expect(table.getAllByRole("row")).toHaveLength(2);
+  fireEvent.click(toggle);
+ }
+ if (locale === "en") expect(chinese(container)).toEqual([]);
 });
 
 test("Global deer workspace calculates and renders English with the S3 snapshot",()=>{

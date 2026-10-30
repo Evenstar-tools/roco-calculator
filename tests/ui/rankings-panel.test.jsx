@@ -198,7 +198,7 @@ test("冥古龙四档耐久保留独立行及正确等级详情，切模板与�
     fireEvent.click(within(detail).getByRole("button", { name: "返回榜单" }));
   }
   fireEvent.click(screen.getByRole("button", { name: "筛选" }));
-  expect(screen.getByText("已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。")).toBeInTheDocument();
+  expect(screen.getByText("含冥古龙等级面板及承伤；仅计注明的特性，不计天气和技能。")).toBeInTheDocument();
   fireEvent.change(screen.getByLabelText("耐久榜模板"), { target: { value: "standard-neutral-v1" } });
   fireEvent.change(screen.getByLabelText("搜索耐久榜精灵"), { target: { value: "69级" } });
   expect(within(screen.getByRole("table", { name: "标准耐久完整榜" })).getAllByRole("row")).toHaveLength(2);

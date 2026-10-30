@@ -330,3 +330,84 @@ test("current snapshot ranks only explicit final forms and corroborated bosses",
   expect(ranking.rows.every(({ formRole }) =>
     formRole === "final" || formRole === "boss")).toBe(true);
 });
+
+describe("global passive durability configurations", () => {
+  const snapshot = JSON.parse(readFileSync("public/data/global-runtime.json", "utf8"));
+  const defensePercent = { "蹦床松鼠": 200, "卷胡巨獭": 180, "古卷匣魔像": 200, "上岸蛙": 140 };
+  const candidates = snapshot.spirits.filter(entry => Object.hasOwn(defensePercent, entry.fullName));
+  const options = {
+    spirits: candidates,
+    traits: snapshot.traits,
+    typeChart: snapshot.typeChart,
+    spiritFilterRevision: snapshot.meta.revisions.spiritFilter,
+    includeLevelVariants: false,
+    includePassiveVariants: true,
+  };
+
+  test.each(Object.keys(STANDARD_DURABILITY_TEMPLATES))("%s preserves base rows and floors core defense before durability", templateId => {
+    expect(candidates).toHaveLength(4);
+    const standard = createDurabilityRanking({ ...options, includePassiveVariants: false, templateId });
+    const ranking = createDurabilityRanking({ ...options, templateId });
+    expect(ranking.rows).toHaveLength(8);
+    expect(new Set(ranking.rows.map(row => row.id)).size).toBe(8);
+    for (const base of standard.rows) {
+      const ordinary = ranking.rows.find(row => row.id === base.id);
+      const passive = ranking.rows.find(row => row.spiritId === base.spiritId && row.passiveLabel);
+      const percent = defensePercent[base.spirit.fullName];
+      expect(ordinary.panelStats).toEqual(base.panelStats);
+      expect(ordinary.durability).toEqual(base.durability);
+      expect(passive.basePanelStats).toEqual(base.panelStats);
+      expect(passive.panelStats.hp).toBe(base.panelStats.hp);
+      const physical = Math.floor(base.panelStats.physicalDefense * percent / 100);
+      const magical = Math.floor(base.panelStats.magicalDefense * percent / 100);
+      expect(passive.panelStats.physicalDefense).toBe(physical);
+      expect(passive.panelStats.magicalDefense).toBe(magical);
+      expect(passive.durability.raw).toEqual({
+        physical: base.panelStats.hp * physical,
+        magical: base.panelStats.hp * magical,
+        combined: base.panelStats.hp * physical * magical / (physical + magical),
+      });
+      expect(passive.passiveDescription).toContain(`双防+${percent - 100}%`);
+    }
+    expect(standard.rows.some(base => [base.panelStats.physicalDefense, base.panelStats.magicalDefense]
+      .some(value => !Number.isInteger(value * defensePercent[base.spirit.fullName] / 100)))).toBe(true);
+  });
+
+  test("conditions are searchable and global attribute multipliers apply after the passive", () => {
+    const ranking = createDurabilityRanking({ ...options, attackType: "武" });
+    expect(ranking.rows).toHaveLength(8);
+    for (const row of ranking.rows.filter(entry => entry.passiveLabel)) {
+      expect(row.multiplier).toBe(row.spirit.fullName === "上岸蛙" ? 0.5 : 2);
+      for (const metric of ["physical", "magical", "combined"]) {
+        expect(row.durability.raw[metric]).toBe(row.baseDurability.raw[metric] / row.multiplier);
+        expect(row.durability.display[metric]).toBe(Math.round(row.durability.raw[metric]));
+      }
+    }
+    expect(createDurabilityRanking({ ...options, attackType: "武", multipliers: [0.5] }).rows
+      .map(row => row.spirit.fullName)).toEqual(["上岸蛙", "上岸蛙"]);
+    for (const query of ["10能量", "总能耗<4", "入场敌方魔力1", "非周末"]) {
+      expect(createDurabilityRanking({ ...options, query }).rows).toHaveLength(1);
+    }
+  });
+
+  test("the full global snapshot adds only the four existing configurations without mutation", () => {
+    const before = JSON.stringify(snapshot);
+    const ranking = createDurabilityRanking({ ...options, spirits: snapshot.spirits });
+    expect(ranking.rows.filter(row => row.passiveLabel).map(row => row.spirit.fullName).sort())
+      .toEqual(Object.keys(defensePercent).sort());
+    expect(snapshot.spirits.some(entry => entry.fullName === "鸡麻麻")).toBe(false);
+    expect(ranking.rows.some(row => row.spirit.fullName === "鸡麻麻")).toBe(false);
+    expect(ranking.rows.every(row => snapshot.spirits.includes(row.spirit))).toBe(true);
+    expect(JSON.stringify(snapshot)).toBe(before);
+    const { includePassiveVariants: _includePassiveVariants, ...defaultOptions } = options;
+    expect(createDurabilityRanking(defaultOptions).rows).toHaveLength(4);
+  });
+
+  test("missing trait bindings or incomplete panels do not fabricate special rows", () => {
+    expect(createDurabilityRanking({ ...options, traits: [] }).rows).toHaveLength(4);
+    expect(createDurabilityRanking({ ...options, spirits: candidates.map(entry => ({ ...entry, traitIds: [] })) }).rows)
+      .toHaveLength(4);
+    expect(createDurabilityRanking({ ...options, spirits: candidates.map(entry => ({ ...entry, raceStats: null })) }).rows)
+      .toEqual([]);
+  });
+});
