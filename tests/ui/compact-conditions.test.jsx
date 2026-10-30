@@ -42,9 +42,14 @@ function controlFor(input) {
 }
 
 // The source of expected controls is the rule catalog, independent of the compact
-// adapter. Every live skill and every declared choice option is exercised.
-test.each(snapshot.skills.map((skill) => [skill.name, skill]))("真实技能 %s 的规则控件均可打开并交互", (_name, skill) => {
-  const expected = [...getSkillEffectInputs(skill), ...getSkillStatusEffectInputs(skill), ...getNegativeStatusInputs(skill)];
+// adapter. Every live skill with controls and every declared choice option is
+// exercised; skills without controls share one empty-dialog path, so one sample covers them.
+const ruleInputs = (skill) => [...getSkillEffectInputs(skill), ...getSkillStatusEffectInputs(skill), ...getNegativeStatusInputs(skill)];
+const hasControls = (skill) => ruleInputs(skill).length > 0 || conditions(skill).dynamicInputs.length > 0;
+const conditionSkills = [...snapshot.skills.filter(hasControls), snapshot.skills.find((skill) => !hasControls(skill))];
+
+test.each(conditionSkills.map((skill) => [skill.name, skill]))("真实技能 %s 的规则控件均可打开并交互", (_name, skill) => {
+  const expected = ruleInputs(skill);
   const { dynamicInputs } = conditions(skill);
   for (const ruleInput of expected) {
     expect(dynamicInputs, `${skill.name}遗漏${ruleInput.label}`).toContainEqual(expect.objectContaining({
