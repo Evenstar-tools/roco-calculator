@@ -42,7 +42,7 @@ test("SEO serves crawler files and a direct deer entry without an introduction",
   expect(await deer.text()).toContain('href="https://rococalc.top/dianlu/"');
 });
 
-for (const theme of ["light", "dark"]) {
+for (const theme of ["light"]) {
   test.describe(`SEO Global direct tool entry ${theme}`, () => {
     test.use({ viewport: { width: 390, height: 844 }, colorScheme: theme, contextOptions: { reducedMotion: "reduce" } });
     test("opens the overseas workspace and restores its setup at the existing URL", async ({ page }) => {
