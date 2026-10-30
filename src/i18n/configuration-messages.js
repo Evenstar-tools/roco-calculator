@@ -1,5 +1,7 @@
 export const configurationMessages = Object.fromEntries([
   ["常用精灵配置可更新（{count}）", "Recommended setups: {count} updates", "おすすめ設定を更新できます（{count}件）"],
+  ["常用精灵配置可导入（{count}）", "Recommended setups: {count} to import", "おすすめ設定を読み込めます（{count}件）"],
+  ["将新增 {count} 份配置。", "{count} setups will be added.", "{count}件の設定を追加します。"],
   ["查看", "View", "表示"],
   ["即时配置", "Quick setup", "クイック設定"],
   ["正在加载中文占位资料…", "Loading Chinese placeholder data…", "中国語の仮データを読み込み中…"],
