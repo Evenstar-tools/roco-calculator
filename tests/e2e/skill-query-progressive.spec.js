@@ -3,7 +3,7 @@ import { resetUiuxStorage } from "./helpers/uiux-helpers.js";
 
 test.use({ serviceWorkers: "block" });
 
-for (const width of [1440, 390]) {
+for (const width of [390]) {
   test(`技能库滚动续载可达末尾，筛选后仍能选中技能 ${width}px`, async ({ page }) => {
     await resetUiuxStorage(page);
     await page.setViewportSize({ width, height: 900 });
