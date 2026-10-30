@@ -34,7 +34,8 @@ function ReadonlyDetail({ entry, attackType, templateId, onBack }) {
     {entry.speed != null ? <><h4>速度 {entry.speed}</h4><p>{entry.qualifier}</p><p>该档配置的显示值，不代表所有配置的速度。</p></> : <>
       <h4>{STANDARD_DURABILITY_TEMPLATES[templateId].label} · {entry.level}级统一模板</h4>
       <p>生命／物防／魔防个体均为60 · 其他个体为0</p><p>HP {entry.panelStats.hp} · 物防 {entry.panelStats.physicalDefense} · 魔防 {entry.panelStats.magicalDefense}</p>
-      <table><thead><tr><th>指标</th><th>基础耐久</th>{attackType ? <th>{attackType}系有效耐久</th> : null}</tr></thead><tbody>{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <tr key={key}><th>{label}</th><td>{number((entry.baseDurability ?? entry.durability).display[key])}</td>{attackType ? <td>{number(entry.durability.display[key])}</td> : null}</tr>)}</tbody></table>
+      {entry.passiveLabel ? <p>{entry.passiveDescription} · 物防 {entry.basePanelStats.physicalDefense}→{entry.panelStats.physicalDefense} · 魔防 {entry.basePanelStats.magicalDefense}→{entry.panelStats.magicalDefense}</p> : null}
+      <table><thead><tr><th>指标</th><th>{entry.passiveLabel ? "特性后耐久" : "基础耐久"}</th>{attackType ? <th>{attackType}系有效耐久</th> : null}</tr></thead><tbody>{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <tr key={key}><th>{label}</th><td>{number((entry.baseDurability ?? entry.durability).display[key])}</td>{attackType ? <td>{number(entry.durability.display[key])}</td> : null}</tr>)}</tbody></table>
       {attackType ? <p className={`rank-tone--${multiplierTone(entry.multiplier)}`}>{attackType} ×{entry.multiplier} · {entry.multiplier === 0 ? "属性免疫，独立分组，不参与数值排名" : "基础耐久 ÷ 属性倍率"}</p> : null}
     </>}
     <p className="rank-note">只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。</p>
@@ -48,18 +49,19 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
   const updateResistance = setResistance ?? setLocalResistance;
   const [more, setMore] = useState(false);
   const [detail, setDetail] = useState(null);
+  const [includePassiveVariants, setIncludePassiveVariants] = useState(true);
   const detailTrigger = useRef(null);
   useEffect(() => {
     backButtonRef?.current?.focus({ preventScroll: true });
     currentRowRef?.current?.scrollIntoView?.({ block: "center" });
   }, [backButtonRef, currentRowRef]);
-  const baseRanking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, attackType, multipliers, typeChart: snapshot.typeChart, templateId, filter: roleFilter === "all" ? undefined : (row) => row.formRole === roleFilter }), [snapshot, attackType, multipliers, templateId, roleFilter]);
+  const baseRanking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, traits: snapshot.traits, includePassiveVariants, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, attackType, multipliers, typeChart: snapshot.typeChart, templateId, filter: roleFilter === "all" ? undefined : (row) => row.formRole === roleFilter }), [snapshot, includePassiveVariants, attackType, multipliers, templateId, roleFilter]);
   const ranking = useMemo(() => selectDurabilityRanking(baseRanking, { query, sortBy: metric }), [baseRanking, query, metric]);
   const rows = [...ranking.immuneRows, ...ranking.rows];
   const hasLevelVariants = [...baseRanking.immuneRows, ...baseRanking.rows].some(row => row.level !== 60);
-  const currentEntryId = [...baseRanking.immuneRows, ...baseRanking.rows].find(row => row.spiritId === currentSpiritId)?.id;
+  const currentEntryId = [...baseRanking.immuneRows, ...baseRanking.rows].find(row => row.spiritId === currentSpiritId && !row.passiveLabel)?.id;
   const closeDetail = () => { setDetail(null); requestAnimationFrame(() => detailTrigger.current?.focus({ preventScroll: true })); };
-  const reset = () => { setQuery(""); setRoleFilter("all"); setTemplateId("standard-hp-v1"); updateResistance({ attackType: "", multipliers: bins }); };
+  const reset = () => { setQuery(""); setRoleFilter("all"); setTemplateId("standard-hp-v1"); setIncludePassiveVariants(true); updateResistance({ attackType: "", multipliers: bins }); };
   return <section aria-label="完整耐久榜" className="rank-view" onKeyDown={(event) => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (detail) closeDetail(); else if (more) setMore(false); else onBack(); } }}>
     {!standalone ? <header className="rank-context-header"><button onClick={onBack} ref={backButtonRef} type="button"><ArrowLeft size={17} />返回能力分析</button><div><h4>标准耐久榜</h4><small>最终形态与首领 · 搜索不改变名次</small></div></header> : null}
     {detail ? <ReadonlyDetail entry={detail} attackType={attackType} templateId={templateId} onBack={closeDetail} /> : null}
@@ -72,11 +74,12 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
       <div className={`rank-options${more ? " is-open" : ""}`}>
         <label>耐久模板<select aria-label="耐久榜模板" onChange={(event) => setTemplateId(event.target.value)} value={templateId}>{Object.values(STANDARD_DURABILITY_TEMPLATES).map((template) => <option key={template.id} value={template.id}>{template.label}</option>)}</select></label>
         <label>形态范围<select aria-label="形态筛选" onChange={(event) => setRoleFilter(event.target.value)} value={roleFilter}><option value="all">最终形态 + 首领</option><option value="final">仅最终形态</option><option value="boss">仅首领</option></select></label>
-        <small>{hasLevelVariants ? "已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。" : "基础耐久 ÷ 属性倍率；不包含特性、天气或技能效果"}</small>
+        <label><input type="checkbox" checked={includePassiveVariants} onChange={event => setIncludePassiveVariants(event.target.checked)} />特殊配置</label>
+        <small>{hasLevelVariants ? "含冥古龙等级面板及承伤；" : ""}仅计注明的特性，不计天气和技能。</small>
         {more ? <button type="button" className="rank-options-done" onClick={() => setMore(false)}>完成筛选</button> : null}
       </div>
       <div aria-label="排行指标" className="rank-metrics" role="group">{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <button aria-pressed={metric === key} key={key} onClick={() => setMetric(key)} type="button">{label}</button>)}</div>
-      <div className="rank-summary"><span role="status">{multiplierSummary(attackType, multipliers, bins)} · {ranking.counts.visible}{rows.some(row => row.level !== 60) ? "档" : "只"}</span><button onClick={reset} type="button">重置</button></div>
+      <div className="rank-summary"><span role="status">{multiplierSummary(attackType, multipliers, bins)} · {ranking.counts.visible}{rows.some(row => row.level !== 60 || row.passiveLabel) ? "档" : "只"}</span><button onClick={reset} type="button">重置</button></div>
       {currentSpiritId && !rows.some((row) => row.spiritId === currentSpiritId) ? <p className="rank-note">参照精灵不符合当前筛选，不计入候选。</p> : null}
       <div className="rank-table-scroll">
         <table aria-label="标准耐久完整榜" className={`rank-table rank-table--${metric}`}><thead><tr><th>排名</th><th>精灵</th>{attackType ? <th className="rank-type-column">{attackType}倍率</th> : null}{tableMetrics.map((key) => <th key={key} className={`rank-value--${key}`} aria-sort={metric === key ? "descending" : "none"}>{attackType ? "有效" : ""}{RANKING_METRIC_LABELS[key]}</th>)}</tr></thead><tbody>

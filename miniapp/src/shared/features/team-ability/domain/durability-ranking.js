@@ -2,6 +2,8 @@ import { FORM_ROLE_MANIFEST_VERSION } from "../../../data/form-role-manifest-v1.
 import { calculateDurability } from "./durability.js";
 import { getS5LevelIncomingDamagePercent } from "../../../domain/s5-preview-traits.js";
 import { getNatureMultipliers } from "../../../domain/natures.js";
+import { getTraitEffectInputs, resolveTraitEffectRule } from "../../../domain/trait-effects.js";
+import { defenseStatForDamage } from "../../../domain/skill-result/numeric.js";
 import { createRankingLevelVariants, resolveRankingFormRole } from "./ranking-levels.js";
 import { ELEMENT_TYPES, getTypeMultiplier } from "../../../domain/type-chart.js";
 import {
@@ -50,6 +52,35 @@ export const STANDARD_DURABILITY_TEMPLATES = Object.freeze({
 });
 
 const RANKING_METRICS = Object.freeze(["physical", "magical", "combined"]);
+const PASSIVE_CONFIGURATIONS = [
+  { name: "蹦床松鼠", traitName: "囤积", label: "10能量", description: "囤积 · 当前能量10，双防+100%", context: { defenderTraitStacks: 10 } },
+  { name: "鸡麻麻", traitName: "护犊", label: "护犊已触发", description: "护犊 · 队友存在萌化，双防+50%", context: { defenderTraitS5EggTriggered: true } },
+  { name: "卷胡巨獭", traitName: "保守派", label: "总能耗＜4", description: "保守派 · 总技能能耗＜4，双防+80%", context: { traitActivated: true } },
+  { name: "古卷匣魔像", traitName: "构装契约者", label: "入场敌方魔力1", description: "构装契约者 · 入场时敌方魔力为1，双防+100%", context: { traitActivated: true } },
+  { name: "上岸蛙", traitName: "张弛有度", label: "非周末", description: "张弛有度 · 非周末，双防+40%", context: { traitActivated: false } },
+];
+
+function createPassiveVariants(spirit, traits) {
+  return PASSIVE_CONFIGURATIONS.filter(preset => preset.name === spirit.fullName).flatMap(preset => {
+    const trait = traits.find(entry => entry.name === preset.traitName && spirit.traitIds?.includes(entry.id));
+    if (!trait) return [];
+    const context = Object.fromEntries(getTraitEffectInputs(trait, "defender").map(control => [
+      control.id, preset.context[control.contextKey] ?? control.defaultValue,
+    ]));
+    const defenseStages = Object.fromEntries(["physical", "magical"].map(category => [category,
+      resolveTraitEffectRule(trait, "defender", {
+        attacker: {}, defender: {}, context, skill: { category, type: "普通" },
+      })?.defenseLevelBonus ?? 0,
+    ]));
+    if (!Object.values(defenseStages).some(value => value > 0)) return [];
+    return [{
+      id: `${spirit.id}:passive:${trait.id}`, level: 60,
+      name: `${spirit.fullName} · ${preset.label}`,
+      passiveLabel: preset.label, passiveDescription: preset.description, defenseStages,
+    }];
+  });
+}
+
 export const DURABILITY_MULTIPLIERS = Object.freeze([0.25, 0.5, 1, 2, 3]);
 
 export function getDurabilityMultipliers(typeChart) {
@@ -129,19 +160,24 @@ function matchesQuery(entry, query) {
 
 function calculateRankingEntry(spirit, template, variant) {
   const form = resolveRankingFormRole(spirit);
-  const panelStats = calculateAllPanelStats({
+  const basePanelStats = calculateAllPanelStats({
     raceStats: spirit.raceStats,
     displayIvs: template.displayIvs,
     natureMultipliers: getNatureMultipliers(template.natureId),
     level: variant.level,
   });
+  const panelStats = variant.defenseStages ? {
+    ...basePanelStats,
+    physicalDefense: defenseStatForDamage(basePanelStats.physicalDefense, variant.defenseStages.physical),
+    magicalDefense: defenseStatForDamage(basePanelStats.magicalDefense, variant.defenseStages.magical),
+  } : basePanelStats;
   const panelDurability = calculateDurability({
     maxHp: panelStats.hp,
     physicalDefense: panelStats.physicalDefense,
     magicalDefense: panelStats.magicalDefense,
   });
-  // Non-standard variants currently belong only to the verified S5 Minggulong
-  // identity. Ordinary templates stay trait-free, including opt-out variants.
+  // Non-standard levels currently belong only to the verified S5 Minggulong.
+  // Passive configurations are separate rows; ordinary rows remain trait-free.
   const incomingDamageMultiplier = variant.level === 60 ? 1 :
     1 + getS5LevelIncomingDamagePercent(variant.level) / 100;
   const raw = Object.fromEntries(RANKING_METRICS.map(key => [key, panelDurability.raw[key] / incomingDamageMultiplier]));
@@ -156,6 +192,7 @@ function calculateRankingEntry(spirit, template, variant) {
     evolutionFamilyId: form.evolutionFamilyId,
     formRole: form.formRole,
     formRoleStatus: form.formRoleStatus,
+    basePanelStats,
     panelStats,
     spirit,
     spiritId: spirit.id,
@@ -180,10 +217,12 @@ export function createDurabilityRanking({
   filter,
   query = "",
   spirits = [],
+  traits = [],
   spiritFilterRevision,
   sortBy = "combined",
   templateId = "standard-hp-v1",
   includeLevelVariants = true,
+  includePassiveVariants = false,
 } = {}) {
   const knownTypes = typeChart?.types ?? ELEMENT_TYPES;
   if (attackType && !knownTypes.includes(attackType)) {
@@ -224,7 +263,10 @@ export function createDurabilityRanking({
       );
     }
   }
-  const entries = eligible.flatMap((spirit) => createRankingLevelVariants(spirit, { includeLevelVariants }).map(variant => {
+  const entries = eligible.flatMap((spirit) => [
+    ...createRankingLevelVariants(spirit, { includeLevelVariants }),
+    ...(includePassiveVariants ? createPassiveVariants(spirit, traits) : []),
+  ].map(variant => {
     const entry = calculateRankingEntry(spirit, template, variant);
     if (!attackType) return entry;
     const multiplier = getTypeMultiplier(attackType, spirit.types, typeChart);
