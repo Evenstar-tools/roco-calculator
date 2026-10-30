@@ -200,11 +200,9 @@ test("显示选项名称开关接通真实精简版，改变标签不改变伤�
   }
 });
 
+// 各天气是否参与计算由 calculator-view-model 逐项验证；此处只验一次界面接线。
 test.each([
   ["雨天", "rain"],
-  ["雷鸣", "thunder"],
-  ["沙暴", "sandstorm"],
-  ["暴风雪", "blizzard"],
 ])("%s未参与当前拍击计算时不显示天气摘要，也不留下空调整入口", async (_label, weather) => {
   const snapshot = createInteractiveSnapshot();
   const state = createInitialState(snapshot);
