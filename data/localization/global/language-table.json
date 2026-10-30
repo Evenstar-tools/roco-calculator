@@ -125122,6 +125122,91 @@
       "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/按客户端统一英日术语，修正工具标题、配置说明与记录，切换语言保留配置。",
       "notes": "2026-10-30英日界面术语修正的用户日志；项目说明，已按实际已完成范围校对，不冒充客户端原句。"
+    },
+    {
+      "key": "ui:国际服常用配置有新增或更新时提醒，导入后不再提醒，手改配置保留。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "国际服常用配置有新增或更新时提醒，导入后不再提醒，手改配置保留。",
+      "zh_project": "国际服常用配置有新增或更新时提醒，导入后不再提醒，手改配置保留。",
+      "en": "Get notified when recommended Global setups can be added or updated. Importing clears the notice; manual edits are kept.",
+      "ja": "グローバル版のおすすめ設定に追加・更新があると通知します。読み込み後は通知せず、手動変更は保持します。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/国际服常用配置有新增或更新时提醒，导入后不再提醒，手改配置保留。",
+      "notes": "2026-10-30：复用国服配置通知；英日区分新增导入与安全更新，保留数量参数与手改保护语义。"
+    },
+    {
+      "key": "ui:导入配置（{count}）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "导入配置（{count}）",
+      "zh_project": "导入配置（{count}）",
+      "en": "Import setups ({count})",
+      "ja": "設定を読み込む（{count}）",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/导入配置（{count}）",
+      "notes": "2026-10-30：复用国服配置通知；英日区分新增导入与安全更新，保留数量参数与手改保护语义。"
+    },
+    {
+      "key": "ui:将新增 {count} 份配置。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "将新增 {count} 份配置。",
+      "zh_project": "将新增 {count} 份配置。",
+      "en": "{count} setups will be added.",
+      "ja": "{count}件の設定を追加します。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/将新增 {count} 份配置。",
+      "notes": "2026-10-30：复用国服配置通知；英日区分新增导入与安全更新，保留数量参数与手改保护语义。"
+    },
+    {
+      "key": "ui:常用精灵配置可导入（{count}）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "常用精灵配置可导入（{count}）",
+      "zh_project": "常用精灵配置可导入（{count}）",
+      "en": "Recommended setups: {count} to import",
+      "ja": "おすすめ設定を読み込めます（{count}件）",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/常用精灵配置可导入（{count}）",
+      "notes": "2026-10-30：复用国服配置通知；英日区分新增导入与安全更新，保留数量参数与手改保护语义。"
+    },
+    {
+      "key": "ui:常用精灵配置可更新（{count}）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "常用精灵配置可更新（{count}）",
+      "zh_project": "常用精灵配置可更新（{count}）",
+      "en": "Recommended setups: {count} updates",
+      "ja": "おすすめ設定を更新できます（{count}件）",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/messages.js#UI_MESSAGES/常用精灵配置可更新（{count}）",
+      "notes": "2026-10-30：复用国服配置通知；英日区分新增导入与安全更新，保留数量参数与手改保护语义。"
     }
   ],
   "plainByKey": {
@@ -161924,6 +162009,31 @@
       "zh": "按客户端统一英日术语，修正工具标题、配置说明与记录，切换语言保留配置。",
       "en": "Official English and Japanese terms across tool titles, setup instructions and logs. Language switching keeps your setup.",
       "ja": "ツール名・設定説明・記録の英日用語をクライアントに統一。言語を切り替えても設定は保持されます。"
+    },
+    "ui:国际服常用配置有新增或更新时提醒，导入后不再提醒，手改配置保留。": {
+      "zh": "国际服常用配置有新增或更新时提醒，导入后不再提醒，手改配置保留。",
+      "en": "Get notified when recommended Global setups can be added or updated. Importing clears the notice; manual edits are kept.",
+      "ja": "グローバル版のおすすめ設定に追加・更新があると通知します。読み込み後は通知せず、手動変更は保持します。"
+    },
+    "ui:导入配置（{count}）": {
+      "zh": "导入配置（{count}）",
+      "en": "Import setups ({count})",
+      "ja": "設定を読み込む（{count}）"
+    },
+    "ui:将新增 {count} 份配置。": {
+      "zh": "将新增 {count} 份配置。",
+      "en": "{count} setups will be added.",
+      "ja": "{count}件の設定を追加します。"
+    },
+    "ui:常用精灵配置可导入（{count}）": {
+      "zh": "常用精灵配置可导入（{count}）",
+      "en": "Recommended setups: {count} to import",
+      "ja": "おすすめ設定を読み込めます（{count}件）"
+    },
+    "ui:常用精灵配置可更新（{count}）": {
+      "zh": "常用精灵配置可更新（{count}）",
+      "en": "Recommended setups: {count} updates",
+      "ja": "おすすめ設定を更新できます（{count}件）"
     }
   }
 }

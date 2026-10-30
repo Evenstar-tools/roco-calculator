@@ -1,3 +1,36 @@
+.preset-update-notice {
+  position: fixed;
+  z-index: 130;
+  top: max(58px, calc(env(safe-area-inset-top) + 12px));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 8px 10px 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  font-size: 13px;
+}
+
+.preset-update-notice .secondary-action {
+  flex: none;
+  min-height: 32px;
+}
+
+/* 宽屏页头中部是空白，提示放进页头，不压住对战卡标题与选择框；1200px 以下页头按钮会与提示重叠。 */
+@media (min-width: 1200px) {
+  .preset-update-notice {
+    top: 4px;
+    padding-block: 4px;
+  }
+}
+
 .toast {
   position: fixed;
   z-index: 100;

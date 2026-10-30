@@ -103,7 +103,7 @@ test("常用配置按数字图鉴号升序展示，搜索保持顺序且不修�
   expect(names()).toEqual(["测试一号", "测试二号异形", "测试二号", "测试十号"]);
   fireEvent.click(screen.getByRole("button", { name: "清除" }));
   expect(names()).toEqual(["测试一号", "测试二号异形", "测试二号", "测试十号", "未知编号"]);
-  fireEvent.click(screen.getByRole("button", { name: /更新配置/ }));
+  fireEvent.click(screen.getByRole("button", { name: "导入配置（5）" }));
   expect(onConfirmImport).toHaveBeenCalledTimes(1);
   expect(entries.map((entry) => entry.spiritId)).toEqual(["ten", "unknown", "two-b", "two-a", "one"]);
 });

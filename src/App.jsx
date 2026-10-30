@@ -42,6 +42,7 @@ import { getSkillSlotConditions } from "./components/skill-condition-inputs.js";
 import { SkillStep } from "./components/SkillStep.jsx";
 import { SpiritStep } from "./components/SpiritStep.jsx";
 import { PresetBrowseProvider } from "./components/PresetBrowseMode.jsx";
+import { PresetUpdateNotice } from "./components/PresetUpdateNotice.jsx";
 import { WorkspaceOverlays } from "./components/WorkspaceOverlays.jsx";
 import { useBalanceComparison } from "./features/balance-comparison/useBalanceComparison.js";
 import { SpiritComparisonControls, SpiritPreviousStatsAction, SpiritTrialChanges } from "./features/balance-comparison/SpiritComparisonControls.jsx";
@@ -2450,6 +2451,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         onViewModeChange={setViewMode}
       />
       <WorkspaceOverlays {...overlayProps}>
+      {serverId === "global" && snapshot.meta?.id === release.dataVersion ? (
+        <PresetUpdateNotice loadPopularConfigLibrary={configLibraryFlow.loadPopularConfigLibrary}
+          onOpen={configLibraryFlow.openPopularConfigLibrary} />
+      ) : null}
       {shortcutsOpen && <ShortcutDialog settings={shortcutSettings} onChange={setShortcutSettings} onClose={() => setShortcutsOpen(false)} />}
       <div className={`calculator-layout calculator-layout--${viewMode}`}>
         <main className="calculator-main">

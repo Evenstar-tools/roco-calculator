@@ -1,4 +1,9 @@
 export const configurationMessages = Object.fromEntries([
+  ["常用精灵配置可更新（{count}）", "Recommended setups: {count} updates", "おすすめ設定を更新できます（{count}件）"],
+  ["常用精灵配置可导入（{count}）", "Recommended setups: {count} to import", "おすすめ設定を読み込めます（{count}件）"],
+  ["将新增 {count} 份配置。", "{count} setups will be added.", "{count}件の設定を追加します。"],
+  ["查看", "View", "表示"],
+  ["国际服常用配置有新增或更新时提醒，导入后不再提醒，手改配置保留。", "Get notified when recommended Global setups can be added or updated. Importing clears the notice; manual edits are kept.", "グローバル版のおすすめ設定に追加・更新があると通知します。読み込み後は通知せず、手動変更は保持します。"],
   ["即时配置", "Quick setup", "クイック設定"],
   ["正在加载中文占位资料…", "Loading Chinese placeholder data…", "中国語の仮データを読み込み中…"],
   ["资料加载失败，请重试。", "Data could not be loaded. Please retry.", "資料を読み込めませんでした。再試行してください。"],
