@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import {
   createDurabilityRanking,
   STANDARD_DURABILITY_TEMPLATES,
@@ -329,4 +330,64 @@ test("current snapshot ranks only explicit final forms and corroborated bosses",
   });
   expect(ranking.rows.every(({ formRole }) =>
     formRole === "final" || formRole === "boss")).toBe(true);
+});
+
+describe("explicit passive durability configurations", () => {
+  const snapshot = withWebPreview(JSON.parse(readFileSync("data/snapshots/current.json", "utf8")));
+  const defensePercent = { "蹦床松鼠": 200, "鸡麻麻": 150, "卷胡巨獭": 180, "古卷匣魔像": 200, "上岸蛙": 140 };
+  const candidates = snapshot.spirits.filter(entry => Object.hasOwn(defensePercent, entry.fullName));
+  const options = { spirits: candidates, traits: snapshot.traits, includePassiveVariants: true };
+
+  test.each(Object.keys(STANDARD_DURABILITY_TEMPLATES))("%s preserves ordinary rows and applies core defense rounding before durability", templateId => {
+    expect(candidates).toHaveLength(5);
+    const standard = createDurabilityRanking({ spirits: candidates, templateId });
+    const ranking = createDurabilityRanking({ ...options, templateId });
+    expect(ranking.rows).toHaveLength(10);
+    expect(new Set(ranking.rows.map(row => row.id)).size).toBe(10);
+    for (const base of standard.rows) {
+      const ordinary = ranking.rows.find(row => row.id === base.id);
+      const passive = ranking.rows.find(row => row.spiritId === base.spiritId && row.passiveLabel);
+      const percent = defensePercent[base.spirit.fullName];
+      expect(ordinary.panelStats).toEqual(base.panelStats);
+      expect(ordinary.durability).toEqual(base.durability);
+      expect(passive.basePanelStats).toEqual(base.panelStats);
+      expect(passive.panelStats.hp).toBe(base.panelStats.hp);
+      const physical = Math.floor(base.panelStats.physicalDefense * percent / 100);
+      const magical = Math.floor(base.panelStats.magicalDefense * percent / 100);
+      expect(passive.panelStats.physicalDefense).toBe(physical);
+      expect(passive.panelStats.magicalDefense).toBe(magical);
+      expect(passive.durability.raw).toEqual({
+        physical: base.panelStats.hp * physical,
+        magical: base.panelStats.hp * magical,
+        combined: base.panelStats.hp * physical * magical / (physical + magical),
+      });
+    }
+    const chicken = standard.rows.find(row => row.spirit.fullName === "鸡麻麻");
+    if (templateId === "standard-hp-v1") expect(chicken.panelStats.physicalDefense % 2).toBe(1);
+  });
+
+  test("conditions are searchable and attribute filtering retains the adjusted durability", () => {
+    const ranking = createDurabilityRanking({ ...options, attackType: "武", query: "护犊" });
+    expect(ranking.rows).toHaveLength(1);
+    const row = ranking.rows[0];
+    expect(row.passiveLabel).toBe("护犊已触发");
+    expect(row.durability.raw.physical).toBe(row.baseDurability.raw.physical / row.multiplier);
+    expect(createDurabilityRanking({ ...options, query: "10能量" }).rows).toHaveLength(1);
+    expect(createDurabilityRanking({ ...options, includePassiveVariants: false }).rows).toHaveLength(5);
+  });
+
+  test("missing traits, unresolved preview mechanics and incomplete panels do not fabricate special rows", () => {
+    expect(createDurabilityRanking({ ...options, traits: [] }).rows).toHaveLength(5);
+    const traits = snapshot.traits.map(({ previewIdentity: _previewIdentity, ...entry }) => entry);
+    expect(new Set(createDurabilityRanking({ ...options, traits }).rows.filter(row => row.passiveLabel).map(row => row.spirit.fullName))).toEqual(new Set(["蹦床松鼠", "卷胡巨獭", "古卷匣魔像", "上岸蛙"]));
+    expect(createDurabilityRanking({ ...options, spirits: candidates.map(entry => ({ ...entry, raceStats: null })) }).rows).toEqual([]);
+  });
+
+  test("only the five approved passive configurations enter the full snapshot ranking", () => {
+    const ranking = createDurabilityRanking({ ...options, spirits: snapshot.spirits });
+    expect(ranking.rows.filter(row => row.passiveLabel).map(row => row.spirit.fullName).sort()).toEqual(Object.keys(defensePercent).sort());
+    for (const query of ["总能耗<4", "入场敌方魔力1", "非周末"]) {
+      expect(createDurabilityRanking({ ...options, query }).rows).toHaveLength(1);
+    }
+  });
 });

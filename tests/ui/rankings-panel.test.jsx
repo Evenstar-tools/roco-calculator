@@ -6,6 +6,26 @@ import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 
 const snapshot = { meta: {}, spirits: [["water", "水测试", ["水"]], ["grass", "草测试", ["草"]], ["dragon", "龙测试", ["水", "龙"]]].map(([id, fullName, types], dexNo) => ({ id, fullName, types, dexNo, stage: "首领", sourceCategory: "首领形态", raceStats: { hp: 100, physicalAttack: 100, magicalAttack: 100, physicalDefense: 100, magicalDefense: 100, speed: 100 } })) };
 
+test("耐久特殊配置保留基础行，可关闭、搜索并查看强化后的面板", () => {
+  const specialSnapshot = { ...snapshot, traits: [{ id: "stockpile", name: "囤积" }], spirits: [
+    { ...snapshot.spirits[0], fullName: "蹦床松鼠", traitIds: ["stockpile"] },
+  ] };
+  render(<RankingsPanel kind="durability" snapshot={specialSnapshot} onClose={vi.fn()} />);
+  expect(screen.getByLabelText("特殊配置")).toBeChecked();
+  expect(screen.getAllByRole("button", { name: /蹦床松鼠/ })).toHaveLength(2);
+  expect(screen.getByRole("status")).toHaveTextContent("2档");
+  fireEvent.click(screen.getByRole("button", { name: /蹦床松鼠 · 10能量/ }));
+  const detail = within(screen.getByRole("region", { name: "榜单配置详情" }));
+  expect(detail.getByText(/当前能量10，双防\+100%/)).toHaveTextContent("物防 203→406 · 魔防 203→406");
+  expect(detail.getByRole("columnheader", { name: "特性后耐久" })).toBeInTheDocument();
+  fireEvent.click(detail.getByRole("button", { name: "返回榜单" }));
+  fireEvent.click(screen.getByLabelText("特殊配置"));
+  expect(screen.getAllByRole("button", { name: /蹦床松鼠/ })).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", { name: "重置", exact: true }));
+  fireEvent.change(screen.getByLabelText("搜索耐久榜精灵"), { target: { value: "10能量" } });
+  expect(screen.getAllByRole("button", { name: /蹦床松鼠/ })).toHaveLength(1);
+});
+
 test("速度榜全屏不重挂查询、口径、详情和种族视图，Escape逐层返回", () => {
   const close = vi.fn();
   render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={close} />);
@@ -198,7 +218,7 @@ test("冥古龙四档耐久保留独立行及正确等级详情，切模板与�
     fireEvent.click(within(detail).getByRole("button", { name: "返回榜单" }));
   }
   fireEvent.click(screen.getByRole("button", { name: "筛选" }));
-  expect(screen.getByText("已计入冥古龙等级面板及承伤；其余特性、天气和技能不计。")).toBeInTheDocument();
+  expect(screen.getByText("含冥古龙等级面板及承伤；仅计注明的特性，不计天气和技能。")).toBeInTheDocument();
   fireEvent.change(screen.getByLabelText("耐久榜模板"), { target: { value: "standard-neutral-v1" } });
   fireEvent.change(screen.getByLabelText("搜索耐久榜精灵"), { target: { value: "69级" } });
   expect(within(screen.getByRole("table", { name: "标准耐久完整榜" })).getAllByRole("row")).toHaveLength(2);
