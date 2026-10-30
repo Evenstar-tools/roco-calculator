@@ -130,6 +130,8 @@
   background: transparent;
   font-size: 12px;
   font-weight: 600;
+  /* 英日文技能名较长，放不下时显示省略号而不是切半个字。 */
+  text-overflow: ellipsis;
 }
 
 .skill-picker__clear {
