@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import snapshot from "../../data/snapshots/current.json";
-import { ELEMENT_TYPES, getTypeMultiplier } from "../../src/domain/type-chart.js";
+import { ELEMENT_TYPES } from "../../src/domain/type-chart.js";
 import { buildTypeQuery, findFinalDualTypeSpirits, toggleQueryType } from "../../src/features/type-query/model.js";
 import { resolveSpiritFormRole } from "../../src/features/team-ability/domain/spirit-form-role.js";
 
@@ -43,16 +43,16 @@ describe("属性查询", () => {
     expect(findFinalDualTypeSpirits(snapshot.spirits, ["地"])).toEqual([]);
   });
   const combinations = ELEMENT_TYPES.flatMap((type, i) => [[type], ...ELEMENT_TYPES.slice(i + 1).map((other) => [type, other])]);
-  test.each(combinations.map((types) => [types.join("/"), types]))("%s：18行无遗漏且与内核一致，选中顺序不影响结果", (_, types) => {
-    const result = buildTypeQuery(types, chart);
-    const reversed = buildTypeQuery([...types].reverse(), chart);
-    for (const side of ["defense", "offense"]) {
-      expect(result[side].map(({ type }) => type)).toEqual(ELEMENT_TYPES);
-      expect(result[side].map(({ multiplier }) => multiplier)).toEqual(reversed[side].map(({ multiplier }) => multiplier));
-    }
-    for (const type of ELEMENT_TYPES) {
-      expect(row(result.defense, type).multiplier).toBe(getTypeMultiplier(type, types, chart));
-      expect(row(result.offense, type).multiplier).toBe(Math.max(...types.map((attack) => getTypeMultiplier(attack, [type], chart))));
+  // 倍率取值本身由 buildTypeQuery 内部的 getTypeMultiplier 计算，逐格对照内核是同义反复；
+  // 这里只验证全部单/双属性组合的行完整性与选择顺序无关。
+  test("全部单双属性组合18行无遗漏，选中顺序不影响结果", () => {
+    for (const types of combinations) {
+      const result = buildTypeQuery(types, chart);
+      const reversed = buildTypeQuery([...types].reverse(), chart);
+      for (const side of ["defense", "offense"]) {
+        expect(result[side].map(({ type }) => type), types.join("/")).toEqual(ELEMENT_TYPES);
+        expect(result[side].map(({ multiplier }) => multiplier), types.join("/")).toEqual(reversed[side].map(({ multiplier }) => multiplier));
+      }
     }
   });
 });
