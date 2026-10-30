@@ -406,7 +406,7 @@
 
   .result-rail__hp-control {
     gap: 4px;
-    grid-template-columns: auto minmax(0, 1fr) 44px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
   .result-rail__hp-control label {
@@ -424,6 +424,11 @@
 
   .result-rail__hp-control button {
     width: 44px;
+  }
+
+  .result-rail__hp-control > button {
+    width: auto;
+    min-width: 44px;
   }
 }
 
@@ -858,6 +863,8 @@
     line-height: 1.15;
     text-overflow: clip;
     white-space: normal;
+    /* 英文长名是单个单词，允许在两行内断开，避免被裁掉末尾字母。 */
+    overflow-wrap: anywhere;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
