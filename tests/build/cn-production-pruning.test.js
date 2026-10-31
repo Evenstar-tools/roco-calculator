@@ -4,6 +4,19 @@ import { parse } from "@babel/parser";
 import { expect, test } from "vitest";
 import { CN_ICON_WEIGHTS, cnProductionPruningPlugin, pruneCnProductionModule } from "../../scripts/cn-production-pruning.mjs";
 
+test("CN preview excludes official Global display records while preserving export contracts and metadata", () => {
+  const code = readFileSync("src/data/global-entity-text.js", "utf8");
+  const result = pruneCnProductionModule(code, "D:/project/src/data/global-entity-text.js");
+  const declarations = source => parse(source, { sourceType: "module" }).program.body;
+  const original = declarations(code);
+  const pruned = declarations(result);
+  expect(pruned.map(node => node.declaration.declarations[0].id.name))
+    .toEqual(original.map(node => node.declaration.declarations[0].id.name));
+  expect(result).toContain(code.slice(original[0].start, original[0].end));
+  expect(result).toContain("{ spirit: {}, skill: {}, trait: {} }");
+  expect(result.length).toBeLessThan(2000);
+});
+
 test("only the root production locale aggregation drops unreachable English/Japanese dictionaries", () => {
   const code = readFileSync("src/i18n/messages.js", "utf8");
   const result = pruneCnProductionModule(code, "D:/project/src/i18n/messages.js");

@@ -6,6 +6,16 @@ export const CN_ICON_WEIGHTS = Object.freeze(["regular", "bold", "fill"]);
 // Keep source translations and development builds intact, and retain all used icons.
 export function pruneCnProductionModule(code, id) {
   const filename = id.replaceAll("\\", "/");
+  if (filename.endsWith("/src/data/global-entity-text.js")) {
+    const exports = parse(code, { sourceType: "module" }).program.body;
+    return exports.map(node => {
+      const name = node.declaration?.declarations?.[0]?.id?.name;
+      if (name === "GLOBAL_ENTITY_TEXT_META") return code.slice(node.start, node.end);
+      if (name === "GLOBAL_ENTITY_TEXT") return "export const GLOBAL_ENTITY_TEXT = { spirit: {}, skill: {}, trait: {} };";
+      if (name === "GLOBAL_CLIENT_TRAIT_TEXT") return "export const GLOBAL_CLIENT_TRAIT_TEXT = {};";
+      throw new Error("Unexpected Global display catalog export in CN build: " + name);
+    }).join("\n");
+  }
   if (filename.endsWith("/src/i18n/messages.js")) {
     const imports = parse(code, { sourceType: "module" }).program.body.filter(node =>
       node.type === "ImportDeclaration" && /^\.\/[\w-]+-messages\.js$/u.test(node.source.value));
